@@ -1,5 +1,18 @@
-# Object file
+*~
 *.o
-
-# Ada Library Information
 *.ali
+#include
+#bin
+DEADJOE
+*.tmp
+*.vec
+*.bin
+*.lis
+*.hex
+*.kate-swp
+*.b#?
+*.s#?
+*.epf
+*.epf.in
+eagle.rc
+testbench
