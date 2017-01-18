@@ -55,6 +55,7 @@ procedure et is
 	prog_position	: natural := 0;
 
 	p : type_port;
+	
 begin
 	null;
 
@@ -64,4 +65,5 @@ begin
 	p.coordinates.x := 0;
 	p.coordinates.y := 0;
 
+	
 end et;
