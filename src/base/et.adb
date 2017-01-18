@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2016 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -42,18 +42,26 @@ with Ada.Exceptions; 			use Ada.Exceptions;
 with Ada.Command_Line;			use Ada.Command_Line;
 with Ada.Directories;			use Ada.Directories;
 
-with et_objects;
--- with m1;
--- with m1_internal; use m1_internal;
+with ada.containers; use ada.containers;
+with ada.containers.vectors;
 
+
+with et_schematic; 	use et_schematic;
+with et_operations; use et_operations;
 
 procedure et is
 
 	version			: String (1..3) := "000";
 	prog_position	: natural := 0;
 
+	p : type_port;
 begin
 	null;
 
+
+	p.name := type_port_name.to_bounded_string("CLK");
+	p.direction := passive;
+	p.coordinates.x := 0;
+	p.coordinates.y := 0;
 
 end et;

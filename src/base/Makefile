@@ -1,13 +1,13 @@
 TARGET = et
 
 VPATH = include
-OBJS = $(TARGET).o et_objects.o
+OBJS = $(TARGET).o et_schematic.o et_operations.o
 PREFIX = $(HOME)
 BINDIR = $(PREFIX)/bin
 
 # compile
 .adb.o:
-	gcc -c $< -I include
+	gcc -c -gnat2012 $< -I $(VPATH)
 .SUFFIXES: .adb .o
 
 # link
