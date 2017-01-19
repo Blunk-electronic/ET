@@ -1,7 +1,7 @@
 TARGET = et
 
 VPATH = include
-OBJS = $(TARGET).o et_schematic.o et_operations.o
+OBJS = $(TARGET).o et_general.o et_schematic.o et_operations.o et_import.o
 PREFIX = $(HOME)
 BINDIR = $(PREFIX)/bin
 

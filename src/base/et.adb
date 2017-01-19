@@ -31,39 +31,66 @@
 --
 
 
-with Ada.Text_IO;				use Ada.Text_IO;
-with Ada.Integer_Text_IO;		use Ada.Integer_Text_IO;
-with Ada.Characters.Handling; 	use Ada.Characters.Handling;
+with ada.text_io;				use ada.text_io;
+with ada.integer_text_io;		use ada.integer_text_io;
+with ada.characters.handling; 	use ada.characters.handling;
 
-with Ada.Strings.Bounded; 		use Ada.Strings.Bounded;
-with Ada.Strings.fixed; 		use Ada.Strings.fixed;
-with Ada.Exceptions; 			use Ada.Exceptions;
+with ada.strings.bounded; 		use ada.strings.bounded;
+with ada.strings.fixed; 		use ada.strings.fixed;
+with ada.exceptions; 			use ada.exceptions;
  
-with Ada.Command_Line;			use Ada.Command_Line;
-with Ada.Directories;			use Ada.Directories;
+with ada.command_line;			use ada.command_line;
+with ada.directories;			use ada.directories;
 
 with ada.containers; use ada.containers;
 with ada.containers.vectors;
 
 
+with et_general;	use et_general;
+with et_import;		use et_import;
 with et_schematic; 	use et_schematic;
 with et_operations; use et_operations;
+
 
 procedure et is
 
 	version			: String (1..3) := "000";
 	prog_position	: natural := 0;
 
-	p : type_port;
-	
+	argument_ct		: natural := argument_count;
+	action			: type_action := none;
 begin
 	null;
+	if argument_ct > 0 then
+		for a in 1..argument_ct loop
+			case action is
+				when none =>
+					if argument(a) = argument_keyword_version then
+						action := request_version;
+						put_line("version " & version);
+					elsif argument(a) = argument_keyword_import then
+						action := import_cad;
+					end if;
 
+				when import_cad =>
+					null;
+					if argument(a) = to_lower(type_cad_format'image(kicad_v4)) then
+						put_line("importing design format " & argument(a) );
+					end if;
 
-	p.name := type_port_name.to_bounded_string("CLK");
-	p.direction := passive;
-	p.coordinates.x := 0;
-	p.coordinates.y := 0;
+					if argument_ct > a then
+						put_line("project name : " & argument(a+1));
+						import_design( type_cad_format'value(argument(a)) , argument(a+1) );
+						exit;
+					else
+						put_line(message_error & "Project file expected !");
+					end if;
+					
+				when others => null;
+			end case;
 
+		end loop;
+
+	end if;
 	
 end et;
