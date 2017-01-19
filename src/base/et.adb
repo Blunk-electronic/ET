@@ -59,8 +59,10 @@ procedure et is
 
 	argument_ct		: natural := argument_count;
 	action			: type_action := none;
+
+
 begin
-	null;
+
 	if argument_ct > 0 then
 		for a in 1..argument_ct loop
 			case action is
@@ -92,5 +94,6 @@ begin
 		end loop;
 
 	end if;
+
 	
 end et;
