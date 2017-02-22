@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                         SYSTEM ET MODULE BASE                            --
+--                         SYSTEM ET BASE                                   --
 --                                                                          --
 --                                 M-1                                      --
 --                                                                          --
@@ -50,6 +50,8 @@ with et_general;	use et_general;
 with et_import;		use et_import;
 with et_schematic; 	use et_schematic;
 with et_operations; use et_operations;
+
+with et_kicad;		use et_kicad;
 
 
 procedure et is
