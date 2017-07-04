@@ -1,0 +1,188 @@
+------------------------------------------------------------------------------
+--                                                                          --
+--                           SYSTEM ET KICAD                                --
+--                                                                          --
+--                                 ET                                       --
+--                                                                          --
+--                               S p e c                                    --
+--                                                                          --
+--         Copyright (C) 2017 Mario Blunk, Blunk electronic                 --
+--                                                                          --
+--    This program is free software: you can redistribute it and/or modify  --
+--    it under the terms of the GNU General Public License as published by  --
+--    the Free Software Foundation, either version 3 of the License, or     --
+--    (at your option) any later version.                                   --
+--                                                                          --
+--    This program is distributed in the hope that it will be useful,       --
+--    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
+--    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
+--    GNU General Public License for more details.                          --
+--                                                                          --
+--    You should have received a copy of the GNU General Public License     --
+--    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+------------------------------------------------------------------------------
+
+--   Please send your questions and comments to:
+--
+--   Mario.Blunk@blunk-electronic.de
+--   or visit <http://www.blunk-electronic.de> for more contact data
+--
+--   history of changes:
+--
+with ada.text_io;				use ada.text_io;
+
+with ada.strings.bounded; 		use ada.strings.bounded;
+with ada.containers; 			use ada.containers;
+with ada.containers.vectors;
+-- with ada.containers.doubly_linked_lists;
+with ada.containers.ordered_maps;
+
+with et_schematic;				use et_schematic;
+with et_import;		            use et_import;
+
+package et_kicad is
+
+
+	file_extension_project   			: constant string (1..3) := "pro";
+	file_extension_schematic 			: constant string (1..3) := "sch";
+
+
+    
+    schematic_version                   : constant positive := 2;
+    
+	procedure import_design ( format : in type_cad_format; project : in string);
+
+
+    project_header_eeschema                 : constant string (1..10) := "[eeschema]";
+    project_header_eeschema_libraries       : constant string (1..20) := "[eeschema/libraries]";
+    project_keyword_version                 : constant string (1..7)  := "version";
+    project_keyword_library_directory       : constant string (1..6)  := "LibDir";
+    project_keyword_library_name            : constant string (1..7)  := "LibName"; -- with index like "LibName1"
+    
+    -- headers, footers, keywords 
+
+--     EESchema Schematic File Version 2
+--     LIBS:nucleo_core-rescue
+--     LIBS:power
+--     LIBS:bel_connectors_and_jumpers
+--     LIBS:bel_primitives
+--     LIBS:bel_stm32
+--     LIBS:nucleo_core-cache
+--     EELAYER 25 0
+--     EELAYER END
+
+    schematic_header_keyword_sys_name      : constant string (1..8) := "EESchema";
+    schematic_header_keyword_schematic     : constant string (1..9) := "Schematic";
+    schematic_header_keyword_file          : constant string (1..4) := "File";
+    schematic_header_keyword_version       : constant string (1..7) := "Version";
+    
+    schematic_library                      : constant string (1..4) := "LIBS";
+    
+    schematic_eelayer                      : constant string (1..7) := "EELAYER";
+    schematic_eelayer_end                  : constant string (1..3) := "END";   
+
+
+
+
+
+	schematic_description_header           : constant string (1..6) := "$Descr";
+	schematic_description_footer           : constant string (1..9) := "$EndDescr";
+	schematic_sheet_header                 : constant string (1..6) := "$Sheet";
+	schematic_sheet_footer                 : constant string (1..9) := "$EndSheet";	
+	schematic_component_header             : constant string (1..5) := "$Comp";
+	schematic_component_footer             : constant string (1..8) := "$EndComp";
+	
+    schematic_keyword_sheet                : constant string (1..5) := "Sheet";
+    schematic_keyword_title                : constant string (1..5) := "Title";
+    schematic_keyword_encoding             : constant string (1..8) := "encoding";    
+    schematic_keyword_date                 : constant string (1..4) := "Date";
+    schematic_keyword_revision             : constant string (1..3) := "Rev";
+    schematic_keyword_company              : constant string (1..4) := "Comp";
+	schematic_keyword_wire		           : constant string (1..4) := "Wire";
+	schematic_keyword_connection           : constant string (1..10) := "Connection";	
+	schematic_keyword_line                 : constant string (1..4) := "Line";	
+	schematic_keyword_text                 : constant string (1..4) := "Text";
+	schematic_keyword_label_simple         : constant string (1..5) := "Label";
+	schematic_keyword_label_hierarchic     : constant string (1..6) := "HLabel";
+	schematic_keyword_label_global         : constant string (1..6) := "GLabel";
+	schematic_keyword_label_dir_bidir      : constant string (1..4) := "BiDi";	
+	schematic_keyword_label_dir_input      : constant string (1..5) := "Input";
+	schematic_keyword_label_dir_output     : constant string (1..6) := "Output";
+	schematic_keyword_label_dir_passive	   : constant string (1..5) := "UnSpc";
+    schematic_keyword_label_dir_tristate   : constant string (1..6) := "3State";
+	schematic_keyword_note                 : constant string (1..5) := "Notes";    
+
+    schematic_keyword_comment_1            : constant string (1..8) := "Comment1";
+    schematic_keyword_comment_2            : constant string (1..8) := "Comment2";
+    schematic_keyword_comment_3            : constant string (1..8) := "Comment3";
+	schematic_keyword_comment_4            : constant string (1..8) := "Comment4";    
+    
+    schematic_keyword_sheet_pos_and_size   : constant string (1..1) := "S";
+    schematic_keyword_sheet_timestamp      : constant string (1..1) := "U";    
+	schematic_keyword_sheet_name           : constant string (1..2) := "F0";
+	schematic_keyword_sheet_file           : constant string (1..2) := "F1";
+	schematic_component_identifier_name    : constant string (1..1) := "L";
+	schematic_component_identifier_unit	   : constant string (1..1) := "U";
+	schematic_component_identifier_coord   : constant string (1..1) := "P";
+	schematic_component_identifier_field   : constant string (1..1) := "F";
+
+	schematic_component_field_count_max 	: constant positive := 10; -- CS: verify
+	type type_schematic_component_field_id is range 0..schematic_component_field_count_max;
+	schematic_component_field_id_annotation	: constant type_schematic_component_field_id := 0;
+	schematic_component_field_id_value		: constant type_schematic_component_field_id := 1;
+	schematic_component_field_id_footprint	: constant type_schematic_component_field_id := 2;
+	-- CS: the purpose of field F 3 is unknown yet
+
+	-- The name of a sheet, the title (and optionally the file) may have 100 characters which seems sufficient for now.
+	-- If sheets are stored as files, the file name may have the same length.
+ 	sheet_name_length	: constant natural := 100;
+	package type_sheet_name is new generic_bounded_length(sheet_name_length); use type_sheet_name;
+	package type_sheet_file is new generic_bounded_length(sheet_name_length); use type_sheet_file;	
+    
+	type type_schematic_field_orientation is (H, V);
+    type type_label_orientation is range 0..3; -- also used for notes
+
+    schematic_tilde : constant string (1..1) := "~";
+
+    -- fonts
+    schematic_style_normal : constant string (1..1) := "~";
+    schematic_style_italic : constant string (1..6) := "Italic";    
+
+    -- visible/invisible status
+    schematic_text_visible   : constant string (1..4) := "0000";    
+    schematic_text_invisible : constant string (1..4) := "0001";
+
+    -- text alignment
+    type type_schematic_text_alignment_horizontal is (R, C, L);
+    type type_schematic_text_alignment_vertical is (TNN, CNN, BNN);    
+
+    -- SHEET HEADERS
+    -- sheet files have a header with meta information:
+    -- stuff like:
+    --     EESchema Schematic File Version 2
+    --     LIBS:nucleo_core-rescue
+    --     LIBS:power
+    --     LIBS:bel_connectors_and_jumpers
+    --     LIBS:bel_primitives
+    --     LIBS:bel_stm32
+    --     LIBS:nucleo_core-cache
+    --     EELAYER 25 0
+    --     EELAYER END
+    type type_sheet_header is record
+        version     : positive; -- 2    
+        libraries   : type_list_of_library_names.vector; -- CS: probably not used by kicad, just information
+        eelayer_a   : positive; -- 25 -- CS: meaning not clear, probably not used
+        eelayer_b   : natural; -- 0 -- CS: meaning not clear, probably not used
+    end record;
+
+    -- The headers are stored in a list:
+    package type_list_of_sheet_headers is new ordered_maps (
+        key_type => type_sheet_file.bounded_string,
+        element_type => type_sheet_header);
+    -- Why ? When schematic files are exported, their headers must be restored to the original state.
+
+    -- this is the instantiated list of headers:
+    list_of_sheet_headers : type_list_of_sheet_headers.map;
+    
+end et_kicad;
+
