@@ -31,27 +31,52 @@
 --
 
 with ada.text_io;				use ada.text_io;
--- 
--- with ada.strings.bounded; 		use ada.strings.bounded;
+with ada.characters;			use ada.characters;
+with ada.characters.handling;	use ada.characters.handling;
+with ada.strings;		 		use ada.strings;
+with ada.strings.fixed; 		use ada.strings.fixed;
+with ada.directories;			use ada.directories;
+with ada.strings.bounded; 		use ada.strings.bounded;
 -- with ada.containers; 			use ada.containers;
 -- with ada.containers.vectors;
 -- with ada.containers.doubly_linked_lists;
 
+with et_general;				use et_general;
 with et_schematic;				use et_schematic;
+
 
 package et_import is
 
-    procedure dummy;
+	-- FILES, DIRECTORIES AND HANDLES
+	package type_project_name is new generic_bounded_length(project_name_length); use type_project_name;
 
-	-- FILE AND DIRECTORY NAMES
-	directory_report		: constant string (1..10) := "et_reports";
-	file_extension_report	: constant string (1..3) := "txt";	
-	file_report_import 		: constant string (1..6) := "import";
+	-- The project file name may have the same length like the project name itself plus its extension (see et_general.ads):
+	package type_project_file_name is new generic_bounded_length(project_name_length + 4); use type_project_file_name;
+	project_file_name	: type_project_file_name.bounded_string;
+	project_file_handle	: ada.text_io.file_type;
+    
+	
+	file_report_import 		: constant string (1 .. 
+								report_directory'length + 1 -- containing directory + separator
+								+ 6 -- base name
+								+ 1 + report_extension'length) -- separator + extension
+									:= compose(report_directory, "import", report_extension);
+	report_handle		: ada.text_io.file_type;
 
+
+
+	schematic_handle	: ada.text_io.file_type;
+	-- CS: board_handle		: ada.text_io.file_type;
     
 	-- CAD FORMATS
-	type type_cad_format is ( kicad_v4 );
-    
+	type type_cad_format is ( unknown, kicad_v4 );
+	-- If no format specified via cmd line, a default applies so that the operator can be 
+	-- notified about missing cad format.
+	cad_format : type_cad_format := unknown; 
 
+	procedure create_report_file;
+	-- Creates the report file in report_directory.
+	-- Leaves the report file open for further puts.
+	
 end et_import;
 

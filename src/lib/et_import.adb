@@ -50,10 +50,20 @@
 
 package body et_import is
 
-    procedure dummy is
+	procedure create_report_file is
+	-- Creates the report file in report_directory.
+	-- Leaves the report file open for further puts.
     begin
-        null;
-    end dummy;
+		create (file => et_import.report_handle, mode => out_file, 
+			name => (compose(containing_directory => report_directory, 
+			name => file_report_import, extension => report_extension))
+			);
+		
+		put_line(et_import.report_handle, system_name & " import report");
+		put_line(et_import.report_handle, row_separator_double);
+		put_line(et_import.report_handle, "date: " & date_now);
+
+    end create_report_file;
 
 end et_import;
 

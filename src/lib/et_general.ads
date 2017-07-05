@@ -52,11 +52,17 @@ package et_general is
 
 	system_name						: constant string (1..9) := "SYSTEM ET";
 
+	-- FILES, EXTENSIONS AND DIRECTORY NAMES
+
+	-- The name of a project may have 100 characters which seems sufficient for now.
+ 	project_name_length		: constant natural := 100;
+
+	-- All reports go into this directory:
+	report_directory		: constant string (1..10)	:= "et_reports";
+	report_extension		: constant string (1..3)	:= "log";
+	
     -- FILE HANDLES
-	handle_project		: ada.text_io.file_type;
-	handle_schematic	: ada.text_io.file_type;
-	handle_report		: ada.text_io.file_type;
-	--file_board		: ada.text_io.file_type; CS
+
 	
 	-- FREQUENTLY USED WORDS AND PHRASES
 	message_error					: constant string (1..8) := "ERROR ! ";
@@ -64,17 +70,17 @@ package et_general is
 	row_separator_single			: constant string (1..100) := 100 * "-";	
 	row_separator_double			: constant string (1..100) := 100 * "=";
 	
-	-- ARGUMENT KEYWORDS
-	argument_keyword_about 			: constant string (1..7) := "--about"; -- CS
-	argument_keyword_version 		: constant string (1..9) := "--version";
-	argument_keyword_import 		: constant string (1..8) := "--import";
+	-- COMMAND LINE SWITCHES
+	--switch_about			: constant string (1..7) := "--about"; -- CS
+	switch_version			: constant string (1..8)	:= "-version"; -- long switch
+	switch_help				: constant string (1..5)	:= "-help"; -- long switch	
+--	switch_import_file		: constant string (1..12)	:= "-import_file";	-- long switch -- currently we do not care about importing single files
+	switch_import_project	: constant string (1..15)	:= "-import_project";	-- long switch
+	switch_import_format	: constant string (1..14)	:= "-import_format";	-- long switch
 																															
-	-- ACTIONS
-	type type_action is ( none, request_version, import_cad );
+-- 	-- ACTIONS
+-- 	type type_action is ( none, request_version, import_cad );
 
-	-- The name of a project may have 100 characters which seems sufficient for now.
- 	project_name_length	: constant natural := 100;
-	package type_project_name is new generic_bounded_length(project_name_length); use type_project_name;
     
 	-- The name of the person who has drawn, checked or approved something may have 100 characters which seems sufficient for now.
  	person_name_length	: constant natural := 100;
