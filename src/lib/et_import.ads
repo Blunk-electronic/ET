@@ -64,7 +64,8 @@ package et_import is
 	report_handle		: ada.text_io.file_type;
 
 
-
+	package type_schematic_file_name is new generic_bounded_length(project_name_length + 4); use type_schematic_file_name;
+	--schematic_file_name	: type_schematic_file_name.bounded_string;
 	schematic_handle	: ada.text_io.file_type;
 	-- CS: board_handle		: ada.text_io.file_type;
     
@@ -74,9 +75,15 @@ package et_import is
 	-- notified about missing cad format.
 	cad_format : type_cad_format := unknown; 
 
-	procedure create_report_file;
+	procedure create_report;
 	-- Creates the report file in report_directory.
+	-- Sets the output to the report file.
 	-- Leaves the report file open for further puts.
+
+	procedure close_report;
+	-- Writes the report footer and closes the report file.
+	-- Sets the output back to standard_output.
+
 	
 end et_import;
 

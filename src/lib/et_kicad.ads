@@ -51,7 +51,8 @@ package et_kicad is
     
     schematic_version                   : constant positive := 2;
     
-	procedure import_design ( format : in type_cad_format; project : in string);
+	procedure import_design; 
+
 
 
     project_header_eeschema                 : constant string (1..10) := "[eeschema]";

@@ -50,20 +50,36 @@
 
 package body et_import is
 
-	procedure create_report_file is
+	procedure create_report is
 	-- Creates the report file in report_directory.
+	-- Sets the output to the report file.
 	-- Leaves the report file open for further puts.
     begin
 		create (file => et_import.report_handle, mode => out_file, 
-			name => (compose(containing_directory => report_directory, 
-			name => file_report_import, extension => report_extension))
-			);
-		
-		put_line(et_import.report_handle, system_name & " import report");
-		put_line(et_import.report_handle, row_separator_double);
-		put_line(et_import.report_handle, "date: " & date_now);
+				name => file_report_import);
 
-    end create_report_file;
+		set_output(et_import.report_handle);
+		
+		put_line(system_name & " import report");
+		put_line("date " & date_now);
+		put_line("CAD format " & type_cad_format'image(cad_format));
+		put_line("project file " & to_string(et_import.project_file_name));
+		put_line(row_separator_double);		
+	end create_report;
+
+	procedure close_report is
+	-- Writes the report footer and closes the report file.
+	-- Sets the output back to standard_output.
+	begin
+		put_line(row_separator_double);
+		put_line("date " & date_now);
+		put_line(system_name & " import report end");
+
+		set_output(standard_output);
+		
+		close(et_import.report_handle);
+		
+	end close_report;
 
 end et_import;
 

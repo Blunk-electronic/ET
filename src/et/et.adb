@@ -97,9 +97,9 @@ procedure et is
 						et_import.cad_format := et_import.type_cad_format'value(parameter);
 						
 					end if;
-				when others =>
-					exit;
-			
+
+					
+				when others => exit; -- CS: produce useful message
 
 			end case;
 		end loop;
@@ -113,7 +113,10 @@ begin
 
 	-- Test if project file specified and if it exists:
 	if length(et_import.project_file_name) > 0 then
-		if not exists(to_string(et_import.project_file_name)) then
+		if exists(to_string(et_import.project_file_name)) then
+			--put_line( "project file: " & to_string(et_import.project_file_name));
+			null;
+		else
 			put_line(message_error & "project file " & to_string(et_import.project_file_name) & " not found ! (forgot extension ?)");
 			raise constraint_error;
 		end if;
@@ -133,38 +136,8 @@ begin
 		create_directory(report_directory);
 	end if;
 
+	-- Now we know the project file name and the CAD format.
+	import_design;
 	
--- 	if argument_ct > 0 then
--- 		for a in 1..argument_ct loop
--- 			case action is
--- 				when none =>
--- 					if argument(a) = argument_keyword_version then
--- 						action := request_version;
--- 						put_line("version " & version);
--- 					elsif argument(a) = argument_keyword_import then
--- 						action := import_cad;
--- 					end if;
--- 
--- 				when import_cad =>
--- 					null;
--- 					if argument(a) = to_lower(type_cad_format'image(kicad_v4)) then
--- 						put_line("importing design format " & argument(a) );
--- 					end if;
--- 
--- 					if argument_ct > a then
--- 						put_line("project name : " & argument(a+1));
--- 						import_design( type_cad_format'value(argument(a)) , argument(a+1) );
--- 						exit;
--- 					else
--- 						put_line(message_error & "Project file expected !");
--- 					end if;
--- 					
--- 				when others => null;
--- 			end case;
--- 
--- 		end loop;
--- 
--- 	end if;
-
 
 end et;

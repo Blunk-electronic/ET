@@ -51,10 +51,13 @@ with et_general;				use et_general;
 package body et_kicad is
 
 
-	procedure import_design ( format : in type_cad_format; project : in string) is
+	procedure import_design is
+		use et_import.type_schematic_file_name;
 		
-		function read_file_project_kicad return unbounded_string is
-			name_of_project_file : unbounded_string;
+		function read_project_file return et_import.type_schematic_file_name.bounded_string is
+			-- 			name_of_project_file : unbounded_string;
+			use et_import.type_project_file_name;
+			
 			max_length_of_line_of_project_file : constant positive := 1000; -- CS: should suffice for now, increase if neccessary
 			package type_line_of_project_file is new generic_bounded_length(max_length_of_line_of_project_file);
 			use type_line_of_project_file;
@@ -70,10 +73,12 @@ package body et_kicad is
             end clear_section_entered_flags;
             
 		begin
-			name_of_project_file:= to_unbounded_string( project & '.' & file_extension_project);
-			if exists(to_string(name_of_project_file)) then
-				put_line( et_import.report_handle,"project file: " & to_string(name_of_project_file));
-				open (file => et_import.project_file_handle, mode => in_file, name => to_string(name_of_project_file));
+-- 			name_of_project_file:= to_unbounded_string( project & '.' & file_extension_project);
+-- 			if exists(to_string(name_of_project_file)) then
+
+			put_line("reading project file ...");
+
+				open (file => et_import.project_file_handle, mode => in_file, name => to_string(et_import.project_file_name));
 				set_input (et_import.project_file_handle);
                 while not end_of_file loop
                     line_counter := line_counter + 1;
@@ -93,16 +98,20 @@ package body et_kicad is
 
                     
                     if section_eeschema_entered then
-                        put_line(to_string(line_of_project_file));
+                        put_line(" " & to_string(line_of_project_file));
                     end if;
                     
 				end loop;
 				close ( et_import.project_file_handle );
-			else
-				put_line(message_warning & "Project file '" & to_string(name_of_project_file) & "' not found !");
-			end if;
-			return to_unbounded_string( project & '.' & file_extension_schematic);
-		end read_file_project_kicad;
+-- 			else
+-- 				put_line(message_warning & "Project file '" & to_string(name_of_project_file) & "' not found !");
+-- 			end if;
+
+			-- Derive the schematic file name from the project file. It is just a matter of file extension.
+			return et_import.type_schematic_file_name.to_bounded_string(
+				compose(name => base_name(to_string(project_file_name)), 
+						extension => file_extension_schematic));
+		end read_project_file;
 
         -- While reading submodules (sheets) the path_to_submodule keeps record of current point in the design 
         -- hierarchy. Each time a submodule A has been found with nested submodules, the name of A is appended here.
@@ -116,41 +125,29 @@ package body et_kicad is
         procedure write_path_to_submodule is
             c : type_path_to_submodule.cursor;            
         begin
-            write_message(
-                file_handle => et_import.report_handle,
-                text => "location: ",
-                lf => false, identation => 0);
+            put("path/location: ");
 
             c := type_path_to_submodule.first(path_to_submodule);            
 
+			-- If there is a hierarchy deeper than 1, write path to submodule:
             if type_path_to_submodule.length(path_to_submodule) > 1 then
                 for n in 1..type_path_to_submodule.length(path_to_submodule)-1 loop
-                    write_message(
-                        file_handle => et_import.report_handle,
-                        text => type_submodule_name.to_string(type_path_to_submodule.element(c)) & ".",
-                        lf => false, identation => 0);
+                    put(type_submodule_name.to_string(type_path_to_submodule.element(c)) & ".");
                     c := type_path_to_submodule.next(c);
                 end loop;
             
                 c := type_path_to_submodule.last(path_to_submodule);
-            
-                write_message(
-                    file_handle => et_import.report_handle,
-                    text => type_submodule_name.to_string(type_path_to_submodule.element(c)),
-                    lf => false, identation => 0);
-            else
-                write_message(
-                    file_handle => et_import.report_handle,
-                    text => type_submodule_name.to_string(type_path_to_submodule.element(c)),
-                    lf => false, identation => 0);
+
+				-- write the submodule name
+                put(type_submodule_name.to_string(type_path_to_submodule.element(c)));
+			else
+				-- no hierarchy. write just the submodule name
+                put(type_submodule_name.to_string(type_path_to_submodule.element(c)));
             end if;
             
-            write_message(
-                file_handle => et_import.report_handle,
-                text => "", identation => 0);
-            
-        end write_path_to_submodule;
-
+            new_line;            
+		end write_path_to_submodule;
+		
         -- Here we append a submodule name the the path_to_submodule.
         procedure append_name_of_parent_module_to_path(submodule : in type_submodule_name.bounded_string) is
         begin
@@ -168,7 +165,7 @@ package body et_kicad is
 
 
         
-		function read_file_schematic_kicad (name_of_schematic_file : in unbounded_string) 
+		function read_schematic (name_of_schematic_file : in et_import.type_schematic_file_name.bounded_string) 
 			return type_list_of_submodule_names_extended is
 		-- Reads the given schematic file. If it contains submodules (hierarchic sheets), 
         -- they will be returned in a list_of_submodules. Otherwise the returned list is empty.
@@ -387,10 +384,10 @@ package body et_kicad is
 			begin
 				write_message(
 					file_handle => et_import.report_handle,
-					text => "start: " & 
+					text => "start " & 
 						trim (type_grid'image( segment.coordinates_start.x),left) & "/" &
 						trim (type_grid'image( segment.coordinates_start.y),left) &
-						" end:" &
+						" end " &
 						trim (type_grid'image( segment.coordinates_end.x),left) & "/" &
 						trim (type_grid'image( segment.coordinates_end.y),left),
 					identation => 4);
@@ -1097,11 +1094,8 @@ package body et_kicad is
 
         begin -- read_file_schematic_kicad
 			if exists(to_string(name_of_schematic_file)) then
-				write_message(
-					file_handle => et_import.report_handle,
-					text => "reading schematic file: " & to_string(name_of_schematic_file) & " ...",
-                    console => true);
-                write_path_to_submodule;
+				put_line("reading schematic file: " & to_string(name_of_schematic_file) & " ...");
+                write_path_to_submodule; -- CS: does not work. wrong position
 				open (file => et_import.schematic_handle, mode => in_file, name => to_string(name_of_schematic_file));
 				set_input (et_import.schematic_handle);
 				while not end_of_file loop
@@ -1123,8 +1117,8 @@ package body et_kicad is
                                     sheet_header_scratch.version := positive'value(get_field(text_in => to_string(line_of_schematic_file), position => 5));
                                 else
                                     write_message(
-                                        file_handle => et_import.report_handle,
-                                        text => "Schematic version" & positive'image(schematic_version) & " required.",
+                                        file_handle => current_output,
+                                        text => message_error & "schematic version" & positive'image(schematic_version) & " required.",
                                         console => true);                        
                                     raise constraint_error;
                                 end if;
@@ -1149,8 +1143,7 @@ package body et_kicad is
                         if get_field(text_in => to_string(line_of_schematic_file), position => 1, ifs => latin_1.colon) = schematic_library then
 
                             -- CS: if this entry is without meaning, it should not go into the report at all
-                            write_message(file_handle => et_import.report_handle, 
-                                text => "uses library: " & get_field(text_in => to_string(line_of_schematic_file), position => 2, ifs => latin_1.colon));
+                            put_line(" uses library " & get_field(text_in => to_string(line_of_schematic_file), position => 2, ifs => latin_1.colon));
 
                             -- append library to list of libraries of the temporarily sheet header
                             type_list_of_library_names.append(
@@ -1241,17 +1234,15 @@ package body et_kicad is
                             -- good idea.
                             if get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_keyword_encoding then
                                 if get_field(text_in => to_string(line_of_schematic_file), position => 2) /= encoding_default then
-                                    write_message(
-                                        file_handle => et_import.report_handle,
-                                        text => message_warning & "non-default endcoding '" & 
-                                            get_field(text_in => to_string(line_of_schematic_file), position => 2) & "' found !");
+                                    put_line(message_warning & "non-default endcoding '" & 
+										get_field(text_in => to_string(line_of_schematic_file), position => 2) & "' found !");
                                 end if;
                             end if;
                                 
                             -- read sheet number from a line like "Sheet 1 7"
                             if get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_keyword_sheet then
                                 sheet_number_current := positive'value(get_field(text_in => to_string(line_of_schematic_file), position => 2));
-                                write_message(file_handle => et_import.report_handle, text => "sheet: " & positive'image(sheet_number_current) & " ...", console => false, identation => 1);
+                                put_line(" sheet" & positive'image(sheet_number_current) & " ...");
                                 sheet_count_total    := positive'value(get_field(text_in => to_string(line_of_schematic_file), position => 3));
                                 if sheet_count_total > 1 then
                                     -- Set in the list_of_submodules (to be returned) the parent_module. The schematic file 
@@ -1373,11 +1364,9 @@ package body et_kicad is
                                     
                                     -- Test if sheet name and file name match:
                                     if type_submodule_name.to_string(submodule_gui_scratch.name) /= base_name(type_submodule_name.to_string(name_of_submodule_scratch)) then
-                                        write_message(file_handle => et_import.report_handle,
-                                                    text => message_warning & "name mismatch: sheet: " &
-                                                            type_submodule_name.to_string(submodule_gui_scratch.name) &
-                                                            " file: " & type_submodule_name.to_string(name_of_submodule_scratch),
-                                                    identation => 0);
+                                        put_line(message_warning & "name mismatch: sheet: " &
+											type_submodule_name.to_string(submodule_gui_scratch.name) &
+											" file: " & type_submodule_name.to_string(name_of_submodule_scratch));
                                     end if;
                                 end if;
 
@@ -1591,13 +1580,8 @@ package body et_kicad is
     -- 											type_device_name.to_string(device_scratch.annotation) & " is " &
     -- 											type_device_name_in_library.to_string(device_scratch.name_in_library));
 
-                                            write_message(
-                                                file_handle => et_import.report_handle,
-                                                text => "device: " & type_device_name.to_string(device_scratch.annotation) & " is " &
-                                                    type_device_name_in_library.to_string(device_scratch.name_in_library),
-                                                identation => 2,
-                                                lf => false
-                                                );
+                                            put("  device " & type_device_name.to_string(device_scratch.annotation) & " is " &
+												type_device_name_in_library.to_string(device_scratch.name_in_library));
                                                     
                                             type_device_list_of_module.append(module.devices,device_scratch);
                                         end if;
@@ -1619,18 +1603,15 @@ package body et_kicad is
                                         if 	positive'value(get_field(text_in => to_string(line_of_schematic_file), position => 3)) > -- "3" -- id
                                             positive'value(get_field(text_in => to_string(line_of_schematic_file), position => 2))   -- "7" -- total
                                             then
-                                                new_line(et_import.report_handle); put_line(et_import.report_handle, " " & message_warning & "Unit ID greater than number of units !");
+												new_line;
+												put_line(message_warning & "Unit ID greater than number of units !");
                                         end if;
                                         device_block_scratch.name := type_device_block_name.to_bounded_string(
                                             get_field(text_in => to_string(line_of_schematic_file), position => 3)); -- "3"
 
                                         --put(et_import.report_handle," with block " & type_device_block_name.to_string(device_block_scratch.name) & " at");
 
-                                        write_message(
-                                            file_handle => et_import.report_handle,
-                                            text => " with block " & type_device_block_name.to_string(device_block_scratch.name) & " at",
-                                            lf => false
-                                            );
+                                        put(" with block " & type_device_block_name.to_string(device_block_scratch.name) & " at");
                                         
                                     end if;
 
@@ -1713,9 +1694,9 @@ package body et_kicad is
                 -- If file has been read and no header found:
                 if not schematic_headline_processed then
                     write_message(
-                    file_handle => et_import.report_handle,
-                    text => message_error & "Schematic file header invalid or not found ! File not accepted !",
-                    console => true);
+						file_handle => current_output,
+						text => message_error & "Schematic file header invalid or not found ! File not accepted !",
+						console => true);
                     raise constraint_error;
                 end if;
 
@@ -1736,11 +1717,7 @@ package body et_kicad is
 				-- a list of anonymous nets.
 				-- CS: handle circlular nets, currently they cause a forever-loop here
 				segment_count := natural(type_wild_list_of_net_segments.length(wild_segment_collection)); -- get number of segments on the current sheet
-				write_message(
-					file_handle => et_import.report_handle,
-					text => "processing" & natural'image(segment_count) & " net segments ...",
-					identation => 2
-					);
+				put_line("  processing" & natural'image(segment_count) & " net segments ...");
 
 				-- It may happen that a sheet has no nets, for example the top level sheet of a design with global nets only. If there are no net segments
 				-- at all, skip processing net segments.
@@ -1762,10 +1739,7 @@ package body et_kicad is
 
 						    -- We initiate a new anonymous net and start looking for a matching segment on the end_point:
 							--put_line(et_import.report_handle," anonymous net" & positive'image(seg) & ":"); 
-							write_message(
-								file_handle => et_import.report_handle,
-								text => "anonymous net with segments:",
-								identation => 2);
+							put_line("  anonymous net with segments:");
 											
 							add_segment_to_anonymous_net(seg); 
 							side_scratch := end_point;
@@ -1844,8 +1818,8 @@ package body et_kicad is
 			else
 				--put_line(message_error & "Schematic file '" & to_string(name_of_schematic_file) & "' not found !");
 				write_message(
-					file_handle => et_import.report_handle,
-					text => message_error & "Schematic file '" & to_string(name_of_schematic_file) & "' not found !",
+					file_handle => current_output,
+					text => message_error & "schematic file '" & to_string(name_of_schematic_file) & "' not found !",
 					console => true);
 				raise constraint_error;
 			end if;
@@ -1864,22 +1838,23 @@ package body et_kicad is
 						raise;					
 						return list_of_submodules;
 
-		end read_file_schematic_kicad;
+		end read_schematic;
 
 
 		list_of_submodules : type_list_of_submodule_names_extended;
-		top_level_schematic_file, name_of_schematic_file : unbounded_string;
+		top_level_schematic_file, name_of_schematic_file : et_import.type_schematic_file_name.bounded_string;
 
 		package stack_of_sheet_lists is new stack_lifo(max => 10, item => type_list_of_submodule_names_extended);
         use stack_of_sheet_lists;
         
     begin -- import design
-		create_report_file;
+		create_report;
 		
-		case format is
+		case et_import.cad_format is
 			when kicad_v4 =>
-				write_message(file_handle => et_import.report_handle, text => "CAD format: " & type_cad_format'image(format));
-				top_level_schematic_file := read_file_project_kicad;
+
+				-- derive top level schematic file name from project file (they differ only in their extension)
+				top_level_schematic_file := read_project_file;
 				name_of_schematic_file := top_level_schematic_file;
 
                 -- The top level schematic file dictates the module name. At the same time it is the first entry
@@ -1890,43 +1865,42 @@ package body et_kicad is
 				-- Starting from the top level module, we read its schematic file. The result can be a list of submodules.
 				-- NOTE: Kicad refers to them as "sheets" !
 				
-				-- The function read_file_schematic_kicad requires the name of the current submodule,
-				list_of_submodules := read_file_schematic_kicad(name_of_schematic_file => name_of_schematic_file);
+				-- The function read_schematic requires the name of the current submodule,
+				list_of_submodules := read_schematic(name_of_schematic_file => name_of_schematic_file);
 				
-				write_message(file_handle => et_import.report_handle, text => "DESIGN STRUCTURE: ", lf => false, identation => 2);
+				put("  DESIGN STRUCTURE ");
 
 				-- If read_file_schematic_kicad returns an empty list of submodules, we are dealing with a flat design. Otherwise
 				-- the design is hierarchic (because the submodule list is longer than zero).
 				if type_list_of_submodule_names.length(list_of_submodules.list) = 0 then -- flat design
-					write_message(file_handle => et_import.report_handle,text => "FLAT");
+					put_line("FLAT");
 				else -- hierarchic design
 					-- In the follwing we dive into hierarchic levels. Each time before a deeper level is entered,
 					-- the list of submodules of the current level is saved on a LIFO stack.
 					-- The top level schematic is at level 0. The level decreases each time a deeper level is assumed.
-					write_message(file_handle => et_import.report_handle,text => "HIERARCHIC");
+					put_line("HIERARCHIC");
 					stack_of_sheet_lists.init; -- stack init
 
 					-- output the number of submodules (sheets) found at level 0:
-					write_message(file_handle => et_import.report_handle, text => "number of hierarchic sheets: " & natural'image(
-						natural(type_list_of_submodule_names.length(list_of_submodules.list))), identation => 2);
+					put_line("  number of hierarchic sheets " & natural'image(
+						natural(type_list_of_submodule_names.length(list_of_submodules.list))));
 
 					-- Initially set submodule pointer at first submodule of list:
 					list_of_submodules.id := 1;
                     
 					loop
 						-- fetch name of submodule (where id is pointing at)
-						name_of_schematic_file := to_unbounded_string(type_submodule_name.to_string(
+						name_of_schematic_file := to_bounded_string(type_submodule_name.to_string(
 							type_list_of_submodule_names.element(container => list_of_submodules.list,index => list_of_submodules.id)));
 						
 						-- backup list_of_submodules OF THIS LEVEL on stack (including the current submodule id)
 						push(list_of_submodules);
-						write_message(file_handle => et_import.report_handle,
-							text => "DESCENDING TO HIERARCHY LEVEL: -" & trim(natural'image(depth),left),identation => 0);
-							write_message(file_handle => et_import.report_handle, text => row_separator_single, identation => 0);						
+						put_line("DESCENDING TO HIERARCHY LEVEL -" & trim(natural'image(depth),left));
+						put_line(row_separator_single);
 						
 						-- Read schematic file as indicated by list_of_submodules.id. 
-						-- Read_file_schematic_kicad receives the name of the schematic file to be read.
-						list_of_submodules := read_file_schematic_kicad(name_of_schematic_file => name_of_schematic_file);
+						-- Read_schematic receives the name of the schematic file to be read.
+						list_of_submodules := read_schematic(name_of_schematic_file => name_of_schematic_file);
 
 						-- If the schematic file contains submodules (hierarchic sheets), set list_of_submodules.id to the first 
 						-- submodule of them. Otherwise restore submodule list of parent module and advance therein to next submodule.
@@ -1935,11 +1909,8 @@ package body et_kicad is
 							list_of_submodules := pop;
                             list_of_submodules.id := list_of_submodules.id + 1;
                             --delete_last_module_name_from_path;
-							write_message(
-								file_handle => et_import.report_handle,
-								text => "NO SUBMODULES HERE. ASCENDING TO HIERARCHY LEVEL: -" & trim(natural'image(depth),left),
-								identation => 0);
-								write_message(file_handle => et_import.report_handle, text => row_separator_single, identation => 0);
+							put_line("NO SUBMODULES HERE. ASCENDING TO HIERARCHY LEVEL -" & trim(natural'image(depth),left));
+							put_line(row_separator_single);
 
 						else
 							-- set cursor at first submodule of list and append name of parent module to path_to_submodule
@@ -1951,14 +1922,14 @@ package body et_kicad is
 						-- Exit after last submodule in level 0 has been processed.
 						if list_of_submodules.id > positive(type_list_of_submodule_names.length(list_of_submodules.list)) then
 							if depth = 0 then 
-								write_message(file_handle => et_import.report_handle, text => "LAST SUBMODULE PROCESSED.", identation => 0);
+								put_line("LAST SUBMODULE PROCESSED.");
 								exit; 
 							end if;
 							list_of_submodules := pop; -- restore overlying list
                             list_of_submodules.id := list_of_submodules.id + 1;
                             delete_last_module_name_from_path; -- update path_to_submodule
-							write_message(file_handle => et_import.report_handle, text => "LAST SUBMODULE PROCESSED. ASCENDING TO HIERARCHY LEVEL: -" & trim(natural'image(depth),left), identation => 0);
-							write_message(file_handle => et_import.report_handle, text => row_separator_single, identation => 0);
+							put_line("LAST SUBMODULE PROCESSED. ASCENDING TO HIERARCHY LEVEL: -" & trim(natural'image(depth),left));
+							put_line(row_separator_single);
 						end if;
 						
 					end loop;
@@ -1967,13 +1938,10 @@ package body et_kicad is
 				null;
 		end case;
 
-		write_message(
-			file_handle => et_import.report_handle,
-			text => "done",
-			identation => 0);
-		
+		close_report;
 
-		close(et_import.report_handle);
+		-- CS: exception handler
+		
 	end import_design;
 
 end et_kicad;
