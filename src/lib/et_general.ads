@@ -106,6 +106,8 @@ package et_general is
 	function strip_quotes (text_in : in string) return string;
 	-- removes heading and trailing quotation from given string		
 
+
+	
 	-- MESSAGES
 	procedure write_message (
 		file_handle : in ada.text_io.file_type;

@@ -121,6 +121,7 @@ package body et_general is
 		return text_in(text_in'first+1..text_in'last-1);
 	end strip_quotes;
 
+	
 	-- MESSAGES
 	procedure write_message (
 		file_handle : in ada.text_io.file_type;

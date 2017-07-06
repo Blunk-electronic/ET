@@ -47,6 +47,7 @@ with et_schematic;				use et_schematic;
 with et_geometry;				use et_geometry;
 
 with et_general;				use et_general;
+with et_string_processing;
 
 package body et_kicad is
 
@@ -55,13 +56,10 @@ package body et_kicad is
 		use et_import.type_schematic_file_name;
 		
 		function read_project_file return et_import.type_schematic_file_name.bounded_string is
-			-- 			name_of_project_file : unbounded_string;
+			line : et_string_processing.type_fields_of_line;
+			
 			use et_import.type_project_file_name;
 			
-			max_length_of_line_of_project_file : constant positive := 1000; -- CS: should suffice for now, increase if neccessary
-			package type_line_of_project_file is new generic_bounded_length(max_length_of_line_of_project_file);
-			use type_line_of_project_file;
-            line_of_project_file : type_line_of_project_file.bounded_string;
             line_counter : natural := 0;
             section_eeschema_entered : boolean := false;
             section_eeschema_libraries_entered : boolean := false;            
@@ -73,39 +71,65 @@ package body et_kicad is
             end clear_section_entered_flags;
             
 		begin
--- 			name_of_project_file:= to_unbounded_string( project & '.' & file_extension_project);
--- 			if exists(to_string(name_of_project_file)) then
-
 			put_line("reading project file ...");
 
-				open (file => et_import.project_file_handle, mode => in_file, name => to_string(et_import.project_file_name));
-				set_input (et_import.project_file_handle);
-                while not end_of_file loop
-                    line_counter := line_counter + 1;
-                    line_of_project_file := to_bounded_string(get_line);
+			open (file => et_import.project_file_handle, mode => in_file, name => to_string(et_import.project_file_name));
+			set_input (et_import.project_file_handle);
+			while not end_of_file loop
 
-                    -- test header [eeschema]
-                    if get_field(text_in => to_string(line_of_project_file), position => 1) = project_header_eeschema then
-                        clear_section_entered_flags;
-                        section_eeschema_entered := true;
-                    end if;
+				-- count lines and save a line in variable "line" (see et_string_processing.ads)
+				line_counter := line_counter + 1;
+				line := et_string_processing.read_line(get_line, latin_1.equals_sign); -- fields are separated by equals sign (=)
 
-                    -- test header [eeschema/libraries]
-                    if get_field(text_in => to_string(line_of_project_file), position => 1) = project_header_eeschema_libraries then
-                        clear_section_entered_flags;
-                        section_eeschema_libraries_entered := true;
-                    end if;
+				case line.field_count is
+					when 0 => null; -- we skip empty lines
+					when 1 => -- we have a line with just one field. those lines contain headers like "[eeschema]"
 
-                    
-                    if section_eeschema_entered then
-                        put_line(" " & to_string(line_of_project_file));
-                    end if;
-                    
-				end loop;
-				close ( et_import.project_file_handle );
--- 			else
--- 				put_line(message_warning & "Project file '" & to_string(name_of_project_file) & "' not found !");
--- 			end if;
+						-- test header [eeschema]
+						if et_string_processing.get_field_from_line(line,1) = project_header_eeschema then
+							clear_section_entered_flags;
+							section_eeschema_entered := true;
+						end if;
+
+						-- test header [eeschema/libraries]
+						if et_string_processing.get_field_from_line(line,1) = project_header_eeschema_libraries then
+							clear_section_entered_flags;
+							section_eeschema_libraries_entered := true;
+						end if;
+
+					when 2 =>
+						if section_eeschema_entered then
+
+							-- get path to libraries (LibDir) and store it in lib_dir (see et_kicad.ads)
+							if et_string_processing.get_field_from_line(line,1) = project_keyword_library_directory then
+								lib_dir := to_bounded_string(et_string_processing.get_field_from_line(line,2));
+								put_line(" library path " & to_string(lib_dir));
+							end if;
+							
+						end if;
+
+						if section_eeschema_libraries_entered then
+
+							-- Get other libraries (LibNamex) and store them in list_of_project_libraries (see et_kicad.ads)
+							-- We ignore the index of LibName.
+							if et_string_processing.get_field_from_line(line,1)(1..project_keyword_library_name'length) 
+								= project_keyword_library_name then
+								--lib_dir := to_bounded_string(et_string_processing.get_field_from_line(line,2));
+								put_line(" library name " & et_string_processing.get_field_from_line(line,2));
+							end if;
+
+						end if;
+						
+					when others => null;
+				end case;
+
+				
+-- 				if section_eeschema_entered or section_eeschema_libraries_entered then
+-- 					put_line(" " & et_string_processing.to_string(line));
+-- 				end if;
+				
+			end loop;
+			close ( et_import.project_file_handle );
 
 			-- Derive the schematic file name from the project file. It is just a matter of file extension.
 			return et_import.type_schematic_file_name.to_bounded_string(

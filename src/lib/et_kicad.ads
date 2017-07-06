@@ -54,11 +54,17 @@ package et_kicad is
 	procedure import_design; 
 
 
-
+-- PROJECT FILE RELATED KEYWORDS AND VARIABLES
     project_header_eeschema                 : constant string (1..10) := "[eeschema]";
     project_header_eeschema_libraries       : constant string (1..20) := "[eeschema/libraries]";
     project_keyword_version                 : constant string (1..7)  := "version";
-    project_keyword_library_directory       : constant string (1..6)  := "LibDir";
+
+	-- project libraries:
+	project_keyword_library_directory       : constant string (1..6)  := "LibDir";
+	lib_dir_length_max : constant positive := 100; -- CS: increase if necessary
+	package type_lib_dir is new generic_bounded_length(lib_dir_length_max); use type_lib_dir;
+	lib_dir : type_lib_dir.bounded_string; -- here the path is stored
+	
     project_keyword_library_name            : constant string (1..7)  := "LibName"; -- with index like "LibName1"
     
     -- headers, footers, keywords 
