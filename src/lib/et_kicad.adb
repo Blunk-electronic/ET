@@ -114,11 +114,11 @@ package body et_kicad is
 		end read_project_file;
 
         -- While reading submodules (sheets) the path_to_submodule keeps record of current point in the design 
-        -- hierarchy. Each time a submodule A has been found with nested submodules, the name of A is appended here.
-        -- Once the parent module is entered again, the name A is removed from the list. When assigning coordinates
+        -- hierarchy. Each time a submodule ABC has been found with nested submodules, the name of ABC is appended here.
+        -- Once the parent module is entered again, the name ABC is removed from the list. When assigning coordinates
         -- to an object, the path_to_submodule is read. 
         -- So by concatenation of the module names of this list (from first to last) we get a full path that tells us
-        -- the exact location of the module withing the design hierarchy.
+        -- the exact location of the module within the design hierarchy.
         path_to_submodule : type_path_to_submodule.list;
 
         -- Sometimes we need to output the location of a submodule:
@@ -150,8 +150,9 @@ package body et_kicad is
 		
         -- Here we append a submodule name the the path_to_submodule.
         procedure append_name_of_parent_module_to_path(submodule : in type_submodule_name.bounded_string) is
-        begin
-            -- Since we are dealing with file names, the extension must be removed before appending.            
+		begin
+			--put_line("path_to_submodule: appending submodule " & type_submodule_name.to_string(submodule));
+            -- Since we are dealing with file names, the extension must be removed before appending.
             type_path_to_submodule.append(path_to_submodule,
                 type_submodule_name.to_bounded_string(base_name(type_submodule_name.to_string(submodule)))
                 );
@@ -1092,10 +1093,13 @@ package body et_kicad is
 					identation => 2);
 			end fetch_components_from_library;
 
-        begin -- read_file_schematic_kicad
+        begin -- read_schematic
 			if exists(to_string(name_of_schematic_file)) then
 				put_line("reading schematic file: " & to_string(name_of_schematic_file) & " ...");
-                write_path_to_submodule; -- CS: does not work. wrong position
+
+				-- log module path as recorded by parent unit
+				write_path_to_submodule;
+				
 				open (file => et_import.schematic_handle, mode => in_file, name => to_string(name_of_schematic_file));
 				set_input (et_import.schematic_handle);
 				while not end_of_file loop
@@ -1866,6 +1870,7 @@ package body et_kicad is
 				-- NOTE: Kicad refers to them as "sheets" !
 				
 				-- The function read_schematic requires the name of the current submodule,
+				-- It returns a list of submodules.
 				list_of_submodules := read_schematic(name_of_schematic_file => name_of_schematic_file);
 				
 				put("  DESIGN STRUCTURE ");
@@ -1875,14 +1880,16 @@ package body et_kicad is
 				if type_list_of_submodule_names.length(list_of_submodules.list) = 0 then -- flat design
 					put_line("FLAT");
 				else -- hierarchic design
-					-- In the follwing we dive into hierarchic levels. Each time before a deeper level is entered,
+					-- In the follwing we dive into the submodules. Each time before a deeper level is entered,
 					-- the list of submodules of the current level is saved on a LIFO stack.
-					-- The top level schematic is at level 0. The level decreases each time a deeper level is assumed.
+					-- The top level schematic is at level 0. The level decreases (negative) each time a deeper
+					-- level is entered.
 					put_line("HIERARCHIC");
+					
 					stack_of_sheet_lists.init; -- stack init
 
 					-- output the number of submodules (sheets) found at level 0:
-					put_line("  number of hierarchic sheets " & natural'image(
+					put_line("  number of hierarchic sheets" & natural'image(
 						natural(type_list_of_submodule_names.length(list_of_submodules.list))));
 
 					-- Initially set submodule pointer at first submodule of list:
