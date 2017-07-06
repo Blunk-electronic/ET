@@ -80,9 +80,7 @@ package et_schematic is
     sheet_comment_length : constant natural := 100;
     package type_sheet_comment is new generic_bounded_length(sheet_comment_length); use type_sheet_comment;
 
-    library_name_length : constant natural := 100;
-    package type_library_name is new generic_bounded_length(library_name_length); use type_library_name;
-    
+   
 -- TIMESTAMP
     -- CS: type_timestamp 
     
@@ -383,10 +381,6 @@ package et_schematic is
 
 
 
--- LIBRARIES
-    package type_list_of_library_names is new vectors (
-        index_type => positive, -- every library name has an id
-        element_type => type_library_name.bounded_string);
 
 
 

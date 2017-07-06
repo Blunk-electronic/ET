@@ -30,11 +30,10 @@
 --   history of changes:
 --
 
--- with ada.strings.bounded; 	use ada.strings.bounded;
--- with ada.containers; use ada.containers;
--- with ada.containers.doubly_linked_lists;
--- with ada.containers.vectors;
--- 
+with ada.containers; 			use ada.containers;
+with ada.containers.vectors;
+with ada.containers.ordered_maps;
+with ada.containers.ordered_sets;
 
 with ada.text_io;				use ada.text_io;
 --with ada.strings; 				use ada.strings;
@@ -86,12 +85,38 @@ package et_general is
  	person_name_length	: constant natural := 100;
 	package type_person_name is new generic_bounded_length(person_name_length); use type_person_name;
 
+
+	-- LIBRARY NAMES AND DIRECTORIES
+
+	-- For storing bare library names like "bel_primitives" we use this bounded string:
+	library_name_length_max : constant natural := 100; -- CS: increase if necessary
+    package type_library_name is new generic_bounded_length(library_name_length_max); use type_library_name;
+
+	-- Bare library names can be stored further-on in a map like this:
+    package type_list_of_library_names is new vectors ( -- CS: should be a map
+        index_type => positive, -- every library name has an id
+		element_type => type_library_name.bounded_string);
+
+	-- The base directory where libraries live is stored in a bounded string:
+	library_directory_length_max : constant positive := 300; -- CS: increase if necessary
+	package type_library_directory is new generic_bounded_length(library_directory_length_max); use type_library_directory;
+
+	-- If a library is fully specified with path, name and extension we store them in bounded strings:
+	library_full_name_max : constant positive := library_directory_length_max + library_name_length_max + 4;
+	package type_library_full_name is new generic_bounded_length(library_full_name_max); use type_library_full_name;
+
+	-- Full library names can be stored furhter-on in an ordered set like this:
+	package type_list_of_full_library_names is new ordered_sets (
+		element_type => type_library_full_name.bounded_string);
+
+
+	
     -- PAPER SIZES
     type type_paper_size is ( A0, A1, A2, A4 ); -- CS: others
     paper_size_default : type_paper_size := A4;
     
     -- STRING PROCESSING
-    encoding_default : constant string (1..5) := "utf-8";
+
     
 	function get_field
 	-- Extracts a field separated by ifs at position. If trailer is true, the trailing content untiil trailer_to is also returned.

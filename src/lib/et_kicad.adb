@@ -54,11 +54,13 @@ package body et_kicad is
 
 	procedure import_design is
 		use et_import.type_schematic_file_name;
+		use et_general.type_library_directory;
 		
 		function read_project_file return et_import.type_schematic_file_name.bounded_string is
 			line : et_string_processing.type_fields_of_line;
 			
 			use et_import.type_project_file_name;
+			use type_list_of_full_library_names;
 			
             line_counter : natural := 0;
             section_eeschema_entered : boolean := false;
@@ -114,7 +116,9 @@ package body et_kicad is
 							-- We ignore the index of LibName.
 							if et_string_processing.get_field_from_line(line,1)(1..project_keyword_library_name'length) 
 								= project_keyword_library_name then
-								--lib_dir := to_bounded_string(et_string_processing.get_field_from_line(line,2));
+								insert(
+									container => list_of_full_library_names, 
+									new_item => to_bounded_string(et_string_processing.get_field_from_line(line,2)));
 								put_line(" library name " & et_string_processing.get_field_from_line(line,2));
 							end if;
 

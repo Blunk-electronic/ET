@@ -37,11 +37,13 @@ with ada.containers.vectors;
 -- with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 
+with et_general;				use et_general;
 with et_schematic;				use et_schematic;
 with et_import;		            use et_import;
 
 package et_kicad is
 
+    encoding_default 					: constant string (1..5) := "utf-8";	
 
 	file_extension_project   			: constant string (1..3) := "pro";
 	file_extension_schematic 			: constant string (1..3) := "sch";
@@ -61,12 +63,13 @@ package et_kicad is
 
 	-- project libraries:
 	project_keyword_library_directory       : constant string (1..6)  := "LibDir";
-	lib_dir_length_max : constant positive := 100; -- CS: increase if necessary
-	package type_lib_dir is new generic_bounded_length(lib_dir_length_max); use type_lib_dir;
-	lib_dir : type_lib_dir.bounded_string; -- here the path is stored
-	
+	lib_dir : type_library_directory.bounded_string; -- here the path to the project libraries is stored
+
+	-- full path and name of library files are collected in list_of_full_library_names
     project_keyword_library_name            : constant string (1..7)  := "LibName"; -- with index like "LibName1"
-    
+	list_of_full_library_names : type_list_of_full_library_names.set;
+
+
     -- headers, footers, keywords 
 
 --     EESchema Schematic File Version 2
