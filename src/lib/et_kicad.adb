@@ -105,21 +105,26 @@ package body et_kicad is
 							-- get path to libraries (LibDir) and store it in lib_dir (see et_kicad.ads)
 							if et_string_processing.get_field_from_line(line,1) = project_keyword_library_directory then
 								lib_dir := to_bounded_string(et_string_processing.get_field_from_line(line,2));
-								put_line(" library path " & to_string(lib_dir));
+
+								-- For the log write something like "LibDir ../../lbr"
+								put_line(" " & project_keyword_library_directory & " " & to_string(lib_dir));
 							end if;
 							
 						end if;
 
 						if section_eeschema_libraries_entered then
 
-							-- Get other libraries (LibNamex) and store them in list_of_project_libraries (see et_kicad.ads)
+							-- Get full library names (incl. path) and store them in list_of_project_libraries (see et_kicad.ads)
 							-- We ignore the index of LibName.
 							if et_string_processing.get_field_from_line(line,1)(1..project_keyword_library_name'length) 
 								= project_keyword_library_name then
-								insert(
+								type_list_of_full_library_names.insert(
 									container => list_of_full_library_names, 
-									new_item => to_bounded_string(et_string_processing.get_field_from_line(line,2)));
-								put_line(" library name " & et_string_processing.get_field_from_line(line,2));
+									new_item => type_library_full_name.to_bounded_string(et_string_processing.get_field_from_line(line,2)));
+
+								-- For the log write something like "LibName ../../lbr/bel_connectors_and_jumpers"
+								put_line(" " & et_string_processing.get_field_from_line(line,2) 
+									& " " & et_string_processing.get_field_from_line(line,2));
 							end if;
 
 						end if;
