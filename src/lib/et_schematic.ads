@@ -46,8 +46,12 @@ package et_schematic is
 
 
 -- NAMES GENERAL
-	-- The name of a device may have 100 characters which seems sufficient for now.
- 	device_name_length	: constant natural := 100;
+
+	-- The name of a device is something like "IC403". Other CAE tools refer to it as "reference".
+	-- It is composed of a prefix like "IC" and the number like "403":
+	device_name_prefix_length : constant natural := 3; -- CS: there is no reason to work with longer prefixes.
+	package type_device_name_prefix is new generic_bounded_length(device_name_prefix_length); use type_device_name_prefix;
+	device_name_length	: constant natural := device_name_prefix_length + 100 ;
 	package type_device_name is new generic_bounded_length(device_name_length); use type_device_name;
 
  	port_name_length	: constant natural := 50;
@@ -271,8 +275,8 @@ package et_schematic is
 	type type_device is record
 		physical_appearance : type_device_physical_appearance := virtual; -- sometimes there is just a schematic
 		name_in_library 	: type_device_name_in_library.bounded_string; -- example: "TRANSISTOR_PNP"
-		annotation			: type_device_name.bounded_string; -- CS: includes prefix (R,C,L, ..) and number later given. example: "R501"
-		-- CS: instead of annotation it should read prefix and should be a dedicated type
+		--annotation			: type_device_name.bounded_string; -- CS: includes prefix (R,C,L, ..) and number later given. example: "R501"
+		prefix				: type_device_name_prefix.bounded_string; -- like "R" or "C"
 		-- CS: library file name ?
 		block_list 			: type_device_block_list.map;
 -- 		case physical_appearance is

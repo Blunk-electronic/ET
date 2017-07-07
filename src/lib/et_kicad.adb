@@ -1118,6 +1118,7 @@ package body et_kicad is
 			device_scratch : type_device; -- temporarily used before appending a device list of the module
 			device_block_scratch : type_device_block; -- temporarily used before appending a block to a device
 			device_cursor_scratch : type_device_list_of_module.cursor; -- points to a device of the module
+			device_inserted : boolean; -- used when a device is being inserted into the device list of a module
 			procedure insert_block ( key : in type_device_name.bounded_string; device : in out type_device ) is 
 			begin
 				--type_device_block_list.append(device.block_list,device_block_scratch);
@@ -1622,30 +1623,33 @@ package body et_kicad is
 											-- READ COMPONENT SECTION CONTENT
 											
 											-- Read device name and annotation from a line like "L NetChanger N1". 
-											-- Append the device to the device list of the module. Devices may occur multiple times, which implies they are
-											-- split into blocks (kicad refers to them as "units", EAGLE refers to them as "symbols").
+											-- Append the device to the device list of the module (module.devices). Devices may occur multiple times, which implies they are
+											-- split into blocks (kicad refers to them as "units", EAGLE refers to them as "gates").
 											-- Only the first occurence of the device leads to appending it to the device list of the module.
 											if get_field_from_line(line,1) = schematic_component_identifier_name then -- "L"
 												device_scratch.name_in_library := type_device_name_in_library.to_bounded_string(get_field_from_line(line,2)); -- "NetChanger"
-												device_scratch.annotation := type_device_name.to_bounded_string(get_field_from_line(line,3)); -- "N1"
+												--device_scratch.annotation := type_device_name.to_bounded_string(get_field_from_line(line,3)); -- "N1"
 												-- CS: check annotation
 
-												-- If component is not in device list yet, add component to device list of module.
-												if not type_device_list_of_module.contains(module.devices,device_scratch) then
-			-- 										put(et_import.report_handle, " device: " &
-			-- 											type_device_name.to_string(device_scratch.annotation) & " is " &
-			-- 											type_device_name_in_library.to_string(device_scratch.name_in_library));
+												-- Insert device in device list of module.
+												type_device_list_of_module.insert(
+													container => module.devices,
+													new_item => device_scratch,
+													key => type_device_name.to_bounded_string(get_field_from_line(line,3)), -- "N1"
+													position => device_cursor_scratch,
+													inserted => device_inserted);
 
-													put("  device " & type_device_name.to_string(device_scratch.annotation) & " is " &
-														type_device_name_in_library.to_string(device_scratch.name_in_library));
-															
-													type_device_list_of_module.append(module.devices,device_scratch);
+												-- If device was not in device list before, write it in logfile.
+												if device_inserted then
+													put("  device " 
+														& get_field_from_line(line,3) -- "N1"
+														& " is " 
+														& type_device_name_in_library.to_string(device_scratch.name_in_library));
 												end if;
 
 												-- The cursor device_cursor_scratch now points to the device. There will be more device information (in the following) 
 												-- that will go into device_scratch. Once the device section is left, device_scratch updates the device where the cursor
 												-- is pointing at.
-												device_cursor_scratch := type_device_list_of_module.find(module.devices,device_scratch);
 											end if;
 
 											-- read unit id from a line like "U 7 3 4543D4D3F"
