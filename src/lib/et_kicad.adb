@@ -130,7 +130,7 @@ package body et_kicad is
 									new_item => type_library_full_name.to_bounded_string(get_field_from_line(line,2)));
 
 								-- For the log write something like "LibName ../../lbr/bel_connectors_and_jumpers"
-								put_line(" " & get_field_from_line(line,2) 
+								put_line(" " & get_field_from_line(line,1) 
 									& " " & get_field_from_line(line,2));
 							end if;
 
