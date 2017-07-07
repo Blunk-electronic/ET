@@ -58,6 +58,8 @@ package body et_kicad is
 		
 		function read_project_file return et_import.type_schematic_file_name.bounded_string is
 		-- Reads the project file in terms of LibDir and LibName. 
+		-- LibDir is stored in variable lib_dir.
+		-- Full library name are stored in list_of_full_library_names.
 		-- Returns the name of the top level schematic file.
 			line : type_fields_of_line;
 			
@@ -207,7 +209,7 @@ package body et_kicad is
 		function read_schematic (name_of_schematic_file : in et_import.type_schematic_file_name.bounded_string) 
 			return type_list_of_submodule_names_extended is
 		-- Reads the given schematic file. If it contains submodules (hierarchic sheets), 
-        -- they will be returned in a list_of_submodules. Otherwise the returned list is empty.
+        -- they will be returned in list_of_submodules. Otherwise the returned list is empty.
         
 			list_of_submodules : type_list_of_submodule_names_extended; -- list to be returned
 			name_of_submodule_scratch : type_submodule_name.bounded_string; -- temporarily used before appended to list_of_submodules
@@ -1116,10 +1118,14 @@ package body et_kicad is
 			device_scratch : type_device; -- temporarily used before appending a device list of the module
 			device_block_scratch : type_device_block; -- temporarily used before appending a block to a device
 			device_cursor_scratch : type_device_list_of_module.cursor; -- points to a device of the module
-			procedure append_block ( device : in out type_device ) is 
+			procedure insert_block ( key : in type_device_name.bounded_string; device : in out type_device ) is 
 			begin
-				type_device_block_list.append(device.block_list,device_block_scratch); 
-			end append_block;
+				--type_device_block_list.append(device.block_list,device_block_scratch);
+				type_device_block_list.insert(
+					container => device.block_list, 
+					new_item => device_block_scratch,
+					key => device_block_scratch.name);  -- the key to a device block is its own name 
+			end insert_block;
 			block_text_scratch : type_device_block_text;
 
 			procedure fetch_components_from_library is
@@ -1607,10 +1613,10 @@ package body et_kicad is
 
 											--put_line(to_string(line_of_schematic_file));								
 											-- update the device with the collected block data (in device_block_scratch)
-											type_device_list_of_module.update_element(module.devices,device_cursor_scratch, append_block'access);
+											type_device_list_of_module.update_element(module.devices,device_cursor_scratch, insert_block'access);
 
 											-- clean up: the list of texts collected in device_block_scratch.text_list must be erased for next spin.
-											type_list_of_device_block_texts.delete(device_block_scratch.text_list,1,type_list_of_device_block_texts.length(device_block_scratch.text_list));
+											type_list_of_device_block_texts.clear(device_block_scratch.text_list);
 										else
 											--put_line("line ->" & to_string(line));
 											-- READ COMPONENT SECTION CONTENT

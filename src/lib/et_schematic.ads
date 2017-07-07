@@ -35,6 +35,8 @@ with ada.strings.unbounded; 	use ada.strings.unbounded;
 with ada.containers;            use ada.containers;
 with ada.containers.vectors;
 with ada.containers.doubly_linked_lists;
+with ada.containers.ordered_maps;
+with ada.containers.ordered_sets;
 
 with et_general;                use et_general;
 package et_schematic is
@@ -194,36 +196,33 @@ package et_schematic is
 	-- outline segments 
 	-- The device block outline is composed of various elements like lines, arcs or cicles.
 	
-	-- Straight lines of a block will be collected in a vector list.
+	-- Straight lines of a block will be collected in a simple list.
 	type type_device_block_outline_segment_line is record
 		coordinates_start : type_coordinates;
 		coordinates_end   : type_coordinates;
 	end record;
-	package type_list_of_device_block_outline_segments_line is new vectors (
-		index_type => positive, -- every segment of a block outline has an id
+	package type_list_of_device_block_outline_segments_line is new doubly_linked_lists (
 		element_type => type_device_block_outline_segment_line);
 
-	-- Arcs of a block will be collected in a vector list.
+	-- Arcs of a block will be collected in a simple list.
 	type type_device_block_outline_segment_arc is record
 		coordinates_start : type_coordinates;
 		coordinates_end   : type_coordinates;
 		coordinates_circumfence : type_coordinates;
 	end record;
-	package type_list_of_device_block_outline_segments_arcs is new vectors (
-		index_type => positive, -- every segment of a block outline has an id
+	package type_list_of_device_block_outline_segments_arcs is new doubly_linked_lists (
 		element_type => type_device_block_outline_segment_arc);
 
-	-- Circles of a block will be collected in a vector list.
+	-- Circles of a block will be collected in a simple list.
 	type type_device_block_outline_segment_circle is record
 		coordinates_start : type_coordinates;
 		coordinates_end   : type_coordinates;
 		coordinates_center: type_coordinates;
 	end record;
-	package type_list_of_device_block_outline_segments_circles is new vectors (
-		index_type => positive, -- every segment of a block outline has an id
+	package type_list_of_device_block_outline_segments_circles is new doubly_linked_lists (
 		element_type => type_device_block_outline_segment_circle);
 
-	-- Text fields of a block will be collected in a vector list.
+	-- Text fields of a block will be collected in a simple list.
 	-- Text fields (usually inside) a device block give more information on what the block is supposed for.
 	-- Example: BANK_1 , BANK_2, PWR_SUPPLY, CT10, CT2, MCU
 	-- A text field of a block may have 100 characters which seems sufficient for now.
@@ -240,30 +239,29 @@ package et_schematic is
         alignment_horizontal    : type_text_alignment_horizontal;
         alignment_vertical      : type_text_alignment_vertical;        
 	end record;
-	package type_list_of_device_block_texts is new vectors (
-		index_type => positive, -- every text field of a block outline has an id
+	package type_list_of_device_block_texts is new doubly_linked_lists (
 		element_type => type_device_block_text);
 
-	-- Ports of a block will be collected in a vector list.
-	package type_list_of_device_block_ports is new vectors ( 
-		index_type => positive, -- every port of a device block has an id
+	-- Ports of a block will be collected in a map.
+	package type_list_of_device_block_ports is new ordered_maps ( 
+		key_type => type_port_name.bounded_string,
 		element_type => type_port);
 
 	-- A block has a name, coordinates, consists of segment lists , ports and texts.
 	type type_device_block is record
 		name					: type_device_block_name.bounded_string;
 		coordinates				: type_coordinates;
-		outline_segments_line 	: type_list_of_device_block_outline_segments_line.vector;
-		outline_segments_arcs 	: type_list_of_device_block_outline_segments_arcs.vector;
-		outline_segments_circles: type_list_of_device_block_outline_segments_circles.vector;
-		port_list 				: type_list_of_device_block_ports.vector;
-        text_list				: type_list_of_device_block_texts.vector;
+		outline_segments_line 	: type_list_of_device_block_outline_segments_line.list;
+		outline_segments_arcs 	: type_list_of_device_block_outline_segments_arcs.list;
+		outline_segments_circles: type_list_of_device_block_outline_segments_circles.list;
+		port_list 				: type_list_of_device_block_ports.map;
+        text_list				: type_list_of_device_block_texts.list;
         -- CS: timestamp
 	end record;
 
-	-- Blocks of a device will be collected in a vector list.
-	package type_device_block_list is new vectors (
-		index_type => positive, -- every block has an id
+	-- Blocks of a device will be collected in a map.
+	package type_device_block_list is new ordered_maps (
+		key_type => type_device_block_name.bounded_string, -- the key to a device block is its own name
 		element_type => type_device_block);
 
 	-- DEVICE	
@@ -274,8 +272,9 @@ package et_schematic is
 		physical_appearance : type_device_physical_appearance := virtual; -- sometimes there is just a schematic
 		name_in_library 	: type_device_name_in_library.bounded_string; -- example: "TRANSISTOR_PNP"
 		annotation			: type_device_name.bounded_string; -- CS: includes prefix (R,C,L, ..) and number later given. example: "R501"
+		-- CS: instead of annotation it should read prefix and should be a dedicated type
 		-- CS: library file name ?
-		block_list 			: type_device_block_list.vector;
+		block_list 			: type_device_block_list.map;
 -- 		case physical_appearance is
 -- 			when footprint =>
 -- 				null; 		-- CS: port-pin map ?
@@ -392,7 +391,7 @@ package et_schematic is
 
     -- SUBMODULE
     -- A submodule is a box with coordinates and length x/y.
-    -- At the box edges are ports.
+    -- On the box edges are ports.
     type type_gui_submodule is record -- CS: read from kicad $sheet
         name                : type_submodule_name.bounded_string;
         text_size_of_name   : type_text_size;
@@ -518,9 +517,9 @@ package et_schematic is
 		index_type => positive, -- every net of a module has an id
 		element_type => type_net);
 
-	-- The devices of a module are collected in a vector list.
- 	package type_device_list_of_module is new vectors (
- 		index_type => positive, -- every device of a module has an id
+	-- The devices of a module are collected in a map.
+ 	package type_device_list_of_module is new ordered_maps (
+ 		key_type => type_device_name.bounded_string, -- something like "IC43"
  		element_type => type_device);
 
     -- A module has a name, a list of nets and a list of devices.
@@ -531,7 +530,7 @@ package et_schematic is
 	type type_module is record
 		name 	    : type_submodule_name.bounded_string; -- example "MOTOR_DRIVER"
 		nets 	    : type_net_list_of_module.vector;
-        devices     : type_device_list_of_module.vector;
+        devices     : type_device_list_of_module.map;
         submodules  : type_list_of_gui_submodules.vector;
         frames      : type_list_of_frames.vector;
         title_blocks: type_list_of_title_blocks.vector;
