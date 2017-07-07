@@ -128,8 +128,8 @@ package et_general is
 			trailer_to 	: in character := latin_1.semicolon
 			) return string;
 
-	function strip_quotes (text_in : in string) return string;
-	-- removes heading and trailing quotation from given string		
+-- 	function strip_quotes (text_in : in string) return string;
+-- 	-- removes heading and trailing quotation from given string		
 
 
 	

@@ -115,11 +115,11 @@ package body et_general is
 	end get_field;
 
 
-	function strip_quotes (text_in : in string) return string is
-	-- removes heading and trailing quotation from given string		
-	begin
-		return text_in(text_in'first+1..text_in'last-1);
-	end strip_quotes;
+-- 	function strip_quotes (text_in : in string) return string is
+-- 	-- removes heading and trailing quotation from given string		
+-- 	begin
+-- 		return text_in(text_in'first+1..text_in'last-1);
+-- 	end strip_quotes;
 
 	
 	-- MESSAGES

@@ -57,6 +57,8 @@ package body et_kicad is
 		use et_general.type_library_directory;
 		
 		function read_project_file return et_import.type_schematic_file_name.bounded_string is
+		-- Reads the project file in terms of LibDir and LibName. 
+		-- Returns the name of the top level schematic file.
 			line : et_string_processing.type_fields_of_line;
 			
 			use et_import.type_project_file_name;
@@ -81,7 +83,10 @@ package body et_kicad is
 
 				-- count lines and save a line in variable "line" (see et_string_processing.ads)
 				line_counter := line_counter + 1;
-				line := et_string_processing.read_line(get_line, latin_1.equals_sign); -- fields are separated by equals sign (=)
+				line := et_string_processing.read_line(
+							line => get_line,
+							comment_mark => "#",
+							ifs => latin_1.equals_sign); -- fields are separated by equals sign (=)
 
 				case line.field_count is
 					when 0 => null; -- we skip empty lines
@@ -152,10 +157,10 @@ package body et_kicad is
         -- to an object, the path_to_submodule is read. 
         -- So by concatenation of the module names of this list (from first to last) we get a full path that tells us
         -- the exact location of the module within the design hierarchy.
-        path_to_submodule : type_path_to_submodule.list;
+        path_to_submodule : type_path_to_submodule.list; -- CS: move to et_schematic ?
 
         -- Sometimes we need to output the location of a submodule:
-        procedure write_path_to_submodule is
+        procedure write_path_to_submodule is  -- CS: move to et_schematic ?
             c : type_path_to_submodule.cursor;            
         begin
             put("path/location: ");
@@ -182,7 +187,7 @@ package body et_kicad is
 		end write_path_to_submodule;
 		
         -- Here we append a submodule name the the path_to_submodule.
-        procedure append_name_of_parent_module_to_path(submodule : in type_submodule_name.bounded_string) is
+        procedure append_name_of_parent_module_to_path(submodule : in type_submodule_name.bounded_string) is  -- CS: move to et_schematic ?
 		begin
 			--put_line("path_to_submodule: appending submodule " & type_submodule_name.to_string(submodule));
             -- Since we are dealing with file names, the extension must be removed before appending.
@@ -192,7 +197,7 @@ package body et_kicad is
         end append_name_of_parent_module_to_path;
 
         -- Here we remove the last submodule name form the path_to_submodule.
-        procedure delete_last_module_name_from_path is
+        procedure delete_last_module_name_from_path is  -- CS: move to et_schematic ?
         begin
             type_path_to_submodule.delete_last(path_to_submodule);
         end delete_last_module_name_from_path;
@@ -206,11 +211,10 @@ package body et_kicad is
         
 			list_of_submodules : type_list_of_submodule_names_extended; -- list to be returned
 			name_of_submodule_scratch : type_submodule_name.bounded_string; -- temporarily used before appended to list_of_submodules
-       
-			max_length_of_line_of_schematic_file : positive := 1000; -- CS: should suffice for now, increase if neccessary
-			package type_line_of_schematic_file is new generic_bounded_length(max_length_of_line_of_schematic_file);
-			use type_line_of_schematic_file;
-			line_of_schematic_file : type_line_of_schematic_file.bounded_string;
+
+			use et_string_processing;
+			line : et_string_processing.type_fields_of_line;
+		
 			line_counter : natural := 0;
 			sheet_file : type_sheet_file.bounded_string;
 			sheet_count_total, sheet_number_current : positive;
@@ -1136,597 +1140,608 @@ package body et_kicad is
 				open (file => et_import.schematic_handle, mode => in_file, name => to_string(name_of_schematic_file));
 				set_input (et_import.schematic_handle);
 				while not end_of_file loop
+
+					-- count lines and save a line in variable "line" (see et_string_processing.ads)
 					line_counter := line_counter + 1;
-					line_of_schematic_file := to_bounded_string(get_line);
-					--put_line(to_string(line_of_schematic_file));
-
-                    -- read schematic headline like "EESchema Schematic File Version 2"
-                    if not schematic_headline_processed then
-                        if get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_header_keyword_sys_name and
-                        get_field(text_in => to_string(line_of_schematic_file), position => 2) = schematic_header_keyword_schematic and
-                        get_field(text_in => to_string(line_of_schematic_file), position => 3) = schematic_header_keyword_file and
-                        get_field(text_in => to_string(line_of_schematic_file), position => 4) = schematic_header_keyword_version then
-                                if positive'value(get_field(text_in => to_string(line_of_schematic_file), position => 5)) = schematic_version then
-                                    -- headline ok, version is supported
-                                    schematic_headline_processed := true;
-
-                                    -- Save schematic format version in temporarily sheet header:                                    
-                                    sheet_header_scratch.version := positive'value(get_field(text_in => to_string(line_of_schematic_file), position => 5));
-                                else
-                                    write_message(
-                                        file_handle => current_output,
-                                        text => message_error & "schematic version" & positive'image(schematic_version) & " required.",
-                                        console => true);                        
-                                    raise constraint_error;
-                                end if;
-                        end if;
-                    else
-
-                        -- READ SHEET HEADER: stuff like:
-                        --     LIBS:nucleo_core-rescue
-                        --     LIBS:power
-                        --     LIBS:bel_connectors_and_jumpers
-                        --     LIBS:bel_primitives
-                        --     LIBS:bel_stm32
-                        --     LIBS:nucleo_core-cache
-                        --     EELAYER 25 0
-                        --     EELAYER END
-
-                        -- This data goes into a temporarily sheet header (sheet_header_scratch). When the schematic file has been
-                        -- read completely, the temporarily sheet header is appended to a list of headers. 
-                        -- Why a list of headers ? When schematic files are exported, their headers must be restored to the original state.
-
-                        -- used libraries from lines like "LIBS:bel_stm32" , CS: not used ?
-                        if get_field(text_in => to_string(line_of_schematic_file), position => 1, ifs => latin_1.colon) = schematic_library then
-
-                            -- CS: if this entry is without meaning, it should not go into the report at all
-                            put_line(" uses library " & get_field(text_in => to_string(line_of_schematic_file), position => 2, ifs => latin_1.colon));
-
-                            -- append library to list of libraries of the temporarily sheet header
-                            type_list_of_library_names.append(
-                                container => sheet_header_scratch.libraries,
-                                new_item => type_library_name.to_bounded_string(get_field(text_in => to_string(line_of_schematic_file), position => 2, ifs => latin_1.colon))
-                                );
-                        end if;
-
-                        -- layer numbers from a line like "EELAYER 25 0" -- CS: not used ?
-                        -- CS: we do not read the line "EELAYER END" and assume it is always there.                                                        
-                        if get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_eelayer then
-                            if get_field(text_in => to_string(line_of_schematic_file), position => 2) = schematic_eelayer_end then
-                                null;
-                            else
-                                -- append layer numbers to the temporarily sheet header
-                                sheet_header_scratch.eelayer_a := positive'value(
-                                    get_field(text_in => to_string(line_of_schematic_file), position => 2));
-
-                                sheet_header_scratch.eelayer_b := natural'value(
-                                    get_field(text_in => to_string(line_of_schematic_file), position => 3));
-                            end if;
-                        end if;
-                        
-                        
-                        
-                        -- READ DESCRIPTION:
-                        -- If the description reveals there is more than one sheet, we have a hierarchic design. Means we
-                        -- need to read follwing sheet sections.
-                        -- The sheet_number_current obtained here serves as part of the coordinates of objects found on this sheet.
-                        -- The sheet description looks like this:
-
-                        -- $Descr A4 11693 8268
-                        -- encoding utf-8
-                        -- Sheet 5 8
-                        -- Title ""
-                        -- Date ""
-                        -- Rev ""
-                        -- Comp ""
-                        -- Comment1 ""
-                        -- Comment2 ""
-                        -- Comment3 ""
-                        -- Comment4 ""
-                        -- $EndDescr
-                        
-                        if not description_entered then
-                            if get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_description_header then -- $Descr A4 11693 8268
-                                description_entered := true; -- we are entering the sheet description
-
-                                -- read drawing frame dimensions from a line like "$Descr A4 11693 8268"
-                                drawing_frame_scratch.paper_size := type_paper_size'value(get_field(text_in => to_string(line_of_schematic_file), position => 2));
-                                drawing_frame_scratch.size_x := type_grid'value(get_field(text_in => to_string(line_of_schematic_file), position => 3));
-                                drawing_frame_scratch.size_y := type_grid'value(get_field(text_in => to_string(line_of_schematic_file), position => 4)); 
-                                drawing_frame_scratch.coordinates.path := path_to_submodule;
-                                drawing_frame_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
-
-                                -- CS: Other properties of the drawing frame like x/y coordinates, lists of lines and texts are 
-                                -- kicad built-in things and remain unassigned here.
-                                                            
-                            end if;
-                        else -- we are inside the description
-                            if get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_description_footer then -- $EndDescr
-                                description_entered := false; -- we are leaving the description
-                                description_processed := true;
-
-                                -- Make temporarily title_block_scratch complete by assigning coordinates and list of texts.
-                                -- Then purge temporarily list of texts.
-                                -- Then append temporarily title block to main module.
-                                title_block_scratch.coordinates.path := path_to_submodule;
-                                title_block_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));                            
-                                title_block_scratch.texts := list_of_title_block_texts_scratch; -- assign collected texts list to temporarily title block
-                                -- CS: x/y coordinates and list of lines are kicad built-in things and thus not available currently.
-
-                                -- purge temporarily texts
-                                type_list_of_title_block_texts.delete(list_of_title_block_texts_scratch,1,
-                                    type_list_of_title_block_texts.length(list_of_title_block_texts_scratch));
-
-                                -- append title block to main module
-                                type_list_of_title_blocks.append(module.title_blocks,title_block_scratch);
-                                
-                                -- append temporarily drawing frame to main module
-                                type_list_of_frames.append(module.frames,drawing_frame_scratch);
-                            end if;
-
-                            -- read endcoding from a line like "encoding utf-8"
-                            -- CS: checks only for a non-default endcoding and outputs a warning.
-                            -- CS: we assume only one encoding. other encodings are ignored currently.
-                            -- The encoding should be project wide. KiCad allows a sheet specific encoding which is no
-                            -- good idea.
-                            if get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_keyword_encoding then
-                                if get_field(text_in => to_string(line_of_schematic_file), position => 2) /= encoding_default then
-                                    put_line(message_warning & "non-default endcoding '" & 
-										get_field(text_in => to_string(line_of_schematic_file), position => 2) & "' found !");
-                                end if;
-                            end if;
-                                
-                            -- read sheet number from a line like "Sheet 1 7"
-                            if get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_keyword_sheet then
-                                sheet_number_current := positive'value(get_field(text_in => to_string(line_of_schematic_file), position => 2));
-                                put_line(" sheet" & positive'image(sheet_number_current) & " ...");
-                                sheet_count_total    := positive'value(get_field(text_in => to_string(line_of_schematic_file), position => 3));
-                                if sheet_count_total > 1 then
-                                    -- Set in the list_of_submodules (to be returned) the parent_module. The schematic file 
-                                    -- being processed (see input parameters of read_file_schematic_kicad) becomes the parent module
-                                    -- of the submodules here.
-                                    list_of_submodules.parent_module := type_submodule_name.to_bounded_string(to_string(name_of_schematic_file));
-                                end if;
-                                -- CS: make sure total sheet count is less or equal current sheet number.
-
-                                -- Our temporarily drawing frame gets the current sheet number assigned.
-                                drawing_frame_scratch.coordinates.sheet_number := sheet_number_current;
-                            end if;						
-
-                            -- read sheet title from a line like "Title "abc""
-                            if get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_keyword_title then                        
-                                title_block_text_scratch.meaning := TITLE;
-                                title_block_text_scratch.text := type_device_block_text_string.to_bounded_string(
-                                    strip_quotes((get_field(text_in => to_string(line_of_schematic_file), position => 2))));
-                                type_list_of_title_block_texts.append(list_of_title_block_texts_scratch,title_block_text_scratch);
-                            end if;
-
-                            -- read date from a line like "Date "1981-01-23""
-                            if get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_keyword_date then                        
-                                title_block_text_scratch.meaning := DRAWN_DATE;
-                                title_block_text_scratch.text := type_device_block_text_string.to_bounded_string(
-                                    strip_quotes((get_field(text_in => to_string(line_of_schematic_file), position => 2))));
-                                type_list_of_title_block_texts.append(list_of_title_block_texts_scratch,title_block_text_scratch);
-                            end if;
-
-                            -- read revision from a line like "Rev "9.7.1"
-                            if get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_keyword_revision then                        
-                                title_block_text_scratch.meaning := REVISION;
-                                title_block_text_scratch.text := type_device_block_text_string.to_bounded_string(
-                                    strip_quotes((get_field(text_in => to_string(line_of_schematic_file), position => 2))));
-                                type_list_of_title_block_texts.append(list_of_title_block_texts_scratch,title_block_text_scratch);
-                            end if;
-
-                            -- read company name
-                            if get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_keyword_company then
-                                title_block_text_scratch.meaning := COMPANY;
-                                title_block_text_scratch.text := type_device_block_text_string.to_bounded_string(
-                                    strip_quotes((get_field(text_in => to_string(line_of_schematic_file), position => 2))));
-                                type_list_of_title_block_texts.append(list_of_title_block_texts_scratch,title_block_text_scratch);
-                            end if;
-
-                            -- read commments 1..4 CS: need something more flexible here in order to read any number of comments.
-                            if  get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_keyword_comment_1 or
-                                get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_keyword_comment_2 or
-                                get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_keyword_comment_3 or 
-                                get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_keyword_comment_4 then
-                                    title_block_text_scratch.meaning := MISC;
-                                    title_block_text_scratch.text := type_device_block_text_string.to_bounded_string(
-                                        strip_quotes((get_field(text_in => to_string(line_of_schematic_file), position => 2))));
-                                    type_list_of_title_block_texts.append(list_of_title_block_texts_scratch,title_block_text_scratch);
-                            end if;
-                            
-
-                        end if;
-
-                        -- Read submodule (sheet) sections (if there has been a total sheet count greater 1 detected earlier).
-                        -- NOTE: Such sections solely serve to display a hierarchical sheet as a black box with its ports.
-                        -- Rightly said this is the black box representation of a submodule. 
-                        -- So in the following we refer to them as "submodule".
-                        -- A submodule (sheet) section example:
-                        
-                        -- $Sheet
-                        -- S 4050 5750 1050 650 
-                        -- U 58A73B5D
-                        -- F0 "Sheet58A73B5C" 58
-                        -- F1 "morpho_test.sch" 58
-                        -- $EndSheet
-
-                        -- And add name of submodule (sheet file name) to list_of_submodules:
-                        if sheet_count_total > 1 then
-                            if not sheet_description_entered then
-                                if get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_sheet_header then -- $Sheet
-                                    sheet_description_entered := true;
-                                end if;
-                            else -- we are inside a sheet description
-                                if get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_sheet_footer then -- $EndSheet
-                                    sheet_description_entered := false; -- we are leaving the sheet description
-
-                                    -- append name_of_submodule_scratch to list_of_submodules to be returned to parent unit
-                                    type_list_of_submodule_names.append(list_of_submodules.list, name_of_submodule_scratch);
-
-                                    -- append submodule_gui_scratch to list of gui submodules
-                                    type_list_of_gui_submodules.append(module.submodules, submodule_gui_scratch);
-                                end if;
-
-                                -- read GUI submodule (sheet) position and size from a line like "S 4050 5750 1050 650"
-                                if get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_keyword_sheet_pos_and_size then
-                                    submodule_gui_scratch.coordinates.path := path_to_submodule;
-                                    submodule_gui_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
-                                    submodule_gui_scratch.coordinates.sheet_number := sheet_number_current;
-                                    submodule_gui_scratch.coordinates.x := type_grid'value(get_field(text_in => to_string(line_of_schematic_file), position => 2));
-                                    submodule_gui_scratch.coordinates.y := type_grid'value(get_field(text_in => to_string(line_of_schematic_file), position => 3));
-                                    submodule_gui_scratch.size_x := type_grid'value(get_field(text_in => to_string(line_of_schematic_file), position => 4));
-                                    submodule_gui_scratch.size_y := type_grid'value(get_field(text_in => to_string(line_of_schematic_file), position => 5));                                
-                                end if;
-
-                                -- read GUI submodule (sheet) timestamp from a line like "U 58A73B5D"
-                                if get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_keyword_sheet_timestamp then 
-                                    submodule_gui_scratch.timestamp := get_field(text_in => to_string(line_of_schematic_file), position => 2);
-                                end if;
-                                
-                                -- Read submodule (sheet) name from a line like "F0 "mcu_stm32f030" 60"
-                                -- Since this is the black-box-representation of a kicad-sheet its name is threated as name of a submodule.
-                                -- The sheet name is stored in submodule_gui_scratch.name to be compared with the sheet file name later.
-                                if get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_keyword_sheet_name then
-                                    submodule_gui_scratch.name := type_submodule_name.to_bounded_string(strip_quotes(get_field(text_in => to_string(line_of_schematic_file), position => 2)));
-                                    submodule_gui_scratch.text_size_of_name := type_text_size'value(get_field(text_in => to_string(line_of_schematic_file), position => 3));
-                                end if;
-
-                                -- Read sheet file name from a line like "F1 "mcu_stm32f030.sch" 60".
-                                -- The file name (name_of_submodule_scratch) goes into the list of submodules to be returned to the parent unit.
-                                if get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_keyword_sheet_file then
-                                    name_of_submodule_scratch := type_submodule_name.to_bounded_string(strip_quotes(get_field(text_in => to_string(line_of_schematic_file), position => 2)));
-                                    submodule_gui_scratch.text_size_of_file := type_text_size'value(get_field(text_in => to_string(line_of_schematic_file), position => 3));
-                                    
-                                    -- Test if sheet name and file name match:
-                                    if type_submodule_name.to_string(submodule_gui_scratch.name) /= base_name(type_submodule_name.to_string(name_of_submodule_scratch)) then
-                                        put_line(message_warning & "name mismatch: sheet: " &
-											type_submodule_name.to_string(submodule_gui_scratch.name) &
-											" file: " & type_submodule_name.to_string(name_of_submodule_scratch));
-                                    end if;
-                                end if;
-
-                            end if;
-                        end if;
-
-                        -- Further parts of the file can be read IF the description has been processed before (see above)
-                        if description_processed then
-                            
-                            -- read net segments						
-                            if not net_segment_entered then
-                                -- collect net segments
-                                if get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_keyword_wire then
-                                    if get_field(text_in => to_string(line_of_schematic_file), position => 2) = schematic_keyword_wire then
-                                        if get_field(text_in => to_string(line_of_schematic_file), position => 3) = schematic_keyword_line then
-                                            --put_line(to_string(line_of_schematic_file));
-                                            net_segment_entered := true; -- CS: assumption: segment coordinates follow in next line
-                                        end if;
-                                    end if;
-                                end if;
-                            else
-                                net_segment_entered := false; -- we are leaving a net segment
-                                --put_line(to_string(line_of_schematic_file));
-
-                                -- CS: warning on segment with zero length
-                                
-                                -- Build a temporarily net segment with fully specified coordinates:
-                                segment_scratch.coordinates_start.path := path_to_submodule;
-                                
-                                -- the name of the current submodule, which is in case of kicad the subordinated schematic file
-                                segment_scratch.coordinates_start.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
-                                segment_scratch.coordinates_end.module_name   := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
-                                
-                                -- The sheet number. NOTE: Kicad V4 can handle only one sheet per submodule. The sheet numbering is consecutive and does
-                                -- not care about the actual submodule names.
-                                segment_scratch.coordinates_start.sheet_number := sheet_number_current;
-
-                                -- the x/y position
-                                segment_scratch.coordinates_start.x := type_grid'value(get_field(text_in => to_string(line_of_schematic_file), position => 1));
-                                segment_scratch.coordinates_start.y := type_grid'value(get_field(text_in => to_string(line_of_schematic_file), position => 2));
-                                segment_scratch.coordinates_end.x   := type_grid'value(get_field(text_in => to_string(line_of_schematic_file), position => 3));
-                                segment_scratch.coordinates_end.y   := type_grid'value(get_field(text_in => to_string(line_of_schematic_file), position => 4));
-
-                                -- The net segments are to be collected in a wild list of segments for later sorting. 
-                                type_wild_list_of_net_segments.append(wild_segment_collection,segment_scratch);
-                            end if;
-
-                            -- read net junctions and store them in a wild list of net junctions for later sorting
-                            if get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_keyword_connection then
-                                if get_field(text_in => to_string(line_of_schematic_file), position => 2) = schematic_tilde then
-
-                                    -- build a temporarily junction
-                                    junction_scratch.coordinates.path := path_to_submodule;
-                                    junction_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
-                                    junction_scratch.coordinates.sheet_number := sheet_number_current;
-                                    junction_scratch.coordinates.x := type_grid'value(get_field(text_in => to_string(line_of_schematic_file), position => 3));
-                                    junction_scratch.coordinates.y := type_grid'value(get_field(text_in => to_string(line_of_schematic_file), position => 4));
-                                    type_list_of_net_junctions.append(wild_collection_of_junctions,junction_scratch);
-                                    junction_count := junction_count + 1;
-                                end if;
-                            end if;
-                                
-                            -- Read simple net labels (they do not have a tag, but just a text) 
-                            -- CS: assumption: keywords "Text Label" and coordinates in one line
-                            if not simple_label_entered then							
-                                if 	get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_keyword_text and 
-                                    get_field(text_in => to_string(line_of_schematic_file), position => 2) = schematic_keyword_label_simple then
-
-                                    simple_label_entered := true;
-                                    --put_line(to_string(line_of_schematic_file));
-
-                                    -- Build a temporarily simple label from a line like "Text Label 5350 3050 0    60   ~ 0" :
-                                    label_simple_scratch.coordinates.path := path_to_submodule;
-                                    label_simple_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
-                                    label_simple_scratch.coordinates.sheet_number := sheet_number_current;
-                                    label_simple_scratch.coordinates.x := type_grid'value(get_field(text_in => to_string(line_of_schematic_file), position => 3));
-                                    label_simple_scratch.coordinates.y := type_grid'value(get_field(text_in => to_string(line_of_schematic_file), position => 4));
-                                    label_simple_scratch.orientation   := to_orientation(get_field(text_in => to_string(line_of_schematic_file), position => 5));
-
-                                    -- build text attributes from size, font and line width
-                                    label_simple_scratch.text_attributes := to_text_attributes(
-                                        size  => type_text_size'value(get_field(text_in => to_string(line_of_schematic_file), position => 6)),
-                                        style => get_field(text_in => to_string(line_of_schematic_file), position => 7),
-                                        width => type_text_line_width'value(get_field(text_in => to_string(line_of_schematic_file), position => 8)));
-                                end if;
-                            else
-                                simple_label_entered := false; -- we are leaving a simple label
-
-                                -- get label text and put it to temporarily simple label
-                                label_simple_scratch.text := type_net_name.to_bounded_string(get_field(text_in => to_string(line_of_schematic_file), position => 1));
-
-                                -- The simple labels are to be collected in a wild list of simple labels.
-                                write_coordinates_of_label( type_net_label(label_simple_scratch));
-                                type_list_of_labels_simple.append(wild_simple_label_collection_scratch,label_simple_scratch);
-                            end if;
-                            
-                            -- read tag net labels (tagged labels can be global or hierarchical)
-                            if not tag_label_entered then
-                                if 	get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_keyword_text 
-                                    and 
-                                    (get_field(text_in => to_string(line_of_schematic_file), position => 2) = schematic_keyword_label_hierarchic 
-                                    or get_field(text_in => to_string(line_of_schematic_file), position => 2) = schematic_keyword_label_global)
-                                    then
-                                
-                                    tag_label_entered := true;
-                                    --put_line(to_string(line_of_schematic_file));
-
-                                    -- Build a temporarily hierarchic/global label from a line like "Text GLabel 1850 3100 0 58 BiDi ~ 0"
-                                    -- The keyword in field 2 tells whether we have a hierarchic or global label:
-                                    if get_field(text_in => to_string(line_of_schematic_file), position => 2) = schematic_keyword_label_hierarchic then
-                                        label_tag_scratch.hierarchic := true;
-                                        label_tag_scratch.global := false;
-                                    else
-                                        label_tag_scratch.hierarchic := false;
-                                        label_tag_scratch.global := true;
-                                    end if;
-
-                                    label_tag_scratch.coordinates.path := path_to_submodule;
-                                    label_tag_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
-                                    label_tag_scratch.coordinates.sheet_number := sheet_number_current;
-                                    label_tag_scratch.coordinates.x := type_grid'value(get_field(text_in => to_string(line_of_schematic_file), position => 3));
-                                    label_tag_scratch.coordinates.y := type_grid'value(get_field(text_in => to_string(line_of_schematic_file), position => 4));
-                                    label_tag_scratch.orientation   := to_orientation(get_field(text_in => to_string(line_of_schematic_file), position => 5));
-                                    
-                                    label_tag_scratch.direction := to_direction(
-                                        get_field(text_in => to_string(line_of_schematic_file), position => 7)
-                                        );
-
-                                    -- build text attributes from size, font and line width
-                                    label_tag_scratch.text_attributes := to_text_attributes(
-                                        size  => type_text_size'value(get_field(text_in => to_string(line_of_schematic_file), position => 6)),
-                                        style => get_field(text_in => to_string(line_of_schematic_file), position => 8),
-                                        width => type_text_line_width'value(get_field(text_in => to_string(line_of_schematic_file), position => 9)));
-                                end if;
-                            else
-                                tag_label_entered := false; -- we are leaving a tag label
-
-                                -- get label text and put it to temporarily tag label
-                                label_tag_scratch.text := type_net_name.to_bounded_string(get_field(text_in => to_string(line_of_schematic_file), position => 1));
-
-                                -- The tag labels are to be collected in a wild list of tag labels for later sorting.
-                                type_list_of_labels_tag.append(wild_tag_label_collection_scratch,label_tag_scratch);
-                            end if;
-
-                            -- read note from a line like "Text Notes 3400 2800 0 60 Italic 12" followed by a line with the actual note:
-                            if not note_entered then
-                                if 	get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_keyword_text and 
-                                    get_field(text_in => to_string(line_of_schematic_file), position => 2) = schematic_keyword_note then
-                                        note_entered := true; -- we are entering a note
-
-                                        -- set coordinates
-                                        note_scratch.coordinates.path := path_to_submodule;
-                                        note_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
-                                        note_scratch.coordinates.sheet_number := sheet_number_current;
-                                        note_scratch.coordinates.x := type_grid'value(get_field(text_in => to_string(line_of_schematic_file), position => 3));
-                                        note_scratch.coordinates.y := type_grid'value(get_field(text_in => to_string(line_of_schematic_file), position => 4));
-                                        note_scratch.orientation   := to_orientation(get_field(text_in => to_string(line_of_schematic_file), position => 5));
-
-                                        -- build text attributes from size, font and line width
-                                        note_scratch.text_attributes := to_text_attributes(
-                                            size  => type_text_size'value(get_field(text_in => to_string(line_of_schematic_file), position => 6)),
-                                            style => get_field(text_in => to_string(line_of_schematic_file), position => 7),
-                                            width => type_text_line_width'value(get_field(text_in => to_string(line_of_schematic_file), position => 8)));
-                                end if;
-                            else 
-                                note_entered := false; -- we are leaving a note
-
-                                -- get note text from a line like "hello\ntest". NOTE "\n" represents a line break
-                                -- CS: store lines in a list of lines instead ?
-                                note_scratch.text := to_unbounded_string(get_field(text_in => to_string(line_of_schematic_file), position => 1));
-
-                                -- the notes are to be collected in the list of notes
-                                type_list_of_notes.append(module.notes,note_scratch);
-                            end if;
-                            
-                            -- READ COMPONENTS
-                            -- Once a component header ($Comp) found, set device_entered flag. This indicates we are inside a device section.
-                            -- Inside the device section, we process its content until the component footer is found.
-                            if not device_entered then
-                                if get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_component_header then
-                                    device_entered := true;
-                                end if;
-                            else -- we are inside the component
-                                if get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_component_footer then
-                                    device_entered := false; -- we are leaving the component
-
-                                    --put_line(to_string(line_of_schematic_file));								
-                                    -- update the device with the collected block data (in device_block_scratch)
-                                    type_device_list_of_module.update_element(module.devices,device_cursor_scratch, append_block'access);
-
-                                    -- clean up: the list of texts collected in device_block_scratch.text_list must be erased for next spin.
-                                    type_list_of_device_block_texts.delete(device_block_scratch.text_list,1,type_list_of_device_block_texts.length(device_block_scratch.text_list));
-                                else
-                                    -- put_line(to_string(line_of_schematic_file));
-                                    -- READ COMPONENT SECTION CONTENT
-                                    
-                                    -- Read device name and annotation from a line like "L NetChanger N1". 
-                                    -- Append the device to the device list of the module. Devices may occur multiple times, which implies they are
-                                    -- split into blocks (kicad refers to them as "units", EAGLE refers to them as "symbols").
-                                    -- Only the first occurence of the device leads to appending it to the device list of the module.
-                                    if get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_component_identifier_name then -- "L"
-                                        device_scratch.name_in_library := type_device_name_in_library.to_bounded_string(
-                                            get_field(text_in => to_string(line_of_schematic_file), position => 2)); -- "NetChanger"
-                                        device_scratch.annotation := type_device_name.to_bounded_string(
-                                            get_field(text_in => to_string(line_of_schematic_file), position => 3)); -- "N1"
-                                        -- CS: check annotation
-
-                                        -- If component is not in device list yet, add component to device list of module.
-                                        if not type_device_list_of_module.contains(module.devices,device_scratch) then
-    -- 										put(et_import.report_handle, " device: " &
-    -- 											type_device_name.to_string(device_scratch.annotation) & " is " &
-    -- 											type_device_name_in_library.to_string(device_scratch.name_in_library));
-
-                                            put("  device " & type_device_name.to_string(device_scratch.annotation) & " is " &
-												type_device_name_in_library.to_string(device_scratch.name_in_library));
-                                                    
-                                            type_device_list_of_module.append(module.devices,device_scratch);
-                                        end if;
-
-                                        -- The cursor device_cursor_scratch now points to the device. There will be more device information (in the following) 
-                                        -- that will go into device_scratch. Once the device section is left, device_scratch updates the device where the cursor
-                                        -- is pointing at.
-                                        device_cursor_scratch := type_device_list_of_module.find(module.devices,device_scratch);
-                                    end if;
-
-                                    -- read unit id from a line like "U 7 3 4543D4D3F"
-                                    if get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_component_identifier_unit then -- "U"
-                                        --put_line(to_string(line_of_schematic_file));
-
-                                        -- KiCad uses positive numbers to identifiy blocks (units). In general a block name can be a string as well.
-                                        -- Therefore we handle the block id as string.
-                                        -- Temporarily the block data is collected in device_block_scratch (to update the device later when leaving the device section).
-                                        -- We also verify here that the block id is not greater than the total number of blocks (in field 2).
-                                        if 	positive'value(get_field(text_in => to_string(line_of_schematic_file), position => 3)) > -- "3" -- id
-                                            positive'value(get_field(text_in => to_string(line_of_schematic_file), position => 2))   -- "7" -- total
-                                            then
-												new_line;
-												put_line(message_warning & "Unit ID greater than number of units !");
-                                        end if;
-                                        device_block_scratch.name := type_device_block_name.to_bounded_string(
-                                            get_field(text_in => to_string(line_of_schematic_file), position => 3)); -- "3"
-
-                                        --put(et_import.report_handle," with block " & type_device_block_name.to_string(device_block_scratch.name) & " at");
-
-                                        put(" with block " & type_device_block_name.to_string(device_block_scratch.name) & " at");
-                                        
-                                    end if;
-
-                                    -- Read unit/block coordinates from a line like "P 3200 4500".
-                                    -- The unit/block coordinates is more than just x/y !
-                                    -- The wirte the unit coordinates in the import report.
-                                    if get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_component_identifier_coord then -- "P"
-                                        device_block_scratch.coordinates.x := type_grid'value(
-                                            get_field(text_in => to_string(line_of_schematic_file), position => 2)); -- "3200"
-                                        device_block_scratch.coordinates.y := type_grid'value(
-                                            get_field(text_in => to_string(line_of_schematic_file), position => 3)); -- "4500"
-
-    --									device_block_scratch.coordinates.main_module := module.name;
-                                        device_block_scratch.coordinates.path := path_to_submodule;
-                                        device_block_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
-                                        device_block_scratch.coordinates.sheet_number := sheet_number_current;
-
-                                        write_coordinates_of_device_block(device_block_scratch);
-                                    end if;
-
-                                    -- read component fields 0..2 from lines like:
-                                    -- 			"F 0 "N701" H 2600 2100 39  0000 C CNN"
-                                    --			"F 1 "NetChanger" H 2600 2250 60  0001 C CNN"
-                                    --			"F 2 "bel_netchanger:N_0.2MM" H 2600 2100 60  0001 C CNN"
-                                    -- Each line represents a text field which goes temporarily into block_text_scratch. 
-                                    -- Once the line is processed, block_text_scratch is appended the the list of texts of device_block_scratch.
-                                    if get_field(text_in => to_string(line_of_schematic_file), position => 1) = schematic_component_identifier_field then -- "F"
-
-                                        -- The field id must be mapped to the actual field meaning:
-                                        case type_schematic_component_field_id'value(get_field(text_in => to_string(line_of_schematic_file), position => 2)) is -- "0..2"
-                                            when schematic_component_field_id_annotation => block_text_scratch.meaning := annotation; -- "0"
-                                            when schematic_component_field_id_value => block_text_scratch.meaning := value; -- "1"
-                                            when schematic_component_field_id_footprint => block_text_scratch.meaning := footprint; -- "2"
-                                            --CS: when schematic_component_field_id_partcode => block_text_scratch.meaning := partcode;
-                                            when others => block_text_scratch.meaning := misc;
-                                        end case;
-                                        
-                                        -- read content like "N701" or "NetChanger" from field position 3
-                                        block_text_scratch.text := type_device_block_text_string.to_bounded_string(strip_quotes( 
-                                            get_field(text_in => to_string(line_of_schematic_file), position => 3)));
-
-                                        -- read orientation like "H" -- type_schematic_field_orientation
-                                        case type_schematic_field_orientation'value(get_field(text_in => to_string(line_of_schematic_file), position => 4)) is
-                                            when H => block_text_scratch.orientation := deg_0;
-                                            when V => block_text_scratch.orientation := deg_90;
-                                        end case;
-
-                                        -- read x and y coordinates like 2600 3250
-                                        block_text_scratch.coordinates.x := type_grid'value(get_field(text_in => to_string(line_of_schematic_file), position => 5));
-                                        block_text_scratch.coordinates.y := type_grid'value(get_field(text_in => to_string(line_of_schematic_file), position => 6));
-
-                                        -- assign further coordinates
-                                        block_text_scratch.coordinates.path := path_to_submodule;
-                                        block_text_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
-                                        block_text_scratch.coordinates.sheet_number := sheet_number_current;
-
-                                        -- build text attributes (only text size available here, style and width assume default value)
-                                        block_text_scratch.text_attributes := to_text_attributes(
-                                            size => type_text_size'value(get_field(text_in => to_string(line_of_schematic_file), position => 7)),
-                                            style => schematic_style_normal,
-                                            width => 0);
-                                            
-                                        -- build text alignment
-                                        block_text_scratch.visible := to_visible(get_field(text_in => to_string(line_of_schematic_file), position => 8));
-                                        block_text_scratch.alignment_horizontal := to_alignment_horizontal(get_field(text_in => to_string(line_of_schematic_file), position => 9));
-                                        block_text_scratch.alignment_vertical := to_alignment_vertical(get_field(text_in => to_string(line_of_schematic_file), position => 10));  
-                                        
-                                        -- append text block_text_scratch to text list of scratch block.
-                                        type_list_of_device_block_texts.append(device_block_scratch.text_list,block_text_scratch);
-
-                                    end if;
-                                end if;
-                                
-                            end if;
-                        end if;
-
-                    end if; -- if not schematic_header_processed
-                end loop;
+					line := et_string_processing.read_line(
+								line => get_line,
+								comment_mark => "", -- there are no comment marks in the schematic file
+								ifs => latin_1.space); -- fields are separated by space
+					
+					case line.field_count is
+						when 0 => null; -- we skip empty lines
+						when others =>
+
+--  							put_line("line ->" & to_string(line));
+							
+							-- read schematic headline like "EESchema Schematic File Version 2"
+							if not schematic_headline_processed then
+								if get_field_from_line(line,1) = schematic_header_keyword_sys_name and
+									get_field_from_line(line,2) = schematic_header_keyword_schematic and
+									get_field_from_line(line,3) = schematic_header_keyword_file and
+									get_field_from_line(line,4) = schematic_header_keyword_version then
+										if positive'value(get_field_from_line(line,5)) = schematic_version then
+											-- headline ok, version is supported
+											schematic_headline_processed := true;
+
+											-- Save schematic format version in temporarily sheet header:                                    
+											sheet_header_scratch.version := positive'value(get_field_from_line(line,5));
+										else
+											write_message(
+												file_handle => current_output,
+												text => message_error & "schematic version" & positive'image(schematic_version) & " required.",
+												console => true);                        
+											raise constraint_error;
+										end if;
+								end if;
+							else
+
+								-- READ SHEET HEADER: stuff like:
+								--     LIBS:nucleo_core-rescue
+								--     LIBS:power
+								--     LIBS:bel_connectors_and_jumpers
+								--     LIBS:bel_primitives
+								--     LIBS:bel_stm32
+								--     LIBS:nucleo_core-cache
+								--     EELAYER 25 0
+								--     EELAYER END
+
+								-- This data goes into a temporarily sheet header (sheet_header_scratch). When the schematic file has been
+								-- read completely, the temporarily sheet header is appended to a list of headers. 
+								-- Why a list of headers ? When schematic files are exported, their headers must be restored to the original state.
+								
+								-- used libraries from lines like "LIBS:bel_stm32" , CS: not used ?
+								-- Field #1 of the line must be broken down by its own ifs in order to get "LIBS" and "bel_stm32"
+								if get_field_from_line( get_field_from_line(line,1), 1, latin_1.colon) = schematic_library then
+
+									-- for the log: write library name
+									put_line(" uses library " & get_field_from_line( get_field_from_line(line,1), 2, latin_1.colon));
+
+									-- append library to list of libraries of the temporarily sheet header
+									type_list_of_library_names.append(
+										container => sheet_header_scratch.libraries,
+										new_item => type_library_name.to_bounded_string(get_field_from_line( get_field_from_line(line,1), 2, latin_1.colon))
+										);
+								end if;
+
+								-- layer numbers from a line like "EELAYER 25 0" -- CS: not used ?
+								-- CS: we do not read the line "EELAYER END" and assume it is always there.                                                        
+								if get_field_from_line(line,1) = schematic_eelayer then
+									if get_field_from_line(line,2) = schematic_eelayer_end then
+										null;
+									else
+										-- append layer numbers to the temporarily sheet header
+										sheet_header_scratch.eelayer_a := positive'value(
+											get_field_from_line(line,2));
+
+										sheet_header_scratch.eelayer_b := natural'value(
+											get_field_from_line(line,3));
+									end if;
+								end if;
+							
+							
+							
+								-- READ DESCRIPTION:
+								-- If the description reveals there is more than one sheet, we have a hierarchic design. Means we
+								-- need to read follwing sheet sections.
+								-- The sheet_number_current obtained here serves as part of the coordinates of objects found on this sheet.
+								-- The sheet description looks like this:
+
+								-- $Descr A4 11693 8268
+								-- encoding utf-8
+								-- Sheet 5 8
+								-- Title ""
+								-- Date ""
+								-- Rev ""
+								-- Comp ""
+								-- Comment1 ""
+								-- Comment2 ""
+								-- Comment3 ""
+								-- Comment4 ""
+								-- $EndDescr
+								
+								if not description_entered then
+									if get_field_from_line(line,1) = schematic_description_header then -- $Descr A4 11693 8268
+										description_entered := true; -- we are entering the sheet description
+
+										-- read drawing frame dimensions from a line like "$Descr A4 11693 8268"
+										drawing_frame_scratch.paper_size := type_paper_size'value(get_field_from_line(line,2));
+										drawing_frame_scratch.size_x := type_grid'value(get_field_from_line(line,3));
+										drawing_frame_scratch.size_y := type_grid'value(get_field_from_line(line,4)); 
+										drawing_frame_scratch.coordinates.path := path_to_submodule;
+										drawing_frame_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+
+										-- CS: Other properties of the drawing frame like x/y coordinates, lists of lines and texts are 
+										-- kicad built-in things and remain unassigned here.
+																	
+									end if;
+								else -- we are inside the description
+									if get_field_from_line(line,1) = schematic_description_footer then -- $EndDescr
+										description_entered := false; -- we are leaving the description
+										description_processed := true;
+
+										-- Make temporarily title_block_scratch complete by assigning coordinates and list of texts.
+										-- Then purge temporarily list of texts.
+										-- Then append temporarily title block to main module.
+										title_block_scratch.coordinates.path := path_to_submodule;
+										title_block_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+										title_block_scratch.texts := list_of_title_block_texts_scratch; -- assign collected texts list to temporarily title block
+										-- CS: x/y coordinates and list of lines are kicad built-in things and thus not available currently.
+
+										-- purge temporarily texts
+										type_list_of_title_block_texts.delete(list_of_title_block_texts_scratch,1,
+											type_list_of_title_block_texts.length(list_of_title_block_texts_scratch));
+
+										-- append title block to main module
+										type_list_of_title_blocks.append(module.title_blocks,title_block_scratch);
+										
+										-- append temporarily drawing frame to main module
+										type_list_of_frames.append(module.frames,drawing_frame_scratch);
+									end if;
+
+									-- read endcoding from a line like "encoding utf-8"
+									-- CS: checks only for a non-default endcoding and outputs a warning.
+									-- CS: we assume only one encoding. other encodings are ignored currently.
+									-- The encoding should be project wide. KiCad allows a sheet specific encoding which is no
+									-- good idea.
+									if get_field_from_line(line,1) = schematic_keyword_encoding then
+										if get_field_from_line(line,2) /= encoding_default then
+											put_line(message_warning & "non-default endcoding '" & 
+												get_field_from_line(line,2) & "' found !");
+										end if;
+									end if;
+										
+									-- read sheet number from a line like "Sheet 1 7"
+									if get_field_from_line(line,1) = schematic_keyword_sheet then
+										sheet_number_current := positive'value(get_field_from_line(line,2));
+										put_line(" sheet" & positive'image(sheet_number_current) & " ...");
+										sheet_count_total    := positive'value(get_field_from_line(line,3));
+										if sheet_count_total > 1 then
+											-- Set in the list_of_submodules (to be returned) the parent_module. The schematic file 
+											-- being processed (see input parameters of read_file_schematic_kicad) becomes the parent module
+											-- of the submodules here.
+											list_of_submodules.parent_module := type_submodule_name.to_bounded_string(to_string(name_of_schematic_file));
+										end if;
+										-- CS: make sure total sheet count is less or equal current sheet number.
+
+										-- Our temporarily drawing frame gets the current sheet number assigned.
+										drawing_frame_scratch.coordinates.sheet_number := sheet_number_current;
+									end if;						
+
+									-- read sheet title from a line like "Title "abc""
+									if get_field_from_line(line,1) = schematic_keyword_title then                        
+										title_block_text_scratch.meaning := TITLE;
+										title_block_text_scratch.text := type_device_block_text_string.to_bounded_string(
+											strip_quotes((get_field_from_line(line,2))));
+										type_list_of_title_block_texts.append(list_of_title_block_texts_scratch,title_block_text_scratch);
+									end if;
+
+									-- read date from a line like "Date "1981-01-23""
+									if get_field_from_line(line,1) = schematic_keyword_date then                        
+										title_block_text_scratch.meaning := DRAWN_DATE;
+										title_block_text_scratch.text := type_device_block_text_string.to_bounded_string(
+											strip_quotes((get_field_from_line(line,2))));
+										type_list_of_title_block_texts.append(list_of_title_block_texts_scratch,title_block_text_scratch);
+									end if;
+
+									-- read revision from a line like "Rev "9.7.1"
+									if get_field_from_line(line,1) = schematic_keyword_revision then                        
+										title_block_text_scratch.meaning := REVISION;
+										title_block_text_scratch.text := type_device_block_text_string.to_bounded_string(
+											strip_quotes((get_field_from_line(line,2))));
+										type_list_of_title_block_texts.append(list_of_title_block_texts_scratch,title_block_text_scratch);
+									end if;
+
+									-- read company name
+									if get_field_from_line(line,1) = schematic_keyword_company then
+										title_block_text_scratch.meaning := COMPANY;
+										title_block_text_scratch.text := type_device_block_text_string.to_bounded_string(
+											strip_quotes((get_field_from_line(line,2))));
+										type_list_of_title_block_texts.append(list_of_title_block_texts_scratch,title_block_text_scratch);
+									end if;
+
+									-- read commments 1..4 CS: need something more flexible here in order to read any number of comments.
+									if  get_field_from_line(line,1) = schematic_keyword_comment_1 or
+										get_field_from_line(line,1) = schematic_keyword_comment_2 or
+										get_field_from_line(line,1) = schematic_keyword_comment_3 or 
+										get_field_from_line(line,1) = schematic_keyword_comment_4 then
+											title_block_text_scratch.meaning := MISC;
+											title_block_text_scratch.text := type_device_block_text_string.to_bounded_string(
+												strip_quotes((get_field_from_line(line,2))));
+											type_list_of_title_block_texts.append(list_of_title_block_texts_scratch,title_block_text_scratch);
+									end if;
+									
+
+								end if;
+
+								-- Read submodule (sheet) sections (if there has been a total sheet count greater 1 detected earlier).
+								-- NOTE: Such sections solely serve to display a hierarchical sheet as a black box with its ports.
+								-- Rightly said this is the black box representation of a submodule. 
+								-- So in the following we refer to them as "submodule".
+								-- A submodule (sheet) section example:
+								
+								-- $Sheet
+								-- S 4050 5750 1050 650 
+								-- U 58A73B5D
+								-- F0 "Sheet58A73B5C" 58
+								-- F1 "morpho_test.sch" 58
+								-- $EndSheet
+
+								-- And add name of submodule (sheet file name) to list_of_submodules:
+								if sheet_count_total > 1 then
+									if not sheet_description_entered then
+										if get_field_from_line(line,1) = schematic_sheet_header then -- $Sheet
+											sheet_description_entered := true;
+										end if;
+									else -- we are inside a sheet description
+										if get_field_from_line(line,1) = schematic_sheet_footer then -- $EndSheet
+											sheet_description_entered := false; -- we are leaving the sheet description
+
+											-- append name_of_submodule_scratch to list_of_submodules to be returned to parent unit
+											type_list_of_submodule_names.append(list_of_submodules.list, name_of_submodule_scratch);
+
+											-- append submodule_gui_scratch to list of gui submodules
+											type_list_of_gui_submodules.append(module.submodules, submodule_gui_scratch);
+										end if;
+
+										-- read GUI submodule (sheet) position and size from a line like "S 4050 5750 1050 650"
+										if get_field_from_line(line,1) = schematic_keyword_sheet_pos_and_size then
+											submodule_gui_scratch.coordinates.path := path_to_submodule;
+											submodule_gui_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+											submodule_gui_scratch.coordinates.sheet_number := sheet_number_current;
+											submodule_gui_scratch.coordinates.x := type_grid'value(get_field_from_line(line,2));
+											submodule_gui_scratch.coordinates.y := type_grid'value(get_field_from_line(line,3));
+											submodule_gui_scratch.size_x := type_grid'value(get_field_from_line(line,4));
+											submodule_gui_scratch.size_y := type_grid'value(get_field_from_line(line,5));                                
+										end if;
+
+										-- read GUI submodule (sheet) timestamp from a line like "U 58A73B5D"
+										if get_field_from_line(line,1) = schematic_keyword_sheet_timestamp then 
+											submodule_gui_scratch.timestamp := get_field_from_line(line,2);
+										end if;
+										
+										-- Read submodule (sheet) name from a line like "F0 "mcu_stm32f030" 60"
+										-- Since this is the black-box-representation of a kicad-sheet its name is threated as name of a submodule.
+										-- The sheet name is stored in submodule_gui_scratch.name to be compared with the sheet file name later.
+										if get_field_from_line(line,1) = schematic_keyword_sheet_name then
+											submodule_gui_scratch.name := type_submodule_name.to_bounded_string(strip_quotes(get_field_from_line(line,2)));
+											submodule_gui_scratch.text_size_of_name := type_text_size'value(get_field_from_line(line,3));
+										end if;
+
+										-- Read sheet file name from a line like "F1 "mcu_stm32f030.sch" 60".
+										-- The file name (name_of_submodule_scratch) goes into the list of submodules to be returned to the parent unit.
+										if get_field_from_line(line,1) = schematic_keyword_sheet_file then
+											name_of_submodule_scratch := type_submodule_name.to_bounded_string(strip_quotes(get_field_from_line(line,2)));
+											submodule_gui_scratch.text_size_of_file := type_text_size'value(get_field_from_line(line,3));
+											
+											-- Test if sheet name and file name match:
+											if type_submodule_name.to_string(submodule_gui_scratch.name) /= base_name(type_submodule_name.to_string(name_of_submodule_scratch)) then
+												put_line(message_warning & "name mismatch: sheet: " &
+													type_submodule_name.to_string(submodule_gui_scratch.name) &
+													" file: " & type_submodule_name.to_string(name_of_submodule_scratch));
+											end if;
+										end if;
+
+									end if;
+								end if;
+
+								-- Further parts of the file can be read IF the description has been processed before (see above)
+								if description_processed then
+									
+									-- read net segments						
+									if not net_segment_entered then
+										-- collect net segments
+										if get_field_from_line(line,1) = schematic_keyword_wire then
+											if get_field_from_line(line,2) = schematic_keyword_wire then
+												if get_field_from_line(line,3) = schematic_keyword_line then
+													--put_line(to_string(line_of_schematic_file));
+													net_segment_entered := true; -- CS: assumption: segment coordinates follow in next line
+												end if;
+											end if;
+										end if;
+									else
+										net_segment_entered := false; -- we are leaving a net segment
+										--put_line(to_string(line_of_schematic_file));
+
+										-- CS: warning on segment with zero length
+										
+										-- Build a temporarily net segment with fully specified coordinates:
+										segment_scratch.coordinates_start.path := path_to_submodule;
+										
+										-- the name of the current submodule, which is in case of kicad the subordinated schematic file
+										segment_scratch.coordinates_start.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+										segment_scratch.coordinates_end.module_name   := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+										
+										-- The sheet number. NOTE: Kicad V4 can handle only one sheet per submodule. The sheet numbering is consecutive and does
+										-- not care about the actual submodule names.
+										segment_scratch.coordinates_start.sheet_number := sheet_number_current;
+
+										-- the x/y position
+										segment_scratch.coordinates_start.x := type_grid'value(get_field_from_line(line,1));
+										segment_scratch.coordinates_start.y := type_grid'value(get_field_from_line(line,2));
+										segment_scratch.coordinates_end.x   := type_grid'value(get_field_from_line(line,3));
+										segment_scratch.coordinates_end.y   := type_grid'value(get_field_from_line(line,4));
+
+										-- The net segments are to be collected in a wild list of segments for later sorting. 
+										type_wild_list_of_net_segments.append(wild_segment_collection,segment_scratch);
+									end if;
+
+									-- read net junctions and store them in a wild list of net junctions for later sorting
+									if get_field_from_line(line,1) = schematic_keyword_connection then
+										if get_field_from_line(line,2) = schematic_tilde then
+
+											-- build a temporarily junction
+											junction_scratch.coordinates.path := path_to_submodule;
+											junction_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+											junction_scratch.coordinates.sheet_number := sheet_number_current;
+											junction_scratch.coordinates.x := type_grid'value(get_field_from_line(line,3));
+											junction_scratch.coordinates.y := type_grid'value(get_field_from_line(line,4));
+											type_list_of_net_junctions.append(wild_collection_of_junctions,junction_scratch);
+											junction_count := junction_count + 1;
+										end if;
+									end if;
+										
+									-- Read simple net labels (they do not have a tag, but just a text) 
+									-- CS: assumption: keywords "Text Label" and coordinates in one line
+									if not simple_label_entered then							
+										if 	get_field_from_line(line,1) = schematic_keyword_text and 
+											get_field_from_line(line,2) = schematic_keyword_label_simple then
+
+											simple_label_entered := true;
+											--put_line(to_string(line_of_schematic_file));
+
+											-- Build a temporarily simple label from a line like "Text Label 5350 3050 0    60   ~ 0" :
+											label_simple_scratch.coordinates.path := path_to_submodule;
+											label_simple_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+											label_simple_scratch.coordinates.sheet_number := sheet_number_current;
+											label_simple_scratch.coordinates.x := type_grid'value(get_field_from_line(line,3));
+											label_simple_scratch.coordinates.y := type_grid'value(get_field_from_line(line,4));
+											label_simple_scratch.orientation   := to_orientation(get_field_from_line(line,5));
+
+											-- build text attributes from size, font and line width
+											label_simple_scratch.text_attributes := to_text_attributes(
+												size  => type_text_size'value(get_field_from_line(line,6)),
+												style => get_field_from_line(line,7),
+												width => type_text_line_width'value(get_field_from_line(line,8)));
+										end if;
+									else
+										simple_label_entered := false; -- we are leaving a simple label
+
+										-- get label text and put it to temporarily simple label
+										label_simple_scratch.text := type_net_name.to_bounded_string(get_field_from_line(line,1));
+
+										-- The simple labels are to be collected in a wild list of simple labels.
+										write_coordinates_of_label( type_net_label(label_simple_scratch));
+										type_list_of_labels_simple.append(wild_simple_label_collection_scratch,label_simple_scratch);
+									end if;
+									
+									-- read tag net labels (tagged labels can be global or hierarchical)
+									if not tag_label_entered then
+										if 	get_field_from_line(line,1) = schematic_keyword_text 
+											and 
+											(get_field_from_line(line,2) = schematic_keyword_label_hierarchic 
+											or get_field_from_line(line,2) = schematic_keyword_label_global)
+											then
+										
+											tag_label_entered := true;
+											--put_line(to_string(line_of_schematic_file));
+
+											-- Build a temporarily hierarchic/global label from a line like "Text GLabel 1850 3100 0 58 BiDi ~ 0"
+											-- The keyword in field 2 tells whether we have a hierarchic or global label:
+											if get_field_from_line(line,2) = schematic_keyword_label_hierarchic then
+												label_tag_scratch.hierarchic := true;
+												label_tag_scratch.global := false;
+											else
+												label_tag_scratch.hierarchic := false;
+												label_tag_scratch.global := true;
+											end if;
+
+											label_tag_scratch.coordinates.path := path_to_submodule;
+											label_tag_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+											label_tag_scratch.coordinates.sheet_number := sheet_number_current;
+											label_tag_scratch.coordinates.x := type_grid'value(get_field_from_line(line,3));
+											label_tag_scratch.coordinates.y := type_grid'value(get_field_from_line(line,4));
+											label_tag_scratch.orientation   := to_orientation(get_field_from_line(line,5));
+											
+											label_tag_scratch.direction := to_direction(
+												get_field_from_line(line,7)
+												);
+
+											-- build text attributes from size, font and line width
+											label_tag_scratch.text_attributes := to_text_attributes(
+												size  => type_text_size'value(get_field_from_line(line,6)),
+												style => get_field_from_line(line,8),
+												width => type_text_line_width'value(get_field_from_line(line,9)));
+										end if;
+									else
+										tag_label_entered := false; -- we are leaving a tag label
+
+										-- get label text and put it to temporarily tag label
+										label_tag_scratch.text := type_net_name.to_bounded_string(get_field_from_line(line,1));
+
+										-- The tag labels are to be collected in a wild list of tag labels for later sorting.
+										type_list_of_labels_tag.append(wild_tag_label_collection_scratch,label_tag_scratch);
+									end if;
+
+									-- read note from a line like "Text Notes 3400 2800 0 60 Italic 12" followed by a line with the actual note:
+									if not note_entered then
+										if 	get_field_from_line(line,1) = schematic_keyword_text and 
+											get_field_from_line(line,2) = schematic_keyword_note then
+												note_entered := true; -- we are entering a note
+
+												-- set coordinates
+												note_scratch.coordinates.path := path_to_submodule;
+												note_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+												note_scratch.coordinates.sheet_number := sheet_number_current;
+												note_scratch.coordinates.x := type_grid'value(get_field_from_line(line,3));
+												note_scratch.coordinates.y := type_grid'value(get_field_from_line(line,4));
+												note_scratch.orientation   := to_orientation(get_field_from_line(line,5));
+
+												-- build text attributes from size, font and line width
+												note_scratch.text_attributes := to_text_attributes(
+													size  => type_text_size'value(get_field_from_line(line,6)),
+													style => get_field_from_line(line,7),
+													width => type_text_line_width'value(get_field_from_line(line,8)));
+										end if;
+									else 
+										note_entered := false; -- we are leaving a note
+
+										-- get note text from a line like "hello\ntest". NOTE "\n" represents a line break
+										-- CS: store lines in a list of lines instead ?
+										note_scratch.text := to_unbounded_string(get_field_from_line(line,1));
+
+										-- the notes are to be collected in the list of notes
+										type_list_of_notes.append(module.notes,note_scratch);
+									end if;
+									
+									-- READ COMPONENTS
+									-- Once a component header ($Comp) found, set device_entered flag. This indicates we are inside a device section.
+									-- Inside the device section, we process its content until the component footer is found.
+									if not device_entered then
+										if get_field_from_line(line,1) = schematic_component_header then
+											device_entered := true;
+										end if;
+									else -- we are inside the component
+										if get_field_from_line(line,1) = schematic_component_footer then
+											device_entered := false; -- we are leaving the component
+
+											--put_line(to_string(line_of_schematic_file));								
+											-- update the device with the collected block data (in device_block_scratch)
+											type_device_list_of_module.update_element(module.devices,device_cursor_scratch, append_block'access);
+
+											-- clean up: the list of texts collected in device_block_scratch.text_list must be erased for next spin.
+											type_list_of_device_block_texts.delete(device_block_scratch.text_list,1,type_list_of_device_block_texts.length(device_block_scratch.text_list));
+										else
+											--put_line("line ->" & to_string(line));
+											-- READ COMPONENT SECTION CONTENT
+											
+											-- Read device name and annotation from a line like "L NetChanger N1". 
+											-- Append the device to the device list of the module. Devices may occur multiple times, which implies they are
+											-- split into blocks (kicad refers to them as "units", EAGLE refers to them as "symbols").
+											-- Only the first occurence of the device leads to appending it to the device list of the module.
+											if get_field_from_line(line,1) = schematic_component_identifier_name then -- "L"
+												device_scratch.name_in_library := type_device_name_in_library.to_bounded_string(get_field_from_line(line,2)); -- "NetChanger"
+												device_scratch.annotation := type_device_name.to_bounded_string(get_field_from_line(line,3)); -- "N1"
+												-- CS: check annotation
+
+												-- If component is not in device list yet, add component to device list of module.
+												if not type_device_list_of_module.contains(module.devices,device_scratch) then
+			-- 										put(et_import.report_handle, " device: " &
+			-- 											type_device_name.to_string(device_scratch.annotation) & " is " &
+			-- 											type_device_name_in_library.to_string(device_scratch.name_in_library));
+
+													put("  device " & type_device_name.to_string(device_scratch.annotation) & " is " &
+														type_device_name_in_library.to_string(device_scratch.name_in_library));
+															
+													type_device_list_of_module.append(module.devices,device_scratch);
+												end if;
+
+												-- The cursor device_cursor_scratch now points to the device. There will be more device information (in the following) 
+												-- that will go into device_scratch. Once the device section is left, device_scratch updates the device where the cursor
+												-- is pointing at.
+												device_cursor_scratch := type_device_list_of_module.find(module.devices,device_scratch);
+											end if;
+
+											-- read unit id from a line like "U 7 3 4543D4D3F"
+											if get_field_from_line(line,1) = schematic_component_identifier_unit then -- "U"
+												--put_line(to_string(line_of_schematic_file));
+
+												-- KiCad uses positive numbers to identifiy blocks (units). In general a block name can be a string as well.
+												-- Therefore we handle the block id as string.
+												-- Temporarily the block data is collected in device_block_scratch (to update the device later when leaving the device section).
+												-- We also verify here that the block id is not greater than the total number of blocks (in field 2).
+												if 	positive'value(get_field_from_line(line,3)) > -- "3" -- id
+													positive'value(get_field_from_line(line,2))   -- "7" -- total
+													then
+														new_line;
+														put_line(message_warning & "Unit ID greater than number of units !");
+												end if;
+												device_block_scratch.name := type_device_block_name.to_bounded_string(
+													get_field_from_line(line,3)); -- "3"
+
+												--put(et_import.report_handle," with block " & type_device_block_name.to_string(device_block_scratch.name) & " at");
+
+												put(" with block " & type_device_block_name.to_string(device_block_scratch.name) & " at");
+												
+											end if;
+
+											-- Read unit/block coordinates from a line like "P 3200 4500".
+											-- The unit/block coordinates is more than just x/y !
+											-- The wirte the unit coordinates in the import report.
+											if get_field_from_line(line,1) = schematic_component_identifier_coord then -- "P"
+												device_block_scratch.coordinates.x := type_grid'value(
+													get_field_from_line(line,2)); -- "3200"
+												device_block_scratch.coordinates.y := type_grid'value(
+													get_field_from_line(line,3)); -- "4500"
+
+			--									device_block_scratch.coordinates.main_module := module.name;
+												device_block_scratch.coordinates.path := path_to_submodule;
+												device_block_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+												device_block_scratch.coordinates.sheet_number := sheet_number_current;
+
+												write_coordinates_of_device_block(device_block_scratch);
+											end if;
+
+											-- read component fields 0..2 from lines like:
+											-- 			"F 0 "N701" H 2600 2100 39  0000 C CNN"
+											--			"F 1 "NetChanger" H 2600 2250 60  0001 C CNN"
+											--			"F 2 "bel_netchanger:N_0.2MM" H 2600 2100 60  0001 C CNN"
+											-- Each line represents a text field which goes temporarily into block_text_scratch. 
+											-- Once the line is processed, block_text_scratch is appended the the list of texts of device_block_scratch.
+											if get_field_from_line(line,1) = schematic_component_identifier_field then -- "F"
+
+												-- The field id must be mapped to the actual field meaning:
+												case type_schematic_component_field_id'value(get_field_from_line(line,2)) is -- "0..2"
+													when schematic_component_field_id_annotation => block_text_scratch.meaning := annotation; -- "0"
+													when schematic_component_field_id_value => block_text_scratch.meaning := value; -- "1"
+													when schematic_component_field_id_footprint => block_text_scratch.meaning := footprint; -- "2"
+													--CS: when schematic_component_field_id_partcode => block_text_scratch.meaning := partcode;
+													when others => block_text_scratch.meaning := misc;
+												end case;
+												
+												-- read content like "N701" or "NetChanger" from field position 3
+												block_text_scratch.text := type_device_block_text_string.to_bounded_string(strip_quotes(get_field_from_line(line,3)));
+
+												-- read orientation like "H" -- type_schematic_field_orientation
+												case type_schematic_field_orientation'value(get_field_from_line(line,4)) is
+													when H => block_text_scratch.orientation := deg_0;
+													when V => block_text_scratch.orientation := deg_90;
+												end case;
+
+												-- read x and y coordinates like 2600 3250
+												block_text_scratch.coordinates.x := type_grid'value(get_field_from_line(line,5));
+												block_text_scratch.coordinates.y := type_grid'value(get_field_from_line(line,6));
+
+												-- assign further coordinates
+												block_text_scratch.coordinates.path := path_to_submodule;
+												block_text_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+												block_text_scratch.coordinates.sheet_number := sheet_number_current;
+
+												-- build text attributes (only text size available here, style and width assume default value)
+												block_text_scratch.text_attributes := to_text_attributes(
+													size => type_text_size'value(get_field_from_line(line,7)),
+													style => schematic_style_normal,
+													width => 0);
+													
+												-- build text alignment
+												block_text_scratch.visible := to_visible(get_field_from_line(line,8));
+												block_text_scratch.alignment_horizontal := to_alignment_horizontal(get_field_from_line(line,9));
+												block_text_scratch.alignment_vertical := to_alignment_vertical(get_field_from_line(line,10));  
+												
+												-- append text block_text_scratch to text list of scratch block.
+												type_list_of_device_block_texts.append(device_block_scratch.text_list,block_text_scratch);
+
+											end if;
+									end if;
+									
+								end if;
+							end if;
+
+							end if; -- if not schematic_header_processed
+
+					end case;
+
+				end loop;
 
                 -- If file has been read and no header found:
                 if not schematic_headline_processed then

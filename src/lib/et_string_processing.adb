@@ -106,12 +106,12 @@ package body et_string_processing is
 	end wildcard_match;
 	
 
-	function remove_comment_from_line(text_in : string) return string is
+	function remove_comment_from_line(text_in : string; comment_mark : in string) return string is
 		position_of_comment : natural;
 		-- NOTE: tabulators will be left unchanged. no substituion with whitespace is done !
 	begin
 		if text_in'length > 0 then -- if line contains something
-			position_of_comment := index(text_in,"#");
+			position_of_comment := index(text_in,comment_mark);
 			case position_of_comment is -- check position of comment
 				when 0 => -- no comment found -> return line as it is
 					return text_in;
@@ -301,7 +301,12 @@ package body et_string_processing is
 	end get_field_from_line;
 
 	-- CS: comments
-	function read_line ( line : in string; ifs : in character := latin_1.space) return type_fields_of_line is
+	function read_line ( 
+	-- Breaks down a given string and returns a type_fields_of_line.
+		line			: in string; -- the line to be broken down
+		comment_mark	: in string; -- the comment mark like "--" or "#"
+		ifs				: in character := latin_1.space -- field separator
+		) return type_fields_of_line is
 		list : type_list_of_strings.vector;
 -- 		field_count : natural := ada.strings.fixed.count (line, ifs);
 
@@ -321,7 +326,14 @@ package body et_string_processing is
 		end read_fields;
 
 	begin -- read_line
-		read_fields(remove_comment_from_line(line));
+		-- If comment_mark is an empty string ("") no comments are to be removed (line remains unchanged).
+		-- Otherwise the comment as specified by comment_mark is to be removed.
+		if comment_mark'length = 0 then
+			read_fields(line); -- no comment specified, leave line as it is
+		else
+			read_fields(remove_comment_from_line(line, comment_mark));
+		end if;
+		
 		--1 + ada.strings.fixed.count(line,row_separator_1a);
 -- 		type_list_of_strings.reserve_capacity(
 -- 			list, 
