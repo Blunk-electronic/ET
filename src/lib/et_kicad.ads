@@ -48,6 +48,7 @@ package et_kicad is
 
 	file_extension_project   			: constant string (1..3) := "pro";
 	file_extension_schematic 			: constant string (1..3) := "sch";
+	file_extension_schematic_lib		: constant string (1..3) := "lib";
 	--CS: file_extension_board	 			: constant string (1..3) := "brd";
 
 
@@ -182,7 +183,8 @@ package et_kicad is
     --     EELAYER 25 0
 	--     EELAYER END
 
-	-- The library names in the header are mapped to a list of components:
+	-- The library names in the header are mapped to a list of components.
+	-- So for each library in the header we have a components listing.
 	-- 	use type_library_name;
 	-- 	use type_list_of_components;
 	package type_component_libraries is new ordered_maps (
@@ -192,7 +194,7 @@ package et_kicad is
 			"=" => et_kicad_libraries.type_list_of_components."="
 		);
 		
-	-- The sheet header in turn is a composite a list of libraries and other things:
+	-- The sheet header in turn is a composite of a list of libraries and other things:
     type type_sheet_header is record
         version     : positive; -- 2    
 		--libraries   : type_list_of_library_names.set; -- CS: probably not used by kicad, just information
@@ -201,13 +203,12 @@ package et_kicad is
         eelayer_b   : natural; -- 0 -- CS: meaning not clear, probably not used
     end record;
 
-	-- The headers are finally stored in a map and accessed by the name of the sheet file:
+	-- Since there are usually many sheets, we need a map of headers.
+	-- The headers are finally stored in a map and accessed by the name of the sheet file.
 	-- Why ? When schematic files are exported, their headers must be restored to the original state.
     package type_list_of_sheet_headers is new ordered_maps (
         key_type => type_sheet_file.bounded_string,
         element_type => type_sheet_header);
-    
-    -- Since there are usually many sheets, we need a map of headers:
     list_of_sheet_headers : type_list_of_sheet_headers.map;
     
 end et_kicad;

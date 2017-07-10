@@ -1130,11 +1130,23 @@ package body et_kicad is
 			block_text_scratch : type_device_block_text;
 
 			procedure fetch_components_from_library is
+				use type_component_libraries;
+				use et_general.type_library_full_name;
+				lib_cursor : type_component_libraries.cursor := first(sheet_header_scratch.libraries);
+				lib_file : et_general.type_library_full_name.bounded_string;
 			begin
-				write_message(
-					file_handle => et_import.report_handle,
-					text => "fetching components from libraries ...",
-					identation => 2);
+				put_line("  loading component libraries ...");
+				if not is_empty(sheet_header_scratch.libraries) then
+					while lib_cursor /= type_component_libraries.no_element loop
+						lib_file := to_bounded_string(compose(
+							containing_directory => et_general.type_library_directory.to_string(lib_dir),
+							name => et_general.type_library_name.to_string(key(lib_cursor)),
+							extension => file_extension_schematic_lib
+							));
+						put_line("   " & to_string(lib_file));
+						next(lib_cursor);
+					end loop;
+				end if;	
 			end fetch_components_from_library;
 
         begin -- read_schematic
@@ -1211,6 +1223,7 @@ package body et_kicad is
 										key => type_library_name.to_bounded_string(get_field_from_line( get_field_from_line(line,1), 2, latin_1.colon)),
 										new_item => type_list_of_components.empty_map
 										);
+
 								end if;
 
 								-- layer numbers from a line like "EELAYER 25 0" -- CS: not used ?
@@ -1765,7 +1778,7 @@ package body et_kicad is
                 end if;
 
                 -- Add temporarily sheet_header_scratch to list of headers.
-                -- NOTE: The file name serves as key in order to match file with header.
+                -- NOTE: The file name serves as key in order to match from file to header.
                 type_list_of_sheet_headers.insert(
                     container => list_of_sheet_headers, 
                     key => type_sheet_file.to_bounded_string(to_string(name_of_schematic_file)),
