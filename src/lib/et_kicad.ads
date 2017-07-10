@@ -40,6 +40,7 @@ with ada.containers.ordered_maps;
 with et_general;				use et_general;
 with et_schematic;				use et_schematic;
 with et_import;		            use et_import;
+with et_kicad_libraries;		use et_kicad_libraries;
 
 package et_kicad is
 
@@ -167,6 +168,7 @@ package et_kicad is
     type type_schematic_text_alignment_horizontal is (R, C, L);
     type type_schematic_text_alignment_vertical is (TNN, CNN, BNN);    
 
+	
     -- SHEET HEADERS
     -- sheet files have a header with meta information:
     -- stuff like:
@@ -178,21 +180,34 @@ package et_kicad is
     --     LIBS:bel_stm32
     --     LIBS:nucleo_core-cache
     --     EELAYER 25 0
-    --     EELAYER END
+	--     EELAYER END
+
+	-- The library names in the header are mapped to a list of components:
+	-- 	use type_library_name;
+	-- 	use type_list_of_components;
+	package type_component_libraries is new ordered_maps (
+		key_type => et_general.type_library_name.bounded_string, -- like bel_primitives
+			"<" => et_general.type_library_name."<",
+		element_type => et_kicad_libraries.type_list_of_components.map, -- the components like R, C, L, ...
+			"=" => et_kicad_libraries.type_list_of_components."="
+		);
+		
+	-- The sheet header in turn is a composite a list of libraries and other things:
     type type_sheet_header is record
         version     : positive; -- 2    
-        libraries   : type_list_of_library_names.set; -- CS: probably not used by kicad, just information
+		--libraries   : type_list_of_library_names.set; -- CS: probably not used by kicad, just information
+		libraries	: type_component_libraries.map;
         eelayer_a   : positive; -- 25 -- CS: meaning not clear, probably not used
         eelayer_b   : natural; -- 0 -- CS: meaning not clear, probably not used
     end record;
 
-    -- The headers are stored in a list:
+	-- The headers are finally stored in a map and accessed by the name of the sheet file:
+	-- Why ? When schematic files are exported, their headers must be restored to the original state.
     package type_list_of_sheet_headers is new ordered_maps (
         key_type => type_sheet_file.bounded_string,
         element_type => type_sheet_header);
-    -- Why ? When schematic files are exported, their headers must be restored to the original state.
-
-    -- this is the instantiated list of headers:
+    
+    -- Since there are usually many sheets, we need a map of headers:
     list_of_sheet_headers : type_list_of_sheet_headers.map;
     
 end et_kicad;

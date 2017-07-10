@@ -55,7 +55,7 @@ package et_schematic is
 	package type_device_name is new generic_bounded_length(device_name_length); use type_device_name;
 
 -- CS: could be of interest some day:
--- 	type type_device_name is record
+-- 	type type_device_name2 is record
 -- 		prefix : type_device_prefix.bounded_string;
 -- 		id : positive;
 -- 	end record;
@@ -211,7 +211,7 @@ package et_schematic is
 		coordinates_start : type_coordinates;
 		coordinates_end   : type_coordinates;
 	end record;
-	package type_list_of_device_block_outline_segments_line is new doubly_linked_lists (
+	package type_list_of_device_block_outline_segments_lines is new doubly_linked_lists (
 		element_type => type_device_block_outline_segment_line);
 
 	-- Arcs of a block will be collected in a simple list.
@@ -261,7 +261,7 @@ package et_schematic is
 	type type_device_block is record
 		name					: type_device_block_name.bounded_string;
 		coordinates				: type_coordinates;
-		outline_segments_line 	: type_list_of_device_block_outline_segments_line.list;
+		outline_segments_lines	: type_list_of_device_block_outline_segments_lines.list;
 		outline_segments_arcs 	: type_list_of_device_block_outline_segments_arcs.list;
 		outline_segments_circles: type_list_of_device_block_outline_segments_circles.list;
 		port_list 				: type_list_of_device_block_ports.map;
@@ -530,6 +530,12 @@ package et_schematic is
  		key_type => type_device_name.bounded_string, -- something like "IC43"
  		element_type => type_device);
 
+	-- CS: could be of interest when a composite type for device names is used. see above.
+-- 	package type_device_list_of_module2 is new ordered_maps (
+--  		key_type => type_device_name2, -- something like "IC43"
+--  		element_type => type_device);
+
+	
     -- A module has a name, a list of nets and a list of devices.
     -- Objects relevant for graphical interfaces are
     -- - a list of submodules
