@@ -181,7 +181,7 @@ package et_kicad is
     --     EELAYER END
     type type_sheet_header is record
         version     : positive; -- 2    
-        libraries   : type_list_of_library_names.vector; -- CS: probably not used by kicad, just information
+        libraries   : type_list_of_library_names.set; -- CS: probably not used by kicad, just information
         eelayer_a   : positive; -- 25 -- CS: meaning not clear, probably not used
         eelayer_b   : natural; -- 0 -- CS: meaning not clear, probably not used
     end record;

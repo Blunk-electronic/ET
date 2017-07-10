@@ -1205,7 +1205,7 @@ package body et_kicad is
 									put_line(" uses library " & get_field_from_line( get_field_from_line(line,1), 2, latin_1.colon));
 
 									-- append library to list of libraries of the temporarily sheet header
-									type_list_of_library_names.append(
+									type_list_of_library_names.insert(
 										container => sheet_header_scratch.libraries,
 										new_item => type_library_name.to_bounded_string(get_field_from_line( get_field_from_line(line,1), 2, latin_1.colon))
 										);

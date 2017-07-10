@@ -49,11 +49,17 @@ package et_schematic is
 
 	-- The name of a device is something like "IC403". Other CAE tools refer to it as "reference".
 	-- It is composed of a prefix like "IC" and the number like "403":
-	device_name_prefix_length : constant natural := 3; -- CS: there is no reason to work with longer prefixes.
-	package type_device_name_prefix is new generic_bounded_length(device_name_prefix_length); use type_device_name_prefix;
-	device_name_length	: constant natural := device_name_prefix_length + 100 ;
+	device_prefix_length : constant natural := 3; -- CS: there is no reason to work with longer prefixes.
+	package type_device_prefix is new generic_bounded_length(device_prefix_length); use type_device_prefix;
+	device_name_length	: constant natural := device_prefix_length + 100 ;
 	package type_device_name is new generic_bounded_length(device_name_length); use type_device_name;
 
+-- CS: could be of interest some day:
+-- 	type type_device_name is record
+-- 		prefix : type_device_prefix.bounded_string;
+-- 		id : positive;
+-- 	end record;
+	
  	port_name_length	: constant natural := 50;
 	package type_port_name is new generic_bounded_length(port_name_length); use type_port_name;
 
@@ -177,7 +183,7 @@ package et_schematic is
 
 	-- Initially, at the lowest level (usually library level), a port has a name, direction,
 	-- coordinates, orientation, flags for making port and pin name visible. 
-	-- Later, other values are assigned like pin name and device. CS: set defaults
+	-- Later, other values are assigned like pin name. CS: set defaults
 	type type_port is record
 		name              : type_port_name.bounded_string; -- example: "CLOCK"
 		direction         : type_port_direction; -- example: "passive"
@@ -186,7 +192,7 @@ package et_schematic is
 		display_port_name : boolean := true;
 		display_pin_name  : boolean := true;
 		pin               : type_pin_name.bounded_string; -- example: "144" or in case of a BGA package "E14"
- 		device            : type_device_name.bounded_string; -- example: "IC501"		
+ 		--device            : type_device_name.bounded_string; -- example: "IC501" CS: wrong ?
 	end record;
 
 
@@ -275,8 +281,6 @@ package et_schematic is
 	type type_device is record
 		physical_appearance : type_device_physical_appearance := virtual; -- sometimes there is just a schematic
 		name_in_library 	: type_device_name_in_library.bounded_string; -- example: "TRANSISTOR_PNP"
-		--annotation			: type_device_name.bounded_string; -- CS: includes prefix (R,C,L, ..) and number later given. example: "R501"
-		prefix				: type_device_name_prefix.bounded_string; -- like "R" or "C"
 		-- CS: library file name ?
 		block_list 			: type_device_block_list.map;
 -- 		case physical_appearance is

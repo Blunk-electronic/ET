@@ -92,9 +92,8 @@ package et_general is
 	library_name_length_max : constant natural := 100; -- CS: increase if necessary
     package type_library_name is new generic_bounded_length(library_name_length_max); use type_library_name;
 
-	-- Bare library names can be stored further-on in a map like this:
-    package type_list_of_library_names is new vectors ( -- CS: should be a map
-        index_type => positive, -- every library name has an id
+	-- Bare library names can be stored further-on in an ordered set like this:
+    package type_list_of_library_names is new ordered_sets (
 		element_type => type_library_name.bounded_string);
 
 	-- The base directory where libraries live is stored in a bounded string:
