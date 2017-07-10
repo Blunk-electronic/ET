@@ -222,11 +222,22 @@ package body et_kicad is
 			sheet_count_total, sheet_number_current : positive;
 			net_segment_entered : boolean := false;
 
-            -- When reading the sheet headers, their content is held temporarily in scratch variables
-            sheet_header_scratch : type_sheet_header; -- The sheet header before being appended to list of sheet headers.
-            --list_of_libraries_scratch : type_list_of_library_names.vector; -- Library names before
-            schematic_headline_processed : boolean := false;
-            
+			-- When reading the sheet header, its content goes into sheet_header.
+			-- This is stuff like:
+			--     LIBS:nucleo_core-rescue
+			--     LIBS:power
+			--     LIBS:bel_connectors_and_jumpers
+			--     LIBS:bel_primitives
+			--     LIBS:bel_stm32
+			--     LIBS:nucleo_core-cache
+			--     EELAYER 25 0
+			--     EELAYER END
+			-- Later these libraries are read and their content also stored in the sheet_header.
+			-- from the libraries.
+            sheet_header : type_sheet_header;
+
+			schematic_headline_processed : boolean := false;
+   
             
             -- When reading net labels, they are held temporarily in scratch variables, 
             -- then added to wild lists of labels for later sorting:
@@ -1130,13 +1141,16 @@ package body et_kicad is
 			block_text_scratch : type_device_block_text;
 
 			procedure fetch_components_from_library is
+			-- This procedure looks up the sheet_header and reads the library names stored there.
+			-- The full library names (incl. containing directory) are build.
+			-- The libraries are then read and theri content added to the sheet_header.
 				use type_component_libraries;
 				use et_general.type_library_full_name;
-				lib_cursor : type_component_libraries.cursor := first(sheet_header_scratch.libraries);
+				lib_cursor : type_component_libraries.cursor := first(sheet_header.libraries);
 				lib_file : et_general.type_library_full_name.bounded_string;
 			begin
 				put_line("  loading component libraries ...");
-				if not is_empty(sheet_header_scratch.libraries) then
+				if not is_empty(sheet_header.libraries) then
 					while lib_cursor /= type_component_libraries.no_element loop
 						lib_file := to_bounded_string(compose(
 							containing_directory => et_general.type_library_directory.to_string(lib_dir),
@@ -1183,8 +1197,8 @@ package body et_kicad is
 											-- headline ok, version is supported
 											schematic_headline_processed := true;
 
-											-- Save schematic format version in temporarily sheet header:                                    
-											sheet_header_scratch.version := positive'value(get_field_from_line(line,5));
+											-- Save schematic format version in sheet header:                                    
+											sheet_header.version := positive'value(get_field_from_line(line,5));
 										else
 											write_message(
 												file_handle => current_output,
@@ -1205,8 +1219,8 @@ package body et_kicad is
 								--     EELAYER 25 0
 								--     EELAYER END
 
-								-- This data goes into a temporarily sheet header (sheet_header_scratch). When the schematic file has been
-								-- read completely, the temporarily sheet header is appended to a list of headers. 
+								-- This data goes into a the sheet_header. When the schematic file has been
+								-- read completely, the sheet_header is appended to global list_of_sheet_headers. 
 								-- Why a list of headers ? When schematic files are exported, their headers must be restored to the original state.
 								
 								-- used libraries from lines like "LIBS:bel_stm32" , CS: not used ?
@@ -1216,10 +1230,10 @@ package body et_kicad is
 									-- for the log: write library name
 									put_line(" uses library " & get_field_from_line( get_field_from_line(line,1), 2, latin_1.colon));
 
-									-- Append bare library name to list of libraries of the temporarily sheet header.
+									-- Append bare library name to list of libraries of the sheet_header.
 									-- The list of components is empty at this stage.
 									type_component_libraries.insert(
-										container => sheet_header_scratch.libraries,
+										container => sheet_header.libraries,
 										key => type_library_name.to_bounded_string(get_field_from_line( get_field_from_line(line,1), 2, latin_1.colon)),
 										new_item => type_list_of_components.empty_map
 										);
@@ -1232,11 +1246,11 @@ package body et_kicad is
 									if get_field_from_line(line,2) = schematic_eelayer_end then
 										null;
 									else
-										-- append layer numbers to the temporarily sheet header
-										sheet_header_scratch.eelayer_a := positive'value(
+										-- append layer numbers to the sheet header
+										sheet_header.eelayer_a := positive'value(
 											get_field_from_line(line,2));
 
-										sheet_header_scratch.eelayer_b := natural'value(
+										sheet_header.eelayer_b := natural'value(
 											get_field_from_line(line,3));
 									end if;
 								end if;
@@ -1777,12 +1791,12 @@ package body et_kicad is
                     raise constraint_error;
                 end if;
 
-                -- Add temporarily sheet_header_scratch to list of headers.
+                -- Add sheet_header to global list_of_sheet_headers.
                 -- NOTE: The file name serves as key in order to match from file to header.
                 type_list_of_sheet_headers.insert(
                     container => list_of_sheet_headers, 
                     key => type_sheet_file.to_bounded_string(to_string(name_of_schematic_file)),
-                    new_item => sheet_header_scratch);
+                    new_item => sheet_header);
                 
 				close ( et_import.schematic_handle );
 				
