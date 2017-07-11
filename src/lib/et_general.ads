@@ -31,6 +31,7 @@
 --
 
 with ada.containers; 			use ada.containers;
+with ada.containers.doubly_linked_lists;
 with ada.containers.vectors;
 with ada.containers.ordered_maps;
 with ada.containers.ordered_sets;
@@ -93,7 +94,8 @@ package et_general is
     package type_library_name is new generic_bounded_length(library_name_length_max); use type_library_name;
 
 	-- Bare library names can be stored further-on in an ordered set like this:
-    package type_list_of_library_names is new ordered_sets (
+	-- We use a doubly linked list because the order of the library names sometimes matters.
+    package type_list_of_library_names is new doubly_linked_lists (
 		element_type => type_library_name.bounded_string);
 
 	-- The base directory where libraries live is stored in a bounded string:
@@ -105,7 +107,8 @@ package et_general is
 	package type_library_full_name is new generic_bounded_length(library_full_name_max); use type_library_full_name;
 
 	-- Full library names can be stored furhter-on in an ordered set like this:
-	package type_list_of_full_library_names is new ordered_sets (
+	-- We use a doubly linked list because the order of the library names sometimes matters.
+	package type_list_of_full_library_names is new doubly_linked_lists (
 		element_type => type_library_full_name.bounded_string);
 
 

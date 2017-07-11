@@ -69,7 +69,7 @@ package et_kicad is
 
 	-- full path and name of library files are collected in list_of_full_library_names
     project_keyword_library_name            : constant string (1..7)  := "LibName"; -- with index like "LibName1"
-	list_of_full_library_names : type_list_of_full_library_names.set;
+	list_of_full_library_names				: type_list_of_full_library_names.list;
 
 
     -- headers, footers, keywords 
@@ -187,19 +187,20 @@ package et_kicad is
 	-- So for each library in the header we have a components listing.
 	-- 	use type_library_name;
 	-- 	use type_list_of_components;
-	package type_component_library is new ordered_maps (
-		key_type => et_general.type_library_name.bounded_string, -- like bel_primitives
-			"<" => et_general.type_library_name."<",
-		element_type => et_kicad_libraries.type_list_of_components.map, -- the components like R, C, L, ...
-			"=" => et_kicad_libraries.type_list_of_components."="
-		);
-		
+-- 	package type_component_library is new ordered_maps (
+-- 		key_type => et_general.type_library_name.bounded_string, -- like bel_primitives
+-- 			"<" => et_general.type_library_name."<",
+-- 		element_type => et_kicad_libraries.type_list_of_components.map, -- the components like R, C, L, ...
+-- 			"=" => et_kicad_libraries.type_list_of_components."="
+-- 		);
+-- 		
 	-- The sheet header in turn is a composite of a list of libraries and other things:
 	-- The sheet header contains the libraries and their content.
+	-- We use a doubly linked list because the order of the library names must be kept.
     type type_sheet_header is record
         version     : positive; -- 2    
-		--libraries   : type_list_of_library_names.set; -- CS: probably not used by kicad, just information
-		libraries	: type_component_library.map;
+		libraries   : type_list_of_library_names.list; -- CS: probably not used by kicad, just information
+		--libraries	: type_list_of_library_names.map;
         eelayer_a   : positive; -- 25 -- CS: meaning not clear, probably not used
         eelayer_b   : natural; -- 0 -- CS: meaning not clear, probably not used
     end record;

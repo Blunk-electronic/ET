@@ -52,6 +52,37 @@ with et_string_processing;		use et_string_processing;
 package body et_kicad is
 
 
+	procedure read_components_libraries is
+		use type_list_of_full_library_names;
+		cursor : type_list_of_full_library_names.cursor := first(list_of_full_library_names);
+
+-- type_list_of_full_library_names.insert(
+-- 									container => list_of_full_library_names, 
+		lib_file : et_general.type_library_full_name.bounded_string;
+	begin
+		if is_empty(list_of_full_library_names) then
+			put_line(message_warning & " no component libraries defined in project file !");
+		else
+			put_line("Loading component libraries ...");
+		
+			while cursor /= no_element loop
+			
+				lib_file := element(cursor);
+				put_line(" " & et_general.type_library_full_name.to_string(lib_file));
+				if exists(et_general.type_library_full_name.to_string(lib_file)) then
+					null;
+				else
+					put_line(message_warning & "library '" 
+						& et_general.type_library_full_name.to_string(lib_file) 
+						& "' not found !");
+				end if;
+				next(cursor);
+
+			end loop;
+		end if;
+	end read_components_libraries;
+	
+
 	procedure import_design is
 		use et_import.type_schematic_file_name;
 		use et_general.type_library_directory;
@@ -121,13 +152,18 @@ package body et_kicad is
 
 						if section_eeschema_libraries_entered then
 
-							-- Get full library names (incl. path) and store them in list_of_project_libraries (see et_kicad.ads)
-							-- We ignore the index of LibName.
+							-- Get full library names (incl. path and extension) and store them in list_of_project_libraries (see et_kicad.ads)
+							-- We ignore the index of LibName. Since we store the lib names in a doubly linked list,
+							-- their order keeps unchanged anyway.
 							if get_field_from_line(line,1)(1..project_keyword_library_name'length) 
 								= project_keyword_library_name then
-								type_list_of_full_library_names.insert(
+								
+								type_list_of_full_library_names.append(
 									container => list_of_full_library_names, 
-									new_item => type_library_full_name.to_bounded_string(get_field_from_line(line,2)));
+									new_item => type_library_full_name.to_bounded_string(
+										get_field_from_line(line,2) -- name incl. path
+										& "."
+										& file_extension_schematic_lib)); -- extension
 
 								-- For the log write something like "LibName ../../lbr/bel_connectors_and_jumpers"
 								put_line(" " & get_field_from_line(line,1) 
@@ -232,8 +268,8 @@ package body et_kicad is
 			--     LIBS:nucleo_core-cache
 			--     EELAYER 25 0
 			--     EELAYER END
-			-- Later these libraries are read and their content also stored in the sheet_header.
-			-- from the libraries.
+			-- The library names here are of no importance. So it is sufficient to just store the 
+			-- library names in the sheet header.
             sheet_header : type_sheet_header;
 
 			schematic_headline_processed : boolean := false;
@@ -1140,28 +1176,28 @@ package body et_kicad is
 			end insert_block;
 			block_text_scratch : type_device_block_text;
 
-			procedure fetch_components_from_library is
+-- 			procedure fetch_components_from_library is
 			-- This procedure looks up the sheet_header and reads the library names stored there.
 			-- The full library names (incl. containing directory) are build.
 			-- The libraries are then read and theri content added to the sheet_header.
-				use type_component_libraries;
-				use et_general.type_library_full_name;
-				lib_cursor : type_component_libraries.cursor := first(sheet_header.libraries);
-				lib_file : et_general.type_library_full_name.bounded_string;
-			begin
-				put_line("  loading component libraries ...");
-				if not is_empty(sheet_header.libraries) then
-					while lib_cursor /= type_component_libraries.no_element loop
-						lib_file := to_bounded_string(compose(
-							containing_directory => et_general.type_library_directory.to_string(lib_dir),
-							name => et_general.type_library_name.to_string(key(lib_cursor)),
-							extension => file_extension_schematic_lib
-							));
-						put_line("   " & to_string(lib_file));
-						next(lib_cursor);
-					end loop;
-				end if;	
-			end fetch_components_from_library;
+-- 				use type_component_libraries;
+-- 				use et_general.type_library_full_name;
+-- 				lib_cursor : type_component_libraries.cursor := first(sheet_header.libraries);
+-- 				lib_file : et_general.type_library_full_name.bounded_string;
+-- 			begin
+-- 				put_line("  loading component libraries ...");
+-- 				if not is_empty(sheet_header.libraries) then
+-- 					while lib_cursor /= type_component_libraries.no_element loop
+-- 						lib_file := to_bounded_string(compose(
+-- 							containing_directory => et_general.type_library_directory.to_string(lib_dir),
+-- 							name => et_general.type_library_name.to_string(key(lib_cursor)),
+-- 							extension => file_extension_schematic_lib
+-- 							));
+-- 						put_line("   " & to_string(lib_file));
+-- 						next(lib_cursor);
+-- 					end loop;
+-- 				end if;	
+-- 			end fetch_components_from_library;
 
         begin -- read_schematic
 			if exists(to_string(name_of_schematic_file)) then
@@ -1222,20 +1258,20 @@ package body et_kicad is
 								-- This data goes into a the sheet_header. When the schematic file has been
 								-- read completely, the sheet_header is appended to global list_of_sheet_headers. 
 								-- Why a list of headers ? When schematic files are exported, their headers must be restored to the original state.
+								-- NOTE: The library entries in the header are not used by kicad. However, they must be read
+								-- and stored in sheet_header.libraries.
 								
-								-- used libraries from lines like "LIBS:bel_stm32" , CS: not used ?
 								-- Field #1 of the line must be broken down by its own ifs in order to get "LIBS" and "bel_stm32"
 								if get_field_from_line( get_field_from_line(line,1), 1, latin_1.colon) = schematic_library then
 
 									-- for the log: write library name
 									put_line(" uses library " & get_field_from_line( get_field_from_line(line,1), 2, latin_1.colon));
 
-									-- Append bare library name to list of libraries of the sheet_header.
-									-- The list of components is empty at this stage.
-									type_component_libraries.insert(
+									-- Store bare library name in the list sheet_header.libraries:
+									-- We use a doubly linked list because the order of the library names must be kept.
+									type_list_of_library_names.append(
 										container => sheet_header.libraries,
-										key => type_library_name.to_bounded_string(get_field_from_line( get_field_from_line(line,1), 2, latin_1.colon)),
-										new_item => type_list_of_components.empty_map
+										new_item => type_library_name.to_bounded_string(get_field_from_line( get_field_from_line(line,1), 2, latin_1.colon))
 										);
 
 								end if;
@@ -1902,9 +1938,7 @@ package body et_kicad is
 				-- Nets without label remain anonymous by using the notation "N$"
 				associate_net_labels_with_anonymous_nets;
 
-				-- The components collected from the schematic file lack the pin positions. We need the pin positions in order to generate
-				-- a netlist.
-				fetch_components_from_library;
+				-- CS: add_pins_to_nets
 				
 			else
 				--put_line(message_error & "Schematic file '" & to_string(name_of_schematic_file) & "' not found !");
@@ -1946,6 +1980,7 @@ package body et_kicad is
 
 				-- derive top level schematic file name from project file (they differ only in their extension)
 				top_level_schematic_file := read_project_file;
+				read_components_libraries;
 				name_of_schematic_file := top_level_schematic_file;
 
                 -- The top level schematic file dictates the module name. At the same time it is the first entry
