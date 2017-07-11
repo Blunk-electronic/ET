@@ -139,9 +139,9 @@ package body et_general is
 		end if;
 
 		if console then
-			put(identation * ' ' & text);
+			put(standard_output,identation * ' ' & text);
 			if lf then 
-				new_line;
+				new_line(standard_output);
 			end if;
 		end if;
 	end write_message;
