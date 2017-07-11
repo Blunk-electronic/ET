@@ -46,7 +46,7 @@
 -- 
 -- with et_geometry;				use et_geometry;
 -- 
---with et_general;				use et_general;
+with et_string_processing;			use et_string_processing;
 
 package body et_import is
 

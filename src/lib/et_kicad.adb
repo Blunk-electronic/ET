@@ -54,28 +54,67 @@ package body et_kicad is
 
 	procedure read_components_libraries is
 		use type_list_of_full_library_names;
-		cursor : type_list_of_full_library_names.cursor := first(list_of_full_library_names);
+		use et_general.type_library_full_name;
+		cursor			: type_list_of_full_library_names.cursor := first(list_of_full_library_names);
+		lib_file_name	: et_general.type_library_full_name.bounded_string;
 
--- type_list_of_full_library_names.insert(
--- 									container => list_of_full_library_names, 
-		lib_file : et_general.type_library_full_name.bounded_string;
+		procedure read_library is
+			line			: type_fields_of_line;
+			line_counter	: natural := 0;
+		begin
+			while not end_of_file loop
+
+				-- count lines and save a line in variable "line" (see et_string_processing.ads)
+				line_counter := line_counter + 1;
+--				put_line(get_line);
+ 				line := read_line(
+ 							line => get_line,
+ 							comment_mark => "#");
+-- 
+-- --				put_line(to_string(line));
+--  				case line.field_count is
+-- 					when 0 => null; -- we skip empty lines
+-- 					when others => null;
+-- 				end case;
+
+			end loop;
+		end read_library;
+		
 	begin
 		if is_empty(list_of_full_library_names) then
 			put_line(message_warning & " no component libraries defined in project file !");
 		else
-			put_line("Loading component libraries ...");
+			write_message(
+				file_handle => current_output,
+				text => "Loading component libraries ...",
+				console => true);
 		
 			while cursor /= no_element loop
 			
-				lib_file := element(cursor);
-				put_line(" " & et_general.type_library_full_name.to_string(lib_file));
-				if exists(et_general.type_library_full_name.to_string(lib_file)) then
-					null;
+				lib_file_name := element(cursor);
+
+				write_message(
+					file_handle => current_output,
+					text => " " & to_string(lib_file_name),
+					console => true);
+				
+				if exists(to_string(lib_file_name)) then
+					open (
+						file => et_import.library_handle,
+						mode => in_file,
+						name => to_string(lib_file_name));
+
+					set_input(et_import.library_handle);
+					read_library;
+
+					close(et_import.library_handle);
 				else
 					put_line(message_warning & "library '" 
-						& et_general.type_library_full_name.to_string(lib_file) 
+						& to_string(lib_file_name) 
 						& "' not found !");
 				end if;
+
+				
 				next(cursor);
 
 			end loop;
@@ -1973,7 +2012,7 @@ package body et_kicad is
         use stack_of_sheet_lists;
         
     begin -- import design
-		create_report;
+		create_report; -- directs all puts to the report file
 		
 		case et_import.cad_format is
 			when kicad_v4 =>

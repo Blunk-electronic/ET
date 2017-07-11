@@ -117,40 +117,7 @@ package et_general is
     type type_paper_size is ( A0, A1, A2, A4 ); -- CS: others
     paper_size_default : type_paper_size := A4;
     
-    -- STRING PROCESSING
 
-    
-	function get_field
-	-- Extracts a field separated by ifs at position. If trailer is true, the trailing content untiil trailer_to is also returned.
-			(
-			text_in 	: in string;
-			position 	: in positive;
-			ifs 		: in character := latin_1.space;
-			trailer 	: boolean := false;
-			trailer_to 	: in character := latin_1.semicolon
-			) return string;
-
--- 	function strip_quotes (text_in : in string) return string;
--- 	-- removes heading and trailing quotation from given string		
-
-
-	
-	-- MESSAGES
-	procedure write_message (
-		file_handle : in ada.text_io.file_type;
-		identation : in natural := 0;
-		text : in string;
-		lf   : in boolean := true;
-		file : in boolean := true;
-		console : in boolean := false);
-
-
-	
-    -- TIME OPERATIONS
-    -- CS: specifiy a type_date for something like 2017-02-12T18:45:01
-    date_field_length   : constant positive := 19;
-	now				    : time := clock;
-	date_now            : string (1..date_field_length) := image(now, time_zone => UTC_Time_Offset(now));
 
 	
 	-- GENERICS

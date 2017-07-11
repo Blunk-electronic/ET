@@ -40,6 +40,13 @@ with ada.text_io;				use ada.text_io;
 
 package body et_string_processing is
 
+	function date_now return string is
+		now		: time := clock;
+		date	: string (1..19) := image(now, time_zone => utc_time_offset(now));
+	begin
+		return date;
+	end date_now;
+	
 	function ht_to_space (c : in character) return character is
 	begin 
 		case c is
@@ -303,6 +310,7 @@ package body et_string_processing is
 	-- CS: comments
 	function read_line ( 
 	-- Breaks down a given string and returns a type_fields_of_line.
+	-- CS: poor performance -> rework !
 		line			: in string; -- the line to be broken down
 		comment_mark	: in string; -- the comment mark like "--" or "#"
 		ifs				: in character := latin_1.space -- field separator
@@ -386,6 +394,32 @@ package body et_string_processing is
 		end if;
 		return to_string(s);
 	end to_string;
+
+
+	-- MESSAGES
+	procedure write_message (
+		file_handle : in ada.text_io.file_type;
+		identation : in natural := 0;
+		text : in string; 
+		lf   : in boolean := true;		
+		file : in boolean := true;
+		console : in boolean := false) is
+	begin
+		if file then
+			put(file_handle, identation * ' ' & text);
+			if lf then 
+				new_line(file_handle);
+			end if;
+		end if;
+
+		if console then
+			put(standard_output,identation * ' ' & text);
+			if lf then 
+				new_line(standard_output);
+			end if;
+		end if;
+	end write_message;
+
 	
 end et_string_processing;
 

@@ -55,9 +55,7 @@ with ada.calendar.time_zones;	use ada.calendar.time_zones;
 
 package et_string_processing is
 
-	now				: time := clock;
-	date_now		: string (1..19) := image(now, time_zone => utc_time_offset(now));
-
+	function date_now return string;
 
 	short_string_length_max : constant natural := 10;
  	package type_short_string is new generic_bounded_length(short_string_length_max);
@@ -118,6 +116,16 @@ package et_string_processing is
 	function get_field_from_line (line : in type_fields_of_line; position : in positive) return string;
 
 	function to_string ( line : in type_fields_of_line) return string;
+
+
+	-- MESSAGES
+	procedure write_message (
+		file_handle : in ada.text_io.file_type;
+		identation : in natural := 0;
+		text : in string;
+		lf   : in boolean := true;
+		file : in boolean := true;
+		console : in boolean := false);
 	
 	
 end et_string_processing;

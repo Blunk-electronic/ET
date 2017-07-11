@@ -67,6 +67,7 @@ package et_import is
 	package type_schematic_file_name is new generic_bounded_length(project_name_length + 4); use type_schematic_file_name;
 	--schematic_file_name	: type_schematic_file_name.bounded_string;
 	schematic_handle	: ada.text_io.file_type;
+	library_handle		: ada.text_io.file_type;
 	-- CS: board_handle		: ada.text_io.file_type;
     
 	-- CAD FORMATS
