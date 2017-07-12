@@ -1213,7 +1213,9 @@ package body et_kicad is
 					new_item => device_unit_scratch,
 					key => device_unit_scratch.name);  -- the key to a device unit is its own name 
 			end insert_unit;
-			unit_text_scratch : type_device_unit_text;
+
+			-- temporarily we store fields here:
+			unit_field_scratch : type_device_unit_field;
 
 -- 			procedure fetch_components_from_library is
 			-- This procedure looks up the sheet_header and reads the library names stored there.
@@ -1721,7 +1723,7 @@ package body et_kicad is
 											type_device_list_of_module.update_element(module.devices,device_cursor_scratch, insert_unit'access);
 
 											-- clean up: the list of texts collected in device_unit_scratch.text_list must be erased for next spin.
-											type_list_of_device_unit_texts.clear(device_unit_scratch.text_list);
+											type_list_of_device_unit_fields.clear(device_unit_scratch.fields);
 										else
 											--put_line("line ->" & to_string(line));
 											-- READ COMPONENT SECTION CONTENT
@@ -1796,54 +1798,54 @@ package body et_kicad is
 												write_coordinates_of_device_unit(device_unit_scratch);
 											end if;
 
-											-- read component fields 0..2 from lines like:
+											-- read unit fields 0..2 from lines like:
 											-- 			"F 0 "N701" H 2600 2100 39  0000 C CNN"
 											--			"F 1 "NetChanger" H 2600 2250 60  0001 C CNN"
 											--			"F 2 "bel_netchanger:N_0.2MM" H 2600 2100 60  0001 C CNN"
-											-- Each line represents a text field which goes temporarily into unit_text_scratch. 
-											-- Once the line is processed, unit_text_scratch is appended the the list of texts of device_unit_scratch.
+											-- Each line represents a field which goes temporarily into unit_text_scratch. 
+											-- Once the line is processed, unit_text_scratch is appended the the list of fields of device_unit_scratch.
 											if get_field_from_line(line,1) = schematic_component_identifier_field then -- "F"
 
 												-- The field id must be mapped to the actual field meaning:
 												case type_schematic_component_field_id'value(get_field_from_line(line,2)) is -- "0..2"
-													when schematic_component_field_id_annotation => unit_text_scratch.meaning := annotation; -- "0"
-													when schematic_component_field_id_value => unit_text_scratch.meaning := value; -- "1"
-													when schematic_component_field_id_footprint => unit_text_scratch.meaning := footprint; -- "2"
+													when schematic_component_field_id_annotation => unit_field_scratch.meaning := annotation; -- "0"
+													when schematic_component_field_id_value => unit_field_scratch.meaning := value; -- "1"
+													when schematic_component_field_id_footprint => unit_field_scratch.meaning := footprint; -- "2"
 													--CS: when schematic_component_field_id_partcode => unit_text_scratch.meaning := partcode;
-													when others => unit_text_scratch.meaning := misc;
+													when others => unit_field_scratch.meaning := misc;
 												end case;
 												
 												-- read content like "N701" or "NetChanger" from field position 3
-												unit_text_scratch.text := type_device_unit_text_string.to_bounded_string(strip_quotes(get_field_from_line(line,3)));
+												unit_field_scratch.text := type_device_unit_field_string.to_bounded_string(strip_quotes(get_field_from_line(line,3)));
 
 												-- read orientation like "H" -- type_schematic_field_orientation
 												case type_schematic_field_orientation'value(get_field_from_line(line,4)) is
-													when H => unit_text_scratch.orientation := deg_0;
-													when V => unit_text_scratch.orientation := deg_90;
+													when H => unit_field_scratch.orientation := deg_0;
+													when V => unit_field_scratch.orientation := deg_90;
 												end case;
 
 												-- read x and y coordinates like 2600 3250
-												unit_text_scratch.coordinates.x := type_grid'value(get_field_from_line(line,5));
-												unit_text_scratch.coordinates.y := type_grid'value(get_field_from_line(line,6));
+												unit_field_scratch.coordinates.x := type_grid'value(get_field_from_line(line,5));
+												unit_field_scratch.coordinates.y := type_grid'value(get_field_from_line(line,6));
 
 												-- assign further coordinates
-												unit_text_scratch.coordinates.path := path_to_submodule;
-												unit_text_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
-												unit_text_scratch.coordinates.sheet_number := sheet_number_current;
+												unit_field_scratch.coordinates.path := path_to_submodule;
+												unit_field_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+												unit_field_scratch.coordinates.sheet_number := sheet_number_current;
 
 												-- build text attributes (only text size available here, style and width assume default value)
-												unit_text_scratch.text_attributes := to_text_attributes(
+												unit_field_scratch.text_attributes := to_text_attributes(
 													size => type_text_size'value(get_field_from_line(line,7)),
 													style => schematic_style_normal,
 													width => 0);
 													
 												-- build text alignment
-												unit_text_scratch.visible := to_visible(get_field_from_line(line,8));
-												unit_text_scratch.alignment_horizontal := to_alignment_horizontal(get_field_from_line(line,9));
-												unit_text_scratch.alignment_vertical := to_alignment_vertical(get_field_from_line(line,10));  
+												unit_field_scratch.visible := to_visible(get_field_from_line(line,8));
+												unit_field_scratch.alignment_horizontal := to_alignment_horizontal(get_field_from_line(line,9));
+												unit_field_scratch.alignment_vertical := to_alignment_vertical(get_field_from_line(line,10));  
 												
-												-- append text unit_text_scratch to text list of scratch unit.
-												type_list_of_device_unit_texts.append(device_unit_scratch.text_list,unit_text_scratch);
+												-- append text unit_field_scratch to text list of scratch unit.
+												type_list_of_device_unit_fields.append(device_unit_scratch.fields,unit_field_scratch);
 
 											end if;
 									end if;

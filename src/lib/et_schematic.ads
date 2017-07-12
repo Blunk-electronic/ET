@@ -233,40 +233,39 @@ package et_schematic is
 		element_type => type_device_unit_outline_segment_circle);
 
 	-- Text fields of a unit will be collected in a simple list.
-	-- Text fields (usually inside) a device unit give more information on what the unit is supposed for.
-	-- Example: BANK_1 , BANK_2, PWR_SUPPLY, CT10, CT2, MCU
+	-- EAGLE refers to them as "attributes".
 	-- A text field of a unit may have 100 characters which seems sufficient for now.
- 	device_unit_text_length	: constant natural := 200;
-	package type_device_unit_text_string is new generic_bounded_length(device_unit_text_length); use type_device_unit_text_string;
-	type type_unit_text_meaning is ( ANNOTATION, VALUE, FOOTPRINT, MISC); -- CS: partcode, function, ...
-	type type_device_unit_text is record
-		meaning			        : type_unit_text_meaning;
+ 	device_unit_field_length	: constant natural := 200;
+	package type_device_unit_field_string is new generic_bounded_length(device_unit_field_length); use type_device_unit_field_string;
+	type type_unit_field_meaning is ( ANNOTATION, VALUE, FOOTPRINT, MISC); -- CS: partcode, function, ...
+	type type_device_unit_field is record
+		meaning			        : type_unit_field_meaning;
 		coordinates             : type_coordinates;
-        text                    : type_device_unit_text_string.bounded_string;
+        text                    : type_device_unit_field_string.bounded_string;
         text_attributes         : type_text_attributes;
         orientation             : type_text_orientation;
         visible                 : boolean;
         alignment_horizontal    : type_text_alignment_horizontal;
         alignment_vertical      : type_text_alignment_vertical;        
 	end record;
-	package type_list_of_device_unit_texts is new doubly_linked_lists (
-		element_type => type_device_unit_text);
+	package type_list_of_device_unit_fields is new doubly_linked_lists (
+		element_type => type_device_unit_field);
 
 	-- Ports of a unit will be collected in a map.
 	package type_list_of_device_unit_ports is new ordered_maps ( 
 		key_type => type_port_name.bounded_string,
 		element_type => type_port);
 
-	-- A unit has a name, coordinates, consists of segment lists , ports and texts.
+	-- A unit has a name, coordinates, consists of segment lists , ports and fields.
 	-- EAGLE refers to units as "gates". KiCad refers to them as "units":
 	type type_device_unit is record
-		name					: type_device_unit_name.bounded_string;
+		name					: type_device_unit_name.bounded_string; -- like 1,2,A,B or PWR
 		coordinates				: type_coordinates;
 		outline_segments_lines	: type_list_of_device_unit_outline_segments_lines.list;
 		outline_segments_arcs 	: type_list_of_device_unit_outline_segments_arcs.list;
 		outline_segments_circles: type_list_of_device_unit_outline_segments_circles.list;
 		port_list 				: type_list_of_device_unit_ports.map;
-        text_list				: type_list_of_device_unit_texts.list;
+        fields					: type_list_of_device_unit_fields.list;
         -- CS: timestamp
 	end record;
 
