@@ -533,16 +533,16 @@ package body et_kicad is
 					identation => 3);
 			end write_coordinates_of_junction;			
 			
-			procedure write_coordinates_of_device_block (block : in type_device_block) is
+			procedure write_coordinates_of_device_unit (unit : in type_device_unit) is
 			begin
 				write_message (
 					file_handle => et_import.report_handle,
 					text => " position (x/y/sheet) " & 
-						trim(type_grid'image(block.coordinates.x),left) & "/" &
-						trim(type_grid'image(block.coordinates.y),left) & "/" &
-						trim(positive'image(block.coordinates.sheet_number),left)
+						trim(type_grid'image(unit.coordinates.x),left) & "/" &
+						trim(type_grid'image(unit.coordinates.y),left) & "/" &
+						trim(positive'image(unit.coordinates.sheet_number),left)
 						);
-			end write_coordinates_of_device_block;			
+			end write_coordinates_of_device_unit;			
 			
 			-- An anonymous_net is a list of net segments that are connected with each other (by their start or end points).
 			-- The anonymous net gets step by step more properties specified: name, scope and some status flags:
@@ -1202,18 +1202,18 @@ package body et_kicad is
 			-- This is relevant for reading devices:
 			device_entered : boolean := false; -- indicates that a device is being read
 			device_scratch : type_device; -- temporarily used before appending a device list of the module
-			device_block_scratch : type_device_block; -- temporarily used before appending a block to a device
+			device_unit_scratch : type_device_unit; -- temporarily used before appending a unit to a device
 			device_cursor_scratch : type_device_list_of_module.cursor; -- points to a device of the module
 			device_inserted : boolean; -- used when a device is being inserted into the device list of a module
-			procedure insert_block ( key : in type_device_name.bounded_string; device : in out type_device ) is 
+			procedure insert_unit ( key : in type_device_name.bounded_string; device : in out type_device ) is 
 			begin
-				--type_device_block_list.append(device.block_list,device_block_scratch);
-				type_device_block_list.insert(
-					container => device.block_list, 
-					new_item => device_block_scratch,
-					key => device_block_scratch.name);  -- the key to a device block is its own name 
-			end insert_block;
-			block_text_scratch : type_device_block_text;
+				--type_device_unit_list.append(device.unit_list,device_unit_scratch);
+				type_device_unit_list.insert(
+					container => device.unit_list, 
+					new_item => device_unit_scratch,
+					key => device_unit_scratch.name);  -- the key to a device unit is its own name 
+			end insert_unit;
+			unit_text_scratch : type_device_unit_text;
 
 -- 			procedure fetch_components_from_library is
 			-- This procedure looks up the sheet_header and reads the library names stored there.
@@ -1422,7 +1422,7 @@ package body et_kicad is
 									-- read sheet title from a line like "Title "abc""
 									if get_field_from_line(line,1) = schematic_keyword_title then                        
 										title_block_text_scratch.meaning := TITLE;
-										title_block_text_scratch.text := type_device_block_text_string.to_bounded_string(
+										title_block_text_scratch.text := type_title_block_text_string.to_bounded_string(
 											strip_quotes((get_field_from_line(line,2))));
 										type_list_of_title_block_texts.append(list_of_title_block_texts_scratch,title_block_text_scratch);
 									end if;
@@ -1430,7 +1430,7 @@ package body et_kicad is
 									-- read date from a line like "Date "1981-01-23""
 									if get_field_from_line(line,1) = schematic_keyword_date then                        
 										title_block_text_scratch.meaning := DRAWN_DATE;
-										title_block_text_scratch.text := type_device_block_text_string.to_bounded_string(
+										title_block_text_scratch.text := type_title_block_text_string.to_bounded_string(
 											strip_quotes((get_field_from_line(line,2))));
 										type_list_of_title_block_texts.append(list_of_title_block_texts_scratch,title_block_text_scratch);
 									end if;
@@ -1438,7 +1438,7 @@ package body et_kicad is
 									-- read revision from a line like "Rev "9.7.1"
 									if get_field_from_line(line,1) = schematic_keyword_revision then                        
 										title_block_text_scratch.meaning := REVISION;
-										title_block_text_scratch.text := type_device_block_text_string.to_bounded_string(
+										title_block_text_scratch.text := type_title_block_text_string.to_bounded_string(
 											strip_quotes((get_field_from_line(line,2))));
 										type_list_of_title_block_texts.append(list_of_title_block_texts_scratch,title_block_text_scratch);
 									end if;
@@ -1446,7 +1446,7 @@ package body et_kicad is
 									-- read company name
 									if get_field_from_line(line,1) = schematic_keyword_company then
 										title_block_text_scratch.meaning := COMPANY;
-										title_block_text_scratch.text := type_device_block_text_string.to_bounded_string(
+										title_block_text_scratch.text := type_title_block_text_string.to_bounded_string(
 											strip_quotes((get_field_from_line(line,2))));
 										type_list_of_title_block_texts.append(list_of_title_block_texts_scratch,title_block_text_scratch);
 									end if;
@@ -1457,7 +1457,7 @@ package body et_kicad is
 										get_field_from_line(line,1) = schematic_keyword_comment_3 or 
 										get_field_from_line(line,1) = schematic_keyword_comment_4 then
 											title_block_text_scratch.meaning := MISC;
-											title_block_text_scratch.text := type_device_block_text_string.to_bounded_string(
+											title_block_text_scratch.text := type_title_block_text_string.to_bounded_string(
 												strip_quotes((get_field_from_line(line,2))));
 											type_list_of_title_block_texts.append(list_of_title_block_texts_scratch,title_block_text_scratch);
 									end if;
@@ -1717,18 +1717,18 @@ package body et_kicad is
 											device_entered := false; -- we are leaving the component
 
 											--put_line(to_string(line_of_schematic_file));								
-											-- update the device with the collected block data (in device_block_scratch)
-											type_device_list_of_module.update_element(module.devices,device_cursor_scratch, insert_block'access);
+											-- update the device with the collected unit data (in device_unit_scratch)
+											type_device_list_of_module.update_element(module.devices,device_cursor_scratch, insert_unit'access);
 
-											-- clean up: the list of texts collected in device_block_scratch.text_list must be erased for next spin.
-											type_list_of_device_block_texts.clear(device_block_scratch.text_list);
+											-- clean up: the list of texts collected in device_unit_scratch.text_list must be erased for next spin.
+											type_list_of_device_unit_texts.clear(device_unit_scratch.text_list);
 										else
 											--put_line("line ->" & to_string(line));
 											-- READ COMPONENT SECTION CONTENT
 											
 											-- Read device name and annotation from a line like "L NetChanger N1". 
 											-- Append the device to the device list of the module (module.devices). Devices may occur multiple times, which implies they are
-											-- split into blocks (kicad refers to them as "units", EAGLE refers to them as "gates").
+											-- split into units (kicad refers to them as "units", EAGLE refers to them as "gates").
 											-- Only the first occurence of the device leads to appending it to the device list of the module.
 											if get_field_from_line(line,1) = schematic_component_identifier_name then -- "L"
 												device_scratch.name_in_library := type_device_name_in_library.to_bounded_string(get_field_from_line(line,2)); -- "NetChanger"
@@ -1760,90 +1760,90 @@ package body et_kicad is
 											if get_field_from_line(line,1) = schematic_component_identifier_unit then -- "U"
 												--put_line(to_string(line_of_schematic_file));
 
-												-- KiCad uses positive numbers to identifiy blocks (units). In general a block name can be a string as well.
-												-- Therefore we handle the block id as string.
-												-- Temporarily the block data is collected in device_block_scratch (to update the device later when leaving the device section).
-												-- We also verify here that the block id is not greater than the total number of blocks (in field 2).
+												-- KiCad uses positive numbers to identifiy units. In general a unit name can be a string as well.
+												-- Therefore we handle the unit id as string.
+												-- Temporarily the unit data is collected in device_unit_scratch (to update the device later when leaving the device section).
+												-- We also verify here that the unit id is not greater than the total number of units (in field 2).
 												if 	positive'value(get_field_from_line(line,3)) > -- "3" -- id
 													positive'value(get_field_from_line(line,2))   -- "7" -- total
 													then
 														new_line;
 														put_line(message_warning & "Unit ID greater than number of units !");
 												end if;
-												device_block_scratch.name := type_device_block_name.to_bounded_string(
+												device_unit_scratch.name := type_device_unit_name.to_bounded_string(
 													get_field_from_line(line,3)); -- "3"
 
-												--put(et_import.report_handle," with block " & type_device_block_name.to_string(device_block_scratch.name) & " at");
+												--put(et_import.report_handle," with unit " & type_device_unit_name.to_string(device_unit_scratch.name) & " at");
 
-												put(" with block " & type_device_block_name.to_string(device_block_scratch.name) & " at");
+												put(" with unit " & type_device_unit_name.to_string(device_unit_scratch.name) & " at");
 												
 											end if;
 
-											-- Read unit/block coordinates from a line like "P 3200 4500".
-											-- The unit/block coordinates is more than just x/y !
-											-- The wirte the unit coordinates in the import report.
+											-- Read unit coordinates from a line like "P 3200 4500".
+											-- The unit coordinates is more than just x/y !
+											-- The write the unit coordinates in the import report.
 											if get_field_from_line(line,1) = schematic_component_identifier_coord then -- "P"
-												device_block_scratch.coordinates.x := type_grid'value(
+												device_unit_scratch.coordinates.x := type_grid'value(
 													get_field_from_line(line,2)); -- "3200"
-												device_block_scratch.coordinates.y := type_grid'value(
+												device_unit_scratch.coordinates.y := type_grid'value(
 													get_field_from_line(line,3)); -- "4500"
 
-			--									device_block_scratch.coordinates.main_module := module.name;
-												device_block_scratch.coordinates.path := path_to_submodule;
-												device_block_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
-												device_block_scratch.coordinates.sheet_number := sheet_number_current;
+			--									device_unit_scratch.coordinates.main_module := module.name;
+												device_unit_scratch.coordinates.path := path_to_submodule;
+												device_unit_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+												device_unit_scratch.coordinates.sheet_number := sheet_number_current;
 
-												write_coordinates_of_device_block(device_block_scratch);
+												write_coordinates_of_device_unit(device_unit_scratch);
 											end if;
 
 											-- read component fields 0..2 from lines like:
 											-- 			"F 0 "N701" H 2600 2100 39  0000 C CNN"
 											--			"F 1 "NetChanger" H 2600 2250 60  0001 C CNN"
 											--			"F 2 "bel_netchanger:N_0.2MM" H 2600 2100 60  0001 C CNN"
-											-- Each line represents a text field which goes temporarily into block_text_scratch. 
-											-- Once the line is processed, block_text_scratch is appended the the list of texts of device_block_scratch.
+											-- Each line represents a text field which goes temporarily into unit_text_scratch. 
+											-- Once the line is processed, unit_text_scratch is appended the the list of texts of device_unit_scratch.
 											if get_field_from_line(line,1) = schematic_component_identifier_field then -- "F"
 
 												-- The field id must be mapped to the actual field meaning:
 												case type_schematic_component_field_id'value(get_field_from_line(line,2)) is -- "0..2"
-													when schematic_component_field_id_annotation => block_text_scratch.meaning := annotation; -- "0"
-													when schematic_component_field_id_value => block_text_scratch.meaning := value; -- "1"
-													when schematic_component_field_id_footprint => block_text_scratch.meaning := footprint; -- "2"
-													--CS: when schematic_component_field_id_partcode => block_text_scratch.meaning := partcode;
-													when others => block_text_scratch.meaning := misc;
+													when schematic_component_field_id_annotation => unit_text_scratch.meaning := annotation; -- "0"
+													when schematic_component_field_id_value => unit_text_scratch.meaning := value; -- "1"
+													when schematic_component_field_id_footprint => unit_text_scratch.meaning := footprint; -- "2"
+													--CS: when schematic_component_field_id_partcode => unit_text_scratch.meaning := partcode;
+													when others => unit_text_scratch.meaning := misc;
 												end case;
 												
 												-- read content like "N701" or "NetChanger" from field position 3
-												block_text_scratch.text := type_device_block_text_string.to_bounded_string(strip_quotes(get_field_from_line(line,3)));
+												unit_text_scratch.text := type_device_unit_text_string.to_bounded_string(strip_quotes(get_field_from_line(line,3)));
 
 												-- read orientation like "H" -- type_schematic_field_orientation
 												case type_schematic_field_orientation'value(get_field_from_line(line,4)) is
-													when H => block_text_scratch.orientation := deg_0;
-													when V => block_text_scratch.orientation := deg_90;
+													when H => unit_text_scratch.orientation := deg_0;
+													when V => unit_text_scratch.orientation := deg_90;
 												end case;
 
 												-- read x and y coordinates like 2600 3250
-												block_text_scratch.coordinates.x := type_grid'value(get_field_from_line(line,5));
-												block_text_scratch.coordinates.y := type_grid'value(get_field_from_line(line,6));
+												unit_text_scratch.coordinates.x := type_grid'value(get_field_from_line(line,5));
+												unit_text_scratch.coordinates.y := type_grid'value(get_field_from_line(line,6));
 
 												-- assign further coordinates
-												block_text_scratch.coordinates.path := path_to_submodule;
-												block_text_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
-												block_text_scratch.coordinates.sheet_number := sheet_number_current;
+												unit_text_scratch.coordinates.path := path_to_submodule;
+												unit_text_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+												unit_text_scratch.coordinates.sheet_number := sheet_number_current;
 
 												-- build text attributes (only text size available here, style and width assume default value)
-												block_text_scratch.text_attributes := to_text_attributes(
+												unit_text_scratch.text_attributes := to_text_attributes(
 													size => type_text_size'value(get_field_from_line(line,7)),
 													style => schematic_style_normal,
 													width => 0);
 													
 												-- build text alignment
-												block_text_scratch.visible := to_visible(get_field_from_line(line,8));
-												block_text_scratch.alignment_horizontal := to_alignment_horizontal(get_field_from_line(line,9));
-												block_text_scratch.alignment_vertical := to_alignment_vertical(get_field_from_line(line,10));  
+												unit_text_scratch.visible := to_visible(get_field_from_line(line,8));
+												unit_text_scratch.alignment_horizontal := to_alignment_horizontal(get_field_from_line(line,9));
+												unit_text_scratch.alignment_vertical := to_alignment_vertical(get_field_from_line(line,10));  
 												
-												-- append text block_text_scratch to text list of scratch block.
-												type_list_of_device_block_texts.append(device_block_scratch.text_list,block_text_scratch);
+												-- append text unit_text_scratch to text list of scratch unit.
+												type_list_of_device_unit_texts.append(device_unit_scratch.text_list,unit_text_scratch);
 
 											end if;
 									end if;

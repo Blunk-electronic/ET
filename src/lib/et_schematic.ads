@@ -63,8 +63,8 @@ package et_schematic is
  	port_name_length	: constant natural := 50;
 	package type_port_name is new generic_bounded_length(port_name_length); use type_port_name;
 
-	device_block_name_length : constant natural := 50;
-	package type_device_block_name is new generic_bounded_length(device_block_name_length); use type_device_block_name;
+	device_unit_name_length : constant natural := 50;
+	package type_device_unit_name is new generic_bounded_length(device_unit_name_length); use type_device_unit_name;
 
  	device_name_in_library_length : constant natural := 100;
 	package type_device_name_in_library is new generic_bounded_length(device_name_in_library_length); use type_device_name_in_library;
@@ -198,91 +198,92 @@ package et_schematic is
 
 -- DEVICE
 	
-	-- BLOCK
-	-- A device block is a sub-unit of a schematic device. Ohter CAE tools refer to them as "gate".
-	-- A schematic device contains at least one block.
-	-- Examples of a block: resistor symbol, i/o-bank of an fpga, power supply of an op-amp
+	-- UNIT
+	-- A device unit is a sub-unit of a schematic device. EAGLE refer to them as "gate".
+	-- A schematic device contains at least one unit.
+	-- Examples of a unit: resistor symbol, i/o-bank of an fpga, NAND-gate
 
 	-- outline segments 
-	-- The device block outline is composed of various elements like lines, arcs or cicles.
+	-- The device unit outline is composed of various elements like lines, arcs or cicles.
 	
-	-- Straight lines of a block will be collected in a simple list.
-	type type_device_block_outline_segment_line is record
+	-- Straight lines of a unit will be collected in a simple list.
+	type type_device_unit_outline_segment_line is record
 		coordinates_start : type_coordinates;
 		coordinates_end   : type_coordinates;
 	end record;
-	package type_list_of_device_block_outline_segments_lines is new doubly_linked_lists (
-		element_type => type_device_block_outline_segment_line);
+	package type_list_of_device_unit_outline_segments_lines is new doubly_linked_lists (
+		element_type => type_device_unit_outline_segment_line);
 
-	-- Arcs of a block will be collected in a simple list.
-	type type_device_block_outline_segment_arc is record
+	-- Arcs of a unit will be collected in a simple list.
+	type type_device_unit_outline_segment_arc is record
 		coordinates_start : type_coordinates;
 		coordinates_end   : type_coordinates;
 		coordinates_circumfence : type_coordinates;
 	end record;
-	package type_list_of_device_block_outline_segments_arcs is new doubly_linked_lists (
-		element_type => type_device_block_outline_segment_arc);
+	package type_list_of_device_unit_outline_segments_arcs is new doubly_linked_lists (
+		element_type => type_device_unit_outline_segment_arc);
 
-	-- Circles of a block will be collected in a simple list.
-	type type_device_block_outline_segment_circle is record
+	-- Circles of a unit will be collected in a simple list.
+	type type_device_unit_outline_segment_circle is record
 		coordinates_start : type_coordinates;
 		coordinates_end   : type_coordinates;
 		coordinates_center: type_coordinates;
 	end record;
-	package type_list_of_device_block_outline_segments_circles is new doubly_linked_lists (
-		element_type => type_device_block_outline_segment_circle);
+	package type_list_of_device_unit_outline_segments_circles is new doubly_linked_lists (
+		element_type => type_device_unit_outline_segment_circle);
 
-	-- Text fields of a block will be collected in a simple list.
-	-- Text fields (usually inside) a device block give more information on what the block is supposed for.
+	-- Text fields of a unit will be collected in a simple list.
+	-- Text fields (usually inside) a device unit give more information on what the unit is supposed for.
 	-- Example: BANK_1 , BANK_2, PWR_SUPPLY, CT10, CT2, MCU
-	-- A text field of a block may have 100 characters which seems sufficient for now.
- 	device_block_text_length	: constant natural := 200;
-	package type_device_block_text_string is new generic_bounded_length(device_block_text_length); use type_device_block_text_string;
-	type type_block_text_meaning is ( ANNOTATION, VALUE, FOOTPRINT, MISC); -- CS: partcode, function, ...
-	type type_device_block_text is record
-		meaning			        : type_block_text_meaning;
+	-- A text field of a unit may have 100 characters which seems sufficient for now.
+ 	device_unit_text_length	: constant natural := 200;
+	package type_device_unit_text_string is new generic_bounded_length(device_unit_text_length); use type_device_unit_text_string;
+	type type_unit_text_meaning is ( ANNOTATION, VALUE, FOOTPRINT, MISC); -- CS: partcode, function, ...
+	type type_device_unit_text is record
+		meaning			        : type_unit_text_meaning;
 		coordinates             : type_coordinates;
-        text                    : type_device_block_text_string.bounded_string;
+        text                    : type_device_unit_text_string.bounded_string;
         text_attributes         : type_text_attributes;
         orientation             : type_text_orientation;
         visible                 : boolean;
         alignment_horizontal    : type_text_alignment_horizontal;
         alignment_vertical      : type_text_alignment_vertical;        
 	end record;
-	package type_list_of_device_block_texts is new doubly_linked_lists (
-		element_type => type_device_block_text);
+	package type_list_of_device_unit_texts is new doubly_linked_lists (
+		element_type => type_device_unit_text);
 
-	-- Ports of a block will be collected in a map.
-	package type_list_of_device_block_ports is new ordered_maps ( 
+	-- Ports of a unit will be collected in a map.
+	package type_list_of_device_unit_ports is new ordered_maps ( 
 		key_type => type_port_name.bounded_string,
 		element_type => type_port);
 
-	-- A block has a name, coordinates, consists of segment lists , ports and texts.
-	type type_device_block is record
-		name					: type_device_block_name.bounded_string;
+	-- A unit has a name, coordinates, consists of segment lists , ports and texts.
+	-- EAGLE refers to units as "gates". KiCad refers to them as "units":
+	type type_device_unit is record
+		name					: type_device_unit_name.bounded_string;
 		coordinates				: type_coordinates;
-		outline_segments_lines	: type_list_of_device_block_outline_segments_lines.list;
-		outline_segments_arcs 	: type_list_of_device_block_outline_segments_arcs.list;
-		outline_segments_circles: type_list_of_device_block_outline_segments_circles.list;
-		port_list 				: type_list_of_device_block_ports.map;
-        text_list				: type_list_of_device_block_texts.list;
+		outline_segments_lines	: type_list_of_device_unit_outline_segments_lines.list;
+		outline_segments_arcs 	: type_list_of_device_unit_outline_segments_arcs.list;
+		outline_segments_circles: type_list_of_device_unit_outline_segments_circles.list;
+		port_list 				: type_list_of_device_unit_ports.map;
+        text_list				: type_list_of_device_unit_texts.list;
         -- CS: timestamp
 	end record;
 
 	-- Blocks of a device will be collected in a map.
-	package type_device_block_list is new ordered_maps (
-		key_type => type_device_block_name.bounded_string, -- the key to a device block is its own name
-		element_type => type_device_block);
+	package type_device_unit_list is new ordered_maps (
+		key_type => type_device_unit_name.bounded_string, -- the key to a device unit is its own name
+		element_type => type_device_unit);
 
 	-- DEVICE	
 	-- A device has a physical appearance, a generic name in the library, an annotation in the schematic,
-	-- a list of blocks, ...
+	-- a list of units, ...
 	type type_device_physical_appearance is ( virtual, footprint); -- CS: cable , wire ?
 	type type_device is record
 		physical_appearance : type_device_physical_appearance := virtual; -- sometimes there is just a schematic
 		name_in_library 	: type_device_name_in_library.bounded_string; -- example: "TRANSISTOR_PNP"
 		-- CS: library file name ?
-		block_list 			: type_device_block_list.map;
+		unit_list 			: type_device_unit_list.map;
 -- 		case physical_appearance is
 -- 			when footprint =>
 -- 				null; 		-- CS: port-pin map ?
@@ -472,7 +473,7 @@ package et_schematic is
 	type type_title_block_text is record -- CS: from kicad $descr
 		meaning			: type_title_block_text_meaning;
  		coordinates		: type_coordinates_basic;
-		text			: type_device_block_text_string.bounded_string;
+		text			: type_title_block_text_string.bounded_string;
  		size			: type_text_size;
  		orientation		: type_text_orientation;
 		-- CS: font, ...

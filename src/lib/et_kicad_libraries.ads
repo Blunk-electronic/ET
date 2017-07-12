@@ -48,21 +48,21 @@ package et_kicad_libraries is
 	-- The kicad schematic editor refers to schematic elements as "components"
 	-- (EAGLE refers to them as "symbols").
 	-- Components are composites of lines, arcs, circles, texts, ports:
-	type type_component is record
+-- 	type type_component is record
 -- 		outline_segments_lines	: type_list_of_device_block_outline_segments_lines.list;
 -- 		outline_segments_arcs 	: type_list_of_device_block_outline_segments_arcs.list;
 -- 		outline_segments_circles: type_list_of_device_block_outline_segments_circles.list;
-		port_list 				: type_list_of_device_block_ports.map;
+-- 		port_list 				: type_list_of_device_block_ports.map;
 --         text_list				: type_list_of_device_block_texts.list;
-	end record;
+-- 	end record;
 
 	-- Components have a name and are stored in an ordered map.
 	-- Within the map they are accessed by a key type_component_name (something like "CAPACITOR").
-	component_name_length_max : constant positive := 100; -- CS: we restrict the part name to 100 characters
-	package type_component_name is new generic_bounded_length(component_name_length_max); use type_component_name;
-	package type_list_of_components is new ordered_maps (
-		key_type => type_component_name.bounded_string,
-		element_type => type_component);
+-- 	component_name_length_max : constant positive := 100; -- CS: we restrict the part name to 100 characters
+-- 	package type_component_name is new generic_bounded_length(component_name_length_max); use type_component_name;
+-- 	package type_list_of_components is new ordered_maps (
+-- 		key_type => type_component_name.bounded_string,
+-- 		element_type => type_component);
 
 	procedure a;
 	
