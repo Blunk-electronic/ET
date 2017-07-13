@@ -113,14 +113,74 @@ package et_general is
 
 
 	
-    -- PAPER SIZES
+-- PAPER SIZES
     type type_paper_size is ( A0, A1, A2, A4 ); -- CS: others
     paper_size_default : type_paper_size := A4;
-    
+
+
+-- ORIENTATION	
+	-- Objects may be placed at a certain angle:
+	type type_orientation is ( deg_0, deg_90, deg_180, deg_270); 
+	-- other angles are not reasonable (footprints and layout have an own type for orientation)
+	
+-- DEVICE
+	device_prefix_length_max : constant natural := 3; -- CS: there is no reason to work with longer prefixes.
+	package type_device_prefix is new generic_bounded_length(device_prefix_length_max); use type_device_prefix;
+	-- A device has a physical appearance, a generic name in the library, an annotation in the schematic,
+	-- a list of units, ...
+	type type_device_physical_appearance is ( virtual, footprint); -- CS: symbol, cable , wire ?
+	type type_device is tagged record
+		physical_appearance : type_device_physical_appearance := virtual;
+		prefix				: type_device_prefix.bounded_string; -- together with an ID we get something like "IC702"
+-- 		name_in_library 	: type_device_name_in_library.bounded_string; -- example: "TRANSISTOR_PNP"
+		-- CS: library file name ?
+-- 		unit_list 			: type_device_unit_list.map;
+-- 		case physical_appearance is
+-- 			when footprint =>
+-- 				null; 		-- CS: port-pin map ?
+-- 			when others => 
+-- 				null;
+		-- 		end case;
+
+	end record;
+
+	
+-- TEXTS
+    -- CS: currently we use unit mil which is old fashionated
+    type type_text_size is range 1..1000; -- CS unit assumed is MIL !!!
+	type type_text_line_width is range 0..100; -- CS unit assumed is MIL !!!
+    type type_text_style is ( default, italic, bold, bold_italic);
+    type type_text_attributes is record
+        --font    : type_text_font; -- CS
+        size    : type_text_size;
+        style   : type_text_style;
+        width   : type_text_line_width;
+    end record;
+
+    -- Texts may be placed at 0 or 90 degree only.
+    subtype type_text_orientation is type_orientation range deg_0..deg_90; 
+
+    type type_text_alignment_horizontal is ( left, center , right);
+    type type_text_alignment_vertical is ( top, center , bottom);    
+
+	-- Text fields:
+	-- A text field may have 200 characters which seems sufficient for now.
+ 	text_field_length_max : constant natural := 200;
+	package type_text_field_string is new generic_bounded_length(text_field_length_max); use type_text_field_string;
+	type type_text_field_meaning is ( ANNOTATION, VALUE, FOOTPRINT, MISC); -- CS: note, partcode, function, ...
+	type type_text_field is tagged record
+		meaning			        : type_text_field_meaning;
+        text                    : type_text_field_string.bounded_string;
+        text_attributes         : type_text_attributes;
+        orientation             : type_text_orientation;
+        visible                 : boolean;
+        alignment_horizontal    : type_text_alignment_horizontal;
+        alignment_vertical      : type_text_alignment_vertical;        
+	end record;
 
 
 	
-	-- GENERICS
+-- GENERICS
 	
 	generic
 		max : positive;

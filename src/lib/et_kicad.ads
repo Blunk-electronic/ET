@@ -40,7 +40,7 @@ with ada.containers.ordered_maps;
 with et_general;				use et_general;
 with et_schematic;				use et_schematic;
 with et_import;		            use et_import;
-with et_kicad_libraries;		use et_kicad_libraries;
+--with et_kicad_libraries;		use et_kicad_libraries;
 
 package et_kicad is
 

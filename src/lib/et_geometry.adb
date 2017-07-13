@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                    SYSTEM ET GEOMETRY                                    --
+--                          SYSTEM ET GEOMETRY                              --
 --                                                                          --
 --                                 ET                                       --
 --                                                                          --
@@ -34,6 +34,8 @@ with ada.text_io;				use ada.text_io;
 -- with ada.strings.bounded; 	use ada.strings.bounded;
 --with ada.numerics.real_arrays;  use ada.numerics.real_arrays;
 with et_schematic;				use et_schematic;
+with et_general;				use et_general;
+with et_libraries;				use et_libraries;
 with ada.numerics.generic_elementary_functions;
 -- with ada.containers; 		use ada.containers;
 -- with ada.containers.vectors;

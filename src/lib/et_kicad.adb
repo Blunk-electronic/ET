@@ -42,6 +42,7 @@ with ada.numerics.real_arrays;  use ada.numerics.real_arrays;
 with ada.directories;			use ada.directories;
 with ada.exceptions; 			use ada.exceptions;
 
+with et_libraries;				use et_libraries;
 with et_schematic;				use et_schematic;
 
 with et_geometry;				use et_geometry;
@@ -326,7 +327,7 @@ package body et_kicad is
             -- When reading notes, they are held temporarily in scratch variables,
             -- then added to the list of notes.
             note_entered : boolean := false;
-            note_scratch : type_note;
+            note_scratch : et_schematic.type_text_field;
 			
 			function to_orientation (text_in : in string) return type_orientation is
 			-- Converts the kicad notation of a label orientation to degrees.
@@ -533,14 +534,14 @@ package body et_kicad is
 					identation => 3);
 			end write_coordinates_of_junction;			
 			
-			procedure write_coordinates_of_device_unit (unit : in type_device_unit) is
+			procedure write_coordinates_of_device_unit (unit : in et_schematic.type_unit) is
 			begin
 				write_message (
 					file_handle => et_import.report_handle,
 					text => " position (x/y/sheet) " & 
-						trim(type_grid'image(unit.coordinates.x),left) & "/" &
-						trim(type_grid'image(unit.coordinates.y),left) & "/" &
-						trim(positive'image(unit.coordinates.sheet_number),left)
+						trim(type_grid'image(unit.position.x),left) & "/" &
+						trim(type_grid'image(unit.position.y),left) & "/" &
+						trim( positive'image(unit.position.sheet_number),left)
 						);
 			end write_coordinates_of_device_unit;			
 			
@@ -1201,21 +1202,22 @@ package body et_kicad is
             
 			-- This is relevant for reading devices:
 			device_entered : boolean := false; -- indicates that a device is being read
-			device_scratch : type_device; -- temporarily used before appending a device list of the module
-			device_unit_scratch : type_device_unit; -- temporarily used before appending a unit to a device
+			device_scratch : et_schematic.type_device; -- temporarily used before appending a device list of the module
+			device_unit_scratch : et_schematic.type_unit; -- temporarily used before appending a unit to a device
 			device_cursor_scratch : type_device_list_of_module.cursor; -- points to a device of the module
 			device_inserted : boolean; -- used when a device is being inserted into the device list of a module
-			procedure insert_unit ( key : in type_device_name.bounded_string; device : in out type_device ) is 
+			
+			procedure insert_unit ( key : in type_device_name.bounded_string; device : in out et_schematic.type_device ) is 
 			begin
 				--type_device_unit_list.append(device.unit_list,device_unit_scratch);
-				type_device_unit_list.insert(
-					container => device.unit_list, 
-					new_item => device_unit_scratch,
-					key => device_unit_scratch.name);  -- the key to a device unit is its own name 
+				et_schematic.type_units.insert(
+					container => device.units, -- the unit list of the device
+					new_item => device_unit_scratch, -- the unit itself
+					key => device_unit_scratch.name); -- the unit name
 			end insert_unit;
 
 			-- temporarily we store fields here:
-			unit_field_scratch : type_device_unit_field;
+			unit_field_scratch : et_schematic.type_text_field;
 
 -- 			procedure fetch_components_from_library is
 			-- This procedure looks up the sheet_header and reads the library names stored there.
@@ -1701,10 +1703,10 @@ package body et_kicad is
 
 										-- get note text from a line like "hello\ntest". NOTE "\n" represents a line break
 										-- CS: store lines in a list of lines instead ?
-										note_scratch.text := to_unbounded_string(get_field_from_line(line,1));
+										note_scratch.text := type_text_field_string.to_bounded_string(get_field_from_line(line,1));
 
 										-- the notes are to be collected in the list of notes
-										type_list_of_notes.append(module.notes,note_scratch);
+										et_schematic.type_text_fields.append(module.notes,note_scratch);
 									end if;
 									
 									-- READ COMPONENTS
@@ -1723,7 +1725,7 @@ package body et_kicad is
 											type_device_list_of_module.update_element(module.devices,device_cursor_scratch, insert_unit'access);
 
 											-- clean up: the list of texts collected in device_unit_scratch.text_list must be erased for next spin.
-											type_list_of_device_unit_fields.clear(device_unit_scratch.fields);
+											et_schematic.type_text_fields.clear(device_unit_scratch.fields);
 										else
 											--put_line("line ->" & to_string(line));
 											-- READ COMPONENT SECTION CONTENT
@@ -1785,15 +1787,15 @@ package body et_kicad is
 											-- The unit coordinates is more than just x/y !
 											-- The write the unit coordinates in the import report.
 											if get_field_from_line(line,1) = schematic_component_identifier_coord then -- "P"
-												device_unit_scratch.coordinates.x := type_grid'value(
+												device_unit_scratch.position.x := type_grid'value(
 													get_field_from_line(line,2)); -- "3200"
-												device_unit_scratch.coordinates.y := type_grid'value(
+												device_unit_scratch.position.y := type_grid'value(
 													get_field_from_line(line,3)); -- "4500"
 
 			--									device_unit_scratch.coordinates.main_module := module.name;
-												device_unit_scratch.coordinates.path := path_to_submodule;
-												device_unit_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
-												device_unit_scratch.coordinates.sheet_number := sheet_number_current;
+												device_unit_scratch.position.path := path_to_submodule;
+												device_unit_scratch.position.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+												device_unit_scratch.position.sheet_number := sheet_number_current;
 
 												write_coordinates_of_device_unit(device_unit_scratch);
 											end if;
@@ -1816,7 +1818,7 @@ package body et_kicad is
 												end case;
 												
 												-- read content like "N701" or "NetChanger" from field position 3
-												unit_field_scratch.text := type_device_unit_field_string.to_bounded_string(strip_quotes(get_field_from_line(line,3)));
+												unit_field_scratch.text := type_text_field_string.to_bounded_string(strip_quotes(get_field_from_line(line,3)));
 
 												-- read orientation like "H" -- type_schematic_field_orientation
 												case type_schematic_field_orientation'value(get_field_from_line(line,4)) is
@@ -1845,7 +1847,7 @@ package body et_kicad is
 												unit_field_scratch.alignment_vertical := to_alignment_vertical(get_field_from_line(line,10));  
 												
 												-- append text unit_field_scratch to text list of scratch unit.
-												type_list_of_device_unit_fields.append(device_unit_scratch.fields,unit_field_scratch);
+												et_schematic.type_text_fields.append(device_unit_scratch.fields,unit_field_scratch);
 
 											end if;
 									end if;

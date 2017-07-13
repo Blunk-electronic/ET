@@ -39,6 +39,8 @@ with ada.containers.ordered_maps;
 with ada.containers.ordered_sets;
 
 with et_general;                use et_general;
+with et_libraries;
+
 package et_schematic is
 
 	procedure a; -- CS: dummy, remove it !
@@ -49,30 +51,9 @@ package et_schematic is
 
 	-- The name of a device is something like "IC403". Other CAE tools refer to it as "reference".
 	-- It is composed of a prefix like "IC" and the number like "403":
-	device_prefix_length : constant natural := 3; -- CS: there is no reason to work with longer prefixes.
-	package type_device_prefix is new generic_bounded_length(device_prefix_length); use type_device_prefix;
-	device_name_length	: constant natural := device_prefix_length + 100 ;
-	package type_device_name is new generic_bounded_length(device_name_length); use type_device_name;
-
--- CS: could be of interest some day:
--- 	type type_device_name2 is record
--- 		prefix : type_device_prefix.bounded_string;
--- 		id : positive;
--- 	end record;
+	device_name_length_max	: constant natural := device_prefix_length_max + 100 ;
+	package type_device_name is new generic_bounded_length(device_name_length_max); use type_device_name;
 	
- 	port_name_length	: constant natural := 50;
-	package type_port_name is new generic_bounded_length(port_name_length); use type_port_name;
-
-	device_unit_name_length : constant natural := 50;
-	package type_device_unit_name is new generic_bounded_length(device_unit_name_length); use type_device_unit_name;
-
- 	device_name_in_library_length : constant natural := 100;
-	package type_device_name_in_library is new generic_bounded_length(device_name_in_library_length); use type_device_name_in_library;
-	
-	-- The name of a pin may have 10 characters which seems sufficient for now.
- 	pin_name_length	: constant natural := 10;
-	package type_pin_name is new generic_bounded_length(pin_name_length); use type_pin_name;
-
 	-- The name of a net may have 100 characters which seems sufficient for now.
  	net_name_length	: constant natural := 100;
 	package type_net_name is new generic_bounded_length(net_name_length); use type_net_name;
@@ -97,200 +78,61 @@ package et_schematic is
     -- CS: type_timestamp 
     
 -- COORDINATES
-	-- Initially a library level, there is only x an y coordinates. Later the name of the submodule
-	-- and the sheet are assigned. CS: set defaults
-	--type type_grid is new natural; -- CS: needs further refinement
-	type type_grid_extended is digits 11 range -100000000.00 .. 100000000.00;	
-	subtype type_grid is type_grid_extended range -100000.00 .. 100000.00; -- CS: unit assumed is MIL !!!
-	-- CS: negative schematic coordinates should be forbidden
-	-- type type_grid is digits 7 range 0.00 .. 100000.00; -- CS: unit assumed is MIL !!!	
-
-    -- The location of a submodule within the design hierarchy is reflected by
-    -- a list of submodule names like motor_driver.counter.supply
-    -- The first item in this list is the name of the top level module.
-    package type_path_to_submodule is new doubly_linked_lists (
-        element_type => type_submodule_name.bounded_string);
-    
-    -- In general every object has x,y coordinates. Further components will
-    -- extend this type later.
-	type type_coordinates_basic is tagged record
-		x,y				: type_grid;
-		-- CS: layer ?		
-	end record;
    
 	-- Within a schematic every object can be located by the name of the:
     -- - path to the submodule (first item in path is the top level module)
 	-- - submodule name
 	-- - sheet number (NOTE: The sheet numbering restarts in a submodule)
 	-- - basic coordinates x/y
-	type type_coordinates is new type_coordinates_basic with record
+
+    -- The location of a submodule within the design hierarchy is reflected by
+    -- a list of submodule names like motor_driver.counter.supply
+    -- The first item in this list is the name of the top level module.
+    package type_path_to_submodule is new doubly_linked_lists (
+        element_type => type_submodule_name.bounded_string);
+	
+	type type_coordinates is new et_libraries.type_coordinates_basic with record
         path            : type_path_to_submodule.list;
 		module_name		: type_submodule_name.bounded_string;
 		sheet_number	: positive;
 	end record;
 
-	
--- ORIENTATION	
-	-- Objects may be placed at a certain angle:
-	type type_orientation is ( deg_0, deg_90, deg_180, deg_270); -- other angles are not reasonable
 
--- TEXTS
-    -- CS: currently we use unit mil which is old fashionated
-    type type_text_size is range 1..1000; -- CS unit assumed is MIL !!!
-	type type_text_line_width is range 0..100; -- CS unit assumed is MIL !!!
-    type type_text_style is ( default, italic, bold, bold_italic);
-    type type_text_attributes is record
-        --font    : type_text_font; -- CS
-        size    : type_text_size;
-        style   : type_text_style;
-        width   : type_text_line_width;
-    end record;
+-- TEXT FIELD
 
-    -- Texts may be placed at 0 or 90 degree only.
-    subtype type_text_orientation is type_orientation range deg_0..deg_90; 
-
-    type type_text_alignment_horizontal is ( left, center , right);
-    type type_text_alignment_vertical is ( top, center , bottom);    
-
-
--- NOTES
-    type type_note is record
-        coordinates     : type_coordinates;    
-        orientation     : type_orientation;        
-        text            : unbounded_string;
-        text_attributes : type_text_attributes;
-    end record;
-	package type_list_of_notes is new vectors (
-		index_type => positive, -- every note has an id
-		element_type => type_note);
-    
-
--- PORT
-	-- A port is something where a net can be attached at.
-	-- The name of a port represents the function of the port like (A14 or RST_N)
-
-	-- The port has an electrical direction:
-	type type_port_direction is (
-		DIGIAL_IN,
-		DIGIAL_OUT,
-		ANALOG_IN,
-		ANALOG_OUT,
-		PASSIVE, 		-- no explicit direction
-		NOT_CONNECTED,
-		POWER_OUT, 		-- a power source
-		POWER_IN		-- a power sink
-		);
-
-	-- Initially, at the lowest level (usually library level), a port has a name, direction,
-	-- coordinates, orientation, flags for making port and pin name visible. 
-	-- Later, other values are assigned like pin name. CS: set defaults
-	type type_port is record
-		name              : type_port_name.bounded_string; -- example: "CLOCK"
-		direction         : type_port_direction; -- example: "passive"
-		coordinates       : type_coordinates;
-		orientation       : type_orientation;
-		display_port_name : boolean := true;
-		display_pin_name  : boolean := true;
-		pin               : type_pin_name.bounded_string; -- example: "144" or in case of a BGA package "E14"
- 		--device            : type_device_name.bounded_string; -- example: "IC501" CS: wrong ?
+	type type_text_field is new et_general.type_text_field with record
+		coordinates             : type_coordinates;
 	end record;
+	package type_text_fields is new doubly_linked_lists (
+		element_type => type_text_field);
 
-
+	
+	
 -- DEVICE
 	
-	-- UNIT
-	-- A device unit is a sub-unit of a schematic device. EAGLE refer to them as "gate".
-	-- A schematic device contains at least one unit.
-	-- Examples of a unit: resistor symbol, i/o-bank of an fpga, NAND-gate
+	type type_unit is record
+		name			: et_libraries.type_device_unit_name.bounded_string;
+		position		: type_coordinates;
+		fields			: type_text_fields.list;	
+	end record;
 
-	-- outline segments 
-	-- The device unit outline is composed of various elements like lines, arcs or cicles.
+	-- Units of a device will be collected in a map.
+	package type_units is new ordered_maps (
+		key_type => et_libraries.type_device_unit_name.bounded_string,
+		"<" => et_libraries.type_device_unit_name."<",
+		element_type => type_unit);
 	
-	-- Straight lines of a unit will be collected in a simple list.
-	type type_device_unit_outline_segment_line is record
-		coordinates_start : type_coordinates;
-		coordinates_end   : type_coordinates;
-	end record;
-	package type_list_of_device_unit_outline_segments_lines is new doubly_linked_lists (
-		element_type => type_device_unit_outline_segment_line);
-
-	-- Arcs of a unit will be collected in a simple list.
-	type type_device_unit_outline_segment_arc is record
-		coordinates_start : type_coordinates;
-		coordinates_end   : type_coordinates;
-		coordinates_circumfence : type_coordinates;
-	end record;
-	package type_list_of_device_unit_outline_segments_arcs is new doubly_linked_lists (
-		element_type => type_device_unit_outline_segment_arc);
-
-	-- Circles of a unit will be collected in a simple list.
-	type type_device_unit_outline_segment_circle is record
-		coordinates_start : type_coordinates;
-		coordinates_end   : type_coordinates;
-		coordinates_center: type_coordinates;
-	end record;
-	package type_list_of_device_unit_outline_segments_circles is new doubly_linked_lists (
-		element_type => type_device_unit_outline_segment_circle);
-
-	-- Text fields of a unit will be collected in a simple list.
-	-- EAGLE refers to them as "attributes".
-	-- A text field of a unit may have 100 characters which seems sufficient for now.
- 	device_unit_field_length	: constant natural := 200;
-	package type_device_unit_field_string is new generic_bounded_length(device_unit_field_length); use type_device_unit_field_string;
-	type type_unit_field_meaning is ( ANNOTATION, VALUE, FOOTPRINT, MISC); -- CS: partcode, function, ...
-	type type_device_unit_field is record
-		meaning			        : type_unit_field_meaning;
-		coordinates             : type_coordinates;
-        text                    : type_device_unit_field_string.bounded_string;
-        text_attributes         : type_text_attributes;
-        orientation             : type_text_orientation;
-        visible                 : boolean;
-        alignment_horizontal    : type_text_alignment_horizontal;
-        alignment_vertical      : type_text_alignment_vertical;        
-	end record;
-	package type_list_of_device_unit_fields is new doubly_linked_lists (
-		element_type => type_device_unit_field);
-
-	-- Ports of a unit will be collected in a map.
-	package type_list_of_device_unit_ports is new ordered_maps ( 
-		key_type => type_port_name.bounded_string,
-		element_type => type_port);
-
-	-- A unit has a name, coordinates, consists of segment lists , ports and fields.
-	-- EAGLE refers to units as "gates". KiCad refers to them as "units":
-	type type_device_unit is record
-		name					: type_device_unit_name.bounded_string; -- like 1,2,A,B or PWR
-		coordinates				: type_coordinates;
-		outline_segments_lines	: type_list_of_device_unit_outline_segments_lines.list;
-		outline_segments_arcs 	: type_list_of_device_unit_outline_segments_arcs.list;
-		outline_segments_circles: type_list_of_device_unit_outline_segments_circles.list;
-		port_list 				: type_list_of_device_unit_ports.map;
-        fields					: type_list_of_device_unit_fields.list;
-        -- CS: timestamp
+	type type_device is new et_general.type_device with record
+		id				: positive; -- together with the prefix we get something like "IC702"
+		name_in_library : et_libraries.type_device_name_in_library.bounded_string; -- example: "TRANSISTOR_PNP"
+		units			: type_units.map;
 	end record;
 
-	-- Blocks of a device will be collected in a map.
-	package type_device_unit_list is new ordered_maps (
-		key_type => type_device_unit_name.bounded_string, -- the key to a device unit is its own name
-		element_type => type_device_unit);
 
-	-- DEVICE	
-	-- A device has a physical appearance, a generic name in the library, an annotation in the schematic,
-	-- a list of units, ...
-	type type_device_physical_appearance is ( virtual, footprint); -- CS: cable , wire ?
-	type type_device is record
-		physical_appearance : type_device_physical_appearance := virtual; -- sometimes there is just a schematic
-		name_in_library 	: type_device_name_in_library.bounded_string; -- example: "TRANSISTOR_PNP"
-		-- CS: library file name ?
-		unit_list 			: type_device_unit_list.map;
--- 		case physical_appearance is
--- 			when footprint =>
--- 				null; 		-- CS: port-pin map ?
--- 			when others => 
--- 				null;
-		-- 		end case;
 
-	end record;
+
+
+
 
 
 
@@ -358,9 +200,10 @@ package et_schematic is
 	type type_scope_of_net is  ( local, hierarchic, global );
 
 	-- A list of type_port forms a port list of a net.
+	use et_libraries;
 	package type_port_list_of_net is new vectors ( 
 		index_type => positive, -- every pin of a net has an id
-		element_type => type_port);
+		element_type => et_libraries.type_port);
 
 	-- A net junction is where segments can be connected with each other.
 	type type_net_junction is tagged record
@@ -548,7 +391,7 @@ package et_schematic is
         submodules  : type_list_of_gui_submodules.vector;
         frames      : type_list_of_frames.vector;
         title_blocks: type_list_of_title_blocks.vector;
-        notes       : type_list_of_notes.vector;
+        notes       : type_text_fields.list;
         -- CS: images
 	end record;
 
