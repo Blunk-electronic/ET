@@ -33,14 +33,15 @@
 with ada.text_io;				use ada.text_io;
 -- with ada.strings.bounded; 	use ada.strings.bounded;
 --with ada.numerics.real_arrays;  use ada.numerics.real_arrays;
-with et_schematic;				use et_schematic;
+--with et_schematic;				use et_schematic;
 with et_general;				use et_general;
-with et_libraries;				use et_libraries;
+--with et_libraries;				use et_libraries;
 with ada.numerics.generic_elementary_functions;
 -- with ada.containers; 		use ada.containers;
 -- with ada.containers.vectors;
 
 package body et_geometry is
+	
 	-- Computes the shortest distance (perpendicular) of a given point from the given line. If the point outside the
 	-- range of the x coordinate, the corresponding flag in the return value is set.
 	function distance_of_point_from_line (

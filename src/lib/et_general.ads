@@ -112,10 +112,24 @@ package et_general is
 		element_type => type_library_full_name.bounded_string);
 
 
+-- GRID AND COORDINATES
+	type type_grid_extended is digits 11 range -100000000.00 .. 100000000.00;	
+	subtype type_grid is type_grid_extended range -100000.00 .. 100000.00; -- CS: unit assumed is MIL !!!
+	-- CS: negative schematic coordinates should be forbidden
+	-- type type_grid is digits 7 range 0.00 .. 100000.00; -- CS: unit assumed is MIL !!!	
+
+    -- In general every object has at least x,y coordinates.
+	type type_coordinates is tagged record
+		x,y				: type_grid;
+	end record;
+
+	
 	
 -- PAPER SIZES
     type type_paper_size is ( A0, A1, A2, A4 ); -- CS: others
     paper_size_default : type_paper_size := A4;
+
+
 
 
 -- ORIENTATION	

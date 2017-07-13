@@ -58,19 +58,10 @@ package et_libraries is
 
 
 -- COORDINATES
-	-- Initially a library level, there is only x an y coordinates. Later the name of the submodule
-	-- and the sheet are assigned. CS: set defaults
-	--type type_grid is new natural; -- CS: needs further refinement
-	type type_grid_extended is digits 11 range -100000000.00 .. 100000000.00;	
-	subtype type_grid is type_grid_extended range -100000.00 .. 100000.00; -- CS: unit assumed is MIL !!!
-	-- CS: negative schematic coordinates should be forbidden
-	-- type type_grid is digits 7 range 0.00 .. 100000.00; -- CS: unit assumed is MIL !!!	
+	subtype type_grid is et_general.type_grid range -1000.00 .. 1000.00; -- CS: unit assumed is MIL !!!
 
-    -- In general every object has x,y coordinates. Further components will
-    -- extend this type later.
-	type type_coordinates_basic is tagged record
+	type type_coordinates is record
 		x,y				: type_grid;
-		-- CS: layer ?		
 	end record;
 
 	
@@ -96,7 +87,7 @@ package et_libraries is
 	type type_port is record
 		name              : type_port_name.bounded_string; -- example: "CLOCK"
 		direction         : type_port_direction; -- example: "passive"
-		coordinates       : type_coordinates_basic;
+		coordinates       : type_coordinates;
 		orientation       : type_orientation;
 		display_port_name : boolean := true;
 		display_pin_name  : boolean := true;
@@ -118,26 +109,26 @@ package et_libraries is
 	
 	-- Straight lines of a unit will be collected in a simple list.
 	type type_device_unit_outline_segment_line is record
-		coordinates_start : type_coordinates_basic;
-		coordinates_end   : type_coordinates_basic;
+		coordinates_start : type_coordinates;
+		coordinates_end   : type_coordinates;
 	end record;
 	package type_list_of_device_unit_outline_segments_lines is new doubly_linked_lists (
 		element_type => type_device_unit_outline_segment_line);
 
 	-- Arcs of a unit will be collected in a simple list.
 	type type_device_unit_outline_segment_arc is record
-		coordinates_start		: type_coordinates_basic;
-		coordinates_end			: type_coordinates_basic;
-		coordinates_circumfence	: type_coordinates_basic;
+		coordinates_start		: type_coordinates;
+		coordinates_end			: type_coordinates;
+		coordinates_circumfence	: type_coordinates;
 	end record;
 	package type_list_of_device_unit_outline_segments_arcs is new doubly_linked_lists (
 		element_type => type_device_unit_outline_segment_arc);
 
 	-- Circles of a unit will be collected in a simple list.
 	type type_device_unit_outline_segment_circle is record
-		coordinates_start : type_coordinates_basic;
-		coordinates_end   : type_coordinates_basic;
-		coordinates_center: type_coordinates_basic;
+		coordinates_start : type_coordinates;
+		coordinates_end   : type_coordinates;
+		coordinates_center: type_coordinates;
 	end record;
 	package type_list_of_device_unit_outline_segments_circles is new doubly_linked_lists (
 		element_type => type_device_unit_outline_segment_circle);
@@ -149,7 +140,7 @@ package et_libraries is
 
 	-- Text fields in the library are can be regarded as attributes.
 	type type_text_field is new et_general.type_text_field with record
-		coordinates             : type_coordinates_basic;
+		coordinates             : type_coordinates;
 	end record;
 	package type_text_fields is new doubly_linked_lists (
 		element_type => type_text_field);

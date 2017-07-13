@@ -32,9 +32,9 @@
 
 -- with ada.strings.bounded; 	use ada.strings.bounded;
 --with ada.numerics.real_arrays;  use ada.numerics.real_arrays;
-with et_schematic;				use et_schematic;
+--with et_schematic;				use et_schematic;
 with et_general;				use et_general;
-with et_libraries;				use et_libraries;
+--with et_libraries;				use et_libraries;
 -- with ada.containers; 		use ada.containers;
 -- with ada.containers.vectors;
 
@@ -47,7 +47,8 @@ package et_geometry is
 
 	type type_line_range is ( inside_end_points, with_end_points, beyond_end_points);
 	
-	-- Computes the shortest distance (perpendicular) of a given point from the given line. If the point outside the
+	-- Computes the shortest distance (perpendicular) of a given point from the given line.
+	-- If the point is outside the
 	-- range of the x coordinate, the corresponding flag in the return value is set.
 	function distance_of_point_from_line (
 		point, line_start, line_end: in type_coordinates;

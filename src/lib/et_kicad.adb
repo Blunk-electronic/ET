@@ -461,16 +461,20 @@ package body et_kicad is
 
 			function junction_sits_on_segment(junction : in type_net_junction; segment : in type_wild_net_segment) return boolean is
 			-- Returns true if the given junction sits on the given net segment.
-				point 		: type_coordinates := junction.coordinates;
-				line_start 	: type_coordinates := segment.coordinates_start;
-				line_end 	: type_coordinates := segment.coordinates_end;
-				zero 		: constant type_grid := 0.0;
+				point 		: et_schematic.type_coordinates := junction.coordinates;
+				line_start 	: et_schematic.type_coordinates := segment.coordinates_start;
+				line_end 	: et_schematic.type_coordinates := segment.coordinates_end;
+				zero 		: constant et_general.type_grid := 0.0;
 				sits_on_segment : boolean := false;
 				d : type_distance_point_from_line;
 			begin
 				-- calculate the shortes distance of point from line.
-				d := distance_of_point_from_line (point => point, line_start => line_start, line_end => line_end,
-					line_range => inside_end_points);
+				d := distance_of_point_from_line (
+					point 		=> et_general.type_coordinates(point),
+					line_start	=> et_general.type_coordinates(line_start),
+					line_end	=> et_general.type_coordinates(line_end),
+					line_range	=> inside_end_points);
+				
 				if (not d.out_of_range) and d.distance = zero then
  					sits_on_segment := true;
  				end if;
@@ -501,37 +505,66 @@ package body et_kicad is
 						-- CS: directon, global, hierarchic
 				end case;
 
-				put_line(et_import.report_handle, "'" & type_net_name.to_string(label.text) & "' at position (x/y/sheet)" &
-						type_grid'image(label.coordinates.x) & "/" & trim(type_grid'image(label.coordinates.y),left) & "/" &
-						trim(positive'image(label.coordinates.sheet_number),left)
-						);
+-- 				put_line(et_import.report_handle, "'" & type_net_name.to_string(label.text) & "' at position (x/y/sheet)" &
+-- 						type_grid'image(label.coordinates.x) & "/" & trim(type_grid'image(label.coordinates.y),left) & "/" &
+-- 						trim(positive'image(label.coordinates.sheet_number),left)
+-- 						);
+
+				put_line("'" & type_net_name.to_string(label.text) & "' at position (x/y/sheet)" 
+					& et_general.type_grid'image(label.coordinates.x) 
+					& "/" 
+					& trim(et_general.type_grid'image(label.coordinates.y),left) 
+					& "/" 
+					& trim(positive'image(label.coordinates.sheet_number),left)
+					);
+
 			end write_coordinates_of_label;
 			
 			procedure write_coordinates_of_segment (segment : in type_net_segment) is
 			begin
-				write_message(
-					file_handle => et_import.report_handle,
-					text => "start " & 
-						trim (type_grid'image( segment.coordinates_start.x),left) & "/" &
-						trim (type_grid'image( segment.coordinates_start.y),left) &
-						" end " &
-						trim (type_grid'image( segment.coordinates_end.x),left) & "/" &
-						trim (type_grid'image( segment.coordinates_end.y),left),
-					identation => 4);
-					
+-- 				write_message(
+-- 					file_handle => et_import.report_handle,
+-- 					text => "start " & 
+-- 						trim (type_grid'image( segment.coordinates_start.x),left) & "/" &
+-- 						trim (type_grid'image( segment.coordinates_start.y),left) &
+-- 						" end " &
+-- 						trim (type_grid'image( segment.coordinates_end.x),left) & "/" &
+-- 						trim (type_grid'image( segment.coordinates_end.y),left),
+-- 					identation => 4);
+
+				put_line("    start "
+					& trim (et_general.type_grid'image( segment.coordinates_start.x),left) 
+					& "/" 
+					& trim (et_general.type_grid'image( segment.coordinates_start.y),left)
+					& " end " 
+					& trim (et_general.type_grid'image( segment.coordinates_end.x),left)
+					& "/" 
+					& trim (et_general.type_grid'image( segment.coordinates_end.y),left)
+					);
+
+
 				-- CS: write sheet number ?
 				--new_line(et_import.report_handle);
 			end write_coordinates_of_segment;
 
 			procedure write_coordinates_of_junction (junction : in type_net_junction) is
 			begin
-				write_message(
-					file_handle => et_import.report_handle,
-					text => "position (x/y/sheet) " & 
-						trim(type_grid'image(junction.coordinates.x),left) & "/" &
-						trim(type_grid'image(junction.coordinates.y),left) & "/" &
-						trim(positive'image(junction.coordinates.sheet_number),left),
-					identation => 3);
+-- 				write_message(
+-- 					file_handle => et_import.report_handle,
+-- 					text => "position (x/y/sheet) " & 
+-- 						trim(type_grid'image(junction.coordinates.x),left) & "/" &
+-- 						trim(type_grid'image(junction.coordinates.y),left) & "/" &
+-- 						trim(positive'image(junction.coordinates.sheet_number),left),
+-- 					identation => 3);
+				put_line("   position (x/y/sheet) " 
+					& trim(et_general.type_grid'image(junction.coordinates.x),left) 
+					& "/" 
+					& trim(et_general.type_grid'image(junction.coordinates.y),left) 
+					& "/" 
+					& trim(positive'image(junction.coordinates.sheet_number),left)
+					);
+
+
 			end write_coordinates_of_junction;			
 			
 			procedure write_coordinates_of_device_unit (unit : in et_schematic.type_unit) is
@@ -539,8 +572,8 @@ package body et_kicad is
 				write_message (
 					file_handle => et_import.report_handle,
 					text => " position (x/y/sheet) " & 
-						trim(type_grid'image(unit.position.x),left) & "/" &
-						trim(type_grid'image(unit.position.y),left) & "/" &
+						trim(et_general.type_grid'image(unit.position.x),left) & "/" &
+						trim(et_general.type_grid'image(unit.position.y),left) & "/" &
 						trim( positive'image(unit.position.sheet_number),left)
 						);
 			end write_coordinates_of_device_unit;			
@@ -610,7 +643,7 @@ package body et_kicad is
 			-- Once a suitable segment was found, sc is assigned with neccessary data to be returned to the parent unit. The search for 
 			-- a suitable segment excludes fully processed segments and the given segment (id).
 				sc : type_same_coord_result;
-				line_start, line_end : type_coordinates;
+				line_start, line_end : et_schematic.type_coordinates;
 				s, e	: boolean; -- indicate the end point, that has been processed already
 				untouched, half_processed : boolean; -- indicate whether a segment is completely untouched or processed in only one direction
 			begin
@@ -779,16 +812,19 @@ package body et_kicad is
 				net_scratch : type_net;
 				
 				function label_sits_on_segment (label : in type_net_label; segment : in type_net_segment) return boolean is
-					point 		: type_coordinates := label.coordinates;
-					line_start 	: type_coordinates := segment.coordinates_start;
-					line_end 	: type_coordinates := segment.coordinates_end;
-					zero 		: constant type_grid := 0.0;
+					point 		: et_schematic.type_coordinates := label.coordinates;
+					line_start 	: et_schematic.type_coordinates := segment.coordinates_start;
+					line_end 	: et_schematic.type_coordinates := segment.coordinates_end;
+					zero 		: constant et_general.type_grid := 0.0;
 					sits_on_segment : boolean := false;
 					d : type_distance_point_from_line;
 				begin
 					-- calculate the shortes distance of point from line.
-					d := distance_of_point_from_line (point => point, line_start => line_start, line_end => line_end,
-						line_range => with_end_points);
+					d := distance_of_point_from_line (
+						point		=> et_general.type_coordinates(point),
+						line_start	=> et_general.type_coordinates(line_start),
+						line_end	=> et_general.type_coordinates(line_end),
+						line_range	=> with_end_points);
 					--put_line(et_import.report_handle,"distance: " & type_grid'image(d.distance));
 					if not d.out_of_range and d.distance = zero then
 						sits_on_segment := true;
@@ -1360,9 +1396,9 @@ package body et_kicad is
 										description_entered := true; -- we are entering the sheet description
 
 										-- read drawing frame dimensions from a line like "$Descr A4 11693 8268"
-										drawing_frame_scratch.paper_size := type_paper_size'value(get_field_from_line(line,2));
-										drawing_frame_scratch.size_x := type_grid'value(get_field_from_line(line,3));
-										drawing_frame_scratch.size_y := type_grid'value(get_field_from_line(line,4)); 
+										drawing_frame_scratch.paper_size	:= type_paper_size'value(get_field_from_line(line,2));
+										drawing_frame_scratch.size_x		:= et_general.type_grid'value(get_field_from_line(line,3));
+										drawing_frame_scratch.size_y 		:= et_general.type_grid'value(get_field_from_line(line,4)); 
 										drawing_frame_scratch.coordinates.path := path_to_submodule;
 										drawing_frame_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
 
@@ -1504,10 +1540,10 @@ package body et_kicad is
 											submodule_gui_scratch.coordinates.path := path_to_submodule;
 											submodule_gui_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
 											submodule_gui_scratch.coordinates.sheet_number := sheet_number_current;
-											submodule_gui_scratch.coordinates.x := type_grid'value(get_field_from_line(line,2));
-											submodule_gui_scratch.coordinates.y := type_grid'value(get_field_from_line(line,3));
-											submodule_gui_scratch.size_x := type_grid'value(get_field_from_line(line,4));
-											submodule_gui_scratch.size_y := type_grid'value(get_field_from_line(line,5));                                
+											submodule_gui_scratch.coordinates.x := et_general.type_grid'value(get_field_from_line(line,2));
+											submodule_gui_scratch.coordinates.y := et_general.type_grid'value(get_field_from_line(line,3));
+											submodule_gui_scratch.size_x		:= et_general.type_grid'value(get_field_from_line(line,4));
+											submodule_gui_scratch.size_y		:= et_general.type_grid'value(get_field_from_line(line,5));                                
 										end if;
 
 										-- read GUI submodule (sheet) timestamp from a line like "U 58A73B5D"
@@ -1572,10 +1608,10 @@ package body et_kicad is
 										segment_scratch.coordinates_start.sheet_number := sheet_number_current;
 
 										-- the x/y position
-										segment_scratch.coordinates_start.x := type_grid'value(get_field_from_line(line,1));
-										segment_scratch.coordinates_start.y := type_grid'value(get_field_from_line(line,2));
-										segment_scratch.coordinates_end.x   := type_grid'value(get_field_from_line(line,3));
-										segment_scratch.coordinates_end.y   := type_grid'value(get_field_from_line(line,4));
+										segment_scratch.coordinates_start.x := et_general.type_grid'value(get_field_from_line(line,1));
+										segment_scratch.coordinates_start.y := et_general.type_grid'value(get_field_from_line(line,2));
+										segment_scratch.coordinates_end.x   := et_general.type_grid'value(get_field_from_line(line,3));
+										segment_scratch.coordinates_end.y   := et_general.type_grid'value(get_field_from_line(line,4));
 
 										-- The net segments are to be collected in a wild list of segments for later sorting. 
 										type_wild_list_of_net_segments.append(wild_segment_collection,segment_scratch);
@@ -1589,8 +1625,8 @@ package body et_kicad is
 											junction_scratch.coordinates.path := path_to_submodule;
 											junction_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
 											junction_scratch.coordinates.sheet_number := sheet_number_current;
-											junction_scratch.coordinates.x := type_grid'value(get_field_from_line(line,3));
-											junction_scratch.coordinates.y := type_grid'value(get_field_from_line(line,4));
+											junction_scratch.coordinates.x := et_general.type_grid'value(get_field_from_line(line,3));
+											junction_scratch.coordinates.y := et_general.type_grid'value(get_field_from_line(line,4));
 											type_list_of_net_junctions.append(wild_collection_of_junctions,junction_scratch);
 											junction_count := junction_count + 1;
 										end if;
@@ -1609,8 +1645,8 @@ package body et_kicad is
 											label_simple_scratch.coordinates.path := path_to_submodule;
 											label_simple_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
 											label_simple_scratch.coordinates.sheet_number := sheet_number_current;
-											label_simple_scratch.coordinates.x := type_grid'value(get_field_from_line(line,3));
-											label_simple_scratch.coordinates.y := type_grid'value(get_field_from_line(line,4));
+											label_simple_scratch.coordinates.x := et_general.type_grid'value(get_field_from_line(line,3));
+											label_simple_scratch.coordinates.y := et_general.type_grid'value(get_field_from_line(line,4));
 											label_simple_scratch.orientation   := to_orientation(get_field_from_line(line,5));
 
 											-- build text attributes from size, font and line width
@@ -1654,8 +1690,8 @@ package body et_kicad is
 											label_tag_scratch.coordinates.path := path_to_submodule;
 											label_tag_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
 											label_tag_scratch.coordinates.sheet_number := sheet_number_current;
-											label_tag_scratch.coordinates.x := type_grid'value(get_field_from_line(line,3));
-											label_tag_scratch.coordinates.y := type_grid'value(get_field_from_line(line,4));
+											label_tag_scratch.coordinates.x := et_general.type_grid'value(get_field_from_line(line,3));
+											label_tag_scratch.coordinates.y := et_general.type_grid'value(get_field_from_line(line,4));
 											label_tag_scratch.orientation   := to_orientation(get_field_from_line(line,5));
 											
 											label_tag_scratch.direction := to_direction(
@@ -1688,8 +1724,8 @@ package body et_kicad is
 												note_scratch.coordinates.path := path_to_submodule;
 												note_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
 												note_scratch.coordinates.sheet_number := sheet_number_current;
-												note_scratch.coordinates.x := type_grid'value(get_field_from_line(line,3));
-												note_scratch.coordinates.y := type_grid'value(get_field_from_line(line,4));
+												note_scratch.coordinates.x := et_general.type_grid'value(get_field_from_line(line,3));
+												note_scratch.coordinates.y := et_general.type_grid'value(get_field_from_line(line,4));
 												note_scratch.orientation   := to_orientation(get_field_from_line(line,5));
 
 												-- build text attributes from size, font and line width
@@ -1787,9 +1823,9 @@ package body et_kicad is
 											-- The unit coordinates is more than just x/y !
 											-- The write the unit coordinates in the import report.
 											if get_field_from_line(line,1) = schematic_component_identifier_coord then -- "P"
-												device_unit_scratch.position.x := type_grid'value(
+												device_unit_scratch.position.x := et_general.type_grid'value(
 													get_field_from_line(line,2)); -- "3200"
-												device_unit_scratch.position.y := type_grid'value(
+												device_unit_scratch.position.y := et_general.type_grid'value(
 													get_field_from_line(line,3)); -- "4500"
 
 			--									device_unit_scratch.coordinates.main_module := module.name;
@@ -1827,8 +1863,8 @@ package body et_kicad is
 												end case;
 
 												-- read x and y coordinates like 2600 3250
-												unit_field_scratch.coordinates.x := type_grid'value(get_field_from_line(line,5));
-												unit_field_scratch.coordinates.y := type_grid'value(get_field_from_line(line,6));
+												unit_field_scratch.coordinates.x := et_general.type_grid'value(get_field_from_line(line,5));
+												unit_field_scratch.coordinates.y := et_general.type_grid'value(get_field_from_line(line,6));
 
 												-- assign further coordinates
 												unit_field_scratch.coordinates.path := path_to_submodule;

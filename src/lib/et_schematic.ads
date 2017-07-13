@@ -91,7 +91,7 @@ package et_schematic is
     package type_path_to_submodule is new doubly_linked_lists (
         element_type => type_submodule_name.bounded_string);
 	
-	type type_coordinates is new et_libraries.type_coordinates_basic with record
+	type type_coordinates is new et_general.type_coordinates with record
         path            : type_path_to_submodule.list;
 		module_name		: type_submodule_name.bounded_string;
 		sheet_number	: positive;
@@ -248,7 +248,7 @@ package et_schematic is
         text_size_of_name   : type_text_size;
         text_size_of_file   : type_text_size;        
 		coordinates		    : type_coordinates;
-        size_x, size_y      : type_grid; -- size x/y of the box
+        size_x, size_y      : et_general.type_grid; -- size x/y of the box
         timestamp           : string (1..8); -- CS: type_timestamp
         -- CS: ports ?
 	end record;
@@ -264,15 +264,15 @@ package et_schematic is
     -- A drawing frame consists of straight lines and texts.
     -- The text is a character at the x/y border that helps to locate objects.
     type type_frame_line is record
-		coordinates_start : type_coordinates_basic;
-        coordinates_end   : type_coordinates_basic;
+		coordinates_start : et_general.type_coordinates;
+        coordinates_end   : et_general.type_coordinates;
     end record;
 	package type_list_of_frame_lines is new vectors (
 		index_type => positive, -- every line of a frame an id
         element_type => type_frame_line);
     
 	type type_frame_text is record
-		coordinates		: type_coordinates_basic;
+		coordinates		: et_general.type_coordinates;
 		text			: character; -- CS: range A..Z and 1..n
 		size			: type_text_size;
 		orientation		: type_text_orientation;
@@ -286,7 +286,7 @@ package et_schematic is
     type type_frame is record
         coordinates     : type_coordinates;
         paper_size      : type_paper_size; -- the size of the paper
-        size_x, size_y  : type_grid; -- the dimensions of the frame (should fit into paper_size) 
+        size_x, size_y  : et_general.type_grid; -- the dimensions of the frame (should fit into paper_size) 
         lines           : type_list_of_frame_lines.vector;
         texts           : type_list_of_frame_texts.vector;
     end record;
@@ -298,8 +298,8 @@ package et_schematic is
 
     -- TITLE BLOCK
     type type_title_block_line is record
-		coordinates_start : type_coordinates_basic;
-		coordinates_end   : type_coordinates_basic;
+		coordinates_start : et_general.type_coordinates;
+		coordinates_end   : et_general.type_coordinates;
     end record;
 	package type_list_of_title_block_lines is new vectors (
 		index_type => positive, -- every line of a frame an id
@@ -314,7 +314,7 @@ package et_schematic is
         REVISION, MISC);
 	type type_title_block_text is record -- CS: from kicad $descr
 		meaning			: type_title_block_text_meaning;
- 		coordinates		: type_coordinates_basic;
+ 		coordinates		: et_general.type_coordinates;
 		text			: type_title_block_text_string.bounded_string;
  		size			: type_text_size;
  		orientation		: type_text_orientation;
