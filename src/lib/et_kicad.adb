@@ -42,7 +42,7 @@ with ada.numerics.real_arrays;  use ada.numerics.real_arrays;
 with ada.directories;			use ada.directories;
 with ada.exceptions; 			use ada.exceptions;
 
-with et_libraries;				use et_libraries;
+with et_libraries;				--use et_libraries;
 with et_schematic;				use et_schematic;
 
 with et_geometry;				use et_geometry;
@@ -54,34 +54,80 @@ package body et_kicad is
 
 
 	procedure read_components_libraries is
-		use type_list_of_full_library_names;
-		use et_general.type_library_full_name;
-		cursor			: type_list_of_full_library_names.cursor := first(list_of_full_library_names);
-		lib_file_name	: et_general.type_library_full_name.bounded_string;
+		use et_libraries.type_list_of_full_library_names;
+		use et_libraries.type_library_full_name;
+		cursor			: et_libraries.type_list_of_full_library_names.cursor := first(list_of_full_library_names);
+		lib_file_name	: et_libraries.type_library_full_name.bounded_string;
 
+		lib_cursor		: et_libraries.type_libraries.cursor;
+		lib_inserted	: boolean;
+
+		comp_cursor		: et_libraries.type_components.cursor;
+		comp_inserted	: boolean;
+		
+		
 		procedure read_library is
 			line			: type_fields_of_line;
 			line_counter	: natural := 0;
-		begin
+
+			procedure insert_component (
+				key		: in et_libraries.type_library_full_name.bounded_string;
+				element	: in out et_libraries.type_components.map) is
+			begin
+				put_line("   " & get_field_from_line(line,2)); -- 74LS00
+				
+				et_libraries.type_components.insert(
+					container	=> element,
+					key			=> et_libraries.type_component_name.to_bounded_string(get_field_from_line(line,2)), -- 74LS00
+					position	=> comp_cursor,
+					inserted	=> comp_inserted,
+					new_item	=> (
+						prefix	=> et_general.type_device_prefix.to_bounded_string(get_field_from_line(line,3)),
+						appearance => et_libraries.real,
+						units	=> et_libraries.type_device_unit_list.empty_map
+						)
+					
+					);
+
+				if comp_inserted then
+					null;
+				else
+					put_line(message_error & "line" & natural'image(line_counter) & " : component already in library !");
+					raise constraint_error;
+				end if;
+				
+			end insert_component;
+			
+		begin -- read_library
+			put_line("  with components:");
+			
 			while not end_of_file loop
 
 				-- count lines and save a line in variable "line" (see et_string_processing.ads)
 				line_counter := line_counter + 1;
---				put_line(get_line);
- 				line := read_line(
- 							line => get_line,
- 							comment_mark => "#");
--- 
--- --				put_line(to_string(line));
---  				case line.field_count is
--- 					when 0 => null; -- we skip empty lines
--- 					when others => null;
--- 				end case;
+ 				line := read_line(line => get_line,	comment_mark => "#");
+				case line.field_count is
+					when 0 => null; -- we skip empty lines
+					when others =>
+
+						-- If there is a:
+					
+						-- component header like "DEF 74LS00 U 0 30 Y Y 4 F N",
+						-- we insert the component in the current library (indicated by lib_cursor):
+						if get_field_from_line(line,1) = et_libraries.def then
+
+							et_libraries.type_libraries.update_element(
+								container	=> et_import.component_libraries,
+								position	=> lib_cursor,
+								process		=> insert_component'access);
+						end if;
+				end case;
 
 			end loop;
 		end read_library;
+
 		
-	begin
+		begin -- read_components_libraries
 		if is_empty(list_of_full_library_names) then
 			put_line(message_warning & " no component libraries defined in project file !");
 		else
@@ -105,9 +151,26 @@ package body et_kicad is
 						mode => in_file,
 						name => to_string(lib_file_name));
 
-					set_input(et_import.library_handle);
-					read_library;
+					-- Since the libary file name is known, we insert the first empty
+					-- library in the list of component libraries.
+					et_libraries.type_libraries.insert(
+						container	=> et_import.component_libraries,
+						key			=> lib_file_name,
+						--new_item	=> et_libraries.type_components.empty_map,
+						position	=> lib_cursor,
+						inserted	=> lib_inserted
+						);
 
+					-- this is a double check. should never fail.
+					if lib_inserted then
+						-- Now we read the library file and add further things to it.
+						set_input(et_import.library_handle);
+						read_library;
+					else
+						put_line(message_error & to_string(lib_file_name) & " already in component libraries !");
+						raise constraint_error;
+					end if;
+					
 					close(et_import.library_handle);
 				else
 					put_line(message_warning & "library '" 
@@ -125,7 +188,7 @@ package body et_kicad is
 
 	procedure import_design is
 		use et_import.type_schematic_file_name;
-		use et_general.type_library_directory;
+		use et_libraries.type_library_directory;
 		
 		function read_project_file return et_import.type_schematic_file_name.bounded_string is
 		-- Reads the project file in terms of LibDir and LibName. 
@@ -135,7 +198,7 @@ package body et_kicad is
 			line : type_fields_of_line;
 			
 			use et_import.type_project_file_name;
-			use type_list_of_full_library_names;
+			use et_libraries.type_list_of_full_library_names;
 			
             line_counter : natural := 0;
             section_eeschema_entered : boolean := false;
@@ -198,9 +261,9 @@ package body et_kicad is
 							if get_field_from_line(line,1)(1..project_keyword_library_name'length) 
 								= project_keyword_library_name then
 								
-								type_list_of_full_library_names.append(
+								et_libraries.type_list_of_full_library_names.append(
 									container => list_of_full_library_names, 
-									new_item => type_library_full_name.to_bounded_string(
+									new_item => et_libraries.type_library_full_name.to_bounded_string(
 										get_field_from_line(line,2) -- name incl. path
 										& "."
 										& file_extension_schematic_lib)); -- extension
@@ -1348,9 +1411,10 @@ package body et_kicad is
 
 									-- Store bare library name in the list sheet_header.libraries:
 									-- We use a doubly linked list because the order of the library names must be kept.
-									type_list_of_library_names.append(
+									et_libraries.type_list_of_library_names.append(
 										container => sheet_header.libraries,
-										new_item => type_library_name.to_bounded_string(get_field_from_line( get_field_from_line(line,1), 2, latin_1.colon))
+										new_item => et_libraries.type_library_name.to_bounded_string(
+											get_field_from_line( get_field_from_line(line,1), 2, latin_1.colon))
 										);
 
 								end if;
@@ -1771,7 +1835,7 @@ package body et_kicad is
 											-- split into units (kicad refers to them as "units", EAGLE refers to them as "gates").
 											-- Only the first occurence of the device leads to appending it to the device list of the module.
 											if get_field_from_line(line,1) = schematic_component_identifier_name then -- "L"
-												device_scratch.name_in_library := type_device_name_in_library.to_bounded_string(get_field_from_line(line,2)); -- "NetChanger"
+												device_scratch.name_in_library := et_libraries.type_component_name.to_bounded_string(get_field_from_line(line,2)); -- "NetChanger"
 												--device_scratch.annotation := type_device_name.to_bounded_string(get_field_from_line(line,3)); -- "N1"
 												-- CS: check annotation
 
@@ -1788,7 +1852,7 @@ package body et_kicad is
 													put("  device " 
 														& get_field_from_line(line,3) -- "N1"
 														& " is " 
-														& type_device_name_in_library.to_string(device_scratch.name_in_library));
+														& et_libraries.type_component_name.to_string(device_scratch.name_in_library));
 												end if;
 
 												-- The cursor device_cursor_scratch now points to the device. There will be more device information (in the following) 
@@ -1810,12 +1874,12 @@ package body et_kicad is
 														new_line;
 														put_line(message_warning & "Unit ID greater than number of units !");
 												end if;
-												device_unit_scratch.name := type_device_unit_name.to_bounded_string(
+												device_unit_scratch.name := et_libraries.type_device_unit_name.to_bounded_string(
 													get_field_from_line(line,3)); -- "3"
 
 												--put(et_import.report_handle," with unit " & type_device_unit_name.to_string(device_unit_scratch.name) & " at");
 
-												put(" with unit " & type_device_unit_name.to_string(device_unit_scratch.name) & " at");
+												put(" with unit " & et_libraries.type_device_unit_name.to_string(device_unit_scratch.name) & " at");
 												
 											end if;
 

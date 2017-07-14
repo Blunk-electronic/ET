@@ -124,7 +124,7 @@ package et_schematic is
 	
 	type type_device is new et_general.type_device with record
 		id				: positive; -- together with the prefix we get something like "IC702"
-		name_in_library : et_libraries.type_device_name_in_library.bounded_string; -- example: "TRANSISTOR_PNP"
+		name_in_library : et_libraries.type_component_name.bounded_string; -- example: "TRANSISTOR_PNP"
 		units			: type_units.map;
 	end record;
 

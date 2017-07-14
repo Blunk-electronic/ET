@@ -41,6 +41,32 @@ with et_general;				use et_general;
 
 package et_libraries is
 
+	-- LIBRARY NAMES AND DIRECTORIES
+
+	-- For storing bare library names like "bel_primitives" we use this bounded string:
+	library_name_length_max : constant natural := 100; -- CS: increase if necessary
+    package type_library_name is new generic_bounded_length(library_name_length_max); use type_library_name;
+
+	-- Bare library names can be stored further-on in an ordered set like this:
+	-- We use a doubly linked list because the order of the library names sometimes matters.
+    package type_list_of_library_names is new doubly_linked_lists (
+		element_type => type_library_name.bounded_string);
+
+	-- The base directory where libraries live is stored in a bounded string:
+	library_directory_length_max : constant positive := 300; -- CS: increase if necessary
+	package type_library_directory is new generic_bounded_length(library_directory_length_max); use type_library_directory;
+
+	-- If a library is fully specified with path, name and extension we store them in bounded strings:
+	library_full_name_max : constant positive := library_directory_length_max + library_name_length_max + 4;
+	package type_library_full_name is new generic_bounded_length(library_full_name_max);
+	use type_library_full_name;
+
+	-- Full library names can be stored furhter-on in an ordered set like this:
+	-- We use a doubly linked list because the order of the library names sometimes matters.
+	package type_list_of_full_library_names is new doubly_linked_lists (
+		element_type => type_library_full_name.bounded_string);
+
+	
 -- SCHEMATIC RELATED
 
  	port_name_length	: constant natural := 50;
@@ -49,13 +75,23 @@ package et_libraries is
 	device_unit_name_length : constant natural := 50;
 	package type_device_unit_name is new generic_bounded_length(device_unit_name_length); use type_device_unit_name;
 
- 	device_name_in_library_length : constant natural := 100;
-	package type_device_name_in_library is new generic_bounded_length(device_name_in_library_length); use type_device_name_in_library;
+ 	component_name_length_max : constant natural := 100;
+	package type_component_name is new generic_bounded_length(component_name_length_max); use type_component_name;
 	
 	-- The name of a pin may have 10 characters which seems sufficient for now.
  	pin_name_length	: constant natural := 10;
 	package type_pin_name is new generic_bounded_length(pin_name_length); use type_pin_name;
 
+
+-- LIBRARY KEYWORDS
+	version_header : constant string (1..28) := "EESchema-LIBRARY Version 2.3";
+	def		: constant string (1..3) := "DEF";
+	enddef	: constant string (1..6) := "ENDDEF";
+	prefix	: constant string (1..1) := "U";
+	field 	: constant string (1..1) := "F";
+	draw	: constant string (1..4) := "DRAW";
+	enddraw	: constant string (1..7) := "ENDDRAW";
+	
 
 -- COORDINATES
 	subtype type_grid is et_general.type_grid range -1000.00 .. 1000.00; -- CS: unit assumed is MIL !!!
@@ -165,19 +201,11 @@ package et_libraries is
 
 	-- A device has a physical appearance, a generic name in the library, an annotation in the schematic,
 	-- a list of units, ...
--- 	type type_device_physical_appearance is ( virtual, footprint); -- CS: cable , wire ?
-	type type_device is new et_general.type_device with record
--- 		physical_appearance : type_device_physical_appearance := virtual; -- sometimes there is just a schematic
--- 		name_in_library 	: type_device_name_in_library.bounded_string; -- example: "TRANSISTOR_PNP"
+	type type_component_appearance is ( virtual, real);
+	type type_device is new et_general.type_device with record -- CS: rename to type_component
 		-- CS: library file name ?
+		appearance		: type_component_appearance;
 		units			: type_device_unit_list.map;
--- 		case physical_appearance is
--- 			when footprint =>
--- 				null; 		-- CS: port-pin map ?
--- 			when others => 
--- 				null;
-		-- 		end case;
-
 	end record;
 
 	
@@ -196,10 +224,16 @@ package et_libraries is
 	-- Within the map they are accessed by a key type_component_name (something like "CAPACITOR").
 -- 	component_name_length_max : constant positive := 100; -- CS: we restrict the part name to 100 characters
 -- 	package type_component_name is new generic_bounded_length(component_name_length_max); use type_component_name;
--- 	package type_list_of_components is new ordered_maps (
--- 		key_type => type_component_name.bounded_string,
--- 		element_type => type_component);
 
+	package type_components is new ordered_maps (
+		key_type => type_component_name.bounded_string, -- example: "TRANSISTOR_PNP"
+		element_type => type_device);
+	use type_components;
+
+	package type_libraries is new ordered_maps (
+		key_type => type_library_full_name.bounded_string,
+		element_type => type_components.map);
+	
 	procedure a;
 	
 end et_libraries;

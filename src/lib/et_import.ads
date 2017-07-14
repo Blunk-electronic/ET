@@ -43,7 +43,7 @@ with ada.strings.bounded; 		use ada.strings.bounded;
 
 with et_general;				use et_general;
 with et_schematic;				use et_schematic;
-
+with et_libraries;
 
 package et_import is
 
@@ -63,7 +63,10 @@ package et_import is
 									:= compose(report_directory, "import", report_extension);
 	report_handle		: ada.text_io.file_type;
 
-
+	-- LIBRARIES
+	-- component libraries go here:
+	component_libraries : et_libraries.type_libraries.map; 
+	
 	package type_schematic_file_name is new generic_bounded_length(project_name_length + 4); use type_schematic_file_name;
 	--schematic_file_name	: type_schematic_file_name.bounded_string;
 	schematic_handle	: ada.text_io.file_type;

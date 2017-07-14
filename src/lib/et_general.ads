@@ -87,29 +87,29 @@ package et_general is
 	package type_person_name is new generic_bounded_length(person_name_length); use type_person_name;
 
 
-	-- LIBRARY NAMES AND DIRECTORIES
-
-	-- For storing bare library names like "bel_primitives" we use this bounded string:
-	library_name_length_max : constant natural := 100; -- CS: increase if necessary
-    package type_library_name is new generic_bounded_length(library_name_length_max); use type_library_name;
-
-	-- Bare library names can be stored further-on in an ordered set like this:
-	-- We use a doubly linked list because the order of the library names sometimes matters.
-    package type_list_of_library_names is new doubly_linked_lists (
-		element_type => type_library_name.bounded_string);
-
-	-- The base directory where libraries live is stored in a bounded string:
-	library_directory_length_max : constant positive := 300; -- CS: increase if necessary
-	package type_library_directory is new generic_bounded_length(library_directory_length_max); use type_library_directory;
-
-	-- If a library is fully specified with path, name and extension we store them in bounded strings:
-	library_full_name_max : constant positive := library_directory_length_max + library_name_length_max + 4;
-	package type_library_full_name is new generic_bounded_length(library_full_name_max); use type_library_full_name;
-
-	-- Full library names can be stored furhter-on in an ordered set like this:
-	-- We use a doubly linked list because the order of the library names sometimes matters.
-	package type_list_of_full_library_names is new doubly_linked_lists (
-		element_type => type_library_full_name.bounded_string);
+-- 	-- LIBRARY NAMES AND DIRECTORIES
+-- 
+-- 	-- For storing bare library names like "bel_primitives" we use this bounded string:
+-- 	library_name_length_max : constant natural := 100; -- CS: increase if necessary
+--     package type_library_name is new generic_bounded_length(library_name_length_max); use type_library_name;
+-- 
+-- 	-- Bare library names can be stored further-on in an ordered set like this:
+-- 	-- We use a doubly linked list because the order of the library names sometimes matters.
+--     package type_list_of_library_names is new doubly_linked_lists (
+-- 		element_type => type_library_name.bounded_string);
+-- 
+-- 	-- The base directory where libraries live is stored in a bounded string:
+-- 	library_directory_length_max : constant positive := 300; -- CS: increase if necessary
+-- 	package type_library_directory is new generic_bounded_length(library_directory_length_max); use type_library_directory;
+-- 
+-- 	-- If a library is fully specified with path, name and extension we store them in bounded strings:
+-- 	library_full_name_max : constant positive := library_directory_length_max + library_name_length_max + 4;
+-- 	package type_library_full_name is new generic_bounded_length(library_full_name_max); use type_library_full_name;
+-- 
+-- 	-- Full library names can be stored furhter-on in an ordered set like this:
+-- 	-- We use a doubly linked list because the order of the library names sometimes matters.
+-- 	package type_list_of_full_library_names is new doubly_linked_lists (
+-- 		element_type => type_library_full_name.bounded_string);
 
 
 -- GRID AND COORDINATES
@@ -142,9 +142,9 @@ package et_general is
 	package type_device_prefix is new generic_bounded_length(device_prefix_length_max); use type_device_prefix;
 	-- A device has a physical appearance, a generic name in the library, an annotation in the schematic,
 	-- a list of units, ...
-	type type_device_physical_appearance is ( virtual, footprint); -- CS: symbol, cable , wire ?
+--	type type_device_physical_appearance is ( virtual, footprint); -- CS: symbol, cable , wire ?
 	type type_device is tagged record
-		physical_appearance : type_device_physical_appearance := virtual;
+--		physical_appearance : type_device_physical_appearance := virtual;
 		prefix				: type_device_prefix.bounded_string; -- together with an ID we get something like "IC702"
 -- 		name_in_library 	: type_device_name_in_library.bounded_string; -- example: "TRANSISTOR_PNP"
 		-- CS: library file name ?

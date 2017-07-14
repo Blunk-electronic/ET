@@ -40,7 +40,7 @@ with ada.containers.ordered_maps;
 with et_general;				use et_general;
 with et_schematic;				use et_schematic;
 with et_import;		            use et_import;
---with et_kicad_libraries;		use et_kicad_libraries;
+with et_libraries;
 
 package et_kicad is
 
@@ -65,11 +65,11 @@ package et_kicad is
 
 	-- project libraries:
 	project_keyword_library_directory       : constant string (1..6)  := "LibDir";
-	lib_dir : type_library_directory.bounded_string; -- here the path to the project libraries is stored
+	lib_dir : et_libraries.type_library_directory.bounded_string; -- here the path to the project libraries is stored
 
 	-- full path and name of library files are collected in list_of_full_library_names
     project_keyword_library_name            : constant string (1..7)  := "LibName"; -- with index like "LibName1"
-	list_of_full_library_names				: type_list_of_full_library_names.list;
+	list_of_full_library_names				: et_libraries.type_list_of_full_library_names.list;
 
 
     -- headers, footers, keywords 
@@ -199,7 +199,7 @@ package et_kicad is
 	-- We use a doubly linked list because the order of the library names must be kept.
     type type_sheet_header is record
         version     : positive; -- 2    
-		libraries   : type_list_of_library_names.list; -- CS: probably not used by kicad, just information
+		libraries   : et_libraries.type_list_of_library_names.list; -- CS: probably not used by kicad, just information
 		--libraries	: type_list_of_library_names.map;
         eelayer_a   : positive; -- 25 -- CS: meaning not clear, probably not used
         eelayer_b   : natural; -- 0 -- CS: meaning not clear, probably not used
