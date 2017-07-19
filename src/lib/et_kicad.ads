@@ -229,7 +229,8 @@ package et_kicad is
 	subtype type_supply_pin_name_position_offset is et_general.type_grid range 0.00 .. et_libraries.type_grid'last;
 
 	-- KiCad supports up to 64 units within a component
-	type type_unit_id is new positive range 1..64;
+	unit_count_max : constant positive := 64;
+	type type_unit_id is new positive range 1..unit_count_max;
 	units_total : type_unit_id;
 	unit_id : type_unit_id;
 	

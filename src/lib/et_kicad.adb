@@ -81,7 +81,9 @@ package body et_kicad is
 				-- for the logfile write the component name
 				put_line("   " & get_field_from_line(line,2)); -- 74LS00
 				units_total := type_unit_id'value(get_field_from_line(line,8));
-				put_line("     " & "with " & type_unit_id'image(units_total));
+				if units_total > 1 then
+					put_line("     " & "with" & type_unit_id'image(units_total) & " units");
+				end if;
 				
 				-- The line it is about looks like:  DEF 74LS00 U 0 30 Y Y 4 F N
 				-- The fields meaning is as follows:
