@@ -71,13 +71,33 @@ package body et_kicad is
 			line_counter	: natural := 0;
 
 			procedure insert_component (
+			-- Updates a library (which is a type_components.map) by inserting a component.
+			-- If the component was inserted (should be) the comp_cursor points to the component
+			-- for later inserting the units:
 				key		: in et_libraries.type_library_full_name.bounded_string;
-				element	: in out et_libraries.type_components.map) is
+				library	: in out et_libraries.type_components.map) is
+
 			begin
+				-- for the logfile write the component name
 				put_line("   " & get_field_from_line(line,2)); -- 74LS00
+				units_total := type_unit_id'value(get_field_from_line(line,8));
+				put_line("     " & "with " & type_unit_id'image(units_total));
+				
+				-- The line it is about looks like:  DEF 74LS00 U 0 30 Y Y 4 F N
+				-- The fields meaning is as follows:
+				-- name, like 74LS00
+				-- prefix, like U
+				-- unknown -- CS: what is it good for ?
+				-- pin name position offset of supply pins, if "place pin names inside" is off. the offset assumes zero
+				-- show pin number Y/N,
+				-- show pin name Y/N, -- (or port name)
+				-- units total, -- like 4
+				-- all units not interchangeable L (otherwise F), (similar to swap level in EAGLE)
+				-- power symbol P (otherwise N)
+				
 				
 				et_libraries.type_components.insert(
-					container	=> element,
+					container	=> library,
 					key			=> et_libraries.type_component_name.to_bounded_string(get_field_from_line(line,2)), -- 74LS00
 					position	=> comp_cursor,
 					inserted	=> comp_inserted,
@@ -113,8 +133,9 @@ package body et_kicad is
 						-- If there is a:
 					
 						-- component header like "DEF 74LS00 U 0 30 Y Y 4 F N",
-						-- we insert the component in the current library (indicated by lib_cursor):
-						if get_field_from_line(line,1) = et_libraries.def then
+						-- We insert the component in the current library (indicated by lib_cursor).
+						-- (In other words this is an update of the current library):
+						if get_field_from_line(line,1) = et_kicad.def then
 
 							et_libraries.type_libraries.update_element(
 								container	=> et_import.component_libraries,
@@ -153,6 +174,7 @@ package body et_kicad is
 
 					-- Since the libary file name is known, we insert the first empty
 					-- library in the list of component libraries.
+					-- After that the lib_cursor points to the latest inserted library.
 					et_libraries.type_libraries.insert(
 						container	=> et_import.component_libraries,
 						key			=> lib_file_name,
@@ -163,7 +185,8 @@ package body et_kicad is
 
 					-- this is a double check. should never fail.
 					if lib_inserted then
-						-- Now we read the library file and add further things to it.
+						-- Now we read the library file and add further things
+						-- to the library pinted to by lib_cursor:
 						set_input(et_import.library_handle);
 						read_library;
 					else
@@ -178,7 +201,7 @@ package body et_kicad is
 						& "' not found !");
 				end if;
 
-				
+				-- prepare next library file to be be read
 				next(cursor);
 
 			end loop;

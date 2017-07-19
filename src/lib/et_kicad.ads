@@ -84,6 +84,8 @@ package et_kicad is
 --     EELAYER 25 0
 --     EELAYER END
 
+-- SCHEMATIC
+
     schematic_header_keyword_sys_name      : constant string (1..8) := "EESchema";
     schematic_header_keyword_schematic     : constant string (1..9) := "Schematic";
     schematic_header_keyword_file          : constant string (1..4) := "File";
@@ -212,6 +214,24 @@ package et_kicad is
         key_type => type_sheet_file.bounded_string,
         element_type => type_sheet_header);
     list_of_sheet_headers : type_list_of_sheet_headers.map;
-    
+
+
+-- LIBRARY
+	
+	version_header : constant string (1..28) := "EESchema-LIBRARY Version 2.3";
+	def		: constant string (1..3) := "DEF";
+	enddef	: constant string (1..6) := "ENDDEF";
+	field 	: constant string (1..1) := "F";
+	draw	: constant string (1..4) := "DRAW";
+	enddraw	: constant string (1..7) := "ENDDRAW";
+
+	-- The distance of the pin name from the pin itself (supply pins only)
+	subtype type_supply_pin_name_position_offset is et_general.type_grid range 0.00 .. et_libraries.type_grid'last;
+
+	-- KiCad supports up to 64 units within a component
+	type type_unit_id is new positive range 1..64;
+	units_total : type_unit_id;
+	unit_id : type_unit_id;
+	
 end et_kicad;
 

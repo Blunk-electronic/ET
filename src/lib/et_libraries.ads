@@ -83,15 +83,6 @@ package et_libraries is
 	package type_pin_name is new generic_bounded_length(pin_name_length); use type_pin_name;
 
 
--- LIBRARY KEYWORDS
-	version_header : constant string (1..28) := "EESchema-LIBRARY Version 2.3";
-	def		: constant string (1..3) := "DEF";
-	enddef	: constant string (1..6) := "ENDDEF";
-	prefix	: constant string (1..1) := "U";
-	field 	: constant string (1..1) := "F";
-	draw	: constant string (1..4) := "DRAW";
-	enddraw	: constant string (1..7) := "ENDDRAW";
-	
 
 -- COORDINATES
 	subtype type_grid is et_general.type_grid range -1000.00 .. 1000.00; -- CS: unit assumed is MIL !!!
@@ -100,7 +91,8 @@ package et_libraries is
 		x,y				: type_grid;
 	end record;
 
-	
+
+
 -- PORT
 	-- A port is something where a net can be attached at.
 	-- The name of a port represents the function of the port like (A14 or RST_N)
@@ -117,6 +109,9 @@ package et_libraries is
 		POWER_IN		-- a power sink
 		);
 
+	type type_visibility_port is ( ON, OFF);
+	type type_visibility_pin is ( ON, OFF);
+	
 	-- Initially, at the lowest level (usually library level), a port has a name, direction,
 	-- coordinates, orientation, flags for making port and pin name visible. 
 	-- Later, other values are assigned like pin name. CS: set defaults
