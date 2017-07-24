@@ -49,11 +49,6 @@ package et_schematic is
 
 -- NAMES GENERAL
 
-	-- The name of a device is something like "IC403". Other CAE tools refer to it as "reference".
-	-- It is composed of a prefix like "IC" and the number like "403":
-	device_name_length_max	: constant natural := device_prefix_length_max + 100 ;
-	package type_device_name is new generic_bounded_length(device_name_length_max); use type_device_name;
-	
 	-- The name of a net may have 100 characters which seems sufficient for now.
  	net_name_length	: constant natural := 100;
 	package type_net_name is new generic_bounded_length(net_name_length); use type_net_name;
@@ -111,18 +106,18 @@ package et_schematic is
 -- DEVICE
 	
 	type type_unit is record
-		name			: et_libraries.type_device_unit_name.bounded_string;
+		name			: et_libraries.type_unit_name.bounded_string;
 		position		: type_coordinates;
 		fields			: type_text_fields.list;	
 	end record;
 
 	-- Units of a device will be collected in a map.
 	package type_units is new ordered_maps (
-		key_type => et_libraries.type_device_unit_name.bounded_string,
-		"<" => et_libraries.type_device_unit_name."<",
+		key_type => et_libraries.type_unit_name.bounded_string,
+		"<" => et_libraries.type_unit_name."<",
 		element_type => type_unit);
 	
-	type type_device is new et_general.type_device with record
+	type type_device is new et_general.type_component with record
 		id				: positive; -- together with the prefix we get something like "IC702"
 		name_in_library : et_libraries.type_component_name.bounded_string; -- example: "TRANSISTOR_PNP"
 		units			: type_units.map;
@@ -369,8 +364,9 @@ package et_schematic is
 		element_type => type_net);
 
 	-- The devices of a module are collected in a map.
+	use et_general.type_device_name;
  	package type_device_list_of_module is new ordered_maps (
- 		key_type => type_device_name.bounded_string, -- something like "IC43"
+ 		key_type => et_general.type_device_name.bounded_string, -- something like "IC43"
  		element_type => type_device);
 
 	-- CS: could be of interest when a composite type for device names is used. see above.

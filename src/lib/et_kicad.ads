@@ -233,6 +233,9 @@ package et_kicad is
 	type type_unit_id is new positive range 1..unit_count_max;
 	units_total : type_unit_id;
 	unit_id : type_unit_id;
-	
+
+	type type_symbol_appearance is (N, P); -- normal or power symbol
+
+
 end et_kicad;
 

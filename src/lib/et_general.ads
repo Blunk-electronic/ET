@@ -137,27 +137,29 @@ package et_general is
 	type type_orientation is ( deg_0, deg_90, deg_180, deg_270); 
 	-- other angles are not reasonable (footprints and layout have an own type for orientation)
 	
--- DEVICE
-	device_prefix_length_max : constant natural := 3; -- CS: there is no reason to work with longer prefixes.
-	package type_device_prefix is new generic_bounded_length(device_prefix_length_max); use type_device_prefix;
-	-- A device has a physical appearance, a generic name in the library, an annotation in the schematic,
-	-- a list of units, ...
---	type type_device_physical_appearance is ( virtual, footprint); -- CS: symbol, cable , wire ?
-	type type_device is tagged record
---		physical_appearance : type_device_physical_appearance := virtual;
-		prefix				: type_device_prefix.bounded_string; -- together with an ID we get something like "IC702"
--- 		name_in_library 	: type_device_name_in_library.bounded_string; -- example: "TRANSISTOR_PNP"
-		-- CS: library file name ?
--- 		unit_list 			: type_device_unit_list.map;
--- 		case physical_appearance is
--- 			when footprint =>
--- 				null; 		-- CS: port-pin map ?
--- 			when others => 
--- 				null;
-		-- 		end case;
+-- COMPONENTS
+	component_prefix_length_max : constant natural := 3; -- CS: there is no reason to work with longer prefixes.
+	package type_component_prefix is new generic_bounded_length(component_prefix_length_max); use type_component_prefix;
+	type type_component_appearance is ( 
+		sch,		-- a component that exists in the schematic only (like power symbols)
+		pcb,		-- a compoennt that exists on the pcb only (like a fiducial)
+		sch_pcb		-- a component that exists in both schematic and soldered on a pcb
+		
+		-- CS: cable 
+		-- CS: wire
+		-- ...
+		);
 
+	type type_component is tagged record
+		appearance 			: type_component_appearance;
+		prefix				: type_component_prefix.bounded_string; -- together with an ID we get something like "IC702"
 	end record;
 
+	-- The name of a component is something like "IC403". Other CAE tools refer to it as "reference".
+	-- It is composed of a prefix like "IC" and the number like "403":
+	device_name_length_max	: constant natural := component_prefix_length_max + 100 ;
+	package type_device_name is new generic_bounded_length(device_name_length_max); use type_device_name;
+	
 	
 -- TEXTS
     -- CS: currently we use unit mil which is old fashionated

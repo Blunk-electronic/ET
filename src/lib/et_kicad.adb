@@ -53,6 +53,15 @@ with et_string_processing;		use et_string_processing;
 package body et_kicad is
 
 
+	function to_appearance ( appearance : in string) 
+		return et_general.type_component_appearance is
+	begin
+		case type_symbol_appearance'value(appearance) is
+			when N => return et_general.sch_pcb;
+			when P => return et_general.sch;
+		end case;
+	end to_appearance;
+	
 	procedure read_components_libraries is
 		use et_libraries.type_list_of_full_library_names;
 		use et_libraries.type_library_full_name;
@@ -78,7 +87,8 @@ package body et_kicad is
 				library	: in out et_libraries.type_components.map) is
 
 			begin
-				-- for the logfile write the component name
+				-- For the logfile write the component name.
+				-- If the component contains more than one unit, write number of units.
 				put_line("   " & get_field_from_line(line,2)); -- 74LS00
 				units_total := type_unit_id'value(get_field_from_line(line,8));
 				if units_total > 1 then
@@ -104,9 +114,9 @@ package body et_kicad is
 					position	=> comp_cursor,
 					inserted	=> comp_inserted,
 					new_item	=> (
-						prefix	=> et_general.type_device_prefix.to_bounded_string(get_field_from_line(line,3)),
-						appearance => et_libraries.real,
-						units	=> et_libraries.type_device_unit_list.empty_map
+						prefix	=> et_general.type_component_prefix.to_bounded_string(get_field_from_line(line,3)), -- U
+						appearance => to_appearance(get_field_from_line(line,10)), -- N/P
+						units	=> et_libraries.type_units.empty_map
 						)
 					
 					);
@@ -1327,17 +1337,17 @@ package body et_kicad is
 			-- This is relevant for reading devices:
 			device_entered : boolean := false; -- indicates that a device is being read
 			device_scratch : et_schematic.type_device; -- temporarily used before appending a device list of the module
-			device_unit_scratch : et_schematic.type_unit; -- temporarily used before appending a unit to a device
+			unit_scratch : et_schematic.type_unit; -- temporarily used before appending a unit to a device
 			device_cursor_scratch : type_device_list_of_module.cursor; -- points to a device of the module
 			device_inserted : boolean; -- used when a device is being inserted into the device list of a module
 			
 			procedure insert_unit ( key : in type_device_name.bounded_string; device : in out et_schematic.type_device ) is 
 			begin
-				--type_device_unit_list.append(device.unit_list,device_unit_scratch);
+				--type_device_unit_list.append(device.unit_list,unit_scratch);
 				et_schematic.type_units.insert(
 					container => device.units, -- the unit list of the device
-					new_item => device_unit_scratch, -- the unit itself
-					key => device_unit_scratch.name); -- the unit name
+					new_item => unit_scratch, -- the unit itself
+					key => unit_scratch.name); -- the unit name
 			end insert_unit;
 
 			-- temporarily we store fields here:
@@ -1846,11 +1856,11 @@ package body et_kicad is
 											device_entered := false; -- we are leaving the component
 
 											--put_line(to_string(line_of_schematic_file));								
-											-- update the device with the collected unit data (in device_unit_scratch)
+											-- update the device with the collected unit data (in unit_scratch)
 											type_device_list_of_module.update_element(module.devices,device_cursor_scratch, insert_unit'access);
 
-											-- clean up: the list of texts collected in device_unit_scratch.text_list must be erased for next spin.
-											et_schematic.type_text_fields.clear(device_unit_scratch.fields);
+											-- clean up: the list of texts collected in unit_scratch.text_list must be erased for next spin.
+											et_schematic.type_text_fields.clear(unit_scratch.fields);
 										else
 											--put_line("line ->" & to_string(line));
 											-- READ COMPONENT SECTION CONTENT
@@ -1891,7 +1901,7 @@ package body et_kicad is
 
 												-- KiCad uses positive numbers to identifiy units. In general a unit name can be a string as well.
 												-- Therefore we handle the unit id as string.
-												-- Temporarily the unit data is collected in device_unit_scratch (to update the device later when leaving the device section).
+												-- Temporarily the unit data is collected in unit_scratch (to update the device later when leaving the device section).
 												-- We also verify here that the unit id is not greater than the total number of units (in field 2).
 												if 	positive'value(get_field_from_line(line,3)) > -- "3" -- id
 													positive'value(get_field_from_line(line,2))   -- "7" -- total
@@ -1899,12 +1909,12 @@ package body et_kicad is
 														new_line;
 														put_line(message_warning & "Unit ID greater than number of units !");
 												end if;
-												device_unit_scratch.name := et_libraries.type_device_unit_name.to_bounded_string(
+												unit_scratch.name := et_libraries.type_unit_name.to_bounded_string(
 													get_field_from_line(line,3)); -- "3"
 
-												--put(et_import.report_handle," with unit " & type_device_unit_name.to_string(device_unit_scratch.name) & " at");
+												--put(et_import.report_handle," with unit " & type_device_unit_name.to_string(unit_scratch.name) & " at");
 
-												put(" with unit " & et_libraries.type_device_unit_name.to_string(device_unit_scratch.name) & " at");
+												put(" with unit " & et_libraries.type_unit_name.to_string(unit_scratch.name) & " at");
 												
 											end if;
 
@@ -1912,17 +1922,17 @@ package body et_kicad is
 											-- The unit coordinates is more than just x/y !
 											-- The write the unit coordinates in the import report.
 											if get_field_from_line(line,1) = schematic_component_identifier_coord then -- "P"
-												device_unit_scratch.position.x := et_general.type_grid'value(
+												unit_scratch.position.x := et_general.type_grid'value(
 													get_field_from_line(line,2)); -- "3200"
-												device_unit_scratch.position.y := et_general.type_grid'value(
+												unit_scratch.position.y := et_general.type_grid'value(
 													get_field_from_line(line,3)); -- "4500"
 
-			--									device_unit_scratch.coordinates.main_module := module.name;
-												device_unit_scratch.position.path := path_to_submodule;
-												device_unit_scratch.position.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
-												device_unit_scratch.position.sheet_number := sheet_number_current;
+			--									unit_scratch.coordinates.main_module := module.name;
+												unit_scratch.position.path := path_to_submodule;
+												unit_scratch.position.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+												unit_scratch.position.sheet_number := sheet_number_current;
 
-												write_coordinates_of_device_unit(device_unit_scratch);
+												write_coordinates_of_device_unit(unit_scratch);
 											end if;
 
 											-- read unit fields 0..2 from lines like:
@@ -1930,7 +1940,7 @@ package body et_kicad is
 											--			"F 1 "NetChanger" H 2600 2250 60  0001 C CNN"
 											--			"F 2 "bel_netchanger:N_0.2MM" H 2600 2100 60  0001 C CNN"
 											-- Each line represents a field which goes temporarily into unit_text_scratch. 
-											-- Once the line is processed, unit_text_scratch is appended the the list of fields of device_unit_scratch.
+											-- Once the line is processed, unit_text_scratch is appended the the list of fields of unit_scratch.
 											if get_field_from_line(line,1) = schematic_component_identifier_field then -- "F"
 
 												-- The field id must be mapped to the actual field meaning:
@@ -1972,7 +1982,7 @@ package body et_kicad is
 												unit_field_scratch.alignment_vertical := to_alignment_vertical(get_field_from_line(line,10));  
 												
 												-- append text unit_field_scratch to text list of scratch unit.
-												et_schematic.type_text_fields.append(device_unit_scratch.fields,unit_field_scratch);
+												et_schematic.type_text_fields.append(unit_scratch.fields,unit_field_scratch);
 
 											end if;
 									end if;

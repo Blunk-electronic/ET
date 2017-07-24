@@ -72,8 +72,8 @@ package et_libraries is
  	port_name_length	: constant natural := 50;
 	package type_port_name is new generic_bounded_length(port_name_length); use type_port_name;
 
-	device_unit_name_length : constant natural := 50;
-	package type_device_unit_name is new generic_bounded_length(device_unit_name_length); use type_device_unit_name;
+	unit_name_length : constant natural := 50;
+	package type_unit_name is new generic_bounded_length(unit_name_length); use type_unit_name;
 
  	component_name_length_max : constant natural := 100;
 	package type_component_name is new generic_bounded_length(component_name_length_max); use type_component_name;
@@ -131,98 +131,76 @@ package et_libraries is
 -- DEVICE
 	
 	-- UNIT
-	-- A device unit is a sub-unit of a schematic device. EAGLE refer to them as "gate".
-	-- A schematic device contains at least one unit.
+	-- A unit is a sub-unit of a component. EAGLE refer to them as "gates".
+	-- A component contains at least one unit.
 	-- Examples of a unit: resistor symbol, i/o-bank of an fpga, NAND-gate
 
 	-- outline segments 
-	-- The device unit outline is composed of various elements like lines, arcs or cicles.
+	-- The unit outline is composed of various elements like lines, arcs or cicles.
 	
 	-- Straight lines of a unit will be collected in a simple list.
-	type type_device_unit_outline_segment_line is record
+	type type_line is record
 		coordinates_start : type_coordinates;
 		coordinates_end   : type_coordinates;
 	end record;
-	package type_list_of_device_unit_outline_segments_lines is new doubly_linked_lists (
-		element_type => type_device_unit_outline_segment_line);
+	package type_lines is new doubly_linked_lists (
+		element_type => type_line);
 
 	-- Arcs of a unit will be collected in a simple list.
-	type type_device_unit_outline_segment_arc is record
+	type type_arc is record
 		coordinates_start		: type_coordinates;
 		coordinates_end			: type_coordinates;
 		coordinates_circumfence	: type_coordinates;
 	end record;
-	package type_list_of_device_unit_outline_segments_arcs is new doubly_linked_lists (
-		element_type => type_device_unit_outline_segment_arc);
+	package type_arcs is new doubly_linked_lists (
+		element_type => type_arc);
 
 	-- Circles of a unit will be collected in a simple list.
-	type type_device_unit_outline_segment_circle is record
+	type type_circle is record
 		coordinates_start : type_coordinates;
 		coordinates_end   : type_coordinates;
 		coordinates_center: type_coordinates;
 	end record;
-	package type_list_of_device_unit_outline_segments_circles is new doubly_linked_lists (
-		element_type => type_device_unit_outline_segment_circle);
+	package type_circles is new doubly_linked_lists (
+		element_type => type_circle);
 
 	-- Ports of a unit will be collected in a map.
-	package type_list_of_device_unit_ports is new ordered_maps ( 
+	package type_ports is new ordered_maps ( 
 		key_type => type_port_name.bounded_string,
 		element_type => type_port);
 
 	-- Text fields in the library are can be regarded as attributes.
-	type type_text_field is new et_general.type_text_field with record
-		coordinates             : type_coordinates;
+	type type_field is new et_general.type_text_field with record
+		coordinate	: type_coordinates;
 	end record;
-	package type_text_fields is new doubly_linked_lists (
-		element_type => type_text_field);
+	package type_fields is new doubly_linked_lists (
+		element_type => type_field);
 	
-	-- A unit has a name, coordinates, consists of segment lists , ports and fields.
+	-- A unit has coordinates, consists of segment lists , ports and fields.
 	-- EAGLE refers to units as "gates". KiCad refers to them as "units":
-	type type_device_unit is record
-		name					: type_device_unit_name.bounded_string; -- like 1,2,A,B or PWR
-		--coordinates				: type_coordinates_basic; -- CS: could be relevant for a device editor
-		outline_segments_lines	: type_list_of_device_unit_outline_segments_lines.list;
-		outline_segments_arcs 	: type_list_of_device_unit_outline_segments_arcs.list;
-		outline_segments_circles: type_list_of_device_unit_outline_segments_circles.list;
-		port_list 				: type_list_of_device_unit_ports.map;
-        fields					: type_text_fields.list;
-        -- CS: timestamp
+	type type_unit is record
+		lines		: type_lines.list;
+		arcs 		: type_arcs.list;
+		circles		: type_circles.list;
+		port_list 	: type_ports.map;
+        fields		: type_fields.list;
 	end record;
 
-	-- Units of a device will be collected in a map.
-	package type_device_unit_list is new ordered_maps (
-		key_type => type_device_unit_name.bounded_string, -- the key to a device unit is its own name
-		element_type => type_device_unit);
+	-- Units of a component will be collected in a map.
+	package type_units is new ordered_maps (
+		key_type => type_unit_name.bounded_string, -- the key to a unit is its name
+		element_type => type_unit);
 
-	-- A device has a physical appearance, a generic name in the library, an annotation in the schematic,
-	-- a list of units, ...
-	type type_component_appearance is ( virtual, real);
-	type type_device is new et_general.type_device with record -- CS: rename to type_component
-		-- CS: library file name ?
-		appearance		: type_component_appearance;
-		units			: type_device_unit_list.map;
+	type type_component is new et_general.type_component with record
+		units			: type_units.map;
 	end record;
 
 	
-	-- The kicad schematic editor refers to schematic elements as "components"
-	-- (EAGLE refers to them as "symbols").
-	-- Components are composites of lines, arcs, circles, texts, ports:
--- 	type type_component is record
--- 		outline_segments_lines	: type_list_of_device_block_outline_segments_lines.list;
--- 		outline_segments_arcs 	: type_list_of_device_block_outline_segments_arcs.list;
--- 		outline_segments_circles: type_list_of_device_block_outline_segments_circles.list;
--- 		port_list 				: type_list_of_device_block_ports.map;
---         text_list				: type_list_of_device_block_texts.list;
--- 	end record;
-
-	-- Components have a name and are stored in an ordered map.
+	-- Components are stored in an ordered map.
 	-- Within the map they are accessed by a key type_component_name (something like "CAPACITOR").
--- 	component_name_length_max : constant positive := 100; -- CS: we restrict the part name to 100 characters
--- 	package type_component_name is new generic_bounded_length(component_name_length_max); use type_component_name;
-
 	package type_components is new ordered_maps (
 		key_type => type_component_name.bounded_string, -- example: "TRANSISTOR_PNP"
-		element_type => type_device);
+		element_type => type_component);
 	use type_components;
 
 	package type_libraries is new ordered_maps (
