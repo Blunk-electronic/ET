@@ -52,10 +52,15 @@ package et_libraries is
     package type_list_of_library_names is new doubly_linked_lists (
 		element_type => type_library_name.bounded_string);
 
+	project_libraries : type_list_of_library_names.list;
+	
 	-- The base directory where libraries live is stored in a bounded string:
 	library_directory_length_max : constant positive := 300; -- CS: increase if necessary
 	package type_library_directory is new generic_bounded_length(library_directory_length_max); use type_library_directory;
 
+	lib_dir : type_library_directory.bounded_string; -- here the path to the project libraries is stored
+	-- CS: this should be a list of paths
+	
 	-- If a library is fully specified with path, name and extension we store them in bounded strings:
 	library_full_name_max : constant positive := library_directory_length_max + library_name_length_max + 4;
 	package type_library_full_name is new generic_bounded_length(library_full_name_max);
@@ -63,8 +68,8 @@ package et_libraries is
 
 	-- Full library names can be stored furhter-on in an ordered set like this:
 	-- We use a doubly linked list because the order of the library names sometimes matters.
-	package type_list_of_full_library_names is new doubly_linked_lists (
-		element_type => type_library_full_name.bounded_string);
+-- 	package type_list_of_full_library_names is new doubly_linked_lists (
+-- 		element_type => type_library_full_name.bounded_string);
 
 	
 -- SCHEMATIC RELATED

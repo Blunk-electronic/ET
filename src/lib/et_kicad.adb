@@ -57,15 +57,18 @@ package body et_kicad is
 		return et_general.type_component_appearance is
 	begin
 		case type_symbol_appearance'value(appearance) is
-			when N => return et_general.sch_pcb;
-			when P => return et_general.sch;
+			when N => put_line("   normal");
+				return et_general.sch_pcb;
+			when P => put_line("   virtual");
+				return et_general.sch;
 		end case;
 	end to_appearance;
 	
 	procedure read_components_libraries is
-		use et_libraries.type_list_of_full_library_names;
+	-- Reads components from libraries as stored in lib_dir and project_libraries:
+		use et_libraries.type_list_of_library_names;
 		use et_libraries.type_library_full_name;
-		cursor			: et_libraries.type_list_of_full_library_names.cursor := first(list_of_full_library_names);
+		cursor			: et_libraries.type_list_of_library_names.cursor := first(et_libraries.project_libraries);
 		lib_file_name	: et_libraries.type_library_full_name.bounded_string;
 
 		lib_cursor		: et_libraries.type_libraries.cursor;
@@ -86,7 +89,7 @@ package body et_kicad is
 				key		: in et_libraries.type_library_full_name.bounded_string;
 				library	: in out et_libraries.type_components.map) is
 
-			begin
+			begin -- insert_component
 				-- For the logfile write the component name.
 				-- If the component contains more than one unit, write number of units.
 				put_line("   " & get_field_from_line(line,2)); -- 74LS00
@@ -160,18 +163,26 @@ package body et_kicad is
 		end read_library;
 
 		
-		begin -- read_components_libraries
-		if is_empty(list_of_full_library_names) then
+	begin -- read_components_libraries
+
+		-- If there were no libraries in the project file, there is nothing to do but writing a warning:
+		if is_empty(et_libraries.project_libraries) then
 			put_line(message_warning & " no component libraries defined in project file !");
 		else
 			write_message(
 				file_handle => current_output,
 				text => "Loading component libraries ...",
 				console => true);
-		
+
+			-- We loop in the list of project libraries.
 			while cursor /= no_element loop
-			
-				lib_file_name := element(cursor);
+
+				-- From lib_dir and the cursor (points to a project lib) we compose the full library file name:
+				lib_file_name := to_bounded_string( compose (
+								containing_directory => et_libraries.type_library_directory.to_string(et_libraries.lib_dir),
+								name => et_libraries.type_library_name.to_string(element(cursor)),
+								extension => file_extension_schematic_lib
+								));
 
 				write_message(
 					file_handle => current_output,
@@ -228,12 +239,11 @@ package body et_kicad is
 		function read_project_file return et_import.type_schematic_file_name.bounded_string is
 		-- Reads the project file in terms of LibDir and LibName. 
 		-- LibDir is stored in variable lib_dir.
-		-- Full library name are stored in list_of_full_library_names.
+		-- Project library names are stored in project_libraries.
 		-- Returns the name of the top level schematic file.
 			line : type_fields_of_line;
 			
 			use et_import.type_project_file_name;
-			use et_libraries.type_list_of_full_library_names;
 			
             line_counter : natural := 0;
             section_eeschema_entered : boolean := false;
@@ -245,7 +255,7 @@ package body et_kicad is
                 section_eeschema_libraries_entered := false;
             end clear_section_entered_flags;
             
-		begin
+		begin -- read_project_file
 			put_line("reading project file ...");
 
 			open (file => et_import.project_file_handle, mode => in_file, name => to_string(et_import.project_file_name));
@@ -279,29 +289,33 @@ package body et_kicad is
 						if section_eeschema_entered then
 
 							-- get path to libraries (LibDir) and store it in lib_dir (see et_kicad.ads)
+							-- CS: lib_dir must be a list of paths as kicad stores them like "LibDir=../../lbr;/home/tmp/.."
+							-- CS: currently we assume only one path here
 							if get_field_from_line(line,1) = project_keyword_library_directory then
-								lib_dir := to_bounded_string(get_field_from_line(line,2));
+								et_libraries.lib_dir := to_bounded_string(get_field_from_line(line,2));
 
 								-- For the log write something like "LibDir ../../lbr"
-								put_line(" " & project_keyword_library_directory & " " & to_string(lib_dir));
+								put_line(" " & project_keyword_library_directory & " " & to_string(et_libraries.lib_dir));
 							end if;
 							
 						end if;
 
 						if section_eeschema_libraries_entered then
 
-							-- Get full library names (incl. path and extension) and store them in list_of_project_libraries (see et_kicad.ads)
+							-- Get library names (incl. path and extension) and store them in list_of_full_library_names (see et_kicad.ads)
+							-- from a line like "LibName1=bel_supply"
 							-- We ignore the index of LibName. Since we store the lib names in a doubly linked list,
-							-- their order keeps unchanged anyway.
+							-- their order remains unchanged.
 							if get_field_from_line(line,1)(1..project_keyword_library_name'length) 
 								= project_keyword_library_name then
 								
-								et_libraries.type_list_of_full_library_names.append(
-									container => list_of_full_library_names, 
-									new_item => et_libraries.type_library_full_name.to_bounded_string(
-										get_field_from_line(line,2) -- name incl. path
-										& "."
-										& file_extension_schematic_lib)); -- extension
+								et_libraries.type_list_of_library_names.append(
+									container => et_libraries.project_libraries, 
+									new_item => et_libraries.type_library_name.to_bounded_string(
+										get_field_from_line(line,2)
+										--& "."
+										--& file_extension_schematic_lib)); -- extension
+										));
 
 								-- For the log write something like "LibName ../../lbr/bel_connectors_and_jumpers"
 								put_line(" " & get_field_from_line(line,1) 
@@ -2158,7 +2172,7 @@ package body et_kicad is
 
 				-- derive top level schematic file name from project file (they differ only in their extension)
 				top_level_schematic_file := read_project_file;
-				read_components_libraries;
+				read_components_libraries; -- as stored in lib_dir and project_libraries
 				name_of_schematic_file := top_level_schematic_file;
 
                 -- The top level schematic file dictates the module name. At the same time it is the first entry

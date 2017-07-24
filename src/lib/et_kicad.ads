@@ -65,11 +65,8 @@ package et_kicad is
 
 	-- project libraries:
 	project_keyword_library_directory       : constant string (1..6)  := "LibDir";
-	lib_dir : et_libraries.type_library_directory.bounded_string; -- here the path to the project libraries is stored
 
-	-- full path and name of library files are collected in list_of_full_library_names
     project_keyword_library_name            : constant string (1..7)  := "LibName"; -- with index like "LibName1"
-	list_of_full_library_names				: et_libraries.type_list_of_full_library_names.list;
 
 
     -- headers, footers, keywords 
