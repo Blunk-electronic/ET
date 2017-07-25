@@ -55,11 +55,14 @@ package body et_kicad is
 
 	function to_appearance ( appearance : in string) 
 		return et_general.type_component_appearance is
+		a : type_symbol_appearance;
 	begin
-		case type_symbol_appearance'value(appearance) is
-			when N => put_line("   normal");
+		put_line("appearance is " & appearance);
+		a := type_symbol_appearance'value(appearance);
+		case a is
+			when N => --put_line("   normal");
 				return et_general.sch_pcb;
-			when P => put_line("   virtual");
+			when P => put_line("   virtual (" & type_symbol_appearance'image(a) & ")");
 				return et_general.sch;
 		end case;
 	end to_appearance;
@@ -93,6 +96,7 @@ package body et_kicad is
 				-- For the logfile write the component name.
 				-- If the component contains more than one unit, write number of units.
 				put_line("   " & get_field_from_line(line,2)); -- 74LS00
+				put_line("->" & to_string(line) & "<-");
 				units_total := type_unit_id'value(get_field_from_line(line,8));
 				if units_total > 1 then
 					put_line("     " & "with" & type_unit_id'image(units_total) & " units");
@@ -109,7 +113,6 @@ package body et_kicad is
 				-- units total, -- like 4
 				-- all units not interchangeable L (otherwise F), (similar to swap level in EAGLE)
 				-- power symbol P (otherwise N)
-				
 				
 				et_libraries.type_components.insert(
 					container	=> library,
@@ -140,7 +143,10 @@ package body et_kicad is
 
 				-- count lines and save a line in variable "line" (see et_string_processing.ads)
 				line_counter := line_counter + 1;
- 				line := read_line(line => get_line,	comment_mark => "#");
+
+				-- The schematic library files use comments (#). But only the comments at the begin
+				-- of a line are relevant. Others are to be ignored. Thus test_whole_line is false.
+ 				line := read_line(line => get_line,	comment_mark => "#", test_whole_line => false);
 				case line.field_count is
 					when 0 => null; -- we skip empty lines
 					when others =>

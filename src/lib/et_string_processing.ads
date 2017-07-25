@@ -75,7 +75,12 @@ package et_string_processing is
 	-- Returns true if text_with_wildcards matches text_exact.
 	-- text_with_wildcards is something like R41* , text_exact is something like R415
 	
-	function remove_comment_from_line(text_in : in string; comment_mark : in string) return string;
+	function remove_comment_from_line(
+		text_in : in string;					-- the input string
+		comment_mark : in string;				-- the comment mark (like "--" or "#"
+		test_whole_line : in boolean := true	-- when false, cares for the comment mark at line begin only
+		)										-- further comment marks are ignored
+		return string;
 
 	function get_field_count (text_in : string) return natural;
 
@@ -108,6 +113,8 @@ package et_string_processing is
 	-- Breaks down a given string and returns a type_fields_of_line.
 		line			: in string; -- the line to be broken down
 		comment_mark	: in string; -- the comment mark like "--" or "#"
+		test_whole_line	: in boolean := true; -- when false, cares for the comment mark at line begin only
+												 -- further comment marks are ignored
 		ifs				: in character := latin_1.space) -- field separator
 		return type_fields_of_line;
 	

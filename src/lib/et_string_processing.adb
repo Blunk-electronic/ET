@@ -113,7 +113,12 @@ package body et_string_processing is
 	end wildcard_match;
 	
 
-	function remove_comment_from_line(text_in : string; comment_mark : in string) return string is
+	function remove_comment_from_line (
+		text_in : in string;					-- the input string
+		comment_mark : in string;				-- the comment mark (like "--" or "#"
+		test_whole_line : in boolean := true	-- when false, cares for the comment mark at line begin only
+												-- further comment marks are ignored
+		) return string is
 		position_of_comment : natural;
 		-- NOTE: tabulators will be left unchanged. no substituion with whitespace is done !
 	begin
@@ -122,10 +127,14 @@ package body et_string_processing is
 			case position_of_comment is -- check position of comment
 				when 0 => -- no comment found -> return line as it is
 					return text_in;
-				when 1 => return ""; -- comment at beginning of line -> do nothing
-				when others => -- comment somewhere in the line -> delete comment
-					--put_line("comment at pos :" & natural'image(position_of_comment));
-					return delete(text_in, position_of_comment, text_in'length); -- remove comment
+				when 1 => return ""; -- comment at beginning of line -> return empty string
+				when others => -- comment somewhere in the line 
+				
+					if test_whole_line then --> delete comment
+						return delete(text_in, position_of_comment, text_in'length); -- remove comment
+					else
+						return text_in; --> return line as it is
+					end if;
 			end case;
 		end if;
 		return "";
@@ -313,6 +322,8 @@ package body et_string_processing is
 	-- CS: poor performance -> rework !
 		line			: in string; -- the line to be broken down
 		comment_mark	: in string; -- the comment mark like "--" or "#"
+		test_whole_line	: in boolean := true; -- when false, cares for the comment mark at line begin only
+												 -- further comment marks are ignored
 		ifs				: in character := latin_1.space -- field separator
 		) return type_fields_of_line is
 		list : type_list_of_strings.vector;
@@ -339,7 +350,11 @@ package body et_string_processing is
 		if comment_mark'length = 0 then
 			read_fields(line); -- no comment specified, leave line as it is
 		else
-			read_fields(remove_comment_from_line(line, comment_mark));
+			read_fields(remove_comment_from_line(
+				text_in => line,
+				comment_mark => comment_mark,
+				test_whole_line => test_whole_line
+				));
 		end if;
 		
 		--1 + ada.strings.fixed.count(line,row_separator_1a);
