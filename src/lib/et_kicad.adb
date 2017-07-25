@@ -1925,27 +1925,16 @@ package body et_kicad is
 												-- is pointing to.
 											end if;
 
-											-- read unit id from a line like "U 2 1 4543D4D3F" -- CS: bug. should read "U 2 4 4543D4D3F" for an 7400
+											-- read line like "U 2 1 4543D4D3F" 
+											-- U is the line indicator, 2 is the unit id, 1 is the demorgan flag, last field is the timestamp
 											if get_field_from_line(line,1) = schematic_component_identifier_unit then -- "U"
-												--put_line(to_string(line_of_schematic_file));
 
 												-- KiCad uses positive numbers to identifiy units. But in general a unit name can be a string as well.
 												-- Therefore we handle the unit id as string.
 												-- Temporarily the unit data is collected in unit_scratch (to update the device later when leaving the device section).
-												-- CS: We also verify here that the unit id is not greater than the total number of units (in field 2).
--- 												if 	positive'value(get_field_from_line(line,3)) > -- "3" -- id
--- 													positive'value(get_field_from_line(line,2))   -- "7" -- total
--- 													then
--- 														new_line;
--- 														put_line(message_warning & "Unit ID greater than number of units !");
--- 												end if;
 												unit_scratch.name := et_libraries.type_unit_name.to_bounded_string(
 													get_field_from_line(line,2)); -- the unit id
-
-												--put(et_import.report_handle," with unit " & type_device_unit_name.to_string(unit_scratch.name) & " at");
-
 												put(" with unit " & et_libraries.type_unit_name.to_string(unit_scratch.name) & " at");
-												
 											end if;
 
 											-- Read unit coordinates from a line like "P 3200 4500".
