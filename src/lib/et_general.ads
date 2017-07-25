@@ -138,7 +138,7 @@ package et_general is
 	-- other angles are not reasonable (footprints and layout have an own type for orientation)
 	
 -- COMPONENTS
-	component_prefix_length_max : constant natural := 3; -- CS: there is no reason to work with longer prefixes.
+	component_prefix_length_max : constant natural := 10; -- CS: there is no reason to work with longer prefixes.
 	package type_component_prefix is new generic_bounded_length(component_prefix_length_max); use type_component_prefix;
 	type type_component_appearance is ( 
 		sch,		-- a component that exists in the schematic only (like power symbols)

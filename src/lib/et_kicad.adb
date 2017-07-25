@@ -57,12 +57,12 @@ package body et_kicad is
 		return et_general.type_component_appearance is
 		a : type_symbol_appearance;
 	begin
-		put_line("appearance is " & appearance);
+-- 		put_line("appearance is " & appearance);
 		a := type_symbol_appearance'value(appearance);
 		case a is
 			when N => --put_line("   normal");
 				return et_general.sch_pcb;
-			when P => put_line("   virtual (" & type_symbol_appearance'image(a) & ")");
+			when P => put_line("    virtual symbol");
 				return et_general.sch;
 		end case;
 	end to_appearance;
@@ -92,11 +92,18 @@ package body et_kicad is
 				key		: in et_libraries.type_library_full_name.bounded_string;
 				library	: in out et_libraries.type_components.map) is
 
+-- 				component : et_libraries.type_component;
+-- 				prefix : et_general.type_component_prefix.bounded_string;
 			begin -- insert_component
 				-- For the logfile write the component name.
 				-- If the component contains more than one unit, write number of units.
 				put_line("   " & get_field_from_line(line,2)); -- 74LS00
-				put_line("->" & to_string(line) & "<-");
+-- 				put_line("->" & to_string(line) & "<-");
+-- 
+-- 				put_line("prefix1 ->" & get_field_from_line(line,3) & "<-"); -- 74LS00
+-- 				prefix := et_general.type_component_prefix.to_bounded_string(get_field_from_line(line,3)); -- U
+-- 				put_line("prefix2 ->" & et_general.type_component_prefix.to_string(prefix) & "<-");
+				
 				units_total := type_unit_id'value(get_field_from_line(line,8));
 				if units_total > 1 then
 					put_line("     " & "with" & type_unit_id'image(units_total) & " units");
@@ -113,6 +120,12 @@ package body et_kicad is
 				-- units total, -- like 4
 				-- all units not interchangeable L (otherwise F), (similar to swap level in EAGLE)
 				-- power symbol P (otherwise N)
+
+-- 				component := (
+-- 						prefix	=> et_general.type_component_prefix.to_bounded_string(get_field_from_line(line,3)), -- U
+-- 						appearance => sch , --to_appearance(get_field_from_line(line,10)), -- N/P
+-- 						units	=> et_libraries.type_units.empty_map
+-- 						);
 				
 				et_libraries.type_components.insert(
 					container	=> library,
@@ -124,7 +137,6 @@ package body et_kicad is
 						appearance => to_appearance(get_field_from_line(line,10)), -- N/P
 						units	=> et_libraries.type_units.empty_map
 						)
-					
 					);
 
 				if comp_inserted then
@@ -1866,7 +1878,7 @@ package body et_kicad is
 									
 									-- READ COMPONENTS
 									-- Once a component header ($Comp) found, set device_entered flag. This indicates we are inside a device section.
-									-- Inside the device section, we process its content until the component footer is found.
+									-- Inside the device section, we process its content until the component footer ($EndComp) is found.
 									if not device_entered then
 										if get_field_from_line(line,1) = schematic_component_header then
 											device_entered := true;
@@ -1894,43 +1906,41 @@ package body et_kicad is
 												--device_scratch.annotation := type_device_name.to_bounded_string(get_field_from_line(line,3)); -- "N1"
 												-- CS: check annotation
 
+												put("  device " 
+													& get_field_from_line(line,3) -- "N1"
+													& " is " 
+													& et_libraries.type_component_name.to_string(device_scratch.name_in_library));
+
+												
 												-- Insert device in device list of module.
 												type_device_list_of_module.insert(
 													container => module.devices,
 													new_item => device_scratch,
 													key => type_device_name.to_bounded_string(get_field_from_line(line,3)), -- "N1"
 													position => device_cursor_scratch,
-													inserted => device_inserted);
-
-												-- If device was not in device list before, write it in logfile.
-												if device_inserted then
-													put("  device " 
-														& get_field_from_line(line,3) -- "N1"
-														& " is " 
-														& et_libraries.type_component_name.to_string(device_scratch.name_in_library));
-												end if;
+													inserted => device_inserted); -- this flag is just formal. no further evaluation												
 
 												-- The cursor device_cursor_scratch now points to the device. There will be more device information (in the following) 
 												-- that will go into device_scratch. Once the device section is left, device_scratch updates the device where the cursor
-												-- is pointing at.
+												-- is pointing to.
 											end if;
 
-											-- read unit id from a line like "U 7 3 4543D4D3F"
+											-- read unit id from a line like "U 2 1 4543D4D3F" -- CS: bug. should read "U 2 4 4543D4D3F" for an 7400
 											if get_field_from_line(line,1) = schematic_component_identifier_unit then -- "U"
 												--put_line(to_string(line_of_schematic_file));
 
-												-- KiCad uses positive numbers to identifiy units. In general a unit name can be a string as well.
+												-- KiCad uses positive numbers to identifiy units. But in general a unit name can be a string as well.
 												-- Therefore we handle the unit id as string.
 												-- Temporarily the unit data is collected in unit_scratch (to update the device later when leaving the device section).
-												-- We also verify here that the unit id is not greater than the total number of units (in field 2).
-												if 	positive'value(get_field_from_line(line,3)) > -- "3" -- id
-													positive'value(get_field_from_line(line,2))   -- "7" -- total
-													then
-														new_line;
-														put_line(message_warning & "Unit ID greater than number of units !");
-												end if;
+												-- CS: We also verify here that the unit id is not greater than the total number of units (in field 2).
+-- 												if 	positive'value(get_field_from_line(line,3)) > -- "3" -- id
+-- 													positive'value(get_field_from_line(line,2))   -- "7" -- total
+-- 													then
+-- 														new_line;
+-- 														put_line(message_warning & "Unit ID greater than number of units !");
+-- 												end if;
 												unit_scratch.name := et_libraries.type_unit_name.to_bounded_string(
-													get_field_from_line(line,3)); -- "3"
+													get_field_from_line(line,2)); -- the unit id
 
 												--put(et_import.report_handle," with unit " & type_device_unit_name.to_string(unit_scratch.name) & " at");
 
