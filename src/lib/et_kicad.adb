@@ -58,12 +58,14 @@ package body et_kicad is
 		return et_general.type_component_appearance is
 		a : type_symbol_appearance;
 	begin
--- 		put_line("appearance is " & appearance);
+ 		put("    appearance ");
 		a := type_symbol_appearance'value(appearance);
 		case a is
-			when N => --put_line("   normal");
+			when N =>
+				put_line("schematic and pcb");
 				return et_general.sch_pcb;
-			when P => put_line("    virtual symbol");
+			when P => 
+				put_line("virtual (schematic only)");
 				return et_general.sch;
 		end case;
 	end to_appearance;
@@ -74,25 +76,50 @@ package body et_kicad is
 		return et_libraries.type_swap_level is
 		i : type_symbol_interchangeable;
 	begin
+		put("    units interchangeable ");
 		i := type_symbol_interchangeable'value(swap_in);
 		case i is
 			when L =>
+				put_line("no");
 				return 0; -- no swapping allowed
 			when F =>
+				put_line("yes");
 				return 1; -- swapping allowed at this level
 		end case;
 	end to_swap_level;
 
 	function to_pin_visibile ( vis_in : in string)
+	-- Converts the kicad "show pin number" flag to the et type_pin_visible.
 		return et_libraries.type_pin_visible is
+		v : type_show_pin_number;
 	begin
-		return et_libraries.off;
+		put("    pin/pad numbers ");
+		v := type_show_pin_number'value(vis_in);
+		case v is 
+			when Y => 
+				put_line("visible");
+				return et_libraries.on;
+			when N => 
+				put_line("invisible");
+				return et_libraries.off;
+		end case;
 	end to_pin_visibile;
 
 	function to_port_visibile ( vis_in : in string)
+	-- Converts the kicad "show pin name" flag to the et type_port_visible.
 		return et_libraries.type_port_visible is
+		v : type_show_pin_name;
 	begin
-		return et_libraries.off;
+		put("    port names ");	
+		v := type_show_pin_name'value(vis_in);
+		case v is 
+			when Y => 
+				put_line("visible");
+				return et_libraries.on;
+			when N => 
+				put_line("invisible");
+				return et_libraries.off;
+		end case;
 	end to_port_visibile;
 
 	
@@ -134,26 +161,31 @@ package body et_kicad is
 				key		: in et_libraries.type_library_full_name.bounded_string;
 				library	: in out et_libraries.type_components.map) is
 
-				-- From the "interchangeable" flag we set the component wide swap level. It applies for 
-				-- all units of the component:
-				swap_level : et_libraries.type_swap_level := to_swap_level(get_field_from_line(line,9));
-				port_name_offset : et_libraries.type_grid := et_libraries.type_grid'value(get_field_from_line(line,5));
-				pin_name_visible  : et_libraries.type_pin_visible  := to_pin_visibile  (get_field_from_line(line,6));
-				port_name_visible : et_libraries.type_port_visible := to_port_visibile (get_field_from_line(line,7));
+				-- If only one unit provided, the flag "interchangeable" is don't care -> default swap level assumed.
+				-- If more units provided, the swap level is derived from field #9.
+				swap_level			: et_libraries.type_swap_level := et_libraries.swap_level_default;
+				port_name_offset	: et_libraries.type_grid;
+				pin_name_visible 	: et_libraries.type_pin_visible;
+				port_name_visible	: et_libraries.type_port_visible;
 			begin -- insert_component
+
 				-- For the logfile write the component name.
 				-- If the component contains more than one unit, write number of units.
 				put_line("   " & get_field_from_line(line,2)); -- 74LS00
--- 				put_line("->" & to_string(line) & "<-");
--- 
--- 				put_line("prefix1 ->" & get_field_from_line(line,3) & "<-"); -- 74LS00
--- 				prefix := et_general.type_component_prefix.to_bounded_string(get_field_from_line(line,3)); -- U
--- 				put_line("prefix2 ->" & et_general.type_component_prefix.to_string(prefix) & "<-");
-				
+
+				-- Get number of units and set swap level as specified in field #9.
 				units_total := type_unit_id'value(get_field_from_line(line,8));
 				if units_total > 1 then
-					put_line("     " & "with" & type_unit_id'image(units_total) & " units");
+					put_line("    with" & type_unit_id'image(units_total) & " units");
+
+					-- From the "interchangeable" flag we set the component wide swap level. It applies for 
+					-- all units of the component:
+					swap_level := to_swap_level (get_field_from_line(line,9));
 				end if;
+				
+				port_name_offset	:= et_libraries.type_grid'value (get_field_from_line(line,5)); -- relevant for supply pins only
+				pin_name_visible 	:= to_pin_visibile  (get_field_from_line(line,6));
+				port_name_visible	:= to_port_visibile (get_field_from_line(line,7));
 				
 				
 				et_libraries.type_components.insert(

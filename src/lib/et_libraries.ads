@@ -188,6 +188,7 @@ package et_libraries is
 
 	swap_level_max : constant natural := 10;
 	type type_swap_level is new natural range 0..swap_level_max;
+	swap_level_default : constant := type_swap_level'first;
 	
 	-- A unit has coordinates, consists of segment lists , ports and fields.
 	-- EAGLE refers to units as "gates". KiCad refers to them as "units":
