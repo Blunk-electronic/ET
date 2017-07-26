@@ -236,6 +236,13 @@ package body et_kicad is
 								position	=> lib_cursor,
 								process		=> insert_component'access);
 						end if;
+
+						-- a reference field like "F0 "U" 0 50 50 H V C CNN"
+						if get_field_from_line(line,1) = et_kicad.field_reference then -- 
+							put_line(to_string(line));
+-- 							et_libraries.type_components.update_element(
+-- 								container	=> et_
+						end if;
 				end case;
 
 			end loop;
