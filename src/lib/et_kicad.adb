@@ -54,6 +54,7 @@ package body et_kicad is
 
 
 	function to_appearance ( appearance : in string) 
+	-- Converts the kicad apperance flag to the et appearance flag.
 		return et_general.type_component_appearance is
 		a : type_symbol_appearance;
 	begin
@@ -66,6 +67,34 @@ package body et_kicad is
 				return et_general.sch;
 		end case;
 	end to_appearance;
+
+	function to_swap_level ( swap_in : in string)
+	-- Converts the kicad interchangeable flag to the et swap level.
+	-- Since Kicad has only one swap level we convert to the lowest swap level available.
+		return et_libraries.type_swap_level is
+		i : type_symbol_interchangeable;
+	begin
+		i := type_symbol_interchangeable'value(swap_in);
+		case i is
+			when L =>
+				return 0; -- no swapping allowed
+			when F =>
+				return 1; -- swapping allowed at this level
+		end case;
+	end to_swap_level;
+
+	function to_pin_visibile ( vis_in : in string)
+		return et_libraries.type_pin_visible is
+	begin
+		return et_libraries.off;
+	end to_pin_visibile;
+
+	function to_port_visibile ( vis_in : in string)
+		return et_libraries.type_port_visible is
+	begin
+		return et_libraries.off;
+	end to_port_visibile;
+
 	
 	procedure read_components_libraries is
 	-- Reads components from libraries as stored in lib_dir and project_libraries:
@@ -87,13 +116,30 @@ package body et_kicad is
 
 			procedure insert_component (
 			-- Updates a library (which is a type_components.map) by inserting a component.
+										   
+			-- The line it is about looks like:  DEF 74LS00 U 0 30 Y Y 4 F N
+			-- The fields meaning is as follows:
+			-- name, like 74LS00
+			-- prefix, like U
+			-- unknown -- CS: what is it good for ?
+			-- pin name position offset of supply pins, if "place pin names inside" is off. the offset assumes zero
+			-- show pin/pad number Y/N,
+			-- show pin name Y/N, -- (better port name)
+			-- units total, -- like 4
+			-- all units not interchangeable L (otherwise F), (similar to swap level in EAGLE)
+			-- power symbol P (otherwise N)
+										   
 			-- If the component was inserted (should be) the comp_cursor points to the component
 			-- for later inserting the units:
 				key		: in et_libraries.type_library_full_name.bounded_string;
 				library	: in out et_libraries.type_components.map) is
 
--- 				component : et_libraries.type_component;
--- 				prefix : et_general.type_component_prefix.bounded_string;
+				-- From the "interchangeable" flag we set the component wide swap level. It applies for 
+				-- all units of the component:
+				swap_level : et_libraries.type_swap_level := to_swap_level(get_field_from_line(line,9));
+				port_name_offset : et_libraries.type_grid := et_libraries.type_grid'value(get_field_from_line(line,5));
+				pin_name_visible  : et_libraries.type_pin_visible  := to_pin_visibile  (get_field_from_line(line,6));
+				port_name_visible : et_libraries.type_port_visible := to_port_visibile (get_field_from_line(line,7));
 			begin -- insert_component
 				-- For the logfile write the component name.
 				-- If the component contains more than one unit, write number of units.
@@ -109,23 +155,6 @@ package body et_kicad is
 					put_line("     " & "with" & type_unit_id'image(units_total) & " units");
 				end if;
 				
-				-- The line it is about looks like:  DEF 74LS00 U 0 30 Y Y 4 F N
-				-- The fields meaning is as follows:
-				-- name, like 74LS00
-				-- prefix, like U
-				-- unknown -- CS: what is it good for ?
-				-- pin name position offset of supply pins, if "place pin names inside" is off. the offset assumes zero
-				-- show pin number Y/N,
-				-- show pin name Y/N, -- (or port name)
-				-- units total, -- like 4
-				-- all units not interchangeable L (otherwise F), (similar to swap level in EAGLE)
-				-- power symbol P (otherwise N)
-
--- 				component := (
--- 						prefix	=> et_general.type_component_prefix.to_bounded_string(get_field_from_line(line,3)), -- U
--- 						appearance => sch , --to_appearance(get_field_from_line(line,10)), -- N/P
--- 						units	=> et_libraries.type_units.empty_map
--- 						);
 				
 				et_libraries.type_components.insert(
 					container	=> library,

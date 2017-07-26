@@ -232,6 +232,9 @@ package et_kicad is
 	unit_id : type_unit_id;
 
 	type type_symbol_appearance is (N, P); -- normal or power symbol
+	type type_symbol_interchangeable is (L, F); -- L means swapping not allowed, F means swapping allowed 
+	type type_show_pin_number is (Y, N); -- show pin/pad number yes/no
+	type type_show_pin_name is (Y, N); -- show pin (better port) name yes/no
 
 
 end et_kicad;

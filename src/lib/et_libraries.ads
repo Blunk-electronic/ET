@@ -114,21 +114,26 @@ package et_libraries is
 		POWER_IN		-- a power sink
 		);
 
-	type type_visibility_port is ( ON, OFF);
-	type type_visibility_pin is ( ON, OFF);
+	type type_port_visible is ( ON, OFF);
+	type type_pin_visible is ( ON, OFF);
 	
 	-- Initially, at the lowest level (usually library level), a port has a name, direction,
 	-- coordinates, orientation, flags for making port and pin name visible. 
 	-- Later, other values are assigned like pin name. CS: set defaults
 	type type_port is record
-		name              : type_port_name.bounded_string; -- example: "CLOCK"
+		name              : type_port_name.bounded_string; -- example: "CLOCK" -- CS: should be the key in the port list instead
+		-- port swap level ?
+		
+		-- Kicad requirement: sometimes the supply port name has a special position
+		name_position_offset : type_grid; 
+		
 		direction         : type_port_direction; -- example: "passive"
 		coordinates       : type_coordinates;
 		orientation       : type_orientation;
-		display_port_name : boolean := true;
-		display_pin_name  : boolean := true;
+		port_name_visible : type_port_visible;
+		pin_name_visible  : type_pin_visible;
 		pin               : type_pin_name.bounded_string; -- example: "144" or in case of a BGA package "E14"
- 		--device            : type_device_name.bounded_string; -- example: "IC501" CS: wrong ?
+		-- pin_position_offset ?
 	end record;
 
 
@@ -180,10 +185,14 @@ package et_libraries is
 	end record;
 	package type_fields is new doubly_linked_lists (
 		element_type => type_field);
+
+	swap_level_max : constant natural := 10;
+	type type_swap_level is new natural range 0..swap_level_max;
 	
 	-- A unit has coordinates, consists of segment lists , ports and fields.
 	-- EAGLE refers to units as "gates". KiCad refers to them as "units":
 	type type_unit is record
+		swap_level	: type_swap_level;
 		lines		: type_lines.list;
 		arcs 		: type_arcs.list;
 		circles		: type_circles.list;

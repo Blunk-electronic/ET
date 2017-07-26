@@ -113,7 +113,7 @@ package et_general is
 
 
 -- GRID AND COORDINATES
-	type type_grid_extended is digits 11 range -100000000.00 .. 100000000.00;	
+	type type_grid_extended is digits 11 range -100000000.00 .. 100000000.00;
 	subtype type_grid is type_grid_extended range -100000.00 .. 100000.00; -- CS: unit assumed is MIL !!!
 	-- CS: negative schematic coordinates should be forbidden
 	-- type type_grid is digits 7 range 0.00 .. 100000.00; -- CS: unit assumed is MIL !!!	
@@ -123,7 +123,7 @@ package et_general is
 		x,y				: type_grid;
 	end record;
 
-	
+	coordinate_zero : constant type_grid := 0.0;
 	
 -- PAPER SIZES
     type type_paper_size is ( A0, A1, A2, A4 ); -- CS: others
