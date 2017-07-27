@@ -140,74 +140,93 @@ package body et_kicad is
 		procedure read_library is
 			line			: type_fields_of_line;
 			line_counter	: natural := 0;
+			component_entered : boolean := false;
 
-			procedure insert_component (
-			-- Updates a library (which is a type_components.map) by inserting a component.
-										   
-			-- The line it is about looks like:  DEF 74LS00 U 0 30 Y Y 4 F N
-			-- The fields meaning is as follows:
-			-- name, like 74LS00
-			-- prefix, like U
-			-- unknown -- CS: what is it good for ?
-			-- pin name position offset of supply pins, if "place pin names inside" is off. the offset assumes zero
-			-- show pin/pad number Y/N,
-			-- show pin name Y/N, -- (better port name)
-			-- units total, -- like 4
-			-- all units not interchangeable L (otherwise F), (similar to swap level in EAGLE)
-			-- power symbol P (otherwise N)
-										   
-			-- If the component was inserted (should be) the comp_cursor points to the component
-			-- for later inserting the units:
-				key		: in et_libraries.type_library_full_name.bounded_string;
-				library	: in out et_libraries.type_components.map) is
-
-				-- If only one unit provided, the flag "interchangeable" is don't care -> default swap level assumed.
-				-- If more units provided, the swap level is derived from field #9.
-				swap_level			: et_libraries.type_swap_level := et_libraries.swap_level_default;
-				port_name_offset	: et_libraries.type_grid;
-				pin_name_visible 	: et_libraries.type_pin_visible;
-				port_name_visible	: et_libraries.type_port_visible;
-			begin -- insert_component
-
-				-- For the logfile write the component name.
-				-- If the component contains more than one unit, write number of units.
-				put_line("   " & get_field_from_line(line,2)); -- 74LS00
-
-				-- Get number of units and set swap level as specified in field #9.
-				units_total := type_unit_id'value(get_field_from_line(line,8));
-				if units_total > 1 then
-					put_line("    with" & type_unit_id'image(units_total) & " units");
-
-					-- From the "interchangeable" flag we set the component wide swap level. It applies for 
-					-- all units of the component:
-					swap_level := to_swap_level (get_field_from_line(line,9));
-				end if;
-				
-				port_name_offset	:= et_libraries.type_grid'value (get_field_from_line(line,5)); -- relevant for supply pins only
-				pin_name_visible 	:= to_pin_visibile  (get_field_from_line(line,6));
-				port_name_visible	:= to_port_visibile (get_field_from_line(line,7));
-				
-				
-				et_libraries.type_components.insert(
-					container	=> library,
-					key			=> et_libraries.type_component_name.to_bounded_string(get_field_from_line(line,2)), -- 74LS00
-					position	=> comp_cursor,
-					inserted	=> comp_inserted,
-					new_item	=> (
-						prefix	=> et_general.type_component_prefix.to_bounded_string(get_field_from_line(line,3)), -- U
-						appearance => to_appearance(get_field_from_line(line,10)), -- N/P
-						units	=> et_libraries.type_units.empty_map
-						)
-					);
-
-				if comp_inserted then
-					null;
-				else
-					put_line(message_error & "line" & natural'image(line_counter) & " : component already in library !");
-					raise constraint_error;
-				end if;
-				
-			end insert_component;
+			prefix				: et_general.type_component_prefix.bounded_string;
+			-- CS: variable for unknown field #4
+			port_name_offset	: et_libraries.type_grid;
+			pin_name_visible 	: et_libraries.type_pin_visible;
+			port_name_visible	: et_libraries.type_port_visible;
+			units_total			: type_unit_id;
+			swap_level			: et_libraries.type_swap_level := et_libraries.swap_level_default;
+			appearance			: et_general.type_component_appearance;
+			
+			--unit_id				: type_unit_id;
+			
+-- 			procedure insert_component (
+-- 			-- Updates a library (which is a type_components.map) by inserting a component.
+-- 										   
+-- 			-- The line it is about looks like:  DEF 74LS00 U 0 30 Y Y 4 F N
+-- 			-- The fields meaning is as follows:
+-- 			-- name, like 74LS00
+-- 			-- prefix, like U
+-- 			-- unknown -- CS: what is it good for ?
+-- 			-- pin name position offset of supply pins, if "place pin names inside" is off. the offset assumes zero
+-- 			-- show pin/pad number Y/N,
+-- 			-- show pin name Y/N, -- (better port name)
+-- 			-- units total, -- like 4
+-- 			-- all units not interchangeable L (otherwise F), (similar to swap level in EAGLE)
+-- 			-- power symbol P (otherwise N)
+-- 										   
+-- 			-- If the component was inserted (should be) the comp_cursor points to the component
+-- 			-- for later inserting the units:
+-- 				key			: in et_libraries.type_library_full_name.bounded_string;
+-- 				components	: in out et_libraries.type_components.map) is
+-- 
+-- 				-- If only one unit provided, the flag "interchangeable" is don't care -> default swap level assumed.
+-- 				-- If more units provided, the swap level is derived from field #9.
+-- 				swap_level			: et_libraries.type_swap_level := et_libraries.swap_level_default;
+-- 				port_name_offset	: et_libraries.type_grid;
+-- 				pin_name_visible 	: et_libraries.type_pin_visible;
+-- 				port_name_visible	: et_libraries.type_port_visible;
+-- 			begin -- insert_component
+-- 
+-- 				-- For the logfile write the component name.
+-- 				-- If the component contains more than one unit, write number of units.
+-- 				put_line("   " & get_field_from_line(line,2)); -- 74LS00
+-- 
+-- 				-- Get number of units and set swap level as specified in field #9.
+-- 				units_total := type_unit_id'value(get_field_from_line(line,8));
+-- 				if units_total > 1 then
+-- 					put_line("    with" & type_unit_id'image(units_total) & " units");
+-- 
+-- 					-- From the "interchangeable" flag we set the component wide swap level. It applies for 
+-- 					-- all units of the component:
+-- 					swap_level := to_swap_level (get_field_from_line(line,9));
+-- 				end if;
+-- 				
+-- 				port_name_offset	:= et_libraries.type_grid'value (get_field_from_line(line,5)); -- relevant for supply pins only
+-- 				pin_name_visible 	:= to_pin_visibile  (get_field_from_line(line,6));
+-- 				port_name_visible	:= to_port_visibile (get_field_from_line(line,7));
+-- 				
+-- 				
+-- 				et_libraries.type_components.insert(
+-- 					container	=> components,
+-- 					key			=> et_libraries.type_component_name.to_bounded_string(get_field_from_line(line,2)), -- 74LS00
+-- 					position	=> comp_cursor,
+-- 					inserted	=> comp_inserted,
+-- 					new_item	=> (
+-- 						prefix	=> et_general.type_component_prefix.to_bounded_string(get_field_from_line(line,3)), -- U
+-- 						appearance => to_appearance(get_field_from_line(line,10)), -- N/P
+-- 						units	=> et_libraries.type_units.empty_map
+-- 						)
+-- 					);
+-- 
+-- 				if comp_inserted then
+-- 					null;
+-- 				else
+-- 					put_line(message_error & "line" & natural'image(line_counter) & " : component already in library !");
+-- 					raise constraint_error;
+-- 				end if;
+-- 				
+-- 			end insert_component;
+-- 
+-- 			procedure insert_unit (
+-- 				key			: in et_libraries.type_component_name.bounded_string;
+-- 				component	: in out et_libraries.type_component) is
+-- 			begin
+-- 				null;
+-- 			end insert_unit;
 			
 		begin -- read_library
 			put_line("  with components:");
@@ -224,24 +243,80 @@ package body et_kicad is
 					when 0 => null; -- we skip empty lines
 					when others =>
 
-						-- If there is a:
-					
-						-- component header like "DEF 74LS00 U 0 30 Y Y 4 F N",
-						-- We insert the component in the current library (indicated by lib_cursor).
-						-- (In other words this is an update of the current library):
-						if get_field_from_line(line,1) = et_kicad.def then
+						if not component_entered then -- wait for component header like "DEF 74LS00 U 0 30 Y Y 4 F N"
+						
+							-- component header like "DEF 74LS00 U 0 30 Y Y 4 F N",
+							-- We insert the component in the current library (indicated by lib_cursor).
+							-- (In other words this is an update of the current library):
+							if get_field_from_line(line,1) = et_kicad.def then
+								component_entered := true;
 
-							et_libraries.type_libraries.update_element(
-								container	=> et_import.component_libraries,
-								position	=> lib_cursor,
-								process		=> insert_component'access);
-						end if;
+								-- for the log:
+								put_line("   " & get_field_from_line(line,2)); -- 74LS00
 
-						-- a reference field like "F0 "U" 0 50 50 H V C CNN"
-						if get_field_from_line(line,1) = et_kicad.field_reference then -- 
-							put_line(to_string(line));
--- 							et_libraries.type_components.update_element(
--- 								container	=> et_
+								-- From the header we extract some basic information about the component:
+								
+								-- The line it is about looks like:  DEF 74LS00 U 0 30 Y Y 4 F N
+								-- The fields meaning is as follows:
+								-- name, like 74LS00
+								-- prefix, like U
+								-- unknown -- CS: what is it good for ?
+								-- pin name position offset of supply pins, if "place pin names inside" is off. the offset assumes zero
+								-- show pin/pad number Y/N,
+								-- show pin name Y/N, -- (better port name)
+								-- units total, -- like 4
+								-- all units not interchangeable L (otherwise F), (similar to swap level in EAGLE)
+								-- power symbol P (otherwise N)								
+
+								prefix := et_general.type_component_prefix.to_bounded_string(get_field_from_line(line,3)); -- U
+								-- CS: field #4 ?
+								port_name_offset	:= et_libraries.type_grid'value (get_field_from_line(line,5)); -- relevant for supply pins only
+								pin_name_visible 	:= to_pin_visibile  (get_field_from_line(line,6));
+								port_name_visible	:= to_port_visibile (get_field_from_line(line,7));
+								
+								-- Get number of units and set swap level as specified in field #9.
+								-- Swap level assumes default if only one unit available.
+								units_total := type_unit_id'value(get_field_from_line(line,8));
+								if units_total > 1 then
+									put_line("    with" & type_unit_id'image(units_total) & " units");
+
+									-- From the "interchangeable" flag we set the component wide swap level. It applies for 
+									-- all units of the component:
+									swap_level := to_swap_level (get_field_from_line(line,9));
+								else
+									swap_level := et_libraries.swap_level_default;
+								end if;
+								
+								appearance			:= to_appearance(get_field_from_line(line,10)); -- N/P
+
+								
+-- 								et_libraries.type_libraries.update_element(
+-- 									container	=> et_import.component_libraries,
+-- 									position	=> lib_cursor,
+-- 									process		=> insert_component'access);
+							end if;
+						else -- we are inside a component section
+							
+							-- a reference field like "F0 "U" 0 50 50 H V C CNN"
+							if get_field_from_line(line,1) = et_kicad.field_reference then -- 
+
+								-- Do a cross check of prefix and reference -- "U" 
+								-- CS: why this redundance ?
+								if strip_quotes(get_field_from_line(line,2)) = et_general.type_component_prefix.to_string(prefix) then
+									null; -- fine
+								else
+									put_line(message_warning & "line" & natural'image(line_counter) & ": prefix vs. reference mismatch !");
+								end if;
+								--put_line(to_string(line));
+-- 								et_libraries.type_components.update_element(
+-- 									container	=> et_libraries.type_libraries.element(lib_cursor),
+-- 									position	=> comp_cursor,
+-- 									process		=> insert_unit'access);
+
+							elsif get_field_from_line(line,1) = et_kicad.enddef then
+								component_entered := false;
+							end if;
+
 						end if;
 				end case;
 
@@ -2032,7 +2107,7 @@ package body et_kicad is
 
 												-- The field id must be mapped to the actual field meaning:
 												case type_schematic_component_field_id'value(get_field_from_line(line,2)) is -- "0..2"
-													when schematic_component_field_id_annotation => unit_field_scratch.meaning := annotation; -- "0"
+													when schematic_component_field_id_reference => unit_field_scratch.meaning := reference; -- "0"
 													when schematic_component_field_id_value => unit_field_scratch.meaning := value; -- "1"
 													when schematic_component_field_id_footprint => unit_field_scratch.meaning := footprint; -- "2"
 													--CS: when schematic_component_field_id_partcode => unit_text_scratch.meaning := partcode;

@@ -136,6 +136,12 @@ package et_general is
 	-- Objects may be placed at a certain angle:
 	type type_orientation is ( deg_0, deg_90, deg_180, deg_270); 
 	-- other angles are not reasonable (footprints and layout have an own type for orientation)
+
+-- NETS
+	-- The name of a net may have 100 characters which seems sufficient for now.
+ 	net_name_length	: constant natural := 100;
+	package type_net_name is new generic_bounded_length(net_name_length); use type_net_name;
+
 	
 -- COMPONENTS
 	component_prefix_length_max : constant natural := 10; -- CS: there is no reason to work with longer prefixes.
@@ -183,7 +189,7 @@ package et_general is
 	-- A text field may have 200 characters which seems sufficient for now.
  	text_field_length_max : constant natural := 200;
 	package type_text_field_string is new generic_bounded_length(text_field_length_max); use type_text_field_string;
-	type type_text_field_meaning is ( ANNOTATION, VALUE, FOOTPRINT, MISC); -- CS: note, partcode, function, ...
+	type type_text_field_meaning is ( REFERENCE, VALUE, FOOTPRINT, MISC); -- CS: note, partcode, function, ...
 	type type_text_field is tagged record
 		meaning			        : type_text_field_meaning;
         text                    : type_text_field_string.bounded_string;

@@ -49,10 +49,6 @@ package et_schematic is
 
 -- NAMES GENERAL
 
-	-- The name of a net may have 100 characters which seems sufficient for now.
- 	net_name_length	: constant natural := 100;
-	package type_net_name is new generic_bounded_length(net_name_length); use type_net_name;
-
 	-- The name of a module may have 100 characters which seems sufficient for now.
  	module_name_length	: constant natural := 100;
 	package type_module_name is new generic_bounded_length(module_name_length); use type_module_name;
@@ -96,7 +92,7 @@ package et_schematic is
 -- TEXT FIELD
 
 	type type_text_field is new et_general.type_text_field with record
-		coordinates             : type_coordinates;
+		coordinates		: type_coordinates;
 	end record;
 	package type_text_fields is new doubly_linked_lists (
 		element_type => type_text_field);

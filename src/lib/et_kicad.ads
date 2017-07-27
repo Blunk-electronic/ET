@@ -140,7 +140,7 @@ package et_kicad is
 
 	schematic_component_field_count_max 	: constant positive := 10; -- CS: verify
 	type type_schematic_component_field_id is range 0..schematic_component_field_count_max;
-	schematic_component_field_id_annotation	: constant type_schematic_component_field_id := 0;
+	schematic_component_field_id_reference	: constant type_schematic_component_field_id := 0;
 	schematic_component_field_id_value		: constant type_schematic_component_field_id := 1;
 	schematic_component_field_id_footprint	: constant type_schematic_component_field_id := 2;
 	-- CS: the purpose of field F 3 is unknown yet
@@ -232,8 +232,6 @@ package et_kicad is
 	-- KiCad supports up to 64 units within a component
 	unit_count_max : constant positive := 64;
 	type type_unit_id is new positive range 1..unit_count_max;
-	units_total : type_unit_id;
-	unit_id : type_unit_id;
 
 	type type_symbol_appearance is (N, P); -- normal or power symbol
 	type type_symbol_interchangeable is (L, F); -- L means swapping not allowed, F means swapping allowed 

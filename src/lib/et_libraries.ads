@@ -96,6 +96,11 @@ package et_libraries is
 		x,y				: type_grid;
 	end record;
 
+	
+-- TEXT FIELD
+	type type_text_field is new et_general.type_text_field with record
+		coordinates		: type_coordinates;
+	end record;
 
 
 -- PORT
