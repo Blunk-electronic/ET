@@ -150,7 +150,7 @@ package body et_kicad is
 			units_total			: type_unit_id;
 			swap_level			: et_libraries.type_swap_level := et_libraries.swap_level_default;
 			appearance			: et_general.type_component_appearance;
-			
+			reference			: et_libraries.type_text_field;
 			--unit_id				: type_unit_id;
 			
 -- 			procedure insert_component (
@@ -312,6 +312,11 @@ package body et_kicad is
 -- 									container	=> et_libraries.type_libraries.element(lib_cursor),
 -- 									position	=> comp_cursor,
 -- 									process		=> insert_unit'access);
+
+								reference.meaning := et_general.reference;
+								reference.text := et_general.type_text_field_string.to_bounded_string(strip_quotes(get_field_from_line(line,2)));
+								reference.coordinates.x := et_libraries.type_grid'value(get_field_from_line(line,3));
+								reference.coordinates.y := et_libraries.type_grid'value(get_field_from_line(line,4));
 
 							elsif get_field_from_line(line,1) = et_kicad.enddef then
 								component_entered := false;
@@ -687,11 +692,11 @@ package body et_kicad is
                 return visible;
             end to_visible;
 
-            function to_alignment_horizontal ( text : in string) return type_text_alignment_horizontal is
+            function to_alignment_horizontal ( text : in string) return et_general.type_text_alignment_horizontal is
             -- Converts a horizontal kicad text alignment to type_text_alignment_horizontal.
-                a : type_text_alignment_horizontal;
+                a : et_general.type_text_alignment_horizontal;
             begin
-                case type_schematic_text_alignment_horizontal'value(text) is
+                case type_text_alignment_horizontal'value(text) is
                     when L => a := left;
                     when C => a := center;
                     when R => a := right;
@@ -699,11 +704,11 @@ package body et_kicad is
                 return a;
             end to_alignment_horizontal;
 
-            function to_alignment_vertical ( text : in string) return type_text_alignment_vertical is
+            function to_alignment_vertical ( text : in string) return et_general.type_text_alignment_vertical is
             -- Converts a vertical kicad text alignment to type_text_alignment_vertical.
-                a : type_text_alignment_vertical;
+                a : et_general.type_text_alignment_vertical;
             begin
-                case type_schematic_text_alignment_vertical'value(text) is
+                case type_text_alignment_vertical'value(text) is
                     when TNN => a := top;
                     when CNN => a := center;
                     when BNN => a := bottom;
@@ -2118,7 +2123,7 @@ package body et_kicad is
 												unit_field_scratch.text := type_text_field_string.to_bounded_string(strip_quotes(get_field_from_line(line,3)));
 
 												-- read orientation like "H" -- type_schematic_field_orientation
-												case type_schematic_field_orientation'value(get_field_from_line(line,4)) is
+												case type_field_orientation'value(get_field_from_line(line,4)) is
 													when H => unit_field_scratch.orientation := deg_0;
 													when V => unit_field_scratch.orientation := deg_90;
 												end case;
