@@ -90,16 +90,17 @@ package et_libraries is
 
 
 -- COORDINATES
-	subtype type_grid is et_general.type_grid range -10000.00 .. 10000.00; -- CS: unit assumed is MIL !!!
-
-	type type_coordinates is record
-		x,y				: type_grid;
-	end record;
+-- 	subtype type_grid is et_general.type_grid range -10000.00 .. 10000.00; -- CS: unit assumed is MIL !!!
+-- 
+-- 	type type_coordinates is record
+-- 		x,y				: type_grid;
+-- 	end record;
 
 	
 -- TEXT FIELD
-	type type_text_field is new et_general.type_text with record
-		coordinates		: type_coordinates;
+	-- A text field in the library gets extended by simple coordinates.
+	type type_text is new et_general.type_text with record
+		coordinates		: et_general.type_coordinates;
 	end record;
 
 

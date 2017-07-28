@@ -189,7 +189,7 @@ package body et_kicad is
 		lib_inserted	: boolean;
 
 		comp_cursor		: et_libraries.type_components.cursor;
-		comp_inserted	: boolean;
+		--comp_inserted	: boolean;
 		
 		
 		procedure read_library is
@@ -199,13 +199,13 @@ package body et_kicad is
 
 			prefix				: et_general.type_component_prefix.bounded_string;
 			-- CS: variable for unknown field #4
-			port_name_offset	: et_libraries.type_grid;
+			port_name_offset	: et_general.type_grid;
 			pin_name_visible 	: et_libraries.type_pin_visible;
 			port_name_visible	: et_libraries.type_port_visible;
 			units_total			: type_unit_id;
 			swap_level			: et_libraries.type_swap_level := et_libraries.swap_level_default;
 			appearance			: et_general.type_component_appearance;
-			reference			: et_libraries.type_text_field;
+			reference			: et_libraries.type_text;
 			--unit_id				: type_unit_id;
 
 			function to_appearance ( appearance : in string) 
@@ -399,7 +399,7 @@ package body et_kicad is
 
 								prefix := et_general.type_component_prefix.to_bounded_string(get_field_from_line(line,3)); -- U
 								-- CS: field #4 ?
-								port_name_offset	:= et_libraries.type_grid'value (get_field_from_line(line,5)); -- relevant for supply pins only
+								port_name_offset	:= et_general.type_grid'value (get_field_from_line(line,5)); -- relevant for supply pins only
 								pin_name_visible 	:= to_pin_visibile  (get_field_from_line(line,6));
 								port_name_visible	:= to_port_visibile (get_field_from_line(line,7));
 								
@@ -453,8 +453,8 @@ package body et_kicad is
 
 								reference.meaning := et_general.reference;
 								reference.text := et_general.type_text_content.to_bounded_string(strip_quotes(get_field_from_line(line,2)));
-								reference.coordinates.x := et_libraries.type_grid'value(get_field_from_line(line,3));
-								reference.coordinates.y := et_libraries.type_grid'value(get_field_from_line(line,4));
+								reference.coordinates.x := et_general.type_grid'value(get_field_from_line(line,3));
+								reference.coordinates.y := et_general.type_grid'value(get_field_from_line(line,4));
 								reference.size := et_general.type_text_size'value(get_field_from_line(line,5));
 								reference.orientation := to_text_orientation (get_field_from_line(line,6));
 								
@@ -757,7 +757,7 @@ package body et_kicad is
             -- When reading notes, they are held temporarily in scratch variables,
             -- then added to the list of notes.
             note_entered : boolean := false;
-            note_scratch : et_schematic.type_text_field;
+            note_scratch : et_schematic.type_text;
 			
 			function to_orientation (text_in : in string) return et_general.type_orientation is
 			-- Converts the label orientation to type_orientation.
@@ -930,7 +930,7 @@ package body et_kicad is
 			end write_coordinates_of_junction;			
 
 
-			procedure write_note_properties (note : in et_schematic.type_text_field) is
+			procedure write_note_properties (note : in et_schematic.type_text) is
 			begin
 				put_line("  note '" & et_general.type_text_content.to_string(note.text)
 					& "' at position (x/y) " 
@@ -1629,7 +1629,7 @@ package body et_kicad is
 			end insert_unit;
 
 			-- temporarily we store fields here:
-			unit_field_scratch : et_schematic.type_text_field;
+			unit_field_scratch : et_schematic.type_text;
 
 -- 			procedure fetch_components_from_library is
 			-- This procedure looks up the sheet_header and reads the library names stored there.
@@ -2133,7 +2133,7 @@ package body et_kicad is
 										write_note_properties(note_scratch);
 										
 										-- the notes are to be collected in the list of notes
-										et_schematic.type_text_fields.append(module.notes,note_scratch);
+										et_schematic.type_texts.append (module.notes,note_scratch);
 									end if;
 									
 									-- READ COMPONENTS
@@ -2152,7 +2152,7 @@ package body et_kicad is
 											type_device_list_of_module.update_element(module.devices,device_cursor_scratch, insert_unit'access);
 
 											-- clean up: the list of texts collected in unit_scratch.text_list must be erased for next spin.
-											et_schematic.type_text_fields.clear(unit_scratch.fields);
+											et_schematic.type_texts.clear (unit_scratch.fields);
 										else
 											--put_line("line ->" & to_string(line));
 											-- READ COMPONENT SECTION CONTENT
@@ -2271,7 +2271,7 @@ package body et_kicad is
 												unit_field_scratch.alignment_vertical := to_alignment_vertical(get_field_from_line(line,10));  
 												
 												-- append text unit_field_scratch to text list of scratch unit.
-												et_schematic.type_text_fields.append(unit_scratch.fields,unit_field_scratch);
+												et_schematic.type_texts.append (unit_scratch.fields,unit_field_scratch);
 
 											end if;
 									end if;

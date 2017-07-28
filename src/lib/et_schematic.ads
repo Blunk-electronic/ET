@@ -91,11 +91,12 @@ package et_schematic is
 
 -- TEXT FIELD
 
-	type type_text_field is new et_general.type_text with record
+	-- A text field in the schematic gets extended by extended coordinates (see above)
+	type type_text is new et_general.type_text with record
 		coordinates		: type_coordinates;
 	end record;
-	package type_text_fields is new doubly_linked_lists (
-		element_type => type_text_field);
+	package type_texts is new doubly_linked_lists (
+		element_type => type_text);
 
 	
 	
@@ -104,7 +105,7 @@ package et_schematic is
 	type type_unit is record
 		name			: et_libraries.type_unit_name.bounded_string;
 		position		: type_coordinates;
-		fields			: type_text_fields.list;	
+		fields			: type_texts.list;	
 	end record;
 
 	-- Units of a device will be collected in a map.
@@ -385,7 +386,7 @@ package et_schematic is
         submodules  : type_list_of_gui_submodules.vector;
         frames      : type_list_of_frames.vector;
         title_blocks: type_list_of_title_blocks.vector;
-        notes       : type_text_fields.list;
+        notes       : type_texts.list;
         -- CS: images
 	end record;
 
