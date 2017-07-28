@@ -91,7 +91,7 @@ package et_schematic is
 
 -- TEXT FIELD
 
-	type type_text_field is new et_general.type_text_field with record
+	type type_text_field is new et_general.type_text with record
 		coordinates		: type_coordinates;
 	end record;
 	package type_text_fields is new doubly_linked_lists (

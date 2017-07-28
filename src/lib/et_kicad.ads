@@ -159,14 +159,18 @@ package et_kicad is
     schematic_style_normal : constant string (1..1) := "~";
     schematic_style_italic : constant string (1..6) := "Italic";    
 
-    -- visible/invisible status
-    schematic_text_visible   : constant string (1..4) := "0000";    
-    schematic_text_invisible : constant string (1..4) := "0001";
 
     -- fields
 	type type_field_orientation is (H, V); -- horizontal, vertical
 	type type_field_alignment_horizontal is (R, C, L); -- right, center, left
-    type type_field_alignment_vertical is (T, C, B);   -- top, center, bottom
+	type type_field_alignment_vertical is (T, C, B);   -- top, center, bottom
+	type type_library_field_visible is (V, I); -- visible, invisible
+
+	-- workaround; prefix V requried to form an enumaration type:
+	schematic_field_visibility_prefix : constant character := 'V';
+	type type_schematic_field_visible is (V0000, V0001); -- visible, invisible 
+	
+		
 	field_style_default 	: constant string (1..2) := "NN";
 	field_style_bold		: constant string (1..2) := "NB";
 	field_style_italic		: constant string (1..2) := "IN";

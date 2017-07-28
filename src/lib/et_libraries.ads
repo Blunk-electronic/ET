@@ -98,7 +98,7 @@ package et_libraries is
 
 	
 -- TEXT FIELD
-	type type_text_field is new et_general.type_text_field with record
+	type type_text_field is new et_general.type_text with record
 		coordinates		: type_coordinates;
 	end record;
 
@@ -185,7 +185,7 @@ package et_libraries is
 		element_type => type_port);
 
 	-- Text fields in the library are can be regarded as attributes.
-	type type_field is new et_general.type_text_field with record
+	type type_field is new et_general.type_text with record
 		coordinate	: type_coordinates;
 	end record;
 	package type_fields is new doubly_linked_lists (

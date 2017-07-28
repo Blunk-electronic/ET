@@ -32,7 +32,7 @@
 
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
---with ada.characters.handling;	use ada.characters.handling;
+with ada.characters.handling;	use ada.characters.handling;
 with ada.text_io;				use ada.text_io;
 with ada.strings; 				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
@@ -174,6 +174,45 @@ package body et_kicad is
 		end case;
 	end to_port_visibile;
 
+	function to_field_visible ( 
+	-- Converts the kicad field visible flag to the type_text_visible.
+	-- The parameter "schematic" tells whether to convert a schematic or a component library field.
+		vis_in : in string; -- the string to be converted
+		schematic : in boolean; -- set false if it is about fields in a library, true if it is about a schematic field
+		meaning : in et_general.type_text_meaning -- the meaning of the field
+		-- Explanation: The visibility of fields in schematic is defined by something like "0001" or "0000".
+		-- In component libraries it is defined by characters like V or I.
+		)
+		return et_general.type_text_visible is
+		v_in_lib : type_library_field_visible;
+		v_in_sch : type_schematic_field_visible;
+		v_out : et_general.type_text_visible;
+	begin
+		put("    " & to_lower(et_general.type_text_meaning'image(meaning)) & " field visible ");
+
+		case schematic is
+			
+			when true =>
+				-- As the type_schematic_field_visible has letter V as workaround, we must 
+				-- prepend it here to vis_in before converting to a type_schematic_field_visible:
+				v_in_sch := type_schematic_field_visible'value(schematic_field_visibility_prefix & vis_in);
+				case v_in_sch is
+					when V0000 => v_out := yes; -- visible
+					when V0001 => v_out := no;  -- invisible
+				end case;
+
+			when false =>
+				v_in_lib := type_library_field_visible'value(vis_in);
+				case v_in_lib is
+					when V => v_out := yes;
+					when I => v_out := no;
+				end case;
+
+		end case;
+
+		put_line(et_general.type_text_visible'image(v_out));		
+		return v_out;
+	end to_field_visible;
 	
 	procedure read_components_libraries is
 	-- Reads components from libraries as stored in lib_dir and project_libraries:
@@ -376,13 +415,17 @@ package body et_kicad is
 -- 									process		=> insert_unit'access);
 
 								reference.meaning := et_general.reference;
-								reference.text := et_general.type_text_field_string.to_bounded_string(strip_quotes(get_field_from_line(line,2)));
+								reference.text := et_general.type_text_content.to_bounded_string(strip_quotes(get_field_from_line(line,2)));
 								reference.coordinates.x := et_libraries.type_grid'value(get_field_from_line(line,3));
 								reference.coordinates.y := et_libraries.type_grid'value(get_field_from_line(line,4));
 								reference.attributes.size := et_general.type_text_size'value(get_field_from_line(line,5));
-								reference.orientation := to_text_orientation(get_field_from_line(line,6));
+								reference.orientation := to_text_orientation (get_field_from_line(line,6));
 								
-								--reference.visible := to_visible(get_field_from_line(line,7));
+								reference.visible := to_field_visible (
+									vis_in		=> get_field_from_line(line,7),
+									schematic	=> false, 
+									meaning		=> et_general.reference);
+
 								reference.alignment_horizontal := to_alignment_horizontal(get_field_from_line(line,8));
 								reference.alignment_vertical   := to_alignment_vertical  (get_field_from_line(line,9));
 
@@ -750,18 +793,6 @@ package body et_kicad is
                 return a_out;
             end to_text_attributes;
 
-            function to_visible ( text : in string) return et_general.type_text_visible is
-            -- Converts the kicad text visible status to type_text_visible.
-                visible : et_general.type_text_visible;
-            begin
-                if text = schematic_text_visible then
-                    visible := yes;
-                elsif text = schematic_text_invisible then
-                    visible := no;
-                end if;
-                return visible;
-            end to_visible;
-
 			-- In the first stage, all net segments of this sheet go into a wild collection of segments.
 			-- Later they will be sorted and connected by their coordinates (start and and points)
 			segment_count : natural; -- holds the total number of segments within a sheet
@@ -893,7 +924,7 @@ package body et_kicad is
 
 			procedure write_note_properties (note : in et_schematic.type_text_field) is
 			begin
-				put_line("  note '" & et_general.type_text_field_string.to_string(note.text)
+				put_line("  note '" & et_general.type_text_content.to_string(note.text)
 					& "' at position (x/y) " 
 					& trim(et_general.type_grid'image(note.coordinates.x),left) 
 					& "/" 
@@ -2081,7 +2112,7 @@ package body et_kicad is
 										-- get note text from a line like "hello\ntest". NOTE "\n" represents a line break
 										-- CS: store lines in a list of lines instead ?
 										-- CS: Currently we store the line as it is in note_scratch.text
-										note_scratch.text := type_text_field_string.to_bounded_string(to_string(line));
+										note_scratch.text := type_text_content.to_bounded_string(to_string(line));
 
 										write_note_properties(note_scratch);
 										
@@ -2185,7 +2216,7 @@ package body et_kicad is
 												end case;
 												
 												-- read content like "N701" or "NetChanger" from field position 3
-												unit_field_scratch.text := type_text_field_string.to_bounded_string(strip_quotes(get_field_from_line(line,3)));
+												unit_field_scratch.text := type_text_content.to_bounded_string(strip_quotes(get_field_from_line(line,3)));
 
 												-- read orientation like "H" -- type_schematic_field_orientation
 												case type_field_orientation'value(get_field_from_line(line,4)) is
@@ -2208,8 +2239,14 @@ package body et_kicad is
 													style => schematic_style_normal,
 													width => 0);
 													
-												-- build text alignment
-												unit_field_scratch.visible := to_visible(get_field_from_line(line,8));
+												-- build text visibility
+												unit_field_scratch.visible := to_field_visible (
+													vis_in		=> get_field_from_line(line,8),
+													schematic	=> true,
+													meaning		=> unit_field_scratch.meaning
+													);
+
+												-- build text alignment												
 												unit_field_scratch.alignment_horizontal := to_alignment_horizontal(get_field_from_line(line,9));
 												unit_field_scratch.alignment_vertical := to_alignment_vertical(get_field_from_line(line,10));  
 												
