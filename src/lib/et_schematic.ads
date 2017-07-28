@@ -139,10 +139,12 @@ package et_schematic is
 	type type_label_direction is ( input, output, bidir, tristate, passive );
 	type type_label_appearance is ( simple, tag );
 	type type_net_label ( label_appearance : type_label_appearance ) is record
-		coordinates       : type_coordinates;
-		orientation       : type_orientation;
-        text              : type_net_name.bounded_string;
-        text_attributes   : type_text_attributes;
+		coordinates	: type_coordinates;
+		orientation	: type_orientation;
+        text		: type_net_name.bounded_string;
+        size		: type_text_size;
+        style		: type_text_style;
+        width		: type_text_line_width;
 		processed	: boolean := false; -- used for associating label with net segment
 		case label_appearance is
 			when tag => 

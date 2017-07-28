@@ -87,93 +87,52 @@ package body et_kicad is
 		return a;
 	end to_alignment_vertical;
 
-	function to_text_style ( text : in string) return et_general.type_text_style is
+	function to_text_style (
 	-- Converts a vertical kicad text style to type_text_style.
-	-- The given text is something like CNN. We are interested in the 2nd and 3rd character only.
+	-- The given style_in is something like CNN. We are interested in the 2nd and 3rd character only.
+		style_in : in string;
+		text : in boolean -- true if it is about the style of a text, false if it is about the style of a field
+		-- Explanation: The style of a text is something like "~" or "Italic".
+		-- The style of a field comes with the letters 2 and 3 of a string like CNN.
+		) return et_general.type_text_style is
 		a : et_general.type_text_style;
-		s : string (1..2) := text(text'first+1..text'last);
-	begin
-		if    s = field_style_default then a := default;
-		elsif s = field_style_bold then a := bold;
-		elsif s = field_style_italic then a := italic;
-		elsif s = field_style_italic_bold then a := italic_bold;
-		else
-			put_line(message_error & "invalid text style !");
+		s_field : string (1..2);
+	
+		procedure invalid_style is
+		begin
+			put_line(message_error & "invalid text style '" & style_in & "' !");
 			raise constraint_error;
-		end if;
+		end invalid_style;
+		
+	begin -- to_text_style
+		--put_line("style_in: " & style_in);
+		case text is
+			when true =>
+				if style_in = text_schematic_style_normal then
+					a := et_general.type_text_style'first;
+				elsif style_in = text_schematic_style_italic then
+					a := italic;
+				else
+					invalid_style;
+				end if;
+				
+			when false =>
+				s_field := style_in(style_in'first+1..style_in'last);
+				
+				if    s_field = field_style_default then a := et_general.type_text_style'first;
+				elsif s_field = field_style_bold then a := bold;
+				elsif s_field = field_style_italic then a := italic;
+				elsif s_field = field_style_italic_bold then a := italic_bold;
+				else
+					invalid_style;
+				end if;
+		end case;
+
+		--put_line("    style " & to_lower(et_general.type_text_style'image(a)));
+		
 		return a;
 	end to_text_style;
 	
-	
-	function to_appearance ( appearance : in string) 
-	-- Converts the kicad apperance flag to the et appearance flag.
-		return et_general.type_component_appearance is
-		a : type_symbol_appearance;
-	begin
- 		put("    appearance ");
-		a := type_symbol_appearance'value(appearance);
-		case a is
-			when N =>
-				put_line("schematic and pcb");
-				return et_general.sch_pcb;
-			when P => 
-				put_line("virtual (schematic only)");
-				return et_general.sch;
-		end case;
-	end to_appearance;
-
-	function to_swap_level ( swap_in : in string)
-	-- Converts the kicad interchangeable flag to the et swap level.
-	-- Since Kicad has only one swap level we convert to the lowest swap level available.
-		return et_libraries.type_swap_level is
-		i : type_symbol_interchangeable;
-	begin
-		put("    units interchangeable ");
-		i := type_symbol_interchangeable'value(swap_in);
-		case i is
-			when L =>
-				put_line("no");
-				return 0; -- no swapping allowed
-			when F =>
-				put_line("yes");
-				return 1; -- swapping allowed at this level
-		end case;
-	end to_swap_level;
-
-	function to_pin_visibile ( vis_in : in string)
-	-- Converts the kicad "show pin number" flag to the et type_pin_visible.
-		return et_libraries.type_pin_visible is
-		v : type_show_pin_number;
-	begin
-		put("    pin/pad numbers ");
-		v := type_show_pin_number'value(vis_in);
-		case v is 
-			when Y => 
-				put_line("visible");
-				return et_libraries.on;
-			when N => 
-				put_line("invisible");
-				return et_libraries.off;
-		end case;
-	end to_pin_visibile;
-
-	function to_port_visibile ( vis_in : in string)
-	-- Converts the kicad "show pin name" flag to the et type_port_visible.
-		return et_libraries.type_port_visible is
-		v : type_show_pin_name;
-	begin
-		put("    port names ");	
-		v := type_show_pin_name'value(vis_in);
-		case v is 
-			when Y => 
-				put_line("visible");
-				return et_libraries.on;
-			when N => 
-				put_line("invisible");
-				return et_libraries.off;
-		end case;
-	end to_port_visibile;
-
 	function to_field_visible ( 
 	-- Converts the kicad field visible flag to the type_text_visible.
 	-- The parameter "schematic" tells whether to convert a schematic or a component library field.
@@ -188,7 +147,7 @@ package body et_kicad is
 		v_in_sch : type_schematic_field_visible;
 		v_out : et_general.type_text_visible;
 	begin
-		put("    " & to_lower(et_general.type_text_meaning'image(meaning)) & " field visible ");
+		--put("    " & to_lower(et_general.type_text_meaning'image(meaning)) & " field visible ");
 
 		case schematic is
 			
@@ -210,9 +169,14 @@ package body et_kicad is
 
 		end case;
 
-		put_line(et_general.type_text_visible'image(v_out));		
+		--put_line(et_general.type_text_visible'image(v_out));		
 		return v_out;
 	end to_field_visible;
+
+	procedure write_text_properies ( field : in et_general.type_text) is
+	begin
+		null;
+	end write_text_properies;
 	
 	procedure read_components_libraries is
 	-- Reads components from libraries as stored in lib_dir and project_libraries:
@@ -243,6 +207,80 @@ package body et_kicad is
 			appearance			: et_general.type_component_appearance;
 			reference			: et_libraries.type_text_field;
 			--unit_id				: type_unit_id;
+
+			function to_appearance ( appearance : in string) 
+			-- Converts the kicad apperance flag to type_component_appearance.
+			-- Used when reading component libraries.
+				return et_general.type_component_appearance is
+				a : type_symbol_appearance;
+			begin
+				put("    appearance ");
+				a := type_symbol_appearance'value(appearance);
+				case a is
+					when N =>
+						put_line("schematic and pcb");
+						return et_general.sch_pcb;
+					when P => 
+						put_line("virtual (schematic only)");
+						return et_general.sch;
+				end case;
+			end to_appearance;
+
+			function to_swap_level ( swap_in : in string)
+			-- Converts the kicad interchangeable flag to the et swap level.
+			-- Since Kicad has only one swap level we convert to the lowest swap level available.
+			-- Used when reading component libraries.	
+				return et_libraries.type_swap_level is
+				i : type_symbol_interchangeable;
+			begin
+				put("    units interchangeable ");
+				i := type_symbol_interchangeable'value(swap_in);
+				case i is
+					when L =>
+						put_line("no");
+						return 0; -- no swapping allowed
+					when F =>
+						put_line("yes");
+						return 1; -- swapping allowed at this level
+				end case;
+			end to_swap_level;
+
+			function to_pin_visibile ( vis_in : in string)
+			-- Converts the kicad "show pin number" flag to the et type_pin_visible.
+			-- Used when reading component libraries.		
+				return et_libraries.type_pin_visible is
+				v : type_show_pin_number;
+			begin
+				put("    pin/pad numbers ");
+				v := type_show_pin_number'value(vis_in);
+				case v is 
+					when Y => 
+						put_line("visible");
+						return et_libraries.on;
+					when N => 
+						put_line("invisible");
+						return et_libraries.off;
+				end case;
+			end to_pin_visibile;
+
+			function to_port_visibile ( vis_in : in string)
+			-- Converts the kicad "show pin name" flag to the et type_port_visible.
+			-- Used when reading component libraries.		
+				return et_libraries.type_port_visible is
+				v : type_show_pin_name;
+			begin
+				put("    port names ");	
+				v := type_show_pin_name'value(vis_in);
+				case v is 
+					when Y => 
+						put_line("visible");
+						return et_libraries.on;
+					when N => 
+						put_line("invisible");
+						return et_libraries.off;
+				end case;
+			end to_port_visibile;
+
 			
 -- 			procedure insert_component (
 -- 			-- Updates a library (which is a type_components.map) by inserting a component.
@@ -380,7 +418,6 @@ package body et_kicad is
 								
 								appearance			:= to_appearance(get_field_from_line(line,10)); -- N/P
 
-								
 -- 								et_libraries.type_libraries.update_element(
 -- 									container	=> et_import.component_libraries,
 -- 									position	=> lib_cursor,
@@ -418,7 +455,7 @@ package body et_kicad is
 								reference.text := et_general.type_text_content.to_bounded_string(strip_quotes(get_field_from_line(line,2)));
 								reference.coordinates.x := et_libraries.type_grid'value(get_field_from_line(line,3));
 								reference.coordinates.y := et_libraries.type_grid'value(get_field_from_line(line,4));
-								reference.attributes.size := et_general.type_text_size'value(get_field_from_line(line,5));
+								reference.size := et_general.type_text_size'value(get_field_from_line(line,5));
 								reference.orientation := to_text_orientation (get_field_from_line(line,6));
 								
 								reference.visible := to_field_visible (
@@ -428,7 +465,11 @@ package body et_kicad is
 
 								reference.alignment_horizontal := to_alignment_horizontal(get_field_from_line(line,8));
 								reference.alignment_vertical   := to_alignment_vertical  (get_field_from_line(line,9));
+								reference.style := to_text_style (style_in => get_field_from_line(line,9), text => false);
 
+								-- for the log:
+								--write_text_properies (et_general.type_text(reference));
+								
 							elsif get_field_from_line(line,1) = et_kicad.enddef then
 								component_entered := false;
 							end if;
@@ -758,40 +799,6 @@ package body et_kicad is
 				return d_out;
 			end to_direction;
 
-            function to_text_attributes ( size : in type_text_size; style : in string; width : type_text_line_width) 
-            -- Converts given text size, style and line width to a type_text_attributes.
-            -- CS: currently case sensitive !                
-                return type_text_attributes is
-                a_out : type_text_attributes;
-            begin
-                a_out.size := size;
-                a_out.width := width;
-                
-                if style = schematic_style_normal then
-                    if width > 0 then
-                        a_out.style := bold;
-                    else
-                        a_out.style := default;
-                    end if;
-                    
-                elsif style = schematic_style_italic then
-                    if width > 0 then
-                        a_out.style := italic_bold;
-                    else
-                        a_out.style := italic;
-                    end if;
-
-                else
-                    write_message(
-                        file_handle => et_import.report_handle,
-                        text => "Text font unknown !",
-                        console => true
-                        );
-					raise constraint_error;
-                end if;
-                
-                return a_out;
-            end to_text_attributes;
 
 			-- In the first stage, all net segments of this sheet go into a wild collection of segments.
 			-- Later they will be sorted and connected by their coordinates (start and and points)
@@ -841,7 +848,7 @@ package body et_kicad is
 			procedure set_s ( segment : in out type_wild_net_segment ) is begin segment.s := true; end set_s;
 			procedure set_picked ( segment : in out type_wild_net_segment ) is begin segment.picked := true; end set_picked;
 
-			procedure write_coordinates_of_label ( label : in type_net_label) is
+			procedure write_label_properties ( label : in type_net_label) is
 			begin
 				case label.label_appearance is
 					when simple =>
@@ -857,7 +864,8 @@ package body et_kicad is
 							lf => false,
 							identation => 3);
 
-						-- CS: directon, global, hierarchic
+						-- CS: directon, global, hierarchic, style, ...
+						
 				end case;
 
 -- 				put_line(et_import.report_handle, "'" & type_net_name.to_string(label.text) & "' at position (x/y/sheet)" &
@@ -873,7 +881,7 @@ package body et_kicad is
 					& trim(positive'image(label.coordinates.sheet_number),left)
 					);
 
-			end write_coordinates_of_label;
+			end write_label_properties;
 			
 			procedure write_coordinates_of_segment (segment : in type_net_segment) is
 			begin
@@ -1298,7 +1306,7 @@ package body et_kicad is
 -- 												type_grid'image(lt.coordinates.x) & "/" &
 -- 												trim(type_grid'image(lt.coordinates.y),left));
 
-												write_coordinates_of_label(type_net_label(lt));
+												write_label_properties(type_net_label(lt));
 -- 												write_message(
 -- 													file_handle => et_import.report_handle,
 -- 													text => "tag label: " & type_net_name.to_string(lt.text) & " position:" &
@@ -2022,10 +2030,16 @@ package body et_kicad is
 											label_simple_scratch.orientation   := to_orientation(get_field_from_line(line,5));
 
 											-- build text attributes from size, font and line width
-											label_simple_scratch.text_attributes := to_text_attributes(
-												size  => type_text_size'value(get_field_from_line(line,6)),
-												style => get_field_from_line(line,7),
-												width => type_text_line_width'value(get_field_from_line(line,8)));
+-- 											label_simple_scratch.text_attributes := to_text_attributes(
+-- 												size  => type_text_size'value(get_field_from_line(line,6)),
+-- 												style => get_field_from_line(line,7),
+-- 												width => type_text_line_width'value(get_field_from_line(line,8)));
+
+											label_simple_scratch.size := type_text_size'value (get_field_from_line(line,6));
+											label_simple_scratch.style := to_text_style (style_in => get_field_from_line(line,7), text => true);
+											label_simple_scratch.width := type_text_line_width'value(get_field_from_line(line,8));
+											
+											
 										end if;
 									else
 										simple_label_entered := false; -- we are leaving a simple label
@@ -2034,8 +2048,8 @@ package body et_kicad is
 										label_simple_scratch.text := type_net_name.to_bounded_string(get_field_from_line(line,1));
 
 										-- The simple labels are to be collected in a wild list of simple labels.
-										write_coordinates_of_label( type_net_label(label_simple_scratch));
-										type_list_of_labels_simple.append(wild_simple_label_collection_scratch,label_simple_scratch);
+										write_label_properties (type_net_label(label_simple_scratch));
+										type_list_of_labels_simple.append (wild_simple_label_collection_scratch,label_simple_scratch);
 									end if;
 									
 									-- read tag net labels (tagged labels can be global or hierarchical)
@@ -2071,10 +2085,9 @@ package body et_kicad is
 												);
 
 											-- build text attributes from size, font and line width
-											label_tag_scratch.text_attributes := to_text_attributes(
-												size  => type_text_size'value(get_field_from_line(line,6)),
-												style => get_field_from_line(line,8),
-												width => type_text_line_width'value(get_field_from_line(line,9)));
+											label_tag_scratch.size := type_text_size'value(get_field_from_line(line,6));
+											label_tag_scratch.style := to_text_style (style_in => get_field_from_line(line,8), text => true);
+											label_tag_scratch.width := type_text_line_width'value(get_field_from_line(line,9));
 										end if;
 									else
 										tag_label_entered := false; -- we are leaving a tag label
@@ -2100,11 +2113,14 @@ package body et_kicad is
 												note_scratch.coordinates.y := et_general.type_grid'value(get_field_from_line(line,4));
 												note_scratch.orientation   := to_orientation(get_field_from_line(line,5));
 
-												-- build text attributes from size, font and line width
-												note_scratch.attributes := to_text_attributes(
-													size  => type_text_size'value(get_field_from_line(line,6)),
-													style => get_field_from_line(line,7),
-													width => type_text_line_width'value(get_field_from_line(line,8)));
+-- 												note_scratch.attributes := to_text_attributes(
+-- 													size  => type_text_size'value(get_field_from_line(line,6)),
+-- 													style => get_field_from_line(line,7),
+-- 													width => type_text_line_width'value(get_field_from_line(line,8)));
+												note_scratch.size := type_text_size'value(get_field_from_line(line,6));
+												note_scratch.style := to_text_style (style_in => get_field_from_line(line,7), text => true);
+												note_scratch.width := type_text_line_width'value(get_field_from_line(line,8));
+
 										end if;
 									else 
 										note_entered := false; -- we are leaving a note
@@ -2234,11 +2250,15 @@ package body et_kicad is
 												unit_field_scratch.coordinates.sheet_number := sheet_number_current;
 
 												-- build text attributes (only text size available here, style and width assume default value)
-												unit_field_scratch.attributes := to_text_attributes(
-													size => type_text_size'value(get_field_from_line(line,7)),
-													style => schematic_style_normal,
-													width => 0);
-													
+-- 												unit_field_scratch.attributes := to_text_attributes(
+-- 													size => type_text_size'value(get_field_from_line(line,7)),
+-- 													style => schematic_style_normal,
+-- 													width => 0);
+
+												unit_field_scratch.size := type_text_size'value(get_field_from_line(line,7));
+												unit_field_scratch.style := to_text_style (style_in => get_field_from_line(line,10), text => false);
+												unit_field_scratch.width := 0;
+
 												-- build text visibility
 												unit_field_scratch.visible := to_field_visible (
 													vis_in		=> get_field_from_line(line,8),

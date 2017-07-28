@@ -155,11 +155,11 @@ package et_kicad is
 
     schematic_tilde : constant string (1..1) := "~";
 
-    -- fonts
-    schematic_style_normal : constant string (1..1) := "~";
-    schematic_style_italic : constant string (1..6) := "Italic";    
-
-
+	-- These strange strings are used to define the text style of 
+	-- net labels and notes:
+    text_schematic_style_normal : constant string (1..1) := "~";
+    text_schematic_style_italic : constant string (1..6) := "Italic";    
+	
     -- fields
 	type type_field_orientation is (H, V); -- horizontal, vertical
 	type type_field_alignment_horizontal is (R, C, L); -- right, center, left
@@ -174,7 +174,7 @@ package et_kicad is
 	field_style_default 	: constant string (1..2) := "NN";
 	field_style_bold		: constant string (1..2) := "NB";
 	field_style_italic		: constant string (1..2) := "IN";
-	field_style_italic_bold	: constant string (1..2) := "NB";	
+	field_style_italic_bold	: constant string (1..2) := "IB";	
 	
 	
     -- SHEET HEADERS

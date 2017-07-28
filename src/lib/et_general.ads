@@ -171,7 +171,7 @@ package et_general is
     -- CS: currently we use unit mil which is old fashionated
     type type_text_size is range 1..1000; -- CS unit assumed is MIL !!!
 	type type_text_line_width is range 0..100; -- CS unit assumed is MIL !!!
-    type type_text_style is ( default, italic, bold, italic_bold);
+    type type_text_style is ( normal, italic, bold, italic_bold);
     type type_text_attributes is record
         --font    : type_text_font; -- CS
         size    : type_text_size;
@@ -191,7 +191,9 @@ package et_general is
 	type type_text is tagged record
 		meaning			        : type_text_meaning;
         text                    : type_text_content.bounded_string;
-        attributes         		: type_text_attributes;
+        size    				: type_text_size;
+        style					: type_text_style;
+        width					: type_text_line_width;		
         orientation             : type_orientation;
         visible                 : type_text_visible;
         alignment_horizontal    : type_text_alignment_horizontal;
