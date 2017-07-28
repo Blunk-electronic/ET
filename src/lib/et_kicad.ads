@@ -151,7 +151,6 @@ package et_kicad is
 	package type_sheet_name is new generic_bounded_length(sheet_name_length); use type_sheet_name;
 	package type_sheet_file is new generic_bounded_length(sheet_name_length); use type_sheet_file;	
     
-	type type_field_orientation is (H, V);
     type type_label_orientation is range 0..3; -- also used for notes
 
     schematic_tilde : constant string (1..1) := "~";
@@ -164,10 +163,15 @@ package et_kicad is
     schematic_text_visible   : constant string (1..4) := "0000";    
     schematic_text_invisible : constant string (1..4) := "0001";
 
-    -- text alignment
-    type type_text_alignment_horizontal is (R, C, L);
-    type type_text_alignment_vertical is (TNN, CNN, BNN);    
-
+    -- fields
+	type type_field_orientation is (H, V); -- horizontal, vertical
+	type type_field_alignment_horizontal is (R, C, L); -- right, center, left
+    type type_field_alignment_vertical is (T, C, B);   -- top, center, bottom
+	field_style_default 	: constant string (1..2) := "NN";
+	field_style_bold		: constant string (1..2) := "NB";
+	field_style_italic		: constant string (1..2) := "IN";
+	field_style_italic_bold	: constant string (1..2) := "NB";	
+	
 	
     -- SHEET HEADERS
     -- sheet files have a header with meta information:

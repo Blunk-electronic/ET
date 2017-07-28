@@ -171,7 +171,7 @@ package et_general is
     -- CS: currently we use unit mil which is old fashionated
     type type_text_size is range 1..1000; -- CS unit assumed is MIL !!!
 	type type_text_line_width is range 0..100; -- CS unit assumed is MIL !!!
-    type type_text_style is ( default, italic, bold, bold_italic);
+    type type_text_style is ( default, italic, bold, italic_bold);
     type type_text_attributes is record
         --font    : type_text_font; -- CS
         size    : type_text_size;
@@ -179,12 +179,10 @@ package et_general is
         width   : type_text_line_width;
     end record;
 
-    -- Texts may be placed at 0 or 90 degree only.
-    subtype type_text_orientation is type_orientation range deg_0..deg_90; 
-
     type type_text_alignment_horizontal is ( left, center , right);
     type type_text_alignment_vertical is ( top, center , bottom);    
-
+	type type_text_visible is (yes, no);
+	
 	-- Text fields:
 	-- A text field may have 200 characters which seems sufficient for now.
  	text_field_length_max : constant natural := 200;
@@ -193,9 +191,9 @@ package et_general is
 	type type_text_field is tagged record
 		meaning			        : type_text_field_meaning;
         text                    : type_text_field_string.bounded_string;
-        text_attributes         : type_text_attributes;
-        orientation             : type_text_orientation;
-        visible                 : boolean;
+        attributes         		: type_text_attributes;
+        orientation             : type_orientation;
+        visible                 : type_text_visible;
         alignment_horizontal    : type_text_alignment_horizontal;
         alignment_vertical      : type_text_alignment_vertical;        
 	end record;

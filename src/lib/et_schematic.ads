@@ -266,7 +266,7 @@ package et_schematic is
 		coordinates		: et_general.type_coordinates;
 		text			: character; -- CS: range A..Z and 1..n
 		size			: type_text_size;
-		orientation		: type_text_orientation;
+		orientation		: type_orientation;
 		-- CS: font, ...
 	end record;
 	package type_list_of_frame_texts is new vectors (
@@ -308,7 +308,7 @@ package et_schematic is
  		coordinates		: et_general.type_coordinates;
 		text			: type_title_block_text_string.bounded_string;
  		size			: type_text_size;
- 		orientation		: type_text_orientation;
+ 		orientation		: type_orientation;
 		-- CS: font, ...
  	end record;
  	package type_list_of_title_block_texts is new vectors (

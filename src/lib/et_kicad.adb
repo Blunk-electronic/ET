@@ -52,7 +52,59 @@ with et_string_processing;		use et_string_processing;
 
 package body et_kicad is
 
+	function to_text_orientation ( text : in string) return et_general.type_orientation is
+	-- Convertes a kicad field text orientation character (H/V) to type_orientation.
+	begin	
+		case type_field_orientation'value(text) is
+			when H => return deg_0;
+			when V => return deg_90;
+		end case;
+	end to_text_orientation;
+	
+	function to_alignment_horizontal ( text : in string) return et_general.type_text_alignment_horizontal is
+	-- Converts a horizontal kicad text alignment to type_text_alignment_horizontal.
+		a : et_general.type_text_alignment_horizontal;
+	begin
+		case type_field_alignment_horizontal'value(text) is
+			when L => a := left;
+			when C => a := center;
+			when R => a := right;
+		end case;
+		return a;
+	end to_alignment_horizontal;
 
+	function to_alignment_vertical ( text : in string) return et_general.type_text_alignment_vertical is
+	-- Converts a vertical kicad text alignment to type_text_alignment_vertical.
+	-- The given text is something like CNN. We are interested in the first character only.
+		a : et_general.type_text_alignment_vertical;
+		s : string (1..1) := text(text'first..text'first);
+	begin
+		case type_field_alignment_vertical'value(s) is
+			when T => a := top;
+			when C => a := center;
+			when B => a := bottom;
+		end case;
+		return a;
+	end to_alignment_vertical;
+
+	function to_text_style ( text : in string) return et_general.type_text_style is
+	-- Converts a vertical kicad text style to type_text_style.
+	-- The given text is something like CNN. We are interested in the 2nd and 3rd character only.
+		a : et_general.type_text_style;
+		s : string (1..2) := text(text'first+1..text'last);
+	begin
+		if    s = field_style_default then a := default;
+		elsif s = field_style_bold then a := bold;
+		elsif s = field_style_italic then a := italic;
+		elsif s = field_style_italic_bold then a := italic_bold;
+		else
+			put_line(message_error & "invalid text style !");
+			raise constraint_error;
+		end if;
+		return a;
+	end to_text_style;
+	
+	
 	function to_appearance ( appearance : in string) 
 	-- Converts the kicad apperance flag to the et appearance flag.
 		return et_general.type_component_appearance is
@@ -297,9 +349,19 @@ package body et_kicad is
 							end if;
 						else -- we are inside a component section
 							
-							-- a reference field like "F0 "U" 0 50 50 H V C CNN"
+							-- If we have the reference field like "F0 "U" 0 50 50 H V C CNN"
 							if get_field_from_line(line,1) = et_kicad.field_reference then -- 
 
+								-- Extract reference text properties:
+								-- field #:
+								-- 2 : reference, which should be equally to prefix (see above)
+								-- 3/4 : x/y coordinates
+								-- 5 : size
+								-- 6 : orientation (H/V)
+								-- 7 : visible/invisible (V/I)
+								-- 8 : aligment horizontal (R,C,L)
+								-- 9 : aligment vertical (TNN, CNN, BNN) / font normal, italic, bold, bold_italic (TBI, TBN)
+								
 								-- Do a cross check of prefix and reference -- "U" 
 								-- CS: why this redundance ?
 								if strip_quotes(get_field_from_line(line,2)) = et_general.type_component_prefix.to_string(prefix) then
@@ -317,6 +379,12 @@ package body et_kicad is
 								reference.text := et_general.type_text_field_string.to_bounded_string(strip_quotes(get_field_from_line(line,2)));
 								reference.coordinates.x := et_libraries.type_grid'value(get_field_from_line(line,3));
 								reference.coordinates.y := et_libraries.type_grid'value(get_field_from_line(line,4));
+								reference.attributes.size := et_general.type_text_size'value(get_field_from_line(line,5));
+								reference.orientation := to_text_orientation(get_field_from_line(line,6));
+								
+								--reference.visible := to_visible(get_field_from_line(line,7));
+								reference.alignment_horizontal := to_alignment_horizontal(get_field_from_line(line,8));
+								reference.alignment_vertical   := to_alignment_vertical  (get_field_from_line(line,9));
 
 							elsif get_field_from_line(line,1) = et_kicad.enddef then
 								component_entered := false;
@@ -607,17 +675,19 @@ package body et_kicad is
             note_entered : boolean := false;
             note_scratch : et_schematic.type_text_field;
 			
-			function to_orientation (text_in : in string) return type_orientation is
-			-- Converts the kicad notation of a label orientation to degrees.
+			function to_orientation (text_in : in string) return et_general.type_orientation is
+			-- Converts the label orientation to type_orientation.
 				o_in : type_label_orientation := type_label_orientation'value(text_in);
 				o_out : type_orientation;
 			begin
+				--put_line(" orientation " & text_in);
 				case o_in is
 					when 0 => o_out := deg_180;
 					when 1 => o_out := deg_90;
 					when 2 => o_out := deg_0;
 					when 3 => o_out := deg_270;
 				end case;
+				put_line("   orientation " & et_general.type_orientation'image(o_out));	
 				return o_out;
 				-- CS: exception handler
 			end to_orientation;
@@ -663,7 +733,7 @@ package body et_kicad is
                     
                 elsif style = schematic_style_italic then
                     if width > 0 then
-                        a_out.style := bold_italic;
+                        a_out.style := italic_bold;
                     else
                         a_out.style := italic;
                     end if;
@@ -680,41 +750,17 @@ package body et_kicad is
                 return a_out;
             end to_text_attributes;
 
-            function to_visible ( text : in string) return boolean is
-            -- Converts the kicad text visible status to boolean type.
-                visible : boolean;
+            function to_visible ( text : in string) return et_general.type_text_visible is
+            -- Converts the kicad text visible status to type_text_visible.
+                visible : et_general.type_text_visible;
             begin
                 if text = schematic_text_visible then
-                    visible := true;
+                    visible := yes;
                 elsif text = schematic_text_invisible then
-                    visible := false;
+                    visible := no;
                 end if;
                 return visible;
             end to_visible;
-
-            function to_alignment_horizontal ( text : in string) return et_general.type_text_alignment_horizontal is
-            -- Converts a horizontal kicad text alignment to type_text_alignment_horizontal.
-                a : et_general.type_text_alignment_horizontal;
-            begin
-                case type_text_alignment_horizontal'value(text) is
-                    when L => a := left;
-                    when C => a := center;
-                    when R => a := right;
-                end case;
-                return a;
-            end to_alignment_horizontal;
-
-            function to_alignment_vertical ( text : in string) return et_general.type_text_alignment_vertical is
-            -- Converts a vertical kicad text alignment to type_text_alignment_vertical.
-                a : et_general.type_text_alignment_vertical;
-            begin
-                case type_text_alignment_vertical'value(text) is
-                    when TNN => a := top;
-                    when CNN => a := center;
-                    when BNN => a := bottom;
-                end case;
-                return a;
-            end to_alignment_vertical;
 
 			-- In the first stage, all net segments of this sheet go into a wild collection of segments.
 			-- Later they will be sorted and connected by their coordinates (start and and points)
@@ -842,8 +888,21 @@ package body et_kicad is
 					& trim(positive'image(junction.coordinates.sheet_number),left)
 					);
 
-
 			end write_coordinates_of_junction;			
+
+
+			procedure write_note_properties (note : in et_schematic.type_text_field) is
+			begin
+				put_line("  note '" & et_general.type_text_field_string.to_string(note.text)
+					& "' at position (x/y) " 
+					& trim(et_general.type_grid'image(note.coordinates.x),left) 
+					& "/" 
+					& trim(et_general.type_grid'image(note.coordinates.y),left) 
+-- 					& "/" 
+-- 					& trim(positive'image(note.coordinates.sheet_number),left)
+					-- CS: write more properties (style, size, ...)
+					);
+			end write_note_properties;
 			
 			procedure write_coordinates_of_device_unit (unit : in et_schematic.type_unit) is
 			begin
@@ -1558,7 +1617,10 @@ package body et_kicad is
 
         begin -- read_schematic
 			if exists(to_string(name_of_schematic_file)) then
-				put_line("reading schematic file: " & to_string(name_of_schematic_file) & " ...");
+				write_message(
+					file_handle => current_output,
+					text => "reading schematic file: " & to_string(name_of_schematic_file) & " ...",
+					console => true);
 
 				-- log module path as recorded by parent unit
 				write_path_to_submodule;
@@ -1998,7 +2060,7 @@ package body et_kicad is
 										if 	get_field_from_line(line,1) = schematic_keyword_text and 
 											get_field_from_line(line,2) = schematic_keyword_note then
 												note_entered := true; -- we are entering a note
-
+										
 												-- set coordinates
 												note_scratch.coordinates.path := path_to_submodule;
 												note_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
@@ -2008,7 +2070,7 @@ package body et_kicad is
 												note_scratch.orientation   := to_orientation(get_field_from_line(line,5));
 
 												-- build text attributes from size, font and line width
-												note_scratch.text_attributes := to_text_attributes(
+												note_scratch.attributes := to_text_attributes(
 													size  => type_text_size'value(get_field_from_line(line,6)),
 													style => get_field_from_line(line,7),
 													width => type_text_line_width'value(get_field_from_line(line,8)));
@@ -2018,8 +2080,11 @@ package body et_kicad is
 
 										-- get note text from a line like "hello\ntest". NOTE "\n" represents a line break
 										-- CS: store lines in a list of lines instead ?
-										note_scratch.text := type_text_field_string.to_bounded_string(get_field_from_line(line,1));
+										-- CS: Currently we store the line as it is in note_scratch.text
+										note_scratch.text := type_text_field_string.to_bounded_string(to_string(line));
 
+										write_note_properties(note_scratch);
+										
 										-- the notes are to be collected in the list of notes
 										et_schematic.type_text_fields.append(module.notes,note_scratch);
 									end if;
@@ -2138,7 +2203,7 @@ package body et_kicad is
 												unit_field_scratch.coordinates.sheet_number := sheet_number_current;
 
 												-- build text attributes (only text size available here, style and width assume default value)
-												unit_field_scratch.text_attributes := to_text_attributes(
+												unit_field_scratch.attributes := to_text_attributes(
 													size => type_text_size'value(get_field_from_line(line,7)),
 													style => schematic_style_normal,
 													width => 0);

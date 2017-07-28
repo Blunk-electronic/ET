@@ -90,7 +90,7 @@ package et_libraries is
 
 
 -- COORDINATES
-	subtype type_grid is et_general.type_grid range -1000.00 .. 1000.00; -- CS: unit assumed is MIL !!!
+	subtype type_grid is et_general.type_grid range -10000.00 .. 10000.00; -- CS: unit assumed is MIL !!!
 
 	type type_coordinates is record
 		x,y				: type_grid;
