@@ -226,10 +226,10 @@ package et_kicad is
 	version_header : constant string (1..28) := "EESchema-LIBRARY Version 2.3";
 	def		: constant string (1..3) := "DEF";
 	enddef	: constant string (1..6) := "ENDDEF";
-	field_reference	: constant string (1..2) := "F0";
-	field_value 	: constant string (1..2) := "F1";
-	field_footprint	: constant string (1..2) := "F2";
-	field_datasheet	: constant string (1..2) := "F3";
+	field_reference	: constant string (1..2) := "F0"; -- hard coded in kicad -> mandatory
+	field_value 	: constant string (1..2) := "F1"; -- hard coded in kicad -> mandatory
+	field_footprint	: constant string (1..2) := "F2"; -- hard coded in kicad -> mandatory
+	field_datasheet	: constant string (1..2) := "F3"; -- hard coded in kicad -> mandatory
 	--CS: field_partcode	: constant string (1..2) := "F4";
 	draw	: constant string (1..4) := "DRAW";
 	enddraw	: constant string (1..7) := "ENDDRAW";

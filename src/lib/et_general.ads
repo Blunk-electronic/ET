@@ -187,13 +187,13 @@ package et_general is
 	-- A text field may have 200 characters which seems sufficient for now.
  	text_length_max : constant natural := 200;
 	package type_text_content is new generic_bounded_length(text_length_max); use type_text_content;
-	type type_text_meaning is ( REFERENCE, VALUE, FOOTPRINT, MISC); -- CS: note, partcode, function, ...
+	type type_text_meaning is ( REFERENCE, VALUE, FOOTPRINT, DATASHEET, MISC); -- CS: note, partcode, function, ...
 	type type_text is tagged record
 		meaning			        : type_text_meaning;
-        text                    : type_text_content.bounded_string;
+        content                 : type_text_content.bounded_string;
         size    				: type_text_size;
         style					: type_text_style;
-        width					: type_text_line_width;		
+        line_width				: type_text_line_width; -- CS: use a general type_line_width ?
         orientation             : type_orientation;
         visible                 : type_text_visible;
         alignment_horizontal    : type_text_alignment_horizontal;

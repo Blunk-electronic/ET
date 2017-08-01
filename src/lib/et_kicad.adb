@@ -173,9 +173,34 @@ package body et_kicad is
 		return v_out;
 	end to_field_visible;
 
-	procedure write_text_properies ( field : in et_general.type_text) is
+	procedure write_text_properies ( text : in et_libraries.type_text) is
+	-- Outputs the properties of the given text.
+		indentation : positive := 4;
 	begin
-		null;
+		put_line(indentation * latin_1.space & "text field");
+		indentation := indentation + 1;
+		put_line(indentation * latin_1.space & "meaning " & to_lower(et_general.type_text_meaning'image(text.meaning)));
+
+		if et_general.type_text_content.length(text.content) > 0 then
+			put_line(indentation * latin_1.space & "content '" & et_general.type_text_content.to_string(text.content) & "'");
+		else
+			put_line(indentation * latin_1.space & "no content");
+		end if;
+
+		put_line(indentation * latin_1.space & "position (x/y) " 
+			& trim(et_general.type_grid'image(text.coordinates.x),left) & "/"
+			& trim(et_general.type_grid'image(text.coordinates.y),left));
+		put_line(indentation * latin_1.space & "size (mm/mil) " 
+			& "?/" -- CS
+			& trim(et_general.type_text_size'image(text.size),left));
+		put_line(indentation * latin_1.space & "style " & to_lower(et_general.type_text_style'image(text.style)));
+		put_line(indentation * latin_1.space & "line width" & et_general.type_text_line_width'image(text.line_width));
+		put_line(indentation * latin_1.space & "orientation " & et_general.type_orientation'image(text.orientation));
+		put_line(indentation * latin_1.space & "aligment (hor/vert) " 
+			& to_lower(et_general.type_text_alignment_horizontal'image(text.alignment_horizontal))
+			& "/"
+			& to_lower(et_general.type_text_alignment_vertical'image(text.alignment_vertical)));
+		put_line(indentation * latin_1.space & "visible " & et_general.type_text_visible'image(text.visible));
 	end write_text_properies;
 	
 	procedure read_components_libraries is
@@ -205,7 +230,7 @@ package body et_kicad is
 			units_total			: type_unit_id;
 			swap_level			: et_libraries.type_swap_level := et_libraries.swap_level_default;
 			appearance			: et_general.type_component_appearance;
-			reference			: et_libraries.type_text;
+			reference, value, footprint, datasheet	: et_libraries.type_text;
 			--unit_id				: type_unit_id;
 
 			function to_appearance ( appearance : in string) 
@@ -281,6 +306,36 @@ package body et_kicad is
 				end case;
 			end to_port_visibile;
 
+			function read_field (meaning : in et_general.type_text_meaning) return et_libraries.type_text is
+			-- Reads general field properties from fields 3..9
+				text : et_libraries.type_text;
+			begin
+				-- field #:
+				-- 3/4 : x/y coordinates
+				-- 5 : size
+				-- 6 : orientation (H/V)
+				-- 7 : visible/invisible (V/I)
+				-- 8 : aligment horizontal (R,C,L)
+				-- 9 : aligment vertical (TNN, CNN, BNN) / font normal, italic, bold, bold_italic (TBI, TBN)
+
+				text.meaning := meaning;
+				text.content := et_general.type_text_content.to_bounded_string(strip_quotes(get_field_from_line(line,2)));
+				text.coordinates.x := et_general.type_grid'value(get_field_from_line(line,3));
+				text.coordinates.y := et_general.type_grid'value(get_field_from_line(line,4));
+				text.size := et_general.type_text_size'value(get_field_from_line(line,5));
+				text.orientation := to_text_orientation (get_field_from_line(line,6));
+				
+				text.visible := to_field_visible (
+					vis_in		=> get_field_from_line(line,7),
+					schematic	=> false, 
+					meaning		=> et_general.reference);
+
+				text.alignment_horizontal := to_alignment_horizontal(get_field_from_line(line,8));
+				text.alignment_vertical   := to_alignment_vertical  (get_field_from_line(line,9));
+				text.style := to_text_style (style_in => get_field_from_line(line,9), text => false);
+
+				return text;
+			end read_field;
 			
 -- 			procedure insert_component (
 -- 			-- Updates a library (which is a type_components.map) by inserting a component.
@@ -426,54 +481,45 @@ package body et_kicad is
 						else -- we are inside a component section
 							
 							-- If we have the reference field like "F0 "U" 0 50 50 H V C CNN"
-							if get_field_from_line(line,1) = et_kicad.field_reference then -- 
+							if get_field_from_line(line,1) = et_kicad.field_reference then
 
-								-- Extract reference text properties:
-								-- field #:
-								-- 2 : reference, which should be equally to prefix (see above)
-								-- 3/4 : x/y coordinates
-								-- 5 : size
-								-- 6 : orientation (H/V)
-								-- 7 : visible/invisible (V/I)
-								-- 8 : aligment horizontal (R,C,L)
-								-- 9 : aligment vertical (TNN, CNN, BNN) / font normal, italic, bold, bold_italic (TBI, TBN)
-								
 								-- Do a cross check of prefix and reference -- "U" 
-								-- CS: why this redundance ?
+								-- CS: why this redundance ? Ask the kicad makers...
 								if strip_quotes(get_field_from_line(line,2)) = et_general.type_component_prefix.to_string(prefix) then
 									null; -- fine
 								else
 									put_line(message_warning & "line" & natural'image(line_counter) & ": prefix vs. reference mismatch !");
 								end if;
-								--put_line(to_string(line));
--- 								et_libraries.type_components.update_element(
--- 									container	=> et_libraries.type_libraries.element(lib_cursor),
--- 									position	=> comp_cursor,
--- 									process		=> insert_unit'access);
 
-								reference.meaning := et_general.reference;
-								reference.text := et_general.type_text_content.to_bounded_string(strip_quotes(get_field_from_line(line,2)));
-								reference.coordinates.x := et_general.type_grid'value(get_field_from_line(line,3));
-								reference.coordinates.y := et_general.type_grid'value(get_field_from_line(line,4));
-								reference.size := et_general.type_text_size'value(get_field_from_line(line,5));
-								reference.orientation := to_text_orientation (get_field_from_line(line,6));
-								
-								reference.visible := to_field_visible (
-									vis_in		=> get_field_from_line(line,7),
-									schematic	=> false, 
-									meaning		=> et_general.reference);
-
-								reference.alignment_horizontal := to_alignment_horizontal(get_field_from_line(line,8));
-								reference.alignment_vertical   := to_alignment_vertical  (get_field_from_line(line,9));
-								reference.style := to_text_style (style_in => get_field_from_line(line,9), text => false);
-
+								reference := read_field (meaning => et_general.reference);
 								-- for the log:
-								--write_text_properies (et_general.type_text(reference));
+								write_text_properies (et_libraries.type_text(reference));
+
+							-- If we have a value field like "F1 "74LS00" 0 -100 50 H V C CNN"
+							elsif get_field_from_line(line,1) = et_kicad.field_value then
+								value := read_field (meaning => et_general.value);
+								-- for the log:
+								write_text_properies (et_libraries.type_text(value));
+
+							-- If we have a footprint field like "F2 "" 0 -100 50 H V C CNN"
+							elsif get_field_from_line(line,1) = et_kicad.field_footprint then
+								footprint := read_field (meaning => et_general.footprint);
+								-- for the log:
+								write_text_properies (et_libraries.type_text(footprint));
+
+							-- If we have a datasheet field like "F3 "" 0 -100 50 H V C CNN"
+							elsif get_field_from_line(line,1) = et_kicad.field_datasheet then
+								datasheet := read_field (meaning => et_general.datasheet);
+								-- for the log:
+								write_text_properies (et_libraries.type_text(datasheet));
+
+
+							-- CS: other fields like function or part code ?
 								
 							elsif get_field_from_line(line,1) = et_kicad.enddef then
 								component_entered := false;
 							end if;
-
+							
 						end if;
 				end case;
 
@@ -932,7 +978,7 @@ package body et_kicad is
 
 			procedure write_note_properties (note : in et_schematic.type_text) is
 			begin
-				put_line("  note '" & et_general.type_text_content.to_string(note.text)
+				put_line("  note '" & et_general.type_text_content.to_string(note.content)
 					& "' at position (x/y) " 
 					& trim(et_general.type_grid'image(note.coordinates.x),left) 
 					& "/" 
@@ -2119,7 +2165,7 @@ package body et_kicad is
 -- 													width => type_text_line_width'value(get_field_from_line(line,8)));
 												note_scratch.size := type_text_size'value(get_field_from_line(line,6));
 												note_scratch.style := to_text_style (style_in => get_field_from_line(line,7), text => true);
-												note_scratch.width := type_text_line_width'value(get_field_from_line(line,8));
+												note_scratch.line_width := type_text_line_width'value(get_field_from_line(line,8));
 
 										end if;
 									else 
@@ -2128,7 +2174,7 @@ package body et_kicad is
 										-- get note text from a line like "hello\ntest". NOTE "\n" represents a line break
 										-- CS: store lines in a list of lines instead ?
 										-- CS: Currently we store the line as it is in note_scratch.text
-										note_scratch.text := type_text_content.to_bounded_string(to_string(line));
+										note_scratch.content := type_text_content.to_bounded_string(to_string(line));
 
 										write_note_properties(note_scratch);
 										
@@ -2232,7 +2278,7 @@ package body et_kicad is
 												end case;
 												
 												-- read content like "N701" or "NetChanger" from field position 3
-												unit_field_scratch.text := type_text_content.to_bounded_string(strip_quotes(get_field_from_line(line,3)));
+												unit_field_scratch.content := type_text_content.to_bounded_string(strip_quotes(get_field_from_line(line,3)));
 
 												-- read orientation like "H" -- type_schematic_field_orientation
 												case type_field_orientation'value(get_field_from_line(line,4)) is
@@ -2257,7 +2303,7 @@ package body et_kicad is
 
 												unit_field_scratch.size := type_text_size'value(get_field_from_line(line,7));
 												unit_field_scratch.style := to_text_style (style_in => get_field_from_line(line,10), text => false);
-												unit_field_scratch.width := 0;
+												unit_field_scratch.line_width := 0;
 
 												-- build text visibility
 												unit_field_scratch.visible := to_field_visible (
