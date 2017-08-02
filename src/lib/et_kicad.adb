@@ -222,6 +222,7 @@ package body et_kicad is
 			line_counter	: natural := 0;
 			component_entered : boolean := false;
 
+			component_name		: et_libraries.type_component_name.bounded_string; -- 74LS00
 			prefix				: et_general.type_component_prefix.bounded_string;
 			-- CS: variable for unknown field #4
 			port_name_offset	: et_general.type_grid;
@@ -230,7 +231,7 @@ package body et_kicad is
 			units_total			: type_unit_id;
 			swap_level			: et_libraries.type_swap_level := et_libraries.swap_level_default;
 			appearance			: et_general.type_component_appearance;
-			reference, value, footprint, datasheet	: et_libraries.type_text;
+			reference, value, footprint, datasheet, fnction, partcode : et_libraries.type_text; -- see et_general.ads
 			--unit_id				: type_unit_id;
 
 			function to_appearance ( appearance : in string) 
@@ -435,6 +436,8 @@ package body et_kicad is
 							if get_field_from_line(line,1) = et_kicad.def then
 								component_entered := true;
 
+								component_name := et_libraries.type_component_name.to_bounded_string(get_field_from_line(line,2)); -- 74LS00
+								
 								-- for the log:
 								put_line("   " & get_field_from_line(line,2)); -- 74LS00
 
@@ -513,8 +516,40 @@ package body et_kicad is
 								-- for the log:
 								write_text_properies (et_libraries.type_text(datasheet));
 
+							-- Other mandatory fields like function and partcode are detected by F4 and F5 
+							-- (not by subfield #10 !) So F4 enforces a function, F5 enforces a partcode.
+							
+							-- If we have a function field like "F4 "" 0 -100 50 H V C CNN" "function",
+							-- we test subfield #10 against the prescribed meaning. If ok the field is read like
+							-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
+							elsif get_field_from_line(line,1) = et_kicad.field_function then
+								if to_lower(et_general.text_meaning_prefix & strip_quotes(get_field_from_line(line,10))) 
+										= to_lower(et_general.type_text_meaning'image(et_general.p_function)) then
+											fnction := read_field (meaning => et_general.p_function);
+											-- for the log:
+											write_text_properies (et_libraries.type_text(fnction));
+								else
+									put_line(message_warning & "line" & natural'image(line_counter) & ": function field invalid !");
+									-- CS: function that returns "line x :" . use it for other actions that output the line number.
+									-- raise constraint_error;
+								end if;
 
-							-- CS: other fields like function or part code ?
+							-- If we have a partcode field like "F5 "" 0 -100 50 H V C CNN" "partcode",
+							-- we test subfield #10 against the prescribed meaning. If ok the field is read like
+							-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
+							elsif get_field_from_line(line,1) = et_kicad.field_partcode then
+								if to_lower(strip_quotes(get_field_from_line(line,10)))
+										= to_lower(et_general.type_text_meaning'image(et_general.partcode)) then
+											partcode := read_field (meaning => et_general.partcode);
+											-- for the log:
+											write_text_properies (et_libraries.type_text(partcode));
+								else
+									put_line(message_warning & "line" & natural'image(line_counter) & ": partcode field invalid !");
+									-- CS: function that returns "line x :" . use it for other actions that output the line number.
+									-- raise constraint_error;
+								end if;
+
+							-- CS: other fields ?
 								
 							elsif get_field_from_line(line,1) = et_kicad.enddef then
 								component_entered := false;
