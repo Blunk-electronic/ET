@@ -224,8 +224,6 @@ package et_kicad is
 -- LIBRARY
 	
 	version_header : constant string (1..28) := "EESchema-LIBRARY Version 2.3";
-	def		: constant string (1..3) := "DEF";
-	enddef	: constant string (1..6) := "ENDDEF";
 	field_reference	: constant string (1..2) := "F0"; -- hard coded in kicad -> mandatory
 	field_value 	: constant string (1..2) := "F1"; -- hard coded in kicad -> mandatory
 	field_footprint	: constant string (1..2) := "F2"; -- hard coded in kicad -> mandatory
@@ -235,8 +233,12 @@ package et_kicad is
 	field_commissioned	: constant string (1..2) := "F6"; -- must be added by the user
 	field_updated		: constant string (1..2) := "F7"; -- must be added by the user
 	field_author		: constant string (1..2) := "F8"; -- must be added by the user
-	draw	: constant string (1..4) := "DRAW";
-	enddraw	: constant string (1..7) := "ENDDRAW";
+	def			: constant string (1..3) := "DEF";
+	enddef		: constant string (1..6) := "ENDDEF";
+	draw		: constant string (1..4) := "DRAW";
+	enddraw		: constant string (1..7) := "ENDDRAW";
+	fplist		: constant string (1..7) := "$FPLIST";
+	endfplist	: constant string (1..10) := "$ENDFPLIST";
 
 	-- The distance of the pin name from the pin itself (supply pins only)
 	subtype type_supply_pin_name_position_offset is et_general.type_grid range 0.00 .. et_general.type_grid'last;

@@ -220,7 +220,7 @@ package body et_kicad is
 		procedure read_library is
 			line			: type_fields_of_line;
 			line_counter	: natural := 0;
-			component_entered : boolean := false;
+			component_entered, footprint_list_entered : boolean := false;
 
 			component_name		: et_libraries.type_component_name.bounded_string; -- 74LS00
 			prefix				: et_general.type_component_prefix.bounded_string;
@@ -600,7 +600,25 @@ package body et_kicad is
 									-- raise constraint_error;
 								end if;
 								
-							-- CS: other fields ?
+							-- CS: other text fields ?
+
+							-- footprint list reading. The list of footprints looks like this (similar to package variants in EAGLE)
+							
+							-- $FPLIST
+							--  Pin_Header_Straight_1X06
+							--  Pin_Header_Angled_1X06
+							--  Socket_Strip_Straight_1X06
+							--  Socket_Strip_Angled_1X06
+							-- $ENDFPLIST
+							
+							-- We wait for the header of the footprint list: like "$FPLIST"
+							elsif get_field_from_line(line,1) = et_kicad.fplist then
+								footprint_list_entered := true;
+
+							-- We wait for the footer of the footprint list: like "$ENDFPLIST"
+							elsif get_field_from_line(line,1) = et_kicad.endfplist then
+								footprint_list_entered := false;
+
 								
 							elsif get_field_from_line(line,1) = et_kicad.enddef then
 								-- CS: check appearacne vs. function vs. partcode -- see stock_manager
