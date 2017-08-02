@@ -230,8 +230,11 @@ package et_kicad is
 	field_value 	: constant string (1..2) := "F1"; -- hard coded in kicad -> mandatory
 	field_footprint	: constant string (1..2) := "F2"; -- hard coded in kicad -> mandatory
 	field_datasheet	: constant string (1..2) := "F3"; -- hard coded in kicad -> mandatory
-	field_function	: constant string (1..2) := "F4";
-	field_partcode	: constant string (1..2) := "F5";
+	field_function	: constant string (1..2) := "F4"; -- must be added by the user
+	field_partcode	: constant string (1..2) := "F5"; -- must be added by the user
+	field_commissioned	: constant string (1..2) := "F6"; -- must be added by the user
+	field_updated		: constant string (1..2) := "F7"; -- must be added by the user
+	field_author		: constant string (1..2) := "F8"; -- must be added by the user
 	draw	: constant string (1..4) := "DRAW";
 	enddraw	: constant string (1..7) := "ENDDRAW";
 

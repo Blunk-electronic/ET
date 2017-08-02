@@ -231,7 +231,8 @@ package body et_kicad is
 			units_total			: type_unit_id;
 			swap_level			: et_libraries.type_swap_level := et_libraries.swap_level_default;
 			appearance			: et_general.type_component_appearance;
-			reference, value, footprint, datasheet, fnction, partcode : et_libraries.type_text; -- see et_general.ads
+			reference, value, footprint, datasheet, fnction, partcode,
+			commissioned, updated, author : et_libraries.type_text; -- see et_general.ads
 			--unit_id				: type_unit_id;
 
 			function to_appearance ( appearance : in string) 
@@ -528,8 +529,9 @@ package body et_kicad is
 											fnction := read_field (meaning => et_general.p_function);
 											-- for the log:
 											write_text_properies (et_libraries.type_text(fnction));
+											-- basic_text_check(fnction); -- CS
 								else
-									put_line(message_warning & "line" & natural'image(line_counter) & ": function field invalid !");
+									put_line(message_warning & "line" & natural'image(line_counter) & ": 'function' field invalid !");
 									-- CS: function that returns "line x :" . use it for other actions that output the line number.
 									-- raise constraint_error;
 								end if;
@@ -543,15 +545,67 @@ package body et_kicad is
 											partcode := read_field (meaning => et_general.partcode);
 											-- for the log:
 											write_text_properies (et_libraries.type_text(partcode));
+											-- basic_text_check(partcode); -- CS
 								else
-									put_line(message_warning & "line" & natural'image(line_counter) & ": partcode field invalid !");
+									put_line(message_warning & "line" & natural'image(line_counter) & ": 'partcode' field invalid !");
 									-- CS: function that returns "line x :" . use it for other actions that output the line number.
 									-- raise constraint_error;
 								end if;
 
+							-- If we have a "commissioned" field like "F6 "" 0 -100 50 H V C CNN" "commissioned",
+							-- we test subfield #10 against the prescribed meaning. If ok the field is read like
+							-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
+							elsif get_field_from_line(line,1) = et_kicad.field_commissioned then
+								if to_lower(strip_quotes(get_field_from_line(line,10)))
+										= to_lower(et_general.type_text_meaning'image(et_general.commissioned)) then
+											commissioned := read_field (meaning => et_general.commissioned);
+											-- for the log:
+											write_text_properies (et_libraries.type_text(commissioned));
+											-- basic_text_check(commissioned); -- CS
+								else
+									put_line(message_warning & "line" & natural'image(line_counter) & ": 'commissioned' field invalid !");
+									-- CS: function that returns "line x :" . use it for other actions that output the line number.
+									-- raise constraint_error;
+								end if;
+
+							-- If we have an "updated" field like "F7 "" 0 -100 50 H V C CNN" "updated",
+							-- we test subfield #10 against the prescribed meaning. If ok the field is read like
+							-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
+							elsif get_field_from_line(line,1) = et_kicad.field_updated then
+								if to_lower(strip_quotes(get_field_from_line(line,10)))
+										= to_lower(et_general.type_text_meaning'image(et_general.updated)) then
+											updated := read_field (meaning => et_general.updated);
+											-- for the log:
+											write_text_properies (et_libraries.type_text(updated));
+											-- basic_text_check(updated); -- CS
+								else
+									put_line(message_warning & "line" & natural'image(line_counter) & ": 'updated' field invalid !");
+									-- CS: function that returns "line x :" . use it for other actions that output the line number.
+									-- raise constraint_error;
+								end if;
+
+							-- If we have an "author" field like "F8 "" 0 -100 50 H V C CNN" "author",
+							-- we test subfield #10 against the prescribed meaning. If ok the field is read like
+							-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
+							elsif get_field_from_line(line,1) = et_kicad.field_author then
+								if to_lower(strip_quotes(get_field_from_line(line,10)))
+										= to_lower(et_general.type_text_meaning'image(et_general.author)) then
+											author := read_field (meaning => et_general.author);
+											-- for the log:
+											write_text_properies (et_libraries.type_text(author));
+											-- basic_text_check(author); -- CS
+								else
+									put_line(message_warning & "line" & natural'image(line_counter) & ": 'author' field invalid !");
+									-- CS: function that returns "line x :" . use it for other actions that output the line number.
+									-- raise constraint_error;
+								end if;
+								
 							-- CS: other fields ?
 								
 							elsif get_field_from_line(line,1) = et_kicad.enddef then
+								-- CS: check appearacne vs. function vs. partcode -- see stock_manager
+								
+							
 								component_entered := false;
 							end if;
 							

@@ -194,8 +194,11 @@ package et_general is
 		FOOTPRINT,
 		DATASHEET,
 		P_FUNCTION, -- workaround: "P_" avoids usage of an ada keyword 
+		COMMISSIONED,
+		UPDATED,
+		AUTHOR,
 		PARTCODE,
-		MISC);
+		MISC); -- CS: others ?
 	
 	type type_text is tagged record
 		meaning			        : type_text_meaning;
