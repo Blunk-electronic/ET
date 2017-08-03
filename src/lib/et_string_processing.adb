@@ -435,6 +435,11 @@ package body et_string_processing is
 		end if;
 	end write_message;
 
-	
+	function affected_line ( line : in positive ) return string is
+	-- Converts a given line number to a string like "line x:"
+	begin
+		return ("line" & positive'image(line) & ": ");
+	end affected_line;
+		
 end et_string_processing;
 

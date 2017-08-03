@@ -199,6 +199,9 @@ package et_general is
 		AUTHOR,
 		PARTCODE,
 		MISC); -- CS: others ?
+
+	function text_meaning_to_string ( meaning : in type_text_meaning) return string;
+	-- Converts meaning to string.
 	
 	type type_text is tagged record
 		meaning			        : type_text_meaning;

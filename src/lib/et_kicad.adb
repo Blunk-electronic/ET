@@ -179,8 +179,10 @@ package body et_kicad is
 	begin
 		put_line(indentation * latin_1.space & "text field");
 		indentation := indentation + 1;
-		put_line(indentation * latin_1.space & "meaning " & to_lower(et_general.type_text_meaning'image(text.meaning)));
 
+		put(indentation * latin_1.space & "meaning ");
+		put_line (et_general.text_meaning_to_string(text.meaning));
+				
 		if et_general.type_text_content.length(text.content) > 0 then
 			put_line(indentation * latin_1.space & "content '" & et_general.type_text_content.to_string(text.content) & "'");
 		else
@@ -202,6 +204,11 @@ package body et_kicad is
 			& to_lower(et_general.type_text_alignment_vertical'image(text.alignment_vertical)));
 		put_line(indentation * latin_1.space & "visible " & et_general.type_text_visible'image(text.visible));
 	end write_text_properies;
+
+	function field_invalid ( meaning : in et_general.type_text_meaning) return string is
+	begin
+		return "'" & et_general.text_meaning_to_string(meaning) & "' field invalid !";
+	end field_invalid;
 	
 	procedure read_components_libraries is
 	-- Reads components from libraries as stored in lib_dir and project_libraries:
@@ -517,7 +524,7 @@ package body et_kicad is
 											if strip_quotes(get_field_from_line(line,2)) = et_general.type_component_prefix.to_string(prefix) then
 												null; -- fine
 											else
-												put_line(message_warning & "line" & natural'image(line_counter) & ": prefix vs. reference mismatch !");
+												put_line(message_warning & et_string_processing.affected_line(line_counter) & ": prefix vs. reference mismatch !");
 											end if;
 
 											reference := read_field (meaning => et_general.reference);
@@ -556,9 +563,9 @@ package body et_kicad is
 														write_text_properies (et_libraries.type_text(fnction));
 														-- basic_text_check(fnction); -- CS
 											else
-												put_line(message_warning & "line" & natural'image(line_counter) & ": 'function' field invalid !");
-												-- CS: function that returns "line x :" . use it for other actions that output the line number.
-												-- raise constraint_error;
+												put_line(message_warning & et_string_processing.affected_line(line_counter) 
+													& field_invalid(et_general.p_function));
+												-- CS: raise constraint_error;
 											end if;
 
 										-- If we have a partcode field like "F5 "" 0 -100 50 H V C CNN" "partcode",
@@ -572,9 +579,9 @@ package body et_kicad is
 														write_text_properies (et_libraries.type_text(partcode));
 														-- basic_text_check(partcode); -- CS
 											else
-												put_line(message_warning & "line" & natural'image(line_counter) & ": 'partcode' field invalid !");
-												-- CS: function that returns "line x :" . use it for other actions that output the line number.
-												-- raise constraint_error;
+												put_line(message_warning & et_string_processing.affected_line(line_counter) 
+													& field_invalid(et_general.partcode));
+												-- CS: raise constraint_error;
 											end if;
 
 										-- If we have a "commissioned" field like "F6 "" 0 -100 50 H V C CNN" "commissioned",
@@ -588,9 +595,9 @@ package body et_kicad is
 														write_text_properies (et_libraries.type_text(commissioned));
 														-- basic_text_check(commissioned); -- CS
 											else
-												put_line(message_warning & "line" & natural'image(line_counter) & ": 'commissioned' field invalid !");
-												-- CS: function that returns "line x :" . use it for other actions that output the line number.
-												-- raise constraint_error;
+												put_line(message_warning & et_string_processing.affected_line(line_counter) 
+													& field_invalid(et_general.commissioned));
+												-- CS: raise constraint_error;
 											end if;
 
 										-- If we have an "updated" field like "F7 "" 0 -100 50 H V C CNN" "updated",
@@ -604,9 +611,9 @@ package body et_kicad is
 														write_text_properies (et_libraries.type_text(updated));
 														-- basic_text_check(updated); -- CS
 											else
-												put_line(message_warning & "line" & natural'image(line_counter) & ": 'updated' field invalid !");
-												-- CS: function that returns "line x :" . use it for other actions that output the line number.
-												-- raise constraint_error;
+												put_line(message_warning & et_string_processing.affected_line(line_counter) 
+													& field_invalid(et_general.updated));
+												-- CS: raise constraint_error;
 											end if;
 
 										-- If we have an "author" field like "F8 "" 0 -100 50 H V C CNN" "author",
@@ -620,9 +627,9 @@ package body et_kicad is
 														write_text_properies (et_libraries.type_text(author));
 														-- basic_text_check(author); -- CS
 											else
-												put_line(message_warning & "line" & natural'image(line_counter) & ": 'author' field invalid !");
-												-- CS: function that returns "line x :" . use it for other actions that output the line number.
-												-- raise constraint_error;
+												put_line(message_warning & et_string_processing.affected_line(line_counter) 
+													& field_invalid(et_general.author));
+												-- CS: raise constraint_error;
 											end if;
 											
 										-- CS: other text fields ?
@@ -2636,11 +2643,11 @@ package body et_kicad is
 				when event:
 					constraint_error =>
 						put_line(exception_information(event));
-						put_line(message_error & "in schematic file '" & to_string(name_of_schematic_file) & "' line" & natural'image(line_counter));
+						put_line(message_error & "in schematic file '" & to_string(name_of_schematic_file) & "' " & et_string_processing.affected_line(line_counter));
 						raise;
 						return list_of_submodules;
 				when others =>
-						put_line(message_error & "in schematic file '" & to_string(name_of_schematic_file) & "' line" & natural'image(line_counter));
+						put_line(message_error & "in schematic file '" & to_string(name_of_schematic_file) & "' " & et_string_processing.affected_line(line_counter));
 						raise;					
 						return list_of_submodules;
 

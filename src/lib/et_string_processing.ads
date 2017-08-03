@@ -134,6 +134,8 @@ package et_string_processing is
 		file : in boolean := true;
 		console : in boolean := false);
 	
+	function affected_line ( line : in positive ) return string;
+	-- Converts a given line number to a string like "line x:"
 	
 end et_string_processing;
 
