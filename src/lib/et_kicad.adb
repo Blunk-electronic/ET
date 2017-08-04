@@ -1835,18 +1835,19 @@ package body et_kicad is
             
 			-- This is relevant for reading devices:
 			device_entered : boolean := false; -- indicates that a device is being read
-			device_scratch : et_schematic.type_device; -- temporarily used before appending a device list of the module
+			device_scratch : et_schematic.type_component; -- temporarily used before appending a device list of the module
 			unit_scratch : et_schematic.type_unit; -- temporarily used before appending a unit to a device
+			unit_scratch_name : et_libraries.type_unit_name.bounded_string; -- temporarily used for the unit name
 			device_cursor_scratch : type_device_list_of_module.cursor; -- points to a device of the module
 			device_inserted : boolean; -- used when a device is being inserted into the device list of a module
 			
-			procedure insert_unit ( key : in type_device_name.bounded_string; device : in out et_schematic.type_device ) is 
+			procedure insert_unit ( key : in type_device_name.bounded_string; device : in out et_schematic.type_component ) is 
 			begin
 				--type_device_unit_list.append(device.unit_list,unit_scratch);
 				et_schematic.type_units.insert(
 					container => device.units, -- the unit list of the device
 					new_item => unit_scratch, -- the unit itself
-					key => unit_scratch.name); -- the unit name
+					key => unit_scratch_name); -- the unit name
 			end insert_unit;
 
 			-- temporarily we store fields here:
@@ -2413,9 +2414,9 @@ package body et_kicad is
 												-- KiCad uses positive numbers to identifiy units. But in general a unit name can be a string as well.
 												-- Therefore we handle the unit id as string.
 												-- Temporarily the unit data is collected in unit_scratch (to update the device later when leaving the device section).
-												unit_scratch.name := et_libraries.type_unit_name.to_bounded_string(
+												unit_scratch_name := et_libraries.type_unit_name.to_bounded_string(
 													get_field_from_line(line,2)); -- the unit id
-												put(" with unit " & et_libraries.type_unit_name.to_string(unit_scratch.name) & " at");
+												put(" with unit " & et_libraries.type_unit_name.to_string(unit_scratch_name) & " at");
 											end if;
 
 											-- Read unit coordinates from a line like "P 3200 4500".

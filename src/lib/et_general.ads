@@ -156,6 +156,7 @@ package et_general is
 		-- ...
 		);
 
+	-- This is the base type of a compoennt. Libraries and schematic add extra properties.
 	type type_component is tagged record
 		appearance 			: type_component_appearance;
 		prefix				: type_component_prefix.bounded_string; -- together with an ID we get something like "IC702"
