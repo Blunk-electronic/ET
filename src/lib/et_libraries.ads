@@ -36,6 +36,7 @@ with ada.containers; 			use ada.containers;
 --with ada.containers.vectors;
 with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
+with ada.containers.ordered_sets;
 
 with et_general;				use et_general;
 
@@ -76,9 +77,6 @@ package et_libraries is
 
  	port_name_length	: constant natural := 50;
 	package type_port_name is new generic_bounded_length(port_name_length); use type_port_name;
-
-	unit_name_length : constant natural := 50;
-	package type_unit_name is new generic_bounded_length(unit_name_length); use type_unit_name;
 
  	component_name_length_max : constant natural := 100;
 	package type_component_name is new generic_bounded_length(component_name_length_max); use type_component_name;
@@ -146,11 +144,6 @@ package et_libraries is
 
 -- DEVICE
 	
-	-- UNIT
-	-- A unit is a sub-unit of a component. EAGLE refer to them as "gates".
-	-- A component contains at least one unit.
-	-- Examples of a unit: resistor symbol, i/o-bank of an fpga, NAND-gate
-
 	-- outline segments 
 	-- The unit outline is composed of various elements like lines, arcs or cicles.
 	
@@ -187,43 +180,108 @@ package et_libraries is
 
 	-- Text fields in the library are can be regarded as attributes.
 	type type_field is new et_general.type_text with record
-		coordinate	: type_coordinates;
+		coordinates	: type_coordinates;
 	end record;
 	package type_fields is new doubly_linked_lists (
 		element_type => type_field);
 
-	swap_level_max : constant natural := 10;
-	type type_swap_level is new natural range 0..swap_level_max;
-	swap_level_default : constant := type_swap_level'first;
+-- SYMBOLS AND UNITS
+
+	-- In schematics electrical components like resistors, capactors and inductors are called "symbols".
+	-- Since they are frequently used we store such things in symbol libraries like bel_primitives.sym.
+	-- The symbol name is something very general like "NAND", "Resistor", "Switch"
+
+	-- A component has one or more units. A unit is a subsection of a component (EAGLE refer to them as "gates").
+	-- There are internal units, which exist for the particular component exclusively. 
+	-- An internal unit has a symbol and furhter properties like a swap level.
+	-- There are external units, which are used for frequently used symbols like resistors or capacitors.
+	-- An external unit is just a reference to a symbol library, the symbol name therein and other properties
+	-- like swap level.	
+	-- The unit name is something like "I/O Bank 3", "PWR" or "Switch 1" "Switch 2"
+
+	-- SYMBOLS
 	
-	-- A unit has coordinates, consists of segment lists , ports and fields.
-	-- EAGLE refers to units as "gates". KiCad refers to them as "units":
-	type type_unit is record
-		swap_level	: type_swap_level;
+	symbol_name_length_max : constant natural := 50;
+	package type_symbol_name is new generic_bounded_length(symbol_name_length_max); use type_symbol_name;
+	
+	type type_symbol is record
 		lines		: type_lines.list;
 		arcs 		: type_arcs.list;
 		circles		: type_circles.list;
 		port_list 	: type_ports.map;
-        fields		: type_fields.list;
+		reference	: type_field; -- placeholder, meaning must be "reference" -- CS: set default (meaning => reference)
+		value		: type_field; -- placeholder, meaning must be "value"
+		commissioned: type_field; -- placehodler, meaning must be "commissioned"
+		updated		: type_field; -- placehodler, meaning must be "updated"
+		author		: type_field; -- placehodler, meaning must be "author"		
 	end record;
 
-	-- Units of a component will be collected in a map.
-	package type_units is new ordered_maps (
-		key_type => type_unit_name.bounded_string, -- the key to a unit is its name
-		element_type => type_unit);
 
-	type type_component is new et_general.type_component with record
-		units			: type_units.map;
-	end record;
+	-- UNITS GENERAL
+
+	unit_name_length_max : constant natural := 50;	
+	package type_unit_name is new generic_bounded_length(unit_name_length_max); use type_unit_name;	
+	
+	unit_swap_level_max : constant natural := 10;
+	type type_unit_swap_level is new natural range 0..unit_swap_level_max;
+	unit_swap_level_default : constant := type_unit_swap_level'first;
 
 	
-	-- Components are stored in an ordered map.
+	-- INTERNAL UNITS
+	
+	-- An internal unit is a symbol with a swap level.
+	type type_unit_internal is record
+		symbol		: type_symbol;
+		coordinates	: type_coordinates;
+		swap_level	: type_unit_swap_level;
+	end record;
+
+	-- Internal units are collected in a map:
+	package type_units_internal is new ordered_maps (
+		key_type => type_unit_name.bounded_string, -- like "I/O-Bank 3" "A" or "B"
+		element_type => type_unit_internal);
+
+
+	-- EXTERNAL UNITS
+
+	-- External units have a reference to an external symbol:
+	type type_unit_reference is record
+		library		: type_library_full_name.bounded_string; -- like /my_libraries/logig.sym
+		name		: type_symbol_name.bounded_string;		 -- like "NAND" or "Resistor" or "Switch"
+	end record;
+
+	-- An external unit has a reference and a swap level.
+	type type_unit_external is record
+		reference	: type_unit_reference;
+		coordinates	: type_coordinates;
+		swap_level	: type_unit_swap_level;		
+	end record;
+
+	-- External units are collected in a map;
+	package type_units_external is new ordered_maps (
+		key_type => type_unit_name.bounded_string,		 -- like "I/O-Bank 3"
+		element_type => type_unit_external);
+
+	
+	-- COMPONENTS
+
+	-- A component may have internal and/or external units.
+	-- It also has text fields.
+	type type_component is new et_general.type_component with record
+		units_internal	: type_units_internal.map;
+		units_external	: type_units_external.map;
+		fields			: type_fields.list;
+	end record;
+	
+	-- Components are stored in a map.
 	-- Within the map they are accessed by a key type_component_name (something like "CAPACITOR").
 	package type_components is new ordered_maps (
 		key_type => type_component_name.bounded_string, -- example: "TRANSISTOR_PNP"
 		element_type => type_component);
 	use type_components;
 
+
+	
 	package type_libraries is new ordered_maps (
 		key_type => type_library_full_name.bounded_string,
 		element_type => type_components.map);

@@ -238,7 +238,7 @@ package body et_kicad is
 			pin_name_visible 	: et_libraries.type_pin_visible;
 			port_name_visible	: et_libraries.type_port_visible;
 			units_total			: type_unit_id;
-			swap_level			: et_libraries.type_swap_level := et_libraries.swap_level_default;
+			unit_swap_level		: et_libraries.type_unit_swap_level := et_libraries.unit_swap_level_default;
 			appearance			: et_general.type_component_appearance;
 			reference, value, footprint, datasheet, fnction, partcode,
 			commissioned, updated, author : et_libraries.type_text; -- see et_general.ads
@@ -266,7 +266,7 @@ package body et_kicad is
 			-- Converts the kicad interchangeable flag to the et swap level.
 			-- Since Kicad has only one swap level we convert to the lowest swap level available.
 			-- Used when reading component libraries.	
-				return et_libraries.type_swap_level is
+				return et_libraries.type_unit_swap_level is
 				i : type_symbol_interchangeable;
 			begin
 				put("    units interchangeable ");
@@ -487,9 +487,9 @@ package body et_kicad is
 
 									-- From the "interchangeable" flag we set the component wide swap level. It applies for 
 									-- all units of the component:
-									swap_level := to_swap_level (get_field_from_line(line,9));
+									unit_swap_level := to_swap_level (get_field_from_line(line,9));
 								else
-									swap_level := et_libraries.swap_level_default;
+									unit_swap_level := et_libraries.unit_swap_level_default;
 								end if;
 								
 								appearance			:= to_appearance(get_field_from_line(line,10)); -- N/P
