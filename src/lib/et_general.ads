@@ -178,7 +178,11 @@ package et_general is
 		prefix	: type_component_prefix.bounded_string;
 		id		: positive;
 	end record;
+
+	function to_component_reference (text_in : in string) return type_component_reference;
+	-- Converts a string like "IC303" to a type_component_reference.
 	
+	function component_reference_compare ( left, right : in type_component_reference) return boolean;
 	
 -- TEXTS
     -- CS: currently we use unit mil which is old fashionated

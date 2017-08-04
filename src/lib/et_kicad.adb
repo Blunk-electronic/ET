@@ -1841,7 +1841,8 @@ package body et_kicad is
 			device_cursor_scratch : type_device_list_of_module.cursor; -- points to a device of the module
 			device_inserted : boolean; -- used when a device is being inserted into the device list of a module
 			
-			procedure insert_unit ( key : in type_device_name.bounded_string; device : in out et_schematic.type_component ) is 
+			--procedure insert_unit ( key : in type_device_name.bounded_string; device : in out et_schematic.type_component ) is
+			procedure insert_unit ( key : in et_general.type_component_reference; device : in out et_schematic.type_component ) is 
 			begin
 				--type_device_unit_list.append(device.unit_list,unit_scratch);
 				et_schematic.type_units.insert(
@@ -2398,7 +2399,8 @@ package body et_kicad is
 												type_device_list_of_module.insert(
 													container => module.devices,
 													new_item => device_scratch,
-													key => type_device_name.to_bounded_string(get_field_from_line(line,3)), -- "N1"
+													--key => type_device_name.to_bounded_string(get_field_from_line(line,3)), -- "N1"
+													key => et_general.to_component_reference(get_field_from_line(line,3)),
 													position => device_cursor_scratch,
 													inserted => device_inserted); -- this flag is just formal. no further evaluation												
 

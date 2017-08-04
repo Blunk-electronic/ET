@@ -33,6 +33,23 @@ with ada.strings.unbounded; 	use ada.strings.unbounded;
 
 package body et_general is
 
+	function to_component_reference (text_in : in string) return type_component_reference is
+	-- Converts a string like "IC303" to a type_component_reference.
+	-- CS: check if allowed prefix
+		r : type_component_reference;
+	begin
+		r.prefix := et_general.type_component_prefix.to_bounded_string("N");
+		r.id := 1;
+		
+		return r;
+	end to_component_reference;
+	
+	function component_reference_compare ( left, right : in type_component_reference) return boolean is
+		-- CS
+	begin
+		return true;
+	end component_reference_compare;
+	
 	function text_meaning_to_string ( meaning : in type_text_meaning) return string is
 	-- Converts meaning to string.
 		function strip_prefix ( s : in string) return string is
