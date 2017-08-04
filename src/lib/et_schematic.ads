@@ -119,15 +119,9 @@ package et_schematic is
 
 	-- This is a component as it appears in the schematic.
 	type type_component is new et_general.type_component with record
-		id				: positive; -- together with the prefix we get something like "IC702"
 		name_in_library : et_libraries.type_component_name.bounded_string; -- example: "TRANSISTOR_PNP"
 		units			: type_units.map;
 	end record;
-
-
-
-
-
 
 
 
@@ -369,7 +363,10 @@ package et_schematic is
 	-- The devices of a module are collected in a map.
 	use et_general.type_device_name;
  	package type_device_list_of_module is new ordered_maps (
- 		key_type => et_general.type_device_name.bounded_string, -- something like "IC43"
+-- 		key_type => et_general.type_device_name.bounded_string, -- something like "IC43"
+		key_type => et_general.type_component_reference, -- something like "IC43"
+		-- "<" => et_libraries.type_unit_name."<",
+		"<" => et_general.type_component_reference."<",
  		element_type => type_component);
 
 	-- CS: could be of interest when a composite type for device names is used. see above.

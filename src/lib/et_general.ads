@@ -144,8 +144,12 @@ package et_general is
 
 	
 -- COMPONENTS
+
+	-- Component referencees (in Eagle "device names") have prefixes like R, C, IC, ...	
 	component_prefix_length_max : constant natural := 10; -- CS: there is no reason to work with longer prefixes.
-	package type_component_prefix is new generic_bounded_length(component_prefix_length_max); use type_component_prefix;
+	package type_component_prefix is new generic_bounded_length(component_prefix_length_max);
+	use type_component_prefix;
+	
 	type type_component_appearance is ( 
 		sch,		-- a component that exists in the schematic only (like power symbols)
 		pcb,		-- a compoennt that exists on the pcb only (like a fiducial)
@@ -156,16 +160,24 @@ package et_general is
 		-- ...
 		);
 
-	-- This is the base type of a compoennt. Libraries and schematic add extra properties.
+	-- This is the base type of a component. 
+	-- Its most basic property is the appearance. See type_component_appearance.
+	-- Libraries and schematic add extra properties.
 	type type_component is tagged record
 		appearance 			: type_component_appearance;
-		prefix				: type_component_prefix.bounded_string; -- together with an ID we get something like "IC702"
 	end record;
 
 	-- The name of a component is something like "IC403". Other CAE tools refer to it as "reference".
 	-- It is composed of a prefix like "IC" and the number like "403":
-	device_name_length_max	: constant natural := component_prefix_length_max + 100 ;
-	package type_device_name is new generic_bounded_length(device_name_length_max); use type_device_name;
+	device_name_length_max	: constant natural := component_prefix_length_max + 100 ; -- CS: obsolete ?
+	package type_device_name is new generic_bounded_length(device_name_length_max); use type_device_name; -- CS: obsolete ?
+
+	-- A component reference (in Eagle "device name") consists of a prefix (like R, C, IC, ..)
+	-- and a consecutive number. Both form something like "IC702"
+	type type_component_reference is record
+		prefix	: type_component_prefix.bounded_string;
+		id		: positive;
+	end record;
 	
 	
 -- TEXTS
