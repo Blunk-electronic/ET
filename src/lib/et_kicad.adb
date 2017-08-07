@@ -1164,7 +1164,7 @@ package body et_kicad is
 					);
 			end write_note_properties;
 			
-			procedure write_coordinates_of_device_unit (unit : in et_schematic.type_unit) is
+			procedure write_coordinates_of_unit (unit : in et_schematic.type_unit) is
 			begin
 				write_message (
 					file_handle => et_import.report_handle,
@@ -1173,7 +1173,7 @@ package body et_kicad is
 						trim(et_general.type_grid'image(unit.position.y),left) & "/" &
 						trim( positive'image(unit.position.sheet_number),left)
 						);
-			end write_coordinates_of_device_unit;			
+			end write_coordinates_of_unit;			
 			
 			-- An anonymous_net is a list of net segments that are connected with each other (by their start or end points).
 			-- The anonymous net gets step by step more properties specified: name, scope and some status flags:
@@ -1833,12 +1833,12 @@ package body et_kicad is
                 );
 
             
-			-- This is relevant for reading devices:
+			-- This is relevant for reading components:
 			device_entered : boolean := false; -- indicates that a device is being read
 			device_scratch : et_schematic.type_component; -- temporarily used before appending a device list of the module
 			unit_scratch : et_schematic.type_unit; -- temporarily used before appending a unit to a device
 			unit_scratch_name : et_libraries.type_unit_name.bounded_string; -- temporarily used for the unit name
-			device_cursor_scratch : type_device_list_of_module.cursor; -- points to a device of the module
+			device_cursor_scratch : type_components.cursor; -- points to a component of the module
 			device_inserted : boolean; -- used when a device is being inserted into the device list of a module
 			
 			--procedure insert_unit ( key : in type_device_name.bounded_string; device : in out et_schematic.type_component ) is
@@ -2372,7 +2372,7 @@ package body et_kicad is
 
 											--put_line(to_string(line_of_schematic_file));								
 											-- update the device with the collected unit data (in unit_scratch)
-											type_device_list_of_module.update_element(module.devices,device_cursor_scratch, insert_unit'access);
+											type_components.update_element (module.components, device_cursor_scratch, insert_unit'access);
 
 											-- clean up: the list of texts collected in unit_scratch.text_list must be erased for next spin.
 											et_schematic.type_texts.clear (unit_scratch.fields);
@@ -2395,9 +2395,9 @@ package body et_kicad is
 													& et_libraries.type_component_name.to_string(device_scratch.name_in_library));
 
 												
-												-- Insert device in device list of module.
-												type_device_list_of_module.insert(
-													container => module.devices,
+												-- Insert component in component list of module.
+												type_components.insert(
+													container => module.components,
 													new_item => device_scratch,
 													--key => type_device_name.to_bounded_string(get_field_from_line(line,3)), -- "N1"
 													key => et_general.to_component_reference(
@@ -2437,7 +2437,7 @@ package body et_kicad is
 												unit_scratch.position.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
 												unit_scratch.position.sheet_number := sheet_number_current;
 
-												write_coordinates_of_device_unit(unit_scratch);
+												write_coordinates_of_unit(unit_scratch);
 											end if;
 
 											-- read unit fields 0..2 from lines like:

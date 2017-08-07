@@ -167,11 +167,6 @@ package et_general is
 		appearance 			: type_component_appearance;
 	end record;
 
-	-- The name of a component is something like "IC403". Other CAE tools refer to it as "reference".
-	-- It is composed of a prefix like "IC" and the number like "403":
-	device_name_length_max	: constant natural := component_prefix_length_max + 100 ; -- CS: obsolete ?
-	package type_device_name is new generic_bounded_length(device_name_length_max); use type_device_name; -- CS: obsolete ?
-
 	-- A component reference (in Eagle "device name") consists of a prefix (like R, C, IC, ..)
 	-- and a consecutive number. Both form something like "IC702"
 	type type_component_reference_element is ( PREFIX, ID);

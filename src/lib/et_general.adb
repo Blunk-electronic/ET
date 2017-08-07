@@ -144,6 +144,7 @@ package body et_general is
 
 		end if;
 
+		-- in case of equivalence of left and right, we return false (default)
 		return result;
 	end compare_component_by_reference;
 	

@@ -360,21 +360,14 @@ package et_schematic is
 		index_type => positive, -- every net of a module has an id
 		element_type => type_net);
 
-	-- The devices of a module are collected in a map.
-	use et_general.type_device_name;
- 	package type_device_list_of_module is new ordered_maps (
--- 		key_type => et_general.type_device_name.bounded_string, -- something like "IC43"
+	-- The components of a module are collected in a map.
+ 	package type_components is new ordered_maps (
 		key_type => et_general.type_component_reference, -- something like "IC43"
 		"<" => et_general.compare_component_by_reference,
  		element_type => type_component);
 
-	-- CS: could be of interest when a composite type for device names is used. see above.
--- 	package type_device_list_of_module2 is new ordered_maps (
---  		key_type => type_device_name2, -- something like "IC43"
---  		element_type => type_device);
-
 	
-    -- A module has a name, a list of nets and a list of devices.
+    -- A module has a name, a list of nets and a list of components.
     -- Objects relevant for graphical interfaces are
     -- - a list of submodules
     -- - a list of drawing frames
@@ -382,7 +375,7 @@ package et_schematic is
 	type type_module is record
 		name 	    : type_submodule_name.bounded_string; -- example "MOTOR_DRIVER"
 		nets 	    : type_net_list_of_module.vector;
-        devices     : type_device_list_of_module.map;
+        components	: type_components.map;
         submodules  : type_list_of_gui_submodules.vector;
         frames      : type_list_of_frames.vector;
         title_blocks: type_list_of_title_blocks.vector;
@@ -391,6 +384,8 @@ package et_schematic is
 	end record;
 
 	module : type_module; -- this is the whole schematic of a board
+
+	-- For multi-board support:
     -- CS: list of modules
 
 
