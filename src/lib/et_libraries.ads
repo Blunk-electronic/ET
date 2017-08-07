@@ -86,14 +86,6 @@ package et_libraries is
 	package type_pin_name is new generic_bounded_length(pin_name_length); use type_pin_name;
 
 
-
--- COORDINATES
--- 	subtype type_grid is et_general.type_grid range -10000.00 .. 10000.00; -- CS: unit assumed is MIL !!!
--- 
--- 	type type_coordinates is record
--- 		x,y				: type_grid;
--- 	end record;
-
 	
 -- TEXT FIELD
 	-- A text field in the library gets extended by simple coordinates.
@@ -142,10 +134,10 @@ package et_libraries is
 
 
 
--- DEVICE
+
 	
 	-- outline segments 
-	-- The unit outline is composed of various elements like lines, arcs or cicles.
+	-- The symbol outline is composed of various elements like lines, arcs or cicles.
 	
 	-- Straight lines of a unit will be collected in a simple list.
 	type type_line is record
@@ -290,3 +282,4 @@ package et_libraries is
 	
 end et_libraries;
 
+-- Soli Deo Gloria

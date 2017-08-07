@@ -139,3 +139,4 @@ package et_string_processing is
 	
 end et_string_processing;
 
+-- Soli Deo Gloria

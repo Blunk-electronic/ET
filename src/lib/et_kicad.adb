@@ -53,7 +53,7 @@ with et_string_processing;		use et_string_processing;
 package body et_kicad is
 
 	function to_text_orientation ( text : in string) return et_general.type_orientation is
-	-- Convertes a kicad field text orientation character (H/V) to type_orientation.
+	-- Converts a kicad field text orientation character (H/V) to type_orientation.
 	begin	
 		case type_field_orientation'value(text) is
 			when H => return deg_0;
@@ -1834,19 +1834,17 @@ package body et_kicad is
 
             
 			-- This is relevant for reading components:
-			device_entered : boolean := false; -- indicates that a device is being read
-			device_scratch : et_schematic.type_component; -- temporarily used before appending a device list of the module
-			unit_scratch : et_schematic.type_unit; -- temporarily used before appending a unit to a device
+			component_entered : boolean := false; -- indicates that a component is being read
+			component_scratch : et_schematic.type_component; -- temporarily used before appending a component list of the module
+			unit_scratch : et_schematic.type_unit; -- temporarily used before appending a unit to a component
 			unit_scratch_name : et_libraries.type_unit_name.bounded_string; -- temporarily used for the unit name
-			device_cursor_scratch : type_components.cursor; -- points to a component of the module
-			device_inserted : boolean; -- used when a device is being inserted into the device list of a module
+			component_cursor_scratch : type_components.cursor; -- points to a component of the module
+			component_inserted : boolean; -- used when a component is being inserted into the component list of a module
 			
-			--procedure insert_unit ( key : in type_device_name.bounded_string; device : in out et_schematic.type_component ) is
-			procedure insert_unit ( key : in et_general.type_component_reference; device : in out et_schematic.type_component ) is 
+			procedure insert_unit ( key : in et_general.type_component_reference; component : in out et_schematic.type_component ) is 
 			begin
-				--type_device_unit_list.append(device.unit_list,unit_scratch);
 				et_schematic.type_units.insert(
-					container => device.units, -- the unit list of the device
+					container => component.units, -- the unit list of the component
 					new_item => unit_scratch, -- the unit itself
 					key => unit_scratch_name); -- the unit name
 			end insert_unit;
@@ -2360,19 +2358,19 @@ package body et_kicad is
 									end if;
 									
 									-- READ COMPONENTS
-									-- Once a component header ($Comp) found, set device_entered flag. This indicates we are inside a device section.
-									-- Inside the device section, we process its content until the component footer ($EndComp) is found.
-									if not device_entered then
+									-- Once a component header ($Comp) found, set component_entered flag. This indicates we are inside a component section.
+									-- Inside the component section, we process its content until the component footer ($EndComp) is found.
+									if not component_entered then
 										if get_field_from_line(line,1) = schematic_component_header then
-											device_entered := true;
+											component_entered := true;
 										end if;
 									else -- we are inside the component
 										if get_field_from_line(line,1) = schematic_component_footer then
-											device_entered := false; -- we are leaving the component
+											component_entered := false; -- we are leaving the component
 
 											--put_line(to_string(line_of_schematic_file));								
-											-- update the device with the collected unit data (in unit_scratch)
-											type_components.update_element (module.components, device_cursor_scratch, insert_unit'access);
+											-- update the component with the collected unit data (in unit_scratch)
+											type_components.update_element (module.components, component_cursor_scratch, insert_unit'access);
 
 											-- clean up: the list of texts collected in unit_scratch.text_list must be erased for next spin.
 											et_schematic.type_texts.clear (unit_scratch.fields);
@@ -2380,34 +2378,33 @@ package body et_kicad is
 											--put_line("line ->" & to_string(line));
 											-- READ COMPONENT SECTION CONTENT
 											
-											-- Read device name and annotation from a line like "L NetChanger N1". 
-											-- Append the device to the device list of the module (module.devices). Devices may occur multiple times, which implies they are
+											-- Read component name and annotation from a line like "L NetChanger N1". 
+											-- Append the component to the component list of the module (module.components). 
+											-- Commponents may occur multiple times, which implies they are
 											-- split into units (kicad refers to them as "units", EAGLE refers to them as "gates").
-											-- Only the first occurence of the device leads to appending it to the device list of the module.
+											-- Only the first occurence of the component leads to appending it to the component list of the module.
 											if get_field_from_line(line,1) = schematic_component_identifier_name then -- "L"
-												device_scratch.name_in_library := et_libraries.type_component_name.to_bounded_string(get_field_from_line(line,2)); -- "NetChanger"
-												--device_scratch.annotation := type_device_name.to_bounded_string(get_field_from_line(line,3)); -- "N1"
+												component_scratch.name_in_library := et_libraries.type_component_name.to_bounded_string(get_field_from_line(line,2)); -- "NetChanger"
 												-- CS: check annotation
 
-												put_line("  device " 
+												put_line("  component " 
 													& get_field_from_line(line,3) -- "N1"
 													& " is " 
-													& et_libraries.type_component_name.to_string(device_scratch.name_in_library));
+													& et_libraries.type_component_name.to_string(component_scratch.name_in_library));
 
 												
 												-- Insert component in component list of module.
 												type_components.insert(
 													container => module.components,
-													new_item => device_scratch,
-													--key => type_device_name.to_bounded_string(get_field_from_line(line,3)), -- "N1"
+													new_item => component_scratch,
 													key => et_general.to_component_reference(
 														text_in => get_field_from_line(line,3),
 														allow_special_character_in_prefix => true),
-													position => device_cursor_scratch,
-													inserted => device_inserted); -- this flag is just formal. no further evaluation												
+													position => component_cursor_scratch,
+													inserted => component_inserted); -- this flag is just formal. no further evaluation												
 
-												-- The cursor device_cursor_scratch now points to the device. There will be more device information (in the following) 
-												-- that will go into device_scratch. Once the device section is left, device_scratch updates the device where the cursor
+												-- The cursor component_cursor_scratch now points to the component. There will be more component information (in the following) 
+												-- that will go into component_scratch. Once the component section is left, component_scratch updates the component where the cursor
 												-- is pointing to.
 											end if;
 
@@ -2417,7 +2414,7 @@ package body et_kicad is
 
 												-- KiCad uses positive numbers to identifiy units. But in general a unit name can be a string as well.
 												-- Therefore we handle the unit id as string.
-												-- Temporarily the unit data is collected in unit_scratch (to update the device later when leaving the device section).
+												-- Temporarily the unit data is collected in unit_scratch (to update the component later when leaving the component section).
 												unit_scratch_name := et_libraries.type_unit_name.to_bounded_string(
 													get_field_from_line(line,2)); -- the unit id
 												put("   with unit " & et_libraries.type_unit_name.to_string(unit_scratch_name) & " at");
@@ -2768,3 +2765,4 @@ package body et_kicad is
 
 end et_kicad;
 
+-- Soli Deo Gloria

@@ -255,3 +255,4 @@ package et_kicad is
 
 end et_kicad;
 
+-- Soli Deo Gloria
