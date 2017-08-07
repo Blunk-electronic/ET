@@ -174,15 +174,24 @@ package et_general is
 
 	-- A component reference (in Eagle "device name") consists of a prefix (like R, C, IC, ..)
 	-- and a consecutive number. Both form something like "IC702"
+	type type_component_reference_element is ( PREFIX, ID);
 	type type_component_reference is record
 		prefix	: type_component_prefix.bounded_string;
-		id		: positive;
+		id		: natural; -- NOTE: This allows something like R0 or IC0 (there are reasons for such stange things ...)
 	end record;
 
-	function to_component_reference (text_in : in string) return type_component_reference;
-	-- Converts a string like "IC303" to a type_component_reference.
+	function to_component_reference (
+	-- Converts a string like "IC303" to a composite type_component_reference.
+	-- If allow_special_charater_in_prefix is given true, the first character
+	-- is allowed to be a special character.
+	-- NOTE: Leading zeroes in the id are removed.	
+		text_in : in string;
+		allow_special_character_in_prefix : in boolean := false)
+		return type_component_reference;
 	
-	function component_reference_compare ( left, right : in type_component_reference) return boolean;
+	function compare_component_by_reference ( left, right : in type_component_reference) return boolean;
+	-- Returns true if left comes before right.
+	-- If left equals right, the return is false.	
 	
 -- TEXTS
     -- CS: currently we use unit mil which is old fashionated

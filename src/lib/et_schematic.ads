@@ -365,8 +365,7 @@ package et_schematic is
  	package type_device_list_of_module is new ordered_maps (
 -- 		key_type => et_general.type_device_name.bounded_string, -- something like "IC43"
 		key_type => et_general.type_component_reference, -- something like "IC43"
-		-- "<" => et_libraries.type_unit_name."<",
-		"<" => et_general.component_reference_compare,
+		"<" => et_general.compare_component_by_reference,
  		element_type => type_component);
 
 	-- CS: could be of interest when a composite type for device names is used. see above.

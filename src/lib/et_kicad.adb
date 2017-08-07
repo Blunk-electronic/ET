@@ -992,7 +992,7 @@ package body et_kicad is
 					when 2 => o_out := deg_0;
 					when 3 => o_out := deg_270;
 				end case;
-				put_line("   orientation " & et_general.type_orientation'image(o_out));	
+				put_line("    orientation " & et_general.type_orientation'image(o_out));	
 				return o_out;
 				-- CS: exception handler
 			end to_orientation;
@@ -2389,7 +2389,7 @@ package body et_kicad is
 												--device_scratch.annotation := type_device_name.to_bounded_string(get_field_from_line(line,3)); -- "N1"
 												-- CS: check annotation
 
-												put("  device " 
+												put_line("  device " 
 													& get_field_from_line(line,3) -- "N1"
 													& " is " 
 													& et_libraries.type_component_name.to_string(device_scratch.name_in_library));
@@ -2400,7 +2400,9 @@ package body et_kicad is
 													container => module.devices,
 													new_item => device_scratch,
 													--key => type_device_name.to_bounded_string(get_field_from_line(line,3)), -- "N1"
-													key => et_general.to_component_reference(get_field_from_line(line,3)),
+													key => et_general.to_component_reference(
+														text_in => get_field_from_line(line,3),
+														allow_special_character_in_prefix => true),
 													position => device_cursor_scratch,
 													inserted => device_inserted); -- this flag is just formal. no further evaluation												
 
@@ -2418,7 +2420,7 @@ package body et_kicad is
 												-- Temporarily the unit data is collected in unit_scratch (to update the device later when leaving the device section).
 												unit_scratch_name := et_libraries.type_unit_name.to_bounded_string(
 													get_field_from_line(line,2)); -- the unit id
-												put(" with unit " & et_libraries.type_unit_name.to_string(unit_scratch_name) & " at");
+												put("   with unit " & et_libraries.type_unit_name.to_string(unit_scratch_name) & " at");
 											end if;
 
 											-- Read unit coordinates from a line like "P 3200 4500".
