@@ -87,12 +87,21 @@ package et_libraries is
 
 
 	
--- TEXT FIELD
+-- TEXT FIELDS
+
 	-- A text field in the library gets extended by simple coordinates.
 	type type_text is new et_general.type_text with record
 		coordinates		: et_general.type_coordinates;
 	end record;
 
+	-- Text fields can be regarded as attributes.
+	-- They are collected in a simple list.
+	type type_field is new et_general.type_text with record
+		coordinates	: type_coordinates;
+	end record;
+	package type_fields is new doubly_linked_lists (
+		element_type => type_field);
+	
 
 -- PORT
 	-- A port is something where a net can be attached at.
@@ -132,14 +141,17 @@ package et_libraries is
 		-- pin_position_offset ?
 	end record;
 
+	-- Ports are collected in a map.
+	package type_ports is new ordered_maps ( 
+		key_type => type_port_name.bounded_string,
+		element_type => type_port);
 
 
 
 	
-	-- outline segments 
-	-- The symbol outline is composed of various elements like lines, arcs or cicles.
+-- SHAPES 
 	
-	-- Straight lines of a unit will be collected in a simple list.
+	-- Straight lines are collected in a simple list.
 	type type_line is record
 		coordinates_start : type_coordinates;
 		coordinates_end   : type_coordinates;
@@ -147,7 +159,7 @@ package et_libraries is
 	package type_lines is new doubly_linked_lists (
 		element_type => type_line);
 
-	-- Arcs of a unit will be collected in a simple list.
+	-- Arcs are collected in a simple list.
 	type type_arc is record
 		coordinates_start		: type_coordinates;
 		coordinates_end			: type_coordinates;
@@ -156,7 +168,7 @@ package et_libraries is
 	package type_arcs is new doubly_linked_lists (
 		element_type => type_arc);
 
-	-- Circles of a unit will be collected in a simple list.
+	-- Circles are collected in a simple list.
 	type type_circle is record
 		coordinates_start : type_coordinates;
 		coordinates_end   : type_coordinates;
@@ -165,17 +177,13 @@ package et_libraries is
 	package type_circles is new doubly_linked_lists (
 		element_type => type_circle);
 
-	-- Ports of a unit will be collected in a map.
-	package type_ports is new ordered_maps ( 
-		key_type => type_port_name.bounded_string,
-		element_type => type_port);
-
-	-- Text fields in the library are can be regarded as attributes.
-	type type_field is new et_general.type_text with record
-		coordinates	: type_coordinates;
+	-- Shapes are wrapped in a the type_shapes:
+	type type_shapes is record
+		lines		: type_lines.list;
+		arcs 		: type_arcs.list;
+		circles		: type_circles.list;
 	end record;
-	package type_fields is new doubly_linked_lists (
-		element_type => type_field);
+
 
 -- SYMBOLS AND UNITS
 
@@ -197,10 +205,8 @@ package et_libraries is
 	package type_symbol_name is new generic_bounded_length(symbol_name_length_max); use type_symbol_name;
 	
 	type type_symbol is record
-		lines		: type_lines.list;
-		arcs 		: type_arcs.list;
-		circles		: type_circles.list;
-		port_list 	: type_ports.map;
+		shapes		: type_shapes;
+		ports		: type_ports.map;
 		reference	: type_field; -- placeholder, meaning must be "reference" -- CS: set default (meaning => reference)
 		value		: type_field; -- placeholder, meaning must be "value"
 		commissioned: type_field; -- placehodler, meaning must be "commissioned"
@@ -222,6 +228,7 @@ package et_libraries is
 	-- INTERNAL UNITS
 	
 	-- An internal unit is a symbol with a swap level.
+	-- An internal unit is owned by a particular component exclusively.
 	type type_unit_internal is record
 		symbol		: type_symbol;
 		coordinates	: type_coordinates;
@@ -236,7 +243,8 @@ package et_libraries is
 
 	-- EXTERNAL UNITS
 
-	-- External units have a reference to an external symbol:
+	-- External units have a reference to an external symbol.
+	-- External units are stored in a library and are shared by many components.
 	type type_unit_reference is record
 		library		: type_library_full_name.bounded_string; -- like /my_libraries/logig.sym
 		name		: type_symbol_name.bounded_string;		 -- like "NAND" or "Resistor" or "Switch"
