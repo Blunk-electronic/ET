@@ -35,6 +35,7 @@ with ada.strings.unbounded; 	use ada.strings.unbounded;
 with ada.containers;            use ada.containers;
 with ada.containers.vectors;
 with ada.containers.doubly_linked_lists;
+with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
 with ada.containers.ordered_sets;
 
@@ -92,13 +93,18 @@ package et_schematic is
 -- TEXT FIELD
 
 	-- A text field in the schematic gets extended by extended coordinates (see above)
-	type type_text is new et_general.type_text with record
-		meaning			: et_general.type_text_meaning;
+	type type_text (meaning : et_general.type_text_meaning) is new et_general.type_text with record
 		coordinates		: type_coordinates;
 	end record;
-	package type_texts is new doubly_linked_lists (
+	package type_texts is new indefinite_doubly_linked_lists (
 		element_type => type_text);
 
+	type type_texts_basic is record
+		reference	: type_text (meaning => et_general.reference);
+		value		: type_text (meaning => et_general.value);
+		datasheet	: type_text (meaning => et_general.datasheet);
+		footprint	: type_text (meaning => et_general.footprint);		
+	end record;
 	
 	
 -- UNITS AND COMPONENTS
@@ -106,9 +112,12 @@ package et_schematic is
 	-- In a schematic we find units spread all over.
 	-- A unit is a subsection of a component.
 	-- A unit has text fields for the reference (like IC303), value (like 7400), ...
+
+
+	
 	type type_unit is record
 		position		: type_coordinates;
-		fields			: type_texts.list;	
+		fields			: type_texts.list;
 	end record;
 
 	-- Units of a component are collected in a map.

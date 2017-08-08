@@ -201,7 +201,9 @@ package et_general is
     end record;
 
     type type_text_alignment_horizontal is ( left, center , right);
-    type type_text_alignment_vertical is ( top, center , bottom);    
+	type type_text_alignment_vertical is ( top, center , bottom);    
+	-- CS: wrap to type_text_aligment
+	
 	type type_text_visible is (yes, no);
 	
 	-- Text fields:
@@ -210,15 +212,16 @@ package et_general is
 	package type_text_content is new generic_bounded_length(text_length_max); use type_text_content;
 	text_meaning_prefix : constant string (1..2) := "P_"; -- workaround, see below
 	type type_text_meaning is (  -- CS: explain them:
-		REFERENCE,
-		VALUE,
-		FOOTPRINT,
-		DATASHEET,
-		P_FUNCTION, -- workaround: "P_" avoids usage of an ada keyword 
-		COMMISSIONED,
-		UPDATED,
-		AUTHOR,
-		PARTCODE,
+		REFERENCE,	-- for things like R301 or X9
+		VALUE,		-- for component values like "200R"
+		FOOTPRINT,	-- for compoenent packages like SOT23
+		DATASHEET,	-- for url to datasheet
+		P_FUNCTION, -- for the function of the component in the design. workaround: "P_" avoids usage of an ada keyword 
+		COMMISSIONED,	-- for the date of commission in the library
+		UPDATED,		-- for the date of the last edit in the library
+		AUTHOR,			-- for the person who did the last edit
+		PARTCODE,		-- for the primary key into an external database (like "R_PAC_S_0805_VAL_200R")
+		NOTE,			-- for notes made by a person
 		MISC); -- CS: others ?
 
 	function text_meaning_to_string ( meaning : in type_text_meaning) return string;

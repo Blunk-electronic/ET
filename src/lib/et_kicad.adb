@@ -52,6 +52,39 @@ with et_string_processing;		use et_string_processing;
 
 package body et_kicad is
 
+	function to_text_meaning (
+	-- Extracts from a scheamtic field like "F 0 "#PWR01" H 2000 3050 50  0001 C CNN" its meaning.
+	-- Extracts from a component field liek "F0 "IC" 0 50 50 H V C CNN" its meaning.
+	-- Since the fields start different in libaray and schematic we also need a flag that tells
+	-- the function whether we are dealing with scheamtic or library fields.
+		line : in type_fields_of_line;
+		schematic : in boolean) -- set false if it is about fields in a library, true if it is about a schematic field	
+		return et_general.type_text_meaning is
+
+		function field (
+			line		: in type_fields_of_line;
+			position	: in positive) return string renames get_field_from_line;
+		
+		meaning : et_general.type_text_meaning;
+	begin
+		case schematic is
+			when true =>
+
+				-- The field id must be mapped to the actual field meaning:
+				case type_schematic_component_field_id'value(field(line,2)) is -- "0..2"
+					when schematic_component_field_id_reference => meaning := et_general.reference; -- "0"
+					when schematic_component_field_id_value => meaning := et_general.value; -- "1"
+					when schematic_component_field_id_footprint => meaning := et_general.footprint; -- "2"
+					--CS: when schematic_component_field_id_partcode => unit_text_scratch.meaning := partcode;
+					when others => meaning := et_general.misc;
+				end case;
+
+			when false => null; -- CS
+		end case;
+
+		return meaning;				
+	end to_text_meaning;
+								 
 	function to_text_orientation ( text : in string) return et_general.type_orientation is
 	-- Converts a kicad field text orientation character (H/V) to type_orientation.
 	begin	
@@ -136,9 +169,8 @@ package body et_kicad is
 	function to_field_visible ( 
 	-- Converts the kicad field visible flag to the type_text_visible.
 	-- The parameter "schematic" tells whether to convert a schematic or a component library field.
-		vis_in : in string; -- the string to be converted
-		schematic : in boolean; -- set false if it is about fields in a library, true if it is about a schematic field
-		meaning : in et_general.type_text_meaning -- the meaning of the field
+		vis_in 		: in string; -- the string to be converted
+		schematic	: in boolean -- set false if it is about fields in a library, true if it is about a schematic field
 		-- Explanation: The visibility of fields in schematic is defined by something like "0001" or "0000".
 		-- In component libraries it is defined by characters like V or I.
 		)
@@ -147,8 +179,6 @@ package body et_kicad is
 		v_in_sch : type_schematic_field_visible;
 		v_out : et_general.type_text_visible;
 	begin
-		--put("    " & to_lower(et_general.type_text_meaning'image(meaning)) & " field visible ");
-
 		case schematic is
 			
 			when true =>
@@ -347,8 +377,7 @@ package body et_kicad is
 				
 				text.visible := to_field_visible (
 					vis_in		=> get_field_from_line(line,7),
-					schematic	=> false, 
-					meaning		=> et_general.reference);
+					schematic	=> false);
 
 				text.alignment_horizontal := to_alignment_horizontal(get_field_from_line(line,8));
 				text.alignment_vertical   := to_alignment_vertical  (get_field_from_line(line,9));
@@ -987,7 +1016,7 @@ package body et_kicad is
             -- When reading notes, they are held temporarily in scratch variables,
             -- then added to the list of notes.
             note_entered : boolean := false;
-            note_scratch : et_schematic.type_text;
+            note_scratch : et_schematic.type_text (meaning => et_general.note);
 			
 			function to_orientation (text_in : in string) return et_general.type_orientation is
 			-- Converts the label orientation to type_orientation.
@@ -1858,8 +1887,6 @@ package body et_kicad is
 					key => unit_scratch_name); -- the unit name
 			end insert_unit;
 
-			-- temporarily we store fields here:
-			unit_field_scratch : et_schematic.type_text;
 
 -- 			procedure fetch_components_from_library is
 			-- This procedure looks up the sheet_header and reads the library names stored there.
@@ -2450,60 +2477,41 @@ package body et_kicad is
 											-- 			"F 0 "N701" H 2600 2100 39  0000 C CNN"
 											--			"F 1 "NetChanger" H 2600 2250 60  0001 C CNN"
 											--			"F 2 "bel_netchanger:N_0.2MM" H 2600 2100 60  0001 C CNN"
-											-- Each line represents a field which goes temporarily into unit_text_scratch. 
-											-- Once the line is processed, unit_text_scratch is appended the the list of fields of unit_scratch.
+											-- Each line represents a text field which is appended to the scratch unit. 
 											if get_field_from_line(line,1) = schematic_component_identifier_field then -- "F"
 
-												-- The field id must be mapped to the actual field meaning:
-												case type_schematic_component_field_id'value(get_field_from_line(line,2)) is -- "0..2"
-													when schematic_component_field_id_reference => unit_field_scratch.meaning := reference; -- "0"
-													when schematic_component_field_id_value => unit_field_scratch.meaning := value; -- "1"
-													when schematic_component_field_id_footprint => unit_field_scratch.meaning := footprint; -- "2"
-													--CS: when schematic_component_field_id_partcode => unit_text_scratch.meaning := partcode;
-													when others => unit_field_scratch.meaning := misc;
-												end case;
-												
-												-- read content like "N701" or "NetChanger" from field position 3
-												unit_field_scratch.content := type_text_content.to_bounded_string(strip_quotes(get_field_from_line(line,3)));
+												-- append text field to scratch unit.
+												et_schematic.type_texts.append (
+													container => unit_scratch.fields,
+													new_item => (
+														-- read text field meaning
+														meaning 	=> to_text_meaning(line => line, schematic => true),
 
-												-- read orientation like "H" -- type_schematic_field_orientation
-												case type_field_orientation'value(get_field_from_line(line,4)) is
-													when H => unit_field_scratch.orientation := deg_0;
-													when V => unit_field_scratch.orientation := deg_90;
-												end case;
+														-- read content like "N701" or "NetChanger" from field position 3
+														content		=> type_text_content.to_bounded_string (strip_quotes(get_field_from_line(line,3))),
 
-												-- read x and y coordinates like 2600 3250
-												unit_field_scratch.coordinates.x := et_general.type_grid'value(get_field_from_line(line,5));
-												unit_field_scratch.coordinates.y := et_general.type_grid'value(get_field_from_line(line,6));
+														-- read orientation like "H" -- type_schematic_field_orientation
+														orientation	=> to_text_orientation (get_field_from_line(line,4)),
 
-												-- assign further coordinates
-												unit_field_scratch.coordinates.path := path_to_submodule;
-												unit_field_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
-												unit_field_scratch.coordinates.sheet_number := sheet_number_current;
+														-- read coordinates
+														coordinates => (x => et_general.type_grid'value(get_field_from_line(line,5)),
+																		y => et_general.type_grid'value(get_field_from_line(line,6)),
+																		path => path_to_submodule,
+																		module_name => type_submodule_name.to_bounded_string (to_string(name_of_schematic_file)),
+																		sheet_number => sheet_number_current),
+														size		=> type_text_size'value (get_field_from_line(line,7)),
+														style		=> to_text_style (style_in => get_field_from_line(line,10), text => false),
+														line_width	=> 0, -- not provided here -- CS: define a default ?
 
-												-- build text attributes (only text size available here, style and width assume default value)
--- 												unit_field_scratch.attributes := to_text_attributes(
--- 													size => type_text_size'value(get_field_from_line(line,7)),
--- 													style => schematic_style_normal,
--- 													width => 0);
+														-- build text visibility
+														visible		=> to_field_visible (
+																			vis_in		=> get_field_from_line(line,8),
+																			schematic	=> true),
 
-												unit_field_scratch.size := type_text_size'value(get_field_from_line(line,7));
-												unit_field_scratch.style := to_text_style (style_in => get_field_from_line(line,10), text => false);
-												unit_field_scratch.line_width := 0;
-
-												-- build text visibility
-												unit_field_scratch.visible := to_field_visible (
-													vis_in		=> get_field_from_line(line,8),
-													schematic	=> true,
-													meaning		=> unit_field_scratch.meaning
-													);
-
-												-- build text alignment												
-												unit_field_scratch.alignment_horizontal := to_alignment_horizontal(get_field_from_line(line,9));
-												unit_field_scratch.alignment_vertical := to_alignment_vertical(get_field_from_line(line,10));  
-												
-												-- append text unit_field_scratch to text list of scratch unit.
-												et_schematic.type_texts.append (unit_scratch.fields,unit_field_scratch);
+														-- build text alignment
+														alignment_horizontal	=> to_alignment_horizontal (get_field_from_line(line,9)),
+														alignment_vertical		=> to_alignment_vertical (get_field_from_line(line,10))
+														));
 
 											end if;
 									end if;

@@ -272,7 +272,8 @@ package et_libraries is
 	type type_component is new et_general.type_component with record
 		units_internal	: type_units_internal.map;
 		units_external	: type_units_external.map;
-		texts_basic		: type_texts_basic;
+		texts_basic		: type_texts_basic; -- basic text fields
+		-- In addition to the basic text fields we need more text fields:
 		partcode		: type_text(meaning => et_general.partcode); -- like "R_PAC_S_0805_VAL_"
 		fnction			: type_text(meaning => et_general.p_function); -- to be filled in schematic later by the user
 		datasheet		: type_text(meaning => et_general.datasheet); -- might be useful for some special components
