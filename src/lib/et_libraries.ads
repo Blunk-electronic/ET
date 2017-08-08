@@ -90,21 +90,19 @@ package et_libraries is
 -- TEXT FIELDS
 
 	-- A text field in the library gets extended by simple coordinates.
+	-- Text fields can be regarded as attributes. Some of them are mandatory.
+	-- They can be collected in a simple list.
 	type type_text is new et_general.type_text with record
 		coordinates		: et_general.type_coordinates;
 	end record;
 
-	-- Text fields can be regarded as attributes.
-	-- They are collected in a simple list.
-	type type_field is new et_general.type_text with record
-		coordinates	: type_coordinates;
-	end record;
-	package type_fields is new doubly_linked_lists (
-		element_type => type_field);
+	package type_texts is new doubly_linked_lists (
+		element_type => type_text);
 	
 
--- PORT
-	-- A port is something where a net can be attached at.
+-- PORTS
+	
+	-- A port is something where a net can be attached to.
 	-- The name of a port represents the function of the port like (A14 or RST_N)
 
 	-- The port has an electrical direction:
@@ -207,11 +205,11 @@ package et_libraries is
 	type type_symbol is record
 		shapes		: type_shapes;
 		ports		: type_ports.map;
-		reference	: type_field; -- placeholder, meaning must be "reference" -- CS: set default (meaning => reference)
-		value		: type_field; -- placeholder, meaning must be "value"
-		commissioned: type_field; -- placehodler, meaning must be "commissioned"
-		updated		: type_field; -- placehodler, meaning must be "updated"
-		author		: type_field; -- placehodler, meaning must be "author"		
+		reference	: type_text; -- placeholder, meaning must be "reference" -- CS: set default (meaning => reference)
+		value		: type_text; -- placeholder, meaning must be "value"
+		commissioned: type_text; -- placehodler, meaning must be "commissioned"
+		updated		: type_text; -- placehodler, meaning must be "updated"
+		author		: type_text; -- placehodler, meaning must be "author"		
 	end record;
 
 
@@ -270,7 +268,7 @@ package et_libraries is
 	type type_component is new et_general.type_component with record
 		units_internal	: type_units_internal.map;
 		units_external	: type_units_external.map;
-		fields			: type_fields.list;
+		fields			: type_texts.list;
 	end record;
 	
 	-- Components are stored in a map.
