@@ -224,15 +224,30 @@ package et_kicad is
 -- LIBRARY
 	
 	version_header : constant string (1..28) := "EESchema-LIBRARY Version 2.3";
-	field_reference	: constant string (1..2) := "F0"; -- hard coded in kicad -> mandatory
-	field_value 	: constant string (1..2) := "F1"; -- hard coded in kicad -> mandatory
-	field_footprint	: constant string (1..2) := "F2"; -- hard coded in kicad -> mandatory
-	field_datasheet	: constant string (1..2) := "F3"; -- hard coded in kicad -> mandatory
-	field_function	: constant string (1..2) := "F4"; -- must be added by the user
-	field_partcode	: constant string (1..2) := "F5"; -- must be added by the user
-	field_commissioned	: constant string (1..2) := "F6"; -- must be added by the user
-	field_updated		: constant string (1..2) := "F7"; -- must be added by the user
-	field_author		: constant string (1..2) := "F8"; -- must be added by the user
+-- 	field_reference	: constant string (1..2) := "F0"; -- hard coded in kicad -> mandatory
+-- 	field_value 	: constant string (1..2) := "F1"; -- hard coded in kicad -> mandatory
+-- 	field_footprint	: constant string (1..2) := "F2"; -- hard coded in kicad -> mandatory
+-- 	field_datasheet	: constant string (1..2) := "F3"; -- hard coded in kicad -> mandatory
+-- 	field_function	: constant string (1..2) := "F4"; -- must be added by the user
+-- 	field_partcode	: constant string (1..2) := "F5"; -- must be added by the user
+-- 	field_commissioned	: constant string (1..2) := "F6"; -- must be added by the user
+-- 	field_updated		: constant string (1..2) := "F7"; -- must be added by the user
+-- 	field_author		: constant string (1..2) := "F8"; -- must be added by the user
+
+	library_component_field_count_max 	: constant positive := 8;
+	-- CS: we limit the number of fields in the compoentn library. Useful limit ?
+
+	type type_library_component_field_id is range 0..library_component_field_count_max;
+	library_component_field_reference	: constant type_library_component_field_id := 0;
+	library_component_field_value		: constant type_library_component_field_id := 1;
+	library_component_field_footprint	: constant type_library_component_field_id := 2;
+	library_component_field_datasheet	: constant type_library_component_field_id := 3;
+	library_component_field_function	: constant type_library_component_field_id := 4;
+	library_component_field_partcode	: constant type_library_component_field_id := 5;
+	library_component_field_commissioned: constant type_library_component_field_id := 6;
+	library_component_field_updated		: constant type_library_component_field_id := 7;
+	library_component_field_author		: constant type_library_component_field_id := 8;
+
 	def			: constant string (1..3) := "DEF";
 	enddef		: constant string (1..6) := "ENDDEF";
 	draw		: constant string (1..4) := "DRAW";

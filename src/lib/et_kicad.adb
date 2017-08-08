@@ -66,10 +66,15 @@ package body et_kicad is
 			position	: in positive) return string renames get_field_from_line;
 		
 		meaning : et_general.type_text_meaning;
+
+		function strip_f ( text : in string) return string is
+		begin return text(text'first+1..text'last); end strip_f;
 	begin
 		case schematic is
 			when true =>
 
+				-- CS: test if field #1 is "F"
+				
 				-- The field id must be mapped to the actual field meaning:
 				case type_schematic_component_field_id'value(field(line,2)) is -- "0..2"
 					when schematic_component_field_id_reference => meaning := et_general.reference; -- "0"
@@ -79,7 +84,44 @@ package body et_kicad is
 					when others => meaning := et_general.misc;
 				end case;
 
-			when false => null; -- CS
+			when false =>
+
+				-- CS: replce by case consstruct
+				case type_library_component_field_id'value ( strip_f (field(line,1) ) ) is
+					when library_component_field_reference		=> meaning := et_general.reference;
+					when library_component_field_value			=> meaning := et_general.value;
+					when library_component_field_footprint		=> meaning := et_general.footprint;
+					when library_component_field_datasheet		=> meaning := et_general.datasheet;
+					when library_component_field_function		=> meaning := et_general.p_function;
+					when library_component_field_partcode		=> meaning := et_general.partcode;
+					when library_component_field_commissioned	=> meaning := et_general.commissioned;
+					when library_component_field_updated		=> meaning := et_general.updated;
+					when library_component_field_author			=> meaning := et_general.author;
+					when others =>
+						put_line(message_error & " invalid field id !"); 
+						-- CS: use available procedures or functions for more detailled output.
+						raise constraint_error;
+				end case;
+				
+-- 				if field(line,1) = field_reference then
+-- 					meaning := et_general.reference;
+-- 				elsif field(line,1) = field_value then
+-- 					meaning := et_general.value;
+-- 				elsif field(line,1) = field_footprint then
+-- 					meaning := et_general.footprint;
+-- 				elsif field(line,1) = field_datasheet then
+-- 					meaning := et_general.datasheet;
+-- 				elsif field(line,1) = field_function then
+-- 					meaning := et_general.p_function;
+-- 				elsif field(line,1) = field_partcode then
+-- 					meaning := et_general.partcode;
+-- 				elsif field(line,1) = field_commissioned then
+-- 					meaning := et_general.commissioned;
+-- 				elsif field(line,1) = field_updated then
+-- 					meaning := et_general.updated;
+-- 				elsif field(line,1) = field_author then
+-- 					meaning := et_general.author;
+-- 				end if;
 		end case;
 
 		return meaning;				
@@ -553,135 +595,149 @@ package body et_kicad is
 										-- NOTE #1: The only way to detect the end of the field list is to wait for the
 										-- header of the footprint list ($FPLIST) or the header of the "draw" list (DRAW).
 										-- Then the active_section is set accordingly.
-										
-										-- If we have the reference field like "F0 "U" 0 50 50 H V C CNN"
-										if get_field_from_line(line,1) = et_kicad.field_reference then
-
-											-- Do a cross check of prefix and reference -- "U" 
-											-- CS: why this redundance ? Ask the kicad makers...
-											if strip_quotes(get_field_from_line(line,2)) = et_general.type_component_prefix.to_string(prefix) then
-												null; -- fine
-											else
-												put_line(message_warning & et_string_processing.affected_line(line_counter) & ": prefix vs. reference mismatch !");
-											end if;
-
-											texts_basic.reference := read_field (meaning => et_general.reference);
-											-- for the log:
-											write_text_properies (et_libraries.type_text(texts_basic.reference));
-
-										-- If we have a value field like "F1 "74LS00" 0 -100 50 H V C CNN"
-										elsif get_field_from_line(line,1) = et_kicad.field_value then
-											texts_basic.value := read_field (meaning => et_general.value);
-											-- for the log:
-											write_text_properies (et_libraries.type_text(texts_basic.value));
-
-										-- If we have a footprint field like "F2 "" 0 -100 50 H V C CNN"
-										elsif get_field_from_line(line,1) = et_kicad.field_footprint then
-											footprint := read_field (meaning => et_general.footprint);
-											-- for the log:
-											write_text_properies (et_libraries.type_text(footprint));
-
-										-- If we have a datasheet field like "F3 "" 0 -100 50 H V C CNN"
-										elsif get_field_from_line(line,1) = et_kicad.field_datasheet then
-											datasheet := read_field (meaning => et_general.datasheet);
-											-- for the log:
-											write_text_properies (et_libraries.type_text(datasheet));
-
-										-- Other mandatory fields like function and partcode are detected by F4 and F5 
-										-- (not by subfield #10 !) So F4 enforces a function, F5 enforces a partcode.
-										
-										-- If we have a function field like "F4 "" 0 -100 50 H V C CNN" "function",
-										-- we test subfield #10 against the prescribed meaning. If ok the field is read like
-										-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
-										elsif get_field_from_line(line,1) = et_kicad.field_function then
-											if to_lower(et_general.text_meaning_prefix & strip_quotes(get_field_from_line(line,10))) 
-													= to_lower(et_general.type_text_meaning'image(et_general.p_function)) then
-														fnction := read_field (meaning => et_general.p_function);
-														-- for the log:
-														write_text_properies (et_libraries.type_text(fnction));
-														-- basic_text_check(fnction); -- CS
-											else
-												put_line(message_warning & et_string_processing.affected_line(line_counter) 
-													& field_invalid(et_general.p_function));
-												-- CS: raise constraint_error;
-											end if;
-
-										-- If we have a partcode field like "F5 "" 0 -100 50 H V C CNN" "partcode",
-										-- we test subfield #10 against the prescribed meaning. If ok the field is read like
-										-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
-										elsif get_field_from_line(line,1) = et_kicad.field_partcode then
-											if to_lower(strip_quotes(get_field_from_line(line,10)))
-													= to_lower(et_general.type_text_meaning'image(et_general.partcode)) then
-														partcode := read_field (meaning => et_general.partcode);
-														-- for the log:
-														write_text_properies (et_libraries.type_text(partcode));
-														-- basic_text_check(partcode); -- CS
-											else
-												put_line(message_warning & et_string_processing.affected_line(line_counter) 
-													& field_invalid(et_general.partcode));
-												-- CS: raise constraint_error;
-											end if;
-
-										-- If we have a "commissioned" field like "F6 "" 0 -100 50 H V C CNN" "commissioned",
-										-- we test subfield #10 against the prescribed meaning. If ok the field is read like
-										-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
-										elsif get_field_from_line(line,1) = et_kicad.field_commissioned then
-											if to_lower(strip_quotes(get_field_from_line(line,10)))
-													= to_lower(et_general.type_text_meaning'image(et_general.commissioned)) then
-														texts_basic.commissioned := read_field (meaning => et_general.commissioned);
-														-- for the log:
-														write_text_properies (et_libraries.type_text(texts_basic.commissioned));
-														-- basic_text_check(commissioned); -- CS
-											else
-												put_line(message_warning & et_string_processing.affected_line(line_counter) 
-													& field_invalid(et_general.commissioned));
-												-- CS: raise constraint_error;
-											end if;
-
-										-- If we have an "updated" field like "F7 "" 0 -100 50 H V C CNN" "updated",
-										-- we test subfield #10 against the prescribed meaning. If ok the field is read like
-										-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
-										elsif get_field_from_line(line,1) = et_kicad.field_updated then
-											if to_lower(strip_quotes(get_field_from_line(line,10)))
-													= to_lower(et_general.type_text_meaning'image(et_general.updated)) then
-														texts_basic.updated := read_field (meaning => et_general.updated);
-														-- for the log:
-														write_text_properies (et_libraries.type_text(texts_basic.updated));
-														-- basic_text_check(updated); -- CS
-											else
-												put_line(message_warning & et_string_processing.affected_line(line_counter) 
-													& field_invalid(et_general.updated));
-												-- CS: raise constraint_error;
-											end if;
-
-										-- If we have an "author" field like "F8 "" 0 -100 50 H V C CNN" "author",
-										-- we test subfield #10 against the prescribed meaning. If ok the field is read like
-										-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
-										elsif get_field_from_line(line,1) = et_kicad.field_author then
-											if to_lower(strip_quotes(get_field_from_line(line,10)))
-													= to_lower(et_general.type_text_meaning'image(et_general.author)) then
-														texts_basic.author := read_field (meaning => et_general.author);
-														-- for the log:
-														write_text_properies (et_libraries.type_text(texts_basic.author));
-														-- basic_text_check(author); -- CS
-											else
-												put_line(message_warning & et_string_processing.affected_line(line_counter) 
-													& field_invalid(et_general.author));
-												-- CS: raise constraint_error;
-											end if;
-											
-										-- CS: other text fields ?
-
-										-- CS: check appearacne vs. function vs. partcode -- see stock_manager	
 
 										-- We wait for the header of the footprint or draw list like "$FPLIST" or "DRAW"
 										-- and set active_section accordingly.
-										elsif get_field_from_line(line,1) = et_kicad.fplist then
+										-- As long as none of those headers occurs, we read the text fields.
+										if get_field_from_line(line,1) = et_kicad.fplist then
 											active_section := footprints;
 										elsif get_field_from_line(line,1) = et_kicad.draw then
 											active_section := draw;
-										end if;
+										else
+											-- read text fields:
+											case to_text_meaning(line => line, schematic => false) is
 
+												-- If we have the reference field like "F0 "U" 0 50 50 H V C CNN"
+												when et_general.reference =>
+																
+													-- Do a cross check of prefix and reference -- "U" 
+													-- CS: why this redundance ? Ask the kicad makers...
+													if strip_quotes(get_field_from_line(line,2)) = et_general.type_component_prefix.to_string(prefix) then
+														null; -- fine
+													else
+														put_line(message_warning & et_string_processing.affected_line(line_counter) & ": prefix vs. reference mismatch !");
+													end if;
+
+													texts_basic.reference := read_field (meaning => et_general.reference);
+													-- for the log:
+													write_text_properies (et_libraries.type_text(texts_basic.reference));
+
+												-- If we have a value field like "F1 "74LS00" 0 -100 50 H V C CNN"
+												when et_general.value =>
+												
+													texts_basic.value := read_field (meaning => et_general.value);
+													-- for the log:
+													write_text_properies (et_libraries.type_text(texts_basic.value));
+
+												-- If we have a footprint field like "F2 "" 0 -100 50 H V C CNN"
+												when et_general.footprint =>
+												
+													footprint := read_field (meaning => et_general.footprint);
+													-- for the log:
+													write_text_properies (et_libraries.type_text(footprint));
+
+												-- If we have a datasheet field like "F3 "" 0 -100 50 H V C CNN"
+												when et_general.datasheet =>
+												
+													datasheet := read_field (meaning => et_general.datasheet);
+													-- for the log:
+													write_text_properies (et_libraries.type_text(datasheet));
+
+												-- Other mandatory fields like function and partcode are detected by F4 and F5 
+												-- (not by subfield #10 !) So F4 enforces a function, F5 enforces a partcode.
+												
+												-- If we have a function field like "F4 "" 0 -100 50 H V C CNN" "function",
+												-- we test subfield #10 against the prescribed meaning. If ok the field is read like
+												-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
+												when et_general.p_function =>
+												
+													if to_lower(et_general.text_meaning_prefix & strip_quotes(get_field_from_line(line,10))) 
+															= to_lower(et_general.type_text_meaning'image(et_general.p_function)) then
+																fnction := read_field (meaning => et_general.p_function);
+																-- for the log:
+																write_text_properies (et_libraries.type_text(fnction));
+																-- basic_text_check(fnction); -- CS
+													else
+														put_line(message_warning & et_string_processing.affected_line(line_counter) 
+															& field_invalid(et_general.p_function));
+														-- CS: raise constraint_error;
+													end if;
+
+												-- If we have a partcode field like "F5 "" 0 -100 50 H V C CNN" "partcode",
+												-- we test subfield #10 against the prescribed meaning. If ok the field is read like
+												-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
+												when et_general.partcode =>
+												
+													if to_lower(strip_quotes(get_field_from_line(line,10)))
+															= to_lower(et_general.type_text_meaning'image(et_general.partcode)) then
+																partcode := read_field (meaning => et_general.partcode);
+																-- for the log:
+																write_text_properies (et_libraries.type_text(partcode));
+																-- basic_text_check(partcode); -- CS
+													else
+														put_line(message_warning & et_string_processing.affected_line(line_counter) 
+															& field_invalid(et_general.partcode));
+														-- CS: raise constraint_error;
+													end if;
+
+												-- If we have a "commissioned" field like "F6 "" 0 -100 50 H V C CNN" "commissioned",
+												-- we test subfield #10 against the prescribed meaning. If ok the field is read like
+												-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
+												when et_general.commissioned =>
+												
+													if to_lower(strip_quotes(get_field_from_line(line,10)))
+															= to_lower(et_general.type_text_meaning'image(et_general.commissioned)) then
+																texts_basic.commissioned := read_field (meaning => et_general.commissioned);
+																-- for the log:
+																write_text_properies (et_libraries.type_text(texts_basic.commissioned));
+																-- basic_text_check(commissioned); -- CS
+													else
+														put_line(message_warning & et_string_processing.affected_line(line_counter) 
+															& field_invalid(et_general.commissioned));
+														-- CS: raise constraint_error;
+													end if;
+
+												-- If we have an "updated" field like "F7 "" 0 -100 50 H V C CNN" "updated",
+												-- we test subfield #10 against the prescribed meaning. If ok the field is read like
+												-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
+												when et_general.updated =>
+												
+													if to_lower(strip_quotes(get_field_from_line(line,10)))
+															= to_lower(et_general.type_text_meaning'image(et_general.updated)) then
+																texts_basic.updated := read_field (meaning => et_general.updated);
+																-- for the log:
+																write_text_properies (et_libraries.type_text(texts_basic.updated));
+																-- basic_text_check(updated); -- CS
+													else
+														put_line(message_warning & et_string_processing.affected_line(line_counter) 
+															& field_invalid(et_general.updated));
+														-- CS: raise constraint_error;
+													end if;
+
+												-- If we have an "author" field like "F8 "" 0 -100 50 H V C CNN" "author",
+												-- we test subfield #10 against the prescribed meaning. If ok the field is read like
+												-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
+												when et_general.author =>
+												
+													if to_lower(strip_quotes(get_field_from_line(line,10)))
+															= to_lower(et_general.type_text_meaning'image(et_general.author)) then
+																texts_basic.author := read_field (meaning => et_general.author);
+																-- for the log:
+																write_text_properies (et_libraries.type_text(texts_basic.author));
+																-- basic_text_check(author); -- CS
+													else
+														put_line(message_warning & et_string_processing.affected_line(line_counter) 
+															& field_invalid(et_general.author));
+														-- CS: raise constraint_error;
+													end if;
+
+												when others => null;
+													-- CS: warning about illegal fields ?
+													-- CS: other text fields ?
+											end case;
+											
+											-- CS: check appearacne vs. function vs. partcode -- see stock_manager	
+										end if;
 
 									when footprints =>
 										-- Here we read the footprint list (similar to package variants in EAGLE):
