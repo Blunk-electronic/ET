@@ -100,7 +100,7 @@ package et_libraries is
 	package type_texts is new indefinite_doubly_linked_lists (
 		element_type => type_text);
 	
-	type type_texts_mandatory is record
+	type type_texts_basic is record
 		reference	: type_text (meaning => et_general.reference);
 		value		: type_text (meaning => et_general.value);
 		commissioned: type_text (meaning => et_general.commissioned);
@@ -213,7 +213,7 @@ package et_libraries is
 	type type_symbol is record
 		shapes		: type_shapes;
 		ports		: type_ports.map;
-		texts_mandatory	: type_texts_mandatory;
+		texts_basic	: type_texts_basic;
 	end record;
 
 
@@ -272,7 +272,7 @@ package et_libraries is
 	type type_component is new et_general.type_component with record
 		units_internal	: type_units_internal.map;
 		units_external	: type_units_external.map;
-		texts_mandatory	: type_texts_mandatory;
+		texts_basic		: type_texts_basic;
 		partcode		: type_text(meaning => et_general.partcode); -- like "R_PAC_S_0805_VAL_"
 		fnction			: type_text(meaning => et_general.p_function); -- to be filled in schematic later by the user
 		datasheet		: type_text(meaning => et_general.datasheet); -- might be useful for some special components
