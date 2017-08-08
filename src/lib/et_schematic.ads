@@ -93,6 +93,7 @@ package et_schematic is
 
 	-- A text field in the schematic gets extended by extended coordinates (see above)
 	type type_text is new et_general.type_text with record
+		meaning			: et_general.type_text_meaning;
 		coordinates		: type_coordinates;
 	end record;
 	package type_texts is new doubly_linked_lists (

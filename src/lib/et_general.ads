@@ -225,7 +225,7 @@ package et_general is
 	-- Converts meaning to string.
 	
 	type type_text is tagged record
-		meaning			        : type_text_meaning;
+		--meaning			        : type_text_meaning;
         content                 : type_text_content.bounded_string;
         size    				: type_text_size;
         style					: type_text_style;

@@ -240,8 +240,17 @@ package body et_kicad is
 			units_total			: type_unit_id;
 			unit_swap_level		: et_libraries.type_unit_swap_level := et_libraries.unit_swap_level_default;
 			appearance			: et_general.type_component_appearance;
-			reference, value, footprint, datasheet, fnction, partcode,
-			commissioned, updated, author : et_libraries.type_text; -- see et_general.ads
+			
+-- 			reference			: et_libraries.type_text(meaning => et_general.reference);
+-- 			value				: et_libraries.type_text(meaning => et_general.value);
+			footprint			: et_libraries.type_text(meaning => et_general.footprint);
+			datasheet			: et_libraries.type_text(meaning => et_general.datasheet);
+			fnction				: et_libraries.type_text(meaning => et_general.p_function);
+			partcode			: et_libraries.type_text(meaning => et_general.partcode);
+
+			-- reference, value, commissioned, updated, author are included here:
+			texts_mandatory		: et_libraries.type_texts_mandatory;
+
 			--unit_id				: type_unit_id;
 
 			function to_appearance ( appearance : in string) 
@@ -319,7 +328,7 @@ package body et_kicad is
 
 			function read_field (meaning : in et_general.type_text_meaning) return et_libraries.type_text is
 			-- Reads general field properties from fields 3..9
-				text : et_libraries.type_text;
+				text : et_libraries.type_text(meaning);
 			begin
 				-- field #:
 				-- 3/4 : x/y coordinates
@@ -329,7 +338,7 @@ package body et_kicad is
 				-- 8 : aligment horizontal (R,C,L)
 				-- 9 : aligment vertical (TNN, CNN, BNN) / font normal, italic, bold, bold_italic (TBI, TBN)
 
-				text.meaning := meaning;
+-- 				text.meaning := meaning;
 				text.content := et_general.type_text_content.to_bounded_string(strip_quotes(get_field_from_line(line,2)));
 				text.coordinates.x := et_general.type_grid'value(get_field_from_line(line,3));
 				text.coordinates.y := et_general.type_grid'value(get_field_from_line(line,4));
@@ -527,15 +536,15 @@ package body et_kicad is
 												put_line(message_warning & et_string_processing.affected_line(line_counter) & ": prefix vs. reference mismatch !");
 											end if;
 
-											reference := read_field (meaning => et_general.reference);
+											texts_mandatory.reference := read_field (meaning => et_general.reference);
 											-- for the log:
-											write_text_properies (et_libraries.type_text(reference));
+											write_text_properies (et_libraries.type_text(texts_mandatory.reference));
 
 										-- If we have a value field like "F1 "74LS00" 0 -100 50 H V C CNN"
 										elsif get_field_from_line(line,1) = et_kicad.field_value then
-											value := read_field (meaning => et_general.value);
+											texts_mandatory.value := read_field (meaning => et_general.value);
 											-- for the log:
-											write_text_properies (et_libraries.type_text(value));
+											write_text_properies (et_libraries.type_text(texts_mandatory.value));
 
 										-- If we have a footprint field like "F2 "" 0 -100 50 H V C CNN"
 										elsif get_field_from_line(line,1) = et_kicad.field_footprint then
@@ -590,9 +599,9 @@ package body et_kicad is
 										elsif get_field_from_line(line,1) = et_kicad.field_commissioned then
 											if to_lower(strip_quotes(get_field_from_line(line,10)))
 													= to_lower(et_general.type_text_meaning'image(et_general.commissioned)) then
-														commissioned := read_field (meaning => et_general.commissioned);
+														texts_mandatory.commissioned := read_field (meaning => et_general.commissioned);
 														-- for the log:
-														write_text_properies (et_libraries.type_text(commissioned));
+														write_text_properies (et_libraries.type_text(texts_mandatory.commissioned));
 														-- basic_text_check(commissioned); -- CS
 											else
 												put_line(message_warning & et_string_processing.affected_line(line_counter) 
@@ -606,9 +615,9 @@ package body et_kicad is
 										elsif get_field_from_line(line,1) = et_kicad.field_updated then
 											if to_lower(strip_quotes(get_field_from_line(line,10)))
 													= to_lower(et_general.type_text_meaning'image(et_general.updated)) then
-														updated := read_field (meaning => et_general.updated);
+														texts_mandatory.updated := read_field (meaning => et_general.updated);
 														-- for the log:
-														write_text_properies (et_libraries.type_text(updated));
+														write_text_properies (et_libraries.type_text(texts_mandatory.updated));
 														-- basic_text_check(updated); -- CS
 											else
 												put_line(message_warning & et_string_processing.affected_line(line_counter) 
@@ -622,9 +631,9 @@ package body et_kicad is
 										elsif get_field_from_line(line,1) = et_kicad.field_author then
 											if to_lower(strip_quotes(get_field_from_line(line,10)))
 													= to_lower(et_general.type_text_meaning'image(et_general.author)) then
-														author := read_field (meaning => et_general.author);
+														texts_mandatory.author := read_field (meaning => et_general.author);
 														-- for the log:
-														write_text_properies (et_libraries.type_text(author));
+														write_text_properies (et_libraries.type_text(texts_mandatory.author));
 														-- basic_text_check(author); -- CS
 											else
 												put_line(message_warning & et_string_processing.affected_line(line_counter) 
