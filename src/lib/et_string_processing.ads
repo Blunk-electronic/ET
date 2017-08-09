@@ -106,12 +106,14 @@ package et_string_processing is
 	package type_list_of_strings is new indefinite_vectors (index_type => positive, element_type => string);
 	type type_fields_of_line is record -- CS: should be private
 		fields		: type_list_of_strings.vector;
-		field_count	: count_type; 
+		field_count	: count_type;
+		line_number	: positive_count;
 	end record;
 
 	function read_line(
 	-- Breaks down a given string and returns a type_fields_of_line.
 		line			: in string; -- the line to be broken down
+		number			: in positive_count; -- the line number	
 		comment_mark	: in string; -- the comment mark like "--" or "#"
 		test_whole_line	: in boolean := true; -- when false, cares for the comment mark at line begin only
 												 -- further comment marks are ignored

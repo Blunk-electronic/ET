@@ -526,7 +526,7 @@ package body et_kicad is
 
 				-- The schematic library files use comments (#). But only the comments at the begin
 				-- of a line are relevant. Others are to be ignored. Thus test_whole_line is false.
- 				line := read_line(line => get_line,	comment_mark => "#", test_whole_line => false);
+ 				line := read_line(line => get_line,	comment_mark => "#", test_whole_line => false, number => ada.text_io.line);
 				case line.field_count is
 					when 0 => null; -- we skip empty lines
 					when others =>
@@ -913,6 +913,7 @@ package body et_kicad is
 				line := read_line(
 							line => get_line,
 							comment_mark => "#",
+							number => ada.text_io.line,
 							ifs => latin_1.equals_sign); -- fields are separated by equals sign (=)
 
 				case line.field_count is
@@ -1997,9 +1998,10 @@ package body et_kicad is
 					-- count lines and save a line in variable "line" (see et_string_processing.ads)
 					line_counter := line_counter + 1;
 					line := et_string_processing.read_line(
-								line => get_line,
-								comment_mark => "", -- there are no comment marks in the schematic file
-								ifs => latin_1.space); -- fields are separated by space
+						line => get_line,
+						number => ada.text_io.line,
+						comment_mark => "", -- there are no comment marks in the schematic file
+						ifs => latin_1.space); -- fields are separated by space
 					
 					case line.field_count is
 						when 0 => null; -- we skip empty lines

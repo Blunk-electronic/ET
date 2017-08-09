@@ -321,11 +321,12 @@ package body et_string_processing is
 	-- Breaks down a given string and returns a type_fields_of_line.
 	-- CS: poor performance -> rework !
 		line			: in string; -- the line to be broken down
+		number			: in positive_count; -- the line number
 		comment_mark	: in string; -- the comment mark like "--" or "#"
 		test_whole_line	: in boolean := true; -- when false, cares for the comment mark at line begin only
 												 -- further comment marks are ignored
-		ifs				: in character := latin_1.space -- field separator
-		) return type_fields_of_line is
+		ifs				: in character := latin_1.space) -- field separator
+		return type_fields_of_line is
 		list : type_list_of_strings.vector;
 -- 		field_count : natural := ada.strings.fixed.count (line, ifs);
 
@@ -362,7 +363,7 @@ package body et_string_processing is
 -- 			list, 
 -- 			count_type( ada.strings.fixed.count (line, ifs) ));
 		
-		return ( fields => list, field_count => type_list_of_strings.length(list));
+		return ( fields => list, field_count => type_list_of_strings.length(list), line_number => number);
 	end read_line;
 
 	function append (left : in type_fields_of_line; right : in type_fields_of_line) return type_fields_of_line is
