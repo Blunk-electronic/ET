@@ -68,63 +68,76 @@ package body et_kicad is
 		meaning : et_general.type_text_meaning;
 
 		function strip_f ( text : in string) return string is
+		-- removes the heading character from the given string.
 		begin return text(text'first+1..text'last); end strip_f;
+
+		function strip_id ( text : in string) return string is
+		-- removes the trailing id from the given string.
+		begin return text(text'first..text'first); end strip_id;
+	
+		procedure invalid_field is begin
+		-- CS: send message to console as well. use write_message
+			put_line(message_error & " invalid field !"); 
+			-- CS: use available procedures or functions for more detailled output.
+			raise constraint_error;
+		end invalid_field;
+			
 	begin
 		case schematic is
 			when true =>
 
-				-- CS: test if field #1 is "F"
-				
-				-- The field id must be mapped to the actual field meaning:
-				case type_schematic_component_field_id'value(field(line,2)) is -- "0..2"
-					when schematic_component_field_id_reference => meaning := et_general.reference; -- "0"
-					when schematic_component_field_id_value => meaning := et_general.value; -- "1"
-					when schematic_component_field_id_footprint => meaning := et_general.footprint; -- "2"
-					--CS: when schematic_component_field_id_partcode => unit_text_scratch.meaning := partcode;
-					when others => meaning := et_general.misc;
-				end case;
+				-- In a schematic the meaning of a text field is identified by "F 0 ...".
 
+				-- So the first thing to do is test if the letter F at the begin of the line:
+				if field(line,1) = schematic_component_identifier_field then
+
+					-- Then we test the field id.
+					-- The field id must be mapped to the actual field meaning:
+					case type_schematic_component_field_id'value(field(line,2)) is -- "0..2"
+						when schematic_component_field_id_reference => meaning := et_general.reference; -- "0"
+						when schematic_component_field_id_value => meaning := et_general.value; -- "1"
+						when schematic_component_field_id_footprint => meaning := et_general.footprint; -- "2"
+						--CS: when schematic_component_field_id_partcode => unit_text_scratch.meaning := partcode;
+						when others => meaning := et_general.misc;
+					end case;
+
+				else
+					invalid_field;
+				end if;
+				
 			when false =>
 
-				-- CS: replce by case consstruct
-				case type_library_component_field_id'value ( strip_f (field(line,1) ) ) is
-					when library_component_field_reference		=> meaning := et_general.reference;
-					when library_component_field_value			=> meaning := et_general.value;
-					when library_component_field_footprint		=> meaning := et_general.footprint;
-					when library_component_field_datasheet		=> meaning := et_general.datasheet;
-					when library_component_field_function		=> meaning := et_general.p_function;
-					when library_component_field_partcode		=> meaning := et_general.partcode;
-					when library_component_field_commissioned	=> meaning := et_general.commissioned;
-					when library_component_field_updated		=> meaning := et_general.updated;
-					when library_component_field_author			=> meaning := et_general.author;
-					when others =>
-						put_line(message_error & " invalid field id !"); 
-						-- CS: use available procedures or functions for more detailled output.
-						raise constraint_error;
-				end case;
+				-- In a library the meaning of a text field is identified by "F0 ...".
 				
--- 				if field(line,1) = field_reference then
--- 					meaning := et_general.reference;
--- 				elsif field(line,1) = field_value then
--- 					meaning := et_general.value;
--- 				elsif field(line,1) = field_footprint then
--- 					meaning := et_general.footprint;
--- 				elsif field(line,1) = field_datasheet then
--- 					meaning := et_general.datasheet;
--- 				elsif field(line,1) = field_function then
--- 					meaning := et_general.p_function;
--- 				elsif field(line,1) = field_partcode then
--- 					meaning := et_general.partcode;
--- 				elsif field(line,1) = field_commissioned then
--- 					meaning := et_general.commissioned;
--- 				elsif field(line,1) = field_updated then
--- 					meaning := et_general.updated;
--- 				elsif field(line,1) = field_author then
--- 					meaning := et_general.author;
--- 				end if;
+				-- So the first thing to do is test if the letter F at the begin of the line:
+				if strip_id(field(line,1)) = schematic_component_identifier_field then
+				
+					case type_library_component_field_id'value ( strip_f (field(line,1) ) ) is
+						when library_component_field_reference		=> meaning := et_general.reference;
+						when library_component_field_value			=> meaning := et_general.value;
+						when library_component_field_footprint		=> meaning := et_general.footprint;
+						when library_component_field_datasheet		=> meaning := et_general.datasheet;
+						when library_component_field_function		=> meaning := et_general.p_function;
+						when library_component_field_partcode		=> meaning := et_general.partcode;
+						when library_component_field_commissioned	=> meaning := et_general.commissioned;
+						when library_component_field_updated		=> meaning := et_general.updated;
+						when library_component_field_author			=> meaning := et_general.author;
+						when others => invalid_field;
+					end case;
+
+				else
+					invalid_field;
+				end if;
+
 		end case;
 
-		return meaning;				
+		return meaning;
+
+		exception --when event: others =>
+			when constraint_error =>
+				invalid_field;
+				return meaning;
+		
 	end to_text_meaning;
 								 
 	function to_text_orientation ( text : in string) return et_general.type_orientation is
@@ -410,7 +423,6 @@ package body et_kicad is
 				-- 8 : aligment horizontal (R,C,L)
 				-- 9 : aligment vertical (TNN, CNN, BNN) / font normal, italic, bold, bold_italic (TBI, TBN)
 
--- 				text.meaning := meaning;
 				text.content := et_general.type_text_content.to_bounded_string(strip_quotes(get_field_from_line(line,2)));
 				text.coordinates.x := et_general.type_grid'value(get_field_from_line(line,3));
 				text.coordinates.y := et_general.type_grid'value(get_field_from_line(line,4));
@@ -425,6 +437,7 @@ package body et_kicad is
 				text.alignment_vertical   := to_alignment_vertical  (get_field_from_line(line,9));
 				text.style := to_text_style (style_in => get_field_from_line(line,9), text => false);
 
+				-- NOTE: text.line_width assumes default (see et_general.ads) as no line width is provided here.
 				return text;
 			end read_field;
 			
@@ -604,7 +617,7 @@ package body et_kicad is
 										elsif get_field_from_line(line,1) = et_kicad.draw then
 											active_section := draw;
 										else
-											-- read text fields:
+											-- read text fields from a component library (thats why scheamtic => false)
 											case to_text_meaning(line => line, schematic => false) is
 
 												-- If we have the reference field like "F0 "U" 0 50 50 H V C CNN"

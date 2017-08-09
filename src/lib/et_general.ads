@@ -232,7 +232,7 @@ package et_general is
         content                 : type_text_content.bounded_string;
         size    				: type_text_size;
         style					: type_text_style;
-        line_width				: type_text_line_width; -- CS: use a general type_line_width ?
+        line_width				: type_text_line_width := 0; -- CS: use a general type_line_width ?
         orientation             : type_orientation;
         visible                 : type_text_visible;
         alignment_horizontal    : type_text_alignment_horizontal;
