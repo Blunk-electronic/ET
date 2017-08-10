@@ -37,6 +37,7 @@ with ada.containers.vectors;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
+with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 with et_general;                use et_general;
@@ -128,7 +129,8 @@ package et_schematic is
 		element_type => type_unit);
 
 	-- This is a component as it appears in the schematic.
-	type type_component is new et_general.type_component with record
+	--	type type_component is new et_general.type_component with record
+	type type_component (appearance : type_component_appearance) is record
 		name_in_library : et_libraries.type_component_name.bounded_string; -- example: "TRANSISTOR_PNP"
 		units			: type_units.map;
 	end record;
@@ -371,7 +373,7 @@ package et_schematic is
 		element_type => type_net);
 
 	-- The components of a module are collected in a map.
- 	package type_components is new ordered_maps (
+ 	package type_components is new indefinite_ordered_maps (
 		key_type => et_general.type_component_reference, -- something like "IC43"
 		"<" => et_general.compare_component_by_reference,
  		element_type => type_component);

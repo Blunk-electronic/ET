@@ -158,6 +158,9 @@ package et_kicad is
 	schematic_component_identifier_unit	   : constant string (1..1) := "U";
 	schematic_component_identifier_coord   : constant string (1..1) := "P";
 
+	-- In schematic, a power symbol/component has a hash as first character like "L P3V3 #PWR07"
+	schematic_component_power_symbol_prefix: constant character := '#';
+
 	-- The name of a sheet, the title (and optionally the file) may have 100 characters which seems sufficient for now.
 	-- If sheets are stored as files, the file name may have the same length.
  	sheet_name_length	: constant natural := 100;
@@ -252,7 +255,7 @@ package et_kicad is
 	unit_count_max : constant positive := 64;
 	type type_unit_id is new positive range 1..unit_count_max;
 
-	type type_symbol_appearance is (N, P); -- normal or power symbol
+	type type_library_component_appearance is (N, P); -- normal or power
 	type type_symbol_interchangeable is (L, F); -- L means swapping not allowed, F means swapping allowed 
 	type type_show_pin_number is (Y, N); -- show pin/pad number yes/no
 	type type_show_pin_name is (Y, N); -- show pin (better port) name yes/no

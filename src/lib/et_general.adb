@@ -97,7 +97,7 @@ package body et_general is
 					if is_upper(c) then
 						r.prefix := r.prefix & c;
 					else
-						put("   prefix " & type_component_prefix.to_string(r.prefix));
+						--put("   prefix " & type_component_prefix.to_string(r.prefix));
 						-- CS: check if allowed prefix
 						d := i; -- d holds the position of the charcter after the prefix.
 							-- d is requried when reading the component id. see below.
@@ -123,7 +123,7 @@ package body et_general is
 			digit := digit + 1; -- increase digit significance (10**0, 10**1, ...)
 		end loop;
 
-		put_line(" id" & natural'image(r.id));
+		--put_line(" id" & natural'image(r.id));
 		
 		return r;
 	end to_component_reference;

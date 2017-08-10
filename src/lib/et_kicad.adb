@@ -271,6 +271,86 @@ package body et_kicad is
 		return v_out;
 	end to_field_visible;
 
+	function to_appearance ( line : in type_fields_of_line; schematic : in boolean) 
+	-- Converts the apperance flag to type_component_appearance.
+	-- The parameter "schematic" specifies whether we are dealing with a schematic
+	-- or a library component.
+	-- The appearance (power symbol or normal) is defined in the component library by P/N
+	-- example: DEF 74LS00 IC 0 30 Y Y 4 F N
+	-- In a schematic it is defined by a hash sign:
+	-- example: L P3V3 #PWR07
+		return et_general.type_component_appearance is
+		comp_app	: et_general.type_component_appearance;
+		lca			: type_library_component_appearance;
+
+		function field (
+			line		: in type_fields_of_line;
+			position	: in positive) return string renames get_field_from_line;
+
+		procedure invalid_appearance is
+		-- CS: display field meaning ?
+			-- 	meaning : in et_general.type_text_meaning) return string is
+		begin
+			write_message(
+				file_handle => current_output,
+				text => message_error & et_string_processing.affected_line(line.number) & "invalid visibility flag !",
+				console => true);
+		
+				-- CS: refine output.
+			raise constraint_error;
+		end invalid_appearance;		
+
+		keyword_appears : constant string (1..8) := "appears ";
+	begin -- to_appearance
+		case schematic is
+
+			when true =>
+				put(3 * latin_1.space & keyword_appears);
+				
+				-- If it is about a schematic component we just test if the first
+				-- character of the 3ed subfield is a hash sign.
+				if field(line,3)(field(line,3)'first) = schematic_component_power_symbol_prefix then
+					comp_app := et_general.sch;
+				else
+					comp_app := et_general.sch_pcb;
+				end if;
+				
+			when false =>
+				put(4 * latin_1.space & keyword_appears);
+				
+				-- If it is about a library component we test the whole letter
+				-- in subfield #10.
+				lca := type_library_component_appearance'value(field(line,10));
+
+				-- Evaluate lca and set comp_app accordingly.
+				case lca is
+					when N =>
+						comp_app := et_general.sch_pcb;
+					when P => 
+						comp_app := et_general.sch;
+				end case;
+		end case;
+
+		-- evaluate component appearance and write meaningful output.
+		case comp_app is
+			when sch =>
+				put_line("in schematic (virtual)");
+			when sch_pcb =>
+				put_line("in schematic and layout");
+			when others => -- CS: should never happen. 
+				raise constraint_error;
+		end case;
+		
+		return comp_app;
+
+		exception 
+			when constraint_error =>
+				invalid_appearance;
+				raise;
+				
+	end to_appearance;
+
+	
 	procedure write_text_properies ( text : in et_libraries.type_text) is
 	-- Outputs the properties of the given text.
 		indentation : positive := 4;
@@ -344,24 +424,6 @@ package body et_kicad is
 			texts_basic			: et_libraries.type_texts_basic;
 
 			--unit_id				: type_unit_id;
-
-			function to_appearance ( appearance : in string) 
-			-- Converts the kicad apperance flag to type_component_appearance.
-			-- Used when reading component libraries.
-				return et_general.type_component_appearance is
-				a : type_symbol_appearance;
-			begin
-				put("    appearance ");
-				a := type_symbol_appearance'value(appearance);
-				case a is
-					when N =>
-						put_line("schematic and pcb");
-						return et_general.sch_pcb;
-					when P => 
-						put_line("virtual (schematic only)");
-						return et_general.sch;
-				end case;
-			end to_appearance;
 
 			function to_swap_level ( swap_in : in string)
 			-- Converts the kicad interchangeable flag to the et swap level.
@@ -595,8 +657,10 @@ package body et_kicad is
 								else
 									unit_swap_level := et_libraries.unit_swap_level_default;
 								end if;
-								
-								appearance			:= to_appearance(get_field_from_line(line,10)); -- N/P
+
+								-- read the appearance flag (N/P) in subfield #10
+								-- This is about a component in a library -> schematic => false
+								appearance := to_appearance(line => line, schematic => false);
 
 -- 								et_libraries.type_libraries.update_element(
 -- 									container	=> et_import.component_libraries,
@@ -682,7 +746,6 @@ package body et_kicad is
 																write_text_properies (et_libraries.type_text(fnction));
 																-- basic_text_check(fnction); -- CS
 													else
-														put_line("xyz");
 														invalid_field(line);
 													end if;
 
@@ -1942,7 +2005,7 @@ package body et_kicad is
             
 			-- This is relevant for reading components:
 			component_entered : boolean := false; -- indicates that a component is being read
-			component_scratch : et_schematic.type_component; -- temporarily used before appending a component list of the module
+			component_name_in_library : et_libraries.type_component_name.bounded_string;
 			unit_scratch : et_schematic.type_unit; -- temporarily used before appending a unit to a component
 			unit_scratch_name : et_libraries.type_unit_name.bounded_string; -- temporarily used for the unit name
 			component_cursor_scratch : type_components.cursor; -- points to a component of the module
@@ -2485,26 +2548,31 @@ package body et_kicad is
 											
 											-- Read component name and annotation from a line like "L NetChanger N1". 
 											-- Append the component to the component list of the module (module.components). 
-											-- Commponents may occur multiple times, which implies they are
-											-- split into units (kicad refers to them as "units", EAGLE refers to them as "gates").
+											-- Components may occur multiple times, which implies they are
+											-- split into units (EAGLE refers to them as "gates").
 											-- Only the first occurence of the component leads to appending it to the component list of the module.
 											if get_field_from_line(line,1) = schematic_component_identifier_name then -- "L"
-												component_scratch.name_in_library := et_libraries.type_component_name.to_bounded_string(get_field_from_line(line,2)); -- "NetChanger"
+												component_name_in_library := et_libraries.type_component_name.to_bounded_string(get_field_from_line(line,2)); -- "NetChanger"
 												-- CS: check annotation
 
 												put_line("  component " 
 													& get_field_from_line(line,3) -- "N1"
 													& " is " 
-													& et_libraries.type_component_name.to_string(component_scratch.name_in_library));
-
+													& et_libraries.type_component_name.to_string(component_name_in_library));
 												
-												-- Insert component in component list of module.
+												-- Insert component in component list of module. For the time being the unit list is empty.
 												type_components.insert(
 													container => module.components,
-													new_item => component_scratch,
 													key => et_general.to_component_reference(
 														text_in => get_field_from_line(line,3),
 														allow_special_character_in_prefix => true),
+
+													new_item => (
+														-- Read the appearance. This is about a component in a schematic -> schematic => true
+														appearance => to_appearance(line => line, schematic => true),
+														name_in_library => component_name_in_library,
+														units => et_schematic.type_units.empty_map),
+													
 													position => component_cursor_scratch,
 													inserted => component_inserted); -- this flag is just formal. no further evaluation												
 
