@@ -363,7 +363,7 @@ package body et_string_processing is
 -- 			list, 
 -- 			count_type( ada.strings.fixed.count (line, ifs) ));
 		
-		return ( fields => list, field_count => type_list_of_strings.length(list), line_number => number);
+		return ( fields => list, field_count => type_list_of_strings.length(list), number => number);
 	end read_line;
 
 	function append (left : in type_fields_of_line; right : in type_fields_of_line) return type_fields_of_line is
@@ -436,10 +436,10 @@ package body et_string_processing is
 		end if;
 	end write_message;
 
-	function affected_line ( line : in positive ) return string is
+	function affected_line ( line : in positive_count ) return string is
 	-- Converts a given line number to a string like "line x:"
 	begin
-		return ("line" & positive'image(line) & ": ");
+		return ("line" & positive_count'image(line) & ": ");
 	end affected_line;
 		
 end et_string_processing;

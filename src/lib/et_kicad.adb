@@ -52,6 +52,21 @@ with et_string_processing;		use et_string_processing;
 
 package body et_kicad is
 
+
+	procedure invalid_field (line : in type_fields_of_line) is
+	-- CS: display field meaning ?
+		-- 	meaning : in et_general.type_text_meaning) return string is
+	begin
+		write_message(
+			file_handle => current_output,
+			text => message_error & et_string_processing.affected_line(line.number) & "invalid field !",
+			console => true);
+	
+			-- CS: refine output.
+		raise constraint_error;
+	end invalid_field;
+
+	
 	function to_text_meaning (
 	-- Extracts from a scheamtic field like "F 0 "#PWR01" H 2000 3050 50  0001 C CNN" its meaning.
 	-- Extracts from a component field liek "F0 "IC" 0 50 50 H V C CNN" its meaning.
@@ -75,14 +90,7 @@ package body et_kicad is
 		-- removes the trailing id from the given string.
 		begin return text(text'first..text'first); end strip_id;
 	
-		procedure invalid_field is begin
-		-- CS: send message to console as well. use write_message
-			put_line(message_error & " invalid field !"); 
-			-- CS: use available procedures or functions for more detailled output.
-			raise constraint_error;
-		end invalid_field;
-			
-	begin
+	begin -- to_text_meaning
 		case schematic is
 			when true =>
 
@@ -102,7 +110,7 @@ package body et_kicad is
 					end case;
 
 				else
-					invalid_field;
+					invalid_field (line);
 				end if;
 				
 			when false =>
@@ -122,21 +130,21 @@ package body et_kicad is
 						when library_component_field_commissioned	=> meaning := et_general.commissioned;
 						when library_component_field_updated		=> meaning := et_general.updated;
 						when library_component_field_author			=> meaning := et_general.author;
-						when others => invalid_field;
+						when others => invalid_field (line);
 					end case;
 
 				else
-					invalid_field;
+					invalid_field (line);
 				end if;
 
 		end case;
 
 		return meaning;
 
-		exception --when event: others =>
+		exception
 			when constraint_error =>
-				invalid_field;
-				return meaning;
+				invalid_field (line); -- CS: May display the affected line a second time in some cases.
+				raise;
 		
 	end to_text_meaning;
 								 
@@ -290,11 +298,6 @@ package body et_kicad is
 		put_line(indentation * latin_1.space & "visible " & et_general.type_text_visible'image(text.visible));
 	end write_text_properies;
 
-	function field_invalid ( meaning : in et_general.type_text_meaning) return string is
-	begin
-		return "'" & et_general.text_meaning_to_string(meaning) & "' field invalid !";
-	end field_invalid;
-	
 	procedure read_components_libraries is
 	-- Reads components from libraries as stored in lib_dir and project_libraries:
 		use et_libraries.type_list_of_library_names;
@@ -311,14 +314,15 @@ package body et_kicad is
 		
 		procedure read_library is
 			line			: type_fields_of_line;
-			line_counter	: natural := 0;
 			component_entered : boolean := false; -- goes true while a component section is being processed
 			type type_active_section is ( none, fields, footprints, draw);
 			active_section : type_active_section := none; -- indicates the subsection being processed
 
 			component_name		: et_libraries.type_component_name.bounded_string; -- 74LS00
 			prefix				: et_general.type_component_prefix.bounded_string; -- IC
+
 			-- CS: variable for unknown field #4
+
 			port_name_offset	: et_general.type_grid;
 			pin_name_visible 	: et_libraries.type_pin_visible;
 			port_name_visible	: et_libraries.type_port_visible;
@@ -326,8 +330,6 @@ package body et_kicad is
 			unit_swap_level		: et_libraries.type_unit_swap_level := et_libraries.unit_swap_level_default;
 			appearance			: et_general.type_component_appearance;
 			
--- 			reference			: et_libraries.type_text(meaning => et_general.reference);
--- 			value				: et_libraries.type_text(meaning => et_general.value);
 			footprint			: et_libraries.type_text(meaning => et_general.footprint);
 			datasheet			: et_libraries.type_text(meaning => et_general.datasheet);
 			fnction				: et_libraries.type_text(meaning => et_general.p_function);
@@ -412,7 +414,8 @@ package body et_kicad is
 			end to_port_visibile;
 
 			function read_field (meaning : in et_general.type_text_meaning) return et_libraries.type_text is
-			-- Reads general field properties from fields 3..9
+			-- Reads general text field properties from subfields 3..9 and returns a type_text with 
+			-- the meaning as given in parameter "meaning".
 				text : et_libraries.type_text(meaning);
 			begin
 				-- field #:
@@ -521,12 +524,15 @@ package body et_kicad is
 			
 			while not end_of_file loop
 
-				-- count lines and save a line in variable "line" (see et_string_processing.ads)
-				line_counter := line_counter + 1;
-
+				-- Store line in variable "line" (see et_string_processing.ads)
 				-- The schematic library files use comments (#). But only the comments at the begin
 				-- of a line are relevant. Others are to be ignored. Thus test_whole_line is false.
- 				line := read_line(line => get_line,	comment_mark => "#", test_whole_line => false, number => ada.text_io.line);
+				line := read_line(
+							line => get_line,
+							comment_mark => "#",
+							test_whole_line => false,
+							number => ada.text_io.line(current_input));
+				
 				case line.field_count is
 					when 0 => null; -- we skip empty lines
 					when others =>
@@ -628,7 +634,7 @@ package body et_kicad is
 													if strip_quotes(get_field_from_line(line,2)) = et_general.type_component_prefix.to_string(prefix) then
 														null; -- fine
 													else
-														put_line(message_warning & et_string_processing.affected_line(line_counter) & ": prefix vs. reference mismatch !");
+														put_line(message_warning & et_string_processing.affected_line(line.number) & ": prefix vs. reference mismatch !");
 													end if;
 
 													texts_basic.reference := read_field (meaning => et_general.reference);
@@ -671,9 +677,8 @@ package body et_kicad is
 																write_text_properies (et_libraries.type_text(fnction));
 																-- basic_text_check(fnction); -- CS
 													else
-														put_line(message_warning & et_string_processing.affected_line(line_counter) 
-															& field_invalid(et_general.p_function));
-														-- CS: raise constraint_error;
+														put_line("xyz");
+														invalid_field(line);
 													end if;
 
 												-- If we have a partcode field like "F5 "" 0 -100 50 H V C CNN" "partcode",
@@ -688,9 +693,7 @@ package body et_kicad is
 																write_text_properies (et_libraries.type_text(partcode));
 																-- basic_text_check(partcode); -- CS
 													else
-														put_line(message_warning & et_string_processing.affected_line(line_counter) 
-															& field_invalid(et_general.partcode));
-														-- CS: raise constraint_error;
+														invalid_field(line);
 													end if;
 
 												-- If we have a "commissioned" field like "F6 "" 0 -100 50 H V C CNN" "commissioned",
@@ -705,9 +708,7 @@ package body et_kicad is
 																write_text_properies (et_libraries.type_text(texts_basic.commissioned));
 																-- basic_text_check(commissioned); -- CS
 													else
-														put_line(message_warning & et_string_processing.affected_line(line_counter) 
-															& field_invalid(et_general.commissioned));
-														-- CS: raise constraint_error;
+														invalid_field(line);
 													end if;
 
 												-- If we have an "updated" field like "F7 "" 0 -100 50 H V C CNN" "updated",
@@ -722,9 +723,7 @@ package body et_kicad is
 																write_text_properies (et_libraries.type_text(texts_basic.updated));
 																-- basic_text_check(updated); -- CS
 													else
-														put_line(message_warning & et_string_processing.affected_line(line_counter) 
-															& field_invalid(et_general.updated));
-														-- CS: raise constraint_error;
+														invalid_field(line);
 													end if;
 
 												-- If we have an "author" field like "F8 "" 0 -100 50 H V C CNN" "author",
@@ -739,9 +738,7 @@ package body et_kicad is
 																write_text_properies (et_libraries.type_text(texts_basic.author));
 																-- basic_text_check(author); -- CS
 													else
-														put_line(message_warning & et_string_processing.affected_line(line_counter) 
-															& field_invalid(et_general.author));
-														-- CS: raise constraint_error;
+														invalid_field(line);
 													end if;
 
 												when others => null;
@@ -891,7 +888,6 @@ package body et_kicad is
 			
 			use et_import.type_project_file_name;
 			
-            line_counter : natural := 0;
             section_eeschema_entered : boolean := false;
             section_eeschema_libraries_entered : boolean := false;            
 
@@ -908,12 +904,11 @@ package body et_kicad is
 			set_input (et_import.project_file_handle);
 			while not end_of_file loop
 
-				-- count lines and save a line in variable "line" (see et_string_processing.ads)
-				line_counter := line_counter + 1;
+				-- Save a line in variable "line" (see et_string_processing.ads)
 				line := read_line(
 							line => get_line,
 							comment_mark => "#",
-							number => ada.text_io.line,
+							number => ada.text_io.line(current_input),
 							ifs => latin_1.equals_sign); -- fields are separated by equals sign (=)
 
 				case line.field_count is
@@ -1052,7 +1047,6 @@ package body et_kicad is
 			use et_string_processing;
 			line : et_string_processing.type_fields_of_line;
 		
-			line_counter : natural := 0;
 			sheet_file : type_sheet_file.bounded_string;
 			sheet_count_total, sheet_number_current : positive;
 			net_segment_entered : boolean := false;
@@ -1995,13 +1989,12 @@ package body et_kicad is
 				set_input (et_import.schematic_handle);
 				while not end_of_file loop
 
-					-- count lines and save a line in variable "line" (see et_string_processing.ads)
-					line_counter := line_counter + 1;
+					-- Store line in variable "line" (see et_string_processing.ads)
 					line := et_string_processing.read_line(
-						line => get_line,
-						number => ada.text_io.line,
-						comment_mark => "", -- there are no comment marks in the schematic file
-						ifs => latin_1.space); -- fields are separated by space
+								line => get_line,
+								number => ada.text_io.line(current_input),
+								comment_mark => "", -- there are no comment marks in the schematic file
+								ifs => latin_1.space); -- fields are separated by space
 					
 					case line.field_count is
 						when 0 => null; -- we skip empty lines
@@ -2733,11 +2726,11 @@ package body et_kicad is
 				when event:
 					constraint_error =>
 						put_line(exception_information(event));
-						put_line(message_error & "in schematic file '" & to_string(name_of_schematic_file) & "' " & et_string_processing.affected_line(line_counter));
+						put_line(message_error & "in schematic file '" & to_string(name_of_schematic_file) & "' " & et_string_processing.affected_line(line.number));
 						raise;
 						return list_of_submodules;
 				when others =>
-						put_line(message_error & "in schematic file '" & to_string(name_of_schematic_file) & "' " & et_string_processing.affected_line(line_counter));
+						put_line(message_error & "in schematic file '" & to_string(name_of_schematic_file) & "' " & et_string_processing.affected_line(line.number));
 						raise;					
 						return list_of_submodules;
 

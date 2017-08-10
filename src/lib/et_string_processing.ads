@@ -107,7 +107,7 @@ package et_string_processing is
 	type type_fields_of_line is record -- CS: should be private
 		fields		: type_list_of_strings.vector;
 		field_count	: count_type;
-		line_number	: positive_count;
+		number		: positive_count;
 	end record;
 
 	function read_line(
@@ -136,7 +136,7 @@ package et_string_processing is
 		file : in boolean := true;
 		console : in boolean := false);
 	
-	function affected_line ( line : in positive ) return string;
+	function affected_line ( line : in positive_count ) return string;
 	-- Converts a given line number to a string like "line x:"
 	
 end et_string_processing;
