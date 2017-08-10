@@ -69,7 +69,7 @@ package body et_kicad is
 	
 	function to_text_meaning (
 	-- Extracts from a scheamtic field like "F 0 "#PWR01" H 2000 3050 50  0001 C CNN" its meaning.
-	-- Extracts from a component field liek "F0 "IC" 0 50 50 H V C CNN" its meaning.
+	-- Extracts from a component field like "F0 "IC" 0 50 50 H V C CNN" its meaning.
 	-- Since the fields start different in libaray and schematic we also need a flag that tells
 	-- the function whether we are dealing with scheamtic or library fields.
 		line : in type_fields_of_line;
@@ -297,9 +297,9 @@ package body et_kicad is
 		put_line(indentation * latin_1.space & "line width" & et_general.type_text_line_width'image(text.line_width));
 		put_line(indentation * latin_1.space & "orientation " & et_general.type_orientation'image(text.orientation));
 		put_line(indentation * latin_1.space & "aligment (hor/vert) " 
-			& to_lower(et_general.type_text_alignment_horizontal'image(text.alignment_horizontal))
+			& to_lower(et_general.type_text_alignment_horizontal'image(text.alignment.horizontal))
 			& "/"
-			& to_lower(et_general.type_text_alignment_vertical'image(text.alignment_vertical)));
+			& to_lower(et_general.type_text_alignment_vertical'image(text.alignment.vertical)));
 		put_line(indentation * latin_1.space & "visible " & et_general.type_text_visible'image(text.visible));
 	end write_text_properies;
 
@@ -441,8 +441,8 @@ package body et_kicad is
 					vis_in		=> get_field_from_line(line,7),
 					schematic	=> false);
 
-				text.alignment_horizontal := to_alignment_horizontal(get_field_from_line(line,8));
-				text.alignment_vertical   := to_alignment_vertical  (get_field_from_line(line,9));
+				text.alignment.horizontal := to_alignment_horizontal(get_field_from_line(line,8));
+				text.alignment.vertical   := to_alignment_vertical  (get_field_from_line(line,9));
 				text.style := to_text_style (style_in => get_field_from_line(line,9), text => false);
 
 				-- NOTE: text.line_width assumes default (see et_general.ads) as no line width is provided here.
@@ -2578,8 +2578,9 @@ package body et_kicad is
 																			schematic	=> true),
 
 														-- build text alignment
-														alignment_horizontal	=> to_alignment_horizontal (get_field_from_line(line,9)),
-														alignment_vertical		=> to_alignment_vertical (get_field_from_line(line,10))
+														alignment	=> (
+																		horizontal	=> to_alignment_horizontal (get_field_from_line(line,9)),
+																		vertical	=> to_alignment_vertical   (get_field_from_line(line,10)))
 														));
 
 											end if;

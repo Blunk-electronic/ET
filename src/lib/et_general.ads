@@ -202,7 +202,10 @@ package et_general is
 
     type type_text_alignment_horizontal is ( left, center , right);
 	type type_text_alignment_vertical is ( top, center , bottom);    
-	-- CS: wrap to type_text_aligment
+	type type_text_aligment is record
+		horizontal	: type_text_alignment_horizontal := center;
+		vertical	: type_text_alignment_vertical := center;
+	end record;
 	
 	type type_text_visible is (yes, no);
 	
@@ -228,15 +231,13 @@ package et_general is
 	-- Converts meaning to string.
 	
 	type type_text is tagged record
-		--meaning			        : type_text_meaning;
-        content                 : type_text_content.bounded_string;
-        size    				: type_text_size;
-        style					: type_text_style;
-        line_width				: type_text_line_width := 0; -- CS: use a general type_line_width ?
-        orientation             : type_orientation;
-        visible                 : type_text_visible;
-        alignment_horizontal    : type_text_alignment_horizontal;
-        alignment_vertical      : type_text_alignment_vertical;        
+        content		: type_text_content.bounded_string;
+        size    	: type_text_size;
+        style		: type_text_style;
+        line_width	: type_text_line_width := 0; -- CS: use a general type_line_width ?
+        orientation	: type_orientation;
+		visible		: type_text_visible;
+		alignment	: type_text_aligment;
 	end record;
 
 
