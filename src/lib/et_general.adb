@@ -30,6 +30,9 @@
 --   history of changes:
 --
 with ada.strings.unbounded; 	use ada.strings.unbounded;
+with ada.characters;			use ada.characters;
+with ada.characters.latin_1;	use ada.characters.latin_1;
+with et_string_processing;
 
 package body et_general is
 
@@ -51,7 +54,11 @@ package body et_general is
 	
 		procedure invalid_reference is
 		begin
-			put_line(message_error & "invalid component reference '" & text_in & "'");
+			et_string_processing.write_message(
+				file_handle => current_output,
+				text => latin_1.lf & message_error & "invalid component reference '" & text_in & "'",
+				console => true);
+			
 			raise constraint_error;
 		end invalid_reference;
 

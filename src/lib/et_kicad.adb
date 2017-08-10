@@ -97,16 +97,21 @@ package body et_kicad is
 				-- In a schematic the meaning of a text field is identified by "F 0 ...".
 
 				-- So the first thing to do is test if the letter F at the begin of the line:
-				if field(line,1) = schematic_component_identifier_field then
+				if field(line,1) = component_field_identifier then
 
 					-- Then we test the field id.
 					-- The field id must be mapped to the actual field meaning:
-					case type_schematic_component_field_id'value(field(line,2)) is -- "0..2"
-						when schematic_component_field_id_reference => meaning := et_general.reference; -- "0"
-						when schematic_component_field_id_value => meaning := et_general.value; -- "1"
-						when schematic_component_field_id_footprint => meaning := et_general.footprint; -- "2"
-						--CS: when schematic_component_field_id_partcode => unit_text_scratch.meaning := partcode;
-						when others => meaning := et_general.misc;
+					case type_component_field_id'value(field(line,2)) is -- "0..2"
+						when component_field_reference		=> meaning := et_general.reference;
+						when component_field_value			=> meaning := et_general.value;
+						when component_field_footprint		=> meaning := et_general.footprint;
+						when component_field_datasheet		=> meaning := et_general.datasheet;
+						when component_field_function		=> meaning := et_general.p_function;
+						when component_field_partcode		=> meaning := et_general.partcode;
+						when component_field_commissioned	=> meaning := et_general.commissioned;
+						when component_field_updated		=> meaning := et_general.updated;
+						when component_field_author			=> meaning := et_general.author;
+						when others => invalid_field (line);
 					end case;
 
 				else
@@ -118,18 +123,18 @@ package body et_kicad is
 				-- In a library the meaning of a text field is identified by "F0 ...".
 				
 				-- So the first thing to do is test if the letter F at the begin of the line:
-				if strip_id(field(line,1)) = schematic_component_identifier_field then
+				if strip_id(field(line,1)) = component_field_identifier then
 				
-					case type_library_component_field_id'value ( strip_f (field(line,1) ) ) is
-						when library_component_field_reference		=> meaning := et_general.reference;
-						when library_component_field_value			=> meaning := et_general.value;
-						when library_component_field_footprint		=> meaning := et_general.footprint;
-						when library_component_field_datasheet		=> meaning := et_general.datasheet;
-						when library_component_field_function		=> meaning := et_general.p_function;
-						when library_component_field_partcode		=> meaning := et_general.partcode;
-						when library_component_field_commissioned	=> meaning := et_general.commissioned;
-						when library_component_field_updated		=> meaning := et_general.updated;
-						when library_component_field_author			=> meaning := et_general.author;
+					case type_component_field_id'value ( strip_f (field(line,1) ) ) is
+						when component_field_reference		=> meaning := et_general.reference;
+						when component_field_value			=> meaning := et_general.value;
+						when component_field_footprint		=> meaning := et_general.footprint;
+						when component_field_datasheet		=> meaning := et_general.datasheet;
+						when component_field_function		=> meaning := et_general.p_function;
+						when component_field_partcode		=> meaning := et_general.partcode;
+						when component_field_commissioned	=> meaning := et_general.commissioned;
+						when component_field_updated		=> meaning := et_general.updated;
+						when component_field_author			=> meaning := et_general.author;
 						when others => invalid_field (line);
 					end case;
 
@@ -2542,7 +2547,7 @@ package body et_kicad is
 											--			"F 1 "NetChanger" H 2600 2250 60  0001 C CNN"
 											--			"F 2 "bel_netchanger:N_0.2MM" H 2600 2100 60  0001 C CNN"
 											-- Each line represents a text field which is appended to the scratch unit. 
-											if get_field_from_line(line,1) = schematic_component_identifier_field then -- "F"
+											if get_field_from_line(line,1) = component_field_identifier then -- "F"
 
 												-- append text field to scratch unit.
 												et_schematic.type_texts.append (
