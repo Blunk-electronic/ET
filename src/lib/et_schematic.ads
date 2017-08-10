@@ -133,6 +133,11 @@ package et_schematic is
 	type type_component (appearance : type_component_appearance) is record
 		name_in_library : et_libraries.type_component_name.bounded_string; -- example: "TRANSISTOR_PNP"
 		units			: type_units.map;
+		case appearance is
+			when et_general.sch => null;
+			when et_general.sch_pcb => null; -- CS: list of footprints
+			when others => null;
+		end case;
 	end record;
 
 

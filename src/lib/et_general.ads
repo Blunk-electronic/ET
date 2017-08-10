@@ -160,12 +160,6 @@ package et_general is
 		-- ...
 		);
 
-	-- This is the base type of a component. 
-	-- Its most basic property is the appearance. See type_component_appearance.
-	-- Libraries and schematic add extra properties.
-	type type_component is tagged record
-		appearance 			: type_component_appearance;
-	end record;
 
 	-- A component reference (in Eagle "device name") consists of a prefix (like R, C, IC, ..)
 	-- and a consecutive number. Both form something like "IC702"
@@ -178,7 +172,7 @@ package et_general is
 	function to_component_reference (
 	-- Converts a string like "IC303" to a composite type_component_reference.
 	-- If allow_special_charater_in_prefix is given true, the first character
-	-- is allowed to be a special character.
+	-- is allowed to be a special character. Example: "L P3V3 #PWR07"
 	-- NOTE: Leading zeroes in the id are removed.	
 		text_in : in string;
 		allow_special_character_in_prefix : in boolean := false)

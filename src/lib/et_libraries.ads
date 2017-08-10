@@ -37,6 +37,7 @@ with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
+with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 with et_general;				use et_general;
@@ -269,7 +270,7 @@ package et_libraries is
 
 	-- A component may have internal and/or external units.
 	-- It also has text fields.
-	type type_component is new et_general.type_component with record
+	type type_component (appearance : et_general.type_component_appearance) is record
 		units_internal	: type_units_internal.map;
 		units_external	: type_units_external.map;
 		texts_basic		: type_texts_basic; -- basic text fields
@@ -277,12 +278,17 @@ package et_libraries is
 		partcode		: type_text(meaning => et_general.partcode); -- like "R_PAC_S_0805_VAL_"
 		fnction			: type_text(meaning => et_general.p_function); -- to be filled in schematic later by the user
 		datasheet		: type_text(meaning => et_general.datasheet); -- might be useful for some special components
-		-- CS: housings, packages : list of footprints
+		case appearance is
+			when et_general.sch => null;
+			when et_general.sch_pcb => null; -- CS: list of footprints
+			when others => null;
+		end case;
+
 	end record;
 	
 	-- Components are stored in a map.
 	-- Within the map they are accessed by a key type_component_name (something like "CAPACITOR").
-	package type_components is new ordered_maps (
+	package type_components is new indefinite_ordered_maps (
 		key_type => type_component_name.bounded_string, -- example: "TRANSISTOR_PNP"
 		element_type => type_component);
 	use type_components;

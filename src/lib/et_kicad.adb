@@ -2005,6 +2005,7 @@ package body et_kicad is
             
 			-- This is relevant for reading components:
 			component_entered : boolean := false; -- indicates that a component is being read
+			--component_appearance : et_general.type_component_appearance;
 			component_name_in_library : et_libraries.type_component_name.bounded_string;
 			unit_scratch : et_schematic.type_unit; -- temporarily used before appending a unit to a component
 			unit_scratch_name : et_libraries.type_unit_name.bounded_string; -- temporarily used for the unit name
@@ -2561,21 +2562,53 @@ package body et_kicad is
 													& et_libraries.type_component_name.to_string(component_name_in_library));
 												
 												-- Insert component in component list of module. For the time being the unit list is empty.
-												type_components.insert(
-													container => module.components,
-													key => et_general.to_component_reference(
-														text_in => get_field_from_line(line,3),
-														allow_special_character_in_prefix => true),
 
-													new_item => (
-														-- Read the appearance. This is about a component in a schematic -> schematic => true
-														appearance => to_appearance(line => line, schematic => true),
-														name_in_library => component_name_in_library,
-														units => et_schematic.type_units.empty_map),
+												-- Read the appearance. This is about a component in a schematic -> schematic => true
+												-- The compoenent is then inserted into the components list of the module according to its appearance.
+												case to_appearance(line => line, schematic => true) is
 													
-													position => component_cursor_scratch,
-													inserted => component_inserted); -- this flag is just formal. no further evaluation												
+													when sch =>
 
+														-- we have a line like "L P3V3 #PWR07"
+														type_components.insert(
+															container => module.components,
+																				  
+															key => et_general.to_component_reference(
+																text_in => get_field_from_line(line,3),
+																allow_special_character_in_prefix => true),
+
+															new_item => (
+																appearance => et_general.sch, -- the component appears in schematic only
+																name_in_library => component_name_in_library,
+																units => et_schematic.type_units.empty_map),
+															
+															position => component_cursor_scratch,
+															inserted => component_inserted); -- this flag is just formal. no further evaluation
+														
+													when sch_pcb =>
+
+														-- we have a line like "L 74LS00 U1"
+														type_components.insert(
+															container => module.components,
+
+															key => et_general.to_component_reference(
+																text_in => get_field_from_line(line,3),
+																allow_special_character_in_prefix => false),
+
+															new_item => (
+																appearance => et_general.sch_pcb, -- the component appears in both schematic and layout
+																name_in_library => component_name_in_library,
+																units => et_schematic.type_units.empty_map),
+															
+															position => component_cursor_scratch,
+															inserted => component_inserted); -- this flag is just formal. no further evaluation
+
+													when others =>
+														null;
+														raise constraint_error;
+														
+												end case;
+														
 												-- The cursor component_cursor_scratch now points to the component. There will be more component information (in the following) 
 												-- that will go into component_scratch. Once the component section is left, component_scratch updates the component where the cursor
 												-- is pointing to.
