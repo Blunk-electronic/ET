@@ -148,7 +148,7 @@ package et_general is
 	component_prefix_length_max : constant natural := 10; -- CS: there is no reason to work with longer prefixes.
 	package type_component_prefix is new generic_bounded_length(component_prefix_length_max);
 	use type_component_prefix;
-	
+
 	type type_component_appearance is ( 
 		sch,		-- a component that exists in the schematic only (like power symbols)
 		pcb,		-- a compoennt that exists on the pcb only (like a fiducial)
@@ -163,9 +163,13 @@ package et_general is
 	-- A component reference (in Eagle "device name") consists of a prefix (like R, C, IC, ..)
 	-- and a consecutive number. Both form something like "IC702"
 	type type_component_reference_element is ( PREFIX, ID);
+	component_reference_prefix_default : constant type_component_prefix.bounded_string := to_bounded_string("?");
+	component_reference_id_default : constant natural := 0;
+	
 	type type_component_reference is record
-		prefix	: type_component_prefix.bounded_string;
-		id		: natural; -- NOTE: This allows something like R0 or IC0 (there are reasons for such stange things ...)
+		prefix	: type_component_prefix.bounded_string := component_reference_prefix_default;
+		id		: natural := component_reference_id_default; 
+		-- NOTE: This allows something like R0 or IC0 (there are reasons for such stange things ...)
 	end record;
 
 	function to_component_reference (
@@ -233,7 +237,6 @@ package et_general is
 		visible		: type_text_visible;
 		alignment	: type_text_aligment;
 	end record;
-
 
 	
 -- GENERICS

@@ -350,7 +350,7 @@ package body et_kicad is
 				
 	end to_appearance;
 
-	
+
 	procedure write_text_properies ( text : in et_libraries.type_text) is
 	-- Outputs the properties of the given text.
 		indentation : positive := 4;
@@ -1334,17 +1334,6 @@ package body et_kicad is
 					);
 			end write_note_properties;
 			
-			procedure write_coordinates_of_unit (unit : in et_schematic.type_unit) is
-			begin
-				write_message (
-					file_handle => et_import.report_handle,
-					text => " position (x/y/sheet) " & 
-						trim(et_general.type_grid'image(unit.position.x),left) & "/" &
-						trim(et_general.type_grid'image(unit.position.y),left) & "/" &
-						trim( positive'image(unit.position.sheet_number),left)
-						);
-			end write_coordinates_of_unit;			
-			
 			-- An anonymous_net is a list of net segments that are connected with each other (by their start or end points).
 			-- The anonymous net gets step by step more properties specified: name, scope and some status flags:
 			package type_anonymous_net is new vectors (
@@ -2007,17 +1996,52 @@ package body et_kicad is
 			component_entered : boolean := false; -- indicates that a component is being read
 
 			tmp_component_name_in_lib	: et_libraries.type_component_name.bounded_string;
-			tmp_component_appearance	: et_general.type_component_appearance;
+			tmp_component_appearance	: et_general.type_component_appearance := et_general.sch;
 			tmp_component_reference		: et_general.type_component_reference;
 			tmp_component_unit_name		: et_libraries.type_unit_name.bounded_string;
 			tmp_component_demorgan		: et_kicad.type_demorgan;
 			tmp_component_timestamp		: et_kicad.type_timestamp;
 			tmp_component_position		: et_schematic.type_coordinates;
 			tmp_component_texts			: et_schematic.type_component_texts;
+
+			function to_text return et_schematic.type_text is
+			-- Converts a field like "F 1 "green" H 2700 2750 50  0000 C CNN" to a type_text
+				function field ( line : in type_fields_of_line; position : in positive) return string renames get_field_from_line;
+			begin
+				return (
+						-- read text field meaning
+						meaning 	=> to_text_meaning(line => line, schematic => true),
+
+						-- read content like "N701" or "NetChanger" from field position 3
+						content		=> type_text_content.to_bounded_string (strip_quotes(field(line,3))),
+
+						-- read orientation like "H" -- type_schematic_field_orientation
+						orientation	=> to_text_orientation (field(line,4)),
+
+						-- read coordinates
+						coordinates => (x => et_general.type_grid'value(field(line,5)),
+										y => et_general.type_grid'value(field(line,6)),
+										path => path_to_submodule,
+										module_name => type_submodule_name.to_bounded_string (to_string(name_of_schematic_file)),
+										sheet_number => sheet_number_current),
+						size		=> type_text_size'value (field(line,7)),
+						style		=> to_text_style (style_in => field(line,10), text => false),
+						line_width	=> 0, -- not provided here -- CS: define a default ?
+
+						-- build text visibility
+						visible		=> to_field_visible (
+											vis_in		=> field(line,8),
+											schematic	=> true),
+
+						-- build text alignment
+						alignment	=> (
+										horizontal	=> to_alignment_horizontal (field(line,9)),
+										vertical	=> to_alignment_vertical   (field(line,10)))
+						);
 			
-			component_name_in_library : et_libraries.type_component_name.bounded_string;
-			unit_scratch : et_schematic.type_unit; -- temporarily used before appending a unit to a component
-			unit_scratch_name : et_libraries.type_unit_name.bounded_string; -- temporarily used for the unit name
+			end to_text;
+
+			
 			component_cursor_scratch : type_components.cursor; -- points to a component of the module
 			component_inserted : boolean; -- used when a component is being inserted into the component list of a module
 			
@@ -2025,8 +2049,11 @@ package body et_kicad is
 			begin
 				et_schematic.type_units.insert(
 					container => component.units, -- the unit list of the component
-					new_item => unit_scratch, -- the unit itself
-					key => unit_scratch_name); -- the unit name
+					new_item => (
+								position => tmp_component_position,
+								fields => et_schematic.type_texts.empty_list
+								),
+					key => tmp_component_unit_name); -- the unit name
 			end insert_unit;
 
 
@@ -2546,12 +2573,70 @@ package body et_kicad is
 										if get_field_from_line(line,1) = schematic_component_footer then
 											component_entered := false; -- we are leaving the component
 
+											-- Insert component in component list of module. For the time beeing the unit list is empty.
+
+											-- Read the appearance. This is about a component in a schematic -> schematic => true
+											-- The compoenent is then inserted into the components list of the module according to its appearance.
+											-- If the component has already been inserted, it will not be inserted again.
+											case tmp_component_appearance is
+												
+												when sch =>
+
+													-- we have a line like "L P3V3 #PWR07"
+													type_components.insert(
+														container => module.components,
+																				
+														key => tmp_component_reference,
+
+														new_item => (
+															appearance => et_general.sch, -- the component appears in schematic only
+															name_in_library => tmp_component_name_in_lib,
+															units => et_schematic.type_units.empty_map),
+														
+														position => component_cursor_scratch,
+														inserted => component_inserted); -- this flag is just formal. no further evaluation
+													
+												when sch_pcb =>
+
+													-- we have a line like "L 74LS00 U1"
+													type_components.insert(
+														container => module.components,
+
+														key => tmp_component_reference,
+
+														new_item => (
+															appearance => et_general.sch_pcb, -- the component appears in both schematic and layout
+															name_in_library => tmp_component_name_in_lib,
+															variant => -- CS: currently we use defaults. fix it
+																( 
+																variant => (
+																	packge => et_libraries.type_component_package_name.to_bounded_string(""),
+																	library => et_libraries.type_library_full_name.to_bounded_string("")
+																	),
+																name => et_libraries.type_component_variant_name.to_bounded_string("")
+																),
+															units => et_schematic.type_units.empty_map),
+														
+														position => component_cursor_scratch,
+														inserted => component_inserted); -- this flag is just formal. no further evaluation
+
+												when others => -- CS: This should never happen. A subtype of type_component_appearance could be a solution.
+													null;
+													raise constraint_error;
+													
+											end case;
+
+											-- The cursor component_cursor_scratch now points to the component. There will be more component information (in the following) 
+											-- that will go into component_scratch. Once the component section is left, component_scratch updates the component where the cursor
+											-- is pointing to.
+
+											
 											--put_line(to_string(line_of_schematic_file));								
 											-- update the component with the collected unit data (in unit_scratch)
 											type_components.update_element (module.components, component_cursor_scratch, insert_unit'access);
 
-											-- clean up: the list of texts collected in unit_scratch.text_list must be erased for next spin.
-											et_schematic.type_texts.clear (unit_scratch.fields);
+											-- clean up: the list of texts collected must be erased for next spin.
+											-- CS: et_schematic.type_texts.clear (tmp_component_texts);
 										else
 											--put_line("line ->" & to_string(line));
 											-- READ COMPONENT SECTION CONTENT
@@ -2563,73 +2648,34 @@ package body et_kicad is
 											-- Only the first occurence of the component leads to appending it to the component list of the module.
 											if get_field_from_line(line,1) = schematic_component_identifier_name then -- "L"
 												tmp_component_name_in_lib := et_libraries.type_component_name.to_bounded_string(get_field_from_line(line,2)); -- "SN74LS00"
-												-- CS: check annotation
-
-												put_line("  component " 
-													& get_field_from_line(line,3) -- "N1"
-													& " is " 
-													& et_libraries.type_component_name.to_string(tmp_component_name_in_lib));
-												
-												-- Insert component in component list of module. For the time being the unit list is empty.
-
-												-- Read the appearance. This is about a component in a schematic -> schematic => true
-												-- The compoenent is then inserted into the components list of the module according to its appearance.
-												-- If the component has already been inserted, it will not be inserted again.
-												case to_appearance(line => line, schematic => true) is
-													
-													when sch =>
-
+												tmp_component_appearance := to_appearance(line => line, schematic => true);
+												case tmp_component_appearance is
+													when sch => 
 														-- we have a line like "L P3V3 #PWR07"
-														type_components.insert(
-															container => module.components,
-																				  
-															key => et_general.to_component_reference(
+														tmp_component_reference := et_general.to_component_reference(
 																text_in => get_field_from_line(line,3),
-																allow_special_character_in_prefix => true),
+																allow_special_character_in_prefix => true);
 
-															new_item => (
-																appearance => et_general.sch, -- the component appears in schematic only
-																name_in_library => component_name_in_library,
-																units => et_schematic.type_units.empty_map),
-															
-															position => component_cursor_scratch,
-															inserted => component_inserted); -- this flag is just formal. no further evaluation
-														
 													when sch_pcb =>
 
 														-- we have a line like "L 74LS00 U1"
-														type_components.insert(
-															container => module.components,
-
-															key => et_general.to_component_reference(
+														tmp_component_reference := et_general.to_component_reference(
 																text_in => get_field_from_line(line,3),
-																allow_special_character_in_prefix => false),
-
-															new_item => (
-																appearance => et_general.sch_pcb, -- the component appears in both schematic and layout
-																name_in_library => component_name_in_library,
-																variant => -- CS: currently we use defaults. fix it
-																	( 
-																	variant => (
-																		packge => et_libraries.type_component_package_name.to_bounded_string(""),
-																		library => et_libraries.type_library_full_name.to_bounded_string("")
-																		),
-																	name => et_libraries.type_component_variant_name.to_bounded_string("")
-																	),
-																units => et_schematic.type_units.empty_map),
-															
-															position => component_cursor_scratch,
-															inserted => component_inserted); -- this flag is just formal. no further evaluation
+																allow_special_character_in_prefix => false);
 
 													when others => -- CS: This should never happen. A subtype of type_component_appearance could be a solution.
 														null;
 														raise constraint_error;
 														
 												end case;
+															
+												-- CS: check proper annotation
+
+												put_line("  component " 
+													& get_field_from_line(line,3) -- "N1"
+													& " is " 
+													& et_libraries.type_component_name.to_string(tmp_component_name_in_lib));
 														
-												-- The cursor component_cursor_scratch now points to the component. There will be more component information (in the following) 
-												-- that will go into component_scratch. Once the component section is left, component_scratch updates the component where the cursor
-												-- is pointing to.
 											end if;
 
 											-- read line like "U 2 1 4543D4D3F" 
@@ -2640,6 +2686,10 @@ package body et_kicad is
 												-- Therefore we handle the unit id as string.
 												tmp_component_unit_name := et_libraries.type_unit_name.to_bounded_string(
 													get_field_from_line(line,2)); -- the unit id
+
+												tmp_component_demorgan := type_demorgan'value(get_field_from_line(line,3));
+												tmp_component_timestamp := type_timestamp(get_field_from_line(line,4));
+										
 												put("   with unit " & et_libraries.type_unit_name.to_string(tmp_component_unit_name) & " at");
 											end if;
 
@@ -2657,7 +2707,7 @@ package body et_kicad is
 												tmp_component_position.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
 												tmp_component_position.sheet_number := sheet_number_current;
 
-												write_coordinates_of_unit(unit_scratch);
+												et_schematic.write_coordinates(tmp_component_position);
 											end if;
 
 											-- read unit fields 0..2 from lines like:
@@ -2667,39 +2717,62 @@ package body et_kicad is
 											-- Each line represents a text field which is appended to the scratch unit. 
 											if get_field_from_line(line,1) = component_field_identifier then -- "F"
 
-												-- append text field to scratch unit.
-												et_schematic.type_texts.append (
-													container => unit_scratch.fields,
-													new_item => (
-														-- read text field meaning
-														meaning 	=> to_text_meaning(line => line, schematic => true),
+												case type_component_field_id'value(get_field_from_line(line,2)) is
+													when component_field_reference =>
+														tmp_component_texts.reference := to_text;
+													when component_field_value =>
+														tmp_component_texts.value := to_text;
+													when component_field_footprint =>
+														tmp_component_texts.packge := to_text;
+													when component_field_datasheet =>
+														tmp_component_texts.datasheet := to_text;
+													when component_field_function =>
+														tmp_component_texts.fnction := to_text;
+													when component_field_partcode =>
+														tmp_component_texts.partcode := to_text;
+													when component_field_commissioned =>
+														tmp_component_texts.commissioned := to_text;
+													when component_field_updated =>
+														tmp_component_texts.updated := to_text;
+													when component_field_author =>
+														tmp_component_texts.author := to_text;
 
-														-- read content like "N701" or "NetChanger" from field position 3
-														content		=> type_text_content.to_bounded_string (strip_quotes(get_field_from_line(line,3))),
-
-														-- read orientation like "H" -- type_schematic_field_orientation
-														orientation	=> to_text_orientation (get_field_from_line(line,4)),
-
-														-- read coordinates
-														coordinates => (x => et_general.type_grid'value(get_field_from_line(line,5)),
-																		y => et_general.type_grid'value(get_field_from_line(line,6)),
-																		path => path_to_submodule,
-																		module_name => type_submodule_name.to_bounded_string (to_string(name_of_schematic_file)),
-																		sheet_number => sheet_number_current),
-														size		=> type_text_size'value (get_field_from_line(line,7)),
-														style		=> to_text_style (style_in => get_field_from_line(line,10), text => false),
-														line_width	=> 0, -- not provided here -- CS: define a default ?
-
-														-- build text visibility
-														visible		=> to_field_visible (
-																			vis_in		=> get_field_from_line(line,8),
-																			schematic	=> true),
-
-														-- build text alignment
-														alignment	=> (
-																		horizontal	=> to_alignment_horizontal (get_field_from_line(line,9)),
-																		vertical	=> to_alignment_vertical   (get_field_from_line(line,10)))
-														));
+													when others => null; -- CS: other fields are ignored
+												end case;
+												
+-- 												-- collect text fields.
+-- 												et_schematic.type_texts.append (
+-- 													container => tmp_component_texts,
+-- 													new_item => (
+-- 														-- read text field meaning
+-- 														meaning 	=> to_text_meaning(line => line, schematic => true),
+-- 
+-- 														-- read content like "N701" or "NetChanger" from field position 3
+-- 														content		=> type_text_content.to_bounded_string (strip_quotes(get_field_from_line(line,3))),
+-- 
+-- 														-- read orientation like "H" -- type_schematic_field_orientation
+-- 														orientation	=> to_text_orientation (get_field_from_line(line,4)),
+-- 
+-- 														-- read coordinates
+-- 														coordinates => (x => et_general.type_grid'value(get_field_from_line(line,5)),
+-- 																		y => et_general.type_grid'value(get_field_from_line(line,6)),
+-- 																		path => path_to_submodule,
+-- 																		module_name => type_submodule_name.to_bounded_string (to_string(name_of_schematic_file)),
+-- 																		sheet_number => sheet_number_current),
+-- 														size		=> type_text_size'value (get_field_from_line(line,7)),
+-- 														style		=> to_text_style (style_in => get_field_from_line(line,10), text => false),
+-- 														line_width	=> 0, -- not provided here -- CS: define a default ?
+-- 
+-- 														-- build text visibility
+-- 														visible		=> to_field_visible (
+-- 																			vis_in		=> get_field_from_line(line,8),
+-- 																			schematic	=> true),
+-- 
+-- 														-- build text alignment
+-- 														alignment	=> (
+-- 																		horizontal	=> to_alignment_horizontal (get_field_from_line(line,9)),
+-- 																		vertical	=> to_alignment_vertical   (get_field_from_line(line,10)))
+-- 														));
 
 											end if;
 									end if;

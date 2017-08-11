@@ -30,14 +30,32 @@
 --   history of changes:
 --
 
+with ada.characters;			use ada.characters;
+with ada.characters.latin_1;	use ada.characters.latin_1;
+with ada.characters.handling;	use ada.characters.handling;
+with ada.strings; 				use ada.strings;
+with ada.strings.fixed; 		use ada.strings.fixed;
+
+with ada.text_io;				use ada.text_io;
+
+with et_general;
+with et_string_processing;
+with et_import;
 
 package body et_schematic is
 
-	-- CS: dummy, remove it !
-	procedure a is
+	procedure write_coordinates (position : in type_coordinates) is
+	-- Writes the given schematic coordinates.
 	begin
-		null;
-	end a;
+		et_string_processing.write_message (
+			file_handle => et_import.report_handle,
+			text => " position (x/y/sheet) " & 
+				trim(et_general.type_grid'image(position.x),left) & "/" &
+				trim(et_general.type_grid'image(position.y),left) & "/" &
+				trim( positive'image(position.sheet_number),left)
+				);
+	end write_coordinates;
 
+	
 end et_schematic;
 

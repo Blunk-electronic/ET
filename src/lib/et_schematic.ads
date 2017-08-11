@@ -45,9 +45,6 @@ with et_libraries;
 
 package et_schematic is
 
-	procedure a; -- CS: dummy, remove it !
-
-
 
 -- NAMES GENERAL
 
@@ -90,7 +87,10 @@ package et_schematic is
 		sheet_number	: positive;
 	end record;
 
+	procedure write_coordinates (position : in type_coordinates);
+	-- Writes the given schematic coordinates.
 
+	
 -- TEXT FIELD
 
 	-- A text field in the schematic gets extended by extended coordinates (see above)
@@ -444,6 +444,9 @@ package et_schematic is
 		id				: positive; -- id of a submodule in the list
 	end record;
 
+
+
+	
 	
 end et_schematic;
 
