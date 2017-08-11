@@ -2565,6 +2565,7 @@ package body et_kicad is
 
 												-- Read the appearance. This is about a component in a schematic -> schematic => true
 												-- The compoenent is then inserted into the components list of the module according to its appearance.
+												-- If the component has already been inserted, it will not be inserted again.
 												case to_appearance(line => line, schematic => true) is
 													
 													when sch =>
@@ -2598,12 +2599,20 @@ package body et_kicad is
 															new_item => (
 																appearance => et_general.sch_pcb, -- the component appears in both schematic and layout
 																name_in_library => component_name_in_library,
+																variant => -- CS: currently we use defaults. fix it
+																	( 
+																	variant => (
+																		packge => et_libraries.type_component_package_name.to_bounded_string(""),
+																		library => et_libraries.type_library_full_name.to_bounded_string("")
+																		),
+																	name => et_libraries.type_component_variant_name.to_bounded_string("")
+																	),
 																units => et_schematic.type_units.empty_map),
 															
 															position => component_cursor_scratch,
 															inserted => component_inserted); -- this flag is just formal. no further evaluation
 
-													when others =>
+													when others => -- CS: This should never happen. A subtype of type_component_appearance could be a solution.
 														null;
 														raise constraint_error;
 														

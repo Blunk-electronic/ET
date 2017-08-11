@@ -128,15 +128,27 @@ package et_schematic is
 		"<" => et_libraries.type_unit_name."<",
 		element_type => type_unit);
 
+	-- After associating (by the operator) a schematic component with a package, the composite
+	-- type_variant is set according to the desired package.
+	type type_variant is record
+		name	: et_libraries.type_component_variant_name.bounded_string;	-- the variant name like "S" or "N"
+		variant	: et_libraries.type_component_variant; -- incorporates package, full library name, connection list
+	end record;
+	
 	-- This is a component as it appears in the schematic.
-	--	type type_component is new et_general.type_component with record
 	type type_component (appearance : type_component_appearance) is record
 		name_in_library : et_libraries.type_component_name.bounded_string; -- example: "TRANSISTOR_PNP"
 		units			: type_units.map;
 		case appearance is
+			-- If a component appears in the schematic only, it does not
+			-- have a package variant.
 			when et_general.sch => null;
-			when et_general.sch_pcb => null; -- CS: list of footprints
-			when others => null;
+
+			-- If a component appears in both schematic and layout it has a package variant.
+			when et_general.sch_pcb => 
+				variant	: type_variant;
+			
+			when others => null; -- CS
 		end case;
 	end record;
 

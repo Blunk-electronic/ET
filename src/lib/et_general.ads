@@ -86,7 +86,6 @@ package et_general is
  	person_name_length	: constant natural := 100;
 	package type_person_name is new generic_bounded_length(person_name_length); use type_person_name;
 
-
 -- 	-- LIBRARY NAMES AND DIRECTORIES
 -- 
 -- 	-- For storing bare library names like "bel_primitives" we use this bounded string:

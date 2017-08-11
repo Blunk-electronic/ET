@@ -87,7 +87,41 @@ package et_libraries is
  	pin_name_length	: constant natural := 10;
 	package type_pin_name is new generic_bounded_length(pin_name_length); use type_pin_name;
 
+-- LAYOUT RELATED
 
+	-- PACKAGES AND VARIANTS
+	-- A component package is something like "SOT32" or "NDIP14". It is a more or less standardized (JEDEC)
+	-- designator for the housing or the case of an electronical component. The package name is independed of
+	-- the actual purpose of a component. An LED can have an SOT23 package and a transistor can also come in an SOT23.
+
+	-- The variant is usually a suffix in a component name, given by its manufacturer. The variant is a manufacturer
+	-- specific abbrevation for the package a component comes with.
+	-- Example: An opamp made by TI can be the type TL084N or TL084D. N means the NDIP14 package
+	-- whereas D means the SO14 package.
+
+	-- component package names like "SOT23" or "TO220" are stored in bounded strings:
+	-- Kicad refers to them as "footprints".
+	component_package_name_length_max : constant positive := 100;
+	package type_component_package_name is new generic_bounded_length(component_package_name_length_max);
+	--use type_component_package_name;
+
+	-- component package variant names like "N" or "D" are stored in short bounded strings:
+	component_variant_name_length_max : constant positive := 10;
+	package type_component_variant_name is new generic_bounded_length(component_variant_name_length_max);
+	use type_component_variant_name;
+
+	-- A component variant is a composite of the package, the library it is stored in and
+	-- a connection list. The connection list maps from port names to pin/pad names.
+	type type_component_variant is record
+		packge	: type_component_package_name.bounded_string;
+		library	: type_library_full_name.bounded_string;
+		-- CS: connection list
+	end record;
+
+	-- Component variants are stored in a map where they are accessed by the variant name.
+	package type_component_variants is new ordered_maps (
+		key_type => type_component_variant_name.bounded_string,
+		element_type => type_component_variant);
 	
 -- TEXT FIELDS
 
@@ -279,9 +313,18 @@ package et_libraries is
 		fnction			: type_text(meaning => et_general.p_function); -- to be filled in schematic later by the user
 		datasheet		: type_text(meaning => et_general.datasheet); -- might be useful for some special components
 		case appearance is
+
+			-- If a component appears in the schematic only, it does not
+			-- have any package variants.
 			when et_general.sch => null;
-			when et_general.sch_pcb => null; -- CS: list of footprints
-			when others => null;
+
+			-- If a component appears in both schematic and layout it comes 
+			-- with at least one package variant. We store variants in a map.
+			when et_general.sch_pcb => 
+				variants :	type_component_variants.map;
+
+			
+			when others => null; -- CS
 		end case;
 
 	end record;
