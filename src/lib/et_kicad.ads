@@ -256,6 +256,13 @@ package et_kicad is
 	type type_unit_id is new positive range 1..unit_count_max;
 
 	type type_library_component_appearance is (N, P); -- normal or power
+
+	type type_demorgan is new natural range 0..1;
+	demorgan_on		: constant type_demorgan := 0;
+	demorgan_off	: constant type_demorgan := 1;
+
+	type type_timestamp is new string (1..8); -- like "34593321"
+
 	type type_symbol_interchangeable is (L, F); -- L means swapping not allowed, F means swapping allowed 
 	type type_show_pin_number is (Y, N); -- show pin/pad number yes/no
 	type type_show_pin_name is (Y, N); -- show pin (better port) name yes/no

@@ -104,7 +104,7 @@ package body et_kicad is
 					case type_component_field_id'value(field(line,2)) is -- "0..2"
 						when component_field_reference		=> meaning := et_general.reference;
 						when component_field_value			=> meaning := et_general.value;
-						when component_field_footprint		=> meaning := et_general.footprint;
+						when component_field_footprint		=> meaning := et_general.packge;
 						when component_field_datasheet		=> meaning := et_general.datasheet;
 						when component_field_function		=> meaning := et_general.p_function;
 						when component_field_partcode		=> meaning := et_general.partcode;
@@ -128,7 +128,7 @@ package body et_kicad is
 					case type_component_field_id'value ( strip_f (field(line,1) ) ) is
 						when component_field_reference		=> meaning := et_general.reference;
 						when component_field_value			=> meaning := et_general.value;
-						when component_field_footprint		=> meaning := et_general.footprint;
+						when component_field_footprint		=> meaning := et_general.packge;
 						when component_field_datasheet		=> meaning := et_general.datasheet;
 						when component_field_function		=> meaning := et_general.p_function;
 						when component_field_partcode		=> meaning := et_general.partcode;
@@ -415,7 +415,7 @@ package body et_kicad is
 			unit_swap_level		: et_libraries.type_unit_swap_level := et_libraries.unit_swap_level_default;
 			appearance			: et_general.type_component_appearance;
 			
-			footprint			: et_libraries.type_text(meaning => et_general.footprint);
+			footprint			: et_libraries.type_text(meaning => et_general.packge);
 			datasheet			: et_libraries.type_text(meaning => et_general.datasheet);
 			fnction				: et_libraries.type_text(meaning => et_general.p_function);
 			partcode			: et_libraries.type_text(meaning => et_general.partcode);
@@ -718,9 +718,9 @@ package body et_kicad is
 													write_text_properies (et_libraries.type_text(texts_basic.value));
 
 												-- If we have a footprint field like "F2 "" 0 -100 50 H V C CNN"
-												when et_general.footprint =>
+												when et_general.packge =>
 												
-													footprint := read_field (meaning => et_general.footprint);
+													footprint := read_field (meaning => et_general.packge);
 													-- for the log:
 													write_text_properies (et_libraries.type_text(footprint));
 
@@ -2005,7 +2005,16 @@ package body et_kicad is
             
 			-- This is relevant for reading components:
 			component_entered : boolean := false; -- indicates that a component is being read
-			--component_appearance : et_general.type_component_appearance;
+
+			tmp_component_name_in_lib	: et_libraries.type_component_name.bounded_string;
+			tmp_component_appearance	: et_general.type_component_appearance;
+			tmp_component_reference		: et_general.type_component_reference;
+			tmp_component_unit_name		: et_libraries.type_unit_name.bounded_string;
+			tmp_component_demorgan		: et_kicad.type_demorgan;
+			tmp_component_timestamp		: et_kicad.type_timestamp;
+			tmp_component_position		: et_schematic.type_coordinates;
+			tmp_component_texts			: et_schematic.type_component_texts;
+			
 			component_name_in_library : et_libraries.type_component_name.bounded_string;
 			unit_scratch : et_schematic.type_unit; -- temporarily used before appending a unit to a component
 			unit_scratch_name : et_libraries.type_unit_name.bounded_string; -- temporarily used for the unit name
@@ -2533,7 +2542,7 @@ package body et_kicad is
 										if get_field_from_line(line,1) = schematic_component_header then
 											component_entered := true;
 										end if;
-									else -- we are inside the component
+									else -- we are inside the component and wait for the component footer ($EndComp)
 										if get_field_from_line(line,1) = schematic_component_footer then
 											component_entered := false; -- we are leaving the component
 
@@ -2553,13 +2562,13 @@ package body et_kicad is
 											-- split into units (EAGLE refers to them as "gates").
 											-- Only the first occurence of the component leads to appending it to the component list of the module.
 											if get_field_from_line(line,1) = schematic_component_identifier_name then -- "L"
-												component_name_in_library := et_libraries.type_component_name.to_bounded_string(get_field_from_line(line,2)); -- "NetChanger"
+												tmp_component_name_in_lib := et_libraries.type_component_name.to_bounded_string(get_field_from_line(line,2)); -- "SN74LS00"
 												-- CS: check annotation
 
 												put_line("  component " 
 													& get_field_from_line(line,3) -- "N1"
 													& " is " 
-													& et_libraries.type_component_name.to_string(component_name_in_library));
+													& et_libraries.type_component_name.to_string(tmp_component_name_in_lib));
 												
 												-- Insert component in component list of module. For the time being the unit list is empty.
 
@@ -2629,25 +2638,24 @@ package body et_kicad is
 
 												-- KiCad uses positive numbers to identifiy units. But in general a unit name can be a string as well.
 												-- Therefore we handle the unit id as string.
-												-- Temporarily the unit data is collected in unit_scratch (to update the component later when leaving the component section).
-												unit_scratch_name := et_libraries.type_unit_name.to_bounded_string(
+												tmp_component_unit_name := et_libraries.type_unit_name.to_bounded_string(
 													get_field_from_line(line,2)); -- the unit id
-												put("   with unit " & et_libraries.type_unit_name.to_string(unit_scratch_name) & " at");
+												put("   with unit " & et_libraries.type_unit_name.to_string(tmp_component_unit_name) & " at");
 											end if;
 
 											-- Read unit coordinates from a line like "P 3200 4500".
 											-- The unit coordinates is more than just x/y !
 											-- The write the unit coordinates in the import report.
 											if get_field_from_line(line,1) = schematic_component_identifier_coord then -- "P"
-												unit_scratch.position.x := et_general.type_grid'value(
+												tmp_component_position.x := et_general.type_grid'value(
 													get_field_from_line(line,2)); -- "3200"
-												unit_scratch.position.y := et_general.type_grid'value(
+												tmp_component_position.y := et_general.type_grid'value(
 													get_field_from_line(line,3)); -- "4500"
 
 			--									unit_scratch.coordinates.main_module := module.name;
-												unit_scratch.position.path := path_to_submodule;
-												unit_scratch.position.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
-												unit_scratch.position.sheet_number := sheet_number_current;
+												tmp_component_position.path := path_to_submodule;
+												tmp_component_position.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+												tmp_component_position.sheet_number := sheet_number_current;
 
 												write_coordinates_of_unit(unit_scratch);
 											end if;

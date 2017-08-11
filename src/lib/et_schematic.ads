@@ -100,14 +100,19 @@ package et_schematic is
 	package type_texts is new indefinite_doubly_linked_lists (
 		element_type => type_text);
 
-	type type_texts_basic is record
+	type type_component_texts is record
 		reference	: type_text (meaning => et_general.reference);
 		value		: type_text (meaning => et_general.value);
-		datasheet	: type_text (meaning => et_general.datasheet);
-		footprint	: type_text (meaning => et_general.footprint);		
+		commissioned: type_text (meaning => et_general.commissioned);
+		updated		: type_text (meaning => et_general.updated);
+		author		: type_text (meaning => et_general.author);
+		packge		: type_text (meaning => et_general.packge); -- like "SOT23"
+		datasheet	: type_text (meaning => et_general.datasheet); -- might be useful for some special components
+		fnction		: type_text (meaning => et_general.p_function); -- to be filled in schematic later by the user
+		partcode	: type_text (meaning => et_general.partcode); -- like "R_PAC_S_0805_VAL_"
 	end record;
-	
-	
+
+
 -- UNITS AND COMPONENTS
 
 	-- In a schematic we find units spread all over.
