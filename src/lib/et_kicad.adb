@@ -59,7 +59,7 @@ package body et_kicad is
 	begin
 		write_message(
 			file_handle => current_output,
-			text => message_error & et_string_processing.affected_line(line.number) & "invalid field !",
+			text => message_error & et_string_processing.affected_line(line) & "invalid field !",
 			console => true);
 	
 			-- CS: refine output.
@@ -293,7 +293,7 @@ package body et_kicad is
 		begin
 			write_message(
 				file_handle => current_output,
-				text => message_error & et_string_processing.affected_line(line.number) & "invalid visibility flag !",
+				text => message_error & et_string_processing.affected_line(line) & "invalid visibility flag !",
 				console => true);
 		
 				-- CS: refine output.
@@ -600,7 +600,7 @@ package body et_kicad is
 							test_whole_line => false,
 							number => ada.text_io.line(current_input));
 				
-				case line.field_count is
+				case field_count(line) is
 					when 0 => null; -- we skip empty lines
 					when others =>
 
@@ -703,7 +703,7 @@ package body et_kicad is
 													if strip_quotes(get_field_from_line(line,2)) = et_general.type_component_prefix.to_string(prefix) then
 														null; -- fine
 													else
-														put_line(message_warning & et_string_processing.affected_line(line.number) & ": prefix vs. reference mismatch !");
+														put_line(message_warning & et_string_processing.affected_line(line) & ": prefix vs. reference mismatch !");
 													end if;
 
 													texts_basic.reference := read_field (meaning => et_general.reference);
@@ -979,7 +979,7 @@ package body et_kicad is
 							number => ada.text_io.line(current_input),
 							ifs => latin_1.equals_sign); -- fields are separated by equals sign (=)
 
-				case line.field_count is
+				case field_count(line) is
 					when 0 => null; -- we skip empty lines
 					when 1 => -- we have a line with just one field. those lines contain headers like "[eeschema]"
 
@@ -2101,7 +2101,7 @@ package body et_kicad is
 								comment_mark => "", -- there are no comment marks in the schematic file
 								ifs => latin_1.space); -- fields are separated by space
 					
-					case line.field_count is
+					case field_count(line) is
 						when 0 => null; -- we skip empty lines
 						when others =>
 
@@ -2923,11 +2923,11 @@ package body et_kicad is
 				when event:
 					constraint_error =>
 						put_line(exception_information(event));
-						put_line(message_error & "in schematic file '" & to_string(name_of_schematic_file) & "' " & et_string_processing.affected_line(line.number));
+						put_line(message_error & "in schematic file '" & to_string(name_of_schematic_file) & "' " & et_string_processing.affected_line(line));
 						raise;
 						return list_of_submodules;
 				when others =>
-						put_line(message_error & "in schematic file '" & to_string(name_of_schematic_file) & "' " & et_string_processing.affected_line(line.number));
+						put_line(message_error & "in schematic file '" & to_string(name_of_schematic_file) & "' " & et_string_processing.affected_line(line));
 						raise;					
 						return list_of_submodules;
 

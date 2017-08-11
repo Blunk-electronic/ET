@@ -216,6 +216,32 @@ package body et_string_processing is
 		return to_string(s);
 	end trim_space_in_string;
 
+
+	procedure write_message (
+		file_handle : in ada.text_io.file_type;
+		identation : in natural := 0;
+		text : in string; 
+		lf   : in boolean := true;		
+		file : in boolean := true;
+		console : in boolean := false) is
+	begin
+		if file then
+			put(file_handle, identation * ' ' & text);
+			if lf then 
+				new_line(file_handle);
+			end if;
+		end if;
+
+		if console then
+			put(standard_output,identation * ' ' & text);
+			if lf then 
+				new_line(standard_output);
+			end if;
+		end if;
+	end write_message;
+
+
+	
 	function get_field_from_line( 
 	-- Extracts a field separated by ifs at position. If trailer is true, the trailing content until trailer_to is also returned.
 		text_in 	: in string;
@@ -411,37 +437,18 @@ package body et_string_processing is
 		return to_string(s);
 	end to_string;
 
-
-	-- MESSAGES
-	procedure write_message (
-		file_handle : in ada.text_io.file_type;
-		identation : in natural := 0;
-		text : in string; 
-		lf   : in boolean := true;		
-		file : in boolean := true;
-		console : in boolean := false) is
+	function affected_line ( line : in type_fields_of_line ) return string is
+	-- Returns the line number of the given line in a string like "line x:"
 	begin
-		if file then
-			put(file_handle, identation * ' ' & text);
-			if lf then 
-				new_line(file_handle);
-			end if;
-		end if;
-
-		if console then
-			put(standard_output,identation * ' ' & text);
-			if lf then 
-				new_line(standard_output);
-			end if;
-		end if;
-	end write_message;
-
-	function affected_line ( line : in positive_count ) return string is
-	-- Converts a given line number to a string like "line x:"
-	begin
-		return ("line" & positive_count'image(line) & ": ");
+		return ("line" & positive_count'image(line.number) & ": ");
 	end affected_line;
-		
+
+	function field_count ( line : in type_fields_of_line) return count_type is
+	-- Returns the number of fields in the given line.
+	begin
+		return line.field_count;
+	end field_count;
+	
 end et_string_processing;
 
 -- Soli Deo Gloria

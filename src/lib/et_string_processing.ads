@@ -92,6 +92,15 @@ package et_string_processing is
 
 	function trim_space_in_string (text_in : in string) return string;
 	-- shrinks successive space characters to a single one in given string
+
+
+	procedure write_message (
+		file_handle : in ada.text_io.file_type;
+		identation : in natural := 0;
+		text : in string;
+		lf   : in boolean := true;
+		file : in boolean := true;
+		console : in boolean := false);
 	
 	function get_field_from_line(
 	-- Extracts a field separated by ifs at position. If trailer is true, the trailing content untiil trailer_to is also returned.
@@ -104,12 +113,11 @@ package et_string_processing is
 
 	-- CS: comments
 	package type_list_of_strings is new indefinite_vectors (index_type => positive, element_type => string);
-	type type_fields_of_line is record -- CS: should be private
-		fields		: type_list_of_strings.vector;
-		field_count	: count_type;
-		number		: positive_count;
-	end record;
 
+	-- This type is required when reading lines from files. It is a composite type
+	-- whose components are hidden. The can only be accessed by special functions and procedures. See below.
+	type type_fields_of_line is private;
+	
 	function read_line(
 	-- Breaks down a given string and returns a type_fields_of_line.
 		line			: in string; -- the line to be broken down
@@ -126,18 +134,19 @@ package et_string_processing is
 
 	function to_string ( line : in type_fields_of_line) return string;
 
+	function affected_line ( line : in type_fields_of_line ) return string;
+	-- Returns the line number of the given line in a string like "line x:"
 
-	-- MESSAGES
-	procedure write_message (
-		file_handle : in ada.text_io.file_type;
-		identation : in natural := 0;
-		text : in string;
-		lf   : in boolean := true;
-		file : in boolean := true;
-		console : in boolean := false);
+	function field_count ( line : in type_fields_of_line) return count_type;
+	-- Returns the number of fields in the given line.
 	
-	function affected_line ( line : in positive_count ) return string;
-	-- Converts a given line number to a string like "line x:"
+	private
+		type type_fields_of_line is record
+			fields		: type_list_of_strings.vector;
+			field_count	: count_type;
+			number		: positive_count;
+		end record;
+
 	
 end et_string_processing;
 
