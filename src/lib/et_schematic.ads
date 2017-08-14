@@ -102,17 +102,17 @@ package et_schematic is
 	package type_texts is new indefinite_doubly_linked_lists (
 		element_type => type_text);
 
-	type type_component_texts is record
-		reference	: type_text (meaning => et_general.reference);
-		value		: type_text (meaning => et_general.value);
-		commissioned: type_text (meaning => et_general.commissioned);
-		updated		: type_text (meaning => et_general.updated);
-		author		: type_text (meaning => et_general.author);
-		packge		: type_text (meaning => et_general.packge); -- like "SOT23"
-		datasheet	: type_text (meaning => et_general.datasheet); -- might be useful for some special components
-		fnction		: type_text (meaning => et_general.p_function); -- to be filled in schematic later by the user
-		partcode	: type_text (meaning => et_general.partcode); -- like "R_PAC_S_0805_VAL_"
-	end record;
+-- 	type type_component_texts is record
+-- 		reference	: type_text (meaning => et_general.reference);
+-- 		value		: type_text (meaning => et_general.value);
+-- 		commissioned: type_text (meaning => et_general.commissioned);
+-- 		updated		: type_text (meaning => et_general.updated);
+-- 		author		: type_text (meaning => et_general.author);
+-- 		packge		: type_text (meaning => et_general.packge); -- like "SOT23"
+-- 		datasheet	: type_text (meaning => et_general.datasheet); -- might be useful for some special components
+-- 		fnction		: type_text (meaning => et_general.p_function); -- to be filled in schematic later by the user
+-- 		partcode	: type_text (meaning => et_general.partcode); -- like "R_PAC_S_0805_VAL_"
+-- 	end record;
 
 
 -- UNITS AND COMPONENTS
@@ -121,11 +121,12 @@ package et_schematic is
 	-- A unit is a subsection of a component.
 	-- A unit has text fields for the reference (like IC303), value (like 7400), ...
 
-
-	
 	type type_unit is record
 		position		: type_coordinates;
-		fields			: type_texts.list;
+		fields			: et_libraries.type_texts.list;
+		-- NOTE: The text fields a defined in et_libraries. Thus they have only
+		-- basic coordinates (x/y). Via the unit position the sheet and module
+		-- name can be obtained.
 	end record;
 
 	-- Units of a component are collected in a map.

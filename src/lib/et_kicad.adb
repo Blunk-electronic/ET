@@ -341,6 +341,12 @@ package body et_kicad is
 	end to_appearance;
 
 
+	function field_content ( text_field : in et_libraries.type_text ) return string is
+	-- Returns the content of the given text field as string.
+	begin
+		return et_general.type_text_content.to_string(text_field.content);
+	end field_content;
+	
 	procedure write_text_properies ( text : in et_libraries.type_text) is
 	-- Outputs the properties of the given text.
 		indentation : positive := 4;
@@ -2023,9 +2029,10 @@ package body et_kicad is
 			tmp_component_demorgan		: et_kicad.type_demorgan;
 			tmp_component_timestamp		: et_kicad.type_timestamp;
 			tmp_component_position		: et_schematic.type_coordinates;
-			tmp_component_texts			: et_schematic.type_component_texts;
+			tmp_component_texts_basic	: et_libraries.type_texts_basic;
+			tmp_component_texts_extended: et_libraries.type_texts_extended_1;
 
-			function to_text return et_schematic.type_text is
+			function to_text return et_libraries.type_text is
 			-- Converts a field like "F 1 "green" H 2700 2750 50  0000 C CNN" to a type_text
 				function field ( line : in type_fields_of_line; position : in positive) return string renames get_field_from_line;
 			begin
@@ -2041,10 +2048,7 @@ package body et_kicad is
 
 					-- read coordinates
 					coordinates => (x => et_general.type_grid'value(field(line,5)),
-									y => et_general.type_grid'value(field(line,6)),
-									path => path_to_submodule,
-									module_name => type_submodule_name.to_bounded_string (to_string(name_of_schematic_file)),
-									sheet_number => sheet_number_current),
+									y => et_general.type_grid'value(field(line,6))),
 					size		=> type_text_size'value (field(line,7)),
 					style		=> to_text_style (style_in => field(line,10), text => false),
 					line_width	=> 0, -- not provided here -- CS: define a default ?
@@ -2071,7 +2075,7 @@ package body et_kicad is
 					container => component.units, -- the unit list of the component
 					new_item => (
 								position => tmp_component_position,
-								fields => et_schematic.type_texts.empty_list
+								fields => et_libraries.type_texts.empty_list
 								),
 					key => tmp_component_unit_name); -- the unit name
 			end insert_unit;
@@ -2099,6 +2103,131 @@ package body et_kicad is
 -- 					end loop;
 -- 				end if;	
 -- 			end fetch_components_from_library;
+
+			procedure insert_component is
+			-- Inserts the component in the component list of the module.
+			-- The component to be inserted consists of the temporarily variables assigned until now.
+			-- Tests if a footprint has been associated with the component.
+
+				-- This is required as scratch variable when breaking down the content of the footprint content.
+				-- Kicad saves library and footprint name in a string like "bel_opto:LED_S_0805" separated by colon.
+				-- When a real component (appearance sch_pcb) is inserted, this variable is loaded with
+				-- the library name and the footprint.
+				tmp_library_footprint : et_string_processing.type_fields_of_line;
+
+				function field (
+					line		: in et_string_processing.type_fields_of_line;
+					position	: in positive) return string renames et_string_processing.get_field_from_line;
+
+			begin -- insert_component
+				-- Read the appearance. This is about a component in a schematic -> schematic => true
+				-- The compoenent is then inserted into the components list of the module according to its appearance.
+				-- If the component has already been inserted, it will not be inserted again.
+				case tmp_component_appearance is
+					
+					when sch => -- we have a line like "L P3V3 #PWR07"
+				
+						type_components.insert(
+							container => module.components,
+													
+							key => tmp_component_reference,
+
+							new_item => (
+								appearance => et_general.sch, -- the component appears in schematic only
+								name_in_library => tmp_component_name_in_lib,
+
+								-- At this stage we do not know if and how many units there are. So the unit list is empty.
+								units => et_schematic.type_units.empty_map),
+							
+							position => component_cursor_scratch,
+							inserted => component_inserted); -- this flag is just formal. no further evaluation
+
+							write_component_properties ( component => component_cursor_scratch, indentation => 2);
+						
+					when sch_pcb => -- we have a line like "L 74LS00 U1"
+
+						-- break down the footprint content like "bel_opto:LED_S_0805".
+						tmp_library_footprint := et_string_processing.read_line(
+								line => field_content (tmp_component_texts_extended.packge),
+								ifs => latin_1.colon);
+
+						
+						type_components.insert(
+							container => module.components,
+
+							key => tmp_component_reference,
+
+							new_item => (
+								appearance => et_general.sch_pcb, -- the component appears in both schematic and layout
+								name_in_library => tmp_component_name_in_lib,
+
+								-- Assemble the package variant.
+								-- NOTE: There is no way to identifiy the name of the package variant like TL084D or TL084N.
+								-- For this reason we leave the variant name empty.
+								variant =>
+									( 
+									variant => (
+
+										-- get the package name from the footprint field 
+										packge => 
+											et_libraries.type_component_package_name.to_bounded_string(
+												field(line => tmp_library_footprint, position => 2)),
+
+										-- get the library file name from the footpint field
+										library => et_libraries.type_library_full_name.to_bounded_string(
+												field(line => tmp_library_footprint, position => 1))),
+
+									-- The variant name is left empty.
+									name => et_libraries.type_component_variant_name.to_bounded_string("")
+									),
+
+								-- At this stage we do not know if and how many units there are. So the unit list is empty for the moment.
+								units => et_schematic.type_units.empty_map),
+							
+							position => component_cursor_scratch,
+							inserted => component_inserted); -- this flag is just formal. no further evaluation
+
+							write_component_properties ( component => component_cursor_scratch, indentation => 2);
+
+							-- Test if footprint has been associated with the component.
+							if field_content (tmp_component_texts_extended.packge)'size = 0 then
+								write_message(
+									file_handle => current_output,
+									text => message_error & et_general.to_string(tmp_component_reference) & ": footprint not specified !",
+									console => true);
+								raise constraint_error;
+							end if;
+
+							-- The libaray and footpint name could be tested separately.
+-- 							-- Test footprint contains a libaray name. example: "bel_opto:LED_S_0805"
+-- 							if field(line => tmp_library_footprint, position => 1)'size = 0 then
+-- 								write_message(
+-- 									file_handle => current_output,
+-- 									text => message_error & et_general.to_string(tmp_component_reference) & ": footprint library not specified !",
+-- 									console => true);
+-- 								raise constraint_error;
+-- 							end if;
+-- 
+-- 							-- Test if footprint has been associated with the component.
+-- 							if field(line => tmp_library_footprint, position => 2)'size = 0 then
+-- 								write_message(
+-- 									file_handle => current_output,
+-- 									text => message_error & et_general.to_string(tmp_component_reference) & ": footprint not specified !",
+-- 									console => true);
+-- 								raise constraint_error;
+-- 							end if;
+
+							
+						
+					when others => -- CS: This should never happen. A subtype of type_component_appearance could be a solution.
+						null;
+						raise constraint_error;
+						
+				end case;
+				
+			end insert_component;
+			
+
 
         begin -- read_schematic
 			if exists(to_string(name_of_schematic_file)) then
@@ -2597,74 +2726,24 @@ package body et_kicad is
 									if not component_entered then
 										if get_field_from_line(line,1) = schematic_component_header then
 											component_entered := true;
+
+											-- This is to init the temporarily used variables that store text fields.
+											-- GNAT would generate a warning otherwise (for good reasons) like "... may be referenced before it has a value."
+											tmp_component_texts_extended.packge.content := type_text_content.to_bounded_string("");
 										end if;
 									else -- we are inside the component and wait for the component footer ($EndComp)
 										if get_field_from_line(line,1) = schematic_component_footer then
 											component_entered := false; -- we are leaving the component
 
 											-- Insert component in component list of module. For the time beeing the unit list is empty.
-
-											-- Read the appearance. This is about a component in a schematic -> schematic => true
-											-- The compoenent is then inserted into the components list of the module according to its appearance.
-											-- If the component has already been inserted, it will not be inserted again.
-											case tmp_component_appearance is
-												
-												when sch =>
-
-													-- we have a line like "L P3V3 #PWR07"
-													type_components.insert(
-														container => module.components,
-																				
-														key => tmp_component_reference,
-
-														new_item => (
-															appearance => et_general.sch, -- the component appears in schematic only
-															name_in_library => tmp_component_name_in_lib,
-															units => et_schematic.type_units.empty_map),
-														
-														position => component_cursor_scratch,
-														inserted => component_inserted); -- this flag is just formal. no further evaluation
-													
-												when sch_pcb =>
-
-													-- we have a line like "L 74LS00 U1"
-													type_components.insert(
-														container => module.components,
-
-														key => tmp_component_reference,
-
-														new_item => (
-															appearance => et_general.sch_pcb, -- the component appears in both schematic and layout
-															name_in_library => tmp_component_name_in_lib,
-															variant => -- CS: currently we use defaults. fix it
-																( 
-																variant => (
-																	packge => et_libraries.type_component_package_name.to_bounded_string(""),
-																	-- tmp_component_texts.packge.content
-																	library => et_libraries.type_library_full_name.to_bounded_string("")
-																	),
-																name => et_libraries.type_component_variant_name.to_bounded_string("")
-																),
-															units => et_schematic.type_units.empty_map),
-														
-														position => component_cursor_scratch,
-														inserted => component_inserted); -- this flag is just formal. no further evaluation
-
-												when others => -- CS: This should never happen. A subtype of type_component_appearance could be a solution.
-													null;
-													raise constraint_error;
-													
-											end case;
-
-											write_component_properties ( component => component_cursor_scratch, indentation => 2);
-
+											insert_component;
+	
 											-- The cursor component_cursor_scratch now points to the component. There will be more component information (in the following) 
 											-- that will go into component_scratch. Once the component section is left, component_scratch updates the component where the cursor
 											-- is pointing to.
-
 											
 											--put_line(to_string(line_of_schematic_file));								
-											-- update the component with the collected unit data (in unit_scratch)
+											-- update the component with the collected unit data
 											type_components.update_element (module.components, component_cursor_scratch, insert_unit'access);
 
 											-- clean up: the list of texts collected must be erased for next spin.
@@ -2751,23 +2830,23 @@ package body et_kicad is
 
 												case type_component_field_id'value(get_field_from_line(line,2)) is
 													when component_field_reference =>
-														tmp_component_texts.reference := to_text;
+														tmp_component_texts_basic.reference := to_text;
 													when component_field_value =>
-														tmp_component_texts.value := to_text;
+														tmp_component_texts_basic.value := to_text;
 													when component_field_footprint =>
-														tmp_component_texts.packge := to_text;
+														tmp_component_texts_extended.packge := to_text;
 													when component_field_datasheet =>
-														tmp_component_texts.datasheet := to_text;
+														tmp_component_texts_extended.datasheet := to_text;
 													when component_field_function =>
-														tmp_component_texts.fnction := to_text;
+														tmp_component_texts_extended.fnction := to_text;
 													when component_field_partcode =>
-														tmp_component_texts.partcode := to_text;
+														tmp_component_texts_extended.partcode := to_text;
 													when component_field_commissioned =>
-														tmp_component_texts.commissioned := to_text;
+														tmp_component_texts_basic.commissioned := to_text;
 													when component_field_updated =>
-														tmp_component_texts.updated := to_text;
+														tmp_component_texts_basic.updated := to_text;
 													when component_field_author =>
-														tmp_component_texts.author := to_text;
+														tmp_component_texts_basic.author := to_text;
 
 													when others => null; -- CS: other fields are ignored
 												end case;

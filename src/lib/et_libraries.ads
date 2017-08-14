@@ -109,6 +109,9 @@ package et_libraries is
 	package type_component_package_name is new generic_bounded_length(component_package_name_length_max);
 	--use type_component_package_name;
 
+	function to_string ( packge : in type_component_package_name.bounded_string) return string;
+	-- Returns the given package name as as string.
+	
 	-- VARIANT NAMES
 	-- If a component has package variants, a suffix after the component type indicates the package
 	-- The variant name is manufacturer specific. example: TL084D or TL084N

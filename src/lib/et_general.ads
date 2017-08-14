@@ -52,7 +52,11 @@ package et_general is
 
 	system_name						: constant string (1..9) := "SYSTEM ET";
 
-	-- FILES, EXTENSIONS AND DIRECTORY NAMES
+-- COMMENT MARKS
+	comment_mark					: constant string (1..1) := "#";
+
+	
+-- FILES, EXTENSIONS AND DIRECTORY NAMES
 
 	-- The name of a project may have 100 characters which seems sufficient for now.
  	project_name_length		: constant natural := 100;
@@ -61,16 +65,16 @@ package et_general is
 	report_directory		: constant string (1..10)	:= "et_reports";
 	report_extension		: constant string (1..3)	:= "log";
 	
-    -- FILE HANDLES
 
 	
-	-- FREQUENTLY USED WORDS AND PHRASES
-	message_error					: constant string (1..8) := "ERROR ! ";
-	message_warning					: constant string (1..10) := "WARNING ! ";	
-	row_separator_single			: constant string (1..100) := 100 * "-";	
-	row_separator_double			: constant string (1..100) := 100 * "=";
+-- FREQUENTLY USED WORDS AND PHRASES
+	message_error					: constant string (1..8)	:= "ERROR ! ";
+	message_warning					: constant string (1..10)	:= "WARNING ! ";	
+	row_separator_single			: constant string (1..100)	:= 100 * "-";	
+	row_separator_double			: constant string (1..100)	:= 100 * "=";
+	item_not_specified				: constant string (1..7)	:= "missing";
 	
-	-- COMMAND LINE SWITCHES
+-- COMMAND LINE SWITCHES
 	--switch_about			: constant string (1..7) := "--about"; -- CS
 	switch_version			: constant string (1..8)	:= "-version"; -- long switch
 	switch_help				: constant string (1..5)	:= "-help"; -- long switch	

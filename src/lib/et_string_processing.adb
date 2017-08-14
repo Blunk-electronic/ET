@@ -352,8 +352,8 @@ package body et_string_processing is
 	-- Breaks down a given string and returns a type_fields_of_line.
 	-- CS: poor performance -> rework !
 		line			: in string; -- the line to be broken down
-		number			: in positive_count; -- the line number
-		comment_mark	: in string; -- the comment mark like "--" or "#"
+		number			: in positive_count := positive_count'first; -- the line number
+		comment_mark	: in string := et_general.comment_mark; -- the comment mark like "--" or "#"
 		test_whole_line	: in boolean := true; -- when false, cares for the comment mark at line begin only
 												 -- further comment marks are ignored
 		ifs				: in character := latin_1.space) -- field separator

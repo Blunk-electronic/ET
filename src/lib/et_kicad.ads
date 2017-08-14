@@ -57,6 +57,8 @@ package et_kicad is
     
 	procedure import_design; 
 
+-- COMMENT MARKS
+	comment_mark							: constant string (1..1) := "#";
 
 -- PROJECT FILE RELATED KEYWORDS AND VARIABLES
     project_header_eeschema                 : constant string (1..10) := "[eeschema]";

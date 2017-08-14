@@ -53,19 +53,41 @@ package body et_libraries is
 
 	function to_string ( name_in_library : in type_component_name.bounded_string) return string is
 	-- Returns the given name_in_library as as string.
+	-- CS: provide a parameter that turns the pretext like "name in library" on/off
 	begin
 		return ("name in library " & type_component_name.to_string(name_in_library));
 	end to_string;
-		
+
+	function to_string ( packge : in type_component_package_name.bounded_string) return string is
+	-- Returns the given package name as as string.
+	-- CS: provide a parameter that turns the pretext on/off
+	begin
+		return (type_component_package_name.to_string(packge));
+	end to_string;
+	
 	function to_string ( variant : in type_component_variant) return string is
 	-- Returns the given variant as string.
 	-- NOTE: This displays the type_component_variant (see et_libraries.ads).
 	-- Do not confuse with type_variant (see et_schematic.ads) which also contains the variant name
 	-- like in TL084D or TL084N.
+	-- CS: provide a parameter that turns the pretext on/off ? Useful ?
+
+	-- If the library name or package name of given variant is empty, assume item_not_specified.
+	-- This produces a still readable output like "library item_not_specified package item_not_specified".
+		v : type_component_variant := variant;
 	begin
-		return ("library " & type_library_full_name.to_string(variant.library)
-			& " package " & type_component_package_name.to_string(variant.packge));
+		if type_library_full_name.length(v.library) = 0 then
+			v.library := type_library_full_name.to_bounded_string(et_general.item_not_specified);
+		end if;
+
+		if type_component_package_name.length(v.packge) = 0 then
+			v.packge := type_component_package_name.to_bounded_string(et_general.item_not_specified);
+		end if;
+		
+		return ("library " & type_library_full_name.to_string(v.library)
+			& " package " & type_component_package_name.to_string(v.packge));
 	end to_string;
+
 	
 end et_libraries;
 
