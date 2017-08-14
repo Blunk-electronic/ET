@@ -44,18 +44,24 @@ with et_import;
 
 package body et_schematic is
 
-	procedure write_coordinates (position : in type_coordinates) is
-	-- Writes the given schematic coordinates.
+	function to_string (position : in type_coordinates) return string is
+	-- Returns the given position as string.
 	begin
-		et_string_processing.write_message (
-			file_handle => et_import.report_handle,
-			text => " position (x/y/sheet) " & 
-				trim(et_general.type_grid'image(position.x),left) & "/" &
-				trim(et_general.type_grid'image(position.y),left) & "/" &
-				trim( positive'image(position.sheet_number),left)
-				);
-	end write_coordinates;
+		return ("position (x/y/sheet) " & 
+			trim(et_general.type_grid'image(position.x),left) & "/" &
+			trim(et_general.type_grid'image(position.y),left) & "/" &
+			trim( positive'image(position.sheet_number),left));
+		-- CS: exception handler
+	end to_string;
 
+	
+	function to_string (orientation : in type_orientation) return string is
+	-- Returns the the given orientation as string.
+	begin
+		return("orientation " & et_general.type_orientation'image(orientation));
+		-- CS: exception handler
+	end to_string;
 	
 end et_schematic;
 
+-- Soli Deo Gloria

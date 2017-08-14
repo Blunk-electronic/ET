@@ -51,8 +51,22 @@ with et_string_processing;		use et_string_processing;
 
 package body et_libraries is
 
-	procedure a is begin null; end a;
-
-
+	function to_string ( name_in_library : in type_component_name.bounded_string) return string is
+	-- Returns the given name_in_library as as string.
+	begin
+		return ("name in library " & type_component_name.to_string(name_in_library));
+	end to_string;
+		
+	function to_string ( variant : in type_component_variant) return string is
+	-- Returns the given variant as string.
+	-- NOTE: This displays the type_component_variant (see et_libraries.ads).
+	-- Do not confuse with type_variant (see et_schematic.ads) which also contains the variant name
+	-- like in TL084D or TL084N.
+	begin
+		return ("library " & type_library_full_name.to_string(variant.library)
+			& " package " & type_component_package_name.to_string(variant.packge));
+	end to_string;
+	
 end et_libraries;
 
+-- Soli Deo Gloria

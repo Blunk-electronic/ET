@@ -87,9 +87,11 @@ package et_schematic is
 		sheet_number	: positive;
 	end record;
 
-	procedure write_coordinates (position : in type_coordinates);
-	-- Writes the given schematic coordinates.
+	function to_string (position : in type_coordinates) return string;
+	-- Returns the given position as string.
 
+	function to_string (orientation : in type_orientation) return string;
+	-- Returns the given orientation as string.
 	
 -- TEXT FIELD
 
@@ -136,7 +138,7 @@ package et_schematic is
 	-- After associating (by the operator) a schematic component with a package, the composite
 	-- type_variant is set according to the desired package.
 	type type_variant is record
-		name	: et_libraries.type_component_variant_name.bounded_string;	-- the variant name like "S" or "N"
+		name	: et_libraries.type_component_variant_name.bounded_string;	-- the variant name like TL084N or TL084D
 		variant	: et_libraries.type_component_variant; -- incorporates package, full library name, connection list
 	end record;
 	

@@ -82,6 +82,10 @@ package et_libraries is
 
  	component_name_length_max : constant natural := 100;
 	package type_component_name is new generic_bounded_length(component_name_length_max); use type_component_name;
+
+	function to_string ( name_in_library : in type_component_name.bounded_string) return string;
+	-- Returns the given name_in_library as as string.
+
 	
 	-- The name of a pin may have 10 characters which seems sufficient for now.
  	pin_name_length	: constant natural := 10;
@@ -105,6 +109,9 @@ package et_libraries is
 	package type_component_package_name is new generic_bounded_length(component_package_name_length_max);
 	--use type_component_package_name;
 
+	-- VARIANT NAMES
+	-- If a component has package variants, a suffix after the component type indicates the package
+	-- The variant name is manufacturer specific. example: TL084D or TL084N
 	-- component package variant names like "N" or "D" are stored in short bounded strings:
 	component_variant_name_length_max : constant positive := 10;
 	package type_component_variant_name is new generic_bounded_length(component_variant_name_length_max);
@@ -113,11 +120,17 @@ package et_libraries is
 	-- A component variant is a composite of the package, the library it is stored in and
 	-- a connection list. The connection list maps from port names to pin/pad names.
 	type type_component_variant is record
-		packge	: type_component_package_name.bounded_string;
-		library	: type_library_full_name.bounded_string;
+		packge	: type_component_package_name.bounded_string;	-- like "SOT23"
+		library	: type_library_full_name.bounded_string;		-- like "/home/abc/lib/smd.mod"
 		-- CS: connection list
 	end record;
 
+	function to_string ( variant : in type_component_variant) return string;
+	-- Returns the given variant as string.
+	-- NOTE: This displays the type_component_variant (see et_libraries.ads).
+	-- Do not confuse with type_variant (see et_schematic.ads) which also contains the variant name
+	-- like in TL084D or TL084N.
+	
 	-- Component variants are stored in a map where they are accessed by the variant name.
 	package type_component_variants is new ordered_maps (
 		key_type => type_component_variant_name.bounded_string,
@@ -347,7 +360,6 @@ package et_libraries is
 		key_type => type_library_full_name.bounded_string,
 		element_type => type_components.map);
 	
-	procedure a;
 	
 end et_libraries;
 

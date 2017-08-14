@@ -40,6 +40,11 @@ with ada.text_io;				use ada.text_io;
 
 package body et_string_processing is
 
+	function indentation ( width : in natural) return string is
+	begin
+		return (width * latin_1.space);
+	end indentation;
+	
 	function date_now return string is
 		now		: time := clock;
 		date	: string (1..19) := image(now, time_zone => utc_time_offset(now));

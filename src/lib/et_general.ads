@@ -166,7 +166,7 @@ package et_general is
 	component_reference_prefix_default : constant type_component_prefix.bounded_string := to_bounded_string("?");
 	component_reference_id_default : constant natural := 0;
 	
-	type type_component_reference is record
+	type type_component_reference is record -- CS: should be private
 		prefix	: type_component_prefix.bounded_string := component_reference_prefix_default;
 		id		: natural := component_reference_id_default; 
 		-- NOTE: This allows something like R0 or IC0 (there are reasons for such stange things ...)
@@ -180,6 +180,12 @@ package et_general is
 		text_in : in string;
 		allow_special_character_in_prefix : in boolean := false)
 		return type_component_reference;
+
+	function to_string ( reference : in type_component_reference) return string;
+	-- Returns the given compoenent reference as string.
+
+	function to_string ( appearance : in type_component_appearance) return string;
+	-- Returns the given component appearance as string.
 	
 	function compare_component_by_reference ( left, right : in type_component_reference) return boolean;
 	-- Returns true if left comes before right.

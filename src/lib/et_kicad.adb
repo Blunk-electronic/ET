@@ -300,12 +300,12 @@ package body et_kicad is
 			raise constraint_error;
 		end invalid_appearance;		
 
-		keyword_appears : constant string (1..8) := "appears ";
+		--keyword_appears : constant string (1..8) := "appears ";
 	begin -- to_appearance
 		case schematic is
 
 			when true =>
-				put(3 * latin_1.space & keyword_appears);
+				--put(3 * latin_1.space & keyword_appears);
 				
 				-- If it is about a schematic component we just test if the first
 				-- character of the 3ed subfield is a hash sign.
@@ -316,7 +316,7 @@ package body et_kicad is
 				end if;
 				
 			when false =>
-				put(4 * latin_1.space & keyword_appears);
+				--put(4 * latin_1.space & keyword_appears);
 				
 				-- If it is about a library component we test the whole letter
 				-- in subfield #10.
@@ -329,16 +329,6 @@ package body et_kicad is
 					when P => 
 						comp_app := et_general.sch;
 				end case;
-		end case;
-
-		-- evaluate component appearance and write meaningful output.
-		case comp_app is
-			when sch =>
-				put_line("in schematic (virtual)");
-			when sch_pcb =>
-				put_line("in schematic and layout");
-			when others => -- CS: should never happen. 
-				raise constraint_error;
 		end case;
 		
 		return comp_app;
@@ -1152,24 +1142,23 @@ package body et_kicad is
 			
 			function to_orientation (text_in : in string) return et_general.type_orientation is
 			-- Converts the label orientation to type_orientation.
+			-- CS: use a dedicated type for input parameter.
 				o_in : type_label_orientation := type_label_orientation'value(text_in);
 				o_out : type_orientation;
 			begin
-				--put_line(" orientation " & text_in);
 				case o_in is
 					when 0 => o_out := deg_180;
 					when 1 => o_out := deg_90;
 					when 2 => o_out := deg_0;
 					when 3 => o_out := deg_270;
 				end case;
-				put_line("    orientation " & et_general.type_orientation'image(o_out));	
 				return o_out;
 				-- CS: exception handler
 			end to_orientation;
 
 			function to_direction (text_in : in string) return type_label_direction is
 			-- Converts the direction of a label to a type_label_direction. 
-			-- CS: currently case sensitive !
+			-- CS: currently case sensitive ! Use dedicated type for input parameter.
 				d_out : type_label_direction := input;
 			begin
 				if text_in = schematic_keyword_label_dir_input then
@@ -1183,7 +1172,7 @@ package body et_kicad is
 				elsif text_in = schematic_keyword_label_dir_passive then
 					d_out := passive;
 				else
-					put_line(et_import.report_handle, message_error & "Label direction unknown !");
+					put_line(message_error & "Label direction unknown !");
 					raise constraint_error;
 				end if;
 				
@@ -1239,42 +1228,40 @@ package body et_kicad is
 			procedure set_s ( segment : in out type_wild_net_segment ) is begin segment.s := true; end set_s;
 			procedure set_picked ( segment : in out type_wild_net_segment ) is begin segment.picked := true; end set_picked;
 
-			procedure write_label_properties ( label : in type_net_label) is
+			procedure write_label_properties ( label : in type_net_label; indentation : in natural := 0) is
+			-- Writes the properties of the given net label in the logfile.
+				function indent ( i : in natural) return string renames et_string_processing.indentation;
 			begin
+--				put(indent(indentation * latin_1.space);
 				case label.label_appearance is
 					when simple =>
-						write_message(
-							file_handle => et_import.report_handle,
-							text => "simple label: ",
-							lf => false,
-							identation => 2);
+						put(indent(indentation) & "simple label ");
 					when tag =>
-						write_message(
-							file_handle => et_import.report_handle,
-							text => "tag label: ",
-							lf => false,
-							identation => 3);
-
+						put(indent(indentation) & "tag label ");
 						-- CS: directon, global, hierarchic, style, ...
-						
 				end case;
 
--- 				put_line(et_import.report_handle, "'" & type_net_name.to_string(label.text) & "' at position (x/y/sheet)" &
--- 						type_grid'image(label.coordinates.x) & "/" & trim(type_grid'image(label.coordinates.y),left) & "/" &
--- 						trim(positive'image(label.coordinates.sheet_number),left)
--- 						);
+				put_line("'" & type_net_name.to_string(label.text) & "' ");
 
-				put_line("'" & type_net_name.to_string(label.text) & "' at position (x/y/sheet)" 
-					& et_general.type_grid'image(label.coordinates.x) 
-					& "/" 
-					& trim(et_general.type_grid'image(label.coordinates.y),left) 
-					& "/" 
-					& trim(positive'image(label.coordinates.sheet_number),left)
-					);
+				put_line(indent(indentation + 1) & et_schematic.to_string(label.coordinates));
+				put_line(indent(indentation + 1) & et_schematic.to_string(label.orientation));
 
+				
+				case label.label_appearance is
+					when simple =>
+						null;
+					when tag =>
+						null;
+						--put("tag label ");
+						-- CS: directon, global, hierarchic, style, ...
+				end case;
+
+-- 				new_line;
+				
 			end write_label_properties;
 			
 			procedure write_coordinates_of_segment (segment : in type_net_segment) is
+			-- CS: rework as write_label_properties
 			begin
 -- 				write_message(
 -- 					file_handle => et_import.report_handle,
@@ -1302,6 +1289,7 @@ package body et_kicad is
 			end write_coordinates_of_segment;
 
 			procedure write_coordinates_of_junction (junction : in type_net_junction) is
+			-- CS: rework as write_label_properties
 			begin
 -- 				write_message(
 -- 					file_handle => et_import.report_handle,
@@ -1320,8 +1308,8 @@ package body et_kicad is
 
 			end write_coordinates_of_junction;			
 
-
 			procedure write_note_properties (note : in et_schematic.type_text) is
+			-- CS: rework as write_label_properties			
 			begin
 				put_line("  note '" & et_general.type_text_content.to_string(note.content)
 					& "' at position (x/y) " 
@@ -1333,6 +1321,39 @@ package body et_kicad is
 					-- CS: write more properties (style, size, ...)
 					);
 			end write_note_properties;
+
+			procedure write_component_properties ( component : in type_components.cursor; indentation : in natural := 0) is
+			-- Writes the compoenent properties of the component indicated by the given cursor.
+				function indent ( i : in natural) return string renames et_string_processing.indentation;
+			begin
+				-- reference
+				put_line(indent(indentation) 
+					& "component " 
+					& et_general.to_string (type_components.key(component)));
+
+				-- CS: library file name
+				-- name in library
+				put_line(indent(indentation + 1)
+						 & et_libraries.to_string (type_components.element(component).name_in_library));
+
+				
+				-- appearance
+				put_line(indent(indentation + 1)
+					& et_general.to_string (type_components.element(component).appearance));
+
+				-- package
+				case type_components.element(component).appearance is
+					when sch_pcb =>
+						put_line(indent(indentation + 1)
+								 & et_libraries.to_string (type_components.element(component).variant.variant));
+						-- NOTE: This displays the type_component_variant (see et_libraries.ads).
+						-- Do not confuse with type_variant (see et_schematic.ads) which also contains the variant name
+						-- like in TL084D or TL084N.
+					when pcb => null; -- CS
+					when others => null; -- CS should never happen as virtual components do not have a package
+				end case;
+				
+			end write_component_properties;
 			
 			-- An anonymous_net is a list of net segments that are connected with each other (by their start or end points).
 			-- The anonymous net gets step by step more properties specified: name, scope and some status flags:
@@ -2009,36 +2030,35 @@ package body et_kicad is
 				function field ( line : in type_fields_of_line; position : in positive) return string renames get_field_from_line;
 			begin
 				return (
-						-- read text field meaning
-						meaning 	=> to_text_meaning(line => line, schematic => true),
+					-- read text field meaning
+					meaning 	=> to_text_meaning(line => line, schematic => true),
 
-						-- read content like "N701" or "NetChanger" from field position 3
-						content		=> type_text_content.to_bounded_string (strip_quotes(field(line,3))),
+					-- read content like "N701" or "NetChanger" from field position 3
+					content		=> type_text_content.to_bounded_string (strip_quotes(field(line,3))),
 
-						-- read orientation like "H" -- type_schematic_field_orientation
-						orientation	=> to_text_orientation (field(line,4)),
+					-- read orientation like "H" -- type_schematic_field_orientation
+					orientation	=> to_text_orientation (field(line,4)),
 
-						-- read coordinates
-						coordinates => (x => et_general.type_grid'value(field(line,5)),
-										y => et_general.type_grid'value(field(line,6)),
-										path => path_to_submodule,
-										module_name => type_submodule_name.to_bounded_string (to_string(name_of_schematic_file)),
-										sheet_number => sheet_number_current),
-						size		=> type_text_size'value (field(line,7)),
-						style		=> to_text_style (style_in => field(line,10), text => false),
-						line_width	=> 0, -- not provided here -- CS: define a default ?
+					-- read coordinates
+					coordinates => (x => et_general.type_grid'value(field(line,5)),
+									y => et_general.type_grid'value(field(line,6)),
+									path => path_to_submodule,
+									module_name => type_submodule_name.to_bounded_string (to_string(name_of_schematic_file)),
+									sheet_number => sheet_number_current),
+					size		=> type_text_size'value (field(line,7)),
+					style		=> to_text_style (style_in => field(line,10), text => false),
+					line_width	=> 0, -- not provided here -- CS: define a default ?
 
-						-- build text visibility
-						visible		=> to_field_visible (
-											vis_in		=> field(line,8),
-											schematic	=> true),
+					-- build text visibility
+					visible		=> to_field_visible (
+										vis_in		=> field(line,8),
+										schematic	=> true),
 
-						-- build text alignment
-						alignment	=> (
-										horizontal	=> to_alignment_horizontal (field(line,9)),
-										vertical	=> to_alignment_vertical   (field(line,10)))
-						);
-			
+					-- build text alignment
+					alignment	=> (
+									horizontal	=> to_alignment_horizontal (field(line,9)),
+									vertical	=> to_alignment_vertical   (field(line,10)))
+					);
 			end to_text;
 
 			
@@ -2473,8 +2493,12 @@ package body et_kicad is
 										-- get label text and put it to temporarily simple label
 										label_simple_scratch.text := type_net_name.to_bounded_string(get_field_from_line(line,1));
 
+										-- for the log
+										write_label_properties (
+											label => type_net_label(label_simple_scratch),
+											indentation => 2);
+
 										-- The simple labels are to be collected in a wild list of simple labels.
-										write_label_properties (type_net_label(label_simple_scratch));
 										type_list_of_labels_simple.append (wild_simple_label_collection_scratch,label_simple_scratch);
 									end if;
 									
@@ -2521,6 +2545,11 @@ package body et_kicad is
 										-- get label text and put it to temporarily tag label
 										label_tag_scratch.text := type_net_name.to_bounded_string(get_field_from_line(line,1));
 
+										-- for the log
+										write_label_properties (
+											label => type_net_label(label_tag_scratch),
+											indentation => 2);
+										
 										-- The tag labels are to be collected in a wild list of tag labels for later sorting.
 										type_list_of_labels_tag.append(wild_tag_label_collection_scratch,label_tag_scratch);
 									end if;
@@ -2611,6 +2640,7 @@ package body et_kicad is
 																( 
 																variant => (
 																	packge => et_libraries.type_component_package_name.to_bounded_string(""),
+																	-- tmp_component_texts.packge.content
 																	library => et_libraries.type_library_full_name.to_bounded_string("")
 																	),
 																name => et_libraries.type_component_variant_name.to_bounded_string("")
@@ -2625,6 +2655,8 @@ package body et_kicad is
 													raise constraint_error;
 													
 											end case;
+
+											write_component_properties ( component => component_cursor_scratch, indentation => 2);
 
 											-- The cursor component_cursor_scratch now points to the component. There will be more component information (in the following) 
 											-- that will go into component_scratch. Once the component section is left, component_scratch updates the component where the cursor
@@ -2671,10 +2703,10 @@ package body et_kicad is
 															
 												-- CS: check proper annotation
 
-												put_line("  component " 
-													& get_field_from_line(line,3) -- "N1"
-													& " is " 
-													& et_libraries.type_component_name.to_string(tmp_component_name_in_lib));
+-- 												put_line("  component " 
+-- 													& get_field_from_line(line,3) -- "N1"
+-- 													& " is " 
+-- 													& et_libraries.type_component_name.to_string(tmp_component_name_in_lib));
 														
 											end if;
 
@@ -2690,7 +2722,7 @@ package body et_kicad is
 												tmp_component_demorgan := type_demorgan'value(get_field_from_line(line,3));
 												tmp_component_timestamp := type_timestamp(get_field_from_line(line,4));
 										
-												put("   with unit " & et_libraries.type_unit_name.to_string(tmp_component_unit_name) & " at");
+-- 												put("   with unit " & et_libraries.type_unit_name.to_string(tmp_component_unit_name) & " at");
 											end if;
 
 											-- Read unit coordinates from a line like "P 3200 4500".
@@ -2707,7 +2739,7 @@ package body et_kicad is
 												tmp_component_position.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
 												tmp_component_position.sheet_number := sheet_number_current;
 
-												et_schematic.write_coordinates(tmp_component_position);
+												--et_schematic.write_coordinates(tmp_component_position);
 											end if;
 
 											-- read unit fields 0..2 from lines like:

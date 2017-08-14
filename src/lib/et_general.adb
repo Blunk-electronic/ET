@@ -29,8 +29,10 @@
 --
 --   history of changes:
 --
+with ada.strings;				use ada.strings;
 with ada.strings.unbounded; 	use ada.strings.unbounded;
 with ada.characters;			use ada.characters;
+with ada.characters.handling;	use ada.characters.handling;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with et_string_processing;
 
@@ -127,6 +129,26 @@ package body et_general is
 		
 		return r;
 	end to_component_reference;
+
+	function to_string ( reference : in type_component_reference) return string is
+	-- Returns the given component reference as string.
+	begin
+		return (type_component_prefix.to_string(reference.prefix) 
+				& trim(natural'image(reference.id),left));
+	end to_string;
+
+	function to_string ( appearance : in type_component_appearance) return string is
+	-- Returns the given component appearance as string.
+	begin
+		case appearance is
+			when sch =>
+				return ("appears in schematic only (virtual component)");
+			when sch_pcb =>
+				return ("appears in schematic and layout");
+			when pcb =>
+				return ("appears in layout only (mechanical component)");
+		end case;
+	end to_string;
 	
 	function compare_component_by_reference ( left, right : in type_component_reference) return boolean is
 	-- Returns true if left comes before right.

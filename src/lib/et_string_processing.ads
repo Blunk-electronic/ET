@@ -55,6 +55,8 @@ with ada.calendar.time_zones;	use ada.calendar.time_zones;
 
 package et_string_processing is
 
+	function indentation ( width : in natural) return string;
+	
 	function date_now return string;
 
 	short_string_length_max : constant natural := 10;
