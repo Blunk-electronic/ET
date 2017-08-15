@@ -410,14 +410,16 @@ package body et_kicad is
 			units_total			: type_unit_id;
 			unit_swap_level		: et_libraries.type_unit_swap_level := et_libraries.unit_swap_level_default;
 			appearance			: et_general.type_component_appearance;
-			
+
+			reference			: et_libraries.type_text(meaning => et_libraries.reference);
+			value				: et_libraries.type_text(meaning => et_libraries.value);
+			commissioned		: et_libraries.type_text(meaning => et_libraries.commissioned);
+			updated				: et_libraries.type_text(meaning => et_libraries.updated);
+			author				: et_libraries.type_text(meaning => et_libraries.author);
 			footprint			: et_libraries.type_text(meaning => et_libraries.packge);
 			datasheet			: et_libraries.type_text(meaning => et_libraries.datasheet);
 			fnction				: et_libraries.type_text(meaning => et_libraries.p_function);
 			partcode			: et_libraries.type_text(meaning => et_libraries.partcode);
-
-			-- reference, value, commissioned, updated, author are included here:
-			texts_basic			: et_libraries.type_texts_basic;
 
 			--unit_id				: type_unit_id;
 
@@ -702,16 +704,16 @@ package body et_kicad is
 														put_line(message_warning & et_string_processing.affected_line(line) & ": prefix vs. reference mismatch !");
 													end if;
 
-													texts_basic.reference := read_field (meaning => et_libraries.reference);
+													reference := read_field (meaning => et_libraries.reference);
 													-- for the log:
-													write_text_properies (et_libraries.type_text(texts_basic.reference));
+													write_text_properies (et_libraries.type_text(reference));
 
 												-- If we have a value field like "F1 "74LS00" 0 -100 50 H V C CNN"
 												when et_libraries.value =>
 												
-													texts_basic.value := read_field (meaning => et_libraries.value);
+													value := read_field (meaning => et_libraries.value);
 													-- for the log:
-													write_text_properies (et_libraries.type_text(texts_basic.value));
+													write_text_properies (et_libraries.type_text(value));
 
 												-- If we have a footprint field like "F2 "" 0 -100 50 H V C CNN"
 												when et_libraries.packge =>
@@ -767,9 +769,9 @@ package body et_kicad is
 												
 													if to_lower(strip_quotes(get_field_from_line(line,10)))
 															= to_lower(et_libraries.type_text_meaning'image(et_libraries.commissioned)) then
-																texts_basic.commissioned := read_field (meaning => et_libraries.commissioned);
+																commissioned := read_field (meaning => et_libraries.commissioned);
 																-- for the log:
-																write_text_properies (et_libraries.type_text(texts_basic.commissioned));
+																write_text_properies (et_libraries.type_text(commissioned));
 																-- basic_text_check(commissioned); -- CS
 													else
 														invalid_field(line);
@@ -782,9 +784,9 @@ package body et_kicad is
 												
 													if to_lower(strip_quotes(get_field_from_line(line,10)))
 															= to_lower(et_libraries.type_text_meaning'image(et_libraries.updated)) then
-																texts_basic.updated := read_field (meaning => et_libraries.updated);
+																updated := read_field (meaning => et_libraries.updated);
 																-- for the log:
-																write_text_properies (et_libraries.type_text(texts_basic.updated));
+																write_text_properies (et_libraries.type_text(updated));
 																-- basic_text_check(updated); -- CS
 													else
 														invalid_field(line);
@@ -797,9 +799,9 @@ package body et_kicad is
 												
 													if to_lower(strip_quotes(get_field_from_line(line,10)))
 															= to_lower(et_libraries.type_text_meaning'image(et_libraries.author)) then
-																texts_basic.author := read_field (meaning => et_libraries.author);
+																author := read_field (meaning => et_libraries.author);
 																-- for the log:
-																write_text_properies (et_libraries.type_text(texts_basic.author));
+																write_text_properies (et_libraries.type_text(author));
 																-- basic_text_check(author); -- CS
 													else
 														invalid_field(line);
@@ -2045,8 +2047,16 @@ package body et_kicad is
 			tmp_component_de_morgan		: et_general.type_de_morgan;
 			tmp_component_timestamp		: et_general.type_timestamp;
 			tmp_component_position		: et_schematic.type_coordinates;
-			tmp_component_texts_basic	: et_libraries.type_texts_basic;
-			tmp_component_texts_extended: et_libraries.type_texts_extended_1;
+
+            tmp_component_text_reference	: et_libraries.type_text (meaning => et_libraries.reference);
+            tmp_component_text_value		: et_libraries.type_text (meaning => et_libraries.value);
+            tmp_component_text_commissioned : et_libraries.type_text (meaning => et_libraries.commissioned);
+            tmp_component_text_updated		: et_libraries.type_text (meaning => et_libraries.updated);
+            tmp_component_text_author		: et_libraries.type_text (meaning => et_libraries.author);
+			tmp_component_text_packge		: et_libraries.type_text (meaning => et_libraries.packge); -- like "SOT23"
+			tmp_component_text_datasheet	: et_libraries.type_text (meaning => et_libraries.datasheet); -- might be useful for some special components
+			tmp_component_text_fnction		: et_libraries.type_text (meaning => et_libraries.p_function); -- to be filled in schematic later by the user
+			tmp_component_text_partcode		: et_libraries.type_text (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"			
 
 			function to_text return et_libraries.type_text is
 			-- Converts a field like "F 1 "green" H 2700 2750 50  0000 C CNN" to a type_text
@@ -2124,8 +2134,7 @@ package body et_kicad is
 					position	: in positive) return string renames et_string_processing.get_field_from_line;
 
 			begin -- insert_component
-				-- Read the appearance. This is about a component in a schematic -> schematic => true
-				-- The compoenent is then inserted into the components list of the module according to its appearance.
+				-- The compoenent is inserted into the components list of the module according to its appearance.
 				-- If the component has already been inserted, it will not be inserted again.
 				case tmp_component_appearance is
 					
@@ -2139,7 +2148,7 @@ package body et_kicad is
 							new_item => (
 								appearance => et_general.sch, -- the component appears in schematic only
 								name_in_library => tmp_component_name_in_lib,
-								value => et_schematic.type_component_value.to_bounded_string (field_content(tmp_component_texts_basic.value)),
+								value => et_schematic.type_component_value.to_bounded_string (field_content(tmp_component_text_value)),
 
 								-- At this stage we do not know if and how many units there are. So the unit list is empty.
 								units => et_schematic.type_units.empty_map),
@@ -2155,7 +2164,7 @@ package body et_kicad is
 
 						-- break down the footprint content like "bel_opto:LED_S_0805".
 						tmp_library_footprint := et_string_processing.read_line(
-								line => field_content (tmp_component_texts_extended.packge),
+								line => field_content (tmp_component_text_packge),
 								ifs => latin_1.colon);
 
 						
@@ -2167,9 +2176,9 @@ package body et_kicad is
 							new_item => (
 								appearance => et_general.sch_pcb, -- the component appears in both schematic and layout
 								name_in_library => tmp_component_name_in_lib,
-								value => et_schematic.type_component_value.to_bounded_string(field_content(tmp_component_texts_basic.value)),
-								partcode => et_libraries.type_component_partcode.to_bounded_string (field_content(tmp_component_texts_extended.partcode)),
-								-- CS: function 
+								value => et_schematic.type_component_value.to_bounded_string(field_content(tmp_component_text_value)),
+								partcode => et_libraries.type_component_partcode.to_bounded_string (field_content(tmp_component_text_partcode)),
+								-- CS: function, partcode, reference, commissioned, ...
 								
 								-- Assemble the package variant.
 								-- NOTE: There is no way to identifiy the name of the package variant like TL084D or TL084N.
@@ -2200,7 +2209,7 @@ package body et_kicad is
 							write_component_properties ( component => component_cursor, indentation => 2);
 
 							-- Test if footprint has been associated with the component.
-							if field_content (tmp_component_texts_extended.packge)'size = 0 then
+							if field_content (tmp_component_text_packge)'size = 0 then
 								write_message(
 									file_handle => current_output,
 									text => message_error & et_general.to_string(tmp_component_reference) & ": footprint not specified !",
@@ -2227,6 +2236,7 @@ package body et_kicad is
 -- 								raise constraint_error;
 -- 							end if;
 
+							-- CS: verify reference against tmp_component_reference. should be equal. @kicad: why this redundance ?
 							-- CS: Test value
 							-- CS: test partcode, verify agsinst prefix, value and package
 							-- CS: test function against prefix of user interactive parts (X, SW, LED, ...)
@@ -2241,6 +2251,11 @@ package body et_kicad is
 			
 
 			procedure insert_unit ( key : in et_general.type_component_reference; component : in out et_schematic.type_component ) is 
+			-- Inserts a unit into the unit list of a component. The text fields around a unit are placeholders.
+			-- The properties of the placeholder texts are loaded with the properties of the text fields of the units
+			-- found in the schematic. The idea behind is to store just basic text properties (type_text_basic) 
+			-- for the texts around the unit, but not its content. The content is stored with the component as a kind
+			-- of meta-data. See procedure insert_component.
 			begin
 				et_schematic.type_units.insert(
 					container => component.units, -- the unit list of the component
@@ -2249,13 +2264,28 @@ package body et_kicad is
 						name			=> tmp_component_unit_name,
 						timestamp		=> tmp_component_timestamp,
 						de_morgan		=> tmp_component_de_morgan,
-						--reference		=> et_libraries.type_text_placeholder(tmp_component_texts_basic.reference)
-						--reference		=> et_libraries.type_text_basic(tmp_component_texts_basic.reference)
 
-						-- Convert tmp_component_texts_* to a placeholder while maintaining the text meaning.
-						reference		=> ( et_libraries.type_text_basic (tmp_component_texts_basic.reference)
-											 with meaning => tmp_component_texts_basic.reference.meaning )
-								--commissioned	=>
+						-- placeholders:
+						-- Convert tmp_component_text_* to a placeholder while maintaining the text meaning.
+						reference		=> ( et_libraries.type_text_basic (tmp_component_text_reference)
+											 with meaning => tmp_component_text_reference.meaning ),
+						value			=> ( et_libraries.type_text_basic (tmp_component_text_value)
+											 with meaning => tmp_component_text_value.meaning ),
+						packge			=> ( et_libraries.type_text_basic (tmp_component_text_packge)
+											 with meaning => tmp_component_text_packge.meaning ),
+						datasheet		=> ( et_libraries.type_text_basic (tmp_component_text_datasheet)
+											 with meaning => tmp_component_text_datasheet.meaning ),
+						fnction			=> ( et_libraries.type_text_basic (tmp_component_text_fnction)
+											 with meaning => tmp_component_text_fnction.meaning ),
+						partcode		=> ( et_libraries.type_text_basic (tmp_component_text_partcode)
+											 with meaning => tmp_component_text_partcode.meaning ),
+						updated			=> ( et_libraries.type_text_basic (tmp_component_text_updated)
+											 with meaning => tmp_component_text_updated.meaning ),
+						author			=> ( et_libraries.type_text_basic (tmp_component_text_author)
+											 with meaning => tmp_component_text_author.meaning ),
+						commissioned	=>  ( et_libraries.type_text_basic (tmp_component_text_commissioned)
+											 with meaning => tmp_component_text_commissioned.meaning )
+						
 						),
 					key => tmp_component_unit_name); -- the unit name
 			end insert_unit;
@@ -2761,7 +2791,7 @@ package body et_kicad is
 
 											-- This is to init the temporarily used variables that store text fields.
 											-- GNAT would generate a warning otherwise (for good reasons) like "... may be referenced before it has a value."
-											tmp_component_texts_extended.packge.content := et_libraries.type_text_content.to_bounded_string("");
+											tmp_component_text_packge.content := et_libraries.type_text_content.to_bounded_string("");
 										end if;
 									else -- we are inside the component and wait for the component footer ($EndComp)
 										if get_field_from_line(line,1) = schematic_component_footer then
@@ -2857,23 +2887,23 @@ package body et_kicad is
 
 												case type_component_field_id'value(get_field_from_line(line,2)) is
 													when component_field_reference =>
-														tmp_component_texts_basic.reference := to_text;
+														tmp_component_text_reference := to_text;
 													when component_field_value =>
-														tmp_component_texts_basic.value := to_text;
+														tmp_component_text_value := to_text;
 													when component_field_footprint =>
-														tmp_component_texts_extended.packge := to_text;
+														tmp_component_text_packge := to_text;
 													when component_field_datasheet =>
-														tmp_component_texts_extended.datasheet := to_text;
+														tmp_component_text_datasheet := to_text;
 													when component_field_function =>
-														tmp_component_texts_extended.fnction := to_text;
+														tmp_component_text_fnction := to_text;
 													when component_field_partcode =>
-														tmp_component_texts_extended.partcode := to_text;
+														tmp_component_text_partcode := to_text;
 													when component_field_commissioned =>
-														tmp_component_texts_basic.commissioned := to_text;
+														tmp_component_text_commissioned := to_text;
 													when component_field_updated =>
-														tmp_component_texts_basic.updated := to_text;
+														tmp_component_text_updated := to_text;
 													when component_field_author =>
-														tmp_component_texts_basic.author := to_text;
+														tmp_component_text_author := to_text;
 
 													when others => null; -- CS: other fields are ignored
 												end case;

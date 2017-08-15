@@ -161,9 +161,6 @@ package et_libraries is
 	end record;
 	
 	-- Text fields:
-	-- A text field may have 200 characters which seems sufficient for now.
- 	text_length_max : constant natural := 200;
-	package type_text_content is new generic_bounded_length(text_length_max); use type_text_content;
 	text_meaning_prefix : constant string (1..2) := "P_"; -- workaround, see below
 	type type_text_meaning is (
 		REFERENCE,		-- for things like R301 or X9
@@ -181,7 +178,8 @@ package et_libraries is
 
 	function text_meaning_to_string ( meaning : in type_text_meaning) return string;
 	-- Converts meaning to string.
-	
+
+	-- These are basic properties a text has got:
 	type type_text_basic is tagged record
 		position	: type_coordinates;
         size    	: type_text_size;
@@ -192,35 +190,18 @@ package et_libraries is
 		alignment	: type_text_aligment;
 	end record;
 
+	-- A text have 200 characters which seems sufficient for now.
+ 	text_length_max : constant natural := 200;
+	package type_text_content is new generic_bounded_length(text_length_max); use type_text_content;
+	
+	-- This is a real text with its content:
 	type type_text (meaning : type_text_meaning) is new type_text_basic with record
         content		: type_text_content.bounded_string;
 	end record;
 
-	-- A text field in the library gets extended by simple coordinates.
-	-- Text fields can be regarded as attributes. Some of them are mandatory.
-	-- They can be collected in a simple list.
-
-	-- A text placeholder in the schematic gets extended by extended coordinates (see above)
+	-- This is a placeholder for a text. It does not have content yet, but a meaning:
 	type type_text_placeholder (meaning : type_text_meaning) is new type_text_basic with null record;
 	
-	package type_texts is new indefinite_doubly_linked_lists (
-		element_type => type_text);
-	
-	type type_texts_basic is record
-		reference	: type_text (meaning => et_libraries.reference);
-		value		: type_text (meaning => et_libraries.value);
-		commissioned: type_text (meaning => et_libraries.commissioned);
-		updated		: type_text (meaning => et_libraries.updated);
-		author		: type_text (meaning => et_libraries.author);
-	end record;
-
-	type type_texts_extended_1 is record
-		packge		: type_text (meaning => et_libraries.packge); -- like "SOT23"
-		datasheet	: type_text (meaning => et_libraries.datasheet); -- might be useful for some special components
-		fnction		: type_text (meaning => et_libraries.p_function); -- to be filled in schematic later by the user
-		partcode	: type_text (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"
-	end record;
-
 	
 -- PORTS
 	
@@ -313,7 +294,7 @@ package et_libraries is
 
 	-- A component has one or more units. A unit is a subsection of a component (EAGLE refer to them as "gates").
 	-- There are internal units, which exist for the particular component exclusively. 
-	-- An internal unit has a symbol and furhter properties like a swap level.
+	-- An internal unit has a symbol and further properties like a swap level.
 	-- There are external units, which are used for frequently used symbols like resistors or capacitors.
 	-- An external unit is just a reference to a symbol library, the symbol name therein and other properties
 	-- like swap level.	
@@ -323,11 +304,16 @@ package et_libraries is
 	
 	symbol_name_length_max : constant natural := 50;
 	package type_symbol_name is new generic_bounded_length(symbol_name_length_max); use type_symbol_name;
-	
+
 	type type_symbol is record
 		shapes		: type_shapes;
 		ports		: type_ports.map;
-		texts_basic	: type_texts_basic;
+		-- Symbols have placeholders for texts:
+		reference	: type_text_placeholder (meaning => et_libraries.reference);
+		value		: type_text_placeholder (meaning => et_libraries.value);
+		commissioned: type_text_placeholder (meaning => et_libraries.commissioned);
+		updated		: type_text_placeholder (meaning => et_libraries.updated);
+		author		: type_text_placeholder (meaning => et_libraries.author);
 	end record;
 
 
@@ -386,8 +372,8 @@ package et_libraries is
 	type type_component (appearance : et_general.type_component_appearance) is record
 		units_internal	: type_units_internal.map;
 		units_external	: type_units_external.map;
-		texts_basic		: type_texts_basic;
-		texts_extended	: type_texts_extended_1;
+		--CS: texts_basic		: type_texts_basic;
+		--CS: texts_extended	: type_texts_extended_1;
 		case appearance is
 
 			-- If a component appears in the schematic only, it does not
