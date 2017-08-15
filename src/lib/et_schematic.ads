@@ -119,12 +119,22 @@ package et_schematic is
 
 	-- In a schematic we find units spread all over.
 	-- A unit is a subsection of a component.
-	-- A unit has text fields for the reference (like IC303), value (like 7400), ...
-
+	-- A unit has placeholders for text like reference (like IC303), value (like 7400), ...
 	type type_unit is record
-		position		: type_coordinates;
-		fields			: et_libraries.type_texts.list;
-		-- NOTE: The text fields a defined in et_libraries. Thus they have only
+		position	: type_coordinates;
+		timestamp	: et_general.type_timestamp;
+		name		: et_libraries.type_unit_name.bounded_string;
+		de_morgan	: et_general.type_de_morgan;
+		reference	: et_libraries.type_text_placeholder (meaning => et_general.reference);
+		value		: et_libraries.type_text_placeholder (meaning => et_general.value);
+		packge		: et_libraries.type_text_placeholder (meaning => et_general.packge); -- like "SOT23"
+		datasheet	: et_libraries.type_text_placeholder (meaning => et_general.datasheet); -- might be useful for some special components
+		fnction		: et_libraries.type_text_placeholder (meaning => et_general.p_function); -- to be filled in schematic later by the user
+		partcode	: et_libraries.type_text_placeholder (meaning => et_general.partcode); -- like "R_PAC_S_0805_VAL_"
+		commissioned: et_libraries.type_text_placeholder (meaning => et_general.commissioned);		
+		updated		: et_libraries.type_text_placeholder (meaning => et_general.updated);		
+		author		: et_libraries.type_text_placeholder (meaning => et_general.author);
+		-- NOTE: The placeholders are defined in et_libraries. Thus they have only
 		-- basic coordinates (x/y). Via the unit position the sheet and module
 		-- name can be obtained.
 	end record;
@@ -152,6 +162,7 @@ package et_schematic is
 	type type_component (appearance : type_component_appearance) is record
 		name_in_library : et_libraries.type_component_name.bounded_string; -- example: "TRANSISTOR_PNP"
 		value			: type_component_value.bounded_string; -- 470R
+		-- CS: function
 		units			: type_units.map;
 		case appearance is
 			-- If a component appears in the schematic only, it does not

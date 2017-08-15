@@ -152,6 +152,11 @@ package et_libraries is
 		coordinates		: et_general.type_coordinates;
 	end record;
 
+	-- A text placeholder in the schematic gets extended by extended coordinates (see above)
+	type type_text_placeholder (meaning : et_general.type_text_meaning) is new et_general.type_text_placeholder with record
+		coordinates		: type_coordinates;
+	end record;
+	
 	package type_texts is new indefinite_doubly_linked_lists (
 		element_type => type_text);
 	

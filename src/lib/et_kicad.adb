@@ -2042,8 +2042,8 @@ package body et_kicad is
 			tmp_component_appearance	: et_general.type_component_appearance := et_general.sch;
 			tmp_component_reference		: et_general.type_component_reference;
 			tmp_component_unit_name		: et_libraries.type_unit_name.bounded_string;
-			tmp_component_demorgan		: et_kicad.type_demorgan;
-			tmp_component_timestamp		: et_kicad.type_timestamp;
+			tmp_component_de_morgan		: et_general.type_de_morgan;
+			tmp_component_timestamp		: et_general.type_timestamp;
 			tmp_component_position		: et_schematic.type_coordinates;
 			tmp_component_texts_basic	: et_libraries.type_texts_basic;
 			tmp_component_texts_extended: et_libraries.type_texts_extended_1;
@@ -2085,18 +2085,6 @@ package body et_kicad is
 			component_cursor	: type_components.cursor; -- points to a component of the module
 			component_inserted	: boolean; -- used when a component is being inserted into the component list of a module
 			
-			procedure insert_unit ( key : in et_general.type_component_reference; component : in out et_schematic.type_component ) is 
-			begin
-				et_schematic.type_units.insert(
-					container => component.units, -- the unit list of the component
-					new_item => (
-								position => tmp_component_position,
-								fields => et_libraries.type_texts.empty_list
-								),
-					key => tmp_component_unit_name); -- the unit name
-			end insert_unit;
-
-
 -- 			procedure fetch_components_from_library is
 			-- This procedure looks up the sheet_header and reads the library names stored there.
 			-- The full library names (incl. containing directory) are build.
@@ -2181,6 +2169,8 @@ package body et_kicad is
 								name_in_library => tmp_component_name_in_lib,
 								value => et_schematic.type_component_value.to_bounded_string(field_content(tmp_component_texts_basic.value)),
 								partcode => et_libraries.type_component_partcode.to_bounded_string (field_content(tmp_component_texts_extended.partcode)),
+								-- CS: function 
+								
 								-- Assemble the package variant.
 								-- NOTE: There is no way to identifiy the name of the package variant like TL084D or TL084N.
 								-- For this reason we leave the variant name empty.
@@ -2239,6 +2229,7 @@ package body et_kicad is
 
 							-- CS: Test value
 							-- CS: test partcode, verify agsinst prefix, value and package
+							-- CS: test function against prefix of user interactive parts (X, SW, LED, ...)
 						
 					when others => -- CS: This should never happen. A subtype of type_component_appearance could be a solution.
 						null;
@@ -2249,6 +2240,21 @@ package body et_kicad is
 			end insert_component;
 			
 
+-- 			procedure insert_unit ( key : in et_general.type_component_reference; component : in out et_schematic.type_component ) is 
+-- 			begin
+-- 				et_schematic.type_units.insert(
+-- 					container => component.units, -- the unit list of the component
+-- 					new_item => (
+-- 								position		=> tmp_component_position,
+-- 								name			=> tmp_component_unit_name,
+-- 								timestamp		=> tmp_component_timestamp,
+-- 								de_morgan		=> tmp_component_de_morgan,
+-- 								reference		=> et_libraries.type_text_placeholder(tmp_component_texts_basic.reference)
+-- 								--commissioned	=>
+-- 								),
+-- 					key => tmp_component_unit_name); -- the unit name
+-- 			end insert_unit;
+			
 
         begin -- read_schematic
 			if exists(to_string(name_of_schematic_file)) then
@@ -2759,13 +2765,9 @@ package body et_kicad is
 											-- Insert component in component list of module. For the time beeing the unit list is empty.
 											insert_component;
 	
-											-- The component_cursor now points to the component. There will be more component information (in the following) 
-											-- that will go into component_scratch. Once the component section is left, component_scratch updates the component where the cursor
-											-- is pointing to.
-											
-											--put_line(to_string(line_of_schematic_file));								
+											-- The component_cursor now points to the component.
 											-- update the component with the collected unit data
-											type_components.update_element (module.components, component_cursor, insert_unit'access);
+-- 											type_components.update_element (module.components, component_cursor, insert_unit'access);
 
 											-- clean up: the list of texts collected must be erased for next spin.
 											-- CS: et_schematic.type_texts.clear (tmp_component_texts);
@@ -2819,7 +2821,7 @@ package body et_kicad is
 												tmp_component_unit_name := et_libraries.type_unit_name.to_bounded_string(
 													get_field_from_line(line,2)); -- the unit id
 
-												tmp_component_demorgan := type_demorgan'value(get_field_from_line(line,3));
+												tmp_component_de_morgan := type_de_morgan'value(get_field_from_line(line,3));
 												tmp_component_timestamp := type_timestamp(get_field_from_line(line,4));
 										
 -- 												put("   with unit " & et_libraries.type_unit_name.to_string(tmp_component_unit_name) & " at");
@@ -2846,7 +2848,6 @@ package body et_kicad is
 											-- 			"F 0 "N701" H 2600 2100 39  0000 C CNN"
 											--			"F 1 "NetChanger" H 2600 2250 60  0001 C CNN"
 											--			"F 2 "bel_netchanger:N_0.2MM" H 2600 2100 60  0001 C CNN"
-											-- Each line represents a text field which is appended to the scratch unit. 
 											if get_field_from_line(line,1) = component_field_identifier then -- "F"
 
 												case type_component_field_id'value(get_field_from_line(line,2)) is

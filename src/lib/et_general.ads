@@ -132,7 +132,13 @@ package et_general is
     type type_paper_size is ( A0, A1, A2, A4 ); -- CS: others
     paper_size_default : type_paper_size := A4;
 
+-- TIMESTAMP
+	type type_timestamp is new string (1..8); -- like "34593321"
 
+-- DE_MORGAN REPRESENTATION
+	type type_de_morgan is new natural range 0..1;
+	de_morgan_on	: constant type_de_morgan := 0;
+	de_morgan_off	: constant type_de_morgan := 1;
 
 
 -- ORIENTATION	
@@ -199,14 +205,8 @@ package et_general is
     -- CS: currently we use unit mil which is old fashionated
     type type_text_size is range 1..1000; -- CS unit assumed is MIL !!!
 	type type_text_line_width is range 0..100; -- CS unit assumed is MIL !!!
-    type type_text_style is ( normal, italic, bold, italic_bold);
-    type type_text_attributes is record
-        --font    : type_text_font; -- CS
-        size    : type_text_size;
-        style   : type_text_style;
-        width   : type_text_line_width;
-    end record;
-
+	type type_text_style is ( normal, italic, bold, italic_bold);
+	type type_text_visible is (yes, no);
     type type_text_alignment_horizontal is ( left, center , right);
 	type type_text_alignment_vertical is ( top, center , bottom);    
 	type type_text_aligment is record
@@ -214,14 +214,13 @@ package et_general is
 		vertical	: type_text_alignment_vertical := center;
 	end record;
 	
-	type type_text_visible is (yes, no);
 	
 	-- Text fields:
 	-- A text field may have 200 characters which seems sufficient for now.
  	text_length_max : constant natural := 200;
 	package type_text_content is new generic_bounded_length(text_length_max); use type_text_content;
 	text_meaning_prefix : constant string (1..2) := "P_"; -- workaround, see below
-	type type_text_meaning is (  -- CS: explain them:
+	type type_text_meaning is (
 		REFERENCE,		-- for things like R301 or X9
 		VALUE,			-- for component values like "200R"
 		COMMISSIONED,	-- for the date of commission in the library
@@ -238,8 +237,7 @@ package et_general is
 	function text_meaning_to_string ( meaning : in type_text_meaning) return string;
 	-- Converts meaning to string.
 	
-	type type_text is tagged record
-        content		: type_text_content.bounded_string;
+	type type_text_placeholder is tagged record
         size    	: type_text_size;
         style		: type_text_style;
         line_width	: type_text_line_width := 0; -- CS: use a general type_line_width ?
@@ -248,6 +246,10 @@ package et_general is
 		alignment	: type_text_aligment;
 	end record;
 
+	type type_text is new type_text_placeholder with record
+        content		: type_text_content.bounded_string;
+	end record;
+	
 	
 -- GENERICS
 	
