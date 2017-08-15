@@ -109,6 +109,10 @@ package et_libraries is
 	package type_component_package_name is new generic_bounded_length(component_package_name_length_max);
 	--use type_component_package_name;
 
+	-- The component partcode is something like "R_PAC_S_0805_VAL_"
+	component_partocde_length_max : constant positive := 200;
+	package type_component_partcode is new generic_bounded_length (component_partocde_length_max);
+
 	function to_string ( packge : in type_component_package_name.bounded_string) return string;
 	-- Returns the given package name as as string.
 	

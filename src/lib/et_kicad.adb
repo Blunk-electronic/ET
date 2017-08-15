@@ -1337,6 +1337,11 @@ package body et_kicad is
 					& "component " 
 					& et_general.to_string (type_components.key(component)));
 
+				-- value
+				put_line(indent(indentation + 1)
+					& "value "
+					& et_schematic.type_component_value.to_string (type_components.element(component).value));
+				
 				-- CS: library file name
 				-- name in library
 				put_line(indent(indentation + 1)
@@ -1347,17 +1352,28 @@ package body et_kicad is
 				put_line(indent(indentation + 1)
 					& et_general.to_string (type_components.element(component).appearance));
 
-				-- package
+				-- depending on the component appearance there is more to report:
 				case type_components.element(component).appearance is
 					when sch_pcb =>
+
+						-- package variant
 						put_line(indent(indentation + 1)
 								 & et_libraries.to_string (type_components.element(component).variant.variant));
 						-- NOTE: This displays the type_component_variant (see et_libraries.ads).
 						-- Do not confuse with type_variant (see et_schematic.ads) which also contains the variant name
 						-- like in TL084D or TL084N.
+
+						-- partcode
+						put_line(indent(indentation + 1)
+							& "partcode "
+							& et_libraries.type_component_partcode.to_string (type_components.element(component).partcode));
+
+						
 					when pcb => null; -- CS
 					when others => null; -- CS should never happen as virtual components do not have a package
 				end case;
+
+
 				
 			end write_component_properties;
 			
@@ -2066,8 +2082,8 @@ package body et_kicad is
 			end to_text;
 
 			
-			component_cursor_scratch : type_components.cursor; -- points to a component of the module
-			component_inserted : boolean; -- used when a component is being inserted into the component list of a module
+			component_cursor	: type_components.cursor; -- points to a component of the module
+			component_inserted	: boolean; -- used when a component is being inserted into the component list of a module
 			
 			procedure insert_unit ( key : in et_general.type_component_reference; component : in out et_schematic.type_component ) is 
 			begin
@@ -2135,15 +2151,18 @@ package body et_kicad is
 							new_item => (
 								appearance => et_general.sch, -- the component appears in schematic only
 								name_in_library => tmp_component_name_in_lib,
+								value => et_schematic.type_component_value.to_bounded_string (field_content(tmp_component_texts_basic.value)),
 
 								-- At this stage we do not know if and how many units there are. So the unit list is empty.
 								units => et_schematic.type_units.empty_map),
 							
-							position => component_cursor_scratch,
+							position => component_cursor,
 							inserted => component_inserted); -- this flag is just formal. no further evaluation
 
-							write_component_properties ( component => component_cursor_scratch, indentation => 2);
-						
+							write_component_properties ( component => component_cursor, indentation => 2);
+
+							-- CS: Test value ?
+							
 					when sch_pcb => -- we have a line like "L 74LS00 U1"
 
 						-- break down the footprint content like "bel_opto:LED_S_0805".
@@ -2160,7 +2179,8 @@ package body et_kicad is
 							new_item => (
 								appearance => et_general.sch_pcb, -- the component appears in both schematic and layout
 								name_in_library => tmp_component_name_in_lib,
-
+								value => et_schematic.type_component_value.to_bounded_string(field_content(tmp_component_texts_basic.value)),
+								partcode => et_libraries.type_component_partcode.to_bounded_string (field_content(tmp_component_texts_extended.partcode)),
 								-- Assemble the package variant.
 								-- NOTE: There is no way to identifiy the name of the package variant like TL084D or TL084N.
 								-- For this reason we leave the variant name empty.
@@ -2184,10 +2204,10 @@ package body et_kicad is
 								-- At this stage we do not know if and how many units there are. So the unit list is empty for the moment.
 								units => et_schematic.type_units.empty_map),
 							
-							position => component_cursor_scratch,
+							position => component_cursor,
 							inserted => component_inserted); -- this flag is just formal. no further evaluation
 
-							write_component_properties ( component => component_cursor_scratch, indentation => 2);
+							write_component_properties ( component => component_cursor, indentation => 2);
 
 							-- Test if footprint has been associated with the component.
 							if field_content (tmp_component_texts_extended.packge)'size = 0 then
@@ -2217,7 +2237,8 @@ package body et_kicad is
 -- 								raise constraint_error;
 -- 							end if;
 
-							
+							-- CS: Test value
+							-- CS: test partcode, verify agsinst prefix, value and package
 						
 					when others => -- CS: This should never happen. A subtype of type_component_appearance could be a solution.
 						null;
@@ -2738,13 +2759,13 @@ package body et_kicad is
 											-- Insert component in component list of module. For the time beeing the unit list is empty.
 											insert_component;
 	
-											-- The cursor component_cursor_scratch now points to the component. There will be more component information (in the following) 
+											-- The component_cursor now points to the component. There will be more component information (in the following) 
 											-- that will go into component_scratch. Once the component section is left, component_scratch updates the component where the cursor
 											-- is pointing to.
 											
 											--put_line(to_string(line_of_schematic_file));								
 											-- update the component with the collected unit data
-											type_components.update_element (module.components, component_cursor_scratch, insert_unit'access);
+											type_components.update_element (module.components, component_cursor, insert_unit'access);
 
 											-- clean up: the list of texts collected must be erased for next spin.
 											-- CS: et_schematic.type_texts.clear (tmp_component_texts);

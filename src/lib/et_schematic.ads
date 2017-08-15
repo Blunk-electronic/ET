@@ -142,20 +142,28 @@ package et_schematic is
 		name	: et_libraries.type_component_variant_name.bounded_string;	-- the variant name like TL084N or TL084D
 		variant	: et_libraries.type_component_variant; -- incorporates package, full library name, connection list
 	end record;
+
+	-- In the schematic, the operator assigns a value to the component.
+	-- The component value is something like 330R or 100nF
+	component_value_length_max : constant positive := 100;
+	package type_component_value is new generic_bounded_length (component_value_length_max);
 	
 	-- This is a component as it appears in the schematic.
 	type type_component (appearance : type_component_appearance) is record
 		name_in_library : et_libraries.type_component_name.bounded_string; -- example: "TRANSISTOR_PNP"
+		value			: type_component_value.bounded_string; -- 470R
 		units			: type_units.map;
 		case appearance is
 			-- If a component appears in the schematic only, it does not
 			-- have a package variant.
 			when et_general.sch => null;
 
-			-- If a component appears in both schematic and layout it has a package variant.
+			-- If a component appears in both schematic and layout it has got:
+			--  - a package variant
+			--  - a partcode
 			when et_general.sch_pcb => 
-				variant	: type_variant;
-			
+				variant		: type_variant;
+				partcode	: et_libraries.type_component_partcode.bounded_string;
 			when others => null; -- CS
 		end case;
 	end record;
