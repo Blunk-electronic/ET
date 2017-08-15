@@ -2240,20 +2240,25 @@ package body et_kicad is
 			end insert_component;
 			
 
--- 			procedure insert_unit ( key : in et_general.type_component_reference; component : in out et_schematic.type_component ) is 
--- 			begin
--- 				et_schematic.type_units.insert(
--- 					container => component.units, -- the unit list of the component
--- 					new_item => (
--- 								position		=> tmp_component_position,
--- 								name			=> tmp_component_unit_name,
--- 								timestamp		=> tmp_component_timestamp,
--- 								de_morgan		=> tmp_component_de_morgan,
--- 								reference		=> et_libraries.type_text_placeholder(tmp_component_texts_basic.reference)
--- 								--commissioned	=>
--- 								),
--- 					key => tmp_component_unit_name); -- the unit name
--- 			end insert_unit;
+			procedure insert_unit ( key : in et_general.type_component_reference; component : in out et_schematic.type_component ) is 
+			begin
+				et_schematic.type_units.insert(
+					container => component.units, -- the unit list of the component
+					new_item => (
+						position		=> tmp_component_position,
+						name			=> tmp_component_unit_name,
+						timestamp		=> tmp_component_timestamp,
+						de_morgan		=> tmp_component_de_morgan,
+						--reference		=> et_libraries.type_text_placeholder(tmp_component_texts_basic.reference)
+						--reference		=> et_libraries.type_text_basic(tmp_component_texts_basic.reference)
+
+						-- Convert tmp_component_texts_* to a placeholder while maintaining the text meaning.
+						reference		=> ( et_libraries.type_text_basic (tmp_component_texts_basic.reference)
+											 with meaning => tmp_component_texts_basic.reference.meaning )
+								--commissioned	=>
+						),
+					key => tmp_component_unit_name); -- the unit name
+			end insert_unit;
 			
 
         begin -- read_schematic
