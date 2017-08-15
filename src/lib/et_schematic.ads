@@ -95,12 +95,14 @@ package et_schematic is
 	
 -- TEXT FIELD
 
-	-- A text field in the schematic gets extended by extended coordinates (see above)
-	type type_text (meaning : et_general.type_text_meaning) is new et_general.type_text with record
+	-- A text/note field in the schematic gets extended by extended coordinates (see above)
+	type type_note is new et_libraries.type_text_basic with record
+		meaning			: et_libraries.type_text_meaning := et_libraries.note;
 		coordinates		: type_coordinates;
+		content			: et_libraries.type_text_content.bounded_string;
 	end record;
 	package type_texts is new indefinite_doubly_linked_lists (
-		element_type => type_text);
+		element_type => type_note);
 
 -- 	type type_component_texts is record
 -- 		reference	: type_text (meaning => et_general.reference);
@@ -125,15 +127,15 @@ package et_schematic is
 		timestamp	: et_general.type_timestamp;
 		name		: et_libraries.type_unit_name.bounded_string;
 		de_morgan	: et_general.type_de_morgan;
-		reference	: et_libraries.type_text_placeholder (meaning => et_general.reference);
-		value		: et_libraries.type_text_placeholder (meaning => et_general.value);
-		packge		: et_libraries.type_text_placeholder (meaning => et_general.packge); -- like "SOT23"
-		datasheet	: et_libraries.type_text_placeholder (meaning => et_general.datasheet); -- might be useful for some special components
-		fnction		: et_libraries.type_text_placeholder (meaning => et_general.p_function); -- to be filled in schematic later by the user
-		partcode	: et_libraries.type_text_placeholder (meaning => et_general.partcode); -- like "R_PAC_S_0805_VAL_"
-		commissioned: et_libraries.type_text_placeholder (meaning => et_general.commissioned);		
-		updated		: et_libraries.type_text_placeholder (meaning => et_general.updated);		
-		author		: et_libraries.type_text_placeholder (meaning => et_general.author);
+		reference	: et_libraries.type_text_placeholder (meaning => et_libraries.reference);
+		value		: et_libraries.type_text_placeholder (meaning => et_libraries.value);
+		packge		: et_libraries.type_text_placeholder (meaning => et_libraries.packge); -- like "SOT23"
+		datasheet	: et_libraries.type_text_placeholder (meaning => et_libraries.datasheet); -- might be useful for some special components
+		fnction		: et_libraries.type_text_placeholder (meaning => et_libraries.p_function); -- to be filled in schematic later by the user
+		partcode	: et_libraries.type_text_placeholder (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"
+		commissioned: et_libraries.type_text_placeholder (meaning => et_libraries.commissioned);		
+		updated		: et_libraries.type_text_placeholder (meaning => et_libraries.updated);		
+		author		: et_libraries.type_text_placeholder (meaning => et_libraries.author);
 		-- NOTE: The placeholders are defined in et_libraries. Thus they have only
 		-- basic coordinates (x/y). Via the unit position the sheet and module
 		-- name can be obtained.
@@ -197,9 +199,9 @@ package et_schematic is
 		coordinates	: type_coordinates;
 		orientation	: type_orientation;
         text		: type_net_name.bounded_string;
-        size		: type_text_size;
-        style		: type_text_style;
-        width		: type_text_line_width;
+        size		: et_libraries.type_text_size;
+        style		: et_libraries.type_text_style;
+        width		: et_libraries.type_text_line_width;
 		processed	: boolean := false; -- used for associating label with net segment
 		case label_appearance is
 			when tag => 

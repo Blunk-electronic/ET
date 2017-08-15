@@ -62,6 +62,6 @@ package body et_schematic is
 		-- CS: exception handler
 	end to_string;
 	
-end et_schematic;
 
+end et_schematic;
 -- Soli Deo Gloria

@@ -74,13 +74,13 @@ package body et_kicad is
 	-- the function whether we are dealing with scheamtic or library fields.
 		line : in type_fields_of_line;
 		schematic : in boolean) -- set false if it is about fields in a library, true if it is about a schematic field	
-		return et_general.type_text_meaning is
+		return et_libraries.type_text_meaning is
 
 		function field (
 			line		: in type_fields_of_line;
 			position	: in positive) return string renames get_field_from_line;
 		
-		meaning : et_general.type_text_meaning;
+		meaning : et_libraries.type_text_meaning;
 
 		function strip_f ( text : in string) return string is
 		-- removes the heading character from the given string.
@@ -102,15 +102,15 @@ package body et_kicad is
 					-- Then we test the field id.
 					-- The field id must be mapped to the actual field meaning:
 					case type_component_field_id'value(field(line,2)) is -- "0..2"
-						when component_field_reference		=> meaning := et_general.reference;
-						when component_field_value			=> meaning := et_general.value;
-						when component_field_footprint		=> meaning := et_general.packge;
-						when component_field_datasheet		=> meaning := et_general.datasheet;
-						when component_field_function		=> meaning := et_general.p_function;
-						when component_field_partcode		=> meaning := et_general.partcode;
-						when component_field_commissioned	=> meaning := et_general.commissioned;
-						when component_field_updated		=> meaning := et_general.updated;
-						when component_field_author			=> meaning := et_general.author;
+						when component_field_reference		=> meaning := et_libraries.reference;
+						when component_field_value			=> meaning := et_libraries.value;
+						when component_field_footprint		=> meaning := et_libraries.packge;
+						when component_field_datasheet		=> meaning := et_libraries.datasheet;
+						when component_field_function		=> meaning := et_libraries.p_function;
+						when component_field_partcode		=> meaning := et_libraries.partcode;
+						when component_field_commissioned	=> meaning := et_libraries.commissioned;
+						when component_field_updated		=> meaning := et_libraries.updated;
+						when component_field_author			=> meaning := et_libraries.author;
 						when others => invalid_field (line);
 					end case;
 
@@ -126,15 +126,15 @@ package body et_kicad is
 				if strip_id(field(line,1)) = component_field_identifier then
 				
 					case type_component_field_id'value ( strip_f (field(line,1) ) ) is
-						when component_field_reference		=> meaning := et_general.reference;
-						when component_field_value			=> meaning := et_general.value;
-						when component_field_footprint		=> meaning := et_general.packge;
-						when component_field_datasheet		=> meaning := et_general.datasheet;
-						when component_field_function		=> meaning := et_general.p_function;
-						when component_field_partcode		=> meaning := et_general.partcode;
-						when component_field_commissioned	=> meaning := et_general.commissioned;
-						when component_field_updated		=> meaning := et_general.updated;
-						when component_field_author			=> meaning := et_general.author;
+						when component_field_reference		=> meaning := et_libraries.reference;
+						when component_field_value			=> meaning := et_libraries.value;
+						when component_field_footprint		=> meaning := et_libraries.packge;
+						when component_field_datasheet		=> meaning := et_libraries.datasheet;
+						when component_field_function		=> meaning := et_libraries.p_function;
+						when component_field_partcode		=> meaning := et_libraries.partcode;
+						when component_field_commissioned	=> meaning := et_libraries.commissioned;
+						when component_field_updated		=> meaning := et_libraries.updated;
+						when component_field_author			=> meaning := et_libraries.author;
 						when others => invalid_field (line);
 					end case;
 
@@ -162,28 +162,28 @@ package body et_kicad is
 		end case;
 	end to_text_orientation;
 	
-	function to_alignment_horizontal ( text : in string) return et_general.type_text_alignment_horizontal is
+	function to_alignment_horizontal ( text : in string) return et_libraries.type_text_alignment_horizontal is
 	-- Converts a horizontal kicad text alignment to type_text_alignment_horizontal.
-		a : et_general.type_text_alignment_horizontal;
+		a : et_libraries.type_text_alignment_horizontal;
 	begin
 		case type_field_alignment_horizontal'value(text) is
-			when L => a := left;
-			when C => a := center;
-			when R => a := right;
+			when L => a := et_libraries.left;
+			when C => a := et_libraries.center;
+			when R => a := et_libraries.right;
 		end case;
 		return a;
 	end to_alignment_horizontal;
 
-	function to_alignment_vertical ( text : in string) return et_general.type_text_alignment_vertical is
+	function to_alignment_vertical ( text : in string) return et_libraries.type_text_alignment_vertical is
 	-- Converts a vertical kicad text alignment to type_text_alignment_vertical.
 	-- The given text is something like CNN. We are interested in the first character only.
-		a : et_general.type_text_alignment_vertical;
+		a : et_libraries.type_text_alignment_vertical;
 		s : string (1..1) := text(text'first..text'first);
 	begin
 		case type_field_alignment_vertical'value(s) is
-			when T => a := top;
-			when C => a := center;
-			when B => a := bottom;
+			when T => a := et_libraries.top;
+			when C => a := et_libraries.center;
+			when B => a := et_libraries.bottom;
 		end case;
 		return a;
 	end to_alignment_vertical;
@@ -195,8 +195,8 @@ package body et_kicad is
 		text : in boolean -- true if it is about the style of a text, false if it is about the style of a field
 		-- Explanation: The style of a text is something like "~" or "Italic".
 		-- The style of a field comes with the letters 2 and 3 of a string like CNN.
-		) return et_general.type_text_style is
-		a : et_general.type_text_style;
+		) return et_libraries.type_text_style is
+		a : et_libraries.type_text_style;
 		s_field : string (1..2);
 	
 		procedure invalid_style is
@@ -210,9 +210,9 @@ package body et_kicad is
 		case text is
 			when true =>
 				if style_in = text_schematic_style_normal then
-					a := et_general.type_text_style'first;
+					a := et_libraries.type_text_style'first;
 				elsif style_in = text_schematic_style_italic then
-					a := italic;
+					a := et_libraries.italic;
 				else
 					invalid_style;
 				end if;
@@ -220,10 +220,10 @@ package body et_kicad is
 			when false =>
 				s_field := style_in(style_in'first+1..style_in'last);
 				
-				if    s_field = field_style_default then a := et_general.type_text_style'first;
-				elsif s_field = field_style_bold then a := bold;
-				elsif s_field = field_style_italic then a := italic;
-				elsif s_field = field_style_italic_bold then a := italic_bold;
+				if    s_field = field_style_default then 		a := et_libraries.type_text_style'first;
+				elsif s_field = field_style_bold then 			a := et_libraries.bold;
+				elsif s_field = field_style_italic then 		a := et_libraries.italic;
+				elsif s_field = field_style_italic_bold then 	a := et_libraries.italic_bold;
 				else
 					invalid_style;
 				end if;
@@ -242,10 +242,10 @@ package body et_kicad is
 		-- Explanation: The visibility of fields in schematic is defined by something like "0001" or "0000".
 		-- In component libraries it is defined by characters like V or I.
 		)
-		return et_general.type_text_visible is
+		return et_libraries.type_text_visible is
 		v_in_lib : type_library_field_visible;
 		v_in_sch : type_schematic_field_visible;
-		v_out : et_general.type_text_visible;
+		v_out : et_libraries.type_text_visible;
 	begin
 		case schematic is
 			
@@ -254,15 +254,15 @@ package body et_kicad is
 				-- prepend it here to vis_in before converting to a type_schematic_field_visible:
 				v_in_sch := type_schematic_field_visible'value(schematic_field_visibility_prefix & vis_in);
 				case v_in_sch is
-					when V0000 => v_out := yes; -- visible
-					when V0001 => v_out := no;  -- invisible
+					when V0000 => v_out := et_libraries.yes; -- visible
+					when V0001 => v_out := et_libraries.no;  -- invisible
 				end case;
 
 			when false =>
 				v_in_lib := type_library_field_visible'value(vis_in);
 				case v_in_lib is
-					when V => v_out := yes;
-					when I => v_out := no;
+					when V => v_out := et_libraries.yes;
+					when I => v_out := et_libraries.no;
 				end case;
 
 		end case;
@@ -344,7 +344,7 @@ package body et_kicad is
 	function field_content ( text_field : in et_libraries.type_text ) return string is
 	-- Returns the content of the given text field as string.
 	begin
-		return et_general.type_text_content.to_string(text_field.content);
+		return et_libraries.type_text_content.to_string(text_field.content);
 	end field_content;
 	
 	procedure write_text_properies ( text : in et_libraries.type_text) is
@@ -355,28 +355,28 @@ package body et_kicad is
 		indentation := indentation + 1;
 
 		put(indentation * latin_1.space & "meaning ");
-		put_line (et_general.text_meaning_to_string(text.meaning));
+		put_line (et_libraries.text_meaning_to_string(text.meaning));
 				
-		if et_general.type_text_content.length(text.content) > 0 then
-			put_line(indentation * latin_1.space & "content '" & et_general.type_text_content.to_string(text.content) & "'");
+		if et_libraries.type_text_content.length(text.content) > 0 then
+			put_line(indentation * latin_1.space & "content '" & et_libraries.type_text_content.to_string(text.content) & "'");
 		else
 			put_line(indentation * latin_1.space & "no content");
 		end if;
 
 		put_line(indentation * latin_1.space & "position (x/y) " 
-			& trim(et_general.type_grid'image(text.coordinates.x),left) & "/"
-			& trim(et_general.type_grid'image(text.coordinates.y),left));
+			& trim(et_general.type_grid'image(text.position.x),left) & "/"
+			& trim(et_general.type_grid'image(text.position.y),left));
 		put_line(indentation * latin_1.space & "size (mm/mil) " 
 			& "?/" -- CS
-			& trim(et_general.type_text_size'image(text.size),left));
-		put_line(indentation * latin_1.space & "style " & to_lower(et_general.type_text_style'image(text.style)));
-		put_line(indentation * latin_1.space & "line width" & et_general.type_text_line_width'image(text.line_width));
+			& trim(et_libraries.type_text_size'image(text.size),left));
+		put_line(indentation * latin_1.space & "style " & to_lower(et_libraries.type_text_style'image(text.style)));
+		put_line(indentation * latin_1.space & "line width" & et_libraries.type_text_line_width'image(text.line_width));
 		put_line(indentation * latin_1.space & "orientation " & et_general.type_orientation'image(text.orientation));
 		put_line(indentation * latin_1.space & "aligment (hor/vert) " 
-			& to_lower(et_general.type_text_alignment_horizontal'image(text.alignment.horizontal))
+			& to_lower(et_libraries.type_text_alignment_horizontal'image(text.alignment.horizontal))
 			& "/"
-			& to_lower(et_general.type_text_alignment_vertical'image(text.alignment.vertical)));
-		put_line(indentation * latin_1.space & "visible " & et_general.type_text_visible'image(text.visible));
+			& to_lower(et_libraries.type_text_alignment_vertical'image(text.alignment.vertical)));
+		put_line(indentation * latin_1.space & "visible " & et_libraries.type_text_visible'image(text.visible));
 	end write_text_properies;
 
 	procedure read_components_libraries is
@@ -411,10 +411,10 @@ package body et_kicad is
 			unit_swap_level		: et_libraries.type_unit_swap_level := et_libraries.unit_swap_level_default;
 			appearance			: et_general.type_component_appearance;
 			
-			footprint			: et_libraries.type_text(meaning => et_general.packge);
-			datasheet			: et_libraries.type_text(meaning => et_general.datasheet);
-			fnction				: et_libraries.type_text(meaning => et_general.p_function);
-			partcode			: et_libraries.type_text(meaning => et_general.partcode);
+			footprint			: et_libraries.type_text(meaning => et_libraries.packge);
+			datasheet			: et_libraries.type_text(meaning => et_libraries.datasheet);
+			fnction				: et_libraries.type_text(meaning => et_libraries.p_function);
+			partcode			: et_libraries.type_text(meaning => et_libraries.partcode);
 
 			-- reference, value, commissioned, updated, author are included here:
 			texts_basic			: et_libraries.type_texts_basic;
@@ -476,7 +476,7 @@ package body et_kicad is
 				end case;
 			end to_port_visibile;
 
-			function read_field (meaning : in et_general.type_text_meaning) return et_libraries.type_text is
+			function read_field (meaning : in et_libraries.type_text_meaning) return et_libraries.type_text is
 			-- Reads general text field properties from subfields 3..9 and returns a type_text with 
 			-- the meaning as given in parameter "meaning".
 				text : et_libraries.type_text(meaning);
@@ -489,10 +489,10 @@ package body et_kicad is
 				-- 8 : aligment horizontal (R,C,L)
 				-- 9 : aligment vertical (TNN, CNN, BNN) / font normal, italic, bold, bold_italic (TBI, TBN)
 
-				text.content := et_general.type_text_content.to_bounded_string(strip_quotes(get_field_from_line(line,2)));
-				text.coordinates.x := et_general.type_grid'value(get_field_from_line(line,3));
-				text.coordinates.y := et_general.type_grid'value(get_field_from_line(line,4));
-				text.size := et_general.type_text_size'value(get_field_from_line(line,5));
+				text.content := et_libraries.type_text_content.to_bounded_string(strip_quotes(get_field_from_line(line,2)));
+				text.position.x := et_general.type_grid'value(get_field_from_line(line,3));
+				text.position.y := et_general.type_grid'value(get_field_from_line(line,4));
+				text.size := et_libraries.type_text_size'value(get_field_from_line(line,5));
 				text.orientation := to_text_orientation (get_field_from_line(line,6));
 				
 				text.visible := to_field_visible (
@@ -692,7 +692,7 @@ package body et_kicad is
 											case to_text_meaning(line => line, schematic => false) is
 
 												-- If we have the reference field like "F0 "U" 0 50 50 H V C CNN"
-												when et_general.reference =>
+												when et_libraries.reference =>
 																
 													-- Do a cross check of prefix and reference -- "U" 
 													-- CS: why this redundance ? Ask the kicad makers...
@@ -702,28 +702,28 @@ package body et_kicad is
 														put_line(message_warning & et_string_processing.affected_line(line) & ": prefix vs. reference mismatch !");
 													end if;
 
-													texts_basic.reference := read_field (meaning => et_general.reference);
+													texts_basic.reference := read_field (meaning => et_libraries.reference);
 													-- for the log:
 													write_text_properies (et_libraries.type_text(texts_basic.reference));
 
 												-- If we have a value field like "F1 "74LS00" 0 -100 50 H V C CNN"
-												when et_general.value =>
+												when et_libraries.value =>
 												
-													texts_basic.value := read_field (meaning => et_general.value);
+													texts_basic.value := read_field (meaning => et_libraries.value);
 													-- for the log:
 													write_text_properies (et_libraries.type_text(texts_basic.value));
 
 												-- If we have a footprint field like "F2 "" 0 -100 50 H V C CNN"
-												when et_general.packge =>
+												when et_libraries.packge =>
 												
-													footprint := read_field (meaning => et_general.packge);
+													footprint := read_field (meaning => et_libraries.packge);
 													-- for the log:
 													write_text_properies (et_libraries.type_text(footprint));
 
 												-- If we have a datasheet field like "F3 "" 0 -100 50 H V C CNN"
-												when et_general.datasheet =>
+												when et_libraries.datasheet =>
 												
-													datasheet := read_field (meaning => et_general.datasheet);
+													datasheet := read_field (meaning => et_libraries.datasheet);
 													-- for the log:
 													write_text_properies (et_libraries.type_text(datasheet));
 
@@ -733,11 +733,11 @@ package body et_kicad is
 												-- If we have a function field like "F4 "" 0 -100 50 H V C CNN" "function",
 												-- we test subfield #10 against the prescribed meaning. If ok the field is read like
 												-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
-												when et_general.p_function =>
+												when et_libraries.p_function =>
 												
-													if to_lower(et_general.text_meaning_prefix & strip_quotes(get_field_from_line(line,10))) 
-															= to_lower(et_general.type_text_meaning'image(et_general.p_function)) then
-																fnction := read_field (meaning => et_general.p_function);
+													if to_lower(et_libraries.text_meaning_prefix & strip_quotes(get_field_from_line(line,10))) 
+															= to_lower(et_libraries.type_text_meaning'image(et_libraries.p_function)) then
+																fnction := read_field (meaning => et_libraries.p_function);
 																-- for the log:
 																write_text_properies (et_libraries.type_text(fnction));
 																-- basic_text_check(fnction); -- CS
@@ -748,11 +748,11 @@ package body et_kicad is
 												-- If we have a partcode field like "F5 "" 0 -100 50 H V C CNN" "partcode",
 												-- we test subfield #10 against the prescribed meaning. If ok the field is read like
 												-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
-												when et_general.partcode =>
+												when et_libraries.partcode =>
 												
 													if to_lower(strip_quotes(get_field_from_line(line,10)))
-															= to_lower(et_general.type_text_meaning'image(et_general.partcode)) then
-																partcode := read_field (meaning => et_general.partcode);
+															= to_lower(et_libraries.type_text_meaning'image(et_libraries.partcode)) then
+																partcode := read_field (meaning => et_libraries.partcode);
 																-- for the log:
 																write_text_properies (et_libraries.type_text(partcode));
 																-- basic_text_check(partcode); -- CS
@@ -763,11 +763,11 @@ package body et_kicad is
 												-- If we have a "commissioned" field like "F6 "" 0 -100 50 H V C CNN" "commissioned",
 												-- we test subfield #10 against the prescribed meaning. If ok the field is read like
 												-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
-												when et_general.commissioned =>
+												when et_libraries.commissioned =>
 												
 													if to_lower(strip_quotes(get_field_from_line(line,10)))
-															= to_lower(et_general.type_text_meaning'image(et_general.commissioned)) then
-																texts_basic.commissioned := read_field (meaning => et_general.commissioned);
+															= to_lower(et_libraries.type_text_meaning'image(et_libraries.commissioned)) then
+																texts_basic.commissioned := read_field (meaning => et_libraries.commissioned);
 																-- for the log:
 																write_text_properies (et_libraries.type_text(texts_basic.commissioned));
 																-- basic_text_check(commissioned); -- CS
@@ -778,11 +778,11 @@ package body et_kicad is
 												-- If we have an "updated" field like "F7 "" 0 -100 50 H V C CNN" "updated",
 												-- we test subfield #10 against the prescribed meaning. If ok the field is read like
 												-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
-												when et_general.updated =>
+												when et_libraries.updated =>
 												
 													if to_lower(strip_quotes(get_field_from_line(line,10)))
-															= to_lower(et_general.type_text_meaning'image(et_general.updated)) then
-																texts_basic.updated := read_field (meaning => et_general.updated);
+															= to_lower(et_libraries.type_text_meaning'image(et_libraries.updated)) then
+																texts_basic.updated := read_field (meaning => et_libraries.updated);
 																-- for the log:
 																write_text_properies (et_libraries.type_text(texts_basic.updated));
 																-- basic_text_check(updated); -- CS
@@ -793,11 +793,11 @@ package body et_kicad is
 												-- If we have an "author" field like "F8 "" 0 -100 50 H V C CNN" "author",
 												-- we test subfield #10 against the prescribed meaning. If ok the field is read like
 												-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
-												when et_general.author =>
+												when et_libraries.author =>
 												
 													if to_lower(strip_quotes(get_field_from_line(line,10)))
-															= to_lower(et_general.type_text_meaning'image(et_general.author)) then
-																texts_basic.author := read_field (meaning => et_general.author);
+															= to_lower(et_libraries.type_text_meaning'image(et_libraries.author)) then
+																texts_basic.author := read_field (meaning => et_libraries.author);
 																-- for the log:
 																write_text_properies (et_libraries.type_text(texts_basic.author));
 																-- basic_text_check(author); -- CS
@@ -1144,7 +1144,7 @@ package body et_kicad is
             -- When reading notes, they are held temporarily in scratch variables,
             -- then added to the list of notes.
             note_entered : boolean := false;
-            note_scratch : et_schematic.type_text (meaning => et_general.note);
+            note_scratch : et_schematic.type_note;
 			
 			function to_orientation (text_in : in string) return et_general.type_orientation is
 			-- Converts the label orientation to type_orientation.
@@ -1314,10 +1314,10 @@ package body et_kicad is
 
 			end write_coordinates_of_junction;			
 
-			procedure write_note_properties (note : in et_schematic.type_text) is
+			procedure write_note_properties (note : in et_schematic.type_note) is
 			-- CS: rework as write_label_properties			
 			begin
-				put_line("  note '" & et_general.type_text_content.to_string(note.content)
+				put_line("  note '" & et_libraries.type_text_content.to_string(note.content)
 					& "' at position (x/y) " 
 					& trim(et_general.type_grid'image(note.coordinates.x),left) 
 					& "/" 
@@ -2057,15 +2057,15 @@ package body et_kicad is
 					meaning 	=> to_text_meaning(line => line, schematic => true),
 
 					-- read content like "N701" or "NetChanger" from field position 3
-					content		=> type_text_content.to_bounded_string (strip_quotes(field(line,3))),
+					content		=> et_libraries.type_text_content.to_bounded_string (strip_quotes(field(line,3))),
 
 					-- read orientation like "H" -- type_schematic_field_orientation
 					orientation	=> to_text_orientation (field(line,4)),
 
 					-- read coordinates
-					coordinates => (x => et_general.type_grid'value(field(line,5)),
+					position	=> (x => et_general.type_grid'value(field(line,5)),
 									y => et_general.type_grid'value(field(line,6))),
-					size		=> type_text_size'value (field(line,7)),
+					size		=> et_libraries.type_text_size'value (field(line,7)),
 					style		=> to_text_style (style_in => field(line,10), text => false),
 					line_width	=> 0, -- not provided here -- CS: define a default ?
 
@@ -2538,14 +2538,14 @@ package body et_kicad is
 										-- The sheet name is stored in submodule_gui_scratch.name to be compared with the sheet file name later.
 										if get_field_from_line(line,1) = schematic_keyword_sheet_name then
 											submodule_gui_scratch.name := type_submodule_name.to_bounded_string(strip_quotes(get_field_from_line(line,2)));
-											submodule_gui_scratch.text_size_of_name := type_text_size'value(get_field_from_line(line,3));
+											submodule_gui_scratch.text_size_of_name := et_libraries.type_text_size'value(get_field_from_line(line,3));
 										end if;
 
 										-- Read sheet file name from a line like "F1 "mcu_stm32f030.sch" 60".
 										-- The file name (name_of_submodule_scratch) goes into the list of submodules to be returned to the parent unit.
 										if get_field_from_line(line,1) = schematic_keyword_sheet_file then
 											name_of_submodule_scratch := type_submodule_name.to_bounded_string(strip_quotes(get_field_from_line(line,2)));
-											submodule_gui_scratch.text_size_of_file := type_text_size'value(get_field_from_line(line,3));
+											submodule_gui_scratch.text_size_of_file := et_libraries.type_text_size'value(get_field_from_line(line,3));
 											
 											-- Test if sheet name and file name match:
 											if type_submodule_name.to_string(submodule_gui_scratch.name) /= base_name(type_submodule_name.to_string(name_of_submodule_scratch)) then
@@ -2637,9 +2637,9 @@ package body et_kicad is
 -- 												style => get_field_from_line(line,7),
 -- 												width => type_text_line_width'value(get_field_from_line(line,8)));
 
-											label_simple_scratch.size := type_text_size'value (get_field_from_line(line,6));
+											label_simple_scratch.size := et_libraries.type_text_size'value (get_field_from_line(line,6));
 											label_simple_scratch.style := to_text_style (style_in => get_field_from_line(line,7), text => true);
-											label_simple_scratch.width := type_text_line_width'value(get_field_from_line(line,8));
+											label_simple_scratch.width := et_libraries.type_text_line_width'value(get_field_from_line(line,8));
 											
 											
 										end if;
@@ -2691,9 +2691,9 @@ package body et_kicad is
 												);
 
 											-- build text attributes from size, font and line width
-											label_tag_scratch.size := type_text_size'value(get_field_from_line(line,6));
+											label_tag_scratch.size := et_libraries.type_text_size'value(get_field_from_line(line,6));
 											label_tag_scratch.style := to_text_style (style_in => get_field_from_line(line,8), text => true);
-											label_tag_scratch.width := type_text_line_width'value(get_field_from_line(line,9));
+											label_tag_scratch.width := et_libraries.type_text_line_width'value(get_field_from_line(line,9));
 										end if;
 									else
 										tag_label_entered := false; -- we are leaving a tag label
@@ -2728,9 +2728,9 @@ package body et_kicad is
 -- 													size  => type_text_size'value(get_field_from_line(line,6)),
 -- 													style => get_field_from_line(line,7),
 -- 													width => type_text_line_width'value(get_field_from_line(line,8)));
-												note_scratch.size := type_text_size'value(get_field_from_line(line,6));
+												note_scratch.size := et_libraries.type_text_size'value(get_field_from_line(line,6));
 												note_scratch.style := to_text_style (style_in => get_field_from_line(line,7), text => true);
-												note_scratch.line_width := type_text_line_width'value(get_field_from_line(line,8));
+												note_scratch.line_width := et_libraries.type_text_line_width'value(get_field_from_line(line,8));
 
 										end if;
 									else 
@@ -2739,7 +2739,7 @@ package body et_kicad is
 										-- get note text from a line like "hello\ntest". NOTE "\n" represents a line break
 										-- CS: store lines in a list of lines instead ?
 										-- CS: Currently we store the line as it is in note_scratch.text
-										note_scratch.content := type_text_content.to_bounded_string(to_string(line));
+										note_scratch.content := et_libraries.type_text_content.to_bounded_string(to_string(line));
 
 										write_note_properties(note_scratch);
 										
@@ -2756,7 +2756,7 @@ package body et_kicad is
 
 											-- This is to init the temporarily used variables that store text fields.
 											-- GNAT would generate a warning otherwise (for good reasons) like "... may be referenced before it has a value."
-											tmp_component_texts_extended.packge.content := type_text_content.to_bounded_string("");
+											tmp_component_texts_extended.packge.content := et_libraries.type_text_content.to_bounded_string("");
 										end if;
 									else -- we are inside the component and wait for the component footer ($EndComp)
 										if get_field_from_line(line,1) = schematic_component_footer then

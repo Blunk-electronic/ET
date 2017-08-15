@@ -88,6 +88,27 @@ package body et_libraries is
 			& " package " & type_component_package_name.to_string(v.packge));
 	end to_string;
 
+
+	function text_meaning_to_string ( meaning : in type_text_meaning) return string is
+	-- Converts meaning to string.
+		function strip_prefix ( s : in string) return string is
+		begin
+			return s (s'first + text_meaning_prefix'last .. s'last);
+		end strip_prefix;
+	begin
+		-- Since the text meaning may assume p_function 
+		-- (which is a workaround in order not to use an ada keyword. see spec of this package),
+		-- we must get gid of the prefix:
+		case meaning is
+			when p_function => -- we must remove the prefix
+				return strip_prefix(to_lower(type_text_meaning'image(meaning)));
+			when others => -- we can do a direct conversion
+				return to_lower(type_text_meaning'image(meaning));
+		end case;
+	end text_meaning_to_string;
+
+	
+	
 	
 end et_libraries;
 

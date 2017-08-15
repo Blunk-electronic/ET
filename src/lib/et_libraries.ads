@@ -30,6 +30,9 @@
 --   history of changes:
 --
 with ada.text_io;				use ada.text_io;
+with ada.characters;			use ada.characters;
+with ada.characters.latin_1;	use ada.characters.latin_1;
+with ada.characters.handling;	use ada.characters.handling;
 
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
@@ -143,36 +146,79 @@ package et_libraries is
 		key_type => type_component_variant_name.bounded_string,
 		element_type => type_component_variant);
 	
--- TEXT FIELDS
+-- TEXT & FIELDS
+
+    -- CS: currently we use unit mil which is old fashionated
+    type type_text_size is range 1..1000; -- CS unit assumed is MIL !!!
+	type type_text_line_width is range 0..100; -- CS unit assumed is MIL !!!
+	type type_text_style is ( normal, italic, bold, italic_bold);
+	type type_text_visible is (yes, no);
+    type type_text_alignment_horizontal is ( left, center , right);
+	type type_text_alignment_vertical is ( top, center , bottom);    
+	type type_text_aligment is record
+		horizontal	: type_text_alignment_horizontal := center;
+		vertical	: type_text_alignment_vertical := center;
+	end record;
+	
+	-- Text fields:
+	-- A text field may have 200 characters which seems sufficient for now.
+ 	text_length_max : constant natural := 200;
+	package type_text_content is new generic_bounded_length(text_length_max); use type_text_content;
+	text_meaning_prefix : constant string (1..2) := "P_"; -- workaround, see below
+	type type_text_meaning is (
+		REFERENCE,		-- for things like R301 or X9
+		VALUE,			-- for component values like "200R"
+		COMMISSIONED,	-- for the date of commission in the library
+		UPDATED,		-- for the date of the last edit in the library
+		AUTHOR,			-- for the person who did the last edit
+		
+		PACKGE,			-- for compoenent packages like SOT23
+		DATASHEET,		-- for url to datasheet
+		P_FUNCTION, 	-- for the function of the component in the design. workaround: "P_" avoids usage of an ada keyword 
+		PARTCODE,		-- for the primary key into an external database (like "R_PAC_S_0805_VAL_200R")
+		NOTE,			-- for notes made by a person
+		MISC); -- CS: others ?
+
+	function text_meaning_to_string ( meaning : in type_text_meaning) return string;
+	-- Converts meaning to string.
+	
+	type type_text_basic is tagged record
+		position	: type_coordinates;
+        size    	: type_text_size;
+        style		: type_text_style;
+        line_width	: type_text_line_width := 0; -- CS: use a general type_line_width ?
+        orientation	: type_orientation;
+		visible		: type_text_visible;
+		alignment	: type_text_aligment;
+	end record;
+
+	type type_text (meaning : type_text_meaning) is new type_text_basic with record
+        content		: type_text_content.bounded_string;
+	end record;
 
 	-- A text field in the library gets extended by simple coordinates.
 	-- Text fields can be regarded as attributes. Some of them are mandatory.
 	-- They can be collected in a simple list.
-	type type_text (meaning : et_general.type_text_meaning) is new et_general.type_text with record
-		coordinates		: et_general.type_coordinates;
-	end record;
 
 	-- A text placeholder in the schematic gets extended by extended coordinates (see above)
-	type type_text_placeholder (meaning : et_general.type_text_meaning) is new et_general.type_text_placeholder with record
-		coordinates		: type_coordinates;
-	end record;
+	type type_text_placeholder (meaning : type_text_meaning) is new type_text_basic with null record;
 	
 	package type_texts is new indefinite_doubly_linked_lists (
 		element_type => type_text);
 	
 	type type_texts_basic is record
-		reference	: type_text (meaning => et_general.reference);
-		value		: type_text (meaning => et_general.value);
-		commissioned: type_text (meaning => et_general.commissioned);
-		updated		: type_text (meaning => et_general.updated);
-		author		: type_text (meaning => et_general.author);
+		reference	: type_text (meaning => et_libraries.reference);
+		value		: type_text (meaning => et_libraries.value);
+		commissioned: type_text (meaning => et_libraries.commissioned);
+		updated		: type_text (meaning => et_libraries.updated);
+		author		: type_text (meaning => et_libraries.author);
 	end record;
 
 	type type_texts_extended_1 is record
-		packge		: type_text (meaning => et_general.packge); -- like "SOT23"
-		datasheet	: type_text (meaning => et_general.datasheet); -- might be useful for some special components
-		fnction		: type_text (meaning => et_general.p_function); -- to be filled in schematic later by the user
-		partcode	: type_text (meaning => et_general.partcode); -- like "R_PAC_S_0805_VAL_"
+		packge		: type_text (meaning => et_libraries.packge); -- like "SOT23"
+		datasheet	: type_text (meaning => et_libraries.datasheet); -- might be useful for some special components
+		fnction		: type_text (meaning => et_libraries.p_function); -- to be filled in schematic later by the user
+		partcode	: type_text (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"
 	end record;
 
 	
