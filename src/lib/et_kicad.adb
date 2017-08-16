@@ -340,6 +340,37 @@ package body et_kicad is
 				
 	end to_appearance;
 
+	function to_alternative_representation ( line : in type_fields_of_line; schematic : in boolean)
+	-- Converts the kicad alternative (deMorgan) representation to the et alternative representation.
+	-- In a schematic it is expressed in a line like "U 2 1 5992967A". The 3rd field is the deMorgan flag.
+		return et_schematic.type_alternative_representation is
+
+		function field ( line : in type_fields_of_line; pos : in positive) return string 
+			renames et_string_processing.get_field_from_line;
+		
+		rep_in : type_alternative_representation;
+		rep_out : et_schematic.type_alternative_representation;
+	begin
+		rep_in := type_alternative_representation'value (field (line,3));
+
+		case rep_in is
+			when alternative_representation_yes =>
+				rep_out := yes;
+
+				-- CS: currently we do not support alternative representations
+				write_message(
+					file_handle => current_output,
+					text => message_error & "alternative representation (DeMorgan) not supported currently !",
+					console => true);
+				
+			when alternative_representation_no =>
+				rep_out := no;
+		end case;
+		
+		return rep_out;
+		
+		-- CS exception handler
+	end to_alternative_representation;
 
 	function field_content ( text_field : in et_libraries.type_text ) return string is
 	-- Returns the content of the given text field as string.
@@ -1995,7 +2026,7 @@ package body et_kicad is
 			tmp_component_appearance	: et_general.type_component_appearance := et_general.sch;
 			tmp_component_reference		: et_general.type_component_reference;
 			tmp_component_unit_name		: et_libraries.type_unit_name.bounded_string;
-			tmp_component_de_morgan		: et_general.type_de_morgan;
+			tmp_component_alt_repres	: et_schematic.type_alternative_representation;
 			tmp_component_timestamp		: et_general.type_timestamp;
 			tmp_component_position		: et_schematic.type_coordinates;
 
@@ -2218,6 +2249,7 @@ package body et_kicad is
 			-- found in the schematic. The idea behind is to store just basic text properties (type_text_basic) 
 			-- for the texts around the unit, but not its content. The content is stored with the component as a kind
 			-- of meta-data. See procedure insert_component.
+			-- Raises constraint error if unit already in unit list of component.
 
 				unit_cursor : type_units.cursor;
 				unit_inserted : boolean;
@@ -2229,7 +2261,7 @@ package body et_kicad is
 						position		=> tmp_component_position,
 						name			=> tmp_component_unit_name,
 						timestamp		=> tmp_component_timestamp,
-						de_morgan		=> tmp_component_de_morgan,
+						alt_repres		=> tmp_component_alt_repres,
 
 						-- placeholders:
 						-- Convert tmp_component_text_* to a placeholder while maintaining the text meaning.
@@ -2259,7 +2291,15 @@ package body et_kicad is
 
 					key => tmp_component_unit_name); -- the unit name
 
-					--	put("   with unit " & et_libraries.type_unit_name.to_string(tmp_component_unit_name) & " at");
+					-- If unit alread in list, raise alarm and abort.
+					if not unit_inserted then
+						write_message(
+							file_handle => current_output,
+							text => message_error & "multiple occurence of the same unit !",
+							console => true);
+						raise constraint_error;
+					end if;
+					
 				write_unit_properties ( unit => unit_cursor, indentation => 3 );
 					
 			end insert_unit;
@@ -2837,8 +2877,12 @@ package body et_kicad is
 												tmp_component_unit_name := et_libraries.type_unit_name.to_bounded_string(
 													get_field_from_line(line,2)); -- the unit id
 
-												tmp_component_de_morgan := type_de_morgan'value(get_field_from_line(line,3));
-												tmp_component_timestamp := type_timestamp(get_field_from_line(line,4));
+												-- Read DeMorgan flag:
+												tmp_component_alt_repres := to_alternative_representation(line => line, schematic => true);
+
+												-- Read timestamp:
+												tmp_component_timestamp := type_timestamp(get_field_from_line(line,4)); 
+												-- CS: function that converts to a type_timestamp and does a plausibility check
 											end if;
 
 											-- Read unit coordinates from a line like "P 3200 4500".

@@ -201,7 +201,9 @@ package et_libraries is
 
 	-- This is a placeholder for a text. It does not have content yet, but a meaning:
 	type type_text_placeholder (meaning : type_text_meaning) is new type_text_basic with null record;
-	
+
+	procedure write_placeholder_properties ( placeholder : in type_text_placeholder; indentation : in natural := 0);
+	-- Writes the properties of the given placeholder.
 	
 -- PORTS
 	

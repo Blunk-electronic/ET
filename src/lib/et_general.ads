@@ -135,12 +135,6 @@ package et_general is
 -- TIMESTAMP
 	type type_timestamp is new string (1..8); -- like "34593321"
 
--- DE_MORGAN REPRESENTATION
-	type type_de_morgan is new natural range 0..1;
-	de_morgan_on	: constant type_de_morgan := 0;
-	de_morgan_off	: constant type_de_morgan := 1;
-
-
 -- ORIENTATION	
 	-- Objects may be placed at a certain angle:
 	type type_orientation is ( deg_0, deg_90, deg_180, deg_270); 

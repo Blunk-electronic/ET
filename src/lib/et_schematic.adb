@@ -51,6 +51,9 @@ package body et_schematic is
 			trim(et_general.type_grid'image(position.x),left) & "/" &
 			trim(et_general.type_grid'image(position.y),left) & "/" &
 			trim( positive'image(position.sheet_number),left));
+
+		-- CS: output in both mil and mm
+		
 		-- CS: exception handler
 	end to_string;
 
@@ -113,12 +116,34 @@ package body et_schematic is
 	-- Writes the properties of the unit indicated by the given cursor.
 		function indent ( i : in natural) return string renames et_string_processing.indentation;
 	begin
-		null; -- CS
-
+		-- unit name
 		put_line(indent(indentation) 
 			& "with unit " 
 			& et_libraries.type_unit_name.to_string (type_units.key(unit)));
 
+		-- alternative representation
+		put_line(indent(indentation + 1) 
+			& "alternative (deMorgan) representation " 
+			& et_schematic.type_alternative_representation'image (type_units.element(unit).alt_repres));
+
+		-- timestamp
+		put_line(indent(indentation + 1) 
+			& "timestamp " 
+			& string(type_units.element (unit).timestamp));
+
+		-- position
+		put_line(indent(indentation + 1) 
+			& "position " 
+			& et_schematic.to_string (type_units.element(unit).position));
+
+		-- placeholders
+		put_line(indent(indentation + 1) 
+			& "placeholders");
+		
+		et_libraries.write_placeholder_properties (
+			placeholder => type_units.element(unit).reference,
+			indentation => indentation + 2);
+		
 	end write_unit_properties;
 
 	

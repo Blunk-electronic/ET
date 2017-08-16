@@ -263,6 +263,9 @@ package et_kicad is
 	type type_show_pin_number is (Y, N); -- show pin/pad number yes/no
 	type type_show_pin_name is (Y, N); -- show pin (better port) name yes/no
 
+	type type_alternative_representation is new natural range 0..1;
+	alternative_representation_yes	: constant type_alternative_representation := 0;
+	alternative_representation_no	: constant type_alternative_representation := 1;
 
 end et_kicad;
 

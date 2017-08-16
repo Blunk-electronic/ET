@@ -108,7 +108,49 @@ package body et_libraries is
 	end text_meaning_to_string;
 
 	
-	
+	procedure write_placeholder_properties ( placeholder : in type_text_placeholder; indentation : in natural := 0) is
+	-- Writes the properties of the given placeholder.
+		function indent ( i : in natural) return string renames et_string_processing.indentation;
+	begin
+		-- meaning
+		put_line(indent(indentation) 
+			& et_libraries.text_meaning_to_string(placeholder.meaning));
+
+		-- position
+-- 		put_line(indent(indentation + 1)
+-- 			 & et_libraries.to_string (placeholder.position));
+
+		-- CS:
+		
+		-- size
+
+		-- style
+
+		-- line width
+
+		-- orientation
+
+		-- visible
+
+		-- alignment
+
+		
+-- 			& trim(et_general.type_grid'image(text.position.x),left) & "/"
+-- 			& trim(et_general.type_grid'image(text.position.y),left));
+-- 		put_line(indentation * latin_1.space & "size (mm/mil) " 
+-- 			& "?/" -- CS
+-- 			& trim(et_libraries.type_text_size'image(text.size),left));
+-- 		put_line(indentation * latin_1.space & "style " & to_lower(et_libraries.type_text_style'image(text.style)));
+-- 		put_line(indentation * latin_1.space & "line width" & et_libraries.type_text_line_width'image(text.line_width));
+-- 		put_line(indentation * latin_1.space & "orientation " & et_general.type_orientation'image(text.orientation));
+-- 		put_line(indentation * latin_1.space & "aligment (hor/vert) " 
+-- 			& to_lower(et_libraries.type_text_alignment_horizontal'image(text.alignment.horizontal))
+-- 			& "/"
+-- 			& to_lower(et_libraries.type_text_alignment_vertical'image(text.alignment.vertical)));
+-- 		put_line(indentation * latin_1.space & "visible " & et_libraries.type_text_visible'image(text.visible));
+
+		
+	end write_placeholder_properties;
 	
 end et_libraries;
 

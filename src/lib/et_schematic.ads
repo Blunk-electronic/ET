@@ -119,6 +119,9 @@ package et_schematic is
 
 -- UNITS AND COMPONENTS
 
+	-- Units may have alternative representations such as de_Morgan
+	type type_alternative_representation is ( NO, YES);
+
 	-- In a schematic we find units spread all over.
 	-- A unit is a subsection of a component.
 	-- A unit has placeholders for text like reference (like IC303), value (like 7400), ...
@@ -126,7 +129,7 @@ package et_schematic is
 		position	: type_coordinates;
 		timestamp	: et_general.type_timestamp;
 		name		: et_libraries.type_unit_name.bounded_string;
-		de_morgan	: et_general.type_de_morgan;
+		alt_repres	: type_alternative_representation;
 		reference	: et_libraries.type_text_placeholder (meaning => et_libraries.reference);
 		value		: et_libraries.type_text_placeholder (meaning => et_libraries.value);
 		packge		: et_libraries.type_text_placeholder (meaning => et_libraries.packge); -- like "SOT23"
