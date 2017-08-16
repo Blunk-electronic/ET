@@ -251,7 +251,7 @@ package et_kicad is
 	endfplist	: constant string (1..10) := "$ENDFPLIST";
 
 	-- The distance of the pin name from the pin itself (supply pins only)
-	subtype type_supply_pin_name_position_offset is et_general.type_grid range 0.00 .. et_general.type_grid'last;
+	subtype type_supply_pin_name_position_offset is et_libraries.type_grid range 0.00 .. et_libraries.type_grid'last;
 
 	-- KiCad supports up to 64 units within a component
 	unit_count_max : constant positive := 64;

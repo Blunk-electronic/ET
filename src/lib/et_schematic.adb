@@ -48,8 +48,8 @@ package body et_schematic is
 	-- Returns the given position as string.
 	begin
 		return ("position (x/y/sheet) " & 
-			trim(et_general.type_grid'image(position.x),left) & "/" &
-			trim(et_general.type_grid'image(position.y),left) & "/" &
+			trim(et_libraries.type_grid'image(position.x),left) & "/" &
+			trim(et_libraries.type_grid'image(position.y),left) & "/" &
 			trim( positive'image(position.sheet_number),left));
 
 		-- CS: output in both mil and mm
