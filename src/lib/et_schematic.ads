@@ -181,10 +181,9 @@ package et_schematic is
 		end case;
 	end record;
 
+	procedure write_unit_properties ( unit : in type_units.cursor; indentation : in natural := 0 );
+	-- Writes the properties of the unit indicated by the given cursor.
 
-
-
-	
 
 -- LABEL
 	-- A label is frequently attached to a net segment in order to make the net name visible. 
@@ -423,6 +422,9 @@ package et_schematic is
 		key_type => et_general.type_component_reference, -- something like "IC43"
 		"<" => et_general.compare_component_by_reference,
  		element_type => type_component);
+
+	procedure write_component_properties ( component : in type_components.cursor; indentation : in natural := 0);
+	-- Writes the properties of the component indicated by the given cursor.
 
 	
     -- A module has a name, a list of nets and a list of components.

@@ -61,6 +61,66 @@ package body et_schematic is
 		return("orientation " & et_general.type_orientation'image(orientation));
 		-- CS: exception handler
 	end to_string;
+
+	
+	procedure write_component_properties ( component : in type_components.cursor; indentation : in natural := 0) is
+	-- Writes the properties of the component indicated by the given cursor.
+		function indent ( i : in natural) return string renames et_string_processing.indentation;
+	begin
+		-- reference
+		put_line(indent(indentation) 
+			& "component " 
+			& et_general.to_string (type_components.key(component)));
+
+		-- value
+		put_line(indent(indentation + 1)
+			& "value "
+			& et_schematic.type_component_value.to_string (type_components.element(component).value));
+		
+		-- CS: library file name
+		-- name in library
+		put_line(indent(indentation + 1)
+					& et_libraries.to_string (type_components.element(component).name_in_library));
+
+		
+		-- appearance
+		put_line(indent(indentation + 1)
+			& et_general.to_string (type_components.element(component).appearance));
+
+		-- depending on the component appearance there is more to report:
+		case type_components.element(component).appearance is
+			when sch_pcb =>
+
+				-- package variant
+				put_line(indent(indentation + 1)
+							& et_libraries.to_string (type_components.element(component).variant.variant));
+				-- NOTE: This displays the type_component_variant (see et_libraries.ads).
+				-- Do not confuse with type_variant (see et_schematic.ads) which also contains the variant name
+				-- like in TL084D or TL084N.
+
+				-- partcode
+				put_line(indent(indentation + 1)
+					& "partcode "
+					& et_libraries.type_component_partcode.to_string (type_components.element(component).partcode));
+
+				
+			when pcb => null; -- CS
+			when others => null; -- CS should never happen as virtual components do not have a package
+		end case;
+	end write_component_properties;
+
+	procedure write_unit_properties ( unit : in type_units.cursor; indentation : in natural := 0 ) is
+	-- Writes the properties of the unit indicated by the given cursor.
+		function indent ( i : in natural) return string renames et_string_processing.indentation;
+	begin
+		null; -- CS
+
+		put_line(indent(indentation) 
+			& "with unit " 
+			& et_libraries.type_unit_name.to_string (type_units.key(unit)));
+
+	end write_unit_properties;
+
 	
 
 end et_schematic;

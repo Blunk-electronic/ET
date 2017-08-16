@@ -1330,55 +1330,6 @@ package body et_kicad is
 					);
 			end write_note_properties;
 
-			procedure write_component_properties ( component : in type_components.cursor; indentation : in natural := 0) is
-			-- Writes the compoenent properties of the component indicated by the given cursor.
-				function indent ( i : in natural) return string renames et_string_processing.indentation;
-			begin
-				-- reference
-				put_line(indent(indentation) 
-					& "component " 
-					& et_general.to_string (type_components.key(component)));
-
-				-- value
-				put_line(indent(indentation + 1)
-					& "value "
-					& et_schematic.type_component_value.to_string (type_components.element(component).value));
-				
-				-- CS: library file name
-				-- name in library
-				put_line(indent(indentation + 1)
-						 & et_libraries.to_string (type_components.element(component).name_in_library));
-
-				
-				-- appearance
-				put_line(indent(indentation + 1)
-					& et_general.to_string (type_components.element(component).appearance));
-
-				-- depending on the component appearance there is more to report:
-				case type_components.element(component).appearance is
-					when sch_pcb =>
-
-						-- package variant
-						put_line(indent(indentation + 1)
-								 & et_libraries.to_string (type_components.element(component).variant.variant));
-						-- NOTE: This displays the type_component_variant (see et_libraries.ads).
-						-- Do not confuse with type_variant (see et_schematic.ads) which also contains the variant name
-						-- like in TL084D or TL084N.
-
-						-- partcode
-						put_line(indent(indentation + 1)
-							& "partcode "
-							& et_libraries.type_component_partcode.to_string (type_components.element(component).partcode));
-
-						
-					when pcb => null; -- CS
-					when others => null; -- CS should never happen as virtual components do not have a package
-				end case;
-
-
-				
-			end write_component_properties;
-			
 			-- An anonymous_net is a list of net segments that are connected with each other (by their start or end points).
 			-- The anonymous net gets step by step more properties specified: name, scope and some status flags:
 			package type_anonymous_net is new vectors (
@@ -2058,6 +2009,13 @@ package body et_kicad is
 			tmp_component_text_fnction		: et_libraries.type_text (meaning => et_libraries.p_function); -- to be filled in schematic later by the user
 			tmp_component_text_partcode		: et_libraries.type_text (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"			
 
+			procedure init_temp_variables is
+			begin
+				tmp_component_text_packge.content := et_libraries.type_text_content.to_bounded_string("");
+				-- CS: init text properties
+				-- CS: init remaining tmp vars
+			end init_temp_variables;
+			
 			function to_text return et_libraries.type_text is
 			-- Converts a field like "F 1 "green" H 2700 2750 50  0000 C CNN" to a type_text
 				function field ( line : in type_fields_of_line; position : in positive) return string renames get_field_from_line;
@@ -2119,8 +2077,12 @@ package body et_kicad is
 -- 			end fetch_components_from_library;
 
 			procedure insert_component is
-			-- Inserts the component in the component list of the module.
-			-- The component to be inserted consists of the temporarily variables assigned until now.
+			-- Inserts the component in the component list of the module (module.components).
+			-- Components may occur multiple times, which implies they are
+			-- split into units (EAGLE refers to them as "gates").
+			-- Only the first occurence of the component leads to appending it to the component list of the module.
+			
+			-- The component to be inserted gets assembled with the temporarily variables assigned until now.
 			-- Tests if a footprint has been associated with the component.
 
 				-- This is required as scratch variable when breaking down the content of the footprint content.
@@ -2256,6 +2218,10 @@ package body et_kicad is
 			-- found in the schematic. The idea behind is to store just basic text properties (type_text_basic) 
 			-- for the texts around the unit, but not its content. The content is stored with the component as a kind
 			-- of meta-data. See procedure insert_component.
+
+				unit_cursor : type_units.cursor;
+				unit_inserted : boolean;
+
 			begin
 				et_schematic.type_units.insert(
 					container => component.units, -- the unit list of the component
@@ -2287,7 +2253,15 @@ package body et_kicad is
 											 with meaning => tmp_component_text_commissioned.meaning )
 						
 						),
+
+					position => unit_cursor,
+					inserted => unit_inserted,
+
 					key => tmp_component_unit_name); -- the unit name
+
+					--	put("   with unit " & et_libraries.type_unit_name.to_string(tmp_component_unit_name) & " at");
+				write_unit_properties ( unit => unit_cursor, indentation => 3 );
+					
 			end insert_unit;
 			
 
@@ -2785,40 +2759,53 @@ package body et_kicad is
 									-- READ COMPONENTS
 									-- Once a component header ($Comp) found, set component_entered flag. This indicates we are inside a component section.
 									-- Inside the component section, we process its content until the component footer ($EndComp) is found.
+									-- Some entries of the component section are relevant for the whole component. Some entries are unit specific.
+									-- The component section looks like this example:
+									
+									-- $Comp
+									-- L 74LS00 U1		-- component specific
+									-- U 4 1 5965E676	-- unit specific
+									-- P 4100 4000		-- unit specific
+									-- F 0 "U1" H 4100 4050 50  0000 C CNN		-- text fields
+									-- F 1 "74LS00" H 4100 3900 50  0000 C CNN	
+									-- F 2 "bel_ic:S_SO14" H 4100 4000 50  0001 C CNN
+									-- F 3 "" H 4100 4000 50  0001 C CNN
+									-- 	4    4100 4000		-- CS: unknown
+									-- 	1    0    0    -1 	-- CS: unknown
+									-- $EndComp
+									
 									if not component_entered then
 										if get_field_from_line(line,1) = schematic_component_header then
 											component_entered := true;
 
 											-- This is to init the temporarily used variables that store text fields.
-											-- GNAT would generate a warning otherwise (for good reasons) like "... may be referenced before it has a value."
-											tmp_component_text_packge.content := et_libraries.type_text_content.to_bounded_string("");
+											init_temp_variables;
+
 										end if;
 									else -- we are inside the component and wait for the component footer ($EndComp)
 										if get_field_from_line(line,1) = schematic_component_footer then
 											component_entered := false; -- we are leaving the component
 
-											-- Insert component in component list of module. For the time beeing the unit list is empty.
+											-- Insert component in component list of module. If a component is split
+											-- in units, only the first occurence of it leads to inserting the component.
+											-- Nevertheless there are some checks on the unit (see insert_component).
 											insert_component;
 	
-											-- The component_cursor now points to the component.
-											-- update the component with the collected unit data
--- 											type_components.update_element (module.components, component_cursor, insert_unit'access);
+											-- The component_cursor now points to the component in the component list.
+											-- We update the component with the collected unit information.
+											type_components.update_element (module.components, component_cursor, insert_unit'access);
 
-											-- clean up: the list of texts collected must be erased for next spin.
-											-- CS: et_schematic.type_texts.clear (tmp_component_texts);
 										else
 											--put_line("line ->" & to_string(line));
 											-- READ COMPONENT SECTION CONTENT
 											
 											-- Read component name and annotation from a line like "L NetChanger N1". 
-											-- Append the component to the component list of the module (module.components). 
-											-- Components may occur multiple times, which implies they are
-											-- split into units (EAGLE refers to them as "gates").
-											-- Only the first occurence of the component leads to appending it to the component list of the module.
+											-- From this entry we reason the compoenent appearance.
 											if get_field_from_line(line,1) = schematic_component_identifier_name then -- "L"
 												tmp_component_name_in_lib := et_libraries.type_component_name.to_bounded_string(get_field_from_line(line,2)); -- "SN74LS00"
 												tmp_component_appearance := to_appearance(line => line, schematic => true);
 												case tmp_component_appearance is
+												
 													when sch => 
 														-- we have a line like "L P3V3 #PWR07"
 														tmp_component_reference := et_general.to_component_reference(
@@ -2839,44 +2826,33 @@ package body et_kicad is
 												end case;
 															
 												-- CS: check proper annotation
-
--- 												put_line("  component " 
--- 													& get_field_from_line(line,3) -- "N1"
--- 													& " is " 
--- 													& et_libraries.type_component_name.to_string(tmp_component_name_in_lib));
-														
 											end if;
 
 											-- read line like "U 2 1 4543D4D3F" 
 											-- U is the line indicator, 2 is the unit id, 1 is the demorgan flag, last field is the timestamp
 											if get_field_from_line(line,1) = schematic_component_identifier_unit then -- "U"
 
-												-- KiCad uses positive numbers to identifiy units. But in general a unit name can be a string as well.
-												-- Therefore we handle the unit id as string.
+												-- KiCad uses positive numbers to identifiy units. But in general a unit name can
+												-- be a string as well. Therefore we handle the unit id as string.
 												tmp_component_unit_name := et_libraries.type_unit_name.to_bounded_string(
 													get_field_from_line(line,2)); -- the unit id
 
 												tmp_component_de_morgan := type_de_morgan'value(get_field_from_line(line,3));
 												tmp_component_timestamp := type_timestamp(get_field_from_line(line,4));
-										
--- 												put("   with unit " & et_libraries.type_unit_name.to_string(tmp_component_unit_name) & " at");
 											end if;
 
 											-- Read unit coordinates from a line like "P 3200 4500".
-											-- The unit coordinates is more than just x/y !
-											-- The write the unit coordinates in the import report.
 											if get_field_from_line(line,1) = schematic_component_identifier_coord then -- "P"
 												tmp_component_position.x := et_general.type_grid'value(
 													get_field_from_line(line,2)); -- "3200"
 												tmp_component_position.y := et_general.type_grid'value(
 													get_field_from_line(line,3)); -- "4500"
 
-			--									unit_scratch.coordinates.main_module := module.name;
+												-- The unit coordinates is more than just x/y :
+												-- unit_scratch.coordinates.main_module := module.name;
 												tmp_component_position.path := path_to_submodule;
 												tmp_component_position.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
 												tmp_component_position.sheet_number := sheet_number_current;
-
-												--et_schematic.write_coordinates(tmp_component_position);
 											end if;
 
 											-- read unit fields 0..2 from lines like:
@@ -2907,40 +2883,6 @@ package body et_kicad is
 
 													when others => null; -- CS: other fields are ignored
 												end case;
-												
--- 												-- collect text fields.
--- 												et_schematic.type_texts.append (
--- 													container => tmp_component_texts,
--- 													new_item => (
--- 														-- read text field meaning
--- 														meaning 	=> to_text_meaning(line => line, schematic => true),
--- 
--- 														-- read content like "N701" or "NetChanger" from field position 3
--- 														content		=> type_text_content.to_bounded_string (strip_quotes(get_field_from_line(line,3))),
--- 
--- 														-- read orientation like "H" -- type_schematic_field_orientation
--- 														orientation	=> to_text_orientation (get_field_from_line(line,4)),
--- 
--- 														-- read coordinates
--- 														coordinates => (x => et_general.type_grid'value(get_field_from_line(line,5)),
--- 																		y => et_general.type_grid'value(get_field_from_line(line,6)),
--- 																		path => path_to_submodule,
--- 																		module_name => type_submodule_name.to_bounded_string (to_string(name_of_schematic_file)),
--- 																		sheet_number => sheet_number_current),
--- 														size		=> type_text_size'value (get_field_from_line(line,7)),
--- 														style		=> to_text_style (style_in => get_field_from_line(line,10), text => false),
--- 														line_width	=> 0, -- not provided here -- CS: define a default ?
--- 
--- 														-- build text visibility
--- 														visible		=> to_field_visible (
--- 																			vis_in		=> get_field_from_line(line,8),
--- 																			schematic	=> true),
--- 
--- 														-- build text alignment
--- 														alignment	=> (
--- 																		horizontal	=> to_alignment_horizontal (get_field_from_line(line,9)),
--- 																		vertical	=> to_alignment_vertical   (get_field_from_line(line,10)))
--- 														));
 
 											end if;
 									end if;
