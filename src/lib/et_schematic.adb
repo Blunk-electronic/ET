@@ -140,11 +140,52 @@ package body et_schematic is
 		-- placeholders
 		put_line(indent(indentation + 1) 
 			& "placeholders");
-		
-		et_libraries.write_placeholder_properties (
-			placeholder => type_units.element(unit).reference,
-			indentation => indentation + 2);
-		
+
+			-- reference
+			et_libraries.write_placeholder_properties (
+				placeholder => type_units.element(unit).reference,
+				indentation => indentation + 2);
+
+			-- value
+			et_libraries.write_placeholder_properties (
+				placeholder => type_units.element(unit).value,
+				indentation => indentation + 2);
+
+			-- package/footprint
+			et_libraries.write_placeholder_properties (
+				placeholder => type_units.element(unit).packge,
+				indentation => indentation + 2);
+
+			-- datasheet
+			et_libraries.write_placeholder_properties (
+				placeholder => type_units.element(unit).datasheet,
+				indentation => indentation + 2);
+
+			-- function
+			et_libraries.write_placeholder_properties (
+				placeholder => type_units.element(unit).fnction,
+				indentation => indentation + 2);
+			
+			-- partcode
+			et_libraries.write_placeholder_properties (
+				placeholder => type_units.element(unit).partcode,
+				indentation => indentation + 2);
+
+			-- commissioned
+			et_libraries.write_placeholder_properties (
+				placeholder => type_units.element(unit).commissioned,
+				indentation => indentation + 2);
+
+			-- updated
+			et_libraries.write_placeholder_properties (
+				placeholder => type_units.element(unit).updated,
+				indentation => indentation + 2);
+
+			-- author
+			et_libraries.write_placeholder_properties (
+				placeholder => type_units.element(unit).author,
+				indentation => indentation + 2);
+			
 	end write_unit_properties;
 
 	

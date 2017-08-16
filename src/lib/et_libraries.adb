@@ -130,34 +130,37 @@ package body et_libraries is
 		put_line(indent(indentation + 1)
 			& et_libraries.to_string (placeholder.position));
 
-		-- CS:
-		
 		-- size
+		put_line(indent(indentation + 1)
+			& "size"
+			& et_libraries.type_text_size'image (placeholder.size));
 
 		-- style
+		put_line(indent(indentation + 1)
+			& "style "
+			& to_lower(et_libraries.type_text_style'image (placeholder.style)));
 
 		-- line width
+		put_line(indent(indentation + 1)
+			& "line width"
+			& et_libraries.type_text_line_width'image (placeholder.line_width));
 
 		-- orientation
+		put_line(indent(indentation + 1)
+			& "orientation "
+			& et_general.type_orientation'image (placeholder.orientation));
 
 		-- visible
+		put_line(indent(indentation + 1)
+			& "visible "
+			& to_lower(et_libraries.type_text_visible'image (placeholder.visible)));
 
 		-- alignment
-
-		
--- 			& trim(et_general.type_grid'image(text.position.x),left) & "/"
--- 			& trim(et_general.type_grid'image(text.position.y),left));
--- 		put_line(indentation * latin_1.space & "size (mm/mil) " 
--- 			& "?/" -- CS
--- 			& trim(et_libraries.type_text_size'image(text.size),left));
--- 		put_line(indentation * latin_1.space & "style " & to_lower(et_libraries.type_text_style'image(text.style)));
--- 		put_line(indentation * latin_1.space & "line width" & et_libraries.type_text_line_width'image(text.line_width));
--- 		put_line(indentation * latin_1.space & "orientation " & et_general.type_orientation'image(text.orientation));
--- 		put_line(indentation * latin_1.space & "aligment (hor/vert) " 
--- 			& to_lower(et_libraries.type_text_alignment_horizontal'image(text.alignment.horizontal))
--- 			& "/"
--- 			& to_lower(et_libraries.type_text_alignment_vertical'image(text.alignment.vertical)));
--- 		put_line(indentation * latin_1.space & "visible " & et_libraries.type_text_visible'image(text.visible));
+		put_line(indent(indentation + 1)
+			& "aligment (hor/vert) "
+			& to_lower(et_libraries.type_text_alignment_horizontal'image(placeholder.alignment.horizontal))
+			& "/"
+			& to_lower(et_libraries.type_text_alignment_vertical'image(placeholder.alignment.vertical)));
 
 		
 	end write_placeholder_properties;
