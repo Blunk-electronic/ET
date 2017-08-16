@@ -87,6 +87,13 @@ package et_schematic is
 		sheet_number	: positive;
 	end record;
 
+	coordinates_preamble : constant string (1..21) := "position " 
+		& "(sheet"
+		& et_libraries.coordinates_dimension_separator
+		& "x"
+		& et_libraries.coordinates_dimension_separator
+		& "y) ";
+	
 	function to_string (position : in type_coordinates) return string;
 	-- Returns the given position as string.
 
@@ -236,7 +243,7 @@ package et_schematic is
     
 	-- So this is the definition of a net segment with start and end coord., lists of simple and tag labels
 	type type_net_segment is tagged record
-		coordinates_start : type_coordinates;
+		coordinates_start : type_coordinates; -- CS: better et_libraries.type_coordinates ?
 		coordinates_end   : type_coordinates;
 		label_list_simple : type_list_of_labels_simple.vector;
 		label_list_tag    : type_list_of_labels_tag.vector;
@@ -275,6 +282,7 @@ package et_schematic is
 		name 		: type_net_name.bounded_string; -- example "CPU_CLOCK"
 		scope 		: type_scope_of_net; -- example "local"
 		segments 	: type_list_of_net_segments.vector; -- list of net segments
+		-- CS: junctions ? 
         ports 		: type_port_list_of_net.vector; -- list of component ports
 		coordinates : type_coordinates;                
 	end record;

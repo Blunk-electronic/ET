@@ -51,6 +51,16 @@ with et_string_processing;		use et_string_processing;
 
 package body et_libraries is
 
+	function to_string ( position : in type_coordinates) return string is
+	-- Returns the given position as string.
+	begin
+		return coordinates_preamble
+			& trim (et_libraries.type_grid'image(position.x),left) 
+			& coordinates_dimension_separator
+			& trim (et_libraries.type_grid'image(position.y),left);
+
+	end to_string;
+	
 	function to_string ( name_in_library : in type_component_name.bounded_string) return string is
 	-- Returns the given name_in_library as as string.
 	-- CS: provide a parameter that turns the pretext like "name in library" on/off
@@ -117,8 +127,8 @@ package body et_libraries is
 			& et_libraries.text_meaning_to_string(placeholder.meaning));
 
 		-- position
--- 		put_line(indent(indentation + 1)
--- 			 & et_libraries.to_string (placeholder.position));
+		put_line(indent(indentation + 1)
+			& et_libraries.to_string (placeholder.position));
 
 		-- CS:
 		

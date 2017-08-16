@@ -47,10 +47,12 @@ package body et_schematic is
 	function to_string (position : in type_coordinates) return string is
 	-- Returns the given position as string.
 	begin
-		return ("position (x/y/sheet) " & 
-			trim(et_libraries.type_grid'image(position.x),left) & "/" &
-			trim(et_libraries.type_grid'image(position.y),left) & "/" &
-			trim( positive'image(position.sheet_number),left));
+		return coordinates_preamble
+			& trim (positive'image(position.sheet_number),left) 
+			& et_libraries.coordinates_dimension_separator
+			& trim (et_libraries.type_grid'image(position.x),left)
+			& et_libraries.coordinates_dimension_separator
+			& trim (et_libraries.type_grid'image(position.y),left);
 
 		-- CS: output in both mil and mm
 		
@@ -133,7 +135,6 @@ package body et_schematic is
 
 		-- position
 		put_line(indent(indentation + 1) 
-			& "position " 
 			& et_schematic.to_string (type_units.element(unit).position));
 
 		-- placeholders

@@ -92,7 +92,11 @@ package et_libraries is
 
 	coordinate_zero : constant type_grid := 0.0;
 
+	coordinates_dimension_separator : constant string (1..1) := "/";
+	coordinates_preamble : constant string (1..15) := "position (x" & coordinates_dimension_separator & "y) ";
 	
+	function to_string ( position : in type_coordinates) return string;
+	-- Returns the given position as string.
 
 -- SCHEMATIC RELATED
 

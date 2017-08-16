@@ -1304,62 +1304,27 @@ package body et_kicad is
 			procedure write_coordinates_of_segment (segment : in type_net_segment) is
 			-- CS: rework as write_label_properties
 			begin
--- 				write_message(
--- 					file_handle => et_import.report_handle,
--- 					text => "start " & 
--- 						trim (type_grid'image( segment.coordinates_start.x),left) & "/" &
--- 						trim (type_grid'image( segment.coordinates_start.y),left) &
--- 						" end " &
--- 						trim (type_grid'image( segment.coordinates_end.x),left) & "/" &
--- 						trim (type_grid'image( segment.coordinates_end.y),left),
--- 					identation => 4);
-
 				put_line("    start "
-					& trim (et_libraries.type_grid'image( segment.coordinates_start.x),left) 
-					& "/" 
-					& trim (et_libraries.type_grid'image( segment.coordinates_start.y),left)
+					& et_schematic.to_string (segment.coordinates_start) 
 					& " end " 
-					& trim (et_libraries.type_grid'image( segment.coordinates_end.x),left)
-					& "/" 
-					& trim (et_libraries.type_grid'image( segment.coordinates_end.y),left)
+					& et_schematic.to_string (segment.coordinates_end) 
 					);
-
-
-				-- CS: write sheet number ?
-				--new_line(et_import.report_handle);
 			end write_coordinates_of_segment;
 
 			procedure write_coordinates_of_junction (junction : in type_net_junction) is
 			-- CS: rework as write_label_properties
 			begin
--- 				write_message(
--- 					file_handle => et_import.report_handle,
--- 					text => "position (x/y/sheet) " & 
--- 						trim(type_grid'image(junction.coordinates.x),left) & "/" &
--- 						trim(type_grid'image(junction.coordinates.y),left) & "/" &
--- 						trim(positive'image(junction.coordinates.sheet_number),left),
--- 					identation => 3);
-				put_line("   position (x/y/sheet) " 
-					& trim(et_libraries.type_grid'image(junction.coordinates.x),left) 
-					& "/" 
-					& trim(et_libraries.type_grid'image(junction.coordinates.y),left) 
-					& "/" 
-					& trim(positive'image(junction.coordinates.sheet_number),left)
-					);
-
+				put_line("    " & et_schematic.to_string (junction.coordinates)); 
 			end write_coordinates_of_junction;			
 
 			procedure write_note_properties (note : in et_schematic.type_note) is
 			-- CS: rework as write_label_properties			
 			begin
-				put_line("  note '" & et_libraries.type_text_content.to_string(note.content)
-					& "' at position (x/y) " 
-					& trim(et_libraries.type_grid'image(note.coordinates.x),left) 
-					& "/" 
-					& trim(et_libraries.type_grid'image(note.coordinates.y),left) 
--- 					& "/" 
--- 					& trim(positive'image(note.coordinates.sheet_number),left)
-					-- CS: write more properties (style, size, ...)
+				put_line("  note '" 
+					& et_libraries.type_text_content.to_string(note.content)
+					& "' " 
+					& et_schematic.to_string(note.coordinates)
+					-- CS: write more properties (style, size, ...
 					);
 			end write_note_properties;
 
