@@ -168,22 +168,20 @@ package et_schematic is
 	package type_component_value is new generic_bounded_length (component_value_length_max);
 	
 	-- This is a component as it appears in the schematic.
-	type type_component (appearance : type_component_appearance) is record
+	type type_component (appearance : et_general.type_component_appearance) is record
 		name_in_library : et_libraries.type_component_name.bounded_string; -- example: "TRANSISTOR_PNP"
 		value			: type_component_value.bounded_string; -- 470R
-		-- CS: function
-		units			: type_units.map;
+		author			: et_general.type_person_name.bounded_string; -- Steve Miller
+		units			: type_units.map; -- PWR, A, B, ...
 		case appearance is
-			-- If a component appears in the schematic only, it does not
-			-- have a package variant.
-			when et_general.sch => null;
-
 			-- If a component appears in both schematic and layout it has got:
-			--  - a package variant
-			--  - a partcode
-			when et_general.sch_pcb => 
+			when sch_pcb => 
 				variant		: type_variant;
 				partcode	: et_libraries.type_component_partcode.bounded_string;
+				purpose		: et_libraries.type_component_purpose.bounded_string;
+				datasheet	: et_libraries.type_component_datasheet.bounded_string;
+
+			when sch => null;
 			when others => null; -- CS
 		end case;
 	end record;

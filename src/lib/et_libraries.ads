@@ -106,6 +106,11 @@ package et_libraries is
  	component_name_length_max : constant natural := 100;
 	package type_component_name is new generic_bounded_length(component_name_length_max); use type_component_name;
 
+	-- For some component (not all !) it is helpful to have an URL to the datasheet:
+	component_datasheet_length_max : constant positive := 1000;
+	package type_component_datasheet is new generic_bounded_length (component_datasheet_length_max);
+
+	
 	function to_string ( name_in_library : in type_component_name.bounded_string) return string;
 	-- Returns the given name_in_library as as string.
 
@@ -136,6 +141,11 @@ package et_libraries is
 	component_partocde_length_max : constant positive := 200;
 	package type_component_partcode is new generic_bounded_length (component_partocde_length_max);
 
+	-- Components that require operator interaction like connectors, LEDs or switches have purpose.
+	-- Example: The purpose of connector X44 is "power in". The purpose of LED5 is "system fail":
+	component_purpose_length_max : constant positive := 100;
+	package type_component_purpose is new generic_bounded_length (component_purpose_length_max);
+	
 	function to_string ( packge : in type_component_package_name.bounded_string) return string;
 	-- Returns the given package name as as string.
 	
@@ -191,7 +201,7 @@ package et_libraries is
 		
 		PACKGE,			-- for compoenent packages like SOT23
 		DATASHEET,		-- for url to datasheet
-		P_FUNCTION, 	-- for the function of the component in the design. workaround: "P_" avoids usage of an ada keyword 
+		P_FUNCTION, 	-- for the function of the component in the design. workaround: "P_" avoids usage of an ada keyword  -- CS: rename to PURPOSE
 		PARTCODE,		-- for the primary key into an external database (like "R_PAC_S_0805_VAL_200R")
 		NOTE,			-- for notes made by a person
 		MISC); -- CS: others ?

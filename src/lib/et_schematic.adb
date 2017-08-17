@@ -168,6 +168,11 @@ package body et_schematic is
 		put_line(indent(indentation + 1)
 					& et_libraries.to_string (type_components.element(component).name_in_library));
 
+		-- author
+		put_line(indent(indentation + 1)
+			& "author "
+			& et_general.type_person_name.to_string (type_components.element(component).author));
+
 		
 		-- appearance
 		put_line(indent(indentation + 1)
@@ -179,11 +184,21 @@ package body et_schematic is
 
 				-- package variant
 				put_line(indent(indentation + 1)
-							& et_libraries.to_string (type_components.element(component).variant.variant));
+					& et_libraries.to_string (type_components.element(component).variant.variant));
 				-- NOTE: This displays the type_component_variant (see et_libraries.ads).
 				-- Do not confuse with type_variant (see et_schematic.ads) which also contains the variant name
 				-- like in TL084D or TL084N.
 
+				-- datasheet
+				put_line(indent(indentation + 1)
+					& "datasheet "
+					& et_libraries.type_component_datasheet.to_string (type_components.element(component).datasheet));
+
+				-- function
+				put_line(indent(indentation + 1)
+					& "purpose "
+					& et_libraries.type_component_purpose.to_string (type_components.element(component).purpose));
+				
 				-- partcode
 				put_line(indent(indentation + 1)
 					& "partcode "

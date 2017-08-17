@@ -2024,6 +2024,10 @@ package body et_kicad is
 								appearance => et_general.sch, -- the component appears in schematic only
 								name_in_library => tmp_component_name_in_lib,
 								value => et_schematic.type_component_value.to_bounded_string (field_content(tmp_component_text_value)),
+								-- CS
+								--commissioned
+								--updated
+								author => et_general.type_person_name.to_bounded_string (field_content(tmp_component_text_author)),
 
 								-- At this stage we do not know if and how many units there are. So the unit list is empty.
 								units => et_schematic.type_units.empty_map),
@@ -2052,8 +2056,13 @@ package body et_kicad is
 								appearance => et_general.sch_pcb, -- the component appears in both schematic and layout
 								name_in_library => tmp_component_name_in_lib,
 								value => et_schematic.type_component_value.to_bounded_string(field_content(tmp_component_text_value)),
+								datasheet => et_libraries.type_component_datasheet.to_bounded_string (field_content(tmp_component_text_datasheet)),
 								partcode => et_libraries.type_component_partcode.to_bounded_string (field_content(tmp_component_text_partcode)),
-								-- CS: function, partcode, reference, commissioned, ...
+								-- CS
+								--commissioned
+								--updated
+								author => et_general.type_person_name.to_bounded_string (field_content(tmp_component_text_author)),
+								purpose => et_libraries.type_component_purpose.to_bounded_string (field_content(tmp_component_text_fnction)),
 								
 								-- Assemble the package variant.
 								-- NOTE: There is no way to identifiy the name of the package variant like TL084D or TL084N.
@@ -2832,6 +2841,7 @@ package body et_kicad is
 												case type_component_field_id'value(get_field_from_line(line,2)) is
 													when component_field_reference =>
 														tmp_component_text_reference := to_text;
+														-- CS: verify tmp_component_text_reference equals tmp_component_reference
 													when component_field_value =>
 														tmp_component_text_value := to_text;
 													when component_field_footprint =>
