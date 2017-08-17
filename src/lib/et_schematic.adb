@@ -58,7 +58,6 @@ package body et_schematic is
 		
 		-- CS: exception handler
 	end to_string;
-
 	
 	function to_string (orientation : in type_orientation) return string is
 	-- Returns the the given orientation as string.
@@ -67,6 +66,88 @@ package body et_schematic is
 		-- CS: exception handler
 	end to_string;
 
+	procedure write_label_properties ( label : in type_net_label; indentation : in natural := 0) is
+	-- Writes the properties of the given net label in the logfile.
+		function indent ( i : in natural) return string renames et_string_processing.indentation;
+	begin
+		case label.label_appearance is
+			when simple =>
+				put(indent(indentation) & "simple label ");
+			when tag =>
+				put(indent(indentation) & "tag label ");
+				-- CS: directon, global, hierarchic, style, ...
+		end case;
+
+		put_line("'" & type_net_name.to_string(label.text) & "' ");
+
+		put_line(indent(indentation + 1) & et_schematic.to_string(label.coordinates));
+		put_line(indent(indentation + 1) & et_schematic.to_string(label.orientation));
+		
+		case label.label_appearance is
+			when simple =>
+				null;
+			when tag =>
+				null;
+				--put("tag label ");
+				-- CS: directon, global, hierarchic, style, ...
+		end case;
+
+	end write_label_properties;
+
+	procedure write_note_properties (note : in et_schematic.type_note; indentation : in natural := 0) is
+	-- Writes the properties of the given note
+		function indent ( i : in natural) return string renames et_string_processing.indentation;
+	begin
+		put_line(indent(indentation)	
+			& "text note");
+
+		-- position
+		put_line(indent(indentation + 1)
+			& et_schematic.to_string (note.coordinates));
+
+		-- content
+		if et_libraries.type_text_content.length(note.content) > 0 then
+			put_line(indent(indentation + 1) 
+				& "content '" & et_libraries.type_text_content.to_string(note.content) & "'");
+		else
+			put_line(indent(indentation + 1)
+				& "no content");
+		end if;
+		
+		-- size
+		put_line(indent(indentation + 1)
+			& "size"
+			& et_libraries.type_text_size'image (note.size));
+
+		-- style
+		put_line(indent(indentation + 1)
+			& "style "
+			& to_lower(et_libraries.type_text_style'image (note.style)));
+
+		-- line width
+		put_line(indent(indentation + 1)
+			& "line width"
+			& et_libraries.type_text_line_width'image (note.line_width));
+
+		-- orientation
+		put_line(indent(indentation + 1)
+			& "orientation "
+			& et_general.type_orientation'image (note.orientation));
+
+		-- visible
+		put_line(indent(indentation + 1)
+			& "visible "
+			& to_lower(et_libraries.type_text_visible'image (note.visible)));
+
+		-- alignment
+		put_line(indent(indentation + 1)
+			& "aligment (hor/vert) "
+			& to_lower(et_libraries.type_text_alignment_horizontal'image(note.alignment.horizontal))
+			& "/"
+			& to_lower(et_libraries.type_text_alignment_vertical'image(note.alignment.vertical)));
+
+			
+	end write_note_properties;
 	
 	procedure write_component_properties ( component : in type_components.cursor; indentation : in natural := 0) is
 	-- Writes the properties of the component indicated by the given cursor.
@@ -188,6 +269,25 @@ package body et_schematic is
 			
 	end write_unit_properties;
 
+
+	procedure write_coordinates_of_segment (segment : in type_net_segment; indentation : in natural := 0 ) is
+	-- Writes the start and end coordinates of a net segment.
+		function indent ( i : in natural) return string renames et_string_processing.indentation;
+	begin
+		put_line(indent(indentation) 
+			& "start "
+			& to_string (segment.coordinates_start) 
+			& " end " 
+			& to_string (segment.coordinates_end));
+	end write_coordinates_of_segment;
+
+	procedure write_coordinates_of_junction (junction : in type_net_junction; indentation : in natural := 0) is
+	-- Writes the coordinates of a net junction.
+		function indent ( i : in natural) return string renames et_string_processing.indentation;
+	begin
+		put_line(indent(indentation) 
+			& et_schematic.to_string (junction.coordinates)); 
+	end write_coordinates_of_junction;			
 	
 
 end et_schematic;

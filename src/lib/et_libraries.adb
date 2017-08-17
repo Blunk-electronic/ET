@@ -99,7 +99,7 @@ package body et_libraries is
 	end to_string;
 
 
-	function text_meaning_to_string ( meaning : in type_text_meaning) return string is
+	function to_string ( meaning : in type_text_meaning) return string is
 	-- Converts meaning to string.
 		function strip_prefix ( s : in string) return string is
 		begin
@@ -115,7 +115,7 @@ package body et_libraries is
 			when others => -- we can do a direct conversion
 				return to_lower(type_text_meaning'image(meaning));
 		end case;
-	end text_meaning_to_string;
+	end to_string;
 
 	
 	procedure write_placeholder_properties ( placeholder : in type_text_placeholder; indentation : in natural := 0) is
@@ -124,7 +124,7 @@ package body et_libraries is
 	begin
 		-- meaning
 		put_line(indent(indentation) 
-			& et_libraries.text_meaning_to_string(placeholder.meaning));
+			& et_libraries.to_string(placeholder.meaning));
 
 		-- position
 		put_line(indent(indentation + 1)
@@ -161,9 +161,65 @@ package body et_libraries is
 			& to_lower(et_libraries.type_text_alignment_horizontal'image(placeholder.alignment.horizontal))
 			& "/"
 			& to_lower(et_libraries.type_text_alignment_vertical'image(placeholder.alignment.vertical)));
-
-		
 	end write_placeholder_properties;
+
+
+	procedure write_text_properies ( text : in et_libraries.type_text; indentation : in natural := 0) is
+	-- Outputs the properties of the given text.
+		function indent ( i : in natural) return string renames et_string_processing.indentation;
+	begin
+		-- meaning
+		put_line(indent(indentation) 
+			--& "meaning "
+			& et_libraries.to_string(text.meaning));
+
+		-- position
+		put_line(indent(indentation + 1)
+			& et_libraries.to_string (text.position));
+
+		-- content
+		if et_libraries.type_text_content.length(text.content) > 0 then
+			put_line(indent(indentation + 1) 
+				& "content '" & et_libraries.type_text_content.to_string(text.content) & "'");
+		else
+			put_line(indent(indentation + 1)
+				& "no content");
+		end if;
+		
+		-- size
+		put_line(indent(indentation + 1)
+			& "size"
+			& et_libraries.type_text_size'image (text.size));
+
+		-- style
+		put_line(indent(indentation + 1)
+			& "style "
+			& to_lower(et_libraries.type_text_style'image (text.style)));
+
+		-- line width
+		put_line(indent(indentation + 1)
+			& "line width"
+			& et_libraries.type_text_line_width'image (text.line_width));
+
+		-- orientation
+		put_line(indent(indentation + 1)
+			& "orientation "
+			& et_general.type_orientation'image (text.orientation));
+
+		-- visible
+		put_line(indent(indentation + 1)
+			& "visible "
+			& to_lower(et_libraries.type_text_visible'image (text.visible)));
+
+		-- alignment
+		put_line(indent(indentation + 1)
+			& "aligment (hor/vert) "
+			& to_lower(et_libraries.type_text_alignment_horizontal'image(text.alignment.horizontal))
+			& "/"
+			& to_lower(et_libraries.type_text_alignment_vertical'image(text.alignment.vertical)));
+
+	end write_text_properies;
+
 	
 end et_libraries;
 

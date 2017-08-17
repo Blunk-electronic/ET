@@ -196,7 +196,7 @@ package et_libraries is
 		NOTE,			-- for notes made by a person
 		MISC); -- CS: others ?
 
-	function text_meaning_to_string ( meaning : in type_text_meaning) return string;
+	function to_string ( meaning : in type_text_meaning) return string;
 	-- Converts meaning to string.
 
 	-- These are basic properties a text has got:
@@ -224,6 +224,10 @@ package et_libraries is
 
 	procedure write_placeholder_properties ( placeholder : in type_text_placeholder; indentation : in natural := 0);
 	-- Writes the properties of the given placeholder.
+
+	procedure write_text_properies ( text : in et_libraries.type_text; indentation : in natural := 0);
+	-- Outputs the properties of the given text.
+
 	
 -- PORTS
 	

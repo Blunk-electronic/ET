@@ -108,20 +108,12 @@ package et_schematic is
 		coordinates		: type_coordinates;
 		content			: et_libraries.type_text_content.bounded_string;
 	end record;
+
+	procedure write_note_properties (note : in et_schematic.type_note; indentation : in natural := 0);
+	-- Writes the properties of the given note
+	
 	package type_texts is new indefinite_doubly_linked_lists (
 		element_type => type_note);
-
--- 	type type_component_texts is record
--- 		reference	: type_text (meaning => et_general.reference);
--- 		value		: type_text (meaning => et_general.value);
--- 		commissioned: type_text (meaning => et_general.commissioned);
--- 		updated		: type_text (meaning => et_general.updated);
--- 		author		: type_text (meaning => et_general.author);
--- 		packge		: type_text (meaning => et_general.packge); -- like "SOT23"
--- 		datasheet	: type_text (meaning => et_general.datasheet); -- might be useful for some special components
--- 		fnction		: type_text (meaning => et_general.p_function); -- to be filled in schematic later by the user
--- 		partcode	: type_text (meaning => et_general.partcode); -- like "R_PAC_S_0805_VAL_"
--- 	end record;
 
 
 -- UNITS AND COMPONENTS
@@ -234,7 +226,8 @@ package et_schematic is
 		index_type => positive, -- every tag label has an id
 		element_type => type_net_label_tag);
 
-
+	procedure write_label_properties ( label : in type_net_label; indentation : in natural := 0);
+	-- Writes the properties of the given net label in the logfile.
     
 
 -- NET
@@ -249,6 +242,9 @@ package et_schematic is
 		label_list_tag    : type_list_of_labels_tag.vector;
 	end record;
 
+	procedure write_coordinates_of_segment (segment : in type_net_segment; indentation : in natural := 0 );
+	-- Writes the start and end coordinates of a net segment.	
+	
 	-- A net is a list of segments.
 	package type_list_of_net_segments is new vectors ( 
 		index_type => positive,  -- every net segment has an id
@@ -269,6 +265,9 @@ package et_schematic is
 		coordinates : type_coordinates;
 	end record;
 
+	procedure write_coordinates_of_junction (junction : in type_net_junction; indentation : in natural := 0);
+	-- Writes the coordinates of a net junction.
+	
 	-- Junctions are to be collected in a list.
 	package type_list_of_net_junctions is new vectors (
 		index_type => positive, -- every junction has an id

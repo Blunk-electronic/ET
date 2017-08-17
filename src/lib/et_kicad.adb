@@ -378,38 +378,6 @@ package body et_kicad is
 		return et_libraries.type_text_content.to_string(text_field.content);
 	end field_content;
 	
-	procedure write_text_properies ( text : in et_libraries.type_text) is
-	-- Outputs the properties of the given text.
-		indentation : positive := 4;
-	begin
-		put_line(indentation * latin_1.space & "text field");
-		indentation := indentation + 1;
-
-		put(indentation * latin_1.space & "meaning ");
-		put_line (et_libraries.text_meaning_to_string(text.meaning));
-				
-		if et_libraries.type_text_content.length(text.content) > 0 then
-			put_line(indentation * latin_1.space & "content '" & et_libraries.type_text_content.to_string(text.content) & "'");
-		else
-			put_line(indentation * latin_1.space & "no content");
-		end if;
-
-		put_line(indentation * latin_1.space & "position (x/y) " 
-			& trim(et_libraries.type_grid'image(text.position.x),left) & "/"
-			& trim(et_libraries.type_grid'image(text.position.y),left));
-		put_line(indentation * latin_1.space & "size (mm/mil) " 
-			& "?/" -- CS
-			& trim(et_libraries.type_text_size'image(text.size),left));
-		put_line(indentation * latin_1.space & "style " & to_lower(et_libraries.type_text_style'image(text.style)));
-		put_line(indentation * latin_1.space & "line width" & et_libraries.type_text_line_width'image(text.line_width));
-		put_line(indentation * latin_1.space & "orientation " & et_general.type_orientation'image(text.orientation));
-		put_line(indentation * latin_1.space & "aligment (hor/vert) " 
-			& to_lower(et_libraries.type_text_alignment_horizontal'image(text.alignment.horizontal))
-			& "/"
-			& to_lower(et_libraries.type_text_alignment_vertical'image(text.alignment.vertical)));
-		put_line(indentation * latin_1.space & "visible " & et_libraries.type_text_visible'image(text.visible));
-	end write_text_properies;
-
 	procedure read_components_libraries is
 	-- Reads components from libraries as stored in lib_dir and project_libraries:
 		use et_libraries.type_list_of_library_names;
@@ -737,28 +705,28 @@ package body et_kicad is
 
 													reference := read_field (meaning => et_libraries.reference);
 													-- for the log:
-													write_text_properies (et_libraries.type_text(reference));
+													et_libraries.write_text_properies (et_libraries.type_text(reference),4); -- actuals: text & indentation
 
 												-- If we have a value field like "F1 "74LS00" 0 -100 50 H V C CNN"
 												when et_libraries.value =>
 												
 													value := read_field (meaning => et_libraries.value);
 													-- for the log:
-													write_text_properies (et_libraries.type_text(value));
+													et_libraries.write_text_properies (et_libraries.type_text(value),4); -- actuals: text & indentation
 
 												-- If we have a footprint field like "F2 "" 0 -100 50 H V C CNN"
 												when et_libraries.packge =>
 												
 													footprint := read_field (meaning => et_libraries.packge);
 													-- for the log:
-													write_text_properies (et_libraries.type_text(footprint));
+													et_libraries.write_text_properies (et_libraries.type_text(footprint),4); -- actuals: text & indentation
 
 												-- If we have a datasheet field like "F3 "" 0 -100 50 H V C CNN"
 												when et_libraries.datasheet =>
 												
 													datasheet := read_field (meaning => et_libraries.datasheet);
 													-- for the log:
-													write_text_properies (et_libraries.type_text(datasheet));
+													et_libraries.write_text_properies (et_libraries.type_text(datasheet),4); -- actuals: text & indentation
 
 												-- Other mandatory fields like function and partcode are detected by F4 and F5 
 												-- (not by subfield #10 !) So F4 enforces a function, F5 enforces a partcode.
@@ -772,7 +740,7 @@ package body et_kicad is
 															= to_lower(et_libraries.type_text_meaning'image(et_libraries.p_function)) then
 																fnction := read_field (meaning => et_libraries.p_function);
 																-- for the log:
-																write_text_properies (et_libraries.type_text(fnction));
+																et_libraries.write_text_properies (et_libraries.type_text(fnction),4); -- actuals: text & indentation
 																-- basic_text_check(fnction); -- CS
 													else
 														invalid_field(line);
@@ -787,7 +755,7 @@ package body et_kicad is
 															= to_lower(et_libraries.type_text_meaning'image(et_libraries.partcode)) then
 																partcode := read_field (meaning => et_libraries.partcode);
 																-- for the log:
-																write_text_properies (et_libraries.type_text(partcode));
+																et_libraries.write_text_properies (et_libraries.type_text(partcode),4); -- actuals: text & indentation
 																-- basic_text_check(partcode); -- CS
 													else
 														invalid_field(line);
@@ -802,7 +770,7 @@ package body et_kicad is
 															= to_lower(et_libraries.type_text_meaning'image(et_libraries.commissioned)) then
 																commissioned := read_field (meaning => et_libraries.commissioned);
 																-- for the log:
-																write_text_properies (et_libraries.type_text(commissioned));
+																et_libraries.write_text_properies (et_libraries.type_text(commissioned),4); -- actuals: text & indentation
 																-- basic_text_check(commissioned); -- CS
 													else
 														invalid_field(line);
@@ -817,7 +785,7 @@ package body et_kicad is
 															= to_lower(et_libraries.type_text_meaning'image(et_libraries.updated)) then
 																updated := read_field (meaning => et_libraries.updated);
 																-- for the log:
-																write_text_properies (et_libraries.type_text(updated));
+																et_libraries.write_text_properies (et_libraries.type_text(updated),4); -- actuals: text & indentation
 																-- basic_text_check(updated); -- CS
 													else
 														invalid_field(line);
@@ -832,7 +800,7 @@ package body et_kicad is
 															= to_lower(et_libraries.type_text_meaning'image(et_libraries.author)) then
 																author := read_field (meaning => et_libraries.author);
 																-- for the log:
-																write_text_properies (et_libraries.type_text(author));
+																et_libraries.write_text_properies (et_libraries.type_text(author),4); -- actuals: text & indentation
 																-- basic_text_check(author); -- CS
 													else
 														invalid_field(line);
@@ -1269,65 +1237,6 @@ package body et_kicad is
 			procedure set_s ( segment : in out type_wild_net_segment ) is begin segment.s := true; end set_s;
 			procedure set_picked ( segment : in out type_wild_net_segment ) is begin segment.picked := true; end set_picked;
 
-			procedure write_label_properties ( label : in type_net_label; indentation : in natural := 0) is
-			-- Writes the properties of the given net label in the logfile.
-				function indent ( i : in natural) return string renames et_string_processing.indentation;
-			begin
---				put(indent(indentation * latin_1.space);
-				case label.label_appearance is
-					when simple =>
-						put(indent(indentation) & "simple label ");
-					when tag =>
-						put(indent(indentation) & "tag label ");
-						-- CS: directon, global, hierarchic, style, ...
-				end case;
-
-				put_line("'" & type_net_name.to_string(label.text) & "' ");
-
-				put_line(indent(indentation + 1) & et_schematic.to_string(label.coordinates));
-				put_line(indent(indentation + 1) & et_schematic.to_string(label.orientation));
-
-				
-				case label.label_appearance is
-					when simple =>
-						null;
-					when tag =>
-						null;
-						--put("tag label ");
-						-- CS: directon, global, hierarchic, style, ...
-				end case;
-
--- 				new_line;
-				
-			end write_label_properties;
-			
-			procedure write_coordinates_of_segment (segment : in type_net_segment) is
-			-- CS: rework as write_label_properties
-			begin
-				put_line("    start "
-					& et_schematic.to_string (segment.coordinates_start) 
-					& " end " 
-					& et_schematic.to_string (segment.coordinates_end) 
-					);
-			end write_coordinates_of_segment;
-
-			procedure write_coordinates_of_junction (junction : in type_net_junction) is
-			-- CS: rework as write_label_properties
-			begin
-				put_line("    " & et_schematic.to_string (junction.coordinates)); 
-			end write_coordinates_of_junction;			
-
-			procedure write_note_properties (note : in et_schematic.type_note) is
-			-- CS: rework as write_label_properties			
-			begin
-				put_line("  note '" 
-					& et_libraries.type_text_content.to_string(note.content)
-					& "' " 
-					& et_schematic.to_string(note.coordinates)
-					-- CS: write more properties (style, size, ...
-					);
-			end write_note_properties;
-
 			-- An anonymous_net is a list of net segments that are connected with each other (by their start or end points).
 			-- The anonymous net gets step by step more properties specified: name, scope and some status flags:
 			package type_anonymous_net is new vectors (
@@ -1370,7 +1279,8 @@ package body et_kicad is
 							index => id,
 							process => set_picked'access);
 
-					write_coordinates_of_segment(segment => type_net_segment(type_wild_list_of_net_segments.element(wild_segment_collection,id)));
+					write_coordinates_of_segment(segment => type_net_segment(type_wild_list_of_net_segments.element(wild_segment_collection,id)),
+												 indentation => 3);
 					
 					scratch := type_net_segment(type_wild_list_of_net_segments.element(wild_segment_collection,id));
 					type_anonymous_net.append(anonymous_net.segments,scratch);
@@ -1775,7 +1685,7 @@ package body et_kicad is
 							for b in 1..type_anonymous_net.length(a.segments) loop -- loop for each segment of anonymous_net a
 								s := type_anonymous_net.element(a.segments, positive(b)); -- get segment
 								type_list_of_net_segments.append(container => net_scratch.segments, new_item => s);
-								write_coordinates_of_segment(segment => s);
+								write_coordinates_of_segment(segment => s, indentation => 4);
 							end loop;
 
                             -- assign coordinates
@@ -1821,7 +1731,7 @@ package body et_kicad is
 							for b in 1..type_anonymous_net.length(a.segments) loop -- loop for each segment of anonymous_net a
 								s := type_anonymous_net.element(a.segments, positive(b)); -- get segment
 								type_list_of_net_segments.append(container => net_scratch.segments, new_item => s);
-								write_coordinates_of_segment(segment => s);
+								write_coordinates_of_segment(segment => s, indentation => 4);
 							end loop;
 
 							-- Look for other anonymous nets with the same name (a.name). Start searching from position n+1:
@@ -1841,7 +1751,7 @@ package body et_kicad is
 											for c in 1..type_anonymous_net.length(b.segments) loop -- loop for each segment of anonymous_net b
 												s := type_anonymous_net.element(b.segments, positive(c)); -- get segment
 												type_list_of_net_segments.append(container => net_scratch.segments, new_item => s);
-												write_coordinates_of_segment(segment => s);
+												write_coordinates_of_segment(segment => s, indentation => 4);
 											end loop;
 
 											-- mark anonymous net as "sorted" so that the outer loop can skip it in further spins
@@ -1921,7 +1831,7 @@ package body et_kicad is
 								if junction_sits_on_segment(junction => junction_scratch, segment => segment_scratch) then -- match
 
 									--write_coordinates_of_segment (type_net_segment(segment_scratch));
-									write_coordinates_of_junction (junction_scratch);
+									write_coordinates_of_junction (junction_scratch, 3); -- last actual is indentation
 
 									-- move start coord. of the current segment to the position of the junction
 									type_wild_list_of_net_segments.update_element(
@@ -2016,6 +1926,7 @@ package body et_kicad is
 				tmp_component_text_packge.content := et_libraries.type_text_content.to_bounded_string("");
 				-- CS: init text properties
 				-- CS: init remaining tmp vars
+				-- CS: clear "field_found" flags
 			end init_temp_variables;
 			
 			function to_text return et_libraries.type_text is
@@ -2761,7 +2672,7 @@ package body et_kicad is
 										-- CS: Currently we store the line as it is in note_scratch.text
 										note_scratch.content := et_libraries.type_text_content.to_bounded_string(to_string(line));
 
-										write_note_properties(note_scratch);
+										write_note_properties(note_scratch,2); -- last actual is indentation
 										
 										-- the notes are to be collected in the list of notes
 										et_schematic.type_texts.append (module.notes,note_scratch);
@@ -2797,6 +2708,8 @@ package body et_kicad is
 										if get_field_from_line(line,1) = schematic_component_footer then
 											component_entered := false; -- we are leaving the component
 
+											-- CS: test "field_found" flags
+											
 											-- Insert component in component list of module. If a component is split
 											-- in units, only the first occurence of it leads to inserting the component.
 											-- Nevertheless there are some checks on the unit (see insert_component).
@@ -2876,6 +2789,8 @@ package body et_kicad is
 											--			"F 2 "bel_netchanger:N_0.2MM" H 2600 2100 60  0001 C CNN"
 											if get_field_from_line(line,1) = component_field_identifier then -- "F"
 
+												-- CS: set "field_found" flags
+												
 												case type_component_field_id'value(get_field_from_line(line,2)) is
 													when component_field_reference =>
 														tmp_component_text_reference := to_text;
