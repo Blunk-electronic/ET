@@ -158,15 +158,26 @@ package body et_schematic is
 			& "component " 
 			& et_general.to_string (type_components.key(component)));
 
+		-- CS: library file name
+		-- name in library
+		put_line(indent(indentation + 1)
+			& "name in library "
+			& et_libraries.to_string (type_components.element(component).name_in_library));
+		
 		-- value
 		put_line(indent(indentation + 1)
 			& "value "
 			& et_schematic.type_component_value.to_string (type_components.element(component).value));
-		
-		-- CS: library file name
-		-- name in library
+
+		-- commissioned
 		put_line(indent(indentation + 1)
-					& et_libraries.to_string (type_components.element(component).name_in_library));
+			& "commissioned "
+			& string(type_components.element(component).commissioned));
+
+		-- updated
+		put_line(indent(indentation + 1)
+			& "updated "
+			& string(type_components.element(component).updated));
 
 		-- author
 		put_line(indent(indentation + 1)
@@ -194,16 +205,15 @@ package body et_schematic is
 					& "datasheet "
 					& et_libraries.type_component_datasheet.to_string (type_components.element(component).datasheet));
 
-				-- function
-				put_line(indent(indentation + 1)
-					& "purpose "
-					& et_libraries.type_component_purpose.to_string (type_components.element(component).purpose));
-				
 				-- partcode
 				put_line(indent(indentation + 1)
 					& "partcode "
 					& et_libraries.type_component_partcode.to_string (type_components.element(component).partcode));
-
+				
+				-- function
+				put_line(indent(indentation + 1)
+					& "purpose "
+					& et_libraries.type_component_purpose.to_string (type_components.element(component).purpose));
 				
 			when pcb => null; -- CS
 			when others => null; -- CS should never happen as virtual components do not have a package
@@ -290,7 +300,6 @@ package body et_schematic is
 				indentation => indentation + 2);
 			
 	end write_unit_properties;
-
 
 	procedure write_coordinates_of_segment (segment : in type_net_segment; indentation : in natural := 0 ) is
 	-- Writes the start and end coordinates of a net segment.

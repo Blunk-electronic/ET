@@ -45,11 +45,12 @@ package body et_string_processing is
 		return (width * latin_1.space);
 	end indentation;
 	
-	function date_now return string is
+	function date_now return type_date is
 		now		: time := clock;
 		date	: string (1..19) := image(now, time_zone => utc_time_offset(now));
 	begin
-		return date;
+		date(11) := 'T'; -- inserts a T so that the result is "2017-08-17T14:17:25"
+		return type_date(date);
 	end date_now;
 	
 	function ht_to_space (c : in character) return character is

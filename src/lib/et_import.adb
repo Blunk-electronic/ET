@@ -61,7 +61,7 @@ package body et_import is
 		set_output(et_import.report_handle);
 		
 		put_line(system_name & " import report");
-		put_line("date " & date_now);
+		put_line("date " & string(date_now));
 		put_line("CAD format " & type_cad_format'image(cad_format));
 		put_line("project file " & to_string(et_import.project_file_name));
 		put_line(row_separator_double);		
@@ -72,7 +72,7 @@ package body et_import is
 	-- Sets the output back to standard_output.
 	begin
 		put_line(row_separator_double);
-		put_line("date " & date_now);
+		put_line("date " & string(date_now));
 		put_line(system_name & " import report end");
 
 		set_output(standard_output);

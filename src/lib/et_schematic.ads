@@ -42,7 +42,7 @@ with ada.containers.ordered_sets;
 
 with et_general;                use et_general;
 with et_libraries;
-
+with et_string_processing;
 package et_schematic is
 
 
@@ -171,6 +171,8 @@ package et_schematic is
 	type type_component (appearance : et_general.type_component_appearance) is record
 		name_in_library : et_libraries.type_component_name.bounded_string; -- example: "TRANSISTOR_PNP"
 		value			: type_component_value.bounded_string; -- 470R
+		commissioned	: et_string_processing.type_date; -- 2017-08-17T14:17:25
+		updated			: et_string_processing.type_date; -- 2017-10-30T08:33:56
 		author			: et_general.type_person_name.bounded_string; -- Steve Miller
 		units			: type_units.map; -- PWR, A, B, ...
 		case appearance is

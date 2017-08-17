@@ -1903,6 +1903,8 @@ package body et_kicad is
 			-- This is relevant for reading components:
 			component_entered : boolean := false; -- indicates that a component is being read
 
+			-- These temporarily used variables store information used when assembling and inserting a component
+			-- or a unit in the component/unit list:
 			tmp_component_name_in_lib	: et_libraries.type_component_name.bounded_string;
 			tmp_component_appearance	: et_general.type_component_appearance := et_general.sch;
 			tmp_component_reference		: et_general.type_component_reference;
@@ -1921,14 +1923,140 @@ package body et_kicad is
 			tmp_component_text_fnction		: et_libraries.type_text (meaning => et_libraries.p_function); -- to be filled in schematic later by the user
 			tmp_component_text_partcode		: et_libraries.type_text (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"			
 
+			-- These are the "field found" flags. They signal if a particular text field has been found.
+			-- They are cleared by procdure "init_temp_variables" once a new compoenent is entered.
+			-- They are evaluated when a component section is left.
+            tmp_component_text_reference_found		: boolean;
+            tmp_component_text_value_found			: boolean;
+            tmp_component_text_commissioned_found	: boolean;
+            tmp_component_text_updated_found		: boolean;
+            tmp_component_text_author_found			: boolean;
+			tmp_component_text_packge_found			: boolean;
+			tmp_component_text_datasheet_found		: boolean;
+			tmp_component_text_fnction_found		: boolean;
+			tmp_component_text_partcode_found		: boolean;
+			
+			
 			procedure init_temp_variables is
 			begin
+				-- clear "field found" flags
+				tmp_component_text_reference_found		:= false;
+				tmp_component_text_value_found			:= false;
+				tmp_component_text_commissioned_found	:= false;
+				tmp_component_text_updated_found		:= false;
+				tmp_component_text_author_found			:= false;
+				tmp_component_text_packge_found			:= false;
+				tmp_component_text_datasheet_found		:= false;
+				tmp_component_text_fnction_found		:= false;
+				tmp_component_text_partcode_found		:= false;
+				
 				tmp_component_text_packge.content := et_libraries.type_text_content.to_bounded_string("");
-				-- CS: init text properties
-				-- CS: init remaining tmp vars
-				-- CS: clear "field_found" flags
+				-- CS: init text properties ?
+				-- CS: init remaining tmp vars ?
+
 			end init_temp_variables;
+
+			procedure check_text_fields is
+			-- Tests if a "field found" flag is cleared and raises an alarm in that case.
+			-- Perfoms a plausibility and symtax check on the text fields.
+				procedure missing_field ( m : in et_libraries.type_text_meaning) is 
+				begin
+					write_message (
+						file_handle => current_output,
+						text => message_error 
+							& "component " & et_general.to_string (tmp_component_reference) 
+							& latin_1.space
+							& et_schematic.to_string(tmp_component_position)
+							& latin_1.lf
+							& "text field '" & et_libraries.to_string(m) & "' missing !",
+						console => true);
+					
+					raise constraint_error;
+				end missing_field;
+			begin
+				-- reference
+				if not tmp_component_text_reference_found then
+					missing_field (et_libraries.reference);
+				else
+					null; -- CS: verify tmp_component_text_reference equals tmp_component_reference
+				end if;
+
+				-- value
+				if not tmp_component_text_value_found then
+					missing_field (et_libraries.value);
+				else
+					null;
+					-- CS: check content of tmp_component_text_value
+				end if;
+
+				-- commissioned
+				if not tmp_component_text_commissioned_found then
+					missing_field (et_libraries.commissioned);
+				else
+					null;
+					-- CS: check content of tmp_component_text_commissioned
+				end if;
+
+				-- updated
+				if not tmp_component_text_updated_found then
+					missing_field (et_libraries.updated);
+				else
+					null;
+					-- CS: check content of tmp_component_text_updated
+				end if;
+
+				-- author
+				if not tmp_component_text_author_found then
+					missing_field (et_libraries.author);
+				else
+					null;
+					-- CS: check content of tmp_component_text_author
+				end if;
+
+				-- If we are checking fields of a real component there are more 
+				-- fields to be checked. If it is about a virtual component, those 
+				-- fields are ignored and thus NOT checked:
+				case tmp_component_appearance is
+					when sch_pcb =>
+							
+						-- package
+						if not tmp_component_text_packge_found then
+							missing_field (et_libraries.packge);
+						else
+							null;
+							-- CS: check content of tmp_component_text_packge
+						end if;
+
+						-- datasheet
+						if not tmp_component_text_datasheet_found then
+							missing_field (et_libraries.datasheet);
+						else
+							null;
+							-- CS: check content of tmp_component_text_datasheet
+						end if;
+
+						-- partcode
+						if not tmp_component_text_partcode_found then
+							missing_field (et_libraries.partcode);
+						else
+							null;
+							-- CS: check content of tmp_component_text_partcode
+						end if;
+						
+						-- purpose
+						if not tmp_component_text_fnction_found then
+							missing_field (et_libraries.p_function);
+						else
+							null;
+							-- CS: check content of tmp_component_text_fnction
+						end if;
+
+					when others => null; -- CS ?
+				end case;
+				
+			end check_text_fields;
 			
+
 			function to_text return et_libraries.type_text is
 			-- Converts a field like "F 1 "green" H 2700 2750 50  0000 C CNN" to a type_text
 				function field ( line : in type_fields_of_line; position : in positive) return string renames get_field_from_line;
@@ -2024,9 +2152,8 @@ package body et_kicad is
 								appearance => et_general.sch, -- the component appears in schematic only
 								name_in_library => tmp_component_name_in_lib,
 								value => et_schematic.type_component_value.to_bounded_string (field_content(tmp_component_text_value)),
-								-- CS
-								--commissioned
-								--updated
+								commissioned => et_string_processing.type_date (field_content(tmp_component_text_commissioned)),
+								updated => et_string_processing.type_date (field_content(tmp_component_text_updated)),
 								author => et_general.type_person_name.to_bounded_string (field_content(tmp_component_text_author)),
 
 								-- At this stage we do not know if and how many units there are. So the unit list is empty.
@@ -2056,12 +2183,13 @@ package body et_kicad is
 								appearance => et_general.sch_pcb, -- the component appears in both schematic and layout
 								name_in_library => tmp_component_name_in_lib,
 								value => et_schematic.type_component_value.to_bounded_string(field_content(tmp_component_text_value)),
+								commissioned => et_string_processing.type_date (field_content(tmp_component_text_commissioned)),
+								updated => et_string_processing.type_date (field_content(tmp_component_text_updated)),
+								author => et_general.type_person_name.to_bounded_string (field_content(tmp_component_text_author)),
+
+								-- properties of a real component (appears in schematic and layout);
 								datasheet => et_libraries.type_component_datasheet.to_bounded_string (field_content(tmp_component_text_datasheet)),
 								partcode => et_libraries.type_component_partcode.to_bounded_string (field_content(tmp_component_text_partcode)),
-								-- CS
-								--commissioned
-								--updated
-								author => et_general.type_person_name.to_bounded_string (field_content(tmp_component_text_author)),
 								purpose => et_libraries.type_component_purpose.to_bounded_string (field_content(tmp_component_text_fnction)),
 								
 								-- Assemble the package variant.
@@ -2748,6 +2876,7 @@ package body et_kicad is
 											component_entered := true;
 
 											-- This is to init the temporarily used variables that store text fields.
+											-- This clears the "field found" flags
 											init_temp_variables;
 
 										end if;
@@ -2755,7 +2884,9 @@ package body et_kicad is
 										if get_field_from_line(line,1) = schematic_component_footer then
 											component_entered := false; -- we are leaving the component
 
-											-- CS: test "field_found" flags
+											-- Check if all required text fields have been found.
+											-- Check content of text fields for syntax and plausibility.
+											check_text_fields;
 											
 											-- Insert component in component list of module. If a component is split
 											-- in units, only the first occurence of it leads to inserting the component.
@@ -2834,30 +2965,46 @@ package body et_kicad is
 											-- 			"F 0 "N701" H 2600 2100 39  0000 C CNN"
 											--			"F 1 "NetChanger" H 2600 2250 60  0001 C CNN"
 											--			"F 2 "bel_netchanger:N_0.2MM" H 2600 2100 60  0001 C CNN"
+											--
+											-- set "field found" flags
 											if get_field_from_line(line,1) = component_field_identifier then -- "F"
-
-												-- CS: set "field_found" flags
 												
 												case type_component_field_id'value(get_field_from_line(line,2)) is
 													when component_field_reference =>
-														tmp_component_text_reference := to_text;
-														-- CS: verify tmp_component_text_reference equals tmp_component_reference
+														tmp_component_text_reference_found	:= true;
+														tmp_component_text_reference 		:= to_text;
+
 													when component_field_value =>
-														tmp_component_text_value := to_text;
+														tmp_component_text_value_found		:= true;
+														tmp_component_text_value 			:= to_text;
+														
 													when component_field_footprint =>
-														tmp_component_text_packge := to_text;
+														tmp_component_text_packge_found		:= true;
+														tmp_component_text_packge 			:= to_text;
+														
 													when component_field_datasheet =>
-														tmp_component_text_datasheet := to_text;
+														tmp_component_text_datasheet_found	:= true;
+														tmp_component_text_datasheet 		:= to_text;
+														
 													when component_field_function =>
-														tmp_component_text_fnction := to_text;
+														tmp_component_text_fnction_found	:= true;
+														tmp_component_text_fnction 			:= to_text;
+														
 													when component_field_partcode =>
-														tmp_component_text_partcode := to_text;
+														tmp_component_text_partcode_found	:= true;
+														tmp_component_text_partcode 		:= to_text;
+														
 													when component_field_commissioned =>
-														tmp_component_text_commissioned := to_text;
+														tmp_component_text_commissioned_found	:= true;
+														tmp_component_text_commissioned 		:= to_text;
+														
 													when component_field_updated =>
-														tmp_component_text_updated := to_text;
+														tmp_component_text_updated_found	:= true;
+														tmp_component_text_updated 			:= to_text;
+														
 													when component_field_author =>
-														tmp_component_text_author := to_text;
+														tmp_component_text_author_found		:= true;
+														tmp_component_text_author 			:= to_text;
 
 													when others => null; -- CS: other fields are ignored
 												end case;

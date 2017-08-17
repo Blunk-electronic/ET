@@ -58,8 +58,9 @@ with et_general;
 package et_string_processing is
 
 	function indentation ( width : in natural) return string;
-	
-	function date_now return string;
+
+	type type_date is new string (1..19); -- "2017-08-17T14:17:25" -- CS: define a type that allows only those characters
+	function date_now return type_date;
 
 	short_string_length_max : constant natural := 10;
  	package type_short_string is new generic_bounded_length(short_string_length_max);

@@ -65,7 +65,8 @@ package body et_libraries is
 	-- Returns the given name_in_library as as string.
 	-- CS: provide a parameter that turns the pretext like "name in library" on/off
 	begin
-		return ("name in library " & type_component_name.to_string(name_in_library));
+		--return ("name in library " & type_component_name.to_string(name_in_library));
+		return (type_component_name.to_string(name_in_library));
 	end to_string;
 
 	function to_string ( packge : in type_component_package_name.bounded_string) return string is
