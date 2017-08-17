@@ -232,25 +232,32 @@ package body et_schematic is
 				placeholder => type_units.element(unit).value,
 				indentation => indentation + 2);
 
-			-- package/footprint
-			et_libraries.write_placeholder_properties (
-				placeholder => type_units.element(unit).packge,
-				indentation => indentation + 2);
+			-- some placeholders exist depending on the component appearance
+			case type_units.element(unit).appearance is
+				when sch_pcb =>
+					
+					-- package/footprint
+					et_libraries.write_placeholder_properties (
+						placeholder => type_units.element(unit).packge,
+						indentation => indentation + 2);
 
-			-- datasheet
-			et_libraries.write_placeholder_properties (
-				placeholder => type_units.element(unit).datasheet,
-				indentation => indentation + 2);
+					-- datasheet
+					et_libraries.write_placeholder_properties (
+						placeholder => type_units.element(unit).datasheet,
+						indentation => indentation + 2);
 
-			-- function
-			et_libraries.write_placeholder_properties (
-				placeholder => type_units.element(unit).fnction,
-				indentation => indentation + 2);
-			
-			-- partcode
-			et_libraries.write_placeholder_properties (
-				placeholder => type_units.element(unit).partcode,
-				indentation => indentation + 2);
+					-- function
+					et_libraries.write_placeholder_properties (
+						placeholder => type_units.element(unit).fnction,
+						indentation => indentation + 2);
+					
+					-- partcode
+					et_libraries.write_placeholder_properties (
+						placeholder => type_units.element(unit).partcode,
+						indentation => indentation + 2);
+
+				when others => null;
+			end case;
 
 			-- commissioned
 			et_libraries.write_placeholder_properties (

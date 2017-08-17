@@ -2031,7 +2031,7 @@ package body et_kicad is
 							position => component_cursor,
 							inserted => component_inserted); -- this flag is just formal. no further evaluation
 
-							write_component_properties ( component => component_cursor, indentation => 2);
+							et_schematic.write_component_properties ( component => component_cursor, indentation => 2);
 
 							-- CS: Test value ?
 							
@@ -2081,7 +2081,7 @@ package body et_kicad is
 							position => component_cursor,
 							inserted => component_inserted); -- this flag is just formal. no further evaluation
 
-							write_component_properties ( component => component_cursor, indentation => 2);
+							et_schematic.write_component_properties ( component => component_cursor, indentation => 2);
 
 							-- Test if footprint has been associated with the component.
 							if field_content (tmp_component_text_packge)'size = 0 then
@@ -2137,50 +2137,88 @@ package body et_kicad is
 				unit_inserted : boolean;
 
 			begin
-				et_schematic.type_units.insert(
-					container => component.units, -- the unit list of the component
-					new_item => (
-						position		=> tmp_component_position,
-						name			=> tmp_component_unit_name,
-						timestamp		=> tmp_component_timestamp,
-						alt_repres		=> tmp_component_alt_repres,
+				case tmp_component_appearance is
 
-						-- placeholders:
-						-- Convert tmp_component_text_* to a placeholder while maintaining the text meaning.
-						reference		=> ( et_libraries.type_text_basic (tmp_component_text_reference)
-											 with meaning => tmp_component_text_reference.meaning ),
-						value			=> ( et_libraries.type_text_basic (tmp_component_text_value)
-											 with meaning => tmp_component_text_value.meaning ),
-						packge			=> ( et_libraries.type_text_basic (tmp_component_text_packge)
-											 with meaning => tmp_component_text_packge.meaning ),
-						datasheet		=> ( et_libraries.type_text_basic (tmp_component_text_datasheet)
-											 with meaning => tmp_component_text_datasheet.meaning ),
-						fnction			=> ( et_libraries.type_text_basic (tmp_component_text_fnction)
-											 with meaning => tmp_component_text_fnction.meaning ),
-						partcode		=> ( et_libraries.type_text_basic (tmp_component_text_partcode)
-											 with meaning => tmp_component_text_partcode.meaning ),
-						updated			=> ( et_libraries.type_text_basic (tmp_component_text_updated)
-											 with meaning => tmp_component_text_updated.meaning ),
-						author			=> ( et_libraries.type_text_basic (tmp_component_text_author)
-											 with meaning => tmp_component_text_author.meaning ),
-						commissioned	=>  ( et_libraries.type_text_basic (tmp_component_text_commissioned)
-											 with meaning => tmp_component_text_commissioned.meaning )
-						
-						),
+					when sch =>
 
-					position => unit_cursor,
-					inserted => unit_inserted,
+						et_schematic.type_units.insert(
+							container => component.units, -- the unit list of the component
+							new_item => (
+								appearance		=> et_general.sch,
+								position		=> tmp_component_position,
+								name			=> tmp_component_unit_name,
+								timestamp		=> tmp_component_timestamp,
+								alt_repres		=> tmp_component_alt_repres,
 
-					key => tmp_component_unit_name); -- the unit name
+								-- placeholders:
+								-- Convert tmp_component_text_* to a placeholder while maintaining the text meaning.
+								reference		=> ( et_libraries.type_text_basic (tmp_component_text_reference)
+													with meaning => tmp_component_text_reference.meaning ),
+								value			=> ( et_libraries.type_text_basic (tmp_component_text_value)
+													with meaning => tmp_component_text_value.meaning ),
+								updated			=> ( et_libraries.type_text_basic (tmp_component_text_updated)
+													with meaning => tmp_component_text_updated.meaning ),
+								author			=> ( et_libraries.type_text_basic (tmp_component_text_author)
+													with meaning => tmp_component_text_author.meaning ),
+								commissioned	=>  ( et_libraries.type_text_basic (tmp_component_text_commissioned)
+													with meaning => tmp_component_text_commissioned.meaning )
+								),
 
-					-- If unit alread in list, raise alarm and abort.
-					if not unit_inserted then
-						write_message(
-							file_handle => current_output,
-							text => message_error & "multiple occurence of the same unit !",
-							console => true);
-						raise constraint_error;
-					end if;
+							position => unit_cursor,
+							inserted => unit_inserted,
+
+							key => tmp_component_unit_name); -- the unit name
+
+					
+					when sch_pcb =>
+			
+						et_schematic.type_units.insert(
+							container => component.units, -- the unit list of the component
+							new_item => (
+								appearance		=> et_general.sch_pcb,
+								position		=> tmp_component_position,
+								name			=> tmp_component_unit_name,
+								timestamp		=> tmp_component_timestamp,
+								alt_repres		=> tmp_component_alt_repres,
+
+								-- placeholders:
+								-- Convert tmp_component_text_* to a placeholder while maintaining the text meaning.
+								reference		=> ( et_libraries.type_text_basic (tmp_component_text_reference)
+													with meaning => tmp_component_text_reference.meaning ),
+								value			=> ( et_libraries.type_text_basic (tmp_component_text_value)
+													with meaning => tmp_component_text_value.meaning ),
+								packge			=> ( et_libraries.type_text_basic (tmp_component_text_packge)
+													with meaning => tmp_component_text_packge.meaning ),
+								datasheet		=> ( et_libraries.type_text_basic (tmp_component_text_datasheet)
+													with meaning => tmp_component_text_datasheet.meaning ),
+								fnction			=> ( et_libraries.type_text_basic (tmp_component_text_fnction)
+													with meaning => tmp_component_text_fnction.meaning ),
+								partcode		=> ( et_libraries.type_text_basic (tmp_component_text_partcode)
+													with meaning => tmp_component_text_partcode.meaning ),
+								updated			=> ( et_libraries.type_text_basic (tmp_component_text_updated)
+													with meaning => tmp_component_text_updated.meaning ),
+								author			=> ( et_libraries.type_text_basic (tmp_component_text_author)
+													with meaning => tmp_component_text_author.meaning ),
+								commissioned	=>  ( et_libraries.type_text_basic (tmp_component_text_commissioned)
+													with meaning => tmp_component_text_commissioned.meaning )
+								),
+
+							position => unit_cursor,
+							inserted => unit_inserted,
+
+							key => tmp_component_unit_name); -- the unit name
+
+					when others => null; -- CS
+				end case;
+					
+				-- If unit alread in list, raise alarm and abort.
+				if not unit_inserted then
+					write_message(
+						file_handle => current_output,
+						text => message_error & "multiple occurence of the same unit !",
+						console => true);
+					raise constraint_error;
+				end if;
 					
 				write_unit_properties ( unit => unit_cursor, indentation => 3 );
 					

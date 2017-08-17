@@ -124,20 +124,25 @@ package et_schematic is
 	-- In a schematic we find units spread all over.
 	-- A unit is a subsection of a component.
 	-- A unit has placeholders for text like reference (like IC303), value (like 7400), ...
-	type type_unit is record
+	-- Some placeholders are available when the component appears in both schematic and layout.
+	type type_unit (appearance : et_general.type_component_appearance) is record
 		position	: type_coordinates;
 		timestamp	: et_general.type_timestamp;
 		name		: et_libraries.type_unit_name.bounded_string;
 		alt_repres	: type_alternative_representation;
 		reference	: et_libraries.type_text_placeholder (meaning => et_libraries.reference);
 		value		: et_libraries.type_text_placeholder (meaning => et_libraries.value);
-		packge		: et_libraries.type_text_placeholder (meaning => et_libraries.packge); -- like "SOT23"
-		datasheet	: et_libraries.type_text_placeholder (meaning => et_libraries.datasheet); -- might be useful for some special components
-		fnction		: et_libraries.type_text_placeholder (meaning => et_libraries.p_function); -- to be filled in schematic later by the user
-		partcode	: et_libraries.type_text_placeholder (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"
 		commissioned: et_libraries.type_text_placeholder (meaning => et_libraries.commissioned);		
 		updated		: et_libraries.type_text_placeholder (meaning => et_libraries.updated);		
 		author		: et_libraries.type_text_placeholder (meaning => et_libraries.author);
+		case appearance is
+			when sch | pcb => null; -- CS
+			when sch_pcb =>
+				packge		: et_libraries.type_text_placeholder (meaning => et_libraries.packge); -- like "SOT23"
+				datasheet	: et_libraries.type_text_placeholder (meaning => et_libraries.datasheet); -- might be useful for some special components
+				fnction		: et_libraries.type_text_placeholder (meaning => et_libraries.p_function); -- to be filled in schematic later by the user
+				partcode	: et_libraries.type_text_placeholder (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"
+		end case;
 		-- NOTE: The placeholders are defined in et_libraries. Thus they have only
 		-- basic coordinates (x/y). Via the unit position the sheet and module
 		-- name can be obtained.
@@ -145,7 +150,7 @@ package et_schematic is
 
 	-- Units of a component are collected in a map.
 	-- A unit is accessed by its name like "I/O Bank 3" or "PWR" or "A" or "B" ...	
-	package type_units is new ordered_maps (
+	package type_units is new indefinite_ordered_maps (
 		key_type => et_libraries.type_unit_name.bounded_string,
 		"<" => et_libraries.type_unit_name."<",
 		element_type => type_unit);
