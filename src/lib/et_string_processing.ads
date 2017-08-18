@@ -130,8 +130,10 @@ package et_string_processing is
 		comment_mark	: in string := et_general.comment_mark; -- the comment mark like "--" or "#"
 		test_whole_line	: in boolean := true; -- when false, cares for the comment mark at line begin only
 												 -- further comment marks are ignored
-		ifs				: in character := latin_1.space) -- field separator
-		return type_fields_of_line;
+		ifs				: in character := latin_1.space;	-- field separator
+		delimiter_wrap	: in boolean := false; -- true if text in delimiters is to be wrapped into a single field
+		delimiter		: in character := latin_1.quotation -- the text delimiter sign (mostly ")
+		) return type_fields_of_line;
 	
 	function append (left : in type_fields_of_line; right : in type_fields_of_line) return type_fields_of_line;
 	

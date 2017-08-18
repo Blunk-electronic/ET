@@ -352,13 +352,17 @@ package body et_string_processing is
 	function read_line ( 
 	-- Breaks down a given string and returns a type_fields_of_line.
 	-- CS: poor performance -> rework !
+	-- CS: do the delimiter stuff
 		line			: in string; -- the line to be broken down
 		number			: in positive_count := positive_count'first; -- the line number
 		comment_mark	: in string := et_general.comment_mark; -- the comment mark like "--" or "#"
 		test_whole_line	: in boolean := true; -- when false, cares for the comment mark at line begin only
 												 -- further comment marks are ignored
-		ifs				: in character := latin_1.space) -- field separator
-		return type_fields_of_line is
+		ifs				: in character := latin_1.space; -- field separator
+		delimiter_wrap	: in boolean := false; -- true if text in delimiters is to be wrapped into a single field
+		delimiter		: in character := latin_1.quotation -- the text delimiter sign (mostly ")
+		) return type_fields_of_line is
+	
 		list : type_list_of_strings.vector;
 -- 		field_count : natural := ada.strings.fixed.count (line, ifs);
 
