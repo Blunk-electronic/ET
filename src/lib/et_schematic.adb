@@ -153,7 +153,7 @@ package body et_schematic is
 	-- Writes the properties of the component indicated by the given cursor.
 		function indent ( i : in natural) return string renames et_string_processing.indentation;
 	begin
-		-- reference
+		-- reference (serves as key in list of components)
 		put_line(indent(indentation) 
 			& "component " 
 			& et_general.to_string (type_components.key(component)));
@@ -176,7 +176,7 @@ package body et_schematic is
 
 		-- updated
 		put_line(indent(indentation + 1)
-			& "updated "
+			& "updated      "
 			& string(type_components.element(component).updated));
 
 		-- author
@@ -232,12 +232,12 @@ package body et_schematic is
 		-- alternative representation
 		put_line(indent(indentation + 1) 
 			& "alternative (deMorgan) representation " 
-			& et_schematic.type_alternative_representation'image (type_units.element(unit).alt_repres));
+			& to_lower (et_schematic.type_alternative_representation'image (type_units.element(unit).alt_repres)));
 
 		-- timestamp
 		put_line(indent(indentation + 1) 
 			& "timestamp " 
-			& string(type_units.element (unit).timestamp));
+			& string (type_units.element (unit).timestamp));
 
 		-- position
 		put_line(indent(indentation + 1) 

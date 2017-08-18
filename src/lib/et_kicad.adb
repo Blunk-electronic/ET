@@ -1958,7 +1958,9 @@ package body et_kicad is
 
 			procedure check_text_fields is
 			-- Tests if a "field found" flag is cleared and raises an alarm in that case.
-			-- Perfoms a plausibility and symtax check on the text fields.
+			-- Perfoms a plausibility and syntax check on the text fields before they are used to 
+			-- assemble and insert the component into the component list of the module.
+			-- This can be regarded as a kind of pre-check.
 				procedure missing_field ( m : in et_libraries.type_text_meaning) is 
 				begin
 					write_message (
@@ -1978,7 +1980,20 @@ package body et_kicad is
 				if not tmp_component_text_reference_found then
 					missing_field (et_libraries.reference);
 				else
-					null; -- CS: verify tmp_component_text_reference equals tmp_component_reference
+					-- verify tmp_component_text_reference equals tmp_component_reference
+					-- KiCad stores redundant information on the component reference as in this example;
+
+					-- $Comp
+					-- L 74LS00 IC1 <- tmp_component_reference
+					-- U 1 1 59969711
+					-- P 4100 4000
+					-- F 0 "IC1" H 4100 4050 50  0000 C BIB <- tmp_component_text_reference
+					
+					if et_general.to_string(tmp_component_reference) /= et_libraries.content(tmp_component_text_reference) then
+						put_line (message_error & " reference mismatch !");
+						put_line (et_general.to_string(tmp_component_reference) & " vs " & et_libraries.content(tmp_component_text_reference));
+						raise constraint_error;
+					end if;
 				end if;
 
 				-- value

@@ -49,7 +49,8 @@ package body et_general is
 
 		r : type_component_reference := (
 				prefix => type_component_prefix.to_bounded_string(""),
-				id => 0);
+				id => 0,
+				id_width => 1);
 	
 		c : character;
 		p : type_component_prefix.bounded_string;
@@ -110,7 +111,7 @@ package body et_general is
 
 		-- assemble id
 		-- Start with the last character in text_in.
-		-- Finish at the position d.
+		-- Finish at the position d (that is the first digit after the last letter, see above).
 		-- All the characters within this range must be digits.
 		-- The significance of the digit is increased after each pass.
 		for i in reverse d .. text_in'last loop
@@ -125,16 +126,39 @@ package body et_general is
 			digit := digit + 1; -- increase digit significance (10**0, 10**1, ...)
 		end loop;
 
-		--put_line(" id" & natural'image(r.id));
+		-- Set the id width.
+		-- It is the number of digits processed when the id was assembled (see above).
+		-- Example: if the given string was IC002 then digit is 3.
+		r.id_width := digit;
+		
+-- 		put_line(" id    " & natural'image(r.id));
+-- 		put_line(" digits" & natural'image(r.id_width));
 		
 		return r;
 	end to_component_reference;
 
 	function to_string ( reference : in type_component_reference) return string is
 	-- Returns the given component reference as string.
+	-- Prepends leading zeros according to reference.id_width.
+		id_width_wanted	: natural := reference.id_width;
+	
+		-- The width of the given id is obtained by converting the id to a string
+		-- and then by measuring its length:
+		id_width_given	: natural := trim(natural'image(reference.id),left)'length;
+
+		-- Finally the number of zeros to prepend is the difference of wanted 
+		-- and given digits:
+		lz				: natural := id_width_wanted - id_width_given;
 	begin
-		return (type_component_prefix.to_string(reference.prefix) 
-				& trim(natural'image(reference.id),left));
+		case lz is
+			when 0 => -- no leading zeroes
+				return (type_component_prefix.to_string(reference.prefix) 
+					& trim(natural'image(reference.id),left));
+				
+			when others => -- leading zeros required
+				return (type_component_prefix.to_string(reference.prefix) 
+					& lz * '0' & trim(natural'image(reference.id),left));
+		end case;
 	end to_string;
 
 	function to_string ( appearance : in type_component_appearance) return string is

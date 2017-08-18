@@ -128,6 +128,10 @@ package et_general is
 	type type_orientation is ( deg_0, deg_90, deg_180, deg_270); 
 	-- other angles are not reasonable (footprints and layout have an own type for orientation)
 
+	-- CS: function that converts type_orientation to something nice to read.
+	-- May exist already somewhere.
+
+	
 -- NETS
 	-- The name of a net may have 100 characters which seems sufficient for now.
  	net_name_length	: constant natural := 100;
@@ -159,9 +163,10 @@ package et_general is
 	component_reference_id_default : constant natural := 0;
 	
 	type type_component_reference is record -- CS: should be private
-		prefix	: type_component_prefix.bounded_string := component_reference_prefix_default;
-		id		: natural := component_reference_id_default; 
-		-- NOTE: This allows something like R0 or IC0 (there are reasons for such stange things ...)
+		prefix		: type_component_prefix.bounded_string := component_reference_prefix_default; -- like "IC"
+		id			: natural := component_reference_id_default; -- like "303"
+		id_width	: positive; -- the number of digits in the id. 3 in case of an id of 303
+		-- NOTE: This allows something like R091 or IC0 (there are reasons for such strange things ...)
 	end record;
 
 	function to_component_reference (

@@ -238,6 +238,8 @@ package et_libraries is
 	procedure write_text_properies ( text : in et_libraries.type_text; indentation : in natural := 0);
 	-- Outputs the properties of the given text.
 
+	function content ( text : in type_text) return string;
+	-- Returns the content of the given text as string.
 	
 -- PORTS
 	

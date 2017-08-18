@@ -149,7 +149,9 @@ package body et_libraries is
 		-- orientation
 		put_line(indent(indentation + 1)
 			& "orientation "
-			& et_general.type_orientation'image (placeholder.orientation));
+			& et_general.type_orientation'image (placeholder.orientation)); 
+			-- CS: function that converts type_orientation to something nice to read.
+			-- May exist already somewhere.
 
 		-- visible
 		put_line(indent(indentation + 1)
@@ -206,6 +208,8 @@ package body et_libraries is
 		put_line(indent(indentation + 1)
 			& "orientation "
 			& et_general.type_orientation'image (text.orientation));
+			-- CS: function that converts type_orientation to something nice to read.
+			-- May exist already somewhere.
 
 		-- visible
 		put_line(indent(indentation + 1)
@@ -221,6 +225,14 @@ package body et_libraries is
 
 	end write_text_properies;
 
+
+	function content ( text : in type_text) return string is
+	-- Returns the content of the given text as string.
+		c : type_text_content.bounded_string;
+	begin
+		c := text.content;
+		return type_text_content.to_string(c);
+	end content;
 	
 end et_libraries;
 
