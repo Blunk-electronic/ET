@@ -39,6 +39,7 @@ with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
+with ada.strings.maps;			use ada.strings.maps;
 with ada.text_io;				use ada.text_io;
 -- with ada.float_text_io;			use ada.float_text_io;
 
@@ -62,6 +63,9 @@ package et_string_processing is
 	type type_date is new string (1..19); -- "2017-08-17T14:17:25" -- CS: define a type that allows only those characters
 	function date_now return type_date;
 
+	function build_character_set_for_component_values return character_set;
+	-- Returns the allowed characters of a component value as character set.	
+	
 	short_string_length_max : constant natural := 10;
  	package type_short_string is new generic_bounded_length(short_string_length_max);
 

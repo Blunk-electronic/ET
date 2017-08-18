@@ -52,6 +52,16 @@ package body et_string_processing is
 		date(11) := 'T'; -- inserts a T so that the result is "2017-08-17T14:17:25"
 		return type_date(date);
 	end date_now;
+
+	function build_character_set_for_component_values return character_set is
+	-- Returns the allowed characters of a component value as character set.
+	-- This forbids values such as "3,3K" or "3 ohms".
+		s : character_set;
+	begin
+		s := to_set (ranges => (('A','Z'),('a','z'),('0','9')));
+		s := s or to_set('_');
+		return s;
+	end build_character_set_for_component_values;
 	
 	function ht_to_space (c : in character) return character is
 	begin 

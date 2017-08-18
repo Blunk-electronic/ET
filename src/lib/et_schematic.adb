@@ -60,11 +60,13 @@ package body et_schematic is
 		i : natural := 0;
 		v : boolean := false;
 	begin
-		-- Rule #1: there must be no space characters
+		-- Rule #1: There are only those characters allowed as specified in component_value_characters:
 		i := index ( source => value, set => component_value_characters, test => outside);
+
 		case i is
 			when 0 => -- test passed. no forbidden characters found
 				v := true;
+
 			when others =>
 				v := false;
 				et_string_processing.write_message(
@@ -72,9 +74,13 @@ package body et_schematic is
 					text => message_error & "value '" & to_string(value) & "' contains invalid character "
 						& "at position" & natural'image(i),
 					console => true);
--- 				put_line (message_error & "component value '" & to_string(value) & "' contains invalid character ");
--- 				put_line ("at position" & natural'image(i));
+				-- CS: goto end
 		end case;
+
+		-- Rule #2: Units in accordance with the component prefix
+		-- CS:
+
+		-- goto-label here
 		
 		return v;
 	end component_value_valid;
