@@ -84,12 +84,11 @@ package et_kicad is
 	component_field_value			: constant type_component_field_id := 1;
 	component_field_footprint		: constant type_component_field_id := 2;
 	component_field_datasheet		: constant type_component_field_id := 3;
-	component_field_function		: constant type_component_field_id := 4;
-	component_field_partcode		: constant type_component_field_id := 5;
-	component_field_commissioned	: constant type_component_field_id := 6;
-	component_field_updated			: constant type_component_field_id := 7;
-	component_field_author			: constant type_component_field_id := 8;
-
+	component_field_commissioned	: constant type_component_field_id := 4;
+	component_field_updated			: constant type_component_field_id := 5;
+	component_field_author			: constant type_component_field_id := 6;
+	component_field_partcode		: constant type_component_field_id := 7;
+	component_field_function		: constant type_component_field_id := 8;
 
 
     -- headers, footers, keywords 

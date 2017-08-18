@@ -1994,6 +1994,8 @@ package body et_kicad is
 					missing_field (et_libraries.commissioned);
 				else
 					null;
+-- 					put_line("------------");
+-- 					et_libraries.write_text_properies(tmp_component_text_commissioned);
 					-- CS: check content of tmp_component_text_commissioned
 				end if;
 
@@ -2053,7 +2055,17 @@ package body et_kicad is
 
 					when others => null; -- CS ?
 				end case;
+
+				exception
+					when constraint_error =>
+						write_message(
+							file_handle => current_output,
+							text => message_error & "component " & et_general.to_string (tmp_component_reference)
+								& " " & et_schematic.to_string (tmp_component_position),
+							console => true);
+						raise constraint_error;
 				
+
 			end check_text_fields;
 			
 
@@ -2258,6 +2270,16 @@ package body et_kicad is
 						raise constraint_error;
 						
 				end case;
+
+
+				exception
+					when constraint_error =>
+						write_message(
+							file_handle => current_output,
+							text => message_error & "component " & et_general.to_string (tmp_component_reference)
+								& " " & et_schematic.to_string (tmp_component_position),
+							console => true);
+						raise constraint_error;
 				
 			end insert_component;
 			
@@ -3157,17 +3179,24 @@ package body et_kicad is
 			exception
 				when event:
 					constraint_error =>
-						put_line(exception_information(event));
-						put_line(message_error & "in schematic file '" & to_string(name_of_schematic_file) & "' " & et_string_processing.affected_line(line));
+						write_message(
+							file_handle => current_output,
+							text => message_error & "in schematic file '" & to_string(name_of_schematic_file) & "' " & et_string_processing.affected_line(line),
+							console => true);
+						close_report;
 						raise;
-						return list_of_submodules;
+
 				when others =>
-						put_line(message_error & "in schematic file '" & to_string(name_of_schematic_file) & "' " & et_string_processing.affected_line(line));
-						raise;					
-						return list_of_submodules;
+					write_message(
+						file_handle => current_output,
+						text => message_error & "in schematic file '" & to_string(name_of_schematic_file) & "' " & et_string_processing.affected_line(line),
+						console => true);
+					close_report;
+					raise;					
 
 		end read_schematic;
 
+		
 
 		list_of_submodules : type_list_of_submodule_names_extended;
 		top_level_schematic_file, name_of_schematic_file : et_import.type_schematic_file_name.bounded_string;
