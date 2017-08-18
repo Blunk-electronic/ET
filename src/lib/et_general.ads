@@ -38,6 +38,7 @@ with ada.containers.ordered_sets;
 
 with ada.text_io;				use ada.text_io;
 --with ada.strings; 				use ada.strings;
+with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.strings.bounded;       use ada.strings.bounded;
 with ada.characters;			use ada.characters;
@@ -47,6 +48,7 @@ with ada.characters.handling;	use ada.characters.handling;
 with ada.calendar;				use ada.calendar;
 with ada.calendar.time_zones;	use ada.calendar.time_zones;
 with ada.calendar.formatting;	use ada.calendar.formatting;
+
 
 package et_general is
 
@@ -119,9 +121,6 @@ package et_general is
 -- PAPER SIZES
     type type_paper_size is ( A0, A1, A2, A4 ); -- CS: others
     paper_size_default : type_paper_size := A4;
-
--- TIMESTAMP
-	type type_timestamp is new string (1..8); -- like "34593321"
 
 	
 -- NETS

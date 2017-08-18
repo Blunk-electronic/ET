@@ -60,11 +60,26 @@ package et_string_processing is
 
 	function indentation ( width : in natural) return string;
 
+-- DATE
+	date_characters : character_set := to_set ( span => ('0','9')) or to_set ("-:T");
 	type type_date is new string (1..19); -- "2017-08-17T14:17:25" -- CS: define a type that allows only those characters
+
+	function date_valid (date : in type_date) return boolean;
+	-- Returns true if given date is valid and plausible.
+	
 	function date_now return type_date;
 
-	function build_character_set_for_component_values return character_set;
+
+-- TIMESTAMP
+	timestamp_characters : character_set := to_set (ranges => (('A','F'),('0','9'))); -- CS: upper case letters only	
+	type type_timestamp is new string (1..8); -- like "3459A3C1"
+	procedure check_timestamp (timestamp : in type_timestamp);
+	-- Checks the given timestamp for valid characters and plausible time.
+	
+-- VALUE
+	function characters_of_value return character_set;
 	-- Returns the allowed characters of a component value as character set.	
+
 	
 	short_string_length_max : constant natural := 10;
  	package type_short_string is new generic_bounded_length(short_string_length_max);

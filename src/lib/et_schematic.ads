@@ -66,8 +66,6 @@ package et_schematic is
     package type_sheet_comment is new generic_bounded_length(sheet_comment_length); use type_sheet_comment;
 
    
--- TIMESTAMP
-    -- CS: type_timestamp 
     
 -- COORDINATES
    
@@ -127,7 +125,7 @@ package et_schematic is
 	-- Some placeholders are available when the component appears in both schematic and layout.
 	type type_unit (appearance : et_general.type_component_appearance) is record
 		position	: type_coordinates;
-		timestamp	: et_general.type_timestamp;
+		timestamp	: et_string_processing.type_timestamp;
 		name		: et_libraries.type_unit_name.bounded_string;
 		alt_repres	: type_alternative_representation;
 		reference	: et_libraries.type_text_placeholder (meaning => et_libraries.reference);
@@ -167,7 +165,7 @@ package et_schematic is
 	component_value_length_max : constant positive := 100;
 
 	-- Define the characters that are allowed for a component value:
-	component_value_characters : character_set := et_string_processing.build_character_set_for_component_values;
+	component_value_characters : character_set := et_string_processing.characters_of_value;
 	package type_component_value is new generic_bounded_length (component_value_length_max);
 
 	function to_string ( value : in type_component_value.bounded_string) return string;

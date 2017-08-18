@@ -1911,7 +1911,7 @@ package body et_kicad is
 			tmp_component_reference		: et_general.type_component_reference;
 			tmp_component_unit_name		: et_libraries.type_unit_name.bounded_string;
 			tmp_component_alt_repres	: et_schematic.type_alternative_representation;
-			tmp_component_timestamp		: et_general.type_timestamp;
+			tmp_component_timestamp		: et_string_processing.type_timestamp;
 			tmp_component_position		: et_schematic.type_coordinates;
 
             tmp_component_text_reference	: et_libraries.type_text (meaning => et_libraries.reference);
@@ -2987,9 +2987,9 @@ package body et_kicad is
 												-- Read DeMorgan flag:
 												tmp_component_alt_repres := to_alternative_representation(line => line, schematic => true);
 
-												-- Read timestamp:
-												tmp_component_timestamp := type_timestamp(get_field_from_line(line,4)); 
-												-- CS: function that converts to a type_timestamp and does a plausibility check
+												-- Read and check the timestamp:
+												tmp_component_timestamp := type_timestamp(get_field_from_line(line,4));
+												et_string_processing.check_timestamp (tmp_component_timestamp);
 											end if;
 
 											-- Read unit coordinates from a line like "P 3200 4500".

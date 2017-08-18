@@ -53,7 +53,20 @@ package body et_string_processing is
 		return type_date(date);
 	end date_now;
 
-	function build_character_set_for_component_values return character_set is
+	function date_valid (date : in type_date) return boolean is
+	-- Returns true if given date is valid and plausible.
+	begin
+		-- CS
+		return true;
+	end date_valid;
+	
+	procedure check_timestamp (timestamp : in type_timestamp) is
+	-- Checks the given timestamp for valid characters and plausible time.
+	begin
+		null; -- CS
+	end check_timestamp;
+	
+	function characters_of_value return character_set is
 	-- Returns the allowed characters of a component value as character set.
 	-- This forbids values such as "3,3K" or "3 ohms".
 		s : character_set;
@@ -61,7 +74,7 @@ package body et_string_processing is
 		s := to_set (ranges => (('A','Z'),('a','z'),('0','9')));
 		s := s or to_set('_');
 		return s;
-	end build_character_set_for_component_values;
+	end characters_of_value;
 	
 	function ht_to_space (c : in character) return character is
 	begin 
