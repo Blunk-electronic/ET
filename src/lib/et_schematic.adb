@@ -47,8 +47,38 @@ package body et_schematic is
 	function to_string ( value : in type_component_value.bounded_string) return string is
 	-- Returns the given value as string.
 	begin
-		return "";
+		return type_component_value.to_string(value);
 	end to_string;
+
+	function component_value_valid (
+	-- Returns true if the given component value meets certain conventions.									   
+		value 		: in et_schematic.type_component_value.bounded_string;
+		reference	: in et_general.type_component_reference)
+		return boolean is
+
+		use et_schematic.type_component_value;
+		i : natural := 0;
+		v : boolean := false;
+	begin
+		-- Rule #1: there must be no space characters
+		i := index ( source => value, set => component_value_characters, test => outside);
+		case i is
+			when 0 => -- test passed. no forbidden characters found
+				v := true;
+			when others =>
+				v := false;
+				et_string_processing.write_message(
+					file_handle => current_output,
+					text => message_error & "value '" & to_string(value) & "' contains invalid character "
+						& "at position" & natural'image(i),
+					console => true);
+-- 				put_line (message_error & "component value '" & to_string(value) & "' contains invalid character ");
+-- 				put_line ("at position" & natural'image(i));
+		end case;
+		
+		return v;
+	end component_value_valid;
+
 	
 	function to_string (position : in type_coordinates) return string is
 	-- Returns the given position as string.

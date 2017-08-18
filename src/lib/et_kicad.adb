@@ -1995,15 +1995,21 @@ package body et_kicad is
 						put_line (et_general.to_string(tmp_component_reference) & " vs " & et_libraries.content(tmp_component_text_reference));
 						raise constraint_error;
 					end if;
+
+					-- CS: check if prefix meets certain conventions
 				end if;
 
 				-- value
 				if not tmp_component_text_value_found then
 					missing_field (et_libraries.value);
 				else
-					null;
-					--if et_general.
-					-- CS: check content of tmp_component_text_value
+					-- depending on the component reference (like R12 or C9) the value must meet certain conventions:
+					if not component_value_valid (
+						value => et_schematic.type_component_value.to_bounded_string (
+							et_libraries.content (tmp_component_text_value)), -- the content of the value field like 200R or 10uF
+						reference => tmp_component_reference) -- the component reference such as R4 or IC34
+						then raise constraint_error;
+					end if;
 				end if;
 
 				-- commissioned

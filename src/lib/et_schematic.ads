@@ -30,6 +30,8 @@
 --   history of changes:
 --
 
+
+with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
 with ada.strings.unbounded; 	use ada.strings.unbounded;
 with ada.containers;            use ada.containers;
@@ -161,12 +163,21 @@ package et_schematic is
 	end record;
 
 	-- In the schematic, the operator assigns a value to the component.
-	-- The component value is something like 330R or 100nF
+	-- The component value is something like 330R or 100n
 	component_value_length_max : constant positive := 100;
+
+	-- These characters are allowed for a component value:
+	component_value_characters : character_set := to_set (ranges => (('A','Z'),('a','z'),('0','9'))); -- CS: add "_"
 	package type_component_value is new generic_bounded_length (component_value_length_max);
 
 	function to_string ( value : in type_component_value.bounded_string) return string;
 	-- Returns the given value as string.
+
+	function component_value_valid (
+	-- Returns true if the given component value meets certain conventions.									   
+		value 		: in et_schematic.type_component_value.bounded_string;
+		reference	: in et_general.type_component_reference) 
+		return boolean;
 	
 	-- This is a component as it appears in the schematic.
 	type type_component (appearance : et_general.type_component_appearance) is record
