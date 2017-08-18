@@ -98,6 +98,15 @@ package et_libraries is
 	function to_string ( position : in type_coordinates) return string;
 	-- Returns the given position as string.
 
+
+-- ORIENTATION	
+	-- Objects may be placed at a certain angle:
+	type type_orientation is range 0 .. 359; -- CS: a type that allows angles of multiples of 45 degrees ?
+
+	function to_string (orientation : in type_orientation) return string;
+	-- Returns the given orientation as string. 
+
+	
 -- SCHEMATIC RELATED
 
  	port_name_length	: constant natural := 50;

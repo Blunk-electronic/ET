@@ -60,6 +60,14 @@ package body et_libraries is
 			& trim (et_libraries.type_grid'image(position.y),left);
 
 	end to_string;
+
+	function to_string (orientation : in type_orientation) return string is
+	-- Returns the the given orientation as string.
+		preamble	: constant string (1..20) := "orientation/rotation";
+		suffix		: constant string (1..4)  := " deg";
+	begin
+		return (preamble & type_orientation'image(orientation) & suffix);
+	end to_string;
 	
 	function to_string ( name_in_library : in type_component_name.bounded_string) return string is
 	-- Returns the given name_in_library as as string.
@@ -148,10 +156,7 @@ package body et_libraries is
 
 		-- orientation
 		put_line(indent(indentation + 1)
-			& "orientation "
-			& et_general.type_orientation'image (placeholder.orientation)); 
-			-- CS: function that converts type_orientation to something nice to read.
-			-- May exist already somewhere.
+			& et_libraries.to_string (placeholder.orientation)); 
 
 		-- visible
 		put_line(indent(indentation + 1)
@@ -206,10 +211,7 @@ package body et_libraries is
 
 		-- orientation
 		put_line(indent(indentation + 1)
-			& "orientation "
-			& et_general.type_orientation'image (text.orientation));
-			-- CS: function that converts type_orientation to something nice to read.
-			-- May exist already somewhere.
+			& et_libraries.to_string (text.orientation));
 
 		-- visible
 		put_line(indent(indentation + 1)

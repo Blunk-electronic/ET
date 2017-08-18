@@ -97,8 +97,6 @@ package et_schematic is
 	function to_string (position : in type_coordinates) return string;
 	-- Returns the given position as string.
 
-	function to_string (orientation : in type_orientation) return string;
-	-- Returns the given orientation as string.
 	
 -- TEXT FIELD
 
@@ -166,6 +164,9 @@ package et_schematic is
 	-- The component value is something like 330R or 100nF
 	component_value_length_max : constant positive := 100;
 	package type_component_value is new generic_bounded_length (component_value_length_max);
+
+	function to_string ( value : in type_component_value.bounded_string) return string;
+	-- Returns the given value as string.
 	
 	-- This is a component as it appears in the schematic.
 	type type_component (appearance : et_general.type_component_appearance) is record
@@ -203,7 +204,7 @@ package et_schematic is
 	type type_label_appearance is ( simple, tag );
 	type type_net_label ( label_appearance : type_label_appearance ) is record
 		coordinates	: type_coordinates;
-		orientation	: type_orientation;
+		orientation	: et_libraries.type_orientation;
         text		: type_net_name.bounded_string;
         size		: et_libraries.type_text_size;
         style		: et_libraries.type_text_style;

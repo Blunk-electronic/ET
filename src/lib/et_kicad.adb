@@ -153,12 +153,13 @@ package body et_kicad is
 		
 	end to_text_meaning;
 								 
-	function to_text_orientation ( text : in string) return et_general.type_orientation is
+	function to_text_orientation ( text : in string) return et_libraries.type_orientation is
+	-- CS: renamte to to_orientation
 	-- Converts a kicad field text orientation character (H/V) to type_orientation.
 	begin	
 		case type_field_orientation'value(text) is
-			when H => return deg_0;
-			when V => return deg_90;
+			when H => return 0;
+			when V => return 90;
 		end case;
 	end to_text_orientation;
 	
@@ -1147,17 +1148,17 @@ package body et_kicad is
             note_entered : boolean := false;
             note_scratch : et_schematic.type_note;
 			
-			function to_orientation (text_in : in string) return et_general.type_orientation is
+			function to_orientation (text_in : in string) return et_libraries.type_orientation is
 			-- Converts the label orientation to type_orientation.
 			-- CS: use a dedicated type for input parameter.
 				o_in : type_label_orientation := type_label_orientation'value(text_in);
-				o_out : type_orientation;
+				o_out : et_libraries.type_orientation;
 			begin
 				case o_in is
-					when 0 => o_out := deg_180;
-					when 1 => o_out := deg_90;
-					when 2 => o_out := deg_0;
-					when 3 => o_out := deg_270;
+					when 0 => o_out := 180;
+					when 1 => o_out :=  90;
+					when 2 => o_out :=   0;
+					when 3 => o_out := 270;
 				end case;
 				return o_out;
 				-- CS: exception handler
@@ -2001,6 +2002,7 @@ package body et_kicad is
 					missing_field (et_libraries.value);
 				else
 					null;
+					--if et_general.
 					-- CS: check content of tmp_component_text_value
 				end if;
 

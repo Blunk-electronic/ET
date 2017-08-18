@@ -123,14 +123,6 @@ package et_general is
 -- TIMESTAMP
 	type type_timestamp is new string (1..8); -- like "34593321"
 
--- ORIENTATION	
-	-- Objects may be placed at a certain angle:
-	type type_orientation is ( deg_0, deg_90, deg_180, deg_270); 
-	-- other angles are not reasonable (footprints and layout have an own type for orientation)
-
-	-- CS: function that converts type_orientation to something nice to read.
-	-- May exist already somewhere.
-
 	
 -- NETS
 	-- The name of a net may have 100 characters which seems sufficient for now.

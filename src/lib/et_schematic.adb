@@ -44,6 +44,12 @@ with et_import;
 
 package body et_schematic is
 
+	function to_string ( value : in type_component_value.bounded_string) return string is
+	-- Returns the given value as string.
+	begin
+		return "";
+	end to_string;
+	
 	function to_string (position : in type_coordinates) return string is
 	-- Returns the given position as string.
 	begin
@@ -59,13 +65,6 @@ package body et_schematic is
 		-- CS: exception handler
 	end to_string;
 	
-	function to_string (orientation : in type_orientation) return string is
-	-- Returns the the given orientation as string.
-	begin
-		return("orientation " & et_general.type_orientation'image(orientation));
-		-- CS: exception handler
-	end to_string;
-
 	procedure write_label_properties ( label : in type_net_label; indentation : in natural := 0) is
 	-- Writes the properties of the given net label in the logfile.
 		function indent ( i : in natural) return string renames et_string_processing.indentation;
@@ -81,7 +80,7 @@ package body et_schematic is
 		put_line("'" & type_net_name.to_string(label.text) & "' ");
 
 		put_line(indent(indentation + 1) & et_schematic.to_string(label.coordinates));
-		put_line(indent(indentation + 1) & et_schematic.to_string(label.orientation));
+		put_line(indent(indentation + 1) & et_libraries.to_string(label.orientation));
 		
 		case label.label_appearance is
 			when simple =>
@@ -131,8 +130,7 @@ package body et_schematic is
 
 		-- orientation
 		put_line(indent(indentation + 1)
-			& "orientation "
-			& et_general.type_orientation'image (note.orientation));
+			& et_libraries.to_string (note.orientation));
 
 		-- visible
 		put_line(indent(indentation + 1)
