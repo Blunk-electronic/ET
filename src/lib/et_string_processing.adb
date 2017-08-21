@@ -53,6 +53,23 @@ package body et_string_processing is
 		return type_date(date);
 	end date_now;
 
+	procedure check_updated_vs_commissioned ( commissioned , updated : in type_date) is
+	-- Checks whether updated is later or equal commissioned.		
+	begin
+		if updated < commissioned then -- if updated before commissioned
+			write_message (
+				file_handle => current_output,
+				text => et_general.message_error & "The time of update is before the time of commission !"
+					& latin_1.lf 
+					& "commissioned : " & string(commissioned) & latin_1.lf
+					& "updated      : " & string(updated),
+					console => true);
+			
+			raise constraint_error;
+		end if;
+	end check_updated_vs_commissioned;
+			
+	
 	function date_valid (date : in type_date) return boolean is
 	-- Returns true if given date is valid and plausible.
 	begin
@@ -65,16 +82,6 @@ package body et_string_processing is
 	begin
 		null; -- CS
 	end check_timestamp;
-	
-	function characters_of_value return character_set is
-	-- Returns the allowed characters of a component value as character set.
-	-- This forbids values such as "3,3K" or "3 ohms".
-		s : character_set;
-	begin
-		s := to_set (ranges => (('A','Z'),('a','z'),('0','9')));
-		s := s or to_set('_');
-		return s;
-	end characters_of_value;
 	
 	function ht_to_space (c : in character) return character is
 	begin 

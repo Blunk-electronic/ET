@@ -1976,12 +1976,25 @@ package body et_kicad is
 					
 					raise constraint_error;
 				end missing_field;
+
+				commissioned, updated : et_string_processing.type_date;
+
+				indentation : natural := 2;				
+				function indent ( i : in natural) return string renames et_string_processing.indentation;
+
 			begin
+				-- write precheck preamble
+				put_line (indent(indentation) 
+					& "component " 
+					& et_general.to_string(tmp_component_reference)
+					& " precheck");
+				
 				-- reference
+				put_line (indent(indentation + 1) & "reference");
 				if not tmp_component_text_reference_found then
 					missing_field (et_libraries.reference);
 				else
-					-- verify tmp_component_text_reference equals tmp_component_reference
+					-- verify tmp_component_text_reference equals tmp_component_reference. @kicad: why this redundance ?
 					-- KiCad stores redundant information on the component reference as in this example;
 
 					-- $Comp
@@ -2000,11 +2013,12 @@ package body et_kicad is
 				end if;
 
 				-- value
+				put_line (indent(indentation + 1) & "value");
 				if not tmp_component_text_value_found then
 					missing_field (et_libraries.value);
 				else
 					-- depending on the component reference (like R12 or C9) the value must meet certain conventions:
-					if not component_value_valid (
+					if not et_schematic.component_value_valid (
 						value => et_schematic.type_component_value.to_bounded_string (
 							et_libraries.content (tmp_component_text_value)), -- the content of the value field like 200R or 10uF
 						reference => tmp_component_reference) -- the component reference such as R4 or IC34
@@ -2013,24 +2027,37 @@ package body et_kicad is
 				end if;
 
 				-- commissioned
+				put_line (indent(indentation + 1) & "commissioned");
 				if not tmp_component_text_commissioned_found then
 					missing_field (et_libraries.commissioned);
 				else
-					null;
--- 					put_line("------------");
--- 					et_libraries.write_text_properies(tmp_component_text_commissioned);
-					-- CS: check content of tmp_component_text_commissioned
+					-- The commissioned time must be checked for plausibility and syntax.
+					-- The string length is indirecty checked on converting the field content to derived type_date.
+					commissioned := et_string_processing.type_date (et_libraries.content (tmp_component_text_commissioned));
+					if not et_string_processing.date_valid (commissioned) 
+						then raise constraint_error;
+					end if;
 				end if;
 
 				-- updated
+				put_line (indent(indentation + 1) & "updated");				
 				if not tmp_component_text_updated_found then
 					missing_field (et_libraries.updated);
 				else
-					null;
-					-- CS: check content of tmp_component_text_updated
+					-- The update time must be checked for plausibility and syntax.
+					-- The string length is indirecty checked on converting the field content to derived type_date.					
+					updated := et_string_processing.type_date (et_libraries.content (tmp_component_text_updated));
+					if not et_string_processing.date_valid (updated) 
+						then raise constraint_error;
+					end if;
+
+					-- make sure the update was later (or at the same time as) the commission date
+					check_updated_vs_commissioned (commissioned, updated);
+
 				end if;
 
 				-- author
+				put_line (indent(indentation + 1) & "author");				
 				if not tmp_component_text_author_found then
 					missing_field (et_libraries.author);
 				else
@@ -2045,6 +2072,7 @@ package body et_kicad is
 					when sch_pcb =>
 							
 						-- package
+						put_line (indent(indentation + 1) & "package/footprint");
 						if not tmp_component_text_packge_found then
 							missing_field (et_libraries.packge);
 						else
@@ -2053,6 +2081,7 @@ package body et_kicad is
 						end if;
 
 						-- datasheet
+						put_line (indent(indentation + 1) & "datasheet");
 						if not tmp_component_text_datasheet_found then
 							missing_field (et_libraries.datasheet);
 						else
@@ -2061,6 +2090,7 @@ package body et_kicad is
 						end if;
 
 						-- partcode
+						put_line (indent(indentation + 1) & "partcode");
 						if not tmp_component_text_partcode_found then
 							missing_field (et_libraries.partcode);
 						else
@@ -2069,6 +2099,7 @@ package body et_kicad is
 						end if;
 						
 						-- purpose
+						put_line (indent(indentation + 1) & "purpose");
 						if not tmp_component_text_fnction_found then
 							missing_field (et_libraries.p_function);
 						else
@@ -2076,6 +2107,11 @@ package body et_kicad is
 							-- CS: check content of tmp_component_text_fnction
 						end if;
 
+						-- put_line (indent(indentation + 1) & "crosschecks");
+						-- CS: test partcode, verify agsinst prefix, value and package
+						-- CS: test function against prefix of user interactive parts (X, SW, LED, ...)
+
+						
 					when others => null; -- CS ?
 				end case;
 
@@ -2199,7 +2235,6 @@ package body et_kicad is
 
 							et_schematic.write_component_properties ( component => component_cursor, indentation => 2);
 
-							-- CS: Test value ?
 							
 					when sch_pcb => -- we have a line like "L 74LS00 U1"
 
@@ -2283,11 +2318,6 @@ package body et_kicad is
 -- 								raise constraint_error;
 -- 							end if;
 
-							-- CS: verify reference against tmp_component_reference. should be equal. @kicad: why this redundance ?
-							-- CS: Test value
-							-- CS: test partcode, verify agsinst prefix, value and package
-							-- CS: test function against prefix of user interactive parts (X, SW, LED, ...)
-						
 					when others => -- CS: This should never happen. A subtype of type_component_appearance could be a solution.
 						null;
 						raise constraint_error;

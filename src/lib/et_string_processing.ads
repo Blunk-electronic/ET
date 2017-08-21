@@ -69,6 +69,8 @@ package et_string_processing is
 	
 	function date_now return type_date;
 
+	procedure check_updated_vs_commissioned ( commissioned , updated : in type_date);
+	-- Checks whether updated is later or equal commissioned.
 
 -- TIMESTAMP
 	timestamp_characters : character_set := to_set (ranges => (('A','F'),('0','9'))); -- CS: upper case letters only	
@@ -76,11 +78,7 @@ package et_string_processing is
 	procedure check_timestamp (timestamp : in type_timestamp);
 	-- Checks the given timestamp for valid characters and plausible time.
 	
--- VALUE
-	function characters_of_value return character_set;
-	-- Returns the allowed characters of a component value as character set.	
 
-	
 	short_string_length_max : constant natural := 10;
  	package type_short_string is new generic_bounded_length(short_string_length_max);
 

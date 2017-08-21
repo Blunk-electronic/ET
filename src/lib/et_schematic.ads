@@ -165,7 +165,7 @@ package et_schematic is
 	component_value_length_max : constant positive := 100;
 
 	-- Define the characters that are allowed for a component value:
-	component_value_characters : character_set := et_string_processing.characters_of_value;
+	component_value_characters : character_set := to_set (ranges => (('A','Z'),('a','z'),('0','9'))) or to_set('_');
 	package type_component_value is new generic_bounded_length (component_value_length_max);
 
 	function to_string ( value : in type_component_value.bounded_string) return string;
