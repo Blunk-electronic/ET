@@ -584,7 +584,67 @@ package body et_kicad is
 -- 			begin
 -- 				null;
 -- 			end insert_unit;
-			
+
+		procedure read_draw_object (line : in type_fields_of_line; indentation : in natural := 0) is
+	
+			function field (line : in type_fields_of_line; position : in positive) return string renames
+				et_string_processing.get_field_from_line;
+				
+			function indent ( i : in natural) return string renames et_string_processing.indentation;
+				
+		begin
+			put_line (indent(indentation) & to_string(line));
+			case type_library_draw'value (field(line,1)) is
+				when P => -- polyline
+					put_line (indent(indentation) & "polyline");
+					-- A polyline is defined by a string like "P 3 0 1 10 0 0 100 50 70 0 N"
+					-- field meaning:
+					--  #2 : number of bends (incl. start and end points) (3)
+					--  #3 : 0 -> common to all units, otherwise unit id it belongs to
+					--  #4 : 1 -> not common to all body styles (alternative representation or DeMorgan) -- CS: verify
+					--  #5 : line width
+					--  #6.. 7  : start point (x/y) (0/0) 
+					--  #8.. 9  : bend point (x/y) (0/100)
+					-- #10..11  : end point (x/y) (50/70)
+					-- last field : fill style N/F/f no fill/foreground/background
+					
+				when S => -- rectangle
+					put_line (indent(indentation) & "rectangle");
+					-- A rectangle is defined by a string like "S -40 -100 40 100 0 1 10 N"
+					-- field meaning;
+					-- #2..5 : start point -40/-100   end point 40/100
+					-- #6 : 0 -> common to all units, otherwise unit id it belongs to
+					-- #7 : 1 -> not common to all body styles (alternative representation or DeMorgan) -- CS: verify
+					-- #8 : line width
+					-- #9 : fill style N/F/f no fill/foreground/background
+					
+				when C => -- circle
+					put_line (indent(indentation) & "circle");
+					
+				when A => -- arcus
+					put_line (indent(indentation) & "arc");
+					
+				when T => -- text
+					put_line (indent(indentation) & "text");
+					
+				when X => -- pin
+					put_line (indent(indentation) & "pin");
+					-- A pin is defined by a string like "X ~ 1 0 150 52 D 51 50 1 1 P"
+					-- field meaning:
+					--  #2 : pin/port name (~)
+					--  #3 : pin number (1)
+					--  #4..5 : position x/y (0/150)
+					--  #6 : pin length (52)
+					--  #7 : orientation up/down (U/D)
+					--  #8 : pin number size (51)
+					--  #9 : pin/port name size (50)
+					-- #10 : 0 -> common to all units, otherwise unit id it belongs to
+					-- #11 : 1 -> not common to all body styles (alternative representation or DeMorgan) -- CS: verify
+					-- #12 : electrical type (direction), see et_kicad.ads for more
+					-- #13 : optional field: pin style, see et_kicad.ads for more
+			end case;
+		end read_draw_object;
+
 		begin -- read_library
 			put_line (indent(indentation) & "with components:");
 			
@@ -854,8 +914,7 @@ package body et_kicad is
 											put_line (indent(indentation + 2) & "draw end");
 										else
 											-- Process lines:
-											put_line(indent(indentation + 3) & to_string(line));
-											null;
+											read_draw_object (line,5);
 										end if;
 										
 									when none =>

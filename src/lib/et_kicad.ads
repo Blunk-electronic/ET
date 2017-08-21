@@ -183,6 +183,55 @@ package et_kicad is
 	type type_field_alignment_vertical is (T, C, B);   -- top, center, bottom
 	type type_library_field_visible is (V, I); -- visible, invisible
 
+-- 	library_draw_identifier_polyline	: constant string (1..1) := "P";
+-- 	library_draw_identifier_rectangle	: constant string (1..1) := "S";
+-- 	library_draw_identifier_circle		: constant string (1..1) := "C";	
+-- 	library_draw_identifier_arc			: constant string (1..1) := "A";
+-- 	library_draw_identifier_pin			: constant string (1..1) := "X";
+-- 	library_draw_identifier_text		: constant string (1..1) := "T";	
+
+	type type_library_draw is (
+		P, -- polyline
+		S, -- rectangle
+		C, -- circel,
+		A, -- arcus
+		T, -- text
+		X); -- pin
+
+	library_rectangle_fill_none			: constant string (1..1) := "N";
+	library_rectangle_fill_foreground	: constant string (1..1) := "F";
+	library_rectangle_fill_background	: constant string (1..1) := "f";
+
+	library_pin_electrical_type_passive			: constant string (1..1) := "P";
+	library_pin_electrical_type_input			: constant string (1..1) := "I";
+	library_pin_electrical_type_output			: constant string (1..1) := "O";	
+	library_pin_electrical_type_bidir			: constant string (1..1) := "B";
+	library_pin_electrical_type_tristate		: constant string (1..1) := "T";
+	library_pin_electrical_type_unspecified		: constant string (1..1) := "U";
+	library_pin_electrical_type_power_in		: constant string (1..1) := "W";
+	library_pin_electrical_type_power_out		: constant string (1..1) := "W";
+	library_pin_electrical_type_open_collector	: constant string (1..1) := "C";
+	library_pin_electrical_type_open_emitter	: constant string (1..1) := "E";
+	library_pin_electrical_type_not_connected	: constant string (1..1) := "N";	
+
+	library_pin_graphical_style_inverted		: constant string (1..1) := "I";
+	library_pin_graphical_style_clock			: constant string (1..1) := "C";
+	library_pin_graphical_style_inverted_clock	: constant string (1..2) := "IC";
+	library_pin_graphical_style_input_low		: constant string (1..1) := "L";
+	library_pin_graphical_style_clock_low		: constant string (1..2) := "CL";
+	library_pin_graphical_style_output_low		: constant string (1..1) := "V";
+	library_pin_graphical_style_falling_edge_clk: constant string (1..1) := "F";
+	library_pin_graphical_style_non_logic		: constant string (1..1) := "X";
+
+	library_pin_graphical_style_invisible_inverted			: constant string (1..2) := "NI";
+	library_pin_graphical_style_invisible_clock				: constant string (1..2) := "NC";
+	library_pin_graphical_style_invisible_inverted_clock	: constant string (1..3) := "NIC";
+	library_pin_graphical_style_invisible_input_low			: constant string (1..2) := "NL";
+	library_pin_graphical_style_invisible_clock_low			: constant string (1..3) := "NCL";
+	library_pin_graphical_style_invisible_output_low		: constant string (1..2) := "NV";
+	library_pin_graphical_style_invisible_falling_edge_clk	: constant string (1..2) := "NF";
+	library_pin_graphical_style_invisible_non_logic			: constant string (1..2) := "NX";
+	
 	-- workaround; prefix V requried to form an enumaration type:
 	schematic_field_visibility_prefix : constant character := 'V';
 	type type_schematic_field_visible is (V0000, V0001); -- visible, invisible 
