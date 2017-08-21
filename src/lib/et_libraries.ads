@@ -225,7 +225,7 @@ package et_libraries is
         style		: type_text_style;
         line_width	: type_text_line_width := 0; -- CS: use a general type_line_width ?
         orientation	: type_orientation;
-		visible		: type_text_visible;
+		visible		: type_text_visible := yes; -- unless assigned otherwise all texts are visible by default
 		alignment	: type_text_aligment;
 	end record;
 

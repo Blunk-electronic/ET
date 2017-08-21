@@ -179,7 +179,6 @@ package body et_schematic is
 			& to_lower(et_libraries.type_text_alignment_horizontal'image(note.alignment.horizontal))
 			& "/"
 			& to_lower(et_libraries.type_text_alignment_vertical'image(note.alignment.vertical)));
-
 			
 	end write_note_properties;
 	

@@ -379,7 +379,7 @@ package body et_kicad is
 		return et_libraries.type_text_content.to_string(text_field.content);
 	end field_content;
 	
-	procedure read_components_libraries is
+	procedure read_components_libraries (indentation : in natural := 0) is
 	-- Reads components from libraries as stored in lib_dir and project_libraries:
 		use et_libraries.type_list_of_library_names;
 		use et_libraries.type_library_full_name;
@@ -391,13 +391,14 @@ package body et_kicad is
 
 		comp_cursor		: et_libraries.type_components.cursor;
 		--comp_inserted	: boolean;
+
+		function indent ( i : in natural) return string renames et_string_processing.indentation;		
 		
-		
-		procedure read_library is
-			line			: type_fields_of_line;
-			component_entered : boolean := false; -- goes true while a component section is being processed
+		procedure read_library (indentation : in natural := 0) is
+			line				: type_fields_of_line;
+			component_entered	: boolean := false; -- goes true while a component section is being processed
 			type type_active_section is ( none, fields, footprints, draw);
-			active_section : type_active_section := none; -- indicates the subsection being processed
+			active_section		: type_active_section := none; -- indicates the subsection being processed
 
 			component_name		: et_libraries.type_component_name.bounded_string; -- 74LS00
 			prefix				: et_general.type_component_prefix.bounded_string; -- IC
@@ -585,7 +586,7 @@ package body et_kicad is
 -- 			end insert_unit;
 			
 		begin -- read_library
-			put_line("  with components:");
+			put_line (indent(indentation) & "with components:");
 			
 			while not end_of_file loop
 
@@ -621,7 +622,7 @@ package body et_kicad is
 								component_name := et_libraries.type_component_name.to_bounded_string(get_field_from_line(line,2)); -- 74LS00
 								
 								-- for the log:
-								put_line("   " & get_field_from_line(line,2)); -- 74LS00
+								put_line(indent(indentation + 1) & get_field_from_line(line,2)); -- 74LS00
 
 								-- From the header we extract some basic information about the component:
 								
@@ -647,7 +648,7 @@ package body et_kicad is
 								-- Swap level assumes default if only one unit available.
 								units_total := type_unit_id'value(get_field_from_line(line,8));
 								if units_total > 1 then
-									put_line("    with" & type_unit_id'image(units_total) & " units");
+									put_line(indent(indentation + 2) & "with" & type_unit_id'image(units_total) & " units");
 
 									-- From the "interchangeable" flag we set the component wide swap level. It applies for 
 									-- all units of the component:
@@ -687,8 +688,10 @@ package body et_kicad is
 										-- As long as none of those headers occurs, we read the text fields.
 										if get_field_from_line(line,1) = et_kicad.fplist then
 											active_section := footprints;
+											put_line (indent(indentation + 2) & "footprint filter begin");
 										elsif get_field_from_line(line,1) = et_kicad.draw then
 											active_section := draw;
+											put_line (indent(indentation + 2) & "draw begin");
 										else
 											-- read text fields from a component library (thats why scheamtic => false)
 											case to_text_meaning(line => line, schematic => false) is
@@ -833,9 +836,10 @@ package body et_kicad is
 										-- that this subsection has been processed.
 										if get_field_from_line(line,1) = et_kicad.endfplist then
 											active_section := none;
+											put_line (indent(indentation + 2) & "footprint filter end");
 										else
 											-- Process lines:
-											put_line(to_string(line));
+											put_line(indent(indentation + 3) & to_string(line));
 										end if;
 
 									when draw =>
@@ -847,9 +851,10 @@ package body et_kicad is
 										-- thate this subsection has been processed.
 										if get_field_from_line(line,1) = et_kicad.enddraw then
 											active_section := none;
+											put_line (indent(indentation + 2) & "draw end");
 										else
 											-- Process lines:
-											--put_line(to_string(line));
+											put_line(indent(indentation + 3) & to_string(line));
 											null;
 										end if;
 										
@@ -859,6 +864,7 @@ package body et_kicad is
 										-- NOTE #2: the active section "fields" is not set here but when the fields are read (see NOTE #1)
 										if get_field_from_line(line,1) = et_kicad.draw then
 											active_section := draw;
+											put_line (indent(indentation + 2) & "draw begin");
 										end if;
 
 								end case; -- active_section
@@ -876,13 +882,13 @@ package body et_kicad is
 
 		-- If there were no libraries in the project file, there is nothing to do but writing a warning:
 		if is_empty(et_libraries.project_libraries) then
-			put_line(message_warning & " no component libraries defined in project file !");
+			put_line(message_warning & "no component libraries defined in project file !");
 		else
-			write_message(
+			write_message (
 				file_handle => current_output,
-				text => "Loading component libraries ...",
+				text => indent(indentation) & "Loading component libraries ...",
 				console => true);
-
+			
 			-- We loop in the list of project libraries.
 			while cursor /= no_element loop
 
@@ -893,9 +899,10 @@ package body et_kicad is
 								extension => file_extension_schematic_lib
 								));
 
-				write_message(
+				-- log library file name
+				write_message (
 					file_handle => current_output,
-					text => " " & to_string(lib_file_name),
+					text => indent(indentation + 1) & to_string(lib_file_name),
 					console => true);
 				
 				if exists(to_string(lib_file_name)) then
@@ -920,7 +927,7 @@ package body et_kicad is
 						-- Now we read the library file and add further things
 						-- to the library pinted to by lib_cursor:
 						set_input(et_import.library_handle);
-						read_library;
+						read_library (indentation => 2);
 					else
 						put_line(message_error & to_string(lib_file_name) & " already in component libraries !");
 						raise constraint_error;
@@ -2122,6 +2129,7 @@ package body et_kicad is
 							text => message_error & "component " & et_general.to_string (tmp_component_reference)
 								& " " & et_schematic.to_string (tmp_component_position),
 							console => true);
+						-- CS: evaluate prog position and provided more detailled output
 						raise constraint_error;
 				
 
@@ -3265,7 +3273,7 @@ package body et_kicad is
 
 				-- derive top level schematic file name from project file (they differ only in their extension)
 				top_level_schematic_file := read_project_file;
-				read_components_libraries; -- as stored in lib_dir and project_libraries
+				read_components_libraries (indentation => 1); -- as stored in lib_dir and project_libraries
 				name_of_schematic_file := top_level_schematic_file;
 
                 -- The top level schematic file dictates the module name. At the same time it is the first entry
