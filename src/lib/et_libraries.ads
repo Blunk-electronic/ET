@@ -99,13 +99,15 @@ package et_libraries is
 	-- Returns the given position as string.
 
 
--- ORIENTATION	
-	-- Objects may be placed at a certain angle:
+-- ORIENTATION AND ROTATION
+	-- Objects may be placed at a certain orientation:
 	type type_orientation is range 0 .. 359; -- CS: a type that allows angles of multiples of 45 degrees ?
 
 	function to_string (orientation : in type_orientation) return string;
 	-- Returns the given orientation as string. 
 
+	-- Objects may be placed at a certain angle:
+	type type_angle is digits 4 range 0.0 .. 359.0;
 	
 -- SCHEMATIC RELATED
 
@@ -298,32 +300,58 @@ package et_libraries is
 
 	
 -- SHAPES 
+	-- line width
+	type type_line_width is new type_grid;
+
+	-- fill
+	type type_fill_border_visible is new boolean;
+	type type_fill_pattern is (cutout, solid); -- CS: hatched ? and its properties ?
+	type type_fill is record 
+		border	: type_fill_border_visible := true;
+		pattern : type_fill_pattern := solid;
+	end record;
 	
-	-- Straight lines are collected in a simple list.
+	-- straight lines
 	type type_line is record
-		coordinates_start : type_coordinates;
-		coordinates_end   : type_coordinates;
+		start_point 	: type_coordinates;
+		end_point   	: type_coordinates;
+		line_width		: type_line_width;
 	end record;
-	package type_lines is new doubly_linked_lists (
-		element_type => type_line);
+	package type_lines is new doubly_linked_lists (element_type => type_line);
 
-	-- Arcs are collected in a simple list.
+	-- polylines 
+	-- A polyline is a list of points. Their interconnections have a width and a fill.
+	-- Filling can be done even if start and end point do not meet. In this case a virtual line
+	-- is "invented" that connects start and end point.
+	-- Finally the polylines are collected in a simple list.
+	package type_points is new doubly_linked_lists (element_type => type_grid);
+	type type_polyline is record
+		line_width		: type_line_width;
+		fill			: type_fill;
+		points			: type_points.list;
+	end record;
+	package type_polylines is new doubly_linked_lists (element_type => type_polyline);
+	
+	-- Arcs
 	type type_arc is record
-		coordinates_start		: type_coordinates;
-		coordinates_end			: type_coordinates;
-		coordinates_circumfence	: type_coordinates;
+		start_point		: type_coordinates;
+		end_point		: type_coordinates;
+		radius			: type_grid;
+		start_angle		: type_angle;
+		end_angle		: type_angle;
+		line_width		: type_line_width;
+ 		fill			: type_fill;
 	end record;
-	package type_arcs is new doubly_linked_lists (
-		element_type => type_arc);
+	package type_arcs is new doubly_linked_lists (element_type => type_arc);
 
-	-- Circles are collected in a simple list.
+	-- Circles
 	type type_circle is record
-		coordinates_start : type_coordinates;
-		coordinates_end   : type_coordinates;
-		coordinates_center: type_coordinates;
+		center			: type_coordinates;
+		radius  		: type_grid;
+		line_width		: type_line_width;
+		fill			: type_fill;
 	end record;
-	package type_circles is new doubly_linked_lists (
-		element_type => type_circle);
+	package type_circles is new doubly_linked_lists (element_type => type_circle);
 
 	-- Shapes are wrapped in a the type_shapes:
 	type type_shapes is record

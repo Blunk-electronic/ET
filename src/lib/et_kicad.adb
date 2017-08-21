@@ -620,13 +620,47 @@ package body et_kicad is
 					
 				when C => -- circle
 					put_line (indent(indentation) & "circle");
+					-- A circle is defined bay a string like "C 0 0 112 0 1 23 N"
+					-- field meaning:
+					--  #2..3 : center (x/y)
+					--  #4 : radius
+					--  #4 : 0 -> common to all units, otherwise unit id it belongs to
+					--  #5 : 1 -> not common to all body styles (alternative representation or DeMorgan) -- CS: verify
+					--  #7 : line width (23)
+					--  #6 : fill style N/F/f no fill/foreground/background
 					
-				when A => -- arcus
+				when A => -- arc
 					put_line (indent(indentation) & "arc");
+					-- An arc is defined by a string like "A 150 0 150 1800 900 0 1 33 N 0 0 150 150"
+					-- NOTE: kicad bug: multiply all y values by -1
+					-- field meaning:
+					--  #2..3 : center (x/y) 
+					--  #4 : radius (150)
+					--  #5 : start angle in tenth of degrees (1800)
+					--  #6 : end angle in tenth of degrees (900)
+					--  #7 : 0 -> common to all units, otherwise unit id it belongs to
+					--  #8 : 1 -> not common to all body styles (alternative representation or DeMorgan) -- CS: verify
+					--  #9 : line width 33
+					-- #10 : fill style N/F/f no fill/foreground/background
+					-- #11..12 : start point (x/y)
+					-- #13..14 : end point (x/y)
 					
 				when T => -- text
 					put_line (indent(indentation) & "text");
-					
+					-- A text is defined by a string like "T 0 0 300 60 0 0 0 leuchtdiode Normal 0 C C"
+					-- field meaning:
+					--  #2 : rotation in tenth of degrees (counter clock wise)
+					--  #3..4 : center (x/y)
+					--  #5 : size 
+					--  #6 : ? - unknown CS
+					--  #7 : 0 -> common to all units, otherwise unit id it belongs to
+					--  #8 : 1 -> not common to all body styles (alternative representation or DeMorgan) -- CS: verify
+					--  #9 : content "leuchtdiode"
+					-- #10 : style Nomal/Italic
+					-- #11 : bold on/off (0/1) 
+					-- #12 : alignment left/center/right L/C/R
+					-- #13 : alignment top/center/bottom T/C/B
+
 				when X => -- pin
 					put_line (indent(indentation) & "pin");
 					-- A pin is defined by a string like "X ~ 1 0 150 52 D 51 50 1 1 P"
