@@ -34,6 +34,7 @@ with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 
+with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 --with ada.containers.vectors;
@@ -442,6 +443,22 @@ package et_libraries is
 
 	
 	-- COMPONENTS
+
+	-- The component value is something like 330R or 100n or 74LS00
+	component_value_length_max : constant positive := 100;
+
+	-- Define the characters that are allowed for a component value:
+	component_value_characters : character_set := to_set (ranges => (('A','Z'),('a','z'),('0','9'))) or to_set('_');
+	package type_component_value is new generic_bounded_length (component_value_length_max);
+
+	function to_string ( value : in type_component_value.bounded_string) return string;
+	-- Returns the given value as string.
+
+	function component_value_valid (
+	-- Returns true if the given component value meets certain conventions.									   
+		value 		: in type_component_value.bounded_string;
+		reference	: in et_general.type_component_reference) 
+		return boolean;
 
 
 	

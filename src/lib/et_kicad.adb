@@ -564,7 +564,7 @@ package body et_kicad is
 							new_item	=> (
 								appearance		=> sch,
 								prefix			=> prefix,
-								value			=> value,
+								value			=> et_libraries.type_component_value.to_bounded_string (et_libraries.content (value)),
 								units_internal	=> et_libraries.type_units_internal.empty_map,
 								units_external	=> et_libraries.type_units_external.empty_map
 								)
@@ -2129,8 +2129,8 @@ package body et_kicad is
 					missing_field (et_libraries.value);
 				else
 					-- depending on the component reference (like R12 or C9) the value must meet certain conventions:
-					if not et_schematic.component_value_valid (
-						value => et_schematic.type_component_value.to_bounded_string (
+					if not et_libraries.component_value_valid (
+						value => et_libraries.type_component_value.to_bounded_string (
 							et_libraries.content (tmp_component_text_value)), -- the content of the value field like 200R or 10uF
 						reference => tmp_component_reference) -- the component reference such as R4 or IC34
 						then raise constraint_error;
@@ -2334,7 +2334,7 @@ package body et_kicad is
 							new_item => (
 								appearance => et_general.sch, -- the component appears in schematic only
 								name_in_library => tmp_component_name_in_lib,
-								value => et_schematic.type_component_value.to_bounded_string (field_content(tmp_component_text_value)),
+								value => et_libraries.type_component_value.to_bounded_string (field_content(tmp_component_text_value)),
 								commissioned => et_string_processing.type_date (field_content(tmp_component_text_commissioned)),
 								updated => et_string_processing.type_date (field_content(tmp_component_text_updated)),
 								author => et_general.type_person_name.to_bounded_string (field_content(tmp_component_text_author)),
@@ -2364,7 +2364,7 @@ package body et_kicad is
 							new_item => (
 								appearance => et_general.sch_pcb, -- the component appears in both schematic and layout
 								name_in_library => tmp_component_name_in_lib,
-								value => et_schematic.type_component_value.to_bounded_string(field_content(tmp_component_text_value)),
+								value => et_libraries.type_component_value.to_bounded_string (field_content(tmp_component_text_value)),
 								commissioned => et_string_processing.type_date (field_content(tmp_component_text_commissioned)),
 								updated => et_string_processing.type_date (field_content(tmp_component_text_updated)),
 								author => et_general.type_person_name.to_bounded_string (field_content(tmp_component_text_author)),
