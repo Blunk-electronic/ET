@@ -356,6 +356,7 @@ package et_libraries is
 	-- Shapes are wrapped in a the type_shapes:
 	type type_shapes is record
 		lines		: type_lines.list;
+		polylines	: type_polylines.list;
 		arcs 		: type_arcs.list;
 		circles		: type_circles.list;
 	end record;

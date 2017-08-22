@@ -383,12 +383,20 @@ package body et_kicad is
 	-- Reads components from libraries as stored in lib_dir and project_libraries:
 		use et_libraries.type_list_of_library_names;
 		use et_libraries.type_library_full_name;
-		cursor			: et_libraries.type_list_of_library_names.cursor := first(et_libraries.project_libraries);
+
+		-- A list of bare library names tells us which libraries the project requires.
+		-- This is the cursor to the bare library names. It points to the bare library name in et_libraries.project_libraries.
+		bare_lib_cursor	: et_libraries.type_list_of_library_names.cursor := first(et_libraries.project_libraries);
+
+		-- Here we keep the full library name (incl. path) like "/home/user/lib/my_lib.lib" temporarily
+		-- before inserting an empty library in the library list et_import.component_libraries :
 		lib_file_name	: et_libraries.type_library_full_name.bounded_string;
 
+		-- This is the library cursor. It points to the library being processed (in the list et_import.component_libraries):
 		lib_cursor		: et_libraries.type_libraries.cursor;
-		lib_inserted	: boolean;
+		lib_inserted	: boolean; -- indicates whether a library has been inserted
 
+		-- This is the component cursor. It points to the component being processed.
 		comp_cursor		: et_libraries.type_components.cursor;
 		--comp_inserted	: boolean;
 
@@ -592,7 +600,7 @@ package body et_kicad is
 				
 			function indent ( i : in natural) return string renames et_string_processing.indentation;
 				
-		begin
+		begin -- read_draw_object
 			put_line (indent(indentation) & to_string(line));
 			case type_library_draw'value (field(line,1)) is
 				when P => -- polyline
@@ -766,6 +774,8 @@ package body et_kicad is
 							-- We wait for the end of component mark (ENDDEF) and clear the component_entered flag accordingly.
 							if get_field_from_line(line,1) = et_kicad.enddef then
 								component_entered := false;
+
+								-- Insert the component into the library indicated by lib_cursor:
 							else
 							-- As long as the component end mark does not appear, we process subsections as 
 							-- indicated by active_section:
@@ -982,20 +992,20 @@ package body et_kicad is
 				text => indent(indentation) & "Loading component libraries ...",
 				console => true);
 			
-			-- We loop in the list of project libraries.
-			while cursor /= no_element loop
+			-- We loop in the list of bare project libraries (it contains only the library names without any path information):
+			while bare_lib_cursor /= no_element loop
 
 				-- From lib_dir and the cursor (points to a project lib) we compose the full library file name:
 				lib_file_name := to_bounded_string( compose (
-								containing_directory => et_libraries.type_library_directory.to_string(et_libraries.lib_dir),
-								name => et_libraries.type_library_name.to_string(element(cursor)),
+								containing_directory => et_libraries.type_library_directory.to_string (et_libraries.lib_dir),
+								name => et_libraries.type_library_name.to_string (element(bare_lib_cursor)),
 								extension => file_extension_schematic_lib
 								));
 
 				-- log library file name
 				write_message (
 					file_handle => current_output,
-					text => indent(indentation + 1) & to_string(lib_file_name),
+					text => indent (indentation + 1) & to_string (lib_file_name),
 					console => true);
 				
 				if exists(to_string(lib_file_name)) then
@@ -1004,12 +1014,12 @@ package body et_kicad is
 						mode => in_file,
 						name => to_string(lib_file_name));
 
-					-- Since the libary file name is known, we insert the first empty
+					-- Since the full libary file name (incl. path) is known, we insert an empty
 					-- library in the list of component libraries.
 					-- After that the lib_cursor points to the latest inserted library.
 					et_libraries.type_libraries.insert(
 						container	=> et_import.component_libraries,
-						key			=> lib_file_name,
+						key			=> lib_file_name, -- full library file name (incl. path) like "/home/user/lib/my_lib.lib"
 						--new_item	=> et_libraries.type_components.empty_map,
 						position	=> lib_cursor,
 						inserted	=> lib_inserted
@@ -1017,7 +1027,7 @@ package body et_kicad is
 
 					-- this is a double check. should never fail.
 					if lib_inserted then
-						-- Now we read the library file and add further things
+						-- Now we read the library file and add components
 						-- to the library pinted to by lib_cursor:
 						set_input(et_import.library_handle);
 						read_library (indentation => 2);
@@ -1034,7 +1044,7 @@ package body et_kicad is
 				end if;
 
 				-- prepare next library file to be be read
-				next(cursor);
+				next (bare_lib_cursor);
 
 			end loop;
 		end if;
