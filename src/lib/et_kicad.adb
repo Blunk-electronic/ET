@@ -565,6 +565,9 @@ package body et_kicad is
 								appearance		=> sch,
 								prefix			=> prefix,
 								value			=> et_libraries.type_component_value.to_bounded_string (et_libraries.content (value)),
+								commissioned	=> et_string_processing.type_date (et_libraries.content (commissioned)),
+								updated			=> et_string_processing.type_date (et_libraries.content (updated)),
+								author			=> et_libraries.type_person_name.to_bounded_string (et_libraries.content (author)),
 								units_internal	=> et_libraries.type_units_internal.empty_map,
 								units_external	=> et_libraries.type_units_external.empty_map
 								)
@@ -2337,7 +2340,7 @@ package body et_kicad is
 								value => et_libraries.type_component_value.to_bounded_string (field_content(tmp_component_text_value)),
 								commissioned => et_string_processing.type_date (field_content(tmp_component_text_commissioned)),
 								updated => et_string_processing.type_date (field_content(tmp_component_text_updated)),
-								author => et_general.type_person_name.to_bounded_string (field_content(tmp_component_text_author)),
+								author => et_libraries.type_person_name.to_bounded_string (field_content(tmp_component_text_author)),
 
 								-- At this stage we do not know if and how many units there are. So the unit list is empty.
 								units => et_schematic.type_units.empty_map),
@@ -2367,7 +2370,7 @@ package body et_kicad is
 								value => et_libraries.type_component_value.to_bounded_string (field_content(tmp_component_text_value)),
 								commissioned => et_string_processing.type_date (field_content(tmp_component_text_commissioned)),
 								updated => et_string_processing.type_date (field_content(tmp_component_text_updated)),
-								author => et_general.type_person_name.to_bounded_string (field_content(tmp_component_text_author)),
+								author => et_libraries.type_person_name.to_bounded_string (field_content(tmp_component_text_author)),
 
 								-- properties of a real component (appears in schematic and layout);
 								datasheet => et_libraries.type_component_datasheet.to_bounded_string (field_content(tmp_component_text_datasheet)),

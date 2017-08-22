@@ -44,7 +44,8 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
-with et_general;				use et_general;
+with et_general;
+with et_string_processing;
 
 package et_libraries is
 
@@ -78,6 +79,9 @@ package et_libraries is
 -- 	package type_list_of_full_library_names is new doubly_linked_lists (
 -- 		element_type => type_library_full_name.bounded_string);
 
+	-- The name of the person who has drawn, checked or approved something may have 100 characters which seems sufficient for now.
+ 	person_name_length	: constant natural := 100;
+	package type_person_name is new generic_bounded_length(person_name_length);
 
 -- GRID AND COORDINATES
 
@@ -469,8 +473,10 @@ package et_libraries is
 		value			: type_component_value.bounded_string; -- 74LS00
 		units_internal	: type_units_internal.map;
 		units_external	: type_units_external.map;
-		--CS: texts_basic		: type_texts_basic;
-		--CS: texts_extended	: type_texts_extended_1;
+		commissioned	: et_string_processing.type_date;
+		updated			: et_string_processing.type_date;
+		author			: type_person_name.bounded_string;
+
 		case appearance is
 
 			-- If a component appears in the schematic only, it does not
@@ -478,11 +484,12 @@ package et_libraries is
 			when et_general.sch => null;
 
 			-- If a component appears in both schematic and layout it comes 
-			-- with at least one package variant. We store variants in a map.
+			-- with at least one package/footprint variant. We store variants in a map.
 			when et_general.sch_pcb => 
-				variants :	type_component_variants.map;
-
-			
+				variants	: type_component_variants.map;
+				datasheet	: type_component_datasheet.bounded_string;
+				purpose		: type_component_purpose.bounded_string;
+				partcode	: type_component_partcode.bounded_string;
 			when others => null; -- CS
 		end case;
 

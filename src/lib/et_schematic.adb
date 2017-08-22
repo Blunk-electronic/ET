@@ -173,7 +173,7 @@ package body et_schematic is
 		-- author
 		put_line(indent(indentation + 1)
 			& "author "
-			& et_general.type_person_name.to_string (type_components.element(component).author));
+			& et_libraries.type_person_name.to_string (type_components.element(component).author));
 
 		
 		-- appearance

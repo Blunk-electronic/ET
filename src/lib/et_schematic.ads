@@ -167,7 +167,7 @@ package et_schematic is
 		value			: et_libraries.type_component_value.bounded_string; -- 470R
 		commissioned	: et_string_processing.type_date; -- 2017-08-17T14:17:25
 		updated			: et_string_processing.type_date; -- 2017-10-30T08:33:56
-		author			: et_general.type_person_name.bounded_string; -- Steve Miller
+		author			: et_libraries.type_person_name.bounded_string; -- Steve Miller
 		units			: type_units.map; -- PWR, A, B, ...
 		case appearance is
 			-- If a component appears in both schematic and layout it has got:
