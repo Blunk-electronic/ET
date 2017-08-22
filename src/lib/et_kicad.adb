@@ -569,7 +569,30 @@ package body et_kicad is
 							);
 						
 					when sch_pcb =>
-						null;
+
+						-- we insert into the given components list a new component
+						et_libraries.type_components.insert(
+							container	=> components,
+							key			=> component_name, -- 74LS00
+							position	=> comp_cursor,
+							inserted	=> comp_inserted,
+							new_item	=> (
+								appearance		=> sch_pcb,
+								prefix			=> prefix,
+								value			=> et_libraries.type_component_value.to_bounded_string (et_libraries.content (value)),
+								commissioned	=> et_string_processing.type_date (et_libraries.content (commissioned)),
+								updated			=> et_string_processing.type_date (et_libraries.content (updated)),
+								author			=> et_libraries.type_person_name.to_bounded_string (et_libraries.content (author)),
+								units_internal	=> et_libraries.type_units_internal.empty_map,
+								units_external	=> et_libraries.type_units_external.empty_map,
+
+								variants		=> et_libraries.type_component_variants.empty_map, -- CS
+								datasheet		=> et_libraries.type_component_datasheet.to_bounded_string (et_libraries.content (datasheet)),
+								purpose			=> et_libraries.type_component_purpose.to_bounded_string (et_libraries.content (fnction)),
+								partcode		=> et_libraries.type_component_partcode.to_bounded_string (et_libraries.content (partcode))
+								)
+							);
+
 
 					when others =>
 						null; -- CS
