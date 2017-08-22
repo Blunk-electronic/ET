@@ -490,6 +490,7 @@ package et_libraries is
 				datasheet	: type_component_datasheet.bounded_string;
 				purpose		: type_component_purpose.bounded_string;
 				partcode	: type_component_partcode.bounded_string;
+
 			when others => null; -- CS
 		end case;
 

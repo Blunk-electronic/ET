@@ -373,11 +373,6 @@ package body et_kicad is
 		-- CS exception handler
 	end to_alternative_representation;
 
-	function field_content ( text_field : in et_libraries.type_text ) return string is
-	-- Returns the content of the given text field as string.
-	begin
-		return et_libraries.type_text_content.to_string(text_field.content);
-	end field_content;
 	
 	procedure read_components_libraries (indentation : in natural := 0) is
 	-- Reads components from libraries as stored in lib_dir and project_libraries:
@@ -2337,10 +2332,10 @@ package body et_kicad is
 							new_item => (
 								appearance => et_general.sch, -- the component appears in schematic only
 								name_in_library => tmp_component_name_in_lib,
-								value => et_libraries.type_component_value.to_bounded_string (field_content(tmp_component_text_value)),
-								commissioned => et_string_processing.type_date (field_content(tmp_component_text_commissioned)),
-								updated => et_string_processing.type_date (field_content(tmp_component_text_updated)),
-								author => et_libraries.type_person_name.to_bounded_string (field_content(tmp_component_text_author)),
+								value => et_libraries.type_component_value.to_bounded_string (et_libraries.content (tmp_component_text_value)),
+								commissioned => et_string_processing.type_date (et_libraries.content (tmp_component_text_commissioned)),
+								updated => et_string_processing.type_date (et_libraries.content (tmp_component_text_updated)),
+								author => et_libraries.type_person_name.to_bounded_string (et_libraries.content (tmp_component_text_author)),
 
 								-- At this stage we do not know if and how many units there are. So the unit list is empty.
 								units => et_schematic.type_units.empty_map),
@@ -2355,7 +2350,7 @@ package body et_kicad is
 
 						-- break down the footprint content like "bel_opto:LED_S_0805".
 						tmp_library_footprint := et_string_processing.read_line(
-								line => field_content (tmp_component_text_packge),
+								line => et_libraries.content (tmp_component_text_packge),
 								ifs => latin_1.colon);
 
 						
@@ -2367,15 +2362,15 @@ package body et_kicad is
 							new_item => (
 								appearance => et_general.sch_pcb, -- the component appears in both schematic and layout
 								name_in_library => tmp_component_name_in_lib,
-								value => et_libraries.type_component_value.to_bounded_string (field_content(tmp_component_text_value)),
-								commissioned => et_string_processing.type_date (field_content(tmp_component_text_commissioned)),
-								updated => et_string_processing.type_date (field_content(tmp_component_text_updated)),
-								author => et_libraries.type_person_name.to_bounded_string (field_content(tmp_component_text_author)),
+								value => et_libraries.type_component_value.to_bounded_string (et_libraries.content (tmp_component_text_value)),
+								commissioned => et_string_processing.type_date (et_libraries.content (tmp_component_text_commissioned)),
+								updated => et_string_processing.type_date (et_libraries.content (tmp_component_text_updated)),
+								author => et_libraries.type_person_name.to_bounded_string (et_libraries.content (tmp_component_text_author)),
 
 								-- properties of a real component (appears in schematic and layout);
-								datasheet => et_libraries.type_component_datasheet.to_bounded_string (field_content(tmp_component_text_datasheet)),
-								partcode => et_libraries.type_component_partcode.to_bounded_string (field_content(tmp_component_text_partcode)),
-								purpose => et_libraries.type_component_purpose.to_bounded_string (field_content(tmp_component_text_fnction)),
+								datasheet => et_libraries.type_component_datasheet.to_bounded_string (et_libraries.content (tmp_component_text_datasheet)),
+								partcode => et_libraries.type_component_partcode.to_bounded_string (et_libraries.content (tmp_component_text_partcode)),
+								purpose => et_libraries.type_component_purpose.to_bounded_string (et_libraries.content (tmp_component_text_fnction)),
 								
 								-- Assemble the package variant.
 								-- NOTE: There is no way to identifiy the name of the package variant like TL084D or TL084N.
@@ -2406,7 +2401,7 @@ package body et_kicad is
 							et_schematic.write_component_properties ( component => component_cursor, indentation => 2);
 
 							-- Test if footprint has been associated with the component.
-							if field_content (tmp_component_text_packge)'size = 0 then
+							if et_libraries.content (tmp_component_text_packge)'size = 0 then
 								write_message(
 									file_handle => current_output,
 									text => message_error & et_general.to_string(tmp_component_reference) & ": footprint not specified !",
