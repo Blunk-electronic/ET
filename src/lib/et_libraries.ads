@@ -443,9 +443,13 @@ package et_libraries is
 	
 	-- COMPONENTS
 
+
+	
 	-- A component may have internal and/or external units.
 	-- It also has text fields.
 	type type_component (appearance : et_general.type_component_appearance) is record
+		prefix			: et_general.type_component_prefix.bounded_string; -- R, C, IC, ...
+		value			: type_component_value.bounded_string; -- 74LS00
 		units_internal	: type_units_internal.map;
 		units_external	: type_units_external.map;
 		--CS: texts_basic		: type_texts_basic;

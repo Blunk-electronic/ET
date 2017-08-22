@@ -398,7 +398,7 @@ package body et_kicad is
 
 		-- This is the component cursor. It points to the component being processed.
 		comp_cursor		: et_libraries.type_components.cursor;
-		--comp_inserted	: boolean;
+		comp_inserted	: boolean; -- indicates whether a component has been inserted
 
 		function indent ( i : in natural) return string renames et_string_processing.indentation;		
 		
@@ -518,25 +518,13 @@ package body et_kicad is
 				return text;
 			end read_field;
 			
--- 			procedure insert_component (
--- 			-- Updates a library (which is a type_components.map) by inserting a component.
--- 										   
--- 			-- The line it is about looks like:  DEF 74LS00 U 0 30 Y Y 4 F N
--- 			-- The fields meaning is as follows:
--- 			-- name, like 74LS00
--- 			-- prefix, like U
--- 			-- unknown -- CS: what is it good for ?
--- 			-- pin name position offset of supply pins, if "place pin names inside" is off. the offset assumes zero
--- 			-- show pin/pad number Y/N,
--- 			-- show pin name Y/N, -- (better port name)
--- 			-- units total, -- like 4
--- 			-- all units not interchangeable L (otherwise F), (similar to swap level in EAGLE)
--- 			-- power symbol P (otherwise N)
--- 										   
+			procedure insert_component (
+			-- Updates the current library by inserting a component.
+
 -- 			-- If the component was inserted (should be) the comp_cursor points to the component
 -- 			-- for later inserting the units:
--- 				key			: in et_libraries.type_library_full_name.bounded_string;
--- 				components	: in out et_libraries.type_components.map) is
+				key			: in et_libraries.type_library_full_name.bounded_string;
+				components	: in out et_libraries.type_components.map) is
 -- 
 -- 				-- If only one unit provided, the flag "interchangeable" is don't care -> default swap level assumed.
 -- 				-- If more units provided, the swap level is derived from field #9.
@@ -544,7 +532,7 @@ package body et_kicad is
 -- 				port_name_offset	: et_libraries.type_grid;
 -- 				pin_name_visible 	: et_libraries.type_pin_visible;
 -- 				port_name_visible	: et_libraries.type_port_visible;
--- 			begin -- insert_component
+			begin -- insert_component
 -- 
 -- 				-- For the logfile write the component name.
 -- 				-- If the component contains more than one unit, write number of units.
@@ -564,18 +552,31 @@ package body et_kicad is
 -- 				pin_name_visible 	:= to_pin_visibile  (get_field_from_line(line,6));
 -- 				port_name_visible	:= to_port_visibile (get_field_from_line(line,7));
 -- 				
--- 				
--- 				et_libraries.type_components.insert(
--- 					container	=> components,
--- 					key			=> et_libraries.type_component_name.to_bounded_string(get_field_from_line(line,2)), -- 74LS00
--- 					position	=> comp_cursor,
--- 					inserted	=> comp_inserted,
--- 					new_item	=> (
--- 						prefix	=> et_general.type_component_prefix.to_bounded_string(get_field_from_line(line,3)), -- U
--- 						appearance => to_appearance(get_field_from_line(line,10)), -- N/P
--- 						units	=> et_libraries.type_units.empty_map
--- 						)
--- 					);
+				case appearance is
+					when sch =>
+
+						-- we insert into the given components list a new component
+						et_libraries.type_components.insert(
+							container	=> components,
+							key			=> component_name, -- 74LS00
+							position	=> comp_cursor,
+							inserted	=> comp_inserted,
+							new_item	=> (
+								appearance		=> sch,
+								prefix			=> prefix,
+								value			=> value,
+								units_internal	=> et_libraries.type_units_internal.empty_map,
+								units_external	=> et_libraries.type_units_external.empty_map
+								)
+							);
+						
+					when sch_pcb =>
+						null;
+
+					when others =>
+						null; -- CS
+						
+				end case;
 -- 
 -- 				if comp_inserted then
 -- 					null;
@@ -584,7 +585,7 @@ package body et_kicad is
 -- 					raise constraint_error;
 -- 				end if;
 -- 				
--- 			end insert_component;
+			end insert_component;
 -- 
 -- 			procedure insert_unit (
 -- 				key			: in et_libraries.type_component_name.bounded_string;
@@ -763,11 +764,6 @@ package body et_kicad is
 								-- This is about a component in a library -> schematic => false
 								appearance := to_appearance(line => line, schematic => false);
 
--- 								et_libraries.type_libraries.update_element(
--- 									container	=> et_import.component_libraries,
--- 									position	=> lib_cursor,
--- 									process		=> insert_component'access);
-
 							end if;
 						else -- we are inside a component section and process subsections
 
@@ -775,7 +771,12 @@ package body et_kicad is
 							if get_field_from_line(line,1) = et_kicad.enddef then
 								component_entered := false;
 
-								-- Insert the component into the library indicated by lib_cursor:
+								-- Insert the component into the current library (indicated by lib_cursor):
+								et_libraries.type_libraries.update_element ( 
+									container	=> et_import.component_libraries,
+									position	=> lib_cursor,
+									process		=> insert_component'access);
+
 							else
 							-- As long as the component end mark does not appear, we process subsections as 
 							-- indicated by active_section:
@@ -803,7 +804,7 @@ package body et_kicad is
 												-- If we have the reference field like "F0 "U" 0 50 50 H V C CNN"
 												when et_libraries.reference =>
 																
-													-- Do a cross check of prefix and reference -- "U" 
+													-- CS: Do a cross check of prefix and reference -- "U" 
 													-- CS: why this redundance ? Ask the kicad makers...
 													if strip_quotes(get_field_from_line(line,2)) = et_general.type_component_prefix.to_string(prefix) then
 														null; -- fine
@@ -2459,7 +2460,7 @@ package body et_kicad is
 				unit_cursor : type_units.cursor;
 				unit_inserted : boolean;
 
-			begin
+			begin -- insert_unit
 				case tmp_component_appearance is
 
 					when sch =>
