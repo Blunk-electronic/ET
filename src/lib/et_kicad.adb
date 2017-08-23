@@ -431,6 +431,8 @@ package body et_kicad is
 			partcode			: et_libraries.type_text (meaning => et_libraries.partcode);
 			tmp_units			: et_libraries.type_units_internal.map;
 
+			--test_container : et_libraries.type_components.map;
+			
 			procedure init_temp_variables is
 			begin
 				null; -- CS
@@ -715,11 +717,13 @@ package body et_kicad is
 					write_scope_of_object (unit_id, indentation + 1);
 					put_line (indent(indentation + 1) & to_string (line));
 
--- 					et_libraries.type_components.update_element (
--- 						container => element (lib_cursor), -- (et_import.component_libraries), --et_libraries.type_units_internal.empty_map,
--- 						position => comp_cursor,
--- 						process => insert_unit'access);
-			
+-- 					test_container := et_libraries.type_libraries.element (lib_cursor);					
+					et_libraries.type_components.update_element (
+						--container => test_container, -- et_libraries.type_libraries.element (lib_cursor),
+						container => et_libraries.type_libraries.element (lib_cursor),
+						position => comp_cursor,
+						process => insert_unit'access);
+
 					
 					-- insert circle in temporarily variable
 --					et_libraries.type_circles.append (
@@ -1138,7 +1142,7 @@ package body et_kicad is
 					et_libraries.type_libraries.insert(
 						container	=> et_import.component_libraries,
 						key			=> lib_file_name, -- full library file name (incl. path) like "/home/user/lib/my_lib.lib"
-						--new_item	=> et_libraries.type_components.empty_map,
+						new_item	=> et_libraries.type_components.empty_map,
 						position	=> lib_cursor,
 						inserted	=> lib_inserted
 						);

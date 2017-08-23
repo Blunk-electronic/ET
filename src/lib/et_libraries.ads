@@ -503,7 +503,7 @@ package et_libraries is
 	use type_components;
 
 
-	
+	--package type_libraries is new indefinite_ordered_maps (	
 	package type_libraries is new ordered_maps (
 		key_type => type_library_full_name.bounded_string,
 		element_type => type_components.map);
