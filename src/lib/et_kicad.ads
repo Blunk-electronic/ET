@@ -303,7 +303,8 @@ package et_kicad is
 
 	-- KiCad supports up to 64 units within a component
 	unit_count_max : constant positive := 64;
-	type type_unit_id is new positive range 1..unit_count_max;
+	type type_units_total is new positive range 1..unit_count_max;
+	type type_unit_id is new natural range natural'first..unit_count_max;
 
 	type type_library_component_appearance is (N, P); -- normal or power
 

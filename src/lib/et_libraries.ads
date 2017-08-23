@@ -281,25 +281,24 @@ package et_libraries is
 	-- coordinates, orientation, flags for making port and pin name visible. 
 	-- Later, other values are assigned like pin name. CS: set defaults
 	type type_port is record
-		name              : type_port_name.bounded_string; -- example: "CLOCK" -- CS: should be the key in the port list instead
-		-- port swap level ?
-		
-		-- Kicad requirement: sometimes the supply port name has a special position
-		name_position_offset : type_grid; 
-		
 		direction         : type_port_direction; -- example: "passive"
 		coordinates       : type_coordinates;
 		orientation       : type_orientation;
 		port_name_visible : type_port_visible;
 		pin_name_visible  : type_pin_visible;
 		pin               : type_pin_name.bounded_string; -- example: "144" or in case of a BGA package "E14"
+
 		-- pin_position_offset ?
+		-- port swap level ?
+		
+		-- Kicad requirement: sometimes the supply port name has a special position
+		name_position_offset : type_grid; 
 	end record;
 
 	-- Ports are collected in a map.
 	package type_ports is new ordered_maps ( 
-		key_type => type_port_name.bounded_string,
-		element_type => type_port);
+		key_type => type_port_name.bounded_string, -- like "CLOCK" or "CE"
+		element_type => type_port); 
 
 
 
