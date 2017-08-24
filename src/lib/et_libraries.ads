@@ -90,12 +90,14 @@ package et_libraries is
 	-- CS: negative schematic coordinates should be forbidden
 	-- type type_grid is digits 7 range 0.00 .. 100000.00; -- CS: unit assumed is MIL !!!	
 
+	coordinate_zero : constant type_grid := 0.0;
+
     -- In general every object has at least x,y coordinates.
 	type type_coordinates is tagged record
-		x,y				: type_grid;
+		x,y				: type_grid := coordinate_zero;
 	end record;
 
-	coordinate_zero : constant type_grid := 0.0;
+
 
 	coordinates_dimension_separator : constant string (1..1) := "/";
 	coordinates_preamble : constant string (1..15) := "position (x" & coordinates_dimension_separator & "y) ";
@@ -228,10 +230,10 @@ package et_libraries is
 	-- These are basic properties a text has got:
 	type type_text_basic is tagged record
 		position	: type_coordinates;
-        size    	: type_text_size;
-        style		: type_text_style;
+        size    	: type_text_size := 50; -- CS define a default
+        style		: type_text_style := type_text_style'first;
         line_width	: type_text_line_width := 0; -- CS: use a general type_line_width ?
-        orientation	: type_orientation;
+        orientation	: type_orientation := type_orientation'first;
 		visible		: type_text_visible := yes; -- unless assigned otherwise all texts are visible by default
 		alignment	: type_text_aligment;
 	end record;
@@ -359,10 +361,10 @@ package et_libraries is
 
 	-- Shapes are wrapped in a the type_shapes:
 	type type_shapes is record
-		lines		: type_lines.list;
-		polylines	: type_polylines.list;
-		arcs 		: type_arcs.list;
-		circles		: type_circles.list;
+		lines		: type_lines.list 		:= type_lines.empty_list;
+		polylines	: type_polylines.list	:= type_polylines.empty_list;
+		arcs 		: type_arcs.list		:= type_arcs.empty_list;
+		circles		: type_circles.list		:= type_circles.empty_list;
 	end record;
 
 
@@ -387,7 +389,7 @@ package et_libraries is
 
 	type type_symbol is record
 		shapes		: type_shapes;
-		ports		: type_ports.map;
+		ports		: type_ports.map := type_ports.empty_map;
 		-- Symbols have placeholders for texts:
 		reference	: type_text_placeholder (meaning => et_libraries.reference);
 		value		: type_text_placeholder (meaning => et_libraries.value);
@@ -414,7 +416,7 @@ package et_libraries is
 	type type_unit_internal is record
 		symbol		: type_symbol;
 		coordinates	: type_coordinates;
-		swap_level	: type_unit_swap_level;
+		swap_level	: type_unit_swap_level := unit_swap_level_default;
 	end record;
 
 	-- Internal units are collected in a map:
@@ -470,8 +472,8 @@ package et_libraries is
 	type type_component (appearance : et_general.type_component_appearance) is record
 		prefix			: et_general.type_component_prefix.bounded_string; -- R, C, IC, ...
 		value			: type_component_value.bounded_string; -- 74LS00
-		units_internal	: type_units_internal.map;
-		units_external	: type_units_external.map;
+		units_internal	: type_units_internal.map := type_units_internal.empty_map;
+		units_external	: type_units_external.map := type_units_external.empty_map;
 		commissioned	: et_string_processing.type_date;
 		updated			: et_string_processing.type_date;
 		author			: type_person_name.bounded_string;
@@ -503,8 +505,8 @@ package et_libraries is
 	use type_components;
 
 
-	--package type_libraries is new indefinite_ordered_maps (	
-	package type_libraries is new ordered_maps (
+	package type_libraries is new indefinite_ordered_maps (	
+	--package type_libraries is new ordered_maps (
 		key_type => type_library_full_name.bounded_string,
 		element_type => type_components.map);
 	

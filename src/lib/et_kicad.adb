@@ -499,6 +499,12 @@ package body et_kicad is
 				end case;
 			end to_port_visibile;
 
+			function to_unit_name (id : in type_unit_id) return et_libraries.type_unit_name.bounded_string is
+			-- returns the given unit id as type_unit_name
+			begin
+				return et_libraries.type_unit_name.to_bounded_string (trim (type_unit_id'image (id), left));
+			end to_unit_name;
+			
 			function read_field (meaning : in et_libraries.type_text_meaning) return et_libraries.type_text is
 			-- Reads general text field properties from subfields 3..9 and returns a type_text with 
 			-- the meaning as given in parameter "meaning".
@@ -529,7 +535,7 @@ package body et_kicad is
 				-- NOTE: text.line_width assumes default (see et_general.ads) as no line width is provided here.
 				return text;
 			end read_field;
-			
+
 			procedure insert_component (
 			-- Updates the current library by inserting a component.
 
@@ -634,14 +640,40 @@ package body et_kicad is
 				
 			end insert_component;
 
-			
-			procedure insert_unit (
-			-- Inserts an internal unit in a component.
-				key			: in et_libraries.type_component_name.bounded_string;
-				component	: in out et_libraries.type_component) is
+
+
+			procedure add_unit (libraries : in out et_libraries.type_libraries.map) is
+
+				procedure insert_unit (
+				-- Inserts an internal unit in a component.
+					key			: in et_libraries.type_component_name.bounded_string;
+					component	: in out et_libraries.type_component) is
+
+					u : et_libraries.type_unit_internal;
+				begin
+
+					component.units_internal.insert (
+						key => to_unit_name (unit_id),
+						new_item => u );
+-- 							(
+-- 							symbol =>
+-- 							coordinates =>
+-- 							swap_level =>
+-- 							);
+						
+				end insert_unit;
+
+				procedure locate_component ( 
+					key			: in et_libraries.type_library_full_name.bounded_string;
+					components	: in out et_libraries.type_components.map) is
+				begin
+					components.update_element (comp_cursor, insert_unit'access);
+				end locate_component;
+
 			begin
-				null; -- CS
-			end insert_unit;
+				libraries.update_element ( lib_cursor, locate_component'access);
+			end add_unit;
+
 
 			
 		procedure read_draw_object (line : in type_fields_of_line; indentation : in natural := 0) is
@@ -718,12 +750,12 @@ package body et_kicad is
 					put_line (indent(indentation + 1) & to_string (line));
 
 -- 					test_container := et_libraries.type_libraries.element (lib_cursor);					
-					et_libraries.type_components.update_element (
-						--container => test_container, -- et_libraries.type_libraries.element (lib_cursor),
-						container => et_libraries.type_libraries.element (lib_cursor),
-						position => comp_cursor,
-						process => insert_unit'access);
-
+-- 					et_libraries.type_components.update_element (
+-- 						--container => test_container, -- et_libraries.type_libraries.element (lib_cursor),
+-- 						container => et_libraries.type_libraries.element (lib_cursor),
+-- 						position => comp_cursor,
+-- 						process => insert_unit'access);
+					add_unit (et_import.component_libraries);
 					
 					-- insert circle in temporarily variable
 --					et_libraries.type_circles.append (
