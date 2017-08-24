@@ -419,6 +419,9 @@ package et_libraries is
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
 	end record;
 
+	-- Sometims for initiallization purposes we need a bare internal unit:
+	bare_unit_internal : type_unit_internal;
+	
 	-- Internal units are collected in a map:
 	package type_units_internal is new ordered_maps (
 		key_type => type_unit_name.bounded_string, -- like "I/O-Bank 3" "A" or "B"
@@ -496,7 +499,7 @@ package et_libraries is
 		end case;
 
 	end record;
-	
+
 	-- Components are stored in a map.
 	-- Within the map they are accessed by a key type_component_name (something like "CAPACITOR").
 	package type_components is new indefinite_ordered_maps (
@@ -504,9 +507,11 @@ package et_libraries is
 		element_type => type_component);
 	use type_components;
 
+	procedure write_component_properties ( component : in type_components.cursor; indentation : in natural := 0);
+	-- Writes the properties of the component indicated by the given cursor.
 
-	package type_libraries is new indefinite_ordered_maps (	
-	--package type_libraries is new ordered_maps (
+	--package type_libraries is new indefinite_ordered_maps (	
+	package type_libraries is new ordered_maps (
 		key_type => type_library_full_name.bounded_string,
 		element_type => type_components.map);
 	

@@ -281,6 +281,62 @@ package body et_libraries is
 		return v;
 	end component_value_valid;
 
+
+	procedure write_component_properties ( component : in type_components.cursor; indentation : in natural := 0) is
+	-- Writes the properties of the component indicated by the given cursor.
+	function indent ( i : in natural) return string renames et_string_processing.indentation;
+		use et_libraries;
+		use et_libraries.type_units_internal;
+		
+		unit_cursor : type_units_internal.cursor;
+		unit_count	: count_type;
+	begin
+		put_line(indent(indentation) & "component properties");
+		
+		-- component name in library
+		put_line(indent(indentation + 1) 
+			& "name " 
+			& type_component_name.to_string (type_components.key (component)));
+
+		-- number of internal units
+		unit_count := type_units_internal.length (type_components.element(component).units_internal);
+		
+		put_line(indent(indentation + 1) 
+			& "number of internal units" 
+			& count_type'image (unit_count));
+
+		case unit_count is
+
+			when 0 => 
+				-- component has no units 
+				raise constraint_error; -- CS: this should never happen
+				
+			when 1 => null;
+			
+			when others =>
+
+				-- write unit properties
+				unit_cursor := type_units_internal.first 
+							(type_components.element(component).units_internal);
+
+-- 				loop 
+-- 					exit when unit_cursor = type_units_internal.no_element;
+					put_line(indent(indentation + 2) 
+						& "name " 
+						& type_unit_name.to_string (type_units_internal.key(unit_cursor)));
+
+					unit_cursor := type_units_internal.next (unit_cursor);
+
+					put_line(indent(indentation + 2) 
+						& "name " 
+						& type_unit_name.to_string (type_units_internal.key(unit_cursor)));
+
+-- 				end loop;
+			
+		end case;
+		
+	end write_component_properties;
+
 	
 end et_libraries;
 

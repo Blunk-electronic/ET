@@ -395,6 +395,10 @@ package body et_kicad is
 		comp_cursor		: et_libraries.type_components.cursor;
 		comp_inserted	: boolean; -- indicates whether a component has been inserted
 
+		-- This is the unit cursor. It points to the unit being processed. In kicad we deal with internal units exclusively.
+		unit_cursor		: et_libraries.type_units_internal.cursor;
+		unit_inserted	: boolean; -- indicates whether a unit has been inserted
+	
 		function indent ( i : in natural) return string renames et_string_processing.indentation;		
 		
 		procedure read_library (indentation : in natural := 0) is
@@ -643,24 +647,27 @@ package body et_kicad is
 
 
 			procedure add_unit (libraries : in out et_libraries.type_libraries.map) is
-
+			-- Add the unit with current unit_id to current component.
+			-- If the unit has already been inserted, nothing happens.
+			
+			-- If the unit_id is 0 and the total number of units is 1, unit_id is set to 1
+			-- and a single unit is added. This is the case if the component has only one unit
+			-- and the draw object has the check "common to all units" set.
+			
+			-- If the unit_id is 0 and the total number of units is greater 1, nothing happens. 
+			-- This is the case when the component has more than one unit and the draw object
+			-- has the check "common to all units" set.
+			
 				procedure insert_unit (
 				-- Inserts an internal unit in a component.
 					key			: in et_libraries.type_component_name.bounded_string;
 					component	: in out et_libraries.type_component) is
-
-					u : et_libraries.type_unit_internal;
 				begin
-
 					component.units_internal.insert (
 						key => to_unit_name (unit_id),
-						new_item => u );
--- 							(
--- 							symbol =>
--- 							coordinates =>
--- 							swap_level =>
--- 							);
-						
+						new_item => et_libraries.bare_unit_internal,
+						position => unit_cursor,
+						inserted => unit_inserted);
 				end insert_unit;
 
 				procedure locate_component ( 
@@ -671,10 +678,23 @@ package body et_kicad is
 				end locate_component;
 
 			begin
-				libraries.update_element ( lib_cursor, locate_component'access);
+				if unit_id > 0 then
+					libraries.update_element ( lib_cursor, locate_component'access);
+				elsif units_total = 1 then
+					unit_id := 1;
+					libraries.update_element ( lib_cursor, locate_component'access);
+				else
+					null; -- CS
+				end if;
 			end add_unit;
 
 
+-- 			procedure add_circle (libraries : in out et_libraries.type_libraries.map) is
+-- 
+-- 			begin
+-- 				libraries.update_element ( lib_cursor, locate_component'access);
+-- 			end add_circle;
+			
 			
 		procedure read_draw_object (line : in type_fields_of_line; indentation : in natural := 0) is
 	
@@ -719,6 +739,9 @@ package body et_kicad is
 					unit_id := to_unit_id (field (line,3));
 					write_scope_of_object (unit_id, indentation + 1);
 					put_line (indent(indentation + 1) & to_string (line));
+
+					-- Add the unit with unit_id to current component (if not already done).
+					add_unit (et_import.component_libraries);
 					
 				when S => -- rectangle
 					put_line (indent(indentation) & "rectangle");
@@ -733,6 +756,9 @@ package body et_kicad is
 					unit_id := to_unit_id (field (line,6));
 					write_scope_of_object (unit_id, indentation + 1);
 					put_line (indent(indentation + 1) & to_string (line));
+
+					-- Add the unit with unit_id to current component (if not already done).
+					add_unit (et_import.component_libraries);
 					
 				when C => -- circle
 					put_line (indent(indentation) & "circle");
@@ -749,21 +775,8 @@ package body et_kicad is
 					write_scope_of_object (unit_id, indentation + 1);
 					put_line (indent(indentation + 1) & to_string (line));
 
--- 					test_container := et_libraries.type_libraries.element (lib_cursor);					
--- 					et_libraries.type_components.update_element (
--- 						--container => test_container, -- et_libraries.type_libraries.element (lib_cursor),
--- 						container => et_libraries.type_libraries.element (lib_cursor),
--- 						position => comp_cursor,
--- 						process => insert_unit'access);
+					-- Add the unit with unit_id to current component (if not already done).
 					add_unit (et_import.component_libraries);
-					
-					-- insert circle in temporarily variable
---					et_libraries.type_circles.append (
--- 						container => tmp_circles,
--- 						new_item => (
--- 							center.x	=> type_grid'value (field (line,2)),
--- 							center.y	=> type_grid'value (field (line,3)),
--- 							radius		=> type_grid'value (field (line,4)),
 					
 				when A => -- arc
 					put_line (indent(indentation) & "arc");
@@ -784,6 +797,9 @@ package body et_kicad is
 					unit_id := to_unit_id (field (line,7));
 					write_scope_of_object (unit_id, indentation + 1);
 					put_line (indent(indentation + 1) & to_string (line));
+
+					-- Add the unit with unit_id to current component (if not already done).
+					add_unit (et_import.component_libraries);
 					
 				when T => -- text
 					put_line (indent(indentation) & "text");
@@ -805,6 +821,9 @@ package body et_kicad is
 					write_scope_of_object (unit_id, indentation + 1);
 					put_line (indent(indentation + 1) & to_string (line));
 
+					-- Add the unit with unit_id to current component (if not already done).
+					add_unit (et_import.component_libraries);
+
 				when X => -- pin
 					put_line (indent(indentation) & "pin");
 					-- A pin is defined by a string like "X ~ 1 0 150 52 D 51 50 1 1 P"
@@ -824,6 +843,9 @@ package body et_kicad is
 					unit_id := to_unit_id (field (line,10));
 					write_scope_of_object (unit_id, indentation + 1);
 					put_line (indent(indentation + 1) & to_string (line));
+
+					-- Add the unit with unit_id to current component (if not already done).
+					add_unit (et_import.component_libraries);
 					
 			end case;
 		end read_draw_object;
@@ -912,6 +934,8 @@ package body et_kicad is
 							-- We wait for the end of component mark (ENDDEF) and clear the component_entered flag accordingly.
 							if get_field_from_line(line,1) = et_kicad.enddef then
 								component_entered := false;
+
+								et_libraries.write_component_properties (component => comp_cursor, indentation => indentation + 1);
 							else
 							-- As long as the component end mark does not appear, we process subsections as 
 							-- indicated by active_section:
