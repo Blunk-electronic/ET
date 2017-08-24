@@ -900,7 +900,7 @@ package body et_kicad is
 								-- unknown -- CS: what is it good for ?
 								-- pin name position offset of supply pins, if "place pin names inside" is off. the offset assumes zero
 								-- show pin/pad number Y/N,
-								-- show pin name Y/N, -- (better port name)
+								-- show pin/port name Y/N,
 								-- units total, -- like 4
 								-- all units not interchangeable L (otherwise F), (similar to swap level in EAGLE)
 								-- power symbol P (otherwise N)								
@@ -950,7 +950,8 @@ package body et_kicad is
 										-- We wait for the header of the footprint or draw list like "$FPLIST" or "DRAW"
 										-- and set active_section accordingly.
 										-- The component wide data is complete at this time. The component
-										-- is to be inserted into the library.
+										-- is to be inserted into the library without any units. Units are assembled and 
+										-- added to the component when the section "DRAW" is processed..
 										
 										-- As long as none of those headers occurs, we read the text fields.
 										if get_field_from_line(line,1) = et_kicad.fplist then

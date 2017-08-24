@@ -290,6 +290,7 @@ package body et_libraries is
 		
 		unit_cursor : type_units_internal.cursor;
 		unit_count	: count_type;
+		units		: type_units_internal.map;
 	begin
 		put_line(indent(indentation) & "component properties");
 		
@@ -299,11 +300,19 @@ package body et_libraries is
 			& type_component_name.to_string (type_components.key (component)));
 
 		-- number of internal units
-		unit_count := type_units_internal.length (type_components.element(component).units_internal);
+		unit_count := length (element (component).units_internal);
 		
 		put_line(indent(indentation + 1) 
 			& "number of internal units" 
 			& count_type'image (unit_count));
+
+		-- write unit properties
+		
+		-- NOTE: As a workaround we load units here temporarily
+		-- NOTE: with GNAT 4.8 .. 7.x it is not possible to advance the unit_cursor with "next". The program gets caught
+		-- in an infinite loop. So the workaround here is to copy the whole units_internal map to units and move
+		-- cursor in the local map "units".
+		units := element (component).units_internal;
 
 		case unit_count is
 
@@ -311,27 +320,32 @@ package body et_libraries is
 				-- component has no units 
 				raise constraint_error; -- CS: this should never happen
 				
-			when 1 => null;
-			
 			when others =>
 
-				-- write unit properties
-				unit_cursor := type_units_internal.first 
-							(type_components.element(component).units_internal);
+				-- The initial idea was to set the unit_cursor as follows. 
+				unit_cursor := first (type_components.element(component).units_internal);
+				-- Then the unit_cursor should be moved with the "next" procedure. This causes the program to freeze.
 
--- 				loop 
--- 					exit when unit_cursor = type_units_internal.no_element;
+				-- Workaround. This statement overwrite the malfunctioning cursor and solves the issue for the time being.
+				-- Comment this line to reproduce the bug:
+				unit_cursor := first (units);
+
+				
+				loop 
+					exit when unit_cursor = type_units_internal.no_element;
+					
+					-- put_line(standard_output, "step 1");
 					put_line(indent(indentation + 2) 
-						& "name " 
-						& type_unit_name.to_string (type_units_internal.key(unit_cursor)));
+						& "unit " 
+						& type_unit_name.to_string (key (unit_cursor)));
 
-					unit_cursor := type_units_internal.next (unit_cursor);
+					-- put_line(standard_output, "step 2");
 
-					put_line(indent(indentation + 2) 
-						& "name " 
-						& type_unit_name.to_string (type_units_internal.key(unit_cursor)));
+					-- Here the program freezes or keeps trappend in a forever-loop:
+					unit_cursor := next (unit_cursor);
+					-- put_line(standard_output, "step 3");
 
--- 				end loop;
+				end loop;
 			
 		end case;
 		
