@@ -113,8 +113,8 @@ package et_libraries is
 	function to_string (orientation : in type_orientation) return string;
 	-- Returns the given orientation as string. 
 
-	-- Objects may be placed at a certain angle:
-	type type_angle is digits 4 range 0.0 .. 359.0;
+	-- Objects may be placed at a certain angle (unit is degrees):
+	type type_angle is digits 4 range -359.9 .. 359.9;
 	
 -- SCHEMATIC RELATED
 

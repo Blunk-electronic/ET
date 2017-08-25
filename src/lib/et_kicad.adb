@@ -373,6 +373,22 @@ package body et_kicad is
 		-- CS exception handler
 	end to_alternative_representation;
 
+	function to_degrees (angle : in string) return et_libraries.type_angle is
+	-- Converts a given angle as string to type_angle.
+		a_in  : type_angle; -- unit is tenth of degrees
+		a_out : et_libraries.type_angle; -- unit is degrees
+		use et_libraries;
+	begin
+		-- convert given string to type_angle
+		a_in  := type_angle'value (angle);
+
+		-- convert type_angle to et_libraries.type_angle.
+		a_out := et_libraries.type_angle (a_in / 10.0);
+
+		--a_out := a_out / 10.0;
+		return a_out;
+	end to_degrees;
+	
 	
 	procedure read_components_libraries (indentation : in natural := 0) is
 	-- Reads components from libraries as stored in lib_dir and project_libraries:
@@ -941,8 +957,8 @@ package body et_kicad is
 					tmp_draw_arc.center.y		:= et_libraries.type_grid'value (field (line,3));
 					tmp_draw_arc.radius			:= et_libraries.type_grid'value (field (line,4));
 
-					tmp_draw_arc.start_angle	:= et_libraries.type_angle'value (field (line,5));
-					tmp_draw_arc.end_angle		:= et_libraries.type_angle'value (field (line,6));
+					tmp_draw_arc.start_angle	:= to_degrees (field (line,5));
+					tmp_draw_arc.end_angle		:= to_degrees (field (line,6));
 					
 					tmp_draw_arc.line_width		:= et_libraries.type_line_width'value (field (line,9));
 					tmp_draw_arc.fill			:= to_fill (field (line,10));

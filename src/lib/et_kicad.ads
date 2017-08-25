@@ -90,6 +90,10 @@ package et_kicad is
 	component_field_partcode		: constant type_component_field_id := 7;
 	component_field_function		: constant type_component_field_id := 8;
 
+-- GRID AND COORDINATES
+	-- Objects may be placed at a certain angle. The unit is tenth of degree:
+	type type_angle is range -3599 .. 3599;
+
 
     -- headers, footers, keywords 
 
