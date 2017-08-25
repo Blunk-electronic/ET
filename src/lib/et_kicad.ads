@@ -198,9 +198,9 @@ package et_kicad is
 		T, -- text
 		X); -- pin
 
-	library_rectangle_fill_none			: constant string (1..1) := "N";
-	library_rectangle_fill_foreground	: constant string (1..1) := "F";
-	library_rectangle_fill_background	: constant string (1..1) := "f";
+	library_fill_none			: constant string (1..1) := "N";
+	library_fill_foreground		: constant string (1..1) := "F";
+	library_fill_background		: constant string (1..1) := "f";
 
 	library_pin_electrical_type_passive			: constant string (1..1) := "P";
 	library_pin_electrical_type_input			: constant string (1..1) := "I";

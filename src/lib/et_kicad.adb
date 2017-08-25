@@ -508,6 +508,73 @@ package body et_kicad is
 			begin
 				return et_libraries.type_unit_name.to_bounded_string (trim (type_unit_id'image (id), left));
 			end to_unit_name;
+
+			function to_fill ( fill_style : in string) return et_libraries.type_fill is
+			-- Converts the given kicad fill style to a type_fill.
+				fill : et_libraries.type_fill;
+			begin
+-- 	library_fill_none			: constant string (1..1) := "N";
+-- 	library_fill_foreground		: constant string (1..1) := "F";
+-- 	library_fill_background		: constant string (1..1) := "f";
+		
+				-- CS
+				if fill_style = library_fill_none then
+				return fill;
+			end to_fill;
+			
+			function to_polyline (line : in et_string_processing.type_fields_of_line) return et_libraries.type_polyline is
+			-- Returns from the given fields of a line a type_polyline.
+				polyline	: et_libraries.type_polyline;
+				points		: et_libraries.type_points.list;
+				total		: positive; -- for cross checking 
+
+				function field (line : in type_fields_of_line; position : in positive) return string renames
+					et_string_processing.get_field_from_line;
+
+				-- A polyline is defined by a string like "P 3 0 1 10 0 0 100 50 70 0 N"
+				-- field meaning:
+				--  #2 : number of bends (incl. start and end points) (3)
+				--  #3 : 0 -> common to all units, otherwise unit id it belongs to
+				--  #4 : 1 -> not common to all body styles (alternative representation or DeMorgan) -- CS: verify
+				--  #5 : line width
+				--  #6.. 7  : start point (x/y) (0/0) 
+				--  #8.. 9  : bend point (x/y) (0/100)
+				-- #10..11  : end point (x/y) (50/70)
+				-- last field : fill style N/F/f no fill/foreground/background
+			
+				-- we start processing the fields from here (where the total number of points is)
+				pos 		: positive := 2; 
+
+				-- the x position of the last point of the line is here (field #10 in example above)
+				end_point	: positive := positive (et_string_processing.field_count (line)) - 2;
+
+				-- temporarily we store coordinates of a point here
+				point		: et_libraries.type_coordinates;
+				
+			begin -- to_polyline
+
+				-- read total number of points
+				total := positive'value (field (line, pos));
+				
+				-- read line width (field #5)
+				pos := 5;
+				polyline.line_width := et_libraries.type_line_width'value (field (line, pos));
+
+				-- From the next field (#6) on, we find the coordinates of the 
+				-- start point, the bend point(s) and the end point:
+				pos := 6;
+				loop exit when pos > end_point;
+					point.x := et_libraries.type_grid'value (field (line, pos)); -- load x
+					point.y := et_libraries.type_grid'value (field (line, pos+1)); -- load y (right after x the field)
+					points.append (point); -- append this point to the list of points
+					pos := pos + 2; -- advance field pointer to x coordinate of next point
+				end loop;
+
+				-- read fill style from last field
+				polyline.fill := to_fill (field (line, pos));				
+				
+				return polyline;
+			end to_polyline;
 			
 			function read_field (meaning : in et_libraries.type_text_meaning) return et_libraries.type_text is
 			-- Reads general text field properties from subfields 3..9 and returns a type_text with 
@@ -677,7 +744,7 @@ package body et_kicad is
 					components.update_element (comp_cursor, insert_unit'access);
 				end locate_component;
 
-			begin
+			begin -- add_unit
 				if unit_id > 0 then
 					libraries.update_element ( lib_cursor, locate_component'access);
 				elsif units_total = 1 then
@@ -688,12 +755,62 @@ package body et_kicad is
 				end if;
 			end add_unit;
 
+			-- temporarily used variables to store draw elements before they are added to a unit.
+			tmp_draw_polyline	: et_libraries.type_polyline;
+			tmp_draw_arc		: et_libraries.type_arc;
+			tmp_draw_circle 	: et_libraries.type_circle;
+			
+			procedure add_symbol_element (
+			-- Adds a symbol element (circle, arcs, lines, etc.) to the unit with the current unit_id.
+			-- The kind of symbol element is given by parameter "element".
+			-- The symbol properties are taken from the temporarily variables named tmp_draw_*.
+				libraries	: in out et_libraries.type_libraries.map;
+				element		: in et_libraries.type_symbol_element) is
+				
+				procedure insert (
+				-- Inserts the given element in the unit.
+					key			: in et_libraries.type_unit_name.bounded_string;
+					unit		: in out et_libraries.type_unit_internal) is
+				begin
+					case element is
+						when et_libraries.polyline =>
+							unit.symbol.shapes.polylines.append (tmp_draw_polyline);
 
--- 			procedure add_circle (libraries : in out et_libraries.type_libraries.map) is
--- 
--- 			begin
--- 				libraries.update_element ( lib_cursor, locate_component'access);
--- 			end add_circle;
+						when et_libraries.arc =>
+							unit.symbol.shapes.arcs.append (tmp_draw_arc);
+							
+						when et_libraries.circle =>
+							unit.symbol.shapes.circles.append (tmp_draw_circle);
+							
+						when others =>
+							raise constraint_error;
+					end case;
+				end insert;
+				
+				procedure locate_unit (
+				-- Locates the unit indicated by unit_cursor.
+					key			: in et_libraries.type_component_name.bounded_string;
+					component	: in out et_libraries.type_component) is
+				begin
+					component.units_internal.update_element (unit_cursor, insert'access);
+				end locate_unit;
+				
+				procedure locate_component ( 
+				-- Locates the component indicated by comp_cursor.
+					key			: in et_libraries.type_library_full_name.bounded_string;
+					components	: in out et_libraries.type_components.map) is
+				begin
+					components.update_element (comp_cursor, locate_unit'access);
+				end locate_component;
+
+			begin -- add_symbol_element
+				if unit_id > 0 then -- the element belongs to a particular unit exclusively.
+					libraries.update_element (lib_cursor, locate_component'access);
+				else -- the element belongs to all units of the component
+					null;
+				end if;
+				
+			end add_symbol_element;
 			
 			
 		procedure read_draw_object (line : in type_fields_of_line; indentation : in natural := 0) is
@@ -742,6 +859,9 @@ package body et_kicad is
 
 					-- Add the unit with unit_id to current component (if not already done).
 					add_unit (et_import.component_libraries);
+
+					-- compose polyline properties					
+					tmp_draw_polyline := to_polyline (line);
 					
 				when S => -- rectangle
 					put_line (indent(indentation) & "rectangle");
@@ -769,7 +889,7 @@ package body et_kicad is
 					--  #5 : 0 -> common to all units, otherwise unit id it belongs to
 					--  #6 : 1 -> not common to all body styles (alternative representation or DeMorgan) -- CS: verify
 					--  #7 : line width (23)
-					--  #6 : fill style N/F/f no fill/foreground/background
+					--  #8 : fill style N/F/f no fill/foreground/background
 
 					unit_id := to_unit_id (field (line,5));
 					write_scope_of_object (unit_id, indentation + 1);
@@ -777,6 +897,16 @@ package body et_kicad is
 
 					-- Add the unit with unit_id to current component (if not already done).
 					add_unit (et_import.component_libraries);
+
+					-- compose circle properties
+					tmp_draw_circle.center.x	:= et_libraries.type_grid'value (field (line,2));
+					tmp_draw_circle.center.y	:= et_libraries.type_grid'value (field (line,3));
+					tmp_draw_circle.radius		:= et_libraries.type_grid'value (field (line,4));
+					tmp_draw_circle.line_width	:= et_libraries.type_line_width'value (field (line,7));
+					tmp_draw_circle.fill		:= to_fill (field (line,8));
+
+					-- add circle to unit
+					add_symbol_element (et_import.component_libraries , et_libraries.circle);
 					
 				when A => -- arc
 					put_line (indent(indentation) & "arc");

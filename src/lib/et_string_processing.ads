@@ -154,7 +154,8 @@ package et_string_processing is
 	
 	function append (left : in type_fields_of_line; right : in type_fields_of_line) return type_fields_of_line;
 	
-	function get_field_from_line (line : in type_fields_of_line; position : in positive) return string;
+	function get_field_from_line (line : in type_fields_of_line; position : in positive) return string; 
+	-- CS: rename to "field". position should be a count_type
 
 	function to_string ( line : in type_fields_of_line) return string;
 

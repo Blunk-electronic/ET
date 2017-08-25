@@ -306,6 +306,7 @@ package et_libraries is
 
 	
 -- SHAPES 
+
 	-- line width
 	type type_line_width is new type_grid;
 
@@ -330,7 +331,7 @@ package et_libraries is
 	-- Filling can be done even if start and end point do not meet. In this case a virtual line
 	-- is "invented" that connects start and end point.
 	-- Finally the polylines are collected in a simple list.
-	package type_points is new doubly_linked_lists (element_type => type_grid);
+	package type_points is new doubly_linked_lists (element_type => type_coordinates);
 	type type_polyline is record
 		line_width		: type_line_width;
 		fill			: type_fill;
@@ -387,6 +388,11 @@ package et_libraries is
 	symbol_name_length_max : constant natural := 50;
 	package type_symbol_name is new generic_bounded_length(symbol_name_length_max); use type_symbol_name;
 
+	type type_symbol_element is (
+		line, polyline, arc, circle, 
+		pin,
+		reference, value, commissioned, updated, author);
+	
 	type type_symbol is record
 		shapes		: type_shapes;
 		ports		: type_ports.map := type_ports.empty_map;
