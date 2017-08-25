@@ -311,10 +311,10 @@ package et_libraries is
 	type type_line_width is new type_grid;
 
 	-- fill
-	type type_fill_border_visible is new boolean;
-	type type_fill_pattern is (cutout, solid); -- CS: hatched ? and its properties ?
+	type type_fill_border is ( visible, invisible);
+	type type_fill_pattern is (none, solid); -- CS: hatched ? and its properties ?
 	type type_fill is record 
-		border	: type_fill_border_visible := true;
+		border	: type_fill_border := visible;
 		pattern : type_fill_pattern := solid;
 	end record;
 	
@@ -341,9 +341,10 @@ package et_libraries is
 	
 	-- Arcs
 	type type_arc is record
+		center			: type_coordinates;
+		radius  		: type_grid;
 		start_point		: type_coordinates;
 		end_point		: type_coordinates;
-		radius			: type_grid;
 		start_angle		: type_angle;
 		end_angle		: type_angle;
 		line_width		: type_line_width;

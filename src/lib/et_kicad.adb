@@ -511,15 +511,20 @@ package body et_kicad is
 
 			function to_fill ( fill_style : in string) return et_libraries.type_fill is
 			-- Converts the given kicad fill style to a type_fill.
-				fill : et_libraries.type_fill;
+				use et_libraries;
 			begin
--- 	library_fill_none			: constant string (1..1) := "N";
--- 	library_fill_foreground		: constant string (1..1) := "F";
--- 	library_fill_background		: constant string (1..1) := "f";
-		
-				-- CS
 				if fill_style = library_fill_none then
-				return fill;
+					return (pattern => none, border => invisible);
+					
+				elsif fill_style = library_fill_foreground then
+					return (pattern => solid, border => invisible);
+					
+				elsif fill_style = library_fill_background then
+					return (pattern => solid, border => visible);
+
+				else
+					raise constraint_error; -- CS write an error message about invalid fill style
+				end if;
 			end to_fill;
 			
 			function to_polyline (line : in et_string_processing.type_fields_of_line) return et_libraries.type_polyline is
@@ -898,7 +903,7 @@ package body et_kicad is
 					-- Add the unit with unit_id to current component (if not already done).
 					add_unit (et_import.component_libraries);
 
-					-- compose circle properties
+					-- compose circle properties -- CS: do this stuff via a function
 					tmp_draw_circle.center.x	:= et_libraries.type_grid'value (field (line,2));
 					tmp_draw_circle.center.y	:= et_libraries.type_grid'value (field (line,3));
 					tmp_draw_circle.radius		:= et_libraries.type_grid'value (field (line,4));
@@ -930,6 +935,26 @@ package body et_kicad is
 
 					-- Add the unit with unit_id to current component (if not already done).
 					add_unit (et_import.component_libraries);
+
+					-- compose arc properties -- CS: do this stuff via a function
+					tmp_draw_arc.center.x		:= et_libraries.type_grid'value (field (line,2));
+					tmp_draw_arc.center.y		:= et_libraries.type_grid'value (field (line,3));
+					tmp_draw_arc.radius			:= et_libraries.type_grid'value (field (line,4));
+
+					tmp_draw_arc.start_angle	:= et_libraries.type_angle'value (field (line,5));
+					tmp_draw_arc.end_angle		:= et_libraries.type_angle'value (field (line,6));
+					
+					tmp_draw_arc.line_width		:= et_libraries.type_line_width'value (field (line,9));
+					tmp_draw_arc.fill			:= to_fill (field (line,10));
+					
+					tmp_draw_arc.start_point.x	:= et_libraries.type_grid'value (field (line,11));
+					tmp_draw_arc.start_point.y	:= et_libraries.type_grid'value (field (line,12));
+					tmp_draw_arc.end_point.x	:= et_libraries.type_grid'value (field (line,13));
+					tmp_draw_arc.end_point.y	:= et_libraries.type_grid'value (field (line,14));
+
+					-- add arc to unit
+					add_symbol_element (et_import.component_libraries , et_libraries.arc);
+					
 					
 				when T => -- text
 					put_line (indent(indentation) & "text");
