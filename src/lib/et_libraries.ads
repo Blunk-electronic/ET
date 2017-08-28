@@ -264,7 +264,7 @@ package et_libraries is
 	-- A port is something where a net can be attached to.
 	-- The name of a port represents the function of the port like (A14 or RST_N)
 
-	subtype type_port_length is type_grid range 10.0 .. 200.0; -- CS: reasonable limits ?
+	subtype type_port_length is type_grid range 0.0 .. 500.0; -- CS: reasonable limits ?
 	
 	-- The port has an electrical direction:
 	type type_port_direction is (

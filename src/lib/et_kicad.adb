@@ -836,6 +836,8 @@ package body et_kicad is
 				-- style
 				-- CS: port.style need function to_style to convert from kicad to et type
 				return port;
+
+				-- CS: exception handler
 			end to_port;
 
 					
@@ -1061,6 +1063,8 @@ package body et_kicad is
 						when others =>
 							raise constraint_error;
 					end case;
+
+				-- CS: exception handler if port is already in map
 				end insert;
 				
 				procedure locate_unit (
