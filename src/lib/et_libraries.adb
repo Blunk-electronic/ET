@@ -322,12 +322,14 @@ package body et_libraries is
 				
 			when others =>
 
-				-- The initial idea was to set the unit_cursor as follows. 
+				-- The initial idea was to set the unit_cursor as follows.
+				-- Statement A:
 				unit_cursor := first (type_components.element(component).units_internal);
 				-- Then the unit_cursor should be moved with the "next" procedure. This causes the program to freeze.
 
-				-- Workaround. This statement overwrite the malfunctioning cursor and solves the issue for the time being.
-				-- Comment this line to reproduce the bug:
+				-- Workaround. This statement overwrites the malfunctioning cursor and solves
+				-- the issue for the time being. Comment this statmement to reproduce the bug:
+				-- Statement B:
 				unit_cursor := first (units);
 
 				
@@ -339,9 +341,12 @@ package body et_libraries is
 						& "unit " 
 						& type_unit_name.to_string (key (unit_cursor)));
 
+					-- CS: output draw objects
+					
 					-- put_line(standard_output, "step 2");
 
-					-- Here the program freezes or keeps trappend in a forever-loop:
+					-- Here the program freezes or keeps trappend in a forever-loop if 
+					-- statement A is used. With statement B everyting works fine:
 					unit_cursor := next (unit_cursor);
 					-- put_line(standard_output, "step 3");
 
