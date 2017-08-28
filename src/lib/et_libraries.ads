@@ -197,7 +197,7 @@ package et_libraries is
 -- TEXT & FIELDS
 
     -- CS: currently we use unit mil which is old fashionated
-    type type_text_size is range 1..1000; -- CS unit assumed is MIL !!!
+    type type_text_size is range 1..1000; -- CS unit assumed is MIL !!! -- CS: should be a subtype of type_grid ?
 	type type_text_line_width is range 0..100; -- CS unit assumed is MIL !!!
 	type type_text_style is ( normal, italic, bold, italic_bold);
 	type type_text_visible is (yes, no);
@@ -264,6 +264,8 @@ package et_libraries is
 	-- A port is something where a net can be attached to.
 	-- The name of a port represents the function of the port like (A14 or RST_N)
 
+	subtype type_port_length is type_grid range 10.0 .. 200.0; -- CS: reasonable limits ?
+	
 	-- The port has an electrical direction:
 	type type_port_direction is (
 		DIGIAL_IN,
@@ -278,18 +280,40 @@ package et_libraries is
 
 	type type_port_visible is ( ON, OFF);
 	type type_pin_visible is ( ON, OFF);
+
+	type type_port_style is ( -- CS: find a better name
+		INVERTED,
+		CLOCK,
+		INVERTED_CLOCK,
+		INPUT_LOW,
+		CLOCK_LOW,
+		OUTPUT_LOW,
+		FALLING_EDGE_CLK, RISING_EDGE_CLK,
+		NON_LOGIC,
+
+		INVISIBLE_INVERTED,
+		INVISIBLE_CLOCK,
+		INVISIBLE_INVERTED_CLOCK,
+		INVISIBLE_INPUT_LOW,
+		INVISIBLE_CLOCK_LOW,
+		INVISIBLE_OUTPUT_LOW,
+		INVISIBLE_FALLING_EDGE_CLK, INVISIBLE_RISING_EDGE_CLK,
+		INVISIBLE_NON_LOGIC);
 	
 	-- Initially, at the lowest level (usually library level), a port has a name, direction,
 	-- coordinates, orientation, flags for making port and pin name visible. 
 	-- Later, other values are assigned like pin name. CS: set defaults
 	type type_port is record
-		direction         : type_port_direction; -- example: "passive"
-		coordinates       : type_coordinates;
-		orientation       : type_orientation;
-		port_name_visible : type_port_visible;
-		pin_name_visible  : type_pin_visible;
-		pin               : type_pin_name.bounded_string; -- example: "144" or in case of a BGA package "E14"
-
+		direction			: type_port_direction; -- example: "passive"
+		style				: type_port_style;
+		coordinates			: type_coordinates;
+		length				: type_port_length;
+		orientation			: type_orientation;
+		port_name_visible	: type_port_visible;
+		pin_name_visible	: type_pin_visible;
+		pin					: type_pin_name.bounded_string; -- example: "144" or in case of a BGA package "E14"
+		port_name_size		: type_text_size;
+		pin_name_size		: type_text_size;
 		-- pin_position_offset ?
 		-- port swap level ?
 		
@@ -402,7 +426,7 @@ package et_libraries is
 
 	type type_symbol_element is (
 		line, polyline, rectangle, arc, circle, -- shapes
-		pin, 
+		port, 
 		text, -- text embedded in a symbol
 		reference, value, commissioned, updated, author); -- text field placeholders
 

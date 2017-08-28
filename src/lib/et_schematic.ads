@@ -257,7 +257,7 @@ package et_schematic is
 	use et_libraries;
 	package type_port_list_of_net is new vectors ( 
 		index_type => positive, -- every pin of a net has an id
-		element_type => et_libraries.type_port);
+		element_type => et_libraries.type_port); -- CS: this should be a schematic specific type_port
 
 	-- A net junction is where segments can be connected with each other.
 	type type_net_junction is tagged record

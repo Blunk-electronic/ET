@@ -787,7 +787,58 @@ package body et_kicad is
 				text.content				:= to_content (field (line,9));
 				return text;
 			end to_text;
-			
+
+			function to_port (line : in et_string_processing.type_fields_of_line) return et_libraries.type_port is
+			-- Returns from the given fields of a port as a type_port.
+				port	: et_libraries.type_port;
+
+				function field (line : in type_fields_of_line; position : in positive) return string renames
+					et_string_processing.get_field_from_line;
+
+				-- A port is defined by a string like "X ~ 1 0 150 52 D 51 50 1 1 P"
+				-- field meaning:
+				--  #2 : port name (~)
+				--  #3 : pin number (1)
+				--  #4..5 : position x/y (0/150)
+				--  #6 : pin length (52)
+				--  #7 : orientation up/down/left/right (U/D/L/R)
+				--  #8 : pin number size (51)
+				--  #9 : port name size (50)
+				-- #10 : 0 -> common to all units, otherwise unit id it belongs to
+				-- #11 : 1 -> not common to all body styles (alternative representation or DeMorgan) -- CS: verify
+				-- #12 : electrical type (direction), see et_kicad.ads for more
+				-- #13 : optional field: pin style, see et_kicad.ads for more
+
+			begin -- to_port
+				-- NOTE: port name is handled separately because it is the key withing the port map of the unit
+
+				-- compose pin number
+				port.pin			:= et_libraries.type_pin_name.to_bounded_string (field (line,3));
+
+				-- compose position
+				port.coordinates.x	:= et_libraries.type_grid'value (field (line,4));
+				port.coordinates.y	:= et_libraries.type_grid'value (field (line,5));
+
+				-- compose length
+				port.length			:= et_libraries.type_port_length'value (field (line,6));
+
+				-- compose orientation
+				-- CS: port.orientation	:= type_library_pin_orientation
+
+				-- text sizes
+				port.pin_name_size	:= et_libraries.type_text_size'value (field (line,8));
+				port.port_name_size	:= et_libraries.type_text_size'value (field (line,9));
+
+				-- direction
+				-- CS: port.direction		:= et_libraries.type_port_direction'v
+				-- need function to convert from kicad direction to et type
+
+				-- style
+				-- CS: port.style need function to_style to convert from kicad to et type
+				return port;
+			end to_port;
+
+					
 			function read_field (meaning : in et_libraries.type_text_meaning) return et_libraries.type_text is
 			-- Reads general text field properties from subfields 3..9 and returns a type_text with 
 			-- the meaning as given in parameter "meaning".
@@ -973,6 +1024,8 @@ package body et_kicad is
 			tmp_draw_arc		: et_libraries.type_arc;
 			tmp_draw_circle 	: et_libraries.type_circle;
 			tmp_draw_text		: et_libraries.type_symbol_text;
+			tmp_draw_port		: et_libraries.type_port;
+			tmp_draw_port_name	: et_libraries.type_port_name.bounded_string;
 			
 			procedure add_symbol_element (
 			-- Adds a symbol element (circle, arcs, lines, etc.) to the unit with the current unit_id.
@@ -1001,6 +1054,9 @@ package body et_kicad is
 
 						when et_libraries.text =>
 							unit.symbol.texts.append (tmp_draw_text);
+
+						when et_libraries.port =>
+							unit.symbol.ports.insert (key => tmp_draw_port_name, new_item => tmp_draw_port);
 							
 						when others =>
 							raise constraint_error;
@@ -1195,17 +1251,17 @@ package body et_kicad is
 					add_symbol_element (et_import.component_libraries , et_libraries.text);
 
 					
-				when X => -- pin
-					put_line (indent(indentation) & "pin");
-					-- A pin is defined by a string like "X ~ 1 0 150 52 D 51 50 1 1 P"
+				when X => -- port
+					put_line (indent(indentation) & "port");
+					-- A port is defined by a string like "X ~ 1 0 150 52 D 51 50 1 1 P"
 					-- field meaning:
-					--  #2 : pin/port name (~)
+					--  #2 : port name (~)
 					--  #3 : pin number (1)
 					--  #4..5 : position x/y (0/150)
 					--  #6 : pin length (52)
-					--  #7 : orientation up/down (U/D)
+					--  #7 : orientation up/down/left/right (U/D/L/R)
 					--  #8 : pin number size (51)
-					--  #9 : pin/port name size (50)
+					--  #9 : port name size (50)
 					-- #10 : 0 -> common to all units, otherwise unit id it belongs to
 					-- #11 : 1 -> not common to all body styles (alternative representation or DeMorgan) -- CS: verify
 					-- #12 : electrical type (direction), see et_kicad.ads for more
@@ -1217,6 +1273,16 @@ package body et_kicad is
 
 					-- Add the unit with unit_id to current component (if not already done).
 					add_unit (et_import.component_libraries);
+
+					-- compose port
+					-- Since ports are collected in a map, the port name is going to be the key. Thus 
+					-- we handle the port name separately from the port properties.
+					tmp_draw_port := to_port (line);
+					tmp_draw_port_name := et_libraries.type_port_name.to_bounded_string (field (line,2));
+					
+					-- add pin to unit
+					add_symbol_element (et_import.component_libraries , et_libraries.port);
+
 					
 			end case;
 		end read_draw_object;
