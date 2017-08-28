@@ -405,11 +405,21 @@ package et_libraries is
 		pin, 
 		text, -- text embedded in a symbol
 		reference, value, commissioned, updated, author); -- text field placeholders
+
+	-- Texts may be embedded in a symbol like "counter" or "&". So far they have the meaning "misc".
+	-- CS: strings and texts within a unit symbol serve for documentation only. As long as
+	-- there is no dedicated enumeration value available we choose "misc".
+	-- CS: The meaning could be something like "documentation" some day.
+	type type_symbol_text is new type_text (meaning => misc) with null record;
+	package type_symbol_texts is new doubly_linked_lists (element_type => type_symbol_text);
 	
 	type type_symbol is record
-		shapes		: type_shapes;
-		ports		: type_ports.map := type_ports.empty_map;
-		-- Symbols have placeholders for texts:
+		shapes		: type_shapes; -- the collection of shapes
+		texts		: type_symbol_texts.list; -- the collection of texts (meaning misc)
+		ports		: type_ports.map := type_ports.empty_map; -- the ports of the symbol
+		
+		-- Placeholders for component wide texts. To be filled with content when 
+		-- a symbol is placed in the schematic:
 		reference	: type_text_placeholder (meaning => et_libraries.reference);
 		value		: type_text_placeholder (meaning => et_libraries.value);
 		commissioned: type_text_placeholder (meaning => et_libraries.commissioned);

@@ -91,6 +91,15 @@ package body et_string_processing is
 		end case;
 	end ht_to_space;		
 
+	function tilde_to_space (c : in character) return character is
+	-- Replaces a tilde by space. Other characters are returned unchanged.
+	begin
+		case c is
+			when '~' => return latin_1.space;
+			when others => return c;
+		end case;
+	end tilde_to_space;						
+	
 	
 	function wildcard_match (text_with_wildcards : in string; text_exact : in string) return boolean is
 	-- Returns true if text_with_wildcards matches text_exact.

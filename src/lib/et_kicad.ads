@@ -178,21 +178,16 @@ package et_kicad is
 
 	-- These strange strings are used to define the text style of 
 	-- net labels and notes:
-    text_schematic_style_normal : constant string (1..1) := "~";
+	text_schematic_style_normal : constant string (1..1) := "~";
     text_schematic_style_italic : constant string (1..6) := "Italic";    
+	text_library_style_normal	: constant string (1..6) := "Normal";
+	text_library_style_italic	: constant string (1..6) := "Italic";	
 	
     -- fields
 	type type_field_orientation is (H, V); -- horizontal, vertical
 	type type_field_alignment_horizontal is (R, C, L); -- right, center, left
 	type type_field_alignment_vertical is (T, C, B);   -- top, center, bottom
 	type type_library_field_visible is (V, I); -- visible, invisible
-
--- 	library_draw_identifier_polyline	: constant string (1..1) := "P";
--- 	library_draw_identifier_rectangle	: constant string (1..1) := "S";
--- 	library_draw_identifier_circle		: constant string (1..1) := "C";	
--- 	library_draw_identifier_arc			: constant string (1..1) := "A";
--- 	library_draw_identifier_pin			: constant string (1..1) := "X";
--- 	library_draw_identifier_text		: constant string (1..1) := "T";	
 
 	type type_library_draw is (
 		P, -- polyline
@@ -206,6 +201,9 @@ package et_kicad is
 	library_fill_foreground		: constant string (1..1) := "F";
 	library_fill_background		: constant string (1..1) := "f";
 
+	library_text_bold_off						: constant string (1..1) := "0";
+	library_text_bold_on						: constant string (1..1) := "1";
+	
 	library_pin_electrical_type_passive			: constant string (1..1) := "P";
 	library_pin_electrical_type_input			: constant string (1..1) := "I";
 	library_pin_electrical_type_output			: constant string (1..1) := "O";	

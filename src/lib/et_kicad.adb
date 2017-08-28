@@ -191,7 +191,8 @@ package body et_kicad is
 
 	function to_text_style (
 	-- Converts a vertical kicad text style to type_text_style.
-	-- The given style_in is something like CNN. We are interested in the 2nd and 3rd character only.
+	-- The given style_in is something like CNN or "Italic" (if it is about a text field or a simple text).
+	-- We are interested in the 2nd and 3rd character only.
 		style_in : in string;
 		text : in boolean -- true if it is about the style of a text, false if it is about the style of a field
 		-- Explanation: The style of a text is something like "~" or "Italic".
@@ -697,6 +698,95 @@ package body et_kicad is
 				return arc;
 			end to_arc;
 
+	
+			function to_text (line : in et_string_processing.type_fields_of_line) return et_libraries.type_symbol_text is
+			-- Returns from the given fields of a text a type_symbol_text.
+				text	: et_libraries.type_symbol_text;
+
+				function field (line : in type_fields_of_line; position : in positive) return string renames
+					et_string_processing.get_field_from_line;
+
+				-- A text is defined by a string like "T 0 0 300 60 0 0 0 leuchtdiode Normal 0 C C"
+				-- Space characters whitin the actual text are replaced by tilde as in this example:
+				-- "T 900 -100 0 60 0 1 0 gate~C Normal 0 C C"
+				-- field meaning:
+				--  #2 : rotation in tenth of degrees (counter clock wise), assumes only values of 0 or 900
+				--  #3..4 : center (x/y)
+				--  #5 : size 
+				--  #6 : ? - unknown CS
+				--  #7 : 0 -> common to all units, otherwise unit id it belongs to
+				--  #8 : 1 -> not common to all body styles (alternative representation or DeMorgan) -- CS: verify
+				--  #9 : content "leuchtdiode~square"
+				-- #10 : style Nomal/Italic
+				-- #11 : bold on/off (0/1) 
+				-- #12 : horizontal alignment left/center/right L/C/R
+				-- #13 : vertical alignment top/center/bottom T/C/B
+
+				function to_style ( style_in : in string; bold_in : in string) return et_libraries.type_text_style is
+				-- Composes from style_in and bold_in a type_text_style
+					a : et_libraries.type_text_style;
+
+					procedure invalid_style is begin
+						put_line(message_error & "invalid text style '" & style_in & "' !"); -- CS: message instead
+						raise constraint_error;
+					end invalid_style;
+
+				begin -- to_style
+					if bold_in = library_text_bold_off then -- "0" -- bold disabled
+						
+						if style_in = text_library_style_normal then
+							a := et_libraries.normal;
+						elsif style_in = text_library_style_italic then
+							a := et_libraries.italic;
+						else
+							invalid_style;
+						end if;
+
+					elsif bold_in = library_text_bold_on then -- "1" -- bold enabled
+
+						if style_in = text_library_style_normal then
+							a := et_libraries.bold;
+						elsif style_in = text_library_style_italic then
+							a := et_libraries.italic_bold;
+						else
+							invalid_style;
+						end if;
+
+					else -- "bold" flag invalid
+						raise constraint_error; -- CS : write message on invaid "bold" flag
+					end if;
+
+					return a;
+				end to_style;
+
+
+				function to_content (text_in : in string) return et_libraries.type_text_content.bounded_string is
+				-- Replaces tilds in given string by space and returns a type_text_content.bounded_string.
+					t : string (1..text_in'length) := text_in; -- copy given text to t
+				begin
+					-- replace tildes in given text by spaces.
+					translate (t, et_string_processing.tilde_to_space'access);
+					return et_libraries.type_text_content.to_bounded_string (t);
+				end to_content;
+				
+			begin -- to_text
+				-- CS: text.orientation	:= et_libraries.type_grid'value (field (line,3));
+				
+				text.position.x		:= et_libraries.type_grid'value (field (line,3));
+				text.position.y		:= et_libraries.type_grid'value (field (line,4));
+				text.size			:= et_libraries.type_text_size'value (field (line,5));
+
+				-- compose from fields 10 and 11 the text style
+				text.style			:= to_style (field (line,10), field (line,11));
+
+				-- compose alignment
+				text.alignment.horizontal	:= to_alignment_horizontal (field (line,12));
+				text.alignment.vertical		:= to_alignment_vertical (field (line,13));
+
+				-- read text content and replace tildes by spaces
+				text.content				:= to_content (field (line,9));
+				return text;
+			end to_text;
 			
 			function read_field (meaning : in et_libraries.type_text_meaning) return et_libraries.type_text is
 			-- Reads general text field properties from subfields 3..9 and returns a type_text with 
@@ -882,6 +972,7 @@ package body et_kicad is
 			tmp_draw_rectangle	: et_libraries.type_rectangle;
 			tmp_draw_arc		: et_libraries.type_arc;
 			tmp_draw_circle 	: et_libraries.type_circle;
+			tmp_draw_text		: et_libraries.type_symbol_text;
 			
 			procedure add_symbol_element (
 			-- Adds a symbol element (circle, arcs, lines, etc.) to the unit with the current unit_id.
@@ -907,6 +998,9 @@ package body et_kicad is
 							
 						when et_libraries.circle =>
 							unit.symbol.shapes.circles.append (tmp_draw_circle);
+
+						when et_libraries.text =>
+							unit.symbol.texts.append (tmp_draw_text);
 							
 						when others =>
 							raise constraint_error;
@@ -1072,8 +1166,10 @@ package body et_kicad is
 				when T => -- text
 					put_line (indent(indentation) & "text");
 					-- A text is defined by a string like "T 0 0 300 60 0 0 0 leuchtdiode Normal 0 C C"
+					-- Space characters whitin the actual text are replaced by tilde as in this example:
+					-- "T 0 -100 0 60 0 1 0 gate~C Normal 0 C C"
 					-- field meaning:
-					--  #2 : rotation in tenth of degrees (counter clock wise)
+					--  #2 : rotation in tenth of degrees (counter clock wise), assumes only values of 0 or 900
 					--  #3..4 : center (x/y)
 					--  #5 : size 
 					--  #6 : ? - unknown CS
@@ -1092,10 +1188,11 @@ package body et_kicad is
 					-- Add the unit with unit_id to current component (if not already done).
 					add_unit (et_import.component_libraries);
 
-					-- CS: tmp_draw_text := to_text (line);
+					-- compose text
+					tmp_draw_text := to_text (line);
 					
-					-- add arc to unit
-					-- CS add_symbol_element (et_import.component_libraries , et_libraries.);
+					-- add text to unit
+					add_symbol_element (et_import.component_libraries , et_libraries.text);
 
 					
 				when X => -- pin
