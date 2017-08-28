@@ -605,6 +605,98 @@ package body et_kicad is
 				
 				return polyline;
 			end to_polyline;
+
+			function to_rectangle (line : in et_string_processing.type_fields_of_line) return et_libraries.type_rectangle is
+			-- Returns from the given fields of a line a type_rectangle.
+				rectangle	: et_libraries.type_rectangle;
+
+				function field (line : in type_fields_of_line; position : in positive) return string renames
+					et_string_processing.get_field_from_line;
+
+				-- A rectangle is defined by a string like "S -40 -100 40 100 0 1 10 N"
+				-- field meaning;
+				-- #2..5 : start point -40/-100   end point 40/100
+				-- #6 : 0 -> common to all units, otherwise unit id it belongs to
+				-- #7 : 1 -> not common to all body styles (alternative representation or DeMorgan) -- CS: verify
+				-- #8 : line width
+				-- #9 : fill style N/F/f no fill/foreground/background
+			begin -- to_rectangle
+				rectangle.start_point.x	:= et_libraries.type_grid'value (field (line,2));
+				rectangle.start_point.y	:= et_libraries.type_grid'value (field (line,3));	
+				rectangle.end_point.x	:= et_libraries.type_grid'value (field (line,4));
+				rectangle.end_point.y	:= et_libraries.type_grid'value (field (line,5));
+				rectangle.line_width	:= et_libraries.type_line_width'value (field (line,8));
+				rectangle.fill			:= to_fill (field (line,9));
+
+				return rectangle;
+			end to_rectangle;
+
+			function to_circle (line : in et_string_processing.type_fields_of_line) return et_libraries.type_circle is
+			-- Returns from the given fields of a circle a type_circle.
+				circle	: et_libraries.type_circle;
+
+				function field (line : in type_fields_of_line; position : in positive) return string renames
+					et_string_processing.get_field_from_line;
+			
+				-- A circle is defined by a string like "C 0 0 112 0 1 23 N"
+				-- field meaning:
+				--  #2..3 : center (x/y)
+				--  #4 : radius
+				--  #5 : 0 -> common to all units, otherwise unit id it belongs to
+				--  #6 : 1 -> not common to all body styles (alternative representation or DeMorgan) -- CS: verify
+				--  #7 : line width (23)
+				--  #8 : fill style N/F/f no fill/foreground/background
+			
+			begin -- to_circle
+				circle.center.x		:= et_libraries.type_grid'value (field (line,2));
+				circle.center.y		:= et_libraries.type_grid'value (field (line,3));
+				circle.radius		:= et_libraries.type_grid'value (field (line,4));
+				circle.line_width	:= et_libraries.type_line_width'value (field (line,7));
+				circle.fill			:= to_fill (field (line,8));
+
+				return circle;
+			end to_circle;
+
+			function to_arc (line : in et_string_processing.type_fields_of_line) return et_libraries.type_arc is
+			-- Returns from the given fields of an arc a type_arc.
+				arc		: et_libraries.type_arc;
+
+				function field (line : in type_fields_of_line; position : in positive) return string renames
+					et_string_processing.get_field_from_line;
+
+				-- An arc is defined by a string like "A 150 0 150 1800 900 0 1 33 N 0 0 150 150"
+				-- NOTE: kicad bug: multiply all y values by -1
+				-- field meaning:
+				--  #2..3 : center (x/y) 
+				--  #4 : radius (150)
+				--  #5 : start angle in tenth of degrees (1800)
+				--  #6 : end angle in tenth of degrees (900)
+				--  #7 : 0 -> common to all units, otherwise unit id it belongs to
+				--  #8 : 1 -> not common to all body styles (alternative representation or DeMorgan) -- CS: verify
+				--  #9 : line width 33
+				-- #10 : fill style N/F/f no fill/foreground/background
+				-- #11..12 : start point (x/y)
+				-- #13..14 : end point (x/y)
+
+			begin -- to_arc
+				arc.center.x		:= et_libraries.type_grid'value (field (line,2));
+				arc.center.y		:= et_libraries.type_grid'value (field (line,3));
+				arc.radius			:= et_libraries.type_grid'value (field (line,4));
+
+				arc.start_angle		:= to_degrees (field (line,5));
+				arc.end_angle		:= to_degrees (field (line,6));
+				
+				arc.line_width		:= et_libraries.type_line_width'value (field (line,9));
+				arc.fill			:= to_fill (field (line,10));
+				
+				arc.start_point.x	:= et_libraries.type_grid'value (field (line,11));
+				arc.start_point.y	:= et_libraries.type_grid'value (field (line,12));
+				arc.end_point.x		:= et_libraries.type_grid'value (field (line,13));
+				arc.end_point.y		:= et_libraries.type_grid'value (field (line,14));
+
+				return arc;
+			end to_arc;
+
 			
 			function read_field (meaning : in et_libraries.type_text_meaning) return et_libraries.type_text is
 			-- Reads general text field properties from subfields 3..9 and returns a type_text with 
@@ -787,6 +879,7 @@ package body et_kicad is
 
 			-- temporarily used variables to store draw elements before they are added to a unit.
 			tmp_draw_polyline	: et_libraries.type_polyline;
+			tmp_draw_rectangle	: et_libraries.type_rectangle;
 			tmp_draw_arc		: et_libraries.type_arc;
 			tmp_draw_circle 	: et_libraries.type_circle;
 			
@@ -805,6 +898,9 @@ package body et_kicad is
 					case element is
 						when et_libraries.polyline =>
 							unit.symbol.shapes.polylines.append (tmp_draw_polyline);
+
+						when et_libraries.rectangle =>
+							unit.symbol.shapes.rectangles.append (tmp_draw_rectangle);
 
 						when et_libraries.arc =>
 							unit.symbol.shapes.arcs.append (tmp_draw_arc);
@@ -837,7 +933,7 @@ package body et_kicad is
 				if unit_id > 0 then -- the element belongs to a particular unit exclusively.
 					libraries.update_element (lib_cursor, locate_component'access);
 				else -- the element belongs to all units of the component
-					null;
+					null; -- CS
 				end if;
 				
 			end add_symbol_element;
@@ -891,8 +987,11 @@ package body et_kicad is
 					-- Add the unit with unit_id to current component (if not already done).
 					add_unit (et_import.component_libraries);
 
-					-- compose polyline properties					
+					-- compose polyline
 					tmp_draw_polyline := to_polyline (line);
+
+					-- add polyline to unit
+					add_symbol_element (et_import.component_libraries , et_libraries.polyline);
 					
 				when S => -- rectangle
 					put_line (indent(indentation) & "rectangle");
@@ -910,6 +1009,12 @@ package body et_kicad is
 
 					-- Add the unit with unit_id to current component (if not already done).
 					add_unit (et_import.component_libraries);
+
+					-- compose rectangle
+					tmp_draw_rectangle := to_rectangle (line);
+
+					-- add rectangle to unit
+					add_symbol_element (et_import.component_libraries , et_libraries.rectangle);
 					
 				when C => -- circle
 					put_line (indent(indentation) & "circle");
@@ -929,13 +1034,9 @@ package body et_kicad is
 					-- Add the unit with unit_id to current component (if not already done).
 					add_unit (et_import.component_libraries);
 
-					-- compose circle properties -- CS: do this stuff via a function
-					tmp_draw_circle.center.x	:= et_libraries.type_grid'value (field (line,2));
-					tmp_draw_circle.center.y	:= et_libraries.type_grid'value (field (line,3));
-					tmp_draw_circle.radius		:= et_libraries.type_grid'value (field (line,4));
-					tmp_draw_circle.line_width	:= et_libraries.type_line_width'value (field (line,7));
-					tmp_draw_circle.fill		:= to_fill (field (line,8));
-
+					-- compose circle
+					tmp_draw_circle := to_circle (line);
+					
 					-- add circle to unit
 					add_symbol_element (et_import.component_libraries , et_libraries.circle);
 					
@@ -962,26 +1063,12 @@ package body et_kicad is
 					-- Add the unit with unit_id to current component (if not already done).
 					add_unit (et_import.component_libraries);
 
-					-- compose arc properties -- CS: do this stuff via a function
-					tmp_draw_arc.center.x		:= et_libraries.type_grid'value (field (line,2));
-					tmp_draw_arc.center.y		:= et_libraries.type_grid'value (field (line,3));
-					tmp_draw_arc.radius			:= et_libraries.type_grid'value (field (line,4));
-
-					tmp_draw_arc.start_angle	:= to_degrees (field (line,5));
-					tmp_draw_arc.end_angle		:= to_degrees (field (line,6));
+					-- compose arc
+					tmp_draw_arc := to_arc (line);
 					
-					tmp_draw_arc.line_width		:= et_libraries.type_line_width'value (field (line,9));
-					tmp_draw_arc.fill			:= to_fill (field (line,10));
-					
-					tmp_draw_arc.start_point.x	:= et_libraries.type_grid'value (field (line,11));
-					tmp_draw_arc.start_point.y	:= et_libraries.type_grid'value (field (line,12));
-					tmp_draw_arc.end_point.x	:= et_libraries.type_grid'value (field (line,13));
-					tmp_draw_arc.end_point.y	:= et_libraries.type_grid'value (field (line,14));
-
 					-- add arc to unit
 					add_symbol_element (et_import.component_libraries , et_libraries.arc);
-					
-					
+
 				when T => -- text
 					put_line (indent(indentation) & "text");
 					-- A text is defined by a string like "T 0 0 300 60 0 0 0 leuchtdiode Normal 0 C C"
@@ -1005,6 +1092,12 @@ package body et_kicad is
 					-- Add the unit with unit_id to current component (if not already done).
 					add_unit (et_import.component_libraries);
 
+					-- CS: tmp_draw_text := to_text (line);
+					
+					-- add arc to unit
+					-- CS add_symbol_element (et_import.component_libraries , et_libraries.);
+
+					
 				when X => -- pin
 					put_line (indent(indentation) & "pin");
 					-- A pin is defined by a string like "X ~ 1 0 150 52 D 51 50 1 1 P"

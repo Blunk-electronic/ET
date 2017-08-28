@@ -338,6 +338,16 @@ package et_libraries is
 		points			: type_points.list;
 	end record;
 	package type_polylines is new doubly_linked_lists (element_type => type_polyline);
+
+	-- Rectangles
+	-- It is sufficient to specifiy the diagonal of the rectangle.
+	type type_rectangle is record
+		start_point		: type_coordinates;
+		end_point		: type_coordinates;
+		line_width		: type_line_width;
+		fill			: type_fill;
+	end record;
+	package type_rectangles is new doubly_linked_lists (element_type => type_rectangle);	
 	
 	-- Arcs
 	type type_arc is record
@@ -365,6 +375,7 @@ package et_libraries is
 	type type_shapes is record
 		lines		: type_lines.list 		:= type_lines.empty_list;
 		polylines	: type_polylines.list	:= type_polylines.empty_list;
+		rectangles	: type_rectangles.list	:= type_rectangles.empty_list;
 		arcs 		: type_arcs.list		:= type_arcs.empty_list;
 		circles		: type_circles.list		:= type_circles.empty_list;
 	end record;
@@ -390,9 +401,10 @@ package et_libraries is
 	package type_symbol_name is new generic_bounded_length(symbol_name_length_max); use type_symbol_name;
 
 	type type_symbol_element is (
-		line, polyline, arc, circle, 
-		pin,
-		reference, value, commissioned, updated, author);
+		line, polyline, rectangle, arc, circle, -- shapes
+		pin, 
+		text, -- text embedded in a symbol
+		reference, value, commissioned, updated, author); -- text field placeholders
 	
 	type type_symbol is record
 		shapes		: type_shapes;
