@@ -375,18 +375,27 @@ package body et_kicad is
 
 	function to_degrees (angle : in string) return et_libraries.type_angle is
 	-- Converts a given angle as string to type_angle.
-		a_in  : type_angle; -- unit is tenth of degrees
-		a_out : et_libraries.type_angle; -- unit is degrees
+		a_in  : type_angle; -- unit is tenth of degrees -3599 .. 3599
+		--a_out : et_libraries.type_angle; -- unit is degrees -359.9 .. 359.9
 		use et_libraries;
+
+		-- For the conversion we need an intermediate real type
+		type type_angle_real is digits 5 range -3599.0 .. 3599.0;
+		a_tmp : type_angle_real;
 	begin
-		-- convert given string to type_angle
-		a_in  := type_angle'value (angle);
+		-- Convert given string to et_kicad.type_angle. This implies a syntax and range check.
+		a_in  := type_angle'value (angle); -- -3599 .. 3599
 
-		-- convert type_angle to et_libraries.type_angle.
-		a_out := et_libraries.type_angle (a_in / 10.0);
+		-- Convert given angle to a real type
+		a_tmp := type_angle_real (a_in); -- -3599.0 .. 3599.0
 
-		--a_out := a_out / 10.0;
-		return a_out;
+		-- convert given angle to et_libraries.type_angle.
+		--a_out := et_libraries.type_angle (a_tmp / 10.0); -- -359.9 .. 359.9
+
+		-- return a_out;
+		return et_libraries.type_angle (a_tmp / 10.0); -- -359.9 .. 359.9
+
+		-- CS: exception handler
 	end to_degrees;
 	
 	
@@ -849,6 +858,7 @@ package body et_kicad is
 			end to_unit_id;
 
 			procedure write_scope_of_object (unit : in type_unit_id; indentation : in natural) is
+			-- Outputs whether the current draw object is common to all units or not.
 			begin
 				put (indent(indentation) & "scope ");
 				if unit = 0 then
