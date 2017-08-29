@@ -460,6 +460,16 @@ package body et_kicad is
 			tmp_partcode		: et_libraries.type_text (meaning => et_libraries.partcode);
 			tmp_units			: et_libraries.type_units_internal.map;
 
+			-- temporarily used variables to store draw elements (polylines, arcs, pins, ...) 
+			-- before they are added to a unit.
+			tmp_draw_polyline	: et_libraries.type_polyline;
+			tmp_draw_rectangle	: et_libraries.type_rectangle;
+			tmp_draw_arc		: et_libraries.type_arc;
+			tmp_draw_circle 	: et_libraries.type_circle;
+			tmp_draw_text		: et_libraries.type_symbol_text;
+			tmp_draw_port		: et_libraries.type_port;
+			tmp_draw_port_name	: et_libraries.type_port_name.bounded_string;
+			
 		
 			procedure init_temp_variables is
 			begin
@@ -1058,7 +1068,6 @@ package body et_kicad is
 			end insert_component;
 
 
-
 			procedure add_unit (libraries : in out et_libraries.type_libraries.map) is
 			-- Add the unit with current unit_id to current component.
 			-- If the unit has already been inserted, nothing happens.
@@ -1101,14 +1110,6 @@ package body et_kicad is
 				end if;
 			end add_unit;
 
-			-- temporarily used variables to store draw elements before they are added to a unit.
-			tmp_draw_polyline	: et_libraries.type_polyline;
-			tmp_draw_rectangle	: et_libraries.type_rectangle;
-			tmp_draw_arc		: et_libraries.type_arc;
-			tmp_draw_circle 	: et_libraries.type_circle;
-			tmp_draw_text		: et_libraries.type_symbol_text;
-			tmp_draw_port		: et_libraries.type_port;
-			tmp_draw_port_name	: et_libraries.type_port_name.bounded_string;
 			
 			procedure add_symbol_element (
 			-- Adds a symbol element (circle, arcs, lines, ports, etc.) to the unit with the current unit_id.
@@ -1200,11 +1201,14 @@ package body et_kicad is
 			end add_symbol_element;
 			
 
-			procedure set_placeholder_properties is
+			procedure set_text_placeholder_properties is
 			-- Sets the properties of placeholders in all units of the component.
+				unit_count : count_type;
 			begin
+				-- CS
+				--unit_count := 
 				null;
-			end set_placeholder_properties;
+			end set_text_placeholder_properties;
 			
 		procedure read_draw_object (line : in type_fields_of_line; indentation : in natural := 0) is
 	
@@ -1249,7 +1253,7 @@ package body et_kicad is
 
 					unit_id := to_unit_id (field (line,3));
 -- 					write_scope_of_object (unit_id, indentation + 1);
--- 					put_line (indent(indentation + 1) & to_string (line));
+					put_line (indent(indentation + 1) & to_string (line));
 
 					-- Add the unit with unit_id to current component (if not already done).
 					add_unit (et_import.component_libraries);
@@ -1272,7 +1276,7 @@ package body et_kicad is
 
 					unit_id := to_unit_id (field (line,6));
 -- 					write_scope_of_object (unit_id, indentation + 1);
--- 					put_line (indent(indentation + 1) & to_string (line));
+					put_line (indent(indentation + 1) & to_string (line));
 
 					-- Add the unit with unit_id to current component (if not already done).
 					add_unit (et_import.component_libraries);
@@ -1296,7 +1300,7 @@ package body et_kicad is
 
 					unit_id := to_unit_id (field (line,5));
 -- 					write_scope_of_object (unit_id, indentation + 1);
--- 					put_line (indent(indentation + 1) & to_string (line));
+					put_line (indent(indentation + 1) & to_string (line));
 
 					-- Add the unit with unit_id to current component (if not already done).
 					add_unit (et_import.component_libraries);
@@ -1325,7 +1329,7 @@ package body et_kicad is
 
 					unit_id := to_unit_id (field (line,7));
 -- 					write_scope_of_object (unit_id, indentation + 1);
--- 					put_line (indent(indentation + 1) & to_string (line));
+					put_line (indent(indentation + 1) & to_string (line));
 
 					-- Add the unit with unit_id to current component (if not already done).
 					add_unit (et_import.component_libraries);
@@ -1356,7 +1360,7 @@ package body et_kicad is
 
 					unit_id := to_unit_id (field (line,7));
 -- 					write_scope_of_object (unit_id, indentation + 1);
--- 					put_line (indent(indentation + 1) & to_string (line));
+					put_line (indent(indentation + 1) & to_string (line));
 
 					-- Add the unit with unit_id to current component (if not already done).
 					add_unit (et_import.component_libraries);
@@ -1386,7 +1390,7 @@ package body et_kicad is
 
 					unit_id := to_unit_id (field (line,10));
 -- 					write_scope_of_object (unit_id, indentation + 1);
--- 					put_line (indent(indentation + 1) & to_string (line));
+					put_line (indent(indentation + 1) & to_string (line));
 
 					-- Add the unit with unit_id to current component (if not already done).
 					add_unit (et_import.component_libraries);
@@ -1631,7 +1635,7 @@ package body et_kicad is
 								-- Set placeholders (reference, value, commissioned, ...) in internal units.
 								-- The placeholder properties are known from the field-section.
 								-- The placeholder properties apply for all units.
-								set_placeholder_properties;
+								set_text_placeholder_properties;
 								
 								-- log component properties
 								et_libraries.write_component_properties (component => comp_cursor, indentation => indentation + 1);
