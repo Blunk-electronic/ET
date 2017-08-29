@@ -212,34 +212,37 @@ package et_kicad is
 
 	-- electrical direction (NOTE: since kicad uses upper and lower case letters here,
 	-- an enumeration type is not possible. thus we define constant strings instead:
-	library_pin_electrical_type_passive			: constant string (1..1) := "P";
-	library_pin_electrical_type_input			: constant string (1..1) := "I";
-	library_pin_electrical_type_output			: constant string (1..1) := "O";	
-	library_pin_electrical_type_bidir			: constant string (1..1) := "B";
-	library_pin_electrical_type_tristate		: constant string (1..1) := "T";
-	library_pin_electrical_type_unspecified		: constant string (1..1) := "U";
-	library_pin_electrical_type_power_in		: constant string (1..1) := "W"; -- CS verify
-	library_pin_electrical_type_power_out		: constant string (1..1) := "w"; -- CS verify
-	library_pin_electrical_type_open_collector	: constant string (1..1) := "C";
-	library_pin_electrical_type_open_emitter	: constant string (1..1) := "E";
-	library_pin_electrical_type_not_connected	: constant string (1..1) := "N";	
+	library_pin_electrical_type_passive			: constant character := 'P';
+	library_pin_electrical_type_input			: constant character := 'I';
+	library_pin_electrical_type_output			: constant character := 'O';	
+	library_pin_electrical_type_bidir			: constant character := 'B';
+	library_pin_electrical_type_tristate		: constant character := 'T';
+	library_pin_electrical_type_unspecified		: constant character := 'U';
+	library_pin_electrical_type_power_in		: constant character := 'W'; -- mind case !
+	library_pin_electrical_type_power_out		: constant character := 'w'; -- mind case !
+	library_pin_electrical_type_open_collector	: constant character := 'C';
+	library_pin_electrical_type_open_emitter	: constant character := 'E';
+	library_pin_electrical_type_not_connected	: constant character := 'N';	
 
+	-- The graphical pin style is optional. If not provided, it defaults to "Line".
+	-- ET maps "Line" to "NONE" (see et_libraries.type_port_style).
 	type type_library_pin_graphical_style is (
-		I,		-- inverted		
-        C,		-- clock			
+		N,		-- line (default if not provided)
+		I,		-- inverted
+        C,		-- clock		
         IC,		-- inverted_clock
-        L,		-- input_low		
-        CL,		-- clock_low		
-        V,		-- output_low		
+        L,		-- input_low	
+        CL,		-- clock_low
+        V,		-- output_low
         F,		-- falling_edge_clk
-        X,		-- non_logic		
-		NI,		-- invisible_inverted			
-		NC,		-- invisible_clock				
-		NIC,	-- invisible_inverted_clock	
-		NL,		-- invisible_input_low			
-		NCL,	-- invisible_clock_low			
-		NV,		-- invisible_output_low		
-		NF,		-- invisible_falling_edge_clk	
+        X,		-- non_logic
+		NI,		-- invisible_inverted
+		NC,		-- invisible_clock
+		NIC,	-- invisible_inverted_clock
+		NL,		-- invisible_input_low	
+		NCL,	-- invisible_clock_low
+		NV,		-- invisible_output_low
+		NF,		-- invisible_falling_edge_clk
 		NX);	-- invisible_non_logic
 	
 	-- workaround; prefix V requried to form an enumaration type:

@@ -121,9 +121,13 @@ package et_libraries is
  	port_name_length	: constant natural := 50;
 	package type_port_name is new generic_bounded_length(port_name_length); use type_port_name;
 
+	function to_string (port_name : in type_port_name.bounded_string) return string;
+	-- Returns the given port name as string.
+	
  	component_name_length_max : constant natural := 100;
 	package type_component_name is new generic_bounded_length(component_name_length_max); use type_component_name;
 
+	
 	-- For some component (not all !) it is helpful to have an URL to the datasheet:
 	component_datasheet_length_max : constant positive := 1000;
 	package type_component_datasheet is new generic_bounded_length (component_datasheet_length_max);
@@ -268,20 +272,24 @@ package et_libraries is
 	
 	-- The port has an electrical direction:
 	type type_port_direction is (
-		DIGIAL_IN,
-		DIGIAL_OUT,
-		ANALOG_IN,
-		ANALOG_OUT,
-		PASSIVE, 		-- no explicit direction
-		NOT_CONNECTED,
+		PASSIVE,
+		INPUT,
+		OUTPUT,
+		BIDIR,
+		TRISTATE,
+		UNKNOWN,
 		POWER_OUT, 		-- a power source
-		POWER_IN		-- a power sink
+		POWER_IN,	-- a power sink
+		PULL_LOW,
+		PULL_HIGH,
+		NOT_CONNECTED
 		);
 
 	type type_port_visible is ( ON, OFF);
 	type type_pin_visible is ( ON, OFF);
 
 	type type_port_style is ( -- CS: find a better name
+		NONE,
 		INVERTED,
 		CLOCK,
 		INVERTED_CLOCK,

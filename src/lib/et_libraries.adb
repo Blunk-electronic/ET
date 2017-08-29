@@ -68,6 +68,12 @@ package body et_libraries is
 	begin
 		return (preamble & type_orientation'image(orientation) & suffix);
 	end to_string;
+
+	function to_string (port_name : in type_port_name.bounded_string) return string is
+	-- Returns the given port name as string.
+	begin
+		return type_port_name.to_string (port_name);
+	end to_string;
 	
 	function to_string ( name_in_library : in type_component_name.bounded_string) return string is
 	-- Returns the given name_in_library as as string.

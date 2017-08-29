@@ -809,6 +809,87 @@ package body et_kicad is
 				-- #12 : electrical type (direction), see et_kicad.ads for more
 				-- #13 : optional field: pin style, see et_kicad.ads for more
 
+				function to_direction (dir : in string) return et_libraries.type_port_direction is
+					d_in : character := dir (dir'first);
+					d_out : et_libraries.type_port_direction;
+					use et_libraries;
+				begin
+					case d_in is
+						when library_pin_electrical_type_passive => 
+							d_out := PASSIVE;
+
+						when library_pin_electrical_type_input => 
+							d_out := INPUT;
+
+						when library_pin_electrical_type_output => 
+							d_out := OUTPUT;
+
+						when library_pin_electrical_type_bidir => 
+							d_out := BIDIR;
+
+						when library_pin_electrical_type_tristate => 
+							d_out := TRISTATE;
+
+						when library_pin_electrical_type_unspecified => 
+							d_out := UNKNOWN;
+
+						when library_pin_electrical_type_power_in => 
+							d_out := POWER_IN;
+
+						when library_pin_electrical_type_power_out => 
+							d_out := POWER_OUT;
+
+						when library_pin_electrical_type_open_collector => 
+							d_out := PULL_LOW;
+
+						when library_pin_electrical_type_open_emitter => 
+							d_out := PULL_HIGH;
+
+						when library_pin_electrical_type_not_connected => 
+							d_out := NOT_CONNECTED;
+
+						when others =>
+							-- CS: write message
+							raise constraint_error;
+					end case;
+
+					return d_out;
+				end to_direction;
+
+				function to_style (style : in string) return et_libraries.type_port_style is
+					s_in  : type_library_pin_graphical_style;
+					s_out : et_libraries.type_port_style := et_libraries.type_port_style'first;
+					use et_libraries;
+				begin
+					-- convert given string to type_library_pin_graphical_style.
+					-- This is an indirect test whether the given style is allowed.
+					s_in := type_library_pin_graphical_style'value (style);
+
+					-- map the given style to et.type_port_style
+					case s_in is
+						when N		=> s_out :=	et_libraries.type_port_style'first; -- default
+						when I		=> s_out :=	INVERTED;
+						when C		=> s_out :=	CLOCK;
+						when IC		=> s_out :=	INVERTED_CLOCK;
+						when L		=> s_out :=	INPUT_LOW;
+						when CL		=> s_out :=	CLOCK_LOW;
+						when V		=> s_out :=	OUTPUT_LOW;
+						when F		=> s_out :=	FALLING_EDGE_CLK;
+						when X		=> s_out :=	NON_LOGIC;
+						when NI		=> s_out :=	INVISIBLE_INVERTED;
+						when NC		=> s_out :=	INVISIBLE_CLOCK;
+						when NIC	=> s_out :=	INVISIBLE_INVERTED_CLOCK;
+						when NL		=> s_out :=	INVISIBLE_INPUT_LOW;
+						when NCL	=> s_out :=	INVISIBLE_CLOCK_LOW;
+						when NV		=> s_out :=	INVISIBLE_OUTPUT_LOW;
+						when NF		=> s_out :=	INVISIBLE_FALLING_EDGE_CLK;
+						when NX		=> s_out :=	INVISIBLE_NON_LOGIC;
+					end case;
+					
+					return s_out;
+					-- CS: exception handler
+				end to_style;
+				
 			begin -- to_port
 				-- NOTE: port name is handled separately because it is the key withing the port map of the unit
 
@@ -830,11 +911,13 @@ package body et_kicad is
 				port.port_name_size	:= et_libraries.type_text_size'value (field (line,9));
 
 				-- direction
-				-- CS: port.direction		:= et_libraries.type_port_direction'v
-				-- need function to convert from kicad direction to et type
+				port.direction		:= to_direction (field (line,12));
 
-				-- style
-				-- CS: port.style need function to_style to convert from kicad to et type
+				-- port style (optional, to be composed if field #13 present)
+				if field_count (line) = 13 then
+					port.style		:= to_style (field (line,13));
+				end if;
+
 				return port;
 
 				-- CS: exception handler
@@ -1038,8 +1121,10 @@ package body et_kicad is
 				
 				procedure insert (
 				-- Inserts the given element in the unit.
-					key			: in et_libraries.type_unit_name.bounded_string;
-					unit		: in out et_libraries.type_unit_internal) is
+				-- If a port is to be inserted: Aborts on multiple usage of port or pin names.
+					key		: in et_libraries.type_unit_name.bounded_string;
+					unit	: in out et_libraries.type_unit_internal) is
+					pos		: natural := 0; -- helps to trace the program position where an exception occured
 				begin
 					case element is
 						when et_libraries.polyline =>
@@ -1058,13 +1143,37 @@ package body et_kicad is
 							unit.symbol.texts.append (tmp_draw_text);
 
 						when et_libraries.port =>
+							pos := 100;
+							-- CS: test if port not used by other units
+							pos := 110;
+							-- CS: test if pin name not used by other units
+							pos := 190;
 							unit.symbol.ports.insert (key => tmp_draw_port_name, new_item => tmp_draw_port);
 							
 						when others =>
 							raise constraint_error;
 					end case;
 
-				-- CS: exception handler if port is already in map
+					exception 
+						when constraint_error =>
+							case pos is
+								when 190 => 
+									-- Tell the operator which port name the problem is:
+									write_message (
+										file_handle => current_output,
+										text => message_error & "file '" 
+											& to_string (lib_file_name) & "' "
+											& affected_line (line) 
+											& "port name '" & et_libraries.to_string (tmp_draw_port_name)
+											& "' already used !",
+										console => true);
+									raise;
+									
+								when others =>
+									raise;
+							end case;
+							
+						when others => raise;
 				end insert;
 				
 				procedure locate_unit (
@@ -1135,8 +1244,8 @@ package body et_kicad is
 					-- last field : fill style N/F/f no fill/foreground/background
 
 					unit_id := to_unit_id (field (line,3));
-					write_scope_of_object (unit_id, indentation + 1);
-					put_line (indent(indentation + 1) & to_string (line));
+-- 					write_scope_of_object (unit_id, indentation + 1);
+-- 					put_line (indent(indentation + 1) & to_string (line));
 
 					-- Add the unit with unit_id to current component (if not already done).
 					add_unit (et_import.component_libraries);
@@ -1158,8 +1267,8 @@ package body et_kicad is
 					-- #9 : fill style N/F/f no fill/foreground/background
 
 					unit_id := to_unit_id (field (line,6));
-					write_scope_of_object (unit_id, indentation + 1);
-					put_line (indent(indentation + 1) & to_string (line));
+-- 					write_scope_of_object (unit_id, indentation + 1);
+-- 					put_line (indent(indentation + 1) & to_string (line));
 
 					-- Add the unit with unit_id to current component (if not already done).
 					add_unit (et_import.component_libraries);
@@ -1182,8 +1291,8 @@ package body et_kicad is
 					--  #8 : fill style N/F/f no fill/foreground/background
 
 					unit_id := to_unit_id (field (line,5));
-					write_scope_of_object (unit_id, indentation + 1);
-					put_line (indent(indentation + 1) & to_string (line));
+-- 					write_scope_of_object (unit_id, indentation + 1);
+-- 					put_line (indent(indentation + 1) & to_string (line));
 
 					-- Add the unit with unit_id to current component (if not already done).
 					add_unit (et_import.component_libraries);
@@ -1211,8 +1320,8 @@ package body et_kicad is
 					-- #13..14 : end point (x/y)
 
 					unit_id := to_unit_id (field (line,7));
-					write_scope_of_object (unit_id, indentation + 1);
-					put_line (indent(indentation + 1) & to_string (line));
+-- 					write_scope_of_object (unit_id, indentation + 1);
+-- 					put_line (indent(indentation + 1) & to_string (line));
 
 					-- Add the unit with unit_id to current component (if not already done).
 					add_unit (et_import.component_libraries);
@@ -1242,8 +1351,8 @@ package body et_kicad is
 					-- #13 : alignment top/center/bottom T/C/B
 
 					unit_id := to_unit_id (field (line,7));
-					write_scope_of_object (unit_id, indentation + 1);
-					put_line (indent(indentation + 1) & to_string (line));
+-- 					write_scope_of_object (unit_id, indentation + 1);
+-- 					put_line (indent(indentation + 1) & to_string (line));
 
 					-- Add the unit with unit_id to current component (if not already done).
 					add_unit (et_import.component_libraries);
@@ -1272,8 +1381,8 @@ package body et_kicad is
 					-- #13 : optional field: pin style, see et_kicad.ads for more
 
 					unit_id := to_unit_id (field (line,10));
-					write_scope_of_object (unit_id, indentation + 1);
-					put_line (indent(indentation + 1) & to_string (line));
+-- 					write_scope_of_object (unit_id, indentation + 1);
+-- 					put_line (indent(indentation + 1) & to_string (line));
 
 					-- Add the unit with unit_id to current component (if not already done).
 					add_unit (et_import.component_libraries);
@@ -1286,7 +1395,6 @@ package body et_kicad is
 					
 					-- add pin to unit
 					add_symbol_element (et_import.component_libraries , et_libraries.port);
-
 					
 			end case;
 		end read_draw_object;
