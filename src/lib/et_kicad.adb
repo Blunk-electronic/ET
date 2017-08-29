@@ -448,21 +448,19 @@ package body et_kicad is
 
 			-- These are variables used to temporarily hold component properties before the component
 			-- gets fully assembled and inserted into the component list of a particular library.
-			-- These properties apply for the whole component.
-			-- CS: rename them with a prefix tmp_*
-			reference			: et_libraries.type_text (meaning => et_libraries.reference);
-			value				: et_libraries.type_text (meaning => et_libraries.value);
-			commissioned		: et_libraries.type_text (meaning => et_libraries.commissioned);
-			updated				: et_libraries.type_text (meaning => et_libraries.updated);
-			author				: et_libraries.type_text (meaning => et_libraries.author);
-			footprint			: et_libraries.type_text (meaning => et_libraries.packge);
-			datasheet			: et_libraries.type_text (meaning => et_libraries.datasheet);
-			fnction				: et_libraries.type_text (meaning => et_libraries.p_function); -- CS: rename to tmp_purpose
-			partcode			: et_libraries.type_text (meaning => et_libraries.partcode);
+			-- These properties apply for the whole component (means for all its units)
+			tmp_reference		: et_libraries.type_text (meaning => et_libraries.reference);
+			tmp_value			: et_libraries.type_text (meaning => et_libraries.value);
+			tmp_commissioned	: et_libraries.type_text (meaning => et_libraries.commissioned);
+			tmp_updated			: et_libraries.type_text (meaning => et_libraries.updated);
+			tmp_author			: et_libraries.type_text (meaning => et_libraries.author);
+			tmp_footprint		: et_libraries.type_text (meaning => et_libraries.packge);
+			tmp_datasheet		: et_libraries.type_text (meaning => et_libraries.datasheet);
+			tmp_purpose			: et_libraries.type_text (meaning => et_libraries.p_function);
+			tmp_partcode		: et_libraries.type_text (meaning => et_libraries.partcode);
 			tmp_units			: et_libraries.type_units_internal.map;
 
-			--test_container : et_libraries.type_components.map;
-			
+		
 			procedure init_temp_variables is
 			begin
 				null; -- CS
@@ -1004,10 +1002,10 @@ package body et_kicad is
 							new_item	=> (
 								appearance		=> sch,
 								prefix			=> prefix,
-								value			=> et_libraries.type_component_value.to_bounded_string (et_libraries.content (value)),
-								commissioned	=> et_string_processing.type_date (et_libraries.content (commissioned)),
-								updated			=> et_string_processing.type_date (et_libraries.content (updated)),
-								author			=> et_libraries.type_person_name.to_bounded_string (et_libraries.content (author)),
+								value			=> et_libraries.type_component_value.to_bounded_string (et_libraries.content (tmp_value)),
+								commissioned	=> et_string_processing.type_date (et_libraries.content (tmp_commissioned)),
+								updated			=> et_string_processing.type_date (et_libraries.content (tmp_updated)),
+								author			=> et_libraries.type_person_name.to_bounded_string (et_libraries.content (tmp_author)),
 								units_internal	=> et_libraries.type_units_internal.empty_map,
 								units_external	=> et_libraries.type_units_external.empty_map
 								)
@@ -1024,19 +1022,19 @@ package body et_kicad is
 							new_item	=> (
 								appearance		=> sch_pcb,
 								prefix			=> prefix,
-								value			=> et_libraries.type_component_value.to_bounded_string (et_libraries.content (value)),
-								commissioned	=> et_string_processing.type_date (et_libraries.content (commissioned)),
-								updated			=> et_string_processing.type_date (et_libraries.content (updated)),
-								author			=> et_libraries.type_person_name.to_bounded_string (et_libraries.content (author)),
+								value			=> et_libraries.type_component_value.to_bounded_string (et_libraries.content (tmp_value)),
+								commissioned	=> et_string_processing.type_date (et_libraries.content (tmp_commissioned)),
+								updated			=> et_string_processing.type_date (et_libraries.content (tmp_updated)),
+								author			=> et_libraries.type_person_name.to_bounded_string (et_libraries.content (tmp_author)),
 								units_internal	=> et_libraries.type_units_internal.empty_map,
 								units_external	=> et_libraries.type_units_external.empty_map,
 
 								variants		=> et_libraries.type_component_variants.empty_map,
 								-- NOTE: kicad does not know about package variants (as EAGLE does). So the variants list here is empty.
 
-								datasheet		=> et_libraries.type_component_datasheet.to_bounded_string (et_libraries.content (datasheet)),
-								purpose			=> et_libraries.type_component_purpose.to_bounded_string (et_libraries.content (fnction)),
-								partcode		=> et_libraries.type_component_partcode.to_bounded_string (et_libraries.content (partcode))
+								datasheet		=> et_libraries.type_component_datasheet.to_bounded_string (et_libraries.content (tmp_datasheet)),
+								purpose			=> et_libraries.type_component_purpose.to_bounded_string (et_libraries.content (tmp_purpose)),
+								partcode		=> et_libraries.type_component_partcode.to_bounded_string (et_libraries.content (tmp_partcode))
 								)
 							);
 
@@ -1405,6 +1403,151 @@ package body et_kicad is
 			end case;
 		end read_draw_object;
 
+
+		procedure read_field (line : in type_fields_of_line) is
+		-- Reads the kicad text field of a component in a temporarily variable.
+		-- Text fields look like:
+		-- F0 "#PWR" 0 -200 50 H I C CNN
+		-- F1 "GND" 0 -100 50 H V C CNN
+		-- F2 "" 0 0 50 H I C CNN
+		-- F3 "" 0 0 50 H I C CNN
+		-- F4 "1974-12-27T23:04:22" 650 100 60 H I C CNN "commissioned"
+		-- F5 "2017-01-23T23:04:22" 650 0 60 H I C CNN "updated"
+		-- F6 "MBL" 450 -100 60 H I C CNN "author"
+
+			function field (line : in type_fields_of_line; position : in positive) return string renames
+				et_string_processing.get_field_from_line;
+				
+			use et_libraries;
+			use et_string_processing;
+
+		begin -- read_field
+			-- read text fields from a component library (thats why scheamtic => false)
+			case to_text_meaning (line => line, schematic => false) is
+
+				-- If we have the reference field like "F0 "U" 0 50 50 H V C CNN"
+				when reference =>
+								
+					-- CS: Do a cross check of prefix and reference -- "U" 
+					-- CS: why this redundance ? Ask the kicad makers...
+					if strip_quotes (field (line,2)) = et_general.type_component_prefix.to_string(prefix) then
+						null; -- fine
+					else
+						put_line(message_warning & affected_line(line) & ": prefix vs. reference mismatch !");
+					end if;
+
+					tmp_reference := read_field (meaning => reference);
+					-- for the log:
+					write_text_properies (type_text (tmp_reference),4); -- actuals: text & indentation
+
+				-- If we have a value field like "F1 "74LS00" 0 -100 50 H V C CNN"
+				when value =>
+				
+					tmp_value := read_field (meaning => value);
+					-- for the log:
+					write_text_properies (type_text (tmp_value),4); -- actuals: text & indentation
+
+				-- If we have a footprint field like "F2 "" 0 -100 50 H V C CNN"
+				when packge =>
+				
+					tmp_footprint := read_field (meaning => packge);
+					-- for the log:
+					write_text_properies (type_text (tmp_footprint),4); -- actuals: text & indentation
+
+				-- If we have a datasheet field like "F3 "" 0 -100 50 H V C CNN"
+				when datasheet =>
+				
+					tmp_datasheet := read_field (meaning => datasheet);
+					-- for the log:
+					write_text_properies (type_text (tmp_datasheet),4); -- actuals: text & indentation
+
+				-- Other mandatory fields like function and partcode are detected by F4 and F5 
+				-- (not by subfield #10 !) So F4 enforces a function, F5 enforces a partcode.
+				
+				-- If we have a function field like "F4 "" 0 -100 50 H V C CNN" "function",
+				-- we test subfield #10 against the prescribed meaning. If ok the field is read like
+				-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
+				when p_function =>
+				
+					if to_lower (et_libraries.text_meaning_prefix & strip_quotes (field (line,10))) 
+							= to_lower (type_text_meaning'image (p_function)) then
+								tmp_purpose := read_field (meaning => p_function);
+								-- for the log:
+								write_text_properies (type_text (tmp_purpose),4); -- actuals: text & indentation
+								-- basic_text_check(fnction); -- CS
+					else
+						invalid_field(line);
+					end if;
+
+				-- If we have a partcode field like "F5 "" 0 -100 50 H V C CNN" "partcode",
+				-- we test subfield #10 against the prescribed meaning. If ok the field is read like
+				-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
+				when partcode =>
+				
+					if to_lower (strip_quotes(field (line,10)))
+							= to_lower (type_text_meaning'image (partcode)) then
+								tmp_partcode := read_field (meaning => partcode);
+								-- for the log:
+								write_text_properies (type_text (tmp_partcode),4); -- actuals: text & indentation
+								-- basic_text_check(partcode); -- CS
+					else
+						invalid_field(line);
+					end if;
+
+				-- If we have a "commissioned" field like "F6 "" 0 -100 50 H V C CNN" "commissioned",
+				-- we test subfield #10 against the prescribed meaning. If ok the field is read like
+				-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
+				when commissioned =>
+				
+					if to_lower (strip_quotes(field (line,10)))
+							= to_lower (type_text_meaning'image (commissioned)) then
+								tmp_commissioned := read_field (meaning => commissioned);
+								-- for the log:
+								write_text_properies (type_text (tmp_commissioned),4); -- actuals: text & indentation
+								-- basic_text_check(commissioned); -- CS
+					else
+						invalid_field(line);
+					end if;
+
+				-- If we have an "updated" field like "F7 "" 0 -100 50 H V C CNN" "updated",
+				-- we test subfield #10 against the prescribed meaning. If ok the field is read like
+				-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
+				when updated =>
+				
+					if to_lower (strip_quotes(field (line,10)))
+							= to_lower (type_text_meaning'image (updated)) then
+								tmp_updated := read_field (meaning => updated);
+								-- for the log:
+								write_text_properies (type_text (tmp_updated),4); -- actuals: text & indentation
+								-- basic_text_check(updated); -- CS
+					else
+						invalid_field(line);
+					end if;
+
+				-- If we have an "author" field like "F8 "" 0 -100 50 H V C CNN" "author",
+				-- we test subfield #10 against the prescribed meaning. If ok the field is read like
+				-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
+				when author =>
+				
+					if to_lower (strip_quotes(field (line,10)))
+							= to_lower (type_text_meaning'image (author)) then
+								tmp_author := read_field (meaning => author);
+								-- for the log:
+								write_text_properies (type_text (tmp_author),4); -- actuals: text & indentation
+								-- basic_text_check(author); -- CS
+					else
+						invalid_field(line);
+					end if;
+
+				when others => null;
+					-- CS: warning about illegal fields ?
+					-- CS: other text fields ?
+			end case;
+			
+			-- CS: check appearance vs. function vs. partcode -- see stock_manager	
+		end read_field;
+
+		
 		begin -- read_library
 			put_line (indent(indentation) & "with components:");
 			
@@ -1537,129 +1680,7 @@ package body et_kicad is
 											active_section := draw;
 											put_line (indent(indentation + 2) & "draw begin");
 										else
-											-- read text fields from a component library (thats why scheamtic => false)
-											case to_text_meaning(line => line, schematic => false) is
-
-												-- If we have the reference field like "F0 "U" 0 50 50 H V C CNN"
-												when et_libraries.reference =>
-																
-													-- CS: Do a cross check of prefix and reference -- "U" 
-													-- CS: why this redundance ? Ask the kicad makers...
-													if strip_quotes(get_field_from_line(line,2)) = et_general.type_component_prefix.to_string(prefix) then
-														null; -- fine
-													else
-														put_line(message_warning & et_string_processing.affected_line(line) & ": prefix vs. reference mismatch !");
-													end if;
-
-													reference := read_field (meaning => et_libraries.reference);
-													-- for the log:
-													et_libraries.write_text_properies (et_libraries.type_text(reference),4); -- actuals: text & indentation
-
-												-- If we have a value field like "F1 "74LS00" 0 -100 50 H V C CNN"
-												when et_libraries.value =>
-												
-													value := read_field (meaning => et_libraries.value);
-													-- for the log:
-													et_libraries.write_text_properies (et_libraries.type_text(value),4); -- actuals: text & indentation
-
-												-- If we have a footprint field like "F2 "" 0 -100 50 H V C CNN"
-												when et_libraries.packge =>
-												
-													footprint := read_field (meaning => et_libraries.packge);
-													-- for the log:
-													et_libraries.write_text_properies (et_libraries.type_text(footprint),4); -- actuals: text & indentation
-
-												-- If we have a datasheet field like "F3 "" 0 -100 50 H V C CNN"
-												when et_libraries.datasheet =>
-												
-													datasheet := read_field (meaning => et_libraries.datasheet);
-													-- for the log:
-													et_libraries.write_text_properies (et_libraries.type_text(datasheet),4); -- actuals: text & indentation
-
-												-- Other mandatory fields like function and partcode are detected by F4 and F5 
-												-- (not by subfield #10 !) So F4 enforces a function, F5 enforces a partcode.
-												
-												-- If we have a function field like "F4 "" 0 -100 50 H V C CNN" "function",
-												-- we test subfield #10 against the prescribed meaning. If ok the field is read like
-												-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
-												when et_libraries.p_function =>
-												
-													if to_lower(et_libraries.text_meaning_prefix & strip_quotes(get_field_from_line(line,10))) 
-															= to_lower(et_libraries.type_text_meaning'image(et_libraries.p_function)) then
-																fnction := read_field (meaning => et_libraries.p_function);
-																-- for the log:
-																et_libraries.write_text_properies (et_libraries.type_text(fnction),4); -- actuals: text & indentation
-																-- basic_text_check(fnction); -- CS
-													else
-														invalid_field(line);
-													end if;
-
-												-- If we have a partcode field like "F5 "" 0 -100 50 H V C CNN" "partcode",
-												-- we test subfield #10 against the prescribed meaning. If ok the field is read like
-												-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
-												when et_libraries.partcode =>
-												
-													if to_lower(strip_quotes(get_field_from_line(line,10)))
-															= to_lower(et_libraries.type_text_meaning'image(et_libraries.partcode)) then
-																partcode := read_field (meaning => et_libraries.partcode);
-																-- for the log:
-																et_libraries.write_text_properies (et_libraries.type_text(partcode),4); -- actuals: text & indentation
-																-- basic_text_check(partcode); -- CS
-													else
-														invalid_field(line);
-													end if;
-
-												-- If we have a "commissioned" field like "F6 "" 0 -100 50 H V C CNN" "commissioned",
-												-- we test subfield #10 against the prescribed meaning. If ok the field is read like
-												-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
-												when et_libraries.commissioned =>
-												
-													if to_lower(strip_quotes(get_field_from_line(line,10)))
-															= to_lower(et_libraries.type_text_meaning'image(et_libraries.commissioned)) then
-																commissioned := read_field (meaning => et_libraries.commissioned);
-																-- for the log:
-																et_libraries.write_text_properies (et_libraries.type_text(commissioned),4); -- actuals: text & indentation
-																-- basic_text_check(commissioned); -- CS
-													else
-														invalid_field(line);
-													end if;
-
-												-- If we have an "updated" field like "F7 "" 0 -100 50 H V C CNN" "updated",
-												-- we test subfield #10 against the prescribed meaning. If ok the field is read like
-												-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
-												when et_libraries.updated =>
-												
-													if to_lower(strip_quotes(get_field_from_line(line,10)))
-															= to_lower(et_libraries.type_text_meaning'image(et_libraries.updated)) then
-																updated := read_field (meaning => et_libraries.updated);
-																-- for the log:
-																et_libraries.write_text_properies (et_libraries.type_text(updated),4); -- actuals: text & indentation
-																-- basic_text_check(updated); -- CS
-													else
-														invalid_field(line);
-													end if;
-
-												-- If we have an "author" field like "F8 "" 0 -100 50 H V C CNN" "author",
-												-- we test subfield #10 against the prescribed meaning. If ok the field is read like
-												-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
-												when et_libraries.author =>
-												
-													if to_lower(strip_quotes(get_field_from_line(line,10)))
-															= to_lower(et_libraries.type_text_meaning'image(et_libraries.author)) then
-																author := read_field (meaning => et_libraries.author);
-																-- for the log:
-																et_libraries.write_text_properies (et_libraries.type_text(author),4); -- actuals: text & indentation
-																-- basic_text_check(author); -- CS
-													else
-														invalid_field(line);
-													end if;
-
-												when others => null;
-													-- CS: warning about illegal fields ?
-													-- CS: other text fields ?
-											end case;
-											
-											-- CS: check appearance vs. function vs. partcode -- see stock_manager	
+											read_field (line);
 										end if;
 
 									when footprints =>
