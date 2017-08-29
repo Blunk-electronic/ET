@@ -1113,7 +1113,7 @@ package body et_kicad is
 			tmp_draw_port_name	: et_libraries.type_port_name.bounded_string;
 			
 			procedure add_symbol_element (
-			-- Adds a symbol element (circle, arcs, lines, etc.) to the unit with the current unit_id.
+			-- Adds a symbol element (circle, arcs, lines, ports, etc.) to the unit with the current unit_id.
 			-- The kind of symbol element is given by parameter "element".
 			-- The symbol properties are taken from the temporarily variables named tmp_draw_*.
 				libraries	: in out et_libraries.type_libraries.map;
@@ -1201,6 +1201,12 @@ package body et_kicad is
 				
 			end add_symbol_element;
 			
+
+			procedure set_placeholder_properties is
+			-- Sets the properties of placeholders in all units of the component.
+			begin
+				null;
+			end set_placeholder_properties;
 			
 		procedure read_draw_object (line : in type_fields_of_line; indentation : in natural := 0) is
 	
@@ -1484,6 +1490,12 @@ package body et_kicad is
 							if get_field_from_line(line,1) = et_kicad.enddef then
 								component_entered := false;
 
+								-- Set placeholders (reference, value, commissioned, ...) in internal units.
+								-- The placeholder properties are known from the field-section.
+								-- The placeholder properties apply for all units.
+								set_placeholder_properties;
+								
+								-- log component properties
 								et_libraries.write_component_properties (component => comp_cursor, indentation => indentation + 1);
 							else
 							-- As long as the component end mark does not appear, we process subsections as 
@@ -1647,7 +1659,7 @@ package body et_kicad is
 													-- CS: other text fields ?
 											end case;
 											
-											-- CS: check appearacne vs. function vs. partcode -- see stock_manager	
+											-- CS: check appearance vs. function vs. partcode -- see stock_manager	
 										end if;
 
 									when footprints =>

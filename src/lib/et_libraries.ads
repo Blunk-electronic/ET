@@ -480,7 +480,7 @@ package et_libraries is
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
 	end record;
 
-	-- Sometims for initiallization purposes we need a bare internal unit:
+	-- Sometimes for initiallization purposes we need a bare internal unit:
 	bare_unit_internal : type_unit_internal;
 	
 	-- Internal units are collected in a map:
