@@ -138,7 +138,7 @@ package et_schematic is
 			when sch_pcb =>
 				packge		: et_libraries.type_text_placeholder (meaning => et_libraries.packge); -- like "SOT23"
 				datasheet	: et_libraries.type_text_placeholder (meaning => et_libraries.datasheet); -- might be useful for some special components
-				fnction		: et_libraries.type_text_placeholder (meaning => et_libraries.p_function); -- to be filled in schematic later by the user
+				purpose		: et_libraries.type_text_placeholder (meaning => et_libraries.purpose); -- to be filled in schematic later by the user
 				partcode	: et_libraries.type_text_placeholder (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"
 		end case;
 		-- NOTE: The placeholders are defined in et_libraries. Thus they have only

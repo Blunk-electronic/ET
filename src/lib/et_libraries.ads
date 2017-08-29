@@ -213,7 +213,6 @@ package et_libraries is
 	end record;
 	
 	-- Text fields:
-	text_meaning_prefix : constant string (1..2) := "P_"; -- workaround, see below
 	type type_text_meaning is (
 		REFERENCE,		-- for things like R301 or X9
 		VALUE,			-- for component values like "200R"
@@ -223,7 +222,7 @@ package et_libraries is
 		
 		PACKGE,			-- for compoenent packages like SOT23
 		DATASHEET,		-- for url to datasheet
-		P_FUNCTION, 	-- for the function of the component in the design. workaround: "P_" avoids usage of an ada keyword  -- CS: rename to PURPOSE
+		PURPOSE,		-- for the purpose of the component in the design.
 		PARTCODE,		-- for the primary key into an external database (like "R_PAC_S_0805_VAL_200R")
 		NOTE,			-- for notes made by a person
 		MISC); -- CS: others ?

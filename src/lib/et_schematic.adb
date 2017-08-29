@@ -262,9 +262,9 @@ package body et_schematic is
 						placeholder => type_units.element(unit).datasheet,
 						indentation => indentation + 2);
 
-					-- function
+					-- purpose
 					et_libraries.write_placeholder_properties (
-						placeholder => type_units.element(unit).fnction,
+						placeholder => type_units.element(unit).purpose,
 						indentation => indentation + 2);
 					
 					-- partcode

@@ -106,7 +106,7 @@ package body et_kicad is
 						when component_field_value			=> meaning := et_libraries.value;
 						when component_field_footprint		=> meaning := et_libraries.packge;
 						when component_field_datasheet		=> meaning := et_libraries.datasheet;
-						when component_field_function		=> meaning := et_libraries.p_function;
+						when component_field_function		=> meaning := et_libraries.purpose;
 						when component_field_partcode		=> meaning := et_libraries.partcode;
 						when component_field_commissioned	=> meaning := et_libraries.commissioned;
 						when component_field_updated		=> meaning := et_libraries.updated;
@@ -130,7 +130,7 @@ package body et_kicad is
 						when component_field_value			=> meaning := et_libraries.value;
 						when component_field_footprint		=> meaning := et_libraries.packge;
 						when component_field_datasheet		=> meaning := et_libraries.datasheet;
-						when component_field_function		=> meaning := et_libraries.p_function;
+						when component_field_function		=> meaning := et_libraries.purpose;
 						when component_field_partcode		=> meaning := et_libraries.partcode;
 						when component_field_commissioned	=> meaning := et_libraries.commissioned;
 						when component_field_updated		=> meaning := et_libraries.updated;
@@ -456,7 +456,7 @@ package body et_kicad is
 			tmp_author			: et_libraries.type_text (meaning => et_libraries.author);
 			tmp_footprint		: et_libraries.type_text (meaning => et_libraries.packge);
 			tmp_datasheet		: et_libraries.type_text (meaning => et_libraries.datasheet);
-			tmp_purpose			: et_libraries.type_text (meaning => et_libraries.p_function);
+			tmp_purpose			: et_libraries.type_text (meaning => et_libraries.purpose);
 			tmp_partcode		: et_libraries.type_text (meaning => et_libraries.partcode);
 			tmp_units			: et_libraries.type_units_internal.map;
 
@@ -1464,17 +1464,16 @@ package body et_kicad is
 				-- Other mandatory fields like function and partcode are detected by F4 and F5 
 				-- (not by subfield #10 !) So F4 enforces a function, F5 enforces a partcode.
 				
-				-- If we have a function field like "F4 "" 0 -100 50 H V C CNN" "function",
+				-- If we have a function field like "F4 "" 0 -100 50 H V C CNN" "purpose",
 				-- we test subfield #10 against the prescribed meaning. If ok the field is read like
 				-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
-				when p_function =>
+				when purpose =>
 				
-					if to_lower (et_libraries.text_meaning_prefix & strip_quotes (field (line,10))) 
-							= to_lower (type_text_meaning'image (p_function)) then
-								tmp_purpose := read_field (meaning => p_function);
-								-- for the log:
-								write_text_properies (type_text (tmp_purpose),4); -- actuals: text & indentation
-								-- basic_text_check(fnction); -- CS
+					if to_lower (strip_quotes (field (line,10))) = to_lower (type_text_meaning'image (purpose)) then
+						tmp_purpose := read_field (meaning => purpose);
+						-- for the log:
+						write_text_properies (type_text (tmp_purpose),4); -- actuals: text & indentation
+						-- basic_text_check(fnction); -- CS
 					else
 						invalid_field(line);
 					end if;
@@ -1484,12 +1483,11 @@ package body et_kicad is
 				-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
 				when partcode =>
 				
-					if to_lower (strip_quotes(field (line,10)))
-							= to_lower (type_text_meaning'image (partcode)) then
-								tmp_partcode := read_field (meaning => partcode);
-								-- for the log:
-								write_text_properies (type_text (tmp_partcode),4); -- actuals: text & indentation
-								-- basic_text_check(partcode); -- CS
+					if to_lower (strip_quotes(field (line,10))) = to_lower (type_text_meaning'image (partcode)) then
+						tmp_partcode := read_field (meaning => partcode);
+						-- for the log:
+						write_text_properies (type_text (tmp_partcode),4); -- actuals: text & indentation
+						-- basic_text_check(partcode); -- CS
 					else
 						invalid_field(line);
 					end if;
@@ -1499,12 +1497,11 @@ package body et_kicad is
 				-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
 				when commissioned =>
 				
-					if to_lower (strip_quotes(field (line,10)))
-							= to_lower (type_text_meaning'image (commissioned)) then
-								tmp_commissioned := read_field (meaning => commissioned);
-								-- for the log:
-								write_text_properies (type_text (tmp_commissioned),4); -- actuals: text & indentation
-								-- basic_text_check(commissioned); -- CS
+					if to_lower (strip_quotes(field (line,10))) = to_lower (type_text_meaning'image (commissioned)) then
+						tmp_commissioned := read_field (meaning => commissioned);
+						-- for the log:
+						write_text_properies (type_text (tmp_commissioned),4); -- actuals: text & indentation
+						-- basic_text_check(commissioned); -- CS
 					else
 						invalid_field(line);
 					end if;
@@ -1514,12 +1511,11 @@ package body et_kicad is
 				-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
 				when updated =>
 				
-					if to_lower (strip_quotes(field (line,10)))
-							= to_lower (type_text_meaning'image (updated)) then
-								tmp_updated := read_field (meaning => updated);
-								-- for the log:
-								write_text_properies (type_text (tmp_updated),4); -- actuals: text & indentation
-								-- basic_text_check(updated); -- CS
+					if to_lower (strip_quotes(field (line,10))) = to_lower (type_text_meaning'image (updated)) then
+						tmp_updated := read_field (meaning => updated);
+						-- for the log:
+						write_text_properies (type_text (tmp_updated),4); -- actuals: text & indentation
+						-- basic_text_check(updated); -- CS
 					else
 						invalid_field(line);
 					end if;
@@ -1529,12 +1525,11 @@ package body et_kicad is
 				-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
 				when author =>
 				
-					if to_lower (strip_quotes(field (line,10)))
-							= to_lower (type_text_meaning'image (author)) then
-								tmp_author := read_field (meaning => author);
-								-- for the log:
-								write_text_properies (type_text (tmp_author),4); -- actuals: text & indentation
-								-- basic_text_check(author); -- CS
+					if to_lower (strip_quotes(field (line,10))) = to_lower (type_text_meaning'image (author)) then
+						tmp_author := read_field (meaning => author);
+						-- for the log:
+						write_text_properies (type_text (tmp_author),4); -- actuals: text & indentation
+						-- basic_text_check(author); -- CS
 					else
 						invalid_field(line);
 					end if;
@@ -2792,7 +2787,7 @@ package body et_kicad is
             tmp_component_text_author		: et_libraries.type_text (meaning => et_libraries.author);
 			tmp_component_text_packge		: et_libraries.type_text (meaning => et_libraries.packge); -- like "SOT23"
 			tmp_component_text_datasheet	: et_libraries.type_text (meaning => et_libraries.datasheet); -- might be useful for some special components
-			tmp_component_text_fnction		: et_libraries.type_text (meaning => et_libraries.p_function); -- to be filled in schematic later by the user
+			tmp_component_text_purpose		: et_libraries.type_text (meaning => et_libraries.purpose); -- to be filled in schematic later by the user
 			tmp_component_text_partcode		: et_libraries.type_text (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"			
 
 			-- These are the "field found" flags. They signal if a particular text field has been found.
@@ -2805,7 +2800,7 @@ package body et_kicad is
             tmp_component_text_author_found			: boolean;
 			tmp_component_text_packge_found			: boolean;
 			tmp_component_text_datasheet_found		: boolean;
-			tmp_component_text_fnction_found		: boolean;
+			tmp_component_text_purpose_found		: boolean;
 			tmp_component_text_partcode_found		: boolean;
 			
 			
@@ -2819,7 +2814,7 @@ package body et_kicad is
 				tmp_component_text_author_found			:= false;
 				tmp_component_text_packge_found			:= false;
 				tmp_component_text_datasheet_found		:= false;
-				tmp_component_text_fnction_found		:= false;
+				tmp_component_text_purpose_found		:= false;
 				tmp_component_text_partcode_found		:= false;
 				
 				tmp_component_text_packge.content := et_libraries.type_text_content.to_bounded_string("");
@@ -2971,8 +2966,8 @@ package body et_kicad is
 						
 						-- purpose
 						put_line (indent(indentation + 1) & "purpose");
-						if not tmp_component_text_fnction_found then
-							missing_field (et_libraries.p_function);
+						if not tmp_component_text_purpose_found then
+							missing_field (et_libraries.purpose);
 						else
 							null;
 							-- CS: check content of tmp_component_text_fnction
@@ -3132,7 +3127,7 @@ package body et_kicad is
 								-- properties of a real component (appears in schematic and layout);
 								datasheet => et_libraries.type_component_datasheet.to_bounded_string (et_libraries.content (tmp_component_text_datasheet)),
 								partcode => et_libraries.type_component_partcode.to_bounded_string (et_libraries.content (tmp_component_text_partcode)),
-								purpose => et_libraries.type_component_purpose.to_bounded_string (et_libraries.content (tmp_component_text_fnction)),
+								purpose => et_libraries.type_component_purpose.to_bounded_string (et_libraries.content (tmp_component_text_purpose)),
 								
 								-- Assemble the package variant.
 								-- NOTE: There is no way to identifiy the name of the package variant like TL084D or TL084N.
@@ -3275,8 +3270,8 @@ package body et_kicad is
 													with meaning => tmp_component_text_packge.meaning ),
 								datasheet		=> ( et_libraries.type_text_basic (tmp_component_text_datasheet)
 													with meaning => tmp_component_text_datasheet.meaning ),
-								fnction			=> ( et_libraries.type_text_basic (tmp_component_text_fnction)
-													with meaning => tmp_component_text_fnction.meaning ),
+								purpose			=> ( et_libraries.type_text_basic (tmp_component_text_purpose)
+													with meaning => tmp_component_text_purpose.meaning ),
 								partcode		=> ( et_libraries.type_text_basic (tmp_component_text_partcode)
 													with meaning => tmp_component_text_partcode.meaning ),
 								updated			=> ( et_libraries.type_text_basic (tmp_component_text_updated)
@@ -3934,8 +3929,8 @@ package body et_kicad is
 														tmp_component_text_datasheet 		:= to_text;
 														
 													when component_field_function =>
-														tmp_component_text_fnction_found	:= true;
-														tmp_component_text_fnction 			:= to_text;
+														tmp_component_text_purpose_found	:= true;
+														tmp_component_text_purpose 			:= to_text;
 														
 													when component_field_partcode =>
 														tmp_component_text_partcode_found	:= true;
