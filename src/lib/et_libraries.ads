@@ -468,6 +468,12 @@ package et_libraries is
 	type type_unit_swap_level is new natural range 0..unit_swap_level_max;
 	unit_swap_level_default : constant := type_unit_swap_level'first;
 
+	type type_unit_add_level is (
+		NEXT, -- should be default
+		REQUEST,
+		CAN,
+		ALWAYS,
+		MUST);
 	
 	-- INTERNAL UNITS
 	
@@ -477,10 +483,11 @@ package et_libraries is
 		symbol		: type_symbol;
 		coordinates	: type_coordinates;
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
+		add_level	: type_unit_add_level := type_unit_add_level'first;
 	end record;
 
 	-- Sometimes for initiallization purposes we need a bare internal unit:
-	bare_unit_internal : type_unit_internal;
+	--bare_unit_internal : type_unit_internal;
 	
 	-- Internal units are collected in a map:
 	package type_units_internal is new ordered_maps (
@@ -501,7 +508,8 @@ package et_libraries is
 	type type_unit_external is record
 		reference	: type_unit_reference;
 		coordinates	: type_coordinates;
-		swap_level	: type_unit_swap_level;		
+		swap_level	: type_unit_swap_level := unit_swap_level_default;
+		add_level	: type_unit_add_level := type_unit_add_level'first;	
 	end record;
 
 	-- External units are collected in a map;
