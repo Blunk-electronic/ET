@@ -430,48 +430,57 @@ package body et_kicad is
 		function indent ( i : in natural) return string renames et_string_processing.indentation;		
 		
 		procedure read_library (indentation : in natural := 0) is
-			line				: type_fields_of_line;
-			component_entered	: boolean := false; -- goes true while a component section is being processed
+			line				: type_fields_of_line; -- the line being processed
+
+			-- This flag goes true once a component section is entered. It is cleared
+			-- when the component section is left.
+			component_entered	: boolean := false; 
+
+			-- The subsection of a component is indicated by variable active_section:			
 			type type_active_section is ( none, fields, footprints, draw);
-			active_section		: type_active_section := none; -- indicates the subsection being processed
+			active_section		: type_active_section := none; 
 
-			component_name		: et_libraries.type_component_name.bounded_string; -- 74LS00
-			prefix				: et_general.type_component_prefix.bounded_string; -- IC
+			-- This flag is used when ports are added to an extra unit (supply symbols).
+			-- It is initialzed by procedure init_temp_variables on entering a component section.
+			extra_unit_available: boolean; 
 
-			-- CS: variable for unknown field #4
-
-			port_name_offset	: et_libraries.type_grid;
-			pin_name_visible 	: et_libraries.type_pin_visible;
-			port_name_visible	: et_libraries.type_port_visible;
-			units_total			: type_units_total; -- see spec for range
-			unit_id				: type_unit_id; -- assumes 0 if all units are affected, -- see spec
-			extra_unit_available: boolean; -- used when ports are added to an extra unit (supply symbols)
-			unit_swap_level		: et_libraries.type_unit_swap_level := et_libraries.unit_swap_level_default;
-			appearance			: et_general.type_component_appearance;
-
+			use et_libraries; -- most of the following stuff is specified there
+			
 			-- These are variables used to temporarily hold component properties before the component
 			-- gets fully assembled and inserted into the component list of a particular library.
-			-- These properties apply for the whole component (means for all its units)
-			tmp_reference		: et_libraries.type_text (meaning => et_libraries.reference);
-			tmp_value			: et_libraries.type_text (meaning => et_libraries.value);
-			tmp_commissioned	: et_libraries.type_text (meaning => et_libraries.commissioned);
-			tmp_updated			: et_libraries.type_text (meaning => et_libraries.updated);
-			tmp_author			: et_libraries.type_text (meaning => et_libraries.author);
-			tmp_footprint		: et_libraries.type_text (meaning => et_libraries.packge);
-			tmp_datasheet		: et_libraries.type_text (meaning => et_libraries.datasheet);
-			tmp_purpose			: et_libraries.type_text (meaning => et_libraries.purpose);
-			tmp_partcode		: et_libraries.type_text (meaning => et_libraries.partcode);
-			tmp_units			: et_libraries.type_units_internal.map;
+			-- These properties apply for the whole component (means for all its units):
+			tmp_component_name		: type_component_name.bounded_string; -- 74LS00
+			tmp_prefix				: et_general.type_component_prefix.bounded_string; -- IC
+			tmp_appearance			: et_general.type_component_appearance;
+
+			tmp_port_name_visible	: type_port_visible;
+			tmp_pin_name_visible	: type_pin_visible;
+			tmp_port_name_offset	: type_grid;
+			
+			tmp_units_total		: type_units_total; -- see spec for range			
+			tmp_unit_id			: type_unit_id; -- assumes 0 if all units are affected, -- see spec			
+			tmp_unit_swap_level	: type_unit_swap_level := unit_swap_level_default;
+			
+			tmp_reference		: type_text (meaning => reference);
+			tmp_value			: type_text (meaning => value);
+			tmp_commissioned	: type_text (meaning => commissioned);
+			tmp_updated			: type_text (meaning => updated);
+			tmp_author			: type_text (meaning => author);
+			tmp_footprint		: type_text (meaning => packge);
+			tmp_datasheet		: type_text (meaning => datasheet);
+			tmp_purpose			: type_text (meaning => purpose);
+			tmp_partcode		: type_text (meaning => partcode);
+			tmp_units			: type_units_internal.map;
 
 			-- temporarily used variables to store draw elements (polylines, arcs, pins, ...) 
 			-- before they are added to a unit.
-			tmp_draw_polyline	: et_libraries.type_polyline;
-			tmp_draw_rectangle	: et_libraries.type_rectangle;
-			tmp_draw_arc		: et_libraries.type_arc;
-			tmp_draw_circle 	: et_libraries.type_circle;
-			tmp_draw_text		: et_libraries.type_symbol_text;
-			tmp_draw_port		: et_libraries.type_port;
-			tmp_draw_port_name	: et_libraries.type_port_name.bounded_string;
+			tmp_draw_polyline	: type_polyline;
+			tmp_draw_rectangle	: type_rectangle;
+			tmp_draw_arc		: type_arc;
+			tmp_draw_circle 	: type_circle;
+			tmp_draw_text		: type_symbol_text;
+			tmp_draw_port		: type_port;
+			tmp_draw_port_name	: type_port_name.bounded_string;
 			
 		
 			procedure init_temp_variables is
@@ -490,7 +499,7 @@ package body et_kicad is
 			-- Since Kicad has only one swap level (interchangeable yes or no) 
 			-- we convert to the lowest swap level available.
 			-- Used when reading component libraries.	
-				return et_libraries.type_unit_swap_level is
+				return type_unit_swap_level is
 				i : type_symbol_interchangeable;
 			begin
 				put("    units interchangeable ");
@@ -508,7 +517,7 @@ package body et_kicad is
 			function to_pin_visibile ( vis_in : in string)
 			-- Converts the kicad "show pin number" flag to the et type_pin_visible.
 			-- Used when reading component libraries.		
-				return et_libraries.type_pin_visible is
+				return type_pin_visible is
 				v : type_show_pin_number;
 			begin
 				put("    pin/pad numbers ");
@@ -526,7 +535,7 @@ package body et_kicad is
 			function to_port_visibile ( vis_in : in string)
 			-- Converts the kicad "show pin name" flag to the et type_port_visible.
 			-- Used when reading component libraries.		
-				return et_libraries.type_port_visible is
+				return type_port_visible is
 				v : type_show_pin_name;
 			begin
 				put("    port names ");	
@@ -534,22 +543,21 @@ package body et_kicad is
 				case v is 
 					when Y => 
 						put_line("visible");
-						return et_libraries.on;
+						return on;
 					when N => 
 						put_line("invisible");
-						return et_libraries.off;
+						return off;
 				end case;
 			end to_port_visibile;
 
-			function to_unit_name (id : in type_unit_id) return et_libraries.type_unit_name.bounded_string is
+			function to_unit_name (id : in type_unit_id) return type_unit_name.bounded_string is
 			-- returns the given unit id as type_unit_name
 			begin
-				return et_libraries.type_unit_name.to_bounded_string (trim (type_unit_id'image (id), left));
+				return type_unit_name.to_bounded_string (trim (type_unit_id'image (id), left));
 			end to_unit_name;
 
-			function to_fill ( fill_style : in string) return et_libraries.type_fill is
+			function to_fill ( fill_style : in string) return type_fill is
 			-- Converts the given kicad fill style to a type_fill.
-				use et_libraries;
 			begin
 				if fill_style = library_fill_none then
 					return (pattern => none, border => invisible);
@@ -565,10 +573,10 @@ package body et_kicad is
 				end if;
 			end to_fill;
 			
-			function to_polyline (line : in et_string_processing.type_fields_of_line) return et_libraries.type_polyline is
+			function to_polyline (line : in et_string_processing.type_fields_of_line) return type_polyline is
 			-- Returns from the given fields of a line a type_polyline.
-				polyline	: et_libraries.type_polyline;
-				points		: et_libraries.type_points.list;
+				polyline	: type_polyline;
+				points		: type_points.list;
 				total		: positive; -- for cross checking 
 
 				function field (line : in type_fields_of_line; position : in positive) return string renames
@@ -592,7 +600,7 @@ package body et_kicad is
 				end_point	: positive := positive (et_string_processing.field_count (line)) - 2;
 
 				-- temporarily we store coordinates of a point here
-				point		: et_libraries.type_coordinates;
+				point		: type_coordinates;
 				
 			begin -- to_polyline
 
@@ -601,14 +609,14 @@ package body et_kicad is
 				
 				-- read line width (field #5)
 				pos := 5;
-				polyline.line_width := et_libraries.type_line_width'value (field (line, pos));
+				polyline.line_width := type_line_width'value (field (line, pos));
 
 				-- From the next field (#6) on, we find the coordinates of the 
 				-- start point, the bend point(s) and the end point:
 				pos := 6;
 				loop exit when pos > end_point;
-					point.x := et_libraries.type_grid'value (field (line, pos)); -- load x
-					point.y := et_libraries.type_grid'value (field (line, pos+1)); -- load y (right after x the field)
+					point.x := type_grid'value (field (line, pos)); -- load x
+					point.y := type_grid'value (field (line, pos+1)); -- load y (right after x the field)
 					points.append (point); -- append this point to the list of points
 					pos := pos + 2; -- advance field pointer to x coordinate of next point
 				end loop;
@@ -644,9 +652,9 @@ package body et_kicad is
 				return rectangle;
 			end to_rectangle;
 
-			function to_circle (line : in et_string_processing.type_fields_of_line) return et_libraries.type_circle is
+			function to_circle (line : in et_string_processing.type_fields_of_line) return type_circle is
 			-- Returns from the given fields of a circle a type_circle.
-				circle	: et_libraries.type_circle;
+				circle	: type_circle;
 
 				function field (line : in type_fields_of_line; position : in positive) return string renames
 					et_string_processing.get_field_from_line;
@@ -661,18 +669,18 @@ package body et_kicad is
 				--  #8 : fill style N/F/f no fill/foreground/background
 			
 			begin -- to_circle
-				circle.center.x		:= et_libraries.type_grid'value (field (line,2));
-				circle.center.y		:= et_libraries.type_grid'value (field (line,3));
-				circle.radius		:= et_libraries.type_grid'value (field (line,4));
-				circle.line_width	:= et_libraries.type_line_width'value (field (line,7));
+				circle.center.x		:= type_grid'value (field (line,2));
+				circle.center.y		:= type_grid'value (field (line,3));
+				circle.radius		:= type_grid'value (field (line,4));
+				circle.line_width	:= type_line_width'value (field (line,7));
 				circle.fill			:= to_fill (field (line,8));
 
 				return circle;
 			end to_circle;
 
-			function to_arc (line : in et_string_processing.type_fields_of_line) return et_libraries.type_arc is
+			function to_arc (line : in et_string_processing.type_fields_of_line) return type_arc is
 			-- Returns from the given fields of an arc a type_arc.
-				arc		: et_libraries.type_arc;
+				arc		: type_arc;
 
 				function field (line : in type_fields_of_line; position : in positive) return string renames
 					et_string_processing.get_field_from_line;
@@ -692,28 +700,28 @@ package body et_kicad is
 				-- #13..14 : end point (x/y)
 
 			begin -- to_arc
-				arc.center.x		:= et_libraries.type_grid'value (field (line,2));
-				arc.center.y		:= et_libraries.type_grid'value (field (line,3));
-				arc.radius			:= et_libraries.type_grid'value (field (line,4));
+				arc.center.x		:= type_grid'value (field (line,2));
+				arc.center.y		:= type_grid'value (field (line,3));
+				arc.radius			:= type_grid'value (field (line,4));
 
 				arc.start_angle		:= to_degrees (field (line,5));
 				arc.end_angle		:= to_degrees (field (line,6));
 				
-				arc.line_width		:= et_libraries.type_line_width'value (field (line,9));
+				arc.line_width		:= type_line_width'value (field (line,9));
 				arc.fill			:= to_fill (field (line,10));
 				
-				arc.start_point.x	:= et_libraries.type_grid'value (field (line,11));
-				arc.start_point.y	:= et_libraries.type_grid'value (field (line,12));
-				arc.end_point.x		:= et_libraries.type_grid'value (field (line,13));
-				arc.end_point.y		:= et_libraries.type_grid'value (field (line,14));
+				arc.start_point.x	:= type_grid'value (field (line,11));
+				arc.start_point.y	:= type_grid'value (field (line,12));
+				arc.end_point.x		:= type_grid'value (field (line,13));
+				arc.end_point.y		:= type_grid'value (field (line,14));
 
 				return arc;
 			end to_arc;
 
 	
-			function to_text (line : in et_string_processing.type_fields_of_line) return et_libraries.type_symbol_text is
+			function to_text (line : in et_string_processing.type_fields_of_line) return type_symbol_text is
 			-- Returns from the given fields of a text a type_symbol_text.
-				text	: et_libraries.type_symbol_text;
+				text	: type_symbol_text;
 
 				function field (line : in type_fields_of_line; position : in positive) return string renames
 					et_string_processing.get_field_from_line;
@@ -734,9 +742,9 @@ package body et_kicad is
 				-- #12 : horizontal alignment left/center/right L/C/R
 				-- #13 : vertical alignment top/center/bottom T/C/B
 
-				function to_style ( style_in : in string; bold_in : in string) return et_libraries.type_text_style is
+				function to_style ( style_in : in string; bold_in : in string) return type_text_style is
 				-- Composes from style_in and bold_in a type_text_style
-					a : et_libraries.type_text_style;
+					a : type_text_style;
 
 					procedure invalid_style is begin
 						put_line(message_error & "invalid text style '" & style_in & "' !"); -- CS: message instead
@@ -747,9 +755,9 @@ package body et_kicad is
 					if bold_in = library_text_bold_off then -- "0" -- bold disabled
 						
 						if style_in = text_library_style_normal then
-							a := et_libraries.normal;
+							a := normal;
 						elsif style_in = text_library_style_italic then
-							a := et_libraries.italic;
+							a := italic;
 						else
 							invalid_style;
 						end if;
@@ -757,9 +765,9 @@ package body et_kicad is
 					elsif bold_in = library_text_bold_on then -- "1" -- bold enabled
 
 						if style_in = text_library_style_normal then
-							a := et_libraries.bold;
+							a := bold;
 						elsif style_in = text_library_style_italic then
-							a := et_libraries.italic_bold;
+							a := italic_bold;
 						else
 							invalid_style;
 						end if;
@@ -772,21 +780,21 @@ package body et_kicad is
 				end to_style;
 
 
-				function to_content (text_in : in string) return et_libraries.type_text_content.bounded_string is
+				function to_content (text_in : in string) return type_text_content.bounded_string is
 				-- Replaces tilds in given string by space and returns a type_text_content.bounded_string.
 					t : string (1..text_in'length) := text_in; -- copy given text to t
 				begin
 					-- replace tildes in given text by spaces.
 					translate (t, et_string_processing.tilde_to_space'access);
-					return et_libraries.type_text_content.to_bounded_string (t);
+					return type_text_content.to_bounded_string (t);
 				end to_content;
 				
 			begin -- to_text
 				-- CS: text.orientation	:= et_libraries.type_grid'value (field (line,3));
 				
-				text.position.x		:= et_libraries.type_grid'value (field (line,3));
-				text.position.y		:= et_libraries.type_grid'value (field (line,4));
-				text.size			:= et_libraries.type_text_size'value (field (line,5));
+				text.position.x		:= type_grid'value (field (line,3));
+				text.position.y		:= type_grid'value (field (line,4));
+				text.size			:= type_text_size'value (field (line,5));
 
 				-- compose from fields 10 and 11 the text style
 				text.style			:= to_style (field (line,10), field (line,11));
@@ -800,9 +808,9 @@ package body et_kicad is
 				return text;
 			end to_text;
 
-			function to_port (line : in et_string_processing.type_fields_of_line) return et_libraries.type_port is
+			function to_port (line : in et_string_processing.type_fields_of_line) return type_port is
 			-- Returns from the given fields of a port as a type_port.
-				port	: et_libraries.type_port;
+				port	: type_port;
 
 				function field (line : in type_fields_of_line; position : in positive) return string renames
 					et_string_processing.get_field_from_line;
@@ -821,10 +829,9 @@ package body et_kicad is
 				-- #12 : electrical type (direction), see et_kicad.ads for more
 				-- #13 : optional field: pin style, see et_kicad.ads for more
 
-				function to_direction (dir : in string) return et_libraries.type_port_direction is
+				function to_direction (dir : in string) return type_port_direction is
 					d_in : character := dir (dir'first);
-					d_out : et_libraries.type_port_direction;
-					use et_libraries;
+					d_out : type_port_direction;
 				begin
 					case d_in is
 						when library_pin_electrical_type_passive => 
@@ -868,10 +875,9 @@ package body et_kicad is
 					return d_out;
 				end to_direction;
 
-				function to_style (style : in string) return et_libraries.type_port_style is
+				function to_style (style : in string) return type_port_style is
 					s_in  : type_library_pin_graphical_style;
-					s_out : et_libraries.type_port_style := et_libraries.type_port_style'first;
-					use et_libraries;
+					s_out : type_port_style := type_port_style'first;
 				begin
 					-- convert given string to type_library_pin_graphical_style.
 					-- This is an indirect test whether the given style is allowed.
@@ -879,7 +885,7 @@ package body et_kicad is
 
 					-- map the given style to et.type_port_style
 					case s_in is
-						when N		=> s_out :=	et_libraries.type_port_style'first; -- default
+						when N		=> s_out :=	type_port_style'first; -- default
 						when I		=> s_out :=	INVERTED;
 						when C		=> s_out :=	CLOCK;
 						when IC		=> s_out :=	INVERTED_CLOCK;
@@ -906,21 +912,21 @@ package body et_kicad is
 				-- NOTE: port name is handled separately because it is the key withing the port map of the unit
 
 				-- compose pin number
-				port.pin			:= et_libraries.type_pin_name.to_bounded_string (field (line,3));
+				port.pin			:= type_pin_name.to_bounded_string (field (line,3));
 
 				-- compose position
-				port.coordinates.x	:= et_libraries.type_grid'value (field (line,4));
-				port.coordinates.y	:= et_libraries.type_grid'value (field (line,5));
+				port.coordinates.x	:= type_grid'value (field (line,4));
+				port.coordinates.y	:= type_grid'value (field (line,5));
 
 				-- compose length
-				port.length			:= et_libraries.type_port_length'value (field (line,6));
+				port.length			:= type_port_length'value (field (line,6));
 
 				-- compose orientation
 				-- CS: port.orientation	:= type_library_pin_orientation
 
 				-- text sizes
-				port.pin_name_size	:= et_libraries.type_text_size'value (field (line,8));
-				port.port_name_size	:= et_libraries.type_text_size'value (field (line,9));
+				port.pin_name_size	:= type_text_size'value (field (line,8));
+				port.port_name_size	:= type_text_size'value (field (line,9));
 
 				-- direction
 				port.direction		:= to_direction (field (line,12));
@@ -936,10 +942,10 @@ package body et_kicad is
 			end to_port;
 
 					
-			function read_field (meaning : in et_libraries.type_text_meaning) return et_libraries.type_text is
+			function read_field (meaning : in type_text_meaning) return type_text is
 			-- Reads general text field properties from subfields 3..9 and returns a type_text with 
 			-- the meaning as given in parameter "meaning".
-				text : et_libraries.type_text(meaning);
+				text : type_text(meaning);
 			begin
 				-- field #:
 				-- 3/4 : x/y coordinates
@@ -949,11 +955,11 @@ package body et_kicad is
 				-- 8 : aligment horizontal (R,C,L)
 				-- 9 : aligment vertical (TNN, CNN, BNN) / font normal, italic, bold, bold_italic (TBI, TBN)
 
-				text.content := et_libraries.type_text_content.to_bounded_string(strip_quotes(get_field_from_line(line,2)));
-				text.position.x := et_libraries.type_grid'value(get_field_from_line(line,3));
-				text.position.y := et_libraries.type_grid'value(get_field_from_line(line,4));
-				text.size := et_libraries.type_text_size'value(get_field_from_line(line,5));
-				text.orientation := to_text_orientation (get_field_from_line(line,6));
+				text.content		:= type_text_content.to_bounded_string (strip_quotes(get_field_from_line(line,2)));
+				text.position.x		:= type_grid'value (get_field_from_line(line,3));
+				text.position.y 	:= type_grid'value (get_field_from_line(line,4));
+				text.size 			:= type_text_size'value (get_field_from_line(line,5));
+				text.orientation	:= to_text_orientation (get_field_from_line(line,6));
 				
 				text.visible := to_field_visible (
 					vis_in		=> get_field_from_line(line,7),
@@ -971,8 +977,8 @@ package body et_kicad is
 			-- Updates the current library by inserting a component.
 			-- If the component was inserted (should be) the comp_cursor points to the component
 			-- for later inserting the units:
-				key			: in et_libraries.type_library_full_name.bounded_string;
-				components	: in out et_libraries.type_components.map) is
+				key			: in type_library_full_name.bounded_string;
+				components	: in out type_components.map) is
 -- 
 -- 				-- If only one unit provided, the flag "interchangeable" is don't care -> default swap level assumed.
 -- 				-- If more units provided, the swap level is derived from field #9.
@@ -1003,24 +1009,24 @@ package body et_kicad is
 -- 				pin_name_visible 	:= to_pin_visibile  (get_field_from_line(line,6));
 -- 				port_name_visible	:= to_port_visibile (get_field_from_line(line,7));
 -- 				
-				case appearance is
+				case tmp_appearance is
 					when sch =>
 
 						-- we insert into the given components list a new component
 						et_libraries.type_components.insert(
 							container	=> components,
-							key			=> component_name, -- 74LS00
+							key			=> tmp_component_name, -- 74LS00
 							position	=> comp_cursor,
 							inserted	=> comp_inserted,
 							new_item	=> (
 								appearance		=> sch,
-								prefix			=> prefix,
-								value			=> et_libraries.type_component_value.to_bounded_string (et_libraries.content (tmp_value)),
-								commissioned	=> et_string_processing.type_date (et_libraries.content (tmp_commissioned)),
-								updated			=> et_string_processing.type_date (et_libraries.content (tmp_updated)),
-								author			=> et_libraries.type_person_name.to_bounded_string (et_libraries.content (tmp_author)),
-								units_internal	=> et_libraries.type_units_internal.empty_map,
-								units_external	=> et_libraries.type_units_external.empty_map
+								prefix			=> tmp_prefix,
+								value			=> type_component_value.to_bounded_string (content (tmp_value)),
+								commissioned	=> et_string_processing.type_date (content (tmp_commissioned)),
+								updated			=> et_string_processing.type_date (content (tmp_updated)),
+								author			=> type_person_name.to_bounded_string (content (tmp_author)),
+								units_internal	=> type_units_internal.empty_map,
+								units_external	=> type_units_external.empty_map
 								)
 							);
 						
@@ -1029,12 +1035,12 @@ package body et_kicad is
 						-- we insert into the given components list a new component
 						et_libraries.type_components.insert(
 							container	=> components,
-							key			=> component_name, -- 74LS00
+							key			=> tmp_component_name, -- 74LS00
 							position	=> comp_cursor,
 							inserted	=> comp_inserted,
 							new_item	=> (
 								appearance		=> sch_pcb,
-								prefix			=> prefix,
+								prefix			=> tmp_prefix,
 								value			=> et_libraries.type_component_value.to_bounded_string (et_libraries.content (tmp_value)),
 								commissioned	=> et_string_processing.type_date (et_libraries.content (tmp_commissioned)),
 								updated			=> et_string_processing.type_date (et_libraries.content (tmp_updated)),
@@ -1081,7 +1087,7 @@ package body et_kicad is
 					key			: in type_component_name.bounded_string;
 					component	: in type_component) is
 				begin
-					unit_cursor := component.units_internal.find (to_unit_name (unit_id));
+					unit_cursor := component.units_internal.find (to_unit_name (tmp_unit_id));
 				end locate_unit;
 
 				procedure locate_component ( 
@@ -1092,36 +1098,41 @@ package body et_kicad is
 				end locate_component;
 
 			begin -- set_unit_cursor
-				if unit_id > 0 then -- if unit_id is zero, nothing is done
+				if tmp_unit_id > 0 then -- if tmp_unit_id is zero, nothing is done
 					type_libraries.query_element ( lib_cursor, locate_component'access);
 				end if;
 			end set_unit_cursor;
 				
 			
 			procedure add_unit (libraries : in out et_libraries.type_libraries.map) is
-			-- Add the unit with current unit_id to current component (indicated by comp_cursor).
+			-- Add the unit with current tmp_unit_id to current component (indicated by comp_cursor).
 			-- Leaves unit_cursor pointing to unit that has been added.
 			
 			-- If the unit has already been inserted, nothing happens.
 			
-			-- If the unit_id is 0 and the total number of units is 1, unit_id is set to 1
+			-- If the tmp_unit_id is 0 and the total number of units is 1, tmp_unit_id is set to 1
 			-- and a single unit is added. This is the case if the component has only one unit
 			-- and the draw object has the check "common to all units" set.
 			
-			-- If the unit_id is 0 and the total number of units is greater 1, nothing happens. 
+			-- If the tmp_unit_id is 0 and the total number of units is greater 1, nothing happens. 
 			-- This is the case when the component has more than one unit and the draw object
 			-- has the check "common to all units" set.
 
+			-- The current tmp_unit_swap_level determines the swap level of the unit to be inserted.
 				use et_libraries;
 			
 				procedure insert_unit (
 				-- Inserts an internal unit in a component.
 					key			: in type_component_name.bounded_string;
 					component	: in out type_component) is
+
+					unit : type_unit_internal;
 				begin
+					unit.swap_level := tmp_unit_swap_level;
+					
 					component.units_internal.insert (
-						key			=> to_unit_name (unit_id),
-						new_item	=> et_libraries.bare_unit_internal,
+						key			=> to_unit_name (tmp_unit_id),
+						new_item	=> unit,
 						position	=> unit_cursor,
 						inserted	=> unit_inserted);
 				end insert_unit;
@@ -1134,10 +1145,10 @@ package body et_kicad is
 				end locate_component;
 
 			begin -- add_unit
-				if unit_id > 0 then
+				if tmp_unit_id > 0 then
 					libraries.update_element ( lib_cursor, locate_component'access);
-				elsif units_total = 1 then
-					unit_id := 1;
+				elsif tmp_units_total = 1 then
+					tmp_unit_id := 1;
 					libraries.update_element ( lib_cursor, locate_component'access);
 				else
 					null; -- CS
@@ -1150,8 +1161,8 @@ package body et_kicad is
 			-- (earlier derived from the component header like "DEF 74LS00 IC 0 30 Y Y 4 F N")
 			begin
 				--put_line ("creating " & type_units_total'image (units_total) & " empty internal units ...");
-				for u in 1 .. type_unit_id (units_total) loop
-					unit_id := u;
+				for u in 1 .. type_unit_id (tmp_units_total) loop
+					tmp_unit_id := u;
 					add_unit (et_import.component_libraries);
 				end loop;
 				--put_line ("done");
@@ -1159,8 +1170,8 @@ package body et_kicad is
 
 				
 			procedure add_symbol_element (
-			-- Adds a symbol element (circle, arcs, lines, ports, etc.) to the unit with the current unit_id.
-			-- If the unit_id is 0, the symbol element is inserted into all units (except extra units).
+			-- Adds a symbol element (circle, arcs, lines, ports, etc.) to the unit with the current tmp_unit_id.
+			-- If the tmp_unit_id is 0, the symbol element is inserted into all units (except extra units).
 			-- Ports belonging to all units (supply ports) are exempted from this procedure -> nothing happens..
 			
 			-- The kind of symbol element is given by parameter "element".
@@ -1245,21 +1256,21 @@ package body et_kicad is
 				end locate_component;
 
 			begin -- add_symbol_element
-				if unit_id > 0 then 
+				if tmp_unit_id > 0 then 
 					-- The element belongs to a particular unit exclusively.
 					-- Only the current unit of the current component receives the symbol element.
-					set_unit_cursor (et_import.component_libraries); -- set unit_cursor according to current unit_id
+					set_unit_cursor (et_import.component_libraries); -- set unit_cursor according to current tmp_unit_id
 					libraries.update_element (lib_cursor, locate_component'access);
 				else 
 					-- The element belongs to all units of the current component.
-					-- In a loop the unit_id is now modified so that all units (except extra units) 
+					-- In a loop the tmp_unit_id is now modified so that all units (except extra units) 
 					-- of the component receive the same symbol element.
 					-- Ports belonging to all units are exempted from this procedure as the loop ends with units_total.
 					-- units_total was set on passing the component header (DEF 74LS00 IC 0 30 Y Y 4 F N)
 					if element /= port then
-						for u in 1 .. type_unit_id (units_total) loop
-							unit_id := u; -- set unit_id
-							set_unit_cursor (et_import.component_libraries);  -- set unit_cursor according to current unit_id
+						for u in 1 .. type_unit_id (tmp_units_total) loop
+							tmp_unit_id := u; -- set tmp_unit_id
+							set_unit_cursor (et_import.component_libraries);  -- set unit_cursor according to current tmp_unit_id
 							libraries.update_element (lib_cursor, locate_component'access);
 						end loop;
 					end if;
@@ -1277,7 +1288,7 @@ package body et_kicad is
 			end set_text_placeholder_properties;
 			
 		procedure read_draw_object (line : in type_fields_of_line; indentation : in natural := 0) is
-		-- Creates a symbol element from the given line and adds it to the unit indicated by unit_id.
+		-- Creates a symbol element from the given line and adds it to the unit indicated by tmp_unit_id.
 			function field (line : in type_fields_of_line; position : in positive) return string renames
 				et_string_processing.get_field_from_line;
 				
@@ -1317,8 +1328,8 @@ package body et_kicad is
 					-- #10..11  : end point (x/y) (50/70)
 					-- last field : fill style N/F/f no fill/foreground/background
 
-					unit_id := to_unit_id (field (line,3));
--- 					write_scope_of_object (unit_id, indentation + 1);
+					tmp_unit_id := to_unit_id (field (line,3));
+-- 					write_scope_of_object (tmp_unit_id, indentation + 1);
 					put_line (indent(indentation + 1) & to_string (line));
 
 					-- compose polyline
@@ -1337,8 +1348,8 @@ package body et_kicad is
 					-- #8 : line width
 					-- #9 : fill style N/F/f no fill/foreground/background
 
-					unit_id := to_unit_id (field (line,6));
--- 					write_scope_of_object (unit_id, indentation + 1);
+					tmp_unit_id := to_unit_id (field (line,6));
+-- 					write_scope_of_object (tmp_unit_id, indentation + 1);
 					put_line (indent(indentation + 1) & to_string (line));
 
 					-- compose rectangle
@@ -1358,8 +1369,8 @@ package body et_kicad is
 					--  #7 : line width (23)
 					--  #8 : fill style N/F/f no fill/foreground/background
 
-					unit_id := to_unit_id (field (line,5));
--- 					write_scope_of_object (unit_id, indentation + 1);
+					tmp_unit_id := to_unit_id (field (line,5));
+-- 					write_scope_of_object (tmp_unit_id, indentation + 1);
 					put_line (indent(indentation + 1) & to_string (line));
 
 					-- compose circle
@@ -1384,8 +1395,8 @@ package body et_kicad is
 					-- #11..12 : start point (x/y)
 					-- #13..14 : end point (x/y)
 
-					unit_id := to_unit_id (field (line,7));
--- 					write_scope_of_object (unit_id, indentation + 1);
+					tmp_unit_id := to_unit_id (field (line,7));
+-- 					write_scope_of_object (tmp_unit_id, indentation + 1);
 					put_line (indent(indentation + 1) & to_string (line));
 
 					-- compose arc
@@ -1412,8 +1423,8 @@ package body et_kicad is
 					-- #12 : alignment left/center/right L/C/R
 					-- #13 : alignment top/center/bottom T/C/B
 
-					unit_id := to_unit_id (field (line,7));
--- 					write_scope_of_object (unit_id, indentation + 1);
+					tmp_unit_id := to_unit_id (field (line,7));
+-- 					write_scope_of_object (tmp_unit_id, indentation + 1);
 					put_line (indent(indentation + 1) & to_string (line));
 
 					-- compose text
@@ -1439,11 +1450,11 @@ package body et_kicad is
 					-- #12 : electrical type (direction), see et_kicad.ads for more
 					-- #13 : optional field: pin style, see et_kicad.ads for more
 
-					unit_id := to_unit_id (field (line,10));
--- 					write_scope_of_object (unit_id, indentation + 1);
+					tmp_unit_id := to_unit_id (field (line,10));
+-- 					write_scope_of_object (tmp_unit_id, indentation + 1);
 					put_line (indent(indentation + 1) & to_string (line));
 
--- 					-- Add the unit with unit_id to current component (if not already done).
+-- 					-- Add the unit with tmp_unit_id to current component (if not already done).
 -- 					add_unit (et_import.component_libraries);
 
 					-- compose port
@@ -1454,12 +1465,12 @@ package body et_kicad is
 
 					-- If this is a unit specific port it gets added to the unit. If it applies for the
 					-- whole component, we create an extra unit and insert it there.
-					if unit_id > 0 then
+					if tmp_unit_id > 0 then
 						-- add unit specific port to unit
 						add_symbol_element (et_import.component_libraries, et_libraries.port);
 					else 
 						-- CS: leave more comments here
-						unit_id := type_unit_id(units_total) + 1;
+						tmp_unit_id := type_unit_id(tmp_units_total) + 1;
 						if not extra_unit_available then -- we must create an extra unit
 							add_unit (et_import.component_libraries);
 							extra_unit_available := true;
@@ -1499,7 +1510,7 @@ package body et_kicad is
 								
 					-- CS: Do a cross check of prefix and reference -- "U" 
 					-- CS: why this redundance ? Ask the kicad makers...
-					if strip_quotes (field (line,2)) = et_general.type_component_prefix.to_string(prefix) then
+					if strip_quotes (field (line,2)) = et_general.type_component_prefix.to_string (tmp_prefix) then
 						null; -- fine
 					else
 						put_line(message_warning & affected_line(line) & ": prefix vs. reference mismatch !");
@@ -1648,7 +1659,7 @@ package body et_kicad is
 								active_section := fields;
 
 								-- The commponent header provides the first component properties:
-								component_name := et_libraries.type_component_name.to_bounded_string(get_field_from_line(line,2)); -- 74LS00
+								tmp_component_name := et_libraries.type_component_name.to_bounded_string(get_field_from_line(line,2)); -- 74LS00
 								
 								-- for the log:
 								put_line(indent(indentation + 1) & get_field_from_line(line,2)); -- 74LS00
@@ -1667,28 +1678,28 @@ package body et_kicad is
 								-- all units not interchangeable L (otherwise F), (similar to swap level in EAGLE)
 								-- power symbol P (otherwise N)								
 
-								prefix := et_general.type_component_prefix.to_bounded_string(get_field_from_line(line,3)); -- U
+								tmp_prefix := et_general.type_component_prefix.to_bounded_string (get_field_from_line (line,3)); -- U
 								-- CS: field #4 ?
-								port_name_offset	:= et_libraries.type_grid'value (get_field_from_line(line,5)); -- relevant for supply pins only
-								pin_name_visible 	:= to_pin_visibile  (get_field_from_line(line,6));
-								port_name_visible	:= to_port_visibile (get_field_from_line(line,7));
+								tmp_port_name_offset	:= et_libraries.type_grid'value (get_field_from_line(line,5)); -- relevant for supply pins only
+								tmp_pin_name_visible	:= to_pin_visibile  (get_field_from_line(line,6));
+								tmp_port_name_visible	:= to_port_visibile (get_field_from_line(line,7));
 								
 								-- Get number of units and set swap level as specified in field #9.
 								-- Swap level assumes default if only one unit available.
-								units_total := type_units_total'value (get_field_from_line(line,8));
-								if units_total > 1 then
-									put_line(indent(indentation + 2) & "with" & type_units_total'image (units_total) & " units");
+								tmp_units_total := type_units_total'value (get_field_from_line(line,8));
+								if tmp_units_total > 1 then
+									put_line (indent(indentation + 2) & "with" & type_units_total'image (tmp_units_total) & " units");
 
 									-- From the "interchangeable" flag we set the component wide swap level. It applies for 
-									-- all units of the component:
-									unit_swap_level := to_swap_level (get_field_from_line(line,9));
+									-- all units of the component (except extra units):
+									tmp_unit_swap_level := to_swap_level (get_field_from_line(line,9));
 								else
-									unit_swap_level := et_libraries.unit_swap_level_default;
+									tmp_unit_swap_level := et_libraries.unit_swap_level_default;
 								end if;
 
 								-- read the appearance flag (N/P) in subfield #10
 								-- This is about a component in a library -> schematic => false
-								appearance := to_appearance(line => line, schematic => false);
+								tmp_appearance := to_appearance (line => line, schematic => false);
 
 							end if;
 						else -- we are inside a component section and process subsections
