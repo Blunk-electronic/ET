@@ -43,7 +43,7 @@ with ada.directories;			use ada.directories;
 with ada.exceptions; 			use ada.exceptions;
 
 with et_libraries;				--use et_libraries;
-with et_schematic;				use et_schematic;
+with et_schematic;				--use et_schematic;
 
 with et_geometry;				use et_geometry;
 
@@ -347,6 +347,8 @@ package body et_kicad is
 	-- In a schematic it is expressed in a line like "U 2 1 5992967A". The 3rd field is the deMorgan flag.
 		return et_schematic.type_alternative_representation is
 
+		use et_schematic;
+	
 		function field ( line : in type_fields_of_line; pos : in positive) return string 
 			renames et_string_processing.get_field_from_line;
 		
@@ -443,6 +445,7 @@ package body et_kicad is
 			port_name_visible	: et_libraries.type_port_visible;
 			units_total			: type_units_total; -- see spec for range
 			unit_id				: type_unit_id; -- assumes 0 if all units are affected, -- see spec
+			extra_unit_available: boolean; -- used when ports are added to an extra unit (supply symbols)
 			unit_swap_level		: et_libraries.type_unit_swap_level := et_libraries.unit_swap_level_default;
 			appearance			: et_general.type_component_appearance;
 
@@ -473,7 +476,8 @@ package body et_kicad is
 		
 			procedure init_temp_variables is
 			begin
-				null; -- CS
+				null; -- CS: init other variables
+				extra_unit_available := false;
 			end init_temp_variables;
 
 			procedure check_text_fields is
@@ -965,9 +969,8 @@ package body et_kicad is
 
 			procedure insert_component (
 			-- Updates the current library by inserting a component.
-
--- 			-- If the component was inserted (should be) the comp_cursor points to the component
--- 			-- for later inserting the units:
+			-- If the component was inserted (should be) the comp_cursor points to the component
+			-- for later inserting the units:
 				key			: in et_libraries.type_library_full_name.bounded_string;
 				components	: in out et_libraries.type_components.map) is
 -- 
@@ -1067,9 +1070,38 @@ package body et_kicad is
 				
 			end insert_component;
 
+			
+			procedure set_unit_cursor (libraries : in out et_libraries.type_libraries.map) is
+			-- Sets the unit_cursor according to the current unit_id.
+			-- If the unit_id is 0, the unit_cursor is not changed.
+				use et_libraries;
+		
+				procedure locate_unit (
+				-- sets the unit_cursor
+					key			: in type_component_name.bounded_string;
+					component	: in type_component) is
+				begin
+					unit_cursor := component.units_internal.find (to_unit_name (unit_id));
+				end locate_unit;
 
+				procedure locate_component ( 
+					key			: in type_library_full_name.bounded_string;
+					components	: in type_components.map) is
+				begin
+					type_components.query_element (comp_cursor, locate_unit'access);
+				end locate_component;
+
+			begin -- set_unit_cursor
+				if unit_id > 0 then -- if unit_id is zero, nothing is done
+					type_libraries.query_element ( lib_cursor, locate_component'access);
+				end if;
+			end set_unit_cursor;
+				
+			
 			procedure add_unit (libraries : in out et_libraries.type_libraries.map) is
-			-- Add the unit with current unit_id to current component.
+			-- Add the unit with current unit_id to current component (indicated by comp_cursor).
+			-- Leaves unit_cursor pointing to unit that has been added.
+			
 			-- If the unit has already been inserted, nothing happens.
 			
 			-- If the unit_id is 0 and the total number of units is 1, unit_id is set to 1
@@ -1079,22 +1111,24 @@ package body et_kicad is
 			-- If the unit_id is 0 and the total number of units is greater 1, nothing happens. 
 			-- This is the case when the component has more than one unit and the draw object
 			-- has the check "common to all units" set.
+
+				use et_libraries;
 			
 				procedure insert_unit (
 				-- Inserts an internal unit in a component.
-					key			: in et_libraries.type_component_name.bounded_string;
-					component	: in out et_libraries.type_component) is
+					key			: in type_component_name.bounded_string;
+					component	: in out type_component) is
 				begin
 					component.units_internal.insert (
-						key => to_unit_name (unit_id),
-						new_item => et_libraries.bare_unit_internal,
-						position => unit_cursor,
-						inserted => unit_inserted);
+						key			=> to_unit_name (unit_id),
+						new_item	=> et_libraries.bare_unit_internal,
+						position	=> unit_cursor,
+						inserted	=> unit_inserted);
 				end insert_unit;
 
 				procedure locate_component ( 
-					key			: in et_libraries.type_library_full_name.bounded_string;
-					components	: in out et_libraries.type_components.map) is
+					key			: in type_library_full_name.bounded_string;
+					components	: in out type_components.map) is
 				begin
 					components.update_element (comp_cursor, insert_unit'access);
 				end locate_component;
@@ -1110,38 +1144,57 @@ package body et_kicad is
 				end if;
 			end add_unit;
 
-			
+			procedure create_units is
+			-- Creates empty units in the current compoenent.
+			-- The number of units is set by unit_total 
+			-- (earlier derived from the component header like "DEF 74LS00 IC 0 30 Y Y 4 F N")
+			begin
+				--put_line ("creating " & type_units_total'image (units_total) & " empty internal units ...");
+				for u in 1 .. type_unit_id (units_total) loop
+					unit_id := u;
+					add_unit (et_import.component_libraries);
+				end loop;
+				--put_line ("done");
+			end create_units;
+
+				
 			procedure add_symbol_element (
 			-- Adds a symbol element (circle, arcs, lines, ports, etc.) to the unit with the current unit_id.
+			-- If the unit_id is 0, the symbol element is inserted into all units (except extra units).
+			-- Ports belonging to all units (supply ports) are exempted from this procedure -> nothing happens..
+			
 			-- The kind of symbol element is given by parameter "element".
 			-- The symbol properties are taken from the temporarily variables named tmp_draw_*.
+						
 				libraries	: in out et_libraries.type_libraries.map;
 				element		: in et_libraries.type_symbol_element) is
+
+				use et_libraries;
 				
 				procedure insert (
 				-- Inserts the given element in the unit.
 				-- If a port is to be inserted: Aborts on multiple usage of port or pin names.
-					key		: in et_libraries.type_unit_name.bounded_string;
-					unit	: in out et_libraries.type_unit_internal) is
+					key		: in type_unit_name.bounded_string;
+					unit	: in out type_unit_internal) is
 					pos		: natural := 0; -- helps to trace the program position where an exception occured
 				begin
 					case element is
-						when et_libraries.polyline =>
+						when polyline =>
 							unit.symbol.shapes.polylines.append (tmp_draw_polyline);
 
-						when et_libraries.rectangle =>
+						when rectangle =>
 							unit.symbol.shapes.rectangles.append (tmp_draw_rectangle);
 
-						when et_libraries.arc =>
+						when arc =>
 							unit.symbol.shapes.arcs.append (tmp_draw_arc);
 							
-						when et_libraries.circle =>
+						when circle =>
 							unit.symbol.shapes.circles.append (tmp_draw_circle);
 
-						when et_libraries.text =>
+						when text =>
 							unit.symbol.texts.append (tmp_draw_text);
 
-						when et_libraries.port =>
+						when port =>
 							pos := 100;
 							-- CS: test if port not used by other units
 							pos := 110;
@@ -1163,7 +1216,7 @@ package body et_kicad is
 										text => message_error & "file '" 
 											& to_string (lib_file_name) & "' "
 											& affected_line (line) 
-											& "port name '" & et_libraries.to_string (tmp_draw_port_name)
+											& "port name '" & to_string (tmp_draw_port_name)
 											& "' already used !",
 										console => true);
 									raise;
@@ -1177,33 +1230,46 @@ package body et_kicad is
 				
 				procedure locate_unit (
 				-- Locates the unit indicated by unit_cursor.
-					key			: in et_libraries.type_component_name.bounded_string;
-					component	: in out et_libraries.type_component) is
+					key			: in type_component_name.bounded_string;
+					component	: in out type_component) is
 				begin
 					component.units_internal.update_element (unit_cursor, insert'access);
 				end locate_unit;
 				
 				procedure locate_component ( 
 				-- Locates the component indicated by comp_cursor.
-					key			: in et_libraries.type_library_full_name.bounded_string;
-					components	: in out et_libraries.type_components.map) is
-				begin
+					key			: in type_library_full_name.bounded_string;
+					components	: in out type_components.map) is
+				begin -- locate_component
 					components.update_element (comp_cursor, locate_unit'access);
 				end locate_component;
 
 			begin -- add_symbol_element
-				if unit_id > 0 then -- the element belongs to a particular unit exclusively.
+				if unit_id > 0 then 
+					-- The element belongs to a particular unit exclusively.
+					-- Only the current unit of the current component receives the symbol element.
+					set_unit_cursor (et_import.component_libraries); -- set unit_cursor according to current unit_id
 					libraries.update_element (lib_cursor, locate_component'access);
-				else -- the element belongs to all units of the component
-					null; -- CS
+				else 
+					-- The element belongs to all units of the current component.
+					-- In a loop the unit_id is now modified so that all units (except extra units) 
+					-- of the component receive the same symbol element.
+					-- Ports belonging to all units are exempted from this procedure as the loop ends with units_total.
+					-- units_total was set on passing the component header (DEF 74LS00 IC 0 30 Y Y 4 F N)
+					if element /= port then
+						for u in 1 .. type_unit_id (units_total) loop
+							unit_id := u; -- set unit_id
+							set_unit_cursor (et_import.component_libraries);  -- set unit_cursor according to current unit_id
+							libraries.update_element (lib_cursor, locate_component'access);
+						end loop;
+					end if;
 				end if;
-				
 			end add_symbol_element;
 			
 
 			procedure set_text_placeholder_properties is
 			-- Sets the properties of placeholders in all units of the component.
-				unit_count : count_type;
+				--unit_count : count_type;
 			begin
 				-- CS
 				--unit_count := 
@@ -1211,7 +1277,7 @@ package body et_kicad is
 			end set_text_placeholder_properties;
 			
 		procedure read_draw_object (line : in type_fields_of_line; indentation : in natural := 0) is
-	
+		-- Creates a symbol element from the given line and adds it to the unit indicated by unit_id.
 			function field (line : in type_fields_of_line; position : in positive) return string renames
 				et_string_processing.get_field_from_line;
 				
@@ -1255,9 +1321,6 @@ package body et_kicad is
 -- 					write_scope_of_object (unit_id, indentation + 1);
 					put_line (indent(indentation + 1) & to_string (line));
 
-					-- Add the unit with unit_id to current component (if not already done).
-					add_unit (et_import.component_libraries);
-
 					-- compose polyline
 					tmp_draw_polyline := to_polyline (line);
 
@@ -1277,9 +1340,6 @@ package body et_kicad is
 					unit_id := to_unit_id (field (line,6));
 -- 					write_scope_of_object (unit_id, indentation + 1);
 					put_line (indent(indentation + 1) & to_string (line));
-
-					-- Add the unit with unit_id to current component (if not already done).
-					add_unit (et_import.component_libraries);
 
 					-- compose rectangle
 					tmp_draw_rectangle := to_rectangle (line);
@@ -1301,9 +1361,6 @@ package body et_kicad is
 					unit_id := to_unit_id (field (line,5));
 -- 					write_scope_of_object (unit_id, indentation + 1);
 					put_line (indent(indentation + 1) & to_string (line));
-
-					-- Add the unit with unit_id to current component (if not already done).
-					add_unit (et_import.component_libraries);
 
 					-- compose circle
 					tmp_draw_circle := to_circle (line);
@@ -1330,9 +1387,6 @@ package body et_kicad is
 					unit_id := to_unit_id (field (line,7));
 -- 					write_scope_of_object (unit_id, indentation + 1);
 					put_line (indent(indentation + 1) & to_string (line));
-
-					-- Add the unit with unit_id to current component (if not already done).
-					add_unit (et_import.component_libraries);
 
 					-- compose arc
 					tmp_draw_arc := to_arc (line);
@@ -1362,9 +1416,6 @@ package body et_kicad is
 -- 					write_scope_of_object (unit_id, indentation + 1);
 					put_line (indent(indentation + 1) & to_string (line));
 
-					-- Add the unit with unit_id to current component (if not already done).
-					add_unit (et_import.component_libraries);
-
 					-- compose text
 					tmp_draw_text := to_text (line);
 					
@@ -1392,18 +1443,32 @@ package body et_kicad is
 -- 					write_scope_of_object (unit_id, indentation + 1);
 					put_line (indent(indentation + 1) & to_string (line));
 
-					-- Add the unit with unit_id to current component (if not already done).
-					add_unit (et_import.component_libraries);
+-- 					-- Add the unit with unit_id to current component (if not already done).
+-- 					add_unit (et_import.component_libraries);
 
 					-- compose port
 					-- Since ports are collected in a map, the port name is going to be the key. Thus 
 					-- we handle the port name separately from the port properties.
 					tmp_draw_port := to_port (line);
 					tmp_draw_port_name := et_libraries.type_port_name.to_bounded_string (field (line,2));
-					
-					-- add pin to unit
-					add_symbol_element (et_import.component_libraries , et_libraries.port);
-					
+
+					-- If this is a unit specific port it gets added to the unit. If it applies for the
+					-- whole component, we create an extra unit and insert it there.
+					if unit_id > 0 then
+						-- add unit specific port to unit
+						add_symbol_element (et_import.component_libraries, et_libraries.port);
+					else 
+						-- CS: leave more comments here
+						unit_id := type_unit_id(units_total) + 1;
+						if not extra_unit_available then -- we must create an extra unit
+							add_unit (et_import.component_libraries);
+							extra_unit_available := true;
+						else
+							null;
+						end if;
+						-- insert the port in the extra unit
+						add_symbol_element (et_import.component_libraries, et_libraries.port);
+					end if;
 			end case;
 		end read_draw_object;
 
@@ -1577,7 +1642,7 @@ package body et_kicad is
 							if get_field_from_line(line,1) = et_kicad.def then
 								component_entered := true;
 
-								-- CS: clear temporarily variables via procedure init_temp_variables
+								init_temp_variables;
 								
 								-- Since we are reading the fields, we set the active_section to "fields"
 								active_section := fields;
@@ -1665,6 +1730,10 @@ package body et_kicad is
 												position	=> lib_cursor,
 												process		=> insert_component'access);
 
+											-- Create in the component as many empty units as given in units_total.
+											-- They will be filled with content later.
+											create_units;
+											
 											active_section := footprints;
 											put_line (indent(indentation + 2) & "footprint filter begin");
 
@@ -1675,6 +1744,10 @@ package body et_kicad is
 												container	=> et_import.component_libraries,
 												position	=> lib_cursor,
 												process		=> insert_component'access);
+
+											-- Create in the component as many empty units as given in units_total.
+											-- They will be filled with content later.
+											create_units;
 
 											active_section := draw;
 											put_line (indent(indentation + 2) & "draw begin");
@@ -1814,6 +1887,7 @@ package body et_kicad is
 	procedure import_design is
 		use et_import.type_schematic_file_name;
 		use et_libraries.type_library_directory;
+		use et_schematic;
 		
 		function read_project_file return et_import.type_schematic_file_name.bounded_string is
 		-- Reads the project file in terms of LibDir and LibName. 
