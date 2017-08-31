@@ -79,11 +79,14 @@ package et_general is
 -- COMMAND LINE SWITCHES
 	--switch_about			: constant string (1..7) := "--about"; -- CS
 	switch_version			: constant string (1..8)	:= "-version"; -- long switch
+	switch_log_level		: constant string (1..10)	:= "-log_level";
 	switch_help				: constant string (1..5)	:= "-help"; -- long switch	
 --	switch_import_file		: constant string (1..12)	:= "-import_file";	-- long switch -- currently we do not care about importing single files
 	switch_import_project	: constant string (1..15)	:= "-import_project";	-- long switch
 	switch_import_format	: constant string (1..14)	:= "-import_format";	-- long switch
-																															
+
+	log_level	: natural := 0;
+
 -- 	-- ACTIONS
 -- 	type type_action is ( none, request_version, import_cad );
 
