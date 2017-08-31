@@ -1313,9 +1313,21 @@ package body et_kicad is
 				begin -- locate_component
 					components.update_element (comp_cursor, locate_unit'access);
 				end locate_component;
-			
+
+				-- Set the number of units to be updated:
+				total : type_unit_id := type_unit_id (tmp_units_total);
 			begin -- set_text_placeholder_properties
-				libraries.update_element (lib_cursor, locate_component'access);
+
+				-- The number of units to be updated increases by one if an extra unit has been created:
+				if extra_unit_available then total := total + 1; end if;
+				
+				-- In a loop we set tmp_unit_id for each unit and update the unit of the component.
+				for u in 1..total loop
+					tmp_unit_id := u;
+					set_unit_cursor (et_import.component_libraries);
+					libraries.update_element (lib_cursor, locate_component'access);
+				end loop;
+				
 			end set_text_placeholder_properties;
 			
 		procedure read_draw_object (line : in type_fields_of_line; indentation : in natural := 0) is
