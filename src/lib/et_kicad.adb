@@ -459,6 +459,7 @@ package body et_kicad is
 			tmp_units_total		: type_units_total; -- see spec for range			
 			tmp_unit_id			: type_unit_id; -- assumes 0 if all units are affected, -- see spec			
 			tmp_unit_swap_level	: type_unit_swap_level := unit_swap_level_default;
+			tmp_unit_add_level	: type_unit_add_level := type_unit_add_level'first;
 			
 			tmp_reference		: type_text (meaning => reference);
 			tmp_value			: type_text (meaning => value);
@@ -486,6 +487,7 @@ package body et_kicad is
 			begin
 				null; -- CS: init other variables
 				extra_unit_available := false;
+				tmp_unit_add_level := type_unit_add_level'first;
 			end init_temp_variables;
 
 			procedure check_text_fields is
@@ -1117,6 +1119,8 @@ package body et_kicad is
 			-- has the check "common to all units" set.
 
 			-- The current tmp_unit_swap_level determines the swap level of the unit to be inserted.
+			-- The current tmp_unit_add_level determines the add level of the unit to be inserted. It is "requsst"
+			-- in case the unit in question is an extra unit (supply unit).
 			
 				procedure insert_unit (
 				-- Inserts an internal unit in a component.
@@ -1125,7 +1129,8 @@ package body et_kicad is
 
 					unit : type_unit_internal;
 				begin
-					unit.swap_level := tmp_unit_swap_level;
+					unit.swap_level	:= tmp_unit_swap_level;
+					unit.add_level	:= tmp_unit_add_level;
 					
 					component.units_internal.insert (
 						key			=> to_unit_name (tmp_unit_id),
@@ -1459,14 +1464,18 @@ package body et_kicad is
 					tmp_draw_port_name := type_port_name.to_bounded_string (field (line,2));
 
 					-- If this is a unit specific port it gets added to the unit. If it applies for the
-					-- whole component, we create an extra unit and insert it there.
+					-- whole component, we create an extra unit and insert it there. An extra unit is
+					-- created ONLY ONCE. Successive unit-wide ports are added there.
+					-- An extra unit always has the add level "request" since it harbors the supply ports.
 					if tmp_unit_id > 0 then
 						-- add unit specific port to unit
 						add_symbol_element (et_import.component_libraries, port);
 					else 
-						-- CS: leave more comments here
+						-- The current unit id one notch above the total number of units.
 						tmp_unit_id := type_unit_id (tmp_units_total) + 1;
-						if not extra_unit_available then -- we must create an extra unit
+						-- If no extra unit has been created yet -> create one with add level "request".
+						if not extra_unit_available then 
+							tmp_unit_add_level := request;
 							add_unit (et_import.component_libraries);
 							extra_unit_available := true;
 						else
