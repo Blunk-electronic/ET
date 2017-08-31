@@ -321,11 +321,11 @@ package et_libraries is
 		pin					: type_pin_name.bounded_string; -- example: "144" or in case of a BGA package "E14"
 		port_name_size		: type_text_size;
 		pin_name_size		: type_text_size;
-		-- pin_position_offset ?
-		-- port swap level ?
+		port_name_offset	: type_grid; -- the clearance between symbol outline and port name -- CS: define a reasonable range
 		
-		-- Kicad requirement: sometimes the supply port name has a special position
-		name_position_offset : type_grid; 
+		-- CS : obsolete ? pin_position_offset ?
+		-- CS: port swap level ?
+
 	end record;
 
 	-- Ports are collected in a map.

@@ -909,9 +909,9 @@ package body et_kicad is
 				end to_style;
 				
 			begin -- to_port
-				-- NOTE: port name is handled separately because it is the key withing the port map of the unit
+				-- NOTE: port name is handled separately because it is the key within the port map of the unit
 
-				-- compose pin number
+				-- compose pin name
 				port.pin			:= type_pin_name.to_bounded_string (field (line,3));
 
 				-- compose position
@@ -924,7 +924,7 @@ package body et_kicad is
 				-- compose orientation
 				-- CS: port.orientation	:= type_library_pin_orientation
 
-				-- text sizes
+				-- port and pin name text size
 				port.pin_name_size	:= type_text_size'value (field (line,8));
 				port.port_name_size	:= type_text_size'value (field (line,9));
 
@@ -936,6 +936,12 @@ package body et_kicad is
 					port.style		:= to_style (field (line,13));
 				end if;
 
+				-- visibility port and pin names
+				port.port_name_visible	:= tmp_port_name_visible;
+				port.pin_name_visible	:= tmp_pin_name_visible;
+
+				-- port name offset
+				port.port_name_offset	:= tmp_port_name_offset;
 				return port;
 
 				-- CS: exception handler
