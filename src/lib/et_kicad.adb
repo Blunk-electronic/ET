@@ -466,11 +466,10 @@ package body et_kicad is
 			tmp_commissioned	: type_text (meaning => commissioned);
 			tmp_updated			: type_text (meaning => updated);
 			tmp_author			: type_text (meaning => author);
-			tmp_footprint		: type_text (meaning => packge);
+			tmp_package			: type_text (meaning => packge);
 			tmp_datasheet		: type_text (meaning => datasheet);
 			tmp_purpose			: type_text (meaning => purpose);
 			tmp_partcode		: type_text (meaning => partcode);
-			tmp_units			: type_units_internal.map;
 
 			-- temporarily used variables to store draw elements (polylines, arcs, pins, ...) 
 			-- before they are added to a unit.
@@ -1296,6 +1295,10 @@ package body et_kicad is
 					unit.symbol.commissioned:= (type_text_basic (tmp_commissioned)	with meaning => commissioned);
 					unit.symbol.updated		:= (type_text_basic (tmp_updated)		with meaning => updated);
 					unit.symbol.author		:= (type_text_basic (tmp_author)		with meaning => author);
+					unit.symbol.packge		:= (type_text_basic (tmp_package)		with meaning => packge);
+					unit.symbol.datasheet	:= (type_text_basic (tmp_datasheet)		with meaning => datasheet);
+					unit.symbol.purpose		:= (type_text_basic (tmp_purpose)		with meaning => purpose);
+					unit.symbol.partcode	:= (type_text_basic (tmp_partcode)		with meaning => partcode);
 				end set;
 				
 				procedure locate_unit (
@@ -1576,9 +1579,9 @@ package body et_kicad is
 				-- If we have a footprint field like "F2 "" 0 -100 50 H V C CNN"
 				when packge =>
 				
-					tmp_footprint := read_field (meaning => packge);
+					tmp_package := read_field (meaning => packge);
 					-- for the log:
-					write_text_properies (type_text (tmp_footprint),4); -- actuals: text & indentation
+					write_text_properies (type_text (tmp_package),4); -- actuals: text & indentation
 
 				-- If we have a datasheet field like "F3 "" 0 -100 50 H V C CNN"
 				when datasheet =>

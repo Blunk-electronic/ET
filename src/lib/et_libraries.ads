@@ -434,8 +434,8 @@ package et_libraries is
 	type type_symbol_element is (
 		line, polyline, rectangle, arc, circle, -- shapes
 		port, 
-		text, -- text embedded in a symbol
-		reference, value, commissioned, updated, author); -- text field placeholders
+		text); -- text embedded in a symbol
+		--reference, value, commissioned, updated, author); -- text field placeholders
 
 	-- Texts may be embedded in a symbol like "counter" or "&". So far they have the meaning "misc".
 	-- CS: strings and texts within a unit symbol serve for documentation only. As long as
@@ -456,6 +456,10 @@ package et_libraries is
 		commissioned: type_text_placeholder (meaning => et_libraries.commissioned);
 		updated		: type_text_placeholder (meaning => et_libraries.updated);
 		author		: type_text_placeholder (meaning => et_libraries.author);
+		packge		: type_text_placeholder (meaning => et_libraries.packge);
+		datasheet	: type_text_placeholder (meaning => et_libraries.datasheet);
+		purpose		: type_text_placeholder (meaning => et_libraries.purpose);
+		partcode	: type_text_placeholder (meaning => et_libraries.partcode);
 	end record;
 
 
@@ -537,9 +541,6 @@ package et_libraries is
 		return boolean;
 
 
-	
-	-- A component may have internal and/or external units.
-	-- It also has text fields.
 	type type_component (appearance : et_general.type_component_appearance) is record
 		prefix			: et_general.type_component_prefix.bounded_string; -- R, C, IC, ...
 		value			: type_component_value.bounded_string; -- 74LS00
