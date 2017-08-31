@@ -1278,13 +1278,44 @@ package body et_kicad is
 			end add_symbol_element;
 			
 
-			procedure set_text_placeholder_properties is
-			-- Sets the properties of placeholders in all units of the component.
-				--unit_count : count_type;
-			begin
-				-- CS
-				--unit_count := 
-				null;
+			procedure set_text_placeholder_properties (libraries : in out type_libraries.map) is
+			-- Sets the properties of placeholders in all units of the component indicated by comp_cursor.
+			
+				procedure set (
+				-- Sets the properties of the placeholdrs in the current unit.
+					key		: in type_unit_name.bounded_string;
+					unit	: in out type_unit_internal) is
+				begin
+					-- For the unit we are interested in the properties of the component text fields.
+					-- The component text fields as given in the component section look like "F0 "IC" 0 50 50 H V C BIB".
+					-- The content (in this example "IC") is not relevant here as it applies for the whole component.
+					-- We convert the text field downward to a type_text_basic (which stips off the content) first.
+					-- Then we convert the type_text_basic upward to type_text_placeholder by providing the meaning:
+					unit.symbol.reference	:= (type_text_basic (tmp_reference)		with meaning => reference);
+					unit.symbol.value		:= (type_text_basic (tmp_value)			with meaning => value);
+					unit.symbol.commissioned:= (type_text_basic (tmp_commissioned)	with meaning => commissioned);
+					unit.symbol.updated		:= (type_text_basic (tmp_updated)		with meaning => updated);
+					unit.symbol.author		:= (type_text_basic (tmp_author)		with meaning => author);
+				end set;
+				
+				procedure locate_unit (
+				-- Locates the unit indicated by unit_cursor.
+					key			: in type_component_name.bounded_string;
+					component	: in out type_component) is
+				begin
+					component.units_internal.update_element (unit_cursor, set'access);
+				end locate_unit;
+				
+				procedure locate_component ( 
+				-- Locates the component indicated by comp_cursor.
+					key			: in type_library_full_name.bounded_string;
+					components	: in out type_components.map) is
+				begin -- locate_component
+					components.update_element (comp_cursor, locate_unit'access);
+				end locate_component;
+			
+			begin -- set_text_placeholder_properties
+				libraries.update_element (lib_cursor, locate_component'access);
 			end set_text_placeholder_properties;
 			
 		procedure read_draw_object (line : in type_fields_of_line; indentation : in natural := 0) is
@@ -1714,7 +1745,7 @@ package body et_kicad is
 								-- Set placeholders (reference, value, commissioned, ...) in internal units.
 								-- The placeholder properties are known from the field-section.
 								-- The placeholder properties apply for all units.
-								set_text_placeholder_properties;
+								set_text_placeholder_properties (et_import.component_libraries);
 								
 								-- log component properties
 								et_libraries.write_component_properties (component => comp_cursor, indentation => indentation + 1);
