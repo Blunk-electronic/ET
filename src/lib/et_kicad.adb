@@ -974,41 +974,20 @@ package body et_kicad is
 			end read_field;
 
 			procedure insert_component (
-			-- Updates the current library by inserting a component.
+			-- Updates the current library by inserting the component.
 			-- If the component was inserted (should be) the comp_cursor points to the component
 			-- for later inserting the units:
 				key			: in type_library_full_name.bounded_string;
 				components	: in out type_components.map) is
--- 
--- 				-- If only one unit provided, the flag "interchangeable" is don't care -> default swap level assumed.
--- 				-- If more units provided, the swap level is derived from field #9.
--- 				swap_level			: et_libraries.type_swap_level := et_libraries.swap_level_default;
--- 				port_name_offset	: et_libraries.type_grid;
--- 				pin_name_visible 	: et_libraries.type_pin_visible;
--- 				port_name_visible	: et_libraries.type_port_visible;
 			begin -- insert_component
 
 				-- Do a precheck of the text fields.
 				check_text_fields;
-				
+
 -- 				-- For the logfile write the component name.
 -- 				-- If the component contains more than one unit, write number of units.
 -- 				put_line("   " & get_field_from_line(line,2)); -- 74LS00
--- 
--- 				-- Get number of units and set swap level as specified in field #9.
--- 				units_total := type_unit_id'value(get_field_from_line(line,8));
--- 				if units_total > 1 then
--- 					put_line("    with" & type_unit_id'image(units_total) & " units");
--- 
--- 					-- From the "interchangeable" flag we set the component wide swap level. It applies for 
--- 					-- all units of the component:
--- 					swap_level := to_swap_level (get_field_from_line(line,9));
--- 				end if;
--- 				
--- 				port_name_offset	:= et_libraries.type_grid'value (get_field_from_line(line,5)); -- relevant for supply pins only
--- 				pin_name_visible 	:= to_pin_visibile  (get_field_from_line(line,6));
--- 				port_name_visible	:= to_port_visibile (get_field_from_line(line,7));
--- 				
+
 				case tmp_appearance is
 					when sch =>
 
@@ -1505,9 +1484,6 @@ package body et_kicad is
 -- 					write_scope_of_object (tmp_unit_id, indentation + 1);
 					put_line (indent (indentation + 1) & to_string (line));
 
--- 					-- Add the unit with tmp_unit_id to current component (if not already done).
--- 					add_unit (et_import.component_libraries);
-
 					-- compose port
 					-- Since ports are collected in a map, the port name is going to be the key. Thus 
 					-- we handle the port name separately from the port properties.
@@ -1522,7 +1498,7 @@ package body et_kicad is
 						-- add unit specific port to unit
 						add_symbol_element (et_import.component_libraries, port);
 					else 
-						-- The current unit id one notch above the total number of units.
+						-- The current unit id is one notch above the total number of units.
 						tmp_unit_id := type_unit_id (tmp_units_total) + 1;
 						-- If no extra unit has been created yet -> create one with add level "request".
 						if not extra_unit_available then 
@@ -1722,18 +1698,17 @@ package body et_kicad is
 								
 								-- The line it is about looks like:  DEF 74LS00 U 0 30 Y Y 4 F N
 								-- The fields meaning is as follows:
-								-- name, like 74LS00
-								-- prefix, like U
-								-- unknown -- CS: what is it good for ?
-								-- pin name position offset of supply pins, if "place pin names inside" is off. the offset assumes zero
-								-- show pin/pad number Y/N,
-								-- show pin/port name Y/N,
-								-- units total, -- like 4
-								-- all units not interchangeable L (otherwise F), (similar to swap level in EAGLE)
-								-- power symbol P (otherwise N)								
+								--  #2 : name, like 74LS00
+								--  #3 : prefix, like U
+								--  #4 : unknown -- CS: what is it good for ?
+								--  #5 : pin name position offset of supply pins, if "place pin names inside" is off. the offset assumes zero
+								--  #6 : show pin/pad number Y/N,
+								--  #7 : show pin/port name Y/N,
+								--  #8 : units total, -- like 4
+								--  #9 : all units not interchangeable L (otherwise F), (similar to swap level in EAGLE)
+								--  #10: power symbol P (otherwise N)
 
 								tmp_prefix := et_general.type_component_prefix.to_bounded_string (get_field_from_line (line,3)); -- U
-								-- CS: field #4 ?
 								tmp_port_name_offset	:= type_grid'value (get_field_from_line(line,5)); -- relevant for supply pins only
 								tmp_pin_name_visible	:= to_pin_visibile  (get_field_from_line(line,6));
 								tmp_port_name_visible	:= to_port_visibile (get_field_from_line(line,7));

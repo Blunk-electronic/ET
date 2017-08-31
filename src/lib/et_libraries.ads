@@ -495,9 +495,6 @@ package et_libraries is
 		add_level	: type_unit_add_level := type_unit_add_level'first;
 	end record;
 
-	-- Sometimes for initiallization purposes we need a bare internal unit:
-	--bare_unit_internal : type_unit_internal;
-	
 	-- Internal units are collected in a map:
 	package type_units_internal is new indefinite_ordered_maps (
 		key_type => type_unit_name.bounded_string, -- like "I/O-Bank 3" "A" or "B"
