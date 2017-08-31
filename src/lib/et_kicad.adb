@@ -1126,7 +1126,7 @@ package body et_kicad is
 					key			: in type_component_name.bounded_string;
 					component	: in out type_component) is
 
-					unit : type_unit_internal;
+					unit : type_unit_internal (tmp_appearance);
 				begin
 					unit.swap_level	:= tmp_unit_swap_level;
 					unit.add_level	:= tmp_unit_add_level;
@@ -1295,10 +1295,15 @@ package body et_kicad is
 					unit.symbol.commissioned:= (type_text_basic (tmp_commissioned)	with meaning => commissioned);
 					unit.symbol.updated		:= (type_text_basic (tmp_updated)		with meaning => updated);
 					unit.symbol.author		:= (type_text_basic (tmp_author)		with meaning => author);
-					unit.symbol.packge		:= (type_text_basic (tmp_package)		with meaning => packge);
-					unit.symbol.datasheet	:= (type_text_basic (tmp_datasheet)		with meaning => datasheet);
-					unit.symbol.purpose		:= (type_text_basic (tmp_purpose)		with meaning => purpose);
-					unit.symbol.partcode	:= (type_text_basic (tmp_partcode)		with meaning => partcode);
+
+					case unit.symbol.appearance is
+						when sch_pcb =>
+							unit.symbol.packge		:= (type_text_basic (tmp_package)	with meaning => packge);
+							unit.symbol.datasheet	:= (type_text_basic (tmp_datasheet)	with meaning => datasheet);
+							unit.symbol.purpose		:= (type_text_basic (tmp_purpose)	with meaning => purpose);
+							unit.symbol.partcode	:= (type_text_basic (tmp_partcode)	with meaning => partcode);
+						when others => null;
+					end case;
 				end set;
 				
 				procedure locate_unit (

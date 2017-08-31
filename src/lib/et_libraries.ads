@@ -443,8 +443,8 @@ package et_libraries is
 	-- CS: The meaning could be something like "documentation" some day.
 	type type_symbol_text is new type_text (meaning => misc) with null record;
 	package type_symbol_texts is new doubly_linked_lists (element_type => type_symbol_text);
-	
-	type type_symbol is record
+
+	type type_symbol (appearance : et_general.type_component_appearance) is record
 		shapes		: type_shapes; -- the collection of shapes
 		texts		: type_symbol_texts.list; -- the collection of texts (meaning misc)
 		ports		: type_ports.map := type_ports.empty_map; -- the ports of the symbol
@@ -456,10 +456,15 @@ package et_libraries is
 		commissioned: type_text_placeholder (meaning => et_libraries.commissioned);
 		updated		: type_text_placeholder (meaning => et_libraries.updated);
 		author		: type_text_placeholder (meaning => et_libraries.author);
-		packge		: type_text_placeholder (meaning => et_libraries.packge);
-		datasheet	: type_text_placeholder (meaning => et_libraries.datasheet);
-		purpose		: type_text_placeholder (meaning => et_libraries.purpose);
-		partcode	: type_text_placeholder (meaning => et_libraries.partcode);
+		-- Symbols have further text placeholders according to their appearance:
+		case appearance is
+			when et_general.sch_pcb =>
+				packge		: type_text_placeholder (meaning => et_libraries.packge);
+				datasheet	: type_text_placeholder (meaning => et_libraries.datasheet);
+				purpose		: type_text_placeholder (meaning => et_libraries.purpose);
+				partcode	: type_text_placeholder (meaning => et_libraries.partcode);
+			when others => null;
+		end case;
 	end record;
 
 
@@ -483,8 +488,8 @@ package et_libraries is
 	
 	-- An internal unit is a symbol with a swap level.
 	-- An internal unit is owned by a particular component exclusively.
-	type type_unit_internal is record
-		symbol		: type_symbol;
+	type type_unit_internal (appearance : et_general.type_component_appearance) is record
+		symbol		: type_symbol (appearance);
 		coordinates	: type_coordinates;
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
 		add_level	: type_unit_add_level := type_unit_add_level'first;
@@ -494,7 +499,7 @@ package et_libraries is
 	--bare_unit_internal : type_unit_internal;
 	
 	-- Internal units are collected in a map:
-	package type_units_internal is new ordered_maps (
+	package type_units_internal is new indefinite_ordered_maps (
 		key_type => type_unit_name.bounded_string, -- like "I/O-Bank 3" "A" or "B"
 		element_type => type_unit_internal);
 
@@ -509,7 +514,7 @@ package et_libraries is
 	end record;
 
 	-- An external unit has a reference and a swap level.
-	type type_unit_external is record
+	type type_unit_external is record -- CS: parameter appearance ?
 		reference	: type_unit_reference;
 		coordinates	: type_coordinates;
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
