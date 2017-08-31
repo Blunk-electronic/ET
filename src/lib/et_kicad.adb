@@ -1025,8 +1025,8 @@ package body et_kicad is
 								commissioned	=> et_string_processing.type_date (content (tmp_commissioned)),
 								updated			=> et_string_processing.type_date (content (tmp_updated)),
 								author			=> type_person_name.to_bounded_string (content (tmp_author)),
-								units_internal	=> type_units_internal.empty_map,
-								units_external	=> type_units_external.empty_map
+								unit_internal	=> bare_unit_internal
+								-- CS unit_external
 								)
 							);
 						
@@ -1080,13 +1080,19 @@ package body et_kicad is
 			procedure set_unit_cursor (libraries : in out type_libraries.map) is
 			-- Sets the unit_cursor according to the current unit_id.
 			-- If the unit_id is 0, the unit_cursor is not changed.
+			-- If it is about a virtual component, the unit_cursor is not changed.
 		
 				procedure locate_unit (
 				-- sets the unit_cursor
 					key			: in type_component_name.bounded_string;
 					component	: in type_component) is
 				begin
-					unit_cursor := component.units_internal.find (to_unit_name (tmp_unit_id));
+					-- set the cursor only if it is a real component
+					case component.appearance is
+						when sch_pcb =>
+							unit_cursor := component.units_internal.find (to_unit_name (tmp_unit_id));
+						when others => null; -- CS ? This should never happen. see below.
+					end case;
 				end locate_unit;
 
 				procedure locate_component ( 
@@ -1097,14 +1103,22 @@ package body et_kicad is
 				end locate_component;
 
 			begin -- set_unit_cursor
-				if tmp_unit_id > 0 then -- if tmp_unit_id is zero, nothing is done
-					type_libraries.query_element ( lib_cursor, locate_component'access);
+				-- Units can be added to real components only.
+				-- Virtual components already have a single internal unit by default.
+				if tmp_appearance = sch_pcb then
+					if tmp_unit_id > 0 then -- if tmp_unit_id is zero, nothing is done
+						type_libraries.query_element ( lib_cursor, locate_component'access);
+					end if;
 				end if;
 			end set_unit_cursor;
 				
 			
 			procedure add_unit (libraries : in out type_libraries.map) is
 			-- Add the unit with current tmp_unit_id to current component (indicated by comp_cursor).
+				
+			-- If the current tmp_appearance is "sch" (virtual component) no unit is added. Nothing happens.
+			-- Components of this appearance have by default only one internal unit (see spec.)
+
 			-- Leaves unit_cursor pointing to unit that has been added.
 			
 			-- If the unit has already been inserted, nothing happens.
@@ -1128,14 +1142,20 @@ package body et_kicad is
 
 					unit : type_unit_internal;
 				begin
-					unit.swap_level	:= tmp_unit_swap_level;
-					unit.add_level	:= tmp_unit_add_level;
-					
-					component.units_internal.insert (
-						key			=> to_unit_name (tmp_unit_id),
-						new_item	=> unit,
-						position	=> unit_cursor,
-						inserted	=> unit_inserted);
+					-- Insert internal unit only if it is about a real component.
+					case component.appearance is
+						when sch_pcb =>
+							unit.swap_level	:= tmp_unit_swap_level;
+							unit.add_level	:= tmp_unit_add_level;
+							
+							component.units_internal.insert (
+								key			=> to_unit_name (tmp_unit_id),
+								new_item	=> unit,
+								position	=> unit_cursor,
+								inserted	=> unit_inserted);
+
+						when others => null; -- CS ? This should never happen at all. see below.
+					end case;
 				end insert_unit;
 
 				procedure locate_component ( 
@@ -1146,18 +1166,22 @@ package body et_kicad is
 				end locate_component;
 
 			begin -- add_unit
-				if tmp_unit_id > 0 then
-					libraries.update_element ( lib_cursor, locate_component'access);
-				elsif tmp_units_total = 1 then
-					tmp_unit_id := 1;
-					libraries.update_element ( lib_cursor, locate_component'access);
-				else
-					null; -- CS
+				-- Units can be added to real components only.
+				-- Virtual components already have a single internal unit by default.
+				if tmp_appearance = sch_pcb then
+					if tmp_unit_id > 0 then
+						libraries.update_element ( lib_cursor, locate_component'access);
+					elsif tmp_units_total = 1 then
+						tmp_unit_id := 1;
+						libraries.update_element ( lib_cursor, locate_component'access);
+					else
+						null; -- CS
+					end if;
 				end if;
 			end add_unit;
 
 			procedure create_units is
-			-- Creates empty units in the current compoenent.
+			-- Creates empty units in the current component.
 			-- The number of units is set by unit_total 
 			-- (earlier derived from the component header like "DEF 74LS00 IC 0 30 Y Y 4 F N")
 			begin
@@ -1243,7 +1267,14 @@ package body et_kicad is
 					key			: in type_component_name.bounded_string;
 					component	: in out type_component) is
 				begin
-					component.units_internal.update_element (unit_cursor, insert'access);
+					case component.appearance is
+						when sch_pcb =>
+							component.units_internal.update_element (unit_cursor, insert'access);
+						when sch =>
+							null; -- CS -- similar to procedure "insert"
+						when others =>
+							null; -- CS
+					end case;
 				end locate_unit;
 				
 				procedure locate_component ( 
@@ -1306,7 +1337,12 @@ package body et_kicad is
 					key			: in type_component_name.bounded_string;
 					component	: in out type_component) is
 				begin
-					component.units_internal.update_element (unit_cursor, set'access);
+					case component.appearance is
+						when sch_pcb =>
+							component.units_internal.update_element (unit_cursor, set'access);
+						when sch => null; -- CS: similar to procdure "set"
+						when others => null; -- CS
+					end case;
 				end locate_unit;
 				
 				procedure locate_component ( 

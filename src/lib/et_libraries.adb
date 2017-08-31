@@ -294,60 +294,73 @@ package body et_libraries is
 			& "name " 
 			& type_component_name.to_string (type_components.key (component)));
 
-		-- number of internal units
-		unit_count := length (element (component).units_internal);
-		
-		put_line(indent(indentation + 1) 
-			& "number of internal units" 
-			& count_type'image (unit_count));
+		case element (component).appearance is
+			when sch_pcb =>
+				-- number of internal units
+				unit_count := length (element (component).units_internal);
 
-		-- write unit properties
-		
-		-- NOTE: As a workaround we load units here temporarily
-		-- NOTE: with GNAT 4.8 .. 7.x it is not possible to advance the unit_cursor with "next". The program gets caught
-		-- in an infinite loop. So the workaround here is to copy the whole units_internal map to units and move
-		-- cursor in the local map "units".
-		units := element (component).units_internal;
+				put_line (indent (indentation + 1) 
+					& "number of internal units" 
+					& count_type'image (unit_count));
 
-		case unit_count is
-
-			when 0 => 
-				-- component has no units 
-				raise constraint_error; -- CS: this should never happen
+				-- write unit properties
 				
-			when others =>
+				-- NOTE: As a workaround we load units here temporarily
+				-- NOTE: with GNAT 4.8 .. 7.x it is not possible to advance the unit_cursor with "next". The program gets caught
+				-- in an infinite loop. So the workaround here is to copy the whole units_internal map to units and move
+				-- cursor in the local map "units".
+				units := element (component).units_internal;
 
-				-- The initial idea was to set the unit_cursor as follows.
-				-- Statement A:
-				unit_cursor := first (type_components.element(component).units_internal);
-				-- Then the unit_cursor should be moved with the "next" procedure. This causes the program to freeze.
+				case unit_count is
 
-				-- Workaround. This statement overwrites the malfunctioning cursor and solves
-				-- the issue for the time being. Comment this statmement to reproduce the bug:
-				-- Statement B:
-				unit_cursor := first (units);
+					when 0 => 
+						-- component has no units 
+						raise constraint_error; -- CS: this should never happen
+						
+					when others =>
 
+						-- The initial idea was to set the unit_cursor as follows.
+						-- Statement A:
+						unit_cursor := first (type_components.element(component).units_internal);
+						-- Then the unit_cursor should be moved with the "next" procedure. This causes the program to freeze.
+
+						-- Workaround. This statement overwrites the malfunctioning cursor and solves
+						-- the issue for the time being. Comment this statmement to reproduce the bug:
+						-- Statement B:
+						unit_cursor := first (units);
+
+						
+						loop 
+							exit when unit_cursor = type_units_internal.no_element;
+							
+							-- put_line(standard_output, "step 1");
+							put_line(indent(indentation + 2) 
+								& "unit " 
+								& type_unit_name.to_string (key (unit_cursor)));
+
+							-- CS: output draw objects
+							
+							-- put_line(standard_output, "step 2");
+
+							-- Here the program freezes or keeps trappend in a forever-loop if 
+							-- statement A is used. With statement B everyting works fine:
+							unit_cursor := next (unit_cursor);
+							-- put_line(standard_output, "step 3");
+
+						end loop;
+					
+				end case;
 				
-				loop 
-					exit when unit_cursor = type_units_internal.no_element;
-					
-					-- put_line(standard_output, "step 1");
-					put_line(indent(indentation + 2) 
-						& "unit " 
-						& type_unit_name.to_string (key (unit_cursor)));
+				
+			when sch =>
+				
+				put_line (indent (indentation + 1) 
+					& "power symbol (as a single unit)" 
+					);
 
-					-- CS: output draw objects
-					
-					-- put_line(standard_output, "step 2");
-
-					-- Here the program freezes or keeps trappend in a forever-loop if 
-					-- statement A is used. With statement B everyting works fine:
-					unit_cursor := next (unit_cursor);
-					-- put_line(standard_output, "step 3");
-
-				end loop;
-			
+			when others => null; -- CS
 		end case;
+		
 		
 	end write_component_properties;
 

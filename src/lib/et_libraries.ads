@@ -491,7 +491,7 @@ package et_libraries is
 	end record;
 
 	-- Sometimes for initiallization purposes we need a bare internal unit:
-	--bare_unit_internal : type_unit_internal;
+	bare_unit_internal : type_unit_internal;
 	
 	-- Internal units are collected in a map:
 	package type_units_internal is new ordered_maps (
@@ -544,8 +544,6 @@ package et_libraries is
 	type type_component (appearance : et_general.type_component_appearance) is record
 		prefix			: et_general.type_component_prefix.bounded_string; -- R, C, IC, ...
 		value			: type_component_value.bounded_string; -- 74LS00
-		units_internal	: type_units_internal.map := type_units_internal.empty_map;
-		units_external	: type_units_external.map := type_units_external.empty_map;
 		commissioned	: et_string_processing.type_date;
 		updated			: et_string_processing.type_date;
 		author			: type_person_name.bounded_string;
@@ -554,11 +552,16 @@ package et_libraries is
 
 			-- If a component appears in the schematic only, it does not
 			-- have any package variants.
-			when et_general.sch => null;
-
+			when et_general.sch =>
+				unit_internal : type_unit_internal := bare_unit_internal;
+				-- CS: unit_external : type_unit_external; -- define a bare external unit
+				
 			-- If a component appears in both schematic and layout it comes 
 			-- with at least one package/footprint variant. We store variants in a map.
 			when et_general.sch_pcb => 
+				units_internal	: type_units_internal.map := type_units_internal.empty_map;
+				units_external	: type_units_external.map := type_units_external.empty_map;
+
 				variants	: type_component_variants.map;
 				datasheet	: type_component_datasheet.bounded_string;
 				purpose		: type_component_purpose.bounded_string;
