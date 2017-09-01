@@ -164,46 +164,51 @@ package body et_libraries is
 	procedure write_text_properies (text : in et_libraries.type_text) is
 	-- Outputs the properties of the given text.
 		use et_string_processing;
-		-- CS: log_threshold
+		log_threshold : type_log_level := 1;
 	begin
-		log_indentation_up;
+-- 		log_indentation_up;
 		
 		-- meaning
-		log (et_libraries.to_string(text.meaning));
+		log ("text field " & et_libraries.to_string(text.meaning), level => log_threshold);
 		log_indentation_up;
 		
 		-- position
-		log (et_libraries.to_string (text.position));
+		log (et_libraries.to_string (text.position), level => log_threshold);
 
 		-- content
 		if et_libraries.type_text_content.length(text.content) > 0 then
-			log ("content '" & et_libraries.type_text_content.to_string(text.content) & "'");
+			log ("content '" & et_libraries.type_text_content.to_string(text.content) & "'",
+				level => log_threshold);
 		else
-			log ("no content");
+			log ("no content", level => log_threshold);
 		end if;
 		
 		-- size
-		log ("size" & et_libraries.type_text_size'image (text.size));
+		log ("size" & et_libraries.type_text_size'image (text.size), level => log_threshold);
 
 		-- style
-		log ("style " & to_lower(et_libraries.type_text_style'image (text.style)));
+		log ("style " & to_lower(et_libraries.type_text_style'image (text.style)),
+			 level => log_threshold);
 
 		-- line width
-		log ("line width" & et_libraries.type_text_line_width'image (text.line_width));
+		log ("line width" & et_libraries.type_text_line_width'image (text.line_width),
+			level => log_threshold);
 
 		-- orientation
-		log (et_libraries.to_string (text.orientation));
+		log (et_libraries.to_string (text.orientation), level => log_threshold);
 
 		-- visible
-		log ("visible " & to_lower(et_libraries.type_text_visible'image (text.visible)));
+		log ("visible " & to_lower(et_libraries.type_text_visible'image (text.visible)),
+			level => log_threshold);
 
 		-- alignment
 		log ("alignment (horizontal/vertical) "
 			& to_lower(et_libraries.type_text_alignment_horizontal'image(text.alignment.horizontal))
 			& "/"
-			& to_lower(et_libraries.type_text_alignment_vertical'image(text.alignment.vertical)));
+			& to_lower(et_libraries.type_text_alignment_vertical'image(text.alignment.vertical)),
+			level => log_threshold);
 
-		log_indentation_down;
+-- 		log_indentation_down;
 		log_indentation_down;
 	end write_text_properies;
 

@@ -1358,7 +1358,7 @@ package body et_kicad is
 				
 			end set_text_placeholder_properties;
 			
-		procedure read_draw_object (line : in type_fields_of_line; indentation : in type_indentation_level := 0) is
+		procedure read_draw_object (line : in type_fields_of_line) is
 		-- Creates a symbol element from the given line and adds it to the unit indicated by tmp_unit_id.
 			function field (line : in type_fields_of_line; position : in positive) return string renames
 				et_string_processing.get_field_from_line;
@@ -1380,12 +1380,18 @@ package body et_kicad is
 					put_line ("unit" & type_unit_id'image(unit));
 				end if;
 			end write_scope_of_object;
+
+			log_threshold : type_log_level := 1;
 			
 		begin -- read_draw_object
--- 			put_line (indent(indentation) & to_string (line));
+			log ("draw object", level => log_threshold);
+			log_indentation_up;
+			
+			-- 			put_line (indent(indentation) & to_string (line)); -- CS: log
+			
 			case type_library_draw'value (field (line,1)) is
 				when P => -- polyline
-					put_line (indent (indentation) & "polyline");
+					log ("polyline", level => log_threshold);
 					-- A polyline is defined by a string like "P 3 0 1 10 0 0 100 50 70 0 N"
 					-- field meaning:
 					--  #2 : number of bends (incl. start and end points) (3)
@@ -1399,7 +1405,7 @@ package body et_kicad is
 
 					tmp_unit_id := to_unit_id (field (line,3));
 -- 					write_scope_of_object (tmp_unit_id, indentation + 1);
-					put_line (indent (indentation + 1) & to_string (line));
+					log (to_string (line), level => log_threshold + 1);
 
 					-- compose polyline
 					tmp_draw_polyline := to_polyline (line);
@@ -1408,7 +1414,7 @@ package body et_kicad is
 					add_symbol_element (et_import.component_libraries, polyline);
 					
 				when S => -- rectangle
-					put_line (indent (indentation) & "rectangle");
+					log ("rectangle", level => log_threshold);
 					-- A rectangle is defined by a string like "S -40 -100 40 100 0 1 10 N"
 					-- field meaning;
 					-- #2..5 : start point -40/-100   end point 40/100
@@ -1419,7 +1425,7 @@ package body et_kicad is
 
 					tmp_unit_id := to_unit_id (field (line,6));
 -- 					write_scope_of_object (tmp_unit_id, indentation + 1);
-					put_line (indent (indentation + 1) & to_string (line));
+					log (to_string (line), level => log_threshold + 1);
 
 					-- compose rectangle
 					tmp_draw_rectangle := to_rectangle (line);
@@ -1428,7 +1434,7 @@ package body et_kicad is
 					add_symbol_element (et_import.component_libraries, rectangle);
 					
 				when C => -- circle
-					put_line (indent(indentation) & "circle");
+					log ("circle", level => log_threshold);
 					-- A circle is defined by a string like "C 0 0 112 0 1 23 N"
 					-- field meaning:
 					--  #2..3 : center (x/y)
@@ -1440,7 +1446,7 @@ package body et_kicad is
 
 					tmp_unit_id := to_unit_id (field (line,5));
 -- 					write_scope_of_object (tmp_unit_id, indentation + 1);
-					put_line (indent(indentation + 1) & to_string (line));
+					log (to_string (line), level => log_threshold + 1);
 
 					-- compose circle
 					tmp_draw_circle := to_circle (line);
@@ -1449,7 +1455,7 @@ package body et_kicad is
 					add_symbol_element (et_import.component_libraries, circle);
 					
 				when A => -- arc
-					put_line (indent (indentation) & "arc");
+					log ("arc", level => log_threshold);
 					-- An arc is defined by a string like "A 150 0 150 1800 900 0 1 33 N 0 0 150 150"
 					-- NOTE: kicad bug: multiply all y values by -1
 					-- field meaning:
@@ -1466,7 +1472,7 @@ package body et_kicad is
 
 					tmp_unit_id := to_unit_id (field (line,7));
 -- 					write_scope_of_object (tmp_unit_id, indentation + 1);
-					put_line (indent (indentation + 1) & to_string (line));
+					log (to_string (line), level => log_threshold + 1);
 
 					-- compose arc
 					tmp_draw_arc := to_arc (line);
@@ -1475,7 +1481,7 @@ package body et_kicad is
 					add_symbol_element (et_import.component_libraries, arc);
 
 				when T => -- text
-					put_line (indent (indentation) & "text");
+					log ("text", level => log_threshold);
 					-- A text is defined by a string like "T 0 0 300 60 0 0 0 leuchtdiode Normal 0 C C"
 					-- Space characters whitin the actual text are replaced by tilde as in this example:
 					-- "T 0 -100 0 60 0 1 0 gate~C Normal 0 C C"
@@ -1494,17 +1500,16 @@ package body et_kicad is
 
 					tmp_unit_id := to_unit_id (field (line,7));
 -- 					write_scope_of_object (tmp_unit_id, indentation + 1);
-					put_line (indent (indentation + 1) & to_string (line));
+					log (to_string (line), level => log_threshold + 1);
 
 					-- compose text
 					tmp_draw_text := to_text (line);
 					
 					-- add text to unit
 					add_symbol_element (et_import.component_libraries, text);
-
 					
 				when X => -- port
-					put_line (indent (indentation) & "port");
+					log ("port", level => log_threshold);
 					-- A port is defined by a string like "X ~ 1 0 150 52 D 51 50 1 1 P"
 					-- field meaning:
 					--  #2 : port name (~)
@@ -1521,7 +1526,7 @@ package body et_kicad is
 
 					tmp_unit_id := to_unit_id (field (line,10));
 -- 					write_scope_of_object (tmp_unit_id, indentation + 1);
-					put_line (indent (indentation + 1) & to_string (line));
+					log (to_string (line), level => log_threshold + 1);
 
 					-- compose port
 					-- Since ports are collected in a map, the port name is going to be the key. Thus 
@@ -1551,6 +1556,8 @@ package body et_kicad is
 						add_symbol_element (et_import.component_libraries, port);
 					end if;
 			end case;
+
+			log_indentation_down;
 		end read_draw_object;
 
 
@@ -1793,6 +1800,8 @@ package body et_kicad is
 							else
 							-- As long as the component end mark does not appear, we process subsections as 
 							-- indicated by active_section:
+								log_indentation_up;
+							
 								case active_section is
 									when fields =>
 										-- Here we read the "fields". 
@@ -1821,7 +1830,7 @@ package body et_kicad is
 											create_units;
 											
 											active_section := footprints;
-											put_line (indent(indentation + 2) & "footprint filter begin");
+											log ("footprint filter begin", level => 3);
 
 										elsif get_field_from_line(line,1) = et_kicad.draw then
 
@@ -1836,7 +1845,7 @@ package body et_kicad is
 											create_units;
 
 											active_section := draw;
-											put_line (indent(indentation + 2) & "draw begin");
+											log ("draw begin", level => 3);
 										else
 											read_field (line);
 										end if;
@@ -1859,7 +1868,7 @@ package body et_kicad is
 										-- that this subsection has been processed.
 										if get_field_from_line(line,1) = et_kicad.endfplist then
 											active_section := none;
-											put_line (indent (indentation + 2) & "footprint filter end");
+											log ("footprint filter end", level => 3);
 										else
 											-- Process lines:
 											put_line (indent (indentation + 3) & to_string(line));
@@ -1874,10 +1883,10 @@ package body et_kicad is
 										-- thate this subsection has been processed.
 										if get_field_from_line (line,1) = et_kicad.enddraw then
 											active_section := none;
-											put_line (indent (indentation + 2) & "draw end");
+											log ("draw end", level => 3);
 										else
 											-- Process lines:
-											read_draw_object (line,5);
+											read_draw_object (line);
 										end if;
 										
 									when none =>
@@ -1886,10 +1895,12 @@ package body et_kicad is
 										-- NOTE #2: the active section "fields" is not set here but when the fields are read (see NOTE #1)
 										if get_field_from_line (line,1) = et_kicad.draw then
 											active_section := draw;
-											put_line (indent (indentation + 2) & "draw begin");
+											log ("draw begin", level => 3);
 										end if;
 
 								end case; -- active_section
+
+								log_indentation_down;
 								
 							end if;
 							
