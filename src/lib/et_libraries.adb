@@ -122,48 +122,42 @@ package body et_libraries is
 	end to_string;
 
 	
-	procedure write_placeholder_properties ( placeholder : in type_text_placeholder; indentation : in et_string_processing.type_indentation_level := 0) is
+	procedure write_placeholder_properties (placeholder : in type_text_placeholder) is
 	-- Writes the properties of the given placeholder.
 		use et_string_processing;
 	begin
 		-- meaning
-		put_line(indent(indentation) 
-			& et_libraries.to_string(placeholder.meaning));
-
+		log (et_libraries.to_string(placeholder.meaning));
+		log_indentation_up;
+		
 		-- position
-		put_line(indent(indentation + 1)
-			& et_libraries.to_string (placeholder.position));
+		log (et_libraries.to_string (placeholder.position));
 
 		-- size
-		put_line(indent(indentation + 1)
-			& "size"
-			& et_libraries.type_text_size'image (placeholder.size));
+		log ("size" & et_libraries.type_text_size'image (placeholder.size));
 
 		-- style
-		put_line(indent(indentation + 1)
-			& "style "
+		log ("style "
 			& to_lower(et_libraries.type_text_style'image (placeholder.style)));
 
 		-- line width
-		put_line(indent(indentation + 1)
-			& "line width"
+		log ("line width"
 			& et_libraries.type_text_line_width'image (placeholder.line_width));
 
 		-- orientation
-		put_line(indent(indentation + 1)
-			& et_libraries.to_string (placeholder.orientation)); 
+		log (et_libraries.to_string (placeholder.orientation)); 
 
 		-- visible
-		put_line(indent(indentation + 1)
-			& "visible "
+		log ("visible "
 			& to_lower(et_libraries.type_text_visible'image (placeholder.visible)));
 
 		-- alignment
-		put_line(indent(indentation + 1)
-			& "aligment (hor/vert) "
+		log ("alignment (hor/vert) "
 			& to_lower(et_libraries.type_text_alignment_horizontal'image(placeholder.alignment.horizontal))
 			& "/"
 			& to_lower(et_libraries.type_text_alignment_vertical'image(placeholder.alignment.vertical)));
+
+		log_indentation_down;
 	end write_placeholder_properties;
 
 
@@ -277,7 +271,7 @@ package body et_libraries is
 	end component_value_valid;
 
 
-	procedure write_component_properties ( component : in type_components.cursor; indentation : in et_string_processing.type_indentation_level := 0) is
+	procedure write_component_properties (component : in type_components.cursor) is
 	-- Writes the properties of the component indicated by the given cursor.
 		use et_string_processing;
 		use et_libraries;
@@ -287,19 +281,15 @@ package body et_libraries is
 		unit_count	: count_type;
 		units		: type_units_internal.map;
 	begin
-		put_line(indent(indentation) & "component properties");
+		log ("component properties");
 		
 		-- component name in library
-		put_line(indent(indentation + 1) 
-			& "name " 
-			& type_component_name.to_string (type_components.key (component)));
+		log ("name " & type_component_name.to_string (type_components.key (component)));
 
 		-- number of internal units
 		unit_count := length (element (component).units_internal);
 		
-		put_line(indent(indentation + 1) 
-			& "number of internal units" 
-			& count_type'image (unit_count));
+		log ("number of internal units" & count_type'image (unit_count));
 
 		-- write unit properties
 		
@@ -332,9 +322,7 @@ package body et_libraries is
 					exit when unit_cursor = type_units_internal.no_element;
 					
 					-- put_line(standard_output, "step 1");
-					put_line(indent(indentation + 2) 
-						& "unit " 
-						& type_unit_name.to_string (key (unit_cursor)));
+					log ("unit " & type_unit_name.to_string (key (unit_cursor)));
 
 					-- CS: output draw objects
 					

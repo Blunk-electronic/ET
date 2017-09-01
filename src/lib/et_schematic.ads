@@ -182,7 +182,7 @@ package et_schematic is
 		end case;
 	end record;
 
-	procedure write_unit_properties ( unit : in type_units.cursor; indentation : in et_string_processing.type_indentation_level := 0 );
+	procedure write_unit_properties (unit : in type_units.cursor);
 	-- Writes the properties of the unit indicated by the given cursor.
 
 
@@ -241,7 +241,7 @@ package et_schematic is
 		label_list_tag    : type_list_of_labels_tag.vector;
 	end record;
 
-	procedure write_coordinates_of_segment (segment : in type_net_segment; indentation : in et_string_processing.type_indentation_level := 0 );
+	procedure write_coordinates_of_segment (segment : in type_net_segment);
 	-- Writes the start and end coordinates of a net segment.	
 	
 	-- A net is a list of segments.
@@ -264,7 +264,7 @@ package et_schematic is
 		coordinates : type_coordinates;
 	end record;
 
-	procedure write_coordinates_of_junction (junction : in type_net_junction; indentation : in et_string_processing.type_indentation_level := 0);
+	procedure write_coordinates_of_junction (junction : in type_net_junction);
 	-- Writes the coordinates of a net junction.
 	
 	-- Junctions are to be collected in a list.
@@ -272,7 +272,9 @@ package et_schematic is
 		index_type => positive, -- every junction has an id
 		element_type => type_net_junction);
 		
-    -- A net has a name, a scope, a list of segments, a list of ports.
+	-- A net has a name, a scope, a list of segments, a list of ports.
+	anonymous_net_name_prefix : constant string (1..2) := "N$";
+	
     -- A net has coordinates
     -- CS: x/y position should be the lowest values available on the first sheet ? 
     -- CS: do not use sheet and x/y at all ?
@@ -432,7 +434,7 @@ package et_schematic is
 		"<" => et_general.compare_component_by_reference,
  		element_type => type_component);
 
-	procedure write_component_properties ( component : in type_components.cursor; indentation : in et_string_processing.type_indentation_level := 0);
+	procedure write_component_properties ( component : in type_components.cursor);
 	-- Writes the properties of the component indicated by the given cursor.
 
 	

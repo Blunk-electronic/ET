@@ -429,7 +429,7 @@ package body et_kicad is
 		unit_inserted	: boolean; -- indicates whether a unit has been inserted
 
 		
-		procedure read_library (indentation : in type_indentation_level := 0) is
+		procedure read_library is
 			line				: type_fields_of_line; -- the line being processed
 
 			-- This flag goes true once a component section is entered. It is cleared
@@ -513,22 +513,36 @@ package body et_kicad is
 				end case;
 			end to_swap_level;
 
-			function to_pin_visibile ( vis_in : in string)
+			function to_pin_visibile (vis_in : in string)
 			-- Converts the kicad "show pin number" flag to the et type_pin_visible.
 			-- Used when reading component libraries.		
 				return type_pin_visible is
-				v : type_show_pin_number;
+				v_in : type_show_pin_number;
+				v_out : type_pin_visible;
+				log_threshold : type_log_level := 1;
+
 			begin
-				put("    pin/pad numbers ");
-				v := type_show_pin_number'value(vis_in);
-				case v is 
+				log_indentation_up;
+				
+				log ("pin/pad names", level => log_threshold);
+				log_indentation_up;
+				
+				v_in := type_show_pin_number'value (vis_in);
+				
+				case v_in is 
 					when Y => 
-						put_line("visible");
-						return et_libraries.on;
+						log ("visible", level => log_threshold);
+						v_out := on;
+						
 					when N => 
-						put_line("invisible");
-						return et_libraries.off;
+						log ("invisible", level => log_threshold);
+						v_out := off;
 				end case;
+
+				log_indentation_down;
+				log_indentation_down;
+				return v_out;
+				
 			end to_pin_visibile;
 
 			function to_port_visibile ( vis_in : in string)
@@ -1657,7 +1671,10 @@ package body et_kicad is
 
 		
 		begin -- read_library
-			put_line (indent(indentation) & "with components:");
+			log_indentation_up;
+			
+			log ("components");
+			log_indentation_up;
 			
 			while not end_of_file loop
 
@@ -1692,10 +1709,10 @@ package body et_kicad is
 								active_section := fields;
 
 								-- The commponent header provides the first component properties:
-								tmp_component_name := et_libraries.type_component_name.to_bounded_string(get_field_from_line(line,2)); -- 74LS00
+								tmp_component_name := et_libraries.type_component_name.to_bounded_string (get_field_from_line(line,2)); -- 74LS00
 								
 								-- for the log:
-								put_line (indent (indentation + 1) & get_field_from_line(line,2)); -- 74LS00
+								log (get_field_from_line(line,2)); -- 74LS00
 
 								-- From the header we extract some basic information about the component:
 								
@@ -1712,15 +1729,15 @@ package body et_kicad is
 								--  #10: power symbol P (otherwise N)
 
 								tmp_prefix := et_general.type_component_prefix.to_bounded_string (get_field_from_line (line,3)); -- U
-								tmp_port_name_offset	:= type_grid'value (get_field_from_line(line,5)); -- relevant for supply pins only
-								tmp_pin_name_visible	:= to_pin_visibile  (get_field_from_line(line,6));
-								tmp_port_name_visible	:= to_port_visibile (get_field_from_line(line,7));
+								tmp_port_name_offset	:= type_grid'value  (get_field_from_line (line,5)); -- relevant for supply pins only
+								tmp_pin_name_visible	:= to_pin_visibile  (get_field_from_line (line,6));
+								tmp_port_name_visible	:= to_port_visibile (get_field_from_line (line,7));
 								
 								-- Get number of units and set swap level as specified in field #9.
 								-- Swap level assumes default if only one unit available.
-								tmp_units_total := type_units_total'value (get_field_from_line(line,8));
+								tmp_units_total := type_units_total'value (get_field_from_line (line,8));
 								if tmp_units_total > 1 then
-									put_line (indent(indentation + 2) & "with" & type_units_total'image (tmp_units_total) & " units");
+									log ("with" & type_units_total'image (tmp_units_total) & " units");
 
 									-- From the "interchangeable" flag we set the component wide swap level. It applies for 
 									-- all units of the component (except extra units):
@@ -1746,7 +1763,7 @@ package body et_kicad is
 								set_text_placeholder_properties (et_import.component_libraries);
 								
 								-- log component properties
-								et_libraries.write_component_properties (component => comp_cursor, indentation => indentation + 1);
+								et_libraries.write_component_properties (component => comp_cursor);
 							else
 							-- As long as the component end mark does not appear, we process subsections as 
 							-- indicated by active_section:
@@ -1854,6 +1871,9 @@ package body et_kicad is
 				end case;
 
 			end loop;
+
+			log_indentation_down;
+			log_indentation_down;			
 		end read_library;
 
 		
@@ -1861,28 +1881,23 @@ package body et_kicad is
 
 		-- If there were no libraries in the project file, there is nothing to do but writing a warning:
 		if is_empty (project_libraries) then
-			put_line(message_warning & "no component libraries defined in project file !");
+			log (message_warning & "no component libraries defined in project file !");
 		else
-			write_message (
-				file_handle => current_output,
-				text => indent(indentation) & "Loading component libraries ...",
-				console => true);
+			log (text => "Loading component libraries ...", console => true);
+			log_indentation_up;
 			
 			-- We loop in the list of bare project libraries (it contains only the library names without any path information):
 			while bare_lib_cursor /= no_element loop
 
 				-- From lib_dir and the cursor (points to a project lib) we compose the full library file name:
-				lib_file_name := to_bounded_string( compose (
+				lib_file_name := to_bounded_string (compose (
 								containing_directory => type_library_directory.to_string (lib_dir),
 								name => type_library_name.to_string (element (bare_lib_cursor)),
 								extension => file_extension_schematic_lib
 								));
 
 				-- log library file name
-				write_message (
-					file_handle => current_output,
-					text => indent (indentation + 1) & to_string (lib_file_name),
-					console => true);
+				log (to_string (lib_file_name), console => true);
 				
 				if exists (to_string (lib_file_name)) then
 					open (
@@ -1906,23 +1921,26 @@ package body et_kicad is
 						-- Now we read the library file and add components
 						-- to the library pinted to by lib_cursor:
 						set_input (et_import.library_handle);
-						read_library (indentation => 2);
+						read_library;
 					else
-						put_line (message_error & to_string(lib_file_name) & " already in component libraries !");
+						log_indentation_reset;
+						log (message_error & to_string(lib_file_name) & " already in component libraries !",
+							 console => true);
 						raise constraint_error;
 					end if;
 					
-					close(et_import.library_handle);
+					close (et_import.library_handle);
 				else
-					put_line(message_warning & "library '" 
-						& to_string(lib_file_name) 
-						& "' not found !");
+					log (message_warning & "library '" & to_string(lib_file_name) & "' not found !");
 				end if;
 
 				-- prepare next library file to be be read
 				next (bare_lib_cursor);
 
 			end loop;
+			
+			log_indentation_down;
+			
 		end if;
 	end read_components_libraries;
 	
@@ -2172,7 +2190,8 @@ package body et_kicad is
 				elsif text_in = schematic_keyword_label_dir_passive then
 					d_out := passive;
 				else
-					put_line(message_error & "Label direction unknown !");
+					log_indentation_reset;
+					log (message_error & "Label direction unknown !", console => true);
 					raise constraint_error;
 				end if;
 				
@@ -2201,7 +2220,7 @@ package body et_kicad is
 			junction_scratch : type_net_junction; -- temporarily used when reading net junctions into a wild collection of junctions
 			wild_collection_of_junctions : type_list_of_net_junctions.vector;
 
-			function junction_sits_on_segment(junction : in type_net_junction; segment : in type_wild_net_segment) return boolean is
+			function junction_sits_on_segment (junction : in type_net_junction; segment : in type_wild_net_segment) return boolean is
 			-- Returns true if the given junction sits on the given net segment.
 				point 		: et_schematic.type_coordinates := junction.coordinates;
 				line_start 	: et_schematic.type_coordinates := segment.coordinates_start;
@@ -2246,7 +2265,7 @@ package body et_kicad is
 			procedure set_sorted ( anon_net : in out type_anonymous_net_extended ) is begin anon_net.sorted := true; end set_sorted;
 			anonymous_net : type_anonymous_net_extended;
 			
-			procedure add_segment_to_anonymous_net ( id : in positive ) is
+			procedure add_segment_to_anonymous_net (id : in positive ) is
 			-- Adds a net segment (indicated by id) to a list of segments connected with each other.
 			-- This procedure happens to be called for a certain segment more than once (unavoidable). So the flag "picked" serves
 			-- as indicator for a segment already added to the anonymous net.
@@ -2272,11 +2291,10 @@ package body et_kicad is
 							index => id,
 							process => set_picked'access);
 
-					write_coordinates_of_segment(segment => type_net_segment(type_wild_list_of_net_segments.element(wild_segment_collection,id)),
-												 indentation => 3);
+					write_coordinates_of_segment (segment => type_net_segment (type_wild_list_of_net_segments.element (wild_segment_collection,id)));
 					
-					scratch := type_net_segment(type_wild_list_of_net_segments.element(wild_segment_collection,id));
-					type_anonymous_net.append(anonymous_net.segments,scratch);
+					scratch := type_net_segment (type_wild_list_of_net_segments.element (wild_segment_collection,id));
+					type_anonymous_net.append (anonymous_net.segments,scratch);
 				end if;
 			end add_segment_to_anonymous_net;
 
@@ -2490,13 +2508,12 @@ package body et_kicad is
 				end label_sits_on_segment;
 				
 			begin -- associate_net_labels_with_anonymous_nets
+				log_indentation_up;
+				
 				-- This does only make sense if there are nets at all:
 				if type_list_of_anonymous_nets.length(list_of_anonymous_nets) > 0 then
 					--put_line(et_import.report_handle,"associating net labels with nets ...");
-					write_message(
-						file_handle => et_import.report_handle,
-						text => "associating net labels with nets ...",
-						identation => 2);
+					log (text => "associating net labels with nets ...");
 					
 					-- Loop in list of anonymous nets, get a (non-processed-yet) net, loop in list of segments and find a (non-processed-yet)
 					-- net label that sits on the net segment. If label sits on segment:
@@ -2537,7 +2554,7 @@ package body et_kicad is
 												else
 													-- If label text is different from previously assigned net name:
 													if type_net_name.to_string(a.name) /= type_net_name.to_string(ls.text) then 
-														put_line(et_import.report_handle,message_warning & "Net '" & type_net_name.to_string(a.name) &
+														log (message_warning & "Net '" & type_net_name.to_string(a.name) &
 														"' has contradicting label '" & type_net_name.to_string(ls.text) & "'");
 													end if;
 												end if;
@@ -2566,7 +2583,7 @@ package body et_kicad is
 										index => positive(b), -- the segment id
 										new_item => s); -- the updated segment
 									-- Clean up: Purge temporarily list of simple labels for next spin.
-									type_list_of_labels_simple.delete(container => lls, index => 1, count => type_list_of_labels_simple.length(lls));
+									type_list_of_labels_simple.delete (container => lls, index => 1, count => type_list_of_labels_simple.length(lls));
 
 									-- Update/replace anonymous net in list_of_anonymous_nets.
 									type_list_of_anonymous_nets.replace_element(
@@ -2608,7 +2625,7 @@ package body et_kicad is
 												else
 													-- If label text is different from previously assigned net name:
 													if type_net_name.to_string(a.name) /= type_net_name.to_string(lt.text) then 
-														put_line(et_import.report_handle,message_warning & "Net '" & type_net_name.to_string(a.name) &
+														log (message_warning & "Net '" & type_net_name.to_string(a.name) &
 														"' has contradicting label '" & type_net_name.to_string(lt.text) & "'");
 													end if;
 
@@ -2639,7 +2656,7 @@ package body et_kicad is
 										index => positive(b), -- the segment id
 										new_item => s); -- the updated segment
 									-- Clean up: Purge temporarily list of tag labels for next spin.
-									type_list_of_labels_tag.delete(container => llt, index => 1, count => type_list_of_labels_tag.length(llt));
+									type_list_of_labels_tag.delete (container => llt, index => 1, count => type_list_of_labels_tag.length(llt));
 
 									-- Update/replace anonymous net in list_of_anonymous_nets.
 									type_list_of_anonymous_nets.replace_element(
@@ -2656,21 +2673,16 @@ package body et_kicad is
 					-- As placeholder for the name we use the notation "N$" where n is an index (derived from the element id in list_of_anonymous_nets)
 					-- Their scope is strictly "local".
 					-- We us an intermediate variable net_scratch for transfer to the module netlist.
-					write_message(
-						file_handle => et_import.report_handle,
-						text => "sorting name-less nets ...",
-						identation => 2);
+					log (text => "sorting name-less nets ...");
+					log_indentation_up;
 					
 					for n in 1..type_list_of_anonymous_nets.length(list_of_anonymous_nets) loop
 						a := type_list_of_anonymous_nets.element(list_of_anonymous_nets, positive(n)); -- get anonymous net
 						if not a.processed then
 
 							-- build temporarily net
-							net_scratch.name := type_net_name.to_bounded_string("N$" & trim(count_type'image(n),left));
-							write_message(
-								file_handle => et_import.report_handle,
-								text => type_net_name.to_string(net_scratch.name),
-								identation => 3);
+							net_scratch.name := type_net_name.to_bounded_string (anonymous_net_name_prefix & trim(count_type'image(n),left));
+							log (type_net_name.to_string(net_scratch.name));
 							
 							net_scratch.scope := local;
 
@@ -2678,7 +2690,7 @@ package body et_kicad is
 							for b in 1..type_anonymous_net.length(a.segments) loop -- loop for each segment of anonymous_net a
 								s := type_anonymous_net.element(a.segments, positive(b)); -- get segment
 								type_list_of_net_segments.append(container => net_scratch.segments, new_item => s);
-								write_coordinates_of_segment(segment => s, indentation => 4);
+								write_coordinates_of_segment (segment => s);
 							end loop;
 
                             -- assign coordinates
@@ -2696,35 +2708,31 @@ package body et_kicad is
 								count => type_list_of_net_segments.length(net_scratch.segments));
 						end if;
 					end loop;
-
+					
+					log_indentation_down;
+					
 					-- Sort anonymous nets with label.
-					write_message(
-						file_handle => et_import.report_handle,
-						text => "sorting named nets ...",
-						identation => 2);
+					log (text => "sorting named nets ...");
+					log_indentation_up;
 					
 					for n in 1..type_list_of_anonymous_nets.length(list_of_anonymous_nets) loop
 						a := type_list_of_anonymous_nets.element(list_of_anonymous_nets, positive(n)); -- get anonymous net
 						if a.processed and not a.sorted then -- if it has not been sorted yet
 							--put(et_import.report_handle," " & type_net_name.to_string(a.name));
-							write_message(
-								file_handle => et_import.report_handle,
-								text => type_net_name.to_string(a.name),
-								identation => 3,
-								lf => false);
+							log (type_net_name.to_string(a.name));
 							
 							net_scratch.name := a.name;
 							net_scratch.scope := a.scope;
+
+							log_indentation_up;
 							--put_line(et_import.report_handle," is " & type_scope_of_net'image(net_scratch.scope) & " with segments:");
-							write_message(
-								file_handle => et_import.report_handle,
-								text => " is " & type_scope_of_net'image(net_scratch.scope) & " with segments:");
+							log ("scope " & type_scope_of_net'image(net_scratch.scope) & " with segments:");
 
 							-- append segments to net_scratch
 							for b in 1..type_anonymous_net.length(a.segments) loop -- loop for each segment of anonymous_net a
 								s := type_anonymous_net.element(a.segments, positive(b)); -- get segment
 								type_list_of_net_segments.append(container => net_scratch.segments, new_item => s);
-								write_coordinates_of_segment(segment => s, indentation => 4);
+								write_coordinates_of_segment (segment => s);
 							end loop;
 
 							-- Look for other anonymous nets with the same name (a.name). Start searching from position n+1:
@@ -2744,7 +2752,7 @@ package body et_kicad is
 											for c in 1..type_anonymous_net.length(b.segments) loop -- loop for each segment of anonymous_net b
 												s := type_anonymous_net.element(b.segments, positive(c)); -- get segment
 												type_list_of_net_segments.append(container => net_scratch.segments, new_item => s);
-												write_coordinates_of_segment(segment => s, indentation => 4);
+												write_coordinates_of_segment (segment => s);
 											end loop;
 
 											-- mark anonymous net as "sorted" so that the outer loop can skip it in further spins
@@ -2756,6 +2764,8 @@ package body et_kicad is
 									end if;
 								end loop;
 							end if;
+
+							log_indentation_down;
 
                             -- assign coordinates
                             net_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
@@ -2773,14 +2783,14 @@ package body et_kicad is
 
  						end if;
 					end loop;
+
+					log_indentation_down;
 					
 				else
-					--put_line(et_import.report_handle,message_warning & "The schematic contains no nets to associate labels with !");
-					write_message(
-						file_handle => et_import.report_handle,
-						text => message_warning & "The schematic does not contain nets to associate net labels with !",
-						identation => 2);
+					log (message_warning & "The schematic does not contain nets to associate net labels with !");
 				end if;
+
+				log_indentation_down;
 			end associate_net_labels_with_anonymous_nets;
 			
 			procedure process_junctions is
@@ -2799,15 +2809,14 @@ package body et_kicad is
 				end change_segment_start_coordinates;
 				
 				segment_smashed : boolean := true; -- indicates whether a segment has been broken down
-            begin -- process junctions
+			begin -- process junctions
+				
+				log_indentation_up;
+				
 				-- Break down net segments that have a junction. Do that if the sheet has junctions at all. Otherwise skip this procedure.
 				-- After breaking down net segments, the numbner of segments increases, so segment_count must be updated finally.
 				if junction_count > 0 then
-					write_message(
-						file_handle => et_import.report_handle,
-						text => "processing" & natural'image(junction_count) & " net junctions ...",
-						identation => 2
-						);
+					log (text => "processing" & natural'image(junction_count) & " net junctions ...");
 
 					-- We reason there are segments to be broken down. After smashing a segment, segment_count increases. If it
 					-- does not increase anymore, all segments are processed.
@@ -2824,7 +2833,7 @@ package body et_kicad is
 								if junction_sits_on_segment(junction => junction_scratch, segment => segment_scratch) then -- match
 
 									--write_coordinates_of_segment (type_net_segment(segment_scratch));
-									write_coordinates_of_junction (junction_scratch, 3); -- last actual is indentation
+									write_coordinates_of_junction (junction_scratch);
 
 									-- move start coord. of the current segment to the position of the junction
 									type_wild_list_of_net_segments.update_element(
@@ -2855,12 +2864,11 @@ package body et_kicad is
 							segment_smashed := false;							
 						end if;
 					end loop;
-					
-					write_message(
-						file_handle => et_import.report_handle,
-						text => "update: net segments total: " & natural'image(segment_count),
-						identation => 2);
+
+					log (text => "update: net segments total" & natural'image(segment_count));
 				end if;
+
+				log_indentation_down;
 			end process_junctions;
 
 
@@ -2956,8 +2964,8 @@ package body et_kicad is
 			-- This can be regarded as a kind of pre-check.
 				procedure missing_field ( m : in et_libraries.type_text_meaning) is 
 				begin
-					write_message (
-						file_handle => current_output,
+					log_indentation_reset;
+					log (
 						text => message_error 
 							& "component " & et_general.to_string (tmp_component_reference) 
 							& latin_1.space
@@ -2971,17 +2979,24 @@ package body et_kicad is
 
 				commissioned, updated : et_string_processing.type_date;
 
-				indentation : et_string_processing.type_indentation_level := 2;
-
+				-- we set the log threshold level so that details are hidden when no log level specified
+				log_threshold : type_log_level := 1;
+				
 			begin
+				log_indentation_up;
+
 				-- write precheck preamble
-				put_line (indent(indentation) 
-					& "component " 
+				log ("component " 
 					& et_general.to_string(tmp_component_reference)
 					& " precheck");
+
+				log_indentation_up;
+
+-- 				-- if the log threshold is one notch more, we log the following stuff:
+-- 				log_threshold := log_threshold + 1;
 				
 				-- reference
-				put_line (indent(indentation + 1) & "reference");
+				log ("reference", level => log_threshold);
 				if not tmp_component_text_reference_found then
 					missing_field (et_libraries.reference);
 				else
@@ -2994,9 +3009,10 @@ package body et_kicad is
 					-- P 4100 4000
 					-- F 0 "IC1" H 4100 4050 50  0000 C BIB <- tmp_component_text_reference
 					
-					if et_general.to_string(tmp_component_reference) /= et_libraries.content(tmp_component_text_reference) then
-						put_line (message_error & " reference mismatch !");
-						put_line (et_general.to_string(tmp_component_reference) & " vs " & et_libraries.content(tmp_component_text_reference));
+					if et_general.to_string (tmp_component_reference) /= et_libraries.content (tmp_component_text_reference) then
+						log_indentation_reset;
+						log (message_error & " reference mismatch !");
+						log (et_general.to_string(tmp_component_reference) & " vs " & et_libraries.content(tmp_component_text_reference));
 						raise constraint_error;
 					end if;
 
@@ -3004,7 +3020,7 @@ package body et_kicad is
 				end if;
 
 				-- value
-				put_line (indent(indentation + 1) & "value");
+				log ("value", level => log_threshold);
 				if not tmp_component_text_value_found then
 					missing_field (et_libraries.value);
 				else
@@ -3018,7 +3034,7 @@ package body et_kicad is
 				end if;
 
 				-- commissioned
-				put_line (indent(indentation + 1) & "commissioned");
+				log ("commissioned", level => log_threshold);
 				if not tmp_component_text_commissioned_found then
 					missing_field (et_libraries.commissioned);
 				else
@@ -3031,7 +3047,7 @@ package body et_kicad is
 				end if;
 
 				-- updated
-				put_line (indent(indentation + 1) & "updated");				
+				log ("updated", level => log_threshold);
 				if not tmp_component_text_updated_found then
 					missing_field (et_libraries.updated);
 				else
@@ -3048,7 +3064,7 @@ package body et_kicad is
 				end if;
 
 				-- author
-				put_line (indent(indentation + 1) & "author");				
+				log ("author", level => log_threshold);
 				if not tmp_component_text_author_found then
 					missing_field (et_libraries.author);
 				else
@@ -3063,7 +3079,7 @@ package body et_kicad is
 					when sch_pcb =>
 							
 						-- package
-						put_line (indent(indentation + 1) & "package/footprint");
+						log ("package/footprint", level => log_threshold);
 						if not tmp_component_text_packge_found then
 							missing_field (et_libraries.packge);
 						else
@@ -3072,7 +3088,7 @@ package body et_kicad is
 						end if;
 
 						-- datasheet
-						put_line (indent(indentation + 1) & "datasheet");
+						log ("datasheet", level => log_threshold);
 						if not tmp_component_text_datasheet_found then
 							missing_field (et_libraries.datasheet);
 						else
@@ -3081,7 +3097,7 @@ package body et_kicad is
 						end if;
 
 						-- partcode
-						put_line (indent(indentation + 1) & "partcode");
+						log ("partcode", level => log_threshold);
 						if not tmp_component_text_partcode_found then
 							missing_field (et_libraries.partcode);
 						else
@@ -3090,7 +3106,7 @@ package body et_kicad is
 						end if;
 						
 						-- purpose
-						put_line (indent(indentation + 1) & "purpose");
+						log ("purpose", level => log_threshold);
 						if not tmp_component_text_purpose_found then
 							missing_field (et_libraries.purpose);
 						else
@@ -3106,6 +3122,9 @@ package body et_kicad is
 					when others => null; -- CS ?
 				end case;
 
+				log_indentation_down;
+				log_indentation_down;
+				
 				exception
 					when constraint_error =>
 						write_message(
@@ -3115,7 +3134,6 @@ package body et_kicad is
 							console => true);
 						-- CS: evaluate prog position and provided more detailled output
 						raise constraint_error;
-				
 
 			end check_text_fields;
 			
@@ -3225,7 +3243,7 @@ package body et_kicad is
 							position => component_cursor,
 							inserted => component_inserted); -- this flag is just formal. no further evaluation
 
-							et_schematic.write_component_properties ( component => component_cursor, indentation => 2);
+							et_schematic.write_component_properties (component => component_cursor);
 
 							
 					when sch_pcb => -- we have a line like "L 74LS00 U1"
@@ -3280,12 +3298,12 @@ package body et_kicad is
 							position => component_cursor,
 							inserted => component_inserted); -- this flag is just formal. no further evaluation
 
-							et_schematic.write_component_properties ( component => component_cursor, indentation => 2);
+							et_schematic.write_component_properties (component => component_cursor);
 
 							-- Test if footprint has been associated with the component.
 							if et_libraries.content (tmp_component_text_packge)'size = 0 then
-								write_message(
-									file_handle => current_output,
+								log_indentation_reset;
+								log (
 									text => message_error & et_general.to_string(tmp_component_reference) & ": footprint not specified !",
 									console => true);
 								raise constraint_error;
@@ -3319,8 +3337,8 @@ package body et_kicad is
 
 				exception
 					when constraint_error =>
-						write_message(
-							file_handle => current_output,
+						log_indentation_reset;
+						log (
 							text => message_error & "component " & et_general.to_string (tmp_component_reference)
 								& " " & et_schematic.to_string (tmp_component_position),
 							console => true);
@@ -3417,14 +3435,13 @@ package body et_kicad is
 					
 				-- If unit alread in list, raise alarm and abort.
 				if not unit_inserted then
-					write_message(
-						file_handle => current_output,
-						text => message_error & "multiple occurence of the same unit !",
+					log_indentation_reset;
+					log (text => message_error & "multiple occurence of the same unit !",
 						console => true);
 					raise constraint_error;
 				end if;
-					
-				write_unit_properties ( unit => unit_cursor, indentation => 3 );
+
+				write_unit_properties (unit => unit_cursor);
 					
 			end insert_unit;
 			
@@ -3915,7 +3932,7 @@ package body et_kicad is
 										-- CS: Currently we store the line as it is in note_scratch.text
 										note_scratch.content := et_libraries.type_text_content.to_bounded_string(to_string(line));
 
-										write_note_properties(note_scratch);
+										write_note_properties (note_scratch);
 										
 										-- the notes are to be collected in the list of notes
 										et_schematic.type_texts.append (module.notes,note_scratch);
@@ -4090,9 +4107,9 @@ package body et_kicad is
 				end loop;
 
                 -- If file has been read and no header found:
-                if not schematic_headline_processed then
-                    write_message(
-						file_handle => current_output,
+				if not schematic_headline_processed then
+					log_indentation_reset;
+                    log (
 						text => message_error & "Schematic file header invalid or not found ! File not accepted !",
 						console => true);
                     raise constraint_error;
@@ -4100,12 +4117,14 @@ package body et_kicad is
 
                 -- Add sheet_header to global list_of_sheet_headers.
                 -- NOTE: The file name serves as key in order to match from file to header.
-                type_list_of_sheet_headers.insert(
+                type_list_of_sheet_headers.insert (
                     container => list_of_sheet_headers, 
-                    key => type_sheet_file.to_bounded_string(to_string(name_of_schematic_file)),
+                    key => type_sheet_file.to_bounded_string (to_string(name_of_schematic_file)),
                     new_item => sheet_header);
                 
-				close ( et_import.schematic_handle );
+				close (et_import.schematic_handle);
+
+				log_indentation_up;
 				
 				-- Build anonymous nets:
 				-- We are processing the net segments of a sheet here. The net segments have been collected in a wild list of net segments earlier.
@@ -4115,7 +4134,7 @@ package body et_kicad is
 				-- a list of anonymous nets.
 				-- CS: handle circlular nets, currently they cause a forever-loop here
 				segment_count := natural(type_wild_list_of_net_segments.length(wild_segment_collection)); -- get number of segments on the current sheet
-				put_line("  processing" & natural'image(segment_count) & " net segments ...");
+				log ("processing" & natural'image(segment_count) & " net segments ...");
 
 				-- It may happen that a sheet has no nets, for example the top level sheet of a design with global nets only. If there are no net segments
 				-- at all, skip processing net segments.
@@ -4125,6 +4144,8 @@ package body et_kicad is
 					-- The outcome of process_junctions might be a greater number of net segments than currently being held in segment_count.
 					process_junctions;
 					-- segment_count now has been updated
+
+					log_indentation_up;
 					
 					-- We inspect one segment after an other. Variable seg points to the segment being processed. 
 					-- A segment, whose e AND s flag has been set, is to be skipped (because this segment has been processed already).
@@ -4137,7 +4158,7 @@ package body et_kicad is
 
 						    -- We initiate a new anonymous net and start looking for a matching segment on the end_point:
 							--put_line(et_import.report_handle," anonymous net" & positive'image(seg) & ":"); 
-							put_line("  anonymous net with segments:");
+							log ("anonymous net with segments");
 											
 							add_segment_to_anonymous_net(seg); 
 							side_scratch := end_point;
@@ -4201,9 +4222,13 @@ package body et_kicad is
 							end loop;
 						end if;
 					end loop;
+
+					log_indentation_down;
+
 				end if;
 
-
+				log_indentation_down;
+				
 				-- All anonymous nets must be given a name. The name is enforced by the a net label. The first label found on the net sets the net name.
 				-- Other labels on the net are checke for their name only. If the name differs from the net name set earlier, a warning is output.
 				-- Nets without label remain anonymous by using the notation "N$"
@@ -4212,10 +4237,8 @@ package body et_kicad is
 				-- CS: add_pins_to_nets
 				
 			else
-				--put_line(message_error & "Schematic file '" & to_string(name_of_schematic_file) & "' not found !");
-				write_message(
-					file_handle => current_output,
-					text => message_error & "schematic file '" & to_string(name_of_schematic_file) & "' not found !",
+				log_indentation_reset;
+				log (message_error & "schematic file '" & to_string(name_of_schematic_file) & "' not found !",
 					console => true);
 				raise constraint_error;
 			end if;
@@ -4225,17 +4248,19 @@ package body et_kicad is
 			exception
 				when event:
 					constraint_error =>
-						write_message(
-							file_handle => current_output,
-							text => message_error & "in schematic file '" & to_string(name_of_schematic_file) & "' " & et_string_processing.affected_line(line),
+						log_indentation_reset;
+						log (message_error & "in schematic file '" 
+							& to_string(name_of_schematic_file) & "' " 
+							& et_string_processing.affected_line(line),
 							console => true);
-						close_report;
+							close_report;
 						raise;
 
 				when others =>
-					write_message(
-						file_handle => current_output,
-						text => message_error & "in schematic file '" & to_string(name_of_schematic_file) & "' " & et_string_processing.affected_line(line),
+					log_indentation_reset;
+					log (message_error & "in schematic file '" 
+						 & to_string(name_of_schematic_file) & "' " 
+						 & et_string_processing.affected_line(line),
 						console => true);
 					close_report;
 					raise;					
@@ -4272,24 +4297,27 @@ package body et_kicad is
 				-- The function read_schematic requires the name of the current submodule,
 				-- It returns a list of submodules.
 				list_of_submodules := read_schematic(name_of_schematic_file => name_of_schematic_file);
-				
-				put("  DESIGN STRUCTURE ");
 
+				log("DESIGN STRUCTURE ");
+				log_indentation_up;
+				
 				-- If read_file_schematic_kicad returns an empty list of submodules, we are dealing with a flat design. Otherwise
 				-- the design is hierarchic (because the submodule list is longer than zero).
 				if type_list_of_submodule_names.length(list_of_submodules.list) = 0 then -- flat design
-					put_line("FLAT");
+					log ("FLAT");
 				else -- hierarchic design
 					-- In the follwing we dive into the submodules. Each time before a deeper level is entered,
 					-- the list of submodules of the current level is saved on a LIFO stack.
 					-- The top level schematic is at level 0. The level decreases (negative) each time a deeper
 					-- level is entered.
-					put_line("HIERARCHIC");
+					log ("HIERARCHIC");
 					
 					stack_of_sheet_lists.init; -- stack init
 
+					log_indentation_up;
+					
 					-- output the number of submodules (sheets) found at level 0:
-					put_line("  number of hierarchic sheets" & natural'image(
+					log ("number of hierarchic sheets" & natural'image(
 						natural(type_list_of_submodule_names.length(list_of_submodules.list))));
 
 					-- Initially set submodule pointer at first submodule of list:
@@ -4301,9 +4329,9 @@ package body et_kicad is
 							type_list_of_submodule_names.element(container => list_of_submodules.list,index => list_of_submodules.id)));
 						
 						-- backup list_of_submodules OF THIS LEVEL on stack (including the current submodule id)
-						push(list_of_submodules);
-						put_line("DESCENDING TO HIERARCHY LEVEL -" & trim(natural'image(depth),left));
-						put_line(row_separator_single);
+						push (list_of_submodules);
+						log ("DESCENDING TO HIERARCHY LEVEL -" & trim(natural'image(depth),left));
+						log (row_separator_single);
 						
 						-- Read schematic file as indicated by list_of_submodules.id. 
 						-- Read_schematic receives the name of the schematic file to be read.
@@ -4316,33 +4344,41 @@ package body et_kicad is
 							list_of_submodules := pop;
                             list_of_submodules.id := list_of_submodules.id + 1;
                             --delete_last_module_name_from_path;
-							put_line("NO SUBMODULES HERE. ASCENDING TO HIERARCHY LEVEL -" & trim(natural'image(depth),left));
-							put_line(row_separator_single);
+							log ("NO SUBMODULES HERE. ASCENDING TO HIERARCHY LEVEL -" & trim(natural'image(depth),left));
+							log (row_separator_single);
 
 						else
 							-- set cursor at first submodule of list and append name of parent module to path_to_submodule
                             list_of_submodules.id := 1;
-                            append_name_of_parent_module_to_path(list_of_submodules.parent_module);
+                            append_name_of_parent_module_to_path (list_of_submodules.parent_module);
 						end if;
 
 						-- Once the last submodule of the list has been processed, restore list of the overlying level and advance to next module.
 						-- Exit after last submodule in level 0 has been processed.
 						if list_of_submodules.id > positive(type_list_of_submodule_names.length(list_of_submodules.list)) then
 							if depth = 0 then 
-								put_line("LAST SUBMODULE PROCESSED.");
+								log ("LAST SUBMODULE PROCESSED.");
 								exit; 
 							end if;
 							list_of_submodules := pop; -- restore overlying list
                             list_of_submodules.id := list_of_submodules.id + 1;
                             delete_last_module_name_from_path; -- update path_to_submodule
-							put_line("LAST SUBMODULE PROCESSED. ASCENDING TO HIERARCHY LEVEL: -" & trim(natural'image(depth),left));
-							put_line(row_separator_single);
+							log ("LAST SUBMODULE PROCESSED. ASCENDING TO HIERARCHY LEVEL: -" & trim(natural'image(depth),left));
+							log (row_separator_single);
 						end if;
 						
 					end loop;
+
+					log_indentation_down;
+					
 				end if;
+
+				log_indentation_down;
+				
 			when others =>
 				null;
+
+				
 		end case;
 
 		close_report;

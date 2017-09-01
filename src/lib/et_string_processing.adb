@@ -45,11 +45,21 @@ package body et_string_processing is
 	procedure log_indentation_up is
 	begin
 		log_indentation := log_indentation + 1;
+		exception
+			when constraint_error =>
+				put_line ("WARNING : maximum log indentation reached !");
+				log_indentation := type_indentation_level'last;
+			when others => null;
 	end log_indentation_up;
 
 	procedure log_indentation_down is
 	begin
 		log_indentation := log_indentation - 1;
+		exception
+			when constraint_error =>
+				put_line ("WARNING : minimum log indentation reached !");
+				log_indentation := type_indentation_level'first;
+			when others => null;
 	end log_indentation_down;
 
 	procedure log_indentation_reset is

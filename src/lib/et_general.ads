@@ -69,7 +69,7 @@ package et_general is
 	
 
 	
--- FREQUENTLY USED WORDS AND PHRASES -- CS: move to et_string_processing
+-- FREQUENTLY USED WORDS AND PHRASES -- CS: move to et_string_processing -- CS: move to et_string_processing
 	message_error					: constant string (1..8)	:= "ERROR ! ";
 	message_warning					: constant string (1..10)	:= "WARNING ! ";	
 	row_separator_single			: constant string (1..100)	:= 100 * "-";	

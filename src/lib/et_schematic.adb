@@ -135,113 +135,106 @@ package body et_schematic is
 		log_indentation_down;
 	end write_note_properties;
 	
-	procedure write_component_properties ( component : in type_components.cursor; indentation : in et_string_processing.type_indentation_level := 0) is
+	procedure write_component_properties ( component : in type_components.cursor) is
 	-- Writes the properties of the component indicated by the given cursor.
 		use et_string_processing;
 	begin
+		log_indentation_up;
+		
 		-- reference (serves as key in list of components)
-		put_line(indent(indentation) 
-			& "component " 
-			& et_general.to_string (type_components.key(component)));
+		log ("component " & et_general.to_string (type_components.key(component)) & " properties");
 
+		log_indentation_up;
+		
 		-- CS: library file name
 		-- name in library
-		put_line(indent(indentation + 1)
-			& "name in library "
+		log ("name in library "
 			& et_libraries.to_string (type_components.element(component).name_in_library));
 		
 		-- value
-		put_line(indent(indentation + 1)
-			& "value "
+		log ("value "
 			& et_libraries.type_component_value.to_string (type_components.element(component).value));
 
 		-- commissioned
-		put_line(indent(indentation + 1)
-			& "commissioned "
-			& string(type_components.element(component).commissioned));
+		log ("commissioned "
+			& string (type_components.element(component).commissioned));
 
 		-- updated
-		put_line(indent(indentation + 1)
-			& "updated      "
-			& string(type_components.element(component).updated));
+		log ("updated      "
+			& string (type_components.element(component).updated));
 
 		-- author
-		put_line(indent(indentation + 1)
-			& "author "
+		log ("author "
 			& et_libraries.type_person_name.to_string (type_components.element(component).author));
-
 		
 		-- appearance
-		put_line(indent(indentation + 1)
-			& et_general.to_string (type_components.element(component).appearance));
+		log (et_general.to_string (type_components.element(component).appearance));
 
 		-- depending on the component appearance there is more to report:
 		case type_components.element(component).appearance is
 			when sch_pcb =>
 
 				-- package variant
-				put_line(indent(indentation + 1)
-					& et_libraries.to_string (type_components.element(component).variant.variant));
+				log (et_libraries.to_string (type_components.element(component).variant.variant));
 				-- NOTE: This displays the type_component_variant (see et_libraries.ads).
 				-- Do not confuse with type_variant (see et_schematic.ads) which also contains the variant name
 				-- like in TL084D or TL084N.
 
 				-- datasheet
-				put_line(indent(indentation + 1)
-					& "datasheet "
+				log ("datasheet "
 					& et_libraries.type_component_datasheet.to_string (type_components.element(component).datasheet));
 
 				-- partcode
-				put_line(indent(indentation + 1)
-					& "partcode "
+				log ("partcode "
 					& et_libraries.type_component_partcode.to_string (type_components.element(component).partcode));
 				
 				-- function
-				put_line(indent(indentation + 1)
-					& "purpose "
+				log ("purpose "
 					& et_libraries.type_component_purpose.to_string (type_components.element(component).purpose));
 				
 			when pcb => null; -- CS
 			when others => null; -- CS should never happen as virtual components do not have a package
 		end case;
+
+		log_indentation_down;
+		log_indentation_down;
+		
 	end write_component_properties;
 
-	procedure write_unit_properties ( unit : in type_units.cursor; indentation : in et_string_processing.type_indentation_level := 0 ) is
+	procedure write_unit_properties (unit : in type_units.cursor) is
 	-- Writes the properties of the unit indicated by the given cursor.
 		use et_string_processing;
 	begin
+		log_indentation_up;
+		
 		-- unit name
-		put_line(indent(indentation) 
-			& "with unit " 
-			& et_libraries.type_unit_name.to_string (type_units.key(unit)));
+		log ("unit " 
+			& et_libraries.type_unit_name.to_string (type_units.key(unit)) & " properties");
 
+		log_indentation_up;
+		
 		-- alternative representation
-		put_line(indent(indentation + 1) 
-			& "alternative (deMorgan) representation " 
+		log ("alternative (deMorgan) representation " 
 			& to_lower (et_schematic.type_alternative_representation'image (type_units.element(unit).alt_repres)));
 
 		-- timestamp
-		put_line(indent(indentation + 1) 
-			& "timestamp " 
+		log ("timestamp " 
 			& string (type_units.element (unit).timestamp));
 
 		-- position
-		put_line(indent(indentation + 1) 
-			& et_schematic.to_string (type_units.element(unit).position));
+		log (et_schematic.to_string (type_units.element(unit).position));
 
 		-- placeholders
-		put_line(indent(indentation + 1) 
-			& "placeholders");
+		log ("placeholders");
+		log_indentation_up;
 
 			-- reference
 			et_libraries.write_placeholder_properties (
-				placeholder => type_units.element(unit).reference,
-				indentation => indentation + 2);
+				placeholder => type_units.element(unit).reference);
 
 			-- value
 			et_libraries.write_placeholder_properties (
-				placeholder => type_units.element(unit).value,
-				indentation => indentation + 2);
+				placeholder => type_units.element(unit).value);
 
 			-- some placeholders exist depending on the component appearance
 			case type_units.element(unit).appearance is
@@ -249,61 +242,63 @@ package body et_schematic is
 					
 					-- package/footprint
 					et_libraries.write_placeholder_properties (
-						placeholder => type_units.element(unit).packge,
-						indentation => indentation + 2);
+						placeholder => type_units.element(unit).packge);
 
 					-- datasheet
 					et_libraries.write_placeholder_properties (
-						placeholder => type_units.element(unit).datasheet,
-						indentation => indentation + 2);
+						placeholder => type_units.element(unit).datasheet);
 
 					-- purpose
 					et_libraries.write_placeholder_properties (
-						placeholder => type_units.element(unit).purpose,
-						indentation => indentation + 2);
+						placeholder => type_units.element(unit).purpose);
 					
 					-- partcode
 					et_libraries.write_placeholder_properties (
-						placeholder => type_units.element(unit).partcode,
-						indentation => indentation + 2);
+						placeholder => type_units.element(unit).partcode);
 
 				when others => null;
 			end case;
 
 			-- commissioned
 			et_libraries.write_placeholder_properties (
-				placeholder => type_units.element(unit).commissioned,
-				indentation => indentation + 2);
+				placeholder => type_units.element(unit).commissioned);
 
 			-- updated
 			et_libraries.write_placeholder_properties (
-				placeholder => type_units.element(unit).updated,
-				indentation => indentation + 2);
+				placeholder => type_units.element(unit).updated);
 
 			-- author
 			et_libraries.write_placeholder_properties (
-				placeholder => type_units.element(unit).author,
-				indentation => indentation + 2);
-			
+				placeholder => type_units.element(unit).author);
+
+		log_indentation_down;
+		log_indentation_down;
+		log_indentation_down;		
 	end write_unit_properties;
 
-	procedure write_coordinates_of_segment (segment : in type_net_segment; indentation : in et_string_processing.type_indentation_level := 0 ) is
+	procedure write_coordinates_of_segment (segment : in type_net_segment) is
 	-- Writes the start and end coordinates of a net segment.
 		use et_string_processing;
 	begin
-		put_line(indent(indentation) 
-			& "start "
-			& to_string (segment.coordinates_start) 
+		log_indentation_up;
+		
+		log ("start "
+			& to_string (segment.coordinates_start) -- CS: do not output sheet number
 			& " end " 
 			& to_string (segment.coordinates_end));
+		
+		log_indentation_down;
 	end write_coordinates_of_segment;
 
-	procedure write_coordinates_of_junction (junction : in type_net_junction; indentation : in et_string_processing.type_indentation_level := 0) is
+	procedure write_coordinates_of_junction (junction : in type_net_junction) is
 	-- Writes the coordinates of a net junction.
 		use et_string_processing;
 	begin
-		put_line (indent(indentation) 
-			& et_schematic.to_string (junction.coordinates)); 
+		log_indentation_up;
+		
+		log (et_schematic.to_string (junction.coordinates)); 
+		
+		log_indentation_down;
 	end write_coordinates_of_junction;			
 	
 
