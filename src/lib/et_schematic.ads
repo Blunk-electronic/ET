@@ -107,7 +107,7 @@ package et_schematic is
 		content			: et_libraries.type_text_content.bounded_string;
 	end record;
 
-	procedure write_note_properties (note : in et_schematic.type_note; indentation : in natural := 0);
+	procedure write_note_properties (note : in et_schematic.type_note);
 	-- Writes the properties of the given note
 	
 	package type_texts is new indefinite_doubly_linked_lists (
@@ -182,7 +182,7 @@ package et_schematic is
 		end case;
 	end record;
 
-	procedure write_unit_properties ( unit : in type_units.cursor; indentation : in natural := 0 );
+	procedure write_unit_properties ( unit : in type_units.cursor; indentation : in et_string_processing.type_indentation_level := 0 );
 	-- Writes the properties of the unit indicated by the given cursor.
 
 
@@ -225,7 +225,7 @@ package et_schematic is
 		index_type => positive, -- every tag label has an id
 		element_type => type_net_label_tag);
 
-	procedure write_label_properties ( label : in type_net_label; indentation : in natural := 0);
+	procedure write_label_properties ( label : in type_net_label);
 	-- Writes the properties of the given net label in the logfile.
     
 
@@ -241,7 +241,7 @@ package et_schematic is
 		label_list_tag    : type_list_of_labels_tag.vector;
 	end record;
 
-	procedure write_coordinates_of_segment (segment : in type_net_segment; indentation : in natural := 0 );
+	procedure write_coordinates_of_segment (segment : in type_net_segment; indentation : in et_string_processing.type_indentation_level := 0 );
 	-- Writes the start and end coordinates of a net segment.	
 	
 	-- A net is a list of segments.
@@ -264,7 +264,7 @@ package et_schematic is
 		coordinates : type_coordinates;
 	end record;
 
-	procedure write_coordinates_of_junction (junction : in type_net_junction; indentation : in natural := 0);
+	procedure write_coordinates_of_junction (junction : in type_net_junction; indentation : in et_string_processing.type_indentation_level := 0);
 	-- Writes the coordinates of a net junction.
 	
 	-- Junctions are to be collected in a list.
@@ -432,7 +432,7 @@ package et_schematic is
 		"<" => et_general.compare_component_by_reference,
  		element_type => type_component);
 
-	procedure write_component_properties ( component : in type_components.cursor; indentation : in natural := 0);
+	procedure write_component_properties ( component : in type_components.cursor; indentation : in et_string_processing.type_indentation_level := 0);
 	-- Writes the properties of the component indicated by the given cursor.
 
 	

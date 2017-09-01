@@ -42,7 +42,8 @@ with ada.command_line;			use ada.command_line;
 with gnat.command_line;			use gnat.command_line;
 with ada.directories;			use ada.directories;
 
-with et_general;	use et_general;
+with et_general;				use et_general;
+with et_string_processing;
 with et_import;		
 with et_kicad;
 
@@ -83,7 +84,7 @@ procedure et is
 
 					elsif full_switch = switch_log_level then
 						put_line ("log level " & parameter);
-						log_level := natural'value (parameter);
+						et_string_processing.log_level := et_string_processing.type_log_level'value (parameter);
 					end if;
 
 					

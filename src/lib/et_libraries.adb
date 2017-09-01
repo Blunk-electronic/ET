@@ -122,9 +122,9 @@ package body et_libraries is
 	end to_string;
 
 	
-	procedure write_placeholder_properties ( placeholder : in type_text_placeholder; indentation : in natural := 0) is
+	procedure write_placeholder_properties ( placeholder : in type_text_placeholder; indentation : in et_string_processing.type_indentation_level := 0) is
 	-- Writes the properties of the given placeholder.
-		function indent ( i : in natural) return string renames et_string_processing.indentation;
+		use et_string_processing;
 	begin
 		-- meaning
 		put_line(indent(indentation) 
@@ -167,9 +167,9 @@ package body et_libraries is
 	end write_placeholder_properties;
 
 
-	procedure write_text_properies ( text : in et_libraries.type_text; indentation : in natural := 0) is
+	procedure write_text_properies (text : in et_libraries.type_text; indentation : in et_string_processing.type_indentation_level := 0) is
 	-- Outputs the properties of the given text.
-		function indent ( i : in natural) return string renames et_string_processing.indentation;
+		use et_string_processing;
 	begin
 		-- meaning
 		put_line(indent(indentation) 
@@ -277,9 +277,9 @@ package body et_libraries is
 	end component_value_valid;
 
 
-	procedure write_component_properties ( component : in type_components.cursor; indentation : in natural := 0) is
+	procedure write_component_properties ( component : in type_components.cursor; indentation : in et_string_processing.type_indentation_level := 0) is
 	-- Writes the properties of the component indicated by the given cursor.
-	function indent ( i : in natural) return string renames et_string_processing.indentation;
+		use et_string_processing;
 		use et_libraries;
 		use et_libraries.type_units_internal;
 		

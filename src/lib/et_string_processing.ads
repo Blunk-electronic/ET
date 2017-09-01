@@ -58,7 +58,31 @@ with et_general;
 
 package et_string_processing is
 
-	function indentation ( width : in natural) return string;
+	type type_log_level is range 0..5;
+	log_level : type_log_level := type_log_level'first;
+
+	type type_indentation_level is range 0..20;
+	log_indentation : type_indentation_level := type_indentation_level'first;
+	procedure log_indentation_up;
+	procedure log_indentation_down;
+	procedure log_indentation_reset;
+
+-- 	package indentation_level_stack is new 
+-- 		et_general.stack_lifo (
+-- 			max => natural(type_indentation_level'last),
+-- 			item => type_indentation_level);
+-- 	
+-- 	type type_log_identation_operation is ( RESET, UP, DOWN, PUSH, POP);
+-- 	procedure log_indentation_operation (operation : in type_log_identation_operation);
+	
+	function indent (width : in type_indentation_level) return string;
+	
+	procedure log (
+		text	: in string;
+		level	: in type_log_level := type_log_level'first;
+		console	: in boolean := false);
+	-- Writes the given text with the current log_indentation in the current output. 
+	-- If the system wide log level is greater or equal the the given log_level the given text is put on the log.
 
 -- DATE
 	date_characters : character_set := to_set ( span => ('0','9')) or to_set ("-:T");

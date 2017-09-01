@@ -30,22 +30,7 @@
 --   history of changes:
 --
 
---with ada.characters;			use ada.characters;
---with ada.characters.latin_1;	use ada.characters.latin_1;
---with ada.characters.handling;	use ada.characters.handling;
--- with ada.text_io;				use ada.text_io;
--- with ada.strings; 				use ada.strings;
--- with ada.strings.fixed; 		use ada.strings.fixed;
--- with ada.strings.bounded; 		use ada.strings.bounded;
--- with ada.strings.unbounded; 	use ada.strings.unbounded;
--- with ada.numerics.real_arrays;  use ada.numerics.real_arrays;
--- with ada.directories;			use ada.directories;
--- with ada.exceptions; 			use ada.exceptions;
--- 
--- with et_schematic;				use et_schematic;
--- 
--- with et_geometry;				use et_geometry;
--- 
+with et_general;
 with et_string_processing;			use et_string_processing;
 
 package body et_import is
@@ -60,11 +45,12 @@ package body et_import is
 
 		set_output(et_import.report_handle);
 		
-		put_line(system_name & " import report");
-		put_line("date " & string(date_now));
-		put_line("CAD format " & type_cad_format'image(cad_format));
-		put_line("project file " & to_string(et_import.project_file_name));
-		put_line(row_separator_double);		
+		put_line (system_name & " import report");
+		put_line ("date " & string (date_now));
+		put_line ("CAD format " & type_cad_format'image (cad_format));
+		put_line ("project file " & to_string (et_import.project_file_name));
+		put_line ("log level" & type_log_level'image (log_level));
+		put_line (row_separator_double);		
 	end create_report;
 
 	procedure close_report is

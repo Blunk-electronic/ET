@@ -402,7 +402,7 @@ package body et_kicad is
 	end to_degrees;
 	
 	
-	procedure read_components_libraries (indentation : in natural := 0) is
+	procedure read_components_libraries (indentation : in type_indentation_level := 0) is
 	-- Reads components from libraries as stored in lib_dir and project_libraries:
         use et_libraries; -- most of the following stuff is specified there
 		use et_libraries.type_list_of_library_names;
@@ -427,10 +427,9 @@ package body et_kicad is
 		-- This is the unit cursor. It points to the unit being processed. In kicad we deal with internal units exclusively.
 		unit_cursor		: et_libraries.type_units_internal.cursor;
 		unit_inserted	: boolean; -- indicates whether a unit has been inserted
-	
-		function indent ( i : in natural) return string renames et_string_processing.indentation;		
+
 		
-		procedure read_library (indentation : in natural := 0) is
+		procedure read_library (indentation : in type_indentation_level := 0) is
 			line				: type_fields_of_line; -- the line being processed
 
 			-- This flag goes true once a component section is entered. It is cleared
@@ -1323,13 +1322,11 @@ package body et_kicad is
 				
 			end set_text_placeholder_properties;
 			
-		procedure read_draw_object (line : in type_fields_of_line; indentation : in natural := 0) is
+		procedure read_draw_object (line : in type_fields_of_line; indentation : in type_indentation_level := 0) is
 		-- Creates a symbol element from the given line and adds it to the unit indicated by tmp_unit_id.
 			function field (line : in type_fields_of_line; position : in positive) return string renames
 				et_string_processing.get_field_from_line;
 				
-			function indent ( i : in natural) return string renames et_string_processing.indentation;
-
 			function to_unit_id (text : in string) return type_unit_id is
 			-- converts a unit id given as string to type_unit_id
 			begin 
@@ -1337,7 +1334,7 @@ package body et_kicad is
 				-- CS: exception handler
 			end to_unit_id;
 
-			procedure write_scope_of_object (unit : in type_unit_id; indentation : in natural) is
+			procedure write_scope_of_object (unit : in type_unit_id; indentation : in type_indentation_level) is
 			-- Outputs whether the current draw object is common to all units or not.
 			begin
 				put (indent(indentation) & "scope ");
@@ -1952,12 +1949,15 @@ package body et_kicad is
                 section_eeschema_entered := false;
                 section_eeschema_libraries_entered := false;
             end clear_section_entered_flags;
-            
+			
 		begin -- read_project_file
-			put_line("reading project file ...");
-
-			open (file => et_import.project_file_handle, mode => in_file, name => to_string(et_import.project_file_name));
+			log_indentation_reset;
+			log (text => "reading project file ...");
+			log_indentation_up;
+			
+			open (file => et_import.project_file_handle, mode => in_file, name => to_string (et_import.project_file_name));
 			set_input (et_import.project_file_handle);
+			
 			while not end_of_file loop
 
 				-- Save a line in variable "line" (see et_string_processing.ads)
@@ -1993,7 +1993,7 @@ package body et_kicad is
 								et_libraries.lib_dir := to_bounded_string(get_field_from_line(line,2));
 
 								-- For the log write something like "LibDir ../../lbr"
-								put_line(" " & project_keyword_library_directory & " " & to_string(et_libraries.lib_dir));
+								log (text => project_keyword_library_directory & " " & to_string(et_libraries.lib_dir));
 							end if;
 							
 						end if;
@@ -2016,8 +2016,7 @@ package body et_kicad is
 										));
 
 								-- For the log write something like "LibName ../../lbr/bel_connectors_and_jumpers"
-								put_line(" " & get_field_from_line(line,1) 
-									& " " & get_field_from_line(line,2));
+								log (text => get_field_from_line(line,1) & " " & get_field_from_line(line,2));
 							end if;
 
 						end if;
@@ -2051,27 +2050,30 @@ package body et_kicad is
         procedure write_path_to_submodule is  -- CS: move to et_schematic ?
             c : type_path_to_submodule.cursor;            
         begin
-            put("path/location: ");
-
+			log (text => "path/location:");
+			log_indentation_up;
+			
             c := type_path_to_submodule.first(path_to_submodule);            
 
 			-- If there is a hierarchy deeper than 1, write path to submodule:
-            if type_path_to_submodule.length(path_to_submodule) > 1 then
+			if type_path_to_submodule.length(path_to_submodule) > 1 then
                 for n in 1..type_path_to_submodule.length(path_to_submodule)-1 loop
-                    put(type_submodule_name.to_string(type_path_to_submodule.element(c)) & ".");
+                    log (text => type_submodule_name.to_string(type_path_to_submodule.element(c)));
                     c := type_path_to_submodule.next(c);
                 end loop;
             
                 c := type_path_to_submodule.last(path_to_submodule);
 
 				-- write the submodule name
-                put(type_submodule_name.to_string(type_path_to_submodule.element(c)));
+				log_indentation_up;
+				log (text => type_submodule_name.to_string(type_path_to_submodule.element(c)));
+				log_indentation_down;
 			else
 				-- no hierarchy. write just the submodule name
-                put(type_submodule_name.to_string(type_path_to_submodule.element(c)));
+                log (text => type_submodule_name.to_string(type_path_to_submodule.element(c)));
             end if;
             
-            new_line;            
+			log_indentation_down;
 		end write_path_to_submodule;
 		
         -- Here we append a submodule name the the path_to_submodule.
@@ -2969,8 +2971,7 @@ package body et_kicad is
 
 				commissioned, updated : et_string_processing.type_date;
 
-				indentation : natural := 2;				
-				function indent ( i : in natural) return string renames et_string_processing.indentation;
+				indentation : et_string_processing.type_indentation_level := 2;
 
 			begin
 				-- write precheck preamble
@@ -3428,14 +3429,16 @@ package body et_kicad is
 			end insert_unit;
 			
 
-        begin -- read_schematic
+		begin -- read_schematic
+			log_indentation_reset;
+			log_indentation_up;
+			
 			if exists(to_string(name_of_schematic_file)) then
-				write_message(
-					file_handle => current_output,
-					text => "reading schematic file: " & to_string(name_of_schematic_file) & " ...",
-					console => true);
+				log (text => "reading schematic file: " & to_string(name_of_schematic_file) & " ...",
+					 console => true);
 
 				-- log module path as recorded by parent unit
+				log_indentation_up;
 				write_path_to_submodule;
 				
 				open (file => et_import.schematic_handle, mode => in_file, name => to_string(name_of_schematic_file));
@@ -3468,10 +3471,10 @@ package body et_kicad is
 											-- Save schematic format version in sheet header:                                    
 											sheet_header.version := positive'value(get_field_from_line(line,5));
 										else
-											write_message(
-												file_handle => current_output,
-												text => message_error & "schematic version" & positive'image(schematic_version) & " required.",
-												console => true);                        
+											log_indentation_reset;
+											log (text => message_error & "schematic version" 
+												 & positive'image(schematic_version) & " required.",
+												console => true);
 											raise constraint_error;
 										end if;
 								end if;
@@ -3497,7 +3500,7 @@ package body et_kicad is
 								if get_field_from_line( get_field_from_line(line,1), 1, latin_1.colon) = schematic_library then
 
 									-- for the log: write library name
-									put_line(" uses library " & get_field_from_line( get_field_from_line(line,1), 2, latin_1.colon));
+									log (text => "uses library " & get_field_from_line (get_field_from_line(line,1), 2, latin_1.colon));
 
 									-- Store bare library name in the list sheet_header.libraries:
 									-- We use a doubly linked list because the order of the library names must be kept.
@@ -3591,7 +3594,8 @@ package body et_kicad is
 									-- good idea.
 									if get_field_from_line(line,1) = schematic_keyword_encoding then
 										if get_field_from_line(line,2) /= encoding_default then
-											put_line(message_warning & "non-default endcoding '" & 
+											--log_indentation_reset;
+											log (text => message_warning & "non-default endcoding '" & 
 												get_field_from_line(line,2) & "' found !");
 										end if;
 									end if;
@@ -3599,7 +3603,7 @@ package body et_kicad is
 									-- read sheet number from a line like "Sheet 1 7"
 									if get_field_from_line(line,1) = schematic_keyword_sheet then
 										sheet_number_current := positive'value(get_field_from_line(line,2));
-										put_line(" sheet" & positive'image(sheet_number_current) & " ...");
+										log ("sheet" & positive'image(sheet_number_current) & " ...");
 										sheet_count_total    := positive'value(get_field_from_line(line,3));
 										if sheet_count_total > 1 then
 											-- Set in the list_of_submodules (to be returned) the parent_module. The schematic file 
@@ -3721,7 +3725,7 @@ package body et_kicad is
 											
 											-- Test if sheet name and file name match:
 											if type_submodule_name.to_string(submodule_gui_scratch.name) /= base_name(type_submodule_name.to_string(name_of_submodule_scratch)) then
-												put_line(message_warning & "name mismatch: sheet: " &
+												log (text => message_warning & "name mismatch: sheet: " &
 													type_submodule_name.to_string(submodule_gui_scratch.name) &
 													" file: " & type_submodule_name.to_string(name_of_submodule_scratch));
 											end if;
@@ -3823,8 +3827,7 @@ package body et_kicad is
 
 										-- for the log
 										write_label_properties (
-											label => type_net_label(label_simple_scratch),
-											indentation => 2);
+											label => type_net_label(label_simple_scratch));
 
 										-- The simple labels are to be collected in a wild list of simple labels.
 										type_list_of_labels_simple.append (wild_simple_label_collection_scratch,label_simple_scratch);
@@ -3875,8 +3878,7 @@ package body et_kicad is
 
 										-- for the log
 										write_label_properties (
-											label => type_net_label(label_tag_scratch),
-											indentation => 2);
+											label => type_net_label(label_tag_scratch));
 										
 										-- The tag labels are to be collected in a wild list of tag labels for later sorting.
 										type_list_of_labels_tag.append(wild_tag_label_collection_scratch,label_tag_scratch);
@@ -3913,7 +3915,7 @@ package body et_kicad is
 										-- CS: Currently we store the line as it is in note_scratch.text
 										note_scratch.content := et_libraries.type_text_content.to_bounded_string(to_string(line));
 
-										write_note_properties(note_scratch,2); -- last actual is indentation
+										write_note_properties(note_scratch);
 										
 										-- the notes are to be collected in the list of notes
 										et_schematic.type_texts.append (module.notes,note_scratch);

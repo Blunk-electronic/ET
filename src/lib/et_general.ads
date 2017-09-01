@@ -85,7 +85,8 @@ package et_general is
 	switch_import_project	: constant string (1..15)	:= "-import_project";	-- long switch
 	switch_import_format	: constant string (1..14)	:= "-import_format";	-- long switch
 
-	log_level	: natural := 0;
+
+
 
 -- 	-- ACTIONS
 -- 	type type_action is ( none, request_version, import_cad );
@@ -192,7 +193,7 @@ package et_general is
 		function depth return natural;
 		procedure init;
 	end stack_lifo;
-	
+
 	
 end et_general;
 

@@ -38,13 +38,51 @@ with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.text_io;				use ada.text_io;
 
+-- with et_general;
+
 package body et_string_processing is
 
-	function indentation ( width : in natural) return string is
+	procedure log_indentation_up is
 	begin
-		return (width * latin_1.space);
-	end indentation;
+		log_indentation := log_indentation + 1;
+	end log_indentation_up;
+
+	procedure log_indentation_down is
+	begin
+		log_indentation := log_indentation - 1;
+	end log_indentation_down;
+
+	procedure log_indentation_reset is
+	begin
+		log_indentation := type_indentation_level'first;
+	end log_indentation_reset;
+
+-- 	procedure log_indentation_operation (operation : in type_log_identation_operation) is
+-- 	begin
+-- 		null;
+-- 	end log_indentation_operation;
 	
+	function indent ( width : in type_indentation_level) return string is
+	begin
+		return (natural(width) * latin_1.space);
+	end indent;
+
+	procedure log (
+		text	: in string;
+		level	: in type_log_level := type_log_level'first;
+		console	: in boolean := false) is
+	-- Writes the given text with the current log_indentation in the current output. 
+	-- If the system wide log level is greater or equal the the given log_level the given text is put on the log.
+	begin
+		if log_level >= level then
+			put_line (current_output, natural (log_indentation) * latin_1.space & text);
+
+			if console then
+				put_line (standard_output, natural (log_indentation) * latin_1.space & text);
+			end if;
+		end if;
+	end log;
+		
 	function date_now return type_date is
 		now		: time := clock;
 		date	: string (1..19) := image(now, time_zone => utc_time_offset(now));
