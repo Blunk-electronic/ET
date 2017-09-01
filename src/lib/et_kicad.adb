@@ -493,34 +493,44 @@ package body et_kicad is
 				null; -- CS
 			end check_text_fields;
 			
-			function to_swap_level ( swap_in : in string)
+			function to_swap_level (swap_in : in string)
 			-- Converts the kicad interchangeable flag to the et swap level.
 			-- Since Kicad has only one swap level (interchangeable yes or no) 
 			-- we convert to the lowest swap level available.
 			-- Used when reading component libraries.	
 				return type_unit_swap_level is
 				i : type_symbol_interchangeable;
+				s : type_unit_swap_level;
+				log_threshold : type_log_level := 1;
 			begin
-				put("    units interchangeable ");
+				log_indentation_up;
+				
+				log ("units interchangeable", level => log_threshold);
+				log_indentation_up;
+
 				i := type_symbol_interchangeable'value(swap_in);
+				
 				case i is
 					when L =>
-						put_line("no");
-						return 0; -- no swapping allowed
+						log ("no", level => log_threshold);
+						s := 0; -- no swapping allowed
 					when F =>
-						put_line("yes");
-						return 1; -- swapping allowed at this level
+						log ("yes", level => log_threshold);
+						s := 1; -- swapping allowed at this level
 				end case;
+
+				log_indentation_down;
+				log_indentation_down;
+				return s;
 			end to_swap_level;
 
 			function to_pin_visibile (vis_in : in string)
 			-- Converts the kicad "show pin number" flag to the et type_pin_visible.
 			-- Used when reading component libraries.		
 				return type_pin_visible is
-				v_in : type_show_pin_number;
-				v_out : type_pin_visible;
+				v_in	: type_show_pin_number;
+				v_out	: type_pin_visible;
 				log_threshold : type_log_level := 1;
-
 			begin
 				log_indentation_up;
 				
@@ -545,22 +555,34 @@ package body et_kicad is
 				
 			end to_pin_visibile;
 
-			function to_port_visibile ( vis_in : in string)
+			function to_port_visibile (vis_in : in string)
 			-- Converts the kicad "show pin name" flag to the et type_port_visible.
 			-- Used when reading component libraries.		
 				return type_port_visible is
-				v : type_show_pin_name;
+				v_in	: type_show_pin_name;
+				v_out	: type_port_visible;
+				log_threshold : type_log_level := 1;			
 			begin
-				put("    port names ");	
-				v := type_show_pin_name'value(vis_in);
-				case v is 
+				log_indentation_up;
+				
+				log ("port names", level => log_threshold);
+				log_indentation_up;
+				
+				v_in := type_show_pin_name'value(vis_in);
+				
+				case v_in is 
 					when Y => 
-						put_line("visible");
-						return on;
+						log ("visible", level => log_threshold);
+						v_out := on;
 					when N => 
-						put_line("invisible");
-						return off;
+						log ("invisible", level => log_threshold);
+						v_out := off;
 				end case;
+
+				log_indentation_down;
+				log_indentation_down;
+
+				return v_out;
 			end to_port_visibile;
 
 			function to_unit_name (id : in type_unit_id) return type_unit_name.bounded_string is
@@ -569,7 +591,7 @@ package body et_kicad is
 				return type_unit_name.to_bounded_string (trim (type_unit_id'image (id), left));
 			end to_unit_name;
 
-			function to_fill ( fill_style : in string) return type_fill is
+			function to_fill (fill_style : in string) return type_fill is
 			-- Converts the given kicad fill style to a type_fill.
 			begin
 				if fill_style = library_fill_none then
@@ -1549,6 +1571,7 @@ package body et_kicad is
 			use et_string_processing;
 
 		begin -- read_field
+			
 			-- read text fields from a component library (thats why scheamtic => false)
 			case to_text_meaning (line => line, schematic => false) is
 
@@ -1560,33 +1583,33 @@ package body et_kicad is
 					if strip_quotes (field (line,2)) = et_general.type_component_prefix.to_string (tmp_prefix) then
 						null; -- fine
 					else
-						put_line (message_warning & affected_line(line) & ": prefix vs. reference mismatch !");
+						log (message_warning & affected_line(line) & ": prefix vs. reference mismatch !");
 					end if;
 
 					tmp_reference := read_field (meaning => reference);
 					-- for the log:
-					write_text_properies (type_text (tmp_reference),4); -- actuals: text & indentation
+					write_text_properies (type_text (tmp_reference)); -- actuals: text & indentation
 
 				-- If we have a value field like "F1 "74LS00" 0 -100 50 H V C CNN"
 				when value =>
 				
 					tmp_value := read_field (meaning => value);
 					-- for the log:
-					write_text_properies (type_text (tmp_value),4); -- actuals: text & indentation
+					write_text_properies (type_text (tmp_value)); -- actuals: text & indentation
 
 				-- If we have a footprint field like "F2 "" 0 -100 50 H V C CNN"
 				when packge =>
 				
 					tmp_package := read_field (meaning => packge);
 					-- for the log:
-					write_text_properies (type_text (tmp_package),4); -- actuals: text & indentation
+					write_text_properies (type_text (tmp_package)); -- actuals: text & indentation
 
 				-- If we have a datasheet field like "F3 "" 0 -100 50 H V C CNN"
 				when datasheet =>
 				
 					tmp_datasheet := read_field (meaning => datasheet);
 					-- for the log:
-					write_text_properies (type_text (tmp_datasheet),4); -- actuals: text & indentation
+					write_text_properies (type_text (tmp_datasheet)); -- actuals: text & indentation
 
 				-- Other mandatory fields like function and partcode are detected by F4 and F5 
 				-- (not by subfield #10 !) So F4 enforces a function, F5 enforces a partcode.
@@ -1599,7 +1622,7 @@ package body et_kicad is
 					if to_lower (strip_quotes (field (line,10))) = to_lower (type_text_meaning'image (purpose)) then
 						tmp_purpose := read_field (meaning => purpose);
 						-- for the log:
-						write_text_properies (type_text (tmp_purpose),4); -- actuals: text & indentation
+						write_text_properies (type_text (tmp_purpose)); -- actuals: text & indentation
 						-- basic_text_check(fnction); -- CS
 					else
 						invalid_field(line);
@@ -1613,7 +1636,7 @@ package body et_kicad is
 					if to_lower (strip_quotes(field (line,10))) = to_lower (type_text_meaning'image (partcode)) then
 						tmp_partcode := read_field (meaning => partcode);
 						-- for the log:
-						write_text_properies (type_text (tmp_partcode),4); -- actuals: text & indentation
+						write_text_properies (type_text (tmp_partcode)); -- actuals: text & indentation
 						-- basic_text_check(partcode); -- CS
 					else
 						invalid_field(line);
@@ -1627,7 +1650,7 @@ package body et_kicad is
 					if to_lower (strip_quotes(field (line,10))) = to_lower (type_text_meaning'image (commissioned)) then
 						tmp_commissioned := read_field (meaning => commissioned);
 						-- for the log:
-						write_text_properies (type_text (tmp_commissioned),4); -- actuals: text & indentation
+						write_text_properies (type_text (tmp_commissioned)); -- actuals: text & indentation
 						-- basic_text_check(commissioned); -- CS
 					else
 						invalid_field(line);
@@ -1641,7 +1664,7 @@ package body et_kicad is
 					if to_lower (strip_quotes(field (line,10))) = to_lower (type_text_meaning'image (updated)) then
 						tmp_updated := read_field (meaning => updated);
 						-- for the log:
-						write_text_properies (type_text (tmp_updated),4); -- actuals: text & indentation
+						write_text_properies (type_text (tmp_updated)); -- actuals: text & indentation
 						-- basic_text_check(updated); -- CS
 					else
 						invalid_field(line);
@@ -1655,7 +1678,7 @@ package body et_kicad is
 					if to_lower (strip_quotes(field (line,10))) = to_lower (type_text_meaning'image (author)) then
 						tmp_author := read_field (meaning => author);
 						-- for the log:
-						write_text_properies (type_text (tmp_author),4); -- actuals: text & indentation
+						write_text_properies (type_text (tmp_author)); -- actuals: text & indentation
 						-- basic_text_check(author); -- CS
 					else
 						invalid_field(line);
@@ -1665,6 +1688,7 @@ package body et_kicad is
 					-- CS: warning about illegal fields ?
 					-- CS: other text fields ?
 			end case;
+
 			
 			-- CS: check appearance vs. function vs. partcode -- see stock_manager	
 		end read_field;
@@ -1737,11 +1761,13 @@ package body et_kicad is
 								-- Swap level assumes default if only one unit available.
 								tmp_units_total := type_units_total'value (get_field_from_line (line,8));
 								if tmp_units_total > 1 then
+									log_indentation_up;
 									log ("with" & type_units_total'image (tmp_units_total) & " units");
 
 									-- From the "interchangeable" flag we set the component wide swap level. It applies for 
 									-- all units of the component (except extra units):
 									tmp_unit_swap_level := to_swap_level (get_field_from_line(line,9));
+									log_indentation_down;
 								else
 									tmp_unit_swap_level := unit_swap_level_default;
 								end if;

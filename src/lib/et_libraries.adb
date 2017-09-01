@@ -161,59 +161,50 @@ package body et_libraries is
 	end write_placeholder_properties;
 
 
-	procedure write_text_properies (text : in et_libraries.type_text; indentation : in et_string_processing.type_indentation_level := 0) is
+	procedure write_text_properies (text : in et_libraries.type_text) is
 	-- Outputs the properties of the given text.
 		use et_string_processing;
+		-- CS: log_threshold
 	begin
+		log_indentation_up;
+		
 		-- meaning
-		put_line(indent(indentation) 
-			--& "meaning "
-			& et_libraries.to_string(text.meaning));
-
+		log (et_libraries.to_string(text.meaning));
+		log_indentation_up;
+		
 		-- position
-		put_line(indent(indentation + 1)
-			& et_libraries.to_string (text.position));
+		log (et_libraries.to_string (text.position));
 
 		-- content
 		if et_libraries.type_text_content.length(text.content) > 0 then
-			put_line(indent(indentation + 1) 
-				& "content '" & et_libraries.type_text_content.to_string(text.content) & "'");
+			log ("content '" & et_libraries.type_text_content.to_string(text.content) & "'");
 		else
-			put_line(indent(indentation + 1)
-				& "no content");
+			log ("no content");
 		end if;
 		
 		-- size
-		put_line(indent(indentation + 1)
-			& "size"
-			& et_libraries.type_text_size'image (text.size));
+		log ("size" & et_libraries.type_text_size'image (text.size));
 
 		-- style
-		put_line(indent(indentation + 1)
-			& "style "
-			& to_lower(et_libraries.type_text_style'image (text.style)));
+		log ("style " & to_lower(et_libraries.type_text_style'image (text.style)));
 
 		-- line width
-		put_line(indent(indentation + 1)
-			& "line width"
-			& et_libraries.type_text_line_width'image (text.line_width));
+		log ("line width" & et_libraries.type_text_line_width'image (text.line_width));
 
 		-- orientation
-		put_line(indent(indentation + 1)
-			& et_libraries.to_string (text.orientation));
+		log (et_libraries.to_string (text.orientation));
 
 		-- visible
-		put_line(indent(indentation + 1)
-			& "visible "
-			& to_lower(et_libraries.type_text_visible'image (text.visible)));
+		log ("visible " & to_lower(et_libraries.type_text_visible'image (text.visible)));
 
 		-- alignment
-		put_line(indent(indentation + 1)
-			& "aligment (hor/vert) "
+		log ("alignment (horizontal/vertical) "
 			& to_lower(et_libraries.type_text_alignment_horizontal'image(text.alignment.horizontal))
 			& "/"
 			& to_lower(et_libraries.type_text_alignment_vertical'image(text.alignment.vertical)));
 
+		log_indentation_down;
+		log_indentation_down;
 	end write_text_properies;
 
 

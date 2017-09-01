@@ -256,7 +256,7 @@ package et_libraries is
 	procedure write_placeholder_properties (placeholder : in type_text_placeholder);
 	-- Writes the properties of the given placeholder.
 
-	procedure write_text_properies (text : in et_libraries.type_text; indentation : in et_string_processing.type_indentation_level := 0);
+	procedure write_text_properies (text : in et_libraries.type_text);
 	-- Outputs the properties of the given text.
 
 	function content ( text : in type_text) return string;
