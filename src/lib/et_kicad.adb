@@ -57,12 +57,11 @@ package body et_kicad is
 	-- CS: display field meaning ?
 		-- 	meaning : in et_general.type_text_meaning) return string is
 	begin
-		write_message(
-			file_handle => current_output,
-			text => message_error & et_string_processing.affected_line(line) & "invalid field !",
+		log_indentation_reset;
+		log (text => message_error & affected_line (line) & "invalid field !",
 			console => true);
-	
-			-- CS: refine output.
+
+		-- CS: refine output.
 		raise constraint_error;
 	end invalid_field;
 
@@ -203,12 +202,12 @@ package body et_kicad is
 	
 		procedure invalid_style is
 		begin
-			put_line(message_error & "invalid text style '" & style_in & "' !");
+			log_indentation_reset;
+			log (message_error & "invalid text style '" & style_in & "' !");
 			raise constraint_error;
 		end invalid_style;
 		
 	begin -- to_text_style
-		--put_line("style_in: " & style_in);
 		case text is
 			when true =>
 				if style_in = text_schematic_style_normal then
@@ -230,8 +229,6 @@ package body et_kicad is
 					invalid_style;
 				end if;
 		end case;
-
-		--put_line("    style " & to_lower(et_general.type_text_style'image(a)));
 		
 		return a;
 	end to_text_style;
@@ -269,7 +266,6 @@ package body et_kicad is
 
 		end case;
 
-		--put_line(et_general.type_text_visible'image(v_out));		
 		return v_out;
 	end to_field_visible;
 
@@ -293,16 +289,14 @@ package body et_kicad is
 		-- CS: display field meaning ?
 			-- 	meaning : in et_general.type_text_meaning) return string is
 		begin
-			write_message(
-				file_handle => current_output,
-				text => message_error & et_string_processing.affected_line(line) & "invalid visibility flag !",
+			log_indentation_reset;
+			log (text => message_error & et_string_processing.affected_line(line) & "invalid visibility flag !",
 				console => true);
 		
 				-- CS: refine output.
 			raise constraint_error;
 		end invalid_appearance;		
 
-		--keyword_appears : constant string (1..8) := "appears ";
 	begin -- to_appearance
 		case schematic is
 
@@ -362,9 +356,8 @@ package body et_kicad is
 				rep_out := yes;
 
 				-- CS: currently we do not support alternative representations
-				write_message(
-					file_handle => current_output,
-					text => message_error & "alternative representation (DeMorgan) not supported currently !",
+				log_indentation_reset;
+				log (text => message_error & "alternative representation (DeMorgan) not supported currently !",
 					console => true);
 				
 			when alternative_representation_no =>
@@ -782,7 +775,8 @@ package body et_kicad is
 					a : type_text_style;
 
 					procedure invalid_style is begin
-						put_line(message_error & "invalid text style '" & style_in & "' !"); -- CS: message instead
+						log_indentation_reset;
+						log (message_error & "invalid text style '" & style_in & "' !");
 						raise constraint_error;
 					end invalid_style;
 
@@ -1027,7 +1021,6 @@ package body et_kicad is
 
 -- 				-- For the logfile write the component name.
 -- 				-- If the component contains more than one unit, write number of units.
--- 				put_line("   " & get_field_from_line(line,2)); -- 74LS00
 
 				case tmp_appearance is
 					when sch =>
@@ -1088,9 +1081,9 @@ package body et_kicad is
 				if comp_inserted then
 					null;
 				else
-					write_message (
-						file_handle => current_output,
-						text => message_error & "line" & affected_line (line) & " : component already in library !");
+					log_indentation_reset;
+					log (text => message_error & "line" & affected_line (line) & " : component already in library !",
+						 console => true);
 					raise constraint_error;
 				end if;
 				
@@ -1177,16 +1170,14 @@ package body et_kicad is
 			end add_unit;
 
 			procedure create_units is
-			-- Creates empty units in the current compoenent.
+			-- Creates empty units in the current component.
 			-- The number of units is set by unit_total 
 			-- (earlier derived from the component header like "DEF 74LS00 IC 0 30 Y Y 4 F N")
 			begin
-				--put_line ("creating " & type_units_total'image (units_total) & " empty internal units ...");
 				for u in 1 .. type_unit_id (tmp_units_total) loop
 					tmp_unit_id := u;
 					add_unit (et_import.component_libraries);
 				end loop;
-				--put_line ("done");
 			end create_units;
 
 				
@@ -1241,8 +1232,8 @@ package body et_kicad is
 							case pos is
 								when 190 => 
 									-- Tell the operator which port name the problem is:
-									write_message (
-										file_handle => current_output,
+									log_indentation_reset;
+									log (
 										text => message_error & "file '" 
 											& to_string (lib_file_name) & "' "
 											& affected_line (line) 
@@ -1370,15 +1361,22 @@ package body et_kicad is
 				-- CS: exception handler
 			end to_unit_id;
 
-			procedure write_scope_of_object (unit : in type_unit_id; indentation : in type_indentation_level) is
+			procedure write_scope_of_object (unit : in type_unit_id) is
 			-- Outputs whether the current draw object is common to all units or not.
+				log_threshold : type_log_level := 2;
 			begin
-				put (indent(indentation) & "scope ");
+				log_indentation_up;
+				log ("scope", log_threshold);
+				log_indentation_up;
+				
 				if unit = 0 then
-					put_line ("common to all units");
+					log ("common to all units", log_threshold);
 				else
-					put_line ("unit" & type_unit_id'image(unit));
+					log ("unit" & type_unit_id'image(unit), log_threshold);
 				end if;
+				
+				log_indentation_down;
+				log_indentation_down;
 			end write_scope_of_object;
 
 			log_threshold : type_log_level := 1;
@@ -1386,8 +1384,9 @@ package body et_kicad is
 		begin -- read_draw_object
 			log ("draw object", level => log_threshold);
 			log_indentation_up;
-			
-			-- 			put_line (indent(indentation) & to_string (line)); -- CS: log
+
+			-- At a certain log level we report the bare line of a draw object as it is:
+			log (to_string (line), log_threshold + 2);
 			
 			case type_library_draw'value (field (line,1)) is
 				when P => -- polyline
@@ -1402,10 +1401,10 @@ package body et_kicad is
 					--  #8.. 9  : bend point (x/y) (0/100)
 					-- #10..11  : end point (x/y) (50/70)
 					-- last field : fill style N/F/f no fill/foreground/background
-
-					tmp_unit_id := to_unit_id (field (line,3));
--- 					write_scope_of_object (tmp_unit_id, indentation + 1);
 					log (to_string (line), level => log_threshold + 1);
+					
+					tmp_unit_id := to_unit_id (field (line,3));
+					write_scope_of_object (tmp_unit_id);
 
 					-- compose polyline
 					tmp_draw_polyline := to_polyline (line);
@@ -1423,9 +1422,10 @@ package body et_kicad is
 					-- #8 : line width
 					-- #9 : fill style N/F/f no fill/foreground/background
 
+					log (to_string (line), level => log_threshold + 1);					
+					
 					tmp_unit_id := to_unit_id (field (line,6));
--- 					write_scope_of_object (tmp_unit_id, indentation + 1);
-					log (to_string (line), level => log_threshold + 1);
+					write_scope_of_object (tmp_unit_id);
 
 					-- compose rectangle
 					tmp_draw_rectangle := to_rectangle (line);
@@ -1444,9 +1444,10 @@ package body et_kicad is
 					--  #7 : line width (23)
 					--  #8 : fill style N/F/f no fill/foreground/background
 
-					tmp_unit_id := to_unit_id (field (line,5));
--- 					write_scope_of_object (tmp_unit_id, indentation + 1);
 					log (to_string (line), level => log_threshold + 1);
+					
+					tmp_unit_id := to_unit_id (field (line,5));
+					write_scope_of_object (tmp_unit_id);
 
 					-- compose circle
 					tmp_draw_circle := to_circle (line);
@@ -1470,9 +1471,10 @@ package body et_kicad is
 					-- #11..12 : start point (x/y)
 					-- #13..14 : end point (x/y)
 
-					tmp_unit_id := to_unit_id (field (line,7));
--- 					write_scope_of_object (tmp_unit_id, indentation + 1);
 					log (to_string (line), level => log_threshold + 1);
+					
+					tmp_unit_id := to_unit_id (field (line,7));
+					write_scope_of_object (tmp_unit_id);
 
 					-- compose arc
 					tmp_draw_arc := to_arc (line);
@@ -1498,9 +1500,10 @@ package body et_kicad is
 					-- #12 : alignment left/center/right L/C/R
 					-- #13 : alignment top/center/bottom T/C/B
 
-					tmp_unit_id := to_unit_id (field (line,7));
--- 					write_scope_of_object (tmp_unit_id, indentation + 1);
 					log (to_string (line), level => log_threshold + 1);
+					
+					tmp_unit_id := to_unit_id (field (line,7));
+					write_scope_of_object (tmp_unit_id);
 
 					-- compose text
 					tmp_draw_text := to_text (line);
@@ -1524,9 +1527,10 @@ package body et_kicad is
 					-- #12 : electrical type (direction), see et_kicad.ads for more
 					-- #13 : optional field: pin style, see et_kicad.ads for more
 
-					tmp_unit_id := to_unit_id (field (line,10));
--- 					write_scope_of_object (tmp_unit_id, indentation + 1);
 					log (to_string (line), level => log_threshold + 1);
+					
+					tmp_unit_id := to_unit_id (field (line,10));
+					write_scope_of_object (tmp_unit_id);
 
 					-- compose port
 					-- Since ports are collected in a map, the port name is going to be the key. Thus 
@@ -1560,6 +1564,18 @@ package body et_kicad is
 			log_indentation_down;
 		end read_draw_object;
 
+		procedure read_footprint (line : in type_fields_of_line) is
+			log_threshold : type_log_level := 1;
+		begin
+			log ("footpint/package", level => log_threshold);
+			log_indentation_up;
+			log (to_string(line), level => log_threshold);
+
+			-- CS
+			
+			log_indentation_down;
+		end read_footprint;
+		
 
 		procedure read_field (line : in type_fields_of_line) is
 		-- Reads the kicad text field of a component in a temporarily variable.
@@ -1769,7 +1785,7 @@ package body et_kicad is
 								tmp_units_total := type_units_total'value (get_field_from_line (line,8));
 								if tmp_units_total > 1 then
 									log_indentation_up;
-									log ("with" & type_units_total'image (tmp_units_total) & " units");
+									log ("with" & type_units_total'image (tmp_units_total) & " units", level => 1);
 
 									-- From the "interchangeable" flag we set the component wide swap level. It applies for 
 									-- all units of the component (except extra units):
@@ -1796,7 +1812,9 @@ package body et_kicad is
 								set_text_placeholder_properties (et_import.component_libraries);
 								
 								-- log component properties
-								et_libraries.write_component_properties (component => comp_cursor);
+								if log_level >= 1 then
+									et_libraries.write_component_properties (component => comp_cursor);
+								end if;
 							else
 							-- As long as the component end mark does not appear, we process subsections as 
 							-- indicated by active_section:
@@ -1871,7 +1889,7 @@ package body et_kicad is
 											log ("footprint filter end", level => 3);
 										else
 											-- Process lines:
-											put_line (indent (indentation + 3) & to_string(line));
+											read_footprint (line);
 										end if;
 
 									when draw =>
@@ -2134,7 +2152,7 @@ package body et_kicad is
         -- Here we append a submodule name the the path_to_submodule.
         procedure append_name_of_parent_module_to_path(submodule : in type_submodule_name.bounded_string) is  -- CS: move to et_schematic ?
 		begin
-			--put_line("path_to_submodule: appending submodule " & type_submodule_name.to_string(submodule));
+			log (text => "path_to_submodule: appending submodule " & type_submodule_name.to_string(submodule), level => 1);
             -- Since we are dealing with file names, the extension must be removed before appending.
             type_path_to_submodule.append(path_to_submodule,
                 type_submodule_name.to_bounded_string(base_name(type_submodule_name.to_string(submodule)))
@@ -2312,17 +2330,12 @@ package body et_kicad is
 				-- of that segment, output the coordinates of the segment, add it to anonymous net.
 				if type_wild_list_of_net_segments.element(wild_segment_collection,id).picked then
 					null;
-					--put("  picked");
+					-- log ("  picked");
 				else
-					--put(et_import.report_handle,"  segment" & positive'image(id) & ":");
-
--- 					write_message(
--- 						file_handle => et_import.report_handle,
--- 						lf => false,
--- 						text => "segment" & positive'image(id) & ":",
--- 						identation => 3);
+					-- log ("  segment" & positive'image(id) & ":");
+					-- log ("segment" & positive'image(id) & ":");
+					-- log ("  segment" & positive'image(id) & ":");
 					
-					--put("  segment" & positive'image(id) & ":");
 					type_wild_list_of_net_segments.update_element(
 							container => wild_segment_collection,
 							index => id,
@@ -2362,13 +2375,22 @@ package body et_kicad is
 				-- If we start the search from the start_point of a segment, the s-flag is to be set. This indicates the start_point has been processed.				
 				case side is
 					when end_point =>
-						--put_line(et_import.report_handle,"  --> origin of search (END): " & type_grid'image(seg_in.coordinates_end.x) & "/" & type_grid'image(seg_in.coordinates_end.y));
+						
+-- 						log ("--> origin of search   (END): " 
+-- 							 & type_grid'image(seg_in.coordinates_end.x) & "/" & type_grid'image(seg_in.coordinates_end.y),
+-- 							 level => 1);
+						
 						type_wild_list_of_net_segments.update_element(
 								container => wild_segment_collection,
 								index => id,
 								process => set_e'access);
+						
 					when start_point =>
-						--put_line(et_import.report_handle,"  --> origin of search (START): " & type_grid'image(seg_in.coordinates_start.x) & "/" & type_grid'image(seg_in.coordinates_start.y));
+						
+-- 						log ("--> origin of search (START): " 
+-- 							 & type_grid'image(seg_in.coordinates_start.x) & "/" & type_grid'image(seg_in.coordinates_start.y),
+-- 							 level => 1);
+						
 						type_wild_list_of_net_segments.update_element(
 								container => wild_segment_collection,
 								index => id,
@@ -2486,9 +2508,11 @@ package body et_kicad is
 				sc.valid := false;
 				sc.id := id;
 				return sc;
+				
 			<<matching_segment_coordinates_found>>
 				add_segment_to_anonymous_net(sc.id);
-				--put_line(et_import.report_handle, "match");
+				--log ("match", level => 1);
+				
 				return sc;
 			end search_for_same_coordinates;
 			
@@ -2537,7 +2561,9 @@ package body et_kicad is
 						line_start	=> et_libraries.type_coordinates(line_start),
 						line_end	=> et_libraries.type_coordinates(line_end),
 						line_range	=> with_end_points);
-					--put_line(et_import.report_handle,"distance: " & type_grid'image(d.distance));
+					
+					--log ("distance: " & type_grid'image(d.distance), level => 1);
+					
 					if not d.out_of_range and d.distance = zero then
 						sits_on_segment := true;
 					end if;
@@ -2549,7 +2575,6 @@ package body et_kicad is
 				
 				-- This does only make sense if there are nets at all:
 				if type_list_of_anonymous_nets.length(list_of_anonymous_nets) > 0 then
-					--put_line(et_import.report_handle,"associating net labels with nets ...");
 					log (text => "associating net labels with nets ...");
 					
 					-- Loop in list of anonymous nets, get a (non-processed-yet) net, loop in list of segments and find a (non-processed-yet)
@@ -2619,6 +2644,7 @@ package body et_kicad is
 										container => a.segments, -- the list of segments of the current anonymous net
 										index => positive(b), -- the segment id
 										new_item => s); -- the updated segment
+									
 									-- Clean up: Purge temporarily list of simple labels for next spin.
 									type_list_of_labels_simple.delete (container => lls, index => 1, count => type_list_of_labels_simple.length(lls));
 
@@ -2762,7 +2788,6 @@ package body et_kicad is
 							net_scratch.scope := a.scope;
 
 							log_indentation_up;
-							--put_line(et_import.report_handle," is " & type_scope_of_net'image(net_scratch.scope) & " with segments:");
 							log ("scope " & type_scope_of_net'image(net_scratch.scope) & " with segments:");
 
 							-- append segments to net_scratch
@@ -2862,7 +2887,6 @@ package body et_kicad is
 						loop_s:
 						for s in 1..segment_count loop
 							segment_scratch := type_wild_list_of_net_segments.element(wild_segment_collection,s); -- get a segment
-							--put_line(et_import.report_handle,natural'image(s));
 
 							-- loop in junction list until a junction has been found that sits on the segment
 							for j in 1..junction_count loop 
@@ -3024,14 +3048,17 @@ package body et_kicad is
 
 				-- write precheck preamble
 				log ("component " 
-					& et_general.to_string(tmp_component_reference)
-					& " precheck");
+					& et_general.to_string(tmp_component_reference));
 
 				log_indentation_up;
-
+				log ("precheck", log_threshold);
+				log_indentation_up;
+				
 -- 				-- if the log threshold is one notch more, we log the following stuff:
 -- 				log_threshold := log_threshold + 1;
-				
+
+
+
 				-- reference
 				log ("reference", level => log_threshold);
 				if not tmp_component_text_reference_found then
@@ -3161,11 +3188,12 @@ package body et_kicad is
 
 				log_indentation_down;
 				log_indentation_down;
+				log_indentation_down;				
 				
 				exception
 					when constraint_error =>
-						write_message(
-							file_handle => current_output,
+						log_indentation_reset;
+						log (
 							text => message_error & "component " & et_general.to_string (tmp_component_reference)
 								& " " & et_schematic.to_string (tmp_component_position),
 							console => true);
@@ -3280,8 +3308,9 @@ package body et_kicad is
 							position => component_cursor,
 							inserted => component_inserted); -- this flag is just formal. no further evaluation
 
-							et_schematic.write_component_properties (component => component_cursor);
-
+							if log_level >= 1 then
+								et_schematic.write_component_properties (component => component_cursor);
+							end if;
 							
 					when sch_pcb => -- we have a line like "L 74LS00 U1"
 
@@ -3335,8 +3364,10 @@ package body et_kicad is
 							position => component_cursor,
 							inserted => component_inserted); -- this flag is just formal. no further evaluation
 
-							et_schematic.write_component_properties (component => component_cursor);
-
+							if log_level >= 1 then						
+								et_schematic.write_component_properties (component => component_cursor);
+							end if;
+							
 							-- Test if footprint has been associated with the component.
 							if et_libraries.content (tmp_component_text_packge)'size = 0 then
 								log_indentation_reset;
@@ -3478,8 +3509,10 @@ package body et_kicad is
 					raise constraint_error;
 				end if;
 
-				write_unit_properties (unit => unit_cursor);
-					
+				if log_level >= 1 then				
+					write_unit_properties (unit => unit_cursor);
+				end if;
+				
 			end insert_unit;
 			
 
@@ -3506,11 +3539,12 @@ package body et_kicad is
 								comment_mark => "", -- there are no comment marks in the schematic file
 								ifs => latin_1.space); -- fields are separated by space
 					
-					case field_count(line) is
+					case field_count (line) is
 						when 0 => null; -- we skip empty lines
 						when others =>
 
---  							put_line("line ->" & to_string(line));
+							-- At a certain log level we report the whole line as it is:
+ 							log (to_string(line), level => 3);
 							
 							-- read schematic headline like "EESchema Schematic File Version 2"
 							if not schematic_headline_processed then
@@ -3797,14 +3831,12 @@ package body et_kicad is
 										if get_field_from_line(line,1) = schematic_keyword_wire then
 											if get_field_from_line(line,2) = schematic_keyword_wire then
 												if get_field_from_line(line,3) = schematic_keyword_line then
-													--put_line(to_string(line_of_schematic_file));
 													net_segment_entered := true; -- CS: assumption: segment coordinates follow in next line
 												end if;
 											end if;
 										end if;
 									else
 										net_segment_entered := false; -- we are leaving a net segment
-										--put_line(to_string(line_of_schematic_file));
 
 										-- CS: warning on segment with zero length
 										
@@ -3851,7 +3883,6 @@ package body et_kicad is
 											get_field_from_line(line,2) = schematic_keyword_label_simple then
 
 											simple_label_entered := true;
-											--put_line(to_string(line_of_schematic_file));
 
 											-- Build a temporarily simple label from a line like "Text Label 5350 3050 0    60   ~ 0" :
 											label_simple_scratch.coordinates.path := path_to_submodule;
@@ -3896,7 +3927,6 @@ package body et_kicad is
 											then
 										
 											tag_label_entered := true;
-											--put_line(to_string(line_of_schematic_file));
 
 											-- Build a temporarily hierarchic/global label from a line like "Text GLabel 1850 3100 0 58 BiDi ~ 0"
 											-- The keyword in field 2 tells whether we have a hierarchic or global label:
@@ -4020,7 +4050,6 @@ package body et_kicad is
 											type_components.update_element (module.components, component_cursor, insert_unit'access);
 
 										else
-											--put_line("line ->" & to_string(line));
 											-- READ COMPONENT SECTION CONTENT
 											
 											-- Read component name and annotation from a line like "L NetChanger N1". 

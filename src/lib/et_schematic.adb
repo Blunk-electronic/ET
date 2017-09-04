@@ -59,9 +59,10 @@ package body et_schematic is
 		-- CS: exception handler
 	end to_string;
 	
-	procedure write_label_properties ( label : in type_net_label) is
+	procedure write_label_properties (label : in type_net_label) is
 	-- Writes the properties of the given net label in the logfile.
 		use et_string_processing;
+		log_threshold : type_log_level := 1;
 	begin
 		log_indentation_up;
 		case label.label_appearance is
@@ -73,9 +74,9 @@ package body et_schematic is
 		end case;
 
 		log_indentation_up;
-		log (text => "name '" & type_net_name.to_string (label.text) & "' ");
-		log (text => et_schematic.to_string (label.coordinates));
-		log (text => et_libraries.to_string (label.orientation));
+		log ("name '" & type_net_name.to_string (label.text) & "' ");
+		log (et_schematic.to_string (label.coordinates));
+		log (et_libraries.to_string (label.orientation), log_threshold);
 		
 		case label.label_appearance is
 			when simple =>
