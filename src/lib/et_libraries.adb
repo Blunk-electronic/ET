@@ -69,6 +69,13 @@ package body et_libraries is
 		return (preamble & type_angle'image (angle) & suffix);
 	end to_string;
 
+	procedure warning_angle_greater_90_degrees is
+	begin
+		log (message_warning 
+			& "text placed in an angle greater than" 
+			& type_angle_90'image(type_angle_90'last));
+	end warning_angle_greater_90_degrees;
+	
 	function to_string (port_name : in type_port_name.bounded_string) return string is
 	-- Returns the given port name as string.
 	begin

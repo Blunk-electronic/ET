@@ -819,7 +819,7 @@ package body et_kicad is
 
 
 				function to_content (text_in : in string) return type_text_content.bounded_string is
-				-- Replaces tilds in given string by space and returns a type_text_content.bounded_string.
+				-- Replaces tildss in given string by space and returns a type_text_content.bounded_string.
 					t : string (1..text_in'length) := text_in; -- copy given text to t
 				begin
 					-- replace tildes in given text by spaces.
@@ -828,7 +828,10 @@ package body et_kicad is
 				end to_content;
 				
 			begin -- to_text
-				-- CS: text.orientation	:= et_libraries.type_grid'value (field (line,3));
+				text.orientation	:= to_degrees (field (line,2));
+				if text.orientation not in type_angle_90 then
+					warning_angle_greater_90_degrees;
+				end if;
 				
 				text.position.x		:= type_grid'value (field (line,3));
 				text.position.y		:= type_grid'value (field (line,4));
