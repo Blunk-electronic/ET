@@ -42,12 +42,7 @@ with ada.numerics.real_arrays;  use ada.numerics.real_arrays;
 with ada.directories;			use ada.directories;
 with ada.exceptions; 			use ada.exceptions;
 
-with et_schematic;				use et_schematic;
-
-with et_geometry;				use et_geometry;
-
-with et_general;				use et_general;
-with et_string_processing;		use et_string_processing;
+with et_string_processing;
 
 package body et_libraries is
 
@@ -70,6 +65,7 @@ package body et_libraries is
 	end to_string;
 
 	procedure warning_angle_greater_90_degrees is
+		use et_string_processing;
 	begin
 		log (et_string_processing.message_warning 
 			& "text placed in an angle greater than" 
@@ -82,7 +78,7 @@ package body et_libraries is
 		return type_port_name.to_string (port_name);
 	end to_string;
 	
-	function to_string ( name_in_library : in type_component_name.bounded_string) return string is
+	function to_string (name_in_library : in type_component_name.bounded_string) return string is
 	-- Returns the given name_in_library as as string.
 	-- CS: provide a parameter that turns the pretext like "name in library" on/off
 	begin
@@ -90,7 +86,7 @@ package body et_libraries is
 		return (type_component_name.to_string(name_in_library));
 	end to_string;
 
-	function to_string ( packge : in type_component_package_name.bounded_string) return string is
+	function to_string (packge : in type_component_package_name.bounded_string) return string is
 	-- Returns the given package name as as string.
 	-- CS: provide a parameter that turns the pretext on/off
 	begin
@@ -107,6 +103,7 @@ package body et_libraries is
 	-- If the library name or package name of given variant is empty, assume item_not_specified.
 	-- This produces a still readable output like "library item_not_specified package item_not_specified".
 		v : type_component_variant := variant;
+		use et_string_processing;
 	begin
 		if type_library_full_name.length(v.library) = 0 then
 			v.library := type_library_full_name.to_bounded_string (item_not_specified);

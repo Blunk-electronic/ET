@@ -37,15 +37,13 @@ with ada.characters.handling;	use ada.characters.handling;
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
---with ada.containers.vectors;
+
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
-with et_general;
---with et_schematic;
 with et_string_processing;
 
 package et_libraries is

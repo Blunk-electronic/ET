@@ -42,7 +42,7 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
-with et_general;                use et_general;
+with et_general;
 with et_libraries;				use et_libraries;
 with et_string_processing;
 
@@ -352,7 +352,7 @@ package et_schematic is
     -- the final drawing frame
     type type_frame is record
         coordinates     : type_coordinates;
-        paper_size      : type_paper_size; -- the size of the paper
+        paper_size      : et_general.type_paper_size; -- the size of the paper
         size_x, size_y  : et_libraries.type_grid; -- the dimensions of the frame (should fit into paper_size) 
         lines           : type_list_of_frame_lines.vector;
         texts           : type_list_of_frame_texts.vector;
