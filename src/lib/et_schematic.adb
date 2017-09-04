@@ -110,7 +110,7 @@ package body et_schematic is
 		if et_libraries.type_text_content.length (note.content) > 0 then
 			log ("content '" & type_text_content.to_string (note.content) & "'");
 		else
-			log (message_warning & "no content !"); 
+			log (et_string_processing.message_warning & "no content !"); 
 		end if;
 
 		

@@ -71,7 +71,7 @@ package body et_libraries is
 
 	procedure warning_angle_greater_90_degrees is
 	begin
-		log (message_warning 
+		log (et_string_processing.message_warning 
 			& "text placed in an angle greater than" 
 			& type_angle_90'image(type_angle_90'last));
 	end warning_angle_greater_90_degrees;
@@ -109,11 +109,11 @@ package body et_libraries is
 		v : type_component_variant := variant;
 	begin
 		if type_library_full_name.length(v.library) = 0 then
-			v.library := type_library_full_name.to_bounded_string(et_general.item_not_specified);
+			v.library := type_library_full_name.to_bounded_string (item_not_specified);
 		end if;
 
 		if type_component_package_name.length(v.packge) = 0 then
-			v.packge := type_component_package_name.to_bounded_string(et_general.item_not_specified);
+			v.packge := type_component_package_name.to_bounded_string (item_not_specified);
 		end if;
 		
 		return ("library " & type_library_full_name.to_string(v.library)

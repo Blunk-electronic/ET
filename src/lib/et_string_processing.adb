@@ -101,13 +101,20 @@ package body et_string_processing is
 		return type_date(date);
 	end date_now;
 
+	function message_warning return string is
+	-- Returns a warning string and increments the warning counter.
+	begin
+		warning_counter := warning_counter + 1;
+		return "WARNING #" & trim (type_warning_counter'image (warning_counter),left) & " ! ";
+	end message_warning;
+
 	procedure check_updated_vs_commissioned ( commissioned , updated : in type_date) is
 	-- Checks whether updated is later or equal commissioned.		
 	begin
 		if updated < commissioned then -- if updated before commissioned
 			write_message (
 				file_handle => current_output,
-				text => et_general.message_error & "The time of update is before the time of commission !"
+				text => message_error & "The time of update is before the time of commission !"
 					& latin_1.lf 
 					& "commissioned : " & string(commissioned) & latin_1.lf
 					& "updated      : " & string(updated),

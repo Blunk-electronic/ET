@@ -96,6 +96,7 @@ procedure et is
 
 	use et_import.type_project_file_name;
 	use et_import;
+	use et_string_processing;
 begin
 
 	get_commandline_arguments;

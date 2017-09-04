@@ -59,7 +59,7 @@ package body et_general is
 		begin
 			et_string_processing.write_message(
 				file_handle => current_output,
-				text => latin_1.lf & message_error & "invalid component reference '" & text_in & "'",
+				text => latin_1.lf & et_string_processing.message_error & "invalid component reference '" & text_in & "'",
 				console => true);
 			
 			raise constraint_error;

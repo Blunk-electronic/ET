@@ -96,6 +96,17 @@ package et_string_processing is
 	procedure check_updated_vs_commissioned ( commissioned , updated : in type_date);
 	-- Checks whether updated is later or equal commissioned.
 
+	row_separator_single			: constant string (1..100)	:= 100 * "-";	
+	row_separator_double			: constant string (1..100)	:= 100 * "=";
+	item_not_specified				: constant string (1..7)	:= "missing";
+	
+-- WARNING AND ERROR MESSAGES
+	message_error : constant string (1..8)	:= "ERROR ! ";
+	type type_warning_counter is new natural;
+	warning_counter : type_warning_counter := 0;
+	function message_warning return string;
+	-- Returns a warning string and increments the warning counter.
+	
 -- TIMESTAMP
 	timestamp_characters : character_set := to_set (ranges => (('A','F'),('0','9'))); -- CS: upper case letters only	
 	type type_timestamp is new string (1..8); -- like "3459A3C1"

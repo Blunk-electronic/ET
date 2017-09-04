@@ -49,7 +49,7 @@ with et_string_processing;
 
 package et_libraries is
 
-	-- LIBRARY NAMES AND DIRECTORIES
+-- LIBRARY NAMES AND DIRECTORIES
 
 	-- For storing bare library names like "bel_primitives" we use this bounded string:
 	library_name_length_max : constant natural := 100; -- CS: increase if necessary

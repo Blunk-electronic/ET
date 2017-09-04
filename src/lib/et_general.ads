@@ -66,15 +66,7 @@ package et_general is
 	-- All reports go into this directory:
 	report_directory		: constant string (1..10)	:= "et_reports";
 	report_extension		: constant string (1..3)	:= "log";
-	
 
-	
--- FREQUENTLY USED WORDS AND PHRASES -- CS: move to et_string_processing -- CS: move to et_string_processing
-	message_error					: constant string (1..8)	:= "ERROR ! ";
-	message_warning					: constant string (1..10)	:= "WARNING ! ";	
-	row_separator_single			: constant string (1..100)	:= 100 * "-";	
-	row_separator_double			: constant string (1..100)	:= 100 * "=";
-	item_not_specified				: constant string (1..7)	:= "missing";
 	
 -- COMMAND LINE SWITCHES
 	--switch_about			: constant string (1..7) := "--about"; -- CS
@@ -84,38 +76,6 @@ package et_general is
 --	switch_import_file		: constant string (1..12)	:= "-import_file";	-- long switch -- currently we do not care about importing single files
 	switch_import_project	: constant string (1..15)	:= "-import_project";	-- long switch
 	switch_import_format	: constant string (1..14)	:= "-import_format";	-- long switch
-
-
-
-
--- 	-- ACTIONS
--- 	type type_action is ( none, request_version, import_cad );
-
-    
-
--- 	-- LIBRARY NAMES AND DIRECTORIES
--- 
--- 	-- For storing bare library names like "bel_primitives" we use this bounded string:
--- 	library_name_length_max : constant natural := 100; -- CS: increase if necessary
---     package type_library_name is new generic_bounded_length(library_name_length_max); use type_library_name;
--- 
--- 	-- Bare library names can be stored further-on in an ordered set like this:
--- 	-- We use a doubly linked list because the order of the library names sometimes matters.
---     package type_list_of_library_names is new doubly_linked_lists (
--- 		element_type => type_library_name.bounded_string);
--- 
--- 	-- The base directory where libraries live is stored in a bounded string:
--- 	library_directory_length_max : constant positive := 300; -- CS: increase if necessary
--- 	package type_library_directory is new generic_bounded_length(library_directory_length_max); use type_library_directory;
--- 
--- 	-- If a library is fully specified with path, name and extension we store them in bounded strings:
--- 	library_full_name_max : constant positive := library_directory_length_max + library_name_length_max + 4;
--- 	package type_library_full_name is new generic_bounded_length(library_full_name_max); use type_library_full_name;
--- 
--- 	-- Full library names can be stored furhter-on in an ordered set like this:
--- 	-- We use a doubly linked list because the order of the library names sometimes matters.
--- 	package type_list_of_full_library_names is new doubly_linked_lists (
--- 		element_type => type_library_full_name.bounded_string);
 
 
 	

@@ -2657,8 +2657,10 @@ package body et_kicad is
 												else
 													-- If label text is different from previously assigned net name:
 													if type_net_name.to_string(a.name) /= type_net_name.to_string(ls.text) then 
-														log (message_warning & "Net '" & type_net_name.to_string(a.name) &
-														"' has contradicting label '" & type_net_name.to_string(ls.text) & "'");
+														log (message_warning & "Net '" 
+															 & type_net_name.to_string(a.name) 
+															 & "' has contradicting label '" 
+															 & type_net_name.to_string(ls.text) & "'");
 													end if;
 												end if;
 
@@ -2729,8 +2731,10 @@ package body et_kicad is
 												else
 													-- If label text is different from previously assigned net name:
 													if type_net_name.to_string(a.name) /= type_net_name.to_string(lt.text) then 
-														log (message_warning & "Net '" & type_net_name.to_string(a.name) &
-														"' has contradicting label '" & type_net_name.to_string(lt.text) & "'");
+														log (message_warning 
+															 & "Net '" & type_net_name.to_string(a.name) 
+															 & "' has contradicting label '" 
+															 & type_net_name.to_string(lt.text) & "'");
 													end if;
 
 													-- CS: check for contradicting scope
@@ -2890,7 +2894,8 @@ package body et_kicad is
 					log_indentation_down;
 					
 				else
-					log (message_warning & "The schematic does not contain nets to associate net labels with !");
+					log (message_warning 
+						 & "The schematic does not contain nets to associate net labels with !");
 				end if;
 
 				log_indentation_down;
@@ -3853,10 +3858,10 @@ package body et_kicad is
 											submodule_gui_scratch.text_size_of_file := et_libraries.type_text_size'value(get_field_from_line(line,3));
 											
 											-- Test if sheet name and file name match:
-											if type_submodule_name.to_string(submodule_gui_scratch.name) /= base_name(type_submodule_name.to_string(name_of_submodule_scratch)) then
+											if type_submodule_name.to_string (submodule_gui_scratch.name) /= base_name (type_submodule_name.to_string (name_of_submodule_scratch)) then
 												log (text => message_warning & "name mismatch: sheet: " &
-													type_submodule_name.to_string(submodule_gui_scratch.name) &
-													" file: " & type_submodule_name.to_string(name_of_submodule_scratch));
+													type_submodule_name.to_string (submodule_gui_scratch.name) &
+													" file: " & type_submodule_name.to_string (name_of_submodule_scratch));
 											end if;
 										end if;
 

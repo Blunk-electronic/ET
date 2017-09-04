@@ -424,7 +424,7 @@ package et_schematic is
 
 -- MODULE
 	-- The nets of a module are collected in a vector list.
-	package type_net_list_of_module is new vectors (
+	package type_net_list_of_module is new vectors ( -- CS: should be map with net name as key
 		index_type => positive, -- every net of a module has an id
 		element_type => type_net);
 
