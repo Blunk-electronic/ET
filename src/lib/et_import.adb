@@ -58,6 +58,15 @@ package body et_import is
 	-- Sets the output back to standard_output.
 	begin
 		put_line(row_separator_double);
+		
+		if warning_counter = 0 then
+			put_line ("no warnings");
+		else
+			put_line ("warnings" & type_warning_counter'image (warning_counter));
+		end if;
+		
+		put_line(row_separator_single);
+		
 		put_line("date " & string(date_now));
 		put_line(system_name & " import report end");
 
