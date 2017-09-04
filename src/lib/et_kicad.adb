@@ -286,8 +286,8 @@ package body et_kicad is
 	-- example: DEF 74LS00 IC 0 30 Y Y 4 F N
 	-- In a schematic it is defined by a hash sign:
 	-- example: L P3V3 #PWR07
-		return et_general.type_component_appearance is
-		comp_app	: et_general.type_component_appearance;
+		return et_libraries.type_component_appearance is
+		comp_app	: et_libraries.type_component_appearance;
 		lca			: type_library_component_appearance;
 
 		function field (
@@ -304,7 +304,9 @@ package body et_kicad is
 		
 				-- CS: refine output.
 			raise constraint_error;
-		end invalid_appearance;		
+		end invalid_appearance;	
+
+		use et_libraries;
 
 	begin -- to_appearance
 		case schematic is
@@ -315,9 +317,9 @@ package body et_kicad is
 				-- If it is about a schematic component we just test if the first
 				-- character of the 3ed subfield is a hash sign.
 				if field(line,3)(field(line,3)'first) = schematic_component_power_symbol_prefix then
-					comp_app := et_general.sch;
+					comp_app := sch;
 				else
-					comp_app := et_general.sch_pcb;
+					comp_app := sch_pcb;
 				end if;
 				
 			when false =>
@@ -330,9 +332,9 @@ package body et_kicad is
 				-- Evaluate lca and set comp_app accordingly.
 				case lca is
 					when N =>
-						comp_app := et_general.sch_pcb;
+						comp_app := sch_pcb;
 					when P => 
-						comp_app := et_general.sch;
+						comp_app := sch;
 				end case;
 		end case;
 		
@@ -450,8 +452,8 @@ package body et_kicad is
 			-- gets fully assembled and inserted into the component list of a particular library.
 			-- These properties apply for the whole component (means for all its units):
 			tmp_component_name		: type_component_name.bounded_string; -- 74LS00
-			tmp_prefix				: et_general.type_component_prefix.bounded_string; -- IC
-			tmp_appearance			: et_general.type_component_appearance;
+			tmp_prefix				: type_component_prefix.bounded_string; -- IC
+			tmp_appearance			: type_component_appearance;
 
 			tmp_port_name_visible	: type_port_visible;
 			tmp_pin_name_visible	: type_pin_visible;
@@ -1644,7 +1646,7 @@ package body et_kicad is
 								
 					-- CS: Do a cross check of prefix and reference -- "U" 
 					-- CS: why this redundance ? Ask the kicad makers...
-					if strip_quotes (field (line,2)) = et_general.type_component_prefix.to_string (tmp_prefix) then
+					if strip_quotes (field (line,2)) = type_component_prefix.to_string (tmp_prefix) then
 						null; -- fine
 					else
 						log (message_warning & affected_line(line) & ": prefix vs. reference mismatch !");
@@ -1816,7 +1818,7 @@ package body et_kicad is
 								--  #9 : all units not interchangeable L (otherwise F), (similar to swap level in EAGLE)
 								--  #10: power symbol P (otherwise N)
 
-								tmp_prefix := et_general.type_component_prefix.to_bounded_string (get_field_from_line (line,3)); -- U
+								tmp_prefix := type_component_prefix.to_bounded_string (get_field_from_line (line,3)); -- U
 								tmp_port_name_offset	:= type_grid'value  (get_field_from_line (line,5)); -- relevant for supply pins only
 								tmp_pin_name_visible	:= to_pin_visibile  (get_field_from_line (line,6));
 								tmp_port_name_visible	:= to_port_visibile (get_field_from_line (line,7));
@@ -3014,8 +3016,8 @@ package body et_kicad is
 			-- These temporarily used variables store information used when assembling and inserting a component
 			-- or a unit in the component/unit list:
 			tmp_component_name_in_lib	: et_libraries.type_component_name.bounded_string;
-			tmp_component_appearance	: et_general.type_component_appearance := et_general.sch;
-			tmp_component_reference		: et_general.type_component_reference;
+			tmp_component_appearance	: et_libraries.type_component_appearance := et_libraries.sch;
+			tmp_component_reference		: et_schematic.type_component_reference;
 			tmp_component_unit_name		: et_libraries.type_unit_name.bounded_string;
 			tmp_component_alt_repres	: et_schematic.type_alternative_representation;
 			tmp_component_timestamp		: et_string_processing.type_timestamp;
@@ -3069,14 +3071,15 @@ package body et_kicad is
 			-- Perfoms a plausibility and syntax check on the text fields before they are used to 
 			-- assemble and insert the component into the component list of the module.
 			-- This can be regarded as a kind of pre-check.
-				procedure missing_field ( m : in et_libraries.type_text_meaning) is 
+				procedure missing_field (m : in et_libraries.type_text_meaning) is 
+					use et_schematic;
 				begin
 					log_indentation_reset;
 					log (
 						text => message_error 
-							& "component " & et_general.to_string (tmp_component_reference) 
+							& "component " & to_string (tmp_component_reference) 
 							& latin_1.space
-							& et_schematic.to_string(tmp_component_position)
+							& to_string (tmp_component_position)
 							& latin_1.lf
 							& "text field '" & et_libraries.to_string(m) & "' missing !",
 						console => true);
@@ -3088,13 +3091,14 @@ package body et_kicad is
 
 				-- we set the log threshold level so that details are hidden when no log level specified
 				log_threshold : type_log_level := 1;
-				
-			begin
+
+				use et_libraries;
+			begin -- check_text_fields
 				log_indentation_up;
 
 				-- write precheck preamble
 				log ("component " 
-					& et_general.to_string(tmp_component_reference));
+					& to_string(tmp_component_reference));
 
 				log_indentation_up;
 				log ("precheck", log_threshold);
@@ -3119,10 +3123,10 @@ package body et_kicad is
 					-- P 4100 4000
 					-- F 0 "IC1" H 4100 4050 50  0000 C BIB <- tmp_component_text_reference
 					
-					if et_general.to_string (tmp_component_reference) /= et_libraries.content (tmp_component_text_reference) then
+					if et_schematic.to_string (tmp_component_reference) /= et_libraries.content (tmp_component_text_reference) then
 						log_indentation_reset;
 						log (message_error & " reference mismatch !");
-						log (et_general.to_string(tmp_component_reference) & " vs " & et_libraries.content(tmp_component_text_reference));
+						log (et_schematic.to_string (tmp_component_reference) & " vs " & et_libraries.content(tmp_component_text_reference));
 						raise constraint_error;
 					end if;
 
@@ -3135,7 +3139,7 @@ package body et_kicad is
 					missing_field (et_libraries.value);
 				else
 					-- depending on the component reference (like R12 or C9) the value must meet certain conventions:
-					if not et_libraries.component_value_valid (
+					if not et_schematic.component_value_valid (
 						value => et_libraries.type_component_value.to_bounded_string (
 							et_libraries.content (tmp_component_text_value)), -- the content of the value field like 200R or 10uF
 						reference => tmp_component_reference) -- the component reference such as R4 or IC34
@@ -3240,7 +3244,7 @@ package body et_kicad is
 					when constraint_error =>
 						log_indentation_reset;
 						log (
-							text => message_error & "component " & et_general.to_string (tmp_component_reference)
+							text => message_error & "component " & et_schematic.to_string (tmp_component_reference)
 								& " " & et_schematic.to_string (tmp_component_position),
 							console => true);
 						-- CS: evaluate prog position and provided more detailled output
@@ -3328,6 +3332,7 @@ package body et_kicad is
 					line		: in et_string_processing.type_fields_of_line;
 					position	: in positive) return string renames et_string_processing.get_field_from_line;
 
+				use et_libraries;
 			begin -- insert_component
 				-- The compoenent is inserted into the components list of the module according to its appearance.
 				-- If the component has already been inserted, it will not be inserted again.
@@ -3335,13 +3340,13 @@ package body et_kicad is
 					
 					when sch => -- we have a line like "L P3V3 #PWR07"
 				
-						type_components.insert(
+						et_schematic.type_components.insert(
 							container => module.components,
 													
 							key => tmp_component_reference,
 
 							new_item => (
-								appearance => et_general.sch, -- the component appears in schematic only
+								appearance => sch, -- the component appears in schematic only
 								name_in_library => tmp_component_name_in_lib,
 								value => et_libraries.type_component_value.to_bounded_string (et_libraries.content (tmp_component_text_value)),
 								commissioned => et_string_processing.type_date (et_libraries.content (tmp_component_text_commissioned)),
@@ -3366,13 +3371,13 @@ package body et_kicad is
 								ifs => latin_1.colon);
 
 						
-						type_components.insert(
+						et_schematic.type_components.insert(
 							container => module.components,
 
 							key => tmp_component_reference,
 
 							new_item => (
-								appearance => et_general.sch_pcb, -- the component appears in both schematic and layout
+								appearance => sch_pcb, -- the component appears in both schematic and layout
 								name_in_library => tmp_component_name_in_lib,
 								value => et_libraries.type_component_value.to_bounded_string (et_libraries.content (tmp_component_text_value)),
 								commissioned => et_string_processing.type_date (et_libraries.content (tmp_component_text_commissioned)),
@@ -3418,7 +3423,7 @@ package body et_kicad is
 							if et_libraries.content (tmp_component_text_packge)'size = 0 then
 								log_indentation_reset;
 								log (
-									text => message_error & et_general.to_string(tmp_component_reference) & ": footprint not specified !",
+									text => message_error & et_schematic.to_string(tmp_component_reference) & ": footprint not specified !",
 									console => true);
 								raise constraint_error;
 							end if;
@@ -3453,7 +3458,7 @@ package body et_kicad is
 					when constraint_error =>
 						log_indentation_reset;
 						log (
-							text => message_error & "component " & et_general.to_string (tmp_component_reference)
+							text => message_error & "component " & et_schematic.to_string (tmp_component_reference)
 								& " " & et_schematic.to_string (tmp_component_position),
 							console => true);
 						raise constraint_error;
@@ -3461,7 +3466,7 @@ package body et_kicad is
 			end insert_component;
 			
 
-			procedure insert_unit ( key : in et_general.type_component_reference; component : in out et_schematic.type_component ) is 
+			procedure insert_unit (key : in et_schematic.type_component_reference; component : in out et_schematic.type_component ) is 
 			-- Inserts a unit into the unit list of a component. The text fields around a unit are placeholders.
 			-- The properties of the placeholder texts are loaded with the properties of the text fields of the units
 			-- found in the schematic. The idea behind is to store just basic text properties (type_text_basic) 
@@ -3471,7 +3476,9 @@ package body et_kicad is
 
 				unit_cursor : type_units.cursor;
 				unit_inserted : boolean;
-
+			
+				use et_libraries;
+			
 			begin -- insert_unit
 				case tmp_component_appearance is
 
@@ -3480,7 +3487,7 @@ package body et_kicad is
 						et_schematic.type_units.insert(
 							container => component.units, -- the unit list of the component
 							new_item => (
-								appearance		=> et_general.sch,
+								appearance		=> sch,
 								position		=> tmp_component_position,
 								name			=> tmp_component_unit_name,
 								timestamp		=> tmp_component_timestamp,
@@ -3511,7 +3518,7 @@ package body et_kicad is
 						et_schematic.type_units.insert(
 							container => component.units, -- the unit list of the component
 							new_item => (
-								appearance		=> et_general.sch_pcb,
+								appearance		=> sch_pcb,
 								position		=> tmp_component_position,
 								name			=> tmp_component_unit_name,
 								timestamp		=> tmp_component_timestamp,
@@ -3561,7 +3568,8 @@ package body et_kicad is
 				
 			end insert_unit;
 			
-
+			use et_libraries;
+			
 		begin -- read_schematic
 			log_indentation_reset;
 			log_indentation_up;
@@ -4093,7 +4101,7 @@ package body et_kicad is
 	
 											-- The component_cursor now points to the component in the component list.
 											-- We update the component with the collected unit information.
-											type_components.update_element (module.components, component_cursor, insert_unit'access);
+											et_schematic.type_components.update_element (module.components, component_cursor, insert_unit'access);
 
 										else
 											-- READ COMPONENT SECTION CONTENT
@@ -4107,14 +4115,14 @@ package body et_kicad is
 												
 													when sch => 
 														-- we have a line like "L P3V3 #PWR07"
-														tmp_component_reference := et_general.to_component_reference(
+														tmp_component_reference := et_schematic.to_component_reference(
 																text_in => get_field_from_line(line,3),
 																allow_special_character_in_prefix => true);
 
 													when sch_pcb =>
 
 														-- we have a line like "L 74LS00 U1"
-														tmp_component_reference := et_general.to_component_reference(
+														tmp_component_reference := et_schematic.to_component_reference(
 																text_in => get_field_from_line(line,3),
 																allow_special_character_in_prefix => false);
 

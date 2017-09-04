@@ -421,9 +421,19 @@ package et_schematic is
 
 
 
+	type type_component_reference is record -- CS: should be private
+		prefix		: type_component_prefix.bounded_string := component_reference_prefix_default; -- like "IC"
+		id			: natural := component_reference_id_default; -- like "303"
+		id_width	: positive; -- the number of digits in the id. 3 in case of an id of 303
+		-- NOTE: This allows something like R091 or IC0 (there are reasons for such strange things ...)
+	end record;
 
-
-
+	function component_value_valid (
+	-- Returns true if the given component value meets certain conventions.									   
+		value 		: in type_component_value.bounded_string;
+		reference	: in type_component_reference) 
+		return boolean;
+	
 	function to_component_reference (
 	-- Converts a string like "IC303" to a composite type_component_reference.
 	-- If allow_special_charater_in_prefix is given true, the first character
@@ -433,13 +443,10 @@ package et_schematic is
 		allow_special_character_in_prefix : in boolean := false)
 		return type_component_reference;
 
-	function to_string ( reference : in type_component_reference) return string;
+	function to_string (reference : in type_component_reference) return string;
 	-- Returns the given compoenent reference as string.
 
-	function to_string ( appearance : in type_component_appearance) return string;
-	-- Returns the given component appearance as string.
-	
-	function compare_component_by_reference ( left, right : in type_component_reference) return boolean;
+	function compare_component_by_reference (left, right : in type_component_reference) return boolean;
 	-- Returns true if left comes before right.
 	-- If left equals right, the return is false.	
 	

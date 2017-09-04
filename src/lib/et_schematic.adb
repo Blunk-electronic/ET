@@ -325,6 +325,43 @@ package body et_schematic is
 	end write_coordinates_of_junction;			
 	
 
+	function component_value_valid (
+	-- Returns true if the given component value meets certain conventions.									   
+		value 		: in type_component_value.bounded_string;
+		reference	: in type_component_reference)
+		return boolean is
+
+		use et_libraries.type_component_value;
+		i : natural := 0;
+		v : boolean := false;
+	begin
+		-- Rule #1: There are only those characters allowed as specified in component_value_characters:
+		i := index ( source => value, set => component_value_characters, test => outside);
+
+		case i is
+			when 0 => -- test passed. no forbidden characters found
+				v := true;
+
+			when others =>
+				v := false;
+				et_string_processing.write_message(
+					file_handle => current_output,
+					text => et_string_processing.message_error & "value '" & et_libraries.to_string (value) & "' contains invalid character "
+						& "at position" & natural'image(i),
+					console => true);
+				-- CS: goto end
+		end case;
+
+		-- Rule #2: Units in accordance with the component prefix
+		-- CS:
+
+		-- goto-label here
+		
+		return v;
+	end component_value_valid;
+
+
+	
 	function to_component_reference (
 	-- Converts a string like "IC303" to a composite type_component_reference.
 	-- If allow_special_character_in_prefix is given true, the first character
@@ -450,19 +487,7 @@ package body et_schematic is
 		end case;
 	end to_string;
 
-	function to_string ( appearance : in type_component_appearance) return string is
-	-- Returns the given component appearance as string.
-	begin
-		case appearance is
-			when sch =>
-				return ("appears in schematic only (virtual component)");
-			when sch_pcb =>
-				return ("appears in schematic and layout");
-			when pcb =>
-				return ("appears in layout only (mechanical component)");
-		end case;
-	end to_string;
-	
+
 	function compare_component_by_reference ( left, right : in type_component_reference) return boolean is
 	-- Returns true if left comes before right.
 	-- If left equals right, the return is false.

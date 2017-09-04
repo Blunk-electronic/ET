@@ -466,6 +466,10 @@ package et_libraries is
 		-- CS: wire
 		-- ...
 		);
+
+	function to_string (appearance : in type_component_appearance) return string;
+	-- Returns the given component appearance as string.
+
 	
 	type type_symbol (appearance : type_component_appearance) is record
 		shapes		: type_shapes; -- the collection of shapes
@@ -556,9 +560,10 @@ package et_libraries is
 	component_value_characters : character_set := to_set (ranges => (('A','Z'),('a','z'),('0','9'))) or to_set('_');
 	package type_component_value is new generic_bounded_length (component_value_length_max);
 
-	function to_string ( value : in type_component_value.bounded_string) return string;
+	function to_string (value : in type_component_value.bounded_string) return string;
 	-- Returns the given value as string.
 
+	
 	-- Component referencees (in Eagle "device names") have prefixes like R, C, IC, ...	
 	component_prefix_length_max : constant natural := 10; -- CS: there is no reason to work with longer prefixes.
 	package type_component_prefix is new generic_bounded_length(component_prefix_length_max);
@@ -571,18 +576,7 @@ package et_libraries is
 	component_reference_id_default : constant natural := 0;
 	
 	
-	type type_component_reference is record -- CS: should be private
-		prefix		: type_component_prefix.bounded_string := component_reference_prefix_default; -- like "IC"
-		id			: natural := component_reference_id_default; -- like "303"
-		id_width	: positive; -- the number of digits in the id. 3 in case of an id of 303
-		-- NOTE: This allows something like R091 or IC0 (there are reasons for such strange things ...)
-	end record;
 	
-	function component_value_valid (
-	-- Returns true if the given component value meets certain conventions.									   
-		value 		: in type_component_value.bounded_string;
-		reference	: in type_component_reference) 
-		return boolean;
 
 
 	

@@ -220,7 +220,7 @@ package body et_libraries is
 	end write_text_properies;
 
 
-	function content ( text : in type_text) return string is
+	function content (text : in type_text) return string is
 	-- Returns the content of the given text as string.
 		c : type_text_content.bounded_string;
 	begin
@@ -228,50 +228,26 @@ package body et_libraries is
 		return type_text_content.to_string(c);
 	end content;
 
-
-
+	
+	function to_string (appearance : in type_component_appearance) return string is
+	-- Returns the given component appearance as string.
+	begin
+		case appearance is
+			when sch =>
+				return ("appears in schematic only (virtual component)");
+			when sch_pcb =>
+				return ("appears in schematic and layout");
+			when pcb =>
+				return ("appears in layout only (mechanical component)");
+		end case;
+	end to_string;
 
 	
-	function to_string ( value : in type_component_value.bounded_string) return string is
+	function to_string (value : in type_component_value.bounded_string) return string is
 	-- Returns the given value as string.
 	begin
 		return type_component_value.to_string(value);
 	end to_string;
-
-	function component_value_valid (
-	-- Returns true if the given component value meets certain conventions.									   
-		value 		: in type_component_value.bounded_string;
-		reference	: in et_general.type_component_reference)
-		return boolean is
-
-		use et_libraries.type_component_value;
-		i : natural := 0;
-		v : boolean := false;
-	begin
-		-- Rule #1: There are only those characters allowed as specified in component_value_characters:
-		i := index ( source => value, set => component_value_characters, test => outside);
-
-		case i is
-			when 0 => -- test passed. no forbidden characters found
-				v := true;
-
-			when others =>
-				v := false;
-				et_string_processing.write_message(
-					file_handle => current_output,
-					text => message_error & "value '" & to_string(value) & "' contains invalid character "
-						& "at position" & natural'image(i),
-					console => true);
-				-- CS: goto end
-		end case;
-
-		-- Rule #2: Units in accordance with the component prefix
-		-- CS:
-
-		-- goto-label here
-		
-		return v;
-	end component_value_valid;
 
 
 	procedure write_component_properties (component : in type_components.cursor) is
