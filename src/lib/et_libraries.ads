@@ -45,6 +45,7 @@ with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 with et_general;
+--with et_schematic;
 with et_string_processing;
 
 package et_libraries is
@@ -456,7 +457,17 @@ package et_libraries is
 	type type_symbol_text is new type_text (meaning => misc) with null record;
 	package type_symbol_texts is new doubly_linked_lists (element_type => type_symbol_text);
 
-	type type_symbol (appearance : et_general.type_component_appearance) is record
+	type type_component_appearance is ( 
+		sch,		-- a component that exists in the schematic only (like power symbols)
+		pcb,		-- a compoennt that exists on the pcb only (like a fiducial)
+		sch_pcb		-- a component that exists in both schematic and soldered on a pcb
+		
+		-- CS: cable 
+		-- CS: wire
+		-- ...
+		);
+	
+	type type_symbol (appearance : type_component_appearance) is record
 		shapes		: type_shapes; -- the collection of shapes
 		texts		: type_symbol_texts.list; -- the collection of texts (meaning misc)
 		ports		: type_ports.map := type_ports.empty_map; -- the ports of the symbol
@@ -470,7 +481,7 @@ package et_libraries is
 		author		: type_text_placeholder (meaning => et_libraries.author);
 		-- Symbols have further text placeholders according to their appearance:
 		case appearance is
-			when et_general.sch_pcb =>
+			when sch_pcb =>
 				packge		: type_text_placeholder (meaning => et_libraries.packge);
 				datasheet	: type_text_placeholder (meaning => et_libraries.datasheet);
 				purpose		: type_text_placeholder (meaning => et_libraries.purpose);
@@ -500,7 +511,7 @@ package et_libraries is
 	
 	-- An internal unit is a symbol with a swap level.
 	-- An internal unit is owned by a particular component exclusively.
-	type type_unit_internal (appearance : et_general.type_component_appearance) is record
+	type type_unit_internal (appearance : type_component_appearance) is record
 		symbol		: type_symbol (appearance);
 		coordinates	: type_coordinates;
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
@@ -548,15 +559,36 @@ package et_libraries is
 	function to_string ( value : in type_component_value.bounded_string) return string;
 	-- Returns the given value as string.
 
+	-- Component referencees (in Eagle "device names") have prefixes like R, C, IC, ...	
+	component_prefix_length_max : constant natural := 10; -- CS: there is no reason to work with longer prefixes.
+	package type_component_prefix is new generic_bounded_length(component_prefix_length_max);
+	use type_component_prefix;
+	
+	-- A component reference (in Eagle "device name") consists of a prefix (like R, C, IC, ..)
+	-- and a consecutive number. Both form something like "IC702"
+	type type_component_reference_element is ( PREFIX, ID);
+	component_reference_prefix_default : constant type_component_prefix.bounded_string := to_bounded_string("?");
+	component_reference_id_default : constant natural := 0;
+	
+	
+	type type_component_reference is record -- CS: should be private
+		prefix		: type_component_prefix.bounded_string := component_reference_prefix_default; -- like "IC"
+		id			: natural := component_reference_id_default; -- like "303"
+		id_width	: positive; -- the number of digits in the id. 3 in case of an id of 303
+		-- NOTE: This allows something like R091 or IC0 (there are reasons for such strange things ...)
+	end record;
+	
 	function component_value_valid (
 	-- Returns true if the given component value meets certain conventions.									   
 		value 		: in type_component_value.bounded_string;
-		reference	: in et_general.type_component_reference) 
+		reference	: in type_component_reference) 
 		return boolean;
 
 
-	type type_component (appearance : et_general.type_component_appearance) is record
-		prefix			: et_general.type_component_prefix.bounded_string; -- R, C, IC, ...
+	
+
+	type type_component (appearance : type_component_appearance) is record
+		prefix			: type_component_prefix.bounded_string; -- R, C, IC, ...
 		value			: type_component_value.bounded_string; -- 74LS00
 		units_internal	: type_units_internal.map := type_units_internal.empty_map;
 		units_external	: type_units_external.map := type_units_external.empty_map;
@@ -568,16 +600,17 @@ package et_libraries is
 
 			-- If a component appears in the schematic only, it does not
 			-- have any package variants.
-			when et_general.sch => null;
+			when sch => null;
 
 			-- If a component appears in both schematic and layout it comes 
 			-- with at least one package/footprint variant. We store variants in a map.
-			when et_general.sch_pcb => 
+			when sch_pcb => 
 				variants	: type_component_variants.map;
 				package_filter : type_package_filter.set := type_package_filter.empty_set;
 				datasheet	: type_component_datasheet.bounded_string;
 				purpose		: type_component_purpose.bounded_string;
 				partcode	: type_component_partcode.bounded_string;
+				
 			when others => null; -- CS
 		end case;
 

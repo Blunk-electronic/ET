@@ -43,10 +43,10 @@ with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 with et_general;                use et_general;
-with et_libraries;
+with et_libraries;				use et_libraries;
 with et_string_processing;
-package et_schematic is
 
+package et_schematic is
 
 -- NAMES GENERAL
 
@@ -123,7 +123,7 @@ package et_schematic is
 	-- A unit is a subsection of a component.
 	-- A unit has placeholders for text like reference (like IC303), value (like 7400), ...
 	-- Some placeholders are available when the component appears in both schematic and layout.
-	type type_unit (appearance : et_general.type_component_appearance) is record
+	type type_unit (appearance : type_component_appearance) is record
 		position	: type_coordinates;
 		timestamp	: et_string_processing.type_timestamp;
 		name		: et_libraries.type_unit_name.bounded_string;
@@ -162,7 +162,7 @@ package et_schematic is
 
 
 	-- This is a component as it appears in the schematic.
-	type type_component (appearance : et_general.type_component_appearance) is record
+	type type_component (appearance : type_component_appearance) is record
 		name_in_library : et_libraries.type_component_name.bounded_string; -- example: "TRANSISTOR_PNP"
 		value			: et_libraries.type_component_value.bounded_string; -- 470R
 		commissioned	: et_string_processing.type_date; -- 2017-08-17T14:17:25
@@ -185,6 +185,13 @@ package et_schematic is
 	procedure write_unit_properties (unit : in type_units.cursor);
 	-- Writes the properties of the unit indicated by the given cursor.
 
+
+-- NETS
+	-- The name of a net may have 100 characters which seems sufficient for now.
+ 	net_name_length	: constant natural := 100;
+	package type_net_name is new generic_bounded_length(net_name_length); use type_net_name;
+
+	
 
 -- LABEL
 	-- A label is frequently attached to a net segment in order to make the net name visible. 
@@ -417,6 +424,27 @@ package et_schematic is
 
 
 
+	function to_component_reference (
+	-- Converts a string like "IC303" to a composite type_component_reference.
+	-- If allow_special_charater_in_prefix is given true, the first character
+	-- is allowed to be a special character. Example: "L P3V3 #PWR07"
+	-- NOTE: Leading zeroes in the id are removed.	
+		text_in : in string;
+		allow_special_character_in_prefix : in boolean := false)
+		return type_component_reference;
+
+	function to_string ( reference : in type_component_reference) return string;
+	-- Returns the given compoenent reference as string.
+
+	function to_string ( appearance : in type_component_appearance) return string;
+	-- Returns the given component appearance as string.
+	
+	function compare_component_by_reference ( left, right : in type_component_reference) return boolean;
+	-- Returns true if left comes before right.
+	-- If left equals right, the return is false.	
+	
+
+
 
 
     
@@ -430,8 +458,8 @@ package et_schematic is
 
 	-- The components of a module are collected in a map.
  	package type_components is new indefinite_ordered_maps (
-		key_type => et_general.type_component_reference, -- something like "IC43"
-		"<" => et_general.compare_component_by_reference,
+		key_type => type_component_reference, -- something like "IC43"
+		"<" => compare_component_by_reference,
  		element_type => type_component);
 
 	procedure write_component_properties ( component : in type_components.cursor);

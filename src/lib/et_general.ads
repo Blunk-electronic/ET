@@ -84,62 +84,7 @@ package et_general is
     paper_size_default : type_paper_size := A4;
 
 	
--- NETS
-	-- The name of a net may have 100 characters which seems sufficient for now.
- 	net_name_length	: constant natural := 100;
-	package type_net_name is new generic_bounded_length(net_name_length); use type_net_name;
 
-	
--- COMPONENTS
-
-	-- Component referencees (in Eagle "device names") have prefixes like R, C, IC, ...	
-	component_prefix_length_max : constant natural := 10; -- CS: there is no reason to work with longer prefixes.
-	package type_component_prefix is new generic_bounded_length(component_prefix_length_max);
-	use type_component_prefix;
-
-	type type_component_appearance is ( 
-		sch,		-- a component that exists in the schematic only (like power symbols)
-		pcb,		-- a compoennt that exists on the pcb only (like a fiducial)
-		sch_pcb		-- a component that exists in both schematic and soldered on a pcb
-		
-		-- CS: cable 
-		-- CS: wire
-		-- ...
-		);
-
-
-	-- A component reference (in Eagle "device name") consists of a prefix (like R, C, IC, ..)
-	-- and a consecutive number. Both form something like "IC702"
-	type type_component_reference_element is ( PREFIX, ID);
-	component_reference_prefix_default : constant type_component_prefix.bounded_string := to_bounded_string("?");
-	component_reference_id_default : constant natural := 0;
-	
-	type type_component_reference is record -- CS: should be private
-		prefix		: type_component_prefix.bounded_string := component_reference_prefix_default; -- like "IC"
-		id			: natural := component_reference_id_default; -- like "303"
-		id_width	: positive; -- the number of digits in the id. 3 in case of an id of 303
-		-- NOTE: This allows something like R091 or IC0 (there are reasons for such strange things ...)
-	end record;
-
-	function to_component_reference (
-	-- Converts a string like "IC303" to a composite type_component_reference.
-	-- If allow_special_charater_in_prefix is given true, the first character
-	-- is allowed to be a special character. Example: "L P3V3 #PWR07"
-	-- NOTE: Leading zeroes in the id are removed.	
-		text_in : in string;
-		allow_special_character_in_prefix : in boolean := false)
-		return type_component_reference;
-
-	function to_string ( reference : in type_component_reference) return string;
-	-- Returns the given compoenent reference as string.
-
-	function to_string ( appearance : in type_component_appearance) return string;
-	-- Returns the given component appearance as string.
-	
-	function compare_component_by_reference ( left, right : in type_component_reference) return boolean;
-	-- Returns true if left comes before right.
-	-- If left equals right, the return is false.	
-	
 
 	
 -- GENERICS
