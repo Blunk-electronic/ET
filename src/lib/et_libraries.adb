@@ -243,13 +243,6 @@ package body et_libraries is
 	end to_string;
 
 	
-	function to_string (value : in type_component_value.bounded_string) return string is
-	-- Returns the given value as string.
-	begin
-		return type_component_value.to_string(value);
-	end to_string;
-
-
 	procedure write_component_properties (component : in type_components.cursor) is
 	-- Writes the properties of the component indicated by the given cursor.
 		use et_string_processing;

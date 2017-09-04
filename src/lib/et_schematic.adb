@@ -323,6 +323,13 @@ package body et_schematic is
 		
 		log_indentation_down;
 	end write_coordinates_of_junction;			
+
+	
+	function to_string (value : in type_component_value.bounded_string) return string is
+	-- Returns the given value as string.
+	begin
+		return type_component_value.to_string(value);
+	end to_string;
 	
 
 	function component_value_valid (
@@ -346,7 +353,7 @@ package body et_schematic is
 				v := false;
 				et_string_processing.write_message(
 					file_handle => current_output,
-					text => et_string_processing.message_error & "value '" & et_libraries.to_string (value) & "' contains invalid character "
+					text => et_string_processing.message_error & "value '" & to_string (value) & "' contains invalid character "
 						& "at position" & natural'image(i),
 					console => true);
 				-- CS: goto end

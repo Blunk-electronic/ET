@@ -428,6 +428,9 @@ package et_schematic is
 		-- NOTE: This allows something like R091 or IC0 (there are reasons for such strange things ...)
 	end record;
 
+	function to_string (value : in type_component_value.bounded_string) return string;
+	-- Returns the given value as string.
+	
 	function component_value_valid (
 	-- Returns true if the given component value meets certain conventions.									   
 		value 		: in type_component_value.bounded_string;

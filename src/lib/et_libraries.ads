@@ -551,7 +551,7 @@ package et_libraries is
 		element_type => type_unit_external);
 
 	
-	-- COMPONENTS
+-- COMPONENTS
 
 	-- The component value is something like 330R or 100n or 74LS00
 	component_value_length_max : constant positive := 100;
@@ -559,10 +559,6 @@ package et_libraries is
 	-- Define the characters that are allowed for a component value:
 	component_value_characters : character_set := to_set (ranges => (('A','Z'),('a','z'),('0','9'))) or to_set('_');
 	package type_component_value is new generic_bounded_length (component_value_length_max);
-
-	function to_string (value : in type_component_value.bounded_string) return string;
-	-- Returns the given value as string.
-
 	
 	-- Component referencees (in Eagle "device names") have prefixes like R, C, IC, ...	
 	component_prefix_length_max : constant natural := 10; -- CS: there is no reason to work with longer prefixes.
@@ -574,11 +570,6 @@ package et_libraries is
 	type type_component_reference_element is ( PREFIX, ID);
 	component_reference_prefix_default : constant type_component_prefix.bounded_string := to_bounded_string("?");
 	component_reference_id_default : constant natural := 0;
-	
-	
-	
-
-
 	
 
 	type type_component (appearance : type_component_appearance) is record
