@@ -120,7 +120,7 @@ package body et_schematic is
 		-- line width
 		log ("line width" & et_libraries.type_text_line_width'image (note.line_width));
 
-		-- orientation
+		-- angle
 		log (et_libraries.to_string (note.orientation));
 
 		-- visible

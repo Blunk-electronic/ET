@@ -197,7 +197,7 @@ package et_schematic is
 	type type_label_appearance is ( simple, tag );
 	type type_net_label ( label_appearance : type_label_appearance ) is record
 		coordinates	: type_coordinates;
-		orientation	: et_libraries.type_orientation;
+		orientation	: et_libraries.type_angle;
         text		: type_net_name.bounded_string;
         size		: et_libraries.type_text_size;
         style		: et_libraries.type_text_style;
@@ -335,7 +335,7 @@ package et_schematic is
 		coordinates		: et_libraries.type_coordinates;
 		text			: character; -- CS: range A..Z and 1..n
 		size			: type_text_size;
-		orientation		: type_orientation;
+		orientation		: type_angle;
 		-- CS: font, ...
 	end record;
 	package type_list_of_frame_texts is new vectors (
@@ -377,7 +377,7 @@ package et_schematic is
  		coordinates		: et_libraries.type_coordinates;
 		text			: type_title_block_text_string.bounded_string;
  		size			: type_text_size;
- 		orientation		: type_orientation;
+ 		orientation		: type_angle;
 		-- CS: font, ...
  	end record;
  	package type_list_of_title_block_texts is new vectors (

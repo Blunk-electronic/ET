@@ -61,12 +61,12 @@ package body et_libraries is
 
 	end to_string;
 
-	function to_string (orientation : in type_orientation) return string is
-	-- Returns the the given orientation as string.
-		preamble	: constant string (1..20) := "orientation/rotation";
-		suffix		: constant string (1..4)  := " deg";
+	function to_string (angle : in type_angle) return string is
+	-- Returns the the given angle as string.
+		preamble	: constant string (1..5) := "angle";
+		suffix		: constant string (1..4) := " deg";
 	begin
-		return (preamble & type_orientation'image(orientation) & suffix);
+		return (preamble & type_angle'image (angle) & suffix);
 	end to_string;
 
 	function to_string (port_name : in type_port_name.bounded_string) return string is
@@ -144,7 +144,7 @@ package body et_libraries is
 		log ("line width"
 			& et_libraries.type_text_line_width'image (placeholder.line_width));
 
-		-- orientation
+		-- angle
 		log (et_libraries.to_string (placeholder.orientation)); 
 
 		-- visible

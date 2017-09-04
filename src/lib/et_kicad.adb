@@ -152,15 +152,24 @@ package body et_kicad is
 		
 	end to_text_meaning;
 								 
-	function to_text_orientation ( text : in string) return et_libraries.type_orientation is
-	-- CS: renamte to to_orientation
-	-- Converts a kicad field text orientation character (H/V) to type_orientation.
+	function to_field_orientation (text : in string) return et_libraries.type_angle is
+	-- Converts a kicad field text orientation character (H/V) to type_angle.
 	begin	
 		case type_field_orientation'value(text) is
-			when H => return 0;
-			when V => return 90;
+			when H => return 0.0;
+			when V => return 90.0;
 		end case;
-	end to_text_orientation;
+
+		exception 
+			when constraint_error =>
+				log_indentation_reset;
+				log (message_error & "invalid text orientation !", console => true);
+				raise;
+			when others =>
+				log_indentation_reset;
+				log (message_error & "invalid text orientation !", console => true);
+				raise;
+	end to_field_orientation;
 	
 	function to_alignment_horizontal ( text : in string) return et_libraries.type_text_alignment_horizontal is
 	-- Converts a horizontal kicad text alignment to type_text_alignment_horizontal.
@@ -994,7 +1003,7 @@ package body et_kicad is
 				text.position.x		:= type_grid'value (get_field_from_line(line,3));
 				text.position.y 	:= type_grid'value (get_field_from_line(line,4));
 				text.size 			:= type_text_size'value (get_field_from_line(line,5));
-				text.orientation	:= to_text_orientation (get_field_from_line(line,6));
+				text.orientation	:= to_field_orientation (get_field_from_line(line,6));
 				
 				text.visible := to_field_visible (
 					vis_in		=> get_field_from_line(line,7),
@@ -2242,17 +2251,17 @@ package body et_kicad is
             note_entered : boolean := false;
             note_scratch : et_schematic.type_note;
 			
-			function to_orientation (text_in : in string) return et_libraries.type_orientation is
-			-- Converts the label orientation to type_orientation.
+			function to_orientation (text_in : in string) return et_libraries.type_angle is
+			-- Converts the label orientation to type_angle.
 			-- CS: use a dedicated type for input parameter.
 				o_in : type_label_orientation := type_label_orientation'value(text_in);
-				o_out : et_libraries.type_orientation;
+				o_out : et_libraries.type_angle;
 			begin
 				case o_in is
-					when 0 => o_out := 180;
-					when 1 => o_out :=  90;
-					when 2 => o_out :=   0;
-					when 3 => o_out := 270;
+					when 0 => o_out := 180.0;
+					when 1 => o_out :=  90.0;
+					when 2 => o_out :=   0.0;
+					when 3 => o_out := 270.0;
 				end case;
 				return o_out;
 				-- CS: exception handler
@@ -3243,8 +3252,8 @@ package body et_kicad is
 					-- read content like "N701" or "NetChanger" from field position 3
 					content		=> et_libraries.type_text_content.to_bounded_string (strip_quotes(field(line,3))),
 
-					-- read orientation like "H" -- type_schematic_field_orientation
-					orientation	=> to_text_orientation (field(line,4)),
+					-- read orientation like "H"
+					orientation	=> to_field_orientation (field(line,4)),
 
 					-- read coordinates
 					position	=> (x => et_libraries.type_grid'value(field(line,5)),

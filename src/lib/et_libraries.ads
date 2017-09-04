@@ -106,15 +106,15 @@ package et_libraries is
 	-- Returns the given position as string.
 
 
--- ORIENTATION AND ROTATION
-	-- Objects may be placed at a certain orientation:
-	type type_orientation is range 0 .. 359; -- CS: a type that allows angles of multiples of 45 degrees ?
+-- ORIENTATION, ANGLE AND ROTATION
 
-	function to_string (orientation : in type_orientation) return string;
-	-- Returns the given orientation as string. 
+-- Objects may be placed at a certain orientation:
+	type type_angle is delta 0.1 digits 4 range -359.9 .. 359.9; -- unit is degrees
+	-- CS: a type that allows angles of multiples of 45 degrees ? or check angle via separate function when required ?
 
-	-- Objects may be placed at a certain angle (unit is degrees):
-	type type_angle is digits 4 range -359.9 .. 359.9;
+	function to_string (angle : in type_angle) return string;
+	-- Returns the given angle as string. 
+
 	
 -- SCHEMATIC RELATED
 
@@ -242,7 +242,7 @@ package et_libraries is
         size    	: type_text_size := 50; -- CS define a default
         style		: type_text_style := type_text_style'first;
         line_width	: type_text_line_width := 0; -- CS: use a general type_line_width ?
-        orientation	: type_orientation := type_orientation'first;
+        orientation	: type_angle := 0.0;
 		visible		: type_text_visible := yes; -- unless assigned otherwise all texts are visible by default
 		alignment	: type_text_aligment;
 	end record;
@@ -321,7 +321,7 @@ package et_libraries is
 		style				: type_port_style;
 		coordinates			: type_coordinates;
 		length				: type_port_length;
-		orientation			: type_orientation;
+		orientation			: type_angle;
 		port_name_visible	: type_port_visible;
 		pin_name_visible	: type_pin_visible;
 		pin					: type_pin_name.bounded_string; -- example: "144" or in case of a BGA package "E14"
