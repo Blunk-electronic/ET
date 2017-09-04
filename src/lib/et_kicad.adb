@@ -1063,7 +1063,8 @@ package body et_kicad is
 
 								variants		=> type_component_variants.empty_map,
 								-- NOTE: kicad does not know about package variants (as EAGLE does). So the variants list here is empty.
-
+								-- Instead we provide the so called package filter, which is empty for the moment.
+								package_filter	=> type_package_filter.empty_set,
 								datasheet		=> type_component_datasheet.to_bounded_string (content (tmp_datasheet)),
 								purpose			=> type_component_purpose.to_bounded_string (content (tmp_purpose)),
 								partcode		=> type_component_partcode.to_bounded_string (content (tmp_partcode))
@@ -1564,17 +1565,45 @@ package body et_kicad is
 			log_indentation_down;
 		end read_draw_object;
 
-		procedure read_footprint (line : in type_fields_of_line) is
+		procedure add_footprint (line : in type_fields_of_line) is
+		-- Reads the proposed footprint and adds it to the package filter of the current component.
 			log_threshold : type_log_level := 1;
-		begin
-			log ("footpint/package", level => log_threshold);
-			log_indentation_up;
-			log (to_string(line), level => log_threshold);
+			fp : type_package_proposal.bounded_string;
 
-			-- CS
+			function field (line : in type_fields_of_line; position : in positive) return string renames
+				et_string_processing.get_field_from_line;
+			
+			procedure do_it (libraries : in out type_libraries.map) is
+			-- Adds the footprint finally.
+				procedure insert_footprint (
+					key			: in type_component_name.bounded_string;
+					component	: in out type_component) is
+				begin
+					component.package_filter.insert (fp);
+				end insert_footprint;
+				
+				procedure locate_component ( 
+					key			: in type_library_full_name.bounded_string;
+					components	: in out type_components.map) is
+				begin
+					components.update_element (comp_cursor, insert_footprint'access);
+				end locate_component;
+
+			begin -- add_footprint
+				libraries.update_element (lib_cursor, locate_component'access);
+			end do_it;
+			
+		begin
+			log ("footpint/package filter", level => log_threshold);
+			log_indentation_up;
+
+			fp := type_package_proposal.to_bounded_string (field (line,1));
+			log (type_package_proposal.to_string(fp), level => log_threshold);
+
+			do_it (et_import.component_libraries);
 			
 			log_indentation_down;
-		end read_footprint;
+		end add_footprint;
 		
 
 		procedure read_field (line : in type_fields_of_line) is
@@ -1889,7 +1918,7 @@ package body et_kicad is
 											log ("footprint filter end", level => 3);
 										else
 											-- Process lines:
-											read_footprint (line);
+											add_footprint (line);
 										end if;
 
 									when draw =>

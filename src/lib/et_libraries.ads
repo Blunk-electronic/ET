@@ -197,6 +197,12 @@ package et_libraries is
 	package type_component_variants is new ordered_maps (
 		key_type => type_component_variant_name.bounded_string,
 		element_type => type_component_variant);
+
+	-- If certain packages are to be proposed they are collected in a so called "package filter"
+	package_proposal_length_max : constant positive := 100;
+	package type_package_proposal is new generic_bounded_length (package_proposal_length_max);
+	use type_package_proposal;
+	package type_package_filter is new ordered_sets (type_package_proposal.bounded_string);
 	
 -- TEXT & FIELDS
 
@@ -562,10 +568,10 @@ package et_libraries is
 			-- with at least one package/footprint variant. We store variants in a map.
 			when et_general.sch_pcb => 
 				variants	: type_component_variants.map;
+				package_filter : type_package_filter.set := type_package_filter.empty_set;
 				datasheet	: type_component_datasheet.bounded_string;
 				purpose		: type_component_purpose.bounded_string;
 				partcode	: type_component_partcode.bounded_string;
-
 			when others => null; -- CS
 		end case;
 
