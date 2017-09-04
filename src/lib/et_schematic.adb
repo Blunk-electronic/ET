@@ -62,6 +62,8 @@ package body et_schematic is
 	procedure write_label_properties (label : in type_net_label) is
 	-- Writes the properties of the given net label in the logfile.
 		use et_string_processing;
+		use et_libraries;
+	
 		log_threshold : type_log_level := 1;
 	begin
 		log_indentation_up;
@@ -75,7 +77,7 @@ package body et_schematic is
 
 		log_indentation_up;
 		log ("name '" & type_net_name.to_string (label.text) & "' ");
-		log (et_schematic.to_string (label.coordinates));
+		log (to_string (et_libraries.type_coordinates (label.coordinates)), log_threshold);
 		log (et_libraries.to_string (label.orientation), log_threshold);
 		
 		case label.label_appearance is
@@ -95,43 +97,51 @@ package body et_schematic is
 	procedure write_note_properties (note : in et_schematic.type_note) is
 	-- Writes the properties of the given note
 		use et_string_processing;
+		use et_libraries;
+	
+		log_threshold : type_log_level := 1;
 	begin
 		log_indentation_up;
 		log ("text note");
 
 		log_indentation_up;
-		
-		-- position
-		log (et_schematic.to_string (note.coordinates));
 
 		-- content
-		if et_libraries.type_text_content.length(note.content) > 0 then
-			log ("content '" & et_libraries.type_text_content.to_string(note.content) & "'");
+		if et_libraries.type_text_content.length (note.content) > 0 then
+			log ("content '" & type_text_content.to_string (note.content) & "'");
 		else
-			log ("no content");
+			log (message_warning & "no content !"); 
+		end if;
+
+		
+		if log_level >= log_threshold then
+			
+			-- position
+			log (to_string (et_libraries.type_coordinates (note.coordinates)), log_threshold);
+			
+			-- size
+			log ("size" & et_libraries.type_text_size'image (note.size));
+
+			-- style
+			log ("style " & to_lower(et_libraries.type_text_style'image (note.style)));
+
+			-- line width
+			log ("line width" & et_libraries.type_text_line_width'image (note.line_width));
+
+			-- angle
+			log (et_libraries.to_string (note.orientation));
+
+			-- visible
+			log ("visible " & to_lower(et_libraries.type_text_visible'image (note.visible)));
+
+			-- alignment
+			log ("alignment (hor/vert) "
+				& to_lower(et_libraries.type_text_alignment_horizontal'image(note.alignment.horizontal))
+				& "/"
+				& to_lower(et_libraries.type_text_alignment_vertical'image(note.alignment.vertical)));
+
 		end if;
 		
-		-- size
-		log ("size" & et_libraries.type_text_size'image (note.size));
-
-		-- style
-		log ("style " & to_lower(et_libraries.type_text_style'image (note.style)));
-
-		-- line width
-		log ("line width" & et_libraries.type_text_line_width'image (note.line_width));
-
-		-- angle
-		log (et_libraries.to_string (note.orientation));
-
-		-- visible
-		log ("visible " & to_lower(et_libraries.type_text_visible'image (note.visible)));
-
-		-- alignment
-		log ("alignment (hor/vert) "
-			& to_lower(et_libraries.type_text_alignment_horizontal'image(note.alignment.horizontal))
-			& "/"
-			& to_lower(et_libraries.type_text_alignment_vertical'image(note.alignment.vertical)));
-
 		log_indentation_down;
 		log_indentation_down;
 	end write_note_properties;
@@ -280,13 +290,18 @@ package body et_schematic is
 	procedure write_coordinates_of_segment (segment : in type_net_segment) is
 	-- Writes the start and end coordinates of a net segment.
 		use et_string_processing;
+		use et_libraries;
+	
+		log_threshold : type_log_level := 1;
 	begin
 		log_indentation_up;
 		
 		log ("start "
-			& to_string (segment.coordinates_start) -- CS: do not output sheet number
+			& to_string (et_libraries.type_coordinates (segment.coordinates_start))
 			& " end " 
-			& to_string (segment.coordinates_end));
+			& to_string (et_libraries.type_coordinates (segment.coordinates_end)),
+			level => log_threshold
+			);
 		
 		log_indentation_down;
 	end write_coordinates_of_segment;
@@ -294,10 +309,15 @@ package body et_schematic is
 	procedure write_coordinates_of_junction (junction : in type_net_junction) is
 	-- Writes the coordinates of a net junction.
 		use et_string_processing;
+		use et_libraries;
+	
+		log_threshold : type_log_level := 1;
 	begin
 		log_indentation_up;
 		
-		log (et_schematic.to_string (junction.coordinates)); 
+		log (to_string (et_libraries.type_coordinates (junction.coordinates)),
+			 level => log_threshold
+			); 
 		
 		log_indentation_down;
 	end write_coordinates_of_junction;			

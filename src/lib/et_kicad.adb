@@ -2786,7 +2786,7 @@ package body et_kicad is
 
 							-- build temporarily net
 							net_scratch.name := type_net_name.to_bounded_string (anonymous_net_name_prefix & trim(count_type'image(n),left));
-							log (type_net_name.to_string(net_scratch.name));
+							log (type_net_name.to_string(net_scratch.name), level => 1);
 							
 							net_scratch.scope := local;
 
@@ -2823,13 +2823,13 @@ package body et_kicad is
 						a := type_list_of_anonymous_nets.element(list_of_anonymous_nets, positive(n)); -- get anonymous net
 						if a.processed and not a.sorted then -- if it has not been sorted yet
 							--put(et_import.report_handle," " & type_net_name.to_string(a.name));
-							log (type_net_name.to_string(a.name));
+							log (type_net_name.to_string(a.name), level => 1);
 							
 							net_scratch.name := a.name;
 							net_scratch.scope := a.scope;
 
 							log_indentation_up;
-							log ("scope " & type_scope_of_net'image(net_scratch.scope) & " with segments:");
+							log ("scope " & type_scope_of_net'image(net_scratch.scope) & " with segments:", level => 1);
 
 							-- append segments to net_scratch
 							for b in 1..type_anonymous_net.length(a.segments) loop -- loop for each segment of anonymous_net a
@@ -4265,7 +4265,7 @@ package body et_kicad is
 
 						    -- We initiate a new anonymous net and start looking for a matching segment on the end_point:
 							--put_line(et_import.report_handle," anonymous net" & positive'image(seg) & ":"); 
-							log ("anonymous net with segments");
+							log ("anonymous net with segments", level => 1);
 											
 							add_segment_to_anonymous_net(seg); 
 							side_scratch := end_point;
