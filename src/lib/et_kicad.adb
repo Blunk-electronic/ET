@@ -3030,7 +3030,7 @@ package body et_kicad is
 				end add_net_to_list_of_anonymous_nets;
 
 				use type_wild_list_of_net_segments;
-				segment_cursor : type_wild_list_of_net_segments.cursor;
+				segment_cursor, seg : type_wild_list_of_net_segments.cursor;
 				
 			begin -- process_net_segments
 				log_indentation_up;
@@ -3060,10 +3060,11 @@ package body et_kicad is
 					-- A segment, whose e AND s flag has been set, is to be skipped (because this segment has been processed already).
 					-- Variable side_scratch points to the side of the segment (start or end point) where another matching segment is to be searched for.
 					-- If a matching segment is found, it gets appended to the current anonymous net.
-					segment_cursor := wild_segment_collection.first;
+					seg := wild_segment_collection.first;
 					
-					while segment_cursor /= type_wild_list_of_net_segments.no_element loop
-
+					while seg /= type_wild_list_of_net_segments.no_element loop
+						segment_cursor := seg;
+						
 						if not type_wild_list_of_net_segments.element (segment_cursor).s and -- Skip already processed nets.
 						   not type_wild_list_of_net_segments.element (segment_cursor).e then 
 
@@ -3139,7 +3140,7 @@ package body et_kicad is
 							end loop;
 						end if;
 
-						next (segment_cursor);
+						next (seg);
 					end loop;
 
 					log_indentation_down;
