@@ -42,6 +42,9 @@ with ada.numerics.real_arrays;  use ada.numerics.real_arrays;
 with ada.directories;			use ada.directories;
 with ada.exceptions; 			use ada.exceptions;
 
+with ada.containers;            use ada.containers;
+with ada.containers.doubly_linked_lists;
+
 with et_libraries;
 with et_schematic;
 
@@ -2307,8 +2310,7 @@ package body et_kicad is
 
 			-- In the first stage, all net segments of this sheet go into a wild collection of segments.
 			-- Later they will be sorted and connected by their coordinates (start and and points)
-			segment_count : natural; -- holds the total number of segments within a sheet
-			seg : natural; -- points to the segment being processed
+			segment_count : count_type; -- holds the total number of segments within a sheet
 			type type_segment_side is (start_point, end_point ); -- the end point of a segment
 			
 			type type_wild_net_segment is new type_net_segment with record
@@ -2317,10 +2319,9 @@ package body et_kicad is
 			end record;
 			segment_scratch: type_wild_net_segment; -- temporarily used when reading net segments into a wild collecton of segments
 			
-			package type_wild_list_of_net_segments is new vectors ( 
-				index_type => positive,  -- every net segment has an id
+			package type_wild_list_of_net_segments is new doubly_linked_lists ( 
 				element_type => type_wild_net_segment);
-			wild_segment_collection : type_wild_list_of_net_segments.vector;
+			wild_segment_collection : type_wild_list_of_net_segments.list;
 
 			junction_scratch : type_net_junction; -- temporarily used when reading net junctions into a wild collection of junctions
 			wild_collection_of_junctions : type_junctions.list;
@@ -2371,15 +2372,15 @@ package body et_kicad is
 			procedure set_sorted ( anon_net : in out type_anonymous_net_extended ) is begin anon_net.sorted := true; end set_sorted;
 			anonymous_net : type_anonymous_net_extended;
 			
-			procedure add_segment_to_anonymous_net (id : in positive ) is
-			-- Adds a net segment (indicated by id) to a list of segments connected with each other.
+			procedure add_segment_to_anonymous_net (segment_cursor : in type_wild_list_of_net_segments.cursor ) is
+			-- Adds a net segment (indicated by given cursor) to a list of segments connected with each other.
 			-- This procedure happens to be called for a certain segment more than once (unavoidable). So the flag "picked" serves
 			-- as indicator for a segment already added to the anonymous net.
 				scratch : type_net_segment;
 			begin
 				-- If segment already picked and added to anonymous net, do nothing with this segment. Otherwise set the "picked" flag
 				-- of that segment, output the coordinates of the segment, add it to anonymous net.
-				if type_wild_list_of_net_segments.element(wild_segment_collection,id).picked then
+				if type_wild_list_of_net_segments.element (segment_cursor).picked then
 					null;
 					-- log ("  picked");
 				else
@@ -2389,12 +2390,13 @@ package body et_kicad is
 					
 					type_wild_list_of_net_segments.update_element(
 							container => wild_segment_collection,
-							index => id,
+							position => segment_cursor,
 							process => set_picked'access);
 
-					write_coordinates_of_segment (segment => type_net_segment (type_wild_list_of_net_segments.element (wild_segment_collection,id)));
+					write_coordinates_of_segment (segment => 
+						type_net_segment (type_wild_list_of_net_segments.element (segment_cursor)));
 					
-					scratch := type_net_segment (type_wild_list_of_net_segments.element (wild_segment_collection,id));
+					scratch := type_net_segment (type_wild_list_of_net_segments.element (segment_cursor));
 					type_anonymous_net.append (anonymous_net.segments,scratch);
 				end if;
 			end add_segment_to_anonymous_net;
@@ -2402,24 +2404,32 @@ package body et_kicad is
 			-- The function search_for_same_coordinates returns this type:
 			type type_same_coord_result is record
 				valid : boolean; -- indicates that a segment with matching coordinates has been found. When false, no segment found -> consider id and side invalid
-				id : positive; -- id of the segment found
+				cursor : type_wild_list_of_net_segments.cursor; -- cursor of the segment found
 				side : type_segment_side; -- end point of the segment found
 			end record;
 			same_coord_result : type_same_coord_result;
 			side_scratch : type_segment_side;
 			
-			function search_for_same_coordinates (id : in positive; seg_in : in type_wild_net_segment; side : in type_segment_side) return type_same_coord_result is
+			function search_for_same_coordinates (
 			-- Starting from a segment indicated by id and the end point (given by side), 
 			-- search in wild_segment_collection for a segment with matching start or end point.
 			-- In general untouched segments are preferred in the search. Half processed segments are of secondary relevance.
 			-- Once a suitable segment was found, sc is assigned with neccessary data to be returned to the parent unit. The search for 
 			-- a suitable segment excludes fully processed segments and the given segment (id).
+				segment_cursor : in type_wild_list_of_net_segments.cursor;
+				seg_in : in type_wild_net_segment;
+				side : in type_segment_side) 
+				return type_same_coord_result is
+
 				sc : type_same_coord_result;
 				line_start, line_end : et_schematic.type_coordinates;
 				s, e	: boolean; -- indicate the end point, that has been processed already
 				untouched, half_processed : boolean; -- indicate whether a segment is completely untouched or processed in only one direction
 
 				use et_libraries;
+				use type_wild_list_of_net_segments;
+			
+				cursor : type_wild_list_of_net_segments.cursor;
 			begin -- search_for_same_coordinates
 				-- Set E/S flag:
 				-- If we start the search from the end_point of a segment, the e-flag is to be set. This indicates the end_point has been processed.
@@ -2433,7 +2443,7 @@ package body et_kicad is
 						
 						type_wild_list_of_net_segments.update_element(
 								container => wild_segment_collection,
-								index => id,
+								position => segment_cursor,
 								process => set_e'access);
 						
 					when start_point =>
@@ -2444,7 +2454,7 @@ package body et_kicad is
 						
 						type_wild_list_of_net_segments.update_element(
 								container => wild_segment_collection,
-								index => id,
+								position => segment_cursor,
 								process => set_s'access);
 				end case;
 
@@ -2452,12 +2462,14 @@ package body et_kicad is
 				-- If the search starts from the end_point of the given net, find a segment whose start or end point matches.
 				-- If the search starts from the start_point of the given net, find a segment whose start or end point matches.
 				-- If suitable segment found, exit and return its ID and a the "valid"-flag set.
-				for i in 1..segment_count loop
-					if i /= id then -- skip the given segment
-						line_start := type_wild_list_of_net_segments.element(wild_segment_collection,i).coordinates_start;
-						line_end   := type_wild_list_of_net_segments.element(wild_segment_collection,i).coordinates_end;
-						s  := type_wild_list_of_net_segments.element(wild_segment_collection,i).s;
-						e  := type_wild_list_of_net_segments.element(wild_segment_collection,i).e;
+				cursor := wild_segment_collection.first;
+				while cursor /= no_element loop
+-- 				for i in 1..segment_count loop
+					if cursor /= segment_cursor then -- skip the given segment
+						line_start := type_wild_list_of_net_segments.element (cursor).coordinates_start;
+						line_end   := type_wild_list_of_net_segments.element (cursor).coordinates_end;
+						s  := type_wild_list_of_net_segments.element (cursor).s;
+						e  := type_wild_list_of_net_segments.element (cursor).e;
 						untouched := not (s or e); -- neither s nor e set
 						--fully_processed := s and e;
 
@@ -2471,14 +2483,14 @@ package body et_kicad is
 									if line_start.x = seg_in.coordinates_end.x and line_start.y = seg_in.coordinates_end.y then
 										sc.valid := true;
 										sc.side := start_point;
-										sc.id := i;
+										sc.cursor := cursor;
 										goto matching_segment_coordinates_found;
 									end if;
 
 									if line_end.x = seg_in.coordinates_end.x and line_end.y = seg_in.coordinates_end.y then
 										sc.valid := true;
 										sc.side := end_point;
-										sc.id := i;
+										sc.cursor := cursor;
 										goto matching_segment_coordinates_found;
 									end if;
 
@@ -2487,19 +2499,21 @@ package body et_kicad is
 									if line_start.x = seg_in.coordinates_start.x and line_start.y = seg_in.coordinates_start.y then
 										sc.valid := true;
 										sc.side := start_point;
-										sc.id := i;
+										sc.cursor := cursor;
 										goto matching_segment_coordinates_found;
 									end if;
 
 									if line_end.x = seg_in.coordinates_start.x and line_end.y = seg_in.coordinates_start.y then
 										sc.valid := true;
 										sc.side := end_point;
-										sc.id := i;
+										sc.cursor := cursor;
 										goto matching_segment_coordinates_found;
 									end if;
 							end case;
 						end if;
 					end if;
+
+					next (cursor);
 				end loop;
 
 				-- No untouched segment found.
@@ -2507,12 +2521,15 @@ package body et_kicad is
 				-- If the search starts from the end_point of the given net, find a segment whose start or end point matches.
 				-- If the search starts from the start_point of the given net, find a segment whose start or end point matches.
 				-- If suitable segment found, exit and return its ID and a the "valid"-flag set.
-				for i in 1..segment_count loop
-					if i /= id then -- skip the given segment
-						line_start := type_wild_list_of_net_segments.element(wild_segment_collection,i).coordinates_start;
-						line_end   := type_wild_list_of_net_segments.element(wild_segment_collection,i).coordinates_end;
-						s  := type_wild_list_of_net_segments.element(wild_segment_collection,i).s;
-						e  := type_wild_list_of_net_segments.element(wild_segment_collection,i).e;
+				cursor := wild_segment_collection.first;
+				--for i in 1..segment_count loop
+				while cursor /= no_element loop
+					--if i /= id then -- skip the given segment
+					if cursor /= segment_cursor then
+						line_start := type_wild_list_of_net_segments.element (cursor).coordinates_start;
+						line_end   := type_wild_list_of_net_segments.element (cursor).coordinates_end;
+						s  := type_wild_list_of_net_segments.element (cursor).s;
+						e  := type_wild_list_of_net_segments.element (cursor).e;
 						half_processed := s xor e;
 
 						if half_processed then
@@ -2525,14 +2542,14 @@ package body et_kicad is
 									if line_start.x = seg_in.coordinates_end.x and line_start.y = seg_in.coordinates_end.y then
 										sc.valid := true;
 										sc.side := start_point;
-										sc.id := i;
+										sc.cursor := cursor;
 										goto matching_segment_coordinates_found;
 									end if;
 
 									if line_end.x = seg_in.coordinates_end.x and line_end.y = seg_in.coordinates_end.y then
 										sc.valid := true;
 										sc.side := end_point;
-										sc.id := i;
+										sc.cursor := cursor;
 										goto matching_segment_coordinates_found;
 									end if;
 
@@ -2541,27 +2558,29 @@ package body et_kicad is
 									if line_start.x = seg_in.coordinates_start.x and line_start.y = seg_in.coordinates_start.y then
 										sc.valid := true;
 										sc.side := start_point;
-										sc.id := i;
+										sc.cursor := cursor;
 										goto matching_segment_coordinates_found;
 									end if;
 
 									if line_end.x = seg_in.coordinates_start.x and line_end.y = seg_in.coordinates_start.y then
 										sc.valid := true;
 										sc.side := end_point;
-										sc.id := i;
+										sc.cursor := cursor;
 										goto matching_segment_coordinates_found;
 									end if;
 							end case;
 						end if;
 					end if;
+
+					next (cursor);
 				end loop;
 				
 				sc.valid := false;
-				sc.id := id;
+				sc.cursor := cursor;
 				return sc;
 				
 			<<matching_segment_coordinates_found>>
-				add_segment_to_anonymous_net(sc.id);
+				add_segment_to_anonymous_net (sc.cursor);
 				--log ("match", level => 1);
 				
 				return sc;
@@ -2922,6 +2941,8 @@ package body et_kicad is
 
 				use et_schematic.type_junctions;
 				junction_cursor : et_schematic.type_junctions.cursor; -- points to the junction being processed
+				segment_cursor : type_wild_list_of_net_segments.cursor;
+				use type_wild_list_of_net_segments;
 			begin -- process junctions
 				
 				log_indentation_up;
@@ -2935,13 +2956,17 @@ package body et_kicad is
 					-- does not increase anymore, all segments are processed.
 					while segment_smashed loop
 					
+						
+						segment_cursor := wild_segment_collection.first;
 						loop_s:
-						for s in 1..segment_count loop
-							segment_scratch := type_wild_list_of_net_segments.element(wild_segment_collection,s); -- get a segment
+						--for s in 1..segment_count loop
+						while segment_cursor /= type_wild_list_of_net_segments.no_element loop
+						
+							segment_scratch := type_wild_list_of_net_segments.element (segment_cursor); -- get a segment
 
 							-- loop in junction list until a junction has been found that sits on the segment
 							junction_cursor := wild_collection_of_junctions.first; -- reset junction cursor to begin of junction list
-							while junction_cursor /= no_element loop
+							while junction_cursor /= type_junctions.no_element loop
 
 								-- fetch junction from current cursor position
 								junction_scratch := type_junctions.element (junction_cursor);
@@ -2954,7 +2979,7 @@ package body et_kicad is
 									-- move start coord. of the current segment to the position of the junction
 									type_wild_list_of_net_segments.update_element(
 										container => wild_segment_collection,
-										index => s,
+										position => segment_cursor,
 										process => change_segment_start_coordinates'access
 										);
 
@@ -2970,20 +2995,22 @@ package body et_kicad is
 
 								next (junction_cursor);
 							end loop;
+
+							next (segment_cursor);
 						end loop loop_s;
 
 						-- Test if segment_count has increased. If yes, set segment_smashed flag so that the wild_segment_collection
 						-- can be searched again. Otherwise clear segment_scratch which ends this procedure.
-						if natural(type_wild_list_of_net_segments.length(wild_segment_collection)) > segment_count then
+						if type_wild_list_of_net_segments.length (wild_segment_collection) > segment_count then
 							segment_smashed := true;
 							-- update segment_count (should increment by 1)
-							segment_count := natural(type_wild_list_of_net_segments.length(wild_segment_collection));
+							segment_count := type_wild_list_of_net_segments.length (wild_segment_collection);
 						else
 							segment_smashed := false;							
 						end if;
 					end loop;
 
-					log (text => "update: net segments total" & natural'image(segment_count));
+					log (text => "update: net segments total" & count_type'image (segment_count));
 				end if;
 
 				log_indentation_down;
@@ -2998,11 +3025,14 @@ package body et_kicad is
 				-- Afterward the anonymous net is deleted. It is a vector of net segments which must be purged so that the vector
 				-- "anonymous_net" can be filled with net segments of the next anonymous net.
 				begin
-					type_list_of_anonymous_nets.append(list_of_anonymous_nets,anonymous_net);
-					type_anonymous_net.delete(anonymous_net.segments,index => 1, count => type_anonymous_net.length(anonymous_net.segments));
+					type_list_of_anonymous_nets.append (list_of_anonymous_nets, anonymous_net);
+					type_anonymous_net.delete (anonymous_net.segments, index => 1, count => type_anonymous_net.length(anonymous_net.segments)); -- CS: use clear
 				end add_net_to_list_of_anonymous_nets;
 
-			begin
+				use type_wild_list_of_net_segments;
+				segment_cursor : type_wild_list_of_net_segments.cursor;
+				
+			begin -- process_net_segments
 				log_indentation_up;
 				
 				-- Build anonymous nets:
@@ -3012,8 +3042,8 @@ package body et_kicad is
 				-- as connected to each other (means they belong to the same net). The net name is unknown yet. So the outcome of the following is
 				-- a list of anonymous nets.
 				-- CS: handle circlular nets, currently they cause a forever-loop here
-				segment_count := natural(type_wild_list_of_net_segments.length(wild_segment_collection)); -- get number of segments on the current sheet
-				log ("processing" & natural'image(segment_count) & " net segments ...");
+				segment_count := type_wild_list_of_net_segments.length (wild_segment_collection); -- get number of segments on the current sheet
+				log ("processing" & count_type'image (segment_count) & " net segments ...");
 
 				-- It may happen that a sheet has no nets, for example the top level sheet of a design with global nets only. If there are no net segments
 				-- at all, skip processing net segments.
@@ -3030,16 +3060,18 @@ package body et_kicad is
 					-- A segment, whose e AND s flag has been set, is to be skipped (because this segment has been processed already).
 					-- Variable side_scratch points to the side of the segment (start or end point) where another matching segment is to be searched for.
 					-- If a matching segment is found, it gets appended to the current anonymous net.
-					for i in 1..segment_count loop
-						seg := i; 
-						if not type_wild_list_of_net_segments.element(wild_segment_collection,seg).s and -- Skip already processed nets.
-						   not type_wild_list_of_net_segments.element(wild_segment_collection,seg).e then 
+					segment_cursor := wild_segment_collection.first;
+					
+					while segment_cursor /= type_wild_list_of_net_segments.no_element loop
+
+						if not type_wild_list_of_net_segments.element (segment_cursor).s and -- Skip already processed nets.
+						   not type_wild_list_of_net_segments.element (segment_cursor).e then 
 
 						    -- We initiate a new anonymous net and start looking for a matching segment on the end_point:
 							--put_line(et_import.report_handle," anonymous net" & positive'image(seg) & ":"); 
 							log ("anonymous net with segments", level => 1);
 											
-							add_segment_to_anonymous_net(seg); 
+							add_segment_to_anonymous_net (segment_cursor); 
 							side_scratch := end_point;
 
 							loop -- A
@@ -3048,20 +3080,23 @@ package body et_kicad is
 								-- If function search_for_same_coordinates discovers a suitable segment, it adds the segment to current anonymous net.
 								-- search_for_same_coordinates sets the e or s flag of the segment in order to indicate which end point has been processed.
 								-- If no connected segment found, toggle side_scratch and repeat search_for_same_coordinates on the other side of the segment.
-								same_coord_result := search_for_same_coordinates( id => seg, seg_in => type_wild_list_of_net_segments.element(wild_segment_collection,seg),
-																				  side => side_scratch);
+								same_coord_result := search_for_same_coordinates (
+									segment_cursor => segment_cursor,
+									seg_in => type_wild_list_of_net_segments.element (segment_cursor),
+									side => side_scratch);
+
 								if same_coord_result.valid then
 									--put_line(et_import.report_handle,"  --> E");
 									null;
 								else
 									-- Toggle side_scratch depending on the e/s flag of the segment:
 									-- D
- 									if type_wild_list_of_net_segments.element(wild_segment_collection,seg).e then
+ 									if type_wild_list_of_net_segments.element (segment_cursor).e then
 										-- put_line(et_import.report_handle,"  --> D1");
 										side_scratch := start_point;
 									end if;
 									
- 									if type_wild_list_of_net_segments.element(wild_segment_collection,seg).s then
+ 									if type_wild_list_of_net_segments.element (segment_cursor).s then
 										-- put_line(et_import.report_handle,"  --> D2");	
  										side_scratch := end_point;	
  									end if;
@@ -3072,8 +3107,11 @@ package body et_kicad is
 									-- If function search_for_same_coordinates discovers a suitable segment, it adds the segment to current anonymous net.
 									-- search_for_same_coordinates sets the e or s flag of the segment in order to indicate which end point has been processed.
 									-- If no connected segment found, the current anonymous net is considered as complete -> cancel loop, advance to next segment ...
-									same_coord_result := search_for_same_coordinates( id => seg, seg_in => type_wild_list_of_net_segments.element(wild_segment_collection,seg),
-																					  side => side_scratch);
+									same_coord_result := search_for_same_coordinates (
+										segment_cursor => segment_cursor,
+										seg_in => type_wild_list_of_net_segments.element (segment_cursor),
+										side => side_scratch);
+									
 									if same_coord_result.valid then
 										--put_line(et_import.report_handle,"  --> F");	
 										null;
@@ -3091,7 +3129,7 @@ package body et_kicad is
 								-- same_coord_result contains the end point of the net that has been found.
 								-- Depending on the end point of the matching net, side_scratch must be set so that the search can continue on the other side
 								-- of the new segment.
-								seg := same_coord_result.id;
+								segment_cursor := same_coord_result.cursor;
 								case same_coord_result.side is
 									when end_point => 
 										side_scratch := start_point;
@@ -3100,6 +3138,8 @@ package body et_kicad is
 								end case;
 							end loop;
 						end if;
+
+						next (segment_cursor);
 					end loop;
 
 					log_indentation_down;

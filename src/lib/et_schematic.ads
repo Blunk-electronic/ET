@@ -235,13 +235,27 @@ package et_schematic is
     
 
 	-- A net is something that carries electrical current between ports. It consists of one or more segments.
+
+	-- A net junction is where segments can be connected with each other.
+	type type_net_junction is tagged record
+		coordinates : type_coordinates;
+	end record;
+
+	procedure write_coordinates_of_junction (junction : in type_net_junction);
+	-- Writes the coordinates of a net junction.
+	
+	-- Junctions are to be collected in a list.
+	package type_junctions is new doubly_linked_lists (
+		element_type => type_net_junction);
+	
 	-- A segment may have labels attached.
 	-- So this is the definition of a net segment with start and end coord., lists of simple and tag labels
 	type type_net_segment is tagged record
-		coordinates_start : type_coordinates; -- CS: better et_libraries.type_coordinates ?
-		coordinates_end   : type_coordinates;
-		label_list_simple : type_list_of_labels_simple.vector;
-		label_list_tag    : type_list_of_labels_tag.vector;
+		coordinates_start 	: type_coordinates;
+		coordinates_end   	: type_coordinates;
+		junctions			: type_junctions.list;
+		label_list_simple 	: type_list_of_labels_simple.vector;
+		label_list_tag    	: type_list_of_labels_tag.vector;
 	end record;
 
 	procedure write_coordinates_of_segment (segment : in type_net_segment);
@@ -262,18 +276,6 @@ package et_schematic is
 		index_type => positive, -- every pin of a net has an id
 		element_type => et_libraries.type_port); -- CS: this should be a schematic specific type_port
 
-	-- A net junction is where segments can be connected with each other.
-	type type_net_junction is tagged record
-		coordinates : type_coordinates;
-	end record;
-
-	procedure write_coordinates_of_junction (junction : in type_net_junction);
-	-- Writes the coordinates of a net junction.
-	
-	-- Junctions are to be collected in a list.
-	package type_junctions is new doubly_linked_lists (
-		element_type => type_net_junction);
-		
 	-- A net has a name, a scope, a list of segments, a list of ports.
 	anonymous_net_name_prefix : constant string (1..2) := "N$";
 	
@@ -284,7 +286,7 @@ package et_schematic is
 		name 		: type_net_name.bounded_string; -- example "CPU_CLOCK"
 		scope 		: type_scope_of_net; -- example "local"
 		segments 	: type_list_of_net_segments.vector; -- list of net segments
-		junctions	: type_junctions.list; -- the junctions of the net
+		--junctions	: type_junctions.list; -- the junctions of the net
         ports 		: type_port_list_of_net.vector; -- list of component ports
 		coordinates : type_coordinates;                
 	end record;
