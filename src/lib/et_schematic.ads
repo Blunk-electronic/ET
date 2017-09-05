@@ -186,14 +186,12 @@ package et_schematic is
 	-- Writes the properties of the unit indicated by the given cursor.
 
 
--- NETS
+-- LABELS AND NETS
+
 	-- The name of a net may have 100 characters which seems sufficient for now.
  	net_name_length	: constant natural := 100;
 	package type_net_name is new generic_bounded_length(net_name_length); use type_net_name;
 
-	
-
--- LABEL
 	-- A label is frequently attached to a net segment in order to make the net name visible. 
 	-- The label can be a simple string or a tag. 
 	-- The label carries the name of the net. 
@@ -223,12 +221,12 @@ package et_schematic is
 	-- The smallest element of a net is a segment. It has a start and an end point.
 	-- It may have a list of simple labels. It may have a list of tag labels.
 	type type_net_label_simple is new type_net_label(label_appearance => simple);
-	package type_list_of_labels_simple is new vectors ( 
+	package type_list_of_labels_simple is new vectors ( -- CS: better a simple list ?
 		index_type => positive, -- every simple label has an id
 		element_type => type_net_label_simple);
 	
 	type type_net_label_tag is new type_net_label(label_appearance => tag);		
-	package type_list_of_labels_tag is new vectors ( 
+	package type_list_of_labels_tag is new vectors ( -- CS: better a simple list ?
 		index_type => positive, -- every tag label has an id
 		element_type => type_net_label_tag);
 
@@ -236,10 +234,8 @@ package et_schematic is
 	-- Writes the properties of the given net label in the logfile.
     
 
--- NET
 	-- A net is something that carries electrical current between ports. It consists of one or more segments.
 	-- A segment may have labels attached.
-    
 	-- So this is the definition of a net segment with start and end coord., lists of simple and tag labels
 	type type_net_segment is tagged record
 		coordinates_start : type_coordinates; -- CS: better et_libraries.type_coordinates ?
@@ -252,7 +248,7 @@ package et_schematic is
 	-- Writes the start and end coordinates of a net segment.	
 	
 	-- A net is a list of segments.
-	package type_list_of_net_segments is new vectors ( 
+	package type_list_of_net_segments is new vectors ( -- CS: better a simple list ?
 		index_type => positive,  -- every net segment has an id
 		element_type => type_net_segment);
 
@@ -260,9 +256,9 @@ package et_schematic is
 	-- it may be exported to parent module (other ECAD tools refer to them as "hierachical or global nets").
 	type type_scope_of_net is  ( local, hierarchic, global );
 
-	-- A list of type_port forms a port list of a net.
+	-- A list of type_port forms the port list of a net:
 	use et_libraries;
-	package type_port_list_of_net is new vectors ( 
+	package type_port_list_of_net is new vectors ( -- CS: better a simple list ?
 		index_type => positive, -- every pin of a net has an id
 		element_type => et_libraries.type_port); -- CS: this should be a schematic specific type_port
 
@@ -275,7 +271,7 @@ package et_schematic is
 	-- Writes the coordinates of a net junction.
 	
 	-- Junctions are to be collected in a list.
-	package type_list_of_net_junctions is new vectors (
+	package type_list_of_net_junctions is new vectors ( -- CS: better a simple list ?
 		index_type => positive, -- every junction has an id
 		element_type => type_net_junction);
 		
@@ -321,7 +317,7 @@ package et_schematic is
 	end record;
 
     -- A list of submodules is a component of the main module:    
-    package type_list_of_gui_submodules is new vectors (
+    package type_list_of_gui_submodules is new vectors ( -- CS: better a simple list ?
         index_type => positive, -- every gui submodule has an id
         element_type => type_gui_submodule);
 
@@ -334,7 +330,7 @@ package et_schematic is
 		coordinates_start : et_libraries.type_coordinates;
         coordinates_end   : et_libraries.type_coordinates;
     end record;
-	package type_list_of_frame_lines is new vectors (
+	package type_list_of_frame_lines is new vectors ( -- CS: better a simple list ?
 		index_type => positive, -- every line of a frame an id
         element_type => type_frame_line);
     
@@ -345,7 +341,7 @@ package et_schematic is
 		orientation		: type_angle;
 		-- CS: font, ...
 	end record;
-	package type_list_of_frame_texts is new vectors (
+	package type_list_of_frame_texts is new vectors ( -- CS: better a simple list ?
 		index_type => positive, -- every text field a frame has an id
         element_type => type_frame_text);
 
@@ -359,7 +355,7 @@ package et_schematic is
     end record;
 
     -- there are lots of drawing frames in a schematic contained in a list
-    package type_list_of_frames is new vectors (
+    package type_list_of_frames is new vectors ( -- CS: better a simple list ?
         index_type => positive, -- every drawing fram has an id
         element_type => type_frame);
 
@@ -368,7 +364,7 @@ package et_schematic is
 		coordinates_start : et_libraries.type_coordinates;
 		coordinates_end   : et_libraries.type_coordinates;
     end record;
-	package type_list_of_title_block_lines is new vectors (
+	package type_list_of_title_block_lines is new vectors ( -- CS: better a simple list ?
 		index_type => positive, -- every line of a frame an id
         element_type => type_title_block_line);
     
@@ -387,7 +383,7 @@ package et_schematic is
  		orientation		: type_angle;
 		-- CS: font, ...
  	end record;
- 	package type_list_of_title_block_texts is new vectors (
+ 	package type_list_of_title_block_texts is new vectors ( -- CS: better a simple list ?
  		index_type => positive, -- every text field of the title block has an id
  		element_type => type_title_block_text);
 
@@ -399,7 +395,7 @@ package et_schematic is
     end record;
 
     -- there are lots of title blocks in a schematic contained in a list
-    package type_list_of_title_blocks is new vectors (
+    package type_list_of_title_blocks is new vectors ( -- CS: better a simple list ?
         index_type => positive, -- every title block has an id
         element_type => type_title_block);
 
@@ -421,21 +417,8 @@ package et_schematic is
 
 
 
-	type type_component_reference is record -- CS: should be private
-		prefix		: type_component_prefix.bounded_string := component_reference_prefix_default; -- like "IC"
-		id			: natural := component_reference_id_default; -- like "303"
-		id_width	: positive; -- the number of digits in the id. 3 in case of an id of 303
-		-- NOTE: This allows something like R091 or IC0 (there are reasons for such strange things ...)
-	end record;
 
-	function to_string (value : in type_component_value.bounded_string) return string;
-	-- Returns the given value as string.
 	
-	function component_value_valid (
-	-- Returns true if the given component value meets certain conventions.									   
-		value 		: in type_component_value.bounded_string;
-		reference	: in type_component_reference) 
-		return boolean;
 	
 	function to_component_reference (
 	-- Converts a string like "IC303" to a composite type_component_reference.
@@ -472,7 +455,7 @@ package et_schematic is
 		"<" => compare_component_by_reference,
  		element_type => type_component);
 
-	procedure write_component_properties ( component : in type_components.cursor);
+	procedure write_component_properties (component : in type_components.cursor);
 	-- Writes the properties of the component indicated by the given cursor.
 
 	
@@ -508,7 +491,7 @@ package et_schematic is
 
     -- When reading a schematic sheet, submodules might be discovered.
     -- They are returned to the parent unit in a list of submodules:
-	package type_list_of_submodule_names is new vectors ( -- the bare list
+	package type_list_of_submodule_names is new vectors ( -- the bare list -- CS: better an ordered set ?
 		index_type => positive,
 		element_type => type_submodule_name.bounded_string);
 

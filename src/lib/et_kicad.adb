@@ -42,12 +42,12 @@ with ada.numerics.real_arrays;  use ada.numerics.real_arrays;
 with ada.directories;			use ada.directories;
 with ada.exceptions; 			use ada.exceptions;
 
-with et_libraries;				--use et_libraries;
-with et_schematic;				--use et_schematic;
+with et_libraries;
+with et_schematic;
 
-with et_geometry;				use et_geometry;
+with et_geometry;
 
-with et_general;				use et_general;
+with et_general;
 with et_string_processing;		use et_string_processing;
 
 package body et_kicad is
@@ -155,7 +155,7 @@ package body et_kicad is
 	function to_field_orientation (text : in string) return et_libraries.type_angle is
 	-- Converts a kicad field text orientation character (H/V) to type_angle.
 	begin	
-		case type_field_orientation'value(text) is
+		case type_field_orientation'value (text) is
 			when H => return 0.0;
 			when V => return 90.0;
 		end case;
@@ -171,7 +171,7 @@ package body et_kicad is
 				raise;
 	end to_field_orientation;
 	
-	function to_alignment_horizontal ( text : in string) return et_libraries.type_text_alignment_horizontal is
+	function to_alignment_horizontal (text : in string) return et_libraries.type_text_alignment_horizontal is
 	-- Converts a horizontal kicad text alignment to type_text_alignment_horizontal.
 		a : et_libraries.type_text_alignment_horizontal;
 	begin
@@ -183,7 +183,7 @@ package body et_kicad is
 		return a;
 	end to_alignment_horizontal;
 
-	function to_alignment_vertical ( text : in string) return et_libraries.type_text_alignment_vertical is
+	function to_alignment_vertical (text : in string) return et_libraries.type_text_alignment_vertical is
 	-- Converts a vertical kicad text alignment to type_text_alignment_vertical.
 	-- The given text is something like CNN. We are interested in the first character only.
 		a : et_libraries.type_text_alignment_vertical;
@@ -206,6 +206,7 @@ package body et_kicad is
 		-- Explanation: The style of a text is something like "~" or "Italic".
 		-- The style of a field comes with the letters 2 and 3 of a string like CNN.
 		) return et_libraries.type_text_style is
+		
 		a : et_libraries.type_text_style;
 		s_field : string (1..2);
 	
@@ -251,6 +252,7 @@ package body et_kicad is
 		-- In component libraries it is defined by characters like V or I.
 		)
 		return et_libraries.type_text_visible is
+		
 		v_in_lib : type_library_field_visible;
 		v_in_sch : type_schematic_field_visible;
 		v_out : et_libraries.type_text_visible;
@@ -260,7 +262,7 @@ package body et_kicad is
 			when true =>
 				-- As the type_schematic_field_visible has letter V as workaround, we must 
 				-- prepend it here to vis_in before converting to a type_schematic_field_visible:
-				v_in_sch := type_schematic_field_visible'value(schematic_field_visibility_prefix & vis_in);
+				v_in_sch := type_schematic_field_visible'value (schematic_field_visibility_prefix & vis_in);
 				case v_in_sch is
 					when V0000 => v_out := et_libraries.yes; -- visible
 					when V0001 => v_out := et_libraries.no;  -- invisible
@@ -278,7 +280,7 @@ package body et_kicad is
 		return v_out;
 	end to_field_visible;
 
-	function to_appearance ( line : in type_fields_of_line; schematic : in boolean) 
+	function to_appearance (line : in type_fields_of_line; schematic : in boolean) 
 	-- Converts the apperance flag to type_component_appearance.
 	-- The parameter "schematic" specifies whether we are dealing with a schematic
 	-- or a library component.
@@ -287,6 +289,7 @@ package body et_kicad is
 	-- In a schematic it is defined by a hash sign:
 	-- example: L P3V3 #PWR07
 		return et_libraries.type_component_appearance is
+		
 		comp_app	: et_libraries.type_component_appearance;
 		lca			: type_library_component_appearance;
 
@@ -347,7 +350,7 @@ package body et_kicad is
 				
 	end to_appearance;
 
-	function to_alternative_representation ( line : in type_fields_of_line; schematic : in boolean)
+	function to_alternative_representation (line : in type_fields_of_line; schematic : in boolean)
 	-- Converts the kicad alternative (deMorgan) representation to the et alternative representation.
 	-- In a schematic it is expressed in a line like "U 2 1 5992967A". The 3rd field is the deMorgan flag.
 		return et_schematic.type_alternative_representation is
@@ -382,6 +385,7 @@ package body et_kicad is
 
 	function to_degrees (angle : in string) return et_libraries.type_angle is
 	-- Converts a given angle as string to type_angle.
+		
 		a_in  : type_angle; -- unit is tenth of degrees -3599 .. 3599
 		--a_out : et_libraries.type_angle; -- unit is degrees -359.9 .. 359.9
 		use et_libraries;
@@ -408,6 +412,7 @@ package body et_kicad is
 	
 	procedure read_components_libraries (indentation : in type_indentation_level := 0) is
 	-- Reads components from libraries as stored in lib_dir and project_libraries:
+		
         use et_libraries; -- most of the following stuff is specified there
 		use et_libraries.type_list_of_library_names;
 		use et_libraries.type_library_full_name;
@@ -487,14 +492,14 @@ package body et_kicad is
 		
 			procedure init_temp_variables is
 			begin
-				null; -- CS: init other variables
+				-- CS: init other variables
 				extra_unit_available := false;
 				tmp_unit_add_level := type_unit_add_level'first;
 			end init_temp_variables;
 
 			procedure check_text_fields is
 			begin
-				null; -- CS
+				null; -- CS: do a value check if value provided
 			end check_text_fields;
 			
 			function to_swap_level (swap_in : in string)
@@ -503,6 +508,7 @@ package body et_kicad is
 			-- we convert to the lowest swap level available.
 			-- Used when reading component libraries.	
 				return type_unit_swap_level is
+				
 				i : type_symbol_interchangeable;
 				s : type_unit_swap_level;
 				log_threshold : type_log_level := 1;
@@ -532,6 +538,7 @@ package body et_kicad is
 			-- Converts the kicad "show pin number" flag to the et type_pin_visible.
 			-- Used when reading component libraries.		
 				return type_pin_visible is
+
 				v_in	: type_show_pin_number;
 				v_out	: type_pin_visible;
 				log_threshold : type_log_level := 1;
@@ -563,6 +570,7 @@ package body et_kicad is
 			-- Converts the kicad "show pin name" flag to the et type_port_visible.
 			-- Used when reading component libraries.		
 				return type_port_visible is
+
 				v_in	: type_show_pin_name;
 				v_out	: type_port_visible;
 				log_threshold : type_log_level := 1;			
@@ -2263,9 +2271,9 @@ package body et_kicad is
 				o_out : et_libraries.type_angle;
 			begin
 				case o_in is
-					when 0 => o_out := 180.0;
+					when 0 => o_out := 180.0; -- CS: probably 0.0 ?
 					when 1 => o_out :=  90.0;
-					when 2 => o_out :=   0.0;
+					when 2 => o_out :=   0.0; -- CS: probably 180.0 ?
 					when 3 => o_out := 270.0;
 				end case;
 				return o_out;
@@ -2325,9 +2333,10 @@ package body et_kicad is
 				line_end 	: et_schematic.type_coordinates := segment.coordinates_end;
 				zero 		: constant et_libraries.type_grid := 0.0;
 				sits_on_segment : boolean := false;
-				d : type_distance_point_from_line;
+				d : et_geometry.type_distance_point_from_line;
 
 				use et_libraries;
+				use et_geometry;
 			begin
 				-- calculate the shortes distance of point from line.
 				d := distance_of_point_from_line (
@@ -2412,7 +2421,7 @@ package body et_kicad is
 				untouched, half_processed : boolean; -- indicate whether a segment is completely untouched or processed in only one direction
 
 				use et_libraries;
-			begin
+			begin -- search_for_same_coordinates
 				-- Set E/S flag:
 				-- If we start the search from the end_point of a segment, the e-flag is to be set. This indicates the end_point has been processed.
 				-- If we start the search from the start_point of a segment, the s-flag is to be set. This indicates the start_point has been processed.				
@@ -2594,9 +2603,10 @@ package body et_kicad is
 					line_end 	: et_schematic.type_coordinates := segment.coordinates_end;
 					zero 		: constant et_libraries.type_grid := 0.0;
 					sits_on_segment : boolean := false;
-					d : type_distance_point_from_line;
+					d : et_geometry.type_distance_point_from_line;
 
 					use et_libraries;
+					use et_geometry;
 				begin
 					-- calculate the shortes distance of point from line.
 					d := distance_of_point_from_line (
@@ -3017,7 +3027,7 @@ package body et_kicad is
 			-- or a unit in the component/unit list:
 			tmp_component_name_in_lib	: et_libraries.type_component_name.bounded_string;
 			tmp_component_appearance	: et_libraries.type_component_appearance := et_libraries.sch;
-			tmp_component_reference		: et_schematic.type_component_reference;
+			tmp_component_reference		: et_libraries.type_component_reference;
 			tmp_component_unit_name		: et_libraries.type_unit_name.bounded_string;
 			tmp_component_alt_repres	: et_schematic.type_alternative_representation;
 			tmp_component_timestamp		: et_string_processing.type_timestamp;
@@ -3104,11 +3114,6 @@ package body et_kicad is
 				log ("precheck", log_threshold);
 				log_indentation_up;
 				
--- 				-- if the log threshold is one notch more, we log the following stuff:
--- 				log_threshold := log_threshold + 1;
-
-
-
 				-- reference
 				log ("reference", level => log_threshold);
 				if not tmp_component_text_reference_found then
@@ -3139,7 +3144,7 @@ package body et_kicad is
 					missing_field (et_libraries.value);
 				else
 					-- depending on the component reference (like R12 or C9) the value must meet certain conventions:
-					if not et_schematic.component_value_valid (
+					if not et_libraries.component_value_valid (
 						value => et_libraries.type_component_value.to_bounded_string (
 							et_libraries.content (tmp_component_text_value)), -- the content of the value field like 200R or 10uF
 						reference => tmp_component_reference) -- the component reference such as R4 or IC34
@@ -3466,7 +3471,7 @@ package body et_kicad is
 			end insert_component;
 			
 
-			procedure insert_unit (key : in et_schematic.type_component_reference; component : in out et_schematic.type_component ) is 
+			procedure insert_unit (key : in et_libraries.type_component_reference; component : in out et_schematic.type_component ) is 
 			-- Inserts a unit into the unit list of a component. The text fields around a unit are placeholders.
 			-- The properties of the placeholder texts are loaded with the properties of the text fields of the units
 			-- found in the schematic. The idea behind is to store just basic text properties (type_text_basic) 

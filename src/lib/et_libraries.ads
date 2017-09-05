@@ -82,6 +82,7 @@ package et_libraries is
  	person_name_length	: constant natural := 100;
 	package type_person_name is new generic_bounded_length(person_name_length);
 
+	
 -- GRID AND COORDINATES
 
 	type type_grid_extended is digits 11 range -100000000.00 .. 100000000.00;
@@ -96,19 +97,16 @@ package et_libraries is
 		x,y				: type_grid := coordinate_zero;
 	end record;
 
-
-
 	coordinates_dimension_separator : constant string (1..1) := "/";
 	coordinates_preamble : constant string (1..15) := "position (x" & coordinates_dimension_separator & "y) ";
 	
-	function to_string ( position : in type_coordinates) return string;
+	function to_string (position : in type_coordinates) return string;
 	-- Returns the given position as string.
 
 
 -- ORIENTATION, ANGLE AND ROTATION
 
--- Objects may be placed at a certain orientation:
-
+	-- Objects may be placed at a certain angle:
 	type type_angle is delta 0.1 digits 4 range -359.9 .. 359.9; -- unit is degrees
 	-- CS: a type that allows angles of multiples of 45 degrees ? 
 	-- or check angle via separate function when required ?
@@ -120,95 +118,10 @@ package et_libraries is
 	-- Returns the given angle as string. 
 
 	procedure warning_angle_greater_90_degrees;
-	
--- SCHEMATIC RELATED
 
- 	port_name_length	: constant natural := 50;
-	package type_port_name is new generic_bounded_length(port_name_length); use type_port_name;
 
-	function to_string (port_name : in type_port_name.bounded_string) return string;
-	-- Returns the given port name as string.
-	
- 	component_name_length_max : constant natural := 100;
-	package type_component_name is new generic_bounded_length(component_name_length_max); use type_component_name;
 
-	
-	-- For some component (not all !) it is helpful to have an URL to the datasheet:
-	component_datasheet_length_max : constant positive := 1000;
-	package type_component_datasheet is new generic_bounded_length (component_datasheet_length_max);
 
-	
-	function to_string ( name_in_library : in type_component_name.bounded_string) return string;
-	-- Returns the given name_in_library as as string.
-
-	
-	-- The name of a pin may have 10 characters which seems sufficient for now.
- 	pin_name_length	: constant natural := 10;
-	package type_pin_name is new generic_bounded_length(pin_name_length); use type_pin_name;
-
--- LAYOUT RELATED
-
-	-- PACKAGES AND VARIANTS
-	-- A component package is something like "SOT32" or "NDIP14". It is a more or less standardized (JEDEC)
-	-- designator for the housing or the case of an electronical component. The package name is independed of
-	-- the actual purpose of a component. An LED can have an SOT23 package and a transistor can also come in an SOT23.
-
-	-- The variant is usually a suffix in a component name, given by its manufacturer. The variant is a manufacturer
-	-- specific abbrevation for the package a component comes with.
-	-- Example: An opamp made by TI can be the type TL084N or TL084D. N means the NDIP14 package
-	-- whereas D means the SO14 package.
-
-	-- component package names like "SOT23" or "TO220" are stored in bounded strings:
-	-- Kicad refers to them as "footprints".
-	component_package_name_length_max : constant positive := 100;
-	package type_component_package_name is new generic_bounded_length(component_package_name_length_max);
-	--use type_component_package_name;
-
-	-- The component partcode is something like "R_PAC_S_0805_VAL_"
-	component_partocde_length_max : constant positive := 200;
-	package type_component_partcode is new generic_bounded_length (component_partocde_length_max);
-
-	-- Components that require operator interaction like connectors, LEDs or switches have purpose.
-	-- Example: The purpose of connector X44 is "power in". The purpose of LED5 is "system fail":
-	component_purpose_length_max : constant positive := 100;
-	package type_component_purpose is new generic_bounded_length (component_purpose_length_max);
-	
-	function to_string ( packge : in type_component_package_name.bounded_string) return string;
-	-- Returns the given package name as as string.
-	
-	-- VARIANT NAMES
-	-- If a component has package variants, a suffix after the component type indicates the package
-	-- The variant name is manufacturer specific. example: TL084D or TL084N
-	-- component package variant names like "N" or "D" are stored in short bounded strings:
-	component_variant_name_length_max : constant positive := 10;
-	package type_component_variant_name is new generic_bounded_length(component_variant_name_length_max);
-	use type_component_variant_name;
-
-	-- A component variant is a composite of the package, the library it is stored in and
-	-- a connection list. The connection list maps from port names to pin/pad names.
-	type type_component_variant is record
-		packge	: type_component_package_name.bounded_string;	-- like "SOT23"
-		library	: type_library_full_name.bounded_string;		-- like "/home/abc/lib/smd.mod"
-		-- CS: connection list
-	end record;
-
-	function to_string ( variant : in type_component_variant) return string;
-	-- Returns the given variant as string.
-	-- NOTE: This displays the type_component_variant (see et_libraries.ads).
-	-- Do not confuse with type_variant (see et_schematic.ads) which also contains the variant name
-	-- like in TL084D or TL084N.
-	
-	-- Component variants are stored in a map where they are accessed by the variant name.
-	package type_component_variants is new ordered_maps (
-		key_type => type_component_variant_name.bounded_string,
-		element_type => type_component_variant);
-
-	-- If certain packages are to be proposed they are collected in a so called "package filter"
-	package_proposal_length_max : constant positive := 100;
-	package type_package_proposal is new generic_bounded_length (package_proposal_length_max);
-	use type_package_proposal;
-	package type_package_filter is new ordered_sets (type_package_proposal.bounded_string);
-	
 -- TEXT & FIELDS
 
     -- CS: currently we use unit mil which is old fashionated
@@ -223,7 +136,6 @@ package et_libraries is
 		vertical	: type_text_alignment_vertical := center;
 	end record;
 	
-	-- Text fields:
 	type type_text_meaning is (
 		REFERENCE,		-- for things like R301 or X9
 		VALUE,			-- for component values like "200R"
@@ -272,12 +184,15 @@ package et_libraries is
 
 	function content ( text : in type_text) return string;
 	-- Returns the content of the given text as string.
+
+
 	
--- PORTS
 	
+	
+-- COMPONENTS, PACKAGES, PORTS AND PINS
+
 	-- A port is something where a net can be attached to.
 	-- The name of a port represents the function of the port like (A14 or RST_N)
-
 	subtype type_port_length is type_grid range 0.0 .. 500.0; -- CS: reasonable limits ?
 	
 	-- The port has an electrical direction:
@@ -317,7 +232,18 @@ package et_libraries is
 		INVISIBLE_OUTPUT_LOW,
 		INVISIBLE_FALLING_EDGE_CLK, INVISIBLE_RISING_EDGE_CLK,
 		INVISIBLE_NON_LOGIC);
+
 	
+ 	port_name_length	: constant natural := 50;
+	package type_port_name is new generic_bounded_length(port_name_length); use type_port_name;
+
+	function to_string (port_name : in type_port_name.bounded_string) return string;
+	-- Returns the given port name as string.
+
+	-- The name of a pin may have 10 characters which seems sufficient for now.
+ 	pin_name_length	: constant natural := 10;
+	package type_pin_name is new generic_bounded_length(pin_name_length); use type_pin_name;
+
 	-- Initially, at the lowest level (usually library level), a port has a name, direction,
 	-- coordinates, orientation, flags for making port and pin name visible. 
 	-- Later, other values are assigned like pin name. CS: set defaults
@@ -333,16 +259,124 @@ package et_libraries is
 		port_name_size		: type_text_size;
 		pin_name_size		: type_text_size;
 		port_name_offset	: type_grid; -- the clearance between symbol outline and port name -- CS: define a reasonable range
-		
 		-- CS : obsolete ? pin_position_offset ?
 		-- CS: port swap level ?
-
 	end record;
 
 	-- Ports are collected in a map.
 	package type_ports is new ordered_maps ( 
 		key_type => type_port_name.bounded_string, -- like "CLOCK" or "CE"
 		element_type => type_port); 
+	
+ 	component_name_length_max : constant natural := 100;
+	package type_component_name is new generic_bounded_length(component_name_length_max); use type_component_name;
+
+	function to_string (name_in_library : in type_component_name.bounded_string) return string;
+	-- Returns the given name_in_library as as string.
+
+	-- The component value is something like 330R or 100n or 74LS00
+	component_value_length_max : constant positive := 100;
+
+	-- Define the characters that are allowed for a component value:
+	component_value_characters : character_set := to_set (ranges => (('A','Z'),('a','z'),('0','9'))) or to_set('_');
+	package type_component_value is new generic_bounded_length (component_value_length_max);
+
+	function to_string (value : in type_component_value.bounded_string) return string;
+	-- Returns the given value as string.
+	
+	-- For some component (not all !) it is helpful to have an URL to the datasheet:
+	component_datasheet_length_max : constant positive := 1000;
+	package type_component_datasheet is new generic_bounded_length (component_datasheet_length_max);
+
+	-- A component reference (in Eagle "device name") consists of a prefix (like R, C, IC, ..)
+	-- and a consecutive number. Both form something like "IC702"
+	-- Component referencees (in Eagle "device names") have prefixes like R, C, IC, ...	
+	component_prefix_length_max : constant natural := 10; -- CS: there is no reason to work with longer prefixes.
+	package type_component_prefix is new generic_bounded_length(component_prefix_length_max);
+	use type_component_prefix;
+
+	type type_component_reference_element is ( PREFIX, ID);
+	component_reference_prefix_default : constant type_component_prefix.bounded_string := to_bounded_string("?");
+	component_reference_id_default : constant natural := 0;
+
+	type type_component_reference is record -- CS: should be private
+		prefix		: type_component_prefix.bounded_string := component_reference_prefix_default; -- like "IC"
+		id			: natural := component_reference_id_default; -- like "303"
+		id_width	: positive; -- the number of digits in the id. 3 in case of an id of 303
+		-- NOTE: This allows something like R091 or IC0 (there are reasons for such strange things ...)
+	end record;
+	
+	function component_value_valid (
+	-- Returns true if the given component value meets certain conventions.									   
+		value 		: in type_component_value.bounded_string;
+		reference	: in type_component_reference) 
+		return boolean;
+
+	
+	-- PACKAGES AND VARIANTS
+	-- A component package is something like "SOT32" or "NDIP14". It is a more or less standardized (JEDEC)
+	-- designator for the housing or the case of an electronical component. The package name is independed of
+	-- the actual purpose of a component. An LED can have an SOT23 package and a transistor can also come in an SOT23.
+
+	-- The variant is usually a suffix in a component name, given by its manufacturer. The variant is a manufacturer
+	-- specific abbrevation for the package a component comes with.
+	-- Example: An opamp made by TI can be the type TL084N or TL084D. N means the NDIP14 package
+	-- whereas D means the SO14 package.
+
+	-- component package names like "SOT23" or "TO220" are stored in bounded strings:
+	-- Kicad refers to them as "footprints".
+	component_package_name_length_max : constant positive := 100;
+	package type_component_package_name is new generic_bounded_length(component_package_name_length_max);
+	--use type_component_package_name;
+
+	-- The component partcode is something like "R_PAC_S_0805_VAL_"
+	component_partocde_length_max : constant positive := 200;
+	package type_component_partcode is new generic_bounded_length (component_partocde_length_max);
+
+	-- Components that require operator interaction like connectors, LEDs or switches have purpose.
+	-- Example: The purpose of connector X44 is "power in". The purpose of LED5 is "system fail":
+	component_purpose_length_max : constant positive := 100;
+	package type_component_purpose is new generic_bounded_length (component_purpose_length_max);
+	
+	function to_string (packge : in type_component_package_name.bounded_string) return string;
+	-- Returns the given package name as as string.
+	
+	-- VARIANT NAMES
+	-- If a component has package variants, a suffix after the component type indicates the package
+	-- The variant name is manufacturer specific. example: TL084D or TL084N
+	-- component package variant names like "N" or "D" are stored in short bounded strings:
+	component_variant_name_length_max : constant positive := 10;
+	package type_component_variant_name is new generic_bounded_length(component_variant_name_length_max);
+	use type_component_variant_name;
+
+	-- A component variant is a composite of the package, the library it is stored in and
+	-- a connection list. The connection list maps from port names to pin/pad names.
+	type type_component_variant is record
+		packge	: type_component_package_name.bounded_string;	-- like "SOT23"
+		library	: type_library_full_name.bounded_string;		-- like "/home/abc/lib/smd.mod"
+		-- CS: connection list
+	end record;
+
+	function to_string (variant : in type_component_variant) return string;
+	-- Returns the given variant as string.
+	-- NOTE: This displays the type_component_variant (see et_libraries.ads).
+	-- Do not confuse with type_variant (see et_schematic.ads) which also contains the variant name
+	-- like in TL084D or TL084N.
+	
+	-- Component variants are stored in a map where they are accessed by the variant name.
+	package type_component_variants is new ordered_maps (
+		key_type => type_component_variant_name.bounded_string,
+		element_type => type_component_variant);
+
+	-- If certain packages are to be proposed they are collected in a so called "package filter"
+	package_proposal_length_max : constant positive := 100;
+	package type_package_proposal is new generic_bounded_length (package_proposal_length_max);
+	use type_package_proposal;
+	package type_package_filter is new ordered_sets (type_package_proposal.bounded_string);
+
+	
+	
+
 
 
 
@@ -423,6 +457,7 @@ package et_libraries is
 	end record;
 
 
+	
 -- SYMBOLS AND UNITS
 
 	-- In schematics electrical components like resistors, capactors and inductors are called "symbols".
@@ -467,7 +502,6 @@ package et_libraries is
 
 	function to_string (appearance : in type_component_appearance) return string;
 	-- Returns the given component appearance as string.
-
 	
 	type type_symbol (appearance : type_component_appearance) is record
 		shapes		: type_shapes; -- the collection of shapes
@@ -493,7 +527,6 @@ package et_libraries is
 	end record;
 
 
-	-- UNITS GENERAL
 
 	unit_name_length_max : constant natural := 50;	
 	package type_unit_name is new generic_bounded_length(unit_name_length_max); use type_unit_name;	
@@ -509,8 +542,6 @@ package et_libraries is
 		ALWAYS,
 		MUST);
 	
-	-- INTERNAL UNITS
-	
 	-- An internal unit is a symbol with a swap level.
 	-- An internal unit is owned by a particular component exclusively.
 	type type_unit_internal (appearance : type_component_appearance) is record
@@ -524,9 +555,6 @@ package et_libraries is
 	package type_units_internal is new indefinite_ordered_maps (
 		key_type => type_unit_name.bounded_string, -- like "I/O-Bank 3" "A" or "B"
 		element_type => type_unit_internal);
-
-
-	-- EXTERNAL UNITS
 
 	-- External units have a reference to an external symbol.
 	-- External units are stored in a library and are shared by many components.
@@ -548,27 +576,9 @@ package et_libraries is
 		key_type => type_unit_name.bounded_string,		 -- like "I/O-Bank 3"
 		element_type => type_unit_external);
 
+
 	
 -- COMPONENTS
-
-	-- The component value is something like 330R or 100n or 74LS00
-	component_value_length_max : constant positive := 100;
-
-	-- Define the characters that are allowed for a component value:
-	component_value_characters : character_set := to_set (ranges => (('A','Z'),('a','z'),('0','9'))) or to_set('_');
-	package type_component_value is new generic_bounded_length (component_value_length_max);
-	
-	-- Component referencees (in Eagle "device names") have prefixes like R, C, IC, ...	
-	component_prefix_length_max : constant natural := 10; -- CS: there is no reason to work with longer prefixes.
-	package type_component_prefix is new generic_bounded_length(component_prefix_length_max);
-	use type_component_prefix;
-	
-	-- A component reference (in Eagle "device name") consists of a prefix (like R, C, IC, ..)
-	-- and a consecutive number. Both form something like "IC702"
-	type type_component_reference_element is ( PREFIX, ID);
-	component_reference_prefix_default : constant type_component_prefix.bounded_string := to_bounded_string("?");
-	component_reference_id_default : constant natural := 0;
-	
 
 	type type_component (appearance : type_component_appearance) is record
 		prefix			: type_component_prefix.bounded_string; -- R, C, IC, ...
