@@ -2322,9 +2322,8 @@ package body et_kicad is
 				element_type => type_wild_net_segment);
 			wild_segment_collection : type_wild_list_of_net_segments.vector;
 
-			junction_count : natural := 0;
 			junction_scratch : type_net_junction; -- temporarily used when reading net junctions into a wild collection of junctions
-			wild_collection_of_junctions : type_junctions.vector;
+			wild_collection_of_junctions : type_junctions.list;
 
 			function junction_sits_on_segment (junction : in type_net_junction; segment : in type_wild_net_segment) return boolean is
 			-- Returns true if the given junction sits on the given net segment.
@@ -2929,14 +2928,17 @@ package body et_kicad is
 				end change_segment_start_coordinates;
 				
 				segment_smashed : boolean := true; -- indicates whether a segment has been broken down
+
+				use et_schematic.type_junctions;
+				junction_cursor : et_schematic.type_junctions.cursor; -- points to the junction being processed
 			begin -- process junctions
 				
 				log_indentation_up;
 				
 				-- Break down net segments that have a junction. Do that if the sheet has junctions at all. Otherwise skip this procedure.
 				-- After breaking down net segments, the numbner of segments increases, so segment_count must be updated finally.
-				if junction_count > 0 then
-					log (text => "processing" & natural'image(junction_count) & " net junctions ...");
+				if not is_empty (wild_collection_of_junctions) then 
+					log (text => "processing" & count_type'image (length (wild_collection_of_junctions)) & " net junctions ...");
 
 					-- We reason there are segments to be broken down. After smashing a segment, segment_count increases. If it
 					-- does not increase anymore, all segments are processed.
@@ -2947,8 +2949,12 @@ package body et_kicad is
 							segment_scratch := type_wild_list_of_net_segments.element(wild_segment_collection,s); -- get a segment
 
 							-- loop in junction list until a junction has been found that sits on the segment
-							for j in 1..junction_count loop 
-								junction_scratch := type_junctions.element (wild_collection_of_junctions,j);
+							junction_cursor := wild_collection_of_junctions.first; -- reset junction cursor to begin of junction list
+							while junction_cursor /= no_element loop
+
+								-- fetch junction from current cursor position
+								junction_scratch := type_junctions.element (junction_cursor);
+								
 								if junction_sits_on_segment (junction => junction_scratch, segment => segment_scratch) then -- match
 
 									--write_coordinates_of_segment (type_net_segment(segment_scratch));
@@ -2970,6 +2976,8 @@ package body et_kicad is
 
 									exit loop_s;
 								end if;
+
+								next (junction_cursor);
 							end loop;
 						end loop loop_s;
 
@@ -3931,7 +3939,6 @@ package body et_kicad is
 											junction_scratch.coordinates.x := et_libraries.type_grid'value(get_field_from_line(line,3));
 											junction_scratch.coordinates.y := et_libraries.type_grid'value(get_field_from_line(line,4));
 											type_junctions.append (wild_collection_of_junctions, junction_scratch);
-											junction_count := junction_count + 1;
 										end if;
 									end if;
 										

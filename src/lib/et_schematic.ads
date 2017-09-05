@@ -271,8 +271,7 @@ package et_schematic is
 	-- Writes the coordinates of a net junction.
 	
 	-- Junctions are to be collected in a list.
-	package type_junctions is new vectors ( -- CS: better a simple list ?
-		index_type => positive, -- every junction has an id
+	package type_junctions is new doubly_linked_lists (
 		element_type => type_net_junction);
 		
 	-- A net has a name, a scope, a list of segments, a list of ports.
