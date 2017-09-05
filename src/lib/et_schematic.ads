@@ -284,7 +284,7 @@ package et_schematic is
 		name 		: type_net_name.bounded_string; -- example "CPU_CLOCK"
 		scope 		: type_scope_of_net; -- example "local"
 		segments 	: type_list_of_net_segments.vector; -- list of net segments
-		-- CS: junctions ? 
+		junctions	: type_junctions.list; -- the junctions of the net
         ports 		: type_port_list_of_net.vector; -- list of component ports
 		coordinates : type_coordinates;                
 	end record;
