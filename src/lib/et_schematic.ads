@@ -271,7 +271,7 @@ package et_schematic is
 	-- Writes the coordinates of a net junction.
 	
 	-- Junctions are to be collected in a list.
-	package type_list_of_net_junctions is new vectors ( -- CS: better a simple list ?
+	package type_junctions is new vectors ( -- CS: better a simple list ?
 		index_type => positive, -- every junction has an id
 		element_type => type_net_junction);
 		
@@ -290,6 +290,10 @@ package et_schematic is
 		coordinates : type_coordinates;                
 	end record;
 
+	-- Nets are collected in a vector list.
+	package type_net_list_of_module is new vectors ( -- CS: should be map with net name as key
+		index_type => positive, -- every net of a module has an id
+		element_type => type_net);
 
 
 
@@ -444,10 +448,6 @@ package et_schematic is
 
 
 -- MODULE
-	-- The nets of a module are collected in a vector list.
-	package type_net_list_of_module is new vectors ( -- CS: should be map with net name as key
-		index_type => positive, -- every net of a module has an id
-		element_type => type_net);
 
 	-- The components of a module are collected in a map.
  	package type_components is new indefinite_ordered_maps (

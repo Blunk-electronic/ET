@@ -2324,7 +2324,7 @@ package body et_kicad is
 
 			junction_count : natural := 0;
 			junction_scratch : type_net_junction; -- temporarily used when reading net junctions into a wild collection of junctions
-			wild_collection_of_junctions : type_list_of_net_junctions.vector;
+			wild_collection_of_junctions : type_junctions.vector;
 
 			function junction_sits_on_segment (junction : in type_net_junction; segment : in type_wild_net_segment) return boolean is
 			-- Returns true if the given junction sits on the given net segment.
@@ -2948,8 +2948,8 @@ package body et_kicad is
 
 							-- loop in junction list until a junction has been found that sits on the segment
 							for j in 1..junction_count loop 
-								junction_scratch := type_list_of_net_junctions.element(wild_collection_of_junctions,j);
-								if junction_sits_on_segment(junction => junction_scratch, segment => segment_scratch) then -- match
+								junction_scratch := type_junctions.element (wild_collection_of_junctions,j);
+								if junction_sits_on_segment (junction => junction_scratch, segment => segment_scratch) then -- match
 
 									--write_coordinates_of_segment (type_net_segment(segment_scratch));
 									write_coordinates_of_junction (junction_scratch);
@@ -3930,7 +3930,7 @@ package body et_kicad is
 											junction_scratch.coordinates.sheet_number := sheet_number_current;
 											junction_scratch.coordinates.x := et_libraries.type_grid'value(get_field_from_line(line,3));
 											junction_scratch.coordinates.y := et_libraries.type_grid'value(get_field_from_line(line,4));
-											type_list_of_net_junctions.append(wild_collection_of_junctions,junction_scratch);
+											type_junctions.append (wild_collection_of_junctions, junction_scratch);
 											junction_count := junction_count + 1;
 										end if;
 									end if;
