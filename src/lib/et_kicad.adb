@@ -2408,7 +2408,6 @@ package body et_kicad is
 				side : type_segment_side; -- end point of the segment found
 			end record;
 			same_coord_result : type_same_coord_result;
-			side_scratch : type_segment_side;
 			
 			function search_for_same_coordinates (
 			-- Starting from a segment indicated by id and the end point (given by side), 
@@ -3017,8 +3016,9 @@ package body et_kicad is
 			end process_junctions;
 
 
-			procedure process_net_segments is
-				-- Assembles net segments to a list of anonymous nets.
+			procedure build_anonymous_nets is
+				-- From the wild segment collection, assembles net segments to a list of anonymous nets.
+				-- Takes junctions into account.
 
 				procedure add_net_to_list_of_anonymous_nets is
 				-- Once an anonymous net is complete, it gets appended to a list of anonymous nets. 
@@ -3030,23 +3030,31 @@ package body et_kicad is
 				end add_net_to_list_of_anonymous_nets;
 
 				use type_wild_list_of_net_segments;
-				segment_cursor, seg : type_wild_list_of_net_segments.cursor;
+
+				-- primary and secondary segment cursors.
+				segment_cursor_a, segment_cursor_b : type_wild_list_of_net_segments.cursor;
+
+				-- node of the segment (end or start point)
+				side : type_segment_side;
 				
-			begin -- process_net_segments
+			begin -- build_anonymous_nets
 				log_indentation_up;
 				
 				-- Build anonymous nets:
-				-- We are processing the net segments of a sheet here. The net segments have been collected in a wild list of net segments earlier.
-				-- This list does not reveal the actual nets where the segments belong to. The segments are inspected in the following by
-				-- looking at the coordinates of their start and end point. Segments whose start or end points match other segments are considered
-				-- as connected to each other (means they belong to the same net). The net name is unknown yet. So the outcome of the following is
-				-- a list of anonymous nets.
+				-- We are processing the net segments of a sheet here. The net segments have been collected in 
+				-- a wild collection of net segments earlier.
+				-- This list does not reveal the actual nets where the segments belong to. The segments are inspected
+				-- in the following by looking at the coordinates of their start and end points. 
+				-- Segments whose start or end points match other segments are considered
+				-- as connected to each other (means they belong to the same net).
+				-- The net name is unknown yet. So the outcome of the following is a list of anonymous nets.
 				-- CS: handle circlular nets, currently they cause a forever-loop here
 				segment_count := type_wild_list_of_net_segments.length (wild_segment_collection); -- get number of segments on the current sheet
+
 				log ("processing" & count_type'image (segment_count) & " net segments ...");
 
-				-- It may happen that a sheet has no nets, for example the top level sheet of a design with global nets only. If there are no net segments
-				-- at all, skip processing net segments.
+				-- It may happen that a sheet has no nets, for example the top level sheet of a design.
+				-- If there are no net segments at all, nothing happens.
 				if segment_count > 0 then 
 
 					-- Segments where a junction sits on, must be broken down. This results in more segments than calculated earlier.
@@ -3056,91 +3064,113 @@ package body et_kicad is
 
 					log_indentation_up;
 					
-					-- We inspect one segment after an other. Variable seg points to the segment being processed. 
-					-- A segment, whose e AND s flag has been set, is to be skipped (because this segment has been processed already).
-					-- Variable side_scratch points to the side of the segment (start or end point) where another matching segment is to be searched for.
+					-- We inspect one segment after another. segment_cursor_a points to the first segment to be processed. 
+					-- A segment, whose "e" AND "s" flag has been set, is to be skipped (because this segment has been processed already).
+					-- Variable side_scratch points to the side of the segment (start or end point) where another matching segment
+					-- is to be searched for.
 					-- If a matching segment is found, it gets appended to the current anonymous net.
-					seg := wild_segment_collection.first;
-					
-					while seg /= type_wild_list_of_net_segments.no_element loop
-						segment_cursor := seg;
-						
-						if not type_wild_list_of_net_segments.element (segment_cursor).s and -- Skip already processed nets.
-						   not type_wild_list_of_net_segments.element (segment_cursor).e then 
+
+					-- set primary segment cursor to begin of wild segment collection
+					segment_cursor_a := wild_segment_collection.first; 
+
+					-- The primary segment cursor advances once an anonymous net is complete (when all connected segments have been found).
+					-- Each time a connected segment has been found, the secondary segment cursor points to that segment.
+					while segment_cursor_a /= type_wild_list_of_net_segments.no_element loop
+						segment_cursor_b := segment_cursor_a;
+
+						-- Already processed nets are skipped. (Processed nets have the "s" and "e" flag set.)
+						if not type_wild_list_of_net_segments.element (segment_cursor_b).s and 
+						   not type_wild_list_of_net_segments.element (segment_cursor_b).e then 
 
 						    -- We initiate a new anonymous net and start looking for a matching segment on the end_point:
 							--put_line(et_import.report_handle," anonymous net" & positive'image(seg) & ":"); 
 							log ("anonymous net with segments", level => 1);
-											
-							add_segment_to_anonymous_net (segment_cursor); 
-							side_scratch := end_point;
+
+							-- The first segment is to be added to the anonymous net.
+							add_segment_to_anonymous_net (segment_cursor_b); 
+							side := end_point;
 
 							loop -- A
-								--put_line(et_import.report_handle,"  --> A");
+								--put_line(et_import.report_handle,"  --> A"); -- CS: log ?
+								
 								-- Search for a segment connected to the current segment. 
-								-- If function search_for_same_coordinates discovers a suitable segment, it adds the segment to current anonymous net.
-								-- search_for_same_coordinates sets the e or s flag of the segment in order to indicate which end point has been processed.
-								-- If no connected segment found, toggle side_scratch and repeat search_for_same_coordinates on the other side of the segment.
+								-- If function search_for_same_coordinates discovers a suitable segment, it adds the segment
+								-- to current anonymous net.
+								-- Search_for_same_coordinates sets the "e" or "s" flag of the segment in order to indicate
+								-- which end point has been processed.
+								-- If no connected segment found, toggle side and repeat search_for_same_coordinates
+								-- on the opposide of the segment.
 								same_coord_result := search_for_same_coordinates (
-									segment_cursor => segment_cursor,
-									seg_in => type_wild_list_of_net_segments.element (segment_cursor),
-									side => side_scratch);
+									segment_cursor	=> segment_cursor_b,
+									seg_in			=> type_wild_list_of_net_segments.element (segment_cursor_b),
+									side			=> side);
 
 								if same_coord_result.valid then
-									--put_line(et_import.report_handle,"  --> E");
+									--put_line(et_import.report_handle,"  --> E"); -- CS: log ?
 									null;
 								else
 									-- Toggle side_scratch depending on the e/s flag of the segment:
 									-- D
- 									if type_wild_list_of_net_segments.element (segment_cursor).e then
-										-- put_line(et_import.report_handle,"  --> D1");
-										side_scratch := start_point;
+ 									if type_wild_list_of_net_segments.element (segment_cursor_b).e then
+										-- put_line(et_import.report_handle,"  --> D1"); -- CS: log ?
+										side := start_point;
 									end if;
 									
- 									if type_wild_list_of_net_segments.element (segment_cursor).s then
-										-- put_line(et_import.report_handle,"  --> D2");	
- 										side_scratch := end_point;	
+ 									if type_wild_list_of_net_segments.element (segment_cursor_b).s then
+										-- put_line(et_import.report_handle,"  --> D2"); -- CS: log ?
+ 										side := end_point;	
  									end if;
 
 									-- C
-									--put_line(et_import.report_handle,"  --> C");
-									-- Search for a segment connected to the current segment (starting from the current side_scratch).
-									-- If function search_for_same_coordinates discovers a suitable segment, it adds the segment to current anonymous net.
-									-- search_for_same_coordinates sets the e or s flag of the segment in order to indicate which end point has been processed.
-									-- If no connected segment found, the current anonymous net is considered as complete -> cancel loop, advance to next segment ...
+									--put_line(et_import.report_handle,"  --> C"); -- CS: log ?
+									
+									-- Search for a segment connected to the current side of the segment.
+									-- If function search_for_same_coordinates discovers a suitable segment, 
+									-- it adds the segment to current anonymous net.
+									-- Search_for_same_coordinates sets the "e" or "s" flag of the segment in order to
+									-- indicate which end point has been processed.
+									-- If no connected segment found, the current anonymous net is considered
+									-- as complete -> cancel loop, advance to next segment ...
 									same_coord_result := search_for_same_coordinates (
-										segment_cursor => segment_cursor,
-										seg_in => type_wild_list_of_net_segments.element (segment_cursor),
-										side => side_scratch);
+										segment_cursor	=> segment_cursor_b,
+										seg_in			=> type_wild_list_of_net_segments.element (segment_cursor_b),
+										side			=> side);
 									
 									if same_coord_result.valid then
-										--put_line(et_import.report_handle,"  --> F");	
+										--put_line(et_import.report_handle,"  --> F"); -- CS: log ?
 										null;
 									else
-										--put_line(et_import.report_handle,"  done");
-										add_net_to_list_of_anonymous_nets; 	-- All collected segments belong to the same net. This net is to be added to
-																			-- a list of anonymous nets.
+										--put_line(et_import.report_handle,"  done"); -- CS: log ?
+										
+										-- All collected segments belong to the same net.
+										-- This net is to be added to the list of anonymous nets.
+										add_net_to_list_of_anonymous_nets; 	
+																			
 										exit;	-- no further segment search required.
 									end if;
 								end if;
 
 								-- B
-								--put_line(et_import.report_handle,"  --> B");
-								-- Update seg with the id of the segment found by search_for_same_coordinates. So seg now points to the next connected segment. 
-								-- same_coord_result contains the end point of the net that has been found.
-								-- Depending on the end point of the matching net, side_scratch must be set so that the search can continue on the other side
-								-- of the new segment.
-								segment_cursor := same_coord_result.cursor;
+								--put_line(et_import.report_handle,"  --> B"); -- CS: log ?
+								
+								-- Update secondary segment_cursor with the cursor of the segment just found 
+								-- by search_for_same_coordinates. So the secondary segment cursor now points to the next
+								-- connected segment. 
+								-- Same_coord_result contains the end point of the segment that has just been found.
+								-- Depending on the end point of the matching segment, side must be set so that the
+								-- search can continue on the opposide of the new segment.
+								segment_cursor_b := same_coord_result.cursor;
 								case same_coord_result.side is
 									when end_point => 
-										side_scratch := start_point;
+										side := start_point;
 									when start_point =>
-										side_scratch := end_point;
+										side := end_point;
 								end case;
 							end loop;
 						end if;
 
-						next (seg);
+						-- advance primary segment cursor
+						next (segment_cursor_a);
 					end loop;
 
 					log_indentation_down;
@@ -3149,7 +3179,7 @@ package body et_kicad is
 
 				log_indentation_down;
 
-			end process_net_segments;
+			end build_anonymous_nets;
 
 			
 			description_entered : boolean := false;
@@ -4411,7 +4441,7 @@ package body et_kicad is
                 
 				close (et_import.schematic_handle);
 
-				process_net_segments; -- Assembles net segments to a list of anonymous nets.			
+				build_anonymous_nets; -- Assembles net segments to a list of anonymous nets
 	
 				-- All anonymous nets must be given a name. The name is enforced by the a net label. The first label found on the net sets the net name.
 				-- Other labels on the net are checke for their name only. If the name differs from the net name set earlier, a warning is output.
