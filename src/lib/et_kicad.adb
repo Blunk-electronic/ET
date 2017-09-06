@@ -2255,17 +2255,18 @@ package body et_kicad is
             
             -- When reading net labels, they are held temporarily in scratch variables, 
             -- then added to wild lists of labels for later sorting:
-			simple_label_entered : boolean := false;			
-			label_simple_scratch: type_net_label_simple;
-			wild_simple_label_collection_scratch : type_simple_labels.vector;
-			tag_label_entered : boolean := false;
-			label_tag_scratch: type_net_label_tag;
-            wild_tag_label_collection_scratch : type_tag_labels.vector;
+			simple_label_entered	: boolean := false;			
+			label_simple_scratch	: type_net_label_simple;
+			tmp_wild_simple_lables	: type_simple_labels.vector;
+
+			tag_label_entered 		: boolean := false;
+			label_tag_scratch		: type_net_label_tag;
+            tmp_wild_tag_lables 	: type_tag_labels.vector;
 
             -- When reading notes, they are held temporarily in scratch variables,
             -- then added to the list of notes.
-            note_entered : boolean := false;
-            note_scratch : et_schematic.type_note;
+            note_entered	: boolean := false;
+            tmp_note		: et_schematic.type_note;
 			
 			function to_orientation (text_in : in string) return et_libraries.type_angle is
 			-- Converts the label orientation to type_angle.
@@ -2631,7 +2632,7 @@ package body et_kicad is
 					--  - assume label text as name of net (and check other labels of the anonymous net)
 					--
 					--  - mark label as processed
-					--  - update/replace label in wild_simple_label_collection_scratch or wild_tag_label_collection_scratch
+					--  - update/replace label in tmp_wild_simple_lables or tmp_wild_tag_lables
 					--
 					--  - Collect label in temporarily list of labels.
 					--
@@ -2650,10 +2651,10 @@ package body et_kicad is
 								--put(et_import.report_handle, "segment: "); write_coordinates_of_segment(s); -- CS: log ?
 								
 								-- Loop in list of simple labels:
-								if type_simple_labels.length (wild_simple_label_collection_scratch) > 0 then -- do that if there are simple labels at all
+								if type_simple_labels.length (tmp_wild_simple_lables) > 0 then -- do that if there are simple labels at all
 									--put_line(" simple labels ..."); -- CS: log ?
-									for l in 1..type_simple_labels.length(wild_simple_label_collection_scratch) loop 
-										ls := type_simple_labels.element(wild_simple_label_collection_scratch, positive(l)); -- get simple label
+									for l in 1..type_simple_labels.length(tmp_wild_simple_lables) loop 
+										ls := type_simple_labels.element(tmp_wild_simple_lables, positive(l)); -- get simple label
 										if not ls.processed then
 											--put(et_import.report_handle, "   probing "); write_coordinates_of_label( type_net_label(ls));  -- CS: log ?
 											if label_sits_on_segment(label => type_net_label(ls), segment => s) then
@@ -2674,10 +2675,10 @@ package body et_kicad is
 													end if;
 												end if;
 
-												-- mark simple label as processed and update/replace it in wild_simple_label_collection_scratch
+												-- mark simple label as processed and update/replace it in tmp_wild_simple_lables
 												ls.processed := true;
 												type_simple_labels.replace_element(
-													container => wild_simple_label_collection_scratch,
+													container => tmp_wild_simple_lables,
 													index => positive(l),
 													new_item => ls);
 
@@ -2709,10 +2710,10 @@ package body et_kicad is
 								end if;
 								
 								-- Loop in list of tag labels:
-								if type_tag_labels.length (wild_tag_label_collection_scratch) > 0 then -- do that if there are tag labels at all
+								if type_tag_labels.length (tmp_wild_tag_lables) > 0 then -- do that if there are tag labels at all
 									--put_line(" hierarchic and global labels ...");	 -- CS: log ?								
-									for l in 1..type_tag_labels.length (wild_tag_label_collection_scratch) loop 
-										lt := type_tag_labels.element (wild_tag_label_collection_scratch, positive(l)); -- get tag label
+									for l in 1..type_tag_labels.length (tmp_wild_tag_lables) loop 
+										lt := type_tag_labels.element (tmp_wild_tag_lables, positive(l)); -- get tag label
 										if not lt.processed then								
 											if label_sits_on_segment(label => type_net_label(lt), segment => s) then
 
@@ -2750,10 +2751,10 @@ package body et_kicad is
 													-- CS: check for contradicting scope
 												end if;
 
-												-- mark tag label as processed and update/replace it in wild_tag_label_collection_scratch
+												-- mark tag label as processed and update/replace it in tmp_wild_tag_lables
 												lt.processed := true;
 												type_tag_labels.replace_element(
-													container => wild_tag_label_collection_scratch,
+													container => tmp_wild_tag_lables,
 													index => positive(l),
 													new_item => lt);
 
@@ -4171,7 +4172,7 @@ package body et_kicad is
 											label => type_net_label(label_simple_scratch));
 
 										-- The simple labels are to be collected in a wild list of simple labels.
-										type_simple_labels.append (wild_simple_label_collection_scratch,label_simple_scratch);
+										type_simple_labels.append (tmp_wild_simple_lables,label_simple_scratch);
 									end if;
 									
 									-- read tag net labels (tagged labels can be global or hierarchical)
@@ -4218,10 +4219,10 @@ package body et_kicad is
 
 										-- for the log
 										write_label_properties (
-											label => type_net_label(label_tag_scratch));
+											label => type_net_label (label_tag_scratch));
 										
 										-- The tag labels are to be collected in a wild list of tag labels for later sorting.
-										type_tag_labels.append(wild_tag_label_collection_scratch,label_tag_scratch);
+										type_tag_labels.append (tmp_wild_tag_lables,label_tag_scratch);
 									end if;
 
 									-- read note from a line like "Text Notes 3400 2800 0 60 Italic 12" followed by a line with the actual note:
@@ -4231,20 +4232,15 @@ package body et_kicad is
 												note_entered := true; -- we are entering a note
 										
 												-- set coordinates
-												note_scratch.coordinates.path := path_to_submodule;
-												note_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
-												note_scratch.coordinates.sheet_number := sheet_number_current;
-												note_scratch.coordinates.x := et_libraries.type_grid'value(get_field_from_line(line,3));
-												note_scratch.coordinates.y := et_libraries.type_grid'value(get_field_from_line(line,4));
-												note_scratch.orientation   := to_orientation(get_field_from_line(line,5));
-
--- 												note_scratch.attributes := to_text_attributes(
--- 													size  => type_text_size'value(get_field_from_line(line,6)),
--- 													style => get_field_from_line(line,7),
--- 													width => type_text_line_width'value(get_field_from_line(line,8)));
-												note_scratch.size := et_libraries.type_text_size'value(get_field_from_line(line,6));
-												note_scratch.style := to_text_style (style_in => get_field_from_line(line,7), text => true);
-												note_scratch.line_width := et_libraries.type_text_line_width'value(get_field_from_line(line,8));
+												tmp_note.coordinates.path := path_to_submodule;
+												tmp_note.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+												tmp_note.coordinates.sheet_number := sheet_number_current;
+												tmp_note.coordinates.x := et_libraries.type_grid'value(get_field_from_line(line,3));
+												tmp_note.coordinates.y := et_libraries.type_grid'value(get_field_from_line(line,4));
+												tmp_note.orientation   := to_orientation(get_field_from_line(line,5));
+												tmp_note.size := et_libraries.type_text_size'value(get_field_from_line(line,6));
+												tmp_note.style := to_text_style (style_in => get_field_from_line(line,7), text => true);
+												tmp_note.line_width := et_libraries.type_text_line_width'value(get_field_from_line(line,8));
 
 										end if;
 									else 
@@ -4252,13 +4248,13 @@ package body et_kicad is
 
 										-- get note text from a line like "hello\ntest". NOTE "\n" represents a line break
 										-- CS: store lines in a list of lines instead ?
-										-- CS: Currently we store the line as it is in note_scratch.text
-										note_scratch.content := et_libraries.type_text_content.to_bounded_string(to_string(line));
+										-- CS: Currently we store the line as it is in tmp_note.text
+										tmp_note.content := et_libraries.type_text_content.to_bounded_string(to_string(line));
 
-										write_note_properties (note_scratch);
+										write_note_properties (tmp_note);
 										
 										-- the notes are to be collected in the list of notes
-										et_schematic.type_texts.append (module.notes,note_scratch);
+										et_schematic.type_texts.append (module.notes,tmp_note);
 									end if;
 									
 									-- READ COMPONENTS
