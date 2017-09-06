@@ -2257,10 +2257,10 @@ package body et_kicad is
             -- then added to wild lists of labels for later sorting:
 			simple_label_entered : boolean := false;			
 			label_simple_scratch: type_net_label_simple;
-			wild_simple_label_collection_scratch : type_list_of_labels_simple.vector;
+			wild_simple_label_collection_scratch : type_simple_labels.vector;
 			tag_label_entered : boolean := false;
 			label_tag_scratch: type_net_label_tag;
-            wild_tag_label_collection_scratch : type_list_of_labels_tag.vector;
+            wild_tag_label_collection_scratch : type_tag_labels.vector;
 
             -- When reading notes, they are held temporarily in scratch variables,
             -- then added to the list of notes.
@@ -2350,7 +2350,7 @@ package body et_kicad is
 
 			-- An anonymous_net is a list of net segments that are connected with each other (by their start or end points).
 			-- The anonymous net gets step by step more properties specified: name, scope and some status flags:
-			package type_anonymous_net is new doubly_linked_lists (
+			package type_anonymous_net is new doubly_linked_lists ( -- CS: move to spec
 				element_type => type_net_segment);
 			
 			type type_anonymous_net_extended is record
@@ -2585,8 +2585,8 @@ package body et_kicad is
 				lt  : 	type_net_label_tag;				
 				a,b : 	type_anonymous_net_extended;
 				s   : 	type_net_segment;
-				lls : 	type_list_of_labels_simple.vector;
-				llt : 	type_list_of_labels_tag.vector;				
+				lls : 	type_simple_labels.vector;
+				llt : 	type_tag_labels.vector;				
 				net_scratch : type_net;
 				
 				function label_sits_on_segment (label : in type_net_label; segment : in type_net_segment) return boolean is
@@ -2650,10 +2650,10 @@ package body et_kicad is
 								--put(et_import.report_handle, "segment: "); write_coordinates_of_segment(s); -- CS: log ?
 								
 								-- Loop in list of simple labels:
-								if type_list_of_labels_simple.length (wild_simple_label_collection_scratch) > 0 then -- do that if there are simple labels at all
+								if type_simple_labels.length (wild_simple_label_collection_scratch) > 0 then -- do that if there are simple labels at all
 									--put_line(" simple labels ..."); -- CS: log ?
-									for l in 1..type_list_of_labels_simple.length(wild_simple_label_collection_scratch) loop 
-										ls := type_list_of_labels_simple.element(wild_simple_label_collection_scratch, positive(l)); -- get simple label
+									for l in 1..type_simple_labels.length(wild_simple_label_collection_scratch) loop 
+										ls := type_simple_labels.element(wild_simple_label_collection_scratch, positive(l)); -- get simple label
 										if not ls.processed then
 											--put(et_import.report_handle, "   probing "); write_coordinates_of_label( type_net_label(ls));  -- CS: log ?
 											if label_sits_on_segment(label => type_net_label(ls), segment => s) then
@@ -2676,13 +2676,13 @@ package body et_kicad is
 
 												-- mark simple label as processed and update/replace it in wild_simple_label_collection_scratch
 												ls.processed := true;
-												type_list_of_labels_simple.replace_element(
+												type_simple_labels.replace_element(
 													container => wild_simple_label_collection_scratch,
 													index => positive(l),
 													new_item => ls);
 
 												-- Collect simple label (ls) in temporarily list of simple labels (lls).
-												type_list_of_labels_simple.append(lls,ls);
+												type_simple_labels.append(lls,ls);
 
 												-- Mark anonymous net as processed.												
 												a.processed := true;
@@ -2699,7 +2699,7 @@ package body et_kicad is
 										new_item => s); -- the updated segment
 									
 									-- Clean up: Purge temporarily list of simple labels for next spin.
-									type_list_of_labels_simple.delete (container => lls, index => 1, count => type_list_of_labels_simple.length(lls)); -- CS: use clear
+									type_simple_labels.delete (container => lls, index => 1, count => type_simple_labels.length(lls)); -- CS: use clear
 
 									-- Update/replace anonymous net in anonymous_nets.
 									type_anonymous_nets.replace_element(
@@ -2709,10 +2709,10 @@ package body et_kicad is
 								end if;
 								
 								-- Loop in list of tag labels:
-								if type_list_of_labels_tag.length (wild_tag_label_collection_scratch) > 0 then -- do that if there are tag labels at all
+								if type_tag_labels.length (wild_tag_label_collection_scratch) > 0 then -- do that if there are tag labels at all
 									--put_line(" hierarchic and global labels ...");	 -- CS: log ?								
-									for l in 1..type_list_of_labels_tag.length (wild_tag_label_collection_scratch) loop 
-										lt := type_list_of_labels_tag.element (wild_tag_label_collection_scratch, positive(l)); -- get tag label
+									for l in 1..type_tag_labels.length (wild_tag_label_collection_scratch) loop 
+										lt := type_tag_labels.element (wild_tag_label_collection_scratch, positive(l)); -- get tag label
 										if not lt.processed then								
 											if label_sits_on_segment(label => type_net_label(lt), segment => s) then
 
@@ -2752,13 +2752,13 @@ package body et_kicad is
 
 												-- mark tag label as processed and update/replace it in wild_tag_label_collection_scratch
 												lt.processed := true;
-												type_list_of_labels_tag.replace_element(
+												type_tag_labels.replace_element(
 													container => wild_tag_label_collection_scratch,
 													index => positive(l),
 													new_item => lt);
 
 												-- Collect tag label (lt) in temporarily list of simple labels (llt).
-												type_list_of_labels_tag.append(llt,lt);
+												type_tag_labels.append(llt,lt);
 
 												-- Mark anonymous net as processed.												
 												a.processed := true;
@@ -2775,7 +2775,7 @@ package body et_kicad is
 										new_item => s); -- the updated segment
 
 									-- Clean up: Purge temporarily list of tag labels for next spin.
-									type_list_of_labels_tag.delete (container => llt, index => 1, count => type_list_of_labels_tag.length(llt)); -- CS: use clear
+									type_tag_labels.delete (container => llt, index => 1, count => type_tag_labels.length(llt)); -- CS: use clear
 
 									-- Update/replace anonymous net in anonymous_nets.
 									type_anonymous_nets.replace_element(
@@ -2811,7 +2811,7 @@ package body et_kicad is
 							segment_cursor := a.segments.first; -- reset segment cursor to begin of segments of the current anonymous net
 							while segment_cursor /= no_element loop -- loop for each segment of anonymous_net a
 								s := element (segment_cursor); -- get segment
-								type_list_of_net_segments.append (container => net_scratch.segments, new_item => s);
+								type_net_segments.append (container => net_scratch.segments, new_item => s);
 								write_coordinates_of_segment (segment => s);
 								next (segment_cursor);
 							end loop;
@@ -2825,10 +2825,10 @@ package body et_kicad is
                             
 							-- append net_scratch to module netlist, then purge net_scratch.segments for next spin
 							type_net_list_of_module.append(container => module.nets, new_item => net_scratch);
-							type_list_of_net_segments.delete( -- CS: use clear
+							type_net_segments.delete( -- CS: use clear
 								container => net_scratch.segments,
 								index => 1,
-								count => type_list_of_net_segments.length (net_scratch.segments));
+								count => type_net_segments.length (net_scratch.segments));
 						end if;
 					end loop;
 					
@@ -2854,7 +2854,7 @@ package body et_kicad is
 							segment_cursor := a.segments.first; -- reset segment cursor to begin of segments of the current anonymous net
 							while segment_cursor /= no_element loop -- loop for each segment of anonymous_net a
 								s := element (segment_cursor); -- get segment
-								type_list_of_net_segments.append (container => net_scratch.segments, new_item => s);
+								type_net_segments.append (container => net_scratch.segments, new_item => s);
 								write_coordinates_of_segment (segment => s);
 								next (segment_cursor);
 							end loop;
@@ -2876,7 +2876,7 @@ package body et_kicad is
 											segment_cursor := b.segments.first; -- reset segment cursor to begin of segments of the current anonymous net
 											while segment_cursor /= no_element loop -- loop for each segment of anonymous_net b
 												s := element (segment_cursor);
-												type_list_of_net_segments.append(container => net_scratch.segments, new_item => s);
+												type_net_segments.append(container => net_scratch.segments, new_item => s);
 												write_coordinates_of_segment (segment => s);
 												next (segment_cursor);
 											end loop;
@@ -2902,10 +2902,10 @@ package body et_kicad is
                             
 							-- append net_scratch to module netlist, then purge net_scratch.segments for next spin
 							type_net_list_of_module.append(container => module.nets, new_item => net_scratch);
-							type_list_of_net_segments.delete( -- CS: use clear
+							type_net_segments.delete( -- CS: use clear
 								container => net_scratch.segments,
 								index => 1,
-								count => type_list_of_net_segments.length(net_scratch.segments));
+								count => type_net_segments.length(net_scratch.segments));
 
  						end if;
 					end loop;
@@ -4171,7 +4171,7 @@ package body et_kicad is
 											label => type_net_label(label_simple_scratch));
 
 										-- The simple labels are to be collected in a wild list of simple labels.
-										type_list_of_labels_simple.append (wild_simple_label_collection_scratch,label_simple_scratch);
+										type_simple_labels.append (wild_simple_label_collection_scratch,label_simple_scratch);
 									end if;
 									
 									-- read tag net labels (tagged labels can be global or hierarchical)
@@ -4221,7 +4221,7 @@ package body et_kicad is
 											label => type_net_label(label_tag_scratch));
 										
 										-- The tag labels are to be collected in a wild list of tag labels for later sorting.
-										type_list_of_labels_tag.append(wild_tag_label_collection_scratch,label_tag_scratch);
+										type_tag_labels.append(wild_tag_label_collection_scratch,label_tag_scratch);
 									end if;
 
 									-- read note from a line like "Text Notes 3400 2800 0 60 Italic 12" followed by a line with the actual note:

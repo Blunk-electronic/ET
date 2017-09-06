@@ -343,10 +343,6 @@ package et_kicad is
 	package type_wild_segments is new doubly_linked_lists ( 
 		element_type => type_wild_net_segment);
 		
-	-- An anonymous_net is a list of net segments that are connected with each other (by their start or end points).
-	-- The anonymous net gets step by step more properties specified: name, scope and some status flags:
--- 	package type_anonymous_net is new doubly_linked_lists (
--- 		element_type => et_schematic.type_net_segment);
 
 	-- The function search_for_same_coordinates returns this type:
 	type type_same_coord_result is record

@@ -220,13 +220,13 @@ package et_schematic is
 
 	-- The smallest element of a net is a segment. It has a start and an end point.
 	-- It may have a list of simple labels. It may have a list of tag labels.
-	type type_net_label_simple is new type_net_label(label_appearance => simple);
-	package type_list_of_labels_simple is new vectors ( -- CS: better a simple list ?
+	type type_net_label_simple is new type_net_label (label_appearance => simple);
+	package type_simple_labels is new vectors ( -- CS: better a simple list ?
 		index_type => positive, -- every simple label has an id
 		element_type => type_net_label_simple);
 	
 	type type_net_label_tag is new type_net_label(label_appearance => tag);		
-	package type_list_of_labels_tag is new vectors ( -- CS: better a simple list ?
+	package type_tag_labels is new vectors ( -- CS: better a simple list ?
 		index_type => positive, -- every tag label has an id
 		element_type => type_net_label_tag);
 
@@ -254,15 +254,15 @@ package et_schematic is
 		coordinates_start 	: type_coordinates;
 		coordinates_end   	: type_coordinates;
 		--junctions			: type_junctions.list;
-		label_list_simple 	: type_list_of_labels_simple.vector;
-		label_list_tag    	: type_list_of_labels_tag.vector;
+		label_list_simple 	: type_simple_labels.vector;
+		label_list_tag    	: type_tag_labels.vector;
 	end record;
 
 	procedure write_coordinates_of_segment (segment : in type_net_segment);
 	-- Writes the start and end coordinates of a net segment.	
 	
 	-- A net is a list of segments.
-	package type_list_of_net_segments is new vectors ( -- CS: better a simple list ?
+	package type_net_segments is new vectors ( -- CS: better a simple list ?
 		index_type => positive,  -- every net segment has an id
 		element_type => type_net_segment);
 
@@ -285,7 +285,7 @@ package et_schematic is
     type type_net is record
 		name 		: type_net_name.bounded_string; -- example "CPU_CLOCK"
 		scope 		: type_scope_of_net; -- example "local"
-		segments 	: type_list_of_net_segments.vector; -- list of net segments
+		segments 	: type_net_segments.vector; -- list of net segments
 		--junctions	: type_junctions.list; -- the junctions of the net
         ports 		: type_port_list_of_net.vector; -- list of component ports
 		coordinates : type_coordinates;                
