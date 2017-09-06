@@ -320,7 +320,7 @@ package et_schematic is
 	end record;
 
     -- A list of submodules is a component of the main module:    
-    package type_list_of_gui_submodules is new vectors ( -- CS: better a simple list ?
+    package type_gui_submodules is new doubly_linked_lists ( -- CS: better a simple list ?
         index_type => positive, -- every gui submodule has an id
         element_type => type_gui_submodule);
 
@@ -332,9 +332,9 @@ package et_schematic is
     type type_frame_line is record
 		coordinates_start : et_libraries.type_coordinates;
         coordinates_end   : et_libraries.type_coordinates;
-    end record;
-	package type_list_of_frame_lines is new vectors ( -- CS: better a simple list ?
-		index_type => positive, -- every line of a frame an id
+	end record;
+	
+	package type_frame_lines is new doubly_linked_lists (
         element_type => type_frame_line);
     
 	type type_frame_text is record
@@ -344,8 +344,8 @@ package et_schematic is
 		orientation		: type_angle;
 		-- CS: font, ...
 	end record;
-	package type_list_of_frame_texts is new vectors ( -- CS: better a simple list ?
-		index_type => positive, -- every text field a frame has an id
+	
+	package type_frame_texts is new doubly_linked_lists (
         element_type => type_frame_text);
 
     -- the final drawing frame
@@ -353,8 +353,8 @@ package et_schematic is
         coordinates     : type_coordinates;
         paper_size      : et_general.type_paper_size; -- the size of the paper
         size_x, size_y  : et_libraries.type_grid; -- the dimensions of the frame (should fit into paper_size) 
-        lines           : type_list_of_frame_lines.vector;
-        texts           : type_list_of_frame_texts.vector;
+        lines           : type_frame_lines.list;
+        texts           : type_frame_texts.list;
     end record;
 
     -- there are lots of drawing frames in a schematic contained in a list
@@ -467,7 +467,7 @@ package et_schematic is
 		name 	    : type_submodule_name.bounded_string; -- example "MOTOR_DRIVER"
 		nets 	    : type_net_list_of_module.vector;
         components	: type_components.map;
-        submodules  : type_list_of_gui_submodules.vector;
+        submodules  : type_gui_submodules.vector;
         frames      : type_list_of_frames.vector;
         title_blocks: type_list_of_title_blocks.vector;
         notes       : type_texts.list;

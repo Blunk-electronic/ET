@@ -4094,7 +4094,7 @@ package body et_kicad is
 											type_list_of_submodule_names.append(list_of_submodules.list, name_of_submodule_scratch);
 
 											-- append submodule_gui_scratch to list of gui submodules
-											type_list_of_gui_submodules.append(module.submodules, submodule_gui_scratch);
+											type_gui_submodules.append (module.submodules, submodule_gui_scratch);
 										end if;
 
 										-- read GUI submodule (sheet) position and size from a line like "S 4050 5750 1050 650"
