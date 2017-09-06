@@ -225,8 +225,7 @@ package et_schematic is
 		element_type => type_net_label_simple);
 	
 	type type_net_label_tag is new type_net_label(label_appearance => tag);		
-	package type_tag_labels is new vectors ( -- CS: better a simple list ?
-		index_type => positive, -- every tag label has an id
+	package type_tag_labels is new doubly_linked_lists (
 		element_type => type_net_label_tag);
 
 	procedure write_label_properties ( label : in type_net_label);
@@ -254,7 +253,7 @@ package et_schematic is
 		coordinates_end   	: type_coordinates;
 		--junctions			: type_junctions.list;
 		label_list_simple 	: type_simple_labels.list;
-		label_list_tag    	: type_tag_labels.vector;
+		label_list_tag    	: type_tag_labels.list;
 	end record;
 
 	procedure write_coordinates_of_segment (segment : in type_net_segment);

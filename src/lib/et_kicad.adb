@@ -2261,7 +2261,7 @@ package body et_kicad is
 
 			tag_label_entered 		: boolean := false;
 			label_tag_scratch		: type_net_label_tag;
-            tmp_wild_tag_lables 	: type_tag_labels.vector;
+            tmp_wild_tag_lables 	: type_tag_labels.list;
 
             -- When reading notes, they are held temporarily in scratch variables,
             -- then added to the list of notes.
@@ -2586,7 +2586,7 @@ package body et_kicad is
 				a,b : 	type_anonymous_net_extended;
 				s   : 	type_net_segment;
 				lls : 	type_simple_labels.list;
-				llt : 	type_tag_labels.vector;				
+				llt : 	type_tag_labels.list;
 				net_scratch : type_net;
 				
 				function label_sits_on_segment (label : in type_net_label; segment : in type_net_segment) return boolean is
@@ -2627,6 +2627,11 @@ package body et_kicad is
 
 				use type_simple_labels;
 				simple_label_cursor	: type_simple_labels.cursor; -- points to the simple label being processed
+
+				use type_tag_labels;
+				tag_label_cursor	: type_tag_labels.cursor; -- points to the tag label being processed
+
+				log_threshold : type_log_level := 2;
 			begin -- associate_net_labels_with_anonymous_nets
 				log_indentation_up;
 				
@@ -2668,9 +2673,11 @@ package body et_kicad is
 										
 										if not ls.processed then
 											--put(et_import.report_handle, "   probing "); write_coordinates_of_label( type_net_label(ls));  -- CS: log ?
-											if label_sits_on_segment(label => type_net_label(ls), segment => s) then
+											if label_sits_on_segment (label => type_net_label(ls), segment => s) then
 
-												--put(et_import.report_handle, "match: "); write_coordinates_of_label( type_net_label(ls));  -- CS: log ?
+												if log_level >= log_threshold then
+													write_label_properties (type_net_label (ls));
+												end if;
 
 												-- The first matching label dictates the net name. 
 												-- If other labels with text differing from net name found, output warning.
@@ -2723,18 +2730,27 @@ package body et_kicad is
 								end if;
 								
 								-- Loop in list of tag labels:
-								if type_tag_labels.length (tmp_wild_tag_lables) > 0 then -- do that if there are tag labels at all
-									--put_line(" hierarchic and global labels ...");	 -- CS: log ?								
-									for l in 1..type_tag_labels.length (tmp_wild_tag_lables) loop 
-										lt := type_tag_labels.element (tmp_wild_tag_lables, positive(l)); -- get tag label
+								--if type_tag_labels.length (tmp_wild_tag_lables) > 0 then -- do that if there are tag labels at all
+								if length (tmp_wild_tag_lables) > 0 then -- do that if there are tag labels at all
+									--put_line(" hierarchic and global labels ...");	 -- CS: log ?
+
+									tag_label_cursor := tmp_wild_tag_lables.first; -- reset label cursor
+									--for l in 1..type_tag_labels.length (tmp_wild_tag_lables) loop 
+									while tag_label_cursor /= type_tag_labels.no_element loop
+										--lt := type_tag_labels.element (tmp_wild_tag_lables, positive(l)); -- get tag label
+										lt := element (tag_label_cursor); -- get tag label
+										
 										if not lt.processed then								
-											if label_sits_on_segment(label => type_net_label(lt), segment => s) then
+											if label_sits_on_segment (label => type_net_label (lt), segment => s) then
 
 -- 												put_line(et_import.report_handle," tag label: " & type_net_name.to_string(lt.text) & " position:" &
 -- 												type_grid'image(lt.coordinates.x) & "/" &
 -- 												trim(type_grid'image(lt.coordinates.y),left));
 
-												write_label_properties (type_net_label(lt));
+												if log_level >= log_threshold then
+													write_label_properties (type_net_label (lt));
+												end if;
+
 -- 												write_message(
 -- 													file_handle => et_import.report_handle,
 -- 													text => "tag label: " & type_net_name.to_string(lt.text) & " position:" &
@@ -2768,16 +2784,19 @@ package body et_kicad is
 												lt.processed := true;
 												type_tag_labels.replace_element(
 													container => tmp_wild_tag_lables,
-													index => positive(l),
+													--index => positive(l),
+													position => tag_label_cursor,
 													new_item => lt);
 
 												-- Collect tag label (lt) in temporarily list of simple labels (llt).
-												type_tag_labels.append(llt,lt);
+												type_tag_labels.append (llt,lt);
 
 												-- Mark anonymous net as processed.												
 												a.processed := true;
 											end if;
 										end if;
+
+										next (tag_label_cursor);
 									end loop;
 
 									-- Copy list of tag labels (llt) to current segment (s).
@@ -2789,7 +2808,8 @@ package body et_kicad is
 										new_item => s); -- the updated segment
 
 									-- Clean up: Purge temporarily list of tag labels for next spin.
-									type_tag_labels.delete (container => llt, index => 1, count => type_tag_labels.length(llt)); -- CS: use clear
+									--type_tag_labels.delete (container => llt, index => 1, count => type_tag_labels.length(llt)); -- CS: use clear
+									type_tag_labels.clear (llt);
 
 									-- Update/replace anonymous net in anonymous_nets.
 									type_anonymous_nets.replace_element(
@@ -4180,17 +4200,10 @@ package body et_kicad is
 											label_simple_scratch.coordinates.y := et_libraries.type_grid'value(get_field_from_line(line,4));
 											label_simple_scratch.orientation   := to_orientation(get_field_from_line(line,5));
 
-											-- build text attributes from size, font and line width
--- 											label_simple_scratch.text_attributes := to_text_attributes(
--- 												size  => type_text_size'value(get_field_from_line(line,6)),
--- 												style => get_field_from_line(line,7),
--- 												width => type_text_line_width'value(get_field_from_line(line,8)));
-
 											label_simple_scratch.size := et_libraries.type_text_size'value (get_field_from_line(line,6));
 											label_simple_scratch.style := to_text_style (style_in => get_field_from_line(line,7), text => true);
 											label_simple_scratch.width := et_libraries.type_text_line_width'value(get_field_from_line(line,8));
-											
-											
+
 										end if;
 									else
 										simple_label_entered := false; -- we are leaving a simple label
@@ -4199,8 +4212,7 @@ package body et_kicad is
 										label_simple_scratch.text := type_net_name.to_bounded_string(get_field_from_line(line,1));
 
 										-- for the log
-										write_label_properties (
-											label => type_net_label(label_simple_scratch));
+										write_label_properties (type_net_label(label_simple_scratch));
 
 										-- The simple labels are to be collected in a wild list of simple labels.
 										type_simple_labels.append (tmp_wild_simple_lables,label_simple_scratch);
@@ -4249,8 +4261,7 @@ package body et_kicad is
 										label_tag_scratch.text := type_net_name.to_bounded_string(get_field_from_line(line,1));
 
 										-- for the log
-										write_label_properties (
-											label => type_net_label (label_tag_scratch));
+										write_label_properties (type_net_label (label_tag_scratch));
 										
 										-- The tag labels are to be collected in a wild list of tag labels for later sorting.
 										type_tag_labels.append (tmp_wild_tag_lables,label_tag_scratch);
