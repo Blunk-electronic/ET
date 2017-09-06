@@ -34,13 +34,14 @@ with ada.text_io;				use ada.text_io;
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 with ada.containers.vectors;
--- with ada.containers.doubly_linked_lists;
+with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 
 with et_general;				use et_general;
 with et_schematic;				--use et_schematic;
 with et_import;		            use et_import;
 with et_libraries;
+--with et_string_processing;		use et_string_processing;
 
 package et_kicad is
 
@@ -329,6 +330,33 @@ package et_kicad is
 	alternative_representation_yes	: constant type_alternative_representation := 0;
 	alternative_representation_no	: constant type_alternative_representation := 1;
 
+
+-- IMPORT
+
+	type type_segment_side is (start_point, end_point ); -- the end point of a segment	
+
+	type type_wild_net_segment is new et_schematic.type_net_segment with record
+		s, e : boolean := false; -- flag indicates the end point beeing assumed
+		picked : boolean := false; -- flag indicates that the segment has been added to the anonymous net
+	end record;
+
+	package type_wild_segments is new doubly_linked_lists ( 
+		element_type => type_wild_net_segment);
+		
+	-- An anonymous_net is a list of net segments that are connected with each other (by their start or end points).
+	-- The anonymous net gets step by step more properties specified: name, scope and some status flags:
+-- 	package type_anonymous_net is new vectors (
+-- 		index_type => positive,  -- every net segment has an id -- CS: use a simple list ?
+-- 		element_type => et_schematic.type_net_segment);
+
+	-- The function search_for_same_coordinates returns this type:
+	type type_same_coord_result is record
+		valid : boolean; -- indicates that a segment with matching coordinates has been found. When false, no segment found -> consider id and side invalid
+		cursor : type_wild_segments.cursor; -- cursor of the segment found
+		side : type_segment_side; -- end point of the segment found
+	end record;
+
+	
 end et_kicad;
 
 -- Soli Deo Gloria

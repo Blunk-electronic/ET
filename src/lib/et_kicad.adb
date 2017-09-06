@@ -2310,21 +2310,13 @@ package body et_kicad is
 
 			-- In the first stage, all net segments of this sheet go into a wild collection of segments.
 			-- Later they will be sorted and connected by their coordinates (start and and points)
-			segment_count : count_type; -- holds the total number of segments within a sheet
-			type type_segment_side is (start_point, end_point ); -- the end point of a segment
+			segment_count	: count_type; -- holds the total number of segments within a sheet
 			
-			type type_wild_net_segment is new type_net_segment with record
-				s, e : boolean := false; -- flag indicates the end point beeing assumed
-				picked : boolean := false; -- flag indicates that the segment has been added to the anonymous net
-			end record;
-			tmp_segment : type_wild_net_segment; -- temporarily used when reading net segments into a wild_segments
-			
-			package type_wild_segments is new doubly_linked_lists ( 
-				element_type => type_wild_net_segment);
-			wild_segments : type_wild_segments.list;
+			tmp_segment		: type_wild_net_segment; -- temporarily used when reading net segments into a wild_segments
+			wild_segments	: type_wild_segments.list;
 
-			tmp_junction : type_net_junction; -- temporarily used when reading net junctions into collection of junctions
-			junctions : type_junctions.list;
+			tmp_junction	: type_net_junction; -- temporarily used when reading net junctions into collection of junctions
+			junctions		: type_junctions.list;
 
 			function junction_sits_on_segment (junction : in type_net_junction; segment : in type_wild_net_segment) return boolean is
 			-- Returns true if the given junction sits on the given net segment.
@@ -2403,13 +2395,6 @@ package body et_kicad is
 				end if;
 			end add_segment_to_anonymous_net;
 
-			-- The function search_for_same_coordinates returns this type:
-			type type_same_coord_result is record
-				valid : boolean; -- indicates that a segment with matching coordinates has been found. When false, no segment found -> consider id and side invalid
-				cursor : type_wild_segments.cursor; -- cursor of the segment found
-				side : type_segment_side; -- end point of the segment found
-			end record;
-			
 			function search_for_same_coordinates (
 			-- Starting from a segment indicated by id and the end point (given by side), 
 			-- search in wild_segments for a segment with matching start or end point.
