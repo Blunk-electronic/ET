@@ -2257,7 +2257,7 @@ package body et_kicad is
             -- then added to wild lists of labels for later sorting:
 			simple_label_entered	: boolean := false;			
 			label_simple_scratch	: type_net_label_simple;
-			tmp_wild_simple_lables	: type_simple_labels.vector;
+			tmp_wild_simple_lables	: type_simple_labels.list;
 
 			tag_label_entered 		: boolean := false;
 			label_tag_scratch		: type_net_label_tag;
@@ -2585,7 +2585,7 @@ package body et_kicad is
 				lt  : 	type_net_label_tag;				
 				a,b : 	type_anonymous_net_extended;
 				s   : 	type_net_segment;
-				lls : 	type_simple_labels.vector;
+				lls : 	type_simple_labels.list;
 				llt : 	type_tag_labels.vector;				
 				net_scratch : type_net;
 				
@@ -2624,6 +2624,9 @@ package body et_kicad is
 				net_cursor		: type_anonymous_nets.cursor := anonymous_nets.first;
 				net_cursor_b	: type_anonymous_nets.cursor;
 				net_id			: natural := 0; -- for something like N$1, N$2, N$3, ...
+
+				use type_simple_labels;
+				simple_label_cursor	: type_simple_labels.cursor; -- points to the simple label being processed
 			begin -- associate_net_labels_with_anonymous_nets
 				log_indentation_up;
 				
@@ -2657,10 +2660,12 @@ package body et_kicad is
 								--put(et_import.report_handle, "segment: "); write_coordinates_of_segment(s); -- CS: log ?
 								
 								-- Loop in list of simple labels:
-								if type_simple_labels.length (tmp_wild_simple_lables) > 0 then -- do that if there are simple labels at all
+								if length (tmp_wild_simple_lables) > 0 then -- do that if there are simple labels at all
 									--put_line(" simple labels ..."); -- CS: log ?
-									for l in 1..type_simple_labels.length(tmp_wild_simple_lables) loop 
-										ls := type_simple_labels.element(tmp_wild_simple_lables, positive(l)); -- get simple label
+									simple_label_cursor := tmp_wild_simple_lables.first; -- reset label cursor
+									while simple_label_cursor /= type_simple_labels.no_element loop
+										ls := element (simple_label_cursor); -- get simple label
+										
 										if not ls.processed then
 											--put(et_import.report_handle, "   probing "); write_coordinates_of_label( type_net_label(ls));  -- CS: log ?
 											if label_sits_on_segment(label => type_net_label(ls), segment => s) then
@@ -2673,7 +2678,7 @@ package body et_kicad is
 													a.name := ls.text; -- assume the label text as net name.
 												else
 													-- If label text is different from previously assigned net name:
-													if type_net_name.to_string(a.name) /= type_net_name.to_string(ls.text) then 
+													if not type_net_name."=" (a.name, ls.text) then 
 														log (message_warning & "Net '" 
 															 & type_net_name.to_string(a.name) 
 															 & "' has contradicting label '" 
@@ -2685,16 +2690,18 @@ package body et_kicad is
 												ls.processed := true;
 												type_simple_labels.replace_element(
 													container => tmp_wild_simple_lables,
-													index => positive(l),
+													position => simple_label_cursor,
 													new_item => ls);
 
 												-- Collect simple label (ls) in temporarily list of simple labels (lls).
-												type_simple_labels.append(lls,ls);
+												type_simple_labels.append (lls,ls);
 
 												-- Mark anonymous net as processed.												
 												a.processed := true;
 											end if;
 										end if;
+
+										next (simple_label_cursor); -- advance label cursor
 									end loop;
 
 									-- Copy list of simple labels (lls) to current segment (s).
@@ -2706,12 +2713,11 @@ package body et_kicad is
 										new_item => s); -- the updated segment
 									
 									-- Clean up: Purge temporarily list of simple labels for next spin.
-									type_simple_labels.delete (container => lls, index => 1, count => type_simple_labels.length(lls)); -- CS: use clear
+									type_simple_labels.clear (lls);
 
 									-- Update/replace anonymous net in anonymous_nets.
 									type_anonymous_nets.replace_element(
 										container => anonymous_nets, -- the list of anonymous nets
-										--index => positive(n), -- the anonymous net id
 										position => net_cursor,
 										new_item => a); -- the updated anonymous net
 								end if;
@@ -3049,7 +3055,7 @@ package body et_kicad is
 
 				procedure add_net_to_anonymous_nets is
 				-- Once an anonymous net is complete, it gets appended to a list of anonymous nets. 
-				-- Afterward the anonymous net is deleted. It is a vector of net segments which must be purged so that the vector
+				-- Afterward the anonymous net is deleted. It is a list of net segments which must be purged so that the list
 				-- "anonymous_net" can be filled with net segments of the next anonymous net.
 				begin
 					type_anonymous_nets.append (anonymous_nets, anonymous_net);

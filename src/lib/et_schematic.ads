@@ -221,8 +221,7 @@ package et_schematic is
 	-- The smallest element of a net is a segment. It has a start and an end point.
 	-- It may have a list of simple labels. It may have a list of tag labels.
 	type type_net_label_simple is new type_net_label (label_appearance => simple);
-	package type_simple_labels is new vectors ( -- CS: better a simple list ?
-		index_type => positive, -- every simple label has an id
+	package type_simple_labels is new doubly_linked_lists (
 		element_type => type_net_label_simple);
 	
 	type type_net_label_tag is new type_net_label(label_appearance => tag);		
@@ -254,7 +253,7 @@ package et_schematic is
 		coordinates_start 	: type_coordinates;
 		coordinates_end   	: type_coordinates;
 		--junctions			: type_junctions.list;
-		label_list_simple 	: type_simple_labels.vector;
+		label_list_simple 	: type_simple_labels.list;
 		label_list_tag    	: type_tag_labels.vector;
 	end record;
 
