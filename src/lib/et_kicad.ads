@@ -345,8 +345,7 @@ package et_kicad is
 		
 	-- An anonymous_net is a list of net segments that are connected with each other (by their start or end points).
 	-- The anonymous net gets step by step more properties specified: name, scope and some status flags:
--- 	package type_anonymous_net is new vectors (
--- 		index_type => positive,  -- every net segment has an id -- CS: use a simple list ?
+-- 	package type_anonymous_net is new doubly_linked_lists (
 -- 		element_type => et_schematic.type_net_segment);
 
 	-- The function search_for_same_coordinates returns this type:
