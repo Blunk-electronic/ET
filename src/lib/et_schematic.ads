@@ -253,7 +253,7 @@ package et_schematic is
 	type type_net_segment is tagged record
 		coordinates_start 	: type_coordinates;
 		coordinates_end   	: type_coordinates;
-		junctions			: type_junctions.list;
+		--junctions			: type_junctions.list;
 		label_list_simple 	: type_list_of_labels_simple.vector;
 		label_list_tag    	: type_list_of_labels_tag.vector;
 	end record;
