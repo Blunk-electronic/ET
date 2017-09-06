@@ -2578,9 +2578,16 @@ package body et_kicad is
 			anonymous_nets : type_anonymous_nets.list; 
 			
 			procedure associate_net_labels_with_anonymous_nets is
-			-- All anonymous nets must be given a name. The name is enforced by the a net label. The first label found on the net sets the net name.
-			-- Other labels on the net are checke for their name only. If the name differs from the net name set earlier, a warning is output.
+			-- All anonymous nets must be given a name. The name is enforced by the a net label. 
+				
+			-- The first label found on the net dictates the net name.
+			-- Other labels on the net are checked for their name only. 
+			-- If the name differs from the net name set earlier, a warning is output.
+
+			-- The kind of net label (simple, hierarchic, global) defines the scope of the net.
+			
 			-- Nets without label remain anonymous by using the notation "N$"
+			
 				ls  :	type_net_label_simple;
 				lt  : 	type_net_label_tag;				
 				a,b : 	type_anonymous_net_extended;
