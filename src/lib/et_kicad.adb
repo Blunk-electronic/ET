@@ -2573,10 +2573,9 @@ package body et_kicad is
 			
 			-- The list of anonymous nets. Procedure add_net_to_anonymous_nets uses 
 			-- this container for temporarily storage of anonymous nets.
-			package type_anonymous_nets is new vectors (
-				index_type => positive,  -- every anonymous net has an id
+			package type_anonymous_nets is new doubly_linked_lists (
 				element_type => type_anonymous_net_extended);
-			anonymous_nets : type_anonymous_nets.vector; 
+			anonymous_nets : type_anonymous_nets.list; 
 			
 			procedure associate_net_labels_with_anonymous_nets is
 			-- All anonymous nets must be given a name. The name is enforced by the a net label. The first label found on the net sets the net name.
@@ -2619,12 +2618,17 @@ package body et_kicad is
 				use type_anonymous_net;
 				-- the segment cursor points to the segment being processed
 				segment_cursor : type_anonymous_net.cursor; 
-				
+
+				use type_anonymous_nets;
+				-- the net cursor points to the anonymous net being processed
+				net_cursor		: type_anonymous_nets.cursor := anonymous_nets.first;
+				net_cursor_b	: type_anonymous_nets.cursor;
+				net_id			: natural := 0; -- for something like N$1, N$2, N$3, ...
 			begin -- associate_net_labels_with_anonymous_nets
 				log_indentation_up;
 				
 				-- This does only make sense if there are nets at all:
-				if type_anonymous_nets.length (anonymous_nets) > 0 then
+				if not is_empty (anonymous_nets) then
 					log (text => "associating net labels with nets ...");
 					
 					-- Loop in list of anonymous nets, get a (non-processed-yet) net, loop in list of segments and find a (non-processed-yet)
@@ -2639,14 +2643,16 @@ package body et_kicad is
 					--  - Mark anonymous net as processed. This indicates that the net has a name (given by a label).
 					--    Non-Processed nets are those without a label.
 					--  - update/replace anonymous net in anonymous_nets
-					for n in 1..type_anonymous_nets.length (anonymous_nets) loop
-						a := type_anonymous_nets.element (anonymous_nets, positive(n)); -- get anonymous net
+					
+					while net_cursor /= type_anonymous_nets.no_element loop -- cursor already reset on declaration (see above)
+						a := element (net_cursor); -- get anonymous net
+						
 						--put_line(et_import.report_handle,"anonymous net #" & trim(count_type'image(n),left) & ": "); -- CS: log ?
 						if not a.processed then -- skip already processed nets
 
 							-- reset segment cursor to begin of segment list of the anonymous net
 							segment_cursor := a.segments.first;
-							while segment_cursor /= no_element loop -- loop for each segment of anonymous_net
+							while segment_cursor /= type_anonymous_net.no_element loop -- loop for each segment of anonymous_net
 								s := a.segments (segment_cursor);
 								--put(et_import.report_handle, "segment: "); write_coordinates_of_segment(s); -- CS: log ?
 								
@@ -2705,7 +2711,8 @@ package body et_kicad is
 									-- Update/replace anonymous net in anonymous_nets.
 									type_anonymous_nets.replace_element(
 										container => anonymous_nets, -- the list of anonymous nets
-										index => positive(n), -- the anonymous net id
+										--index => positive(n), -- the anonymous net id
+										position => net_cursor,
 										new_item => a); -- the updated anonymous net
 								end if;
 								
@@ -2781,13 +2788,16 @@ package body et_kicad is
 									-- Update/replace anonymous net in anonymous_nets.
 									type_anonymous_nets.replace_element(
 										container => anonymous_nets, -- the list of anonymous nets
-										index => positive(n), -- the anonymous net id
+										--index => positive(n), -- the anonymous net id
+										position => net_cursor,
 										new_item => a); -- the updated anonymous net
 								end if;
 
 								next (segment_cursor); -- advance segment cursor
 							end loop;
 						end if;
+
+						next (net_cursor); -- advance net cursor
 					end loop;
 
 					-- Sort anonymous nets without label.
@@ -2797,20 +2807,25 @@ package body et_kicad is
 					-- We us an intermediate variable net_scratch for transfer to the module netlist.
 					log (text => "sorting name-less nets ...");
 					log_indentation_up;
-					
-					for n in 1..type_anonymous_nets.length (anonymous_nets) loop
-						a := type_anonymous_nets.element (anonymous_nets, positive(n)); -- get anonymous net
+
+					net_cursor := anonymous_nets.first; -- reset net cursor
+					while net_cursor /= type_anonymous_nets.no_element loop
+						a := element (net_cursor);  -- get anonymous net
+
 						if not a.processed then
 
-							-- build temporarily net
-							net_scratch.name := type_net_name.to_bounded_string (anonymous_net_name_prefix & trim(count_type'image(n),left));
+							-- build temporarily net with a name like N$542
+							net_id := net_id + 1; -- increment net id
+							net_scratch.name := type_net_name.to_bounded_string (
+								anonymous_net_name_prefix & trim (natural'image (net_id), left));
+							
 							log (type_net_name.to_string(net_scratch.name), level => 1);
 							
 							net_scratch.scope := local;
 
 							-- append segments to net_scratch
 							segment_cursor := a.segments.first; -- reset segment cursor to begin of segments of the current anonymous net
-							while segment_cursor /= no_element loop -- loop for each segment of anonymous_net a
+							while segment_cursor /= type_anonymous_net.no_element loop -- loop for each segment of anonymous_net a
 								s := element (segment_cursor); -- get segment
 								type_net_segments.append (container => net_scratch.segments, new_item => s);
 								write_coordinates_of_segment (segment => s);
@@ -2825,12 +2840,11 @@ package body et_kicad is
                             -- net_scratch.coordinates.sheet := sheet_number_current;
                             
 							-- append net_scratch to module netlist, then purge net_scratch.segments for next spin
-							type_net_list_of_module.append(container => module.nets, new_item => net_scratch);
-							type_net_segments.delete( -- CS: use clear
-								container => net_scratch.segments,
-								index => 1,
-								count => type_net_segments.length (net_scratch.segments));
+							type_net_list_of_module.append (container => module.nets, new_item => net_scratch);
+							type_net_segments.clear (net_scratch.segments);
 						end if;
+
+						next (net_cursor); -- advance net cursor
 					end loop;
 					
 					log_indentation_down;
@@ -2839,10 +2853,12 @@ package body et_kicad is
 					log (text => "sorting named nets ...");
 					log_indentation_up;
 					
-					for n in 1..type_anonymous_nets.length (anonymous_nets) loop
-						a := type_anonymous_nets.element (anonymous_nets, positive(n)); -- get anonymous net
+					net_cursor := anonymous_nets.first; -- reset net cursor
+					while net_cursor /= type_anonymous_nets.no_element loop
+						a := element (net_cursor);  -- get anonymous net
+
 						if a.processed and not a.sorted then -- if it has not been sorted yet
-							--put(et_import.report_handle," " & type_net_name.to_string(a.name));
+
 							log (type_net_name.to_string(a.name), level => 1);
 							
 							net_scratch.name := a.name;
@@ -2853,29 +2869,37 @@ package body et_kicad is
 
 							-- append segments to net_scratch
 							segment_cursor := a.segments.first; -- reset segment cursor to begin of segments of the current anonymous net
-							while segment_cursor /= no_element loop -- loop for each segment of anonymous_net a
+							while segment_cursor /= type_anonymous_net.no_element loop -- loop for each segment of anonymous_net a
 								s := element (segment_cursor); -- get segment
 								type_net_segments.append (container => net_scratch.segments, new_item => s);
 								write_coordinates_of_segment (segment => s);
 								next (segment_cursor);
 							end loop;
 
-							-- Look for other anonymous nets with the same name (a.name). Start searching from position n+1:
+							-- Look for other anonymous nets with the same name (a.name). 
+							-- Start searching from the position of net_cursor on using net_cursor_b.
+							-- If net_cursor already points the last net in anonymous_nets do nothing.
 							-- Mark anonymous net as "sorted".
 							-- If last anonymous net reached, do not look for other nets with same name.
-							if n = type_anonymous_nets.length (anonymous_nets) then -- last net reached
-								null; 
+							--if n = type_anonymous_nets.length (anonymous_nets) then -- last net reached
+
+							if a = last_element (anonymous_nets) then
+								null; -- net_cursor already points the last net in anonymous_nets --> do nothing
 							else -- search for nets with same name
-								for o in n+1..type_anonymous_nets.length (anonymous_nets) loop
-									b := type_anonymous_nets.element (anonymous_nets, positive(o)); -- get anonymous net
+								net_cursor_b := next (net_cursor);
+								while net_cursor_b /= type_anonymous_nets.no_element loop
+									
+									b := element (net_cursor_b); -- get anonymous net
+
 									if b.processed then
-										if type_net_name.to_string (b.name) = type_net_name.to_string (a.name) then
+
+										if type_net_name."=" (b.name, a.name) then
 
 											-- CS: make sure scope of the anonymous net is the same
 
 											-- append segments to net_scratch
 											segment_cursor := b.segments.first; -- reset segment cursor to begin of segments of the current anonymous net
-											while segment_cursor /= no_element loop -- loop for each segment of anonymous_net b
+											while segment_cursor /= type_anonymous_net.no_element loop -- loop for each segment of anonymous_net b
 												s := element (segment_cursor);
 												type_net_segments.append(container => net_scratch.segments, new_item => s);
 												write_coordinates_of_segment (segment => s);
@@ -2883,12 +2907,14 @@ package body et_kicad is
 											end loop;
 
 											-- mark anonymous net as "sorted" so that the outer loop can skip it in further spins
-											type_anonymous_nets.update_element(
+											type_anonymous_nets.update_element (
 												container => anonymous_nets, 
-												index => positive(o), 
+												position => net_cursor_b,
 												process => set_sorted'access);
 										end if;
 									end if;
+
+									next (net_cursor_b); -- advance net cursor
 								end loop;
 							end if;
 
@@ -2903,12 +2929,11 @@ package body et_kicad is
                             
 							-- append net_scratch to module netlist, then purge net_scratch.segments for next spin
 							type_net_list_of_module.append(container => module.nets, new_item => net_scratch);
-							type_net_segments.delete( -- CS: use clear
-								container => net_scratch.segments,
-								index => 1,
-								count => type_net_segments.length(net_scratch.segments));
+							type_net_segments.clear (net_scratch.segments);
 
- 						end if;
+						end if;
+
+						next (net_cursor); -- advance net cursor
 					end loop;
 
 					log_indentation_down;
