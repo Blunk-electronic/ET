@@ -3427,8 +3427,6 @@ package body et_kicad is
 			end to_text;
 
 			
-			component_cursor	: et_schematic.type_components.cursor; -- points to a component of the module
-
 			
 -- 			procedure fetch_components_from_library is
 			-- This procedure looks up the sheet_header and reads the library names stored there.
@@ -3474,35 +3472,15 @@ package body et_kicad is
 
 				use et_libraries;
 
-				component_inserted	: boolean;
 			begin -- insert_component
+				
 				-- The compoenent is inserted into the components list of the module according to its appearance.
 				-- If the component has already been inserted, it will not be inserted again.
+				
 				case tmp_component_appearance is
 					
 					when sch => -- we have a line like "L P3V3 #PWR07"
 				
--- remove begin
-						et_schematic.type_components.insert(
-							container => module.components,
-													
-							key => tmp_component_reference,
-
-							new_item => (
-								appearance => sch, -- the component appears in schematic only
-								name_in_library => tmp_component_name_in_lib,
-								value => et_libraries.type_component_value.to_bounded_string (et_libraries.content (tmp_component_text_value)),
-								commissioned => et_string_processing.type_date (et_libraries.content (tmp_component_text_commissioned)),
-								updated => et_string_processing.type_date (et_libraries.content (tmp_component_text_updated)),
-								author => et_libraries.type_person_name.to_bounded_string (et_libraries.content (tmp_component_text_author)),
-
-								-- At this stage we do not know if and how many units there are. So the unit list is empty.
-								units => et_schematic.type_units.empty_map),
-							
-							position => component_cursor,
-							inserted => component_inserted); -- this flag is just formal. no further evaluation
--- remove end
-						
 						add_component (
 							reference => tmp_component_reference,
 							component => (
@@ -3516,11 +3494,6 @@ package body et_kicad is
 								-- At this stage we do not know if and how many units there are. So the unit list is empty.
 								units 			=> et_schematic.type_units.empty_map));
 
-						if log_level >= 1 then
-							et_schematic.write_component_properties (component => component_cursor);
-						end if;
-
-
 					when sch_pcb => -- we have a line like "L 74LS00 U1"
 
 						-- break down the footprint content like "bel_opto:LED_S_0805".
@@ -3528,54 +3501,6 @@ package body et_kicad is
 								line => et_libraries.content (tmp_component_text_packge),
 								ifs => latin_1.colon);
 
---- remove begin						
-						et_schematic.type_components.insert(
-							container => module.components,
-
-							key => tmp_component_reference,
-
-							new_item => (
-								appearance => sch_pcb, -- the component appears in both schematic and layout
-								name_in_library => tmp_component_name_in_lib,
-								value => et_libraries.type_component_value.to_bounded_string (et_libraries.content (tmp_component_text_value)),
-								commissioned => et_string_processing.type_date (et_libraries.content (tmp_component_text_commissioned)),
-								updated => et_string_processing.type_date (et_libraries.content (tmp_component_text_updated)),
-								author => et_libraries.type_person_name.to_bounded_string (et_libraries.content (tmp_component_text_author)),
-
-								-- properties of a real component (appears in schematic and layout);
-								datasheet => et_libraries.type_component_datasheet.to_bounded_string (et_libraries.content (tmp_component_text_datasheet)),
-								partcode => et_libraries.type_component_partcode.to_bounded_string (et_libraries.content (tmp_component_text_partcode)),
-								purpose => et_libraries.type_component_purpose.to_bounded_string (et_libraries.content (tmp_component_text_purpose)),
-								
-								-- Assemble the package variant.
-								-- NOTE: There is no way to identifiy the name of the package variant like TL084D or TL084N.
-								-- For this reason we leave the variant name empty.
-								variant =>
-									( 
-									variant => (
-
-										-- get the package name from the footprint field 
-										packge => 
-											et_libraries.type_component_package_name.to_bounded_string(
-												field(line => tmp_library_footprint, position => 2)),
-
-										-- get the library file name from the footpint field
-										library => et_libraries.type_library_full_name.to_bounded_string(
-												field(line => tmp_library_footprint, position => 1))),
-
-									-- The variant name is left empty.
-									name => et_libraries.type_component_variant_name.to_bounded_string("")
-									),
-
-								-- At this stage we do not know if and how many units there are. So the unit list is empty for the moment.
-								units => et_schematic.type_units.empty_map),
-							
-							position => component_cursor,
-							inserted => component_inserted); -- this flag is just formal. no further evaluation
--- remove end
-
-
-						
 						add_component (
 							reference => tmp_component_reference,
 							component => (
@@ -3614,10 +3539,6 @@ package body et_kicad is
 								-- At this stage we do not know if and how many units there are. So the unit list is empty for the moment.
 								units => et_schematic.type_units.empty_map));
 
-						
-							if log_level >= 1 then						
-								et_schematic.write_component_properties (component => component_cursor);
-							end if;
 							
 							-- Test if footprint has been associated with the component.
 							if et_libraries.content (tmp_component_text_packge)'size = 0 then
@@ -3666,16 +3587,13 @@ package body et_kicad is
 			end insert_component;
 			
 
-			procedure insert_unit (key : in et_libraries.type_component_reference; component : in out et_schematic.type_component ) is 
+			procedure insert_unit is 
 			-- Inserts a unit into the unit list of a component. The text fields around a unit are placeholders.
 			-- The properties of the placeholder texts are loaded with the properties of the text fields of the units
 			-- found in the schematic. The idea behind is to store just basic text properties (type_text_basic) 
 			-- for the texts around the unit, but not its content. The content is stored with the component as a kind
 			-- of meta-data. See procedure insert_component.
 			-- Raises constraint error if unit already in unit list of component.
-
-				unit_cursor : type_units.cursor;
-				unit_inserted : boolean;
 			
 				use et_libraries;
 			
@@ -3683,36 +3601,6 @@ package body et_kicad is
 				case tmp_component_appearance is
 
 					when sch =>
-
--- remove begin
-						et_schematic.type_units.insert(
-							container => component.units, -- the unit list of the component
-							new_item => (
-								appearance		=> sch,
-								position		=> tmp_component_position,
-								name			=> tmp_component_unit_name,
-								timestamp		=> tmp_component_timestamp,
-								alt_repres		=> tmp_component_alt_repres,
-
-								-- placeholders:
-								-- Convert tmp_component_text_* to a placeholder while maintaining the text meaning.
-								reference		=> ( et_libraries.type_text_basic (tmp_component_text_reference)
-													with meaning => tmp_component_text_reference.meaning ),
-								value			=> ( et_libraries.type_text_basic (tmp_component_text_value)
-													with meaning => tmp_component_text_value.meaning ),
-								updated			=> ( et_libraries.type_text_basic (tmp_component_text_updated)
-													with meaning => tmp_component_text_updated.meaning ),
-								author			=> ( et_libraries.type_text_basic (tmp_component_text_author)
-													with meaning => tmp_component_text_author.meaning ),
-								commissioned	=>  ( et_libraries.type_text_basic (tmp_component_text_commissioned)
-													with meaning => tmp_component_text_commissioned.meaning )
-								),
-
-							position => unit_cursor,
-							inserted => unit_inserted,
-
-							key => tmp_component_unit_name); -- the unit name
--- remove end
 
 						add_unit (
 							reference	=> tmp_component_reference,
@@ -3740,44 +3628,6 @@ package body et_kicad is
 											   
 
 					when sch_pcb =>
-
--- remove begin
-						et_schematic.type_units.insert(
-							container => component.units, -- the unit list of the component
-							new_item => (
-								appearance		=> sch_pcb,
-								position		=> tmp_component_position,
-								name			=> tmp_component_unit_name,
-								timestamp		=> tmp_component_timestamp,
-								alt_repres		=> tmp_component_alt_repres,
-
-								-- placeholders:
-								-- Convert tmp_component_text_* to a placeholder while maintaining the text meaning.
-								reference		=> ( et_libraries.type_text_basic (tmp_component_text_reference)
-													with meaning => tmp_component_text_reference.meaning ),
-								value			=> ( et_libraries.type_text_basic (tmp_component_text_value)
-													with meaning => tmp_component_text_value.meaning ),
-								packge			=> ( et_libraries.type_text_basic (tmp_component_text_packge)
-													with meaning => tmp_component_text_packge.meaning ),
-								datasheet		=> ( et_libraries.type_text_basic (tmp_component_text_datasheet)
-													with meaning => tmp_component_text_datasheet.meaning ),
-								purpose			=> ( et_libraries.type_text_basic (tmp_component_text_purpose)
-													with meaning => tmp_component_text_purpose.meaning ),
-								partcode		=> ( et_libraries.type_text_basic (tmp_component_text_partcode)
-													with meaning => tmp_component_text_partcode.meaning ),
-								updated			=> ( et_libraries.type_text_basic (tmp_component_text_updated)
-													with meaning => tmp_component_text_updated.meaning ),
-								author			=> ( et_libraries.type_text_basic (tmp_component_text_author)
-													with meaning => tmp_component_text_author.meaning ),
-								commissioned	=>  ( et_libraries.type_text_basic (tmp_component_text_commissioned)
-													with meaning => tmp_component_text_commissioned.meaning )
-								),
-
-							position => unit_cursor,
-							inserted => unit_inserted,
-
-							key => tmp_component_unit_name); -- the unit name
--- remove end
 
 						add_unit (
 							reference	=> tmp_component_reference,
@@ -3814,18 +3664,6 @@ package body et_kicad is
 					when others => null; -- CS
 				end case;
 					
-				-- If unit alread in list, raise alarm and abort. -- CS remove
-				if not unit_inserted then
-					log_indentation_reset;
-					log (text => message_error & "multiple occurence of the same unit !",
-						console => true);
-					raise constraint_error;
-				end if;
-
-				if log_level >= 1 then				
-					write_unit_properties (unit => unit_cursor);
-				end if;
-				
 			end insert_unit;
 
 			
@@ -4345,7 +4183,8 @@ package body et_kicad is
 	
 											-- The component_cursor now points to the component in the component list.
 											-- We update the component with the collected unit information.
-											et_schematic.type_components.update_element (module.components, component_cursor, insert_unit'access);
+											--et_schematic.type_components.update_element (module.components, component_cursor, insert_unit'access);
+											insert_unit;
 
 										else
 											-- READ COMPONENT SECTION CONTENT
