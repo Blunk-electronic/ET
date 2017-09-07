@@ -2059,6 +2059,12 @@ package body et_kicad is
 		use et_import.type_schematic_file_name;
 		use et_libraries.type_library_directory;
 		use et_schematic;
+
+		list_of_submodules : type_list_of_submodule_names_extended;
+		top_level_schematic_file, name_of_schematic_file : et_import.type_schematic_file_name.bounded_string;
+
+		package stack_of_sheet_lists is new stack_lifo (max => 10, item => type_list_of_submodule_names_extended);
+        use stack_of_sheet_lists;
 		
 		function read_project_file return et_import.type_schematic_file_name.bounded_string is
 		-- Reads the project file in terms of LibDir and LibName. 
@@ -2448,6 +2454,8 @@ package body et_kicad is
 			name_of_submodule_scratch : type_submodule_name.bounded_string; -- temporarily used before appended to list_of_submodules
 
 			use et_string_processing;
+			use et_libraries;
+		
 			line : et_string_processing.type_fields_of_line;
 		
 			sheet_file : type_sheet_file.bounded_string;
@@ -3417,7 +3425,7 @@ package body et_kicad is
 			end to_text;
 
 			
-			component_cursor	: type_components.cursor; -- points to a component of the module
+			component_cursor	: et_schematic.type_components.cursor; -- points to a component of the module
 
 			
 -- 			procedure fetch_components_from_library is
@@ -3700,9 +3708,6 @@ package body et_kicad is
 				
 			end insert_unit;
 
-
-			
-			use et_libraries;
 			
 		begin -- read_schematic
 			log_indentation_reset;
@@ -4404,14 +4409,7 @@ package body et_kicad is
 
 		end read_schematic;
 
-		
 
-		list_of_submodules : type_list_of_submodule_names_extended;
-		top_level_schematic_file, name_of_schematic_file : et_import.type_schematic_file_name.bounded_string;
-
-		package stack_of_sheet_lists is new stack_lifo(max => 10, item => type_list_of_submodule_names_extended);
-        use stack_of_sheet_lists;
-        
     begin -- import design
 		create_report; -- directs all puts to the report file
 		
