@@ -44,6 +44,7 @@ with ada.exceptions; 			use ada.exceptions;
 
 with ada.containers;            use ada.containers;
 with ada.containers.doubly_linked_lists;
+with ada.containers.ordered_maps;
 
 with et_libraries;
 with et_schematic;
@@ -2220,6 +2221,15 @@ package body et_kicad is
         end delete_last_module_name_from_path;
 
 
+
+		
+
+		
+
+
+
+			
+		
         
 		function read_schematic (name_of_schematic_file : in et_import.type_schematic_file_name.bounded_string) 
 			return type_list_of_submodule_names_extended is

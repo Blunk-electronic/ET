@@ -320,7 +320,7 @@ package et_schematic is
 	end record;
 
     -- A list of submodules is a component of the main module:    
-    package type_gui_submodules is new doubly_linked_lists ( -- CS: better a simple list ?
+    package type_gui_submodules is new vectors ( -- CS: better a simple list ?
         index_type => positive, -- every gui submodule has an id
         element_type => type_gui_submodule);
 
@@ -464,26 +464,40 @@ package et_schematic is
     -- - a list of drawing frames
     -- - a list of title blocks
 	type type_module is record
-		name 	    : type_submodule_name.bounded_string; -- example "MOTOR_DRIVER"
-		nets 	    : type_net_list_of_module.vector;
+		name 	    : type_submodule_name.bounded_string; -- CS: remove. example "MOTOR_DRIVER"
+		nets 	    : type_net_list_of_module.vector; -- CS: simple list ?
         components	: type_components.map;
-        submodules  : type_gui_submodules.vector;
-        frames      : type_list_of_frames.vector;
-        title_blocks: type_list_of_title_blocks.vector;
-        notes       : type_texts.list;
+        submodules  : type_gui_submodules.vector; -- CS: simple list or map ?
+        frames      : type_list_of_frames.vector; -- CS: simple list ?
+        title_blocks: type_list_of_title_blocks.vector; -- CS: simple list ?
+		notes       : type_texts.list;
+		-- CS: junctions
         -- CS: images
 	end record;
 
 	module : type_module; -- this is the whole schematic of a board
 
-	-- For multi-board support:
-    -- CS: list of modules
 
+	package type_rig is new ordered_maps (
+		key_type => type_submodule_name.bounded_string, -- example "MOTOR_DRIVER"
+		element_type => type_module);
 
+	rig : type_rig.map;
+	module_cursor : type_rig.cursor;
 
+	procedure add_module ( -- CS: comments
+		module_name : in type_submodule_name.bounded_string;
+		module		: in type_module);
 
+	procedure add_component ( -- CS: comments
+		reference	: in et_libraries.type_component_reference;
+		component	: in type_component);
 
-
+	procedure add_unit ( -- CS: comments
+		reference	: in et_libraries.type_component_reference;
+		unit_name	: in et_libraries.type_unit_name.bounded_string;
+		unit 		: in type_unit);
+		
 
     
 -- MISC

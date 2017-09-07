@@ -480,6 +480,103 @@ package body et_schematic is
 	end compare_component_by_reference;
 
 
+
+	
+	procedure add_module ( -- CS: comments
+		module_name : in type_submodule_name.bounded_string;
+		module		: in type_module) is
+		
+		inserted : boolean := false;
+	begin
+		rig.insert (
+			key			=> module_name,
+			new_item	=> module,
+			position	=> module_cursor,
+			inserted	=> inserted
+			);
+
+		if not inserted then
+			null; -- CS: error message
+			raise constraint_error;
+		end if;
+	end add_module;
+
+	procedure add_component ( -- CS: comments
+		reference	: in et_libraries.type_component_reference;
+		component	: in type_component) is
+		
+		procedure add (
+			name	: in type_submodule_name.bounded_string;
+			module	: in out type_module) is
+			
+			inserted	: boolean := false;
+			cursor		: type_components.cursor;
+		begin
+			module.components.insert (
+				key			=> reference,
+				new_item	=> component,
+				position	=> cursor, -- updates component_cursor. no further meaning
+				inserted	=> inserted
+				);
+
+			if not inserted then
+				null; -- CS: error message
+				raise constraint_error;
+			end if;
+		end add;
+	begin
+		rig.update_element (
+			position	=> module_cursor,
+			process		=> add'access
+			);
+	end add_component;
+	
+	procedure add_unit ( -- CS: comments
+		reference	: in et_libraries.type_component_reference;
+		unit_name	: in et_libraries.type_unit_name.bounded_string;
+		unit 		: in type_unit) is
+	
+		procedure add (
+			reference	: in et_libraries.type_component_reference;
+			component	: in out type_component) is
+
+			inserted	: boolean := false;
+			cursor		: type_units.cursor;
+		begin
+			component.units.insert (
+				key			=> unit_name,
+				new_item	=> unit,
+				position	=> cursor, -- updates unit_cursor. no further meaning
+				inserted	=> inserted
+				);
+
+			if not inserted then
+				null; -- CS: error message
+				raise constraint_error;
+			end if;
+		end add;
+		
+		procedure locate_component (
+			name	: in type_submodule_name.bounded_string;
+			module	: in out type_module) is
+			
+			cursor : type_components.cursor;
+		begin
+			cursor := module.components.find (reference);
+			-- CS: do something if reference not found
+			
+			module.components.update_element (
+				position	=> cursor,
+				process		=> add'access
+				);
+		end locate_component;
+		
+	begin
+		rig.update_element (
+			position	=> module_cursor,
+			process		=> locate_component'access
+			);
+	end add_unit;
 	
 end et_schematic;
 -- Soli Deo Gloria
