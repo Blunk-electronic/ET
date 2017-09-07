@@ -585,7 +585,14 @@ package body et_schematic is
 		end if;
 	end add_module;
 
-	procedure add_component ( -- CS: comments
+	procedure add_component (
+	-- Adds a component into the the module (indicated by module_cursor).
+	-- If a component is already in the list, nothing happens.
+	-- Components may occur multiple times in the schematic if they 
+	-- consist of more than one unit.
+	-- CS: This assumption may not apply for all CAE systems. Currently we
+	-- consider only kicad. In other cases the "inserted" check (see below) 
+	-- must be enabled via an argument.
 		reference	: in et_libraries.type_component_reference;
 		component	: in type_component) is
 		
@@ -604,8 +611,8 @@ package body et_schematic is
 				);
 
 			if not inserted then
-				null; -- CS: error message
-				raise constraint_error;
+				null; -- CS: see comment above
+				--raise constraint_error;
 			end if;
 		end add;
 	begin
@@ -619,13 +626,15 @@ package body et_schematic is
 		reference	: in et_libraries.type_component_reference;
 		unit_name	: in et_libraries.type_unit_name.bounded_string;
 		unit 		: in type_unit) is
-	
+
 		procedure add (
 			reference	: in et_libraries.type_component_reference;
 			component	: in out type_component) is
 
 			inserted	: boolean := false;
 			cursor		: type_units.cursor;
+
+			use et_string_processing;
 		begin
 			component.units.insert (
 				key			=> unit_name,
@@ -635,7 +644,11 @@ package body et_schematic is
 				);
 
 			if not inserted then
-				null; -- CS: error message
+				null; -- CS: error message. unit already in component
+				log_indentation_reset;
+				log (
+					text => message_error & "multiple occurence of the same unit !",
+					console => true);
 				raise constraint_error;
 			end if;
 		end add;

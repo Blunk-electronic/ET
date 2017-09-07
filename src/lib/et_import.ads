@@ -68,6 +68,10 @@ package et_import is
 	component_libraries : et_libraries.type_libraries.map; 
 	
 	package type_schematic_file_name is new generic_bounded_length(project_name_length + 4); use type_schematic_file_name;
+	
+	function to_string (schematic : in type_schematic_file_name.bounded_string) return string;
+	-- Returns the given schematic file name as string.
+	
 	--schematic_file_name	: type_schematic_file_name.bounded_string;
 	schematic_handle	: ada.text_io.file_type;
 	library_handle		: ada.text_io.file_type;

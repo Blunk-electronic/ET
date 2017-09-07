@@ -507,7 +507,7 @@ package et_schematic is
 	end record;
 
 	module : type_module; -- this is the whole schematic of a board
-
+	bare_module : type_module; -- an empty module for initialisation purposes
 
 	package type_rig is new ordered_maps (
 		key_type => type_submodule_name.bounded_string, -- example "MOTOR_DRIVER"
@@ -516,15 +516,19 @@ package et_schematic is
 	rig : type_rig.map;
 	module_cursor : type_rig.cursor;
 	
-	procedure add_module ( -- CS: comments
+	procedure add_module (
+	-- Adds a module into the module list. Leaves module_cursor pointing
+	-- at the module inserted last.
 		module_name : in type_submodule_name.bounded_string;
 		module		: in type_module);
 
-	procedure add_component ( -- CS: comments
+	procedure add_component (
+	-- Adds a component into the the module (indicated by module_cursor).
 		reference	: in et_libraries.type_component_reference;
 		component	: in type_component);
 
-	procedure add_unit ( -- CS: comments
+	procedure add_unit (
+	-- Adds a unit into the given commponent.
 		reference	: in et_libraries.type_component_reference;
 		unit_name	: in et_libraries.type_unit_name.bounded_string;
 		unit 		: in type_unit);

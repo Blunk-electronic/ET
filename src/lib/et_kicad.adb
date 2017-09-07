@@ -2056,12 +2056,14 @@ package body et_kicad is
 	
 
 	procedure import_design is
-		use et_import.type_schematic_file_name;
+		--use et_import.type_schematic_file_name;
 		use et_libraries.type_library_directory;
 		use et_schematic;
 
 		list_of_submodules : type_list_of_submodule_names_extended;
-		top_level_schematic_file, name_of_schematic_file : et_import.type_schematic_file_name.bounded_string;
+		
+		top_level_schematic : et_import.type_schematic_file_name.bounded_string;
+		current_schematic : et_import.type_schematic_file_name.bounded_string;
 
 		package stack_of_sheet_lists is new stack_lifo (max => 10, item => type_list_of_submodule_names_extended);
         use stack_of_sheet_lists;
@@ -2445,7 +2447,7 @@ package body et_kicad is
 			
 
 			
-		function read_schematic (name_of_schematic_file : in et_import.type_schematic_file_name.bounded_string) 
+		function read_schematic (current_schematic : in et_import.type_schematic_file_name.bounded_string) 
 			return type_list_of_submodule_names_extended is
 		-- Reads the given schematic file. If it contains submodules (hierarchic sheets), 
         -- they will be returned in list_of_submodules. Otherwise the returned list is empty.
@@ -2989,7 +2991,7 @@ package body et_kicad is
 							end loop;
 
                             -- assign coordinates
-                            net_scratch.coordinates.module_name := type_submodule_name.to_bounded_string (to_string (name_of_schematic_file));
+                            net_scratch.coordinates.module_name := type_submodule_name.to_bounded_string (to_string (current_schematic));
                             net_scratch.coordinates.path := path_to_submodule;
                             -- CS: x,y coordinates should be the lowest available on the first sheet.
                             -- CS: do not assign sheet and x/y at all ?
@@ -3077,7 +3079,7 @@ package body et_kicad is
 							log_indentation_down;
 
                             -- assign coordinates
-                            net_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+                            net_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(current_schematic));
                             net_scratch.coordinates.path := path_to_submodule;
                             -- CS: x,y coordinates should be the lowest available on the first sheet.
                             -- CS: do not assign sheet and x/y at all ?
@@ -3379,7 +3381,7 @@ package body et_kicad is
                 text_size_of_name => 58,
                 text_size_of_file => 58,                
                 coordinates => (    path => path_to_submodule,
-                                    module_name => type_submodule_name.to_bounded_string( to_string(name_of_schematic_file)),
+                                    module_name => type_submodule_name.to_bounded_string( to_string(current_schematic)),
                                     sheet_number => 1,
                                     x => 0.0,
                                     y => 0.0 
@@ -3480,6 +3482,7 @@ package body et_kicad is
 					
 					when sch => -- we have a line like "L P3V3 #PWR07"
 				
+-- remove begin
 						et_schematic.type_components.insert(
 							container => module.components,
 													
@@ -3498,11 +3501,26 @@ package body et_kicad is
 							
 							position => component_cursor,
 							inserted => component_inserted); -- this flag is just formal. no further evaluation
+-- remove end
+						
+						add_component (
+							reference => tmp_component_reference,
+							component => (
+								appearance		=> sch,
+								name_in_library	=> tmp_component_name_in_lib,
+								value 			=> et_libraries.type_component_value.to_bounded_string (et_libraries.content (tmp_component_text_value)),
+								commissioned 	=> et_string_processing.type_date (et_libraries.content (tmp_component_text_commissioned)),
+								updated 		=> et_string_processing.type_date (et_libraries.content (tmp_component_text_updated)),
+								author 			=> et_libraries.type_person_name.to_bounded_string (et_libraries.content (tmp_component_text_author)),
 
-							if log_level >= 1 then
-								et_schematic.write_component_properties (component => component_cursor);
-							end if;
-							
+								-- At this stage we do not know if and how many units there are. So the unit list is empty.
+								units 			=> et_schematic.type_units.empty_map));
+
+						if log_level >= 1 then
+							et_schematic.write_component_properties (component => component_cursor);
+						end if;
+
+
 					when sch_pcb => -- we have a line like "L 74LS00 U1"
 
 						-- break down the footprint content like "bel_opto:LED_S_0805".
@@ -3510,7 +3528,7 @@ package body et_kicad is
 								line => et_libraries.content (tmp_component_text_packge),
 								ifs => latin_1.colon);
 
-						
+--- remove begin						
 						et_schematic.type_components.insert(
 							container => module.components,
 
@@ -3554,7 +3572,49 @@ package body et_kicad is
 							
 							position => component_cursor,
 							inserted => component_inserted); -- this flag is just formal. no further evaluation
+-- remove end
 
+
+						
+						add_component (
+							reference => tmp_component_reference,
+							component => (
+								appearance		=> sch_pcb,
+								name_in_library	=> tmp_component_name_in_lib,
+								value			=> et_libraries.type_component_value.to_bounded_string (et_libraries.content (tmp_component_text_value)),
+								commissioned	=> et_string_processing.type_date (et_libraries.content (tmp_component_text_commissioned)),
+								updated			=> et_string_processing.type_date (et_libraries.content (tmp_component_text_updated)),
+								author			=> et_libraries.type_person_name.to_bounded_string (et_libraries.content (tmp_component_text_author)),
+
+								-- properties of a real component (appears in schematic and layout);
+								datasheet		=> et_libraries.type_component_datasheet.to_bounded_string (et_libraries.content (tmp_component_text_datasheet)),
+								partcode		=> et_libraries.type_component_partcode.to_bounded_string (et_libraries.content (tmp_component_text_partcode)),
+								purpose			=> et_libraries.type_component_purpose.to_bounded_string (et_libraries.content (tmp_component_text_purpose)),
+								
+								-- Assemble the package variant.
+								-- NOTE: There is no way to identifiy the name of the package variant like TL084D or TL084N.
+								-- For this reason we leave the variant name empty.
+								variant =>
+									( 
+									variant => (
+
+										-- get the package name from the footprint field 
+										packge => 
+											et_libraries.type_component_package_name.to_bounded_string(
+												field(line => tmp_library_footprint, position => 2)),
+
+										-- get the library file name from the footpint field
+										library => et_libraries.type_library_full_name.to_bounded_string(
+												field(line => tmp_library_footprint, position => 1))),
+
+									-- The variant name is left empty.
+									name => et_libraries.type_component_variant_name.to_bounded_string("")
+									),
+
+								-- At this stage we do not know if and how many units there are. So the unit list is empty for the moment.
+								units => et_schematic.type_units.empty_map));
+
+						
 							if log_level >= 1 then						
 								et_schematic.write_component_properties (component => component_cursor);
 							end if;
@@ -3624,6 +3684,7 @@ package body et_kicad is
 
 					when sch =>
 
+-- remove begin
 						et_schematic.type_units.insert(
 							container => component.units, -- the unit list of the component
 							new_item => (
@@ -3651,10 +3712,36 @@ package body et_kicad is
 							inserted => unit_inserted,
 
 							key => tmp_component_unit_name); -- the unit name
+-- remove end
 
-					
+						add_unit (
+							reference	=> tmp_component_reference,
+							unit_name	=> tmp_component_unit_name,
+							unit 		=> (
+								appearance		=> sch,
+								position		=> tmp_component_position,
+								name			=> tmp_component_unit_name,
+								timestamp		=> tmp_component_timestamp,
+								alt_repres		=> tmp_component_alt_repres,
+
+								-- placeholders:
+								-- Convert tmp_component_text_* to a placeholder while maintaining the text meaning.
+								reference		=> ( et_libraries.type_text_basic (tmp_component_text_reference)
+													with meaning => tmp_component_text_reference.meaning ),
+								value			=> ( et_libraries.type_text_basic (tmp_component_text_value)
+													with meaning => tmp_component_text_value.meaning ),
+								updated			=> ( et_libraries.type_text_basic (tmp_component_text_updated)
+													with meaning => tmp_component_text_updated.meaning ),
+								author			=> ( et_libraries.type_text_basic (tmp_component_text_author)
+													with meaning => tmp_component_text_author.meaning ),
+								commissioned	=>  ( et_libraries.type_text_basic (tmp_component_text_commissioned)
+													with meaning => tmp_component_text_commissioned.meaning )
+								));
+											   
+
 					when sch_pcb =>
-			
+
+-- remove begin
 						et_schematic.type_units.insert(
 							container => component.units, -- the unit list of the component
 							new_item => (
@@ -3690,11 +3777,44 @@ package body et_kicad is
 							inserted => unit_inserted,
 
 							key => tmp_component_unit_name); -- the unit name
+-- remove end
+
+						add_unit (
+							reference	=> tmp_component_reference,
+							unit_name	=> tmp_component_unit_name,
+							unit 		=> (
+								appearance		=> sch_pcb,
+								position		=> tmp_component_position,
+								name			=> tmp_component_unit_name,
+								timestamp		=> tmp_component_timestamp,
+								alt_repres		=> tmp_component_alt_repres,
+
+								-- placeholders:
+								-- Convert tmp_component_text_* to a placeholder while maintaining the text meaning.
+								reference		=> ( et_libraries.type_text_basic (tmp_component_text_reference)
+													with meaning => tmp_component_text_reference.meaning ),
+								value			=> ( et_libraries.type_text_basic (tmp_component_text_value)
+													with meaning => tmp_component_text_value.meaning ),
+								packge			=> ( et_libraries.type_text_basic (tmp_component_text_packge)
+													with meaning => tmp_component_text_packge.meaning ),
+								datasheet		=> ( et_libraries.type_text_basic (tmp_component_text_datasheet)
+													with meaning => tmp_component_text_datasheet.meaning ),
+								purpose			=> ( et_libraries.type_text_basic (tmp_component_text_purpose)
+													with meaning => tmp_component_text_purpose.meaning ),
+								partcode		=> ( et_libraries.type_text_basic (tmp_component_text_partcode)
+													with meaning => tmp_component_text_partcode.meaning ),
+								updated			=> ( et_libraries.type_text_basic (tmp_component_text_updated)
+													with meaning => tmp_component_text_updated.meaning ),
+								author			=> ( et_libraries.type_text_basic (tmp_component_text_author)
+													with meaning => tmp_component_text_author.meaning ),
+								commissioned	=>  ( et_libraries.type_text_basic (tmp_component_text_commissioned)
+													with meaning => tmp_component_text_commissioned.meaning )
+								));
 
 					when others => null; -- CS
 				end case;
 					
-				-- If unit alread in list, raise alarm and abort.
+				-- If unit alread in list, raise alarm and abort. -- CS remove
 				if not unit_inserted then
 					log_indentation_reset;
 					log (text => message_error & "multiple occurence of the same unit !",
@@ -3713,15 +3833,15 @@ package body et_kicad is
 			log_indentation_reset;
 			log_indentation_up;
 			
-			if exists(to_string(name_of_schematic_file)) then
-				log (text => "reading schematic file: " & to_string(name_of_schematic_file) & " ...",
+			if exists(to_string(current_schematic)) then
+				log (text => "reading schematic file: " & to_string(current_schematic) & " ...",
 					 console => true);
 
 				-- log module path as recorded by parent unit
 				log_indentation_up;
 				write_path_to_submodule;
 				
-				open (file => et_import.schematic_handle, mode => in_file, name => to_string(name_of_schematic_file));
+				open (file => et_import.schematic_handle, mode => in_file, name => to_string(current_schematic));
 				set_input (et_import.schematic_handle);
 				while not end_of_file loop
 
@@ -3838,7 +3958,7 @@ package body et_kicad is
 										tmp_frame.size_x		:= et_libraries.type_grid'value(get_field_from_line(line,3));
 										tmp_frame.size_y 		:= et_libraries.type_grid'value(get_field_from_line(line,4)); 
 										tmp_frame.coordinates.path := path_to_submodule;
-										tmp_frame.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+										tmp_frame.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(current_schematic));
 
 										-- CS: Other properties of the drawing frame like x/y coordinates, lists of lines and texts are 
 										-- kicad built-in things and remain unassigned here.
@@ -3853,7 +3973,7 @@ package body et_kicad is
 										-- Then purge temporarily list of texts.
 										-- Then append temporarily title block to main module.
 										tmp_title_block.coordinates.path := path_to_submodule;
-										tmp_title_block.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+										tmp_title_block.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(current_schematic));
 										tmp_title_block.texts := tmp_title_block_texts; -- assign collected texts list to temporarily title block
 										-- CS: x/y coordinates and list of lines are kicad built-in things and thus not available currently.
 
@@ -3890,7 +4010,7 @@ package body et_kicad is
 											-- Set in the list_of_submodules (to be returned) the parent_module. The schematic file 
 											-- being processed (see input parameters of read_file_schematic_kicad) becomes the parent module
 											-- of the submodules here.
-											list_of_submodules.parent_module := type_submodule_name.to_bounded_string(to_string(name_of_schematic_file));
+											list_of_submodules.parent_module := type_submodule_name.to_bounded_string(to_string(current_schematic));
 										end if;
 										-- CS: make sure total sheet count is less or equal current sheet number.
 
@@ -3977,7 +4097,7 @@ package body et_kicad is
 										-- read GUI submodule (sheet) position and size from a line like "S 4050 5750 1050 650"
 										if get_field_from_line(line,1) = schematic_keyword_sheet_pos_and_size then
 											submodule_gui_scratch.coordinates.path := path_to_submodule;
-											submodule_gui_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+											submodule_gui_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(current_schematic));
 											submodule_gui_scratch.coordinates.sheet_number := sheet_number_current;
 											submodule_gui_scratch.coordinates.x := et_libraries.type_grid'value(get_field_from_line(line,2));
 											submodule_gui_scratch.coordinates.y := et_libraries.type_grid'value(get_field_from_line(line,3));
@@ -4037,8 +4157,8 @@ package body et_kicad is
 										tmp_segment.coordinates_start.path := path_to_submodule;
 										
 										-- the name of the current submodule, which is in case of kicad the subordinated schematic file
-										tmp_segment.coordinates_start.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
-										tmp_segment.coordinates_end.module_name   := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+										tmp_segment.coordinates_start.module_name := type_submodule_name.to_bounded_string( to_string(current_schematic));
+										tmp_segment.coordinates_end.module_name   := type_submodule_name.to_bounded_string( to_string(current_schematic));
 										
 										-- The sheet number. NOTE: Kicad V4 can handle only one sheet per submodule. The sheet numbering is consecutive and does
 										-- not care about the actual submodule names.
@@ -4060,7 +4180,7 @@ package body et_kicad is
 
 											-- build a temporarily junction
 											tmp_junction.coordinates.path := path_to_submodule;
-											tmp_junction.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+											tmp_junction.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(current_schematic));
 											tmp_junction.coordinates.sheet_number := sheet_number_current;
 											tmp_junction.coordinates.x := et_libraries.type_grid'value(get_field_from_line(line,3));
 											tmp_junction.coordinates.y := et_libraries.type_grid'value(get_field_from_line(line,4));
@@ -4078,7 +4198,7 @@ package body et_kicad is
 
 											-- Build a temporarily simple label from a line like "Text Label 5350 3050 0    60   ~ 0" :
 											tmp_simple_net_label.coordinates.path := path_to_submodule;
-											tmp_simple_net_label.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+											tmp_simple_net_label.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(current_schematic));
 											tmp_simple_net_label.coordinates.sheet_number := sheet_number_current;
 											tmp_simple_net_label.coordinates.x := et_libraries.type_grid'value(get_field_from_line(line,3));
 											tmp_simple_net_label.coordinates.y := et_libraries.type_grid'value(get_field_from_line(line,4));
@@ -4123,7 +4243,7 @@ package body et_kicad is
 											end if;
 
 											tmp_tag_net_label.coordinates.path := path_to_submodule;
-											tmp_tag_net_label.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+											tmp_tag_net_label.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(current_schematic));
 											tmp_tag_net_label.coordinates.sheet_number := sheet_number_current;
 											tmp_tag_net_label.coordinates.x := et_libraries.type_grid'value(get_field_from_line(line,3));
 											tmp_tag_net_label.coordinates.y := et_libraries.type_grid'value(get_field_from_line(line,4));
@@ -4159,7 +4279,7 @@ package body et_kicad is
 										
 												-- set coordinates
 												tmp_note.coordinates.path := path_to_submodule;
-												tmp_note.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+												tmp_note.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(current_schematic));
 												tmp_note.coordinates.sheet_number := sheet_number_current;
 												tmp_note.coordinates.x := et_libraries.type_grid'value(get_field_from_line(line,3));
 												tmp_note.coordinates.y := et_libraries.type_grid'value(get_field_from_line(line,4));
@@ -4286,7 +4406,7 @@ package body et_kicad is
 												-- The unit coordinates is more than just x/y :
 												-- unit_scratch.coordinates.main_module := module.name;
 												tmp_component_position.path := path_to_submodule;
-												tmp_component_position.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+												tmp_component_position.module_name := type_submodule_name.to_bounded_string( to_string(current_schematic));
 												tmp_component_position.sheet_number := sheet_number_current;
 											end if;
 
@@ -4363,7 +4483,7 @@ package body et_kicad is
                 -- NOTE: The file name serves as key in order to match from file to header.
                 type_list_of_sheet_headers.insert (
                     container => list_of_sheet_headers, 
-                    key => type_sheet_file.to_bounded_string (to_string(name_of_schematic_file)),
+                    key => type_sheet_file.to_bounded_string (to_string(current_schematic)),
                     new_item => sheet_header);
                 
 				close (et_import.schematic_handle);
@@ -4380,7 +4500,7 @@ package body et_kicad is
 				
 			else
 				log_indentation_reset;
-				log (message_error & "schematic file '" & to_string(name_of_schematic_file) & "' not found !",
+				log (message_error & "schematic file '" & to_string(current_schematic) & "' not found !",
 					console => true);
 				raise constraint_error;
 			end if;
@@ -4392,7 +4512,7 @@ package body et_kicad is
 					constraint_error =>
 						log_indentation_reset;
 						log (message_error & "in schematic file '" 
-							& to_string(name_of_schematic_file) & "' " 
+							& to_string(current_schematic) & "' " 
 							& et_string_processing.affected_line(line),
 							console => true);
 							close_report;
@@ -4401,7 +4521,7 @@ package body et_kicad is
 				when others =>
 					log_indentation_reset;
 					log (message_error & "in schematic file '" 
-						 & to_string(name_of_schematic_file) & "' " 
+						 & to_string(current_schematic) & "' " 
 						 & et_string_processing.affected_line(line),
 						console => true);
 					close_report;
@@ -4417,28 +4537,38 @@ package body et_kicad is
 			when kicad_v4 =>
 
 				-- derive top level schematic file name from project file (they differ only in their extension)
-				top_level_schematic_file := read_project_file;
+				top_level_schematic := read_project_file;
+
+				-- The top level schematic file dictates the module name. So we create the module here.
+				-- It is still empty.
+				add_module (
+					module_name	=> type_submodule_name.to_bounded_string (
+										et_import.to_string (top_level_schematic)),
+					module		=> bare_module);
+				
 				read_components_libraries (indentation => 1); -- as stored in lib_dir and project_libraries
-				name_of_schematic_file := top_level_schematic_file;
+				current_schematic := top_level_schematic;
 
                 -- The top level schematic file dictates the module name. At the same time it is the first entry
                 -- in the module path.
-				module.name := type_submodule_name.to_bounded_string(to_string(name_of_schematic_file));
-                append_name_of_parent_module_to_path(module.name);
+				module.name := type_submodule_name.to_bounded_string(to_string(current_schematic)); -- CS: remove
+				--append_name_of_parent_module_to_path(module.name);
+				append_name_of_parent_module_to_path (type_submodule_name.to_bounded_string (
+					et_import.to_string (top_level_schematic)));
                 
 				-- Starting from the top level module, we read its schematic file. The result can be a list of submodules.
 				-- NOTE: Kicad refers to them as "sheets" !
 				
 				-- The function read_schematic requires the name of the current submodule,
 				-- It returns a list of submodules.
-				list_of_submodules := read_schematic(name_of_schematic_file => name_of_schematic_file);
+				list_of_submodules := read_schematic (current_schematic => current_schematic);
 
 				log("DESIGN STRUCTURE ");
 				log_indentation_up;
 				
 				-- If read_file_schematic_kicad returns an empty list of submodules, we are dealing with a flat design. Otherwise
 				-- the design is hierarchic (because the submodule list is longer than zero).
-				if type_list_of_submodule_names.length(list_of_submodules.list) = 0 then -- flat design
+				if type_list_of_submodule_names.length (list_of_submodules.list) = 0 then -- flat design -- CS: use is_empty
 					log ("FLAT");
 				else -- hierarchic design
 					-- In the follwing we dive into the submodules. Each time before a deeper level is entered,
@@ -4452,16 +4582,19 @@ package body et_kicad is
 					log_indentation_up;
 					
 					-- output the number of submodules (sheets) found at level 0:
-					log ("number of hierarchic sheets" & natural'image(
-						natural(type_list_of_submodule_names.length(list_of_submodules.list))));
+					log ("number of hierarchic sheets" & natural'image (
+						natural (type_list_of_submodule_names.length (list_of_submodules.list)))); -- CS: use count_type
 
 					-- Initially set submodule pointer at first submodule of list:
 					list_of_submodules.id := 1;
                     
 					loop
 						-- fetch name of submodule (where id is pointing at)
-						name_of_schematic_file := to_bounded_string(type_submodule_name.to_string(
-							type_list_of_submodule_names.element(container => list_of_submodules.list,index => list_of_submodules.id)));
+						current_schematic := et_import.type_schematic_file_name.to_bounded_string (
+							et_schematic.type_submodule_name.to_string (
+								type_list_of_submodule_names.element (
+									container => list_of_submodules.list,
+									index => list_of_submodules.id)));
 						
 						-- backup list_of_submodules OF THIS LEVEL on stack (including the current submodule id)
 						push (list_of_submodules);
@@ -4470,11 +4603,11 @@ package body et_kicad is
 						
 						-- Read schematic file as indicated by list_of_submodules.id. 
 						-- Read_schematic receives the name of the schematic file to be read.
-						list_of_submodules := read_schematic(name_of_schematic_file => name_of_schematic_file);
+						list_of_submodules := read_schematic (current_schematic => current_schematic);
 
 						-- If the schematic file contains submodules (hierarchic sheets), set list_of_submodules.id to the first 
 						-- submodule of them. Otherwise restore submodule list of parent module and advance therein to next submodule.
-						if type_list_of_submodule_names.length(list_of_submodules.list) = 0 then -- flat submodule (no hierarchic sheets)
+						if type_list_of_submodule_names.length(list_of_submodules.list) = 0 then -- flat submodule (no hierarchic sheets) -- CS: use is_empty
 
 							list_of_submodules := pop;
                             list_of_submodules.id := list_of_submodules.id + 1;
