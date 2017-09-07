@@ -333,12 +333,27 @@ package et_kicad is
 
 -- IMPORT
 
-	type type_segment_side is (start_point, end_point ); -- the end point of a segment	
+	-- section flags
+	net_segment_entered		: boolean := false;
+	simple_label_entered	: boolean := false;
+	tag_label_entered 		: boolean := false;	
+	note_entered			: boolean := false;	
+
+	-- temporarily storage
+	tmp_junction			: et_schematic.type_net_junction;
+	tmp_simple_net_label	: et_schematic.type_net_label_simple;
+	tmp_tag_net_label		: et_schematic.type_net_label_tag;
+	tmp_note				: et_schematic.type_note;	
 
 	type type_wild_net_segment is new et_schematic.type_net_segment with record
 		s, e : boolean := false; -- flag indicates the end point beeing assumed
 		picked : boolean := false; -- flag indicates that the segment has been added to the anonymous net
 	end record;
+
+	tmp_segment				: type_wild_net_segment;
+	
+	type type_segment_side is (start_point, end_point ); -- the end point of a segment	
+
 
 	package type_wild_segments is new doubly_linked_lists ( 
 		element_type => type_wild_net_segment);

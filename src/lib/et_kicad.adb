@@ -2244,7 +2244,7 @@ package body et_kicad is
 		
 			sheet_file : type_sheet_file.bounded_string;
 			sheet_count_total, sheet_number_current : positive;
-			net_segment_entered : boolean := false;
+
 
 			-- When reading the sheet header, its content goes into sheet_header.
 			-- This is stuff like:
@@ -2261,23 +2261,13 @@ package body et_kicad is
             sheet_header : type_sheet_header;
 
 			schematic_headline_processed : boolean := false;
-   
             
-            -- When reading net labels, they are held temporarily in scratch variables, 
-            -- then added to wild lists of labels for later sorting:
-			simple_label_entered	: boolean := false;			
-			label_simple_scratch	: type_net_label_simple;
 			tmp_wild_simple_lables	: type_simple_labels.list;
-
-			tag_label_entered 		: boolean := false;
-			label_tag_scratch		: type_net_label_tag;
             tmp_wild_tag_lables 	: type_tag_labels.list;
+			wild_segments			: type_wild_segments.list;
+			tmp_junctions			: type_junctions.list;
 
-            -- When reading notes, they are held temporarily in scratch variables,
-            -- then added to the list of notes.
-            note_entered	: boolean := false;
-            tmp_note		: et_schematic.type_note;
-			
+		
 			function to_orientation (text_in : in string) return et_libraries.type_angle is
 			-- Converts the label orientation to type_angle.
 			-- CS: use a dedicated type for input parameter.
@@ -2322,12 +2312,6 @@ package body et_kicad is
 			-- In the first stage, all net segments of this sheet go into a wild collection of segments.
 			-- Later they will be sorted and connected by their coordinates (start and and points)
 			segment_count	: count_type; -- holds the total number of segments within a sheet
-			
-			tmp_segment		: type_wild_net_segment; -- temporarily used when reading net segments into a wild_segments
-			wild_segments	: type_wild_segments.list;
-
-			tmp_junction	: type_net_junction; -- temporarily used when reading net junctions into collection of junctions
-			junctions		: type_junctions.list;
 
 			function junction_sits_on_segment (junction : in type_net_junction; segment : in type_wild_net_segment) return boolean is
 			-- Returns true if the given junction sits on the given net segment.
@@ -3018,8 +3002,8 @@ package body et_kicad is
 				
 				-- Break down net segments that have a junction. Do that if the sheet has junctions at all. Otherwise skip this procedure.
 				-- After breaking down net segments, the numbner of segments increases, so segment_count must be updated finally.
-				if not is_empty (junctions) then 
-					log (text => "processing" & count_type'image (length (junctions)) & " net junctions ...");
+				if not is_empty (tmp_junctions) then 
+					log (text => "processing" & count_type'image (length (tmp_junctions)) & " net junctions ...");
 
 					-- We reason there are segments to be broken down. After smashing a segment, segment_count increases. If it
 					-- does not increase anymore, all segments are processed.
@@ -3034,7 +3018,7 @@ package body et_kicad is
 							segment := type_wild_segments.element (segment_cursor); -- get a segment
 
 							-- loop in junction list until a junction has been found that sits on the segment
-							junction_cursor := junctions.first; -- reset junction cursor to begin of junction list
+							junction_cursor := tmp_junctions.first; -- reset junction cursor to begin of junction list
 							while junction_cursor /= type_junctions.no_element loop
 
 								-- fetch junction from current cursor position
@@ -4197,7 +4181,7 @@ package body et_kicad is
 											tmp_junction.coordinates.sheet_number := sheet_number_current;
 											tmp_junction.coordinates.x := et_libraries.type_grid'value(get_field_from_line(line,3));
 											tmp_junction.coordinates.y := et_libraries.type_grid'value(get_field_from_line(line,4));
-											type_junctions.append (junctions, tmp_junction);
+											type_junctions.append (tmp_junctions, tmp_junction);
 										end if;
 									end if;
 										
@@ -4210,29 +4194,29 @@ package body et_kicad is
 											simple_label_entered := true;
 
 											-- Build a temporarily simple label from a line like "Text Label 5350 3050 0    60   ~ 0" :
-											label_simple_scratch.coordinates.path := path_to_submodule;
-											label_simple_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
-											label_simple_scratch.coordinates.sheet_number := sheet_number_current;
-											label_simple_scratch.coordinates.x := et_libraries.type_grid'value(get_field_from_line(line,3));
-											label_simple_scratch.coordinates.y := et_libraries.type_grid'value(get_field_from_line(line,4));
-											label_simple_scratch.orientation   := to_orientation(get_field_from_line(line,5));
+											tmp_simple_net_label.coordinates.path := path_to_submodule;
+											tmp_simple_net_label.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+											tmp_simple_net_label.coordinates.sheet_number := sheet_number_current;
+											tmp_simple_net_label.coordinates.x := et_libraries.type_grid'value(get_field_from_line(line,3));
+											tmp_simple_net_label.coordinates.y := et_libraries.type_grid'value(get_field_from_line(line,4));
+											tmp_simple_net_label.orientation   := to_orientation(get_field_from_line(line,5));
 
-											label_simple_scratch.size := et_libraries.type_text_size'value (get_field_from_line(line,6));
-											label_simple_scratch.style := to_text_style (style_in => get_field_from_line(line,7), text => true);
-											label_simple_scratch.width := et_libraries.type_text_line_width'value(get_field_from_line(line,8));
+											tmp_simple_net_label.size := et_libraries.type_text_size'value (get_field_from_line(line,6));
+											tmp_simple_net_label.style := to_text_style (style_in => get_field_from_line(line,7), text => true);
+											tmp_simple_net_label.width := et_libraries.type_text_line_width'value(get_field_from_line(line,8));
 
 										end if;
 									else
 										simple_label_entered := false; -- we are leaving a simple label
 
 										-- get label text and put it to temporarily simple label
-										label_simple_scratch.text := type_net_name.to_bounded_string(get_field_from_line(line,1));
+										tmp_simple_net_label.text := type_net_name.to_bounded_string(get_field_from_line(line,1));
 
 										-- for the log
-										write_label_properties (type_net_label(label_simple_scratch));
+										write_label_properties (type_net_label(tmp_simple_net_label));
 
 										-- The simple labels are to be collected in a wild list of simple labels.
-										type_simple_labels.append (tmp_wild_simple_lables,label_simple_scratch);
+										type_simple_labels.append (tmp_wild_simple_lables,tmp_simple_net_label);
 									end if;
 									
 									-- read tag net labels (tagged labels can be global or hierarchical)
@@ -4248,40 +4232,40 @@ package body et_kicad is
 											-- Build a temporarily hierarchic/global label from a line like "Text GLabel 1850 3100 0 58 BiDi ~ 0"
 											-- The keyword in field 2 tells whether we have a hierarchic or global label:
 											if get_field_from_line(line,2) = schematic_keyword_label_hierarchic then
-												label_tag_scratch.hierarchic := true;
-												label_tag_scratch.global := false;
+												tmp_tag_net_label.hierarchic := true;
+												tmp_tag_net_label.global := false;
 											else
-												label_tag_scratch.hierarchic := false;
-												label_tag_scratch.global := true;
+												tmp_tag_net_label.hierarchic := false;
+												tmp_tag_net_label.global := true;
 											end if;
 
-											label_tag_scratch.coordinates.path := path_to_submodule;
-											label_tag_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
-											label_tag_scratch.coordinates.sheet_number := sheet_number_current;
-											label_tag_scratch.coordinates.x := et_libraries.type_grid'value(get_field_from_line(line,3));
-											label_tag_scratch.coordinates.y := et_libraries.type_grid'value(get_field_from_line(line,4));
-											label_tag_scratch.orientation   := to_orientation(get_field_from_line(line,5));
+											tmp_tag_net_label.coordinates.path := path_to_submodule;
+											tmp_tag_net_label.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+											tmp_tag_net_label.coordinates.sheet_number := sheet_number_current;
+											tmp_tag_net_label.coordinates.x := et_libraries.type_grid'value(get_field_from_line(line,3));
+											tmp_tag_net_label.coordinates.y := et_libraries.type_grid'value(get_field_from_line(line,4));
+											tmp_tag_net_label.orientation   := to_orientation(get_field_from_line(line,5));
 											
-											label_tag_scratch.direction := to_direction(
+											tmp_tag_net_label.direction := to_direction(
 												get_field_from_line(line,7)
 												);
 
 											-- build text attributes from size, font and line width
-											label_tag_scratch.size := et_libraries.type_text_size'value(get_field_from_line(line,6));
-											label_tag_scratch.style := to_text_style (style_in => get_field_from_line(line,8), text => true);
-											label_tag_scratch.width := et_libraries.type_text_line_width'value(get_field_from_line(line,9));
+											tmp_tag_net_label.size := et_libraries.type_text_size'value(get_field_from_line(line,6));
+											tmp_tag_net_label.style := to_text_style (style_in => get_field_from_line(line,8), text => true);
+											tmp_tag_net_label.width := et_libraries.type_text_line_width'value(get_field_from_line(line,9));
 										end if;
 									else
 										tag_label_entered := false; -- we are leaving a tag label
 
 										-- get label text and put it to temporarily tag label
-										label_tag_scratch.text := type_net_name.to_bounded_string(get_field_from_line(line,1));
+										tmp_tag_net_label.text := type_net_name.to_bounded_string(get_field_from_line(line,1));
 
 										-- for the log
-										write_label_properties (type_net_label (label_tag_scratch));
+										write_label_properties (type_net_label (tmp_tag_net_label));
 										
 										-- The tag labels are to be collected in a wild list of tag labels for later sorting.
-										type_tag_labels.append (tmp_wild_tag_lables,label_tag_scratch);
+										type_tag_labels.append (tmp_wild_tag_lables,tmp_tag_net_label);
 									end if;
 
 									-- read note from a line like "Text Notes 3400 2800 0 60 Italic 12" followed by a line with the actual note:
