@@ -386,6 +386,7 @@ package et_kicad is
 	tmp_component_text_partcode_found		: boolean;
 
 	
+	
 	type type_wild_net_segment is new et_schematic.type_net_segment with record
 		s, e : boolean := false; -- flag indicates the end point beeing assumed
 		picked : boolean := false; -- flag indicates that the segment has been added to the anonymous net

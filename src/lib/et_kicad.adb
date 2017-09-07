@@ -2166,61 +2166,6 @@ package body et_kicad is
 						extension => file_extension_schematic));
 		end read_project_file;
 
-        -- While reading submodules (sheets) the path_to_submodule keeps record of current point in the design 
-        -- hierarchy. Each time a submodule ABC has been found with nested submodules, the name of ABC is appended here.
-        -- Once the parent module is entered again, the name ABC is removed from the list. When assigning coordinates
-        -- to an object, the path_to_submodule is read. 
-        -- So by concatenation of the module names of this list (from first to last) we get a full path that tells us
-        -- the exact location of the module within the design hierarchy.
-        path_to_submodule : type_path_to_submodule.list; -- CS: move to et_schematic ?
-
-        -- Sometimes we need to output the location of a submodule:
-        procedure write_path_to_submodule is  -- CS: move to et_schematic ?
-            c : type_path_to_submodule.cursor;            
-        begin
-			log (text => "path/location:");
-			log_indentation_up;
-			
-            c := type_path_to_submodule.first(path_to_submodule);            
-
-			-- If there is a hierarchy deeper than 1, write path to submodule:
-			if type_path_to_submodule.length(path_to_submodule) > 1 then
-                for n in 1..type_path_to_submodule.length(path_to_submodule)-1 loop
-                    log (text => type_submodule_name.to_string(type_path_to_submodule.element(c)));
-                    c := type_path_to_submodule.next(c);
-                end loop;
-            
-                c := type_path_to_submodule.last(path_to_submodule);
-
-				-- write the submodule name
-				log_indentation_up;
-				log (text => type_submodule_name.to_string(type_path_to_submodule.element(c)));
-				log_indentation_down;
-			else
-				-- no hierarchy. write just the submodule name
-                log (text => type_submodule_name.to_string(type_path_to_submodule.element(c)));
-            end if;
-            
-			log_indentation_down;
-		end write_path_to_submodule;
-		
-        -- Here we append a submodule name the the path_to_submodule.
-        procedure append_name_of_parent_module_to_path(submodule : in type_submodule_name.bounded_string) is  -- CS: move to et_schematic ?
-		begin
-			log (text => "path_to_submodule: appending submodule " & type_submodule_name.to_string(submodule), level => 1);
-            -- Since we are dealing with file names, the extension must be removed before appending.
-            type_path_to_submodule.append(path_to_submodule,
-                type_submodule_name.to_bounded_string(base_name(type_submodule_name.to_string(submodule)))
-                );
-        end append_name_of_parent_module_to_path;
-
-        -- Here we remove the last submodule name form the path_to_submodule.
-        procedure delete_last_module_name_from_path is  -- CS: move to et_schematic ?
-        begin
-            type_path_to_submodule.delete_last(path_to_submodule);
-        end delete_last_module_name_from_path;
-
-
 
 		
 		function to_angle (text_in : in string) return et_libraries.type_angle is

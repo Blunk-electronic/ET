@@ -80,6 +80,27 @@ package et_schematic is
     -- The first item in this list is the name of the top level module.
     package type_path_to_submodule is new doubly_linked_lists (
         element_type => type_submodule_name.bounded_string);
+
+	-- While reading submodules (in kicad sheets) the path_to_submodule keeps record of current point in the design 
+	-- hierarchy. Each time a submodule ABC has been found with nested submodules, the name of ABC is appended here.
+	-- Once the parent module is entered again, the name ABC is removed from the list. When assigning coordinates
+	-- to an object, the path_to_submodule is read. 
+	-- So this list (from first to last) provides a full path that tells us
+	-- the exact location of the submodule within the design hierarchy.
+	path_to_submodule : type_path_to_submodule.list;
+	
+	-- Sometimes we need to output the location of a submodule:
+	procedure write_path_to_submodule;
+
+	-- Here we append a submodule name the the path_to_submodule.
+	procedure append_name_of_parent_module_to_path (submodule : in type_submodule_name.bounded_string);
+
+	-- Here we remove the last submodule name form the path_to_submodule.
+	procedure delete_last_module_name_from_path;
+
+
+
+	
 	
 	type type_coordinates is new et_libraries.type_coordinates with record
         path            : type_path_to_submodule.list;
