@@ -41,6 +41,7 @@ with ada.text_io;				use ada.text_io;
 with et_general;
 with et_libraries;
 with et_string_processing;
+with et_geometry;
 with et_import;
 
 
@@ -324,6 +325,35 @@ package body et_schematic is
 		log_indentation_down;
 	end write_coordinates_of_junction;			
 
+
+	function junction_sits_on_segment (
+	-- Returns true if the given junction sits on the given net segment.
+		junction	: in type_net_junction;
+		segment		: in type_net_segment) 
+		return boolean is
+		point 		: et_schematic.type_coordinates := junction.coordinates;
+		line_start 	: et_schematic.type_coordinates := segment.coordinates_start;
+		line_end 	: et_schematic.type_coordinates := segment.coordinates_end;
+		zero 		: constant et_libraries.type_grid := 0.0;
+		sits_on_segment : boolean := false;
+		d : et_geometry.type_distance_point_from_line;
+
+		use et_libraries;
+		use et_geometry;
+	begin
+		-- calculate the shortes distance of point from line.
+		d := distance_of_point_from_line (
+			point 		=> et_libraries.type_coordinates(point),
+			line_start	=> et_libraries.type_coordinates(line_start),
+			line_end	=> et_libraries.type_coordinates(line_end),
+			line_range	=> inside_end_points);
+		
+		if (not d.out_of_range) and d.distance = zero then
+			sits_on_segment := true;
+		end if;
+		return sits_on_segment;
+	end junction_sits_on_segment;
+	
 	
 	function to_component_reference (
 	-- Converts a string like "IC303" to a composite type_component_reference.
@@ -480,6 +510,7 @@ package body et_schematic is
 	end compare_component_by_reference;
 
 
+	
 
 	
 	procedure add_module ( -- CS: comments

@@ -38,10 +38,10 @@ with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 
 with et_general;				use et_general;
-with et_schematic;				--use et_schematic;
+with et_schematic;
 with et_import;		            use et_import;
 with et_libraries;
---with et_string_processing;		use et_string_processing;
+with et_string_processing;
 
 package et_kicad is
 
@@ -334,17 +334,58 @@ package et_kicad is
 -- IMPORT
 
 	-- section flags
-	net_segment_entered		: boolean := false;
-	simple_label_entered	: boolean := false;
-	tag_label_entered 		: boolean := false;	
-	note_entered			: boolean := false;	
+	description_entered			: boolean := false;
+	description_processed		: boolean := false;
+	sheet_description_entered	: boolean := false;
+
+	component_entered 			: boolean := false;
+	net_segment_entered			: boolean := false;
+	simple_label_entered		: boolean := false;
+	tag_label_entered 			: boolean := false;	
+	note_entered				: boolean := false;	
 
 	-- temporarily storage
+	tmp_frame 				: et_schematic.type_frame; -- a single drawing frame
+	tmp_title_block_text 	: et_schematic.type_title_block_text; -- a single text within the title block
+	tmp_title_block_texts 	: et_schematic.type_list_of_title_block_texts.vector; -- a list of title block texts
+	tmp_title_block 		: et_schematic.type_title_block; -- a full title block	
 	tmp_junction			: et_schematic.type_net_junction;
 	tmp_simple_net_label	: et_schematic.type_net_label_simple;
 	tmp_tag_net_label		: et_schematic.type_net_label_tag;
 	tmp_note				: et_schematic.type_note;	
 
+	tmp_component_name_in_lib		: et_libraries.type_component_name.bounded_string;
+	tmp_component_appearance		: et_libraries.type_component_appearance := et_libraries.sch;
+	tmp_component_reference			: et_libraries.type_component_reference;
+	tmp_component_unit_name			: et_libraries.type_unit_name.bounded_string;
+	tmp_component_alt_repres		: et_schematic.type_alternative_representation;
+	tmp_component_timestamp			: et_string_processing.type_timestamp;
+	tmp_component_position			: et_schematic.type_coordinates;
+
+	tmp_component_text_reference	: et_libraries.type_text (meaning => et_libraries.reference);
+	tmp_component_text_value		: et_libraries.type_text (meaning => et_libraries.value);
+	tmp_component_text_commissioned : et_libraries.type_text (meaning => et_libraries.commissioned);
+	tmp_component_text_updated		: et_libraries.type_text (meaning => et_libraries.updated);
+	tmp_component_text_author		: et_libraries.type_text (meaning => et_libraries.author);
+	tmp_component_text_packge		: et_libraries.type_text (meaning => et_libraries.packge); -- like "SOT23"
+	tmp_component_text_datasheet	: et_libraries.type_text (meaning => et_libraries.datasheet); -- might be useful for some special components
+	tmp_component_text_purpose		: et_libraries.type_text (meaning => et_libraries.purpose); -- to be filled in schematic later by the user
+	tmp_component_text_partcode		: et_libraries.type_text (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"			
+	
+	-- These are the "field found" flags. They signal if a particular text field has been found.
+	-- They are cleared by procdure "init_temp_variables" once a new compoenent is entered.
+	-- They are evaluated when a component section is left.
+	tmp_component_text_reference_found		: boolean;
+	tmp_component_text_value_found			: boolean;
+	tmp_component_text_commissioned_found	: boolean;
+	tmp_component_text_updated_found		: boolean;
+	tmp_component_text_author_found			: boolean;
+	tmp_component_text_packge_found			: boolean;
+	tmp_component_text_datasheet_found		: boolean;
+	tmp_component_text_purpose_found		: boolean;
+	tmp_component_text_partcode_found		: boolean;
+
+	
 	type type_wild_net_segment is new et_schematic.type_net_segment with record
 		s, e : boolean := false; -- flag indicates the end point beeing assumed
 		picked : boolean := false; -- flag indicates that the segment has been added to the anonymous net
@@ -365,6 +406,8 @@ package et_kicad is
 		cursor : type_wild_segments.cursor; -- cursor of the segment found
 		side : type_segment_side; -- end point of the segment found
 	end record;
+
+
 
 	
 end et_kicad;

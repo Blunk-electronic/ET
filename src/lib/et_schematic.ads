@@ -241,10 +241,19 @@ package et_schematic is
 
 	procedure write_coordinates_of_junction (junction : in type_net_junction);
 	-- Writes the coordinates of a net junction.
+
+	type type_net_segment; -- prespecificaton. see below
+	
+	function junction_sits_on_segment (
+	-- Returns true if the given junction sits on the given net segment.
+		junction	: in type_net_junction;
+		segment		: in type_net_segment) 
+		return boolean;
 	
 	-- Junctions are to be collected in a list.
 	package type_junctions is new doubly_linked_lists (
 		element_type => type_net_junction);
+
 	
 	-- A segment may have labels attached.
 	-- So this is the definition of a net segment with start and end coord., lists of simple and tag labels
@@ -256,9 +265,10 @@ package et_schematic is
 		label_list_tag    	: type_tag_labels.list;
 	end record;
 
+	
 	procedure write_coordinates_of_segment (segment : in type_net_segment);
 	-- Writes the start and end coordinates of a net segment.	
-	
+
 	-- A net is a list of segments.
 	package type_net_segments is new vectors ( -- CS: better a simple list ?
 		index_type => positive,  -- every net segment has an id
@@ -484,7 +494,7 @@ package et_schematic is
 
 	rig : type_rig.map;
 	module_cursor : type_rig.cursor;
-
+	
 	procedure add_module ( -- CS: comments
 		module_name : in type_submodule_name.bounded_string;
 		module		: in type_module);

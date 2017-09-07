@@ -2223,14 +2223,277 @@ package body et_kicad is
 
 
 		
+		function to_angle (text_in : in string) return et_libraries.type_angle is
+		-- Converts the label orientation to type_angle.
+		-- CS: use a dedicated type for input parameter.
+			o_in : type_label_orientation := type_label_orientation'value(text_in);
+			o_out : et_libraries.type_angle;
+		begin
+			case o_in is
+				when 0 => o_out := 180.0; -- CS: probably 0.0 ?
+				when 1 => o_out :=  90.0;
+				when 2 => o_out :=   0.0; -- CS: probably 180.0 ?
+				when 3 => o_out := 270.0;
+			end case;
+			return o_out;
+			-- CS: exception handler
+		end to_angle;
 
 		
+		function to_direction (text_in : in string) return type_label_direction is
+		-- Converts the direction of a label to a type_label_direction. 
+		-- CS: currently case sensitive ! Use dedicated type for input parameter.
+			d_out : type_label_direction := input;
+		begin
+			if text_in = schematic_keyword_label_dir_input then
+				d_out := input;
+			elsif text_in = schematic_keyword_label_dir_output then
+				d_out := output;
+			elsif text_in = schematic_keyword_label_dir_bidir then
+				d_out := bidir;
+			elsif text_in = schematic_keyword_label_dir_tristate then
+				d_out := tristate;
+			elsif text_in = schematic_keyword_label_dir_passive then
+				d_out := passive;
+			else
+				log_indentation_reset;
+				log (message_error & "Label direction unknown !", console => true);
+				raise constraint_error;
+			end if;
+			
+			return d_out;
+		end to_direction;		
 
 
+		-- Prodcedures that set the s,e or picked flag in a wild net segment.
+		procedure set_e (segment : in out type_wild_net_segment ) is begin segment.e := true; end set_e;
+		procedure set_s (segment : in out type_wild_net_segment ) is begin segment.s := true; end set_s;
+		procedure set_picked (segment : in out type_wild_net_segment ) is begin segment.picked := true; end set_picked;
 
 			
+		-- An anonymous_net is a list of net segments that are connected with each other (by their start or end points).
+		-- The anonymous net gets step by step more properties specified: name, scope and some status flags:
+		package type_anonymous_net is new doubly_linked_lists ( -- CS: move to spec
+			element_type => type_net_segment);
+
+		type type_anonymous_net_extended is record
+			segments 	: type_anonymous_net.list;		-- the net segments
+			name 		: type_net_name.bounded_string; -- the name (derived from net labels)
+			scope 		: type_scope_of_net := local;	-- the scope (derived from net labels)
+			processed	: boolean := false;				-- set once a label has been found on the net
+			sorted		: boolean := false;				-- set once sorted out while sorting named nets
+		end record;
+
+		package type_anonymous_nets is new doubly_linked_lists (
+			element_type => type_anonymous_net_extended);
 		
-        
+		-- When sorting named nets, this procedure sets the "sorted" flag of the anonymous net.
+		procedure set_sorted (anon_net : in out type_anonymous_net_extended) is 
+			begin anon_net.sorted := true; end set_sorted;
+		
+			
+		procedure init_temp_variables is
+		begin
+			-- clear "field found" flags
+			tmp_component_text_reference_found		:= false;
+			tmp_component_text_value_found			:= false;
+			tmp_component_text_commissioned_found	:= false;
+			tmp_component_text_updated_found		:= false;
+			tmp_component_text_author_found			:= false;
+			tmp_component_text_packge_found			:= false;
+			tmp_component_text_datasheet_found		:= false;
+			tmp_component_text_purpose_found		:= false;
+			tmp_component_text_partcode_found		:= false;
+			
+			tmp_component_text_packge.content := et_libraries.type_text_content.to_bounded_string("");
+			-- CS: init text properties ?
+			-- CS: init remaining tmp vars ?
+
+		end init_temp_variables;
+
+		procedure check_text_fields is
+		-- Tests if any "field found" flag is still cleared and raises an alarm in that case.
+		-- Perfoms a plausibility and syntax check on the text fields before they are used to 
+		-- assemble and insert the component into the component list of the module.
+		-- This can be regarded as a kind of pre-check.
+			procedure missing_field (m : in et_libraries.type_text_meaning) is 
+				use et_schematic;
+			begin
+				log_indentation_reset;
+				log (
+					text => message_error 
+						& "component " & to_string (tmp_component_reference) 
+						& latin_1.space
+						& to_string (tmp_component_position)
+						& latin_1.lf
+						& "text field '" & et_libraries.to_string(m) & "' missing !",
+					console => true);
+				
+				raise constraint_error;
+			end missing_field;
+
+			commissioned, updated : et_string_processing.type_date;
+
+			-- we set the log threshold level so that details are hidden when no log level specified
+			log_threshold : type_log_level := 1;
+
+			use et_libraries;
+		begin -- check_text_fields
+			log_indentation_up;
+
+			-- write precheck preamble
+			log ("component " 
+				& to_string(tmp_component_reference));
+
+			log_indentation_up;
+			log ("precheck", log_threshold);
+			log_indentation_up;
+			
+			-- reference
+			log ("reference", level => log_threshold);
+			if not tmp_component_text_reference_found then
+				missing_field (et_libraries.reference);
+			else
+				-- verify tmp_component_text_reference equals tmp_component_reference. @kicad: why this redundance ?
+				-- KiCad stores redundant information on the component reference as in this example;
+
+				-- $Comp
+				-- L 74LS00 IC1 <- tmp_component_reference
+				-- U 1 1 59969711
+				-- P 4100 4000
+				-- F 0 "IC1" H 4100 4050 50  0000 C BIB <- tmp_component_text_reference
+				
+				if et_schematic.to_string (tmp_component_reference) /= et_libraries.content (tmp_component_text_reference) then
+					log_indentation_reset;
+					log (message_error & " reference mismatch !");
+					log (et_schematic.to_string (tmp_component_reference) & " vs " & et_libraries.content(tmp_component_text_reference));
+					raise constraint_error;
+				end if;
+
+				-- CS: check if prefix meets certain conventions
+			end if;
+
+			-- value
+			log ("value", level => log_threshold);
+			if not tmp_component_text_value_found then
+				missing_field (et_libraries.value);
+			else
+				-- depending on the component reference (like R12 or C9) the value must meet certain conventions:
+				if not et_libraries.component_value_valid (
+					value => et_libraries.type_component_value.to_bounded_string (
+						et_libraries.content (tmp_component_text_value)), -- the content of the value field like 200R or 10uF
+					reference => tmp_component_reference) -- the component reference such as R4 or IC34
+					then raise constraint_error;
+				end if;
+			end if;
+
+			-- commissioned
+			log ("commissioned", level => log_threshold);
+			if not tmp_component_text_commissioned_found then
+				missing_field (et_libraries.commissioned);
+			else
+				-- The commissioned time must be checked for plausibility and syntax.
+				-- The string length is indirecty checked on converting the field content to derived type_date.
+				commissioned := et_string_processing.type_date (et_libraries.content (tmp_component_text_commissioned));
+				if not et_string_processing.date_valid (commissioned) 
+					then raise constraint_error;
+				end if;
+			end if;
+
+			-- updated
+			log ("updated", level => log_threshold);
+			if not tmp_component_text_updated_found then
+				missing_field (et_libraries.updated);
+			else
+				-- The update time must be checked for plausibility and syntax.
+				-- The string length is indirecty checked on converting the field content to derived type_date.					
+				updated := et_string_processing.type_date (et_libraries.content (tmp_component_text_updated));
+				if not et_string_processing.date_valid (updated) 
+					then raise constraint_error;
+				end if;
+
+				-- make sure the update was later (or at the same time as) the commission date
+				check_updated_vs_commissioned (commissioned, updated);
+
+			end if;
+
+			-- author
+			log ("author", level => log_threshold);
+			if not tmp_component_text_author_found then
+				missing_field (et_libraries.author);
+			else
+				null;
+				-- CS: check content of tmp_component_text_author
+			end if;
+
+			-- If we are checking fields of a real component there are more 
+			-- fields to be checked. If it is about a virtual component, those 
+			-- fields are ignored and thus NOT checked:
+			case tmp_component_appearance is
+				when sch_pcb =>
+						
+					-- package
+					log ("package/footprint", level => log_threshold);
+					if not tmp_component_text_packge_found then
+						missing_field (et_libraries.packge);
+					else
+						null;
+						-- CS: check content of tmp_component_text_packge
+					end if;
+
+					-- datasheet
+					log ("datasheet", level => log_threshold);
+					if not tmp_component_text_datasheet_found then
+						missing_field (et_libraries.datasheet);
+					else
+						null;
+						-- CS: check content of tmp_component_text_datasheet
+					end if;
+
+					-- partcode
+					log ("partcode", level => log_threshold);
+					if not tmp_component_text_partcode_found then
+						missing_field (et_libraries.partcode);
+					else
+						null;
+						-- CS: check content of tmp_component_text_partcode
+					end if;
+					
+					-- purpose
+					log ("purpose", level => log_threshold);
+					if not tmp_component_text_purpose_found then
+						missing_field (et_libraries.purpose);
+					else
+						null;
+						-- CS: check content of tmp_component_text_fnction
+					end if;
+
+					-- put_line (indent(indentation + 1) & "crosschecks");
+					-- CS: test partcode, verify agsinst prefix, value and package
+					-- CS: test function against prefix of user interactive parts (X, SW, LED, ...)
+
+					
+				when others => null; -- CS ?
+			end case;
+
+			log_indentation_down;
+			log_indentation_down;
+			log_indentation_down;				
+			
+			exception
+				when constraint_error =>
+					log_indentation_reset;
+					log (
+						text => message_error & "component " & et_schematic.to_string (tmp_component_reference)
+							& " " & et_schematic.to_string (tmp_component_position),
+						console => true);
+					-- CS: evaluate prog position and provided more detailled output
+					raise constraint_error;
+
+		end check_text_fields;
+			
+
+			
 		function read_schematic (name_of_schematic_file : in et_import.type_schematic_file_name.bounded_string) 
 			return type_list_of_submodule_names_extended is
 		-- Reads the given schematic file. If it contains submodules (hierarchic sheets), 
@@ -2267,99 +2530,17 @@ package body et_kicad is
 			wild_segments			: type_wild_segments.list;
 			tmp_junctions			: type_junctions.list;
 
-		
-			function to_orientation (text_in : in string) return et_libraries.type_angle is
-			-- Converts the label orientation to type_angle.
-			-- CS: use a dedicated type for input parameter.
-				o_in : type_label_orientation := type_label_orientation'value(text_in);
-				o_out : et_libraries.type_angle;
-			begin
-				case o_in is
-					when 0 => o_out := 180.0; -- CS: probably 0.0 ?
-					when 1 => o_out :=  90.0;
-					when 2 => o_out :=   0.0; -- CS: probably 180.0 ?
-					when 3 => o_out := 270.0;
-				end case;
-				return o_out;
-				-- CS: exception handler
-			end to_orientation;
-
-			function to_direction (text_in : in string) return type_label_direction is
-			-- Converts the direction of a label to a type_label_direction. 
-			-- CS: currently case sensitive ! Use dedicated type for input parameter.
-				d_out : type_label_direction := input;
-			begin
-				if text_in = schematic_keyword_label_dir_input then
-					d_out := input;
-				elsif text_in = schematic_keyword_label_dir_output then
-					d_out := output;
-				elsif text_in = schematic_keyword_label_dir_bidir then
-					d_out := bidir;
-				elsif text_in = schematic_keyword_label_dir_tristate then
-					d_out := tristate;
-				elsif text_in = schematic_keyword_label_dir_passive then
-					d_out := passive;
-				else
-					log_indentation_reset;
-					log (message_error & "Label direction unknown !", console => true);
-					raise constraint_error;
-				end if;
-				
-				return d_out;
-			end to_direction;
-
-
 			-- In the first stage, all net segments of this sheet go into a wild collection of segments.
 			-- Later they will be sorted and connected by their coordinates (start and and points)
 			segment_count	: count_type; -- holds the total number of segments within a sheet
-
-			function junction_sits_on_segment (junction : in type_net_junction; segment : in type_wild_net_segment) return boolean is
-			-- Returns true if the given junction sits on the given net segment.
-				point 		: et_schematic.type_coordinates := junction.coordinates;
-				line_start 	: et_schematic.type_coordinates := segment.coordinates_start;
-				line_end 	: et_schematic.type_coordinates := segment.coordinates_end;
-				zero 		: constant et_libraries.type_grid := 0.0;
-				sits_on_segment : boolean := false;
-				d : et_geometry.type_distance_point_from_line;
-
-				use et_libraries;
-				use et_geometry;
-			begin
-				-- calculate the shortes distance of point from line.
-				d := distance_of_point_from_line (
-					point 		=> et_libraries.type_coordinates(point),
-					line_start	=> et_libraries.type_coordinates(line_start),
-					line_end	=> et_libraries.type_coordinates(line_end),
-					line_range	=> inside_end_points);
-				
-				if (not d.out_of_range) and d.distance = zero then
- 					sits_on_segment := true;
- 				end if;
-				return sits_on_segment;
-			end junction_sits_on_segment;
 			
-			-- Prodcedures that set the s,e or picked flag. These procedures are called via access.
-			procedure set_e ( segment : in out type_wild_net_segment ) is begin segment.e := true; end set_e;
-			procedure set_s ( segment : in out type_wild_net_segment ) is begin segment.s := true; end set_s;
-			procedure set_picked ( segment : in out type_wild_net_segment ) is begin segment.picked := true; end set_picked;
-
-			-- An anonymous_net is a list of net segments that are connected with each other (by their start or end points).
-			-- The anonymous net gets step by step more properties specified: name, scope and some status flags:
-			package type_anonymous_net is new doubly_linked_lists ( -- CS: move to spec
-				element_type => type_net_segment);
-			
-			type type_anonymous_net_extended is record
-				segments 	: type_anonymous_net.list;		-- the net segments
-				name 		: type_net_name.bounded_string; -- the name (derived from net labels)
-				scope 		: type_scope_of_net := local;	-- the scope (derived from net labels)
-				processed	: boolean := false;				-- set once a label has been found on the net
-				sorted		: boolean := false;				-- set once sorted out while sorting named nets
-			end record;
-			
-			-- When sorting named nets, this procedure sets the "sorted" flag of the anonymous net.
-			procedure set_sorted (anon_net : in out type_anonymous_net_extended) is begin anon_net.sorted := true; end set_sorted;
 			anonymous_net : type_anonymous_net_extended;
-			
+
+			-- The list of anonymous nets. Procedure add_net_to_anonymous_nets uses 
+			-- this container for temporarily storage of anonymous nets.
+			anonymous_nets : type_anonymous_nets.list; 
+
+		
 			procedure add_segment_to_anonymous_net (segment_cursor : in type_wild_segments.cursor) is
 			-- Adds a net segment (indicated by given cursor) to a list of segments connected with each other.
 			-- This procedure happens to be called for a certain segment more than once (unavoidable). So the flag "picked" serves
@@ -2565,11 +2746,6 @@ package body et_kicad is
 				return sc;
 			end search_for_same_coordinates;
 			
-			-- The list of anonymous nets. Procedure add_net_to_anonymous_nets uses 
-			-- this container for temporarily storage of anonymous nets.
-			package type_anonymous_nets is new doubly_linked_lists (
-				element_type => type_anonymous_net_extended);
-			anonymous_nets : type_anonymous_nets.list; 
 			
 			procedure associate_net_labels_with_anonymous_nets is
 			-- All anonymous nets must be given a name. The name is enforced by the a net label. 
@@ -3024,7 +3200,7 @@ package body et_kicad is
 								-- fetch junction from current cursor position
 								junction := type_junctions.element (junction_cursor);
 								
-								if junction_sits_on_segment (junction => junction, segment => segment) then -- match
+								if junction_sits_on_segment (junction => junction, segment => type_net_segment(segment)) then -- match
 
 									--write_coordinates_of_segment (type_net_segment(segment));
 									write_coordinates_of_junction (junction);
@@ -3240,16 +3416,8 @@ package body et_kicad is
 			end build_anonymous_nets;
 
 			
-			description_entered : boolean := false;
-            description_processed : boolean := false;
-            sheet_description_entered : boolean := false;
 
-            -- When reading the sheet descripton we need a temporarily places for storage. They will
-            -- later be appended to the main module.
-            drawing_frame_scratch : type_frame; -- a single drawing frame
-            title_block_text_scratch : type_title_block_text; -- a single text within the title block
-            list_of_title_block_texts_scratch : type_list_of_title_block_texts.vector; -- a list of title block texts
-            title_block_scratch : type_title_block; -- a full title block
+
 
             -- When reading gui submodules (kicad refers to them as "sheets") they are stored temporarily here.
             -- This temporarily variable needs defaults in order to prevent misleading compiler warnings.
@@ -3268,248 +3436,11 @@ package body et_kicad is
                 timestamp => "00000000"
                 );
 
-            
-			-- This is relevant for reading components:
-			component_entered : boolean := false; -- indicates that a component is being read
 
-			-- These temporarily used variables store information used when assembling and inserting a component
-			-- or a unit in the component/unit list:
-			tmp_component_name_in_lib	: et_libraries.type_component_name.bounded_string;
-			tmp_component_appearance	: et_libraries.type_component_appearance := et_libraries.sch;
-			tmp_component_reference		: et_libraries.type_component_reference;
-			tmp_component_unit_name		: et_libraries.type_unit_name.bounded_string;
-			tmp_component_alt_repres	: et_schematic.type_alternative_representation;
-			tmp_component_timestamp		: et_string_processing.type_timestamp;
-			tmp_component_position		: et_schematic.type_coordinates;
-
-            tmp_component_text_reference	: et_libraries.type_text (meaning => et_libraries.reference);
-            tmp_component_text_value		: et_libraries.type_text (meaning => et_libraries.value);
-            tmp_component_text_commissioned : et_libraries.type_text (meaning => et_libraries.commissioned);
-            tmp_component_text_updated		: et_libraries.type_text (meaning => et_libraries.updated);
-            tmp_component_text_author		: et_libraries.type_text (meaning => et_libraries.author);
-			tmp_component_text_packge		: et_libraries.type_text (meaning => et_libraries.packge); -- like "SOT23"
-			tmp_component_text_datasheet	: et_libraries.type_text (meaning => et_libraries.datasheet); -- might be useful for some special components
-			tmp_component_text_purpose		: et_libraries.type_text (meaning => et_libraries.purpose); -- to be filled in schematic later by the user
-			tmp_component_text_partcode		: et_libraries.type_text (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"			
-
-			-- These are the "field found" flags. They signal if a particular text field has been found.
-			-- They are cleared by procdure "init_temp_variables" once a new compoenent is entered.
-			-- They are evaluated when a component section is left.
-            tmp_component_text_reference_found		: boolean;
-            tmp_component_text_value_found			: boolean;
-            tmp_component_text_commissioned_found	: boolean;
-            tmp_component_text_updated_found		: boolean;
-            tmp_component_text_author_found			: boolean;
-			tmp_component_text_packge_found			: boolean;
-			tmp_component_text_datasheet_found		: boolean;
-			tmp_component_text_purpose_found		: boolean;
-			tmp_component_text_partcode_found		: boolean;
-			
-			
-			procedure init_temp_variables is
-			begin
-				-- clear "field found" flags
-				tmp_component_text_reference_found		:= false;
-				tmp_component_text_value_found			:= false;
-				tmp_component_text_commissioned_found	:= false;
-				tmp_component_text_updated_found		:= false;
-				tmp_component_text_author_found			:= false;
-				tmp_component_text_packge_found			:= false;
-				tmp_component_text_datasheet_found		:= false;
-				tmp_component_text_purpose_found		:= false;
-				tmp_component_text_partcode_found		:= false;
-				
-				tmp_component_text_packge.content := et_libraries.type_text_content.to_bounded_string("");
-				-- CS: init text properties ?
-				-- CS: init remaining tmp vars ?
-
-			end init_temp_variables;
-
-			procedure check_text_fields is
-			-- Tests if a "field found" flag is cleared and raises an alarm in that case.
-			-- Perfoms a plausibility and syntax check on the text fields before they are used to 
-			-- assemble and insert the component into the component list of the module.
-			-- This can be regarded as a kind of pre-check.
-				procedure missing_field (m : in et_libraries.type_text_meaning) is 
-					use et_schematic;
-				begin
-					log_indentation_reset;
-					log (
-						text => message_error 
-							& "component " & to_string (tmp_component_reference) 
-							& latin_1.space
-							& to_string (tmp_component_position)
-							& latin_1.lf
-							& "text field '" & et_libraries.to_string(m) & "' missing !",
-						console => true);
-					
-					raise constraint_error;
-				end missing_field;
-
-				commissioned, updated : et_string_processing.type_date;
-
-				-- we set the log threshold level so that details are hidden when no log level specified
-				log_threshold : type_log_level := 1;
-
-				use et_libraries;
-			begin -- check_text_fields
-				log_indentation_up;
-
-				-- write precheck preamble
-				log ("component " 
-					& to_string(tmp_component_reference));
-
-				log_indentation_up;
-				log ("precheck", log_threshold);
-				log_indentation_up;
-				
-				-- reference
-				log ("reference", level => log_threshold);
-				if not tmp_component_text_reference_found then
-					missing_field (et_libraries.reference);
-				else
-					-- verify tmp_component_text_reference equals tmp_component_reference. @kicad: why this redundance ?
-					-- KiCad stores redundant information on the component reference as in this example;
-
-					-- $Comp
-					-- L 74LS00 IC1 <- tmp_component_reference
-					-- U 1 1 59969711
-					-- P 4100 4000
-					-- F 0 "IC1" H 4100 4050 50  0000 C BIB <- tmp_component_text_reference
-					
-					if et_schematic.to_string (tmp_component_reference) /= et_libraries.content (tmp_component_text_reference) then
-						log_indentation_reset;
-						log (message_error & " reference mismatch !");
-						log (et_schematic.to_string (tmp_component_reference) & " vs " & et_libraries.content(tmp_component_text_reference));
-						raise constraint_error;
-					end if;
-
-					-- CS: check if prefix meets certain conventions
-				end if;
-
-				-- value
-				log ("value", level => log_threshold);
-				if not tmp_component_text_value_found then
-					missing_field (et_libraries.value);
-				else
-					-- depending on the component reference (like R12 or C9) the value must meet certain conventions:
-					if not et_libraries.component_value_valid (
-						value => et_libraries.type_component_value.to_bounded_string (
-							et_libraries.content (tmp_component_text_value)), -- the content of the value field like 200R or 10uF
-						reference => tmp_component_reference) -- the component reference such as R4 or IC34
-						then raise constraint_error;
-					end if;
-				end if;
-
-				-- commissioned
-				log ("commissioned", level => log_threshold);
-				if not tmp_component_text_commissioned_found then
-					missing_field (et_libraries.commissioned);
-				else
-					-- The commissioned time must be checked for plausibility and syntax.
-					-- The string length is indirecty checked on converting the field content to derived type_date.
-					commissioned := et_string_processing.type_date (et_libraries.content (tmp_component_text_commissioned));
-					if not et_string_processing.date_valid (commissioned) 
-						then raise constraint_error;
-					end if;
-				end if;
-
-				-- updated
-				log ("updated", level => log_threshold);
-				if not tmp_component_text_updated_found then
-					missing_field (et_libraries.updated);
-				else
-					-- The update time must be checked for plausibility and syntax.
-					-- The string length is indirecty checked on converting the field content to derived type_date.					
-					updated := et_string_processing.type_date (et_libraries.content (tmp_component_text_updated));
-					if not et_string_processing.date_valid (updated) 
-						then raise constraint_error;
-					end if;
-
-					-- make sure the update was later (or at the same time as) the commission date
-					check_updated_vs_commissioned (commissioned, updated);
-
-				end if;
-
-				-- author
-				log ("author", level => log_threshold);
-				if not tmp_component_text_author_found then
-					missing_field (et_libraries.author);
-				else
-					null;
-					-- CS: check content of tmp_component_text_author
-				end if;
-
-				-- If we are checking fields of a real component there are more 
-				-- fields to be checked. If it is about a virtual component, those 
-				-- fields are ignored and thus NOT checked:
-				case tmp_component_appearance is
-					when sch_pcb =>
-							
-						-- package
-						log ("package/footprint", level => log_threshold);
-						if not tmp_component_text_packge_found then
-							missing_field (et_libraries.packge);
-						else
-							null;
-							-- CS: check content of tmp_component_text_packge
-						end if;
-
-						-- datasheet
-						log ("datasheet", level => log_threshold);
-						if not tmp_component_text_datasheet_found then
-							missing_field (et_libraries.datasheet);
-						else
-							null;
-							-- CS: check content of tmp_component_text_datasheet
-						end if;
-
-						-- partcode
-						log ("partcode", level => log_threshold);
-						if not tmp_component_text_partcode_found then
-							missing_field (et_libraries.partcode);
-						else
-							null;
-							-- CS: check content of tmp_component_text_partcode
-						end if;
-						
-						-- purpose
-						log ("purpose", level => log_threshold);
-						if not tmp_component_text_purpose_found then
-							missing_field (et_libraries.purpose);
-						else
-							null;
-							-- CS: check content of tmp_component_text_fnction
-						end if;
-
-						-- put_line (indent(indentation + 1) & "crosschecks");
-						-- CS: test partcode, verify agsinst prefix, value and package
-						-- CS: test function against prefix of user interactive parts (X, SW, LED, ...)
-
-						
-					when others => null; -- CS ?
-				end case;
-
-				log_indentation_down;
-				log_indentation_down;
-				log_indentation_down;				
-				
-				exception
-					when constraint_error =>
-						log_indentation_reset;
-						log (
-							text => message_error & "component " & et_schematic.to_string (tmp_component_reference)
-								& " " & et_schematic.to_string (tmp_component_position),
-							console => true);
-						-- CS: evaluate prog position and provided more detailled output
-						raise constraint_error;
-
-			end check_text_fields;
-			
 
 			function to_text return et_libraries.type_text is
 			-- Converts a field like "F 1 "green" H 2700 2750 50  0000 C CNN" to a type_text
-				function field ( line : in type_fields_of_line; position : in positive) return string renames get_field_from_line;
+				function field (line : in type_fields_of_line; position : in positive) return string renames get_field_from_line;
 			begin
 				return (
 					-- read text field meaning
@@ -3542,7 +3473,7 @@ package body et_kicad is
 
 			
 			component_cursor	: type_components.cursor; -- points to a component of the module
-			component_inserted	: boolean; -- used when a component is being inserted into the component list of a module
+
 			
 -- 			procedure fetch_components_from_library is
 			-- This procedure looks up the sheet_header and reads the library names stored there.
@@ -3587,6 +3518,8 @@ package body et_kicad is
 					position	: in positive) return string renames et_string_processing.get_field_from_line;
 
 				use et_libraries;
+
+				component_inserted	: boolean;
 			begin -- insert_component
 				-- The compoenent is inserted into the components list of the module according to its appearance.
 				-- If the component has already been inserted, it will not be inserted again.
@@ -3951,11 +3884,11 @@ package body et_kicad is
 										description_entered := true; -- we are entering the sheet description
 
 										-- read drawing frame dimensions from a line like "$Descr A4 11693 8268"
-										drawing_frame_scratch.paper_size	:= type_paper_size'value(get_field_from_line(line,2));
-										drawing_frame_scratch.size_x		:= et_libraries.type_grid'value(get_field_from_line(line,3));
-										drawing_frame_scratch.size_y 		:= et_libraries.type_grid'value(get_field_from_line(line,4)); 
-										drawing_frame_scratch.coordinates.path := path_to_submodule;
-										drawing_frame_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+										tmp_frame.paper_size	:= type_paper_size'value(get_field_from_line(line,2));
+										tmp_frame.size_x		:= et_libraries.type_grid'value(get_field_from_line(line,3));
+										tmp_frame.size_y 		:= et_libraries.type_grid'value(get_field_from_line(line,4)); 
+										tmp_frame.coordinates.path := path_to_submodule;
+										tmp_frame.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
 
 										-- CS: Other properties of the drawing frame like x/y coordinates, lists of lines and texts are 
 										-- kicad built-in things and remain unassigned here.
@@ -3966,23 +3899,23 @@ package body et_kicad is
 										description_entered := false; -- we are leaving the description
 										description_processed := true;
 
-										-- Make temporarily title_block_scratch complete by assigning coordinates and list of texts.
+										-- Make temporarily tmp_title_block complete by assigning coordinates and list of texts.
 										-- Then purge temporarily list of texts.
 										-- Then append temporarily title block to main module.
-										title_block_scratch.coordinates.path := path_to_submodule;
-										title_block_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
-										title_block_scratch.texts := list_of_title_block_texts_scratch; -- assign collected texts list to temporarily title block
+										tmp_title_block.coordinates.path := path_to_submodule;
+										tmp_title_block.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(name_of_schematic_file));
+										tmp_title_block.texts := tmp_title_block_texts; -- assign collected texts list to temporarily title block
 										-- CS: x/y coordinates and list of lines are kicad built-in things and thus not available currently.
 
 										-- purge temporarily texts
-										type_list_of_title_block_texts.delete(list_of_title_block_texts_scratch,1,
-											type_list_of_title_block_texts.length(list_of_title_block_texts_scratch));
+										type_list_of_title_block_texts.delete(tmp_title_block_texts,1,
+											type_list_of_title_block_texts.length(tmp_title_block_texts));
 
 										-- append title block to main module
-										type_list_of_title_blocks.append(module.title_blocks,title_block_scratch);
+										type_list_of_title_blocks.append(module.title_blocks,tmp_title_block);
 										
 										-- append temporarily drawing frame to main module
-										type_list_of_frames.append(module.frames,drawing_frame_scratch);
+										type_list_of_frames.append(module.frames,tmp_frame);
 									end if;
 
 									-- read endcoding from a line like "encoding utf-8"
@@ -4012,39 +3945,39 @@ package body et_kicad is
 										-- CS: make sure total sheet count is less or equal current sheet number.
 
 										-- Our temporarily drawing frame gets the current sheet number assigned.
-										drawing_frame_scratch.coordinates.sheet_number := sheet_number_current;
+										tmp_frame.coordinates.sheet_number := sheet_number_current;
 									end if;						
 
 									-- read sheet title from a line like "Title "abc""
 									if get_field_from_line(line,1) = schematic_keyword_title then                        
-										title_block_text_scratch.meaning := TITLE;
-										title_block_text_scratch.text := type_title_block_text_string.to_bounded_string(
+										tmp_title_block_text.meaning := TITLE;
+										tmp_title_block_text.text := type_title_block_text_string.to_bounded_string(
 											strip_quotes((get_field_from_line(line,2))));
-										type_list_of_title_block_texts.append(list_of_title_block_texts_scratch,title_block_text_scratch);
+										type_list_of_title_block_texts.append(tmp_title_block_texts,tmp_title_block_text);
 									end if;
 
 									-- read date from a line like "Date "1981-01-23""
 									if get_field_from_line(line,1) = schematic_keyword_date then                        
-										title_block_text_scratch.meaning := DRAWN_DATE;
-										title_block_text_scratch.text := type_title_block_text_string.to_bounded_string(
+										tmp_title_block_text.meaning := DRAWN_DATE;
+										tmp_title_block_text.text := type_title_block_text_string.to_bounded_string(
 											strip_quotes((get_field_from_line(line,2))));
-										type_list_of_title_block_texts.append(list_of_title_block_texts_scratch,title_block_text_scratch);
+										type_list_of_title_block_texts.append(tmp_title_block_texts,tmp_title_block_text);
 									end if;
 
 									-- read revision from a line like "Rev "9.7.1"
 									if get_field_from_line(line,1) = schematic_keyword_revision then                        
-										title_block_text_scratch.meaning := REVISION;
-										title_block_text_scratch.text := type_title_block_text_string.to_bounded_string(
+										tmp_title_block_text.meaning := REVISION;
+										tmp_title_block_text.text := type_title_block_text_string.to_bounded_string(
 											strip_quotes((get_field_from_line(line,2))));
-										type_list_of_title_block_texts.append(list_of_title_block_texts_scratch,title_block_text_scratch);
+										type_list_of_title_block_texts.append(tmp_title_block_texts,tmp_title_block_text);
 									end if;
 
 									-- read company name
 									if get_field_from_line(line,1) = schematic_keyword_company then
-										title_block_text_scratch.meaning := COMPANY;
-										title_block_text_scratch.text := type_title_block_text_string.to_bounded_string(
+										tmp_title_block_text.meaning := COMPANY;
+										tmp_title_block_text.text := type_title_block_text_string.to_bounded_string(
 											strip_quotes((get_field_from_line(line,2))));
-										type_list_of_title_block_texts.append(list_of_title_block_texts_scratch,title_block_text_scratch);
+										type_list_of_title_block_texts.append(tmp_title_block_texts,tmp_title_block_text);
 									end if;
 
 									-- read commments 1..4 CS: need something more flexible here in order to read any number of comments.
@@ -4052,10 +3985,10 @@ package body et_kicad is
 										get_field_from_line(line,1) = schematic_keyword_comment_2 or
 										get_field_from_line(line,1) = schematic_keyword_comment_3 or 
 										get_field_from_line(line,1) = schematic_keyword_comment_4 then
-											title_block_text_scratch.meaning := MISC;
-											title_block_text_scratch.text := type_title_block_text_string.to_bounded_string(
+											tmp_title_block_text.meaning := MISC;
+											tmp_title_block_text.text := type_title_block_text_string.to_bounded_string(
 												strip_quotes((get_field_from_line(line,2))));
-											type_list_of_title_block_texts.append(list_of_title_block_texts_scratch,title_block_text_scratch);
+											type_list_of_title_block_texts.append(tmp_title_block_texts,tmp_title_block_text);
 									end if;
 									
 
@@ -4199,7 +4132,7 @@ package body et_kicad is
 											tmp_simple_net_label.coordinates.sheet_number := sheet_number_current;
 											tmp_simple_net_label.coordinates.x := et_libraries.type_grid'value(get_field_from_line(line,3));
 											tmp_simple_net_label.coordinates.y := et_libraries.type_grid'value(get_field_from_line(line,4));
-											tmp_simple_net_label.orientation   := to_orientation(get_field_from_line(line,5));
+											tmp_simple_net_label.orientation   := to_angle (get_field_from_line(line,5));
 
 											tmp_simple_net_label.size := et_libraries.type_text_size'value (get_field_from_line(line,6));
 											tmp_simple_net_label.style := to_text_style (style_in => get_field_from_line(line,7), text => true);
@@ -4244,7 +4177,7 @@ package body et_kicad is
 											tmp_tag_net_label.coordinates.sheet_number := sheet_number_current;
 											tmp_tag_net_label.coordinates.x := et_libraries.type_grid'value(get_field_from_line(line,3));
 											tmp_tag_net_label.coordinates.y := et_libraries.type_grid'value(get_field_from_line(line,4));
-											tmp_tag_net_label.orientation   := to_orientation(get_field_from_line(line,5));
+											tmp_tag_net_label.orientation   := to_angle (get_field_from_line(line,5));
 											
 											tmp_tag_net_label.direction := to_direction(
 												get_field_from_line(line,7)
@@ -4280,7 +4213,7 @@ package body et_kicad is
 												tmp_note.coordinates.sheet_number := sheet_number_current;
 												tmp_note.coordinates.x := et_libraries.type_grid'value(get_field_from_line(line,3));
 												tmp_note.coordinates.y := et_libraries.type_grid'value(get_field_from_line(line,4));
-												tmp_note.orientation   := to_orientation(get_field_from_line(line,5));
+												tmp_note.orientation   := to_angle (get_field_from_line(line,5));
 												tmp_note.size := et_libraries.type_text_size'value(get_field_from_line(line,6));
 												tmp_note.style := to_text_style (style_in => get_field_from_line(line,7), text => true);
 												tmp_note.line_width := et_libraries.type_text_line_width'value(get_field_from_line(line,8));
