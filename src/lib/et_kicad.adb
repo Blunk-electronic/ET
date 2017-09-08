@@ -2999,12 +2999,8 @@ package body et_kicad is
                             -- CS: do not assign sheet and x/y at all ?
                             -- net.coordinates.sheet := sheet_number_current;
                             
-							-- append net to module netlist, then purge net.segments for next spin
-							type_nets.insert (  -- CS: insert where module_cursor points to
-								container	=> module.nets,
-								new_item	=> net,
-								key			=> net_name);
-							
+							-- insert net in module, then purge net.segments for next spin
+							add_net (net_name, net);
 							type_net_segments.clear (net.segments);
 						end if;
 
@@ -3091,13 +3087,8 @@ package body et_kicad is
                             -- CS: do not assign sheet and x/y at all ?
                             -- net.coordinates.sheet := sheet_number_current;
                             
-							-- append net to module netlist, then purge net.segments for next spin
-							type_nets.insert ( -- CS: insert where module_cursor points to
-								container => module.nets,
-								new_item => net,
-								key => net_name
-								);
-
+							-- insert net in module, then purge net.segments for next spin
+							add_net (net_name, net);
 							type_net_segments.clear (net.segments);
 
 						end if;
@@ -3830,11 +3821,11 @@ package body et_kicad is
 										type_list_of_title_block_texts.delete(tmp_title_block_texts,1,
 											type_list_of_title_block_texts.length(tmp_title_block_texts));
 
-										-- append title block to main module
-										type_list_of_title_blocks.append(module.title_blocks,tmp_title_block);
+										-- append title block to module
+										add_title_block (tmp_title_block);
 										
-										-- append temporarily drawing frame to main module
-										type_list_of_frames.append(module.frames,tmp_frame);
+										-- append temporarily drawing frame to module
+										add_frame (tmp_frame);
 									end if;
 
 									-- read endcoding from a line like "encoding utf-8"

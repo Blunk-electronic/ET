@@ -388,8 +388,7 @@ package et_schematic is
     end record;
 
     -- there are lots of drawing frames in a schematic contained in a list
-    package type_list_of_frames is new vectors ( -- CS: better a simple list ?
-        index_type => positive, -- every drawing fram has an id
+    package type_frames is new doubly_linked_lists (
         element_type => type_frame);
 
     -- TITLE BLOCK
@@ -428,8 +427,7 @@ package et_schematic is
     end record;
 
     -- there are lots of title blocks in a schematic contained in a list
-    package type_list_of_title_blocks is new vectors ( -- CS: better a simple list ?
-        index_type => positive, -- every title block has an id
+    package type_title_blocks is new doubly_linked_lists (
         element_type => type_title_block);
 
     
@@ -498,8 +496,8 @@ package et_schematic is
 		nets 	    : type_nets.map;
         components	: type_components.map;
         submodules  : type_gui_submodules.vector; -- CS: simple list or map ?
-        frames      : type_list_of_frames.vector; -- CS: simple list ?
-        title_blocks: type_list_of_title_blocks.vector; -- CS: simple list ?
+        frames      : type_frames.list;
+        title_blocks: type_title_blocks.list;
 		notes       : type_texts.list;
 		-- CS: junctions
         -- CS: images
@@ -521,6 +519,14 @@ package et_schematic is
 		module_name : in type_submodule_name.bounded_string;
 		module		: in type_module);
 
+	procedure add_frame (
+	-- Inserts a drawing frame in the the module (indicated by module_cursor).
+		frame	: in et_schematic.type_frame);
+	
+	procedure add_title_block (
+	-- Inserts a title block in the the module (indicated by module_cursor).
+		tblock	: in et_schematic.type_title_block);
+	
 	procedure add_net (
 	-- Adds a net into the the module (indicated by module_cursor).
 		name	: in et_schematic.type_net_name.bounded_string;

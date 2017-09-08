@@ -585,6 +585,64 @@ package body et_schematic is
 		end if;
 	end add_module;
 
+	procedure add_frame (
+	-- Inserts a drawing frame in the the module (indicated by module_cursor).
+	-- As drawing frames are collected in a simple list, the same frame
+	-- can be added multiple times.
+		frame	: in et_schematic.type_frame) is
+		
+		procedure add (
+			mod_name	: in type_submodule_name.bounded_string;
+			module		: in out type_module) is
+
+			use et_string_processing;
+		begin
+			module.frames.append (
+				new_item	=> frame);
+
+			if log_level >= 1 then
+				null; -- CS: write this procedure:
+				--et_schematic.write_frame_properties
+			end if;
+
+		end add;
+	begin
+		rig.update_element (
+			position	=> module_cursor,
+			process		=> add'access
+			);
+	end add_frame;
+
+	
+	procedure add_title_block (
+	-- Inserts a title block in the the module (indicated by module_cursor).
+	-- As title blocks are collected in a simple list, the same title block
+	-- can be added multiple times.
+		tblock	: in et_schematic.type_title_block) is
+		
+		procedure add (
+			mod_name	: in type_submodule_name.bounded_string;
+			module		: in out type_module) is
+
+			use et_string_processing;
+		begin
+			module.title_blocks.append (
+				new_item	=> tblock);
+
+			if log_level >= 1 then
+				null; -- CS: write this procedure:
+				--et_schematic.write_title_block_properties
+			end if;
+
+		end add;
+	begin
+		rig.update_element (
+			position	=> module_cursor,
+			process		=> add'access
+			);
+	end add_title_block;
+
+	
 	procedure add_net (
 	-- Adds a net into the the module (indicated by module_cursor).
 		name	: in et_schematic.type_net_name.bounded_string;
