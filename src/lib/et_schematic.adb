@@ -585,6 +585,46 @@ package body et_schematic is
 		end if;
 	end add_module;
 
+
+	procedure add_gui_submodule (
+	-- Inserts a gui submodule in the module (indicated by module_cursor)
+		name		: in et_schematic.type_submodule_name.bounded_string;
+		gui_sub_mod	: in et_schematic.type_gui_submodule) is
+
+		procedure add (
+			mod_name	: in type_submodule_name.bounded_string;
+			module		: in out type_module) is
+			
+			inserted	: boolean := false;
+			cursor		: type_gui_submodules.cursor;
+
+			use et_string_processing;
+		begin
+			module.submodules.insert (
+				key			=> name,
+				new_item	=> gui_sub_mod,
+				position	=> cursor, -- updates cursor. no further meaning
+				inserted	=> inserted
+				);
+
+			if inserted then
+				if log_level >= 1 then
+					null; -- CS: write this procedure:
+					--et_schematic.write_gui_submodule_properties (gui_sub_mod => cursor);
+				end if;
+			else -- not inserted. net already in module -> abort
+				null; -- CS: 
+				raise constraint_error;
+			end if;
+		end add;
+	begin
+		rig.update_element (
+			position	=> module_cursor,
+			process		=> add'access
+			);
+	end add_gui_submodule;
+
+	
 	procedure add_frame (
 	-- Inserts a drawing frame in the the module (indicated by module_cursor).
 	-- As drawing frames are collected in a simple list, the same frame
@@ -613,6 +653,7 @@ package body et_schematic is
 			);
 	end add_frame;
 
+	
 	
 	procedure add_title_block (
 	-- Inserts a title block in the the module (indicated by module_cursor).

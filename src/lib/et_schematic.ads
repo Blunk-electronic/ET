@@ -340,7 +340,6 @@ package et_schematic is
     -- A submodule is a box with coordinates and length x/y.
     -- On the box edges are ports.
     type type_gui_submodule is record -- CS: read from kicad $sheet
-        name                : type_submodule_name.bounded_string;
         text_size_of_name   : type_text_size;
         text_size_of_file   : type_text_size;        
 		coordinates		    : type_coordinates;
@@ -350,10 +349,9 @@ package et_schematic is
 	end record;
 
     -- A list of submodules is a component of the main module:    
-    package type_gui_submodules is new vectors ( -- CS: better a simple list ?
-        index_type => positive, -- every gui submodule has an id
+    package type_gui_submodules is new ordered_maps (
+        key_type => type_submodule_name.bounded_string,
         element_type => type_gui_submodule);
-
 
 
     -- DRAWING FRAME
@@ -396,17 +394,20 @@ package et_schematic is
 		coordinates_start : et_libraries.type_coordinates;
 		coordinates_end   : et_libraries.type_coordinates;
     end record;
+
 	package type_list_of_title_block_lines is new vectors ( -- CS: better a simple list ?
 		index_type => positive, -- every line of a frame an id
         element_type => type_title_block_line);
     
  	title_block_text_length	: constant natural := 200;
 	package type_title_block_text_string is new generic_bounded_length(title_block_text_length); use type_title_block_text_string;
-    type type_title_block_text_meaning is ( PROJECT, TITLE, 
+
+	type type_title_block_text_meaning is ( PROJECT, TITLE, 
         DRAWN_BY, CHECKED_BY, APPROVED_BY, 
         DRAWN_DATE, CHECKED_DATE, APPROVED_DATE,
         COMPANY,
-        REVISION, MISC);
+		REVISION, MISC);
+	
 	type type_title_block_text is record -- CS: from kicad $descr
 		meaning			: type_title_block_text_meaning;
  		coordinates		: et_libraries.type_coordinates;
@@ -415,7 +416,8 @@ package et_schematic is
  		orientation		: type_angle;
 		-- CS: font, ...
  	end record;
- 	package type_list_of_title_block_texts is new vectors ( -- CS: better a simple list ?
+
+	package type_list_of_title_block_texts is new vectors ( -- CS: better a simple list ?
  		index_type => positive, -- every text field of the title block has an id
  		element_type => type_title_block_text);
 
@@ -495,7 +497,7 @@ package et_schematic is
 		name 	    : type_submodule_name.bounded_string; -- CS: remove. example "MOTOR_DRIVER"
 		nets 	    : type_nets.map;
         components	: type_components.map;
-        submodules  : type_gui_submodules.vector; -- CS: simple list or map ?
+        submodules  : type_gui_submodules.map;
         frames      : type_frames.list;
         title_blocks: type_title_blocks.list;
 		notes       : type_texts.list;
@@ -519,6 +521,11 @@ package et_schematic is
 		module_name : in type_submodule_name.bounded_string;
 		module		: in type_module);
 
+	procedure add_gui_submodule (
+	-- Inserts a gui submodule in the module (indicated by module_cursor)
+		name		: in et_schematic.type_submodule_name.bounded_string;
+		gui_sub_mod	: in et_schematic.type_gui_submodule);
+	
 	procedure add_frame (
 	-- Inserts a drawing frame in the the module (indicated by module_cursor).
 		frame	: in et_schematic.type_frame);

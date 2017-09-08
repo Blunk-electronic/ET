@@ -3377,9 +3377,9 @@ package body et_kicad is
 
 
             -- When reading gui submodules (kicad refers to them as "sheets") they are stored temporarily here.
-            -- This temporarily variable needs defaults in order to prevent misleading compiler warnings.
+			-- This temporarily variable needs defaults in order to prevent misleading compiler warnings.
+			submodule_gui_name : type_submodule_name.bounded_string := type_submodule_name.to_bounded_string("");
             submodule_gui_scratch : type_gui_submodule := (
-                name => type_submodule_name.to_bounded_string(""),
                 text_size_of_name => 58,
                 text_size_of_file => 58,                
                 coordinates => (    path => path_to_submodule,
@@ -3931,7 +3931,8 @@ package body et_kicad is
 											type_list_of_submodule_names.append(list_of_submodules.list, name_of_submodule_scratch);
 
 											-- append submodule_gui_scratch to list of gui submodules
-											type_gui_submodules.append (module.submodules, submodule_gui_scratch);
+											--type_gui_submodules.append (module.submodules, submodule_gui_scratch);
+											add_gui_submodule (submodule_gui_name, submodule_gui_scratch);
 										end if;
 
 										-- read GUI submodule (sheet) position and size from a line like "S 4050 5750 1050 650"
@@ -3954,7 +3955,7 @@ package body et_kicad is
 										-- Since this is the black-box-representation of a kicad-sheet its name is threated as name of a submodule.
 										-- The sheet name is stored in submodule_gui_scratch.name to be compared with the sheet file name later.
 										if get_field_from_line(line,1) = schematic_keyword_sheet_name then
-											submodule_gui_scratch.name := type_submodule_name.to_bounded_string(strip_quotes(get_field_from_line(line,2)));
+											submodule_gui_name := type_submodule_name.to_bounded_string (strip_quotes (get_field_from_line(line,2)));
 											submodule_gui_scratch.text_size_of_name := et_libraries.type_text_size'value(get_field_from_line(line,3));
 										end if;
 
@@ -3965,9 +3966,9 @@ package body et_kicad is
 											submodule_gui_scratch.text_size_of_file := et_libraries.type_text_size'value(get_field_from_line(line,3));
 											
 											-- Test if sheet name and file name match:
-											if type_submodule_name.to_string (submodule_gui_scratch.name) /= base_name (type_submodule_name.to_string (name_of_submodule_scratch)) then
+											if type_submodule_name.to_string (submodule_gui_name) /= base_name (type_submodule_name.to_string (name_of_submodule_scratch)) then
 												log (text => message_warning & "name mismatch: sheet: " &
-													type_submodule_name.to_string (submodule_gui_scratch.name) &
+													type_submodule_name.to_string (submodule_gui_name) &
 													" file: " & type_submodule_name.to_string (name_of_submodule_scratch));
 											end if;
 										end if;
