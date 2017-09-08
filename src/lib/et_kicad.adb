@@ -2719,7 +2719,9 @@ package body et_kicad is
 				s   : 	type_net_segment;
 				lls : 	type_simple_labels.list;
 				llt : 	type_tag_labels.list;
-				net_scratch : type_net;
+			
+				net : type_net;
+				net_name	: type_net_name.bounded_string;
 				
 				function label_sits_on_segment (label : in type_net_label; segment : in type_net_segment) return boolean is
 					point 		: et_schematic.type_coordinates := label.coordinates;
@@ -2962,7 +2964,7 @@ package body et_kicad is
 					-- Anonymous nets without label have no name -> "processed" flag is still cleared.
 					-- As placeholder for the name we use the notation "N$" where n is an index (derived from the element id in anonymous_nets)
 					-- Their scope is strictly "local".
-					-- We us an intermediate variable net_scratch for transfer to the module netlist.
+					-- We us an intermediate variable net for transfer to the module netlist.
 					log (text => "sorting name-less nets ...");
 					log_indentation_up;
 
@@ -2974,32 +2976,36 @@ package body et_kicad is
 
 							-- build temporarily net with a name like N$542
 							net_id := net_id + 1; -- increment net id
-							net_scratch.name := type_net_name.to_bounded_string (
+							net_name := type_net_name.to_bounded_string (
 								anonymous_net_name_prefix & trim (natural'image (net_id), left));
 							
-							log (type_net_name.to_string(net_scratch.name), level => 1);
+							log (type_net_name.to_string (net_name), level => 1);
 							
-							net_scratch.scope := local;
+							net.scope := local;
 
-							-- append segments to net_scratch
+							-- append segments to net
 							segment_cursor := a.segments.first; -- reset segment cursor to begin of segments of the current anonymous net
 							while segment_cursor /= type_anonymous_net.no_element loop -- loop for each segment of anonymous_net a
 								s := element (segment_cursor); -- get segment
-								type_net_segments.append (container => net_scratch.segments, new_item => s);
+								type_net_segments.append (container => net.segments, new_item => s);
 								write_coordinates_of_segment (segment => s);
 								next (segment_cursor);
 							end loop;
 
                             -- assign coordinates
-                            net_scratch.coordinates.module_name := type_submodule_name.to_bounded_string (to_string (current_schematic));
-                            net_scratch.coordinates.path := path_to_submodule;
+                            net.coordinates.module_name := type_submodule_name.to_bounded_string (to_string (current_schematic));
+                            net.coordinates.path := path_to_submodule;
                             -- CS: x,y coordinates should be the lowest available on the first sheet.
                             -- CS: do not assign sheet and x/y at all ?
-                            -- net_scratch.coordinates.sheet := sheet_number_current;
+                            -- net.coordinates.sheet := sheet_number_current;
                             
-							-- append net_scratch to module netlist, then purge net_scratch.segments for next spin
-							type_net_list_of_module.append (container => module.nets, new_item => net_scratch);
-							type_net_segments.clear (net_scratch.segments);
+							-- append net to module netlist, then purge net.segments for next spin
+							type_nets.insert (  -- CS: insert where module_cursor points to
+								container	=> module.nets,
+								new_item	=> net,
+								key			=> net_name);
+							
+							type_net_segments.clear (net.segments);
 						end if;
 
 						next (net_cursor); -- advance net cursor
@@ -3017,19 +3023,19 @@ package body et_kicad is
 
 						if a.processed and not a.sorted then -- if it has not been sorted yet
 
-							log (type_net_name.to_string(a.name), level => 1);
+							log (type_net_name.to_string (a.name), level => 1);
 							
-							net_scratch.name := a.name;
-							net_scratch.scope := a.scope;
+							net_name := a.name;
+							net.scope := a.scope;
 
 							log_indentation_up;
-							log ("scope " & type_scope_of_net'image (net_scratch.scope) & " with segments:", level => 1);
+							log ("scope " & type_scope_of_net'image (net.scope) & " with segments:", level => 1);
 
-							-- append segments to net_scratch
+							-- append segments to net
 							segment_cursor := a.segments.first; -- reset segment cursor to begin of segments of the current anonymous net
 							while segment_cursor /= type_anonymous_net.no_element loop -- loop for each segment of anonymous_net a
 								s := element (segment_cursor); -- get segment
-								type_net_segments.append (container => net_scratch.segments, new_item => s);
+								type_net_segments.append (container => net.segments, new_item => s);
 								write_coordinates_of_segment (segment => s);
 								next (segment_cursor);
 							end loop;
@@ -3055,11 +3061,11 @@ package body et_kicad is
 
 											-- CS: make sure scope of the anonymous net is the same
 
-											-- append segments to net_scratch
+											-- append segments to net
 											segment_cursor := b.segments.first; -- reset segment cursor to begin of segments of the current anonymous net
 											while segment_cursor /= type_anonymous_net.no_element loop -- loop for each segment of anonymous_net b
 												s := element (segment_cursor);
-												type_net_segments.append(container => net_scratch.segments, new_item => s);
+												type_net_segments.append(container => net.segments, new_item => s);
 												write_coordinates_of_segment (segment => s);
 												next (segment_cursor);
 											end loop;
@@ -3079,15 +3085,20 @@ package body et_kicad is
 							log_indentation_down;
 
                             -- assign coordinates
-                            net_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(current_schematic));
-                            net_scratch.coordinates.path := path_to_submodule;
+                            net.coordinates.module_name := type_submodule_name.to_bounded_string (to_string (current_schematic));
+                            net.coordinates.path := path_to_submodule;
                             -- CS: x,y coordinates should be the lowest available on the first sheet.
                             -- CS: do not assign sheet and x/y at all ?
-                            -- net_scratch.coordinates.sheet := sheet_number_current;
+                            -- net.coordinates.sheet := sheet_number_current;
                             
-							-- append net_scratch to module netlist, then purge net_scratch.segments for next spin
-							type_net_list_of_module.append(container => module.nets, new_item => net_scratch);
-							type_net_segments.clear (net_scratch.segments);
+							-- append net to module netlist, then purge net.segments for next spin
+							type_nets.insert ( -- CS: insert where module_cursor points to
+								container => module.nets,
+								new_item => net,
+								key => net_name
+								);
+
+							type_net_segments.clear (net.segments);
 
 						end if;
 

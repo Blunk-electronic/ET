@@ -585,6 +585,44 @@ package body et_schematic is
 		end if;
 	end add_module;
 
+	procedure add_net (
+	-- Adds a net into the the module (indicated by module_cursor).
+		name	: in et_schematic.type_net_name.bounded_string;
+		net		: in et_schematic.type_net) is
+		
+		procedure add (
+			mod_name	: in type_submodule_name.bounded_string;
+			module		: in out type_module) is
+			
+			inserted	: boolean := false;
+			cursor		: type_nets.cursor;
+
+			use et_string_processing;
+		begin
+			module.nets.insert (
+				key			=> name,
+				new_item	=> net,
+				position	=> cursor, -- updates cursor. no further meaning
+				inserted	=> inserted
+				);
+
+			if inserted then
+				if log_level >= 1 then
+					null; -- CS: write this procedure:
+					--et_schematic.write_net_properties (net => cursor);
+				end if;
+			else -- not inserted. net already in module -> abort
+				null; -- CS: 
+				raise constraint_error;
+			end if;
+		end add;
+	begin
+		rig.update_element (
+			position	=> module_cursor,
+			process		=> add'access
+			);
+	end add_net;
+	
 	procedure add_component (
 	-- Adds a component into the the module (indicated by module_cursor).
 	-- If a component is already in the list, nothing happens.
@@ -608,7 +646,7 @@ package body et_schematic is
 			module.components.insert (
 				key			=> reference,
 				new_item	=> component,
-				position	=> cursor, -- updates component_cursor. no further meaning
+				position	=> cursor, -- updates cursor. no further meaning
 				inserted	=> inserted
 				);
 
