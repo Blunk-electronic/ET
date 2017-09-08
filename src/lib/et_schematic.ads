@@ -512,7 +512,6 @@ package et_schematic is
         -- CS: images
 	end record;
 
-	module : type_module; -- this is the whole schematic of a board
 	bare_module : type_module; -- an empty module for initialisation purposes
 
 	package type_rig is new ordered_maps (

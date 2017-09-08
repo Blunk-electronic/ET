@@ -354,6 +354,7 @@ package et_kicad is
 	tmp_tag_net_label		: et_schematic.type_net_label_tag;
 	tmp_note				: et_schematic.type_note;	
 
+	tmp_module_name 				: et_schematic.type_submodule_name.bounded_string;	
 	tmp_component_name_in_lib		: et_libraries.type_component_name.bounded_string;
 	tmp_component_appearance		: et_libraries.type_component_appearance := et_libraries.sch;
 	tmp_component_reference			: et_libraries.type_component_reference;

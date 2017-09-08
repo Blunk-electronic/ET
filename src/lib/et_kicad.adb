@@ -2451,7 +2451,7 @@ package body et_kicad is
 			return type_list_of_submodule_names_extended is
 		-- Reads the given schematic file. If it contains submodules (hierarchic sheets), 
         -- they will be returned in list_of_submodules. Otherwise the returned list is empty.
-        
+
 			list_of_submodules : type_list_of_submodule_names_extended; -- list to be returned
 			name_of_submodule_scratch : type_submodule_name.bounded_string; -- temporarily used before appended to list_of_submodules
 
@@ -4378,23 +4378,19 @@ package body et_kicad is
 
 				-- derive top level schematic file name from project file (they differ only in their extension)
 				top_level_schematic := read_project_file;
-
+				tmp_module_name := type_submodule_name.to_bounded_string (et_import.to_string (top_level_schematic));
+				
 				-- The top level schematic file dictates the module name. So we create the module here.
 				-- It is still empty.
 				add_module (
-					module_name	=> type_submodule_name.to_bounded_string (
-										et_import.to_string (top_level_schematic)),
+					module_name	=> tmp_module_name,
 					module		=> bare_module);
 				
 				read_components_libraries (indentation => 1); -- as stored in lib_dir and project_libraries
 				current_schematic := top_level_schematic;
 
-                -- The top level schematic file dictates the module name. At the same time it is the first entry
-                -- in the module path.
-				module.name := type_submodule_name.to_bounded_string(to_string(current_schematic)); -- CS: remove
-				--append_name_of_parent_module_to_path(module.name);
-				append_name_of_parent_module_to_path (type_submodule_name.to_bounded_string (
-					et_import.to_string (top_level_schematic)));
+                -- The top level schematic file is the first entry in the module path.
+				append_name_of_parent_module_to_path (tmp_module_name);
                 
 				-- Starting from the top level module, we read its schematic file. The result can be a list of submodules.
 				-- NOTE: Kicad refers to them as "sheets" !
