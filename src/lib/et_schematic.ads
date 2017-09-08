@@ -33,7 +33,7 @@
 --		1. Objects like net segments, net labels, junctions, notes ... 
 --		   should be collected in ordered sets instead of doubly_linked_lists
 --			- the benefits: placing identical objects at the same position would be impossible
---
+--			- the cons: ordering subprograms required
 
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
@@ -134,6 +134,10 @@ package et_schematic is
 
 	procedure write_note_properties (note : in et_schematic.type_note);
 	-- Writes the properties of the given note
+
+	procedure add_note (
+	-- Inserts a note in the the module (indicated by module_cursor).
+		note	: in et_schematic.type_note);
 	
 	package type_texts is new indefinite_doubly_linked_lists (
 		element_type => type_note);
@@ -536,7 +540,7 @@ package et_schematic is
 	procedure add_title_block (
 	-- Inserts a title block in the the module (indicated by module_cursor).
 		tblock	: in et_schematic.type_title_block);
-	
+
 	procedure add_net (
 	-- Adds a net into the the module (indicated by module_cursor).
 		name	: in et_schematic.type_net_name.bounded_string;

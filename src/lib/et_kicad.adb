@@ -4141,7 +4141,7 @@ package body et_kicad is
 										write_note_properties (tmp_note);
 										
 										-- the notes are to be collected in the list of notes
-										et_schematic.type_texts.append (module.notes,tmp_note);
+										add_note (tmp_note);
 									end if;
 									
 									-- READ COMPONENTS

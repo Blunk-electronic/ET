@@ -683,6 +683,35 @@ package body et_schematic is
 			);
 	end add_title_block;
 
+
+	procedure add_note (
+	-- Inserts a note in the the module (indicated by module_cursor).
+	-- As notes are collected in a simple list, the same note
+	-- can be added multiple times.
+		note	: in et_schematic.type_note) is
+		
+		procedure add (
+			mod_name	: in type_submodule_name.bounded_string;
+			module		: in out type_module) is
+
+			use et_string_processing;
+		begin
+			module.notes.append (
+				new_item	=> note);
+
+			if log_level >= 1 then
+				null; -- CS: 
+				--et_schematic.write_note_properties
+			end if;
+
+		end add;
+	begin
+		rig.update_element (
+			position	=> module_cursor,
+			process		=> add'access
+			);
+	end add_note;
+
 	
 	procedure add_net (
 	-- Adds a net into the the module (indicated by module_cursor).
