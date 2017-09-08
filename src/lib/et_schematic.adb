@@ -382,7 +382,7 @@ package body et_schematic is
 	function junction_sits_on_segment (
 	-- Returns true if the given junction sits on the given net segment.
 		junction	: in type_net_junction;
-		segment		: in type_net_segment) 
+		segment		: in type_net_segment'class) 
 		return boolean is
 		point 		: et_schematic.type_coordinates := junction.coordinates;
 		line_start 	: et_schematic.type_coordinates := segment.coordinates_start;

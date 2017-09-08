@@ -276,7 +276,8 @@ package et_schematic is
 	function junction_sits_on_segment (
 	-- Returns true if the given junction sits on the given net segment.
 		junction	: in type_net_junction;
-		segment		: in type_net_segment) 
+		segment		: in type_net_segment'class) 
+		-- NOTE: see https://en.wikibooks.org/wiki/Ada_Programming/Object_Orientation#Polymorphism.2C_class-wide_programming_and_dynamic_dispatching
 		return boolean;
 	
 	-- Junctions are to be collected in a list.
