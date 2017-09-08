@@ -3430,30 +3430,15 @@ package body et_kicad is
 
 			
 			
--- 			procedure fetch_components_from_library is
-			-- This procedure looks up the sheet_header and reads the library names stored there.
-			-- The full library names (incl. containing directory) are build.
-			-- The libraries are then read and theri content added to the sheet_header.
--- 				use type_component_libraries;
--- 				use et_general.type_library_full_name;
--- 				lib_cursor : type_component_libraries.cursor := first(sheet_header.libraries);
--- 				lib_file : et_general.type_library_full_name.bounded_string;
--- 			begin
--- 				put_line("  loading component libraries ...");
--- 				if not is_empty(sheet_header.libraries) then
--- 					while lib_cursor /= type_component_libraries.no_element loop
--- 						lib_file := to_bounded_string(compose(
--- 							containing_directory => et_general.type_library_directory.to_string(lib_dir),
--- 							name => et_general.type_library_name.to_string(key(lib_cursor)),
--- 							extension => file_extension_schematic_lib
--- 							));
--- 						put_line("   " & to_string(lib_file));
--- 						next(lib_cursor);
--- 					end loop;
--- 				end if;	
--- 			end fetch_components_from_library;
 			procedure build_port_lists is
-			-- Loads the port lists of all nets.
+				-- Loads the port lists of all nets.
+
+-- 				type type_port is record
+-- 				
+-- 				function component_port_list (reference : in type_component_reference) 
+-- 					return 
+
+				
 			begin
 				null;
 			end build_port_lists;

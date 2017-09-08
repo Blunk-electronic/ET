@@ -563,7 +563,7 @@ package body et_schematic is
 		return result;
 	end compare_reference;
 
-	function compare_ports (left, right : in type_port) return boolean is
+	function compare_ports (left, right : in type_port_of_net) return boolean is
 	-- Returns true if left comes before right.
 	-- If left equals right, the return is false.	
 	-- CS: needs verification !
