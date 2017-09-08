@@ -29,7 +29,11 @@
 --
 --   history of changes:
 --
-
+--   ToDo: 
+--		1. Objects like net segments, net labels, junctions, notes ... 
+--		   should be collected in ordered sets instead of doubly_linked_lists
+--			- the benefits: placing identical objects at the same position would be impossible
+--
 
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
@@ -291,8 +295,7 @@ package et_schematic is
 	-- Writes the start and end coordinates of a net segment.	
 
 	-- A net is a list of segments.
-	package type_net_segments is new vectors ( -- CS: better a simple list ?
-		index_type => positive,  -- every net segment has an id
+	package type_net_segments is new doubly_linked_lists (
 		element_type => type_net_segment);
 
 	-- A net may be visible within a submodule (local net) or 
@@ -313,7 +316,7 @@ package et_schematic is
     -- CS: do not use sheet and x/y at all ?
     type type_net is record
 		scope 		: type_scope_of_net; -- example "local"
-		segments 	: type_net_segments.vector; -- list of net segments
+		segments 	: type_net_segments.list; -- list of net segments
 		--junctions	: type_junctions.list; -- the junctions of the net
         ports 		: type_port_list_of_net.vector; -- list of component ports
 		coordinates : type_coordinates;                
