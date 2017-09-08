@@ -534,9 +534,10 @@ package body et_schematic is
 	end to_string;
 
 
-	function compare_component_by_reference ( left, right : in type_component_reference) return boolean is
+	function compare_reference ( left, right : in type_component_reference) return boolean is
 	-- Returns true if left comes before right.
 	-- If left equals right, the return is false.
+	-- CS: needs verification !
 		result : boolean := false;
 		use et_libraries.type_component_prefix;
 	begin
@@ -560,9 +561,34 @@ package body et_schematic is
 
 		-- in case of equivalence of left and right, we return false (default)
 		return result;
-	end compare_component_by_reference;
+	end compare_reference;
 
+	function compare_ports (left, right : in type_port) return boolean is
+	-- Returns true if left comes before right.
+	-- If left equals right, the return is false.	
+	-- CS: needs verification !
+		result : boolean := false;
+	begin
+		-- First we compare the component reference.
+		-- Examples: C56 comes before R4, LED5 comes before LED7
+		if compare_reference (left.component, right.component) then
+			result := true;
 
+		-- If equal references, compare pin names
+		elsif type_pin_name.">" (left.pin, right.pin) then
+			result := true;
+
+		-- If equal pin names, compare port names -- CS: should never happen. raise alarm ?
+		elsif type_port_name.">" (left.port, right.port) then
+			result := true;
+			
+		else
+			result := false;
+		end if;
+
+		-- in case of equivalence of left and right, we return false (default)
+		return result;
+	end compare_ports;
 	
 
 	

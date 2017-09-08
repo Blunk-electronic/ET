@@ -307,10 +307,19 @@ package et_schematic is
 	type type_scope_of_net is  ( local, hierarchic, global );
 
 	-- A list of type_port forms the port list of a net:
-	use et_libraries;
-	package type_port_list_of_net is new vectors ( -- CS: better a simple list ?
-		index_type => positive, -- every pin of a net has an id
-		element_type => et_libraries.type_port); -- CS: this should be a schematic specific type_port
+	type type_port is record
+		component	: et_libraries.type_component_reference;
+		pin			: et_libraries.type_pin_name.bounded_string;
+		port		: et_libraries.type_port_name.bounded_string;
+	end record;
+
+	function compare_ports (left, right : in type_port) return boolean;
+	-- Returns true if left comes before right.
+	-- If left equals right, the return is false.	
+	
+	package type_ports is new ordered_sets (
+		element_type => type_port,
+		"<" => compare_ports);
 
 	-- A net has a name, a scope, a list of segments, a list of ports.
 	anonymous_net_name_prefix : constant string (1..2) := "N$";
@@ -322,7 +331,7 @@ package et_schematic is
 		scope 		: type_scope_of_net; -- example "local"
 		segments 	: type_net_segments.list; -- list of net segments
 		--junctions	: type_junctions.list; -- the junctions of the net
-        ports 		: type_port_list_of_net.vector; -- list of component ports
+        ports 		: type_ports.set; -- list of component ports
 		coordinates : type_coordinates;                
 	end record;
 
@@ -472,7 +481,7 @@ package et_schematic is
 	function to_string (reference : in type_component_reference) return string;
 	-- Returns the given compoenent reference as string.
 
-	function compare_component_by_reference (left, right : in type_component_reference) return boolean;
+	function compare_reference (left, right : in type_component_reference) return boolean;
 	-- Returns true if left comes before right.
 	-- If left equals right, the return is false.	
 	
@@ -488,7 +497,7 @@ package et_schematic is
 	-- The components of a module are collected in a map.
  	package type_components is new indefinite_ordered_maps (
 		key_type => type_component_reference, -- something like "IC43"
-		"<" => compare_component_by_reference,
+		"<" => compare_reference,
  		element_type => type_component);
 
 	procedure write_component_properties (component : in type_components.cursor);
