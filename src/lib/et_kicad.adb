@@ -3452,7 +3452,7 @@ package body et_kicad is
 -- 			end fetch_components_from_library;
 
 			procedure insert_component is
-			-- Inserts the component in the component list of the module (module.components).
+			-- Inserts the component in the component list of the module (indicated by module_cursor).
 			-- Components may occur multiple times, which implies they are
 			-- split into units (EAGLE refers to them as "gates").
 			-- Only the first occurence of the component leads to appending it to the component list of the module.
@@ -4181,9 +4181,7 @@ package body et_kicad is
 											-- Nevertheless there are some checks on the unit (see insert_component).
 											insert_component;
 	
-											-- The component_cursor now points to the component in the component list.
 											-- We update the component with the collected unit information.
-											--et_schematic.type_components.update_element (module.components, component_cursor, insert_unit'access);
 											insert_unit;
 
 										else

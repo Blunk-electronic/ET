@@ -612,14 +612,14 @@ package body et_schematic is
 				inserted	=> inserted
 				);
 
-			if inserted then -- first occurence of component
+-- 			if inserted then -- first occurence of component
 				if log_level >= 1 then
 					et_schematic.write_component_properties (component => cursor);
 				end if;
-			else -- not inserted
-				null; -- CS: see comment above
+-- 			else -- not inserted
+-- 				null; -- CS: see comment above
 				--raise constraint_error;
-			end if;
+-- 			end if;
 		end add;
 	begin
 		rig.update_element (
