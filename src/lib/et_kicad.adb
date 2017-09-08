@@ -3452,7 +3452,14 @@ package body et_kicad is
 -- 					end loop;
 -- 				end if;	
 -- 			end fetch_components_from_library;
+			procedure build_port_lists is
+			-- Loads the port lists of all nets.
+			begin
+				null;
+			end build_port_lists;
 
+
+			
 			procedure insert_component is
 			-- Inserts the component in the component list of the module (indicated by module_cursor).
 			-- Components may occur multiple times, which implies they are
@@ -4336,7 +4343,8 @@ package body et_kicad is
 				-- The nets are appended to the netlist of the current module.
 				associate_net_labels_with_anonymous_nets;
 
-				-- CS: add_pins_to_nets
+				-- Now the port lists of nets must be built.
+				build_port_lists;
 				
 			else
 				log_indentation_reset;

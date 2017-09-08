@@ -311,6 +311,7 @@ package et_schematic is
 		component	: et_libraries.type_component_reference;
 		pin			: et_libraries.type_pin_name.bounded_string;
 		port		: et_libraries.type_port_name.bounded_string;
+		coordinates : et_libraries.type_coordinates; -- CS: if not sufficient, use et_schematic.type_coordinates
 	end record;
 
 	function compare_ports (left, right : in type_port) return boolean;
@@ -331,8 +332,8 @@ package et_schematic is
 		scope 		: type_scope_of_net; -- example "local"
 		segments 	: type_net_segments.list; -- list of net segments
 		--junctions	: type_junctions.list; -- the junctions of the net
-        ports 		: type_ports.set; -- list of component ports
-		coordinates : type_coordinates;                
+        ports 		: type_ports.set; -- list of ports
+		coordinates : type_coordinates;
 	end record;
 
 	-- Nets are collected in a map.
