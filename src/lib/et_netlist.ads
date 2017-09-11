@@ -35,12 +35,12 @@ with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
 with ada.strings.unbounded; 	use ada.strings.unbounded;
 with ada.containers;            use ada.containers;
-with ada.containers.vectors;
+-- with ada.containers.vectors;
 with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
+-- with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
-with ada.containers.indefinite_ordered_maps;
-with ada.containers.ordered_sets;
+-- with ada.containers.indefinite_ordered_maps;
+-- with ada.containers.ordered_sets;
 
 with et_general;
 with et_libraries;
@@ -56,11 +56,12 @@ package et_netlist is
 	-- Ports of a component are collected in a simple list.
 	package type_ports is new doubly_linked_lists ( 
 		element_type => type_port); 
+	use type_ports;
 
 	-- The ports of a component are collected this way:
 	package type_portlists is new ordered_maps (
 		key_type => et_libraries.type_component_reference,
-		element_type => type_port,
+		element_type => type_ports.list,
 		"<" => et_schematic.compare_reference);
 
 

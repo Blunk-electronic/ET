@@ -498,6 +498,8 @@ package et_schematic is
 	-- Returns true if left comes before right.
 	-- If left equals right, the return is false.	
 	
+	function equal_reference (left, right : in type_component_reference) return boolean;
+	-- Returns true if left equals right.
 
 
 

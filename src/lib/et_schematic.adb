@@ -569,6 +569,33 @@ package body et_schematic is
 		return result;
 	end compare_reference;
 
+	function equal_reference (left, right : in type_component_reference) return boolean is
+	-- Returns true if left equals right.
+	-- Example: if IC4 = IC4 then return true.
+		result : boolean := false;
+		use et_libraries.type_component_prefix;
+	begin
+		-- First we compare the prefix. If prefixes are equal, we compare the id.
+		-- If either of them does not match, the result is set false.
+		if left.prefix = right.prefix then -- like IC and IC
+
+			if left.id = right.id then -- like 4 and 4
+				result := true;
+			else -- like 5 and 6
+				result := false;
+			end if;
+			
+		else -- like R and IC
+			result := false; 
+		end if;
+
+		return result;
+	end equal_reference;
+	
+
+
+	
+	
 	function compare_ports (left, right : in type_port) return boolean is
 	-- Returns true if left comes before right. Compares by component name and pin name.
 	-- If left equals right, the return is false.	
