@@ -219,7 +219,10 @@ package et_schematic is
 
 	-- The name of a net may have 100 characters which seems sufficient for now.
  	net_name_length	: constant natural := 100;
-	package type_net_name is new generic_bounded_length(net_name_length); use type_net_name;
+	package type_net_name is new generic_bounded_length (net_name_length); use type_net_name;
+	
+	function to_string (net_name : in type_net_name.bounded_string) return string;
+	-- Returns the given net name as string;
 
 	-- A label is frequently attached to a net segment in order to make the net name visible. 
 	-- The label can be a simple string or a tag. 
@@ -560,17 +563,22 @@ package et_schematic is
 		gui_sub_mod	: in et_schematic.type_gui_submodule);
 	
 	procedure add_frame (
-	-- Inserts a drawing frame in the the module (indicated by module_cursor).
+	-- Inserts a drawing frame in the module (indicated by module_cursor).
 		frame	: in et_schematic.type_frame);
 	
 	procedure add_title_block (
-	-- Inserts a title block in the the module (indicated by module_cursor).
+	-- Inserts a title block in the module (indicated by module_cursor).
 		tblock	: in et_schematic.type_title_block);
 
 	procedure add_net (
-	-- Adds a net into the the module (indicated by module_cursor).
+	-- Adds a net into the module (indicated by module_cursor).
 		name	: in et_schematic.type_net_name.bounded_string;
 		net		: in et_schematic.type_net);
+
+-- 	procedure add_port (
+-- 	-- Adds a port to a net.
+-- 		net_name	: in et_schematic.type_net_name.bounded_string;
+-- 		port		: in et_libraries.type_port;
 	
 	procedure add_component (
 	-- Adds a component into the the module (indicated by module_cursor).
@@ -584,6 +592,15 @@ package et_schematic is
 		unit 		: in type_unit);
 		
 
+
+
+
+	procedure warning_on_name_less_net (
+	-- Writes a warning about a name-less net.
+		name 	: in et_schematic.type_net_name.bounded_string;
+		net		: in et_schematic.type_net);
+
+	
     
 -- MISC
 

@@ -3001,6 +3001,7 @@ package body et_kicad is
                             
 							-- insert net in module, then purge net.segments for next spin
 							add_net (net_name, net);
+
 							type_net_segments.clear (net.segments);
 						end if;
 
@@ -3428,7 +3429,16 @@ package body et_kicad is
 					);
 			end to_text;
 
+
 			
+			procedure detect_name_less_nets is
+			begin
+				null;
+
+				-- Report name-less net.
+				--warning_on_name_less_net (net_name, net);
+
+			end detect_name_less_nets;
 			
 			procedure build_port_lists is
 				-- Loads the port lists of all nets.
@@ -3444,6 +3454,11 @@ package body et_kicad is
 			end build_port_lists;
 
 
+			procedure build_netlist is
+			begin
+				null;
+			end build_netlist;
+	
 			
 			procedure insert_component is
 			-- Inserts the component in the component list of the module (indicated by module_cursor).
@@ -4330,6 +4345,8 @@ package body et_kicad is
 
 				-- Now the port lists of nets must be built.
 				build_port_lists;
+
+				-- CS build_netlist;
 				
 			else
 				log_indentation_reset;

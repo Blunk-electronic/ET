@@ -114,6 +114,12 @@ package body et_schematic is
 		
 		-- CS: exception handler
 	end to_string;
+
+	function to_string (net_name : in type_net_name.bounded_string) return string is
+	-- Returns the given net name as string.
+	begin
+		return type_net_name.to_string (net_name);
+	end to_string;
 	
 	procedure write_label_properties (label : in type_net_label) is
 	-- Writes the properties of the given net label in the logfile.
@@ -875,6 +881,25 @@ package body et_schematic is
 			process		=> locate_component'access
 			);
 	end add_unit;
+
+
+
+
+
+	procedure warning_on_name_less_net (
+	-- Writes a warning about a name-less net.
+		name 	: in et_schematic.type_net_name.bounded_string;
+		net		: in et_schematic.type_net
+		) is
+
+		use et_string_processing;
+	begin
+		log (
+			text => message_warning & "name-less net " & to_string (name) & " found !"
+			);
+		-- CS: output coordinates of net (lowest x/Y)
+	end warning_on_name_less_net;
+
 	
 end et_schematic;
 -- Soli Deo Gloria
