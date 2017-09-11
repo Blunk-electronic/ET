@@ -64,11 +64,21 @@ package body et_netlist is
 		
 		component_cursor : type_components.cursor;
 	begin
+		
+		log (text => "component list");
+		log_indentation_up;
+		
 		reset_component_cursor (component_cursor);
 		while component_cursor /= type_components.no_element loop
-			log (text => to_string (get_component_reference (component_cursor)));
+			--log (text => to_string (get_component_reference (component_cursor)));
+			--write_component_properties (component_cursor);
+			log (text => to_string (component_reference (component_cursor)));
+
+			log (text => "name in library :" & to_string (component_name_in_library (component_cursor)));
 			next (component_cursor);
 		end loop;
+
+		log_indentation_down;
 		
 		return pl;
 	end build_portlists;

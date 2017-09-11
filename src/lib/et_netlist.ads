@@ -66,7 +66,7 @@ package et_netlist is
 
 	function build_portlists return type_portlists.map;
 
-
+	portlists : type_portlists.map;
 	
 	
 end et_netlist;

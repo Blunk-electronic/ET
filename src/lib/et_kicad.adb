@@ -48,6 +48,7 @@ with ada.containers.ordered_maps;
 
 with et_libraries;
 with et_schematic;
+with et_netlist;
 
 with et_geometry;
 
@@ -3440,19 +3441,6 @@ package body et_kicad is
 
 			end detect_name_less_nets;
 			
-			procedure build_port_lists is
-				-- Loads the port lists of all nets.
-
--- 				type type_port is record
--- 				
--- 				function component_port_list (reference : in type_component_reference) 
--- 					return 
-
-
-				
-			begin
-				null;
-			end build_port_lists;
 
 
 			procedure build_netlist is
@@ -4345,7 +4333,7 @@ package body et_kicad is
 				associate_net_labels_with_anonymous_nets;
 
 				-- Now the port lists of nets must be built.
-				build_port_lists;
+				et_netlist.portlists := et_netlist.build_portlists;
 
 				-- CS build_netlist;
 				

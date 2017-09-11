@@ -518,6 +518,16 @@ package et_schematic is
 	procedure write_component_properties (component : in type_components.cursor);
 	-- Writes the properties of the component indicated by the given cursor.
 
+	function component_reference (cursor : in type_components.cursor) 
+		return type_component_reference;
+	-- Returns the component reference where cursor points to.
+
+	function component_name_in_library (cursor : in type_components.cursor) 
+		return et_libraries.type_component_name.bounded_string;
+	-- Returns the generic name of a component as it is listed in a library.
+	-- The cursor must point to the component in question.
+
+	
     -- A module has a name, a list of nets and a list of components.
     -- Objects relevant for graphical interfaces are
     -- - a list of submodules
@@ -582,9 +592,9 @@ package et_schematic is
 	procedure reset_component_cursor (cursor : in out type_components.cursor);
 	-- Resets the given component cursor to the begin of the component list.
 	
-	function get_component_reference (cursor : in out type_components.cursor) 
-	-- Returns the component reference where the component cursor points to.
-		return type_component_reference;
+-- 	function get_component_reference (cursor : in out type_components.cursor) 
+-- 	-- Returns the component reference where the component cursor points to.
+-- 		return type_component_reference;
 
 
 

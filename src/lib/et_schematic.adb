@@ -279,6 +279,22 @@ package body et_schematic is
 		
 	end write_component_properties;
 
+	function component_reference (cursor : in type_components.cursor) 
+		return type_component_reference is
+	-- Returns the component reference where cursor points to.
+	begin
+		return type_components.key (cursor);
+	end component_reference;
+
+	function component_name_in_library (cursor : in type_components.cursor) 
+		return et_libraries.type_component_name.bounded_string is
+	-- Returns the generic name of a component as it is listed in a library.
+	-- The cursor must point to the component in question.
+	begin
+		return type_components.element (cursor).name_in_library;
+	end component_name_in_library;
+
+	
 	procedure write_unit_properties (unit : in type_units.cursor) is
 	-- Writes the properties of the unit indicated by the given cursor.
 		use et_string_processing;
@@ -989,28 +1005,28 @@ package body et_schematic is
 			);
 	end reset_component_cursor;
 	
-	function get_component_reference (cursor : in out type_components.cursor)
-	-- Returns the component reference where the component cursor points to.
-		return type_component_reference is
-
-		cr : type_component_reference;
-		
-		procedure get (
-			name	: in type_submodule_name.bounded_string;
-			module	: in type_module) is
-			use type_components;
-		begin
-			cr := key (cursor);
-		end get;
-		
-	begin
-		type_rig.query_element (
-			position	=> module_cursor,
-			process		=> get'access
-			);
-
-		return cr;
-	end get_component_reference;
+-- 	function get_component_reference (cursor : in out type_components.cursor)
+-- 	-- Returns the component reference where the component cursor points to.
+-- 		return type_component_reference is
+-- 
+-- 		cr : type_component_reference;
+-- 		
+-- 		procedure get (
+-- 			name	: in type_submodule_name.bounded_string;
+-- 			module	: in type_module) is
+-- 			use type_components;
+-- 		begin
+-- 			cr := key (cursor);
+-- 		end get;
+-- 		
+-- 	begin
+-- 		type_rig.query_element (
+-- 			position	=> module_cursor,
+-- 			process		=> get'access
+-- 			);
+-- 
+-- 		return cr;
+-- 	end get_component_reference;
 
 
 	procedure warning_on_name_less_net (
