@@ -569,8 +569,8 @@ package body et_schematic is
 		return result;
 	end compare_reference;
 
-	function compare_ports (left, right : in type_port_of_net) return boolean is
-	-- Returns true if left comes before right.
+	function compare_ports (left, right : in type_port) return boolean is
+	-- Returns true if left comes before right. Compares by component name and pin name.
 	-- If left equals right, the return is false.	
 	-- CS: needs verification !
 		result : boolean := false;
@@ -782,6 +782,65 @@ package body et_schematic is
 			process		=> add'access
 			);
 	end add_net;
+
+	
+	procedure add_port (
+	-- Adds a port to a net in the current module (indicated by module_cursor).
+		net		: in et_schematic.type_net_name.bounded_string;
+		port	: in et_schematic.type_port ) is
+
+		procedure add (
+			net_name	: in type_net_name.bounded_string;
+			net			: in out type_net) is
+
+			inserted	: boolean := false;
+			cursor		: type_ports.cursor;
+
+			use et_string_processing;
+		begin
+			net.ports.insert (
+				new_item	=> port,
+				position	=> cursor, -- updates cursor. no further meaning
+				inserted	=> inserted
+				);
+
+			if inserted then -- fine. port was inserted successfully
+				if log_level >= 1 then				
+					--CS : write_port_properties (unit => cursor);
+					null;
+				end if;
+			else -- not inserted, port already in net -> failure
+				log_indentation_reset;
+				log (
+					text => message_error & "multiple occurence of a port in the same net !",
+					console => true);
+				raise constraint_error;
+			end if;
+		end add;
+		
+		procedure locate_net (
+			name	: in type_submodule_name.bounded_string;
+			module	: in out type_module) is
+			
+			cursor : type_nets.cursor;
+		begin
+			cursor := module.nets.find (net);
+			-- CS: do something if net not found
+			
+			module.nets.update_element (
+				position	=> cursor,
+				process		=> add'access
+				);
+		end locate_net;
+
+	begin
+		rig.update_element (
+			position	=> module_cursor,
+			process		=> locate_net'access
+			);
+	end add_port;
+
+
 	
 	procedure add_component (
 	-- Adds a component into the the module (indicated by module_cursor).

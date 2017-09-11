@@ -3448,6 +3448,7 @@ package body et_kicad is
 -- 				function component_port_list (reference : in type_component_reference) 
 -- 					return 
 
+
 				
 			begin
 				null;

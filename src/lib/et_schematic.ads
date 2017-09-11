@@ -311,19 +311,21 @@ package et_schematic is
 	type type_scope_of_net is  ( local, hierarchic, global );
 
 	-- This is a port as it is listed in a type_net:
-	type type_port_of_net is record
+	type type_port is record
 		component	: et_libraries.type_component_reference;
 		pin			: et_libraries.type_pin_name.bounded_string;
 		port		: et_libraries.type_port_name.bounded_string;
-		coordinates : et_libraries.type_coordinates; -- CS: if not sufficient, use et_schematic.type_coordinates
+		coordinates : et_schematic.type_coordinates;
+		direction	: type_port_direction; -- example: "passive" -- used for ERC
+		style		: type_port_style;	-- used for ERC
 	end record;
 
-	function compare_ports (left, right : in type_port_of_net) return boolean;
-	-- Returns true if left comes before right.
+	function compare_ports (left, right : in type_port) return boolean;
+	-- Returns true if left comes before right. Compares by component name and pin name.
 	-- If left equals right, the return is false.	
 	
-	package type_ports_of_net is new ordered_sets (
-		element_type => type_port_of_net,
+	package type_ports is new ordered_sets (
+		element_type => type_port,
 		"<" => compare_ports);
 
 	-- A net has a name, a scope, a list of segments, a list of ports.
@@ -334,7 +336,7 @@ package et_schematic is
 		scope 		: type_scope_of_net; -- example "local"
 		segments 	: type_net_segments.list; -- list of net segments
 		--junctions	: type_junctions.list; -- the junctions of the net
-        ports 		: type_ports_of_net.set; -- list of type_ports_of_net
+        ports 		: type_ports.set; -- list of type_ports
 		coordinates : type_coordinates;
 	end record;
 
@@ -345,26 +347,6 @@ package et_schematic is
 
 	anonymous_net_name_prefix : constant string (1..2) := "N$";
 
-
-
-
-	
-
-	-- This is the port of a component within the schematic.
-	type type_port_of_component is record
-		pin			: et_libraries.type_pin_name.bounded_string; -- example: "144" or in case of a BGA package "E14"
-		position	: type_coordinates; -- full set of coordinates (module, sheet, x,y, ...)
-
-		-- for ERC we need electrical information
-		direction	: et_libraries.type_port_direction; -- passive, in, out, ...
-		-- CS: style ?
-	end record;
-
-	-- Ports of a component are collected in a map. The key into the map is the port name.
-	package type_ports_of_component is new ordered_maps ( 
-		key_type => et_libraries.type_port_name.bounded_string, -- like "CLOCK" or "CE"
-		element_type => type_port_of_component,
-		"<" => et_libraries.type_port_name."<"); 
 
 
 
@@ -575,10 +557,10 @@ package et_schematic is
 		name	: in et_schematic.type_net_name.bounded_string;
 		net		: in et_schematic.type_net);
 
--- 	procedure add_port (
--- 	-- Adds a port to a net.
--- 		net_name	: in et_schematic.type_net_name.bounded_string;
--- 		port		: in et_libraries.type_port;
+	procedure add_port (
+	-- Adds a port to a net in the current module (indicated by module_cursor).
+		net		: in et_schematic.type_net_name.bounded_string;
+		port	: in et_schematic.type_port);
 	
 	procedure add_component (
 	-- Adds a component into the the module (indicated by module_cursor).
