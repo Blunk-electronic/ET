@@ -40,6 +40,11 @@ with ada.text_io;				use ada.text_io;
 
 with ada.directories;
 
+with ada.containers;            use ada.containers;
+-- with ada.containers.doubly_linked_lists;
+-- with ada.containers.indefinite_doubly_linked_lists;
+with ada.containers.ordered_maps;
+
 with et_general;
 with et_libraries;
 with et_string_processing;
@@ -968,8 +973,44 @@ package body et_schematic is
 			);
 	end add_unit;
 
+	procedure reset_component_cursor (cursor : in out type_components.cursor) is
+	-- Resets the given component cursor to the begin of the component list.
+		procedure reset (
+			name	: in type_submodule_name.bounded_string;
+			module	: in type_module) is
+			use type_components;
+		begin
+			cursor := first (module.components);
+		end reset;
+	begin
+		type_rig.query_element (
+			position	=> module_cursor,
+			process		=> reset'access
+			);
+	end reset_component_cursor;
+	
+	function get_component_reference (cursor : in out type_components.cursor)
+	-- Returns the component reference where the component cursor points to.
+		return type_component_reference is
 
+		cr : type_component_reference;
+		
+		procedure get (
+			name	: in type_submodule_name.bounded_string;
+			module	: in type_module) is
+			use type_components;
+		begin
+			cr := key (cursor);
+		end get;
+		
+	begin
+		type_rig.query_element (
+			position	=> module_cursor,
+			process		=> get'access
+			);
 
+		return cr;
+	end get_component_reference;
 
 
 	procedure warning_on_name_less_net (

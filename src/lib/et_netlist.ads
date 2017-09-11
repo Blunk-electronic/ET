@@ -58,13 +58,13 @@ package et_netlist is
 		element_type => type_port); 
 	use type_ports;
 
-	-- The ports of a component are collected this way:
+	-- The components with their ports are collected in a map with the component reference as key:
 	package type_portlists is new ordered_maps (
 		key_type => et_libraries.type_component_reference,
 		element_type => type_ports.list,
 		"<" => et_schematic.compare_reference);
 
-
+	function build_portlists return type_portlists.map;
 
 
 	

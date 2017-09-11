@@ -578,8 +578,13 @@ package et_schematic is
 		reference	: in et_libraries.type_component_reference;
 		unit_name	: in et_libraries.type_unit_name.bounded_string;
 		unit 		: in type_unit);
-		
 
+	procedure reset_component_cursor (cursor : in out type_components.cursor);
+	-- Resets the given component cursor to the begin of the component list.
+	
+	function get_component_reference (cursor : in out type_components.cursor) 
+	-- Returns the component reference where the component cursor points to.
+		return type_component_reference;
 
 
 
