@@ -577,7 +577,7 @@ package body et_schematic is
 	begin
 		-- First we compare the component reference.
 		-- Examples: C56 comes before R4, LED5 comes before LED7
-		if compare_reference (left.component, right.component) then
+		if compare_reference (left.reference, right.reference) then
 			result := true;
 
 		-- If equal references, compare pin names

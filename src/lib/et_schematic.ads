@@ -310,9 +310,8 @@ package et_schematic is
 	-- it may be exported to parent module (other ECAD tools refer to them as "hierachical or global nets").
 	type type_scope_of_net is  ( local, hierarchic, global );
 
-	-- This is a port as it is listed in a type_net:
-	type type_port is record
-		component	: et_libraries.type_component_reference;
+	-- This is a coponent port with its basic elements:
+	type type_port_base is tagged record
 		pin			: et_libraries.type_pin_name.bounded_string;
 		port		: et_libraries.type_port_name.bounded_string;
 		coordinates : et_schematic.type_coordinates;
@@ -320,9 +319,19 @@ package et_schematic is
 		style		: type_port_style;	-- used for ERC
 	end record;
 
+	-- If component ports are to be listed in a type_net, we need additionally the component reference:
+	type type_port is new type_port_base with record
+		reference	: et_libraries.type_component_reference;
+	end record;
+
 	function compare_ports (left, right : in type_port) return boolean;
 	-- Returns true if left comes before right. Compares by component name and pin name.
 	-- If left equals right, the return is false.	
+
+	procedure add_port (
+	-- Adds a port to a net in the current module (indicated by module_cursor).
+		net		: in et_schematic.type_net_name.bounded_string;
+		port	: in et_schematic.type_port);
 	
 	package type_ports is new ordered_sets (
 		element_type => type_port,
@@ -557,11 +566,6 @@ package et_schematic is
 		name	: in et_schematic.type_net_name.bounded_string;
 		net		: in et_schematic.type_net);
 
-	procedure add_port (
-	-- Adds a port to a net in the current module (indicated by module_cursor).
-		net		: in et_schematic.type_net_name.bounded_string;
-		port	: in et_schematic.type_port);
-	
 	procedure add_component (
 	-- Adds a component into the the module (indicated by module_cursor).
 		reference	: in et_libraries.type_component_reference;

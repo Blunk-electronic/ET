@@ -43,37 +43,26 @@ with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 with et_general;
-with et_libraries;				use et_libraries;
+with et_libraries;
+with et_schematic;
 with et_string_processing;
 
 package et_netlist is
 
 	procedure dummy;
--- 	type type_port is record
-		
-	
--- 	package type_component_portlists is new ordered_maps (
--- 		key_type => type_component_reference,
--- 		element_type => et_libraries.type_ports
 
-	
+ 	type type_port is new et_schematic.type_port_base with null record;
 
--- 	-- This is the port of a component within the schematic.
--- 	type type_port_of_component is record
--- 		pin			: et_libraries.type_pin_name.bounded_string; -- example: "144" or in case of a BGA package "E14"
--- 		position	: type_coordinates; -- full set of coordinates (module, sheet, x,y, ...)
--- 
--- 		-- for ERC we need electrical information
--- 		direction	: et_libraries.type_port_direction; -- passive, in, out, ...
--- 		-- CS: style ?
--- 	end record;
--- 
--- 	-- Ports of a component are collected in a map. The key into the map is the port name.
--- 	package type_ports_of_component is new ordered_maps ( 
--- 		key_type => et_libraries.type_port_name.bounded_string, -- like "CLOCK" or "CE"
--- 		element_type => type_port_of_component,
--- 		"<" => et_libraries.type_port_name."<"); 
--- 
+	-- Ports of a component are collected in a simple list.
+	package type_ports is new doubly_linked_lists ( 
+		element_type => type_port); 
+
+	-- The ports of a component are collected this way:
+	package type_portlists is new ordered_maps (
+		key_type => et_libraries.type_component_reference,
+		element_type => type_port,
+		"<" => et_schematic.compare_reference);
+
 
 
 
