@@ -2959,7 +2959,6 @@ package body et_kicad is
 										new_item => s); -- the updated segment
 
 									-- Clean up: Purge temporarily list of tag labels for next spin.
-									--type_tag_labels.delete (container => llt, index => 1, count => type_tag_labels.length(llt)); -- CS: use clear
 									type_tag_labels.clear (llt);
 
 									-- Update/replace anonymous net in anonymous_nets.
