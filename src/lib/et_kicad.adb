@@ -1204,7 +1204,7 @@ package body et_kicad is
 			begin
 				for u in 1 .. type_unit_id (tmp_units_total) loop
 					tmp_unit_id := u;
-					add_unit (et_import.component_libraries);
+					add_unit (component_libraries);
 				end loop;
 			end create_units;
 
@@ -1297,7 +1297,7 @@ package body et_kicad is
 				if tmp_unit_id > 0 then 
 					-- The element belongs to a particular unit exclusively.
 					-- Only the current unit of the current component receives the symbol element.
-					set_unit_cursor (et_import.component_libraries); -- set unit_cursor according to current tmp_unit_id
+					set_unit_cursor (component_libraries); -- set unit_cursor according to current tmp_unit_id
 					libraries.update_element (lib_cursor, locate_component'access);
 				else 
 					-- The element belongs to all units of the current component.
@@ -1308,7 +1308,7 @@ package body et_kicad is
 					if element /= port then
 						for u in 1 .. type_unit_id (tmp_units_total) loop
 							tmp_unit_id := u; -- set tmp_unit_id
-							set_unit_cursor (et_import.component_libraries);  -- set unit_cursor according to current tmp_unit_id
+							set_unit_cursor (component_libraries);  -- set unit_cursor according to current tmp_unit_id
 							libraries.update_element (lib_cursor, locate_component'access);
 						end loop;
 					end if;
@@ -1371,7 +1371,7 @@ package body et_kicad is
 				-- In a loop we set tmp_unit_id for each unit and update the unit of the component.
 				for u in 1..total loop
 					tmp_unit_id := u;
-					set_unit_cursor (et_import.component_libraries);
+					set_unit_cursor (component_libraries);
 					libraries.update_element (lib_cursor, locate_component'access);
 				end loop;
 				
@@ -1438,7 +1438,7 @@ package body et_kicad is
 					tmp_draw_polyline := to_polyline (line);
 
 					-- add polyline to unit
-					add_symbol_element (et_import.component_libraries, polyline);
+					add_symbol_element (component_libraries, polyline);
 					
 				when S => -- rectangle
 					log ("rectangle", level => log_threshold);
@@ -1459,7 +1459,7 @@ package body et_kicad is
 					tmp_draw_rectangle := to_rectangle (line);
 
 					-- add rectangle to unit
-					add_symbol_element (et_import.component_libraries, rectangle);
+					add_symbol_element (component_libraries, rectangle);
 					
 				when C => -- circle
 					log ("circle", level => log_threshold);
@@ -1481,7 +1481,7 @@ package body et_kicad is
 					tmp_draw_circle := to_circle (line);
 					
 					-- add circle to unit
-					add_symbol_element (et_import.component_libraries, circle);
+					add_symbol_element (component_libraries, circle);
 					
 				when A => -- arc
 					log ("arc", level => log_threshold);
@@ -1508,7 +1508,7 @@ package body et_kicad is
 					tmp_draw_arc := to_arc (line);
 					
 					-- add arc to unit
-					add_symbol_element (et_import.component_libraries, arc);
+					add_symbol_element (component_libraries, arc);
 
 				when T => -- text
 					log ("text", level => log_threshold);
@@ -1537,7 +1537,7 @@ package body et_kicad is
 					tmp_draw_text := to_text (line);
 					
 					-- add text to unit
-					add_symbol_element (et_import.component_libraries, text);
+					add_symbol_element (component_libraries, text);
 					
 				when X => -- port
 					log ("port", level => log_threshold);
@@ -1572,20 +1572,20 @@ package body et_kicad is
 					-- An extra unit always has the add level "request" since it harbors the supply ports.
 					if tmp_unit_id > 0 then
 						-- add unit specific port to unit
-						add_symbol_element (et_import.component_libraries, port);
+						add_symbol_element (component_libraries, port);
 					else 
 						-- The current unit id is one notch above the total number of units.
 						tmp_unit_id := type_unit_id (tmp_units_total) + 1;
 						-- If no extra unit has been created yet -> create one with add level "request".
 						if not extra_unit_available then 
 							tmp_unit_add_level := request;
-							add_unit (et_import.component_libraries);
+							add_unit (component_libraries);
 							extra_unit_available := true;
 						else
 							null;
 						end if;
 						-- insert the port in the extra unit
-						add_symbol_element (et_import.component_libraries, port);
+						add_symbol_element (component_libraries, port);
 					end if;
 			end case;
 
@@ -1627,7 +1627,7 @@ package body et_kicad is
 			fp := type_package_proposal.to_bounded_string (field (line,1));
 			log (type_package_proposal.to_string(fp), level => log_threshold);
 
-			do_it (et_import.component_libraries);
+			do_it (component_libraries);
 			
 			log_indentation_down;
 		end add_footprint;
@@ -1865,7 +1865,7 @@ package body et_kicad is
 								-- Set placeholders (reference, value, commissioned, ...) in internal units.
 								-- The placeholder properties are known from the field-section.
 								-- The placeholder properties apply for all units.
-								set_text_placeholder_properties (et_import.component_libraries);
+								set_text_placeholder_properties (component_libraries);
 								
 								-- log component properties
 								if log_level >= 1 then
@@ -1895,7 +1895,7 @@ package body et_kicad is
 											
 											-- Insert the component into the current library (indicated by lib_cursor):
 											type_libraries.update_element ( 
-												container	=> et_import.component_libraries,
+												container	=> component_libraries,
 												position	=> lib_cursor,
 												process		=> insert_component'access);
 
@@ -1910,7 +1910,7 @@ package body et_kicad is
 
 											-- Insert the component into the current library (indicated by lib_cursor):
 											type_libraries.update_element ( 
-												container	=> et_import.component_libraries,
+												container	=> component_libraries,
 												position	=> lib_cursor,
 												process		=> insert_component'access);
 
@@ -2021,7 +2021,7 @@ package body et_kicad is
 					-- library in the list of component libraries.
 					-- After that the lib_cursor points to the latest inserted library.
 					type_libraries.insert (
-						container	=> et_import.component_libraries,
+						container	=> component_libraries,
 						key			=> lib_file_name, -- full library file name (incl. path) like "/home/user/lib/my_lib.lib"
 						new_item	=> type_components.empty_map,
 						position	=> lib_cursor,

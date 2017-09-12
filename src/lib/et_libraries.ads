@@ -63,7 +63,7 @@ package et_libraries is
 	library_directory_length_max : constant positive := 300; -- CS: increase if necessary
 	package type_library_directory is new generic_bounded_length (library_directory_length_max); use type_library_directory;
 
-	-- This is the library root directory for ALL projects.
+	-- This is the library root directory for ALL projects (or for the whole rig).
 	-- We assume all projects have their libraries stored in the same directory.
 	lib_dir : type_library_directory.bounded_string; -- here the path to the project libraries is stored
 	-- CS: this should be a list of paths
@@ -623,7 +623,8 @@ package et_libraries is
 	package type_libraries is new ordered_maps (
 		key_type => type_library_full_name.bounded_string,
 		element_type => type_components.map);
-	
+
+	component_libraries : type_libraries.map;
 	
 end et_libraries;
 

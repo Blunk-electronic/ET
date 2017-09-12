@@ -63,9 +63,7 @@ package et_import is
 									:= compose(report_directory, "import", report_extension);
 	report_handle		: ada.text_io.file_type;
 
-	-- LIBRARIES
-	-- component libraries go here:
-	component_libraries : et_libraries.type_libraries.map; 
+
 	
 	package type_schematic_file_name is new generic_bounded_length(project_name_length + 4); use type_schematic_file_name;
 	
