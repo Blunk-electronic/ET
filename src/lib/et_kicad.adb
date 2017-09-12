@@ -415,16 +415,16 @@ package body et_kicad is
 	end to_degrees;
 	
 	
-	procedure read_components_libraries (indentation : in type_indentation_level := 0) is
-	-- Reads components from libraries as stored in lib_dir and project_libraries:
+	procedure read_components_libraries is
+	-- Reads components from libraries as stored in lib_dir and project libraries:
 		
         use et_libraries; -- most of the following stuff is specified there
 		use et_libraries.type_library_names;
 		use et_libraries.type_library_full_name;
 
-		-- A list of bare library names tells us which libraries the project requires.
-		-- This is the cursor to the bare library names. It points to the bare library name in et_libraries.project_libraries.
-		bare_lib_cursor	: et_libraries.type_library_names.cursor := first(et_libraries.project_libraries);
+		-- The list of bare library names tells us which libraries the project requires.
+		-- This is the cursor to the bare library names. It points to the bare library name in the current module.
+		bare_lib_cursor	: type_library_names.cursor;
 
 		-- Here we keep the full library name (incl. path) like "/home/user/lib/my_lib.lib" temporarily
 		-- before inserting an empty library in the library list et_import.component_libraries :
@@ -1989,9 +1989,10 @@ package body et_kicad is
 
 		
 	begin -- read_components_libraries
-
+		et_schematic.reset_library_cursor (bare_lib_cursor);
+		
 		-- If there were no libraries in the project file, there is nothing to do but writing a warning:
-		if is_empty (project_libraries) then
+		if et_schematic.number_of_libraries = 0 then
 			log (message_warning & "no component libraries defined in project file !");
 		else
 			log (text => "Loading component libraries ...", console => true);
@@ -2062,7 +2063,7 @@ package body et_kicad is
 		use et_schematic;
 
 		function field (line : in type_fields_of_line; position : in positive) return string renames
-			et_string_processing.get_field_from_line;
+			et_string_processing.get_field_from_line; -- CS: apply in read_schematic
 		
 		list_of_submodules : type_list_of_submodule_names_extended;
 		
@@ -2081,7 +2082,8 @@ package body et_kicad is
 			
 			use et_import.type_project_file_name;
 			use et_libraries;
-			
+
+		-- CS: move to spec begin
             section_eeschema_entered : boolean := false;
             section_eeschema_libraries_entered : boolean := false;            
 
@@ -2090,11 +2092,18 @@ package body et_kicad is
                 section_eeschema_entered := false;
                 section_eeschema_libraries_entered := false;
             end clear_section_entered_flags;
+		-- CS: move to spec end
 			
 		begin -- read_project_file
 			log_indentation_reset;
 			log (text => "reading project file ...");
 			log_indentation_up;
+
+			-- Clear list of project libraries from earlier projects that have been imported.
+			-- If we import only one project, this statement does not matter.
+			-- In tmp_project_libraries the project libraries are collected. 
+			-- Later they become part of the module being processed.
+			type_library_names.clear (tmp_project_libraries);
 			
 			open (file => et_import.project_file_handle, mode => in_file, name => to_string (et_import.project_file_name));
 			set_input (et_import.project_file_handle);
@@ -2148,9 +2157,9 @@ package body et_kicad is
 							-- their order remains unchanged.
 							if field (line,1)(1..project_keyword_library_name'length) 
 								= project_keyword_library_name then
-								
+
 								type_library_names.append (
-									container => project_libraries, 
+									container => tmp_project_libraries, 
 									new_item => type_library_name.to_bounded_string(
 										field (line,2)
 										--& "."
@@ -4386,12 +4395,21 @@ package body et_kicad is
 				tmp_module_name := type_submodule_name.to_bounded_string (et_import.to_string (top_level_schematic));
 				
 				-- The top level schematic file dictates the module name. So we create the module here.
-				-- It is still empty.
+				-- The first element to set is the project libraries which we collected earlier when the
+				-- project file was read.
 				add_module (
 					module_name	=> tmp_module_name,
-					module		=> bare_module);
+					module		=> (
+						libraries		=> tmp_project_libraries, -- set project libraries
+						nets			=> type_nets.empty_map,
+						components		=> type_components.empty_map,
+						submodules		=> type_gui_submodules.empty_map,
+						frames			=> type_frames.empty_list,
+						title_blocks	=> type_title_blocks.empty_list,
+						notes			=> type_texts.empty_list)
+					);
 				
-				read_components_libraries (indentation => 1); -- as stored in lib_dir and project_libraries
+				read_components_libraries; -- as stored in lib_dir and project libraries
 				current_schematic := top_level_schematic;
 
                 -- The top level schematic file is the first entry in the module path.

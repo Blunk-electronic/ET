@@ -534,29 +534,30 @@ package et_schematic is
     -- - a list of drawing frames
     -- - a list of title blocks
 	type type_module is record
-		name 	    : type_submodule_name.bounded_string; -- CS: remove. example "MOTOR_DRIVER"
-		nets 	    : type_nets.map;
-        components	: type_components.map;
-        submodules  : type_gui_submodules.map;
-        frames      : type_frames.list;
-        title_blocks: type_title_blocks.list;
-		notes       : type_texts.list;
+		libraries	: type_library_names.list;	-- the list of project library names
+		nets 	    : type_nets.map;			-- the nets of the module
+        components	: type_components.map;		-- the components of the module
+        submodules  : type_gui_submodules.map;	-- graphical representations of submodules
+        frames      : type_frames.list;			-- frames
+        title_blocks: type_title_blocks.list;	-- title blocks
+		notes       : type_texts.list;			-- notes
 		-- CS: junctions
         -- CS: images
 	end record;
 
-	bare_module : type_module; -- an empty module for initialisation purposes
 
+	-- A rig is a set of modules:
 	package type_rig is new ordered_maps (
 		key_type => type_submodule_name.bounded_string, -- example "MOTOR_DRIVER"
 		element_type => type_module);
 
 	rig : type_rig.map;
 	module_cursor : type_rig.cursor;
-	
+
+
 	procedure add_module (
-	-- Adds a module into the module list. Leaves module_cursor pointing
-	-- at the module inserted last.
+	-- Adds a module into the rig. Leaves module_cursor pointing
+	-- to the module inserted last.
 		module_name : in type_submodule_name.bounded_string;
 		module		: in type_module);
 
@@ -591,12 +592,18 @@ package et_schematic is
 
 	procedure reset_component_cursor (cursor : in out type_components.cursor);
 	-- Resets the given component cursor to the begin of the component list.
+
+	procedure reset_library_cursor (cursor : in out type_library_names.cursor);
+	-- Resets the given library cursor to the begin of the library list list.
+
+	function number_of_libraries return count_type;
+	-- Returns the number of project libraries.
 	
 -- 	function get_component_reference (cursor : in out type_components.cursor) 
 -- 	-- Returns the component reference where the component cursor points to.
 -- 		return type_component_reference;
 
-
+	
 
 	procedure warning_on_name_less_net (
 	-- Writes a warning about a name-less net.

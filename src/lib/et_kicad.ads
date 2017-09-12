@@ -65,12 +65,11 @@ package et_kicad is
     project_header_eeschema                 : constant string (1..10) := "[eeschema]";
     project_header_eeschema_libraries       : constant string (1..20) := "[eeschema/libraries]";
     project_keyword_version                 : constant string (1..7)  := "version";
-
-	-- project libraries:
 	project_keyword_library_directory       : constant string (1..6)  := "LibDir";
-
     project_keyword_library_name            : constant string (1..7)  := "LibName"; -- with index like "LibName1"
 
+	-- when reading the projec file, the project library names are collected here temporarily:
+	tmp_project_libraries					: et_libraries.type_library_names.list;
 
 -- COMPONENT TEXT FIELDS
 

@@ -646,7 +646,9 @@ package body et_schematic is
 	
 
 	
-	procedure add_module ( -- CS: comments
+	procedure add_module (
+	-- Adds a module into the rig. Leaves module_cursor pointing
+	-- to the module inserted last.
 		module_name : in type_submodule_name.bounded_string;
 		module		: in type_module) is
 		
@@ -1004,6 +1006,44 @@ package body et_schematic is
 			process		=> reset'access
 			);
 	end reset_component_cursor;
+
+	procedure reset_library_cursor (cursor : in out type_library_names.cursor) is
+	-- Resets the given library cursor to the begin of the library list list.
+		procedure reset (
+			name	: in type_submodule_name.bounded_string;
+			module	: in type_module) is
+			use type_library_names;
+		begin
+			cursor := first (module.libraries);
+		end reset;
+	begin
+		type_rig.query_element (
+			position	=> module_cursor,
+			process		=> reset'access
+			);
+	end reset_library_cursor;
+
+	function number_of_libraries return count_type is
+	-- Returns the number of project libraries.
+		n : count_type := 0;
+
+		procedure get (
+			name	: in type_submodule_name.bounded_string;
+			module	: in type_module) is
+			use type_library_names;
+		begin
+			n := length (module.libraries);
+		end get;
+
+	begin
+		type_rig.query_element (
+			position	=> module_cursor,
+			process		=> get'access
+			);
+
+		return n;
+	end number_of_libraries;
+
 	
 -- 	function get_component_reference (cursor : in out type_components.cursor)
 -- 	-- Returns the component reference where the component cursor points to.

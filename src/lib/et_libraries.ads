@@ -59,8 +59,6 @@ package et_libraries is
     package type_library_names is new doubly_linked_lists (
 		element_type => type_library_name.bounded_string);
 
-	project_libraries : type_library_names.list;
-	
 	-- The base directory where libraries live is stored in a bounded string:
 	library_directory_length_max : constant positive := 300; -- CS: increase if necessary
 	package type_library_directory is new generic_bounded_length (library_directory_length_max); use type_library_directory;
