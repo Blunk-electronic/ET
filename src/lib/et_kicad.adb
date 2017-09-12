@@ -2477,7 +2477,7 @@ package body et_kicad is
 		
 			line : et_string_processing.type_fields_of_line;
 		
-			sheet_file : type_sheet_file.bounded_string;
+			sheet_file : type_schematic_file_name.bounded_string;
 			sheet_count_total, sheet_number_current : positive;
 
 
@@ -4335,7 +4335,7 @@ package body et_kicad is
                 -- NOTE: The file name serves as key in order to match from file to header.
 				add_sheet_header (
 					header => sheet_header,
-					sheet => type_sheet_file.to_bounded_string (to_string (current_schematic)));
+					sheet => current_schematic);
 				
 				close (schematic_handle);
 

@@ -73,7 +73,9 @@ package et_schematic is
 	-- The name of a project may have 100 characters which seems sufficient for now.
  	project_name_length : constant natural := 100;
 	package type_project_name is new generic_bounded_length (project_name_length); use type_project_name;
-	package type_schematic_file_name is new generic_bounded_length (project_name_length + 4); use type_schematic_file_name;
+	schematic_file_name_length : constant positive := project_name_length + 4; -- includes extension
+	package type_schematic_file_name is new generic_bounded_length (schematic_file_name_length); use type_schematic_file_name;
+
 	schematic_handle	: ada.text_io.file_type;
 	
 	function to_string (schematic : in type_schematic_file_name.bounded_string) return string;
@@ -84,11 +86,8 @@ package et_schematic is
 	project_file_name	: type_project_file_name.bounded_string;
 	project_file_handle	: ada.text_io.file_type;
 	
-	-- The name of a sheet, the title (and optionally the file) may have 100 characters which seems sufficient for now.
-	-- If sheets are stored as files, the file name may have the same length.
- 	sheet_name_length : constant natural := 100;
-	package type_sheet_name is new generic_bounded_length (sheet_name_length); use type_sheet_name;
-	package type_sheet_file is new generic_bounded_length (sheet_name_length); use type_sheet_file;	
+	-- Sheet names may have the same length as schematic files.
+	package type_sheet_name is new generic_bounded_length (schematic_file_name_length); use type_sheet_name;
    
 -- PAPER SIZES
     type type_paper_size is ( A0, A1, A2, A4 ); -- CS: others
@@ -499,7 +498,7 @@ package et_schematic is
 
 	-- Since there are usually many sheets, we need a map from schematic file name to schematic header.
     package type_sheet_headers is new ordered_maps (
-        key_type => type_sheet_file.bounded_string,
+        key_type => type_schematic_file_name.bounded_string,
         element_type => type_sheet_header);
 	
 	
@@ -613,7 +612,7 @@ package et_schematic is
 	procedure add_sheet_header (
 	-- Inserts a sheet header in the module (indicated by module_cursor).
 		header	: in type_sheet_header;
-		sheet	: in type_sheet_file.bounded_string);
+		sheet	: in type_schematic_file_name.bounded_string);
 	
 	procedure add_frame (
 	-- Inserts a drawing frame in the module (indicated by module_cursor).

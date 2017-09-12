@@ -716,7 +716,7 @@ package body et_schematic is
 	procedure add_sheet_header (
 	-- Inserts a sheet header in the module (indicated by module_cursor).
 		header	: in type_sheet_header;
-		sheet	: in type_sheet_file.bounded_string) is
+		sheet	: in type_schematic_file_name.bounded_string) is
 
 		procedure add (
 			mod_name	: in type_submodule_name.bounded_string;
