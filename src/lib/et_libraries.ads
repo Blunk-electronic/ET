@@ -624,6 +624,7 @@ package et_libraries is
 		key_type => type_library_full_name.bounded_string,
 		element_type => type_components.map);
 
+	-- All compoenent models are collected here. This collection applies for the whole rig.
 	component_libraries : type_libraries.map;
 	
 end et_libraries;
