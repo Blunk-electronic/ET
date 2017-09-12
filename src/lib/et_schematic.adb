@@ -54,6 +54,12 @@ with et_import;
 
 package body et_schematic is
 
+	function to_string (schematic : in type_schematic_file_name.bounded_string) return string is
+	-- Returns the given schematic file name as string.
+	begin
+		return type_schematic_file_name.to_string (schematic);
+	end to_string;
+	
 	-- Sometimes we need to output the location of a submodule:
 	procedure write_path_to_submodule is
 		c : type_path_to_submodule.cursor;

@@ -73,6 +73,8 @@ package et_libraries is
 	package type_library_full_name is new generic_bounded_length (library_full_name_max);
 	use type_library_full_name;
 
+	library_handle : ada.text_io.file_type;
+	
 	-- Full library names can be stored furhter-on in an ordered set like this:
 	-- We use a doubly linked list because the order of the library names sometimes matters.
 -- 	package type_list_of_full_library_names is new doubly_linked_lists (

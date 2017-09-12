@@ -37,9 +37,9 @@ with ada.containers.vectors;
 with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 
-with et_general;				use et_general;
+with et_general;
 with et_schematic;
-with et_import;		            use et_import;
+with et_import;
 with et_libraries;
 with et_string_processing;
 

@@ -60,8 +60,6 @@ package et_general is
 	
 -- FILES, EXTENSIONS AND DIRECTORY NAMES
 
-	-- The name of a project may have 100 characters which seems sufficient for now.
- 	project_name_length		: constant natural := 100;
 
 	-- All reports go into this directory:
 	report_directory		: constant string (1..10)	:= "et_reports";
@@ -79,9 +77,6 @@ package et_general is
 
 
 	
--- PAPER SIZES
-    type type_paper_size is ( A0, A1, A2, A4 ); -- CS: others
-    paper_size_default : type_paper_size := A4;
 
 	
 

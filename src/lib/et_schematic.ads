@@ -35,6 +35,7 @@
 --			- the benefits: placing identical objects at the same position would be impossible
 --			- the cons: ordering subprograms required
 
+with ada.text_io;				use ada.text_io;
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
 with ada.strings.unbounded; 	use ada.strings.unbounded;
@@ -69,13 +70,31 @@ package et_schematic is
     sheet_comment_length : constant natural := 100;
     package type_sheet_comment is new generic_bounded_length(sheet_comment_length); use type_sheet_comment;
 
+	-- The name of a project may have 100 characters which seems sufficient for now.
+ 	project_name_length : constant natural := 100;
+	package type_project_name is new generic_bounded_length (project_name_length); use type_project_name;
+	package type_schematic_file_name is new generic_bounded_length (project_name_length + 4); use type_schematic_file_name;
+	schematic_handle	: ada.text_io.file_type;
+	
+	function to_string (schematic : in type_schematic_file_name.bounded_string) return string;
+	-- Returns the given schematic file name as string.
+
+	-- The project file name may have the same length as the project name itself plus extension (*.pro, *.prj, ...):
+	package type_project_file_name is new generic_bounded_length (project_name_length + 4); use type_project_file_name;
+	project_file_name	: type_project_file_name.bounded_string;
+	project_file_handle	: ada.text_io.file_type;
+	
 	-- The name of a sheet, the title (and optionally the file) may have 100 characters which seems sufficient for now.
 	-- If sheets are stored as files, the file name may have the same length.
  	sheet_name_length : constant natural := 100;
 	package type_sheet_name is new generic_bounded_length (sheet_name_length); use type_sheet_name;
 	package type_sheet_file is new generic_bounded_length (sheet_name_length); use type_sheet_file;	
    
-    
+-- PAPER SIZES
+    type type_paper_size is ( A0, A1, A2, A4 ); -- CS: others
+    paper_size_default : type_paper_size := A4;
+
+	
 -- COORDINATES
    
 	-- Within a schematic every object can be located by the name of the:
@@ -413,7 +432,7 @@ package et_schematic is
     -- the final drawing frame
     type type_frame is record
         coordinates     : type_coordinates;
-        paper_size      : et_general.type_paper_size; -- the size of the paper
+        paper_size      : type_paper_size; -- the size of the paper
         size_x, size_y  : et_libraries.type_grid; -- the dimensions of the frame (should fit into paper_size) 
         lines           : type_frame_lines.list;
         texts           : type_frame_texts.list;

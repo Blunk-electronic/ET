@@ -44,7 +44,8 @@ with ada.directories;			use ada.directories;
 
 with et_general;				use et_general;
 with et_string_processing;
-with et_import;		
+with et_schematic;
+with et_import;
 with et_kicad;
 
 procedure et is
@@ -52,6 +53,7 @@ procedure et is
 	version : string (1..3) := "000";
 
 	procedure get_commandline_arguments is
+		use et_schematic;
 	begin
 		loop 
 			case getopt(switch_version 
@@ -76,7 +78,7 @@ procedure et is
 
 					elsif full_switch = switch_import_project then
 						put_line ("import project " & parameter);
-						et_import.project_file_name := et_import.type_project_file_name.to_bounded_string (parameter);
+						project_file_name := type_project_file_name.to_bounded_string (parameter);
 
 					elsif full_switch = switch_import_format then
 						put_line ("import format " & parameter);
@@ -94,7 +96,7 @@ procedure et is
 		end loop;
 	end get_commandline_arguments;
 
-	use et_import.type_project_file_name;
+	use et_schematic.type_project_file_name;
 	use et_import;
 	use et_string_processing;
 begin
@@ -102,12 +104,12 @@ begin
 	get_commandline_arguments;
 
 	-- Test if project file specified and if it exists:
-	if length (et_import.project_file_name) > 0 then
-		if exists (to_string(et_import.project_file_name)) then
+	if length (et_schematic.project_file_name) > 0 then
+		if exists (to_string (et_schematic.project_file_name)) then
 			--put_line( "project file: " & to_string(et_import.project_file_name));
 			null;
 		else
-			put_line (message_error & "project file " & to_string (et_import.project_file_name) 
+			put_line (message_error & "project file " & to_string (et_schematic.project_file_name) 
 				& " not found ! (forgot extension ?)");
 			raise constraint_error;
 		end if;

@@ -31,16 +31,12 @@
 --
 
 with et_general;
+with et_schematic;
 with et_string_processing;			use et_string_processing;
 
 package body et_export is
 
-	function to_string (schematic : in type_schematic_file_name.bounded_string) return string is
-	-- Returns the given schematic file name as string.
-	begin
-		return type_schematic_file_name.to_string (schematic);
-	end to_string;
-	
+
 	procedure create_report is
 	-- Creates the report file in report_directory.
 	-- Sets the output to the report file.
@@ -54,7 +50,7 @@ package body et_export is
 		put_line (et_general.system_name & " export report");
 		put_line ("date " & string (date_now));
 		put_line ("CAD format " & type_cad_format'image (cad_format));
-		put_line ("project file " & to_string (et_export.project_file_name));
+		put_line ("project file " & et_schematic.type_project_file_name.to_string (et_schematic.project_file_name));
 		put_line ("log level" & type_log_level'image (log_level));
 		put_line (row_separator_double);		
 	end create_report;

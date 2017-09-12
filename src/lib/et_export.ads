@@ -47,14 +47,6 @@ with et_libraries;
 
 package et_export is
 
-	-- FILES, DIRECTORIES AND HANDLES
-	package type_project_name is new generic_bounded_length (et_general.project_name_length); use type_project_name;
-
-	-- The project file name may have the same length like the project name itself plus its extension (see et_general.ads):
-	package type_project_file_name is new generic_bounded_length (et_general.project_name_length + 4); use type_project_file_name;
-	project_file_name	: type_project_file_name.bounded_string;
-	project_file_handle	: ada.text_io.file_type;
-    
 	
 	file_report_export	: constant string (1 .. 
 								et_general.report_directory'length + 1 -- containing directory + separator
@@ -63,20 +55,7 @@ package et_export is
 									:= compose (et_general.report_directory, "export", et_general.report_extension);
 	report_handle		: ada.text_io.file_type;
 
-	-- LIBRARIES
-	-- component libraries go here:
-	component_libraries : et_libraries.type_libraries.map; 
 	
-	package type_schematic_file_name is new generic_bounded_length (et_general.project_name_length + 4); use type_schematic_file_name;
-	
-	function to_string (schematic : in type_schematic_file_name.bounded_string) return string;
-	-- Returns the given schematic file name as string.
-	
-	--schematic_file_name	: type_schematic_file_name.bounded_string;
-	schematic_handle	: ada.text_io.file_type;
-	library_handle		: ada.text_io.file_type;
-	-- CS: board_handle		: ada.text_io.file_type;
-    
 	-- CAD FORMATS
 	type type_cad_format is ( et_v1, kicad_v4 );
 	-- If no format specified via cmd line, a default applies so that the operator can be 

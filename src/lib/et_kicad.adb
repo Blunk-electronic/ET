@@ -2013,7 +2013,7 @@ package body et_kicad is
 				
 				if exists (to_string (lib_file_name)) then
 					open (
-						file => et_import.library_handle,
+						file => library_handle,
 						mode => in_file,
 						name => to_string (lib_file_name));
 
@@ -2032,18 +2032,18 @@ package body et_kicad is
 					if lib_inserted then
 						-- Now we read the library file and add components
 						-- to the library pinted to by lib_cursor:
-						set_input (et_import.library_handle);
+						set_input (library_handle);
 						read_library;
 					else
 						log_indentation_reset;
-						log (message_error & to_string(lib_file_name) & " already in component libraries !",
+						log (message_error & to_string (lib_file_name) & " already in component libraries !",
 							 console => true);
 						raise constraint_error;
 					end if;
 					
-					close (et_import.library_handle);
+					close (library_handle);
 				else
-					log (message_warning & "library '" & to_string(lib_file_name) & "' not found !");
+					log (message_warning & "library '" & to_string (lib_file_name) & "' not found !");
 				end if;
 
 				-- prepare next library file to be be read
@@ -2067,21 +2067,22 @@ package body et_kicad is
 		
 		list_of_submodules : type_list_of_submodule_names_extended;
 		
-		top_level_schematic : et_import.type_schematic_file_name.bounded_string;
-		current_schematic : et_import.type_schematic_file_name.bounded_string;
+		top_level_schematic	: type_schematic_file_name.bounded_string;
+		current_schematic	: type_schematic_file_name.bounded_string;
 
-		package stack_of_sheet_lists is new stack_lifo (max => 10, item => type_list_of_submodule_names_extended);
+		package stack_of_sheet_lists is new et_general.stack_lifo (max => 10, item => type_list_of_submodule_names_extended);
         use stack_of_sheet_lists;
 		
-		function read_project_file return et_import.type_schematic_file_name.bounded_string is
+		function read_project_file return type_schematic_file_name.bounded_string is
 		-- Reads the project file in terms of LibDir and LibName. 
 		-- LibDir is stored in variable lib_dir.
 		-- Project library names are stored in project_libraries.
 		-- Returns the name of the top level schematic file.
 			line : type_fields_of_line;
 			
-			use et_import.type_project_file_name;
+			use type_project_file_name;
 			use et_libraries;
+			use et_schematic;
 
 		-- CS: move to spec begin
             section_eeschema_entered : boolean := false;
@@ -2105,8 +2106,8 @@ package body et_kicad is
 			-- Later they become part of the module being processed.
 			type_library_names.clear (tmp_project_libraries);
 			
-			open (file => et_import.project_file_handle, mode => in_file, name => to_string (et_import.project_file_name));
-			set_input (et_import.project_file_handle);
+			open (file => project_file_handle, mode => in_file, name => to_string (project_file_name));
+			set_input (project_file_handle);
 			
 			while not end_of_file loop
 
@@ -2182,10 +2183,10 @@ package body et_kicad is
 				
 			end loop;
 
-			close (et_import.project_file_handle);
+			close (project_file_handle);
 
 			-- Derive the schematic file name from the project file. It is just a matter of file extension.
-			return et_import.type_schematic_file_name.to_bounded_string(
+			return type_schematic_file_name.to_bounded_string(
 				compose (name => base_name (to_string (project_file_name)), 
 						extension => file_extension_schematic));
 		end read_project_file;
@@ -2463,7 +2464,7 @@ package body et_kicad is
 			
 
 			
-		function read_schematic (current_schematic : in et_import.type_schematic_file_name.bounded_string) 
+		function read_schematic (current_schematic : in type_schematic_file_name.bounded_string) 
 			return type_list_of_submodule_names_extended is
 		-- Reads the given schematic file. If it contains submodules (hierarchic sheets), 
         -- they will be returned in list_of_submodules. Otherwise the returned list is empty.
@@ -3692,8 +3693,8 @@ package body et_kicad is
 				log_indentation_up;
 				write_path_to_submodule;
 				
-				open (file => et_import.schematic_handle, mode => in_file, name => to_string(current_schematic));
-				set_input (et_import.schematic_handle);
+				open (file => schematic_handle, mode => in_file, name => to_string(current_schematic));
+				set_input (schematic_handle);
 				while not end_of_file loop
 
 					-- Store line in variable "line" (see et_string_processing.ads)
@@ -4336,7 +4337,7 @@ package body et_kicad is
 					header => sheet_header,
 					sheet => type_sheet_file.to_bounded_string (to_string (current_schematic)));
 				
-				close (et_import.schematic_handle);
+				close (schematic_handle);
 
 				build_anonymous_nets; -- Assembles net segments to a list of anonymous nets
 	
@@ -4368,7 +4369,7 @@ package body et_kicad is
 							& to_string(current_schematic) & "' " 
 							& et_string_processing.affected_line(line),
 							console => true);
-							close_report;
+							et_import.close_report;
 						raise;
 
 				when others =>
@@ -4377,21 +4378,21 @@ package body et_kicad is
 						 & to_string(current_schematic) & "' " 
 						 & et_string_processing.affected_line(line),
 						console => true);
-					close_report;
+					et_import.close_report;
 					raise;					
 
 		end read_schematic;
 
 
     begin -- import design
-		create_report; -- directs all puts to the report file
+		et_import.create_report; -- directs all puts to the report file
 		
 		case et_import.cad_format is
-			when kicad_v4 =>
+			when et_import.kicad_v4 =>
 
 				-- derive top level schematic file name from project file (they differ only in their extension)
 				top_level_schematic := read_project_file;
-				tmp_module_name := type_submodule_name.to_bounded_string (et_import.to_string (top_level_schematic));
+				tmp_module_name := type_submodule_name.to_bounded_string (to_string (top_level_schematic));
 				
 				-- The top level schematic file dictates the module name. So we create the module here.
 				-- The first element to set is the project libraries which we collected earlier when the
@@ -4450,8 +4451,8 @@ package body et_kicad is
                     
 					loop
 						-- fetch name of submodule (where id is pointing at)
-						current_schematic := et_import.type_schematic_file_name.to_bounded_string (
-							et_schematic.type_submodule_name.to_string (
+						current_schematic := type_schematic_file_name.to_bounded_string (
+							type_submodule_name.to_string (
 								type_list_of_submodule_names.element (
 									container => list_of_submodules.list,
 									index => list_of_submodules.id)));
@@ -4509,7 +4510,7 @@ package body et_kicad is
 				
 		end case;
 
-		close_report;
+		et_import.close_report;
 
 		-- CS: exception handler
 		
