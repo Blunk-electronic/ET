@@ -3960,7 +3960,7 @@ package body et_kicad is
 
 										-- read GUI submodule (sheet) timestamp from a line like "U 58A73B5D"
 										if get_field_from_line(line,1) = schematic_keyword_sheet_timestamp then 
-											submodule_gui_scratch.timestamp := get_field_from_line(line,2);
+											submodule_gui_scratch.timestamp := type_timestamp (get_field_from_line(line,2));
 										end if;
 										
 										-- Read submodule (sheet) name from a line like "F0 "mcu_stm32f030" 60"

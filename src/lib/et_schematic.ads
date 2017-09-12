@@ -396,7 +396,7 @@ package et_schematic is
         text_size_of_file   : type_text_size;        
 		coordinates		    : type_coordinates;
         size_x, size_y      : et_libraries.type_grid; -- size x/y of the box
-        timestamp           : string (1..8); -- CS: type_timestamp
+        timestamp           : et_string_processing.type_timestamp;
         -- CS: ports ?
 	end record;
 
