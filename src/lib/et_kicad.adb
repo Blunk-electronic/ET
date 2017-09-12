@@ -419,12 +419,12 @@ package body et_kicad is
 	-- Reads components from libraries as stored in lib_dir and project_libraries:
 		
         use et_libraries; -- most of the following stuff is specified there
-		use et_libraries.type_list_of_library_names;
+		use et_libraries.type_library_names;
 		use et_libraries.type_library_full_name;
 
 		-- A list of bare library names tells us which libraries the project requires.
 		-- This is the cursor to the bare library names. It points to the bare library name in et_libraries.project_libraries.
-		bare_lib_cursor	: et_libraries.type_list_of_library_names.cursor := first(et_libraries.project_libraries);
+		bare_lib_cursor	: et_libraries.type_library_names.cursor := first(et_libraries.project_libraries);
 
 		-- Here we keep the full library name (incl. path) like "/home/user/lib/my_lib.lib" temporarily
 		-- before inserting an empty library in the library list et_import.component_libraries :
@@ -2061,6 +2061,9 @@ package body et_kicad is
 		use et_libraries.type_library_directory;
 		use et_schematic;
 
+		function field (line : in type_fields_of_line; position : in positive) return string renames
+			et_string_processing.get_field_from_line;
+		
 		list_of_submodules : type_list_of_submodule_names_extended;
 		
 		top_level_schematic : et_import.type_schematic_file_name.bounded_string;
@@ -2077,6 +2080,7 @@ package body et_kicad is
 			line : type_fields_of_line;
 			
 			use et_import.type_project_file_name;
+			use et_libraries;
 			
             section_eeschema_entered : boolean := false;
             section_eeschema_libraries_entered : boolean := false;            
@@ -2109,13 +2113,13 @@ package body et_kicad is
 					when 1 => -- we have a line with just one field. those lines contain headers like "[eeschema]"
 
 						-- test header [eeschema]
-						if get_field_from_line(line,1) = project_header_eeschema then
+						if field (line,1) = project_header_eeschema then
 							clear_section_entered_flags;
 							section_eeschema_entered := true;
 						end if;
 
 						-- test header [eeschema/libraries]
-						if get_field_from_line(line,1) = project_header_eeschema_libraries then
+						if field (line,1) = project_header_eeschema_libraries then
 							clear_section_entered_flags;
 							section_eeschema_libraries_entered := true;
 						end if;
@@ -2125,12 +2129,13 @@ package body et_kicad is
 
 							-- get path to libraries (LibDir) and store it in lib_dir (see et_kicad.ads)
 							-- CS: lib_dir must be a list of paths as kicad stores them like "LibDir=../../lbr;/home/tmp/.."
-							-- CS: currently we assume only one path here
-							if get_field_from_line(line,1) = project_keyword_library_directory then
-								et_libraries.lib_dir := to_bounded_string(get_field_from_line(line,2));
+							-- CS: currently we assume only one path here. Provide procedure that sets lib_dir and checks
+							-- deviations.
+							if field (line,1) = project_keyword_library_directory then
+								lib_dir := to_bounded_string (field (line,2));
 
 								-- For the log write something like "LibDir ../../lbr"
-								log (text => project_keyword_library_directory & " " & to_string(et_libraries.lib_dir));
+								log (text => project_keyword_library_directory & " " & to_string (lib_dir));
 							end if;
 							
 						end if;
@@ -2141,19 +2146,19 @@ package body et_kicad is
 							-- from a line like "LibName1=bel_supply"
 							-- We ignore the index of LibName. Since we store the lib names in a doubly linked list,
 							-- their order remains unchanged.
-							if get_field_from_line(line,1)(1..project_keyword_library_name'length) 
+							if field (line,1)(1..project_keyword_library_name'length) 
 								= project_keyword_library_name then
 								
-								et_libraries.type_list_of_library_names.append(
-									container => et_libraries.project_libraries, 
-									new_item => et_libraries.type_library_name.to_bounded_string(
-										get_field_from_line(line,2)
+								type_library_names.append (
+									container => project_libraries, 
+									new_item => type_library_name.to_bounded_string(
+										field (line,2)
 										--& "."
 										--& file_extension_schematic_lib)); -- extension
 										));
 
 								-- For the log write something like "LibName ../../lbr/bel_connectors_and_jumpers"
-								log (text => get_field_from_line(line,1) & " " & get_field_from_line(line,2));
+								log (text => field (line,1) & " " & field (line,2));
 							end if;
 
 						end if;
@@ -2167,11 +2172,12 @@ package body et_kicad is
 -- 				end if;
 				
 			end loop;
-			close ( et_import.project_file_handle );
+
+			close (et_import.project_file_handle);
 
 			-- Derive the schematic file name from the project file. It is just a matter of file extension.
 			return et_import.type_schematic_file_name.to_bounded_string(
-				compose(name => base_name(to_string(project_file_name)), 
+				compose (name => base_name (to_string (project_file_name)), 
 						extension => file_extension_schematic));
 		end read_project_file;
 
@@ -3741,7 +3747,7 @@ package body et_kicad is
 
 									-- Store bare library name in the list sheet_header.libraries:
 									-- We use a doubly linked list because the order of the library names must be kept.
-									et_libraries.type_list_of_library_names.append(
+									et_libraries.type_library_names.append(
 										container => sheet_header.libraries,
 										new_item => et_libraries.type_library_name.to_bounded_string(
 											get_field_from_line( get_field_from_line(line,1), 2, latin_1.colon))

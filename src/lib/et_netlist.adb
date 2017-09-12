@@ -74,7 +74,7 @@ package body et_netlist is
 			--write_component_properties (component_cursor);
 			log (text => to_string (component_reference (component_cursor)));
 
-			log (text => "name in library :" & to_string (component_name_in_library (component_cursor)));
+			log (text => "name in library " & et_libraries.type_component_name.to_string (component_name_in_library (component_cursor)));
 			next (component_cursor);
 		end loop;
 
