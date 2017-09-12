@@ -166,11 +166,6 @@ package et_kicad is
 	-- In schematic, a power symbol/component has a hash as first character like "L P3V3 #PWR07"
 	schematic_component_power_symbol_prefix: constant character := '#';
 
-	-- The name of a sheet, the title (and optionally the file) may have 100 characters which seems sufficient for now.
-	-- If sheets are stored as files, the file name may have the same length.
- 	sheet_name_length	: constant natural := 100;
-	package type_sheet_name is new generic_bounded_length(sheet_name_length); use type_sheet_name;
-	package type_sheet_file is new generic_bounded_length(sheet_name_length); use type_sheet_file;	
     
     type type_label_orientation is range 0..3; -- also used for notes
 
@@ -280,24 +275,6 @@ package et_kicad is
 -- 			"=" => et_kicad_libraries.type_list_of_components."="
 -- 		);
 -- 		
-	-- The sheet header in turn is a composite of a list of libraries and other things:
-	-- The sheet header contains the libraries and their content.
-	-- We use a doubly linked list because the order of the library names must be kept.
-    type type_sheet_header is record
-        version     : positive; -- 2    
-		libraries   : et_libraries.type_library_names.list; -- CS: probably not used by kicad, just information
-		--libraries	: type_list_of_library_names.map;
-        eelayer_a   : positive; -- 25 -- CS: meaning not clear, probably not used
-        eelayer_b   : natural; -- 0 -- CS: meaning not clear, probably not used
-    end record;
-
-	-- Since there are usually many sheets, we need a map of headers.
-	-- The headers are finally stored in a map and accessed by the name of the sheet file.
-	-- Why ? When schematic files are exported, their headers must be restored to the original state.
-    package type_list_of_sheet_headers is new ordered_maps (
-        key_type => type_sheet_file.bounded_string,
-        element_type => type_sheet_header);
-    list_of_sheet_headers : type_list_of_sheet_headers.map;
 
 
 -- LIBRARY

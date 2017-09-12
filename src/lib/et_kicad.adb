@@ -4330,13 +4330,12 @@ package body et_kicad is
                     raise constraint_error;
                 end if;
 
-                -- Add sheet_header to global list_of_sheet_headers.
+                -- Add sheet_header to module.
                 -- NOTE: The file name serves as key in order to match from file to header.
-                type_list_of_sheet_headers.insert (
-                    container => list_of_sheet_headers, 
-                    key => type_sheet_file.to_bounded_string (to_string(current_schematic)),
-                    new_item => sheet_header);
-                
+				add_sheet_header (
+					header => sheet_header,
+					sheet => type_sheet_file.to_bounded_string (to_string (current_schematic)));
+				
 				close (et_import.schematic_handle);
 
 				build_anonymous_nets; -- Assembles net segments to a list of anonymous nets
@@ -4354,7 +4353,7 @@ package body et_kicad is
 				
 			else
 				log_indentation_reset;
-				log (message_error & "schematic file '" & to_string(current_schematic) & "' not found !",
+				log (message_error & "schematic file '" & to_string (current_schematic) & "' not found !",
 					console => true);
 				raise constraint_error;
 			end if;
@@ -4406,7 +4405,9 @@ package body et_kicad is
 						submodules		=> type_gui_submodules.empty_map,
 						frames			=> type_frames.empty_list,
 						title_blocks	=> type_title_blocks.empty_list,
-						notes			=> type_texts.empty_list)
+						notes			=> type_texts.empty_list,
+						sheet_headers	=> type_sheet_headers.empty_map
+						)
 					);
 				
 				read_components_libraries; -- as stored in lib_dir and project libraries

@@ -55,7 +55,7 @@ package et_schematic is
 -- NAMES GENERAL
 
 	-- The name of a module may have 100 characters which seems sufficient for now.
- 	module_name_length	: constant natural := 100;
+ 	module_name_length : constant natural := 100;
 	package type_module_name is new generic_bounded_length(module_name_length); use type_module_name;
 
 	-- The name of a submodule may have 100 characters which seems sufficient for now.
@@ -63,12 +63,17 @@ package et_schematic is
 	package type_submodule_name is new generic_bounded_length(submodule_name_length); use type_submodule_name;
 
     -- A sheet title may have 100 characters which seems sufficient for now.
- 	sheet_title_length	: constant natural := 100;    
+ 	sheet_title_length : constant natural := 100;    
 	package type_sheet_title is new generic_bounded_length(sheet_title_length); use type_sheet_title;
     
     sheet_comment_length : constant natural := 100;
     package type_sheet_comment is new generic_bounded_length(sheet_comment_length); use type_sheet_comment;
 
+	-- The name of a sheet, the title (and optionally the file) may have 100 characters which seems sufficient for now.
+	-- If sheets are stored as files, the file name may have the same length.
+ 	sheet_name_length : constant natural := 100;
+	package type_sheet_name is new generic_bounded_length (sheet_name_length); use type_sheet_name;
+	package type_sheet_file is new generic_bounded_length (sheet_name_length); use type_sheet_file;	
    
     
 -- COORDINATES
@@ -461,6 +466,24 @@ package et_schematic is
     package type_title_blocks is new doubly_linked_lists (
         element_type => type_title_block);
 
+	-- sheet headers (kicad requirement)
+	-- The sheet header is a composite of a list of libraries and other things:
+	-- It contains a list of libraries used by a schemetic sheet.
+	-- We use a simple list because the order of the library names must be kept.
+    type type_sheet_header is record
+        version     : positive; -- 2    
+		libraries   : et_libraries.type_library_names.list; -- CS: probably not used by kicad, just information
+		--libraries	: type_list_of_library_names.map;
+        eelayer_a   : positive; -- 25 -- CS: meaning not clear, probably not used
+        eelayer_b   : natural; -- 0 -- CS: meaning not clear, probably not used
+    end record;
+
+	-- Since there are usually many sheets, we need a map from schematic file name to schematic header.
+    package type_sheet_headers is new ordered_maps (
+        key_type => type_sheet_file.bounded_string,
+        element_type => type_sheet_header);
+	
+	
     
 -- 	type type_gui_sheet is record -- CS: from kicad $descr
 --         title           : type_sheet_title.bounded_string;
@@ -534,13 +557,15 @@ package et_schematic is
     -- - a list of drawing frames
     -- - a list of title blocks
 	type type_module is record
-		libraries	: type_library_names.list;	-- the list of project library names
-		nets 	    : type_nets.map;			-- the nets of the module
-        components	: type_components.map;		-- the components of the module
-        submodules  : type_gui_submodules.map;	-- graphical representations of submodules
-        frames      : type_frames.list;			-- frames
-        title_blocks: type_title_blocks.list;	-- title blocks
-		notes       : type_texts.list;			-- notes
+		libraries		: type_library_names.list;	-- the list of project library names
+		nets 	    	: type_nets.map;			-- the nets of the module
+        components		: type_components.map;		-- the components of the module
+		submodules  	: type_gui_submodules.map;	-- graphical representations of submodules
+        frames      	: type_frames.list;			-- frames
+        title_blocks	: type_title_blocks.list;	-- title blocks
+		notes       	: type_texts.list;			-- notes
+
+		sheet_headers	: type_sheet_headers.map;	-- the list of sheet headers -- kicad requirement
 		-- CS: junctions
         -- CS: images
 	end record;
@@ -565,6 +590,11 @@ package et_schematic is
 	-- Inserts a gui submodule in the module (indicated by module_cursor)
 		name		: in et_schematic.type_submodule_name.bounded_string;
 		gui_sub_mod	: in et_schematic.type_gui_submodule);
+
+	procedure add_sheet_header (
+	-- Inserts a sheet header in the module (indicated by module_cursor).
+		header	: in type_sheet_header;
+		sheet	: in type_sheet_file.bounded_string);
 	
 	procedure add_frame (
 	-- Inserts a drawing frame in the module (indicated by module_cursor).

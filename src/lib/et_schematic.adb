@@ -707,6 +707,36 @@ package body et_schematic is
 	end add_gui_submodule;
 
 	
+	procedure add_sheet_header (
+	-- Inserts a sheet header in the module (indicated by module_cursor).
+		header	: in type_sheet_header;
+		sheet	: in type_sheet_file.bounded_string) is
+
+		procedure add (
+			mod_name	: in type_submodule_name.bounded_string;
+			module		: in out type_module) is
+
+			use et_string_processing;
+		begin
+			module.sheet_headers.insert (
+				key			=> sheet,
+				new_item	=> header);
+
+			if log_level >= 1 then
+				null; -- CS: write this procedure:
+				--et_schematic.write_header
+			end if;
+
+		end add;
+
+	begin
+		rig.update_element (
+			position	=> module_cursor,
+			process		=> add'access
+			);
+	end add_sheet_header;
+
+	
 	procedure add_frame (
 	-- Inserts a drawing frame in the the module (indicated by module_cursor).
 	-- As drawing frames are collected in a simple list, the same frame
