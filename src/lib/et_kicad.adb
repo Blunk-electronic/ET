@@ -2065,12 +2065,12 @@ package body et_kicad is
 		function field (line : in type_fields_of_line; position : in positive) return string renames
 			et_string_processing.get_field_from_line; -- CS: apply in read_schematic
 		
-		list_of_submodules : type_list_of_submodule_names_extended;
+		list_of_submodules : type_submodule_names_extended;
 		
 		top_level_schematic	: type_schematic_file_name.bounded_string;
 		current_schematic	: type_schematic_file_name.bounded_string;
 
-		package stack_of_sheet_lists is new et_general.stack_lifo (max => 10, item => type_list_of_submodule_names_extended);
+		package stack_of_sheet_lists is new et_general.stack_lifo (max => 10, item => type_submodule_names_extended);
         use stack_of_sheet_lists;
 		
 		function read_project_file return type_schematic_file_name.bounded_string is
@@ -2465,11 +2465,11 @@ package body et_kicad is
 
 			
 		function read_schematic (current_schematic : in type_schematic_file_name.bounded_string) 
-			return type_list_of_submodule_names_extended is
+			return type_submodule_names_extended is
 		-- Reads the given schematic file. If it contains submodules (hierarchic sheets), 
         -- they will be returned in list_of_submodules. Otherwise the returned list is empty.
 
-			list_of_submodules : type_list_of_submodule_names_extended; -- list to be returned
+			list_of_submodules : type_submodule_names_extended; -- list to be returned
 			name_of_submodule_scratch : type_submodule_name.bounded_string; -- temporarily used before appended to list_of_submodules
 
 			use et_string_processing;
@@ -3939,7 +3939,7 @@ package body et_kicad is
 											sheet_description_entered := false; -- we are leaving the sheet description
 
 											-- append name_of_submodule_scratch to list_of_submodules to be returned to parent unit
-											type_list_of_submodule_names.append(list_of_submodules.list, name_of_submodule_scratch);
+											type_submodule_names.append (list_of_submodules.list, name_of_submodule_scratch);
 
 											-- append submodule_gui_scratch to list of gui submodules
 											--type_gui_submodules.append (module.submodules, submodule_gui_scratch);
@@ -4428,7 +4428,7 @@ package body et_kicad is
 				
 				-- If read_file_schematic_kicad returns an empty list of submodules, we are dealing with a flat design. Otherwise
 				-- the design is hierarchic (because the submodule list is longer than zero).
-				if type_list_of_submodule_names.length (list_of_submodules.list) = 0 then -- flat design -- CS: use is_empty
+				if type_submodule_names.length (list_of_submodules.list) = 0 then -- flat design -- CS: use is_empty
 					log ("FLAT");
 				else -- hierarchic design
 					-- In the follwing we dive into the submodules. Each time before a deeper level is entered,
@@ -4443,7 +4443,7 @@ package body et_kicad is
 					
 					-- output the number of submodules (sheets) found at level 0:
 					log ("number of hierarchic sheets" & natural'image (
-						natural (type_list_of_submodule_names.length (list_of_submodules.list)))); -- CS: use count_type
+						natural (type_submodule_names.length (list_of_submodules.list)))); -- CS: use count_type
 
 					-- Initially set submodule pointer at first submodule of list:
 					list_of_submodules.id := 1;
@@ -4452,7 +4452,7 @@ package body et_kicad is
 						-- fetch name of submodule (where id is pointing at)
 						current_schematic := type_schematic_file_name.to_bounded_string (
 							type_submodule_name.to_string (
-								type_list_of_submodule_names.element (
+								type_submodule_names.element (
 									container => list_of_submodules.list,
 									index => list_of_submodules.id)));
 						
@@ -4467,7 +4467,7 @@ package body et_kicad is
 
 						-- If the schematic file contains submodules (hierarchic sheets), set list_of_submodules.id to the first 
 						-- submodule of them. Otherwise restore submodule list of parent module and advance therein to next submodule.
-						if type_list_of_submodule_names.length(list_of_submodules.list) = 0 then -- flat submodule (no hierarchic sheets) -- CS: use is_empty
+						if type_submodule_names.length (list_of_submodules.list) = 0 then -- flat submodule (no hierarchic sheets) -- CS: use is_empty
 
 							list_of_submodules := pop;
                             list_of_submodules.id := list_of_submodules.id + 1;
@@ -4483,7 +4483,7 @@ package body et_kicad is
 
 						-- Once the last submodule of the list has been processed, restore list of the overlying level and advance to next module.
 						-- Exit after last submodule in level 0 has been processed.
-						if list_of_submodules.id > positive(type_list_of_submodule_names.length(list_of_submodules.list)) then
+						if list_of_submodules.id > positive (type_submodule_names.length (list_of_submodules.list)) then
 							if depth = 0 then 
 								log ("LAST SUBMODULE PROCESSED.");
 								exit; 
