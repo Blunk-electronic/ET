@@ -59,22 +59,31 @@ package body et_netlist is
 
 	function build_portlists return type_portlists.map is
 		pl : type_portlists.map;
+
+		use et_libraries;
 		use et_schematic;
 		use et_schematic.type_components;
 		
-		component_cursor : type_components.cursor;
+		component_cursor	: et_schematic.type_components.cursor;
+		library_cursor		: type_library_names.cursor;
 	begin
 		
 		log (text => "component list");
 		log_indentation_up;
 		
 		reset_component_cursor (component_cursor);
-		while component_cursor /= type_components.no_element loop
-			--log (text => to_string (get_component_reference (component_cursor)));
+		while component_cursor /= et_schematic.type_components.no_element loop
+
 			--write_component_properties (component_cursor);
 			log (text => to_string (component_reference (component_cursor)));
-
 			log (text => "name in library " & et_libraries.type_component_name.to_string (component_name_in_library (component_cursor)));
+
+			-- search libraries "name in library"
+			reset_library_cursor (library_cursor);
+
+
+
+			
 			next (component_cursor);
 		end loop;
 

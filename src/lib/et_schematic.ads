@@ -642,7 +642,7 @@ package et_schematic is
 	-- Resets the given component cursor to the begin of the component list.
 
 	procedure reset_library_cursor (cursor : in out type_library_names.cursor);
-	-- Resets the given library cursor to the begin of the library list list.
+	-- Resets the given library cursor to the begin of the library list.
 
 	function number_of_libraries return count_type;
 	-- Returns the number of project libraries.
