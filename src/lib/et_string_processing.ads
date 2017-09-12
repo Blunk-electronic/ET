@@ -84,6 +84,12 @@ package et_string_processing is
 	-- Writes the given text with the current log_indentation in the current output. 
 	-- If the system wide log level is greater or equal the the given log_level the given text is put on the log.
 
+-- CHARACTERS IN NOTES, TEXT, LABELS, ...
+	-- Since we want designs readable and portable in as many languages as possible we accept only those characters:
+	general_characters : character_set := 
+		to_set (ranges => (('a','z'),('A','Z'),('0','9'))) -- letters and numbers
+		or to_set ("!?.-: "); -- other characters -- CS: add others if neccessary
+	
 -- DATE
 	date_characters : character_set := to_set ( span => ('0','9')) or to_set ("-:T");
 	type type_date is new string (1..19); -- "2017-08-17T14:17:25" -- CS: define a type that allows only those characters

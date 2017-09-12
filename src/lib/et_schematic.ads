@@ -416,10 +416,10 @@ package et_schematic is
 	
 	package type_frame_lines is new doubly_linked_lists (
         element_type => type_frame_line);
-    
+
 	type type_frame_text is record
 		coordinates		: et_libraries.type_coordinates;
-		text			: character; -- CS: range A..Z and 1..n
+		text			: character_set := et_string_processing.general_characters;
 		size			: type_text_size;
 		orientation		: type_angle;
 		-- CS: font, ...
