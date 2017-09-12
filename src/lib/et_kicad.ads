@@ -323,7 +323,7 @@ package et_kicad is
 	-- temporarily storage
 	tmp_frame 				: et_schematic.type_frame; -- a single drawing frame
 	tmp_title_block_text 	: et_schematic.type_title_block_text; -- a single text within the title block
-	tmp_title_block_texts 	: et_schematic.type_list_of_title_block_texts.vector; -- a list of title block texts
+	tmp_title_block_texts 	: et_schematic.type_title_block_texts.list; -- a list of title block texts
 	tmp_title_block 		: et_schematic.type_title_block; -- a full title block	
 	tmp_junction			: et_schematic.type_net_junction;
 	tmp_simple_net_label	: et_schematic.type_net_label_simple;

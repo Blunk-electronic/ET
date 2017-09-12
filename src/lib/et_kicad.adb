@@ -3830,8 +3830,7 @@ package body et_kicad is
 										-- CS: x/y coordinates and list of lines are kicad built-in things and thus not available currently.
 
 										-- purge temporarily texts
-										type_list_of_title_block_texts.delete(tmp_title_block_texts,1,
-											type_list_of_title_block_texts.length(tmp_title_block_texts));
+										type_title_block_texts.clear (tmp_title_block_texts);
 
 										-- append title block to module
 										add_title_block (tmp_title_block);
@@ -3875,7 +3874,7 @@ package body et_kicad is
 										tmp_title_block_text.meaning := TITLE;
 										tmp_title_block_text.text := type_title_block_text_string.to_bounded_string(
 											strip_quotes((get_field_from_line(line,2))));
-										type_list_of_title_block_texts.append(tmp_title_block_texts,tmp_title_block_text);
+										type_title_block_texts.append (tmp_title_block_texts, tmp_title_block_text);
 									end if;
 
 									-- read date from a line like "Date "1981-01-23""
@@ -3883,7 +3882,7 @@ package body et_kicad is
 										tmp_title_block_text.meaning := DRAWN_DATE;
 										tmp_title_block_text.text := type_title_block_text_string.to_bounded_string(
 											strip_quotes((get_field_from_line(line,2))));
-										type_list_of_title_block_texts.append(tmp_title_block_texts,tmp_title_block_text);
+										type_title_block_texts.append (tmp_title_block_texts, tmp_title_block_text);
 									end if;
 
 									-- read revision from a line like "Rev "9.7.1"
@@ -3891,7 +3890,7 @@ package body et_kicad is
 										tmp_title_block_text.meaning := REVISION;
 										tmp_title_block_text.text := type_title_block_text_string.to_bounded_string(
 											strip_quotes((get_field_from_line(line,2))));
-										type_list_of_title_block_texts.append(tmp_title_block_texts,tmp_title_block_text);
+										type_title_block_texts.append (tmp_title_block_texts, tmp_title_block_text);
 									end if;
 
 									-- read company name
@@ -3899,7 +3898,7 @@ package body et_kicad is
 										tmp_title_block_text.meaning := COMPANY;
 										tmp_title_block_text.text := type_title_block_text_string.to_bounded_string(
 											strip_quotes((get_field_from_line(line,2))));
-										type_list_of_title_block_texts.append(tmp_title_block_texts,tmp_title_block_text);
+										type_title_block_texts.append (tmp_title_block_texts, tmp_title_block_text);
 									end if;
 
 									-- read commments 1..4 CS: need something more flexible here in order to read any number of comments.
@@ -3910,7 +3909,7 @@ package body et_kicad is
 											tmp_title_block_text.meaning := MISC;
 											tmp_title_block_text.text := type_title_block_text_string.to_bounded_string(
 												strip_quotes((get_field_from_line(line,2))));
-											type_list_of_title_block_texts.append(tmp_title_block_texts,tmp_title_block_text);
+											type_title_block_texts.append (tmp_title_block_texts, tmp_title_block_text);
 									end if;
 									
 

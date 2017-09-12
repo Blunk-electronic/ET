@@ -447,8 +447,7 @@ package et_schematic is
 		coordinates_end   : et_libraries.type_coordinates;
     end record;
 
-	package type_list_of_title_block_lines is new vectors ( -- CS: better a simple list ?
-		index_type => positive, -- every line of a frame an id
+	package type_title_block_lines is new doubly_linked_lists (
         element_type => type_title_block_line);
     
  	title_block_text_length	: constant natural := 200;
@@ -469,15 +468,14 @@ package et_schematic is
 		-- CS: font, ...
  	end record;
 
-	package type_list_of_title_block_texts is new vectors ( -- CS: better a simple list ?
- 		index_type => positive, -- every text field of the title block has an id
+	package type_title_block_texts is new doubly_linked_lists (
  		element_type => type_title_block_text);
 
     -- the final title block
     type type_title_block is record
         coordinates     : type_coordinates;
-        lines           : type_list_of_title_block_lines.vector;
-        texts           : type_list_of_title_block_texts.vector;
+        lines           : type_title_block_lines.list;
+        texts           : type_title_block_texts.list;
     end record;
 
     -- there are lots of title blocks in a schematic contained in a list
