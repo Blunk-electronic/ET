@@ -573,7 +573,8 @@ package et_schematic is
     -- - a list of drawing frames
     -- - a list of title blocks
 	type type_module is record
-		libraries		: type_library_names.list;	-- the list of project library names
+		--libraries		: type_library_names.list;	-- the list of project library names
+		libraries		: type_full_library_names.list;	-- the list of project library names
 		nets 	    	: type_nets.map;			-- the nets of the module
         components		: type_components.map;		-- the components of the module
 		submodules  	: type_gui_submodules.map;	-- graphical representations of submodules
@@ -639,7 +640,7 @@ package et_schematic is
 	procedure reset_component_cursor (cursor : in out type_components.cursor);
 	-- Resets the given component cursor to the begin of the component list.
 
-	procedure reset_library_cursor (cursor : in out type_library_names.cursor);
+	procedure reset_library_cursor (cursor : in out type_full_library_names.cursor);
 	-- Resets the given library cursor to the begin of the library list.
 
 	function number_of_libraries return count_type;

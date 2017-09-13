@@ -61,11 +61,21 @@ package body et_netlist is
 		pl : type_portlists.map;
 
 		use et_libraries;
+		use et_libraries.type_full_library_names;
 		use et_schematic;
 		use et_schematic.type_components;
-		
+
+		-- The component cursor points to the component being processed.
 		component_cursor	: et_schematic.type_components.cursor;
-		library_cursor		: type_library_names.cursor;
+
+		-- The generic name of a component in a library (like TRANSISTOR_PNP or LED) 
+		-- is tempoarily held here:
+		component_name		: et_libraries.type_component_name.bounded_string; 
+
+		-- The library cursor points to the library to search in:
+		library_cursor		: type_full_library_names.cursor;
+
+		library_name		: type_full_library_name.bounded_string;
 	begin
 		
 		log (text => "component list");
@@ -74,13 +84,22 @@ package body et_netlist is
 		reset_component_cursor (component_cursor);
 		while component_cursor /= et_schematic.type_components.no_element loop
 
-			--write_component_properties (component_cursor);
 			log (text => to_string (component_reference (component_cursor)));
-			log (text => "name in library " & et_libraries.type_component_name.to_string (component_name_in_library (component_cursor)));
+			component_name := component_name_in_library (component_cursor);
+			log (text => "name in library " & to_string (component_name));
 
-			-- search libraries "name in library"
+			-- Search in libraries for a component with name component_name :
 			reset_library_cursor (library_cursor);
+			while library_cursor /= type_full_library_names.no_element loop
+				log (text => " library " & to_string (element (library_cursor)));
 
+				library_name := type_full_library_name.to_bounded_string (
+									to_string (lib_dir)
+									& to_string (element (library_cursor))
+-- 									& file_extension_schematic_lib
+												);
+				next (library_cursor);
+			end loop;
 
 
 			

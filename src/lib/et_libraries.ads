@@ -54,25 +54,42 @@ package et_libraries is
 	library_name_length_max : constant natural := 100; -- CS: increase if necessary
     package type_library_name is new generic_bounded_length (library_name_length_max); use type_library_name;
 
-	-- Bare library names can be stored further-on in an ordered set like this:
+	function to_string (library_name : in type_library_name.bounded_string) return string;
+	-- Returns the given library name as string.
+	
+	-- Bare library names can be stored further-on in a simple list:
 	-- We use a simple list because the order of the library names sometimes matters and must be kept.
     package type_library_names is new doubly_linked_lists (
 		element_type => type_library_name.bounded_string);
 
 	-- The base directory where libraries live is stored in a bounded string:
 	library_directory_length_max : constant positive := 300; -- CS: increase if necessary
-	package type_library_directory is new generic_bounded_length (library_directory_length_max); use type_library_directory;
+	package type_library_directory is new generic_bounded_length (library_directory_length_max);
 
 	-- This is the library root directory for ALL projects (or for the whole rig).
 	-- We assume all projects have their libraries stored in the same directory.
 	lib_dir : type_library_directory.bounded_string; -- here the path to the project libraries is stored
-	-- CS: this should be a list of paths
+	-- CS: In the future this should be a list of paths as project libraries may be spread
+	-- in other directories. For example kicad defines that in the project file in a manner
+	-- like "LibDir=../../lbr;/home/tmp/.."
+
+	function to_string (directory : in type_library_directory.bounded_string) return string;
+	-- Returns the given library directory as string;
 	
 	-- If a library is fully specified with path, name and extension we store them in bounded strings:
 	library_full_name_max : constant positive := library_directory_length_max + library_name_length_max + 4;
-	package type_library_full_name is new generic_bounded_length (library_full_name_max);
-	use type_library_full_name;
+	package type_full_library_name is new generic_bounded_length (library_full_name_max);
+	use type_full_library_name;
 
+	function to_string (full_library_name : in type_full_library_name.bounded_string) return string;
+	-- Returns the given full library name as string;
+	
+	-- Full library names can be stored further-on in a simple list:
+	-- We use a simple list because the order of the library names sometimes matters and must be kept.
+    package type_full_library_names is new doubly_linked_lists (
+		element_type => type_full_library_name.bounded_string);
+
+	
 	library_handle : ada.text_io.file_type;
 	
 	-- Full library names can be stored furhter-on in an ordered set like this:
@@ -81,8 +98,8 @@ package et_libraries is
 -- 		element_type => type_library_full_name.bounded_string);
 
 	-- The name of the person who has drawn, checked or approved something may have 100 characters which seems sufficient for now.
- 	person_name_length	: constant natural := 100;
-	package type_person_name is new generic_bounded_length(person_name_length);
+ 	person_name_length : constant natural := 100;
+	package type_person_name is new generic_bounded_length (person_name_length);
 
 	
 -- GRID AND COORDINATES
@@ -355,7 +372,7 @@ package et_libraries is
 	-- a connection list. The connection list maps from port names to pin/pad names.
 	type type_component_variant is record
 		packge	: type_component_package_name.bounded_string;	-- like "SOT23"
-		library	: type_library_full_name.bounded_string;		-- like "/home/abc/lib/smd.mod"
+		library	: type_full_library_name.bounded_string;		-- like "/home/abc/lib/smd.mod"
 		-- CS: connection list
 	end record;
 
@@ -561,7 +578,7 @@ package et_libraries is
 	-- External units have a reference to an external symbol.
 	-- External units are stored in a library and are shared by many components.
 	type type_unit_reference is record
-		library		: type_library_full_name.bounded_string; -- like /my_libraries/logig.sym
+		library		: type_full_library_name.bounded_string; -- like /my_libraries/logig.sym
 		name		: type_symbol_name.bounded_string;		 -- like "NAND" or "Resistor" or "Switch"
 	end record;
 
@@ -623,10 +640,10 @@ package et_libraries is
 
 	--package type_libraries is new indefinite_ordered_maps (	
 	package type_libraries is new ordered_maps (
-		key_type => type_library_full_name.bounded_string,
+		key_type => type_full_library_name.bounded_string,
 		element_type => type_components.map);
 
-	-- All compoenent models are collected here. This collection applies for the whole rig.
+	-- All component models are collected here. This collection applies for the whole rig.
 	component_libraries : type_libraries.map;
 	
 end et_libraries;

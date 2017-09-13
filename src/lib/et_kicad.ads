@@ -69,7 +69,7 @@ package et_kicad is
     project_keyword_library_name            : constant string (1..7)  := "LibName"; -- with index like "LibName1"
 
 	-- when reading the projec file, the project library names are collected here temporarily:
-	tmp_project_libraries					: et_libraries.type_library_names.list;
+	tmp_project_libraries					: et_libraries.type_full_library_names.list;
 
 -- COMPONENT TEXT FIELDS
 

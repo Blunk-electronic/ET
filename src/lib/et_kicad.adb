@@ -419,16 +419,15 @@ package body et_kicad is
 	-- Reads components from libraries as stored in lib_dir and project libraries:
 		
         use et_libraries; -- most of the following stuff is specified there
-		use et_libraries.type_library_names;
-		use et_libraries.type_library_full_name;
+		use et_libraries.type_full_library_names;
 
-		-- The list of bare library names tells us which libraries the project requires.
-		-- This is the cursor to the bare library names. It points to the bare library name in the current module.
-		bare_lib_cursor	: type_library_names.cursor;
+		-- The list of full library names tells us which libraries the project requires.
+		-- This is the cursor to the full library names. It points to the library name in the current module.
+		project_lib_cursor : type_full_library_names.cursor;
 
 		-- Here we keep the full library name (incl. path) like "/home/user/lib/my_lib.lib" temporarily
-		-- before inserting an empty library in the library list et_import.component_libraries :
-		lib_file_name	: et_libraries.type_library_full_name.bounded_string;
+		-- before inserting an empty library in the library list et_libraries.component_libraries :
+		lib_file_name	: et_libraries.type_full_library_name.bounded_string;
 
 		-- This is the library cursor. It points to the library being processed (in the list et_import.component_libraries):
 		lib_cursor		: et_libraries.type_libraries.cursor;
@@ -1039,7 +1038,7 @@ package body et_kicad is
 			-- Updates the current library by inserting the component.
 			-- If the component was inserted (should be) the comp_cursor points to the component
 			-- for later inserting the units:
-				key			: in type_library_full_name.bounded_string;
+				key			: in type_full_library_name.bounded_string;
 				components	: in out type_components.map) is
 			begin -- insert_component
 
@@ -1131,7 +1130,7 @@ package body et_kicad is
 				end locate_unit;
 
 				procedure locate_component ( 
-					key			: in type_library_full_name.bounded_string;
+					key			: in type_full_library_name.bounded_string;
 					components	: in type_components.map) is
 				begin
 					type_components.query_element (comp_cursor, locate_unit'access);
@@ -1180,7 +1179,7 @@ package body et_kicad is
 				end insert_unit;
 
 				procedure locate_component ( 
-					key			: in type_library_full_name.bounded_string;
+					key			: in type_full_library_name.bounded_string;
 					components	: in out type_components.map) is
 				begin
 					components.update_element (comp_cursor, insert_unit'access);
@@ -1263,7 +1262,7 @@ package body et_kicad is
 									log_indentation_reset;
 									log (
 										text => message_error & "file '" 
-											& to_string (lib_file_name) & "' "
+											& et_libraries.to_string (lib_file_name) & "' "
 											& affected_line (line) 
 											& "port name '" & to_string (tmp_draw_port_name)
 											& "' already used !",
@@ -1287,7 +1286,7 @@ package body et_kicad is
 				
 				procedure locate_component ( 
 				-- Locates the component indicated by comp_cursor.
-					key			: in type_library_full_name.bounded_string;
+					key			: in type_full_library_name.bounded_string;
 					components	: in out type_components.map) is
 				begin -- locate_component
 					components.update_element (comp_cursor, locate_unit'access);
@@ -1355,7 +1354,7 @@ package body et_kicad is
 				
 				procedure locate_component ( 
 				-- Locates the component indicated by comp_cursor.
-					key			: in type_library_full_name.bounded_string;
+					key			: in type_full_library_name.bounded_string;
 					components	: in out type_components.map) is
 				begin -- locate_component
 					components.update_element (comp_cursor, locate_unit'access);
@@ -1610,7 +1609,7 @@ package body et_kicad is
 				end insert_footprint;
 				
 				procedure locate_component ( 
-					key			: in type_library_full_name.bounded_string;
+					key			: in type_full_library_name.bounded_string;
 					components	: in out type_components.map) is
 				begin
 					components.update_element (comp_cursor, insert_footprint'access);
@@ -1989,7 +1988,7 @@ package body et_kicad is
 
 		
 	begin -- read_components_libraries
-		et_schematic.reset_library_cursor (bare_lib_cursor);
+		et_schematic.reset_library_cursor (project_lib_cursor);
 		
 		-- If there were no libraries in the project file, there is nothing to do but writing a warning:
 		if et_schematic.number_of_libraries = 0 then
@@ -1998,20 +1997,16 @@ package body et_kicad is
 			log (text => "Loading component libraries ...", console => true);
 			log_indentation_up;
 			
-			-- We loop in the list of bare project libraries (it contains only the library names without any path information):
-			while bare_lib_cursor /= no_element loop
+			-- We loop in the list of project libraries:
+			while project_lib_cursor /= type_full_library_names.no_element loop
 
-				-- From lib_dir and the cursor (points to a project lib) we compose the full library file name:
-				lib_file_name := to_bounded_string (compose (
-								containing_directory => type_library_directory.to_string (lib_dir),
-								name => type_library_name.to_string (element (bare_lib_cursor)),
-								extension => file_extension_schematic_lib
-								));
+				-- Set the library to be read:
+				lib_file_name := element (project_lib_cursor);
 
 				-- log library file name
 				log (to_string (lib_file_name), console => true);
 				
-				if exists (to_string (lib_file_name)) then
+				if exists ( to_string (lib_file_name)) then
 					open (
 						file => library_handle,
 						mode => in_file,
@@ -2047,7 +2042,7 @@ package body et_kicad is
 				end if;
 
 				-- prepare next library file to be be read
-				next (bare_lib_cursor);
+				next (project_lib_cursor);
 
 			end loop;
 			
@@ -2104,7 +2099,7 @@ package body et_kicad is
 			-- If we import only one project, this statement does not matter.
 			-- In tmp_project_libraries the project libraries are collected. 
 			-- Later they become part of the module being processed.
-			type_library_names.clear (tmp_project_libraries);
+			type_full_library_names.clear (tmp_project_libraries);
 			
 			open (file => project_file_handle, mode => in_file, name => to_string (project_file_name));
 			set_input (project_file_handle);
@@ -2114,7 +2109,7 @@ package body et_kicad is
 				-- Save a line in variable "line" (see et_string_processing.ads)
 				line := read_line(
 							line => get_line,
-							comment_mark => "#",
+							comment_mark => "#", -- use constant comment_mark
 							number => ada.text_io.line(current_input),
 							ifs => latin_1.equals_sign); -- fields are separated by equals sign (=)
 
@@ -2137,37 +2132,36 @@ package body et_kicad is
 					when 2 =>
 						if section_eeschema_entered then
 
-							-- get path to libraries (LibDir) and store it in lib_dir (see et_kicad.ads)
-							-- CS: lib_dir must be a list of paths as kicad stores them like "LibDir=../../lbr;/home/tmp/.."
+							-- Get root path to libraries (LibDir) and store it in lib_dir (see et_kicad.ads)
 							-- CS: currently we assume only one path here. Provide procedure that sets lib_dir and checks
 							-- deviations.
 							if field (line,1) = project_keyword_library_directory then
 								lib_dir := to_bounded_string (field (line,2));
 
 								-- For the log write something like "LibDir ../../lbr"
-								log (text => project_keyword_library_directory & " " & to_string (lib_dir));
+								log (text => project_keyword_library_directory & " " & et_libraries.to_string (lib_dir));
 							end if;
 							
 						end if;
 
 						if section_eeschema_libraries_entered then
 
-							-- Get library names (incl. path and extension) and store them in list_of_full_library_names (see et_kicad.ads)
-							-- from a line like "LibName1=bel_supply"
-							-- We ignore the index of LibName. Since we store the lib names in a doubly linked list,
-							-- their order remains unchanged.
+							-- From a line like "LibName1=bel_supply" get library names (incl. path and extension) and
+							-- store them in list tmp_project_libraries (see et_kicad.ads).
+							-- We ignore the index of LibName. Since we store the lib names in a 
+							-- doubly linked list their order remains unchanged anyway.
 							if field (line,1)(1..project_keyword_library_name'length) 
 								= project_keyword_library_name then
 
-								type_library_names.append (
-									container => tmp_project_libraries, 
-									new_item => type_library_name.to_bounded_string(
-										field (line,2)
-										--& "."
-										--& file_extension_schematic_lib)); -- extension
-										));
-
-								-- For the log write something like "LibName ../../lbr/bel_connectors_and_jumpers"
+								type_full_library_names.append (
+									container	=> tmp_project_libraries, 
+									new_item	=> type_full_library_name.to_bounded_string (
+										compose (
+											containing_directory	=> et_libraries.to_string (lib_dir),
+											name					=> field (line,2),
+											extension				=> file_extension_schematic_lib)));
+								
+								-- For the log write something like "LibName bel_connectors_and_jumpers"
 								log (text => field (line,1) & " " & field (line,2));
 							end if;
 
@@ -3542,7 +3536,7 @@ package body et_kicad is
 												field(line => tmp_library_footprint, position => 2)),
 
 										-- get the library file name from the footpint field
-										library => et_libraries.type_library_full_name.to_bounded_string(
+										library => et_libraries.type_full_library_name.to_bounded_string(
 												field(line => tmp_library_footprint, position => 1))),
 
 									-- The variant name is left empty.
@@ -4409,7 +4403,7 @@ package body et_kicad is
 						)
 					);
 				
-				read_components_libraries; -- as stored in lib_dir and project libraries
+				read_components_libraries; -- as stored in element "libraries" of the current module
 				current_schematic := top_level_schematic;
 
                 -- The top level schematic file is the first entry in the module path.

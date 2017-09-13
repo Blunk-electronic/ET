@@ -46,6 +46,25 @@ with et_string_processing;
 
 package body et_libraries is
 
+	function to_string (library_name : in type_library_name.bounded_string) return string is
+	-- Returns the given library name as string.
+	begin
+		return type_library_name.to_string (library_name);
+	end to_string;
+	
+	function to_string (directory : in type_library_directory.bounded_string) return string is
+	-- Returns the given library directory as string;
+	begin
+		return type_library_directory.to_string (directory);
+	end to_string;
+
+	function to_string (full_library_name : in type_full_library_name.bounded_string) return string is
+	-- Returns the given full library name as string;
+	begin
+		return type_full_library_name.to_string (full_library_name);
+	end to_string;
+	
+	
 	function to_string ( position : in type_coordinates) return string is
 	-- Returns the given position as string.
 	begin
@@ -105,16 +124,16 @@ package body et_libraries is
 		v : type_component_variant := variant;
 		use et_string_processing;
 	begin
-		if type_library_full_name.length(v.library) = 0 then
-			v.library := type_library_full_name.to_bounded_string (item_not_specified);
+		if type_full_library_name.length (v.library) = 0 then
+			v.library := type_full_library_name.to_bounded_string (item_not_specified);
 		end if;
 
 		if type_component_package_name.length(v.packge) = 0 then
 			v.packge := type_component_package_name.to_bounded_string (item_not_specified);
 		end if;
 		
-		return ("library " & type_library_full_name.to_string(v.library)
-			& " package " & type_component_package_name.to_string(v.packge));
+		return ("library " & type_full_library_name.to_string (v.library)
+			& " package " & type_component_package_name.to_string (v.packge));
 	end to_string;
 
 

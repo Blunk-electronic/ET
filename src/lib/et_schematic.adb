@@ -1043,12 +1043,12 @@ package body et_schematic is
 			);
 	end reset_component_cursor;
 
-	procedure reset_library_cursor (cursor : in out type_library_names.cursor) is
+	procedure reset_library_cursor (cursor : in out type_full_library_names.cursor) is
 	-- Resets the given library cursor to the begin of the library list list.
 		procedure reset (
 			name	: in type_submodule_name.bounded_string;
 			module	: in type_module) is
-			use type_library_names;
+			use type_full_library_names;
 		begin
 			cursor := first (module.libraries);
 		end reset;
@@ -1066,7 +1066,7 @@ package body et_schematic is
 		procedure get (
 			name	: in type_submodule_name.bounded_string;
 			module	: in type_module) is
-			use type_library_names;
+			use type_full_library_names;
 		begin
 			n := length (module.libraries);
 		end get;
