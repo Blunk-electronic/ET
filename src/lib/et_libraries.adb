@@ -368,6 +368,46 @@ package body et_libraries is
 		
 	end write_component_properties;
 
+	function find_component (
+	-- Searches the given library for the given component. Returns a cursor to that component.
+		library		: in type_full_library_name.bounded_string;
+		component	: in type_component_name.bounded_string) 
+		return type_components.cursor is
+
+		lib_cursor	: type_libraries.cursor;
+		comp_cursor	: type_components.cursor := no_element;
+	
+		use type_libraries;
+		use et_string_processing;
+
+		procedure locate (
+			library : in type_full_library_name.bounded_string;
+			components : in type_components.map) is
+		begin
+			comp_cursor := components.find (component);
+			if comp_cursor /= type_components.no_element then
+				null; 
+				-- CS: log ("found !");
+			end if;
+		end locate;
+	
+	begin
+		lib_cursor := component_libraries.find (library);
+
+		-- If the given library exists, locate the given component therein.
+		-- Otherwise generate a warning.
+		if lib_cursor /= type_libraries.no_element then
+			query_element (
+				position => lib_cursor,
+				process => locate'access);
+		else
+			log (message_warning & "library " & to_string (library) & " not found !");
+			-- CS: raise constraint_error ?
+		end if;
+
+		return comp_cursor;
+	end find_component;
+
 	
 end et_libraries;
 

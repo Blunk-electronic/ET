@@ -646,7 +646,11 @@ package et_libraries is
 	-- All component models are collected here. This collection applies for the whole rig.
 	component_libraries : type_libraries.map;
 
-
+	function find_component (
+	-- Searches the given library for the given component. Returns a cursor to that component.
+		library		: in type_full_library_name.bounded_string;
+		component	: in type_component_name.bounded_string) 
+		return type_components.cursor;
 	
 end et_libraries;
 
