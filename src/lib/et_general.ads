@@ -55,7 +55,7 @@ package et_general is
 	system_name						: constant string (1..9) := "SYSTEM ET";
 
 -- COMMENT MARKS
-	comment_mark					: constant string (1..1) := "#";
+	comment_mark					: constant string (1..1) := "#"; -- move to string_processing ?
 
 	
 -- FILES, EXTENSIONS AND DIRECTORY NAMES

@@ -65,7 +65,7 @@ package body et_netlist is
 		use et_schematic;
 		use et_schematic.type_components;
 
-		-- The component cursor points to the component being processed.
+		-- The component cursor points to the schematic component being processed.
 		component_cursor	: et_schematic.type_components.cursor;
 
 		-- The generic name of a component in a library (like TRANSISTOR_PNP or LED) 
@@ -82,26 +82,36 @@ package body et_netlist is
 		log_indentation_up;
 		
 		reset_component_cursor (component_cursor);
+
+		-- Loop in component list of schematic:
 		while component_cursor /= et_schematic.type_components.no_element loop
 
-			log (text => to_string (component_reference (component_cursor)));
+			-- log component by its reference
+			log (text => "reference " & to_string (component_reference (component_cursor)));
+
+			-- load component name as it is listed in a library
+			log_indentation_up;			
 			component_name := component_name_in_library (component_cursor);
-			log (text => "name in library " & to_string (component_name));
+			log (text => "generic name " & to_string (component_name));
 
 			-- Search in libraries for a component with name component_name :
+			log_indentation_up;
+			log (text => "searching libraries ...");
+			log_indentation_up;
 			reset_library_cursor (library_cursor);
 			while library_cursor /= type_full_library_names.no_element loop
-				log (text => " library " & to_string (element (library_cursor)));
 
-				library_name := type_full_library_name.to_bounded_string (
-									to_string (lib_dir)
-									& to_string (element (library_cursor))
--- 									& file_extension_schematic_lib
-												);
-				next (library_cursor);
+				-- set and log library name
+				library_name := (element (library_cursor));
+				log (text => to_string (library_name));
+
+				
+				
+				next (library_cursor); -- advance to next library
 			end loop;
-
-
+			log_indentation_down;
+			log_indentation_down;
+			log_indentation_down;
 			
 			next (component_cursor);
 		end loop;
