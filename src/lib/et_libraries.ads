@@ -89,7 +89,7 @@ package et_libraries is
     package type_full_library_names is new doubly_linked_lists (
 		element_type => type_full_library_name.bounded_string);
 
-	
+	-- When accessing library files we need this:
 	library_handle : ada.text_io.file_type;
 	
 	-- Full library names can be stored furhter-on in an ordered set like this:
@@ -645,6 +645,8 @@ package et_libraries is
 
 	-- All component models are collected here. This collection applies for the whole rig.
 	component_libraries : type_libraries.map;
+
+
 	
 end et_libraries;
 
