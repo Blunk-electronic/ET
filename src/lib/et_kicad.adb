@@ -429,7 +429,7 @@ package body et_kicad is
 		-- before inserting an empty library in the library list et_libraries.component_libraries :
 		lib_file_name	: et_libraries.type_full_library_name.bounded_string;
 
-		-- This is the library cursor. It points to the library being processed (in the list et_import.component_libraries):
+		-- This is the library cursor. It points to the library being processed (in the list et_libraries.component_libraries):
 		lib_cursor		: et_libraries.type_libraries.cursor;
 		lib_inserted	: boolean; -- indicates whether a library has been inserted
 
@@ -1138,7 +1138,7 @@ package body et_kicad is
 
 			begin -- set_unit_cursor
 				if tmp_unit_id > 0 then -- if tmp_unit_id is zero, nothing is done
-					type_libraries.query_element ( lib_cursor, locate_component'access);
+					type_libraries.query_element (lib_cursor, locate_component'access);
 				end if;
 			end set_unit_cursor;
 				
@@ -1158,7 +1158,7 @@ package body et_kicad is
 			-- has the check "common to all units" set.
 
 			-- The current tmp_unit_swap_level determines the swap level of the unit to be inserted.
-			-- The current tmp_unit_add_level determines the add level of the unit to be inserted. It is "requsst"
+			-- The current tmp_unit_add_level determines the add level of the unit to be inserted. It is "request"
 			-- in case the unit in question is an extra unit (supply unit).
 			
 				procedure insert_unit (
