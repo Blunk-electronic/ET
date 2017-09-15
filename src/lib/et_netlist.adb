@@ -88,42 +88,68 @@ package body et_netlist is
 
 		-- CS: log_threshold for messages below
 
+		units_sch : et_schematic.type_units.map;
+
+	
+		function position_of_unit (
+		-- Returns the coordinates of the given unit.
+		-- The unit is one element in the given list of units.
+			name : in type_unit_name.bounded_string; -- the unit being inquired
+			units : in et_schematic.type_units.map) -- the list of units
+			return et_schematic.type_coordinates is
+
+			unit_cursor : et_schematic.type_units.cursor;
+			--c : et_schematic.type_coordinates;
+		begin
+			unit_cursor := et_schematic.type_units.find (container => units, key => name);
+			--c := et_schematic.type_units.element (unit_cursor).position;
+			--return c;
+			return et_schematic.type_units.element (unit_cursor).position;
+		end;
+
+	
 		procedure extract_ports is
 
 			use et_libraries.type_units_internal;
+			use et_libraries.type_ports;
 			
 			unit_cursor_internal	: type_units_internal.cursor;
-			unit_count_internal		: count_type;
-			units_internal			: type_units_internal.map;
+			port_cursor				: et_libraries.type_ports.cursor;
+
+			unit_name_lib : type_unit_name.bounded_string;
+			unit_position : et_schematic.type_coordinates;
 			-- CS: external units
 		begin
-					-- number of internal units
-			unit_count_internal := length (element (component_cursor_lib).units_internal);
-			log ("number of internal units" & count_type'image (unit_count_internal));					
-			units_internal := element (component_cursor_lib).units_internal;
+			unit_cursor_internal := first_internal_unit (component_cursor_lib);
+			while unit_cursor_internal /= type_units_internal.no_element loop
+				log_indentation_up;
 
-			case unit_count_internal is
-
-				when 0 => 
-					-- component has no units 
-					raise constraint_error; -- CS: this should never happen
-					
-				when others =>
-
-					unit_cursor_internal := first (units_internal);
-					
-					loop exit when unit_cursor_internal = type_units_internal.no_element;
-						log ("unit " & type_unit_name.to_string (key (unit_cursor_internal)));
-
-						unit_cursor_internal := next (unit_cursor_internal);
-					end loop;
+				unit_name_lib := key (unit_cursor_internal);
+				log ("unit " & to_string (unit_name_lib));
 				
-			end case;
+				-- get unit position
+				unit_position := position_of_unit (unit_name_lib, units_sch);
+				log (et_schematic.to_string (unit_position));
+
+				port_cursor := first_port (unit_cursor_internal);
+				while port_cursor /= et_libraries.type_ports.no_element loop
+					log_indentation_up;
+					log ("port " & type_port_name.to_string (key (port_cursor)));
+					-- get port position
+
+					log_indentation_down;
+					port_cursor := next (port_cursor);
+				end loop;
+				
+				log_indentation_down;
+				unit_cursor_internal := next (unit_cursor_internal);
+			end loop;
+			
 		end extract_ports;
 	
 	begin
 		
-		log (text => "component list");
+		log (text => "generating component- and netlist");
 		log_indentation_up;
 		
 		et_schematic.reset_component_cursor (component_cursor_sch);
@@ -134,6 +160,11 @@ package body et_netlist is
 			-- log component by its reference
 			log (text => "reference " & et_schematic.to_string (et_schematic.component_reference (component_cursor_sch)));
 
+			-- get the units of the current schematic component (indicated by component_cursor_sch)
+			units_sch := et_schematic.units_of_component (component_cursor_sch);
+			-- component position
+			--log (text => "position " & et_schematic.to_string ( element (component_cursor_sch).
+				 
 			-- load component name as it is listed in a library
 			log_indentation_up;			
 			component_name := et_schematic.component_name_in_library (component_cursor_sch);

@@ -198,6 +198,7 @@ package et_schematic is
 		-- name can be obtained.
 	end record;
 
+	
 	-- Units of a component are collected in a map.
 	-- A unit is accessed by its name like "I/O Bank 3" or "PWR" or "A" or "B" ...	
 	package type_units is new indefinite_ordered_maps (
@@ -650,8 +651,16 @@ package et_schematic is
 -- 	-- Returns the component reference where the component cursor points to.
 -- 		return type_component_reference;
 
-	
+	function units_of_component (component_cursor : in type_components.cursor) return type_units.map;
+	-- Returns the units of the given component.
 
+-- 	function position_of_unit (
+-- 	-- Returns the coordinates of the given unit.
+-- 	-- The unit is one element in the given list of units.
+-- 		name : in type_unit_name.bounded_string; -- the unit being inquired
+-- 		units : in type_units.map) -- the list of units
+-- 		return type_coordinates;
+	
 	procedure warning_on_name_less_net (
 	-- Writes a warning about a name-less net.
 		name 	: in et_schematic.type_net_name.bounded_string;

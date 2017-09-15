@@ -263,7 +263,12 @@ package body et_libraries is
 		end case;
 	end to_string;
 
-
+	function to_string (unit_name : in type_unit_name.bounded_string) return string is
+	-- Returns the given unit name as string.
+	begin
+		return type_unit_name.to_string (unit_name);
+	end to_string;
+	
 	function component_value_valid (
 	-- Returns true if the given component value meets certain conventions.									   
 		value 		: in type_component_value.bounded_string;
@@ -407,6 +412,78 @@ package body et_libraries is
 
 		return comp_cursor;
 	end find_component;
+
+	function first_internal_unit (
+	-- Returns the cursor to the first unit of the given component.
+		component_cursor : in type_components.cursor)
+		return type_units_internal.cursor is
+
+		unit_cursor : type_units_internal.cursor;
+
+		procedure locate (
+			name : in type_component_name.bounded_string;
+			component : in type_component) is
+
+			use type_units_internal;
+			use et_string_processing;
+		begin
+			-- Set the unit cursor to the first unit of the component.
+			unit_cursor := type_units_internal.first (component.units_internal);
+
+			-- In case the component has no units, abort.
+			if unit_cursor = type_units_internal.no_element then
+				log_indentation_reset;
+				log (message_error & "generic component " 
+						& to_string (name_in_library => type_components.key (component_cursor)) 
+						& " has no units !",
+					console => true);
+				raise constraint_error;
+			end if;
+		end locate;
+	
+	begin
+		-- locate the component by the given component cursor
+		type_components.query_element (component_cursor, locate'access);
+
+		-- CS: do something if cursor invalid. via exception handler ?
+		return unit_cursor;
+	end first_internal_unit;
+
+
+	function first_port (
+	-- Returns the cursor to the first port of the given unit
+		unit_cursor : in type_units_internal.cursor)
+		return type_ports.cursor is
+
+		port_cursor : type_ports.cursor;
+
+		procedure locate (
+			name : in type_unit_name.bounded_string;
+			unit : in type_unit_internal) is
+
+			use type_ports;
+			use et_string_processing;
+		begin
+			-- Set the port cursor to the first port of the unit.
+			port_cursor := type_ports.first (unit.symbol.ports);
+
+			-- In case the unit has no ports, abort.
+			if port_cursor = type_ports.no_element then
+				--log_indentation_reset;
+				log (message_warning & "generic unit " 
+						& to_string (unit_name => type_units_internal.key (unit_cursor)) 
+						& " has no ports !");
+					--console => true);
+				--CS raise constraint_error;
+			end if;
+		end locate;
+
+	begin
+		type_units_internal.query_element (unit_cursor, locate'access);
+		
+		-- CS: do something if cursor invalid. via exception handler ?
+		return port_cursor;
+	end first_port;
 
 	
 end et_libraries;

@@ -29,6 +29,12 @@
 --
 --   history of changes:
 --
+--   ToDo:
+--		1. Warning if virtual component pins apply for all units. Usually 
+--			virtual components (such as power flags) have only one unit. If the
+--			check "common to all units in component" is set, ET generates an
+--			extra unit. Why ? ET assumes the affeced pin is a power pin. Power pins
+--			in turn are assigned to an extra unit (in EAGLE we speak of "supply symbols").
 
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;

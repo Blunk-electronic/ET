@@ -548,7 +548,10 @@ package et_libraries is
 
 
 	unit_name_length_max : constant natural := 50;	
-	package type_unit_name is new generic_bounded_length(unit_name_length_max); use type_unit_name;	
+	package type_unit_name is new generic_bounded_length (unit_name_length_max); use type_unit_name;
+
+	function to_string (unit_name : in type_unit_name.bounded_string) return string;
+	-- Returns the given unit name as string.
 	
 	unit_swap_level_max : constant natural := 10;
 	type type_unit_swap_level is new natural range 0..unit_swap_level_max;
@@ -651,7 +654,18 @@ package et_libraries is
 		library		: in type_full_library_name.bounded_string;
 		component	: in type_component_name.bounded_string) 
 		return type_components.cursor;
-	
+
+	function first_internal_unit (
+	-- Returns the cursor to the first unit of the given component
+		component_cursor : in type_components.cursor)
+		return type_units_internal.cursor;
+
+	function first_port (
+	-- Returns the cursor to the first port of the given unit
+		unit_cursor : in type_units_internal.cursor)
+		return type_ports.cursor;
+
+		
 end et_libraries;
 
 -- Soli Deo Gloria

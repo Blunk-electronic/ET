@@ -1080,6 +1080,42 @@ package body et_schematic is
 		return n;
 	end number_of_libraries;
 
+	function units_of_component (component_cursor : in type_components.cursor) return type_units.map is
+	-- Returns the units of the given component.
+		u : type_units.map;
+
+		procedure locate (
+			name : in type_component_reference;
+			component : in type_component) is
+		begin
+			-- copy the units of the component to the return value
+			u := component.units;
+		end locate;
+		
+	begin
+		-- locate the given component by component_cursor
+		type_components.query_element (component_cursor, locate'access);
+		
+		-- CS: do something if cursor invalid. via exception handler ?
+		return u;
+	end units_of_component;
+
+
+-- 	function position_of_unit (
+-- 	-- Returns the coordinates of the given unit.
+-- 	-- The unit is one element in the given list of units.
+-- 		name : in type_unit_name.bounded_string; -- the unit being inquired
+-- 		units : in type_units.map) -- the list of units
+-- 		return type_coordinates is
+-- 
+-- 		unit_cursor : type_units.cursor;
+-- 		c : type_coordinates;
+-- 	begin
+-- 		unit_cursor := type_units.find (container => units, key => name);
+-- 
+-- 		return c; --element (unit_cursor).coordinates;
+-- 	end;
+
 	
 -- 	function get_component_reference (cursor : in out type_components.cursor)
 -- 	-- Returns the component reference where the component cursor points to.
