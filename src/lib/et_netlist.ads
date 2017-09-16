@@ -49,8 +49,6 @@ with et_string_processing;
 
 package et_netlist is
 
-	procedure dummy;
-
  	type type_port is new et_schematic.type_port_base with null record;
 
 	-- Ports of a component are collected in a simple list.
@@ -65,8 +63,9 @@ package et_netlist is
 		"<" => et_schematic.compare_reference);
 
 	function build_portlists return type_portlists.map;
-
-	portlists : type_portlists.map;
+	-- Returns a list of components with the absolute positions of their ports.
+	
+	portlists : type_portlists.map; -- CS: temporily used, remove !
 	
 	
 end et_netlist;

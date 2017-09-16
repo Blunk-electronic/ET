@@ -55,19 +55,19 @@ with et_import;
 package body et_netlist is
 
 
-	procedure dummy is begin null; end dummy;
-
 	function build_portlists return type_portlists.map is
+	-- Returns a list of components with the absolute positions of their ports.
+		
 	-- Locates the components of the schematic in the libraries. 
 	-- Extracts the ports of the components from the libraries and
 	-- stores them in map "portlists". The key into this map is the 
 	-- component reference.
-		
+
+		-- Here we collect the portlists of schematic components.
 		portlists : type_portlists.map;
 
 		use et_libraries;
 		use et_libraries.type_full_library_names;
-		--use et_schematic;
 		use et_schematic.type_components;
 
 		-- This component cursor points to the schematic component being processed.
@@ -77,9 +77,9 @@ package body et_netlist is
 		-- is tempoarily held here:
 		component_name		: et_libraries.type_component_name.bounded_string; 
 
-		-- The library cursor points to the library to search in (in module.libraries):
+		-- The library cursor points to the library to search in (in module.libraries).
+		-- NOTE: module.libraries is just a list of full library names, no more.
 		library_cursor_sch	: type_full_library_names.cursor;
-
 		library_name		: type_full_library_name.bounded_string;
 
 		-- This component cursor points to the library component being processed.
@@ -88,6 +88,7 @@ package body et_netlist is
 
 		-- CS: log_threshold for messages below
 
+		-- For tempoarily storage of units of a component (taken from the schematic):
 		units_sch : et_schematic.type_units.map;
 
 	
@@ -97,45 +98,53 @@ package body et_netlist is
 			name : in type_unit_name.bounded_string; -- the unit being inquired
 			units : in et_schematic.type_units.map) -- the list of units
 			return et_schematic.type_coordinates is
-
 			unit_cursor : et_schematic.type_units.cursor;
-			--c : et_schematic.type_coordinates;
 		begin
 			unit_cursor := et_schematic.type_units.find (container => units, key => name);
-			--c := et_schematic.type_units.element (unit_cursor).position;
-			--return c;
 			return et_schematic.type_units.element (unit_cursor).position;
 		end;
 
 	
 		procedure extract_ports is
-
+		-- Extracts the ports of the component as indicated by the current component_cursor_lib.
+		-- The unit cursor of the component advances through the units stored in the library.
+		-- NOTE: The library contains the positions of the ports.
 			use et_libraries.type_units_internal;
 			use et_libraries.type_ports;
 			
-			unit_cursor_internal	: type_units_internal.cursor;
-			port_cursor				: et_libraries.type_ports.cursor;
+			unit_cursor_internal	: type_units_internal.cursor; -- points to the current unit
+			port_cursor				: et_libraries.type_ports.cursor; -- points to a port of that unit
 
-			unit_name_lib : type_unit_name.bounded_string;
-			unit_position : et_schematic.type_coordinates;
+			unit_name_lib : type_unit_name.bounded_string; -- the unit name in the library. like "A", "B" or "PWR"
+			unit_position : et_schematic.type_coordinates; -- the coordinates of the current unit
 			-- CS: external units
 		begin
+			-- Loop in unit list of the component (indicated by component_cursor_lib).
+			-- unit_cursor_internal points to the unit in the library.
+			-- Get the coordinates of the same unit in the schematic.
 			unit_cursor_internal := first_internal_unit (component_cursor_lib);
 			while unit_cursor_internal /= type_units_internal.no_element loop
 				log_indentation_up;
 
+				-- get the unit name
 				unit_name_lib := key (unit_cursor_internal);
 				log ("unit " & to_string (unit_name_lib));
-				
-				-- get unit position
+
+				-- Now the unit name serves as key into the unit list we got from the schematic (unit_sch).
+				-- So we get the unit position in the schematic.
 				unit_position := position_of_unit (unit_name_lib, units_sch);
 				log (et_schematic.to_string (unit_position));
 
+				-- Get the ports of the current unit. Start with the first port of a unit.
+				-- The unit_position plus the relative port position yields the absolute
+				-- position of the port.
 				port_cursor := first_port (unit_cursor_internal);
 				while port_cursor /= et_libraries.type_ports.no_element loop
 					log_indentation_up;
 					log ("port " & type_port_name.to_string (key (port_cursor)));
-					-- get port position
+					
+					-- CS: calculate absolute port position: unit_position + port position
+					-- and insert port in portlist of the current component
 
 					log_indentation_down;
 					port_cursor := next (port_cursor);
@@ -147,14 +156,21 @@ package body et_netlist is
 			
 		end extract_ports;
 	
-	begin
+	begin -- build_portlists
 		
-		log (text => "generating component- and netlist");
+		log (text => "generating portlists ...");
 		log_indentation_up;
-		
-		et_schematic.reset_component_cursor (component_cursor_sch);
 
-		-- Loop in component list of schematic:
+		-- The library contains the coordinates of the ports whereas
+		-- the schematic provides the coordinates of the units of a component.
+		-- These coordinates summed up yields the absolute position of the ports.
+		
+		-- Loop in component list of schematic. component_cursor_sch points to the 
+		-- particular component. For each component, store a list
+		-- of its units in units_sch. This list contains the units found in the schematic
+		-- with their coordinates. These coordinates plus the port coordinates (extracted in 
+		-- procedure (extract_ports) will yield the absolute positions of the ports.
+		et_schematic.reset_component_cursor (component_cursor_sch);
 		while component_cursor_sch /= et_schematic.type_components.no_element loop
 
 			-- log component by its reference
@@ -162,15 +178,14 @@ package body et_netlist is
 
 			-- get the units of the current schematic component (indicated by component_cursor_sch)
 			units_sch := et_schematic.units_of_component (component_cursor_sch);
-			-- component position
-			--log (text => "position " & et_schematic.to_string ( element (component_cursor_sch).
-				 
-			-- load component name as it is listed in a library
+ 
+			-- get generic component name (as listed in a library)
 			log_indentation_up;			
 			component_name := et_schematic.component_name_in_library (component_cursor_sch);
 			log (text => "generic name " & to_string (component_name));
 
-			-- Search in libraries for a component with name component_name.
+			-- Search in libraries for a component with this very generic name.
+			-- library_cursor_sch points to the particular full library name.
 			-- The libraries are searched according to their order in the library list of the module.
 			-- The search is complete on the first finding of the component.
 			log_indentation_up;
@@ -179,28 +194,27 @@ package body et_netlist is
 			et_schematic.reset_library_cursor (library_cursor_sch);
 			while library_cursor_sch /= type_full_library_names.no_element loop
 
-				-- set and log library name
+				-- Set and log particular library to be searched in.
 				library_name := (element (library_cursor_sch));
 				log (text => to_string (library_name));
 
-				-- Search component in library
+				-- Get cursor of that component in library. If cursor is empty, search in
+				-- next library. If cursor points to a matching component, extract ports
+				-- of that component. Procedure extract_ports uses component_cursor_lib .
 				component_cursor_lib := find_component (library_name, component_name);
-
-				-- If component not found, advance to next library and search again.
-				-- If component found, exit loop and proceed with next component.
 				if component_cursor_lib = type_components.no_element then
 					-- not found -> advance to next library (in module.libraries)
 					next (library_cursor_sch); 
 				else
-					extract_ports;
+					extract_ports; -- uses component_cursor_lib
 					-- found -> no further search required
 					-- CS: write warning if component exists in other libraries ?
 					exit;
 				end if;
-				
+					
 			end loop;
 
-			-- If component not found in any library:
+			-- IF COMPONENT NOT FOUND IN ANY LIBRARY:
 			-- Early exits from the loop above leave library_cursor_sch pointing to a library.
 			-- If the loop has been completed without success, library_cursor_sch points to no_element.
 			-- If all libraries searched without any match -> generate error message.
