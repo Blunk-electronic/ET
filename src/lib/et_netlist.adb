@@ -64,8 +64,10 @@ package body et_netlist is
 	-- component reference.
 
 		-- Here we collect the portlists of schematic components.
-		portlists : type_portlists.map;
-
+		portlists					: type_portlists.map;
+		component_inserted			: boolean;
+		component_cursor_portlists	: type_portlists.cursor;
+	
 		use et_libraries;
 		use et_libraries.type_full_library_names;
 		use et_schematic.type_components;
@@ -93,6 +95,7 @@ package body et_netlist is
 		units_sch : et_schematic.type_units.map;
 
 		function unit_exists (
+		-- Returns true if the given unit with name exists in the given list of units.
 			name : in type_unit_name.bounded_string; -- the unit being inquired
 			units : in et_schematic.type_units.map) -- the list of units
 			return boolean is
@@ -133,7 +136,56 @@ package body et_netlist is
 			unit_name_lib : type_unit_name.bounded_string; -- the unit name in the library. like "A", "B" or "PWR"
 			unit_position : et_schematic.type_coordinates; -- the coordinates of the current unit
 			-- CS: external units
-		begin
+
+			procedure add_port is
+			-- Builds a new port and appends it to portlist of the current 
+			-- component (indicated by component_cursor_portlists).
+			
+			-- The library defined properties of the port are taken from where port_cursor points to.
+			-- They are copied to the new port without change.
+			
+			-- Properites set in the schematic such as path, module name, sheet are copied into the
+			-- new port unchanged. X and Y position in turn become offset by the X/Y position of the 
+			-- unit.
+			
+				procedure add (
+					component	: in type_component_reference;
+					ports		: in out type_ports.list) is
+				begin
+					type_ports.append (
+						container => ports,
+						new_item => (
+
+							-- library defined properites:
+							port		=> key (port_cursor), -- the port name
+							pin			=> element (port_cursor).pin, -- the pin name
+							direction	=> element (port_cursor).direction, -- the port direction
+							style		=> element (port_cursor).style, -- port style
+
+							-- schematic defined properties:
+							coordinates	=> (
+								path			=> unit_position.path, -- path remains unchanged
+								module_name		=> unit_position.module_name, -- module name unchanged
+								sheet_number	=> unit_position.sheet_number, -- sheet unchanged
+
+								-- offset port position by unit position
+								x				=> unit_position.x + element (port_cursor).coordinates.x, 
+								y				=> unit_position.y + element (port_cursor).coordinates.y 
+							)));
+
+					log_indentation_up;
+					log (et_schematic.to_string (last_element (ports).coordinates));
+					log_indentation_down;
+				end add;
+				
+			begin -- add_port
+				type_portlists.update_element (
+					container => portlists,
+					position => component_cursor_portlists,
+					process => add'access);
+			end add_port;
+			
+		begin -- extract_ports
 			-- Loop in unit list of the component (indicated by component_cursor_lib).
 			-- unit_cursor_internal points to the unit in the library.
 			-- Get the coordinates of the same unit in the schematic.
@@ -149,6 +201,7 @@ package body et_netlist is
 				if unit_exists (unit_name_lib, units_sch) then
 					log ("unit " & to_string (unit_name_lib));
 					unit_position := position_of_unit (unit_name_lib, units_sch);
+					log_indentation_up;
 					log (et_schematic.to_string (unit_position));
 
 					-- Get the ports of the current unit. Start with the first port of a unit.
@@ -159,12 +212,15 @@ package body et_netlist is
 						log_indentation_up;
 						log ("port " & type_port_name.to_string (key (port_cursor)));
 						
-						-- CS: calculate absolute port position: unit_position + port position
-						-- and insert port in portlist of the current component
-
+						-- Build a new port and append port to portlist of the 
+						-- current component (indicated by component_cursor_portlists).
+						add_port;
+						
 						log_indentation_down;
 						port_cursor := next (port_cursor);
 					end loop;
+
+					log_indentation_down;
 				end if;
 					
 				log_indentation_down;
@@ -194,11 +250,16 @@ package body et_netlist is
 			component_reference :=  et_schematic.component_reference (component_cursor_sch);
 			log (text => "reference " & et_schematic.to_string (component_reference));
 			
-			-- insert component in portlists. for the moment the portlist is empty.
+			-- Insert component in portlists. for the moment the portlist of this component is empty.
+			-- After that the component_cursor_portlists points to the component. This cursor will
+			-- later be used to add a port to the portlists.
 			type_portlists.insert (
-				container => portlists, 
-				key => component_reference,
-				new_item => type_ports.empty_list);
+				container	=> portlists,
+				key			=> component_reference,
+				new_item	=> type_ports.empty_list,
+				inserted	=> component_inserted, -- obligatory, no further meaning
+				position	=> component_cursor_portlists
+				);
 			
 			-- get the units of the current schematic component (indicated by component_cursor_sch)
 			units_sch := et_schematic.units_of_component (component_cursor_sch);
