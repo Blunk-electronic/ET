@@ -63,9 +63,22 @@ package body et_libraries is
 	begin
 		return type_full_library_name.to_string (full_library_name);
 	end to_string;
+
+	function to_grid (grid : in string) return type_grid is
+	-- Returns the given grid as type_grid.
+		g : type_grid;
+	begin
+		g := type_grid'value (grid);
+		return g;
+	end to_grid;
+
+	function to_string (grid : in type_grid) return string is
+	-- Returns the given grid as string.
+	begin
+		return trim (type_grid'image (grid), left);
+	end to_string;
 	
-	
-	function to_string ( position : in type_coordinates) return string is
+	function to_string (position : in type_coordinates) return string is
 	-- Returns the given position as string.
 	begin
 		return coordinates_preamble
@@ -268,6 +281,12 @@ package body et_libraries is
 	begin
 		return type_unit_name.to_string (unit_name);
 	end to_string;
+
+	function to_unit_name (unit_name : in string) return type_unit_name.bounded_string is
+	-- Returns the given unit name as type_unit_name.
+	begin
+		return type_unit_name.to_bounded_string (unit_name);
+	end to_unit_name;
 	
 	function component_value_valid (
 	-- Returns true if the given component value meets certain conventions.									   

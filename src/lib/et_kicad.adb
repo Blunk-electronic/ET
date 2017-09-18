@@ -3710,6 +3710,52 @@ package body et_kicad is
 					
 			end insert_unit;
 
+	
+			procedure verify_unit_name_and_position (line : in type_fields_of_line) is
+				use et_libraries.type_unit_name;
+			begin
+				
+				if et_libraries.to_string (tmp_component_unit_name) /= get_field_from_line (line,1) then
+					raise constraint_error; -- CS: write useful message
+				end if;
+				
+				if tmp_component_position.x /= to_grid (get_field_from_line (line,2)) then
+					log_indentation_reset;
+-- 					log ("position invalid. expected '" & to_string (tmp_component_position.x) 
+-- 						& "' found '" 
+-- 						& get_field_from_line (line,2)
+-- 						& "'");
+					raise constraint_error; -- CS: write useful message
+				end if;
+
+				if tmp_component_position.y /= to_grid (get_field_from_line (line,3)) then
+					raise constraint_error; -- CS: write useful message
+				end if;
+
+			end verify_unit_name_and_position;
+
+			procedure build_unit_orientation_and_mirror_style (line : in type_fields_of_line) is
+			-- Builds from a line (see below) the component orientation and mirror style:
+			--  1    0    0  -1  -- orientation 0,   mirror normal
+			--  0   -1   -1   0  -- orientation 90,  mirror normal
+			-- -1    0    0   1  -- orientation 180, mirror normal 
+			-- 	0    1    1   0  -- orientation -90, mirror normal  
+
+			-- 	1    0    0   1  -- orientation 0,   mirror --
+			--  0   -1    1   0  -- orientation 90,  mirror -- 
+			-- -1    0    0  -1  -- orientation 180, mirror -- 
+			--  0    1   -1   0  -- orientation -90, mirror -- 
+
+			-- -1    0    0  -1  -- orientation 0,   mirror |
+			--  0    1   -1   0  -- orientation 90,  mirror |
+			--  1    0    0   1  -- orientation 180, mirror |
+			--  1    0    0   1  -- orientation -90, mirror |
+				
+			begin -- CS:
+				tmp_component_unit_orientation := 0.0;
+				tmp_component_unit_mirror := none;
+			end build_unit_orientation_and_mirror_style;
+			
 			
 		begin -- read_schematic
 			log_indentation_reset;
@@ -4275,11 +4321,10 @@ package body et_kicad is
 												end case;
 															
 												-- CS: check proper annotation
-											end if;
 
 											-- read line like "U 2 1 4543D4D3F" 
 											-- U is the line indicator, 2 is the unit id, 1 is the demorgan flag, last field is the timestamp
-											if get_field_from_line(line,1) = schematic_component_identifier_unit then -- "U"
+											elsif get_field_from_line(line,1) = schematic_component_identifier_unit then -- "U"
 
 												-- KiCad uses positive numbers to identifiy units. But in general a unit name can
 												-- be a string as well. Therefore we handle the unit id as string.
@@ -4292,10 +4337,10 @@ package body et_kicad is
 												-- Read and check the timestamp:
 												tmp_component_timestamp := type_timestamp(get_field_from_line(line,4));
 												et_string_processing.check_timestamp (tmp_component_timestamp);
-											end if;
 
 											-- Read unit coordinates from a line like "P 3200 4500".
-											if get_field_from_line(line,1) = schematic_component_identifier_coord then -- "P"
+											elsif get_field_from_line(line,1) = schematic_component_identifier_coord then -- "P"
+											
 												tmp_component_position.x := et_libraries.type_grid'value(
 													get_field_from_line(line,2)); -- "3200"
 												tmp_component_position.y := et_libraries.type_grid'value(
@@ -4306,7 +4351,6 @@ package body et_kicad is
 												tmp_component_position.path := path_to_submodule;
 												tmp_component_position.module_name := type_submodule_name.to_bounded_string( to_string(current_schematic));
 												tmp_component_position.sheet_number := sheet_number_current;
-											end if;
 
 											-- read unit fields 0..2 from lines like:
 											-- 			"F 0 "N701" H 2600 2100 39  0000 C CNN"
@@ -4314,7 +4358,7 @@ package body et_kicad is
 											--			"F 2 "bel_netchanger:N_0.2MM" H 2600 2100 60  0001 C CNN"
 											--
 											-- set "field found" flags
-											if get_field_from_line(line,1) = component_field_identifier then -- "F"
+											elsif get_field_from_line(line,1) = component_field_identifier then -- "F"
 												
 												case type_component_field_id'value(get_field_from_line(line,2)) is
 													when component_field_reference =>
@@ -4354,6 +4398,24 @@ package body et_kicad is
 														tmp_component_text_author 			:= to_text;
 
 													when others => null; -- CS: other fields are ignored. warning ?
+												end case;
+
+											else
+												-- What is left is a strange repetition of the unit name and its x/y coordinates in a line like
+												-- "2    6000 4000"
+												-- followed by the unit mirror style and the unit orientation in a line like
+												-- "1    0    0    -1"
+
+												case field_count (line) is
+													when 3 => -- we have the unit name and its x/y position.
+														-- We verify if unit name and position match the values read earlier:
+														verify_unit_name_and_position (line);
+													
+													when 4 => null; -- we have the unit mirror style and orientation
+														build_unit_orientation_and_mirror_style (line);
+													
+													when others => 
+														raise constraint_error; -- CS: write useful message
 												end case;
 
 											end if;

@@ -118,6 +118,12 @@ package et_libraries is
 
 	coordinates_dimension_separator : constant string (1..1) := "/";
 	coordinates_preamble : constant string (1..15) := "position (x" & coordinates_dimension_separator & "y) ";
+
+	function to_grid (grid : in string) return type_grid;
+	-- Returns the given grid as type_grid.
+
+	function to_string (grid : in type_grid) return string;
+	-- Returns the given grid as string.
 	
 	function to_string (position : in type_coordinates) return string;
 	-- Returns the given position as string.
@@ -552,6 +558,9 @@ package et_libraries is
 
 	function to_string (unit_name : in type_unit_name.bounded_string) return string;
 	-- Returns the given unit name as string.
+
+	function to_unit_name (unit_name : in string) return type_unit_name.bounded_string;
+	-- Returns the given unit name as type_unit_name.
 	
 	unit_swap_level_max : constant natural := 10;
 	type type_unit_swap_level is new natural range 0..unit_swap_level_max;

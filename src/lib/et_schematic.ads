@@ -172,7 +172,7 @@ package et_schematic is
 	type type_alternative_representation is ( NO, YES);
 
 	-- units can be placed mirrored horizontal or vertical:
-	type type_mirror is (horizontal, vertical);
+	type type_mirror is (none, horizontal, vertical);
 
 	-- In a schematic we find units spread all over.
 	-- A unit is a subsection of a component.
