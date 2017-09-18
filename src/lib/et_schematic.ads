@@ -171,12 +171,17 @@ package et_schematic is
 	-- Units may have alternative representations such as de_Morgan
 	type type_alternative_representation is ( NO, YES);
 
+	-- units can be placed mirrored horizontal or vertical:
+	type type_mirror is (horizontal, vertical);
+
 	-- In a schematic we find units spread all over.
 	-- A unit is a subsection of a component.
 	-- A unit has placeholders for text like reference (like IC303), value (like 7400), ...
 	-- Some placeholders are available when the component appears in both schematic and layout.
 	type type_unit (appearance : type_component_appearance) is record
 		position	: type_coordinates;
+		orientation	: et_libraries.type_angle;
+		mirror		: type_mirror;
 		timestamp	: et_string_processing.type_timestamp;
 		name		: et_libraries.type_unit_name.bounded_string;
 		alt_repres	: type_alternative_representation;

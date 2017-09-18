@@ -687,6 +687,8 @@ package body et_kicad is
 
 				-- read fill style from last field
 				polyline.fill := to_fill (field (line, pos));				
+
+				-- CS: log properties
 				
 				return polyline;
 			end to_polyline;
@@ -715,6 +717,8 @@ package body et_kicad is
 				rectangle.line_width	:= type_line_width'value (field (line,8));
 				rectangle.fill			:= to_fill (field (line,9));
 
+				-- CS: log properties
+				
 				return rectangle;
 			end to_rectangle;
 
@@ -742,6 +746,8 @@ package body et_kicad is
 				circle.line_width	:= type_line_width'value (field (line,7));
 				circle.fill			:= to_fill (field (line,8));
 
+				-- CS: log properties
+				
 				return circle;
 			end to_circle;
 
@@ -783,6 +789,8 @@ package body et_kicad is
 				arc.end_point.x		:= type_grid'value (field (line,13));
 				arc.end_point.y		:= type_grid'value (field (line,14));
 				arc.end_point.y		:= invert_y (arc.end_point.y);
+
+				-- CS: log properties
 				return arc;
 			end to_arc;
 
@@ -879,6 +887,8 @@ package body et_kicad is
 
 				-- read text content and replace tildes by spaces
 				text.content				:= to_content (field (line,9));
+
+				-- CS: log properties
 				return text;
 			end to_text;
 
@@ -3638,6 +3648,8 @@ package body et_kicad is
 							unit 		=> (
 								appearance		=> sch,
 								position		=> tmp_component_position,
+								orientation		=> tmp_component_unit_orientation,
+								mirror			=> tmp_component_unit_mirror,
 								name			=> tmp_component_unit_name,
 								timestamp		=> tmp_component_timestamp,
 								alt_repres		=> tmp_component_alt_repres,
@@ -3665,6 +3677,8 @@ package body et_kicad is
 							unit 		=> (
 								appearance		=> sch_pcb,
 								position		=> tmp_component_position,
+								orientation		=> tmp_component_unit_orientation,
+								mirror			=> tmp_component_unit_mirror,
 								name			=> tmp_component_unit_name,
 								timestamp		=> tmp_component_timestamp,
 								alt_repres		=> tmp_component_alt_repres,
@@ -4235,8 +4249,10 @@ package body et_kicad is
 											-- Read component name and annotation from a line like "L NetChanger N1". 
 											-- From this entry we reason the compoenent appearance.
 											if get_field_from_line(line,1) = schematic_component_identifier_name then -- "L"
+												
 												tmp_component_name_in_lib := et_libraries.type_component_name.to_bounded_string(get_field_from_line(line,2)); -- "SN74LS00"
 												tmp_component_appearance := to_appearance(line => line, schematic => true);
+												
 												case tmp_component_appearance is
 												
 													when sch => 
@@ -4337,7 +4353,7 @@ package body et_kicad is
 														tmp_component_text_author_found		:= true;
 														tmp_component_text_author 			:= to_text;
 
-													when others => null; -- CS: other fields are ignored
+													when others => null; -- CS: other fields are ignored. warning ?
 												end case;
 
 											end if;

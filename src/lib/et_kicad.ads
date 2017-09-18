@@ -338,7 +338,9 @@ package et_kicad is
 	tmp_component_alt_repres		: et_schematic.type_alternative_representation;
 	tmp_component_timestamp			: et_string_processing.type_timestamp;
 	tmp_component_position			: et_schematic.type_coordinates;
-
+	tmp_component_unit_orientation	: et_libraries.type_angle;
+	tmp_component_unit_mirror		: et_schematic.type_mirror;
+	
 	tmp_component_text_reference	: et_libraries.type_text (meaning => et_libraries.reference);
 	tmp_component_text_value		: et_libraries.type_text (meaning => et_libraries.value);
 	tmp_component_text_commissioned : et_libraries.type_text (meaning => et_libraries.commissioned);

@@ -168,7 +168,7 @@ package body et_netlist is
 								module_name		=> unit_position.module_name, -- module name unchanged
 								sheet_number	=> unit_position.sheet_number, -- sheet unchanged
 
-								-- offset port position by unit position
+								-- CS: offset port position by unit position, orientation an mirroring
 								x				=> unit_position.x + element (port_cursor).coordinates.x, 
 								y				=> unit_position.y + element (port_cursor).coordinates.y 
 							)));
