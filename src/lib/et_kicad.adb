@@ -499,7 +499,13 @@ package body et_kicad is
 			tmp_draw_port		: type_port;
 			tmp_draw_port_name	: type_port_name.bounded_string;
 			
-		
+			function invert_y (y : in et_libraries.type_grid) return et_libraries.type_grid is
+			-- For some unknown reason, kicad saves the y position of library objects inverted.
+			-- It is probably a bug. However, when importing objects we must invert y.
+			begin
+				return y * (-1.0);
+			end invert_y;
+			
 			procedure init_temp_variables is
 			begin
 				-- CS: init other variables
@@ -674,6 +680,7 @@ package body et_kicad is
 				loop exit when pos > end_point;
 					point.x := type_grid'value (field (line, pos)); -- load x
 					point.y := type_grid'value (field (line, pos+1)); -- load y (right after x the field)
+					point.y := invert_y (point.y);
 					points.append (point); -- append this point to the list of points
 					pos := pos + 2; -- advance field pointer to x coordinate of next point
 				end loop;
@@ -700,9 +707,11 @@ package body et_kicad is
 				-- #9 : fill style N/F/f no fill/foreground/background
 			begin -- to_rectangle
 				rectangle.start_point.x	:= type_grid'value (field (line,2));
-				rectangle.start_point.y	:= type_grid'value (field (line,3));	
+				rectangle.start_point.y	:= type_grid'value (field (line,3));
+				rectangle.start_point.y	:= invert_y (rectangle.start_point.y);
 				rectangle.end_point.x	:= type_grid'value (field (line,4));
 				rectangle.end_point.y	:= type_grid'value (field (line,5));
+				rectangle.end_point.y	:= invert_y (rectangle.end_point.y);
 				rectangle.line_width	:= type_line_width'value (field (line,8));
 				rectangle.fill			:= to_fill (field (line,9));
 
@@ -728,6 +737,7 @@ package body et_kicad is
 			begin -- to_circle
 				circle.center.x		:= type_grid'value (field (line,2));
 				circle.center.y		:= type_grid'value (field (line,3));
+				circle.center.y		:= invert_y (circle.center.y);
 				circle.radius		:= type_grid'value (field (line,4));
 				circle.line_width	:= type_line_width'value (field (line,7));
 				circle.fill			:= to_fill (field (line,8));
@@ -759,6 +769,7 @@ package body et_kicad is
 			begin -- to_arc
 				arc.center.x		:= type_grid'value (field (line,2));
 				arc.center.y		:= type_grid'value (field (line,3));
+				arc.center.y		:= invert_y (arc.center.y);
 				arc.radius			:= type_grid'value (field (line,4));
 
 				arc.start_angle		:= to_degrees (field (line,5));
@@ -771,7 +782,7 @@ package body et_kicad is
 				arc.start_point.y	:= type_grid'value (field (line,12));
 				arc.end_point.x		:= type_grid'value (field (line,13));
 				arc.end_point.y		:= type_grid'value (field (line,14));
-
+				arc.end_point.y		:= invert_y (arc.end_point.y);
 				return arc;
 			end to_arc;
 
@@ -855,6 +866,8 @@ package body et_kicad is
 				
 				text.position.x		:= type_grid'value (field (line,3));
 				text.position.y		:= type_grid'value (field (line,4));
+				text.position.y		:= invert_y (text.position.y);
+
 				text.size			:= type_text_size'value (field (line,5));
 
 				-- compose from fields 10 and 11 the text style
@@ -978,7 +991,8 @@ package body et_kicad is
 				-- compose position
 				port.coordinates.x	:= type_grid'value (field (line,4));
 				port.coordinates.y	:= type_grid'value (field (line,5));
-
+				port.coordinates.y	:= invert_y (port.coordinates.y);
+				
 				-- compose length
 				port.length			:= type_port_length'value (field (line,6));
 
@@ -1003,6 +1017,9 @@ package body et_kicad is
 
 				-- port name offset
 				port.port_name_offset	:= tmp_port_name_offset;
+
+				-- CS: log port properties
+
 				return port;
 
 				-- CS: exception handler
@@ -4168,8 +4185,23 @@ package body et_kicad is
 									-- F 1 "74LS00" H 4100 3900 50  0000 C CNN	
 									-- F 2 "bel_ic:S_SO14" H 4100 4000 50  0001 C CNN
 									-- F 3 "" H 4100 4000 50  0001 C CNN
-									-- 	4    4100 4000		-- CS: unknown
-									-- 	1    0    0    -1 	-- CS: unknown
+									-- 	4    4100 4000		-- CS: same as x/y pos ?
+
+									--  1    0    0  -1  -- orientation 0,   mirror normal
+									--  0   -1   -1   0  -- orientation 90,  mirror normal
+									-- -1    0    0   1  -- orientation 180, mirror normal 
+									-- 	0    1    1   0  -- orientation -90, mirror normal  
+
+									-- 	1    0    0   1  -- orientation 0,   mirror --
+									--  0   -1    1   0  -- orientation 90,  mirror -- 
+									-- -1    0    0  -1  -- orientation 180, mirror -- 
+									--  0    1   -1   0  -- orientation -90, mirror -- 
+
+									-- -1    0    0  -1  -- orientation 0,   mirror |
+									--  0    1   -1   0  -- orientation 90,  mirror |
+									--  1    0    0   1  -- orientation 180, mirror |
+									--  1    0    0   1  -- orientation -90, mirror |
+									
 									-- $EndComp
 									
 									if not component_entered then
