@@ -4458,8 +4458,6 @@ package body et_kicad is
 				-- Now the port lists of nets must be built and added to the current module.
 				add_portlists (build_portlists);
 
-				-- CS build_netlist;
-				
 			else
 				log_indentation_reset;
 				log (message_error & "schematic file '" & to_string (current_schematic) & "' not found !",

@@ -131,7 +131,8 @@ begin
 
 	-- Now we know the project file name and the CAD format.
 	et_kicad.import_design;
-
+	
+	-- CS build_netlist;
 end et;
 
 -- Soli Deo Gloria
