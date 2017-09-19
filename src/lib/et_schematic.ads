@@ -348,6 +348,7 @@ package et_schematic is
 		style		: type_port_style;	-- used for ERC
 	end record;
 
+
 	-- If component ports are to be listed in a type_net, we need additionally the component reference:
 	type type_port is new type_port_base with record
 		reference	: et_libraries.type_component_reference;
@@ -572,6 +573,25 @@ package et_schematic is
 	-- Returns the generic name of a component as it is listed in a library.
 	-- The cursor must point to the component in question.
 
+
+-- PORTLISTS	
+	-- Base ports of a component are collected in a simple list.
+	package type_base_ports is new doubly_linked_lists ( 
+		element_type => type_port_base); 
+	use type_base_ports;
+
+	-- The components with their ports are collected in a map with the component reference as key:
+	package type_portlists is new ordered_maps (
+		key_type => et_libraries.type_component_reference,
+		element_type => type_base_ports.list,
+		"<" => et_schematic.compare_reference);
+
+	function build_portlists return type_portlists.map;
+	-- Returns a list of components with the absolute positions of their ports.
+	
+
+	
+-- MODULES
 	
     -- A module has a name, a list of nets and a list of components.
     -- Objects relevant for graphical interfaces are
@@ -579,9 +599,9 @@ package et_schematic is
     -- - a list of drawing frames
     -- - a list of title blocks
 	type type_module is record
-		--libraries		: type_library_names.list;	-- the list of project library names
 		libraries		: type_full_library_names.list;	-- the list of project library names
 		nets 	    	: type_nets.map;			-- the nets of the module
+		portlists		: type_portlists.map;		-- the portlists of the module
         components		: type_components.map;		-- the components of the module
 		submodules  	: type_gui_submodules.map;	-- graphical representations of submodules
         frames      	: type_frames.list;			-- frames
@@ -632,6 +652,10 @@ package et_schematic is
 		name	: in et_schematic.type_net_name.bounded_string;
 		net		: in et_schematic.type_net);
 
+	procedure add_portlists (
+	-- Adds the portlists into the module (indicated by module.cursor)
+		portlists : in et_schematic.type_portlists.map);
+	
 	procedure add_component (
 	-- Adds a component into the the module (indicated by module_cursor).
 		reference	: in et_libraries.type_component_reference;

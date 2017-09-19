@@ -4455,8 +4455,8 @@ package body et_kicad is
 				-- The nets are appended to the netlist of the current module.
 				associate_net_labels_with_anonymous_nets;
 
-				-- Now the port lists of nets must be built.
-				et_netlist.portlists := et_netlist.build_portlists;
+				-- Now the port lists of nets must be built and added to the current module.
+				add_portlists (build_portlists);
 
 				-- CS build_netlist;
 				
@@ -4510,6 +4510,7 @@ package body et_kicad is
 					module		=> (
 						libraries		=> tmp_project_libraries, -- set project libraries
 						nets			=> type_nets.empty_map,
+						portlists		=> type_portlists.empty_map,
 						components		=> type_components.empty_map,
 						submodules		=> type_gui_submodules.empty_map,
 						frames			=> type_frames.empty_list,
