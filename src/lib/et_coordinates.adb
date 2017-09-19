@@ -34,28 +34,25 @@ with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 
-with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded; 		use ada.strings.bounded;
-with ada.containers; 			use ada.containers;
+with ada.strings;				use ada.strings;
+with ada.strings.fixed; 		use ada.strings.fixed;
+-- with ada.strings.bounded; 		use ada.strings.bounded;
+-- with ada.containers; 			use ada.containers;
 
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
-with ada.containers.ordered_maps;
-with ada.containers.indefinite_ordered_maps;
-with ada.containers.ordered_sets;
+-- with ada.containers.doubly_linked_lists;
+-- with ada.containers.indefinite_doubly_linked_lists;
+-- with ada.containers.ordered_maps;
+-- with ada.containers.indefinite_ordered_maps;
+-- with ada.containers.ordered_sets;
 
 --with et_string_processing;
 
 package body et_coordinates is
 
-	procedure dummy is
-	begin
-		null;
-	end dummy;
-
 	function mil_to_distance (mil : in string) return type_distance is
+	-- Returns the given mils to type_distance.		
 
-		type type_distance_intermediate is delta 0.0001 digits 13 range -10000000.0 .. 1000000.0;
+		type type_distance_intermediate is digits 13 range -10000000.0 .. 1000000.0;
 		-- unit is mil
 		-- CS: refine range and delta if required
 
@@ -68,7 +65,24 @@ package body et_coordinates is
 		-- CS: exception handler
 	end mil_to_distance;
 
+	
+	function to_string (distance : in type_distance) return string is
+	-- Returns the given distance to a string.
+	begin
+		return trim (type_distance'image (distance), left);
+	end to_string;
+
+	
 -- private
+	function to_string (point : in type_2d_point) return string is
+	-- Returns the given point coordinates to a string.
+	begin
+		return trim (type_distance'image (point.x), left)
+			& axis_separator 
+			& trim (type_distance'image (point.y), left);
+	end to_string;
+
+	
 	procedure move (
 		point : in out type_2d_point;
 		offset : in type_2d_point
@@ -78,6 +92,7 @@ package body et_coordinates is
 		point.y := point.y + offset.y;
 	end move;
 
+	
 	function move (
 		point : in out type_2d_point;
 		offset : in type_2d_point
@@ -89,6 +104,7 @@ package body et_coordinates is
 			);
 	end move;
 
+	
 	function mirror (
 		point : in out type_2d_point;
 		axis  : in type_axis

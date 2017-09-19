@@ -45,6 +45,7 @@ with ada.containers;            use ada.containers;
 -- with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
 
+with et_coordinates;
 with et_general;
 with et_libraries;
 with et_string_processing;
@@ -113,9 +114,10 @@ package body et_schematic is
 	
 	function to_string (position : in type_coordinates) return string is
 	-- Returns the given position as string.
+		--use et_coordinates;
 	begin
 		return coordinates_preamble
-			& trim (positive'image(position.sheet_number),left) 
+			& trim (positive'image (position.sheet_number),left) 
 			& et_libraries.coordinates_dimension_separator
 			& trim (et_libraries.type_grid'image(position.x),left)
 			& et_libraries.coordinates_dimension_separator
@@ -398,6 +400,7 @@ package body et_schematic is
 				procedure add (
 					component	: in type_component_reference;
 					ports		: in out type_base_ports.list) is
+					use et_coordinates;
 				begin
 					type_base_ports.append (
 						container => ports,
@@ -699,6 +702,7 @@ package body et_schematic is
 
 		use et_libraries;
 		use et_geometry;
+		use et_coordinates;
 	begin
 		-- calculate the shortes distance of point from line.
 		d := distance_of_point_from_line (

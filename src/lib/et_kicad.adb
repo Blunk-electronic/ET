@@ -52,6 +52,7 @@ with ada.containers;            use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 
+with et_coordinates;
 with et_libraries;
 with et_schematic;
 with et_netlist;
@@ -502,6 +503,7 @@ package body et_kicad is
 			function invert_y (y : in et_libraries.type_grid) return et_libraries.type_grid is
 			-- For some unknown reason, kicad saves the y position of library objects inverted.
 			-- It is probably a bug. However, when importing objects we must invert y.
+				use et_coordinates;
 			begin
 				return y * (-1.0);
 			end invert_y;
@@ -2585,6 +2587,7 @@ package body et_kicad is
 				s, e	: boolean; -- indicate the end point, that has been processed already
 				untouched, half_processed : boolean; -- indicate whether a segment is completely untouched or processed in only one direction
 
+				use et_coordinates;
 				use et_libraries;
 				use type_wild_segments;
 			
@@ -2775,6 +2778,7 @@ package body et_kicad is
 					sits_on_segment : boolean := false;
 					d : et_geometry.type_distance_point_from_line;
 
+					use et_coordinates;
 					use et_libraries;
 					use et_geometry;
 				begin
@@ -3713,6 +3717,7 @@ package body et_kicad is
 	
 			procedure verify_unit_name_and_position (line : in type_fields_of_line) is
 				use et_libraries.type_unit_name;
+				use et_coordinates;
 			begin
 				
 				if et_libraries.to_string (tmp_component_unit_name) /= get_field_from_line (line,1) then

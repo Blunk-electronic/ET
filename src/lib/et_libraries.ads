@@ -44,6 +44,7 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
+with et_coordinates;
 with et_string_processing;
 
 package et_libraries is
@@ -103,17 +104,15 @@ package et_libraries is
 
 	
 -- GRID AND COORDINATES
+	
+	--type type_grid_extended is digits 11 range -100000000.00 .. 100000000.00;
+	subtype type_grid_extended is et_coordinates.type_distance;
+	subtype type_grid is type_grid_extended;
 
-	type type_grid_extended is digits 11 range -100000000.00 .. 100000000.00;
-	subtype type_grid is type_grid_extended range -100000.00 .. 100000.00; -- CS: unit assumed is MIL !!!
-	-- CS: negative schematic coordinates should be forbidden
-	-- type type_grid is digits 7 range 0.00 .. 100000.00; -- CS: unit assumed is MIL !!!	
-
-	coordinate_zero : constant type_grid := 0.0;
 
     -- In general every object has at least x,y coordinates.
 	type type_coordinates is tagged record
-		x,y				: type_grid := coordinate_zero;
+		x,y				: type_grid := et_coordinates.zero_distance;
 	end record;
 
 	coordinates_dimension_separator : constant string (1..1) := "/";

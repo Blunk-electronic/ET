@@ -39,6 +39,7 @@ with et_libraries;				use et_libraries;
 with ada.numerics.generic_elementary_functions;
 -- with ada.containers; 		use ada.containers;
 -- with ada.containers.vectors;
+with et_coordinates;
 
 package body et_geometry is
 	
@@ -49,6 +50,8 @@ package body et_geometry is
 		line_range : in type_line_range)
 		return type_distance_point_from_line is
 
+		use et_coordinates;
+		
 		s : type_coordinates := line_start;
 		e : type_coordinates := line_end;		
 		

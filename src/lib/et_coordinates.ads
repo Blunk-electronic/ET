@@ -34,21 +34,20 @@ with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 
-with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded; 		use ada.strings.bounded;
-with ada.containers; 			use ada.containers;
-
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
-with ada.containers.ordered_maps;
-with ada.containers.indefinite_ordered_maps;
-with ada.containers.ordered_sets;
+-- with ada.strings.maps;			use ada.strings.maps;
+-- with ada.strings.bounded; 		use ada.strings.bounded;
+-- with ada.containers; 			use ada.containers;
+-- 
+-- with ada.containers.doubly_linked_lists;
+-- with ada.containers.indefinite_doubly_linked_lists;
+-- with ada.containers.ordered_maps;
+-- with ada.containers.indefinite_ordered_maps;
+-- with ada.containers.ordered_sets;
 
 --with et_string_processing;
 
 package et_coordinates is
 
-	procedure dummy;
 	
 -- GRID AND COORDINATES
 
@@ -57,15 +56,25 @@ package et_coordinates is
 -- 	type type_unit_metric is (micrometer, millimeter, centimeter, meter);
 -- 	type type_unit_imperial is (mil, inch);
 
-	type type_distance is delta 0.0001 digits 11 range -10000.0000 .. 10000.0000; -- unit is metric millimeters
+	type type_distance is digits 11 range -100000000.0 .. 100000000.0; -- unit is metric millimeters
 	zero_distance : constant type_distance := 0.0;
 
 	function mil_to_distance (mil : in string) return type_distance;
+	-- Returns the given mils to type_distance.
+	
+	function to_string (distance : in type_distance) return string;
+	-- Returns the given distance to a string.
 
+	
 	type type_2d_point is private;
 
 		zero : constant type_2d_point;
 
+	axis_separator : constant string (1..1) := "/";
+	
+	function to_string (point : in type_2d_point) return string;
+	-- Returns the given point coordinates to a string.
+	
 	procedure move (
 		point : in out type_2d_point;
 		offset : in type_2d_point

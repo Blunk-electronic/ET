@@ -127,7 +127,7 @@ package et_schematic is
 
 
 
-	
+	-- CS: negative schematic coordinates should be forbidden	
 	
 	type type_coordinates is new et_libraries.type_coordinates with record
         path            : type_path_to_submodule.list;
