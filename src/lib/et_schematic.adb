@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                    SYSTEM ET SCHEMATIC DECLARATIONS                        --
+--                    SYSTEM ET SCHEMATIC DECLARATIONS                      --
 --                                                                          --
 --                                 ET                                       --
 --                                                                          --
