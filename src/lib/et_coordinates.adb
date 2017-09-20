@@ -83,46 +83,56 @@ package body et_coordinates is
 	end to_string;
 
 	
-	procedure move (
-		point : in out type_2d_point;
-		offset : in type_2d_point
-		) is
+-- 	procedure move (
+-- 		point : in out type_2d_point;
+-- 		offset : in type_2d_point
+-- 		) is
+-- 	begin
+-- 		point.x := point.x + offset.x;
+-- 		point.y := point.y + offset.y;
+-- 	end move;
+
+-- 	
+-- 	function move (
+-- 		point : in type_2d_point;
+-- 		offset : in type_2d_point
+-- 		) return type_2d_point is
+-- 	begin
+-- 		return (
+-- 			x => point.x + offset.x,
+-- 			y => point.y + offset.y
+-- 			);
+-- 	end move;
+
+-- 	function move (point : in type_2d_point; offset : in type_2d_point) return type_2d_point is
+-- 	function move (point : in type_2d_point) return type_2d_point is
+-- 	begin
+-- 		return point;
+-- 	end move;
+	function move (point : in type_2d_point'class; offset : in type_2d_point) return type_2d_point'class is
 	begin
-		point.x := point.x + offset.x;
-		point.y := point.y + offset.y;
+		return point;
 	end move;
 
-	
-	function move (
-		point : in out type_2d_point;
-		offset : in type_2d_point
-		) return type_2d_point is
-	begin
-		return (
-			x => point.x + offset.x,
-			y => point.y + offset.y
-			);
-	end move;
 
-	
-	function mirror (
-		point : in out type_2d_point;
-		axis  : in type_axis
-		) return type_2d_point is
-	begin
-		case axis is
-			when X =>
-				return (
-					x => point.x,
-					y => point.y * (-1.0)
-					);
-			when Y =>
-				return (
-					x => point.x * (-1.0),
-					y => point.y
-					);
-		end case;
-	end mirror;
+-- 	function mirror (
+-- 		point : in type_2d_point;
+-- 		axis  : in type_axis
+-- 		) return type_2d_point is
+-- 	begin
+-- 		case axis is
+-- 			when X =>
+-- 				return (
+-- 					x => point.x,
+-- 					y => point.y * (-1.0)
+-- 					);
+-- 			when Y =>
+-- 				return (
+-- 					x => point.x * (-1.0),
+-- 					y => point.y
+-- 					);
+-- 		end case;
+-- 	end mirror;
 	
 end et_coordinates;
 

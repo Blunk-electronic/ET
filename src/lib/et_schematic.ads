@@ -48,8 +48,11 @@ with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 with et_general;
+with et_coordinates;
 with et_libraries;				use et_libraries;
 with et_string_processing;
+
+
 
 package et_schematic is
 
@@ -135,6 +138,8 @@ package et_schematic is
 		sheet_number	: positive;
 	end record;
 
+
+	
 	coordinates_preamble : constant string (1..21) := "position " 
 		& "(sheet"
 		& et_libraries.coordinates_dimension_separator
@@ -713,6 +718,19 @@ package et_schematic is
 	end record;
 
 
+
+	type type_coordinates2 is new et_coordinates.type_2d_point with private;
+-- 	overriding 
+-- 	function move (point : in type_coordinates2; offset : in type_coordinates2) return type_coordinates2;
+
+
+private
+	
+	type type_coordinates2 is new et_coordinates.type_2d_point with record
+        path            : type_path_to_submodule.list;
+		module_name		: type_submodule_name.bounded_string;
+		sheet_number	: positive;
+	end record;
 
 	
 	

@@ -66,29 +66,34 @@ package et_coordinates is
 	-- Returns the given distance to a string.
 
 	
-	type type_2d_point is private;
+	type type_2d_point is tagged private;
 
-		zero : constant type_2d_point;
+	zero : constant type_2d_point;
 
 	axis_separator : constant string (1..1) := "/";
 	
 	function to_string (point : in type_2d_point) return string;
 	-- Returns the given point coordinates to a string.
 	
-	procedure move (
-		point : in out type_2d_point;
-		offset : in type_2d_point
-		);
+-- 	procedure move (
+-- 		point : in out type_2d_point;
+-- 		offset : in type_2d_point
+-- 		);
 
-	function move (
-		point : in out type_2d_point;
-		offset : in type_2d_point
-		) return type_2d_point;
+-- 	function move (
+-- 		point : in type_2d_point;
+-- 		offset : in type_2d_point
+-- 		) return type_2d_point;
 
-	function mirror (
-		point : in out type_2d_point;
-		axis  : in type_axis
-		) return type_2d_point;
+	--function move (point : in type_2d_point) return type_2d_point;
+-- 	function move (point : in type_2d_point; offset : in type_2d_point) return type_2d_point;
+-- 	function move (point : in type_2d_point) return type_2d_point;
+	function move (point : in type_2d_point'class; offset : in type_2d_point) return type_2d_point'class;
+
+-- 	function mirror (
+-- 		point : in type_2d_point;
+-- 		axis  : in type_axis
+-- 		) return type_2d_point;
 
 	-- CS: procedure mirror ?
 
@@ -96,7 +101,7 @@ package et_coordinates is
 
 	private 
 
-		type type_2d_point is record
+		type type_2d_point is tagged record
 			x, y : type_distance;
 		end record;
 		

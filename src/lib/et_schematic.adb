@@ -114,7 +114,6 @@ package body et_schematic is
 	
 	function to_string (position : in type_coordinates) return string is
 	-- Returns the given position as string.
-		--use et_coordinates;
 	begin
 		return coordinates_preamble
 			& trim (positive'image (position.sheet_number),left) 
@@ -1449,6 +1448,31 @@ package body et_schematic is
 		-- CS: output coordinates of net (lowest x/Y)
 	end warning_on_name_less_net;
 
+
+-- private
+
+-- 	function move (
+-- 		point : in type_coordinates2;
+-- 		offset : in type_coordinates2
+-- 		) return type_coordinates2 is
+-- -- 		a : type_coordinates2;
+-- 	begin
+-- -- -- 		return (
+-- -- -- 			x => point.x + offset.x,
+-- -- -- 			y => point.y + offset.y
+-- -- -- 			);
+-- 		return point;
+-- 	end move;
+
+	
+	procedure write_coordinates is
+		--use et_coordinates;
+		t : type_coordinates2;
+	begin
+		put_line (to_string (point => t));
+	
+	end write_coordinates;
+	
 	
 end et_schematic;
 -- Soli Deo Gloria
