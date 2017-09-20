@@ -48,7 +48,7 @@ with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 with et_general;
-with et_coordinates;
+with et_coordinates;			--use et_coordinates;
 with et_libraries;				use et_libraries;
 with et_string_processing;
 
@@ -62,9 +62,6 @@ package et_schematic is
  	module_name_length : constant natural := 100;
 	package type_module_name is new generic_bounded_length(module_name_length); use type_module_name;
 
-	-- The name of a submodule may have 100 characters which seems sufficient for now.
- 	submodule_name_length : constant natural := 100;
-	package type_submodule_name is new generic_bounded_length(submodule_name_length); use type_submodule_name;
 
     -- A sheet title may have 100 characters which seems sufficient for now.
  	sheet_title_length : constant natural := 100;    
@@ -105,11 +102,6 @@ package et_schematic is
 	-- - sheet number (NOTE: The sheet numbering restarts in a submodule)
 	-- - basic coordinates x/y
 
-    -- The location of a submodule within the design hierarchy is reflected by
-    -- a list of submodule names like motor_driver.counter.supply
-    -- The first item in this list is the name of the top level module.
-    package type_path_to_submodule is new doubly_linked_lists (
-        element_type => type_submodule_name.bounded_string);
 
 	-- While reading submodules (in kicad sheets) the path_to_submodule keeps record of current point in the design 
 	-- hierarchy. Each time a submodule ABC has been found with nested submodules, the name of ABC is appended here.
@@ -117,13 +109,13 @@ package et_schematic is
 	-- to an object, the path_to_submodule is read. 
 	-- So this list (from first to last) provides a full path that tells us
 	-- the exact location of the submodule within the design hierarchy.
-	path_to_submodule : type_path_to_submodule.list;
+	path_to_submodule : et_coordinates.type_path_to_submodule.list;
 	
 	-- Sometimes we need to output the location of a submodule:
 	procedure write_path_to_submodule;
 
 	-- Here we append a submodule name the the path_to_submodule.
-	procedure append_name_of_parent_module_to_path (submodule : in type_submodule_name.bounded_string);
+	procedure append_name_of_parent_module_to_path (submodule : in et_coordinates.type_submodule_name.bounded_string);
 
 	-- Here we remove the last submodule name form the path_to_submodule.
 	procedure delete_last_module_name_from_path;
@@ -131,24 +123,16 @@ package et_schematic is
 
 
 	-- CS: negative schematic coordinates should be forbidden	
-	
-	type type_coordinates is new et_libraries.type_coordinates with record
-        path            : type_path_to_submodule.list;
-		module_name		: type_submodule_name.bounded_string;
-		sheet_number	: positive;
-	end record;
+-- 	type type_coordinates is new et_coordinates.type_2d_point with private;	
+-- 	type type_coordinates is new et_libraries.type_coordinates with record
+--         path            : type_path_to_submodule.list;
+-- 		module_name		: type_submodule_name.bounded_string;
+-- 		sheet_number	: positive;
+-- 	end record;
 
 
 	
-	coordinates_preamble : constant string (1..21) := "position " 
-		& "(sheet"
-		& et_libraries.coordinates_dimension_separator
-		& "x"
-		& et_libraries.coordinates_dimension_separator
-		& "y) ";
 	
-	function to_string (position : in type_coordinates) return string;
-	-- Returns the given position as string.
 
 	
 -- TEXT FIELD
@@ -156,7 +140,7 @@ package et_schematic is
 	-- A text/note field in the schematic gets extended by extended coordinates (see above)
 	type type_note is new et_libraries.type_text_basic with record
 		meaning			: et_libraries.type_text_meaning := et_libraries.note;
-		coordinates		: type_coordinates;
+		coordinates		: et_coordinates.type_coordinates;
 		content			: et_libraries.type_text_content.bounded_string;
 	end record;
 
@@ -184,7 +168,7 @@ package et_schematic is
 	-- A unit has placeholders for text like reference (like IC303), value (like 7400), ...
 	-- Some placeholders are available when the component appears in both schematic and layout.
 	type type_unit (appearance : type_component_appearance) is record
-		position	: type_coordinates;
+		position	: et_coordinates.type_coordinates;
 		orientation	: et_libraries.type_angle;
 		mirror		: type_mirror;
 		timestamp	: et_string_processing.type_timestamp;
@@ -267,7 +251,7 @@ package et_schematic is
 	type type_label_direction is ( input, output, bidir, tristate, passive );
 	type type_label_appearance is ( simple, tag );
 	type type_net_label ( label_appearance : type_label_appearance ) is record
-		coordinates	: type_coordinates;
+		coordinates	: et_coordinates.type_coordinates;
 		orientation	: et_libraries.type_angle;
         text		: type_net_name.bounded_string;
         size		: et_libraries.type_text_size;
@@ -302,7 +286,7 @@ package et_schematic is
 
 	-- A net junction is where segments can be connected with each other.
 	type type_net_junction is tagged record
-		coordinates : type_coordinates;
+		coordinates : et_coordinates.type_coordinates;
 	end record;
 
 	procedure write_coordinates_of_junction (junction : in type_net_junction);
@@ -325,8 +309,8 @@ package et_schematic is
 	-- A segment may have labels attached.
 	-- So this is the definition of a net segment with start and end coord., lists of simple and tag labels
 	type type_net_segment is tagged record
-		coordinates_start 	: type_coordinates;
-		coordinates_end   	: type_coordinates;
+		coordinates_start 	: et_coordinates.type_coordinates;
+		coordinates_end   	: et_coordinates.type_coordinates;
 		--junctions			: type_junctions.list;
 		label_list_simple 	: type_simple_labels.list;
 		label_list_tag    	: type_tag_labels.list;
@@ -348,7 +332,7 @@ package et_schematic is
 	type type_port_base is tagged record
 		pin			: et_libraries.type_pin_name.bounded_string;
 		port		: et_libraries.type_port_name.bounded_string;
-		coordinates : et_schematic.type_coordinates;
+		coordinates : et_coordinates.type_coordinates;
 		direction	: type_port_direction; -- example: "passive" -- used for ERC
 		style		: type_port_style;	-- used for ERC
 	end record;
@@ -381,7 +365,7 @@ package et_schematic is
 		segments 	: type_net_segments.list; -- list of net segments
 		--junctions	: type_junctions.list; -- the junctions of the net
         ports 		: type_ports.set; -- list of type_ports
-		coordinates : type_coordinates;
+		coordinates : et_coordinates.type_coordinates;
 	end record;
 
 	-- Nets are collected in a map.
@@ -406,7 +390,7 @@ package et_schematic is
     type type_gui_submodule is record -- CS: read from kicad $sheet
         text_size_of_name   : type_text_size;
         text_size_of_file   : type_text_size;        
-		coordinates		    : type_coordinates;
+		coordinates		    : et_coordinates.type_coordinates;
         size_x, size_y      : et_libraries.type_grid; -- size x/y of the box
         timestamp           : et_string_processing.type_timestamp;
         -- CS: ports ?
@@ -414,7 +398,8 @@ package et_schematic is
 
     -- A list of submodules is a component of the main module:    
     package type_gui_submodules is new ordered_maps (
-        key_type => type_submodule_name.bounded_string,
+        key_type => et_coordinates.type_submodule_name.bounded_string,
+		"<" => et_coordinates.type_submodule_name."<",
         element_type => type_gui_submodule);
 
 
@@ -621,7 +606,8 @@ package et_schematic is
 
 	-- A rig is a set of modules:
 	package type_rig is new ordered_maps (
-		key_type => type_submodule_name.bounded_string, -- example "MOTOR_DRIVER"
+		key_type => et_coordinates.type_submodule_name.bounded_string, -- example "MOTOR_DRIVER"
+		"<" => et_coordinates.type_submodule_name."<",											 
 		element_type => type_module);
 
 	rig : type_rig.map;
@@ -631,12 +617,12 @@ package et_schematic is
 	procedure add_module (
 	-- Adds a module into the rig. Leaves module_cursor pointing
 	-- to the module inserted last.
-		module_name : in type_submodule_name.bounded_string;
+		module_name : in et_coordinates.type_submodule_name.bounded_string;
 		module		: in type_module);
 
 	procedure add_gui_submodule (
 	-- Inserts a gui submodule in the module (indicated by module_cursor)
-		name		: in et_schematic.type_submodule_name.bounded_string;
+		name		: in et_coordinates.type_submodule_name.bounded_string;
 		gui_sub_mod	: in et_schematic.type_gui_submodule);
 
 	procedure add_sheet_header (
@@ -708,27 +694,18 @@ package et_schematic is
     -- They are returned to the parent unit in a list of submodules:
 	package type_submodule_names is new vectors ( -- the bare list -- CS: better an ordered set ?
 		index_type => positive,
-		element_type => type_submodule_name.bounded_string);
+		"=" => et_coordinates.type_submodule_name."=",
+		element_type => et_coordinates.type_submodule_name.bounded_string);
 
     -- A composite type with additional supporting information:
 	type type_submodule_names_extended is record
-		parent_module	: type_submodule_name.bounded_string;
+		parent_module	: et_coordinates.type_submodule_name.bounded_string;
 		list			: type_submodule_names.vector;
 		id				: positive; -- id of a submodule in the list
 	end record;
 
 
 
--- 	type type_coordinates2 is new et_coordinates.type_2d_point with private;
--- 
--- 
--- private
--- 	
--- 	type type_coordinates2 is new et_coordinates.type_2d_point with record
---         path            : type_path_to_submodule.list;
--- 		module_name		: type_submodule_name.bounded_string;
--- 		sheet_number	: positive;
--- 	end record;
 
 	
 	

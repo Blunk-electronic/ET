@@ -63,6 +63,7 @@ package body et_schematic is
 	
 	-- Sometimes we need to output the location of a submodule:
 	procedure write_path_to_submodule is
+		use et_coordinates;
 		c : type_path_to_submodule.cursor;
 		use et_string_processing;
 	begin
@@ -93,9 +94,10 @@ package body et_schematic is
 	end write_path_to_submodule;
 
 	-- Here we append a submodule name the the path_to_submodule.
-	procedure append_name_of_parent_module_to_path (submodule : in type_submodule_name.bounded_string) is
+	procedure append_name_of_parent_module_to_path (submodule : in et_coordinates.type_submodule_name.bounded_string) is
 		use et_string_processing;
 		use ada.directories;
+		use et_coordinates;
 	begin
 		log (text => "path_to_submodule: appending submodule " & type_submodule_name.to_string(submodule), level => 1);
 		-- Since we are dealing with file names, the extension must be removed before appending.
@@ -106,26 +108,10 @@ package body et_schematic is
 	
 	-- Here we remove the last submodule name form the path_to_submodule.
 	procedure delete_last_module_name_from_path is
+		use et_coordinates;
 	begin
 		type_path_to_submodule.delete_last (path_to_submodule);
 	end delete_last_module_name_from_path;
-
-
-	
-	function to_string (position : in type_coordinates) return string is
-	-- Returns the given position as string.
-	begin
-		return coordinates_preamble
-			& trim (positive'image (position.sheet_number),left) 
-			& et_libraries.coordinates_dimension_separator
-			& trim (et_libraries.type_grid'image(position.x),left)
-			& et_libraries.coordinates_dimension_separator
-			& trim (et_libraries.type_grid'image(position.y),left);
-
-		-- CS: output in both mil and mm
-		
-		-- CS: exception handler
-	end to_string;
 
 	function to_string (net_name : in type_net_name.bounded_string) return string is
 	-- Returns the given net name as string.
@@ -136,6 +122,7 @@ package body et_schematic is
 	procedure write_label_properties (label : in type_net_label) is
 	-- Writes the properties of the given net label in the logfile.
 		use et_string_processing;
+		use et_coordinates;
 		use et_libraries;
 	
 		log_threshold : type_log_level := 1;
@@ -151,7 +138,7 @@ package body et_schematic is
 
 		log_indentation_up;
 		log ("name '" & type_net_name.to_string (label.text) & "' ");
-		log (to_string (et_libraries.type_coordinates (label.coordinates)), log_threshold);
+		log (to_string (label.coordinates), log_threshold);
 		log (et_libraries.to_string (label.orientation), log_threshold);
 		
 		case label.label_appearance is
@@ -172,6 +159,7 @@ package body et_schematic is
 	-- Writes the properties of the given note
 		use et_string_processing;
 		use et_libraries;
+		use et_coordinates;
 	
 		log_threshold : type_log_level := 1;
 	begin
@@ -191,7 +179,7 @@ package body et_schematic is
 		if log_level >= log_threshold then
 			
 			-- position
-			log (to_string (et_libraries.type_coordinates (note.coordinates)), log_threshold);
+			log (to_string (note.coordinates), log_threshold);
 			
 			-- size
 			log ("size" & et_libraries.type_text_size'image (note.size));
@@ -363,7 +351,7 @@ package body et_schematic is
 		-- The unit is one element in the given list of units.
 			name : in type_unit_name.bounded_string; -- the unit being inquired
 			units : in et_schematic.type_units.map) -- the list of units
-			return et_schematic.type_coordinates is
+			return et_coordinates.type_coordinates is
 			unit_cursor : et_schematic.type_units.cursor;
 		begin
 			unit_cursor := et_schematic.type_units.find (container => units, key => name);
@@ -377,12 +365,13 @@ package body et_schematic is
 		-- NOTE: The library contains the positions of the ports.
 			use et_libraries.type_units_internal;
 			use et_libraries.type_ports;
-			
+			use et_coordinates;
+		
 			unit_cursor_internal	: type_units_internal.cursor; -- points to the current unit
 			port_cursor				: et_libraries.type_ports.cursor; -- points to a port of that unit
 
 			unit_name_lib : type_unit_name.bounded_string; -- the unit name in the library. like "A", "B" or "PWR"
-			unit_position : et_schematic.type_coordinates; -- the coordinates of the current unit
+			unit_position : et_coordinates.type_coordinates; -- the coordinates of the current unit
 			-- CS: external units
 
 			procedure add_port is
@@ -401,29 +390,29 @@ package body et_schematic is
 					ports		: in out type_base_ports.list) is
 					use et_coordinates;
 				begin
-					type_base_ports.append (
-						container => ports,
-						new_item => (
-
-							-- library defined properites:
-							port		=> key (port_cursor), -- the port name
-							pin			=> element (port_cursor).pin, -- the pin name
-							direction	=> element (port_cursor).direction, -- the port direction
-							style		=> element (port_cursor).style, -- port style
-
-							-- schematic defined properties:
-							coordinates	=> (
-								path			=> unit_position.path, -- path remains unchanged
-								module_name		=> unit_position.module_name, -- module name unchanged
-								sheet_number	=> unit_position.sheet_number, -- sheet unchanged
-
-								-- CS: offset port position by unit position, orientation an mirroring
-								x				=> unit_position.x + element (port_cursor).coordinates.x, 
-								y				=> unit_position.y + element (port_cursor).coordinates.y 
-							)));
+-- 					type_base_ports.append (
+-- 						container => ports,
+-- 						new_item => (
+-- 
+-- 							-- library defined properites:
+-- 							port		=> key (port_cursor), -- the port name
+-- 							pin			=> element (port_cursor).pin, -- the pin name
+-- 							direction	=> element (port_cursor).direction, -- the port direction
+-- 							style		=> element (port_cursor).style, -- port style
+-- 
+-- 							-- schematic defined properties:
+-- 							coordinates	=> (
+-- 								path			=> path (unit_position), -- path remains unchanged
+-- 								module_name		=> module (unit_position), -- module name unchanged
+-- 								sheet_number	=> sheet (unit_position), -- sheet unchanged
+-- 
+-- 								-- CS: offset port position by unit position, orientation an mirroring
+-- 								x				=> distance_x (unit_position) + element (port_cursor).coordinates.x, 
+-- 								y				=> distance_y (unit_position) + element (port_cursor).coordinates.y 
+-- 							)));
 
 					log_indentation_up;
-					log (et_schematic.to_string (last_element (ports).coordinates));
+					--log (to_string (last_element (ports).coordinates));
 					log_indentation_down;
 				end add;
 				
@@ -451,7 +440,7 @@ package body et_schematic is
 					log ("unit " & to_string (unit_name_lib));
 					unit_position := position_of_unit (unit_name_lib, units_sch);
 					log_indentation_up;
-					log (et_schematic.to_string (unit_position));
+					log (to_string (unit_position));
 
 					-- Get the ports of the current unit. Start with the first port of a unit.
 					-- The unit_position plus the relative port position yields the absolute
@@ -579,6 +568,7 @@ package body et_schematic is
 	procedure write_unit_properties (unit : in type_units.cursor) is
 	-- Writes the properties of the unit indicated by the given cursor.
 		use et_string_processing;
+		use et_coordinates;
 	begin
 		log_indentation_up;
 		
@@ -597,7 +587,7 @@ package body et_schematic is
 			& string (type_units.element (unit).timestamp));
 
 		-- position
-		log (et_schematic.to_string (type_units.element(unit).position));
+		log (to_string (type_units.element (unit).position));
 
 		-- placeholders
 		log ("placeholders");
@@ -654,16 +644,16 @@ package body et_schematic is
 	procedure write_coordinates_of_segment (segment : in type_net_segment) is
 	-- Writes the start and end coordinates of a net segment.
 		use et_string_processing;
-		use et_libraries;
+		use et_coordinates;
 	
 		log_threshold : type_log_level := 1;
 	begin
 		log_indentation_up;
 		
 		log ("start "
-			& to_string (et_libraries.type_coordinates (segment.coordinates_start))
+			& to_string (segment.coordinates_start)
 			& " end " 
-			& to_string (et_libraries.type_coordinates (segment.coordinates_end)),
+			& to_string (segment.coordinates_end),
 			level => log_threshold
 			);
 		
@@ -673,13 +663,13 @@ package body et_schematic is
 	procedure write_coordinates_of_junction (junction : in type_net_junction) is
 	-- Writes the coordinates of a net junction.
 		use et_string_processing;
-		use et_libraries;
+		use et_coordinates;
 	
 		log_threshold : type_log_level := 1;
 	begin
 		log_indentation_up;
 		
-		log (to_string (et_libraries.type_coordinates (junction.coordinates)),
+		log (to_string (junction.coordinates),
 			 level => log_threshold
 			); 
 		
@@ -692,10 +682,11 @@ package body et_schematic is
 		junction	: in type_net_junction;
 		segment		: in type_net_segment'class) 
 		return boolean is
-		point 		: et_schematic.type_coordinates := junction.coordinates;
-		line_start 	: et_schematic.type_coordinates := segment.coordinates_start;
-		line_end 	: et_schematic.type_coordinates := segment.coordinates_end;
-		zero 		: constant et_libraries.type_grid := 0.0;
+
+		point 		: et_coordinates.type_coordinates := junction.coordinates;
+		line_start 	: et_coordinates.type_coordinates := segment.coordinates_start;
+		line_end 	: et_coordinates.type_coordinates := segment.coordinates_end;
+		zero 		: constant et_coordinates.type_distance := et_coordinates.zero_distance;
 		sits_on_segment : boolean := false;
 		d : et_geometry.type_distance_point_from_line;
 
@@ -705,7 +696,7 @@ package body et_schematic is
 	begin
 		-- calculate the shortes distance of point from line.
 		d := distance_of_point_from_line (
-			point 		=> et_libraries.type_coordinates(point),
+			point 		=> type_2d_point (point),
 			line_start	=> et_libraries.type_coordinates(line_start),
 			line_end	=> et_libraries.type_coordinates(line_end),
 			line_range	=> inside_end_points);

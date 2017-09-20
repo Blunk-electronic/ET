@@ -72,6 +72,55 @@ package body et_coordinates is
 			& trim (type_distance'image (point.y), left);
 	end to_string;
 
+	function distance_x (point : in type_2d_point) return type_distance is
+	begin
+		return point.x;
+	end distance_x;
+
+	function distance_y (point : in type_2d_point) return type_distance is
+	begin
+		return point.y;
+	end distance_y;
+
+
+
+	
+	
+	function to_string (position : in type_coordinates) return string is
+	-- Returns the given position as string.
+	begin
+-- 		return coordinates_preamble
+-- 			& trim (positive'image (position.sheet_number),left) 
+-- 			& et_libraries.coordinates_dimension_separator
+-- 			& trim (et_libraries.type_grid'image(position.x),left)
+-- 			& et_libraries.coordinates_dimension_separator
+-- 			& trim (et_libraries.type_grid'image(position.y),left);
+
+		return coordinates_preamble
+			& trim (positive'image (position.sheet_number),left) 
+			& axis_separator
+			& to_string ( type_2d_point (position));
+
+		-- CS: output in both mil and mm
+		
+		-- CS: exception handler
+	end to_string;
+
+	function path (position : in type_coordinates) return type_path_to_submodule.list is
+	begin
+		return position.path;
+	end path;
+
+	function module (position : in type_coordinates) return type_submodule_name.bounded_string is
+	begin
+		return position.module_name;
+	end module;
+
+	function sheet (position : in type_coordinates) return positive is
+	begin
+		return position.sheet_number;
+	end sheet;
+
 	
 end et_coordinates;
 

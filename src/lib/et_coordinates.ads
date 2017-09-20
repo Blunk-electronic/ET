@@ -35,10 +35,10 @@ with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 
 -- with ada.strings.maps;			use ada.strings.maps;
--- with ada.strings.bounded; 		use ada.strings.bounded;
--- with ada.containers; 			use ada.containers;
+with ada.strings.bounded; 		use ada.strings.bounded;
+with ada.containers; 			use ada.containers;
 -- 
--- with ada.containers.doubly_linked_lists;
+with ada.containers.doubly_linked_lists;
 -- with ada.containers.indefinite_doubly_linked_lists;
 -- with ada.containers.ordered_maps;
 -- with ada.containers.indefinite_ordered_maps;
@@ -76,9 +76,38 @@ package et_coordinates is
 	
 	function to_string (point : in type_2d_point) return string;
 	-- Returns the given point coordinates to a string.
+
+	function distance_x (point : in type_2d_point) return type_distance;
+	function distance_y (point : in type_2d_point) return type_distance;	
+
 	
 
+	-- The name of a submodule may have 100 characters which seems sufficient for now.
+ 	submodule_name_length : constant natural := 100;
+	package type_submodule_name is new generic_bounded_length (submodule_name_length); use type_submodule_name;
+	
+    -- The location of a submodule within the design hierarchy is reflected by
+    -- a list of submodule names like motor_driver.counter.supply
+    -- The first item in this list is the name of the top level module.
+    package type_path_to_submodule is new doubly_linked_lists (
+        element_type => type_submodule_name.bounded_string);
 
+	type type_coordinates is new type_2d_point with private;
+
+	coordinates_preamble : constant string (1..21) := "position " 
+		& "(sheet"
+		& axis_separator
+		& "x"
+		& axis_separator
+		& "y) ";
+	
+	function to_string (position : in type_coordinates) return string;
+	-- Returns the given position as string.
+
+	function path   (position : in type_coordinates) return type_path_to_submodule.list;
+	function module (position : in type_coordinates) return type_submodule_name.bounded_string;
+	function sheet  (position : in type_coordinates) return positive;
+	
 	private 
 		-- In general every object has at least x,y coordinates.
 		type type_2d_point is tagged record
@@ -86,6 +115,14 @@ package et_coordinates is
 		end record;
 		
 		zero : constant type_2d_point := (x => zero_distance, y => zero_distance);
+
+	
+		type type_coordinates is new type_2d_point with record
+			path            : type_path_to_submodule.list;
+			module_name		: type_submodule_name.bounded_string;
+			sheet_number	: positive;
+		end record;
+
 		
 end et_coordinates;
 

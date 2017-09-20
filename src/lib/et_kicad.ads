@@ -40,6 +40,7 @@ with ada.containers.ordered_maps;
 with et_general;
 with et_schematic;
 with et_import;
+with et_coordinates;
 with et_libraries;
 with et_string_processing;
 
@@ -330,14 +331,14 @@ package et_kicad is
 	tmp_tag_net_label		: et_schematic.type_net_label_tag;
 	tmp_note				: et_schematic.type_note;	
 
-	tmp_module_name 				: et_schematic.type_submodule_name.bounded_string;	
+	tmp_module_name 				: et_coordinates.type_submodule_name.bounded_string;	
 	tmp_component_name_in_lib		: et_libraries.type_component_name.bounded_string;
 	tmp_component_appearance		: et_libraries.type_component_appearance := et_libraries.sch;
 	tmp_component_reference			: et_libraries.type_component_reference;
 	tmp_component_unit_name			: et_libraries.type_unit_name.bounded_string;
 	tmp_component_alt_repres		: et_schematic.type_alternative_representation;
 	tmp_component_timestamp			: et_string_processing.type_timestamp;
-	tmp_component_position			: et_schematic.type_coordinates;
+	tmp_component_position			: et_coordinates.type_coordinates;
 	tmp_component_unit_orientation	: et_libraries.type_angle;
 	tmp_component_unit_mirror		: et_schematic.type_mirror;
 	
