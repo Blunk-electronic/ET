@@ -427,7 +427,7 @@ package et_schematic is
 
     -- the final drawing frame
     type type_frame is record
-        coordinates     : type_coordinates;
+        coordinates     : et_coordinates.type_coordinates;
         paper_size      : type_paper_size; -- the size of the paper
         size_x, size_y  : et_libraries.type_grid; -- the dimensions of the frame (should fit into paper_size) 
         lines           : type_frame_lines.list;
@@ -470,7 +470,7 @@ package et_schematic is
 
     -- the final title block
     type type_title_block is record
-        coordinates     : type_coordinates;
+        coordinates     : et_coordinates.type_coordinates;
         lines           : type_title_block_lines.list;
         texts           : type_title_block_texts.list;
     end record;

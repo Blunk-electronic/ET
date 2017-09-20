@@ -82,6 +82,15 @@ package body et_coordinates is
 		return point.y;
 	end distance_y;
 
+	procedure set_x (point : in out type_2d_point; x : in type_distance) is
+	begin
+		point.x := x;
+	end set_x;
+	
+	procedure set_y (point : in out type_2d_point; y : in type_distance) is
+	begin
+		point.y := y;
+	end set_y;
 
 
 	
@@ -121,6 +130,23 @@ package body et_coordinates is
 		return position.sheet_number;
 	end sheet;
 
+	procedure set_module (position : in out type_coordinates; name : in type_submodule_name.bounded_string) is
+	-- Sets the module name in given position.
+	begin
+		position.module_name := name;
+	end set_module;
+
+	procedure set_path (position : in out type_coordinates; path : in type_path_to_submodule.list) is
+	-- Sets the path in given position.
+	begin
+		position.path := path;
+	end set_path;
+
+	procedure set_sheet (position : in out type_coordinates; sheet : in positive) is
+	-- Sets the sheet number in given position.
+	begin
+		position.sheet_number := sheet;
+	end set_sheet;
 	
 end et_coordinates;
 

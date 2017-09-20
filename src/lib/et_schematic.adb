@@ -696,9 +696,9 @@ package body et_schematic is
 	begin
 		-- calculate the shortes distance of point from line.
 		d := distance_of_point_from_line (
-			point 		=> type_2d_point (point),
-			line_start	=> et_libraries.type_coordinates(line_start),
-			line_end	=> et_libraries.type_coordinates(line_end),
+			point 		=> type_2d_point (junction.coordinates),
+			line_start	=> type_2d_point (segment.coordinates_start), -- et_libraries.type_coordinates(line_start),
+			line_end	=> type_2d_point (segment.coordinates_end), -- et_libraries.type_coordinates(line_end),
 			line_range	=> inside_end_points);
 		
 		if (not d.out_of_range) and d.distance = zero then
@@ -922,7 +922,7 @@ package body et_schematic is
 	procedure add_module (
 	-- Adds a module into the rig. Leaves module_cursor pointing
 	-- to the module inserted last.
-		module_name : in type_submodule_name.bounded_string;
+		module_name : in et_coordinates.type_submodule_name.bounded_string;
 		module		: in type_module) is
 		
 		inserted : boolean := false;
@@ -943,11 +943,11 @@ package body et_schematic is
 
 	procedure add_gui_submodule (
 	-- Inserts a gui submodule in the module (indicated by module_cursor)
-		name		: in et_schematic.type_submodule_name.bounded_string;
+		name		: in et_coordinates.type_submodule_name.bounded_string;
 		gui_sub_mod	: in et_schematic.type_gui_submodule) is
 
 		procedure add (
-			mod_name	: in type_submodule_name.bounded_string;
+			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out type_module) is
 			
 			inserted	: boolean := false;
@@ -986,7 +986,7 @@ package body et_schematic is
 		sheet	: in type_schematic_file_name.bounded_string) is
 
 		procedure add (
-			mod_name	: in type_submodule_name.bounded_string;
+			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out type_module) is
 
 			use et_string_processing;
@@ -1017,7 +1017,7 @@ package body et_schematic is
 		frame	: in et_schematic.type_frame) is
 		
 		procedure add (
-			mod_name	: in type_submodule_name.bounded_string;
+			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out type_module) is
 
 			use et_string_processing;
@@ -1047,7 +1047,7 @@ package body et_schematic is
 		tblock	: in et_schematic.type_title_block) is
 		
 		procedure add (
-			mod_name	: in type_submodule_name.bounded_string;
+			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out type_module) is
 
 			use et_string_processing;
@@ -1076,7 +1076,7 @@ package body et_schematic is
 		note	: in et_schematic.type_note) is
 		
 		procedure add (
-			mod_name	: in type_submodule_name.bounded_string;
+			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out type_module) is
 
 			use et_string_processing;
@@ -1104,7 +1104,7 @@ package body et_schematic is
 		net		: in et_schematic.type_net) is
 		
 		procedure add (
-			mod_name	: in type_submodule_name.bounded_string;
+			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out type_module) is
 			
 			inserted	: boolean := false;
@@ -1141,7 +1141,7 @@ package body et_schematic is
 		portlists : in et_schematic.type_portlists.map) is
 
 		procedure add (
-			mod_name	: in type_submodule_name.bounded_string;
+			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out type_module) is
 		begin
 			module.portlists := portlists;
@@ -1189,7 +1189,7 @@ package body et_schematic is
 		end add;
 		
 		procedure locate_net (
-			name	: in type_submodule_name.bounded_string;
+			name	: in et_coordinates.type_submodule_name.bounded_string;
 			module	: in out type_module) is
 			
 			cursor : type_nets.cursor;
@@ -1224,7 +1224,7 @@ package body et_schematic is
 		component	: in type_component) is
 		
 		procedure add (
-			name	: in type_submodule_name.bounded_string;
+			name	: in et_coordinates.type_submodule_name.bounded_string;
 			module	: in out type_module) is
 			
 			inserted	: boolean := false;
@@ -1290,7 +1290,7 @@ package body et_schematic is
 		end add;
 		
 		procedure locate_component (
-			name	: in type_submodule_name.bounded_string;
+			name	: in et_coordinates.type_submodule_name.bounded_string;
 			module	: in out type_module) is
 			
 			cursor : type_components.cursor;
@@ -1314,7 +1314,7 @@ package body et_schematic is
 	procedure reset_component_cursor (cursor : in out type_components.cursor) is
 	-- Resets the given component cursor to the begin of the component list.
 		procedure reset (
-			name	: in type_submodule_name.bounded_string;
+			name	: in et_coordinates.type_submodule_name.bounded_string;
 			module	: in type_module) is
 			use type_components;
 		begin
@@ -1330,7 +1330,7 @@ package body et_schematic is
 	procedure reset_library_cursor (cursor : in out type_full_library_names.cursor) is
 	-- Resets the given library cursor to the begin of the library list list.
 		procedure reset (
-			name	: in type_submodule_name.bounded_string;
+			name	: in et_coordinates.type_submodule_name.bounded_string;
 			module	: in type_module) is
 			use type_full_library_names;
 		begin
@@ -1348,7 +1348,7 @@ package body et_schematic is
 		n : count_type := 0;
 
 		procedure get (
-			name	: in type_submodule_name.bounded_string;
+			name	: in et_coordinates.type_submodule_name.bounded_string;
 			module	: in type_module) is
 			use type_full_library_names;
 		begin

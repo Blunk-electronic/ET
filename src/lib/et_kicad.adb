@@ -2315,8 +2315,10 @@ package body et_kicad is
 		-- Perfoms a plausibility and syntax check on the text fields before they are used to 
 		-- assemble and insert the component into the component list of the module.
 		-- This can be regarded as a kind of pre-check.
+		use et_coordinates;
+		
 			procedure missing_field (m : in et_libraries.type_text_meaning) is 
-				use et_schematic;
+				
 			begin
 				log_indentation_reset;
 				log (
@@ -2325,7 +2327,7 @@ package body et_kicad is
 						& latin_1.space
 						& to_string (tmp_component_position)
 						& latin_1.lf
-						& "text field '" & et_libraries.to_string(m) & "' missing !",
+						& "text field '" & et_libraries.to_string (m) & "' missing !",
 					console => true);
 				
 				raise constraint_error;
@@ -2484,7 +2486,7 @@ package body et_kicad is
 					log_indentation_reset;
 					log (
 						text => message_error & "component " & et_schematic.to_string (tmp_component_reference)
-							& " " & et_schematic.to_string (tmp_component_position),
+							& " " & to_string (tmp_component_position),
 						console => true);
 					-- CS: evaluate prog position and provided more detailled output
 					raise constraint_error;
@@ -2499,10 +2501,10 @@ package body et_kicad is
         -- they will be returned in list_of_submodules. Otherwise the returned list is empty.
 
 			list_of_submodules : type_submodule_names_extended; -- list to be returned
-			name_of_submodule_scratch : type_submodule_name.bounded_string; -- temporarily used before appended to list_of_submodules
+			name_of_submodule_scratch : et_coordinates.type_submodule_name.bounded_string; -- temporarily used before appended to list_of_submodules
 
 			use et_string_processing;
-			use et_libraries;
+			--use et_libraries;
 		
 			line : et_string_processing.type_fields_of_line;
 		
@@ -2583,12 +2585,12 @@ package body et_kicad is
 				return type_same_coord_result is
 
 				sc : type_same_coord_result;
-				line_start, line_end : et_schematic.type_coordinates;
+				line_start, line_end : et_coordinates.type_coordinates;
 				s, e	: boolean; -- indicate the end point, that has been processed already
 				untouched, half_processed : boolean; -- indicate whether a segment is completely untouched or processed in only one direction
 
 				use et_coordinates;
-				use et_libraries;
+				--use et_libraries;
 				use type_wild_segments;
 			
 				cursor : type_wild_segments.cursor;
@@ -2642,14 +2644,16 @@ package body et_kicad is
 							case side is
 								-- If the search starts from the end_point of the given net, find a segment whose start or end point matches.
 								when end_point =>
-									if line_start.x = seg_in.coordinates_end.x and line_start.y = seg_in.coordinates_end.y then
+									--if line_start.x = seg_in.coordinates_end.x and line_start.y = seg_in.coordinates_end.y then
+									if distance_x (line_start) = distance_x (seg_in.coordinates_end) and distance_y (line_start) = distance_y (seg_in.coordinates_end) then
 										sc.valid := true;
 										sc.side := start_point;
 										sc.cursor := cursor;
 										goto matching_segment_coordinates_found;
 									end if;
 
-									if line_end.x = seg_in.coordinates_end.x and line_end.y = seg_in.coordinates_end.y then
+									--if line_end.x = seg_in.coordinates_end.x and line_end.y = seg_in.coordinates_end.y then
+									if distance_x (line_end) = distance_x (seg_in.coordinates_end) and distance_y (line_end) = distance_y (seg_in.coordinates_end) then
 										sc.valid := true;
 										sc.side := end_point;
 										sc.cursor := cursor;
@@ -2658,14 +2662,16 @@ package body et_kicad is
 
 								-- If the search starts from the start_point of the given net, find a segment whose start or end point matches.									
 								when start_point =>
-									if line_start.x = seg_in.coordinates_start.x and line_start.y = seg_in.coordinates_start.y then
+									--if line_start.x = seg_in.coordinates_start.x and line_start.y = seg_in.coordinates_start.y then
+									if distance_x (line_start) = distance_x (seg_in.coordinates_start) and distance_y (line_start) = distance_y (seg_in.coordinates_start) then
 										sc.valid := true;
 										sc.side := start_point;
 										sc.cursor := cursor;
 										goto matching_segment_coordinates_found;
 									end if;
 
-									if line_end.x = seg_in.coordinates_start.x and line_end.y = seg_in.coordinates_start.y then
+									--if line_end.x = seg_in.coordinates_start.x and line_end.y = seg_in.coordinates_start.y then
+									if distance_x (line_end) = distance_x (seg_in.coordinates_start) and distance_y (line_end) = distance_y (seg_in.coordinates_start) then
 										sc.valid := true;
 										sc.side := end_point;
 										sc.cursor := cursor;
@@ -2701,14 +2707,16 @@ package body et_kicad is
 							case side is
 								-- If the search starts from the end_point of the given net, find a segment whose start or end point matches.
 								when end_point =>
-									if line_start.x = seg_in.coordinates_end.x and line_start.y = seg_in.coordinates_end.y then
+									--if line_start.x = seg_in.coordinates_end.x and line_start.y = seg_in.coordinates_end.y then
+									if distance_x (line_start) = distance_x (seg_in.coordinates_end) and distance_y (line_start) = distance_y (seg_in.coordinates_end) then
 										sc.valid := true;
 										sc.side := start_point;
 										sc.cursor := cursor;
 										goto matching_segment_coordinates_found;
 									end if;
 
-									if line_end.x = seg_in.coordinates_end.x and line_end.y = seg_in.coordinates_end.y then
+									--if line_end.x = seg_in.coordinates_end.x and line_end.y = seg_in.coordinates_end.y then
+									if distance_x (line_end) = distance_x (seg_in.coordinates_end) and distance_y (line_end) = distance_y (seg_in.coordinates_end) then
 										sc.valid := true;
 										sc.side := end_point;
 										sc.cursor := cursor;
@@ -2717,14 +2725,16 @@ package body et_kicad is
 
 								-- If the search starts from the start_point of the given net, find a segment whose start or end point matches.
 								when start_point =>
-									if line_start.x = seg_in.coordinates_start.x and line_start.y = seg_in.coordinates_start.y then
+									--if line_start.x = seg_in.coordinates_start.x and line_start.y = seg_in.coordinates_start.y then
+									if distance_x (line_start) = distance_x (seg_in.coordinates_start) and distance_y (line_start) = distance_y (seg_in.coordinates_start) then
 										sc.valid := true;
 										sc.side := start_point;
 										sc.cursor := cursor;
 										goto matching_segment_coordinates_found;
 									end if;
 
-									if line_end.x = seg_in.coordinates_start.x and line_end.y = seg_in.coordinates_start.y then
+									--if line_end.x = seg_in.coordinates_start.x and line_end.y = seg_in.coordinates_start.y then
+									if distance_x (line_end) = distance_x (seg_in.coordinates_start) and distance_y (line_end) = distance_y (seg_in.coordinates_start) then
 										sc.valid := true;
 										sc.side := end_point;
 										sc.cursor := cursor;
@@ -2759,6 +2769,8 @@ package body et_kicad is
 			-- The kind of net label (simple, hierarchic, global) defines the scope of the net.
 			
 			-- Nets without label remain anonymous by using the notation "N$"
+
+				use et_coordinates;
 			
 				ls  :	type_net_label_simple;
 				lt  : 	type_net_label_tag;				
@@ -2771,27 +2783,27 @@ package body et_kicad is
 				net_name	: type_net_name.bounded_string;
 				
 				function label_sits_on_segment (label : in type_net_label; segment : in type_net_segment) return boolean is
-					point 		: et_schematic.type_coordinates := label.coordinates;
-					line_start 	: et_schematic.type_coordinates := segment.coordinates_start;
-					line_end 	: et_schematic.type_coordinates := segment.coordinates_end;
-					zero 		: constant et_libraries.type_grid := 0.0;
+					--point 		: et_schematic.type_coordinates := label.coordinates;
+					--line_start 	: et_schematic.type_coordinates := segment.coordinates_start;
+					--line_end 	: et_schematic.type_coordinates := segment.coordinates_end;
+					--zero 		: constant et_libraries.type_grid := 0.0;
 					sits_on_segment : boolean := false;
 					d : et_geometry.type_distance_point_from_line;
 
-					use et_coordinates;
-					use et_libraries;
+					--use et_libraries;
 					use et_geometry;
 				begin
 					-- calculate the shortes distance of point from line.
 					d := distance_of_point_from_line (
-						point		=> et_libraries.type_coordinates(point),
-						line_start	=> et_libraries.type_coordinates(line_start),
-						line_end	=> et_libraries.type_coordinates(line_end),
+						--point		=> et_libraries.type_coordinates(point),
+						point		=> type_2d_point (label.coordinates),
+						line_start	=> type_2d_point (segment.coordinates_start),
+						line_end	=> type_2d_point (segment.coordinates_end),
 						line_range	=> with_end_points);
 					
 					--log ("distance: " & type_grid'image(d.distance), level => 1);
 					
-					if not d.out_of_range and d.distance = zero then
+					if not d.out_of_range and d.distance = zero_distance then
 						sits_on_segment := true;
 					end if;
 					return sits_on_segment;
@@ -3040,8 +3052,9 @@ package body et_kicad is
 							end loop;
 
                             -- assign coordinates
-                            net.coordinates.module_name := type_submodule_name.to_bounded_string (to_string (current_schematic));
-                            net.coordinates.path := path_to_submodule;
+							--net.coordinates.module_name := et_coordinates.type_submodule_name.to_bounded_string (to_string (current_schematic));
+							set_module (net.coordinates, type_submodule_name.to_bounded_string (to_string (current_schematic)));
+                            set_path (net.coordinates, path_to_submodule);
                             -- CS: x,y coordinates should be the lowest available on the first sheet.
                             -- CS: do not assign sheet and x/y at all ?
                             -- net.coordinates.sheet := sheet_number_current;
@@ -3129,8 +3142,8 @@ package body et_kicad is
 							log_indentation_down;
 
                             -- assign coordinates
-                            net.coordinates.module_name := type_submodule_name.to_bounded_string (to_string (current_schematic));
-                            net.coordinates.path := path_to_submodule;
+							set_module (net.coordinates, type_submodule_name.to_bounded_string (to_string (current_schematic)));
+                            set_path (net.coordinates, path_to_submodule);
                             -- CS: x,y coordinates should be the lowest available on the first sheet.
                             -- CS: do not assign sheet and x/y at all ?
                             -- net.coordinates.sheet := sheet_number_current;
@@ -3426,21 +3439,22 @@ package body et_kicad is
 
             -- When reading gui submodules (kicad refers to them as "sheets") they are stored temporarily here.
 			-- This temporarily variable needs defaults in order to prevent misleading compiler warnings.
-			submodule_gui_name : type_submodule_name.bounded_string := type_submodule_name.to_bounded_string("");
-            submodule_gui_scratch : type_gui_submodule := (
-                text_size_of_name => 58,
-                text_size_of_file => 58,                
-                coordinates => (    path => path_to_submodule,
-                                    module_name => type_submodule_name.to_bounded_string( to_string(current_schematic)),
-                                    sheet_number => 1,
-                                    x => 0.0,
-                                    y => 0.0 
-                               ),
-                size_x => 0.0,
-                size_y => 0.0,
-                timestamp => "00000000"
-                );
-
+-- 			submodule_gui_name : et_coordinates.type_submodule_name.bounded_string := et_coordinates.type_submodule_name.to_bounded_string("");
+--             submodule_gui_scratch : type_gui_submodule := (
+--                 text_size_of_name => 58,
+--                 text_size_of_file => 58,                
+--                 coordinates => (    path => et_schematic.path_to_submodule,
+--                                     module_name => et_coordinates.type_submodule_name.to_bounded_string (to_string (current_schematic)),
+--                                     sheet_number => 1,
+--                                     x => 0.0,
+--                                     y => 0.0 
+--                                ),
+--                 size_x => 0.0,
+--                 size_y => 0.0,
+--                 timestamp => "00000000"
+--                 );
+			submodule_gui_name : et_coordinates.type_submodule_name.bounded_string; -- CS: move to specs
+			submodule_gui_scratch : type_gui_submodule; -- CS: move to specs
 
 
 			function to_text return et_libraries.type_text is
@@ -3624,7 +3638,7 @@ package body et_kicad is
 						log_indentation_reset;
 						log (
 							text => message_error & "component " & et_schematic.to_string (tmp_component_reference)
-								& " " & et_schematic.to_string (tmp_component_position),
+								& " " & et_coordinates.to_string (tmp_component_position),
 							console => true);
 						raise constraint_error;
 				
@@ -3724,7 +3738,7 @@ package body et_kicad is
 					raise constraint_error; -- CS: write useful message
 				end if;
 				
-				if tmp_component_position.x /= to_grid (get_field_from_line (line,2)) then
+				if distance_x (tmp_component_position) /= mil_to_distance (get_field_from_line (line,2)) then
 					log_indentation_reset;
 -- 					log ("position invalid. expected '" & to_string (tmp_component_position.x) 
 -- 						& "' found '" 
@@ -3733,7 +3747,7 @@ package body et_kicad is
 					raise constraint_error; -- CS: write useful message
 				end if;
 
-				if tmp_component_position.y /= to_grid (get_field_from_line (line,3)) then
+				if distance_y (tmp_component_position) /= mil_to_distance (get_field_from_line (line,3)) then
 					raise constraint_error; -- CS: write useful message
 				end if;
 
@@ -3890,8 +3904,11 @@ package body et_kicad is
 										tmp_frame.paper_size	:= type_paper_size'value(get_field_from_line(line,2));
 										tmp_frame.size_x		:= et_libraries.type_grid'value(get_field_from_line(line,3));
 										tmp_frame.size_y 		:= et_libraries.type_grid'value(get_field_from_line(line,4)); 
-										tmp_frame.coordinates.path := path_to_submodule;
-										tmp_frame.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(current_schematic));
+										
+										--tmp_frame.coordinates.path := path_to_submodule;
+										et_coordinates.set_path (tmp_frame.coordinates, path_to_submodule);
+										--tmp_frame.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(current_schematic));
+										et_coordinates.set_module (tmp_frame.coordinates, et_coordinates.type_submodule_name.to_bounded_string( to_string (current_schematic)));
 
 										-- CS: Other properties of the drawing frame like x/y coordinates, lists of lines and texts are 
 										-- kicad built-in things and remain unassigned here.
@@ -3905,8 +3922,12 @@ package body et_kicad is
 										-- Make temporarily tmp_title_block complete by assigning coordinates and list of texts.
 										-- Then purge temporarily list of texts.
 										-- Then append temporarily title block to main module.
-										tmp_title_block.coordinates.path := path_to_submodule;
-										tmp_title_block.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(current_schematic));
+										
+										--tmp_title_block.coordinates.path := path_to_submodule;
+										et_coordinates.set_path (tmp_title_block.coordinates, path_to_submodule);
+										
+										--tmp_title_block.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(current_schematic));
+										et_coordinates.set_module (tmp_title_block.coordinates, et_coordinates.type_submodule_name.to_bounded_string (to_string(current_schematic)));
 										tmp_title_block.texts := tmp_title_block_texts; -- assign collected texts list to temporarily title block
 										-- CS: x/y coordinates and list of lines are kicad built-in things and thus not available currently.
 
@@ -3942,12 +3963,13 @@ package body et_kicad is
 											-- Set in the list_of_submodules (to be returned) the parent_module. The schematic file 
 											-- being processed (see input parameters of read_file_schematic_kicad) becomes the parent module
 											-- of the submodules here.
-											list_of_submodules.parent_module := type_submodule_name.to_bounded_string(to_string(current_schematic));
+											list_of_submodules.parent_module := et_coordinates.type_submodule_name.to_bounded_string (to_string (current_schematic));
 										end if;
 										-- CS: make sure total sheet count is less or equal current sheet number.
 
 										-- Our temporarily drawing frame gets the current sheet number assigned.
-										tmp_frame.coordinates.sheet_number := sheet_number_current;
+										--tmp_frame.coordinates.sheet_number := sheet_number_current;
+										et_coordinates.set_sheet (tmp_frame.coordinates, sheet_number_current);
 									end if;						
 
 									-- read sheet title from a line like "Title "abc""
@@ -4029,11 +4051,18 @@ package body et_kicad is
 
 										-- read GUI submodule (sheet) position and size from a line like "S 4050 5750 1050 650"
 										if get_field_from_line(line,1) = schematic_keyword_sheet_pos_and_size then
-											submodule_gui_scratch.coordinates.path := path_to_submodule;
-											submodule_gui_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(current_schematic));
-											submodule_gui_scratch.coordinates.sheet_number := sheet_number_current;
-											submodule_gui_scratch.coordinates.x := et_libraries.type_grid'value(get_field_from_line(line,2));
-											submodule_gui_scratch.coordinates.y := et_libraries.type_grid'value(get_field_from_line(line,3));
+											--submodule_gui_scratch.coordinates.path := path_to_submodule;
+											et_coordinates.set_path (submodule_gui_scratch.coordinates, path_to_submodule);
+											--submodule_gui_scratch.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(current_schematic));
+											et_coordinates.set_module (submodule_gui_scratch.coordinates, et_coordinates.type_submodule_name.to_bounded_string (to_string (current_schematic)));
+											--submodule_gui_scratch.coordinates.sheet_number := sheet_number_current;
+											et_coordinates.set_sheet (submodule_gui_scratch.coordinates, sheet_number_current);
+											
+											--submodule_gui_scratch.coordinates.x := et_libraries.type_grid'value(get_field_from_line(line,2));
+											et_coordinates.set_x (submodule_gui_scratch.coordinates, et_coordinates.mil_to_distance (get_field_from_line (line,2)));
+											--submodule_gui_scratch.coordinates.y := et_libraries.type_grid'value(get_field_from_line(line,3));
+											et_coordinates.set_y (submodule_gui_scratch.coordinates, et_coordinates.mil_to_distance (get_field_from_line (line,3)));
+
 											submodule_gui_scratch.size_x		:= et_libraries.type_grid'value(get_field_from_line(line,4));
 											submodule_gui_scratch.size_y		:= et_libraries.type_grid'value(get_field_from_line(line,5));                                
 										end if;
@@ -4047,21 +4076,21 @@ package body et_kicad is
 										-- Since this is the black-box-representation of a kicad-sheet its name is threated as name of a submodule.
 										-- The sheet name is stored in submodule_gui_scratch.name to be compared with the sheet file name later.
 										if get_field_from_line(line,1) = schematic_keyword_sheet_name then
-											submodule_gui_name := type_submodule_name.to_bounded_string (strip_quotes (get_field_from_line(line,2)));
+											submodule_gui_name := et_coordinates.type_submodule_name.to_bounded_string (strip_quotes (get_field_from_line(line,2)));
 											submodule_gui_scratch.text_size_of_name := et_libraries.type_text_size'value(get_field_from_line(line,3));
 										end if;
 
 										-- Read sheet file name from a line like "F1 "mcu_stm32f030.sch" 60".
 										-- The file name (name_of_submodule_scratch) goes into the list of submodules to be returned to the parent unit.
 										if get_field_from_line(line,1) = schematic_keyword_sheet_file then
-											name_of_submodule_scratch := type_submodule_name.to_bounded_string(strip_quotes(get_field_from_line(line,2)));
+											name_of_submodule_scratch := et_coordinates.type_submodule_name.to_bounded_string (strip_quotes (get_field_from_line (line,2)));
 											submodule_gui_scratch.text_size_of_file := et_libraries.type_text_size'value(get_field_from_line(line,3));
 											
 											-- Test if sheet name and file name match:
-											if type_submodule_name.to_string (submodule_gui_name) /= base_name (type_submodule_name.to_string (name_of_submodule_scratch)) then
+											if et_coordinates.type_submodule_name.to_string (submodule_gui_name) /= base_name (et_coordinates.type_submodule_name.to_string (name_of_submodule_scratch)) then
 												log (text => message_warning & "name mismatch: sheet: " &
-													type_submodule_name.to_string (submodule_gui_name) &
-													" file: " & type_submodule_name.to_string (name_of_submodule_scratch));
+													et_coordinates.type_submodule_name.to_string (submodule_gui_name) &
+													" file: " & et_coordinates.type_submodule_name.to_string (name_of_submodule_scratch));
 											end if;
 										end if;
 

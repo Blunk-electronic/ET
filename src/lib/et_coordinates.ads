@@ -80,8 +80,9 @@ package et_coordinates is
 	function distance_x (point : in type_2d_point) return type_distance;
 	function distance_y (point : in type_2d_point) return type_distance;	
 
+	procedure set_x (point : in out type_2d_point; x : in type_distance);
+	procedure set_y (point : in out type_2d_point; y : in type_distance);
 	
-
 	-- The name of a submodule may have 100 characters which seems sufficient for now.
  	submodule_name_length : constant natural := 100;
 	package type_submodule_name is new generic_bounded_length (submodule_name_length); use type_submodule_name;
@@ -107,6 +108,16 @@ package et_coordinates is
 	function path   (position : in type_coordinates) return type_path_to_submodule.list;
 	function module (position : in type_coordinates) return type_submodule_name.bounded_string;
 	function sheet  (position : in type_coordinates) return positive;
+
+	procedure set_module (position : in out type_coordinates; name : in type_submodule_name.bounded_string);
+	-- Sets the module name in given position.
+
+	procedure set_path (position : in out type_coordinates; path : in type_path_to_submodule.list);
+	-- Sets the path in given position.
+
+	procedure set_sheet (position : in out type_coordinates; sheet : in positive);
+	-- Sets the sheet number in given position.
+
 	
 	private 
 		-- In general every object has at least x,y coordinates.

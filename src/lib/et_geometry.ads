@@ -30,30 +30,23 @@
 --   history of changes:
 --
 
--- with ada.strings.bounded; 	use ada.strings.bounded;
---with ada.numerics.real_arrays;  use ada.numerics.real_arrays;
---with et_schematic;				use et_schematic;
-with et_general;				use et_general;
-with et_libraries;				use et_libraries;
--- with ada.containers; 		use ada.containers;
--- with ada.containers.vectors;
+with et_coordinates;
 
 package et_geometry is
 
 	type type_distance_point_from_line is record
-		distance : type_grid;
-		out_of_range : boolean;
+		distance		: et_coordinates.type_distance;
+		out_of_range	: boolean;
 	end record;
 
 	type type_line_range is ( inside_end_points, with_end_points, beyond_end_points);
 	
+	function distance_of_point_from_line (
 	-- Computes the shortest distance (perpendicular) of a given point from the given line.
 	-- If the point is outside the
 	-- range of the x coordinate, the corresponding flag in the return value is set.
-	function distance_of_point_from_line (
-		point, line_start, line_end: in type_coordinates;
-		line_range : in type_line_range)
-		return type_distance_point_from_line;
+		point, line_start, line_end: in et_coordinates.type_2d_point;
+		line_range : in type_line_range) return type_distance_point_from_line;
 
 -- 	procedure move (
 -- 		point : in out type_2d_point;
@@ -73,3 +66,4 @@ package et_geometry is
 	
 end et_geometry;
 
+-- Soli Deo Gloria
