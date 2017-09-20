@@ -36,15 +36,6 @@ with ada.characters.handling;	use ada.characters.handling;
 
 with ada.strings;				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
--- with ada.strings.bounded; 		use ada.strings.bounded;
--- with ada.containers; 			use ada.containers;
-
--- with ada.containers.doubly_linked_lists;
--- with ada.containers.indefinite_doubly_linked_lists;
--- with ada.containers.ordered_maps;
--- with ada.containers.indefinite_ordered_maps;
--- with ada.containers.ordered_sets;
-
 --with et_string_processing;
 
 package body et_coordinates is
@@ -73,7 +64,6 @@ package body et_coordinates is
 	end to_string;
 
 	
--- private
 	function to_string (point : in type_2d_point) return string is
 	-- Returns the given point coordinates to a string.
 	begin
@@ -82,57 +72,6 @@ package body et_coordinates is
 			& trim (type_distance'image (point.y), left);
 	end to_string;
 
-	
--- 	procedure move (
--- 		point : in out type_2d_point;
--- 		offset : in type_2d_point
--- 		) is
--- 	begin
--- 		point.x := point.x + offset.x;
--- 		point.y := point.y + offset.y;
--- 	end move;
-
--- 	
--- 	function move (
--- 		point : in type_2d_point;
--- 		offset : in type_2d_point
--- 		) return type_2d_point is
--- 	begin
--- 		return (
--- 			x => point.x + offset.x,
--- 			y => point.y + offset.y
--- 			);
--- 	end move;
-
--- 	function move (point : in type_2d_point; offset : in type_2d_point) return type_2d_point is
--- 	function move (point : in type_2d_point) return type_2d_point is
--- 	begin
--- 		return point;
--- 	end move;
-	function move (point : in type_2d_point'class; offset : in type_2d_point) return type_2d_point'class is
-	begin
-		return point;
-	end move;
-
-
--- 	function mirror (
--- 		point : in type_2d_point;
--- 		axis  : in type_axis
--- 		) return type_2d_point is
--- 	begin
--- 		case axis is
--- 			when X =>
--- 				return (
--- 					x => point.x,
--- 					y => point.y * (-1.0)
--- 					);
--- 			when Y =>
--- 				return (
--- 					x => point.x * (-1.0),
--- 					y => point.y
--- 					);
--- 		end case;
--- 	end mirror;
 	
 end et_coordinates;
 

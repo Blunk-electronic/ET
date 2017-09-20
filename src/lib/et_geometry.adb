@@ -177,5 +177,48 @@ package body et_geometry is
 		return d;
 	end distance_of_point_from_line;
 
+
+-- 	procedure move (
+-- 		point : in out type_2d_point;
+-- 		offset : in type_2d_point
+-- 		) is
+-- 	begin
+-- 		point.x := point.x + offset.x;
+-- 		point.y := point.y + offset.y;
+-- 	end move;
+
+	
+-- 	function move (
+-- 		point	: in type_2d_point'class;
+-- 		offset	: in type_2d_point
+-- 		) return type_2d_point'class is
+-- 		p : type_2d_point'class := point;
+-- 	begin
+-- 		p.x := point.x + offset.x;
+-- 		p.y := point.y + offset.y;
+-- 		return p;
+-- 	end move;
+-- 
+-- 
+-- 	function mirror (
+-- 		point	: in type_2d_point;
+-- 		axis	: in type_axis
+-- 		) return type_2d_point is
+-- 	begin
+-- 		case axis is
+-- 			when X =>
+-- 				return (
+-- 					x => point.x,
+-- 					y => point.y * (-1.0)
+-- 					);
+-- 			when Y =>
+-- 				return (
+-- 					x => point.x * (-1.0),
+-- 					y => point.y
+-- 					);
+-- 		end case;
+-- 	end mirror;
+
+	
 end et_geometry;
 

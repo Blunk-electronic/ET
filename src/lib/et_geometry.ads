@@ -55,5 +55,21 @@ package et_geometry is
 		line_range : in type_line_range)
 		return type_distance_point_from_line;
 
+-- 	procedure move (
+-- 		point : in out type_2d_point;
+-- 		offset : in type_2d_point
+-- 		);
+
+-- 	function move (
+-- 		point	: in type_2d_point'class;
+-- 		offset	: in type_2d_point
+-- 		) return type_2d_point'class;
+-- 
+-- 	function mirror (
+-- 		point	: in type_2d_point;
+-- 		axis	: in type_axis
+-- 		) return type_2d_point;
+
+	
 end et_geometry;
 

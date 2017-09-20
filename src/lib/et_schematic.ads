@@ -719,18 +719,16 @@ package et_schematic is
 
 
 
-	type type_coordinates2 is new et_coordinates.type_2d_point with private;
--- 	overriding 
--- 	function move (point : in type_coordinates2; offset : in type_coordinates2) return type_coordinates2;
-
-
-private
-	
-	type type_coordinates2 is new et_coordinates.type_2d_point with record
-        path            : type_path_to_submodule.list;
-		module_name		: type_submodule_name.bounded_string;
-		sheet_number	: positive;
-	end record;
+-- 	type type_coordinates2 is new et_coordinates.type_2d_point with private;
+-- 
+-- 
+-- private
+-- 	
+-- 	type type_coordinates2 is new et_coordinates.type_2d_point with record
+--         path            : type_path_to_submodule.list;
+-- 		module_name		: type_submodule_name.bounded_string;
+-- 		sheet_number	: positive;
+-- 	end record;
 
 	
 	
