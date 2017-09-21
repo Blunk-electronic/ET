@@ -53,7 +53,7 @@ package body et_geometry is
 
 		line_scratch : type_2d_point;
 		
-		d : type_distance_point_from_line;
+		result : type_distance_point_from_line;
 		s1,s2,s3,s4,s5,s6,s7,s8 : type_distance;
 
 	begin
@@ -79,7 +79,7 @@ package body et_geometry is
 
 		s8 := functions.sqrt (s6+s7);
 
-		d.distance := s5 / s8;
+		result.distance := s5 / s8;
 
 		-- If the range check adresses the line end points, the direction of the line
 		-- matters. Means if it was drawn from the left to the right or the other way around.
@@ -97,7 +97,7 @@ package body et_geometry is
 		-- Test range of point in regard of the x position.
 		case line_range is
 			when inside_end_points =>
-				if d.distance = zero_distance then
+				if result.distance = zero_distance then
 
 					if delta_x = zero_distance then -- vertical line
 						
@@ -105,18 +105,18 @@ package body et_geometry is
 							--if point.y >= e.y or point.y <= s.y then -- point above, below or on end points of line
 							if distance_y (point) >= distance_y (e) or distance_y (point) <= distance_y (s) then
 							-- point above, below or on end points of line
-								d.out_of_range := true;
+								result.out_of_range := true;
 							else
-								d.out_of_range := false;
+								result.out_of_range := false;
 							end if;
 							
 						else -- line drawn toward x-axis
 							-- if point.y >= s.y or point.y <= e.y then -- point above,below or on end points of line
 							if distance_y (point) >= distance_y (s) or distance_y (point) <= distance_y (e) then
 							-- point above,below or on end points of line
-								d.out_of_range := true;
+								result.out_of_range := true;
 							else
-								d.out_of_range := false;
+								result.out_of_range := false;
 							end if;
 						end if;
 						
@@ -124,9 +124,9 @@ package body et_geometry is
 							
 						--if point.x >= e.x or point.x <= s.x then
 						if distance_x (point) >= distance_x (e) or distance_x (point) <= distance_x (s) then
-							d.out_of_range := true;
+							result.out_of_range := true;
 						else
-							d.out_of_range := false;
+							result.out_of_range := false;
 						end if;
 						
 					end if;
@@ -140,25 +140,25 @@ package body et_geometry is
 				end if;
 				
 			when with_end_points =>
-				if d.distance = zero_distance then
+				if result.distance = zero_distance then
 					if delta_x = zero_distance then -- vertical line
 						
 						if delta_y > zero_distance then -- line drawn away from x-axis
 							--if point.y > e.y or point.y < s.y then -- point above or below end points of line
 							if distance_y (point) > distance_y (e) or distance_y (point) < distance_y (s) then 
 							-- point above or below end points of line
-								d.out_of_range := true;
+								result.out_of_range := true;
 							else
-								d.out_of_range := false;
+								result.out_of_range := false;
 							end if;
 							
 						else -- line drawn toward x-axis
 							--if point.y > s.y or point.y < e.y then -- point above or below end points of line
 							if distance_y (point) > distance_y (s) or distance_y (point) < distance_y (e) then 
 							-- point above or below end points of line								
-								d.out_of_range := true;
+								result.out_of_range := true;
 							else
-								d.out_of_range := false;
+								result.out_of_range := false;
 							end if;
 						end if;
 						
@@ -166,21 +166,21 @@ package body et_geometry is
 							
 						--if point.x > e.x or point.x < s.x then
 						if distance_x (point) > distance_x (e) or distance_x (point) < distance_x (s) then
-							d.out_of_range := true;
+							result.out_of_range := true;
 						else
-							d.out_of_range := false;
+							result.out_of_range := false;
 						end if;
 						
 					end if;
 				end if;
 				
 			when beyond_end_points =>
-				if d.distance = zero_distance then
-					d.out_of_range := false;
+				if result.distance = zero_distance then
+					result.out_of_range := false;
 				end if;
 		end case;
 				
-		return d;
+		return result;
 
 	end distance_of_point_from_line;
 

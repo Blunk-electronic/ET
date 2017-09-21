@@ -2535,7 +2535,7 @@ package body et_kicad is
 
 			-- In the first stage, all net segments of this sheet go into a wild collection of segments.
 			-- Later they will be sorted and connected by their coordinates (start and and points)
-			segment_count	: count_type; -- holds the total number of segments within a sheet
+			segment_count	: count_type := 0; -- holds the total number of segments within a sheet
 			
 			anonymous_net : type_anonymous_net_extended;
 
@@ -2783,10 +2783,6 @@ package body et_kicad is
 				net_name	: type_net_name.bounded_string;
 				
 				function label_sits_on_segment (label : in type_net_label; segment : in type_net_segment) return boolean is
-					--point 		: et_schematic.type_coordinates := label.coordinates;
-					--line_start 	: et_schematic.type_coordinates := segment.coordinates_start;
-					--line_end 	: et_schematic.type_coordinates := segment.coordinates_end;
-					--zero 		: constant et_libraries.type_grid := 0.0;
 					sits_on_segment : boolean := false;
 					d : et_geometry.type_distance_point_from_line;
 
@@ -3223,6 +3219,7 @@ package body et_kicad is
 									--write_coordinates_of_segment (type_net_segment(segment));
 									--write_coordinates_of_junction (junction);
 									log (text => et_coordinates.to_string (junction.coordinates), level => 1);
+									-- NOTE: junctions sitting on a net crossing may appear twice here.
 
 									-- move start coord. of the current segment to the position of the junction
 									type_wild_segments.update_element(

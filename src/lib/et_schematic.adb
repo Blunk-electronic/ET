@@ -67,7 +67,7 @@ package body et_schematic is
 		c : type_path_to_submodule.cursor;
 		use et_string_processing;
 	begin
-		log (text => "path/location:");
+		log (text => "path/location");
 		log_indentation_up;
 		
 		c := type_path_to_submodule.first (path_to_submodule);            
@@ -703,9 +703,10 @@ package body et_schematic is
 		sits_on_segment : boolean := false;
 		d : et_geometry.type_distance_point_from_line;
 
-		use et_libraries;
+-- 		use et_libraries;
 		use et_geometry;
 		use et_coordinates;
+		use et_string_processing;
 	begin
 		-- calculate the shortes distance of point from line.
 		d := distance_of_point_from_line (
@@ -713,10 +714,21 @@ package body et_schematic is
 			line_start	=> type_2d_point (segment.coordinates_start), -- et_libraries.type_coordinates(line_start),
 			line_end	=> type_2d_point (segment.coordinates_end), -- et_libraries.type_coordinates(line_end),
 			line_range	=> inside_end_points);
+
+		log (text => "distance" & type_distance'image (d.distance), level => 2);
+		
+		if not d.out_of_range then -- CS: use log_threshold
+			log (text => "within range", level => 2);
+		end if;
 		
 		if (not d.out_of_range) and d.distance = zero then
 			sits_on_segment := true;
 		end if;
+
+		if sits_on_segment then -- CS: use log_threshold
+			log (text => "on segment", level => 2);
+		end if;
+		
 		return sits_on_segment;
 	end junction_sits_on_segment;
 	
