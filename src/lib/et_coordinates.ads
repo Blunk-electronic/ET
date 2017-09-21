@@ -55,7 +55,8 @@ package et_coordinates is
 -- 	type type_unit_metric is (micrometer, millimeter, centimeter, meter);
 -- 	type type_unit_imperial is (mil, inch);
 
-	type type_distance is digits 11 range -100000000.0 .. 100000000.0; -- unit is metric millimeters
+	--type type_distance is digits 11 range -100000000.0 .. 100000000.0; -- unit is metric millimeters
+	type type_distance is delta 0.1 range   -100000000.0 .. 100000000.0;
 	zero_distance : constant type_distance := 0.0;
 
 	-- CS: type_grid ?
