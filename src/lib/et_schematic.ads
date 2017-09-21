@@ -278,10 +278,9 @@ package et_schematic is
 	package type_tag_labels is new doubly_linked_lists (
 		element_type => type_net_label_tag);
 
-	procedure write_label_properties ( label : in type_net_label);
+	procedure write_label_properties (label : in type_net_label);
 	-- Writes the properties of the given net label in the logfile.
     
-
 	-- A net is something that carries electrical current between ports. It consists of one or more segments.
 
 	-- A net junction is where segments can be connected with each other.
@@ -289,8 +288,11 @@ package et_schematic is
 		coordinates : et_coordinates.type_coordinates;
 	end record;
 
-	procedure write_coordinates_of_junction (junction : in type_net_junction);
-	-- Writes the coordinates of a net junction.
+	procedure write_junction_properties (junction : in type_net_junction);
+	-- Writes the properties of the given net junction in the logfile.
+	
+-- 	procedure write_coordinates_of_junction (junction : in type_net_junction); -- CS: no longer used
+-- 	-- Writes the coordinates of a net junction.
 
 	type type_net_segment; -- prespecificaton. see below
 	

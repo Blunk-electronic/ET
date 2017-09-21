@@ -95,6 +95,8 @@ package et_coordinates is
 
 	type type_coordinates is new type_2d_point with private;
 
+	zero_position : constant type_coordinates;
+	
 	coordinates_preamble : constant string (1..21) := "position " 
 		& "(sheet"
 		& axis_separator
@@ -134,6 +136,12 @@ package et_coordinates is
 			sheet_number	: positive;
 		end record;
 
+		zero_position : constant type_coordinates := (
+			module_name		=> type_submodule_name.to_bounded_string (""),
+			path			=> type_path_to_submodule.empty_list,
+			sheet_number	=> 1,
+			x				=> 0.0,
+			y				=> 0.0 );
 		
 end et_coordinates;
 

@@ -331,6 +331,26 @@ package et_kicad is
 	tmp_tag_net_label		: et_schematic.type_net_label_tag;
 	tmp_note				: et_schematic.type_note;	
 
+            -- When reading gui submodules (kicad refers to them as "sheets") they are stored temporarily here.
+			-- This temporarily variable needs defaults in order to prevent misleading compiler warnings.
+	tmp_submodule_gui_name : et_coordinates.type_submodule_name.bounded_string; -- CS: move to specs
+	tmp_submodule_gui : et_schematic.type_gui_submodule := (
+		text_size_of_name => 58, -- CS reasonable ?
+		text_size_of_file => 58, -- CS reasonable ?
+		coordinates => et_coordinates.zero_position,
+-- 								(    path => et_schematic.path_to_submodule,
+--                                     module_name => et_coordinates.type_submodule_name.to_bounded_string (to_string (current_schematic)),
+--                                     sheet_number => 1,
+--                                     x => 0.0,
+--                                     y => 0.0 
+--                                ),
+		size_x => 0.0, -- CS reasonable ?
+		size_y => 0.0, -- CS reasonable ?
+		timestamp => "00000000" -- -- CS reasonable ?
+		);
+
+
+	
 	tmp_module_name 				: et_coordinates.type_submodule_name.bounded_string;	
 	tmp_component_name_in_lib		: et_libraries.type_component_name.bounded_string;
 	tmp_component_appearance		: et_libraries.type_component_appearance := et_libraries.sch;

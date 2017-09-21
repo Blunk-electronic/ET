@@ -155,6 +155,22 @@ package body et_schematic is
 
 	end write_label_properties;
 
+	procedure write_junction_properties (junction : in type_net_junction) is
+	-- Writes the properties of the given net junction in the logfile.
+		use et_string_processing;
+		use et_coordinates;
+		use et_libraries;
+	
+		log_threshold : type_log_level := 1;
+	begin
+		log_indentation_up;
+		log ("net junction");
+		log_indentation_up;
+		log (to_string (junction.coordinates), log_threshold);
+		log_indentation_down;
+		log_indentation_down;		
+	end write_junction_properties;
+	
 	procedure write_note_properties (note : in et_schematic.type_note) is
 	-- Writes the properties of the given note
 		use et_string_processing;
@@ -660,21 +676,21 @@ package body et_schematic is
 		log_indentation_down;
 	end write_coordinates_of_segment;
 
-	procedure write_coordinates_of_junction (junction : in type_net_junction) is
-	-- Writes the coordinates of a net junction.
-		use et_string_processing;
-		use et_coordinates;
-	
-		log_threshold : type_log_level := 1;
-	begin
-		log_indentation_up;
-		
-		log (to_string (junction.coordinates),
-			 level => log_threshold
-			); 
-		
-		log_indentation_down;
-	end write_coordinates_of_junction;			
+-- 	procedure write_coordinates_of_junction (junction : in type_net_junction) is
+-- 	-- Writes the coordinates of a net junction.
+-- 		use et_string_processing;
+-- 		use et_coordinates;
+-- 	
+-- 		log_threshold : type_log_level := 1;
+-- 	begin
+-- 		log_indentation_up;
+-- 		
+-- 		log (to_string (junction.coordinates),
+-- 			 level => log_threshold
+-- 			); 
+-- 		
+-- 		log_indentation_down;
+-- 	end write_coordinates_of_junction;			
 
 
 	function junction_sits_on_segment (
@@ -683,10 +699,7 @@ package body et_schematic is
 		segment		: in type_net_segment'class) 
 		return boolean is
 
-		point 		: et_coordinates.type_coordinates := junction.coordinates;
-		line_start 	: et_coordinates.type_coordinates := segment.coordinates_start;
-		line_end 	: et_coordinates.type_coordinates := segment.coordinates_end;
-		zero 		: constant et_coordinates.type_distance := et_coordinates.zero_distance;
+		zero : constant et_coordinates.type_distance := et_coordinates.zero_distance;
 		sits_on_segment : boolean := false;
 		d : et_geometry.type_distance_point_from_line;
 
