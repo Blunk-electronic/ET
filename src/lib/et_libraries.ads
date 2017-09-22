@@ -44,7 +44,7 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
-with et_coordinates;
+with et_coordinates;			use et_coordinates;
 with et_string_processing;
 
 package et_libraries is
@@ -103,30 +103,6 @@ package et_libraries is
 	package type_person_name is new generic_bounded_length (person_name_length);
 
 	
--- GRID AND COORDINATES
-	
-	--type type_grid_extended is digits 11 range -100000000.00 .. 100000000.00;
-	subtype type_grid_extended is et_coordinates.type_distance;
-	subtype type_grid is type_grid_extended;
-
-
-    -- In general every object has at least x,y coordinates.
-	type type_coordinates is tagged record
-		x,y				: type_grid := et_coordinates.zero_distance;
-	end record;
-
-	coordinates_dimension_separator : constant string (1..1) := "/";
-	coordinates_preamble : constant string (1..15) := "position (x" & coordinates_dimension_separator & "y) ";
-
-	function to_grid (grid : in string) return type_grid;
-	-- Returns the given grid as type_grid.
-
- 	function to_string (grid : in type_grid) return string;
--- 	Returns the given grid as string.
-	
-	function to_string (position : in type_coordinates) return string;
-	-- Returns the given position as string.
-
 
 -- ORIENTATION, ANGLE AND ROTATION
 
@@ -148,9 +124,11 @@ package et_libraries is
 
 -- TEXT & FIELDS
 
-    -- CS: currently we use unit mil which is old fashionated
-    type type_text_size is range 1..1000; -- CS unit assumed is MIL !!! -- CS: should be a subtype of type_grid ?
-	type type_text_line_width is range 0..100; -- CS unit assumed is MIL !!!
+	-- Texts of any kind must have a size between 0.1 and 50mm
+	subtype type_text_size is type_distance range 0.1 .. 50.0; -- unit is mm
+	
+	subtype type_text_line_width is type_distance range 0.0 .. 5.0; -- unit is mm
+
 	type type_text_style is ( normal, italic, bold, italic_bold);
 	type type_text_visible is (yes, no);
     type type_text_alignment_horizontal is ( left, center , right);
@@ -174,15 +152,15 @@ package et_libraries is
 		NOTE,			-- for notes made by a person
 		MISC); -- CS: others ?
 
-	function to_string ( meaning : in type_text_meaning) return string;
+	function to_string (meaning : in type_text_meaning) return string;
 	-- Converts meaning to string.
 
 	-- These are basic properties a text has got:
 	type type_text_basic is tagged record
-		position	: type_coordinates;
-        size    	: type_text_size := 50; -- CS define a default
+		position	: type_2d_point;
+        size    	: type_text_size := 2.0; -- CS define a default
         style		: type_text_style := type_text_style'first;
-        line_width	: type_text_line_width := 0; -- CS: use a general type_line_width ?
+        line_width	: type_text_line_width := type_text_line_width'first; -- CS: use a general type_line_width ?
         orientation	: type_angle := 0.0;
 		visible		: type_text_visible := yes; -- unless assigned otherwise all texts are visible by default
 		alignment	: type_text_aligment;
@@ -217,7 +195,7 @@ package et_libraries is
 
 	-- A port is something where a net can be attached to.
 	-- The name of a port represents the function of the port like (A14 or RST_N)
-	subtype type_port_length is type_grid range 0.0 .. 500.0; -- CS: reasonable limits ?
+	subtype type_port_length is type_distance range 0.0 .. 20.0; -- unit is millimeters. CS: reasonable limits ?
 	
 	-- The port has an electrical direction:
 	type type_port_direction is (
@@ -282,7 +260,7 @@ package et_libraries is
 		pin					: type_pin_name.bounded_string; -- example: "144" or in case of a BGA package "E14"
 		port_name_size		: type_text_size;
 		pin_name_size		: type_text_size;
-		port_name_offset	: type_grid; -- the clearance between symbol outline and port name -- CS: define a reasonable range
+		port_name_offset	: type_distance; -- the clearance between symbol outline and port name -- CS: define a reasonable range
 		-- CS : obsolete ? pin_position_offset ?
 		-- CS: port swap level ?
 	end record;
@@ -408,7 +386,7 @@ package et_libraries is
 -- SHAPES 
 
 	-- line width
-	type type_line_width is new type_grid;
+	subtype type_line_width is type_distance;
 
 	-- fill
 	type type_fill_border is ( visible, invisible);
@@ -452,7 +430,7 @@ package et_libraries is
 	-- Arcs
 	type type_arc is record
 		center			: type_coordinates;
-		radius  		: type_grid;
+		radius  		: type_distance;
 		start_point		: type_coordinates;
 		end_point		: type_coordinates;
 		start_angle		: type_angle;
@@ -465,7 +443,7 @@ package et_libraries is
 	-- Circles
 	type type_circle is record
 		center			: type_coordinates;
-		radius  		: type_grid;
+		radius  		: type_distance;
 		line_width		: type_line_width;
 		fill			: type_fill;
 	end record;

@@ -47,11 +47,9 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
-with et_general;
-with et_coordinates;			--use et_coordinates;
+with et_coordinates;			use et_coordinates;
 with et_libraries;				use et_libraries;
 with et_string_processing;
-
 
 
 package et_schematic is
@@ -392,8 +390,8 @@ package et_schematic is
     type type_gui_submodule is record -- CS: read from kicad $sheet
         text_size_of_name   : type_text_size;
         text_size_of_file   : type_text_size;        
-		coordinates		    : et_coordinates.type_coordinates;
-        size_x, size_y      : et_libraries.type_grid; -- size x/y of the box
+		coordinates		    : type_coordinates;
+        size_x, size_y      : type_distance; -- size x/y of the box
         timestamp           : et_string_processing.type_timestamp;
         -- CS: ports ?
 	end record;
@@ -409,15 +407,15 @@ package et_schematic is
     -- A drawing frame consists of straight lines and texts.
     -- The text is a character at the x/y border that helps to locate objects.
     type type_frame_line is record
-		coordinates_start : et_libraries.type_coordinates;
-        coordinates_end   : et_libraries.type_coordinates;
+		coordinates_start : type_2d_point;
+        coordinates_end   : type_2d_point;
 	end record;
 	
 	package type_frame_lines is new doubly_linked_lists (
         element_type => type_frame_line);
 
 	type type_frame_text is record
-		coordinates		: et_libraries.type_coordinates;
+		coordinates		: type_2d_point;
 		text			: character_set := et_string_processing.general_characters;
 		size			: type_text_size;
 		orientation		: type_angle;
@@ -429,9 +427,9 @@ package et_schematic is
 
     -- the final drawing frame
     type type_frame is record
-        coordinates     : et_coordinates.type_coordinates;
+        coordinates     : type_coordinates; -- the position of the frame
         paper_size      : type_paper_size; -- the size of the paper
-        size_x, size_y  : et_libraries.type_grid; -- the dimensions of the frame (should fit into paper_size) 
+        size_x, size_y  : type_distance; -- the dimensions of the frame (should fit into paper_size) 
         lines           : type_frame_lines.list;
         texts           : type_frame_texts.list;
     end record;
@@ -442,8 +440,8 @@ package et_schematic is
 
     -- TITLE BLOCK
     type type_title_block_line is record
-		coordinates_start : et_libraries.type_coordinates;
-		coordinates_end   : et_libraries.type_coordinates;
+		coordinates_start : type_2d_point;
+		coordinates_end   : type_2d_point;
     end record;
 
 	package type_title_block_lines is new doubly_linked_lists (
@@ -460,7 +458,7 @@ package et_schematic is
 	
 	type type_title_block_text is record -- CS: from kicad $descr
 		meaning			: type_title_block_text_meaning;
- 		coordinates		: et_libraries.type_coordinates;
+ 		coordinates		: type_2d_point;
 		text			: type_title_block_text_string.bounded_string;
  		size			: type_text_size;
  		orientation		: type_angle;

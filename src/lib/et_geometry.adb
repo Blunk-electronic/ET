@@ -46,7 +46,7 @@ package body et_geometry is
 
 		use et_coordinates;
 
-		type type_float is digits 11 range -100000000.0 .. 100000000.0;
+		type type_float is digits 11 range -100000000.0 .. 100000000.0; -- CS: probably way too much
 		package functions is new ada.numerics.generic_elementary_functions (type_float);
 	
 		s : type_2d_point := line_start;

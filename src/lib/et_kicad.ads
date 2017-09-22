@@ -37,10 +37,9 @@ with ada.containers.vectors;
 with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 
-with et_general;
 with et_schematic;
 with et_import;
-with et_coordinates;
+with et_coordinates;			use et_coordinates;
 with et_libraries;
 with et_string_processing;
 
@@ -290,7 +289,7 @@ package et_kicad is
 	endfplist	: constant string (1..10) := "$ENDFPLIST";
 
 	-- The distance of the pin name from the pin itself (supply pins only)
-	subtype type_supply_pin_name_position_offset is et_libraries.type_grid range 0.00 .. et_libraries.type_grid'last;
+	subtype type_supply_pin_name_position_offset is type_distance range 0.00 .. type_distance'last;
 
 	-- KiCad supports up to 64 units within a component
 	unit_count_max : constant positive := 64;
@@ -335,8 +334,8 @@ package et_kicad is
 			-- This temporarily variable needs defaults in order to prevent misleading compiler warnings.
 	tmp_submodule_gui_name : et_coordinates.type_submodule_name.bounded_string; -- CS: move to specs
 	tmp_submodule_gui : et_schematic.type_gui_submodule := (
-		text_size_of_name => 58, -- CS reasonable ?
-		text_size_of_file => 58, -- CS reasonable ?
+		text_size_of_name => 2.0, -- CS reasonable ? use default ?
+		text_size_of_file => 2.0, -- CS reasonable ? use default ?
 		coordinates => et_coordinates.zero_position,
 -- 								(    path => et_schematic.path_to_submodule,
 --                                     module_name => et_coordinates.type_submodule_name.to_bounded_string (to_string (current_schematic)),

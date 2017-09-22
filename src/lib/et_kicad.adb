@@ -473,7 +473,7 @@ package body et_kicad is
 
 			tmp_port_name_visible	: type_port_visible;
 			tmp_pin_name_visible	: type_pin_visible;
-			tmp_port_name_offset	: type_grid;
+			tmp_port_name_offset	: type_distance;
 			
 			tmp_units_total		: type_units_total; -- see spec for range			
 			tmp_unit_id			: type_unit_id; -- assumes 0 if all units are affected, -- see spec			
@@ -500,13 +500,14 @@ package body et_kicad is
 			tmp_draw_port		: type_port;
 			tmp_draw_port_name	: type_port_name.bounded_string;
 			
-			function invert_y (y : in et_libraries.type_grid) return et_libraries.type_grid is
-			-- For some unknown reason, kicad saves the y position of library objects inverted.
-			-- It is probably a bug. However, when importing objects we must invert y.
-				use et_coordinates;
-			begin
-				return y * (-1.0);
-			end invert_y;
+-- 			function invert_y (y : in et_libraries.type_grid) return et_libraries.type_grid is
+-- 			-- For some unknown reason, kicad saves the y position of library objects inverted.
+-- 			-- It is probably a bug. However, when importing objects we must invert y. 
+-- CS place this comment where the inversion is invoked
+-- 				use et_coordinates;
+-- 			begin
+-- 				return y * (-1.0);
+-- 			end invert_y;
 			
 			procedure init_temp_variables is
 			begin
@@ -680,9 +681,9 @@ package body et_kicad is
 				-- start point, the bend point(s) and the end point:
 				pos := 6;
 				loop exit when pos > end_point;
-					point.x := type_grid'value (field (line, pos)); -- load x
-					point.y := type_grid'value (field (line, pos+1)); -- load y (right after x the field)
-					point.y := invert_y (point.y);
+					set_x (point, mil_to_distance (field (line, pos))); -- set x
+					set_y (point, mil_to_distance (field (line, pos+1))); -- set y (right after the x-field)
+					-- CS point.y := invert_y (point.y);
 					points.append (point); -- append this point to the list of points
 					pos := pos + 2; -- advance field pointer to x coordinate of next point
 				end loop;
@@ -710,12 +711,12 @@ package body et_kicad is
 				-- #8 : line width
 				-- #9 : fill style N/F/f no fill/foreground/background
 			begin -- to_rectangle
-				rectangle.start_point.x	:= type_grid'value (field (line,2));
-				rectangle.start_point.y	:= type_grid'value (field (line,3));
-				rectangle.start_point.y	:= invert_y (rectangle.start_point.y);
-				rectangle.end_point.x	:= type_grid'value (field (line,4));
-				rectangle.end_point.y	:= type_grid'value (field (line,5));
-				rectangle.end_point.y	:= invert_y (rectangle.end_point.y);
+				set_x (rectangle.start_point, mil_to_distance (field (line,2)));
+				set_y (rectangle.start_point, mil_to_distance (field (line,3)));
+				-- CS rectangle.start_point.y	:= invert_y (rectangle.start_point.y);
+				set_x (rectangle.end_point, mil_to_distance (field (line,4)));
+				set_y (rectangle.end_point, mil_to_distance (field (line,5)));
+				-- CS rectangle.end_point.y	:= invert_y (rectangle.end_point.y);
 				rectangle.line_width	:= type_line_width'value (field (line,8));
 				rectangle.fill			:= to_fill (field (line,9));
 
@@ -741,10 +742,10 @@ package body et_kicad is
 				--  #8 : fill style N/F/f no fill/foreground/background
 			
 			begin -- to_circle
-				circle.center.x		:= type_grid'value (field (line,2));
-				circle.center.y		:= type_grid'value (field (line,3));
-				circle.center.y		:= invert_y (circle.center.y);
-				circle.radius		:= type_grid'value (field (line,4));
+				set_x (circle.center, mil_to_distance (field (line,2)));
+				set_y (circle.center, mil_to_distance (field (line,3)));
+				-- CS: circle.center.y		:= invert_y (circle.center.y);
+				circle.radius		:= mil_to_distance (field (line,4));
 				circle.line_width	:= type_line_width'value (field (line,7));
 				circle.fill			:= to_fill (field (line,8));
 
@@ -775,10 +776,10 @@ package body et_kicad is
 				-- #13..14 : end point (x/y)
 
 			begin -- to_arc
-				arc.center.x		:= type_grid'value (field (line,2));
-				arc.center.y		:= type_grid'value (field (line,3));
-				arc.center.y		:= invert_y (arc.center.y);
-				arc.radius			:= type_grid'value (field (line,4));
+				set_x (arc.center, mil_to_distance (field (line,2)));
+				set_y (arc.center, mil_to_distance (field (line,3)));
+				-- CS arc.center.y		:= invert_y (arc.center.y);
+				arc.radius			:= mil_to_distance (field (line,4));
 
 				arc.start_angle		:= to_degrees (field (line,5));
 				arc.end_angle		:= to_degrees (field (line,6));
@@ -786,11 +787,11 @@ package body et_kicad is
 				arc.line_width		:= type_line_width'value (field (line,9));
 				arc.fill			:= to_fill (field (line,10));
 				
-				arc.start_point.x	:= type_grid'value (field (line,11));
-				arc.start_point.y	:= type_grid'value (field (line,12));
-				arc.end_point.x		:= type_grid'value (field (line,13));
-				arc.end_point.y		:= type_grid'value (field (line,14));
-				arc.end_point.y		:= invert_y (arc.end_point.y);
+				set_x (arc.start_point, mil_to_distance (field (line,11)));
+				set_y (arc.start_point, mil_to_distance (field (line,12)));
+				set_x (arc.end_point, mil_to_distance (field (line,13)));
+				set_y (arc.end_point, mil_to_distance (field (line,14)));
+				-- CS arc.end_point.y		:= invert_y (arc.end_point.y);
 
 				-- CS: log properties
 				return arc;
@@ -874,14 +875,14 @@ package body et_kicad is
 					warning_angle_greater_90_degrees;
 				end if;
 				
-				text.position.x		:= type_grid'value (field (line,3));
-				text.position.y		:= type_grid'value (field (line,4));
-				text.position.y		:= invert_y (text.position.y);
+				set_x (text.position, mil_to_distance (field (line,3)));
+				set_y (text.position, mil_to_distance (field (line,4)));
+				-- CS text.position.y		:= invert_y (text.position.y);
 
-				text.size			:= type_text_size'value (field (line,5));
+				text.size := mil_to_distance (field (line,5));
 
 				-- compose from fields 10 and 11 the text style
-				text.style			:= to_style (field (line,10), field (line,11));
+				text.style := to_style (field (line,10), field (line,11));
 
 				-- compose alignment
 				text.alignment.horizontal	:= to_alignment_horizontal (field (line,12));
@@ -1001,18 +1002,18 @@ package body et_kicad is
 				port.pin			:= type_pin_name.to_bounded_string (field (line,3));
 
 				-- compose position
-				port.coordinates.x	:= type_grid'value (field (line,4));
-				port.coordinates.y	:= type_grid'value (field (line,5));
-				port.coordinates.y	:= invert_y (port.coordinates.y);
+				set_x (port.coordinates, mil_to_distance (field (line,4)));
+				set_y (port.coordinates, mil_to_distance (field (line,5)));
+				-- CS port.coordinates.y	:= invert_y (port.coordinates.y);
 				
 				-- compose length
-				port.length			:= type_port_length'value (field (line,6));
+				port.length			:= mil_to_distance (field (line,6));
 
 				-- compose orientation
 				-- CS: port.orientation	:= type_library_pin_orientation
 
 				-- port and pin name text size
-				port.pin_name_size	:= type_text_size'value (field (line,8));
+				port.pin_name_size	:= mil_to_distance (field (line,8));
 				port.port_name_size	:= type_text_size'value (field (line,9));
 
 				-- direction
@@ -1052,9 +1053,9 @@ package body et_kicad is
 				-- 9 : aligment vertical (TNN, CNN, BNN) / font normal, italic, bold, bold_italic (TBI, TBN)
 
 				text.content		:= type_text_content.to_bounded_string (strip_quotes(get_field_from_line(line,2)));
-				text.position.x		:= type_grid'value (get_field_from_line(line,3));
-				text.position.y 	:= type_grid'value (get_field_from_line(line,4));
-				text.size 			:= type_text_size'value (get_field_from_line(line,5));
+				set_x (text.position, mil_to_distance (get_field_from_line(line,3)));
+				set_y (text.position, mil_to_distance (get_field_from_line(line,4)));
+				text.size 			:= mil_to_distance (get_field_from_line(line,5));
 				text.orientation	:= to_field_orientation (get_field_from_line(line,6));
 				
 				text.visible := to_field_visible (
@@ -1866,8 +1867,8 @@ package body et_kicad is
 								--  #10: power symbol P (otherwise N)
 
 								tmp_prefix := type_component_prefix.to_bounded_string (get_field_from_line (line,3)); -- U
-								tmp_port_name_offset	:= type_grid'value  (get_field_from_line (line,5)); -- relevant for supply pins only
-								tmp_pin_name_visible	:= to_pin_visibile  (get_field_from_line (line,6));
+								tmp_port_name_offset	:= mil_to_distance (get_field_from_line (line,5)); -- relevant for supply pins only
+								tmp_pin_name_visible	:= to_pin_visibile (get_field_from_line (line,6));
 								tmp_port_name_visible	:= to_port_visibile (get_field_from_line (line,7));
 								
 								-- Get number of units and set swap level as specified in field #9.
@@ -3438,7 +3439,11 @@ package body et_kicad is
 			function to_text return et_libraries.type_text is
 			-- Converts a field like "F 1 "green" H 2700 2750 50  0000 C CNN" to a type_text
 				function field (line : in type_fields_of_line; position : in positive) return string renames get_field_from_line;
+		
+				text_position : type_2d_point;
 			begin
+				set_x (text_position, mil_to_distance (field(line,5)));
+				set_y (text_position, mil_to_distance (field(line,6)));
 				return (
 					-- read text field meaning
 					meaning 	=> to_text_meaning(line => line, schematic => true),
@@ -3450,15 +3455,17 @@ package body et_kicad is
 					orientation	=> to_field_orientation (field(line,4)),
 
 					-- read coordinates
-					position	=> (x => et_libraries.type_grid'value(field(line,5)),
-									y => et_libraries.type_grid'value(field(line,6))),
-					size		=> et_libraries.type_text_size'value (field(line,7)),
-					style		=> to_text_style (style_in => field(line,10), text => false),
-					line_width	=> 0, -- not provided here -- CS: define a default ?
+					position	=> --(x => mil_to_distance (field(line,5)),
+									  --y => mil_to_distance (field(line,6))),
+									  text_position,
+									  
+					size		=> mil_to_distance (field (line,7)),
+					style		=> to_text_style (style_in => field (line,10), text => false),
+					line_width	=> et_libraries.type_text_line_width'first,
 
 					-- build text visibility
 					visible		=> to_field_visible (
-										vis_in		=> field(line,8),
+										vis_in		=> field (line,8),
 										schematic	=> true),
 
 					-- build text alignment
@@ -3881,8 +3888,8 @@ package body et_kicad is
 
 										-- read drawing frame dimensions from a line like "$Descr A4 11693 8268"
 										tmp_frame.paper_size	:= type_paper_size'value(get_field_from_line(line,2));
-										tmp_frame.size_x		:= et_libraries.type_grid'value(get_field_from_line(line,3));
-										tmp_frame.size_y 		:= et_libraries.type_grid'value(get_field_from_line(line,4)); 
+										tmp_frame.size_x		:= mil_to_distance (get_field_from_line(line,3));
+										tmp_frame.size_y 		:= mil_to_distance (get_field_from_line(line,4)); 
 										
 										--tmp_frame.coordinates.path := path_to_submodule;
 										et_coordinates.set_path (tmp_frame.coordinates, path_to_submodule);
@@ -4042,8 +4049,8 @@ package body et_kicad is
 											--tmp_submodule_gui.coordinates.y := et_libraries.type_grid'value(get_field_from_line(line,3));
 											et_coordinates.set_y (tmp_submodule_gui.coordinates, et_coordinates.mil_to_distance (get_field_from_line (line,3)));
 
-											tmp_submodule_gui.size_x		:= et_libraries.type_grid'value(get_field_from_line(line,4));
-											tmp_submodule_gui.size_y		:= et_libraries.type_grid'value(get_field_from_line(line,5));                                
+											tmp_submodule_gui.size_x := mil_to_distance (get_field_from_line(line,4));
+											tmp_submodule_gui.size_y := mil_to_distance (get_field_from_line(line,5));                                
 										end if;
 
 										-- read GUI submodule (sheet) timestamp from a line like "U 58A73B5D"
@@ -4149,7 +4156,7 @@ package body et_kicad is
 											set_y (tmp_simple_net_label.coordinates, mil_to_distance (get_field_from_line (line,4)));
 											tmp_simple_net_label.orientation := to_angle (get_field_from_line (line,5));
 
-											tmp_simple_net_label.size := et_libraries.type_text_size'value (get_field_from_line(line,6));
+											tmp_simple_net_label.size := mil_to_distance (get_field_from_line(line,6));
 											tmp_simple_net_label.style := to_text_style (style_in => get_field_from_line(line,7), text => true);
 											tmp_simple_net_label.width := et_libraries.type_text_line_width'value(get_field_from_line(line,8));
 
@@ -4199,7 +4206,7 @@ package body et_kicad is
 												);
 
 											-- build text attributes from size, font and line width
-											tmp_tag_net_label.size := et_libraries.type_text_size'value(get_field_from_line(line,6));
+											tmp_tag_net_label.size := mil_to_distance (get_field_from_line(line,6));
 											tmp_tag_net_label.style := to_text_style (style_in => get_field_from_line(line,8), text => true);
 											tmp_tag_net_label.width := et_libraries.type_text_line_width'value(get_field_from_line(line,9));
 										end if;
@@ -4229,9 +4236,9 @@ package body et_kicad is
 												set_x (tmp_note.coordinates, mil_to_distance (get_field_from_line (line,3)));
 												set_y (tmp_note.coordinates, mil_to_distance (get_field_from_line (line,4)));
 												tmp_note.orientation   := to_angle (get_field_from_line(line,5));
-												tmp_note.size := et_libraries.type_text_size'value(get_field_from_line(line,6));
+												tmp_note.size := mil_to_distance (get_field_from_line(line,6));
 												tmp_note.style := to_text_style (style_in => get_field_from_line(line,7), text => true);
-												tmp_note.line_width := et_libraries.type_text_line_width'value(get_field_from_line(line,8));
+												tmp_note.line_width := mil_to_distance (get_field_from_line (line,8));
 
 										end if;
 									else 

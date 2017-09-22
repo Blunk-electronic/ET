@@ -41,16 +41,11 @@ with ada.text_io;				use ada.text_io;
 with ada.directories;
 
 with ada.containers;            use ada.containers;
--- with ada.containers.doubly_linked_lists;
--- with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
 
 with et_coordinates;
-with et_general;
-with et_libraries;
 with et_string_processing;
 with et_geometry;
-with et_import;
 
 
 package body et_schematic is
@@ -712,20 +707,10 @@ package body et_schematic is
 			line_end	=> type_2d_point (segment.coordinates_end), -- et_libraries.type_coordinates(line_end),
 			line_range	=> inside_end_points);
 
-		log (text => "distance" & type_distance'image (d.distance), level => 2);
-		
-		if not d.out_of_range then -- CS: use log_threshold
-			log (text => "within range", level => 2);
-		end if;
-		
 		if (not d.out_of_range) and d.distance = zero then
 			sits_on_segment := true;
 		end if;
 
-		if sits_on_segment then -- CS: use log_threshold
-			log (text => "on segment", level => 2);
-		end if;
-		
 		return sits_on_segment;
 	end junction_sits_on_segment;
 	

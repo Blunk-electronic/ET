@@ -64,30 +64,6 @@ package body et_libraries is
 		return type_full_library_name.to_string (full_library_name);
 	end to_string;
 
-	function to_grid (grid : in string) return type_grid is
-	-- Returns the given grid as type_grid.
-		g : type_grid;
-	begin
-		g := type_grid'value (grid);
-		return g;
-	end to_grid;
-
-	function to_string (grid : in type_grid) return string is
-	-- Returns the given grid as string.
-	begin
-		return trim (type_grid'image (grid), left);
-	end to_string;
-	
-	function to_string (position : in type_coordinates) return string is
-	-- Returns the given position as string.
-	begin
-		return coordinates_preamble
-			& trim (et_libraries.type_grid'image(position.x),left) 
-			& coordinates_dimension_separator
-			& trim (et_libraries.type_grid'image(position.y),left);
-
-	end to_string;
-
 	function to_string (angle : in type_angle) return string is
 	-- Returns the the given angle as string.
 		preamble	: constant string (1..5) := "angle";
@@ -167,7 +143,7 @@ package body et_libraries is
 		log_indentation_up;
 		
 		-- position
-		log (et_libraries.to_string (placeholder.position));
+		log (to_string (placeholder.position));
 
 		-- size
 		log ("size" & et_libraries.type_text_size'image (placeholder.size));
@@ -209,7 +185,7 @@ package body et_libraries is
 		log_indentation_up;
 		
 		-- position
-		log (et_libraries.to_string (text.position), level => log_threshold);
+		log (to_string (text.position), level => log_threshold);
 
 		-- content
 		if et_libraries.type_text_content.length(text.content) > 0 then

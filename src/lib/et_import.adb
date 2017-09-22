@@ -51,6 +51,8 @@ package body et_import is
 		put_line ("date " & string (date_now));
 		put_line ("CAD format " & type_cad_format'image (cad_format));
 		put_line ("project file " & et_schematic.type_project_file_name.to_string (et_schematic.project_file_name));
+		put_line ("CAUTION: Measurement system is METRIC. All dimensions given in Millimeters !");
+		put_line ("CAUTION: All angles are given in degrees !");
 		put_line ("log level" & type_log_level'image (log_level));
 		put_line (row_separator_double);		
 	end create_report;
