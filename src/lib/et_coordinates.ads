@@ -125,7 +125,7 @@ package et_coordinates is
 	private 
 		-- In general every object has at least x,y coordinates.
 		type type_2d_point is tagged record
-			x, y : type_distance;
+			x, y : type_distance := zero_distance;
 		end record;
 		
 		zero : constant type_2d_point := (x => zero_distance, y => zero_distance);
