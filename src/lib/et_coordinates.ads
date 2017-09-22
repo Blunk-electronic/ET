@@ -82,6 +82,19 @@ package et_coordinates is
 
 	procedure set_x (point : in out type_2d_point; x : in type_distance);
 	procedure set_y (point : in out type_2d_point; y : in type_distance);
+
+-- 	function mirror (
+-- 		point	: in type_2d_point;
+-- 		axis	: in type_axis
+-- 		) return type_2d_point;
+
+	procedure mirror (
+		point	: in out type_2d_point;
+		axis	: in type_axis);	
+
+
+
+
 	
 	-- The name of a submodule may have 100 characters which seems sufficient for now.
  	submodule_name_length : constant natural := 100;
@@ -94,7 +107,11 @@ package et_coordinates is
         element_type => type_submodule_name.bounded_string);
 
 	type type_coordinates is new type_2d_point with private;
-
+-- 	overriding
+-- 	procedure mirror (
+-- 		coordinates : in out type_coordinates;
+-- 		axis		: in type_axis);
+	
 	zero_position : constant type_coordinates;
 	
 	coordinates_preamble : constant string (1..21) := "position " 

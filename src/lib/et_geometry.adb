@@ -223,24 +223,6 @@ package body et_geometry is
 -- 	end move;
 -- 
 -- 
--- 	function mirror (
--- 		point	: in type_2d_point;
--- 		axis	: in type_axis
--- 		) return type_2d_point is
--- 	begin
--- 		case axis is
--- 			when X =>
--- 				return (
--- 					x => point.x,
--- 					y => point.y * (-1.0)
--- 					);
--- 			when Y =>
--- 				return (
--- 					x => point.x * (-1.0),
--- 					y => point.y
--- 					);
--- 		end case;
--- 	end mirror;
 
 	
 end et_geometry;

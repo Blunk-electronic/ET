@@ -93,7 +93,50 @@ package body et_coordinates is
 		point.y := y;
 	end set_y;
 
+-- 	function mirror (
+-- 		point	: in type_2d_point;
+-- 		axis	: in type_axis
+-- 		) return type_2d_point is
+-- 	begin
+-- 		case axis is
+-- 			when X =>
+-- 				return (
+-- 					x => point.x,
+-- 					y => point.y * (-1.0)
+-- 					);
+-- 			when Y =>
+-- 				return (
+-- 					x => point.x * (-1.0),
+-- 					y => point.y
+-- 					);
+-- 		end case;
+-- 	end mirror;
 
+	procedure mirror (
+		point	: in out type_2d_point;
+		axis	: in type_axis)
+		is
+	begin
+		case axis is
+			when X =>
+				point.y := point.y * (-1.0);
+			when Y =>
+				point.x := point.x * (-1.0);
+		end case;
+	end mirror;
+
+-- 	procedure mirror (
+-- 		coordinates : in out type_coordinates;
+-- 		axis		: in type_axis)
+-- 		is
+-- 	begin
+-- 		case axis is
+-- 			when X =>
+-- 				coordinates.y := coordinates.y * (-1.0);
+-- 			when Y =>
+-- 				coordinates.x := coordinates.x * (-1.0);
+-- 		end case;
+-- 	end mirror;
 	
 	
 	function to_string (position : in type_coordinates) return string is
