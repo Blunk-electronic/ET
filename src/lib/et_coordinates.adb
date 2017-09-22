@@ -68,7 +68,7 @@ package body et_coordinates is
 	-- Returns the given point coordinates to a string.
 	begin
 		return trim (type_distance'image (point.x), left)
-			& axis_separator 
+			& latin_1.space & axis_separator & latin_1.space
 			& trim (type_distance'image (point.y), left);
 	end to_string;
 
@@ -98,16 +98,9 @@ package body et_coordinates is
 	function to_string (position : in type_coordinates) return string is
 	-- Returns the given position as string.
 	begin
--- 		return coordinates_preamble
--- 			& trim (positive'image (position.sheet_number),left) 
--- 			& et_libraries.coordinates_dimension_separator
--- 			& trim (et_libraries.type_grid'image(position.x),left)
--- 			& et_libraries.coordinates_dimension_separator
--- 			& trim (et_libraries.type_grid'image(position.y),left);
-
 		return coordinates_preamble
 			& trim (positive'image (position.sheet_number),left) 
-			& axis_separator
+			& latin_1.space & axis_separator & latin_1.space
 			& to_string ( type_2d_point (position));
 
 		-- CS: output in both mil and mm

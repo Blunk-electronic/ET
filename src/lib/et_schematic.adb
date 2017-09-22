@@ -123,8 +123,7 @@ package body et_schematic is
 	-- Writes the properties of the given net label in the logfile.
 		use et_string_processing;
 		use et_coordinates;
-		use et_libraries;
-	
+
 		log_threshold : type_log_level := 1;
 	begin
 		log_indentation_up;
@@ -159,7 +158,6 @@ package body et_schematic is
 	-- Writes the properties of the given net junction in the logfile.
 		use et_string_processing;
 		use et_coordinates;
-		use et_libraries;
 	
 		log_threshold : type_log_level := 1;
 	begin
@@ -174,7 +172,6 @@ package body et_schematic is
 	procedure write_note_properties (note : in et_schematic.type_note) is
 	-- Writes the properties of the given note
 		use et_string_processing;
-		use et_libraries;
 		use et_coordinates;
 	
 		log_threshold : type_log_level := 1;

@@ -121,8 +121,8 @@ package et_libraries is
 	function to_grid (grid : in string) return type_grid;
 	-- Returns the given grid as type_grid.
 
-	function to_string (grid : in type_grid) return string;
-	-- Returns the given grid as string.
+ 	function to_string (grid : in type_grid) return string;
+-- 	Returns the given grid as string.
 	
 	function to_string (position : in type_coordinates) return string;
 	-- Returns the given position as string.
