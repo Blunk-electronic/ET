@@ -55,7 +55,7 @@ package et_coordinates is
 -- 	type type_unit_metric is (micrometer, millimeter, centimeter, meter);
 -- 	type type_unit_imperial is (mil, inch);
 
-	type type_distance is delta 0.01 range -100000000.0 .. 100000000.0;
+	type type_distance is delta 0.01 range -100000000.0 .. 100000000.0; -- unit is metric millimeter
 	zero_distance : constant type_distance := 0.0;
 
 	-- CS: type_grid ?
@@ -83,6 +83,8 @@ package et_coordinates is
 	procedure set_x (point : in out type_2d_point; x : in type_distance);
 	procedure set_y (point : in out type_2d_point; y : in type_distance);
 
+	procedure set (point : in out type_2d_point; position : in type_2d_point);
+	
 -- 	function mirror (
 -- 		point	: in type_2d_point;
 -- 		axis	: in type_axis
@@ -92,7 +94,9 @@ package et_coordinates is
 		point	: in out type_2d_point;
 		axis	: in type_axis);	
 
-
+	procedure move (
+		point	: in out type_2d_point;
+		offset	: in type_2d_point);
 
 
 	

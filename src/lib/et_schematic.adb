@@ -400,8 +400,26 @@ package body et_schematic is
 
 					port_coordinates : type_coordinates;
 				begin
-					set_x (port_coordinates, distance_x (unit_position) + distance_x (element (port_cursor).coordinates));
-							 
+					-- init port coordinates with the coordinates of the port found in the library
+					set		(point => port_coordinates, position	=> element (port_cursor).coordinates);
+
+					-- Mirror port coordinates if required.
+					-- CS: compute mirror style based on mirror style of unit. unit.mirror
+					mirror	(point => port_coordinates, axis		=> x);
+
+					-- offset port coordinates by the coordinates of the unit found in the schematic
+					move	(point => port_coordinates, offset		=> unit_position);
+
+					-- path remains unchanged because the port is still where the unit is
+					set_path (port_coordinates, path (unit_position));
+
+					-- module name remains unchanged because the port is still in the same module
+					set_module (port_coordinates, module (unit_position));
+
+					-- sheet name remains unchanged because the sheet is still the same
+					set_sheet (port_coordinates, sheet (unit_position));
+					
+					-- insert a the newly built port in the portlist of the component
 					type_base_ports.append (
 						container => ports,
 						new_item => (
@@ -414,14 +432,6 @@ package body et_schematic is
 
 							-- schematic defined properties:
 							coordinates	=> port_coordinates
--- 							(
--- 								path			=> path (unit_position), -- path remains unchanged
--- 								module_name		=> module (unit_position), -- module name unchanged
--- 								sheet_number	=> sheet (unit_position), -- sheet unchanged
--- 
--- 								-- CS: offset port position by unit position, orientation an mirroring
--- 								x				=> distance_x (unit_position) + element (port_cursor).coordinates.x, 
--- 								y				=> distance_y (unit_position) + element (port_cursor).coordinates.y 
 							));
 
 					log_indentation_up;

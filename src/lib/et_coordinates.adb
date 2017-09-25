@@ -93,6 +93,11 @@ package body et_coordinates is
 		point.y := y;
 	end set_y;
 
+	procedure set (point : in out type_2d_point; position : in type_2d_point) is
+	begin
+		point := position;
+	end set;
+	
 -- 	function mirror (
 -- 		point	: in type_2d_point;
 -- 		axis	: in type_axis
@@ -125,6 +130,15 @@ package body et_coordinates is
 		end case;
 	end mirror;
 
+	procedure move (
+		point	: in out type_2d_point;
+		offset	: in type_2d_point)
+		is
+	begin
+		point.x := point.x + offset.x;
+		point.y := point.y + offset.y;
+	end move;
+	
 -- 	procedure mirror (
 -- 		coordinates : in out type_coordinates;
 -- 		axis		: in type_axis)
