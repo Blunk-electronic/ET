@@ -356,7 +356,7 @@ package body et_schematic is
 	
 		function position_of_unit (
 		-- Returns the coordinates of the given unit.
-		-- The unit is one element in the given list of units.
+		-- The unit is an element in the given list of units.
 			name : in type_unit_name.bounded_string; -- the unit being inquired
 			units : in et_schematic.type_units.map) -- the list of units
 			return et_coordinates.type_coordinates is
@@ -366,7 +366,18 @@ package body et_schematic is
 			return et_schematic.type_units.element (unit_cursor).position;
 		end position_of_unit;
 
-	
+		function mirror_style_of_unit (
+		-- Returns the mirror style of the given unit.
+		-- The unit is an element in the given list of units.
+			name : in type_unit_name.bounded_string; -- the unit being inquired
+			units : in et_schematic.type_units.map) -- the list of units
+			return et_schematic.type_mirror is
+			unit_cursor : et_schematic.type_units.cursor;
+		begin
+			unit_cursor := et_schematic.type_units.find (container => units, key => name);
+			return et_schematic.type_units.element (unit_cursor).mirror;
+		end mirror_style_of_unit;
+		
 		procedure extract_ports is
 		-- Extracts the ports of the component as indicated by the current component_cursor_lib.
 		-- The unit cursor of the component advances through the units stored in the library.
@@ -390,8 +401,9 @@ package body et_schematic is
 			-- They are copied to the new port without change.
 			
 			-- Properites set in the schematic such as path, module name, sheet are copied into the
-			-- new port unchanged. X and Y position in turn become offset by the X/Y position of the 
-			-- unit.
+			-- new port unchanged. X and Y position in turn become mirrored and offset by the X/Y 
+			-- position of the unit.
+			-- NOTE: It is important first to mirror the port (if required) and then to offset it.
 			
 				procedure add (
 					component	: in type_component_reference;
@@ -399,16 +411,20 @@ package body et_schematic is
 					use et_coordinates;
 
 					port_coordinates : type_coordinates;
+					--mirror_style : et_schematic.type_mirror;
 				begin
 					-- init port coordinates with the coordinates of the port found in the library
-					set		(point => port_coordinates, position	=> element (port_cursor).coordinates);
+					set (point => port_coordinates, position => element (port_cursor).coordinates);
 
 					-- Mirror port coordinates if required.
-					-- CS: compute mirror style based on mirror style of unit. unit.mirror
-					mirror	(point => port_coordinates, axis		=> x);
+					case mirror_style_of_unit (unit_name_lib, units_sch) is
+						when none => null; -- unit not mirrored in schematic
+						when x_axis => mirror (point => port_coordinates, axis => x);
+						when y_axis => mirror (point => port_coordinates, axis => y);
+					end case;
 
 					-- offset port coordinates by the coordinates of the unit found in the schematic
-					move	(point => port_coordinates, offset		=> unit_position);
+					move (point => port_coordinates, offset => unit_position);
 
 					-- path remains unchanged because the port is still where the unit is
 					set_path (port_coordinates, path (unit_position));
