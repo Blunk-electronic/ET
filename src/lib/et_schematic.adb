@@ -298,18 +298,78 @@ package body et_schematic is
 	end component_name_in_library;
 
 
+	function unit_exists (
+	-- Returns true if the unit with the given name exists in the given list of units.
+		name : in type_unit_name.bounded_string; -- the unit being inquired
+		units : in et_schematic.type_units.map) -- the list of units
+		return boolean is
+
+		use et_schematic;
+		use et_schematic.type_units;
+	begin
+		if et_schematic.type_units.find (container => units, key => name) = type_units.no_element then
+			return false;
+		else	
+			return true;
+		end if;
+	end unit_exists;
+	
+	function position_of_unit (
+	-- Returns the coordinates of the unit with the given name.
+	-- It is assumed, the unit in question exists.
+	-- The unit is an element in the given list of units.
+		name : in type_unit_name.bounded_string; -- the unit being inquired
+		units : in et_schematic.type_units.map) -- the list of units
+		return et_coordinates.type_coordinates is
+		unit_cursor : et_schematic.type_units.cursor;
+	begin
+		unit_cursor := et_schematic.type_units.find (container => units, key => name);
+		return et_schematic.type_units.element (unit_cursor).position;
+	end position_of_unit;
+
+	function mirror_style_of_unit (
+	-- Returns the mirror style of the given unit.
+	-- It is assumed, the unit in question exists.
+	-- The unit is an element in the given list of units.
+		name : in type_unit_name.bounded_string; -- the unit being inquired
+		units : in et_schematic.type_units.map) -- the list of units
+		return et_schematic.type_mirror is
+		unit_cursor : et_schematic.type_units.cursor;
+	begin
+		unit_cursor := et_schematic.type_units.find (container => units, key => name);
+		return et_schematic.type_units.element (unit_cursor).mirror;
+	end mirror_style_of_unit;
+
+	function orientation_of_unit (
+	-- Returns the orientation of the given unit.
+	-- It is assumed, the unit in question exists.
+	-- The unit is an element in the given list of units.
+		name : in type_unit_name.bounded_string; -- the unit being inquired
+		units : in et_schematic.type_units.map) -- the list of units
+		return et_libraries.type_angle is
+		unit_cursor : et_schematic.type_units.cursor;
+	begin
+		unit_cursor := et_schematic.type_units.find (container => units, key => name);
+		return et_schematic.type_units.element (unit_cursor).orientation;
+	end orientation_of_unit;
+	
 	function build_portlists return type_portlists.map is
-	-- Returns a list of components with the absolute positions of their ports.
+	-- Returns a list of components with the absolute positions of their ports in the schematic.
 		
 	-- Locates the components of the schematic in the libraries. 
-	-- Extracts the ports of the components from the libraries and
-	-- stores them in map "portlists". The key into this map is the 
-	-- component reference.
+	-- Computes the absolute port positions of components from:
+	--  - the port coordinates provided by the librares
+	--  - the unit coordinates provided by the schematic
+	--  - the unit mirror style provided by the schematic
+	--  - the unit orientation provided by the schematic
+	
+	-- Stores the absolute port coordinates in map "portlists". 
+	-- The key into this map is the component reference.
 
-		-- Here we collect the portlists of schematic components.
+		-- Here we collect the portlists:
 		portlists					: type_portlists.map;
 		component_inserted			: boolean;
-		component_cursor_portlists	: type_portlists.cursor;
+		component_cursor_portlists	: type_portlists.cursor; -- points to the portlist being built
 	
 		use et_libraries;
 		use et_libraries.type_full_library_names;
@@ -321,7 +381,10 @@ package body et_schematic is
 
 		-- The generic name of a component in a library (like TRANSISTOR_PNP or LED) 
 		-- is tempoarily held here:
-		component_name		: et_libraries.type_component_name.bounded_string; 
+		component_name		: et_libraries.type_component_name.bounded_string;
+
+		-- The component reference in the schematic (like R44 or IC34)
+		-- is tempoarily held here:
 		component_reference	: et_libraries.type_component_reference;
 	
 		-- The library cursor points to the library to search in (in module.libraries).
@@ -338,56 +401,19 @@ package body et_schematic is
 		-- For tempoarily storage of units of a component (taken from the schematic):
 		units_sch : et_schematic.type_units.map;
 
-		function unit_exists (
-		-- Returns true if the given unit with name exists in the given list of units.
-			name : in type_unit_name.bounded_string; -- the unit being inquired
-			units : in et_schematic.type_units.map) -- the list of units
-			return boolean is
 
-			use et_schematic;
-			use et_schematic.type_units;
-		begin
-			if et_schematic.type_units.find (container => units, key => name) = type_units.no_element then
-				return false;
-			else	
-				return true;
-			end if;
-		end unit_exists;
-	
-		function position_of_unit (
-		-- Returns the coordinates of the given unit.
-		-- The unit is an element in the given list of units.
-			name : in type_unit_name.bounded_string; -- the unit being inquired
-			units : in et_schematic.type_units.map) -- the list of units
-			return et_coordinates.type_coordinates is
-			unit_cursor : et_schematic.type_units.cursor;
-		begin
-			unit_cursor := et_schematic.type_units.find (container => units, key => name);
-			return et_schematic.type_units.element (unit_cursor).position;
-		end position_of_unit;
-
-		function mirror_style_of_unit (
-		-- Returns the mirror style of the given unit.
-		-- The unit is an element in the given list of units.
-			name : in type_unit_name.bounded_string; -- the unit being inquired
-			units : in et_schematic.type_units.map) -- the list of units
-			return et_schematic.type_mirror is
-			unit_cursor : et_schematic.type_units.cursor;
-		begin
-			unit_cursor := et_schematic.type_units.find (container => units, key => name);
-			return et_schematic.type_units.element (unit_cursor).mirror;
-		end mirror_style_of_unit;
-		
 		procedure extract_ports is
-		-- Extracts the ports of the component as indicated by the current component_cursor_lib.
-		-- The unit cursor of the component advances through the units stored in the library.
+		-- Extracts the ports of the component indicated by component_cursor_lib.
 		-- NOTE: The library contains the positions of the ports.
 			use et_libraries.type_units_internal;
 			use et_libraries.type_ports;
 			use et_coordinates;
-		
-			unit_cursor_internal	: type_units_internal.cursor; -- points to the current unit
-			port_cursor				: et_libraries.type_ports.cursor; -- points to a port of that unit
+
+			-- The unit cursor of the component advances through the units stored in the library.
+			unit_cursor_internal	: type_units_internal.cursor;
+
+			-- The port cursor of the unit indicates the port of a unit.
+			port_cursor				: et_libraries.type_ports.cursor; 
 
 			unit_name_lib : type_unit_name.bounded_string; -- the unit name in the library. like "A", "B" or "PWR"
 			unit_position : et_coordinates.type_coordinates; -- the coordinates of the current unit
@@ -401,7 +427,7 @@ package body et_schematic is
 			-- They are copied to the new port without change.
 			
 			-- Properites set in the schematic such as path, module name, sheet are copied into the
-			-- new port unchanged. X and Y position in turn become mirrored and offset by the X/Y 
+			-- new port unchanged. X and Y position in turn become mirrored (if required) and offset by the X/Y 
 			-- position of the unit.
 			-- NOTE: It is important first to mirror the port (if required) and then to offset it.
 			
@@ -416,6 +442,11 @@ package body et_schematic is
 					-- init port coordinates with the coordinates of the port found in the library
 					set (point => port_coordinates, position => element (port_cursor).coordinates);
 
+					-- CS: rotate ?
+-- 					rotate (
+-- 						point => port_coordinates,
+-- 						angle => orientation_of_unit (unit_name_lib, units_sch));
+					
 					-- Mirror port coordinates if required.
 					case mirror_style_of_unit (unit_name_lib, units_sch) is
 						when none => null; -- unit not mirrored in schematic
@@ -423,6 +454,8 @@ package body et_schematic is
 						when y_axis => mirror (point => port_coordinates, axis => y);
 					end case;
 
+					-- CS: rotate ?
+					
 					-- offset port coordinates by the coordinates of the unit found in the schematic
 					move (point => port_coordinates, offset => unit_position);
 
@@ -456,17 +489,26 @@ package body et_schematic is
 				end add;
 				
 			begin -- add_port
+
+				-- We update the portlist of the component in container portlists.
+				-- The cursor to the portlist was set when the element got inserted (see below in procedure build_portlists).
 				type_portlists.update_element (
-					container => portlists,
-					position => component_cursor_portlists,
-					process => add'access);
+					container	=> portlists,
+					position	=> component_cursor_portlists,
+					process		=> add'access);
 			end add_port;
 			
 		begin -- extract_ports
 			-- Loop in unit list of the component (indicated by component_cursor_lib).
 			-- unit_cursor_internal points to the unit in the library.
-			-- Get the coordinates of the same unit in the schematic.
+			-- Frequently, not all units of a component are deployed in the schematic.
+			-- If a unit is not deployed it is ignored. Otherwise the coordinates of the
+			-- unit in the schematic are stored in unit_position.
+
+			-- Init the unit cursor of the current component:
 			unit_cursor_internal := first_internal_unit (component_cursor_lib);
+
+			-- Loop in list of internal units:
 			while unit_cursor_internal /= type_units_internal.no_element loop
 				log_indentation_up;
 
@@ -474,17 +516,22 @@ package body et_schematic is
 				unit_name_lib := key (unit_cursor_internal);
 
 				-- Now the unit name serves as key into the unit list we got from the schematic (unit_sch).
-				-- So we get the unit position in the schematic.
+				-- If the unit is deployed in the schematic, we load unit_position. 
+				-- unit_position holds the position of the unit in the schematic.
 				if unit_exists (unit_name_lib, units_sch) then
 					log ("unit " & to_string (unit_name_lib));
-					unit_position := position_of_unit (unit_name_lib, units_sch);
+					unit_position := position_of_unit (unit_name_lib, units_sch); -- pos. in schematic
 					log_indentation_up;
 					log (to_string (unit_position));
 
-					-- Get the ports of the current unit. Start with the first port of a unit.
-					-- The unit_position plus the relative port position yields the absolute
-					-- position of the port.
-					port_cursor := first_port (unit_cursor_internal);
+					-- Get the ports of the current unit. Start with the first port of the unit.
+					-- The unit_position plus the relative port position (in library) yields the absolute
+					-- position of the port (in schematic).
+
+					-- Init port cursor
+					port_cursor := first_port (unit_cursor_internal); -- port in library
+
+					-- Loop in port list of the unit:
 					while port_cursor /= et_libraries.type_ports.no_element loop
 						log_indentation_up;
 						log ("port " & type_port_name.to_string (key (port_cursor)));
@@ -532,10 +579,10 @@ package body et_schematic is
 			-- later be used to add a port to the portlists.
 			type_portlists.insert (
 				container	=> portlists,
-				key			=> component_reference,
+				key			=> component_reference, -- like R44
 				new_item	=> type_base_ports.empty_list,
 				inserted	=> component_inserted, -- obligatory, no further meaning
-				position	=> component_cursor_portlists
+				position	=> component_cursor_portlists -- points to the portlist being built
 				);
 			
 			-- get the units of the current schematic component (indicated by component_cursor_sch)

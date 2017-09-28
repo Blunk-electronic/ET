@@ -98,7 +98,9 @@ package et_coordinates is
 		point	: in out type_2d_point;
 		offset	: in type_2d_point);
 
-
+-- 	procedure rotate (
+-- 		point	: in out type_2d_point;
+-- 		angle	: in et_libraries.type_angle);
 	
 	-- The name of a submodule may have 100 characters which seems sufficient for now.
  	submodule_name_length : constant natural := 100;

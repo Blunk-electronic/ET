@@ -138,6 +138,15 @@ package body et_coordinates is
 		point.x := point.x + offset.x;
 		point.y := point.y + offset.y;
 	end move;
+
+-- 	procedure rotate (
+-- 		point	: in out type_2d_point;
+-- 		angle	: in et_libraries.type_angle)
+-- 		is
+-- 	begin
+-- 		null;
+-- 	end rotate;
+
 	
 -- 	procedure mirror (
 -- 		coordinates : in out type_coordinates;
