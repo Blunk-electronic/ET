@@ -140,11 +140,14 @@ package body et_coordinates is
 	end move;
 
 	procedure rotate (
+	-- Rotates the given point around the origin.
 		point	: in out type_2d_point;
 		angle	: in type_angle)
 		is
 	begin
 		null;
+		-- point.x / point.x = tan alpha
+		-- arctan alpha + angle = beta
 	end rotate;
 
 	function to_string (position : in type_coordinates) return string is

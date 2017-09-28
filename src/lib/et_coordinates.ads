@@ -109,6 +109,7 @@ package et_coordinates is
 		offset	: in type_2d_point);
 
 	procedure rotate (
+	-- Rotates the given point around the origin.
 		point	: in out type_2d_point;
 		angle	: in type_angle);
 	
