@@ -104,20 +104,6 @@ package et_libraries is
 
 	
 
--- ORIENTATION, ANGLE AND ROTATION
-
-	-- Objects may be placed at a certain angle:
-	type type_angle is delta 0.1 digits 4 range -359.9 .. 359.9; -- unit is degrees
-	-- CS: a type that allows angles of multiples of 45 degrees ? 
-	-- or check angle via separate function when required ?
-	
-	subtype type_angle_90 is type_angle range 0.0 .. 90.0;
-	-- CS: make use of this type by membership tests when required
-
-	function to_string (angle : in type_angle) return string;
-	-- Returns the given angle as string. 
-
-	procedure warning_angle_greater_90_degrees;
 
 
 

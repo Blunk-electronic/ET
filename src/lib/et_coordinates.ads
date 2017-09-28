@@ -66,6 +66,21 @@ package et_coordinates is
 	function to_string (distance : in type_distance) return string;
 	-- Returns the given distance to a string.
 
+
+	type type_angle is delta 0.1 digits 4 range -359.9 .. 359.9; -- unit is degrees
+	-- CS: a type that allows angles of multiples of 45 degrees ? 
+	-- or check angle via separate function when required ?
+	
+	subtype type_angle_90 is type_angle range 0.0 .. 90.0;
+	-- CS: make use of this type by membership tests when required
+
+	function to_string (angle : in type_angle) return string;
+	-- Returns the given angle as string. 
+
+	procedure warning_angle_greater_90_degrees;
+
+
+	
 	
 	type type_2d_point is tagged private;
 
@@ -85,11 +100,6 @@ package et_coordinates is
 
 	procedure set (point : in out type_2d_point; position : in type_2d_point);
 	
--- 	function mirror (
--- 		point	: in type_2d_point;
--- 		axis	: in type_axis
--- 		) return type_2d_point;
-
 	procedure mirror (
 		point	: in out type_2d_point;
 		axis	: in type_axis);	
@@ -98,9 +108,9 @@ package et_coordinates is
 		point	: in out type_2d_point;
 		offset	: in type_2d_point);
 
--- 	procedure rotate (
--- 		point	: in out type_2d_point;
--- 		angle	: in et_libraries.type_angle);
+	procedure rotate (
+		point	: in out type_2d_point;
+		angle	: in type_angle);
 	
 	-- The name of a submodule may have 100 characters which seems sufficient for now.
  	submodule_name_length : constant natural := 100;

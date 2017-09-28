@@ -64,22 +64,6 @@ package body et_libraries is
 		return type_full_library_name.to_string (full_library_name);
 	end to_string;
 
-	function to_string (angle : in type_angle) return string is
-	-- Returns the the given angle as string.
-		preamble	: constant string (1..5) := "angle";
-		suffix		: constant string (1..4) := " deg";
-	begin
-		return (preamble & type_angle'image (angle) & suffix);
-	end to_string;
-
-	procedure warning_angle_greater_90_degrees is
-		use et_string_processing;
-	begin
-		log (et_string_processing.message_warning 
-			& "text placed in an angle greater than" 
-			& type_angle_90'image(type_angle_90'last));
-	end warning_angle_greater_90_degrees;
-	
 	function to_string (port_name : in type_port_name.bounded_string) return string is
 	-- Returns the given port name as string.
 	begin
@@ -157,17 +141,17 @@ package body et_libraries is
 			& et_libraries.type_text_line_width'image (placeholder.line_width));
 
 		-- angle
-		log (et_libraries.to_string (placeholder.orientation)); 
+		log (to_string (placeholder.orientation)); 
 
 		-- visible
 		log ("visible "
-			& to_lower(et_libraries.type_text_visible'image (placeholder.visible)));
+			& to_lower (et_libraries.type_text_visible'image (placeholder.visible)));
 
 		-- alignment
 		log ("alignment (hor/vert) "
-			& to_lower(et_libraries.type_text_alignment_horizontal'image(placeholder.alignment.horizontal))
+			& to_lower (et_libraries.type_text_alignment_horizontal'image (placeholder.alignment.horizontal))
 			& "/"
-			& to_lower(et_libraries.type_text_alignment_vertical'image(placeholder.alignment.vertical)));
+			& to_lower (et_libraries.type_text_alignment_vertical'image (placeholder.alignment.vertical)));
 
 		log_indentation_down;
 	end write_placeholder_properties;
@@ -207,7 +191,7 @@ package body et_libraries is
 			level => log_threshold);
 
 		-- orientation
-		log (et_libraries.to_string (text.orientation), level => log_threshold);
+		log (to_string (text.orientation), level => log_threshold);
 
 		-- visible
 		log ("visible " & to_lower(et_libraries.type_text_visible'image (text.visible)),
@@ -215,9 +199,9 @@ package body et_libraries is
 
 		-- alignment
 		log ("alignment (horizontal/vertical) "
-			& to_lower(et_libraries.type_text_alignment_horizontal'image(text.alignment.horizontal))
+			& to_lower (et_libraries.type_text_alignment_horizontal'image (text.alignment.horizontal))
 			& "/"
-			& to_lower(et_libraries.type_text_alignment_vertical'image(text.alignment.vertical)),
+			& to_lower (et_libraries.type_text_alignment_vertical'image (text.alignment.vertical)),
 			level => log_threshold);
 
 -- 		log_indentation_down;

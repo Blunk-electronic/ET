@@ -36,7 +36,7 @@ with ada.characters.handling;	use ada.characters.handling;
 
 with ada.strings;				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
---with et_string_processing;
+with et_string_processing;
 
 package body et_coordinates is
 
@@ -63,6 +63,25 @@ package body et_coordinates is
 		return trim (type_distance'image (distance), left);
 	end to_string;
 
+
+
+	function to_string (angle : in type_angle) return string is
+	-- Returns the the given angle as string.
+		preamble	: constant string (1..5) := "angle";
+		suffix		: constant string (1..4) := " deg";
+	begin
+		return (preamble & type_angle'image (angle) & suffix);
+	end to_string;
+
+	procedure warning_angle_greater_90_degrees is
+		use et_string_processing;
+	begin
+		log (et_string_processing.message_warning 
+			& "text placed in an angle greater than" 
+			& type_angle_90'image (type_angle_90'last));
+	end warning_angle_greater_90_degrees;
+	
+	
 	
 	function to_string (point : in type_2d_point) return string is
 	-- Returns the given point coordinates to a string.
@@ -98,25 +117,6 @@ package body et_coordinates is
 		point := position;
 	end set;
 	
--- 	function mirror (
--- 		point	: in type_2d_point;
--- 		axis	: in type_axis
--- 		) return type_2d_point is
--- 	begin
--- 		case axis is
--- 			when X =>
--- 				return (
--- 					x => point.x,
--- 					y => point.y * (-1.0)
--- 					);
--- 			when Y =>
--- 				return (
--- 					x => point.x * (-1.0),
--- 					y => point.y
--- 					);
--- 		end case;
--- 	end mirror;
-
 	procedure mirror (
 		point	: in out type_2d_point;
 		axis	: in type_axis)
@@ -139,29 +139,14 @@ package body et_coordinates is
 		point.y := point.y + offset.y;
 	end move;
 
--- 	procedure rotate (
--- 		point	: in out type_2d_point;
--- 		angle	: in et_libraries.type_angle)
--- 		is
--- 	begin
--- 		null;
--- 	end rotate;
+	procedure rotate (
+		point	: in out type_2d_point;
+		angle	: in type_angle)
+		is
+	begin
+		null;
+	end rotate;
 
-	
--- 	procedure mirror (
--- 		coordinates : in out type_coordinates;
--- 		axis		: in type_axis)
--- 		is
--- 	begin
--- 		case axis is
--- 			when X =>
--- 				coordinates.y := coordinates.y * (-1.0);
--- 			when Y =>
--- 				coordinates.x := coordinates.x * (-1.0);
--- 		end case;
--- 	end mirror;
-	
-	
 	function to_string (position : in type_coordinates) return string is
 	-- Returns the given position as string.
 	begin

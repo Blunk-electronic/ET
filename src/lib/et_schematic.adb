@@ -133,7 +133,7 @@ package body et_schematic is
 		log_indentation_up;
 		log ("name '" & type_net_name.to_string (label.text) & "' ");
 		log (to_string (label.coordinates), log_threshold);
-		log (et_libraries.to_string (label.orientation), log_threshold);
+		log (to_string (label.orientation), log_threshold);
 		
 		case label.label_appearance is
 			when simple =>
@@ -199,16 +199,16 @@ package body et_schematic is
 			log ("line width" & et_libraries.type_text_line_width'image (note.line_width));
 
 			-- angle
-			log (et_libraries.to_string (note.orientation));
+			log (to_string (note.orientation));
 
 			-- visible
-			log ("visible " & to_lower(et_libraries.type_text_visible'image (note.visible)));
+			log ("visible " & to_lower (et_libraries.type_text_visible'image (note.visible)));
 
 			-- alignment
 			log ("alignment (hor/vert) "
-				& to_lower(et_libraries.type_text_alignment_horizontal'image(note.alignment.horizontal))
+				& to_lower (et_libraries.type_text_alignment_horizontal'image (note.alignment.horizontal))
 				& "/"
-				& to_lower(et_libraries.type_text_alignment_vertical'image(note.alignment.vertical)));
+				& to_lower (et_libraries.type_text_alignment_vertical'image (note.alignment.vertical)));
 
 		end if;
 		
@@ -346,7 +346,7 @@ package body et_schematic is
 	-- The unit is an element in the given list of units.
 		name : in type_unit_name.bounded_string; -- the unit being inquired
 		units : in et_schematic.type_units.map) -- the list of units
-		return et_libraries.type_angle is
+		return type_angle is
 		unit_cursor : et_schematic.type_units.cursor;
 	begin
 		unit_cursor := et_schematic.type_units.find (container => units, key => name);

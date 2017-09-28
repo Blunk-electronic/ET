@@ -167,7 +167,7 @@ package et_schematic is
 	-- Some placeholders are available when the component appears in both schematic and layout.
 	type type_unit (appearance : type_component_appearance) is record
 		position	: et_coordinates.type_coordinates;
-		orientation	: et_libraries.type_angle;
+		orientation	: et_coordinates.type_angle;
 		mirror		: type_mirror;
 		timestamp	: et_string_processing.type_timestamp;
 		name		: et_libraries.type_unit_name.bounded_string;
@@ -250,7 +250,7 @@ package et_schematic is
 	type type_label_appearance is ( simple, tag );
 	type type_net_label ( label_appearance : type_label_appearance ) is record
 		coordinates	: et_coordinates.type_coordinates;
-		orientation	: et_libraries.type_angle;
+		orientation	: type_angle;
         text		: type_net_name.bounded_string;
         size		: et_libraries.type_text_size;
         style		: et_libraries.type_text_style;

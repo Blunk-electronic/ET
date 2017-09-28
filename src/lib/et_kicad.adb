@@ -164,7 +164,7 @@ package body et_kicad is
 		
 	end to_text_meaning;
 								 
-	function to_field_orientation (text : in string) return et_libraries.type_angle is
+	function to_field_orientation (text : in string) return et_coordinates.type_angle is
 	-- Converts a kicad field text orientation character (H/V) to type_angle.
 	begin	
 		case type_field_orientation'value (text) is
@@ -395,7 +395,7 @@ package body et_kicad is
 		-- CS exception handler
 	end to_alternative_representation;
 
-	function to_degrees (angle : in string) return et_libraries.type_angle is
+	function to_degrees (angle : in string) return et_coordinates.type_angle is
 	-- Converts a given angle as string to type_angle.
 		
 		a_in  : type_angle; -- unit is tenth of degrees -3599 .. 3599
@@ -416,7 +416,7 @@ package body et_kicad is
 		--a_out := et_libraries.type_angle (a_tmp / 10.0); -- -359.9 .. 359.9
 
 		-- return a_out;
-		return et_libraries.type_angle (a_tmp / 10.0); -- -359.9 .. 359.9
+		return et_coordinates.type_angle (a_tmp / 10.0); -- -359.9 .. 359.9
 
 		-- CS: exception handler
 	end to_degrees;
@@ -2245,11 +2245,11 @@ package body et_kicad is
 
 
 		
-		function to_angle (text_in : in string) return et_libraries.type_angle is
+		function to_angle (text_in : in string) return et_coordinates.type_angle is
 		-- Converts the label orientation to type_angle.
 		-- CS: use a dedicated type for input parameter.
 			o_in : type_label_orientation := type_label_orientation'value(text_in);
-			o_out : et_libraries.type_angle;
+			o_out : et_coordinates.type_angle;
 		begin
 			case o_in is
 				when 0 => o_out := 180.0; -- CS: probably 0.0 ?
