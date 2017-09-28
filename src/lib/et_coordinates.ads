@@ -39,6 +39,7 @@ with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 -- 
 with ada.containers.doubly_linked_lists;
+-- with ada.numerics.generic_elementary_functions;
 -- with ada.containers.indefinite_doubly_linked_lists;
 -- with ada.containers.ordered_maps;
 -- with ada.containers.indefinite_ordered_maps;
@@ -58,6 +59,7 @@ package et_coordinates is
 	type type_distance is delta 0.01 range -100000000.0 .. 100000000.0; -- unit is metric millimeter
 	zero_distance : constant type_distance := 0.0;
 
+
 	-- CS: type_grid ?
 
 	function mil_to_distance (mil : in string) return type_distance;
@@ -67,6 +69,11 @@ package et_coordinates is
 	-- Returns the given distance to a string.
 
 
+	units_per_cycle : constant float := 360.0;
+	
+	-- Angles are to be interpreted as: 
+	-- positive angle -> counter clock wise
+	-- negative angle -> clock wise
 	type type_angle is delta 0.1 digits 4 range -359.9 .. 359.9; -- unit is degrees
 	-- CS: a type that allows angles of multiples of 45 degrees ? 
 	-- or check angle via separate function when required ?

@@ -3762,6 +3762,11 @@ package body et_kicad is
 
 			procedure build_unit_orientation_and_mirror_style (line : in type_fields_of_line) is
 			-- Builds from a line (see below) the component orientation and mirror style:
+
+			-- Angles in Kicad are to be interpreted as: 
+			-- positive angle -> counter clock wise
+			-- negative angle -> clock wise
+			
 			--  1    0    0  -1  -- orientation 0,   mirror normal
 			--  0   -1   -1   0  -- orientation 90,  mirror normal
 			-- -1    0    0   1  -- orientation 180, mirror normal 

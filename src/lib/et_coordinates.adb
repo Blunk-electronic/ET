@@ -36,6 +36,8 @@ with ada.characters.handling;	use ada.characters.handling;
 
 with ada.strings;				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
+
+with ada.numerics.generic_elementary_functions;
 with et_string_processing;
 
 package body et_coordinates is
@@ -144,10 +146,40 @@ package body et_coordinates is
 		point	: in out type_2d_point;
 		angle	: in type_angle)
 		is
+
+		type type_float_distance is digits 7 range -1000.0 .. 1000.0; -- CS: refine
+		package functions_distance is new ada.numerics.generic_elementary_functions (type_float_distance);
+		use functions_distance;
+		
+		--type type_float_angle is digits 4 range -359.9 .. 359.9; -- CS: refine
+		type type_float_angle is digits 4 range -719.9 .. 719.9; -- CS: refine			
+		package functions_angle is new ada.numerics.generic_elementary_functions (type_float_angle);
+		use functions_angle;
+
+		angle_out			: type_float_angle;		-- unit is degrees
+		distance_to_origin	: type_float_distance;	-- unit is mm
 	begin
-		null;
-		-- point.x / point.x = tan alpha
-		-- arctan alpha + angle = beta
+		-- compute distance of given point to origin
+		distance_to_origin := sqrt (
+					type_float_distance (point.x) ** type_float_distance (2) 
+					+
+					type_float_distance (point.y) ** type_float_distance (2)
+					);
+		
+		-- compute the current angle of the given point (in degrees)
+		angle_out := type_float_angle (arctan (
+			x => type_float_distance (point.x),
+			y => type_float_distance (point.y),
+			cycle => type_float_distance (units_per_cycle)));
+
+		-- sum current angle and given angle
+		angle_out := angle_out + type_float_angle (angle);
+
+		if angle_out > type_float_angle (type_angle'last) then
+			null;
+			angle_out := angle_out - type_float_angle (units_per_cycle);
+		end if;
+		
 	end rotate;
 
 	function to_string (position : in type_coordinates) return string is
