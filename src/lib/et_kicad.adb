@@ -3766,6 +3766,8 @@ package body et_kicad is
 			-- Angles in Kicad are to be interpreted as: 
 			-- positive angle -> counter clock wise
 			-- negative angle -> clock wise
+
+			-- The order of operations: FIRST rotate THEN mirror
 			
 			--  1    0    0  -1  -- orientation 0,   mirror normal
 			--  0   -1   -1   0  -- orientation 90,  mirror normal
@@ -3781,10 +3783,128 @@ package body et_kicad is
 			--  0    1   -1   0  -- orientation 90,  mirror |
 			--  1    0    0   1  -- orientation 180, mirror |
 			--  1    0    0   1  -- orientation -90, mirror |
-				
-			begin -- CS:
-				tmp_component_unit_orientation := 0.0;
-				tmp_component_unit_mirror := none;
+				orient_1, orient_2 : type_schematic_unit_orientation;
+				mirror_1, mirror_2 : type_schematic_unit_mirror_style;
+			
+			begin -- CS: provide useful log messages via exception handler
+
+				-- compute unit orientation
+				orient_1 := type_schematic_unit_orientation'value (get_field_from_line (line, 1));
+				orient_2 := type_schematic_unit_orientation'value (get_field_from_line (line, 2));
+				mirror_1 := type_schematic_unit_mirror_style'value (get_field_from_line (line, 3));
+				mirror_2 := type_schematic_unit_mirror_style'value (get_field_from_line (line, 4));
+
+				case orient_1 is
+					when -1 =>
+						if orient_2 = 0 then
+							tmp_component_unit_orientation := 180.0;
+
+							-- compute unit mirror style
+							if mirror_1 = 0 then
+								case mirror_2 is
+									when -1 =>
+										tmp_component_unit_mirror := x_axis;
+									when  1 =>
+										tmp_component_unit_mirror := none;
+									when others =>
+										-- invalid mirror style
+										raise constraint_error;
+								end case;
+							else
+								-- invalid mirror style
+								raise constraint_error;
+							end if;
+							
+						else
+							-- invalid orientation
+							raise constraint_error;
+						end if;
+							
+					when  0 =>
+						case orient_2 is
+							when -1 => 
+								tmp_component_unit_orientation :=  90.0;
+								
+								-- compute unit mirror style
+								case mirror_1 is
+									when -1 =>
+										if mirror_2 = 0 then
+											tmp_component_unit_mirror := none;
+										else
+											-- invalid mirror style
+											raise constraint_error;
+										end if;
+
+									when  0 =>
+										-- invalid mirror style
+										raise constraint_error;
+
+									when  1 =>
+										if mirror_2 = 0 then
+											tmp_component_unit_mirror := x_axis;
+										else
+											-- invaid mirror style
+											raise constraint_error;
+										end if;
+								end case;
+
+							when  1 =>
+								tmp_component_unit_orientation := -90.0;
+
+								-- compute unit mirror style
+								case mirror_1 is
+									when -1 =>
+										if mirror_2 = 0 then
+											tmp_component_unit_mirror := x_axis;
+										else
+											-- invalid mirror style
+											raise constraint_error;
+										end if;
+
+									when  0 =>
+										-- invaid mirror style
+										raise constraint_error;
+
+									when  1 =>
+										if mirror_2 = 0 then
+											tmp_component_unit_mirror := none;
+										else
+											-- invalid mirror style
+											raise constraint_error;
+										end if;
+								end case;
+
+							when others => 
+								-- invalid orientation
+								raise constraint_error;
+						end case;
+
+					when  1 =>
+						if orient_2 = 0 then
+							tmp_component_unit_orientation := 0.0;
+
+							-- compute unit mirror style
+							if mirror_1 = 0 then
+								case mirror_2 is
+									when -1 =>
+										tmp_component_unit_mirror := none;
+									when  1 =>
+										tmp_component_unit_mirror := x_axis;
+									when others =>
+										-- invalid mirror style
+										raise constraint_error;
+								end case;
+							else
+								-- invalid mirror style
+								raise constraint_error;
+							end if;
+							
+						else
+							-- invalid orientation
+							raise constraint_error;
+						end if;
+				end case;
+
 			end build_unit_orientation_and_mirror_style;
 			
 			use et_coordinates;

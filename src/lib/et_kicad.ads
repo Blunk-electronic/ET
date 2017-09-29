@@ -163,6 +163,9 @@ package et_kicad is
 	schematic_component_identifier_unit	   : constant string (1..1) := "U";
 	schematic_component_identifier_coord   : constant string (1..1) := "P";
 
+	type type_schematic_unit_orientation	is range -1..1;
+	type type_schematic_unit_mirror_style	is range -1..1;
+
 	-- In schematic, a power symbol/component has a hash as first character like "L P3V3 #PWR07"
 	schematic_component_power_symbol_prefix: constant character := '#';
 
