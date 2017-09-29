@@ -105,7 +105,9 @@ package et_coordinates is
 	procedure set_x (point : in out type_2d_point; x : in type_distance);
 	procedure set_y (point : in out type_2d_point; y : in type_distance);
 
-	procedure set (point : in out type_2d_point; position : in type_2d_point);
+	procedure set (
+		point	 : in out type_2d_point;
+		position : in type_2d_point);
 	
 	procedure mirror (
 		point	: in out type_2d_point;

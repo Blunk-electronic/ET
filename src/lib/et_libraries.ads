@@ -238,7 +238,7 @@ package et_libraries is
 	type type_port is record
 		direction			: type_port_direction; -- example: "passive"
 		style				: type_port_style;
-		coordinates			: type_coordinates;
+		coordinates			: type_2d_point;
 		length				: type_port_length;
 		orientation			: type_angle;
 		port_name_visible	: type_port_visible;
