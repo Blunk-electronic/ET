@@ -482,7 +482,7 @@ package body et_schematic is
 							));
 
 					log_indentation_up;
-					--log (to_string (last_element (ports).coordinates));
+					log (to_string (last_element (ports).coordinates));
 					log_indentation_down;
 				end add;
 				

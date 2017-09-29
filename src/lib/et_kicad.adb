@@ -1019,6 +1019,7 @@ package body et_kicad is
 				
 			begin -- to_port
 				-- NOTE: port name is handled separately because it is the key within the port map of the unit
+				log_indentation_up;
 
 				-- compose pin name
 				port.pin			:= type_pin_name.to_bounded_string (field (line,3));
@@ -1026,8 +1027,8 @@ package body et_kicad is
 				-- compose position
 				set_x (port.coordinates, mil_to_distance (field (line,4)));
 				set_y (port.coordinates, mil_to_distance (field (line,5)));
-				-- CS port.coordinates.y	:= invert_y (port.coordinates.y);
-				
+				mirror (point => port.coordinates, axis => x);
+
 				-- compose length
 				port.length			:= mil_to_distance (field (line,6));
 
@@ -1053,8 +1054,11 @@ package body et_kicad is
 				-- port name offset
 				port.port_name_offset	:= tmp_port_name_offset;
 
-				-- CS: log port properties
+				--log (text => et_coordinates.to_string (point => port.coordinates), level => 1);
 
+				-- CS: log other port properties
+
+				log_indentation_down;
 				return port;
 
 				-- CS: exception handler
