@@ -142,7 +142,7 @@ package body et_coordinates is
 	end move;
 
 	procedure rotate (
-	-- Rotates the given point around the origin.
+	-- Rotates the given point by the given angle with the origin as center.
 		point	: in out type_2d_point;
 		angle	: in type_angle)
 		is
@@ -151,35 +151,76 @@ package body et_coordinates is
 		package functions_distance is new ada.numerics.generic_elementary_functions (type_float_distance);
 		use functions_distance;
 		
-		--type type_float_angle is digits 4 range -359.9 .. 359.9; -- CS: refine
 		type type_float_angle is digits 4 range -719.9 .. 719.9; -- CS: refine			
 		package functions_angle is new ada.numerics.generic_elementary_functions (type_float_angle);
 		use functions_angle;
 
 		angle_out			: type_float_angle;		-- unit is degrees
 		distance_to_origin	: type_float_distance;	-- unit is mm
+		scratch				: type_float_distance;
 	begin
-		-- compute distance of given point to origin
-		distance_to_origin := sqrt (
-					type_float_distance (point.x) ** type_float_distance (2) 
+		-- Do nothing if the given rotation is zero.
+		if angle /= 0.0 then
+
+			-- CS: in order to improve performance some ops can be skipped or simplified
+			-- if point.x or point.y are zero
+			
+			-- compute distance of given point to origin
+			if point.x = zero_distance and point.y = zero_distance then
+				distance_to_origin := type_float_distance (zero_distance);
+			elsif point.x = zero_distance then
+				distance_to_origin := type_float_distance (abs (point.y));
+			elsif point.y = zero_distance then
+				distance_to_origin := type_float_distance (abs (point.x));
+			else
+				distance_to_origin := sqrt (
+					type_float_distance (abs (point.x)) ** type_float_distance (2) 
 					+
-					type_float_distance (point.y) ** type_float_distance (2)
+					type_float_distance (abs (point.y)) ** type_float_distance (2)
 					);
-		
-		-- compute the current angle of the given point (in degrees)
-		angle_out := type_float_angle (arctan (
-			x => type_float_distance (point.x),
-			y => type_float_distance (point.y),
-			cycle => type_float_distance (units_per_cycle)));
+			end if;
+			
+			-- compute the current angle of the given point (in degrees)
+			if point.x /= zero_distance then
+				angle_out := type_float_angle (arctan (
+					x => type_float_distance (point.x),
+					y => type_float_distance (point.y),
+					cycle => type_float_distance (units_per_cycle))
+					);
+			else -- x = 0
+				if point.y > zero_distance then
+					angle_out := 90.0;
+				elsif point.y < zero_distance then
+					angle_out := -90.0;
+				else
+					angle_out := 0.0;
+				end if;
+			end if;
+			
+			-- compute new angle by adding current angle and given angle
+			angle_out := angle_out + type_float_angle (angle);
 
-		-- sum current angle and given angle
-		angle_out := angle_out + type_float_angle (angle);
+	-- 		-- Remove multiturns in angle_out. 
+	-- 		CS: no need because angle_out is invisible to the outside world.
+	-- 		-- example 1: angle_out =  370 degrees.  370 - 360 =  10. so angle_out equals  10 degrees.
+	-- 		-- example 2: angle_out = -370 degrees. -370 + 360 = -10. so angle_out equals -10 degrees.
+	-- 		if angle_out > type_float_angle (type_angle'last) then
+	-- 			angle_out := angle_out - type_float_angle (units_per_cycle);
+	-- 		elsif angle_out < type_float_angle (type_angle'first) then
+	-- 			angle_out := angle_out + type_float_angle (units_per_cycle);
+	-- 		else
+	-- 			null;
+	-- 		end if;
 
-		if angle_out > type_float_angle (type_angle'last) then
-			null;
-			angle_out := angle_out - type_float_angle (units_per_cycle);
-		end if;
-		
+			-- compute new x   -- (cos angle_out) * distance_to_origin
+			scratch := cos (type_float_distance (angle_out), type_float_distance (units_per_cycle));
+			point.x := type_distance (scratch * distance_to_origin);
+
+			-- compute new y   -- (sin angle_out) * distance_to_origin
+			scratch := sin (type_float_distance (angle_out), type_float_distance (units_per_cycle));
+			point.y := type_distance (scratch * distance_to_origin);
+	
+		end if; -- if angle not zero
 	end rotate;
 
 	function to_string (position : in type_coordinates) return string is

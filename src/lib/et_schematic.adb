@@ -427,9 +427,9 @@ package body et_schematic is
 			-- They are copied to the new port without change.
 			
 			-- Properites set in the schematic such as path, module name, sheet are copied into the
-			-- new port unchanged. X and Y position in turn become mirrored (if required) and offset by the X/Y 
-			-- position of the unit.
-			-- NOTE: It is important first to mirror the port (if required) and then to offset it.
+			-- new port unchanged. X and Y position of the port must be re-computed according to
+			-- the rotation, mirror style and position of the unit in the schematic.
+			-- NOTE: It is important first to rotate, then mirror (if required) and finally to move/offset it.
 			
 				procedure add (
 					component	: in type_component_reference;
@@ -442,11 +442,11 @@ package body et_schematic is
 					-- init port coordinates with the coordinates of the port found in the library
 					set (point => port_coordinates, position => element (port_cursor).coordinates);
 
-					-- CS: rotate ?
--- 					rotate (
--- 						point => port_coordinates,
--- 						angle => orientation_of_unit (unit_name_lib, units_sch));
-					
+					-- rotate port coordinates
+					rotate (
+						point => port_coordinates,
+						angle => orientation_of_unit (unit_name_lib, units_sch));
+
 					-- Mirror port coordinates if required.
 					case mirror_style_of_unit (unit_name_lib, units_sch) is
 						when none => null; -- unit not mirrored in schematic
@@ -454,8 +454,6 @@ package body et_schematic is
 						when y_axis => mirror (point => port_coordinates, axis => y);
 					end case;
 
-					-- CS: rotate ?
-					
 					-- offset port coordinates by the coordinates of the unit found in the schematic
 					move (point => port_coordinates, offset => unit_position);
 
