@@ -114,7 +114,9 @@ package body et_coordinates is
 		point.y := y;
 	end set_y;
 
-	procedure set (point : in out type_2d_point; position : in type_2d_point) is
+	procedure set (
+		point : in out type_2d_point;
+		position : in type_2d_point) is
 	begin
 		point := position;
 	end set;
@@ -223,6 +225,21 @@ package body et_coordinates is
 		end if; -- if angle not zero
 	end rotate;
 
+
+	function to_coordinates (point : in type_2d_point'class)
+	-- Converts a type_2d_point to type_coordinates.
+		return type_coordinates is
+	begin
+		return (
+			x		=> point.x,
+			y		=> point.y,
+			path	=> type_path_to_submodule.empty_list,
+			module_name		=> type_submodule_name.to_bounded_string (""),
+			sheet_number	=> 1
+			);
+	end to_coordinates;
+
+	
 	function to_string (position : in type_coordinates) return string is
 	-- Returns the given position as string.
 	begin

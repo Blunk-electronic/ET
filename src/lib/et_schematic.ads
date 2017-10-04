@@ -577,7 +577,7 @@ package et_schematic is
 		"<" => et_schematic.compare_reference);
 
 	function build_portlists return type_portlists.map;
-	-- Returns a list of components with the absolute positions of their ports.
+	-- Returns a list of components with the absolute positions of their ports as they are placed in the schematic.
 	
 
 	

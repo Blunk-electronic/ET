@@ -133,11 +133,11 @@ package et_coordinates is
         element_type => type_submodule_name.bounded_string);
 
 	type type_coordinates is new type_2d_point with private;
--- 	overriding
--- 	procedure mirror (
--- 		coordinates : in out type_coordinates;
--- 		axis		: in type_axis);
-	
+
+	function to_coordinates (point : in type_2d_point'class)
+	-- Converts a type_2d_point to type_coordinates.
+		return type_coordinates;
+
 	zero_position : constant type_coordinates;
 	
 	coordinates_preamble : constant string (1..21) := "position " 

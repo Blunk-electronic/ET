@@ -354,7 +354,7 @@ package body et_schematic is
 	end orientation_of_unit;
 	
 	function build_portlists return type_portlists.map is
-	-- Returns a list of components with the absolute positions of their ports in the schematic.
+	-- Returns a list of components with the absolute positions of their ports as they are placed in the schematic.
 		
 	-- Locates the components of the schematic in the libraries. 
 	-- Computes the absolute port positions of components from:
@@ -439,8 +439,10 @@ package body et_schematic is
 					port_coordinates : type_coordinates;
 					--mirror_style : et_schematic.type_mirror;
 				begin
-					-- init port coordinates with the coordinates of the port found in the library
-					set (point => port_coordinates, position => element (port_cursor).coordinates);
+					-- Init port coordinates with the coordinates of the port found in the library.
+					-- The port position is a type_2d_point and must be converted to type_coordinates.
+					set (point => port_coordinates,
+						 position => to_coordinates (element (port_cursor).coordinates)); -- with type conversion
 
 					-- rotate port coordinates
 					rotate (
@@ -487,7 +489,6 @@ package body et_schematic is
 				end add;
 				
 			begin -- add_port
-
 				-- We update the portlist of the component in container portlists.
 				-- The cursor to the portlist was set when the element got inserted (see below in procedure build_portlists).
 				type_portlists.update_element (
@@ -552,7 +553,6 @@ package body et_schematic is
 		end extract_ports;
 	
 	begin -- build_portlists
-		
 		log (text => "generating portlists ...");
 		log_indentation_up;
 
@@ -596,7 +596,7 @@ package body et_schematic is
 			-- The libraries are searched according to their order in the library list of the module.
 			-- The search is complete on the first finding of the component.
 			log_indentation_up;
-			log (text => "searching libraries ...");
+			log (text => "searching in libraries ...");
 			log_indentation_up;
 			et_schematic.reset_library_cursor (library_cursor_sch);
 			while library_cursor_sch /= type_full_library_names.no_element loop
