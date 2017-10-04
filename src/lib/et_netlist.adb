@@ -54,9 +54,29 @@ with et_import;
 
 package body et_netlist is
 
-	procedure make_netlist is begin
-		null; -- CS
-	end make_netlist;
+	procedure make_netlists is 
+		use et_schematic;
+		use et_schematic.type_rig;
+
+		portlists : type_portlists.map;
+	begin
+		log_indentation_up;
+		log (text => "building netlists ...", level => 1);
+		
+		et_schematic.first_module;
+
+		while module_cursor /= type_rig.no_element loop
+			log_indentation_up;
+			log (text => "submodule " & to_string (key (module_cursor)), level => 1);
+
+			portlists := build_portlists;
+			
+			next (module_cursor);
+		end loop;
+
+		log_indentation_down;
+		log_indentation_down;
+	end make_netlists;
 	
 end et_netlist;
 

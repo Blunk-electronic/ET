@@ -47,6 +47,7 @@ with et_string_processing;
 with et_schematic;
 with et_import;
 with et_kicad;
+with et_netlist;
 
 procedure et is
 
@@ -132,7 +133,7 @@ begin
 	-- Now we know the project file name and the CAD format.
 	et_kicad.import_design;
 	
-	-- CS build_netlist;
+	et_netlist.make_netlists;
 end et;
 
 -- Soli Deo Gloria

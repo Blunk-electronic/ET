@@ -70,7 +70,7 @@ package et_netlist is
 	rig_netlists : type_rig_netlists.map;
 
 	
-	procedure make_netlist;
+	procedure make_netlists;
 	
 end et_netlist;
 

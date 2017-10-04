@@ -999,7 +999,24 @@ package body et_schematic is
 		-- in case of equivalence of left and right, we return false (default)
 		return result;
 	end compare_ports;
+
+
+	procedure first_module is
+	-- Resets the module_cursor to the first submodule of the rig.
+	begin
+		module_cursor := rig.first;
+		-- CS: exception handler in case given module does not exist
+	end first_module;
 	
+
+	procedure set_module (
+	-- Sets the active module. Leaves module_cursor pointing
+	-- to the module.
+		module_name : in et_coordinates.type_submodule_name.bounded_string) is
+	begin
+		module_cursor := rig.find (module_name);
+		-- CS: exception handler in case given module does not exist
+	end set_module;
 
 	
 	procedure add_module (
@@ -1219,23 +1236,23 @@ package body et_schematic is
 			);
 	end add_net;
 
-	procedure add_portlists (
-	-- Adds the portlists into the module (indicated by module.cursor)
-		portlists : in et_schematic.type_portlists.map) is
-
-		procedure add (
-			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
-			module		: in out type_module) is
-		begin
-			module.portlists := portlists;
-		end add;
-			
-	begin
-		rig.update_element (
-		position	=> module_cursor,
-		process		=> add'access
-		);
-	end add_portlists;
+-- 	procedure add_portlists (
+-- 	-- Adds the portlists into the module (indicated by module.cursor)
+-- 		portlists : in et_schematic.type_portlists.map) is
+-- 
+-- 		procedure add (
+-- 			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
+-- 			module		: in out type_module) is
+-- 		begin
+-- 			module.portlists := portlists;
+-- 		end add;
+-- 			
+-- 	begin
+-- 		rig.update_element (
+-- 		position	=> module_cursor,
+-- 		process		=> add'access
+-- 		);
+-- 	end add_portlists;
 	
 	procedure add_port (
 	-- Adds a port to a net in the current module (indicated by module_cursor).

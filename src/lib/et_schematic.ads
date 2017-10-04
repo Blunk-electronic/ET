@@ -591,7 +591,7 @@ package et_schematic is
 	type type_module is record
 		libraries		: type_full_library_names.list;	-- the list of project library names
 		nets 	    	: type_nets.map;			-- the nets of the module
-		portlists		: type_portlists.map;		-- the portlists of the module
+		--portlists		: type_portlists.map;		-- the portlists of the module
         components		: type_components.map;		-- the components of the module
 		submodules  	: type_gui_submodules.map;	-- graphical representations of submodules
         frames      	: type_frames.list;			-- frames
@@ -613,6 +613,13 @@ package et_schematic is
 	rig : type_rig.map;
 	module_cursor : type_rig.cursor;
 
+	procedure first_module;
+	-- Resets the module_cursor to the first submodule of the rig.
+	
+	procedure set_module (
+	-- Sets the active module. Leaves module_cursor pointing
+	-- to the module.
+		module_name : in et_coordinates.type_submodule_name.bounded_string);
 	
 	procedure add_module (
 	-- Adds a module into the rig. Leaves module_cursor pointing
@@ -643,9 +650,9 @@ package et_schematic is
 		name	: in et_schematic.type_net_name.bounded_string;
 		net		: in et_schematic.type_net);
 
-	procedure add_portlists (
-	-- Adds the portlists into the module (indicated by module.cursor)
-		portlists : in et_schematic.type_portlists.map);
+-- 	procedure add_portlists (
+-- 	-- Adds the portlists into the module (indicated by module.cursor)
+-- 		portlists : in et_schematic.type_portlists.map);
 	
 	procedure add_component (
 	-- Adds a component into the the module (indicated by module_cursor).
