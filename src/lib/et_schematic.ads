@@ -613,7 +613,7 @@ package et_schematic is
 	rig : type_rig.map;
 	module_cursor : type_rig.cursor;
 
-
+	
 	procedure add_module (
 	-- Adds a module into the rig. Leaves module_cursor pointing
 	-- to the module inserted last.
