@@ -60,7 +60,6 @@ package body et_netlist is
 
 		portlists : type_portlists.map;
 	begin
-		log_indentation_up;
 		log (text => "building netlists ...", level => 1);
 		
 		et_schematic.first_module;
@@ -70,11 +69,11 @@ package body et_netlist is
 			log (text => "submodule " & to_string (key (module_cursor)), level => 1);
 
 			portlists := build_portlists;
+			-- CS: write_netlist (build_portlists);
 			
 			next (module_cursor);
 		end loop;
 
-		log_indentation_down;
 		log_indentation_down;
 	end make_netlists;
 	

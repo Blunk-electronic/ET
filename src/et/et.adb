@@ -46,6 +46,7 @@ with et_general;				use et_general;
 with et_string_processing;
 with et_schematic;
 with et_import;
+with et_export;
 with et_kicad;
 with et_netlist;
 
@@ -132,8 +133,12 @@ begin
 
 	-- Now we know the project file name and the CAD format.
 	et_kicad.import_design;
+
+	et_export.create_report;
 	
 	et_netlist.make_netlists;
+
+	et_export.close_report;
 end et;
 
 -- Soli Deo Gloria

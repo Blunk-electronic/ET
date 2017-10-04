@@ -52,7 +52,8 @@ package body et_export is
 		put_line ("CAD format " & type_cad_format'image (cad_format));
 		put_line ("project file " & et_schematic.type_project_file_name.to_string (et_schematic.project_file_name));
 		put_line ("log level" & type_log_level'image (log_level));
-		put_line (row_separator_double);		
+		put_line (row_separator_double);
+		log_indentation_reset;
 	end create_report;
 
 	procedure close_report is

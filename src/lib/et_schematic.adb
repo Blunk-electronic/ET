@@ -553,6 +553,7 @@ package body et_schematic is
 		end extract_ports;
 	
 	begin -- build_portlists
+		log_indentation_up;
 		log (text => "generating portlists ...");
 		log_indentation_up;
 
@@ -641,6 +642,7 @@ package body et_schematic is
 			next (component_cursor_sch); -- advance to next component
 		end loop;
 
+		log_indentation_down;
 		log_indentation_down;
 		
 		return portlists;
