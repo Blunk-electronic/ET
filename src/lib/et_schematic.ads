@@ -68,9 +68,17 @@ package et_schematic is
     sheet_comment_length : constant natural := 100;
     package type_sheet_comment is new generic_bounded_length(sheet_comment_length); use type_sheet_comment;
 
+	-- This is the root directory where all projects live:
+	projects_root_dir_length : constant natural := 100;
+	package type_projects_root_dir is new generic_bounded_length (projects_root_dir_length);
+	--use type_projects_root_dir;
+	projects_root_dir : type_projects_root_dir.bounded_string;
+	
 	-- The name of a project may have 100 characters which seems sufficient for now.
  	project_name_length : constant natural := 100;
 	package type_project_name is new generic_bounded_length (project_name_length); use type_project_name;
+	project_name : type_project_name.bounded_string;
+	
 	schematic_file_name_length : constant positive := project_name_length + 4; -- includes extension
 	package type_schematic_file_name is new generic_bounded_length (schematic_file_name_length); use type_schematic_file_name;
 

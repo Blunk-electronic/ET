@@ -43,7 +43,7 @@ with gnat.command_line;			use gnat.command_line;
 with ada.directories;			use ada.directories;
 
 with et_general;				use et_general;
-with et_string_processing;
+with et_string_processing;		use et_string_processing;
 with et_schematic;
 with et_import;
 with et_export;
@@ -52,13 +52,11 @@ with et_netlist;
 
 procedure et is
 
-	version : string (1..3) := "000";
-
 	procedure get_commandline_arguments is
 		use et_schematic;
 	begin
 		loop 
-			case getopt(switch_version 
+			case getopt (switch_version 
 						& latin_1.space & switch_help
 						& latin_1.space & switch_log_level & latin_1.equals_sign
 						--& latin_1.space & switch_import_file & latin_1.equals_sign -- CS: see below
@@ -80,7 +78,7 @@ procedure et is
 
 					elsif full_switch = switch_import_project then
 						put_line ("import project " & parameter);
-						project_file_name := type_project_file_name.to_bounded_string (parameter);
+						project_name := type_project_name.to_bounded_string (parameter);
 
 					elsif full_switch = switch_import_format then
 						put_line ("import format " & parameter);
@@ -88,7 +86,7 @@ procedure et is
 
 					elsif full_switch = switch_log_level then
 						put_line ("log level " & parameter);
-						et_string_processing.log_level := et_string_processing.type_log_level'value (parameter);
+						log_level := type_log_level'value (parameter);
 					end if;
 
 					
@@ -98,44 +96,93 @@ procedure et is
 		end loop;
 	end get_commandline_arguments;
 
-	use et_schematic.type_project_file_name;
-	use et_import;
-	use et_string_processing;
-begin
+	procedure backup_projects_root_directory is
+		use et_schematic;
+		use et_schematic.type_projects_root_dir;
+	begin
+		-- CS: log ?
+		projects_root_dir := to_bounded_string (current_directory);
+	end backup_projects_root_directory;
 
-	get_commandline_arguments;
+	procedure restore_projects_root_directory is
+		use et_schematic;
+		use et_schematic.type_projects_root_dir;
+	begin
+		log_indentation_reset;
+		log (text => "changing back to projects directory '" & to_string (projects_root_dir) & "' ...",
+			 level => 1);
+		set_directory (to_string (projects_root_dir));
+	end restore_projects_root_directory;
+	
+	procedure create_work_directory is
+	begin
+		if not exists (work_directory) then
+			put_line ("creating " & system_name & " work directory '" & work_directory & "' ...");
+			create_directory (work_directory);
+		end if;
+	end create_work_directory;
 
-	-- Test if project file specified and if it exists:
-	if length (et_schematic.project_file_name) > 0 then
-		if exists (to_string (et_schematic.project_file_name)) then
-			--put_line( "project file: " & to_string(et_import.project_file_name));
-			null;
+	procedure create_report_directory is
+	begin	
+		if not exists (compose (work_directory, report_directory)) then
+			put_line ("creating report directory ...");
+			create_directory (compose (work_directory, report_directory));
+		end if;
+	end create_report_directory;
+	
+	procedure import_design is
+		use et_schematic;
+		use et_schematic.type_project_name;
+		use et_import;
+	begin
+		-- Test if project name specified and if project base directory exists:
+		if length (project_name) > 0 then
+			if exists (to_string (project_name)) then
+				--put_line( "project file: " & to_string(et_import.project_file_name));
+				null; -- fine
+			else
+				put_line (message_error & "project '" & to_string (project_name) 
+					& "' not found ! (working directory correct ?)");
+				raise constraint_error;
+			end if;
 		else
-			put_line (message_error & "project file " & to_string (et_schematic.project_file_name) 
-				& " not found ! (forgot extension ?)");
+			put_line (message_error & "project name not specified !");
 			raise constraint_error;
 		end if;
-	else
-		put_line (message_error & "project name not specified !");
-		raise constraint_error;
-	end if;
 
-	-- Test if cad format specified:
-	if et_import.cad_format = unknown then
-		put_line (message_error & "CAD format not specified !");
-		raise constraint_error;
-	end if;		
+		-- Test if cad format specified:
+		if et_import.cad_format = unknown then
+			put_line (message_error & "CAD format not specified !");
+			raise constraint_error;
+		end if;		
 
-	if not exists (report_directory) then
-		put_line ("creating report directory ...");
-		create_directory (report_directory);
-	end if;
+		create_work_directory;
+		create_report_directory;
+		et_import.create_report; -- directs all puts to the report file
+		
+		-- The design import requires changing of directories. So we backup the current directory.
+		-- After the import, we restore the directory.
+		backup_projects_root_directory;
+		
+		et_kicad.import_design;
 
-	-- Now we know the project file name and the CAD format.
-	et_kicad.import_design;
+		restore_projects_root_directory;
 
-	et_export.create_report;
+		et_import.close_report;
+	end import_design;
 	
+begin
+
+	-- process command line arguments
+	get_commandline_arguments;
+
+	-- import design indicated by variable project_name
+	import_design;
+
+	-- export useful things from the imported project(s)
+	et_export.create_report;
+
+	-- netlists
 	et_netlist.make_netlists;
 
 	et_export.close_report;

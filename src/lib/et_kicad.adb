@@ -2154,7 +2154,10 @@ package body et_kicad is
 			
 		begin -- read_project_file
 			log_indentation_reset;
-			log (text => "reading project file ...");
+			log (text => "reading project file " 
+				 & compose (
+					name		=> et_schematic.type_project_name.to_string (et_schematic.project_name), 
+					extension	=> file_extension_project) & " ...");
 			log_indentation_up;
 
 			-- Clear list of project libraries from earlier projects that have been imported.
@@ -2162,8 +2165,16 @@ package body et_kicad is
 			-- In tmp_project_libraries the project libraries are collected. 
 			-- Later they become part of the module being processed.
 			type_full_library_names.clear (tmp_project_libraries);
-			
-			open (file => project_file_handle, mode => in_file, name => to_string (project_file_name));
+
+			-- Open project file. 
+			-- The file name is composed of project name and extension.
+			open (
+				file => project_file_handle,
+				mode => in_file,
+				name => compose (
+							name		=> et_schematic.type_project_name.to_string (et_schematic.project_name), 
+							extension	=> file_extension_project)
+				);
 			set_input (project_file_handle);
 			
 			while not end_of_file loop
@@ -2241,10 +2252,13 @@ package body et_kicad is
 
 			close (project_file_handle);
 
-			-- Derive the schematic file name from the project file. It is just a matter of file extension.
-			return type_schematic_file_name.to_bounded_string(
-				compose (name => base_name (to_string (project_file_name)), 
-						extension => file_extension_schematic));
+			-- Derive the top level schematic file name from the project name.
+			-- It is just a matter of file extension.
+			return type_schematic_file_name.to_bounded_string (
+				compose (
+					name		=> et_schematic.type_project_name.to_string (project_name), 
+					extension	=> file_extension_schematic)
+					);
 		end read_project_file;
 
 
@@ -3783,10 +3797,10 @@ package body et_kicad is
 			-- -1    0    0  -1  -- orientation 180, mirror -- 
 			--  0    1   -1   0  -- orientation -90, mirror -- 
 
-			-- -1    0    0  -1  -- orientation 0,   mirror |
-			--  0    1   -1   0  -- orientation 90,  mirror |
-			--  1    0    0   1  -- orientation 180, mirror |
-			--  1    0    0   1  -- orientation -90, mirror |
+			-- -1    0    0  -1  -- orientation 0,   mirror | 	-- not used
+			--  0    1   -1   0  -- orientation 90,  mirror |	-- not used
+			--  1    0    0   1  -- orientation 180, mirror |	-- not used
+			--  1    0    0   1  -- orientation -90, mirror |	-- not used
 				orient_1, orient_2 : type_schematic_unit_orientation;
 				mirror_1, mirror_2 : type_schematic_unit_mirror_style;
 			
@@ -3918,7 +3932,7 @@ package body et_kicad is
 			log_indentation_up;
 			
 			if exists(to_string(current_schematic)) then
-				log (text => "reading schematic file: " & to_string(current_schematic) & " ...",
+				log (text => "reading schematic file " & to_string (current_schematic) & " ...",
 					 console => true);
 
 				-- log module path as recorded by parent unit
@@ -4663,13 +4677,19 @@ package body et_kicad is
 		end read_schematic;
 
 
-    begin -- import design
-		et_import.create_report; -- directs all puts to the report file
+    begin -- import_design
+
+		-- change to given project directory
+		log (
+			text => "changing to project directory '" & (et_schematic.type_project_name.to_string (et_schematic.project_name) & "' ..."),
+			level => 1
+			);
+		set_directory (et_schematic.type_project_name.to_string (et_schematic.project_name));
 		
 		case et_import.cad_format is
 			when et_import.kicad_v4 =>
 
-				-- derive top level schematic file name from project file (they differ only in their extension)
+				-- derive top level schematic file name from project name
 				top_level_schematic := read_project_file;
 				tmp_module_name := et_coordinates.type_submodule_name.to_bounded_string (to_string (top_level_schematic));
 				
@@ -4789,8 +4809,6 @@ package body et_kicad is
 
 				
 		end case;
-
-		et_import.close_report;
 
 		-- CS: exception handler
 		

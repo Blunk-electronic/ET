@@ -47,12 +47,10 @@ with et_libraries;
 
 package et_export is
 
-	
-	file_report_export	: constant string (1 .. 
-								et_general.report_directory'length + 1 -- containing directory + separator
-								+ 6 -- base name
-								+ 1 + et_general.report_extension'length) -- separator + extension
-									:= compose (et_general.report_directory, "export", et_general.report_extension);
+
+	function file_report_export return string;
+	-- Returns the relative path and name of the export report file.
+
 	report_handle		: ada.text_io.file_type;
 
 	

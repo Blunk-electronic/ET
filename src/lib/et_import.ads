@@ -47,14 +47,11 @@ with et_libraries;
 
 package et_import is
 
-	-- FILES, DIRECTORIES AND HANDLES
-  
+-- FILES, DIRECTORIES AND HANDLES
+
+	function file_report_import return string;
+	-- Returns the relative path and name of the import report file.
 	
-	file_report_import 		: constant string (1 .. 
-								report_directory'length + 1 -- containing directory + separator
-								+ 6 -- base name
-								+ 1 + report_extension'length) -- separator + extension
-									:= compose(report_directory, "import", report_extension);
 	report_handle		: ada.text_io.file_type;
 
 

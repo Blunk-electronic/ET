@@ -36,6 +36,15 @@ with et_string_processing;			use et_string_processing;
 
 package body et_import is
 
+	function file_report_import return string is
+	-- Returns the relative path and name of the import report file.
+	begin
+		return compose ( 
+			containing_directory => compose (work_directory, report_directory),
+			name => "import",
+			extension => report_extension
+			);
+	end file_report_import;
 	
 	procedure create_report is
 	-- Creates the report file in report_directory.
@@ -45,7 +54,7 @@ package body et_import is
 		create (file => et_import.report_handle, mode => out_file, 
 				name => file_report_import);
 
-		set_output(et_import.report_handle);
+		set_output (et_import.report_handle);
 		
 		put_line (system_name & " import report");
 		put_line ("date " & string (date_now));
@@ -61,7 +70,7 @@ package body et_import is
 	-- Writes the report footer and closes the report file.
 	-- Sets the output back to standard_output.
 	begin
-		put_line(row_separator_double);
+		put_line (row_separator_double);
 		
 		if warning_counter = 0 then
 			put_line ("no warnings");
@@ -69,14 +78,14 @@ package body et_import is
 			put_line ("warnings" & type_warning_counter'image (warning_counter));
 		end if;
 		
-		put_line(row_separator_single);
+		put_line (row_separator_single);
 		
-		put_line("date " & string(date_now));
-		put_line(system_name & " import report end");
+		put_line ("date " & string (date_now));
+		put_line (system_name & " import report end");
 
-		set_output(standard_output);
+		set_output (standard_output);
 		
-		close(et_import.report_handle);
+		close (et_import.report_handle);
 		
 	end close_report;
 
