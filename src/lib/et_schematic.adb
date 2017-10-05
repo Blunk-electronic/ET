@@ -94,7 +94,7 @@ package body et_schematic is
 		use ada.directories;
 		use et_coordinates;
 	begin
-		log (text => "path_to_submodule: appending submodule " & type_submodule_name.to_string(submodule), level => 1);
+		log (text => "path_to_submodule: appending submodule " & type_submodule_name.to_string(submodule), level => 2);
 		-- Since we are dealing with file names, the extension must be removed before appending.
 		type_path_to_submodule.append (path_to_submodule,
 			type_submodule_name.to_bounded_string (base_name (type_submodule_name.to_string(submodule)))

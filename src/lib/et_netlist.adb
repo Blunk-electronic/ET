@@ -50,23 +50,34 @@ with et_schematic;
 with et_string_processing;		use et_string_processing;
 with et_geometry;
 with et_import;
-
+with et_export;
 
 package body et_netlist is
 
-	procedure make_netlists is 
+	procedure make_netlists is
+	-- Netlists are to be exported in individual project directories in the work directory of ET.
+	-- These project directories have the same name as the module indicated by module_cursor.
 		use et_schematic;
 		use et_schematic.type_rig;
-
+		use et_export;
+		use ada.directories;
+		
 		portlists : type_portlists.map;
 	begin
 		log (text => "building netlists ...", level => 1);
-		
+
+		-- We start with the first module of the rig.
 		et_schematic.first_module;
 
+		-- Process one module after another.
 		while module_cursor /= type_rig.no_element loop
 			log_indentation_up;
 			log (text => "submodule " & to_string (key (module_cursor)), level => 1);
+			create_project_directory (base_name (to_string (key (module_cursor))));
+
+-- 			rig_netlists.insert (
+-- 				key => to_bounded_string (base_name (to_string (key (module_cursor)))),
+-- 				new_item => type_netlist.empty_map);
 
 			portlists := build_portlists;
 			-- CS: write_netlist (build_portlists);

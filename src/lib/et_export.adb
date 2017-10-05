@@ -91,6 +91,18 @@ package body et_export is
 		
 	end close_report;
 
+	procedure create_project_directory (project : in string) is
+	-- Creates given project directory in work_directory of ET.
+		use et_general;
+	begin
+		if not exists (compose (work_directory, project)) then
+			log (
+				text => "creating project directory '" & compose (work_directory, project) & "' ...",
+				level => 2);
+
+			create_directory (compose (work_directory, project));
+		end if;
+	end create_project_directory;
 
 	
 end et_export;

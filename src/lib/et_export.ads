@@ -69,7 +69,8 @@ package et_export is
 	-- Writes the report footer and closes the report file.
 	-- Sets the output back to standard_output.
 
-
+	procedure create_project_directory (project : in string);
+	-- Creates given project directory in work_directory of ET.
 	
 end et_export;
 
