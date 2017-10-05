@@ -4691,7 +4691,8 @@ package body et_kicad is
 
 				-- derive top level schematic file name from project name
 				top_level_schematic := read_project_file;
-				tmp_module_name := et_coordinates.type_submodule_name.to_bounded_string (to_string (top_level_schematic));
+				--tmp_module_name := et_coordinates.type_submodule_name.to_bounded_string (to_string (top_level_schematic));
+				tmp_module_name := et_coordinates.type_submodule_name.to_bounded_string (base_name (to_string (top_level_schematic)));
 				
 				-- The top level schematic file dictates the module name. So we create the module here.
 				-- The first element to set is the project libraries which we collected earlier when the

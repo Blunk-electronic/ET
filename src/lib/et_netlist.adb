@@ -69,17 +69,22 @@ package body et_netlist is
 		-- We start with the first module of the rig.
 		et_schematic.first_module;
 
-		-- Process one module after another.
+		-- Process one rig module after another.
+		-- module_cursor point to the module in the rig.
 		while module_cursor /= type_rig.no_element loop
 			log_indentation_up;
 			log (text => "submodule " & to_string (key (module_cursor)), level => 1);
-			create_project_directory (base_name (to_string (key (module_cursor))));
+			create_project_directory (to_string (key (module_cursor)));
 
--- 			rig_netlists.insert (
--- 				key => to_bounded_string (base_name (to_string (key (module_cursor)))),
--- 				new_item => type_netlist.empty_map);
+			rig_netlists.insert (
+				key => key (module_cursor),
+				new_item => type_netlist.empty_map);
 
+			-- build_portlists generates the portlists of the rig module indicated
+			-- by module_cursor.
 			portlists := build_portlists;
+
+			
 			-- CS: write_netlist (build_portlists);
 			
 			next (module_cursor);
