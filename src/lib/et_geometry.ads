@@ -39,7 +39,11 @@ package et_geometry is
 		out_of_range	: boolean;
 	end record;
 
-	type type_line_range is ( inside_end_points, with_end_points, beyond_end_points);
+	type type_line_range is (
+		inside_end_points,	-- start and end point excluded
+		with_end_points,	-- start and end point included
+		beyond_end_points	-- unlimited line assumed. extends beyond both start and end point into infinity
+		);
 	
 	function distance_of_point_from_line (
 	-- Computes the shortest distance (perpendicular) of a given point from the given line.
@@ -48,22 +52,6 @@ package et_geometry is
 		point, line_start, line_end: in et_coordinates.type_2d_point;
 		line_range : in type_line_range) return type_distance_point_from_line;
 
--- 	procedure move (
--- 		point : in out type_2d_point;
--- 		offset : in type_2d_point
--- 		);
-
--- 	function move (
--- 		point	: in type_2d_point'class;
--- 		offset	: in type_2d_point
--- 		) return type_2d_point'class;
--- 
--- 	function mirror (
--- 		point	: in type_2d_point;
--- 		axis	: in type_axis
--- 		) return type_2d_point;
-
-	
 end et_geometry;
 
 -- Soli Deo Gloria

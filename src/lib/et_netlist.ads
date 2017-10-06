@@ -32,7 +32,7 @@
 --   ToDo: 
 
 -- with ada.strings.maps;			use ada.strings.maps;
--- with ada.strings.bounded;       use ada.strings.bounded;
+with ada.strings.bounded;       use ada.strings.bounded;
 -- with ada.strings.unbounded; 	use ada.strings.unbounded;
 with ada.containers;            use ada.containers;
 -- with ada.containers.vectors;
@@ -66,11 +66,19 @@ package et_netlist is
 		key_type => et_coordinates.type_submodule_name.bounded_string, -- example "MOTOR_DRIVER"
 		element_type => type_netlist.map); -- the netlist of the submodule
 
+	
 	-- This is the place where we store the netlists of the rig.
 	rig_netlists : type_rig_netlists.map;
-
 	
 	procedure make_netlists;
+
+	-- Whenever we deal with netlist files this type should be used:
+	netlist_file_name_length : constant positive := 100; -- CS: should suffice for now
+	package type_netlist_file_name is new generic_bounded_length (netlist_file_name_length); 
+	--use type_netlist_file_name;
+
+	
+	procedure write_netlists;
 	
 end et_netlist;
 

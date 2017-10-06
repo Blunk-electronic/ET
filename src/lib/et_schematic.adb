@@ -684,7 +684,7 @@ package body et_schematic is
 			point 		=> type_2d_point (port.coordinates),
 			line_start	=> type_2d_point (segment.coordinates_start),
 			line_end	=> type_2d_point (segment.coordinates_end),
-			line_range	=> inside_end_points);
+			line_range	=> with_end_points);
 
 		if (not d.out_of_range) and d.distance = et_coordinates.zero_distance then
 			sits_on_segment := true;
@@ -790,6 +790,15 @@ package body et_schematic is
 		log_indentation_down;
 	end write_coordinates_of_segment;
 
+	function to_string (segment : in type_net_segment) return string is
+	-- Returns the start and end coordinates of the given net segment.
+	begin
+		return ("start "
+			& to_string (segment.coordinates_start)
+			& " end " 
+			& to_string (segment.coordinates_end));
+	end to_string;
+	
 -- 	procedure write_coordinates_of_junction (junction : in type_net_junction) is
 -- 	-- Writes the coordinates of a net junction.
 -- 		use et_string_processing;

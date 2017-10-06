@@ -328,6 +328,9 @@ package et_schematic is
 	procedure write_coordinates_of_segment (segment : in type_net_segment);
 	-- Writes the start and end coordinates of a net segment.	
 
+	function to_string (segment : in type_net_segment) return string; -- CS: should replace write_coordinates_of_segment
+	-- Returns the start and end coordinates of the given net segment.
+	
 	-- A net is a list of segments.
 	package type_net_segments is new doubly_linked_lists (
 		element_type => type_net_segment);

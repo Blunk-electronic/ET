@@ -104,6 +104,18 @@ package body et_export is
 		end if;
 	end create_project_directory;
 
+
+-- 	function file_name_export (name : in string) return string is
+-- 	-- Returns the relative path and name of the file to be exported.
+-- 		use et_general;
+-- 	begin
+-- 		return compose ( 
+-- 			containing_directory => compose (work_directory, report_directory),
+-- 			name => name,
+-- 			extension => report_extension
+-- 			);
+-- 	end file_name_export;
+	
 	
 end et_export;
 

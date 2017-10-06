@@ -184,7 +184,8 @@ begin
 
 	-- netlists
 	et_netlist.make_netlists;
-
+	et_netlist.write_netlists;
+	
 	et_export.close_report;
 end et;
 
