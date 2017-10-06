@@ -56,39 +56,48 @@ with et_export;
 package body et_netlist is
 
 	procedure make_netlists is
+	-- Builids the netlists of all modules in the rig.
 	-- Netlists are to be exported in individual project directories in the work directory of ET.
 	-- These project directories have the same name as the module indicated by module_cursor.
 
-	-- CS: DO EXTENSIVE COMMENTING !!!!!!!!!!
 		use et_schematic;
 		use et_schematic.type_rig;
 		use et_export;
 		use ada.directories;
-		
+
+		-- Here the portlists of the current module are stored by function build_portlists:
 		portlists : type_portlists.map;
 	
 		function make_netlist return type_netlist.map is
-			net_cursor_netlist : type_netlist.cursor;
-			net_inserted : boolean;
+		-- Generates the netlist of the current module (indicated by module_cursor).
+		-- The portlists provide the port coordinates. 
+		-- The module provides the nets.
+		-- With this information we make the netlist of the current module.
+		
+			net_cursor_netlist : type_netlist.cursor; -- points to the current net within the netlist being built
+			net_inserted : boolean; -- indicates whether a net has been inserted into the netlist
 			
-			net_cursor_module : type_nets.cursor := first_net;
-			netlist : type_netlist.map;
+			net_cursor_module : type_nets.cursor := first_net; 
+			-- points to the net being read from the module (see type_module in et_schematic.ads)
+		
+			netlist : type_netlist.map; -- the netlist being built. to be returned finally.
 			use type_nets;
 			
-			segment_cursor : type_net_segments.cursor;
-			segment : type_net_segment;
+			segment_cursor : type_net_segments.cursor; -- points to the net segment being read from the module
+			segment : type_net_segment; -- the actual net segment read from the module
 			use type_net_segments;
 
-			component_cursor : type_portlists.cursor;
+			component_cursor : type_portlists.cursor; -- point to the component within the portlists
 			use type_portlists;
 
-			port_cursor : type_base_ports.cursor;
-			port : type_port_base;
+			port_cursor : type_base_ports.cursor; -- points to the port being read from a component within the portlists
+			port : type_port_base; -- the actual port read from the portlists
 			use type_base_ports;
 
 			use et_string_processing;
 
 			procedure add_port (
+			-- Adds the given port and the component reference to the net within the netlist being built.
 				reference : in et_libraries.type_component_reference;
 				port : in type_port_base) is
 
@@ -100,29 +109,41 @@ package body et_netlist is
 					ports.insert (new_item => (port with reference));
 				end add;
 				
-			begin
+			begin -- add_port
 				netlist.update_element (
 					position => net_cursor_netlist,
 					process => add'access);
 			end add_port;
 			
-		begin -- make_netlists
+		begin -- make_netlist (note singluar !)
 			log (text => "building module netlist ...", level => 1);
+
+			-- HOW DOES IT WORK ?
+			-- The outer loop fetches one net after another from the module (see type_module in et_schematic.ads).
+			-- The net name is used as primary key for the net being inserted into the netlist.
+			-- The loop in the next level fetches the net segments from the net.
+
+			-- The loop in the next level fetches components from the portlists.
+			-- The loop in the next level fetches the ports of the component within the portlists.
+
+			-- Then we test if a port sits on the current segment. When positive, the port is added to 
+			-- the net within the netlist.
 			
-			-- LOOP IN NETS OF MODULE
+			-- LOOP IN NETS OF MODULE (outer loop)
 			while net_cursor_module /= type_nets.no_element loop
 
 				-- get the net name via net_cursor
 				log_indentation_up;
 				log (text => "net " & et_schematic.type_net_name.to_string (key (net_cursor_module)), level => 2);
 				
-				-- insert net in netlist
+				-- Insert net in netlist with the net name as primary key:
 				netlist.insert (
 					key => key (net_cursor_module), -- net name like "MCU_CLOCK"
 					new_item => type_ports.empty_set, -- for the moment an empty portlist
 					inserted => net_inserted, -- CS: check status ?
 					position => net_cursor_netlist);
 
+				-- loop in segments of net
 				segment_cursor := first_segment (net_cursor_module);
 				while segment_cursor /= type_net_segments.no_element loop
 					segment := element (segment_cursor);
@@ -132,7 +153,7 @@ package body et_netlist is
 					-- LOOP IN PORTLISTS
 					component_cursor := first (portlists);
 					while component_cursor /= type_portlists.no_element loop
-						log ("probing comp " & et_schematic.to_string (key (component_cursor)), level => 3);
+						log ("probing component " & et_schematic.to_string (key (component_cursor)), level => 3);
 						
 						port_cursor := first_port (component_cursor);
 						while port_cursor /= type_base_ports.no_element loop
@@ -173,7 +194,7 @@ package body et_netlist is
 			return type_netlist.empty_map;
 		end make_netlist;
 		
-	begin
+	begin -- make_netlists (note plural !)
 		log (text => "building rig netlists ...", level => 1);
 
 		-- We start with the first module of the rig.
@@ -188,7 +209,8 @@ package body et_netlist is
 
 			-- Generate the portlists of the module indicated by module_cursor.
 			portlists := build_portlists;
-			
+
+			-- Insert the module in rig_netlists with the netlist built by make_netlist:
 			rig_netlists.insert (
 				key => key (module_cursor),
 				new_item => make_netlist);
@@ -201,7 +223,8 @@ package body et_netlist is
 
 
 	procedure write_netlists is
-	-- Writes the netlists of the rig in files.
+	-- Exports/Writes the netlists of the rig in separate files.
+	-- Call this procedure after executing procedure make_netlist !
 		use type_rig_netlists;
 		use ada.directories;
 		use et_general;
@@ -209,9 +232,11 @@ package body et_netlist is
 		netlist_handle : ada.text_io.file_type;
 		netlist_file_name : type_netlist_file_name.bounded_string;
 	
-		module_cursor : type_rig_netlists.cursor := rig_netlists.first;
-		net_cursor : type_netlist.cursor;
-	begin
+		module_cursor : type_rig_netlists.cursor := rig_netlists.first; -- points to the module
+		net_cursor : type_netlist.cursor; -- points to the net being exported
+	
+	begin -- write_netlists
+	
 		log (text => "writing rig netlists ...", level => 1);
 		while module_cursor /= type_rig_netlists.no_element loop
 			log_indentation_up;

@@ -611,7 +611,6 @@ package et_schematic is
 	type type_module is record
 		libraries		: type_full_library_names.list;	-- the list of project library names
 		nets 	    	: type_nets.map;			-- the nets of the module
-		--portlists		: type_portlists.map;		-- the portlists of the module
         components		: type_components.map;		-- the components of the module
 		submodules  	: type_gui_submodules.map;	-- graphical representations of submodules
         frames      	: type_frames.list;			-- frames
@@ -676,11 +675,6 @@ package et_schematic is
 	function first_segment (net_cursor : in type_nets.cursor) return type_net_segments.cursor;
 	-- Returns a cursor pointing to the first net segment of the given net.
 
-	
--- 	procedure add_portlists (
--- 	-- Adds the portlists into the module (indicated by module.cursor)
--- 		portlists : in et_schematic.type_portlists.map);
-	
 	procedure add_component (
 	-- Adds a component into the the module (indicated by module_cursor).
 		reference	: in et_libraries.type_component_reference;

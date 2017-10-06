@@ -49,6 +49,12 @@ with et_string_processing;
 
 package et_netlist is
 
+	-- Whenever we deal with netlist files this type should be used:
+	netlist_file_name_length : constant positive := 100; -- CS: should suffice for now
+	package type_netlist_file_name is new generic_bounded_length (netlist_file_name_length); 
+	--use type_netlist_file_name;
+
+	
 	use et_schematic.type_net_name;
 	use et_schematic.type_ports;
 
@@ -71,15 +77,14 @@ package et_netlist is
 	rig_netlists : type_rig_netlists.map;
 	
 	procedure make_netlists;
+	-- Builids the netlists of all modules in the rig.
+	-- Netlists are to be exported in individual project directories in the work directory of ET.
 
-	-- Whenever we deal with netlist files this type should be used:
-	netlist_file_name_length : constant positive := 100; -- CS: should suffice for now
-	package type_netlist_file_name is new generic_bounded_length (netlist_file_name_length); 
-	--use type_netlist_file_name;
 
 	
 	procedure write_netlists;
-	
+	-- Exports/Writes the netlists of the rig in separate files.
+	-- Call this procedure after executing procedure make_netlist !	
 end et_netlist;
 
 -- Soli Deo Gloria
