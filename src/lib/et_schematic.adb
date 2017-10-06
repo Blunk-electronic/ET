@@ -648,8 +648,52 @@ package body et_schematic is
 		return portlists;
 	end build_portlists;
 
+	function first_port (component_cursor : in type_portlists.cursor) return type_base_ports.cursor is
+	-- Returns a cursor pointing to the first port of a component in the portlists.
+		port_cursor : type_base_ports.cursor;
+	
+		procedure set_cursor (
+			name : in et_libraries.type_component_reference;
+			ports : in type_base_ports.list) is
+		begin
+			port_cursor := first (ports);
+		end set_cursor;
+	begin
+		type_portlists.query_element (
+			position => component_cursor,
+			process => set_cursor'access);
 
+		return port_cursor;
+	end first_port;
 
+	function port_sits_on_segment (
+	-- Returns true if the given port sits on the given net segment.
+		port	: in type_port_base'class;
+		segment	: in type_net_segment'class) 
+		return boolean is
+
+		use et_geometry;
+		use et_coordinates;
+		
+		sits_on_segment : boolean := false;
+		d : type_distance_point_from_line;
+
+	begin
+		-- calculate the shortes distance of point from line.
+		d := distance_of_point_from_line (
+			point 		=> type_2d_point (port.coordinates),
+			line_start	=> type_2d_point (segment.coordinates_start),
+			line_end	=> type_2d_point (segment.coordinates_end),
+			line_range	=> inside_end_points);
+
+		if (not d.out_of_range) and d.distance = et_coordinates.zero_distance then
+			sits_on_segment := true;
+		end if;
+
+		return sits_on_segment;
+	end port_sits_on_segment;
+
+	
 	
 	procedure write_unit_properties (unit : in type_units.cursor) is
 	-- Writes the properties of the unit indicated by the given cursor.
@@ -769,20 +813,21 @@ package body et_schematic is
 		segment		: in type_net_segment'class) 
 		return boolean is
 
+		-- CS: clean up as in port_sits_on_segment
+		
 		zero : constant et_coordinates.type_distance := et_coordinates.zero_distance;
 		sits_on_segment : boolean := false;
 		d : et_geometry.type_distance_point_from_line;
 
--- 		use et_libraries;
 		use et_geometry;
 		use et_coordinates;
-		use et_string_processing;
+
 	begin
 		-- calculate the shortes distance of point from line.
 		d := distance_of_point_from_line (
 			point 		=> type_2d_point (junction.coordinates),
-			line_start	=> type_2d_point (segment.coordinates_start), -- et_libraries.type_coordinates(line_start),
-			line_end	=> type_2d_point (segment.coordinates_end), -- et_libraries.type_coordinates(line_end),
+			line_start	=> type_2d_point (segment.coordinates_start),
+			line_end	=> type_2d_point (segment.coordinates_end),
 			line_range	=> inside_end_points);
 
 		if (not d.out_of_range) and d.distance = zero then
@@ -1238,6 +1283,44 @@ package body et_schematic is
 			);
 	end add_net;
 
+	function first_net return type_nets.cursor is
+	-- Returns a cursor pointing to the first net of the module (indicated by module_cursor).
+		cursor : type_nets.cursor;	
+
+		procedure set_cursor (
+			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
+			module		: in type_module) is
+ 		begin
+			cursor := module.nets.first;
+		end set_cursor;
+	
+	begin
+		type_rig.query_element (
+			position	=> module_cursor,
+			process		=> set_cursor'access
+			);
+		return cursor;
+	end first_net;
+
+	function first_segment (net_cursor : in type_nets.cursor) return type_net_segments.cursor is
+	-- Returns a cursor pointing to the first net segment of the given net.
+		segment_cursor : type_net_segments.cursor;
+
+		procedure set_cursor (
+			name	: in type_net_name.bounded_string;
+			net		: in type_net) is
+		begin
+			segment_cursor := net.segments.first;
+		end set_cursor;
+
+	begin
+		type_nets.query_element (
+			position	=> net_cursor,
+			process		=> set_cursor'access
+			);
+		return segment_cursor;
+	end first_segment;
+	
 -- 	procedure add_portlists (
 -- 	-- Adds the portlists into the module (indicated by module.cursor)
 -- 		portlists : in et_schematic.type_portlists.map) is
@@ -1256,61 +1339,61 @@ package body et_schematic is
 -- 		);
 -- 	end add_portlists;
 	
-	procedure add_port (
-	-- Adds a port to a net in the current module (indicated by module_cursor).
-		net		: in et_schematic.type_net_name.bounded_string;
-		port	: in et_schematic.type_port ) is
-
-		procedure add (
-			net_name	: in type_net_name.bounded_string;
-			net			: in out type_net) is
-
-			inserted	: boolean := false;
-			cursor		: type_ports.cursor;
-
-			use et_string_processing;
-		begin
-			net.ports.insert (
-				new_item	=> port,
-				position	=> cursor, -- updates cursor. no further meaning
-				inserted	=> inserted
-				);
-
-			if inserted then -- fine. port was inserted successfully
-				if log_level >= 1 then				
-					--CS : write_port_properties (unit => cursor);
-					null;
-				end if;
-			else -- not inserted, port already in net -> failure
-				log_indentation_reset;
-				log (
-					text => message_error & "multiple occurence of a port in the same net !",
-					console => true);
-				raise constraint_error;
-			end if;
-		end add;
-		
-		procedure locate_net (
-			name	: in et_coordinates.type_submodule_name.bounded_string;
-			module	: in out type_module) is
-			
-			cursor : type_nets.cursor;
-		begin
-			cursor := module.nets.find (net);
-			-- CS: do something if net not found
-			
-			module.nets.update_element (
-				position	=> cursor,
-				process		=> add'access
-				);
-		end locate_net;
-
-	begin
-		rig.update_element (
-			position	=> module_cursor,
-			process		=> locate_net'access
-			);
-	end add_port;
+-- 	procedure add_port (
+-- 	-- Adds a port to a net in the current module (indicated by module_cursor).
+-- 		net		: in et_schematic.type_net_name.bounded_string;
+-- 		port	: in et_schematic.type_port ) is
+-- 
+-- 		procedure add (
+-- 			net_name	: in type_net_name.bounded_string;
+-- 			net			: in out type_net) is
+-- 
+-- 			inserted	: boolean := false;
+-- 			cursor		: type_ports.cursor;
+-- 
+-- 			use et_string_processing;
+-- 		begin
+-- 			net.ports.insert (
+-- 				new_item	=> port,
+-- 				position	=> cursor, -- updates cursor. no further meaning
+-- 				inserted	=> inserted
+-- 				);
+-- 
+-- 			if inserted then -- fine. port was inserted successfully
+-- 				if log_level >= 1 then				
+-- 					--CS : write_port_properties (unit => cursor);
+-- 					null;
+-- 				end if;
+-- 			else -- not inserted, port already in net -> failure
+-- 				log_indentation_reset;
+-- 				log (
+-- 					text => message_error & "multiple occurence of a port in the same net !",
+-- 					console => true);
+-- 				raise constraint_error;
+-- 			end if;
+-- 		end add;
+-- 		
+-- 		procedure locate_net (
+-- 			name	: in et_coordinates.type_submodule_name.bounded_string;
+-- 			module	: in out type_module) is
+-- 			
+-- 			cursor : type_nets.cursor;
+-- 		begin
+-- 			cursor := module.nets.find (net);
+-- 			-- CS: do something if net not found
+-- 			
+-- 			module.nets.update_element (
+-- 				position	=> cursor,
+-- 				process		=> add'access
+-- 				);
+-- 		end locate_net;
+-- 
+-- 	begin
+-- 		rig.update_element (
+-- 			position	=> module_cursor,
+-- 			process		=> locate_net'access
+-- 			);
+-- 	end add_port;
 
 
 	
