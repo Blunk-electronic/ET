@@ -61,8 +61,8 @@ package body et_geometry is
 		line_scratch : type_2d_point;
 		
 		result : type_distance_point_from_line;
--- 		s1,s2,s3,s4,s5,s6,s7,s8 : type_distance;
 		s1,s2,s3,s4,s5,s6,s7,s8 : type_float;
+
 
 	begin
 		-- The following computation bases on 
@@ -97,6 +97,7 @@ package body et_geometry is
 
 		--result.distance := s5 / s8;
 		result.distance := type_distance (s5 / s8);
+-- 		log ("distance " & type_distance'image (result.distance), level => 4);
 
 		-- If the range check adresses the line end points, the direction of the line
 		-- matters. Means if it was drawn from the left to the right or the other way around.
@@ -157,9 +158,13 @@ package body et_geometry is
 				end if;
 				
 			when with_end_points =>
+-- 				log ("with endpoints", level => 4);
+				
 				if result.distance = zero_distance then
+-- 					log ("zero distance", level => 4);
+					
 					if delta_x = zero_distance then -- vertical line
-						log ("vertial line", level => 4);
+-- 						log ("vertial line", level => 4);
 						
 						if delta_y > zero_distance then -- line drawn away from x-axis
 							--if point.y > e.y or point.y < s.y then -- point above or below end points of line
@@ -181,7 +186,7 @@ package body et_geometry is
 						end if;
 						
 					else -- line is a slope or horizontal
-						log ("horizontal line or slope", level => 4);
+-- 						log ("horizontal line or slope", level => 4);
 						
 						--if point.x > e.x or point.x < s.x then
 						if distance_x (point) > distance_x (e) or distance_x (point) < distance_x (s) then
@@ -203,29 +208,6 @@ package body et_geometry is
 
 	end distance_of_point_from_line;
 
-
--- 	procedure move (
--- 		point : in out type_2d_point;
--- 		offset : in type_2d_point
--- 		) is
--- 	begin
--- 		point.x := point.x + offset.x;
--- 		point.y := point.y + offset.y;
--- 	end move;
-
-	
--- 	function move (
--- 		point	: in type_2d_point'class;
--- 		offset	: in type_2d_point
--- 		) return type_2d_point'class is
--- 		p : type_2d_point'class := point;
--- 	begin
--- 		p.x := point.x + offset.x;
--- 		p.y := point.y + offset.y;
--- 		return p;
--- 	end move;
--- 
--- 
 
 	
 end et_geometry;

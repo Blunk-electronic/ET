@@ -593,7 +593,7 @@ package et_schematic is
 	-- The cursor must point to the component in question.
 
 
--- PORTLISTS	
+-- PORTLISTS -- required for netlist generation. CS: should move to et_netlist ?
 	-- Base ports of a component are collected in a simple list.
 	package type_base_ports is new doubly_linked_lists ( 
 		element_type => type_port_base); 
