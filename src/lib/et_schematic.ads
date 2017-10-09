@@ -583,6 +583,10 @@ package et_schematic is
 		return type_component_reference;
 	-- Returns the component reference where cursor points to.
 
+	function component_appearance (cursor : in type_components.cursor)
+	-- Returns the component appearance where cursor points to.
+		return type_component_appearance;
+
 	function component_name_in_library (cursor : in type_components.cursor) 
 		return et_libraries.type_component_name.bounded_string;
 	-- Returns the generic name of a component as it is listed in a library.

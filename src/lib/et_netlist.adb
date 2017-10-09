@@ -235,6 +235,7 @@ package body et_netlist is
 					-- LOOP IN PORTLISTS
 					component_cursor := first (portlists);
 					while component_cursor /= type_portlists.no_element loop
+						log_indentation_up;
 						log ("probing component " & et_schematic.to_string (key (component_cursor)), level => 3);
 						
 						port_cursor := first_port (component_cursor);
@@ -243,6 +244,7 @@ package body et_netlist is
 							-- CS: skip already processed ports to improve performance
 							
 							port := element (port_cursor); -- in portlist of component
+							log_indentation_up;
 							log ("probing port " & et_coordinates.to_string (port.coordinates), level => 3);
 
 							-- test if port sits on segment
@@ -258,10 +260,12 @@ package body et_netlist is
 									port => port);
 
 							end if;
+							log_indentation_down;
 							
 							next (port_cursor);
 						end loop;
 
+						log_indentation_down;
 						next (component_cursor);
 					end loop;
 

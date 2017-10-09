@@ -289,6 +289,13 @@ package body et_schematic is
 		return type_components.key (cursor);
 	end component_reference;
 
+	function component_appearance (cursor : in type_components.cursor)
+	-- Returns the component appearance where cursor points to.
+		return type_component_appearance is
+	begin
+		return type_components.element (cursor).appearance;
+	end component_appearance;
+	
 	function component_name_in_library (cursor : in type_components.cursor) 
 		return et_libraries.type_component_name.bounded_string is
 	-- Returns the generic name of a component as it is listed in a library.
@@ -562,82 +569,87 @@ package body et_schematic is
 		-- These coordinates summed up yields the absolute position of the ports.
 		
 		-- Loop in component list of schematic. component_cursor_sch points to the 
-		-- particular component. For each component, store a list
-		-- of its units in units_sch. This list contains the units found in the schematic
-		-- with their coordinates. These coordinates plus the port coordinates (extracted in 
+		-- particular component. We are interested in components that appear in both schematc and layout.
+		-- For each component, store a list of its units in units_sch.
+		-- This list contains the units found in the schematic with their coordinates.
+		-- These coordinates plus the port coordinates (extracted in 
 		-- procedure (extract_ports) will yield the absolute positions of the ports.
 		et_schematic.reset_component_cursor (component_cursor_sch);
 		while component_cursor_sch /= et_schematic.type_components.no_element loop
 
-			-- log component by its reference		
-			component_reference :=  et_schematic.component_reference (component_cursor_sch);
-			log (text => "reference " & et_schematic.to_string (component_reference));
-			
-			-- Insert component in portlists. for the moment the portlist of this component is empty.
-			-- After that the component_cursor_portlists points to the component. This cursor will
-			-- later be used to add a port to the portlists.
-			type_portlists.insert (
-				container	=> portlists,
-				key			=> component_reference, -- like R44
-				new_item	=> type_base_ports.empty_list,
-				inserted	=> component_inserted, -- obligatory, no further meaning
-				position	=> component_cursor_portlists -- points to the portlist being built
-				);
-			
-			-- get the units of the current schematic component (indicated by component_cursor_sch)
-			units_sch := et_schematic.units_of_component (component_cursor_sch);
- 
-			-- get generic component name (as listed in a library)
-			log_indentation_up;			
-			component_name := et_schematic.component_name_in_library (component_cursor_sch);
-			log (text => "generic name " & to_string (component_name));
+			if component_appearance (component_cursor_sch) = sch_pcb then
+		
+				-- log component by its reference		
+				component_reference :=  et_schematic.component_reference (component_cursor_sch);
+				log (text => "reference " & et_schematic.to_string (component_reference));
+				
+				-- Insert component in portlists. for the moment the portlist of this component is empty.
+				-- After that the component_cursor_portlists points to the component. This cursor will
+				-- later be used to add a port to the portlists.
+				type_portlists.insert (
+					container	=> portlists,
+					key			=> component_reference, -- like R44
+					new_item	=> type_base_ports.empty_list,
+					inserted	=> component_inserted, -- obligatory, no further meaning
+					position	=> component_cursor_portlists -- points to the portlist being built
+					);
+				
+				-- get the units of the current schematic component (indicated by component_cursor_sch)
+				units_sch := et_schematic.units_of_component (component_cursor_sch);
+	
+				-- get generic component name (as listed in a library)
+				log_indentation_up;			
+				component_name := et_schematic.component_name_in_library (component_cursor_sch);
+				log (text => "generic name " & to_string (component_name));
 
-			-- Search in libraries for a component with this very generic name.
-			-- library_cursor_sch points to the particular full library name.
-			-- The libraries are searched according to their order in the library list of the module.
-			-- The search is complete on the first finding of the component.
-			log_indentation_up;
-			log (text => "searching in libraries ...");
-			log_indentation_up;
-			et_schematic.reset_library_cursor (library_cursor_sch);
-			while library_cursor_sch /= type_full_library_names.no_element loop
+				-- Search in libraries for a component with this very generic name.
+				-- library_cursor_sch points to the particular full library name.
+				-- The libraries are searched according to their order in the library list of the module.
+				-- The search is complete on the first finding of the component.
+				log_indentation_up;
+				log (text => "searching in libraries ...");
+				log_indentation_up;
+				et_schematic.reset_library_cursor (library_cursor_sch);
+				while library_cursor_sch /= type_full_library_names.no_element loop
 
-				-- Set and log particular library to be searched in.
-				library_name := (element (library_cursor_sch));
-				log (text => to_string (library_name));
+					-- Set and log particular library to be searched in.
+					library_name := (element (library_cursor_sch));
+					log (text => to_string (library_name));
 
-				-- Get cursor of that component in library. If cursor is empty, search in
-				-- next library. If cursor points to a matching component, extract ports
-				-- of that component. Procedure extract_ports uses component_cursor_lib .
-				component_cursor_lib := find_component (library_name, component_name);
-				if component_cursor_lib = et_libraries.type_components.no_element then
-					-- not found -> advance to next library (in module.libraries)
-					next (library_cursor_sch); 
-				else
-					extract_ports; -- uses component_cursor_lib
-					-- found -> no further search required
-					-- CS: write warning if component exists in other libraries ?
-					exit;
+					-- Get cursor of that component in library. If cursor is empty, search in
+					-- next library. If cursor points to a matching component, extract ports
+					-- of that component. Procedure extract_ports uses component_cursor_lib .
+					component_cursor_lib := find_component (library_name, component_name);
+					if component_cursor_lib = et_libraries.type_components.no_element then
+						-- not found -> advance to next library (in module.libraries)
+						next (library_cursor_sch); 
+					else
+						extract_ports; -- uses component_cursor_lib
+						-- found -> no further search required
+						-- CS: write warning if component exists in other libraries ?
+						exit;
+					end if;
+						
+				end loop;
+
+				-- IF COMPONENT NOT FOUND IN ANY LIBRARY:
+				-- Early exits from the loop above leave library_cursor_sch pointing to a library.
+				-- If the loop has been completed without success, library_cursor_sch points to no_element.
+				-- If all libraries searched without any match -> generate error message.
+				if library_cursor_sch = type_full_library_names.no_element then
+					log_indentation_reset;
+					log (message_error & "component with reference "  
+						& et_schematic.to_string (et_schematic.component_reference (component_cursor_sch))
+						& " has no generic model in any library !",
+						console => true);
+					raise constraint_error;
 				end if;
-					
-			end loop;
+				
+				log_indentation_down;
+				log_indentation_down;
+				log_indentation_down;
 
-			-- IF COMPONENT NOT FOUND IN ANY LIBRARY:
-			-- Early exits from the loop above leave library_cursor_sch pointing to a library.
-			-- If the loop has been completed without success, library_cursor_sch points to no_element.
-			-- If all libraries searched without any match -> generate error message.
-			if library_cursor_sch = type_full_library_names.no_element then
-				log_indentation_reset;
-				log (message_error & "component with reference "  
-					& et_schematic.to_string (et_schematic.component_reference (component_cursor_sch))
-					& " has no generic model in any library !",
-					console => true);
-				raise constraint_error;
-			end if;
-			
-			log_indentation_down;
-			log_indentation_down;
-			log_indentation_down;
+			end if; -- appearance
 			
 			next (component_cursor_sch); -- advance to next component
 		end loop;

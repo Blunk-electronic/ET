@@ -31,6 +31,7 @@
 --
 
 with ada.numerics.generic_elementary_functions;
+with et_string_processing;		use et_string_processing;
 with et_coordinates;
 
 package body et_geometry is
@@ -158,6 +159,7 @@ package body et_geometry is
 			when with_end_points =>
 				if result.distance = zero_distance then
 					if delta_x = zero_distance then -- vertical line
+						log ("vertial line", level => 4);
 						
 						if delta_y > zero_distance then -- line drawn away from x-axis
 							--if point.y > e.y or point.y < s.y then -- point above or below end points of line
@@ -179,7 +181,8 @@ package body et_geometry is
 						end if;
 						
 					else -- line is a slope or horizontal
-							
+						log ("horizontal line or slope", level => 4);
+						
 						--if point.x > e.x or point.x < s.x then
 						if distance_x (point) > distance_x (e) or distance_x (point) < distance_x (s) then
 							result.out_of_range := true;
