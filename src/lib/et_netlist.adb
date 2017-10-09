@@ -55,6 +55,88 @@ with et_export;
 
 package body et_netlist is
 
+	procedure first_module is
+	-- Resets the module_cursor to the first module of the rig.
+	begin
+		module_cursor := rig.first;
+		-- CS: exception handler in case given module does not exist
+	end first_module;
+
+	function first_net return type_netlist.cursor is
+	-- Returns a cursor to the first net of the current module (indicated by module_cursor).
+		cursor : type_netlist.cursor;
+	
+		procedure set (
+			module	: in et_coordinates.type_submodule_name.bounded_string;
+			netlist	: in type_netlist.map) is
+		begin
+			cursor := netlist.first;
+		end set;
+
+	begin -- first_net
+		type_rig_netlists.query_element (
+			position => module_cursor,
+			process => set'access);
+
+		return cursor;
+	end first_net;
+
+	function net_count return count_type is
+	-- Returns the number of nets of the current module as string.
+		count : count_type := 0;
+	
+		procedure get (
+			module	: in et_coordinates.type_submodule_name.bounded_string;
+			netlist	: in type_netlist.map) is
+		begin
+			count := length (netlist);
+		end get;
+
+	begin
+		type_rig_netlists.query_element (
+			position => module_cursor,
+			process => get'access);
+
+		return count;
+	end net_count;
+	
+	function first_port (net_cursor : in type_netlist.cursor) return et_schematic.type_ports.cursor is
+	-- Returns a cursor to the first port of the given net in the current module (indicated by module_cursor).
+		cursor : et_schematic.type_ports.cursor;
+	
+		procedure set (
+			net		: in et_schematic.type_net_name.bounded_string;
+			ports	: in et_schematic.type_ports.set) is
+		begin
+			cursor := ports.first;
+		end set;
+
+	begin -- first_port
+		type_netlist.query_element (
+			position => net_cursor,
+			process => set'access);
+
+		return cursor;
+	end first_port;
+
+	function port_count (net_cursor : in type_netlist.cursor) return count_type is
+	-- Returns the number of ports of the given net of the current module.
+		count : count_type := 0;
+
+		procedure get (
+			net		: in et_schematic.type_net_name.bounded_string;
+			ports	: in et_schematic.type_ports.set) is
+		begin
+			count := length (ports);
+		end get;
+					  
+	begin -- port_count
+		type_netlist.query_element (
+			position => net_cursor,
+			process => get'access);
+		return count;
+	end port_count;
+	
 	procedure make_netlists is
 	-- Builids the netlists of all modules in the rig.
 	-- Netlists are to be exported in individual project directories in the work directory of ET.
@@ -67,7 +149,7 @@ package body et_netlist is
 
 		-- Here the portlists of the current module are stored by function build_portlists:
 		portlists : type_portlists.map;
-	
+
 		function make_netlist return type_netlist.map is
 		-- Generates the netlist of the current module (indicated by module_cursor).
 		-- The portlists provide the port coordinates. 
@@ -190,8 +272,9 @@ package body et_netlist is
 				log_indentation_down;
 				next (net_cursor_module);
 			end loop;
-			
-			return type_netlist.empty_map;
+
+			log (text => "processed nets" & count_type'image (length (netlist)), level => 2);
+			return netlist;
 		end make_netlist;
 		
 	begin -- make_netlists (note plural !)
@@ -201,21 +284,21 @@ package body et_netlist is
 		et_schematic.first_module;
 
 		-- Process one rig module after another.
-		-- module_cursor point to the module in the rig.
-		while module_cursor /= type_rig.no_element loop
+		-- module_cursor points to the module in the rig.
+		while et_schematic.module_cursor /= type_rig.no_element loop
 			log_indentation_up;
-			log (text => "module " & to_string (key (module_cursor)), level => 1);
-			create_project_directory (to_string (key (module_cursor)));
+			log (text => "module " & to_string (key (et_schematic.module_cursor)), level => 1);
+			create_project_directory (to_string (key (et_schematic.module_cursor)));
 
 			-- Generate the portlists of the module indicated by module_cursor.
 			portlists := build_portlists;
 
 			-- Insert the module in rig_netlists with the netlist built by make_netlist:
-			rig_netlists.insert (
-				key => key (module_cursor),
+			rig.insert (
+				key => key (et_schematic.module_cursor),
 				new_item => make_netlist);
 
-			next (module_cursor);
+			next (et_schematic.module_cursor);
 		end loop;
 
 		log_indentation_down;
@@ -232,16 +315,23 @@ package body et_netlist is
 		netlist_handle : ada.text_io.file_type;
 		netlist_file_name : type_netlist_file_name.bounded_string;
 	
-		module_cursor : type_rig_netlists.cursor := rig_netlists.first; -- points to the module
-		net_cursor : type_netlist.cursor; -- points to the net being exported
-	
+		net_cursor	: type_netlist.cursor; -- points to the net being exported
+		net_name	: et_schematic.type_net_name.bounded_string;
+		port_cursor	: et_schematic.type_ports.cursor; -- point to the port being exported
+
+-- 		component	: et_libraries.type_component_reference;
+-- 		port		: et_libraries.type_pin_name.bounded_string;
+-- 		pin			: et_libraries.type_port_name.bounded_string;
+		port		: et_schematic.type_port;
+
+
 	begin -- write_netlists
-	
+		first_module;
+		
 		log (text => "writing rig netlists ...", level => 1);
 		while module_cursor /= type_rig_netlists.no_element loop
 			log_indentation_up;
 			log (text => "module " & to_string (key (module_cursor)), level => 1);
-			log_indentation_down;
 
 			-- compose the netlist file name and its path like "../ET/motor_driver/motor_driver.net"
 			netlist_file_name := type_netlist_file_name.to_bounded_string (
@@ -251,14 +341,57 @@ package body et_netlist is
 					extension => "net"));
 
 			-- create the netlist (which inevitably overwrites the previous file)
+			log_indentation_up;
+			log (text => "creating netlist file " & type_netlist_file_name.to_string (netlist_file_name), level => 1);
 			create (
 				file => netlist_handle,
 				mode => out_file, 
 				name => type_netlist_file_name.to_string (netlist_file_name));
 
-			-- CS: write the netlist
+			-- CS: write a nice header with legend in netlist
+			
+			-- export net
+			log_indentation_up;
+			log (text => "exporting" & count_type'image (net_count) & " nets ...", level => 1);
+			net_cursor := first_net;
+			while net_cursor /= type_netlist.no_element loop
+				net_name := key (net_cursor);
+
+				-- write net name in netlist
+				log_indentation_up;
+				log (text => "net " & et_schematic.type_net_name.to_string (net_name), level => 1);
+				new_line (netlist_handle);
+				put_line (netlist_handle, et_schematic.type_net_name.to_string (net_name));
+
+				-- export port
+				log_indentation_up;
+				log (text => "exporting" & count_type'image (port_count (net_cursor)) & " ports ...", level => 1);
+				port_cursor := first_port (net_cursor);
+				while port_cursor /= et_schematic.type_ports.no_element loop
+					port := element (port_cursor);
+
+					-- write reference, port, pin in netlist (all in a single line)
+					put_line (netlist_handle, 
+						et_schematic.reference (port) & " "
+						& et_schematic.port (port) & " "
+						& et_schematic.pin (port) & " "
+						);
+					
+					next (port_cursor);
+				end loop;
+				log_indentation_down;
+				
+				log_indentation_down;
+
+				next (net_cursor);
+			end loop;
 			
 			close (netlist_handle);
+
+			log_indentation_down;
+			log_indentation_down;
+			log_indentation_down;
+
 			
 			next (module_cursor);
 		end loop;

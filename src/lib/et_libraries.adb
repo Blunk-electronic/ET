@@ -69,6 +69,12 @@ package body et_libraries is
 	begin
 		return type_port_name.to_string (port_name);
 	end to_string;
+
+	function to_string (pin_name : in type_pin_name.bounded_string) return string is
+	-- Returns the given pin name as string.
+	begin
+		return type_pin_name.to_string (pin_name);
+	end to_string;
 	
 	function to_string (name_in_library : in type_component_name.bounded_string) return string is
 	-- Returns the given name_in_library as as string.

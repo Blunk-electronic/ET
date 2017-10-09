@@ -359,6 +359,15 @@ package et_schematic is
 		reference	: et_libraries.type_component_reference;
 	end record;
 
+	function reference (port : in type_port) return string;
+	-- Returns the component reference of the given port.
+
+	function port (port : in type_port) return string;
+	-- Returns the port name of the given port.
+
+	function pin (port : in type_port) return string;
+	-- Returns the pin name of the given port.
+	
 	function compare_ports (left, right : in type_port) return boolean;
 	-- Returns true if left comes before right. Compares by component name and pin name.
 	-- If left equals right, the return is false.	
@@ -633,7 +642,7 @@ package et_schematic is
 	module_cursor : type_rig.cursor;
 
 	procedure first_module;
-	-- Resets the module_cursor to the first submodule of the rig.
+	-- Resets the module_cursor to the first module of the rig.
 	
 	procedure set_module (
 	-- Sets the active module. Leaves module_cursor pointing

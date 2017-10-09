@@ -74,7 +74,35 @@ package et_netlist is
 
 	
 	-- This is the place where we store the netlists of the rig.
-	rig_netlists : type_rig_netlists.map;
+	rig : type_rig_netlists.map;
+	module_cursor : type_rig_netlists.cursor;
+
+	procedure first_module;
+	-- Resets the module_cursor to the first module of the rig.
+
+	function first_net return type_netlist.cursor;
+	-- Returns a cursor to the first net of the current module (indicated by module_cursor).
+
+	function net_count return count_type;
+	-- Returns the number of nets of the current module.
+	
+	function first_port (net_cursor : in type_netlist.cursor) return et_schematic.type_ports.cursor;
+	-- Returns a cursor to the first port of the given net in the current module (indicated by module_cursor).
+
+	function port_count (net_cursor : in type_netlist.cursor) return count_type;
+	-- Returns the number of ports of the given net of the current module.
+	
+	
+-- 	
+-- 	procedure set_module (
+-- 	-- Sets the active module. Leaves module_cursor pointing
+-- 	-- to the module.
+-- 		module_name : in et_coordinates.type_submodule_name.bounded_string);
+
+
+
+
+	
 	
 	procedure make_netlists;
 	-- Builids the netlists of all modules in the rig.

@@ -232,6 +232,9 @@ package et_libraries is
  	pin_name_length	: constant natural := 10;
 	package type_pin_name is new generic_bounded_length(pin_name_length); use type_pin_name;
 
+	function to_string (pin_name : in type_pin_name.bounded_string) return string;
+	-- Returns the given pin name as string.
+	
 	-- Initially, at the lowest level (usually library level), a port has a name, direction,
 	-- coordinates, orientation, flags for making port and pin name visible. 
 	-- Later, other values are assigned like pin name. CS: set defaults

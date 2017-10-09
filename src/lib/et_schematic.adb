@@ -1057,8 +1057,26 @@ package body et_schematic is
 	end compare_ports;
 
 
+	function reference (port : in type_port) return string is
+	-- Returns the component reference of the given port.	
+	begin
+		return to_string (port.reference);
+	end reference;
+
+	function port (port : in type_port) return string is
+	-- Returns the port name of the given port.
+	begin
+		return to_string (port.port);
+	end port;
+
+	function pin (port : in type_port) return string is
+	-- Returns the pin name of the given port.
+	begin
+		return to_string (port.pin);
+	end pin;
+	
 	procedure first_module is
-	-- Resets the module_cursor to the first submodule of the rig.
+	-- Resets the module_cursor to the first module of the rig.
 	begin
 		module_cursor := rig.first;
 		-- CS: exception handler in case given module does not exist
