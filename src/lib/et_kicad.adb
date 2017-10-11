@@ -466,10 +466,11 @@ package body et_kicad is
 			
 			-- These are variables used to temporarily hold component properties before the component
 			-- gets fully assembled and inserted into the component list of a particular library.
-			-- These properties apply for the whole component (means for all its units):
+			-- These properties apply for the whole component (means for all its units): -- CS: move them to specs ?
 			tmp_component_name		: type_component_name.bounded_string; -- 74LS00
 			tmp_prefix				: type_component_prefix.bounded_string; -- IC
 			tmp_appearance			: type_component_appearance;
+			tmp_power_flag			: boolean; -- goes true if component is a power flag
 
 			tmp_port_name_visible	: type_port_visible;
 			tmp_pin_name_visible	: type_pin_visible;
@@ -1893,6 +1894,14 @@ package body et_kicad is
 								--  #10: power symbol P (otherwise N)
 
 								tmp_prefix := type_component_prefix.to_bounded_string (get_field_from_line (line,3)); -- U
+
+								-- Whether a component is a "power flag" can be judged by the prefix:
+								if to_string (tmp_prefix) = power_flag_prefix then
+									tmp_power_flag := true;
+								else
+									tmp_power_flag := false;
+								end if;
+								
 								tmp_port_name_offset	:= mil_to_distance (get_field_from_line (line,5)); -- relevant for supply pins only
 								tmp_pin_name_visible	:= to_pin_visibile (get_field_from_line (line,6));
 								tmp_port_name_visible	:= to_port_visibile (get_field_from_line (line,7));

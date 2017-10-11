@@ -283,10 +283,13 @@ package et_libraries is
 	-- and a consecutive number. Both form something like "IC702"
 	-- Component referencees (in Eagle "device names") have prefixes like R, C, IC, ...	
 	component_prefix_length_max : constant natural := 10; -- CS: there is no reason to work with longer prefixes.
-	package type_component_prefix is new generic_bounded_length(component_prefix_length_max);
+	package type_component_prefix is new generic_bounded_length (component_prefix_length_max);
 	use type_component_prefix;
 
-	type type_component_reference_element is ( PREFIX, ID);
+	function to_string (prefix : in type_component_prefix.bounded_string) return string;
+	-- returns the given prefix as string
+
+	type type_component_reference_element is (PREFIX, ID);
 	component_reference_prefix_default : constant type_component_prefix.bounded_string := to_bounded_string("?");
 	component_reference_id_default : constant natural := 0;
 

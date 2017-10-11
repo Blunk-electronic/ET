@@ -228,6 +228,12 @@ package body et_libraries is
 	begin
 		return type_component_value.to_string(value);
 	end to_string;
+
+	function to_string (prefix : in type_component_prefix.bounded_string) return string is
+	-- returns the given prefix as string
+	begin
+		return type_component_prefix.to_string (prefix);
+	end to_string;
 	
 	function to_string (appearance : in type_component_appearance) return string is
 	-- Returns the given component appearance as string.
