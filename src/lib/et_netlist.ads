@@ -36,11 +36,11 @@ with ada.strings.bounded;       use ada.strings.bounded;
 -- with ada.strings.unbounded; 	use ada.strings.unbounded;
 with ada.containers;            use ada.containers;
 -- with ada.containers.vectors;
--- with ada.containers.doubly_linked_lists;
+with ada.containers.doubly_linked_lists;
 -- with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
 -- with ada.containers.indefinite_ordered_maps;
--- with ada.containers.ordered_sets;
+with ada.containers.ordered_sets;
 
 with et_coordinates;
 with et_libraries;
@@ -56,12 +56,67 @@ package et_netlist is
 
 	
 	use et_schematic.type_net_name;
-	use et_schematic.type_ports;
+-- 	use et_schematic.type_ports;
+
+	function port_sits_on_segment (
+	-- Returns true if the given port sits on the given net segment.
+		port	: in et_schematic.type_port_base'class;
+		segment	: in et_schematic.type_net_segment'class) 
+		return boolean;
+
+	-- If component ports are to be listed, we need additionally the component reference:
+	type type_port is new et_schematic.type_port_base with record
+		reference	: et_libraries.type_component_reference;
+	end record;
+
+	function reference (port : in type_port) return string;
+	-- Returns the component reference of the given port.
+
+	function port (port : in type_port) return string;
+	-- Returns the port name of the given port.
+
+	function pin (port : in type_port) return string;
+	-- Returns the pin name of the given port.
+	
+	function compare_ports (left, right : in type_port) return boolean;
+	-- Returns true if left comes before right. Compares by component name and pin name.
+	-- If left equals right, the return is false.	
+
+	package type_ports is new ordered_sets (
+		element_type => type_port,
+		"<" => compare_ports);
+
+-- PORTLISTS -- required for netlist generation.
+	-- Base ports of a component are collected in a simple list.
+	use et_schematic;
+	package type_base_ports is new doubly_linked_lists ( 
+		element_type => et_schematic.type_port_base); 
+	use type_base_ports;
+
+	-- The components with their ports are collected in a map with the component reference as key:
+	package type_portlists is new ordered_maps (
+		key_type => et_libraries.type_component_reference,
+		element_type => type_base_ports.list,
+		"<" => et_schematic.compare_reference);
+
+	function build_portlists return type_portlists.map;
+	-- Returns a list of components with the absolute positions of their ports as they are placed in the schematic.
+	
+	function first_port (component_cursor : in type_portlists.cursor) return type_base_ports.cursor;
+	-- Returns a cursor pointing to the first port of a component in the portlists.
+
+
+
+
+	
 
 	-- This is the netlist of a single submodule:
+	use et_schematic.type_net_name;
+	use type_ports;
+	
 	package type_netlist is new ordered_maps (
 		key_type => et_schematic.type_net_name.bounded_string, -- net name like "MCU_CLOCK"
-		element_type => et_schematic.type_ports.set); -- the list of ports connected with the net
+		element_type => type_ports.set); -- the list of ports connected with the net
 
 	use type_netlist;
 	use et_coordinates.type_submodule_name;
@@ -86,7 +141,7 @@ package et_netlist is
 	function net_count return count_type;
 	-- Returns the number of nets of the current module.
 	
-	function first_port (net_cursor : in type_netlist.cursor) return et_schematic.type_ports.cursor;
+	function first_port (net_cursor : in type_netlist.cursor) return type_ports.cursor;
 	-- Returns a cursor to the first port of the given net in the current module (indicated by module_cursor).
 
 	function port_count (net_cursor : in type_netlist.cursor) return count_type;

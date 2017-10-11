@@ -198,14 +198,43 @@ package et_schematic is
 		-- name can be obtained.
 	end record;
 
-	
 	-- Units of a component are collected in a map.
 	-- A unit is accessed by its name like "I/O Bank 3" or "PWR" or "A" or "B" ...	
 	package type_units is new indefinite_ordered_maps (
-		key_type => et_libraries.type_unit_name.bounded_string,
-		"<" => et_libraries.type_unit_name."<",
+		key_type => type_unit_name.bounded_string,
+		"<" => type_unit_name."<",
 		element_type => type_unit);
 
+	function unit_exists (
+	-- Returns true if the unit with the given name exists in the given list of units.
+		name : in type_unit_name.bounded_string; -- the unit being inquired
+		units : in type_units.map) -- the list of units
+		return boolean;
+
+	function position_of_unit (
+	-- Returns the coordinates of the unit with the given name.
+	-- It is assumed, the unit in question exists.
+	-- The unit is an element in the given list of units.
+		name : in type_unit_name.bounded_string; -- the unit being inquired
+		units : in type_units.map) -- the list of units
+		return type_coordinates;
+	
+	function mirror_style_of_unit (
+	-- Returns the mirror style of the given unit.
+	-- It is assumed, the unit in question exists.
+	-- The unit is an element in the given list of units.
+		name : in type_unit_name.bounded_string; -- the unit being inquired
+		units : in type_units.map) -- the list of units
+		return type_mirror;
+	
+	function orientation_of_unit (
+	-- Returns the orientation of the given unit.
+	-- It is assumed, the unit in question exists.
+	-- The unit is an element in the given list of units.
+		name : in type_unit_name.bounded_string; -- the unit being inquired
+		units : in type_units.map) -- the list of units
+		return type_angle;
+	
 	-- After associating (by the operator) a schematic component with a package, the composite
 	-- type_variant is set according to the desired package.
 	type type_variant is record
@@ -347,34 +376,6 @@ package et_schematic is
 		direction	: type_port_direction; -- example: "passive" -- used for ERC
 		style		: type_port_style;	-- used for ERC
 	end record;
-
-	function port_sits_on_segment (
-	-- Returns true if the given port sits on the given net segment.
-		port	: in type_port_base'class;
-		segment	: in type_net_segment'class) 
-		return boolean;
-
-	-- If component ports are to be listed, we need additionally the component reference:
-	type type_port is new type_port_base with record
-		reference	: et_libraries.type_component_reference;
-	end record;
-
-	function reference (port : in type_port) return string;
-	-- Returns the component reference of the given port.
-
-	function port (port : in type_port) return string;
-	-- Returns the port name of the given port.
-
-	function pin (port : in type_port) return string;
-	-- Returns the pin name of the given port.
-	
-	function compare_ports (left, right : in type_port) return boolean;
-	-- Returns true if left comes before right. Compares by component name and pin name.
-	-- If left equals right, the return is false.	
-
-	package type_ports is new ordered_sets (
-		element_type => type_port,
-		"<" => compare_ports);
 
 	-- A net has a name, a scope, a list of segments.
     -- A net has coordinates
@@ -587,26 +588,6 @@ package et_schematic is
 	-- The cursor must point to the component in question.
 
 
--- PORTLISTS -- required for netlist generation. CS: should move to et_netlist ?
-	-- Base ports of a component are collected in a simple list.
-	package type_base_ports is new doubly_linked_lists ( 
-		element_type => type_port_base); 
-	use type_base_ports;
-
-	-- The components with their ports are collected in a map with the component reference as key:
-	package type_portlists is new ordered_maps (
-		key_type => et_libraries.type_component_reference,
-		element_type => type_base_ports.list,
-		"<" => et_schematic.compare_reference);
-
-	function build_portlists return type_portlists.map;
-	-- Returns a list of components with the absolute positions of their ports as they are placed in the schematic.
-	
-	function first_port (component_cursor : in type_portlists.cursor) return type_base_ports.cursor;
-	-- Returns a cursor pointing to the first port of a component in the portlists.
-
-
-
 	
 -- MODULES
 	
@@ -709,13 +690,6 @@ package et_schematic is
 	function units_of_component (component_cursor : in type_components.cursor) return type_units.map;
 	-- Returns the units of the given component.
 
--- 	function position_of_unit (
--- 	-- Returns the coordinates of the given unit.
--- 	-- The unit is one element in the given list of units.
--- 		name : in type_unit_name.bounded_string; -- the unit being inquired
--- 		units : in type_units.map) -- the list of units
--- 		return type_coordinates;
-	
 	procedure warning_on_name_less_net (
 	-- Writes a warning about a name-less net.
 		name 	: in et_schematic.type_net_name.bounded_string;
