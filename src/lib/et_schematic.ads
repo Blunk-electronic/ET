@@ -354,7 +354,7 @@ package et_schematic is
 		segment	: in type_net_segment'class) 
 		return boolean;
 
-	-- If component ports are to be listed in a type_net, we need additionally the component reference:
+	-- If component ports are to be listed, we need additionally the component reference:
 	type type_port is new type_port_base with record
 		reference	: et_libraries.type_component_reference;
 	end record;
@@ -372,16 +372,11 @@ package et_schematic is
 	-- Returns true if left comes before right. Compares by component name and pin name.
 	-- If left equals right, the return is false.	
 
--- 	procedure add_port (
--- 	-- Adds a port to a net in the current module (indicated by module_cursor).
--- 		net		: in et_schematic.type_net_name.bounded_string;
--- 		port	: in et_schematic.type_port);
-	
 	package type_ports is new ordered_sets (
 		element_type => type_port,
 		"<" => compare_ports);
 
-	-- A net has a name, a scope, a list of segments, a list of ports.
+	-- A net has a name, a scope, a list of segments.
     -- A net has coordinates
     -- CS: x/y position should be the lowest values available on the first sheet ? 
     -- CS: do not use sheet and x/y at all ?
@@ -389,7 +384,6 @@ package et_schematic is
 		scope 		: type_scope_of_net; -- example "local"
 		segments 	: type_net_segments.list; -- list of net segments
 		--junctions	: type_junctions.list; -- the junctions of the net
-        --ports 		: type_ports.set; -- list of type_ports
 		coordinates : et_coordinates.type_coordinates;
 	end record;
 
