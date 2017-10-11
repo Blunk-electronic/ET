@@ -341,8 +341,8 @@ package et_schematic is
 
 	-- This is a coponent port with its basic elements:
 	type type_port_base is tagged record
-		pin			: et_libraries.type_pin_name.bounded_string;
-		port		: et_libraries.type_port_name.bounded_string;
+		pin			: et_libraries.type_pin_name.bounded_string; -- the pin name like 3,4 or E3, A2
+		port		: et_libraries.type_port_name.bounded_string; -- the port name like GPIO1, GPIO2
 		coordinates : et_coordinates.type_coordinates;
 		direction	: type_port_direction; -- example: "passive" -- used for ERC
 		style		: type_port_style;	-- used for ERC

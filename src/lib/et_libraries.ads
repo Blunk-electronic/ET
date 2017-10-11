@@ -296,6 +296,9 @@ package et_libraries is
 		id_width	: positive; -- the number of digits in the id. 3 in case of an id of 303
 		-- NOTE: This allows something like R091 or IC0 (there are reasons for such strange things ...)
 	end record;
+
+	function prefix (reference : in type_component_reference) return type_component_prefix.bounded_string;
+	-- Returns the prefix of the given component reference.
 	
 	function component_value_valid (
 	-- Returns true if the given component value meets certain conventions.									   

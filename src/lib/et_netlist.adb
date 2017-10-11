@@ -136,10 +136,14 @@ package body et_netlist is
 			process => get'access);
 		return count;
 	end port_count;
+
+
+		
 	
 	procedure make_netlists is
 	-- Builids the netlists of all modules in the rig.
-	-- Netlists are to be exported in individual project directories in the work directory of ET.
+	-- Bases on the portlists and net-segment information of the module.
+	-- Netlists become exported in individual project directories in the work directory of ET.
 	-- These project directories have the same name as the module indicated by module_cursor.
 
 		use et_schematic;
@@ -162,7 +166,7 @@ package body et_netlist is
 			net_cursor_module : type_nets.cursor := first_net; 
 			-- points to the net being read from the module (see type_module in et_schematic.ads)
 		
-			netlist : type_netlist.map; -- the netlist being built. to be returned finally.
+			netlist_pre : type_netlist.map; -- the netlist being built. to be returned finally.
 			use type_nets;
 			
 			segment_cursor : type_net_segments.cursor; -- points to the net segment being read from the module
@@ -192,11 +196,66 @@ package body et_netlist is
 				end add;
 				
 			begin -- add_port
-				netlist.update_element (
+				netlist_pre.update_element (
 					position => net_cursor_netlist,
 					process => add'access);
 			end add_port;
+
+			function post_process_netlist return type_netlist.map is
+			-- Post processes the netlist of the current rig module (indicated by module_cursor)
+				netlist_post : type_netlist.map; -- the netlist being built. to be returned finally.
+				net_cursor_pre, net_cursor_post : type_netlist.cursor;
+				net_name	: et_schematic.type_net_name.bounded_string;
+
+				port_cursor	: et_schematic.type_ports.cursor;
+				port		: et_schematic.type_port;
+
+				use et_libraries;
+			begin
 			
+				log (text => "post-processing module netlist ...", level => 1);
+				net_cursor_pre := netlist_pre.first;
+				while net_cursor_pre /= type_netlist.no_element loop
+					net_name := key (net_cursor_pre);
+
+					log_indentation_up;
+					log (text => "net " & et_schematic.type_net_name.to_string (net_name), level => 1);
+					log_indentation_up;
+
+		-- 			--log (text => "exporting" & count_type'image (port_count (net_cursor)) & " ports ...", level => 1);
+					port_cursor := first_port (net_cursor_pre);
+					while port_cursor /= et_schematic.type_ports.no_element loop
+						port := element (port_cursor);
+						
+						log (text => 
+								et_schematic.reference (port) & " "
+								& et_schematic.port (port) & " "
+								& et_schematic.pin (port) & " "
+								);
+
+						-- test if supply port name matches net name
+						if port.direction = POWER_OUT then
+							if et_schematic.port (port) = et_schematic.to_string (net_name) then
+								null; -- fine. net name matches port name
+							else
+								log (text => "net renaming required", level => 1);
+							end if;
+null;
+						end if;
+						
+						next (port_cursor);
+					end loop;
+
+					log_indentation_down;
+					log_indentation_down;
+
+					next (net_cursor_pre);
+				end loop;
+
+				
+				return netlist_post;
+			end post_process_netlist;
+					
 		begin -- make_netlist (note singluar !)
 			log (text => "building module netlist ...", level => 1);
 
@@ -219,7 +278,7 @@ package body et_netlist is
 				log (text => "net " & et_schematic.type_net_name.to_string (key (net_cursor_module)), level => 2);
 				
 				-- Insert net in netlist with the net name as primary key:
-				netlist.insert (
+				netlist_pre.insert (
 					key => key (net_cursor_module), -- net name like "MCU_CLOCK"
 					new_item => type_ports.empty_set, -- for the moment an empty portlist
 					inserted => net_inserted, -- CS: check status ?
@@ -277,8 +336,11 @@ package body et_netlist is
 				next (net_cursor_module);
 			end loop;
 
-			log (text => "processed nets" & count_type'image (length (netlist)), level => 2);
-			return netlist;
+			log (text => "processed nets" & count_type'image (length (netlist_pre)), level => 2);
+
+			--return netlist_pre;			
+			return post_process_netlist;
+
 		end make_netlist;
 		
 	begin -- make_netlists (note plural !)

@@ -289,6 +289,12 @@ package body et_libraries is
 		return v;
 	end component_value_valid;
 
+	function prefix (reference : in type_component_reference) return type_component_prefix.bounded_string is
+	-- Returns the prefix of the given component reference.
+	begin
+		return reference.prefix;
+	end prefix;
+
 	
 	procedure write_component_properties (component : in type_components.cursor) is
 	-- Writes the properties of the component indicated by the given cursor.
