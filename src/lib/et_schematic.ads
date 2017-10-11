@@ -368,14 +368,6 @@ package et_schematic is
 	-- it may be exported to parent module (other ECAD tools refer to them as "hierachical or global nets").
 	type type_scope_of_net is  ( local, hierarchic, global );
 
-	-- This is a coponent port with its basic elements:
-	type type_port_base is tagged record
-		pin			: et_libraries.type_pin_name.bounded_string; -- the pin name like 3,4 or E3, A2
-		port		: et_libraries.type_port_name.bounded_string; -- the port name like GPIO1, GPIO2
-		coordinates : et_coordinates.type_coordinates;
-		direction	: type_port_direction; -- example: "passive" -- used for ERC
-		style		: type_port_style;	-- used for ERC
-	end record;
 
 	-- A net has a name, a scope, a list of segments.
     -- A net has coordinates

@@ -58,7 +58,7 @@ package body et_netlist is
 	function port_sits_on_segment (
 	-- Returns true if the given port sits on the given net segment.
 		port	: in type_port_base'class;
-		segment	: in type_net_segment'class) 
+		segment	: in et_schematic.type_net_segment'class) 
 		return boolean is
 
 		use et_geometry;
@@ -85,7 +85,7 @@ package body et_netlist is
 	function reference (port : in type_port) return string is
 	-- Returns the component reference of the given port.	
 	begin
-		return to_string (port.reference);
+		return et_schematic.to_string (port.reference);
 	end reference;
 
 	function port (port : in type_port) return string is
@@ -106,6 +106,7 @@ package body et_netlist is
 	-- CS: needs verification !
 		result : boolean := false;
 		use et_libraries;
+		use et_schematic;
 	begin
 		-- First we compare the component reference.
 		-- Examples: C56 comes before R4, LED5 comes before LED7
@@ -184,7 +185,8 @@ package body et_netlist is
 			use et_libraries.type_units_internal;
 			use et_libraries.type_ports;
 			use et_coordinates;
-
+			use et_schematic;
+		
 			-- The unit cursor of the component advances through the units stored in the library.
 			unit_cursor_internal	: type_units_internal.cursor;
 
@@ -206,12 +208,12 @@ package body et_netlist is
 			-- new port unchanged. X and Y position of the port must be re-computed according to
 			-- the rotation, mirror style and position of the unit in the schematic.
 			-- NOTE: It is important first to rotate, then mirror (if required) and finally to move/offset it.
-			
+
 				procedure add (
 					component	: in type_component_reference;
 					ports		: in out type_base_ports.list) is
 					use et_coordinates;
-
+					
 					port_coordinates : type_coordinates;
 					--mirror_style : et_schematic.type_mirror;
 				begin

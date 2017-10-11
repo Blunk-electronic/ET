@@ -58,39 +58,27 @@ package et_netlist is
 	use et_schematic.type_net_name;
 -- 	use et_schematic.type_ports;
 
+	-- This is a coponent port with its basic elements:
+	type type_port_base is tagged record
+		pin			: et_libraries.type_pin_name.bounded_string; -- the pin name like 3,4 or E3, A2
+		port		: et_libraries.type_port_name.bounded_string; -- the port name like GPIO1, GPIO2
+		coordinates : et_coordinates.type_coordinates;
+		direction	: et_libraries.type_port_direction; -- example: "passive" -- used for ERC
+		style		: et_libraries.type_port_style;	-- used for ERC
+	end record;
+
 	function port_sits_on_segment (
 	-- Returns true if the given port sits on the given net segment.
-		port	: in et_schematic.type_port_base'class;
+		port	: in type_port_base'class;
 		segment	: in et_schematic.type_net_segment'class) 
 		return boolean;
 
-	-- If component ports are to be listed, we need additionally the component reference:
-	type type_port is new et_schematic.type_port_base with record
-		reference	: et_libraries.type_component_reference;
-	end record;
 
-	function reference (port : in type_port) return string;
-	-- Returns the component reference of the given port.
-
-	function port (port : in type_port) return string;
-	-- Returns the port name of the given port.
-
-	function pin (port : in type_port) return string;
-	-- Returns the pin name of the given port.
-	
-	function compare_ports (left, right : in type_port) return boolean;
-	-- Returns true if left comes before right. Compares by component name and pin name.
-	-- If left equals right, the return is false.	
-
-	package type_ports is new ordered_sets (
-		element_type => type_port,
-		"<" => compare_ports);
-
--- PORTLISTS -- required for netlist generation.
+-- PORTLISTS -- required as intermediate stage for netlist generation.
 	-- Base ports of a component are collected in a simple list.
-	use et_schematic;
+
 	package type_base_ports is new doubly_linked_lists ( 
-		element_type => et_schematic.type_port_base); 
+		element_type => type_port_base); 
 	use type_base_ports;
 
 	-- The components with their ports are collected in a map with the component reference as key:
@@ -110,10 +98,32 @@ package et_netlist is
 
 	
 
-	-- This is the netlist of a single submodule:
 	use et_schematic.type_net_name;
-	use type_ports;
+
+	-- If component ports are to be listed, we need additionally the component reference:
+	type type_port is new type_port_base with record
+		reference	: et_libraries.type_component_reference;
+	end record;
+
+	function reference (port : in type_port) return string;
+	-- Returns the component reference of the given port.
+
+	function port (port : in type_port) return string;
+	-- Returns the port name of the given port.
+
+	function pin (port : in type_port) return string;
+	-- Returns the pin name of the given port.
 	
+	function compare_ports (left, right : in type_port) return boolean;
+	-- Returns true if left comes before right. Compares by component name and pin name.
+	-- If left equals right, the return is false.	
+	
+	package type_ports is new ordered_sets (
+		element_type => type_port,
+		"<" => compare_ports);
+	use type_ports;
+
+	-- This is the netlist of a single submodule:	
 	package type_netlist is new ordered_maps (
 		key_type => et_schematic.type_net_name.bounded_string, -- net name like "MCU_CLOCK"
 		element_type => type_ports.set); -- the list of ports connected with the net
