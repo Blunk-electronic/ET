@@ -113,6 +113,10 @@ package et_netlist is
 
 	function pin (port : in type_port) return string;
 	-- Returns the pin name of the given port.
+
+	-- CS: function direction (port : in type_port) return string;
+	-- Returns the direction of the given port.
+
 	
 	function compare_ports (left, right : in type_port) return boolean;
 	-- Returns true if left comes before right. Compares by component name and pin name.

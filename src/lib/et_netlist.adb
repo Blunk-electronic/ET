@@ -605,6 +605,13 @@ package body et_netlist is
 					process => add'access);
 			end add_port;
 
+			function net_to_port_name (port_name : in et_libraries.type_port_name.bounded_string) 
+				return type_net_name.bounded_string is
+			begin
+				-- cs: count renamings
+				return type_net_name.to_bounded_string (et_libraries.to_string (port_name));
+			end net_to_port_name;
+																				  
 			function post_process_netlist return type_netlist.map is
 			-- Post processes the netlist of the current rig module (indicated by module_cursor)
 				netlist_post : type_netlist.map; -- the netlist being built. to be returned finally.
@@ -618,6 +625,7 @@ package body et_netlist is
 			begin
 			
 				log (text => "post-processing module netlist ...", level => 1);
+				-- LOOP IN PRELIMINARY NETLIST
 				net_cursor_pre := netlist_pre.first;
 				while net_cursor_pre /= type_netlist.no_element loop
 					net_name := key (net_cursor_pre);
@@ -626,6 +634,7 @@ package body et_netlist is
 					log (text => "net " & et_schematic.type_net_name.to_string (net_name), level => 1);
 					log_indentation_up;
 
+					-- LOOP IN PORTLIST OF CURRENT NET
 		-- 			--log (text => "exporting" & count_type'image (port_count (net_cursor)) & " ports ...", level => 1);
 					port_cursor := first_port (net_cursor_pre);
 					while port_cursor /= type_ports.no_element loop
@@ -639,10 +648,11 @@ package body et_netlist is
 
 						-- test if supply port name matches net name
 						if port.direction = POWER_OUT then
-							if et_netlist.port (port) = et_schematic.to_string (net_name) then
+							if et_netlist.port (element (port_cursor)) = et_schematic.to_string (net_name) then
 								null; -- fine. net name matches port name
 							else
 								log (text => "net renaming required", level => 1);
+								net_name := net_to_port_name (element (port_cursor).port);
 							end if;
 
 						end if;
