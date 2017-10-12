@@ -198,6 +198,9 @@ package et_libraries is
 		NOT_CONNECTED
 		);
 
+	function to_string (direction : in type_port_direction) return string;
+	-- Returns the given port direction as string.
+
 	type type_port_visible is ( ON, OFF);
 	type type_pin_visible is ( ON, OFF);
 

@@ -35,6 +35,8 @@
 --			check "common to all units in component" is set, ET generates an
 --			extra unit. Why ? ET assumes the affeced pin is a power pin. Power pins
 --			in turn are assigned to an extra unit (in EAGLE we speak of "supply symbols").
+--		2. Warning if virtual component with one power pin has pin direction differing from power_out
+--			Example: Power symbol "P3V3" must have pin direction power_out.	
 
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
@@ -425,9 +427,12 @@ package body et_kicad is
 	-- If the given component reference is one that belongs to a "power flag" returns true.
 		use et_libraries.type_component_prefix;
 	begin
+		--log (et_schematic.to_string (reference));
 		if et_libraries.prefix (reference) = power_flag_prefix then
+			--log ("power flag on");
 			return true;
-		else 
+		else
+			--log ("power flag off");
 			return false;
 		end if;
 	end to_power_flag;

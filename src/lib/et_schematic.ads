@@ -582,6 +582,10 @@ package et_schematic is
 	-- Returns the component appearance where cursor points to.
 		return type_component_appearance;
 
+	function component_power_flag (cursor : in type_components.cursor)
+	-- Returns true if the component is a power flag.
+		 return boolean;
+	
 	function component_name_in_library (cursor : in type_components.cursor) 
 		return et_libraries.type_component_name.bounded_string;
 	-- Returns the generic name of a component as it is listed in a library.

@@ -64,6 +64,12 @@ package body et_libraries is
 		return type_full_library_name.to_string (full_library_name);
 	end to_string;
 
+	function to_string (direction : in type_port_direction) return string is
+	-- Returns the given port direction as string.
+	begin
+		return "direction " & to_lower (type_port_direction'image (direction));
+	end to_string;
+	
 	function to_string (port_name : in type_port_name.bounded_string) return string is
 	-- Returns the given port name as string.
 	begin

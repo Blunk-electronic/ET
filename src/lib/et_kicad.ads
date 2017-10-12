@@ -302,7 +302,7 @@ package et_kicad is
 	type type_library_component_appearance is (N, P); -- normal or power
 
 	-- power flags have a special prefix which distinguishes them from other components:
-	power_flag_prefix : constant string (1..4) := "#PWR";
+	power_flag_prefix : constant string (1..4) := "#FLG";
 	
 	type type_symbol_interchangeable is (L, F); -- L means swapping not allowed, F means swapping allowed 
 	type type_show_pin_number is (Y, N); -- show pin/pad number yes/no

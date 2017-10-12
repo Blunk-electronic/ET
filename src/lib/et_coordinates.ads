@@ -95,7 +95,8 @@ package et_coordinates is
 
 	axis_separator		: constant string (1..1) := "/";
 	--position_preamble	: constant string (1..15) := "position (x" & axis_separator & "y) ";
-	position_preamble	: constant string (1..6) := "(x" & axis_separator & "y) ";
+	position_preamble	: constant string (1..11) := "pos. (x" & axis_separator & "y) ";
+	--position_preamble	: constant string (1..6) := "(x" & axis_separator & "y) ";
 	
 	function to_string (point : in type_2d_point) return string;
 	-- Returns the given point coordinates to a string.
@@ -141,8 +142,9 @@ package et_coordinates is
 
 	zero_position : constant type_coordinates;
 	
---	coordinates_preamble : constant string (1..21) := "position "
-	coordinates_preamble : constant string (1..12) := "" 
+	--	coordinates_preamble : constant string (1..21) := "position "
+	coordinates_preamble : constant string (1..17) := "pos. "
+	--coordinates_preamble : constant string (1..12) := "" 
 		& "(sheet"
 		& axis_separator
 		& "x"

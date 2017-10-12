@@ -262,7 +262,9 @@ package body et_netlist is
 							));
 
 					log_indentation_up;
-					log (to_string (last_element (ports).coordinates));
+					log (to_string (last_element (ports).direction), level => 2);
+					-- CS: other port properties
+					log (to_string (last_element (ports).coordinates), level => 2);
 					log_indentation_down;
 				end add;
 				
@@ -342,9 +344,9 @@ package body et_netlist is
 		-- Loop in component list of schematic. component_cursor_sch points to the 
 		-- particular component. 
 
-		-- CS: update this comment and explain why virtual components are addressed too:
-		-- We are interested in components that appear in both schematc and layout.
-
+		-- We ignore components that are "power_flags". Yet other virtual components like
+		-- power symbols like GND or P3V3 are relevant indeed. Because later when we do
+		-- the netlist post-processing they enforce their port names to the connected net.
 		
 		-- For each component, store a list of its units in units_sch.
 		-- This list contains the units found in the schematic with their coordinates.
@@ -353,7 +355,8 @@ package body et_netlist is
 		et_schematic.reset_component_cursor (component_cursor_sch);
 		while component_cursor_sch /= et_schematic.type_components.no_element loop
 
--- 			if component_appearance (component_cursor_sch) = sch_pcb then
+			-- power flags are to be skipped
+			if not et_schematic.component_power_flag (component_cursor_sch) then
 		
 				-- log component by its reference		
 				component_reference :=  et_schematic.component_reference (component_cursor_sch);
@@ -425,7 +428,7 @@ package body et_netlist is
 				log_indentation_down;
 				log_indentation_down;
 
--- 			end if; -- appearance
+			end if; -- no power_flag
 			
 			next (component_cursor_sch); -- advance to next component
 		end loop;

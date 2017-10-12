@@ -295,6 +295,27 @@ package body et_schematic is
 	begin
 		return type_components.element (cursor).appearance;
 	end component_appearance;
+
+	function component_power_flag (cursor : in type_components.cursor)
+	-- Returns true if the component is a power flag.
+		return boolean is
+		use et_string_processing;
+	begin
+		-- Only vitual components have the power flag property. 
+		-- For real components the return is always false;
+		if type_components.element (cursor).appearance = sch then
+			--log ("virtual component");
+			--if type_components.element (cursor).power_flag then
+			--	log ("power flag on");
+			--else
+			--	log ("power flag off");
+			--end if;
+			return type_components.element (cursor).power_flag;
+		else
+			--log ("real component");
+			return false;
+		end if;
+	end component_power_flag;
 	
 	function component_name_in_library (cursor : in type_components.cursor) 
 		return et_libraries.type_component_name.bounded_string is
