@@ -259,7 +259,15 @@ package et_schematic is
 				purpose		: et_libraries.type_component_purpose.bounded_string;
 				datasheet	: et_libraries.type_component_datasheet.bounded_string;
 
-			when sch => null;
+			-- If a component appears in the schematic only, it does not
+			-- have any package variants.
+			-- Such components are power symbols or power flags. Later when building netlists
+			-- those components enforce net names (like GND or P3V3). Power flags do not
+			-- enforce net names. In order to distinguish them from regular power symbols the
+			-- power_flag is provided.
+			when sch => 
+				power_flag	: boolean := false; -- CS: use a derived type
+				
 			when others => null; -- CS
 		end case;
 	end record;

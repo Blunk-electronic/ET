@@ -420,7 +420,17 @@ package body et_kicad is
 
 		-- CS: exception handler
 	end to_degrees;
-	
+
+	function to_power_flag (reference : in et_libraries.type_component_reference) return boolean is
+	-- If the given component reference is one that belongs to a "power flag" returns true.
+		use et_libraries.type_component_prefix;
+	begin
+		if et_libraries.prefix (reference) = power_flag_prefix then
+			return true;
+		else 
+			return false;
+		end if;
+	end to_power_flag;
 	
 	procedure read_components_libraries is
 	-- Reads components from libraries as stored in lib_dir and project libraries:
@@ -470,7 +480,6 @@ package body et_kicad is
 			tmp_component_name		: type_component_name.bounded_string; -- 74LS00
 			tmp_prefix				: type_component_prefix.bounded_string; -- IC
 			tmp_appearance			: type_component_appearance;
-			tmp_power_flag			: boolean; -- goes true if component is a power flag
 
 			tmp_port_name_visible	: type_port_visible;
 			tmp_pin_name_visible	: type_pin_visible;
@@ -1117,11 +1126,20 @@ package body et_kicad is
 						-- we insert into the given components list a new component
 						type_components.insert(
 							container	=> components,
-							key			=> tmp_component_name, -- 74LS00
+							key			=> tmp_component_name, -- #PWR, #FLG 
 							position	=> comp_cursor,
 							inserted	=> comp_inserted,
 							new_item	=> (
 								appearance		=> sch,
+
+								-- Whether the component is a power flag can be reasoned by the prefix.
+								-- At library level there is no indexed prefix. Power flags have just 
+								-- the prefix "#FLG". So we can provide an arbitrary index for the conversion
+								-- function "to_power_flag".
+								power_flag		=> to_power_flag (et_schematic.to_component_reference (
+														text_in => to_string (tmp_prefix) & "0", -- #FLG0
+														allow_special_character_in_prefix => true)), -- because of the '#'
+
 								prefix			=> tmp_prefix,
 								value			=> type_component_value.to_bounded_string (content (tmp_value)),
 								commissioned	=> et_string_processing.type_date (content (tmp_commissioned)),
@@ -1894,14 +1912,6 @@ package body et_kicad is
 								--  #10: power symbol P (otherwise N)
 
 								tmp_prefix := type_component_prefix.to_bounded_string (get_field_from_line (line,3)); -- U
-
-								-- Whether a component is a "power flag" can be judged by the prefix:
-								if to_string (tmp_prefix) = power_flag_prefix then
-									tmp_power_flag := true;
-								else
-									tmp_power_flag := false;
-								end if;
-								
 								tmp_port_name_offset	:= mil_to_distance (get_field_from_line (line,5)); -- relevant for supply pins only
 								tmp_pin_name_visible	:= to_pin_visibile (get_field_from_line (line,6));
 								tmp_port_name_visible	:= to_port_visibile (get_field_from_line (line,7));
@@ -3577,6 +3587,10 @@ package body et_kicad is
 							reference => tmp_component_reference,
 							component => (
 								appearance		=> sch,
+
+								-- Whether the component is a "power flag" can be reasoned from its reference:
+								power_flag		=> to_power_flag (tmp_component_reference),
+								
 								name_in_library	=> tmp_component_name_in_lib,
 								value 			=> et_libraries.type_component_value.to_bounded_string (et_libraries.content (tmp_component_text_value)),
 								commissioned 	=> et_string_processing.type_date (et_libraries.content (tmp_component_text_commissioned)),
