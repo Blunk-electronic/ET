@@ -606,6 +606,7 @@ package body et_netlist is
 			end add_port;
 
 			function port_to_net_name (port_name : in et_libraries.type_port_name.bounded_string) 
+			-- Converts the given port name to a net name.
 				return type_net_name.bounded_string is
 			begin
 				-- cs: count renamings. warning if more than one renaming occured
@@ -614,6 +615,7 @@ package body et_netlist is
 																				  
 			function post_process_netlist return type_netlist.map is
 			-- Post processes the netlist of the current rig module (indicated by module_cursor)
+			-- CS: comment !
 				net_cursor_pre	: type_netlist.cursor;
 
 				netlist_post 	: type_netlist.map; -- the netlist being built. to be returned finally.
@@ -628,7 +630,6 @@ package body et_netlist is
 					net_name	: in et_schematic.type_net_name.bounded_string;
 					ports		: in out type_ports.set) is
 				begin
-					null;
 					union (target => ports, source => element (net_cursor_pre)); 
 				end append_ports;
 				
@@ -667,19 +668,19 @@ package body et_netlist is
 								log (text => "net renaming required", level => 1);
 								net_name := port_to_net_name (element (port_cursor).port);
 							end if;
-
 						end if;
 						
 						next (port_cursor);
 					end loop;
 
-					-- insert renamed net in netlist_post
+					-- create a new net in netlist_post
 					netlist_post.insert (
 						key => net_name,
 						new_item => element (net_cursor_pre),
 						position => net_cursor_post,
 						inserted => inserted_post);
 
+					-- if net already in netlist_post, append ports only
 					if not inserted_post then
 						netlist_post.update_element (
 							position => net_cursor_post,
@@ -691,7 +692,6 @@ package body et_netlist is
 
 					next (net_cursor_pre);
 				end loop;
-
 				
 				return netlist_post;
 			end post_process_netlist;
@@ -778,7 +778,6 @@ package body et_netlist is
 
 			log (text => "processed nets" & count_type'image (length (netlist_pre)), level => 2);
 
-			--return netlist_pre;			
 			return post_process_netlist;
 
 		end make_netlist;
@@ -824,10 +823,6 @@ package body et_netlist is
 		net_cursor	: type_netlist.cursor; -- points to the net being exported
 		net_name	: et_schematic.type_net_name.bounded_string;
 		port_cursor	: type_ports.cursor; -- point to the port being exported
-
--- 		component	: et_libraries.type_component_reference;
--- 		port		: et_libraries.type_pin_name.bounded_string;
--- 		pin			: et_libraries.type_port_name.bounded_string;
 		port		: type_port;
 
 
@@ -886,6 +881,7 @@ package body et_netlist is
 					port := element (port_cursor);
 
 					-- write reference, port, pin in netlist (all in a single line)
+					-- CS: use port_cursor instead of a variable "port"
 					put_line (netlist_handle, 
 						reference (port) & " "
 						& et_netlist.port (port) & " "
