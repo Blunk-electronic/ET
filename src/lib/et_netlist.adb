@@ -570,7 +570,7 @@ package body et_netlist is
 			net_cursor_module : type_nets.cursor := first_net; 
 			-- points to the net being read from the module (see type_module in et_schematic.ads)
 		
-			netlist_pre : type_netlist.map; -- the netlist being built. to be returned finally.
+			netlist_pre : type_netlist.map; -- the preliminary netlist
 			use type_nets;
 			
 			segment_cursor : type_net_segments.cursor; -- points to the net segment being read from the module
@@ -605,24 +605,35 @@ package body et_netlist is
 					process => add'access);
 			end add_port;
 
-			function net_to_port_name (port_name : in et_libraries.type_port_name.bounded_string) 
+			function port_to_net_name (port_name : in et_libraries.type_port_name.bounded_string) 
 				return type_net_name.bounded_string is
 			begin
-				-- cs: count renamings
+				-- cs: count renamings. warning if more than one renaming occured
 				return type_net_name.to_bounded_string (et_libraries.to_string (port_name));
-			end net_to_port_name;
+			end port_to_net_name;
 																				  
 			function post_process_netlist return type_netlist.map is
 			-- Post processes the netlist of the current rig module (indicated by module_cursor)
-				netlist_post : type_netlist.map; -- the netlist being built. to be returned finally.
-				net_cursor_pre, net_cursor_post : type_netlist.cursor;
-				net_name	: et_schematic.type_net_name.bounded_string;
+				net_cursor_pre	: type_netlist.cursor;
 
-				port_cursor	: type_ports.cursor;
-				port		: type_port;
+				netlist_post 	: type_netlist.map; -- the netlist being built. to be returned finally.
+				net_cursor_post	: type_netlist.cursor;
+				inserted_post	: boolean;
+				net_name		: et_schematic.type_net_name.bounded_string;
 
+				port_cursor		: type_ports.cursor;
+				port			: type_port;
+
+				procedure append_ports (
+					net_name	: in et_schematic.type_net_name.bounded_string;
+					ports		: in out type_ports.set) is
+				begin
+					null;
+					union (target => ports, source => element (net_cursor_pre)); 
+				end append_ports;
+				
 				use et_libraries;
-			begin
+			begin -- post_process_netlist
 			
 				log (text => "post-processing module netlist ...", level => 1);
 				-- LOOP IN PRELIMINARY NETLIST
@@ -646,19 +657,34 @@ package body et_netlist is
 								& et_netlist.pin (port) & " "
 								);
 
-						-- test if supply port name matches net name
+						-- Test if supply port name matches net name. When positive, nothing to to.
+						-- Otherwise set the new net name according to the port name of the power port.
+						-- The last renaming that took place owerwrites previous renamings.
 						if port.direction = POWER_OUT then
 							if et_netlist.port (element (port_cursor)) = et_schematic.to_string (net_name) then
 								null; -- fine. net name matches port name
 							else
 								log (text => "net renaming required", level => 1);
-								net_name := net_to_port_name (element (port_cursor).port);
+								net_name := port_to_net_name (element (port_cursor).port);
 							end if;
 
 						end if;
 						
 						next (port_cursor);
 					end loop;
+
+					-- insert renamed net in netlist_post
+					netlist_post.insert (
+						key => net_name,
+						new_item => element (net_cursor_pre),
+						position => net_cursor_post,
+						inserted => inserted_post);
+
+					if not inserted_post then
+						netlist_post.update_element (
+							position => net_cursor_post,
+							process => append_ports'access);
+					end if;
 
 					log_indentation_down;
 					log_indentation_down;
@@ -820,7 +846,7 @@ package body et_netlist is
 					name => to_string (key (module_cursor)),
 					extension => "net"));
 
-			-- create the netlist (which inevitably overwrites the previous file)
+			-- create the netlist (which inevitably and intentionally overwrites the previous file)
 			log_indentation_up;
 			log (text => "creating netlist file " & type_netlist_file_name.to_string (netlist_file_name), level => 1);
 			create (
@@ -829,6 +855,15 @@ package body et_netlist is
 				name => type_netlist_file_name.to_string (netlist_file_name));
 
 			-- CS: write a nice header with legend in netlist
+			put_line (netlist_handle, comment_mark & " " & system_name & " netlist");
+			put_line (netlist_handle, comment_mark & " date " & string (date_now));
+			put_line (netlist_handle, comment_mark & " module " & to_string (key (module_cursor)));
+			put_line (netlist_handle, comment_mark & " " & row_separator_double);
+			-- CS: statistics about net count and pin count ?
+			put_line (netlist_handle, comment_mark & " legend:");
+			put_line (netlist_handle, comment_mark & "  net name");
+			put_line (netlist_handle, comment_mark & "  component port pin/pad direction");
+			put_line (netlist_handle, comment_mark & " " & row_separator_single);
 			
 			-- export net
 			log_indentation_up;
@@ -865,6 +900,10 @@ package body et_netlist is
 
 				next (net_cursor);
 			end loop;
+
+			new_line (netlist_handle);
+			put_line (netlist_handle, comment_mark & " " & row_separator_double);
+			put_line (netlist_handle, comment_mark & " end of list");
 			
 			close (netlist_handle);
 
