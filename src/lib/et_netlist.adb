@@ -226,7 +226,7 @@ package body et_netlist is
 					use et_coordinates;
 					
 					port_coordinates : type_coordinates;
-					--mirror_style : et_schematic.type_mirror;
+
 				begin -- add
 					-- Init port coordinates with the coordinates of the port found in the library.
 					-- The port position is a type_2d_point and must be converted to type_coordinates.

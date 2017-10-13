@@ -164,10 +164,13 @@ package et_schematic is
 -- UNITS AND COMPONENTS
 
 	-- Units may have alternative representations such as de_Morgan
-	type type_alternative_representation is ( NO, YES);
+	type type_alternative_representation is (NO, YES);
 
 	-- units can be placed mirrored along the x or y axis or not at all.
 	type type_mirror is (none, x_axis, y_axis);
+
+	function to_string (mirror : in type_mirror) return string;
+	-- returns the given mirror style as string
 
 	-- In a schematic we find units spread all over.
 	-- A unit is a subsection of a component.

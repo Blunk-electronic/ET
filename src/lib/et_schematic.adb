@@ -407,6 +407,13 @@ package body et_schematic is
 		-- position
 		log (to_string (type_units.element (unit).position));
 
+		-- orientation or angle
+		log (to_string (type_units.element (unit).orientation));
+
+		-- mirror style
+		log (to_string (type_units.element (unit).mirror));
+
+		
 		-- placeholders
 		log ("placeholders");
 		log_indentation_up;
@@ -911,6 +918,11 @@ package body et_schematic is
 			);
 	end add_note;
 
+	function to_string (mirror : in type_mirror) return string is
+	-- returns the given mirror style as string
+	begin
+		return "mirror style " & to_lower (type_mirror'image (mirror));
+	end to_string;
 	
 	procedure add_net (
 	-- Adds a net into the the module (indicated by module_cursor).
