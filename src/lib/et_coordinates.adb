@@ -160,6 +160,8 @@ package body et_coordinates is
 		angle_out			: type_float_angle;		-- unit is degrees
 		distance_to_origin	: type_float_distance;	-- unit is mm
 		scratch				: type_float_distance;
+
+		use et_string_processing;
 	begin
 		-- Do nothing if the given rotation is zero.
 		if angle /= 0.0 then
@@ -183,13 +185,23 @@ package body et_coordinates is
 			end if;
 			
 			-- compute the current angle of the given point (in degrees)
-			if point.x /= zero_distance then
-				angle_out := type_float_angle (arctan (
-					x => type_float_distance (point.x),
-					y => type_float_distance (point.y),
-					cycle => type_float_distance (units_per_cycle))
-					);
-			else -- x = 0
+-- 			if point.x /= zero_distance then
+-- 				angle_out := type_float_angle (arctan (
+-- 					x => type_float_distance (point.x),
+-- 					y => type_float_distance (point.y),
+-- 					cycle => type_float_distance (units_per_cycle))
+-- 					);
+-- 			else -- x = 0
+-- 				if point.y > zero_distance then
+-- 					angle_out := 90.0;
+-- 				elsif point.y < zero_distance then
+-- 					angle_out := -90.0;
+-- 				else
+-- 					angle_out := 0.0;
+-- 				end if;
+-- 			end if;
+
+			if point.x = zero_distance then
 				if point.y > zero_distance then
 					angle_out := 90.0;
 				elsif point.y < zero_distance then
@@ -197,11 +209,31 @@ package body et_coordinates is
 				else
 					angle_out := 0.0;
 				end if;
+
+			elsif point.y = zero_distance then
+				if point.x > zero_distance then
+					angle_out := 0.0;
+				elsif point.x < zero_distance then
+					angle_out := 180.0;
+				else
+					angle_out := 0.0;
+				end if;
+
+			else
+				angle_out := type_float_angle (arctan (
+					x => type_float_distance (point.x),
+					y => type_float_distance (point.y),
+					cycle => type_float_distance (units_per_cycle))
+					);
 			end if;
+
+			log (text => "angle in lib. " & to_string (type_angle (angle_out)), level => 3);
 			
 			-- compute new angle by adding current angle and given angle
 			angle_out := angle_out + type_float_angle (angle);
 
+			log (text => "angle in sch. " & type_float_angle'image (angle_out), level => 3);
+			
 	-- 		-- Remove multiturns in angle_out. 
 	-- 		CS: no need because angle_out is invisible to the outside world.
 	-- 		-- example 1: angle_out =  370 degrees.  370 - 360 =  10. so angle_out equals  10 degrees.
@@ -217,10 +249,12 @@ package body et_coordinates is
 			-- compute new x   -- (cos angle_out) * distance_to_origin
 			scratch := cos (type_float_distance (angle_out), type_float_distance (units_per_cycle));
 			point.x := type_distance (scratch * distance_to_origin);
+			log (text => "x in sch. " & type_distance'image (point.x), level => 3);
 
 			-- compute new y   -- (sin angle_out) * distance_to_origin
 			scratch := sin (type_float_distance (angle_out), type_float_distance (units_per_cycle));
 			point.y := type_distance (scratch * distance_to_origin);
+			log (text => "y in sch. " & type_distance'image (point.y), level => 3);
 	
 		end if; -- if angle not zero
 	end rotate;
