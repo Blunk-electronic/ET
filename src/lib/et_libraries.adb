@@ -307,6 +307,12 @@ package body et_libraries is
 		return reference.prefix;
 	end prefix;
 
+	function component_appearance (cursor : in type_components.cursor)
+	-- Returns the component appearance where cursor points to.
+		return type_component_appearance is
+	begin
+		return type_components.element (cursor).appearance;
+	end component_appearance;
 	
 	procedure write_component_properties (component : in type_components.cursor) is
 	-- Writes the properties of the component indicated by the given cursor.

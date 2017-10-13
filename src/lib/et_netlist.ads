@@ -65,6 +65,8 @@ package et_netlist is
 		coordinates : et_coordinates.type_coordinates;
 		direction	: et_libraries.type_port_direction; -- example: "passive" -- used for ERC
 		style		: et_libraries.type_port_style;	-- used for ERC
+		appearance	: et_libraries.type_component_appearance;
+		-- CS: processed : boolean;
 	end record;
 
 	function port_sits_on_segment (
@@ -117,7 +119,9 @@ package et_netlist is
 	-- CS: function direction (port : in type_port) return string;
 	-- Returns the direction of the given port.
 
-	
+	function appearance (port : in type_port) return et_libraries.type_component_appearance;
+	-- Returns the appearance of the given port.
+
 	function compare_ports (left, right : in type_port) return boolean;
 	-- Returns true if left comes before right. Compares by component name and pin name.
 	-- If left equals right, the return is false.	
@@ -127,6 +131,9 @@ package et_netlist is
 		"<" => compare_ports);
 	use type_ports;
 
+	function appearance (port : in type_ports.cursor) return et_libraries.type_component_appearance;
+	-- Returns the appearance of the given port.
+	
 	-- This is the netlist of a single submodule:	
 	package type_netlist is new ordered_maps (
 		key_type => et_schematic.type_net_name.bounded_string, -- net name like "MCU_CLOCK"

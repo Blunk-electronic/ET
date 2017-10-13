@@ -627,6 +627,10 @@ package et_libraries is
 		element_type => type_component);
 	use type_components;
 
+	function component_appearance (cursor : in type_components.cursor)
+	-- Returns the component appearance where cursor points to.
+		return type_component_appearance;
+
 	procedure write_component_properties (component : in type_components.cursor);
 	-- Writes the properties of the component indicated by the given cursor.
 

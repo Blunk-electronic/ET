@@ -100,6 +100,12 @@ package body et_netlist is
 		return et_libraries.to_string (port.pin);
 	end pin;
 
+	function appearance (port : in type_port) return et_libraries.type_component_appearance is
+	-- Returns the appearance of the given port.
+	begin
+		return port.appearance;
+	end appearance;
+	
 	function compare_ports (left, right : in type_port) return boolean is
 	-- Returns true if left comes before right. Compares by component name and pin name.
 	-- If left equals right, the return is false.	
@@ -129,6 +135,11 @@ package body et_netlist is
 		return result;
 	end compare_ports;
 
+	function appearance (port : in type_ports.cursor) return et_libraries.type_component_appearance is
+	-- Returns the appearance of the given port.
+	begin
+		return (element (port).appearance);
+	end appearance;
 
 	function build_portlists return type_portlists.map is
 	-- Returns a list of components with the absolute positions of their ports as they are placed in the schematic.
@@ -216,7 +227,7 @@ package body et_netlist is
 					
 					port_coordinates : type_coordinates;
 					--mirror_style : et_schematic.type_mirror;
-				begin
+				begin -- add
 					-- Init port coordinates with the coordinates of the port found in the library.
 					-- The port position is a type_2d_point and must be converted to type_coordinates.
 					et_coordinates.set (point => port_coordinates,
@@ -256,6 +267,10 @@ package body et_netlist is
 							pin			=> element (port_cursor).pin, -- the pin name
 							direction	=> element (port_cursor).direction, -- the port direction
 							style		=> element (port_cursor).style, -- port style
+
+							-- We also set the port appearance. Later when writing the netlist, this property
+							-- serves to tell real from virtual ports.
+							appearance	=> et_schematic.component_appearance (component_cursor_sch),
 
 							-- schematic defined properties:
 							coordinates	=> port_coordinates
@@ -332,6 +347,22 @@ package body et_netlist is
 			
 		end extract_ports;
 	
+
+		procedure check_appearance_sch_vs_lib is
+		-- Verifies appearance of schematic component against library component.
+		begin
+			if et_schematic.component_appearance (component_cursor_sch) = 
+			   et_libraries.component_appearance (component_cursor_lib) then
+				null; -- fine
+			else
+				-- this should never happen
+				log (text => message_error & "comonent appearance mismatch !", console => true);
+				-- CS: provide more details on the affected component
+				raise constraint_error;
+			end if;
+		end check_appearance_sch_vs_lib;
+					
+
 	begin -- build_portlists
 		log_indentation_up;
 		log (text => "generating portlists ...");
@@ -351,7 +382,7 @@ package body et_netlist is
 		-- For each component, store a list of its units in units_sch.
 		-- This list contains the units found in the schematic with their coordinates.
 		-- These coordinates plus the port coordinates (extracted in 
-		-- procedure (extract_ports) will yield the absolute positions of the ports.
+		-- procedure (extract_ports) will later yield the absolute positions of the ports.
 		et_schematic.reset_component_cursor (component_cursor_sch);
 		while component_cursor_sch /= et_schematic.type_components.no_element loop
 
@@ -403,6 +434,10 @@ package body et_netlist is
 						-- not found -> advance to next library (in module.libraries)
 						next (library_cursor_sch); 
 					else
+						-- As a safety measure we make sure that the appearance of the component
+						-- in the schematic equals that in the library.
+						check_appearance_sch_vs_lib;
+	
 						extract_ports; -- uses component_cursor_lib
 						-- found -> no further search required
 						-- CS: write warning if component exists in other libraries ?
@@ -449,7 +484,7 @@ package body et_netlist is
 		begin
 			port_cursor := first (ports);
 		end set_cursor;
-	begin
+		begin -- first_port
 		type_portlists.query_element (
 			position => component_cursor,
 			process => set_cursor'access);
@@ -816,7 +851,8 @@ package body et_netlist is
 		use type_rig_netlists;
 		use ada.directories;
 		use et_general;
-	
+		use et_libraries;
+		
 		netlist_handle : ada.text_io.file_type;
 		netlist_file_name : type_netlist_file_name.bounded_string;
 	
@@ -824,7 +860,6 @@ package body et_netlist is
 		net_name	: et_schematic.type_net_name.bounded_string;
 		port_cursor	: type_ports.cursor; -- point to the port being exported
 		port		: type_port;
-
 
 	begin -- write_netlists
 		first_module;
@@ -878,16 +913,22 @@ package body et_netlist is
 				log (text => "exporting" & count_type'image (port_count (net_cursor)) & " ports ...", level => 1);
 				port_cursor := first_port (net_cursor);
 				while port_cursor /= type_ports.no_element loop
-					port := element (port_cursor);
 
-					-- write reference, port, pin in netlist (all in a single line)
-					-- CS: use port_cursor instead of a variable "port"
-					put_line (netlist_handle, 
-						reference (port) & " "
-						& et_netlist.port (port) & " "
-						& et_netlist.pin (port) & " "
-						);
-					
+					-- we export only ports of real components
+					if appearance (port_cursor) = et_libraries.sch_pcb then
+
+						port := element (port_cursor);
+
+						-- write reference, port, pin in netlist (all in a single line)
+						-- CS: use port_cursor instead of a variable "port"
+						put_line (netlist_handle, 
+							reference (port) & " "
+							& et_netlist.port (port) & " "
+							& et_netlist.pin (port) & " "
+							);
+
+					end if;
+						
 					next (port_cursor);
 				end loop;
 				log_indentation_down;
