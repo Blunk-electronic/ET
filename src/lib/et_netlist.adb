@@ -63,11 +63,14 @@ package body et_netlist is
 
 		use et_geometry;
 		use et_coordinates;
+		use et_string_processing;
 		
 		sits_on_segment : boolean := false;
 		d : type_distance_point_from_line;
 
 	begin
+ 		log ("B seg start x " & float'image (float (distance_x (segment.coordinates_start))), level => 5);
+	
 		-- calculate the shortes distance of point from line.
 		d := distance_of_point_from_line (
 			point 		=> type_2d_point (port.coordinates),
@@ -782,6 +785,7 @@ package body et_netlist is
 							log ("probing port " & et_coordinates.to_string (port.coordinates), level => 3);
 
 							-- test if port sits on segment
+							--log ("A seg start x " & float'image (float (et_coordinates.distance_x (segment.coordinates_start))), level => 5); -- debug
 							if port_sits_on_segment (port, segment) then
 								log_indentation_up;
 								log ("comp " & et_schematic.to_string (key (component_cursor)), level => 2);

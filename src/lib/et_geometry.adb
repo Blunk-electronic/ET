@@ -65,39 +65,40 @@ package body et_geometry is
 
 
 	begin
-		-- The following computation bases on 
+
+		log ("point   " & to_string (point), level => 4);
+		log ("start   " & to_string (s), level => 4);
+		log ("end     " & to_string (e), level => 4);				
+-- 		log ("point x/y " & float'image (float (distance_x (point))) & "/" & float'image (float (distance_y (point))) , level => 4);
+-- 		log ("start x/y " & float'image (float (distance_x (s))) & "/" & float'image (float (distance_y (s))) , level => 4);
+-- 		log ("end   x/y " & float'image (float (distance_x (e))) & "/" & float'image (float (distance_y (e))) , level => 4);
+
+-- 		log ("delta_x " & to_string (delta_x), level => 4);
+-- 		log ("delta_y " & to_string (delta_y), level => 4);
+-- 		log ("test    " & to_string (distance => (55.88-50.80)), level => 4);		
+		-- If either delta_x or delta_y is zero, the computation is simple.
+		-- Otherwise we must do a bit more as described in 
 		-- https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
-		
-		-- CS: skip this part if either delta_x or delta_y is zero. should improve performance
-		
-		--s1 := (e.y - s.y) * point.x;
-		--s1 := (distance_y (e) - distance_y (s)) * distance_x (point);
-		s1 := type_float ((distance_y (e) - distance_y (s)) * distance_x (point));
-		
-		--s2 := (e.x - s.x) * point.y;
-		--s2 := (distance_x (e) - distance_x (s)) * distance_y (point);
-		s2 := type_float ((distance_x (e) - distance_x (s)) * distance_y (point));
-		
-		--s3 := e.x * s.y;
-		--s3 := distance_x (e) * distance_y (s);
-		s3 := type_float (distance_x (e) * distance_y (s));
-		
-		--s4 := e.y * s.x;
-		--s4 := distance_y (e) * distance_x (s);
-		s4 := type_float (distance_y (e) * distance_x (s));
+		if delta_x = zero_distance then
+			result.distance := distance_x (point) - distance_x (s);
+			log ("delta_x zero", level => 4);
+		elsif delta_y = zero_distance then
+			result.distance := distance_y (s) - distance_y (point);
+			log ("delta_y zero", level => 4);
+		else
+			s1 := type_float ((distance_y (e) - distance_y (s)) * distance_x (point));
+			s2 := type_float ((distance_x (e) - distance_x (s)) * distance_y (point));
+			s3 := type_float (distance_x (e) * distance_y (s));
+			s4 := type_float (distance_y (e) * distance_x (s));
+			s5 := abs (s1 - s2 + s3 - s4);
+			s6 := type_float (distance_y (e) - distance_y (s)) ** 2;
+			s7 := type_float (distance_x (e) - distance_x (s)) ** 2;
+			s8 := functions.sqrt (s6 + s7);
 
-		s5 := abs (s1 - s2 + s3 - s4);
-
-		--s6 := (e.y - s.y)**2;
-		s6 := type_float (distance_y (e) - distance_y (s)) ** 2;
-		--s7 := (e.x - s.x)**2;
-		s7 := type_float (distance_x (e) - distance_x (s)) ** 2;
-
-		s8 := functions.sqrt (s6 + s7);
-
-		--result.distance := s5 / s8;
-		result.distance := type_distance (s5 / s8);
--- 		log ("distance " & type_distance'image (result.distance), level => 4);
+			result.distance := type_distance (s5 / s8);
+		end if;
+		
+		log ("distance " & type_distance'image (result.distance), level => 4);
 
 		-- If the range check adresses the line end points, the direction of the line
 		-- matters. Means if it was drawn from the left to the right or the other way around.

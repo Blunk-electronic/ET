@@ -44,7 +44,7 @@ package body et_coordinates is
 
 	function mil_to_distance (mil : in string) return type_distance is
 	-- Returns the given mils to type_distance.		
-
+		use et_string_processing;
 		type type_distance_intermediate is digits 13 range -10000000.0 .. 1000000.0;
 		-- unit is mil
 		-- CS: refine range and delta if required
@@ -53,7 +53,16 @@ package body et_coordinates is
 	begin
 		d_in := type_distance_intermediate'value (mil);
 
-		return type_distance ( d_in * (25.4 * 0.001) );
+		log_indentation_up;
+		log ("mil to mm : " 
+			& "mil as string " & mil 
+-- 			& ", mil as fixed" & type_distance_intermediate'image (d_in)
+-- 			& ", mm as fixed" & type_distance_intermediate'image (d_in * (25.4 * 0.001))
+			& ", mm as float" & float'image (float (d_in * (25.4 * 0.001))),
+			level => 5);
+		log_indentation_down;
+		
+		return type_distance (d_in * (25.4 * 0.001) );
 		
 		-- CS: exception handler
 	end mil_to_distance;
@@ -87,11 +96,19 @@ package body et_coordinates is
 	
 	function to_string (point : in type_2d_point) return string is
 	-- Returns the given point coordinates to a string.
+		use et_string_processing;
 	begin
+		log (text => position_preamble & "as float "
+			& trim (float'image (float (point.x)), left)
+			& latin_1.space & axis_separator & latin_1.space
+			& trim (float'image (float (point.y)), left),
+			level => 5);
+
 		return position_preamble
 			& trim (type_distance'image (point.x), left)
 			& latin_1.space & axis_separator & latin_1.space
 			& trim (type_distance'image (point.y), left);
+	
 	end to_string;
 
 	function distance_x (point : in type_2d_point) return type_distance is
@@ -105,7 +122,13 @@ package body et_coordinates is
 	end distance_y;
 
 	procedure set_x (point : in out type_2d_point; x : in type_distance) is
+		use et_string_processing;
 	begin
+		log (text => "set x :"
+			& " point x " &  trim (float'image (float (point.x)), left)
+			& " x in " & trim (float'image (float (x)), left),
+			level => 5);
+
 		point.x := x;
 	end set_x;
 	
@@ -160,6 +183,8 @@ package body et_coordinates is
 		angle_out			: type_float_angle;		-- unit is degrees
 		distance_to_origin	: type_float_distance;	-- unit is mm
 		scratch				: type_float_distance;
+
+		type type_float_coarse is delta 0.01 range -1000.0..1000.0;
 
 		use et_string_processing;
 	begin
@@ -227,19 +252,18 @@ package body et_coordinates is
 					);
 			end if;
 
-			log_indentation_up;
-			log (text => "angle in lib. " & to_string (type_angle (angle_out)), level => 3);
-			log (text => "angle in sch. " & type_float_angle'image (angle_out), level => 3);
-			
 			-- Compute new angle by adding current angle and given angle.
 			-- This computation depends on the Y axis style. The in the conventional style (Y going upwards positive)
 			-- we add the given angle to the current angle. In the old fashioned stlyle (Y going downwards positive)
 			-- we subtract the given angle from the current angle.
+			log_indentation_up;
+			log (text => "angle in lib. " & to_string (type_angle (angle_out)), level => 3);
 			if Y_axis_positive = upwards then
 				angle_out := angle_out + type_float_angle (angle);
 			else
 				angle_out := angle_out - type_float_angle (angle);
 			end if;
+			log (text => "angle in sch. " & type_float_angle'image (angle_out), level => 3);
 			
 	-- 		-- Remove multiturns in angle_out. 
 	-- 		CS: no need because angle_out is invisible to the outside world.
@@ -255,7 +279,8 @@ package body et_coordinates is
 
 			-- compute new x   -- (cos angle_out) * distance_to_origin
 			scratch := cos (type_float_distance (angle_out), type_float_distance (units_per_cycle));
-			point.x := type_distance (scratch * distance_to_origin);
+			--point.x := type_distance (scratch * distance_to_origin);
+			point.x := type_distance (type_float_coarse (scratch * distance_to_origin));
 			log (text => "x in sch. " & type_distance'image (point.x), level => 3);
 
 			-- compute new y   -- (sin angle_out) * distance_to_origin
@@ -284,7 +309,14 @@ package body et_coordinates is
 	
 	function to_string (position : in type_coordinates) return string is
 	-- Returns the given position as string.
+		use et_string_processing;
 	begin
+		log (text => position_preamble & "as float "
+			& trim (float'image (float (position.x)), left)
+			& latin_1.space & axis_separator & latin_1.space
+			& trim (float'image (float (position.y)), left),
+			level => 5);
+
 		return coordinates_preamble
 			& trim (positive'image (position.sheet_number),left) 
 			& latin_1.space & axis_separator & latin_1.space

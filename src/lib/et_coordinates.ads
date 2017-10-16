@@ -63,7 +63,8 @@ package et_coordinates is
 -- 	type type_unit_metric is (micrometer, millimeter, centimeter, meter);
 -- 	type type_unit_imperial is (mil, inch);
 
-	type type_distance is delta 0.000001 range -100000000.0 .. 100000000.0; -- unit is metric millimeter
+--	type type_distance is delta 0.01 range -100000000.0 .. 100000000.0; -- unit is metric millimeter
+	type type_distance is digits 9 range -100000000.0 .. 100000000.0; -- unit is metric millimeter
 	zero_distance : constant type_distance := 0.0;
 
 

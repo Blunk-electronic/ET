@@ -4286,6 +4286,7 @@ package body et_kicad is
 											if get_field_from_line(line,2) = schematic_keyword_wire then
 												if get_field_from_line(line,3) = schematic_keyword_line then
 													net_segment_entered := true; -- CS: assumption: segment coordinates follow in next line
+													log (text => "net segment", level => 1);
 												end if;
 											end if;
 										end if;
@@ -4304,6 +4305,7 @@ package body et_kicad is
 										-- The sheet number. NOTE: Kicad V4 can handle only one sheet per submodule. The sheet numbering is consecutive and does
 										-- not care about the actual submodule names.
 										set_sheet (tmp_segment.coordinates_start, sheet_number_current);
+										set_sheet (tmp_segment.coordinates_end,   sheet_number_current);
 
 										-- the x/y position
 										set_x (tmp_segment.coordinates_start, mil_to_distance (get_field_from_line (line,1)));
@@ -4311,7 +4313,13 @@ package body et_kicad is
 										set_x (tmp_segment.coordinates_end, mil_to_distance (get_field_from_line (line,3)));
 										set_y (tmp_segment.coordinates_end, mil_to_distance (get_field_from_line (line,4)));
 
-										-- The net segments are to be collected in a wild list of segments for later sorting. 
+										-- The net segments are to be collected in a wild list of segments for later sorting.
+										if log_level >= 1 then
+											log_indentation_up;
+											write_coordinates_of_segment (tmp_segment);
+											log_indentation_down;
+										end if;
+										
 										type_wild_segments.append (wild_segments, tmp_segment);
 									end if;
 

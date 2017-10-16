@@ -397,7 +397,7 @@ package et_kicad is
 		picked : boolean := false; -- flag indicates that the segment has been added to the anonymous net
 	end record;
 
-	tmp_segment				: type_wild_net_segment;
+	tmp_segment : type_wild_net_segment;
 	
 	type type_segment_side is (start_point, end_point ); -- the end point of a segment	
 
