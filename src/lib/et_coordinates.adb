@@ -227,12 +227,19 @@ package body et_coordinates is
 					);
 			end if;
 
+			log_indentation_up;
 			log (text => "angle in lib. " & to_string (type_angle (angle_out)), level => 3);
-			
-			-- compute new angle by adding current angle and given angle
-			angle_out := angle_out + type_float_angle (angle);
-
 			log (text => "angle in sch. " & type_float_angle'image (angle_out), level => 3);
+			
+			-- Compute new angle by adding current angle and given angle.
+			-- This computation depends on the Y axis style. The in the conventional style (Y going upwards positive)
+			-- we add the given angle to the current angle. In the old fashioned stlyle (Y going downwards positive)
+			-- we subtract the given angle from the current angle.
+			if Y_axis_positive = upwards then
+				angle_out := angle_out + type_float_angle (angle);
+			else
+				angle_out := angle_out - type_float_angle (angle);
+			end if;
 			
 	-- 		-- Remove multiturns in angle_out. 
 	-- 		CS: no need because angle_out is invisible to the outside world.
@@ -255,6 +262,7 @@ package body et_coordinates is
 			scratch := sin (type_float_distance (angle_out), type_float_distance (units_per_cycle));
 			point.y := type_distance (scratch * distance_to_origin);
 			log (text => "y in sch. " & type_distance'image (point.y), level => 3);
+			log_indentation_down;
 	
 		end if; -- if angle not zero
 	end rotate;

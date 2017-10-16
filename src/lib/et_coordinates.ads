@@ -53,6 +53,13 @@ package et_coordinates is
 
 	type type_axis is (X, Y);
 
+	-- There are drawings with the origin at the upper left corner (used by KiCad, ...).
+	-- There are also drawings the the origin at the lower left corner (used by EAGLE, ...)
+	type type_Y_axis_positive is (upwards, downwards);
+	-- This flag is set on import or export of designs in accordance to the desired CAD format.
+	-- Geometric operations like rotating require this flag.
+	Y_axis_positive : type_Y_axis_positive := upwards;
+	
 -- 	type type_unit_metric is (micrometer, millimeter, centimeter, meter);
 -- 	type type_unit_imperial is (mil, inch);
 

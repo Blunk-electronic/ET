@@ -4717,6 +4717,9 @@ package body et_kicad is
 		case et_import.cad_format is
 			when et_import.kicad_v4 =>
 
+				-- Kicad uses Y axis positive downwards style
+				Y_axis_positive := downwards;
+				
 				-- derive top level schematic file name from project name
 				top_level_schematic := read_project_file;
 				--tmp_module_name := et_coordinates.type_submodule_name.to_bounded_string (to_string (top_level_schematic));
