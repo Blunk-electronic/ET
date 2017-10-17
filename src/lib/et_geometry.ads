@@ -34,7 +34,7 @@ with et_coordinates;
 
 package et_geometry is
 
-	type type_distance_point_from_line is record
+	type type_distance_point_from_line is record -- CS: should be private
 		distance		: et_coordinates.type_distance;
 		out_of_range	: boolean;
 	end record;

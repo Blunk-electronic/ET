@@ -67,6 +67,9 @@ package et_coordinates is
 	type type_distance is digits 9 range -100000000.0 .. 100000000.0; -- unit is metric millimeter
 	zero_distance : constant type_distance := 0.0;
 
+	-- type type_accuracy is delta 0.001 digits 10;
+
+	accuracy_schematic : constant type_distance := 0.01; -- CS: use type_accuracy
 
 	-- CS: type_grid ?
 

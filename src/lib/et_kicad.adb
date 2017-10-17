@@ -3539,23 +3539,7 @@ package body et_kicad is
 					);
 			end to_text;
 
-
-			
-			procedure detect_name_less_nets is
-			begin
-				null;
-
-				-- Report name-less net.
-				--warning_on_name_less_net (net_name, net);
-
-			end detect_name_less_nets;
-			
-
-
-			procedure build_netlist is
-			begin
-				null;
-			end build_netlist;
+		
 	
 			
 			procedure insert_component is

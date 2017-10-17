@@ -65,7 +65,7 @@ package body et_coordinates is
 		
 		return et_math.round (
 			float_in => type_distance (d_in * (25.4 * 0.001)),
-			accuracy => 0.01);
+			accuracy => accuracy_schematic);
 		
 		-- CS: exception handler
 	end mil_to_distance;
@@ -116,12 +116,12 @@ package body et_coordinates is
 
 	function distance_x (point : in type_2d_point) return type_distance is
 	begin
-		return et_math.round (point.x, 0.01);
+		return et_math.round (point.x, accuracy_schematic);
 	end distance_x;
 
 	function distance_y (point : in type_2d_point) return type_distance is
 	begin
-		return et_math.round (point.y, 0.01);
+		return et_math.round (point.y, accuracy_schematic);
 	end distance_y;
 
 	procedure set_x (point : in out type_2d_point; x : in type_distance) is
@@ -280,12 +280,12 @@ package body et_coordinates is
 			-- compute new x   -- (cos angle_out) * distance_to_origin
 			scratch := cos (type_float_distance (angle_out), type_float_distance (units_per_cycle));
 			--point.x := type_distance (scratch * distance_to_origin);
-			point.x := et_math.round (float_in => type_distance (scratch * distance_to_origin), accuracy => 0.01);
+			point.x := et_math.round (float_in => type_distance (scratch * distance_to_origin), accuracy => accuracy_schematic);
 			log (text => "x in sch. " & type_distance'image (point.x), level => 3);
 
 			-- compute new y   -- (sin angle_out) * distance_to_origin
 			scratch := sin (type_float_distance (angle_out), type_float_distance (units_per_cycle));
-			point.y := et_math.round (float_in => type_distance (scratch * distance_to_origin), accuracy => 0.01);
+			point.y := et_math.round (float_in => type_distance (scratch * distance_to_origin), accuracy => accuracy_schematic);
 			log (text => "y in sch. " & type_distance'image (point.y), level => 3);
 			log_indentation_down;
 	
