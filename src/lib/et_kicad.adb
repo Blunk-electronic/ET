@@ -3783,6 +3783,9 @@ package body et_kicad is
 
 	
 			procedure verify_unit_name_and_position (line : in type_fields_of_line) is
+			-- Checks if the x/y position of the unit matches that provided in given line.
+			-- It is about the strange repetition of the unit name and its x/y coordinates in a line like
+			-- "2    6000 4000"
 				use et_libraries.type_unit_name;
 				use et_coordinates;
 			begin

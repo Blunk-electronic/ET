@@ -33,6 +33,7 @@
 with ada.numerics.generic_elementary_functions;
 with et_string_processing;		use et_string_processing;
 with et_coordinates;
+with et_math;
 
 package body et_geometry is
 	
@@ -41,6 +42,7 @@ package body et_geometry is
 	-- range of the x coordinate, the corresponding flag in the return value is set.
 
 	-- CS: provide range and accuracy via parameter
+	-- CS: type_Y_axis_positive (upwards, downwards) may matter here. 
 	
 		point, line_start, line_end: in et_coordinates.type_2d_point;
 		line_range : in type_line_range) return type_distance_point_from_line is
@@ -53,10 +55,8 @@ package body et_geometry is
 		s : type_2d_point := line_start;
 		e : type_2d_point := line_end;		
 		
-		--package functions is new ada.numerics.generic_elementary_functions (type_distance);
-
-		delta_x : type_distance := distance_x (e) - distance_x (s); -- e.x - s.x;
-		delta_y : type_distance := distance_y (e) - distance_y (s); -- e.y - s.y;
+		delta_x : type_distance := distance_x (e) - distance_x (s);
+		delta_y : type_distance := distance_y (e) - distance_y (s);
 
 		line_scratch : type_2d_point;
 		
@@ -64,26 +64,19 @@ package body et_geometry is
 		s1,s2,s3,s4,s5,s6,s7,s8 : type_float;
 
 
-	begin
+	begin -- Distance_from_a_point_to_a_line
+-- 		log ("point   " & to_string (point), level => 4);
+-- 		log ("start   " & to_string (s), level => 4);
+-- 		log ("end     " & to_string (e), level => 4);				
 
-		log ("point   " & to_string (point), level => 4);
-		log ("start   " & to_string (s), level => 4);
-		log ("end     " & to_string (e), level => 4);				
--- 		log ("point x/y " & float'image (float (distance_x (point))) & "/" & float'image (float (distance_y (point))) , level => 4);
--- 		log ("start x/y " & float'image (float (distance_x (s))) & "/" & float'image (float (distance_y (s))) , level => 4);
--- 		log ("end   x/y " & float'image (float (distance_x (e))) & "/" & float'image (float (distance_y (e))) , level => 4);
-
--- 		log ("delta_x " & to_string (delta_x), level => 4);
--- 		log ("delta_y " & to_string (delta_y), level => 4);
--- 		log ("test    " & to_string (distance => (55.88-50.80)), level => 4);		
 		-- If either delta_x or delta_y is zero, the computation is simple.
 		-- Otherwise we must do a bit more as described in 
 		-- https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
 		if delta_x = zero_distance then
-			result.distance := distance_x (point) - distance_x (s);
+			result.distance := et_math.round (float_in => distance_x (point) - distance_x (s), accuracy => 0.01);
 			log ("delta_x zero", level => 4);
 		elsif delta_y = zero_distance then
-			result.distance := distance_y (s) - distance_y (point);
+			result.distance := et_math.round (float_in => distance_y (s) - distance_y (point), accuracy => 0.01);
 			log ("delta_y zero", level => 4);
 		else
 			s1 := type_float ((distance_y (e) - distance_y (s)) * distance_x (point));
@@ -95,11 +88,11 @@ package body et_geometry is
 			s7 := type_float (distance_x (e) - distance_x (s)) ** 2;
 			s8 := functions.sqrt (s6 + s7);
 
-			result.distance := type_distance (s5 / s8);
+			result.distance := et_math.round (float_in => type_distance (s5 / s8), accuracy => 0.01); -- CS: accuracy sufficient ?
 		end if;
 		
 		log ("distance " & type_distance'image (result.distance), level => 4);
-
+		
 		-- If the range check adresses the line end points, the direction of the line
 		-- matters. Means if it was drawn from the left to the right or the other way around.
 		-- Swap start/end coordinates of line if drawn from right to the left.
@@ -168,16 +161,18 @@ package body et_geometry is
 -- 						log ("vertial line", level => 4);
 						
 						if delta_y > zero_distance then -- line drawn away from x-axis
-							--if point.y > e.y or point.y < s.y then -- point above or below end points of line
+							-- if point above or below end points of line
 							if distance_y (point) > distance_y (e) or distance_y (point) < distance_y (s) then 
-							-- point above or below end points of line
+								-- point above or below end points of line
+-- 								log ("out of range", level => 4);
 								result.out_of_range := true;
 							else
+-- 								log ("within range", level => 4);
 								result.out_of_range := false;
 							end if;
 							
 						else -- line drawn toward x-axis
-							--if point.y > s.y or point.y < e.y then -- point above or below end points of line
+							-- if point above or below end points of line
 							if distance_y (point) > distance_y (s) or distance_y (point) < distance_y (e) then 
 							-- point above or below end points of line								
 								result.out_of_range := true;
@@ -189,7 +184,6 @@ package body et_geometry is
 					else -- line is a slope or horizontal
 -- 						log ("horizontal line or slope", level => 4);
 						
-						--if point.x > e.x or point.x < s.x then
 						if distance_x (point) > distance_x (e) or distance_x (point) < distance_x (s) then
 							result.out_of_range := true;
 						else
