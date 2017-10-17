@@ -70,13 +70,19 @@ package body et_coordinates is
 		-- CS: exception handler
 	end mil_to_distance;
 
+	function format_distance (distance : in type_distance) return string is
+	-- Returns the given distance aa a neat number with the schematic defined accuracy.
+		type distance_fixed is delta accuracy_schematic range -10000.0 .. 10000.0; -- unit is mm
+	begin
+		return trim (distance_fixed'image (distance_fixed (distance)), left);
+	end format_distance;
 	
 	function to_string (distance : in type_distance) return string is
 	-- Returns the given distance to a string.
 	begin
-		return trim (type_distance'image (distance), left);
+		--return trim (type_distance'image (distance), left);
+		return format_distance (distance);
 	end to_string;
-
 
 
 	function to_string (angle : in type_angle) return string is
@@ -101,16 +107,12 @@ package body et_coordinates is
 	-- Returns the given point coordinates to a string.
 		use et_string_processing;
 	begin
--- 		log (text => position_preamble & "as float "
--- 			& trim (float'image (float (point.x)), left)
--- 			& latin_1.space & axis_separator & latin_1.space
--- 			& trim (float'image (float (point.y)), left),
--- 			level => 5);
-
 		return position_preamble
-			& trim (type_distance'image (point.x), left)
+		-- 	& trim (type_distance'image (point.x), left)
+			& format_distance (point.x)
 			& latin_1.space & axis_separator & latin_1.space
-			& trim (type_distance'image (point.y), left);
+		--	& trim (type_distance'image (point.y), left);
+			& format_distance (point.y);
 	
 	end to_string;
 
@@ -127,10 +129,6 @@ package body et_coordinates is
 	procedure set_x (point : in out type_2d_point; x : in type_distance) is
 		use et_string_processing;
 	begin
--- 		log (text => "set x :"
--- 			& " point x " &  trim (float'image (float (point.x)), left)
--- 			& " x in " & trim (float'image (float (x)), left),
--- 			level => 5);
 		point.x := x;
 	end set_x;
 	
@@ -210,21 +208,6 @@ package body et_coordinates is
 			end if;
 			
 			-- compute the current angle of the given point (in degrees)
--- 			if point.x /= zero_distance then
--- 				angle_out := type_float_angle (arctan (
--- 					x => type_float_distance (point.x),
--- 					y => type_float_distance (point.y),
--- 					cycle => type_float_distance (units_per_cycle))
--- 					);
--- 			else -- x = 0
--- 				if point.y > zero_distance then
--- 					angle_out := 90.0;
--- 				elsif point.y < zero_distance then
--- 					angle_out := -90.0;
--- 				else
--- 					angle_out := 0.0;
--- 				end if;
--- 			end if;
 
 			if point.x = zero_distance then
 				if point.y > zero_distance then
@@ -311,11 +294,6 @@ package body et_coordinates is
 	-- Returns the given position as string.
 		use et_string_processing;
 	begin
--- 		log (text => position_preamble & "as float "
--- 			& trim (float'image (float (position.x)), left)
--- 			& latin_1.space & axis_separator & latin_1.space
--- 			& trim (float'image (float (position.y)), left),
--- 			level => 5);
 
 		return coordinates_preamble
 			& trim (positive'image (position.sheet_number),left) 

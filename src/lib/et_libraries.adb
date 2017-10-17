@@ -43,6 +43,7 @@ with ada.directories;			use ada.directories;
 with ada.exceptions; 			use ada.exceptions;
 
 with et_string_processing;
+with et_coordinates;
 
 package body et_libraries is
 
@@ -142,15 +143,15 @@ package body et_libraries is
 		log (to_string (placeholder.position));
 
 		-- size
-		log ("size" & et_libraries.type_text_size'image (placeholder.size));
+		log ("size " & et_coordinates.to_string (placeholder.size));
 
 		-- style
 		log ("style "
 			& to_lower(et_libraries.type_text_style'image (placeholder.style)));
 
 		-- line width
-		log ("line width"
-			& et_libraries.type_text_line_width'image (placeholder.line_width));
+		log ("line width "
+			& et_coordinates.to_string (placeholder.line_width));
 
 		-- angle
 		log (to_string (placeholder.orientation)); 
@@ -192,14 +193,14 @@ package body et_libraries is
 		end if;
 		
 		-- size
-		log ("size" & et_libraries.type_text_size'image (text.size), level => log_threshold);
+		log ("size " & et_coordinates.to_string (text.size), level => log_threshold);
 
 		-- style
 		log ("style " & to_lower(et_libraries.type_text_style'image (text.style)),
 			 level => log_threshold);
 
 		-- line width
-		log ("line width" & et_libraries.type_text_line_width'image (text.line_width),
+		log ("line width " & et_coordinates.to_string (text.line_width),
 			level => log_threshold);
 
 		-- orientation
