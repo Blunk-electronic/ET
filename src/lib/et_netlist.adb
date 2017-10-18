@@ -152,6 +152,7 @@ package body et_netlist is
 	--  - the unit coordinates provided by the schematic
 	--  - the unit mirror style provided by the schematic
 	--  - the unit orientation provided by the schematic
+	-- Special threatment for "common to all units" ports of global units. See comments.
 	
 	-- Stores the absolute port coordinates in map "portlists". 
 	-- The key into this map is the component reference.
@@ -230,14 +231,13 @@ package body et_netlist is
 					port_coordinates : type_coordinates;
 
 				begin -- add
+
 					-- Init port coordinates with the coordinates of the port found in the library.
 					-- The port position is a type_2d_point and must be converted to type_coordinates.
 					et_coordinates.set (
 						point		=> port_coordinates,
 						position	=> to_coordinates (element (port_cursor).coordinates)); -- with type conversion
 
--- 					log ("A");
-					
 					-- rotate port coordinates
 					rotate (
 						point => port_coordinates,
@@ -299,21 +299,18 @@ package body et_netlist is
 			
 
 			procedure ports_of_global_unit is
-			-- CS: comment
+			-- Searches in the component (indicated by component_cursor_lib) for units
+			-- with the "global" flag set.
+			-- Sets the port_cursor for each port and leaves the rest of the work to procedure add_port.
 				unit_cursor : type_units_internal.cursor;
-				port_cursor : et_libraries.type_ports.cursor; 
 			begin
-				unit_cursor := first_internal_unit (component_cursor_lib);
-
 				-- Loop in list of internal units:
+				unit_cursor := first_internal_unit (component_cursor_lib);
 				while unit_cursor /= type_units_internal.no_element loop
 					log_indentation_up;
 
-					-- get the unit name
-					unit_name_lib := key (unit_cursor);
-				
 					if element (unit_cursor).global then
-						log ("global unit " & to_string (unit_name_lib));
+						--log ("global unit " & to_string (key (unit_cursor)));
 
 						-- NOTE: One could think of exiting the loop here once the global unit
 						-- has been found. If it were about KiCad only, this would make sense
@@ -321,22 +318,19 @@ package body et_netlist is
 						-- As for other CAE tools there might be more global units, so there
 						-- is no early exit here.
 
+						-- Loop in port list of the unit:						
 						port_cursor := first_port (unit_cursor); -- port in library
-
-						-- Loop in port list of the unit:
 						while port_cursor /= et_libraries.type_ports.no_element loop
-							log_indentation_up;
-							log ("port " & type_port_name.to_string (key (port_cursor)));
-							
+
+							log ("port " & type_port_name.to_string (key (port_cursor))
+								& " pin/pad " & to_string (element (port_cursor).pin));
+
 							-- Build a new port and append port to portlist of the 
 							-- current component (indicated by component_cursor_portlists).
-							-- CS: add_port;
+							add_port;
 							
-							log_indentation_down;
 							port_cursor := next (port_cursor);
 						end loop;
-
-
 					end if;
 
 					log_indentation_down;
@@ -382,7 +376,8 @@ package body et_netlist is
 					-- Loop in port list of the unit:
 					while port_cursor /= et_libraries.type_ports.no_element loop
 						log_indentation_up;
-						log ("port " & type_port_name.to_string (key (port_cursor)));
+						log ("port " & type_port_name.to_string (key (port_cursor))
+							& " pin/pad " & to_string (element (port_cursor).pin));
 						
 						-- Build a new port and append port to portlist of the 
 						-- current component (indicated by component_cursor_portlists).
@@ -392,6 +387,17 @@ package body et_netlist is
 						port_cursor := next (port_cursor);
 					end loop;
 
+					-- SEARCH FOR PORTS OF GLOBAL UNITS. 
+					
+					-- NOTE: Take a rest before trying to understand the following:
+					
+					-- The problem with ports that are "common to all units" (KiCad terminology) is:
+					--  The unit they belong to does not appear in the schematic, whereas their ports
+					--  are visible on each unit (kicad button "show hidden pins").
+					-- Solution: We assume all "common to all units" ports belong to all units of the 
+					-- component, thus inheriting the unit_name_lib and the unti_position.
+					-- The the unit_name_lib and unit_position of the current unit are applied
+					-- to the global units.
 					ports_of_global_unit;
 					
 					log_indentation_down;

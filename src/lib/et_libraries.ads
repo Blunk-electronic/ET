@@ -559,7 +559,7 @@ package et_libraries is
 		-- Currentliy only required by kicad: Units that harbor component wide 
 		-- pins have this flag set.
 		-- Usually units with power supply pins exclusively.
-		-- When building portlists this flag is important.
+		-- When building portlists this flag is important. See et_netlist package.
 		global		: boolean := false; -- CS: use a boolean derived type 
 	end record;
 
