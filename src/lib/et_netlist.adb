@@ -194,7 +194,7 @@ package body et_netlist is
 
 		procedure extract_ports is
 		-- Extracts the ports of the component indicated by component_cursor_lib.
-		-- NOTE: The library contains the positions of the ports.
+		-- NOTE: The library contains the (x/y) positions of the ports.
 			use et_libraries.type_units_internal;
 			use et_libraries.type_ports;
 			use et_coordinates;
@@ -232,9 +232,12 @@ package body et_netlist is
 				begin -- add
 					-- Init port coordinates with the coordinates of the port found in the library.
 					-- The port position is a type_2d_point and must be converted to type_coordinates.
-					et_coordinates.set (point => port_coordinates,
-						 position => to_coordinates (element (port_cursor).coordinates)); -- with type conversion
+					et_coordinates.set (
+						point		=> port_coordinates,
+						position	=> to_coordinates (element (port_cursor).coordinates)); -- with type conversion
 
+-- 					log ("A");
+					
 					-- rotate port coordinates
 					rotate (
 						point => port_coordinates,
@@ -294,6 +297,55 @@ package body et_netlist is
 					process		=> add'access);
 			end add_port;
 			
+
+			procedure ports_of_global_unit is
+			-- CS: comment
+				unit_cursor : type_units_internal.cursor;
+				port_cursor : et_libraries.type_ports.cursor; 
+			begin
+				unit_cursor := first_internal_unit (component_cursor_lib);
+
+				-- Loop in list of internal units:
+				while unit_cursor /= type_units_internal.no_element loop
+					log_indentation_up;
+
+					-- get the unit name
+					unit_name_lib := key (unit_cursor);
+				
+					if element (unit_cursor).global then
+						log ("global unit " & to_string (unit_name_lib));
+
+						-- NOTE: One could think of exiting the loop here once the global unit
+						-- has been found. If it were about KiCad only, this would make sense
+						-- as there can be only one global unit per component.
+						-- As for other CAE tools there might be more global units, so there
+						-- is no early exit here.
+
+						port_cursor := first_port (unit_cursor); -- port in library
+
+						-- Loop in port list of the unit:
+						while port_cursor /= et_libraries.type_ports.no_element loop
+							log_indentation_up;
+							log ("port " & type_port_name.to_string (key (port_cursor)));
+							
+							-- Build a new port and append port to portlist of the 
+							-- current component (indicated by component_cursor_portlists).
+							-- CS: add_port;
+							
+							log_indentation_down;
+							port_cursor := next (port_cursor);
+						end loop;
+
+
+					end if;
+
+					log_indentation_down;
+					unit_cursor := next (unit_cursor);
+				end loop;
+
+			end ports_of_global_unit;
+
+			
 		begin -- extract_ports
 			-- Loop in unit list of the component (indicated by component_cursor_lib).
 			-- unit_cursor_internal points to the unit in the library.
@@ -314,9 +366,9 @@ package body et_netlist is
 				-- Now the unit name serves as key into the unit list we got from the schematic (unit_sch).
 				-- If the unit is deployed in the schematic, we load unit_position. 
 				-- unit_position holds the position of the unit in the schematic.
-				if unit_exists (unit_name_lib, units_sch) then
+				if unit_exists (name => unit_name_lib, units => units_sch) then -- if unit deployed in schematic
 					log ("unit " & to_string (unit_name_lib));
-					unit_position := position_of_unit (unit_name_lib, units_sch); -- pos. in schematic
+					unit_position := position_of_unit (name => unit_name_lib, units => units_sch); -- pos. in schematic
 					log_indentation_up;
 					log (to_string (unit_position));
 
@@ -340,9 +392,11 @@ package body et_netlist is
 						port_cursor := next (port_cursor);
 					end loop;
 
+					ports_of_global_unit;
+					
 					log_indentation_down;
 				end if;
-					
+
 				log_indentation_down;
 				unit_cursor_internal := next (unit_cursor_internal);
 			end loop;

@@ -556,7 +556,8 @@ package et_libraries is
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
 		add_level	: type_unit_add_level := type_unit_add_level'first;
 
-		-- Units that harbor component wide pins have this flag set.
+		-- Currentliy only required by kicad: Units that harbor component wide 
+		-- pins have this flag set.
 		-- Usually units with power supply pins exclusively.
 		-- When building portlists this flag is important.
 		global		: boolean := false; -- CS: use a boolean derived type 
@@ -580,7 +581,9 @@ package et_libraries is
 		coordinates	: type_coordinates;
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
 		add_level	: type_unit_add_level := type_unit_add_level'first;
-		--global		: boolean := false; -- CS: use a boolean derived type 
+		-- NOTE: there is no "global" flag as with type_unit_internal.
+		-- The "global" flag is a kicad requirement. Since kicad does not know 
+		-- external units, this flag is not preent here.
 	end record;
 
 	-- External units are collected in a map;
