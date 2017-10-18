@@ -1300,7 +1300,6 @@ package body et_kicad is
 			procedure add_symbol_element (
 			-- Adds a symbol element (circle, arcs, lines, ports, etc.) to the unit with the current tmp_unit_id.
 			-- If the tmp_unit_id is 0, the symbol element is inserted into all units (except extra units).
-			-- Ports belonging to all units (supply ports) are exempted from this procedure -> nothing happens..
 			
 			-- The kind of symbol element is given by parameter "element".
 			-- The symbol properties are taken from the temporarily variables named tmp_draw_*.
@@ -1383,22 +1382,24 @@ package body et_kicad is
 
 			begin -- add_symbol_element
 				if tmp_unit_id > 0 then 
+					--log ("unit id " & type_unit_id'image (tmp_unit_id) , level => 1);
 					-- The element belongs to a particular unit exclusively.
 					-- Only the current unit of the current component receives the symbol element.
 					set_unit_cursor (component_libraries); -- set unit_cursor according to current tmp_unit_id
 					libraries.update_element (lib_cursor, locate_component'access);
-				else 
+				else -- tmp_unit_id = 0
 					-- The element belongs to all units of the current component.
 					-- In a loop the tmp_unit_id is now modified so that all units (except extra units) 
 					-- of the component receive the same symbol element.
-					-- Ports belonging to all units are exempted from this procedure as the loop ends with units_total.
 					-- units_total was set on passing the component header (DEF 74LS00 IC 0 30 Y Y 4 F N)
-					if element /= port then
+					if element /= port then -- should always be true since tmp_unit_id is always greater zero when a port is added to a unit
 						for u in 1 .. type_unit_id (tmp_units_total) loop
 							tmp_unit_id := u; -- set tmp_unit_id
 							set_unit_cursor (component_libraries);  -- set unit_cursor according to current tmp_unit_id
 							libraries.update_element (lib_cursor, locate_component'access);
 						end loop;
+					else
+						raise constraint_error; -- should never happen. see comment above after "if" statement
 					end if;
 				end if;
 			end add_symbol_element;
@@ -1658,11 +1659,14 @@ package body et_kicad is
 					-- whole component, we create an extra unit and insert it there. An extra unit is
 					-- created ONLY ONCE. Successive unit-wide ports are added there.
 					-- An extra unit always has the add level "request" since it harbors the supply ports.
+					-- When adding a port, tmp_unit_id is always greater zero.
 					if tmp_unit_id > 0 then
 						-- add unit specific port to unit
+
+						--log ("unit id " & type_unit_id'image (tmp_unit_id) , level => log_threshold);
 						add_symbol_element (component_libraries, port);
 					else 
-						-- The current unit id is one notch above the total number of units.
+						-- The unit id changes from 0 to tmp_units_total + 1 (one notch above the total number) :
 						tmp_unit_id := type_unit_id (tmp_units_total) + 1;
 						-- If no extra unit has been created yet -> create one with add level "request".
 						if not extra_unit_available then 
@@ -1674,6 +1678,7 @@ package body et_kicad is
 							null;
 						end if;
 						-- insert the port in the extra unit
+						--log ("unit id " & type_unit_id'image (tmp_unit_id) , level => log_threshold);						
 						add_symbol_element (component_libraries, port);
 					end if;
 			end case;
