@@ -549,12 +549,17 @@ package et_libraries is
 		MUST);
 	
 	-- An internal unit is a symbol with a swap level.
-	-- An internal unit is owned by a particular component exclusively.
+	-- An internal unit is owned by the particular component exclusively.
 	type type_unit_internal (appearance : type_component_appearance) is record
 		symbol		: type_symbol (appearance);
 		coordinates	: type_coordinates;
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
 		add_level	: type_unit_add_level := type_unit_add_level'first;
+
+		-- Units that harbor component wide pins have this flag set.
+		-- Usually units with power supply pins exclusively.
+		-- When building portlists this flag is important.
+		global		: boolean := false; -- CS: use a boolean derived type 
 	end record;
 
 	-- Internal units are collected in a map:
@@ -574,7 +579,8 @@ package et_libraries is
 		reference	: type_unit_reference;
 		coordinates	: type_coordinates;
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
-		add_level	: type_unit_add_level := type_unit_add_level'first;	
+		add_level	: type_unit_add_level := type_unit_add_level'first;
+		--global		: boolean := false; -- CS: use a boolean derived type 
 	end record;
 
 	-- External units are collected in a map;

@@ -494,6 +494,7 @@ package body et_kicad is
 			tmp_unit_id			: type_unit_id; -- assumes 0 if all units are affected, -- see spec			
 			tmp_unit_swap_level	: type_unit_swap_level := unit_swap_level_default;
 			tmp_unit_add_level	: type_unit_add_level := type_unit_add_level'first;
+			tmp_unit_global		: boolean := false; -- specifies if a unit harbors component wide pins (such as power supply)
 			
 			tmp_reference		: type_text (meaning => reference);
 			tmp_value			: type_text (meaning => value);
@@ -520,6 +521,7 @@ package body et_kicad is
 				-- CS: init other variables
 				extra_unit_available := false;
 				tmp_unit_add_level := type_unit_add_level'first;
+				tmp_unit_global := false;
 			end init_temp_variables;
 
 			procedure check_text_fields is
@@ -1256,6 +1258,7 @@ package body et_kicad is
 				begin
 					unit.swap_level	:= tmp_unit_swap_level;
 					unit.add_level	:= tmp_unit_add_level;
+					unit.global		:= tmp_unit_global;
 					
 					component.units_internal.insert (
 						key			=> to_unit_name (tmp_unit_id),
@@ -1664,6 +1667,7 @@ package body et_kicad is
 						-- If no extra unit has been created yet -> create one with add level "request".
 						if not extra_unit_available then 
 							tmp_unit_add_level := request;
+							tmp_unit_global := true; -- this is a unit with power supply pins that apply for the whole component
 							add_unit (component_libraries);
 							extra_unit_available := true;
 						else
