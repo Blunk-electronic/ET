@@ -3660,7 +3660,7 @@ package body et_kicad is
 								datasheet		=> et_libraries.type_component_datasheet.to_bounded_string (et_libraries.content (tmp_component_text_datasheet)),
 								partcode		=> et_libraries.type_component_partcode.to_bounded_string (et_libraries.content (tmp_component_text_partcode)),
 								purpose			=> et_libraries.type_component_purpose.to_bounded_string (et_libraries.content (tmp_component_text_purpose)),
-								
+								bom				=> et_libraries.type_bom'value (et_libraries.content (tmp_component_text_bom)),
 								-- Assemble the package variant.
 								-- NOTE: There is no way to identifiy the name of the package variant like TL084D or TL084N.
 								-- For this reason we leave the variant name empty.
@@ -3806,9 +3806,11 @@ package body et_kicad is
 													with meaning => tmp_component_text_updated.meaning ),
 								author			=> ( et_libraries.type_text_basic (tmp_component_text_author)
 													with meaning => tmp_component_text_author.meaning ),
-								commissioned	=>  ( et_libraries.type_text_basic (tmp_component_text_commissioned)
-													with meaning => tmp_component_text_commissioned.meaning )
-								));
+								commissioned	=>  (et_libraries.type_text_basic (tmp_component_text_commissioned)
+													with meaning => tmp_component_text_commissioned.meaning),
+								bom				=>  (et_libraries.type_text_basic (tmp_component_text_bom)
+													with meaning => tmp_component_text_bom.meaning)
+							   ));
 
 					when others => null; -- CS
 				end case;

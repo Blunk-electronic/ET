@@ -195,7 +195,7 @@ package et_schematic is
 				datasheet	: et_libraries.type_text_placeholder (meaning => et_libraries.datasheet); -- might be useful for some special components
 				purpose		: et_libraries.type_text_placeholder (meaning => et_libraries.purpose); -- to be filled in schematic later by the user
 				partcode	: et_libraries.type_text_placeholder (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"
-				-- CS: bom : et_libraries.type_text_placeholder (meaning => et_libraries.bom);
+				bom			: et_libraries.type_text_placeholder (meaning => et_libraries.bom);
 		end case;
 		-- NOTE: The placeholders are defined in et_libraries. Thus they have only
 		-- basic coordinates (x/y). Via the unit position the sheet and module
@@ -262,7 +262,8 @@ package et_schematic is
 				partcode	: et_libraries.type_component_partcode.bounded_string;
 				purpose		: et_libraries.type_component_purpose.bounded_string;
 				datasheet	: et_libraries.type_component_datasheet.bounded_string;
-
+				bom			: et_libraries.type_bom;
+				
 			-- If a component appears in the schematic only, it does not
 			-- have any package variants.
 			-- Such components are power symbols or power flags. Later when building netlists

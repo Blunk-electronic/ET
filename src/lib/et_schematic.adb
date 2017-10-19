@@ -274,6 +274,11 @@ package body et_schematic is
 				-- function
 				log ("purpose "
 					& et_libraries.type_component_purpose.to_string (type_components.element(component).purpose));
+
+				-- bom
+				log ("bom "
+					& et_libraries.type_bom'image (type_components.element (component).bom));
+
 				
 			when pcb => null; -- CS
 			when others => null; -- CS should never happen as virtual components do not have a package
@@ -448,6 +453,11 @@ package body et_schematic is
 					et_libraries.write_placeholder_properties (
 						placeholder => type_units.element(unit).partcode);
 
+					-- bom
+					et_libraries.write_placeholder_properties (
+						placeholder => type_units.element (unit).bom);
+
+					
 				when others => null;
 			end case;
 
