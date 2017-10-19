@@ -54,6 +54,7 @@ package et_netlist is
 	package type_netlist_file_name is new generic_bounded_length (netlist_file_name_length); 
 	--use type_netlist_file_name;
 
+	extension_netlist : constant string (1 .. 3) := "net";
 	
 	use et_schematic.type_net_name;
 -- 	use et_schematic.type_ports;

@@ -43,9 +43,11 @@ with ada.directories;
 with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 
+with et_general;
 with et_coordinates;
 with et_string_processing;
 with et_geometry;
+with et_export;
 
 
 package body et_schematic is
@@ -1188,6 +1190,126 @@ package body et_schematic is
 		-- CS: output coordinates of net (lowest x/Y)
 	end warning_on_name_less_net;
 	
+
+	
+-- BOM
+	
+	procedure make_bom is
+		use ada.directories;
+		use et_general;
+		use et_string_processing;
+		use et_export;
+		use type_rig;
+		
+		bom_file_name : type_bom_file_name.bounded_string;
+		bom_handle : ada.text_io.file_type;
+		
+	begin
+		first_module;
+		
+		log (text => "writing BOM ...", level => 1);
+
+		while module_cursor /= type_rig.no_element loop
+			log_indentation_up;
+			log (text => "module " & to_string (key (module_cursor)), level => 1);
+
+			-- compose the netlist file name and its path like "../ET/motor_driver/CAM/motor_driver.net"
+			bom_file_name := type_bom_file_name.to_bounded_string 
+				(
+				compose (
+					containing_directory => compose 
+						(
+						containing_directory => compose (work_directory, to_string (key (module_cursor))),
+						name => et_export.directory_cam
+						),
+					name => to_string (key (module_cursor)),
+					extension => extension_bom)
+				);
+
+			-- create the netlist (which inevitably and intentionally overwrites the previous file)
+			log_indentation_up;
+			log (text => "creating BOM file " & type_bom_file_name.to_string (bom_file_name), level => 1);
+			create (
+				file => bom_handle,
+				mode => out_file, 
+				name => type_bom_file_name.to_string (bom_file_name));
+
+			put_line (bom_handle, comment_mark & " " & system_name & " BOM (Bill Of Material)");
+			put_line (bom_handle, comment_mark & " date " & string (date_now));
+			put_line (bom_handle, comment_mark & " module " & to_string (key (module_cursor)));
+			put_line (bom_handle, comment_mark & " " & row_separator_double);
+			
+			-- CS: statistics about net count and pin count ?
+-- 			put_line (bom_handle, comment_mark & " legend:");
+			
+			-- export net
+-- 			log_indentation_up;
+-- 			log (text => "exporting" & count_type'image (net_count) & " nets ...", level => 1);
+-- 			net_cursor := first_net;
+-- 			while net_cursor /= type_netlist.no_element loop
+-- 				net_name := key (net_cursor);
+-- 
+-- 				-- write net name in netlist
+-- 				log_indentation_up;
+-- 				log (text => "net " & et_schematic.type_net_name.to_string (net_name), level => 1);
+-- 				new_line (netlist_handle);
+-- 				put_line (netlist_handle, et_schematic.type_net_name.to_string (net_name));
+-- 
+-- 				-- export port
+-- 				log_indentation_up;
+-- 				log (text => "exporting" & count_type'image (port_count (net_cursor)) & " ports ...", level => 1);
+-- 				port_cursor := first_port (net_cursor);
+-- 				while port_cursor /= type_ports.no_element loop
+-- 
+-- 					-- we export only ports of real components
+-- 					if appearance (port_cursor) = et_libraries.sch_pcb then
+-- 
+-- 						port := element (port_cursor);
+-- 
+-- 						-- write reference, port, pin in netlist (all in a single line)
+-- 						-- CS: use port_cursor instead of a variable "port"
+-- 						put_line (netlist_handle, 
+-- 							reference (port) & " "
+-- 							& et_netlist.port (port) & " "
+-- 							& et_netlist.pin (port) & " "
+-- 							);
+-- 
+-- 					end if;
+-- 						
+-- 					next (port_cursor);
+-- 				end loop;
+-- 				log_indentation_down;
+-- 				
+-- 				log_indentation_down;
+-- 
+-- 				next (net_cursor);
+-- 			end loop;
+
+			new_line (bom_handle);
+			put_line (bom_handle, comment_mark & " " & row_separator_double);
+			put_line (bom_handle, comment_mark & " end of list");
+			
+			close (bom_handle);
+
+			log_indentation_down;
+-- 			log_indentation_down;
+-- 			log_indentation_down;
+			
+			next (module_cursor);
+		end loop;
+		
+	end make_bom;
+
+	
+
+-- STATISTICS
+	
+	procedure make_statistics is
+		statistic_file_name : type_statistic_file_name.bounded_string;
+	begin
+		null; -- CS
+	end make_statistics;
+
 	
 end et_schematic;
 -- Soli Deo Gloria

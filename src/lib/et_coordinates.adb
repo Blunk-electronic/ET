@@ -275,6 +275,11 @@ package body et_coordinates is
 		end if; -- if angle not zero
 	end rotate;
 
+	function to_string (submodule : in type_submodule_name.bounded_string) return string is
+	-- Returns the given submodule name as string.
+	begin
+		return type_submodule_name.to_string (submodule);
+	end to_string;
 
 	function to_coordinates (point : in type_2d_point'class)
 	-- Converts a type_2d_point to type_coordinates.

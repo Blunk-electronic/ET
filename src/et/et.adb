@@ -171,7 +171,7 @@ procedure et is
 		et_import.close_report;
 	end import_design;
 	
-begin
+begin -- main
 
 	-- process command line arguments
 	get_commandline_arguments;
@@ -185,6 +185,12 @@ begin
 	-- netlists
 	et_netlist.make_netlists;
 	et_netlist.write_netlists;
+
+	-- statistics
+	et_schematic.make_statistics;
+
+	-- bom
+	et_schematic.make_bom;
 	
 	et_export.close_report;
 end et;

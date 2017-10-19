@@ -69,8 +69,12 @@ package et_export is
 	-- Writes the report footer and closes the report file.
 	-- Sets the output back to standard_output.
 
+	directory_cam			: constant string (1 ..  3) := "CAM";
+	directory_statistics	: constant string (1 .. 10) := "statistics";
+	
 	procedure create_project_directory (project : in string);
 	-- Creates given project directory in work_directory of ET.
+	-- Creates subdirectories for CAM, statistics, ...
 	
 end et_export;
 

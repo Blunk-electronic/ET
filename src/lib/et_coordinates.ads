@@ -138,6 +138,9 @@ package et_coordinates is
 	-- The name of a submodule may have 100 characters which seems sufficient for now.
  	submodule_name_length : constant natural := 100;
 	package type_submodule_name is new generic_bounded_length (submodule_name_length); use type_submodule_name;
+
+	function to_string (submodule : in type_submodule_name.bounded_string) return string;
+	-- Returns the given submodule name as string.
 	
     -- The location of a submodule within the design hierarchy is reflected by
     -- a list of submodule names like motor_driver.counter.supply

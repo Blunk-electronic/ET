@@ -931,12 +931,18 @@ package body et_netlist is
 			log_indentation_up;
 			log (text => "module " & to_string (key (module_cursor)), level => 1);
 
-			-- compose the netlist file name and its path like "../ET/motor_driver/motor_driver.net"
-			netlist_file_name := type_netlist_file_name.to_bounded_string (
+			-- compose the netlist file name and its path like "../ET/motor_driver/CAM/motor_driver.net"
+			netlist_file_name := type_netlist_file_name.to_bounded_string 
+				(
 				compose (
-					containing_directory => compose (work_directory, to_string (key (module_cursor))),
+					containing_directory => compose 
+						(
+						containing_directory => compose (work_directory, to_string (key (module_cursor))),
+						name => et_export.directory_cam
+						),
 					name => to_string (key (module_cursor)),
-					extension => "net"));
+					extension => extension_netlist)
+				);
 
 			-- create the netlist (which inevitably and intentionally overwrites the previous file)
 			log_indentation_up;
@@ -946,7 +952,6 @@ package body et_netlist is
 				mode => out_file, 
 				name => type_netlist_file_name.to_string (netlist_file_name));
 
-			-- CS: write a nice header with legend in netlist
 			put_line (netlist_handle, comment_mark & " " & system_name & " netlist");
 			put_line (netlist_handle, comment_mark & " date " & string (date_now));
 			put_line (netlist_handle, comment_mark & " module " & to_string (key (module_cursor)));

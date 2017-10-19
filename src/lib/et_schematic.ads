@@ -721,8 +721,25 @@ package et_schematic is
 	end record;
 
 
+-- BOM
+	-- Whenever we deal with BOM files this type should be used:
+	bom_file_name_length : constant positive := 100; -- CS: should suffice for now
+	package type_bom_file_name is new generic_bounded_length (bom_file_name_length); 
 
+	extension_bom : constant string (1 .. 3) := "bom";
+	procedure make_bom;
+	
 
+-- STATISTICS
+
+	-- Whenever we deal with statistic file this type should be used:
+	statistic_file_name_length : constant positive := 100; -- CS: should suffice for now
+	package type_statistic_file_name is new generic_bounded_length (statistic_file_name_length); 
+
+	extension_statistics : constant string (1 .. 4) := "stat";
+	
+	procedure make_statistics;
+		
 	
 	
 end et_schematic;
