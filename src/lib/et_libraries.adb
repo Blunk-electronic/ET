@@ -65,6 +65,12 @@ package body et_libraries is
 		return type_full_library_name.to_string (full_library_name);
 	end to_string;
 
+	function to_string (person : in type_person_name.bounded_string) return string is
+	-- Returns the given person name as string.
+	begin
+		return type_person_name.to_string (person);
+	end to_string;
+	
 	function to_string (direction : in type_port_direction) return string is
 	-- Returns the given port direction as string.
 	begin
@@ -91,6 +97,19 @@ package body et_libraries is
 		return (type_component_name.to_string(name_in_library));
 	end to_string;
 
+	function to_string (partcode : in type_component_partcode.bounded_string) return string is
+	-- Returns the given partcode as string.
+	begin
+		return type_component_partcode.to_string (partcode);
+	end to_string;
+	
+	function to_string (purpose : in type_component_purpose.bounded_string) return string is
+	-- Returns the given purpose as string.
+	begin
+		return type_component_purpose.to_string (purpose);
+	end to_string;
+
+	
 	function to_string (packge : in type_component_package_name.bounded_string) return string is
 	-- Returns the given package name as as string.
 	-- CS: provide a parameter that turns the pretext on/off

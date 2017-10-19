@@ -121,7 +121,12 @@ package body et_string_processing is
 			raise constraint_error;
 		end if;
 	end check_updated_vs_commissioned;
-			
+
+	function to_string (date : in type_date) return string is
+	-- Returns the given date as string.
+	begin
+		return string (date);
+	end to_string;
 	
 	function date_valid (date : in type_date) return boolean is
 	-- Returns true if given date is valid and plausible.

@@ -249,7 +249,7 @@ package et_schematic is
 
 	-- This is a component as it appears in the schematic.
 	type type_component (appearance : type_component_appearance) is record
-		name_in_library : et_libraries.type_component_name.bounded_string; -- example: "TRANSISTOR_PNP"
+		name_in_library : et_libraries.type_component_name.bounded_string; -- example: "TRANSISTOR_PNP" -- CS: rename to generic_name ?
 		value			: et_libraries.type_component_value.bounded_string; -- 470R
 		commissioned	: et_string_processing.type_date; -- 2017-08-17T14:17:25
 		updated			: et_string_processing.type_date; -- 2017-10-30T08:33:56
@@ -258,7 +258,7 @@ package et_schematic is
 		case appearance is
 			-- If a component appears in both schematic and layout it has got:
 			when sch_pcb => 
-				variant		: type_variant;
+				variant		: type_variant; -- includes the footprint/package
 				partcode	: et_libraries.type_component_partcode.bounded_string;
 				purpose		: et_libraries.type_component_purpose.bounded_string;
 				datasheet	: et_libraries.type_component_datasheet.bounded_string;
@@ -671,6 +671,9 @@ package et_schematic is
 	function first_segment (net_cursor : in type_nets.cursor) return type_net_segments.cursor;
 	-- Returns a cursor pointing to the first net segment of the given net.
 
+	function first_component return type_components.cursor;
+	-- Returns a cursor pointing to the first component of the module (indicated by module_cursor).
+	
 	procedure add_component (
 	-- Adds a component into the the module (indicated by module_cursor).
 		reference	: in et_libraries.type_component_reference;

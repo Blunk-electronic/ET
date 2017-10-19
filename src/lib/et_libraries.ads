@@ -102,7 +102,8 @@ package et_libraries is
  	person_name_length : constant natural := 100;
 	package type_person_name is new generic_bounded_length (person_name_length);
 
-	
+	function to_string (person : in type_person_name.bounded_string) return string;
+	-- Returns the given person name as string.
 
 
 
@@ -334,10 +335,16 @@ package et_libraries is
 	component_partocde_length_max : constant positive := 200;
 	package type_component_partcode is new generic_bounded_length (component_partocde_length_max);
 
+	function to_string (partcode : in type_component_partcode.bounded_string) return string;
+	-- Returns the given partcode as string.
+	
 	-- Components that require operator interaction like connectors, LEDs or switches have purpose.
 	-- Example: The purpose of connector X44 is "power in". The purpose of LED5 is "system fail":
 	component_purpose_length_max : constant positive := 100;
 	package type_component_purpose is new generic_bounded_length (component_purpose_length_max);
+
+	function to_string (purpose : in type_component_purpose.bounded_string) return string;
+	-- Returns the given purpose as string.
 	
 	function to_string (packge : in type_component_package_name.bounded_string) return string;
 	-- Returns the given package name as as string.

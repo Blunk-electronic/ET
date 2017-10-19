@@ -1001,6 +1001,27 @@ package body et_schematic is
 			);
 		return segment_cursor;
 	end first_segment;
+
+	function first_component return type_components.cursor is
+	-- Returns a cursor pointing to the first component of the module (indicated by module_cursor).
+		cursor : type_components.cursor;
+
+		procedure set_cursor (
+			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
+			module		: in type_module) is
+ 		begin
+			cursor := module.components.first;
+		end set_cursor;
+
+	begin
+		type_rig.query_element (
+			position	=> module_cursor,
+			process		=> set_cursor'access
+			);
+		return cursor;
+	end first_component;
+
+	
 	
 	
 	procedure add_component (
@@ -1201,6 +1222,7 @@ package body et_schematic is
 		use et_export;
 		use et_csv;
 		use type_rig;
+		use type_components;
 		
 		
 		bom_file_name : type_bom_file_name.bounded_string;
@@ -1217,6 +1239,8 @@ package body et_schematic is
 		column_part_code	: constant string (1 .. 9) := "PART_CODE";
 		column_part_code_ext: constant string (1 ..13) := "PART_CODE_EXT"; -- not used
 		column_updated		: constant string (1 .. 7) := "UPDATED";
+
+		component_cursor : type_components.cursor;
 		
 	begin
 		first_module;
@@ -1254,18 +1278,43 @@ package body et_schematic is
 -- 			put_line (bom_handle, comment_mark & " " & row_separator_double);
 
 			put_field (file => bom_handle, text => column_component);
-			
+			put_field (file => bom_handle, text => column_value);
+			put_field (file => bom_handle, text => column_generic_name);
+			put_field (file => bom_handle, text => column_package);
+			put_field (file => bom_handle, text => column_author);
+			put_field (file => bom_handle, text => column_bom);
+			put_field (file => bom_handle, text => column_commissioned);
+			put_field (file => bom_handle, text => column_purpose);
+			put_field (file => bom_handle, text => column_part_code);
+			put_field (file => bom_handle, text => column_part_code_ext);
+			put_field (file => bom_handle, text => column_updated);
+			put_lf    (file => bom_handle);
+
 			-- CS: statistics about net count and pin count ?
 -- 			put_line (bom_handle, comment_mark & " legend:");
 			
 			-- export net
 -- 			log_indentation_up;
 -- 			log (text => "exporting" & count_type'image (net_count) & " nets ...", level => 1);
--- 			net_cursor := first_net;
--- 			while net_cursor /= type_netlist.no_element loop
+			component_cursor := first_component;
+			while component_cursor /= type_components.no_element loop
 -- 				net_name := key (net_cursor);
 -- 
 -- 				-- write net name in netlist
+				if component_appearance (component_cursor) = sch_pcb then
+					put_field (file => bom_handle, text => to_string (key (component_cursor)));
+					put_field (file => bom_handle, text => to_string (element (component_cursor).value));
+					put_field (file => bom_handle, text => to_string (element (component_cursor).name_in_library));
+					put_field (file => bom_handle, text => to_string (element (component_cursor).variant.variant.packge));
+					put_field (file => bom_handle, text => to_string (element (component_cursor).author));
+					-- CS put_field (file => bom_handle, text => to_string (element (component_cursor).bom));
+					put_field (file => bom_handle, text => to_string (element (component_cursor).commissioned));
+					put_field (file => bom_handle, text => to_string (element (component_cursor).purpose));
+					put_field (file => bom_handle, text => to_string (element (component_cursor).partcode));
+					put_lf    (file => bom_handle);
+
+				end if;
+
 -- 				log_indentation_up;
 -- 				log (text => "net " & et_schematic.type_net_name.to_string (net_name), level => 1);
 -- 				new_line (netlist_handle);
@@ -1298,12 +1347,10 @@ package body et_schematic is
 -- 				
 -- 				log_indentation_down;
 -- 
--- 				next (net_cursor);
--- 			end loop;
+				next (component_cursor);
+			end loop;
 
-			new_line (bom_handle);
-			put_line (bom_handle, comment_mark & " " & row_separator_double);
-			put_line (bom_handle, comment_mark & " end of list");
+--			CS: put_line (bom_handle, comment_mark & " end of list");
 			
 			close (bom_handle);
 
