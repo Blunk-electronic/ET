@@ -136,6 +136,7 @@ package et_libraries is
 		PURPOSE,		-- for the purpose of the component in the design.
 		PARTCODE,		-- for the primary key into an external database (like "R_PAC_S_0805_VAL_200R")
 		NOTE,			-- for notes made by a person
+		-- BOM CS -- for assembly variants
 		MISC); -- CS: others ?
 
 	function to_string (meaning : in type_text_meaning) return string;
@@ -515,13 +516,14 @@ package et_libraries is
 		commissioned: type_text_placeholder (meaning => et_libraries.commissioned);
 		updated		: type_text_placeholder (meaning => et_libraries.updated);
 		author		: type_text_placeholder (meaning => et_libraries.author);
-		-- Symbols have further text placeholders according to their appearance:
+		-- Symbols have further text placeholders according to the appearance of the component:
 		case appearance is
 			when sch_pcb =>
 				packge		: type_text_placeholder (meaning => et_libraries.packge);
 				datasheet	: type_text_placeholder (meaning => et_libraries.datasheet);
 				purpose		: type_text_placeholder (meaning => et_libraries.purpose);
 				partcode	: type_text_placeholder (meaning => et_libraries.partcode);
+				-- CS bom : type_text_placeholder (meaning => et_libraries.bom);
 			when others => null;
 		end case;
 	end record;
@@ -623,7 +625,7 @@ package et_libraries is
 				datasheet	: type_component_datasheet.bounded_string;
 				purpose		: type_component_purpose.bounded_string;
 				partcode	: type_component_partcode.bounded_string;
-				
+				-- CS: bom : type_bom;
 			when others => null; -- CS
 		end case;
 

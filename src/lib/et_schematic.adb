@@ -48,7 +48,7 @@ with et_coordinates;
 with et_string_processing;
 with et_geometry;
 with et_export;
-
+with et_csv;
 
 package body et_schematic is
 
@@ -1199,10 +1199,24 @@ package body et_schematic is
 		use et_general;
 		use et_string_processing;
 		use et_export;
+		use et_csv;
 		use type_rig;
+		
 		
 		bom_file_name : type_bom_file_name.bounded_string;
 		bom_handle : ada.text_io.file_type;
+
+		column_component	: constant string (1 .. 9) := "COMPONENT";
+		column_value		: constant string (1 .. 5) := "VALUE";
+		column_generic_name	: constant string (1 ..12) := "GENERIC_NAME";
+		column_package		: constant string (1 .. 7) := "PACKAGE";
+		column_author		: constant string (1 .. 6) := "AUTHOR";
+		column_bom			: constant string (1 .. 3) := "BOM";
+		column_commissioned	: constant string (1 ..12) := "COMMISSIONED";
+		column_purpose		: constant string (1 .. 7) := "PURPOSE";
+		column_part_code	: constant string (1 .. 9) := "PART_CODE";
+		column_part_code_ext: constant string (1 ..13) := "PART_CODE_EXT"; -- not used
+		column_updated		: constant string (1 .. 7) := "UPDATED";
 		
 	begin
 		first_module;
@@ -1234,10 +1248,12 @@ package body et_schematic is
 				mode => out_file, 
 				name => type_bom_file_name.to_string (bom_file_name));
 
-			put_line (bom_handle, comment_mark & " " & system_name & " BOM (Bill Of Material)");
-			put_line (bom_handle, comment_mark & " date " & string (date_now));
-			put_line (bom_handle, comment_mark & " module " & to_string (key (module_cursor)));
-			put_line (bom_handle, comment_mark & " " & row_separator_double);
+-- 			put_line (bom_handle, comment_mark & " " & system_name & " BOM (Bill Of Material)");
+-- 			put_line (bom_handle, comment_mark & " date " & string (date_now));
+-- 			put_line (bom_handle, comment_mark & " module " & to_string (key (module_cursor)));
+-- 			put_line (bom_handle, comment_mark & " " & row_separator_double);
+
+			put_field (file => bom_handle, text => column_component);
 			
 			-- CS: statistics about net count and pin count ?
 -- 			put_line (bom_handle, comment_mark & " legend:");
