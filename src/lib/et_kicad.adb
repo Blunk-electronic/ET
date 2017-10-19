@@ -75,6 +75,9 @@ package body et_kicad is
 		log (text => message_error & affected_line (line) & "invalid field !",
 			console => true);
 
+		log (text => to_string (line),
+			console => true);
+
 		-- CS: refine output.
 		raise constraint_error;
 	end invalid_field;
@@ -124,6 +127,7 @@ package body et_kicad is
 						when component_field_commissioned	=> meaning := et_libraries.commissioned;
 						when component_field_updated		=> meaning := et_libraries.updated;
 						when component_field_author			=> meaning := et_libraries.author;
+						when component_field_bom			=> meaning := et_libraries.bom;
 						when others => invalid_field (line);
 					end case;
 
@@ -148,6 +152,7 @@ package body et_kicad is
 						when component_field_commissioned	=> meaning := et_libraries.commissioned;
 						when component_field_updated		=> meaning := et_libraries.updated;
 						when component_field_author			=> meaning := et_libraries.author;
+						when component_field_bom			=> meaning := et_libraries.bom;
 						when others => invalid_field (line);
 					end case;
 
@@ -505,6 +510,7 @@ package body et_kicad is
 			tmp_datasheet		: type_text (meaning => datasheet);
 			tmp_purpose			: type_text (meaning => purpose);
 			tmp_partcode		: type_text (meaning => partcode);
+			tmp_bom				: type_text (meaning => bom);
 
 			-- temporarily used variables to store draw elements (polylines, arcs, pins, ...) 
 			-- before they are added to a unit.
@@ -1181,7 +1187,8 @@ package body et_kicad is
 								package_filter	=> type_package_filter.empty_set,
 								datasheet		=> type_component_datasheet.to_bounded_string (content (tmp_datasheet)),
 								purpose			=> type_component_purpose.to_bounded_string (content (tmp_purpose)),
-								partcode		=> type_component_partcode.to_bounded_string (content (tmp_partcode))
+								partcode		=> type_component_partcode.to_bounded_string (content (tmp_partcode)),
+								bom				=> type_bom'value (content (tmp_bom))
 								)
 							);
 
@@ -1201,7 +1208,15 @@ package body et_kicad is
 						 console => true);
 					raise constraint_error;
 				end if;
-				
+
+				exception
+					when constraint_error =>
+						log_indentation_reset;
+						log (text => message_error & "component " & to_string (tmp_component_name) & " invalid !",
+							 console => true);
+							-- CS: provide details about the problem
+						raise;
+						
 			end insert_component;
 
 			
@@ -1409,14 +1424,14 @@ package body et_kicad is
 			-- Sets the properties of placeholders in all units of the component indicated by comp_cursor.
 			
 				procedure set (
-				-- Sets the properties of the placeholdrs in the current unit.
+				-- Sets the properties of the placeholders in the current unit.
 					key		: in type_unit_name.bounded_string;
 					unit	: in out type_unit_internal) is
 				begin
 					-- For the unit we are interested in the properties of the component text fields.
 					-- The component text fields as given in the component section look like "F0 "IC" 0 50 50 H V C BIB".
 					-- The content (in this example "IC") is not relevant here as it applies for the whole component.
-					-- We convert the text field downward to a type_text_basic (which stips off the content) first.
+					-- We convert the text field downward to a type_text_basic (which strips off the content) first.
 					-- Then we convert the type_text_basic upward to type_text_placeholder by providing the meaning:
 					unit.symbol.reference	:= (type_text_basic (tmp_reference)		with meaning => reference);
 					unit.symbol.value		:= (type_text_basic (tmp_value)			with meaning => value);
@@ -1430,6 +1445,7 @@ package body et_kicad is
 							unit.symbol.datasheet	:= (type_text_basic (tmp_datasheet)	with meaning => datasheet);
 							unit.symbol.purpose		:= (type_text_basic (tmp_purpose)	with meaning => purpose);
 							unit.symbol.partcode	:= (type_text_basic (tmp_partcode)	with meaning => partcode);
+							unit.symbol.bom			:= (type_text_basic (tmp_bom)		with meaning => bom);
 						when others => null;
 					end case;
 				end set;
@@ -1787,7 +1803,7 @@ package body et_kicad is
 				-- Other mandatory fields like function and partcode are detected by F4 and F5 
 				-- (not by subfield #10 !) So F4 enforces a function, F5 enforces a partcode.
 				
-				-- If we have a function field like "F4 "" 0 -100 50 H V C CNN" "purpose",
+				-- If we have a purpose field like "F9 "" 0 -100 50 H V C CNN" "purpose",
 				-- we test subfield #10 against the prescribed meaning. If ok the field is read like
 				-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
 				when purpose =>
@@ -1801,7 +1817,7 @@ package body et_kicad is
 						invalid_field(line);
 					end if;
 
-				-- If we have a partcode field like "F5 "" 0 -100 50 H V C CNN" "partcode",
+				-- If we have a partcode field like "F7 "" 0 -100 50 H V C CNN" "partcode",
 				-- we test subfield #10 against the prescribed meaning. If ok the field is read like
 				-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
 				when partcode =>
@@ -1815,7 +1831,7 @@ package body et_kicad is
 						invalid_field(line);
 					end if;
 
-				-- If we have a "commissioned" field like "F6 "" 0 -100 50 H V C CNN" "commissioned",
+				-- If we have a "commissioned" field like "F4 "" 0 -100 50 H V C CNN" "commissioned",
 				-- we test subfield #10 against the prescribed meaning. If ok the field is read like
 				-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
 				when commissioned =>
@@ -1829,7 +1845,7 @@ package body et_kicad is
 						invalid_field(line);
 					end if;
 
-				-- If we have an "updated" field like "F7 "" 0 -100 50 H V C CNN" "updated",
+				-- If we have an "updated" field like "F5 "" 0 -100 50 H V C CNN" "updated",
 				-- we test subfield #10 against the prescribed meaning. If ok the field is read like
 				-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
 				when updated =>
@@ -1843,7 +1859,7 @@ package body et_kicad is
 						invalid_field(line);
 					end if;
 
-				-- If we have an "author" field like "F8 "" 0 -100 50 H V C CNN" "author",
+				-- If we have an "author" field like "F6 "" 0 -100 50 H V C CNN" "author",
 				-- we test subfield #10 against the prescribed meaning. If ok the field is read like
 				-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
 				when author =>
@@ -1857,6 +1873,21 @@ package body et_kicad is
 						invalid_field(line);
 					end if;
 
+				-- If we have a "bom" field like "F8 "" 0 -100 50 H V C CNN" "bom",
+				-- we test subfield #10 against the prescribed meaning. If ok the field is read like
+				-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
+				when bom =>
+				
+					if to_lower (strip_quotes (field (line,10))) = to_lower (type_text_meaning'image (bom)) then
+						tmp_bom := read_field (meaning => bom);
+						-- for the log:
+						write_text_properies (type_text (tmp_bom)); -- actuals: text & indentation
+						-- basic_text_check (bom); -- CS
+					else
+						invalid_field (line);
+					end if;
+
+					
 				when others => null;
 					-- CS: warning about illegal fields ?
 					-- CS: other text fields ?
@@ -2543,6 +2574,16 @@ package body et_kicad is
 						-- CS: check content of tmp_component_text_fnction
 					end if;
 
+					-- bom
+					log ("bom", level => log_threshold);
+					if not tmp_component_text_bom_found then
+						missing_field (et_libraries.bom);
+					else
+						null;
+						-- CS: check content of tmp_component_text_bom
+					end if;
+
+					
 					-- put_line (indent(indentation + 1) & "crosschecks");
 					-- CS: test partcode, verify agsinst prefix, value and package
 					-- CS: test function against prefix of user interactive parts (X, SW, LED, ...)
@@ -4579,7 +4620,7 @@ package body et_kicad is
 											-- set "field found" flags
 											elsif get_field_from_line(line,1) = component_field_identifier then -- "F"
 												
-												case type_component_field_id'value(get_field_from_line(line,2)) is
+												case type_component_field_id'value (get_field_from_line (line,2)) is
 													when component_field_reference =>
 														tmp_component_text_reference_found	:= true;
 														tmp_component_text_reference 		:= to_text;
@@ -4616,6 +4657,11 @@ package body et_kicad is
 														tmp_component_text_author_found		:= true;
 														tmp_component_text_author 			:= to_text;
 
+													when component_field_bom =>
+														tmp_component_text_bom_found		:= true;
+														tmp_component_text_bom				:= to_text;
+
+														
 													when others => null; -- CS: other fields are ignored. warning ?
 												end case;
 

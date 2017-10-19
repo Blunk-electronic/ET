@@ -76,7 +76,7 @@ package et_kicad is
 	-- In compoenent libraries and schematic, a text field is indicated by letter "F":
 	component_field_identifier				: constant string (1..1) := "F";
 
-	library_component_field_count_max 	: constant positive := 8;
+	library_component_field_count_max 	: constant positive := 9;
 	-- CS: we limit the number of fields in the compoentn library. Useful limit ?
 
 	type type_component_field_id is range 0..library_component_field_count_max;
@@ -88,7 +88,9 @@ package et_kicad is
 	component_field_updated			: constant type_component_field_id := 5;
 	component_field_author			: constant type_component_field_id := 6;
 	component_field_partcode		: constant type_component_field_id := 7;
-	component_field_function		: constant type_component_field_id := 8;
+	component_field_bom				: constant type_component_field_id := 8;
+	component_field_function		: constant type_component_field_id := 9;
+
 
 -- GRID AND COORDINATES
 	-- Objects may be placed at a certain angle. The unit is tenth of degree:
@@ -375,7 +377,8 @@ package et_kicad is
 	tmp_component_text_packge		: et_libraries.type_text (meaning => et_libraries.packge); -- like "SOT23"
 	tmp_component_text_datasheet	: et_libraries.type_text (meaning => et_libraries.datasheet); -- might be useful for some special components
 	tmp_component_text_purpose		: et_libraries.type_text (meaning => et_libraries.purpose); -- to be filled in schematic later by the user
-	tmp_component_text_partcode		: et_libraries.type_text (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"			
+	tmp_component_text_partcode		: et_libraries.type_text (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"
+	tmp_component_text_bom			: et_libraries.type_text (meaning => et_libraries.bom);
 	
 	-- These are the "field found" flags. They signal if a particular text field has been found.
 	-- They are cleared by procdure "init_temp_variables" once a new compoenent is entered.
@@ -389,6 +392,7 @@ package et_kicad is
 	tmp_component_text_datasheet_found		: boolean;
 	tmp_component_text_purpose_found		: boolean;
 	tmp_component_text_partcode_found		: boolean;
+	tmp_component_text_bom_found			: boolean;	
 
 	
 	
