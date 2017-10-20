@@ -1363,11 +1363,72 @@ package body et_schematic is
 	
 
 -- STATISTICS
-	
-	procedure make_statistics is
-		statistic_file_name : type_statistic_file_name.bounded_string;
+
+	function component_count return count_type is
+	-- Returns the number of components in the module indicated by module_cursor.
 	begin
-		null; -- CS
+		return 0; -- CS
+	end component_count;
+
+	procedure make_statistics is
+		statistics_file_name	: type_statistic_file_name.bounded_string;
+		statistics_handle		: ada.text_io.file_type;
+
+		use ada.directories;
+		use et_general;
+		use type_rig;
+		use et_string_processing;
+	begin
+		first_module;
+		
+		log (text => "writing statistics ...", level => 1);
+
+		while module_cursor /= type_rig.no_element loop
+			log_indentation_up;
+			log (text => "module " & to_string (key (module_cursor)), level => 1);
+
+			-- compose the statistics file name and its path like "../ET/motor_driver/CAM/motor_driver.stat"
+			statistics_file_name := type_statistic_file_name.to_bounded_string 
+				(
+				compose (
+					containing_directory => compose 
+						(
+						containing_directory => compose (work_directory, to_string (key (module_cursor))),
+						name => et_export.directory_cam
+						),
+					name => to_string (key (module_cursor)),
+					extension => extension_statistics)
+				);
+
+			-- create the statistics file (which inevitably and intentionally overwrites the previous file)
+			log_indentation_up;
+			log (text => "creating statistics file " & type_statistic_file_name.to_string (statistics_file_name), level => 1);
+			create (
+				file => statistics_handle,
+				mode => out_file, 
+				name => type_statistic_file_name.to_string (statistics_file_name));
+
+			put_line (statistics_handle, comment_mark & " " & system_name & " statistics");
+			put_line (statistics_handle, comment_mark & " date " & string (date_now));
+			put_line (statistics_handle, comment_mark & " module " & to_string (key (module_cursor)));
+			put_line (statistics_handle, comment_mark & " " & row_separator_double);
+-- 			put_line (statistics_handle, comment_mark & " legend:");
+-- 			put_line (statistics_handle, comment_mark & "  net name");
+-- 			put_line (statistics_handle, comment_mark & "  component port pin/pad direction");
+			put_line (statistics_handle, comment_mark & " components" & count_type'image (component_count));
+-- 			put_line (statistics_handle, comment_mark & " " & row_separator_single);
+
+			-- CS
+
+			put_line (statistics_handle, comment_mark & " " & row_separator_single);
+			put_line (statistics_handle, comment_mark & " end of list");
+			
+			close (statistics_handle);
+			log_indentation_down;
+			next (module_cursor);
+		end loop;
+			
+		
 	end make_statistics;
 
 	

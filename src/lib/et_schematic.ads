@@ -747,6 +747,9 @@ package et_schematic is
 	package type_statistic_file_name is new generic_bounded_length (statistic_file_name_length); 
 
 	extension_statistics : constant string (1 .. 4) := "stat";
+
+	function component_count return count_type;
+	-- Returns the number of components in the module indicated by module_cursor.
 	
 	procedure make_statistics;
 		
