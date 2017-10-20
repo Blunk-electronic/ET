@@ -115,6 +115,16 @@ package body et_schematic is
 	begin
 		return type_net_name.to_string (net_name);
 	end to_string;
+
+	function anonymous (net_name : in type_net_name.bounded_string) return boolean is
+	-- Returns true if the given net is anonymous.
+	begin
+		if slice (net_name, 1, 2) = anonymous_net_name_prefix then
+			return true;
+		else 
+			return false;
+		end if;
+	end anonymous;
 	
 	procedure write_label_properties (label : in type_net_label) is
 	-- Writes the properties of the given net label in the logfile.
@@ -478,6 +488,16 @@ package body et_schematic is
 		log_indentation_down;		
 	end write_unit_properties;
 
+	function length (segment : in type_net_segment) return type_distance is
+	-- Returns the length of the given net segment.
+		len : type_distance;
+		use et_string_processing;
+	begin
+		len := distance (segment.coordinates_start, segment.coordinates_end);
+		log (text => "segment length " & to_string (len) & "mm", level => 3);
+		return len;
+	end length;
+	
 	procedure write_coordinates_of_segment (segment : in type_net_segment) is
 	-- Writes the start and end coordinates of a net segment.
 		use et_string_processing;

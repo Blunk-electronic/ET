@@ -134,6 +134,9 @@ package et_coordinates is
 	-- Rotates the given point by the given angle with the origin as center.
 		point	: in out type_2d_point;
 		angle	: in type_angle);
+
+	function distance (point_1, point_2 : in type_2d_point) return type_distance;
+	-- Returns the distance between the given points.
 	
 	-- The name of a submodule may have 100 characters which seems sufficient for now.
  	submodule_name_length : constant natural := 100;

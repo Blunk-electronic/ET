@@ -275,6 +275,42 @@ package body et_coordinates is
 		end if; -- if angle not zero
 	end rotate;
 
+	function distance (point_1, point_2 : in type_2d_point) return type_distance is
+	-- Returns the distance between the given points.
+		dis : type_distance;
+
+		package functions_distance is new ada.numerics.generic_elementary_functions (type_distance);
+		use functions_distance;
+
+		use et_string_processing;
+	begin
+		-- To save computing time a few simple checks:
+		
+		if point_1 = point_2 then -- points have same x/y position -> zero difference
+-- 			log (text => "equal points", level => 4);
+			dis := zero_distance;
+			
+		elsif point_1.x = point_2.x then -- points are in a vertical line
+-- 			log (text => "vertical", level => 4);
+			dis := abs (point_2.y - point_1.y);
+			
+		elsif point_1.y = point_2.y then -- points are in a horizontal line
+-- 			log (text => "horizontal", level => 4);
+			dis := abs (point_2.x - point_1.x);
+
+		else -- distance = sqrt (delta_x^2 + delta_y^2)
+-- 			log (text => "diagonal", level => 4);
+			dis := sqrt (
+					(abs (point_2.x - point_1.x)) ** 2.0 
+					+
+					(abs (point_2.y - point_1.y)) ** 2.0 
+					);
+		end if;
+
+		log (text => "distance " & type_distance'image (dis), level => 4);
+		return dis;
+	end distance;
+
 	function to_string (submodule : in type_submodule_name.bounded_string) return string is
 	-- Returns the given submodule name as string.
 	begin

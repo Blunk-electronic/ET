@@ -4331,9 +4331,7 @@ package body et_kicad is
 										end if;
 									else
 										net_segment_entered := false; -- we are leaving a net segment
-
-										-- CS: warning on segment with zero length
-										
+			
 										-- Build a temporarily net segment with fully specified coordinates:
 										set_path (tmp_segment.coordinates_start, path_to_submodule);
 										
@@ -4352,14 +4350,23 @@ package body et_kicad is
 										set_x (tmp_segment.coordinates_end, mil_to_distance (get_field_from_line (line,3)));
 										set_y (tmp_segment.coordinates_end, mil_to_distance (get_field_from_line (line,4)));
 
-										-- The net segments are to be collected in a wild list of segments for later sorting.
-										if log_level >= 1 then
-											log_indentation_up;
-											write_coordinates_of_segment (tmp_segment);
-											log_indentation_down;
-										end if;
-										
-										type_wild_segments.append (wild_segments, tmp_segment);
+										-- Ignore net segments with zero length (CS: for some reason they may exist. could be a kicad bug)
+										-- If a net segment has zero length, issue a warning.
+										if length (tmp_segment) > zero_distance then 
+
+											-- The net segments are to be collected in a wild list of segments for later sorting.
+											if log_level >= 1 then
+												log_indentation_up;
+												write_coordinates_of_segment (tmp_segment);
+												log_indentation_down;
+											end if;
+											
+											type_wild_segments.append (wild_segments, tmp_segment);
+											
+										else -- segment has zero length
+											log (message_warning & "Line " & affected_line (line) & "Net segment with zero length found -> ignored !");
+										end if; -- length
+
 									end if;
 
 									-- read net junctions and store them in a wild list of net junctions for later sorting

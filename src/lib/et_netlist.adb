@@ -684,16 +684,33 @@ package body et_netlist is
 			use et_string_processing;
 
 			procedure add_port (
-			-- Adds the given port and the component reference to the net within the netlist being built.
+			-- Adds the given port and the component reference to the net in the netlist being built.
 				reference : in et_libraries.type_component_reference;
 				port : in type_port_base) is
 
 				procedure add (
 					net_name : in type_net_name.bounded_string;
 					ports : in out type_ports.set) is
+
+					inserted : boolean;
+					cursor : type_ports.cursor;
 				begin
 					--ports.insert (port with reference); -- CS: does not compile with gnat 4.8.5 . may work with later versions
-					ports.insert (new_item => (port with reference));
+		
+					-- If a port sits on the point where two segments meet, the same port should be inserted only once.
+					-- Thus we have the obligatory flag "inserted". 
+					ports.insert (
+						new_item => (port with reference),
+						inserted => inserted,
+						position => cursor
+						);
+
+					if not inserted then -- port already in net
+						log_indentation_up;
+						log (text => "already processed -> skipped", level => 3);
+						log_indentation_down;
+					end if;
+						
 				end add;
 				
 			begin -- add_port
@@ -712,7 +729,9 @@ package body et_netlist is
 																				  
 			function post_process_netlist return type_netlist.map is
 			-- Post processes the netlist of the current rig module (indicated by module_cursor)
-			-- CS: comment !
+			-- Enforces port names onto nets. A net name must change according to the names of 
+			-- "power out" ports in that net. Example: A net with name N$2 has a port with name "GND"
+			-- the net name must change from N$2 to GND.
 				net_cursor_pre	: type_netlist.cursor;
 
 				netlist_post 	: type_netlist.map; -- the netlist being built. to be returned finally.
@@ -762,8 +781,18 @@ package body et_netlist is
 							if et_netlist.port (element (port_cursor)) = et_schematic.to_string (net_name) then
 								null; -- fine. net name matches port name
 							else
-								log (text => "net renaming required", level => 1);
+								log (text => "port name overrides net name", level => 1);
+
+								-- Check if a non-anonymous net name is overridded by the port name.
+								-- Example: The net name is already "P3V3" and the port name is "+3V3".
+								-- More serious example : The net name is already "P3V3" and the port name is "GND".
+								if not et_schematic.anonymous (net_name) then
+									log (message_warning & "NAME OF POWER OUT PIN OVERRIDES NET NAME !");
+									-- CS: error and abort instead ?
+								end if;
+									
 								net_name := port_to_net_name (element (port_cursor).port);
+								-- CS: update net names in module.nets ?
 							end if;
 						end if;
 						
@@ -972,12 +1001,22 @@ package body et_netlist is
 				-- write net name in netlist
 				log_indentation_up;
 				log (text => "net " & et_schematic.type_net_name.to_string (net_name), level => 1);
+
+				-- Check if net has no dedicated name (a net name like N$3 is anonymous):
+				if et_schematic.anonymous (net_name) then
+					log (message_warning & "Net has no dedicated name !");
+				end if;
+				
 				new_line (netlist_handle);
 				put_line (netlist_handle, et_schematic.type_net_name.to_string (net_name));
 
 				-- export port
 				log_indentation_up;
 				log (text => "exporting" & count_type'image (port_count (net_cursor)) & " ports ...", level => 1);
+				-- CS: warning if net has only one pin
+
+				-- CS: perfom an ERC on the current net in a separate loop (similar to the one below)
+				
 				port_cursor := first_port (net_cursor);
 				while port_cursor /= type_ports.no_element loop
 

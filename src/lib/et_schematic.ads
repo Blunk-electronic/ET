@@ -290,6 +290,9 @@ package et_schematic is
 	function to_string (net_name : in type_net_name.bounded_string) return string;
 	-- Returns the given net name as string;
 
+	function anonymous (net_name : in type_net_name.bounded_string) return boolean;
+	-- Returns true if the given net is anonymous.
+	
 	-- A label is frequently attached to a net segment in order to make the net name visible. 
 	-- The label can be a simple string or a tag. 
 	-- The label carries the name of the net. 
@@ -366,6 +369,8 @@ package et_schematic is
 		label_list_tag    	: type_tag_labels.list;
 	end record;
 
+	function length (segment : in type_net_segment) return type_distance;
+	-- Returns the length of the given net segment.
 	
 	procedure write_coordinates_of_segment (segment : in type_net_segment);
 	-- Writes the start and end coordinates of a net segment.	
