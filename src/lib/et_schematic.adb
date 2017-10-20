@@ -277,7 +277,7 @@ package body et_schematic is
 
 				-- bom
 				log ("bom "
-					& et_libraries.type_bom'image (type_components.element (component).bom));
+					& et_libraries.to_string (type_components.element (component).bom));
 
 				
 			when pcb => null; -- CS
@@ -1226,6 +1226,8 @@ package body et_schematic is
 -- BOM
 	
 	procedure make_bom is
+	-- Generates a bom file. This file is csv formatted and is to be processed by
+	-- other ERP tools (like stock_manager, see <https://github.com/Blunk-electronic/stock_manager>)
 		use ada.directories;
 		use et_general;
 		use et_string_processing;
@@ -1233,7 +1235,6 @@ package body et_schematic is
 		use et_csv;
 		use type_rig;
 		use type_components;
-		
 		
 		bom_file_name : type_bom_file_name.bounded_string;
 		bom_handle : ada.text_io.file_type;
@@ -1282,11 +1283,9 @@ package body et_schematic is
 				mode => out_file, 
 				name => type_bom_file_name.to_string (bom_file_name));
 
--- 			put_line (bom_handle, comment_mark & " " & system_name & " BOM (Bill Of Material)");
--- 			put_line (bom_handle, comment_mark & " date " & string (date_now));
--- 			put_line (bom_handle, comment_mark & " module " & to_string (key (module_cursor)));
--- 			put_line (bom_handle, comment_mark & " " & row_separator_double);
+			-- CS: A nice header should be placed. First make sure stock_manager can handle it.
 
+			-- write the BOM table header
 			put_field (file => bom_handle, text => column_component);
 			put_field (file => bom_handle, text => column_value);
 			put_field (file => bom_handle, text => column_generic_name);
@@ -1300,74 +1299,42 @@ package body et_schematic is
 			put_field (file => bom_handle, text => column_updated);
 			put_lf    (file => bom_handle);
 
-			-- CS: statistics about net count and pin count ?
--- 			put_line (bom_handle, comment_mark & " legend:");
-			
-			-- export net
--- 			log_indentation_up;
--- 			log (text => "exporting" & count_type'image (net_count) & " nets ...", level => 1);
+			log_indentation_up;
 			component_cursor := first_component;
 			while component_cursor /= type_components.no_element loop
--- 				net_name := key (net_cursor);
--- 
--- 				-- write net name in netlist
+
+				-- We ignore all virtual components like power flags, power symbols, ...
 				if component_appearance (component_cursor) = sch_pcb then
+					log (text => to_string (key (component_cursor)), level => 1);
+
 					put_field (file => bom_handle, text => to_string (key (component_cursor)));
 					put_field (file => bom_handle, text => to_string (element (component_cursor).value));
 					put_field (file => bom_handle, text => to_string (element (component_cursor).name_in_library));
 					put_field (file => bom_handle, text => to_string (element (component_cursor).variant.variant.packge));
 					put_field (file => bom_handle, text => to_string (element (component_cursor).author));
-					-- CS put_field (file => bom_handle, text => to_string (element (component_cursor).bom));
+					put_field (file => bom_handle, text => to_string (element (component_cursor).bom));
 					put_field (file => bom_handle, text => to_string (element (component_cursor).commissioned));
 					put_field (file => bom_handle, text => to_string (element (component_cursor).purpose));
 					put_field (file => bom_handle, text => to_string (element (component_cursor).partcode));
+
+					-- CS: This is an empty field. it is reserved for the attribute "PART_CODE_EXT" 
+					-- which is currently not supported:
+					put_field (file => bom_handle, text => "");
+
+					put_field (file => bom_handle, text => to_string (element (component_cursor).updated));
 					put_lf    (file => bom_handle);
 
 				end if;
 
--- 				log_indentation_up;
--- 				log (text => "net " & et_schematic.type_net_name.to_string (net_name), level => 1);
--- 				new_line (netlist_handle);
--- 				put_line (netlist_handle, et_schematic.type_net_name.to_string (net_name));
--- 
--- 				-- export port
--- 				log_indentation_up;
--- 				log (text => "exporting" & count_type'image (port_count (net_cursor)) & " ports ...", level => 1);
--- 				port_cursor := first_port (net_cursor);
--- 				while port_cursor /= type_ports.no_element loop
--- 
--- 					-- we export only ports of real components
--- 					if appearance (port_cursor) = et_libraries.sch_pcb then
--- 
--- 						port := element (port_cursor);
--- 
--- 						-- write reference, port, pin in netlist (all in a single line)
--- 						-- CS: use port_cursor instead of a variable "port"
--- 						put_line (netlist_handle, 
--- 							reference (port) & " "
--- 							& et_netlist.port (port) & " "
--- 							& et_netlist.pin (port) & " "
--- 							);
--- 
--- 					end if;
--- 						
--- 					next (port_cursor);
--- 				end loop;
--- 				log_indentation_down;
--- 				
--- 				log_indentation_down;
--- 
 				next (component_cursor);
 			end loop;
-
---			CS: put_line (bom_handle, comment_mark & " end of list");
+			log_indentation_down;
+			
+			-- CS: A list end mark should be placed. First make sure stock_manager can handle it.
+			-- put_line (bom_handle, comment_mark & " end of list");
 			
 			close (bom_handle);
-
 			log_indentation_down;
--- 			log_indentation_down;
--- 			log_indentation_down;
-			
 			next (module_cursor);
 		end loop;
 		

@@ -3689,7 +3689,7 @@ package body et_kicad is
 							if et_libraries.content (tmp_component_text_packge)'size = 0 then
 								log_indentation_reset;
 								log (
-									text => message_error & et_schematic.to_string(tmp_component_reference) & ": footprint not specified !",
+									text => message_error & "component " & et_schematic.to_string (tmp_component_reference) & " footprint not specified !",
 									console => true);
 								raise constraint_error;
 							end if;

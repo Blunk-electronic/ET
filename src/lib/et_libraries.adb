@@ -149,7 +149,6 @@ package body et_libraries is
 		return to_lower(type_text_meaning'image(meaning));
 	end to_string;
 
-	
 	procedure write_placeholder_properties (placeholder : in type_text_placeholder) is
 	-- Writes the properties of the given placeholder.
 		use et_string_processing;
@@ -285,6 +284,12 @@ package body et_libraries is
 	begin
 		return type_unit_name.to_bounded_string (unit_name);
 	end to_unit_name;
+
+	function to_string (bom : in type_bom) return string is
+	-- Returns the given bom variable as string.	
+	begin
+		return to_lower (type_bom'image (bom));
+	end to_string;
 	
 	function component_value_valid (
 	-- Returns true if the given component value meets certain conventions.									   

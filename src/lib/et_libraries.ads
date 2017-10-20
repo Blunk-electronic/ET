@@ -601,6 +601,9 @@ package et_libraries is
 		element_type => type_unit_external);
 
 	type type_bom is (YES, NO);
+
+	function to_string (bom : in type_bom) return string;
+	-- Returns the given bom variable as string.
 	
 -- COMPONENTS
 
