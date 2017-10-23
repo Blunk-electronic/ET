@@ -437,7 +437,9 @@ package body et_netlist is
 		-- Loop in component list of schematic. component_cursor_sch points to the 
 		-- particular component. 
 
-		-- We ignore components that are "power_flags". Yet other virtual components like
+		-- We ignore components that are "power_flags". Since the portlists are a prerequisite
+		-- of netlist generation, this implies, that "power_flags" are not in the netlists.
+		-- Yet other virtual components like
 		-- power symbols like GND or P3V3 are relevant indeed. Because later when we do
 		-- the netlist post-processing they enforce their port names to the connected net.
 		
@@ -638,8 +640,41 @@ package body et_netlist is
 		return count;
 	end port_count;
 
+	function component_ports_total return count_type is
+	-- Returns the total number of component ports in the current module.
+	-- The return does not include so called "power_flags".
+		n : count_type := 0;
 
-		
+		procedure get (
+			module	: in et_coordinates.type_submodule_name.bounded_string;
+			netlist	: in type_netlist.map) is
+
+			net : type_netlist.cursor;
+		begin
+			net := netlist.first;
+
+			-- loop trough the nets and summ up the number of ports.
+			while net /= type_netlist.no_element loop
+				n := n + port_count (net);
+				next (net);
+			end loop;
+		end get;
+
+	begin -- component_ports_total
+		type_rig_netlists.query_element (
+			position => module_cursor,
+			process => get'access);
+
+		return n;
+
+	end component_ports_total;
+	
+	procedure set_module (module_name : in et_coordinates.type_submodule_name.bounded_string) is
+	-- Sets the active module. Leaves module_cursor pointing to the module.
+	begin
+		module_cursor := rig.find (module_name);
+	end set_module;
+	
 	
 	procedure make_netlists is
 	-- Builids the netlists of all modules in the rig.

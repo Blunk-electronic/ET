@@ -49,6 +49,7 @@ with et_string_processing;
 with et_geometry;
 with et_export;
 with et_csv;
+with et_netlist;
 
 package body et_schematic is
 
@@ -313,6 +314,18 @@ package body et_schematic is
 		return type_components.element (cursor).appearance;
 	end component_appearance;
 
+	function bom (cursor : in type_components.cursor)
+	-- Returns the component bom status where cursor points to.
+		return type_bom is
+		b : type_bom; -- the bom status
+	begin
+		-- Only real components have a bom status.
+		if component_appearance (cursor) = sch_pcb then
+			b := type_components.element (cursor).bom;
+		end if;
+		return b;
+	end bom;
+	
 	function component_power_flag (cursor : in type_components.cursor)
 	-- Returns true if the component is a power flag.
 		return boolean is
@@ -1267,7 +1280,7 @@ package body et_schematic is
 		column_bom			: constant string (1 .. 3) := "BOM";
 		column_commissioned	: constant string (1 ..12) := "COMMISSIONED";
 		column_purpose		: constant string (1 .. 7) := "PURPOSE";
-		column_part_code	: constant string (1 .. 9) := "PART_CODE";
+		column_part_code	: constant string (1 .. 9) := "PART_CODE"; -- CS: make sure stock_manager can handle it. former PART_CODE_BEL
 		column_part_code_ext: constant string (1 ..13) := "PART_CODE_EXT"; -- not used
 		column_updated		: constant string (1 .. 7) := "UPDATED";
 
@@ -1325,25 +1338,28 @@ package body et_schematic is
 
 				-- We ignore all virtual components like power flags, power symbols, ...
 				if component_appearance (component_cursor) = sch_pcb then
-					log (text => to_string (key (component_cursor)), level => 1);
 
-					put_field (file => bom_handle, text => to_string (key (component_cursor)));
-					put_field (file => bom_handle, text => to_string (element (component_cursor).value));
-					put_field (file => bom_handle, text => to_string (element (component_cursor).name_in_library));
-					put_field (file => bom_handle, text => to_string (element (component_cursor).variant.variant.packge));
-					put_field (file => bom_handle, text => to_string (element (component_cursor).author));
-					put_field (file => bom_handle, text => to_string (element (component_cursor).bom));
-					put_field (file => bom_handle, text => to_string (element (component_cursor).commissioned));
-					put_field (file => bom_handle, text => to_string (element (component_cursor).purpose));
-					put_field (file => bom_handle, text => to_string (element (component_cursor).partcode));
+					if bom (component_cursor) = YES then
+						log (text => to_string (key (component_cursor)), level => 1);
 
-					-- CS: This is an empty field. it is reserved for the attribute "PART_CODE_EXT" 
-					-- which is currently not supported:
-					put_field (file => bom_handle, text => "");
+						put_field (file => bom_handle, text => to_string (key (component_cursor)));
+						put_field (file => bom_handle, text => to_string (element (component_cursor).value));
+						put_field (file => bom_handle, text => to_string (element (component_cursor).name_in_library));
+						put_field (file => bom_handle, text => to_string (element (component_cursor).variant.variant.packge));
+						put_field (file => bom_handle, text => to_string (element (component_cursor).author));
+						put_field (file => bom_handle, text => to_string (element (component_cursor).bom));
+						put_field (file => bom_handle, text => to_string (element (component_cursor).commissioned));
+						put_field (file => bom_handle, text => to_string (element (component_cursor).purpose));
+						put_field (file => bom_handle, text => to_string (element (component_cursor).partcode));
 
-					put_field (file => bom_handle, text => to_string (element (component_cursor).updated));
-					put_lf    (file => bom_handle);
+						-- CS: This is an empty field. it is reserved for the attribute "PART_CODE_EXT" 
+						-- which is currently not supported:
+						put_field (file => bom_handle, text => "");
 
+						put_field (file => bom_handle, text => to_string (element (component_cursor).updated));
+						put_lf    (file => bom_handle);
+
+					end if;
 				end if;
 
 				next (component_cursor);
@@ -1364,20 +1380,137 @@ package body et_schematic is
 
 -- STATISTICS
 
-	function component_count return count_type is
-	-- Returns the number of components in the module indicated by module_cursor.
+	function components_total return count_type is
+	-- Returns the total number of components (inc. virtual components) in the module indicated by module_cursor.
+		n : count_type := 0;
+
+		procedure get (
+			name	: in et_coordinates.type_submodule_name.bounded_string;
+			module	: in type_module) is
+			use type_components;
+		begin
+			n := length (module.components);
+		end get;
+	
 	begin
-		return 0; -- CS
-	end component_count;
+		type_rig.query_element (
+			position	=> module_cursor,
+			process		=> get'access
+			);
 
+		return n;
+	end components_total;
+
+	function components_real (mounted_only : in boolean := false) return count_type is
+	-- Returns the number of real components in the module indicated by module_cursor.
+	-- If mounted_only is true, only components with the flag "bom" set are adressed.
+	-- If mounted_only is false, all real components are adressed.
+		n : count_type := 0;
+
+		procedure get (
+			name	: in et_coordinates.type_submodule_name.bounded_string;
+			module	: in type_module) is
+
+			component : type_components.cursor;
+			use type_components;
+			use et_string_processing;
+		begin -- get
+			if mounted_only then
+				log (text => "mounted components", level => 1);
+			else
+				log (text => "real components", level => 1);
+			end if;
+
+			component := module.components.first;			
+			while component /= type_components.no_element loop
+
+				-- filter real components
+				if component_appearance (component) = sch_pcb then
+					log_indentation_up;
+					
+					if mounted_only then
+						if bom (component) = YES then
+							log (text => to_string (key (component)), level => 1);
+							n := n + 1;
+						end if;
+					else
+						log (text => to_string (key (component)), level => 1);
+						n := n + 1;
+					end if;
+
+					log_indentation_down;
+				end if;
+				next (component);
+			end loop;
+		end get;
+	
+	begin -- components_real
+		type_rig.query_element (
+			position	=> module_cursor,
+			process		=> get'access
+			);
+
+		return n;
+	end components_real;
+
+	function components_virtual return count_type is
+	-- Returns the number of virtual components in the module indicated by module_cursor.
+		n : count_type := 0;
+
+		procedure get (
+			name	: in et_coordinates.type_submodule_name.bounded_string;
+			module	: in type_module) is
+
+			component : type_components.cursor;
+			use type_components;
+			use et_string_processing;
+		begin
+			log (text => "virtual components", level => 1);
+			
+			component := module.components.first;
+			while component /= type_components.no_element loop
+				
+				-- filter real components
+				if component_appearance (component) = sch then
+					log_indentation_up;
+					
+					log (text => to_string (key (component)), level => 1);
+					n := n + 1;
+					
+					log_indentation_down;
+				end if;
+				next (component);
+			end loop;
+			
+		end get;
+	
+	begin
+		type_rig.query_element (
+			position	=> module_cursor,
+			process		=> get'access
+			);
+
+		return n;
+	end components_virtual;
+
+	
 	procedure make_statistics is
-		statistics_file_name	: type_statistic_file_name.bounded_string;
-		statistics_handle		: ada.text_io.file_type;
+	-- Generates the statistics on components and nets of the rig.
+	-- Breaks statistics up into submodules, general statistics (CAD) and CAM related things.
+		statistics_file_name_cad: type_statistic_file_name.bounded_string;
+		statistics_file_name_cam: type_statistic_file_name.bounded_string;
+		statistics_handle_cad	: ada.text_io.file_type;
+		statistics_handle_cam	: ada.text_io.file_type;
 
+		component : type_components.cursor;
+		-- CS net
+		
 		use ada.directories;
 		use et_general;
+		use type_components;
 		use type_rig;
 		use et_string_processing;
+		use et_netlist;
 	begin
 		first_module;
 		
@@ -1386,9 +1519,60 @@ package body et_schematic is
 		while module_cursor /= type_rig.no_element loop
 			log_indentation_up;
 			log (text => "module " & to_string (key (module_cursor)), level => 1);
+			log_indentation_up;
 
-			-- compose the statistics file name and its path like "../ET/motor_driver/CAM/motor_driver.stat"
-			statistics_file_name := type_statistic_file_name.to_bounded_string 
+			-- CAD
+			-- compose the CAD statistics file name and its path like "../ET/motor_driver/motor_driver.stat"
+			statistics_file_name_cad := type_statistic_file_name.to_bounded_string 
+				(
+				compose (
+					containing_directory => compose (work_directory, to_string (key (module_cursor))),
+					name => to_string (key (module_cursor)),
+					extension => extension_statistics)
+				);
+
+			-- create the statistics file (which inevitably and intentionally overwrites the previous file)
+			log (text => "CAD statistics file " & type_statistic_file_name.to_string (statistics_file_name_cad), level => 1);
+			create (
+				file => statistics_handle_cad,
+				mode => out_file, 
+				name => type_statistic_file_name.to_string (statistics_file_name_cad));
+
+			log_indentation_up;
+			put_line (statistics_handle_cad, comment_mark & " " & system_name & " CAD statistics");
+			put_line (statistics_handle_cad, comment_mark & " date " & string (date_now));
+			put_line (statistics_handle_cad, comment_mark & " module " & to_string (key (module_cursor)));
+			put_line (statistics_handle_cad, comment_mark & " " & row_separator_double);
+
+			-- components
+			put_line (statistics_handle_cad, "components");
+			put_line (statistics_handle_cad, " total  " & count_type'image (components_total) & " (incl. virtual components)");
+			put_line (statistics_handle_cad, " real   " & count_type'image (components_real)); -- all real components ! Regardless of bom status !
+			put_line (statistics_handle_cad, " virtual" & count_type'image (components_virtual) & " (power symbols, power flags, ...)");
+			new_line (statistics_handle_cad);
+			-- CS: resitors, leds, transitors, ...
+
+			-- nets
+			put_line (statistics_handle_cad, "nets");
+			-- CS: currently we get the net and pin numbers from et_netlist.rig.
+			-- In the future this data should be taken from et_schematic.rig.
+			et_netlist.set_module (key (module_cursor));
+			put_line (statistics_handle_cad, " total  " & count_type'image (et_netlist.net_count));
+			-- As for the total number of ports, we take all ports into account as they are listed in et_netlist.rig.
+			-- This includes ports of virtual components except so called "power_flags".
+			put_line (statistics_handle_cad, "  ports " & count_type'image (et_netlist.component_ports_total) & " (excl. power flags)");
+			
+			-- finish statistics			
+			put_line (statistics_handle_cad, comment_mark & " " & row_separator_single);
+			put_line (statistics_handle_cad, comment_mark & " end of list");
+			log_indentation_down;
+			close (statistics_handle_cad);
+
+
+
+			-- CAM
+			-- compose the CAM statistics file name and its path like "../ET/motor_driver/CAM/motor_driver.stat"
+			statistics_file_name_cam := type_statistic_file_name.to_bounded_string 
 				(
 				compose (
 					containing_directory => compose 
@@ -1401,29 +1585,44 @@ package body et_schematic is
 				);
 
 			-- create the statistics file (which inevitably and intentionally overwrites the previous file)
-			log_indentation_up;
-			log (text => "creating statistics file " & type_statistic_file_name.to_string (statistics_file_name), level => 1);
+			log (text => "CAM statistics file " & type_statistic_file_name.to_string (statistics_file_name_cam), level => 1);
 			create (
-				file => statistics_handle,
+				file => statistics_handle_cam,
 				mode => out_file, 
-				name => type_statistic_file_name.to_string (statistics_file_name));
+				name => type_statistic_file_name.to_string (statistics_file_name_cam));
 
-			put_line (statistics_handle, comment_mark & " " & system_name & " statistics");
-			put_line (statistics_handle, comment_mark & " date " & string (date_now));
-			put_line (statistics_handle, comment_mark & " module " & to_string (key (module_cursor)));
-			put_line (statistics_handle, comment_mark & " " & row_separator_double);
--- 			put_line (statistics_handle, comment_mark & " legend:");
--- 			put_line (statistics_handle, comment_mark & "  net name");
--- 			put_line (statistics_handle, comment_mark & "  component port pin/pad direction");
-			put_line (statistics_handle, comment_mark & " components" & count_type'image (component_count));
--- 			put_line (statistics_handle, comment_mark & " " & row_separator_single);
+			log_indentation_up;
+			put_line (statistics_handle_cam, comment_mark & " " & system_name & " CAM statistics");
+			put_line (statistics_handle_cam, comment_mark & " date " & string (date_now));
+			put_line (statistics_handle_cam, comment_mark & " module " & to_string (key (module_cursor)));
+			put_line (statistics_handle_cam, comment_mark & " " & row_separator_double);
 
-			-- CS
+			-- components
+			put_line (statistics_handle_cam, "components");
+			put_line (statistics_handle_cam, " total" & count_type'image (components_real (mounted_only => true)));
+			-- As for the total number of real component ports, we take all ports into account for which a physical
+			-- pad must be manufactured. Here it does not matter if a component is to be mounted or not, if a pin is connected or not.
+			-- CS: THT/SMD
+			-- CS: THT/SMD/pins/pads
+			-- CS: resitors, leds, transitors, ...
+			new_line (statistics_handle_cam);
 
-			put_line (statistics_handle, comment_mark & " " & row_separator_single);
-			put_line (statistics_handle, comment_mark & " end of list");
+			-- nets
+			put_line (statistics_handle_cam, "nets");
+			-- CS: currently we get the net and pin numbers from et_netlist.rig.
+			-- In the future this data should be taken from et_schematic.rig.
+			et_netlist.set_module (key (module_cursor));
+			put_line (statistics_handle_cam, " total" & count_type'image (et_netlist.net_count));
+
+			-- finish statistics
+			put_line (statistics_handle_cam, comment_mark & " " & row_separator_single);
+			put_line (statistics_handle_cam, comment_mark & " end of list");
+			log_indentation_down;
+			close (statistics_handle_cam);
+
+
+
 			
-			close (statistics_handle);
 			log_indentation_down;
 			next (module_cursor);
 		end loop;

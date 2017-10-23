@@ -592,6 +592,10 @@ package et_schematic is
 	-- Returns the component appearance where cursor points to.
 		return type_component_appearance;
 
+	function bom (cursor : in type_components.cursor)
+	-- Returns the component bom status where cursor points to.
+		return type_bom;
+
 	function component_power_flag (cursor : in type_components.cursor)
 	-- Returns true if the component is a power flag.
 		 return boolean;
@@ -748,8 +752,17 @@ package et_schematic is
 
 	extension_statistics : constant string (1 .. 4) := "stat";
 
-	function component_count return count_type;
-	-- Returns the number of components in the module indicated by module_cursor.
+	function components_total return count_type;
+	-- Returns the total number of components (incl. virtual components) in the module indicated by module_cursor.
+
+	function components_real (mounted_only : in boolean := false) return count_type;
+	-- Returns the number of real components in the module indicated by module_cursor.
+	-- If mounted_only is true, only components with the flag "bom" set are adressed.
+	-- If mounted_only is false, all real components are adressed.
+	
+	function components_virtual return count_type;
+	-- Returns the number of virtual components in the module indicated by module_cursor.
+
 	
 	procedure make_statistics;
 		

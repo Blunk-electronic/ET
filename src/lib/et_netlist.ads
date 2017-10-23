@@ -135,7 +135,9 @@ package et_netlist is
 	function appearance (port : in type_ports.cursor) return et_libraries.type_component_appearance;
 	-- Returns the appearance of the given port.
 	
-	-- This is the netlist of a single submodule:	
+	-- This is the netlist of a single submodule:
+	-- It doss also contain ports of virtual components (power symbols) except 
+	-- so called "power flags".
 	package type_netlist is new ordered_maps (
 		key_type => et_schematic.type_net_name.bounded_string, -- net name like "MCU_CLOCK"
 		element_type => type_ports.set); -- the list of ports connected with the net
@@ -168,13 +170,14 @@ package et_netlist is
 
 	function port_count (net_cursor : in type_netlist.cursor) return count_type;
 	-- Returns the number of ports of the given net of the current module.
+
+	function component_ports_total return count_type;
+	-- Returns the total number of component ports in the current module.
+	-- The return does not include so called "power_flags".
 	
-	
--- 	
--- 	procedure set_module (
--- 	-- Sets the active module. Leaves module_cursor pointing
--- 	-- to the module.
--- 		module_name : in et_coordinates.type_submodule_name.bounded_string);
+	procedure set_module (module_name : in et_coordinates.type_submodule_name.bounded_string);
+	-- Sets the active module. Leaves module_cursor pointing to the module.
+
 
 
 
