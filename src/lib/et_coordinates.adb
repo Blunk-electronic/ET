@@ -43,7 +43,7 @@ with et_math;
 
 package body et_coordinates is
 
-	function mil_to_distance (mil : in string) return type_distance is
+	function mil_to_distance (mil : in string; warn_on_negative : boolean := true) return type_distance is
 	-- Returns the given mils to type_distance.		
 		use et_string_processing;
 		type type_distance_intermediate is digits 13 range -10000000.0 .. 1000000.0;
@@ -51,6 +51,7 @@ package body et_coordinates is
 		-- CS: refine range and delta if required
 
 		d_in : type_distance_intermediate;
+		d : type_distance; -- the distance to be returned
 	begin
 		d_in := type_distance_intermediate'value (mil);
 
@@ -59,13 +60,22 @@ package body et_coordinates is
 			& "mil as string " & mil 
 -- 			& ", mil as fixed" & type_distance_intermediate'image (d_in)
 -- 			& ", mm as fixed" & type_distance_intermediate'image (d_in * (25.4 * 0.001))
-			& ", mm as float" & float'image (float (d_in * (25.4 * 0.001))),
+			& ", mm as float " & float'image (float (d_in * (25.4 * 0.001))),
 			level => 6);
 		log_indentation_down;
-		
-		return et_math.round (
+
+		-- calculate distance
+		d := et_math.round (
 			float_in => type_distance (d_in * (25.4 * 0.001)),
 			accuracy => accuracy_schematic);
+
+		if warn_on_negative then
+			if d < zero_distance then
+				log (text => message_warning & "negative coordinates found !");
+			end if;
+		end if;
+		
+		return d;
 		
 		-- CS: exception handler
 	end mil_to_distance;

@@ -258,8 +258,15 @@ package body et_kicad is
 					invalid_style;
 				end if;
 		end case;
-		
+
 		return a;
+		
+		exception
+			when constraint_error =>
+				invalid_style;
+
+				return a; -- CS: never reached
+				
 	end to_text_style;
 	
 	function to_field_visible ( 
@@ -695,8 +702,8 @@ package body et_kicad is
 				-- start point, the bend point(s) and the end point:
 				pos := 6;
 				loop exit when pos > end_point;
-					set_x (point, mil_to_distance (field (line, pos))); -- set x
-					set_y (point, mil_to_distance (field (line, pos+1))); -- set y (right after the x-field)
+					set_x (point, mil_to_distance (mil => field (line, pos), warn_on_negative => false)); -- set x
+					set_y (point, mil_to_distance (mil => field (line, pos+1), warn_on_negative => false)); -- set y (right after the x-field)
 
 					-- For some unknown reason, kicad saves the y position of library objects inverted.
 					-- It is probably a bug. However, when importing objects we must invert y. 
@@ -729,15 +736,15 @@ package body et_kicad is
 				-- #8 : line width
 				-- #9 : fill style N/F/f no fill/foreground/background
 			begin -- to_rectangle
-				set_x (rectangle.start_point, mil_to_distance (field (line,2)));
-				set_y (rectangle.start_point, mil_to_distance (field (line,3)));
+				set_x (rectangle.start_point, mil_to_distance (mil => field (line,2), warn_on_negative => false));
+				set_y (rectangle.start_point, mil_to_distance (mil => field (line,3), warn_on_negative => false));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
 				mirror (point => rectangle.start_point, axis => x);
 				
-				set_x (rectangle.end_point, mil_to_distance (field (line,4)));
-				set_y (rectangle.end_point, mil_to_distance (field (line,5)));
+				set_x (rectangle.end_point, mil_to_distance (mil => field (line,4), warn_on_negative => false));
+				set_y (rectangle.end_point, mil_to_distance (mil => field (line,5), warn_on_negative => false));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
@@ -768,14 +775,14 @@ package body et_kicad is
 				--  #8 : fill style N/F/f no fill/foreground/background
 			
 			begin -- to_circle
-				set_x (circle.center, mil_to_distance (field (line,2)));
-				set_y (circle.center, mil_to_distance (field (line,3)));
+				set_x (circle.center, mil_to_distance (mil => field (line,2), warn_on_negative => false));
+				set_y (circle.center, mil_to_distance (mil => field (line,3), warn_on_negative => false));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
 				mirror (point => circle.center, axis => x);
 	
-				circle.radius		:= mil_to_distance (field (line,4));
+				circle.radius		:= mil_to_distance (mil => field (line,4), warn_on_negative => false);
 				circle.line_width	:= type_line_width'value (field (line,7));
 				circle.fill			:= to_fill (field (line,8));
 
@@ -806,14 +813,14 @@ package body et_kicad is
 				-- #13..14 : end point (x/y)
 
 			begin -- to_arc
-				set_x (arc.center, mil_to_distance (field (line,2)));
-				set_y (arc.center, mil_to_distance (field (line,3)));
+				set_x (arc.center, mil_to_distance (mil => field (line,2), warn_on_negative => false));
+				set_y (arc.center, mil_to_distance (mil => field (line,3), warn_on_negative => false));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
 				mirror (point => arc.center, axis => x);
 
-				arc.radius			:= mil_to_distance (field (line,4));
+				arc.radius			:= mil_to_distance (mil => field (line,4), warn_on_negative => false);
 
 				arc.start_angle		:= to_degrees (field (line,5));
 				arc.end_angle		:= to_degrees (field (line,6));
@@ -821,15 +828,15 @@ package body et_kicad is
 				arc.line_width		:= type_line_width'value (field (line,9));
 				arc.fill			:= to_fill (field (line,10));
 				
-				set_x (arc.start_point, mil_to_distance (field (line,11)));
-				set_y (arc.start_point, mil_to_distance (field (line,12)));
+				set_x (arc.start_point, mil_to_distance (mil => field (line,11), warn_on_negative => false));
+				set_y (arc.start_point, mil_to_distance (mil => field (line,12), warn_on_negative => false));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
 				mirror (point => arc.start_point, axis => x);
 
-				set_x (arc.end_point, mil_to_distance (field (line,13)));
-				set_y (arc.end_point, mil_to_distance (field (line,14)));
+				set_x (arc.end_point, mil_to_distance (mil => field (line,13), warn_on_negative => false));
+				set_y (arc.end_point, mil_to_distance (mil => field (line,14), warn_on_negative => false));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
@@ -917,14 +924,14 @@ package body et_kicad is
 					warning_angle_greater_90_degrees;
 				end if;
 				
-				set_x (text.position, mil_to_distance (field (line,3)));
-				set_y (text.position, mil_to_distance (field (line,4)));
+				set_x (text.position, mil_to_distance (mil => field (line,3), warn_on_negative => false));
+				set_y (text.position, mil_to_distance (mil => field (line,4), warn_on_negative => false));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
 				mirror (point => text.position, axis => x);
 
-				text.size := mil_to_distance (field (line,5));
+				text.size := mil_to_distance (mil => field (line,5), warn_on_negative => false);
 
 				-- compose from fields 10 and 11 the text style
 				text.style := to_style (field (line,10), field (line,11));
@@ -1048,18 +1055,18 @@ package body et_kicad is
 				port.pin			:= type_pin_name.to_bounded_string (field (line,3));
 
 				-- compose position
-				set_x (port.coordinates, mil_to_distance (field (line,4)));
-				set_y (port.coordinates, mil_to_distance (field (line,5)));
+				set_x (port.coordinates, mil_to_distance (mil => field (line,4), warn_on_negative => false));
+				set_y (port.coordinates, mil_to_distance (mil => field (line,5), warn_on_negative => false));
 				mirror (point => port.coordinates, axis => x);
 
 				-- compose length
-				port.length			:= mil_to_distance (field (line,6));
+				port.length			:= mil_to_distance (mil => field (line,6), warn_on_negative => false);
 
 				-- compose orientation
 				-- CS: port.orientation	:= type_library_pin_orientation
 
 				-- port and pin name text size
-				port.pin_name_size	:= mil_to_distance (field (line,8));
+				port.pin_name_size	:= mil_to_distance (mil => field (line,8), warn_on_negative => false);
 				port.port_name_size	:= type_text_size'value (field (line,9));
 
 				-- direction
@@ -1102,9 +1109,9 @@ package body et_kicad is
 				-- 9 : aligment vertical (TNN, CNN, BNN) / font normal, italic, bold, bold_italic (TBI, TBN)
 
 				text.content		:= type_text_content.to_bounded_string (strip_quotes(get_field_from_line(line,2)));
-				set_x (text.position, mil_to_distance (get_field_from_line(line,3)));
-				set_y (text.position, mil_to_distance (get_field_from_line(line,4)));
-				text.size 			:= mil_to_distance (get_field_from_line(line,5));
+				set_x (text.position, mil_to_distance (mil => get_field_from_line(line,3), warn_on_negative => false));
+				set_y (text.position, mil_to_distance (mil => get_field_from_line(line,4), warn_on_negative => false));
+				text.size 			:= mil_to_distance (mil => get_field_from_line(line,5), warn_on_negative => false);
 				text.orientation	:= to_field_orientation (get_field_from_line(line,6));
 				
 				text.visible := to_field_visible (
@@ -1759,6 +1766,8 @@ package body et_kicad is
 				
 			use et_string_processing;
 
+			-- CS: flags that indicate the finding of a field. raise alarm if field missing. mind appearance
+			
 		begin -- read_field
 			
 			-- read text fields from a component library (thats why scheamtic => false)
@@ -1926,6 +1935,9 @@ package body et_kicad is
 						-- The lines right after the component header are the so called "fields". The fields can be
 						-- regarded as attributes (similar to EAGLE). The first four attributes are hard coded in kicad
 						-- and are thus always there. In the component library the fields start with "F0" .. "Fn".
+
+						log (text => to_string (line), level => 3);
+						
 						if not component_entered then 
 							
 							if get_field_from_line(line,1) = et_kicad.def then
@@ -1957,7 +1969,7 @@ package body et_kicad is
 								--  #10: power symbol P (otherwise N)
 
 								tmp_prefix := type_component_prefix.to_bounded_string (get_field_from_line (line,3)); -- U
-								tmp_port_name_offset	:= mil_to_distance (get_field_from_line (line,5)); -- relevant for supply pins only
+								tmp_port_name_offset	:= mil_to_distance (mil => get_field_from_line (line,5), warn_on_negative => false); -- relevant for supply pins only
 								tmp_pin_name_visible	:= to_pin_visibile (get_field_from_line (line,6));
 								tmp_port_name_visible	:= to_port_visibile (get_field_from_line (line,7));
 								
@@ -2109,7 +2121,12 @@ package body et_kicad is
 			end loop;
 
 			log_indentation_down;
-			log_indentation_down;			
+			log_indentation_down;
+
+			exception
+				when constraint_error =>
+					log (text => message_error & affected_line (line) & to_string (line), console => true);
+					raise;
 		end read_library;
 
 		
@@ -2175,6 +2192,7 @@ package body et_kicad is
 			log_indentation_down;
 			
 		end if;
+				
 	end read_components_libraries;
 	
 

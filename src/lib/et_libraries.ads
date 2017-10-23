@@ -227,7 +227,7 @@ package et_libraries is
 		INVISIBLE_NON_LOGIC);
 
 	
- 	port_name_length	: constant natural := 50;
+ 	port_name_length	: constant natural := 100;
 	package type_port_name is new generic_bounded_length(port_name_length); use type_port_name;
 
 	function to_string (port_name : in type_port_name.bounded_string) return string;

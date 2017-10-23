@@ -73,7 +73,7 @@ package et_coordinates is
 
 	-- CS: type_grid ?
 
-	function mil_to_distance (mil : in string) return type_distance;
+	function mil_to_distance (mil : in string; warn_on_negative : boolean := true) return type_distance;
 	-- Returns the given mils to type_distance.
 	
 	function to_string (distance : in type_distance) return string;
