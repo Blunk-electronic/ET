@@ -3171,6 +3171,8 @@ package body et_kicad is
 							net_name := type_net_name.to_bounded_string (
 								anonymous_net_name_prefix & trim (natural'image (net_id), left));
 							
+							net.name := net_name;
+							
 							log (type_net_name.to_string (net_name), level => 1);
 							
 							net.scope := local;
@@ -3193,7 +3195,8 @@ package body et_kicad is
                             -- net.coordinates.sheet := sheet_number_current;
                             
 							-- insert net in module, then purge net.segments for next spin
-							add_net (net_name, net);
+-- 							add_net (net_name, net);
+							add_net (net);
 
 							type_net_segments.clear (net.segments);
 						end if;
@@ -3215,7 +3218,8 @@ package body et_kicad is
 
 							log (type_net_name.to_string (a.name), level => 1);
 							
-							net_name := a.name;
+-- 							net_name := a.name;
+							net.name := a.name;
 							net.scope := a.scope;
 
 							log_indentation_up;
@@ -3282,7 +3286,8 @@ package body et_kicad is
                             -- net.coordinates.sheet := sheet_number_current;
                             
 							-- insert net in module, then purge net.segments for next spin
-							add_net (net_name, net);
+-- 							add_net (net_name, net);
+							add_net (net);
 							type_net_segments.clear (net.segments);
 
 						end if;
@@ -4816,7 +4821,8 @@ package body et_kicad is
 					module_name	=> tmp_module_name,
 					module		=> (
 						libraries		=> tmp_project_libraries, -- set project libraries
-						nets			=> type_nets.empty_map,
+						--nets			=> type_nets.empty_map,
+						nets			=> type_nets.empty_list,
 						--portlists		=> type_portlists.empty_map,
 						components		=> type_components.empty_map,
 						submodules		=> type_gui_submodules.empty_map,

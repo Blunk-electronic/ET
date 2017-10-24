@@ -879,14 +879,18 @@ package body et_netlist is
 
 				-- get the net name via net_cursor
 				log_indentation_up;
-				log (text => "net " & et_schematic.type_net_name.to_string (key (net_cursor_module)), level => 2);
+				--log (text => "net " & et_schematic.type_net_name.to_string (key (net_cursor_module)), level => 2);
+				log (text => "net " & et_schematic.to_string (element (net_cursor_module).name), level => 2);
 				
 				-- Insert net in netlist with the net name as primary key:
 				netlist_pre.insert (
-					key => key (net_cursor_module), -- net name like "MCU_CLOCK"
+					--key => key (net_cursor_module), -- net name like "MCU_CLOCK"
+					key => element (net_cursor_module).name, -- net name like "MCU_CLOCK"
 					new_item => type_ports.empty_set, -- for the moment an empty portlist
-					inserted => net_inserted, -- CS: check status ?
-					position => net_cursor_netlist);
+					inserted => net_inserted, -- CS: check status ? In case a strand with same name was already read.
+					position => net_cursor_netlist); 
+					-- NOTE: if net not inserted due to a previous strand with the same name, net_cursor_netlist still
+					-- points to the net in netlist_pre where ports are to be added.
 
 				-- loop in segments of net
 				segment_cursor := first_segment (net_cursor_module);

@@ -395,7 +395,8 @@ package et_schematic is
     -- A net has coordinates
     -- CS: x/y position should be the lowest values available on the first sheet ? 
     -- CS: do not use sheet and x/y at all ?
-    type type_net is record
+    type type_net is record -- CS: rename to type_strand ?
+		name		: type_net_name.bounded_string; -- example "CPU_CLOCK"
 		scope 		: type_scope_of_net; -- example "local"
 		segments 	: type_net_segments.list; -- list of net segments
 		--junctions	: type_junctions.list; -- the junctions of the net
@@ -403,8 +404,10 @@ package et_schematic is
 	end record;
 
 	-- Nets are collected in a map.
-	package type_nets is new ordered_maps (
-		key_type => type_net_name.bounded_string, -- example "CPU_CLOCK"
+-- 	package type_nets is new ordered_maps (
+-- 		key_type => type_net_name.bounded_string, -- example "CPU_CLOCK"
+-- 		element_type => type_net);
+	package type_nets is new doubly_linked_lists ( -- CS: rename to type_strands ?
 		element_type => type_net);
 
 	anonymous_net_name_prefix : constant string (1..2) := "N$";
@@ -620,7 +623,8 @@ package et_schematic is
     -- - a list of title blocks
 	type type_module is record
 		libraries		: type_full_library_names.list;	-- the list of project library names
-		nets 	    	: type_nets.map;			-- the nets of the module
+		--nets 	    	: type_nets.map;			-- the nets of the module
+		nets 	    	: type_nets.list;			-- the nets of the module -- CS: rename to strands
         components		: type_components.map;		-- the components of the module
 		submodules  	: type_gui_submodules.map;	-- graphical representations of submodules
         frames      	: type_frames.list;			-- frames
@@ -676,7 +680,7 @@ package et_schematic is
 
 	procedure add_net (
 	-- Adds a net into the module (indicated by module_cursor).
-		name	: in et_schematic.type_net_name.bounded_string;
+-- 		name	: in et_schematic.type_net_name.bounded_string;
 		net		: in et_schematic.type_net);
 
 	function first_net return type_nets.cursor;
