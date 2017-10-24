@@ -132,6 +132,7 @@ package body et_string_processing is
 	-- Returns true if given date is valid and plausible.
 	begin
 		-- CS
+		-- CS: call a procedure that says something like "date format invalid" or "date in stone age or date in future"
 		return true;
 	end date_valid;
 	

@@ -2210,6 +2210,8 @@ package body et_kicad is
 		top_level_schematic	: type_schematic_file_name.bounded_string;
 		current_schematic	: type_schematic_file_name.bounded_string;
 
+		net_id : natural := 0; -- for counting name-less nets (like N$1, N$2, N$3, ...)
+		
 		package stack_of_sheet_lists is new et_general.stack_lifo (max => 10, item => type_submodule_names_extended);
         use stack_of_sheet_lists;
 		
@@ -2619,8 +2621,8 @@ package body et_kicad is
 				when constraint_error =>
 					log_indentation_reset;
 					log (
-						text => message_error & "component " & et_schematic.to_string (tmp_component_reference)
-							& " " & to_string (tmp_component_position),
+						text => message_error & "invalid field in component " & et_schematic.to_string (tmp_component_reference)
+							& " at " & to_string (tmp_component_position),
 						console => true);
 					-- CS: evaluate prog position and provided more detailled output
 					raise constraint_error;
@@ -2947,7 +2949,7 @@ package body et_kicad is
 				-- the net cursor points to the anonymous net being processed
 				net_cursor		: type_anonymous_nets.cursor := anonymous_nets.first;
 				net_cursor_b	: type_anonymous_nets.cursor;
-				net_id			: natural := 0; -- for something like N$1, N$2, N$3, ...
+-- 				net_id			: natural := 0; -- for something like N$1, N$2, N$3, ...
 
 				use type_simple_labels;
 				simple_label_cursor	: type_simple_labels.cursor; -- points to the simple label being processed
@@ -2956,6 +2958,7 @@ package body et_kicad is
 				tag_label_cursor	: type_tag_labels.cursor; -- points to the tag label being processed
 
 				log_threshold : type_log_level := 2;
+
 			begin -- associate_net_labels_with_anonymous_nets
 				log_indentation_up;
 				
@@ -4012,6 +4015,7 @@ package body et_kicad is
 			end build_unit_orientation_and_mirror_style;
 			
 			use et_coordinates;
+			use et_libraries;
 			
 		begin -- read_schematic
 			log_indentation_reset;
@@ -4314,14 +4318,16 @@ package body et_kicad is
 										-- The sheet name is stored in tmp_submodule_gui.name to be compared with the sheet file name later.
 										if get_field_from_line(line,1) = schematic_keyword_sheet_name then
 											tmp_submodule_gui_name := et_coordinates.type_submodule_name.to_bounded_string (strip_quotes (get_field_from_line(line,2)));
-											tmp_submodule_gui.text_size_of_name := et_libraries.type_text_size'value(get_field_from_line(line,3));
+											--tmp_submodule_gui.text_size_of_name := type_text_size'value (get_field_from_line(line,3));
+											tmp_submodule_gui.text_size_of_name := mil_to_distance (get_field_from_line(line,3));
 										end if;
 
 										-- Read sheet file name from a line like "F1 "mcu_stm32f030.sch" 60".
 										-- The file name (name_of_submodule_scratch) goes into the list of submodules to be returned to the parent unit.
 										if get_field_from_line(line,1) = schematic_keyword_sheet_file then
 											name_of_submodule_scratch := et_coordinates.type_submodule_name.to_bounded_string (strip_quotes (get_field_from_line (line,2)));
-											tmp_submodule_gui.text_size_of_file := et_libraries.type_text_size'value(get_field_from_line(line,3));
+											--tmp_submodule_gui.text_size_of_file := et_libraries.type_text_size'value(get_field_from_line(line,3));
+											tmp_submodule_gui.text_size_of_file := mil_to_distance (get_field_from_line (line,3));
 											
 											-- Test if sheet name and file name match:
 											if et_coordinates.type_submodule_name.to_string (tmp_submodule_gui_name) /= base_name (et_coordinates.type_submodule_name.to_string (name_of_submodule_scratch)) then
