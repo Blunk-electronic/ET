@@ -3167,7 +3167,7 @@ package body et_kicad is
 						if not a.processed then
 
 							-- build temporarily net with a name like N$542
-							net_id := net_id + 1; -- increment net id
+							net_id := net_id + 1; -- increment net id. net_id applies for the whole design. see declarations of procedure import_design
 							net_name := type_net_name.to_bounded_string (
 								anonymous_net_name_prefix & trim (natural'image (net_id), left));
 							
