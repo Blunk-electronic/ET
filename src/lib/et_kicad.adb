@@ -527,7 +527,7 @@ package body et_kicad is
 			tmp_draw_circle 	: type_circle;
 			tmp_draw_text		: type_symbol_text;
 			tmp_draw_port		: type_port;
-			tmp_draw_port_name	: type_port_name.bounded_string;
+-- 			tmp_draw_port_name	: type_port_name.bounded_string; -- CS: maybe not used anymore
 			
 			procedure init_temp_variables is
 			begin
@@ -1048,9 +1048,11 @@ package body et_kicad is
 				end to_style;
 				
 			begin -- to_port
-				-- NOTE: port name is handled separately because it is the key within the port map of the unit
 				log_indentation_up;
 
+				-- port name. to be taken from field #2 of the given line
+				port.name := type_port_name.to_bounded_string (field (line,2));
+				
 				-- compose pin name
 				port.pin			:= type_pin_name.to_bounded_string (field (line,3));
 
@@ -1358,32 +1360,33 @@ package body et_kicad is
 							pos := 110;
 							-- CS: test if pin name not used by other units
 							pos := 190;
-							unit.symbol.ports.insert (key => tmp_draw_port_name, new_item => tmp_draw_port);
+							--unit.symbol.ports.insert (key => tmp_draw_port_name, new_item => tmp_draw_port);
+							unit.symbol.ports.append (tmp_draw_port);
 							
 						when others =>
 							raise constraint_error;
 					end case;
 
-					exception 
-						when constraint_error =>
-							case pos is
-								when 190 => 
-									-- Tell the operator which port name the problem is:
-									log_indentation_reset;
-									log (
-										text => message_error & "file '" 
-											& et_libraries.to_string (lib_file_name) & "' "
-											& affected_line (line) 
-											& "port name '" & to_string (tmp_draw_port_name)
-											& "' already used !",
-										console => true);
-									raise;
-									
-								when others =>
-									raise;
-							end case;
-							
-						when others => raise;
+-- 					exception 
+-- 						when constraint_error =>
+-- 							case pos is
+-- 								when 190 => 
+-- 									-- Tell the operator which port name the problem is:
+-- 									log_indentation_reset;
+-- 									log (
+-- 										text => message_error & "file '" 
+-- 											& et_libraries.to_string (lib_file_name) & "' "
+-- 											& affected_line (line) 
+-- 											& "port name '" & to_string (tmp_draw_port_name)
+-- 											& "' already used !",
+-- 										console => true);
+-- 									raise;
+-- 									
+-- 								when others =>
+-- 									raise;
+-- 							end case;
+-- 							
+-- 						when others => raise;
 				end insert;
 				
 				procedure locate_unit (
@@ -1673,10 +1676,8 @@ package body et_kicad is
 					write_scope_of_object (tmp_unit_id);
 
 					-- compose port
-					-- Since ports are collected in a map, the port name is going to be the key. Thus 
-					-- we handle the port name separately from the port properties.
 					tmp_draw_port := to_port (line);
-					tmp_draw_port_name := type_port_name.to_bounded_string (field (line,2));
+-- 					tmp_draw_port_name := type_port_name.to_bounded_string (field (line,2));
 
 					-- If this is a unit specific port it gets added to the unit. If it applies for the
 					-- whole component, we create an extra unit and insert it there. An extra unit is

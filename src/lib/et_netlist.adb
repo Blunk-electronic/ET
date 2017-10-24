@@ -268,7 +268,8 @@ package body et_netlist is
 						new_item => (
 
 							-- library defined properites:
-							port		=> key (port_cursor), -- the port name
+							--port		=> key (port_cursor), -- the port name
+							port		=> element (port_cursor).name, -- the port name
 							pin			=> element (port_cursor).pin, -- the pin name
 							direction	=> element (port_cursor).direction, -- the port direction
 							style		=> element (port_cursor).style, -- port style
@@ -322,7 +323,8 @@ package body et_netlist is
 						port_cursor := first_port (unit_cursor); -- port in library
 						while port_cursor /= et_libraries.type_ports.no_element loop
 
-							log ("port " & type_port_name.to_string (key (port_cursor))
+							--log ("port " & type_port_name.to_string (key (port_cursor))
+							log ("port " & type_port_name.to_string (element (port_cursor).name)
 								& " pin/pad " & to_string (element (port_cursor).pin));
 
 							-- Build a new port and append port to portlist of the 
@@ -376,7 +378,8 @@ package body et_netlist is
 					-- Loop in port list of the unit:
 					while port_cursor /= et_libraries.type_ports.no_element loop
 						log_indentation_up;
-						log ("port " & type_port_name.to_string (key (port_cursor))
+						--log ("port " & type_port_name.to_string (key (port_cursor))
+						log ("port " & type_port_name.to_string (element (port_cursor).name)
 							& " pin/pad " & to_string (element (port_cursor).pin));
 						
 						-- Build a new port and append port to portlist of the 

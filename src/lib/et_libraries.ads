@@ -244,6 +244,7 @@ package et_libraries is
 	-- coordinates, orientation, flags for making port and pin name visible. 
 	-- Later, other values are assigned like pin name. CS: set defaults
 	type type_port is record
+		name				: type_port_name.bounded_string; -- like "CLOCK" or "CE"		
 		direction			: type_port_direction; -- example: "passive"
 		style				: type_port_style;
 		coordinates			: type_2d_point; -- there is only x and y
@@ -259,11 +260,17 @@ package et_libraries is
 		-- CS: port swap level ?
 	end record;
 
-	-- Ports are collected in a map.
-	package type_ports is new ordered_maps ( 
-		key_type => type_port_name.bounded_string, -- like "CLOCK" or "CE"
+	-- Ports of a component are collected in a simple list. A list, because multiple ports
+	-- with the same name (but differing pin/pad names) may exist. For example lots of GND
+	-- ports at large ICs.
+-- 	package type_ports is new ordered_maps ( 
+-- 		key_type => type_port_name.bounded_string, -- like "CLOCK" or "CE"
+-- 		element_type => type_port); 
+	package type_ports is new doubly_linked_lists ( 
+-- 		key_type => type_port_name.bounded_string, -- like "CLOCK" or "CE"
 		element_type => type_port); 
-	
+
+
  	component_name_length_max : constant natural := 100;
 	package type_component_name is new generic_bounded_length(component_name_length_max); use type_component_name;
 
@@ -514,7 +521,8 @@ package et_libraries is
 	type type_symbol (appearance : type_component_appearance) is record
 		shapes		: type_shapes; -- the collection of shapes
 		texts		: type_symbol_texts.list; -- the collection of texts (meaning misc)
-		ports		: type_ports.map := type_ports.empty_map; -- the ports of the symbol
+		--ports		: type_ports.map := type_ports.empty_map; -- the ports of the symbol
+		ports		: type_ports.list := type_ports.empty_list; -- the ports of the symbol
 		
 		-- Placeholders for component wide texts. To be filled with content when 
 		-- a symbol is placed in the schematic:
