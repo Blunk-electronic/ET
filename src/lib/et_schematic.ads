@@ -384,7 +384,11 @@ package et_schematic is
 
 	-- A net may be visible within a submodule (local net) or 
 	-- it may be exported to parent module (other ECAD tools refer to them as "hierachical or global nets").
-	type type_scope_of_net is  ( local, hierarchic, global );
+
+	-- Translated into the KiCad terminology;
+	-- A net may be visible within a sheet (local net) or 
+	-- it may be exported to parent sheet (other ECAD tools refer to them as "hierachical or global nets").
+	type type_scope_of_net is (local, hierarchic, global);
 
 
 	-- A net has a name, a scope, a list of segments.
