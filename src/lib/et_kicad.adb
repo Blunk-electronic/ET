@@ -1951,6 +1951,7 @@ package body et_kicad is
 
 								-- The commponent header provides the first component properties:
 								tmp_component_name := et_libraries.type_component_name.to_bounded_string (get_field_from_line(line,2)); -- 74LS00
+								et_libraries.check_component_name (tmp_component_name);
 								
 								-- for the log:
 								log (get_field_from_line(line,2)); -- 74LS00

@@ -88,6 +88,36 @@ package body et_libraries is
 	begin
 		return type_pin_name.to_string (pin_name);
 	end to_string;
+
+	procedure check_component_name (
+	-- Checks if the given component name meets certain conventions.									   
+		name : in type_component_name.bounded_string) is
+
+		use et_string_processing;
+		use et_libraries.type_component_value;
+		i : natural := 0;
+
+	begin
+		-- Rule #1: There are only those characters allowed as specified in component_name_characters:
+		i := index (source => name, set => component_name_characters, test => outside);
+
+		case i is
+			when 0 => -- test passed. no forbidden characters found
+				null;
+
+			when others =>
+				log_indentation_reset;
+				log (
+					text => message_error & "invalid character in generic component name '" 
+						& to_string (name) & "' at position" & natural'image (i),
+					console => true
+					);
+				raise constraint_error;
+		end case;
+
+		-- CS: other checks ?
+
+	end check_component_name;
 	
 	function to_string (name_in_library : in type_component_name.bounded_string) return string is
 	-- Returns the given name_in_library as as string.
