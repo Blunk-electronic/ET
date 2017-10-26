@@ -164,6 +164,7 @@ package et_kicad is
 	schematic_component_identifier_name    : constant string (1..1) := "L";
 	schematic_component_identifier_unit	   : constant string (1..1) := "U";
 	schematic_component_identifier_coord   : constant string (1..1) := "P";
+	schematic_component_identifier_path    : constant string (1..2) := "AR"; -- CS: meaning unclear
 
 	type type_schematic_unit_orientation	is range -1..1;
 	type type_schematic_unit_mirror_style	is range -1..1;

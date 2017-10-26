@@ -4651,6 +4651,11 @@ package body et_kicad is
 												set_module (tmp_component_position, type_submodule_name.to_bounded_string (to_string (current_schematic)));
 												set_sheet (tmp_component_position, sheet_number_current);
 
+											-- Skip unit path entry in lines like "AR Path="/59EF082F" Ref="N23"  Part="1"
+											elsif get_field_from_line (line,1) = schematic_component_identifier_path then -- "AR"
+												-- CS: meaning unclear
+												log (message_warning & "ignoring line '" & to_string (line) & "' ! Meaning unclear !");
+
 											-- read unit fields 0..2 from lines like:
 											-- 			"F 0 "N701" H 2600 2100 39  0000 C CNN"
 											--			"F 1 "NetChanger" H 2600 2250 60  0001 C CNN"
