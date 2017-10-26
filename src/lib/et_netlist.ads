@@ -62,7 +62,7 @@ package et_netlist is
 	-- This is a coponent port with its basic elements:
 	type type_port_base is tagged record
 		pin			: et_libraries.type_pin_name.bounded_string; -- the pin name like 3,4 or E3, A2
-		port		: et_libraries.type_port_name.bounded_string; -- the port name like GPIO1, GPIO2
+		port		: et_libraries.type_port_name.bounded_string; -- the port name like GPIO1, GPIO2 -- CS: rename to "name"
 		coordinates : et_coordinates.type_coordinates;
 		direction	: et_libraries.type_port_direction; -- example: "passive" -- used for ERC
 		style		: et_libraries.type_port_style;	-- used for ERC

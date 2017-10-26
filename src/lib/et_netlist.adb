@@ -716,7 +716,7 @@ package body et_netlist is
 			use type_portlists;
 
 			port_cursor : type_base_ports.cursor; -- points to the port being read from a component within the portlists
-			port : type_port_base; -- the actual port read from the portlists
+-- 			port : type_port_base; -- the actual port read from the portlists
 			use type_base_ports;
 
 			use et_string_processing;
@@ -910,21 +910,28 @@ package body et_netlist is
 
 							-- CS: skip already processed ports to improve performance
 							
-							port := element (port_cursor); -- in portlist of component
+-- 							port := element (port_cursor); -- in portlist of component
 							log_indentation_up;
-							log ("probing port " & et_coordinates.to_string (port.coordinates), level => 3);
+							--log ("probing port " & et_coordinates.to_string (port.coordinates), level => 3);
+							log ("probing port " & et_coordinates.to_string (element (port_cursor).coordinates), level => 3);
 
 							-- test if port sits on segment
-							if port_sits_on_segment (port, segment) then
+-- 							if port_sits_on_segment (port, segment) then
+							if port_sits_on_segment (element (port_cursor), segment) then
 								log_indentation_up;
-								log ("comp " & et_schematic.to_string (key (component_cursor)), level => 2);
-								log ("port " & et_coordinates.to_string (port.coordinates), level => 2);
+								log ("comp " & et_schematic.to_string (key (component_cursor))
+									& " port " 
+									& et_libraries.to_string (element (port_cursor).port)
+									& " "
+									& et_coordinates.to_string (element (port_cursor).coordinates), level => 2);
+								
 								log_indentation_down;
 
 								-- add port to current net in netlist
 								add_port (
 									reference => key (component_cursor),
-									port => port);
+									--port => port);
+									port => element (port_cursor));
 
 							end if;
 							log_indentation_down;
