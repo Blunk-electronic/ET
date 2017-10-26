@@ -69,18 +69,24 @@ package body et_netlist is
 		d : type_distance_point_from_line;
 
 	begin
-		-- calculate the shortes distance of point from line.
-		d := distance_of_point_from_line (
-			point 		=> type_2d_point (port.coordinates),
-			line_start	=> type_2d_point (segment.coordinates_start),
-			line_end	=> type_2d_point (segment.coordinates_end),
-			line_range	=> with_end_points);
+		-- First make sure port and segment share the same module path and sheet.
+		-- It is sufficient to check against the segment start coordinates.
+		if same_path_and_sheet (port.coordinates, segment.coordinates_start) then
+			
+			-- calculate the shortes distance of point from line.
+			d := distance_of_point_from_line (
+				point 		=> type_2d_point (port.coordinates),
+				line_start	=> type_2d_point (segment.coordinates_start),
+				line_end	=> type_2d_point (segment.coordinates_end),
+				line_range	=> with_end_points);
 
-		if (not d.out_of_range) and d.distance = et_coordinates.zero_distance then
-			sits_on_segment := true;
-			log ("port on segment", level => 5);
+			if (not d.out_of_range) and d.distance = et_coordinates.zero_distance then
+				sits_on_segment := true;
+				log ("port on segment", level => 5);
+			end if;
+
 		end if;
-
+			
 		return sits_on_segment;
 	end port_sits_on_segment;
 

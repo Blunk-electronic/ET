@@ -328,6 +328,7 @@ package body et_libraries is
 		return boolean is
 
 		use et_libraries.type_component_value;
+		use et_string_processing;
 		i : natural := 0;
 		v : boolean := false;
 	begin
@@ -340,9 +341,7 @@ package body et_libraries is
 
 			when others =>
 				v := false;
-				et_string_processing.write_message(
-					file_handle => current_output,
-					text => et_string_processing.message_error & "value '" & to_string (value) & "' contains invalid character "
+				log (text => message_error & "value '" & to_string (value) & "' contains invalid character "
 						& "at position" & natural'image(i),
 					console => true);
 				-- CS: goto end

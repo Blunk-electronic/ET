@@ -374,6 +374,21 @@ package body et_coordinates is
 		return position.sheet_number;
 	end sheet;
 
+	function same_path_and_sheet (left, right : in type_coordinates) return boolean is
+	-- Returns true if the given coordinates have same path and sheet.
+		same : boolean := false;
+		use type_path_to_submodule;
+	begin 
+		-- We compare path and sheet. x/y are ignored
+		if path (left) = path (right) then
+			if sheet (left) = sheet (right) then
+				same := true;
+			end if;
+		end if;
+
+		return same;
+	end same_path_and_sheet;
+	
 	procedure set_module (position : in out type_coordinates; name : in type_submodule_name.bounded_string) is
 	-- Sets the module name in given position.
 	begin

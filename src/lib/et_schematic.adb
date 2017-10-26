@@ -605,10 +605,9 @@ package body et_schematic is
 		p : type_component_prefix.bounded_string;
 	
 		procedure invalid_reference is
+			use et_string_processing;
 		begin
-			et_string_processing.write_message(
-				file_handle => current_output,
-				text => latin_1.lf & et_string_processing.message_error & "invalid component reference '" & text_in & "'",
+			log (text => latin_1.lf & message_error & "invalid component reference '" & text_in & "'",
 				console => true);
 			
 			raise constraint_error;
