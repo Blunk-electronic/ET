@@ -4654,7 +4654,7 @@ package body et_kicad is
 											-- Skip unit path entry in lines like "AR Path="/59EF082F" Ref="N23"  Part="1"
 											elsif get_field_from_line (line,1) = schematic_component_identifier_path then -- "AR"
 												-- CS: meaning unclear
-												log (message_warning & "ignoring line '" & to_string (line) & "' ! Meaning unclear !");
+												log (message_warning & affected_line (line) & "ignoring line '" & to_string (line) & "' ! Meaning unclear !");
 
 											-- read unit fields 0..2 from lines like:
 											-- 			"F 0 "N701" H 2600 2100 39  0000 C CNN"
