@@ -388,6 +388,8 @@ package et_schematic is
 
 
 	-- A strand is a collection of net segments which belong to each other. 
+	-- Segments belong to each other either because their start/end points meet
+	-- or they bear the same name (enforced by a net label).
     -- A net has coordinates
     -- CS: x/y position should be the lowest values available on the first sheet ? 
     -- CS: do not use sheet and x/y at all ?

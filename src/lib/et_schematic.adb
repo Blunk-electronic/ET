@@ -1023,8 +1023,15 @@ package body et_schematic is
 			use et_schematic.type_strands;
 			
 			cursor : type_strands.cursor := module.strands.first;
+			-- Points to the strand being processed
+			
+			renamed : boolean := false; -- signals that a strand renaming took place
+			-- Used to abort renaming after an anonymous strands has been renamed.
+			-- The names of anonymous strands like (N$6) are unique. So after the first
+			-- renaming the procedure comes to an early end.
 
 			procedure do_it (strand : in out type_strand) is
+			-- Renames the strand if its name equals name_before.
 			begin
 				if strand.name = name_before then
 
@@ -1037,13 +1044,22 @@ package body et_schematic is
 						);
 					log_indentation_down;
 
-					strand.name := name_after;
+					strand.name := name_after; -- assign new name to strand
+
+					renamed := true; -- signal renaming took place
 				end if;
 			end do_it;
 			
 		begin -- rename
 			while cursor /= type_strands.no_element loop
 				module.strands.update_element (position => cursor, process => do_it'access);
+
+				-- Exit prematurely if name_before was anonymous. anonymous strand names are unique.
+				-- So it is ok to exit prematurely.
+				if renamed and anonymous (name_before) then
+					exit;
+				end if;
+				
 				next (cursor);
 			end loop;
 		end rename;
