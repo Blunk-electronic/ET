@@ -968,59 +968,37 @@ package body et_schematic is
 		return "mirror style " & to_lower (type_mirror'image (mirror));
 	end to_string;
 	
-	procedure add_net (
-	-- Adds a net into the the module (indicated by module_cursor).
-		--name	: in et_schematic.type_net_name.bounded_string;
-		net		: in et_schematic.type_net) is
+	procedure add_strand (
+	-- Adds a strand into the the module (indicated by module_cursor).
+		strand : in et_schematic.type_strand) is
 		
 		procedure add (
 			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out type_module) is
-			
--- 			inserted	: boolean := false;
--- 			cursor		: type_nets.cursor;
-
 			use et_string_processing;
 		begin
--- 			module.nets.insert (
--- 				key			=> name,
--- 				new_item	=> net,
--- 				position	=> cursor, -- updates cursor. no further meaning
--- 				inserted	=> inserted
--- 				);
-
 			log_indentation_up;
-			log (text => "inserting strand " & to_string (net.name) & " in database ...", level => 2);
+			log (text => "inserting strand " & to_string (strand.name) & " in database ...", level => 2);
 			log_indentation_down;
 
-			module.nets.append (net);
-
--- 			if inserted then
--- 				if log_level >= 1 then
--- 					null; -- CS: write this procedure:
--- 					--et_schematic.write_net_properties (net => cursor);
--- 				end if;
--- 			else -- not inserted. net already in module -> abort
--- 				null; -- CS: 
--- 				raise constraint_error;
--- 			end if;
+			module.strands.append (strand);
 		end add;
 	begin
 		rig.update_element (
 			position	=> module_cursor,
 			process		=> add'access
 			);
-	end add_net;
+	end add_strand;
 
-	function first_net return type_nets.cursor is
-	-- Returns a cursor pointing to the first net of the module (indicated by module_cursor).
-		cursor : type_nets.cursor;	
+	function first_strand return type_strands.cursor is
+	-- Returns a cursor pointing to the first strand of the module (indicated by module_cursor).
+		cursor : type_strands.cursor;	
 
 		procedure set_cursor (
 			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in type_module) is
  		begin
-			cursor := module.nets.first;
+			cursor := module.strands.first;
 		end set_cursor;
 	
 	begin
@@ -1029,22 +1007,21 @@ package body et_schematic is
 			process		=> set_cursor'access
 			);
 		return cursor;
-	end first_net;
+	end first_strand;
 
-	function first_segment (net_cursor : in type_nets.cursor) return type_net_segments.cursor is
-	-- Returns a cursor pointing to the first net segment of the given net.
+	function first_segment (cursor : in type_strands.cursor) return type_net_segments.cursor is
+	-- Returns a cursor pointing to the first net segment of the given strand.
 		segment_cursor : type_net_segments.cursor;
 
 		procedure set_cursor (
---			name	: in type_net_name.bounded_string;
-			net		: in type_net) is
+			strand : in type_strand) is
 		begin
-			segment_cursor := net.segments.first;
+			segment_cursor := strand.segments.first;
 		end set_cursor;
 
 	begin
-		type_nets.query_element (
-			position	=> net_cursor,
+		type_strands.query_element (
+			position	=> cursor,
 			process		=> set_cursor'access
 			);
 		return segment_cursor;
@@ -1245,19 +1222,19 @@ package body et_schematic is
 	end units_of_component;
 
 
-	procedure warning_on_name_less_net (
-	-- Writes a warning about a name-less net.
-		name 	: in et_schematic.type_net_name.bounded_string;
-		net		: in et_schematic.type_net
-		) is
-
-		use et_string_processing;
-	begin
-		log (
-			text => message_warning & "name-less net " & to_string (name) & " found !"
-			);
-		-- CS: output coordinates of net (lowest x/Y)
-	end warning_on_name_less_net;
+-- 	procedure warning_on_name_less_net (
+-- 	-- Writes a warning about a name-less net.
+-- 		name 	: in et_schematic.type_net_name.bounded_string;
+-- 		net		: in et_schematic.type_strand
+-- 		) is
+-- 
+-- 		use et_string_processing;
+-- 	begin
+-- 		log (
+-- 			text => message_warning & "name-less net " & to_string (name) & " found !"
+-- 			);
+-- 		-- CS: output coordinates of net (lowest x/Y)
+-- 	end warning_on_name_less_net;
 	
 
 	

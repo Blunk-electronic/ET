@@ -332,8 +332,6 @@ package et_schematic is
 	procedure write_label_properties (label : in type_net_label);
 	-- Writes the properties of the given net label in the logfile.
     
-	-- A net is something that carries electrical current between ports. It consists of one or more segments.
-
 	-- A net junction is where segments can be connected with each other.
 	type type_net_junction is tagged record
 		coordinates : et_coordinates.type_coordinates;
@@ -351,7 +349,6 @@ package et_schematic is
 	-- Returns true if the given junction sits on the given net segment.
 		junction	: in type_net_junction;
 		segment		: in type_net_segment'class) 
-		-- NOTE: see https://en.wikibooks.org/wiki/Ada_Programming/Object_Orientation#Polymorphism.2C_class-wide_programming_and_dynamic_dispatching
 		return boolean;
 	
 	-- Junctions are to be collected in a list.
@@ -384,18 +381,17 @@ package et_schematic is
 
 	-- A net may be visible within a submodule (local net) or 
 	-- it may be exported to parent module (other ECAD tools refer to them as "hierachical or global nets").
-
 	-- Translated into the KiCad terminology;
 	-- A net may be visible within a sheet (local net) or 
 	-- it may be exported to parent sheet (other ECAD tools refer to them as "hierachical or global nets").
 	type type_scope_of_net is (local, hierarchic, global);
 
 
-	-- A net has a name, a scope, a list of segments.
+	-- A strand is a collection of net segments which belong to each other. 
     -- A net has coordinates
     -- CS: x/y position should be the lowest values available on the first sheet ? 
     -- CS: do not use sheet and x/y at all ?
-    type type_net is record -- CS: rename to type_strand ?
+    type type_strand is record
 		name		: type_net_name.bounded_string; -- example "CPU_CLOCK"
 		scope 		: type_scope_of_net; -- example "local"
 		segments 	: type_net_segments.list; -- list of net segments
@@ -403,13 +399,12 @@ package et_schematic is
 		coordinates : et_coordinates.type_coordinates;
 	end record;
 
-	-- Nets are collected in a map.
--- 	package type_nets is new ordered_maps (
--- 		key_type => type_net_name.bounded_string, -- example "CPU_CLOCK"
--- 		element_type => type_net);
-	package type_nets is new doubly_linked_lists ( -- CS: rename to type_strands ?
-		element_type => type_net);
+	-- Strands are collected in a list:
+	package type_strands is new doubly_linked_lists (
+		element_type => type_strand);
 
+	-- If the name of a strand can not be identified, we default to the well proved
+	-- N$ notation:
 	anonymous_net_name_prefix : constant string (1..2) := "N$";
 
 
@@ -616,19 +611,17 @@ package et_schematic is
 	
 -- MODULES
 	
-    -- A module has a name, a list of nets and a list of components.
-    -- Objects relevant for graphical interfaces are
-    -- - a list of submodules
-    -- - a list of drawing frames
-    -- - a list of title blocks
+	-- A module has a name, a list of strands and a list of components.
+	-- There may be multiple strands that have the same name. 
+	-- Example: A strand MCU_CLK on sheet 1 and another on sheet 4.
 	type type_module is record
 		libraries		: type_full_library_names.list;	-- the list of project library names
 		--nets 	    	: type_nets.map;			-- the nets of the module
-		nets 	    	: type_nets.list;			-- the nets of the module -- CS: rename to strands
+		strands	    	: type_strands.list;		-- the strands of the module
         components		: type_components.map;		-- the components of the module
-		submodules  	: type_gui_submodules.map;	-- graphical representations of submodules
-        frames      	: type_frames.list;			-- frames
-        title_blocks	: type_title_blocks.list;	-- title blocks
+		submodules  	: type_gui_submodules.map;	-- graphical representations of submodules -- GUI relevant
+        frames      	: type_frames.list;			-- frames -- GUI relevant
+        title_blocks	: type_title_blocks.list;	-- title blocks -- GUI relevant
 		notes       	: type_texts.list;			-- notes
 
 		sheet_headers	: type_sheet_headers.map;	-- the list of sheet headers -- kicad requirement
@@ -678,16 +671,15 @@ package et_schematic is
 	-- Inserts a title block in the module (indicated by module_cursor).
 		tblock	: in et_schematic.type_title_block);
 
-	procedure add_net (
-	-- Adds a net into the module (indicated by module_cursor).
--- 		name	: in et_schematic.type_net_name.bounded_string;
-		net		: in et_schematic.type_net);
+	procedure add_strand (
+	-- Adds a strand into the module (indicated by module_cursor).
+		strand : in et_schematic.type_strand);
 
-	function first_net return type_nets.cursor;
-	-- Returns a cursor pointing to the first net of the module (indicated by module_cursor).
+	function first_strand return type_strands.cursor;
+	-- Returns a cursor pointing to the first strand of the module (indicated by module_cursor).
 
-	function first_segment (net_cursor : in type_nets.cursor) return type_net_segments.cursor;
-	-- Returns a cursor pointing to the first net segment of the given net.
+	function first_segment (cursor : in type_strands.cursor) return type_net_segments.cursor;
+	-- Returns a cursor pointing to the first net segment of the given strand.
 
 	function first_component return type_components.cursor;
 	-- Returns a cursor pointing to the first component of the module (indicated by module_cursor).
@@ -719,10 +711,10 @@ package et_schematic is
 	function units_of_component (component_cursor : in type_components.cursor) return type_units.map;
 	-- Returns the units of the given component.
 
-	procedure warning_on_name_less_net (
-	-- Writes a warning about a name-less net.
-		name 	: in et_schematic.type_net_name.bounded_string;
-		net		: in et_schematic.type_net);
+-- 	procedure warning_on_name_less_net ( -- CS: rename net to strand
+-- 	-- Writes a warning about a name-less net.
+-- 		name 	: in et_schematic.type_net_name.bounded_string;
+-- 		net		: in et_schematic.type_strand);
 
 	
     
