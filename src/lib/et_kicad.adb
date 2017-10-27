@@ -3454,7 +3454,8 @@ package body et_kicad is
 				-- Build anonymous nets:
 				-- We are processing the net segments of a sheet here. The net segments have been collected in 
 				-- a wild collection of net segments earlier.
-				-- This list does not reveal the actual nets where the segments belong to. The segments are inspected
+				-- This wild collection of segments does not reveal the actual nets where the segments belong to.
+				-- The segments are inspected
 				-- in the following by looking at the coordinates of their start and end points. 
 				-- Segments whose start or end points match other segments are considered
 				-- as connected to each other (means they belong to the same net).
@@ -4454,8 +4455,13 @@ package body et_kicad is
 											tmp_simple_net_label.orientation := to_angle (get_field_from_line (line,5));
 
 											tmp_simple_net_label.size := mil_to_distance (get_field_from_line(line,6));
+											-- CS: check label text size 1.27
+											
 											tmp_simple_net_label.style := to_text_style (style_in => get_field_from_line(line,7), text => true);
+											-- cS: check label style
+											
 											tmp_simple_net_label.width := et_libraries.type_text_line_width'value(get_field_from_line(line,8));
+											-- CS: check label line width
 
 										end if;
 									else
@@ -4776,12 +4782,12 @@ package body et_kicad is
 				
 				close (schematic_handle);
 
-				build_anonymous_nets; -- Assembles net segments to a list of anonymous nets
+				build_anonymous_nets; -- From the wild list of net segments, assembles net segments to a list of anonymous nets
 	
 				-- All anonymous nets must be given a name. The name is enforced by the a net label. The first label found on the net sets the net name.
 				-- Other labels on the net are checke for their name only. If the name differs from the net name set earlier, a warning is output.
 				-- Nets without label remain anonymous by using the notation "N$"
-				-- The nets are appended to the netlist of the current module.
+				-- The nets are finally appended to the netlist of the current module.
 				associate_net_labels_with_anonymous_nets;
 
 -- 				-- Now the port lists of nets must be built and added to the current module.

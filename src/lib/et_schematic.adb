@@ -988,6 +988,11 @@ package body et_schematic is
 -- 				position	=> cursor, -- updates cursor. no further meaning
 -- 				inserted	=> inserted
 -- 				);
+
+			log_indentation_up;
+			log (text => "inserting strand " & to_string (net.name) & " in database ...", level => 2);
+			log_indentation_down;
+
 			module.nets.append (net);
 
 -- 			if inserted then
