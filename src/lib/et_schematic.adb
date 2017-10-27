@@ -118,7 +118,7 @@ package body et_schematic is
 	end to_string;
 
 	function anonymous (net_name : in type_net_name.bounded_string) return boolean is
-	-- Returns true if the given net is anonymous.
+	-- Returns true if the given net name is anonymous.
 	begin
 		if slice (net_name, 1, 2) = anonymous_net_name_prefix then
 			return true;
@@ -1009,6 +1009,55 @@ package body et_schematic is
 		return cursor;
 	end first_strand;
 
+	procedure rename_strands (
+	-- Renames all strands with the name_before to the name_after.
+		name_before : type_net_name.bounded_string;
+		name_after	: type_net_name.bounded_string) is
+
+		use et_string_processing;
+		
+		procedure rename (
+			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
+			module		: in out type_module) is
+
+			use et_schematic.type_strands;
+			
+			cursor : type_strands.cursor := module.strands.first;
+
+			procedure do_it (strand : in out type_strand) is
+			begin
+				if strand.name = name_before then
+
+					log_indentation_up;
+					log (
+						text => to_string (strand.name) 
+							& " to "
+							& to_string (name_after) & " ...",
+							level => 2
+						);
+					log_indentation_down;
+
+					strand.name := name_after;
+				end if;
+			end do_it;
+			
+		begin -- rename
+			while cursor /= type_strands.no_element loop
+				module.strands.update_element (position => cursor, process => do_it'access);
+				next (cursor);
+			end loop;
+		end rename;
+		
+	begin -- rename_strands
+		log ("renaming strands ...", level => 2);
+		
+		rig.update_element (
+			position	=> module_cursor,
+			process		=> rename'access
+			);
+	end rename_strands;
+
+	
 	function first_segment (cursor : in type_strands.cursor) return type_net_segments.cursor is
 	-- Returns a cursor pointing to the first net segment of the given strand.
 		segment_cursor : type_net_segments.cursor;

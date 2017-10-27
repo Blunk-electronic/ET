@@ -792,9 +792,10 @@ package body et_netlist is
 				end append_ports;
 				
 				use et_libraries;
+				
 			begin -- post_process_netlist
-			
 				log (text => "post-processing module netlist ...", level => 1);
+			
 				-- LOOP IN PRELIMINARY NETLIST
 				net_cursor_pre := netlist_pre.first;
 				while net_cursor_pre /= type_netlist.no_element loop
@@ -823,18 +824,26 @@ package body et_netlist is
 							if et_netlist.port (element (port_cursor)) = et_schematic.to_string (net_name) then
 								null; -- fine. net name matches port name
 							else
-								log (text => "port name overrides net name", level => 1);
+								log_indentation_up;
+								log (text => "is a power output -> port name overwrites net name", level => 2);
 
-								-- Check if a non-anonymous net name is overridded by the port name.
+								-- Check if a non-anonymous net name is overwritten by the port name.
 								-- Example: The net name is already "P3V3" and the port name is "+3V3".
 								-- More serious example : The net name is already "P3V3" and the port name is "GND".
 								if not et_schematic.anonymous (net_name) then
-									log (message_warning & "NAME OF POWER OUT PIN OVERRIDES NET NAME !");
+									log (message_warning & "NAME OF POWER OUT PIN OVERWRITES EXPLICIT NET NAME !");
 									-- CS: error and abort instead ?
 								end if;
-									
+
+								-- set the new net name
 								net_name := port_to_net_name (element (port_cursor).port);
-								-- CS: update net names in module.nets ?
+								
+								-- update strands
+								et_schematic.rename_strands (
+									name_before => key (net_cursor_pre),
+									name_after => net_name);
+
+								log_indentation_down;
 							end if;
 						end if;
 						

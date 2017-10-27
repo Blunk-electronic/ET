@@ -291,7 +291,7 @@ package et_schematic is
 	-- Returns the given net name as string;
 
 	function anonymous (net_name : in type_net_name.bounded_string) return boolean;
-	-- Returns true if the given net is anonymous.
+	-- Returns true if the given net name is anonymous.
 	
 	-- A label is frequently attached to a net segment in order to make the net name visible. 
 	-- The label can be a simple string or a tag. 
@@ -678,6 +678,11 @@ package et_schematic is
 	function first_strand return type_strands.cursor;
 	-- Returns a cursor pointing to the first strand of the module (indicated by module_cursor).
 
+	procedure rename_strands (
+	-- Renames all strands with the name_before to the name_after.
+		name_before : type_net_name.bounded_string;
+		name_after	: type_net_name.bounded_string);
+	
 	function first_segment (cursor : in type_strands.cursor) return type_net_segments.cursor;
 	-- Returns a cursor pointing to the first net segment of the given strand.
 
