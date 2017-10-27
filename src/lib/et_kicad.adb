@@ -2915,16 +2915,17 @@ package body et_kicad is
 			end search_for_same_coordinates;
 			
 			
-			procedure associate_net_labels_with_anonymous_nets is
-			-- All anonymous nets must be given a name. The name is enforced by the a net label. 
+			procedure associate_net_labels_with_anonymous_strands is
+			-- All anonymous strands must be given a name. The name is enforced by net labels.
 				
-			-- The first label found on the net dictates the net name.
-			-- Other labels on the net are checked for their name only. 
-			-- If the name differs from the net name set earlier, a warning is output.
+			-- The first label found on the net dictates the strand name.
+			-- Other labels on the strand are checked for their name only. 
+			-- If the name differs from the strand name set earlier, a warning is output.
 
-			-- The kind of net label (simple, hierarchic, global) defines the scope of the net.
+			-- The kind of net label (simple, hierarchic, global) defines the scope of the strand (and finally the net).
+			-- Net labels sitting on a segment, are added to the list of labels of that segment.
 			
-			-- Nets without label remain anonymous by using the notation "N$"
+			-- Strands without label remain anonymous by using the notation "N$". 
 
 				use et_coordinates;
 			
@@ -2979,7 +2980,7 @@ package body et_kicad is
 
 				log_threshold : type_log_level := 2;
 
-			begin -- associate_net_labels_with_anonymous_nets
+			begin -- associate_net_labels_with_anonymous_strands
 				log_indentation_up;
 				
 				-- This does only make sense if there are strands at all:
@@ -3320,7 +3321,7 @@ package body et_kicad is
 				end if;
 
 				log_indentation_down;
-			end associate_net_labels_with_anonymous_nets;
+			end associate_net_labels_with_anonymous_strands;
 			
 			procedure process_junctions is
 			-- Breaks down all net segments where a junction sits on. In the end, the number of net segments increases.
@@ -4781,14 +4782,13 @@ package body et_kicad is
 
 				build_anonymous_strands; -- From the wild list of net segments, assembles net segments to a list of anonymous strands.
 	
-				-- All anonymous nets must be given a name. The name is enforced by the a net label. The first label found on the net sets the net name.
-				-- Other labels on the net are checke for their name only. If the name differs from the net name set earlier, a warning is output.
-				-- Nets without label remain anonymous by using the notation "N$"
-				-- The nets are finally appended to the netlist of the current module.
-				associate_net_labels_with_anonymous_nets;
-
--- 				-- Now the port lists of nets must be built and added to the current module.
--- 				add_portlists (build_portlists);
+				-- All anonymous strands must be given a name. The name is enforced by the a net label. The first label found on the strand
+				-- sets the strand name. 
+				-- Other labels on the strand are checked for their name only. If the name differs from the net name set earlier,
+				-- a warning is output.
+				-- Strads without label remain anonymous by using the notation "N$"
+				-- The nets are finally appended to the strands of the current module.
+				associate_net_labels_with_anonymous_strands;
 
 			else
 				log_indentation_reset;
