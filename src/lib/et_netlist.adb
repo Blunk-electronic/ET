@@ -686,7 +686,10 @@ package body et_netlist is
 	
 	
 	procedure make_netlists is
-	-- Builids the netlists of all modules in the rig.
+	-- Builds the netlists of all modules in the rig.
+	-- Updates the strand names in et_schematic.rig because some of them get a final name due to
+	-- power out ports.
+	
 	-- Bases on the portlists and strands information of the module.
 	-- Netlists become exported in individual project directories in the work directory of ET.
 	-- These project directories have the same name as the module indicated by module_cursor.

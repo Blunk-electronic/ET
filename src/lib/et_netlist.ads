@@ -187,6 +187,8 @@ package et_netlist is
 	procedure make_netlists;
 	-- Builids the netlists of all modules in the rig.
 	-- Netlists are to be exported in individual project directories in the work directory of ET.
+	-- Updates the strand names in et_schematic.rig because some of them get a final name due to
+	-- power out ports.
 
 
 	

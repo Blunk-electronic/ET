@@ -183,7 +183,7 @@ begin -- main
 	et_export.create_report;
 
 	-- netlists
-	et_netlist.make_netlists;
+	et_netlist.make_netlists; -- updates et_schematic.rig.module.strands
 	et_netlist.write_netlists;
 
 	-- statistics
