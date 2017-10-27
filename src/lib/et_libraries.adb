@@ -70,6 +70,12 @@ package body et_libraries is
 	begin
 		return type_person_name.to_string (person);
 	end to_string;
+
+	function to_string (size : in type_text_size) return string is
+	-- Returns the given text size as string.
+	begin
+		return "size " & format_distance (size);
+	end to_string;
 	
 	function to_string (direction : in type_port_direction) return string is
 	-- Returns the given port direction as string.

@@ -1100,7 +1100,10 @@ package body et_kicad is
 			function read_field (meaning : in type_text_meaning) return type_text is
 			-- Reads general text field properties from subfields 3..9 and returns a type_text with 
 			-- the meaning as given in parameter "meaning".
+			-- Checks basic properties of text fields (text size, aligment, ...)
+				use et_coordinates;
 				text : type_text(meaning);
+
 			begin
 				-- field #:
 				-- 3/4 : x/y coordinates
@@ -1110,20 +1113,36 @@ package body et_kicad is
 				-- 8 : aligment horizontal (R,C,L)
 				-- 9 : aligment vertical (TNN, CNN, BNN) / font normal, italic, bold, bold_italic (TBI, TBN)
 
-				text.content		:= type_text_content.to_bounded_string (strip_quotes(get_field_from_line(line,2)));
-				set_x (text.position, mil_to_distance (mil => get_field_from_line(line,3), warn_on_negative => false));
-				set_y (text.position, mil_to_distance (mil => get_field_from_line(line,4), warn_on_negative => false));
-				text.size 			:= mil_to_distance (mil => get_field_from_line(line,5), warn_on_negative => false);
-				text.orientation	:= to_field_orientation (get_field_from_line(line,6));
+				text.content		:= type_text_content.to_bounded_string (strip_quotes (get_field_from_line (line,2)));
+				-- CS: check content vs. meaning
+				
+				set_x (text.position, mil_to_distance (mil => get_field_from_line (line,3), warn_on_negative => false));
+				set_y (text.position, mil_to_distance (mil => get_field_from_line (line,4), warn_on_negative => false));
+				text.size 			:= mil_to_distance (mil => get_field_from_line (line,5), warn_on_negative => false);
+
+				-- check text size of fields
+				if text.size /= text_size_field_default then
+					log (message_warning 
+						 & "text size of field '" & to_string (meaning)
+						 & "' invalid. Found " & to_string (size => text.size) 
+						 & ". Expected " & to_string (size => text_size_field_default) & " !");
+				end if;
+				
+				text.orientation := to_field_orientation (get_field_from_line (line,6));
+				-- CS: check orientation.
 				
 				text.visible := to_field_visible (
-					vis_in		=> get_field_from_line(line,7),
+					vis_in		=> get_field_from_line (line,7),
 					schematic	=> false);
+				-- CS: check visibility.
 
-				text.alignment.horizontal := to_alignment_horizontal(get_field_from_line(line,8));
-				text.alignment.vertical   := to_alignment_vertical  (get_field_from_line(line,9));
-				text.style := to_text_style (style_in => get_field_from_line(line,9), text => false);
-
+				text.alignment.horizontal := to_alignment_horizontal (get_field_from_line (line,8));
+				-- CS: check hor aligment.
+				text.alignment.vertical   := to_alignment_vertical  (get_field_from_line (line,9));
+				-- CS: check vert aligment.
+				text.style := to_text_style (style_in => get_field_from_line (line,9), text => false);
+				-- CS: check style.
+				
 				-- NOTE: text.line_width assumes default (see et_general.ads) as no line width is provided here.
 				return text;
 			end read_field;
@@ -1136,7 +1155,7 @@ package body et_kicad is
 				components	: in out type_components.map) is
 			begin -- insert_component
 
-				-- Do a precheck of the text fields.
+				-- Do a precheck of the text fields. -- CS most of the checks is already done in procedure read_field.
 				check_text_fields;
 
 -- 				-- For the logfile write the component name.
@@ -4395,7 +4414,7 @@ package body et_kicad is
 											type_wild_segments.append (wild_segments, tmp_segment);
 											
 										else -- segment has zero length
-											log (message_warning & "Line " & affected_line (line) & "Net segment with zero length found -> ignored !");
+											log (message_warning & affected_line (line) & "Net segment with zero length found -> ignored !");
 										end if; -- length
 
 									end if;
