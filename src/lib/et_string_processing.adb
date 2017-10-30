@@ -146,6 +146,16 @@ package body et_string_processing is
 	begin
 		null; -- CS
 	end check_timestamp;
+
+	function strip_directory_separator (text : in string) return string is
+	-- Removes the trailing directory separtor (if preset).
+	begin
+		if text (text'last) = '/' then -- CS: does not work with DOS/Windows
+			return text (text'first .. text'last-1);
+		else
+			return text;
+		end if;
+	end strip_directory_separator;
 	
 	function ht_to_space (c : in character) return character is
 	begin 

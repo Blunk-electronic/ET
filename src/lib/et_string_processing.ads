@@ -124,6 +124,9 @@ package et_string_processing is
 	-- Checks the given timestamp for valid characters and plausible time.
 	
 
+	function strip_directory_separator (text : in string) return string;
+	-- Removes the trailing directory separtor (if preset).
+	
 	short_string_length_max : constant natural := 10;
  	package type_short_string is new generic_bounded_length(short_string_length_max);
 

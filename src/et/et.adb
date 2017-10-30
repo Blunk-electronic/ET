@@ -77,7 +77,7 @@ procedure et is
 -- 						put_line("import file " & parameter); 
 
 					elsif full_switch = switch_import_project then
-						put_line ("import project " & parameter);
+						put_line ("import project " & strip_directory_separator (parameter));
 						project_name := type_project_name.to_bounded_string (parameter);
 
 					elsif full_switch = switch_import_format then
@@ -137,6 +137,10 @@ procedure et is
 	begin
 		-- Test if project name specified and if project base directory exists:
 		if length (project_name) > 0 then
+
+			-- If project name was provided with a trailing directory separator it must be removed.
+			project_name := to_bounded_string (strip_directory_separator (to_string (project_name)));
+			
 			if exists (to_string (project_name)) then
 				--put_line( "project file: " & to_string(et_import.project_file_name));
 				null; -- fine
