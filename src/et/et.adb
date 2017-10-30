@@ -163,11 +163,15 @@ procedure et is
 		-- The design import requires changing of directories. So we backup the current directory.
 		-- After the import, we restore the directory.
 		backup_projects_root_directory;
-		
 		et_kicad.import_design;
-
 		restore_projects_root_directory;
 
+		-- The project database can be completed once netlists have been built.
+		-- For example: The names of strands may change once power output ports have been
+		-- detected.
+		-- make_netlists generates portlists, netlists and updates the strand names.
+		et_netlist.make_netlists;
+		
 		et_import.close_report;
 	end import_design;
 	
@@ -181,15 +185,17 @@ begin -- main
 
 	-- export useful things from the imported project(s)
 	et_export.create_report;
-
-	-- netlists
-	et_netlist.make_netlists; -- updates et_schematic.rig.module.strands
+	reset_warnings_counter;
+	
+	-- export netlists
+	-- NOTE: write_netlists requires that netlists have been built before 
+	-- (see comments in procedure import_design above).
 	et_netlist.write_netlists;
 
-	-- statistics
+	-- export statistics
 	et_schematic.make_statistics;
 
-	-- bom
+	-- export bom
 	et_schematic.make_bom;
 	
 	et_export.close_report;

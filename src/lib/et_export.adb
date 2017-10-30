@@ -93,7 +93,7 @@ package body et_export is
 
 	procedure create_project_directory (project : in string) is
 	-- Creates given project directory in work_directory of ET.
-	-- Creates subdirectories for CAM, statistics, ...
+	-- Creates subdirectory for CAM
 		use et_general;
 	begin
 		if not exists (compose (work_directory, project)) then
@@ -103,7 +103,6 @@ package body et_export is
 
 			create_directory (compose (work_directory, project));
 			create_path (compose (compose (work_directory, project), directory_cam));
-			create_path (compose (compose (work_directory, project), directory_statistics));
 		end if;
 	end create_project_directory;
 

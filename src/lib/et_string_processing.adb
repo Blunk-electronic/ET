@@ -122,6 +122,11 @@ package body et_string_processing is
 		end if;
 	end check_updated_vs_commissioned;
 
+	procedure reset_warnings_counter is
+	begin
+		warning_counter := 0;
+	end reset_warnings_counter;
+	
 	function to_string (date : in type_date) return string is
 	-- Returns the given date as string.
 	begin
