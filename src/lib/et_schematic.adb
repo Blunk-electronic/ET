@@ -145,8 +145,8 @@ package body et_schematic is
 
 		log_indentation_up;
 		log ("name '" & type_net_name.to_string (label.text) & "' ");
-		log (to_string (label.coordinates), log_threshold);
-		log (to_string (label.orientation), log_threshold);
+		log (text => to_string (label.coordinates), level => log_threshold + 1);
+		log (text => to_string (label.orientation), level => log_threshold + 1);
 		
 		case label.label_appearance is
 			when simple =>
@@ -191,16 +191,16 @@ package body et_schematic is
 
 		-- content
 		if et_libraries.type_text_content.length (note.content) > 0 then
-			log ("content '" & type_text_content.to_string (note.content) & "'");
+			log (text => "content '" & type_text_content.to_string (note.content) & "'", level => log_threshold);
 		else
-			log (et_string_processing.message_warning & "no content !"); 
+			log (text => et_string_processing.message_warning & "no content !", level => log_threshold); 
 		end if;
 
 		
-		if log_level >= log_threshold then
+		if log_level >= log_threshold + 1 then
 			
 			-- position
-			log (to_string (note.coordinates), log_threshold);
+			log (to_string (note.coordinates));
 			
 			-- size
 			log ("size" & et_libraries.type_text_size'image (note.size));
@@ -229,7 +229,7 @@ package body et_schematic is
 		log_indentation_down;
 	end write_note_properties;
 	
-	procedure write_component_properties ( component : in type_components.cursor) is
+	procedure write_component_properties (component : in type_components.cursor) is
 	-- Writes the properties of the component indicated by the given cursor.
 		use et_string_processing;
 	begin
@@ -1142,7 +1142,7 @@ package body et_schematic is
 				);
 
 -- 			if inserted then -- first occurence of component
-				if log_level >= 1 then
+				if log_level >= 2 then
 					et_schematic.write_component_properties (component => cursor);
 				end if;
 -- 			else -- not inserted
@@ -1179,7 +1179,7 @@ package body et_schematic is
 				);
 
 			if inserted then -- fine. unit was inserted successfully
-				if log_level >= 1 then				
+				if log_level >= 2 then				
 					write_unit_properties (unit => cursor);
 				end if;
 			else -- not inserted, unit already in component -> failure

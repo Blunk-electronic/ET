@@ -551,7 +551,7 @@ package body et_kicad is
 				
 				i : type_symbol_interchangeable;
 				s : type_unit_swap_level;
-				log_threshold : type_log_level := 1;
+				log_threshold : type_log_level := 2;
 			begin
 				log_indentation_up;
 				
@@ -581,7 +581,7 @@ package body et_kicad is
 
 				v_in	: type_show_pin_number;
 				v_out	: type_pin_visible;
-				log_threshold : type_log_level := 1;
+				log_threshold : type_log_level := 2;
 			begin
 				log_indentation_up;
 				
@@ -613,7 +613,7 @@ package body et_kicad is
 
 				v_in	: type_show_pin_name;
 				v_out	: type_port_visible;
-				log_threshold : type_log_level := 1;			
+				log_threshold : type_log_level := 2;
 			begin
 				log_indentation_up;
 				
@@ -1541,7 +1541,7 @@ package body et_kicad is
 				log_indentation_down;
 			end write_scope_of_object;
 
-			log_threshold : type_log_level := 1;
+			log_threshold : type_log_level := 2;
 			
 		begin -- read_draw_object
 			log ("draw object", level => log_threshold);
@@ -1731,7 +1731,7 @@ package body et_kicad is
 
 		procedure add_footprint (line : in type_fields_of_line) is
 		-- Reads the proposed footprint and adds it to the package filter of the current component.
-			log_threshold : type_log_level := 1;
+			log_threshold : type_log_level := 2;
 			fp : type_package_proposal.bounded_string;
 
 			function field (line : in type_fields_of_line; position : in positive) return string renames
@@ -2026,7 +2026,7 @@ package body et_kicad is
 								set_text_placeholder_properties (component_libraries);
 								
 								-- log component properties
-								if log_level >= 1 then
+								if log_level >= 2 then
 									et_libraries.write_component_properties (component => comp_cursor);
 								end if;
 							else
@@ -2482,7 +2482,7 @@ package body et_kicad is
 			commissioned, updated : et_string_processing.type_date;
 
 			-- we set the log threshold level so that details are hidden when no log level specified
-			log_threshold : type_log_level := 1;
+			log_threshold : type_log_level := 2;
 
 			use et_libraries;
 		begin -- check_text_fields
@@ -3174,12 +3174,13 @@ package body et_kicad is
 						next (strand_cursor); -- advance strand cursor
 					end loop;
 
-					-- Sort anonymous nets without label.
-					-- Anonymous nets without label have no name -> "processed" flag is still cleared.
-					-- As placeholder for the name we use the notation "N$" where n is an index (derived from the element id in anonymous_nets)
+					-- Sort anonymous strands (they do not have any labels).
+					-- Anonymous strands have no name -> "processed" flag is still cleared.
+					-- As placeholder for the name we use the notation "N$" where n is an index (derived from the element id in anonymous_strands)
 					-- Their scope is strictly "local".
-					-- We us an intermediate variable net for transfer to the module netlist.
-					log (text => "sorting name-less nets ...");
+					-- We us an intermediate variable "strand" for transfer to the module netlist.
+					-- NOTE: Even if a strand has no name at this stage, it may receive a name after netlist generation.
+					log (text => "sorting name-less strands ... NOTE: Names may change after netlist generation.");
 					log_indentation_up;
 
 					strand_cursor := anonymous_strands.first; -- reset strand cursor
@@ -3226,8 +3227,11 @@ package body et_kicad is
 					
 					log_indentation_down;
 					
-					-- Sort anonymous nets with label.
-					log (text => "sorting named nets ...");
+					-- Sort anonymous strands with label.
+					-- NOTE: Even if a strand has a dedicated name in this stage, it may receive a name after netlist generation by force.
+					-- Power out ports may overwrite the strand name. As this would be a design error, the operator will 
+					-- be notified and warned about such violations on netlist generation.
+					log (text => "sorting named strands ...");
 					log_indentation_up;
 					
 					strand_cursor := anonymous_strands.first; -- reset strand cursor
@@ -3242,7 +3246,7 @@ package body et_kicad is
 							strand.scope := a.scope;
 
 							log_indentation_up;
-							log ("scope " & type_scope_of_net'image (strand.scope) & " with segments:", level => 1);
+							log ("scope " & type_scope_of_net'image (strand.scope) & " with segments", level => 1);
 
 							-- append segments to net
 							segment_cursor := a.segments.first; -- reset segment cursor to begin of segments of the current anonymous net
@@ -3458,7 +3462,9 @@ package body et_kicad is
 				-- Segments whose start or end points match other segments are considered
 				-- as connected to each other (means they belong to the same strand).
 				-- The net name is unknown yet. So the outcome of the following is a list of anonymous strands.
+				
 				-- CS: handle circlular strands, currently they cause a forever-loop here
+				
 				segment_count := type_wild_segments.length (wild_segments); -- get number of segments on the current sheet
 
 				log ("processing" & count_type'image (segment_count) & " net segments ...");
@@ -3492,9 +3498,9 @@ package body et_kicad is
 						if not type_wild_segments.element (segment_cursor_b).s and 
 						   not type_wild_segments.element (segment_cursor_b).e then 
 
-						    -- We initiate a new anonymous strand and start looking for a matching segment on the end_point:
+						    -- We initiate a new strand and start looking for a matching segment on the end_point:
 							--put_line(et_import.report_handle," anonymous net" & positive'image(seg) & ":"); 
-							log ("anonymous strand with segments", level => 1);
+							log ("assembling strand with segments", level => 1);
 
 							-- The first segment is to be added to the anonymous strand.
 							add_segment_to_anonymous_strand (segment_cursor_b); 
@@ -4374,7 +4380,9 @@ package body et_kicad is
 											if get_field_from_line(line,2) = schematic_keyword_wire then
 												if get_field_from_line(line,3) = schematic_keyword_line then
 													net_segment_entered := true; -- CS: assumption: segment coordinates follow in next line
+													log_indentation_up;
 													log (text => "net segment", level => 1);
+													log_indentation_down;
 												end if;
 											end if;
 										end if;

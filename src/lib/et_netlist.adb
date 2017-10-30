@@ -385,8 +385,10 @@ package body et_netlist is
 					while port_cursor /= et_libraries.type_ports.no_element loop
 						log_indentation_up;
 						--log ("port " & type_port_name.to_string (key (port_cursor))
-						log ("port " & type_port_name.to_string (element (port_cursor).name)
-							& " pin/pad " & to_string (element (port_cursor).pin));
+						log (text => "port " & type_port_name.to_string (element (port_cursor).name)
+								& " pin/pad " & to_string (element (port_cursor).pin),
+							 level => 2
+							);
 						
 						-- Build a new port and append port to portlist of the 
 						-- current component (indicated by component_cursor_portlists).
@@ -817,8 +819,9 @@ package body et_netlist is
 						log (text => 
 								reference (port) & " "
 								& et_netlist.port (port) & " "
-								& et_netlist.pin (port) & " "
-								);
+								& et_netlist.pin (port) & " ",
+							level => 2
+							);
 
 						-- Test if supply port name matches net name. When positive, nothing to to.
 						-- Otherwise set the new net name according to the port name of the power port.

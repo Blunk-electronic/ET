@@ -227,7 +227,7 @@ package body et_libraries is
 	procedure write_text_properies (text : in et_libraries.type_text) is
 	-- Outputs the properties of the given text.
 		use et_string_processing;
-		log_threshold : type_log_level := 1;
+		log_threshold : type_log_level := 2;
 	begin
 -- 		log_indentation_up;
 		
@@ -383,6 +383,8 @@ package body et_libraries is
 		unit_cursor : type_units_internal.cursor;
 		unit_count	: count_type;
 		units		: type_units_internal.map;
+
+		--log_threshold : type_log_level := 1;
 	begin
 		log ("component properties");
 		
