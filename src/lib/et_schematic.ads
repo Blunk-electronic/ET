@@ -299,9 +299,9 @@ package et_schematic is
 	-- In case the appearance is "tag", the property "direction" exists.
 	-- The "direction" indicates the flow of energy or information on the net.
 	
-	type type_label_direction is ( input, output, bidir, tristate, passive );
-	type type_label_appearance is ( simple, tag );
-	type type_net_label ( label_appearance : type_label_appearance ) is record
+	type type_label_direction is (input, output, bidir, tristate, passive);
+	type type_label_appearance is (simple, tag);
+	type type_net_label (label_appearance : type_label_appearance) is record
 		coordinates	: et_coordinates.type_coordinates;
 		orientation	: type_angle;
         text		: type_net_name.bounded_string;
@@ -386,6 +386,8 @@ package et_schematic is
 	-- it may be exported to parent sheet (other ECAD tools refer to them as "hierachical or global nets").
 	type type_scope_of_net is (local, hierarchic, global);
 
+	function to_string (scope : in type_scope_of_net) return string;
+	-- Retruns the given scope as string.
 
 	-- A strand is a collection of net segments which belong to each other. 
 	-- Segments belong to each other either because their start/end points meet
@@ -684,6 +686,9 @@ package et_schematic is
 	-- Renames all strands with the name_before to the name_after.
 		name_before : type_net_name.bounded_string;
 		name_after	: type_net_name.bounded_string);
+
+	procedure write_strands;
+	-- Writes a nice overview of strands, net segments and labels
 	
 	function first_segment (cursor : in type_strands.cursor) return type_net_segments.cursor;
 	-- Returns a cursor pointing to the first net segment of the given strand.

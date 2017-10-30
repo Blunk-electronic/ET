@@ -538,6 +538,12 @@ package body et_schematic is
 			& " end " 
 			& to_string (segment.coordinates_end));
 	end to_string;
+
+	function to_string (scope : in type_scope_of_net) return string is
+	-- Retruns the given scope as string.
+	begin
+		return to_lower (type_scope_of_net'image (scope));
+	end to_string;
 	
 -- 	procedure write_coordinates_of_junction (junction : in type_net_junction) is
 -- 	-- Writes the coordinates of a net junction.
@@ -1072,6 +1078,76 @@ package body et_schematic is
 			process		=> rename'access
 			);
 	end rename_strands;
+
+	procedure write_strands is
+	-- Writes a nice overview of strands, net segments and labels
+		use et_string_processing;
+
+		procedure query_label (
+			segment		: in type_net_segment) is
+			label_simple	: type_simple_labels.cursor	:= segment.label_list_simple.first;
+			label_tag		: type_tag_labels.cursor	:= segment.label_list_tag.first;
+			use type_simple_labels;
+			use type_tag_labels;
+		begin
+			log_indentation_up;
+			while label_simple /= type_simple_labels.no_element loop
+				log ("simple label " & to_string (element (label_simple).coordinates));
+				next (label_simple);
+			end loop;
+
+			while label_tag /= type_tag_labels.no_element loop
+				log ("tag label " & to_string (element (label_tag).coordinates));
+				next (label_tag);
+			end loop;
+
+			log_indentation_down;
+		end query_label;
+	
+		procedure query_segment (
+			strand		: in type_strand) is
+			segment : type_net_segments.cursor := strand.segments.first;
+			use type_net_segments;
+		begin
+			while segment /= type_net_segments.no_element loop
+				log_indentation_up;
+				log ("segment " & to_string (element (segment)));
+
+				type_net_segments.query_element (
+					position	=> segment,
+					process		=> query_label'access);
+
+				log_indentation_down;				
+				next (segment);
+			end loop;
+		end query_segment;
+	
+		procedure query_strands (
+			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
+			module		: in type_module) is
+			strand : type_strands.cursor := module.strands.first;
+			use type_strands;
+		begin
+			while strand /= type_strands.no_element loop
+				log_indentation_up;
+				log (to_string (element (strand).name) & " scope " & to_string (element (strand).scope));
+
+				type_strands.query_element (
+					position	=> strand,
+					process		=> query_segment'access);
+				
+				log_indentation_down;
+				next (strand);
+			end loop;
+		end query_strands;
+		
+	begin -- write_strands
+		log ("creating net strands report ...");
+		
+		type_rig.query_element (
+			position	=> module_cursor,
+			process		=> query_strands'access);
+	end write_strands;
 
 	
 	function first_segment (cursor : in type_strands.cursor) return type_net_segments.cursor is

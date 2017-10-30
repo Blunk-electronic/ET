@@ -993,6 +993,11 @@ package body et_netlist is
 				key => key (et_schematic.module_cursor),
 				new_item => make_netlist);
 
+			-- create a nice report about net strands, segments and labels
+			if log_level >= 1 then
+				write_strands;
+			end if;
+				
 			next (et_schematic.module_cursor);
 		end loop;
 

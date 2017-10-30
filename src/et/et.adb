@@ -175,7 +175,7 @@ procedure et is
 		-- detected.
 		-- make_netlists generates portlists, netlists and updates the strand names.
 		et_netlist.make_netlists;
-		
+
 		et_import.close_report;
 	end import_design;
 	
