@@ -384,7 +384,7 @@ package et_schematic is
 	-- Translated into the KiCad terminology;
 	-- A net may be visible within a sheet (local net) or 
 	-- it may be exported to parent sheet (other ECAD tools refer to them as "hierachical or global nets").
-	type type_scope_of_net is (local, hierarchic, global);
+	type type_scope_of_net is (unknown, local, hierarchic, global);
 
 	function to_string (scope : in type_scope_of_net) return string;
 	-- Retruns the given scope as string.
@@ -397,7 +397,7 @@ package et_schematic is
     -- CS: do not use sheet and x/y at all ?
     type type_strand is record
 		name		: type_net_name.bounded_string; -- example "CPU_CLOCK"
-		scope 		: type_scope_of_net; -- example "local"
+		scope 		: type_scope_of_net := type_scope_of_net'first; -- example "local"
 		segments 	: type_net_segments.list; -- list of net segments
 		--junctions	: type_junctions.list; -- the junctions of the net
 		coordinates : et_coordinates.type_coordinates;

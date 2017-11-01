@@ -132,20 +132,25 @@ package body et_schematic is
 		use et_string_processing;
 		use et_coordinates;
 
-		log_threshold : type_log_level := 1;
+		log_threshold : type_log_level := 2;
 	begin
 		log_indentation_up;
+		
 		case label.label_appearance is
 			when simple =>
-				log (text => "simple label");
+				log (text => "simple label " & to_string (label.text) & " at " & to_string (label.coordinates));
+				
 			when tag =>
-				log (text => "tag label");
-				-- CS: directon, global, hierarchic, style, ...
+				if label.hierarchic then
+					log (text => "hierarchic label " & to_string (label.text) & " at " & to_string (label.coordinates));
+				end if;
+				if label.global then
+					log (text => "global label " & to_string (label.text) & " at " & to_string (label.coordinates));
+				end if;
+					-- CS: directon, global, hierarchic, style, ...
 		end case;
 
 		log_indentation_up;
-		log ("name '" & type_net_name.to_string (label.text) & "' ");
-		log (text => to_string (label.coordinates), level => log_threshold + 1);
 		log (text => to_string (label.orientation), level => log_threshold + 1);
 		
 		case label.label_appearance is
@@ -984,7 +989,7 @@ package body et_schematic is
 			use et_string_processing;
 		begin
 			log_indentation_up;
-			log (text => "inserting strand " & to_string (strand.name) & " in database ...", level => 2);
+			log (text => "inserting strand " & to_string (strand.name) & " in database ...", level => 3);
 			log_indentation_down;
 
 			module.strands.append (strand);
