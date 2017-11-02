@@ -393,28 +393,47 @@ package et_schematic is
 	-- Segments belong to each other because their start/end points meet.
     -- A net has coordinates
     -- CS: x/y position should be the lowest values available on the first sheet ? 
-    -- CS: do not use sheet and x/y at all ?
-    type type_strand is record
-		name		: type_net_name.bounded_string; -- example "CPU_CLOCK"
-		scope 		: type_scope_of_net := type_scope_of_net'first; -- example "local"
+	-- CS: do not use sheet and x/y at all ?
+	type type_strand is tagged record
 		segments 	: type_net_segments.list; -- list of net segments
 		--junctions	: type_junctions.list; -- the junctions of the net
 		coordinates : et_coordinates.type_coordinates;
 	end record;
 
-	-- Strands are collected in a list:
-	package type_strands is new doubly_linked_lists (
+	-- base type strands are collected in a vector:
+	package type_strands is new vectors (
+		index_type => count_type,
 		element_type => type_strand);
+	
+	-- As long as strands are independed of each other they must 
+	-- have a name and their own scope.
+    type type_strand_named is new type_strand with record
+		name		: type_net_name.bounded_string; -- example "CPU_CLOCK"
+		scope 		: type_scope_of_net := type_scope_of_net'first; -- example "local"
+	end record;
+
+	procedure add_strand (
+	-- Adds a strand into the module (indicated by module_cursor).
+		strand : in et_schematic.type_strand_named);
+	
+	-- Named strands are collected in a list:
+	package type_strands_named is new doubly_linked_lists (
+		element_type => type_strand_named);
 
 	-- If the name of a strand can not be identified, we default to the well proved
 	-- N$ notation:
 	anonymous_net_name_prefix : constant string (1..2) := "N$";
 
+	-- This is a net:
+	type type_net is record
+		scope 		: type_scope_of_net := type_scope_of_net'first; -- example "local"
+		strands		: type_strands.vector;
+	end record;
 
-
-
-	
-	
+	-- Nets are collected in a map:
+	package type_nets is new ordered_maps (
+		key_type => type_net_name.bounded_string, -- example "CPU_CLOCK"	
+		element_type => type_net);
 
 -- VISUALISATION IN A GRAPHICAL USER INTERFACE
 	-- How objects are displayed in a GUI.
@@ -614,13 +633,10 @@ package et_schematic is
 	
 -- MODULES
 	
-	-- A module has a name, a list of strands and a list of components.
-	-- There may be multiple strands that have the same name. 
-	-- Example: A strand MCU_CLK on sheet 1 and another on sheet 4.
 	type type_module is record
 		libraries		: type_full_library_names.list;	-- the list of project library names
-		--nets 	    	: type_nets.map;			-- the nets of the module
-		strands	    	: type_strands.list;		-- the strands of the module
+		strands	    	: type_strands_named.list;		-- the strands of the module. temporarily used. CS: clear once nets are ready. 
+		nets 	    	: type_nets.map;			-- the nets of the module
         components		: type_components.map;		-- the components of the module
 		submodules  	: type_gui_submodules.map;	-- graphical representations of submodules -- GUI relevant
         frames      	: type_frames.list;			-- frames -- GUI relevant
@@ -674,11 +690,7 @@ package et_schematic is
 	-- Inserts a title block in the module (indicated by module_cursor).
 		tblock	: in et_schematic.type_title_block);
 
-	procedure add_strand (
-	-- Adds a strand into the module (indicated by module_cursor).
-		strand : in et_schematic.type_strand);
-
-	function first_strand return type_strands.cursor;
+	function first_strand return type_strands_named.cursor;
 	-- Returns a cursor pointing to the first strand of the module (indicated by module_cursor).
 
 	procedure rename_strands (
@@ -689,9 +701,12 @@ package et_schematic is
 	procedure write_strands;
 	-- Writes a nice overview of strands, net segments and labels
 	
-	function first_segment (cursor : in type_strands.cursor) return type_net_segments.cursor;
+	function first_segment (cursor : in type_strands_named.cursor) return type_net_segments.cursor;
 	-- Returns a cursor pointing to the first net segment of the given strand.
 
+	procedure build_nets;
+	-- Builds the nets of the current module from its strands.
+	
 	function first_component return type_components.cursor;
 	-- Returns a cursor pointing to the first component of the module (indicated by module_cursor).
 	

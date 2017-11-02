@@ -2938,7 +2938,7 @@ package body et_kicad is
 				lls : 	type_simple_labels.list;
 				llt : 	type_tag_labels.list;
 			
-				strand 		: type_strand;
+				strand 		: type_strand_named;
 				net_name	: type_net_name.bounded_string;
 				
 				function label_sits_on_segment (label : in type_net_label; segment : in type_net_segment) return boolean is
@@ -4920,7 +4920,8 @@ package body et_kicad is
 					module_name	=> tmp_module_name,
 					module		=> (
 						libraries		=> tmp_project_libraries, -- set project libraries
-						strands			=> type_strands.empty_list,
+						strands			=> type_strands_named.empty_list,
+						nets			=> type_nets.empty_map,
 						components		=> type_components.empty_map,
 						submodules		=> type_gui_submodules.empty_map,
 						frames			=> type_frames.empty_list,

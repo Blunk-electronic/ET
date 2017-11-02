@@ -549,6 +549,30 @@ package body et_schematic is
 	begin
 		return to_lower (type_scope_of_net'image (scope));
 	end to_string;
+
+	procedure add_strand (
+	-- Adds a strand into the the module (indicated by module_cursor).
+		strand : in et_schematic.type_strand_named) is
+		
+		procedure add (
+			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
+			module		: in out type_module) is
+			use et_string_processing;
+		begin
+			log_indentation_up;
+			log (text => "inserting strand " & to_string (strand.name) & " in database ...", level => 3);
+			log_indentation_down;
+
+			module.strands.append (strand);
+		end add;
+		
+	begin -- add_strand
+		rig.update_element (
+			position	=> module_cursor,
+			process		=> add'access
+			);
+	end add_strand;
+
 	
 -- 	procedure write_coordinates_of_junction (junction : in type_net_junction) is
 -- 	-- Writes the coordinates of a net junction.
@@ -979,31 +1003,9 @@ package body et_schematic is
 		return "mirror style " & to_lower (type_mirror'image (mirror));
 	end to_string;
 	
-	procedure add_strand (
-	-- Adds a strand into the the module (indicated by module_cursor).
-		strand : in et_schematic.type_strand) is
-		
-		procedure add (
-			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
-			module		: in out type_module) is
-			use et_string_processing;
-		begin
-			log_indentation_up;
-			log (text => "inserting strand " & to_string (strand.name) & " in database ...", level => 3);
-			log_indentation_down;
-
-			module.strands.append (strand);
-		end add;
-	begin
-		rig.update_element (
-			position	=> module_cursor,
-			process		=> add'access
-			);
-	end add_strand;
-
-	function first_strand return type_strands.cursor is
+	function first_strand return type_strands_named.cursor is
 	-- Returns a cursor pointing to the first strand of the module (indicated by module_cursor).
-		cursor : type_strands.cursor;	
+		cursor : type_strands_named.cursor;	
 
 		procedure set_cursor (
 			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
@@ -1031,9 +1033,9 @@ package body et_schematic is
 			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out type_module) is
 
-			use et_schematic.type_strands;
+			use et_schematic.type_strands_named;
 			
-			cursor : type_strands.cursor := module.strands.first;
+			cursor : type_strands_named.cursor := module.strands.first;
 			-- Points to the strand being processed
 			
 			renamed : boolean := false; -- signals that a strand renaming took place
@@ -1041,7 +1043,7 @@ package body et_schematic is
 			-- The names of anonymous strands like (N$6) are unique. So after the first
 			-- renaming the procedure comes to an early end.
 
-			procedure do_it (strand : in out type_strand) is
+			procedure do_it (strand : in out type_strand_named) is
 			-- Renames the strand if its name equals name_before.
 			begin
 				if strand.name = name_before then
@@ -1062,7 +1064,7 @@ package body et_schematic is
 			end do_it;
 			
 		begin -- rename
-			while cursor /= type_strands.no_element loop
+			while cursor /= type_strands_named.no_element loop
 				module.strands.update_element (position => cursor, process => do_it'access);
 
 				-- Exit prematurely if name_before was anonymous. anonymous strand names are unique.
@@ -1110,7 +1112,7 @@ package body et_schematic is
 		end query_label;
 	
 		procedure query_segment (
-			strand		: in type_strand) is
+			strand	: in type_strand_named) is
 			segment : type_net_segments.cursor := strand.segments.first;
 			use type_net_segments;
 		begin
@@ -1130,14 +1132,14 @@ package body et_schematic is
 		procedure query_strands (
 			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in type_module) is
-			strand : type_strands.cursor := module.strands.first;
-			use type_strands;
+			strand : type_strands_named.cursor := module.strands.first;
+			use type_strands_named;
 		begin
-			while strand /= type_strands.no_element loop
+			while strand /= type_strands_named.no_element loop
 				log_indentation_up;
 				log (to_string (element (strand).name) & " scope " & to_string (element (strand).scope));
 
-				type_strands.query_element (
+				type_strands_named.query_element (
 					position	=> strand,
 					process		=> query_segment'access);
 				
@@ -1155,24 +1157,64 @@ package body et_schematic is
 	end write_strands;
 
 	
-	function first_segment (cursor : in type_strands.cursor) return type_net_segments.cursor is
+	function first_segment (cursor : in type_strands_named.cursor) return type_net_segments.cursor is
 	-- Returns a cursor pointing to the first net segment of the given strand.
 		segment_cursor : type_net_segments.cursor;
 
 		procedure set_cursor (
-			strand : in type_strand) is
+			strand : in type_strand_named) is
 		begin
 			segment_cursor := strand.segments.first;
 		end set_cursor;
 
 	begin
-		type_strands.query_element (
+		type_strands_named.query_element (
 			position	=> cursor,
 			process		=> set_cursor'access
 			);
 		return segment_cursor;
 	end first_segment;
 
+	procedure build_nets is
+	-- Builds the nets of the current module from its strands.
+
+	-- Build the module nets. Build_nets merges the strands which are still independed of
+	-- each other. For example a strand named "VCC3V3" exists on submodule A on sheet 2. 
+	-- Another strand "VCC3V3" exists on submodule C on sheet 1. They do not "know" each other
+	-- and must be merged into a single net.
+		use et_string_processing;
+		use et_schematic.type_strands_named;
+		use et_schematic.type_rig;
+
+		named_strand : type_strands_named.cursor;
+
+-- 		strand : type_strand_named;
+	begin
+		log ("building nets ...");
+		first_module;
+
+		log_indentation_up;
+
+		while module_cursor /= type_rig.no_element loop
+			log ("module " & to_string (key (module_cursor)), level => 1);
+			
+			named_strand := first_strand;
+			log_indentation_up;
+			while named_strand /= type_strands_named.no_element loop
+				log ("strand " & to_string (element (named_strand).name));
+
+				-- append net to module.nets
+				
+				next (named_strand);
+			end loop;
+			log_indentation_down;
+			
+			next (module_cursor);
+		end loop;
+
+		log_indentation_down;
+	end build_nets;
+	
 	function first_component return type_components.cursor is
 	-- Returns a cursor pointing to the first component of the module (indicated by module_cursor).
 		cursor : type_components.cursor;

@@ -713,11 +713,11 @@ package body et_netlist is
 			net_cursor_netlist : type_netlist.cursor; -- points to the current net within the netlist being built
 			net_inserted : boolean; -- indicates whether a net has been inserted into the netlist
 			
-			strand_cursor_module : type_strands.cursor := first_strand;
+			strand_cursor_module : type_strands_named.cursor := first_strand;
 			-- points to the strand being read from the module (et_schematic.rig)
 		
 			netlist_pre : type_netlist.map; -- the preliminary netlist
-			use type_strands;
+			use type_strands_named;
 			
 			segment_cursor : type_net_segments.cursor; -- points to the net segment being read from the module
 			segment : type_net_segment; -- the actual net segment read from the module
@@ -894,7 +894,7 @@ package body et_netlist is
 			-- the net within the netlist.
 			
 			-- LOOP IN STRANDS OF MODULE (outer loop)
-			while strand_cursor_module /= type_strands.no_element loop
+			while strand_cursor_module /= type_strands_named.no_element loop
 
 				-- get the strand name via strand_cursor_module
 				log_indentation_up;
