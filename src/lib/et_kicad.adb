@@ -2427,7 +2427,7 @@ package body et_kicad is
 			name 		: type_net_name.bounded_string; -- the name (derived from net labels)
 			scope 		: type_scope_of_net := type_scope_of_net'first;	-- the scope (derived from net labels)
 			processed	: boolean := false;				-- set once a label has been found on the net
-			sorted		: boolean := false;				-- set once sorted out while sorting named nets
+			sorted		: boolean := false;				-- set once sorted out while sorting named nets -- CS: remove. obsolete
 		end record;
 
 		package type_anonymous_strands is new doubly_linked_lists (
@@ -2933,8 +2933,8 @@ package body et_kicad is
 			
 				ls  :	type_net_label_simple;
 				lt  : 	type_net_label_tag;				
-				a,b : 	type_anonymous_strand_extended;
-				s   : 	type_net_segment;
+				anon_strand_a, anon_strand_b : type_anonymous_strand_extended;
+				segment	: type_net_segment;
 				lls : 	type_simple_labels.list;
 				llt : 	type_tag_labels.list;
 			
@@ -2989,8 +2989,8 @@ package body et_kicad is
 				if not is_empty (anonymous_strands) then
 					log (text => "associating net labels with strands ...");
 					
-					-- Loop in list of anonymous strands, get a (non-processed-yet) strand, loop in list of segments and find a (non-processed-yet)
-					-- net label that sits on the net segment. If label sits on segment:
+					-- Loop in list of anonymous strands, get a (non-processed-yet) strand, loop in list of segments and 
+					-- find a (non-processed-yet) net label that sits on the net segment. If label sits on segment:
 					--  - assume label text as name of strand (and check other labels of the anonymous strand)
 					--
 					--  - mark label as processed
@@ -3001,17 +3001,16 @@ package body et_kicad is
 					--  - Mark anonymous strand as processed. This indicates that the strand has a name (given by a label).
 					--    Non-Processed strands are those without a label.
 					--  - update/replace anonymous strand in anonymous_strands
-					
 					while strand_cursor /= type_anonymous_strands.no_element loop -- cursor already reset on declaration (see above)
-						a := element (strand_cursor); -- get anonymous strand
+						anon_strand_a := element (strand_cursor); -- get anonymous strand
 						
 						--put_line(et_import.report_handle,"anonymous net #" & trim(count_type'image(n),left) & ": "); -- CS: log ?
-						if not a.processed then -- skip already processed nets
+						if not anon_strand_a.processed then -- skip already processed nets
 
 							-- reset segment cursor to begin of segment list of the anonymous net
-							segment_cursor := a.segments.first;
-							while segment_cursor /= type_anonymous_strand.no_element loop -- loop for each segment in anonymous strand "a"
-								s := a.segments (segment_cursor);
+							segment_cursor := anon_strand_a.segments.first;
+							while segment_cursor /= type_anonymous_strand.no_element loop -- loop for each segment in anonymous strand anon_strand_a
+								segment := anon_strand_a.segments (segment_cursor);
 								--put(et_import.report_handle, "segment: "); write_coordinates_of_segment(s); -- CS: log ?
 								
 								-- Loop in list of simple labels:
@@ -3024,7 +3023,7 @@ package body et_kicad is
 										
 										if not ls.processed then
 											--put(et_import.report_handle, "   probing "); write_coordinates_of_label( type_net_label(ls));  -- CS: log ?
-											if label_sits_on_segment (label => type_net_label(ls), segment => s) then
+											if label_sits_on_segment (label => type_net_label(ls), segment => segment) then
 
 												if log_level >= log_threshold then
 													write_label_properties (type_net_label (ls));
@@ -3032,18 +3031,17 @@ package body et_kicad is
 
 												-- The first matching label dictates the net name. 
 												-- If other labels with text differing from net name found, output warning.
-												if type_net_name.length (a.name) = 0 then -- If this is the first matching label
-													a.name := ls.text; -- assume the label text as net name.
-													a.scope := local; -- since this is a simple label, the scope of the strand is local
+												if type_net_name.length (anon_strand_a.name) = 0 then -- If this is the first matching label
+													anon_strand_a.name := ls.text; -- assume the label text as net name.
+													anon_strand_a.scope := local; -- since this is a simple label, the scope of the strand is local
 												else
 													-- If label text is different from previously assigned net name:
-													if not type_net_name."=" (a.name, ls.text) then 
+													if not type_net_name."=" (anon_strand_a.name, ls.text) then 
 														log_indentation_reset;
 														log (message_error 
-															 & "Net " & to_string(a.name) & " has contradicting label " 
+															 & "Net " & to_string (anon_strand_a.name) & " has contradicting label " 
 															 & "at " & to_string (ls.coordinates) & " !");
 														raise constraint_error;
-
 													end if;
 												end if;
 
@@ -3058,7 +3056,7 @@ package body et_kicad is
 												type_simple_labels.append (lls,ls);
 
 												-- Mark anonymous strand as processed.
-												a.processed := true;
+												anon_strand_a.processed := true;
 											end if;
 										end if;
 
@@ -3066,13 +3064,13 @@ package body et_kicad is
 									end loop;
 
 									-- Copy list of simple labels (lls) to current segment (s).
-									s.label_list_simple := lls;
+									segment.label_list_simple := lls;
 									
 									-- Update/replace segment in current anonymous strand.
 									type_anonymous_strand.replace_element (
-										container => a.segments, -- the list of segments of the current anonymous strand
+										container => anon_strand_a.segments, -- the list of segments of the current anonymous strand
 										position => segment_cursor,
-										new_item => s); -- the updated segment
+										new_item => segment); -- the updated segment
 									
 									-- Clean up: Purge temporarily list of simple labels for next spin.
 									type_simple_labels.clear (lls);
@@ -3081,7 +3079,7 @@ package body et_kicad is
 									type_anonymous_strands.replace_element (
 										container => anonymous_strands, -- the list of anonymous strands
 										position => strand_cursor,
-										new_item => a); -- the updated anonymous net
+										new_item => anon_strand_a); -- the updated anonymous net
 								end if;
 								
 								-- Loop in list of tag labels:
@@ -3097,7 +3095,7 @@ package body et_kicad is
 										lt := element (tag_label_cursor); -- get tag label
 										
 										if not lt.processed then								
-											if label_sits_on_segment (label => type_net_label (lt), segment => s) then
+											if label_sits_on_segment (label => type_net_label (lt), segment => segment) then
 
 -- 												put_line(et_import.report_handle," tag label: " & type_net_name.to_string(lt.text) & " position:" &
 -- 												type_grid'image(lt.coordinates.x) & "/" &
@@ -3116,20 +3114,20 @@ package body et_kicad is
 
 												-- Check if the label does not contradict with other labels of this strand.
 												-- Otherwise, set scope according to the label just found.
-												case a.scope is
+												case anon_strand_a.scope is
 													when unknown => -- find. no label found so far. set scope of strand
 														if lt.global then 
-															a.scope := global;
+															anon_strand_a.scope := global;
 														end if;
 														if lt.hierarchic then 
-															a.scope := hierarchic;
+															anon_strand_a.scope := hierarchic;
 														end if;
 
 													when local => -- strand has been marked as "local" already. no hierarchic or global label allowed !
 														if lt.global or lt.hierarchic then
 															log_indentation_reset;
 															log (message_error
-																& "local net " & to_string (a.name) 
+																& "local net " & to_string (anon_strand_a.name) 
 																	& " has a hierarchic or global label at " & to_string (lt.coordinates) & " !");
 															raise constraint_error;
 														end if;
@@ -3138,7 +3136,7 @@ package body et_kicad is
 														if lt.global then
 															log_indentation_reset;
 															log (message_error
-																& "hierarchic net " & to_string (a.name) 
+																& "hierarchic net " & to_string (anon_strand_a.name) 
 																& " has a global label at " & to_string (lt.coordinates) & " !");
 															raise constraint_error;
 														end if;
@@ -3147,7 +3145,7 @@ package body et_kicad is
 														if lt.hierarchic then
 															log_indentation_reset;
 															log (message_error
-																& "global net " & to_string (a.name) 
+																& "global net " & to_string (anon_strand_a.name) 
 																& " has a hierarchic label at " & to_string (lt.coordinates) & " !");
 															raise constraint_error;
 														end if;
@@ -3155,15 +3153,14 @@ package body et_kicad is
 
 												-- The first matching label dictates the net name and scope. 
 												-- If other labels with text differing from net name found, output warning.
-												if type_net_name.length (a.name) = 0 then -- If this is the first matching label
-													a.name := lt.text; -- assume the label text as net name.
-
+												if type_net_name.length (anon_strand_a.name) = 0 then -- If this is the first matching label
+													anon_strand_a.name := lt.text; -- assume the label text as net name.
 												else
 													-- If label text is different from previously assigned net name:
-													if to_string (a.name) /= to_string (lt.text) then 
+													if to_string (anon_strand_a.name) /= to_string (lt.text) then 
 														log_indentation_reset;
 														log (message_error 
-															 & "Net " & to_string(a.name) & " has contradicting label " 
+															 & "Net " & to_string (anon_strand_a.name) & " has contradicting label " 
 															 & "at " & to_string (lt.coordinates) & " !");
 														raise constraint_error;
 													end if;
@@ -3183,7 +3180,7 @@ package body et_kicad is
 												type_tag_labels.append (llt,lt);
 
 												-- Mark anonymous net as processed.												
-												a.processed := true;
+												anon_strand_a.processed := true;
 											end if;
 										end if;
 
@@ -3191,12 +3188,12 @@ package body et_kicad is
 									end loop;
 
 									-- Copy list of tag labels (llt) to current segment (s).
-									s.label_list_tag := llt;
+									segment.label_list_tag := llt;
 									-- Update/replace segment in current anonymous net.
 									type_anonymous_strand.replace_element(
-										container => a.segments, -- the list of segments of the current anonymous strand
+										container => anon_strand_a.segments, -- the list of segments of the current anonymous strand
 										position => segment_cursor,
-										new_item => s); -- the updated segment
+										new_item => segment); -- the updated segment
 
 									-- Clean up: Purge temporarily list of tag labels for next spin.
 									type_tag_labels.clear (llt);
@@ -3206,7 +3203,7 @@ package body et_kicad is
 										container => anonymous_strands, -- the list of anonymous strands
 										--index => positive(n), -- the anonymous net id
 										position => strand_cursor,
-										new_item => a); -- the updated anonymous net
+										new_item => anon_strand_a); -- the updated anonymous net
 								end if;
 
 								next (segment_cursor); -- advance segment cursor
@@ -3218,7 +3215,7 @@ package body et_kicad is
 
 					-- Sort anonymous strands (they do not have any labels).
 					-- Anonymous strands have no name -> "processed" flag is still cleared.
-					-- As placeholder for the name we use the notation "N$" where n is an index (derived from the element id in anonymous_strands)
+					-- As placeholder for the name we use the notation "N$n" where n is an index (derived from the element id in anonymous_strands)
 					-- Their scope is strictly "local".
 					-- We us an intermediate variable "strand" for transfer to the module netlist.
 					-- NOTE: Even if a strand has no name at this stage, it may receive a name after netlist generation.
@@ -3227,30 +3224,38 @@ package body et_kicad is
 
 					strand_cursor := anonymous_strands.first; -- reset strand cursor
 					while strand_cursor /= type_anonymous_strands.no_element loop
-						a := element (strand_cursor);  -- get anonymous strand
+						anon_strand_a := element (strand_cursor);  -- get anonymous strand
 
-						if not a.processed then
+						if not anon_strand_a.processed then
 
 							-- build temporarily net with a name like N$542
 							net_id := net_id + 1; -- increment net id. net_id applies for the whole design. see declarations of procedure import_design
 							net_name := type_net_name.to_bounded_string (
 								anonymous_net_name_prefix & trim (natural'image (net_id), left));
+
+							log (to_string (net_name), level => 2);
 							
 							strand.name := net_name;
-							
-							log (type_net_name.to_string (net_name), level => 1);
-							
 							strand.scope := local;
 
+							log_indentation_up;
+							log ("scope " & type_scope_of_net'image (strand.scope) & " with segments", level => 2);
+							
 							-- append segments to net
-							segment_cursor := a.segments.first; -- reset segment cursor to begin of segments of the current anonymous net
-							while segment_cursor /= type_anonymous_strand.no_element loop -- loop for each segment of anonymous strand "a"
-								s := element (segment_cursor); -- get segment
-								type_net_segments.append (container => strand.segments, new_item => s);
-								write_coordinates_of_segment (segment => s);
+							segment_cursor := anon_strand_a.segments.first; -- reset segment cursor to begin of segments of the current anonymous net
+							while segment_cursor /= type_anonymous_strand.no_element loop -- loop for each segment of anonymous strand anon_strand_a
+								segment := element (segment_cursor); -- get segment
+								type_net_segments.append (container => strand.segments, new_item => segment);
+								
+								if log_level >= 2 then
+									write_coordinates_of_segment (segment => segment);
+								end if;
+								
 								next (segment_cursor);
 							end loop;
 
+							log_indentation_down;
+							
                             -- assign coordinates
 							set_module (strand.coordinates, type_submodule_name.to_bounded_string (to_string (current_schematic)));
                             set_path (strand.coordinates, path_to_submodule);
@@ -3269,82 +3274,80 @@ package body et_kicad is
 					
 					log_indentation_down;
 					
-					-- Sort anonymous strands with label.
+					-- Sort strands with label. Those strands have the "processed" flag set.
 					-- NOTE: Even if a strand has a dedicated name in this stage, it may receive a name after netlist generation by force.
-					-- Power out ports may overwrite the strand name. As this would be a design error, the operator will 
+					-- Power-out ports may overwrite the strand name. As this would be a design error, the operator will 
 					-- be notified and warned about such violations on netlist generation.
 					log (text => "sorting named strands ...");
 					log_indentation_up;
 					
 					strand_cursor := anonymous_strands.first; -- reset strand cursor
 					while strand_cursor /= type_anonymous_strands.no_element loop
-						a := element (strand_cursor);  -- get anonymous strand
+						anon_strand_a := element (strand_cursor);  -- get a strand
 
-						if a.processed and not a.sorted then -- if it has not been sorted yet
+						if anon_strand_a.processed and not anon_strand_a.sorted then -- it must have a name AND it must not be sorted yet
 
-							log (to_string (a.name), level => 2);
+							log (to_string (anon_strand_a.name), level => 2);
 							
-							strand.name := a.name;
-							strand.scope := a.scope;
+							strand.name := anon_strand_a.name;
+							strand.scope := anon_strand_a.scope;
 
 							log_indentation_up;
 							log ("scope " & type_scope_of_net'image (strand.scope) & " with segments", level => 2);
 
 							-- append segments to strand
-							segment_cursor := a.segments.first; -- reset segment cursor to begin of segments of the current anonymous strand
+							segment_cursor := anon_strand_a.segments.first; -- reset segment cursor to begin of segments of the current anonymous strand
 							while segment_cursor /= type_anonymous_strand.no_element loop -- loop for each segment of anonymous_strand "a"
-								s := element (segment_cursor); -- get segment
-								type_net_segments.append (container => strand.segments, new_item => s);
+								segment := element (segment_cursor); -- get segment
+								type_net_segments.append (container => strand.segments, new_item => segment);
 								
 								if log_level >= 2 then
-									write_coordinates_of_segment (segment => s);
+									write_coordinates_of_segment (segment => segment);
 								end if;
 								
 								next (segment_cursor);
 							end loop;
 
-							-- Look for other anonymous strands with the same name (a.name). 
+							-- Look for other anonymous strands with the same name (anon_strand_a.name). 
 							-- Start searching from the position of strand_cursor on using strand_cursor_b.
 							-- If strand_cursor already points the last strand in anonymous_strands do nothing.
 							-- Mark anonymous strand as "sorted".
 							-- If last anonymous strand reached, do not look for other strands with same name.
-							--if n = type_anonymous_nets.length (anonymous_nets) then -- last net reached
-
-							if a = last_element (anonymous_strands) then
+							if anon_strand_a = last_element (anonymous_strands) then
 								null; -- strand_cursor already points the last strand in anonymous_strands --> do nothing
 							else -- search for strands with same name
 								strand_cursor_b := next (strand_cursor);
 								while strand_cursor_b /= type_anonymous_strands.no_element loop
 									
-									b := element (strand_cursor_b); -- get anonymous strand
+									anon_strand_b := element (strand_cursor_b); -- get anonymous strand
 
-									if b.processed then
+									if anon_strand_b.processed then
 
-										if type_net_name."=" (b.name, a.name) then
+										if type_net_name."=" (anon_strand_b.name, anon_strand_a.name) then
 
-											-- make sure scope of the anonymous strands are the same
-											if a.scope = b.scope then
+											-- make sure scope of the strands are equal
+											if anon_strand_a.scope /= anon_strand_b.scope then
 
 												-- append segments to net
-												segment_cursor := b.segments.first; -- reset segment cursor to begin of segments of the current anonymous net
-												while segment_cursor /= type_anonymous_strand.no_element loop -- loop for each segment of anonymous_net "b"
-													s := element (segment_cursor);
-													type_net_segments.append (container => strand.segments, new_item => s);
+-- 												segment_cursor := b.segments.first; -- reset segment cursor to begin of segments of the current anonymous net
+-- 												while segment_cursor /= type_anonymous_strand.no_element loop -- loop for each segment of anonymous_net "b"
+-- 													s := element (segment_cursor);
+-- 													type_net_segments.append (container => strand.segments, new_item => s);
+-- 
+-- 													if log_level >= 2 then
+-- 														write_coordinates_of_segment (segment => s);
+-- 													end if;
+-- 													
+-- 													next (segment_cursor);
+-- 												end loop;
+-- 
+-- 												-- mark anonymous strand as "sorted" so that the outer loop can skip it in further spins
+-- 												type_anonymous_strands.update_element (
+-- 													container => anonymous_strands, 
+-- 													position => strand_cursor_b,
+-- 													process => set_sorted'access);
 
-													if log_level >= 2 then
-														write_coordinates_of_segment (segment => s);
-													end if;
-													
-													next (segment_cursor);
-												end loop;
-
-												-- mark anonymous net as "sorted" so that the outer loop can skip it in further spins
-												type_anonymous_strands.update_element (
-													container => anonymous_strands, 
-													position => strand_cursor_b,
-													process => set_sorted'access);
-
-											else
+-- 											else
 												log_indentation_reset;
 												log (message_error & "contradicting scope of strands !"); -- CS: show strand name
 												raise constraint_error;
@@ -3419,7 +3422,6 @@ package body et_kicad is
 					-- We reason there are segments to be broken down. After smashing a segment, segment_count increases. If it
 					-- does not increase anymore, all segments are processed.
 					while segment_smashed loop
-					
 						
 						segment_cursor := wild_segments.first;
 						loop_s:
@@ -3439,7 +3441,9 @@ package body et_kicad is
 
 									--write_coordinates_of_segment (type_net_segment(segment));
 									--write_coordinates_of_junction (junction);
-									log (text => et_coordinates.to_string (junction.coordinates), level => 1);
+									log_indentation_up;
+									log (text => to_string (junction.coordinates), level => 2);
+									log_indentation_down;
 									-- NOTE: junctions sitting on a net crossing may appear twice here.
 
 									-- move start coord. of the current segment to the position of the junction
