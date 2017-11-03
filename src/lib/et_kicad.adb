@@ -4243,9 +4243,9 @@ package body et_kicad is
 										tmp_frame.size_y 		:= mil_to_distance (get_field_from_line(line,4)); 
 										
 										--tmp_frame.coordinates.path := path_to_submodule;
-										et_coordinates.set_path (tmp_frame.coordinates, path_to_submodule);
+										set_path (tmp_frame.coordinates, path_to_submodule);
 										--et_coordinates.set_module (tmp_frame.coordinates, et_coordinates.type_submodule_name.to_bounded_string (to_string (current_schematic)));
-										et_coordinates.set_module (tmp_frame.coordinates, to_submodule_name (current_schematic));
+										set_module (tmp_frame.coordinates, to_submodule_name (current_schematic));
 
 										-- CS: Other properties of the drawing frame like x/y coordinates, lists of lines and texts are 
 										-- kicad built-in things and remain unassigned here.
@@ -4263,8 +4263,8 @@ package body et_kicad is
 										--tmp_title_block.coordinates.path := path_to_submodule;
 										et_coordinates.set_path (tmp_title_block.coordinates, path_to_submodule);
 										
-										--tmp_title_block.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(current_schematic));
-										et_coordinates.set_module (tmp_title_block.coordinates, et_coordinates.type_submodule_name.to_bounded_string (to_string(current_schematic)));
+										-- set_module (tmp_title_block.coordinates, et_coordinates.type_submodule_name.to_bounded_string (to_string(current_schematic)));
+										set_module (tmp_title_block.coordinates, to_submodule_name (current_schematic));
 										tmp_title_block.texts := tmp_title_block_texts; -- assign collected texts list to temporarily title block
 										-- CS: x/y coordinates and list of lines are kicad built-in things and thus not available currently.
 
@@ -4388,16 +4388,12 @@ package body et_kicad is
 
 										-- read GUI submodule (sheet) position and size from a line like "S 4050 5750 1050 650"
 										if get_field_from_line(line,1) = schematic_keyword_sheet_pos_and_size then
-											--tmp_submodule_gui.coordinates.path := path_to_submodule;
-											et_coordinates.set_path (tmp_submodule_gui.coordinates, path_to_submodule);
-											--tmp_submodule_gui.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(current_schematic));
-											et_coordinates.set_module (tmp_submodule_gui.coordinates, et_coordinates.type_submodule_name.to_bounded_string (to_string (current_schematic)));
-											--tmp_submodule_gui.coordinates.sheet_number := sheet_number_current;
+											set_path (tmp_submodule_gui.coordinates, path_to_submodule);
+											--set_module (tmp_submodule_gui.coordinates, et_coordinates.type_submodule_name.to_bounded_string (to_string (current_schematic)));
+											set_module (tmp_submodule_gui.coordinates, to_submodule_name (current_schematic));
 											et_coordinates.set_sheet (tmp_submodule_gui.coordinates, sheet_number_current);
 											
-											--tmp_submodule_gui.coordinates.x := et_libraries.type_grid'value(get_field_from_line(line,2));
 											et_coordinates.set_x (tmp_submodule_gui.coordinates, et_coordinates.mil_to_distance (get_field_from_line (line,2)));
-											--tmp_submodule_gui.coordinates.y := et_libraries.type_grid'value(get_field_from_line(line,3));
 											et_coordinates.set_y (tmp_submodule_gui.coordinates, et_coordinates.mil_to_distance (get_field_from_line (line,3)));
 
 											tmp_submodule_gui.size_x := mil_to_distance (get_field_from_line(line,4));
@@ -4459,8 +4455,10 @@ package body et_kicad is
 										set_path (tmp_segment.coordinates_start, path_to_submodule);
 										
 										-- the name of the current submodule, which is in case of kicad the subordinated schematic file
-										set_module (tmp_segment.coordinates_start, type_submodule_name.to_bounded_string (to_string (current_schematic)));
-										set_module (tmp_segment.coordinates_end, type_submodule_name.to_bounded_string (to_string(current_schematic)));
+										--set_module (tmp_segment.coordinates_start, type_submodule_name.to_bounded_string (to_string (current_schematic)));
+										set_module (tmp_segment.coordinates_start, to_submodule_name (current_schematic));
+										--set_module (tmp_segment.coordinates_end, type_submodule_name.to_bounded_string (to_string(current_schematic)));
+										set_module (tmp_segment.coordinates_end, to_submodule_name (current_schematic));
 										
 										-- The sheet number. NOTE: Kicad V4 can handle only one sheet per submodule. The sheet numbering is consecutive and does
 										-- not care about the actual submodule names.
@@ -4498,7 +4496,8 @@ package body et_kicad is
 
 											-- build a temporarily junction
 											set_path (tmp_junction.coordinates, path_to_submodule);
-											set_module (tmp_junction.coordinates, type_submodule_name.to_bounded_string (to_string (current_schematic)));
+											--set_module (tmp_junction.coordinates, type_submodule_name.to_bounded_string (to_string (current_schematic)));
+											set_module (tmp_junction.coordinates, to_submodule_name (current_schematic));
 											set_sheet (tmp_junction.coordinates, sheet_number_current);
 											set_x (tmp_junction.coordinates, mil_to_distance (get_field_from_line (line,3)));
 											set_y (tmp_junction.coordinates, mil_to_distance (get_field_from_line (line,4)));
@@ -4520,7 +4519,8 @@ package body et_kicad is
 
 											-- Build a temporarily simple label from a line like "Text Label 5350 3050 0    60   ~ 0" :
 											set_path (tmp_simple_net_label.coordinates, path_to_submodule);
-											set_module (tmp_simple_net_label.coordinates, type_submodule_name.to_bounded_string (to_string (current_schematic)));
+											--set_module (tmp_simple_net_label.coordinates, type_submodule_name.to_bounded_string (to_string (current_schematic)));
+											set_module (tmp_simple_net_label.coordinates, to_submodule_name (current_schematic));
 											set_sheet (tmp_simple_net_label.coordinates, sheet_number_current);
 											set_x (tmp_simple_net_label.coordinates, mil_to_distance (get_field_from_line (line,3)));
 											set_y (tmp_simple_net_label.coordinates, mil_to_distance (get_field_from_line (line,4)));
@@ -4570,7 +4570,8 @@ package body et_kicad is
 											end if;
 
 											set_path (tmp_tag_net_label.coordinates, path_to_submodule);
-											set_module (tmp_tag_net_label.coordinates, type_submodule_name.to_bounded_string (to_string (current_schematic)));
+											--set_module (tmp_tag_net_label.coordinates, type_submodule_name.to_bounded_string (to_string (current_schematic)));
+											set_module (tmp_tag_net_label.coordinates, to_submodule_name (current_schematic));
 											set_sheet (tmp_tag_net_label.coordinates, sheet_number_current);
 											set_x (tmp_tag_net_label.coordinates, mil_to_distance (get_field_from_line (line,3)));
 											set_y (tmp_tag_net_label.coordinates, mil_to_distance (get_field_from_line (line,4)));
@@ -4606,7 +4607,8 @@ package body et_kicad is
 										
 												-- set coordinates
 												set_path (tmp_note.coordinates, path_to_submodule);
-												set_module (tmp_note.coordinates, type_submodule_name.to_bounded_string (to_string (current_schematic)));
+												--set_module (tmp_note.coordinates, type_submodule_name.to_bounded_string (to_string (current_schematic)));
+												set_module (tmp_note.coordinates, to_submodule_name (current_schematic));
 												set_sheet (tmp_note.coordinates, sheet_number_current);
 												set_x (tmp_note.coordinates, mil_to_distance (get_field_from_line (line,3)));
 												set_y (tmp_note.coordinates, mil_to_distance (get_field_from_line (line,4)));
@@ -4746,7 +4748,8 @@ package body et_kicad is
 												-- The unit coordinates is more than just x/y :
 												-- unit_scratch.coordinates.main_module := module.name;
 												set_path (tmp_component_position, path_to_submodule);
-												set_module (tmp_component_position, type_submodule_name.to_bounded_string (to_string (current_schematic)));
+												--set_module (tmp_component_position, type_submodule_name.to_bounded_string (to_string (current_schematic)));
+												set_module (tmp_component_position, to_submodule_name (current_schematic));
 												set_sheet (tmp_component_position, sheet_number_current);
 
 											-- Skip unit path entry in lines like "AR Path="/59EF082F" Ref="N23"  Part="1"

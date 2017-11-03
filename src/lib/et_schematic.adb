@@ -1211,14 +1211,23 @@ package body et_schematic is
 			procedure set_scope_and_add_strand (
 				net_name : in type_net_name.bounded_string;
 				net		 : in out type_net) is
+
+-- 				strand : type_strand;
 			begin
 				if net_created then
 					log ("net " & to_string (element (named_strand).name), level => 1);
 					net.scope := element (named_strand).scope; -- set scope of net
 				else
 					if net.scope /= element (named_strand).scope then
-						log (message_error & "scope of net " & to_string (element (named_strand).name
-							& " in " & to_string (position => element (named_strand).coordinates, full => true)));
+						log (message_error 
+							& "scope of net " & to_string (element (named_strand).name)
+							& " at " & to_string (position => element (named_strand).coordinates, scope => et_coordinates.module)
+							& " invalid ! Should be " & type_scope_of_net'image (net.scope) & " !"
+							-- CS: show the strand it is conflicting with
+							--& " conflicts with scope of net "
+							--& " at " & to_string (position => (last_element (net.strands)).coordinates, scope => et_coordinates.module)
+							);
+						--strand := last_element (net.strands);
 						raise constraint_error;
 					end if;
 				end if;

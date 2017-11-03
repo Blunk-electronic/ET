@@ -165,19 +165,32 @@ package et_coordinates is
 
 	zero_position : constant type_coordinates;
 	
-	--	coordinates_preamble : constant string (1..21) := "position "
-	coordinates_preamble : constant string (1..17) := "pos. "
-	--coordinates_preamble : constant string (1..12) := "" 
+	coordinates_preamble_sheet : constant string (1..17) := "pos. "
 		& "(sheet"
 		& axis_separator
 		& "x"
 		& axis_separator
 		& "y) ";
+
+	coordinates_preamble_module : constant string (1..24) := "pos. "
+		& "(module"
+		& axis_separator
+		& "sheet"
+		& axis_separator
+		& "x"
+		& axis_separator
+		& "y) ";
+	
+	type type_scope is (
+		sheet, 	-- coordinates sheet related
+		module); -- coordinates with the module in scope
+		-- CS: rig ? -- with the whole rig is scope
 	
 	function to_string (
-	-- Returns the given position as string.
+	-- Returns the given position as string. Scope specifies how much position is to
+	-- be displayed. See type_scope comments.
 		position	: in type_coordinates;
-		full		: in boolean := false) -- when true, returns path and module name additionally
+		scope		: in type_scope := sheet)
 		return string;
 
 	function path   (position : in type_coordinates) return type_path_to_submodule.list;

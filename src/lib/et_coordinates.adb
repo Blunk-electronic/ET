@@ -337,7 +337,7 @@ package body et_coordinates is
 		result : unbounded_string;
 	begin
 		while submodule /= type_path_to_submodule.no_element loop
-			result := result & '.' & to_unbounded_string (to_string (element (submodule)));
+			result := result & to_unbounded_string (to_string (element (submodule))) & '.';
 			next (submodule);
 		end loop;
 		
@@ -359,33 +359,34 @@ package body et_coordinates is
 
 	
 	function to_string (
-	-- Returns the given position as string.
+	-- Returns the given position as string. Scope specifies how much position is to
+	-- be displayed. See specification of type_scope.
 		position	: in type_coordinates;
-		full		: in boolean := false) -- when true, returns path and module name additionally
+		scope		: in type_scope := sheet)
 		return string is
 
 		use et_string_processing;
 	begin
-		if full then
-			return "module "
-				& to_string (position.path) & latin_1.space
-				& to_string (position.module) & latin_1.space
-				& trim (positive'image (position.sheet_number),left) 
-				& latin_1.space & axis_separator & latin_1.space
-				--& to_string ( type_2d_point (position));
-				& to_string (distance_x (position))
-				& latin_1.space & axis_separator & latin_1.space
-				& to_string (distance_y (position));
+		case scope is
+			when module =>
+				return coordinates_preamble_module
+					& to_string (position.path)
+					& to_string (position.module)
+					& latin_1.space & axis_separator & latin_1.space
+					& trim (positive'image (position.sheet_number),left) 
+					& latin_1.space & axis_separator & latin_1.space
+					& to_string (distance_x (position))
+					& latin_1.space & axis_separator & latin_1.space
+					& to_string (distance_y (position));
 
-		else
-			return coordinates_preamble
-				& trim (positive'image (position.sheet_number),left) 
-				& latin_1.space & axis_separator & latin_1.space
-				--& to_string ( type_2d_point (position));
-				& to_string (distance_x (position))
-				& latin_1.space & axis_separator & latin_1.space
-				& to_string (distance_y (position));
-		end if;
+			when sheet =>
+				return coordinates_preamble_sheet
+					& trim (positive'image (position.sheet_number),left) 
+					& latin_1.space & axis_separator & latin_1.space
+					& to_string (distance_x (position))
+					& latin_1.space & axis_separator & latin_1.space
+					& to_string (distance_y (position));
+		end case;
 		-- CS: output in both mil and mm
 		
 		-- CS: exception handler
