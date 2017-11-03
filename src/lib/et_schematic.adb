@@ -111,6 +111,17 @@ package body et_schematic is
 		type_path_to_submodule.delete_last (path_to_submodule);
 	end delete_last_module_name_from_path;
 
+	function to_submodule_name (file_name : in type_schematic_file_name.bounded_string)
+		return et_coordinates.type_submodule_name.bounded_string is
+	-- Retruns the base name of the given schematic file name as submodule name.
+		use ada.directories;
+	begin
+		-- CS: test if given submodule has an extension. if not return
+		-- submodule as it is.
+		--return to_bounded_string (base_name (et_coordinates.to_string (submodule)));
+		return type_submodule_name.to_bounded_string (base_name (to_string (file_name)));
+	end to_submodule_name;
+	
 	function to_string (net_name : in type_net_name.bounded_string) return string is
 	-- Returns the given net name as string.
 	begin

@@ -3260,7 +3260,8 @@ package body et_kicad is
 							log_indentation_down;
 							
                             -- assign coordinates
-							set_module (strand.coordinates, type_submodule_name.to_bounded_string (to_string (current_schematic)));
+							--set_module (strand.coordinates, type_submodule_name.to_bounded_string (to_string (current_schematic)));
+							set_module (strand.coordinates, to_submodule_name (current_schematic));
 							set_path (strand.coordinates, path_to_submodule);
 							set_sheet (strand.coordinates, sheet_number_current);
                             -- CS: x,y coordinates should be the lowest available on the sheet.
@@ -3365,7 +3366,8 @@ package body et_kicad is
 							log_indentation_down;
 
                             -- assign coordinates
-							set_module (strand.coordinates, type_submodule_name.to_bounded_string (to_string (current_schematic)));
+-- 							set_module (strand.coordinates, type_submodule_name.to_bounded_string (to_string (current_schematic)));
+							set_module (strand.coordinates, to_submodule_name (current_schematic));
                             set_path (strand.coordinates, path_to_submodule);
 							set_sheet (strand.coordinates, sheet_number_current);
 							-- CS: x,y coordinates should be the lowest available on the sheet.
@@ -4115,7 +4117,7 @@ package body et_kicad is
 			log_indentation_reset;
 			log_indentation_up;
 			
-			if exists(to_string(current_schematic)) then
+			if exists (to_string (current_schematic)) then
 				log (text => "reading schematic file " & to_string (current_schematic) & " ...",
 					 console => true);
 
@@ -4123,7 +4125,7 @@ package body et_kicad is
 				log_indentation_up;
 				write_path_to_submodule;
 				
-				open (file => schematic_handle, mode => in_file, name => to_string(current_schematic));
+				open (file => schematic_handle, mode => in_file, name => to_string (current_schematic));
 				set_input (schematic_handle);
 				while not end_of_file loop
 
@@ -4242,8 +4244,8 @@ package body et_kicad is
 										
 										--tmp_frame.coordinates.path := path_to_submodule;
 										et_coordinates.set_path (tmp_frame.coordinates, path_to_submodule);
-										--tmp_frame.coordinates.module_name := type_submodule_name.to_bounded_string( to_string(current_schematic));
-										et_coordinates.set_module (tmp_frame.coordinates, et_coordinates.type_submodule_name.to_bounded_string( to_string (current_schematic)));
+										--et_coordinates.set_module (tmp_frame.coordinates, et_coordinates.type_submodule_name.to_bounded_string (to_string (current_schematic)));
+										et_coordinates.set_module (tmp_frame.coordinates, to_submodule_name (current_schematic));
 
 										-- CS: Other properties of the drawing frame like x/y coordinates, lists of lines and texts are 
 										-- kicad built-in things and remain unassigned here.

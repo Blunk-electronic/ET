@@ -126,8 +126,10 @@ package et_schematic is
 	-- Here we remove the last submodule name form the path_to_submodule.
 	procedure delete_last_module_name_from_path;
 
-
-
+	function to_submodule_name (file_name : in type_schematic_file_name.bounded_string)
+		return et_coordinates.type_submodule_name.bounded_string;
+	-- Returns the base name of the given schematic file name as submodule name.
+	
 	-- CS: negative schematic coordinates should be forbidden	
 -- 	type type_coordinates is new et_coordinates.type_2d_point with private;	
 -- 	type type_coordinates is new et_libraries.type_coordinates with record
