@@ -138,14 +138,14 @@ package body et_schematic is
 		
 		case label.label_appearance is
 			when simple =>
-				log (text => "simple label " & to_string (label.text) & " at " & to_string (label.coordinates));
+				log (text => "simple label " & to_string (label.text) & " at " & to_string (position => label.coordinates));
 				
 			when tag =>
 				if label.hierarchic then
-					log (text => "hierarchic label " & to_string (label.text) & " at " & to_string (label.coordinates));
+					log (text => "hierarchic label " & to_string (label.text) & " at " & to_string (position => label.coordinates));
 				end if;
 				if label.global then
-					log (text => "global label " & to_string (label.text) & " at " & to_string (label.coordinates));
+					log (text => "global label " & to_string (label.text) & " at " & to_string (position => label.coordinates));
 				end if;
 					-- CS: directon, global, hierarchic, style, ...
 		end case;
@@ -177,7 +177,7 @@ package body et_schematic is
 		log_indentation_up;
 		log ("net junction");
 		log_indentation_up;
-		log (to_string (junction.coordinates), log_threshold);
+		log (to_string (position => junction.coordinates), log_threshold);
 		log_indentation_down;
 		log_indentation_down;		
 	end write_junction_properties;
@@ -205,7 +205,7 @@ package body et_schematic is
 		if log_level >= log_threshold + 1 then
 			
 			-- position
-			log (to_string (note.coordinates));
+			log (to_string (position => note.coordinates));
 			
 			-- size
 			log ("size" & et_libraries.type_text_size'image (note.size));
@@ -440,7 +440,7 @@ package body et_schematic is
 			& string (type_units.element (unit).timestamp));
 
 		-- position
-		log (to_string (type_units.element (unit).position));
+		log (to_string (position => type_units.element (unit).position));
 
 		-- orientation or angle
 		log (to_string (type_units.element (unit).orientation));
@@ -526,9 +526,9 @@ package body et_schematic is
 		log_indentation_up;
 		
 		log ("start "
-			& to_string (segment.coordinates_start)
+			& to_string (position => segment.coordinates_start)
 			& " end " 
-			& to_string (segment.coordinates_end),
+			& to_string (position => segment.coordinates_end),
 			level => log_threshold
 			);
 		
@@ -539,9 +539,9 @@ package body et_schematic is
 	-- Returns the start and end coordinates of the given net segment.
 	begin
 		return ("start "
-			& to_string (segment.coordinates_start)
+			& to_string (position => segment.coordinates_start)
 			& " end " 
-			& to_string (segment.coordinates_end));
+			& to_string (position => segment.coordinates_end));
 	end to_string;
 
 	function to_string (scope : in type_scope_of_net) return string is
@@ -1099,12 +1099,12 @@ package body et_schematic is
 		begin
 			log_indentation_up;
 			while label_simple /= type_simple_labels.no_element loop
-				log ("simple label " & to_string (element (label_simple).coordinates));
+				log ("simple label " & to_string (position => element (label_simple).coordinates));
 				next (label_simple);
 			end loop;
 
 			while label_tag /= type_tag_labels.no_element loop
-				log ("tag label " & to_string (element (label_tag).coordinates));
+				log ("tag label " & to_string (position => element (label_tag).coordinates));
 				next (label_tag);
 			end loop;
 
@@ -1188,7 +1188,68 @@ package body et_schematic is
 
 		named_strand : type_strands_named.cursor;
 
--- 		strand : type_strand_named;
+		procedure add_net (
+			mod_name : in type_submodule_name.bounded_string;
+			module   : in out type_module) is
+
+			use et_schematic.type_nets;
+			
+			net_created : boolean;
+			net_cursor : type_nets.cursor;
+
+			procedure set_scope_and_add_strand (
+				net_name : in type_net_name.bounded_string;
+				net		 : in out type_net) is
+			begin
+				if net_created then
+					log ("net " & to_string (element (named_strand).name), level => 1);
+					net.scope := element (named_strand).scope; -- set scope of net
+				else
+					if net.scope /= element (named_strand).scope then
+						log (message_error & "scope of net " & to_string (element (named_strand).name
+							& " in " & to_string (position => element (named_strand).coordinates, full => true)));
+						raise constraint_error;
+					end if;
+				end if;
+				
+				net.strands.append (
+					new_item => type_strand (element (named_strand))); -- copy strand to net
+			end set_scope_and_add_strand;
+
+-- 			procedure check_scope_and_add_strand (
+-- 				net_name : in type_net_name.bounded_string;
+-- 				net		 : in out type_net) is
+-- 			begin
+-- 				if net.scope /= element (named_strand).scope then
+-- 					null; -- error
+-- 				else
+-- 					net.strands.append (
+-- 						new_item => type_strand (element (named_strand))); -- copy strand to net
+-- 				end if;
+-- 			end check_scope_and_add_strand;
+
+			
+		begin -- add_net
+
+			-- create net
+			module.nets.insert (
+				key 		=> element (named_strand).name,
+				position	=> net_cursor,
+				inserted	=> net_created);
+
+			-- if net not already created, set scope and add the strand indicated by cursor name_strand
+-- 			if inserted then
+			module.nets.update_element (
+				position => net_cursor,
+				process => set_scope_and_add_strand'access);
+-- 			else -- if net already created
+-- 				module.nets.update_element (
+-- 					position => net_cursor,
+-- 					process => check_scope_and_add_strand'access);
+-- 			end if;
+			
+		end add_net;
+		
 	begin
 		log ("building nets ...");
 		first_module;
@@ -1201,9 +1262,12 @@ package body et_schematic is
 			named_strand := first_strand;
 			log_indentation_up;
 			while named_strand /= type_strands_named.no_element loop
-				log ("strand " & to_string (element (named_strand).name));
+				log ("strand " & to_string (element (named_strand).name), level => 2);
 
 				-- append net to module.nets
+				rig.update_element (
+					position => module_cursor,
+					process => add_net'access);
 				
 				next (named_strand);
 			end loop;

@@ -291,7 +291,7 @@ package body et_netlist is
 					log_indentation_up;
 					log (to_string (last_element (ports).direction), level => 2);
 					-- CS: other port properties
-					log (to_string (last_element (ports).coordinates), level => 2);
+					log (to_string (position => last_element (ports).coordinates), level => 2);
 					log_indentation_down;
 				end add;
 				
@@ -372,7 +372,7 @@ package body et_netlist is
 					log ("unit " & to_string (unit_name_lib));
 					unit_position := position_of_unit (name => unit_name_lib, units => units_sch); -- pos. in schematic
 					log_indentation_up;
-					log (to_string (unit_position));
+					log (to_string (position => unit_position));
 
 					-- Get the ports of the current unit. Start with the first port of the unit.
 					-- The unit_position plus the relative port position (in library) yields the absolute
@@ -930,7 +930,8 @@ package body et_netlist is
 							-- CS: skip already processed ports to improve performance
 							
 							log_indentation_up;
-							log ("probing port " & et_coordinates.to_string (element (port_cursor).coordinates), level => 3);
+							log ("probing port " 
+								 & et_coordinates.to_string (position => element (port_cursor).coordinates), level => 3);
 
 							-- test if port sits on segment
 							if port_sits_on_segment (element (port_cursor), segment) then
@@ -939,7 +940,7 @@ package body et_netlist is
 									& " port " 
 									& et_libraries.to_string (element (port_cursor).port)
 									& " "
-									& et_coordinates.to_string (element (port_cursor).coordinates), level => 2);
+									& et_coordinates.to_string (position => element (port_cursor).coordinates), level => 2);
 								
 								log_indentation_down;
 

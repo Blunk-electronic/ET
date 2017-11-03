@@ -36,6 +36,7 @@ with ada.characters.handling;	use ada.characters.handling;
 
 with ada.strings;				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
+with ada.strings.unbounded;
 
 with ada.numerics.generic_elementary_functions;
 with et_string_processing;
@@ -327,6 +328,22 @@ package body et_coordinates is
 		return type_submodule_name.to_string (submodule);
 	end to_string;
 
+	function to_string (path : in type_path_to_submodule.list) return string is
+	-- Returns the given path as string.
+		use type_path_to_submodule;
+		use ada.strings.unbounded;
+	
+		submodule : type_path_to_submodule.cursor := path.first;
+		result : unbounded_string;
+	begin
+		while submodule /= type_path_to_submodule.no_element loop
+			result := result & '.' & to_unbounded_string (to_string (element (submodule)));
+			next (submodule);
+		end loop;
+		
+		return to_string (result);
+	end to_string;
+	
 	function to_coordinates (point : in type_2d_point'class)
 	-- Converts a type_2d_point to type_coordinates.
 		return type_coordinates is
@@ -341,19 +358,34 @@ package body et_coordinates is
 	end to_coordinates;
 
 	
-	function to_string (position : in type_coordinates) return string is
+	function to_string (
 	-- Returns the given position as string.
+		position	: in type_coordinates;
+		full		: in boolean := false) -- when true, returns path and module name additionally
+		return string is
+
 		use et_string_processing;
 	begin
+		if full then
+			return "module "
+				& to_string (position.path) & latin_1.space
+				& to_string (position.module) & latin_1.space
+				& trim (positive'image (position.sheet_number),left) 
+				& latin_1.space & axis_separator & latin_1.space
+				--& to_string ( type_2d_point (position));
+				& to_string (distance_x (position))
+				& latin_1.space & axis_separator & latin_1.space
+				& to_string (distance_y (position));
 
-		return coordinates_preamble
-			& trim (positive'image (position.sheet_number),left) 
-			& latin_1.space & axis_separator & latin_1.space
-			--& to_string ( type_2d_point (position));
-			& to_string (distance_x (position))
-			& latin_1.space & axis_separator & latin_1.space
-			& to_string (distance_y (position));
-
+		else
+			return coordinates_preamble
+				& trim (positive'image (position.sheet_number),left) 
+				& latin_1.space & axis_separator & latin_1.space
+				--& to_string ( type_2d_point (position));
+				& to_string (distance_x (position))
+				& latin_1.space & axis_separator & latin_1.space
+				& to_string (distance_y (position));
+		end if;
 		-- CS: output in both mil and mm
 		
 		-- CS: exception handler

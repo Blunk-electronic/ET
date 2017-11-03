@@ -400,9 +400,8 @@ package et_schematic is
 		coordinates : et_coordinates.type_coordinates;
 	end record;
 
-	-- base type strands are collected in a vector:
-	package type_strands is new vectors (
-		index_type => count_type,
+	-- base type strands are collected in a simple list:
+	package type_strands is new doubly_linked_lists (
 		element_type => type_strand);
 	
 	-- As long as strands are independed of each other they must 
@@ -427,7 +426,7 @@ package et_schematic is
 	-- This is a net:
 	type type_net is record
 		scope 		: type_scope_of_net := type_scope_of_net'first; -- example "local"
-		strands		: type_strands.vector;
+		strands		: type_strands.list;
 	end record;
 
 	-- Nets are collected in a map:

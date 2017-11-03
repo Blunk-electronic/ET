@@ -2472,7 +2472,7 @@ package body et_kicad is
 					text => message_error 
 						& "component " & to_string (tmp_component_reference) 
 						& latin_1.space
-						& to_string (tmp_component_position)
+						& to_string (position => tmp_component_position)
 						& latin_1.lf
 						& "text field '" & et_libraries.to_string (m) & "' missing !",
 					console => true);
@@ -2643,7 +2643,7 @@ package body et_kicad is
 					log_indentation_reset;
 					log (
 						text => message_error & "invalid field in component " & et_schematic.to_string (tmp_component_reference)
-							& " at " & to_string (tmp_component_position),
+							& " at " & to_string (position => tmp_component_position),
 						console => true);
 					-- CS: evaluate prog position and provided more detailled output
 					raise constraint_error;
@@ -3040,7 +3040,7 @@ package body et_kicad is
 														log_indentation_reset;
 														log (message_error 
 															 & "Net " & to_string (anon_strand_a.name) & " has contradicting label " 
-															 & "at " & to_string (ls.coordinates) & " !");
+															 & "at " & to_string (position => ls.coordinates) & " !");
 														raise constraint_error;
 													end if;
 												end if;
@@ -3128,7 +3128,8 @@ package body et_kicad is
 															log_indentation_reset;
 															log (message_error
 																& "local net " & to_string (anon_strand_a.name) 
-																	& " has a hierarchic or global label at " & to_string (lt.coordinates) & " !");
+																& " has a hierarchic or global label at " 
+																& to_string (position => lt.coordinates) & " !");
 															raise constraint_error;
 														end if;
 														
@@ -3137,7 +3138,8 @@ package body et_kicad is
 															log_indentation_reset;
 															log (message_error
 																& "hierarchic net " & to_string (anon_strand_a.name) 
-																& " has a global label at " & to_string (lt.coordinates) & " !");
+																& " has a global label at " 
+																& to_string (position => lt.coordinates) & " !");
 															raise constraint_error;
 														end if;
 
@@ -3146,7 +3148,8 @@ package body et_kicad is
 															log_indentation_reset;
 															log (message_error
 																& "global net " & to_string (anon_strand_a.name) 
-																& " has a hierarchic label at " & to_string (lt.coordinates) & " !");
+																& " has a hierarchic label at " 
+																& to_string (position => lt.coordinates) & " !");
 															raise constraint_error;
 														end if;
 												end case;
@@ -3161,7 +3164,7 @@ package body et_kicad is
 														log_indentation_reset;
 														log (message_error 
 															 & "Net " & to_string (anon_strand_a.name) & " has contradicting label " 
-															 & "at " & to_string (lt.coordinates) & " !");
+															 & "at " & to_string (position => lt.coordinates) & " !");
 														raise constraint_error;
 													end if;
 
@@ -3258,10 +3261,10 @@ package body et_kicad is
 							
                             -- assign coordinates
 							set_module (strand.coordinates, type_submodule_name.to_bounded_string (to_string (current_schematic)));
-                            set_path (strand.coordinates, path_to_submodule);
-                            -- CS: x,y coordinates should be the lowest available on the first sheet.
-                            -- CS: do not assign sheet and x/y at all ?
-                            -- net.coordinates.sheet := sheet_number_current;
+							set_path (strand.coordinates, path_to_submodule);
+							set_sheet (strand.coordinates, sheet_number_current);
+                            -- CS: x,y coordinates should be the lowest available on the sheet.
+                            -- CS: do not assign x/y at all ?
                             
 							-- insert strand in module, then purge strand.segments for next spin
 							add_strand (strand);
@@ -3364,9 +3367,9 @@ package body et_kicad is
                             -- assign coordinates
 							set_module (strand.coordinates, type_submodule_name.to_bounded_string (to_string (current_schematic)));
                             set_path (strand.coordinates, path_to_submodule);
-                            -- CS: x,y coordinates should be the lowest available on the first sheet.
-                            -- CS: do not assign sheet and x/y at all ?
-                            -- net.coordinates.sheet := sheet_number_current;
+							set_sheet (strand.coordinates, sheet_number_current);
+							-- CS: x,y coordinates should be the lowest available on the sheet.
+                            -- CS: do not assign x/y at all ?
                             
 							-- insert strand in module, then purge strand.segments for next spin
 							add_strand (strand);
@@ -3442,7 +3445,7 @@ package body et_kicad is
 									--write_coordinates_of_segment (type_net_segment(segment));
 									--write_coordinates_of_junction (junction);
 									log_indentation_up;
-									log (text => to_string (junction.coordinates), level => 2);
+									log (text => to_string (position => junction.coordinates), level => 2);
 									log_indentation_down;
 									-- NOTE: junctions sitting on a net crossing may appear twice here.
 
@@ -3838,7 +3841,7 @@ package body et_kicad is
 						log_indentation_reset;
 						log (
 							text => message_error & "component " & et_schematic.to_string (tmp_component_reference)
-								& " " & et_coordinates.to_string (tmp_component_position),
+								& " " & et_coordinates.to_string (position => tmp_component_position),
 							console => true);
 						raise constraint_error;
 				

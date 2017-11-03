@@ -154,6 +154,9 @@ package et_coordinates is
     package type_path_to_submodule is new doubly_linked_lists (
         element_type => type_submodule_name.bounded_string);
 
+	function to_string (path : in type_path_to_submodule.list) return string;
+	-- Returns the given path as string.
+	
 	type type_coordinates is new type_2d_point with private;
 
 	function to_coordinates (point : in type_2d_point'class)
@@ -171,8 +174,11 @@ package et_coordinates is
 		& axis_separator
 		& "y) ";
 	
-	function to_string (position : in type_coordinates) return string;
+	function to_string (
 	-- Returns the given position as string.
+		position	: in type_coordinates;
+		full		: in boolean := false) -- when true, returns path and module name additionally
+		return string;
 
 	function path   (position : in type_coordinates) return type_path_to_submodule.list;
 	function module (position : in type_coordinates) return type_submodule_name.bounded_string;
