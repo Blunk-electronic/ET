@@ -164,6 +164,11 @@ package et_coordinates is
 		return type_coordinates;
 
 	zero_position : constant type_coordinates;
+
+	coordinates_preamble_xy : constant string (1..11) := "pos. "
+		& "(x"
+		& axis_separator
+		& "y) ";
 	
 	coordinates_preamble_sheet : constant string (1..17) := "pos. "
 		& "(sheet"
@@ -182,6 +187,7 @@ package et_coordinates is
 		& "y) ";
 	
 	type type_scope is (
+		xy, -- only x an y pos.
 		sheet, 	-- coordinates sheet related
 		module); -- coordinates with the module in scope
 		-- CS: rig ? -- with the whole rig is scope

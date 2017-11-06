@@ -2717,14 +2717,18 @@ package body et_kicad is
 					-- log ("segment" & positive'image(id) & ":");
 					-- log ("  segment" & positive'image(id) & ":");
 					
-					type_wild_segments.update_element(
-							container => wild_segments,
-							position => segment_cursor,
-							process => set_picked'access);
+					type_wild_segments.update_element (
+						container => wild_segments,
+						position => segment_cursor,
+						process => set_picked'access);
 
-					write_coordinates_of_segment (segment => 
-						type_net_segment (type_wild_segments.element (segment_cursor)));
+-- 					write_coordinates_of_segment (segment => 
+-- 						type_net_segment (type_wild_segments.element (segment_cursor)));
 					
+					log (to_string (
+							segment => type_net_segment (type_wild_segments.element (segment_cursor)),
+							scope => xy));
+
 					scratch := type_net_segment (type_wild_segments.element (segment_cursor));
 					type_anonymous_strand.append (anonymous_strand.segments, scratch);
 				end if;
@@ -3026,7 +3030,10 @@ package body et_kicad is
 											if label_sits_on_segment (label => type_net_label(ls), segment => segment) then
 
 												if log_level >= log_threshold then
-													write_label_properties (type_net_label (ls));
+													--write_label_properties (type_net_label (ls));
+													log_indentation_up;
+													log ("label at " & to_string (label => type_net_label (ls), scope => xy));
+													log_indentation_down;
 												end if;
 
 												-- The first matching label dictates the net name. 
@@ -3102,7 +3109,10 @@ package body et_kicad is
 -- 												trim(type_grid'image(lt.coordinates.y),left));
 
 												if log_level >= log_threshold then
-													write_label_properties (type_net_label (lt));
+													--write_label_properties (type_net_label (lt));
+													log_indentation_up;
+													log ("label at " & to_string (label => type_net_label (lt), scope => xy));
+													log_indentation_down;
 												end if;
 
 -- 												write_message(
@@ -3251,7 +3261,8 @@ package body et_kicad is
 								type_net_segments.append (container => strand.segments, new_item => segment);
 								
 								if log_level >= 2 then
-									write_coordinates_of_segment (segment => segment);
+									--write_coordinates_of_segment (segment => segment);
+									log (to_string (segment => segment, scope => xy));
 								end if;
 								
 								next (segment_cursor);
@@ -3307,7 +3318,8 @@ package body et_kicad is
 								type_net_segments.append (container => strand.segments, new_item => segment);
 								
 								if log_level >= 2 then
-									write_coordinates_of_segment (segment => segment);
+									--write_coordinates_of_segment (segment => segment);
+									log (to_string (segment => segment, scope => xy));
 								end if;
 								
 								next (segment_cursor);
@@ -3448,9 +3460,11 @@ package body et_kicad is
 
 									--write_coordinates_of_segment (type_net_segment(segment));
 									--write_coordinates_of_junction (junction);
-									log_indentation_up;
-									log (text => to_string (position => junction.coordinates), level => 2);
-									log_indentation_down;
+									if log_level >= 2 then
+										log_indentation_up;
+										log (to_string (position => junction.coordinates, scope => xy));
+										log_indentation_down;
+									end if;
 									-- NOTE: junctions sitting on a net crossing may appear twice here.
 
 									-- move start coord. of the current segment to the position of the junction
@@ -3569,6 +3583,7 @@ package body et_kicad is
 						    -- We initiate a new strand and start looking for a matching segment on the end_point:
 							--put_line(et_import.report_handle," anonymous net" & positive'image(seg) & ":"); 
 							log ("assembling strand with segments", level => 1);
+							log_indentation_up;
 
 							-- The first segment is to be added to the anonymous strand.
 							add_segment_to_anonymous_strand (segment_cursor_b); 
@@ -3652,6 +3667,8 @@ package body et_kicad is
 										side := end_point;
 								end case;
 							end loop;
+
+							log_indentation_down;
 						end if;
 
 						-- advance primary segment cursor
@@ -4444,9 +4461,9 @@ package body et_kicad is
 											if get_field_from_line(line,2) = schematic_keyword_wire then
 												if get_field_from_line(line,3) = schematic_keyword_line then
 													net_segment_entered := true; -- CS: assumption: segment coordinates follow in next line
-													log_indentation_up;
-													log (text => "net segment", level => 1);
-													log_indentation_down;
+-- 													log_indentation_up;
+-- 													log (text => "net segment", level => 1);
+-- 													log_indentation_down;
 												end if;
 											end if;
 										end if;
@@ -4480,7 +4497,8 @@ package body et_kicad is
 											-- The net segments are to be collected in a wild list of segments for later sorting.
 											if log_level >= 1 then
 												log_indentation_up;
-												write_coordinates_of_segment (tmp_segment);
+												--write_coordinates_of_segment (tmp_segment);
+												log ("net segment " & to_string (segment => tmp_segment, scope => xy));
 												log_indentation_down;
 											end if;
 											
@@ -4505,7 +4523,12 @@ package body et_kicad is
 											set_y (tmp_junction.coordinates, mil_to_distance (get_field_from_line (line,4)));
 
 											-- for the log
-											write_junction_properties (tmp_junction);
+											--write_junction_properties (tmp_junction);
+											if log_level >= 1 then
+												log_indentation_up;
+												log ("junction at " & to_string (junction => tmp_junction, scope => xy));
+												log_indentation_down;
+											end if;
 
 											type_junctions.append (tmp_junctions, tmp_junction);
 										end if;
@@ -4545,8 +4568,13 @@ package body et_kicad is
 										tmp_simple_net_label.text := type_net_name.to_bounded_string(get_field_from_line(line,1));
 
 										-- for the log
-										write_label_properties (type_net_label (tmp_simple_net_label));
-
+										--write_label_properties (type_net_label (tmp_simple_net_label));
+										if log_level >= 1 then
+											log_indentation_up;
+											log ("simple label at " & to_string (label => type_net_label (tmp_simple_net_label), scope => xy));
+											log_indentation_down;
+										end if;
+										
 										-- The simple labels are to be collected in a wild list of simple labels.
 										type_simple_labels.append (tmp_wild_simple_labels,tmp_simple_net_label);
 									end if;
@@ -4595,7 +4623,12 @@ package body et_kicad is
 										tmp_tag_net_label.text := type_net_name.to_bounded_string(get_field_from_line(line,1));
 
 										-- for the log
-										write_label_properties (type_net_label (tmp_tag_net_label));
+-- 										write_label_properties (type_net_label (tmp_tag_net_label));
+										if log_level >= 1 then
+											log_indentation_up;
+											log ("tag label at " & to_string (label => type_net_label (tmp_tag_net_label), scope => xy));
+											log_indentation_down;
+										end if;
 										
 										-- The tag labels are to be collected in a wild list of tag labels for later sorting.
 										type_tag_labels.append (tmp_wild_tag_lables,tmp_tag_net_label);

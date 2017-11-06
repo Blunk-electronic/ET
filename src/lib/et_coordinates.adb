@@ -386,6 +386,13 @@ package body et_coordinates is
 					& to_string (distance_x (position))
 					& latin_1.space & axis_separator & latin_1.space
 					& to_string (distance_y (position));
+
+			when xy =>
+				return coordinates_preamble_xy
+					& to_string (distance_x (position))
+					& latin_1.space & axis_separator & latin_1.space
+					& to_string (distance_y (position));
+
 		end case;
 		-- CS: output in both mil and mm
 		

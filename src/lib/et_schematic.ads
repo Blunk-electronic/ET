@@ -315,7 +315,7 @@ package et_schematic is
 			when tag => 
 				direction : type_label_direction;
 				-- CS: coordinates of next tag of this net (by sheet coord. or area ?)
-				global : boolean;
+				global : boolean; -- CS: use only one flag. true -> hierachic, false -> global
 				hierarchic : boolean;
 			when simple => null;
 		end case;
@@ -333,7 +333,10 @@ package et_schematic is
 
 	procedure write_label_properties (label : in type_net_label);
 	-- Writes the properties of the given net label in the logfile.
-    
+
+	function to_string (label : in type_net_label; scope : in type_scope) return string;
+	-- Returns the coordinates of the given label as string.
+	
 	-- A net junction is where segments can be connected with each other.
 	type type_net_junction is tagged record
 		coordinates : et_coordinates.type_coordinates;
@@ -342,8 +345,8 @@ package et_schematic is
 	procedure write_junction_properties (junction : in type_net_junction);
 	-- Writes the properties of the given net junction in the logfile.
 	
--- 	procedure write_coordinates_of_junction (junction : in type_net_junction); -- CS: no longer used
--- 	-- Writes the coordinates of a net junction.
+	function to_string (junction : in type_net_junction; scope : in type_scope) return string;
+	-- Returns the position of the given junction as string.
 
 	type type_net_segment; -- prespecificaton. see below
 	
@@ -371,10 +374,10 @@ package et_schematic is
 	function length (segment : in type_net_segment) return type_distance;
 	-- Returns the length of the given net segment.
 	
-	procedure write_coordinates_of_segment (segment : in type_net_segment);
-	-- Writes the start and end coordinates of a net segment.	
+-- 	procedure write_coordinates_of_segment (segment : in type_net_segment);
+-- 	-- Writes the start and end coordinates of a net segment.	
 
-	function to_string (segment : in type_net_segment) return string; -- CS: should replace write_coordinates_of_segment
+	function to_string (segment : in type_net_segment; scope : in type_scope := sheet) return string; -- CS: should replace write_coordinates_of_segment
 	-- Returns the start and end coordinates of the given net segment.
 	
 	-- A net is a list of segments.
@@ -709,6 +712,9 @@ package et_schematic is
 
 	procedure build_nets;
 	-- Builds the nets of the current module from its strands.
+
+	procedure write_nets;
+	-- Writes a nice overview of all nets, strands, segments and labels.
 	
 	function first_component return type_components.cursor;
 	-- Returns a cursor pointing to the first component of the module (indicated by module_cursor).
