@@ -1321,7 +1321,97 @@ package body et_schematic is
 				process => set_scope_and_add_strand'access);
 			
 		end add_net;
+
+
+		procedure query_label (
+			segment : in type_net_segment) is
+			label_simple : type_simple_labels.cursor := segment.label_list_simple.first;
+			label_tag : type_tag_labels.cursor := segment.label_list_tag.first;
+			use type_simple_labels;
+			use type_tag_labels;
+			
+		begin
+-- 			log ("simple labels");
+			log_indentation_up;
+			if not is_empty (segment.label_list_simple) then
+				null;
+				
+			end if;
+			
+			log_indentation_down;
+		end query_label;
 		
+		procedure query_segment (
+			strand : in type_strand) is
+			segment : type_net_segments.cursor := strand.segments.first;
+			use type_net_segments;
+
+			-- for the segment we provide a consequtive number which has no further meaning
+			segment_number : count_type := 1;			
+		begin
+			log_indentation_up;
+			while segment /= type_net_segments.no_element loop
+				log ("segment" & count_type'image (segment_number));
+
+				query_element (
+					position => segment,
+					process => query_label'access);
+				
+				segment_number := segment_number + 1;
+				next (segment);
+			end loop;
+			log_indentation_down;
+		end query_segment;
+		
+		procedure query_strand (
+			net_name : in type_net_name.bounded_string;
+			net : in type_net) is
+			
+			strand : type_strands.cursor := net.strands.first;
+			use type_strands;
+
+			-- for the strand we provide a consequtive number which has no further meaning
+			strand_number : count_type := 1;			
+		begin -- query_strand
+			log_indentation_up;
+			while strand /= type_strands.no_element loop
+				log ("strand" & count_type'image (strand_number) &
+					" at " & to_string (position => element (strand).coordinates, scope => et_coordinates.module)
+					);
+
+				query_element (
+					position => strand,
+					process => query_segment'access);
+				
+				strand_number := strand_number + 1;
+				next (strand);
+			end loop;
+
+			log_indentation_down;
+		end query_strand;
+		
+		procedure query_net (
+			mod_name : in type_submodule_name.bounded_string;
+			module : in type_module) is
+
+			net : type_nets.cursor := module.nets.first;
+
+			use type_nets;
+		begin
+			log_indentation_up;
+			while net /= type_nets.no_element loop
+				log ("net " & to_string (key (net)));
+
+				query_element (
+					position => net,
+					process => query_strand'access);
+				
+				next (net);
+			end loop;
+
+			log_indentation_down;
+		end query_net;
+			
 	begin -- build_nets
 		log ("building nets ...");
 		first_module;
@@ -1349,6 +1439,26 @@ package body et_schematic is
 			next (module_cursor);
 		end loop;
 
+		-- show a net report
+		if log_level >= 2 then
+			log ("creating net report ...");
+			log_indentation_up;
+			
+			first_module;
+			while module_cursor /= type_rig.no_element loop
+				
+				log ("module " & to_string (key (module_cursor)));
+
+				query_element (
+					position => module_cursor,
+					process => query_net'access);
+				
+				next (module_cursor);
+			end loop;
+
+			log_indentation_down;
+		end if;
+		
 		log_indentation_down;
 	end build_nets;
 	
