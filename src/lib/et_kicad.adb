@@ -3244,7 +3244,7 @@ package body et_kicad is
 							log_indentation_up;
 							log ("scope " & type_scope_of_net'image (strand.scope) & " with segments", level => 2);
 							
-							-- append segments to net
+							-- append segments to strand
 							segment_cursor := anon_strand_a.segments.first; -- reset segment cursor to begin of segments of the current anonymous net
 							while segment_cursor /= type_anonymous_strand.no_element loop -- loop for each segment of anonymous strand anon_strand_a
 								segment := element (segment_cursor); -- get segment
@@ -3264,8 +3264,9 @@ package body et_kicad is
 							set_module (strand.coordinates, to_submodule_name (current_schematic));
 							set_path (strand.coordinates, path_to_submodule);
 							set_sheet (strand.coordinates, sheet_number_current);
-                            -- CS: x,y coordinates should be the lowest available on the sheet.
-                            -- CS: do not assign x/y at all ?
+
+							-- set x,y coordinates (lowest available on the sheet)
+							set (strand.coordinates, to_coordinates (lowest_xy (strand)));
                             
 							-- insert strand in module, then purge strand.segments for next spin
 							add_strand (strand);
@@ -3370,9 +3371,10 @@ package body et_kicad is
 							set_module (strand.coordinates, to_submodule_name (current_schematic));
                             set_path (strand.coordinates, path_to_submodule);
 							set_sheet (strand.coordinates, sheet_number_current);
-							-- CS: x,y coordinates should be the lowest available on the sheet.
-                            -- CS: do not assign x/y at all ?
-                            
+
+							-- set x,y coordinates (lowest available on the sheet)
+							set (strand.coordinates, to_coordinates (lowest_xy (strand)));
+							
 							-- insert strand in module, then purge strand.segments for next spin
 							add_strand (strand);
 							type_net_segments.clear (strand.segments);
@@ -4881,7 +4883,7 @@ package body et_kicad is
 					constraint_error =>
 						log_indentation_reset;
 						log (message_error & "in schematic file '" 
-							& to_string(current_schematic) & "' " 
+							& to_string (current_schematic) & "' " 
 							& et_string_processing.affected_line (line),
 							console => true);
 							et_import.close_report;
@@ -4891,7 +4893,7 @@ package body et_kicad is
 				when others =>
 					log_indentation_reset;
 					log (message_error & "in schematic file '" 
-						 & to_string(current_schematic) & "' " 
+						 & to_string (current_schematic) & "' " 
 						 & et_string_processing.affected_line (line),
 						console => true);
 					et_import.close_report;

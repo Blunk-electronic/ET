@@ -183,6 +183,14 @@ procedure et is
 		et_schematic.build_nets;
 		
 		et_import.close_report;
+
+		exception
+			when event:
+				constraint_error =>
+					et_import.close_report;
+					put_line (standard_output, "Read import report for warnings and error messages !"); -- CS: show path to report file
+					raise;
+
 	end import_design;
 	
 begin -- main

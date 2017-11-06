@@ -558,9 +558,53 @@ package body et_schematic is
 	function to_string (scope : in type_scope_of_net) return string is
 	-- Retruns the given scope as string.
 	begin
-		return to_lower (type_scope_of_net'image (scope));
+		--return to_lower (type_scope_of_net'image (scope));
+		return type_scope_of_net'image (scope);
 	end to_string;
 
+	function lowest_xy (strand : in type_strand_named) return type_2d_point is
+	-- Returns the lowest x/y position of the given strand.
+		point : type_2d_point;
+		segment : type_net_segments.cursor;
+	
+		x : type_distance := type_distance'last;
+		y : type_distance := type_distance'last;
+
+		use type_net_segments;
+
+		-- CS: usage of intermediate variables for x/Y of start/end points could improve performance
+	begin
+		-- loop through segments and keep the lowest x and y position
+		segment := strand.segments.first;
+		while segment /= type_net_segments.no_element loop
+
+			-- check start point
+			if distance_x (element (segment).coordinates_start) < x then
+				x := distance_x (element (segment).coordinates_start);
+			end if;
+
+			if distance_y (element (segment).coordinates_start) < y then
+				y := distance_y (element (segment).coordinates_start);
+			end if;
+
+			-- check end point
+			if distance_x (element (segment).coordinates_end) < x then
+				x := distance_x (element (segment).coordinates_end);
+			end if;
+
+			if distance_y (element (segment).coordinates_end) < y then
+				y := distance_y (element (segment).coordinates_end);
+			end if;
+			
+			next (segment);
+		end loop;
+
+		set_x (point, x);
+		set_y (point, y);
+
+		return point;
+	end lowest_xy;
+	
 	procedure add_strand (
 	-- Adds a strand into the the module (indicated by module_cursor).
 		strand : in et_schematic.type_strand_named) is
@@ -1200,6 +1244,10 @@ package body et_schematic is
 		named_strand : type_strands_named.cursor;
 
 		procedure add_net (
+		-- Creates a net with the name and the scope (local, hierarchic, global) of the current named_strand. 
+		-- If the net existed already, then named_strand is appended to the strands of the net.
+		-- The scope of the named_strand is checked aginst the scope of the latest strand
+		-- of the net.
 			mod_name : in type_submodule_name.bounded_string;
 			module   : in out type_module) is
 
@@ -1212,43 +1260,44 @@ package body et_schematic is
 				net_name : in type_net_name.bounded_string;
 				net		 : in out type_net) is
 
--- 				strand : type_strand;
+				strand : type_strand; -- temporarily used on scope conflict
 			begin
 				if net_created then
 					log ("net " & to_string (element (named_strand).name), level => 1);
 					net.scope := element (named_strand).scope; -- set scope of net
-				else
+				else -- net already there -> check scope
 					if net.scope /= element (named_strand).scope then
+						strand := type_strands.last_element (net.strands);
+
+						log_indentation_reset;
+
+						-- short error message for the console output
 						log (message_error 
-							& "scope of net " & to_string (element (named_strand).name)
-							& " at " & to_string (position => element (named_strand).coordinates, scope => et_coordinates.module)
-							& " invalid ! Should be " & type_scope_of_net'image (net.scope) & " !"
-							-- CS: show the strand it is conflicting with
-							--& " conflicts with scope of net "
-							--& " at " & to_string (position => (last_element (net.strands)).coordinates, scope => et_coordinates.module)
+								& "scope contradiction with net " & to_string (element (named_strand).name) & " !",
+							console => true
 							);
-						--strand := last_element (net.strands);
+
+						-- full error message for the log
+						log (message_error 
+								& "scope " & to_string (element (named_strand).scope) 
+								& " of net " & to_string (element (named_strand).name)
+								& " at " & to_string (position => element (named_strand).coordinates, scope => et_coordinates.module)
+								& " invalid !"
+								& latin_1.lf
+								& "Conflicts with scope " & to_string (net.scope) & " of net"
+								& " at " & to_string (position => strand.coordinates, scope => et_coordinates.module),
+							console => false
+							);
+						
 						raise constraint_error;
 					end if;
 				end if;
-				
+
+				-- add named_strand to the net
 				net.strands.append (
-					new_item => type_strand (element (named_strand))); -- copy strand to net
+					new_item => type_strand (element (named_strand))); -- type conversion !
 			end set_scope_and_add_strand;
 
--- 			procedure check_scope_and_add_strand (
--- 				net_name : in type_net_name.bounded_string;
--- 				net		 : in out type_net) is
--- 			begin
--- 				if net.scope /= element (named_strand).scope then
--- 					null; -- error
--- 				else
--- 					net.strands.append (
--- 						new_item => type_strand (element (named_strand))); -- copy strand to net
--- 				end if;
--- 			end check_scope_and_add_strand;
-
-			
 		begin -- add_net
 
 			-- create net
@@ -1257,34 +1306,31 @@ package body et_schematic is
 				position	=> net_cursor,
 				inserted	=> net_created);
 
-			-- if net not already created, set scope and add the strand indicated by cursor name_strand
--- 			if inserted then
+			-- If net created or already there, net_cursor points to the net
+			-- where the strand is to be added.
 			module.nets.update_element (
 				position => net_cursor,
 				process => set_scope_and_add_strand'access);
--- 			else -- if net already created
--- 				module.nets.update_element (
--- 					position => net_cursor,
--- 					process => check_scope_and_add_strand'access);
--- 			end if;
 			
 		end add_net;
 		
-	begin
+	begin -- build_nets
 		log ("building nets ...");
 		first_module;
 
 		log_indentation_up;
 
+		-- loop in modules of the rig and fetch one strand after another
 		while module_cursor /= type_rig.no_element loop
 			log ("module " & to_string (key (module_cursor)), level => 1);
-			
+
+			-- loop in strands of the current module
 			named_strand := first_strand;
 			log_indentation_up;
 			while named_strand /= type_strands_named.no_element loop
 				log ("strand " & to_string (element (named_strand).name), level => 2);
 
-				-- append net to module.nets
+				-- Create net and append strand to module.nets
 				rig.update_element (
 					position => module_cursor,
 					process => add_net'access);

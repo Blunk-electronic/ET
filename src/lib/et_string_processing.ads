@@ -91,7 +91,7 @@ package et_string_processing is
 		or to_set ("!?.-: "); -- other characters -- CS: add others if neccessary
 	
 -- DATE
-	date_characters : character_set := to_set ( span => ('0','9')) or to_set ("-:T");
+	date_characters : character_set := to_set (span => ('0','9')) or to_set ("-:T");
 	type type_date is new string (1..19); -- "2017-08-17T14:17:25" -- CS: define a type that allows only those characters
 
 	function to_string (date : in type_date) return string;
@@ -102,12 +102,13 @@ package et_string_processing is
 	
 	function date_now return type_date;
 
-	procedure check_updated_vs_commissioned ( commissioned , updated : in type_date);
+	procedure check_updated_vs_commissioned (commissioned , updated : in type_date);
 	-- Checks whether updated is later or equal commissioned.
 
-	row_separator_single			: constant string (1..100)	:= 100 * "-";	
-	row_separator_double			: constant string (1..100)	:= 100 * "=";
-	item_not_specified				: constant string (1..7)	:= "missing";
+	row_separator_length 	: constant positive := 150;
+	row_separator_single	: constant string (1..row_separator_length)	:= row_separator_length * "-";	
+	row_separator_double	: constant string (1..row_separator_length)	:= row_separator_length * "=";
+	item_not_specified		: constant string (1..7) := "missing";
 	
 -- WARNING AND ERROR MESSAGES
 	message_error : constant string (1..8)	:= "ERROR ! ";
