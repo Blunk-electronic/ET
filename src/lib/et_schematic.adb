@@ -1262,8 +1262,10 @@ package body et_schematic is
 
 				strand : type_strand; -- temporarily used on scope conflict
 			begin
+				log ("net " & to_string (element (named_strand).name), level => 2);
+				
 				if net_created then
-					log ("net " & to_string (element (named_strand).name), level => 1);
+-- 					log ("net " & to_string (element (named_strand).name), level => 1);
 					net.scope := element (named_strand).scope; -- set scope of net
 				else -- net already there -> check scope
 					if net.scope /= element (named_strand).scope then
@@ -1293,6 +1295,12 @@ package body et_schematic is
 					end if;
 				end if;
 
+				if log_level >= 2 then
+					log_indentation_up;
+					log ("strand at " & to_string (position => element (named_strand).coordinates, scope => et_coordinates.module));
+					log_indentation_down;
+				end if;
+				
 				-- add named_strand to the net
 				net.strands.append (
 					new_item => type_strand (element (named_strand))); -- type conversion !
@@ -1328,7 +1336,6 @@ package body et_schematic is
 			named_strand := first_strand;
 			log_indentation_up;
 			while named_strand /= type_strands_named.no_element loop
-				log ("strand " & to_string (element (named_strand).name), level => 2);
 
 				-- Create net and append strand to module.nets
 				rig.update_element (

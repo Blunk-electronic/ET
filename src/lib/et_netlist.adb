@@ -995,7 +995,7 @@ package body et_netlist is
 				new_item => make_netlist);
 
 			-- create a nice report about net strands, segments and labels
-			if log_level >= 1 then
+			if log_level >= 2 then
 				write_strands;
 			end if;
 				
