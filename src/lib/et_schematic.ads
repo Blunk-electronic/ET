@@ -706,6 +706,9 @@ package et_schematic is
 
 	procedure write_strands;
 	-- Writes a nice overview of strands, net segments and labels
+
+	procedure check_strands;
+	-- Checks scope of strands across the current module (indicated by module_cursor)
 	
 	function first_segment (cursor : in type_strands_named.cursor) return type_net_segments.cursor;
 	-- Returns a cursor pointing to the first net segment of the given strand.

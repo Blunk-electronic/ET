@@ -1226,6 +1226,36 @@ package body et_schematic is
 			process		=> query_strands'access);
 	end write_strands;
 
+	procedure check_strands is
+	-- Checks scope of strands across the current module (indicated by module_cursor)
+	-- CS: describe the purpose of this procdure more detailled.
+		use et_string_processing;
+
+		procedure query_strands (
+			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
+			module		: in type_module) is
+			strand : type_strands_named.cursor := module.strands.first;
+			use type_strands_named;
+		begin
+			while strand /= type_strands_named.no_element loop
+				log_indentation_up;
+				log (to_string (element (strand).name) & " scope " & to_string (element (strand).scope));
+
+				
+				log_indentation_down;
+				next (strand);
+			end loop;
+		end query_strands;
+
+	begin
+		log ("checking strands ...");
+
+		type_rig.query_element (
+			position	=> module_cursor,
+			process		=> query_strands'access);
+
+	end check_strands;
+	
 	
 	function first_segment (cursor : in type_strands_named.cursor) return type_net_segments.cursor is
 	-- Returns a cursor pointing to the first net segment of the given strand.

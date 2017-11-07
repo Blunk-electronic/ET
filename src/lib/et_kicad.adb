@@ -4997,7 +4997,8 @@ package body et_kicad is
 				
 				-- If read_file_schematic_kicad returns an empty list of submodules, we are dealing with a flat design. Otherwise
 				-- the design is hierarchic (because the submodule list is longer than zero).
-				if type_submodule_names.length (list_of_submodules.list) = 0 then -- flat design -- CS: use is_empty
+				--if type_submodule_names.length (list_of_submodules.list) = 0 then -- flat design -- CS: use is_empty
+				if type_submodule_names.is_empty (list_of_submodules.list) then -- flat design
 					log ("FLAT");
 				else -- hierarchic design
 					-- In the follwing we dive into the submodules. Each time before a deeper level is entered,
@@ -5067,13 +5068,17 @@ package body et_kicad is
 					end loop;
 
 					log_indentation_down;
+
+					-- Checks scope of strands across the current module (indicated by module_cursor).
+					-- NOTE: module_cursor points to the current module.
+					check_strands;
 					
 				end if;
 
 				log_indentation_down;
 				
 			when others =>
-				null;
+				null; -- CS: add import of other CAD formats here
 
 				
 		end case;
