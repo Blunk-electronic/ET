@@ -70,23 +70,27 @@ package body et_import is
 	-- Writes the report footer and closes the report file.
 	-- Sets the output back to standard_output.
 	begin
-		put_line (row_separator_double);
-		
-		if warning_counter = 0 then
-			put_line ("no warnings");
-		else
-			put_line ("warnings" & type_warning_counter'image (warning_counter));
-		end if;
-		
-		put_line (row_separator_single);
-		
-		put_line ("date " & string (date_now));
-		put_line (system_name & " import report end");
+		if is_open (et_import.report_handle) then
+	
+			put_line (row_separator_double);
+			
+			if warning_counter = 0 then
+				put_line ("no warnings");
+			else
+				put_line ("warnings" & type_warning_counter'image (warning_counter));
+			end if;
+			
+			put_line (row_separator_single);
+			
+			put_line ("date " & string (date_now));
+			put_line (system_name & " import report end");
 
-		set_output (standard_output);
-		
-		close (et_import.report_handle);
-		
+			set_output (standard_output);
+			
+			close (et_import.report_handle);
+
+			put_line ("Read import report for warnings and error messages !"); -- CS: show path to report file
+		end if;
 	end close_report;
 
 end et_import;

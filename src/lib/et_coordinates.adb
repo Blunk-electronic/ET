@@ -288,9 +288,9 @@ package body et_coordinates is
 
 	function distance (point_1, point_2 : in type_2d_point) return type_distance is
 	-- Returns the distance between the given points.
-		dis : type_distance;
-
-		package functions_distance is new ada.numerics.generic_elementary_functions (type_distance);
+-- 		dis : type_distance;
+		dis : float;
+		package functions_distance is new ada.numerics.generic_elementary_functions (float);
 		use functions_distance;
 
 		use et_string_processing;
@@ -299,27 +299,46 @@ package body et_coordinates is
 		
 		if point_1 = point_2 then -- points have same x/y position -> zero difference
 -- 			log (text => "equal points", level => 4);
-			dis := zero_distance;
+			dis := float (zero_distance);
 			
 		elsif point_1.x = point_2.x then -- points are in a vertical line
 -- 			log (text => "vertical", level => 4);
-			dis := abs (point_2.y - point_1.y);
+-- 			dis := abs (point_2.y - point_1.y);
+			dis := float (abs (point_2.y - point_1.y));
 			
 		elsif point_1.y = point_2.y then -- points are in a horizontal line
 -- 			log (text => "horizontal", level => 4);
-			dis := abs (point_2.x - point_1.x);
+-- 			dis := abs (point_2.x - point_1.x);
+			dis := float (abs (point_2.x - point_1.x));
 
 		else -- distance = sqrt (delta_x^2 + delta_y^2)
--- 			log (text => "diagonal", level => 4);
+			log (text => "diagonal", level => 4);
+			
+			-- CS: depending on given point_1/2 one of those calculations should be
+			-- used in order to avoid range errors:
+
+-- 			dis := sqrt (
+-- 					(abs (point_2.x - point_1.x)) ** 2.0 
+-- 					+
+-- 					(abs (point_2.y - point_1.y)) ** 2.0 
+-- 					);
+
 			dis := sqrt (
-					(abs (point_2.x - point_1.x)) ** 2.0 
+					(float (abs (point_2.x - point_1.x))) ** 2
 					+
-					(abs (point_2.y - point_1.y)) ** 2.0 
+					(float (abs (point_2.y - point_1.y))) ** 2 
 					);
+
+-- 			dis := arctan (
+-- 				y => point_2.y - point_1.y,
+-- 				x => point_2.x - point_1.x,
+-- 				cycle => type_distance (units_per_cycle));
+-- 
+-- 			dis := sin (dis) * (point_2.x - point_1.x);
 		end if;
 
-		log (text => "distance " & type_distance'image (dis), level => 4);
-		return dis;
+		log (text => "distance " & float'image (dis), level => 4);
+		return type_distance (dis);
 	end distance;
 
 	function to_string (submodule : in type_submodule_name.bounded_string) return string is

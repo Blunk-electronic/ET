@@ -64,7 +64,12 @@ package et_coordinates is
 -- 	type type_unit_imperial is (mil, inch);
 
 --	type type_distance is delta 0.01 range -100000000.0 .. 100000000.0; -- unit is metric millimeter
-	type type_distance is digits 9 range -100000000.0 .. 100000000.0; -- unit is metric millimeter
+
+	-- The total distance between two objects:
+	type type_distance is digits 9 range -100_000_000.0 .. 100_000_000.0; -- unit is metric millimeter
+
+	-- The x and y position of an object:
+	subtype type_distance_xy is type_distance range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter
 	zero_distance : constant type_distance := 0.0;
 
 	-- type type_accuracy is delta 0.001 digits 10;

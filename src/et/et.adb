@@ -188,7 +188,7 @@ procedure et is
 			when event:
 				constraint_error =>
 					et_import.close_report;
-					put_line (standard_output, "Read import report for warnings and error messages !"); -- CS: show path to report file
+-- 					put_line (standard_output, "Read import report for warnings and error messages !"); -- CS: show path to report file
 					raise;
 
 	end import_design;

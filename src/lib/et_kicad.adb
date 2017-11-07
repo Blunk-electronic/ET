@@ -3262,7 +3262,9 @@ package body et_kicad is
 								
 								if log_level >= 2 then
 									--write_coordinates_of_segment (segment => segment);
+									log_indentation_up;
 									log (to_string (segment => segment, scope => xy));
+									log_indentation_down;
 								end if;
 								
 								next (segment_cursor);
@@ -3280,6 +3282,7 @@ package body et_kicad is
 							set (strand.coordinates, to_coordinates (lowest_xy (strand)));
                             
 							-- insert strand in module, then purge strand.segments for next spin
+							log ("inserting strand in module ...", level => 3);
 							add_strand (strand);
 
 							type_net_segments.clear (strand.segments);
@@ -3388,6 +3391,7 @@ package body et_kicad is
 							set (strand.coordinates, to_coordinates (lowest_xy (strand)));
 							
 							-- insert strand in module, then purge strand.segments for next spin
+							log ("inserting strand in module ...", level => 3);
 							add_strand (strand);
 							type_net_segments.clear (strand.segments);
 
@@ -4910,8 +4914,9 @@ package body et_kicad is
 			end if;
 
 			return list_of_submodules;
-			
+
 			exception
+				-- CS: log exception message
 				when event:
 					constraint_error =>
 						log_indentation_reset;
@@ -4920,7 +4925,7 @@ package body et_kicad is
 							& et_string_processing.affected_line (line),
 							console => true);
 							et_import.close_report;
-						put_line (standard_output, "Read import report for warnings and error messages !"); -- CS: show path to report file
+-- 						put_line (standard_output, "Read import report for warnings and error messages !"); -- CS: show path to report file
 						raise;
 
 				when others =>
@@ -4930,7 +4935,7 @@ package body et_kicad is
 						 & et_string_processing.affected_line (line),
 						console => true);
 					et_import.close_report;
-					put_line (standard_output, "Read import report for warnings and error messages !"); -- CS: show path to report file
+-- 					put_line (standard_output, "Read import report for warnings and error messages !"); -- CS: show path to report file
 					raise;					
 
 		end read_schematic;
