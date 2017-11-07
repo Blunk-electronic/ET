@@ -39,17 +39,8 @@ with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 
 with ada.containers.doubly_linked_lists;
--- with ada.numerics.generic_elementary_functions;
--- with ada.containers.indefinite_doubly_linked_lists;
--- with ada.containers.ordered_maps;
--- with ada.containers.indefinite_ordered_maps;
--- with ada.containers.ordered_sets;
-
---with et_string_processing;
 
 package et_coordinates is
-
-	
 
 	type type_axis is (X, Y);
 
@@ -62,8 +53,6 @@ package et_coordinates is
 	
 -- 	type type_unit_metric is (micrometer, millimeter, centimeter, meter);
 -- 	type type_unit_imperial is (mil, inch);
-
---	type type_distance is delta 0.01 range -100000000.0 .. 100000000.0; -- unit is metric millimeter
 
 	-- The total distance between two objects:
 	type type_distance is digits 9 range -100_000_000.0 .. 100_000_000.0; -- unit is metric millimeter
@@ -231,7 +220,7 @@ package et_coordinates is
 	private 
 		-- In general every object has at least x,y coordinates.
 		type type_2d_point is tagged record
-			x, y : type_distance := zero_distance;
+			x, y : type_distance_xy := zero_distance;
 		end record;
 		
 		zero : constant type_2d_point := (x => zero_distance, y => zero_distance);
