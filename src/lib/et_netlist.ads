@@ -136,7 +136,7 @@ package et_netlist is
 	-- Returns the appearance of the given port.
 	
 	-- This is the netlist of a single submodule:
-	-- It doss also contain ports of virtual components (power symbols) except 
+	-- It does also contain ports of virtual components (power symbols) except 
 	-- so called "power flags".
 	package type_netlist is new ordered_maps (
 		key_type => et_schematic.type_net_name.bounded_string, -- net name like "MCU_CLOCK"

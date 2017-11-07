@@ -898,7 +898,7 @@ package body et_netlist is
 
 				-- get the strand name via strand_cursor_module
 				log_indentation_up;
-				log (text => "net " & et_schematic.to_string (element (strand_cursor_module).name), level => 2);
+				log (text => "strand of net " & et_schematic.to_string (element (strand_cursor_module).name), level => 2);
 				
 				-- Insert net in netlist with the strand name as primary key:
 				netlist_pre.insert (
