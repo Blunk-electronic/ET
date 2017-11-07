@@ -78,8 +78,9 @@ package et_coordinates is
 
 	-- CS: type_grid ?
 
-	function mil_to_distance (mil : in string; warn_on_negative : boolean := true) return type_distance;
-	-- Returns the given mils to type_distance.
+	function mil_to_distance (mil : in string; warn_on_negative : boolean := true) 
+		return type_distance_xy;
+	-- Returns the given mils to type_distance_xy.
 
 	function format_distance (distance : in type_distance) return string;
 	-- Returns the given distance aa a neat number with the schematic defined accuracy.
