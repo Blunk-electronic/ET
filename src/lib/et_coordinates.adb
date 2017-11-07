@@ -129,22 +129,26 @@ package body et_coordinates is
 	end to_string;
 
 	function distance_x (point : in type_2d_point) return type_distance is
+	-- Returns the x distance of point from the drawing origin.		
 	begin
 		return et_math.round (point.x, accuracy_schematic);
 	end distance_x;
 
 	function distance_y (point : in type_2d_point) return type_distance is
+	-- Returns the y distance of point from the drawing origin.
 	begin
 		return et_math.round (point.y, accuracy_schematic);
 	end distance_y;
 
-	procedure set_x (point : in out type_2d_point; x : in type_distance) is
+	procedure set_x (point : in out type_2d_point; x : in type_distance_xy) is
+	-- Assigns a point the given x position.
 		use et_string_processing;
 	begin
 		point.x := x;
 	end set_x;
 	
-	procedure set_y (point : in out type_2d_point; y : in type_distance) is
+	procedure set_y (point : in out type_2d_point; y : in type_distance_xy) is
+	-- Assigns a point the given y position.
 	begin
 		point.y := y;
 	end set_y;
