@@ -128,13 +128,13 @@ package body et_coordinates is
 	
 	end to_string;
 
-	function distance_x (point : in type_2d_point) return type_distance is
+	function distance_x (point : in type_2d_point) return type_distance_xy is
 	-- Returns the x distance of point from the drawing origin.		
 	begin
 		return et_math.round (point.x, accuracy_schematic);
 	end distance_x;
 
-	function distance_y (point : in type_2d_point) return type_distance is
+	function distance_y (point : in type_2d_point) return type_distance_xy is
 	-- Returns the y distance of point from the drawing origin.
 	begin
 		return et_math.round (point.y, accuracy_schematic);

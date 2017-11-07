@@ -121,10 +121,10 @@ package et_coordinates is
 	function to_string (point : in type_2d_point) return string;
 	-- Returns the given point coordinates to a string.
 
-	function distance_x (point : in type_2d_point) return type_distance;
+	function distance_x (point : in type_2d_point) return type_distance_xy;
 	-- Returns the x distance of point from the drawing origin.
 	
-	function distance_y (point : in type_2d_point) return type_distance;	
+	function distance_y (point : in type_2d_point) return type_distance_xy;
 	-- Returns the y distance of point from the drawing origin.
 	
 	procedure set_x (point : in out type_2d_point; x : in type_distance_xy);
