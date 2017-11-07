@@ -580,87 +580,43 @@ package body et_schematic is
 		point_1, point_2 : type_2d_point;
 		segment : type_net_segments.cursor;
 	
-		x : type_distance := type_distance'last;
-		y : type_distance := type_distance'last;
-
-		start_point, end_point : type_2d_point;
-	
 		use type_net_segments;
 		use et_string_processing;
 
 		-- CS: usage of intermediate variables for x/Y of start/end points could improve performance
 	begin
+		log_indentation_up;
 		log ("calculating the point nearest to drawing origin ...", level => 3);
-		set_x (point_1, type_distance'last);
-		set_y (point_1, type_distance'last);
--- 		set_x (point_1, zero_distance);
--- 		set_y (point_1, zero_distance);
+
+		-- init point_1 as the farest possible point from drawing origin
+		set_x (point_1, type_distance_xy'last);
+		set_y (point_1, type_distance_xy'last);
 		
-		-- loop through segments and keep the lowest x and y position
+		-- loop through segments and keep the nearest point to origin
 		segment := strand.segments.first;
 		while segment /= type_net_segments.no_element loop
 
+			-- check start point of segment
+			-- if closer to orign than point_1 keep start point
 			point_2	:= type_2d_point (element (segment).coordinates_start);
-			log ("point 2 " & to_string (point_2), level => 4);
-
 			if distance (point_2, zero) < distance (point_1, zero) then
 				log (" start", level => 4);
 				point_1 := point_2;
 			end if;
-			
-			point_2	:= type_2d_point (element (segment).coordinates_end);
 
+			-- check start point of segment
+			-- if closer to orign than point_1 keep end point
+			point_2	:= type_2d_point (element (segment).coordinates_end);
 			if distance (point_2, zero) < distance (point_1, zero) then
 				log (" end", level => 4);
 				point_1 := point_2;
 			end if;
-
-			
--- 			if distance (start_point, zero) <= distance (end_point, zero) then
--- 				point_2 := start_point;
--- 			else 
--- 				point_2 := end_point;
--- 			end if;
--- 
--- 			if distance (point_2, zero) < distance (point_1, zero) then
--- 				point_1 := point_2;
--- 			end if;
-
-			
--- 			-- check start point
--- 			if distance_x (element (segment).coordinates_start) < x then
--- 				x := distance_x (element (segment).coordinates_start);
--- 				set_x (start_point, x);
--- 			end if;
--- 
--- 			if distance_y (element (segment).coordinates_start) < y then
--- 				y := distance_y (element (segment).coordinates_start);
--- 				set_y (start_point, y);
--- 			end if;
--- 
--- 			-- check end point
--- 			if distance_x (element (segment).coordinates_end) < x then
--- 				x := distance_x (element (segment).coordinates_end);
--- 				set_x (end_point, x);
--- 			end if;
--- 
--- 			if distance_y (element (segment).coordinates_end) < y then
--- 				y := distance_y (element (segment).coordinates_end);
--- 				set_y (end_point, y);
--- 			end if;
 			
 			next (segment);
 		end loop;
 
--- 		if distance (start_point, zero) >= distance (end_point, zero) then
--- 			return start_point;
--- 		else 
--- 			return end_point;
--- 		end if;
+		log_indentation_down;
 		
--- 		set_x (point, x);
--- 		set_y (point, y);
-
 		return point_1;
 	end lowest_xy;
 	
