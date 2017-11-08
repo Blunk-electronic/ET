@@ -288,6 +288,10 @@ package et_schematic is
 	-- The name of a net may have 100 characters which seems sufficient for now.
  	net_name_length	: constant natural := 100;
 	package type_net_name is new generic_bounded_length (net_name_length); use type_net_name;
+
+	-- When net names address hierachic structures we use a separator.
+	-- Example: net name "HEATER_CONTROL.DRIVER.CLK"
+	net_name_hierarchy_separator : constant string (1..1) := ".";
 	
 	function to_string (net_name : in type_net_name.bounded_string) return string;
 	-- Returns the given net name as string;

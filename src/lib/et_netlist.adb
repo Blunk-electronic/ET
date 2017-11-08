@@ -198,6 +198,7 @@ package body et_netlist is
 		-- For tempoarily storage of units of a component (taken from the schematic):
 		units_sch : et_schematic.type_units.map;
 
+		log_threshold : type_log_level := 1;
 
 		procedure extract_ports is
 		-- Extracts the ports of the component indicated by component_cursor_lib.
@@ -369,10 +370,10 @@ package body et_netlist is
 				-- If the unit is deployed in the schematic, we load unit_position. 
 				-- unit_position holds the position of the unit in the schematic.
 				if unit_exists (name => unit_name_lib, units => units_sch) then -- if unit deployed in schematic
-					log ("unit " & to_string (unit_name_lib));
+					log ("unit " & to_string (unit_name_lib), level => log_threshold);
 					unit_position := position_of_unit (name => unit_name_lib, units => units_sch); -- pos. in schematic
 					log_indentation_up;
-					log (to_string (position => unit_position));
+					log (to_string (position => unit_position), level => log_threshold + 1);
 
 					-- Get the ports of the current unit. Start with the first port of the unit.
 					-- The unit_position plus the relative port position (in library) yields the absolute
@@ -387,7 +388,7 @@ package body et_netlist is
 						--log ("port " & type_port_name.to_string (key (port_cursor))
 						log (text => "port " & type_port_name.to_string (element (port_cursor).name)
 								& " pin/pad " & to_string (element (port_cursor).pin),
-							 level => 2
+							 level => log_threshold + 1
 							);
 						
 						-- Build a new port and append port to portlist of the 
@@ -429,6 +430,7 @@ package body et_netlist is
 				null; -- fine
 			else
 				-- this should never happen
+				log_indentation_down;
 				log (text => message_error & "comonent appearance mismatch !", console => true);
 				-- CS: provide more details on the affected component
 				raise constraint_error;
@@ -466,7 +468,7 @@ package body et_netlist is
 		
 				-- log component by its reference		
 				component_reference :=  et_schematic.component_reference (component_cursor_sch);
-				log (text => "reference " & et_schematic.to_string (component_reference));
+				log (text => "reference " & et_schematic.to_string (component_reference), level => log_threshold);
 				
 				-- Insert component in portlists. for the moment the portlist of this component is empty.
 				-- After that the component_cursor_portlists points to the component. This cursor will
@@ -485,21 +487,21 @@ package body et_netlist is
 				-- get generic component name (as listed in a library)
 				log_indentation_up;			
 				component_name := et_schematic.component_name_in_library (component_cursor_sch);
-				log (text => "generic name " & to_string (component_name));
+				log (text => "generic name " & to_string (component_name), level => log_threshold + 1);
 
 				-- Search in libraries for a component with this very generic name.
 				-- library_cursor_sch points to the particular full library name.
 				-- The libraries are searched according to their order in the library list of the module.
 				-- The search is complete on the first finding of the component.
 				log_indentation_up;
-				log (text => "searching in libraries ...");
+				log (text => "searching in libraries ...", level => log_threshold + 1);
 				log_indentation_up;
 				et_schematic.reset_library_cursor (library_cursor_sch);
 				while library_cursor_sch /= type_full_library_names.no_element loop
 
 					-- Set and log particular library to be searched in.
 					library_name := (element (library_cursor_sch));
-					log (text => to_string (library_name));
+					log (text => to_string (library_name), level => log_threshold + 1);
 
 					-- Get cursor of that component in library. If cursor is empty, search in
 					-- next library. If cursor points to a matching component, extract ports
@@ -807,7 +809,7 @@ package body et_netlist is
 					net_name := key (net_cursor_pre);
 
 					log_indentation_up;
-					log (text => "net " & et_schematic.type_net_name.to_string (net_name), level => 1);
+					log (text => "net " & et_schematic.type_net_name.to_string (net_name), level => 2);
 					log_indentation_up;
 
 					-- LOOP IN PORTLIST OF CURRENT NET
@@ -820,7 +822,7 @@ package body et_netlist is
 								reference (port) & " "
 								& et_netlist.port (port) & " "
 								& et_netlist.pin (port) & " ",
-							level => 2
+							level => 3
 							);
 
 						-- Test if supply port name matches net name. When positive, nothing to to.
@@ -831,7 +833,7 @@ package body et_netlist is
 								null; -- fine. net name matches port name
 							else
 								log_indentation_up;
-								log (text => "is a power output -> port name overwrites net name", level => 2);
+								log (text => "is a power output -> port name overwrites net name", level => 3);
 
 								-- Check if a non-anonymous net name is overwritten by the port name.
 								-- Example: The net name is already "P3V3" and the port name is "+3V3".
@@ -916,7 +918,7 @@ package body et_netlist is
 				while segment_cursor /= type_net_segments.no_element loop
 					segment := element (segment_cursor);
 					log_indentation_up;
-					log (text => "probing segment " & to_string (segment), level => 2);
+					log (text => "probing segment " & to_string (segment), level => 3);
 
 					-- LOOP IN PORTLISTS
 					component_cursor := first (portlists);
@@ -940,7 +942,7 @@ package body et_netlist is
 									& " port " 
 									& et_libraries.to_string (element (port_cursor).port)
 									& " "
-									& et_coordinates.to_string (position => element (port_cursor).coordinates), level => 2);
+									& et_coordinates.to_string (position => element (port_cursor).coordinates), level => 3);
 								
 								log_indentation_down;
 

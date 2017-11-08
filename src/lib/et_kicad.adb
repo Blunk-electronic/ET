@@ -2986,6 +2986,8 @@ package body et_kicad is
 
 				log_threshold : type_log_level := 2;
 
+				use type_net_name;
+				
 			begin -- associate_net_labels_with_anonymous_strands
 				log_indentation_up;
 				
@@ -2996,6 +2998,8 @@ package body et_kicad is
 					-- Loop in list of anonymous strands, get a (non-processed-yet) strand, loop in list of segments and 
 					-- find a (non-processed-yet) net label that sits on the net segment. If label sits on segment:
 					--  - assume label text as name of strand (and check other labels of the anonymous strand)
+					--  - NOTE: Local nets (defined as such by simple lables) get the schematic name as prefix. 
+					--    Example: A simple label "CLK" on a schematic sheet file "main_board" results in a local net named "main_board_CLK".
 					--
 					--  - mark label as processed
 					--  - update/replace label in tmp_wild_simple_labels or tmp_wild_tag_lables
@@ -3036,17 +3040,37 @@ package body et_kicad is
 													log_indentation_down;
 												end if;
 
-												-- The first matching label dictates the net name. 
-												-- If other labels with text differing from net name found, output warning.
+												-- The first matching simple label dictates the strand name. 
+												-- If other labels with text differing from strand name found, output warning.
 												if type_net_name.length (anon_strand_a.name) = 0 then -- If this is the first matching label
-													anon_strand_a.name := ls.text; -- assume the label text as net name.
+													--anon_strand_a.name := ls.text; -- assume the label text as strand name.
+
+													-- Assume the label text as strand name.
+													-- Prefix net name by current_schematic file name:
+													anon_strand_a.name := type_net_name.to_bounded_string (
+															to_string (to_submodule_name (current_schematic))
+															& net_name_hierarchy_separator & type_net_name.to_string (ls.text)); 
+													
 													anon_strand_a.scope := local; -- since this is a simple label, the scope of the strand is local
 												else
-													-- If label text is different from previously assigned net name:
-													if not type_net_name."=" (anon_strand_a.name, ls.text) then 
+													-- If label text is different from previously assigned strand name.
+													-- NOTE: name check must include the prefix given earlier. See above.
+													--if not type_net_name."=" (anon_strand_a.name, ls.text) then
+													if not type_net_name."=" 
+														(
+														anon_strand_a.name,
+														type_net_name.to_bounded_string (
+															to_string (to_submodule_name (current_schematic)) & net_name_hierarchy_separator 
+															& type_net_name.to_string (ls.text))
+														) then 
+
+														-- for the console a short message
+														put_line (standard_output, message_error & "Net label conflict !");
+
+														-- for the log, some more information
 														log_indentation_reset;
 														log (message_error 
-															 & "Net " & to_string (anon_strand_a.name) & " has contradicting label " 
+															 & "Net " & type_net_name.to_string (anon_strand_a.name) & " has contradicting label " 
 															 & "at " & to_string (position => ls.coordinates) & " !");
 														raise constraint_error;
 													end if;
@@ -3137,7 +3161,7 @@ package body et_kicad is
 														if lt.global or lt.hierarchic then
 															log_indentation_reset;
 															log (message_error
-																& "local net " & to_string (anon_strand_a.name) 
+																& "local net " & type_net_name.to_string (anon_strand_a.name) 
 																& " has a hierarchic or global label at " 
 																& to_string (position => lt.coordinates) & " !");
 															raise constraint_error;
@@ -3147,7 +3171,7 @@ package body et_kicad is
 														if lt.global then
 															log_indentation_reset;
 															log (message_error
-																& "hierarchic net " & to_string (anon_strand_a.name) 
+																& "hierarchic net " & type_net_name.to_string (anon_strand_a.name) 
 																& " has a global label at " 
 																& to_string (position => lt.coordinates) & " !");
 															raise constraint_error;
@@ -3157,7 +3181,7 @@ package body et_kicad is
 														if lt.hierarchic then
 															log_indentation_reset;
 															log (message_error
-																& "global net " & to_string (anon_strand_a.name) 
+																& "global net " & type_net_name.to_string (anon_strand_a.name) 
 																& " has a hierarchic label at " 
 																& to_string (position => lt.coordinates) & " !");
 															raise constraint_error;
@@ -3170,10 +3194,10 @@ package body et_kicad is
 													anon_strand_a.name := lt.text; -- assume the label text as net name.
 												else
 													-- If label text is different from previously assigned net name:
-													if to_string (anon_strand_a.name) /= to_string (lt.text) then 
+													if anon_strand_a.name /= lt.text then 
 														log_indentation_reset;
 														log (message_error 
-															 & "Net " & to_string (anon_strand_a.name) & " has contradicting label " 
+															 & "Net " & type_net_name.to_string (anon_strand_a.name) & " has contradicting label " 
 															 & "at " & to_string (position => lt.coordinates) & " !");
 														raise constraint_error;
 													end if;
@@ -3246,7 +3270,7 @@ package body et_kicad is
 							net_name := type_net_name.to_bounded_string (
 								anonymous_net_name_prefix & trim (natural'image (net_id), left));
 
-							log (to_string (net_name), level => 2);
+							log (type_net_name.to_string (net_name), level => 2);
 							
 							strand.name := net_name;
 							strand.scope := local;
@@ -3306,7 +3330,7 @@ package body et_kicad is
 
 						if anon_strand_a.processed and not anon_strand_a.sorted then -- it must have a name AND it must not be sorted yet
 
-							log (to_string (anon_strand_a.name), level => 2);
+							log (type_net_name.to_string (anon_strand_a.name), level => 2);
 							
 							strand.name := anon_strand_a.name;
 							strand.scope := anon_strand_a.scope;
@@ -5071,7 +5095,7 @@ package body et_kicad is
 
 					-- Checks scope of strands across the current module (indicated by module_cursor).
 					-- NOTE: module_cursor points to the current module.
-					check_strands;
+					--check_strands; -- CS: currently not used
 					
 				end if;
 
