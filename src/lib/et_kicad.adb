@@ -2998,8 +2998,6 @@ package body et_kicad is
 					-- Loop in list of anonymous strands, get a (non-processed-yet) strand, loop in list of segments and 
 					-- find a (non-processed-yet) net label that sits on the net segment. If label sits on segment:
 					--  - assume label text as name of strand (and check other labels of the anonymous strand)
-					--  - NOTE: Local nets (defined as such by simple lables) get the schematic name as prefix. 
-					--    Example: A simple label "CLK" on a schematic sheet file "main_board" results in a local net named "main_board_CLK".
 					--
 					--  - mark label as processed
 					--  - update/replace label in tmp_wild_simple_labels or tmp_wild_tag_lables
@@ -3022,7 +3020,6 @@ package body et_kicad is
 								--put(et_import.report_handle, "segment: "); write_coordinates_of_segment(s); -- CS: log ?
 								
 								-- Loop in list of simple labels:
-								--if length (tmp_wild_simple_labels) > 0 then -- do that if there are simple labels at all
 								if not is_empty (tmp_wild_simple_labels) then -- do that if there are simple labels at all
 									--put_line(" simple labels ..."); -- CS: log ?
 									simple_label_cursor := tmp_wild_simple_labels.first; -- reset label cursor
@@ -3043,26 +3040,15 @@ package body et_kicad is
 												-- The first matching simple label dictates the strand name. 
 												-- If other labels with text differing from strand name found, output warning.
 												if type_net_name.length (anon_strand_a.name) = 0 then -- If this is the first matching label
-													--anon_strand_a.name := ls.text; -- assume the label text as strand name.
 
-													-- Assume the label text as strand name.
-													-- Prefix net name by current_schematic file name:
-													anon_strand_a.name := type_net_name.to_bounded_string (
-															to_string (to_submodule_name (current_schematic))
-															& net_name_hierarchy_separator & type_net_name.to_string (ls.text)); 
-													
-													anon_strand_a.scope := local; -- since this is a simple label, the scope of the strand is local
+													-- assume the label text as strand name.
+													anon_strand_a.name := ls.text; 
+
+													-- since this is a simple label, the scope of the strand is local
+													anon_strand_a.scope := local;
 												else
-													-- If label text is different from previously assigned strand name.
-													-- NOTE: name check must include the prefix given earlier. See above.
-													--if not type_net_name."=" (anon_strand_a.name, ls.text) then
-													if not type_net_name."=" 
-														(
-														anon_strand_a.name,
-														type_net_name.to_bounded_string (
-															to_string (to_submodule_name (current_schematic)) & net_name_hierarchy_separator 
-															& type_net_name.to_string (ls.text))
-														) then 
+													-- If label text is different from previously assigned strand name:
+													if not type_net_name."=" (anon_strand_a.name, ls.text) then
 
 														-- for the console a short message
 														put_line (standard_output, message_error & "Net label conflict !");

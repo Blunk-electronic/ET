@@ -336,16 +336,28 @@ package body et_coordinates is
 		return type_submodule_name.to_string (submodule);
 	end to_string;
 
-	function to_string (path : in type_path_to_submodule.list) return string is
-	-- Returns the given path as string.
+	function to_string (
+		path : in type_path_to_submodule.list;
+		top_module : in boolean := true) return string is
+	-- Returns the given path as string with hierarchy_separator.
+	-- If top_module = false, the name of the top module is omitted.
+	
 		use type_path_to_submodule;
 		use ada.strings.unbounded;
 	
 		submodule : type_path_to_submodule.cursor := path.first;
 		result : unbounded_string;
 	begin
+		-- If top_module is false, advance cursor right to next module.
+		if not top_module then
+			next (submodule);
+		end if;
+
+		-- Loop through list of submodules and collect their names in "result".
 		while submodule /= type_path_to_submodule.no_element loop
-			result := result & to_unbounded_string (to_string (element (submodule))) & '.';
+			result := result 
+				& to_unbounded_string (to_string (element (submodule))) 
+				& hierarchy_separator;
 			next (submodule);
 		end loop;
 		

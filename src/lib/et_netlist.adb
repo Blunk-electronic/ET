@@ -714,6 +714,7 @@ package body et_netlist is
 		
 			net_cursor_netlist : type_netlist.cursor; -- points to the current net within the netlist being built
 			net_inserted : boolean; -- indicates whether a net has been inserted into the netlist
+			net_name : type_net_name.bounded_string;
 			
 			strand_cursor_module : type_strands_named.cursor := first_strand;
 			-- points to the strand being read from the module (et_schematic.rig)
@@ -900,11 +901,23 @@ package body et_netlist is
 
 				-- get the strand name via strand_cursor_module
 				log_indentation_up;
-				log (text => "strand of net " & et_schematic.to_string (element (strand_cursor_module).name), level => 2);
+-- 				log (text => "strand of net " & et_schematic.to_string (element (strand_cursor_module).name), level => 2);
+
+				if element (strand_cursor_module).scope = local then
+					net_name := type_net_name.to_bounded_string (
+						et_coordinates.to_string (et_coordinates.path (element (strand_cursor_module).coordinates), top_module => false)
+						& et_coordinates.to_string (et_coordinates.module (element (strand_cursor_module).coordinates))
+						& et_coordinates.hierarchy_separator & et_schematic.to_string (element (strand_cursor_module).name));
+				else
+					net_name := element (strand_cursor_module).name;
+				end if;
+					
+				log (text => "strand of net " & et_schematic.to_string (net_name));
 				
 				-- Insert net in netlist with the strand name as primary key:
 				netlist_pre.insert (
-					key			=> element (strand_cursor_module).name, -- strand name like "MCU_CLOCK"
+					--key			=> element (strand_cursor_module).name, -- strand name like "MCU_CLOCK"
+					key			=> net_name, -- strand name like "MCU_CLOCK"
 					new_item	=> type_ports.empty_set, -- for the moment an empty portlist
 					inserted	=> net_inserted, -- CS: check status ? In case a strand with same name was already read.
 					position	=> net_cursor_netlist); 

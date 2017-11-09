@@ -155,8 +155,15 @@ package et_coordinates is
     package type_path_to_submodule is new doubly_linked_lists (
         element_type => type_submodule_name.bounded_string);
 
-	function to_string (path : in type_path_to_submodule.list) return string;
-	-- Returns the given path as string.
+	-- When handling hierachic structures we use a separator.
+	-- Example: net name "HEATER_CONTROL.DRIVER.CLK"
+	hierarchy_separator : constant string (1..1) := ".";
+	
+	function to_string (
+		path : in type_path_to_submodule.list;
+		top_module : in boolean := true) return string;
+	-- Returns the given path as string with hierarchy_separator.
+	-- If top_module = false, the name of the top module is omitted.
 	
 	type type_coordinates is new type_2d_point with private;
 

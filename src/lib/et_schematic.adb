@@ -1207,7 +1207,17 @@ package body et_schematic is
 		begin
 			while strand /= type_strands_named.no_element loop
 				log_indentation_up;
-				log (to_string (element (strand).name) & " scope " & to_string (element (strand).scope));
+-- 				log (to_string (element (strand).name) & " scope " & to_string (element (strand).scope)
+-- 					& " at pos. " 
+-- 					& et_coordinates.to_string (et_coordinates.path (element (strand).coordinates), top_module => false)
+-- 					& et_coordinates.to_string (et_coordinates.module (element (strand).coordinates)));
+
+				log (et_coordinates.to_string (et_coordinates.path (element (strand).coordinates), top_module => false)
+					& et_coordinates.to_string (et_coordinates.module (element (strand).coordinates))
+					& hierarchy_separator 
+					& to_string (element (strand).name) & " scope " & to_string (element (strand).scope)
+					);
+
 
 				type_strands_named.query_element (
 					position	=> strand,
@@ -1321,7 +1331,10 @@ package body et_schematic is
 	end first_segment;
 
 	procedure build_nets is
-	-- Builds the nets of the current module from its strands.
+	-- Builds the nets (see type_module.nets) of the current module from its strands (see type_module.strands).
+	-- This procdure should be called AFTER netlist generation because some strands may have changed their name.
+	-- (Names of strands have changee due to power-out ports connected with them.)
+	-- NOTE: This is NOT about generating or exporting a netlist. See package et_netlist instead.
 
 	-- Build the module nets. Build_nets merges the strands which are still independed of
 	-- each other. For example a strand named "VCC3V3" exists on submodule A on sheet 2. 
@@ -1335,6 +1348,7 @@ package body et_schematic is
 
 		procedure add_net (
 		-- Creates a net with the name and the scope (local, hierarchic, global) of the current named_strand. 
+		-- If named_strand is local, the net name is rendered to a full hierarchic name.
 		-- If the net existed already, then named_strand is appended to the strands of the net.
 		-- The scope of the named_strand is checked aginst the scope of the latest strand
 		-- of the net.
@@ -1345,6 +1359,7 @@ package body et_schematic is
 			
 			net_created : boolean;
 			net_cursor : type_nets.cursor;
+			net_name : type_net_name.bounded_string;
 
 			procedure set_scope_and_add_strand (
 				net_name : in type_net_name.bounded_string;
@@ -1352,9 +1367,10 @@ package body et_schematic is
 
 				strand : type_strand; -- temporarily used on scope conflict
 			begin
-				log ("net " & to_string (element (named_strand).name), level => 2);
+				--log ("net " & to_string (element (named_strand).name), level => 2);
+				log ("strand of net " & to_string (net_name), level => 2);
 				
-				if net_created then
+				if net_created then -- net has just been created
 -- 					log ("net " & to_string (element (named_strand).name), level => 1);
 					net.scope := element (named_strand).scope; -- set scope of net
 				else -- net already there -> check scope
@@ -1365,14 +1381,26 @@ package body et_schematic is
 
 						-- short error message for the console output
 						log (message_error 
-								& "scope contradiction with net " & to_string (element (named_strand).name) & " !",
+							 --& "scope contradiction with net " & to_string (element (named_strand).name) & " !",
+							 & "scope contradiction in net " & to_string (net_name) & " !",
 							console => true
 							);
 
 						-- full error message for the log
+-- 						log (message_error 
+-- 								& "scope " & to_string (element (named_strand).scope) 
+-- 								& " of net " & to_string (element (named_strand).name)
+-- 								& " at " & to_string (position => element (named_strand).coordinates, scope => et_coordinates.module)
+-- 								& " invalid !"
+-- 								& latin_1.lf
+-- 								& "Conflicts with scope " & to_string (net.scope) & " of net"
+-- 								& " at " & to_string (position => strand.coordinates, scope => et_coordinates.module),
+-- 							console => false
+-- 							);
+
 						log (message_error 
 								& "scope " & to_string (element (named_strand).scope) 
-								& " of net " & to_string (element (named_strand).name)
+								& " of net " & to_string (net_name)
 								& " at " & to_string (position => element (named_strand).coordinates, scope => et_coordinates.module)
 								& " invalid !"
 								& latin_1.lf
@@ -1380,7 +1408,7 @@ package body et_schematic is
 								& " at " & to_string (position => strand.coordinates, scope => et_coordinates.module),
 							console => false
 							);
-						
+
 						raise constraint_error;
 					end if;
 				end if;
@@ -1398,14 +1426,31 @@ package body et_schematic is
 
 		begin -- add_net
 
+			-- form the net name depending on scope
+			case element (named_strand).scope is
+
+				-- If the current strand is local, the full hierarchic name of the net must be formed
+				-- in order to get something like "driver.GND" :
+				when local =>
+					net_name := type_net_name.to_bounded_string (
+						et_coordinates.to_string (et_coordinates.path (element (named_strand).coordinates), top_module => false)
+							& et_coordinates.to_string (et_coordinates.module (element (named_strand).coordinates))
+							& et_coordinates.hierarchy_separator & et_schematic.to_string (element (named_strand).name));
+
+				-- CS: special threatment for hierarchic strands ?					
+				when others =>
+					net_name := element (named_strand).name;
+
+			end case;
+			
 			-- create net
 			module.nets.insert (
-				key 		=> element (named_strand).name,
+				--key 		=> element (named_strand).name,
+				key 		=> net_name,
 				position	=> net_cursor,
 				inserted	=> net_created);
 
-			-- If net created or already there, net_cursor points to the net
-			-- where the strand is to be added.
+			-- If net created or already there, net_cursor points to the net where the strand is to be added.
 			module.nets.update_element (
 				position => net_cursor,
 				process => set_scope_and_add_strand'access);
