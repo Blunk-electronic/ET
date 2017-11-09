@@ -131,7 +131,9 @@ package body et_schematic is
 	function anonymous (net_name : in type_net_name.bounded_string) return boolean is
 	-- Returns true if the given net name is anonymous.
 	begin
-		if slice (net_name, 1, 2) = anonymous_net_name_prefix then
+		-- CS: this is just a test if anonymous_net_name_prefix is somewhere
+		-- in the net name. Should be improved.
+		if type_net_name.count (net_name, anonymous_net_name_prefix) > 0 then
 			return true;
 		else 
 			return false;
@@ -1373,6 +1375,12 @@ package body et_schematic is
 				if net_created then -- net has just been created
 -- 					log ("net " & to_string (element (named_strand).name), level => 1);
 					net.scope := element (named_strand).scope; -- set scope of net
+
+					-- Test if net has a dedicated name. Output a warning if negative.
+					if anonymous (net_name) then
+						log (message_warning & "net " & to_string (net_name) & " has no dedicated name !");
+					end if;
+					
 				else -- net already there -> check scope
 					if net.scope /= element (named_strand).scope then
 						strand := type_strands.last_element (net.strands);
