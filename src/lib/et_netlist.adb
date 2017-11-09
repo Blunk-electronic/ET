@@ -1085,15 +1085,15 @@ package body et_netlist is
 
 				-- write net name in netlist
 				log_indentation_up;
-				log (text => "net " & et_schematic.type_net_name.to_string (net_name), level => 1);
+				log (text => "net " & to_string (net_name), level => 1);
 
 				-- Check if net has no dedicated name (a net name like N$3 is anonymous):
 				if et_schematic.anonymous (net_name) then
-					log (message_warning & "Net has no dedicated name !");
+					log (message_warning & "net " & to_string (net_name) & " has no dedicated name !");
 				end if;
 				
 				new_line (netlist_handle);
-				put_line (netlist_handle, et_schematic.type_net_name.to_string (net_name));
+				put_line (netlist_handle, to_string (net_name));
 
 				-- export port
 				log_indentation_up;

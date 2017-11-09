@@ -1976,7 +1976,7 @@ package body et_schematic is
 		begin
 			n := length (module.components);
 		end get;
-	
+
 	begin
 		type_rig.query_element (
 			position	=> module_cursor,
@@ -2027,6 +2027,12 @@ package body et_schematic is
 				end if;
 				next (component);
 			end loop;
+
+			if n = 0 then
+				log_indentation_up;
+				log (text => "none", level => 1);
+				log_indentation_down;
+			end if;
 		end get;
 	
 	begin -- components_real
@@ -2053,6 +2059,7 @@ package body et_schematic is
 			log (text => "virtual components", level => 1);
 			
 			component := module.components.first;
+
 			while component /= type_components.no_element loop
 				
 				-- filter real components
@@ -2066,6 +2073,12 @@ package body et_schematic is
 				end if;
 				next (component);
 			end loop;
+
+			if n = 0 then
+				log_indentation_up;
+				log (text => "none", level => 1);
+				log_indentation_down;
+			end if;
 			
 		end get;
 	
