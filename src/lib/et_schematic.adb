@@ -229,15 +229,17 @@ package body et_schematic is
 		return (to_string (position => junction.coordinates, scope => scope));
 	end to_string;
 	
-	procedure write_note_properties (note : in et_schematic.type_note) is
+	procedure write_note_properties (
+		note : in et_schematic.type_note;
+		log_threshold : in et_string_processing.type_log_level := 0) is
 	-- Writes the properties of the given note
 		use et_string_processing;
 		use et_coordinates;
 	
-		log_threshold : type_log_level := 1;
+-- 		log_threshold : type_log_level := 2;
 	begin
 		log_indentation_up;
-		log ("text note");
+		log ("text note", log_threshold);
 
 		log_indentation_up;
 

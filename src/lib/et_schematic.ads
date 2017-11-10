@@ -152,7 +152,9 @@ package et_schematic is
 		content			: et_libraries.type_text_content.bounded_string;
 	end record;
 
-	procedure write_note_properties (note : in et_schematic.type_note);
+	procedure write_note_properties (
+		note : in et_schematic.type_note;
+		log_threshold : in et_string_processing.type_log_level := 0);
 	-- Writes the properties of the given note
 
 	procedure add_note (

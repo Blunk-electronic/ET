@@ -2457,12 +2457,12 @@ package body et_kicad is
 
 		end init_temp_variables;
 
-		procedure check_text_fields is
+		procedure check_text_fields (log_threshold : in type_log_level) is
 		-- Tests if any "field found" flag is still cleared and raises an alarm in that case.
 		-- Perfoms a plausibility and syntax check on the text fields before they are used to 
 		-- assemble and insert the component into the component list of the module.
 		-- This can be regarded as a kind of pre-check.
-		use et_coordinates;
+			use et_coordinates;
 		
 			procedure missing_field (m : in et_libraries.type_text_meaning) is 
 				
@@ -2483,7 +2483,7 @@ package body et_kicad is
 			commissioned, updated : et_string_processing.type_date;
 
 			-- we set the log threshold level so that details are hidden when no log level specified
-			log_threshold : type_log_level := 2;
+-- 			log_threshold : type_log_level := 2;
 
 			use et_libraries;
 		begin -- check_text_fields
@@ -2491,14 +2491,14 @@ package body et_kicad is
 
 			-- write precheck preamble
 			log ("component " 
-				& to_string(tmp_component_reference));
+				& to_string(tmp_component_reference), level => log_threshold);
 
 			log_indentation_up;
-			log ("precheck", log_threshold);
+			log ("precheck", log_threshold + 1);
 			log_indentation_up;
 			
 			-- reference
-			log ("reference", level => log_threshold);
+			log ("reference", level => log_threshold + 1);
 			if not tmp_component_text_reference_found then
 				missing_field (et_libraries.reference);
 			else
@@ -2522,7 +2522,7 @@ package body et_kicad is
 			end if;
 
 			-- value
-			log ("value", level => log_threshold);
+			log ("value", level => log_threshold + 1);
 			if not tmp_component_text_value_found then
 				missing_field (et_libraries.value);
 			else
@@ -2536,7 +2536,7 @@ package body et_kicad is
 			end if;
 
 			-- commissioned
-			log ("commissioned", level => log_threshold);
+			log ("commissioned", level => log_threshold + 1);
 			if not tmp_component_text_commissioned_found then
 				missing_field (et_libraries.commissioned);
 			else
@@ -2549,7 +2549,7 @@ package body et_kicad is
 			end if;
 
 			-- updated
-			log ("updated", level => log_threshold);
+			log ("updated", level => log_threshold + 1);
 			if not tmp_component_text_updated_found then
 				missing_field (et_libraries.updated);
 			else
@@ -2566,7 +2566,7 @@ package body et_kicad is
 			end if;
 
 			-- author
-			log ("author", level => log_threshold);
+			log ("author", level => log_threshold + 1);
 			if not tmp_component_text_author_found then
 				missing_field (et_libraries.author);
 			else
@@ -2581,7 +2581,7 @@ package body et_kicad is
 				when sch_pcb =>
 						
 					-- package
-					log ("package/footprint", level => log_threshold);
+					log ("package/footprint", level => log_threshold + 1);
 					if not tmp_component_text_packge_found then
 						missing_field (et_libraries.packge);
 					else
@@ -2590,7 +2590,7 @@ package body et_kicad is
 					end if;
 
 					-- datasheet
-					log ("datasheet", level => log_threshold);
+					log ("datasheet", level => log_threshold + 1);
 					if not tmp_component_text_datasheet_found then
 						missing_field (et_libraries.datasheet);
 					else
@@ -2599,7 +2599,7 @@ package body et_kicad is
 					end if;
 
 					-- partcode
-					log ("partcode", level => log_threshold);
+					log ("partcode", level => log_threshold + 1);
 					if not tmp_component_text_partcode_found then
 						missing_field (et_libraries.partcode);
 					else
@@ -2608,7 +2608,7 @@ package body et_kicad is
 					end if;
 					
 					-- purpose
-					log ("purpose", level => log_threshold);
+					log ("purpose", level => log_threshold + 1);
 					if not tmp_component_text_purpose_found then
 						missing_field (et_libraries.purpose);
 					else
@@ -2617,7 +2617,7 @@ package body et_kicad is
 					end if;
 
 					-- bom
-					log ("bom", level => log_threshold);
+					log ("bom", level => log_threshold + 1);
 					if not tmp_component_text_bom_found then
 						missing_field (et_libraries.bom);
 					else
@@ -4541,7 +4541,7 @@ package body et_kicad is
 
 											-- for the log
 											--write_junction_properties (tmp_junction);
-											if log_level >= 1 then
+											if log_level >= log_threshold + 1 then
 												log_indentation_up;
 												log ("junction at " & to_string (junction => tmp_junction, scope => xy));
 												log_indentation_down;
@@ -4586,7 +4586,7 @@ package body et_kicad is
 
 										-- for the log
 										--write_label_properties (type_net_label (tmp_simple_net_label));
-										if log_level >= 1 then
+										if log_level >= log_threshold + 1 then
 											log_indentation_up;
 											log ("simple label at " & to_string (label => type_net_label (tmp_simple_net_label), scope => xy));
 											log_indentation_down;
@@ -4640,8 +4640,7 @@ package body et_kicad is
 										tmp_tag_net_label.text := type_net_name.to_bounded_string(get_field_from_line(line,1));
 
 										-- for the log
--- 										write_label_properties (type_net_label (tmp_tag_net_label));
-										if log_level >= 1 then
+										if log_level >= log_threshold + 1 then
 											log_indentation_up;
 											log ("tag label at " & to_string (label => type_net_label (tmp_tag_net_label), scope => xy));
 											log_indentation_down;
@@ -4678,7 +4677,7 @@ package body et_kicad is
 										-- CS: Currently we store the line as it is in tmp_note.text
 										tmp_note.content := et_libraries.type_text_content.to_bounded_string(to_string(line));
 
-										write_note_properties (tmp_note);
+										write_note_properties (tmp_note, log_threshold + 1);
 										
 										-- the notes are to be collected in the list of notes
 										add_note (tmp_note);
@@ -4732,7 +4731,7 @@ package body et_kicad is
 
 											-- Check if all required text fields have been found.
 											-- Check content of text fields for syntax and plausibility.
-											check_text_fields;
+											check_text_fields (log_threshold + 2);
 											
 											-- Insert component in component list of module. If a component is split
 											-- in units, only the first occurence of it leads to inserting the component.
