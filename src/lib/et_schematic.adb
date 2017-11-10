@@ -128,6 +128,28 @@ package body et_schematic is
 		return type_net_name.to_string (net_name);
 	end to_string;
 
+	function simple_name (net_name : in type_net_name.bounded_string) return type_net_name.bounded_string is
+	-- Returns the simple name of the given net name.
+	-- Example: If the given name is "MOTOR_DRIVER.CLOCK" then the return is "CLOCK".
+		position_of_last_separator : natural := 0;
+		name : type_net_name.bounded_string;
+	begin
+		-- Detect position of last hierarchy separator.
+		position_of_last_separator := index (net_name, hierarchy_separator, backward);
+
+		-- If the given net name is a simple name already, return it as it is.
+		-- Otherwise extract the simple net name from position of hierarchy 
+		-- separator until end of net_name.
+		if position_of_last_separator > 0 then
+			name := type_net_name.to_bounded_string (
+				slice (net_name, position_of_last_separator + 1, length (net_name)));
+		else
+			name := net_name;
+		end if;
+		
+		return name;
+	end simple_name;
+	
 	function anonymous (net_name : in type_net_name.bounded_string) return boolean is
 	-- Returns true if the given net name is anonymous.
 	begin
@@ -1096,11 +1118,14 @@ package body et_schematic is
 
 	procedure rename_strands (
 	-- Renames all strands with the name_before to the name_after.
+	-- Changes the scope of the affected strands to "global".
 		name_before : type_net_name.bounded_string;
 		name_after	: type_net_name.bounded_string) is
 
 		use et_string_processing;
-		
+
+		count : natural := 0;
+	
 		procedure rename (
 			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out type_module) is
@@ -1116,28 +1141,36 @@ package body et_schematic is
 			-- renaming the procedure comes to an early end.
 
 			procedure do_it (strand : in out type_strand_named) is
-			-- Renames the strand if its name equals name_before.
 			begin
+				-- search for the strand to be renamed
 				if strand.name = name_before then
 
+					count := count + 1;
 					log_indentation_up;
+-- 					log (
+-- 						text => to_string (strand.name) 
+-- 							& " to "
+-- 							& to_string (name_after) & " ...",
+-- 							level => 2
+-- 						);
 					log (
-						text => to_string (strand.name) 
-							& " to "
-							& to_string (name_after) & " ...",
-							level => 2
-						);
+						text => to_string (position => strand.coordinates, scope => et_coordinates.module),
+						level => 3);
+
 					log_indentation_down;
 
 					strand.name := name_after; -- assign new name to strand
+					strand.scope := global;
 
-					renamed := true; -- signal renaming took place
+					renamed := true; -- signal that renaming took place
 				end if;
 			end do_it;
 			
 		begin -- rename
 			while cursor /= type_strands_named.no_element loop
-				module.strands.update_element (position => cursor, process => do_it'access);
+				module.strands.update_element (
+					position => cursor,
+					process => do_it'access);
 
 				-- Exit prematurely if name_before was anonymous. anonymous strand names are unique.
 				-- So it is ok to exit prematurely.
@@ -1150,12 +1183,25 @@ package body et_schematic is
 		end rename;
 		
 	begin -- rename_strands
-		log ("renaming strands ...", level => 2);
+		log ("renaming strands from " & to_string (name_before)
+			 & " to " & to_string (name_after) & " ...", level => 2);
 		
 		rig.update_element (
 			position	=> module_cursor,
 			process		=> rename'access
 			);
+
+		if count > 0 then
+			log ("renamed" & natural'image (count) & " strands.", level => 2);
+		else
+			-- CS: This should never happen
+			log_indentation_reset;
+			log (message_error & "strand " 
+				& to_string (name_before) & " not found !");
+			raise constraint_error;
+		end if;
+
+		
 	end rename_strands;
 
 	procedure write_strands is
@@ -1332,11 +1378,11 @@ package body et_schematic is
 		return segment_cursor;
 	end first_segment;
 
-	procedure build_nets is
+	procedure build_internal_net_database is
 	-- Builds the nets (see type_module.nets) of the current module from its strands (see type_module.strands).
+	-- NOTE: This is NOT about generating or exporting a netlist. See package et_netlist instead.
 	-- This procdure should be called AFTER netlist generation because some strands may have changed their name.
 	-- (Names of strands have changee due to power-out ports connected with them.)
-	-- NOTE: This is NOT about generating or exporting a netlist. See package et_netlist instead.
 
 	-- Build the module nets. Build_nets merges the strands which are still independed of
 	-- each other. For example a strand named "VCC3V3" exists on submodule A on sheet 2. 
@@ -1348,6 +1394,8 @@ package body et_schematic is
 
 		named_strand : type_strands_named.cursor;
 
+		log_threshold : type_log_level := 1;
+	
 		procedure add_net (
 		-- Creates a net with the name and the scope (local, hierarchic, global) of the current named_strand. 
 		-- If named_strand is local, the net name is rendered to a full hierarchic name.
@@ -1370,7 +1418,7 @@ package body et_schematic is
 				strand : type_strand; -- temporarily used on scope conflict
 			begin
 				--log ("net " & to_string (element (named_strand).name), level => 2);
-				log ("strand of net " & to_string (net_name), level => 2);
+				log ("strand of net " & to_string (net_name), level => log_threshold + 1);
 				
 				if net_created then -- net has just been created
 -- 					log ("net " & to_string (element (named_strand).name), level => 1);
@@ -1421,7 +1469,7 @@ package body et_schematic is
 					end if;
 				end if;
 
-				if log_level >= 3 then
+				if log_level >= log_threshold + 2 then
 					log_indentation_up;
 					log ("strand at " & to_string (position => element (named_strand).coordinates, scope => et_coordinates.module));
 					log_indentation_down;
@@ -1465,15 +1513,15 @@ package body et_schematic is
 			
 		end add_net;
 
-	begin -- build_nets
-		log ("building nets ...");
+	begin -- build_internal_net_database
+		log (text => "building internal net database ...", level => log_threshold);
 		first_module;
 
 		log_indentation_up;
 
 		-- loop in modules of the rig and fetch one strand after another
 		while module_cursor /= type_rig.no_element loop
-			log ("module " & to_string (key (module_cursor)), level => 1);
+			log ("module " & to_string (key (module_cursor)), level => log_threshold);
 
 			-- loop in strands of the current module
 			named_strand := first_strand;
@@ -1498,7 +1546,7 @@ package body et_schematic is
 		end if;
 		
 		log_indentation_down;
-	end build_nets;
+	end build_internal_net_database;
 
 	procedure write_nets is
 	-- Writes a nice overview of all nets, strands, segments and labels.
@@ -1572,7 +1620,7 @@ package body et_schematic is
 		begin -- query_strand
 			log_indentation_up;
 			while strand /= type_strands.no_element loop
-				log ("strand" & count_type'image (strand_number) &
+				log ("strand #" & trim (count_type'image (strand_number), left) &
 					" at " & to_string (position => element (strand).coordinates, scope => et_coordinates.module)
 					);
 

@@ -2700,6 +2700,7 @@ package body et_kicad is
 			-- this container for temporarily storage of anonymous strands.
 			anonymous_strands : type_anonymous_strands.list; 
 
+			log_threshold : type_log_level := 1;
 		
 			procedure add_segment_to_anonymous_strand (segment_cursor : in type_wild_segments.cursor) is
 			-- Adds a net segment (indicated by given cursor) to anonymous_strand.
@@ -4174,7 +4175,7 @@ package body et_kicad is
 						when others =>
 
 							-- At a certain log level we report the whole line as it is:
- 							log (to_string(line), level => 3);
+ 							log (to_string (line), level => log_threshold + 3);
 							
 							-- read schematic headline like "EESchema Schematic File Version 2"
 							if not schematic_headline_processed then
@@ -4218,14 +4219,16 @@ package body et_kicad is
 								if get_field_from_line( get_field_from_line(line,1), 1, latin_1.colon) = schematic_library then
 
 									-- for the log: write library name
-									log (text => "uses library " & get_field_from_line (get_field_from_line(line,1), 2, latin_1.colon));
+									log (text => "uses library " & get_field_from_line (get_field_from_line (line,1), 2, latin_1.colon),
+										 level => log_threshold + 1
+										);
 
 									-- Store bare library name in the list sheet_header.libraries:
 									-- We use a doubly linked list because the order of the library names must be kept.
-									et_libraries.type_library_names.append(
+									et_libraries.type_library_names.append (
 										container => sheet_header.libraries,
-										new_item => et_libraries.type_library_name.to_bounded_string(
-											get_field_from_line( get_field_from_line(line,1), 2, latin_1.colon))
+										new_item => et_libraries.type_library_name.to_bounded_string (
+											get_field_from_line (get_field_from_line(line,1), 2, latin_1.colon))
 										);
 
 								end if;
@@ -4327,7 +4330,7 @@ package body et_kicad is
 									-- read sheet number from a line like "Sheet 1 7"
 									if get_field_from_line(line,1) = schematic_keyword_sheet then
 										sheet_number_current := positive'value(get_field_from_line(line,2));
-										log ("sheet" & positive'image(sheet_number_current) & " ...");
+										log ("sheet" & positive'image (sheet_number_current) & " ...", level => log_threshold + 1);
 										sheet_count_total    := positive'value(get_field_from_line(line,3));
 										if sheet_count_total > 1 then
 											-- Set in the list_of_submodules (to be returned) the parent_module. The schematic file 
@@ -4509,7 +4512,7 @@ package body et_kicad is
 										if length (tmp_segment) > zero_distance then 
 
 											-- The net segments are to be collected in a wild list of segments for later sorting.
-											if log_level >= 1 then
+											if log_level >= log_threshold + 1 then
 												log_indentation_up;
 												--write_coordinates_of_segment (tmp_segment);
 												log ("net segment " & to_string (segment => tmp_segment, scope => xy));

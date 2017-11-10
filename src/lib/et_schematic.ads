@@ -292,6 +292,10 @@ package et_schematic is
 	function to_string (net_name : in type_net_name.bounded_string) return string;
 	-- Returns the given net name as string;
 
+	function simple_name (net_name : in type_net_name.bounded_string) return type_net_name.bounded_string;
+	-- Returns the simple name of the given net name.
+	-- Example: If the given name is "MOTOR_DRIVER.CLOCK" then the return is "CLOCK".
+	
 	function anonymous (net_name : in type_net_name.bounded_string) return boolean;
 	-- Returns true if the given net name is anonymous.
 	
@@ -701,6 +705,7 @@ package et_schematic is
 
 	procedure rename_strands (
 	-- Renames all strands with the name_before to the name_after.
+	-- Changes the scope of the affected strands to "global".
 		name_before : type_net_name.bounded_string;
 		name_after	: type_net_name.bounded_string);
 
@@ -713,8 +718,8 @@ package et_schematic is
 	function first_segment (cursor : in type_strands_named.cursor) return type_net_segments.cursor;
 	-- Returns a cursor pointing to the first net segment of the given strand.
 
-	procedure build_nets;
-	-- Builds the nets of the current module from its strands.
+	procedure build_internal_net_database;
+	-- Builds the net database of the current module from its strands.
 
 	procedure write_nets;
 	-- Writes a nice overview of all nets, strands, segments and labels.

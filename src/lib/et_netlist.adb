@@ -198,7 +198,7 @@ package body et_netlist is
 		-- For tempoarily storage of units of a component (taken from the schematic):
 		units_sch : et_schematic.type_units.map;
 
-		log_threshold : type_log_level := 1;
+		log_threshold : type_log_level := 2;
 
 		procedure extract_ports is
 		-- Extracts the ports of the component indicated by component_cursor_lib.
@@ -331,8 +331,9 @@ package body et_netlist is
 						while port_cursor /= et_libraries.type_ports.no_element loop
 
 							--log ("port " & type_port_name.to_string (key (port_cursor))
-							log ("port " & type_port_name.to_string (element (port_cursor).name)
-								& " pin/pad " & to_string (element (port_cursor).pin));
+							log (text => "port " & type_port_name.to_string (element (port_cursor).name)
+									& " pin/pad " & to_string (element (port_cursor).pin),
+								 level => log_threshold + 1);
 
 							-- Build a new port and append port to portlist of the 
 							-- current component (indicated by component_cursor_portlists).
@@ -440,7 +441,7 @@ package body et_netlist is
 
 	begin -- build_portlists
 		log_indentation_up;
-		log (text => "generating portlists ...");
+		log (text => "building portlists ...", level => log_threshold);
 		log_indentation_up;
 
 		-- The library contains the coordinates of the ports whereas
@@ -706,6 +707,8 @@ package body et_netlist is
 		-- Here the portlists of the current module are stored by function build_portlists:
 		portlists : type_portlists.map;
 
+		log_threshold : type_log_level := 1;
+		
 		function make_netlist return type_netlist.map is
 		-- Generates the netlist of the current module (indicated by module_cursor).
 		-- The portlists provide the port coordinates. 
@@ -802,7 +805,8 @@ package body et_netlist is
 				use et_libraries;
 				
 			begin -- post_process_netlist
-				log (text => "post-processing module netlist ...", level => 1);
+				log_indentation_up;
+				log (text => "post-processing netlist ...", level => log_threshold);
 			
 				-- LOOP IN PRELIMINARY NETLIST
 				net_cursor_pre := netlist_pre.first;
@@ -810,7 +814,7 @@ package body et_netlist is
 					net_name := key (net_cursor_pre);
 
 					log_indentation_up;
-					log (text => "net " & et_schematic.type_net_name.to_string (net_name), level => 2);
+					log (text => "net " & et_schematic.type_net_name.to_string (net_name), level => log_threshold + 1);
 					log_indentation_up;
 
 					-- LOOP IN PORTLIST OF CURRENT NET
@@ -823,7 +827,7 @@ package body et_netlist is
 								reference (port) & " "
 								& et_netlist.port (port) & " "
 								& et_netlist.pin (port) & " ",
-							level => 3
+							level => log_threshold + 2
 							);
 
 						-- Test if supply port name matches net name. When positive, nothing to to.
@@ -834,7 +838,7 @@ package body et_netlist is
 								null; -- fine. net name matches port name
 							else
 								log_indentation_up;
-								log (text => "is a power output -> port name overwrites net name", level => 3);
+								log (text => "is a power output -> port name overwrites net name", level => log_threshold + 2);
 
 								-- Check if a non-anonymous net name is overwritten by the port name.
 								-- Example: The net name is already "P3V3" and the port name is "+3V3".
@@ -849,7 +853,8 @@ package body et_netlist is
 								
 								-- update strands
 								et_schematic.rename_strands (
-									name_before => key (net_cursor_pre),
+									--name_before => key (net_cursor_pre),
+									name_before => simple_name (key (net_cursor_pre)),
 									name_after => net_name);
 
 								log_indentation_down;
@@ -878,12 +883,14 @@ package body et_netlist is
 
 					next (net_cursor_pre);
 				end loop;
-				
+
+				log_indentation_down;
 				return netlist_post;
 			end post_process_netlist;
 					
 		begin -- make_netlist (note singluar !)
-			log (text => "building module netlist ...", level => 1);
+			log_indentation_up;
+			log (text => "building netlist ...", level => log_threshold);
 
 			-- HOW DOES IT WORK ?
 			-- The outer loop fetches one strand after another from a module in et_schematic.rig (see type_module in et_schematic.ads).
@@ -912,12 +919,12 @@ package body et_netlist is
 					net_name := element (strand_cursor_module).name;
 				end if;
 					
-				log (text => "strand of net " & et_schematic.to_string (net_name));
+				log (text => "strand of net " & et_schematic.to_string (net_name), level => log_threshold + 1);
 				
 				-- Insert net in netlist with the strand name as primary key:
 				netlist_pre.insert (
 					--key			=> element (strand_cursor_module).name, -- strand name like "MCU_CLOCK"
-					key			=> net_name, -- strand name like "MCU_CLOCK"
+					key			=> net_name, -- strand name like "MCU_CLOCK" or "GUIDANCE_GPIO.GND"
 					new_item	=> type_ports.empty_set, -- for the moment an empty portlist
 					inserted	=> net_inserted, -- CS: check status ? In case a strand with same name was already read.
 					position	=> net_cursor_netlist); 
@@ -931,13 +938,13 @@ package body et_netlist is
 				while segment_cursor /= type_net_segments.no_element loop
 					segment := element (segment_cursor);
 					log_indentation_up;
-					log (text => "probing segment " & to_string (segment), level => 3);
+					log (text => "probing segment " & to_string (segment), level => log_threshold + 2);
 
 					-- LOOP IN PORTLISTS
 					component_cursor := first (portlists);
 					while component_cursor /= type_portlists.no_element loop
 						log_indentation_up;
-						log ("probing component " & et_schematic.to_string (key (component_cursor)), level => 3);
+						log ("probing component " & et_schematic.to_string (key (component_cursor)), level => log_threshold + 2);
 						
 						port_cursor := first_port (component_cursor);
 						while port_cursor /= type_base_ports.no_element loop
@@ -946,7 +953,7 @@ package body et_netlist is
 							
 							log_indentation_up;
 							log ("probing port " 
-								 & et_coordinates.to_string (position => element (port_cursor).coordinates), level => 3);
+								 & et_coordinates.to_string (position => element (port_cursor).coordinates), level => log_threshold + 2);
 
 							-- test if port sits on segment
 							if port_sits_on_segment (element (port_cursor), segment) then
@@ -955,7 +962,7 @@ package body et_netlist is
 									& " port " 
 									& et_libraries.to_string (element (port_cursor).port)
 									& " "
-									& et_coordinates.to_string (position => element (port_cursor).coordinates), level => 3);
+									& et_coordinates.to_string (position => element (port_cursor).coordinates), level => log_threshold + 2);
 								
 								log_indentation_down;
 
@@ -982,14 +989,15 @@ package body et_netlist is
 				next (strand_cursor_module);
 			end loop;
 
-			log (text => "processed nets" & count_type'image (length (netlist_pre)), level => 2);
-
+			log (text => "processed nets" & count_type'image (length (netlist_pre)), level => log_threshold + 1);
+			log_indentation_down;
+			
 			return post_process_netlist;
 
 		end make_netlist;
 		
 	begin -- make_netlists (note plural !)
-		log (text => "building rig netlists ...", level => 1);
+		log (text => "building rig netlists ...", level => log_threshold);
 
 		-- We start with the first module of the rig.
 		et_schematic.first_module;
@@ -998,7 +1006,7 @@ package body et_netlist is
 		-- module_cursor points to the module in the rig.
 		while et_schematic.module_cursor /= type_rig.no_element loop
 			log_indentation_up;
-			log (text => "module " & to_string (key (et_schematic.module_cursor)), level => 1);
+			log (text => "module " & to_string (key (et_schematic.module_cursor)), level => log_threshold);
 			create_project_directory (to_string (key (et_schematic.module_cursor)));
 
 			-- Generate the portlists of the module indicated by module_cursor.
