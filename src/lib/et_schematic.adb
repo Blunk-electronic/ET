@@ -290,7 +290,7 @@ package body et_schematic is
 		log_indentation_up;
 		
 		-- reference (serves as key in list of components)
-		log ("component " & to_string (type_components.key(component)) & " properties");
+		log ("component " & to_string (type_components.key(component)));
 
 		log_indentation_up;
 		
@@ -1710,8 +1710,9 @@ package body et_schematic is
 	-- CS: This assumption may not apply for all CAE systems. Currently we
 	-- consider only kicad. In other cases the "inserted" check (see below) 
 	-- must be enabled via an argument.
-		reference	: in et_libraries.type_component_reference;
-		component	: in type_component) is
+		reference		: in et_libraries.type_component_reference;
+		component		: in type_component;
+		log_threshold 	: in et_string_processing.type_log_level) is
 		
 		procedure add (
 			name	: in et_coordinates.type_submodule_name.bounded_string;
@@ -1730,7 +1731,7 @@ package body et_schematic is
 				);
 
 -- 			if inserted then -- first occurence of component
-				if log_level >= 2 then
+				if log_level >= log_threshold then
 					et_schematic.write_component_properties (component => cursor);
 				end if;
 -- 			else -- not inserted

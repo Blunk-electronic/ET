@@ -731,8 +731,9 @@ package et_schematic is
 	
 	procedure add_component (
 	-- Adds a component into the the module (indicated by module_cursor).
-		reference	: in et_libraries.type_component_reference;
-		component	: in type_component);
+		reference		: in et_libraries.type_component_reference;
+		component		: in type_component;
+		log_threshold	: in et_string_processing.type_log_level);
 
 	procedure add_unit (
 	-- Adds a unit into the given commponent.

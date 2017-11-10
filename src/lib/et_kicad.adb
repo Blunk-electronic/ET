@@ -2457,7 +2457,8 @@ package body et_kicad is
 
 		end init_temp_variables;
 
-		procedure check_text_fields (log_threshold : in type_log_level) is
+		procedure check_text_fields (log_threshold : in type_log_level) is 
+		-- NOTE: This is schematic related !
 		-- Tests if any "field found" flag is still cleared and raises an alarm in that case.
 		-- Perfoms a plausibility and syntax check on the text fields before they are used to 
 		-- assemble and insert the component into the component list of the module.
@@ -3745,6 +3746,7 @@ package body et_kicad is
 	
 			
 			procedure insert_component is
+			-- NOTE: This is schematic related !
 			-- Inserts the component in the component list of the module (indicated by module_cursor).
 			-- Components may occur multiple times, which implies they are
 			-- split into units (EAGLE refers to them as "gates").
@@ -3789,7 +3791,8 @@ package body et_kicad is
 								author 			=> et_libraries.type_person_name.to_bounded_string (et_libraries.content (tmp_component_text_author)),
 
 								-- At this stage we do not know if and how many units there are. So the unit list is empty.
-								units 			=> et_schematic.type_units.empty_map));
+								units 			=> et_schematic.type_units.empty_map),
+							log_threshold => log_threshold +1);
 
 					when sch_pcb => -- we have a line like "L 74LS00 U1"
 
@@ -3834,7 +3837,9 @@ package body et_kicad is
 									),
 
 								-- At this stage we do not know if and how many units there are. So the unit list is empty for the moment.
-								units => et_schematic.type_units.empty_map));
+								units => et_schematic.type_units.empty_map),
+
+							log_threshold => log_threshold +1);
 
 							
 							-- Test if footprint has been associated with the component.
