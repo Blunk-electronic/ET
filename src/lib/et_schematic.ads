@@ -281,8 +281,10 @@ package et_schematic is
 		end case;
 	end record;
 
-	procedure write_unit_properties (unit : in type_units.cursor);
+	procedure write_unit_properties (
 	-- Writes the properties of the unit indicated by the given cursor.
+		unit			: in type_units.cursor;
+		log_threshold	: in et_string_processing.type_log_level);
 
 
 -- LABELS AND NETS
@@ -617,8 +619,10 @@ package et_schematic is
 		"<" => compare_reference,
  		element_type => type_component);
 
-	procedure write_component_properties (component : in type_components.cursor);
+	procedure write_component_properties (
 	-- Writes the properties of the component indicated by the given cursor.
+		component : in type_components.cursor;
+		log_threshold : in et_string_processing.type_log_level);
 
 	function component_reference (cursor : in type_components.cursor) 
 		return type_component_reference;
@@ -737,9 +741,10 @@ package et_schematic is
 
 	procedure add_unit (
 	-- Adds a unit into the given commponent.
-		reference	: in et_libraries.type_component_reference;
-		unit_name	: in et_libraries.type_unit_name.bounded_string;
-		unit 		: in type_unit);
+		reference		: in et_libraries.type_component_reference;
+		unit_name		: in et_libraries.type_unit_name.bounded_string;
+		unit 			: in type_unit;
+		log_threshold	: in et_string_processing.type_log_level);
 
 	procedure reset_component_cursor (cursor : in out type_components.cursor);
 	-- Resets the given component cursor to the begin of the component list.

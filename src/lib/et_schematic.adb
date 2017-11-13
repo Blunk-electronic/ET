@@ -283,66 +283,69 @@ package body et_schematic is
 		log_indentation_down;
 	end write_note_properties;
 	
-	procedure write_component_properties (component : in type_components.cursor) is
+	procedure write_component_properties (
 	-- Writes the properties of the component indicated by the given cursor.
+		component : in type_components.cursor;
+		log_threshold : in et_string_processing.type_log_level) is
+
 		use et_string_processing;
 	begin
 		log_indentation_up;
 		
 		-- reference (serves as key in list of components)
-		log ("component " & to_string (type_components.key(component)));
+		log ("component " & to_string (type_components.key (component)) & " properties", log_threshold);
 
 		log_indentation_up;
 		
 		-- CS: library file name
 		-- name in library
 		log ("name in library "
-			& et_libraries.to_string (type_components.element(component).name_in_library));
+			& to_string (type_components.element (component).name_in_library), log_threshold);
 		
 		-- value
 		log ("value "
-			& et_libraries.type_component_value.to_string (type_components.element(component).value));
+			& to_string (type_components.element (component).value), log_threshold);
 
 		-- commissioned
 		log ("commissioned "
-			& string (type_components.element(component).commissioned));
+			& string (type_components.element (component).commissioned), log_threshold);
 
 		-- updated
 		log ("updated      "
-			& string (type_components.element(component).updated));
+			& string (type_components.element(component).updated), log_threshold);
 
 		-- author
 		log ("author "
-			& et_libraries.type_person_name.to_string (type_components.element(component).author));
+			& to_string (type_components.element(component).author), log_threshold);
 		
 		-- appearance
-		log (to_string (type_components.element(component).appearance));
+		log (to_string (type_components.element(component).appearance), log_threshold);
 
 		-- depending on the component appearance there is more to report:
 		case type_components.element(component).appearance is
 			when sch_pcb =>
 
 				-- package variant
-				log (et_libraries.to_string (type_components.element(component).variant.variant));
+				log (to_string (type_components.element (component).variant.variant), log_threshold);
 				-- NOTE: This displays the type_component_variant (see et_libraries.ads).
 				-- Do not confuse with type_variant (see et_schematic.ads) which also contains the variant name
 				-- like in TL084D or TL084N.
 
 				-- datasheet
 				log ("datasheet "
-					& et_libraries.type_component_datasheet.to_string (type_components.element(component).datasheet));
+					& type_component_datasheet.to_string (type_components.element (component).datasheet), log_threshold);
 
 				-- partcode
 				log ("partcode "
-					& et_libraries.type_component_partcode.to_string (type_components.element(component).partcode));
+					& type_component_partcode.to_string (type_components.element (component).partcode), log_threshold);
 				
-				-- function
+				-- purpose
 				log ("purpose "
-					& et_libraries.type_component_purpose.to_string (type_components.element(component).purpose));
+					& type_component_purpose.to_string (type_components.element(component).purpose), log_threshold);
 
 				-- bom
 				log ("bom "
-					& et_libraries.to_string (type_components.element (component).bom));
+					& to_string (type_components.element (component).bom), log_threshold);
 
 				
 			when pcb => null; -- CS
@@ -467,8 +470,11 @@ package body et_schematic is
 	
 
 	
-	procedure write_unit_properties (unit : in type_units.cursor) is
+	procedure write_unit_properties (
 	-- Writes the properties of the unit indicated by the given cursor.
+		unit			: in type_units.cursor;
+		log_threshold	: in et_string_processing.type_log_level) is
+
 		use et_string_processing;
 		use et_coordinates;
 	begin
@@ -476,79 +482,89 @@ package body et_schematic is
 		
 		-- unit name
 		log ("unit " 
-			& et_libraries.type_unit_name.to_string (type_units.key(unit)) & " properties");
+			& to_string (type_units.key (unit)), log_threshold);
 
 		log_indentation_up;
 		
 		-- alternative representation
 		log ("alternative (deMorgan) representation " 
-			& to_lower (et_schematic.type_alternative_representation'image (type_units.element(unit).alt_repres)));
+			 & to_lower (type_alternative_representation'image (type_units.element (unit).alt_repres)),
+			 log_threshold + 1);
 
 		-- timestamp
 		log ("timestamp " 
-			& string (type_units.element (unit).timestamp));
+			& string (type_units.element (unit).timestamp), log_threshold + 1);
 
 		-- position
-		log (to_string (position => type_units.element (unit).position));
+		log (to_string (position => type_units.element (unit).position), log_threshold + 1);
 
 		-- orientation or angle
-		log (to_string (type_units.element (unit).orientation));
+		log (to_string (type_units.element (unit).orientation), log_threshold + 1);
 
 		-- mirror style
-		log (to_string (type_units.element (unit).mirror));
+		log (to_string (type_units.element (unit).mirror), log_threshold + 1);
 
 		
 		-- placeholders
-		log ("placeholders");
+		log ("placeholders", log_threshold + 1);
 		log_indentation_up;
 
 			-- reference
 			et_libraries.write_placeholder_properties (
-				placeholder => type_units.element(unit).reference);
+				placeholder => type_units.element (unit).reference,
+				log_threshold => log_threshold + 1);
 
 			-- value
 			et_libraries.write_placeholder_properties (
-				placeholder => type_units.element(unit).value);
+				placeholder => type_units.element (unit).value,
+				log_threshold => log_threshold + 1);
 
 			-- some placeholders exist depending on the component appearance
-			case type_units.element(unit).appearance is
+			case type_units.element (unit).appearance is
 				when sch_pcb =>
 					
 					-- package/footprint
 					et_libraries.write_placeholder_properties (
-						placeholder => type_units.element(unit).packge);
+						placeholder => type_units.element (unit).packge,
+						log_threshold => log_threshold + 1);
 
 					-- datasheet
 					et_libraries.write_placeholder_properties (
-						placeholder => type_units.element(unit).datasheet);
+						placeholder => type_units.element (unit).datasheet,
+						log_threshold => log_threshold + 1);
 
 					-- purpose
 					et_libraries.write_placeholder_properties (
-						placeholder => type_units.element(unit).purpose);
+						placeholder => type_units.element (unit).purpose,
+						log_threshold => log_threshold + 1);
 					
 					-- partcode
 					et_libraries.write_placeholder_properties (
-						placeholder => type_units.element(unit).partcode);
+						placeholder => type_units.element (unit).partcode,
+						log_threshold => log_threshold + 1);
 
 					-- bom
 					et_libraries.write_placeholder_properties (
-						placeholder => type_units.element (unit).bom);
-
+						placeholder => type_units.element (unit).bom,
+						log_threshold => log_threshold + 1);
 					
 				when others => null;
 			end case;
 
 			-- commissioned
 			et_libraries.write_placeholder_properties (
-				placeholder => type_units.element(unit).commissioned);
+				placeholder => type_units.element (unit).commissioned,
+				log_threshold => log_threshold + 1);
 
 			-- updated
 			et_libraries.write_placeholder_properties (
-				placeholder => type_units.element(unit).updated);
+				placeholder => type_units.element (unit).updated,
+				log_threshold => log_threshold + 1);
 
 			-- author
 			et_libraries.write_placeholder_properties (
-				placeholder => type_units.element(unit).author);
+				placeholder => type_units.element (unit).author,
+				log_threshold => log_threshold + 1);
 
 		log_indentation_down;
 		log_indentation_down;
@@ -1731,9 +1747,7 @@ package body et_schematic is
 				);
 
 -- 			if inserted then -- first occurence of component
-				if log_level >= log_threshold then
-					et_schematic.write_component_properties (component => cursor);
-				end if;
+				write_component_properties (component => cursor, log_threshold => log_threshold + 1);
 -- 			else -- not inserted
 -- 				null; -- CS: see comment above
 				--raise constraint_error;
@@ -1746,10 +1760,12 @@ package body et_schematic is
 			);
 	end add_component;
 	
-	procedure add_unit ( -- CS: comments
-		reference	: in et_libraries.type_component_reference;
-		unit_name	: in et_libraries.type_unit_name.bounded_string;
-		unit 		: in type_unit) is
+	procedure add_unit (
+	-- Adds a unit into the given commponent.
+		reference		: in et_libraries.type_component_reference;
+		unit_name		: in et_libraries.type_unit_name.bounded_string;
+		unit 			: in type_unit;
+		log_threshold	: in et_string_processing.type_log_level) is
 
 		procedure add (
 			reference	: in et_libraries.type_component_reference;
@@ -1768,9 +1784,9 @@ package body et_schematic is
 				);
 
 			if inserted then -- fine. unit was inserted successfully
-				if log_level >= 2 then				
-					write_unit_properties (unit => cursor);
-				end if;
+-- 				if log_level >= 2 then				
+					write_unit_properties (unit => cursor, log_threshold => log_threshold);
+-- 				end if;
 			else -- not inserted, unit already in component -> failure
 				log_indentation_reset;
 				log (

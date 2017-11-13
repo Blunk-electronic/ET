@@ -76,6 +76,12 @@ package body et_libraries is
 	begin
 		return "size " & format_distance (size);
 	end to_string;
+
+	function width_to_string (width : in type_text_line_width) return string is
+	-- Returns the given line width as string.
+	begin
+		return "width " & format_distance (width);
+	end width_to_string;
 	
 	function to_string (direction : in type_port_direction) return string is
 	-- Returns the given port direction as string.
@@ -185,40 +191,43 @@ package body et_libraries is
 		return to_lower(type_text_meaning'image(meaning));
 	end to_string;
 
-	procedure write_placeholder_properties (placeholder : in type_text_placeholder) is
+	procedure write_placeholder_properties (
 	-- Writes the properties of the given placeholder.
+		placeholder		: in type_text_placeholder;
+		log_threshold	: in et_string_processing.type_log_level) is
+
 		use et_string_processing;
 	begin
 		-- meaning
-		log (et_libraries.to_string(placeholder.meaning));
+		log (to_string (placeholder.meaning), log_threshold);
 		log_indentation_up;
 		
 		-- position
-		log (to_string (placeholder.position));
+		log (to_string (placeholder.position), log_threshold);
 
 		-- size
-		log ("size " & et_coordinates.to_string (placeholder.size));
+		log ("size " & to_string (placeholder.size), log_threshold);
 
 		-- style
 		log ("style "
-			& to_lower(et_libraries.type_text_style'image (placeholder.style)));
+			& to_lower (type_text_style'image (placeholder.style)), log_threshold);
 
 		-- line width
 		log ("line width "
-			& et_coordinates.to_string (placeholder.line_width));
+			& width_to_string (placeholder.line_width), log_threshold);
 
 		-- angle
-		log (to_string (placeholder.orientation)); 
+		log (to_string (placeholder.orientation), log_threshold); 
 
 		-- visible
 		log ("visible "
-			& to_lower (et_libraries.type_text_visible'image (placeholder.visible)));
+			& to_lower (et_libraries.type_text_visible'image (placeholder.visible)), log_threshold);
 
 		-- alignment
 		log ("alignment (hor/vert) "
 			& to_lower (et_libraries.type_text_alignment_horizontal'image (placeholder.alignment.horizontal))
 			& "/"
-			& to_lower (et_libraries.type_text_alignment_vertical'image (placeholder.alignment.vertical)));
+			& to_lower (et_libraries.type_text_alignment_vertical'image (placeholder.alignment.vertical)), log_threshold);
 
 		log_indentation_down;
 	end write_placeholder_properties;

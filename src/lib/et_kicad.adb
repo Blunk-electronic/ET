@@ -1148,6 +1148,7 @@ package body et_kicad is
 			end read_field;
 
 			procedure insert_component (
+			-- NOTE: This is library related stuff.
 			-- Updates the current library by inserting the component.
 			-- If the component was inserted (should be) the comp_cursor points to the component
 			-- for later inserting the units:
@@ -2463,6 +2464,7 @@ package body et_kicad is
 		-- Perfoms a plausibility and syntax check on the text fields before they are used to 
 		-- assemble and insert the component into the component list of the module.
 		-- This can be regarded as a kind of pre-check.
+		-- CS: check text size and width
 			use et_coordinates;
 		
 			procedure missing_field (m : in et_libraries.type_text_meaning) is 
@@ -2492,10 +2494,10 @@ package body et_kicad is
 
 			-- write precheck preamble
 			log ("component " 
-				& to_string(tmp_component_reference), level => log_threshold);
+				& to_string(tmp_component_reference) & " prechecking fields ...", level => log_threshold);
 
-			log_indentation_up;
-			log ("precheck", log_threshold + 1);
+-- 			log_indentation_up;
+-- 			log ("precheck", log_threshold + 1);
 			log_indentation_up;
 			
 			-- reference
@@ -2637,7 +2639,7 @@ package body et_kicad is
 
 			log_indentation_down;
 			log_indentation_down;
-			log_indentation_down;				
+-- 			log_indentation_down;				
 			
 			exception
 				when constraint_error =>
@@ -2729,7 +2731,7 @@ package body et_kicad is
 					
 					log (to_string (
 							segment => type_net_segment (type_wild_segments.element (segment_cursor)),
-							scope => xy));
+							scope => xy), log_threshold + 1);
 
 					scratch := type_net_segment (type_wild_segments.element (segment_cursor));
 					type_anonymous_strand.append (anonymous_strand.segments, scratch);
@@ -3452,7 +3454,7 @@ package body et_kicad is
 				-- Break down net segments that have a junction. Do that if the sheet has junctions at all. Otherwise skip this procedure.
 				-- After breaking down net segments, the numbner of segments increases, so segment_count must be updated finally.
 				if not is_empty (tmp_junctions) then 
-					log (text => "processing" & count_type'image (length (tmp_junctions)) & " net junctions ...");
+					log ("processing" & count_type'image (length (tmp_junctions)) & " net junctions ...", log_threshold);
 
 					-- We reason there are segments to be broken down. After smashing a segment, segment_count increases. If it
 					-- does not increase anymore, all segments are processed.
@@ -3476,7 +3478,7 @@ package body et_kicad is
 
 									--write_coordinates_of_segment (type_net_segment(segment));
 									--write_coordinates_of_junction (junction);
-									if log_level >= 2 then
+									if log_level >= log_threshold + 1 then
 										log_indentation_up;
 										log (to_string (position => junction.coordinates, scope => xy));
 										log_indentation_down;
@@ -3517,7 +3519,7 @@ package body et_kicad is
 						end if;
 					end loop;
 
-					log (text => "update: net segments total" & count_type'image (segment_count));
+					log ("update: net segments total" & count_type'image (segment_count), log_threshold);
 				end if;
 
 				log_indentation_down;
@@ -3565,7 +3567,7 @@ package body et_kicad is
 				
 				segment_count := type_wild_segments.length (wild_segments); -- get number of segments on the current sheet
 
-				log ("processing" & count_type'image (segment_count) & " net segments ...");
+				log ("processing" & count_type'image (segment_count) & " net segments ...", log_threshold);
 
 				-- It may happen that a sheet has no nets, for example the top level sheet of a design.
 				-- If there are no net segments at all, nothing happens.
@@ -3598,7 +3600,7 @@ package body et_kicad is
 
 						    -- We initiate a new strand and start looking for a matching segment on the end_point:
 							--put_line(et_import.report_handle," anonymous net" & positive'image(seg) & ":"); 
-							log ("assembling strand with segments", level => 1);
+							log ("assembling strand with segments", log_threshold + 1);
 							log_indentation_up;
 
 							-- The first segment is to be added to the anonymous strand.
@@ -3776,7 +3778,7 @@ package body et_kicad is
 					
 					when sch => -- we have a line like "L P3V3 #PWR07"
 				
-						add_component (
+						et_schematic.add_component (
 							reference => tmp_component_reference,
 							component => (
 								appearance		=> sch,
@@ -3801,7 +3803,7 @@ package body et_kicad is
 								line => et_libraries.content (tmp_component_text_packge),
 								ifs => latin_1.colon);
 
-						add_component (
+						et_schematic.add_component ( 
 							reference => tmp_component_reference,
 							component => (
 								appearance		=> sch_pcb,
@@ -3890,6 +3892,7 @@ package body et_kicad is
 			
 
 			procedure insert_unit is 
+			-- NOTE: This is schematic related.
 			-- Inserts a unit into the unit list of a component. The text fields around a unit are placeholders.
 			-- The properties of the placeholder texts are loaded with the properties of the text fields of the units
 			-- found in the schematic. The idea behind is to store just basic text properties (type_text_basic) 
@@ -3900,11 +3903,13 @@ package body et_kicad is
 				use et_libraries;
 			
 			begin -- insert_unit
+				log_indentation_up;
+				
 				case tmp_component_appearance is
 
 					when sch =>
 
-						add_unit (
+						et_schematic.add_unit (
 							reference	=> tmp_component_reference,
 							unit_name	=> tmp_component_unit_name,
 							unit 		=> (
@@ -3928,12 +3933,13 @@ package body et_kicad is
 													with meaning => tmp_component_text_author.meaning ),
 								commissioned	=>  ( et_libraries.type_text_basic (tmp_component_text_commissioned)
 													with meaning => tmp_component_text_commissioned.meaning )
-								));
+										   ),
+							log_threshold => log_threshold + 1);
 											   
 
 					when sch_pcb =>
 
-						add_unit (
+						et_schematic.add_unit (
 							reference	=> tmp_component_reference,
 							unit_name	=> tmp_component_unit_name,
 							unit 		=> (
@@ -3967,11 +3973,13 @@ package body et_kicad is
 													with meaning => tmp_component_text_commissioned.meaning),
 								bom				=>  (et_libraries.type_text_basic (tmp_component_text_bom)
 													with meaning => tmp_component_text_bom.meaning)
-							   ));
+											),
+							log_threshold => log_threshold + 1);
 
 					when others => null; -- CS
 				end case;
-					
+
+				log_indentation_down;
 			end insert_unit;
 
 	
@@ -4736,7 +4744,7 @@ package body et_kicad is
 
 											-- Check if all required text fields have been found.
 											-- Check content of text fields for syntax and plausibility.
-											check_text_fields (log_threshold + 2);
+											check_text_fields (log_threshold + 1);
 											
 											-- Insert component in component list of module. If a component is split
 											-- in units, only the first occurence of it leads to inserting the component.
@@ -4912,8 +4920,11 @@ package body et_kicad is
 					sheet => current_schematic);
 				
 				close (schematic_handle);
+				log_indentation_down;
+				log ("reading complete. closing schematic file " & to_string (current_schematic) & " ...", log_threshold);
 
-				build_anonymous_strands; -- From the wild list of net segments, assembles net segments to a list of anonymous strands.
+				-- From the wild list of net segments, assembles net segments to a list of anonymous strands.
+				build_anonymous_strands; 
 	
 				-- All anonymous strands must be given a name. The name is enforced by the a net label. The first label found on the strand
 				-- sets the strand name. 

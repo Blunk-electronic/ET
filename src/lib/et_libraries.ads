@@ -121,6 +121,9 @@ package et_libraries is
 
 	subtype type_text_line_width is type_distance range 0.0 .. 5.0; -- unit is mm
 
+	function width_to_string (width : in type_text_line_width) return string;
+	-- Returns the given line width as string.
+	
 	type type_text_style is ( normal, italic, bold, italic_bold);
 	type type_text_visible is (yes, no);
     type type_text_alignment_horizontal is ( left, center , right);
@@ -171,8 +174,10 @@ package et_libraries is
 	-- This is a placeholder for a text. It does not have content yet, but a meaning:
 	type type_text_placeholder (meaning : type_text_meaning) is new type_text_basic with null record;
 
-	procedure write_placeholder_properties (placeholder : in type_text_placeholder);
+	procedure write_placeholder_properties (
 	-- Writes the properties of the given placeholder.
+		placeholder		: in type_text_placeholder;
+		log_threshold	: in et_string_processing.type_log_level);
 
 	procedure write_text_properies (text : in et_libraries.type_text);
 	-- Outputs the properties of the given text.
