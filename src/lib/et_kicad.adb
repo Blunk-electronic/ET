@@ -449,7 +449,7 @@ package body et_kicad is
 		end if;
 	end to_power_flag;
 	
-	procedure read_components_libraries is
+	procedure read_components_libraries (log_threshold : in type_log_level) is
 	-- Reads components from libraries as stored in lib_dir and project libraries:
 		
         use et_libraries; -- most of the following stuff is specified there
@@ -551,21 +551,21 @@ package body et_kicad is
 				
 				i : type_symbol_interchangeable;
 				s : type_unit_swap_level;
-				log_threshold : type_log_level := 2;
+				--log_threshold : type_log_level := 2;
 			begin
 				log_indentation_up;
 				
-				log ("units interchangeable", level => log_threshold);
+				log ("units interchangeable", level => log_threshold + 2);
 				log_indentation_up;
 
 				i := type_symbol_interchangeable'value(swap_in);
 				
 				case i is
 					when L =>
-						log ("no", level => log_threshold);
+						log ("no", level => log_threshold + 2);
 						s := 0; -- no swapping allowed
 					when F =>
-						log ("yes", level => log_threshold);
+						log ("yes", level => log_threshold + 2);
 						s := 1; -- swapping allowed at this level
 				end case;
 
@@ -581,22 +581,21 @@ package body et_kicad is
 
 				v_in	: type_show_pin_number;
 				v_out	: type_pin_visible;
-				log_threshold : type_log_level := 2;
 			begin
 				log_indentation_up;
 				
-				log ("pin/pad names", level => log_threshold);
+				log ("pin/pad names", level => log_threshold + 2);
 				log_indentation_up;
 				
 				v_in := type_show_pin_number'value (vis_in);
 				
 				case v_in is 
 					when Y => 
-						log ("visible", level => log_threshold);
+						log ("visible", level => log_threshold + 2);
 						v_out := on;
 						
 					when N => 
-						log ("invisible", level => log_threshold);
+						log ("invisible", level => log_threshold + 2);
 						v_out := off;
 				end case;
 
@@ -613,21 +612,20 @@ package body et_kicad is
 
 				v_in	: type_show_pin_name;
 				v_out	: type_port_visible;
-				log_threshold : type_log_level := 2;
 			begin
 				log_indentation_up;
 				
-				log ("port names", level => log_threshold);
+				log ("port names", level => log_threshold + 2);
 				log_indentation_up;
 				
-				v_in := type_show_pin_name'value(vis_in);
+				v_in := type_show_pin_name'value (vis_in);
 				
 				case v_in is 
 					when Y => 
-						log ("visible", level => log_threshold);
+						log ("visible", level => log_threshold + 2);
 						v_out := on;
 					when N => 
-						log ("invisible", level => log_threshold);
+						log ("invisible", level => log_threshold + 2);
 						v_out := off;
 				end case;
 
@@ -1526,26 +1524,26 @@ package body et_kicad is
 
 			procedure write_scope_of_object (unit : in type_unit_id) is
 			-- Outputs whether the current draw object is common to all units or not.
-				log_threshold : type_log_level := 2;
+-- 				log_threshold : type_log_level := 2;
 			begin
 				log_indentation_up;
-				log ("scope", log_threshold);
+				log ("scope", log_threshold + 1);
 				log_indentation_up;
 				
 				if unit = 0 then
-					log ("common to all units", log_threshold);
+					log ("common to all units", log_threshold + 1);
 				else
-					log ("unit" & type_unit_id'image(unit), log_threshold);
+					log ("unit" & type_unit_id'image(unit), log_threshold + 1);
 				end if;
 				
 				log_indentation_down;
 				log_indentation_down;
 			end write_scope_of_object;
 
-			log_threshold : type_log_level := 2;
+-- 			log_threshold : type_log_level := 2;
 			
 		begin -- read_draw_object
-			log ("draw object", level => log_threshold);
+			log ("draw object", level => log_threshold + 1);
 			log_indentation_up;
 
 			-- At a certain log level we report the bare line of a draw object as it is:
@@ -1553,7 +1551,7 @@ package body et_kicad is
 			
 			case type_library_draw'value (field (line,1)) is
 				when P => -- polyline
-					log ("polyline", level => log_threshold);
+					log ("polyline", level => log_threshold + 1);
 					-- A polyline is defined by a string like "P 3 0 1 10 0 0 100 50 70 0 N"
 					-- field meaning:
 					--  #2 : number of bends (incl. start and end points) (3)
@@ -1576,7 +1574,7 @@ package body et_kicad is
 					add_symbol_element (component_libraries, polyline);
 					
 				when S => -- rectangle
-					log ("rectangle", level => log_threshold);
+					log ("rectangle", level => log_threshold + 1);
 					-- A rectangle is defined by a string like "S -40 -100 40 100 0 1 10 N"
 					-- field meaning;
 					-- #2..5 : start point -40/-100   end point 40/100
@@ -1597,7 +1595,7 @@ package body et_kicad is
 					add_symbol_element (component_libraries, rectangle);
 					
 				when C => -- circle
-					log ("circle", level => log_threshold);
+					log ("circle", level => log_threshold + 1);
 					-- A circle is defined by a string like "C 0 0 112 0 1 23 N"
 					-- field meaning:
 					--  #2..3 : center (x/y)
@@ -1619,7 +1617,7 @@ package body et_kicad is
 					add_symbol_element (component_libraries, circle);
 					
 				when A => -- arc
-					log ("arc", level => log_threshold);
+					log ("arc", level => log_threshold + 1);
 					-- An arc is defined by a string like "A 150 0 150 1800 900 0 1 33 N 0 0 150 150"
 					-- NOTE: kicad bug: multiply all y values by -1
 					-- field meaning:
@@ -1646,7 +1644,7 @@ package body et_kicad is
 					add_symbol_element (component_libraries, arc);
 
 				when T => -- text
-					log ("text", level => log_threshold);
+					log ("text", level => log_threshold + 1);
 					-- A text is defined by a string like "T 0 0 300 60 0 0 0 leuchtdiode Normal 0 C C"
 					-- Space characters whitin the actual text are replaced by tilde as in this example:
 					-- "T 0 -100 0 60 0 1 0 gate~C Normal 0 C C"
@@ -1675,7 +1673,7 @@ package body et_kicad is
 					add_symbol_element (component_libraries, text);
 					
 				when X => -- port
-					log ("port", level => log_threshold);
+					log ("port", level => log_threshold + 1);
 					-- A port is defined by a string like "X ~ 1 0 150 52 D 51 50 1 1 P"
 					-- field meaning:
 					--  #2 : port name (~)
@@ -1732,7 +1730,7 @@ package body et_kicad is
 
 		procedure add_footprint (line : in type_fields_of_line) is
 		-- Reads the proposed footprint and adds it to the package filter of the current component.
-			log_threshold : type_log_level := 2;
+-- 			log_threshold : type_log_level := 2;
 			fp : type_package_proposal.bounded_string;
 
 			function field (line : in type_fields_of_line; position : in positive) return string renames
@@ -1759,11 +1757,11 @@ package body et_kicad is
 			end do_it;
 			
 		begin
-			log ("footpint/package filter", level => log_threshold);
+			log ("footpint/package filter", level => log_threshold + 1);
 			log_indentation_up;
 
 			fp := type_package_proposal.to_bounded_string (field (line,1));
-			log (type_package_proposal.to_string(fp), level => log_threshold);
+			log (type_package_proposal.to_string(fp), level => log_threshold + 1);
 
 			do_it (component_libraries);
 			
@@ -1931,7 +1929,7 @@ package body et_kicad is
 		begin -- read_library
 			log_indentation_up;
 			
-			log ("components");
+			log ("components", log_threshold + 1);
 			log_indentation_up;
 			
 			while not end_of_file loop
@@ -1974,7 +1972,7 @@ package body et_kicad is
 								et_libraries.check_component_name (tmp_component_name);
 								
 								-- for the log:
-								log (get_field_from_line(line,2)); -- 74LS00
+								log (get_field_from_line(line,2), log_threshold + 1); -- 74LS00
 
 								-- From the header we extract some basic information about the component:
 								
@@ -2000,7 +1998,7 @@ package body et_kicad is
 								tmp_units_total := type_units_total'value (get_field_from_line (line,8));
 								if tmp_units_total > 1 then
 									log_indentation_up;
-									log ("with" & type_units_total'image (tmp_units_total) & " units", level => 1);
+									log ("with" & type_units_total'image (tmp_units_total) & " units", level => log_threshold + 1);
 
 									-- From the "interchangeable" flag we set the component wide swap level. It applies for 
 									-- all units of the component (except extra units):
@@ -2063,7 +2061,7 @@ package body et_kicad is
 											create_units;
 											
 											active_section := footprints;
-											log ("footprint filter begin", level => 3);
+											log ("footprint filter begin", level => log_threshold + 2);
 
 										elsif get_field_from_line(line,1) = et_kicad.draw then
 
@@ -2078,7 +2076,7 @@ package body et_kicad is
 											create_units;
 
 											active_section := draw;
-											log ("draw begin", level => 3);
+											log ("draw begin", level => log_threshold + 2);
 										else
 											read_field (line);
 										end if;
@@ -2101,7 +2099,7 @@ package body et_kicad is
 										-- that this subsection has been processed.
 										if get_field_from_line(line,1) = et_kicad.endfplist then
 											active_section := none;
-											log ("footprint filter end", level => 3);
+											log ("footprint filter end", level => log_threshold + 2);
 										else
 											-- Process lines:
 											add_footprint (line);
@@ -2116,7 +2114,7 @@ package body et_kicad is
 										-- thate this subsection has been processed.
 										if get_field_from_line (line,1) = et_kicad.enddraw then
 											active_section := none;
-											log ("draw end", level => 3);
+											log ("draw end", level => log_threshold + 2);
 										else
 											-- Process lines:
 											read_draw_object (line);
@@ -2128,7 +2126,7 @@ package body et_kicad is
 										-- NOTE #2: the active section "fields" is not set here but when the fields are read (see NOTE #1)
 										if get_field_from_line (line,1) = et_kicad.draw then
 											active_section := draw;
-											log ("draw begin", level => 3);
+											log ("draw begin", level => log_threshold + 2);
 										end if;
 
 								end case; -- active_section
@@ -2169,7 +2167,7 @@ package body et_kicad is
 				lib_file_name := element (project_lib_cursor);
 
 				-- log library file name
-				log (to_string (lib_file_name), console => true);
+				log (to_string (lib_file_name), console => true, level => log_threshold);
 				
 				if exists ( to_string (lib_file_name)) then
 					open (
@@ -2232,7 +2230,9 @@ package body et_kicad is
 		current_schematic	: type_schematic_file_name.bounded_string;
 
 		net_id : natural := 0; -- for counting name-less nets (like N$1, N$2, N$3, ...)
-		
+
+		log_threshold : type_log_level := 1;
+
 		package stack_of_sheet_lists is new et_general.stack_lifo (max => 10, item => type_submodule_names_extended);
         use stack_of_sheet_lists;
 		
@@ -2468,7 +2468,6 @@ package body et_kicad is
 			use et_coordinates;
 		
 			procedure missing_field (m : in et_libraries.type_text_meaning) is 
-				
 			begin
 				log_indentation_reset;
 				log (
@@ -2484,9 +2483,6 @@ package body et_kicad is
 			end missing_field;
 
 			commissioned, updated : et_string_processing.type_date;
-
-			-- we set the log threshold level so that details are hidden when no log level specified
--- 			log_threshold : type_log_level := 2;
 
 			use et_libraries;
 		begin -- check_text_fields
@@ -2655,7 +2651,9 @@ package body et_kicad is
 			
 
 			
-		function read_schematic (current_schematic : in type_schematic_file_name.bounded_string) 
+		function read_schematic (
+			current_schematic	: in type_schematic_file_name.bounded_string;
+			log_threshold		: in type_log_level)
 			return type_submodule_names_extended is
 		-- Reads the given schematic file. If it contains submodules (hierarchic sheets), 
         -- they will be returned in list_of_submodules. Otherwise the returned list is empty.
@@ -2703,8 +2701,6 @@ package body et_kicad is
 			-- this container for temporarily storage of anonymous strands.
 			anonymous_strands : type_anonymous_strands.list; 
 
-			log_threshold : type_log_level := 1;
-		
 			procedure add_segment_to_anonymous_strand (segment_cursor : in type_wild_segments.cursor) is
 			-- Adds a net segment (indicated by given cursor) to anonymous_strand.
 			-- This procedure happens to be called for a certain segment more than once (unavoidable). So the flag "picked" serves
@@ -2988,8 +2984,6 @@ package body et_kicad is
 				use type_tag_labels;
 				tag_label_cursor	: type_tag_labels.cursor; -- points to the tag label being processed
 
-				log_threshold : type_log_level := 2;
-
 				use type_net_name;
 				
 			begin -- associate_net_labels_with_anonymous_strands
@@ -3034,8 +3028,7 @@ package body et_kicad is
 											--put(et_import.report_handle, "   probing "); write_coordinates_of_label( type_net_label(ls));  -- CS: log ?
 											if label_sits_on_segment (label => type_net_label(ls), segment => segment) then
 
-												if log_level >= log_threshold then
-													--write_label_properties (type_net_label (ls));
+												if log_level >= log_threshold + 1 then
 													log_indentation_up;
 													log ("label at " & to_string (label => type_net_label (ls), scope => xy));
 													log_indentation_down;
@@ -3122,8 +3115,7 @@ package body et_kicad is
 -- 												type_grid'image(lt.coordinates.x) & "/" &
 -- 												trim(type_grid'image(lt.coordinates.y),left));
 
-												if log_level >= log_threshold then
-													--write_label_properties (type_net_label (lt));
+												if log_level >= log_threshold + 1 then
 													log_indentation_up;
 													log ("label at " & to_string (label => type_net_label (lt), scope => xy));
 													log_indentation_down;
@@ -4969,14 +4961,14 @@ package body et_kicad is
 		end read_schematic;
 
 
-    begin -- import_design
+	begin -- import_design
 
 		-- change to given project directory
 		log (
-			text => "changing to project directory '" & (et_schematic.type_project_name.to_string (et_schematic.project_name) & "' ..."),
-			level => 1
+			text => "changing to project directory '" & (type_project_name.to_string (et_schematic.project_name) & "' ..."),
+			level => log_threshold
 			);
-		set_directory (et_schematic.type_project_name.to_string (et_schematic.project_name));
+		set_directory (type_project_name.to_string (et_schematic.project_name));
 		
 		case et_import.cad_format is
 			when et_import.kicad_v4 =>
@@ -4986,8 +4978,7 @@ package body et_kicad is
 				
 				-- derive top level schematic file name from project name
 				top_level_schematic := read_project_file;
-				--tmp_module_name := et_coordinates.type_submodule_name.to_bounded_string (to_string (top_level_schematic));
-				tmp_module_name := et_coordinates.type_submodule_name.to_bounded_string (base_name (to_string (top_level_schematic)));
+				tmp_module_name := type_submodule_name.to_bounded_string (base_name (to_string (top_level_schematic)));
 				
 				-- The top level schematic file dictates the module name. So we create the module here.
 				-- The first element to set is the project libraries which we collected earlier when the
@@ -5007,7 +4998,7 @@ package body et_kicad is
 						)
 					);
 				
-				read_components_libraries; -- as stored in element "libraries" of the current module
+				read_components_libraries (log_threshold); -- as stored in element "libraries" of the current module
 				current_schematic := top_level_schematic;
 
                 -- The top level schematic file is the first entry in the module path.
@@ -5018,7 +5009,7 @@ package body et_kicad is
 				
 				-- The function read_schematic requires the name of the current submodule,
 				-- It returns a list of submodules.
-				list_of_submodules := read_schematic (current_schematic => current_schematic);
+				list_of_submodules := read_schematic (current_schematic, log_threshold);
 
 				log("DESIGN STRUCTURE ");
 				log_indentation_up;
@@ -5061,7 +5052,7 @@ package body et_kicad is
 						
 						-- Read schematic file as indicated by list_of_submodules.id. 
 						-- Read_schematic receives the name of the schematic file to be read.
-						list_of_submodules := read_schematic (current_schematic => current_schematic);
+						list_of_submodules := read_schematic (current_schematic, log_threshold);
 
 						-- If the schematic file contains submodules (hierarchic sheets), set list_of_submodules.id to the first 
 						-- submodule of them. Otherwise restore submodule list of parent module and advance therein to next submodule.
