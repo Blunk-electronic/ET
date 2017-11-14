@@ -479,6 +479,9 @@ package body et_kicad is
 		procedure read_library (log_threshold : in type_log_level) is
 			line				: type_fields_of_line; -- the line being processed
 
+			function field (line : in type_fields_of_line; position : in positive) return string renames
+				et_string_processing.get_field_from_line;
+			
 			-- This flag goes true once a component section is entered. It is cleared
 			-- when the component section is left.
 			component_entered	: boolean := false; 
@@ -1102,6 +1105,9 @@ package body et_kicad is
 				use et_coordinates;
 				text : type_text(meaning);
 
+				function field (line : in type_fields_of_line; position : in positive) return string renames
+					et_string_processing.get_field_from_line;
+			
 			begin
 				-- field #:
 				-- 3/4 : x/y coordinates
@@ -1111,12 +1117,12 @@ package body et_kicad is
 				-- 8 : aligment horizontal (R,C,L)
 				-- 9 : aligment vertical (TNN, CNN, BNN) / font normal, italic, bold, bold_italic (TBI, TBN)
 
-				text.content		:= type_text_content.to_bounded_string (strip_quotes (get_field_from_line (line,2)));
+				text.content		:= type_text_content.to_bounded_string (strip_quotes (field (line,2)));
 				-- CS: check content vs. meaning
 				
-				set_x (text.position, mil_to_distance (mil => get_field_from_line (line,3), warn_on_negative => false));
-				set_y (text.position, mil_to_distance (mil => get_field_from_line (line,4), warn_on_negative => false));
-				text.size 			:= mil_to_distance (mil => get_field_from_line (line,5), warn_on_negative => false);
+				set_x (text.position, mil_to_distance (mil => field (line,3), warn_on_negative => false));
+				set_y (text.position, mil_to_distance (mil => field (line,4), warn_on_negative => false));
+				text.size 			:= mil_to_distance (mil => field (line,5), warn_on_negative => false);
 
 				-- check text size of fields
 				if text.size /= text_size_field_default then
@@ -1126,19 +1132,19 @@ package body et_kicad is
 						 & ". Expected " & to_string (size => text_size_field_default) & " !");
 				end if;
 				
-				text.orientation := to_field_orientation (get_field_from_line (line,6));
+				text.orientation := to_field_orientation (field  (line,6));
 				-- CS: check orientation.
 				
 				text.visible := to_field_visible (
-					vis_in		=> get_field_from_line (line,7),
+					vis_in		=> field  (line,7),
 					schematic	=> false);
 				-- CS: check visibility.
 
-				text.alignment.horizontal := to_alignment_horizontal (get_field_from_line (line,8));
+				text.alignment.horizontal := to_alignment_horizontal (field  (line,8));
 				-- CS: check hor aligment.
-				text.alignment.vertical   := to_alignment_vertical  (get_field_from_line (line,9));
+				text.alignment.vertical   := to_alignment_vertical (field  (line,9));
 				-- CS: check vert aligment.
-				text.style := to_text_style (style_in => get_field_from_line (line,9), text => false);
+				text.style := to_text_style (style_in => field (line,9), text => false);
 				-- CS: check style.
 				
 				-- NOTE: text.line_width assumes default (see et_general.ads) as no line width is provided here.
@@ -1963,7 +1969,7 @@ package body et_kicad is
 						
 						if not component_entered then 
 							
-							if get_field_from_line(line,1) = et_kicad.def then
+							if field (line,1) = et_kicad.def then
 								component_entered := true;
 
 								init_temp_variables;
@@ -1972,11 +1978,11 @@ package body et_kicad is
 								active_section := fields;
 
 								-- The commponent header provides the first component properties:
-								tmp_component_name := et_libraries.type_component_name.to_bounded_string (get_field_from_line(line,2)); -- 74LS00
+								tmp_component_name := et_libraries.type_component_name.to_bounded_string (field (line,2)); -- 74LS00
 								et_libraries.check_component_name (tmp_component_name);
 								
 								-- for the log:
-								log (get_field_from_line (line,2), log_threshold); -- 74LS00
+								log (field  (line,2), log_threshold); -- 74LS00
 
 								-- From the header we extract some basic information about the component:
 								
@@ -1992,21 +1998,21 @@ package body et_kicad is
 								--  #9 : all units not interchangeable L (otherwise F), (similar to swap level in EAGLE)
 								--  #10: power symbol P (otherwise N)
 
-								tmp_prefix := type_component_prefix.to_bounded_string (get_field_from_line (line,3)); -- U
-								tmp_port_name_offset	:= mil_to_distance (mil => get_field_from_line (line,5), warn_on_negative => false); -- relevant for supply pins only
-								tmp_pin_name_visible	:= to_pin_visibile (get_field_from_line (line,6));
-								tmp_port_name_visible	:= to_port_visibile (get_field_from_line (line,7));
+								tmp_prefix := type_component_prefix.to_bounded_string (field  (line,3)); -- U
+								tmp_port_name_offset	:= mil_to_distance (mil => field  (line,5), warn_on_negative => false); -- relevant for supply pins only
+								tmp_pin_name_visible	:= to_pin_visibile (field  (line,6));
+								tmp_port_name_visible	:= to_port_visibile (field  (line,7));
 								
 								-- Get number of units and set swap level as specified in field #9.
 								-- Swap level assumes default if only one unit available.
-								tmp_units_total := type_units_total'value (get_field_from_line (line,8));
+								tmp_units_total := type_units_total'value (field  (line,8));
 								if tmp_units_total > 1 then
 									log_indentation_up;
 									log ("with" & type_units_total'image (tmp_units_total) & " units", level => log_threshold);
 
 									-- From the "interchangeable" flag we set the component wide swap level. It applies for 
 									-- all units of the component (except extra units):
-									tmp_unit_swap_level := to_swap_level (get_field_from_line(line,9));
+									tmp_unit_swap_level := to_swap_level (field (line,9));
 									log_indentation_down;
 								else
 									tmp_unit_swap_level := unit_swap_level_default;
@@ -2020,7 +2026,7 @@ package body et_kicad is
 						else -- we are inside a component section and process subsections
 
 							-- We wait for the end of component mark (ENDDEF) and clear the component_entered flag accordingly.
-							if get_field_from_line(line,1) = et_kicad.enddef then
+							if field (line,1) = et_kicad.enddef then
 								component_entered := false;
 
 								-- Set placeholders (reference, value, commissioned, ...) in internal units.
@@ -2053,7 +2059,7 @@ package body et_kicad is
 										-- added to the component when the section "DRAW" is processed..
 										
 										-- As long as none of those headers occurs, we read the text fields.
-										if get_field_from_line (line,1) = et_kicad.fplist then
+										if field  (line,1) = et_kicad.fplist then
 											
 											-- Insert the component into the current library (indicated by lib_cursor):
 											type_libraries.update_element ( 
@@ -2069,7 +2075,7 @@ package body et_kicad is
 											--log ("footprint/package filter begin", level => log_threshold + 1);
 											log ("footprint/package filter", level => log_threshold + 1);
 
-										elsif get_field_from_line (line,1) = et_kicad.draw then
+										elsif field  (line,1) = et_kicad.draw then
 
 											-- Insert the component into the current library (indicated by lib_cursor):
 											type_libraries.update_element ( 
@@ -2104,7 +2110,7 @@ package body et_kicad is
 										-- we process the lines of this subsection.
 										-- When the footer appears, we set active_section to "none" which means
 										-- that this subsection has been processed.
-										if get_field_from_line (line,1) = et_kicad.endfplist then
+										if field  (line,1) = et_kicad.endfplist then
 											active_section := none;
 											--log ("footprint/package filter end", level => log_threshold + 1);
 										else
@@ -2119,7 +2125,7 @@ package body et_kicad is
 										-- we process the lines of this subsection.
 										-- When the footer appears, we set active_section to "none" which means
 										-- thate this subsection has been processed.
-										if get_field_from_line (line,1) = et_kicad.enddraw then
+										if field  (line,1) = et_kicad.enddraw then
 											active_section := none;
 											log ("draw end", level => log_threshold + 2);
 										else
@@ -2131,7 +2137,7 @@ package body et_kicad is
 										-- If no subsection is being processed, we wait for the "draw" header (DRAW)
 										-- and set the active_section accordingly.
 										-- NOTE #2: the active section "fields" is not set here but when the fields are read (see NOTE #1)
-										if get_field_from_line (line,1) = et_kicad.draw then
+										if field  (line,1) = et_kicad.draw then
 											active_section := draw;
 											log ("draw begin", level => log_threshold + 2);
 										end if;
@@ -2237,7 +2243,7 @@ package body et_kicad is
 		use et_schematic;
 
 		function field (line : in type_fields_of_line; position : in positive) return string renames
-			et_string_processing.get_field_from_line; -- CS: apply in read_schematic
+			et_string_processing.get_field_from_line;
 		
 		list_of_submodules : type_submodule_names_extended;
 		
@@ -2665,7 +2671,7 @@ package body et_kicad is
         -- they will be returned in list_of_submodules. Otherwise the returned list is empty.
 
 			list_of_submodules : type_submodule_names_extended; -- list to be returned
-			name_of_submodule_scratch : et_coordinates.type_submodule_name.bounded_string; -- temporarily used before appended to list_of_submodules
+			name_of_submodule_scratch : type_submodule_name.bounded_string; -- temporarily used before appended to list_of_submodules
 
 			use et_string_processing;
 			--use et_libraries;
@@ -3985,24 +3991,28 @@ package body et_kicad is
 			-- Checks if the x/y position of the unit matches that provided in given line.
 			-- It is about the strange repetition of the unit name and its x/y coordinates in a line like
 			-- "2    6000 4000"
+
+				function field (line : in type_fields_of_line; position : in positive) return string renames
+					et_string_processing.get_field_from_line;
+		
 				use et_libraries.type_unit_name;
 				use et_coordinates;
 			begin
 				
-				if et_libraries.to_string (tmp_component_unit_name) /= get_field_from_line (line,1) then
+				if et_libraries.to_string (tmp_component_unit_name) /= field (line,1) then
 					raise constraint_error; -- CS: write useful message
 				end if;
 				
-				if distance_x (tmp_component_position) /= mil_to_distance (get_field_from_line (line,2)) then
+				if distance_x (tmp_component_position) /= mil_to_distance (field (line,2)) then
 					log_indentation_reset;
 -- 					log ("position invalid. expected '" & to_string (tmp_component_position.x) 
 -- 						& "' found '" 
--- 						& get_field_from_line (line,2)
+-- 						& field (line,2)
 -- 						& "'");
 					raise constraint_error; -- CS: write useful message
 				end if;
 
-				if distance_y (tmp_component_position) /= mil_to_distance (get_field_from_line (line,3)) then
+				if distance_y (tmp_component_position) /= mil_to_distance (field (line,3)) then
 					raise constraint_error; -- CS: write useful message
 				end if;
 
@@ -4011,6 +4021,9 @@ package body et_kicad is
 			procedure build_unit_orientation_and_mirror_style (line : in type_fields_of_line) is
 			-- Builds from a line (see below) the component orientation and mirror style:
 
+				function field (line : in type_fields_of_line; position : in positive) return string renames
+					et_string_processing.get_field_from_line;
+			
 			-- Angles in Kicad are to be interpreted as: 
 			-- positive angle -> counter clock wise
 			-- negative angle -> clock wise
@@ -4037,10 +4050,10 @@ package body et_kicad is
 			begin -- CS: provide useful log messages via exception handler
 
 				-- compute unit orientation
-				orient_1 := type_schematic_unit_orientation'value (get_field_from_line (line, 1));
-				orient_2 := type_schematic_unit_orientation'value (get_field_from_line (line, 2));
-				mirror_1 := type_schematic_unit_mirror_style'value (get_field_from_line (line, 3));
-				mirror_2 := type_schematic_unit_mirror_style'value (get_field_from_line (line, 4));
+				orient_1 := type_schematic_unit_orientation'value (field (line, 1));
+				orient_2 := type_schematic_unit_orientation'value (field (line, 2));
+				mirror_1 := type_schematic_unit_mirror_style'value (field (line, 3));
+				mirror_2 := type_schematic_unit_mirror_style'value (field (line, 4));
 
 				case orient_1 is
 					when -1 =>
@@ -4177,7 +4190,7 @@ package body et_kicad is
 					-- Store line in variable "line" (see et_string_processing.ads)
 					line := et_string_processing.read_line(
 								line => get_line,
-								number => ada.text_io.line(current_input),
+								number => ada.text_io.line (current_input),
 								comment_mark => "", -- there are no comment marks in the schematic file
 								ifs => latin_1.space); -- fields are separated by space
 					
@@ -4190,16 +4203,16 @@ package body et_kicad is
 							
 							-- read schematic headline like "EESchema Schematic File Version 2"
 							if not schematic_headline_processed then
-								if get_field_from_line(line,1) = schematic_header_keyword_sys_name and
-									get_field_from_line(line,2) = schematic_header_keyword_schematic and
-									get_field_from_line(line,3) = schematic_header_keyword_file and
-									get_field_from_line(line,4) = schematic_header_keyword_version then
-										if positive'value(get_field_from_line(line,5)) = schematic_version then
+								if field (line,1) = schematic_header_keyword_sys_name and
+									field (line,2) = schematic_header_keyword_schematic and
+									field (line,3) = schematic_header_keyword_file and
+									field (line,4) = schematic_header_keyword_version then
+										if positive'value(field (line,5)) = schematic_version then
 											-- headline ok, version is supported
 											schematic_headline_processed := true;
 
 											-- Save schematic format version in sheet header:                                    
-											sheet_header.version := positive'value(get_field_from_line(line,5));
+											sheet_header.version := positive'value(field (line,5));
 										else
 											log_indentation_reset;
 											log (text => message_error & "schematic version" 
@@ -4227,10 +4240,10 @@ package body et_kicad is
 								-- and stored in sheet_header.libraries.
 								
 								-- Field #1 of the line must be broken down by its own ifs in order to get "LIBS" and "bel_stm32"
-								if get_field_from_line( get_field_from_line(line,1), 1, latin_1.colon) = schematic_library then
+								if get_field_from_line (field  (line,1), 1, latin_1.colon) = schematic_library then
 
 									-- for the log: write library name
-									log (text => "uses library " & get_field_from_line (get_field_from_line (line,1), 2, latin_1.colon),
+									log (text => "uses library " & get_field_from_line (field  (line,1), 2, latin_1.colon),
 										 level => log_threshold + 1
 										);
 
@@ -4239,23 +4252,23 @@ package body et_kicad is
 									et_libraries.type_library_names.append (
 										container => sheet_header.libraries,
 										new_item => et_libraries.type_library_name.to_bounded_string (
-											get_field_from_line (get_field_from_line(line,1), 2, latin_1.colon))
+											get_field_from_line (field (line,1), 2, latin_1.colon))
 										);
 
 								end if;
 
 								-- layer numbers from a line like "EELAYER 25 0" -- CS: not used ?
 								-- CS: we do not read the line "EELAYER END" and assume it is always there.                                                        
-								if get_field_from_line(line,1) = schematic_eelayer then
-									if get_field_from_line(line,2) = schematic_eelayer_end then
+								if field (line,1) = schematic_eelayer then
+									if field (line,2) = schematic_eelayer_end then
 										null;
 									else
 										-- append layer numbers to the sheet header
 										sheet_header.eelayer_a := positive'value(
-											get_field_from_line(line,2));
+											field (line,2));
 
 										sheet_header.eelayer_b := natural'value(
-											get_field_from_line(line,3));
+											field (line,3));
 									end if;
 								end if;
 							
@@ -4281,13 +4294,13 @@ package body et_kicad is
 								-- $EndDescr
 								
 								if not description_entered then
-									if get_field_from_line(line,1) = schematic_description_header then -- $Descr A4 11693 8268
+									if field (line,1) = schematic_description_header then -- $Descr A4 11693 8268
 										description_entered := true; -- we are entering the sheet description
 
 										-- read drawing frame dimensions from a line like "$Descr A4 11693 8268"
-										tmp_frame.paper_size	:= type_paper_size'value(get_field_from_line(line,2));
-										tmp_frame.size_x		:= mil_to_distance (get_field_from_line(line,3));
-										tmp_frame.size_y 		:= mil_to_distance (get_field_from_line(line,4)); 
+										tmp_frame.paper_size	:= type_paper_size'value(field (line,2));
+										tmp_frame.size_x		:= mil_to_distance (field (line,3));
+										tmp_frame.size_y 		:= mil_to_distance (field (line,4)); 
 										
 										--tmp_frame.coordinates.path := path_to_submodule;
 										set_path (tmp_frame.coordinates, path_to_submodule);
@@ -4299,7 +4312,7 @@ package body et_kicad is
 																	
 									end if;
 								else -- we are inside the description
-									if get_field_from_line(line,1) = schematic_description_footer then -- $EndDescr
+									if field (line,1) = schematic_description_footer then -- $EndDescr
 										description_entered := false; -- we are leaving the description
 										description_processed := true;
 
@@ -4330,19 +4343,19 @@ package body et_kicad is
 									-- CS: we assume only one encoding. other encodings are ignored currently.
 									-- The encoding should be project wide. KiCad allows a sheet specific encoding which is no
 									-- good idea.
-									if get_field_from_line(line,1) = schematic_keyword_encoding then
-										if get_field_from_line(line,2) /= encoding_default then
+									if field (line,1) = schematic_keyword_encoding then
+										if field (line,2) /= encoding_default then
 											--log_indentation_reset;
 											log (text => message_warning & "non-default endcoding '" & 
-												get_field_from_line(line,2) & "' found !");
+												field (line,2) & "' found !");
 										end if;
 									end if;
 										
 									-- read sheet number from a line like "Sheet 1 7"
-									if get_field_from_line(line,1) = schematic_keyword_sheet then
-										sheet_number_current := positive'value(get_field_from_line(line,2));
+									if field (line,1) = schematic_keyword_sheet then
+										sheet_number_current := positive'value(field (line,2));
 										log ("sheet" & positive'image (sheet_number_current) & " ...", level => log_threshold + 1);
-										sheet_count_total    := positive'value(get_field_from_line(line,3));
+										sheet_count_total    := positive'value(field (line,3));
 										if sheet_count_total > 1 then
 											-- Set in the list_of_submodules (to be returned) the parent_module. The schematic file 
 											-- being processed (see input parameters of read_file_schematic_kicad) becomes the parent module
@@ -4357,45 +4370,45 @@ package body et_kicad is
 									end if;						
 
 									-- read sheet title from a line like "Title "abc""
-									if get_field_from_line(line,1) = schematic_keyword_title then                        
+									if field (line,1) = schematic_keyword_title then                        
 										tmp_title_block_text.meaning := TITLE;
 										tmp_title_block_text.text := type_title_block_text_string.to_bounded_string(
-											strip_quotes((get_field_from_line(line,2))));
+											strip_quotes((field (line,2))));
 										type_title_block_texts.append (tmp_title_block_texts, tmp_title_block_text);
 									end if;
 
 									-- read date from a line like "Date "1981-01-23""
-									if get_field_from_line(line,1) = schematic_keyword_date then                        
+									if field (line,1) = schematic_keyword_date then                        
 										tmp_title_block_text.meaning := DRAWN_DATE;
 										tmp_title_block_text.text := type_title_block_text_string.to_bounded_string(
-											strip_quotes((get_field_from_line(line,2))));
+											strip_quotes((field (line,2))));
 										type_title_block_texts.append (tmp_title_block_texts, tmp_title_block_text);
 									end if;
 
 									-- read revision from a line like "Rev "9.7.1"
-									if get_field_from_line(line,1) = schematic_keyword_revision then                        
+									if field (line,1) = schematic_keyword_revision then                        
 										tmp_title_block_text.meaning := REVISION;
 										tmp_title_block_text.text := type_title_block_text_string.to_bounded_string(
-											strip_quotes((get_field_from_line(line,2))));
+											strip_quotes((field (line,2))));
 										type_title_block_texts.append (tmp_title_block_texts, tmp_title_block_text);
 									end if;
 
 									-- read company name
-									if get_field_from_line(line,1) = schematic_keyword_company then
+									if field (line,1) = schematic_keyword_company then
 										tmp_title_block_text.meaning := COMPANY;
 										tmp_title_block_text.text := type_title_block_text_string.to_bounded_string(
-											strip_quotes((get_field_from_line(line,2))));
+											strip_quotes((field (line,2))));
 										type_title_block_texts.append (tmp_title_block_texts, tmp_title_block_text);
 									end if;
 
 									-- read commments 1..4 CS: need something more flexible here in order to read any number of comments.
-									if  get_field_from_line(line,1) = schematic_keyword_comment_1 or
-										get_field_from_line(line,1) = schematic_keyword_comment_2 or
-										get_field_from_line(line,1) = schematic_keyword_comment_3 or 
-										get_field_from_line(line,1) = schematic_keyword_comment_4 then
+									if  field (line,1) = schematic_keyword_comment_1 or
+										field (line,1) = schematic_keyword_comment_2 or
+										field (line,1) = schematic_keyword_comment_3 or 
+										field (line,1) = schematic_keyword_comment_4 then
 											tmp_title_block_text.meaning := MISC;
 											tmp_title_block_text.text := type_title_block_text_string.to_bounded_string(
-												strip_quotes((get_field_from_line(line,2))));
+												strip_quotes((field (line,2))));
 											type_title_block_texts.append (tmp_title_block_texts, tmp_title_block_text);
 									end if;
 									
@@ -4418,11 +4431,11 @@ package body et_kicad is
 								-- And add name of submodule (sheet file name) to list_of_submodules:
 								if sheet_count_total > 1 then
 									if not sheet_description_entered then
-										if get_field_from_line(line,1) = schematic_sheet_header then -- $Sheet
+										if field (line,1) = schematic_sheet_header then -- $Sheet
 											sheet_description_entered := true;
 										end if;
 									else -- we are inside a sheet description
-										if get_field_from_line(line,1) = schematic_sheet_footer then -- $EndSheet
+										if field (line,1) = schematic_sheet_footer then -- $EndSheet
 											sheet_description_entered := false; -- we are leaving the sheet description
 
 											-- append name_of_submodule_scratch to list_of_submodules to be returned to parent unit
@@ -4434,39 +4447,39 @@ package body et_kicad is
 										end if;
 
 										-- read GUI submodule (sheet) position and size from a line like "S 4050 5750 1050 650"
-										if get_field_from_line(line,1) = schematic_keyword_sheet_pos_and_size then
+										if field (line,1) = schematic_keyword_sheet_pos_and_size then
 											set_path (tmp_submodule_gui.coordinates, path_to_submodule);
 											--set_module (tmp_submodule_gui.coordinates, et_coordinates.type_submodule_name.to_bounded_string (to_string (current_schematic)));
 											set_module (tmp_submodule_gui.coordinates, to_submodule_name (current_schematic));
 											et_coordinates.set_sheet (tmp_submodule_gui.coordinates, sheet_number_current);
 											
-											et_coordinates.set_x (tmp_submodule_gui.coordinates, et_coordinates.mil_to_distance (get_field_from_line (line,2)));
-											et_coordinates.set_y (tmp_submodule_gui.coordinates, et_coordinates.mil_to_distance (get_field_from_line (line,3)));
+											et_coordinates.set_x (tmp_submodule_gui.coordinates, et_coordinates.mil_to_distance (field  (line,2)));
+											et_coordinates.set_y (tmp_submodule_gui.coordinates, et_coordinates.mil_to_distance (field  (line,3)));
 
-											tmp_submodule_gui.size_x := mil_to_distance (get_field_from_line(line,4));
-											tmp_submodule_gui.size_y := mil_to_distance (get_field_from_line(line,5));                                
+											tmp_submodule_gui.size_x := mil_to_distance (field (line,4));
+											tmp_submodule_gui.size_y := mil_to_distance (field (line,5));                                
 										end if;
 
 										-- read GUI submodule (sheet) timestamp from a line like "U 58A73B5D"
-										if get_field_from_line(line,1) = schematic_keyword_sheet_timestamp then 
-											tmp_submodule_gui.timestamp := type_timestamp (get_field_from_line(line,2));
+										if field (line,1) = schematic_keyword_sheet_timestamp then 
+											tmp_submodule_gui.timestamp := type_timestamp (field (line,2));
 										end if;
 										
 										-- Read submodule (sheet) name from a line like "F0 "mcu_stm32f030" 60"
 										-- Since this is the black-box-representation of a kicad-sheet its name is threated as name of a submodule.
 										-- The sheet name is stored in tmp_submodule_gui.name to be compared with the sheet file name later.
-										if get_field_from_line(line,1) = schematic_keyword_sheet_name then
-											tmp_submodule_gui_name := et_coordinates.type_submodule_name.to_bounded_string (strip_quotes (get_field_from_line(line,2)));
-											--tmp_submodule_gui.text_size_of_name := type_text_size'value (get_field_from_line(line,3));
-											tmp_submodule_gui.text_size_of_name := mil_to_distance (get_field_from_line(line,3));
+										if field (line,1) = schematic_keyword_sheet_name then
+											tmp_submodule_gui_name := et_coordinates.type_submodule_name.to_bounded_string (strip_quotes (field (line,2)));
+											--tmp_submodule_gui.text_size_of_name := type_text_size'value (field (line,3));
+											tmp_submodule_gui.text_size_of_name := mil_to_distance (field (line,3));
 										end if;
 
 										-- Read sheet file name from a line like "F1 "mcu_stm32f030.sch" 60".
 										-- The file name (name_of_submodule_scratch) goes into the list of submodules to be returned to the parent unit.
-										if get_field_from_line(line,1) = schematic_keyword_sheet_file then
-											name_of_submodule_scratch := et_coordinates.type_submodule_name.to_bounded_string (strip_quotes (get_field_from_line (line,2)));
-											--tmp_submodule_gui.text_size_of_file := et_libraries.type_text_size'value(get_field_from_line(line,3));
-											tmp_submodule_gui.text_size_of_file := mil_to_distance (get_field_from_line (line,3));
+										if field (line,1) = schematic_keyword_sheet_file then
+											name_of_submodule_scratch := et_coordinates.type_submodule_name.to_bounded_string (strip_quotes (field  (line,2)));
+											--tmp_submodule_gui.text_size_of_file := et_libraries.type_text_size'value(field (line,3));
+											tmp_submodule_gui.text_size_of_file := mil_to_distance (field  (line,3));
 											
 											-- Test if sheet name and file name match:
 											if et_coordinates.type_submodule_name.to_string (tmp_submodule_gui_name) /= base_name (et_coordinates.type_submodule_name.to_string (name_of_submodule_scratch)) then
@@ -4485,9 +4498,9 @@ package body et_kicad is
 									-- read net segments						
 									if not net_segment_entered then
 										-- collect net segments
-										if get_field_from_line(line,1) = schematic_keyword_wire then
-											if get_field_from_line(line,2) = schematic_keyword_wire then
-												if get_field_from_line(line,3) = schematic_keyword_line then
+										if field (line,1) = schematic_keyword_wire then
+											if field (line,2) = schematic_keyword_wire then
+												if field (line,3) = schematic_keyword_line then
 													net_segment_entered := true; -- CS: assumption: segment coordinates follow in next line
 -- 													log_indentation_up;
 -- 													log (text => "net segment", level => 1);
@@ -4513,10 +4526,10 @@ package body et_kicad is
 										set_sheet (tmp_segment.coordinates_end,   sheet_number_current);
 
 										-- the x/y position
-										set_x (tmp_segment.coordinates_start, mil_to_distance (get_field_from_line (line,1)));
-										set_y (tmp_segment.coordinates_start, mil_to_distance (get_field_from_line (line,2)));
-										set_x (tmp_segment.coordinates_end, mil_to_distance (get_field_from_line (line,3)));
-										set_y (tmp_segment.coordinates_end, mil_to_distance (get_field_from_line (line,4)));
+										set_x (tmp_segment.coordinates_start, mil_to_distance (field  (line,1)));
+										set_y (tmp_segment.coordinates_start, mil_to_distance (field  (line,2)));
+										set_x (tmp_segment.coordinates_end, mil_to_distance (field  (line,3)));
+										set_y (tmp_segment.coordinates_end, mil_to_distance (field  (line,4)));
 
 										-- Ignore net segments with zero length (CS: for some reason they may exist. could be a kicad bug)
 										-- If a net segment has zero length, issue a warning.
@@ -4539,16 +4552,16 @@ package body et_kicad is
 									end if;
 
 									-- read net junctions and store them in a wild list of net junctions for later sorting
-									if get_field_from_line(line,1) = schematic_keyword_connection then
-										if get_field_from_line(line,2) = schematic_tilde then
+									if field (line,1) = schematic_keyword_connection then
+										if field (line,2) = schematic_tilde then
 
 											-- build a temporarily junction
 											set_path (tmp_junction.coordinates, path_to_submodule);
 											--set_module (tmp_junction.coordinates, type_submodule_name.to_bounded_string (to_string (current_schematic)));
 											set_module (tmp_junction.coordinates, to_submodule_name (current_schematic));
 											set_sheet (tmp_junction.coordinates, sheet_number_current);
-											set_x (tmp_junction.coordinates, mil_to_distance (get_field_from_line (line,3)));
-											set_y (tmp_junction.coordinates, mil_to_distance (get_field_from_line (line,4)));
+											set_x (tmp_junction.coordinates, mil_to_distance (field  (line,3)));
+											set_y (tmp_junction.coordinates, mil_to_distance (field  (line,4)));
 
 											-- for the log
 											--write_junction_properties (tmp_junction);
@@ -4565,8 +4578,8 @@ package body et_kicad is
 									-- Read simple net labels (they do not have a tag, but just a text) 
 									-- CS: assumption: keywords "Text Label" and coordinates in one line
 									if not simple_label_entered then							
-										if 	get_field_from_line(line,1) = schematic_keyword_text and 
-											get_field_from_line(line,2) = schematic_keyword_label_simple then
+										if 	field (line,1) = schematic_keyword_text and 
+											field (line,2) = schematic_keyword_label_simple then
 
 											simple_label_entered := true;
 
@@ -4575,17 +4588,17 @@ package body et_kicad is
 											--set_module (tmp_simple_net_label.coordinates, type_submodule_name.to_bounded_string (to_string (current_schematic)));
 											set_module (tmp_simple_net_label.coordinates, to_submodule_name (current_schematic));
 											set_sheet (tmp_simple_net_label.coordinates, sheet_number_current);
-											set_x (tmp_simple_net_label.coordinates, mil_to_distance (get_field_from_line (line,3)));
-											set_y (tmp_simple_net_label.coordinates, mil_to_distance (get_field_from_line (line,4)));
-											tmp_simple_net_label.orientation := to_angle (get_field_from_line (line,5));
+											set_x (tmp_simple_net_label.coordinates, mil_to_distance (field  (line,3)));
+											set_y (tmp_simple_net_label.coordinates, mil_to_distance (field  (line,4)));
+											tmp_simple_net_label.orientation := to_angle (field  (line,5));
 
-											tmp_simple_net_label.size := mil_to_distance (get_field_from_line(line,6));
+											tmp_simple_net_label.size := mil_to_distance (field (line,6));
 											-- CS: check label text size 1.27
 											
-											tmp_simple_net_label.style := to_text_style (style_in => get_field_from_line(line,7), text => true);
+											tmp_simple_net_label.style := to_text_style (style_in => field (line,7), text => true);
 											-- cS: check label style
 											
-											tmp_simple_net_label.width := et_libraries.type_text_line_width'value(get_field_from_line(line,8));
+											tmp_simple_net_label.width := et_libraries.type_text_line_width'value(field (line,8));
 											-- CS: check label line width
 
 										end if;
@@ -4593,7 +4606,7 @@ package body et_kicad is
 										simple_label_entered := false; -- we are leaving a simple label
 
 										-- get label text and put it to temporarily simple label
-										tmp_simple_net_label.text := type_net_name.to_bounded_string(get_field_from_line(line,1));
+										tmp_simple_net_label.text := type_net_name.to_bounded_string(field (line,1));
 
 										-- for the log
 										--write_label_properties (type_net_label (tmp_simple_net_label));
@@ -4609,17 +4622,17 @@ package body et_kicad is
 									
 									-- read tag net labels (tagged labels can be global or hierarchical)
 									if not tag_label_entered then
-										if 	get_field_from_line(line,1) = schematic_keyword_text 
+										if 	field (line,1) = schematic_keyword_text 
 											and 
-											(get_field_from_line(line,2) = schematic_keyword_label_hierarchic 
-											or get_field_from_line(line,2) = schematic_keyword_label_global)
+											(field (line,2) = schematic_keyword_label_hierarchic 
+											or field (line,2) = schematic_keyword_label_global)
 											then
 										
 											tag_label_entered := true;
 
 											-- Build a temporarily hierarchic/global label from a line like "Text GLabel 1850 3100 0 58 BiDi ~ 0"
 											-- The keyword in field 2 tells whether we have a hierarchic or global label:
-											if get_field_from_line(line,2) = schematic_keyword_label_hierarchic then
+											if field (line,2) = schematic_keyword_label_hierarchic then
 												tmp_tag_net_label.hierarchic := true;
 												tmp_tag_net_label.global := false;
 											else
@@ -4631,24 +4644,24 @@ package body et_kicad is
 											--set_module (tmp_tag_net_label.coordinates, type_submodule_name.to_bounded_string (to_string (current_schematic)));
 											set_module (tmp_tag_net_label.coordinates, to_submodule_name (current_schematic));
 											set_sheet (tmp_tag_net_label.coordinates, sheet_number_current);
-											set_x (tmp_tag_net_label.coordinates, mil_to_distance (get_field_from_line (line,3)));
-											set_y (tmp_tag_net_label.coordinates, mil_to_distance (get_field_from_line (line,4)));
-											tmp_tag_net_label.orientation   := to_angle (get_field_from_line(line,5));
+											set_x (tmp_tag_net_label.coordinates, mil_to_distance (field  (line,3)));
+											set_y (tmp_tag_net_label.coordinates, mil_to_distance (field  (line,4)));
+											tmp_tag_net_label.orientation   := to_angle (field (line,5));
 											
 											tmp_tag_net_label.direction := to_direction(
-												get_field_from_line(line,7)
+												field (line,7)
 												);
 
 											-- build text attributes from size, font and line width
-											tmp_tag_net_label.size := mil_to_distance (get_field_from_line(line,6));
-											tmp_tag_net_label.style := to_text_style (style_in => get_field_from_line(line,8), text => true);
-											tmp_tag_net_label.width := et_libraries.type_text_line_width'value(get_field_from_line(line,9));
+											tmp_tag_net_label.size := mil_to_distance (field (line,6));
+											tmp_tag_net_label.style := to_text_style (style_in => field (line,8), text => true);
+											tmp_tag_net_label.width := et_libraries.type_text_line_width'value(field (line,9));
 										end if;
 									else
 										tag_label_entered := false; -- we are leaving a tag label
 
 										-- get label text and put it to temporarily tag label
-										tmp_tag_net_label.text := type_net_name.to_bounded_string(get_field_from_line(line,1));
+										tmp_tag_net_label.text := type_net_name.to_bounded_string(field (line,1));
 
 										-- for the log
 										if log_level >= log_threshold + 1 then
@@ -4663,8 +4676,8 @@ package body et_kicad is
 
 									-- read note from a line like "Text Notes 3400 2800 0 60 Italic 12" followed by a line with the actual note:
 									if not note_entered then
-										if 	get_field_from_line(line,1) = schematic_keyword_text and 
-											get_field_from_line(line,2) = schematic_keyword_note then
+										if 	field (line,1) = schematic_keyword_text and 
+											field (line,2) = schematic_keyword_note then
 												note_entered := true; -- we are entering a note
 										
 												-- set coordinates
@@ -4672,12 +4685,12 @@ package body et_kicad is
 												--set_module (tmp_note.coordinates, type_submodule_name.to_bounded_string (to_string (current_schematic)));
 												set_module (tmp_note.coordinates, to_submodule_name (current_schematic));
 												set_sheet (tmp_note.coordinates, sheet_number_current);
-												set_x (tmp_note.coordinates, mil_to_distance (get_field_from_line (line,3)));
-												set_y (tmp_note.coordinates, mil_to_distance (get_field_from_line (line,4)));
-												tmp_note.orientation   := to_angle (get_field_from_line(line,5));
-												tmp_note.size := mil_to_distance (get_field_from_line(line,6));
-												tmp_note.style := to_text_style (style_in => get_field_from_line(line,7), text => true);
-												tmp_note.line_width := mil_to_distance (get_field_from_line (line,8));
+												set_x (tmp_note.coordinates, mil_to_distance (field  (line,3)));
+												set_y (tmp_note.coordinates, mil_to_distance (field  (line,4)));
+												tmp_note.orientation   := to_angle (field (line,5));
+												tmp_note.size := mil_to_distance (field (line,6));
+												tmp_note.style := to_text_style (style_in => field (line,7), text => true);
+												tmp_note.line_width := mil_to_distance (field  (line,8));
 
 										end if;
 									else 
@@ -4728,7 +4741,7 @@ package body et_kicad is
 									-- $EndComp
 									
 									if not component_entered then
-										if get_field_from_line(line,1) = schematic_component_header then
+										if field (line,1) = schematic_component_header then
 											component_entered := true;
 
 											-- This is to init the temporarily used variables that store text fields.
@@ -4737,7 +4750,7 @@ package body et_kicad is
 
 										end if;
 									else -- we are inside the component and wait for the component footer ($EndComp)
-										if get_field_from_line(line,1) = schematic_component_footer then
+										if field (line,1) = schematic_component_footer then
 											component_entered := false; -- we are leaving the component
 
 											-- Check if all required text fields have been found.
@@ -4757,9 +4770,9 @@ package body et_kicad is
 											
 											-- Read component name and annotation from a line like "L NetChanger N1". 
 											-- From this entry we reason the compoenent appearance.
-											if get_field_from_line(line,1) = schematic_component_identifier_name then -- "L"
+											if field (line,1) = schematic_component_identifier_name then -- "L"
 												
-												tmp_component_name_in_lib := et_libraries.type_component_name.to_bounded_string(get_field_from_line(line,2)); -- "SN74LS00"
+												tmp_component_name_in_lib := et_libraries.type_component_name.to_bounded_string(field (line,2)); -- "SN74LS00"
 												tmp_component_appearance := to_appearance(line => line, schematic => true);
 												
 												case tmp_component_appearance is
@@ -4767,14 +4780,14 @@ package body et_kicad is
 													when et_libraries.sch => 
 														-- we have a line like "L P3V3 #PWR07"
 														tmp_component_reference := et_schematic.to_component_reference(
-																text_in => get_field_from_line(line,3),
+																text_in => field (line,3),
 																allow_special_character_in_prefix => true);
 
 													when et_libraries.sch_pcb =>
 
 														-- we have a line like "L 74LS00 U1"
 														tmp_component_reference := et_schematic.to_component_reference(
-																text_in => get_field_from_line(line,3),
+																text_in => field (line,3),
 																allow_special_character_in_prefix => false);
 
 													when others => -- CS: This should never happen. A subtype of type_component_appearance could be a solution.
@@ -4787,25 +4800,25 @@ package body et_kicad is
 
 											-- read line like "U 2 1 4543D4D3F" 
 											-- U is the line indicator, 2 is the unit id, 1 is the demorgan flag, last field is the timestamp
-											elsif get_field_from_line(line,1) = schematic_component_identifier_unit then -- "U"
+											elsif field (line,1) = schematic_component_identifier_unit then -- "U"
 
 												-- KiCad uses positive numbers to identifiy units. But in general a unit name can
 												-- be a string as well. Therefore we handle the unit id as string.
 												tmp_component_unit_name := et_libraries.type_unit_name.to_bounded_string(
-													get_field_from_line(line,2)); -- the unit id
+													field (line,2)); -- the unit id
 
 												-- Read DeMorgan flag:
 												tmp_component_alt_repres := to_alternative_representation(line => line, schematic => true);
 
 												-- Read and check the timestamp:
-												tmp_component_timestamp := type_timestamp(get_field_from_line(line,4));
+												tmp_component_timestamp := type_timestamp(field (line,4));
 												et_string_processing.check_timestamp (tmp_component_timestamp);
 
 											-- Read unit coordinates from a line like "P 3200 4500".
-											elsif get_field_from_line(line,1) = schematic_component_identifier_coord then -- "P"
+											elsif field (line,1) = schematic_component_identifier_coord then -- "P"
 											
-												set_x (tmp_component_position, mil_to_distance (get_field_from_line (line,2))); -- "3200"
-												set_y (tmp_component_position, mil_to_distance (get_field_from_line (line,3))); -- "4500"
+												set_x (tmp_component_position, mil_to_distance (field  (line,2))); -- "3200"
+												set_y (tmp_component_position, mil_to_distance (field  (line,3))); -- "4500"
 
 												-- The unit coordinates is more than just x/y :
 												-- unit_scratch.coordinates.main_module := module.name;
@@ -4815,7 +4828,7 @@ package body et_kicad is
 												set_sheet (tmp_component_position, sheet_number_current);
 
 											-- Skip unit path entry in lines like "AR Path="/59EF082F" Ref="N23"  Part="1"
-											elsif get_field_from_line (line,1) = schematic_component_identifier_path then -- "AR"
+											elsif field  (line,1) = schematic_component_identifier_path then -- "AR"
 												-- CS: meaning unclear
 												log (message_warning & affected_line (line) & "ignoring line '" & to_string (line) & "' ! Meaning unclear !");
 
@@ -4825,9 +4838,9 @@ package body et_kicad is
 											--			"F 2 "bel_netchanger:N_0.2MM" H 2600 2100 60  0001 C CNN"
 											--
 											-- set "field found" flags
-											elsif get_field_from_line(line,1) = component_field_identifier then -- "F"
+											elsif field (line,1) = component_field_identifier then -- "F"
 												
-												case type_component_field_id'value (get_field_from_line (line,2)) is
+												case type_component_field_id'value (field  (line,2)) is
 													when component_field_reference =>
 														tmp_component_text_reference_found	:= true;
 														tmp_component_text_reference 		:= to_text;

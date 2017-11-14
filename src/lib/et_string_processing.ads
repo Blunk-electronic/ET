@@ -176,7 +176,7 @@ package et_string_processing is
 		file : in boolean := true;
 		console : in boolean := false);
 	
-	function get_field_from_line(
+	function get_field_from_line (
 	-- Extracts a field separated by ifs at position. If trailer is true, the trailing content untiil trailer_to is also returned.
 		text_in 	: in string;
 		position 	: in positive;
