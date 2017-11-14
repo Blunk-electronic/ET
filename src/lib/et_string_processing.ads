@@ -117,6 +117,9 @@ package et_string_processing is
 	procedure reset_warnings_counter;
 	function message_warning return string;
 	-- Returns a warning string and increments the warning counter.
+
+	function message_note return string;
+	-- Returns a notification string.
 	
 -- TIMESTAMP
 	timestamp_characters : character_set := to_set (ranges => (('A','F'),('0','9'))); -- CS: upper case letters only	

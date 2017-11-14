@@ -45,7 +45,7 @@ package body et_string_processing is
 		log_indentation := log_indentation + 1;
 		exception
 			when constraint_error =>
-				put_line ("WARNING : maximum log indentation reached !");
+				put_line ("WARNING ! Maximum log indentation reached !");
 				log_indentation := type_indentation_level'last;
 			when others => null;
 	end log_indentation_up;
@@ -55,7 +55,7 @@ package body et_string_processing is
 		log_indentation := log_indentation - 1;
 		exception
 			when constraint_error =>
-				put_line ("WARNING : minimum log indentation reached !");
+				put_line ("WARNING ! Minimum log indentation reached !");
 				log_indentation := type_indentation_level'first;
 			when others => null;
 	end log_indentation_down;
@@ -103,9 +103,15 @@ package body et_string_processing is
 	-- Returns a warning string and increments the warning counter.
 	begin
 		warning_counter := warning_counter + 1;
-		return "WARNING #" & trim (type_warning_counter'image (warning_counter),left) & " ! ";
+		return "WARNING #" & trim (type_warning_counter'image (warning_counter),left) & " : ";
 	end message_warning;
 
+	function message_note return string is
+	-- Returns a notification string.
+	begin
+		return "NOTE : ";
+	end message_note;
+	
 	procedure check_updated_vs_commissioned ( commissioned , updated : in type_date) is
 	-- Checks whether updated is later or equal commissioned.		
 	begin

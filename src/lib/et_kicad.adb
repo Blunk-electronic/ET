@@ -3421,7 +3421,7 @@ package body et_kicad is
 					log_indentation_down;
 					
 				else
-					log (message_warning 
+					log (message_note 
 						 & "The schematic does not contain nets to associate net labels with !");
 				end if;
 
@@ -5105,7 +5105,7 @@ package body et_kicad is
 						
 					end loop;
 
-					log_indentation_down;
+					--log_indentation_down;
 
 					-- Checks scope of strands across the current module (indicated by module_cursor).
 					-- NOTE: module_cursor points to the current module.

@@ -1273,17 +1273,17 @@ package body et_schematic is
 		begin
 			while strand /= type_strands_named.no_element loop
 				log_indentation_up;
--- 				log (to_string (element (strand).name) & " scope " & to_string (element (strand).scope)
--- 					& " at pos. " 
--- 					& et_coordinates.to_string (et_coordinates.path (element (strand).coordinates), top_module => false)
--- 					& et_coordinates.to_string (et_coordinates.module (element (strand).coordinates)));
 
-				log (et_coordinates.to_string (et_coordinates.path (element (strand).coordinates), top_module => false)
-					& et_coordinates.to_string (et_coordinates.module (element (strand).coordinates))
-					& hierarchy_separator 
-					& to_string (element (strand).name) & " scope " & to_string (element (strand).scope)
-					);
+				log (to_string (element (strand).name) & " scope " & to_string (element (strand).scope)
+					& " in " 
+					& et_coordinates.to_string (et_coordinates.path (element (strand).coordinates), top_module => false)
+					& et_coordinates.to_string (et_coordinates.module (element (strand).coordinates)));
 
+-- 				log (et_coordinates.to_string (et_coordinates.path (element (strand).coordinates), top_module => false)
+-- 					& et_coordinates.to_string (et_coordinates.module (element (strand).coordinates))
+-- 					& hierarchy_separator 
+-- 					& to_string (element (strand).name) & " scope " & to_string (element (strand).scope)
+-- 					);
 
 				type_strands_named.query_element (
 					position	=> strand,
@@ -1445,6 +1445,7 @@ package body et_schematic is
 					-- Test if net has a dedicated name. Output a warning if negative.
 					if anonymous (net_name) then
 						log (message_warning & "net " & to_string (net_name) & " has no dedicated name !");
+						-- CS: Show the lowest xy position
 					end if;
 					
 				else -- net already there -> check scope
