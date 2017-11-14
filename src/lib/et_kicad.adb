@@ -2265,10 +2265,12 @@ package body et_kicad is
 			
 		begin -- read_project_file
 			log_indentation_reset;
-			log (text => "reading project file " 
+			log (
+				text => "reading project file " 
 				 & compose (
-					name		=> et_schematic.type_project_name.to_string (et_schematic.project_name), 
-					extension	=> file_extension_project) & " ...");
+					name		=> type_project_name.to_string (project_name), 
+					extension	=> file_extension_project) & " ...",
+				level => log_threshold + 1);
 			log_indentation_up;
 
 			-- Clear list of project libraries from earlier projects that have been imported.
@@ -2323,7 +2325,9 @@ package body et_kicad is
 								lib_dir := to_bounded_string (field (line,2));
 
 								-- For the log write something like "LibDir ../../lbr"
-								log (text => project_keyword_library_directory & " " & et_libraries.to_string (lib_dir));
+								log (
+									text => project_keyword_library_directory & " " & et_libraries.to_string (lib_dir),
+									level => log_threshold + 1);
 							end if;
 							
 						end if;
@@ -2346,7 +2350,7 @@ package body et_kicad is
 											extension				=> file_extension_schematic_lib)));
 								
 								-- For the log write something like "LibName bel_connectors_and_jumpers"
-								log (text => field (line,1) & " " & field (line,2));
+								log (text => field (line,1) & " " & field (line,2), level => log_threshold + 1);
 							end if;
 
 						end if;
