@@ -179,8 +179,10 @@ package et_libraries is
 		placeholder		: in type_text_placeholder;
 		log_threshold	: in et_string_processing.type_log_level);
 
-	procedure write_text_properies (text : in et_libraries.type_text);
+	procedure write_text_properies (
 	-- Outputs the properties of the given text.
+		text : in et_libraries.type_text;
+		log_threshold : in et_string_processing.type_log_level);
 
 	function content ( text : in type_text) return string;
 	-- Returns the content of the given text as string.
@@ -677,7 +679,8 @@ package et_libraries is
 	-- Returns the component appearance where cursor points to.
 		return type_component_appearance;
 
-	procedure write_component_properties (component : in type_components.cursor);
+	--	CS: currently there is no need for a component summary
+	-- procedure write_component_properties (component : in type_components.cursor);
 	-- Writes the properties of the component indicated by the given cursor.
 
 	--package type_libraries is new indefinite_ordered_maps (	

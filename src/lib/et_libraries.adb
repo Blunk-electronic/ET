@@ -233,52 +233,54 @@ package body et_libraries is
 	end write_placeholder_properties;
 
 
-	procedure write_text_properies (text : in et_libraries.type_text) is
+	procedure write_text_properies (
 	-- Outputs the properties of the given text.
+		text : in et_libraries.type_text;
+		log_threshold : in et_string_processing.type_log_level) is
+
 		use et_string_processing;
-		log_threshold : type_log_level := 2;
 	begin
 -- 		log_indentation_up;
 		
 		-- meaning
-		log ("text field " & et_libraries.to_string(text.meaning), level => log_threshold);
+		log ("field/attribute '" & et_libraries.to_string (text.meaning) & "'", level => log_threshold);
 		log_indentation_up;
 		
-		-- position
-		log (to_string (text.position), level => log_threshold);
-
 		-- content
-		if et_libraries.type_text_content.length(text.content) > 0 then
+		if et_libraries.type_text_content.length (text.content) > 0 then
 			log ("content '" & et_libraries.type_text_content.to_string(text.content) & "'",
 				level => log_threshold);
 		else
 			log ("no content", level => log_threshold);
 		end if;
+
+		-- position
+		log (to_string (text.position), level => log_threshold + 1);
 		
 		-- size
-		log ("size " & et_coordinates.to_string (text.size), level => log_threshold);
+		log ("size " & et_coordinates.to_string (text.size), level => log_threshold + 1);
 
 		-- style
 		log ("style " & to_lower(et_libraries.type_text_style'image (text.style)),
-			 level => log_threshold);
+			 level => log_threshold + 1);
 
 		-- line width
 		log ("line width " & et_coordinates.to_string (text.line_width),
-			level => log_threshold);
+			level => log_threshold + 1);
 
 		-- orientation
-		log (to_string (text.orientation), level => log_threshold);
+		log (to_string (text.orientation), level => log_threshold + 1);
 
 		-- visible
 		log ("visible " & to_lower(et_libraries.type_text_visible'image (text.visible)),
-			level => log_threshold);
+			level => log_threshold + 1);
 
 		-- alignment
 		log ("alignment (horizontal/vertical) "
 			& to_lower (et_libraries.type_text_alignment_horizontal'image (text.alignment.horizontal))
 			& "/"
 			& to_lower (et_libraries.type_text_alignment_vertical'image (text.alignment.vertical)),
-			level => log_threshold);
+			level => log_threshold + 1);
 
 -- 		log_indentation_down;
 		log_indentation_down;
@@ -382,76 +384,76 @@ package body et_libraries is
 	begin
 		return type_components.element (cursor).appearance;
 	end component_appearance;
-	
-	procedure write_component_properties (component : in type_components.cursor) is
-	-- Writes the properties of the component indicated by the given cursor.
-		use et_string_processing;
-		use et_libraries;
-		use et_libraries.type_units_internal;
-		
-		unit_cursor : type_units_internal.cursor;
-		unit_count	: count_type;
-		units		: type_units_internal.map;
 
-		--log_threshold : type_log_level := 1;
-	begin
-		log ("component properties");
-		
-		-- component name in library
-		log ("name " & type_component_name.to_string (type_components.key (component)));
-
-		-- number of internal units
-		unit_count := length (element (component).units_internal);
-		
-		log ("number of internal units" & count_type'image (unit_count));
-
-		-- write unit properties
-		
-		-- NOTE: As a workaround we load units here temporarily
-		-- NOTE: with GNAT 4.8 .. 7.x it is not possible to advance the unit_cursor with "next". The program gets caught
-		-- in an infinite loop. So the workaround here is to copy the whole units_internal map to units and move
-		-- cursor in the local map "units".
-		units := element (component).units_internal;
-
-		case unit_count is
-
-			when 0 => 
-				-- component has no units 
-				raise constraint_error; -- CS: this should never happen
-				
-			when others =>
-
-				-- The initial idea was to set the unit_cursor as follows.
-				-- Statement A:
-				unit_cursor := first (type_components.element(component).units_internal);
-				-- Then the unit_cursor should be moved with the "next" procedure. This causes the program to freeze.
-
-				-- Workaround. This statement overwrites the malfunctioning cursor and solves
-				-- the issue for the time being. Comment this statmement to reproduce the bug:
-				-- Statement B:
-				unit_cursor := first (units);
-
-				
-				loop 
-					exit when unit_cursor = type_units_internal.no_element;
-					
-					-- put_line(standard_output, "step 1");
-					log ("unit " & type_unit_name.to_string (key (unit_cursor)));
-
-					-- CS: output draw objects
-					
-					-- put_line(standard_output, "step 2");
-
-					-- Here the program freezes or keeps trappend in a forever-loop if 
-					-- statement A is used. With statement B everyting works fine:
-					unit_cursor := next (unit_cursor);
-					-- put_line(standard_output, "step 3");
-
-				end loop;
-			
-		end case;
-		
-	end write_component_properties;
+--	CS: currently there is no need for a component summary	
+-- 	procedure write_component_properties (component : in type_components.cursor) is
+-- 	-- Writes the properties of the component indicated by the given cursor.
+-- 		use et_string_processing;
+-- 		use et_libraries;
+-- 		use et_libraries.type_units_internal;
+-- 		
+-- 		unit_cursor : type_units_internal.cursor;
+-- 		unit_count	: count_type;
+-- 		units		: type_units_internal.map;
+-- 
+-- 	begin
+-- 		log ("component properties");
+-- 		
+-- 		-- component name in library
+-- 		log ("name " & type_component_name.to_string (type_components.key (component)));
+-- 
+-- 		-- number of internal units
+-- 		unit_count := length (element (component).units_internal);
+-- 		
+-- 		log ("number of internal units" & count_type'image (unit_count));
+-- 
+-- 		-- write unit properties
+-- 		
+-- 		-- NOTE: As a workaround we load units here temporarily
+-- 		-- NOTE: with GNAT 4.8 .. 7.x it is not possible to advance the unit_cursor with "next". The program gets caught
+-- 		-- in an infinite loop. So the workaround here is to copy the whole units_internal map to units and move
+-- 		-- cursor in the local map "units".
+-- 		units := element (component).units_internal;
+-- 
+-- 		case unit_count is
+-- 
+-- 			when 0 => 
+-- 				-- component has no units 
+-- 				raise constraint_error; -- CS: this should never happen
+-- 				
+-- 			when others =>
+-- 
+-- 				-- The initial idea was to set the unit_cursor as follows.
+-- 				-- Statement A:
+-- 				unit_cursor := first (type_components.element(component).units_internal);
+-- 				-- Then the unit_cursor should be moved with the "next" procedure. This causes the program to freeze.
+-- 
+-- 				-- Workaround. This statement overwrites the malfunctioning cursor and solves
+-- 				-- the issue for the time being. Comment this statmement to reproduce the bug:
+-- 				-- Statement B:
+-- 				unit_cursor := first (units);
+-- 
+-- 				
+-- 				loop 
+-- 					exit when unit_cursor = type_units_internal.no_element;
+-- 					
+-- 					-- put_line(standard_output, "step 1");
+-- 					log ("unit " & type_unit_name.to_string (key (unit_cursor)));
+-- 
+-- 					-- CS: output draw objects
+-- 					
+-- 					-- put_line(standard_output, "step 2");
+-- 
+-- 					-- Here the program freezes or keeps trappend in a forever-loop if 
+-- 					-- statement A is used. With statement B everyting works fine:
+-- 					unit_cursor := next (unit_cursor);
+-- 					-- put_line(standard_output, "step 3");
+-- 
+-- 				end loop;
+-- 			
+-- 		end case;
+-- 		
+-- 	end write_component_properties;
 
 	function find_component (
 	-- Searches the given library for the given component. Returns a cursor to that component.

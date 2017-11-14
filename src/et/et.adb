@@ -167,7 +167,7 @@ procedure et is
 		-- The design import requires changing of directories. So we backup the current directory.
 		-- After the import, we restore the directory.
 		backup_projects_root_directory;
-		et_kicad.import_design;
+		et_kicad.import_design (log_threshold => 0);
 		restore_projects_root_directory;
 
 		-- The project database can be completed once netlists have been built.

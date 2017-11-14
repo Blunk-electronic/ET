@@ -56,7 +56,7 @@ package et_kicad is
     
     schematic_version                   : constant positive := 2;
     
-	procedure import_design; 
+	procedure import_design (log_threshold : in et_string_processing.type_log_level); 
 
 -- COMMENT MARKS
 	comment_mark							: constant string (1..1) := "#";
