@@ -51,8 +51,6 @@ package et_kicad is
 	file_extension_schematic 			: constant string (1..3) := "sch";
 	file_extension_schematic_lib		: constant string (1..3) := "lib";
 	--CS: file_extension_board	 			: constant string (1..3) := "brd";
-
-
     
     schematic_version                   : constant positive := 2;
     
@@ -171,6 +169,7 @@ package et_kicad is
 
 	-- In schematic, a power symbol/component has a hash as first character like "L P3V3 #PWR07"
 	schematic_component_power_symbol_prefix: constant character := '#';
+
 
     
     type type_label_orientation is range 0..3; -- also used for notes
@@ -319,6 +318,12 @@ package et_kicad is
 -- IMPORT
 
 	-- section flags
+	section_eeschema_entered 			: boolean := false;
+	section_eeschema_libraries_entered	: boolean := false;            
+
+	procedure clear_section_entered_flags;
+	-- clears section_eeschema_entered and section_eeschema_libraries_entered.
+	
 	description_entered			: boolean := false;
 	description_processed		: boolean := false;
 	sheet_description_entered	: boolean := false;

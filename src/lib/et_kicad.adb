@@ -2223,6 +2223,14 @@ package body et_kicad is
 	end read_components_libraries;
 	
 
+	procedure clear_section_entered_flags is
+	-- clears section_eeschema_entered and section_eeschema_libraries_entered.
+	begin
+		section_eeschema_entered := false;
+		section_eeschema_libraries_entered := false;
+	end clear_section_entered_flags;
+
+	
 	procedure import_design (log_threshold : in et_string_processing.type_log_level) is
 		--use et_import.type_schematic_file_name;
 		use et_libraries.type_library_directory;
@@ -2252,17 +2260,6 @@ package body et_kicad is
 			use et_libraries;
 			use et_schematic;
 
-		-- CS: move to spec begin
-            section_eeschema_entered : boolean := false;
-            section_eeschema_libraries_entered : boolean := false;            
-
-            procedure clear_section_entered_flags is
-            begin
-                section_eeschema_entered := false;
-                section_eeschema_libraries_entered := false;
-            end clear_section_entered_flags;
-		-- CS: move to spec end
-			
 		begin -- read_project_file
 			log_indentation_reset;
 			log (
