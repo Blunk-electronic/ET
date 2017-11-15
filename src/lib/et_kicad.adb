@@ -3223,13 +3223,17 @@ package body et_kicad is
 						next (strand_cursor); -- advance strand cursor
 					end loop;
 
-					-- Sort anonymous strands (they do not have any labels).
-					-- Anonymous strands have no name -> "processed" flag is still cleared.
+					-- Build name-less strands from anonymous strands.
+					-- Anonymous strands have no label, hence no name -> "processed" flag is still cleared.
 					-- As placeholder for the name we use the notation "N$n" where n is taken from the net_id (counter of name-less strands)
 					-- Their scope is strictly "local".
-					-- We use an intermediate variable "strand" for transfer to the module netlist.
-					-- NOTE: Even if a strand has no name at this stage, it may receive a name later after netlist generation.
-					log (text => "sorting name-less strands ... NOTE: Names may change after netlist generation.");
+					--
+					-- We build a new strand (of type type_strand_named) in an intermediate variable "strand"
+					-- (as specified in et_schematic type_strand_named) for transfer to the module netlist.
+					--
+					-- NOTE: Even if a strand has no name at this stage, it may get a dedicated name later on netlist generation.
+					-- Power-out ports may overwrite the strand name.
+					log (text => "building name-less strands ... NOTE: Names may change after netlist generation.");
 					log_indentation_up;
 
 					strand_cursor := anonymous_strands.first; -- reset strand cursor
@@ -3251,7 +3255,7 @@ package body et_kicad is
 							log_indentation_up;
 							log ("scope " & type_scope_of_net'image (strand.scope) & " with segments", level => 2);
 							
-							-- append segments to strand
+							-- fetch net segments from anonymous strand and append them to the new name-less strand:
 							segment_cursor := anon_strand_a.segments.first; -- reset segment cursor to begin of segments of the current anonymous net
 							while segment_cursor /= type_net_segments.no_element loop -- loop for each segment of anonymous strand anon_strand_a
 								segment := element (segment_cursor); -- get segment
@@ -3290,11 +3294,10 @@ package body et_kicad is
 					
 					log_indentation_down;
 					
-					-- Sort strands with label. Those strands have the "processed" flag set.
-					-- NOTE: Even if a strand has a dedicated name in this stage, it may receive a name after netlist generation by force.
-					-- Power-out ports may overwrite the strand name. As this would be a design error, the operator will 
-					-- be notified and warned about such violations on netlist generation.
-					log (text => "sorting named strands ...");
+					-- Build named strands with label. Those strands have the "processed" flag set.
+					-- NOTE: Even if a strand has a dedicated name at this stage, it may get a dedicated name later on netlist generation.
+					-- Power-out ports may overwrite the strand name (which would be regarded as design error and is handled on netlist generation)
+					log (text => "building named strands ...");
 					log_indentation_up;
 					
 					strand_cursor := anonymous_strands.first; -- reset strand cursor
@@ -3311,7 +3314,7 @@ package body et_kicad is
 							log_indentation_up;
 							log ("scope " & type_scope_of_net'image (strand.scope) & " with segments", level => 2);
 
-							-- append segments to strand
+							-- fetch net segments from anonymous strand and append them to the new named strand:
 							segment_cursor := anon_strand_a.segments.first; -- reset segment cursor to begin of segments of the current anonymous strand
 							while segment_cursor /= type_net_segments.no_element loop -- loop for each segment of anonymous_strand "a"
 								segment := element (segment_cursor); -- get segment
