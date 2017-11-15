@@ -2431,12 +2431,12 @@ package body et_kicad is
 			
 		-- An anonymous strand is a list of net segments that are connected with each other (by their start or end points).
 		-- The anonymous strand gets step by step more properties specified: name, scope and some status flags:
-		package type_anonymous_strand is new doubly_linked_lists ( -- CS: move to spec
+		package type_segments is new doubly_linked_lists ( -- CS: move to spec
 			element_type => type_net_segment);
 
 		-- This is an intermediate type used for handling anonymous strands:
 		type type_anonymous_strand_extended is record
-			segments 	: type_anonymous_strand.list;	-- the net segments
+			segments 	: type_segments.list;			-- the net segments
 			name 		: type_net_name.bounded_string; -- the name (derived from net labels)
 			scope 		: type_scope_of_net := type_scope_of_net'first;	-- the scope (derived from net labels)
 			processed	: boolean := false;				-- set once a label has been found on the net
@@ -2698,10 +2698,10 @@ package body et_kicad is
 
 			schematic_headline_processed : boolean := false;
             
-			tmp_wild_simple_labels	: type_simple_labels.list;
-            tmp_wild_tag_lables 	: type_tag_labels.list;
-			wild_segments			: type_wild_segments.list;
-			tmp_junctions			: type_junctions.list;
+			wild_simple_labels	: type_simple_labels.list;
+            wild_tag_labels 	: type_tag_labels.list;
+			wild_segments		: type_wild_segments.list;
+			wild_junctions		: type_junctions.list;
 
 			-- In the first stage, all net segments of this sheet go into a wild collection of segments.
 			-- Later they will be sorted and connected by their coordinates (start and and points)
@@ -2742,7 +2742,7 @@ package body et_kicad is
 							scope => xy), log_threshold + 1);
 
 					scratch := type_net_segment (type_wild_segments.element (segment_cursor));
-					type_anonymous_strand.append (anonymous_strand.segments, scratch);
+					type_segments.append (anonymous_strand.segments, scratch);
 				end if;
 			end add_segment_to_anonymous_strand;
 
@@ -2935,15 +2935,15 @@ package body et_kicad is
 			procedure associate_net_labels_with_anonymous_strands is
 			-- All anonymous strands must be given a name. The name is enforced by net labels.
 				
-			-- The first label found on the net dictates the strand name.
+			-- The first label found on the strand dictates the strand name.
 			-- Other labels on the strand are checked for their name only. 
 			-- If the name differs from the strand name set earlier, an error is output.
 			-- If scope of strands are contradicting, error is output.
 
-			-- The kind of net label (simple, hierarchic, global) defines the scope of the strand (and finally the net).
+			-- The kind of net label (simple, hierarchic, global) defines the scope of the strand.
 			-- Net labels sitting on a segment, are added to the list of labels of that segment.
 			
-			-- Strands without label remain anonymous by using the notation "N$". 
+			-- Strands without label are named by using the notation "N$". 
 
 				use et_coordinates;
 			
@@ -2960,8 +2960,6 @@ package body et_kicad is
 				function label_sits_on_segment (label : in type_net_label; segment : in type_net_segment) return boolean is
 					sits_on_segment : boolean := false;
 					d : et_geometry.type_distance_point_from_line;
-
-					--use et_libraries;
 					use et_geometry;
 				begin
 					-- calculate the shortes distance of point from line.
@@ -2980,9 +2978,9 @@ package body et_kicad is
 					return sits_on_segment;
 				end label_sits_on_segment;
 
-				use type_anonymous_strand;
+				use type_segments;
 				-- the segment cursor points to the segment being processed
-				segment_cursor : type_anonymous_strand.cursor; 
+				segment_cursor : type_segments.cursor; 
 
 				use type_anonymous_strands;
 				
@@ -3008,13 +3006,12 @@ package body et_kicad is
 					-- Loop in list of anonymous strands, get a (non-processed-yet) strand, loop in list of segments and 
 					-- find a (non-processed-yet) net label that sits on the net segment. If label sits on segment:
 					--  - assume label text as name of strand (and check other labels of the anonymous strand)
+					--  - set scope of strand according to the net label
 					--
 					--  - mark label as processed
-					--  - update/replace label in tmp_wild_simple_labels or tmp_wild_tag_lables
+					--  - update/replace label in wild_simple_labels or wild_tag_labels
 					--
-					--  - Collect label in temporarily list of labels.
-					--
-					--  - Mark anonymous strand as processed. This indicates that the strand has a name (given by a label).
+					--  - Mark anonymous strand as processed. This indicates that the strand has got a name (given by a label).
 					--    Non-Processed strands are those without a label.
 					--  - update/replace anonymous strand in anonymous_strands
 					while strand_cursor /= type_anonymous_strands.no_element loop -- cursor already reset on declaration (see above)
@@ -3025,14 +3022,14 @@ package body et_kicad is
 
 							-- reset segment cursor to begin of segment list of the anonymous net
 							segment_cursor := anon_strand_a.segments.first;
-							while segment_cursor /= type_anonymous_strand.no_element loop -- loop for each segment in anonymous strand anon_strand_a
+							while segment_cursor /= type_segments.no_element loop -- loop for each segment in anonymous strand anon_strand_a
 								segment := anon_strand_a.segments (segment_cursor);
 								--put(et_import.report_handle, "segment: "); write_coordinates_of_segment(s); -- CS: log ?
 								
 								-- Loop in list of simple labels:
-								if not is_empty (tmp_wild_simple_labels) then -- do that if there are simple labels at all
+								if not is_empty (wild_simple_labels) then -- do that if there are simple labels at all
 									--put_line(" simple labels ..."); -- CS: log ?
-									simple_label_cursor := tmp_wild_simple_labels.first; -- reset label cursor
+									simple_label_cursor := wild_simple_labels.first; -- reset label cursor
 									while simple_label_cursor /= type_simple_labels.no_element loop
 										ls := element (simple_label_cursor); -- get simple label
 										
@@ -3071,10 +3068,10 @@ package body et_kicad is
 													end if;
 												end if;
 
-												-- mark simple label as processed and update/replace it in tmp_wild_simple_labels
+												-- mark simple label as processed and update/replace it in wild_simple_labels
 												ls.processed := true;
-												type_simple_labels.replace_element(
-													container => tmp_wild_simple_labels,
+												type_simple_labels.replace_element (
+													container => wild_simple_labels,
 													position => simple_label_cursor,
 													new_item => ls);
 
@@ -3093,7 +3090,7 @@ package body et_kicad is
 									segment.label_list_simple := lls;
 									
 									-- Update/replace segment in current anonymous strand.
-									type_anonymous_strand.replace_element (
+									type_segments.replace_element (
 										container => anon_strand_a.segments, -- the list of segments of the current anonymous strand
 										position => segment_cursor,
 										new_item => segment); -- the updated segment
@@ -3109,15 +3106,15 @@ package body et_kicad is
 								end if;
 								
 								-- Loop in list of tag labels:
-								--if type_tag_labels.length (tmp_wild_tag_lables) > 0 then -- do that if there are tag labels at all
-								-- if length (tmp_wild_tag_lables) > 0 then -- do that if there are tag labels at all
-								if not is_empty (tmp_wild_tag_lables) then -- do that if there are tag labels at all
+								--if type_tag_labels.length (wild_tag_labels) > 0 then -- do that if there are tag labels at all
+								-- if length (wild_tag_labels) > 0 then -- do that if there are tag labels at all
+								if not is_empty (wild_tag_labels) then -- do that if there are tag labels at all
 									--put_line(" hierarchic and global labels ...");	 -- CS: log ?
 
-									tag_label_cursor := tmp_wild_tag_lables.first; -- reset label cursor
-									--for l in 1..type_tag_labels.length (tmp_wild_tag_lables) loop 
+									tag_label_cursor := wild_tag_labels.first; -- reset label cursor
+									--for l in 1..type_tag_labels.length (wild_tag_labels) loop 
 									while tag_label_cursor /= type_tag_labels.no_element loop
-										--lt := type_tag_labels.element (tmp_wild_tag_lables, positive(l)); -- get tag label
+										--lt := type_tag_labels.element (wild_tag_labels, positive(l)); -- get tag label
 										lt := element (tag_label_cursor); -- get tag label
 										
 										if not lt.processed then								
@@ -3199,10 +3196,10 @@ package body et_kicad is
 													-- CS: check for contradicting scope
 												end if;
 
-												-- mark tag label as processed and update/replace it in tmp_wild_tag_lables
+												-- mark tag label as processed and update/replace it in wild_tag_labels
 												lt.processed := true;
-												type_tag_labels.replace_element(
-													container => tmp_wild_tag_lables,
+												type_tag_labels.replace_element (
+													container => wild_tag_labels,
 													--index => positive(l),
 													position => tag_label_cursor,
 													new_item => lt);
@@ -3221,7 +3218,7 @@ package body et_kicad is
 									-- Copy list of tag labels (llt) to current segment (s).
 									segment.label_list_tag := llt;
 									-- Update/replace segment in current anonymous net.
-									type_anonymous_strand.replace_element(
+									type_segments.replace_element (
 										container => anon_strand_a.segments, -- the list of segments of the current anonymous strand
 										position => segment_cursor,
 										new_item => segment); -- the updated segment
@@ -3246,10 +3243,10 @@ package body et_kicad is
 
 					-- Sort anonymous strands (they do not have any labels).
 					-- Anonymous strands have no name -> "processed" flag is still cleared.
-					-- As placeholder for the name we use the notation "N$n" where n is an index (derived from the element id in anonymous_strands)
+					-- As placeholder for the name we use the notation "N$n" where n is taken from the net_id (counter of name-less strands)
 					-- Their scope is strictly "local".
-					-- We us an intermediate variable "strand" for transfer to the module netlist.
-					-- NOTE: Even if a strand has no name at this stage, it may receive a name after netlist generation.
+					-- We use an intermediate variable "strand" for transfer to the module netlist.
+					-- NOTE: Even if a strand has no name at this stage, it may receive a name later after netlist generation.
 					log (text => "sorting name-less strands ... NOTE: Names may change after netlist generation.");
 					log_indentation_up;
 
@@ -3259,7 +3256,7 @@ package body et_kicad is
 
 						if not anon_strand_a.processed then
 
-							-- build temporarily net with a name like N$542
+							-- build temporarily strand with a name like N$542
 							net_id := net_id + 1; -- increment net id. net_id applies for the whole design. see declarations of procedure import_design
 							net_name := type_net_name.to_bounded_string (
 								anonymous_net_name_prefix & trim (natural'image (net_id), left));
@@ -3274,7 +3271,7 @@ package body et_kicad is
 							
 							-- append segments to strand
 							segment_cursor := anon_strand_a.segments.first; -- reset segment cursor to begin of segments of the current anonymous net
-							while segment_cursor /= type_anonymous_strand.no_element loop -- loop for each segment of anonymous strand anon_strand_a
+							while segment_cursor /= type_segments.no_element loop -- loop for each segment of anonymous strand anon_strand_a
 								segment := element (segment_cursor); -- get segment
 								type_net_segments.append (container => strand.segments, new_item => segment);
 								
@@ -3334,7 +3331,7 @@ package body et_kicad is
 
 							-- append segments to strand
 							segment_cursor := anon_strand_a.segments.first; -- reset segment cursor to begin of segments of the current anonymous strand
-							while segment_cursor /= type_anonymous_strand.no_element loop -- loop for each segment of anonymous_strand "a"
+							while segment_cursor /= type_segments.no_element loop -- loop for each segment of anonymous_strand "a"
 								segment := element (segment_cursor); -- get segment
 								type_net_segments.append (container => strand.segments, new_item => segment);
 								
@@ -3457,8 +3454,8 @@ package body et_kicad is
 				
 				-- Break down net segments that have a junction. Do that if the sheet has junctions at all. Otherwise skip this procedure.
 				-- After breaking down net segments, the numbner of segments increases, so segment_count must be updated finally.
-				if not is_empty (tmp_junctions) then 
-					log ("processing" & count_type'image (length (tmp_junctions)) & " net junctions ...", log_threshold);
+				if not is_empty (wild_junctions) then 
+					log ("processing" & count_type'image (length (wild_junctions)) & " net junctions ...", log_threshold);
 
 					-- We reason there are segments to be broken down. After smashing a segment, segment_count increases. If it
 					-- does not increase anymore, all segments are processed.
@@ -3472,7 +3469,7 @@ package body et_kicad is
 							segment := type_wild_segments.element (segment_cursor); -- get a segment
 
 							-- loop in junction list until a junction has been found that sits on the segment
-							junction_cursor := tmp_junctions.first; -- reset junction cursor to begin of junction list
+							junction_cursor := wild_junctions.first; -- reset junction cursor to begin of junction list
 							while junction_cursor /= type_junctions.no_element loop
 
 								-- fetch junction from current cursor position
@@ -3531,8 +3528,7 @@ package body et_kicad is
 
 
 			procedure build_anonymous_strands is
-			-- From the wild segment collection, assembles net segments to a list of anonymous strands.
-			-- Takes junctions into account.
+			-- From the wild segments and wild junctions assemble net segments to anonymous strands.
 
 				procedure add_strand_to_anonymous_strands is
 				-- Once an anonymous strand is complete, it gets appended to a list of anonymous strands. 
@@ -3540,7 +3536,7 @@ package body et_kicad is
 				-- "anonymous_strand" can be filled with net segments of the next anonymous strand.
 				begin
 					type_anonymous_strands.append (anonymous_strands, anonymous_strand);
-					type_anonymous_strand.clear (anonymous_strand.segments);
+					type_segments.clear (anonymous_strand.segments);
 				end add_strand_to_anonymous_strands;
 
 				use type_wild_segments;
@@ -3710,6 +3706,7 @@ package body et_kicad is
 
 
 			function to_text return et_libraries.type_text is
+			-- NOTE: This is schematic related stuff !
 			-- Converts a field like "F 1 "green" H 2700 2750 50  0000 C CNN" to a type_text
 				function field (line : in type_fields_of_line; position : in positive) return string renames get_field_from_line;
 		
@@ -3988,6 +3985,7 @@ package body et_kicad is
 
 	
 			procedure verify_unit_name_and_position (line : in type_fields_of_line) is
+			-- NOTE: This is schematic related.
 			-- Checks if the x/y position of the unit matches that provided in given line.
 			-- It is about the strange repetition of the unit name and its x/y coordinates in a line like
 			-- "2    6000 4000"
@@ -4024,26 +4022,27 @@ package body et_kicad is
 				function field (line : in type_fields_of_line; position : in positive) return string renames
 					et_string_processing.get_field_from_line;
 			
-			-- Angles in Kicad are to be interpreted as: 
-			-- positive angle -> counter clock wise
-			-- negative angle -> clock wise
+				-- Angles in Kicad are to be interpreted as: 
+				-- positive angle -> counter clock wise
+				-- negative angle -> clock wise
 
-			-- The order of operations: FIRST rotate THEN mirror
-			
-			--  1    0    0  -1  -- orientation 0,   mirror normal
-			--  0   -1   -1   0  -- orientation 90,  mirror normal
-			-- -1    0    0   1  -- orientation 180, mirror normal 
-			-- 	0    1    1   0  -- orientation -90, mirror normal  
+				-- The order of operations: FIRST rotate THEN mirror
+				
+				--  1    0    0  -1  -- orientation 0,   mirror normal
+				--  0   -1   -1   0  -- orientation 90,  mirror normal
+				-- -1    0    0   1  -- orientation 180, mirror normal 
+				-- 	0    1    1   0  -- orientation -90, mirror normal  
 
-			-- 	1    0    0   1  -- orientation 0,   mirror --
-			--  0   -1    1   0  -- orientation 90,  mirror -- 
-			-- -1    0    0  -1  -- orientation 180, mirror -- 
-			--  0    1   -1   0  -- orientation -90, mirror -- 
+				-- 	1    0    0   1  -- orientation 0,   mirror --
+				--  0   -1    1   0  -- orientation 90,  mirror -- 
+				-- -1    0    0  -1  -- orientation 180, mirror -- 
+				--  0    1   -1   0  -- orientation -90, mirror -- 
 
-			-- -1    0    0  -1  -- orientation 0,   mirror | 	-- not used
-			--  0    1   -1   0  -- orientation 90,  mirror |	-- not used
-			--  1    0    0   1  -- orientation 180, mirror |	-- not used
-			--  1    0    0   1  -- orientation -90, mirror |	-- not used
+				-- -1    0    0  -1  -- orientation 0,   mirror | 	-- not used
+				--  0    1   -1   0  -- orientation 90,  mirror |	-- not used
+				--  1    0    0   1  -- orientation 180, mirror |	-- not used
+				--  1    0    0   1  -- orientation -90, mirror |	-- not used
+
 				orient_1, orient_2 : type_schematic_unit_orientation;
 				mirror_1, mirror_2 : type_schematic_unit_mirror_style;
 			
@@ -4571,7 +4570,7 @@ package body et_kicad is
 												log_indentation_down;
 											end if;
 
-											type_junctions.append (tmp_junctions, tmp_junction);
+											type_junctions.append (wild_junctions, tmp_junction);
 										end if;
 									end if;
 										
@@ -4617,7 +4616,7 @@ package body et_kicad is
 										end if;
 										
 										-- The simple labels are to be collected in a wild list of simple labels.
-										type_simple_labels.append (tmp_wild_simple_labels,tmp_simple_net_label);
+										type_simple_labels.append (wild_simple_labels,tmp_simple_net_label);
 									end if;
 									
 									-- read tag net labels (tagged labels can be global or hierarchical)
@@ -4671,7 +4670,7 @@ package body et_kicad is
 										end if;
 										
 										-- The tag labels are to be collected in a wild list of tag labels for later sorting.
-										type_tag_labels.append (tmp_wild_tag_lables,tmp_tag_net_label);
+										type_tag_labels.append (wild_tag_labels,tmp_tag_net_label);
 									end if;
 
 									-- read note from a line like "Text Notes 3400 2800 0 60 Italic 12" followed by a line with the actual note:
@@ -4934,15 +4933,17 @@ package body et_kicad is
 				log_indentation_down;
 				log ("reading complete. closing schematic file " & to_string (current_schematic) & " ...", log_threshold);
 
-				-- From the wild list of net segments, assembles net segments to a list of anonymous strands.
-				build_anonymous_strands; 
+				-- From the wild list of net segments, assemble net segments to anonymous strands.
+				-- A strand is: all net segments connected with each other by their start or end points.
+				build_anonymous_strands;
 	
-				-- All anonymous strands must be given a name. The name is enforced by the a net label. The first label found on the strand
-				-- sets the strand name. 
-				-- Other labels on the strand are checked for their name only. If the name differs from the net name set earlier,
-				-- a warning is output.
-				-- Strads without label remain anonymous by using the notation "N$"
-				-- The nets are finally appended to the strands of the current module.
+				-- All anonymous strands must be given a name. The name is enforced by the a net label.
+				-- (The fact that power-put ports enforce a name also, is cared for later on netlist generation.)
+				-- The first label found on the strand sets the strand name and scope. 
+				-- Other labels on the strand are checked for their name only. 
+				-- If the name differs from the net name set earlier, a warning is output. 
+				-- Strands without label remain anonymous. Their name is assigned by using the notation "N$".
+				-- The strands are finally appended to the strands of the current module (see spec. of type_module.strands).
 				associate_net_labels_with_anonymous_strands;
 
 			else
