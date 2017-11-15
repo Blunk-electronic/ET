@@ -2429,14 +2429,9 @@ package body et_kicad is
 		procedure set_picked (segment : in out type_wild_net_segment ) is begin segment.picked := true; end set_picked;
 
 			
-		-- An anonymous strand is a list of net segments that are connected with each other (by their start or end points).
-		-- The anonymous strand gets step by step more properties specified: name, scope and some status flags:
-		package type_segments is new doubly_linked_lists ( -- CS: move to spec
-			element_type => type_net_segment);
-
-		-- This is an anonymous strand:
+		-- An anonymous strand is a list of net segments that are connected with each other (by their start or end points):
 		type type_anonymous_strand is record
-			segments 	: type_segments.list;			-- the net segments
+			segments 	: type_net_segments.list;		-- the net segments
 			name 		: type_net_name.bounded_string; -- the name (derived from net labels)
 			scope 		: type_scope_of_net := type_scope_of_net'first;	-- the scope (derived from net labels)
 			processed	: boolean := false;				-- set once a label has been found on the net
@@ -2743,7 +2738,7 @@ package body et_kicad is
 							scope => xy), log_threshold + 1);
 
 					scratch := type_net_segment (type_wild_segments.element (segment_cursor));
-					type_segments.append (anonymous_strand.segments, scratch);
+					type_net_segments.append (anonymous_strand.segments, scratch);
 				end if;
 			end add_segment_to_anonymous_strand;
 
@@ -2979,9 +2974,9 @@ package body et_kicad is
 					return sits_on_segment;
 				end label_sits_on_segment;
 
-				use type_segments;
+				use type_net_segments;
 				-- the segment cursor points to the segment being processed
-				segment_cursor : type_segments.cursor; 
+				segment_cursor : type_net_segments.cursor; 
 
 				use type_anonymous_strands;
 				
@@ -3023,7 +3018,7 @@ package body et_kicad is
 
 							-- reset segment cursor to begin of segment list of the anonymous net
 							segment_cursor := anon_strand_a.segments.first;
-							while segment_cursor /= type_segments.no_element loop -- loop for each segment in anonymous strand anon_strand_a
+							while segment_cursor /= type_net_segments.no_element loop -- loop for each segment in anonymous strand anon_strand_a
 								segment := anon_strand_a.segments (segment_cursor);
 								--put(et_import.report_handle, "segment: "); write_coordinates_of_segment(s); -- CS: log ?
 								
@@ -3091,7 +3086,7 @@ package body et_kicad is
 									segment.label_list_simple := lls;
 									
 									-- Update/replace segment in current anonymous strand.
-									type_segments.replace_element (
+									type_net_segments.replace_element (
 										container => anon_strand_a.segments, -- the list of segments of the current anonymous strand
 										position => segment_cursor,
 										new_item => segment); -- the updated segment
@@ -3219,7 +3214,7 @@ package body et_kicad is
 									-- Copy list of tag labels (llt) to current segment (s).
 									segment.label_list_tag := llt;
 									-- Update/replace segment in current anonymous net.
-									type_segments.replace_element (
+									type_net_segments.replace_element (
 										container => anon_strand_a.segments, -- the list of segments of the current anonymous strand
 										position => segment_cursor,
 										new_item => segment); -- the updated segment
@@ -3272,7 +3267,7 @@ package body et_kicad is
 							
 							-- append segments to strand
 							segment_cursor := anon_strand_a.segments.first; -- reset segment cursor to begin of segments of the current anonymous net
-							while segment_cursor /= type_segments.no_element loop -- loop for each segment of anonymous strand anon_strand_a
+							while segment_cursor /= type_net_segments.no_element loop -- loop for each segment of anonymous strand anon_strand_a
 								segment := element (segment_cursor); -- get segment
 								type_net_segments.append (container => strand.segments, new_item => segment);
 								
@@ -3332,7 +3327,7 @@ package body et_kicad is
 
 							-- append segments to strand
 							segment_cursor := anon_strand_a.segments.first; -- reset segment cursor to begin of segments of the current anonymous strand
-							while segment_cursor /= type_segments.no_element loop -- loop for each segment of anonymous_strand "a"
+							while segment_cursor /= type_net_segments.no_element loop -- loop for each segment of anonymous_strand "a"
 								segment := element (segment_cursor); -- get segment
 								type_net_segments.append (container => strand.segments, new_item => segment);
 								
@@ -3537,7 +3532,7 @@ package body et_kicad is
 				-- "anonymous_strand" can be filled with net segments of the next anonymous strand.
 				begin
 					type_anonymous_strands.append (anonymous_strands, anonymous_strand);
-					type_segments.clear (anonymous_strand.segments);
+					type_net_segments.clear (anonymous_strand.segments);
 				end add_strand_to_anonymous_strands;
 
 				use type_wild_segments;
