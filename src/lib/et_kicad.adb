@@ -3333,51 +3333,31 @@ package body et_kicad is
 							-- If strand_cursor already points the last strand in anonymous_strands do nothing.
 							-- Mark anonymous strand as "sorted".
 							-- If last anonymous strand reached, do not look for other strands with same name.
-							if anon_strand_a = last_element (anonymous_strands) then
-								null; -- strand_cursor already points the last strand in anonymous_strands --> do nothing
-							else -- search for strands with same name
-								strand_cursor_b := next (strand_cursor);
-								while strand_cursor_b /= type_anonymous_strands.no_element loop
-									
-									anon_strand_b := element (strand_cursor_b); -- get anonymous strand
-
-									if anon_strand_b.processed then
-
-										if type_net_name."=" (anon_strand_b.name, anon_strand_a.name) then
-
-											-- make sure scope of the strands are equal
-											if anon_strand_a.scope /= anon_strand_b.scope then
-
-												-- append segments to net
--- 												segment_cursor := b.segments.first; -- reset segment cursor to begin of segments of the current anonymous net
--- 												while segment_cursor /= type_anonymous_strand.no_element loop -- loop for each segment of anonymous_net "b"
--- 													s := element (segment_cursor);
--- 													type_net_segments.append (container => strand.segments, new_item => s);
+-- 							if anon_strand_a = last_element (anonymous_strands) then
+-- 								null; -- strand_cursor already points the last strand in anonymous_strands --> do nothing
+-- 							else -- search for strands with same name
+-- 								strand_cursor_b := next (strand_cursor);
+-- 								while strand_cursor_b /= type_anonymous_strands.no_element loop
+-- 									
+-- 									anon_strand_b := element (strand_cursor_b); -- get anonymous strand
 -- 
--- 													if log_level >= 2 then
--- 														write_coordinates_of_segment (segment => s);
--- 													end if;
--- 													
--- 													next (segment_cursor);
--- 												end loop;
+-- 									if anon_strand_b.processed then
 -- 
--- 												-- mark anonymous strand as "sorted" so that the outer loop can skip it in further spins
--- 												type_anonymous_strands.update_element (
--- 													container => anonymous_strands, 
--- 													position => strand_cursor_b,
--- 													process => set_sorted'access);
-
--- 											else
-												log_indentation_reset;
-												log (message_error & "contradicting scope of strands !"); -- CS: show strand name
-												raise constraint_error;
-											end if;
-										end if;
-									end if;
-
-									next (strand_cursor_b); -- advance strand cursor
-								end loop;
-							end if;
+-- 										if type_net_name."=" (anon_strand_b.name, anon_strand_a.name) then
+-- 
+-- 											-- make sure scope of the strands are equal
+-- 											if anon_strand_a.scope /= anon_strand_b.scope then
+-- 
+-- 												log_indentation_reset;
+-- 												log (message_error & "contradicting scope of strands !"); -- CS: show strand name
+-- 												raise constraint_error;
+-- 											end if;
+-- 										end if;
+-- 									end if;
+-- 
+-- 									next (strand_cursor_b); -- advance strand cursor
+-- 								end loop;
+-- 							end if;
 
 							log_indentation_down;
 
