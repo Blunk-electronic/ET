@@ -785,6 +785,7 @@ package body et_netlist is
 			-- Enforces port names onto nets. A net name must change according to the names of 
 			-- "power out" ports in that net. Example: A net with name N$2 has a port with name "GND"
 			-- the net name must change from N$2 to GND.
+			-- Renames the strands accordingly.
 				net_cursor_pre	: type_netlist.cursor;
 
 				netlist_post 	: type_netlist.map; -- the netlist being built. to be returned finally.
@@ -910,6 +911,7 @@ package body et_netlist is
 				log_indentation_up;
 -- 				log (text => "strand of net " & et_schematic.to_string (element (strand_cursor_module).name), level => 2);
 
+				-- if strand is local, build its full name like "GUIDANCE_GPIO.GND"
 				if element (strand_cursor_module).scope = local then
 					net_name := type_net_name.to_bounded_string (
 						et_coordinates.to_string (et_coordinates.path (element (strand_cursor_module).coordinates), top_module => false)
