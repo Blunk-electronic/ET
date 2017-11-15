@@ -2428,11 +2428,6 @@ package body et_kicad is
 		procedure set_s (segment : in out type_wild_net_segment ) is begin segment.s := true; end set_s;
 		procedure set_picked (segment : in out type_wild_net_segment ) is begin segment.picked := true; end set_picked;
 
-		-- When sorting named strands, this procedure sets the "sorted" flag of the anonymous strand.
-		procedure set_sorted (anon_net : in out type_anonymous_strand) is 
-			begin anon_net.sorted := true; end set_sorted;
-		
-			
 		procedure init_temp_variables is
 		begin
 			-- clear "field found" flags
@@ -3304,7 +3299,7 @@ package body et_kicad is
 					while strand_cursor /= type_anonymous_strands.no_element loop
 						anon_strand_a := element (strand_cursor);  -- get a strand
 
-						if anon_strand_a.processed and not anon_strand_a.sorted then -- it must have a name AND it must not be sorted yet
+						if anon_strand_a.processed then -- it must have a name
 
 							log (type_net_name.to_string (anon_strand_a.name), level => 2);
 							
@@ -3328,41 +3323,9 @@ package body et_kicad is
 								next (segment_cursor);
 							end loop;
 
-							-- Look for other anonymous strands with the same name (anon_strand_a.name). 
-							-- Start searching from the position of strand_cursor on using strand_cursor_b.
-							-- If strand_cursor already points the last strand in anonymous_strands do nothing.
-							-- Mark anonymous strand as "sorted".
-							-- If last anonymous strand reached, do not look for other strands with same name.
--- 							if anon_strand_a = last_element (anonymous_strands) then
--- 								null; -- strand_cursor already points the last strand in anonymous_strands --> do nothing
--- 							else -- search for strands with same name
--- 								strand_cursor_b := next (strand_cursor);
--- 								while strand_cursor_b /= type_anonymous_strands.no_element loop
--- 									
--- 									anon_strand_b := element (strand_cursor_b); -- get anonymous strand
--- 
--- 									if anon_strand_b.processed then
--- 
--- 										if type_net_name."=" (anon_strand_b.name, anon_strand_a.name) then
--- 
--- 											-- make sure scope of the strands are equal
--- 											if anon_strand_a.scope /= anon_strand_b.scope then
--- 
--- 												log_indentation_reset;
--- 												log (message_error & "contradicting scope of strands !"); -- CS: show strand name
--- 												raise constraint_error;
--- 											end if;
--- 										end if;
--- 									end if;
--- 
--- 									next (strand_cursor_b); -- advance strand cursor
--- 								end loop;
--- 							end if;
-
 							log_indentation_down;
 
                             -- assign coordinates
--- 							set_module (strand.coordinates, type_submodule_name.to_bounded_string (to_string (current_schematic)));
 							set_module (strand.coordinates, to_submodule_name (current_schematic));
                             set_path (strand.coordinates, path_to_submodule);
 							set_sheet (strand.coordinates, sheet_number_current);

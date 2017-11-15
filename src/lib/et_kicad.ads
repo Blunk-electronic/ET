@@ -427,7 +427,6 @@ package et_kicad is
 		name 		: et_schematic.type_net_name.bounded_string;	-- the strand name (derived from net labels)
 		scope 		: et_schematic.type_scope_of_net := et_schematic.type_scope_of_net'first; -- the scope (derived from net labels)
 		processed	: boolean := false;	-- set once a label has been found on the net
-		sorted		: boolean := false;	-- set once sorted out while sorting named nets -- CS: remove. obsolete
 	end record;
 
 	-- We collect anonymous strands in a simple list:
