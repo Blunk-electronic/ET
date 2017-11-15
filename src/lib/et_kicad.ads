@@ -401,7 +401,7 @@ package et_kicad is
 	tmp_component_text_bom_found			: boolean;	
 
 	
-	
+	-- NET SEGMENT PROCESSING
 	type type_wild_net_segment is new et_schematic.type_net_segment with record
 		s, e : boolean := false; -- flag indicates the end point beeing assumed
 		picked : boolean := false; -- flag indicates that the segment has been added to the anonymous net
@@ -409,12 +409,10 @@ package et_kicad is
 
 	tmp_segment : type_wild_net_segment;
 	
-	type type_segment_side is (start_point, end_point ); -- the end point of a segment	
-
+	type type_segment_side is (start_point, end_point); -- the end point of a segment	
 
 	package type_wild_segments is new doubly_linked_lists ( 
 		element_type => type_wild_net_segment);
-		
 
 	-- The function search_for_same_coordinates returns this type:
 	type type_same_coord_result is record

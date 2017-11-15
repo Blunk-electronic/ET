@@ -2434,8 +2434,8 @@ package body et_kicad is
 		package type_segments is new doubly_linked_lists ( -- CS: move to spec
 			element_type => type_net_segment);
 
-		-- This is an intermediate type used for handling anonymous strands:
-		type type_anonymous_strand_extended is record
+		-- This is an anonymous strand:
+		type type_anonymous_strand is record
 			segments 	: type_segments.list;			-- the net segments
 			name 		: type_net_name.bounded_string; -- the name (derived from net labels)
 			scope 		: type_scope_of_net := type_scope_of_net'first;	-- the scope (derived from net labels)
@@ -2443,11 +2443,12 @@ package body et_kicad is
 			sorted		: boolean := false;				-- set once sorted out while sorting named nets -- CS: remove. obsolete
 		end record;
 
+		-- We collect anonymous strands in a simple list:
 		package type_anonymous_strands is new doubly_linked_lists (
-			element_type => type_anonymous_strand_extended);
+			element_type => type_anonymous_strand);
 		
 		-- When sorting named strands, this procedure sets the "sorted" flag of the anonymous strand.
-		procedure set_sorted (anon_net : in out type_anonymous_strand_extended) is 
+		procedure set_sorted (anon_net : in out type_anonymous_strand) is 
 			begin anon_net.sorted := true; end set_sorted;
 		
 			
@@ -2707,7 +2708,7 @@ package body et_kicad is
 			-- Later they will be sorted and connected by their coordinates (start and and points)
 			segment_count	: count_type := 0; -- holds the total number of segments within a sheet
 			
-			anonymous_strand : type_anonymous_strand_extended;
+			anonymous_strand : type_anonymous_strand;
 
 			-- The list of anonymous strands. Procedure add_strand_to_anonymous_strands uses 
 			-- this container for temporarily storage of anonymous strands.
@@ -2949,7 +2950,7 @@ package body et_kicad is
 			
 				ls  :	type_net_label_simple;
 				lt  : 	type_net_label_tag;				
-				anon_strand_a, anon_strand_b : type_anonymous_strand_extended;
+				anon_strand_a, anon_strand_b : type_anonymous_strand;
 				segment	: type_net_segment;
 				lls : 	type_simple_labels.list;
 				llt : 	type_tag_labels.list;
