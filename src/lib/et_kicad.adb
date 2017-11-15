@@ -2428,20 +2428,6 @@ package body et_kicad is
 		procedure set_s (segment : in out type_wild_net_segment ) is begin segment.s := true; end set_s;
 		procedure set_picked (segment : in out type_wild_net_segment ) is begin segment.picked := true; end set_picked;
 
-			
-		-- An anonymous strand is a list of net segments that are connected with each other (by their start or end points):
-		type type_anonymous_strand is record
-			segments 	: type_net_segments.list;		-- the net segments
-			name 		: type_net_name.bounded_string; -- the name (derived from net labels)
-			scope 		: type_scope_of_net := type_scope_of_net'first;	-- the scope (derived from net labels)
-			processed	: boolean := false;				-- set once a label has been found on the net
-			sorted		: boolean := false;				-- set once sorted out while sorting named nets -- CS: remove. obsolete
-		end record;
-
-		-- We collect anonymous strands in a simple list:
-		package type_anonymous_strands is new doubly_linked_lists (
-			element_type => type_anonymous_strand);
-		
 		-- When sorting named strands, this procedure sets the "sorted" flag of the anonymous strand.
 		procedure set_sorted (anon_net : in out type_anonymous_strand) is 
 			begin anon_net.sorted := true; end set_sorted;

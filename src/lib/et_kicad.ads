@@ -401,7 +401,7 @@ package et_kicad is
 	tmp_component_text_bom_found			: boolean;	
 
 	
-	-- NET SEGMENT PROCESSING
+-- NET SEGMENT AND STRAND PROCESSING
 	type type_wild_net_segment is new et_schematic.type_net_segment with record
 		s, e : boolean := false; -- flag indicates the end point beeing assumed
 		picked : boolean := false; -- flag indicates that the segment has been added to the anonymous net
@@ -421,6 +421,18 @@ package et_kicad is
 		side : type_segment_side; -- end point of the segment found
 	end record;
 
+	-- An anonymous strand is a list of net segments that are connected with each other (by their start or end points):
+	type type_anonymous_strand is record
+		segments 	: et_schematic.type_net_segments.list;			-- the net segments
+		name 		: et_schematic.type_net_name.bounded_string;	-- the strand name (derived from net labels)
+		scope 		: et_schematic.type_scope_of_net := et_schematic.type_scope_of_net'first; -- the scope (derived from net labels)
+		processed	: boolean := false;	-- set once a label has been found on the net
+		sorted		: boolean := false;	-- set once sorted out while sorting named nets -- CS: remove. obsolete
+	end record;
+
+	-- We collect anonymous strands in a simple list:
+	package type_anonymous_strands is new doubly_linked_lists (
+		element_type => type_anonymous_strand);
 
 
 	
