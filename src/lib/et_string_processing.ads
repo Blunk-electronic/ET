@@ -45,6 +45,7 @@ with ada.text_io;				use ada.text_io;
 
 with ada.containers;            use ada.containers;
 --with ada.containers.vectors;
+with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_vectors;
 
 -- with interfaces;				use interfaces;
@@ -194,7 +195,7 @@ package et_string_processing is
 	-- This type is required when reading lines from files. It is a composite type
 	-- whose components are hidden. The can only be accessed by special functions and procedures. See below.
 	type type_fields_of_line is private;
-	
+
 	function read_line(
 	-- Breaks down a given string and returns a type_fields_of_line.
 		line			: in string; -- the line to be broken down
@@ -219,15 +220,18 @@ package et_string_processing is
 
 	function field_count ( line : in type_fields_of_line) return count_type;
 	-- Returns the number of fields in the given line.
+
+	function lines_equally (left, right : in type_fields_of_line) return boolean;
 	
 	private
 		type type_fields_of_line is record
 			fields		: type_list_of_strings.vector;
-			field_count	: count_type;
-			number		: positive_count;
+			field_count	: count_type;		-- number of fields in line
+			number		: positive_count; 	-- line numer
 		end record;
 
-	
+
+		
 end et_string_processing;
 
 -- Soli Deo Gloria

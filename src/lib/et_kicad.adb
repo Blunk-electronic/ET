@@ -66,7 +66,31 @@ with et_string_processing;		use et_string_processing;
 
 package body et_kicad is
 
+	procedure clear (lines : in out type_lines.list) is
+	begin
+		type_lines.clear (lines);
+	end clear;
 
+	procedure add (line : in type_fields_of_line) is
+	begin
+		lines.append (line);
+	end add;
+	
+	function first (lines : in type_lines.list) return type_lines.cursor is
+	begin
+		return type_lines.first (lines);
+	end first;
+
+	procedure next (line : in out type_lines.cursor) is
+	begin
+		type_lines.next (line);
+	end next;
+
+	function line return et_string_processing.type_fields_of_line is
+	begin
+		return type_lines.element (line_cursor);
+	end line;
+	
 	procedure invalid_field (line : in type_fields_of_line) is
 	-- CS: display field meaning ?
 		-- 	meaning : in et_general.type_text_meaning) return string is
@@ -2651,9 +2675,9 @@ package body et_kicad is
 			name_of_submodule_scratch : type_submodule_name.bounded_string; -- temporarily used before appended to list_of_submodules
 
 			use et_string_processing;
-			--use et_libraries;
 		
 			line : et_string_processing.type_fields_of_line; -- the line of the schematic file being processed
+-- 			lines : et_string_processing.type_lines.list;
 		
 			sheet_file : type_schematic_file_name.bounded_string;
 			sheet_count_total, sheet_number_current : positive;
@@ -4097,6 +4121,90 @@ package body et_kicad is
 			
 			use et_coordinates;
 			use et_libraries;
+
+			procedure make_gui_sheet (lines : in type_lines.list) is
+				sheet : et_schematic.type_gui_submodule;
+				name, file : et_coordinates.type_submodule_name.bounded_string;
+				use type_lines;
+				use et_coordinates.type_submodule_name;
+			begin
+				--line_cursor := first (lines);
+				line_cursor := type_lines.first (lines);
+-- 				log (to_string (et_kicad.line), log_threshold + 1);
+				
+				-- read GUI sheet position and size from a line like "S 4050 5750 1050 650"
+				if field (et_kicad.line,1) = schematic_keyword_sheet_pos_and_size then
+					set_path (sheet.coordinates, path_to_submodule);
+					set_module (sheet.coordinates, type_submodule_name.to_bounded_string (to_string (current_schematic)));
+					set_module (sheet.coordinates, to_submodule_name (current_schematic));
+					set_sheet (sheet.coordinates, sheet_number_current);
+					set_x (sheet.coordinates, mil_to_distance (field (et_kicad.line,2)));
+					set_y (sheet.coordinates, mil_to_distance (field (et_kicad.line,3)));
+
+					sheet.size_x := mil_to_distance (field (et_kicad.line,4));
+					sheet.size_y := mil_to_distance (field (et_kicad.line,5));                                
+				end if;
+
+				next (line_cursor);
+-- 				log (to_string (et_kicad.line), log_threshold + 1);
+				
+				-- read GUI submodule (sheet) timestamp from a line like "U 58A73B5D"
+				if field (et_kicad.line,1) = schematic_keyword_sheet_timestamp then 
+					sheet.timestamp := type_timestamp (field (et_kicad.line,2));
+				end if;
+
+				next (line_cursor);
+				
+				-- Read sheet name from a line like "F0 "mcu_stm32f030" 60"
+				-- Since this is the black-box-representation of a kicad-sheet its name is threated as name of a submodule.
+				-- The sheet name will later be compared with the sheet file name.
+				if field (et_kicad.line,1) = schematic_keyword_sheet_name then
+					name := type_submodule_name.to_bounded_string (strip_quotes (field (et_kicad.line,2)));
+					sheet.text_size_of_name := mil_to_distance (field (et_kicad.line,3));
+				end if;
+
+				next (line_cursor);
+				
+				-- Read sheet file name from a line like "F1 "mcu_stm32f030.sch" 60".
+				if field (et_kicad.line,1) = schematic_keyword_sheet_file then
+					file := type_submodule_name.to_bounded_string (base_name (strip_quotes (field (et_kicad.line,2))));
+					sheet.text_size_of_file := mil_to_distance (field (et_kicad.line,3));
+					
+					-- Test if sheet name and file name match:
+					if name /= file then
+						log_indentation_reset;
+						log (text => message_error & "name mismatch: sheet name '" 
+							& type_submodule_name.to_string (name) & "' differs from file name '"
+							& type_submodule_name.to_string (file));
+						raise constraint_error;
+					end if;
+
+					-- append sheet file name (with extension) to list_of_submodules to be returned to parent unit
+					type_submodule_names.append (
+						list_of_submodules.list,
+						type_submodule_name.to_bounded_string (strip_quotes (field (et_kicad.line,2))));
+				end if;
+
+				log_indentation_up;
+				log ("hierarchic sheet " & type_submodule_name.to_string (name), log_threshold + 1);
+				
+				-- Read sheet ports from a line like "F2 "SENSOR_GND" I R 2250 3100 60".
+				-- CS: more comments
+				next (line_cursor);
+				while line_cursor /= no_element loop
+					log_indentation_up;
+					log ("port " & strip_quotes (field (et_kicad.line, 2)), log_threshold + 2);
+					log_indentation_down;
+
+					-- CS: add port
+					next (line_cursor);
+				end loop;
+
+				log_indentation_down;
+				
+				add_gui_submodule (name, sheet);
+			end make_gui_sheet;
+
 			
 		begin -- read_schematic
 			log_indentation_reset;
@@ -4115,7 +4223,7 @@ package body et_kicad is
 				while not end_of_file loop
 
 					-- Store line in variable "line" (see et_string_processing.ads)
-					line := et_string_processing.read_line(
+					line := et_string_processing.read_line (
 								line => get_line,
 								number => ada.text_io.line (current_input),
 								comment_mark => "", -- there are no comment marks in the schematic file
@@ -4355,67 +4463,23 @@ package body et_kicad is
 								-- F1 "morpho_test.sch" 58
 								-- $EndSheet
 
-								-- And add name of submodule (sheet file name) to list_of_submodules:
 								if sheet_count_total > 1 then
 									if not sheet_description_entered then
 										if field (line,1) = schematic_sheet_header then -- $Sheet
 											sheet_description_entered := true;
+
+											clear (lines);
 										end if;
 									else -- we are inside a sheet description
 										if field (line,1) = schematic_sheet_footer then -- $EndSheet
 											sheet_description_entered := false; -- we are leaving the sheet description
 
-											-- append name_of_submodule_scratch to list_of_submodules to be returned to parent unit
-											type_submodule_names.append (list_of_submodules.list, name_of_submodule_scratch);
-
-											-- append tmp_submodule_gui to list of gui submodules
-											--type_gui_submodules.append (module.submodules, tmp_submodule_gui);
-											add_gui_submodule (tmp_submodule_gui_name, tmp_submodule_gui);
+											make_gui_sheet (lines);
+											clear (lines);
+										else
+											--log (to_string (line));
+											add (line);
 										end if;
-
-										-- read GUI submodule (sheet) position and size from a line like "S 4050 5750 1050 650"
-										if field (line,1) = schematic_keyword_sheet_pos_and_size then
-											set_path (tmp_submodule_gui.coordinates, path_to_submodule);
-											--set_module (tmp_submodule_gui.coordinates, et_coordinates.type_submodule_name.to_bounded_string (to_string (current_schematic)));
-											set_module (tmp_submodule_gui.coordinates, to_submodule_name (current_schematic));
-											et_coordinates.set_sheet (tmp_submodule_gui.coordinates, sheet_number_current);
-											
-											et_coordinates.set_x (tmp_submodule_gui.coordinates, et_coordinates.mil_to_distance (field  (line,2)));
-											et_coordinates.set_y (tmp_submodule_gui.coordinates, et_coordinates.mil_to_distance (field  (line,3)));
-
-											tmp_submodule_gui.size_x := mil_to_distance (field (line,4));
-											tmp_submodule_gui.size_y := mil_to_distance (field (line,5));                                
-										end if;
-
-										-- read GUI submodule (sheet) timestamp from a line like "U 58A73B5D"
-										if field (line,1) = schematic_keyword_sheet_timestamp then 
-											tmp_submodule_gui.timestamp := type_timestamp (field (line,2));
-										end if;
-										
-										-- Read submodule (sheet) name from a line like "F0 "mcu_stm32f030" 60"
-										-- Since this is the black-box-representation of a kicad-sheet its name is threated as name of a submodule.
-										-- The sheet name is stored in tmp_submodule_gui.name to be compared with the sheet file name later.
-										if field (line,1) = schematic_keyword_sheet_name then
-											tmp_submodule_gui_name := et_coordinates.type_submodule_name.to_bounded_string (strip_quotes (field (line,2)));
-											--tmp_submodule_gui.text_size_of_name := type_text_size'value (field (line,3));
-											tmp_submodule_gui.text_size_of_name := mil_to_distance (field (line,3));
-										end if;
-
-										-- Read sheet file name from a line like "F1 "mcu_stm32f030.sch" 60".
-										-- The file name (name_of_submodule_scratch) goes into the list of submodules to be returned to the parent unit.
-										if field (line,1) = schematic_keyword_sheet_file then
-											name_of_submodule_scratch := et_coordinates.type_submodule_name.to_bounded_string (strip_quotes (field  (line,2)));
-											--tmp_submodule_gui.text_size_of_file := et_libraries.type_text_size'value(field (line,3));
-											tmp_submodule_gui.text_size_of_file := mil_to_distance (field  (line,3));
-											
-											-- Test if sheet name and file name match:
-											if et_coordinates.type_submodule_name.to_string (tmp_submodule_gui_name) /= base_name (et_coordinates.type_submodule_name.to_string (name_of_submodule_scratch)) then
-												log (text => message_warning & "name mismatch: sheet: " &
-													et_coordinates.type_submodule_name.to_string (tmp_submodule_gui_name) &
-													" file: " & et_coordinates.type_submodule_name.to_string (name_of_submodule_scratch));
-											end if;
-										end if;
-
 									end if;
 								end if;
 

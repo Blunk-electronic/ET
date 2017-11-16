@@ -33,9 +33,9 @@ with ada.text_io;				use ada.text_io;
 
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
-with ada.containers.vectors;
+-- with ada.containers.vectors;
 with ada.containers.doubly_linked_lists;
-with ada.containers.ordered_maps;
+-- with ada.containers.ordered_maps;
 
 with et_schematic;
 with et_import;
@@ -45,6 +45,22 @@ with et_string_processing;
 
 package et_kicad is
 
+	-- If lines of a file are to be collected we use this simple list:
+	package type_lines is new doubly_linked_lists (
+		element_type => et_string_processing.type_fields_of_line,
+		"=" => et_string_processing.lines_equally);
+
+	lines : type_lines.list;
+	line_cursor : type_lines.cursor;
+	procedure clear (lines : in out type_lines.list);
+	procedure add (line : in et_string_processing.type_fields_of_line);
+	function first (lines : in type_lines.list) return type_lines.cursor;
+	procedure next (line : in out type_lines.cursor);	
+	function line return et_string_processing.type_fields_of_line;
+
+
+
+	
     encoding_default 					: constant string (1..5) := "utf-8";	
 
 	file_extension_project   			: constant string (1..3) := "pro";
@@ -159,6 +175,7 @@ package et_kicad is
     schematic_keyword_sheet_timestamp      : constant string (1..1) := "U";    
 	schematic_keyword_sheet_name           : constant string (1..2) := "F0";
 	schematic_keyword_sheet_file           : constant string (1..2) := "F1";
+	schematic_keyword_sheet_port           : constant string (1..2) := "F2";
 	schematic_component_identifier_name    : constant string (1..1) := "L";
 	schematic_component_identifier_unit	   : constant string (1..1) := "U";
 	schematic_component_identifier_coord   : constant string (1..1) := "P";

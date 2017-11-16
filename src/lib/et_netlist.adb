@@ -1018,6 +1018,7 @@ package body et_netlist is
 			rig.insert (
 				key => key (et_schematic.module_cursor),
 				new_item => make_netlist);
+				--CS: new_item => connect_hierarchical_nets (make_netlist));
 
 			-- create a nice report about net strands, segments and labels
 			if log_level >= 2 then

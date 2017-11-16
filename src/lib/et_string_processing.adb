@@ -577,6 +577,27 @@ package body et_string_processing is
 	begin
 		return line.field_count;
 	end field_count;
+
+	function lines_equally (left, right : in type_fields_of_line) return boolean is
+		use type_list_of_strings;
+	begin
+		-- compare field counts
+		if left.field_count /= right.field_count then
+			return false;
+		end if;
+
+		-- compare line numbers
+		if left.number /= right.number then
+			return false;
+		end if;
+
+		-- compare fields contents
+		if left.fields /= right.fields then
+			return false;
+		end if;
+		
+		return true;
+	end lines_equally;
 	
 end et_string_processing;
 
