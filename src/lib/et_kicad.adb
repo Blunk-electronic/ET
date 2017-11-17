@@ -106,6 +106,18 @@ package body et_kicad is
 		raise constraint_error;
 	end invalid_field;
 
+	function to_point (x_in, y_in : in string) return type_2d_point is
+		point : type_2d_point;
+		x : type_distance_xy;
+		y : type_distance_xy;
+	begin
+		x := mil_to_distance (x_in);
+		y := mil_to_distance (y_in);
+
+		set_x (point, x);
+		set_y (point, y);
+		return point;
+	end to_point;
 	
 	function to_text_meaning (
 	-- Extracts from a scheamtic field like "F 0 "#PWR01" H 2000 3050 50  0001 C CNN" its meaning.
@@ -4123,11 +4135,71 @@ package body et_kicad is
 			use et_libraries;
 
 			procedure make_gui_sheet (lines : in type_lines.list) is
-				sheet : et_schematic.type_gui_submodule;
-				name, file : et_coordinates.type_submodule_name.bounded_string;
+				sheet : et_schematic.type_gui_submodule; -- the hierarchical GUI sheet to be assembled
+				name, file : et_coordinates.type_submodule_name.bounded_string; -- sheet name and file name (must be equal)
+
+				port_inserted : boolean; -- used to detect multiple ports with the same name
+				port_cursor : type_gui_submodule_ports.cursor; -- obligatory, but not read
+				
 				use type_lines;
 				use et_coordinates.type_submodule_name;
-			begin
+
+				function to_direction (dir_in : in string) return type_port_direction is
+				-- Converts a string to type_port_direction.
+					result : type_port_direction;
+					dir : type_sheet_port_direction; -- see et_kicad.ads
+				begin
+					dir := type_sheet_port_direction'value (dir_in);
+					
+					case dir is
+						when I => result := INPUT;
+						when O => result := OUTPUT;
+						when B => result := BIDIR;
+						when T => result := TRISTATE;
+						when U => result := PASSIVE;
+					end case;
+
+					log_indentation_up;
+					log (to_string (result), log_threshold + 2);
+					log_indentation_down;
+					
+					return result;
+
+					exception
+						when constraint_error =>
+							log_indentation_reset;
+							log (message_error & "invalid port direction '" 
+								 & dir_in & "' !");
+							-- CS: provide more details
+							raise;
+
+				end to_direction;
+
+				function to_orientation (or_in : in string) return et_coordinates.type_angle is
+				-- Converts a string to type_angle
+					result : et_coordinates.type_angle;
+					orientation : type_sheet_port_orientation; -- see et_kicad.ads
+				begin
+					orientation := type_sheet_port_orientation'value (or_in);
+
+					case orientation is
+						when R => result := et_coordinates.type_angle (0.0);
+						when L => result := et_coordinates.type_angle (180.0);
+					end case;
+					
+					return result;
+
+					exception
+						when constraint_error =>
+							log_indentation_reset;
+							log (message_error & "invalid port orientation '" 
+								 & or_in & "' !");
+							-- CS: provide more details
+							raise;
+
+				end to_orientation;
+					
+			begin -- make_gui_sheet
 				--line_cursor := first (lines);
 				line_cursor := type_lines.first (lines);
 -- 				log (to_string (et_kicad.line), log_threshold + 1);
@@ -4189,19 +4261,40 @@ package body et_kicad is
 				log ("hierarchic sheet " & type_submodule_name.to_string (name), log_threshold + 1);
 				
 				-- Read sheet ports from a line like "F2 "SENSOR_GND" I R 2250 3100 60".
-				-- CS: more comments
+				-- The index after the F is a successive number that increments on every port:
+				-- So the next port would be "F3 "SENSOR_VCC" I R 2250 3300 60" ...
 				next (line_cursor);
 				while line_cursor /= no_element loop
 					log_indentation_up;
 					log ("port " & strip_quotes (field (et_kicad.line, 2)), log_threshold + 2);
-					log_indentation_down;
 
-					-- CS: add port
+					-- add port
+					type_gui_submodule_ports.insert (
+						container => sheet.ports,
+						key => type_net_name.to_bounded_string (strip_quotes (field (et_kicad.line, 2))), -- port name
+						new_item => (
+							direction => to_direction (field (et_kicad.line, 3)),
+							orientation => to_orientation (field (et_kicad.line, 4)),
+							coordinates => to_point (field (et_kicad.line, 5), field (et_kicad.line, 6)),
+							text_size => to_text_size (mil_to_distance (field (et_kicad.line, 7)))),
+						inserted => port_inserted,
+						position => port_cursor
+						);
+
+					-- if port could not be inserted -> abort
+					if not port_inserted then
+						log_indentation_reset;
+						log (message_error & "multiple usage of port " & strip_quotes (field (et_kicad.line, 2)) & " !");
+						raise constraint_error;
+					end if;
+					
+					log_indentation_down;
 					next (line_cursor);
 				end loop;
 
 				log_indentation_down;
-				
+
+				-- insert the hierarchical GUI sheet in module (see et_schematic type_module)
 				add_gui_submodule (name, sheet);
 			end make_gui_sheet;
 
@@ -4268,6 +4361,8 @@ package body et_kicad is
 								--     EELAYER 25 0
 								--     EELAYER END
 
+								-- CS: use type_lines (similar to reading gui sheets)
+								
 								-- This data goes into a the sheet_header. When the schematic file has been
 								-- read completely, the sheet_header is appended to global list_of_sheet_headers. 
 								-- Why a list of headers ? When schematic files are exported, their headers must be restored to the original state.
@@ -4327,6 +4422,8 @@ package body et_kicad is
 								-- Comment3 ""
 								-- Comment4 ""
 								-- $EndDescr
+
+								-- CS: use type_lines (similar to reading gui sheets)
 								
 								if not description_entered then
 									if field (line,1) = schematic_description_header then -- $Descr A4 11693 8268
@@ -4451,7 +4548,8 @@ package body et_kicad is
 								end if;
 
 								-- Read submodule (sheet) sections (if there has been a total sheet count greater 1 detected earlier).
-								-- NOTE: Such sections solely serve to display a hierarchical sheet as a black box with its ports.
+								-- A hierachical sheet displays a hierarchical sheet as a black box with its ports.
+								-- It serves as link between a hierachical net and the parent module.
 								-- Rightly said this is the black box representation of a submodule. 
 								-- So in the following we refer to them as "submodule".
 								-- A submodule (sheet) section example:
@@ -4461,6 +4559,8 @@ package body et_kicad is
 								-- U 58A73B5D
 								-- F0 "Sheet58A73B5C" 58
 								-- F1 "morpho_test.sch" 58
+								-- F2 "SENSOR_GND" U R 2250 3100 60 
+								-- F3 "SENSOR_VCC" I L 1350 3250 60 
 								-- $EndSheet
 
 								if sheet_count_total > 1 then
@@ -4486,7 +4586,12 @@ package body et_kicad is
 								-- Further parts of the file can be read IF the description has been processed before (see above)
 								if description_processed then
 									
-									-- read net segments						
+									-- read net segments
+									-- Example:
+									-- Wire Wire Line
+									-- 2250 3100 2400 3100 
+									-- CS: use type_lines (similar to reading gui sheets)
+
 									if not net_segment_entered then
 										-- collect net segments
 										if field (line,1) = schematic_keyword_wire then
@@ -4543,6 +4648,7 @@ package body et_kicad is
 									end if;
 
 									-- read net junctions and store them in a wild list of net junctions for later sorting
+									-- CS: use type_lines (similar to reading gui sheets)
 									if field (line,1) = schematic_keyword_connection then
 										if field (line,2) = schematic_tilde then
 
@@ -4568,6 +4674,7 @@ package body et_kicad is
 										
 									-- Read simple net labels (they do not have a tag, but just a text) 
 									-- CS: assumption: keywords "Text Label" and coordinates in one line
+									-- CS: use type_lines (similar to reading gui sheets)
 									if not simple_label_entered then							
 										if 	field (line,1) = schematic_keyword_text and 
 											field (line,2) = schematic_keyword_label_simple then
@@ -4612,6 +4719,7 @@ package body et_kicad is
 									end if;
 									
 									-- read tag net labels (tagged labels can be global or hierarchical)
+									-- CS: use type_lines (similar to reading gui sheets)									
 									if not tag_label_entered then
 										if 	field (line,1) = schematic_keyword_text 
 											and 
@@ -4666,6 +4774,7 @@ package body et_kicad is
 									end if;
 
 									-- read note from a line like "Text Notes 3400 2800 0 60 Italic 12" followed by a line with the actual note:
+									-- CS: use type_lines (similar to reading gui sheets)
 									if not note_entered then
 										if 	field (line,1) = schematic_keyword_text and 
 											field (line,2) = schematic_keyword_note then
@@ -4728,9 +4837,9 @@ package body et_kicad is
 									--  0    1   -1   0  -- orientation 90,  mirror |
 									--  1    0    0   1  -- orientation 180, mirror |
 									--  1    0    0   1  -- orientation -90, mirror |
-									
 									-- $EndComp
-									
+
+									-- CS: use type_lines (similar to reading gui sheets)
 									if not component_entered then
 										if field (line,1) = schematic_component_header then
 											component_entered := true;
@@ -4898,7 +5007,7 @@ package body et_kicad is
 									end if;
 									
 								end if;
-							end if;
+								end if;
 
 							end if; -- if not schematic_header_processed
 

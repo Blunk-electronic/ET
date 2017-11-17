@@ -454,14 +454,26 @@ package et_schematic is
 
     -- SUBMODULE
     -- A submodule is a box with coordinates and length x/y.
-    -- On the box edges are ports.
-    type type_gui_submodule is record -- CS: read from kicad $sheet
+	-- On the box edges are ports. 
+	-- It serves as link between a hierachical net and the parent module.
+	type type_gui_submodule_port is record
+		direction	: type_port_direction;
+		text_size	: type_text_size;
+		coordinates	: type_2d_point;
+		orientation	: type_angle;
+	end record;
+
+	package type_gui_submodule_ports is new ordered_maps (
+		key_type => type_net_name.bounded_string,
+		element_type => type_gui_submodule_port);
+
+	type type_gui_submodule is record
         text_size_of_name   : type_text_size;
         text_size_of_file   : type_text_size;        
 		coordinates		    : type_coordinates;
         size_x, size_y      : type_distance; -- size x/y of the box
         timestamp           : et_string_processing.type_timestamp;
-        -- CS: ports ?
+        ports				: type_gui_submodule_ports.map;
 	end record;
 
     -- A list of submodules is a component of the main module:    
@@ -654,7 +666,7 @@ package et_schematic is
 		strands	    	: type_strands_named.list;		-- the strands of the module. temporarily used. CS: clear once nets are ready. 
 		nets 	    	: type_nets.map;			-- the nets of the module
         components		: type_components.map;		-- the components of the module
-		submodules  	: type_gui_submodules.map;	-- graphical representations of submodules -- GUI relevant
+		submodules  	: type_gui_submodules.map;	-- graphical representations of submodules. -- GUI relevant
         frames      	: type_frames.list;			-- frames -- GUI relevant
         title_blocks	: type_title_blocks.list;	-- title blocks -- GUI relevant
 		notes       	: type_texts.list;			-- notes

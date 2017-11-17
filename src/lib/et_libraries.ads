@@ -116,6 +116,11 @@ package et_libraries is
 
 	text_size_field_default	: constant type_text_size := 1.27;
 
+	function to_text_size (size : in type_distance) return type_text_size;
+	-- Converts given size to type_text_size.
+	-- Reports a warning if text size out of range.
+	-- CS: make use of it wherever possible !
+
 	function to_string (size : in type_text_size) return string;
 	-- Returns the given text size as string.
 

@@ -71,6 +71,17 @@ package body et_libraries is
 		return type_person_name.to_string (person);
 	end to_string;
 
+	function to_text_size (size : in type_distance) return type_text_size is
+	-- Converts given size to type_text_size.
+	-- Reports a warning if text size out of range.
+		use et_string_processing;
+	begin
+		if size not in type_text_size then
+			log (message_warning & "text size " & to_string (size) & " out of range !");
+		end if;
+		return size;
+	end to_text_size;
+	
 	function to_string (size : in type_text_size) return string is
 	-- Returns the given text size as string.
 	begin

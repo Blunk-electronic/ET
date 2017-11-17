@@ -227,7 +227,7 @@ package et_kicad is
 		R, -- right
 		L); -- left
 
-	-- electrical direction (NOTE: since kicad uses upper and lower case letters here,
+	-- electrical direction of COMPONENT PORTS (NOTE: since kicad uses upper and lower case letters here,
 	-- an enumeration type is not possible. thus we define constant strings instead:
 	library_pin_electrical_type_passive			: constant character := 'P';
 	library_pin_electrical_type_input			: constant character := 'I';
@@ -240,7 +240,7 @@ package et_kicad is
 	library_pin_electrical_type_open_collector	: constant character := 'C';
 	library_pin_electrical_type_open_emitter	: constant character := 'E';
 	library_pin_electrical_type_not_connected	: constant character := 'N';	
-
+	
 	-- The graphical pin style is optional. If not provided, it defaults to "Line".
 	-- ET maps "Line" to "NONE" (see et_libraries.type_port_style).
 	type type_library_pin_graphical_style is (
@@ -272,6 +272,20 @@ package et_kicad is
 	field_style_italic		: constant string (1..2) := "IN";
 	field_style_italic_bold	: constant string (1..2) := "IB";	
 	
+	-- electrical direction of HIERARCHICAL SHEET PORTS
+	type type_sheet_port_direction is (
+		I, -- input
+		O, -- output
+		B, -- bidir
+		T, -- tristate
+		U); -- passive
+
+	-- orientation of HIERARCHICAL SHEET PORTS
+	type type_sheet_port_orientation is (
+		L, 	-- on the left edge of the box
+		R);	-- on the right edge of the box
+
+
 	
     -- SHEET HEADERS
     -- sheet files have a header with meta information:
@@ -361,23 +375,23 @@ package et_kicad is
 	tmp_tag_net_label		: et_schematic.type_net_label_tag;
 	tmp_note				: et_schematic.type_note;	
 
-            -- When reading gui submodules (kicad refers to them as "sheets") they are stored temporarily here.
-			-- This temporarily variable needs defaults in order to prevent misleading compiler warnings.
-	tmp_submodule_gui_name : et_coordinates.type_submodule_name.bounded_string; -- CS: move to specs
-	tmp_submodule_gui : et_schematic.type_gui_submodule := (
-		text_size_of_name => 2.0, -- CS reasonable ? use default ?
-		text_size_of_file => 2.0, -- CS reasonable ? use default ?
-		coordinates => et_coordinates.zero_position,
--- 								(    path => et_schematic.path_to_submodule,
---                                     module_name => et_coordinates.type_submodule_name.to_bounded_string (to_string (current_schematic)),
---                                     sheet_number => 1,
---                                     x => 0.0,
---                                     y => 0.0 
---                                ),
-		size_x => 0.0, -- CS reasonable ?
-		size_y => 0.0, -- CS reasonable ?
-		timestamp => "00000000" -- -- CS reasonable ?
-		);
+-- 	-- When reading gui submodules (kicad refers to them as "sheets") they are stored temporarily here.
+-- 	-- This temporarily variable needs defaults in order to prevent misleading compiler warnings.
+-- 	tmp_submodule_gui_name : et_coordinates.type_submodule_name.bounded_string; -- CS: move to specs
+-- 	tmp_submodule_gui : et_schematic.type_gui_submodule := (
+-- 		text_size_of_name => 2.0, -- CS reasonable ? use default ?
+-- 		text_size_of_file => 2.0, -- CS reasonable ? use default ?
+-- 		coordinates => et_coordinates.zero_position,
+-- -- 								(    path => et_schematic.path_to_submodule,
+-- --                                     module_name => et_coordinates.type_submodule_name.to_bounded_string (to_string (current_schematic)),
+-- --                                     sheet_number => 1,
+-- --                                     x => 0.0,
+-- --                                     y => 0.0 
+-- --                                ),
+-- 		size_x => 0.0, -- CS reasonable ?
+-- 		size_y => 0.0, -- CS reasonable ?
+-- 		timestamp => "00000000" -- -- CS reasonable ?
+-- 		);
 
 
 	
