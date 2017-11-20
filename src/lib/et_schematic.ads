@@ -724,8 +724,9 @@ package et_schematic is
 	procedure rename_strands (
 	-- Renames all strands with the name_before to the name_after.
 	-- Changes the scope of the affected strands to "global".
-		name_before : type_net_name.bounded_string;
-		name_after	: type_net_name.bounded_string);
+		name_before		: in type_net_name.bounded_string;
+		name_after		: in type_net_name.bounded_string;
+		log_threshold	: in et_string_processing.type_log_level);
 
 	procedure write_strands;
 	-- Writes a nice overview of strands, net segments and labels

@@ -1137,8 +1137,9 @@ package body et_schematic is
 	procedure rename_strands (
 	-- Renames all strands with the name_before to the name_after.
 	-- Changes the scope of the affected strands to "global".
-		name_before : type_net_name.bounded_string;
-		name_after	: type_net_name.bounded_string) is
+		name_before		: in type_net_name.bounded_string;
+		name_after		: in type_net_name.bounded_string;
+		log_threshold	: in et_string_processing.type_log_level) is
 
 		use et_string_processing;
 
@@ -1171,9 +1172,8 @@ package body et_schematic is
 -- 							& to_string (name_after) & " ...",
 -- 							level => 2
 -- 						);
-					log (
-						text => to_string (position => strand.coordinates, scope => et_coordinates.module),
-						level => 3);
+					log (to_string (position => strand.coordinates, scope => et_coordinates.module),
+						log_threshold + 1);
 
 					log_indentation_down;
 
@@ -1202,7 +1202,7 @@ package body et_schematic is
 		
 	begin -- rename_strands
 		log ("renaming strands from " & to_string (name_before)
-			 & " to " & to_string (name_after) & " ...", level => 2);
+			 & " to " & to_string (name_after) & " ...", log_threshold);
 		
 		rig.update_element (
 			position	=> module_cursor,
@@ -1210,7 +1210,7 @@ package body et_schematic is
 			);
 
 		if count > 0 then
-			log ("renamed" & natural'image (count) & " strands.", level => 2);
+			log ("renamed" & natural'image (count) & " strands", log_threshold);
 		else
 			-- CS: This should never happen
 			log_indentation_reset;
@@ -1218,8 +1218,6 @@ package body et_schematic is
 				& to_string (name_before) & " not found !");
 			raise constraint_error;
 		end if;
-
-		
 	end rename_strands;
 
 	procedure write_strands is

@@ -856,7 +856,8 @@ package body et_netlist is
 								et_schematic.rename_strands (
 									--name_before => key (net_cursor_pre),
 									name_before => simple_name (key (net_cursor_pre)),
-									name_after => net_name);
+									name_after => net_name,
+									log_threshold => log_threshold + 3);
 
 								log_indentation_down;
 							end if;
@@ -1032,8 +1033,9 @@ package body et_netlist is
 	end make_netlists;
 
 	procedure update_strand_names (log_threshold : in et_string_processing.type_log_level) is
-	-- Here the portlists of the current module are stored by function build_portlists:
-	-- CS: comments
+	-- Tests if a power out port is connected to a strand and renames the strand if necessary.
+	-- Writes a strands report at a certain log level.
+
 		portlists : type_portlists.map := type_portlists.empty_map;
 
 		use et_schematic;
@@ -1063,12 +1065,12 @@ package body et_netlist is
 		-- Generate the portlists of the module indicated by module_cursor.
 		portlists := build_portlists; -- CS: log_threshold ?
 
-		-- LOOP IN STRANDS OF MODULE (outer loop)
+		-- LOOP IN STRANDS OF MODULE
 		while strand /= type_strands_named.no_element loop
 			log_indentation_up;
 			log ("strand of net " & et_schematic.to_string (element (strand).name), log_threshold + 2);
 
-			-- LOOP IN SEGMENTS OF STRAND (inner loop)
+			-- LOOP IN SEGMENTS OF STRAND
 			segment := first_segment (strand);
 			while segment /= type_net_segments.no_element loop
 				log_indentation_up;
@@ -1079,11 +1081,14 @@ package body et_netlist is
 				while component /= type_portlists.no_element loop
 					log_indentation_up;
 					log ("probing component " & et_schematic.to_string (key (component)), log_threshold + 4);
-						
+
+					-- LOOP IN PORTLIST (of component)
 					port := first_port (component);
 					while port /= type_base_ports.no_element loop
 						log_indentation_up;
 
+						-- We are interested in power out ports exclusively. Only such ports may enforce their
+						-- name on a strand.
 						if element (port).direction = POWER_OUT then
 						-- CS: skip already processed ports to improve performance
 
@@ -1094,34 +1099,33 @@ package body et_netlist is
 								log_indentation_up;
 -- 								log ("match", log_threshold + 2);
 
-								-- if port name differs from strand name -> rename strand by port name
-								if to_net_name (element (port).port) /= element (strand).name then
+								-- If strand has no name yet, it is to be named by the name of the port that sits on it.
+								-- If strand has a name already, its scope must be global
+								-- because power out ports are allowed in global strands exclusively !
+								if et_schematic.anonymous (element (strand).name) then
 									log ("component " & et_schematic.to_string (key (component)) 
 										& " pin " & to_string (element (port).pin)
 										& " port name " & to_string (element (port).port) 
 										& " is a power output -> port name sets strand name", log_threshold + 2);
 
-									-- Only name-less strands can be renamed.
-									-- Those which already have an expicit name can not be renamed.
-									-- Example: The net name is already "P3V3" and the port name is "+3V3".
-									-- More serious example : The net name is already "P3V3" and the port name is "GND".
-									if et_schematic.anonymous (element (strand).name) then
+									-- rename strand
+									et_schematic.rename_strands (
+										name_before => element (strand).name,
+										name_after => to_net_name (element (port).port),
+										log_threshold => log_threshold + 3);
 
-										-- rename strands
-										et_schematic.rename_strands (
-											name_before => element (strand).name,
-											name_after => to_net_name (element (port).port)
-											);
-									else
+								elsif element (strand).scope /= global then -- strand has a name and is local or hierarchic
+							
 										log_indentation_reset;
 										log (message_error & "component " & et_schematic.to_string (key (component)) 
 											& " POWER OUT pin " & to_string (element (port).pin)
 											& " port name " & to_string (element (port).port) 
 											& latin_1.lf
 											& "at " & to_string (element (port).coordinates, module)
-											& " conflicts with net " & et_schematic.to_string (element (strand).name) & " !");
+											& latin_1.lf
+											& "conflicts with " & to_string (element (strand).scope) 
+											& " net " & et_schematic.to_string (element (strand).name) & " !");
 										raise constraint_error;
-									end if;
 
 								end if;
 								
