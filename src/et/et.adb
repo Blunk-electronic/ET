@@ -174,10 +174,10 @@ procedure et is
 		-- For example: The names of strands may change once power output ports have been
 		-- detected.
 		-- make_netlists generates portlists, netlists and updates the strand names.
-		et_netlist.make_netlists;
+-- 		et_netlist.make_netlists;
 
 		-- Build the internal database of module nets.
-		et_schematic.build_internal_net_database;
+-- 		et_schematic.build_internal_net_database;
 		-- Merges the strands which are still independed of each other. 
 		-- For example a strand named "VCC3V3" exists on submodule A on sheet 2. 
 		-- Another strand "VCC3V3" exists on submodule C on sheet 1. They do not "know" each other
@@ -189,7 +189,7 @@ procedure et is
 			when event:
 				constraint_error =>
 					et_import.close_report;
--- 					put_line (standard_output, "Read import report for warnings and error messages !"); -- CS: show path to report file
+					put_line (standard_output, message_error & "Read import report for warnings and error messages !"); -- CS: show path to report file
 					raise;
 
 	end import_design;
@@ -209,15 +209,20 @@ begin -- main
 	-- export netlists
 	-- NOTE: write_netlists requires that netlists have been built before 
 	-- (see comments in procedure import_design above).
-	et_netlist.write_netlists;
+-- 	et_netlist.write_netlists;
 
 	-- export statistics
-	et_schematic.make_statistics;
+-- 	et_schematic.make_statistics;
 
 	-- export bom
-	et_schematic.make_bom;
+-- 	et_schematic.make_bom;
 	
 	et_export.close_report;
+
+	exception
+		when event:
+			constraint_error => set_exit_status (failure);
+
 end et;
 
 -- Soli Deo Gloria

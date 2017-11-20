@@ -190,7 +190,7 @@ package et_netlist is
 	-- Updates the strand names in et_schematic.rig because some of them get a final name due to
 	-- power out ports.
 
-
+	procedure update_strand_names (log_threshold : in et_string_processing.type_log_level);
 	
 	procedure write_netlists;
 	-- Exports/Writes the netlists of the rig in separate files.

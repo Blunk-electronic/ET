@@ -1031,7 +1031,130 @@ package body et_netlist is
 		log_indentation_down;
 	end make_netlists;
 
+	procedure update_strand_names (log_threshold : in et_string_processing.type_log_level) is
+	-- Here the portlists of the current module are stored by function build_portlists:
+	-- CS: comments
+		portlists : type_portlists.map := type_portlists.empty_map;
 
+		use et_schematic;
+		use et_coordinates;
+		use et_libraries;
+		
+		strand		: type_strands_named.cursor := first_strand;
+		segment		: type_net_segments.cursor;
+		component	: type_portlists.cursor;
+		port		: type_base_ports.cursor;
+		
+		use type_strands_named;
+		use type_net_segments;
+		use type_portlists;
+		use type_base_ports;
+
+		function to_net_name (port_name : in type_port_name.bounded_string) 
+		-- Converts the given port name to a net name.
+			return type_net_name.bounded_string is
+		begin
+			return type_net_name.to_bounded_string (to_string (port_name));
+		end to_net_name;
+		
+	begin -- update_strand_names
+		log (text => "updating strand names ...", level => log_threshold);
+
+		-- Generate the portlists of the module indicated by module_cursor.
+		portlists := build_portlists; -- CS: log_threshold ?
+
+		-- LOOP IN STRANDS OF MODULE (outer loop)
+		while strand /= type_strands_named.no_element loop
+			log_indentation_up;
+			log ("strand of net " & et_schematic.to_string (element (strand).name), log_threshold + 2);
+
+			-- LOOP IN SEGMENTS OF STRAND (inner loop)
+			segment := first_segment (strand);
+			while segment /= type_net_segments.no_element loop
+				log_indentation_up;
+				log ("probing segment " & to_string (element (segment)), log_threshold + 3);
+
+				-- LOOP IN COMPONENTS (of portlists)
+				component := first (portlists);
+				while component /= type_portlists.no_element loop
+					log_indentation_up;
+					log ("probing component " & et_schematic.to_string (key (component)), log_threshold + 4);
+						
+					port := first_port (component);
+					while port /= type_base_ports.no_element loop
+						log_indentation_up;
+
+						if element (port).direction = POWER_OUT then
+						-- CS: skip already processed ports to improve performance
+
+							log ("probing port " & to_string (position => element (port).coordinates), log_threshold + 4);
+
+							-- test if port sits on segment
+							if port_sits_on_segment (element (port), element (segment)) then
+								log_indentation_up;
+-- 								log ("match", log_threshold + 2);
+
+								-- if port name differs from strand name -> rename strand by port name
+								if to_net_name (element (port).port) /= element (strand).name then
+									log ("component " & et_schematic.to_string (key (component)) 
+										& " pin " & to_string (element (port).pin)
+										& " port name " & to_string (element (port).port) 
+										& " is a power output -> port name sets strand name", log_threshold + 2);
+
+									-- Only name-less strands can be renamed.
+									-- Those which already have an expicit name can not be renamed.
+									-- Example: The net name is already "P3V3" and the port name is "+3V3".
+									-- More serious example : The net name is already "P3V3" and the port name is "GND".
+									if et_schematic.anonymous (element (strand).name) then
+
+										-- rename strands
+										et_schematic.rename_strands (
+											name_before => element (strand).name,
+											name_after => to_net_name (element (port).port)
+											);
+									else
+										log_indentation_reset;
+										log (message_error & "component " & et_schematic.to_string (key (component)) 
+											& " POWER OUT pin " & to_string (element (port).pin)
+											& " port name " & to_string (element (port).port) 
+											& latin_1.lf
+											& "at " & to_string (element (port).coordinates, module)
+											& " conflicts with net " & et_schematic.to_string (element (strand).name) & " !");
+										raise constraint_error;
+									end if;
+
+								end if;
+								
+								log_indentation_down;
+							end if;
+
+						end if;
+						
+						log_indentation_down;
+						next (port);
+					end loop;
+
+					log_indentation_down;
+					next (component);
+				end loop;
+
+
+				log_indentation_down;
+				next (segment);
+			end loop;
+
+			log_indentation_down;
+			next (strand);
+		end loop;
+		
+		-- create a nice report about net strands, segments and labels
+		if log_level >= log_threshold then
+			write_strands;
+		end if;
+
+	end update_strand_names;
+		
+	
 	procedure write_netlists is
 	-- Exports/Writes the netlists of the rig in separate files.
 	-- Call this procedure after executing procedure make_netlist !

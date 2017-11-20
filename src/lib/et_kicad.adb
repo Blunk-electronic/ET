@@ -5211,11 +5211,14 @@ package body et_kicad is
 
 					-- Checks scope of strands across the current module (indicated by module_cursor).
 					-- NOTE: module_cursor points to the current module.
-					--check_strands; -- CS: currently not used
+					--check_strands; -- CS: currently not used and does not belong here
 					
 				end if;
 
+				
 				log_indentation_down;
+
+				et_netlist.update_strand_names (log_threshold + 1);
 				
 			when others =>
 				null; -- CS: add import of other CAD formats here
@@ -5223,7 +5226,20 @@ package body et_kicad is
 				
 		end case;
 
-		-- CS: exception handler
+		
+		
+-- 		exception
+-- 			-- CS: log exception message
+-- 			when event:
+-- 				constraint_error =>
+-- 					log_indentation_reset;
+-- 					log (message_error & "in schematic file '" 
+-- 						& to_string (current_schematic) & "' " 
+-- 						console => true);
+-- 						et_import.close_report;
+-- 						put_line (standard_output, "Read import report for warnings and error messages !"); -- CS: show path to report file
+-- 					raise;
+
 		
 	end import_design;
 
