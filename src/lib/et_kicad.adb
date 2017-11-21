@@ -3163,6 +3163,7 @@ package body et_kicad is
 
 													when local => -- strand has been marked as "local" already. no hierarchic or global label allowed !
 														if lt.global or lt.hierarchic then
+															put_line (standard_output, message_error & "Net label conflict !");
 															log_indentation_reset;
 															log (message_error
 																& "local net " & type_net_name.to_string (anon_strand_a.name) 
@@ -3173,6 +3174,7 @@ package body et_kicad is
 														
 													when hierarchic => -- strand has been marked as "hierarchic" already. no global label allowed !
 														if lt.global then
+															put_line (standard_output, message_error & "Net label conflict !");
 															log_indentation_reset;
 															log (message_error
 																& "hierarchic net " & type_net_name.to_string (anon_strand_a.name) 
@@ -3183,6 +3185,7 @@ package body et_kicad is
 
 													when global => -- strand has been marked as "global" already. no hierarchic label allowed !
 														if lt.hierarchic then
+															put_line (standard_output, message_error & "Net label conflict !");
 															log_indentation_reset;
 															log (message_error
 																& "global net " & type_net_name.to_string (anon_strand_a.name) 
@@ -5219,6 +5222,13 @@ package body et_kicad is
 				log_indentation_down;
 
 				et_netlist.update_strand_names (log_threshold + 1);
+
+				-- Merge the strands which are still independed of each other. 
+				-- For example a strand named "VCC3V3" exists on submodule A on sheet 2. 
+				-- Another strand "VCC3V3" exists on submodule C on sheet 1. They do not "know" each other
+				-- and must be merged into a single net.
+				et_schematic.link_strands (log_threshold + 1);
+
 				
 			when others =>
 				null; -- CS: add import of other CAD formats here

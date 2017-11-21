@@ -441,7 +441,7 @@ package et_schematic is
 	-- This is a net:
 	type type_net is record
 		scope 		: type_scope_of_net := type_scope_of_net'first; -- example "local"
-		strands		: type_strands.list;
+		strands		: type_strands_named.list;
 	end record;
 
 	-- Nets are collected in a map:
@@ -737,8 +737,8 @@ package et_schematic is
 	function first_segment (cursor : in type_strands_named.cursor) return type_net_segments.cursor;
 	-- Returns a cursor pointing to the first net segment of the given strand.
 
-	procedure build_internal_net_database;
-	-- Builds the net database of the current module from its strands.
+	procedure link_strands (log_threshold : in et_string_processing.type_log_level);
+	-- Links strands to nets (see type_module.nets).
 
 	procedure write_nets;
 	-- Writes a nice overview of all nets, strands, segments and labels.

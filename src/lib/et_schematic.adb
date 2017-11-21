@@ -1394,7 +1394,9 @@ package body et_schematic is
 		return segment_cursor;
 	end first_segment;
 
-	procedure build_internal_net_database is
+	procedure link_strands (log_threshold : in et_string_processing.type_log_level) is
+	-- Links strands to nets (see type_module.nets).
+
 	-- Builds the nets (see type_module.nets) of the current module from its strands (see type_module.strands).
 	-- NOTE: This is NOT about generating or exporting a netlist. See package et_netlist instead.
 	-- This procdure should be called AFTER netlist generation because some strands may have changed their name.
@@ -1408,10 +1410,8 @@ package body et_schematic is
 		use et_schematic.type_strands_named;
 		use et_schematic.type_rig;
 
-		named_strand : type_strands_named.cursor;
+		strand : type_strands_named.cursor;
 
-		log_threshold : type_log_level := 1;
-	
 		procedure add_net (
 		-- Creates a net with the name and the scope (local, hierarchic, global) of the current named_strand. 
 		-- If named_strand is local, the net name is rendered to a full hierarchic name.
@@ -1427,42 +1427,43 @@ package body et_schematic is
 			net_cursor : type_nets.cursor;
 			net_name : type_net_name.bounded_string;
 
-			procedure set_scope_and_add_strand (
+			procedure add_strand (
 				net_name : in type_net_name.bounded_string;
 				net		 : in out type_net) is
-
-				strand : type_strand; -- temporarily used on scope conflict
 			begin
-				--log ("net " & to_string (element (named_strand).name), level => 2);
-				log ("strand of net " & to_string (net_name), level => log_threshold + 1);
+				log ("strand of net " & to_string (net_name), level => log_threshold + 2);
 				
 				if net_created then -- net has just been created
--- 					log ("net " & to_string (element (named_strand).name), level => 1);
-					net.scope := element (named_strand).scope; -- set scope of net
+					net.scope := element (strand).scope; -- set scope of net
 
-					-- Test if net has a dedicated name. Output a warning if negative.
-					if anonymous (net_name) then
-						log (message_warning & "net " & to_string (net_name) & " has no dedicated name !");
-						-- CS: Show the lowest xy position
-					end if;
-					
-				else -- net already there -> check scope
-					if net.scope /= element (named_strand).scope then
-						strand := type_strands.last_element (net.strands);
-
-						log_indentation_reset;
-
-						-- short error message for the console output
-						log (message_error 
-							 --& "scope contradiction with net " & to_string (element (named_strand).name) & " !",
-							 & "scope contradiction in net " & to_string (net_name) & " !",
-							console => true
-							);
-
-						-- full error message for the log
+-- 				else -- net already there -> check scope
+-- 					if net.scope /= element (named_strand).scope then
+-- 						strand := type_strands.last_element (net.strands);
+-- 
+-- 						log_indentation_reset;
+-- 
+-- 						-- short error message for the console output
+-- 						log (message_error 
+-- 							 --& "scope contradiction with net " & to_string (element (named_strand).name) & " !",
+-- 							 & "scope contradiction in net " & to_string (net_name) & " !",
+-- 							console => true
+-- 							);
+-- 
+-- 						-- full error message for the log
+-- -- 						log (message_error 
+-- -- 								& "scope " & to_string (element (named_strand).scope) 
+-- -- 								& " of net " & to_string (element (named_strand).name)
+-- -- 								& " at " & to_string (position => element (named_strand).coordinates, scope => et_coordinates.module)
+-- -- 								& " invalid !"
+-- -- 								& latin_1.lf
+-- -- 								& "Conflicts with scope " & to_string (net.scope) & " of net"
+-- -- 								& " at " & to_string (position => strand.coordinates, scope => et_coordinates.module),
+-- -- 							console => false
+-- -- 							);
+-- 
 -- 						log (message_error 
 -- 								& "scope " & to_string (element (named_strand).scope) 
--- 								& " of net " & to_string (element (named_strand).name)
+-- 								& " of net " & to_string (net_name)
 -- 								& " at " & to_string (position => element (named_strand).coordinates, scope => et_coordinates.module)
 -- 								& " invalid !"
 -- 								& latin_1.lf
@@ -1470,49 +1471,54 @@ package body et_schematic is
 -- 								& " at " & to_string (position => strand.coordinates, scope => et_coordinates.module),
 -- 							console => false
 -- 							);
-
-						log (message_error 
-								& "scope " & to_string (element (named_strand).scope) 
-								& " of net " & to_string (net_name)
-								& " at " & to_string (position => element (named_strand).coordinates, scope => et_coordinates.module)
-								& " invalid !"
-								& latin_1.lf
-								& "Conflicts with scope " & to_string (net.scope) & " of net"
-								& " at " & to_string (position => strand.coordinates, scope => et_coordinates.module),
-							console => false
-							);
-
-						raise constraint_error;
-					end if;
+-- 
+-- 						raise constraint_error;
+-- 					end if;
 				end if;
 
 				if log_level >= log_threshold + 2 then
 					log_indentation_up;
-					log ("strand at " & to_string (position => element (named_strand).coordinates, scope => et_coordinates.module));
+					log ("strand at " & to_string (position => element (strand).coordinates, scope => et_coordinates.module));
 					log_indentation_down;
 				end if;
 				
 				-- add named_strand to the net
 				net.strands.append (
-					new_item => type_strand (element (named_strand))); -- type conversion !
-			end set_scope_and_add_strand;
+					new_item => element (strand));
+			end add_strand;
 
 		begin -- add_net
 
 			-- form the net name depending on scope
-			case element (named_strand).scope is
+			case element (strand).scope is
 
-				-- If the current strand is local, the full hierarchic name of the net must be formed
-				-- in order to get something like "driver.GND" :
 				when local =>
-					net_name := type_net_name.to_bounded_string (
-						et_coordinates.to_string (et_coordinates.path (element (named_strand).coordinates), top_module => false)
-							& et_coordinates.to_string (et_coordinates.module (element (named_strand).coordinates))
-							& et_coordinates.hierarchy_separator & et_schematic.to_string (element (named_strand).name));
+					
+					-- Output a warning if strand has no name.
+					if anonymous (element (strand).name) then
+						log (message_warning & "net " & to_string (element (strand).name) & " has no dedicated name !");
+						-- CS: Show the lowest xy position
+						log ("at " & to_string (position => element (strand).coordinates, scope => et_coordinates.module));
+					end if;
 
-				-- CS: special threatment for hierarchic strands ?					
-				when others =>
-					net_name := element (named_strand).name;
+					-- For local strands the full hierarchic name of the net must be formed
+					-- in order to get something like "driver.GND" :
+					net_name := type_net_name.to_bounded_string (
+						et_coordinates.to_string (et_coordinates.path (element (strand).coordinates), top_module => false)
+							& et_coordinates.to_string (et_coordinates.module (element (strand).coordinates))
+							& et_coordinates.hierarchy_separator & et_schematic.to_string (element (strand).name));
+
+				when global =>
+					net_name := element (strand).name;
+
+				-- CS: special threatment for hierarchic strands ?
+				when hierarchic =>
+					log (message_error & "hierarchical nets not supported !");
+					raise constraint_error;
+
+				when unknown =>
+					log (message_error & "unknown scope of net !");
+					raise constraint_error; -- CS: should never happen
 
 			end case;
 			
@@ -1525,45 +1531,37 @@ package body et_schematic is
 
 			-- If net created or already there, net_cursor points to the net where the strand is to be added.
 			module.nets.update_element (
-				position => net_cursor,
-				process => set_scope_and_add_strand'access);
+				position	=> net_cursor,
+				process		=> add_strand'access);
 			
 		end add_net;
 
-	begin -- build_internal_net_database
-		log (text => "building internal net database ...", level => log_threshold);
-		first_module;
+	begin -- link_strands
+		log (text => "linking strands to nets ...", level => log_threshold);
 
 		log_indentation_up;
 
-		-- loop in modules of the rig and fetch one strand after another
-		while module_cursor /= type_rig.no_element loop
-			log ("module " & to_string (key (module_cursor)), level => log_threshold);
+		-- loop in strands of the current module
+		strand := first_strand;
+		log_indentation_up;
+		while strand /= type_strands_named.no_element loop
 
-			-- loop in strands of the current module
-			named_strand := first_strand;
-			log_indentation_up;
-			while named_strand /= type_strands_named.no_element loop
-
-				-- Create net and append strand to module.nets
-				rig.update_element (
-					position => module_cursor,
-					process => add_net'access);
+			-- Create net and append strand to module.nets
+			rig.update_element (
+				position => module_cursor,
+				process => add_net'access);
 				
-				next (named_strand);
-			end loop;
-			log_indentation_down;
-			
-			next (module_cursor);
+			next (strand);
 		end loop;
-
+		log_indentation_down;
+			
 		-- show a net report -- CS: separate procedure
-		if log_level >= 2 then
+		if log_level >= log_threshold + 1 then
 			write_nets;
 		end if;
 		
 		log_indentation_down;
-	end build_internal_net_database;
+	end link_strands;
 
 	procedure write_nets is
 	-- Writes a nice overview of all nets, strands, segments and labels.
@@ -1601,7 +1599,7 @@ package body et_schematic is
 		end query_label;
 		
 		procedure query_segment (
-			strand : in type_strand) is
+			strand : in type_strand_named) is
 			segment : type_net_segments.cursor := strand.segments.first;
 			use type_net_segments;
 
@@ -1629,14 +1627,14 @@ package body et_schematic is
 			net_name : in type_net_name.bounded_string;
 			net : in type_net) is
 			
-			strand : type_strands.cursor := net.strands.first;
-			use type_strands;
+			strand : type_strands_named.cursor := net.strands.first;
+			use type_strands_named;
 
 			-- for the strand we provide a consequtive number which has no further meaning
 			strand_number : count_type := 1;			
 		begin -- query_strand
 			log_indentation_up;
-			while strand /= type_strands.no_element loop
+			while strand /= type_strands_named.no_element loop
 				log ("strand #" & trim (count_type'image (strand_number), left) &
 					" at " & to_string (position => element (strand).coordinates, scope => et_coordinates.module)
 					);

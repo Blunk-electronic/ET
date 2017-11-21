@@ -176,12 +176,6 @@ procedure et is
 		-- make_netlists generates portlists, netlists and updates the strand names.
 -- 		et_netlist.make_netlists;
 
-		-- Build the internal database of module nets.
--- 		et_schematic.build_internal_net_database;
-		-- Merges the strands which are still independed of each other. 
-		-- For example a strand named "VCC3V3" exists on submodule A on sheet 2. 
-		-- Another strand "VCC3V3" exists on submodule C on sheet 1. They do not "know" each other
-		-- and must be merged into a single net.
 		
 		et_import.close_report;
 
