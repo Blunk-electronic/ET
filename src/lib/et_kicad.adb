@@ -3262,9 +3262,9 @@ package body et_kicad is
 					-- We build a new strand (of type type_strand_named) in an intermediate variable "strand"
 					-- (as specified in et_schematic type_strand_named) for transfer to the module netlist.
 					--
-					-- NOTE: Even if a strand has no name at this stage, it may get a dedicated name later on netlist generation.
+					-- NOTE: Even if a strand has no name at this stage, it may get a dedicated name later.
 					-- Power-out ports may overwrite the strand name.
-					log (text => "building name-less strands ... NOTE: Names may change after netlist generation.");
+					log (text => "building name-less strands ...");
 					log_indentation_up;
 
 					strand_cursor := anonymous_strands.first; -- reset strand cursor
