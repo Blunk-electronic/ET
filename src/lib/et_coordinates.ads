@@ -40,6 +40,8 @@ with ada.containers; 			use ada.containers;
 
 with ada.containers.doubly_linked_lists;
 
+with et_string_processing;
+
 package et_coordinates is
 
 	type type_axis is (X, Y);
@@ -137,7 +139,8 @@ package et_coordinates is
 	procedure rotate (
 	-- Rotates the given point by the given angle with the origin as center.
 		point	: in out type_2d_point;
-		angle	: in type_angle);
+		angle	: in type_angle;
+		log_threshold : in et_string_processing.type_log_level);
 
 	function distance (point_1, point_2 : in type_2d_point) return type_distance;
 	-- Returns the distance between the given points.

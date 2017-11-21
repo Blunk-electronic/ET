@@ -90,7 +90,7 @@ package et_netlist is
 		element_type => type_base_ports.list,
 		"<" => et_schematic.compare_reference);
 
-	function build_portlists return type_portlists.map;
+	function build_portlists (log_threshold : in et_string_processing.type_log_level) return type_portlists.map;
 	-- Returns a list of components with the absolute positions of their ports as they are placed in the schematic.
 	
 	function first_port (component_cursor : in type_portlists.cursor) return type_base_ports.cursor;

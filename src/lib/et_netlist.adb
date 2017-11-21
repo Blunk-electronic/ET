@@ -149,7 +149,7 @@ package body et_netlist is
 		return (element (port).appearance);
 	end appearance;
 
-	function build_portlists return type_portlists.map is
+	function build_portlists (log_threshold : in et_string_processing.type_log_level) return type_portlists.map is
 	-- Returns a list of components with the absolute positions of their ports as they are placed in the schematic.
 		
 	-- Locates the components of the schematic in the libraries. 
@@ -197,8 +197,6 @@ package body et_netlist is
 
 		-- For tempoarily storage of units of a component (taken from the schematic):
 		units_sch : et_schematic.type_units.map;
-
-		log_threshold : type_log_level := 2;
 
 		procedure extract_ports is
 		-- Extracts the ports of the component indicated by component_cursor_lib.
@@ -248,7 +246,8 @@ package body et_netlist is
 					-- rotate port coordinates
 					rotate (
 						point => port_coordinates,
-						angle => et_schematic.orientation_of_unit (unit_name_lib, units_sch));
+						angle => et_schematic.orientation_of_unit (unit_name_lib, units_sch),
+						log_threshold => log_threshold + 3);
 
 					-- Mirror port coordinates if required.
 					case mirror_style_of_unit (unit_name_lib, units_sch) is
@@ -290,9 +289,9 @@ package body et_netlist is
 							));
 
 					log_indentation_up;
-					log (to_string (last_element (ports).direction), level => 2);
+					log (to_string (last_element (ports).direction), log_threshold + 3);
 					-- CS: other port properties
-					log (to_string (position => last_element (ports).coordinates), level => 2);
+					log (to_string (position => last_element (ports).coordinates), log_threshold + 3);
 					log_indentation_down;
 				end add;
 				
@@ -333,7 +332,7 @@ package body et_netlist is
 							--log ("port " & type_port_name.to_string (key (port_cursor))
 							log (text => "port " & type_port_name.to_string (element (port_cursor).name)
 									& " pin/pad " & to_string (element (port_cursor).pin),
-								 level => log_threshold + 1);
+								 level => log_threshold + 2);
 
 							-- Build a new port and append port to portlist of the 
 							-- current component (indicated by component_cursor_portlists).
@@ -371,10 +370,10 @@ package body et_netlist is
 				-- If the unit is deployed in the schematic, we load unit_position. 
 				-- unit_position holds the position of the unit in the schematic.
 				if unit_exists (name => unit_name_lib, units => units_sch) then -- if unit deployed in schematic
-					log ("unit " & to_string (unit_name_lib), level => log_threshold);
+					log ("unit " & to_string (unit_name_lib), log_threshold + 1);
 					unit_position := position_of_unit (name => unit_name_lib, units => units_sch); -- pos. in schematic
 					log_indentation_up;
-					log (to_string (position => unit_position), level => log_threshold + 1);
+					log (to_string (position => unit_position), log_threshold + 2);
 
 					-- Get the ports of the current unit. Start with the first port of the unit.
 					-- The unit_position plus the relative port position (in library) yields the absolute
@@ -389,7 +388,7 @@ package body et_netlist is
 						--log ("port " & type_port_name.to_string (key (port_cursor))
 						log (text => "port " & type_port_name.to_string (element (port_cursor).name)
 								& " pin/pad " & to_string (element (port_cursor).pin),
-							 level => log_threshold + 1
+							 level => log_threshold + 2
 							);
 						
 						-- Build a new port and append port to portlist of the 
@@ -469,7 +468,7 @@ package body et_netlist is
 		
 				-- log component by its reference		
 				component_reference :=  et_schematic.component_reference (component_cursor_sch);
-				log (text => "reference " & et_schematic.to_string (component_reference), level => log_threshold);
+				log ("reference " & et_schematic.to_string (component_reference), log_threshold + 1);
 				
 				-- Insert component in portlists. for the moment the portlist of this component is empty.
 				-- After that the component_cursor_portlists points to the component. This cursor will
@@ -488,21 +487,21 @@ package body et_netlist is
 				-- get generic component name (as listed in a library)
 				log_indentation_up;			
 				component_name := et_schematic.component_name_in_library (component_cursor_sch);
-				log (text => "generic name " & to_string (component_name), level => log_threshold + 1);
+				log ("generic name " & to_string (component_name), log_threshold + 2);
 
 				-- Search in libraries for a component with this very generic name.
 				-- library_cursor_sch points to the particular full library name.
 				-- The libraries are searched according to their order in the library list of the module.
 				-- The search is complete on the first finding of the component.
 				log_indentation_up;
-				log (text => "searching in libraries ...", level => log_threshold + 1);
+				log ("searching in libraries ...", log_threshold + 2);
 				log_indentation_up;
 				et_schematic.reset_library_cursor (library_cursor_sch);
 				while library_cursor_sch /= type_full_library_names.no_element loop
 
 					-- Set and log particular library to be searched in.
 					library_name := (element (library_cursor_sch));
-					log (text => to_string (library_name), level => log_threshold + 1);
+					log (to_string (library_name), log_threshold + 2);
 
 					-- Get cursor of that component in library. If cursor is empty, search in
 					-- next library. If cursor points to a matching component, extract ports
@@ -547,6 +546,7 @@ package body et_netlist is
 		end loop;
 
 		log_indentation_down;
+		log (text => "portlists complete", level => log_threshold);
 		log_indentation_down;
 		
 		return portlists;
@@ -1013,7 +1013,7 @@ package body et_netlist is
 			create_project_directory (to_string (key (et_schematic.module_cursor)));
 
 			-- Generate the portlists of the module indicated by module_cursor.
-			portlists := build_portlists;
+			portlists := build_portlists (log_threshold + 1);
 
 			-- Insert the module in rig_netlists with the netlist built by make_netlist:
 			rig.insert (
@@ -1063,12 +1063,12 @@ package body et_netlist is
 		log (text => "updating strand names ...", level => log_threshold);
 
 		-- Generate the portlists of the module indicated by module_cursor.
-		portlists := build_portlists; -- CS: log_threshold ?
+		portlists := build_portlists (log_threshold + 1);
 
 		-- LOOP IN STRANDS OF MODULE
 		while strand /= type_strands_named.no_element loop
 			log_indentation_up;
-			log ("strand of net " & et_schematic.to_string (element (strand).name), log_threshold + 2);
+			log ("strand of net " & et_schematic.to_string (element (strand).name), log_threshold + 3);
 
 			-- LOOP IN SEGMENTS OF STRAND
 			segment := first_segment (strand);
