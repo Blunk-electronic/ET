@@ -617,7 +617,7 @@ package body et_schematic is
 		return type_scope_of_net'image (scope);
 	end to_string;
 
-	function lowest_xy (strand : in type_strand_named) return type_2d_point is
+	function lowest_xy (strand : in type_strand) return type_2d_point is
 	-- Returns the lowest x/y position of the given strand.
 		point_1, point_2 : type_2d_point;
 		segment : type_net_segments.cursor;
@@ -664,7 +664,7 @@ package body et_schematic is
 	
 	procedure add_strand (
 	-- Adds a strand into the the module (indicated by module_cursor).
-		strand : in et_schematic.type_strand_named) is
+		strand : in et_schematic.type_strand) is
 		
 		procedure add (
 			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
@@ -1159,7 +1159,7 @@ package body et_schematic is
 			-- The names of anonymous strands like (N$6) are unique. So after the first
 			-- renaming the procedure comes to an early end.
 
-			procedure do_it (strand : in out type_strand_named) is
+			procedure do_it (strand : in out type_strand) is
 			begin
 				-- search for the strand to be renamed
 				if strand.name = name_before then
@@ -1246,7 +1246,7 @@ package body et_schematic is
 		end query_label;
 	
 		procedure query_segment (
-			strand	: in type_strand_named) is
+			strand	: in type_strand) is
 			segment : type_net_segments.cursor := strand.segments.first;
 			use type_net_segments;
 		begin
@@ -1381,7 +1381,7 @@ package body et_schematic is
 		segment_cursor : type_net_segments.cursor;
 
 		procedure set_cursor (
-			strand : in type_strand_named) is
+			strand : in type_strand) is
 		begin
 			segment_cursor := strand.segments.first;
 		end set_cursor;
@@ -1599,7 +1599,7 @@ package body et_schematic is
 		end query_label;
 		
 		procedure query_segment (
-			strand : in type_strand_named) is
+			strand : in type_strand) is
 			segment : type_net_segments.cursor := strand.segments.first;
 			use type_net_segments;
 

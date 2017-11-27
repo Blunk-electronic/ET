@@ -406,33 +406,25 @@ package et_schematic is
 	-- Segments belong to each other because their start/end points meet.
 	-- A strand has coordinates. 
 	-- x/y position are the lowest values within the strand. see function lowest_xy.
-	type type_strand is tagged record
-		segments 	: type_net_segments.list; -- list of net segments
-		--junctions	: type_junctions.list; -- the junctions of the net
-		coordinates : et_coordinates.type_coordinates;
-	end record;
-	
-	-- base type strands are collected in a simple list:
-	package type_strands is new doubly_linked_lists (
-		element_type => type_strand);
-	
 	-- As long as strands are independed of each other they must 
 	-- have a name and their own scope.
-    type type_strand_named is new type_strand with record
+	type type_strand is record
+		segments 	: type_net_segments.list; -- list of net segments		
+		coordinates : et_coordinates.type_coordinates;
 		name		: type_net_name.bounded_string; -- example "CPU_CLOCK"
 		scope 		: type_scope_of_net := type_scope_of_net'first; -- example "local"
 	end record;
 
-	function lowest_xy (strand : in type_strand_named) return type_2d_point;
+	function lowest_xy (strand : in type_strand) return type_2d_point;
 	-- Returns the lowest x/y position of the given strand.
 	
 	procedure add_strand (
 	-- Adds a strand into the module (indicated by module_cursor).
-		strand : in et_schematic.type_strand_named);
+		strand : in et_schematic.type_strand);
 	
 	-- Named strands are collected in a list:
 	package type_strands_named is new doubly_linked_lists (
-		element_type => type_strand_named);
+		element_type => type_strand);
 
 	-- If the name of a strand can not be identified, we default to the well proved
 	-- N$ notation:
