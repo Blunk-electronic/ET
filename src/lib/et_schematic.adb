@@ -1115,9 +1115,9 @@ package body et_schematic is
 		return "mirror style " & to_lower (type_mirror'image (mirror));
 	end to_string;
 	
-	function first_strand return type_strands_named.cursor is
+	function first_strand return type_strands.cursor is
 	-- Returns a cursor pointing to the first strand of the module (indicated by module_cursor).
-		cursor : type_strands_named.cursor;	
+		cursor : type_strands.cursor;	
 
 		procedure set_cursor (
 			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
@@ -1149,9 +1149,9 @@ package body et_schematic is
 			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out type_module) is
 
-			use et_schematic.type_strands_named;
+			use et_schematic.type_strands;
 			
-			cursor : type_strands_named.cursor := module.strands.first;
+			cursor : type_strands.cursor := module.strands.first;
 			-- Points to the strand being processed
 			
 			renamed : boolean := false; -- signals that a strand renaming took place
@@ -1185,7 +1185,7 @@ package body et_schematic is
 			end do_it;
 			
 		begin -- rename
-			while cursor /= type_strands_named.no_element loop
+			while cursor /= type_strands.no_element loop
 				module.strands.update_element (
 					position => cursor,
 					process => do_it'access);
@@ -1266,10 +1266,10 @@ package body et_schematic is
 		procedure query_strands (
 			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in type_module) is
-			strand : type_strands_named.cursor := module.strands.first;
-			use type_strands_named;
+			strand : type_strands.cursor := module.strands.first;
+			use type_strands;
 		begin
-			while strand /= type_strands_named.no_element loop
+			while strand /= type_strands.no_element loop
 				log_indentation_up;
 
 				log (to_string (element (strand).name) & " scope " & to_string (element (strand).scope)
@@ -1283,7 +1283,7 @@ package body et_schematic is
 -- 					& to_string (element (strand).name) & " scope " & to_string (element (strand).scope)
 -- 					);
 
-				type_strands_named.query_element (
+				type_strands.query_element (
 					position	=> strand,
 					process		=> query_segment'access);
 				
@@ -1309,13 +1309,13 @@ package body et_schematic is
 			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in type_module) is
 			
-			strand_primary		: type_strands_named.cursor := module.strands.first;
-			strand_secondary	: type_strands_named.cursor;
-			use type_strands_named;
+			strand_primary		: type_strands.cursor := module.strands.first;
+			strand_secondary	: type_strands.cursor;
+			use type_strands;
 		begin
 			log ("checking local strands ...");
 			
-			while strand_primary /= type_strands_named.no_element loop
+			while strand_primary /= type_strands.no_element loop
 				log_indentation_up;
 				
 				if element (strand_primary).scope = local then
@@ -1330,7 +1330,7 @@ package body et_schematic is
 					if strand_primary /= module.strands.last then
 						strand_secondary := next (strand_primary);
 
-						while strand_secondary /= type_strands_named.no_element loop
+						while strand_secondary /= type_strands.no_element loop
 							if element (strand_secondary).scope = local then
 								if sheet (element (strand_secondary).coordinates) /= sheet (element (strand_primary).coordinates) then
 									
@@ -1376,7 +1376,7 @@ package body et_schematic is
 	end check_strands;
 	
 	
-	function first_segment (cursor : in type_strands_named.cursor) return type_net_segments.cursor is
+	function first_segment (cursor : in type_strands.cursor) return type_net_segments.cursor is
 	-- Returns a cursor pointing to the first net segment of the given strand.
 		segment_cursor : type_net_segments.cursor;
 
@@ -1387,7 +1387,7 @@ package body et_schematic is
 		end set_cursor;
 
 	begin
-		type_strands_named.query_element (
+		type_strands.query_element (
 			position	=> cursor,
 			process		=> set_cursor'access
 			);
@@ -1407,10 +1407,10 @@ package body et_schematic is
 	-- Another strand "VCC3V3" exists on submodule C on sheet 1. They do not "know" each other
 	-- and must be merged into a single net.
 		use et_string_processing;
-		use et_schematic.type_strands_named;
+		use et_schematic.type_strands;
 		use et_schematic.type_rig;
 
-		strand : type_strands_named.cursor;
+		strand : type_strands.cursor;
 
 		procedure add_net (
 		-- Creates a net with the name and the scope (local, hierarchic, global) of the current named_strand. 
@@ -1435,45 +1435,6 @@ package body et_schematic is
 				
 				if net_created then -- net has just been created
 					net.scope := element (strand).scope; -- set scope of net
-
--- 				else -- net already there -> check scope
--- 					if net.scope /= element (named_strand).scope then
--- 						strand := type_strands.last_element (net.strands);
--- 
--- 						log_indentation_reset;
--- 
--- 						-- short error message for the console output
--- 						log (message_error 
--- 							 --& "scope contradiction with net " & to_string (element (named_strand).name) & " !",
--- 							 & "scope contradiction in net " & to_string (net_name) & " !",
--- 							console => true
--- 							);
--- 
--- 						-- full error message for the log
--- -- 						log (message_error 
--- -- 								& "scope " & to_string (element (named_strand).scope) 
--- -- 								& " of net " & to_string (element (named_strand).name)
--- -- 								& " at " & to_string (position => element (named_strand).coordinates, scope => et_coordinates.module)
--- -- 								& " invalid !"
--- -- 								& latin_1.lf
--- -- 								& "Conflicts with scope " & to_string (net.scope) & " of net"
--- -- 								& " at " & to_string (position => strand.coordinates, scope => et_coordinates.module),
--- -- 							console => false
--- -- 							);
--- 
--- 						log (message_error 
--- 								& "scope " & to_string (element (named_strand).scope) 
--- 								& " of net " & to_string (net_name)
--- 								& " at " & to_string (position => element (named_strand).coordinates, scope => et_coordinates.module)
--- 								& " invalid !"
--- 								& latin_1.lf
--- 								& "Conflicts with scope " & to_string (net.scope) & " of net"
--- 								& " at " & to_string (position => strand.coordinates, scope => et_coordinates.module),
--- 							console => false
--- 							);
--- 
--- 						raise constraint_error;
--- 					end if;
 				end if;
 
 				if log_level >= log_threshold + 2 then
@@ -1483,10 +1444,27 @@ package body et_schematic is
 				end if;
 				
 				-- add named_strand to the net
-				net.strands.append (
-					new_item => element (strand));
+				net.strands.append (new_item => element (strand));
+
+				-- CS: search for hierarchical sheets connected with this strand
+				
 			end add_strand;
 
+			procedure create_net is
+			begin
+				-- create net
+				module.nets.insert (
+					--key 		=> element (named_strand).name,
+					key 		=> net_name,
+					position	=> net_cursor,
+					inserted	=> net_created);
+
+				-- If net created or already there, net_cursor points to the net where the strand is to be added.
+				module.nets.update_element (
+					position	=> net_cursor,
+					process		=> add_strand'access);
+			end create_net;
+			
 		begin -- add_net
 
 			-- form the net name depending on scope
@@ -1508,9 +1486,12 @@ package body et_schematic is
 							& et_coordinates.to_string (et_coordinates.module (element (strand).coordinates))
 							& et_coordinates.hierarchy_separator & et_schematic.to_string (element (strand).name));
 
+					create_net;
+					
 				when global =>
 					net_name := element (strand).name;
-
+					create_net;
+					
 				-- CS: special threatment for hierarchic strands ?
 				when hierarchic =>
 					log (message_error & "hierarchical nets not supported !");
@@ -1518,22 +1499,10 @@ package body et_schematic is
 
 				when unknown =>
 					log (message_error & "unknown scope of net !");
-					raise constraint_error; -- CS: should never happen
+					raise constraint_error; -- CS: should never happen as all strands should have a scope by now
 
 			end case;
-			
-			-- create net
-			module.nets.insert (
-				--key 		=> element (named_strand).name,
-				key 		=> net_name,
-				position	=> net_cursor,
-				inserted	=> net_created);
 
-			-- If net created or already there, net_cursor points to the net where the strand is to be added.
-			module.nets.update_element (
-				position	=> net_cursor,
-				process		=> add_strand'access);
-			
 		end add_net;
 
 	begin -- link_strands
@@ -1544,7 +1513,7 @@ package body et_schematic is
 		-- loop in strands of the current module
 		strand := first_strand;
 		log_indentation_up;
-		while strand /= type_strands_named.no_element loop
+		while strand /= type_strands.no_element loop
 
 			-- Create net and append strand to module.nets
 			rig.update_element (
@@ -1627,14 +1596,14 @@ package body et_schematic is
 			net_name : in type_net_name.bounded_string;
 			net : in type_net) is
 			
-			strand : type_strands_named.cursor := net.strands.first;
-			use type_strands_named;
+			strand : type_strands.cursor := net.strands.first;
+			use type_strands;
 
 			-- for the strand we provide a consequtive number which has no further meaning
 			strand_number : count_type := 1;			
 		begin -- query_strand
 			log_indentation_up;
-			while strand /= type_strands_named.no_element loop
+			while strand /= type_strands.no_element loop
 				log ("strand #" & trim (count_type'image (strand_number), left) &
 					" at " & to_string (position => element (strand).coordinates, scope => et_coordinates.module)
 					);

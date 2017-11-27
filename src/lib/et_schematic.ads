@@ -421,8 +421,8 @@ package et_schematic is
 	-- Adds a strand into the module (indicated by module_cursor).
 		strand : in et_schematic.type_strand);
 	
-	-- Named strands are collected in a list:
-	package type_strands_named is new doubly_linked_lists (
+	-- Strands are collected in a list:
+	package type_strands is new doubly_linked_lists (
 		element_type => type_strand);
 
 	-- If the name of a strand can not be identified, we default to the well proved
@@ -432,7 +432,7 @@ package et_schematic is
 	-- This is a net:
 	type type_net is record
 		scope 		: type_net_scope := type_net_scope'first; -- example "local"
-		strands		: type_strands_named.list;
+		strands		: type_strands.list;
 	end record;
 
 	-- Nets are collected in a map:
@@ -654,7 +654,7 @@ package et_schematic is
 	
 	type type_module is record
 		libraries		: type_full_library_names.list;	-- the list of project library names
-		strands	    	: type_strands_named.list;		-- the strands of the module. temporarily used. CS: clear once nets are ready. 
+		strands	    	: type_strands.list;		-- the strands of the module. temporarily used. CS: clear once nets are ready. 
 		nets 	    	: type_nets.map;			-- the nets of the module
         components		: type_components.map;		-- the components of the module
 		submodules  	: type_gui_submodules.map;	-- graphical representations of submodules. -- GUI relevant
@@ -709,7 +709,7 @@ package et_schematic is
 	-- Inserts a title block in the module (indicated by module_cursor).
 		tblock	: in et_schematic.type_title_block);
 
-	function first_strand return type_strands_named.cursor;
+	function first_strand return type_strands.cursor;
 	-- Returns a cursor pointing to the first strand of the module (indicated by module_cursor).
 
 	procedure rename_strands (
@@ -725,7 +725,7 @@ package et_schematic is
 	procedure check_strands;
 	-- Checks scope of strands across the current module (indicated by module_cursor)
 	
-	function first_segment (cursor : in type_strands_named.cursor) return type_net_segments.cursor;
+	function first_segment (cursor : in type_strands.cursor) return type_net_segments.cursor;
 	-- Returns a cursor pointing to the first net segment of the given strand.
 
 	procedure link_strands (log_threshold : in et_string_processing.type_log_level);

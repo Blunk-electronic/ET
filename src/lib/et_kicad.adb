@@ -5121,7 +5121,7 @@ package body et_kicad is
 					module_name	=> tmp_module_name,
 					module		=> (
 						libraries		=> tmp_project_libraries, -- set project libraries
-						strands			=> type_strands_named.empty_list,
+						strands			=> type_strands.empty_list,
 						nets			=> type_nets.empty_map,
 						components		=> type_components.empty_map,
 						submodules		=> type_gui_submodules.empty_map,
