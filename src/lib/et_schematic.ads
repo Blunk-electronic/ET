@@ -392,14 +392,13 @@ package et_schematic is
 	package type_net_segments is new doubly_linked_lists (
 		element_type => type_net_segment);
 
-	-- A net may be visible within a submodule (local net) or 
-	-- it may be exported to parent module (other ECAD tools refer to them as "hierachical or global nets").
-	-- Translated into the KiCad terminology;
-	-- A net may be visible within a sheet (local net) or 
-	-- it may be exported to parent sheet (other ECAD tools refer to them as "hierachical or global nets").
-	type type_scope_of_net is (unknown, local, hierarchic, global);
-
-	function to_string (scope : in type_scope_of_net) return string;
+	-- A net may be visible within a submodule (local) or 
+	-- it may be exported to parent module (hierachical) or
+	-- it is visible across the whole scheamtic (global).
+	type type_strand_scope is (unknown, hierarchic, local, global);
+	subtype type_net_scope is type_strand_scope range local..global; 
+	
+	function to_string (scope : in type_strand_scope) return string;
 	-- Retruns the given scope as string.
 
 	-- A strand is a collection of net segments which belong to each other. 
@@ -412,7 +411,7 @@ package et_schematic is
 		segments 	: type_net_segments.list; -- list of net segments		
 		coordinates : et_coordinates.type_coordinates;
 		name		: type_net_name.bounded_string; -- example "CPU_CLOCK"
-		scope 		: type_scope_of_net := type_scope_of_net'first; -- example "local"
+		scope 		: type_strand_scope := type_strand_scope'first; -- example "local"
 	end record;
 
 	function lowest_xy (strand : in type_strand) return type_2d_point;
@@ -432,7 +431,7 @@ package et_schematic is
 
 	-- This is a net:
 	type type_net is record
-		scope 		: type_scope_of_net := type_scope_of_net'first; -- example "local"
+		scope 		: type_net_scope := type_net_scope'first; -- example "local"
 		strands		: type_strands_named.list;
 	end record;
 

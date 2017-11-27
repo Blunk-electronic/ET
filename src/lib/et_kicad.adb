@@ -3297,7 +3297,7 @@ package body et_kicad is
 							strand.scope := local;
 
 							log_indentation_up;
-							log ("scope " & type_scope_of_net'image (strand.scope) & " with segments", level => 2);
+							log ("scope " & to_string (strand.scope) & " with segments", level => 2);
 							
 							-- fetch net segments from anonymous strand and append them to the new name-less strand:
 							segment_cursor := anon_strand_a.segments.first; -- reset segment cursor to begin of segments of the current anonymous net
@@ -3356,7 +3356,7 @@ package body et_kicad is
 							strand.scope := anon_strand_a.scope;
 
 							log_indentation_up;
-							log ("scope " & type_scope_of_net'image (strand.scope) & " with segments", level => 2);
+							log ("scope " & to_string (strand.scope) & " with segments", level => 2);
 
 							-- fetch net segments from anonymous strand and append them to the new named strand:
 							segment_cursor := anon_strand_a.segments.first; -- reset segment cursor to begin of segments of the current anonymous strand

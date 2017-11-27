@@ -456,7 +456,7 @@ package et_kicad is
 	type type_anonymous_strand is record
 		segments 	: et_schematic.type_net_segments.list;			-- the net segments
 		name 		: et_schematic.type_net_name.bounded_string;	-- the strand name (derived from net labels)
-		scope 		: et_schematic.type_scope_of_net := et_schematic.type_scope_of_net'first; -- the scope (derived from net labels)
+		scope 		: et_schematic.type_strand_scope := et_schematic.type_strand_scope'first; -- the scope (derived from net labels)
 		processed	: boolean := false;	-- set once a label has been found on the net
 	end record;
 

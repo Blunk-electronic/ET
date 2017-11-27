@@ -610,11 +610,11 @@ package body et_schematic is
 			& to_string (position => segment.coordinates_end, scope => xy));
 	end to_string;
 
-	function to_string (scope : in type_scope_of_net) return string is
+	function to_string (scope : in type_strand_scope) return string is
 	-- Retruns the given scope as string.
 	begin
 		--return to_lower (type_scope_of_net'image (scope));
-		return type_scope_of_net'image (scope);
+		return type_strand_scope'image (scope);
 	end to_string;
 
 	function lowest_xy (strand : in type_strand) return type_2d_point is
