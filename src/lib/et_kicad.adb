@@ -3008,6 +3008,11 @@ package body et_kicad is
 				tag_label_cursor	: type_tag_labels.cursor; -- points to the tag label being processed
 
 				use type_net_name;
+
+				procedure output_net_label_conflict is
+				begin
+					put_line (standard_output, message_error & "Net label conflict !");
+				end output_net_label_conflict;
 				
 			begin -- associate_net_labels_with_anonymous_strands
 				log_indentation_up;
@@ -3040,7 +3045,7 @@ package body et_kicad is
 								--put(et_import.report_handle, "segment: "); write_coordinates_of_segment(s); -- CS: log ?
 								
 								-- Loop in list of simple labels:
-								if not is_empty (wild_simple_labels) then -- do that if there are simple labels at all
+								if not is_empty (wild_simple_labels) then -- do it if there are simple labels at all
 									--put_line(" simple labels ..."); -- CS: log ?
 									simple_label_cursor := wild_simple_labels.first; -- reset label cursor
 									while simple_label_cursor /= type_simple_labels.no_element loop
@@ -3056,21 +3061,45 @@ package body et_kicad is
 													log_indentation_down;
 												end if;
 
+												-- Check if the label does not contradict with other labels of this strand.
+												-- Otherwise, set scope to local.
+												case anon_strand_a.scope is
+													when unknown => -- find. no label found so far. set scope of strand
+														anon_strand_a.scope := local;
+
+													when local => -- strand has been marked as "local" already. nothing to to
+														null;
+
+													when hierarchic => -- strand has been marked as "hierarchic" already. no local label allowed !
+														output_net_label_conflict;
+														log_indentation_reset;
+														log (message_error
+															& "hierarchic net " & type_net_name.to_string (anon_strand_a.name) 
+															& " has a local label at " 
+															& to_string (position => ls.coordinates) & " !");
+														raise constraint_error;
+
+													when global => -- strand has been marked as "global" already. no local label allowed !
+														output_net_label_conflict;
+														log_indentation_reset;
+														log (message_error
+															& "global net " & type_net_name.to_string (anon_strand_a.name) 
+															& " has a local label at " 
+																& to_string (position => ls.coordinates) & " !");
+															raise constraint_error;
+												end case;
+
+												
 												-- The first matching simple label dictates the strand name. 
 												-- If other labels with text differing from strand name found, output warning.
 												if type_net_name.length (anon_strand_a.name) = 0 then -- If this is the first matching label
 
 													-- assume the label text as strand name.
 													anon_strand_a.name := ls.text; 
-
-													-- since this is a simple label, the scope of the strand is local
-													anon_strand_a.scope := local;
 												else
 													-- If label text is different from previously assigned strand name:
 													if not type_net_name."=" (anon_strand_a.name, ls.text) then
-
-														-- for the console a short message
-														put_line (standard_output, message_error & "Net label conflict !");
+														output_net_label_conflict;
 
 														-- for the log, some more information
 														log_indentation_reset;
@@ -3119,36 +3148,21 @@ package body et_kicad is
 								end if;
 								
 								-- Loop in list of tag labels:
-								--if type_tag_labels.length (wild_tag_labels) > 0 then -- do that if there are tag labels at all
-								-- if length (wild_tag_labels) > 0 then -- do that if there are tag labels at all
-								if not is_empty (wild_tag_labels) then -- do that if there are tag labels at all
+								if not is_empty (wild_tag_labels) then -- do if if there are tag labels at all
 									--put_line(" hierarchic and global labels ...");	 -- CS: log ?
 
 									tag_label_cursor := wild_tag_labels.first; -- reset label cursor
-									--for l in 1..type_tag_labels.length (wild_tag_labels) loop 
 									while tag_label_cursor /= type_tag_labels.no_element loop
-										--lt := type_tag_labels.element (wild_tag_labels, positive(l)); -- get tag label
 										lt := element (tag_label_cursor); -- get tag label
 										
 										if not lt.processed then								
 											if label_sits_on_segment (label => type_net_label (lt), segment => segment) then
-
--- 												put_line(et_import.report_handle," tag label: " & type_net_name.to_string(lt.text) & " position:" &
--- 												type_grid'image(lt.coordinates.x) & "/" &
--- 												trim(type_grid'image(lt.coordinates.y),left));
 
 												if log_level >= log_threshold + 1 then
 													log_indentation_up;
 													log ("label at " & to_string (label => type_net_label (lt), scope => xy));
 													log_indentation_down;
 												end if;
-
--- 												write_message(
--- 													file_handle => et_import.report_handle,
--- 													text => "tag label: " & type_net_name.to_string(lt.text) & " position:" &
--- 															type_grid'image(lt.coordinates.x) & "/" &
--- 															trim(type_grid'image(lt.coordinates.y),left),
--- 													identation => 3);
 
 												-- Check if the label does not contradict with other labels of this strand.
 												-- Otherwise, set scope according to the label just found.
@@ -3163,7 +3177,7 @@ package body et_kicad is
 
 													when local => -- strand has been marked as "local" already. no hierarchic or global label allowed !
 														if lt.global or lt.hierarchic then
-															put_line (standard_output, message_error & "Net label conflict !");
+															output_net_label_conflict;
 															log_indentation_reset;
 															log (message_error
 																& "local net " & type_net_name.to_string (anon_strand_a.name) 
@@ -3174,7 +3188,7 @@ package body et_kicad is
 														
 													when hierarchic => -- strand has been marked as "hierarchic" already. no global label allowed !
 														if lt.global then
-															put_line (standard_output, message_error & "Net label conflict !");
+															output_net_label_conflict;
 															log_indentation_reset;
 															log (message_error
 																& "hierarchic net " & type_net_name.to_string (anon_strand_a.name) 
@@ -3185,7 +3199,7 @@ package body et_kicad is
 
 													when global => -- strand has been marked as "global" already. no hierarchic label allowed !
 														if lt.hierarchic then
-															put_line (standard_output, message_error & "Net label conflict !");
+															output_net_label_conflict;
 															log_indentation_reset;
 															log (message_error
 																& "global net " & type_net_name.to_string (anon_strand_a.name) 
@@ -3208,15 +3222,12 @@ package body et_kicad is
 															 & "at " & to_string (position => lt.coordinates) & " !");
 														raise constraint_error;
 													end if;
-
-													-- CS: check for contradicting scope
 												end if;
 
 												-- mark tag label as processed and update/replace it in wild_tag_labels
 												lt.processed := true;
 												type_tag_labels.replace_element (
 													container => wild_tag_labels,
-													--index => positive(l),
 													position => tag_label_cursor,
 													new_item => lt);
 
@@ -3245,7 +3256,6 @@ package body et_kicad is
 									-- Update/replace anonymous net in anonymous_nets.
 									type_anonymous_strands.replace_element (
 										container => anonymous_strands, -- the list of anonymous strands
-										--index => positive(n), -- the anonymous net id
 										position => strand_cursor,
 										new_item => anon_strand_a); -- the updated anonymous net
 								end if;
