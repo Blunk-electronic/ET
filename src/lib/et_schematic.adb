@@ -1394,6 +1394,82 @@ package body et_schematic is
 		return segment_cursor;
 	end first_segment;
 
+	function hierachic_port_available (strand : in type_strands.cursor) return boolean is
+	-- Returns true if strand is connected with a non-processed hierachic port.
+		available : boolean := false;
+		segment : type_net_segments.cursor;
+		use type_strands;
+		use type_net_segments;
+	
+		gui_submodule : type_gui_submodules.cursor;
+		use type_gui_submodules;
+	
+		use et_schematic.type_rig;
+		use et_coordinates.type_path_to_submodule;
+
+		port : type_gui_submodule_ports.cursor;
+		use type_gui_submodule_ports;
+
+		function on_segment (port : in type_gui_submodule_port; segment : in type_net_segment) return boolean is
+			use et_geometry;
+			distance : type_distance_point_from_line;
+		begin
+			distance := distance_of_point_from_line (
+				point 		=> port.coordinates,
+				line_start	=> type_2d_point (segment.coordinates_start),
+				line_end	=> type_2d_point (segment.coordinates_end),
+				line_range	=> with_end_points);
+
+			if not distance.out_of_range and distance.distance = zero_distance then
+				return true;
+			else
+				return false;
+			end if;
+		end on_segment;
+		
+	begin
+		-- If the design is flat -> nothing to do. If gui submodules available fetch them
+		-- one after another.
+		first_module;
+		if not is_empty (element (module_cursor).submodules) then
+-- 		if length (element (module_cursor).submodules) > 0 then
+
+			-- Loop in gui submodules:
+			gui_submodule := element (module_cursor).submodules.first;
+			while gui_submodule /= type_gui_submodules.no_element loop
+
+				-- If gui_submodule and given strand are in the same submodule
+				if path (element (gui_submodule).coordinates) = path (element (strand).coordinates) then
+					-- CS: compare sheet ? If a submodule schematic may have lots of sheets, no need to do so ?
+
+					-- loop in segments of given strand
+					segment := element (strand).segments.first;
+					while segment /= type_net_segments.no_element loop
+
+						-- loop in ports of gui_submodule
+						port := element (gui_submodule).ports.first;
+						while port /= type_gui_submodule_ports.no_element loop
+
+							if on_segment (element (port), element (segment)) then
+								return true; -- CS
+							end if;
+							
+							next (port);
+						end loop;
+						
+						next (segment);
+					end loop;
+					
+				end if;
+
+				next (gui_submodule);
+			end loop;
+		end if;
+
+		
+		return available;
+	end hierachic_port_available;
+	
 	procedure link_strands (log_threshold : in et_string_processing.type_log_level) is
 	-- Links strands to nets (see type_module.nets).
 
@@ -1430,6 +1506,8 @@ package body et_schematic is
 			procedure add_strand (
 				net_name : in type_net_name.bounded_string;
 				net		 : in out type_net) is
+
+-- 				sub_strand : type_strands.cursor;
 			begin
 				log ("strand of net " & to_string (net_name), level => log_threshold + 2);
 				
@@ -1446,8 +1524,14 @@ package body et_schematic is
 				-- add named_strand to the net
 				net.strands.append (new_item => element (strand));
 
+
 				-- CS: search for hierarchical sheets connected with this strand
-				
+				if hierachic_port_available (strand) then
+					log_indentation_up;
+					log ("has hierachic ports");
+					log_indentation_down;
+				end if;
+					
 			end add_strand;
 
 			procedure create_net is

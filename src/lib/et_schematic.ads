@@ -416,7 +416,7 @@ package et_schematic is
 
 	function lowest_xy (strand : in type_strand) return type_2d_point;
 	-- Returns the lowest x/y position of the given strand.
-	
+
 	procedure add_strand (
 	-- Adds a strand into the module (indicated by module_cursor).
 		strand : in et_schematic.type_strand);
@@ -425,6 +425,9 @@ package et_schematic is
 	package type_strands is new doubly_linked_lists (
 		element_type => type_strand);
 
+	function hierachic_port_available (strand : in type_strands.cursor) return boolean;
+	-- Returns true if strand is connected with a non-processed hierachic port.
+	
 	-- If the name of a strand can not be identified, we default to the well proved
 	-- N$ notation:
 	anonymous_net_name_prefix : constant string (1..2) := "N$";
