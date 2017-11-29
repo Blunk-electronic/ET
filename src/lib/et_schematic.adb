@@ -977,7 +977,7 @@ package body et_schematic is
 			if inserted then
 				if log_level >= 1 then
                     null; -- CS: write this procedure:
-                    log ("hierachic sheet", console => true);
+                    --log ("hierachic sheet", console => true);
 					--et_schematic.write_gui_submodule_properties (gui_sub_mod => cursor);
 				end if;
 			else -- not inserted. net already in module -> abort
@@ -1412,12 +1412,15 @@ package body et_schematic is
 		use et_schematic.type_strands;
 		use et_schematic.type_rig;
 
+        net_name : type_net_name.bounded_string;
+	
 		strand : type_strands.cursor;
 
         type type_hierachic_net (available : boolean) is record
             case available is
                 when true =>
                     submodule   : type_submodule_name.bounded_string;
+                    path        : type_path_to_submodule.list;
                     net         : type_net_name.bounded_string;
                 when false => null;
             end case;
@@ -1503,6 +1506,7 @@ package body et_schematic is
                                     return (
                                         available   => true,
                                         submodule   => key (gui_submodule),
+                                        path        => path (element (gui_submodule).coordinates),
                                         net         => type_net_name.to_bounded_string (to_string (key (port))));
                                 end if;
                                 
@@ -1525,11 +1529,9 @@ package body et_schematic is
 
     
 		procedure add_net (
-		-- Creates a net with the name and the scope (local, hierarchic, global) of the current named_strand. 
-		-- If named_strand is local, the net name is rendered to a full hierarchic name.
-		-- If the net existed already, then named_strand is appended to the strands of the net.
-		-- The scope of the named_strand is checked aginst the scope of the latest strand
-		-- of the net.
+		-- Creates a net with the name and the scope (local, global) of the current strand. 
+		-- If strand is local, the net name is rendered to a full hierarchic name.
+		-- If the net existed already, then strand is appended to the strands of the net.
 			mod_name : in type_submodule_name.bounded_string;
 			module   : in out type_module) is
 
@@ -1537,15 +1539,12 @@ package body et_schematic is
 			
 			net_created : boolean;
 			net_cursor : type_nets.cursor;
-			net_name : type_net_name.bounded_string;
 
 			procedure add_strand (
-				net_name : in type_net_name.bounded_string;
-				net		 : in out type_net) is
-
--- 				sub_strand : type_strands.cursor;
+				name	: in type_net_name.bounded_string;
+				net		: in out type_net) is
 			begin
-				log ("strand of net " & to_string (net_name), level => log_threshold + 2);
+				log ("strand of net " & to_string (name), level => log_threshold + 2);
 				
 				if net_created then -- net has just been created
 					net.scope := element (strand).scope; -- set scope of net
@@ -1557,77 +1556,25 @@ package body et_schematic is
 					log_indentation_down;
 				end if;
 				
-				-- add named_strand to the net
+				-- append strand to the net
 				net.strands.append (new_item => element (strand));
-
-
-				-- CS: search for hierarchical sheets connected with this strand
--- 				if hierachic_net (strand).available then
--- 					log_indentation_up;
---                     --log ("-> " & to_string (key (port)));
---                     log ("has hierarchic ports", log_threshold + 2);
--- 					log_indentation_down;
--- 				end if;
-					
 			end add_strand;
 
-			procedure create_net is
-			begin
-				-- create net
-				module.nets.insert (
-					--key 		=> element (named_strand).name,
-					key 		=> net_name,
-					position	=> net_cursor,
-					inserted	=> net_created);
-
-				-- If net created or already there, net_cursor points to the net where the strand is to be added.
-				module.nets.update_element (
-					position	=> net_cursor,
-					process		=> add_strand'access);
-			end create_net;
-			
 		begin -- add_net
+			module.nets.insert (
+				key 		=> net_name,
+				position	=> net_cursor,
+				inserted	=> net_created);
 
-			-- form the net name depending on scope
-			case element (strand).scope is
-
-				when local =>
-					
-					-- Output a warning if strand has no name.
-					if anonymous (element (strand).name) then
-						log (message_warning & "net " & to_string (element (strand).name) & " has no dedicated name !");
-						-- CS: Show the lowest xy position
-						log ("at " & to_string (position => element (strand).coordinates, scope => et_coordinates.module));
-					end if;
-
-					-- For local strands the full hierarchic name of the net must be formed
-					-- in order to get something like "driver.GND" :
-					net_name := type_net_name.to_bounded_string (
-						et_coordinates.to_string (et_coordinates.path (element (strand).coordinates), top_module => false)
-							& et_coordinates.to_string (et_coordinates.module (element (strand).coordinates))
-							& et_coordinates.hierarchy_separator & et_schematic.to_string (element (strand).name));
-
-					create_net;
-					
-				when global =>
-					net_name := element (strand).name;
-					create_net;
-					
-				-- CS: special threatment for hierarchic strands ?
-				when hierarchic =>
-					log (message_error & "hierarchical nets not supported !");
-					raise constraint_error;
-
-				when unknown =>
-					log (message_error & "unknown scope of net !");
-					raise constraint_error; -- CS: should never happen as all strands should have a scope by now
-
-			end case;
-
+			-- If net created or already there, net_cursor points to the net where the strand is to be added.
+			module.nets.update_element (
+				position	=> net_cursor,
+				process		=> add_strand'access);
 		end add_net;
 
+       
 	begin -- link_strands
-		log (text => "linking strands to nets ...", level => log_threshold);
+		log (text => "linking local and global strands to nets ...", level => log_threshold);
 
 		log_indentation_up;
 
@@ -1636,11 +1583,47 @@ package body et_schematic is
 		log_indentation_up;
 		while strand /= type_strands.no_element loop
 
-			-- Create net and append strand to module.nets
-			rig.update_element (
-				position => module_cursor,
-				process => add_net'access);
-				
+            case element (strand).scope is
+                when local =>
+
+					-- Output a warning if strand has no name.
+					if anonymous (element (strand).name) then
+						log (message_warning & "net " & to_string (element (strand).name) & " has no dedicated name !");
+						-- CS: Show the lowest xy position
+						log ("at " & to_string (position => element (strand).coordinates, scope => et_coordinates.module));
+					end if;
+
+					-- form the net name depending on scope
+					-- For local strands the full hierarchic name of the net must be formed
+					-- in order to get something like "driver.GND" :
+					net_name := type_net_name.to_bounded_string (
+						et_coordinates.to_string (et_coordinates.path (element (strand).coordinates), top_module => false)
+							& et_coordinates.to_string (et_coordinates.module (element (strand).coordinates))
+							& et_coordinates.hierarchy_separator & et_schematic.to_string (element (strand).name));
+                    
+                    -- Create net and append strand to module.nets
+                    rig.update_element (
+                        position => module_cursor,
+                        process => add_net'access);
+
+				when global =>
+					-- form the net name depending on scope
+					net_name := element (strand).name;
+
+                    -- Create net and append strand to module.nets
+                    rig.update_element (
+                        position => module_cursor,
+                        process => add_net'access);
+
+				when unknown =>
+					log (message_error & "unknown scope of net !");
+					raise constraint_error; -- CS: should never happen as all strands should have a scope by now
+
+				when hierarchic =>
+					null; -- CS special threatment
+					
+			end case;
+            
 			next (strand);
 		end loop;
 		log_indentation_down;

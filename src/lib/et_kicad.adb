@@ -4220,7 +4220,7 @@ package body et_kicad is
 				-- read GUI sheet position and size from a line like "S 4050 5750 1050 650"
 				if field (et_kicad.line,1) = schematic_keyword_sheet_pos_and_size then
 					set_path (sheet.coordinates, path_to_submodule);
-					set_module (sheet.coordinates, type_submodule_name.to_bounded_string (to_string (current_schematic)));
+					--set_module (sheet.coordinates, type_submodule_name.to_bounded_string (to_string (current_schematic)));
 					set_module (sheet.coordinates, to_submodule_name (current_schematic));
 					set_sheet (sheet.coordinates, sheet_number_current);
 					set_x (sheet.coordinates, mil_to_distance (field (et_kicad.line,2)));
