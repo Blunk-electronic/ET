@@ -4289,9 +4289,10 @@ package body et_kicad is
 							direction => to_direction (field (et_kicad.line, 3)),
 							orientation => to_orientation (field (et_kicad.line, 4)),
 							coordinates => to_point (field (et_kicad.line, 5), field (et_kicad.line, 6)),
-							text_size => to_text_size (mil_to_distance (field (et_kicad.line, 7)))),
+                            text_size => to_text_size (mil_to_distance (field (et_kicad.line, 7))),
+                            processed => false),
 						inserted => port_inserted,
-						position => port_cursor
+                        position => port_cursor
 						);
 
 					-- if port could not be inserted -> abort
@@ -5237,7 +5238,8 @@ package body et_kicad is
 				-- For example a strand named "VCC3V3" exists on submodule A on sheet 2. 
 				-- Another strand "VCC3V3" exists on submodule C on sheet 1. They do not "know" each other
 				-- and must be merged into a single net.
-				et_schematic.link_strands (log_threshold + 1);
+                et_schematic.link_strands (log_threshold + 1);
+                et_schematic.process_hierarchic_nets (log_threshold + 1);
 
 				
 			when others =>

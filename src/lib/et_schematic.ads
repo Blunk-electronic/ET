@@ -451,7 +451,8 @@ package et_schematic is
 		direction	: type_port_direction;
 		text_size	: type_text_size;
 		coordinates	: type_2d_point;
-		orientation	: type_angle;
+        orientation	: type_angle;
+        processed   : boolean; -- used when linking hierarchic nets
 	end record;
 
 	package type_gui_submodule_ports is new ordered_maps (
@@ -728,9 +729,14 @@ package et_schematic is
 	function first_segment (cursor : in type_strands.cursor) return type_net_segments.cursor;
 	-- Returns a cursor pointing to the first net segment of the given strand.
 
+	function first_net return type_nets.cursor;
+	-- Returns a cursor pointing to the first net of the module (indicated by module_cursor).
+    
 	procedure link_strands (log_threshold : in et_string_processing.type_log_level);
 	-- Links strands to nets (see type_module.nets).
 
+	procedure process_hierarchic_nets (log_threshold : in et_string_processing.type_log_level);
+    
 	procedure write_nets;
 	-- Writes a nice overview of all nets, strands, segments and labels.
 	

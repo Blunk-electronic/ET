@@ -1395,9 +1395,28 @@ package body et_schematic is
 		return segment_cursor;
 	end first_segment;
 
+	function first_net return type_nets.cursor is
+	-- Returns a cursor pointing to the first net of the module (indicated by module_cursor).
+		cursor : type_nets.cursor;	
+
+		procedure set_cursor (
+			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
+			module		: in type_module) is
+ 		begin
+			cursor := module.nets.first;
+		end set_cursor;
+	
+	begin
+		type_rig.query_element (
+			position	=> module_cursor,
+			process		=> set_cursor'access
+			);
+		return cursor;
+	end first_net;
+	
 	
 	procedure link_strands (log_threshold : in et_string_processing.type_log_level) is
-	-- Links strands to nets (see type_module.nets).
+	-- Links local and global strands to nets (see type_module.nets).
 
 	-- Builds the nets (see type_module.nets) of the current module from its strands (see type_module.strands).
 	-- NOTE: This is NOT about generating or exporting a netlist. See package et_netlist instead.
@@ -1410,124 +1429,11 @@ package body et_schematic is
 	-- and must be merged into a single net.
 		use et_string_processing;
 		use et_schematic.type_strands;
-		use et_schematic.type_rig;
 
         net_name : type_net_name.bounded_string;
 	
-		strand : type_strands.cursor;
-
-        type type_hierachic_net (available : boolean) is record
-            case available is
-                when true =>
-                    submodule   : type_submodule_name.bounded_string;
-                    path        : type_path_to_submodule.list;
-                    net         : type_net_name.bounded_string;
-                when false => null;
-            end case;
-        end record;
-    
-        function hierachic_net (strand : in type_strands.cursor) return type_hierachic_net is
-        -- Returns the name of a subordinated hierarchic net (if available).
-        -- If no hierarchic net available, returns a single "false". See type_hierachic_net specification.    
-            segment : type_net_segments.cursor;
-            segments :type_net_segments.list; -- workaround for possible gnat bug. see comments below
-            use type_net_segments;
-        
-            gui_submodule : type_gui_submodules.cursor;
-            gui_submodules : type_gui_submodules.map;  -- workaround for possible gnat bug. see comments below
-            use type_gui_submodules;
-        
-            use et_schematic.type_rig;
-            use et_coordinates.type_path_to_submodule;
-
-            port : type_gui_submodule_ports.cursor;
-            ports : type_gui_submodule_ports.map;  -- workaround for possible gnat bug. see comments below
-            use type_gui_submodule_ports;
-
-            function on_segment (port : in type_gui_submodule_port; segment : in type_net_segment) return boolean is
-            -- Returns true if given port sits on given segment.
-                use et_geometry;
-                distance : type_distance_point_from_line;
-            begin
-                distance := distance_of_point_from_line (
-                    point 		=> port.coordinates,
-                    line_start	=> type_2d_point (segment.coordinates_start),
-                    line_end	=> type_2d_point (segment.coordinates_end),
-                    line_range	=> with_end_points);
-
-                if not distance.out_of_range and distance.distance = zero_distance then
-                    return true;
-                else
-                    return false;
-                end if;
-            end on_segment;
-
-        begin -- hierachic_net
-            -- If the design is flat -> nothing to do. If gui submodules available fetch them one after another.
-            if not is_empty (element (module_cursor).submodules) then
-
-                -- Loop in gui submodules:
-                
-                -- gui_submodule := element (module_cursor).submodules.first; -- THIS CURSOR DOES NOT WORK !
-                -- NOTE: advancing cursor gui_submodule via statement "next (gui_submodule)" does not work with GNATMAKE 7.2.1 20171020 [gcc-7-branch revision 253932]
-                -- see comment below
-                -- As a workaround we work with a local copy of all submodules in variable gui_submodules and 
-                -- advance the cursor "gui_submodule" there.
-                gui_submodules := element (module_cursor).submodules;
-                gui_submodule := gui_submodules.first;
-
-                while gui_submodule /= type_gui_submodules.no_element loop
-
-                    -- If gui_submodule and given strand are in the same submodule
-                    if path (element (gui_submodule).coordinates) = path (element (strand).coordinates) then
-                        -- CS: compare sheet ? If a submodule schematic may have lots of sheets, no need to do so ?
-
-                        -- loop in segments of given strand:
-                        
-                        -- segment := element (strand).segments.first; -- THIS CURSOR DOES NOT WORK !
-                        -- NOTE: advancing cursor segment via statement "next (segment)" does not work with GNATMAKE 7.2.1 20171020 [gcc-7-branch revision 253932]
-                        -- As a workaround we work with a local copy of all segments in variable segments and advance a 
-                        -- cursor "segment" there.
-                        segments := element (strand).segments;
-                        segment := segments.first;
-                        while segment /= type_net_segments.no_element loop
-
-                            -- loop in ports of gui_submodule
-                            
-                            -- port := element (gui_submodule).ports.first; -- THIS CURSOR DOES NOT WORK !
-                            ports := element (gui_submodule).ports;
-                            port := ports.first;
-                            while port /= type_gui_submodule_ports.no_element loop
-
-                                -- test if port sits on segment
-                                if on_segment (element (port), element (segment)) then
-
-                                    -- return submodule and net name
-                                    return (
-                                        available   => true,
-                                        submodule   => key (gui_submodule),
-                                        path        => path (element (gui_submodule).coordinates),
-                                        net         => type_net_name.to_bounded_string (to_string (key (port))));
-                                end if;
-                                
-                                next (port);
-                            end loop;
-
-                            next (segment);
-                        end loop;
-
-                    end if;
-
-                    next (gui_submodule);
-
-                end loop;
-            end if;
-            
-            return (available => false);
-        end hierachic_net;
-
-
-    
+		strand	: type_strands.cursor;
+	
 		procedure add_net (
 		-- Creates a net with the name and the scope (local, global) of the current strand. 
 		-- If strand is local, the net name is rendered to a full hierarchic name.
@@ -1572,7 +1478,6 @@ package body et_schematic is
 				process		=> add_strand'access);
 		end add_net;
 
-       
 	begin -- link_strands
 		log (text => "linking local and global strands to nets ...", level => log_threshold);
 
@@ -1627,14 +1532,219 @@ package body et_schematic is
 			next (strand);
 		end loop;
 		log_indentation_down;
-			
-		-- show a net report -- CS: separate procedure
-		if log_level >= log_threshold + 1 then
-			write_nets;
-		end if;
+
+	end link_strands;
+
+
+	
+	procedure process_hierarchic_nets (log_threshold : in et_string_processing.type_log_level) is
+		use et_string_processing;
+		use type_nets;
+		net : type_nets.cursor;
+		
+--         type type_hierachic_net (available : boolean) is record
+--             case available is
+--                 when true =>
+--                     submodule   : type_submodule_name.bounded_string;
+--                     path        : type_path_to_submodule.list;
+--                     net         : type_net_name.bounded_string;
+--                 when false => null;
+--             end case;
+--         end record;
+--     
+--         function hierachic_net (strand : in type_strands.cursor) return type_hierachic_net is
+--         -- Returns the name of a subordinated hierarchic net (if available).
+--         -- If no hierarchic net available, returns a single "false". See type_hierachic_net specification.    
+--             segment : type_net_segments.cursor;
+--             segments :type_net_segments.list; -- workaround for possible gnat bug. see comments below
+--             use type_net_segments;
+--         
+--             gui_submodule : type_gui_submodules.cursor;
+--             gui_submodules : type_gui_submodules.map;  -- workaround for possible gnat bug. see comments below
+--             use type_gui_submodules;
+--         
+--             use et_schematic.type_rig;
+--             use et_coordinates.type_path_to_submodule;
+-- 
+--             port : type_gui_submodule_ports.cursor;
+--             ports : type_gui_submodule_ports.map;  -- workaround for possible gnat bug. see comments below
+--             use type_gui_submodule_ports;
+-- 
+--             function on_segment (port : in type_gui_submodule_port; segment : in type_net_segment) return boolean is
+--             -- Returns true if given port sits on given segment.
+--                 use et_geometry;
+--                 distance : type_distance_point_from_line;
+--             begin
+--                 distance := distance_of_point_from_line (
+--                     point 		=> port.coordinates,
+--                     line_start	=> type_2d_point (segment.coordinates_start),
+--                     line_end	=> type_2d_point (segment.coordinates_end),
+--                     line_range	=> with_end_points);
+-- 
+--                 if not distance.out_of_range and distance.distance = zero_distance then
+--                     return true;
+--                 else
+--                     return false;
+--                 end if;
+--             end on_segment;
+-- 
+-- 
+-- 			procedure mark_processed (
+-- 				name : in type_net_name.bounded_string;
+-- 				port : in out type_gui_submodule_port) is
+-- 			begin
+-- 				port.processed := true;
+-- 			end mark_processed;
+-- 									  
+-- 			
+-- 		begin -- hierachic_net
+--             -- If the design is flat -> nothing to do. If gui submodules available fetch them one after another.
+--             if not is_empty (element (module_cursor).submodules) then
+-- 
+--                 -- Loop in gui submodules:
+--                 
+--                 -- gui_submodule := element (module_cursor).submodules.first; -- THIS CURSOR DOES NOT WORK !
+--                 -- NOTE: advancing cursor gui_submodule via statement "next (gui_submodule)" does not work with GNATMAKE 7.2.1 20171020 [gcc-7-branch revision 253932]
+--                 -- see comment below
+--                 -- As a workaround we work with a local copy of all submodules in variable gui_submodules and 
+--                 -- advance the cursor "gui_submodule" there.
+--                 gui_submodules := element (module_cursor).submodules;
+--                 gui_submodule := gui_submodules.first;
+-- 
+--                 while gui_submodule /= type_gui_submodules.no_element loop
+-- 
+--                     -- If gui_submodule and given strand are in the same submodule
+--                     if path (element (gui_submodule).coordinates) = path (element (strand).coordinates) then
+--                         -- CS: compare sheet ? If a submodule schematic may have lots of sheets, no need to do so ?
+-- 
+--                         -- loop in segments of given strand:
+--                         
+--                         -- segment := element (strand).segments.first; -- THIS CURSOR DOES NOT WORK !
+--                         -- NOTE: advancing cursor segment via statement "next (segment)" does not work with GNATMAKE 7.2.1 20171020 [gcc-7-branch revision 253932]
+--                         -- As a workaround we work with a local copy of all segments in variable segments and advance a 
+--                         -- cursor "segment" there.
+--                         segments := element (strand).segments;
+--                         segment := segments.first;
+--                         while segment /= type_net_segments.no_element loop
+-- 
+--                             -- loop in ports of gui_submodule
+--                             
+--                             -- port := element (gui_submodule).ports.first; -- THIS CURSOR DOES NOT WORK !
+--                             ports := element (gui_submodule).ports;
+--                             port := ports.first;
+--                             while port /= type_gui_submodule_ports.no_element loop
+-- 
+--                                 -- test if port sits on segment
+--                                 if on_segment (element (port), element (segment)) then
+-- 
+-- -- 									-- mark port as processed
+-- -- 									update_element (
+-- -- 										container => ports,
+-- -- 										position => port,
+-- -- 										process => mark_processed'access);
+-- 									
+--                                     -- return submodule and net name
+--                                     return (
+--                                         available   => true,
+--                                         submodule   => key (gui_submodule),
+--                                         path        => path (element (gui_submodule).coordinates),
+--                                         net         => type_net_name.to_bounded_string (to_string (key (port))));
+--                                 end if;
+--                                 
+--                                 next (port);
+--                             end loop;
+-- 
+--                             next (segment);
+--                         end loop;
+-- 
+--                     end if;
+-- 
+--                     next (gui_submodule);
+-- 
+--                 end loop;
+--             end if;
+--             
+--             return (available => false);
+--         end hierachic_net;
+-- 
+
+		
+		procedure query_segment (
+			strand : in type_strand) is
+			segment : type_net_segments.cursor := strand.segments.first;
+			use type_net_segments;
+		begin
+			while segment /= type_net_segments.no_element loop
+
+				next (segment);
+			end loop;
+		end query_segment;
+		
+		procedure query_strand (
+			net_name : in type_net_name.bounded_string;
+			net : in type_net) is
+			use type_strands;
+			strand : type_strands.cursor := net.strands.first;
+		begin -- query_strand
+			while strand /= type_strands.no_element loop
+				query_element (
+					position => strand,
+					process => query_segment'access);
+
+-- 				while hierarchic_net_available (hierachic_net (strand)) loop
+-- 					null;
+-- 				end loop;
+
+
+				next (strand);
+			end loop;
+		end query_strand;
+		
+-- 		
+-- 		function hierarchic_net_available (net : in type_hierachic_net) return boolean is
+-- 		begin
+-- 			if net.available then
+-- 				-- CS process_hierarchic_nets (net)
+-- 				return true;
+-- 			else
+-- 				return false;
+-- 			end if;
+-- 		end hierarchic_net_available;
+
+
+	begin
+
+
+		log (text => "linking hierarchic strands to nets ...", level => log_threshold);
+
+		log_indentation_up;
+
+		-- loop in nets of the current module
+		net := first_net;
+		log_indentation_up;
+		while net /= type_nets.no_element loop
+			--put_line (standard_output, to_string (key (net)));
+
+			query_element (
+				position => net,
+				process => query_strand'access);
+
+			next (net);
+		end loop;
+		log_indentation_down;
+
+		
+
+-- 		-- show a net report -- CS: separate procedure
+-- 		if log_level >= log_threshold + 1 then
+-- 			write_nets;
+-- 		end if;
 		
 		log_indentation_down;
-	end link_strands;
+
+	end process_hierarchic_nets;
+
+	
 
 	procedure write_nets is
 	-- Writes a nice overview of all nets, strands, segments and labels.
