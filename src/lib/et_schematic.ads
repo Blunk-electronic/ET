@@ -697,6 +697,9 @@ package et_schematic is
 		name		: in et_coordinates.type_submodule_name.bounded_string;
 		gui_sub_mod	: in et_schematic.type_gui_submodule);
 
+    function first_gui_submodule return type_gui_submodules.cursor;
+    -- Returns a cursor pointing to the first gui_submodule of the moduel (indicated by module_cursor)
+    
 	procedure add_sheet_header (
 	-- Inserts a sheet header in the module (indicated by module_cursor).
 		header	: in type_sheet_header;

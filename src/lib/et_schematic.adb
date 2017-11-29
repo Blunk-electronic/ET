@@ -992,6 +992,26 @@ package body et_schematic is
 			);
 	end add_gui_submodule;
 
+    function first_gui_submodule return type_gui_submodules.cursor is
+    -- Returns a cursor pointing to the first gui_submodule of the moduel (indicated by module_cursor)
+		cursor : type_gui_submodules.cursor;	
+
+		procedure set_cursor (
+			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
+			module		: in type_module) is
+ 		begin
+			cursor := module.submodules.first;
+		end set_cursor;
+	
+	begin
+		type_rig.query_element (
+			position	=> module_cursor,
+			process		=> set_cursor'access
+			);
+		return cursor;
+	end first_gui_submodule;
+
+	
 	
 	procedure add_sheet_header (
 	-- Inserts a sheet header in the module (indicated by module_cursor).
@@ -1542,16 +1562,13 @@ package body et_schematic is
 		use type_nets;
 		net : type_nets.cursor;
 		
---         type type_hierachic_net (available : boolean) is record
---             case available is
---                 when true =>
---                     submodule   : type_submodule_name.bounded_string;
---                     path        : type_path_to_submodule.list;
---                     net         : type_net_name.bounded_string;
---                 when false => null;
---             end case;
---         end record;
---     
+        type type_hierachic_port is record
+			available	: boolean := false;
+			submodule   : type_submodule_name.bounded_string := type_submodule_name.to_bounded_string ("");
+			path        : type_path_to_submodule.list := type_path_to_submodule.empty_list;
+			port		: type_net_name.bounded_string := to_bounded_string ("");
+        end record;
+    
 --         function hierachic_net (strand : in type_strands.cursor) return type_hierachic_net is
 --         -- Returns the name of a subordinated hierarchic net (if available).
 --         -- If no hierarchic net available, returns a single "false". See type_hierachic_net specification.    
@@ -1668,14 +1685,66 @@ package body et_schematic is
 --         end hierachic_net;
 -- 
 
+
+		function hierarchic_port (segment : in type_net_segments.cursor) return type_hierachic_port is
+			port : type_hierachic_port;
+			use type_rig;
+
+			procedure locate_submodule (
+				submod_name : in type_submodule_name.bounded_string;
+				submodule : in out type_gui_submodule) is
+				port : type_gui_submodule_ports.cursor := submodule.ports.first;
+				use type_gui_submodule_ports;
+			begin
+				while port /= type_gui_submodule_ports.no_element loop
+
+					-- CS: port cursor points to port
+					next (port);
+				end loop;
+			end locate_submodule;
+			
+			procedure query_gui_submodule (
+				mod_name : in type_submodule_name.bounded_string;
+				module : in out type_module) is
+				submodule : type_gui_submodules.cursor := module.submodules.first;
+				use type_gui_submodules;
+			begin
+				while submodule /= type_gui_submodules.no_element loop
+
+					update_element (
+						container => module.submodules,
+						position => submodule,
+						process => locate_submodule'access);
+					
+					next (submodule);
+				end loop;
+			end query_gui_submodule;
+
+
+			
+		begin
+			update_element (
+				container => rig,
+				position => module_cursor,
+				process => query_gui_submodule'access);
+
+-- 				submodule := first_gui_submodule;
+			return port;
+		end hierarchic_port;
+
 		
 		procedure query_segment (
 			strand : in type_strand) is
 			segment : type_net_segments.cursor := strand.segments.first;
 			use type_net_segments;
+			submodule : type_gui_submodules.cursor;
+			port : type_hierachic_port;
 		begin
 			while segment /= type_net_segments.no_element loop
-
+				-- CS: segment cursor point to segment
+				
+				port := hierarchic_port (segment);
+				
 				next (segment);
 			end loop;
 		end query_segment;
