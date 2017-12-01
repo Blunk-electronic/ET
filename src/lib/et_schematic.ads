@@ -82,6 +82,8 @@ package et_schematic is
 	schematic_file_name_length : constant positive := project_name_length + 4; -- includes extension
 	package type_schematic_file_name is new generic_bounded_length (schematic_file_name_length); use type_schematic_file_name;
 
+	top_level_schematic	: type_schematic_file_name.bounded_string;
+	
 	schematic_handle	: ada.text_io.file_type;
 	
 	function to_string (schematic : in type_schematic_file_name.bounded_string) return string;
@@ -117,10 +119,10 @@ package et_schematic is
 	-- the exact location of the submodule within the design hierarchy.
 	path_to_submodule : et_coordinates.type_path_to_submodule.list;
 	
-	-- Sometimes we need to output the location of a submodule:
-	procedure write_path_to_submodule;
+-- 	-- Sometimes we need to output the location of a submodule:
+-- 	procedure write_path_to_submodule;
 
-	-- Here we append a submodule name the the path_to_submodule.
+	-- Here we append a submodule name to the path_to_submodule.
 	procedure append_name_of_parent_module_to_path (submodule : in et_coordinates.type_submodule_name.bounded_string);
 
 	-- Here we remove the last submodule name form the path_to_submodule.

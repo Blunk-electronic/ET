@@ -2283,7 +2283,7 @@ package body et_kicad is
 		
 		list_of_submodules : type_submodule_names_extended;
 		
-		top_level_schematic	: type_schematic_file_name.bounded_string;
+		--top_level_schematic	: type_schematic_file_name.bounded_string;
 		current_schematic	: type_schematic_file_name.bounded_string;
 
 		net_id : natural := 0; -- for counting name-less nets (like N$1, N$2, N$3, ...)
@@ -4324,7 +4324,8 @@ package body et_kicad is
 
 				-- log module path as recorded by parent unit
 				log_indentation_up;
-				write_path_to_submodule;
+				--write_path_to_submodule;
+				log (to_string (path_to_submodule), log_threshold + 1);
 				
 				open (file => schematic_handle, mode => in_file, name => to_string (current_schematic));
 				set_input (schematic_handle);
@@ -5138,7 +5139,9 @@ package body et_kicad is
 				current_schematic := top_level_schematic;
 
                 -- The top level schematic file is the first entry in the module path.
-				append_name_of_parent_module_to_path (tmp_module_name);
+				--append_name_of_parent_module_to_path (tmp_module_name);
+				-- The top level schematic file is the root in the module path.
+				append_name_of_parent_module_to_path (type_submodule_name.to_bounded_string (""));
                 
 				-- Starting from the top level module, we read its schematic file. The result can be a list of submodules.
 				-- NOTE: Kicad refers to them as "sheets" !
@@ -5156,8 +5159,8 @@ package body et_kicad is
 				if type_submodule_names.is_empty (list_of_submodules.list) then -- flat design
 					log ("FLAT");
 				else -- hierarchic design
-					-- In the follwing we dive into the submodules. Each time before a deeper level is entered,
-					-- the list of submodules of the current level is saved on a LIFO stack.
+					-- In the following we dive into the submodules. Each time before a deeper level is entered,
+					-- the list of submodules (of the current level) is saved on a LIFO stack.
 					-- The top level schematic is at level 0. The level decreases (negative) each time a deeper
 					-- level is entered.
 					log ("HIERARCHIC");

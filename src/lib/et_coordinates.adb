@@ -362,8 +362,12 @@ package body et_coordinates is
 				& hierarchy_separator;
 			next (submodule);
 		end loop;
+
+-- 		if result = hierarchy_separator then
+-- 			result := result & " (top module)";
+-- 		end if;
 		
-		return to_string (result);
+		return to_string ("location " & result);
 	end to_string;
 	
 	function to_coordinates (point : in type_2d_point'class)

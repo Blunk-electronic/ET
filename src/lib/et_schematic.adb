@@ -59,49 +59,62 @@ package body et_schematic is
 		return type_schematic_file_name.to_string (schematic);
 	end to_string;
 	
-	-- Sometimes we need to output the location of a submodule:
-	procedure write_path_to_submodule is
-		use et_coordinates;
-		c : type_path_to_submodule.cursor;
-		use et_string_processing;
-	begin
-		log (text => "path/location");
-		log_indentation_up;
-		
-		c := type_path_to_submodule.first (path_to_submodule);            
+-- 	-- Sometimes we need to output the location of a submodule:
+-- 	procedure write_path_to_submodule is
+-- 		use et_coordinates;
+-- 		use type_submodule_name;
+-- 		c : type_path_to_submodule.cursor;
+-- 		use et_string_processing;
+-- 	begin
+-- -- 		log (text => "path ");
+-- -- 		log_indentation_up;
+-- 		
+-- 		c := type_path_to_submodule.first (path_to_submodule);            
+-- 
+-- 		-- If there is a hierarchy deeper than 1, write path to submodule:
+-- 		if type_path_to_submodule.length (path_to_submodule) > 1 then -- CS: use is_empty
+-- -- 			for n in 1..type_path_to_submodule.length (path_to_submodule)-1 loop
+-- -- 				log (text => hierarchy_separator & type_submodule_name.to_string (type_path_to_submodule.element (c)));
+-- -- 				c := type_path_to_submodule.next (c);
+-- -- 			end loop;
+-- 			log ("path " & to_string (path_to_submodule));
+-- 
+-- -- 			c := type_path_to_submodule.last (path_to_submodule);
+-- 
+-- 			-- write the submodule name
+-- -- 			log_indentation_up;
+-- -- 			log (text => type_submodule_name.to_string (type_path_to_submodule.element (c)));
+-- -- 			log_indentation_down;
+-- 		else
+-- 			-- no hierarchy. write just the submodule name
+-- 			--log (text => type_submodule_name.to_string(type_path_to_submodule.element(c)));
+-- 			log ("path " & hierarchy_separator & "(top module)");
+-- 		end if;
+-- 		
+-- -- 		log_indentation_down;
+-- 	end write_path_to_submodule;
 
-		-- If there is a hierarchy deeper than 1, write path to submodule:
-		if type_path_to_submodule.length(path_to_submodule) > 1 then
-			for n in 1..type_path_to_submodule.length(path_to_submodule)-1 loop
-				log (text => type_submodule_name.to_string(type_path_to_submodule.element(c)));
-				c := type_path_to_submodule.next(c);
-			end loop;
-		
-			c := type_path_to_submodule.last(path_to_submodule);
-
-			-- write the submodule name
-			log_indentation_up;
-			log (text => type_submodule_name.to_string(type_path_to_submodule.element(c)));
-			log_indentation_down;
-		else
-			-- no hierarchy. write just the submodule name
-			log (text => type_submodule_name.to_string(type_path_to_submodule.element(c)));
-		end if;
-		
-		log_indentation_down;
-	end write_path_to_submodule;
-
-	-- Here we append a submodule name the the path_to_submodule.
+	-- Here we append a submodule name to the path_to_submodule.
+	-- CS: unify with procedure delete_last_module_name_from_path
 	procedure append_name_of_parent_module_to_path (submodule : in et_coordinates.type_submodule_name.bounded_string) is
 		use et_string_processing;
 		use ada.directories;
-		use et_coordinates;
+		use et_coordinates.type_submodule_name;
 	begin
-		log (text => "path_to_submodule: appending submodule " & type_submodule_name.to_string(submodule), level => 2);
-		-- Since we are dealing with file names, the extension must be removed before appending.
-		type_path_to_submodule.append (path_to_submodule,
-			type_submodule_name.to_bounded_string (base_name (type_submodule_name.to_string(submodule)))
-			);
+		if length (submodule) = 0 then
+			log ("append path_to_submodule " & hierarchy_separator, level => 1);
+			type_path_to_submodule.append (path_to_submodule,
+				to_bounded_string (type_submodule_name.to_string (submodule)));
+		else
+			log ("append path_to_submodule " 
+				& base_name (type_submodule_name.to_string (submodule)), level => 1);
+
+			-- Since we are dealing with file names, the extension must be removed before appending.
+			type_path_to_submodule.append (path_to_submodule,
+				to_bounded_string (base_name (type_submodule_name.to_string (submodule))));
+
+		end if;
+		
 	end append_name_of_parent_module_to_path;
 	
 	-- Here we remove the last submodule name form the path_to_submodule.
@@ -1289,21 +1302,25 @@ package body et_schematic is
 			module		: in type_module) is
 			strand : type_strands.cursor := module.strands.first;
 			use type_strands;
+			use et_coordinates.type_path_to_submodule;
+			use ada.directories;
 		begin
 			while strand /= type_strands.no_element loop
 				log_indentation_up;
 
-				log (to_string (element (strand).name) & " scope " & to_string (element (strand).scope)
-					& " in " 
-					& et_coordinates.to_string (et_coordinates.path (element (strand).coordinates), top_module => false)
-					& et_coordinates.to_string (et_coordinates.module (element (strand).coordinates)));
-
--- 				log (et_coordinates.to_string (et_coordinates.path (element (strand).coordinates), top_module => false)
--- 					& et_coordinates.to_string (et_coordinates.module (element (strand).coordinates))
--- 					& hierarchy_separator 
--- 					& to_string (element (strand).name) & " scope " & to_string (element (strand).scope)
--- 					);
-
+				if base_name (to_string (top_level_schematic)) = to_string (et_coordinates.module (element (strand).coordinates)) then
+					-- strand is in top module
+					log (to_string (element (strand).name) & " scope " & to_string (element (strand).scope)
+						& latin_1.space
+						& et_coordinates.to_string (et_coordinates.path (element (strand).coordinates)));
+				else
+					-- strand is in a submodule
+					log (to_string (element (strand).name) & " scope " & to_string (element (strand).scope)
+						& latin_1.space
+						& et_coordinates.to_string (et_coordinates.path (element (strand).coordinates))
+						& et_coordinates.to_string (et_coordinates.module (element (strand).coordinates)));
+				end if;
+						
 				type_strands.query_element (
 					position	=> strand,
 					process		=> query_segment'access);
