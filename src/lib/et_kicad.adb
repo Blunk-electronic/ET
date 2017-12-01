@@ -4325,7 +4325,7 @@ package body et_kicad is
 				-- log module path as recorded by parent unit
 				log_indentation_up;
 				--write_path_to_submodule;
-				log (to_string (path_to_submodule), log_threshold + 1);
+				log ("path " & to_string (path_to_submodule), log_threshold + 1);
 				
 				open (file => schematic_handle, mode => in_file, name => to_string (current_schematic));
 				set_input (schematic_handle);

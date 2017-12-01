@@ -367,7 +367,8 @@ package body et_coordinates is
 -- 			result := result & " (top module)";
 -- 		end if;
 		
-		return to_string ("location " & result);
+		--return to_string ("location " & result);
+		return to_string (result);
 	end to_string;
 	
 	function to_coordinates (point : in type_2d_point'class)
@@ -404,7 +405,8 @@ package body et_coordinates is
 					& to_string (distance_x (position))
 					& latin_1.space & axis_separator & latin_1.space
 					& to_string (distance_y (position));
-
+			-- CS: if module is top_level_schematic return only the hierarchy_separator.
+				
 			when sheet =>
 				return coordinates_preamble_sheet
 					& trim (positive'image (position.sheet_number),left) 

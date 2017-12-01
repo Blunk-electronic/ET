@@ -1538,11 +1538,22 @@ package body et_schematic is
 					-- form the net name depending on scope
 					-- For local strands the full hierarchic name of the net must be formed
 					-- in order to get something like "driver.GND" :
-					net_name := type_net_name.to_bounded_string (
-						et_coordinates.to_string (et_coordinates.path (element (strand).coordinates), top_module => false)
+-- 					net_name := type_net_name.to_bounded_string (
+-- 						et_coordinates.to_string (et_coordinates.path (element (strand).coordinates), top_module => false)
+-- 							& et_coordinates.to_string (et_coordinates.module (element (strand).coordinates))
+-- 							& et_coordinates.hierarchy_separator & et_schematic.to_string (element (strand).name));
+
+					if ada.directories.base_name (to_string (top_level_schematic)) = to_string (et_coordinates.module (element (strand).coordinates)) then -- CS: make function and use it in procedure write_strands too
+						net_name := type_net_name.to_bounded_string (hierarchy_separator 
+							& et_schematic.to_string (element (strand).name));
+					else
+						net_name := type_net_name.to_bounded_string (
+							et_coordinates.to_string (et_coordinates.path (element (strand).coordinates))
 							& et_coordinates.to_string (et_coordinates.module (element (strand).coordinates))
 							& et_coordinates.hierarchy_separator & et_schematic.to_string (element (strand).name));
-                    
+
+					end if;
+					
                     -- Create net and append strand to module.nets
                     rig.update_element (
                         position => module_cursor,
@@ -1731,8 +1742,8 @@ package body et_schematic is
 			if net.available then
 				log_indentation_up;
 
-				log ("net " & to_string (net.port) & " "
-					& to_string (net.path) 
+				log ("testing hierarchic net " & to_string (net.port) 
+					& " in submodule " & to_string (net.path) 
 					& et_coordinates.to_string (net.submodule));
 				
 				while strand /= type_strands.no_element loop
@@ -1742,7 +1753,7 @@ package body et_schematic is
 								if element (strand).name = net.port then
 									hierarchic_port_connected := true;
 
-									log ("reaches down into " 
+									log ("reaches down in submodule " 
 										& to_string (net.path) 
 										& et_coordinates.to_string (net.submodule) 
 										& " as net " & to_string (net.port));
@@ -1826,7 +1837,7 @@ package body et_schematic is
 		net := first_net;
 		log_indentation_up;
 		while net /= type_nets.no_element loop
-			log ("net " & to_string (key (net)));
+			log ("net " & to_string (key (net)), log_threshold + 1);
 
 			query_element (
 				position => net,
