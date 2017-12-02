@@ -1637,7 +1637,7 @@ package body et_schematic is
 				submodule_cursor : type_gui_submodules.cursor := module.submodules.first;
 				use type_gui_submodules;
 
-				procedure locate_submodule (
+				procedure query_port (
 					submod_name	: in type_submodule_name.bounded_string;
 					submodule	: in out type_gui_submodule) is
 					port : type_gui_submodule_ports.cursor := submodule.ports.first;
@@ -1651,7 +1651,28 @@ package body et_schematic is
 						port.processed := true;
 					end mark_processed;
 
-				begin -- locate_submodule
+					function append_module_to_path (
+						path_in : in type_path_to_submodule.list;
+						module : in type_submodule_name.bounded_string)
+						return et_coordinates.type_path_to_submodule.list is
+						use type_submodule_name;
+						use ada.directories;
+						path_out : type_path_to_submodule.list := path_in;
+					begin
+						--log ("path in  " & to_string (path_in));
+						--log ("module   " & type_submodule_name.to_string (module));
+						if type_submodule_name.to_string (module) /= base_name (type_schematic_file_name.to_string (top_level_schematic)) then
+							
+							type_path_to_submodule.append (
+								container => path_out,
+								new_item => module);
+							--log ("path out " & to_string (path_out));						
+						end if;
+						
+						return path_out;
+					end append_module_to_path;
+					
+				begin -- query_port
 					while port /= type_gui_submodule_ports.no_element loop
 
 						-- we are interested in non-processed ports only
@@ -1669,8 +1690,9 @@ package body et_schematic is
 								-- form the return value
 								net := (
 									available	=> true,
-									submodule	=> submod_name,
-									path		=> path (submodule.coordinates),
+									submodule	=> submod_name, -- example: LEVEL_SHIFTER
+--									path		=> path (submodule.coordinates),
+									path		=> append_module_to_path (path (submodule.coordinates), et_coordinates.module (submodule.coordinates)), -- example /core 
 									port		=> type_net_name.to_bounded_string (to_string (key (port))));
 
 								exit;
@@ -1680,7 +1702,7 @@ package body et_schematic is
 
 						next (port);
 					end loop;
-				end locate_submodule;
+				end query_port;
 
 			begin -- query_gui_submodule
 				while submodule_cursor /= type_gui_submodules.no_element loop
@@ -1688,7 +1710,7 @@ package body et_schematic is
 					update_element (
 						container => module.submodules,
 						position => submodule_cursor,
-						process => locate_submodule'access);
+						process => query_port'access);
 
 					if net.available then exit; end if;
 					
