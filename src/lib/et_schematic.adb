@@ -101,11 +101,11 @@ package body et_schematic is
 		use ada.directories;
 		use et_coordinates.type_submodule_name;
 	begin
-		if length (submodule) = 0 then
-			log ("append path_to_submodule " & hierarchy_separator, level => 1);
-			type_path_to_submodule.append (path_to_submodule,
-				to_bounded_string (type_submodule_name.to_string (submodule)));
-		else
+-- 		if length (submodule) = 0 then
+-- 			log ("append path_to_submodule " & hierarchy_separator, level => 1);
+-- 			type_path_to_submodule.append (path_to_submodule,
+-- 				to_bounded_string (type_submodule_name.to_string (submodule)));
+-- 		else
 			log ("append path_to_submodule " 
 				& base_name (type_submodule_name.to_string (submodule)), level => 1);
 
@@ -113,7 +113,7 @@ package body et_schematic is
 			type_path_to_submodule.append (path_to_submodule,
 				to_bounded_string (base_name (type_submodule_name.to_string (submodule))));
 
-		end if;
+-- 		end if;
 		
 	end append_name_of_parent_module_to_path;
 	
@@ -1308,19 +1308,24 @@ package body et_schematic is
 			while strand /= type_strands.no_element loop
 				log_indentation_up;
 
-				if base_name (to_string (top_level_schematic)) = to_string (et_coordinates.module (element (strand).coordinates)) then
-					-- strand is in top module
+-- 				if base_name (to_string (top_level_schematic)) = to_string (et_coordinates.module (element (strand).coordinates)) then
+-- 					-- strand is in top module
+-- 					log (to_string (element (strand).name) & " scope " & to_string (element (strand).scope)
+-- 						& latin_1.space
+-- 						& et_coordinates.to_string (et_coordinates.path (element (strand).coordinates)));
+-- 				else
+-- 					-- strand is in a submodule
+-- 					log (to_string (element (strand).name) & " scope " & to_string (element (strand).scope)
+-- 						& latin_1.space
+-- 						& et_coordinates.to_string (et_coordinates.path (element (strand).coordinates))
+-- 						& et_coordinates.to_string (et_coordinates.module (element (strand).coordinates)));
+-- 				end if;
+
 					log (to_string (element (strand).name) & " scope " & to_string (element (strand).scope)
 						& latin_1.space
 						& et_coordinates.to_string (et_coordinates.path (element (strand).coordinates)));
-				else
-					-- strand is in a submodule
-					log (to_string (element (strand).name) & " scope " & to_string (element (strand).scope)
-						& latin_1.space
-						& et_coordinates.to_string (et_coordinates.path (element (strand).coordinates))
-						& et_coordinates.to_string (et_coordinates.module (element (strand).coordinates)));
-				end if;
-						
+
+				
 				type_strands.query_element (
 					position	=> strand,
 					process		=> query_segment'access);
@@ -1515,6 +1520,8 @@ package body et_schematic is
 				process		=> add_strand'access);
 		end add_net;
 
+		--use et_coordinates.type_path_to_submodule;
+		
 	begin -- link_strands
 		log (text => "linking local and global strands to nets ...", level => log_threshold);
 
@@ -1538,22 +1545,35 @@ package body et_schematic is
 					-- form the net name depending on scope
 					-- For local strands the full hierarchic name of the net must be formed
 					-- in order to get something like "driver.GND" :
+
 -- 					net_name := type_net_name.to_bounded_string (
 -- 						et_coordinates.to_string (et_coordinates.path (element (strand).coordinates), top_module => false)
 -- 							& et_coordinates.to_string (et_coordinates.module (element (strand).coordinates))
 -- 							& et_coordinates.hierarchy_separator & et_schematic.to_string (element (strand).name));
 
-					if ada.directories.base_name (to_string (top_level_schematic)) = to_string (et_coordinates.module (element (strand).coordinates)) then -- CS: make function and use it in procedure write_strands too
-						net_name := type_net_name.to_bounded_string (hierarchy_separator 
+-- 					if ada.directories.base_name (to_string (top_level_schematic)) = to_string (et_coordinates.module (element (strand).coordinates)) then -- CS: make function and use it in procedure write_strands too
+-- 						net_name := type_net_name.to_bounded_string (hierarchy_separator 
+-- 							& et_schematic.to_string (element (strand).name));
+-- 					else
+-- 						net_name := type_net_name.to_bounded_string (
+-- 							et_coordinates.to_string (et_coordinates.path (element (strand).coordinates))
+-- 							& et_coordinates.to_string (et_coordinates.module (element (strand).coordinates))
+-- 							& et_coordinates.hierarchy_separator & et_schematic.to_string (element (strand).name));
+-- 					end if;
+
+					-- if strand is in top module form a net name like "/MASTER_RESET"
+					if type_path_to_submodule.is_empty (et_coordinates.path (element (strand).coordinates)) then
+						net_name := type_net_name.to_bounded_string (
+							hierarchy_separator
 							& et_schematic.to_string (element (strand).name));
-					else
+
+					else -- strand is in any submodule. form a net name like "/SENSOR/RESET"
 						net_name := type_net_name.to_bounded_string (
 							et_coordinates.to_string (et_coordinates.path (element (strand).coordinates))
-							& et_coordinates.to_string (et_coordinates.module (element (strand).coordinates))
-							& et_coordinates.hierarchy_separator & et_schematic.to_string (element (strand).name));
-
+							& hierarchy_separator 
+							& et_schematic.to_string (element (strand).name));
 					end if;
-					
+				
                     -- Create net and append strand to module.nets
                     rig.update_element (
                         position => module_cursor,
@@ -1593,7 +1613,7 @@ package body et_schematic is
 		
         type type_hierachic_net is record
 			available	: boolean := false;
-			submodule   : type_submodule_name.bounded_string := type_submodule_name.to_bounded_string ("");
+-- 			submodule   : type_submodule_name.bounded_string := type_submodule_name.to_bounded_string ("");
 			path        : type_path_to_submodule.list := type_path_to_submodule.empty_list;
 			port		: type_net_name.bounded_string := to_bounded_string ("");
         end record;
@@ -1690,9 +1710,10 @@ package body et_schematic is
 								-- form the return value
 								net := (
 									available	=> true,
-									submodule	=> submod_name, -- example: LEVEL_SHIFTER
---									path		=> path (submodule.coordinates),
-									path		=> append_module_to_path (path (submodule.coordinates), et_coordinates.module (submodule.coordinates)), -- example /core 
+-- 									submodule	=> submod_name, -- example: LEVEL_SHIFTER
+-- 									path		=> path (submodule.coordinates),
+--									path		=> append_module_to_path (path (submodule.coordinates), et_coordinates.module (submodule.coordinates)), -- example /core
+									path		=> append_module_to_path (path (submodule.coordinates), submod_name), -- example /core/LEVEL_SHIFTER
 									port		=> type_net_name.to_bounded_string (to_string (key (port))));
 
 								exit;
@@ -1764,20 +1785,20 @@ package body et_schematic is
 			if net.available then
 				log_indentation_up;
 
-				log ("testing hierarchic net " & to_string (net.port) 
-					& " in submodule " & to_string (net.path) 
-					& et_coordinates.to_string (net.submodule));
+-- 				log ("testing hierarchic net " & to_string (net.port) 
+-- 					& " in submodule " & to_string (net.path)); 
+-- 					& et_coordinates.to_string (net.submodule));
 				
 				while strand /= type_strands.no_element loop
 					if element (strand).scope = hierarchic then
 						if path (element (strand).coordinates) = net.path then
-							if module (element (strand).coordinates) = net.submodule then
+-- 							if module (element (strand).coordinates) = net.submodule then
 								if element (strand).name = net.port then
 									hierarchic_port_connected := true;
 
 									log ("reaches down in submodule " 
 										& to_string (net.path) 
-										& et_coordinates.to_string (net.submodule) 
+										--& et_coordinates.to_string (net.submodule) 
 										& " as net " & to_string (net.port));
 
 									log_indentation_up;
@@ -1790,7 +1811,7 @@ package body et_schematic is
 										process => query_segment'access);
 
 								end if;
-							end if;
+							--end if;
 						end if;
 					end if;
 					next (strand);
@@ -1799,7 +1820,7 @@ package body et_schematic is
 				if not hierarchic_port_connected then
 					log (message_warning & "hierarchic net " & to_string (net.port) 
 						& " in submodule " & to_string (net.path) 
-						& et_coordinates.to_string (net.submodule) 
+-- 						& et_coordinates.to_string (net.submodule) 
 						& " not found ! "
 						--& latin_1.lf
 						& "Hierarchic sheet in parent module requires this net !");
@@ -1819,7 +1840,6 @@ package body et_schematic is
 				strand   : in type_strand) is
 				segment  : type_net_segments.cursor := strand.segments.first;
 				use type_net_segments;
--- 				submodule : type_gui_submodules.cursor;
 				h_net : type_hierachic_net;
 			begin
 				-- Load one segment after another and test if the segment

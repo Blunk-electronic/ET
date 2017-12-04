@@ -340,7 +340,7 @@ package body et_coordinates is
 
 	function to_string (
 		path : in type_path_to_submodule.list;
-		top_module : in boolean := true) return string is
+		top_module : in boolean := true) return string is -- CS: probably no longer required
 	-- Returns the given path as string with hierarchy_separator.
 	-- If top_module = false, the name of the top module is omitted.
 	
@@ -355,14 +355,17 @@ package body et_coordinates is
 			next (submodule);
 		end if;
 
-		-- Loop through list of submodules and collect their names in "result".
-		while submodule /= type_path_to_submodule.no_element loop
-			result := result 
-				& to_unbounded_string (to_string (element (submodule))) 
-				& hierarchy_separator;
-			next (submodule);
-		end loop;
-
+		if is_empty (path) then
+			result := to_unbounded_string (hierarchy_separator);
+		else
+			-- Loop through list of submodules and collect their names in "result".
+			while submodule /= type_path_to_submodule.no_element loop
+				result := result & hierarchy_separator 
+					& to_unbounded_string (to_string (element (submodule)));
+-- 					& hierarchy_separator;
+				next (submodule);
+			end loop;
+		end if;
 -- 		if result = hierarchy_separator then
 -- 			result := result & " (top module)";
 -- 		end if;
@@ -397,15 +400,14 @@ package body et_coordinates is
 		case scope is
 			when module =>
 				return coordinates_preamble_module
-					& to_string (position.path)
-					& to_string (position.module)
-					& latin_1.space & axis_separator & latin_1.space
+					& to_string (position.path) & latin_1.space & hierarchy_separator & latin_1.space
+-- 					& to_string (position.module)
+-- 					& latin_1.space & axis_separator & latin_1.space
 					& trim (positive'image (position.sheet_number),left) 
 					& latin_1.space & axis_separator & latin_1.space
 					& to_string (distance_x (position))
 					& latin_1.space & axis_separator & latin_1.space
 					& to_string (distance_y (position));
-			-- CS: if module is top_level_schematic return only the hierarchy_separator.
 				
 			when sheet =>
 				return coordinates_preamble_sheet

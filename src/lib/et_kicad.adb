@@ -4220,7 +4220,7 @@ package body et_kicad is
 				-- read GUI sheet position and size from a line like "S 4050 5750 1050 650"
 				if field (et_kicad.line,1) = schematic_keyword_sheet_pos_and_size then
 					set_path (sheet.coordinates, path_to_submodule);
-					--log ("path " & to_string (path (sheet.coordinates)));
+					log ("path " & to_string (path (sheet.coordinates)));
 					--set_module (sheet.coordinates, type_submodule_name.to_bounded_string (to_string (current_schematic)));
 					set_module (sheet.coordinates, to_submodule_name (current_schematic));
 					set_sheet (sheet.coordinates, sheet_number_current);
@@ -5142,7 +5142,7 @@ package body et_kicad is
                 -- The top level schematic file is the first entry in the module path.
 				--append_name_of_parent_module_to_path (tmp_module_name);
 				-- The top level schematic file is the root in the module path.
-				append_name_of_parent_module_to_path (type_submodule_name.to_bounded_string ("")); -- EXP
+				--append_name_of_parent_module_to_path (type_submodule_name.to_bounded_string ("")); -- EXP
                 
 				-- Starting from the top level module, we read its schematic file. The result can be a list 
 				-- of submodules which means that the design is hierarchic.
@@ -5187,9 +5187,11 @@ package body et_kicad is
 						
 						-- backup list_of_submodules OF THIS LEVEL on stack (including the current submodule id)
 						push (list_of_submodules);
+						
 						log ("DESCENDING TO HIERARCHY LEVEL -" & trim (natural'image (depth),left));
 						log (row_separator_single);
-						
+
+						append_name_of_parent_module_to_path (type_submodule_name.to_bounded_string (base_name (to_string (current_schematic)))); -- EXP
 						-- Read schematic file as indicated by list_of_submodules.id. 
 						-- Read_schematic receives the name of the schematic file to be read.
 						list_of_submodules := read_schematic (current_schematic, log_threshold);
@@ -5199,15 +5201,16 @@ package body et_kicad is
 						if type_submodule_names.is_empty (list_of_submodules.list) then -- flat submodule (no hierarchic sheets)
 
 							list_of_submodules := pop;
+							delete_last_module_name_from_path; -- EXP
                             list_of_submodules.id := list_of_submodules.id + 1;
-                            --delete_last_module_name_from_path;
+                            
 							log ("NO SUBMODULES HERE. ASCENDING TO HIERARCHY LEVEL -" & trim (natural'image (depth),left));
 							log (row_separator_single);
 
 						else
 							-- set cursor at first submodule of list and append name of parent module to path_to_submodule
                             list_of_submodules.id := 1;
-                            append_name_of_parent_module_to_path (list_of_submodules.parent_module);
+                            --append_name_of_parent_module_to_path (list_of_submodules.parent_module); -- EXP
 						end if;
 
 						-- Once the last submodule of the list has been processed, restore list of the overlying level and advance to next module.
@@ -5218,8 +5221,9 @@ package body et_kicad is
 								exit; 
 							end if;
 							list_of_submodules := pop; -- restore overlying list
+							delete_last_module_name_from_path; -- update path_to_submodule -- EXP
                             list_of_submodules.id := list_of_submodules.id + 1;
-                            delete_last_module_name_from_path; -- update path_to_submodule
+--                             delete_last_module_name_from_path; -- update path_to_submodule -- EXP
 							log ("LAST SUBMODULE PROCESSED. ASCENDING TO HIERARCHY LEVEL: -" & trim(natural'image(depth),left));
 							log (row_separator_single);
 						end if;

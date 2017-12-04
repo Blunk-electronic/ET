@@ -189,8 +189,8 @@ package et_coordinates is
 		& axis_separator
 		& "y) ";
 
-	coordinates_preamble_module : constant string (1..24) := "pos. "
-		& "(module"
+	coordinates_preamble_module : constant string (1..22) := "pos. "
+		& "(path"
 		& axis_separator
 		& "sheet"
 		& axis_separator
