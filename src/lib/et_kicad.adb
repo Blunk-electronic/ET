@@ -4325,6 +4325,7 @@ package body et_kicad is
 				-- log module path as recorded by parent unit
 				log_indentation_up;
 				--write_path_to_submodule;
+				--append_name_of_parent_module_to_path (to_ tmp_module_name);
 				log ("path " & to_string (path_to_submodule), log_threshold + 1);
 				
 				open (file => schematic_handle, mode => in_file, name => to_string (current_schematic));
@@ -4506,7 +4507,7 @@ package body et_kicad is
 										sheet_count_total    := positive'value(field (line,3));
 										if sheet_count_total > 1 then
 											-- Set in the list_of_submodules (to be returned) the parent_module. The schematic file 
-											-- being processed (see input parameters of read_file_schematic_kicad) becomes the parent module
+											-- being processed (see input parameters of read_schematic) becomes the parent module
 											-- of the submodules here.
 											list_of_submodules.parent_module := et_coordinates.type_submodule_name.to_bounded_string (to_string (current_schematic));
 										end if;
@@ -5141,10 +5142,11 @@ package body et_kicad is
                 -- The top level schematic file is the first entry in the module path.
 				--append_name_of_parent_module_to_path (tmp_module_name);
 				-- The top level schematic file is the root in the module path.
-				append_name_of_parent_module_to_path (type_submodule_name.to_bounded_string (""));
+				append_name_of_parent_module_to_path (type_submodule_name.to_bounded_string ("")); -- EXP
                 
-				-- Starting from the top level module, we read its schematic file. The result can be a list of submodules.
-				-- NOTE: Kicad refers to them as "sheets" !
+				-- Starting from the top level module, we read its schematic file. The result can be a list 
+				-- of submodules which means that the design is hierarchic.
+				-- NOTE: Kicad refers to submodules as "sheets" !
 				
 				-- The function read_schematic requires the name of the current submodule,
 				-- It returns a list of submodules.
@@ -5153,9 +5155,8 @@ package body et_kicad is
 				log("DESIGN STRUCTURE ");
 				log_indentation_up;
 				
-				-- If read_file_schematic_kicad returns an empty list of submodules, we are dealing with a flat design. Otherwise
+				-- If read_schematic returns an empty list of submodules, we are dealing with a flat design. Otherwise
 				-- the design is hierarchic (because the submodule list is longer than zero).
-				--if type_submodule_names.length (list_of_submodules.list) = 0 then -- flat design -- CS: use is_empty
 				if type_submodule_names.is_empty (list_of_submodules.list) then -- flat design
 					log ("FLAT");
 				else -- hierarchic design
@@ -5177,7 +5178,7 @@ package body et_kicad is
 					list_of_submodules.id := 1;
                     
 					loop
-						-- fetch name of submodule (where id is pointing at)
+						-- fetch name of submodule (where id is pointing to)
 						current_schematic := type_schematic_file_name.to_bounded_string (
 							et_coordinates.type_submodule_name.to_string (
 								type_submodule_names.element (
@@ -5186,7 +5187,7 @@ package body et_kicad is
 						
 						-- backup list_of_submodules OF THIS LEVEL on stack (including the current submodule id)
 						push (list_of_submodules);
-						log ("DESCENDING TO HIERARCHY LEVEL -" & trim(natural'image(depth),left));
+						log ("DESCENDING TO HIERARCHY LEVEL -" & trim (natural'image (depth),left));
 						log (row_separator_single);
 						
 						-- Read schematic file as indicated by list_of_submodules.id. 

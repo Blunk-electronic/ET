@@ -126,7 +126,7 @@ package et_schematic is
 	procedure append_name_of_parent_module_to_path (submodule : in et_coordinates.type_submodule_name.bounded_string);
 
 	-- Here we remove the last submodule name form the path_to_submodule.
-	procedure delete_last_module_name_from_path;
+	procedure delete_last_module_name_from_path; -- CS: unify with append_name_of_parent_module_to_path
 
 	function to_submodule_name (file_name : in type_schematic_file_name.bounded_string)
 		return et_coordinates.type_submodule_name.bounded_string;
