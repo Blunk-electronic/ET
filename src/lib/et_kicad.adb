@@ -5196,12 +5196,12 @@ package body et_kicad is
 
 						-- If the schematic file contains submodules (hierarchic sheets), set list_of_submodules.id to the first 
 						-- submodule of them. Otherwise restore submodule list of parent module and advance therein to next submodule.
-						if type_submodule_names.length (list_of_submodules.list) = 0 then -- flat submodule (no hierarchic sheets) -- CS: use is_empty
+						if type_submodule_names.is_empty (list_of_submodules.list) then -- flat submodule (no hierarchic sheets)
 
 							list_of_submodules := pop;
                             list_of_submodules.id := list_of_submodules.id + 1;
                             --delete_last_module_name_from_path;
-							log ("NO SUBMODULES HERE. ASCENDING TO HIERARCHY LEVEL -" & trim(natural'image(depth),left));
+							log ("NO SUBMODULES HERE. ASCENDING TO HIERARCHY LEVEL -" & trim (natural'image (depth),left));
 							log (row_separator_single);
 
 						else
