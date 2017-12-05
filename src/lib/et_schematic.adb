@@ -589,8 +589,11 @@ package body et_schematic is
 		return type_strand_scope'image (scope);
 	end to_string;
 
-	function lowest_xy (strand : in type_strand) return type_2d_point is
+	function lowest_xy (
 	-- Returns the lowest x/y position of the given strand.
+		strand : in type_strand;
+		log_threshold : in et_string_processing.type_log_level
+		) return type_2d_point is
 		point_1, point_2 : type_2d_point;
 		segment : type_net_segments.cursor;
 	
@@ -600,7 +603,7 @@ package body et_schematic is
 		-- CS: usage of intermediate variables for x/Y of start/end points could improve performance
 	begin
 		log_indentation_up;
-		log ("calculating the point nearest to drawing origin ...", level => 3);
+		log ("calculating the point nearest to drawing origin ...", log_threshold);
 
 		-- init point_1 as the farest possible point from drawing origin
 		set_x (point_1, type_distance_xy'last);
@@ -614,7 +617,7 @@ package body et_schematic is
 			-- if closer to orign than point_1 keep start point
 			point_2	:= type_2d_point (element (segment).coordinates_start);
 			if distance (point_2, zero) < distance (point_1, zero) then
-				log (" start", level => 4);
+				log (" start", log_threshold + 1);
 				point_1 := point_2;
 			end if;
 
@@ -622,7 +625,7 @@ package body et_schematic is
 			-- if closer to orign than point_1 keep end point
 			point_2	:= type_2d_point (element (segment).coordinates_end);
 			if distance (point_2, zero) < distance (point_1, zero) then
-				log (" end", level => 4);
+				log (" end", log_threshold + 1);
 				point_1 := point_2;
 			end if;
 			
@@ -1785,9 +1788,9 @@ package body et_schematic is
 			if net.available then
 				log_indentation_up;
 
--- 				log ("testing hierarchic net " & to_string (net.port) 
--- 					& " in submodule " & to_string (net.path)); 
--- 					& et_coordinates.to_string (net.submodule));
+				log ("probing hierarchic net " & to_string (net.name) 
+						& " in submodule " & to_string (net.path) & " ...",
+					log_threshold + 2);
 				
 				while h_strand /= type_strands.no_element loop
 					if element (h_strand).scope = hierarchic then
@@ -1797,10 +1800,14 @@ package body et_schematic is
 
 								log ("reaches down into submodule " 
 									& to_string (net.path) 
-									& " as net " & to_string (net.name));
+									& " as net " & to_string (net.name),
+									log_threshold + 1
+									);
 
 								log_indentation_up;
-								log ("strand " & to_string (lowest_xy (element (h_strand))));
+								log ("strand " & to_string (lowest_xy (element (h_strand), log_threshold + 3)),
+									 log_threshold + 2
+									);
 								log_indentation_down;
 
 								-- Test if hierarchic h_strand itself is connected to any gui_submodules.

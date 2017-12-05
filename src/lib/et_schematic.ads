@@ -415,9 +415,12 @@ package et_schematic is
 		scope 		: type_strand_scope := type_strand_scope'first; -- example "local"
 	end record;
 
-	function lowest_xy (strand : in type_strand) return type_2d_point;
+	function lowest_xy (
 	-- Returns the lowest x/y position of the given strand.
-
+		strand : in type_strand;
+		log_threshold : in et_string_processing.type_log_level
+		) return type_2d_point;
+	
 	procedure add_strand (
 	-- Adds a strand into the module (indicated by module_cursor).
 		strand : in et_schematic.type_strand);

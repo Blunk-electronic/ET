@@ -3324,7 +3324,7 @@ package body et_kicad is
 							set_sheet (strand.coordinates, sheet_number_current);
 
 							-- set x,y coordinates (lowest available on the sheet)
-							set (strand.coordinates, to_coordinates (lowest_xy (strand)));
+							set (strand.coordinates, to_coordinates (lowest_xy (strand, log_threshold + 1)));
                             
 							-- insert strand in module, then purge strand.segments for next spin
 							log ("inserting strand in module ...", level => 3);
@@ -3380,7 +3380,7 @@ package body et_kicad is
 							set_sheet (strand.coordinates, sheet_number_current);
 
 							-- set x,y coordinates (lowest available on the sheet)
-							set (strand.coordinates, to_coordinates (lowest_xy (strand)));
+							set (strand.coordinates, to_coordinates (lowest_xy (strand, log_threshold + 1)));
 							
 							-- insert strand in module, then purge strand.segments for next spin
 							log ("inserting strand in module ...", level => 3);
