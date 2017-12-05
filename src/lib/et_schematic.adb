@@ -59,41 +59,6 @@ package body et_schematic is
 		return type_schematic_file_name.to_string (schematic);
 	end to_string;
 	
--- 	-- Sometimes we need to output the location of a submodule:
--- 	procedure write_path_to_submodule is
--- 		use et_coordinates;
--- 		use type_submodule_name;
--- 		c : type_path_to_submodule.cursor;
--- 		use et_string_processing;
--- 	begin
--- -- 		log (text => "path ");
--- -- 		log_indentation_up;
--- 		
--- 		c := type_path_to_submodule.first (path_to_submodule);            
--- 
--- 		-- If there is a hierarchy deeper than 1, write path to submodule:
--- 		if type_path_to_submodule.length (path_to_submodule) > 1 then -- CS: use is_empty
--- -- 			for n in 1..type_path_to_submodule.length (path_to_submodule)-1 loop
--- -- 				log (text => hierarchy_separator & type_submodule_name.to_string (type_path_to_submodule.element (c)));
--- -- 				c := type_path_to_submodule.next (c);
--- -- 			end loop;
--- 			log ("path " & to_string (path_to_submodule));
--- 
--- -- 			c := type_path_to_submodule.last (path_to_submodule);
--- 
--- 			-- write the submodule name
--- -- 			log_indentation_up;
--- -- 			log (text => type_submodule_name.to_string (type_path_to_submodule.element (c)));
--- -- 			log_indentation_down;
--- 		else
--- 			-- no hierarchy. write just the submodule name
--- 			--log (text => type_submodule_name.to_string(type_path_to_submodule.element(c)));
--- 			log ("path " & hierarchy_separator & "(top module)");
--- 		end if;
--- 		
--- -- 		log_indentation_down;
--- 	end write_path_to_submodule;
-
 	-- Here we append a submodule name to the path_to_submodule.
 	-- CS: unify with procedure delete_last_module_name_from_path
 	procedure append_name_of_parent_module_to_path (submodule : in et_coordinates.type_submodule_name.bounded_string) is
@@ -102,20 +67,13 @@ package body et_schematic is
 		use et_coordinates.type_submodule_name;
 	begin
 		-- CS: limit path length !
--- 		if length (submodule) = 0 then
--- 			log ("append path_to_submodule " & hierarchy_separator, level => 1);
--- 			type_path_to_submodule.append (path_to_submodule,
--- 				to_bounded_string (type_submodule_name.to_string (submodule)));
--- 		else
-			log ("append path_to_submodule " 
-				& base_name (type_submodule_name.to_string (submodule)), level => 1);
+-- 		log ("append path_to_submodule " 
+-- 			& base_name (type_submodule_name.to_string (submodule)), level => 1);
 
-			-- Since we are dealing with file names, the extension must be removed before appending.
-			type_path_to_submodule.append (path_to_submodule,
-				to_bounded_string (base_name (type_submodule_name.to_string (submodule))));
+		-- Since we are dealing with file names, the extension must be removed before appending.
+		type_path_to_submodule.append (path_to_submodule,
+			to_bounded_string (base_name (type_submodule_name.to_string (submodule))));
 
--- 		end if;
-		
 	end append_name_of_parent_module_to_path;
 	
 	-- Here we remove the last submodule name form the path_to_submodule.

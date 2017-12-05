@@ -119,9 +119,6 @@ package et_schematic is
 	-- the exact location of the submodule within the design hierarchy.
 	path_to_submodule : et_coordinates.type_path_to_submodule.list;
 	
--- 	-- Sometimes we need to output the location of a submodule:
--- 	procedure write_path_to_submodule;
-
 	-- Here we append a submodule name to the path_to_submodule.
 	procedure append_name_of_parent_module_to_path (submodule : in et_coordinates.type_submodule_name.bounded_string);
 
