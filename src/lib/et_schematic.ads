@@ -394,9 +394,11 @@ package et_schematic is
 	package type_net_segments is new doubly_linked_lists (
 		element_type => type_net_segment);
 
-	-- A net may be visible within a submodule (local) or 
-	-- it may be exported to parent module (hierachical) or
+	-- In a GUI a net may be visible within a submodule (local) or 
+	-- it may be seen from the parent module (hierachical net) or
 	-- it is visible across the whole scheamtic (global).
+	-- In reality a net can only be either local or global. Hierarchic nets
+	-- are just extensions of local or global nets with a different name.
 	type type_strand_scope is (unknown, hierarchic, local, global);
 	subtype type_net_scope is type_strand_scope range local..global; 
 	
