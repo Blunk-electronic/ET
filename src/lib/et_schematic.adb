@@ -1130,131 +1130,465 @@ package body et_schematic is
 		return cursor;
 	end first_strand;
 
-	procedure update_strand_names (log_threshold : in et_string_processing.type_log_level) is
-	-- Tests if a power out port is connected to a strand and renames the strand if necessary.
-		use et_netlist;
-		use et_string_processing;
+-- PORTLISTS
+
+	function build_portlists (log_threshold : in et_string_processing.type_log_level) return type_portlists.map is
+	-- Returns a list of components with the absolute positions of their ports as they are placed in the schematic.
+	-- This applies to the module indicated by module_cursor.
+		
+	-- Locates the components of the schematic in the libraries. 
+	-- Computes the absolute port positions of components from:
+	--  - the port coordinates provided by the librares
+	--  - the unit coordinates provided by the schematic
+	--  - the unit mirror style provided by the schematic
+	--  - the unit orientation provided by the schematic
+	-- Special threatment for "common to all units" ports of global units. See comments.
 	
-		portlists : type_portlists.map := type_portlists.empty_map;
+	-- Stores the absolute port coordinates in map "portlists". 
+	-- The key into this map is the component reference.
 
-		use et_coordinates;
+		-- Here we collect the portlists:
+		portlists					: type_portlists.map;
+		component_inserted			: boolean;
+		component_cursor_portlists	: type_portlists.cursor; -- points to the portlist being built
+	
 		use et_libraries;
+		use et_libraries.type_full_library_names;
+		use et_schematic.type_components;
+		use et_string_processing;
+
+		-- This component cursor points to the schematic component being processed.
+		component_cursor_sch: et_schematic.type_components.cursor;
+
+		-- The generic name of a component in a library (like TRANSISTOR_PNP or LED) 
+		-- is tempoarily held here:
+		component_name		: et_libraries.type_component_name.bounded_string;
+
+		-- The component reference in the schematic (like R44 or IC34)
+		-- is tempoarily held here:
+		component_reference	: et_libraries.type_component_reference;
+	
+		-- The library cursor points to the library to search in (in module.libraries).
+		-- NOTE: module.libraries is just a list of full library names, no more.
+		library_cursor_sch	: type_full_library_names.cursor;
+		library_name		: type_full_library_name.bounded_string;
+
+		-- This component cursor points to the library component being processed.
+		use et_libraries.type_components;
+		component_cursor_lib: et_libraries.type_components.cursor;
+
+		-- CS: log_threshold for messages below
+
+		-- For tempoarily storage of units of a component (taken from the schematic):
+		units_sch : et_schematic.type_units.map;
+
+		procedure extract_ports is
+		-- Extracts the ports of the component indicated by component_cursor_lib.
+		-- NOTE: The library contains the (x/y) positions of the ports.
+			use et_libraries.type_units_internal;
+			use et_libraries.type_ports;
+			use et_coordinates;
+			use et_schematic;
 		
-		strand		: type_strands.cursor := first_strand;
-		segment		: type_net_segments.cursor;
-		component	: type_portlists.cursor;
-		port		: type_base_ports.cursor;
-		
-		use type_strands;
-		use type_net_segments;
-		use type_portlists;
-		use type_base_ports;
+			-- The unit cursor of the component advances through the units stored in the library.
+			unit_cursor_internal	: type_units_internal.cursor;
 
-		function to_net_name (port_name : in type_port_name.bounded_string) 
-		-- Converts the given port name to a net name.
-			return type_net_name.bounded_string is
-		begin
-			return type_net_name.to_bounded_string (to_string (port_name));
-		end to_net_name;
-		
-	begin -- update_strand_names
-		log (text => "updating strand names by power-out ports ...", level => log_threshold);
+			-- The port cursor of the unit indicates the port of a unit.
+			port_cursor				: et_libraries.type_ports.cursor; 
 
-		-- Generate the portlists of the module indicated by module_cursor.
-		portlists := build_portlists (log_threshold + 1);
+			unit_name_lib : type_unit_name.bounded_string; -- the unit name in the library. like "A", "B" or "PWR"
+			unit_position : et_coordinates.type_coordinates; -- the coordinates of the current unit
+			-- CS: external units
 
-		-- LOOP IN STRANDS OF MODULE
-		while strand /= type_strands.no_element loop
-			log_indentation_up;
-			log ("strand of net " & et_schematic.to_string (element (strand).name), log_threshold + 3);
+			procedure add_port is
+			-- Builds a new port and appends it to portlist of the current 
+			-- component (indicated by component_cursor_portlists).
+			
+			-- The library defined properties of the port are taken from where port_cursor points to.
+			-- They are copied to the new port without change.
+			
+			-- Properites set in the schematic such as path, module name, sheet are copied into the
+			-- new port unchanged. X and Y position of the port must be re-computed according to
+			-- the rotation, mirror style and position of the unit in the schematic.
+			-- NOTE: It is important first to rotate, then mirror (if required) and finally to move/offset it.
 
-			-- LOOP IN SEGMENTS OF STRAND
-			segment := first_segment (strand);
-			while segment /= type_net_segments.no_element loop
-				log_indentation_up;
-				log ("probing segment " & to_string (element (segment)), log_threshold + 3);
+				procedure add (
+					component	: in type_component_reference;
+					ports		: in out type_ports.list) is
+					use et_coordinates;
+					
+					port_coordinates : type_coordinates;
 
-				-- LOOP IN COMPONENTS (of portlists)
-				component := first (portlists);
-				while component /= type_portlists.no_element loop
+				begin -- add
+
+					-- Init port coordinates with the coordinates of the port found in the library.
+					-- The port position is a type_2d_point and must be converted to type_coordinates.
+					et_coordinates.set (
+						point		=> port_coordinates,
+						position	=> to_coordinates (element (port_cursor).coordinates)); -- with type conversion
+
+					-- rotate port coordinates
+					rotate (
+						point => port_coordinates,
+						angle => et_schematic.orientation_of_unit (unit_name_lib, units_sch),
+						log_threshold => log_threshold + 3);
+
+					-- Mirror port coordinates if required.
+					case mirror_style_of_unit (unit_name_lib, units_sch) is
+						when none => null; -- unit not mirrored in schematic
+						when x_axis => mirror (point => port_coordinates, axis => x);
+						when y_axis => mirror (point => port_coordinates, axis => y);
+					end case;
+
+					-- offset port coordinates by the coordinates of the unit found in the schematic
+					move (point => port_coordinates, offset => unit_position);
+
+					-- path remains unchanged because the port is still where the unit is
+					set_path (port_coordinates, path (unit_position));
+
+					-- module name remains unchanged because the port is still in the same module
+					set_module (port_coordinates, module (unit_position));
+
+					-- sheet name remains unchanged because the sheet is still the same
+					set_sheet (port_coordinates, sheet (unit_position));
+					
+					-- insert a the newly built port in the portlist of the component
+					type_ports.append (
+						container => ports,
+						new_item => (
+
+							-- library defined properites:
+							--port		=> key (port_cursor), -- the port name
+							port		=> element (port_cursor).name, -- the port name
+							pin			=> element (port_cursor).pin, -- the pin name
+							direction	=> element (port_cursor).direction, -- the port direction
+							style		=> element (port_cursor).style, -- port style
+
+							-- We also set the port appearance. Later when writing the netlist, this property
+							-- serves to tell real from virtual ports.
+							appearance	=> et_schematic.component_appearance (component_cursor_sch),
+
+							-- schematic defined properties:
+							coordinates	=> port_coordinates
+							));
+
 					log_indentation_up;
-					log ("probing component " & et_schematic.to_string (key (component)), log_threshold + 4);
+					log (to_string (last_element (ports).direction), log_threshold + 3);
+					-- CS: other port properties
+					log (to_string (position => last_element (ports).coordinates), log_threshold + 3);
+					log_indentation_down;
+				end add;
+				
+			begin -- add_port
+				-- We update the portlist of the component in container portlists.
+				-- The cursor to the portlist was set when the element got inserted (see below in procedure build_portlists).
+				type_portlists.update_element (
+					container	=> portlists,
+					position	=> component_cursor_portlists,
+					process		=> add'access);
+			end add_port;
 
-					-- LOOP IN PORTLIST (of component)
-					port := first_port (component);
-					while port /= type_base_ports.no_element loop
-						log_indentation_up;
+			procedure ports_of_global_unit is
+			-- Searches in the component (indicated by component_cursor_lib) for units
+			-- with the "global" flag set.
+			-- Sets the port_cursor for each port and leaves the rest of the work to procedure add_port.
+				unit_cursor : type_units_internal.cursor;
+			begin
+				-- Loop in list of internal units:
+				unit_cursor := first_internal_unit (component_cursor_lib);
+				while unit_cursor /= type_units_internal.no_element loop
+					log_indentation_up;
 
-						-- We are interested in power out ports exclusively. Only such ports may enforce their
-						-- name on a strand.
-						if element (port).direction = POWER_OUT then
-						-- CS: skip already processed ports to improve performance
+					if element (unit_cursor).global then
+						--log ("global unit " & to_string (key (unit_cursor)));
 
-							log ("probing port " & to_string (position => element (port).coordinates), log_threshold + 4);
+						-- NOTE: One could think of exiting the loop here once the global unit
+						-- has been found. If it were about KiCad only, this would make sense
+						-- as there can be only one global unit per component.
+						-- As for other CAE tools there might be more global units, so there
+						-- is no early exit here.
 
-							-- test if port sits on segment
-							if port_sits_on_segment (element (port), element (segment)) then
-								log_indentation_up;
--- 								log ("match", log_threshold + 2);
+						-- Loop in port list of the unit:						
+						port_cursor := first_port (unit_cursor); -- port in library
+						while port_cursor /= et_libraries.type_ports.no_element loop
 
-								-- If strand has no name yet, it is to be named by the name of the port that sits on it.
-								-- If strand has a name already, its scope must be global
-								-- because power out ports are allowed in global strands exclusively !
-								if et_schematic.anonymous (element (strand).name) then
-									log ("component " & et_schematic.to_string (key (component)) 
-										& " pin " & to_string (element (port).pin)
-										& " port name " & to_string (element (port).port) 
-										& " is a power output -> port name sets strand name", log_threshold + 2);
+							--log ("port " & type_port_name.to_string (key (port_cursor))
+							log (text => "port " & type_port_name.to_string (element (port_cursor).name)
+									& " pin/pad " & to_string (element (port_cursor).pin),
+								 level => log_threshold + 2);
 
-									-- rename strand
-									et_schematic.rename_strands (
-										name_before => element (strand).name,
-										name_after => to_net_name (element (port).port),
-										log_threshold => log_threshold + 3);
-
-								elsif element (strand).scope /= global then -- strand has a name and is local or hierarchic
+							-- Build a new port and append port to portlist of the 
+							-- current component (indicated by component_cursor_portlists).
+							add_port;
 							
-										log_indentation_reset;
-										log (message_error & "component " & et_schematic.to_string (key (component)) 
-											& " POWER OUT pin " & to_string (element (port).pin)
-											& " port name " & to_string (element (port).port) 
-											& latin_1.lf
-											& "at " & to_string (element (port).coordinates, module)
-											& latin_1.lf
-											& "conflicts with " & to_string (element (strand).scope) 
-											& " net " & et_schematic.to_string (element (strand).name) & " !");
-										raise constraint_error;
-
-								end if;
-								
-								log_indentation_down;
-							end if;
-
-						end if;
-						
-						log_indentation_down;
-						next (port);
-					end loop;
+							port_cursor := next (port_cursor);
+						end loop;
+					end if;
 
 					log_indentation_down;
-					next (component);
+					unit_cursor := next (unit_cursor);
 				end loop;
 
+			end ports_of_global_unit;
+			
+		begin -- extract_ports
+			-- Loop in unit list of the component (indicated by component_cursor_lib).
+			-- unit_cursor_internal points to the unit in the library.
+			-- Frequently, not all units of a component are deployed in the schematic.
+			-- If a unit is not deployed it is ignored. Otherwise the coordinates of the
+			-- unit in the schematic are stored in unit_position.
+
+			-- Init the unit cursor of the current component:
+			unit_cursor_internal := first_internal_unit (component_cursor_lib);
+
+			-- Loop in list of internal units:
+			while unit_cursor_internal /= type_units_internal.no_element loop
+				log_indentation_up;
+
+				-- get the unit name
+				unit_name_lib := key (unit_cursor_internal);
+
+				-- Now the unit name serves as key into the unit list we got from the schematic (unit_sch).
+				-- If the unit is deployed in the schematic, we load unit_position. 
+				-- unit_position holds the position of the unit in the schematic.
+				if unit_exists (name => unit_name_lib, units => units_sch) then -- if unit deployed in schematic
+					log ("unit " & to_string (unit_name_lib), log_threshold + 1);
+					unit_position := position_of_unit (name => unit_name_lib, units => units_sch); -- pos. in schematic
+					log_indentation_up;
+					log (to_string (position => unit_position), log_threshold + 2);
+
+					-- Get the ports of the current unit. Start with the first port of the unit.
+					-- The unit_position plus the relative port position (in library) yields the absolute
+					-- position of the port (in schematic).
+
+					-- Init port cursor
+					port_cursor := first_port (unit_cursor_internal); -- port in library
+
+					-- Loop in port list of the unit:
+					while port_cursor /= et_libraries.type_ports.no_element loop
+						log_indentation_up;
+						--log ("port " & type_port_name.to_string (key (port_cursor))
+						log (text => "port " & type_port_name.to_string (element (port_cursor).name)
+								& " pin/pad " & to_string (element (port_cursor).pin),
+							 level => log_threshold + 2
+							);
+						
+						-- Build a new port and append port to portlist of the 
+						-- current component (indicated by component_cursor_portlists).
+						add_port;
+						
+						log_indentation_down;
+						port_cursor := next (port_cursor);
+					end loop;
+
+					-- SEARCH FOR PORTS OF GLOBAL UNITS. 
+					
+					-- NOTE: Take a rest before trying to understand the following:
+					
+					-- The problem with ports that are "common to all units" (KiCad terminology) is:
+					--  The unit they belong to does not appear in the schematic, whereas their ports
+					--  are visible on each unit (kicad button "show hidden pins").
+					-- Solution: We assume all "common to all units" ports belong to all units of the 
+					-- component, thus inheriting the unit_name_lib and the unti_position.
+					-- The the unit_name_lib and unit_position of the current unit are applied
+					-- to the global units.
+					ports_of_global_unit;
+					
+					log_indentation_down;
+				end if;
 
 				log_indentation_down;
-				next (segment);
+				unit_cursor_internal := next (unit_cursor_internal);
 			end loop;
+			
+		end extract_ports;
 
-			log_indentation_down;
-			next (strand);
-		end loop;
+		procedure check_appearance_sch_vs_lib is
+		-- Verifies appearance of schematic component against library component.
+		begin
+			if et_schematic.component_appearance (component_cursor_sch) = 
+			   et_libraries.component_appearance (component_cursor_lib) then
+				null; -- fine
+			else
+				-- this should never happen
+				log_indentation_down;
+				log (text => message_error & "comonent appearance mismatch !", console => true);
+				-- CS: provide more details on the affected component
+				raise constraint_error;
+			end if;
+		end check_appearance_sch_vs_lib;
+
+	begin -- build_portlists
+		log_indentation_up;
+		log (text => "building portlists ...", level => log_threshold);
+		log_indentation_up;
+
+		-- The library contains the coordinates of the ports whereas
+		-- the schematic provides the coordinates of the units of a component.
+		-- These coordinates summed up yields the absolute position of the ports.
 		
-	end update_strand_names;
+		-- Loop in component list of schematic. component_cursor_sch points to the 
+		-- particular component. 
 
+		-- We ignore components that are "power_flags". Since the portlists are a prerequisite
+		-- of netlist generation, this implies, that "power_flags" are not in the netlists.
+		-- Yet other virtual components like
+		-- power symbols like GND or P3V3 are relevant indeed. Because later when we do
+		-- the netlist post-processing they enforce their port names to the connected net.
+		
+		-- For each component, store a list of its units in units_sch.
+		-- This list contains the units found in the schematic with their coordinates.
+		-- These coordinates plus the port coordinates (extracted in 
+		-- procedure (extract_ports) will later yield the absolute positions of the ports.
+		et_schematic.reset_component_cursor (component_cursor_sch);
+		while component_cursor_sch /= et_schematic.type_components.no_element loop
+
+			-- power flags are to be skipped
+			if not et_schematic.component_power_flag (component_cursor_sch) then
+		
+				-- log component by its reference		
+				component_reference :=  et_schematic.component_reference (component_cursor_sch);
+				log ("reference " & et_schematic.to_string (component_reference), log_threshold + 1);
+				
+				-- Insert component in portlists. for the moment the portlist of this component is empty.
+				-- After that the component_cursor_portlists points to the component. This cursor will
+				-- later be used to add a port to the portlists.
+				type_portlists.insert (
+					container	=> portlists,
+					key			=> component_reference, -- like R44
+					new_item	=> type_ports.empty_list,
+					inserted	=> component_inserted, -- obligatory, no further meaning
+					position	=> component_cursor_portlists -- points to the portlist being built
+					);
+				
+				-- get the units of the current schematic component (indicated by component_cursor_sch)
+				units_sch := et_schematic.units_of_component (component_cursor_sch);
 	
+				-- get generic component name (as listed in a library)
+				log_indentation_up;			
+				component_name := et_schematic.component_name_in_library (component_cursor_sch);
+				log ("generic name " & to_string (component_name), log_threshold + 2);
+
+				-- Search in libraries for a component with this very generic name.
+				-- library_cursor_sch points to the particular full library name.
+				-- The libraries are searched according to their order in the library list of the module.
+				-- The search is complete on the first finding of the component.
+				log_indentation_up;
+				log ("searching in libraries ...", log_threshold + 2);
+				log_indentation_up;
+				et_schematic.reset_library_cursor (library_cursor_sch);
+				while library_cursor_sch /= type_full_library_names.no_element loop
+
+					-- Set and log particular library to be searched in.
+					library_name := (element (library_cursor_sch));
+					log (to_string (library_name), log_threshold + 2);
+
+					-- Get cursor of that component in library. If cursor is empty, search in
+					-- next library. If cursor points to a matching component, extract ports
+					-- of that component. Procedure extract_ports uses component_cursor_lib .
+					component_cursor_lib := find_component (library_name, component_name);
+					if component_cursor_lib = et_libraries.type_components.no_element then
+						-- not found -> advance to next library (in module.libraries)
+						next (library_cursor_sch); 
+					else
+						-- As a safety measure we make sure that the appearance of the component
+						-- in the schematic equals that in the library.
+						check_appearance_sch_vs_lib;
+	
+						extract_ports; -- uses component_cursor_lib
+						-- found -> no further search required
+						-- CS: write warning if component exists in other libraries ?
+						exit;
+					end if;
+						
+				end loop;
+
+				-- IF COMPONENT NOT FOUND IN ANY LIBRARY:
+				-- Early exits from the loop above leave library_cursor_sch pointing to a library.
+				-- If the loop has been completed without success, library_cursor_sch points to no_element.
+				-- If all libraries searched without any match -> generate error message.
+				if library_cursor_sch = type_full_library_names.no_element then
+					log_indentation_reset;
+					log (message_error & "component with reference "  
+						& et_schematic.to_string (et_schematic.component_reference (component_cursor_sch))
+						& " has no generic model in any library !",
+						console => true);
+					raise constraint_error;
+				end if;
+				
+				log_indentation_down;
+				log_indentation_down;
+				log_indentation_down;
+
+			end if; -- no power_flag
+			
+			next (component_cursor_sch); -- advance to next component
+		end loop;
+
+		log_indentation_down;
+-- 		log (text => "portlists complete", level => log_threshold);
+		log_indentation_down;
+		
+		return portlists;
+	end build_portlists;
+
+	function first_port (component_cursor : in type_portlists.cursor) return type_ports.cursor is
+	-- Returns a cursor pointing to the first port of a component in the portlists.
+		port_cursor : type_ports.cursor;
+	
+		procedure set_cursor (
+			name : in et_libraries.type_component_reference;
+			ports : in type_ports.list) is
+		begin
+			port_cursor := first (ports);
+		end set_cursor;
+		begin -- first_port
+		type_portlists.query_element (
+			position => component_cursor,
+			process => set_cursor'access);
+
+		return port_cursor;
+	end first_port;
+
+	function port_sits_on_segment (
+	-- Returns true if the given port sits on the given net segment.
+		port	: in type_port'class;
+		segment	: in type_net_segment'class) 
+		return boolean is
+
+		use et_geometry;
+		use et_coordinates;
+		use et_string_processing;
+		
+		sits_on_segment : boolean := false;
+		d : type_distance_point_from_line;
+	begin
+		-- First make sure port and segment share the same module path and sheet.
+		-- It is sufficient to check against the segment start coordinates.
+		if same_path_and_sheet (port.coordinates, segment.coordinates_start) then
+			
+			-- calculate the shortes distance of point from line.
+			d := distance_of_point_from_line (
+				point 		=> type_2d_point (port.coordinates),
+				line_start	=> type_2d_point (segment.coordinates_start),
+				line_end	=> type_2d_point (segment.coordinates_end),
+				line_range	=> with_end_points);
+
+			if (not d.out_of_range) and d.distance = et_coordinates.zero_distance then
+				sits_on_segment := true;
+				log ("port on segment", level => 5);
+			end if;
+
+		end if;
+			
+		return sits_on_segment;
+	end port_sits_on_segment;
+		
 	procedure rename_strands (
 	-- Renames all strands with the name_before to the name_after.
 	-- Changes the scope of the affected strands to "global".
+	-- This procdure is required if a strand is connected to a power-out port.
+	-- The power-out port enforces its name onto the strand.
 		name_before		: in type_net_name.bounded_string;
 		name_after		: in type_net_name.bounded_string;
 		log_threshold	: in et_string_processing.type_log_level) is
@@ -1338,6 +1672,128 @@ package body et_schematic is
 		end if;
 	end rename_strands;
 
+	
+	procedure update_strand_names (log_threshold : in et_string_processing.type_log_level) is
+	-- Tests if a power out port is connected to a strand and renames the strand if necessary.
+		use et_string_processing;
+	
+		portlists : type_portlists.map := type_portlists.empty_map;
+
+		use et_coordinates;
+		use et_libraries;
+		
+		strand		: type_strands.cursor := first_strand;
+		segment		: type_net_segments.cursor;
+		component	: type_portlists.cursor;
+		port		: type_ports.cursor;
+		
+		use type_strands;
+		use type_net_segments;
+		use type_portlists;
+		use type_ports;
+
+		function to_net_name (port_name : in type_port_name.bounded_string) 
+		-- Converts the given port name to a net name.
+			return type_net_name.bounded_string is
+		begin
+			return type_net_name.to_bounded_string (to_string (port_name));
+		end to_net_name;
+		
+	begin -- update_strand_names
+		log (text => "updating strand names by power-out ports ...", level => log_threshold);
+
+		-- Generate the portlists of the module indicated by module_cursor.
+		portlists := build_portlists (log_threshold + 1);
+
+		-- LOOP IN STRANDS OF MODULE
+		while strand /= type_strands.no_element loop
+			log_indentation_up;
+			log ("strand of net " & et_schematic.to_string (element (strand).name), log_threshold + 3);
+
+			-- LOOP IN SEGMENTS OF STRAND
+			segment := first_segment (strand);
+			while segment /= type_net_segments.no_element loop
+				log_indentation_up;
+				log ("probing segment " & to_string (element (segment)), log_threshold + 3);
+
+				-- LOOP IN COMPONENTS (of portlists)
+				component := first (portlists);
+				while component /= type_portlists.no_element loop
+					log_indentation_up;
+					log ("probing component " & et_schematic.to_string (key (component)), log_threshold + 4);
+
+					-- LOOP IN PORTLIST (of component)
+					port := first_port (component);
+					while port /= type_ports.no_element loop
+						log_indentation_up;
+
+						-- We are interested in power out ports exclusively. Only such ports may enforce their
+						-- name on a strand.
+						if element (port).direction = POWER_OUT then
+						-- CS: skip already processed ports to improve performance
+
+							log ("probing port " & to_string (position => element (port).coordinates), log_threshold + 4);
+
+							-- test if port sits on segment
+							if port_sits_on_segment (element (port), element (segment)) then
+								log_indentation_up;
+-- 								log ("match", log_threshold + 2);
+
+								-- If strand has no name yet, it is to be named by the name of the port that sits on it.
+								-- If strand has a name already, its scope must be global
+								-- because power out ports are allowed in global strands exclusively !
+								if et_schematic.anonymous (element (strand).name) then
+									log ("component " & et_schematic.to_string (key (component)) 
+										& " pin " & to_string (element (port).pin)
+										& " port name " & to_string (element (port).port) 
+										& " is a power output -> port name sets strand name", log_threshold + 2);
+
+									-- rename strand
+									et_schematic.rename_strands (
+										name_before => element (strand).name,
+										name_after => to_net_name (element (port).port),
+										log_threshold => log_threshold + 3);
+
+								elsif element (strand).scope /= global then -- strand has a name and is local or hierarchic
+							
+										log_indentation_reset;
+										log (message_error & "component " & et_schematic.to_string (key (component)) 
+											& " POWER OUT pin " & to_string (element (port).pin)
+											& " port name " & to_string (element (port).port) 
+											& latin_1.lf
+											& "at " & to_string (element (port).coordinates, module)
+											& latin_1.lf
+											& "conflicts with " & to_string (element (strand).scope) 
+											& " net " & et_schematic.to_string (element (strand).name) & " !");
+										raise constraint_error;
+
+								end if;
+								
+								log_indentation_down;
+							end if;
+
+						end if;
+						
+						log_indentation_down;
+						next (port);
+					end loop;
+
+					log_indentation_down;
+					next (component);
+				end loop;
+
+
+				log_indentation_down;
+				next (segment);
+			end loop;
+
+			log_indentation_down;
+			next (strand);
+		end loop;
+		
+	end update_strand_names;
+
+	
 	procedure write_strands (log_threshold : in et_string_processing.type_log_level) is
 	-- Writes a nice overview of strands, net segments and labels
 	-- CS: output consequtive number for strands and segments (as in procedure write_nets)
@@ -2347,7 +2803,8 @@ package body et_schematic is
 	end add_unit;
 
 	procedure reset_component_cursor (cursor : in out type_components.cursor) is
-	-- Resets the given component cursor to the begin of the component list.
+	-- Resets the given component cursor to the begin of the component list
+	-- of the module indicated by module_cursor.
 		procedure reset (
 			name	: in et_coordinates.type_submodule_name.bounded_string;
 			module	: in type_module) is
@@ -2420,21 +2877,119 @@ package body et_schematic is
 	end units_of_component;
 
 
--- 	procedure warning_on_name_less_net (
--- 	-- Writes a warning about a name-less net.
--- 		name 	: in et_schematic.type_net_name.bounded_string;
--- 		net		: in et_schematic.type_strand
--- 		) is
--- 
--- 		use et_string_processing;
--- 	begin
--- 		log (
--- 			text => message_warning & "name-less net " & to_string (name) & " found !"
--- 			);
--- 		-- CS: output coordinates of net (lowest x/Y)
--- 	end warning_on_name_less_net;
+-- PORTLISTS
 	
+-- 
+-- 	function reference (port : in type_port) return string is
+-- 	-- Returns the component reference of the given port.	
+-- 	begin
+-- 		return et_schematic.to_string (port.reference);
+-- 	end reference;
+-- 
+-- 	function port (port : in type_port) return string is
+-- 	-- Returns the port name of the given port.
+-- 	begin
+-- 		return et_libraries.to_string (port.port);
+-- 	end port;
+-- 
+-- 	function pin (port : in type_port) return string is
+-- 	-- Returns the pin name of the given port.
+-- 	begin
+-- 		return et_libraries.to_string (port.pin);
+-- 	end pin;
+-- 
+-- 	function appearance (port : in type_port) return et_libraries.type_component_appearance is
+-- 	-- Returns the appearance of the given port.
+-- 	begin
+-- 		return port.appearance;
+-- 	end appearance;
+-- 	
+-- 	function compare_ports (left, right : in type_port) return boolean is
+-- 	-- Returns true if left comes before right. Compares by component name and pin name.
+-- 	-- If left equals right, the return is false.	
+-- 	-- CS: needs verification !
+-- 		result : boolean := false;
+-- 		use et_libraries;
+-- 		use et_schematic;
+-- 	begin
+-- 		-- First we compare the component reference.
+-- 		-- Examples: C56 comes before R4, LED5 comes before LED7
+-- 		if compare_reference (left.reference, right.reference) then
+-- 			result := true;
+-- 
+-- 		-- If equal references, compare pin names
+-- 		elsif type_pin_name.">" (left.pin, right.pin) then
+-- 			result := true;
+-- 
+-- 		-- If equal pin names, compare port names -- CS: should never happen. raise alarm ?
+-- 		elsif type_port_name.">" (left.port, right.port) then
+-- 			result := true;
+-- 			
+-- 		else
+-- 			result := false;
+-- 		end if;
+-- 
+-- 		-- in case of equivalence of left and right, we return false (default)
+-- 		return result;
+-- 	end compare_ports;
+-- 
+-- 	function appearance (port : in type_ports.cursor) return et_libraries.type_component_appearance is
+-- 	-- Returns the appearance of the given port.
+-- 	begin
+-- 		return (element (port).appearance);
+-- 	end appearance;
+-- 
+-- 
+-- 
+-- 	
+-- 	procedure first_module_netlist is
+-- 	-- Resets the module_cursor to the first module of the rig.
+-- 	begin
+-- 		module_cursor_netlists := rig_netlists.first;
+-- 		-- CS: exception handler in case given module does not exist
+-- 	end first_module_netlist;
+-- 
+-- 	function first_net return type_netlist.cursor is
+-- 	-- Returns a cursor to the first net of the current module (indicated by module_cursor).
+-- 		cursor : type_netlist.cursor;
+-- 	
+-- 		procedure set (
+-- 			module	: in et_coordinates.type_submodule_name.bounded_string;
+-- 			netlist	: in type_netlist.map) is
+-- 		begin
+-- 			cursor := netlist.first;
+-- 		end set;
+-- 
+-- 	begin -- first_net
+-- 		type_rig_netlists.query_element (
+-- 			position => module_cursor_netlists,
+-- 			process => set'access);
+-- 
+-- 		return cursor;
+-- 	end first_net;
+-- 
+-- 
+-- 	function net_count return count_type is
+-- 	-- Returns the number of nets of the current module as string.
+-- 		count : count_type := 0;
+-- 	
+-- 		procedure get (
+-- 			module	: in et_coordinates.type_submodule_name.bounded_string;
+-- 			netlist	: in type_netlist.map) is
+-- 		begin
+-- 			count := length (netlist);
+-- 		end get;
+-- 
+-- 	begin
+-- 		type_rig_netlists.query_element (
+-- 			position => module_cursor_netlists,
+-- 			process => get'access);
+-- 
+-- 		return count;
+-- 	end net_count;
 
+
+	
 	
 -- BOM
 	
@@ -2686,142 +3241,148 @@ package body et_schematic is
 		return n;
 	end components_virtual;
 
+-- 	procedure set_module (module_name : in et_coordinates.type_submodule_name.bounded_string) is
+-- 	-- Sets the active module. Leaves module_cursor pointing to the module.
+-- 	begin
+-- 		module_cursor_netlists := rig_netlists.find (module_name);
+-- 	end set_module;
+
 	
-	procedure make_statistics is
-	-- Generates the statistics on components and nets of the rig.
-	-- Breaks statistics up into submodules, general statistics (CAD) and CAM related things.
-		statistics_file_name_cad: type_statistic_file_name.bounded_string;
-		statistics_file_name_cam: type_statistic_file_name.bounded_string;
-		statistics_handle_cad	: ada.text_io.file_type;
-		statistics_handle_cam	: ada.text_io.file_type;
-
-		component : type_components.cursor;
-		-- CS net
-		
-		use ada.directories;
-		use et_general;
-		use type_components;
-		use type_rig;
-		use et_string_processing;
-		use et_netlist;
-	begin
-		first_module;
-		
-		log (text => "writing statistics ...", level => 1);
-
-		while module_cursor /= type_rig.no_element loop
-			log_indentation_up;
-			log (text => "module " & to_string (key (module_cursor)), level => 1);
-			log_indentation_up;
-
-			-- CAD
-			-- compose the CAD statistics file name and its path like "../ET/motor_driver/motor_driver.stat"
-			statistics_file_name_cad := type_statistic_file_name.to_bounded_string 
-				(
-				compose (
-					containing_directory => compose (work_directory, to_string (key (module_cursor))),
-					name => to_string (key (module_cursor)),
-					extension => extension_statistics)
-				);
-
-			-- create the statistics file (which inevitably and intentionally overwrites the previous file)
-			log (text => "CAD statistics file " & type_statistic_file_name.to_string (statistics_file_name_cad), level => 1);
-			create (
-				file => statistics_handle_cad,
-				mode => out_file, 
-				name => type_statistic_file_name.to_string (statistics_file_name_cad));
-
-			log_indentation_up;
-			put_line (statistics_handle_cad, comment_mark & " " & system_name & " CAD statistics");
-			put_line (statistics_handle_cad, comment_mark & " date " & string (date_now));
-			put_line (statistics_handle_cad, comment_mark & " module " & to_string (key (module_cursor)));
-			put_line (statistics_handle_cad, comment_mark & " " & row_separator_double);
-
-			-- components
-			put_line (statistics_handle_cad, "components");
-			put_line (statistics_handle_cad, " total  " & count_type'image (components_total) & " (incl. virtual components)");
-			put_line (statistics_handle_cad, " real   " & count_type'image (components_real)); -- all real components ! Regardless of bom status !
-			put_line (statistics_handle_cad, " virtual" & count_type'image (components_virtual) & " (power symbols, power flags, ...)");
-			new_line (statistics_handle_cad);
-			-- CS: resitors, leds, transitors, ...
-
-			-- nets
-			put_line (statistics_handle_cad, "nets");
-			-- CS: currently we get the net and pin numbers from et_netlist.rig.
-			-- In the future this data should be taken from et_schematic.rig.
-			et_netlist.set_module (key (module_cursor));
-			put_line (statistics_handle_cad, " total  " & count_type'image (et_netlist.net_count));
-			-- As for the total number of ports, we take all ports into account as they are listed in et_netlist.rig.
-			-- This includes ports of virtual components except so called "power_flags".
-			put_line (statistics_handle_cad, "  ports " & count_type'image (et_netlist.component_ports_total) & " (excl. power flags)");
-			
-			-- finish statistics			
-			put_line (statistics_handle_cad, comment_mark & " " & row_separator_single);
-			put_line (statistics_handle_cad, comment_mark & " end of list");
-			log_indentation_down;
-			close (statistics_handle_cad);
-
-
-
-			-- CAM
-			-- compose the CAM statistics file name and its path like "../ET/motor_driver/CAM/motor_driver.stat"
-			statistics_file_name_cam := type_statistic_file_name.to_bounded_string 
-				(
-				compose (
-					containing_directory => compose 
-						(
-						containing_directory => compose (work_directory, to_string (key (module_cursor))),
-						name => et_export.directory_cam
-						),
-					name => to_string (key (module_cursor)),
-					extension => extension_statistics)
-				);
-
-			-- create the statistics file (which inevitably and intentionally overwrites the previous file)
-			log (text => "CAM statistics file " & type_statistic_file_name.to_string (statistics_file_name_cam), level => 1);
-			create (
-				file => statistics_handle_cam,
-				mode => out_file, 
-				name => type_statistic_file_name.to_string (statistics_file_name_cam));
-
-			log_indentation_up;
-			put_line (statistics_handle_cam, comment_mark & " " & system_name & " CAM statistics");
-			put_line (statistics_handle_cam, comment_mark & " date " & string (date_now));
-			put_line (statistics_handle_cam, comment_mark & " module " & to_string (key (module_cursor)));
-			put_line (statistics_handle_cam, comment_mark & " " & row_separator_double);
-
-			-- components
-			put_line (statistics_handle_cam, "components");
-			put_line (statistics_handle_cam, " total" & count_type'image (components_real (mounted_only => true)));
-			-- As for the total number of real component ports, we take all ports into account for which a physical
-			-- pad must be manufactured. Here it does not matter if a component is to be mounted or not, if a pin is connected or not.
-			-- CS: THT/SMD
-			-- CS: THT/SMD/pins/pads
-			-- CS: resitors, leds, transitors, ...
-			new_line (statistics_handle_cam);
-
-			-- nets
-			put_line (statistics_handle_cam, "nets");
-			-- CS: currently we get the net and pin numbers from et_netlist.rig.
-			-- In the future this data should be taken from et_schematic.rig.
-			et_netlist.set_module (key (module_cursor));
-			put_line (statistics_handle_cam, " total" & count_type'image (et_netlist.net_count));
-
-			-- finish statistics
-			put_line (statistics_handle_cam, comment_mark & " " & row_separator_single);
-			put_line (statistics_handle_cam, comment_mark & " end of list");
-			log_indentation_down;
-			close (statistics_handle_cam);
-
-
-
-			
-			log_indentation_down;
-			next (module_cursor);
-		end loop;
-			
-		
-	end make_statistics;
+-- 	procedure make_statistics is
+-- 	-- Generates the statistics on components and nets of the rig.
+-- 	-- Breaks statistics up into submodules, general statistics (CAD) and CAM related things.
+-- 		statistics_file_name_cad: type_statistic_file_name.bounded_string;
+-- 		statistics_file_name_cam: type_statistic_file_name.bounded_string;
+-- 		statistics_handle_cad	: ada.text_io.file_type;
+-- 		statistics_handle_cam	: ada.text_io.file_type;
+-- 
+-- 		component : type_components.cursor;
+-- 		-- CS net
+-- 		
+-- 		use ada.directories;
+-- 		use et_general;
+-- 		use type_components;
+-- 		use type_rig;
+-- 		use et_string_processing;
+-- 		use et_netlist;
+-- 	begin
+-- 		first_module;
+-- 		
+-- 		log (text => "writing statistics ...", level => 1);
+-- 
+-- 		while module_cursor /= type_rig.no_element loop
+-- 			log_indentation_up;
+-- 			log (text => "module " & to_string (key (module_cursor)), level => 1);
+-- 			log_indentation_up;
+-- 
+-- 			-- CAD
+-- 			-- compose the CAD statistics file name and its path like "../ET/motor_driver/motor_driver.stat"
+-- 			statistics_file_name_cad := type_statistic_file_name.to_bounded_string 
+-- 				(
+-- 				compose (
+-- 					containing_directory => compose (work_directory, to_string (key (module_cursor))),
+-- 					name => to_string (key (module_cursor)),
+-- 					extension => extension_statistics)
+-- 				);
+-- 
+-- 			-- create the statistics file (which inevitably and intentionally overwrites the previous file)
+-- 			log (text => "CAD statistics file " & type_statistic_file_name.to_string (statistics_file_name_cad), level => 1);
+-- 			create (
+-- 				file => statistics_handle_cad,
+-- 				mode => out_file, 
+-- 				name => type_statistic_file_name.to_string (statistics_file_name_cad));
+-- 
+-- 			log_indentation_up;
+-- 			put_line (statistics_handle_cad, comment_mark & " " & system_name & " CAD statistics");
+-- 			put_line (statistics_handle_cad, comment_mark & " date " & string (date_now));
+-- 			put_line (statistics_handle_cad, comment_mark & " module " & to_string (key (module_cursor)));
+-- 			put_line (statistics_handle_cad, comment_mark & " " & row_separator_double);
+-- 
+-- 			-- components
+-- 			put_line (statistics_handle_cad, "components");
+-- 			put_line (statistics_handle_cad, " total  " & count_type'image (components_total) & " (incl. virtual components)");
+-- 			put_line (statistics_handle_cad, " real   " & count_type'image (components_real)); -- all real components ! Regardless of bom status !
+-- 			put_line (statistics_handle_cad, " virtual" & count_type'image (components_virtual) & " (power symbols, power flags, ...)");
+-- 			new_line (statistics_handle_cad);
+-- 			-- CS: resitors, leds, transitors, ...
+-- 
+-- 			-- nets
+-- 			put_line (statistics_handle_cad, "nets");
+-- 			-- CS: currently we get the net and pin numbers from et_netlist.rig.
+-- 			-- In the future this data should be taken from et_schematic.rig.
+-- 			et_netlist.set_module (key (module_cursor));
+-- 			put_line (statistics_handle_cad, " total  " & count_type'image (et_netlist.net_count));
+-- 			-- As for the total number of ports, we take all ports into account as they are listed in et_netlist.rig.
+-- 			-- This includes ports of virtual components except so called "power_flags".
+-- 			put_line (statistics_handle_cad, "  ports " & count_type'image (et_netlist.component_ports_total) & " (excl. power flags)");
+-- 			
+-- 			-- finish statistics			
+-- 			put_line (statistics_handle_cad, comment_mark & " " & row_separator_single);
+-- 			put_line (statistics_handle_cad, comment_mark & " end of list");
+-- 			log_indentation_down;
+-- 			close (statistics_handle_cad);
+-- 
+-- 
+-- 
+-- 			-- CAM
+-- 			-- compose the CAM statistics file name and its path like "../ET/motor_driver/CAM/motor_driver.stat"
+-- 			statistics_file_name_cam := type_statistic_file_name.to_bounded_string 
+-- 				(
+-- 				compose (
+-- 					containing_directory => compose 
+-- 						(
+-- 						containing_directory => compose (work_directory, to_string (key (module_cursor))),
+-- 						name => et_export.directory_cam
+-- 						),
+-- 					name => to_string (key (module_cursor)),
+-- 					extension => extension_statistics)
+-- 				);
+-- 
+-- 			-- create the statistics file (which inevitably and intentionally overwrites the previous file)
+-- 			log (text => "CAM statistics file " & type_statistic_file_name.to_string (statistics_file_name_cam), level => 1);
+-- 			create (
+-- 				file => statistics_handle_cam,
+-- 				mode => out_file, 
+-- 				name => type_statistic_file_name.to_string (statistics_file_name_cam));
+-- 
+-- 			log_indentation_up;
+-- 			put_line (statistics_handle_cam, comment_mark & " " & system_name & " CAM statistics");
+-- 			put_line (statistics_handle_cam, comment_mark & " date " & string (date_now));
+-- 			put_line (statistics_handle_cam, comment_mark & " module " & to_string (key (module_cursor)));
+-- 			put_line (statistics_handle_cam, comment_mark & " " & row_separator_double);
+-- 
+-- 			-- components
+-- 			put_line (statistics_handle_cam, "components");
+-- 			put_line (statistics_handle_cam, " total" & count_type'image (components_real (mounted_only => true)));
+-- 			-- As for the total number of real component ports, we take all ports into account for which a physical
+-- 			-- pad must be manufactured. Here it does not matter if a component is to be mounted or not, if a pin is connected or not.
+-- 			-- CS: THT/SMD
+-- 			-- CS: THT/SMD/pins/pads
+-- 			-- CS: resitors, leds, transitors, ...
+-- 			new_line (statistics_handle_cam);
+-- 
+-- 			-- nets
+-- 			put_line (statistics_handle_cam, "nets");
+-- 			-- CS: currently we get the net and pin numbers from et_netlist.rig.
+-- 			-- In the future this data should be taken from et_schematic.rig.
+-- 			et_netlist.set_module (key (module_cursor));
+-- 			put_line (statistics_handle_cam, " total" & count_type'image (et_netlist.net_count));
+-- 
+-- 			-- finish statistics
+-- 			put_line (statistics_handle_cam, comment_mark & " " & row_separator_single);
+-- 			put_line (statistics_handle_cam, comment_mark & " end of list");
+-- 			log_indentation_down;
+-- 			close (statistics_handle_cam);
+-- 
+-- 
+-- 
+-- 			
+-- 			log_indentation_down;
+-- 			next (module_cursor);
+-- 		end loop;
+-- 			
+-- 		
+-- 	end make_statistics;
 
 	
 end et_schematic;
