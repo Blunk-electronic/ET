@@ -51,7 +51,7 @@ with et_kicad;
 with et_netlist;
 
 procedure et is
-
+	
 	procedure get_commandline_arguments is
 		use et_schematic;
 	begin
@@ -170,13 +170,6 @@ procedure et is
 		et_kicad.import_design (log_threshold => 0);
 		restore_projects_root_directory;
 
-		-- The project database can be completed once netlists have been built.
-		-- For example: The names of strands may change once power output ports have been
-		-- detected.
-		-- make_netlists generates portlists, netlists and updates the strand names.
--- 		et_netlist.make_netlists;
-
-		
 		et_import.close_report;
 
 		exception
@@ -201,9 +194,8 @@ begin -- main
 	reset_warnings_counter;
 	
 	-- export netlists
-	-- NOTE: write_netlists requires that netlists have been built before 
-	-- (see comments in procedure import_design above).
--- 	et_netlist.write_netlists;
+	et_schematic.make_netlists (log_threshold => 0);
+
 
 	-- export statistics
 -- 	et_schematic.make_statistics;

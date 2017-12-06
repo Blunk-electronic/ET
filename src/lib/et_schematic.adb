@@ -1146,7 +1146,9 @@ package body et_schematic is
 	
 	-- Stores the absolute port coordinates in map "portlists". 
 	-- The key into this map is the component reference.
-
+	
+	-- Saves the portlists in the module (indicated by module_cursor).
+	
 		-- Here we collect the portlists:
 		portlists					: type_portlists.map;
 		component_inserted			: boolean;
@@ -1418,6 +1420,25 @@ package body et_schematic is
 			end if;
 		end check_appearance_sch_vs_lib;
 
+		procedure save_portlists is
+		-- Save the portlists in the module (indicated by module_cursor).
+		-- module_cursor points already there.
+			use type_rig;
+		
+			procedure save (
+				module_name : in type_submodule_name.bounded_string;
+				module : in out type_module) is
+			begin
+				module.portlists := portlists;
+			end save;
+		begin
+			log ("saving portlists ...", log_threshold + 1);
+			update_element (
+				container => rig,
+				position => module_cursor,
+				process => save'access);
+		end save_portlists;
+		
 	begin -- build_portlists
 		log_indentation_up;
 		log (text => "building portlists ...", level => log_threshold);
@@ -1528,6 +1549,10 @@ package body et_schematic is
 		log_indentation_down;
 -- 		log (text => "portlists complete", level => log_threshold);
 		log_indentation_down;
+
+		-- Save portlists in the module (indicated by module_cursor).
+		-- Why ? The portlists are later essential for netlist generation and ERC.
+		save_portlists;
 		
 		return portlists;
 	end build_portlists;
@@ -2877,7 +2902,45 @@ package body et_schematic is
 	end units_of_component;
 
 
--- PORTLISTS
+	procedure make_netlists (log_threshold : in et_string_processing.type_log_level) is
+	-- Builds the netlists of all modules of the rig.
+	-- Bases on the portlists and nets/strands information of the module.
+	-- Netlists are exported in individual project directories in the work directory of ET.
+	-- These project directories have the same name as the module indicated by module_cursor.
+	
+		use et_string_processing;
+		use type_rig;
+		use et_export;
+
+-- 		portlists : type_portlists.map;
+		
+	begin -- make_netlists (note plural !)
+		log (text => "building rig netlists ...", level => log_threshold);
+
+		-- We start with the first module of the rig.
+		et_schematic.first_module;
+
+		-- Process one rig module after another.
+		-- module_cursor points to the module in the rig.
+		while module_cursor /= type_rig.no_element loop
+			log_indentation_up;
+			log ("module " & to_string (key (module_cursor)), log_threshold);
+			create_project_directory (to_string (key (module_cursor)));
+
+			-- Generate the portlists of the module indicated by module_cursor.
+-- 			portlists := element (module_cursor).portlists;
+
+-- 			-- Insert the module in rig_netlists with the netlist built by make_netlist:
+-- 			rig.insert (
+-- 				key => key (et_schematic.module_cursor),
+-- 				new_item => make_netlist);
+				--CS: new_item => connect_hierarchical_nets (make_netlist));
+
+			next (et_schematic.module_cursor);
+		end loop;
+
+		log_indentation_down;
+	end make_netlists;
 	
 -- 
 -- 	function reference (port : in type_port) return string is

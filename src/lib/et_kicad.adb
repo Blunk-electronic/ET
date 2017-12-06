@@ -5128,6 +5128,7 @@ package body et_kicad is
 						strands			=> type_strands.empty_list,
 						nets			=> type_nets.empty_map,
 						components		=> type_components.empty_map,
+						portlists		=> type_portlists.empty_map,
 						submodules		=> type_gui_submodules.empty_map,
 						frames			=> type_frames.empty_list,
 						title_blocks	=> type_title_blocks.empty_list,
@@ -5260,7 +5261,7 @@ package body et_kicad is
 
 				-- write net report
 				et_schematic.write_nets (log_threshold + 1);
-				
+
 			when others =>
 				null; -- CS: add import of other CAD formats here
 

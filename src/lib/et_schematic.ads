@@ -653,7 +653,27 @@ package et_schematic is
 	-- Returns the generic name of a component as it is listed in a library.
 	-- The cursor must point to the component in question.
 
+	
+	-- This is a coponent port with its basic elements:
+	type type_port is tagged record -- CS: change to "is record" ?
+		pin			: type_pin_name.bounded_string; -- the pin name like 3,4 or E3, A2
+		port		: type_port_name.bounded_string; -- the port name like GPIO1, GPIO2 -- CS: rename to "name"
+		coordinates : type_coordinates;
+		direction	: type_port_direction; -- example: "passive" -- used for ERC
+		style		: type_port_style;	-- used for ERC
+		appearance	: type_component_appearance;
+		-- CS: processed : boolean;
+	end record;
 
+	package type_ports is new doubly_linked_lists (
+		element_type => type_port); 
+	use type_ports;
+
+	-- The components with their ports are collected in a map with the component reference as key:
+	package type_portlists is new ordered_maps (
+		key_type => type_component_reference,
+		element_type => type_ports.list,
+		"<" => compare_reference);
 	
 -- MODULES
 	
@@ -661,7 +681,8 @@ package et_schematic is
 		libraries		: type_full_library_names.list;	-- the list of project library names
 		strands	    	: type_strands.list;		-- the strands of the module. temporarily used. CS: clear once nets are ready. 
 		nets 	    	: type_nets.map;			-- the nets of the module
-        components		: type_components.map;		-- the components of the module
+		components		: type_components.map;		-- the components of the module
+		portlists		: type_portlists.map;		-- the portlists of the module
 		submodules  	: type_gui_submodules.map;	-- graphical representations of submodules. -- GUI relevant
         frames      	: type_frames.list;			-- frames -- GUI relevant
         title_blocks	: type_title_blocks.list;	-- title blocks -- GUI relevant
@@ -801,35 +822,6 @@ package et_schematic is
 		id				: positive; -- id of a submodule in the list
 	end record;
 
--- PORTLISTS
-	
-	-- This is a coponent port with its basic elements:
-	type type_port is tagged record
-		pin			: type_pin_name.bounded_string; -- the pin name like 3,4 or E3, A2
-		port		: type_port_name.bounded_string; -- the port name like GPIO1, GPIO2 -- CS: rename to "name"
-		coordinates : type_coordinates;
-		direction	: type_port_direction; -- example: "passive" -- used for ERC
-		style		: type_port_style;	-- used for ERC
-		appearance	: type_component_appearance;
-		-- CS: processed : boolean;
-	end record;
-
--- 	function port_sits_on_segment (
--- 	-- Returns true if the given port sits on the given net segment.
--- 		port	: in type_port_base'class;
--- 		segment	: in type_net_segment'class) 
--- 		return boolean;
--- 	
-	package type_ports is new doubly_linked_lists (
-		element_type => type_port); 
-	use type_ports;
-
-	-- The components with their ports are collected in a map with the component reference as key:
-	package type_portlists is new ordered_maps (
-		key_type => type_component_reference,
-		element_type => type_ports.list,
-		"<" => compare_reference);
-	
 	function build_portlists (log_threshold : in et_string_processing.type_log_level) return type_portlists.map;
 	-- Returns a list of components with the absolute positions of their ports as they are placed in the schematic.
 
@@ -892,6 +884,7 @@ package et_schematic is
 
 	extension_netlist : constant string (1 .. 3) := "net";
 
+	procedure make_netlists (log_threshold : in et_string_processing.type_log_level);
 	
 -- BOM
 	-- Whenever we deal with BOM files this type should be used:
