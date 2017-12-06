@@ -5247,9 +5247,15 @@ package body et_kicad is
 				-- For example a strand named "VCC3V3" exists on submodule A on sheet 2. 
 				-- Another strand "VCC3V3" exists on submodule C on sheet 1. They do not "know" each other
 				-- and must be merged into a single net.
-                et_schematic.link_strands (log_threshold + 1);
-                et_schematic.process_hierarchic_nets (log_threshold + 1);
+				et_schematic.link_strands (log_threshold + 1);
 
+				-- Append hierarchic strands to global or local nets.
+				-- IMPORTANT: Hierarchic nets are nothing more than extensions of
+				-- local or global nets !
+				et_schematic.process_hierarchic_nets (log_threshold + 1);
+
+				-- write net report
+				et_schematic.write_nets (log_threshold + 1);
 				
 			when others =>
 				null; -- CS: add import of other CAD formats here

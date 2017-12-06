@@ -744,7 +744,7 @@ package et_schematic is
 
 	procedure process_hierarchic_nets (log_threshold : in et_string_processing.type_log_level);
     
-	procedure write_nets;
+	procedure write_nets (log_threshold : in et_string_processing.type_log_level);
 	-- Writes a nice overview of all nets, strands, segments and labels.
 	
 	function first_component return type_components.cursor;
