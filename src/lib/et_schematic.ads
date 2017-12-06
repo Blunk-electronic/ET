@@ -720,6 +720,9 @@ package et_schematic is
 	function first_strand return type_strands.cursor;
 	-- Returns a cursor pointing to the first strand of the module (indicated by module_cursor).
 
+	procedure update_strand_names (log_threshold : in et_string_processing.type_log_level);
+	-- Tests if a power out port is connected to a strand and renames the strand if necessary.	
+	
 	procedure rename_strands (
 	-- Renames all strands with the name_before to the name_after.
 	-- Changes the scope of the affected strands to "global".

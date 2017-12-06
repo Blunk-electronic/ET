@@ -5242,7 +5242,7 @@ package body et_kicad is
 				log_indentation_down;
 
 				-- Update strand names according to power out ports connected with them:
-				et_netlist.update_strand_names (log_threshold + 1);
+				et_schematic.update_strand_names (log_threshold + 1);
 
 				-- write strands report
 				et_schematic.write_strands (log_threshold + 1);
