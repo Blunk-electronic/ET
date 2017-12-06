@@ -5241,8 +5241,12 @@ package body et_kicad is
 				
 				log_indentation_down;
 
+				-- Update strand names according to power out ports connected with them:
 				et_netlist.update_strand_names (log_threshold + 1);
 
+				-- write strands report
+				et_schematic.write_strands (log_threshold + 1);
+				
 				-- Merge the strands which are still independed of each other. 
 				-- For example a strand named "VCC3V3" exists on submodule A on sheet 2. 
 				-- Another strand "VCC3V3" exists on submodule C on sheet 1. They do not "know" each other

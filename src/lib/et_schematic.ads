@@ -727,7 +727,7 @@ package et_schematic is
 		name_after		: in type_net_name.bounded_string;
 		log_threshold	: in et_string_processing.type_log_level);
 
-	procedure write_strands;
+	procedure write_strands (log_threshold : in et_string_processing.type_log_level);
 	-- Writes a nice overview of strands, net segments and labels
 
 	procedure check_strands;

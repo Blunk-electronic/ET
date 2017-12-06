@@ -1216,8 +1216,9 @@ package body et_schematic is
 		end if;
 	end rename_strands;
 
-	procedure write_strands is
+	procedure write_strands (log_threshold : in et_string_processing.type_log_level) is
 	-- Writes a nice overview of strands, net segments and labels
+	-- CS: output consequtive number for strands and segments (as in procedure write_nets)
 		use et_string_processing;
 
 		procedure query_label (
@@ -1227,18 +1228,20 @@ package body et_schematic is
 			use type_simple_labels;
 			use type_tag_labels;
 		begin
-			log_indentation_up;
-			while label_simple /= type_simple_labels.no_element loop
-				log ("simple label " & to_string (position => element (label_simple).coordinates));
-				next (label_simple);
-			end loop;
+			if log_level >= log_threshold + 2 then
+				log_indentation_up;
+				while label_simple /= type_simple_labels.no_element loop
+					log ("simple label " & to_string (position => element (label_simple).coordinates));
+					next (label_simple);
+				end loop;
 
-			while label_tag /= type_tag_labels.no_element loop
-				log ("tag label " & to_string (position => element (label_tag).coordinates));
-				next (label_tag);
-			end loop;
+				while label_tag /= type_tag_labels.no_element loop
+					log ("tag label " & to_string (position => element (label_tag).coordinates));
+					next (label_tag);
+				end loop;
 
-			log_indentation_down;
+				log_indentation_down;
+			end if;
 		end query_label;
 	
 		procedure query_segment (
@@ -1246,17 +1249,19 @@ package body et_schematic is
 			segment : type_net_segments.cursor := strand.segments.first;
 			use type_net_segments;
 		begin
-			while segment /= type_net_segments.no_element loop
-				log_indentation_up;
-				log ("segment " & to_string (element (segment)));
+			if log_level >= log_threshold + 1 then
+				while segment /= type_net_segments.no_element loop
+					log_indentation_up;
+					log ("segment " & to_string (element (segment)));
 
-				type_net_segments.query_element (
-					position	=> segment,
-					process		=> query_label'access);
+					type_net_segments.query_element (
+						position	=> segment,
+						process		=> query_label'access);
 
-				log_indentation_down;				
-				next (segment);
-			end loop;
+					log_indentation_down;				
+					next (segment);
+				end loop;
+			end if;
 		end query_segment;
 	
 		procedure query_strands (
@@ -1267,42 +1272,33 @@ package body et_schematic is
 			use et_coordinates.type_path_to_submodule;
 			use ada.directories;
 		begin
-			while strand /= type_strands.no_element loop
-				log_indentation_up;
-
--- 				if base_name (to_string (top_level_schematic)) = to_string (et_coordinates.module (element (strand).coordinates)) then
--- 					-- strand is in top module
--- 					log (to_string (element (strand).name) & " scope " & to_string (element (strand).scope)
--- 						& latin_1.space
--- 						& et_coordinates.to_string (et_coordinates.path (element (strand).coordinates)));
--- 				else
--- 					-- strand is in a submodule
--- 					log (to_string (element (strand).name) & " scope " & to_string (element (strand).scope)
--- 						& latin_1.space
--- 						& et_coordinates.to_string (et_coordinates.path (element (strand).coordinates))
--- 						& et_coordinates.to_string (et_coordinates.module (element (strand).coordinates)));
--- 				end if;
+			if log_level >= log_threshold then
+				while strand /= type_strands.no_element loop
+					log_indentation_up;
 
 					log (to_string (element (strand).name) & " scope " & to_string (element (strand).scope)
-						& latin_1.space
+						& " in "
 						& et_coordinates.to_string (et_coordinates.path (element (strand).coordinates)));
-
-				
-				type_strands.query_element (
-					position	=> strand,
-					process		=> query_segment'access);
-				
-				log_indentation_down;
-				next (strand);
-			end loop;
+					
+					type_strands.query_element (
+						position	=> strand,
+						process		=> query_segment'access);
+					
+					log_indentation_down;
+					next (strand);
+				end loop;
+			end if;
 		end query_strands;
 		
 	begin -- write_strands
-		log ("creating net strands report ...");
-		
-		type_rig.query_element (
-			position	=> module_cursor,
-			process		=> query_strands'access);
+		if log_level >= log_threshold then
+			log ("strands report");
+			
+			type_rig.query_element (
+				position	=> module_cursor,
+				process		=> query_strands'access);
+		end if;
+	
 	end write_strands;
 
 	procedure check_strands is -- CS: currently not used
@@ -1482,8 +1478,6 @@ package body et_schematic is
 				process		=> add_strand'access);
 		end add_net;
 
-		--use et_coordinates.type_path_to_submodule;
-		
 	begin -- link_strands
 		log (text => "linking local and global strands to nets ...", level => log_threshold);
 
@@ -1565,8 +1559,6 @@ package body et_schematic is
 		log_indentation_down;
 	end link_strands;
 
-
-	
 	procedure process_hierarchic_nets (log_threshold : in et_string_processing.type_log_level) is
 	-- Looks up strands of hierarchic nets and appends them to the local or global nets (if connected via gui_submodules). 
 	-- Hierarchic nets are mere extensions of a global or local net at deeper levels in the design hierarchy. 

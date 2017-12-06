@@ -1021,10 +1021,10 @@ package body et_netlist is
 				new_item => make_netlist);
 				--CS: new_item => connect_hierarchical_nets (make_netlist));
 
-			-- create a nice report about net strands, segments and labels
-			if log_level >= 2 then
-				write_strands;
-			end if;
+-- 			-- create a nice report about net strands, segments and labels
+-- 			if log_level >= 2 then
+-- 				write_strands;
+-- 			end if;
 				
 			next (et_schematic.module_cursor);
 		end loop;
@@ -1151,10 +1151,10 @@ package body et_netlist is
 			next (strand);
 		end loop;
 		
-		-- create a nice report about net strands, segments and labels
-		if log_level >= log_threshold then
-			write_strands;
-		end if;
+-- 		-- create a nice report about net strands, segments and labels
+-- 		if log_level >= log_threshold then
+-- 			write_strands;
+-- 		end if;
 
 	end update_strand_names;
 		
