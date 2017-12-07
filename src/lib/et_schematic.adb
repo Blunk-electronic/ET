@@ -2901,6 +2901,35 @@ package body et_schematic is
 		return u;
 	end units_of_component;
 
+	function compare_ports (left, right : in type_port_with_reference) return boolean is
+	-- Returns true if left comes before right. Compares by component name and pin name.
+	-- If left equals right, the return is false.	
+	-- CS: needs verification !
+		result : boolean := false;
+		use et_libraries;
+		use et_schematic;
+	begin
+		-- First we compare the component reference.
+		-- Examples: C56 comes before R4, LED5 comes before LED7
+		if compare_reference (left.reference, right.reference) then
+			result := true;
+
+		-- If equal references, compare pin names
+		elsif type_pin_name.">" (left.pin, right.pin) then
+			result := true;
+
+		-- If equal pin names, compare port names -- CS: should never happen. raise alarm ?
+		elsif type_port_name.">" (left.port, right.port) then
+			result := true;
+			
+		else
+			result := false;
+		end if;
+
+		-- in case of equivalence of left and right, we return false (default)
+		return result;
+	end compare_ports;
+	
 
 	procedure make_netlists (log_threshold : in et_string_processing.type_log_level) is
 	-- Builds the netlists of all modules of the rig.
@@ -2913,18 +2942,213 @@ package body et_schematic is
 		use et_export;
 
 -- 		portlists : type_portlists.map;
+
+		function make_netlist return type_netlist.map is
+		-- Generates the netlist of the current module (indicated by module_cursor).
+		-- module.portlists provide the port coordinates. 
+		-- module.nets provides the strands and nets.
+		-- With this information we make the netlist of the current module.
 		
+			-- the netlist being built
+			netlist		: type_netlist.map;
+			
+-- 			procedure add_port (
+-- 			-- Adds the given port and the component reference to the net in the netlist being built.
+-- 				reference : in et_libraries.type_component_reference;
+-- 				port : in type_port_base) is
+-- 
+-- 				procedure add (
+-- 					net_name : in type_net_name.bounded_string;
+-- 					ports : in out type_ports.set) is
+-- 
+-- 					inserted : boolean;
+-- 					cursor : type_ports.cursor;
+-- 				begin
+-- 					-- If a port sits on the point where two segments meet, the same port should be inserted only once.
+-- 					-- Thus we have the obligatory flag "inserted". 
+-- 					ports.insert (
+-- 						new_item => (port with reference),
+-- 						inserted => inserted,
+-- 						position => cursor
+-- 						);
+-- 
+-- 					if not inserted then -- port already in net
+-- 						log_indentation_up;
+-- 						log (text => "already processed -> skipped", level => 3);
+-- 						log_indentation_down;
+-- 					end if;
+-- 						
+-- 				end add;
+-- 				
+-- 			begin -- add_port
+-- 				netlist_pre.update_element (
+-- 					position => net_cursor_netlist,
+-- 					process => add'access);
+-- 			end add_port;
+
+			procedure query_nets (
+				module_name	: in type_submodule_name.bounded_string;
+				module		: in type_module) is
+
+				use type_nets;
+				net : type_nets.cursor := module.nets.first; -- points to the net being read
+				net_in_netlist : type_netlist.cursor; -- point to the net being built in the netlist
+				net_created : boolean := false; -- goes true once the net has been created in the netlist
+				
+				procedure query_strands (
+					net_name	: in type_net_name.bounded_string;
+					net			: in type_net) is
+					use type_strands;
+					strand : type_strands.cursor := net.strands.first; -- points to the strand being read
+
+					procedure query_segments (strand : in type_strand) is
+						use type_net_segments;
+						segment		: type_net_segments.cursor := strand.segments.first; -- points to the segment being read
+						use type_portlists;
+						component	: type_portlists.cursor := module.portlists.first;	-- points to the component being read
+
+						procedure query_ports (
+							component	: in type_component_reference;
+							ports		: in type_ports.list) is
+							use type_ports;
+							port : type_ports.cursor := ports.first; -- points to the port being read
+						begin
+							while port /= type_ports.no_element loop
+
+								log_indentation_up;
+								log ("probing " & to_string (component) 
+										& " pin/pad " & to_string (element (port).pin)
+										& latin_1.space
+										& to_string (position => element (port).coordinates, scope => et_coordinates.module),
+									log_threshold + 3);
+
+								-- test if port sits on segment
+								if port_sits_on_segment (element (port), element (segment)) then
+									log_indentation_up;
+								
+									log (to_string (component) 
+											& " pin/pad " & to_string (element (port).pin)
+											& latin_1.space
+											& to_string (position => element (port).coordinates, scope => et_coordinates.module),
+										log_threshold + 2);
+									
+									log_indentation_down;
+-- 
+-- 									-- add port to current net in netlist
+-- 									add_port (
+-- 										reference => key (component_cursor),
+-- 										port => element (port_cursor));
+-- 
+								end if;
+								log_indentation_down;
+
+							
+								next (port);
+							end loop;
+						end query_ports;
+						
+					begin -- query_segments
+						while segment /= type_net_segments.no_element loop
+
+							-- CS: log segment coordinates
+							
+							component := module.portlists.first;	-- points to the component being read
+							while component /= type_portlists.no_element loop
+							
+								type_portlists.query_element (
+									position => component,
+									process => query_ports'access);
+
+								next (component);
+							end loop;
+								
+							next (segment);
+						end loop;
+					end query_segments;
+
+				begin -- query_strands
+					while strand /= type_strands.no_element loop
+
+						-- CS: log strand coordinates
+						query_element (
+							position => strand,
+							process => query_segments'access);
+				
+						next (strand);
+					end loop;
+				end query_strands;
+
+			begin -- query_nets
+				log_indentation_up;
+			
+				while net /= type_nets.no_element loop
+
+					-- log the name of the net being built
+					log (to_string (key (net)), log_threshold + 1);
+				
+					-- create net in netlist
+					insert (
+						container => netlist,
+						key => key (net),
+						new_item => type_ports_with_reference.empty_set,
+						position => net_in_netlist,
+						inserted => net_created);
+
+					-- CS: evaluate net_created
+
+					-- search for ports connected with the net being built
+					query_element (
+						position => net,
+						process => query_strands'access);
+
+					next (net);
+				end loop;
+
+				log_indentation_down;	
+			end query_nets;
+					
+		begin -- make_netlist (note singluar !)
+			--log (text => "building netlist ...", level => log_threshold);
+
+			query_element (
+				position => module_cursor,
+				process => query_nets'access);
+			
+			-- HOW DOES IT WORK ?
+			-- The outer loop fetches one strand after another from a module in et_schematic.rig (see type_module in et_schematic.ads).
+			-- The strand name is used as primary key for the net being inserted into the netlist.
+			-- The loop in the next level fetches the net segments from that strand.
+
+			-- The loop in the next level fetches components from the portlists.
+			-- The loop in the next level fetches the ports of the component within the portlists.
+
+			-- Then we test if a port sits on the current segment. When positive, the port is added to 
+			-- the net within the netlist.
+
+			return netlist;
+
+		end make_netlist;
+
+
+		procedure add_netlist (
+			module_name : in type_submodule_name.bounded_string;
+			module : in out type_module) is
+		begin
+			module.netlist := make_netlist;
+		end add_netlist;
+
+
 	begin -- make_netlists (note plural !)
 		log (text => "building rig netlists ...", level => log_threshold);
-
+		log_indentation_up;
+		
 		-- We start with the first module of the rig.
 		et_schematic.first_module;
 
 		-- Process one rig module after another.
 		-- module_cursor points to the module in the rig.
 		while module_cursor /= type_rig.no_element loop
-			log_indentation_up;
-			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log ("module " & to_string (key (module_cursor)), log_threshold + 1);
 			create_project_directory (to_string (key (module_cursor)));
 
 			-- Generate the portlists of the module indicated by module_cursor.
@@ -2935,7 +3159,12 @@ package body et_schematic is
 -- 				key => key (et_schematic.module_cursor),
 -- 				new_item => make_netlist);
 				--CS: new_item => connect_hierarchical_nets (make_netlist));
-
+-- 			make_netlist;
+			update_element (
+				container => rig,
+				position => module_cursor,
+				process => add_netlist'access);
+				
 			next (et_schematic.module_cursor);
 		end loop;
 

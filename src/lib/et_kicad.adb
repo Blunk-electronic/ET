@@ -5129,6 +5129,7 @@ package body et_kicad is
 						nets			=> type_nets.empty_map,
 						components		=> type_components.empty_map,
 						portlists		=> type_portlists.empty_map,
+						netlist			=> type_netlist.empty_map,
 						submodules		=> type_gui_submodules.empty_map,
 						frames			=> type_frames.empty_list,
 						title_blocks	=> type_title_blocks.empty_list,

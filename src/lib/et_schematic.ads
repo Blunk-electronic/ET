@@ -655,7 +655,7 @@ package et_schematic is
 
 	
 	-- This is a coponent port with its basic elements:
-	type type_port is tagged record -- CS: change to "is record" ?
+	type type_port is tagged record
 		pin			: type_pin_name.bounded_string; -- the pin name like 3,4 or E3, A2
 		port		: type_port_name.bounded_string; -- the port name like GPIO1, GPIO2 -- CS: rename to "name"
 		coordinates : type_coordinates;
@@ -665,6 +665,7 @@ package et_schematic is
 		-- CS: processed : boolean;
 	end record;
 
+	-- Ports can be collected in a simple list:
 	package type_ports is new doubly_linked_lists (
 		element_type => type_port); 
 	use type_ports;
@@ -674,6 +675,28 @@ package et_schematic is
 		key_type => type_component_reference,
 		element_type => type_ports.list,
 		"<" => compare_reference);
+
+	-- If component ports are to be listed, we need additionally the component reference:
+	type type_port_with_reference is new type_port with record
+		reference	: type_component_reference;
+	end record;
+
+	function compare_ports (left, right : in type_port_with_reference) return boolean;
+	-- Returns true if left comes before right. Compares by component name and pin name.
+	-- If left equals right, the return is false.	
+	
+	package type_ports_with_reference is new ordered_sets (
+		element_type => type_port_with_reference,
+		"<" => compare_ports);
+	use type_ports_with_reference;
+
+	-- This is the netlist of a single submodule:
+	-- It does also contain ports of virtual components (power symbols) except 
+	-- so called "power flags".
+	package type_netlist is new ordered_maps (
+		key_type => type_net_name.bounded_string, -- net name like "MCU_CLOCK"
+		element_type => type_ports_with_reference.set); -- the list of ports connected with the net
+	use type_netlist;
 	
 -- MODULES
 	
@@ -683,6 +706,7 @@ package et_schematic is
 		nets 	    	: type_nets.map;			-- the nets of the module
 		components		: type_components.map;		-- the components of the module
 		portlists		: type_portlists.map;		-- the portlists of the module
+		netlist			: type_netlist.map;			-- the netlist
 		submodules  	: type_gui_submodules.map;	-- graphical representations of submodules. -- GUI relevant
         frames      	: type_frames.list;			-- frames -- GUI relevant
         title_blocks	: type_title_blocks.list;	-- title blocks -- GUI relevant
