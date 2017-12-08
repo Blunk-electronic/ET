@@ -909,6 +909,12 @@ package et_schematic is
 	extension_netlist : constant string (1 .. 3) := "net";
 
 	procedure make_netlists (log_threshold : in et_string_processing.type_log_level);
+
+	procedure export_netlists (log_threshold : in et_string_processing.type_log_level);
+	-- Exports/Writes the netlists of the rig in separate files.
+	-- Addresses real components exclusively. Virtual things like GND symbols are not exported.
+	-- Call this procedure after executing procedure make_netlist !
+
 	
 -- BOM
 	-- Whenever we deal with BOM files this type should be used:

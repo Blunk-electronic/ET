@@ -2932,7 +2932,25 @@ package body et_schematic is
 		return result;
 	end compare_ports;
 	
+	function net_count return count_type is
+	-- Returns the number of nets of the current module as string.
+		count : count_type := 0;
+	
+		procedure count_nets (
+			module_name	: in type_submodule_name.bounded_string;
+			module		: in type_module) is
+		begin
+			count := length (module.netlist);
+		end count_nets;
 
+	begin -- net_count
+		type_rig.query_element (
+			position => module_cursor,
+			process => count_nets'access);
+
+		return count;
+	end net_count;
+	
 	procedure make_netlists (log_threshold : in et_string_processing.type_log_level) is
 	-- Builds the netlists of all modules of the rig.
 	-- Addresses ALL components both virtual and real. Virtual components are things like GND or VCC symbols.
@@ -2943,7 +2961,6 @@ package body et_schematic is
 	
 		use et_string_processing;
 		use type_rig;
-		use et_export;
 
 		function make_netlist return type_netlist.map is
 		-- Generates the netlist of the current module (indicated by module_cursor).
@@ -3070,7 +3087,7 @@ package body et_schematic is
 												& " pin/pad " & to_string (element (port_cursor).pin)
 												& latin_1.space
 												& to_string (position => element (port_cursor).coordinates, scope => et_coordinates.module),
-											log_threshold + 3);
+											log_threshold + 5);
 
 										-- test if port sits on segment
 										if port_sits_on_segment (element (port_cursor), element (segment)) then
@@ -3080,7 +3097,7 @@ package body et_schematic is
 													& " pin/pad " & to_string (element (port_cursor).pin)
 													& latin_1.space
 													& to_string (position => element (port_cursor).coordinates, scope => et_coordinates.module),
-												log_threshold + 2);
+												log_threshold + 3);
 											
 											log_indentation_down;
 
@@ -3110,7 +3127,7 @@ package body et_schematic is
 					
 						while segment /= type_net_segments.no_element loop
 
-							log ("segment " & to_string (element (segment)), log_threshold + 3);
+							log ("segment " & to_string (element (segment)), log_threshold + 4);
 
 							-- reset the component cursor, then loop in the component list 
 							component_cursor := module.portlists.first;	-- points to the component being read
@@ -3155,7 +3172,7 @@ package body et_schematic is
 				while net_cursor /= type_nets.no_element loop
 
 					-- log the name of the net being built
-					log (to_string (key (net_cursor)), log_threshold + 1);
+					log (to_string (key (net_cursor)), log_threshold + 2);
 				
 					-- create net in netlist
 					insert (
@@ -3198,20 +3215,20 @@ package body et_schematic is
 		log_indentation_up;
 		
 		-- We start with the first module of the rig.
-		et_schematic.first_module;
+		first_module;
 
 		-- Process one rig module after another.
 		-- module_cursor points to the module in the rig.
 		while module_cursor /= type_rig.no_element loop
 			log ("module " & to_string (key (module_cursor)), log_threshold + 1);
-			create_project_directory (to_string (key (module_cursor)));
 
 			update_element (
 				container => rig,
 				position => module_cursor,
 				process => add_netlist'access);
-				
-			next (et_schematic.module_cursor);
+
+			log (" net count total" & count_type'image (net_count), log_threshold + 1);
+			next (module_cursor);
 		end loop;
 
 		log_indentation_down;
@@ -3307,25 +3324,142 @@ package body et_schematic is
 -- 	end first_net;
 -- 
 -- 
--- 	function net_count return count_type is
--- 	-- Returns the number of nets of the current module as string.
--- 		count : count_type := 0;
--- 	
--- 		procedure get (
--- 			module	: in et_coordinates.type_submodule_name.bounded_string;
--- 			netlist	: in type_netlist.map) is
--- 		begin
--- 			count := length (netlist);
--- 		end get;
--- 
--- 	begin
--- 		type_rig_netlists.query_element (
--- 			position => module_cursor_netlists,
--- 			process => get'access);
--- 
--- 		return count;
--- 	end net_count;
 
+
+	procedure export_netlists (log_threshold : in et_string_processing.type_log_level) is
+	-- Exports/Writes the netlists of the rig in separate files.
+	-- Addresses real components exclusively. Virtual things like GND symbols are not exported.
+	-- Call this procedure after executing procedure make_netlist !
+		use type_rig;
+		use ada.directories;
+		use et_general;
+		use et_string_processing;
+		use et_export;
+		
+		netlist_handle : ada.text_io.file_type;
+		netlist_file_name : type_netlist_file_name.bounded_string;
+	
+		procedure query_nets (
+			module_name	: type_submodule_name.bounded_string;
+			module		: type_module) is
+			net_cursor	: type_netlist.cursor := module.netlist.first;
+		begin
+			log_indentation_up;
+		
+			while net_cursor /= type_netlist.no_element loop
+
+				-- write net name in netlist
+				log ("net " & to_string (key (net_cursor)), log_threshold + 3);
+
+				new_line (netlist_handle);
+				put_line (netlist_handle, to_string (key (net_cursor)));
+
+			
+				next (net_cursor);
+			end loop;
+				
+			log_indentation_down;	
+		end query_nets;
+
+	begin -- export_netlists
+
+		-- We start with the first module of the rig.
+		first_module;
+
+		log ("exporting rig netlists ...", log_threshold);
+		log_indentation_up;
+		
+		while module_cursor /= type_rig.no_element loop
+			log ("module " & to_string (key (module_cursor)), log_threshold + 1);
+
+			-- compose the netlist file name and its path like "../ET/motor_driver/CAM/motor_driver.net"
+			create_project_directory (to_string (key (module_cursor)));
+			netlist_file_name := type_netlist_file_name.to_bounded_string 
+				(
+				compose (
+					containing_directory => compose 
+						(
+						containing_directory => compose (work_directory, to_string (key (module_cursor))),
+						name => et_export.directory_cam
+						),
+					name => to_string (key (module_cursor)),
+					extension => extension_netlist)
+				);
+
+			-- create the netlist (which inevitably and intentionally overwrites the previous file)
+			log_indentation_up;
+			log ("creating netlist file " & type_netlist_file_name.to_string (netlist_file_name), log_threshold + 2);
+			create (
+				file => netlist_handle,
+				mode => out_file, 
+				name => type_netlist_file_name.to_string (netlist_file_name));
+
+			put_line (netlist_handle, comment_mark & " " & system_name & " netlist");
+			put_line (netlist_handle, comment_mark & " date " & string (date_now));
+			put_line (netlist_handle, comment_mark & " module " & to_string (key (module_cursor)));
+			put_line (netlist_handle, comment_mark & " " & row_separator_double);
+			put_line (netlist_handle, comment_mark & " net count total" & count_type'image (net_count));
+			-- CS: statistics about pin count ?
+			
+			put_line (netlist_handle, comment_mark);
+			put_line (netlist_handle, comment_mark & " legend:");
+			put_line (netlist_handle, comment_mark & "  net name");
+			put_line (netlist_handle, comment_mark & "  component port pin/pad direction");
+			put_line (netlist_handle, comment_mark & " " & row_separator_single);
+
+			query_element (
+				position	=> module_cursor,
+				process		=> query_nets'access);
+
+-- 
+-- 				-- export port
+-- 				log_indentation_up;
+-- 				log (text => "exporting" & count_type'image (port_count (net_cursor)) & " ports ...", level => 1);
+-- 				-- CS: warning if net has only one pin
+-- 
+-- 				-- CS: perfom an ERC on the current net in a separate loop (similar to the one below)
+-- 				
+-- 				port_cursor := first_port (net_cursor);
+-- 				while port_cursor /= type_ports.no_element loop
+-- 
+-- 					-- we export only ports of real components
+-- 					if appearance (port_cursor) = et_libraries.sch_pcb then
+-- 
+-- 						port := element (port_cursor);
+-- 
+-- 						-- write reference, port, pin in netlist (all in a single line)
+-- 						-- CS: use port_cursor instead of a variable "port"
+-- 						put_line (netlist_handle, 
+-- 							reference (port) & " "
+-- 							& et_netlist.port (port) & " "
+-- 							& et_netlist.pin (port) & " "
+-- 							);
+-- 
+-- 					end if;
+-- 						
+-- 					next (port_cursor);
+-- 				end loop;
+-- 				log_indentation_down;
+-- 				
+-- 				log_indentation_down;
+-- 
+-- 				next (net_cursor);
+-- 			end loop;
+
+			new_line (netlist_handle);
+			put_line (netlist_handle, comment_mark & " " & row_separator_double);
+			put_line (netlist_handle, comment_mark & " end of list");
+			
+			close (netlist_handle);
+			log_indentation_down;
+			
+			next (module_cursor);
+			
+		end loop;
+			
+		log_indentation_down;
+		
+	end export_netlists;
 
 	
 	

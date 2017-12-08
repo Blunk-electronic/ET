@@ -193,10 +193,13 @@ begin -- main
 	et_export.create_report;
 	reset_warnings_counter;
 	
-	-- export netlists
+	-- make netlists
 	et_schematic.make_netlists (log_threshold => 0);
 
+	-- export netlists
+	et_schematic.export_netlists (log_threshold => 0);
 
+	
 	-- export statistics
 -- 	et_schematic.make_statistics;
 
