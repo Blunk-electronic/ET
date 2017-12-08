@@ -2974,7 +2974,7 @@ package body et_schematic is
 					strand : type_strands.cursor := net.strands.first; -- points to the first strand of the net
 
 					procedure query_segments (strand : in type_strand) is
-					-- Tests the net segements of the given strand if they are connected with any component ports.
+					-- Tests the net segments of the given strand if they are connected with any component ports.
 					-- For every segment, all component ports must be tested.
 						use type_net_segments;
 						segment		: type_net_segments.cursor := strand.segments.first; -- points to the segment being read
@@ -3010,37 +3010,45 @@ package body et_schematic is
 									log_indentation_down;
 								end if;
 							end add_port;
-								
+
 						begin -- query_ports
 							while port /= type_ports.no_element loop
 
-								log_indentation_up;
-								log ("probing " & to_string (component) 
-										& " pin/pad " & to_string (element (port).pin)
-										& latin_1.space
-										& to_string (position => element (port).coordinates, scope => et_coordinates.module),
-									log_threshold + 3);
-
-								-- test if port sits on segment
-								if port_sits_on_segment (element (port), element (segment)) then
-									log_indentation_up;
+								-- Probe only those ports which are in the same path and at the same
+								-- sheet as the port. Probing other ports would be a waste of time.
+								if et_coordinates.same_path_and_sheet (
+									left => strand.coordinates, 
+									right => element (port).coordinates ) then
 								
-									log ("connected with " & to_string (component) 
+									log_indentation_up;
+									log ("probing " & to_string (component) 
 											& " pin/pad " & to_string (element (port).pin)
 											& latin_1.space
 											& to_string (position => element (port).coordinates, scope => et_coordinates.module),
-										log_threshold + 2);
+										log_threshold + 3);
+
+									-- test if port sits on segment
+									if port_sits_on_segment (element (port), element (segment)) then
+										log_indentation_up;
 									
+										log ("connected with " & to_string (component) 
+												& " pin/pad " & to_string (element (port).pin)
+												& latin_1.space
+												& to_string (position => element (port).coordinates, scope => et_coordinates.module),
+											log_threshold + 2);
+										
+										log_indentation_down;
+
+										-- add port to the net being built
+										type_netlist.update_element (
+											container => netlist,
+											position => net_in_netlist,
+											process => add_port'access);
+
+									end if;
+										
 									log_indentation_down;
-
-									-- add port to the net being built
-									type_netlist.update_element (
-										container => netlist,
-										position => net_in_netlist,
-										process => add_port'access);
-
 								end if;
-								log_indentation_down;
 
 								next (port);
 							end loop;

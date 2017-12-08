@@ -239,7 +239,7 @@ package et_coordinates is
 	
 		type type_coordinates is new type_2d_point with record
 			path            : type_path_to_submodule.list;
-			module_name		: type_submodule_name.bounded_string;
+			module_name		: type_submodule_name.bounded_string; -- CS: remove, no longer required
 			sheet_number	: positive; -- CS: dedicated type
 		end record;
 
