@@ -1271,7 +1271,9 @@ package body et_schematic is
 							appearance	=> et_schematic.component_appearance (component_cursor_sch),
 
 							-- schematic defined properties:
-							coordinates	=> port_coordinates
+							coordinates	=> port_coordinates,
+
+							processed	=> false -- used by netlist generator (procedure make_netlists)
 							));
 
 					log_indentation_up;
@@ -2988,6 +2990,13 @@ package body et_schematic is
 							use type_ports;
 							port : type_ports.cursor := ports.first; -- points to the first port of the component
 
+							procedure mark_processed (
+							-- mark port in portlist as processed
+								port : in out type_port) is
+							begin
+								port.processed := true;
+							end mark_processed;
+							
 							procedure add_port (
 							-- Adds the port (indicated by cursor "port" to the portlist of the net being built.
 								net_name	: in type_net_name.bounded_string;
@@ -3014,11 +3023,14 @@ package body et_schematic is
 						begin -- query_ports
 							while port /= type_ports.no_element loop
 
-								-- Probe only those ports which are in the same path and at the same
-								-- sheet as the port. Probing other ports would be a waste of time.
+								-- Probe only those ports (in the portlists) which are in the same 
+								-- path and at the same sheet as the port.
+								-- Probing other ports would be a waste of time.
 								if et_coordinates.same_path_and_sheet (
 									left => strand.coordinates, 
 									right => element (port).coordinates ) then
+
+									-- CS: if port not processed
 								
 									log_indentation_up;
 									log ("probing " & to_string (component) 
@@ -3045,6 +3057,11 @@ package body et_schematic is
 											position => net_in_netlist,
 											process => add_port'access);
 
+										-- Mark the port (in the portlists) as processed
+-- 										update_element (
+-- 											container => ports,
+-- 											position => port,
+-- 											process => mark_processed'access);
 									end if;
 										
 									log_indentation_down;
@@ -3057,7 +3074,8 @@ package body et_schematic is
 					begin -- query_segments
 						while segment /= type_net_segments.no_element loop
 
-							-- CS: log segment coordinates
+							log_indentation_up;
+							log ("segment " & to_string (element (segment)), log_threshold + 3);
 
 							-- reset the component cursor, then loop in the component list 
 							component := module.portlists.first;	-- points to the component being read
@@ -3070,6 +3088,8 @@ package body et_schematic is
 
 								next (component);
 							end loop;
+							
+							log_indentation_down;	
 								
 							next (segment);
 						end loop;

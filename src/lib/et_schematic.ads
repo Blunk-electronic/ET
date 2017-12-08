@@ -662,7 +662,7 @@ package et_schematic is
 		direction	: type_port_direction; -- example: "passive" -- used for ERC
 		style		: type_port_style;	-- used for ERC
 		appearance	: type_component_appearance;
-		-- CS: processed : boolean;
+		processed	: boolean; -- used for netlist generation
 	end record;
 
 	-- Ports can be collected in a simple list:
