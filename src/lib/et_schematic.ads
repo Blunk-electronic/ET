@@ -22,6 +22,8 @@
 --    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
 ------------------------------------------------------------------------------
 
+--   For correct displaying set tab with in your edtito to 4.
+
 --   Please send your questions and comments to:
 --
 --   info@blunk-electronic.de
@@ -768,13 +770,6 @@ package et_schematic is
 	procedure update_strand_names (log_threshold : in et_string_processing.type_log_level);
 	-- Tests if a power out port is connected to a strand and renames the strand if necessary.	
 	
--- 	procedure rename_strands (
--- 	-- Renames all strands with the name_before to the name_after.
--- 	-- Changes the scope of the affected strands to "global".
--- 		name_before		: in type_net_name.bounded_string;
--- 		name_after		: in type_net_name.bounded_string;
--- 		log_threshold	: in et_string_processing.type_log_level);
-
 	procedure write_strands (log_threshold : in et_string_processing.type_log_level);
 	-- Writes a nice overview of strands, net segments and labels
 
@@ -821,10 +816,6 @@ package et_schematic is
 	function number_of_libraries return count_type;
 	-- Returns the number of project libraries.
 	
--- 	function get_component_reference (cursor : in out type_components.cursor) 
--- 	-- Returns the component reference where the component cursor points to.
--- 		return type_component_reference;
-
 	function units_of_component (component_cursor : in type_components.cursor) return type_units.map;
 	-- Returns the units of the given component.
 
@@ -848,57 +839,6 @@ package et_schematic is
 
 	function build_portlists (log_threshold : in et_string_processing.type_log_level) return type_portlists.map;
 	-- Returns a list of components with the absolute positions of their ports as they are placed in the schematic.
-
--- 	function first_port (component_cursor : in type_portlists.cursor) return type_base_ports.cursor;
--- 	-- Returns a cursor pointing to the first port of a component in the portlists.
--- 
--- 	-- If component ports are to be listed, we need additionally the component reference:
--- 	type type_port is new type_port_base with record
--- 		reference	: et_libraries.type_component_reference;
--- 	end record;
--- 
--- 	function reference (port : in type_port) return string;
--- 	-- Returns the component reference of the given port.
--- 
--- 	function appearance (port : in type_ports.cursor) return et_libraries.type_component_appearance;
--- 	-- Returns the appearance of the given port.
--- 	
--- 	function compare_ports (left, right : in type_port) return boolean;
--- 	-- Returns true if left comes before right. Compares by component name and pin name.
--- 	-- If left equals right, the return is false.	
--- 	
--- 	package type_ports is new ordered_sets (
--- 		element_type => type_port,
--- 		"<" => compare_ports);
--- 	use type_ports;
--- 
--- 	-- This is the netlist of a single submodule:
--- 	-- It does also contain ports of virtual components (power symbols) except 
--- 	-- so called "power flags".
--- 	package type_netlist is new ordered_maps (
--- 		key_type => et_schematic.type_net_name.bounded_string, -- net name like "MCU_CLOCK"
--- 		element_type => type_ports.set); -- the list of ports connected with the net
--- 	use type_netlist;
--- 
--- 	-- The rig netlist is a map of netlists. For each submodule we have a
--- 	-- distinctive netlist. The key to the particular netlist is the submodule name.
--- 	use et_coordinates.type_submodule_name;
--- 	package type_rig_netlists is new ordered_maps (
--- 		key_type => et_coordinates.type_submodule_name.bounded_string, -- example "MOTOR_DRIVER"
--- 		element_type => type_netlist.map); -- the netlist of the submodule
--- 
--- 	-- This is the place where we store the netlists of the rig.
--- 	rig_netlists : type_rig_netlists.map;
--- 	module_cursor_netlists : type_rig_netlists.cursor;
--- 
--- 	procedure first_module_netlist;
--- 	-- Resets the module_cursor to the first module of the rig.
--- 
--- 	function first_net return type_netlist.cursor;
--- 	-- Returns a cursor to the first net of the current module (indicated by module_cursor).
--- 
--- 	function net_count return count_type;
--- 	-- Returns the number of nets of the current module.
 
 -- NETLISTS
 	-- Whenever we deal with netlist files this type should be used:
@@ -944,9 +884,7 @@ package et_schematic is
 	function components_virtual return count_type;
 	-- Returns the number of virtual components in the module indicated by module_cursor.
 
--- 	procedure set_module (module_name : in et_coordinates.type_submodule_name.bounded_string);
--- 	-- Sets the active module. Leaves module_cursor_netlists pointing to the module.
--- 	
+
 -- 	procedure make_statistics;
 		
 	

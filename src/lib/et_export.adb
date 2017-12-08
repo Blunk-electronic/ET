@@ -22,6 +22,8 @@
 --    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
 ------------------------------------------------------------------------------
 
+--   For correct displaying set tab with in your edtito to 4.
+
 --   Please send your questions and comments to:
 --
 --   info@blunk-electronic.de
@@ -91,15 +93,17 @@ package body et_export is
 		
 	end close_report;
 
-	procedure create_project_directory (project : in string) is
+	procedure create_project_directory (
 	-- Creates given project directory in work_directory of ET.
 	-- Creates subdirectory for CAM
+		project			: in string;
+		log_threshold	: in et_string_processing.type_log_level) is
 		use et_general;
 	begin
 		if not exists (compose (work_directory, project)) then
-			log (
-				text => "creating project directory '" & compose (work_directory, project) & "' ...",
-				level => 2);
+			log ("creating project directory " 
+					& compose (work_directory, project) & " ...",
+				log_threshold);
 
 			create_directory (compose (work_directory, project));
 			create_path (compose (compose (work_directory, project), directory_cam));

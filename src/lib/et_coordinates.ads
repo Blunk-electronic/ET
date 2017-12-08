@@ -22,6 +22,8 @@
 --    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
 ------------------------------------------------------------------------------
 
+--   For correct displaying set tab with in your edtito to 4.
+
 --   Please send your questions and comments to:
 --
 --   info@blunk-electronic.de

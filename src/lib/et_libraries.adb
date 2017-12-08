@@ -94,10 +94,16 @@ package body et_libraries is
 		return "width " & format_distance (width);
 	end width_to_string;
 	
-	function to_string (direction : in type_port_direction) return string is
+	function to_string (
+		direction	: in type_port_direction;
+		preamble	: in boolean := true) return string is
 	-- Returns the given port direction as string.
 	begin
-		return "direction " & to_lower (type_port_direction'image (direction));
+		if preamble then
+			return " direction " & to_lower (type_port_direction'image (direction));
+		else
+			return latin_1.space & to_lower (type_port_direction'image (direction));
+		end if;
 	end to_string;
 	
 	function to_string (port_name : in type_port_name.bounded_string) return string is

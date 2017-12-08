@@ -22,6 +22,8 @@
 --    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
 ------------------------------------------------------------------------------
 
+--   For correct displaying set tab with in your edtito to 4.
+
 --   Please send your questions and comments to:
 --
 --   info@blunk-electronic.de
@@ -3234,98 +3236,6 @@ package body et_schematic is
 		log_indentation_down;
 	end make_netlists;
 	
--- 
--- 	function reference (port : in type_port) return string is
--- 	-- Returns the component reference of the given port.	
--- 	begin
--- 		return et_schematic.to_string (port.reference);
--- 	end reference;
--- 
--- 	function port (port : in type_port) return string is
--- 	-- Returns the port name of the given port.
--- 	begin
--- 		return et_libraries.to_string (port.port);
--- 	end port;
--- 
--- 	function pin (port : in type_port) return string is
--- 	-- Returns the pin name of the given port.
--- 	begin
--- 		return et_libraries.to_string (port.pin);
--- 	end pin;
--- 
--- 	function appearance (port : in type_port) return et_libraries.type_component_appearance is
--- 	-- Returns the appearance of the given port.
--- 	begin
--- 		return port.appearance;
--- 	end appearance;
--- 	
--- 	function compare_ports (left, right : in type_port) return boolean is
--- 	-- Returns true if left comes before right. Compares by component name and pin name.
--- 	-- If left equals right, the return is false.	
--- 	-- CS: needs verification !
--- 		result : boolean := false;
--- 		use et_libraries;
--- 		use et_schematic;
--- 	begin
--- 		-- First we compare the component reference.
--- 		-- Examples: C56 comes before R4, LED5 comes before LED7
--- 		if compare_reference (left.reference, right.reference) then
--- 			result := true;
--- 
--- 		-- If equal references, compare pin names
--- 		elsif type_pin_name.">" (left.pin, right.pin) then
--- 			result := true;
--- 
--- 		-- If equal pin names, compare port names -- CS: should never happen. raise alarm ?
--- 		elsif type_port_name.">" (left.port, right.port) then
--- 			result := true;
--- 			
--- 		else
--- 			result := false;
--- 		end if;
--- 
--- 		-- in case of equivalence of left and right, we return false (default)
--- 		return result;
--- 	end compare_ports;
--- 
--- 	function appearance (port : in type_ports.cursor) return et_libraries.type_component_appearance is
--- 	-- Returns the appearance of the given port.
--- 	begin
--- 		return (element (port).appearance);
--- 	end appearance;
--- 
--- 
--- 
--- 	
--- 	procedure first_module_netlist is
--- 	-- Resets the module_cursor to the first module of the rig.
--- 	begin
--- 		module_cursor_netlists := rig_netlists.first;
--- 		-- CS: exception handler in case given module does not exist
--- 	end first_module_netlist;
--- 
--- 	function first_net return type_netlist.cursor is
--- 	-- Returns a cursor to the first net of the current module (indicated by module_cursor).
--- 		cursor : type_netlist.cursor;
--- 	
--- 		procedure set (
--- 			module	: in et_coordinates.type_submodule_name.bounded_string;
--- 			netlist	: in type_netlist.map) is
--- 		begin
--- 			cursor := netlist.first;
--- 		end set;
--- 
--- 	begin -- first_net
--- 		type_rig_netlists.query_element (
--- 			position => module_cursor_netlists,
--- 			process => set'access);
--- 
--- 		return cursor;
--- 	end first_net;
--- 
--- 
-
-
 	procedure export_netlists (log_threshold : in et_string_processing.type_log_level) is
 	-- Exports/Writes the netlists of the rig in separate files.
 	-- Addresses real components exclusively. Virtual things like GND symbols are not exported.
@@ -3340,21 +3250,62 @@ package body et_schematic is
 		netlist_file_name : type_netlist_file_name.bounded_string;
 	
 		procedure query_nets (
-			module_name	: type_submodule_name.bounded_string;
-			module		: type_module) is
+			module_name	: in type_submodule_name.bounded_string;
+			module		: in type_module) is
 			net_cursor	: type_netlist.cursor := module.netlist.first;
-		begin
+
+			procedure query_ports (
+				net_name	: in type_net_name.bounded_string;
+				ports		: in type_ports_with_reference.set) is
+				port_cursor : type_ports_with_reference.cursor := ports.first;
+			begin
+				log_indentation_up;
+				--log ("ports" & count_type'image (length (ports)), log_threshold + 3);
+
+				while port_cursor /= type_ports_with_reference.no_element loop
+
+					-- we export only ports of real components
+					if element (port_cursor).appearance = sch_pcb then
+
+						-- write reference, port, pin in netlist (all in a single line)
+						log ( 
+							to_string (element (port_cursor).reference) & latin_1.space
+							& to_string (element (port_cursor).port) & latin_1.space
+							& to_string (element (port_cursor).pin)
+							& to_string (element (port_cursor).direction),
+							log_threshold + 3);
+					
+						-- write reference, port, pin in netlist (all in a single line)
+						put_line (netlist_handle, 
+							to_string (element (port_cursor).reference) & latin_1.space
+							& to_string (element (port_cursor).port) & latin_1.space
+							& to_string (element (port_cursor).pin)
+							& to_string (element (port_cursor).direction, preamble => false));
+
+					end if;
+						
+					next (port_cursor);
+				end loop;
+
+				log_indentation_down;
+			end query_ports;
+			
+		begin -- query_nets
 			log_indentation_up;
-		
+
+			-- output the net names. then query the ports/pins of the net
 			while net_cursor /= type_netlist.no_element loop
 
-				-- write net name in netlist
-				log ("net " & to_string (key (net_cursor)), log_threshold + 3);
-
+				-- log and write net name in netlist
+				log (to_string (key (net_cursor)), log_threshold + 2);
 				new_line (netlist_handle);
 				put_line (netlist_handle, to_string (key (net_cursor)));
 
-			
+				-- query ports of net
+				type_netlist.query_element (
+					position	=> net_cursor,
+					process		=> query_ports'access);
+				
 				next (net_cursor);
 			end loop;
 				
@@ -3372,8 +3323,10 @@ package body et_schematic is
 		while module_cursor /= type_rig.no_element loop
 			log ("module " & to_string (key (module_cursor)), log_threshold + 1);
 
+			log_indentation_up;
+			
 			-- compose the netlist file name and its path like "../ET/motor_driver/CAM/motor_driver.net"
-			create_project_directory (to_string (key (module_cursor)));
+			create_project_directory (to_string (key (module_cursor)), log_threshold + 2);
 			netlist_file_name := type_netlist_file_name.to_bounded_string 
 				(
 				compose (
@@ -3387,7 +3340,6 @@ package body et_schematic is
 				);
 
 			-- create the netlist (which inevitably and intentionally overwrites the previous file)
-			log_indentation_up;
 			log ("creating netlist file " & type_netlist_file_name.to_string (netlist_file_name), log_threshold + 2);
 			create (
 				file => netlist_handle,
@@ -3407,44 +3359,10 @@ package body et_schematic is
 			put_line (netlist_handle, comment_mark & "  component port pin/pad direction");
 			put_line (netlist_handle, comment_mark & " " & row_separator_single);
 
+			-- do the export
 			query_element (
 				position	=> module_cursor,
 				process		=> query_nets'access);
-
--- 
--- 				-- export port
--- 				log_indentation_up;
--- 				log (text => "exporting" & count_type'image (port_count (net_cursor)) & " ports ...", level => 1);
--- 				-- CS: warning if net has only one pin
--- 
--- 				-- CS: perfom an ERC on the current net in a separate loop (similar to the one below)
--- 				
--- 				port_cursor := first_port (net_cursor);
--- 				while port_cursor /= type_ports.no_element loop
--- 
--- 					-- we export only ports of real components
--- 					if appearance (port_cursor) = et_libraries.sch_pcb then
--- 
--- 						port := element (port_cursor);
--- 
--- 						-- write reference, port, pin in netlist (all in a single line)
--- 						-- CS: use port_cursor instead of a variable "port"
--- 						put_line (netlist_handle, 
--- 							reference (port) & " "
--- 							& et_netlist.port (port) & " "
--- 							& et_netlist.pin (port) & " "
--- 							);
--- 
--- 					end if;
--- 						
--- 					next (port_cursor);
--- 				end loop;
--- 				log_indentation_down;
--- 				
--- 				log_indentation_down;
--- 
--- 				next (net_cursor);
--- 			end loop;
 
 			new_line (netlist_handle);
 			put_line (netlist_handle, comment_mark & " " & row_separator_double);
@@ -3461,10 +3379,6 @@ package body et_schematic is
 		
 	end export_netlists;
 
-	
-	
--- BOM
-	
 	procedure make_bom is
 	-- Generates a bom file. This file is csv formatted and is to be processed by
 	-- other ERP tools (like stock_manager, see <https://github.com/Blunk-electronic/stock_manager>)
@@ -3493,7 +3407,7 @@ package body et_schematic is
 
 		component_cursor : type_components.cursor;
 		
-	begin
+		begin -- make_bom
 		first_module;
 		
 		log (text => "writing BOM ...", level => 1);
@@ -3713,11 +3627,6 @@ package body et_schematic is
 		return n;
 	end components_virtual;
 
--- 	procedure set_module (module_name : in et_coordinates.type_submodule_name.bounded_string) is
--- 	-- Sets the active module. Leaves module_cursor pointing to the module.
--- 	begin
--- 		module_cursor_netlists := rig_netlists.find (module_name);
--- 	end set_module;
 
 	
 -- 	procedure make_statistics is
