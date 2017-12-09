@@ -16,3 +16,4 @@ Installation:
 - install the GNAT Ada compiler (version 4.5 or later)
 - run the install script install.sh as non-root user
 - The script installs the executable binary in $HOME/bin and further-on creates a hidden directory .ET in $HOME where configuration files live
+- currently there is nothing to do in the configuration directory -> leave it as it is
