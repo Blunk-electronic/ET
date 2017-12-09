@@ -22,7 +22,7 @@
 --    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtito to 4.
+--   For correct displaying set tab with in your editor to 4.
 
 --   Please send your questions and comments to:
 --
@@ -36,6 +36,8 @@
 --		   should be collected in ordered sets instead of doubly_linked_lists
 --			- the benefits: placing identical objects at the same position would be impossible
 --			- the cons: ordering subprograms required
+--		2. Templates via copy and via reference
+--		3. Assembly variants
 
 with ada.text_io;				use ada.text_io;
 with ada.strings.maps;			use ada.strings.maps;
