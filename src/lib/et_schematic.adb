@@ -3499,17 +3499,11 @@ package body et_schematic is
 
 -- STATISTICS
 
-	function to_string (category : in type_component_category) return string is
-	-- Returns the given category as string.
-	begin
-		return to_lower (type_component_category'image (category));
-	end to_string;
-	
-	function make_statistics_components_and_ports (log_threshold : in et_string_processing.type_log_level)
-		return type_statistics_components_and_ports is
-	-- Returns statistics about components and ports on the module indicated by module_cursor.
-	-- The numbers are extracted from the components and portlists of the module exclusively.
-		statistics : type_statistics_components_and_ports;
+	function make_statistics (log_threshold : in et_string_processing.type_log_level)
+		return type_statistics is
+	-- Returns statistics about the module indicated by module_cursor.
+
+		statistics : type_statistics;
 	
 		arrow : constant string (1..4) := " -> ";
 
@@ -3521,32 +3515,39 @@ package body et_schematic is
 		
 			component : type_components.cursor := module.components.first;
 			use type_components;
-			begin -- count_components
+
+			procedure log_component (mounted : in boolean := true) is
+			begin
+				if mounted then
+					log (to_string (key (component)) 
+						& arrow & to_string (element (component).appearance),
+						log_threshold);
+				else
+					log (to_string (key (component)) 
+						& arrow & to_string (element (component).appearance) 
+						& arrow & not_mounted, log_threshold);
+				end if;
+			end log_component;
+			
+		begin -- count_components
 			statistics.components_total := module.components.length;
 
 			while component /= type_components.no_element loop
 
 				case element (component).appearance is
 					when sch => -- virtual
-						log (to_string (key (component)) & " -> " & to_string (virtual), log_threshold);
+						log_component;
 						statistics.components_virtual := statistics.components_virtual + 1;
 
 					when sch_pcb => -- real
 						statistics.components_real := statistics.components_real + 1;
 					
 						if element (component).bom = YES then
+							log_component;
 							statistics.components_mounted := statistics.components_mounted + 1;
-						
-							log (to_string (key (component))
-								& arrow & to_string (real), log_threshold);
-
 						else
-							log (to_string (key (component)) 
-								& arrow & to_string (real) 
-								& arrow & not_mounted, log_threshold);
-
+							log_component (mounted => false);
 						end if;
-							
 				end case;
 
 				next (component);
@@ -3591,7 +3592,7 @@ package body et_schematic is
 				
 		end count_ports;
 
-	begin -- make_statistics_components_and_ports
+	begin -- make_statistics
 
 		type_rig.query_element (
 			position	=> module_cursor,
@@ -3602,34 +3603,40 @@ package body et_schematic is
 			position	=> module_cursor,
 			process		=> count_ports'access
 			);
-			
+
+		statistics.nets_total := net_count;
 		
 		return statistics;
-	end make_statistics_components_and_ports;
+	end make_statistics;
 
-	function components_statistics (
-		statistics_components_and_ports : in type_statistics_components_and_ports;
-		category : in type_component_category) return string is
-	-- Returns the number of components as string. Category determines the kind of 
-	-- components to address.
+	function query_statistics (
+		statistics	: in type_statistics;
+		category	: in type_statistics_category) return string is
+	-- Returns the number objects as specified by given category.
 	begin
 		case category is
-			when total =>
+			when components_total =>
 				return count_type'image (
-					statistics_components_and_ports.components_virtual 
-					+ statistics_components_and_ports.components_real);
+					statistics.components_virtual 
+					+ statistics.components_real);
 
-			when virtual =>
-				return count_type'image (statistics_components_and_ports.components_virtual);
+			when components_virtual =>
+				return count_type'image (statistics.components_virtual);
 
-			when real =>
-				return count_type'image (statistics_components_and_ports.components_real);
+			when components_real =>
+				return count_type'image (statistics.components_real);
 
-			when mounted =>
-				return count_type'image (statistics_components_and_ports.components_mounted);
+			when components_mounted =>
+				return count_type'image (statistics.components_mounted);
 
+			when nets_total =>
+				return count_type'image (statistics.nets_total);
+				
+			when ports_total =>
+				return count_type'image (statistics.ports_total);
+				
 		end case;
-	end components_statistics;
+	end query_statistics;
 
 	
 	procedure write_statistics (log_threshold : in et_string_processing.type_log_level) is
@@ -3640,17 +3647,13 @@ package body et_schematic is
 		statistics_handle_cad	: ada.text_io.file_type;
 		statistics_handle_cam	: ada.text_io.file_type;
 
-		component : type_components.cursor;
-		-- CS net
-
-		components_and_ports : type_statistics_components_and_ports;
+		statistics : type_statistics;
 		
 		use ada.directories;
 		use et_general;
-		use type_components;
 		use type_rig;
 		use et_string_processing;
-		use et_netlist;
+
 	begin -- write_statistics
 		first_module;
 		
@@ -3685,28 +3688,30 @@ package body et_schematic is
 			put_line (statistics_handle_cad, comment_mark & " module " & to_string (key (module_cursor)));
 			put_line (statistics_handle_cad, comment_mark & " " & row_separator_double);
 
-			components_and_ports := make_statistics_components_and_ports (log_threshold + 1);
+			statistics := make_statistics (log_threshold + 1);
 			
 			-- components
 			put_line (statistics_handle_cad, "components");
-			put_line (statistics_handle_cad, " total   " & components_statistics (components_and_ports, total));
-			put_line (statistics_handle_cad, " real    " & components_statistics (components_and_ports, real));
+			put_line (statistics_handle_cad, " total   " & query_statistics (statistics, components_total));
+			put_line (statistics_handle_cad, " real    " & query_statistics (statistics, components_real));
 			put_line (statistics_handle_cad, latin_1.space & et_string_processing.mounted & latin_1.space 
-				& components_statistics (components_and_ports, mounted));
-			put_line (statistics_handle_cad, " virtual " & components_statistics (components_and_ports, virtual));
+				& query_statistics (statistics, components_mounted));
+			put_line (statistics_handle_cad, " virtual " & query_statistics (statistics, components_virtual));
 -- 			-- CS: resitors, leds, transitors, ...
--- 
--- 			-- nets
--- 			put_line (statistics_handle_cad, "nets");
--- 			put_line (statistics_handle_cad, " total  " & count_type'image (net_count));
--- 
--- 			-- As for the total number of ports, we take all ports into account (inc. virtual ports of virtual components like GND symbols).
--- 			--put_line (statistics_handle_cad, "  ports " & count_type'image (port_count));
+			new_line (statistics_handle_cad);
+
+			-- nets
+			put_line (statistics_handle_cad, "nets");
+			put_line (statistics_handle_cad, " total   " & query_statistics (statistics, nets_total));
+
+			-- As for the total number of ports, we take all ports into account (inc. virtual ports 
+			-- of virtual components like GND symbols).
+			put_line (statistics_handle_cad, " ports   " & query_statistics (statistics, ports_total));
 -- 			
--- 			-- finish statistics			
--- 			put_line (statistics_handle_cad, comment_mark & " " & row_separator_single);
--- 			put_line (statistics_handle_cad, comment_mark & " end of list");
--- 			log_indentation_down;
+			-- finish statistics			
+			put_line (statistics_handle_cad, comment_mark & " " & row_separator_single);
+			put_line (statistics_handle_cad, comment_mark & " end of list");
+			log_indentation_down;
 			close (statistics_handle_cad);
 
 

@@ -879,53 +879,42 @@ package et_schematic is
 
 	extension_statistics : constant string (1 .. 4) := "stat";
 
-	type type_statistics_components_and_ports is private;
+	type type_statistics is private;
 
-	type type_component_category is (
-		total,
-		virtual,
-		real,
-		mounted
+	type type_statistics_category is (
+		components_total,
+		components_virtual,
+		components_real,
+		components_mounted,
+		nets_total,
+		ports_total
 		-- CS: capacitors, resistors, ...?
 		);
-
-	type type_port_category is (
-		total,
-		virtual,
-		real,
-		mounted
-		-- CS: capacitors, resistors, ...?
-		);
-
 	
-	function to_string (category : in type_component_category) return string;
-	-- Returns the given category as string.
+	function make_statistics (log_threshold : in et_string_processing.type_log_level)
+		return type_statistics;
+	-- Returns statistics about the module indicated by module_cursor.
+
+	function query_statistics (
+		statistics	: in type_statistics;
+		category	: in type_statistics_category) return string;
+	-- Returns the number objects as specified by given category.
 	
-	function make_statistics_components_and_ports (log_threshold : in et_string_processing.type_log_level)
-		return type_statistics_components_and_ports;
-	-- Returns statistics about components and ports on the module indicated by module_cursor.
-	-- The numbers are extracted from the components and portlists of the module exclusively.
-
-	function components_statistics (
-		statistics_components_and_ports : in type_statistics_components_and_ports;
-		category : in type_component_category) return string;
-	-- Returns the number of components as string. Category determines the kind of 
-	-- components to address.
-
 	procedure write_statistics (log_threshold : in et_string_processing.type_log_level);
 	-- Writes the statistics on components and nets of the rig.
 	-- Breaks statistics up into submodules, general statistics (CAD) and CAM related things.
 
 	private
 	
-		type type_statistics_components_and_ports is record
+		type type_statistics is record
 			components_total	: count_type := 0;
 			components_virtual	: count_type := 0;
 			components_real		: count_type := 0;
 			components_mounted	: count_type := 0;
+			nets_total			: count_type := 0;
 			ports_total			: count_type := 0;
-			ports_virtual		: count_type := 0;
-			ports_real			: count_type := 0;
+-- 			ports_virtual		: count_type := 0;
+-- 			ports_real			: count_type := 0;
 		end record;
 		
 	
