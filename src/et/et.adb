@@ -200,7 +200,7 @@ begin -- main
 	et_schematic.export_netlists (log_threshold => 0);
 	
 	-- export statistics
-	et_schematic.make_statistics (log_threshold => 0);
+	et_schematic.write_statistics (log_threshold => 0);
 
 	-- export bom
 -- 	et_schematic.make_bom;

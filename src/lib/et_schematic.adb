@@ -3498,179 +3498,141 @@ package body et_schematic is
 	
 
 -- STATISTICS
-	function port_count return count_type is
-	-- Returns the total number of ports (inc. virtual component ports)
+
+	function to_string (category : in type_component_category) return string is
+	-- Returns the given category as string.
 	begin
-		return 0;
-	end port_count;
-
-
-	function components_total return count_type is
-	-- Returns the total number of components (inc. virtual components) in the module indicated by module_cursor.
-		n : count_type := 0;
-
-		procedure get (
-			name	: in et_coordinates.type_submodule_name.bounded_string;
-			module	: in type_module) is
-			use type_components;
-		begin
-			n := length (module.components);
-		end get;
-
-	begin
-		type_rig.query_element (
-			position	=> module_cursor,
-			process		=> get'access
-			);
-
-		return n;
-	end components_total;
-
-	function components_real (mounted_only : in boolean := false) return count_type is
-	-- Returns the number of real components in the module indicated by module_cursor.
-	-- If mounted_only is true, only components with the flag "bom" set are adressed.
-	-- If mounted_only is false, all real components are adressed.
-		n : count_type := 0;
-
-		procedure get (
-			name	: in et_coordinates.type_submodule_name.bounded_string;
-			module	: in type_module) is
-
-			component : type_components.cursor;
-			use type_components;
-			use et_string_processing;
-		begin -- get
-			if mounted_only then
-				log (text => "mounted components", level => 1);
-			else
-				log (text => "real components", level => 1);
-			end if;
-
-			component := module.components.first;			
-			while component /= type_components.no_element loop
-
-				-- filter real components
-				if component_appearance (component) = sch_pcb then
-					log_indentation_up;
-					
-					if mounted_only then
-						if bom (component) = YES then
-							log (text => to_string (key (component)), level => 1);
-							n := n + 1;
-						end if;
-					else
-						log (text => to_string (key (component)), level => 1);
-						n := n + 1;
-					end if;
-
-					log_indentation_down;
-				end if;
-				next (component);
-			end loop;
-
-			if n = 0 then
-				log_indentation_up;
-				log (text => "none", level => 1);
-				log_indentation_down;
-			end if;
-		end get;
+		return to_lower (type_component_category'image (category));
+	end to_string;
 	
-	begin -- components_real
-		type_rig.query_element (
-			position	=> module_cursor,
-			process		=> get'access
-			);
-
-		return n;
-	end components_real;
-
-	function components_virtual return count_type is
-	-- Returns the number of virtual components in the module indicated by module_cursor.
-		n : count_type := 0;
-
-		procedure get (
-			name	: in et_coordinates.type_submodule_name.bounded_string;
-			module	: in type_module) is
-
-			component : type_components.cursor;
-			use type_components;
-			use et_string_processing;
-		begin
-			log (text => "virtual components", level => 1);
-			
-			component := module.components.first;
-
-			while component /= type_components.no_element loop
-				
-				-- filter real components
-				if component_appearance (component) = sch then
-					log_indentation_up;
-					
-					log (text => to_string (key (component)), level => 1);
-					n := n + 1;
-					
-					log_indentation_down;
-				end if;
-				next (component);
-			end loop;
-
-			if n = 0 then
-				log_indentation_up;
-				log (text => "none", level => 1);
-				log_indentation_down;
-			end if;
-			
-		end get;
-	
-	begin
-		type_rig.query_element (
-			position	=> module_cursor,
-			process		=> get'access
-			);
-
-		return n;
-	end components_virtual;
-
-	function make_statistics_components_and_ports return type_statistics_components_and_ports is
+	function make_statistics_components_and_ports (log_threshold : in et_string_processing.type_log_level)
+		return type_statistics_components_and_ports is
 	-- Returns statistics about components and ports on the module indicated by module_cursor.
-	-- The numbers are extracted from the portlists of the module exclusively.
+	-- The numbers are extracted from the components and portlists of the module exclusively.
 		statistics : type_statistics_components_and_ports;
+	
+		arrow : constant string (1..4) := " -> ";
 
-		procedure count (
+		use et_string_processing;		
+		
+		procedure count_components (
+			name	: in type_submodule_name.bounded_string;
+			module	: in type_module) is
+		
+			component : type_components.cursor := module.components.first;
+			use type_components;
+			begin -- count_components
+			statistics.components_total := module.components.length;
+
+			while component /= type_components.no_element loop
+
+				case element (component).appearance is
+					when sch => -- virtual
+						log (to_string (key (component)) & " -> " & to_string (virtual), log_threshold);
+						statistics.components_virtual := statistics.components_virtual + 1;
+
+					when sch_pcb => -- real
+						statistics.components_real := statistics.components_real + 1;
+					
+						if element (component).bom = YES then
+							statistics.components_mounted := statistics.components_mounted + 1;
+						
+							log (to_string (key (component))
+								& arrow & to_string (real), log_threshold);
+
+						else
+							log (to_string (key (component)) 
+								& arrow & to_string (real) 
+								& arrow & not_mounted, log_threshold);
+
+						end if;
+							
+				end case;
+
+				next (component);
+			end loop;
+				
+		end count_components;
+
+
+		procedure count_ports (
 			name	: in type_submodule_name.bounded_string;
 			module	: in type_module) is
 
-			component : type_portlists.cursor;
 			use type_portlists;
-			use et_string_processing;
-		begin
-			statistics.components_total := module.portlists.length;
-		end count;
-	begin
+			portlist : type_portlists.cursor := module.portlists.first;
+
+			procedure count (
+				component	: in type_component_reference;
+				ports		: in type_ports.list) is
+				port : type_ports.cursor := ports.first;
+			begin
+				while port /= type_ports.no_element loop
+			
+					if element (port).processed then
+						statistics.ports_total := statistics.ports_total + 1;
+					
+						-- CS: log port
+					end if;
+
+					next (port);
+				end loop;
+			end count;
+				
+		begin -- count_ports
+			while portlist /= type_portlists.no_element loop
+
+				query_element (
+					position	=> portlist,
+					process		=> count'access);
+				
+				next (portlist);
+			end loop;
+				
+		end count_ports;
+
+	begin -- make_statistics_components_and_ports
 
 		type_rig.query_element (
 			position	=> module_cursor,
-			process		=> count'access
+			process		=> count_components'access
 			);
-	
+
+		type_rig.query_element (
+			position	=> module_cursor,
+			process		=> count_ports'access
+			);
+			
+		
 		return statistics;
 	end make_statistics_components_and_ports;
 
 	function components_statistics (
 		statistics_components_and_ports : in type_statistics_components_and_ports;
-		appearance : in type_appearance_schematic) return string is
-	-- Returns the number of components as string. appearance determines the kind of 
+		category : in type_component_category) return string is
+	-- Returns the number of components as string. Category determines the kind of 
 	-- components to address.
 	begin
-		case appearance is
-			when sch => -- virtual
+		case category is
+			when total =>
+				return count_type'image (
+					statistics_components_and_ports.components_virtual 
+					+ statistics_components_and_ports.components_real);
+
+			when virtual =>
 				return count_type'image (statistics_components_and_ports.components_virtual);
-			when sch_pcb => -- real
+
+			when real =>
 				return count_type'image (statistics_components_and_ports.components_real);
+
+			when mounted =>
+				return count_type'image (statistics_components_and_ports.components_mounted);
+
 		end case;
 	end components_statistics;
+
 	
-	procedure make_statistics (log_threshold : in et_string_processing.type_log_level) is
+	procedure write_statistics (log_threshold : in et_string_processing.type_log_level) is
 	-- Generates the statistics on components and nets of the rig.
 	-- Breaks statistics up into submodules, general statistics (CAD) and CAM related things.
 		statistics_file_name_cad: type_statistic_file_name.bounded_string;
@@ -3689,7 +3651,7 @@ package body et_schematic is
 		use type_rig;
 		use et_string_processing;
 		use et_netlist;
-	begin
+	begin -- write_statistics
 		first_module;
 		
 		log ("writing statistics ...", log_threshold);
@@ -3723,14 +3685,15 @@ package body et_schematic is
 			put_line (statistics_handle_cad, comment_mark & " module " & to_string (key (module_cursor)));
 			put_line (statistics_handle_cad, comment_mark & " " & row_separator_double);
 
-			components_and_ports := make_statistics_components_and_ports;
+			components_and_ports := make_statistics_components_and_ports (log_threshold + 1);
 			
 			-- components
 			put_line (statistics_handle_cad, "components");
-			put_line (statistics_handle_cad, " real  " & components_statistics (components_and_ports, sch));
--- 			put_line (statistics_handle_cad, " real   " & natural'image (components_and_ports.components_real)); -- all real components ! Regardless of bom status !
--- 			put_line (statistics_handle_cad, " virtual" & natural'image (components_and_ports.components_) & " (power symbols, power flags, ...)");
--- 			new_line (statistics_handle_cad);
+			put_line (statistics_handle_cad, " total   " & components_statistics (components_and_ports, total));
+			put_line (statistics_handle_cad, " real    " & components_statistics (components_and_ports, real));
+			put_line (statistics_handle_cad, latin_1.space & et_string_processing.mounted & latin_1.space 
+				& components_statistics (components_and_ports, mounted));
+			put_line (statistics_handle_cad, " virtual " & components_statistics (components_and_ports, virtual));
 -- 			-- CS: resitors, leds, transitors, ...
 -- 
 -- 			-- nets
@@ -3806,7 +3769,7 @@ package body et_schematic is
 		end loop;
 			
 		
-	end make_statistics;
+	end write_statistics;
 
 	
 end et_schematic;

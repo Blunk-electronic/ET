@@ -662,7 +662,7 @@ package et_schematic is
 	-- The cursor must point to the component in question.
 
 	
-	-- This is a coponent port with its basic elements:
+	-- This is a component port with its basic elements:
 	type type_port is tagged record
 		pin			: type_pin_name.bounded_string; -- the pin name like 3,4 or E3, A2
 		port		: type_port_name.bounded_string; -- the port name like GPIO1, GPIO2 -- CS: rename to "name"
@@ -670,7 +670,7 @@ package et_schematic is
 		direction	: type_port_direction; -- example: "passive" -- used for ERC
 		style		: type_port_style;	-- used for ERC
 		appearance	: type_appearance_schematic;
-		processed	: boolean; -- used for netlist generation
+		processed	: boolean; -- used for netlist generation -- CS: rename to "connected"
 	end record;
 
 	-- Ports can be collected in a simple list:
@@ -881,41 +881,51 @@ package et_schematic is
 
 	type type_statistics_components_and_ports is private;
 
-	
-	function components_total return count_type;
-	-- Returns the total number of components (incl. virtual components) in the module indicated by module_cursor.
+	type type_component_category is (
+		total,
+		virtual,
+		real,
+		mounted
+		-- CS: capacitors, resistors, ...?
+		);
 
-	function components_real (mounted_only : in boolean := false) return count_type;
-	-- Returns the number of real components in the module indicated by module_cursor.
-	-- If mounted_only is true, only components with the flag "bom" set are adressed.
-	-- If mounted_only is false, all real components are adressed.
-	
-	function components_virtual return count_type;
-	-- Returns the number of virtual components in the module indicated by module_cursor.
+	type type_port_category is (
+		total,
+		virtual,
+		real,
+		mounted
+		-- CS: capacitors, resistors, ...?
+		);
 
-	function make_statistics_components_and_ports return type_statistics_components_and_ports;
+	
+	function to_string (category : in type_component_category) return string;
+	-- Returns the given category as string.
+	
+	function make_statistics_components_and_ports (log_threshold : in et_string_processing.type_log_level)
+		return type_statistics_components_and_ports;
 	-- Returns statistics about components and ports on the module indicated by module_cursor.
-	-- The numbers are extracted from the portlists of the module exclusively.
+	-- The numbers are extracted from the components and portlists of the module exclusively.
 
 	function components_statistics (
 		statistics_components_and_ports : in type_statistics_components_and_ports;
-		appearance : in type_appearance_schematic) return string;
-	-- Returns the number of components as string. appearance determines the kind of 
+		category : in type_component_category) return string;
+	-- Returns the number of components as string. Category determines the kind of 
 	-- components to address.
-	
-	procedure make_statistics (log_threshold : in et_string_processing.type_log_level);
-	-- Generates the statistics on components and nets of the rig.
+
+	procedure write_statistics (log_threshold : in et_string_processing.type_log_level);
+	-- Writes the statistics on components and nets of the rig.
 	-- Breaks statistics up into submodules, general statistics (CAD) and CAM related things.
 
 	private
 	
 		type type_statistics_components_and_ports is record
-			components_total	: count_type;
-			components_virtual	: count_type;
-			components_real		: count_type;
-			ports_total			: count_type;
-			ports_virtual		: count_type;
-			ports_real			: count_type;
+			components_total	: count_type := 0;
+			components_virtual	: count_type := 0;
+			components_real		: count_type := 0;
+			components_mounted	: count_type := 0;
+			ports_total			: count_type := 0;
+			ports_virtual		: count_type := 0;
+			ports_real			: count_type := 0;
 		end record;
 		
 	

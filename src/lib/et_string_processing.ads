@@ -121,6 +121,9 @@ package et_string_processing is
 
 	function message_note return string;
 	-- Returns a notification string.
+
+	mounted		: constant string (1..7)  := "mounted";
+	not_mounted	: constant string (1..11) := "not mounted";
 	
 -- TIMESTAMP
 	timestamp_characters : character_set := to_set (ranges => (('A','F'),('0','9'))); -- CS: upper case letters only	
