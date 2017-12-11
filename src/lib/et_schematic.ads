@@ -179,11 +179,15 @@ package et_schematic is
 	function to_string (mirror : in type_mirror) return string;
 	-- returns the given mirror style as string
 
+	-- In a schematic we handle only virtual components (like GND symbols)
+	-- and those which appear in both schematic an layout (so called real compoenents):
+	subtype type_appearance_schematic is type_component_appearance range sch .. sch_pcb;
+	
 	-- In a schematic we find units spread all over.
 	-- A unit is a subsection of a component.
 	-- A unit has placeholders for text like reference (like IC303), value (like 7400), ...
 	-- Some placeholders are available when the component appears in both schematic and layout.
-	type type_unit (appearance : type_component_appearance) is record
+	type type_unit (appearance : type_appearance_schematic) is record
 		position	: et_coordinates.type_coordinates;
 		orientation	: et_coordinates.type_angle;
 		mirror		: type_mirror;
@@ -196,7 +200,7 @@ package et_schematic is
 		updated		: et_libraries.type_text_placeholder (meaning => et_libraries.updated);		
 		author		: et_libraries.type_text_placeholder (meaning => et_libraries.author);
 		case appearance is
-			when sch | pcb => null; -- CS
+			when sch => null; -- CS
 			when sch_pcb =>
 				packge		: et_libraries.type_text_placeholder (meaning => et_libraries.packge); -- like "SOT23"
 				datasheet	: et_libraries.type_text_placeholder (meaning => et_libraries.datasheet); -- might be useful for some special components
@@ -255,7 +259,7 @@ package et_schematic is
 
 
 	-- This is a component as it appears in the schematic.
-	type type_component (appearance : type_component_appearance) is record
+	type type_component (appearance : type_appearance_schematic) is record
 		name_in_library : et_libraries.type_component_name.bounded_string; -- example: "TRANSISTOR_PNP" -- CS: rename to generic_name ?
 		value			: et_libraries.type_component_value.bounded_string; -- 470R
 		commissioned	: et_string_processing.type_date; -- 2017-08-17T14:17:25
@@ -642,7 +646,7 @@ package et_schematic is
 
 	function component_appearance (cursor : in type_components.cursor)
 	-- Returns the component appearance where cursor points to.
-		return type_component_appearance;
+		return type_appearance_schematic;
 
 	function bom (cursor : in type_components.cursor)
 	-- Returns the component bom status where cursor points to.
@@ -665,7 +669,7 @@ package et_schematic is
 		coordinates : type_coordinates;
 		direction	: type_port_direction; -- example: "passive" -- used for ERC
 		style		: type_port_style;	-- used for ERC
-		appearance	: type_component_appearance;
+		appearance	: type_appearance_schematic;
 		processed	: boolean; -- used for netlist generation
 	end record;
 
@@ -875,6 +879,9 @@ package et_schematic is
 
 	extension_statistics : constant string (1 .. 4) := "stat";
 
+	type type_statistics_components_and_ports is private;
+
+	
 	function components_total return count_type;
 	-- Returns the total number of components (incl. virtual components) in the module indicated by module_cursor.
 
@@ -886,8 +893,30 @@ package et_schematic is
 	function components_virtual return count_type;
 	-- Returns the number of virtual components in the module indicated by module_cursor.
 
+	function make_statistics_components_and_ports return type_statistics_components_and_ports;
+	-- Returns statistics about components and ports on the module indicated by module_cursor.
+	-- The numbers are extracted from the portlists of the module exclusively.
 
--- 	procedure make_statistics;
+	function components_statistics (
+		statistics_components_and_ports : in type_statistics_components_and_ports;
+		appearance : in type_appearance_schematic) return string;
+	-- Returns the number of components as string. appearance determines the kind of 
+	-- components to address.
+	
+	procedure make_statistics (log_threshold : in et_string_processing.type_log_level);
+	-- Generates the statistics on components and nets of the rig.
+	-- Breaks statistics up into submodules, general statistics (CAD) and CAM related things.
+
+	private
+	
+		type type_statistics_components_and_ports is record
+			components_total	: count_type;
+			components_virtual	: count_type;
+			components_real		: count_type;
+			ports_total			: count_type;
+			ports_virtual		: count_type;
+			ports_real			: count_type;
+		end record;
 		
 	
 	

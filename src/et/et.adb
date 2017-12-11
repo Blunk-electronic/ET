@@ -198,10 +198,9 @@ begin -- main
 
 	-- export netlists
 	et_schematic.export_netlists (log_threshold => 0);
-
 	
 	-- export statistics
--- 	et_schematic.make_statistics;
+	et_schematic.make_statistics (log_threshold => 0);
 
 	-- export bom
 -- 	et_schematic.make_bom;

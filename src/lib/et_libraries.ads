@@ -533,9 +533,8 @@ package et_libraries is
 
 	type type_component_appearance is ( 
 		sch,		-- a component that exists in the schematic only (like power symbols)
-		pcb,		-- a compoennt that exists on the pcb only (like a fiducial)
-		sch_pcb		-- a component that exists in both schematic and soldered on a pcb
-		
+		sch_pcb,	-- a component that exists in both schematic and soldered on a pcb
+		pcb			-- a compoennt that exists on the pcb only (like a fiducial)		
 		-- CS: cable 
 		-- CS: wire
 		-- ...

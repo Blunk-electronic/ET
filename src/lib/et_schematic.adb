@@ -321,8 +321,6 @@ package body et_schematic is
 				log ("bom "
 					& to_string (type_components.element (component).bom), log_threshold);
 
-				
-			when pcb => null; -- CS
 			when others => null; -- CS should never happen as virtual components do not have a package
 		end case;
 
@@ -340,7 +338,7 @@ package body et_schematic is
 
 	function component_appearance (cursor : in type_components.cursor)
 	-- Returns the component appearance where cursor points to.
-		return type_component_appearance is
+		return type_appearance_schematic is
 	begin
 		return type_components.element (cursor).appearance;
 	end component_appearance;
@@ -3500,6 +3498,12 @@ package body et_schematic is
 	
 
 -- STATISTICS
+	function port_count return count_type is
+	-- Returns the total number of ports (inc. virtual component ports)
+	begin
+		return 0;
+	end port_count;
+
 
 	function components_total return count_type is
 	-- Returns the total number of components (inc. virtual components) in the module indicated by module_cursor.
@@ -3627,83 +3631,122 @@ package body et_schematic is
 		return n;
 	end components_virtual;
 
+	function make_statistics_components_and_ports return type_statistics_components_and_ports is
+	-- Returns statistics about components and ports on the module indicated by module_cursor.
+	-- The numbers are extracted from the portlists of the module exclusively.
+		statistics : type_statistics_components_and_ports;
 
+		procedure count (
+			name	: in type_submodule_name.bounded_string;
+			module	: in type_module) is
+
+			component : type_portlists.cursor;
+			use type_portlists;
+			use et_string_processing;
+		begin
+			statistics.components_total := module.portlists.length;
+		end count;
+	begin
+
+		type_rig.query_element (
+			position	=> module_cursor,
+			process		=> count'access
+			);
 	
--- 	procedure make_statistics is
--- 	-- Generates the statistics on components and nets of the rig.
--- 	-- Breaks statistics up into submodules, general statistics (CAD) and CAM related things.
--- 		statistics_file_name_cad: type_statistic_file_name.bounded_string;
--- 		statistics_file_name_cam: type_statistic_file_name.bounded_string;
--- 		statistics_handle_cad	: ada.text_io.file_type;
--- 		statistics_handle_cam	: ada.text_io.file_type;
--- 
--- 		component : type_components.cursor;
--- 		-- CS net
--- 		
--- 		use ada.directories;
--- 		use et_general;
--- 		use type_components;
--- 		use type_rig;
--- 		use et_string_processing;
--- 		use et_netlist;
--- 	begin
--- 		first_module;
--- 		
--- 		log (text => "writing statistics ...", level => 1);
--- 
--- 		while module_cursor /= type_rig.no_element loop
--- 			log_indentation_up;
--- 			log (text => "module " & to_string (key (module_cursor)), level => 1);
--- 			log_indentation_up;
--- 
--- 			-- CAD
--- 			-- compose the CAD statistics file name and its path like "../ET/motor_driver/motor_driver.stat"
--- 			statistics_file_name_cad := type_statistic_file_name.to_bounded_string 
--- 				(
--- 				compose (
--- 					containing_directory => compose (work_directory, to_string (key (module_cursor))),
--- 					name => to_string (key (module_cursor)),
--- 					extension => extension_statistics)
--- 				);
--- 
--- 			-- create the statistics file (which inevitably and intentionally overwrites the previous file)
--- 			log (text => "CAD statistics file " & type_statistic_file_name.to_string (statistics_file_name_cad), level => 1);
--- 			create (
--- 				file => statistics_handle_cad,
--- 				mode => out_file, 
--- 				name => type_statistic_file_name.to_string (statistics_file_name_cad));
--- 
--- 			log_indentation_up;
--- 			put_line (statistics_handle_cad, comment_mark & " " & system_name & " CAD statistics");
--- 			put_line (statistics_handle_cad, comment_mark & " date " & string (date_now));
--- 			put_line (statistics_handle_cad, comment_mark & " module " & to_string (key (module_cursor)));
--- 			put_line (statistics_handle_cad, comment_mark & " " & row_separator_double);
--- 
--- 			-- components
--- 			put_line (statistics_handle_cad, "components");
--- 			put_line (statistics_handle_cad, " total  " & count_type'image (components_total) & " (incl. virtual components)");
--- 			put_line (statistics_handle_cad, " real   " & count_type'image (components_real)); -- all real components ! Regardless of bom status !
--- 			put_line (statistics_handle_cad, " virtual" & count_type'image (components_virtual) & " (power symbols, power flags, ...)");
+		return statistics;
+	end make_statistics_components_and_ports;
+
+	function components_statistics (
+		statistics_components_and_ports : in type_statistics_components_and_ports;
+		appearance : in type_appearance_schematic) return string is
+	-- Returns the number of components as string. appearance determines the kind of 
+	-- components to address.
+	begin
+		case appearance is
+			when sch => -- virtual
+				return count_type'image (statistics_components_and_ports.components_virtual);
+			when sch_pcb => -- real
+				return count_type'image (statistics_components_and_ports.components_real);
+		end case;
+	end components_statistics;
+	
+	procedure make_statistics (log_threshold : in et_string_processing.type_log_level) is
+	-- Generates the statistics on components and nets of the rig.
+	-- Breaks statistics up into submodules, general statistics (CAD) and CAM related things.
+		statistics_file_name_cad: type_statistic_file_name.bounded_string;
+		statistics_file_name_cam: type_statistic_file_name.bounded_string;
+		statistics_handle_cad	: ada.text_io.file_type;
+		statistics_handle_cam	: ada.text_io.file_type;
+
+		component : type_components.cursor;
+		-- CS net
+
+		components_and_ports : type_statistics_components_and_ports;
+		
+		use ada.directories;
+		use et_general;
+		use type_components;
+		use type_rig;
+		use et_string_processing;
+		use et_netlist;
+	begin
+		first_module;
+		
+		log ("writing statistics ...", log_threshold);
+		log_indentation_up;
+		
+		while module_cursor /= type_rig.no_element loop
+
+			log ("module " & to_string (key (module_cursor)), log_threshold + 1);
+			log_indentation_up;
+
+			-- CAD
+			-- compose the CAD statistics file name and its path like "../ET/motor_driver/motor_driver.stat"
+			statistics_file_name_cad := type_statistic_file_name.to_bounded_string 
+				(
+				compose (
+					containing_directory => compose (work_directory, to_string (key (module_cursor))),
+					name => to_string (key (module_cursor)),
+					extension => extension_statistics)
+				);
+
+			-- create the statistics file (which inevitably and intentionally overwrites the previous file)
+			log ("CAD statistics file " & type_statistic_file_name.to_string (statistics_file_name_cad), log_threshold + 2);
+			create (
+				file => statistics_handle_cad,
+				mode => out_file, 
+				name => type_statistic_file_name.to_string (statistics_file_name_cad));
+
+			log_indentation_up;
+			put_line (statistics_handle_cad, comment_mark & " " & system_name & " CAD statistics");
+			put_line (statistics_handle_cad, comment_mark & " date " & string (date_now));
+			put_line (statistics_handle_cad, comment_mark & " module " & to_string (key (module_cursor)));
+			put_line (statistics_handle_cad, comment_mark & " " & row_separator_double);
+
+			components_and_ports := make_statistics_components_and_ports;
+			
+			-- components
+			put_line (statistics_handle_cad, "components");
+			put_line (statistics_handle_cad, " real  " & components_statistics (components_and_ports, sch));
+-- 			put_line (statistics_handle_cad, " real   " & natural'image (components_and_ports.components_real)); -- all real components ! Regardless of bom status !
+-- 			put_line (statistics_handle_cad, " virtual" & natural'image (components_and_ports.components_) & " (power symbols, power flags, ...)");
 -- 			new_line (statistics_handle_cad);
 -- 			-- CS: resitors, leds, transitors, ...
 -- 
 -- 			-- nets
 -- 			put_line (statistics_handle_cad, "nets");
--- 			-- CS: currently we get the net and pin numbers from et_netlist.rig.
--- 			-- In the future this data should be taken from et_schematic.rig.
--- 			et_netlist.set_module (key (module_cursor));
--- 			put_line (statistics_handle_cad, " total  " & count_type'image (et_netlist.net_count));
--- 			-- As for the total number of ports, we take all ports into account as they are listed in et_netlist.rig.
--- 			-- This includes ports of virtual components except so called "power_flags".
--- 			put_line (statistics_handle_cad, "  ports " & count_type'image (et_netlist.component_ports_total) & " (excl. power flags)");
+-- 			put_line (statistics_handle_cad, " total  " & count_type'image (net_count));
+-- 
+-- 			-- As for the total number of ports, we take all ports into account (inc. virtual ports of virtual components like GND symbols).
+-- 			--put_line (statistics_handle_cad, "  ports " & count_type'image (port_count));
 -- 			
 -- 			-- finish statistics			
 -- 			put_line (statistics_handle_cad, comment_mark & " " & row_separator_single);
 -- 			put_line (statistics_handle_cad, comment_mark & " end of list");
 -- 			log_indentation_down;
--- 			close (statistics_handle_cad);
--- 
--- 
+			close (statistics_handle_cad);
+
+
 -- 
 -- 			-- CAM
 -- 			-- compose the CAM statistics file name and its path like "../ET/motor_driver/CAM/motor_driver.stat"
@@ -3758,12 +3801,12 @@ package body et_schematic is
 -- 
 -- 
 -- 			
--- 			log_indentation_down;
--- 			next (module_cursor);
--- 		end loop;
--- 			
--- 		
--- 	end make_statistics;
+			log_indentation_down;
+			next (module_cursor);
+		end loop;
+			
+		
+	end make_statistics;
 
 	
 end et_schematic;
