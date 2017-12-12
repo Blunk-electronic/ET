@@ -22,6 +22,11 @@
 --    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
 ------------------------------------------------------------------------------
 
+--   For correct displaying set tab with in your edtior to 4.
+
+--   The two letters "CS" indicate a "construction side" where things are not
+--   finished yet or intended for to future.
+
 --   Please send your questions and comments to:
 --
 --   info@blunk-electronic.de
@@ -382,7 +387,6 @@ package body et_coordinates is
 			x		=> point.x,
 			y		=> point.y,
 			path	=> type_path_to_submodule.empty_list,
-			module_name		=> type_submodule_name.to_bounded_string (""),
 			sheet_number	=> 1
 			);
 	end to_coordinates;
@@ -434,11 +438,6 @@ package body et_coordinates is
 		return position.path;
 	end path;
 
-	function module (position : in type_coordinates) return type_submodule_name.bounded_string is
-	begin
-		return position.module_name;
-	end module;
-
 	function sheet (position : in type_coordinates) return positive is
 	begin
 		return position.sheet_number;
@@ -459,12 +458,6 @@ package body et_coordinates is
 		return same;
 	end same_path_and_sheet;
 	
-	procedure set_module (position : in out type_coordinates; name : in type_submodule_name.bounded_string) is
-	-- Sets the module name in given position.
-	begin
-		position.module_name := name;
-	end set_module;
-
 	procedure set_path (position : in out type_coordinates; path : in type_path_to_submodule.list) is
 	-- Sets the path in given position.
 	begin

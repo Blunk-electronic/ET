@@ -217,15 +217,11 @@ package et_coordinates is
 		return string;
 
 	function path   (position : in type_coordinates) return type_path_to_submodule.list;
-	function module (position : in type_coordinates) return type_submodule_name.bounded_string;
 	function sheet  (position : in type_coordinates) return positive;
 
 	function same_path_and_sheet (left, right : in type_coordinates) return boolean;
 	-- Returns true if the given coordinates have same path and sheet.
 	
-	procedure set_module (position : in out type_coordinates; name : in type_submodule_name.bounded_string);
-	-- Sets the module name in given position.
-
 	procedure set_path (position : in out type_coordinates; path : in type_path_to_submodule.list);
 	-- Sets the path in given position.
 
@@ -244,12 +240,10 @@ package et_coordinates is
 	
 		type type_coordinates is new type_2d_point with record
 			path            : type_path_to_submodule.list;
-			module_name		: type_submodule_name.bounded_string; -- CS: remove, no longer required
 			sheet_number	: positive; -- CS: dedicated type
 		end record;
 
 		zero_position : constant type_coordinates := (
-			module_name		=> type_submodule_name.to_bounded_string (""),
 			path			=> type_path_to_submodule.empty_list,
 			sheet_number	=> 1,
 			x				=> 0.0,

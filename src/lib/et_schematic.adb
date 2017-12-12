@@ -1251,9 +1251,6 @@ package body et_schematic is
 					-- path remains unchanged because the port is still where the unit is
 					set_path (port_coordinates, path (unit_position));
 
-					-- module name remains unchanged because the port is still in the same module
-					set_module (port_coordinates, module (unit_position));
-
 					-- sheet name remains unchanged because the sheet is still the same
 					set_sheet (port_coordinates, sheet (unit_position));
 					
