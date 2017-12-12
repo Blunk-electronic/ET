@@ -22,7 +22,10 @@
 --    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtito to 4.
+--   For correct displaying set tab with in your edtior to 4.
+
+--   The two letters "CS" indicate a "construction side" where things are not
+--   finished yet or intended for to future.
 
 --   Please send your questions and comments to:
 --
@@ -3377,7 +3380,7 @@ package body et_schematic is
 		
 	end export_netlists;
 
-	procedure make_bom is
+	procedure export_bom (log_threshold : in et_string_processing.type_log_level) is
 	-- Generates a bom file. This file is csv formatted and is to be processed by
 	-- other ERP tools (like stock_manager, see <https://github.com/Blunk-electronic/stock_manager>)
 		use ada.directories;
@@ -3403,18 +3406,60 @@ package body et_schematic is
 		column_part_code_ext: constant string (1 ..13) := "PART_CODE_EXT"; -- not used
 		column_updated		: constant string (1 .. 7) := "UPDATED";
 
-		component_cursor : type_components.cursor;
+		procedure query_components (
+			module_name : in type_submodule_name.bounded_string;
+			module		: in type_module) is
 		
-		begin -- make_bom
+			component : type_components.cursor := module.components.first;
+
+		begin -- query_components
+			log_indentation_up;
+			while component /= type_components.no_element loop
+
+				-- We ignore all virtual components like power flags, power symbols, ...
+				if component_appearance (component) = sch_pcb then
+
+					if bom (component) = YES then
+						log (to_string (key (component)), log_threshold + 2);
+
+						-- CS: warning if netchanger/net-ties occur here. they should have the bom flag set to NO.
+
+						put_field (file => bom_handle, text => to_string (key (component)));
+						put_field (file => bom_handle, text => to_string (element (component).value));
+						put_field (file => bom_handle, text => to_string (element (component).name_in_library));
+						put_field (file => bom_handle, text => to_string (element (component).variant.variant.packge));
+						put_field (file => bom_handle, text => to_string (element (component).author));
+						put_field (file => bom_handle, text => to_string (element (component).bom));
+						put_field (file => bom_handle, text => to_string (element (component).commissioned));
+						put_field (file => bom_handle, text => to_string (element (component).purpose));
+						put_field (file => bom_handle, text => to_string (element (component).partcode));
+
+						-- CS: This is an empty field. it is reserved for the attribute "PART_CODE_EXT" 
+						-- which is currently not supported:
+						put_field (file => bom_handle, text => "");
+
+						put_field (file => bom_handle, text => to_string (element (component).updated));
+						put_lf    (file => bom_handle);
+
+					end if;
+				end if;
+
+				next (component);
+			end loop;
+				
+			log_indentation_down;
+		end query_components;
+		
+	begin -- export_bom
 		first_module;
 		
-		log (text => "writing BOM ...", level => 1);
+		log ("exporting BOM ...", log_threshold);
 
 		while module_cursor /= type_rig.no_element loop
 			log_indentation_up;
-			log (text => "module " & to_string (key (module_cursor)), level => 1);
+			log ("module " & to_string (key (module_cursor)), log_threshold + 1);
 
-			-- compose the netlist file name and its path like "../ET/motor_driver/CAM/motor_driver.net"
+			-- compose the bom file name and its path like "../ET/motor_driver/CAM/motor_driver.csv"
 			bom_file_name := type_bom_file_name.to_bounded_string 
 				(
 				compose (
@@ -3427,9 +3472,9 @@ package body et_schematic is
 					extension => extension_bom)
 				);
 
-			-- create the netlist (which inevitably and intentionally overwrites the previous file)
+			-- create the BOM (which inevitably and intentionally overwrites the previous file)
 			log_indentation_up;
-			log (text => "creating BOM file " & type_bom_file_name.to_string (bom_file_name), level => 1);
+			log ("BOM file " & type_bom_file_name.to_string (bom_file_name), log_threshold + 2);
 			create (
 				file => bom_handle,
 				mode => out_file, 
@@ -3451,49 +3496,20 @@ package body et_schematic is
 			put_field (file => bom_handle, text => column_updated);
 			put_lf    (file => bom_handle);
 
-			log_indentation_up;
-			component_cursor := first_component;
-			while component_cursor /= type_components.no_element loop
+			query_element (
+				position	=> module_cursor,
+				process		=> query_components'access);
 
-				-- We ignore all virtual components like power flags, power symbols, ...
-				if component_appearance (component_cursor) = sch_pcb then
-
-					if bom (component_cursor) = YES then
-						log (text => to_string (key (component_cursor)), level => 1);
-
-						put_field (file => bom_handle, text => to_string (key (component_cursor)));
-						put_field (file => bom_handle, text => to_string (element (component_cursor).value));
-						put_field (file => bom_handle, text => to_string (element (component_cursor).name_in_library));
-						put_field (file => bom_handle, text => to_string (element (component_cursor).variant.variant.packge));
-						put_field (file => bom_handle, text => to_string (element (component_cursor).author));
-						put_field (file => bom_handle, text => to_string (element (component_cursor).bom));
-						put_field (file => bom_handle, text => to_string (element (component_cursor).commissioned));
-						put_field (file => bom_handle, text => to_string (element (component_cursor).purpose));
-						put_field (file => bom_handle, text => to_string (element (component_cursor).partcode));
-
-						-- CS: This is an empty field. it is reserved for the attribute "PART_CODE_EXT" 
-						-- which is currently not supported:
-						put_field (file => bom_handle, text => "");
-
-						put_field (file => bom_handle, text => to_string (element (component_cursor).updated));
-						put_lf    (file => bom_handle);
-
-					end if;
-				end if;
-
-				next (component_cursor);
-			end loop;
-			log_indentation_down;
-			
 			-- CS: A list end mark should be placed. First make sure stock_manager can handle it.
 			-- put_line (bom_handle, comment_mark & " end of list");
 			
 			close (bom_handle);
 			log_indentation_down;
+			log_indentation_down;
 			next (module_cursor);
 		end loop;
 		
-	end make_bom;
+	end export_bom;
 
 	
 
@@ -3517,21 +3533,25 @@ package body et_schematic is
 			use type_components;
 
 			procedure log_component (mounted : in boolean := true) is
+			-- This is for logging mounted or not mounted components.
 			begin
 				if mounted then
 					log (to_string (key (component)) 
 						& arrow & to_string (element (component).appearance),
-						log_threshold);
+						log_threshold + 1);
 				else
 					log (to_string (key (component)) 
 						& arrow & to_string (element (component).appearance) 
-						& arrow & not_mounted, log_threshold);
+						& arrow & not_mounted, log_threshold + 1);
 				end if;
 			end log_component;
 			
 		begin -- count_components
+			-- total number of components
 			statistics.components_total := module.components.length;
 
+			-- count virtual and real components. real components are separated by
+			-- the fact if they are mounted or not.
 			while component /= type_components.no_element loop
 
 				case element (component).appearance is
@@ -3555,7 +3575,6 @@ package body et_schematic is
 				
 		end count_components;
 
-
 		procedure count_ports (
 			name	: in type_submodule_name.bounded_string;
 			module	: in type_module) is
@@ -3568,42 +3587,43 @@ package body et_schematic is
 				ports		: in type_ports.list) is
 				port : type_ports.cursor := ports.first;
 			begin
+				-- loop through the ports of the given component
+				-- and count those which are connected.
 				while port /= type_ports.no_element loop
-			
 					if element (port).processed then
 						statistics.ports_total := statistics.ports_total + 1;
 					
 						-- CS: log port
 					end if;
-
 					next (port);
 				end loop;
 			end count;
 				
 		begin -- count_ports
 			while portlist /= type_portlists.no_element loop
-
 				query_element (
 					position	=> portlist,
 					process		=> count'access);
 				
 				next (portlist);
 			end loop;
-				
 		end count_ports;
 
 	begin -- make_statistics
 
+		-- count components
 		type_rig.query_element (
 			position	=> module_cursor,
 			process		=> count_components'access
 			);
 
+		-- count ports
 		type_rig.query_element (
 			position	=> module_cursor,
 			process		=> count_ports'access
 			);
 
+		-- count nets
 		statistics.nets_total := net_count;
 		
 		return statistics;
@@ -3641,7 +3661,7 @@ package body et_schematic is
 	
 	procedure write_statistics (log_threshold : in et_string_processing.type_log_level) is
 	-- Generates the statistics on components and nets of the rig.
-	-- Breaks statistics up into submodules, general statistics (CAD) and CAM related things.
+	-- Distinguishes between CAD and CAM related things.
 		statistics_file_name_cad: type_statistic_file_name.bounded_string;
 		statistics_file_name_cam: type_statistic_file_name.bounded_string;
 		statistics_handle_cad	: ada.text_io.file_type;
@@ -3715,65 +3735,61 @@ package body et_schematic is
 			close (statistics_handle_cad);
 
 
--- 
--- 			-- CAM
--- 			-- compose the CAM statistics file name and its path like "../ET/motor_driver/CAM/motor_driver.stat"
--- 			statistics_file_name_cam := type_statistic_file_name.to_bounded_string 
--- 				(
--- 				compose (
--- 					containing_directory => compose 
--- 						(
--- 						containing_directory => compose (work_directory, to_string (key (module_cursor))),
--- 						name => et_export.directory_cam
--- 						),
--- 					name => to_string (key (module_cursor)),
--- 					extension => extension_statistics)
--- 				);
--- 
--- 			-- create the statistics file (which inevitably and intentionally overwrites the previous file)
--- 			log (text => "CAM statistics file " & type_statistic_file_name.to_string (statistics_file_name_cam), level => 1);
--- 			create (
--- 				file => statistics_handle_cam,
--- 				mode => out_file, 
--- 				name => type_statistic_file_name.to_string (statistics_file_name_cam));
--- 
--- 			log_indentation_up;
--- 			put_line (statistics_handle_cam, comment_mark & " " & system_name & " CAM statistics");
--- 			put_line (statistics_handle_cam, comment_mark & " date " & string (date_now));
--- 			put_line (statistics_handle_cam, comment_mark & " module " & to_string (key (module_cursor)));
--- 			put_line (statistics_handle_cam, comment_mark & " " & row_separator_double);
--- 
--- 			-- components
--- 			put_line (statistics_handle_cam, "components");
--- 			put_line (statistics_handle_cam, " total" & count_type'image (components_real (mounted_only => true)));
--- 			-- As for the total number of real component ports, we take all ports into account for which a physical
--- 			-- pad must be manufactured. Here it does not matter if a component is to be mounted or not, if a pin is connected or not.
--- 			-- CS: THT/SMD
--- 			-- CS: THT/SMD/pins/pads
--- 			-- CS: resitors, leds, transitors, ...
--- 			new_line (statistics_handle_cam);
--- 
--- 			-- nets
--- 			put_line (statistics_handle_cam, "nets");
--- 			-- CS: currently we get the net and pin numbers from et_netlist.rig.
--- 			-- In the future this data should be taken from et_schematic.rig.
--- 			et_netlist.set_module (key (module_cursor));
--- 			put_line (statistics_handle_cam, " total" & count_type'image (et_netlist.net_count));
--- 
--- 			-- finish statistics
--- 			put_line (statistics_handle_cam, comment_mark & " " & row_separator_single);
--- 			put_line (statistics_handle_cam, comment_mark & " end of list");
--- 			log_indentation_down;
--- 			close (statistics_handle_cam);
--- 
--- 
--- 
--- 			
+
+			-- CAM
+			-- compose the CAM statistics file name and its path like "../ET/motor_driver/CAM/motor_driver.stat"
+			statistics_file_name_cam := type_statistic_file_name.to_bounded_string 
+				(
+				compose (
+					containing_directory => compose 
+						(
+						containing_directory => compose (work_directory, to_string (key (module_cursor))),
+						name => et_export.directory_cam
+						),
+					name => to_string (key (module_cursor)),
+					extension => extension_statistics)
+				);
+
+			-- create the statistics file (which inevitably and intentionally overwrites the previous file)
+			log ("CAM statistics file " & type_statistic_file_name.to_string (statistics_file_name_cam), log_threshold + 2);
+			create (
+				file => statistics_handle_cam,
+				mode => out_file, 
+				name => type_statistic_file_name.to_string (statistics_file_name_cam));
+
+			log_indentation_up;
+			put_line (statistics_handle_cam, comment_mark & " " & system_name & " CAM statistics");
+			put_line (statistics_handle_cam, comment_mark & " date " & string (date_now));
+			put_line (statistics_handle_cam, comment_mark & " module " & to_string (key (module_cursor)));
+			put_line (statistics_handle_cam, comment_mark & " " & row_separator_double);
+
+			-- components
+			put_line (statistics_handle_cam, "components");
+			put_line (statistics_handle_cam, " total   " & query_statistics (statistics, components_mounted));
+
+			-- As for the total number of real component ports, we take all ports into account for which a physical
+			-- pad must be manufactured. Here it does not matter if a component is to be mounted or not, if a pin is connected or not.
+			-- CS: THT/SMD
+			-- CS: THT/SMD/pins/pads
+			-- CS: ressitors, leds, transitors, ...
+			new_line (statistics_handle_cam);
+
+			-- nets
+			put_line (statistics_handle_cam, "nets");
+			put_line (statistics_handle_cam, " total   " & query_statistics (statistics, nets_total));
+			-- CS: ports of mounted components ? Could be useful for test generation like FPT, ICT, BST, ...
+
+			-- finish statistics
+			put_line (statistics_handle_cam, comment_mark & " " & row_separator_single);
+			put_line (statistics_handle_cam, comment_mark & " end of list");
+			log_indentation_down;
+			close (statistics_handle_cam);
+			
 			log_indentation_down;
 			next (module_cursor);
 		end loop;
-			
 		
+		log_indentation_down;
 	end write_statistics;
 
 	

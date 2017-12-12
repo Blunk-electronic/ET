@@ -22,6 +22,11 @@
 --    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
 ------------------------------------------------------------------------------
 
+--   For correct displaying set tab with in your editor to 4.
+
+--   The two letters "CS" indicate a "construction side" where things are not
+--   finished yet or intended for to future.
+
 --   Please send your questions and comments to:
 --
 --   info@blunk-electronic.de
@@ -203,7 +208,7 @@ begin -- main
 	et_schematic.write_statistics (log_threshold => 0);
 
 	-- export bom
--- 	et_schematic.make_bom;
+	et_schematic.export_bom (log_threshold => 0);
 	
 	et_export.close_report;
 

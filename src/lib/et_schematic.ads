@@ -24,6 +24,9 @@
 
 --   For correct displaying set tab with in your editor to 4.
 
+--   The two letters "CS" indicate a "construction side" where things are not
+--   finished yet or intended for to future.
+
 --   Please send your questions and comments to:
 --
 --   info@blunk-electronic.de
@@ -42,7 +45,7 @@
 with ada.text_io;				use ada.text_io;
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
-with ada.strings.unbounded; 	use ada.strings.unbounded;
+--with ada.strings.unbounded; 	use ada.strings.unbounded;
 with ada.containers;            use ada.containers;
 with ada.containers.vectors;
 with ada.containers.doubly_linked_lists;
@@ -389,9 +392,6 @@ package et_schematic is
 	function length (segment : in type_net_segment) return type_distance;
 	-- Returns the length of the given net segment.
 	
--- 	procedure write_coordinates_of_segment (segment : in type_net_segment);
--- 	-- Writes the start and end coordinates of a net segment.	
-
 	function to_string (segment : in type_net_segment; scope : in type_scope := sheet) return string; -- CS: should replace write_coordinates_of_segment
 	-- Returns the start and end coordinates of the given net segment.
 	
@@ -852,7 +852,7 @@ package et_schematic is
 	package type_netlist_file_name is new generic_bounded_length (netlist_file_name_length); 
 	--use type_netlist_file_name;
 
-	extension_netlist : constant string (1 .. 3) := "net";
+	extension_netlist : constant string (1..3) := "net";
 
 	procedure make_netlists (log_threshold : in et_string_processing.type_log_level);
 
@@ -867,9 +867,10 @@ package et_schematic is
 	bom_file_name_length : constant positive := 100; -- CS: should suffice for now
 	package type_bom_file_name is new generic_bounded_length (bom_file_name_length); 
 
-	extension_bom : constant string (1 .. 3) := "bom";
-	procedure make_bom;
-	
+	extension_bom : constant string (1..3) := "csv";
+	procedure export_bom (log_threshold : in et_string_processing.type_log_level);
+	-- Generates a bom file. This file is csv formatted and is to be processed by
+	-- other ERP tools (like stock_manager, see <https://github.com/Blunk-electronic/stock_manager>)
 
 -- STATISTICS
 
@@ -877,7 +878,7 @@ package et_schematic is
 	statistic_file_name_length : constant positive := 100; -- CS: should suffice for now
 	package type_statistic_file_name is new generic_bounded_length (statistic_file_name_length); 
 
-	extension_statistics : constant string (1 .. 4) := "stat";
+	extension_statistics : constant string (1..4) := "stat";
 
 	type type_statistics is private;
 
@@ -902,7 +903,7 @@ package et_schematic is
 	
 	procedure write_statistics (log_threshold : in et_string_processing.type_log_level);
 	-- Writes the statistics on components and nets of the rig.
-	-- Breaks statistics up into submodules, general statistics (CAD) and CAM related things.
+	-- Distinguishes between CAD and CAM related things.
 
 	private
 	
@@ -913,11 +914,9 @@ package et_schematic is
 			components_mounted	: count_type := 0;
 			nets_total			: count_type := 0;
 			ports_total			: count_type := 0;
--- 			ports_virtual		: count_type := 0;
--- 			ports_real			: count_type := 0;
-		end record;
-		
-	
+-- CS		ports_virtual		: count_type := 0;
+-- CS		ports_real			: count_type := 0;
+		end record;	
 	
 end et_schematic;
 
