@@ -1273,7 +1273,7 @@ package body et_schematic is
 							-- schematic defined properties:
 							coordinates	=> port_coordinates,
 
-							processed	=> false -- used by netlist generator (procedure make_netlists)
+							connected	=> false -- used by netlist generator (procedure make_netlists)
 							));
 
 					log_indentation_up;
@@ -3007,8 +3007,8 @@ package body et_schematic is
 							use type_ports;
 							port_cursor : type_ports.cursor := ports.first; -- points to the first port of the component
 
-							procedure mark_port_as_processed is
-							-- mark port in portlist as processed
+							procedure mark_port_as_connected is
+							-- mark port in portlist as connected
 							
 								procedure locate_component (
 								-- Locates the component within the portlist of the submodule
@@ -3022,7 +3022,7 @@ package body et_schematic is
 
 										procedure mark_it (port : in out type_port) is
 										begin
-											port.processed := true;
+											port.connected := true;
 										end mark_it;
 											
 									begin -- locate_port
@@ -3039,13 +3039,13 @@ package body et_schematic is
 										process 	=> locate_port'access);
 								end locate_component;
 									
-							begin -- mark_port_as_processed
+							begin -- mark_port_as_connected
 								-- locate the submodule in the rig
 								update_element (
 									container => rig,
 									position => module_cursor,
 									process => locate_component'access);
-							end mark_port_as_processed;
+							end mark_port_as_connected;
 							
 							procedure add_port (
 							-- Adds the port (indicated by cursor "port" to the portlist of the net being built.
@@ -3080,7 +3080,7 @@ package body et_schematic is
 									left => strand.coordinates, 
 									right => element (port_cursor).coordinates ) then
 
-									if not element (port_cursor).processed then
+									if not element (port_cursor).connected then
 								
 										log_indentation_up;
 										log ("probing " & to_string (component) 
@@ -3107,11 +3107,11 @@ package body et_schematic is
 												position => net_in_netlist,
 												process => add_port'access);
 
-											-- Mark the port (in the portlists) as processed.
+											-- Mark the port (in the portlists) as connected.
 											-- Why ? A port can be connected to ONLY ONE net. So once it is
 											-- detected here, it would be a wast of computing time to 
 											-- test if the port is connected to other nets.
-											mark_port_as_processed;
+											mark_port_as_connected;
 										end if;
 											
 										log_indentation_down;
@@ -3587,7 +3587,7 @@ package body et_schematic is
 				-- loop through the ports of the given component
 				-- and count those which are connected.
 				while port /= type_ports.no_element loop
-					if element (port).processed then
+					if element (port).connected then
 						statistics.ports_total := statistics.ports_total + 1;
 					
 						-- CS: log port
