@@ -55,7 +55,7 @@ package et_kicad is
 		element_type => et_string_processing.type_fields_of_line,
 		"=" => et_string_processing.lines_equally);
 
-	lines : type_lines.list;
+	lines : type_lines.list := type_lines.empty_list;
 	line_cursor : type_lines.cursor;
 	procedure clear (lines : in out type_lines.list);
 	procedure add (line : in et_string_processing.type_fields_of_line);
@@ -371,10 +371,6 @@ package et_kicad is
 	note_entered				: boolean := false;	
 
 	-- temporarily storage
-	tmp_frame 				: et_schematic.type_frame; -- a single drawing frame
-	tmp_title_block_text 	: et_schematic.type_title_block_text; -- a single text within the title block
-	tmp_title_block_texts 	: et_schematic.type_title_block_texts.list; -- a list of title block texts
-	tmp_title_block 		: et_schematic.type_title_block; -- a full title block	
 	tmp_junction			: et_schematic.type_net_junction;
 	tmp_simple_net_label	: et_schematic.type_net_label_simple;
 	tmp_tag_net_label		: et_schematic.type_net_label_tag;

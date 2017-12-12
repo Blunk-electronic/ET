@@ -4149,6 +4149,161 @@ package body et_kicad is
 			use et_coordinates;
 			use et_libraries;
 
+			
+			procedure make_drawing_frame (lines : in type_lines.list) is
+			-- Builds the drawing frame.
+				
+				-- These are the components of the drawing frame. At the end
+				-- of this procedure they are assembled to a drawing frame:
+				
+				frame : et_schematic.type_frame; -- a single drawing frame
+				title_block_text 	: et_schematic.type_title_block_text; -- a single text within the title block
+				title_block_texts 	: et_schematic.type_title_block_texts.list; -- a list of title block texts
+				title_block 		: et_schematic.type_title_block; -- a full title block
+				
+				-- If the description reveals there is more than one sheet, we have a hierarchic design. Means we
+				-- need to read follwing sheet sections.
+				-- The sheet_number_current obtained here serves as part of the coordinates of objects found on this sheet.
+				-- The sheet description looks like this:
+
+				-- $Descr A4 11693 8268
+				-- encoding utf-8
+				-- Sheet 5 8
+				-- Title ""
+				-- Date ""
+				-- Rev ""
+				-- Comp ""
+				-- Comment1 ""
+				-- Comment2 ""
+				-- Comment3 ""
+				-- Comment4 ""
+				-- $EndDescr
+				
+				use type_lines;
+			
+			begin -- make_drawing_frame
+				line_cursor := type_lines.first (lines);
+
+				-- read drawing frame dimensions from a line like "$Descr A4 11693 8268"
+				frame.paper_size	:= type_paper_size'value (field (et_kicad.line,2));
+				frame.size_x		:= mil_to_distance (field (et_kicad.line,3));
+				frame.size_y 		:= mil_to_distance (field (et_kicad.line,4)); 
+				
+				--frame.coordinates.path := path_to_submodule;
+				set_path (frame.coordinates, path_to_submodule);
+
+				-- CS: Other properties of the drawing frame like x/y coordinates, lists of lines and texts are 
+				-- kicad built-in things and remain unassigned here.
+
+				next (line_cursor);
+
+				-- read endcoding from a line like "encoding utf-8"
+				-- CS: checks only for a non-default endcoding and outputs a warning.
+				-- CS: we assume only one encoding. other encodings are ignored currently.
+				-- The encoding should be project wide. KiCad allows a sheet specific encoding which is no
+				-- good idea.
+				if field (et_kicad.line,1) = schematic_keyword_encoding then
+					if field (et_kicad.line,2) /= encoding_default then
+						log (message_warning & "non-default endcoding '" & field (et_kicad.line,2) & "' found !");
+					end if;
+				end if;
+
+				next (line_cursor);
+
+				-- read sheet number from a line like "Sheet 1 7"
+				if field (et_kicad.line,1) = schematic_keyword_sheet then
+					sheet_number_current := positive'value (field (et_kicad.line,2));
+					log ("sheet" & positive'image (sheet_number_current) & " ...", log_threshold + 1);
+					sheet_count_total := positive'value (field (et_kicad.line,3));
+					-- CS: sheet_count_total must not change from sheet to sheet. Check required.
+					if sheet_count_total > 1 then
+						-- Set in the list_of_submodules (to be returned) the parent_module. The schematic file 
+						-- being processed (see input parameters of read_schematic) becomes the parent module
+						-- of the submodules here.
+						list_of_submodules.parent_module := type_submodule_name.to_bounded_string (to_string (current_schematic));
+					end if;
+					-- CS: make sure total sheet count is less or equal current sheet number.
+
+					-- Our temporarily drawing frame gets the current sheet number assigned.
+					set_sheet (frame.coordinates, sheet_number_current);
+				end if;						
+
+				next (line_cursor);
+				
+				-- read sheet title from a line like "Title "abc""
+				if field (et_kicad.line,1) = schematic_keyword_title then                        
+					title_block_text.meaning := TITLE;
+					title_block_text.text := type_title_block_text_string.to_bounded_string(
+						strip_quotes ((field (et_kicad.line,2))));
+						type_title_block_texts.append (title_block_texts, title_block_text);
+				end if;
+
+				next (line_cursor);
+				
+				-- read date from a line like "Date "1981-01-23""
+				if field (et_kicad.line,1) = schematic_keyword_date then                        
+					title_block_text.meaning := DRAWN_DATE;
+					title_block_text.text := type_title_block_text_string.to_bounded_string(
+						strip_quotes ((field (et_kicad.line,2))));
+						type_title_block_texts.append (title_block_texts, title_block_text);
+				end if;
+
+				next (line_cursor);
+				
+				-- read revision from a line like "Rev "9.7.1"
+				if field (et_kicad.line,1) = schematic_keyword_revision then                        
+					title_block_text.meaning := REVISION;
+					title_block_text.text := type_title_block_text_string.to_bounded_string (
+						strip_quotes ((field (line,2))));
+						type_title_block_texts.append (title_block_texts, title_block_text);
+				end if;
+
+				next (line_cursor);
+
+				-- read company name
+				if field (et_kicad.line,1) = schematic_keyword_company then
+					title_block_text.meaning := COMPANY;
+					title_block_text.text := type_title_block_text_string.to_bounded_string(
+					strip_quotes ((field (et_kicad.line,2))));
+					type_title_block_texts.append (title_block_texts, title_block_text);
+				end if;
+
+				next (line_cursor);
+
+				-- read commments 1..4 CS: need something more flexible here in order to read any number of comments.
+				if  field (et_kicad.line,1) = schematic_keyword_comment_1 or
+					field (et_kicad.line,1) = schematic_keyword_comment_2 or
+					field (et_kicad.line,1) = schematic_keyword_comment_3 or 
+					field (et_kicad.line,1) = schematic_keyword_comment_4 then
+						title_block_text.meaning := MISC;
+						title_block_text.text := type_title_block_text_string.to_bounded_string (
+						strip_quotes ((field (et_kicad.line,2))));
+						type_title_block_texts.append (title_block_texts, title_block_text);
+				end if;
+
+				-- FINALIZE
+
+				-- Make temporarily title_block complete by assigning coordinates and list of texts.
+				-- Then purge temporarily list of texts.
+				-- Then append temporarily title block to main module.
+										
+				set_path (title_block.coordinates, path_to_submodule);
+				
+				title_block.texts := title_block_texts; -- assign collected texts list to temporarily title block
+				-- CS: x/y coordinates and list of lines are kicad built-in things and thus not available currently.
+
+				-- purge temporarily texts
+				type_title_block_texts.clear (title_block_texts);
+
+				-- append title block to module
+				add_title_block (title_block);
+				
+				-- append temporarily drawing frame to module
+				add_frame (frame);
+
+			end make_drawing_frame;
+
+
 			procedure make_gui_sheet (lines : in type_lines.list) is
 				sheet : et_schematic.type_gui_submodule; -- the hierarchical GUI sheet to be assembled
 				name, file : et_coordinates.type_submodule_name.bounded_string; -- sheet name and file name (must be equal)
@@ -4222,7 +4377,7 @@ package body et_kicad is
 				-- read GUI sheet position and size from a line like "S 4050 5750 1050 650"
 				if field (et_kicad.line,1) = schematic_keyword_sheet_pos_and_size then
 					set_path (sheet.coordinates, path_to_submodule);
-					log ("path " & to_string (path (sheet.coordinates)));
+					--log ("path " & to_string (path (sheet.coordinates)));
 					set_sheet (sheet.coordinates, sheet_number_current);
 					set_x (sheet.coordinates, mil_to_distance (field (et_kicad.line,2)));
 					set_y (sheet.coordinates, mil_to_distance (field (et_kicad.line,3)));
@@ -4422,10 +4577,6 @@ package body et_kicad is
 							
 							
 								-- READ DESCRIPTION:
-								-- If the description reveals there is more than one sheet, we have a hierarchic design. Means we
-								-- need to read follwing sheet sections.
-								-- The sheet_number_current obtained here serves as part of the coordinates of objects found on this sheet.
-								-- The sheet description looks like this:
 
 								-- $Descr A4 11693 8268
 								-- encoding utf-8
@@ -4439,125 +4590,23 @@ package body et_kicad is
 								-- Comment3 ""
 								-- Comment4 ""
 								-- $EndDescr
-
-								-- CS: use type_lines (similar to reading gui sheets)
 								
 								if not description_entered then
 									if field (line,1) = schematic_description_header then -- $Descr A4 11693 8268
 										description_entered := true; -- we are entering the sheet description
 
-										-- read drawing frame dimensions from a line like "$Descr A4 11693 8268"
-										tmp_frame.paper_size	:= type_paper_size'value(field (line,2));
-										tmp_frame.size_x		:= mil_to_distance (field (line,3));
-										tmp_frame.size_y 		:= mil_to_distance (field (line,4)); 
-										
-										--tmp_frame.coordinates.path := path_to_submodule;
-										set_path (tmp_frame.coordinates, path_to_submodule);
-
-										-- CS: Other properties of the drawing frame like x/y coordinates, lists of lines and texts are 
-										-- kicad built-in things and remain unassigned here.
-																	
+										add (line);
 									end if;
 								else -- we are inside the description
 									if field (line,1) = schematic_description_footer then -- $EndDescr
 										description_entered := false; -- we are leaving the description
 										description_processed := true;
 
-										-- Make temporarily tmp_title_block complete by assigning coordinates and list of texts.
-										-- Then purge temporarily list of texts.
-										-- Then append temporarily title block to main module.
-										
-										--tmp_title_block.coordinates.path := path_to_submodule;
-										et_coordinates.set_path (tmp_title_block.coordinates, path_to_submodule);
-										
-										tmp_title_block.texts := tmp_title_block_texts; -- assign collected texts list to temporarily title block
-										-- CS: x/y coordinates and list of lines are kicad built-in things and thus not available currently.
-
-										-- purge temporarily texts
-										type_title_block_texts.clear (tmp_title_block_texts);
-
-										-- append title block to module
-										add_title_block (tmp_title_block);
-										
-										-- append temporarily drawing frame to module
-										add_frame (tmp_frame);
+										make_drawing_frame (lines);
+										clear (lines); -- clean up line collector
+									else
+										add (line);
 									end if;
-
-									-- read endcoding from a line like "encoding utf-8"
-									-- CS: checks only for a non-default endcoding and outputs a warning.
-									-- CS: we assume only one encoding. other encodings are ignored currently.
-									-- The encoding should be project wide. KiCad allows a sheet specific encoding which is no
-									-- good idea.
-									if field (line,1) = schematic_keyword_encoding then
-										if field (line,2) /= encoding_default then
-											--log_indentation_reset;
-											log (text => message_warning & "non-default endcoding '" & 
-												field (line,2) & "' found !");
-										end if;
-									end if;
-										
-									-- read sheet number from a line like "Sheet 1 7"
-									if field (line,1) = schematic_keyword_sheet then
-										sheet_number_current := positive'value(field (line,2));
-										log ("sheet" & positive'image (sheet_number_current) & " ...", level => log_threshold + 1);
-										sheet_count_total    := positive'value(field (line,3));
-										if sheet_count_total > 1 then
-											-- Set in the list_of_submodules (to be returned) the parent_module. The schematic file 
-											-- being processed (see input parameters of read_schematic) becomes the parent module
-											-- of the submodules here.
-											list_of_submodules.parent_module := et_coordinates.type_submodule_name.to_bounded_string (to_string (current_schematic));
-										end if;
-										-- CS: make sure total sheet count is less or equal current sheet number.
-
-										-- Our temporarily drawing frame gets the current sheet number assigned.
-										--tmp_frame.coordinates.sheet_number := sheet_number_current;
-										et_coordinates.set_sheet (tmp_frame.coordinates, sheet_number_current);
-									end if;						
-
-									-- read sheet title from a line like "Title "abc""
-									if field (line,1) = schematic_keyword_title then                        
-										tmp_title_block_text.meaning := TITLE;
-										tmp_title_block_text.text := type_title_block_text_string.to_bounded_string(
-											strip_quotes((field (line,2))));
-										type_title_block_texts.append (tmp_title_block_texts, tmp_title_block_text);
-									end if;
-
-									-- read date from a line like "Date "1981-01-23""
-									if field (line,1) = schematic_keyword_date then                        
-										tmp_title_block_text.meaning := DRAWN_DATE;
-										tmp_title_block_text.text := type_title_block_text_string.to_bounded_string(
-											strip_quotes((field (line,2))));
-										type_title_block_texts.append (tmp_title_block_texts, tmp_title_block_text);
-									end if;
-
-									-- read revision from a line like "Rev "9.7.1"
-									if field (line,1) = schematic_keyword_revision then                        
-										tmp_title_block_text.meaning := REVISION;
-										tmp_title_block_text.text := type_title_block_text_string.to_bounded_string(
-											strip_quotes((field (line,2))));
-										type_title_block_texts.append (tmp_title_block_texts, tmp_title_block_text);
-									end if;
-
-									-- read company name
-									if field (line,1) = schematic_keyword_company then
-										tmp_title_block_text.meaning := COMPANY;
-										tmp_title_block_text.text := type_title_block_text_string.to_bounded_string(
-											strip_quotes((field (line,2))));
-										type_title_block_texts.append (tmp_title_block_texts, tmp_title_block_text);
-									end if;
-
-									-- read commments 1..4 CS: need something more flexible here in order to read any number of comments.
-									if  field (line,1) = schematic_keyword_comment_1 or
-										field (line,1) = schematic_keyword_comment_2 or
-										field (line,1) = schematic_keyword_comment_3 or 
-										field (line,1) = schematic_keyword_comment_4 then
-											tmp_title_block_text.meaning := MISC;
-											tmp_title_block_text.text := type_title_block_text_string.to_bounded_string(
-												strip_quotes((field (line,2))));
-											type_title_block_texts.append (tmp_title_block_texts, tmp_title_block_text);
-									end if;
-									
-
 								end if;
 
 								-- Read submodule (sheet) sections (if there has been a total sheet count greater 1 detected earlier).
@@ -4580,8 +4629,6 @@ package body et_kicad is
 									if not sheet_description_entered then
 										if field (line,1) = schematic_sheet_header then -- $Sheet
 											sheet_description_entered := true;
-
-											clear (lines);
 										end if;
 									else -- we are inside a sheet description
 										if field (line,1) = schematic_sheet_footer then -- $EndSheet
