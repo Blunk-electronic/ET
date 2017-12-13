@@ -359,7 +359,9 @@ package et_kicad is
 
 	procedure clear_section_entered_flags;
 	-- clears section_eeschema_entered and section_eeschema_libraries_entered.
-	
+
+	schematic_version_valid 	: boolean := false;	
+	sheet_header_entered		: boolean := false;	
 	description_entered			: boolean := false;
 	description_processed		: boolean := false;
 	sheet_description_entered	: boolean := false;

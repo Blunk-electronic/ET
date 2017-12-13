@@ -2699,23 +2699,6 @@ package body et_kicad is
 			sheet_file : type_schematic_file_name.bounded_string;
 			sheet_count_total, sheet_number_current : positive;
 
-
-			-- When reading the sheet header, its content goes into sheet_header.
-			-- This is stuff like:
-			--     LIBS:nucleo_core-rescue
-			--     LIBS:power
-			--     LIBS:bel_connectors_and_jumpers
-			--     LIBS:bel_primitives
-			--     LIBS:bel_stm32
-			--     LIBS:nucleo_core-cache
-			--     EELAYER 25 0
-			--     EELAYER END
-			-- The library names here are of no importance. So it is sufficient to just store the 
-			-- library names in the sheet header.
-            sheet_header : type_sheet_header;
-
-			schematic_headline_processed : boolean := false;
-            
 			wild_simple_labels	: type_simple_labels.list;
             wild_tag_labels 	: type_tag_labels.list;
 			wild_segments		: type_wild_segments.list;
@@ -4149,7 +4132,100 @@ package body et_kicad is
 			use et_coordinates;
 			use et_libraries;
 
+			procedure check_header (line : in type_fields_of_line) is
+			-- Tests the given line if it contains a valid schematic sheet header.
+			-- Sets the flag schematic_headline_processed.
+			-- Aborts program if schematic version invalid.
+			begin
+				if field (line,1) = schematic_header_keyword_sys_name and
+					field (line,2) = schematic_header_keyword_schematic and
+					field (line,3) = schematic_header_keyword_file and
+					field (line,4) = schematic_header_keyword_version then
+						if positive'value (field (line,5)) = schematic_version then
+							-- headline ok, version is supported
+							schematic_version_valid := true;
+						else
+							log_indentation_reset;
+							log (text => message_error & "schematic version" 
+									& positive'image(schematic_version) & " required.",
+								console => true);
+							raise constraint_error;
+						end if;
+				end if;
+			end check_header;
 			
+			procedure make_sheet_header (lines : in type_lines.list) is
+			-- Builds the sheet header.
+			-- The sheet header mainly contains the used libraries.
+
+				sheet_header : type_sheet_header; -- the header being built
+			
+				--	LIBS:nucleo_core-rescue
+				--	LIBS:power
+				-- 	LIBS:bel_connectors_and_jumpers
+				--	LIBS:bel_primitives
+				--	LIBS:bel_stm32
+				--	LIBS:nucleo_core-cache
+				--	EELAYER 25 0
+				--	EELAYER END
+
+				-- This data goes into a the sheet_header. When the schematic file has been
+				-- read completely, the sheet_header is appended to global list_of_sheet_headers. 
+				-- Why a list of headers ? When schematic files are exported, their headers must be restored to the original state.
+				-- NOTE: The library entries in the header are not used by kicad. However, they must be read
+				-- and stored in sheet_header.libraries.
+								
+				use type_lines;
+			
+			begin -- make_sheet_header
+				line_cursor := type_lines.first (lines);
+				while line_cursor /= type_lines.no_element loop
+
+					--log ("---> C " & to_string (line));
+					
+					-- Field #1 of the line must be broken down by its own ifs in order to get "LIBS" and "bel_stm32"
+					if get_field_from_line (field (et_kicad.line,1), 1, latin_1.colon) = schematic_library then
+
+						-- for the log: write library name
+						log ("uses library " & get_field_from_line (field (et_kicad.line,1), 2, latin_1.colon),
+							log_threshold + 1);
+
+						-- Store bare library name in the list sheet_header.libraries:
+						-- We use a doubly linked list because the order of the library names must be kept.
+						et_libraries.type_library_names.append (
+							container => sheet_header.libraries,
+							new_item => et_libraries.type_library_name.to_bounded_string (
+								get_field_from_line (field (et_kicad.line,1), 2, latin_1.colon))
+							);
+
+					end if;
+
+					-- layer numbers from a line like "EELAYER 25 0" -- CS: not used ?
+					-- CS: we do not read the line "EELAYER END" and assume it is always there.                                                        
+					if field (et_kicad.line,1) = schematic_eelayer then
+						if field (et_kicad.line,2) = schematic_eelayer_end then
+							null;
+						else
+							-- append layer numbers to the sheet header
+							sheet_header.eelayer_a := positive'value(
+								field (et_kicad.line,2));
+
+							sheet_header.eelayer_b := natural'value(
+								field (et_kicad.line,3));
+						end if;
+					end if;
+
+					next (line_cursor);
+				end loop;
+
+				-- Add sheet_header to module.
+                -- NOTE: The file name serves as key in order to match from file to header.
+				add_sheet_header (
+					header => sheet_header,
+					sheet => current_schematic);
+
+			end make_sheet_header;
+
 			procedure make_drawing_frame (lines : in type_lines.list) is
 			-- Builds the drawing frame.
 				
@@ -4305,7 +4381,8 @@ package body et_kicad is
 
 
 			procedure make_gui_sheet (lines : in type_lines.list) is
-				sheet : et_schematic.type_gui_submodule; -- the hierarchical GUI sheet to be assembled
+			-- Builds the GUI sheet.
+				sheet : et_schematic.type_gui_submodule; -- the hierarchical GUI sheet being built
 				name, file : et_coordinates.type_submodule_name.bounded_string; -- sheet name and file name (must be equal)
 
 				port_inserted : boolean; -- used to detect multiple ports with the same name
@@ -4499,582 +4576,529 @@ package body et_kicad is
 						when others =>
 
 							-- At a certain log level we report the whole line as it is:
- 							log (to_string (line), level => log_threshold + 3);
+ 							log (to_string (line), log_threshold + 3);
+
+							-- The first line should be the headline with the schematic version:
+							-- READ SCHEMATIC HEADLINE:
+
+							-- EESchema Schematic File Version 2
 							
-							-- read schematic headline like "EESchema Schematic File Version 2"
-							if not schematic_headline_processed then
-								if field (line,1) = schematic_header_keyword_sys_name and
-									field (line,2) = schematic_header_keyword_schematic and
-									field (line,3) = schematic_header_keyword_file and
-									field (line,4) = schematic_header_keyword_version then
-										if positive'value(field (line,5)) = schematic_version then
-											-- headline ok, version is supported
-											schematic_headline_processed := true;
+							if not schematic_version_valid then
+								check_header (line); 
+								-- sets schematic_version_valid true.
+								-- aborts program if version not supported
+							end if;
 
-											-- Save schematic format version in sheet header:                                    
-											sheet_header.version := positive'value(field (line,5));
-										else
-											log_indentation_reset;
-											log (text => message_error & "schematic version" 
-												 & positive'image(schematic_version) & " required.",
-												console => true);
-											raise constraint_error;
-										end if;
-								end if;
-							else
+							-- READ SHEET HEADER:
 
-								-- READ SHEET HEADER: stuff like:
-								--     LIBS:nucleo_core-rescue
-								--     LIBS:power
-								--     LIBS:bel_connectors_and_jumpers
-								--     LIBS:bel_primitives
-								--     LIBS:bel_stm32
-								--     LIBS:nucleo_core-cache
-								--     EELAYER 25 0
-								--     EELAYER END
+							--	EESchema Schematic File Version 2
+							--	LIBS:nucleo_core-rescue
+							--	LIBS:power
+							--	LIBS:bel_connectors_and_jumpers
+							--	LIBS:bel_primitives
+							--	LIBS:bel_stm32
+							--	LIBS:nucleo_core-cache
+							--	EELAYER 25 0
+							--	EELAYER END
 
-								-- CS: use type_lines (similar to reading gui sheets)
-								
-								-- This data goes into a the sheet_header. When the schematic file has been
-								-- read completely, the sheet_header is appended to global list_of_sheet_headers. 
-								-- Why a list of headers ? When schematic files are exported, their headers must be restored to the original state.
-								-- NOTE: The library entries in the header are not used by kicad. However, they must be read
-								-- and stored in sheet_header.libraries.
-								
-								-- Field #1 of the line must be broken down by its own ifs in order to get "LIBS" and "bel_stm32"
+							if not sheet_header_entered then
 								if get_field_from_line (field  (line,1), 1, latin_1.colon) = schematic_library then
-
-									-- for the log: write library name
-									log (text => "uses library " & get_field_from_line (field  (line,1), 2, latin_1.colon),
-										 level => log_threshold + 1
-										);
-
-									-- Store bare library name in the list sheet_header.libraries:
-									-- We use a doubly linked list because the order of the library names must be kept.
-									et_libraries.type_library_names.append (
-										container => sheet_header.libraries,
-										new_item => et_libraries.type_library_name.to_bounded_string (
-											get_field_from_line (field (line,1), 2, latin_1.colon))
-										);
-
+									sheet_header_entered := true;
+									add (line);
 								end if;
+							else -- we are inside the sheet header and wait for the footer
+								if field (line,1) = schematic_eelayer and field (line,2) = schematic_eelayer_end then
+									sheet_header_entered := false;
+									add (line);
+									make_sheet_header (lines);
+									clear (lines); -- clean up line collector
+								else
+									add (line);
+								end if;
+							end if;
+							
+							-- READ DESCRIPTION:
 
-								-- layer numbers from a line like "EELAYER 25 0" -- CS: not used ?
-								-- CS: we do not read the line "EELAYER END" and assume it is always there.                                                        
-								if field (line,1) = schematic_eelayer then
-									if field (line,2) = schematic_eelayer_end then
-										null;
-									else
-										-- append layer numbers to the sheet header
-										sheet_header.eelayer_a := positive'value(
-											field (line,2));
+							-- $Descr A4 11693 8268
+							-- encoding utf-8
+							-- Sheet 5 8
+							-- Title ""
+							-- Date ""
+							-- Rev ""
+							-- Comp ""
+							-- Comment1 ""
+							-- Comment2 ""
+							-- Comment3 ""
+							-- Comment4 ""
+							-- $EndDescr
+							
+							if not description_entered then
+								if field (line,1) = schematic_description_header then -- $Descr A4 11693 8268
+									description_entered := true; -- we are entering the sheet description
 
-										sheet_header.eelayer_b := natural'value(
-											field (line,3));
+									add (line);
+								end if;
+							else -- we are inside the description
+								if field (line,1) = schematic_description_footer then -- $EndDescr
+									description_entered := false; -- we are leaving the description
+									description_processed := true;
+
+									make_drawing_frame (lines);
+									clear (lines); -- clean up line collector
+								else
+									add (line);
+								end if;
+							end if;
+
+							-- Read submodule (sheet) sections (if there has been a total sheet count greater 1 detected earlier).
+							-- A hierachical sheet displays a hierarchical sheet as a black box with its ports.
+							-- It serves as link between a hierachical net and the parent module.
+							-- Rightly said this is the black box representation of a submodule. 
+							-- So in the following we refer to them as "submodule".
+							-- A submodule (sheet) section example:
+							
+							-- $Sheet
+							-- S 4050 5750 1050 650 
+							-- U 58A73B5D
+							-- F0 "Sheet58A73B5C" 58
+							-- F1 "morpho_test.sch" 58
+							-- F2 "SENSOR_GND" U R 2250 3100 60 
+							-- F3 "SENSOR_VCC" I L 1350 3250 60 
+							-- $EndSheet
+
+							if sheet_count_total > 1 then
+								if not sheet_description_entered then
+									if field (line,1) = schematic_sheet_header then -- $Sheet
+										sheet_description_entered := true;
 									end if;
-								end if;
-							
-							
-							
-								-- READ DESCRIPTION:
+								else -- we are inside a sheet description
+									if field (line,1) = schematic_sheet_footer then -- $EndSheet
+										sheet_description_entered := false; -- we are leaving the sheet description
 
-								-- $Descr A4 11693 8268
-								-- encoding utf-8
-								-- Sheet 5 8
-								-- Title ""
-								-- Date ""
-								-- Rev ""
-								-- Comp ""
-								-- Comment1 ""
-								-- Comment2 ""
-								-- Comment3 ""
-								-- Comment4 ""
-								-- $EndDescr
-								
-								if not description_entered then
-									if field (line,1) = schematic_description_header then -- $Descr A4 11693 8268
-										description_entered := true; -- we are entering the sheet description
-
+										make_gui_sheet (lines);
+										clear (lines);
+									else
+										--log (to_string (line));
 										add (line);
 									end if;
-								else -- we are inside the description
-									if field (line,1) = schematic_description_footer then -- $EndDescr
-										description_entered := false; -- we are leaving the description
-										description_processed := true;
-
-										make_drawing_frame (lines);
-										clear (lines); -- clean up line collector
-									else
-										add (line);
-									end if;
 								end if;
+							end if;
 
-								-- Read submodule (sheet) sections (if there has been a total sheet count greater 1 detected earlier).
-								-- A hierachical sheet displays a hierarchical sheet as a black box with its ports.
-								-- It serves as link between a hierachical net and the parent module.
-								-- Rightly said this is the black box representation of a submodule. 
-								-- So in the following we refer to them as "submodule".
-								-- A submodule (sheet) section example:
+							-- Further parts of the file can be read IF the description has been processed before (see above)
+							if description_processed then
 								
-								-- $Sheet
-								-- S 4050 5750 1050 650 
-								-- U 58A73B5D
-								-- F0 "Sheet58A73B5C" 58
-								-- F1 "morpho_test.sch" 58
-								-- F2 "SENSOR_GND" U R 2250 3100 60 
-								-- F3 "SENSOR_VCC" I L 1350 3250 60 
-								-- $EndSheet
+								-- read net segments
+								-- Example:
+								-- Wire Wire Line
+								-- 2250 3100 2400 3100 
+								-- CS: use type_lines (similar to reading gui sheets)
 
-								if sheet_count_total > 1 then
-									if not sheet_description_entered then
-										if field (line,1) = schematic_sheet_header then -- $Sheet
-											sheet_description_entered := true;
-										end if;
-									else -- we are inside a sheet description
-										if field (line,1) = schematic_sheet_footer then -- $EndSheet
-											sheet_description_entered := false; -- we are leaving the sheet description
-
-											make_gui_sheet (lines);
-											clear (lines);
-										else
-											--log (to_string (line));
-											add (line);
-										end if;
-									end if;
-								end if;
-
-								-- Further parts of the file can be read IF the description has been processed before (see above)
-								if description_processed then
-									
-									-- read net segments
-									-- Example:
-									-- Wire Wire Line
-									-- 2250 3100 2400 3100 
-									-- CS: use type_lines (similar to reading gui sheets)
-
-									if not net_segment_entered then
-										-- collect net segments
-										if field (line,1) = schematic_keyword_wire then
-											if field (line,2) = schematic_keyword_wire then
-												if field (line,3) = schematic_keyword_line then
-													net_segment_entered := true; -- CS: assumption: segment coordinates follow in next line
+								if not net_segment_entered then
+									-- collect net segments
+									if field (line,1) = schematic_keyword_wire then
+										if field (line,2) = schematic_keyword_wire then
+											if field (line,3) = schematic_keyword_line then
+												net_segment_entered := true; -- CS: assumption: segment coordinates follow in next line
 -- 													log_indentation_up;
 -- 													log (text => "net segment", level => 1);
 -- 													log_indentation_down;
-												end if;
 											end if;
-										end if;
-									else
-										net_segment_entered := false; -- we are leaving a net segment
-			
-										-- Build a temporarily net segment with fully specified coordinates:
-										set_path (tmp_segment.coordinates_start, path_to_submodule);
-										set_path (tmp_segment.coordinates_end, path_to_submodule);
-										
-										-- The sheet number. NOTE: Kicad V4 can handle only one sheet per submodule. The sheet numbering is consecutive and does
-										-- not care about the actual submodule names.
-										set_sheet (tmp_segment.coordinates_start, sheet_number_current);
-										set_sheet (tmp_segment.coordinates_end,   sheet_number_current);
-
-										-- the x/y position
-										set_x (tmp_segment.coordinates_start, mil_to_distance (field  (line,1)));
-										set_y (tmp_segment.coordinates_start, mil_to_distance (field  (line,2)));
-										set_x (tmp_segment.coordinates_end, mil_to_distance (field  (line,3)));
-										set_y (tmp_segment.coordinates_end, mil_to_distance (field  (line,4)));
-
-										-- Ignore net segments with zero length (CS: for some reason they may exist. could be a kicad bug)
-										-- If a net segment has zero length, issue a warning.
-										if length (tmp_segment) > zero_distance then 
-
-											-- The net segments are to be collected in a wild list of segments for later sorting.
-											if log_level >= log_threshold + 1 then
-												log_indentation_up;
-												--write_coordinates_of_segment (tmp_segment);
-												log ("net segment " & to_string (segment => tmp_segment, scope => xy));
-												log_indentation_down;
-											end if;
-											
-											type_wild_segments.append (wild_segments, tmp_segment);
-											
-										else -- segment has zero length
-											log (message_warning & affected_line (line) & "Net segment with zero length found -> ignored !");
-										end if; -- length
-
-									end if;
-
-									-- read net junctions and store them in a wild list of net junctions for later sorting
-									-- CS: use type_lines (similar to reading gui sheets)
-									if field (line,1) = schematic_keyword_connection then
-										if field (line,2) = schematic_tilde then
-
-											-- build a temporarily junction
-											set_path (tmp_junction.coordinates, path_to_submodule);
-											set_sheet (tmp_junction.coordinates, sheet_number_current);
-											set_x (tmp_junction.coordinates, mil_to_distance (field  (line,3)));
-											set_y (tmp_junction.coordinates, mil_to_distance (field  (line,4)));
-
-											-- for the log
-											--write_junction_properties (tmp_junction);
-											if log_level >= log_threshold + 1 then
-												log_indentation_up;
-												log ("junction at " & to_string (junction => tmp_junction, scope => xy));
-												log_indentation_down;
-											end if;
-
-											type_junctions.append (wild_junctions, tmp_junction);
 										end if;
 									end if;
-										
-									-- Read simple net labels (they do not have a tag, but just a text) 
-									-- CS: assumption: keywords "Text Label" and coordinates in one line
-									-- CS: use type_lines (similar to reading gui sheets)
-									if not simple_label_entered then							
-										if 	field (line,1) = schematic_keyword_text and 
-											field (line,2) = schematic_keyword_label_simple then
+								else
+									net_segment_entered := false; -- we are leaving a net segment
+		
+									-- Build a temporarily net segment with fully specified coordinates:
+									set_path (tmp_segment.coordinates_start, path_to_submodule);
+									set_path (tmp_segment.coordinates_end, path_to_submodule);
+									
+									-- The sheet number. NOTE: Kicad V4 can handle only one sheet per submodule. The sheet numbering is consecutive and does
+									-- not care about the actual submodule names.
+									set_sheet (tmp_segment.coordinates_start, sheet_number_current);
+									set_sheet (tmp_segment.coordinates_end,   sheet_number_current);
 
-											simple_label_entered := true;
+									-- the x/y position
+									set_x (tmp_segment.coordinates_start, mil_to_distance (field  (line,1)));
+									set_y (tmp_segment.coordinates_start, mil_to_distance (field  (line,2)));
+									set_x (tmp_segment.coordinates_end, mil_to_distance (field  (line,3)));
+									set_y (tmp_segment.coordinates_end, mil_to_distance (field  (line,4)));
 
-											-- Build a temporarily simple label from a line like "Text Label 5350 3050 0    60   ~ 0" :
-											set_path (tmp_simple_net_label.coordinates, path_to_submodule);
-											set_sheet (tmp_simple_net_label.coordinates, sheet_number_current);
-											set_x (tmp_simple_net_label.coordinates, mil_to_distance (field  (line,3)));
-											set_y (tmp_simple_net_label.coordinates, mil_to_distance (field  (line,4)));
-											tmp_simple_net_label.orientation := to_angle (field  (line,5));
+									-- Ignore net segments with zero length (CS: for some reason they may exist. could be a kicad bug)
+									-- If a net segment has zero length, issue a warning.
+									if length (tmp_segment) > zero_distance then 
 
-											tmp_simple_net_label.size := mil_to_distance (field (line,6));
-											-- CS: check label text size 1.27
-											
-											tmp_simple_net_label.style := to_text_style (style_in => field (line,7), text => true);
-											-- cS: check label style
-											
-											tmp_simple_net_label.width := et_libraries.type_text_line_width'value(field (line,8));
-											-- CS: check label line width
-
-										end if;
-									else
-										simple_label_entered := false; -- we are leaving a simple label
-
-										-- get label text and put it to temporarily simple label
-										tmp_simple_net_label.text := type_net_name.to_bounded_string(field (line,1));
-
-										-- for the log
-										--write_label_properties (type_net_label (tmp_simple_net_label));
+										-- The net segments are to be collected in a wild list of segments for later sorting.
 										if log_level >= log_threshold + 1 then
 											log_indentation_up;
-											log ("simple label at " & to_string (label => type_net_label (tmp_simple_net_label), scope => xy));
+											--write_coordinates_of_segment (tmp_segment);
+											log ("net segment " & to_string (segment => tmp_segment, scope => xy));
 											log_indentation_down;
 										end if;
 										
-										-- The simple labels are to be collected in a wild list of simple labels.
-										type_simple_labels.append (wild_simple_labels,tmp_simple_net_label);
-									end if;
-									
-									-- read tag net labels (tagged labels can be global or hierarchical)
-									-- CS: use type_lines (similar to reading gui sheets)									
-									if not tag_label_entered then
-										if 	field (line,1) = schematic_keyword_text 
-											and 
-											(field (line,2) = schematic_keyword_label_hierarchic 
-											or field (line,2) = schematic_keyword_label_global)
-											then
+										type_wild_segments.append (wild_segments, tmp_segment);
 										
-											tag_label_entered := true;
+									else -- segment has zero length
+										log (message_warning & affected_line (line) & "Net segment with zero length found -> ignored !");
+									end if; -- length
 
-											-- Build a temporarily hierarchic/global label from a line like "Text GLabel 1850 3100 0 58 BiDi ~ 0"
-											-- The keyword in field 2 tells whether we have a hierarchic or global label:
-											if field (line,2) = schematic_keyword_label_hierarchic then
-												tmp_tag_net_label.hierarchic := true;
-												tmp_tag_net_label.global := false;
-											else
-												tmp_tag_net_label.hierarchic := false;
-												tmp_tag_net_label.global := true;
-											end if;
+								end if;
 
-											set_path (tmp_tag_net_label.coordinates, path_to_submodule);
-											set_sheet (tmp_tag_net_label.coordinates, sheet_number_current);
-											set_x (tmp_tag_net_label.coordinates, mil_to_distance (field  (line,3)));
-											set_y (tmp_tag_net_label.coordinates, mil_to_distance (field  (line,4)));
-											tmp_tag_net_label.orientation   := to_angle (field (line,5));
-											
-											tmp_tag_net_label.direction := to_direction(
-												field (line,7)
-												);
+								-- read net junctions and store them in a wild list of net junctions for later sorting
+								-- CS: use type_lines (similar to reading gui sheets)
+								if field (line,1) = schematic_keyword_connection then
+									if field (line,2) = schematic_tilde then
 
-											-- build text attributes from size, font and line width
-											tmp_tag_net_label.size := mil_to_distance (field (line,6));
-											tmp_tag_net_label.style := to_text_style (style_in => field (line,8), text => true);
-											tmp_tag_net_label.width := et_libraries.type_text_line_width'value(field (line,9));
-										end if;
-									else
-										tag_label_entered := false; -- we are leaving a tag label
-
-										-- get label text and put it to temporarily tag label
-										tmp_tag_net_label.text := type_net_name.to_bounded_string(field (line,1));
+										-- build a temporarily junction
+										set_path (tmp_junction.coordinates, path_to_submodule);
+										set_sheet (tmp_junction.coordinates, sheet_number_current);
+										set_x (tmp_junction.coordinates, mil_to_distance (field  (line,3)));
+										set_y (tmp_junction.coordinates, mil_to_distance (field  (line,4)));
 
 										-- for the log
+										--write_junction_properties (tmp_junction);
 										if log_level >= log_threshold + 1 then
 											log_indentation_up;
-											log ("tag label at " & to_string (label => type_net_label (tmp_tag_net_label), scope => xy));
+											log ("junction at " & to_string (junction => tmp_junction, scope => xy));
 											log_indentation_down;
 										end if;
-										
-										-- The tag labels are to be collected in a wild list of tag labels for later sorting.
-										type_tag_labels.append (wild_tag_labels,tmp_tag_net_label);
+
+										type_junctions.append (wild_junctions, tmp_junction);
 									end if;
+								end if;
+									
+								-- Read simple net labels (they do not have a tag, but just a text) 
+								-- CS: assumption: keywords "Text Label" and coordinates in one line
+								-- CS: use type_lines (similar to reading gui sheets)
+								if not simple_label_entered then							
+									if 	field (line,1) = schematic_keyword_text and 
+										field (line,2) = schematic_keyword_label_simple then
 
-									-- read note from a line like "Text Notes 3400 2800 0 60 Italic 12" followed by a line with the actual note:
-									-- CS: use type_lines (similar to reading gui sheets)
-									if not note_entered then
-										if 	field (line,1) = schematic_keyword_text and 
-											field (line,2) = schematic_keyword_note then
-												note_entered := true; -- we are entering a note
+										simple_label_entered := true;
+
+										-- Build a temporarily simple label from a line like "Text Label 5350 3050 0    60   ~ 0" :
+										set_path (tmp_simple_net_label.coordinates, path_to_submodule);
+										set_sheet (tmp_simple_net_label.coordinates, sheet_number_current);
+										set_x (tmp_simple_net_label.coordinates, mil_to_distance (field  (line,3)));
+										set_y (tmp_simple_net_label.coordinates, mil_to_distance (field  (line,4)));
+										tmp_simple_net_label.orientation := to_angle (field  (line,5));
+
+										tmp_simple_net_label.size := mil_to_distance (field (line,6));
+										-- CS: check label text size 1.27
 										
-												-- set coordinates
-												set_path (tmp_note.coordinates, path_to_submodule);
-												set_sheet (tmp_note.coordinates, sheet_number_current);
-												set_x (tmp_note.coordinates, mil_to_distance (field  (line,3)));
-												set_y (tmp_note.coordinates, mil_to_distance (field  (line,4)));
-												tmp_note.orientation   := to_angle (field (line,5));
-												tmp_note.size := mil_to_distance (field (line,6));
-												tmp_note.style := to_text_style (style_in => field (line,7), text => true);
-												tmp_note.line_width := mil_to_distance (field  (line,8));
-
-										end if;
-									else 
-										note_entered := false; -- we are leaving a note
-
-										-- get note text from a line like "hello\ntest". NOTE "\n" represents a line break
-										-- CS: store lines in a list of lines instead ?
-										-- CS: Currently we store the line as it is in tmp_note.text
-										tmp_note.content := et_libraries.type_text_content.to_bounded_string(to_string(line));
-
-										write_note_properties (tmp_note, log_threshold + 1);
+										tmp_simple_net_label.style := to_text_style (style_in => field (line,7), text => true);
+										-- cS: check label style
 										
-										-- the notes are to be collected in the list of notes
-										add_note (tmp_note);
+										tmp_simple_net_label.width := et_libraries.type_text_line_width'value(field (line,8));
+										-- CS: check label line width
+
+									end if;
+								else
+									simple_label_entered := false; -- we are leaving a simple label
+
+									-- get label text and put it to temporarily simple label
+									tmp_simple_net_label.text := type_net_name.to_bounded_string(field (line,1));
+
+									-- for the log
+									--write_label_properties (type_net_label (tmp_simple_net_label));
+									if log_level >= log_threshold + 1 then
+										log_indentation_up;
+										log ("simple label at " & to_string (label => type_net_label (tmp_simple_net_label), scope => xy));
+										log_indentation_down;
 									end if;
 									
-									-- READ COMPONENTS
-									-- Once a component header ($Comp) found, set component_entered flag. This indicates we are inside a component section.
-									-- Inside the component section, we process its content until the component footer ($EndComp) is found.
-									-- Some entries of the component section are relevant for the whole component. Some entries are unit specific.
-									-- The component section looks like this example:
+									-- The simple labels are to be collected in a wild list of simple labels.
+									type_simple_labels.append (wild_simple_labels,tmp_simple_net_label);
+								end if;
+								
+								-- read tag net labels (tagged labels can be global or hierarchical)
+								-- CS: use type_lines (similar to reading gui sheets)									
+								if not tag_label_entered then
+									if 	field (line,1) = schematic_keyword_text 
+										and 
+										(field (line,2) = schematic_keyword_label_hierarchic 
+										or field (line,2) = schematic_keyword_label_global)
+										then
 									
-									-- $Comp
-									-- L 74LS00 U1		-- component specific
-									-- U 4 1 5965E676	-- unit specific
-									-- P 4100 4000		-- unit specific
-									-- F 0 "U1" H 4100 4050 50  0000 C CNN		-- text fields
-									-- F 1 "74LS00" H 4100 3900 50  0000 C CNN	
-									-- F 2 "bel_ic:S_SO14" H 4100 4000 50  0001 C CNN
-									-- F 3 "" H 4100 4000 50  0001 C CNN
-									-- 	4    4100 4000		-- CS: same as x/y pos ?
+										tag_label_entered := true;
 
-									--  1    0    0  -1  -- orientation 0,   mirror normal
-									--  0   -1   -1   0  -- orientation 90,  mirror normal
-									-- -1    0    0   1  -- orientation 180, mirror normal 
-									-- 	0    1    1   0  -- orientation -90, mirror normal  
-
-									-- 	1    0    0   1  -- orientation 0,   mirror --
-									--  0   -1    1   0  -- orientation 90,  mirror -- 
-									-- -1    0    0  -1  -- orientation 180, mirror -- 
-									--  0    1   -1   0  -- orientation -90, mirror -- 
-
-									-- -1    0    0  -1  -- orientation 0,   mirror |
-									--  0    1   -1   0  -- orientation 90,  mirror |
-									--  1    0    0   1  -- orientation 180, mirror |
-									--  1    0    0   1  -- orientation -90, mirror |
-									-- $EndComp
-
-									-- CS: use type_lines (similar to reading gui sheets)
-									if not component_entered then
-										if field (line,1) = schematic_component_header then
-											component_entered := true;
-
-											-- This is to init the temporarily used variables that store text fields.
-											-- This clears the "field found" flags
-											init_temp_variables;
-
+										-- Build a temporarily hierarchic/global label from a line like "Text GLabel 1850 3100 0 58 BiDi ~ 0"
+										-- The keyword in field 2 tells whether we have a hierarchic or global label:
+										if field (line,2) = schematic_keyword_label_hierarchic then
+											tmp_tag_net_label.hierarchic := true;
+											tmp_tag_net_label.global := false;
+										else
+											tmp_tag_net_label.hierarchic := false;
+											tmp_tag_net_label.global := true;
 										end if;
-									else -- we are inside the component and wait for the component footer ($EndComp)
-										if field (line,1) = schematic_component_footer then
-											component_entered := false; -- we are leaving the component
 
-											-- Check if all required text fields have been found.
-											-- Check content of text fields for syntax and plausibility.
-											check_text_fields (log_threshold + 1);
+										set_path (tmp_tag_net_label.coordinates, path_to_submodule);
+										set_sheet (tmp_tag_net_label.coordinates, sheet_number_current);
+										set_x (tmp_tag_net_label.coordinates, mil_to_distance (field  (line,3)));
+										set_y (tmp_tag_net_label.coordinates, mil_to_distance (field  (line,4)));
+										tmp_tag_net_label.orientation   := to_angle (field (line,5));
+										
+										tmp_tag_net_label.direction := to_direction(
+											field (line,7)
+											);
+
+										-- build text attributes from size, font and line width
+										tmp_tag_net_label.size := mil_to_distance (field (line,6));
+										tmp_tag_net_label.style := to_text_style (style_in => field (line,8), text => true);
+										tmp_tag_net_label.width := et_libraries.type_text_line_width'value(field (line,9));
+									end if;
+								else
+									tag_label_entered := false; -- we are leaving a tag label
+
+									-- get label text and put it to temporarily tag label
+									tmp_tag_net_label.text := type_net_name.to_bounded_string(field (line,1));
+
+									-- for the log
+									if log_level >= log_threshold + 1 then
+										log_indentation_up;
+										log ("tag label at " & to_string (label => type_net_label (tmp_tag_net_label), scope => xy));
+										log_indentation_down;
+									end if;
+									
+									-- The tag labels are to be collected in a wild list of tag labels for later sorting.
+									type_tag_labels.append (wild_tag_labels,tmp_tag_net_label);
+								end if;
+
+								-- read note from a line like "Text Notes 3400 2800 0 60 Italic 12" followed by a line with the actual note:
+								-- CS: use type_lines (similar to reading gui sheets)
+								if not note_entered then
+									if 	field (line,1) = schematic_keyword_text and 
+										field (line,2) = schematic_keyword_note then
+											note_entered := true; -- we are entering a note
+									
+											-- set coordinates
+											set_path (tmp_note.coordinates, path_to_submodule);
+											set_sheet (tmp_note.coordinates, sheet_number_current);
+											set_x (tmp_note.coordinates, mil_to_distance (field  (line,3)));
+											set_y (tmp_note.coordinates, mil_to_distance (field  (line,4)));
+											tmp_note.orientation   := to_angle (field (line,5));
+											tmp_note.size := mil_to_distance (field (line,6));
+											tmp_note.style := to_text_style (style_in => field (line,7), text => true);
+											tmp_note.line_width := mil_to_distance (field  (line,8));
+
+									end if;
+								else 
+									note_entered := false; -- we are leaving a note
+
+									-- get note text from a line like "hello\ntest". NOTE "\n" represents a line break
+									-- CS: store lines in a list of lines instead ?
+									-- CS: Currently we store the line as it is in tmp_note.text
+									tmp_note.content := et_libraries.type_text_content.to_bounded_string(to_string(line));
+
+									write_note_properties (tmp_note, log_threshold + 1);
+									
+									-- the notes are to be collected in the list of notes
+									add_note (tmp_note);
+								end if;
+								
+								-- READ COMPONENTS
+								-- Once a component header ($Comp) found, set component_entered flag. This indicates we are inside a component section.
+								-- Inside the component section, we process its content until the component footer ($EndComp) is found.
+								-- Some entries of the component section are relevant for the whole component. Some entries are unit specific.
+								-- The component section looks like this example:
+								
+								-- $Comp
+								-- L 74LS00 U1		-- component specific
+								-- U 4 1 5965E676	-- unit specific
+								-- P 4100 4000		-- unit specific
+								-- F 0 "U1" H 4100 4050 50  0000 C CNN		-- text fields
+								-- F 1 "74LS00" H 4100 3900 50  0000 C CNN	
+								-- F 2 "bel_ic:S_SO14" H 4100 4000 50  0001 C CNN
+								-- F 3 "" H 4100 4000 50  0001 C CNN
+								-- 	4    4100 4000		-- CS: same as x/y pos ?
+
+								--  1    0    0  -1  -- orientation 0,   mirror normal
+								--  0   -1   -1   0  -- orientation 90,  mirror normal
+								-- -1    0    0   1  -- orientation 180, mirror normal 
+								-- 	0    1    1   0  -- orientation -90, mirror normal  
+
+								-- 	1    0    0   1  -- orientation 0,   mirror --
+								--  0   -1    1   0  -- orientation 90,  mirror -- 
+								-- -1    0    0  -1  -- orientation 180, mirror -- 
+								--  0    1   -1   0  -- orientation -90, mirror -- 
+
+								-- -1    0    0  -1  -- orientation 0,   mirror |
+								--  0    1   -1   0  -- orientation 90,  mirror |
+								--  1    0    0   1  -- orientation 180, mirror |
+								--  1    0    0   1  -- orientation -90, mirror |
+								-- $EndComp
+
+								-- CS: use type_lines (similar to reading gui sheets)
+								if not component_entered then
+									if field (line,1) = schematic_component_header then
+										component_entered := true;
+
+										-- This is to init the temporarily used variables that store text fields.
+										-- This clears the "field found" flags
+										init_temp_variables;
+
+									end if;
+								else -- we are inside the component and wait for the component footer ($EndComp)
+									if field (line,1) = schematic_component_footer then
+										component_entered := false; -- we are leaving the component
+
+										-- Check if all required text fields have been found.
+										-- Check content of text fields for syntax and plausibility.
+										check_text_fields (log_threshold + 1);
+										
+										-- Insert component in component list of module. If a component is split
+										-- in units, only the first occurence of it leads to inserting the component.
+										-- Nevertheless there are some checks on the unit (see insert_component).
+										insert_component;
+
+										-- We update the component with the collected unit information.
+										insert_unit;
+
+									else
+										-- READ COMPONENT SECTION CONTENT
+										
+										-- Read component name and annotation from a line like "L NetChanger N1". 
+										-- From this entry we reason the compoenent appearance.
+										if field (line,1) = schematic_component_identifier_name then -- "L"
 											
-											-- Insert component in component list of module. If a component is split
-											-- in units, only the first occurence of it leads to inserting the component.
-											-- Nevertheless there are some checks on the unit (see insert_component).
-											insert_component;
-	
-											-- We update the component with the collected unit information.
-											insert_unit;
+											tmp_component_name_in_lib := et_libraries.type_component_name.to_bounded_string(field (line,2)); -- "SN74LS00"
+											tmp_component_appearance := to_appearance(line => line, schematic => true);
+											
+											case tmp_component_appearance is
+											
+												when et_libraries.sch => 
+													-- we have a line like "L P3V3 #PWR07"
+													tmp_component_reference := et_schematic.to_component_reference(
+															text_in => field (line,3),
+															allow_special_character_in_prefix => true);
+
+												when et_libraries.sch_pcb =>
+
+													-- we have a line like "L 74LS00 U1"
+													tmp_component_reference := et_schematic.to_component_reference(
+															text_in => field (line,3),
+															allow_special_character_in_prefix => false);
+
+												when others => -- CS: This should never happen. A subtype of type_component_appearance could be a solution.
+													null;
+													raise constraint_error;
+													
+											end case;
+														
+											-- CS: check proper annotation
+
+										-- read line like "U 2 1 4543D4D3F" 
+										-- U is the line indicator, 2 is the unit id, 1 is the demorgan flag, last field is the timestamp
+										elsif field (line,1) = schematic_component_identifier_unit then -- "U"
+
+											-- KiCad uses positive numbers to identifiy units. But in general a unit name can
+											-- be a string as well. Therefore we handle the unit id as string.
+											tmp_component_unit_name := et_libraries.type_unit_name.to_bounded_string(
+												field (line,2)); -- the unit id
+
+											-- Read DeMorgan flag:
+											tmp_component_alt_repres := to_alternative_representation(line => line, schematic => true);
+
+											-- Read and check the timestamp:
+											tmp_component_timestamp := type_timestamp(field (line,4));
+											et_string_processing.check_timestamp (tmp_component_timestamp);
+
+										-- Read unit coordinates from a line like "P 3200 4500".
+										elsif field (line,1) = schematic_component_identifier_coord then -- "P"
+										
+											set_x (tmp_component_position, mil_to_distance (field  (line,2))); -- "3200"
+											set_y (tmp_component_position, mil_to_distance (field  (line,3))); -- "4500"
+
+											-- The unit coordinates is more than just x/y :
+											-- unit_scratch.coordinates.main_module := module.name;
+											set_path (tmp_component_position, path_to_submodule);
+											set_sheet (tmp_component_position, sheet_number_current);
+
+										-- Skip unit path entry in lines like "AR Path="/59EF082F" Ref="N23"  Part="1"
+										elsif field  (line,1) = schematic_component_identifier_path then -- "AR"
+											-- CS: meaning unclear
+											log (message_warning & affected_line (line) & "ignoring line '" & to_string (line) & "' ! Meaning unclear !");
+
+										-- read unit fields 0..2 from lines like:
+										-- 			"F 0 "N701" H 2600 2100 39  0000 C CNN"
+										--			"F 1 "NetChanger" H 2600 2250 60  0001 C CNN"
+										--			"F 2 "bel_netchanger:N_0.2MM" H 2600 2100 60  0001 C CNN"
+										--
+										-- set "field found" flags
+										elsif field (line,1) = component_field_identifier then -- "F"
+											
+											case type_component_field_id'value (field  (line,2)) is
+												when component_field_reference =>
+													tmp_component_text_reference_found	:= true;
+													tmp_component_text_reference 		:= to_text;
+
+												when component_field_value =>
+													tmp_component_text_value_found		:= true;
+													tmp_component_text_value 			:= to_text;
+													
+												when component_field_footprint =>
+													tmp_component_text_packge_found		:= true;
+													tmp_component_text_packge 			:= to_text;
+													
+												when component_field_datasheet =>
+													tmp_component_text_datasheet_found	:= true;
+													tmp_component_text_datasheet 		:= to_text;
+													
+												when component_field_function =>
+													tmp_component_text_purpose_found	:= true;
+													tmp_component_text_purpose 			:= to_text;
+													
+												when component_field_partcode =>
+													tmp_component_text_partcode_found	:= true;
+													tmp_component_text_partcode 		:= to_text;
+													
+												when component_field_commissioned =>
+													tmp_component_text_commissioned_found	:= true;
+													tmp_component_text_commissioned 		:= to_text;
+													
+												when component_field_updated =>
+													tmp_component_text_updated_found	:= true;
+													tmp_component_text_updated 			:= to_text;
+													
+												when component_field_author =>
+													tmp_component_text_author_found		:= true;
+													tmp_component_text_author 			:= to_text;
+
+												when component_field_bom =>
+													tmp_component_text_bom_found		:= true;
+													tmp_component_text_bom				:= to_text;
+
+													
+												when others => null; -- CS: other fields are ignored. warning ?
+											end case;
 
 										else
-											-- READ COMPONENT SECTION CONTENT
-											
-											-- Read component name and annotation from a line like "L NetChanger N1". 
-											-- From this entry we reason the compoenent appearance.
-											if field (line,1) = schematic_component_identifier_name then -- "L"
+											-- What is left is a strange repetition of the unit name and its x/y coordinates in a line like
+											-- "2    6000 4000"
+											-- followed by the unit mirror style and the unit orientation in a line like
+											-- "1    0    0    -1"
+
+											case field_count (line) is
+												when 3 => -- we have the unit name and its x/y position.
+													-- We verify if unit name and position match the values read earlier:
+													verify_unit_name_and_position (line);
 												
-												tmp_component_name_in_lib := et_libraries.type_component_name.to_bounded_string(field (line,2)); -- "SN74LS00"
-												tmp_component_appearance := to_appearance(line => line, schematic => true);
+												when 4 => null; -- we have the unit mirror style and orientation
+													build_unit_orientation_and_mirror_style (line);
 												
-												case tmp_component_appearance is
-												
-													when et_libraries.sch => 
-														-- we have a line like "L P3V3 #PWR07"
-														tmp_component_reference := et_schematic.to_component_reference(
-																text_in => field (line,3),
-																allow_special_character_in_prefix => true);
+												when others => 
+													raise constraint_error; -- CS: write useful message
+											end case;
 
-													when et_libraries.sch_pcb =>
-
-														-- we have a line like "L 74LS00 U1"
-														tmp_component_reference := et_schematic.to_component_reference(
-																text_in => field (line,3),
-																allow_special_character_in_prefix => false);
-
-													when others => -- CS: This should never happen. A subtype of type_component_appearance could be a solution.
-														null;
-														raise constraint_error;
-														
-												end case;
-															
-												-- CS: check proper annotation
-
-											-- read line like "U 2 1 4543D4D3F" 
-											-- U is the line indicator, 2 is the unit id, 1 is the demorgan flag, last field is the timestamp
-											elsif field (line,1) = schematic_component_identifier_unit then -- "U"
-
-												-- KiCad uses positive numbers to identifiy units. But in general a unit name can
-												-- be a string as well. Therefore we handle the unit id as string.
-												tmp_component_unit_name := et_libraries.type_unit_name.to_bounded_string(
-													field (line,2)); -- the unit id
-
-												-- Read DeMorgan flag:
-												tmp_component_alt_repres := to_alternative_representation(line => line, schematic => true);
-
-												-- Read and check the timestamp:
-												tmp_component_timestamp := type_timestamp(field (line,4));
-												et_string_processing.check_timestamp (tmp_component_timestamp);
-
-											-- Read unit coordinates from a line like "P 3200 4500".
-											elsif field (line,1) = schematic_component_identifier_coord then -- "P"
-											
-												set_x (tmp_component_position, mil_to_distance (field  (line,2))); -- "3200"
-												set_y (tmp_component_position, mil_to_distance (field  (line,3))); -- "4500"
-
-												-- The unit coordinates is more than just x/y :
-												-- unit_scratch.coordinates.main_module := module.name;
-												set_path (tmp_component_position, path_to_submodule);
-												set_sheet (tmp_component_position, sheet_number_current);
-
-											-- Skip unit path entry in lines like "AR Path="/59EF082F" Ref="N23"  Part="1"
-											elsif field  (line,1) = schematic_component_identifier_path then -- "AR"
-												-- CS: meaning unclear
-												log (message_warning & affected_line (line) & "ignoring line '" & to_string (line) & "' ! Meaning unclear !");
-
-											-- read unit fields 0..2 from lines like:
-											-- 			"F 0 "N701" H 2600 2100 39  0000 C CNN"
-											--			"F 1 "NetChanger" H 2600 2250 60  0001 C CNN"
-											--			"F 2 "bel_netchanger:N_0.2MM" H 2600 2100 60  0001 C CNN"
-											--
-											-- set "field found" flags
-											elsif field (line,1) = component_field_identifier then -- "F"
-												
-												case type_component_field_id'value (field  (line,2)) is
-													when component_field_reference =>
-														tmp_component_text_reference_found	:= true;
-														tmp_component_text_reference 		:= to_text;
-
-													when component_field_value =>
-														tmp_component_text_value_found		:= true;
-														tmp_component_text_value 			:= to_text;
-														
-													when component_field_footprint =>
-														tmp_component_text_packge_found		:= true;
-														tmp_component_text_packge 			:= to_text;
-														
-													when component_field_datasheet =>
-														tmp_component_text_datasheet_found	:= true;
-														tmp_component_text_datasheet 		:= to_text;
-														
-													when component_field_function =>
-														tmp_component_text_purpose_found	:= true;
-														tmp_component_text_purpose 			:= to_text;
-														
-													when component_field_partcode =>
-														tmp_component_text_partcode_found	:= true;
-														tmp_component_text_partcode 		:= to_text;
-														
-													when component_field_commissioned =>
-														tmp_component_text_commissioned_found	:= true;
-														tmp_component_text_commissioned 		:= to_text;
-														
-													when component_field_updated =>
-														tmp_component_text_updated_found	:= true;
-														tmp_component_text_updated 			:= to_text;
-														
-													when component_field_author =>
-														tmp_component_text_author_found		:= true;
-														tmp_component_text_author 			:= to_text;
-
-													when component_field_bom =>
-														tmp_component_text_bom_found		:= true;
-														tmp_component_text_bom				:= to_text;
-
-														
-													when others => null; -- CS: other fields are ignored. warning ?
-												end case;
-
-											else
-												-- What is left is a strange repetition of the unit name and its x/y coordinates in a line like
-												-- "2    6000 4000"
-												-- followed by the unit mirror style and the unit orientation in a line like
-												-- "1    0    0    -1"
-
-												case field_count (line) is
-													when 3 => -- we have the unit name and its x/y position.
-														-- We verify if unit name and position match the values read earlier:
-														verify_unit_name_and_position (line);
-													
-													when 4 => null; -- we have the unit mirror style and orientation
-														build_unit_orientation_and_mirror_style (line);
-													
-													when others => 
-														raise constraint_error; -- CS: write useful message
-												end case;
-
-											end if;
-									end if;
-									
+										end if;
 								end if;
-								end if;
-
-							end if; -- if not schematic_header_processed
+								
+							end if;
+							end if;
 
 					end case;
 
 				end loop;
 
-                -- If file has been read and no header found:
-				if not schematic_headline_processed then
-					log_indentation_reset;
-                    log (
-						text => message_error & "Schematic file header invalid or not found ! File not accepted !",
-						console => true);
-                    raise constraint_error;
-                end if;
-
-                -- Add sheet_header to module.
-                -- NOTE: The file name serves as key in order to match from file to header.
-				add_sheet_header (
-					header => sheet_header,
-					sheet => current_schematic);
-				
 				close (schematic_handle);
 				log_indentation_down;
 				log ("reading complete. closing schematic file " & to_string (current_schematic) & " ...", log_threshold);

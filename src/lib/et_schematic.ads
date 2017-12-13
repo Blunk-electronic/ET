@@ -568,9 +568,7 @@ package et_schematic is
 	-- It contains a list of libraries used by a schemetic sheet.
 	-- We use a simple list because the order of the library names must be kept.
     type type_sheet_header is record
-        version     : positive; -- 2    
 		libraries   : et_libraries.type_library_names.list; -- CS: probably not used by kicad, just information
-		--libraries	: type_list_of_library_names.map;
         eelayer_a   : positive; -- 25 -- CS: meaning not clear, probably not used
         eelayer_b   : natural; -- 0 -- CS: meaning not clear, probably not used
     end record;
