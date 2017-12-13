@@ -4545,6 +4545,264 @@ package body et_kicad is
 				add_gui_submodule (name, sheet);
 			end make_gui_sheet;
 
+
+			function net_segment_header (line : in type_fields_of_line) return boolean is
+			-- Returns true if given line is a net segment header like "Wire Wire Line"
+				result : boolean := false;
+			begin
+				if field (line,1) = schematic_keyword_wire then
+					if field (line,2) = schematic_keyword_wire then
+						if field (line,3) = schematic_keyword_line then
+							result := true;
+						end if;
+					end if;
+				end if;
+				return result;
+			end net_segment_header;
+			
+			procedure make_net_segment (lines : in type_lines.list) is
+			-- Builds a net segment and appends it to the collection of wild segments.
+
+				-- After the segment heaser "Wire Wire Line" the next line like
+				-- "2250 3100 2400 3100" is read here. It contains start and end points 
+				-- of a net segment.
+			
+				segment : type_wild_net_segment; -- the segment being built
+			begin
+				line_cursor := type_lines.first (lines);
+				
+				-- Build a temporarily net segment with fully specified coordinates:
+				set_path (segment.coordinates_start, path_to_submodule);
+				set_path (segment.coordinates_end, path_to_submodule);
+				
+				-- The sheet number. NOTE: Kicad V4 can handle only one sheet per submodule. The sheet numbering is consecutive and does
+				-- not care about the actual submodule names.
+				set_sheet (segment.coordinates_start, sheet_number_current);
+				set_sheet (segment.coordinates_end,   sheet_number_current);
+
+				-- the x/y position
+				set_x (segment.coordinates_start, mil_to_distance (field (et_kicad.line,1)));
+				set_y (segment.coordinates_start, mil_to_distance (field (et_kicad.line,2)));
+				set_x (segment.coordinates_end, mil_to_distance (field (et_kicad.line,3)));
+				set_y (segment.coordinates_end, mil_to_distance (field (et_kicad.line,4)));
+
+				-- Ignore net segments with zero length (CS: for some reason they may exist. could be a kicad bug)
+				-- If a net segment has zero length, issue a warning.
+				if length (segment) > zero_distance then 
+
+					-- The net segments are to be collected in a wild list of segments for later sorting.
+					if log_level >= log_threshold + 1 then
+						log_indentation_up;
+						log ("net segment " & to_string (segment => segment, scope => xy));
+						log_indentation_down;
+					end if;
+					
+					type_wild_segments.append (wild_segments, segment);
+					
+				else -- segment has zero length
+					log (message_warning & affected_line (et_kicad.line) & "Net segment with zero length found -> ignored !");
+				end if; -- length
+
+			end make_net_segment;
+
+			function junction_header (line : in type_fields_of_line) return boolean is
+			-- Returns true if given line is a net junction "Connection ~ 4650 4600"
+				result : boolean := false;
+			begin
+				if field (line,1) = schematic_keyword_connection then
+					if field (line,2) = schematic_tilde then
+						result := true;
+					end if;
+				end if;
+				return result;
+			end junction_header;
+
+			procedure make_junction (line : in type_fields_of_line) is
+			-- Builds a net junction and stores it a wild list of net junctions.
+				junction : et_schematic.type_net_junction;
+			begin
+				-- build a temporarily junction
+				set_path (junction.coordinates, path_to_submodule);
+				set_sheet (junction.coordinates, sheet_number_current);
+				set_x (junction.coordinates, mil_to_distance (field (line,3)));
+				set_y (junction.coordinates, mil_to_distance (field (line,4)));
+
+				-- for the log
+				if log_level >= log_threshold + 1 then
+					log_indentation_up;
+					log ("junction at " & to_string (junction => junction, scope => xy));
+					log_indentation_down;
+				end if;
+
+				type_junctions.append (wild_junctions, junction);
+			end make_junction;
+
+			function simple_label_header (line : in type_fields_of_line) return boolean is
+			-- Returns true if given line is a header of a simple label like 
+			-- "Text Label 2350 3250 0 60 ~ 0"
+				result : boolean := false;
+			begin
+				if 	field (line,1) = schematic_keyword_text and 
+					field (line,2) = schematic_keyword_label_simple then
+						result := true;
+				end if;
+				return result;
+			end simple_label_header;
+
+			procedure make_simple_label (lines : in type_lines.list) is
+			-- Builds a simple net label and appends it to the collection of wild simple labels.
+
+				-- The label header "Text Label 2350 3250 0 60 ~ 0" and the next line like
+				-- "net_name_abc" is read here. It contains the supposed net name.
+			
+				label : type_net_label_simple; -- the label being built
+			begin
+				line_cursor := type_lines.first (lines);
+
+				-- Build a temporarily simple label from a line like "Text Label 5350 3050 0    60   ~ 0" :
+				set_path (label.coordinates, path_to_submodule);
+				set_sheet (label.coordinates, sheet_number_current);
+				set_x (label.coordinates, mil_to_distance (field (et_kicad.line,3)));
+				set_y (label.coordinates, mil_to_distance (field (et_kicad.line,4)));
+				label.orientation := to_angle (field (et_kicad.line,5));
+
+				label.size := mil_to_distance (field (et_kicad.line,6));
+				-- CS: check label text size 1.27
+				
+				label.style := to_text_style (style_in => field (et_kicad.line,7), text => true);
+				-- cS: check label style
+				
+				label.width := et_libraries.type_text_line_width'value (field (et_kicad.line,8));
+				-- CS: check label line width
+
+				next (line_cursor);
+
+				-- get label text and put it to temporarily simple label
+				label.text := type_net_name.to_bounded_string (field (et_kicad.line,1));
+
+				-- for the log
+				if log_level >= log_threshold + 1 then
+					log_indentation_up;
+					log ("simple label at " & to_string (label => type_net_label (label), scope => xy));
+					log_indentation_down;
+				end if;
+				
+				-- The simple labels are to be collected in a wild list of simple labels.
+				type_simple_labels.append (wild_simple_labels, label);
+				
+			end make_simple_label;
+
+			function tag_label_header (line : in type_fields_of_line) return boolean is
+			-- Returns true if given line is a header of a global or hierarchic label like 
+			-- "Text HLabel 2700 2000 0 60 Input ~ 0" or
+			-- "Text GLabel 4700 3200 1 60 UnSpc ~ 0"
+				result : boolean := false;
+			begin
+				if field (line,1) = schematic_keyword_text and 
+					(field (line,2) = schematic_keyword_label_hierarchic or
+					 field (line,2) = schematic_keyword_label_global) then
+						result := true;
+				end if;
+				return result;
+			end tag_label_header;
+
+			procedure make_tag_label (lines : in type_lines.list) is
+			-- Builds a global or hierachical label and appends it to the collection of wild tag labels.
+
+				-- The label header "Text GLabel 4700 3200 1 60 UnSpc ~ 0" and the next line like
+				-- "net_name_abc" is read here. It contains the supposed net name.
+			
+				label : type_net_label_tag; -- the label being built
+			begin
+				line_cursor := type_lines.first (lines);
+
+				-- Build a temporarily hierarchic/global label from a line like "Text GLabel 1850 3100 0 58 BiDi ~ 0"
+				-- The keyword in field 2 tells whether we have a hierarchic or global label:
+				if field (et_kicad.line,2) = schematic_keyword_label_hierarchic then
+					label.hierarchic := true;
+					label.global := false;
+				else
+					label.hierarchic := false;
+					label.global := true;
+				end if;
+
+				set_path (label.coordinates, path_to_submodule);
+				set_sheet (label.coordinates, sheet_number_current);
+				set_x (label.coordinates, mil_to_distance (field (et_kicad.line,3)));
+				set_y (label.coordinates, mil_to_distance (field (et_kicad.line,4)));
+				label.orientation := to_angle (field (et_kicad.line,5));
+				
+				label.direction := to_direction (field (et_kicad.line,7));
+
+				-- build text attributes from size, font and line width
+				label.size := mil_to_distance (field (et_kicad.line,6));
+				label.style := to_text_style (style_in => field (et_kicad.line,8), text => true);
+				label.width := et_libraries.type_text_line_width'value (field (et_kicad.line,9));
+
+				next (line_cursor);
+
+				-- get label text
+				label.text := type_net_name.to_bounded_string (field (et_kicad.line,1));
+
+				-- for the log
+				if log_level >= log_threshold + 1 then
+					log_indentation_up;
+					log ("tag label at " & to_string (label => type_net_label (label), scope => xy));
+					log_indentation_down;
+				end if;
+				
+				-- The tag labels are to be collected in a wild list of tag labels for later sorting.
+				type_tag_labels.append (wild_tag_labels, label);
+				
+			end make_tag_label;
+
+			function text_note_header (line : in type_fields_of_line) return boolean is
+			-- Returns true if given line is a header of a text note like
+			-- Text Notes 7100 6700 0 67 Italic 13
+			-- ET Test Circuit
+				result : boolean := false;
+			begin
+				if field (line,1) = schematic_keyword_text and 
+					field (line,2) = schematic_keyword_note then
+						result := true;
+				end if;
+				return result;
+			end text_note_header;
+
+			procedure make_text_note (lines : in type_lines.list) is
+			-- Builds a text note and appends it to the collection of text notes.
+
+				-- The label header "Text Notes 3400 2800 0 60 Italic 12" and the next line like
+				-- "ERC32 Test Board" is read here. It contains the actual text.
+			
+				note : type_note; -- the text note being built
+			begin
+				line_cursor := type_lines.first (lines);
+
+				-- set coordinates
+				set_path (note.coordinates, path_to_submodule);
+				set_sheet (note.coordinates, sheet_number_current);
+				set_x (note.coordinates, mil_to_distance (field (et_kicad.line,3)));
+				set_y (note.coordinates, mil_to_distance (field (et_kicad.line,4)));
+				
+				note.orientation   := to_angle (field (et_kicad.line,5));
+				note.size := mil_to_distance (field (et_kicad.line,6));
+				note.style := to_text_style (style_in => field (et_kicad.line,7), text => true);
+				note.line_width := mil_to_distance (field (et_kicad.line,8));
+
+				next (line_cursor);
+
+				-- get note text from a line like "hello\ntest". NOTE "\n" represents a line break
+				-- CS: store lines in a list of lines instead ?
+				-- CS: Currently we store the line as it is in tmp_note.text
+				note.content := et_libraries.type_text_content.to_bounded_string (to_string (line));
+
+				write_note_properties (note, log_threshold + 1);
+				
+				-- the notes are to be collected in the list of notes
+				add_note (note);
+
+			end make_text_note;
 			
 		begin -- read_schematic
 			log_indentation_reset;
@@ -4650,8 +4908,8 @@ package body et_kicad is
 								end if;
 							end if;
 
-							-- Read submodule (sheet) sections (if there has been a total sheet count greater 1 detected earlier).
-							-- A hierachical sheet displays a hierarchical sheet as a black box with its ports.
+							-- Read hierarchical GUI sheets (if there has been a total sheet count greater 1 detected earlier).
+							-- A hierachical GUI sheet displays a hierarchical sheet as a black box with its ports.
 							-- It serves as link between a hierachical net and the parent module.
 							-- Rightly said this is the black box representation of a submodule. 
 							-- So in the following we refer to them as "submodule".
@@ -4666,7 +4924,7 @@ package body et_kicad is
 							-- F3 "SENSOR_VCC" I L 1350 3250 60 
 							-- $EndSheet
 
-							if sheet_count_total > 1 then
+							if sheet_count_total > 1 then -- read hierarchical GUI sheets
 								if not sheet_description_entered then
 									if field (line,1) = schematic_sheet_header then -- $Sheet
 										sheet_description_entered := true;
@@ -4687,212 +4945,79 @@ package body et_kicad is
 							-- Further parts of the file can be read IF the description has been processed before (see above)
 							if description_processed then
 								
-								-- read net segments
-								-- Example:
+								-- READ NET SEGMENTS
+
 								-- Wire Wire Line
 								-- 2250 3100 2400 3100 
-								-- CS: use type_lines (similar to reading gui sheets)
 
 								if not net_segment_entered then
-									-- collect net segments
-									if field (line,1) = schematic_keyword_wire then
-										if field (line,2) = schematic_keyword_wire then
-											if field (line,3) = schematic_keyword_line then
-												net_segment_entered := true; -- CS: assumption: segment coordinates follow in next line
--- 													log_indentation_up;
--- 													log (text => "net segment", level => 1);
--- 													log_indentation_down;
-											end if;
-										end if;
+									if net_segment_header (line) then
+										net_segment_entered := true;
 									end if;
 								else
 									net_segment_entered := false; -- we are leaving a net segment
-		
-									-- Build a temporarily net segment with fully specified coordinates:
-									set_path (tmp_segment.coordinates_start, path_to_submodule);
-									set_path (tmp_segment.coordinates_end, path_to_submodule);
-									
-									-- The sheet number. NOTE: Kicad V4 can handle only one sheet per submodule. The sheet numbering is consecutive and does
-									-- not care about the actual submodule names.
-									set_sheet (tmp_segment.coordinates_start, sheet_number_current);
-									set_sheet (tmp_segment.coordinates_end,   sheet_number_current);
-
-									-- the x/y position
-									set_x (tmp_segment.coordinates_start, mil_to_distance (field  (line,1)));
-									set_y (tmp_segment.coordinates_start, mil_to_distance (field  (line,2)));
-									set_x (tmp_segment.coordinates_end, mil_to_distance (field  (line,3)));
-									set_y (tmp_segment.coordinates_end, mil_to_distance (field  (line,4)));
-
-									-- Ignore net segments with zero length (CS: for some reason they may exist. could be a kicad bug)
-									-- If a net segment has zero length, issue a warning.
-									if length (tmp_segment) > zero_distance then 
-
-										-- The net segments are to be collected in a wild list of segments for later sorting.
-										if log_level >= log_threshold + 1 then
-											log_indentation_up;
-											--write_coordinates_of_segment (tmp_segment);
-											log ("net segment " & to_string (segment => tmp_segment, scope => xy));
-											log_indentation_down;
-										end if;
-										
-										type_wild_segments.append (wild_segments, tmp_segment);
-										
-									else -- segment has zero length
-										log (message_warning & affected_line (line) & "Net segment with zero length found -> ignored !");
-									end if; -- length
-
+									add (line);
+									make_net_segment (lines);
+									clear (lines);
 								end if;
 
-								-- read net junctions and store them in a wild list of net junctions for later sorting
-								-- CS: use type_lines (similar to reading gui sheets)
-								if field (line,1) = schematic_keyword_connection then
-									if field (line,2) = schematic_tilde then
+								-- READ NET JUNCTIONS 
+								
+								-- Connection ~ 4650 4600
 
-										-- build a temporarily junction
-										set_path (tmp_junction.coordinates, path_to_submodule);
-										set_sheet (tmp_junction.coordinates, sheet_number_current);
-										set_x (tmp_junction.coordinates, mil_to_distance (field  (line,3)));
-										set_y (tmp_junction.coordinates, mil_to_distance (field  (line,4)));
-
-										-- for the log
-										--write_junction_properties (tmp_junction);
-										if log_level >= log_threshold + 1 then
-											log_indentation_up;
-											log ("junction at " & to_string (junction => tmp_junction, scope => xy));
-											log_indentation_down;
-										end if;
-
-										type_junctions.append (wild_junctions, tmp_junction);
-									end if;
+								if junction_header (line) then
+									make_junction (line);
 								end if;
 									
-								-- Read simple net labels (they do not have a tag, but just a text) 
-								-- CS: assumption: keywords "Text Label" and coordinates in one line
-								-- CS: use type_lines (similar to reading gui sheets)
-								if not simple_label_entered then							
-									if 	field (line,1) = schematic_keyword_text and 
-										field (line,2) = schematic_keyword_label_simple then
+								-- READ SIMPLE NET LABELS (they do not have a tag, but just a text) 
 
+								-- Text Label 2350 3250 0 60 ~ 0
+								-- TOP_VCC
+
+								if not simple_label_entered then
+									if simple_label_header (line) then
 										simple_label_entered := true;
-
-										-- Build a temporarily simple label from a line like "Text Label 5350 3050 0    60   ~ 0" :
-										set_path (tmp_simple_net_label.coordinates, path_to_submodule);
-										set_sheet (tmp_simple_net_label.coordinates, sheet_number_current);
-										set_x (tmp_simple_net_label.coordinates, mil_to_distance (field  (line,3)));
-										set_y (tmp_simple_net_label.coordinates, mil_to_distance (field  (line,4)));
-										tmp_simple_net_label.orientation := to_angle (field  (line,5));
-
-										tmp_simple_net_label.size := mil_to_distance (field (line,6));
-										-- CS: check label text size 1.27
-										
-										tmp_simple_net_label.style := to_text_style (style_in => field (line,7), text => true);
-										-- cS: check label style
-										
-										tmp_simple_net_label.width := et_libraries.type_text_line_width'value(field (line,8));
-										-- CS: check label line width
-
+										add (line);
 									end if;
 								else
 									simple_label_entered := false; -- we are leaving a simple label
-
-									-- get label text and put it to temporarily simple label
-									tmp_simple_net_label.text := type_net_name.to_bounded_string(field (line,1));
-
-									-- for the log
-									--write_label_properties (type_net_label (tmp_simple_net_label));
-									if log_level >= log_threshold + 1 then
-										log_indentation_up;
-										log ("simple label at " & to_string (label => type_net_label (tmp_simple_net_label), scope => xy));
-										log_indentation_down;
-									end if;
-									
-									-- The simple labels are to be collected in a wild list of simple labels.
-									type_simple_labels.append (wild_simple_labels,tmp_simple_net_label);
+									add (line);
+									make_simple_label (lines);
+									clear (lines);
 								end if;
 								
-								-- read tag net labels (tagged labels can be global or hierarchical)
-								-- CS: use type_lines (similar to reading gui sheets)									
+								-- READ TAG NET-LABELS (global or hierarchical)
+
+								-- Text GLabel 4700 3200 1    60   UnSpc ~ 0
+								-- DRV_1
+
 								if not tag_label_entered then
-									if 	field (line,1) = schematic_keyword_text 
-										and 
-										(field (line,2) = schematic_keyword_label_hierarchic 
-										or field (line,2) = schematic_keyword_label_global)
-										then
-									
+									if tag_label_header (line) then
 										tag_label_entered := true;
-
-										-- Build a temporarily hierarchic/global label from a line like "Text GLabel 1850 3100 0 58 BiDi ~ 0"
-										-- The keyword in field 2 tells whether we have a hierarchic or global label:
-										if field (line,2) = schematic_keyword_label_hierarchic then
-											tmp_tag_net_label.hierarchic := true;
-											tmp_tag_net_label.global := false;
-										else
-											tmp_tag_net_label.hierarchic := false;
-											tmp_tag_net_label.global := true;
-										end if;
-
-										set_path (tmp_tag_net_label.coordinates, path_to_submodule);
-										set_sheet (tmp_tag_net_label.coordinates, sheet_number_current);
-										set_x (tmp_tag_net_label.coordinates, mil_to_distance (field  (line,3)));
-										set_y (tmp_tag_net_label.coordinates, mil_to_distance (field  (line,4)));
-										tmp_tag_net_label.orientation   := to_angle (field (line,5));
-										
-										tmp_tag_net_label.direction := to_direction(
-											field (line,7)
-											);
-
-										-- build text attributes from size, font and line width
-										tmp_tag_net_label.size := mil_to_distance (field (line,6));
-										tmp_tag_net_label.style := to_text_style (style_in => field (line,8), text => true);
-										tmp_tag_net_label.width := et_libraries.type_text_line_width'value(field (line,9));
+										add (line);
 									end if;
 								else
 									tag_label_entered := false; -- we are leaving a tag label
-
-									-- get label text and put it to temporarily tag label
-									tmp_tag_net_label.text := type_net_name.to_bounded_string(field (line,1));
-
-									-- for the log
-									if log_level >= log_threshold + 1 then
-										log_indentation_up;
-										log ("tag label at " & to_string (label => type_net_label (tmp_tag_net_label), scope => xy));
-										log_indentation_down;
-									end if;
-									
-									-- The tag labels are to be collected in a wild list of tag labels for later sorting.
-									type_tag_labels.append (wild_tag_labels,tmp_tag_net_label);
+									add (line);
+									make_tag_label (lines);
+									clear (lines);
 								end if;
 
-								-- read note from a line like "Text Notes 3400 2800 0 60 Italic 12" followed by a line with the actual note:
-								-- CS: use type_lines (similar to reading gui sheets)
-								if not note_entered then
-									if 	field (line,1) = schematic_keyword_text and 
-										field (line,2) = schematic_keyword_note then
-											note_entered := true; -- we are entering a note
-									
-											-- set coordinates
-											set_path (tmp_note.coordinates, path_to_submodule);
-											set_sheet (tmp_note.coordinates, sheet_number_current);
-											set_x (tmp_note.coordinates, mil_to_distance (field  (line,3)));
-											set_y (tmp_note.coordinates, mil_to_distance (field  (line,4)));
-											tmp_note.orientation   := to_angle (field (line,5));
-											tmp_note.size := mil_to_distance (field (line,6));
-											tmp_note.style := to_text_style (style_in => field (line,7), text => true);
-											tmp_note.line_width := mil_to_distance (field  (line,8));
+								-- READ NOTES 
 
+								-- "Text Notes 3400 2800 0 60 Italic 12"
+								-- "ERC32 Test Board"
+								
+								if not note_entered then
+									if text_note_header (line) then
+										note_entered := true; -- we are entering a note
+										add (line);
 									end if;
 								else 
 									note_entered := false; -- we are leaving a note
-
-									-- get note text from a line like "hello\ntest". NOTE "\n" represents a line break
-									-- CS: store lines in a list of lines instead ?
-									-- CS: Currently we store the line as it is in tmp_note.text
-									tmp_note.content := et_libraries.type_text_content.to_bounded_string(to_string(line));
-
-									write_note_properties (tmp_note, log_threshold + 1);
-									
-									-- the notes are to be collected in the list of notes
-									add_note (tmp_note);
+									add (line);
+									make_text_note (lines);
+									clear (lines);
 								end if;
 								
 								-- READ COMPONENTS
