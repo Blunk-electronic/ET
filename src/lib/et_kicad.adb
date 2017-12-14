@@ -2287,10 +2287,9 @@ package body et_kicad is
 			et_string_processing.get_field_from_line;
 		
 		list_of_submodules : type_submodule_names_extended;
-		
-		--top_level_schematic	: type_schematic_file_name.bounded_string;
-		current_schematic	: type_schematic_file_name.bounded_string;
 
+		current_schematic	: type_schematic_file_name.bounded_string;
+		
 		net_id : natural := 0; -- for counting name-less nets (like N$1, N$2, N$3, ...)
 
 		package stack_of_sheet_lists is new et_general.stack_lifo (max => 10, item => type_submodule_names_extended);
@@ -5025,8 +5024,6 @@ package body et_kicad is
 
 				-- log module path as recorded by parent unit
 				log_indentation_up;
-				--write_path_to_submodule;
-				--append_name_of_parent_module_to_path (to_ tmp_module_name);
 				log ("path " & to_string (path_to_submodule), log_threshold + 1);
 				
 				open (file => schematic_handle, mode => in_file, name => to_string (current_schematic));
@@ -5354,15 +5351,15 @@ package body et_kicad is
 				Y_axis_positive := downwards;
 				
 				-- derive top level schematic file name from project name
-				top_level_schematic := read_project_file;
-				tmp_module_name := type_submodule_name.to_bounded_string (base_name (to_string (top_level_schematic)));
+				top_level_schematic	:= read_project_file;
 				
 				-- The top level schematic file dictates the module name. So we create the module here.
 				-- The first element to set is the project libraries which we collected earlier when the
 				-- project file was read.
 				add_module (
-					module_name	=> tmp_module_name,
-					module		=> (
+					module_name	=> type_submodule_name.to_bounded_string (
+										base_name (to_string (top_level_schematic))),
+					module => (
 						libraries		=> tmp_project_libraries, -- set project libraries
 						strands			=> type_strands.empty_list,
 						nets			=> type_nets.empty_map,
@@ -5373,18 +5370,14 @@ package body et_kicad is
 						frames			=> type_frames.empty_list,
 						title_blocks	=> type_title_blocks.empty_list,
 						notes			=> type_texts.empty_list,
-						sheet_headers	=> type_sheet_headers.empty_map
-						)
-					);
+						sheet_headers	=> type_sheet_headers.empty_map));
+				
 				
 				read_components_libraries (log_threshold); -- as stored in element "libraries" of the current module
 				current_schematic := top_level_schematic;
 
                 -- The top level schematic file is the first entry in the module path.
-				--append_name_of_parent_module_to_path (tmp_module_name);
 				-- The top level schematic file is the root in the module path.
-				--append_name_of_parent_module_to_path (type_submodule_name.to_bounded_string ("")); -- EXP
-                
 				-- Starting from the top level module, we read its schematic file. The result can be a list 
 				-- of submodules which means that the design is hierarchic.
 				-- NOTE: Kicad refers to submodules as "sheets" !

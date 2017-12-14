@@ -34,6 +34,8 @@
 --
 --   history of changes:
 --
+
+
 with ada.text_io;				use ada.text_io;
 
 with ada.strings.bounded; 		use ada.strings.bounded;
@@ -115,18 +117,6 @@ package et_kicad is
 	-- Objects may be placed at a certain angle. The unit is tenth of degree:
 	type type_angle is range -3599 .. 3599;
 
-
-    -- headers, footers, keywords 
-
---     EESchema Schematic File Version 2
---     LIBS:nucleo_core-rescue
---     LIBS:power
---     LIBS:bel_connectors_and_jumpers
---     LIBS:bel_primitives
---     LIBS:bel_stm32
---     LIBS:nucleo_core-cache
---     EELAYER 25 0
---     EELAYER END
 
 -- SCHEMATIC
 
@@ -341,21 +331,6 @@ package et_kicad is
 	tag_label_entered 			: boolean := false;	
 	note_entered				: boolean := false;	
 
-	-- temporarily storage
-	tmp_module_name 				: et_coordinates.type_submodule_name.bounded_string;	
-	tmp_component_unit_name			: et_libraries.type_unit_name.bounded_string;
-	
-	tmp_component_text_reference	: et_libraries.type_text (meaning => et_libraries.reference);
-	tmp_component_text_value		: et_libraries.type_text (meaning => et_libraries.value);
-	tmp_component_text_commissioned : et_libraries.type_text (meaning => et_libraries.commissioned);
-	tmp_component_text_updated		: et_libraries.type_text (meaning => et_libraries.updated);
-	tmp_component_text_author		: et_libraries.type_text (meaning => et_libraries.author);
-	tmp_component_text_packge		: et_libraries.type_text (meaning => et_libraries.packge); -- like "SOT23"
-	tmp_component_text_datasheet	: et_libraries.type_text (meaning => et_libraries.datasheet); -- might be useful for some special components
-	tmp_component_text_purpose		: et_libraries.type_text (meaning => et_libraries.purpose); -- to be filled in schematic later by the user
-	tmp_component_text_partcode		: et_libraries.type_text (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"
-	tmp_component_text_bom			: et_libraries.type_text (meaning => et_libraries.bom);
-	
 	
 -- NET SEGMENT AND STRAND PROCESSING
 	type type_wild_net_segment is new et_schematic.type_net_segment with record
@@ -363,8 +338,6 @@ package et_kicad is
 		picked : boolean := false; -- flag indicates that the segment has been added to the anonymous net
 	end record;
 
-	tmp_segment : type_wild_net_segment; -- CS: remove
-	
 	type type_segment_side is (start_point, end_point); -- the end point of a segment	
 
 	package type_wild_segments is new doubly_linked_lists ( 
