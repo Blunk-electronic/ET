@@ -2469,216 +2469,24 @@ package body et_kicad is
 		procedure set_s (segment : in out type_wild_net_segment ) is begin segment.s := true; end set_s;
 		procedure set_picked (segment : in out type_wild_net_segment ) is begin segment.picked := true; end set_picked;
 
-		procedure init_temp_variables is
-		begin
-			-- clear "field found" flags
-			tmp_component_text_reference_found		:= false;
-			tmp_component_text_value_found			:= false;
-			tmp_component_text_commissioned_found	:= false;
-			tmp_component_text_updated_found		:= false;
-			tmp_component_text_author_found			:= false;
-			tmp_component_text_packge_found			:= false;
-			tmp_component_text_datasheet_found		:= false;
-			tmp_component_text_purpose_found		:= false;
-			tmp_component_text_partcode_found		:= false;
-			
-			tmp_component_text_packge.content := et_libraries.type_text_content.to_bounded_string("");
-			-- CS: init text properties ?
-			-- CS: init remaining tmp vars ?
-
-		end init_temp_variables;
-
-		procedure check_text_fields (log_threshold : in type_log_level) is 
-		-- NOTE: This is schematic related !
-		-- Tests if any "field found" flag is still cleared and raises an alarm in that case.
-		-- Perfoms a plausibility and syntax check on the text fields before they are used to 
-		-- assemble and insert the component into the component list of the module.
-		-- This can be regarded as a kind of pre-check.
-		-- CS: check text size and width
-			use et_coordinates;
-		
-			procedure missing_field (m : in et_libraries.type_text_meaning) is 
-			begin
-				log_indentation_reset;
-				log (
-					text => message_error 
-						& "component " & to_string (tmp_component_reference) 
-						& latin_1.space
-						& to_string (position => tmp_component_position)
-						& latin_1.lf
-						& "text field '" & et_libraries.to_string (m) & "' missing !",
-					console => true);
-				
-				raise constraint_error;
-			end missing_field;
-
-			commissioned, updated : et_string_processing.type_date;
-
-			use et_libraries;
-		begin -- check_text_fields
-			log_indentation_up;
-
-			-- write precheck preamble
-			log ("component " 
-				& to_string(tmp_component_reference) & " prechecking fields ...", level => log_threshold);
-
--- 			log_indentation_up;
--- 			log ("precheck", log_threshold + 1);
-			log_indentation_up;
-			
-			-- reference
-			log ("reference", level => log_threshold + 1);
-			if not tmp_component_text_reference_found then
-				missing_field (et_libraries.reference);
-			else
-				-- verify tmp_component_text_reference equals tmp_component_reference. @kicad: why this redundance ?
-				-- KiCad stores redundant information on the component reference as in this example;
-
-				-- $Comp
-				-- L 74LS00 IC1 <- tmp_component_reference
-				-- U 1 1 59969711
-				-- P 4100 4000
-				-- F 0 "IC1" H 4100 4050 50  0000 C BIB <- tmp_component_text_reference
-				
-				if et_schematic.to_string (tmp_component_reference) /= et_libraries.content (tmp_component_text_reference) then
-					log_indentation_reset;
-					log (message_error & " reference mismatch !");
-					log (et_schematic.to_string (tmp_component_reference) & " vs " & et_libraries.content(tmp_component_text_reference));
-					raise constraint_error;
-				end if;
-
-				-- CS: check if prefix meets certain conventions
-			end if;
-
-			-- value
-			log ("value", level => log_threshold + 1);
-			if not tmp_component_text_value_found then
-				missing_field (et_libraries.value);
-			else
-				-- depending on the component reference (like R12 or C9) the value must meet certain conventions:
-				if not et_libraries.component_value_valid (
-					value => et_libraries.type_component_value.to_bounded_string (
-						et_libraries.content (tmp_component_text_value)), -- the content of the value field like 200R or 10uF
-					reference => tmp_component_reference) -- the component reference such as R4 or IC34
-					then raise constraint_error;
-				end if;
-			end if;
-
-			-- commissioned
-			log ("commissioned", level => log_threshold + 1);
-			if not tmp_component_text_commissioned_found then
-				missing_field (et_libraries.commissioned);
-			else
-				-- The commissioned time must be checked for plausibility and syntax.
-				-- The string length is indirecty checked on converting the field content to derived type_date.
-				commissioned := et_string_processing.type_date (et_libraries.content (tmp_component_text_commissioned));
-				if not et_string_processing.date_valid (commissioned) 
-					then raise constraint_error;
-				end if;
-			end if;
-
-			-- updated
-			log ("updated", level => log_threshold + 1);
-			if not tmp_component_text_updated_found then
-				missing_field (et_libraries.updated);
-			else
-				-- The update time must be checked for plausibility and syntax.
-				-- The string length is indirecty checked on converting the field content to derived type_date.					
-				updated := et_string_processing.type_date (et_libraries.content (tmp_component_text_updated));
-				if not et_string_processing.date_valid (updated) 
-					then raise constraint_error;
-				end if;
-
-				-- make sure the update was later (or at the same time as) the commission date
-				check_updated_vs_commissioned (commissioned, updated);
-
-			end if;
-
-			-- author
-			log ("author", level => log_threshold + 1);
-			if not tmp_component_text_author_found then
-				missing_field (et_libraries.author);
-			else
-				null;
-				-- CS: check content of tmp_component_text_author
-			end if;
-
-			-- If we are checking fields of a real component there are more 
-			-- fields to be checked. If it is about a virtual component, those 
-			-- fields are ignored and thus NOT checked:
-			case tmp_component_appearance is
-				when sch_pcb =>
-						
-					-- package
-					log ("package/footprint", level => log_threshold + 1);
-					if not tmp_component_text_packge_found then
-						missing_field (et_libraries.packge);
-					else
-						null;
-						-- CS: check content of tmp_component_text_packge
-					end if;
-
-					-- datasheet
-					log ("datasheet", level => log_threshold + 1);
-					if not tmp_component_text_datasheet_found then
-						missing_field (et_libraries.datasheet);
-					else
-						null;
-						-- CS: check content of tmp_component_text_datasheet
-					end if;
-
-					-- partcode
-					log ("partcode", level => log_threshold + 1);
-					if not tmp_component_text_partcode_found then
-						missing_field (et_libraries.partcode);
-					else
-						null;
-						-- CS: check content of tmp_component_text_partcode
-					end if;
-					
-					-- purpose
-					log ("purpose", level => log_threshold + 1);
-					if not tmp_component_text_purpose_found then
-						missing_field (et_libraries.purpose);
-					else
-						null;
-						-- CS: check content of tmp_component_text_fnction
-					end if;
-
-					-- bom
-					log ("bom", level => log_threshold + 1);
-					if not tmp_component_text_bom_found then
-						missing_field (et_libraries.bom);
-					else
-						null;
-						-- CS: check content of tmp_component_text_bom
-					end if;
-
-					
-					-- put_line (indent(indentation + 1) & "crosschecks");
-					-- CS: test partcode, verify agsinst prefix, value and package
-					-- CS: test function against prefix of user interactive parts (X, SW, LED, ...)
-
-					
-				when others => null; -- CS ?
-			end case;
-
-			log_indentation_down;
-			log_indentation_down;
--- 			log_indentation_down;				
-			
-			exception
-				when constraint_error =>
-					log_indentation_reset;
-					log (
-						text => message_error & "invalid field in component " & et_schematic.to_string (tmp_component_reference)
-							& " at " & to_string (position => tmp_component_position),
-						console => true);
-					-- CS: evaluate prog position and provided more detailled output
-					raise constraint_error;
-
-		end check_text_fields;
-			
+-- 		procedure init_temp_variables is
+-- 		begin
+-- 			-- clear "field found" flags
+-- 			tmp_component_text_reference_found		:= false;
+-- 			tmp_component_text_value_found			:= false;
+-- 			tmp_component_text_commissioned_found	:= false;
+-- 			tmp_component_text_updated_found		:= false;
+-- 			tmp_component_text_author_found			:= false;
+-- 			tmp_component_text_packge_found			:= false;
+-- 			tmp_component_text_datasheet_found		:= false;
+-- 			tmp_component_text_purpose_found		:= false;
+-- 			tmp_component_text_partcode_found		:= false;
+-- 			
+-- 			tmp_component_text_packge.content := et_libraries.type_text_content.to_bounded_string("");
+-- 			-- CS: init text properties ?
+-- 			-- CS: init remaining tmp vars ?
+-- 
+-- 		end init_temp_variables;
 
 			
 		function read_schematic (
@@ -4859,6 +4667,20 @@ package body et_kicad is
 			--  1    0    0   1  -- orientation -90, mirror |
 			-- $EndComp
 
+				-- These are the "field found" flags. They signal if a particular text field has been found.
+				-- They are cleared by procdure "init_temp_variables" once a new compoenent is entered.
+				-- They are evaluated when a component section is left.
+				text_reference_found	: boolean := false;
+				text_value_found		: boolean := false;
+				text_commissioned_found	: boolean := false;
+				text_updated_found		: boolean := false;
+				text_author_found		: boolean := false;
+				text_packge_found		: boolean := false;
+				text_datasheet_found	: boolean := false;
+				text_purpose_found		: boolean := false;
+				text_partcode_found		: boolean := false;
+				text_bom_found			: boolean := false;
+
 				function to_text return et_libraries.type_text is
 				-- Converts a field like "F 1 "green" H 2700 2750 50  0000 C CNN" to a type_text
 					function field (line : in type_fields_of_line; position : in positive) return string renames get_field_from_line;
@@ -4898,10 +4720,203 @@ package body et_kicad is
 						);
 				end to_text;
 
-			
+				procedure check_text_fields (log_threshold : in type_log_level) is 
+				-- Tests if any "field found" flag is still cleared and raises an alarm in that case.
+				-- Perfoms a plausibility and syntax check on the text fields before they are used to 
+				-- assemble and insert the component into the component list of the module.
+				-- This can be regarded as a kind of pre-check.
+				-- CS: check text size and width
+					use et_coordinates;
+				
+					procedure missing_field (m : in et_libraries.type_text_meaning) is 
+					begin
+						log_indentation_reset;
+						log (
+							text => message_error 
+								& "component " & to_string (tmp_component_reference) 
+								& latin_1.space
+								& to_string (position => tmp_component_position)
+								& latin_1.lf
+								& "text field '" & et_libraries.to_string (m) & "' missing !",
+							console => true);
+						
+						raise constraint_error;
+					end missing_field;
+
+					commissioned, updated : et_string_processing.type_date;
+
+					use et_libraries;
+				begin -- check_text_fields
+					log_indentation_up;
+
+					-- write precheck preamble
+					log ("component " 
+						& to_string(tmp_component_reference) & " prechecking fields ...", level => log_threshold);
+
+		-- 			log_indentation_up;
+		-- 			log ("precheck", log_threshold + 1);
+					log_indentation_up;
+					
+					-- reference
+					log ("reference", level => log_threshold + 1);
+					if not text_reference_found then
+						missing_field (et_libraries.reference);
+					else
+						-- verify tmp_component_text_reference equals tmp_component_reference. @kicad: why this redundance ?
+						-- KiCad stores redundant information on the component reference as in this example;
+
+						-- $Comp
+						-- L 74LS00 IC1 <- tmp_component_reference
+						-- U 1 1 59969711
+						-- P 4100 4000
+						-- F 0 "IC1" H 4100 4050 50  0000 C BIB <- tmp_component_text_reference
+						
+						if et_schematic.to_string (tmp_component_reference) /= et_libraries.content (tmp_component_text_reference) then
+							log_indentation_reset;
+							log (message_error & " reference mismatch !");
+							log (et_schematic.to_string (tmp_component_reference) & " vs " & et_libraries.content(tmp_component_text_reference));
+							raise constraint_error;
+						end if;
+
+						-- CS: check if prefix meets certain conventions
+					end if;
+
+					-- value
+					log ("value", level => log_threshold + 1);
+					if not text_value_found then
+						missing_field (et_libraries.value);
+					else
+						-- depending on the component reference (like R12 or C9) the value must meet certain conventions:
+						if not et_libraries.component_value_valid (
+							value => et_libraries.type_component_value.to_bounded_string (
+								et_libraries.content (tmp_component_text_value)), -- the content of the value field like 200R or 10uF
+							reference => tmp_component_reference) -- the component reference such as R4 or IC34
+							then raise constraint_error;
+						end if;
+					end if;
+
+					-- commissioned
+					log ("commissioned", level => log_threshold + 1);
+					if not text_commissioned_found then
+						missing_field (et_libraries.commissioned);
+					else
+						-- The commissioned time must be checked for plausibility and syntax.
+						-- The string length is indirecty checked on converting the field content to derived type_date.
+						commissioned := et_string_processing.type_date (et_libraries.content (tmp_component_text_commissioned));
+						if not et_string_processing.date_valid (commissioned) 
+							then raise constraint_error;
+						end if;
+					end if;
+
+					-- updated
+					log ("updated", level => log_threshold + 1);
+					if not text_updated_found then
+						missing_field (et_libraries.updated);
+					else
+						-- The update time must be checked for plausibility and syntax.
+						-- The string length is indirecty checked on converting the field content to derived type_date.					
+						updated := et_string_processing.type_date (et_libraries.content (tmp_component_text_updated));
+						if not et_string_processing.date_valid (updated) 
+							then raise constraint_error;
+						end if;
+
+						-- make sure the update was later (or at the same time as) the commission date
+						check_updated_vs_commissioned (commissioned, updated);
+
+					end if;
+
+					-- author
+					log ("author", level => log_threshold + 1);
+					if not text_author_found then
+						missing_field (et_libraries.author);
+					else
+						null;
+						-- CS: check content of tmp_component_text_author
+					end if;
+
+					-- If we are checking fields of a real component there are more 
+					-- fields to be checked. If it is about a virtual component, those 
+					-- fields are ignored and thus NOT checked:
+					case tmp_component_appearance is
+						when sch_pcb =>
+								
+							-- package
+							log ("package/footprint", level => log_threshold + 1);
+							if not text_packge_found then
+								missing_field (et_libraries.packge);
+							else
+								null;
+								-- CS: check content of tmp_component_text_packge
+							end if;
+
+							-- datasheet
+							log ("datasheet", level => log_threshold + 1);
+							if not text_datasheet_found then
+								missing_field (et_libraries.datasheet);
+							else
+								null;
+								-- CS: check content of tmp_component_text_datasheet
+							end if;
+
+							-- partcode
+							log ("partcode", level => log_threshold + 1);
+							if not text_partcode_found then
+								missing_field (et_libraries.partcode);
+							else
+								null;
+								-- CS: check content of tmp_component_text_partcode
+							end if;
+							
+							-- purpose
+							log ("purpose", level => log_threshold + 1);
+							if not text_purpose_found then
+								missing_field (et_libraries.purpose);
+							else
+								null;
+								-- CS: check content of tmp_component_text_fnction
+							end if;
+
+							-- bom
+							log ("bom", level => log_threshold + 1);
+							if not text_bom_found then
+								missing_field (et_libraries.bom);
+							else
+								null;
+								-- CS: check content of tmp_component_text_bom
+							end if;
+
+							
+							-- put_line (indent(indentation + 1) & "crosschecks");
+							-- CS: test partcode, verify agsinst prefix, value and package
+							-- CS: test function against prefix of user interactive parts (X, SW, LED, ...)
+
+							
+						when others => null; -- CS ?
+					end case;
+
+					log_indentation_down;
+					log_indentation_down;
+		-- 			log_indentation_down;				
+					
+					exception
+						when constraint_error =>
+							log_indentation_reset;
+							log (
+								text => message_error & "invalid field in component " & et_schematic.to_string (tmp_component_reference)
+									& " at " & to_string (position => tmp_component_position),
+								console => true);
+							-- CS: evaluate prog position and provided more detailled output
+							raise constraint_error;
+
+				end check_text_fields;
+
 				use type_lines;
 			
-			begin
+			begin -- make_component
+				tmp_component_text_packge.content := type_text_content.to_bounded_string("");
+					-- CS: init text properties ?
+					-- CS: init remaining tmp vars ?
+				
 				line_cursor := type_lines.first (lines);
 				while line_cursor /= type_lines.no_element loop
 
@@ -4982,43 +4997,43 @@ package body et_kicad is
 						
 						case type_component_field_id'value (field (et_kicad.line,2)) is
 							when component_field_reference =>
-								tmp_component_text_reference_found	:= true;
+								text_reference_found	:= true;
 								tmp_component_text_reference 		:= to_text;
 
 							when component_field_value =>
-								tmp_component_text_value_found		:= true;
+								text_value_found		:= true;
 								tmp_component_text_value 			:= to_text;
 								
 							when component_field_footprint =>
-								tmp_component_text_packge_found		:= true;
+								text_packge_found		:= true;
 								tmp_component_text_packge 			:= to_text;
 								
 							when component_field_datasheet =>
-								tmp_component_text_datasheet_found	:= true;
+								text_datasheet_found	:= true;
 								tmp_component_text_datasheet 		:= to_text;
 								
 							when component_field_function =>
-								tmp_component_text_purpose_found	:= true;
+								text_purpose_found	:= true;
 								tmp_component_text_purpose 			:= to_text;
 								
 							when component_field_partcode =>
-								tmp_component_text_partcode_found	:= true;
+								text_partcode_found	:= true;
 								tmp_component_text_partcode 		:= to_text;
 								
 							when component_field_commissioned =>
-								tmp_component_text_commissioned_found	:= true;
+								text_commissioned_found	:= true;
 								tmp_component_text_commissioned 		:= to_text;
 								
 							when component_field_updated =>
-								tmp_component_text_updated_found	:= true;
+								text_updated_found	:= true;
 								tmp_component_text_updated 			:= to_text;
 								
 							when component_field_author =>
-								tmp_component_text_author_found		:= true;
+								text_author_found		:= true;
 								tmp_component_text_author 			:= to_text;
 
 							when component_field_bom =>
-								tmp_component_text_bom_found		:= true;
+								text_bom_found		:= true;
 								tmp_component_text_bom				:= to_text;
 
 								
@@ -5050,6 +5065,18 @@ package body et_kicad is
 
 					next (line_cursor);
 				end loop;
+
+				-- Check if all required text fields have been found.
+				-- Check content of text fields for syntax and plausibility.
+				check_text_fields (log_threshold + 1);
+				
+				-- Insert component in component list of module. If a component is split
+				-- in units, only the first occurence of it leads to inserting the component.
+				-- Nevertheless there are some checks on the unit (see insert_component).
+				insert_component;
+
+				-- We update the component with the collected unit information.
+				insert_unit;
 				
 			end make_component;
 			
@@ -5301,14 +5328,13 @@ package body et_kicad is
 								--  1    0    0   1  -- orientation -90, mirror |
 								-- $EndComp
 
-								-- CS: use type_lines (similar to reading gui sheets)
 								if not component_entered then
 									if component_header (line) then
 										component_entered := true;
 
-										-- This is to init the temporarily used variables that store text fields.
-										-- This clears the "field found" flags
-										init_temp_variables;
+-- 										-- This is to init the temporarily used variables that store text fields.
+-- 										-- This clears the "field found" flags
+-- 										init_temp_variables;
 
 									end if;
 								else -- we are inside the component and wait for the component footer ($EndComp)
@@ -5318,17 +5344,17 @@ package body et_kicad is
 										make_component (lines);
 										clear (lines);
 										
-										-- Check if all required text fields have been found.
-										-- Check content of text fields for syntax and plausibility.
-										check_text_fields (log_threshold + 1);
-										
-										-- Insert component in component list of module. If a component is split
-										-- in units, only the first occurence of it leads to inserting the component.
-										-- Nevertheless there are some checks on the unit (see insert_component).
-										insert_component;
-
-										-- We update the component with the collected unit information.
-										insert_unit;
+-- 										-- Check if all required text fields have been found.
+-- 										-- Check content of text fields for syntax and plausibility.
+-- 										check_text_fields (log_threshold + 1);
+-- 										
+-- 										-- Insert component in component list of module. If a component is split
+-- 										-- in units, only the first occurence of it leads to inserting the component.
+-- 										-- Nevertheless there are some checks on the unit (see insert_component).
+-- 										insert_component;
+-- 
+-- 										-- We update the component with the collected unit information.
+-- 										insert_unit;
 
 									else
 										-- READ COMPONENT SECTION CONTENT
@@ -5468,9 +5494,9 @@ package body et_kicad is
 -- 											end case;
 -- 
 -- 										end if;
-								end if;
+									end if;
 								
-							end if;
+								end if;
 							end if;
 
 					end case;

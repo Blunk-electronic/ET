@@ -395,19 +395,19 @@ package et_kicad is
 	tmp_component_text_partcode		: et_libraries.type_text (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"
 	tmp_component_text_bom			: et_libraries.type_text (meaning => et_libraries.bom);
 	
-	-- These are the "field found" flags. They signal if a particular text field has been found.
-	-- They are cleared by procdure "init_temp_variables" once a new compoenent is entered.
-	-- They are evaluated when a component section is left.
-	tmp_component_text_reference_found		: boolean;
-	tmp_component_text_value_found			: boolean;
-	tmp_component_text_commissioned_found	: boolean;
-	tmp_component_text_updated_found		: boolean;
-	tmp_component_text_author_found			: boolean;
-	tmp_component_text_packge_found			: boolean;
-	tmp_component_text_datasheet_found		: boolean;
-	tmp_component_text_purpose_found		: boolean;
-	tmp_component_text_partcode_found		: boolean;
-	tmp_component_text_bom_found			: boolean;	
+-- 	-- These are the "field found" flags. They signal if a particular text field has been found.
+-- 	-- They are cleared by procdure "init_temp_variables" once a new compoenent is entered.
+-- 	-- They are evaluated when a component section is left.
+-- 	tmp_component_text_reference_found		: boolean;
+-- 	tmp_component_text_value_found			: boolean;
+-- 	tmp_component_text_commissioned_found	: boolean;
+-- 	tmp_component_text_updated_found		: boolean;
+-- 	tmp_component_text_author_found			: boolean;
+-- 	tmp_component_text_packge_found			: boolean;
+-- 	tmp_component_text_datasheet_found		: boolean;
+-- 	tmp_component_text_purpose_found		: boolean;
+-- 	tmp_component_text_partcode_found		: boolean;
+-- 	tmp_component_text_bom_found			: boolean;	
 
 	
 -- NET SEGMENT AND STRAND PROCESSING
