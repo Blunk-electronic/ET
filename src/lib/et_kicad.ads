@@ -374,15 +374,15 @@ package et_kicad is
 
 	-- temporarily storage
 	tmp_module_name 				: et_coordinates.type_submodule_name.bounded_string;	
-	tmp_component_name_in_lib		: et_libraries.type_component_name.bounded_string;
-	tmp_component_appearance		: et_libraries.type_component_appearance := et_libraries.sch;
-	tmp_component_reference			: et_libraries.type_component_reference;
+-- 	tmp_component_name_in_lib		: et_libraries.type_component_name.bounded_string;
+-- 	tmp_component_appearance		: et_libraries.type_component_appearance := et_libraries.sch;
+-- 	tmp_component_reference			: et_libraries.type_component_reference;
 	tmp_component_unit_name			: et_libraries.type_unit_name.bounded_string;
-	tmp_component_alt_repres		: et_schematic.type_alternative_representation;
-	tmp_component_timestamp			: et_string_processing.type_timestamp;
-	tmp_component_position			: et_coordinates.type_coordinates;
-	tmp_component_unit_orientation	: et_coordinates.type_angle;
-	tmp_component_unit_mirror		: et_schematic.type_mirror;
+-- 	tmp_component_alt_repres		: et_schematic.type_alternative_representation;
+-- 	tmp_component_timestamp			: et_string_processing.type_timestamp;
+--	tmp_component_position			: et_coordinates.type_coordinates;
+-- 	tmp_component_unit_orientation	: et_coordinates.type_angle;
+-- 	tmp_component_unit_mirror		: et_schematic.type_mirror;
 	
 	tmp_component_text_reference	: et_libraries.type_text (meaning => et_libraries.reference);
 	tmp_component_text_value		: et_libraries.type_text (meaning => et_libraries.value);

@@ -3518,424 +3518,423 @@ package body et_kicad is
 		
 	
 			
-			procedure insert_component is
-			-- NOTE: This is schematic related !
-			-- Inserts the component in the component list of the module (indicated by module_cursor).
-			-- Components may occur multiple times, which implies they are
-			-- split into units (EAGLE refers to them as "gates").
-			-- Only the first occurence of the component leads to appending it to the component list of the module.
-			
-			-- The component to be inserted gets assembled with the temporarily variables assigned until now.
-			-- Tests if a footprint has been associated with the component.
-
-				-- This is required as scratch variable when breaking down the content of the footprint content.
-				-- Kicad saves library and footprint name in a string like "bel_opto:LED_S_0805" separated by colon.
-				-- When a real component (appearance sch_pcb) is inserted, this variable is loaded with
-				-- the library name and the footprint.
-				tmp_library_footprint : et_string_processing.type_fields_of_line;
-
-				function field (
-					line		: in et_string_processing.type_fields_of_line;
-					position	: in positive) return string renames et_string_processing.get_field_from_line;
-
-				use et_libraries;
-
-			begin -- insert_component
-				
-				-- The compoenent is inserted into the components list of the module according to its appearance.
-				-- If the component has already been inserted, it will not be inserted again.
-				
-				case tmp_component_appearance is
-					
-					when sch => -- we have a line like "L P3V3 #PWR07"
-				
-						et_schematic.add_component (
-							reference => tmp_component_reference,
-							component => (
-								appearance		=> sch,
-
-								-- Whether the component is a "power flag" can be reasoned from its reference:
-								power_flag		=> to_power_flag (tmp_component_reference),
-								
-								name_in_library	=> tmp_component_name_in_lib,
-								value 			=> et_libraries.type_component_value.to_bounded_string (et_libraries.content (tmp_component_text_value)),
-								commissioned 	=> et_string_processing.type_date (et_libraries.content (tmp_component_text_commissioned)),
-								updated 		=> et_string_processing.type_date (et_libraries.content (tmp_component_text_updated)),
-								author 			=> et_libraries.type_person_name.to_bounded_string (et_libraries.content (tmp_component_text_author)),
-
-								-- At this stage we do not know if and how many units there are. So the unit list is empty.
-								units 			=> et_schematic.type_units.empty_map),
-							log_threshold => log_threshold +1);
-
-					when sch_pcb => -- we have a line like "L 74LS00 U1"
-
-						-- break down the footprint content like "bel_opto:LED_S_0805".
-						tmp_library_footprint := et_string_processing.read_line(
-								line => et_libraries.content (tmp_component_text_packge),
-								ifs => latin_1.colon);
-
-						et_schematic.add_component ( 
-							reference => tmp_component_reference,
-							component => (
-								appearance		=> sch_pcb,
-								name_in_library	=> tmp_component_name_in_lib,
-								value			=> et_libraries.type_component_value.to_bounded_string (et_libraries.content (tmp_component_text_value)),
-								commissioned	=> et_string_processing.type_date (et_libraries.content (tmp_component_text_commissioned)),
-								updated			=> et_string_processing.type_date (et_libraries.content (tmp_component_text_updated)),
-								author			=> et_libraries.type_person_name.to_bounded_string (et_libraries.content (tmp_component_text_author)),
-
-								-- properties of a real component (appears in schematic and layout);
-								datasheet		=> et_libraries.type_component_datasheet.to_bounded_string (et_libraries.content (tmp_component_text_datasheet)),
-								partcode		=> et_libraries.type_component_partcode.to_bounded_string (et_libraries.content (tmp_component_text_partcode)),
-								purpose			=> et_libraries.type_component_purpose.to_bounded_string (et_libraries.content (tmp_component_text_purpose)),
-								bom				=> et_libraries.type_bom'value (et_libraries.content (tmp_component_text_bom)),
-								-- Assemble the package variant.
-								-- NOTE: There is no way to identifiy the name of the package variant like TL084D or TL084N.
-								-- For this reason we leave the variant name empty.
-								variant =>
-									( 
-									variant => (
-
-										-- get the package name from the footprint field 
-										packge => 
-											et_libraries.type_component_package_name.to_bounded_string(
-												field(line => tmp_library_footprint, position => 2)),
-
-										-- get the library file name from the footpint field
-										library => et_libraries.type_full_library_name.to_bounded_string(
-												field(line => tmp_library_footprint, position => 1))),
-
-									-- The variant name is left empty.
-									name => et_libraries.type_component_variant_name.to_bounded_string("")
-									),
-
-								-- At this stage we do not know if and how many units there are. So the unit list is empty for the moment.
-								units => et_schematic.type_units.empty_map),
-
-							log_threshold => log_threshold +1);
-
-							
-							-- Test if footprint has been associated with the component.
-							if et_libraries.content (tmp_component_text_packge)'size = 0 then
-								log_indentation_reset;
-								log (
-									text => message_error & "component " & et_schematic.to_string (tmp_component_reference) & " footprint not specified !",
-									console => true);
-								raise constraint_error;
-							end if;
-
-							-- The libaray and footpint name could be tested separately.
--- 							-- Test footprint contains a libaray name. example: "bel_opto:LED_S_0805"
--- 							if field(line => tmp_library_footprint, position => 1)'size = 0 then
--- 								write_message(
--- 									file_handle => current_output,
--- 									text => message_error & et_general.to_string(tmp_component_reference) & ": footprint library not specified !",
+-- 			procedure insert_component is
+-- 			-- NOTE: This is schematic related !
+-- 			-- Inserts the component in the component list of the module (indicated by module_cursor).
+-- 			-- Components may occur multiple times, which implies they are
+-- 			-- split into units (EAGLE refers to them as "gates").
+-- 			-- Only the first occurence of the component leads to appending it to the component list of the module.
+-- 			
+-- 			-- The component to be inserted gets assembled with the temporarily variables assigned until now.
+-- 			-- Tests if a footprint has been associated with the component.
+-- 
+-- 				-- This is required as scratch variable when breaking down the content of the footprint content.
+-- 				-- Kicad saves library and footprint name in a string like "bel_opto:LED_S_0805" separated by colon.
+-- 				-- When a real component (appearance sch_pcb) is inserted, this variable is loaded with
+-- 				-- the library name and the footprint.
+-- 				tmp_library_footprint : et_string_processing.type_fields_of_line;
+-- 
+-- 				function field (
+-- 					line		: in et_string_processing.type_fields_of_line;
+-- 					position	: in positive) return string renames et_string_processing.get_field_from_line;
+-- 
+-- 				use et_libraries;
+-- 
+-- 			begin -- insert_component
+-- 				
+-- 				-- The compoenent is inserted into the components list of the module according to its appearance.
+-- 				-- If the component has already been inserted, it will not be inserted again.
+-- 				
+-- 				case tmp_component_appearance is
+-- 					
+-- 					when sch => -- we have a line like "L P3V3 #PWR07"
+-- 				
+-- 						et_schematic.add_component (
+-- 							reference => tmp_component_reference,
+-- 							component => (
+-- 								appearance		=> sch,
+-- 
+-- 								-- Whether the component is a "power flag" can be reasoned from its reference:
+-- 								power_flag		=> to_power_flag (tmp_component_reference),
+-- 								
+-- 								name_in_library	=> tmp_component_name_in_lib,
+-- 								value 			=> et_libraries.type_component_value.to_bounded_string (et_libraries.content (tmp_component_text_value)),
+-- 								commissioned 	=> et_string_processing.type_date (et_libraries.content (tmp_component_text_commissioned)),
+-- 								updated 		=> et_string_processing.type_date (et_libraries.content (tmp_component_text_updated)),
+-- 								author 			=> et_libraries.type_person_name.to_bounded_string (et_libraries.content (tmp_component_text_author)),
+-- 
+-- 								-- At this stage we do not know if and how many units there are. So the unit list is empty.
+-- 								units 			=> et_schematic.type_units.empty_map),
+-- 							log_threshold => log_threshold +1);
+-- 
+-- 					when sch_pcb => -- we have a line like "L 74LS00 U1"
+-- 
+-- 						-- break down the footprint content like "bel_opto:LED_S_0805".
+-- 						tmp_library_footprint := et_string_processing.read_line(
+-- 								line => et_libraries.content (tmp_component_text_packge),
+-- 								ifs => latin_1.colon);
+-- 
+-- 						et_schematic.add_component ( 
+-- 							reference => tmp_component_reference,
+-- 							component => (
+-- 								appearance		=> sch_pcb,
+-- 								name_in_library	=> tmp_component_name_in_lib,
+-- 								value			=> et_libraries.type_component_value.to_bounded_string (et_libraries.content (tmp_component_text_value)),
+-- 								commissioned	=> et_string_processing.type_date (et_libraries.content (tmp_component_text_commissioned)),
+-- 								updated			=> et_string_processing.type_date (et_libraries.content (tmp_component_text_updated)),
+-- 								author			=> et_libraries.type_person_name.to_bounded_string (et_libraries.content (tmp_component_text_author)),
+-- 
+-- 								-- properties of a real component (appears in schematic and layout);
+-- 								datasheet		=> et_libraries.type_component_datasheet.to_bounded_string (et_libraries.content (tmp_component_text_datasheet)),
+-- 								partcode		=> et_libraries.type_component_partcode.to_bounded_string (et_libraries.content (tmp_component_text_partcode)),
+-- 								purpose			=> et_libraries.type_component_purpose.to_bounded_string (et_libraries.content (tmp_component_text_purpose)),
+-- 								bom				=> et_libraries.type_bom'value (et_libraries.content (tmp_component_text_bom)),
+-- 								-- Assemble the package variant.
+-- 								-- NOTE: There is no way to identifiy the name of the package variant like TL084D or TL084N.
+-- 								-- For this reason we leave the variant name empty.
+-- 								variant =>
+-- 									( 
+-- 									variant => (
+-- 
+-- 										-- get the package name from the footprint field 
+-- 										packge => 
+-- 											et_libraries.type_component_package_name.to_bounded_string(
+-- 												field(line => tmp_library_footprint, position => 2)),
+-- 
+-- 										-- get the library file name from the footpint field
+-- 										library => et_libraries.type_full_library_name.to_bounded_string(
+-- 												field(line => tmp_library_footprint, position => 1))),
+-- 
+-- 									-- The variant name is left empty.
+-- 									name => et_libraries.type_component_variant_name.to_bounded_string("")
+-- 									),
+-- 
+-- 								-- At this stage we do not know if and how many units there are. So the unit list is empty for the moment.
+-- 								units => et_schematic.type_units.empty_map),
+-- 
+-- 							log_threshold => log_threshold +1);
+-- 
+-- 							
+-- 							-- Test if footprint has been associated with the component.
+-- 							if et_libraries.content (tmp_component_text_packge)'size = 0 then
+-- 								log_indentation_reset;
+-- 								log (
+-- 									text => message_error & "component " & et_schematic.to_string (tmp_component_reference) & " footprint not specified !",
 -- 									console => true);
 -- 								raise constraint_error;
 -- 							end if;
 -- 
--- 							-- Test if footprint has been associated with the component.
--- 							if field(line => tmp_library_footprint, position => 2)'size = 0 then
--- 								write_message(
--- 									file_handle => current_output,
--- 									text => message_error & et_general.to_string(tmp_component_reference) & ": footprint not specified !",
--- 									console => true);
--- 								raise constraint_error;
--- 							end if;
-
-					when others => -- CS: This should never happen. A subtype of type_component_appearance could be a solution.
-						null;
-						raise constraint_error;
-						
-				end case;
-
-
-				exception
-					when constraint_error =>
-						log_indentation_reset;
-						log (
-							text => message_error & "component " & et_schematic.to_string (tmp_component_reference)
-								& " " & et_coordinates.to_string (position => tmp_component_position),
-							console => true);
-						raise constraint_error;
-				
-			end insert_component;
-			
-
-			procedure insert_unit is 
-			-- NOTE: This is schematic related.
-			-- Inserts a unit into the unit list of a component. The text fields around a unit are placeholders.
-			-- The properties of the placeholder texts are loaded with the properties of the text fields of the units
-			-- found in the schematic. The idea behind is to store just basic text properties (type_text_basic) 
-			-- for the texts around the unit, but not its content. The content is stored with the component as a kind
-			-- of meta-data. See procedure insert_component.
-			-- Raises constraint error if unit already in unit list of component.
-			
-				use et_libraries;
-			
-			begin -- insert_unit
-				log_indentation_up;
-				
-				case tmp_component_appearance is
-
-					when sch =>
-
-						et_schematic.add_unit (
-							reference	=> tmp_component_reference,
-							unit_name	=> tmp_component_unit_name,
-							unit 		=> (
-								appearance		=> sch,
-								position		=> tmp_component_position,
-								orientation		=> tmp_component_unit_orientation,
-								mirror			=> tmp_component_unit_mirror,
-								name			=> tmp_component_unit_name,
-								timestamp		=> tmp_component_timestamp,
-								alt_repres		=> tmp_component_alt_repres,
-
-								-- placeholders:
-								-- Convert tmp_component_text_* to a placeholder while maintaining the text meaning.
-								reference		=> ( et_libraries.type_text_basic (tmp_component_text_reference)
-													with meaning => tmp_component_text_reference.meaning ),
-								value			=> ( et_libraries.type_text_basic (tmp_component_text_value)
-													with meaning => tmp_component_text_value.meaning ),
-								updated			=> ( et_libraries.type_text_basic (tmp_component_text_updated)
-													with meaning => tmp_component_text_updated.meaning ),
-								author			=> ( et_libraries.type_text_basic (tmp_component_text_author)
-													with meaning => tmp_component_text_author.meaning ),
-								commissioned	=>  ( et_libraries.type_text_basic (tmp_component_text_commissioned)
-													with meaning => tmp_component_text_commissioned.meaning )
-										   ),
-							log_threshold => log_threshold + 1);
-											   
-
-					when sch_pcb =>
-
-						et_schematic.add_unit (
-							reference	=> tmp_component_reference,
-							unit_name	=> tmp_component_unit_name,
-							unit 		=> (
-								appearance		=> sch_pcb,
-								position		=> tmp_component_position,
-								orientation		=> tmp_component_unit_orientation,
-								mirror			=> tmp_component_unit_mirror,
-								name			=> tmp_component_unit_name,
-								timestamp		=> tmp_component_timestamp,
-								alt_repres		=> tmp_component_alt_repres,
-
-								-- placeholders:
-								-- Convert tmp_component_text_* to a placeholder while maintaining the text meaning.
-								reference		=> ( et_libraries.type_text_basic (tmp_component_text_reference)
-													with meaning => tmp_component_text_reference.meaning ),
-								value			=> ( et_libraries.type_text_basic (tmp_component_text_value)
-													with meaning => tmp_component_text_value.meaning ),
-								packge			=> ( et_libraries.type_text_basic (tmp_component_text_packge)
-													with meaning => tmp_component_text_packge.meaning ),
-								datasheet		=> ( et_libraries.type_text_basic (tmp_component_text_datasheet)
-													with meaning => tmp_component_text_datasheet.meaning ),
-								purpose			=> ( et_libraries.type_text_basic (tmp_component_text_purpose)
-													with meaning => tmp_component_text_purpose.meaning ),
-								partcode		=> ( et_libraries.type_text_basic (tmp_component_text_partcode)
-													with meaning => tmp_component_text_partcode.meaning ),
-								updated			=> ( et_libraries.type_text_basic (tmp_component_text_updated)
-													with meaning => tmp_component_text_updated.meaning ),
-								author			=> ( et_libraries.type_text_basic (tmp_component_text_author)
-													with meaning => tmp_component_text_author.meaning ),
-								commissioned	=>  (et_libraries.type_text_basic (tmp_component_text_commissioned)
-													with meaning => tmp_component_text_commissioned.meaning),
-								bom				=>  (et_libraries.type_text_basic (tmp_component_text_bom)
-													with meaning => tmp_component_text_bom.meaning)
-											),
-							log_threshold => log_threshold + 1);
-
-					when others => null; -- CS
-				end case;
-
-				log_indentation_down;
-			end insert_unit;
+-- 							-- The libaray and footpint name could be tested separately.
+-- -- 							-- Test footprint contains a libaray name. example: "bel_opto:LED_S_0805"
+-- -- 							if field(line => tmp_library_footprint, position => 1)'size = 0 then
+-- -- 								write_message(
+-- -- 									file_handle => current_output,
+-- -- 									text => message_error & et_general.to_string(tmp_component_reference) & ": footprint library not specified !",
+-- -- 									console => true);
+-- -- 								raise constraint_error;
+-- -- 							end if;
+-- -- 
+-- -- 							-- Test if footprint has been associated with the component.
+-- -- 							if field(line => tmp_library_footprint, position => 2)'size = 0 then
+-- -- 								write_message(
+-- -- 									file_handle => current_output,
+-- -- 									text => message_error & et_general.to_string(tmp_component_reference) & ": footprint not specified !",
+-- -- 									console => true);
+-- -- 								raise constraint_error;
+-- -- 							end if;
+-- 
+-- 					when others => -- CS: This should never happen. A subtype of type_component_appearance could be a solution.
+-- 						null;
+-- 						raise constraint_error;
+-- 						
+-- 				end case;
+-- 
+-- 
+-- 				exception
+-- 					when constraint_error =>
+-- 						log_indentation_reset;
+-- 						log (
+-- 							text => message_error & "component " & et_schematic.to_string (tmp_component_reference)
+-- 								& " " & et_coordinates.to_string (position => tmp_component_position),
+-- 							console => true);
+-- 						raise constraint_error;
+-- 				
+-- 			end insert_component;
+-- 			
+-- 
+-- 			procedure insert_unit is 
+-- 			-- NOTE: This is schematic related.
+-- 			-- Inserts a unit into the unit list of a component. The text fields around a unit are placeholders.
+-- 			-- The properties of the placeholder texts are loaded with the properties of the text fields of the units
+-- 			-- found in the schematic. The idea behind is to store just basic text properties (type_text_basic) 
+-- 			-- for the texts around the unit, but not its content. The content is stored with the component as a kind
+-- 			-- of meta-data. See procedure insert_component.
+-- 			-- Raises constraint error if unit already in unit list of component.
+-- 			
+-- 				use et_libraries;
+-- 			
+-- 			begin -- insert_unit
+-- 				log_indentation_up;
+-- 				
+-- 				case tmp_component_appearance is
+-- 
+-- 					when sch =>
+-- 
+-- 						et_schematic.add_unit (
+-- 							reference	=> tmp_component_reference,
+-- 							unit_name	=> tmp_component_unit_name,
+-- 							unit 		=> (
+-- 								appearance		=> sch,
+-- 								position		=> tmp_component_position,
+-- 								orientation		=> tmp_component_unit_orientation,
+-- 								mirror			=> tmp_component_unit_mirror,
+-- 								name			=> tmp_component_unit_name,
+-- 								timestamp		=> tmp_component_timestamp,
+-- 								alt_repres		=> tmp_component_alt_repres,
+-- 
+-- 								-- placeholders:
+-- 								-- Convert tmp_component_text_* to a placeholder while maintaining the text meaning.
+-- 								reference		=> ( et_libraries.type_text_basic (tmp_component_text_reference)
+-- 													with meaning => tmp_component_text_reference.meaning ),
+-- 								value			=> ( et_libraries.type_text_basic (tmp_component_text_value)
+-- 													with meaning => tmp_component_text_value.meaning ),
+-- 								updated			=> ( et_libraries.type_text_basic (tmp_component_text_updated)
+-- 													with meaning => tmp_component_text_updated.meaning ),
+-- 								author			=> ( et_libraries.type_text_basic (tmp_component_text_author)
+-- 													with meaning => tmp_component_text_author.meaning ),
+-- 								commissioned	=>  ( et_libraries.type_text_basic (tmp_component_text_commissioned)
+-- 													with meaning => tmp_component_text_commissioned.meaning )
+-- 										   ),
+-- 							log_threshold => log_threshold + 1);
+-- 											   
+-- 
+-- 					when sch_pcb =>
+-- 
+-- 						et_schematic.add_unit (
+-- 							reference	=> tmp_component_reference,
+-- 							unit_name	=> tmp_component_unit_name,
+-- 							unit 		=> (
+-- 								appearance		=> sch_pcb,
+-- 								position		=> tmp_component_position,
+-- 								orientation		=> tmp_component_unit_orientation,
+-- 								mirror			=> tmp_component_unit_mirror,
+-- 								name			=> tmp_component_unit_name,
+-- 								timestamp		=> tmp_component_timestamp,
+-- 								alt_repres		=> tmp_component_alt_repres,
+-- 
+-- 								-- placeholders:
+-- 								-- Convert tmp_component_text_* to a placeholder while maintaining the text meaning.
+-- 								reference		=> ( et_libraries.type_text_basic (tmp_component_text_reference)
+-- 													with meaning => tmp_component_text_reference.meaning ),
+-- 								value			=> ( et_libraries.type_text_basic (tmp_component_text_value)
+-- 													with meaning => tmp_component_text_value.meaning ),
+-- 								packge			=> ( et_libraries.type_text_basic (tmp_component_text_packge)
+-- 													with meaning => tmp_component_text_packge.meaning ),
+-- 								datasheet		=> ( et_libraries.type_text_basic (tmp_component_text_datasheet)
+-- 													with meaning => tmp_component_text_datasheet.meaning ),
+-- 								purpose			=> ( et_libraries.type_text_basic (tmp_component_text_purpose)
+-- 													with meaning => tmp_component_text_purpose.meaning ),
+-- 								partcode		=> ( et_libraries.type_text_basic (tmp_component_text_partcode)
+-- 													with meaning => tmp_component_text_partcode.meaning ),
+-- 								updated			=> ( et_libraries.type_text_basic (tmp_component_text_updated)
+-- 													with meaning => tmp_component_text_updated.meaning ),
+-- 								author			=> ( et_libraries.type_text_basic (tmp_component_text_author)
+-- 													with meaning => tmp_component_text_author.meaning ),
+-- 								commissioned	=>  (et_libraries.type_text_basic (tmp_component_text_commissioned)
+-- 													with meaning => tmp_component_text_commissioned.meaning),
+-- 								bom				=>  (et_libraries.type_text_basic (tmp_component_text_bom)
+-- 													with meaning => tmp_component_text_bom.meaning)
+-- 											),
+-- 							log_threshold => log_threshold + 1);
+-- 
+-- 					when others => null; -- CS
+-- 				end case;
+-- 
+-- 				log_indentation_down;
+-- 			end insert_unit;
 
 	
-			procedure verify_unit_name_and_position (line : in type_fields_of_line) is
-			-- NOTE: This is schematic related.
-			-- Checks if the x/y position of the unit matches that provided in given line.
-			-- It is about the strange repetition of the unit name and its x/y coordinates in a line like
-			-- "2    6000 4000"
+-- 			procedure verify_unit_name_and_position (line : in type_fields_of_line) is
+-- 			-- Checks if the x/y position of the unit matches that provided in given line.
+-- 			-- It is about the strange repetition of the unit name and its x/y coordinates in a line like
+-- 			-- "2    6000 4000"
+-- 
+-- 				function field (line : in type_fields_of_line; position : in positive) return string renames
+-- 					et_string_processing.get_field_from_line;
+-- 		
+-- 				use et_libraries.type_unit_name;
+-- 				use et_coordinates;
+-- 			begin
+-- 				
+-- 				if et_libraries.to_string (tmp_component_unit_name) /= field (line,1) then
+-- 					raise constraint_error; -- CS: write useful message
+-- 				end if;
+-- 				
+-- 				if distance_x (tmp_component_position) /= mil_to_distance (field (line,2)) then
+-- 					log_indentation_reset;
+-- -- 					log ("position invalid. expected '" & to_string (tmp_component_position.x) 
+-- -- 						& "' found '" 
+-- -- 						& field (line,2)
+-- -- 						& "'");
+-- 					raise constraint_error; -- CS: write useful message
+-- 				end if;
+-- 
+-- 				if distance_y (tmp_component_position) /= mil_to_distance (field (line,3)) then
+-- 					raise constraint_error; -- CS: write useful message
+-- 				end if;
+-- 
+-- 			end verify_unit_name_and_position;
 
-				function field (line : in type_fields_of_line; position : in positive) return string renames
-					et_string_processing.get_field_from_line;
-		
-				use et_libraries.type_unit_name;
-				use et_coordinates;
-			begin
-				
-				if et_libraries.to_string (tmp_component_unit_name) /= field (line,1) then
-					raise constraint_error; -- CS: write useful message
-				end if;
-				
-				if distance_x (tmp_component_position) /= mil_to_distance (field (line,2)) then
-					log_indentation_reset;
--- 					log ("position invalid. expected '" & to_string (tmp_component_position.x) 
--- 						& "' found '" 
--- 						& field (line,2)
--- 						& "'");
-					raise constraint_error; -- CS: write useful message
-				end if;
-
-				if distance_y (tmp_component_position) /= mil_to_distance (field (line,3)) then
-					raise constraint_error; -- CS: write useful message
-				end if;
-
-			end verify_unit_name_and_position;
-
-			procedure build_unit_orientation_and_mirror_style (line : in type_fields_of_line) is
-			-- Builds from a line (see below) the component orientation and mirror style:
-
-				function field (line : in type_fields_of_line; position : in positive) return string renames
-					et_string_processing.get_field_from_line;
-			
-				-- Angles in Kicad are to be interpreted as: 
-				-- positive angle -> counter clock wise
-				-- negative angle -> clock wise
-
-				-- The order of operations: FIRST rotate THEN mirror
-				
-				--  1    0    0  -1  -- orientation 0,   mirror normal
-				--  0   -1   -1   0  -- orientation 90,  mirror normal
-				-- -1    0    0   1  -- orientation 180, mirror normal 
-				-- 	0    1    1   0  -- orientation -90, mirror normal  
-
-				-- 	1    0    0   1  -- orientation 0,   mirror --
-				--  0   -1    1   0  -- orientation 90,  mirror -- 
-				-- -1    0    0  -1  -- orientation 180, mirror -- 
-				--  0    1   -1   0  -- orientation -90, mirror -- 
-
-				-- -1    0    0  -1  -- orientation 0,   mirror | 	-- not used
-				--  0    1   -1   0  -- orientation 90,  mirror |	-- not used
-				--  1    0    0   1  -- orientation 180, mirror |	-- not used
-				--  1    0    0   1  -- orientation -90, mirror |	-- not used
-
-				orient_1, orient_2 : type_schematic_unit_orientation;
-				mirror_1, mirror_2 : type_schematic_unit_mirror_style;
-			
-			begin -- CS: provide useful log messages via exception handler
-
-				-- compute unit orientation
-				orient_1 := type_schematic_unit_orientation'value (field (line, 1));
-				orient_2 := type_schematic_unit_orientation'value (field (line, 2));
-				mirror_1 := type_schematic_unit_mirror_style'value (field (line, 3));
-				mirror_2 := type_schematic_unit_mirror_style'value (field (line, 4));
-
-				case orient_1 is
-					when -1 =>
-						if orient_2 = 0 then
-							tmp_component_unit_orientation := 180.0;
-
-							-- compute unit mirror style
-							if mirror_1 = 0 then
-								case mirror_2 is
-									when -1 =>
-										tmp_component_unit_mirror := x_axis;
-									when  1 =>
-										tmp_component_unit_mirror := none;
-									when others =>
-										-- invalid mirror style
-										raise constraint_error;
-								end case;
-							else
-								-- invalid mirror style
-								raise constraint_error;
-							end if;
-							
-						else
-							-- invalid orientation
-							raise constraint_error;
-						end if;
-							
-					when  0 =>
-						case orient_2 is
-							when -1 => 
-								tmp_component_unit_orientation :=  90.0;
-								
-								-- compute unit mirror style
-								case mirror_1 is
-									when -1 =>
-										if mirror_2 = 0 then
-											tmp_component_unit_mirror := none;
-										else
-											-- invalid mirror style
-											raise constraint_error;
-										end if;
-
-									when  0 =>
-										-- invalid mirror style
-										raise constraint_error;
-
-									when  1 =>
-										if mirror_2 = 0 then
-											tmp_component_unit_mirror := x_axis;
-										else
-											-- invaid mirror style
-											raise constraint_error;
-										end if;
-								end case;
-
-							when  1 =>
-								tmp_component_unit_orientation := -90.0;
-
-								-- compute unit mirror style
-								case mirror_1 is
-									when -1 =>
-										if mirror_2 = 0 then
-											tmp_component_unit_mirror := x_axis;
-										else
-											-- invalid mirror style
-											raise constraint_error;
-										end if;
-
-									when  0 =>
-										-- invaid mirror style
-										raise constraint_error;
-
-									when  1 =>
-										if mirror_2 = 0 then
-											tmp_component_unit_mirror := none;
-										else
-											-- invalid mirror style
-											raise constraint_error;
-										end if;
-								end case;
-
-							when others => 
-								-- invalid orientation
-								raise constraint_error;
-						end case;
-
-					when  1 =>
-						if orient_2 = 0 then
-							tmp_component_unit_orientation := 0.0;
-
-							-- compute unit mirror style
-							if mirror_1 = 0 then
-								case mirror_2 is
-									when -1 =>
-										tmp_component_unit_mirror := none;
-									when  1 =>
-										tmp_component_unit_mirror := x_axis;
-									when others =>
-										-- invalid mirror style
-										raise constraint_error;
-								end case;
-							else
-								-- invalid mirror style
-								raise constraint_error;
-							end if;
-							
-						else
-							-- invalid orientation
-							raise constraint_error;
-						end if;
-				end case;
-
-			end build_unit_orientation_and_mirror_style;
+-- 			procedure build_unit_orientation_and_mirror_style (line : in type_fields_of_line) is
+-- 			-- Builds from a line (see below) the component orientation and mirror style:
+-- 
+-- 				function field (line : in type_fields_of_line; position : in positive) return string renames
+-- 					et_string_processing.get_field_from_line;
+-- 			
+-- 				-- Angles in Kicad are to be interpreted as: 
+-- 				-- positive angle -> counter clock wise
+-- 				-- negative angle -> clock wise
+-- 
+-- 				-- The order of operations: FIRST rotate THEN mirror
+-- 				
+-- 				--  1    0    0  -1  -- orientation 0,   mirror normal
+-- 				--  0   -1   -1   0  -- orientation 90,  mirror normal
+-- 				-- -1    0    0   1  -- orientation 180, mirror normal 
+-- 				-- 	0    1    1   0  -- orientation -90, mirror normal  
+-- 
+-- 				-- 	1    0    0   1  -- orientation 0,   mirror --
+-- 				--  0   -1    1   0  -- orientation 90,  mirror -- 
+-- 				-- -1    0    0  -1  -- orientation 180, mirror -- 
+-- 				--  0    1   -1   0  -- orientation -90, mirror -- 
+-- 
+-- 				-- -1    0    0  -1  -- orientation 0,   mirror | 	-- not used
+-- 				--  0    1   -1   0  -- orientation 90,  mirror |	-- not used
+-- 				--  1    0    0   1  -- orientation 180, mirror |	-- not used
+-- 				--  1    0    0   1  -- orientation -90, mirror |	-- not used
+-- 
+-- 				orient_1, orient_2 : type_schematic_unit_orientation;
+-- 				mirror_1, mirror_2 : type_schematic_unit_mirror_style;
+-- 			
+-- 			begin -- CS: provide useful log messages via exception handler
+-- 
+-- 				-- compute unit orientation
+-- 				orient_1 := type_schematic_unit_orientation'value (field (line, 1));
+-- 				orient_2 := type_schematic_unit_orientation'value (field (line, 2));
+-- 				mirror_1 := type_schematic_unit_mirror_style'value (field (line, 3));
+-- 				mirror_2 := type_schematic_unit_mirror_style'value (field (line, 4));
+-- 
+-- 				case orient_1 is
+-- 					when -1 =>
+-- 						if orient_2 = 0 then
+-- 							tmp_component_unit_orientation := 180.0;
+-- 
+-- 							-- compute unit mirror style
+-- 							if mirror_1 = 0 then
+-- 								case mirror_2 is
+-- 									when -1 =>
+-- 										tmp_component_unit_mirror := x_axis;
+-- 									when  1 =>
+-- 										tmp_component_unit_mirror := none;
+-- 									when others =>
+-- 										-- invalid mirror style
+-- 										raise constraint_error;
+-- 								end case;
+-- 							else
+-- 								-- invalid mirror style
+-- 								raise constraint_error;
+-- 							end if;
+-- 							
+-- 						else
+-- 							-- invalid orientation
+-- 							raise constraint_error;
+-- 						end if;
+-- 							
+-- 					when  0 =>
+-- 						case orient_2 is
+-- 							when -1 => 
+-- 								tmp_component_unit_orientation :=  90.0;
+-- 								
+-- 								-- compute unit mirror style
+-- 								case mirror_1 is
+-- 									when -1 =>
+-- 										if mirror_2 = 0 then
+-- 											tmp_component_unit_mirror := none;
+-- 										else
+-- 											-- invalid mirror style
+-- 											raise constraint_error;
+-- 										end if;
+-- 
+-- 									when  0 =>
+-- 										-- invalid mirror style
+-- 										raise constraint_error;
+-- 
+-- 									when  1 =>
+-- 										if mirror_2 = 0 then
+-- 											tmp_component_unit_mirror := x_axis;
+-- 										else
+-- 											-- invaid mirror style
+-- 											raise constraint_error;
+-- 										end if;
+-- 								end case;
+-- 
+-- 							when  1 =>
+-- 								tmp_component_unit_orientation := -90.0;
+-- 
+-- 								-- compute unit mirror style
+-- 								case mirror_1 is
+-- 									when -1 =>
+-- 										if mirror_2 = 0 then
+-- 											tmp_component_unit_mirror := x_axis;
+-- 										else
+-- 											-- invalid mirror style
+-- 											raise constraint_error;
+-- 										end if;
+-- 
+-- 									when  0 =>
+-- 										-- invaid mirror style
+-- 										raise constraint_error;
+-- 
+-- 									when  1 =>
+-- 										if mirror_2 = 0 then
+-- 											tmp_component_unit_mirror := none;
+-- 										else
+-- 											-- invalid mirror style
+-- 											raise constraint_error;
+-- 										end if;
+-- 								end case;
+-- 
+-- 							when others => 
+-- 								-- invalid orientation
+-- 								raise constraint_error;
+-- 						end case;
+-- 
+-- 					when  1 =>
+-- 						if orient_2 = 0 then
+-- 							tmp_component_unit_orientation := 0.0;
+-- 
+-- 							-- compute unit mirror style
+-- 							if mirror_1 = 0 then
+-- 								case mirror_2 is
+-- 									when -1 =>
+-- 										tmp_component_unit_mirror := none;
+-- 									when  1 =>
+-- 										tmp_component_unit_mirror := x_axis;
+-- 									when others =>
+-- 										-- invalid mirror style
+-- 										raise constraint_error;
+-- 								end case;
+-- 							else
+-- 								-- invalid mirror style
+-- 								raise constraint_error;
+-- 							end if;
+-- 							
+-- 						else
+-- 							-- invalid orientation
+-- 							raise constraint_error;
+-- 						end if;
+-- 				end case;
+-- 
+-- 			end build_unit_orientation_and_mirror_style;
 			
 			use et_coordinates;
 			use et_libraries;
@@ -4641,7 +4640,6 @@ package body et_kicad is
 			-- Some entries are unit specific.
 			-- The component section looks like this example:
 			
-			-- $Comp
 			-- L 74LS00 U1		-- component specific
 			-- U 4 1 5965E676	-- unit specific
 			-- P 4100 4000		-- unit specific
@@ -4649,7 +4647,7 @@ package body et_kicad is
 			-- F 1 "74LS00" H 4100 3900 50  0000 C CNN	
 			-- F 2 "bel_ic:S_SO14" H 4100 4000 50  0001 C CNN
 			-- F 3 "" H 4100 4000 50  0001 C CNN
-			-- 	4    4100 4000		-- CS: same as x/y pos ?
+			-- 	4    4100 4000		-- same as x/y pos
 
 			--  1    0    0  -1  -- orientation 0,   mirror normal
 			--  0   -1   -1   0  -- orientation 90,  mirror normal
@@ -4665,8 +4663,20 @@ package body et_kicad is
 			--  0    1   -1   0  -- orientation 90,  mirror |
 			--  1    0    0   1  -- orientation 180, mirror |
 			--  1    0    0   1  -- orientation -90, mirror |
-			-- $EndComp
 
+				use et_libraries;
+				use et_string_processing;
+
+				reference					: type_component_reference;			
+				appearance					: type_component_appearance := et_libraries.sch; -- CS: why this default ?
+				generic_name_in_lbr			: type_component_name.bounded_string;
+				unit_name					: type_unit_name.bounded_string;			
+				position					: et_coordinates.type_coordinates;
+				orientation					: et_coordinates.type_angle;
+				mirror						: type_mirror;
+				timestamp					: type_timestamp;
+				alternative_representation	: et_schematic.type_alternative_representation;
+			
 				-- These are the "field found" flags. They signal if a particular text field has been found.
 				-- They are cleared by procdure "init_temp_variables" once a new compoenent is entered.
 				-- They are evaluated when a component section is left.
@@ -4681,6 +4691,17 @@ package body et_kicad is
 				text_partcode_found		: boolean := false;
 				text_bom_found			: boolean := false;
 
+				text_reference		: type_text (meaning => et_libraries.reference);
+				text_value			: type_text (meaning => value);
+				text_commissioned 	: type_text (meaning => commissioned);
+				text_updated		: type_text (meaning => updated);
+				text_author			: type_text (meaning => author);
+				text_package		: type_text (meaning => packge); -- like "SOT23"
+				text_datasheet		: type_text (meaning => datasheet); -- might be useful for some special components
+				text_purpose		: type_text (meaning => purpose); -- to be filled in schematic later by the user
+				text_partcode		: type_text (meaning => partcode); -- like "R_PAC_S_0805_VAL_"
+				text_bom			: type_text (meaning => bom);
+			
 				function to_text return et_libraries.type_text is
 				-- Converts a field like "F 1 "green" H 2700 2750 50  0000 C CNN" to a type_text
 					function field (line : in type_fields_of_line; position : in positive) return string renames get_field_from_line;
@@ -4726,16 +4747,15 @@ package body et_kicad is
 				-- assemble and insert the component into the component list of the module.
 				-- This can be regarded as a kind of pre-check.
 				-- CS: check text size and width
-					use et_coordinates;
 				
 					procedure missing_field (m : in et_libraries.type_text_meaning) is 
 					begin
 						log_indentation_reset;
 						log (
 							text => message_error 
-								& "component " & to_string (tmp_component_reference) 
+								& "component " & to_string (reference) 
 								& latin_1.space
-								& to_string (position => tmp_component_position)
+								& to_string (position => position)
 								& latin_1.lf
 								& "text field '" & et_libraries.to_string (m) & "' missing !",
 							console => true);
@@ -4745,13 +4765,12 @@ package body et_kicad is
 
 					commissioned, updated : et_string_processing.type_date;
 
-					use et_libraries;
 				begin -- check_text_fields
 					log_indentation_up;
 
 					-- write precheck preamble
 					log ("component " 
-						& to_string(tmp_component_reference) & " prechecking fields ...", level => log_threshold);
+						& to_string(reference) & " prechecking fields ...", level => log_threshold);
 
 		-- 			log_indentation_up;
 		-- 			log ("precheck", log_threshold + 1);
@@ -4762,19 +4781,19 @@ package body et_kicad is
 					if not text_reference_found then
 						missing_field (et_libraries.reference);
 					else
-						-- verify tmp_component_text_reference equals tmp_component_reference. @kicad: why this redundance ?
+						-- verify text_reference equals reference. @kicad: why this redundance ?
 						-- KiCad stores redundant information on the component reference as in this example;
 
 						-- $Comp
-						-- L 74LS00 IC1 <- tmp_component_reference
+						-- L 74LS00 IC1 <- reference
 						-- U 1 1 59969711
 						-- P 4100 4000
-						-- F 0 "IC1" H 4100 4050 50  0000 C BIB <- tmp_component_text_reference
+						-- F 0 "IC1" H 4100 4050 50  0000 C BIB <- text_reference
 						
-						if et_schematic.to_string (tmp_component_reference) /= et_libraries.content (tmp_component_text_reference) then
+						if et_schematic.to_string (reference) /= et_libraries.content (text_reference) then
 							log_indentation_reset;
 							log (message_error & " reference mismatch !");
-							log (et_schematic.to_string (tmp_component_reference) & " vs " & et_libraries.content(tmp_component_text_reference));
+							log (et_schematic.to_string (reference) & " vs " & et_libraries.content(text_reference));
 							raise constraint_error;
 						end if;
 
@@ -4789,8 +4808,8 @@ package body et_kicad is
 						-- depending on the component reference (like R12 or C9) the value must meet certain conventions:
 						if not et_libraries.component_value_valid (
 							value => et_libraries.type_component_value.to_bounded_string (
-								et_libraries.content (tmp_component_text_value)), -- the content of the value field like 200R or 10uF
-							reference => tmp_component_reference) -- the component reference such as R4 or IC34
+								et_libraries.content (text_value)), -- the content of the value field like 200R or 10uF
+							reference => reference) -- the component reference such as R4 or IC34
 							then raise constraint_error;
 						end if;
 					end if;
@@ -4802,7 +4821,7 @@ package body et_kicad is
 					else
 						-- The commissioned time must be checked for plausibility and syntax.
 						-- The string length is indirecty checked on converting the field content to derived type_date.
-						commissioned := et_string_processing.type_date (et_libraries.content (tmp_component_text_commissioned));
+						commissioned := et_string_processing.type_date (et_libraries.content (text_commissioned));
 						if not et_string_processing.date_valid (commissioned) 
 							then raise constraint_error;
 						end if;
@@ -4815,7 +4834,7 @@ package body et_kicad is
 					else
 						-- The update time must be checked for plausibility and syntax.
 						-- The string length is indirecty checked on converting the field content to derived type_date.					
-						updated := et_string_processing.type_date (et_libraries.content (tmp_component_text_updated));
+						updated := et_string_processing.type_date (et_libraries.content (text_updated));
 						if not et_string_processing.date_valid (updated) 
 							then raise constraint_error;
 						end if;
@@ -4831,13 +4850,13 @@ package body et_kicad is
 						missing_field (et_libraries.author);
 					else
 						null;
-						-- CS: check content of tmp_component_text_author
+						-- CS: check content of text_author
 					end if;
 
 					-- If we are checking fields of a real component there are more 
 					-- fields to be checked. If it is about a virtual component, those 
 					-- fields are ignored and thus NOT checked:
-					case tmp_component_appearance is
+					case appearance is
 						when sch_pcb =>
 								
 							-- package
@@ -4846,7 +4865,7 @@ package body et_kicad is
 								missing_field (et_libraries.packge);
 							else
 								null;
-								-- CS: check content of tmp_component_text_packge
+								-- CS: check content of text_package
 							end if;
 
 							-- datasheet
@@ -4855,7 +4874,7 @@ package body et_kicad is
 								missing_field (et_libraries.datasheet);
 							else
 								null;
-								-- CS: check content of tmp_component_text_datasheet
+								-- CS: check content of text_datasheet
 							end if;
 
 							-- partcode
@@ -4864,7 +4883,7 @@ package body et_kicad is
 								missing_field (et_libraries.partcode);
 							else
 								null;
-								-- CS: check content of tmp_component_text_partcode
+								-- CS: check content of text_partcode
 							end if;
 							
 							-- purpose
@@ -4882,7 +4901,7 @@ package body et_kicad is
 								missing_field (et_libraries.bom);
 							else
 								null;
-								-- CS: check content of tmp_component_text_bom
+								-- CS: check content of text_bom
 							end if;
 
 							
@@ -4902,45 +4921,454 @@ package body et_kicad is
 						when constraint_error =>
 							log_indentation_reset;
 							log (
-								text => message_error & "invalid field in component " & et_schematic.to_string (tmp_component_reference)
-									& " at " & to_string (position => tmp_component_position),
+								text => message_error & "invalid field in component " & et_schematic.to_string (reference)
+									& " at " & to_string (position => position),
 								console => true);
 							-- CS: evaluate prog position and provided more detailled output
 							raise constraint_error;
 
 				end check_text_fields;
 
+
+				procedure insert_component is
+				-- Inserts the component in the component list of the module (indicated by module_cursor).
+				-- Components may occur multiple times, which implies they are
+				-- split into units (EAGLE refers to them as "gates").
+				-- Only the first occurence of the component leads to appending it to the component list of the module.
+				
+				-- The component to be inserted gets assembled from the temporarily variables assigned until now.
+				-- Tests if a footprint has been associated with the component.
+
+					-- This is required as scratch variable when breaking down the content of the footprint content.
+					-- Kicad saves library and footprint name in a string like "bel_opto:LED_S_0805" separated by colon.
+					-- When a real component (appearance sch_pcb) is inserted, this variable is loaded with
+					-- the library name and the footprint.
+					tmp_library_footprint : et_string_processing.type_fields_of_line;
+
+					function field (
+						line		: in et_string_processing.type_fields_of_line;
+						position	: in positive) return string renames et_string_processing.get_field_from_line;
+
+				begin -- insert_component
+					
+					-- The compoenent is inserted into the components list of the module according to its appearance.
+					-- If the component has already been inserted, it will not be inserted again.
+					
+					case appearance is
+						
+						when sch => -- we have a line like "L P3V3 #PWR07"
+					
+							et_schematic.add_component (
+								reference => reference,
+								component => (
+									appearance		=> sch,
+
+									-- Whether the component is a "power flag" can be reasoned from its reference:
+									power_flag		=> to_power_flag (reference),
+									
+									name_in_library	=> generic_name_in_lbr,
+									value 			=> type_component_value.to_bounded_string (content (text_value)),
+									commissioned 	=> type_date (et_libraries.content (text_commissioned)),
+									updated 		=> type_date (et_libraries.content (text_updated)),
+									author 			=> type_person_name.to_bounded_string (content (text_author)),
+
+									-- At this stage we do not know if and how many units there are. So the unit list is empty.
+									units 			=> type_units.empty_map),
+								log_threshold => log_threshold +1);
+
+						when sch_pcb => -- we have a line like "L 74LS00 U1"
+
+							-- break down the footprint content like "bel_opto:LED_S_0805".
+							tmp_library_footprint := read_line (
+									line => content (text_package),
+									ifs => latin_1.colon);
+
+							et_schematic.add_component ( 
+								reference => reference,
+								component => (
+									appearance		=> sch_pcb,
+									name_in_library	=> generic_name_in_lbr,
+									value			=> type_component_value.to_bounded_string (content (text_value)),
+									commissioned	=> type_date (content (text_commissioned)),
+									updated			=> type_date (content (text_updated)),
+									author			=> type_person_name.to_bounded_string (content (text_author)),
+
+									-- properties of a real component (appears in schematic and layout);
+									datasheet		=> type_component_datasheet.to_bounded_string (content (text_datasheet)),
+									partcode		=> type_component_partcode.to_bounded_string (content (text_partcode)),
+									purpose			=> type_component_purpose.to_bounded_string (content (text_purpose)),
+									bom				=> type_bom'value (content (text_bom)),
+									-- Assemble the package variant.
+									-- NOTE: There is no way to identifiy the name of the package variant like TL084D or TL084N.
+									-- For this reason we leave the variant name empty.
+									variant =>
+										( 
+										variant => (
+
+											-- get the package name from the footprint field 
+											packge => 
+												type_component_package_name.to_bounded_string(
+													field (line => tmp_library_footprint, position => 2)),
+
+											-- get the library file name from the footpint field
+											library => type_full_library_name.to_bounded_string(
+													field (line => tmp_library_footprint, position => 1))),
+
+										-- The variant name is left empty.
+										name => type_component_variant_name.to_bounded_string("")
+										),
+
+									-- At this stage we do not know if and how many units there are. So the unit list is empty for the moment.
+									units => type_units.empty_map),
+
+								log_threshold => log_threshold +1);
+
+								
+								-- Test if footprint has been associated with the component.
+								if content (text_package)'size = 0 then
+									log_indentation_reset;
+									log (
+										text => message_error & "component " & to_string (reference) 
+											& " footprint not specified !",
+										console => true);
+									raise constraint_error;
+								end if;
+
+								-- The libaray and footpint name could be tested separately.
+	-- 							-- Test footprint contains a libaray name. example: "bel_opto:LED_S_0805"
+	-- 							if field(line => tmp_library_footprint, position => 1)'size = 0 then
+	-- 								write_message(
+	-- 									file_handle => current_output,
+	-- 									text => message_error & et_general.to_string(reference) & ": footprint library not specified !",
+	-- 									console => true);
+	-- 								raise constraint_error;
+	-- 							end if;
+	-- 
+	-- 							-- Test if footprint has been associated with the component.
+	-- 							if field(line => tmp_library_footprint, position => 2)'size = 0 then
+	-- 								write_message(
+	-- 									file_handle => current_output,
+	-- 									text => message_error & et_general.to_string(reference) & ": footprint not specified !",
+	-- 									console => true);
+	-- 								raise constraint_error;
+	-- 							end if;
+
+						when others => -- CS: This should never happen. A subtype of type_component_appearance could be a solution.
+							null;
+							raise constraint_error;
+							
+					end case;
+
+
+					exception
+						when constraint_error =>
+							log_indentation_reset;
+							log (
+								text => message_error & "component " & et_schematic.to_string (reference)
+									& " " & et_coordinates.to_string (position => position),
+								console => true);
+							raise constraint_error;
+					
+				end insert_component;
+				
+
+				procedure insert_unit is 
+				-- Inserts a unit into the unit list of a component. The text fields around a unit are placeholders.
+				-- The properties of the placeholder texts are loaded with the properties of the text fields of the units
+				-- found in the schematic. The idea behind is to store just basic text properties (type_text_basic) 
+				-- for the texts around the unit, but not its content. The content is stored with the component as a kind
+				-- of meta-data. See procedure insert_component.
+				-- Raises constraint error if unit already in unit list of component.
+				begin -- insert_unit
+					log_indentation_up;
+					
+					case appearance is
+
+						when sch =>
+
+							et_schematic.add_unit (
+								reference	=> reference,
+								unit_name	=> unit_name,
+								unit 		=> (
+									appearance		=> sch,
+									position		=> position,
+									orientation		=> orientation,
+									mirror			=> mirror,
+									name			=> unit_name,
+									timestamp		=> timestamp,
+									alt_repres		=> alternative_representation,
+
+									-- placeholders:
+									-- Convert tmp_component_text_* to a placeholder while maintaining the text meaning.
+									reference		=> (type_text_basic (text_reference)
+														with meaning => text_reference.meaning),
+									value			=> (type_text_basic (text_value)
+														with meaning => text_value.meaning),
+									updated			=> (type_text_basic (text_updated)
+														with meaning => text_updated.meaning),
+									author			=> (type_text_basic (text_author)
+														with meaning => text_author.meaning),
+									commissioned	=> (type_text_basic (text_commissioned)
+														with meaning => text_commissioned.meaning)),
+								log_threshold => log_threshold + 1);
+												
+
+						when sch_pcb =>
+
+							et_schematic.add_unit (
+								reference	=> reference,
+								unit_name	=> unit_name,
+								unit 		=> (
+									appearance		=> sch_pcb,
+									position		=> position,
+									orientation		=> orientation,
+									mirror			=> mirror,
+									name			=> unit_name,
+									timestamp		=> timestamp,
+									alt_repres		=> alternative_representation,
+
+									-- placeholders:
+									-- Convert tmp_component_text_* to a placeholder while maintaining the text meaning.
+									reference		=> (type_text_basic (text_reference)
+														with meaning => text_reference.meaning),
+									value			=> (type_text_basic (text_value)
+														with meaning => text_value.meaning),
+									packge			=> (type_text_basic (text_package)
+														with meaning => text_package.meaning),
+									datasheet		=> (type_text_basic (text_datasheet)
+														with meaning => text_datasheet.meaning),
+									purpose			=> (type_text_basic (text_purpose)
+														with meaning => text_purpose.meaning),
+									partcode		=> (type_text_basic (text_partcode)
+														with meaning => text_partcode.meaning),
+									updated			=> (type_text_basic (text_updated)
+														with meaning => text_updated.meaning),
+									author			=> (type_text_basic (text_author)
+														with meaning => text_author.meaning),
+									commissioned	=> (type_text_basic (text_commissioned)
+														with meaning => text_commissioned.meaning),
+									bom				=> (type_text_basic (text_bom)
+														with meaning => text_bom.meaning)),
+								log_threshold => log_threshold + 1);
+
+						when others => null; -- CS
+					end case;
+
+					log_indentation_down;
+				end insert_unit;
+
+				procedure verify_unit_name_and_position (line : in type_fields_of_line) is
+				-- Checks if the x/y position of the unit matches that provided in given line.
+				-- It is about the strange repetition of the unit name and its x/y coordinates in a line like
+				-- "2    6000 4000"
+					function field (line : in type_fields_of_line; position : in positive) return string renames
+						et_string_processing.get_field_from_line;
+			
+				begin -- verify_unit_name_and_position
+					
+					if et_libraries.to_string (unit_name) /= field (line,1) then
+						raise constraint_error; -- CS: write useful message
+					end if;
+					
+					if distance_x (position) /= mil_to_distance (field (line,2)) then
+						log_indentation_reset;
+	-- 					log ("position invalid. expected '" & to_string (position.x) 
+	-- 						& "' found '" 
+	-- 						& field (line,2)
+	-- 						& "'");
+						raise constraint_error; -- CS: write useful message
+					end if;
+
+					if distance_y (position) /= mil_to_distance (field (line,3)) then
+						raise constraint_error; -- CS: write useful message
+					end if;
+
+				end verify_unit_name_and_position;
+
+
+				procedure build_unit_orientation_and_mirror_style (line : in type_fields_of_line) is
+				-- Builds from a line (see below) the component orientation and mirror style:
+
+					function field (line : in type_fields_of_line; position : in positive) return string renames
+						et_string_processing.get_field_from_line;
+				
+					-- Angles in Kicad are to be interpreted as: 
+					-- positive angle -> counter clock wise
+					-- negative angle -> clock wise
+
+					-- The order of operations: FIRST rotate THEN mirror
+					
+					--  1    0    0  -1  -- orientation 0,   mirror normal
+					--  0   -1   -1   0  -- orientation 90,  mirror normal
+					-- -1    0    0   1  -- orientation 180, mirror normal 
+					-- 	0    1    1   0  -- orientation -90, mirror normal  
+
+					-- 	1    0    0   1  -- orientation 0,   mirror --
+					--  0   -1    1   0  -- orientation 90,  mirror -- 
+					-- -1    0    0  -1  -- orientation 180, mirror -- 
+					--  0    1   -1   0  -- orientation -90, mirror -- 
+
+					-- -1    0    0  -1  -- orientation 0,   mirror | 	-- not used
+					--  0    1   -1   0  -- orientation 90,  mirror |	-- not used
+					--  1    0    0   1  -- orientation 180, mirror |	-- not used
+					--  1    0    0   1  -- orientation -90, mirror |	-- not used
+
+					orient_1, orient_2 : type_schematic_unit_orientation;
+					mirror_1, mirror_2 : type_schematic_unit_mirror_style;
+				
+				begin -- CS: provide useful log messages via exception handler
+
+					-- compute unit orientation
+					orient_1 := type_schematic_unit_orientation'value (field (line, 1));
+					orient_2 := type_schematic_unit_orientation'value (field (line, 2));
+					mirror_1 := type_schematic_unit_mirror_style'value (field (line, 3));
+					mirror_2 := type_schematic_unit_mirror_style'value (field (line, 4));
+
+					case orient_1 is
+						when -1 =>
+							if orient_2 = 0 then
+								orientation := 180.0;
+
+								-- compute unit mirror style
+								if mirror_1 = 0 then
+									case mirror_2 is
+										when -1 =>
+											mirror := x_axis;
+										when  1 =>
+											mirror := none;
+										when others =>
+											-- invalid mirror style
+											raise constraint_error;
+									end case;
+								else
+									-- invalid mirror style
+									raise constraint_error;
+								end if;
+								
+							else
+								-- invalid orientation
+								raise constraint_error;
+							end if;
+								
+						when  0 =>
+							case orient_2 is
+								when -1 => 
+									orientation :=  90.0;
+									
+									-- compute unit mirror style
+									case mirror_1 is
+										when -1 =>
+											if mirror_2 = 0 then
+												mirror := none;
+											else
+												-- invalid mirror style
+												raise constraint_error;
+											end if;
+
+										when  0 =>
+											-- invalid mirror style
+											raise constraint_error;
+
+										when  1 =>
+											if mirror_2 = 0 then
+												mirror := x_axis;
+											else
+												-- invaid mirror style
+												raise constraint_error;
+											end if;
+									end case;
+
+								when  1 =>
+									orientation := -90.0;
+
+									-- compute unit mirror style
+									case mirror_1 is
+										when -1 =>
+											if mirror_2 = 0 then
+												mirror := x_axis;
+											else
+												-- invalid mirror style
+												raise constraint_error;
+											end if;
+
+										when  0 =>
+											-- invaid mirror style
+											raise constraint_error;
+
+										when  1 =>
+											if mirror_2 = 0 then
+												mirror := none;
+											else
+												-- invalid mirror style
+												raise constraint_error;
+											end if;
+									end case;
+
+								when others => 
+									-- invalid orientation
+									raise constraint_error;
+							end case;
+
+						when  1 =>
+							if orient_2 = 0 then
+								orientation := 0.0;
+
+								-- compute unit mirror style
+								if mirror_1 = 0 then
+									case mirror_2 is
+										when -1 =>
+											mirror := none;
+										when  1 =>
+											mirror := x_axis;
+										when others =>
+											-- invalid mirror style
+											raise constraint_error;
+									end case;
+								else
+									-- invalid mirror style
+									raise constraint_error;
+								end if;
+								
+							else
+								-- invalid orientation
+								raise constraint_error;
+							end if;
+					end case;
+
+				end build_unit_orientation_and_mirror_style;
+
+				
 				use type_lines;
 			
 			begin -- make_component
-				tmp_component_text_packge.content := type_text_content.to_bounded_string("");
+				text_package.content := type_text_content.to_bounded_string(""); -- CS: really required ?
 					-- CS: init text properties ?
 					-- CS: init remaining tmp vars ?
 				
 				line_cursor := type_lines.first (lines);
 				while line_cursor /= type_lines.no_element loop
 
-					--log ("component line: " & to_string (et_kicad.line));
+					log ("component line: " & to_string (et_kicad.line), log_threshold + 2);
 
 					-- Read component name and annotation from a line like "L NetChanger N1". 
 					-- From this entry we reason the compoenent appearance.
 					if field (et_kicad.line,1) = schematic_component_identifier_name then -- "L"
 						
-						tmp_component_name_in_lib := type_component_name.to_bounded_string (field (et_kicad.line,2)); -- "SN74LS00"
-						tmp_component_appearance := to_appearance (line => et_kicad.line, schematic => true);
+						generic_name_in_lbr := type_component_name.to_bounded_string (field (et_kicad.line,2)); -- "SN74LS00"
+						appearance := to_appearance (line => et_kicad.line, schematic => true);
 						
-						case tmp_component_appearance is
+						case appearance is
 						
 							when et_libraries.sch => 
 								-- we have a line like "L P3V3 #PWR07"
-								tmp_component_reference := to_component_reference (
+								reference := to_component_reference (
 									text_in => field (et_kicad.line,3),
 									allow_special_character_in_prefix => true);
 
 							when et_libraries.sch_pcb =>
 
 								-- we have a line like "L 74LS00 U1"
-								tmp_component_reference := to_component_reference(
+								reference := to_component_reference(
 									text_in => field (et_kicad.line,3),
 									allow_special_character_in_prefix => false);
 
@@ -4958,26 +5386,26 @@ package body et_kicad is
 
 						-- KiCad uses positive numbers to identifiy units. But in general a unit name can
 						-- be a string as well. Therefore we handle the unit id as string.
-						tmp_component_unit_name := type_unit_name.to_bounded_string (
+						unit_name := type_unit_name.to_bounded_string (
 							field (et_kicad.line,2)); -- the unit id
 
 						-- Read DeMorgan flag:
-						tmp_component_alt_repres := to_alternative_representation (line => et_kicad.line, schematic => true);
+						alternative_representation := to_alternative_representation (line => et_kicad.line, schematic => true);
 
 						-- Read and check the timestamp:
-						tmp_component_timestamp := type_timestamp (field (et_kicad.line,4));
-						et_string_processing.check_timestamp (tmp_component_timestamp);
+						timestamp := type_timestamp (field (et_kicad.line,4));
+						et_string_processing.check_timestamp (timestamp);
 
 					-- Read unit coordinates from a line like "P 3200 4500".
 					elsif field (et_kicad.line,1) = schematic_component_identifier_coord then -- "P"
 					
-						set_x (tmp_component_position, mil_to_distance (field (et_kicad.line,2))); -- "3200"
-						set_y (tmp_component_position, mil_to_distance (field (et_kicad.line,3))); -- "4500"
+						set_x (position, mil_to_distance (field (et_kicad.line,2))); -- "3200"
+						set_y (position, mil_to_distance (field (et_kicad.line,3))); -- "4500"
 
 						-- The unit coordinates is more than just x/y :
 						-- unit_scratch.coordinates.main_module := module.name;
-						set_path (tmp_component_position, path_to_submodule);
-						set_sheet (tmp_component_position, sheet_number_current);
+						set_path (position, path_to_submodule);
+						set_sheet (position, sheet_number_current);
 
 					-- Skip unit path entry in lines like "AR Path="/59EF082F" Ref="N23"  Part="1"
 					elsif field (et_kicad.line,1) = schematic_component_identifier_path then -- "AR"
@@ -4998,43 +5426,43 @@ package body et_kicad is
 						case type_component_field_id'value (field (et_kicad.line,2)) is
 							when component_field_reference =>
 								text_reference_found	:= true;
-								tmp_component_text_reference 		:= to_text;
+								text_reference 			:= to_text;
 
 							when component_field_value =>
 								text_value_found		:= true;
-								tmp_component_text_value 			:= to_text;
+								text_value 				:= to_text;
 								
 							when component_field_footprint =>
 								text_packge_found		:= true;
-								tmp_component_text_packge 			:= to_text;
+								text_package 			:= to_text;
 								
 							when component_field_datasheet =>
 								text_datasheet_found	:= true;
-								tmp_component_text_datasheet 		:= to_text;
+								text_datasheet 			:= to_text;
 								
 							when component_field_function =>
 								text_purpose_found	:= true;
-								tmp_component_text_purpose 			:= to_text;
+								text_purpose 			:= to_text;
 								
 							when component_field_partcode =>
-								text_partcode_found	:= true;
-								tmp_component_text_partcode 		:= to_text;
+								text_partcode_found		:= true;
+								text_partcode 			:= to_text;
 								
 							when component_field_commissioned =>
 								text_commissioned_found	:= true;
-								tmp_component_text_commissioned 		:= to_text;
+								text_commissioned 		:= to_text;
 								
 							when component_field_updated =>
 								text_updated_found	:= true;
-								tmp_component_text_updated 			:= to_text;
+								text_updated 			:= to_text;
 								
 							when component_field_author =>
 								text_author_found		:= true;
-								tmp_component_text_author 			:= to_text;
+								text_author 			:= to_text;
 
 							when component_field_bom =>
-								text_bom_found		:= true;
-								tmp_component_text_bom				:= to_text;
+								text_bom_found			:= true;
+								text_bom				:= to_text;
 
 								
 							when others => null; -- CS: other fields are ignored. warning ?
