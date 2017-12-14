@@ -606,7 +606,7 @@ package body et_schematic is
 		-- CS: usage of intermediate variables for x/Y of start/end points could improve performance
 	begin
 		log_indentation_up;
-		log ("calculating the point nearest to drawing origin ...", log_threshold);
+		log ("calculating the point nearest to drawing origin ...", log_threshold + 1);
 
 		-- init point_1 as the farest possible point from drawing origin
 		set_x (point_1, type_distance_xy'last);
@@ -620,7 +620,7 @@ package body et_schematic is
 			-- if closer to orign than point_1 keep start point
 			point_2	:= type_2d_point (element (segment).coordinates_start);
 			if distance (point_2, zero) < distance (point_1, zero) then
-				log (" start", log_threshold + 1);
+				log (" start", log_threshold + 2);
 				point_1 := point_2;
 			end if;
 
@@ -628,7 +628,7 @@ package body et_schematic is
 			-- if closer to orign than point_1 keep end point
 			point_2	:= type_2d_point (element (segment).coordinates_end);
 			if distance (point_2, zero) < distance (point_1, zero) then
-				log (" end", log_threshold + 1);
+				log (" end", log_threshold + 2);
 				point_1 := point_2;
 			end if;
 			
@@ -2323,7 +2323,9 @@ package body et_schematic is
 		end hierarchic_net;
 
 
-		procedure collect_hierarchic_strands (net : in type_hierachic_net) is
+		procedure collect_hierarchic_strands (
+			net				: in type_hierachic_net;
+			log_threshold	: in et_string_processing.type_log_level) is
 		-- Locates hierarchic strands as specified by given hierarchic net.
 		-- "net" provides the "available" flag. If false, this procedure does nothing.
 		-- "net" provides the path to the submodule to search in.
@@ -2367,13 +2369,13 @@ package body et_schematic is
 					-- Append all hierarchic strands (if any) to the net being built
 					-- (see top level code of procedure process_hierarchic_nets. 
 					-- The net being built is indicated by cursor "net").
-					collect_hierarchic_strands (h_net);
+					collect_hierarchic_strands (h_net, log_threshold);
 
 					-- If one hierarchic net has been detected, there could be more. 
 					-- This loop goes on until no more hierarchic nets are available.
 					while h_net.available loop
 						h_net := hierarchic_net (segment);
-						collect_hierarchic_strands (h_net);
+						collect_hierarchic_strands (h_net, log_threshold);
 					end loop;
 					
 					next (segment);
@@ -2472,13 +2474,13 @@ package body et_schematic is
 					-- Append all hierarchic strands (if any) to the net being built
 					-- (see top level code of procedure process_hierarchic_nets. 
 					-- The net being built is indicated by cursor "net").
-					collect_hierarchic_strands (h_net);
+					collect_hierarchic_strands (h_net, log_threshold);
 
 					-- If one hierarchic net has been detected, there could be more. 
 					-- This loop goes on until no more hierarchic nets are available.
 					while h_net.available loop
 						h_net := hierarchic_net (segment);
-						collect_hierarchic_strands (h_net);
+						collect_hierarchic_strands (h_net, log_threshold);
 					end loop;
 					
 					next (segment);

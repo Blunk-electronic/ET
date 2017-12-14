@@ -136,13 +136,8 @@ package et_kicad is
     schematic_header_keyword_version       : constant string (1..7) := "Version";
     
     schematic_library                      : constant string (1..4) := "LIBS";
-    
     schematic_eelayer                      : constant string (1..7) := "EELAYER";
     schematic_eelayer_end                  : constant string (1..3) := "END";   
-
-
-
-
 
 	schematic_description_header           : constant string (1..6) := "$Descr";
 	schematic_description_footer           : constant string (1..9) := "$EndDescr";
@@ -291,32 +286,6 @@ package et_kicad is
 		R);	-- on the right edge of the box
 
 
-	
-    -- SHEET HEADERS
-    -- sheet files have a header with meta information:
-    -- stuff like:
-    --     EESchema Schematic File Version 2
-    --     LIBS:nucleo_core-rescue
-    --     LIBS:power
-    --     LIBS:bel_connectors_and_jumpers
-    --     LIBS:bel_primitives
-    --     LIBS:bel_stm32
-    --     LIBS:nucleo_core-cache
-    --     EELAYER 25 0
-	--     EELAYER END
-
-	-- The library names in the header are mapped to a list of components.
-	-- So for each library in the header we have a components listing.
-	-- 	use type_library_name;
-	-- 	use type_list_of_components;
--- 	package type_component_library is new ordered_maps (
--- 		key_type => et_general.type_library_name.bounded_string, -- like bel_primitives
--- 			"<" => et_general.type_library_name."<",
--- 		element_type => et_kicad_libraries.type_list_of_components.map, -- the components like R, C, L, ...
--- 			"=" => et_kicad_libraries.type_list_of_components."="
--- 		);
--- 		
-
 
 -- LIBRARY
 	
@@ -374,15 +343,7 @@ package et_kicad is
 
 	-- temporarily storage
 	tmp_module_name 				: et_coordinates.type_submodule_name.bounded_string;	
--- 	tmp_component_name_in_lib		: et_libraries.type_component_name.bounded_string;
--- 	tmp_component_appearance		: et_libraries.type_component_appearance := et_libraries.sch;
--- 	tmp_component_reference			: et_libraries.type_component_reference;
 	tmp_component_unit_name			: et_libraries.type_unit_name.bounded_string;
--- 	tmp_component_alt_repres		: et_schematic.type_alternative_representation;
--- 	tmp_component_timestamp			: et_string_processing.type_timestamp;
---	tmp_component_position			: et_coordinates.type_coordinates;
--- 	tmp_component_unit_orientation	: et_coordinates.type_angle;
--- 	tmp_component_unit_mirror		: et_schematic.type_mirror;
 	
 	tmp_component_text_reference	: et_libraries.type_text (meaning => et_libraries.reference);
 	tmp_component_text_value		: et_libraries.type_text (meaning => et_libraries.value);
@@ -395,20 +356,6 @@ package et_kicad is
 	tmp_component_text_partcode		: et_libraries.type_text (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"
 	tmp_component_text_bom			: et_libraries.type_text (meaning => et_libraries.bom);
 	
--- 	-- These are the "field found" flags. They signal if a particular text field has been found.
--- 	-- They are cleared by procdure "init_temp_variables" once a new compoenent is entered.
--- 	-- They are evaluated when a component section is left.
--- 	tmp_component_text_reference_found		: boolean;
--- 	tmp_component_text_value_found			: boolean;
--- 	tmp_component_text_commissioned_found	: boolean;
--- 	tmp_component_text_updated_found		: boolean;
--- 	tmp_component_text_author_found			: boolean;
--- 	tmp_component_text_packge_found			: boolean;
--- 	tmp_component_text_datasheet_found		: boolean;
--- 	tmp_component_text_purpose_found		: boolean;
--- 	tmp_component_text_partcode_found		: boolean;
--- 	tmp_component_text_bom_found			: boolean;	
-
 	
 -- NET SEGMENT AND STRAND PROCESSING
 	type type_wild_net_segment is new et_schematic.type_net_segment with record
