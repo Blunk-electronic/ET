@@ -3667,45 +3667,45 @@ package body et_kicad is
 
 
 
-			function to_text return et_libraries.type_text is
-			-- NOTE: This is schematic related stuff !
-			-- Converts a field like "F 1 "green" H 2700 2750 50  0000 C CNN" to a type_text
-				function field (line : in type_fields_of_line; position : in positive) return string renames get_field_from_line;
-		
-				text_position : type_2d_point;
-			begin
-				set_x (text_position, mil_to_distance (field(line,5)));
-				set_y (text_position, mil_to_distance (field(line,6)));
-				return (
-					-- read text field meaning
-					meaning 	=> to_text_meaning(line => line, schematic => true),
-
-					-- read content like "N701" or "NetChanger" from field position 3
-					content		=> et_libraries.type_text_content.to_bounded_string (strip_quotes(field(line,3))),
-
-					-- read orientation like "H"
-					orientation	=> to_field_orientation (field(line,4)),
-
-					-- read coordinates
-					position	=> --(x => mil_to_distance (field(line,5)),
-									  --y => mil_to_distance (field(line,6))),
-									  text_position,
-									  
-					size		=> mil_to_distance (field (line,7)),
-					style		=> to_text_style (style_in => field (line,10), text => false),
-					line_width	=> et_libraries.type_text_line_width'first,
-
-					-- build text visibility
-					visible		=> to_field_visible (
-										vis_in		=> field (line,8),
-										schematic	=> true),
-
-					-- build text alignment
-					alignment	=> (
-									horizontal	=> to_alignment_horizontal (field(line,9)),
-									vertical	=> to_alignment_vertical   (field(line,10)))
-					);
-			end to_text;
+-- 			function to_text return et_libraries.type_text is
+-- 			-- NOTE: This is schematic related stuff !
+-- 			-- Converts a field like "F 1 "green" H 2700 2750 50  0000 C CNN" to a type_text
+-- 				function field (line : in type_fields_of_line; position : in positive) return string renames get_field_from_line;
+-- 		
+-- 				text_position : type_2d_point;
+-- 			begin
+-- 				set_x (text_position, mil_to_distance (field(line,5)));
+-- 				set_y (text_position, mil_to_distance (field(line,6)));
+-- 				return (
+-- 					-- read text field meaning
+-- 					meaning 	=> to_text_meaning(line => line, schematic => true),
+-- 
+-- 					-- read content like "N701" or "NetChanger" from field position 3
+-- 					content		=> et_libraries.type_text_content.to_bounded_string (strip_quotes(field(line,3))),
+-- 
+-- 					-- read orientation like "H"
+-- 					orientation	=> to_field_orientation (field(line,4)),
+-- 
+-- 					-- read coordinates
+-- 					position	=> --(x => mil_to_distance (field(line,5)),
+-- 									  --y => mil_to_distance (field(line,6))),
+-- 									  text_position,
+-- 									  
+-- 					size		=> mil_to_distance (field (line,7)),
+-- 					style		=> to_text_style (style_in => field (line,10), text => false),
+-- 					line_width	=> et_libraries.type_text_line_width'first,
+-- 
+-- 					-- build text visibility
+-- 					visible		=> to_field_visible (
+-- 										vis_in		=> field (line,8),
+-- 										schematic	=> true),
+-- 
+-- 					-- build text alignment
+-- 					alignment	=> (
+-- 									horizontal	=> to_alignment_horizontal (field(line,9)),
+-- 									vertical	=> to_alignment_vertical   (field(line,10)))
+-- 					);
+-- 			end to_text;
 
 		
 	
@@ -4803,6 +4803,255 @@ package body et_kicad is
 				add_note (note);
 
 			end make_text_note;
+
+			function component_header (line : in type_fields_of_line) return boolean is
+			-- Returns true if given line is a header of a component.
+			begin
+				if field (line,1) = schematic_component_header then
+					return true;
+				else 
+					return false;
+				end if;
+			end component_header;
+
+			function component_footer (line : in type_fields_of_line) return boolean is
+			-- Returns true if given line is a footer of a component.
+			begin
+				if field (line,1) = schematic_component_footer then
+					return true;
+				else 
+					return false;
+				end if;
+			end component_footer;
+
+			
+			procedure make_component (lines : in type_lines.list) is
+			-- Builds a unit or a component and inserts it in the component list of 
+			-- current module.
+
+			-- Some entries of the component section are relevant for the whole component.
+			-- Some entries are unit specific.
+			-- The component section looks like this example:
+			
+			-- $Comp
+			-- L 74LS00 U1		-- component specific
+			-- U 4 1 5965E676	-- unit specific
+			-- P 4100 4000		-- unit specific
+			-- F 0 "U1" H 4100 4050 50  0000 C CNN		-- text fields
+			-- F 1 "74LS00" H 4100 3900 50  0000 C CNN	
+			-- F 2 "bel_ic:S_SO14" H 4100 4000 50  0001 C CNN
+			-- F 3 "" H 4100 4000 50  0001 C CNN
+			-- 	4    4100 4000		-- CS: same as x/y pos ?
+
+			--  1    0    0  -1  -- orientation 0,   mirror normal
+			--  0   -1   -1   0  -- orientation 90,  mirror normal
+			-- -1    0    0   1  -- orientation 180, mirror normal 
+			-- 	0    1    1   0  -- orientation -90, mirror normal  
+
+			-- 	1    0    0   1  -- orientation 0,   mirror --
+			--  0   -1    1   0  -- orientation 90,  mirror -- 
+			-- -1    0    0  -1  -- orientation 180, mirror -- 
+			--  0    1   -1   0  -- orientation -90, mirror -- 
+
+			-- -1    0    0  -1  -- orientation 0,   mirror |
+			--  0    1   -1   0  -- orientation 90,  mirror |
+			--  1    0    0   1  -- orientation 180, mirror |
+			--  1    0    0   1  -- orientation -90, mirror |
+			-- $EndComp
+
+				function to_text return et_libraries.type_text is
+				-- Converts a field like "F 1 "green" H 2700 2750 50  0000 C CNN" to a type_text
+					function field (line : in type_fields_of_line; position : in positive) return string renames get_field_from_line;
+			
+					text_position : type_2d_point;
+				begin
+					set_x (text_position, mil_to_distance (field (et_kicad.line,5)));
+					set_y (text_position, mil_to_distance (field (et_kicad.line,6)));
+					return (
+						-- read text field meaning
+						meaning 	=> to_text_meaning (line => et_kicad.line, schematic => true),
+
+						-- read content like "N701" or "NetChanger" from field position 3
+						content		=> type_text_content.to_bounded_string (strip_quotes (field (et_kicad.line,3))),
+
+						-- read orientation like "H"
+						orientation	=> to_field_orientation (field (et_kicad.line,4)),
+
+						-- read coordinates
+						position	=> --(x => mil_to_distance (field(line,5)),
+										--y => mil_to_distance (field(line,6))),
+										text_position,
+										
+						size		=> mil_to_distance (field (et_kicad.line,7)),
+						style		=> to_text_style (style_in => field (et_kicad.line,10), text => false),
+						line_width	=> type_text_line_width'first,
+
+						-- build text visibility
+						visible		=> to_field_visible (
+											vis_in		=> field (et_kicad.line,8),
+											schematic	=> true),
+
+						-- build text alignment
+						alignment	=> (
+										horizontal	=> to_alignment_horizontal (field (et_kicad.line,9)),
+										vertical	=> to_alignment_vertical   (field (et_kicad.line,10)))
+						);
+				end to_text;
+
+			
+				use type_lines;
+			
+			begin
+				line_cursor := type_lines.first (lines);
+				while line_cursor /= type_lines.no_element loop
+
+					--log ("component line: " & to_string (et_kicad.line));
+
+					-- Read component name and annotation from a line like "L NetChanger N1". 
+					-- From this entry we reason the compoenent appearance.
+					if field (et_kicad.line,1) = schematic_component_identifier_name then -- "L"
+						
+						tmp_component_name_in_lib := type_component_name.to_bounded_string (field (et_kicad.line,2)); -- "SN74LS00"
+						tmp_component_appearance := to_appearance (line => et_kicad.line, schematic => true);
+						
+						case tmp_component_appearance is
+						
+							when et_libraries.sch => 
+								-- we have a line like "L P3V3 #PWR07"
+								tmp_component_reference := to_component_reference (
+									text_in => field (et_kicad.line,3),
+									allow_special_character_in_prefix => true);
+
+							when et_libraries.sch_pcb =>
+
+								-- we have a line like "L 74LS00 U1"
+								tmp_component_reference := to_component_reference(
+									text_in => field (et_kicad.line,3),
+									allow_special_character_in_prefix => false);
+
+							when others => -- CS: This should never happen. A subtype of type_component_appearance could be a solution.
+								null;
+								raise constraint_error;
+								
+						end case;
+									
+						-- CS: check proper annotation
+
+					-- read line like "U 2 1 4543D4D3F" 
+					-- U is the line indicator, 2 is the unit id, 1 is the demorgan flag, last field is the timestamp
+					elsif field (et_kicad.line,1) = schematic_component_identifier_unit then -- "U"
+
+						-- KiCad uses positive numbers to identifiy units. But in general a unit name can
+						-- be a string as well. Therefore we handle the unit id as string.
+						tmp_component_unit_name := type_unit_name.to_bounded_string (
+							field (et_kicad.line,2)); -- the unit id
+
+						-- Read DeMorgan flag:
+						tmp_component_alt_repres := to_alternative_representation (line => et_kicad.line, schematic => true);
+
+						-- Read and check the timestamp:
+						tmp_component_timestamp := type_timestamp (field (et_kicad.line,4));
+						et_string_processing.check_timestamp (tmp_component_timestamp);
+
+					-- Read unit coordinates from a line like "P 3200 4500".
+					elsif field (et_kicad.line,1) = schematic_component_identifier_coord then -- "P"
+					
+						set_x (tmp_component_position, mil_to_distance (field (et_kicad.line,2))); -- "3200"
+						set_y (tmp_component_position, mil_to_distance (field (et_kicad.line,3))); -- "4500"
+
+						-- The unit coordinates is more than just x/y :
+						-- unit_scratch.coordinates.main_module := module.name;
+						set_path (tmp_component_position, path_to_submodule);
+						set_sheet (tmp_component_position, sheet_number_current);
+
+					-- Skip unit path entry in lines like "AR Path="/59EF082F" Ref="N23"  Part="1"
+					elsif field (et_kicad.line,1) = schematic_component_identifier_path then -- "AR"
+						-- CS: meaning unclear
+						log (message_warning & affected_line (et_kicad.line) 
+							& "ignoring line '" & to_string (et_kicad.line) & "' ! Meaning unclear !");
+
+					-- read unit fields 0..2 from lines like:
+					-- 			"F 0 "N701" H 2600 2100 39  0000 C CNN"
+					--			"F 1 "NetChanger" H 2600 2250 60  0001 C CNN"
+					--			"F 2 "bel_netchanger:N_0.2MM" H 2600 2100 60  0001 C CNN"
+					--
+					-- set "field found" flags
+					elsif field (et_kicad.line,1) = component_field_identifier then -- "F"
+
+						--log ("unit field A: " & to_string (et_kicad.line));
+						
+						case type_component_field_id'value (field (et_kicad.line,2)) is
+							when component_field_reference =>
+								tmp_component_text_reference_found	:= true;
+								tmp_component_text_reference 		:= to_text;
+
+							when component_field_value =>
+								tmp_component_text_value_found		:= true;
+								tmp_component_text_value 			:= to_text;
+								
+							when component_field_footprint =>
+								tmp_component_text_packge_found		:= true;
+								tmp_component_text_packge 			:= to_text;
+								
+							when component_field_datasheet =>
+								tmp_component_text_datasheet_found	:= true;
+								tmp_component_text_datasheet 		:= to_text;
+								
+							when component_field_function =>
+								tmp_component_text_purpose_found	:= true;
+								tmp_component_text_purpose 			:= to_text;
+								
+							when component_field_partcode =>
+								tmp_component_text_partcode_found	:= true;
+								tmp_component_text_partcode 		:= to_text;
+								
+							when component_field_commissioned =>
+								tmp_component_text_commissioned_found	:= true;
+								tmp_component_text_commissioned 		:= to_text;
+								
+							when component_field_updated =>
+								tmp_component_text_updated_found	:= true;
+								tmp_component_text_updated 			:= to_text;
+								
+							when component_field_author =>
+								tmp_component_text_author_found		:= true;
+								tmp_component_text_author 			:= to_text;
+
+							when component_field_bom =>
+								tmp_component_text_bom_found		:= true;
+								tmp_component_text_bom				:= to_text;
+
+								
+							when others => null; -- CS: other fields are ignored. warning ?
+						end case;
+
+						--log ("unit field B: " & to_string (et_kicad.line));
+						
+					else
+						-- What is left is a strange repetition of the unit name and its x/y coordinates in a line like
+						-- "2    6000 4000"
+						-- followed by the unit mirror style and the unit orientation in a line like
+						-- "1    0    0    -1"
+
+						case field_count (et_kicad.line) is
+							when 3 => -- we have the unit name and its x/y position.
+								-- We verify if unit name and position match the values read earlier:
+								verify_unit_name_and_position (et_kicad.line);
+							
+							when 4 => null; -- we have the unit mirror style and orientation
+								build_unit_orientation_and_mirror_style (et_kicad.line);
+							
+							when others => 
+								raise constraint_error; -- CS: write useful message
+						end case;
+
+					end if;
+
+
+					next (line_cursor);
+				end loop;
+				
+			end make_component;
 			
 		begin -- read_schematic
 			log_indentation_reset;
@@ -5054,7 +5303,7 @@ package body et_kicad is
 
 								-- CS: use type_lines (similar to reading gui sheets)
 								if not component_entered then
-									if field (line,1) = schematic_component_header then
+									if component_header (line) then
 										component_entered := true;
 
 										-- This is to init the temporarily used variables that store text fields.
@@ -5063,9 +5312,12 @@ package body et_kicad is
 
 									end if;
 								else -- we are inside the component and wait for the component footer ($EndComp)
-									if field (line,1) = schematic_component_footer then
+									if component_footer (line) then
 										component_entered := false; -- we are leaving the component
 
+										make_component (lines);
+										clear (lines);
+										
 										-- Check if all required text fields have been found.
 										-- Check content of text fields for syntax and plausibility.
 										check_text_fields (log_threshold + 1);
@@ -5080,141 +5332,142 @@ package body et_kicad is
 
 									else
 										-- READ COMPONENT SECTION CONTENT
+										add (line);
 										
-										-- Read component name and annotation from a line like "L NetChanger N1". 
-										-- From this entry we reason the compoenent appearance.
-										if field (line,1) = schematic_component_identifier_name then -- "L"
-											
-											tmp_component_name_in_lib := et_libraries.type_component_name.to_bounded_string(field (line,2)); -- "SN74LS00"
-											tmp_component_appearance := to_appearance(line => line, schematic => true);
-											
-											case tmp_component_appearance is
-											
-												when et_libraries.sch => 
-													-- we have a line like "L P3V3 #PWR07"
-													tmp_component_reference := et_schematic.to_component_reference(
-															text_in => field (line,3),
-															allow_special_character_in_prefix => true);
-
-												when et_libraries.sch_pcb =>
-
-													-- we have a line like "L 74LS00 U1"
-													tmp_component_reference := et_schematic.to_component_reference(
-															text_in => field (line,3),
-															allow_special_character_in_prefix => false);
-
-												when others => -- CS: This should never happen. A subtype of type_component_appearance could be a solution.
-													null;
-													raise constraint_error;
-													
-											end case;
-														
-											-- CS: check proper annotation
-
-										-- read line like "U 2 1 4543D4D3F" 
-										-- U is the line indicator, 2 is the unit id, 1 is the demorgan flag, last field is the timestamp
-										elsif field (line,1) = schematic_component_identifier_unit then -- "U"
-
-											-- KiCad uses positive numbers to identifiy units. But in general a unit name can
-											-- be a string as well. Therefore we handle the unit id as string.
-											tmp_component_unit_name := et_libraries.type_unit_name.to_bounded_string(
-												field (line,2)); -- the unit id
-
-											-- Read DeMorgan flag:
-											tmp_component_alt_repres := to_alternative_representation(line => line, schematic => true);
-
-											-- Read and check the timestamp:
-											tmp_component_timestamp := type_timestamp(field (line,4));
-											et_string_processing.check_timestamp (tmp_component_timestamp);
-
-										-- Read unit coordinates from a line like "P 3200 4500".
-										elsif field (line,1) = schematic_component_identifier_coord then -- "P"
-										
-											set_x (tmp_component_position, mil_to_distance (field  (line,2))); -- "3200"
-											set_y (tmp_component_position, mil_to_distance (field  (line,3))); -- "4500"
-
-											-- The unit coordinates is more than just x/y :
-											-- unit_scratch.coordinates.main_module := module.name;
-											set_path (tmp_component_position, path_to_submodule);
-											set_sheet (tmp_component_position, sheet_number_current);
-
-										-- Skip unit path entry in lines like "AR Path="/59EF082F" Ref="N23"  Part="1"
-										elsif field  (line,1) = schematic_component_identifier_path then -- "AR"
-											-- CS: meaning unclear
-											log (message_warning & affected_line (line) & "ignoring line '" & to_string (line) & "' ! Meaning unclear !");
-
-										-- read unit fields 0..2 from lines like:
-										-- 			"F 0 "N701" H 2600 2100 39  0000 C CNN"
-										--			"F 1 "NetChanger" H 2600 2250 60  0001 C CNN"
-										--			"F 2 "bel_netchanger:N_0.2MM" H 2600 2100 60  0001 C CNN"
-										--
-										-- set "field found" flags
-										elsif field (line,1) = component_field_identifier then -- "F"
-											
-											case type_component_field_id'value (field  (line,2)) is
-												when component_field_reference =>
-													tmp_component_text_reference_found	:= true;
-													tmp_component_text_reference 		:= to_text;
-
-												when component_field_value =>
-													tmp_component_text_value_found		:= true;
-													tmp_component_text_value 			:= to_text;
-													
-												when component_field_footprint =>
-													tmp_component_text_packge_found		:= true;
-													tmp_component_text_packge 			:= to_text;
-													
-												when component_field_datasheet =>
-													tmp_component_text_datasheet_found	:= true;
-													tmp_component_text_datasheet 		:= to_text;
-													
-												when component_field_function =>
-													tmp_component_text_purpose_found	:= true;
-													tmp_component_text_purpose 			:= to_text;
-													
-												when component_field_partcode =>
-													tmp_component_text_partcode_found	:= true;
-													tmp_component_text_partcode 		:= to_text;
-													
-												when component_field_commissioned =>
-													tmp_component_text_commissioned_found	:= true;
-													tmp_component_text_commissioned 		:= to_text;
-													
-												when component_field_updated =>
-													tmp_component_text_updated_found	:= true;
-													tmp_component_text_updated 			:= to_text;
-													
-												when component_field_author =>
-													tmp_component_text_author_found		:= true;
-													tmp_component_text_author 			:= to_text;
-
-												when component_field_bom =>
-													tmp_component_text_bom_found		:= true;
-													tmp_component_text_bom				:= to_text;
-
-													
-												when others => null; -- CS: other fields are ignored. warning ?
-											end case;
-
-										else
-											-- What is left is a strange repetition of the unit name and its x/y coordinates in a line like
-											-- "2    6000 4000"
-											-- followed by the unit mirror style and the unit orientation in a line like
-											-- "1    0    0    -1"
-
-											case field_count (line) is
-												when 3 => -- we have the unit name and its x/y position.
-													-- We verify if unit name and position match the values read earlier:
-													verify_unit_name_and_position (line);
-												
-												when 4 => null; -- we have the unit mirror style and orientation
-													build_unit_orientation_and_mirror_style (line);
-												
-												when others => 
-													raise constraint_error; -- CS: write useful message
-											end case;
-
-										end if;
+-- 										-- Read component name and annotation from a line like "L NetChanger N1". 
+-- 										-- From this entry we reason the compoenent appearance.
+-- 										if field (line,1) = schematic_component_identifier_name then -- "L"
+-- 											
+-- 											tmp_component_name_in_lib := et_libraries.type_component_name.to_bounded_string(field (line,2)); -- "SN74LS00"
+-- 											tmp_component_appearance := to_appearance(line => line, schematic => true);
+-- 											
+-- 											case tmp_component_appearance is
+-- 											
+-- 												when et_libraries.sch => 
+-- 													-- we have a line like "L P3V3 #PWR07"
+-- 													tmp_component_reference := et_schematic.to_component_reference(
+-- 															text_in => field (line,3),
+-- 															allow_special_character_in_prefix => true);
+-- 
+-- 												when et_libraries.sch_pcb =>
+-- 
+-- 													-- we have a line like "L 74LS00 U1"
+-- 													tmp_component_reference := et_schematic.to_component_reference(
+-- 															text_in => field (line,3),
+-- 															allow_special_character_in_prefix => false);
+-- 
+-- 												when others => -- CS: This should never happen. A subtype of type_component_appearance could be a solution.
+-- 													null;
+-- 													raise constraint_error;
+-- 													
+-- 											end case;
+-- 														
+-- 											-- CS: check proper annotation
+-- 
+-- 										-- read line like "U 2 1 4543D4D3F" 
+-- 										-- U is the line indicator, 2 is the unit id, 1 is the demorgan flag, last field is the timestamp
+-- 										elsif field (line,1) = schematic_component_identifier_unit then -- "U"
+-- 
+-- 											-- KiCad uses positive numbers to identifiy units. But in general a unit name can
+-- 											-- be a string as well. Therefore we handle the unit id as string.
+-- 											tmp_component_unit_name := et_libraries.type_unit_name.to_bounded_string(
+-- 												field (line,2)); -- the unit id
+-- 
+-- 											-- Read DeMorgan flag:
+-- 											tmp_component_alt_repres := to_alternative_representation(line => line, schematic => true);
+-- 
+-- 											-- Read and check the timestamp:
+-- 											tmp_component_timestamp := type_timestamp(field (line,4));
+-- 											et_string_processing.check_timestamp (tmp_component_timestamp);
+-- 
+-- 										-- Read unit coordinates from a line like "P 3200 4500".
+-- 										elsif field (line,1) = schematic_component_identifier_coord then -- "P"
+-- 										
+-- 											set_x (tmp_component_position, mil_to_distance (field  (line,2))); -- "3200"
+-- 											set_y (tmp_component_position, mil_to_distance (field  (line,3))); -- "4500"
+-- 
+-- 											-- The unit coordinates is more than just x/y :
+-- 											-- unit_scratch.coordinates.main_module := module.name;
+-- 											set_path (tmp_component_position, path_to_submodule);
+-- 											set_sheet (tmp_component_position, sheet_number_current);
+-- 
+-- 										-- Skip unit path entry in lines like "AR Path="/59EF082F" Ref="N23"  Part="1"
+-- 										elsif field  (line,1) = schematic_component_identifier_path then -- "AR"
+-- 											-- CS: meaning unclear
+-- 											log (message_warning & affected_line (line) & "ignoring line '" & to_string (line) & "' ! Meaning unclear !");
+-- 
+-- 										-- read unit fields 0..2 from lines like:
+-- 										-- 			"F 0 "N701" H 2600 2100 39  0000 C CNN"
+-- 										--			"F 1 "NetChanger" H 2600 2250 60  0001 C CNN"
+-- 										--			"F 2 "bel_netchanger:N_0.2MM" H 2600 2100 60  0001 C CNN"
+-- 										--
+-- 										-- set "field found" flags
+-- 										elsif field (line,1) = component_field_identifier then -- "F"
+-- 											
+-- 											case type_component_field_id'value (field  (line,2)) is
+-- 												when component_field_reference =>
+-- 													tmp_component_text_reference_found	:= true;
+-- 													tmp_component_text_reference 		:= to_text;
+-- 
+-- 												when component_field_value =>
+-- 													tmp_component_text_value_found		:= true;
+-- 													tmp_component_text_value 			:= to_text;
+-- 													
+-- 												when component_field_footprint =>
+-- 													tmp_component_text_packge_found		:= true;
+-- 													tmp_component_text_packge 			:= to_text;
+-- 													
+-- 												when component_field_datasheet =>
+-- 													tmp_component_text_datasheet_found	:= true;
+-- 													tmp_component_text_datasheet 		:= to_text;
+-- 													
+-- 												when component_field_function =>
+-- 													tmp_component_text_purpose_found	:= true;
+-- 													tmp_component_text_purpose 			:= to_text;
+-- 													
+-- 												when component_field_partcode =>
+-- 													tmp_component_text_partcode_found	:= true;
+-- 													tmp_component_text_partcode 		:= to_text;
+-- 													
+-- 												when component_field_commissioned =>
+-- 													tmp_component_text_commissioned_found	:= true;
+-- 													tmp_component_text_commissioned 		:= to_text;
+-- 													
+-- 												when component_field_updated =>
+-- 													tmp_component_text_updated_found	:= true;
+-- 													tmp_component_text_updated 			:= to_text;
+-- 													
+-- 												when component_field_author =>
+-- 													tmp_component_text_author_found		:= true;
+-- 													tmp_component_text_author 			:= to_text;
+-- 
+-- 												when component_field_bom =>
+-- 													tmp_component_text_bom_found		:= true;
+-- 													tmp_component_text_bom				:= to_text;
+-- 
+-- 													
+-- 												when others => null; -- CS: other fields are ignored. warning ?
+-- 											end case;
+-- 
+-- 										else
+-- 											-- What is left is a strange repetition of the unit name and its x/y coordinates in a line like
+-- 											-- "2    6000 4000"
+-- 											-- followed by the unit mirror style and the unit orientation in a line like
+-- 											-- "1    0    0    -1"
+-- 
+-- 											case field_count (line) is
+-- 												when 3 => -- we have the unit name and its x/y position.
+-- 													-- We verify if unit name and position match the values read earlier:
+-- 													verify_unit_name_and_position (line);
+-- 												
+-- 												when 4 => null; -- we have the unit mirror style and orientation
+-- 													build_unit_orientation_and_mirror_style (line);
+-- 												
+-- 												when others => 
+-- 													raise constraint_error; -- CS: write useful message
+-- 											end case;
+-- 
+-- 										end if;
 								end if;
 								
 							end if;
