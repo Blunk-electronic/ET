@@ -2492,7 +2492,6 @@ package body et_kicad is
             wild_tag_labels 	: type_tag_labels.list;
 			wild_segments		: type_wild_segments.list;
 			wild_junctions		: type_junctions.list;
-			wild_no_connections	: type_no_connection_flags.list;
 
 			-- In the first stage, all net segments of this sheet go into a wild collection of segments.
 			-- Later they will be sorted and connected by their coordinates (start and and points)
@@ -5051,6 +5050,19 @@ package body et_kicad is
 			-- Builds a no-connect flag and stores it a wild list of no-connection-flags
 			-- A line that specifies such a flag loops like "NoConn ~ 5000 3900"
 				no_connection_flag : et_schematic.type_no_connection_flag;
+
+				use type_rig;
+			
+				procedure append_no_connect_flag (
+					module_name : in type_submodule_name.bounded_string;
+					module : in out type_module) is
+					use type_no_connection_flags;
+				begin
+					append (
+						container => module.no_connections,
+						new_item => no_connection_flag);
+				end append_no_connect_flag;				
+			
 			begin
 				set_path (no_connection_flag.coordinates, path_to_submodule);
 				set_sheet (no_connection_flag.coordinates, sheet_number_current);
@@ -5065,7 +5077,12 @@ package body et_kicad is
 					log_indentation_down;
 				end if;
 
-				type_no_connection_flags.append (wild_no_connections, no_connection_flag);
+				-- append the no-connect-flag to the list of no_connections of the current module
+				update_element (
+					container => rig,
+					position => module_cursor,
+					process => append_no_connect_flag'access);
+				
 			end make_no_connection;
 
 			
@@ -5427,6 +5444,7 @@ package body et_kicad is
 						strands			=> type_strands.empty_list,
 						nets			=> type_nets.empty_map,
 						components		=> type_components.empty_map,
+						no_connections	=> type_no_connection_flags.empty_list,
 						portlists		=> type_portlists.empty_map,
 						netlist			=> type_netlist.empty_map,
 						submodules		=> type_gui_submodules.empty_map,
@@ -5539,7 +5557,7 @@ package body et_kicad is
 				log_indentation_down;
 
 				-- Update strand names according to power out ports connected with them:
-				et_schematic.update_strand_names (log_threshold + 1);
+				et_schematic.update_strand_names (log_threshold + 1); -- includes portlist generation
 
 				-- write strands report
 				et_schematic.write_strands (log_threshold + 1);

@@ -671,6 +671,8 @@ package et_schematic is
 
 	function to_string (no_connection_flag : in type_no_connection_flag; scope : in type_scope) return string;
 	-- Returns the position of the given no-connection-flag as string.
+
+	type type_port_open is new boolean;
 	
 	-- This is a component port with its basic elements:
 	type type_port is tagged record
@@ -680,6 +682,7 @@ package et_schematic is
 		direction	: type_port_direction; -- example: "passive" -- used for ERC
 		style		: type_port_style;	-- used for ERC
 		appearance	: type_appearance_schematic;
+		open		: type_port_open; -- true if port is to be left open intentionally (by a no_connection-flag)
 		connected	: boolean; -- used for netlist generation. true when port connected with a net
 	end record;
 
@@ -723,6 +726,7 @@ package et_schematic is
 		strands	    	: type_strands.list;		-- the strands of the module. temporarily used. CS: clear once nets are ready. 
 		nets 	    	: type_nets.map;			-- the nets of the module
 		components		: type_components.map;		-- the components of the module
+		no_connections	: type_no_connection_flags.list; -- the list of no-connection-flags
 		portlists		: type_portlists.map;		-- the portlists of the module
 		netlist			: type_netlist.map;			-- the netlist
 		submodules  	: type_gui_submodules.map;	-- graphical representations of submodules. -- GUI relevant

@@ -1151,6 +1151,8 @@ package body et_schematic is
 	--  - the unit mirror style provided by the schematic
 	--  - the unit orientation provided by the schematic
 	-- Special threatment for "common to all units" ports of global units. See comments.
+
+	-- Sets the "open" flag of the port if it was marked with a no-connect-flag.
 	
 	-- Stores the absolute port coordinates in map "portlists". 
 	-- The key into this map is the component reference.
@@ -1226,9 +1228,50 @@ package body et_schematic is
 					component	: in type_component_reference;
 					ports		: in out type_ports.list) is
 					use et_coordinates;
+					use type_rig;
 					
 					port_coordinates : type_coordinates;
 
+					function left_open return type_port_open is
+					-- Returns true if a no-connect-flag sits at the port_coordinates.
+
+						port_open : type_port_open := false;
+					
+						procedure query_no_connect_flags (
+							module_name : in type_submodule_name.bounded_string;
+							module : in type_module) is
+							use type_no_connection_flags;
+							flag_cursor : type_no_connection_flags.cursor := module.no_connections.first;
+						begin
+							-- Compare coordinates of no-connection-flags with port_coordinates
+							-- and exit prematurely with "open" set to true.
+							while flag_cursor /= type_no_connection_flags.no_element loop
+
+								-- CS: to improve performance, test if flag has not been processed yet
+								-- But first implement a test that raises error if more than one port 
+								-- sits on the same position.
+								
+								if element (flag_cursor).coordinates = port_coordinates then
+									log (" intentionally left open", log_threshold + 3);
+									port_open := true;
+									exit;
+								end if;
+								
+								next (flag_cursor);
+							end loop;
+						end query_no_connect_flags;
+						
+					begin -- left_open
+
+						-- Query no-connect-flags:
+						query_element (
+							position => module_cursor,
+							process => query_no_connect_flags'access);
+
+						-- If this statement is reached, no flag was found -> return false
+						return port_open;
+					end left_open;
+					
 				begin -- add
 
 					-- Init port coordinates with the coordinates of the port found in the library.
@@ -1278,11 +1321,14 @@ package body et_schematic is
 							-- schematic defined properties:
 							coordinates	=> port_coordinates,
 
+							-- if to be left open intentionally, the list of no-connection-flags must be looked up
+							open		=> left_open,
+							
 							connected	=> false -- used by netlist generator (procedure make_netlists)
 							));
 
-					log_indentation_up;
 					log (to_string (last_element (ports).direction), log_threshold + 3);
+					log_indentation_up;
 					-- CS: other port properties
 					log (to_string (position => last_element (ports).coordinates), log_threshold + 3);
 					log_indentation_down;
@@ -1438,7 +1484,7 @@ package body et_schematic is
 			begin
 				module.portlists := portlists;
 			end save;
-		begin
+		begin -- save_portlists
 			log ("saving portlists ...", log_threshold + 1);
 			update_element (
 				container => rig,
