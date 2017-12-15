@@ -205,7 +205,7 @@ package body et_schematic is
 	begin	
 		return (to_string (position => junction.coordinates, scope => scope));
 	end to_string;
-	
+
 	procedure write_note_properties (
 		note : in et_schematic.type_note;
 		log_threshold : in et_string_processing.type_log_level := 0) is
@@ -387,6 +387,11 @@ package body et_schematic is
 		return type_components.element (cursor).name_in_library;
 	end component_name_in_library;
 
+	function to_string (no_connection_flag : in type_no_connection_flag; scope : in type_scope) return string is
+	-- Returns the position of the given no-connection-flag as string.
+	begin	
+		return (to_string (position => no_connection_flag.coordinates, scope => scope));
+	end to_string;
 
 	function unit_exists (
 	-- Returns true if the unit with the given name exists in the given list of units.

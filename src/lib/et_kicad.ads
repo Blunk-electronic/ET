@@ -154,7 +154,8 @@ package et_kicad is
 	schematic_keyword_label_dir_output     : constant string (1..6) := "Output";
 	schematic_keyword_label_dir_passive	   : constant string (1..5) := "UnSpc";
     schematic_keyword_label_dir_tristate   : constant string (1..6) := "3State";
-	schematic_keyword_note                 : constant string (1..5) := "Notes";    
+	schematic_keyword_note					: constant string (1..5) := "Notes";
+	schematic_keyword_no_connection			: constant string (1..6) := "NoConn";    
 
     schematic_keyword_comment_1            : constant string (1..8) := "Comment1";
     schematic_keyword_comment_2            : constant string (1..8) := "Comment2";

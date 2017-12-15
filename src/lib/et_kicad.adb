@@ -2492,6 +2492,7 @@ package body et_kicad is
             wild_tag_labels 	: type_tag_labels.list;
 			wild_segments		: type_wild_segments.list;
 			wild_junctions		: type_junctions.list;
+			wild_no_connections	: type_no_connection_flags.list;
 
 			-- In the first stage, all net segments of this sheet go into a wild collection of segments.
 			-- Later they will be sorted and connected by their coordinates (start and and points)
@@ -3577,6 +3578,7 @@ package body et_kicad is
 				line_cursor := type_lines.first (lines);
 
 				-- read drawing frame dimensions from a line like "$Descr A4 11693 8268"
+				-- CS test field count				
 				frame.paper_size	:= type_paper_size'value (field (et_kicad.line,2));
 				frame.size_x		:= mil_to_distance (field (et_kicad.line,3));
 				frame.size_y 		:= mil_to_distance (field (et_kicad.line,4)); 
@@ -3595,6 +3597,7 @@ package body et_kicad is
 				-- The encoding should be project wide. KiCad allows a sheet specific encoding which is no
 				-- good idea.
 				if field (et_kicad.line,1) = schematic_keyword_encoding then
+					-- CS test field count
 					if field (et_kicad.line,2) /= encoding_default then
 						log (message_warning & "non-default endcoding '" & field (et_kicad.line,2) & "' found !");
 					end if;
@@ -3604,6 +3607,7 @@ package body et_kicad is
 
 				-- read sheet number from a line like "Sheet 1 7"
 				if field (et_kicad.line,1) = schematic_keyword_sheet then
+					-- CS test field count					
 					sheet_number_current := positive'value (field (et_kicad.line,2));
 					log ("sheet" & positive'image (sheet_number_current) & " ...", log_threshold + 1);
 					sheet_count_total := positive'value (field (et_kicad.line,3));
@@ -3624,6 +3628,7 @@ package body et_kicad is
 				
 				-- read sheet title from a line like "Title "abc""
 				if field (et_kicad.line,1) = schematic_keyword_title then                        
+					-- CS test field count					
 					title_block_text.meaning := TITLE;
 					title_block_text.text := type_title_block_text_string.to_bounded_string(
 						strip_quotes ((field (et_kicad.line,2))));
@@ -3634,6 +3639,7 @@ package body et_kicad is
 				
 				-- read date from a line like "Date "1981-01-23""
 				if field (et_kicad.line,1) = schematic_keyword_date then                        
+					-- CS test field count					
 					title_block_text.meaning := DRAWN_DATE;
 					title_block_text.text := type_title_block_text_string.to_bounded_string(
 						strip_quotes ((field (et_kicad.line,2))));
@@ -3644,6 +3650,7 @@ package body et_kicad is
 				
 				-- read revision from a line like "Rev "9.7.1"
 				if field (et_kicad.line,1) = schematic_keyword_revision then                        
+					-- CS test field count					
 					title_block_text.meaning := REVISION;
 					title_block_text.text := type_title_block_text_string.to_bounded_string (
 						strip_quotes ((field (line,2))));
@@ -3654,6 +3661,7 @@ package body et_kicad is
 
 				-- read company name
 				if field (et_kicad.line,1) = schematic_keyword_company then
+					-- CS test field count					
 					title_block_text.meaning := COMPANY;
 					title_block_text.text := type_title_block_text_string.to_bounded_string(
 					strip_quotes ((field (et_kicad.line,2))));
@@ -3667,6 +3675,7 @@ package body et_kicad is
 					field (et_kicad.line,1) = schematic_keyword_comment_2 or
 					field (et_kicad.line,1) = schematic_keyword_comment_3 or 
 					field (et_kicad.line,1) = schematic_keyword_comment_4 then
+					-- CS test field count
 						title_block_text.meaning := MISC;
 						title_block_text.text := type_title_block_text_string.to_bounded_string (
 						strip_quotes ((field (et_kicad.line,2))));
@@ -3767,9 +3776,10 @@ package body et_kicad is
 				--line_cursor := first (lines);
 				line_cursor := type_lines.first (lines);
 -- 				log (to_string (et_kicad.line), log_threshold + 1);
-				
+
 				-- read GUI sheet position and size from a line like "S 4050 5750 1050 650"
 				if field (et_kicad.line,1) = schematic_keyword_sheet_pos_and_size then
+					-- CS test field count
 					set_path (sheet.coordinates, path_to_submodule);
 					--log ("path " & to_string (path (sheet.coordinates)));
 					set_sheet (sheet.coordinates, sheet_number_current);
@@ -3785,6 +3795,7 @@ package body et_kicad is
 				
 				-- read GUI submodule (sheet) timestamp from a line like "U 58A73B5D"
 				if field (et_kicad.line,1) = schematic_keyword_sheet_timestamp then 
+					-- CS test field count					
 					sheet.timestamp := type_timestamp (field (et_kicad.line,2));
 				end if;
 
@@ -3794,6 +3805,7 @@ package body et_kicad is
 				-- Since this is the black-box-representation of a kicad-sheet its name is threated as name of a submodule.
 				-- The sheet name will later be compared with the sheet file name.
 				if field (et_kicad.line,1) = schematic_keyword_sheet_name then
+					-- CS test field count					
 					name := type_submodule_name.to_bounded_string (strip_quotes (field (et_kicad.line,2)));
 					sheet.text_size_of_name := mil_to_distance (field (et_kicad.line,3));
 				end if;
@@ -3802,6 +3814,7 @@ package body et_kicad is
 				
 				-- Read sheet file name from a line like "F1 "mcu_stm32f030.sch" 60".
 				if field (et_kicad.line,1) = schematic_keyword_sheet_file then
+					-- CS test field count					
 					file := type_submodule_name.to_bounded_string (base_name (strip_quotes (field (et_kicad.line,2))));
 					sheet.text_size_of_file := mil_to_distance (field (et_kicad.line,3));
 					
@@ -3867,6 +3880,7 @@ package body et_kicad is
 			-- Returns true if given line is a net segment header like "Wire Wire Line"
 				result : boolean := false;
 			begin
+				-- CS test field count
 				if field (line,1) = schematic_keyword_wire then
 					if field (line,2) = schematic_keyword_wire then
 						if field (line,3) = schematic_keyword_line then
@@ -3926,6 +3940,7 @@ package body et_kicad is
 			-- Returns true if given line is a net junction "Connection ~ 4650 4600"
 				result : boolean := false;
 			begin
+				-- CS test field count
 				if field (line,1) = schematic_keyword_connection then
 					if field (line,2) = schematic_tilde then
 						result := true;
@@ -3959,6 +3974,7 @@ package body et_kicad is
 			-- "Text Label 2350 3250 0 60 ~ 0"
 				result : boolean := false;
 			begin
+				-- CS test field count
 				if 	field (line,1) = schematic_keyword_text and 
 					field (line,2) = schematic_keyword_label_simple then
 						result := true;
@@ -4015,6 +4031,7 @@ package body et_kicad is
 			-- "Text GLabel 4700 3200 1 60 UnSpc ~ 0"
 				result : boolean := false;
 			begin
+				-- CS test field count
 				if field (line,1) = schematic_keyword_text and 
 					(field (line,2) = schematic_keyword_label_hierarchic or
 					 field (line,2) = schematic_keyword_label_global) then
@@ -4079,6 +4096,7 @@ package body et_kicad is
 			-- ET Test Circuit
 				result : boolean := false;
 			begin
+				-- CS test field count
 				if field (line,1) = schematic_keyword_text and 
 					field (line,2) = schematic_keyword_note then
 						result := true;
@@ -4124,6 +4142,7 @@ package body et_kicad is
 			function component_header (line : in type_fields_of_line) return boolean is
 			-- Returns true if given line is a header of a component.
 			begin
+				-- CS test field count
 				if field (line,1) = schematic_component_header then
 					return true;
 				else 
@@ -4134,6 +4153,7 @@ package body et_kicad is
 			function component_footer (line : in type_fields_of_line) return boolean is
 			-- Returns true if given line is a footer of a component.
 			begin
+				-- CS test field count
 				if field (line,1) = schematic_component_footer then
 					return true;
 				else 
@@ -5013,6 +5033,41 @@ package body et_kicad is
 				insert_unit;
 				
 			end make_component;
+
+			function no_connection_header (line : in type_fields_of_line) return boolean is
+			-- Returns true if given line is a no-connection-flag "NoConn ~ 5000 3900"
+				result : boolean := false;
+			begin
+				-- CS test field count
+				if field (line,1) = schematic_keyword_no_connection then
+					if field (line,2) = schematic_tilde then
+						result := true;
+					end if;
+				end if;
+				return result;
+			end no_connection_header;
+			
+			procedure make_no_connection (line : in type_fields_of_line) is
+			-- Builds a no-connect flag and stores it a wild list of no-connection-flags
+			-- A line that specifies such a flag loops like "NoConn ~ 5000 3900"
+				no_connection_flag : et_schematic.type_no_connection_flag;
+			begin
+				set_path (no_connection_flag.coordinates, path_to_submodule);
+				set_sheet (no_connection_flag.coordinates, sheet_number_current);
+				set_x (no_connection_flag.coordinates, mil_to_distance (field (line,3)));
+				set_y (no_connection_flag.coordinates, mil_to_distance (field (line,4)));
+
+				-- for the log
+				if log_level >= log_threshold + 1 then
+					log_indentation_up;
+					log ("no-connection-flag at " 
+						& to_string (no_connection_flag => no_connection_flag, scope => xy));
+					log_indentation_down;
+				end if;
+
+				type_no_connection_flags.append (wild_no_connections, no_connection_flag);
+			end make_no_connection;
+
 			
 		begin -- read_schematic
 			log_indentation_reset;
@@ -5276,6 +5331,14 @@ package body et_kicad is
 										add (line);
 									end if;
 								
+								end if;
+
+								-- READ NO-CONNECT-FLAGS
+
+								-- NoConn ~ 5000 3900
+								
+								if no_connection_header (line) then
+									make_no_connection (line);
 								end if;
 							end if;
 

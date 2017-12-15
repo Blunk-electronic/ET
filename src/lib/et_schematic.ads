@@ -356,8 +356,9 @@ package et_schematic is
 	-- Returns the coordinates of the given label as string.
 	
 	-- A net junction is where segments can be connected with each other.
-	type type_net_junction is tagged record
+	type type_net_junction is record
 		coordinates : et_coordinates.type_coordinates;
+		-- CS: processed flag
 	end record;
 
 	procedure write_junction_properties (junction : in type_net_junction);
@@ -378,7 +379,6 @@ package et_schematic is
 	package type_junctions is new doubly_linked_lists (
 		element_type => type_net_junction);
 
-	
 	-- A segment may have labels attached.
 	-- So this is the definition of a net segment with start and end coord., lists of simple and tag labels
 	type type_net_segment is tagged record
@@ -659,6 +659,18 @@ package et_schematic is
 	-- Returns the generic name of a component as it is listed in a library.
 	-- The cursor must point to the component in question.
 
+	-- No-connection-flags indicate that a component port is intentionally left unconnected.
+	type type_no_connection_flag is record
+		coordinates : et_coordinates.type_coordinates;
+		-- CS: processed flag
+	end record;
+
+	-- No-connection-flags can be stored in a simple list:
+	package type_no_connection_flags is new doubly_linked_lists (
+		element_type => type_no_connection_flag);	
+
+	function to_string (no_connection_flag : in type_no_connection_flag; scope : in type_scope) return string;
+	-- Returns the position of the given no-connection-flag as string.
 	
 	-- This is a component port with its basic elements:
 	type type_port is tagged record
