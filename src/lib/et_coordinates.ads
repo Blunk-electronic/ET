@@ -79,10 +79,10 @@ package et_coordinates is
 	-- Returns the given mils to type_distance_xy.
 
 	function format_distance (distance : in type_distance) return string;
-	-- Returns the given distance aa a neat number with the schematic defined accuracy.
+	-- Returns the given distance as a neat number with the schematic defined accuracy.
 	
 	function to_string (distance : in type_distance) return string;
-	-- Returns the given distance to a string.
+	-- Returns the given distance as a string.
 
 
 	units_per_cycle : constant float := 360.0;

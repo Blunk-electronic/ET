@@ -1242,20 +1242,33 @@ package body et_schematic is
 							module : in type_module) is
 							use type_no_connection_flags;
 							flag_cursor : type_no_connection_flags.cursor := module.no_connections.first;
+
+							use type_path_to_submodule;
 						begin
 							-- Compare coordinates of no-connection-flags with port_coordinates
 							-- and exit prematurely with "open" set to true.
 							while flag_cursor /= type_no_connection_flags.no_element loop
 
+								log ("probing port at         " & to_string (port_coordinates, et_coordinates.module));
+								log ("probing no-connect-flag " & to_string (element (flag_cursor), et_coordinates.module));
+
+-- 								if distance_x (element (flag_cursor).coordinates) = distance_x (port_coordinates) then
+-- 								if distance_y (element (flag_cursor).coordinates) = distance_y (port_coordinates) then
+-- 								if et_coordinates.path (element (flag_cursor).coordinates) = et_coordinates.path (port_coordinates) then
+-- 								if sheet (element (flag_cursor).coordinates) = sheet (port_coordinates) then
 								-- CS: to improve performance, test if flag has not been processed yet
 								-- But first implement a test that raises error if more than one port 
 								-- sits on the same position.
 								
-								if element (flag_cursor).coordinates = port_coordinates then
-									log (" intentionally left open", log_threshold + 3);
+ 								if element (flag_cursor).coordinates = port_coordinates then
+									--log (" intentionally left open", log_threshold + 3);
+									log (" intentionally left open", log_threshold + 1);
 									port_open := true;
 									exit;
-								end if;
+-- end if;
+-- end if;
+-- end if;
+end if;
 								
 								next (flag_cursor);
 							end loop;
