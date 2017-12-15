@@ -5576,6 +5576,11 @@ package body et_kicad is
 				-- write net report
 				et_schematic.write_nets (log_threshold + 1);
 
+				-- CS: look for orphaned things like:
+				--  no-connect-flags
+				--  junctions
+				--  net segments
+				
 			when others =>
 				null; -- CS: add import of other CAD formats here
 

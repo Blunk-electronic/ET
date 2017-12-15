@@ -1273,7 +1273,6 @@ package body et_schematic is
 					end left_open;
 					
 				begin -- add
-
 					-- Init port coordinates with the coordinates of the port found in the library.
 					-- The port position is a type_2d_point and must be converted to type_coordinates.
 					et_coordinates.set (
@@ -1322,7 +1321,7 @@ package body et_schematic is
 							coordinates	=> port_coordinates,
 
 							-- if to be left open intentionally, the list of no-connection-flags must be looked up
-							open		=> left_open,
+							intended_open => left_open,
 							
 							connected	=> false -- used by netlist generator (procedure make_netlists)
 							));
@@ -1499,7 +1498,7 @@ package body et_schematic is
 
 		-- The library contains the coordinates of the ports whereas
 		-- the schematic provides the coordinates of the units of a component.
-		-- These coordinates summed up yields the absolute position of the ports.
+		-- These coordinates summed up yield the absolute position of the ports.
 		
 		-- Loop in component list of schematic. component_cursor_sch points to the 
 		-- particular component. 
@@ -1508,7 +1507,7 @@ package body et_schematic is
 		-- of netlist generation, this implies, that "power_flags" are not in the netlists.
 		-- Yet other virtual components like
 		-- power symbols like GND or P3V3 are relevant indeed. Because later when we do
-		-- the netlist post-processing they enforce their port names to the connected net.
+		-- the strand renaming those ports enforce their names to the connected net.
 		
 		-- For each component, store a list of its units in units_sch.
 		-- This list contains the units found in the schematic with their coordinates.
@@ -1628,7 +1627,7 @@ package body et_schematic is
 		return port_cursor;
 	end first_port;
 
-	function port_sits_on_segment (
+	function port_sits_on_segment ( -- CS: rename to port_connected_with_segment
 	-- Returns true if the given port sits on the given net segment.
 		port	: in type_port'class;
 		segment	: in type_net_segment'class) 
@@ -1641,22 +1640,33 @@ package body et_schematic is
 		sits_on_segment : boolean := false;
 		d : type_distance_point_from_line;
 	begin
-		-- First make sure port and segment share the same module path and sheet.
-		-- It is sufficient to check against the segment start coordinates.
-		if same_path_and_sheet (port.coordinates, segment.coordinates_start) then
+		-- First make sure the port is to be connected at all. Ports intended to be open
+		-- are regarded as "not connected with the segment".
+		if not port.intended_open then
+	
+			-- Make sure port and segment share the same module path and sheet.
+			-- It is sufficient to check against the segment start coordinates.
+			if same_path_and_sheet (port.coordinates, segment.coordinates_start) then
+
+				-- CS: if port sits between start and end point of segment, test if a junction
+				-- is placed at the port position. Issue warning if negative.
+
+				-- CS: if ports sits at start or end point of segment AND if another segment
+				-- meets there, test for a junction.. issue warning if negative.
 			
-			-- calculate the shortes distance of point from line.
-			d := distance_of_point_from_line (
-				point 		=> type_2d_point (port.coordinates),
-				line_start	=> type_2d_point (segment.coordinates_start),
-				line_end	=> type_2d_point (segment.coordinates_end),
-				line_range	=> with_end_points);
+				-- calculate the shortes distance of point from line.
+				d := distance_of_point_from_line (
+					point 		=> type_2d_point (port.coordinates),
+					line_start	=> type_2d_point (segment.coordinates_start),
+					line_end	=> type_2d_point (segment.coordinates_end),
+					line_range	=> with_end_points);
 
-			if (not d.out_of_range) and d.distance = et_coordinates.zero_distance then
-				sits_on_segment := true;
-				log ("port on segment", level => 5);
+				if (not d.out_of_range) and d.distance = et_coordinates.zero_distance then
+					sits_on_segment := true;
+					log ("port on segment", level => 5);
+				end if;
+
 			end if;
-
 		end if;
 			
 		return sits_on_segment;
@@ -1812,12 +1822,12 @@ package body et_schematic is
 
 							log ("probing port " & to_string (position => element (port).coordinates), log_threshold + 4);
 
-							-- test if port sits on segment
+							-- test if port is connected with segment
 							if port_sits_on_segment (element (port), element (segment)) then
 								log_indentation_up;
 -- 								log ("match", log_threshold + 2);
 
-								-- If strand has no name yet, it is to be named by the name of the port that sits on it.
+								-- If strand has no name yet, it is to be named after the name of the port that sits on it.
 								-- If strand has a name already, its scope must be global
 								-- because power out ports are allowed in global strands exclusively !
 								if et_schematic.anonymous (element (strand).name) then
