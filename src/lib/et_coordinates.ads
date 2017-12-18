@@ -62,7 +62,10 @@ package et_coordinates is
 -- 	type type_unit_imperial is (mil, inch);
 
 	-- The total distance between two objects:
-	type type_distance is digits 9 range -100_000_000.0 .. 100_000_000.0; -- unit is metric millimeter
+	--	type type_distance is digits 9 range -100_000_000.0 .. 100_000_000.0; -- unit is metric millimeter
+	--accuracy_schematic : constant float := 0.01; -- CS: use type_accuracy	
+	type type_distance is delta 0.01 range -100_000_000.00 .. 100_000_000.00;
+	for type_distance'small use 0.01;
 
 	-- The x and y position of an object:
 	subtype type_distance_xy is type_distance range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter
@@ -78,8 +81,8 @@ package et_coordinates is
 		return type_distance_xy;
 	-- Returns the given mils to type_distance_xy.
 
-	function format_distance (distance : in type_distance) return string;
-	-- Returns the given distance as a neat number with the schematic defined accuracy.
+-- 	function format_distance (distance : in type_distance) return string;
+-- 	-- Returns the given distance as a neat number with the schematic defined accuracy.
 	
 	function to_string (distance : in type_distance) return string;
 	-- Returns the given distance as a string.

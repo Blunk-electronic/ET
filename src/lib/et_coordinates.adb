@@ -72,9 +72,14 @@ package body et_coordinates is
 		log_indentation_down;
 
 		-- calculate distance
-		distance := et_math.round (
-			float_in => type_distance (d_in * (25.4 * 0.001)),
-			accuracy => accuracy_schematic);
+-- 		distance := et_math.round (
+-- 			float_in => type_distance (d_in * (25.4 * 0.001)),
+-- 			accuracy => accuracy_schematic);
+
+		distance := type_distance (d_in * (25.4 * 0.001));
+
+		log ("mil as distance " & type_distance'image (distance));
+		--log ("mil as distance " & type_distance'image (type_distance (d_in * (25.4 * 0.001))));
 
 		if warn_on_negative then
 			if distance < zero_distance then
@@ -87,18 +92,18 @@ package body et_coordinates is
 		-- CS: exception handler
 	end mil_to_distance;
 
-	function format_distance (distance : in type_distance) return string is
-	-- Returns the given distance aa a neat number with the schematic defined accuracy.
-		type distance_fixed is delta accuracy_schematic range -10000.0 .. 10000.0; -- unit is mm
-	begin
-		return trim (distance_fixed'image (distance_fixed (distance)), left);
-	end format_distance;
+-- 	function format_distance (distance : in type_distance) return string is
+-- 	-- Returns the given distance aa a neat number with the schematic defined accuracy.
+-- 		type distance_fixed is delta accuracy_schematic range -10000.0 .. 10000.0; -- unit is mm
+-- 	begin
+-- 		return trim (distance_fixed'image (distance_fixed (distance)), left);
+-- 	end format_distance;
 	
 	function to_string (distance : in type_distance) return string is
 	-- Returns the given distance to a string.
 	begin
-		--return trim (type_distance'image (distance), left);
-		return format_distance (distance);
+		return trim (type_distance'image (distance), left);
+		--return format_distance (distance);
 	end to_string;
 
 
@@ -126,10 +131,10 @@ package body et_coordinates is
 	begin
 		return position_preamble
 		-- 	& trim (type_distance'image (point.x), left)
-			& format_distance (point.x)
+			& to_string (point.x)
 			& latin_1.space & axis_separator & latin_1.space
 		--	& trim (type_distance'image (point.y), left);
-			& format_distance (point.y);
+			& to_string (point.y);
 	
 	end to_string;
 

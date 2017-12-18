@@ -90,13 +90,13 @@ package body et_libraries is
 	function to_string (size : in type_text_size) return string is
 	-- Returns the given text size as string.
 	begin
-		return "size " & format_distance (size);
+		return "size " & et_coordinates.to_string (size);
 	end to_string;
 
 	function width_to_string (width : in type_text_line_width) return string is
 	-- Returns the given line width as string.
 	begin
-		return "width " & format_distance (width);
+		return "width " & et_coordinates.to_string (width);
 	end width_to_string;
 	
 	function to_string (

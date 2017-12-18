@@ -63,26 +63,27 @@ package body et_math is
 		use et_coordinates;
 		use et_string_processing;
 
-		package functions_distance is new ada.numerics.generic_elementary_functions (type_distance);
-		use functions_distance;
-		
-		a : type_distance;
-
-		d : type_distance;
-		i : integer;
+-- 		package functions_distance is new ada.numerics.generic_elementary_functions (type_distance);
+-- 		use functions_distance;
+-- 		
+-- 		a : type_distance;
+-- 
+-- 		d : type_distance;
+-- 		i : integer;
 	begin
 		-- CS: check if accuracy is in type_accuracy
 -- 		if type_distance (accuracy) in type_accuracy then
 -- 			null;
 -- 		end if;
 
-		a := accuracy ** (-1.0); -- the reciprocal of the accuracy
-		d := float_in * a; -- multiply the given float_in by the reciprocal of the accuracy
-		i := integer (d); -- round result to integer
-		d := type_distance (i); -- convert result back to float and divide by reciprocal of accuracy
-		d := d / a;
+-- 		a := accuracy ** (-1.0); -- the reciprocal of the accuracy
+-- 		d := float_in * a; -- multiply the given float_in by the reciprocal of the accuracy
+-- 		i := integer (d); -- round result to integer
+-- 		d := type_distance (i); -- convert result back to float and divide by reciprocal of accuracy
+-- 		d := d / a;
 		
-		return d;
+-- 		return d;
+		return float_in;
 	end round;
 
 

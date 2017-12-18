@@ -1249,8 +1249,8 @@ package body et_schematic is
 							-- and exit prematurely with "open" set to true.
 							while flag_cursor /= type_no_connection_flags.no_element loop
 
-								log ("probing port at         " & to_string (port_coordinates, et_coordinates.module));
-								log ("probing no-connect-flag " & to_string (element (flag_cursor), et_coordinates.module));
+-- 								log ("probing port at         " & to_string (port_coordinates, et_coordinates.module));
+-- 								log ("probing no-connect-flag " & to_string (element (flag_cursor), et_coordinates.module));
 
 -- 								if distance_x (element (flag_cursor).coordinates) = distance_x (port_coordinates) then
 -- 								if distance_y (element (flag_cursor).coordinates) = distance_y (port_coordinates) then

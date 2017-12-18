@@ -73,15 +73,22 @@ package body et_geometry is
 -- 		log ("point   " & to_string (point), level => 4);
 -- 		log ("start   " & to_string (s), level => 4);
 -- 		log ("end     " & to_string (e), level => 4);				
+-- 
+-- 		log ("point   " & float'image (float(distance_x (point))), level => 4);
+-- 		log ("start   " & float'image (float(distance_x (s))), level => 4);
+-- 		log ("end     " & to_string (e), level => 4);				
+
 
 		-- If either delta_x or delta_y is zero, the computation is simple.
 		-- Otherwise we must do a bit more as described in 
 		-- https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
 		if delta_x = zero_distance then
-			result.distance := et_math.round (float_in => distance_x (point) - distance_x (s), accuracy => accuracy_schematic);
+			--result.distance := et_math.round (float_in => distance_x (point) - distance_x (s), accuracy => accuracy_schematic);
+			result.distance := distance_x (point) - distance_x (s);
 			log ("delta_x zero", level => 4);
 		elsif delta_y = zero_distance then
-			result.distance := et_math.round (float_in => distance_y (s) - distance_y (point), accuracy => accuracy_schematic);
+			--result.distance := et_math.round (float_in => distance_y (s) - distance_y (point), accuracy => accuracy_schematic);
+			result.distance := distance_y (point) - distance_y (s);
 			log ("delta_y zero", level => 4);
 		else
 			s1 := type_float ((distance_y (e) - distance_y (s)) * distance_x (point));
