@@ -55,13 +55,15 @@ with et_string_processing;
 
 package body et_math is
 
-	function round (
-	-- Rounds the given float_in according to the given accuracy.
-	-- Accuracy must be a power of ten (0.01, 0.1, 1, 10, ..).
-		float_in : in et_coordinates.type_distance;
-		accuracy : in et_coordinates.type_distance) return et_coordinates.type_distance is
-		use et_coordinates;
-		use et_string_processing;
+	procedure dummy is begin null; end dummy;
+	
+-- 	function round (
+-- 	-- Rounds the given float_in according to the given accuracy.
+-- 	-- Accuracy must be a power of ten (0.01, 0.1, 1, 10, ..).
+-- 		float_in : in et_coordinates.type_distance;
+-- 		accuracy : in et_coordinates.type_distance) return et_coordinates.type_distance is
+-- 		use et_coordinates;
+-- 		use et_string_processing;
 
 -- 		package functions_distance is new ada.numerics.generic_elementary_functions (type_distance);
 -- 		use functions_distance;
@@ -70,7 +72,7 @@ package body et_math is
 -- 
 -- 		d : type_distance;
 -- 		i : integer;
-	begin
+-- 	begin
 		-- CS: check if accuracy is in type_accuracy
 -- 		if type_distance (accuracy) in type_accuracy then
 -- 			null;
@@ -83,8 +85,8 @@ package body et_math is
 -- 		d := d / a;
 		
 -- 		return d;
-		return float_in;
-	end round;
+-- 		return float_in;
+-- 	end round;
 
 
 	

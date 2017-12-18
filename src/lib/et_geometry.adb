@@ -84,12 +84,14 @@ package body et_geometry is
 		-- https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
 		if delta_x = zero_distance then
 			--result.distance := et_math.round (float_in => distance_x (point) - distance_x (s), accuracy => accuracy_schematic);
+			log ("delta_x zero -> vertical line", level => 4);
 			result.distance := distance_x (point) - distance_x (s);
-			log ("delta_x zero", level => 4);
+			
 		elsif delta_y = zero_distance then
 			--result.distance := et_math.round (float_in => distance_y (s) - distance_y (point), accuracy => accuracy_schematic);
-			result.distance := distance_y (point) - distance_y (s);
-			log ("delta_y zero", level => 4);
+			log ("delta_y zero -> horizontal line", level => 4);
+			result.distance := distance_y (s) - distance_y (point);
+			
 		else
 			s1 := type_float ((distance_y (e) - distance_y (s)) * distance_x (point));
 			s2 := type_float ((distance_x (e) - distance_x (s)) * distance_y (point));
@@ -100,7 +102,9 @@ package body et_geometry is
 			s7 := type_float (distance_x (e) - distance_x (s)) ** 2;
 			s8 := functions.sqrt (s6 + s7);
 
-			result.distance := et_math.round (float_in => type_distance (s5 / s8), accuracy => accuracy_schematic); -- CS: accuracy sufficient ?
+			--result.distance := et_math.round (float_in => type_distance (s5 / s8), accuracy => accuracy_schematic); -- CS: accuracy sufficient ?
+			result.distance := type_distance (s5 / s8);
+			
 		end if;
 		
 		log ("distance " & type_distance'image (result.distance), level => 4);

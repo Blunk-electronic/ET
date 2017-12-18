@@ -561,25 +561,6 @@ package body et_schematic is
 		return len;
 	end length;
 	
--- 	procedure write_coordinates_of_segment (segment : in type_net_segment) is
--- 	-- Writes the start and end coordinates of a net segment.
--- 		use et_string_processing;
--- 		use et_coordinates;
--- 	
--- 		log_threshold : type_log_level := 1;
--- 	begin
--- 		log_indentation_up;
--- 		
--- 		log ("start "
--- 			& to_string (position => segment.coordinates_start)
--- 			& " end " 
--- 			& to_string (position => segment.coordinates_end),
--- 			level => log_threshold
--- 			);
--- 		
--- 		log_indentation_down;
--- 	end write_coordinates_of_segment;
-
 	function to_string (segment : in type_net_segment; scope : in type_scope := sheet) return string is
 	-- Returns the start and end coordinates of the given net segment.
 	begin
@@ -667,24 +648,6 @@ package body et_schematic is
 			process		=> add'access
 			);
 	end add_strand;
-
-	
--- 	procedure write_coordinates_of_junction (junction : in type_net_junction) is
--- 	-- Writes the coordinates of a net junction.
--- 		use et_string_processing;
--- 		use et_coordinates;
--- 	
--- 		log_threshold : type_log_level := 1;
--- 	begin
--- 		log_indentation_up;
--- 		
--- 		log (to_string (junction.coordinates),
--- 			 level => log_threshold
--- 			); 
--- 		
--- 		log_indentation_down;
--- 	end write_coordinates_of_junction;			
-
 
 	function junction_sits_on_segment (
 	-- Returns true if the given junction sits on the given net segment.
@@ -1252,10 +1215,6 @@ package body et_schematic is
 -- 								log ("probing port at         " & to_string (port_coordinates, et_coordinates.module));
 -- 								log ("probing no-connect-flag " & to_string (element (flag_cursor), et_coordinates.module));
 
--- 								if distance_x (element (flag_cursor).coordinates) = distance_x (port_coordinates) then
--- 								if distance_y (element (flag_cursor).coordinates) = distance_y (port_coordinates) then
--- 								if et_coordinates.path (element (flag_cursor).coordinates) = et_coordinates.path (port_coordinates) then
--- 								if sheet (element (flag_cursor).coordinates) = sheet (port_coordinates) then
 								-- CS: to improve performance, test if flag has not been processed yet
 								-- But first implement a test that raises error if more than one port 
 								-- sits on the same position.
@@ -1265,10 +1224,7 @@ package body et_schematic is
 									log (" has no-connect-flag -> intentionally left open", log_threshold + 1);
 									port_open := true;
 									exit;
--- end if;
--- end if;
--- end if;
-end if;
+								end if;
 								
 								next (flag_cursor);
 							end loop;
@@ -1664,7 +1620,7 @@ end if;
 				-- CS: if port sits between start and end point of segment, test if a junction
 				-- is placed at the port position. Issue warning if negative.
 
-				-- CS: if ports sits at start or end point of segment AND if another segment
+				-- CS: if port sits at start or end point of segment AND if another segment
 				-- meets there, test for a junction.. issue warning if negative.
 			
 				-- calculate the shortes distance of point from line.

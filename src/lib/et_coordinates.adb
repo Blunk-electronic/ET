@@ -63,22 +63,12 @@ package body et_coordinates is
 		d_in := type_distance_intermediate'value (mil);
 
 		log_indentation_up;
-		log ("mil to mm : " 
-			& "mil as string " & mil 
--- 			& ", mil as fixed" & type_distance_intermediate'image (d_in)
--- 			& ", mm as fixed" & type_distance_intermediate'image (d_in * (25.4 * 0.001))
-			& ", mm as float " & float'image (float (d_in * (25.4 * 0.001))),
-			level => 6);
+		log ("mil to mm: mil in " & mil, level => 6);
 		log_indentation_down;
-
-		-- calculate distance
--- 		distance := et_math.round (
--- 			float_in => type_distance (d_in * (25.4 * 0.001)),
--- 			accuracy => accuracy_schematic);
 
 		distance := type_distance (d_in * (25.4 * 0.001));
 
-		log ("mil as distance " & type_distance'image (distance));
+		log ("mm out " & type_distance'image (distance), level => 6);
 		--log ("mil as distance " & type_distance'image (type_distance (d_in * (25.4 * 0.001))));
 
 		if warn_on_negative then
@@ -92,13 +82,6 @@ package body et_coordinates is
 		-- CS: exception handler
 	end mil_to_distance;
 
--- 	function format_distance (distance : in type_distance) return string is
--- 	-- Returns the given distance aa a neat number with the schematic defined accuracy.
--- 		type distance_fixed is delta accuracy_schematic range -10000.0 .. 10000.0; -- unit is mm
--- 	begin
--- 		return trim (distance_fixed'image (distance_fixed (distance)), left);
--- 	end format_distance;
-	
 	function to_string (distance : in type_distance) return string is
 	-- Returns the given distance to a string.
 	begin
@@ -141,13 +124,15 @@ package body et_coordinates is
 	function distance_x (point : in type_2d_point) return type_distance_xy is
 	-- Returns the x distance of point from the drawing origin.		
 	begin
-		return et_math.round (point.x, accuracy_schematic);
+		--return et_math.round (point.x, accuracy_schematic);
+		return point.x;
 	end distance_x;
 
 	function distance_y (point : in type_2d_point) return type_distance_xy is
 	-- Returns the y distance of point from the drawing origin.
 	begin
-		return et_math.round (point.y, accuracy_schematic);
+		--return et_math.round (point.y, accuracy_schematic);
+		return point.y;
 	end distance_y;
 
 	procedure set_x (point : in out type_2d_point; x : in type_distance_xy) is
@@ -290,12 +275,14 @@ package body et_coordinates is
 			-- compute new x   -- (cos angle_out) * distance_to_origin
 			scratch := cos (type_float_distance (angle_out), type_float_distance (units_per_cycle));
 			--point.x := type_distance (scratch * distance_to_origin);
-			point.x := et_math.round (float_in => type_distance (scratch * distance_to_origin), accuracy => accuracy_schematic);
+			--point.x := et_math.round (float_in => type_distance (scratch * distance_to_origin), accuracy => accuracy_schematic);
+			point.x := type_distance (scratch * distance_to_origin);
 			--log ("x in sch. " & to_string (point.x), log_threshold);
 
 			-- compute new y   -- (sin angle_out) * distance_to_origin
 			scratch := sin (type_float_distance (angle_out), type_float_distance (units_per_cycle));
-			point.y := et_math.round (float_in => type_distance (scratch * distance_to_origin), accuracy => accuracy_schematic);
+			--point.y := et_math.round (float_in => type_distance (scratch * distance_to_origin), accuracy => accuracy_schematic);
+			point.y := type_distance (scratch * distance_to_origin);
 			--log ("y in sch. " & to_string (point.y), log_threshold);
 			log ("point out " & to_string (point), log_threshold);
 			log_indentation_down;

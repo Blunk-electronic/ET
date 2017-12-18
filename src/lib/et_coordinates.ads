@@ -54,26 +54,20 @@ package et_coordinates is
 	-- There are drawings with the origin at the upper left corner (used by KiCad, ...).
 	-- There are also drawings the the origin at the lower left corner (used by EAGLE, ...)
 	type type_Y_axis_positive is (upwards, downwards);
+
 	-- This flag is set on import or export of designs in accordance to the desired CAD format.
 	-- Geometric operations like rotating require this flag.
 	Y_axis_positive : type_Y_axis_positive := upwards;
 	
--- 	type type_unit_metric is (micrometer, millimeter, centimeter, meter);
--- 	type type_unit_imperial is (mil, inch);
-
 	-- The total distance between two objects:
 	--	type type_distance is digits 9 range -100_000_000.0 .. 100_000_000.0; -- unit is metric millimeter
-	--accuracy_schematic : constant float := 0.01; -- CS: use type_accuracy	
 	type type_distance is delta 0.01 range -100_000_000.00 .. 100_000_000.00;
-	for type_distance'small use 0.01;
+	for type_distance'small use 0.01; -- this is the accuracy required for schematic
 
 	-- The x and y position of an object:
 	subtype type_distance_xy is type_distance range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter
 	zero_distance : constant type_distance := 0.0;
 
-	-- type type_accuracy is delta 0.001 digits 10;
-
-	accuracy_schematic : constant type_distance := 0.01; -- CS: use type_accuracy
 
 	-- CS: type_grid ?
 
@@ -81,9 +75,6 @@ package et_coordinates is
 		return type_distance_xy;
 	-- Returns the given mils to type_distance_xy.
 
--- 	function format_distance (distance : in type_distance) return string;
--- 	-- Returns the given distance as a neat number with the schematic defined accuracy.
-	
 	function to_string (distance : in type_distance) return string;
 	-- Returns the given distance as a string.
 

@@ -54,15 +54,13 @@ with ada.numerics.generic_elementary_functions;
 
 package et_math is
 
-
+	procedure dummy;
 	
-	function round (
-	-- Rounds the given float_in according to the given accuracy.
-	-- Accuracy must be a power of ten (0.01, 0.1, 1, 10, ..).
-		float_in : in et_coordinates.type_distance;
-		accuracy : in et_coordinates.type_distance) return et_coordinates.type_distance;
-
-
+-- 	function round (
+-- 	-- Rounds the given float_in according to the given accuracy.
+-- 	-- Accuracy must be a power of ten (0.01, 0.1, 1, 10, ..).
+-- 		float_in : in et_coordinates.type_distance;
+-- 		accuracy : in et_coordinates.type_distance) return et_coordinates.type_distance;
 	
 	
 end et_math;
