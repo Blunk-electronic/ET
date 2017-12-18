@@ -1262,7 +1262,7 @@ package body et_schematic is
 								
  								if element (flag_cursor).coordinates = port_coordinates then
 									--log (" intentionally left open", log_threshold + 3);
-									log (" intentionally left open", log_threshold + 1);
+									log (" has no-connect-flag -> intentionally left open", log_threshold + 1);
 									port_open := true;
 									exit;
 -- end if;
@@ -1980,81 +1980,6 @@ end if;
 	
 	end write_strands;
 
-	procedure check_strands is -- CS: currently not used
-	-- Checks scope of strands across the current module (indicated by module_cursor)
-	-- CS: describe the purpose of this procdure more detailled.
-		use et_string_processing;
-
-		procedure query_strands (
-			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
-			module		: in type_module) is
-			
-			strand_primary		: type_strands.cursor := module.strands.first;
-			strand_secondary	: type_strands.cursor;
-			use type_strands;
-		begin
-			log ("checking local strands ...");
-			
-			while strand_primary /= type_strands.no_element loop
-				log_indentation_up;
-				
-				if element (strand_primary).scope = local then
-
-					log (
-						text => to_string (element (strand_primary).name) 
-							& " at " & to_string (
-								position => element (strand_primary).coordinates,
-								scope => et_coordinates.module),
-						 level => 2);
-						
-					if strand_primary /= module.strands.last then
-						strand_secondary := next (strand_primary);
-
-						while strand_secondary /= type_strands.no_element loop
-							if element (strand_secondary).scope = local then
-								if sheet (element (strand_secondary).coordinates) /= sheet (element (strand_primary).coordinates) then
-									
-									if element (strand_secondary).name = element (strand_primary).name then
-
-										put_line (standard_output, message_error & "net name conflict with net "
-											& to_string (element (strand_secondary).name));
-
-										log_indentation_reset;
-										log (message_error & "net name conflict with net " 
-											& to_string (element (strand_secondary).name) 
-											& " at " & to_string (
-												position => element (strand_secondary).coordinates,
-												scope => et_coordinates.module));
-
-										-- Explain the reason for this rule:
-										log ("A local net is restricted to a single sheet ! Use global nets instead.");
-								
-										raise constraint_error;
-
-									end if;
-								end if;
-							end if;
-							
-							next (strand_secondary);
-						end loop;
-					end if;
-				end if;
-					
-				
-				log_indentation_down;
-				next (strand_primary);
-			end loop;
-		end query_strands;
-
-	begin
-		log ("checking strands ...");
-
-		type_rig.query_element (
-			position	=> module_cursor,
-			process		=> query_strands'access);
-
-	end check_strands;
-	
 	
 	function first_segment (cursor : in type_strands.cursor) return type_net_segments.cursor is
 	-- Returns a cursor pointing to the first net segment of the given strand.
