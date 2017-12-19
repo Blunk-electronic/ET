@@ -361,9 +361,6 @@ package et_schematic is
 		-- CS: processed flag
 	end record;
 
-	procedure write_junction_properties (junction : in type_net_junction);
-	-- Writes the properties of the given net junction in the logfile.
-	
 	function to_string (junction : in type_net_junction; scope : in type_scope) return string;
 	-- Returns the position of the given junction as string.
 
@@ -380,11 +377,11 @@ package et_schematic is
 		element_type => type_net_junction);
 
 	-- A segment may have labels attached.
-	-- So this is the definition of a net segment with start and end coord., lists of simple and tag labels
+	-- So this is the definition of a net segment with start and end point,
+	-- lists of simple and tag labels:
 	type type_net_segment is tagged record
 		coordinates_start 	: et_coordinates.type_coordinates;
 		coordinates_end   	: et_coordinates.type_coordinates;
-		--junctions			: type_junctions.list;
 		label_list_simple 	: type_simple_labels.list;
 		label_list_tag    	: type_tag_labels.list;
 	end record;
@@ -697,7 +694,8 @@ package et_schematic is
 		element_type => type_ports.list,
 		"<" => compare_reference);
 
-	-- If component ports are to be listed, we need additionally the component reference:
+	-- If component ports are to be listed, 
+	-- we need additionally the component reference like R102 or IC7
 	type type_port_with_reference is new type_port with record
 		reference	: type_component_reference;
 	end record;
@@ -705,7 +703,8 @@ package et_schematic is
 	function compare_ports (left, right : in type_port_with_reference) return boolean;
 	-- Returns true if left comes before right. Compares by component name and pin name.
 	-- If left equals right, the return is false.	
-	
+
+	-- This is a set of ports as we need in the netlist.
 	package type_ports_with_reference is new ordered_sets (
 		element_type => type_port_with_reference,
 		"<" => compare_ports);
@@ -724,6 +723,7 @@ package et_schematic is
 	type type_module is record
 		libraries		: type_full_library_names.list;	-- the list of project library names
 		strands	    	: type_strands.list;		-- the strands of the module. temporarily used. CS: clear once nets are ready. 
+		junctions		: type_junctions.list;		-- net junctions
 		nets 	    	: type_nets.map;			-- the nets of the module
 		components		: type_components.map;		-- the components of the module
 		no_connections	: type_no_connection_flags.list; -- the list of no-connection-flags
@@ -735,7 +735,6 @@ package et_schematic is
 		notes       	: type_texts.list;			-- notes
 
 		sheet_headers	: type_sheet_headers.map;	-- the list of sheet headers -- kicad requirement
-		-- CS: junctions
         -- CS: images
 	end record;
 

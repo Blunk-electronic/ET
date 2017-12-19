@@ -185,21 +185,6 @@ package body et_schematic is
 		return (to_string (position => label.coordinates, scope => scope));
 	end to_string;
 	
-	procedure write_junction_properties (junction : in type_net_junction) is
-	-- Writes the properties of the given net junction in the logfile.
-		use et_string_processing;
-		use et_coordinates;
-	
-		log_threshold : type_log_level := 1;
-	begin
-		log_indentation_up;
-		log ("net junction");
-		log_indentation_up;
-		log (to_string (position => junction.coordinates), log_threshold);
-		log_indentation_down;
-		log_indentation_down;		
-	end write_junction_properties;
-
 	function to_string (junction : in type_net_junction; scope : in type_scope) return string is
 	-- Returns the position of the given junction as string.
 	begin	

@@ -3172,11 +3172,12 @@ package body et_kicad is
 			end associate_net_labels_with_anonymous_strands;
 			
 			procedure process_junctions is
-			-- Breaks down all net segments where a junction sits on. In the end, the number of net segments increases.
+			-- Breaks down all net segments where a junction sits on. 
+			-- In the end, the number of net segments may increase.
 				
 			-- Loops in wild_segments and tests if a junction sits on a segment.
-			-- Then splits the segment where the junction sits. If there are junctions left on the remaining fragments,
-			-- they will be detected in the next spin. 
+			-- Then splits the segment where the junction sits. If there are junctions left on 
+			-- the remaining fragments, they will be detected in the next spin. 
 			-- The flag segment_smashed indicates there are no more segments left with a junction.
 				segment : type_wild_net_segment;
 				junction : type_net_junction;
@@ -3193,7 +3194,46 @@ package body et_kicad is
 				
 				junction_cursor : et_schematic.type_junctions.cursor; -- points to the junction being processed
 				segment_cursor : type_wild_segments.cursor; -- points to the current segment
-
+-- 				junction_on_segment : boolean;
+-- 				
+-- 				procedure query_junctions (
+-- 					module_name : in type_submodule_name.bounded_string;
+-- 					module : in type_module) is
+-- 					junction_cursor : et_schematic.type_junctions.cursor := module.junctions.first; -- points to the junction being processed
+-- 				begin
+-- 					while junction_cursor /= type_junctions.no_element loop
+-- 
+-- 						if junction_sits_on_segment (element (junction_cursor), type_net_segment (element (segment_cursor))) then -- match
+-- 
+-- 							if log_level >= log_threshold + 1 then
+-- 								log_indentation_up;
+-- 								log (to_string (position => junction.coordinates, scope => xy));
+-- 								log_indentation_down;
+-- 							end if;
+-- 							-- NOTE: junctions sitting on a net crossing may appear twice here.
+-- 
+-- 							-- move start coord. of the current segment to the position of the junction
+-- 							type_wild_segments.update_element(
+-- 								container => wild_segments,
+-- 								position => segment_cursor,
+-- 								process => change_segment_start_coordinates'access
+-- 								);
+-- 
+-- 							-- replace end coord. of segment by pos. of junction
+-- 							segment.coordinates_end := junction.coordinates;
+-- 							type_wild_segments.append(
+-- 								container => wild_segments,
+-- 								new_item => segment
+-- 								);
+-- 
+-- 							junction_on_segment := true;
+-- 							exit;
+-- 						end if;
+-- 						
+-- 						next (junction_cursor);
+-- 					end loop;
+-- 				end query_junctions;
+				
 			begin -- process junctions
 				
 				log_indentation_up;
@@ -3209,7 +3249,6 @@ package body et_kicad is
 						
 						segment_cursor := wild_segments.first;
 						loop_s:
-						--for s in 1..segment_count loop
 						while segment_cursor /= type_wild_segments.no_element loop
 						
 							segment := type_wild_segments.element (segment_cursor); -- get a segment
@@ -3223,8 +3262,6 @@ package body et_kicad is
 								
 								if junction_sits_on_segment (junction => junction, segment => type_net_segment (segment)) then -- match
 
-									--write_coordinates_of_segment (type_net_segment(segment));
-									--write_coordinates_of_junction (junction);
 									if log_level >= log_threshold + 1 then
 										log_indentation_up;
 										log (to_string (position => junction.coordinates, scope => xy));
@@ -3252,6 +3289,16 @@ package body et_kicad is
 								next (junction_cursor);
 							end loop;
 
+-- 							junction_on_segment := false;
+-- 
+-- 							type_rig.query_element (
+-- 								position => module_cursor,
+-- 								process => query_junctions'access);
+-- 
+-- 							if junction_on_segment then
+-- 								exit;
+-- 							end if;
+							
 							next (segment_cursor);
 						end loop loop_s;
 
@@ -3274,7 +3321,7 @@ package body et_kicad is
 
 
 			procedure build_anonymous_strands is
-			-- From the wild segments and wild junctions assemble net segments to anonymous strands.
+			-- From the wild segments and junctions assemble net segments to anonymous strands.
 
 				procedure add_strand_to_anonymous_strands is
 				-- Once an anonymous strand is complete, it gets appended to a list of anonymous strands. 
@@ -3951,6 +3998,16 @@ package body et_kicad is
 			procedure make_junction (line : in type_fields_of_line) is
 			-- Builds a net junction and stores it a wild list of net junctions.
 				junction : et_schematic.type_net_junction;
+
+				procedure append_junction (
+					module_name : in type_submodule_name.bounded_string;
+					module		: in out type_module) is
+				begin
+					type_junctions.append (
+						container => module.junctions,
+						new_item => junction);
+				end append_junction;
+				
 			begin
 				-- build a temporarily junction
 				set_path (junction.coordinates, path_to_submodule);
@@ -3965,7 +4022,13 @@ package body et_kicad is
 					log_indentation_down;
 				end if;
 
-				type_junctions.append (wild_junctions, junction);
+				type_junctions.append (wild_junctions, junction); -- CS: remove
+				
+				type_rig.update_element (
+					container => rig,
+					position => module_cursor,
+					process => append_junction'access);
+				
 			end make_junction;
 
 			function simple_label_header (line : in type_fields_of_line) return boolean is
@@ -5442,6 +5505,7 @@ package body et_kicad is
 					module => (
 						libraries		=> tmp_project_libraries, -- set project libraries
 						strands			=> type_strands.empty_list,
+						junctions		=> type_junctions.empty_list,
 						nets			=> type_nets.empty_map,
 						components		=> type_components.empty_map,
 						no_connections	=> type_no_connection_flags.empty_list,
