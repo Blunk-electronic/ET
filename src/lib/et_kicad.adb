@@ -3174,14 +3174,20 @@ package body et_kicad is
 			procedure process_junctions is
 			-- Breaks down all net segments where a junction sits on. 
 			-- In the end, the number of net segments may increase.
-				
+
+			-- NOTE: The junction to be tested is taken from the wild list of net junctions. This
+			-- list contains the junction of the current sheet exclusively.
+			
 			-- Loops in wild_segments and tests if a junction sits on a segment.
 			-- Then splits the segment where the junction sits. If there are junctions left on 
 			-- the remaining fragments, they will be detected in the next spin. 
 			-- The flag segment_smashed indicates there are no more segments left with a junction.
 				segment : type_wild_net_segment;
 				junction : type_net_junction;
-				
+			
+				use et_schematic.type_junctions;
+				junction_cursor : et_schematic.type_junctions.cursor; -- points to the junction being processed
+
 				procedure change_segment_start_coordinates (segment : in out type_wild_net_segment) is 
 				begin
 					segment.coordinates_start := junction.coordinates;
@@ -3189,50 +3195,8 @@ package body et_kicad is
 				
 				segment_smashed : boolean := true; -- indicates whether a segment has been broken down
 
-				use et_schematic.type_junctions;
 				use type_wild_segments;
-				
-				junction_cursor : et_schematic.type_junctions.cursor; -- points to the junction being processed
 				segment_cursor : type_wild_segments.cursor; -- points to the current segment
--- 				junction_on_segment : boolean;
--- 				
--- 				procedure query_junctions (
--- 					module_name : in type_submodule_name.bounded_string;
--- 					module : in type_module) is
--- 					junction_cursor : et_schematic.type_junctions.cursor := module.junctions.first; -- points to the junction being processed
--- 				begin
--- 					while junction_cursor /= type_junctions.no_element loop
--- 
--- 						if junction_sits_on_segment (element (junction_cursor), type_net_segment (element (segment_cursor))) then -- match
--- 
--- 							if log_level >= log_threshold + 1 then
--- 								log_indentation_up;
--- 								log (to_string (position => junction.coordinates, scope => xy));
--- 								log_indentation_down;
--- 							end if;
--- 							-- NOTE: junctions sitting on a net crossing may appear twice here.
--- 
--- 							-- move start coord. of the current segment to the position of the junction
--- 							type_wild_segments.update_element(
--- 								container => wild_segments,
--- 								position => segment_cursor,
--- 								process => change_segment_start_coordinates'access
--- 								);
--- 
--- 							-- replace end coord. of segment by pos. of junction
--- 							segment.coordinates_end := junction.coordinates;
--- 							type_wild_segments.append(
--- 								container => wild_segments,
--- 								new_item => segment
--- 								);
--- 
--- 							junction_on_segment := true;
--- 							exit;
--- 						end if;
--- 						
--- 						next (junction_cursor);
--- 					end loop;
--- 				end query_junctions;
 				
 			begin -- process junctions
 				
@@ -3253,14 +3217,14 @@ package body et_kicad is
 						
 							segment := type_wild_segments.element (segment_cursor); -- get a segment
 
-							-- loop in junction list until a junction has been found that sits on the segment
+							-- loop in wild junction list until a junction has been found that sits on the segment
 							junction_cursor := wild_junctions.first; -- reset junction cursor to begin of junction list
 							while junction_cursor /= type_junctions.no_element loop
 
 								-- fetch junction from current cursor position
 								junction := type_junctions.element (junction_cursor);
 								
-								if junction_sits_on_segment (junction => junction, segment => type_net_segment (segment)) then -- match
+								if junction_sits_on_segment (junction, type_net_segment (segment)) then -- match
 
 									if log_level >= log_threshold + 1 then
 										log_indentation_up;
@@ -3270,7 +3234,7 @@ package body et_kicad is
 									-- NOTE: junctions sitting on a net crossing may appear twice here.
 
 									-- move start coord. of the current segment to the position of the junction
-									type_wild_segments.update_element(
+									type_wild_segments.update_element (
 										container => wild_segments,
 										position => segment_cursor,
 										process => change_segment_start_coordinates'access
@@ -3278,7 +3242,9 @@ package body et_kicad is
 
 									-- replace end coord. of segment by pos. of junction
 									segment.coordinates_end := junction.coordinates;
-									type_wild_segments.append(
+
+									-- append new segment to list of wild segments
+									type_wild_segments.append (
 										container => wild_segments,
 										new_item => segment
 										);
@@ -3289,21 +3255,11 @@ package body et_kicad is
 								next (junction_cursor);
 							end loop;
 
--- 							junction_on_segment := false;
--- 
--- 							type_rig.query_element (
--- 								position => module_cursor,
--- 								process => query_junctions'access);
--- 
--- 							if junction_on_segment then
--- 								exit;
--- 							end if;
-							
 							next (segment_cursor);
 						end loop loop_s;
 
 						-- Test if segment_count has increased. If yes, set segment_smashed flag so that the wild_segments
-						-- can be searched again. Otherwise clear segment. End of procedure.
+						-- can be searched again. Otherwise clear segment_smashed -> end of procedure.
 						if type_wild_segments.length (wild_segments) > segment_count then
 							segment_smashed := true;
 							-- update segment_count (should increment by 1)
@@ -3996,10 +3952,16 @@ package body et_kicad is
 			end junction_header;
 
 			procedure make_junction (line : in type_fields_of_line) is
-			-- Builds a net junction and stores it a wild list of net junctions.
-				junction : et_schematic.type_net_junction;
+			-- Builds a net junction and stores it both in the 
+			-- junction list of the module (for statistics, ERC, ...) 
+			-- AND in the wild list junctions.
+			-- The wild list is needed when the anonymous strands of
+			-- the sheet are built (see procedure build_anonymous_strands).
+			-- The wild list contains the junction of the current sheet exclusively.
+				junction : et_schematic.type_net_junction;  -- the junction being built
 
 				procedure append_junction (
+				-- add junction to module.junctions
 					module_name : in type_submodule_name.bounded_string;
 					module		: in out type_module) is
 				begin
@@ -4008,8 +3970,7 @@ package body et_kicad is
 						new_item => junction);
 				end append_junction;
 				
-			begin
-				-- build a temporarily junction
+			begin -- make_junction
 				set_path (junction.coordinates, path_to_submodule);
 				set_sheet (junction.coordinates, sheet_number_current);
 				set_x (junction.coordinates, mil_to_distance (field (line,3)));
@@ -4022,8 +3983,10 @@ package body et_kicad is
 					log_indentation_down;
 				end if;
 
-				type_junctions.append (wild_junctions, junction); -- CS: remove
-				
+				-- add to wild list of junctions
+				type_junctions.append (wild_junctions, junction);
+
+				-- add to module.junctions
 				type_rig.update_element (
 					container => rig,
 					position => module_cursor,

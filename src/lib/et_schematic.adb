@@ -2892,6 +2892,27 @@ package body et_schematic is
 
 		return count;
 	end net_count;
+
+	function junction_count return count_type is
+	-- Returns the number of junctions of the current module as string.
+		count : count_type := 0;
+	
+		procedure count_junctions (
+			module_name	: in type_submodule_name.bounded_string;
+			module		: in type_module) is
+			use type_junctions;
+		begin
+			count := length (module.junctions);
+		end count_junctions;
+
+	begin -- junction_count
+		type_rig.query_element (
+			position => module_cursor,
+			process => count_junctions'access);
+
+		return count;
+	end junction_count;
+
 	
 	procedure make_netlists (log_threshold : in et_string_processing.type_log_level) is
 	-- Builds the netlists of all modules of the rig.
@@ -3564,6 +3585,9 @@ package body et_schematic is
 
 		-- count nets
 		statistics.nets_total := net_count;
+
+		-- count junctions
+		-- CS: statistics.junctions_total := junction_count;
 		
 		return statistics;
 	end make_statistics;
