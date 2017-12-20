@@ -68,27 +68,48 @@ package body et_geometry is
 		result : type_distance_point_from_line;
 		s1,s2,s3,s4,s5,s6,s7,s8 : type_float;
 
-
 	begin -- Distance_from_a_point_to_a_line
 -- 		log ("point   " & to_string (point), level => 4);
 -- 		log ("start   " & to_string (s), level => 4);
 -- 		log ("end     " & to_string (e), level => 4);				
--- 
--- 		log ("point   " & float'image (float(distance_x (point))), level => 4);
--- 		log ("start   " & float'image (float(distance_x (s))), level => 4);
--- 		log ("end     " & to_string (e), level => 4);				
 
+		-- The first an simplest test is to figure out whether
+		-- the given point sits at the start or end point of the line.
+		-- This test applies for a range that includes the start and end 
+		-- points of the line. 
+		-- On match we exit this function prematurely and return the result
+		-- with the appropiate flags set.
+		case line_range is
+			when with_end_points | beyond_end_points =>
+				
+				if point = line_start then
+					
+					result.sits_on_start := true;
+-- 					result.distance := zero_distance;
+					return result;
 
+				elsif point = line_end then
+					
+					result.sits_on_end := true;
+-- 					result.distance := zero_distance;
+					return result;
+
+				end if;
+				
+			when others => null;
+		end case;
+
+		-- The next test depends on the orientation of the given line.
+		-- The line is vertical if delta_x is zero. It is horizontal if
+		-- delta_y is zero.
 		-- If either delta_x or delta_y is zero, the computation is simple.
 		-- Otherwise we must do a bit more as described in 
 		-- https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
 		if delta_x = zero_distance then
-			--result.distance := et_math.round (float_in => distance_x (point) - distance_x (s), accuracy => accuracy_schematic);
 			log ("delta_x zero -> vertical line", level => 4);
 			result.distance := distance_x (point) - distance_x (s);
 			
 		elsif delta_y = zero_distance then
-			--result.distance := et_math.round (float_in => distance_y (s) - distance_y (point), accuracy => accuracy_schematic);
 			log ("delta_y zero -> horizontal line", level => 4);
 			result.distance := distance_y (s) - distance_y (point);
 			
@@ -102,9 +123,7 @@ package body et_geometry is
 			s7 := type_float (distance_x (e) - distance_x (s)) ** 2;
 			s8 := functions.sqrt (s6 + s7);
 
-			--result.distance := et_math.round (float_in => type_distance (s5 / s8), accuracy => accuracy_schematic); -- CS: accuracy sufficient ?
 			result.distance := type_distance (s5 / s8);
-			
 		end if;
 		
 		log ("distance " & type_distance'image (result.distance), level => 4);

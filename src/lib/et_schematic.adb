@@ -640,7 +640,7 @@ package body et_schematic is
 		segment		: in type_net_segment'class) 
 		return boolean is
 
-		-- CS: clean up as in port_sits_on_segment
+		-- CS: clean up as in port_connected_with_segment
 		
 		zero : constant et_coordinates.type_distance := et_coordinates.zero_distance;
 		sits_on_segment : boolean := false;
@@ -1581,10 +1581,10 @@ package body et_schematic is
 		return port_cursor;
 	end first_port;
 
-	function port_sits_on_segment ( -- CS: rename to port_connected_with_segment
+	function port_connected_with_segment (
 	-- Returns true if the given port sits on the given net segment.
 		port	: in type_port'class;
-		segment	: in type_net_segment'class) 
+		segment	: in type_net_segment'class) -- CS: pass a cursor instead ? Makes excluding the same segment easier in procedure query_segments
 		return boolean is
 
 		use et_geometry;
@@ -1592,7 +1592,7 @@ package body et_schematic is
 		use et_string_processing;
 		
 		sits_on_segment : boolean := false;
-		d : type_distance_point_from_line;
+		distance : type_distance_point_from_line;
 
 		function junction_here return boolean is
 		-- Returns true if a junction sits at the coordinates of the given port.
@@ -1616,15 +1616,93 @@ package body et_schematic is
 				end loop;
 			end query_junctions;
 		
-			begin -- junction_here
+		begin -- junction_here
 			type_rig.query_element (
 				position => module_cursor,
 				process => query_junctions'access);
 
 			return junction_found;
 		end junction_here;
-			
-	begin
+
+		function another_segment_here return boolean is
+		-- Returns true if another segment is placed at the coordinates of the given port.
+			segment_found : boolean := false; -- to be returned
+		
+			procedure query_strands (
+			-- Query net segments. Exits prematurely once a segment is found.
+				module_name : in type_submodule_name.bounded_string;
+				module : in type_module) is
+				use type_strands;
+				strand_cursor : type_strands.cursor := module.strands.first;
+
+				procedure query_segments (
+					strand : in type_strand) is
+					use type_net_segments;
+					segment_cursor : type_net_segments.cursor := strand.segments.first;
+				begin
+					while segment_cursor /= type_net_segments.no_element loop
+				
+						-- The inquired segment must not be the same as the given segment:
+						if not (element (segment_cursor).coordinates_start = segment.coordinates_start and
+							element (segment_cursor).coordinates_end = segment.coordinates_end) then
+
+							--log ("probing segment " & to_string (element (segment_cursor)));
+							
+							-- If the inquired segment is placed with start or end point 
+							-- at the given port position, we exit prematurely:
+							if	element (segment_cursor).coordinates_start = port.coordinates or
+								element (segment_cursor).coordinates_end   = port.coordinates then
+									--log ("segment found");
+									segment_found := true;
+									exit;
+							end if;
+
+						end if;
+							
+						next (segment_cursor);
+						
+					end loop;
+				end query_segments;
+				
+			begin -- query_strands
+				while strand_cursor /= type_strands.no_element loop
+
+					type_strands.query_element (
+						position => strand_cursor,
+						process => query_segments'access);
+
+-- 					if segment_found then
+-- 						exit;
+-- 					end if;
+					
+					next (strand_cursor);
+				end loop;
+			end query_strands;
+		
+		begin -- another_segment_here
+			--log ("probing for other segment at " & to_string (port.coordinates, et_coordinates.module));
+		
+			type_rig.query_element (
+				position => module_cursor,
+				process => query_strands'access);
+
+			return segment_found;
+		end another_segment_here;
+
+		procedure test_junction is
+		begin
+			if junction_here then
+				sits_on_segment := true;
+			else
+				log_indentation_reset;
+				log (message_error & "missing junction at " 
+					& to_string (port.coordinates, et_coordinates.module),
+						console => true);
+				raise constraint_error;
+			end if;
+		end test_junction;
+		
+	begin -- port_connected_with_segment
 		-- First make sure the port is to be connected at all. Ports intended to be open
 		-- are regarded as "not connected with the segment".
 		if not port.intended_open then
@@ -1633,34 +1711,41 @@ package body et_schematic is
 			-- It is sufficient to check against the segment start coordinates.
 			if same_path_and_sheet (port.coordinates, segment.coordinates_start) then
 
-				-- CS: if port sits between start and end point of segment, test if a junction
-				-- is placed at the port position. Issue warning if negative.
-
-				-- CS: if port sits at start or end point of segment AND if another segment
-				-- meets there, test for a junction.. issue warning if negative.
-			
 				-- calculate the shortes distance of point from line.
-				d := distance_of_point_from_line (
+				distance := distance_of_point_from_line (
 					point 		=> type_2d_point (port.coordinates),
 					line_start	=> type_2d_point (segment.coordinates_start),
 					line_end	=> type_2d_point (segment.coordinates_end),
 					line_range	=> with_end_points);
 
-				if (not d.out_of_range) and d.distance = et_coordinates.zero_distance then
+				if (not distance.out_of_range) and distance.distance = et_coordinates.zero_distance then
 
-					--if junction_here then
-						sits_on_segment := true;
-						log ("port on segment", level => 5);
-					--else
-					--	log (message_warning & "missing junction at " & to_string (port.coordinates, et_coordinates.module));
-					--end if;
+					-- If point sits on either start or end point of given line
+					if distance.sits_on_start or distance.sits_on_end then
+
+						-- If another segment meets here a junction is required:
+						if another_segment_here then
+							test_junction;
+						else 
+							-- no other segment here -> port is connected 
+							-- only with start or end point of given segment:
+							sits_on_segment := true;
+							--log ("port on segment", level => 5);
+						end if;
+							
+					else 
+						-- Point sits between start and end point of given line.
+						-- This case requires a junction:
+						test_junction;
+
+					end if;
 				end if;
 
 			end if;
 		end if;
 		
 		return sits_on_segment;
-	end port_sits_on_segment;
+	end port_connected_with_segment;
 		
 	procedure rename_strands (
 	-- Renames all strands with the name_before to the name_after.
@@ -1813,7 +1898,7 @@ package body et_schematic is
 							log ("probing port " & to_string (position => element (port).coordinates), log_threshold + 4);
 
 							-- test if port is connected with segment
-							if port_sits_on_segment (element (port), element (segment)) then
+							if port_connected_with_segment (element (port), element (segment)) then
 								log_indentation_up;
 -- 								log ("match", log_threshold + 2);
 
@@ -3089,7 +3174,7 @@ package body et_schematic is
 											log_threshold + 5);
 
 										-- test if port sits on segment
-										if port_sits_on_segment (element (port_cursor), element (segment)) then
+										if port_connected_with_segment (element (port_cursor), element (segment)) then
 											log_indentation_up;
 										
 											log ("connected with " & to_string (component) 
@@ -3714,16 +3799,16 @@ package body et_schematic is
 			
 			-- components
 			put_line (statistics_handle_cad, "components");
-			put_line (statistics_handle_cad, " total   " & query_statistics (statistics, components_total));
-			put_line (statistics_handle_cad, " real    " & query_statistics (statistics, components_real));
+			put_line (statistics_handle_cad, " total    " & query_statistics (statistics, components_total));
+			put_line (statistics_handle_cad, " real     " & query_statistics (statistics, components_real));
 			put_line (statistics_handle_cad, latin_1.space & et_string_processing.mounted & latin_1.space 
 				& query_statistics (statistics, components_mounted));
-			put_line (statistics_handle_cad, " virtual " & query_statistics (statistics, components_virtual));
+			put_line (statistics_handle_cad, " virtual  " & query_statistics (statistics, components_virtual));
 
 			-- As for the total number of ports, we take all ports into account (inc. virtual ports 
 			-- of virtual components like GND symbols).
 			new_line (statistics_handle_cad);
-			put_line (statistics_handle_cad, "ports   " & query_statistics (statistics, ports_total));
+			put_line (statistics_handle_cad, "ports     " & query_statistics (statistics, ports_total));
 
 			-- CS: resitors, leds, transitors, ...
 			new_line (statistics_handle_cad);

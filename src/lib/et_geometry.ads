@@ -40,8 +40,10 @@ with et_coordinates;
 package et_geometry is
 
 	type type_distance_point_from_line is record -- CS: should be private
-		distance		: et_coordinates.type_distance;
-		out_of_range	: boolean;
+		distance		: et_coordinates.type_distance := et_coordinates.zero_distance;
+		sits_on_start	: boolean := false;
+		sits_on_end		: boolean := false;
+		out_of_range	: boolean := false;
 	end record;
 
 	type type_line_range is (
