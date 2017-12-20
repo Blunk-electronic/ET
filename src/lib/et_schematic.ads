@@ -898,7 +898,10 @@ package et_schematic is
 		components_real,
 		components_mounted,
 		nets_total,
+		-- CS: nets_global, nets_hierarchic
+		junctions,
 		ports_total
+		-- CS: no_connection_flags
 		-- CS: capacitors, resistors, ...?
 		);
 	
@@ -923,6 +926,7 @@ package et_schematic is
 			components_real		: count_type := 0;
 			components_mounted	: count_type := 0;
 			nets_total			: count_type := 0;
+			junctions			: count_type := 0;
 			ports_total			: count_type := 0;
 -- CS		ports_virtual		: count_type := 0;
 -- CS		ports_real			: count_type := 0;

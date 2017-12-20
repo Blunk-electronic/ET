@@ -1593,6 +1593,37 @@ package body et_schematic is
 		
 		sits_on_segment : boolean := false;
 		d : type_distance_point_from_line;
+
+		function junction_here return boolean is
+		-- Returns true if a junction sits at the coordinates of the given port.
+			junction_found : boolean := false; -- to be returned
+		
+			procedure query_junctions (
+			-- Query junctions. Exits prematurely once a junction is found.
+				module_name : in type_submodule_name.bounded_string;
+				module : in type_module) is
+				use type_junctions;
+				junction_cursor : type_junctions.cursor := module.junctions.first;
+			begin -- query_junctions
+				junction_found := false;
+				while junction_cursor /= type_junctions.no_element loop
+					-- compare coordinates of junction an given port
+					if element (junction_cursor).coordinates = port.coordinates then
+						junction_found := true;
+						exit; -- no further search required
+					end if;
+					next (junction_cursor);	
+				end loop;
+			end query_junctions;
+		
+			begin -- junction_here
+			type_rig.query_element (
+				position => module_cursor,
+				process => query_junctions'access);
+
+			return junction_found;
+		end junction_here;
+			
 	begin
 		-- First make sure the port is to be connected at all. Ports intended to be open
 		-- are regarded as "not connected with the segment".
@@ -1616,13 +1647,18 @@ package body et_schematic is
 					line_range	=> with_end_points);
 
 				if (not d.out_of_range) and d.distance = et_coordinates.zero_distance then
-					sits_on_segment := true;
-					log ("port on segment", level => 5);
+
+					--if junction_here then
+						sits_on_segment := true;
+						log ("port on segment", level => 5);
+					--else
+					--	log (message_warning & "missing junction at " & to_string (port.coordinates, et_coordinates.module));
+					--end if;
 				end if;
 
 			end if;
 		end if;
-			
+		
 		return sits_on_segment;
 	end port_sits_on_segment;
 		
@@ -3587,7 +3623,7 @@ package body et_schematic is
 		statistics.nets_total := net_count;
 
 		-- count junctions
-		-- CS: statistics.junctions_total := junction_count;
+		statistics.junctions := junction_count;
 		
 		return statistics;
 	end make_statistics;
@@ -3614,6 +3650,9 @@ package body et_schematic is
 
 			when nets_total =>
 				return count_type'image (statistics.nets_total);
+
+			when junctions =>
+				return count_type'image (statistics.junctions);
 				
 			when ports_total =>
 				return count_type'image (statistics.ports_total);
@@ -3680,18 +3719,21 @@ package body et_schematic is
 			put_line (statistics_handle_cad, latin_1.space & et_string_processing.mounted & latin_1.space 
 				& query_statistics (statistics, components_mounted));
 			put_line (statistics_handle_cad, " virtual " & query_statistics (statistics, components_virtual));
--- 			-- CS: resitors, leds, transitors, ...
-			new_line (statistics_handle_cad);
-
-			-- nets
-			put_line (statistics_handle_cad, "nets");
-			put_line (statistics_handle_cad, " total   " & query_statistics (statistics, nets_total));
 
 			-- As for the total number of ports, we take all ports into account (inc. virtual ports 
 			-- of virtual components like GND symbols).
-			put_line (statistics_handle_cad, " ports   " & query_statistics (statistics, ports_total));
--- 			
+			new_line (statistics_handle_cad);
+			put_line (statistics_handle_cad, "ports   " & query_statistics (statistics, ports_total));
+
+			-- CS: resitors, leds, transitors, ...
+			new_line (statistics_handle_cad);
+
+			-- nets
+			put_line (statistics_handle_cad, "nets      " & query_statistics (statistics, nets_total));
+			put_line (statistics_handle_cad, "junctions " & query_statistics (statistics, junctions));
+
 			-- finish statistics			
+			new_line (statistics_handle_cad);
 			put_line (statistics_handle_cad, comment_mark & " " & row_separator_single);
 			put_line (statistics_handle_cad, comment_mark & " end of list");
 			log_indentation_down;
