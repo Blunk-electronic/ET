@@ -1573,7 +1573,7 @@ package body et_schematic is
 		begin
 			port_cursor := first (ports);
 		end set_cursor;
-		begin -- first_port
+	begin -- first_port
 		type_portlists.query_element (
 			position => component_cursor,
 			process => set_cursor'access);
@@ -1584,7 +1584,11 @@ package body et_schematic is
 	function port_connected_with_segment (
 	-- Returns true if the given port sits on the given net segment.
 		port	: in type_port'class;
-		segment	: in type_net_segment'class) -- CS: pass a cursor instead ? Makes excluding the same segment easier in procedure query_segments
+		segment	: in type_net_segment'class) 
+		-- NOTE: Passing a cursor to given segment does not work. This measure would make
+		-- excluding the same segment easier in procedure query_segments. The cursor to the given segment
+		-- would be the same type as the segment being inquired, yet they do not point to the same
+		-- memory location. So forget this idea.
 		return boolean is
 
 		use et_geometry;
