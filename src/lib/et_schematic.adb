@@ -3159,9 +3159,102 @@ package body et_schematic is
 
 	procedure check_orphaned_no_connection_flags (log_threshold : in et_string_processing.type_log_level) is
 	-- Warns about orphaned no_connection_flags.
-	begin
-		null;
-		-- CS
+
+		use type_rig;
+		use et_string_processing;
+	
+		procedure query_no_connect_flags (
+		-- Query junctions. Exits prematurely once a junction is found.
+			module_name : in type_submodule_name.bounded_string;
+			module : in type_module) is
+			use type_no_connection_flags;
+			no_connection_flag_cursor : type_no_connection_flags.cursor := module.no_connections.first;
+
+			procedure query_portlists (
+			-- Query junctions. Exits prematurely once a junction is found.
+				module_name : in type_submodule_name.bounded_string;
+				module : in type_module) is
+				use type_portlists;
+				portlist_cursor : type_portlists.cursor := module.portlists.first;
+
+				-- As long as no port is detected, we consider the flag as orphaned.
+				flag_orphaned : boolean := true;
+				
+				procedure query_ports (
+					component : in type_component_reference;
+					ports : in type_ports.list) is
+					port_cursor : type_ports.cursor := ports.first;
+					use type_ports;
+				begin -- query_ports
+					-- query ports of component and test if the no_connection_flag is attached to any of them
+					while port_cursor /= type_ports.no_element loop
+
+						-- if port and no_connection_flag have the same coordinates then the 
+						-- flag is considered as not orphaned -> exit prematurely
+						if element (no_connection_flag_cursor).coordinates = element (port_cursor).coordinates then
+							flag_orphaned := false;
+							exit;
+						end if;
+							
+						next (port_cursor);
+					end loop;
+				end query_ports;
+				
+			begin -- query_portlists
+				-- Search in the portlists for a port that has the no_connection_flag attached.
+				-- The search ends prematurely once such a port was found. As long as
+				-- the flag is considered as orphaned the search continues until all portlists
+				-- have been searched.
+				while flag_orphaned and portlist_cursor /= type_portlists.no_element loop
+					query_element (
+						position => portlist_cursor,
+						process => query_ports'access);
+					next (portlist_cursor);
+				end loop;
+
+				-- If the flag is still orphaned issue a warning.
+				if flag_orphaned then
+					-- no_connection_flag is not placed at any port
+					log (message_warning & "orphaned no_connection_flag found at " 
+						 & to_string (element (no_connection_flag_cursor).coordinates,
+							et_coordinates.module));
+				end if;
+					
+			end query_portlists;
+			
+		begin -- query_no_connect_flags
+			log ("quering no_connection_flags ...", log_threshold + 1);
+			while no_connection_flag_cursor /= type_no_connection_flags.no_element loop
+
+				query_element (
+					position => module_cursor,
+					process => query_portlists'access);
+
+				next (no_connection_flag_cursor);	
+			end loop;
+		end query_no_connect_flags;
+
+	begin -- check_orphaned_no_connection_flags
+		log ("checking orphaned no-connection-flags ...", log_threshold);
+		log_indentation_up;
+
+		-- We start with the first module of the rig.
+		first_module;
+
+		-- Process one rig module after another.
+		-- module_cursor points to the module in the rig.
+		while module_cursor /= type_rig.no_element loop
+			
+			-- query no_connection_flags of current module and test if any of them
+			-- is not placed at a port
+			query_element (
+				position => module_cursor,
+				process => query_no_connect_flags'access);
+			
+			next (module_cursor);
+		end loop;
+
+		log_indentation_down;
 	end check_orphaned_no_connection_flags;
 	
 	procedure make_netlists (log_threshold : in et_string_processing.type_log_level) is

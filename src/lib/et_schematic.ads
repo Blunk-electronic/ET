@@ -866,6 +866,8 @@ package et_schematic is
 	procedure check_orphaned_no_connection_flags (log_threshold : in et_string_processing.type_log_level);
 	-- Warns about orphaned no_connection_flags.
 
+	-- CS: procedure check_open_ports (log_threshold : in et_string_processing.type_log_level);
+	-- Warns about unintentionally left open ports
 	
 -- NETLISTS
 	-- Whenever we deal with netlist files this type should be used:

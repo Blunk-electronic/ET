@@ -98,7 +98,7 @@ package body et_import is
 			close (et_import.report_handle);
 
 			if warning_counter > 0 then
-				put_line (standard_output, "Read import and export reports for warnings and error messages !"); -- CS: show path to report file
+				put_line (standard_output, "Read import report for warnings and error messages !"); -- CS: show path to report file
 			end if;
 -- 			put_line (standard_output, "successful !");
 -- 			put_line ("Read import and export reports for warnings and error messages !"); -- CS: show path to report file

@@ -93,6 +93,10 @@ package body et_export is
 		set_output(standard_output);
 		
 		close (et_export.report_handle);
+
+		if warning_counter > 0 then
+			put_line (standard_output, "Read export report for warnings and error messages !"); -- CS: show path to report file
+		end if;
 		
 	end close_report;
 
