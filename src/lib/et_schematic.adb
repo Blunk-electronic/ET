@@ -1665,16 +1665,13 @@ package body et_schematic is
 				end query_segments;
 				
 			begin -- query_strands
-				while strand_cursor /= type_strands.no_element loop
+				-- Once a segment has been found or all strands have been processed:
+				while (not segment_found) and strand_cursor /= type_strands.no_element loop
 
 					type_strands.query_element (
 						position => strand_cursor,
 						process => query_segments'access);
 
--- 					if segment_found then
--- 						exit;
--- 					end if;
-					
 					next (strand_cursor);
 				end loop;
 			end query_strands;
