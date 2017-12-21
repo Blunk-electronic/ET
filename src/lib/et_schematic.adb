@@ -3035,6 +3035,134 @@ package body et_schematic is
 		return count;
 	end junction_count;
 
+	procedure check_junctions (log_threshold : in et_string_processing.type_log_level) is
+	-- Verifies that junctions are placed at net crossings.
+	-- Warns about orphaned junctions.
+	begin
+		null;
+		-- CS
+	end check_junctions;
+	
+	procedure check_misplaced_no_connection_flags (log_threshold : in et_string_processing.type_log_level) is
+	-- Warns about no_connection_flags placed at nets.
+		use et_string_processing;
+		use type_rig;
+		
+		procedure query_strands (
+		-- Query strands and test if no_connection_flags are placed on any segment of the strand.
+			module_name : in type_submodule_name.bounded_string;
+			module : in type_module) is
+			use type_strands;
+			strand_cursor : type_strands.cursor := module.strands.first;
+
+			procedure query_segments (
+				strand : in type_strand) is
+				use type_net_segments;
+				segment_cursor : type_net_segments.cursor := strand.segments.first;
+
+				procedure find_no_connection_flag is
+				-- Issues a warning if a no_connection_flag sits at the segment.
+				
+					procedure query_no_connect_flags (
+					-- Query junctions. Exits prematurely once a junction is found.
+						module_name : in type_submodule_name.bounded_string;
+						module : in type_module) is
+						use type_no_connection_flags;
+						use et_geometry;
+						no_connection_flag_cursor : type_no_connection_flags.cursor := module.no_connections.first;
+						distance : type_distance_point_from_line;
+					begin -- query_no_connect_flags
+						log ("quering no_connection_flags ...", log_threshold + 4);
+						while no_connection_flag_cursor /= type_no_connection_flags.no_element loop
+
+							-- now we have element (segment_cursor) 
+							-- and element (no_connection_flag_cursor) to work with
+
+							-- Make sure no_connection_flag and segment share the same module path and sheet.
+							-- It is sufficient to check against the segment start coordinates.
+							if same_path_and_sheet (
+								element (no_connection_flag_cursor).coordinates,
+								element (segment_cursor).coordinates_start) then
+															
+								distance := distance_of_point_from_line (
+									point 		=> type_2d_point (element (no_connection_flag_cursor).coordinates),
+									line_start	=> type_2d_point (element (segment_cursor).coordinates_start),
+									line_end	=> type_2d_point (element (segment_cursor).coordinates_end),
+									line_range	=> with_end_points);
+
+								if (not distance.out_of_range) and distance.distance = et_coordinates.zero_distance then
+									log (message_warning & "no-connection-flag misplaced on a net at " 
+										& to_string (element (no_connection_flag_cursor).coordinates, et_coordinates.module));
+								end if;
+							end if;
+
+							next (no_connection_flag_cursor);	
+						end loop;
+					end query_no_connect_flags;
+				
+				begin -- find_no_connection_flag
+					log ("searching no_connection_flags ...", log_threshold + 3);
+					-- query no_connection_flags of the module
+					type_rig.query_element (
+						position => module_cursor,
+						process => query_no_connect_flags'access);
+				end find_no_connection_flag;
+				
+			begin -- query_segments
+				log ("quering segments ...", log_threshold + 2);
+				while segment_cursor /= type_net_segments.no_element loop
+		
+					-- test if there are any no_connection_flags placed on the segment
+					find_no_connection_flag;
+					next (segment_cursor);
+				end loop;
+			end query_segments;
+			
+		begin -- query_strands
+			log ("quering strands ...", log_threshold + 1);
+			log_indentation_up;
+			
+			while strand_cursor /= type_strands.no_element loop
+
+				-- query segments of current strand
+				type_strands.query_element (
+					position => strand_cursor,
+					process => query_segments'access);
+
+				next (strand_cursor);
+			end loop;
+
+			log_indentation_down;	
+		end query_strands;
+
+	begin -- check_misplaced_no_connection_flags
+		log ("checking misplaced no-connection-flags ...", log_threshold);
+		log_indentation_up;
+
+		-- We start with the first module of the rig.
+		first_module;
+
+		-- Process one rig module after another.
+		-- module_cursor points to the module in the rig.
+		while module_cursor /= type_rig.no_element loop
+			
+			-- query strands of current module and check of any misplaced no_connection_flags
+			query_element (
+				position => module_cursor,
+				process => query_strands'access);
+			
+			next (module_cursor);
+		end loop;
+
+		log_indentation_down;
+	end check_misplaced_no_connection_flags;
+
+	procedure check_orphaned_no_connection_flags (log_threshold : in et_string_processing.type_log_level) is
+	-- Warns about orphaned no_connection_flags.
+	begin
+		null;
+		-- CS
+	end check_orphaned_no_connection_flags;
 	
 	procedure make_netlists (log_threshold : in et_string_processing.type_log_level) is
 	-- Builds the netlists of all modules of the rig.

@@ -197,6 +197,13 @@ begin -- main
 	-- export useful things from the imported project(s)
 	et_export.create_report;
 	reset_warnings_counter;
+
+	-- detect missing or orphaned junctions
+	et_schematic.check_junctions (log_threshold => 0);
+
+	-- detect misplaced or orphaned no-connect-flags
+	et_schematic.check_misplaced_no_connection_flags (log_threshold => 0);
+	et_schematic.check_orphaned_no_connection_flags (log_threshold => 0);
 	
 	-- make netlists
 	et_schematic.make_netlists (log_threshold => 0);

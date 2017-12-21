@@ -722,7 +722,7 @@ package et_schematic is
 	
 	type type_module is record
 		libraries		: type_full_library_names.list;	-- the list of project library names
-		strands	    	: type_strands.list;		-- the strands of the module. temporarily used. CS: clear once nets are ready. 
+		strands	    	: type_strands.list;		-- the strands of the module
 		junctions		: type_junctions.list;		-- net junctions
 		nets 	    	: type_nets.map;			-- the nets of the module
 		components		: type_components.map;		-- the components of the module
@@ -856,6 +856,17 @@ package et_schematic is
 	function build_portlists (log_threshold : in et_string_processing.type_log_level) return type_portlists.map;
 	-- Returns a list of components with the absolute positions of their ports as they are placed in the schematic.
 
+	procedure check_junctions (log_threshold : in et_string_processing.type_log_level);
+	-- Verifies that junctions are placed at net crossings.
+	-- Warns about orphaned junctions.
+
+	procedure check_misplaced_no_connection_flags (log_threshold : in et_string_processing.type_log_level);
+	-- Warns about no_connection_flags placed at nets.
+
+	procedure check_orphaned_no_connection_flags (log_threshold : in et_string_processing.type_log_level);
+	-- Warns about orphaned no_connection_flags.
+
+	
 -- NETLISTS
 	-- Whenever we deal with netlist files this type should be used:
 	netlist_file_name_length : constant positive := 100; -- CS: should suffice for now
