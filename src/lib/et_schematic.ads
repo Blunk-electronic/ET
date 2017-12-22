@@ -857,7 +857,8 @@ package et_schematic is
 	-- Returns a list of components with the absolute positions of their ports as they are placed in the schematic.
 
 	procedure check_junctions (log_threshold : in et_string_processing.type_log_level);
-	-- Verifies that junctions are placed at net crossings.
+	-- Verifies that junctions are placed where net segments are connected with each other.
+	-- NOTE: make_netlist detects if a junction is missing where a port is connected with a net.
 	-- Warns about orphaned junctions.
 
 	procedure check_misplaced_no_connection_flags (log_threshold : in et_string_processing.type_log_level);

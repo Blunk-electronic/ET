@@ -1619,7 +1619,7 @@ package body et_schematic is
 			begin -- query_junctions
 				junction_found := false;
 				while junction_cursor /= type_junctions.no_element loop
-					-- compare coordinates of junction an given port
+					-- compare coordinates of junction and given port
 					if element (junction_cursor).coordinates = port.coordinates then
 						junction_found := true;
 						exit; -- no further search required
@@ -3044,11 +3044,198 @@ package body et_schematic is
 	end junction_count;
 
 	procedure check_junctions (log_threshold : in et_string_processing.type_log_level) is
-	-- Verifies that junctions are placed at net crossings.
+	-- Verifies that junctions are placed where net segments are connected with each other.
+	-- NOTE: make_netlist detects if a junction is missing where a port is connected with a net.
 	-- Warns about orphaned junctions.
-	begin
-		null;
-		-- CS
+		use et_string_processing;
+		use type_rig;
+
+		procedure query_strands_prim (
+		-- Query strands of module.
+			module_name : in type_submodule_name.bounded_string;
+			module : in type_module) is
+			use type_strands;
+			strand_cursor_prim : type_strands.cursor := module.strands.first;
+
+			procedure query_segments_prim (
+			-- Query segments of strand
+				strand : in type_strand) is
+				use type_net_segments;
+				segment_cursor_prim : type_net_segments.cursor := strand.segments.first;
+
+				type type_junction is record
+					expected : boolean := false;
+					position : type_coordinates;
+				end record;
+
+				junction : type_junction;
+				
+				function find_position_of_expected_junction return type_junction is
+				-- Queries strands and segments of module. Tests if start or end point of the 
+				-- the primary segment (indicated by segment_cursor_prim) meets 
+				-- another segment (port_cursor_secondary) BETWEEN
+				-- its start and end point.Exits prematurely when positive. Returns the composite
+				-- junction_position.
+					junction_position : type_junction;
+				
+					use type_strands;
+
+					-- start strand query with the first strand of the module.
+					strand_cursor_sec : type_strands.cursor := module.strands.first;
+
+					procedure query_segments_sec (
+						strand : in type_strand) is
+						segment_cursor_sec : type_net_segments.cursor := strand.segments.first;
+						use et_geometry;
+						distance : type_distance_point_from_line;
+					begin -- query_segments_sec
+						log ("quering segments ...", log_threshold + 4);
+						while segment_cursor_sec /= type_net_segments.no_element loop
+
+							-- Test segments that are on the same path and sheet. It is sufficient
+							-- to compare the start coordinates of the segments.
+							if same_path_and_sheet (
+								element (segment_cursor_prim).coordinates_start,
+								element (segment_cursor_sec).coordinates_start) then
+
+								-- If START point of primary segment sits BETWEEN start and end point of secondary segment,
+								-- exit prematurely and return the coordinates of the expected junction.
+								distance := distance_of_point_from_line (
+									point 		=> type_2d_point (element (segment_cursor_prim).coordinates_start),
+									line_start	=> type_2d_point (element (segment_cursor_sec).coordinates_start),
+									line_end	=> type_2d_point (element (segment_cursor_sec).coordinates_end),
+									line_range	=> inside_end_points);
+
+								if (not distance.out_of_range) and distance.distance = et_coordinates.zero_distance then
+									junction_position.expected := true;
+									junction_position.position := element (segment_cursor_prim).coordinates_start;
+									exit;
+								end if;
+
+								-- If END point of primary segment sits BETWEEN start and end point of secondary segment,
+								-- exit prematurely and return the coordinates of the expected junction.
+								distance := distance_of_point_from_line (
+									point 		=> type_2d_point (element (segment_cursor_prim).coordinates_end),
+									line_start	=> type_2d_point (element (segment_cursor_sec).coordinates_start),
+									line_end	=> type_2d_point (element (segment_cursor_sec).coordinates_end),
+									line_range	=> inside_end_points);
+
+								if (not distance.out_of_range) and distance.distance = et_coordinates.zero_distance then
+									junction_position.expected := true;
+									junction_position.position := element (segment_cursor_prim).coordinates_end;
+									exit;
+								end if;
+							end if;
+
+							next (segment_cursor_sec);
+						end loop;
+					end query_segments_sec;
+
+				begin -- find_position_of_expected_junction
+					log ("quering strands ...", log_threshold + 3);
+					log_indentation_up;
+
+					-- Query secondary net segments until a junction is expected or until all secondary segments 
+					-- are tested. If no junction is expected return junction_position.expected false.
+					while (not junction_position.expected) and strand_cursor_sec /= type_strands.no_element loop
+						type_strands.query_element (
+							position => strand_cursor_sec,
+							process => query_segments_sec'access);
+
+						next (strand_cursor_sec);
+					end loop;
+
+					log_indentation_down;
+					return junction_position;
+				end find_position_of_expected_junction;
+
+				function junction_here return boolean is
+				-- Returns true if a junction exits at the expected position (junction.position).
+					junction_found : boolean := false; -- to be returned
+				
+					procedure query_junctions (
+					-- Query junctions. Exits prematurely once a junction is found.
+						module_name : in type_submodule_name.bounded_string;
+						module : in type_module) is
+						use type_junctions;
+						junction_cursor : type_junctions.cursor := module.junctions.first;
+					begin -- query_junctions
+						junction_found := false;
+						while junction_cursor /= type_junctions.no_element loop
+							-- compare coordinates of junction and expected junction position
+							if element (junction_cursor).coordinates = junction.position then
+								junction_found := true;
+								exit; -- no further search required
+							end if;
+							next (junction_cursor);	
+						end loop;
+					end query_junctions;
+				
+				begin -- junction_here
+					type_rig.query_element (
+						position => module_cursor,
+						process => query_junctions'access);
+
+					return junction_found;
+				end junction_here;
+
+				
+				
+			begin -- query_segments_prim
+				log ("quering segments ...", log_threshold + 2);
+				while segment_cursor_prim /= type_net_segments.no_element loop
+
+					junction := find_position_of_expected_junction;
+
+					if junction.expected then
+						if not junction_here then
+							log (message_warning & "missing net junction at " 
+							 & to_string (junction.position, et_coordinates.module));
+						end if;
+					end if;
+					
+					next (segment_cursor_prim);
+				end loop;
+			end query_segments_prim;
+
+			
+		begin -- query_strands_prim
+			log ("quering strands ...", log_threshold + 1);
+			log_indentation_up;
+			
+			while strand_cursor_prim /= type_strands.no_element loop
+
+				-- query segments of current strand
+				type_strands.query_element (
+					position => strand_cursor_prim,
+					process => query_segments_prim'access);
+
+				next (strand_cursor_prim);
+			end loop;
+
+			log_indentation_down;	
+		end query_strands_prim;
+		
+	begin -- check_junctions
+		log ("detecting missing net junctions ...", log_threshold);
+		log_indentation_up;
+
+		-- We start with the first module of the rig.
+		first_module;
+
+		-- Process one rig module after another.
+		-- module_cursor points to the module in the rig.
+		while module_cursor /= type_rig.no_element loop
+			
+			-- query strands of current module
+			query_element (
+				position => module_cursor,
+				process => query_strands_prim'access);
+			
+			next (module_cursor);
+		end loop;
+
+		log_indentation_down;
 	end check_junctions;
 	
 	procedure check_misplaced_no_connection_flags (log_threshold : in et_string_processing.type_log_level) is
@@ -3267,7 +3454,8 @@ package body et_schematic is
 
 	procedure check_open_ports (log_threshold : in et_string_processing.type_log_level) is
 	-- Warns about unintentionally left open ports. That are ports without a no_connection_flag.
-
+	-- Must be called AFTER make_netlists !
+	
 		use type_rig;
 		use et_string_processing;
 
@@ -3469,6 +3657,8 @@ package body et_schematic is
 	-- Bases on the portlists and nets/strands information of the module.
 	-- Netlists are exported in individual project directories in the work directory of ET.
 	-- These project directories have the same name as the module indicated by module_cursor.
+
+	-- Detects if a junction is missing where a port is connected with a net.
 	
 		use et_string_processing;
 		use type_rig;
