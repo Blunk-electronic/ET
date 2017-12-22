@@ -201,13 +201,18 @@ begin -- main
 	-- detect missing or orphaned junctions
 	et_schematic.check_junctions (log_threshold => 0);
 
-	-- detect misplaced or orphaned no-connect-flags
+	-- detect misplaced no-connect-flags
 	et_schematic.check_misplaced_no_connection_flags (log_threshold => 0);
+
+	-- detect orphaned no-connect-flags
 	et_schematic.check_orphaned_no_connection_flags (log_threshold => 0);
-	
+
 	-- make netlists
 	et_schematic.make_netlists (log_threshold => 0);
 
+	-- detect unintentionally left open ports (must happen AFTER make_netlists !)
+	et_schematic.check_open_ports (log_threshold => 0);
+	
 	-- export netlists
 	et_schematic.export_netlists (log_threshold => 0);
 	

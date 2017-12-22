@@ -679,8 +679,8 @@ package et_schematic is
 		direction		: type_port_direction; -- example: "passive" -- used for ERC
 		style			: type_port_style;	-- used for ERC
 		appearance		: type_appearance_schematic;
-		intended_open	: type_port_open; -- true if port is to be left open intentionally (by a no_connection-flag)
-		connected		: boolean; -- used for netlist generation. true when port connected with a net
+		intended_open	: type_port_open; -- set while portlist generation. true if port is to be left open intentionally (by a no_connection-flag)
+		connected		: boolean; -- set while netlist generation. true when port connected with a net
 	end record;
 
 	-- Ports can be collected in a simple list:
@@ -866,8 +866,8 @@ package et_schematic is
 	procedure check_orphaned_no_connection_flags (log_threshold : in et_string_processing.type_log_level);
 	-- Warns about orphaned no_connection_flags.
 
-	-- CS: procedure check_open_ports (log_threshold : in et_string_processing.type_log_level);
-	-- Warns about unintentionally left open ports
+	procedure check_open_ports (log_threshold : in et_string_processing.type_log_level);
+	-- Warns about unintentionally left open ports. That are ports without a no_connection_flag.
 	
 -- NETLISTS
 	-- Whenever we deal with netlist files this type should be used:

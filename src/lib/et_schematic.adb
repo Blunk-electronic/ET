@@ -1144,7 +1144,7 @@ package body et_schematic is
 
 		procedure extract_ports is
 		-- Extracts the ports of the component indicated by component_cursor_lib.
-		-- NOTE: The library contains the (x/y) positions of the ports.
+		-- NOTE: The library contains the relative (x/y) positions of the ports.
 			use et_libraries.type_units_internal;
 			use et_libraries.type_ports;
 			use et_coordinates;
@@ -1391,13 +1391,13 @@ package body et_schematic is
 
 					-- SEARCH FOR PORTS OF GLOBAL UNITS. 
 					
-					-- NOTE: Take a rest before trying to understand the following:
+					-- NOTE: Have a break before trying to understand the following:
 					
 					-- The problem with ports that are "common to all units" (KiCad terminology) is:
-					--  The unit they belong to does not appear in the schematic, whereas their ports
+					--  The unit they belong to, does not appear in the schematic, whereas their ports
 					--  are visible on each unit (kicad button "show hidden pins").
 					-- Solution: We assume all "common to all units" ports belong to all units of the 
-					-- component, thus inheriting the unit_name_lib and the unti_position.
+					-- component, thus inheriting the unit_name_lib and the unit_position.
 					-- The the unit_name_lib and unit_position of the current unit are applied
 					-- to the global units.
 					ports_of_global_unit;
@@ -1452,6 +1452,8 @@ package body et_schematic is
 
 		-- The library contains the coordinates of the ports whereas
 		-- the schematic provides the coordinates of the units of a component.
+		-- The library coordinates are regarded as relative to the coordinates
+		-- provided by the schematic.
 		-- These coordinates summed up yield the absolute position of the ports.
 		
 		-- Loop in component list of schematic. component_cursor_sch points to the 
@@ -1470,7 +1472,7 @@ package body et_schematic is
 		et_schematic.reset_component_cursor (component_cursor_sch);
 		while component_cursor_sch /= et_schematic.type_components.no_element loop
 
-			-- power flags are to be skipped
+			-- power flags are to be skipped -- CS: for proper ERC probably no good idea. see comments above
 			if not et_schematic.component_power_flag (component_cursor_sch) then
 		
 				-- log component by its reference		
@@ -1491,7 +1493,9 @@ package body et_schematic is
 				-- get the units of the current schematic component (indicated by component_cursor_sch)
 				units_sch := et_schematic.units_of_component (component_cursor_sch);
 	
-				-- get generic component name (as listed in a library)
+				-- Get generic component name (as listed in a library)
+				-- CS: mind generic names in library that start with a tilde. 
+				-- see https://forum.kicad.info/t/why-a-tilde-in-schematic-library/8263/6
 				log_indentation_up;			
 				component_name := et_schematic.component_name_in_library (component_cursor_sch);
 				log ("generic name " & to_string (component_name), log_threshold + 2);
@@ -3256,6 +3260,155 @@ package body et_schematic is
 
 		log_indentation_down;
 	end check_orphaned_no_connection_flags;
+
+	procedure check_open_ports (log_threshold : in et_string_processing.type_log_level) is
+	-- Warns about unintentionally left open ports. That are ports without a no_connection_flag.
+
+		use type_rig;
+		use et_string_processing;
+
+		procedure query_portlists (
+			module_name : in type_submodule_name.bounded_string;
+			module : in type_module) is
+			use type_portlists;
+			portlist_cursor : type_portlists.cursor := module.portlists.first;
+
+			procedure query_ports (
+				component : in type_component_reference;
+				ports : in type_ports.list) is
+				port_cursor : type_ports.cursor := ports.first;
+				use type_ports;
+				
+-- 				function no_connection_flag_here return boolean is
+-- 				-- returns true once a no_connection_flag has been found at the port coordinates
+-- 					no_connection_flag_found : boolean := false;
+-- 				
+-- 					procedure query_no_connect_flags (
+-- 						module_name : in type_submodule_name.bounded_string;
+-- 						module : in type_module) is
+-- 						use type_no_connection_flags;
+-- 						no_connection_flag_cursor : type_no_connection_flags.cursor := module.no_connections.first;
+-- 					begin -- query_no_connect_flags
+-- 						log ("quering no_connection_flags ...", log_threshold + 1);
+-- 						while no_connection_flag_cursor /= type_no_connection_flags.no_element loop
+-- 
+-- 							-- Compare coordinates of port and no_connection_flag. 
+-- 							-- On match exit prematurely.
+-- 							if element (port_cursor).coordinates = element (no_connection_flag_cursor).coordinates then
+-- 								log ("match", log_threshold + 1);
+-- 								no_connection_flag_found := true;
+-- 								exit;
+-- 							end if;
+-- 
+-- 							next (no_connection_flag_cursor);	
+-- 						end loop;
+-- 					end query_no_connect_flags;
+-- 						
+-- 				begin -- query_no_connect_flags
+-- 					query_element (
+-- 						position => module_cursor,
+-- 						process => query_no_connect_flags'access);
+-- 
+-- 					return no_connection_flag_found;
+-- 				end no_connection_flag_here;
+
+-- 				function segment_here return boolean is
+-- 				-- Returns true if a net segment is placed at the coordinates of the port.
+-- 					segment_found : boolean := false; -- to be returned
+-- 				
+-- 					procedure query_strands (
+-- 					-- Query net segments. Exits prematurely once a segment is found.
+-- 						module_name : in type_submodule_name.bounded_string;
+-- 						module : in type_module) is
+-- 						use type_strands;
+-- 						strand_cursor : type_strands.cursor := module.strands.first;
+-- 
+-- 						procedure query_segments (
+-- 							strand : in type_strand) is
+-- 							use type_net_segments;
+-- 							segment_cursor : type_net_segments.cursor := strand.segments.first;
+-- 						begin
+-- 							while segment_cursor /= type_net_segments.no_element loop
+-- 						
+-- 								-- Compare the coordinates of the port with the coordinates of the segment:
+-- 								if	element (port_cursor).coordinates = element (segment_cursor).coordinates_start or
+-- 									element (port_cursor).coordinates = element (segment_cursor).coordinates_end then
+-- 
+-- 									segment_found := true;
+-- 									exit;
+-- 								end if;
+-- 
+-- 								next (segment_cursor);
+-- 							end loop;
+-- 						end query_segments;
+-- 						
+-- 					begin -- query_strands
+-- 						while (not segment_found) and strand_cursor /= type_strands.no_element loop
+-- 
+-- 							type_strands.query_element (
+-- 								position => strand_cursor,
+-- 								process => query_segments'access);
+-- 
+-- 							next (strand_cursor);
+-- 						end loop;
+-- 					end query_strands;
+-- 				
+-- 				begin -- segment_here
+-- 					type_rig.query_element (
+-- 						position => module_cursor,
+-- 						process => query_strands'access);
+-- 
+-- 					return segment_found;
+-- 				end segment_here;
+
+			begin -- query_ports
+				while port_cursor /= type_ports.no_element loop
+
+					if 	element (port_cursor).intended_open = false and
+						not element (port_cursor).connected then
+							log (message_warning & "port not connected at " 
+								 & to_string (element (port_cursor).coordinates, et_coordinates.module));
+					end if;
+				
+					next (port_cursor);
+				end loop;
+			end query_ports;
+			
+		begin -- query_portlists
+			-- Search in the portlists for a port that has neither a no_connection_flag attached
+			-- nor any net connected.
+			while portlist_cursor /= type_portlists.no_element loop
+				query_element (
+					position => portlist_cursor,
+					process => query_ports'access);
+				next (portlist_cursor);
+			end loop;
+		end query_portlists;
+
+
+	begin -- check_open_ports
+		log ("searching unintentionally left open ports ...", log_threshold);
+		log_indentation_up;
+
+		-- We start with the first module of the rig.
+		first_module;
+
+		-- Process one rig module after another.
+		-- module_cursor points to the module in the rig.
+		while module_cursor /= type_rig.no_element loop
+			
+			-- query no_connection_flags of current module and test if any of them
+			-- is not placed at a port
+			query_element (
+				position => module_cursor,
+				process => query_portlists'access);
+			
+			next (module_cursor);
+		end loop;
+
+		log_indentation_down;
+
+	end check_open_ports;
 	
 	procedure make_netlists (log_threshold : in et_string_processing.type_log_level) is
 	-- Builds the netlists of all modules of the rig.
