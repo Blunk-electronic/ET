@@ -1099,8 +1099,8 @@ package body et_schematic is
 	--  - the unit mirror style provided by the schematic
 	--  - the unit orientation provided by the schematic
 
-	-- Special threatment for "common to all units" ports of global units. 
-	-- Ports belonging to all units are added in the portlist of a component multiple
+	-- Special threatment for "common to all units". Such units are global units.
+	-- Their ports apply to all units and are added in the portlist of a component multiple
 	-- times but with different coordinates.
 	-- See comments.
 
@@ -3282,6 +3282,8 @@ package body et_schematic is
 				ports : in type_ports.list) is
 				port_cursor : type_ports.cursor := ports.first;
 				use type_ports;
+
+-- NOTE: DO NOT REMOVE THE FOLLWING. MIGHT BE REQUIRED SOME DAY.
 				
 -- 				function no_connection_flag_here return boolean is
 -- 				-- returns true once a no_connection_flag has been found at the port coordinates
@@ -3364,19 +3366,56 @@ package body et_schematic is
 -- 
 -- 					return segment_found;
 -- 				end segment_here;
+-- DO NOT REMOVE ! END OF BLOCK.
 
 				function connected_by_other_unit return boolean is
+				-- Searches down the portlist (starting right after the port_cursor position)
+				-- for a port with same name. Tests if the port is NOT intentionally left open
+				-- AND if the port is connected to any net segment. When positive, exits 
+				-- prematurely with a return value "true". If no suitable port found, 
+				-- returns "false".
+					port_cursor_secondary : type_ports.cursor := port_cursor;
+					use type_port_name;
 				begin
+					next (port_cursor_secondary); -- advance one notch after port_cursor
+
+					-- search down the portlist
+					while port_cursor_secondary /= type_ports.no_element loop
+						if element (port_cursor_secondary).port = element (port_cursor).port then
+
+							if 	element (port_cursor_secondary).intended_open = false and
+								element (port_cursor_secondary).connected then
+								return true;
+							end if;
+								
+						end if;
+							
+						next (port_cursor_secondary);
+					end loop;
+
+					-- no other connected port found
 					return false;
 				end connected_by_other_unit;
 
 			begin -- query_ports
+				-- Test the port if it is NOT intentionally left open AND
+				-- if it is not connected to any net segment.
+				-- The easiest is to evaluate the flags "intended_open" and "connected".
+				-- Those flags have been set while portlist and netlist generation
+				-- (See procedures build_portlists and make_netlists).
+				-- This method requires those procedures executed previously. Otherwise
+				-- the code in comments (see above) can be used to detect no_connection_flags and 
+				-- net segments attached to the port.
 				while port_cursor /= type_ports.no_element loop
 
-					if element (port_cursor).intended_open = false and
-						not element (port_cursor).connected then
-							-- CS: power in ports ?
-							-- key (port_cursor) -- component reference
+					if element (port_cursor).intended_open = false and -- port intentionally not open
+						not element (port_cursor).connected then -- port not connected to any net segment
+
+							-- Special threatment for ports of global units (like power supply ports).
+							-- Such ports may be not connected at certain units, yet connected at other units
+							-- of the same component. So we search for other ports (in the portlist of the component)
+							-- bearing the same name. If one of them is connected things are fine. Otherwise
+							-- the port is indeed not connected -> issue warning.
 							if not connected_by_other_unit then
 							
 								log (message_warning & "port not connected at " 
@@ -3398,7 +3437,6 @@ package body et_schematic is
 				next (portlist_cursor);
 			end loop;
 		end query_portlists;
-
 
 	begin -- check_open_ports
 		log ("searching unintentionally left open ports ...", log_threshold);
