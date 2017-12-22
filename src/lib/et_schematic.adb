@@ -1098,7 +1098,11 @@ package body et_schematic is
 	--  - the unit coordinates provided by the schematic
 	--  - the unit mirror style provided by the schematic
 	--  - the unit orientation provided by the schematic
-	-- Special threatment for "common to all units" ports of global units. See comments.
+
+	-- Special threatment for "common to all units" ports of global units. 
+	-- Ports belonging to all units are added in the portlist of a component multiple
+	-- times but with different coordinates.
+	-- See comments.
 
 	-- Sets the "open" flag of the port if it was marked with a no-connect-flag.
 	
@@ -3361,13 +3365,23 @@ package body et_schematic is
 -- 					return segment_found;
 -- 				end segment_here;
 
+				function connected_by_other_unit return boolean is
+				begin
+					return false;
+				end connected_by_other_unit;
+
 			begin -- query_ports
 				while port_cursor /= type_ports.no_element loop
 
-					if 	element (port_cursor).intended_open = false and
+					if element (port_cursor).intended_open = false and
 						not element (port_cursor).connected then
-							log (message_warning & "port not connected at " 
-								 & to_string (element (port_cursor).coordinates, et_coordinates.module));
+							-- CS: power in ports ?
+							-- key (port_cursor) -- component reference
+							if not connected_by_other_unit then
+							
+								log (message_warning & "port not connected at " 
+									 & to_string (element (port_cursor).coordinates, et_coordinates.module));
+							end if;
 					end if;
 				
 					next (port_cursor);

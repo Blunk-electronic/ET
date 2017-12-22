@@ -673,7 +673,7 @@ package et_schematic is
 	
 	-- This is a component port with its basic elements:
 	type type_port is tagged record
-		pin				: type_pin_name.bounded_string; -- the pin name like 3,4 or E3, A2
+		pin				: type_pin_name.bounded_string; -- the pin/pad name like 3,4 or E3, A2
 		port			: type_port_name.bounded_string; -- the port name like GPIO1, GPIO2 -- CS: rename to "name"
 		coordinates 	: type_coordinates;
 		direction		: type_port_direction; -- example: "passive" -- used for ERC
