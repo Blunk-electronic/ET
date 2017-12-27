@@ -3351,6 +3351,122 @@ package body et_schematic is
 		log_indentation_down;
 	end check_orphaned_junctions;
 
+	procedure check_misplaced_junctions (log_threshold : in et_string_processing.type_log_level) is
+	-- Warns about misplaced junctions.
+		use type_rig;
+		use et_string_processing;
+
+		procedure query_junctions (
+		-- Query junctions.
+			module_name : in type_submodule_name.bounded_string;
+			module : in type_module) is
+			use type_junctions;
+			junction_cursor : type_junctions.cursor := module.junctions.first;
+
+			function more_than_one_segment_here return boolean is
+			-- Returns true if junction sits on more than one segment.
+				more_than_one_segment_found : boolean := false; -- to be returned
+			
+				procedure query_strands (
+				-- Query net segments. Exits prematurely once a strand is found where the junction
+				-- sits on.
+					module_name : in type_submodule_name.bounded_string;
+					module : in type_module) is
+					use type_strands;
+					strand_cursor : type_strands.cursor := module.strands.first;
+
+					procedure query_segments (
+					-- Query net segments. Sets the flag segment_found and exits prematurely 
+					-- once a segment is found where the junction sits on.
+						strand : in type_strand) is
+						use type_net_segments;
+						segment_cursor : type_net_segments.cursor := strand.segments.first;
+						use et_geometry;
+						distance : type_distance_point_from_line;
+						segment_counter : natural := 0;
+					begin
+						while segment_cursor /= type_net_segments.no_element loop
+
+							-- Make sure junction and segment share the same module path and sheet.
+							-- It is sufficient to check against the segment start coordinates.
+							if same_path_and_sheet (element (segment_cursor).coordinates_start, element (junction_cursor).coordinates) then
+
+								distance := distance_of_point_from_line (
+									point 		=> type_2d_point (element (junction_cursor).coordinates),
+									line_start	=> type_2d_point (element (segment_cursor).coordinates_start),
+									line_end	=> type_2d_point (element (segment_cursor).coordinates_end),
+									line_range	=> with_end_points);
+
+								-- count segments. quit searching once at least two segments have been found
+								if (not distance.out_of_range) and distance.distance = et_coordinates.zero_distance then
+									segment_counter := segment_counter + 1;
+									if segment_counter >= 2 then
+										more_than_one_segment_found := true;
+										exit;
+									end if;
+								end if;
+
+							end if;
+								
+							next (segment_cursor);
+						end loop;
+					end query_segments;
+					
+				begin -- query_strands
+					-- Probe strands until at least two segments have been found or all strands have been processed:
+					while (not more_than_one_segment_found) and strand_cursor /= type_strands.no_element loop
+
+						type_strands.query_element (
+							position => strand_cursor,
+							process => query_segments'access);
+
+						next (strand_cursor);
+					end loop;
+				end query_strands;
+			
+			begin -- more_than_one_segment_here
+				type_rig.query_element (
+					position => module_cursor,
+					process => query_strands'access);
+
+				return more_than_one_segment_found;
+			end more_than_one_segment_here;
+
+		begin -- query_junctions
+			while junction_cursor /= type_junctions.no_element loop
+
+				if not more_than_one_segment_here then
+					log (message_warning & "misplaced net junction at " 
+						 & to_string (element (junction_cursor).coordinates,
+						et_coordinates.module));
+				end if;
+					
+				next (junction_cursor);	
+			end loop;
+		end query_junctions;
+
+		
+	begin -- check_misplaced_junctions
+		log ("detecting misplaced net junctions ...", log_threshold);
+		log_indentation_up;
+
+		-- We start with the first module of the rig.
+		first_module;
+
+		-- Process one rig module after another.
+		-- module_cursor points to the module in the rig.
+		while module_cursor /= type_rig.no_element loop
+			
+			-- query strands of current module
+			query_element (
+				position => module_cursor,
+				process => query_junctions'access);
+			
+			next (module_cursor);
+		end loop;
+
+		log_indentation_down;
+	end check_misplaced_junctions;
 	
 	procedure check_misplaced_no_connection_flags (log_threshold : in et_string_processing.type_log_level) is
 	-- Warns about no_connection_flags placed at nets.
