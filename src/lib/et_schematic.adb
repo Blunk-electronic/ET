@@ -3432,10 +3432,59 @@ package body et_schematic is
 				return more_than_one_segment_found;
 			end more_than_one_segment_here;
 
+			function port_here return boolean is
+				port_found : boolean := false;
+
+				procedure query_portlists (
+				-- Query junctions. Exits prematurely once a junction is found.
+					module_name : in type_submodule_name.bounded_string;
+					module : in type_module) is
+					use type_portlists;
+					portlist_cursor : type_portlists.cursor := module.portlists.first;
+					
+					procedure query_ports (
+						component : in type_component_reference;
+						ports : in type_ports.list) is
+						port_cursor : type_ports.cursor := ports.first;
+						use type_ports;
+					begin -- query_ports
+						while port_cursor /= type_ports.no_element loop
+
+							if element (port_cursor).coordinates = element (junction_cursor).coordinates then
+								port_found := false;
+								exit;
+							end if;
+								
+							next (port_cursor);
+						end loop;
+					end query_ports;
+					
+				begin -- query_portlists
+					while (not port_found) and portlist_cursor /= type_portlists.no_element loop
+						query_element (
+							position => portlist_cursor,
+							process => query_ports'access);
+						next (portlist_cursor);
+					end loop;
+				end query_portlists;
+
+			begin -- port_here
+				query_element (
+					position => module_cursor,
+					process => query_portlists'access);
+				return port_found;
+			end port_here;
+			
 		begin -- query_junctions
 			while junction_cursor /= type_junctions.no_element loop
 
-				if not more_than_one_segment_here then
+				if more_than_one_segment_here then
+					if not port_here then
+						log (message_warning & "misplaced net junction at " 
+							& to_string (element (junction_cursor).coordinates,
+							et_coordinates.module));
+					end if;
+				else
 					log (message_warning & "misplaced net junction at " 
 						 & to_string (element (junction_cursor).coordinates,
 						et_coordinates.module));
