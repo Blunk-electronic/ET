@@ -2302,7 +2302,6 @@ package body et_kicad is
 		-- Returns the name of the top level schematic file.
 			line : type_fields_of_line;
 			
-			use type_project_file_name;
 			use et_libraries;
 			use et_schematic;
 

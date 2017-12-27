@@ -97,15 +97,15 @@ package et_schematic is
 	-- Returns the given schematic file name as string.
 
 	-- The project file name may have the same length as the project name itself plus extension (*.pro, *.prj, ...):
-	package type_project_file_name is new generic_bounded_length (project_name_length + 4); use type_project_file_name;
-	project_file_name	: type_project_file_name.bounded_string;
+-- 	package type_project_file_name is new generic_bounded_length (project_name_length + 4); use type_project_file_name;
+-- 	project_file_name	: type_project_file_name.bounded_string;
 	project_file_handle	: ada.text_io.file_type;
 	
 	-- Sheet names may have the same length as schematic files.
 	package type_sheet_name is new generic_bounded_length (schematic_file_name_length); use type_sheet_name;
    
 -- PAPER SIZES
-    type type_paper_size is ( A0, A1, A2, A4 ); -- CS: others
+    type type_paper_size is (A0, A1, A2, A4); -- CS: others ?
     paper_size_default : type_paper_size := A4;
 
 	
