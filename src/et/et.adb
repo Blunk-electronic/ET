@@ -214,6 +214,9 @@ begin -- main
 
 	-- detect unintentionally left open ports (must happen AFTER make_netlists !)
 	et_schematic.check_open_ports (log_threshold => 0);
+
+	-- detect non-deployed units
+	et_schematic.check_non_deployed_units (log_threshold => 0);
 	
 	-- export netlists
 	et_schematic.export_netlists (log_threshold => 0);

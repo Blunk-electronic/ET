@@ -263,6 +263,7 @@ package et_schematic is
 
 	-- This is a component as it appears in the schematic.
 	type type_component (appearance : type_appearance_schematic) is record
+		-- CS: library_name : type_full_library_name.bounded_string; -- $HOME/projects/libraries/transistors.lbr
 		name_in_library : et_libraries.type_component_name.bounded_string; -- example: "TRANSISTOR_PNP" -- CS: rename to generic_name ?
 		value			: et_libraries.type_component_value.bounded_string; -- 470R
 		commissioned	: et_string_processing.type_date; -- 2017-08-17T14:17:25
@@ -874,6 +875,9 @@ package et_schematic is
 
 	procedure check_open_ports (log_threshold : in et_string_processing.type_log_level);
 	-- Warns about unintentionally left open ports. That are ports without a no_connection_flag.
+
+	procedure check_non_deployed_units (log_threshold : in et_string_processing.type_log_level);
+	-- Warns about not deployed units and open ports thereof.
 	
 -- NETLISTS
 	-- Whenever we deal with netlist files this type should be used:

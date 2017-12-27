@@ -3939,6 +3939,54 @@ package body et_schematic is
 		log_indentation_down;
 
 	end check_open_ports;
+
+	procedure check_non_deployed_units (log_threshold : in et_string_processing.type_log_level) is
+	-- Warns about not deployed units and open ports thereof.
+		use et_string_processing;
+		use type_rig;
+
+		procedure query_components (
+			module_name : in type_submodule_name.bounded_string;
+			module		: in type_module) is
+
+			use type_components;
+			component : type_components.cursor := module.components.first;
+
+		begin -- query_components
+			log_indentation_up;
+
+			while component /= type_components.no_element loop
+
+
+				next (component);
+			end loop;
+				
+			log_indentation_down;
+		end query_components;
+
+
+	begin -- check_non_deployed_units
+		log ("detecting non-deployed units ...", log_threshold);
+		log_indentation_up;
+
+		-- We start with the first module of the rig.
+		first_module;
+
+		-- Process one rig module after another.
+		-- module_cursor points to the module in the rig.
+		while module_cursor /= type_rig.no_element loop
+			
+			-- query no_connection_flags of current module and test if any of them
+			-- is not placed at a port
+			query_element (
+				position => module_cursor,
+				process => query_components'access);
+			
+			next (module_cursor);
+		end loop;
+
+		log_indentation_down;
+	end check_non_deployed_units;
 	
 	procedure make_netlists (log_threshold : in et_string_processing.type_log_level) is
 	-- Builds the netlists of all modules of the rig.
