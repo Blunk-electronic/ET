@@ -3352,20 +3352,23 @@ package body et_schematic is
 	end check_orphaned_junctions;
 
 	procedure check_misplaced_junctions (log_threshold : in et_string_processing.type_log_level) is
-	-- Warns about misplaced junctions.
+	-- Warns about misplaced junctions. A junction is considered as "misplaced" if:
+	-- - it is placed at the end of a net segment where no another segment meets 
+	-- - it is placed between two net segments where no port sits
+	-- - it is placed where no segment is (means somewhere in the void)
 		use type_rig;
 		use et_string_processing;
 
 		procedure query_junctions (
-		-- Query junctions.
+		-- Query junctions and test net segments and ports at the junction coordinates.
 			module_name : in type_submodule_name.bounded_string;
 			module : in type_module) is
 			use type_junctions;
 			junction_cursor : type_junctions.cursor := module.junctions.first;
 
-			function more_than_one_segment_here return boolean is
-			-- Returns true if junction sits on more than one segment.
-				more_than_one_segment_found : boolean := false; -- to be returned
+			function segment_count_here return natural is
+			-- Returns the number of segments that meet at the junction coordinates.
+				segment_counter : natural := 0; -- to be returned
 			
 				procedure query_strands (
 				-- Query net segments. Exits prematurely once a strand is found where the junction
@@ -3383,7 +3386,6 @@ package body et_schematic is
 						segment_cursor : type_net_segments.cursor := strand.segments.first;
 						use et_geometry;
 						distance : type_distance_point_from_line;
-						segment_counter : natural := 0;
 					begin
 						while segment_cursor /= type_net_segments.no_element loop
 
@@ -3397,13 +3399,9 @@ package body et_schematic is
 									line_end	=> type_2d_point (element (segment_cursor).coordinates_end),
 									line_range	=> with_end_points);
 
-								-- count segments. quit searching once at least two segments have been found
+								-- count segments
 								if (not distance.out_of_range) and distance.distance = et_coordinates.zero_distance then
 									segment_counter := segment_counter + 1;
-									if segment_counter >= 2 then
-										more_than_one_segment_found := true;
-										exit;
-									end if;
 								end if;
 
 							end if;
@@ -3413,8 +3411,10 @@ package body et_schematic is
 					end query_segments;
 					
 				begin -- query_strands
-					-- Probe strands until at least two segments have been found or all strands have been processed:
-					while (not more_than_one_segment_found) and strand_cursor /= type_strands.no_element loop
+					-- Probe strands.
+					-- There is no need to probe other strands once a segment was found. For this reason
+					-- this loop also tests the segment_counter.
+					while segment_counter = 0 and strand_cursor /= type_strands.no_element loop
 
 						type_strands.query_element (
 							position => strand_cursor,
@@ -3424,34 +3424,36 @@ package body et_schematic is
 					end loop;
 				end query_strands;
 			
-			begin -- more_than_one_segment_here
+			begin -- segment_count_here
 				type_rig.query_element (
 					position => module_cursor,
 					process => query_strands'access);
 
-				return more_than_one_segment_found;
-			end more_than_one_segment_here;
+				return segment_counter;
+			end segment_count_here;
 
 			function port_here return boolean is
+			-- Return true if a port exists at the position of the junction.
 				port_found : boolean := false;
 
 				procedure query_portlists (
-				-- Query junctions. Exits prematurely once a junction is found.
+				-- Query portlists. Exits prematurely once any port was found.
 					module_name : in type_submodule_name.bounded_string;
 					module : in type_module) is
 					use type_portlists;
 					portlist_cursor : type_portlists.cursor := module.portlists.first;
 					
 					procedure query_ports (
+					-- Query ports. Exit prematurely once a port was found.
 						component : in type_component_reference;
 						ports : in type_ports.list) is
 						port_cursor : type_ports.cursor := ports.first;
 						use type_ports;
-					begin -- query_ports
+					begin
 						while port_cursor /= type_ports.no_element loop
 
 							if element (port_cursor).coordinates = element (junction_cursor).coordinates then
-								port_found := false;
+								port_found := true; -- this would cancel the portlist query loop
 								exit;
 							end if;
 								
@@ -3459,7 +3461,7 @@ package body et_schematic is
 						end loop;
 					end query_ports;
 					
-				begin -- query_portlists
+				begin -- query_portlists. exit prematurely once a port was found 
 					while (not port_found) and portlist_cursor /= type_portlists.no_element loop
 						query_element (
 							position => portlist_cursor,
@@ -3474,26 +3476,35 @@ package body et_schematic is
 					process => query_portlists'access);
 				return port_found;
 			end port_here;
+
+			procedure log_misplaced_junction is
+			begin
+				log (message_warning & "misplaced net junction at " 
+					& to_string (element (junction_cursor).coordinates,
+					et_coordinates.module));
+			end log_misplaced_junction;
 			
 		begin -- query_junctions
 			while junction_cursor /= type_junctions.no_element loop
 
-				if more_than_one_segment_here then
-					if not port_here then
-						log (message_warning & "misplaced net junction at " 
-							& to_string (element (junction_cursor).coordinates,
-							et_coordinates.module));
-					end if;
-				else
-					log (message_warning & "misplaced net junction at " 
-						 & to_string (element (junction_cursor).coordinates,
-						et_coordinates.module));
-				end if;
+				-- Get the number of net segments at the junction coordinates.
+				case segment_count_here is
+					when 0 | 1 => log_misplaced_junction;
+						-- junction in the void or at the end of a single segment
+					
+					when 2 =>
+						-- junction between two segments -> there should be a port
+						if not port_here then 
+							log_misplaced_junction;
+						end if;
+
+					when others => null;
+						-- more than two segments here. nothing wrong.
+				end case;
 					
 				next (junction_cursor);	
 			end loop;
 		end query_junctions;
-
 		
 	begin -- check_misplaced_junctions
 		log ("detecting misplaced net junctions ...", log_threshold);

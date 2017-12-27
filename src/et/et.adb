@@ -228,7 +228,9 @@ begin -- main
 
 	exception
 		when event:
-			constraint_error => set_exit_status (failure);
+			constraint_error => 
+				et_export.close_report;
+				set_exit_status (failure);
 
 end et;
 
