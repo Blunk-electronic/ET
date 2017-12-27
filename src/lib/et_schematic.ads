@@ -859,6 +859,8 @@ package et_schematic is
 	procedure check_junctions (log_threshold : in et_string_processing.type_log_level);
 	-- Verifies that junctions are placed where net segments are connected with each other.
 	-- NOTE: make_netlist detects if a junction is missing where a port is connected with a net.
+
+	procedure check_orphaned_junctions (log_threshold : in et_string_processing.type_log_level);
 	-- Warns about orphaned junctions.
 
 	procedure check_misplaced_no_connection_flags (log_threshold : in et_string_processing.type_log_level);
