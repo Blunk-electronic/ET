@@ -263,7 +263,7 @@ package et_schematic is
 
 	-- This is a component as it appears in the schematic.
 	type type_component (appearance : type_appearance_schematic) is record
-		-- CS: library_name : type_full_library_name.bounded_string; -- ../libraries/transistors.lbr
+		library_name	: type_full_library_name.bounded_string; -- ../libraries/transistors.lbr
 		-- If the library name is provided, locating the component model in the libraries would
 		-- be deterministic (not depended on the order of the libraries in the project file).
 		

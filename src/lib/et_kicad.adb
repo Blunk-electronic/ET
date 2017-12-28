@@ -4523,8 +4523,14 @@ package body et_kicad is
 
 									-- Whether the component is a "power flag" can be reasoned from its reference:
 									power_flag		=> to_power_flag (reference),
-									
+
+									-- KiCad does no provide an exact name of the library where the component
+									-- model can be found. It only provides the generic name of the model.
+									-- The library is determined by the order of the library names in the 
+									-- project file. So the library name is empty here.
+									library_name	=> type_full_library_name.to_bounded_string (""),
 									name_in_library	=> generic_name_in_lbr,
+									
 									value 			=> type_component_value.to_bounded_string (content (text_value)),
 									commissioned 	=> type_date (et_libraries.content (text_commissioned)),
 									updated 		=> type_date (et_libraries.content (text_updated)),
@@ -4545,7 +4551,14 @@ package body et_kicad is
 								reference => reference,
 								component => (
 									appearance		=> sch_pcb,
+
+									-- KiCad does no provide an exact name of the library where the component
+									-- model can be found. It only provides the generic name of the model.
+									-- The library is determined by the order of the library names in the 
+									-- project file. So the library name is empty here.
+									library_name	=> type_full_library_name.to_bounded_string (""),
 									name_in_library	=> generic_name_in_lbr,
+									
 									value			=> type_component_value.to_bounded_string (content (text_value)),
 									commissioned	=> type_date (content (text_commissioned)),
 									updated			=> type_date (content (text_updated)),
