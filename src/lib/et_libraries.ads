@@ -25,10 +25,7 @@
 --   For correct displaying set tab with in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction side" where things are not
---   finished yet or intended for to future.
-
---   The two letters "CS" indicate a "construction side" where things are not
---   finished yet or intended for to future.
+--   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
 --
@@ -77,7 +74,7 @@ package et_libraries is
 
 	-- This is the library root directory for ALL projects (or for the whole rig).
 	-- We assume all projects have their libraries stored in the same directory.
-	lib_dir : type_library_directory.bounded_string; -- here the path to the project libraries is stored
+	lib_dir : type_library_directory.bounded_string;
 	-- CS: In the future this should be a list of paths as project libraries may be spread
 	-- in other directories. For example kicad defines that in the project file in a manner
 	-- like "LibDir=../../lbr;/home/tmp/.."
@@ -704,7 +701,7 @@ package et_libraries is
 		element_type => type_components.map);
 
 	-- All component models are collected here. This collection applies for the whole rig.
-	component_libraries : type_libraries.map;
+	component_libraries : type_libraries.map; -- CS: should be part of type_rig. see et_schematic type_rig
 
 	function find_component (
 	-- Searches the given library for the given component. Returns a cursor to that component.

@@ -25,7 +25,7 @@
 --   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction side" where things are not
---   finished yet or intended for to future.
+--   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
 --
@@ -263,7 +263,10 @@ package et_schematic is
 
 	-- This is a component as it appears in the schematic.
 	type type_component (appearance : type_appearance_schematic) is record
-		-- CS: library_name : type_full_library_name.bounded_string; -- $HOME/projects/libraries/transistors.lbr
+		-- CS: library_name : type_full_library_name.bounded_string; -- ../libraries/transistors.lbr
+		-- If the library name is provided, locating the component model in the libraries would
+		-- be deterministic (not depended on the order of the libraries in the project file).
+		
 		name_in_library : et_libraries.type_component_name.bounded_string; -- example: "TRANSISTOR_PNP" -- CS: rename to generic_name ?
 		value			: et_libraries.type_component_value.bounded_string; -- 470R
 		commissioned	: et_string_processing.type_date; -- 2017-08-17T14:17:25
@@ -722,7 +725,9 @@ package et_schematic is
 -- MODULES
 	
 	type type_module is record
-		libraries		: type_full_library_names.list;	-- the list of project library names
+		libraries		: type_full_library_names.list;	
+		-- The list of project library names in the order as defined in project file.
+		
 		strands	    	: type_strands.list;		-- the strands of the module
 		junctions		: type_junctions.list;		-- net junctions
 		nets 	    	: type_nets.map;			-- the nets of the module
@@ -742,6 +747,7 @@ package et_schematic is
 
 	-- A rig is a set of modules:
 	package type_rig is new ordered_maps (
+	-- CS: package type_modules is new ordered_maps (
 		key_type => et_coordinates.type_submodule_name.bounded_string, -- example "MOTOR_DRIVER"
 		"<" => et_coordinates.type_submodule_name."<",											 
 		element_type => type_module);
@@ -749,6 +755,12 @@ package et_schematic is
 	rig : type_rig.map;
 	module_cursor : type_rig.cursor;
 
+-- CS: a rig should also contain the libraries
+-- 	type type_rig is record
+-- 		libraries	: type_libraries.map;
+-- 		modules		: type_modules.map;
+-- 	end record;
+	
 	procedure first_module;
 	-- Resets the module_cursor to the first module of the rig.
 	

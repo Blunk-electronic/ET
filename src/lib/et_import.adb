@@ -25,10 +25,7 @@
 --   For correct displaying set tab with in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction side" where things are not
---   finished yet or intended for to future.
-
---   The two letters "CS" indicate a "construction side" where things are not
---   finished yet or intended for to future.
+--   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
 --

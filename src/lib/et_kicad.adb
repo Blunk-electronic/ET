@@ -25,7 +25,7 @@
 --   For correct displaying set tab with in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction side" where things are not
---   finished yet or intended for to future.
+--   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
 --
@@ -2203,12 +2203,15 @@ package body et_kicad is
 					raise;
 		end read_library;
 
+		use et_schematic.type_rig;
 		
 	begin -- read_components_libraries
 		et_schematic.reset_library_cursor (project_lib_cursor);
+		-- CS: use query_element where module_cursor points to, query libraries ...
+		-- CS: remove et_schematic.reset_library_cursor and et_schematic.number_of_libraries
 		
-		-- If there were no libraries in the project file, there is nothing to do but writing a warning:
-		if et_schematic.number_of_libraries = 0 then
+		-- If there are no libraries in the project file, there is nothing to do but writing a warning:
+		if et_schematic.number_of_libraries = 0 then -- CS: use length
 			log (message_warning & "no component libraries defined in project file !");
 		else
 			log (text => "Loading component libraries ...", console => true);
@@ -2234,16 +2237,18 @@ package body et_kicad is
 					-- After that the lib_cursor points to the latest inserted library.
 					type_libraries.insert (
 						container	=> component_libraries,
-						key			=> lib_file_name, -- full library file name (incl. path) like "/home/user/lib/my_lib.lib"
+						key			=> lib_file_name, -- full library file name (incl. path) like "../lib/my_lib.lib"
 						new_item	=> type_components.empty_map,
 						position	=> lib_cursor,
 						inserted	=> lib_inserted
 						);
 
 					-- this is a double check. should never fail.
+					-- CS: the library could have been inserted earlier by reading another project.
+					-- This would not be an error. The library should be skipped instead of an error message.
 					if lib_inserted then
 						-- Now we read the library file and add components
-						-- to the library pinted to by lib_cursor:
+						-- to the library pointed to by lib_cursor:
 						set_input (library_handle);
 						read_library (log_threshold + 1);
 					else
@@ -2360,9 +2365,9 @@ package body et_kicad is
 					when 2 =>
 						if section_eeschema_entered then
 
-							-- Get root path to libraries (LibDir) and store it in lib_dir (see et_kicad.ads)
+							-- Get root path to libraries (LibDir) and store it in lib_dir (see et_libraries.ads)
 							-- CS: currently we assume only one path here. Provide procedure that sets lib_dir and checks
-							-- deviations.
+							-- deviations from this rule.
 							if field (line,1) = project_keyword_library_directory then
 								lib_dir := to_bounded_string (field (line,2));
 
@@ -5461,6 +5466,7 @@ package body et_kicad is
 				-- The top level schematic file dictates the module name. So we create the module here.
 				-- The first element to set is the project libraries which we collected earlier when the
 				-- project file was read.
+				-- CS: remove add_module and directly insert in rig. module_cursor would be set here instead.
 				add_module (
 					module_name	=> type_submodule_name.to_bounded_string (
 										base_name (to_string (top_level_schematic))),
@@ -5602,11 +5608,6 @@ package body et_kicad is
 				-- write net report
 				et_schematic.write_nets (log_threshold + 1);
 
-				-- CS: look for orphaned things like:
-				--  no-connect-flags
-				--  junctions
-				--  net segments
-				
 			when others =>
 				null; -- CS: add import of other CAD formats here
 

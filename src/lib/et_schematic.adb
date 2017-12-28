@@ -25,7 +25,7 @@
 --   For correct displaying set tab with in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction side" where things are not
---   finished yet or intended for to future.
+--   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
 --
@@ -1499,15 +1499,16 @@ package body et_schematic is
 	
 				-- Get generic component name (as listed in a library)
 				-- CS: mind generic names in library that start with a tilde. 
-				-- see https://forum.kicad.info/t/why-a-tilde-in-schematic-library/8263/6
+				-- see <https://forum.kicad.info/t/why-a-tilde-in-schematic-library/8263/6>
 				log_indentation_up;			
 				component_name := et_schematic.component_name_in_library (component_cursor_sch);
 				log ("generic name " & to_string (component_name), log_threshold + 2);
 
-				-- Search in libraries for a component with this very generic name.
+				-- Search in libraries for a component with exactly this generic name.
 				-- library_cursor_sch points to the particular full library name.
 				-- The libraries are searched according to their order in the library list of the module.
 				-- The search is complete on the first finding of the component.
+				-- CS: prefer the library name provided by the component (if available).
 				log_indentation_up;
 				log ("searching in libraries ...", log_threshold + 2);
 				log_indentation_up;
@@ -2919,7 +2920,7 @@ package body et_schematic is
 	end reset_component_cursor;
 
 	procedure reset_library_cursor (cursor : in out type_full_library_names.cursor) is
-	-- Resets the given library cursor to the begin of the library list list.
+	-- Resets the given library cursor to the begin of the library list.
 		procedure reset (
 			name	: in et_coordinates.type_submodule_name.bounded_string;
 			module	: in type_module) is

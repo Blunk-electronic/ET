@@ -25,7 +25,7 @@
 --   For correct displaying set tab with in your editor to 4.
 
 --   The two letters "CS" indicate a "construction side" where things are not
---   finished yet or intended for to future.
+--   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
 --
@@ -216,7 +216,7 @@ begin -- main
 	et_schematic.check_open_ports (log_threshold => 0);
 
 	-- detect non-deployed units
-	et_schematic.check_non_deployed_units (log_threshold => 0);
+-- CS:	et_schematic.check_non_deployed_units (log_threshold => 0);
 	
 	-- export netlists
 	et_schematic.export_netlists (log_threshold => 0);
