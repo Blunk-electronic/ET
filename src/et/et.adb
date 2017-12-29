@@ -216,7 +216,7 @@ begin -- main
 	et_schematic.check_open_ports (log_threshold => 0);
 
 	-- detect non-deployed units
--- CS:	et_schematic.check_non_deployed_units (log_threshold => 0);
+	et_schematic.check_non_deployed_units (log_threshold => 0);
 	
 	-- export netlists
 	et_schematic.export_netlists (log_threshold => 0);

@@ -4501,8 +4501,8 @@ package body et_kicad is
 					procedure query_components (
 					-- Queries the components in the current library. Exits prematurely once the 
 					-- given generic component was found.
-						lib_name : type_full_library_name.bounded_string;
-						components : et_libraries.type_components.map) is
+						lib_name : in type_full_library_name.bounded_string;
+						components : in et_libraries.type_components.map) is
 						use et_libraries.type_components;
 						component_cursor : et_libraries.type_components.cursor := components.first;
 						use et_libraries.type_component_name;
@@ -4510,7 +4510,7 @@ package body et_kicad is
 						log_indentation_up;
 						while component_cursor /= et_libraries.type_components.no_element loop
 							
-							log (et_libraries.to_string (key (component_cursor)), log_threshold + 3);
+							log (et_libraries.to_string (key (component_cursor)), log_threshold + 4);
 
 							if key (component_cursor) = component then
 								component_found := true;
@@ -4524,19 +4524,21 @@ package body et_kicad is
 					
 				begin -- generic_name_to_library
 					log_indentation_up;
-					log ("locating library containing generic component " & to_string (component) & " ...", log_threshold + 1);
+					log ("locating library containing generic component " & to_string (component) & " ...", log_threshold + 2);
 					
 					-- loop in libraries and exit prematurely once a library with the given component was found
 					while lib_cursor /= type_libraries.no_element loop
 						log_indentation_up;
 						log ("probing " 
 							 & et_libraries.to_string (key (lib_cursor)) 
-							 & " ...", log_threshold + 2);
+							 & " ...", log_threshold + 3);
 
 						query_element (
 							position => lib_cursor,
 							process => query_components'access);
 
+						log_indentation_down;
+						
 						-- Exit BEFORE advancing the lib_cursor because lib_cursor position must be kept fore
 						-- return value. See below. component_found MUST NOT be parameter of this loop.
 						if component_found then
@@ -4545,7 +4547,6 @@ package body et_kicad is
 						
 						next (lib_cursor);
 
-						log_indentation_down;
 					end loop;
 					log_indentation_down;
 					
@@ -4586,8 +4587,10 @@ package body et_kicad is
 				begin -- insert_component
 					log_indentation_up;
 					
-					-- The compoenent is inserted into the components list of the module according to its appearance.
+					-- The component is inserted into the components list of the module according to its appearance.
 					-- If the component has already been inserted, it will not be inserted again.
+					-- CS: Even if the component is not inserted again, all the operations that form its elements
+					-- like power_flag, library_name, ... are executed which is a waste of computing time.
 					
 					case appearance is
 						

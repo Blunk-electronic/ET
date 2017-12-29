@@ -3946,24 +3946,43 @@ package body et_schematic is
 		use et_string_processing;
 		use type_rig;
 
-		procedure query_components (
+		procedure query_schematic_components (
 			module_name : in type_submodule_name.bounded_string;
 			module		: in type_module) is
 
 			use type_components;
-			component : type_components.cursor := module.components.first;
+			component_cursor : type_components.cursor := module.components.first;
+			library_cursor : type_libraries.cursor;
 
-		begin -- query_components
-			log_indentation_up;
+			use type_libraries;
+			
+			procedure query_library_components (
+				library : in type_full_library_name.bounded_string;
+				components : in et_libraries.type_components.map) is
+			begin
+				null;
+			end query_library_components;
+			
+		begin -- query_schematic_components
+			while component_cursor /= type_components.no_element loop
 
-			while component /= type_components.no_element loop
+				log (to_string (key (component_cursor)) & " in " 
+					& to_string (element (component_cursor).library_name),
+					log_threshold + 1);
+				
+				library_cursor := type_libraries.find (
+					container => component_libraries,
+					key => element (component_cursor).library_name);
 
+				type_libraries.query_element (
+					position => library_cursor,
+					process => query_library_components'access);
+				
+				next (component_cursor);
 
-				next (component);
 			end loop;
 				
-			log_indentation_down;
-		end query_components;
+		end query_schematic_components;
 
 
 	begin -- check_non_deployed_units
@@ -3981,7 +4000,7 @@ package body et_schematic is
 			-- is not placed at a port
 			query_element (
 				position => module_cursor,
-				process => query_components'access);
+				process => query_schematic_components'access);
 			
 			next (module_cursor);
 		end loop;
