@@ -297,7 +297,7 @@ package et_libraries is
 
 	-- The generic name of a component in the library. 
  	component_name_length_max : constant natural := 100;
-	package type_component_name is new generic_bounded_length(component_name_length_max); use type_component_name;
+	package type_component_name is new generic_bounded_length (component_name_length_max); use type_component_name;
 	-- Only those characters are allowed for the generic component name:
 	component_name_characters : character_set := to_set (ranges => (('A','Z'),('0','9'))) or to_set('-') or to_set('_');
 

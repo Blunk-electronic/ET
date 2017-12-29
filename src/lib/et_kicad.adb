@@ -50,14 +50,8 @@ with ada.text_io;				use ada.text_io;
 with ada.strings; 				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.strings.bounded; 		use ada.strings.bounded;
-with ada.strings.unbounded; 	use ada.strings.unbounded;
-with ada.numerics.real_arrays;  use ada.numerics.real_arrays;
 with ada.directories;			use ada.directories;
 with ada.exceptions; 			use ada.exceptions;
-
-with ada.containers;            use ada.containers;
-with ada.containers.doubly_linked_lists;
-with ada.containers.ordered_maps;
 
 with et_coordinates;
 with et_libraries;
@@ -4488,6 +4482,88 @@ package body et_kicad is
 				end check_text_fields;
 
 
+				function generic_name_to_library (
+				-- Returns the full name of the library where given generic component is contained.
+				-- The given reference serves to provide a helpful error message on the affected 
+				-- component in the schematic.
+					component : in type_component_name.bounded_string; -- the generic name like "RESISTOR"
+					reference : in type_component_reference) -- the reference in the schematic like "R4"
+					return type_full_library_name.bounded_string is -- the full library name like "../libraries/resistors.lib"
+
+					use type_libraries;
+					use type_full_library_name;
+				
+					component_found : boolean := false; -- goes true once the given component was found in any library
+					
+					lib_cursor : type_libraries.cursor := component_libraries.first; -- points to the library being searched in
+					library : type_full_library_name.bounded_string; -- the full library name to be returned
+
+					procedure query_components (
+					-- Queries the components in the current library. Exits prematurely once the 
+					-- given generic component was found.
+						lib_name : type_full_library_name.bounded_string;
+						components : et_libraries.type_components.map) is
+						use et_libraries.type_components;
+						component_cursor : et_libraries.type_components.cursor := components.first;
+						use et_libraries.type_component_name;
+					begin
+						log_indentation_up;
+						while component_cursor /= et_libraries.type_components.no_element loop
+							
+							log (et_libraries.to_string (key (component_cursor)), log_threshold + 3);
+
+							if key (component_cursor) = component then
+								component_found := true;
+								exit;
+							end if;
+							next (component_cursor);
+
+						end loop;
+						log_indentation_down;
+					end query_components;
+					
+				begin -- generic_name_to_library
+					log_indentation_up;
+					log ("locating library containing generic component " & to_string (component) & " ...", log_threshold + 1);
+					
+					-- loop in libraries and exit prematurely once a library with the given component was found
+					while lib_cursor /= type_libraries.no_element loop
+						log_indentation_up;
+						log ("probing " 
+							 & et_libraries.to_string (key (lib_cursor)) 
+							 & " ...", log_threshold + 2);
+
+						query_element (
+							position => lib_cursor,
+							process => query_components'access);
+
+						-- Exit BEFORE advancing the lib_cursor because lib_cursor position must be kept fore
+						-- return value. See below. component_found MUST NOT be parameter of this loop.
+						if component_found then
+							exit;
+						end if;
+						
+						next (lib_cursor);
+
+						log_indentation_down;
+					end loop;
+					log_indentation_down;
+					
+					-- After a successful search return the name of the library where lib_cursor is pointing to.
+					-- Otherwise send error messagen and abort.
+					if component_found then
+						return key (lib_cursor);
+					else
+						log_indentation_reset;
+						log (message_error & "for component "  
+							& et_schematic.to_string (reference)
+							& " no generic model in any library found !",
+							console => true);
+						raise constraint_error;
+					end if;
+					
+				end generic_name_to_library;
+				
 				procedure insert_component is
 				-- Inserts the component in the component list of the module (indicated by module_cursor).
 				-- Components may occur multiple times, which implies they are
@@ -4508,6 +4584,7 @@ package body et_kicad is
 						position	: in positive) return string renames et_string_processing.get_field_from_line;
 
 				begin -- insert_component
+					log_indentation_up;
 					
 					-- The compoenent is inserted into the components list of the module according to its appearance.
 					-- If the component has already been inserted, it will not be inserted again.
@@ -4527,8 +4604,8 @@ package body et_kicad is
 									-- KiCad does no provide an exact name of the library where the component
 									-- model can be found. It only provides the generic name of the model.
 									-- The library is determined by the order of the library names in the 
-									-- project file. So the library name is empty here.
-									library_name	=> type_full_library_name.to_bounded_string (""),
+									-- project file. The function generic_name_to_library does the job.
+									library_name	=> generic_name_to_library (generic_name_in_lbr, reference),
 									name_in_library	=> generic_name_in_lbr,
 									
 									value 			=> type_component_value.to_bounded_string (content (text_value)),
@@ -4555,8 +4632,8 @@ package body et_kicad is
 									-- KiCad does no provide an exact name of the library where the component
 									-- model can be found. It only provides the generic name of the model.
 									-- The library is determined by the order of the library names in the 
-									-- project file. So the library name is empty here.
-									library_name	=> type_full_library_name.to_bounded_string (""),
+									-- project file. The function generic_name_to_library does the job.
+									library_name	=> generic_name_to_library (generic_name_in_lbr, reference),
 									name_in_library	=> generic_name_in_lbr,
 									
 									value			=> type_component_value.to_bounded_string (content (text_value)),
@@ -4630,7 +4707,8 @@ package body et_kicad is
 							
 					end case;
 
-
+					log_indentation_down;
+					
 					exception
 						when constraint_error =>
 							log_indentation_reset;
