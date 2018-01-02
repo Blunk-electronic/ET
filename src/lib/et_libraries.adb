@@ -523,6 +523,9 @@ package body et_libraries is
 			library : in type_full_library_name.bounded_string;
 			components : in type_components.map) is
 		begin
+			-- CS: mind generic names in library that start with a tilde. 
+			-- see <https://forum.kicad.info/t/why-a-tilde-in-schematic-library/8263/6>
+
 			comp_cursor := components.find (component);
 			if comp_cursor /= type_components.no_element then
 				null; 

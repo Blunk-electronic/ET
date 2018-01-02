@@ -364,14 +364,6 @@ package body et_schematic is
 		end if;
 	end component_power_flag;
 	
-	function component_name_in_library (cursor : in type_components.cursor) 
-		return et_libraries.type_component_name.bounded_string is
-	-- Returns the generic name of a component as it is listed in a library.
-	-- The cursor must point to the component in question.
-	begin
-		return type_components.element (cursor).name_in_library;
-	end component_name_in_library;
-
 	function to_string (no_connection_flag : in type_no_connection_flag; scope : in type_scope) return string is
 	-- Returns the position of the given no-connection-flag as string.
 	begin	
@@ -765,32 +757,7 @@ package body et_schematic is
 		return r;
 	end to_component_reference;
 
--- 	function to_string ( reference : in type_component_reference) return string is
--- 	-- Returns the given component reference as string.
--- 	-- Prepends leading zeros according to reference.id_width.
--- 		id_width_wanted	: natural := reference.id_width;
--- 	
--- 		-- The width of the given id is obtained by converting the id to a string
--- 		-- and then by measuring its length:
--- 		id_width_given	: natural := trim(natural'image(reference.id),left)'length;
--- 
--- 		-- Finally the number of zeros to prepend is the difference of wanted 
--- 		-- and given digits:
--- 		lz				: natural := id_width_wanted - id_width_given;
--- 	begin
--- 		case lz is
--- 			when 0 => -- no leading zeroes
--- 				return (type_component_prefix.to_string(reference.prefix) 
--- 					& trim(natural'image(reference.id),left));
--- 				
--- 			when others => -- leading zeros required
--- 				return (type_component_prefix.to_string(reference.prefix) 
--- 					& lz * '0' & trim(natural'image(reference.id),left));
--- 		end case;
--- 	end to_string;
-
-
-	function compare_reference ( left, right : in type_component_reference) return boolean is
+	function compare_reference (left, right : in type_component_reference) return boolean is
 	-- Returns true if left comes before right.
 	-- If left equals right, the return is false.
 	-- CS: needs verification !
@@ -1125,19 +1092,10 @@ package body et_schematic is
 		-- This component cursor points to the schematic component being processed.
 		component_cursor_sch: et_schematic.type_components.cursor;
 
-		-- The generic name of a component in a library (like TRANSISTOR_PNP or LED) 
-		-- is tempoarily held here:
-		component_name		: et_libraries.type_component_name.bounded_string;
-
 		-- The component reference in the schematic (like R44 or IC34)
 		-- is tempoarily held here:
 		component_reference	: et_libraries.type_component_reference;
 	
-		-- The library cursor points to the library to search in (in module.libraries).
-		-- NOTE: module.libraries is just a list of full library names, no more.
--- 		library_cursor_sch	: type_full_library_names.cursor;
-		library_name		: type_full_library_name.bounded_string;
-
 		-- This component cursor points to the library component being processed.
 		use et_libraries.type_components;
 		component_cursor_lib: et_libraries.type_components.cursor;
@@ -1498,72 +1456,41 @@ package body et_schematic is
 				-- get the units of the current schematic component (indicated by component_cursor_sch)
 				units_sch := et_schematic.units_of_component (component_cursor_sch);
 	
-				-- Get generic component name (as listed in a library)
-				-- CS: mind generic names in library that start with a tilde. 
-				-- see <https://forum.kicad.info/t/why-a-tilde-in-schematic-library/8263/6>
 				log_indentation_up;			
-				component_name := et_schematic.component_name_in_library (component_cursor_sch);
-				--log ("generic name " & to_string (component_name), log_threshold + 2);
 
-				-- Search in libraries for a component with exactly this generic name.
-				-- library_cursor_sch points to the particular full library name.
-				-- The libraries are searched according to their order in the library list of the module.
-				-- The search is complete on the first finding of the component.
-				-- CS: prefer the library name provided by the component (if available).
--- 				log_indentation_up;
--- 				log ("searching in libraries ...", log_threshold + 2);
--- 				log_indentation_up;
--- 				et_schematic.reset_library_cursor (library_cursor_sch);
--- 				while library_cursor_sch /= type_full_library_names.no_element loop
+				-- log particular library to be searched in.
+				log ("generic name " 
+						& to_string (element (component_cursor_sch).name_in_library) 
+						& " in " & to_string (element (component_cursor_sch).library_name),
+					 log_threshold + 2);
 
-					-- Set and log particular library to be searched in.
-					--library_name := (element (library_cursor_sch));
-					library_name := element (component_cursor_sch).library_name;
-					log ("generic name " 
-							& to_string (component_name) 
-							& " in " & to_string (library_name),
-						 log_threshold + 2);
-
-					-- Get cursor of that component in library. If cursor is empty, search in
-					-- next library. If cursor points to a matching component, extract ports
-					-- of that component. Procedure extract_ports uses component_cursor_lib .
-					component_cursor_lib := find_component (library_name, component_name);
-					if component_cursor_lib = et_libraries.type_components.no_element then
--- 						-- not found -> advance to next library (in module.libraries)
--- 						next (library_cursor_sch); 
-						no_generic_model_found (
-							reference => key (component_cursor_sch),
-							library => library_name,
-							generic_name => component_name);
+				-- Set cursor of the generic model in library. If cursor is empty, the component
+				-- is not there -> error and abort.
+				-- Otherwise cursor points to a matching component -> extract ports
+				-- of that component. Procedure extract_ports uses component_cursor_lib.
+				component_cursor_lib := find_component (
+					library => element (component_cursor_sch).library_name, -- like ../lib/transistors.lib
+					component => element (component_cursor_sch).name_in_library); -- like TRANSISTOR_PNP
+					
+				if component_cursor_lib = et_libraries.type_components.no_element then
+					-- component not found
+					no_generic_model_found (
+						reference => key (component_cursor_sch),
+						-- like T12					   
+											   
+						library => element (component_cursor_sch).library_name,
+						-- like ../lib/transistors.lib
+						
+						generic_name => element (component_cursor_sch).name_in_library);
+						-- like TRANSISTOR_PNP or LED
 					else
 						-- As a safety measure we make sure that the appearance of the component
 						-- in the schematic equals that in the library.
 						check_appearance_sch_vs_lib;
-	
-						extract_ports; -- uses component_cursor_lib
-						-- found -> no further search required
-						-- CS: write warning if component exists in other libraries ?
--- 						exit;
-					end if;
--- 						
--- 				end loop;
 
--- 				-- IF COMPONENT NOT FOUND IN ANY LIBRARY:
--- 				-- Early exits from the loop above leave library_cursor_sch pointing to a library.
--- 				-- If the loop has been completed without success, library_cursor_sch points to no_element.
--- 				-- If all libraries searched without any match -> generate error message.
--- 				if library_cursor_sch = type_full_library_names.no_element then
--- 					log_indentation_reset;
--- 					log (message_error & "component with reference "  
--- 						& et_libraries.to_string (et_schematic.component_reference (component_cursor_sch))
--- 						& " has no generic model in any library !",
--- 						console => true);
--- 					-- CS: use procdure et_libraries.no_generic_model_found
--- 					raise constraint_error;
--- 				end if;
-				
--- 				log_indentation_down;
--- 				log_indentation_down;
+						extract_ports; -- uses component_cursor_lib
+					end if;
+
 				log_indentation_down;
 
 			end if; -- no power_flag
@@ -4050,8 +3977,11 @@ package body et_schematic is
 				log_indentation_up;
 				
 				while component_lib /= et_libraries.type_components.no_element loop
-
-					if key (component_lib) = element (component_sch).name_in_library then -- CS: mind tileds 
+					-- component_lib points to the generic model in the library
+				
+					if key (component_lib) = element (component_sch).name_in_library then
+						-- CS: mind generic names in library that start with a tilde. 
+						-- see <https://forum.kicad.info/t/why-a-tilde-in-schematic-library/8263/6>
 				
 						query_element (
 							position => component_lib,

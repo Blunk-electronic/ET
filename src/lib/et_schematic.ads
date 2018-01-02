@@ -607,9 +607,6 @@ package et_schematic is
 		allow_special_character_in_prefix : in boolean := false)
 		return type_component_reference;
 
--- 	function to_string (reference : in type_component_reference) return string;
--- 	-- Returns the given component reference as string.
-
 	function compare_reference (left, right : in type_component_reference) return boolean;
 	-- Returns true if left comes before right.
 	-- If left equals right, the return is false.	
@@ -652,11 +649,6 @@ package et_schematic is
 	-- Returns true if the component is a power flag.
 		 return boolean;
 	
-	function component_name_in_library (cursor : in type_components.cursor) 
-		return et_libraries.type_component_name.bounded_string;
-	-- Returns the generic name of a component as it is listed in a library.
-	-- The cursor must point to the component in question.
-
 	-- No-connection-flags indicate that a component port is intentionally left unconnected.
 	type type_no_connection_flag is record
 		coordinates : et_coordinates.type_coordinates;
