@@ -304,11 +304,22 @@ package et_libraries is
 		or to_set('-') 
 		or to_set('_') 
 		or to_set('~'); -- CS: KiCad requirement for components with the value field set to "invisible" 
-						-- (strange idea but we have to live with it)
-
+						-- strange idea but we have to live with it
+						-- see <https://forum.kicad.info/t/why-a-tilde-in-schematic-library/8263/6>
+						
 	procedure check_component_name (
-	-- Checks if the the given component name meets certain conventions.									   
+	-- Checks if the the given generic component name meets certain conventions.
 		name : in type_component_name.bounded_string);
+
+	function strip_tilde (generic_name : in type_component_name.bounded_string) return
+		type_component_name.bounded_string;
+	-- Removes a heading tilde character from a generic component name.
+	-- example: ~TRANSISTOR_NPN becomes TRANSISTOR_NPN
+
+	function prepend_tilde (generic_name : in type_component_name.bounded_string) return
+		type_component_name.bounded_string;
+	-- Prepends a heading tilde character to a generic component name.
+	-- example: TRANSISTOR_NPN becomes ~TRANSISTOR_NPN
 	
 	function to_string (name_in_library : in type_component_name.bounded_string) return string;
 	-- Returns the given name_in_library as as string.

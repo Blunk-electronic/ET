@@ -124,7 +124,7 @@ package body et_libraries is
 	end to_string;
 
 	procedure check_component_name (
-	-- Checks if the given component name meets certain conventions.									   
+	-- Checks if the given generic component name meets certain conventions.
 		name : in type_component_name.bounded_string) is
 
 		use et_string_processing;
@@ -135,6 +135,9 @@ package body et_libraries is
 		-- Rule #1: There are only those characters allowed as specified in component_name_characters:
 		i := index (source => name, set => component_name_characters, test => outside);
 
+		-- CS: in KiCad V4 projects a tilde may be the first character of a generic name.
+		-- This requires a special test that allows a tilde at ONLY this position.
+		
 		case i is
 			when 0 => -- test passed. no forbidden characters found
 				null;
@@ -152,6 +155,33 @@ package body et_libraries is
 		-- CS: other checks ?
 
 	end check_component_name;
+
+	function strip_tilde (generic_name : in type_component_name.bounded_string) return
+		type_component_name.bounded_string is
+	-- Removes a possible heading tilde character from a generic component name.
+	-- example: ~TRANSISTOR_NPN becomes TRANSISTOR_NPN	
+	-- CS: This function is a KiCad requirement and should be applies if the project being processed
+	-- is a kicad V4 project. Otherwise the whole body of this function must be skipped and
+	-- generic_name returned as it is.	
+		length : type_component_name.length_range := type_component_name.length (generic_name);
+	begin
+		if element (generic_name, 1) = '~' then
+			return type_component_name.bounded_slice (generic_name, 2, length);
+		else
+			return generic_name;
+		end if;
+	end strip_tilde;
+
+	function prepend_tilde (generic_name : in type_component_name.bounded_string) return
+		type_component_name.bounded_string is
+	-- Prepends a heading tilde character to a generic component name.
+	-- example: TRANSISTOR_NPN becomes ~TRANSISTOR_NPN
+	-- CS: This function is a KiCad requirement and should be applies if the project being processed
+	-- is a kicad V4 project. Otherwise the whole body of this function must be skipped and generic_name returned
+	-- unchanged.
+	begin
+		return '~' & generic_name;
+	end prepend_tilde;
 	
 	function to_string (name_in_library : in type_component_name.bounded_string) return string is
 	-- Returns the given name_in_library as as string.
@@ -523,13 +553,14 @@ package body et_libraries is
 			library : in type_full_library_name.bounded_string;
 			components : in type_components.map) is
 		begin
-			-- CS: mind generic names in library that start with a tilde. 
-			-- see <https://forum.kicad.info/t/why-a-tilde-in-schematic-library/8263/6>
-
-			comp_cursor := components.find (component);
-			if comp_cursor /= type_components.no_element then
-				null; 
-				-- CS: log ("found !");
+			-- Generic names in library sometimes start with a tilde. 
+			-- So, first we search for the given component without tilde.
+			-- If no match, sarch for the given component with a tilde prepended.
+			-- If still no match, comp_cursor is empty (no_element).
+			comp_cursor := components.find (component); -- TRANSISTOR_NPN
+			if comp_cursor = type_components.no_element then
+				comp_cursor := components.find (prepend_tilde (component)); -- ~TRANSISTOR_NPN
+				--CS: log ?
 			end if;
 		end locate;
 	
@@ -634,7 +665,7 @@ package body et_libraries is
 	begin
 		log_indentation_reset;
 		log (message_error & "component " & to_string (reference) -- CS: output coordinates
-			& "has no generic model " & to_string (generic_name)
+			& " has no generic model " & to_string (generic_name)
 			& " in library " & to_string (library), console => true);
 		raise constraint_error;
 	end no_generic_model_found;

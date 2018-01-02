@@ -3978,10 +3978,10 @@ package body et_schematic is
 				
 				while component_lib /= et_libraries.type_components.no_element loop
 					-- component_lib points to the generic model in the library
-				
-					if key (component_lib) = element (component_sch).name_in_library then
-						-- CS: mind generic names in library that start with a tilde. 
-						-- see <https://forum.kicad.info/t/why-a-tilde-in-schematic-library/8263/6>
+
+					-- Sometimes the generic name in the libarary starts with a tilde.
+					-- It must be removed before testing the name.
+					if strip_tilde (key (component_lib)) = element (component_sch).name_in_library then
 				
 						query_element (
 							position => component_lib,
