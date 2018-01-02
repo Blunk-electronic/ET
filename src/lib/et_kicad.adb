@@ -4513,6 +4513,8 @@ package body et_kicad is
 							log (et_libraries.to_string (key (component_cursor)), log_threshold + 4);
 
 							if key (component_cursor) = component then
+								-- CS: mind generic names in library that start with a tilde. 
+								-- see <https://forum.kicad.info/t/why-a-tilde-in-schematic-library/8263/6>
 								component_found := true;
 								exit;
 							end if;

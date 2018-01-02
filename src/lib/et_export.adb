@@ -77,27 +77,30 @@ package body et_export is
 	-- Writes the report footer and closes the report file.
 	-- Sets the output back to standard_output.
 	begin
-		put_line(row_separator_double);
-		
-		if warning_counter = 0 then
-			put_line ("no warnings");
-		else
-			put_line ("warnings" & type_warning_counter'image (warning_counter));
-		end if;
-		
-		put_line(row_separator_single);
-		
-		put_line ("date " & string(date_now));
-		put_line (et_general.system_name & " export report end");
+		if is_open (et_export.report_handle) then
+			
+			put_line (row_separator_double);
+			
+			if warning_counter = 0 then
+				put_line ("no warnings");
+			else
+				put_line ("warnings" & type_warning_counter'image (warning_counter));
+			end if;
+			
+			put_line (row_separator_single);
+			
+			put_line ("date " & string(date_now));
+			put_line (et_general.system_name & " export report end");
 
-		set_output(standard_output);
-		
-		close (et_export.report_handle);
+			set_output (standard_output);
+			
+			close (et_export.report_handle);
 
-		if warning_counter > 0 then
-			put_line (standard_output, "Read export report for warnings and error messages !"); -- CS: show path to report file
+			if warning_counter > 0 then
+				put_line (standard_output, "Read export report for warnings and error messages !"); -- CS: show path to report file
+			end if;
 		end if;
-		
+			
 	end close_report;
 
 	procedure create_project_directory (

@@ -299,7 +299,12 @@ package et_libraries is
  	component_name_length_max : constant natural := 100;
 	package type_component_name is new generic_bounded_length (component_name_length_max); use type_component_name;
 	-- Only those characters are allowed for the generic component name:
-	component_name_characters : character_set := to_set (ranges => (('A','Z'),('0','9'))) or to_set('-') or to_set('_');
+	component_name_characters : character_set := to_set 
+		(ranges => (('A','Z'),('0','9'))) 
+		or to_set('-') 
+		or to_set('_') 
+		or to_set('~'); -- CS: KiCad requirement for components with the value field set to "invisible" 
+						-- (strange idea but we have to live with it)
 
 	procedure check_component_name (
 	-- Checks if the the given component name meets certain conventions.									   
