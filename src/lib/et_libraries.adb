@@ -354,6 +354,12 @@ package body et_libraries is
 		return type_unit_name.to_bounded_string (unit_name);
 	end to_unit_name;
 
+	function to_string (add_level : in type_unit_add_level) return string is
+	-- Returns the given add level as string.
+	begin
+		return " add level " & type_unit_add_level'image (add_level);
+	end to_string;
+	
 	function to_string (bom : in type_bom) return string is
 	-- Returns the given bom variable as string.	
 	begin
@@ -394,6 +400,30 @@ package body et_libraries is
 		return v;
 	end component_value_valid;
 
+	function to_string (reference : in type_component_reference) return string is
+	-- Returns the given component reference as string.
+	-- Prepends leading zeros according to reference.id_width.
+		id_width_wanted	: natural := reference.id_width;
+	
+		-- The width of the given id is obtained by converting the id to a string
+		-- and then by measuring its length:
+		id_width_given	: natural := trim(natural'image(reference.id),left)'length;
+
+		-- Finally the number of zeros to prepend is the difference of wanted 
+		-- and given digits:
+		lz				: natural := id_width_wanted - id_width_given;
+	begin
+		case lz is
+			when 0 => -- no leading zeroes
+				return (type_component_prefix.to_string(reference.prefix) 
+					& trim(natural'image(reference.id),left));
+				
+			when others => -- leading zeros required
+				return (type_component_prefix.to_string(reference.prefix) 
+					& lz * '0' & trim(natural'image(reference.id),left));
+		end case;
+	end to_string;
+	
 	function prefix (reference : in type_component_reference) return type_component_prefix.bounded_string is
 	-- Returns the prefix of the given component reference.
 	begin
@@ -588,6 +618,23 @@ package body et_libraries is
 		-- CS: do something if cursor invalid. via exception handler ?
 		return port_cursor;
 	end first_port;
+
+
+
+	
+	procedure no_generic_model_found (
+		reference : in type_component_reference; -- IC303
+		library : in type_full_library_name.bounded_string; -- ../lib/transistors.lib
+		generic_name : in type_component_name.bounded_string) -- TRANSISTOR_NPN
+		is
+		use et_string_processing;
+	begin
+		log_indentation_reset;
+		log (message_error & "component " & to_string (reference) -- CS: output coordinates
+			& "has no generic model " & to_string (generic_name)
+			& " in library " & to_string (library), console => true);
+		raise constraint_error;
+	end no_generic_model_found;
 
 	
 end et_libraries;

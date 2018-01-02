@@ -765,29 +765,29 @@ package body et_schematic is
 		return r;
 	end to_component_reference;
 
-	function to_string ( reference : in type_component_reference) return string is
-	-- Returns the given component reference as string.
-	-- Prepends leading zeros according to reference.id_width.
-		id_width_wanted	: natural := reference.id_width;
-	
-		-- The width of the given id is obtained by converting the id to a string
-		-- and then by measuring its length:
-		id_width_given	: natural := trim(natural'image(reference.id),left)'length;
-
-		-- Finally the number of zeros to prepend is the difference of wanted 
-		-- and given digits:
-		lz				: natural := id_width_wanted - id_width_given;
-	begin
-		case lz is
-			when 0 => -- no leading zeroes
-				return (type_component_prefix.to_string(reference.prefix) 
-					& trim(natural'image(reference.id),left));
-				
-			when others => -- leading zeros required
-				return (type_component_prefix.to_string(reference.prefix) 
-					& lz * '0' & trim(natural'image(reference.id),left));
-		end case;
-	end to_string;
+-- 	function to_string ( reference : in type_component_reference) return string is
+-- 	-- Returns the given component reference as string.
+-- 	-- Prepends leading zeros according to reference.id_width.
+-- 		id_width_wanted	: natural := reference.id_width;
+-- 	
+-- 		-- The width of the given id is obtained by converting the id to a string
+-- 		-- and then by measuring its length:
+-- 		id_width_given	: natural := trim(natural'image(reference.id),left)'length;
+-- 
+-- 		-- Finally the number of zeros to prepend is the difference of wanted 
+-- 		-- and given digits:
+-- 		lz				: natural := id_width_wanted - id_width_given;
+-- 	begin
+-- 		case lz is
+-- 			when 0 => -- no leading zeroes
+-- 				return (type_component_prefix.to_string(reference.prefix) 
+-- 					& trim(natural'image(reference.id),left));
+-- 				
+-- 			when others => -- leading zeros required
+-- 				return (type_component_prefix.to_string(reference.prefix) 
+-- 					& lz * '0' & trim(natural'image(reference.id),left));
+-- 		end case;
+-- 	end to_string;
 
 
 	function compare_reference ( left, right : in type_component_reference) return boolean is
@@ -1086,6 +1086,7 @@ package body et_schematic is
 		return cursor;
 	end first_strand;
 
+	
 -- PORTLISTS
 
 	function build_portlists (log_threshold : in et_string_processing.type_log_level) return type_portlists.map is
@@ -1481,7 +1482,7 @@ package body et_schematic is
 		
 				-- log component by its reference		
 				component_reference :=  et_schematic.component_reference (component_cursor_sch);
-				log ("reference " & et_schematic.to_string (component_reference), log_threshold + 1);
+				log ("reference " & et_libraries.to_string (component_reference), log_threshold + 1);
 				
 				-- Insert component in portlists. for the moment the portlist of this component is empty.
 				-- After that the component_cursor_portlists points to the component. This cursor will
@@ -1546,9 +1547,10 @@ package body et_schematic is
 				if library_cursor_sch = type_full_library_names.no_element then
 					log_indentation_reset;
 					log (message_error & "component with reference "  
-						& et_schematic.to_string (et_schematic.component_reference (component_cursor_sch))
+						& et_libraries.to_string (et_schematic.component_reference (component_cursor_sch))
 						& " has no generic model in any library !",
 						console => true);
+					-- CS: use procdure et_libraries.no_generic_model_found
 					raise constraint_error;
 				end if;
 				
@@ -1893,7 +1895,7 @@ package body et_schematic is
 				component := first (portlists);
 				while component /= type_portlists.no_element loop
 					log_indentation_up;
-					log ("probing component " & et_schematic.to_string (key (component)), log_threshold + 4);
+					log ("probing component " & et_libraries.to_string (key (component)), log_threshold + 4);
 
 					-- LOOP IN PORTLIST (of component)
 					port := first_port (component);
@@ -1916,7 +1918,7 @@ package body et_schematic is
 								-- If strand has a name already, its scope must be global
 								-- because power out ports are allowed in global strands exclusively !
 								if et_schematic.anonymous (element (strand).name) then
-									log ("component " & et_schematic.to_string (key (component)) 
+									log ("component " & et_libraries.to_string (key (component)) 
 										& " pin " & to_string (element (port).pin)
 										& " port name " & to_string (element (port).port) 
 										& " is a power output -> port name sets strand name", log_threshold + 2);
@@ -1930,7 +1932,7 @@ package body et_schematic is
 								elsif element (strand).scope /= global then -- strand has a name and is local or hierarchic
 							
 										log_indentation_reset;
-										log (message_error & "component " & et_schematic.to_string (key (component)) 
+										log (message_error & "component " & et_libraries.to_string (key (component)) 
 											& " POWER OUT pin " & to_string (element (port).pin)
 											& " port name " & to_string (element (port).port) 
 											& latin_1.lf
@@ -3947,43 +3949,142 @@ package body et_schematic is
 		use type_rig;
 
 		procedure query_schematic_components (
+		-- Queries the schematic components one after another.
+		-- Opens the library where the generic model is stored.
+		-- The library name is provided by the schematic compoonent.
 			module_name : in type_submodule_name.bounded_string;
 			module		: in type_module) is
 
 			use type_components;
-			component_cursor : type_components.cursor := module.components.first;
+			component_sch : type_components.cursor := module.components.first;
 			library_cursor : type_libraries.cursor;
 
 			use type_libraries;
 			
 			procedure query_library_components (
+			-- Queries the generic models stored in the library.
 				library : in type_full_library_name.bounded_string;
 				components : in et_libraries.type_components.map) is
-			begin
-				null;
+				use et_libraries.type_components;
+				component_lib : et_libraries.type_components.cursor := components.first;
+
+				procedure query_units_lib (
+					component_name : in type_component_name.bounded_string;
+					component : in et_libraries.type_component) is
+					use et_libraries.type_units_internal;
+					unit_internal : et_libraries.type_units_internal.cursor := component.units_internal.first;
+
+					procedure query_units_sch (
+						component_name : in type_component_reference;
+						component : in type_component) is
+						use type_units;
+						unit_cursor : type_units.cursor := component.units.first;
+						unit_deployed : boolean := false;
+						use type_unit_name;
+					begin
+						while unit_cursor /= type_units.no_element loop
+							if key (unit_cursor) = key (unit_internal) then
+								unit_deployed := true;
+								exit;
+							end if;
+							next (unit_cursor);
+						end loop;
+
+						-- If a unit is not deployed we issue warnings or errors depending 
+						-- on the add level of the unit:
+						if not unit_deployed then
+							case element (unit_internal).add_level is
+								when request =>
+									log (message_error & to_string (key (component_sch)) 
+										& " unit " & et_libraries.to_string (key (unit_internal)
+										& " with" & to_string (element (unit_internal).add_level)
+										& " not deployed !"));
+									raise constraint_error;
+
+								when others =>
+									log (message_warning & to_string (key (component_sch)) 
+										& " unit " & et_libraries.to_string (key (unit_internal)
+										& " with" & to_string (element (unit_internal).add_level)
+										& " not deployed !"));
+							end case;
+						end if;
+							
+					end query_units_sch;
+					
+				begin -- query_units_lib
+					while unit_internal /= type_units_internal.no_element loop
+						log ("unit " & to_string (key (unit_internal)) 
+							& to_string (element (unit_internal).add_level), log_threshold + 1);
+
+						-- For each generic unit the units of the schematic component must be inquired
+						-- if any of them matches the current generic unit name:
+						query_element (
+							position => component_sch,
+							process => query_units_sch'access);
+						
+						next (unit_internal);
+					end loop;
+				end query_units_lib;
+
+				use et_libraries.type_component_name;
+				generic_model_found : boolean := false; -- goes true once the generic model was found
+				
+			begin -- query_library_components
+				-- Loop in components of library. Once the generic model name matches 
+				-- the name provided by the schematic component, the units of the
+				-- library component must be queried. Exit prematurely after that
+				-- because the same component won't (should not) occur again in the library.
+				-- If the component could not be found, raise error and abort.
+
+				log_indentation_up;
+				
+				while component_lib /= et_libraries.type_components.no_element loop
+
+					if key (component_lib) = element (component_sch).name_in_library then -- CS: mind tileds 
+				
+						query_element (
+							position => component_lib,
+							process => query_units_lib'access);
+
+						generic_model_found := true;
+						exit;
+					end if;
+						
+					--query_element 
+					next (component_lib);
+				end loop;
+
+				log_indentation_down;
+				
+				if not generic_model_found then
+					no_generic_model_found (
+						reference => key (component_sch),
+						library => element (component_sch).library_name,
+						generic_name => element (component_sch).name_in_library);
+				end if;
+					
 			end query_library_components;
 			
 		begin -- query_schematic_components
-			while component_cursor /= type_components.no_element loop
+			while component_sch /= type_components.no_element loop
 
-				log (to_string (key (component_cursor)) & " in " 
-					& to_string (element (component_cursor).library_name),
-					log_threshold + 1);
-				
-				library_cursor := type_libraries.find (
-					container => component_libraries,
-					key => element (component_cursor).library_name);
+				log (to_string (key (component_sch)) & " in " 
+					& to_string (element (component_sch).library_name), log_threshold + 1);
 
-				type_libraries.query_element (
+				-- Set library cursor so that it points to the library
+				-- of the generic model.
+				library_cursor := find (
+					container => component_libraries, -- the collection of project libraries with generic models
+					key => element (component_sch).library_name); -- lib name provided by schematic component
+
+				-- Query the library components.
+				query_element (
 					position => library_cursor,
 					process => query_library_components'access);
 				
-				next (component_cursor);
-
+				next (component_sch);
 			end loop;
-				
 		end query_schematic_components;
-
 
 	begin -- check_non_deployed_units
 		log ("detecting non-deployed units ...", log_threshold);
@@ -3996,8 +4097,7 @@ package body et_schematic is
 		-- module_cursor points to the module in the rig.
 		while module_cursor /= type_rig.no_element loop
 			
-			-- query no_connection_flags of current module and test if any of them
-			-- is not placed at a port
+			-- query components in schematic
 			query_element (
 				position => module_cursor,
 				process => query_schematic_components'access);

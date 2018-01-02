@@ -4342,10 +4342,10 @@ package body et_kicad is
 						-- P 4100 4000
 						-- F 0 "IC1" H 4100 4050 50  0000 C BIB <- text_reference
 						
-						if et_schematic.to_string (reference) /= et_libraries.content (text_reference) then
+						if et_libraries.to_string (reference) /= et_libraries.content (text_reference) then
 							log_indentation_reset;
 							log (message_error & " reference mismatch !");
-							log (et_schematic.to_string (reference) & " vs " & et_libraries.content(text_reference));
+							log (et_libraries.to_string (reference) & " vs " & et_libraries.content (text_reference));
 							raise constraint_error;
 						end if;
 
@@ -4473,7 +4473,7 @@ package body et_kicad is
 						when constraint_error =>
 							log_indentation_reset;
 							log (
-								text => message_error & "invalid field in component " & et_schematic.to_string (reference)
+								text => message_error & "invalid field in component " & et_libraries.to_string (reference)
 									& " at " & to_string (position => position),
 								console => true);
 							-- CS: evaluate prog position and provided more detailled output
@@ -4557,7 +4557,7 @@ package body et_kicad is
 					else
 						log_indentation_reset;
 						log (message_error & "for component "  
-							& et_schematic.to_string (reference)
+							& et_libraries.to_string (reference)
 							& " no generic model in any library found !",
 							console => true);
 						raise constraint_error;
@@ -4716,7 +4716,7 @@ package body et_kicad is
 						when constraint_error =>
 							log_indentation_reset;
 							log (
-								text => message_error & "component " & et_schematic.to_string (reference)
+								text => message_error & "component " & et_libraries.to_string (reference)
 									& " " & et_coordinates.to_string (position => position),
 								console => true);
 							raise constraint_error;

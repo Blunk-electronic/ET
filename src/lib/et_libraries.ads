@@ -343,6 +343,10 @@ package et_libraries is
 		-- NOTE: This allows something like R091 or IC0 (there are reasons for such strange things ...)
 	end record;
 
+	function to_string (reference : in type_component_reference) return string;
+	-- Returns the given component reference as string.
+	-- Prepends leading zeros according to reference.id_width.
+	
 	function prefix (reference : in type_component_reference) return type_component_prefix.bounded_string;
 	-- Returns the prefix of the given component reference.
 	
@@ -595,6 +599,9 @@ package et_libraries is
 		CAN,
 		ALWAYS,
 		MUST);
+
+	function to_string (add_level : in type_unit_add_level) return string;
+	-- Returns the given add level as string.
 	
 	-- An internal unit is a symbol with a swap level.
 	-- An internal unit is owned by the particular component exclusively.
@@ -631,7 +638,7 @@ package et_libraries is
 		add_level	: type_unit_add_level := type_unit_add_level'first;
 		-- NOTE: there is no "global" flag as with type_unit_internal.
 		-- The "global" flag is a kicad requirement. Since kicad does not know 
-		-- external units, this flag is not preent here.
+		-- external units, this flag is not present here.
 	end record;
 
 	-- External units are collected in a map;
@@ -719,6 +726,12 @@ package et_libraries is
 		unit_cursor : in type_units_internal.cursor)
 		return type_ports.cursor;
 
+	procedure no_generic_model_found (
+		reference : in type_component_reference; -- IC303
+		library : in type_full_library_name.bounded_string; -- ../lib/xilinx.lib
+		generic_name : in type_component_name.bounded_string);
+
+		
 		
 end et_libraries;
 

@@ -233,6 +233,7 @@ begin -- main
 		when event:
 			constraint_error => 
 				et_export.close_report;
+				put_line (standard_output, message_error & "Read export report for warnings and error messages !"); -- CS: show path to report file
 				set_exit_status (failure);
 
 end et;

@@ -607,8 +607,8 @@ package et_schematic is
 		allow_special_character_in_prefix : in boolean := false)
 		return type_component_reference;
 
-	function to_string (reference : in type_component_reference) return string;
-	-- Returns the given compoenent reference as string.
+-- 	function to_string (reference : in type_component_reference) return string;
+-- 	-- Returns the given component reference as string.
 
 	function compare_reference (left, right : in type_component_reference) return boolean;
 	-- Returns true if left comes before right.
