@@ -4004,9 +4004,9 @@ package body et_schematic is
 -- 
 -- 								when others =>
 									log (message_warning & to_string (key (component_sch)) 
-										& " unit " & et_libraries.to_string (key (unit_internal)
+										& " unit " & et_libraries.to_string (key (unit_internal))
 										& " with" & to_string (element (unit_internal).add_level)
-										& " not deployed ! Inputs might be left open unintentionally !"));
+										& " not deployed ! Inputs might be left open unintentionally !");
 
 									-- CS: show not-connected inputs
 -- 							end case;
