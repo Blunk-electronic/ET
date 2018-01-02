@@ -3992,21 +3992,24 @@ package body et_schematic is
 
 						-- If a unit is not deployed we issue warnings or errors depending 
 						-- on the add level of the unit:
+						-- CS
 						if not unit_deployed then
-							case element (unit_internal).add_level is
-								when request =>
-									log (message_error & to_string (key (component_sch)) 
-										& " unit " & et_libraries.to_string (key (unit_internal)
-										& " with" & to_string (element (unit_internal).add_level)
-										& " not deployed !"));
-									raise constraint_error;
-
-								when others =>
+-- 							case element (unit_internal).add_level is
+-- 								when request =>
+-- 									log (message_error & to_string (key (component_sch)) 
+-- 										& " unit " & et_libraries.to_string (key (unit_internal)
+-- 										& " with" & to_string (element (unit_internal).add_level)
+-- 										& " not deployed !"));
+-- 									raise constraint_error;
+-- 
+-- 								when others =>
 									log (message_warning & to_string (key (component_sch)) 
 										& " unit " & et_libraries.to_string (key (unit_internal)
 										& " with" & to_string (element (unit_internal).add_level)
-										& " not deployed !"));
-							end case;
+										& " not deployed ! Inputs might be left open unintentionally !"));
+
+									-- CS: show not-connected inputs
+-- 							end case;
 						end if;
 							
 					end query_units_sch;
@@ -4014,7 +4017,7 @@ package body et_schematic is
 				begin -- query_units_lib
 					while unit_internal /= type_units_internal.no_element loop
 						log ("unit " & to_string (key (unit_internal)) 
-							& to_string (element (unit_internal).add_level), log_threshold + 1);
+							& to_string (element (unit_internal).add_level), log_threshold + 2);
 
 						-- For each generic unit the units of the schematic component must be inquired
 						-- if any of them matches the current generic unit name:
