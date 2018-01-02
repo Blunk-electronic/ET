@@ -1135,7 +1135,7 @@ package body et_schematic is
 	
 		-- The library cursor points to the library to search in (in module.libraries).
 		-- NOTE: module.libraries is just a list of full library names, no more.
-		library_cursor_sch	: type_full_library_names.cursor;
+-- 		library_cursor_sch	: type_full_library_names.cursor;
 		library_name		: type_full_library_name.bounded_string;
 
 		-- This component cursor points to the library component being processed.
@@ -1503,30 +1503,38 @@ package body et_schematic is
 				-- see <https://forum.kicad.info/t/why-a-tilde-in-schematic-library/8263/6>
 				log_indentation_up;			
 				component_name := et_schematic.component_name_in_library (component_cursor_sch);
-				log ("generic name " & to_string (component_name), log_threshold + 2);
+				--log ("generic name " & to_string (component_name), log_threshold + 2);
 
 				-- Search in libraries for a component with exactly this generic name.
 				-- library_cursor_sch points to the particular full library name.
 				-- The libraries are searched according to their order in the library list of the module.
 				-- The search is complete on the first finding of the component.
 				-- CS: prefer the library name provided by the component (if available).
-				log_indentation_up;
-				log ("searching in libraries ...", log_threshold + 2);
-				log_indentation_up;
-				et_schematic.reset_library_cursor (library_cursor_sch);
-				while library_cursor_sch /= type_full_library_names.no_element loop
+-- 				log_indentation_up;
+-- 				log ("searching in libraries ...", log_threshold + 2);
+-- 				log_indentation_up;
+-- 				et_schematic.reset_library_cursor (library_cursor_sch);
+-- 				while library_cursor_sch /= type_full_library_names.no_element loop
 
 					-- Set and log particular library to be searched in.
-					library_name := (element (library_cursor_sch));
-					log (to_string (library_name), log_threshold + 2);
+					--library_name := (element (library_cursor_sch));
+					library_name := element (component_cursor_sch).library_name;
+					log ("generic name " 
+							& to_string (component_name) 
+							& " in " & to_string (library_name),
+						 log_threshold + 2);
 
 					-- Get cursor of that component in library. If cursor is empty, search in
 					-- next library. If cursor points to a matching component, extract ports
 					-- of that component. Procedure extract_ports uses component_cursor_lib .
 					component_cursor_lib := find_component (library_name, component_name);
 					if component_cursor_lib = et_libraries.type_components.no_element then
-						-- not found -> advance to next library (in module.libraries)
-						next (library_cursor_sch); 
+-- 						-- not found -> advance to next library (in module.libraries)
+-- 						next (library_cursor_sch); 
+						no_generic_model_found (
+							reference => key (component_cursor_sch),
+							library => library_name,
+							generic_name => component_name);
 					else
 						-- As a safety measure we make sure that the appearance of the component
 						-- in the schematic equals that in the library.
@@ -1535,27 +1543,27 @@ package body et_schematic is
 						extract_ports; -- uses component_cursor_lib
 						-- found -> no further search required
 						-- CS: write warning if component exists in other libraries ?
-						exit;
+-- 						exit;
 					end if;
-						
-				end loop;
+-- 						
+-- 				end loop;
 
-				-- IF COMPONENT NOT FOUND IN ANY LIBRARY:
-				-- Early exits from the loop above leave library_cursor_sch pointing to a library.
-				-- If the loop has been completed without success, library_cursor_sch points to no_element.
-				-- If all libraries searched without any match -> generate error message.
-				if library_cursor_sch = type_full_library_names.no_element then
-					log_indentation_reset;
-					log (message_error & "component with reference "  
-						& et_libraries.to_string (et_schematic.component_reference (component_cursor_sch))
-						& " has no generic model in any library !",
-						console => true);
-					-- CS: use procdure et_libraries.no_generic_model_found
-					raise constraint_error;
-				end if;
+-- 				-- IF COMPONENT NOT FOUND IN ANY LIBRARY:
+-- 				-- Early exits from the loop above leave library_cursor_sch pointing to a library.
+-- 				-- If the loop has been completed without success, library_cursor_sch points to no_element.
+-- 				-- If all libraries searched without any match -> generate error message.
+-- 				if library_cursor_sch = type_full_library_names.no_element then
+-- 					log_indentation_reset;
+-- 					log (message_error & "component with reference "  
+-- 						& et_libraries.to_string (et_schematic.component_reference (component_cursor_sch))
+-- 						& " has no generic model in any library !",
+-- 						console => true);
+-- 					-- CS: use procdure et_libraries.no_generic_model_found
+-- 					raise constraint_error;
+-- 				end if;
 				
-				log_indentation_down;
-				log_indentation_down;
+-- 				log_indentation_down;
+-- 				log_indentation_down;
 				log_indentation_down;
 
 			end if; -- no power_flag
