@@ -49,6 +49,7 @@ with ada.exceptions; 			use ada.exceptions;
 
 with et_string_processing;
 with et_coordinates;
+with et_import;
 
 package body et_libraries is
 
@@ -125,20 +126,64 @@ package body et_libraries is
 
 	procedure check_component_name (
 	-- Checks if the given generic component name meets certain conventions.
-		name : in type_component_name.bounded_string) is
+		name : in type_component_name.bounded_string; -- TRANSISTOR_NPN
+		customized : in boolean := false) -- when true use customized character set
+		-- for the test (depends on import CAD format).
+		is
 
+		use et_import;
 		use et_string_processing;
 		use et_libraries.type_component_value;
-		i : natural := 0;
 
+		invalid_character_position : natural := 0;
+		component_name_characters_customized : character_set;
+	
 	begin
-		-- Rule #1: There are only those characters allowed as specified in component_name_characters:
-		i := index (source => name, set => component_name_characters, test => outside);
+		-- Test given generic name and get position of possible invalid characters.
 
-		-- CS: in KiCad V4 projects a tilde may be the first character of a generic name.
-		-- This requires a special test that allows a tilde at ONLY this position.
+		-- If a customized test is required, then for certain CAD formats 
+		-- some additional characters are allowed. Otherwise the test is
+		-- conducted against the default character set.
+		if customized then
+
+			case et_import.cad_format is
+
+				when kicad_v4 =>
+				-- KiCad requirement for components with the value field set to "invisible" 
+				-- strange idea but we have to live with it
+				-- see <https://forum.kicad.info/t/why-a-tilde-in-schematic-library/8263/6>
+				-- So we extend the default character set by tilde:
+					component_name_characters_customized := component_name_characters or to_set ('~');
+
+					-- Test given generic name and get position of possible invalid characters.
+					invalid_character_position := index (
+						source => name,
+						set => component_name_characters_customized,
+						test => outside);
+
+					-- CS: test if tilde is the first character of the generic name.
+					-- This requires a special test that allows a tilde at ONLY this position.
+				
+				when others =>
+
+					-- Test given generic name and get position of possible invalid characters.
+					invalid_character_position := index (
+						source => name,
+						set => component_name_characters,
+						test => outside);
+					
+			end case;
+
+		else -- no customization -> default test
+			-- Test given generic name and get position of possible invalid characters.
+			invalid_character_position := index (
+				source => name,
+				set => component_name_characters,
+				test => outside);
+		end if;
 		
-		case i is
+		-- Evaluate position of invalid character.
+		case invalid_character_position is
 			when 0 => -- test passed. no forbidden characters found
 				null;
 
@@ -146,7 +191,7 @@ package body et_libraries is
 				log_indentation_reset;
 				log (
 					text => message_error & "invalid character in generic component name '" 
-						& to_string (name) & "' at position" & natural'image (i),
+						& to_string (name) & "' at position" & natural'image (invalid_character_position),
 					console => true
 					);
 				raise constraint_error;

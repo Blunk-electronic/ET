@@ -577,7 +577,7 @@ package body et_kicad is
 
 			procedure check_text_fields is
 			begin
-				null; -- CS: do a value check if value provided
+				null; -- CS: do a value check if value provided (Field F0).
 			end check_text_fields;
 			
 			function to_swap_level (swap_in : in string)
@@ -1152,12 +1152,12 @@ package body et_kicad is
 				-- 8 : aligment horizontal (R,C,L)
 				-- 9 : aligment vertical (TNN, CNN, BNN) / font normal, italic, bold, bold_italic (TBI, TBN)
 
-				text.content		:= type_text_content.to_bounded_string (strip_quotes (field (line,2)));
+				text.content := type_text_content.to_bounded_string (strip_quotes (field (line,2)));
 				-- CS: check content vs. meaning
 				
 				set_x (text.position, mil_to_distance (mil => field (line,3), warn_on_negative => false));
 				set_y (text.position, mil_to_distance (mil => field (line,4), warn_on_negative => false));
-				text.size 			:= mil_to_distance (mil => field (line,5), warn_on_negative => false);
+				text.size := mil_to_distance (mil => field (line,5), warn_on_negative => false);
 
 				-- check text size of fields
 				if text.size /= text_size_field_default then
@@ -1182,7 +1182,7 @@ package body et_kicad is
 				text.style := to_text_style (style_in => field (line,9), text => false);
 				-- CS: check style.
 				
-				-- NOTE: text.line_width assumes default (see et_general.ads) as no line width is provided here.
+				-- NOTE: text.line_width assumes default as no explicit line width is provided here.
 				return text;
 			end read_field;
 
@@ -2014,7 +2014,10 @@ package body et_kicad is
 
 								-- The commponent header provides the first component properties:
 								tmp_component_name := et_libraries.type_component_name.to_bounded_string (field (line,2)); -- 74LS00
-								et_libraries.check_component_name (tmp_component_name);
+
+								-- The generic component name must be checked for invalid characters.
+								-- Since this is a kicad_v4 import, the test is to be customized (due to heading tilde characters)
+								check_component_name (name => tmp_component_name, customized => true);
 								
 								-- for the log:
 								log (field  (line,2), log_threshold); -- 74LS00
@@ -4222,7 +4225,7 @@ package body et_kicad is
 
 				reference					: type_component_reference;			
 				appearance					: type_component_appearance := et_libraries.sch; -- CS: why this default ?
-				generic_name_in_lbr			: type_component_name.bounded_string;
+				generic_name_in_lbr			: type_component_name.bounded_string; -- like TRANSISTOR_PNP
 				unit_name					: type_unit_name.bounded_string;			
 				position					: et_coordinates.type_coordinates;
 				orientation					: et_coordinates.type_angle;
@@ -4606,10 +4609,11 @@ package body et_kicad is
 									-- Whether the component is a "power flag" can be reasoned from its reference:
 									power_flag		=> to_power_flag (reference),
 
-									-- KiCad does no provide an exact name of the library where the component
+									-- KiCad does not provide an exact name of the library where the generic component
 									-- model can be found. It only provides the generic name of the model.
 									-- The library is determined by the order of the library names in the 
-									-- project file. The function generic_name_to_library does the job.
+									-- project file. It is the first libaray in this succession that contains the model.
+									-- The function generic_name_to_library does the job.
 									library_name	=> generic_name_to_library (generic_name_in_lbr, reference),
 									name_in_library	=> generic_name_in_lbr,
 									
@@ -4634,10 +4638,11 @@ package body et_kicad is
 								component => (
 									appearance		=> sch_pcb,
 
-									-- KiCad does no provide an exact name of the library where the component
+									-- KiCad does not provide an exact name of the library where the generic component
 									-- model can be found. It only provides the generic name of the model.
 									-- The library is determined by the order of the library names in the 
-									-- project file. The function generic_name_to_library does the job.
+									-- project file. It is the first libaray in this succession that contains the model.
+									-- The function generic_name_to_library does the job.
 									library_name	=> generic_name_to_library (generic_name_in_lbr, reference),
 									name_in_library	=> generic_name_in_lbr,
 									
@@ -5006,6 +5011,12 @@ package body et_kicad is
 					if field (et_kicad.line,1) = schematic_component_identifier_name then -- "L"
 						
 						generic_name_in_lbr := type_component_name.to_bounded_string (field (et_kicad.line,2)); -- "SN74LS00"
+
+						-- test the name of the generic model 
+						check_component_name (
+							name => generic_name_in_lbr, -- "SN74LS00"
+							customized => false); -- we do not allow tilde characters here. they occur ONLY in the library.
+
 						appearance := to_appearance (line => et_kicad.line, schematic => true);
 						
 						case appearance is

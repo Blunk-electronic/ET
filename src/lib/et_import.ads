@@ -62,7 +62,7 @@ package et_import is
 
     
 	-- CAD FORMATS
-	type type_cad_format is ( unknown, kicad_v4 );
+	type type_cad_format is (unknown, kicad_v4);
 	-- If no format specified via cmd line, a default applies so that the operator can be 
 	-- notified about missing cad format.
 	cad_format : type_cad_format := unknown; 

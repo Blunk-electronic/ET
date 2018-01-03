@@ -298,18 +298,18 @@ package et_libraries is
 	-- The generic name of a component in the library. 
  	component_name_length_max : constant natural := 100;
 	package type_component_name is new generic_bounded_length (component_name_length_max); use type_component_name;
-	-- Only those characters are allowed for the generic component name:
+	-- Only those characters are allowed for the generic component name.
+	-- See et_import.check_component_name for customization depending on CAD format.
 	component_name_characters : character_set := to_set 
 		(ranges => (('A','Z'),('0','9'))) 
 		or to_set('-') 
-		or to_set('_') 
-		or to_set('~'); -- CS: KiCad requirement for components with the value field set to "invisible" 
-						-- strange idea but we have to live with it
-						-- see <https://forum.kicad.info/t/why-a-tilde-in-schematic-library/8263/6>
-						
+		or to_set('_'); 
+
 	procedure check_component_name (
 	-- Checks if the the given generic component name meets certain conventions.
-		name : in type_component_name.bounded_string);
+		name : in type_component_name.bounded_string; -- TRANSISTOR_NPN
+		customized : in boolean := false); -- when true use customized character set
+		-- for the test (depends on import CAD format).
 
 	function strip_tilde (generic_name : in type_component_name.bounded_string) return
 		type_component_name.bounded_string;
