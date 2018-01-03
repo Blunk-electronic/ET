@@ -3699,7 +3699,8 @@ package body et_schematic is
 				ports : in type_ports.list) is
 				port_cursor : type_ports.cursor := ports.first;
 				use type_ports;
-
+				use et_import;
+				
 -- NOTE: DO NOT REMOVE THE FOLLWING. MIGHT BE REQUIRED SOME DAY.
 				
 -- 				function no_connection_flag_here return boolean is
@@ -3786,27 +3787,26 @@ package body et_schematic is
 -- DO NOT REMOVE ! END OF BLOCK.
 
 				function connected_by_other_unit return boolean is
-				-- Searches down the portlist (starting right after the port_cursor position)
-				-- for a port with same name. Tests if the port is NOT intentionally left open
+				-- Searches the portlist for another port with same name.
+				-- Tests if the port is NOT intentionally left open
 				-- AND if the port is connected to any net segment. When positive, exits 
 				-- prematurely with a return value "true". If no suitable port found, 
 				-- returns "false".
-					port_cursor_secondary : type_ports.cursor := port_cursor;
+					port_cursor_secondary : type_ports.cursor := ports.first;
 					use type_port_name;
 				begin
-					next (port_cursor_secondary); -- advance one notch after port_cursor
-
-					-- search down the portlist
+					-- search the portlist but skip the port of origin
 					while port_cursor_secondary /= type_ports.no_element loop
-						if element (port_cursor_secondary).port = element (port_cursor).port then
+						if port_cursor_secondary /= port_cursor then -- skip original port
+							if element (port_cursor_secondary).port = element (port_cursor).port then
 
-							if 	element (port_cursor_secondary).intended_open = false and
-								element (port_cursor_secondary).connected then
-								return true;
+								if 	element (port_cursor_secondary).intended_open = false and
+									element (port_cursor_secondary).connected then
+									return true;
+								end if;
+									
 							end if;
-								
 						end if;
-							
 						next (port_cursor_secondary);
 					end loop;
 
@@ -3828,16 +3828,31 @@ package body et_schematic is
 					if element (port_cursor).intended_open = false and -- port intentionally not open
 						not element (port_cursor).connected then -- port not connected to any net segment
 
-							-- Special threatment for ports of global units (like power supply ports).
+						-- for kicad_v4 we must do something special:
+						if et_import.cad_format = kicad_v4 then
+
+							-- Special threatment for ports of global units (power supply ports) requried.
 							-- Such ports may be not connected at certain units, yet connected at other units
 							-- of the same component. So we search for other ports (in the portlist of the component)
 							-- bearing the same name. If one of them is connected things are fine. Otherwise
-							-- the port is indeed not connected -> issue warning.
-							if not connected_by_other_unit then
-							
+							-- the power supply port is indeed not connected -> raise alarm and abort.
+							-- For ports with other directions, issue a warning.
+							if element (port_cursor).direction = power_in then
+								if not connected_by_other_unit then
+									log (message_error & "power supply not connected at " 
+										& to_string (element (port_cursor).coordinates, et_coordinates.module)
+										& " nor via other units of this component !");
+									raise constraint_error;
+								end if;
+							else
 								log (message_warning & "port not connected at " 
-									 & to_string (element (port_cursor).coordinates, et_coordinates.module));
+									& to_string (element (port_cursor).coordinates, et_coordinates.module));
 							end if;
+
+						else
+							log (message_warning & "port not connected at " 
+								& to_string (element (port_cursor).coordinates, et_coordinates.module));
+						end if;
 					end if;
 				
 					next (port_cursor);
@@ -3952,11 +3967,12 @@ package body et_schematic is
 									-- is not deployed, we have a serious design error. 
 									-- NOTE: kicad_v4 schematics do not contain "request" units as they are 
 									-- "common to all units" of a component. So in order to avoid a 
-									-- false alarm, seemingly missing "request" are ignored with kicad_v4.
+									-- false alarm, seemingly missing "request" are ignored here.
+									-- Procdure check_open_ports detects such design errors. 
 
 									if et_import.cad_format /= kicad_v4 then
 										log (message_error & unit_not_deployed
-											& " Power supply might be not connected !");
+											& " power supply might be left unconnected !");
 										raise constraint_error;
 									end if;
 
@@ -3972,7 +3988,7 @@ package body et_schematic is
 									
 								when next | always =>
 									log (message_warning & unit_not_deployed
-										& " Inputs might be left open unintentionally !");
+										& " inputs might float !");
 
 								-- CS: special threatment for "always" ?
 									
