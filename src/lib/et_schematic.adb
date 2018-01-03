@@ -53,6 +53,7 @@ with et_coordinates;
 with et_string_processing;
 with et_geometry;
 with et_export;
+with et_import;
 with et_csv;
 with et_netlist;
 
@@ -3916,6 +3917,16 @@ package body et_schematic is
 						unit_cursor : type_units.cursor := component.units.first;
 						unit_deployed : boolean := false;
 						use type_unit_name;
+						use et_import;
+
+						function unit_not_deployed return string is
+						begin
+							return to_string (key (component_sch)) 
+								& " unit " & et_libraries.to_string (key (unit_internal))
+								& " with" & to_string (element (unit_internal).add_level)
+								& " not deployed !";
+						end unit_not_deployed;
+		
 					begin
 						while unit_cursor /= type_units.no_element loop
 							if key (unit_cursor) = key (unit_internal) then
@@ -3926,25 +3937,46 @@ package body et_schematic is
 						end loop;
 
 						-- If a unit is not deployed we issue warnings or errors depending 
-						-- on the add level of the unit:
-						-- CS
+						-- on the add level of the unit. 
+						
+						-- CS: show not-connected inputs
+						
 						if not unit_deployed then
--- 							case element (unit_internal).add_level is
--- 								when request =>
--- 									log (message_error & to_string (key (component_sch)) 
--- 										& " unit " & et_libraries.to_string (key (unit_internal)
--- 										& " with" & to_string (element (unit_internal).add_level)
--- 										& " not deployed !"));
--- 									raise constraint_error;
--- 
--- 								when others =>
-									log (message_warning & to_string (key (component_sch)) 
-										& " unit " & et_libraries.to_string (key (unit_internal))
-										& " with" & to_string (element (unit_internal).add_level)
-										& " not deployed ! Inputs might be left open unintentionally !");
+							case element (unit_internal).add_level is
 
-									-- CS: show not-connected inputs
--- 							end case;
+								-- request units usually harbor power supply 
+								when request =>
+
+									-- For CAD formats other thatn kicad_v4 we raise alarm here.
+									-- If a unit with add level "request"
+									-- is not deployed, we have a serious design error. 
+									-- NOTE: kicad_v4 schematics do not contain "request" units as they are 
+									-- "common to all units" of a component. So in order to avoid a 
+									-- false alarm, seemingly missing "request" are ignored with kicad_v4.
+
+									if et_import.cad_format /= kicad_v4 then
+										log (message_error & unit_not_deployed
+											& " Power supply might be not connected !");
+										raise constraint_error;
+									end if;
+
+								-- raise alarm if "must" unit is missing. there are numerous reasons
+								-- for such a unit to be there. So no further advise possible.
+								when must =>
+									log (message_error & unit_not_deployed);
+									raise constraint_error;
+
+								-- "can" units may be left non-deployed
+								when et_libraries.can =>
+									null;
+									
+								when next | always =>
+									log (message_warning & unit_not_deployed
+										& " Inputs might be left open unintentionally !");
+
+								-- CS: special threatment for "always" ?
+									
+							end case;
 						end if;
 							
 					end query_units_sch;
@@ -3962,6 +3994,9 @@ package body et_schematic is
 						
 						next (unit_internal);
 					end loop;
+
+					-- CS: external units ?
+					
 				end query_units_lib;
 
 				use et_libraries.type_component_name;

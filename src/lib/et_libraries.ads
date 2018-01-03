@@ -610,11 +610,11 @@ package et_libraries is
 	unit_swap_level_default : constant := type_unit_swap_level'first;
 
 	type type_unit_add_level is (
-		NEXT, -- should be default
-		REQUEST,
-		CAN,
-		ALWAYS,
-		MUST);
+		NEXT, 		-- should be default. for things like logig gates, multi-OP-Amps, ...
+		REQUEST, 	-- for power supply 
+		CAN,		-- for things like optional relay contacts
+		ALWAYS,		-- CS: see EAGLE manual
+		MUST);		-- for things like relay coils
 
 	function to_string (add_level : in type_unit_add_level) return string;
 	-- Returns the given add level as string.
