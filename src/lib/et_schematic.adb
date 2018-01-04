@@ -1054,6 +1054,15 @@ package body et_schematic is
 		return cursor;
 	end first_strand;
 
+
+	function show_danger (danger : in type_danger) return string is
+		preamble : constant string (1..11) := " DANGER OF ";
+	begin
+		case danger is
+			when floating_input	=> return preamble & "FLOATING INPUT(S) !";
+			when contention		=> return preamble & "CONTENTION !";
+		end case;	
+	end show_danger;
 	
 -- PORTLISTS
 
@@ -2107,9 +2116,9 @@ package body et_schematic is
 
 					-- Output a warning if strand has no name.
 					if anonymous (element (strand).name) then
-						log (message_warning & "net " & to_string (element (strand).name) & " has no dedicated name !");
-						-- CS: Show the lowest xy position
-						log ("at " & to_string (position => element (strand).coordinates, scope => et_coordinates.module));
+						log (message_warning & "net " & to_string (element (strand).name) 
+							& " at " & to_string (position => element (strand).coordinates, scope => et_coordinates.module)
+							& " has no dedicated name !");
 					end if;
 
 					-- form the net name depending on scope
@@ -3972,7 +3981,7 @@ package body et_schematic is
 
 									if et_import.cad_format /= kicad_v4 then
 										log (message_error & unit_not_deployed
-											& " power supply might be left unconnected !");
+											& " power supply might be left unconnected !"); -- CS: add to type_danger
 										raise constraint_error;
 									end if;
 
@@ -3988,7 +3997,7 @@ package body et_schematic is
 									
 								when next | always =>
 									log (message_warning & unit_not_deployed
-										& " inputs might float !");
+										& show_danger (floating_input));
 
 								-- CS: special threatment for "always" ?
 									
@@ -4099,6 +4108,141 @@ package body et_schematic is
 
 		log_indentation_down;
 	end check_non_deployed_units;
+
+	procedure net_test (log_threshold : in et_string_processing.type_log_level) is
+	-- Tests nets for number of inputs, outputs, bidirs, ...
+		use et_string_processing;
+		use type_rig;
+
+		procedure query_nets (
+			module_name : in type_submodule_name.bounded_string;
+			module : in type_module) is
+			use type_netlist;
+			net_cursor : type_netlist.cursor := module.netlist.first;
+
+			procedure query_ports (
+				net_name : in type_net_name.bounded_string;
+				ports : in type_ports_with_reference.set) is
+				use type_ports_with_reference;
+				port_cursor : type_ports_with_reference.cursor := ports.first;
+
+				input_count 	: natural := 0;
+				output_count 	: natural := 0;
+				power_out_count	: natural := 0;
+				--power_in_count	: natural := 0;
+
+				function show_net return string is
+				begin
+					return "net " & to_string (key (net_cursor));
+					-- CS: show coordinates directly ?
+				end show_net;
+
+			begin -- query_ports
+
+				while port_cursor /= type_ports_with_reference.no_element loop
+			
+					-- write reference, port, pin in netlist (all in a single line)
+					log ( 
+						to_string (element (port_cursor).reference) & latin_1.space
+						& to_string (element (port_cursor).port) & latin_1.space
+						& to_string (element (port_cursor).pin)
+						& to_string (element (port_cursor).direction, preamble => false),
+						log_threshold + 3);
+
+					case element (port_cursor).direction is
+						when input		=> input_count := input_count + 1;
+						when output		=> output_count := output_count + 1;
+						when power_out	=> power_out_count := power_out_count + 1;
+						--when unknown	=> 
+						when others		=> null;
+					end case;
+						
+					next (port_cursor);
+				end loop;
+
+				-- Test if net has zero or one single port:
+				case length (ports) is
+					when 0 =>
+						log (message_warning & "net " & to_string (key (net_cursor)) & " has no ports !"
+							& " See import report for coordinates.");
+					
+					when 1 =>
+						log (message_warning & "net " & to_string (key (net_cursor)) 
+							& " has only one port at "
+							& to_string (element (ports.first).coordinates, scope => et_coordinates.module));
+
+						-- warn about single inputs
+						if input_count > 0 then
+							log (message_warning & show_net & " has only one input !" & show_danger (floating_input));
+						end if;
+						
+					when others => null;
+				end case;
+
+				-- Test number of inputs, outputs, ...
+				case output_count is
+					when 0 => null;
+					when 1 => null; -- CS: if more than one bidir, pull_low, pull_high, power_out  -> warning
+					
+					when others =>
+						log_indentation_reset;
+						log (message_error & show_net & " has more than one output !" & show_danger (contention));
+						-- CS: show affected ports and their coordinates
+						raise constraint_error;
+				end case;
+
+				-- Test contenting power sources. CS: depends on port names
+-- 				if power_out_count > 1 then
+-- 					log_indentation_reset;
+-- 					log (message_error & show_net & " has more than one power source !" & show_danger (contention));
+-- 					-- CS: show affected ports and their coordinates
+-- 					raise constraint_error;
+-- 				end if;
+						
+			end query_ports;
+				
+		begin -- query_nets
+			log_indentation_up;
+		
+			while net_cursor /= type_netlist.no_element loop
+				log (to_string (key (net_cursor)), log_threshold + 2);
+
+				log_indentation_up;
+				
+				query_element (
+					position => net_cursor,
+					process => query_ports'access);
+
+				log_indentation_down;
+				
+				next (net_cursor);
+			end loop;
+				
+			log_indentation_down;
+		end query_nets;
+		
+	begin -- net_test
+		log ("net test ...", log_threshold);
+		log_indentation_up;
+
+		-- We start with the first module of the rig.
+		first_module;
+
+		-- Process one rig module after another.
+		-- module_cursor points to the module in the rig.
+		while module_cursor /= type_rig.no_element loop
+			log ("module " & to_string (key (module_cursor)), log_threshold + 1);
+		
+			-- query nets in netlist
+			query_element (
+				position => module_cursor,
+				process => query_nets'access);
+			
+			next (module_cursor);
+		end loop;
+
+		log_indentation_down;
+	end net_test;
 	
 	procedure make_netlists (log_threshold : in et_string_processing.type_log_level) is
 	-- Builds the netlists of all modules of the rig.

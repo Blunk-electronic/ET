@@ -217,8 +217,11 @@ begin -- main
 
 	-- detect non-deployed units
 	et_schematic.check_non_deployed_units (log_threshold => 0);
+
+	-- test nets for inputs, outputs, bidirs, ...
+	et_schematic.net_test (log_threshold => 0);
 	
-	-- export netlists
+	-- export netlists (requires that make_netlists has been called previously)
 	et_schematic.export_netlists (log_threshold => 0);
 	
 	-- export statistics

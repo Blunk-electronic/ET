@@ -209,17 +209,17 @@ package et_libraries is
 	
 	-- The port has an electrical direction:
 	type type_port_direction is (
-		PASSIVE,
-		INPUT,
-		OUTPUT,
-		BIDIR,
-		TRISTATE,
+		PASSIVE,	-- almost all passive components like resistors, capacitors, .. have such ports
+		INPUT,		-- signal inputs
+		OUTPUT,		-- signal outputs
+		BIDIR,		-- bidirectional ports
+		TRISTATE,	-- tristate ports
 		UNKNOWN,
-		POWER_OUT, 		-- a power source
-		POWER_IN,	-- a power sink
-		PULL_LOW,
-		PULL_HIGH,
-		NOT_CONNECTED
+		POWER_OUT,	-- a power source like power symbol (VCC, GND, ..)
+		POWER_IN,	-- a power sink like power ports of ICs
+		PULL_LOW,	-- a port with internal pull-down resistor CS: rename to weak_low
+		PULL_HIGH,	-- a port with internal pull-up resistor CS: rename to weak_high
+		NOT_CONNECTED	-- advised by manufacturer to be left unconnected
 		);
 
 	function to_string (

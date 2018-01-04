@@ -855,6 +855,12 @@ package et_schematic is
 		id				: positive; -- id of a submodule in the list
 	end record;
 
+	type type_danger is (
+		floating_input,
+		contention);
+	
+	function show_danger (danger : in type_danger) return string;
+	
 	function build_portlists (log_threshold : in et_string_processing.type_log_level) return type_portlists.map;
 	-- Returns a list of components with the absolute positions of their ports as they are placed in the schematic.
 
@@ -879,6 +885,9 @@ package et_schematic is
 
 	procedure check_non_deployed_units (log_threshold : in et_string_processing.type_log_level);
 	-- Warns about not deployed units and open ports thereof.
+
+	procedure net_test (log_threshold : in et_string_processing.type_log_level);
+	-- Tests nets for number of inputs, outputs, bidirs, ...
 	
 -- NETLISTS
 	-- Whenever we deal with netlist files this type should be used:
