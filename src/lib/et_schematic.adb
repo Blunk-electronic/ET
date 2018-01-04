@@ -4160,7 +4160,7 @@ package body et_schematic is
 					next (port_cursor);
 				end loop;
 
-				-- Test if net has zero or one single port:
+				-- Test if net has zero OR one single port. Warn about single inputs:
 				case length (ports) is
 					when 0 =>
 						log (message_warning & "net " & to_string (key (net_cursor)) & " has no ports !"
@@ -4179,18 +4179,26 @@ package body et_schematic is
 					when others => null;
 				end case;
 
-				-- Test number of inputs, outputs, ...
-				case output_count is
-					when 0 => null;
-					when 1 => null; -- CS: if more than one bidir, pull_low, pull_high, power_out  -> warning
+				-- Test if outputs drive against each other:
+				if output_count > 1 then
+					log_indentation_reset;
+					log (message_error & show_net & " has more than one output !" & show_danger (contention));
+					-- CS: show affected ports and their coordinates
+					raise constraint_error;
+				end if;
 					
-					when others =>
+				-- CS: pull_low against pull_high
+				
+				-- Test if any outputs are connected with a power source
+				if power_out_count > 0 then
+					if output_count > 0 then -- CS: or bidir_count pull_high pull_low
 						log_indentation_reset;
-						log (message_error & show_net & " has more than one output !" & show_danger (contention));
+						log (message_error & show_net & " has outputs connected with power sources !" & show_danger (contention));
 						-- CS: show affected ports and their coordinates
 						raise constraint_error;
-				end case;
-
+					end if;
+				end if;
+				
 				-- Test contenting power sources. CS: depends on port names
 -- 				if power_out_count > 1 then
 -- 					log_indentation_reset;
