@@ -4136,7 +4136,7 @@ package body et_schematic is
 				bidir_count		: natural := 0;
 				weak1_count		: natural := 0;
 				weak0_count		: natural := 0;
-				-- CS ? power_in_count	: natural := 0;
+				-- CS ? power_in_count	: natural := 0; -- CS: test if power_in name matches net name ?
 
 				function show_net return string is
 				begin
