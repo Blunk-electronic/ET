@@ -3073,9 +3073,14 @@ package body et_schematic is
 						use et_geometry;
 						distance : type_distance_point_from_line;
 					begin -- query_segments_sec
+						log_indentation_up;
 						log ("quering segments ...", log_threshold + 4);
+						log_indentation_up;
+						
 						while segment_cursor_sec /= type_net_segments.no_element loop
-
+						
+							log (to_string (element (segment_cursor_sec)), log_threshold + 4);
+						
 							-- Test segments that are on the same path and sheet. It is sufficient
 							-- to compare the start coordinates of the segments.
 							if same_path_and_sheet (
@@ -3113,15 +3118,25 @@ package body et_schematic is
 
 							next (segment_cursor_sec);
 						end loop;
+
+						log_indentation_down;	
+						log_indentation_down;
 					end query_segments_sec;
 
 				begin -- find_position_of_expected_junction
+					log_indentation_up;
 					log ("quering strands ...", log_threshold + 3);
 					log_indentation_up;
 
 					-- Query secondary net segments until a junction is expected or until all secondary segments 
 					-- are tested. If no junction is expected return junction_position.expected false.
 					while (not junction_position.expected) and strand_cursor_sec /= type_strands.no_element loop
+
+						log (to_string (element (strand_cursor_sec).name)
+							& " at " 
+							& to_string (element (strand_cursor_sec).coordinates, scope => et_coordinates.module),
+							log_threshold + 3);
+					
 						type_strands.query_element (
 							position => strand_cursor_sec,
 							process => query_segments_sec'access);
@@ -3129,6 +3144,7 @@ package body et_schematic is
 						next (strand_cursor_sec);
 					end loop;
 
+					log_indentation_down;
 					log_indentation_down;
 					return junction_position;
 				end find_position_of_expected_junction;
@@ -3166,9 +3182,13 @@ package body et_schematic is
 				
 				
 			begin -- query_segments_prim
+				log_indentation_up;
 				log ("quering segments ...", log_threshold + 2);
+				log_indentation_up;
+				
 				while segment_cursor_prim /= type_net_segments.no_element loop
-
+					log (to_string (element (segment_cursor_prim)), log_threshold + 2);
+				
 					junction := find_position_of_expected_junction;
 
 					if junction.expected then
@@ -3180,6 +3200,9 @@ package body et_schematic is
 					
 					next (segment_cursor_prim);
 				end loop;
+
+				log_indentation_down;
+				log_indentation_down;
 			end query_segments_prim;
 
 			
@@ -3188,7 +3211,12 @@ package body et_schematic is
 			log_indentation_up;
 			
 			while strand_cursor_prim /= type_strands.no_element loop
-
+			
+				log (to_string (element (strand_cursor_prim).name)
+					& " at " 
+					& to_string (element (strand_cursor_prim).coordinates, scope => et_coordinates.module),
+					log_threshold + 1);
+			
 				-- query segments of current strand
 				type_strands.query_element (
 					position => strand_cursor_prim,
