@@ -346,7 +346,7 @@ package et_schematic is
 	package type_simple_labels is new doubly_linked_lists (
 		element_type => type_net_label_simple);
 	
-	type type_net_label_tag is new type_net_label(label_appearance => tag);		
+	type type_net_label_tag is new type_net_label (label_appearance => tag);		
 	package type_tag_labels is new doubly_linked_lists (
 		element_type => type_net_label_tag);
 
@@ -663,6 +663,7 @@ package et_schematic is
 	-- Returns the position of the given no-connection-flag as string.
 
 	type type_port_open is new boolean;
+	type type_port_connected is (YES, NO);
 	
 	-- For portlists and netlists we need a component port with its basic elements:
 	type type_port is tagged record -- CS: use a controlled type since some selectors do not apply for virtual ports
@@ -673,7 +674,7 @@ package et_schematic is
 		style			: type_port_style;	-- used for ERC
 		appearance		: type_appearance_schematic;
 		intended_open	: type_port_open; -- set while portlist generation. true if port is to be left open intentionally (by a no_connection-flag)
-		connected		: boolean; -- set while netlist generation. true when port connected with a net -- CS: use a derived type
+		connected		: type_port_connected; -- set while netlist generation. true when port connected with a net
 		power_flag		: type_power_flag := no;
 	end record;
 

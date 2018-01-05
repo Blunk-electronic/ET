@@ -1262,7 +1262,7 @@ package body et_schematic is
 									-- if to be left open intentionally, the list of no-connection-flags must be looked up
 									intended_open => left_open,
 									
-									connected	=> false -- used by netlist generator (procedure make_netlists)
+									connected	=> no -- used by netlist generator (procedure make_netlists)
 									));
 
 						when sch_pcb =>
@@ -1292,7 +1292,7 @@ package body et_schematic is
 									-- if to be left open intentionally, the list of no-connection-flags must be looked up
 									intended_open => left_open,
 									
-									connected	=> false -- used by netlist generator (procedure make_netlists)
+									connected	=> no -- used by netlist generator (procedure make_netlists)
 									));
 
 					end case;
@@ -3846,7 +3846,7 @@ package body et_schematic is
 							if element (port_cursor_secondary).port = element (port_cursor).port then
 
 								if 	element (port_cursor_secondary).intended_open = false and
-									element (port_cursor_secondary).connected then
+									element (port_cursor_secondary).connected = YES then
 									return true;
 								end if;
 									
@@ -3871,7 +3871,7 @@ package body et_schematic is
 				while port_cursor /= type_ports.no_element loop
 
 					if element (port_cursor).intended_open = false and -- port intentionally not open
-						not element (port_cursor).connected then -- port not connected to any net segment
+						element (port_cursor).connected = NO then -- port not connected to any net segment
 
 						-- for kicad_v4 we must do something special:
 						if et_import.cad_format = kicad_v4 then
@@ -4409,7 +4409,7 @@ package body et_schematic is
 
 										procedure mark_it (port : in out type_port) is
 										begin
-											port.connected := true;
+											port.connected := YES;
 										end mark_it;
 											
 									begin -- locate_port
@@ -4467,7 +4467,7 @@ package body et_schematic is
 									left => strand.coordinates, 
 									right => element (port_cursor).coordinates ) then
 
-									if not element (port_cursor).connected then
+									if element (port_cursor).connected = NO then
 								
 										log_indentation_up;
 										log ("probing " & to_string (component) 
@@ -4974,7 +4974,7 @@ package body et_schematic is
 				-- loop through the ports of the given component
 				-- and count those which are connected.
 				while port /= type_ports.no_element loop
-					if element (port).connected then
+					if element (port).connected = YES then
 						statistics.ports_total := statistics.ports_total + 1;
 					
 						-- CS: log port
