@@ -286,7 +286,7 @@ package et_schematic is
 			-- enforce net names. In order to distinguish them from regular power symbols the
 			-- power_flag is provided.
 			when sch => 
-				power_flag	: boolean := false; -- CS: use a derived type
+				power_flag	: type_power_flag := no;
 				
 			when others => null; -- CS
 		end case;
@@ -646,8 +646,8 @@ package et_schematic is
 		return type_bom;
 
 	function component_power_flag (cursor : in type_components.cursor)
-	-- Returns true if the component is a power flag.
-		 return boolean;
+	-- Returns the component power flag status.
+		 return type_power_flag;
 	
 	-- No-connection-flags indicate that a component port is intentionally left unconnected.
 	type type_no_connection_flag is record
@@ -674,7 +674,7 @@ package et_schematic is
 		appearance		: type_appearance_schematic;
 		intended_open	: type_port_open; -- set while portlist generation. true if port is to be left open intentionally (by a no_connection-flag)
 		connected		: boolean; -- set while netlist generation. true when port connected with a net -- CS: use a derived type
-		power_flag		: boolean := false; -- CS: use a derived type
+		power_flag		: type_power_flag := no;
 	end record;
 
 	-- Ports can be collected in a simple list:

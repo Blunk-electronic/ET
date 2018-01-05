@@ -470,17 +470,19 @@ package body et_kicad is
 		-- CS: exception handler
 	end to_degrees;
 
-	function to_power_flag (reference : in et_libraries.type_component_reference) return boolean is
-	-- If the given component reference is one that belongs to a "power flag" returns true.
-		use et_libraries.type_component_prefix;
+	function to_power_flag (reference : in et_libraries.type_component_reference) return 
+		et_libraries.type_power_flag is
+	-- If the given component reference is one that belongs to a "power flag" returns YES.
+		use et_libraries;
+		use type_component_prefix;
 	begin
 		--log (et_schematic.to_string (reference));
 		if et_libraries.prefix (reference) = power_flag_prefix then
 			--log ("power flag on");
-			return true;
+			return YES;
 		else
 			--log ("power flag off");
-			return false;
+			return NO;
 		end if;
 	end to_power_flag;
 	

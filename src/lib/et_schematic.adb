@@ -345,8 +345,8 @@ package body et_schematic is
 	end bom;
 	
 	function component_power_flag (cursor : in type_components.cursor)
-	-- Returns true if the component is a power flag.
-		return boolean is
+	-- Returns the component power flag status.
+		return type_power_flag is
 		use et_string_processing;
 	begin
 		-- Only vitual components have the power flag property. 
@@ -361,7 +361,7 @@ package body et_schematic is
 			return type_components.element (cursor).power_flag;
 		else
 			--log ("real component");
-			return false;
+			return no;
 		end if;
 	end component_power_flag;
 	
@@ -1277,7 +1277,7 @@ package body et_schematic is
 									direction	=> element (port_cursor).direction, -- the port direction
 
 									-- This port does not belong to a power_flag, because real components can never be.
-									power_flag	=> false,
+									power_flag	=> no,
 									
 									style		=> element (port_cursor).style, -- port style
 
@@ -1885,7 +1885,7 @@ package body et_schematic is
 						-- We are interested in power out ports exclusively. Only such ports may enforce their
 						-- name on a strand. NOTE: Power_flags also have a (single) power_out port, but they 
 						-- do NOT enforce their name on the strand.
-						if element (port).direction = POWER_OUT and not element (port).power_flag then
+						if element (port).direction = POWER_OUT and element (port).power_flag = NO then
 						-- CS: skip already processed ports to improve performance
 
 							log ("probing port " & to_string (position => element (port).coordinates), log_threshold + 4);

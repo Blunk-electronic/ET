@@ -668,7 +668,8 @@ package et_libraries is
 	-- Returns the given bom variable as string.
 	
 -- COMPONENTS
-	
+	type type_power_flag is (YES, NO);
+
 	type type_component (appearance : type_component_appearance) is record
 		prefix			: type_component_prefix.bounded_string; -- R, C, IC, ...
 		value			: type_component_value.bounded_string; -- 74LS00
@@ -687,7 +688,7 @@ package et_libraries is
 			-- enforce net names. In order to distinguish them from regular power symbols the
 			-- power_flag is provided.
 			when sch => 
-				power_flag	: boolean := false; -- CS: use a derived type
+				power_flag	: type_power_flag := no;
 
 			-- If a component appears in both schematic and layout it comes 
 			-- with at least one package/footprint variant. We store variants in a map.
