@@ -1034,10 +1034,10 @@ package body et_kicad is
 							d_out := POWER_OUT;
 
 						when library_pin_electrical_type_open_collector => 
-							d_out := PULL_LOW;
+							d_out := WEAK1;
 
 						when library_pin_electrical_type_open_emitter => 
-							d_out := PULL_HIGH;
+							d_out := WEAK0;
 
 						when library_pin_electrical_type_not_connected => 
 							d_out := NOT_CONNECTED;

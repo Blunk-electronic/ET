@@ -217,8 +217,8 @@ package et_libraries is
 		UNKNOWN,
 		POWER_OUT,	-- a power source like power symbol (VCC, GND, ..)
 		POWER_IN,	-- a power sink like power ports of ICs
-		PULL_LOW,	-- a port with internal pull-up resistor CS: rename to weak1
-		PULL_HIGH,	-- a port with internal pull-down resistor CS: rename to weak0
+		WEAK1,		-- a port with internal pull-up resistor
+		WEAK0,		-- a port with internal pull-down resistor
 		NOT_CONNECTED	-- advised by manufacturer to be left unconnected
 		);
 

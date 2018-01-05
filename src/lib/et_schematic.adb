@@ -4133,9 +4133,9 @@ package body et_schematic is
 				input_count 	: natural := 0;
 				output_count 	: natural := 0;
 				power_out_count	: natural := 0;
-				-- CS bidir_count	: natural := 0;
-				-- CS weak1_count	: natural := 0;
-				-- CS weak0_count	: natural := 0;
+				bidir_count		: natural := 0;
+				weak1_count		: natural := 0;
+				weak0_count		: natural := 0;
 				-- CS ? power_in_count	: natural := 0;
 
 				function show_net return string is
@@ -4162,16 +4162,19 @@ package body et_schematic is
 					case element (port_cursor).direction is
 						when input		=> input_count := input_count + 1;
 						when output		=> output_count := output_count + 1;
+						when bidir		=> bidir_count := bidir_count + 1;
+						when weak0		=> weak0_count := weak0_count + 1;
+						when weak1		=> weak1_count := weak1_count + 1;
 						when power_out	=> power_out_count := power_out_count + 1;
 						
-						when unknown	=> 
+						when unknown	=> -- CS: verification required
 							log_indentation_reset;
 							log (message_error & show_net & " has a port with unknown direction at " 
 								& to_string (element (port_cursor).coordinates, scope => et_coordinates.module)
 								& show_danger (not_predictable));
 							raise constraint_error;
 
-						when others		=> null; -- CS
+						when others		=> null; -- CS: TRISTATE, PASSIVE, POWER_IN
 					end case;
 						
 					next (port_cursor);
@@ -4202,8 +4205,38 @@ package body et_schematic is
 					log (message_warning & show_net & " has more than one output !" & show_danger (contention));
 					-- CS: show affected ports and their coordinates. use a loop in ports and show outputs
 				end if;
-					
-				-- CS: pull_low against pull_high
+
+				-- Test if no pull-resistors are connected with bidirs: -- CS: verification required
+				if bidir_count > 1 then
+					-- For the moment we warn if there are as many bidir as ports. this implies there is nothing that
+					-- could pull the net to a definite level:
+					if length (ports) = count_type (bidir_count) then
+						log (message_warning & show_net & " has no pull resistors !" & show_danger (floating_input));
+					end if;
+				end if;
+
+				-- Test if no pull-down-resistors are connected with weak0 outputs: -- CS: verification required
+				if weak0_count > 0 then
+					-- For the moment we warn if there are as many weak0 outputs as ports. this implies there is nothing that
+					-- could pull the net to a definite level:
+					if length (ports) = count_type (weak0_count) then
+						log (message_warning & show_net & " has no pull-down resistors !" & show_danger (floating_input));
+					end if;
+				end if;
+
+				-- Test if no pull-up-resistors are connected with weak1 outputs: -- CS: verification required
+				if weak1_count > 0 then
+					-- For the moment we warn if there are as many weak1 outputs as ports. this implies there is nothing that
+					-- could pull the net to a definite level:
+					if length (ports) = count_type (weak1_count) then
+						log (message_warning & show_net & " has no pull-up resistors !" & show_danger (floating_input));
+					end if;
+				end if;
+				
+				-- Test contending weak0 against weak1 outputs -- CS: verification required
+				if weak0_count > 0 and weak1_count > 0 then
+					log (message_warning & show_net & " has weak0 and weak1 outputs !" & show_danger (contention));
+				end if;
 				
 				-- Test if any outputs are connected with a power source
 				if power_out_count > 0 then
