@@ -264,7 +264,7 @@ package et_libraries is
 	function to_string (pin_name : in type_pin_name.bounded_string) return string;
 	-- Returns the given pin name as string.
 	
-	-- Initially, at the lowest level (usually library level), a port has a name, direction,
+	-- Initially, at the library level, a port has a name, direction,
 	-- coordinates, orientation, flags for making port and pin name visible. 
 	-- Later, other values are assigned like pin name. CS: set defaults
 	type type_port is record
@@ -668,7 +668,7 @@ package et_libraries is
 	-- Returns the given bom variable as string.
 	
 -- COMPONENTS
-
+	
 	type type_component (appearance : type_component_appearance) is record
 		prefix			: type_component_prefix.bounded_string; -- R, C, IC, ...
 		value			: type_component_value.bounded_string; -- 74LS00

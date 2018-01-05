@@ -1231,31 +1231,72 @@ package body et_schematic is
 					-- sheet name remains unchanged because the sheet is still the same
 					set_sheet (port_coordinates, sheet (unit_position));
 					
-					-- insert a the newly built port in the portlist of the component
-					type_ports.append (
-						container => ports,
-						new_item => (
+					-- Insert a the newly built port in the portlist of the component.
+					-- This action depends on the appearance of the schematic component being processed.
+					-- For example: only virtual components can be power_flags.
+					case element (component_cursor_sch).appearance is
+						when sch =>
+							type_ports.append (
+								container => ports,
+								new_item => (
 
-							-- library defined properites:
-							--port		=> key (port_cursor), -- the port name
-							port		=> element (port_cursor).name, -- the port name
-							pin			=> element (port_cursor).pin, -- the pin name
-							direction	=> element (port_cursor).direction, -- the port direction
-							style		=> element (port_cursor).style, -- port style
+									-- library defined properites:
+									--port		=> key (port_cursor), -- the port name
+									port		=> element (port_cursor).name, -- the port name
+									pin			=> element (port_cursor).pin, -- the pin name
+									direction	=> element (port_cursor).direction, -- the port direction
 
-							-- We also set the port appearance. Later when writing the netlist, this property
-							-- serves to tell real from virtual ports.
-							appearance	=> et_schematic.component_appearance (component_cursor_sch),
+									-- Set the power_flag status (by taking it from the schematic component begin processed).
+									power_flag	=> element (component_cursor_sch).power_flag,
+									
+									style		=> element (port_cursor).style, -- port style
 
-							-- schematic defined properties:
-							coordinates	=> port_coordinates,
+									-- We also set the port appearance (by taking it from the schematic component begin processed).
+									-- Later when writing the netlist, this property
+									-- serves to tell real from virtual ports.
+									appearance	=> et_schematic.component_appearance (component_cursor_sch),
 
-							-- if to be left open intentionally, the list of no-connection-flags must be looked up
-							intended_open => left_open,
+									-- schematic defined properties:
+									coordinates	=> port_coordinates,
+
+									-- if to be left open intentionally, the list of no-connection-flags must be looked up
+									intended_open => left_open,
+									
+									connected	=> false -- used by netlist generator (procedure make_netlists)
+									));
+
+						when sch_pcb =>
+							type_ports.append (
+								container => ports,
+								new_item => (
+
+									-- library defined properites:
+									--port		=> key (port_cursor), -- the port name
+									port		=> element (port_cursor).name, -- the port name
+									pin			=> element (port_cursor).pin, -- the pin name
+									direction	=> element (port_cursor).direction, -- the port direction
+
+									-- This port does not belong to a power_flag, because real components can never be.
+									power_flag	=> false,
+									
+									style		=> element (port_cursor).style, -- port style
+
+									-- We also set the port appearance (by taking it from the schematic component begin processed).
+									-- Later when writing the netlist, this property
+									-- serves to tell real from virtual ports.
+									appearance	=> et_schematic.component_appearance (component_cursor_sch),
+
+									-- schematic defined properties:
+									coordinates	=> port_coordinates,
+
+									-- if to be left open intentionally, the list of no-connection-flags must be looked up
+									intended_open => left_open,
+									
+									connected	=> false -- used by netlist generator (procedure make_netlists)
+									));
+
+					end case;
 							
-							connected	=> false -- used by netlist generator (procedure make_netlists)
-							));
-
 					log (to_string (last_element (ports).direction), log_threshold + 3);
 					log_indentation_up;
 					-- CS: other port properties
@@ -1435,78 +1476,69 @@ package body et_schematic is
 		-- Loop in component list of schematic. component_cursor_sch points to the 
 		-- particular component. 
 
-		-- We ignore components that are "power_flags". Since the portlists are a prerequisite
-		-- of netlist generation, this implies, that "power_flags" are not in the netlists.
-		-- Yet other virtual components like
-		-- power symbols like GND or P3V3 are relevant indeed. Because later when we do
-		-- the strand renaming those ports enforce their names to the connected net.
-		
+		-- ALL schematic components are addressed. No distinction between real or virtual parts.
+
 		-- For each component, store a list of its units in units_sch.
 		-- This list contains the units found in the schematic with their coordinates.
 		-- These coordinates plus the port coordinates (extracted in 
 		-- procedure (extract_ports) will later yield the absolute positions of the ports.
 		et_schematic.reset_component_cursor (component_cursor_sch);
 		while component_cursor_sch /= et_schematic.type_components.no_element loop
-
-			-- power flags are to be skipped -- CS: for proper ERC probably no good idea. see comments above
-			if not et_schematic.component_power_flag (component_cursor_sch) then
 		
-				-- log component by its reference		
-				component_reference :=  et_schematic.component_reference (component_cursor_sch);
-				log ("reference " & et_libraries.to_string (component_reference), log_threshold + 1);
-				
-				-- Insert component in portlists. for the moment the portlist of this component is empty.
-				-- After that the component_cursor_portlists points to the component. This cursor will
-				-- later be used to add a port to the portlists.
-				type_portlists.insert (
-					container	=> portlists,
-					key			=> component_reference, -- like R44
-					new_item	=> type_ports.empty_list,
-					inserted	=> component_inserted, -- obligatory, no further meaning
-					position	=> component_cursor_portlists -- points to the portlist being built
-					);
-				
-				-- get the units of the current schematic component (indicated by component_cursor_sch)
-				units_sch := et_schematic.units_of_component (component_cursor_sch);
-	
-				log_indentation_up;			
+			-- log component by its reference		
+			component_reference :=  et_schematic.component_reference (component_cursor_sch);
+			log ("reference " & et_libraries.to_string (component_reference), log_threshold + 1);
+			
+			-- Insert component in portlists. for the moment the portlist of this component is empty.
+			-- After that the component_cursor_portlists points to the component. This cursor will
+			-- later be used to add a port to the portlists.
+			type_portlists.insert (
+				container	=> portlists,
+				key			=> component_reference, -- like R44
+				new_item	=> type_ports.empty_list,
+				inserted	=> component_inserted, -- obligatory, no further meaning
+				position	=> component_cursor_portlists -- points to the portlist being built
+				);
+			
+			-- get the units of the current schematic component (indicated by component_cursor_sch)
+			units_sch := et_schematic.units_of_component (component_cursor_sch);
 
-				-- log particular library to be searched in.
-				log ("generic name " 
-						& to_string (element (component_cursor_sch).name_in_library) 
-						& " in " & to_string (element (component_cursor_sch).library_name),
-					 log_threshold + 2);
+			log_indentation_up;			
 
-				-- Set cursor of the generic model in library. If cursor is empty, the component
-				-- is not there -> error and abort.
-				-- Otherwise cursor points to a matching component -> extract ports
-				-- of that component. Procedure extract_ports uses component_cursor_lib.
-				component_cursor_lib := find_component (
-					library => element (component_cursor_sch).library_name, -- like ../lib/transistors.lib
-					component => element (component_cursor_sch).name_in_library); -- like TRANSISTOR_PNP
+			-- log particular library to be searched in.
+			log ("generic name " 
+					& to_string (element (component_cursor_sch).name_in_library) 
+					& " in " & to_string (element (component_cursor_sch).library_name),
+					log_threshold + 2);
+
+			-- Set cursor of the generic model in library. If cursor is empty, the component
+			-- is not there -> error and abort.
+			-- Otherwise cursor points to a matching component -> extract ports
+			-- of that component. Procedure extract_ports uses component_cursor_lib.
+			component_cursor_lib := find_component (
+				library => element (component_cursor_sch).library_name, -- like ../lib/transistors.lib
+				component => element (component_cursor_sch).name_in_library); -- like TRANSISTOR_PNP
+				
+			if component_cursor_lib = et_libraries.type_components.no_element then
+				-- component not found
+				no_generic_model_found (
+					reference => key (component_cursor_sch),
+					-- like T12					   
+											
+					library => element (component_cursor_sch).library_name,
+					-- like ../lib/transistors.lib
 					
-				if component_cursor_lib = et_libraries.type_components.no_element then
-					-- component not found
-					no_generic_model_found (
-						reference => key (component_cursor_sch),
-						-- like T12					   
-											   
-						library => element (component_cursor_sch).library_name,
-						-- like ../lib/transistors.lib
-						
-						generic_name => element (component_cursor_sch).name_in_library);
-						-- like TRANSISTOR_PNP or LED
-					else
-						-- As a safety measure we make sure that the appearance of the component
-						-- in the schematic equals that in the library.
-						check_appearance_sch_vs_lib;
+					generic_name => element (component_cursor_sch).name_in_library);
+					-- like TRANSISTOR_PNP or LED
+				else
+					-- As a safety measure we make sure that the appearance of the component
+					-- in the schematic equals that in the library.
+					check_appearance_sch_vs_lib;
 
-						extract_ports; -- uses component_cursor_lib
-					end if;
+					extract_ports; -- uses component_cursor_lib
+				end if;
 
-				log_indentation_down;
-
-			end if; -- no power_flag
+			log_indentation_down;
 			
 			next (component_cursor_sch); -- advance to next component
 		end loop;
@@ -1851,8 +1883,9 @@ package body et_schematic is
 						log_indentation_up;
 
 						-- We are interested in power out ports exclusively. Only such ports may enforce their
-						-- name on a strand.
-						if element (port).direction = POWER_OUT then
+						-- name on a strand. NOTE: Power_flags also have a (single) power_out port, but they 
+						-- do NOT enforce their name on the strand.
+						if element (port).direction = POWER_OUT and not element (port).power_flag then
 						-- CS: skip already processed ports to improve performance
 
 							log ("probing port " & to_string (position => element (port).coordinates), log_threshold + 4);
@@ -4248,7 +4281,9 @@ package body et_schematic is
 					end if;
 				end if;
 				
-				-- Test contenting power sources. CS: depends on port names
+				-- Test contenting power sources. 
+				-- CS: depends on port names
+				-- CS: mind power flags
 -- 				if power_out_count > 1 then
 -- 					log_indentation_reset;
 -- 					log (message_error & show_net & " has more than one power source !" & show_danger (contention));
