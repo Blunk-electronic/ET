@@ -3570,8 +3570,13 @@ package body et_schematic is
 						distance : type_distance_point_from_line;
 					begin -- query_no_connect_flags
 						log ("quering no_connection_flags ...", log_threshold + 4);
+						log_indentation_up;
+						
 						while no_connection_flag_cursor /= type_no_connection_flags.no_element loop
 
+							log (to_string (element (no_connection_flag_cursor).coordinates, scope => et_coordinates.module),
+								log_threshold + 4);
+						
 							-- now we have element (segment_cursor) 
 							-- and element (no_connection_flag_cursor) to work with
 
@@ -3595,24 +3600,38 @@ package body et_schematic is
 
 							next (no_connection_flag_cursor);	
 						end loop;
+
+						log_indentation_down;
 					end query_no_connect_flags;
 				
 				begin -- find_no_connection_flag
-					log ("searching no_connection_flags ...", log_threshold + 3);
+					log_indentation_up;
+				
+					--log ("searching no_connection_flags ...", log_threshold + 3);
 					-- query no_connection_flags of the module
 					type_rig.query_element (
 						position => module_cursor,
 						process => query_no_connect_flags'access);
+
+					log_indentation_down;
 				end find_no_connection_flag;
 				
 			begin -- query_segments
+				log_indentation_up;
 				log ("quering segments ...", log_threshold + 2);
+				log_indentation_up;
+				
 				while segment_cursor /= type_net_segments.no_element loop
-		
+					log (to_string (element (segment_cursor)), log_threshold + 2);
+				
 					-- test if there are any no_connection_flags placed on the segment
 					find_no_connection_flag;
 					next (segment_cursor);
 				end loop;
+
+				log_indentation_down;
+				log_indentation_down;
+					
 			end query_segments;
 			
 		begin -- query_strands
@@ -3621,6 +3640,11 @@ package body et_schematic is
 			
 			while strand_cursor /= type_strands.no_element loop
 
+				log (to_string (element (strand_cursor).name)
+					& " at " 
+					& to_string (element (strand_cursor).coordinates, scope => et_coordinates.module),
+					log_threshold + 1);
+			
 				-- query segments of current strand
 				type_strands.query_element (
 					position => strand_cursor,
@@ -3629,11 +3653,11 @@ package body et_schematic is
 				next (strand_cursor);
 			end loop;
 
-			log_indentation_down;	
+			log_indentation_down;
 		end query_strands;
 
 	begin -- check_misplaced_no_connection_flags
-		log ("checking misplaced no-connection-flags ...", log_threshold);
+		log ("detecting misplaced no-connection-flags ...", log_threshold);
 		log_indentation_up;
 
 		-- We start with the first module of the rig.
