@@ -217,8 +217,8 @@ package et_libraries is
 		UNKNOWN,
 		POWER_OUT,	-- a power source like power symbol (VCC, GND, ..)
 		POWER_IN,	-- a power sink like power ports of ICs
-		PULL_LOW,	-- a port with internal pull-down resistor CS: rename to weak_low
-		PULL_HIGH,	-- a port with internal pull-up resistor CS: rename to weak_high
+		PULL_LOW,	-- a port with internal pull-up resistor CS: rename to weak1
+		PULL_HIGH,	-- a port with internal pull-down resistor CS: rename to weak0
 		NOT_CONNECTED	-- advised by manufacturer to be left unconnected
 		);
 
@@ -227,8 +227,8 @@ package et_libraries is
 		preamble	: in boolean := true) return string;
 	-- Returns the given port direction as string.
 
-	type type_port_visible is ( ON, OFF);
-	type type_pin_visible is ( ON, OFF);
+	type type_port_visible is (ON, OFF);
+	type type_pin_visible is (ON, OFF);
 
 	type type_port_style is ( -- CS: find a better name
 		NONE,

@@ -1056,11 +1056,14 @@ package body et_schematic is
 
 
 	function show_danger (danger : in type_danger) return string is
-		preamble : constant string (1..11) := " DANGER OF ";
+		preamble : constant string (1..9) := " RISK OF ";
 	begin
 		case danger is
-			when floating_input	=> return preamble & "FLOATING INPUT(S) !";
-			when contention		=> return preamble & "CONTENTION !";
+			when floating_input		=> return preamble & "FLOATING INPUT(S) !";
+			when contention			=> return preamble & "CONTENTION !";
+			when short_circuit		=> return preamble & "SHORT CIRCUIT OR OVERLOAD !";
+			when no_power_supply	=> return preamble & "COMPONENT DAMAGE !";
+			when not_predictable	=> return preamble & "UNPREDICTABLE HARM !";
 		end case;	
 	end show_danger;
 	
@@ -3981,7 +3984,7 @@ package body et_schematic is
 
 									if et_import.cad_format /= kicad_v4 then
 										log (message_error & unit_not_deployed
-											& " power supply might be left unconnected !"); -- CS: add to type_danger
+											& show_danger (no_power_supply));
 										raise constraint_error;
 									end if;
 
@@ -4111,6 +4114,7 @@ package body et_schematic is
 
 	procedure net_test (log_threshold : in et_string_processing.type_log_level) is
 	-- Tests nets for number of inputs, outputs, bidirs, ...
+	-- CS: improve test coverage by including component categories like connectors, jumpers, testpads, ...
 		use et_string_processing;
 		use type_rig;
 
@@ -4129,13 +4133,19 @@ package body et_schematic is
 				input_count 	: natural := 0;
 				output_count 	: natural := 0;
 				power_out_count	: natural := 0;
-				--power_in_count	: natural := 0;
+				-- CS bidir_count	: natural := 0;
+				-- CS weak1_count	: natural := 0;
+				-- CS weak0_count	: natural := 0;
+				-- CS ? power_in_count	: natural := 0;
 
 				function show_net return string is
 				begin
 					return "net " & to_string (key (net_cursor));
 					-- CS: show coordinates directly ?
 				end show_net;
+
+				-- CS: procedure (input parameter port-direction) that loops through the ports 
+				-- and outputs them as requested by the input parameter.
 
 			begin -- query_ports
 
@@ -4153,8 +4163,15 @@ package body et_schematic is
 						when input		=> input_count := input_count + 1;
 						when output		=> output_count := output_count + 1;
 						when power_out	=> power_out_count := power_out_count + 1;
-						--when unknown	=> 
-						when others		=> null;
+						
+						when unknown	=> 
+							log_indentation_reset;
+							log (message_error & show_net & " has a port with unknown direction at " 
+								& to_string (element (port_cursor).coordinates, scope => et_coordinates.module)
+								& show_danger (not_predictable));
+							raise constraint_error;
+
+						when others		=> null; -- CS
 					end case;
 						
 					next (port_cursor);
@@ -4174,6 +4191,7 @@ package body et_schematic is
 						-- warn about single inputs
 						if input_count > 0 then
 							log (message_warning & show_net & " has only one input !" & show_danger (floating_input));
+							-- CS: show affected ports and their coordinates. use a loop in ports and show inputs.
 						end if;
 						
 					when others => null;
@@ -4181,10 +4199,8 @@ package body et_schematic is
 
 				-- Test if outputs drive against each other:
 				if output_count > 1 then
-					log_indentation_reset;
-					log (message_error & show_net & " has more than one output !" & show_danger (contention));
-					-- CS: show affected ports and their coordinates
-					raise constraint_error;
+					log (message_warning & show_net & " has more than one output !" & show_danger (contention));
+					-- CS: show affected ports and their coordinates. use a loop in ports and show outputs
 				end if;
 					
 				-- CS: pull_low against pull_high
@@ -4193,8 +4209,8 @@ package body et_schematic is
 				if power_out_count > 0 then
 					if output_count > 0 then -- CS: or bidir_count pull_high pull_low
 						log_indentation_reset;
-						log (message_error & show_net & " has outputs connected with power sources !" & show_danger (contention));
-						-- CS: show affected ports and their coordinates
+						log (message_error & show_net & " has outputs connected with power sources !" & show_danger (short_circuit));
+						-- CS: show affected ports and their coordinates. use a loop in ports and show outputs and power outs.
 						raise constraint_error;
 					end if;
 				end if;

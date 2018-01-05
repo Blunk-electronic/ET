@@ -857,7 +857,11 @@ package et_schematic is
 
 	type type_danger is (
 		floating_input,
-		contention);
+		contention,
+		short_circuit,
+		no_power_supply,
+		not_predictable
+		);
 	
 	function show_danger (danger : in type_danger) return string;
 	
