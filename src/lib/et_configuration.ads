@@ -1,12 +1,12 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                    SYSTEM ET NETLIST DECLARATIONS                        --
+--                        SYSTEM ET CONFIGURATION                           --
 --                                                                          --
 --                                 ET                                       --
 --                                                                          --
---                               B o d y                                    --
+--                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -34,36 +34,39 @@
 --
 --   history of changes:
 --
+--   ToDo: 
 
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
-with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
+-- with ada.strings.maps;			use ada.strings.maps;
+with ada.strings.bounded;       use ada.strings.bounded;
+-- with ada.strings.unbounded; 	use ada.strings.unbounded;
+-- with ada.containers;            use ada.containers;
+-- with ada.containers.vectors;
+-- with ada.containers.doubly_linked_lists;
+-- with ada.containers.indefinite_doubly_linked_lists;
+-- with ada.containers.ordered_maps;
+-- with ada.containers.indefinite_ordered_maps;
+-- with ada.containers.ordered_sets;
 
 with ada.text_io;				use ada.text_io;
+with ada.directories;			use ada.directories;
 
-with ada.containers;            use ada.containers;
-with ada.containers.indefinite_ordered_maps;
-
-
-with ada.directories;
-
-with et_general;
+-- with et_coordinates;
 with et_libraries;
-with et_schematic;
-with et_string_processing;		use et_string_processing;
-with et_coordinates;
-with et_geometry;
-with et_import;
-with et_export;
+-- with et_schematic;
+with et_string_processing;
 
-package body et_netlist is
+package et_configuration is
 
-	procedure dummy is begin null; end dummy;
+	configuration_file_handle : ada.text_io.file_type;
 
+	-- The name of the configuration file may have 100 characters which seems sufficient for now.
+ 	configuraton_file_name_length : constant natural := 100;
+	package type_configuration_file_name is new generic_bounded_length (configuraton_file_name_length); 
 
-		
-end et_netlist;
+	procedure create_default_configuration (file_name : in type_configuration_file_name.bounded_string);
+	-- Creates a default configuration file.
+	
+	
+end et_configuration;
 
 -- Soli Deo Gloria

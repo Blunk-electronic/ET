@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                         SYSTEM ET BASE                                   --
+--                            SYSTEM ET BASE                                --
 --                                                                          --
 --                                 M-1                                      --
 --                                                                          --
@@ -53,7 +53,6 @@ with et_schematic;
 with et_import;
 with et_export;
 with et_kicad;
-with et_netlist;
 
 procedure et is
 	

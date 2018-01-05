@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                    SYSTEM ET SCHEMATIC DECLARATIONS                      --
+--                         SYSTEM ET SCHEMATIC                              --
 --                                                                          --
 --                                 ET                                       --
 --                                                                          --
@@ -55,7 +55,6 @@ with et_geometry;
 with et_export;
 with et_import;
 with et_csv;
-with et_netlist;
 
 package body et_schematic is
 

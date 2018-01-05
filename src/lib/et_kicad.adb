@@ -56,7 +56,6 @@ with ada.exceptions; 			use ada.exceptions;
 with et_coordinates;
 with et_libraries;
 with et_schematic;
-with et_netlist;
 
 with et_geometry;
 
