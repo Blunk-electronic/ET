@@ -675,7 +675,7 @@ package et_schematic is
 		appearance		: type_appearance_schematic;
 		intended_open	: type_port_open; -- set while portlist generation. true if port is to be left open intentionally (by a no_connection-flag)
 		connected		: type_port_connected; -- set while netlist generation. true when port connected with a net
-		power_flag		: type_power_flag := no;
+		power_flag		: type_power_flag; -- indicates if port belongs to a power_flag
 	end record;
 
 	-- Ports can be collected in a simple list:
