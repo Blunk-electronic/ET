@@ -65,6 +65,7 @@ package et_general is
 	switch_import_project	: constant string (1..15)	:= "-import_project";	-- long switch
 	switch_import_format	: constant string (1..14)	:= "-import_format";	-- long switch
 	switch_make_default_conf	: constant string (1..19) := "-make_configuration";
+	switch_configuration_file	: constant string (1..19) := "-configuration_file";
 
 -- OPERATOR ACTIONS
 	type type_operator_action is (

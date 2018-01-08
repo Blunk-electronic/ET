@@ -72,6 +72,7 @@ procedure et is
 						& latin_1.space & switch_import_project & latin_1.equals_sign
 						& latin_1.space & switch_import_format & latin_1.equals_sign
 						& latin_1.space & switch_make_default_conf & latin_1.equals_sign
+						& latin_1.space & switch_configuration_file & latin_1.equals_sign
 					) is
 
 				when latin_1.hyphen => -- which is a '-'
@@ -97,11 +98,15 @@ procedure et is
 						put_line ("import format " & parameter);
 						et_import.cad_format := et_import.type_cad_format'value (parameter);
 
-					elsif full_switch = switch_make_default_conf then
-						put_line ("default configuration file " & parameter);
+					elsif full_switch = switch_make_default_conf then -- make configuration file
+						put_line ("configuration file " & parameter);
 
 						-- set operator action
 						operator_action := make_configuration;
+						conf_file_name := et_configuration.type_configuration_file_name.to_bounded_string (parameter);
+
+					elsif full_switch = switch_configuration_file then -- define configuration file
+						put_line ("configuration file " & parameter);
 						conf_file_name := et_configuration.type_configuration_file_name.to_bounded_string (parameter);
 						
 					elsif full_switch = switch_log_level then
@@ -191,6 +196,13 @@ procedure et is
 		create_work_directory;
 		create_report_directory;
 		et_import.create_report; -- directs all puts to the report file
+
+		-- read configuration file if specified. otherwise issue warning
+		if et_configuration.type_configuration_file_name.length (conf_file_name) > 0 then
+			et_configuration.read_configuration (file_name => conf_file_name, log_threshold => 0);
+		else
+			log (message_warning & "no configuration file specified !");
+		end if;
 		
 		-- The design import requires changing of directories. So we backup the current directory.
 		-- After the import, we restore the directory.

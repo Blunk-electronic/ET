@@ -197,13 +197,28 @@ package body et_configuration is
 
 		use et_string_processing;
 		line : et_string_processing.type_fields_of_line; -- the line of the file
+
+		function field (line : in type_fields_of_line; position : in positive) return string renames
+			et_string_processing.get_field_from_line;
+	
+		section_component_prefixes_entered						: boolean := false;
+		section_component_units_entered							: boolean := false;
+		section_components_with_operator_interaction_entered	: boolean := false;
+
+		procedure clear_section_flags is
+		begin
+			section_component_prefixes_entered := false;
+			section_component_units_entered := false;
+			section_components_with_operator_interaction_entered := false;
+			--clear (lines);
+		end clear_section_flags;
+	
 	begin
-		log_indentation_reset;
-		log_indentation_up;
+		log ("reading configuration file " & to_string (file_name) & " ...", log_threshold);
+
+-- 		log_indentation_reset;
 			
 		if exists (to_string (file_name)) then
-			log ("reading configuration file " & to_string (file_name) & " ...",
-				 console => true);
 
 			component_prefixes := type_component_prefixes.empty_map;			
 
@@ -225,8 +240,44 @@ package body et_configuration is
 					when others =>
 
 						-- At a certain log level we report the whole line as it is:
-						log (to_string (line), log_threshold + 3);
+						--log (to_string (line), log_threshold + 3);
 
+						-- wait for the section headers:
+						if field (line, 1) = section_component_prefixes then
+							clear_section_flags;
+							section_component_prefixes_entered := true;
+						end if;
+
+						if field (line, 1) = section_component_units then
+							clear_section_flags;
+							section_component_units_entered := true;
+						end if;
+
+						if section_component_prefixes_entered then
+							--log (to_string (line));
+							null;
+							--add (line);
+						end if;
+						
+-- 						if not section_component_prefixes_entered then
+-- 							if field (line, 1) = section_component_prefixes then
+-- 								clear_section_flags;
+-- 								section_component_prefixes_entered := true;
+-- 							end if;
+-- 						else
+-- 							log (to_string (line));
+-- 							null;
+-- 						end if;
+-- 
+-- 						if not section_component_units_entered then
+-- 							if field (line, 1) = section_component_units then
+-- 								clear_section_flags;
+-- 								section_component_units_entered := true;
+-- 							end if;
+-- 						else
+-- -- 							log (to_string (line));
+-- 							null;
+-- 						end if;
 						
 				end case;
 				
