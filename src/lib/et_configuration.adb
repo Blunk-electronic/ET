@@ -56,20 +56,38 @@ with et_string_processing;		use et_string_processing;
 
 package body et_configuration is
 
-	procedure create_default_configuration (file_name : in type_configuration_file_name.bounded_string) is
+	procedure make_default_configuration (
+		file_name		: in type_configuration_file_name.bounded_string;
+		log_threshold	: in et_string_processing.type_log_level) is
 	-- Creates a default configuration file.
+		use et_general;
+		use type_configuration_file_name;
 	begin
+		log ("generating default configuration file " 
+			 & to_string (file_name), log_threshold);
 
+		if exists (to_string (file_name)) then
+			-- CS: warn operator and request confirmation
+			null;
+		end if;
+		
 		create (
 			file => configuration_file_handle, 
 			mode => out_file, 
-			name => et_configuration.type_configuration_file_name.to_string (file_name));
+			name => to_string (file_name));
 
+		put_line (configuration_file_handle, comment_mark & system_name & " configuration");
+		put_line (configuration_file_handle, comment_mark & "auto generated at date " & string (date_now));
+		put_line (configuration_file_handle, comment_mark & "Please modify it according to your needs.");
+		put_line (configuration_file_handle, row_separator_double);
+		
 		
 		null;
 
+		put_line (configuration_file_handle, comment_mark & system_name & " configuration end");
+		close (configuration_file_handle);
 		
-	end create_default_configuration;
+	end make_default_configuration;
 
 		
 end et_configuration;

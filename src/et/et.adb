@@ -66,6 +66,7 @@ procedure et is
 						--& latin_1.space & switch_import_file & latin_1.equals_sign -- CS: see below
 						& latin_1.space & switch_import_project & latin_1.equals_sign
 						& latin_1.space & switch_import_format & latin_1.equals_sign
+						& latin_1.space & switch_make_default_conf & latin_1.equals_sign
 					) is
 
 				when latin_1.hyphen => -- which is a '-'
@@ -88,6 +89,10 @@ procedure et is
 						put_line ("import format " & parameter);
 						et_import.cad_format := et_import.type_cad_format'value (parameter);
 
+					elsif full_switch = switch_make_default_conf then
+						put_line ("default configuration file " & parameter);
+						-- CS
+						
 					elsif full_switch = switch_log_level then
 						put_line ("log level " & parameter);
 						log_level := type_log_level'value (parameter);

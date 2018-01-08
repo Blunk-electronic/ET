@@ -63,7 +63,9 @@ package et_configuration is
  	configuraton_file_name_length : constant natural := 100;
 	package type_configuration_file_name is new generic_bounded_length (configuraton_file_name_length); 
 
-	procedure create_default_configuration (file_name : in type_configuration_file_name.bounded_string);
+	procedure make_default_configuration (
+		file_name		: in type_configuration_file_name.bounded_string;
+		log_threshold	: in et_string_processing.type_log_level);
 	-- Creates a default configuration file.
 	
 	
