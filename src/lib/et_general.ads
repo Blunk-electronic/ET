@@ -66,7 +66,13 @@ package et_general is
 	switch_import_format	: constant string (1..14)	:= "-import_format";	-- long switch
 	switch_make_default_conf	: constant string (1..19) := "-make_configuration";
 
-	
+-- OPERATOR ACTIONS
+	type type_operator_action is (
+		request_help,
+		import_design,
+		make_configuration
+		-- CS: others ?
+		);
 
 	
 

@@ -52,9 +52,14 @@ with et_string_processing;		use et_string_processing;
 with et_schematic;
 with et_import;
 with et_export;
+with et_configuration;
 with et_kicad;
 
 procedure et is
+
+	-- Depending on the command line arguments this variable tells what the operator wants to do:
+	operator_action : type_operator_action := request_help;
+	conf_file_name	: et_configuration.type_configuration_file_name.bounded_string;	
 	
 	procedure get_commandline_arguments is
 		use et_schematic;
@@ -85,13 +90,19 @@ procedure et is
 						put_line ("import project " & strip_directory_separator (parameter));
 						project_name := type_project_name.to_bounded_string (parameter);
 
+						-- set operator action
+						operator_action := import_design;
+
 					elsif full_switch = switch_import_format then
 						put_line ("import format " & parameter);
 						et_import.cad_format := et_import.type_cad_format'value (parameter);
 
 					elsif full_switch = switch_make_default_conf then
 						put_line ("default configuration file " & parameter);
-						-- CS
+
+						-- set operator action
+						operator_action := make_configuration;
+						conf_file_name := et_configuration.type_configuration_file_name.to_bounded_string (parameter);
 						
 					elsif full_switch = switch_log_level then
 						put_line ("log level " & parameter);
@@ -103,6 +114,14 @@ procedure et is
 
 			end case;
 		end loop;
+
+		exception
+			when others =>
+				put_line (message_error & "command line argument error !");
+				null;
+				-- CS: show help and command line switches
+				raise;
+				
 	end get_commandline_arguments;
 
 	procedure backup_projects_root_directory is
@@ -183,64 +202,91 @@ procedure et is
 
 		exception
 			when event:
-				constraint_error =>
+				others =>
 					et_import.close_report;
 					put_line (standard_output, message_error & "Read import report for warnings and error messages !"); -- CS: show path to report file
 					raise;
 
 	end import_design;
+
+	procedure check_design is
+		use et_schematic;
+	begin
+		-- export useful things from the imported project(s)
+		et_export.create_report;
+		reset_warnings_counter;
+
+		-- detect missing or orphaned junctions
+		check_junctions (log_threshold => 0);
+		check_orphaned_junctions (log_threshold => 0);
+		check_misplaced_junctions (log_threshold => 0);	
+
+		-- detect misplaced no-connect-flags
+		check_misplaced_no_connection_flags (log_threshold => 0);
+
+		-- detect orphaned no-connect-flags
+		check_orphaned_no_connection_flags (log_threshold => 0);
+
+		-- make netlists
+		make_netlists (log_threshold => 0);
+
+		-- detect unintentionally left open ports (must happen AFTER make_netlists !)
+		check_open_ports (log_threshold => 0);
+
+		-- detect non-deployed units
+		check_non_deployed_units (log_threshold => 0);
+
+		-- test nets for inputs, outputs, bidirs, ...
+		net_test (log_threshold => 0);
+		
+		-- export netlists (requires that make_netlists has been called previously)
+		export_netlists (log_threshold => 0);
+		
+		-- export statistics
+		write_statistics (log_threshold => 0);
+
+		-- export bom
+		export_bom (log_threshold => 0);
+		
+		et_export.close_report;
+
+		exception
+			when event:
+				others => 
+					et_export.close_report;
+					put_line (standard_output, message_error & "Read export report for warnings and error messages !"); -- CS: show path to report file
+
+		
+	end check_design;
+
+		
 	
 begin -- main
 
 	-- process command line arguments
 	get_commandline_arguments;
 
-	-- import design indicated by variable project_name
-	import_design;
+	case operator_action is
+		when request_help =>
+			null; -- CS
 
-	-- export useful things from the imported project(s)
-	et_export.create_report;
-	reset_warnings_counter;
-
-	-- detect missing or orphaned junctions
-	et_schematic.check_junctions (log_threshold => 0);
-	et_schematic.check_orphaned_junctions (log_threshold => 0);
-	et_schematic.check_misplaced_junctions (log_threshold => 0);	
-
-	-- detect misplaced no-connect-flags
-	et_schematic.check_misplaced_no_connection_flags (log_threshold => 0);
-
-	-- detect orphaned no-connect-flags
-	et_schematic.check_orphaned_no_connection_flags (log_threshold => 0);
-
-	-- make netlists
-	et_schematic.make_netlists (log_threshold => 0);
-
-	-- detect unintentionally left open ports (must happen AFTER make_netlists !)
-	et_schematic.check_open_ports (log_threshold => 0);
-
-	-- detect non-deployed units
-	et_schematic.check_non_deployed_units (log_threshold => 0);
-
-	-- test nets for inputs, outputs, bidirs, ...
-	et_schematic.net_test (log_threshold => 0);
+		when import_design =>
 	
-	-- export netlists (requires that make_netlists has been called previously)
-	et_schematic.export_netlists (log_threshold => 0);
-	
-	-- export statistics
-	et_schematic.write_statistics (log_threshold => 0);
+			-- import design indicated by variable project_name
+			import_design;
 
-	-- export bom
-	et_schematic.export_bom (log_threshold => 0);
-	
-	et_export.close_report;
+			-- check the imported design
+			check_design;
+			
+		when make_configuration =>
+			null;
+			et_configuration.make_default_configuration (conf_file_name, log_threshold => 0);
+	end case;
+			
 
 	exception
 		when event:
-			constraint_error => 
-				et_export.close_report;
-				put_line (standard_output, message_error & "Read export report for warnings and error messages !"); -- CS: show path to report file
+			others => 
 				set_exit_status (failure);
 
 end et;

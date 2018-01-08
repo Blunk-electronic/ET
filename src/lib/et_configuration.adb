@@ -35,8 +35,8 @@
 --   history of changes:
 --
 
--- with ada.characters;			use ada.characters;
--- with ada.characters.latin_1;	use ada.characters.latin_1;
+with ada.characters;			use ada.characters;
+with ada.characters.latin_1;	use ada.characters.latin_1;
 -- with ada.characters.handling;	use ada.characters.handling;
 -- with ada.strings; 				use ada.strings;
 -- with ada.strings.fixed; 		use ada.strings.fixed;
@@ -52,19 +52,38 @@ with ada.directories;
 with et_general;
 with et_libraries;
 with et_string_processing;		use et_string_processing;
-
+with et_export;
 
 package body et_configuration is
 
+	function to_string (cat : in type_component_category) return string is
+	-- returns the given component category as string
+	begin
+		return latin_1.space & type_component_category'image (cat);
+	end to_string;
+
+	function to_string (unit : in type_component_unit) return string is
+	-- returns the given component unit as string
+	begin
+		return latin_1.space & type_component_unit'image (unit);
+	end to_string;
+
+	
 	procedure make_default_configuration (
 		file_name		: in type_configuration_file_name.bounded_string;
 		log_threshold	: in et_string_processing.type_log_level) is
 	-- Creates a default configuration file.
 		use et_general;
 		use type_configuration_file_name;
+
+		function comment return string is begin return comment_mark & latin_1.space; end comment;
+
 	begin
-		log ("generating default configuration file " 
-			 & to_string (file_name), log_threshold);
+		et_export.create_report;
+		reset_warnings_counter;
+
+	
+		log ("generating default configuration file " & to_string (file_name), log_threshold);
 
 		if exists (to_string (file_name)) then
 			-- CS: warn operator and request confirmation
@@ -76,20 +95,111 @@ package body et_configuration is
 			mode => out_file, 
 			name => to_string (file_name));
 
-		put_line (configuration_file_handle, comment_mark & system_name & " configuration");
-		put_line (configuration_file_handle, comment_mark & "auto generated at date " & string (date_now));
-		put_line (configuration_file_handle, comment_mark & "Please modify it according to your needs.");
-		put_line (configuration_file_handle, row_separator_double);
-		
-		
-		null;
+		put_line (configuration_file_handle, comment & system_name & " configuration");
+		put_line (configuration_file_handle, comment & "auto generated at date " & string (date_now));
+		put_line (configuration_file_handle, comment & "Please modify it according to your needs.");
+		put_line (configuration_file_handle, comment & row_separator_double);
+		new_line (configuration_file_handle);
 
-		put_line (configuration_file_handle, comment_mark & system_name & " configuration end");
+		-- COMPONENT PREFIXES
+		put_line (configuration_file_handle, section_component_prefixes); -- section header
+		new_line (configuration_file_handle);		
+		put_line (configuration_file_handle, comment & "prefix category");
+		new_line (configuration_file_handle);		
+		put_line (configuration_file_handle, "R  " & to_string (RESISTOR));
+		put_line (configuration_file_handle, "C  " & to_string (CAPACITOR));
+		put_line (configuration_file_handle, "L  " & to_string (INDUCTOR));
+		put_line (configuration_file_handle, "TF " & to_string (TRANSFORMER));
+		put_line (configuration_file_handle, "D  " & to_string (DIODE));
+		put_line (configuration_file_handle, "T  " & to_string (TRANSISTOR));
+		put_line (configuration_file_handle, "LED" & to_string (LIGHT_EMMITTING_DIODE));
+		put_line (configuration_file_handle, "IC " & to_string (INTEGRATED_CIRCUIT));
+		put_line (configuration_file_handle, "N  " & to_string (NETCHANGER));
+		--put_line (configuration_file_handle, "W" & to_string (WIRE));
+		--put_line (configuration_file_handle, "CBL" & to_string (CABLE));
+		put_line (configuration_file_handle, "X  " & to_string (CONNECTOR));
+		put_line (configuration_file_handle, "J  " & to_string (JUMPER));
+		put_line (configuration_file_handle, "S  " & to_string (SWITCH));
+		put_line (configuration_file_handle, "K  " & to_string (RELAY));
+		put_line (configuration_file_handle, "M  " & to_string (MOTOR));
+		put_line (configuration_file_handle, "B  " & to_string (BUZZER));
+		put_line (configuration_file_handle, "LS " & to_string (LOUDSPEAKER));
+		put_line (configuration_file_handle, "MIC" & to_string (MICROPHONE));
+		
+		new_line (configuration_file_handle);
+		new_line (configuration_file_handle);		
+
+		-- UNITS OF COMPONENT VALUES
+		put_line (configuration_file_handle, section_component_units); -- section header
+		new_line (configuration_file_handle);		
+		put_line (configuration_file_handle, "R" & to_string (OHM));
+		put_line (configuration_file_handle, "m" & to_string (MILLIOHM));
+		put_line (configuration_file_handle, "k" & to_string (KILOOHM));
+		put_line (configuration_file_handle, "M" & to_string (MEGAOHM));
+
+		put_line (configuration_file_handle, "F" & to_string (FARAD));
+		put_line (configuration_file_handle, "m" & to_string (MILLIFARAD));
+		put_line (configuration_file_handle, "u" & to_string (MICROFARAD));
+		put_line (configuration_file_handle, "n" & to_string (NANOFARAD));
+		put_line (configuration_file_handle, "p" & to_string (PICOFARAD));
+
+		put_line (configuration_file_handle, "H" & to_string (HENRY));
+		put_line (configuration_file_handle, "m" & to_string (MILLIHENRY));
+		put_line (configuration_file_handle, "u" & to_string (MICROHENRY));
+		put_line (configuration_file_handle, "n" & to_string (NANOHENRY));
+		
+		new_line (configuration_file_handle);
+		new_line (configuration_file_handle);		
+
+		-- COMPONENT WITH OPERATOR INTERACTION
+		put_line (configuration_file_handle, section_components_with_operator_interaction); -- section header
+		new_line (configuration_file_handle);		
+		put_line (configuration_file_handle, comment & "prefix");
+		new_line (configuration_file_handle);		
+		put_line (configuration_file_handle, "LED");
+		put_line (configuration_file_handle, "S");
+		put_line (configuration_file_handle, "B");
+		put_line (configuration_file_handle, "X");
+		put_line (configuration_file_handle, "J");
+		new_line (configuration_file_handle);
+		
+
+		-- CONNECTOR GND TERMINAL
+        -- CS
+-- 		put_line (configuration_file_handle, section_connector_gnd_terminal); -- section header
+-- 		new_line (configuration_file_handle);
+
+		-- CS LINE WIDTHS
+
+		-- CS TEXT SIZES
+	
+		
+		put_line (configuration_file_handle, comment & row_separator_double);		
+		put_line (configuration_file_handle, comment & system_name & " configuration end");
 		close (configuration_file_handle);
+
+		et_export.close_report;
+
+		exception
+			when event:
+				others => 
+					et_export.close_report;
+					put_line (standard_output, message_error & "Read export report for warnings and error messages !"); -- CS: show path to report file
+
 		
 	end make_default_configuration;
 
-		
+
+	procedure read_configuration (
+		file_name		: in type_configuration_file_name.bounded_string;
+		log_threshold	: in et_string_processing.type_log_level) is
+	-- Reads the given configuration file.
+	-- Fills component_prefixes.
+	begin
+		component_prefixes := type_component_prefixes.empty_map;
+
+	end read_configuration;
+	
 end et_configuration;
 
 -- Soli Deo Gloria

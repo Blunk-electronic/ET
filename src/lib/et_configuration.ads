@@ -39,11 +39,11 @@
 -- with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
 -- with ada.strings.unbounded; 	use ada.strings.unbounded;
--- with ada.containers;            use ada.containers;
+with ada.containers;            use ada.containers;
 -- with ada.containers.vectors;
 -- with ada.containers.doubly_linked_lists;
 -- with ada.containers.indefinite_doubly_linked_lists;
--- with ada.containers.ordered_maps;
+with ada.containers.ordered_maps;
 -- with ada.containers.indefinite_ordered_maps;
 -- with ada.containers.ordered_sets;
 
@@ -57,6 +57,64 @@ with et_string_processing;
 
 package et_configuration is
 
+	section_component_prefixes	: constant string (1..20) := "[COMPONENT_PREFIXES]";
+	section_component_units		: constant string (1..17) := "[COMPONENT_UNITS]";
+	section_components_with_operator_interaction : constant string (1..31) := "[OPERATOR_INTERACTION_REQUIRED]";
+	section_connector_gnd_terminal : constant string (1..24) := "[CONNECTOR_GND_TERMINAL]";
+
+	type type_component_category is (
+		RESISTOR,
+		CAPACITOR,
+		INDUCTOR,
+		TRANSFORMER,
+		DIODE,
+		TRANSISTOR,
+		LIGHT_EMMITTING_DIODE,
+		INTEGRATED_CIRCUIT,
+		NETCHANGER,
+-- 		WIRE,
+-- 		CABLE,
+		CONNECTOR,
+		JUMPER,
+		SWITCH,
+		RELAY,
+-- 		CONTACTOR,
+		MOTOR,
+		BUZZER,
+		LOUDSPEAKER,
+		MICROPHONE
+		);
+	
+	function to_string (cat : in type_component_category) return string;
+	-- returns the given component category as string
+
+	package type_component_prefixes is new ordered_maps (
+		key_type => et_libraries.type_component_prefix.bounded_string, -- IC
+		element_type => type_component_category, -- INTEGRATED_CIRCUIT
+		"<" => et_libraries.type_component_prefix."<");
+
+	-- After reading the configuration, we store the component prefixes for the design here:
+	component_prefixes : type_component_prefixes.map;
+	
+	type type_component_unit is (
+		OHM,
+		MILLIOHM,
+		KILOOHM,
+		MEGAOHM,
+		FARAD,
+		MILLIFARAD,
+		MICROFARAD,
+		NANOFARAD,
+		PICOFARAD,
+		HENRY,
+		MILLIHENRY,
+		MICROHENRY,
+		NANOHENRY
+		);
+
+	function to_string (unit : in type_component_unit) return string;
+	-- returns the given unit as string
+	
 	configuration_file_handle : ada.text_io.file_type;
 
 	-- The name of the configuration file may have 100 characters which seems sufficient for now.
@@ -67,7 +125,12 @@ package et_configuration is
 		file_name		: in type_configuration_file_name.bounded_string;
 		log_threshold	: in et_string_processing.type_log_level);
 	-- Creates a default configuration file.
-	
+
+	procedure read_configuration (
+		file_name		: in type_configuration_file_name.bounded_string;
+		log_threshold	: in et_string_processing.type_log_level);
+	-- Reads the given configuration file.
+	-- Fills component_prefixes.
 	
 end et_configuration;
 
