@@ -74,7 +74,6 @@ package body et_configuration is
 		log_threshold	: in et_string_processing.type_log_level) is
 	-- Creates a default configuration file.
 		use et_general;
-		use type_configuration_file_name;
 
 		function comment return string is begin return comment_mark & latin_1.space; end comment;
 
@@ -195,8 +194,55 @@ package body et_configuration is
 		log_threshold	: in et_string_processing.type_log_level) is
 	-- Reads the given configuration file.
 	-- Fills component_prefixes.
+
+		use et_string_processing;
+		line : et_string_processing.type_fields_of_line; -- the line of the file
 	begin
-		component_prefixes := type_component_prefixes.empty_map;
+		log_indentation_reset;
+		log_indentation_up;
+			
+		if exists (to_string (file_name)) then
+			log ("reading configuration file " & to_string (file_name) & " ...",
+				 console => true);
+
+			component_prefixes := type_component_prefixes.empty_map;			
+
+			open (file => configuration_file_handle, mode => in_file, name => to_string (file_name));
+			set_input (configuration_file_handle);
+
+			-- read configuration file line per line
+			while not end_of_file loop
+
+				-- Store line in variable "line" (see et_string_processing.ads)
+				line := et_string_processing.read_line (
+					line => get_line,
+					number => ada.text_io.line (current_input),
+					comment_mark => et_general.comment_mark,
+					ifs => latin_1.space); -- fields are separated by space
+
+				case field_count (line) is
+					when 0 => null; -- we skip empty lines
+					when others =>
+
+						-- At a certain log level we report the whole line as it is:
+						log (to_string (line), log_threshold + 3);
+
+						
+				end case;
+				
+			end loop;
+
+			set_input (standard_input);
+			close (configuration_file_handle);
+			
+		else
+			log_indentation_reset;
+			log (message_error & "configuration file " & to_string (file_name) & " not found !",
+				 console => true);
+			raise constraint_error;
+		end if;
+		
+
 
 	end read_configuration;
 	

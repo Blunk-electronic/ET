@@ -120,7 +120,8 @@ package et_configuration is
 	-- The name of the configuration file may have 100 characters which seems sufficient for now.
  	configuraton_file_name_length : constant natural := 100;
 	package type_configuration_file_name is new generic_bounded_length (configuraton_file_name_length); 
-
+	use type_configuration_file_name;
+	
 	procedure make_default_configuration (
 		file_name		: in type_configuration_file_name.bounded_string;
 		log_threshold	: in et_string_processing.type_log_level);
