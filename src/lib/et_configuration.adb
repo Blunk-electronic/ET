@@ -222,6 +222,8 @@ package body et_configuration is
 		-- The lines of the section are in container "lines".
 		-- Clears "lines" after processing.
 			line_cursor : type_lines.cursor := lines.first; -- points to the line being processed
+			component_prefix_cursor : type_configuration_component_prefixes.cursor;
+			inserted : boolean := false;
 		begin
 			next (line_cursor); -- the first line of the section is its header itself and can be skipped
 			log_indentation_up;
@@ -234,6 +236,20 @@ package body et_configuration is
 					log_indentation_up;
 					while line_cursor /= type_lines.no_element loop
 						log (to_string (element (line_cursor)), log_threshold + 2);
+
+						-- insert the prefix assignment in container configuration_component_prefixes
+						type_configuration_component_prefixes.insert (
+							container => configuration_component_prefixes,
+							position => component_prefix_cursor,
+							inserted => inserted,
+							key => et_libraries.type_component_prefix.to_bounded_string (field (element (line_cursor), 1)),
+							-- CS: test if prefix contains only allowed characters
+							new_item => type_component_category'value (field (element (line_cursor), 2)));
+
+						if not inserted then
+							log (message_warning & affected_line (element (line_cursor)) & "multiple occurence of assignment ! Entry ignored !");
+						end if;
+						
 						next (line_cursor);
 					end loop;
 					log_indentation_down;
@@ -263,6 +279,18 @@ package body et_configuration is
 
 			-- clean up. empty container "lines" for next section
 			lines.clear;
+
+			exception
+				when others =>
+					log_indentation_reset;
+					log (message_error & affected_line (element (line_cursor)) & latin_1.space & to_string (element (line_cursor)),
+						 console => false);
+
+					-- CS: provide information on what is wrong with the line (depending on section_entered)
+					-- propose category, units, ...
+					
+					raise;
+					
 		end process_previous_section;
 		
 	begin -- read_configuration
