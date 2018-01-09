@@ -287,13 +287,14 @@ package et_kicad is
 	-- In schematic, a power symbol/component has a hash as first character like "L P3V3 #PWR07"
 	schematic_component_power_symbol_prefix: constant character := '#';
 	
-	-- power flags have a special prefix which distinguishes them from other components:
+	-- power flags and symbols have a special prefix which distinguishes 
+	-- them from real components:
 	power_flag_prefix : constant string (1..4) := "#FLG";
+	power_symbol_prefix : constant string (1..4) := "#PWR";	
 
 	-- Thes are the characters allowed for a component prefix:
 	component_prefix_characters : character_set := et_libraries.component_prefix_characters 
 		or to_set (schematic_component_power_symbol_prefix);
-	
 	
 	type type_symbol_interchangeable is (L, F); -- L means swapping not allowed, F means swapping allowed 
 	type type_show_pin_number is (Y, N); -- show pin/pad number yes/no

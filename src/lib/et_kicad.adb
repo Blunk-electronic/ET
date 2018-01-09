@@ -104,6 +104,46 @@ package body et_kicad is
 		raise constraint_error;
 	end invalid_field;
 
+	function validate_prefix (prefix : in et_libraries.type_component_prefix.bounded_string) 
+		return et_libraries.type_component_prefix.bounded_string is
+	-- Tests if the given prefix is a power_flag_prefix or a power_symbol_prefix.
+	-- Raises exception if not. Otherwise returns the given prefix unchanged.
+		use et_string_processing;
+		use et_libraries.type_component_prefix;
+	begin
+		if to_string (prefix) = power_flag_prefix or to_string (prefix) = power_symbol_prefix then
+			return prefix;
+		else
+			log_indentation_reset;
+			log (message_error & "invalid prefix "
+				 & to_string (prefix) & " !"
+				 & " Expected " 
+				 & power_flag_prefix & " or "
+				 & power_symbol_prefix & " !");
+			raise constraint_error;
+		end if;
+	end validate_prefix;
+
+	function validate_prefix (reference : in et_libraries.type_component_reference)
+		return et_libraries.type_component_reference is
+	-- Tests if the given reference has a power_flag_prefix or a power_symbol_prefix.
+	-- Raises exception if not. Otherwise returns the given reference unchanged.
+		use et_libraries.type_component_prefix;
+	begin
+		if to_string (reference.prefix) = power_flag_prefix or to_string (reference.prefix) = power_symbol_prefix then
+			return reference;
+		else
+			log_indentation_reset;
+			log (message_error & "invalid prefix "
+				 & to_string (reference.prefix) & " !"
+				 & " Expected " 
+				 & power_flag_prefix & " or "
+				 & power_symbol_prefix & " !");
+			raise constraint_error;
+		end if;
+	end validate_prefix;
+		
+	
 	function to_point (x_in, y_in : in string) return type_2d_point is
 		point : type_2d_point;
 		x : type_distance_xy;
@@ -1224,9 +1264,11 @@ package body et_kicad is
 
 								-- Since this is a virtual component, we do the prefix character check
 								-- against the Kicad specific character set for prefixes. see et_kicad.ads.
-								prefix			=> check_prefix_characters (
+								-- Afterward we validate the prefix. The prefixes for virtual components
+								-- are KiCad specific.
+								prefix			=> validate_prefix (check_prefix_characters (
 													prefix => tmp_prefix,
-													characters => component_prefix_characters),
+													characters => component_prefix_characters)),
 								
 								value			=> type_component_value.to_bounded_string (content (tmp_value)),
 								commissioned	=> et_string_processing.type_date (content (tmp_commissioned)),
@@ -1250,6 +1292,9 @@ package body et_kicad is
 
 								-- Since this is a real component. we do the prefix character check 
 								-- against the default character set for prefixes as specified in et_libraries.
+								-- Afterward we validate the prefix. The prefixes for real components are specified
+								-- in the et configuration file (see et_configuration).
+								-- CS
 								prefix			=> check_prefix_characters (
 													prefix => tmp_prefix,
 													characters => et_libraries.component_prefix_characters),
@@ -5030,20 +5075,26 @@ package body et_kicad is
 							customized => false); -- we do not allow tilde characters here. they occur ONLY in the library.
 
 						appearance := to_appearance (line => et_kicad.line, schematic => true);
-						
+
+						-- Depending on the appearance of the component the reference is built and checked.
 						case appearance is
 						
 							when et_libraries.sch => 
 								-- We have a line like "L P3V3 #PWR07".
-								-- Test if the reference contains a allowed characters.
-								reference := to_component_reference (
+								-- Test if the reference contains allowed characters.
+								-- Afterward we validate the prefix of the reference. It must be those
+								-- of a power symbol or a power flag.
+								reference := validate_prefix (to_component_reference (
 									text_in => field (et_kicad.line,3),
-									allow_special_character_in_prefix => true);
+									allow_special_character_in_prefix => true));
 
 							when et_libraries.sch_pcb =>
-
 								-- we have a line like "L 74LS00 U1"
-								-- Test if the reference contains a allowed characters.
+								-- Test if the reference contains allowed characters.
+								-- Afterward we validate the prefix of the reference. 
+								-- It is about a REAL component. Its prefix must be one 
+								-- of those defined in the configuration file (see et_configuration).
+								-- CS
 								reference := to_component_reference(
 									text_in => field (et_kicad.line,3),
 									allow_special_character_in_prefix => false);
