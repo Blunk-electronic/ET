@@ -5019,7 +5019,7 @@ package body et_kicad is
 					log ("component line: " & to_string (et_kicad.line), log_threshold + 3);
 
 					-- Read component name and annotation from a line like "L NetChanger N1". 
-					-- From this entry we reason the compoenent appearance.
+					-- From this entry we reason the component appearance.
 					if field (et_kicad.line,1) = schematic_component_identifier_name then -- "L"
 						
 						generic_name_in_lbr := type_component_name.to_bounded_string (field (et_kicad.line,2)); -- "SN74LS00"
