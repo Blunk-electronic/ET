@@ -62,10 +62,10 @@ package body et_configuration is
 		return latin_1.space & type_component_category'image (cat);
 	end to_string;
 
-	function to_string (unit : in type_component_unit) return string is
-	-- returns the given component unit as string
+	function to_string (unit : in type_component_value) return string is
+	-- returns the given component value as string
 	begin
-		return latin_1.space & type_component_unit'image (unit);
+		return latin_1.space & type_component_value'image (unit);
 	end to_string;
 
 	
@@ -129,7 +129,7 @@ package body et_configuration is
 		new_line (configuration_file_handle);		
 
 		-- UNITS OF COMPONENT VALUES
-		put_line (configuration_file_handle, section_component_units); -- section header
+		put_line (configuration_file_handle, section_component_values); -- section header
 		new_line (configuration_file_handle);		
 		put_line (configuration_file_handle, "R" & to_string (OHM));
 		put_line (configuration_file_handle, "m" & to_string (MILLIOHM));
@@ -204,7 +204,7 @@ package body et_configuration is
 		type type_section is (
 			none,
 			component_prefixes,
-			component_units,
+			component_values,
 			components_with_operator_interaction
 			);
 		
@@ -265,7 +265,7 @@ package body et_configuration is
 					log_indentation_down;
 
 				-- COMPONENT VALUES
-				when component_units =>
+				when component_values =>
 					log ("component values ...", log_threshold + 1);
 					log_indentation_up;
 					while line_cursor /= type_lines.no_element loop
@@ -343,9 +343,9 @@ package body et_configuration is
 							section_entered := component_prefixes;
 						end if;
 
-						if field (line, 1) = section_component_units then
+						if field (line, 1) = section_component_values then
 							process_previous_section;
-							section_entered := component_units;
+							section_entered := component_values;
 						end if;
 
 						if field (line, 1) = section_components_with_operator_interaction then

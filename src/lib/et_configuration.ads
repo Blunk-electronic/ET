@@ -58,7 +58,7 @@ with et_string_processing;
 package et_configuration is
 
 	section_component_prefixes	: constant string (1..20) := "[COMPONENT_PREFIXES]";
-	section_component_units		: constant string (1..17) := "[COMPONENT_UNITS]";
+	section_component_values	: constant string (1..18) := "[COMPONENT_VALUES]";
 	section_components_with_operator_interaction : constant string (1..31) := "[OPERATOR_INTERACTION_REQUIRED]";
 	section_connector_gnd_terminal : constant string (1..24) := "[CONNECTOR_GND_TERMINAL]";
 
@@ -96,7 +96,7 @@ package et_configuration is
 	-- After reading the configuration, we store the component prefixes for the design here:
 	configuration_component_prefixes : type_configuration_component_prefixes.map;
 	
-	type type_component_unit is (
+	type type_component_value is (
 		OHM,
 		MILLIOHM,
 		KILOOHM,
@@ -112,8 +112,8 @@ package et_configuration is
 		NANOHENRY
 		);
 
-	function to_string (unit : in type_component_unit) return string;
-	-- returns the given unit as string
+	function to_string (unit : in type_component_value) return string;
+	-- returns the given value as string
 	
 	configuration_file_handle : ada.text_io.file_type;
 
