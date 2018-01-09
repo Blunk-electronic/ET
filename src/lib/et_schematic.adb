@@ -660,8 +660,9 @@ package body et_schematic is
 	function to_component_reference (
 	-- Converts a string like "IC303" to a composite type_component_reference.
 	-- If allow_special_character_in_prefix is given true, the first character
-	-- is allowed to be a special character.
+	-- is allowed to be a special character. This is currently a kicad requirement.
 	-- NOTE: Leading zeroes in the id are removed.
+	-- CS: text prefix characters against character set component_prefix_characters
 		text_in : in string;
 		allow_special_character_in_prefix : in boolean := false		
 		) return type_component_reference is
@@ -706,7 +707,7 @@ package body et_schematic is
 							end if;
 
 						when true =>
-							if is_upper(c) or is_special(c) then
+							if is_upper(c) or is_special(c) then -- CS: test for et_kicad.schematic_component_power_symbol_prefix instead.
 								r.prefix := r.prefix & c;
 							else 
 								invalid_reference;

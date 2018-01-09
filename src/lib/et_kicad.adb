@@ -5034,7 +5034,8 @@ package body et_kicad is
 						case appearance is
 						
 							when et_libraries.sch => 
-								-- we have a line like "L P3V3 #PWR07"
+								-- We have a line like "L P3V3 #PWR07".
+								-- Test if the reference contains a allowed characters.
 								reference := to_component_reference (
 									text_in => field (et_kicad.line,3),
 									allow_special_character_in_prefix => true);
@@ -5042,6 +5043,7 @@ package body et_kicad is
 							when et_libraries.sch_pcb =>
 
 								-- we have a line like "L 74LS00 U1"
+								-- Test if the reference contains a allowed characters.
 								reference := to_component_reference(
 									text_in => field (et_kicad.line,3),
 									allow_special_character_in_prefix => false);
