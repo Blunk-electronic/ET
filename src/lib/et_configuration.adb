@@ -226,7 +226,8 @@ package body et_configuration is
 			inserted : boolean := false;
 
 			use et_libraries;
-		
+
+			-- CS: check field count in sections respecitvely. issue warning if too many fields. 
 		begin
 			next (line_cursor); -- the first line of the section is its header itself and can be skipped
 			log_indentation_up;
@@ -246,7 +247,7 @@ package body et_configuration is
 							container => configuration_component_prefixes,
 							position => component_prefix_cursor,
 
-							-- If entry already in map, this flag goes true. Warning issued lated. see below.
+							-- If entry already in map, this flag goes true. Warning issued later. see below.
 							inserted => inserted,
 							
 							-- Test if prefix contains only allowed characters. Then use it as key in this map.
@@ -331,6 +332,8 @@ package body et_configuration is
 					when 0 => null; -- we skip empty lines
 					when others =>
 
+						-- CS: check field count ?
+						
 						-- At a certain log level we report the whole line as it is:
 						--log (to_string (line), log_threshold + 3);
 
