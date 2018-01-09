@@ -88,13 +88,13 @@ package et_configuration is
 	function to_string (cat : in type_component_category) return string;
 	-- returns the given component category as string
 
-	package type_component_prefixes is new ordered_maps (
+	package type_configuration_component_prefixes is new ordered_maps (
 		key_type => et_libraries.type_component_prefix.bounded_string, -- IC
 		element_type => type_component_category, -- INTEGRATED_CIRCUIT
 		"<" => et_libraries.type_component_prefix."<");
 
 	-- After reading the configuration, we store the component prefixes for the design here:
-	component_prefixes : type_component_prefixes.map;
+	configuration_component_prefixes : type_configuration_component_prefixes.map;
 	
 	type type_component_unit is (
 		OHM,

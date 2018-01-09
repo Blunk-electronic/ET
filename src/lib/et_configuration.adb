@@ -43,8 +43,8 @@ with ada.characters.latin_1;	use ada.characters.latin_1;
 
 with ada.text_io;				use ada.text_io;
 
--- with ada.containers;            use ada.containers;
--- with ada.containers.indefinite_ordered_maps;
+with ada.containers;            use ada.containers;
+with ada.containers.doubly_linked_lists;
 
 
 with ada.directories;
@@ -200,27 +200,77 @@ package body et_configuration is
 
 		function field (line : in type_fields_of_line; position : in positive) return string renames
 			et_string_processing.get_field_from_line;
-	
-		section_component_prefixes_entered						: boolean := false;
-		section_component_units_entered							: boolean := false;
-		section_components_with_operator_interaction_entered	: boolean := false;
 
-		procedure clear_section_flags is
+		type type_section is (
+			none,
+			component_prefixes,
+			component_units,
+			components_with_operator_interaction
+			);
+		
+		section_entered : type_section := none;
+		
+		-- lines of the file are collected in a simple list:
+		package type_lines is new doubly_linked_lists (
+			element_type => et_string_processing.type_fields_of_line,
+			"=" => et_string_processing.lines_equally);
+		use type_lines;
+		lines : type_lines.list := type_lines.empty_list;
+			
+		procedure process_previous_section is
+		-- Processes the section indicated by section_entered. 
+		-- The lines of the section are in container "lines".
+		-- Clears "lines" after processing.
+			line_cursor : type_lines.cursor := lines.first; -- points to the line being processed
 		begin
-			section_component_prefixes_entered := false;
-			section_component_units_entered := false;
-			section_components_with_operator_interaction_entered := false;
-			--clear (lines);
-		end clear_section_flags;
-	
-	begin
+			next (line_cursor); -- the first line of the section is its header itself and can be skipped
+			log_indentation_up;
+
+			case section_entered is
+				when none => null;
+				
+				when component_prefixes =>
+					log ("component prefixes ...", log_threshold + 1);
+					log_indentation_up;
+					while line_cursor /= type_lines.no_element loop
+						log (to_string (element (line_cursor)), log_threshold + 2);
+						next (line_cursor);
+					end loop;
+					log_indentation_down;
+
+				when component_units =>
+					log ("component units ...", log_threshold + 1);
+					log_indentation_up;
+					while line_cursor /= type_lines.no_element loop
+						log (to_string (element (line_cursor)), log_threshold + 2);
+						next (line_cursor);
+					end loop;
+					log_indentation_down;
+
+				when components_with_operator_interaction =>
+					log ("components with operator interaction ...", log_threshold + 1);
+					log_indentation_up;
+					while line_cursor /= type_lines.no_element loop
+						log (to_string (element (line_cursor)), log_threshold + 2);
+						next (line_cursor);
+					end loop;
+					log_indentation_down;
+
+					
+			end case;
+			
+			log_indentation_down;
+
+			-- clean up. empty container "lines" for next section
+			lines.clear;
+		end process_previous_section;
+		
+	begin -- read_configuration
 		log ("reading configuration file " & to_string (file_name) & " ...", log_threshold);
 
--- 		log_indentation_reset;
-			
 		if exists (to_string (file_name)) then
 
-			component_prefixes := type_component_prefixes.empty_map;			
+			configuration_component_prefixes := type_configuration_component_prefixes.empty_map;
 
 			open (file => configuration_file_handle, mode => in_file, name => to_string (file_name));
 			set_input (configuration_file_handle);
@@ -242,47 +292,41 @@ package body et_configuration is
 						-- At a certain log level we report the whole line as it is:
 						--log (to_string (line), log_threshold + 3);
 
-						-- wait for the section headers:
+						-- Wait for a section header.
+						-- Once a header was found, the PREVIOUS section is regarded as complete.
+						-- The PREVIOUS section is then processed with all its lines in container "lines".
+						-- Set section_entered according to the section BEING entered.
 						if field (line, 1) = section_component_prefixes then
-							clear_section_flags;
-							section_component_prefixes_entered := true;
+							process_previous_section;
+							section_entered := component_prefixes;
 						end if;
 
 						if field (line, 1) = section_component_units then
-							clear_section_flags;
-							section_component_units_entered := true;
+							process_previous_section;
+							section_entered := component_units;
 						end if;
 
-						if section_component_prefixes_entered then
-							--log (to_string (line));
-							null;
-							--add (line);
+						if field (line, 1) = section_components_with_operator_interaction then
+							process_previous_section;
+							section_entered := components_with_operator_interaction;
 						end if;
+
+						-- CS: place other sections header tests here
 						
--- 						if not section_component_prefixes_entered then
--- 							if field (line, 1) = section_component_prefixes then
--- 								clear_section_flags;
--- 								section_component_prefixes_entered := true;
--- 							end if;
--- 						else
--- 							log (to_string (line));
--- 							null;
--- 						end if;
--- 
--- 						if not section_component_units_entered then
--- 							if field (line, 1) = section_component_units then
--- 								clear_section_flags;
--- 								section_component_units_entered := true;
--- 							end if;
--- 						else
--- -- 							log (to_string (line));
--- 							null;
--- 						end if;
+						-- For all entered sections collect lines in container "lines".
+						case section_entered is
+							when none => null;
+							when others =>
+								lines.append (line);
+						end case;
 						
 				end case;
 				
 			end loop;
 
+			-- The last section of the file is complete, once the file end is reached.
+			process_previous_section;
+			
 			set_input (standard_input);
 			close (configuration_file_handle);
 			

@@ -35,14 +35,11 @@
 --   history of changes:
 --
 
-
 with ada.text_io;				use ada.text_io;
 
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
--- with ada.containers.vectors;
 with ada.containers.doubly_linked_lists;
--- with ada.containers.ordered_maps;
 
 with et_schematic;
 with et_import;
@@ -59,14 +56,6 @@ package et_kicad is
 
 	lines : type_lines.list := type_lines.empty_list;
 	line_cursor : type_lines.cursor;
-	procedure clear (lines : in out type_lines.list);
-	procedure add (line : in et_string_processing.type_fields_of_line);
-	function first (lines : in type_lines.list) return type_lines.cursor;
-	procedure next (line : in out type_lines.cursor);	
-	function line return et_string_processing.type_fields_of_line;
-
-
-
 	
     encoding_default 					: constant string (1..5) := "utf-8";	
 
