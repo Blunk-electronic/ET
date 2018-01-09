@@ -251,7 +251,10 @@ package body et_configuration is
 							inserted => inserted,
 							
 							-- Test if prefix contains only allowed characters. Then use it as key in this map.
-							key => check_prefix (type_component_prefix.to_bounded_string (field (element (line_cursor), 1))),
+							-- We test against the default character set as specified in et_libraries.
+							key => check_prefix_characters (
+								prefix => type_component_prefix.to_bounded_string (field (element (line_cursor), 1)),
+								characters => component_prefix_characters),
 
 							-- Test if component category is valid. Then use it as new item.
 							new_item => type_component_category'value (field (element (line_cursor), 2)));

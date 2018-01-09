@@ -36,7 +36,7 @@
 --
 
 with ada.text_io;				use ada.text_io;
-
+with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
@@ -163,12 +163,7 @@ package et_kicad is
 
 	type type_schematic_unit_orientation	is range -1..1;
 	type type_schematic_unit_mirror_style	is range -1..1;
-
-	-- In schematic, a power symbol/component has a hash as first character like "L P3V3 #PWR07"
-	schematic_component_power_symbol_prefix: constant character := '#';
-
-
-    
+   
     type type_label_orientation is range 0..3; -- also used for notes
 
     schematic_tilde : constant string (1..1) := "~";
@@ -288,8 +283,23 @@ package et_kicad is
 
 	type type_library_component_appearance is (N, P); -- normal or power
 
+	
+	-- In schematic, a power symbol/component has a hash as first character like "L P3V3 #PWR07"
+	schematic_component_power_symbol_prefix: constant character := '#';
+	
 	-- power flags have a special prefix which distinguishes them from other components:
 	power_flag_prefix : constant string (1..4) := "#FLG";
+
+	-- Thes are the characters allowed for a component prefix:
+	component_prefix_characters : character_set := et_libraries.component_prefix_characters 
+		or to_set (schematic_component_power_symbol_prefix);
+	
+-- 	function check_prefix (prefix : in et_libraries.type_component_prefix.bounded_string) 
+-- 		return et_libraries.type_component_prefix.bounded_string;
+-- 	-- Tests if the given prefix contains only valid characters. Raises exception if invalid character found.
+-- 	-- Returns prefix unchanged otherwise.
+-- 
+
 	
 	type type_symbol_interchangeable is (L, F); -- L means swapping not allowed, F means swapping allowed 
 	type type_show_pin_number is (Y, N); -- show pin/pad number yes/no

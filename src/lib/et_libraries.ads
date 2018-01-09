@@ -348,9 +348,14 @@ package et_libraries is
 	function to_string (prefix : in type_component_prefix.bounded_string) return string;
 	-- returns the given prefix as string
 
-	function check_prefix (prefix : in type_component_prefix.bounded_string) return type_component_prefix.bounded_string;
-	-- Tests if the given prefix contains only valid characters. Raises exception if invalid character found.
-	-- Returns prefix unchanged otherwise.
+	function check_prefix_characters (
+		prefix : in type_component_prefix.bounded_string;
+		characters : in character_set)
+		return type_component_prefix.bounded_string;
+	-- Tests if the given prefix contains only valid characters as specified
+	-- by given character set.
+	-- Raises exception if invalid character found.
+	-- Returns prefix unchanged otherwise.	
 	
 	type type_component_reference_element is (PREFIX, ID);
 	component_reference_prefix_default : constant type_component_prefix.bounded_string := to_bounded_string("?");
