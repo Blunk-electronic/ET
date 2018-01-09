@@ -1222,7 +1222,12 @@ package body et_kicad is
 														text_in => to_string (tmp_prefix) & "0", -- #FLG0
 														allow_special_character_in_prefix => true)), -- because of the '#'
 
-								prefix			=> tmp_prefix,
+								-- Since this is a virtual component, we do the prefix character check
+								-- against the Kicad specific character set for prefixes. see et_kicad.ads.
+								prefix			=> check_prefix_characters (
+													prefix => tmp_prefix,
+													characters => component_prefix_characters),
+								
 								value			=> type_component_value.to_bounded_string (content (tmp_value)),
 								commissioned	=> et_string_processing.type_date (content (tmp_commissioned)),
 								updated			=> et_string_processing.type_date (content (tmp_updated)),
@@ -1242,7 +1247,13 @@ package body et_kicad is
 							inserted	=> comp_inserted,
 							new_item	=> (
 								appearance		=> sch_pcb,
-								prefix			=> tmp_prefix,
+
+								-- Since this is a real component. we do the prefix character check 
+								-- against the default character set for prefixes as specified in et_libraries.
+								prefix			=> check_prefix_characters (
+													prefix => tmp_prefix,
+													characters => et_libraries.component_prefix_characters),
+								
 								value			=> type_component_value.to_bounded_string (content (tmp_value)),
 								commissioned	=> et_string_processing.type_date (content (tmp_commissioned)),
 								updated			=> et_string_processing.type_date (content (tmp_updated)),
@@ -1283,7 +1294,7 @@ package body et_kicad is
 						log_indentation_reset;
 						log (text => message_error & "component " & to_string (tmp_component_name) & " invalid !",
 							 console => true);
-							-- CS: provide details about the problem
+							-- CS: provide details about the problem (line number, ...)
 						raise;
 						
 			end insert_component;
@@ -2272,31 +2283,6 @@ package body et_kicad is
 				
 	end read_components_libraries;
 
-
--- 	function check_prefix (prefix : in et_libraries.type_component_prefix.bounded_string) 
--- 		return et_libraries.type_component_prefix.bounded_string is
--- 	-- Tests if the given prefix contains only valid characters. Raises exception if invalid character found.
--- 	-- Returns prefix unchanged otherwise.
--- 		use et_string_processing;
--- 		invalid_character_position : natural := 0;
--- 	begin
--- 		invalid_character_position := index (
--- 			source => prefix,
--- 			set => component_prefix_characters,
--- 			test => outside);
--- 
--- 		if invalid_character_position > 0 then
--- 			log_indentation_reset;
--- 			log (message_error & "component prefix " & to_string (prefix) 
--- 				 & " has invalid character at position"
--- 				 & natural'image (invalid_character_position));
--- 			raise constraint_error;
--- 		end if;
--- 		
--- 		return prefix;
--- 	end check_prefix;
-	
-	
 
 	procedure clear_section_entered_flags is
 	-- clears section_eeschema_entered and section_eeschema_libraries_entered.

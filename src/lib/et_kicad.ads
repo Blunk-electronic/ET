@@ -294,12 +294,6 @@ package et_kicad is
 	component_prefix_characters : character_set := et_libraries.component_prefix_characters 
 		or to_set (schematic_component_power_symbol_prefix);
 	
--- 	function check_prefix (prefix : in et_libraries.type_component_prefix.bounded_string) 
--- 		return et_libraries.type_component_prefix.bounded_string;
--- 	-- Tests if the given prefix contains only valid characters. Raises exception if invalid character found.
--- 	-- Returns prefix unchanged otherwise.
--- 
-
 	
 	type type_symbol_interchangeable is (L, F); -- L means swapping not allowed, F means swapping allowed 
 	type type_show_pin_number is (Y, N); -- show pin/pad number yes/no
