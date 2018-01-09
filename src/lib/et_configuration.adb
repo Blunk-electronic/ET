@@ -224,13 +224,17 @@ package body et_configuration is
 			line_cursor : type_lines.cursor := lines.first; -- points to the line being processed
 			component_prefix_cursor : type_configuration_component_prefixes.cursor;
 			inserted : boolean := false;
+
+			use et_libraries;
+		
 		begin
 			next (line_cursor); -- the first line of the section is its header itself and can be skipped
 			log_indentation_up;
 
 			case section_entered is
 				when none => null;
-				
+
+				-- COMPONENT PREFIXES
 				when component_prefixes =>
 					log ("component prefixes ...", log_threshold + 1);
 					log_indentation_up;
@@ -241,11 +245,17 @@ package body et_configuration is
 						type_configuration_component_prefixes.insert (
 							container => configuration_component_prefixes,
 							position => component_prefix_cursor,
+
+							-- If entry already in map, this flag goes true. Warning issued lated. see below.
 							inserted => inserted,
-							key => et_libraries.type_component_prefix.to_bounded_string (field (element (line_cursor), 1)),
-							-- CS: test if prefix contains only allowed characters
+							
+							-- Test if prefix contains only allowed characters. Then use it as key in this map.
+							key => check_prefix (type_component_prefix.to_bounded_string (field (element (line_cursor), 1))),
+
+							-- Test if component category is valid. Then use it as new item.
 							new_item => type_component_category'value (field (element (line_cursor), 2)));
 
+						
 						if not inserted then
 							log (message_warning & affected_line (element (line_cursor)) & "multiple occurence of assignment ! Entry ignored !");
 						end if;
@@ -254,20 +264,24 @@ package body et_configuration is
 					end loop;
 					log_indentation_down;
 
+				-- COMPONENT VALUES
 				when component_units =>
-					log ("component units ...", log_threshold + 1);
+					log ("component values ...", log_threshold + 1);
 					log_indentation_up;
 					while line_cursor /= type_lines.no_element loop
 						log (to_string (element (line_cursor)), log_threshold + 2);
+						-- CS
 						next (line_cursor);
 					end loop;
 					log_indentation_down;
 
+				-- COMPONENTS WITH USER INTERACTON
 				when components_with_operator_interaction =>
 					log ("components with operator interaction ...", log_threshold + 1);
 					log_indentation_up;
 					while line_cursor /= type_lines.no_element loop
 						log (to_string (element (line_cursor)), log_threshold + 2);
+						-- CS
 						next (line_cursor);
 					end loop;
 					log_indentation_down;

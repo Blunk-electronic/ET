@@ -412,6 +412,28 @@ package body et_libraries is
 	begin
 		return type_component_prefix.to_string (prefix);
 	end to_string;
+
+	function check_prefix (prefix : in type_component_prefix.bounded_string) return type_component_prefix.bounded_string is
+	-- Tests if the given prefix contains only valid characters. Raises exception if invalid character found.
+	-- Returns prefix unchanged otherwise.	
+		use et_string_processing;
+		invalid_character_position : natural := 0;
+	begin
+		invalid_character_position := index (
+			source => prefix,
+			set => component_prefix_characters,
+			test => outside);
+
+		if invalid_character_position > 0 then
+			log_indentation_reset;
+			log (message_error & "component prefix " & to_string (prefix) 
+				 & " has invalid character at position"
+				 & natural'image (invalid_character_position));
+			raise constraint_error;
+		end if;
+		
+		return prefix;
+	end check_prefix;
 	
 	function to_string (appearance : in type_component_appearance) return string is
 	-- Returns the given component appearance as string.
