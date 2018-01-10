@@ -54,6 +54,7 @@ with et_string_processing;
 with et_geometry;
 with et_export;
 with et_import;
+with et_configuration;
 with et_csv;
 
 package body et_schematic is
@@ -4215,6 +4216,7 @@ package body et_schematic is
 				use type_ports_with_reference;
 				port_cursor : type_ports_with_reference.cursor := ports.first;
 
+				-- for counting ports by direction
 				input_count 	: natural := 0;
 				output_count 	: natural := 0;
 				power_out_count	: natural := 0;
@@ -4223,6 +4225,29 @@ package body et_schematic is
 				weak0_count		: natural := 0;
 				-- CS ? power_in_count	: natural := 0; -- CS: test if power_in name matches net name ?
 
+				-- for counting ports by component category
+				use et_configuration;
+				connector_count	: natural := 0;
+				testpoint_count	: natural := 0;
+				jumper_count	: natural := 0;
+				switch_count	: natural := 0;
+				resistor_count	: natural := 0;
+				ic_count		: natural := 0;
+				others_count	: natural := 0;
+
+				function sum_connectives return natural is
+				begin
+					return connector_count + testpoint_count + jumper_count + switch_count;
+				end sum_connectives;
+
+				function sum_drivers return natural is
+				begin
+					return output_count + bidir_count + weak0_count + weak1_count;
+				end sum_drivers;
+				
+				procedure increment (count : in out natural) is
+				begin count := count + 1; end increment;
+				
 				function show_net return string is
 				begin
 					return "net " & to_string (key (net_cursor));
@@ -4244,8 +4269,9 @@ package body et_schematic is
 						& to_string (element (port_cursor).direction, preamble => false),
 						log_threshold + 3);
 
+					-- count ports by direction
 					case element (port_cursor).direction is
-						when input		=> input_count := input_count + 1;
+						when input		=> input_count := input_count + 1; -- CS: use increment (see above)
 						when output		=> output_count := output_count + 1;
 						when bidir		=> bidir_count := bidir_count + 1;
 						when weak0		=> weak0_count := weak0_count + 1;
@@ -4256,16 +4282,38 @@ package body et_schematic is
 							log_indentation_reset;
 							log (message_error & show_net & " has a port with unknown direction at " 
 								& to_string (element (port_cursor).coordinates, scope => et_coordinates.module)
-								& show_danger (not_predictable));
+								& show_danger (not_predictable),
+								console => true
+								);
 							raise constraint_error;
 
-						when others		=> null; -- CS: TRISTATE, PASSIVE, POWER_IN
+							when others		=> null; -- CS: TRISTATE, PASSIVE, POWER_IN
 					end case;
+
+					-- Count ports by component category (address real components only)
+					if element (port_cursor).appearance = sch_pcb then
+						case category (element (port_cursor).reference) is
+
+							-- count "connectives"
+							when connector			=> increment (connector_count);
+							when testpoint			=> increment (testpoint_count);
+							when jumper				=> increment (jumper_count);
+							when switch				=> increment (switch_count);
+
+							-- count resistors
+							when resistor			=> increment (resistor_count);
+							when resistor_network	=> increment (resistor_count);
+							
+							when integrated_circuit	=> increment (ic_count);
+							
+							when others 			=> increment (others_count);
+						end case;
+					end if;
 						
 					next (port_cursor);
 				end loop;
 
-				-- Test if net has zero OR one single port. Warn about single inputs:
+				-- Test if net has zero OR one single port. Warn about floating inputs:
 				case length (ports) is
 					when 0 =>
 						log (message_warning & "net " & to_string (key (net_cursor)) & " has no ports !"
@@ -4277,12 +4325,20 @@ package body et_schematic is
 							& to_string (element (ports.first).coordinates, scope => et_coordinates.module));
 
 						-- warn about single inputs
-						if input_count > 0 then
+						if input_count = 1 then
 							log (message_warning & show_net & " has only one input !" & show_danger (floating_input));
 							-- CS: show affected ports and their coordinates. use a loop in ports and show inputs.
 						end if;
 						
-					when others => null;
+					when others =>
+						if sum_drivers = 0 then -- no kind of driver
+							if input_count > 0 then -- one or more inputs
+								if others_count = 0 then
+									log (message_warning & show_net & " has no energy sources !" & show_danger (floating_input));
+									-- CS: show affected ports and their coordinates. use a loop in ports and show inputs.
+								end if;
+							end if;
+						end if;
 				end case;
 
 				-- Test if outputs drive against each other:

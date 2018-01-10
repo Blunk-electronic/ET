@@ -670,8 +670,8 @@ package et_schematic is
 		pin				: type_pin_name.bounded_string; -- the pin/pad name like 3,4 or E3, A2
 		port			: type_port_name.bounded_string; -- the port name like GPIO1, GPIO2 -- CS: rename to "name"
 		coordinates 	: type_coordinates;
-		direction		: type_port_direction; -- example: "passive" -- used for ERC
-		style			: type_port_style;	-- used for ERC
+		direction		: type_port_direction; -- example: "passive"
+		style			: type_port_style;
 		appearance		: type_appearance_schematic;
 		intended_open	: type_port_open; -- set while portlist generation. true if port is to be left open intentionally (by a no_connection-flag)
 		connected		: type_port_connected; -- set while netlist generation. true when port connected with a net
