@@ -57,10 +57,11 @@ with et_string_processing;
 
 package et_configuration is
 
-	section_component_prefixes	: constant string (1..20) := "[COMPONENT_PREFIXES]";
-	section_component_values	: constant string (1..17) := "[COMPONENT_UNITS]";
-	section_components_with_operator_interaction : constant string (1..31) := "[OPERATOR_INTERACTION_REQUIRED]";
-	section_connector_gnd_terminal : constant string (1..24) := "[CONNECTOR_GND_TERMINAL]";
+	-- configuration file section headers
+	section_component_prefixes						: constant string (1..20) := "[COMPONENT_PREFIXES]";
+	section_component_values						: constant string (1..17) := "[COMPONENT_UNITS]";
+	section_components_with_operator_interaction 	: constant string (1..31) := "[OPERATOR_INTERACTION_REQUIRED]";
+	section_connector_gnd_terminal					: constant string (1..24) := "[CONNECTOR_GND_TERMINAL]";
 
 	type type_component_category is (
 		ANTENNA,
@@ -99,13 +100,13 @@ package et_configuration is
 	-- returns the given component category as string
 
 	-- component prefixes and their category are stored in a map:
-	package type_configuration_component_prefixes is new ordered_maps (
+	package type_component_prefixes is new ordered_maps (
 		key_type => et_libraries.type_component_prefix.bounded_string, -- IC
 		element_type => type_component_category, -- INTEGRATED_CIRCUIT
 		"<" => et_libraries.type_component_prefix."<");
 
 	-- After reading the configuration, we store the component prefixes for the design here:
-	configuration_component_prefixes : type_configuration_component_prefixes.map;
+	component_prefixes : type_component_prefixes.map;
 
 	function category (reference : in et_libraries.type_component_reference) return
 		type_component_category;

@@ -67,16 +67,16 @@ package body et_configuration is
 	-- Returns the category of the given component reference. If no category could be
 	-- found, returns category UNKNOWN.
 		use et_libraries.type_component_prefix;
-		use type_configuration_component_prefixes;
+		use type_component_prefixes;
 
-		prefix_cursor : type_configuration_component_prefixes.cursor;
+		prefix_cursor : type_component_prefixes.cursor;
 	begin
 		-- locate prefix as specified by configuration file
-		prefix_cursor := configuration_component_prefixes.find (reference.prefix);
+		prefix_cursor := component_prefixes.find (reference.prefix);
 
 		-- If prefix not specified (or no configuration at all) return category UNKNOWN.
 		-- Otherwise return the respecitve category.
-		if prefix_cursor = type_configuration_component_prefixes.no_element then
+		if prefix_cursor = type_component_prefixes.no_element then
 			log (message_warning & " category of component " 
 				 & et_libraries.to_string (reference)
 				 & to_string (UNKNOWN) & " !");
@@ -259,7 +259,7 @@ package body et_configuration is
 		-- The lines of the section are in container "lines".
 		-- Clears "lines" after processing.
 			line_cursor : type_lines.cursor := lines.first; -- points to the line being processed
-			component_prefix_cursor : type_configuration_component_prefixes.cursor;
+			component_prefix_cursor : type_component_prefixes.cursor;
 			inserted : boolean := false;
 
 			use et_libraries;
@@ -279,9 +279,9 @@ package body et_configuration is
 					while line_cursor /= type_lines.no_element loop
 						log (to_string (element (line_cursor)), log_threshold + 2);
 
-						-- insert the prefix assignment in container configuration_component_prefixes
-						type_configuration_component_prefixes.insert (
-							container => configuration_component_prefixes,
+						-- insert the prefix assignment in container component_prefixes
+						type_component_prefixes.insert (
+							container => et_configuration.component_prefixes,
 							position => component_prefix_cursor,
 
 							-- If entry already in map, this flag goes true. Warning issued later. see below.
@@ -353,7 +353,7 @@ package body et_configuration is
 
 		if exists (to_string (file_name)) then
 
-			configuration_component_prefixes := type_configuration_component_prefixes.empty_map;
+			et_configuration.component_prefixes := type_component_prefixes.empty_map;
 
 			open (file => configuration_file_handle, mode => in_file, name => to_string (file_name));
 			set_input (configuration_file_handle);
@@ -429,11 +429,11 @@ package body et_configuration is
 	-- Tests if the given prefix is a power_flag_prefix or a power_symbol_prefix.
 	-- Raises exception if not. Otherwise returns the given prefix unchanged.
 		use et_libraries.type_component_prefix;
-		use type_configuration_component_prefixes;
+		use type_component_prefixes;
 	
-		prefix_cursor : type_configuration_component_prefixes.cursor;
+		prefix_cursor : type_component_prefixes.cursor;
 	begin
-		if configuration_component_prefixes.find (prefix) /= type_configuration_component_prefixes.no_element then
+		if component_prefixes.find (prefix) /= type_component_prefixes.no_element then
 			return prefix;
 		else
 			log_indentation_reset;
@@ -451,9 +451,9 @@ package body et_configuration is
 	-- Tests if the given reference has a valid prefix as specified in the configuration file.
 	-- Raises exception if not. Otherwise returns the given reference unchanged.
 		use et_libraries.type_component_prefix;
-		use type_configuration_component_prefixes;
+		use type_component_prefixes;
 	begin
-		if configuration_component_prefixes.find (reference.prefix) /= type_configuration_component_prefixes.no_element then
+		if component_prefixes.find (reference.prefix) /= type_component_prefixes.no_element then
 			return reference;
 		else
 			log_indentation_reset;
