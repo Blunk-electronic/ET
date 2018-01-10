@@ -164,7 +164,7 @@ package body et_configuration is
 		new_line (configuration_file_handle);		
 
 		-- UNITS OF COMPONENT VALUES
-		put_line (configuration_file_handle, section_component_values); -- section header
+		put_line (configuration_file_handle, section_component_units); -- section header
 		new_line (configuration_file_handle);
 		put_line (configuration_file_handle, comment & "unit meaning");
 		new_line (configuration_file_handle);
@@ -241,7 +241,7 @@ package body et_configuration is
 		type type_section is (
 			none,
 			component_prefixes,
-			component_values,
+			component_units,
 			components_with_operator_interaction
 			);
 		
@@ -259,7 +259,8 @@ package body et_configuration is
 		-- The lines of the section are in container "lines".
 		-- Clears "lines" after processing.
 			line_cursor : type_lines.cursor := lines.first; -- points to the line being processed
-			component_prefix_cursor : type_component_prefixes.cursor;
+			component_prefix_cursor : type_component_prefixes.cursor; -- CS: rename to prefix_cursor
+			unit_cursor : type_component_units.cursor;
 			inserted : boolean := false;
 
 			use et_libraries;
@@ -296,7 +297,7 @@ package body et_configuration is
 							-- Test if component category is valid. Then use it as new item.
 							new_item => type_component_category'value (field (element (line_cursor), 2)));
 
-						
+						-- CS: move to procedure
 						if not inserted then
 							log (message_warning & affected_line (element (line_cursor)) & "multiple occurence of assignment ! Entry ignored !");
 						end if;
@@ -305,13 +306,30 @@ package body et_configuration is
 					end loop;
 					log_indentation_down;
 
-				-- COMPONENT VALUES
-				when component_values =>
-					log ("component values ...", log_threshold + 1);
+				-- COMPONENT UNITS OF MEASUREMENT
+				when component_units =>
+					log ("component units of measurement ...", log_threshold + 1);
 					log_indentation_up;
 					while line_cursor /= type_lines.no_element loop
 						log (to_string (element (line_cursor)), log_threshold + 2);
-						-- CS insert the unit assignment in container component_units
+
+						-- insert the unit of measurement assignment in container component_units
+						type_component_units.insert (
+							container => et_configuration.component_units,
+							position => unit_cursor,
+
+							-- If entry already in map, this flag goes true. Warning issued later. see below.
+							inserted => inserted,
+
+							-- CS: validate characters check_unit_characters
+							new_item => type_component_unit.to_bounded_string (field (element (line_cursor), 1)),
+							key => type_component_unit_meaning'value (field (element (line_cursor), 2)));
+
+						-- CS: move to procedure
+						if not inserted then
+							log (message_warning & affected_line (element (line_cursor)) & "multiple occurence of assignment ! Entry ignored !");
+						end if;
+						
 						next (line_cursor);
 					end loop;
 					log_indentation_down;
@@ -386,9 +404,9 @@ package body et_configuration is
 							section_entered := component_prefixes;
 						end if;
 
-						if field (line, 1) = section_component_values then
+						if field (line, 1) = section_component_units then
 							process_previous_section;
-							section_entered := component_values;
+							section_entered := component_units;
 						end if;
 
 						if field (line, 1) = section_components_with_operator_interaction then

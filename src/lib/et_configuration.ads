@@ -59,7 +59,7 @@ package et_configuration is
 
 	-- configuration file section headers
 	section_component_prefixes						: constant string (1..20) := "[COMPONENT_PREFIXES]";
-	section_component_values						: constant string (1..17) := "[COMPONENT_UNITS]";
+	section_component_units							: constant string (1..22) := "[UNITS_OF_MEASUREMENT]";
 	section_components_with_operator_interaction 	: constant string (1..31) := "[OPERATOR_INTERACTION_REQUIRED]";
 	section_connector_gnd_terminal					: constant string (1..24) := "[CONNECTOR_GND_TERMINAL]";
 
@@ -132,19 +132,19 @@ package et_configuration is
 	function to_string (meaning : in type_component_unit_meaning) return string;
 	-- returns the meaning of the given unit meaning string. (things like OHM, KILOOHM, MEGAOHM, ...)
 
-	-- The units used to express the value of a component are limited to two characters.
+	-- The units of measurement express the value of a component and are limited to two characters.
 	-- So the user could define units like uF or mH. More than two characters are not common.
 	-- However, the recommendation is to use just one character like u, m, k, M. Reason: how to express
 	-- something like 3.3Ohms since the Ohm character is a special character ?
 	-- By the category of the component we can reason that it is about Ohms, Henry or Farad.
 	component_unit_length_max : constant positive := 2;
 	package type_component_unit is new generic_bounded_length (component_unit_length_max);
-
+	
 	-- component values and their meaning are stored in a map:
 	package type_component_units is new ordered_maps (
-		key_type => type_component_unit.bounded_string, -- R, m, k, ...
-		element_type => type_component_unit_meaning, -- OHMS, KILOOHM, MEGAOHM, ...
-		"<" => type_component_unit."<");
+		key_type => type_component_unit_meaning, -- OHMS, KILOOHM, MEGAOHM, ...
+		element_type => type_component_unit.bounded_string, -- R, m, k, ...
+		"=" => type_component_unit."=");
 
 	-- After reading the configuration, we store the component units for the design here:
 	component_units : type_component_units.map;
