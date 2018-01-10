@@ -62,6 +62,30 @@ package body et_configuration is
 		return latin_1.space & type_component_category'image (cat);
 	end to_string;
 
+	function category (reference : in et_libraries.type_component_reference) return
+		type_component_category is
+	-- Returns the category of the given component reference. If no category could be
+	-- found, returns category UNKNOWN.
+		use et_libraries.type_component_prefix;
+		use type_configuration_component_prefixes;
+
+		prefix_cursor : type_configuration_component_prefixes.cursor;
+	begin
+		-- locate prefix as specified by configuration file
+		prefix_cursor := configuration_component_prefixes.find (reference.prefix);
+
+		-- If prefix not specified (or no configuration at all) return category UNKNOWN.
+		-- Otherwise return the respecitve category.
+		if prefix_cursor = type_configuration_component_prefixes.no_element then
+			log (message_warning & " category of component " 
+				 & et_libraries.to_string (reference)
+				 & to_string (UNKNOWN) & " !");
+			return UNKNOWN;
+		else
+			return element (prefix_cursor);
+		end if;
+	end category;
+	
 	function to_string (unit : in type_component_value) return string is
 	-- returns the given component value as string
 	begin
