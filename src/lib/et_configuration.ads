@@ -63,26 +63,34 @@ package et_configuration is
 	section_connector_gnd_terminal : constant string (1..24) := "[CONNECTOR_GND_TERMINAL]";
 
 	type type_component_category is (
-		RESISTOR,
-		CAPACITOR,
-		INDUCTOR,
-		TRANSFORMER,
-		DIODE,
-		TRANSISTOR,
-		LIGHT_EMMITTING_DIODE,
-		INTEGRATED_CIRCUIT,
-		NETCHANGER,
--- 		WIRE,
--- 		CABLE,
-		CONNECTOR,
-		JUMPER,
-		SWITCH,
-		RELAY,
--- 		CONTACTOR,
-		MOTOR,
+		BATTERY,
 		BUZZER,
+-- 		CABLE,
+		CAPACITOR,
+		CONNECTOR,				-- component where another component of opposide gender is plugged
+		DIODE,
+		FUSE,
+		HEATSINK,				-- a bulk of metal that absorbs and dissipates excessive heat
+		INDUCTOR,
+		INTEGRATED_CIRCUIT,
+		JUMPER,					-- a component that allows tieing nets via a removable bridge
+		LIGHT_EMMITTING_DIODE,	-- an LED
 		LOUDSPEAKER,
-		MICROPHONE
+		MICROPHONE,
+		NETCHANGER,				-- ties two nets together
+		MOTOR,
+		QUARTZ,					-- quartz crystal resonators
+		TRANSFORMER,
+		TRANSISTOR,				-- NPN, PNP, NFET, MOSFET, ...
+		RELAY,
+		RESISTOR,				-- varistors, trimmers, potentiometers, photoresistors
+		RESISTOR_NETWORK,		-- a collection of resistors in a single housing
+		SWITCH,					-- push buttons, breakers, makers, rotary encoders, ...
+		TESTPOINT,				-- a point where measurements can be taken
+		THYRISTOR,
+		TUBE,					-- triodes, pentodes, thyratrons, klystrons, ...
+		UNKNOWN					-- not specified
+-- 		WIRE
 		);
 	
 	function to_string (cat : in type_component_category) return string;
@@ -132,7 +140,17 @@ package et_configuration is
 		log_threshold	: in et_string_processing.type_log_level);
 	-- Reads the given configuration file.
 	-- Fills component_prefixes.
+
+	function validate_prefix (prefix : in et_libraries.type_component_prefix.bounded_string) 
+		return et_libraries.type_component_prefix.bounded_string;
+	-- Tests if the given prefix is valid as specified in the configuration file.
+	-- Raises exception if not. Otherwise returns the given prefix unchanged.
 	
+	function validate_prefix (reference : in et_libraries.type_component_reference)
+		return et_libraries.type_component_reference;
+	-- Tests if the given reference has a valid prefix as specified in the configuration file.
+	-- Raises exception if not. Otherwise returns the given reference unchanged.
+
 end et_configuration;
 
 -- Soli Deo Gloria

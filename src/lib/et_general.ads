@@ -38,7 +38,7 @@
 
 package et_general is
 
-	version					: constant string (1..3) := "000";	
+	version					: constant string (1..11) := "version 000";	
 	system_name				: constant string (1..9) := "SYSTEM ET";
 
 

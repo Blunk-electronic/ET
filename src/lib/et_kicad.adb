@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -56,7 +56,7 @@ with ada.exceptions; 			use ada.exceptions;
 with et_coordinates;
 with et_libraries;
 with et_schematic;
-
+with et_configuration;
 with et_geometry;
 
 with et_general;
@@ -119,7 +119,9 @@ package body et_kicad is
 				 & to_string (prefix) & " !"
 				 & " Expected " 
 				 & power_flag_prefix & " or "
-				 & power_symbol_prefix & " !");
+				 & power_symbol_prefix & " !",
+				console => true
+				);
 			raise constraint_error;
 		end if;
 	end validate_prefix;
@@ -134,11 +136,14 @@ package body et_kicad is
 			return reference;
 		else
 			log_indentation_reset;
-			log (message_error & "invalid prefix "
-				 & to_string (reference.prefix) & " !"
+			log (message_error & "invalid prefix in component reference "
+				 & et_libraries.to_string (reference) & " !"
 				 & " Expected " 
 				 & power_flag_prefix & " or "
-				 & power_symbol_prefix & " !");
+				 & power_symbol_prefix & " !",
+				console => true
+				);
+			-- CS: show coordinates of affected component
 			raise constraint_error;
 		end if;
 	end validate_prefix;
@@ -1294,11 +1299,10 @@ package body et_kicad is
 								-- against the default character set for prefixes as specified in et_libraries.
 								-- Afterward we validate the prefix. The prefixes for real components are specified
 								-- in the et configuration file (see et_configuration).
-								-- CS
-								prefix			=> check_prefix_characters (
+								prefix			=> et_configuration.validate_prefix (check_prefix_characters (
 													prefix => tmp_prefix,
-													characters => et_libraries.component_prefix_characters),
-								
+													characters => et_libraries.component_prefix_characters)),
+																	
 								value			=> type_component_value.to_bounded_string (content (tmp_value)),
 								commissioned	=> et_string_processing.type_date (content (tmp_commissioned)),
 								updated			=> et_string_processing.type_date (content (tmp_updated)),
@@ -5094,10 +5098,9 @@ package body et_kicad is
 								-- Afterward we validate the prefix of the reference. 
 								-- It is about a REAL component. Its prefix must be one 
 								-- of those defined in the configuration file (see et_configuration).
-								-- CS
-								reference := to_component_reference(
+								reference := et_configuration.validate_prefix (to_component_reference (
 									text_in => field (et_kicad.line,3),
-									allow_special_character_in_prefix => false);
+									allow_special_character_in_prefix => false));
 
 							when others => -- CS: This should never happen. A subtype of type_component_appearance could be a solution.
 								null;
