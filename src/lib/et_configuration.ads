@@ -58,11 +58,12 @@ with et_string_processing;
 package et_configuration is
 
 	section_component_prefixes	: constant string (1..20) := "[COMPONENT_PREFIXES]";
-	section_component_values	: constant string (1..18) := "[COMPONENT_VALUES]";
+	section_component_values	: constant string (1..17) := "[COMPONENT_UNITS]";
 	section_components_with_operator_interaction : constant string (1..31) := "[OPERATOR_INTERACTION_REQUIRED]";
 	section_connector_gnd_terminal : constant string (1..24) := "[CONNECTOR_GND_TERMINAL]";
 
 	type type_component_category is (
+		ANTENNA,
 		BATTERY,
 		BUZZER,
 -- 		CABLE,
@@ -79,6 +80,7 @@ package et_configuration is
 		MICROPHONE,
 		NETCHANGER,				-- ties two nets together
 		MOTOR,
+		OPTOCOUPLER,
 		QUARTZ,					-- quartz crystal resonators
 		TRANSFORMER,
 		TRANSISTOR,				-- NPN, PNP, NFET, MOSFET, ...
@@ -96,6 +98,7 @@ package et_configuration is
 	function to_string (cat : in type_component_category) return string;
 	-- returns the given component category as string
 
+	-- component prefixes and their category are stored in a map:
 	package type_configuration_component_prefixes is new ordered_maps (
 		key_type => et_libraries.type_component_prefix.bounded_string, -- IC
 		element_type => type_component_category, -- INTEGRATED_CIRCUIT
@@ -109,7 +112,7 @@ package et_configuration is
 	-- Returns the category of the given component reference. If no category could be
 	-- found, returns category UNKNOWN.
 	
-	type type_component_value is (
+	type type_component_unit_meaning is (
 		OHM,
 		MILLIOHM,
 		KILOOHM,
@@ -125,8 +128,25 @@ package et_configuration is
 		NANOHENRY
 		);
 
-	function to_string (unit : in type_component_value) return string;
-	-- returns the given value as string
+	function to_string (meaning : in type_component_unit_meaning) return string;
+	-- returns the meaning of the given unit meaning string. (things like OHM, KILOOHM, MEGAOHM, ...)
+
+	-- The units used to express the value of a component are limited to two characters.
+	-- So the user could define units like uF or mH. More than two characters are not common.
+	-- However, the recommendation is to use just one character like u, m, k, M. Reason: how to express
+	-- something like 3.3Ohms since the Ohm character is a special character ?
+	-- By the category of the component we can reason that it is about Ohms, Henry or Farad.
+	component_unit_length_max : constant positive := 2;
+	package type_component_unit is new generic_bounded_length (component_unit_length_max);
+
+	-- component values and their meaning are stored in a map:
+	package type_component_units is new ordered_maps (
+		key_type => type_component_unit.bounded_string, -- R, m, k, ...
+		element_type => type_component_unit_meaning, -- OHMS, KILOOHM, MEGAOHM, ...
+		"<" => type_component_unit."<");
+
+	-- After reading the configuration, we store the component units for the design here:
+	component_units : type_component_units.map;
 	
 	configuration_file_handle : ada.text_io.file_type;
 

@@ -4387,12 +4387,10 @@ package body et_kicad is
 					-- write precheck preamble
 					log ("component " 
 						& to_string(reference) & " prechecking fields ...", level => log_threshold);
-
-		-- 			log_indentation_up;
-		-- 			log ("precheck", log_threshold + 1);
 					log_indentation_up;
 					
 					-- reference
+					-- NOTE: the reference prefix has been checked already in main of procedure make_component
 					log ("reference", level => log_threshold + 1);
 					if not text_reference_found then
 						missing_field (et_libraries.reference);
@@ -4412,8 +4410,6 @@ package body et_kicad is
 							log (et_libraries.to_string (reference) & " vs " & et_libraries.content (text_reference));
 							raise constraint_error;
 						end if;
-
-						-- CS: check if prefix meets certain conventions
 					end if;
 
 					-- value

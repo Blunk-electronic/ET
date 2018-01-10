@@ -489,7 +489,7 @@ package body et_libraries is
 		v : boolean := false;
 	begin
 		-- Rule #1: There are only those characters allowed as specified in component_value_characters:
-		i := index ( source => value, set => component_value_characters, test => outside);
+		i := index (source => value, set => component_value_characters, test => outside);
 
 		case i is
 			when 0 => -- test passed. no forbidden characters found

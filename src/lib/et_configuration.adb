@@ -86,10 +86,10 @@ package body et_configuration is
 		end if;
 	end category;
 	
-	function to_string (unit : in type_component_value) return string is
-	-- returns the given component value as string
+	function to_string (meaning : in type_component_unit_meaning) return string is
+	-- returns the meaning of the given unit meaning string. (things like OHM, KILOOHM, MEGAOHM, ...)
 	begin
-		return latin_1.space & type_component_value'image (unit);
+		return latin_1.space & type_component_unit_meaning'image (meaning);
 	end to_string;
 
 	
@@ -130,6 +130,7 @@ package body et_configuration is
 		new_line (configuration_file_handle);		
 		put_line (configuration_file_handle, comment & "prefix category");
 		new_line (configuration_file_handle);		
+		put_line (configuration_file_handle, "ANT" & to_string (ANTENNA));		
 		put_line (configuration_file_handle, "B  " & to_string (BUZZER));
 		put_line (configuration_file_handle, "BAT" & to_string (BATTERY));
 		put_line (configuration_file_handle, "C  " & to_string (CAPACITOR));
@@ -146,6 +147,7 @@ package body et_configuration is
 		put_line (configuration_file_handle, "M  " & to_string (MOTOR));
 		put_line (configuration_file_handle, "MIC" & to_string (MICROPHONE));
 		put_line (configuration_file_handle, "N  " & to_string (NETCHANGER));
+		put_line (configuration_file_handle, "OC " & to_string (OPTOCOUPLER));		
 		put_line (configuration_file_handle, "Q  " & to_string (QUARTZ));
 		put_line (configuration_file_handle, "R  " & to_string (RESISTOR));
 		put_line (configuration_file_handle, "RN " & to_string (RESISTOR_NETWORK));
@@ -163,7 +165,9 @@ package body et_configuration is
 
 		-- UNITS OF COMPONENT VALUES
 		put_line (configuration_file_handle, section_component_values); -- section header
-		new_line (configuration_file_handle);		
+		new_line (configuration_file_handle);
+		put_line (configuration_file_handle, comment & "unit meaning");
+		new_line (configuration_file_handle);
 		put_line (configuration_file_handle, "R" & to_string (OHM));
 		put_line (configuration_file_handle, "m" & to_string (MILLIOHM));
 		put_line (configuration_file_handle, "k" & to_string (KILOOHM));
@@ -307,7 +311,7 @@ package body et_configuration is
 					log_indentation_up;
 					while line_cursor /= type_lines.no_element loop
 						log (to_string (element (line_cursor)), log_threshold + 2);
-						-- CS
+						-- CS insert the unit assignment in container component_units
 						next (line_cursor);
 					end loop;
 					log_indentation_down;
