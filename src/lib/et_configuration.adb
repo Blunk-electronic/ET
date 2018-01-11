@@ -214,6 +214,10 @@ package body et_configuration is
 		put_line (configuration_file_handle, "m" & to_string (MILLIHENRY));
 		put_line (configuration_file_handle, "u" & to_string (MICROHENRY));
 		put_line (configuration_file_handle, "n" & to_string (NANOHENRY));
+
+		put_line (configuration_file_handle, "V" & to_string (VOLT));
+		put_line (configuration_file_handle, "A" & to_string (AMPERE));
+		put_line (configuration_file_handle, "m" & to_string (MILLIAMPERE));
 		
 		new_line (configuration_file_handle);
 		new_line (configuration_file_handle);		

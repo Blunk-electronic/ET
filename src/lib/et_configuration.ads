@@ -126,7 +126,10 @@ package et_configuration is
 		HENRY,
 		MILLIHENRY,
 		MICROHENRY,
-		NANOHENRY
+		NANOHENRY,
+		VOLT,
+		AMPERE,
+		MILLIAMPERE
 		);
 
 	function to_string (meaning : in type_component_unit_meaning) return string;

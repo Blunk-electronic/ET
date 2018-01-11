@@ -37,9 +37,10 @@
 
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
---with ada.characters.handling;	use ada.characters.handling;
+with ada.characters.handling;	use ada.characters.handling;
 with ada.text_io;				use ada.text_io;
 with ada.strings; 				use ada.strings;
+with ada.strings.maps.constants;
 with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.strings.unbounded; 	use ada.strings.unbounded;
@@ -506,14 +507,14 @@ package body et_libraries is
 		return to_lower (type_bom'image (bom));
 	end to_string;
 	
-	function component_value_valid (
+	function component_value_valid ( -- CS: should be a procedure
 	-- Returns true if the given component value meets certain conventions.									   
 		value 		: in type_component_value.bounded_string;
 		reference	: in type_component_reference;
 		appearance	: in type_component_appearance)
 		return boolean is
 
--- 		use et_libraries.type_component_value;
+		use et_libraries.type_component_value;
 		use et_string_processing;
 		use et_configuration;
 
@@ -522,7 +523,35 @@ package body et_libraries is
 
 		value_length : natural := type_component_value.length (value);
 		char_pos : positive;
-		
+
+		procedure test_if_first_character_is_digit is
+		-- tests if the first character of value_prechecked is a digit.
+		begin
+			if not is_digit (element (value_prechecked, 1)) then
+				log_indentation_reset;
+				log (message_error & "component " & to_string (reference) 
+					 & " value " & to_string (value_prechecked) & " invalid !",
+					 console => true);
+				raise constraint_error;
+			end if;
+		end test_if_first_character_is_digit;
+
+		procedure test_unit_of_measurement is
+		-- tests if the correct unit of measurement comes after the first digit
+			use ada.strings.maps.constants;
+			unit_start : natural;
+-- 			unit_end : natural;
+		begin
+			null;
+			-- get position of first non-digit character in something like 220k498
+			--unit_start := index (value_prechecked, decimal_digit_set, outside);
+			--unit_start := index (value_prechecked, decimal_digit_set, outside);
+-- 			case category (reference) is
+-- 				when resistor =>
+-- 					-- get position of first digit character after unit_start
+-- 			unit_end := index (value_prechecked, decimal_digit_set, inside); --, from => unit_start);
+		end test_unit_of_measurement;
+
 	begin
 		-- As a general rule, each component should have a value assigned. If not issue warning.
 		if value_length > 0 then
@@ -538,15 +567,31 @@ package body et_libraries is
 			case appearance is
 				
 				when sch_pcb => 
+
+					-- For certain component categories the value must start 
+					-- with a digit (like 3n3, 1V8, ...):
 					case category (reference) is
-						when resistor => null;
-							--for char_pos in 1
+						when battery | capacitor | fuse | inductor | resistor | resistor_network | quartz => -- CS: others ?
+							test_if_first_character_is_digit;
+							test_unit_of_measurement;
 						when others => null;
 					end case;
 
+					
+
+					
 				when others => null; -- CS
 			end case;
 
+
+-- 							for char_pos in 1..value_length loop
+-- null;
+-- 							end loop;
+-- 							else
+								
+-- end if;
+
+			
 		else
 			log (message_warning & "component " & to_string (reference) & " has no value !");
 		end if;
