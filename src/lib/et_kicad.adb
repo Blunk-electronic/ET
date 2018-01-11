@@ -623,7 +623,7 @@ package body et_kicad is
 
 			procedure check_text_fields is
 			begin
-				null; -- CS: do a value check if value provided (Field F0).
+				null; -- CS: do useful prechecks of the fields
 			end check_text_fields;
 			
 			function to_swap_level (swap_in : in string)
@@ -1242,7 +1242,7 @@ package body et_kicad is
 			begin -- insert_component
 
 				-- Do a precheck of the text fields. -- CS most of the checks is already done in procedure read_field.
-				check_text_fields;
+				check_text_fields; -- CS: currently emtpy. nothing happens.
 
 -- 				-- For the logfile write the component name.
 -- 				-- If the component contains more than one unit, write number of units.
@@ -1271,11 +1271,17 @@ package body et_kicad is
 								-- against the Kicad specific character set for prefixes. see et_kicad.ads.
 								-- Afterward we validate the prefix. The prefixes for virtual components
 								-- are KiCad specific.
-								prefix			=> validate_prefix (check_prefix_characters (
-													prefix => tmp_prefix,
-													characters => component_prefix_characters)),
+								prefix			=> validate_prefix (
+													check_prefix_characters (
+														prefix => tmp_prefix,
+														characters => component_prefix_characters)
+													),
 								
-								value			=> type_component_value.to_bounded_string (content (tmp_value)),
+								-- The value must be validated before being used further on:
+								value			=> check_value_characters (
+													value => type_component_value.to_bounded_string (content (tmp_value)),
+													characters => component_value_characters),
+								
 								commissioned	=> et_string_processing.type_date (content (tmp_commissioned)),
 								updated			=> et_string_processing.type_date (content (tmp_updated)),
 								author			=> type_person_name.to_bounded_string (content (tmp_author)),
@@ -1299,11 +1305,17 @@ package body et_kicad is
 								-- against the default character set for prefixes as specified in et_libraries.
 								-- Afterward we validate the prefix. The prefixes for real components are specified
 								-- in the et configuration file (see et_configuration).
-								prefix			=> et_configuration.validate_prefix (check_prefix_characters (
-													prefix => tmp_prefix,
-													characters => et_libraries.component_prefix_characters)),
+								prefix			=> et_configuration.validate_prefix (
+													check_prefix_characters (
+														prefix => tmp_prefix,
+														characters => et_libraries.component_prefix_characters)
+													),
 																	
-								value			=> type_component_value.to_bounded_string (content (tmp_value)),
+								-- The value must be validated before being used further on:
+								value			=> check_value_characters (
+													value => type_component_value.to_bounded_string (content (tmp_value)),
+													characters => component_value_characters),
+								
 								commissioned	=> et_string_processing.type_date (content (tmp_commissioned)),
 								updated			=> et_string_processing.type_date (content (tmp_updated)),
 								author			=> type_person_name.to_bounded_string (content (tmp_author)),
@@ -1915,8 +1927,9 @@ package body et_kicad is
 
 				-- If we have a value field like "F1 "74LS00" 0 -100 50 H V C CNN"
 				when value =>
-				
+
 					tmp_value := read_field (meaning => value);
+					
 					-- for the log:
 					write_text_properies (type_text (tmp_value), log_threshold + 1);
 
