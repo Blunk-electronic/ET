@@ -35,13 +35,15 @@
 --   history of changes:
 --
 
+with ada.text_io;				use ada.text_io;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
+with ada.strings; 				use ada.strings;
+with ada.strings.maps;			use ada.strings.maps;
+
 -- with ada.characters.handling;	use ada.characters.handling;
--- with ada.strings; 				use ada.strings;
 -- with ada.strings.fixed; 		use ada.strings.fixed;
 
-with ada.text_io;				use ada.text_io;
 
 with ada.containers;            use ada.containers;
 with ada.containers.doubly_linked_lists;
@@ -91,6 +93,35 @@ package body et_configuration is
 	begin
 		return latin_1.space & type_component_unit_meaning'image (meaning);
 	end to_string;
+
+	function check_unit_characters (
+		unit : in type_component_unit.bounded_string;
+		characters : in character_set)
+		return type_component_unit.bounded_string is
+	-- Tests if the given unit of measurement contains only valid characters as specified
+	-- by given character set.
+	-- Raises exception if invalid character found.
+	-- Returns unit of measurement unchanged otherwise.	
+		use et_string_processing;
+		use type_component_unit;
+		invalid_character_position : natural := 0;
+	begin
+		invalid_character_position := index (
+			source => unit,
+			set => characters,
+			test => outside);
+
+		if invalid_character_position > 0 then
+			log_indentation_reset;
+			log (message_error & "unit of measurement " & to_string (unit) 
+				 & " has invalid character at position"
+				 & natural'image (invalid_character_position));
+			raise constraint_error;
+		end if;
+		
+		return unit;
+	end check_unit_characters;
+
 
 	
 	procedure make_default_configuration (
@@ -265,6 +296,13 @@ package body et_configuration is
 
 			use et_libraries;
 
+			procedure test_multiple_occurences is 
+			begin
+				if not inserted then
+					log (message_warning & affected_line (element (line_cursor)) & "multiple occurence of assignment ! Entry ignored !");
+				end if;
+			end test_multiple_occurences;
+		
 			-- CS: check field count in sections respecitvely. issue warning if too many fields. 
 		begin
 			next (line_cursor); -- the first line of the section is its header itself and can be skipped
@@ -297,11 +335,7 @@ package body et_configuration is
 							-- Test if component category is valid. Then use it as new item.
 							new_item => type_component_category'value (field (element (line_cursor), 2)));
 
-						-- CS: move to procedure
-						if not inserted then
-							log (message_warning & affected_line (element (line_cursor)) & "multiple occurence of assignment ! Entry ignored !");
-						end if;
-						
+						test_multiple_occurences;
 						next (line_cursor);
 					end loop;
 					log_indentation_down;
@@ -321,15 +355,16 @@ package body et_configuration is
 							-- If entry already in map, this flag goes true. Warning issued later. see below.
 							inserted => inserted,
 
-							-- CS: validate characters check_unit_characters
-							new_item => type_component_unit.to_bounded_string (field (element (line_cursor), 1)),
-							key => type_component_unit_meaning'value (field (element (line_cursor), 2)));
+							-- the key in this map is the meeaning like MICROFARAD or NANOHENRY
+							key => type_component_unit_meaning'value (field (element (line_cursor), 2)),
+							
+							-- the item is the unit of measurement. it must be validated before.
+							new_item => check_unit_characters (
+									unit => type_component_unit.to_bounded_string (field (element (line_cursor), 1)),
+									characters => component_unit_characters)
+							);
 
-						-- CS: move to procedure
-						if not inserted then
-							log (message_warning & affected_line (element (line_cursor)) & "multiple occurence of assignment ! Entry ignored !");
-						end if;
-						
+						test_multiple_occurences;
 						next (line_cursor);
 					end loop;
 					log_indentation_down;
@@ -357,9 +392,10 @@ package body et_configuration is
 				when others =>
 					log_indentation_reset;
 					log (message_error & affected_line (element (line_cursor)) & latin_1.space & to_string (element (line_cursor)),
-						 console => false);
+						 console => true);
 
 					-- CS: provide information on what is wrong with the line (depending on section_entered)
+					-- number of characters in unit of measurement
 					-- propose category, units, ...
 					
 					raise;

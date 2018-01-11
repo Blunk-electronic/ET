@@ -333,6 +333,15 @@ package et_libraries is
 
 	function to_string (value : in type_component_value.bounded_string) return string;
 	-- Returns the given value as string.
+
+	function check_value_characters (
+		value : in type_component_value.bounded_string;
+		characters : in character_set)
+		return type_component_value.bounded_string;
+	-- Tests if the given value contains only valid characters as specified
+	-- by given character set.
+	-- Raises exception if invalid character found.
+	-- Returns value unchanged otherwise.	
 	
 	-- For some component (not all !) it is helpful to have an URL to the datasheet:
 	component_datasheet_length_max : constant positive := 1000;

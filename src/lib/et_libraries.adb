@@ -407,6 +407,34 @@ package body et_libraries is
 		return type_component_value.to_string(value);
 	end to_string;
 
+	function check_value_characters (
+		value : in type_component_value.bounded_string;
+		characters : in character_set)
+		return type_component_value.bounded_string is
+	-- Tests if the given value contains only valid characters as specified
+	-- by given character set.
+	-- Raises exception if invalid character found.
+	-- Returns value unchanged otherwise.	
+		use et_string_processing;
+		use type_component_value;
+		invalid_character_position : natural := 0;
+	begin
+		invalid_character_position := index (
+			source => value,
+			set => characters,
+			test => outside);
+
+		if invalid_character_position > 0 then
+			log_indentation_reset;
+			log (message_error & "component value " & to_string (value) 
+				 & " has invalid character at position"
+				 & natural'image (invalid_character_position));
+			raise constraint_error;
+		end if;
+		
+		return value;
+	end check_value_characters;
+	
 	function to_string (prefix : in type_component_prefix.bounded_string) return string is
 	-- returns the given prefix as string
 	begin
@@ -483,32 +511,27 @@ package body et_libraries is
 		reference	: in type_component_reference)
 		return boolean is
 
-		use et_libraries.type_component_value;
+-- 		use et_libraries.type_component_value;
 		use et_string_processing;
-		i : natural := 0;
-		v : boolean := false;
+
+		-- After the precheck for valid characters the value is stored here:
+		value_prechecked : type_component_value.bounded_string;
 	begin
-		-- Rule #1: There are only those characters allowed as specified in component_value_characters:
-		i := index (source => value, set => component_value_characters, test => outside);
-
-		case i is
-			when 0 => -- test passed. no forbidden characters found
-				v := true;
-
-			when others =>
-				v := false;
-				log (text => message_error & "value '" & to_string (value) & "' contains invalid character "
-						& "at position" & natural'image(i),
-					console => true);
-				-- CS: goto end
-		end case;
+		-- Rule #1: There are only those characters allowed as specified 
+		-- in component_value_characters:
+		value_prechecked := check_value_characters (
+			value => value,
+			characters => component_value_characters);
 
 		-- Rule #2: Units in accordance with the component prefix
 		-- CS:
 
 		-- goto-label here
+		return true;
 		
-		return v;
+		exception
+			when others => return false;
+
 	end component_value_valid;
 
 	function to_string (reference : in type_component_reference) return string is

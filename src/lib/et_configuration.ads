@@ -36,7 +36,7 @@
 --
 --   ToDo: 
 
--- with ada.strings.maps;			use ada.strings.maps;
+with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
 -- with ada.strings.unbounded; 	use ada.strings.unbounded;
 with ada.containers;            use ada.containers;
@@ -137,8 +137,18 @@ package et_configuration is
 	-- However, the recommendation is to use just one character like u, m, k, M. Reason: how to express
 	-- something like 3.3Ohms since the Ohm character is a special character ?
 	-- By the category of the component we can reason that it is about Ohms, Henry or Farad.
+	component_unit_characters : character_set := to_set (ranges => (('A','Z'),('a','z')));
 	component_unit_length_max : constant positive := 2;
 	package type_component_unit is new generic_bounded_length (component_unit_length_max);
+
+	function check_unit_characters (
+		unit : in type_component_unit.bounded_string;
+		characters : in character_set)
+		return type_component_unit.bounded_string;
+	-- Tests if the given unit of measurement contains only valid characters as specified
+	-- by given character set.
+	-- Raises exception if invalid character found.
+	-- Returns unit of measurement unchanged otherwise.	
 	
 	-- component values and their meaning are stored in a map:
 	package type_component_units is new ordered_maps (
