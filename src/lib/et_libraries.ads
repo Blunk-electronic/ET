@@ -387,11 +387,22 @@ package et_libraries is
 	
 	function prefix (reference : in type_component_reference) return type_component_prefix.bounded_string;
 	-- Returns the prefix of the given component reference.
+
+	type type_component_appearance is ( 
+		sch,		-- a component that exists in the schematic only (like power symbols)
+		sch_pcb,	-- a component that exists in both schematic and soldered on a pcb
+		pcb			-- a component that exists on the pcb only (like a fiducial)		
+		-- CS: cable 
+		-- CS: wire
+		-- CS: net-ties, netchanger
+		-- ...
+		);
 	
 	function component_value_valid (
 	-- Returns true if the given component value meets certain conventions.									   
 		value 		: in type_component_value.bounded_string;
-		reference	: in type_component_reference) 
+		reference	: in type_component_reference;
+		appearance	: in type_component_appearance) 
 		return boolean;
 
 	
@@ -577,16 +588,6 @@ package et_libraries is
 	-- CS: The meaning could be something like "documentation" some day.
 	type type_symbol_text is new type_text (meaning => misc) with null record;
 	package type_symbol_texts is new doubly_linked_lists (element_type => type_symbol_text);
-
-	type type_component_appearance is ( 
-		sch,		-- a component that exists in the schematic only (like power symbols)
-		sch_pcb,	-- a component that exists in both schematic and soldered on a pcb
-		pcb			-- a component that exists on the pcb only (like a fiducial)		
-		-- CS: cable 
-		-- CS: wire
-		-- CS: net-ties, netchanger
-		-- ...
-		);
 
 	function to_string (appearance : in type_component_appearance) return string;
 	-- Returns the given component appearance as string.

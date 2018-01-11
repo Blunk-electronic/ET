@@ -4431,11 +4431,15 @@ package body et_kicad is
 						missing_field (et_libraries.value);
 					else
 						-- depending on the component reference (like R12 or C9) the value must meet certain conventions:
-						if not et_libraries.component_value_valid (
-							value => et_libraries.type_component_value.to_bounded_string (
-								et_libraries.content (text_value)), -- the content of the value field like 200R or 10uF
-							reference => reference) -- the component reference such as R4 or IC34
-							then raise constraint_error;
+						if not component_value_valid (
+														 
+							-- the content of the value field like 200R or 10u
+							value => type_component_value.to_bounded_string (content (text_value)), 
+								
+							-- the component reference such as R4 or IC34
+							reference => reference,
+
+							appearance => appearance) then raise constraint_error;
 						end if;
 					end if;
 

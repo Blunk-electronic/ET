@@ -50,6 +50,7 @@ with ada.exceptions; 			use ada.exceptions;
 with et_string_processing;
 with et_coordinates;
 with et_import;
+with et_configuration;
 
 package body et_libraries is
 
@@ -508,29 +509,57 @@ package body et_libraries is
 	function component_value_valid (
 	-- Returns true if the given component value meets certain conventions.									   
 		value 		: in type_component_value.bounded_string;
-		reference	: in type_component_reference)
+		reference	: in type_component_reference;
+		appearance	: in type_component_appearance)
 		return boolean is
 
 -- 		use et_libraries.type_component_value;
 		use et_string_processing;
+		use et_configuration;
 
 		-- After the precheck for valid characters the value is stored here:
 		value_prechecked : type_component_value.bounded_string;
+
+		value_length : natural := type_component_value.length (value);
+		char_pos : positive;
+		
 	begin
-		-- Rule #1: There are only those characters allowed as specified 
-		-- in component_value_characters:
-		value_prechecked := check_value_characters (
-			value => value,
-			characters => component_value_characters);
+		-- As a general rule, each component should have a value assigned. If not issue warning.
+		if value_length > 0 then
 
-		-- Rule #2: Units in accordance with the component prefix
-		-- CS:
+			-- Rule #1: There are only those characters allowed as specified 
+			-- in component_value_characters:
+			value_prechecked := check_value_characters (
+				value => value,
+				characters => component_value_characters);
 
-		-- goto-label here
+			-- Rule #2 for real components only: 
+			-- Units of measurement must be in accordance with the component category
+			case appearance is
+				
+				when sch_pcb => 
+					case category (reference) is
+						when resistor => null;
+							--for char_pos in 1
+						when others => null;
+					end case;
+
+				when others => null; -- CS
+			end case;
+
+		else
+			log (message_warning & "component " & to_string (reference) & " has no value !");
+		end if;
+
+		
+
 		return true;
 		
 		exception
-			when others => return false;
+			when others => 
+				-- CS: explain what is wrong
+
+				return false;
 
 	end component_value_valid;
 
