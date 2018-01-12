@@ -566,7 +566,30 @@ package body et_libraries is
 			
 			-- This cursor points to the unit of measurement being probed
 			unit_cursor : type_component_units.cursor := component_units.first;
-		
+
+			procedure test_if_unit_ok is
+			begin
+				if not unit_ok then
+					value_invalid;
+				end if;
+			end test_if_unit_ok;
+
+			function unit_found return boolean is
+			begin
+				unit_start := index (value, to_string (element (unit_cursor)), place);
+				if unit_start = place then
+					-- advance place to end of unit
+					place := place + length (element (unit_cursor)) - 1;
+
+					-- unit valid, no further probing required
+					unit_ok := true;
+					return true;
+				else
+					unit_ok := false;
+					return false;
+				end if;
+			end unit_found;
+			
 		begin -- test_unit_of_measurement
 			-- We process one character after another in the given value.
 			while place <= value_length loop
@@ -591,35 +614,78 @@ package body et_libraries is
 						-- in order to get to the actual unit as defined in configuration file (k, u, ...).
 						-- Unit_start becomes greater zero if the unit of measurement has been found
 						-- at the current place.
-						while unit_cursor /= type_component_units.no_element loop
-							case key (unit_cursor) is
+						case component_category is
 
--- 								case component_category is
--- 									when RESISTOR | RESISTOR_NETWORK =>
+							when BATTERY =>
+								while unit_cursor /= type_component_units.no_element loop
+									case key (unit_cursor) is
+										when VOLT =>
+											if unit_found then exit; end if;
+										when others => null;
+									end case;
+									next (unit_cursor);
+								end loop;
+								test_if_unit_ok;
+							
+							when CAPACITOR =>
+								while unit_cursor /= type_component_units.no_element loop
+									case key (unit_cursor) is
+										when PICOFARAD | NANOFARAD | MICROFARAD | MILLIFARAD | FARAD =>
+											if unit_found then exit; end if;
+										when others => null;
+									end case;
+									next (unit_cursor);
+								end loop;
+								test_if_unit_ok;
+
+							when FUSE =>
+								while unit_cursor /= type_component_units.no_element loop
+									case key (unit_cursor) is
+										when MILLIAMPERE | AMPERE =>
+											if unit_found then exit; end if;
+										when others => null;
+									end case;
+									next (unit_cursor);
+								end loop;
+								test_if_unit_ok;
 								
-								when MILLIOHM | OHM | KILOOHM | MEGAOHM | GIGAOHM =>
-									-- if component_category = RESISTOR or component_category = RESISTOR_NETWORK
-									unit_start := index (value, to_string (element (unit_cursor)), place);
-									if unit_start = place then
-										-- advance place to end of unit
-										place := place + length (element (unit_cursor)) - 1;
-
-										 -- unit valid, no further probing required
-										unit_ok := true;
-										exit;
-									end if;
-									
-								when others => null;
+							when INDUCTOR =>
+								while unit_cursor /= type_component_units.no_element loop
+									case key (unit_cursor) is
+										when NANOHENRY | MICROHENRY | MILLIHENRY | HENRY =>
+											if unit_found then exit; end if;
+										when others => null;
+									end case;
+									next (unit_cursor);
+								end loop;
+								test_if_unit_ok;
 								
-							end case;
+							when RESISTOR | RESISTOR_NETWORK =>
+								while unit_cursor /= type_component_units.no_element loop
+									case key (unit_cursor) is
+										when MILLIOHM | OHM | KILOOHM | MEGAOHM | GIGAOHM =>
+											if unit_found then exit; end if;
+										when others => null;
+									end case;
+									next (unit_cursor);
+								end loop;
+								test_if_unit_ok;
 
-							next (unit_cursor);
-						end loop;
-
-						-- After probing the units, if unit not valid -> abort.
-						if not unit_ok then
-							value_invalid;
-						end if;
+							when QUARTZ =>
+								while unit_cursor /= type_component_units.no_element loop
+									case key (unit_cursor) is
+										when KILOHERTZ | MEGAHERTZ | GIGAHERTZ =>
+											if unit_found then exit; end if;
+										when others => null;
+									end case;
+									next (unit_cursor);
+								end loop;
+								test_if_unit_ok;
+								
+								
+							when others => null;
+								
+						end case;
 					end if;
 
 				else 

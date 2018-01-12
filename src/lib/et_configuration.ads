@@ -134,7 +134,11 @@ package et_configuration is
 		VOLT,
 
 		MILLIAMPERE,
-		AMPERE
+		AMPERE,
+
+		KILOHERTZ,
+		MEGAHERTZ,
+		GIGAHERTZ
 		);
 
 	function to_string (meaning : in type_component_unit_meaning) return string;

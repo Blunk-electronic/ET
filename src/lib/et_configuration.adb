@@ -220,6 +220,10 @@ package body et_configuration is
 
 		put_line (configuration_file_handle, "m" & to_string (MILLIAMPERE));		
 		put_line (configuration_file_handle, "A" & to_string (AMPERE));
+
+		put_line (configuration_file_handle, "k" & to_string (KILOHERTZ));
+		put_line (configuration_file_handle, "M" & to_string (MEGAHERTZ));
+		put_line (configuration_file_handle, "G" & to_string (GIGAHERTZ));
 		
 		new_line (configuration_file_handle);
 		new_line (configuration_file_handle);		
