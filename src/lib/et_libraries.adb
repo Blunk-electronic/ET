@@ -430,7 +430,9 @@ package body et_libraries is
 			log_indentation_reset;
 			log (message_error & "component value " & to_string (value) 
 				 & " has invalid character at position"
-				 & natural'image (invalid_character_position));
+				 & natural'image (invalid_character_position),
+				 console => true
+				);
 			raise constraint_error;
 		end if;
 		
@@ -518,42 +520,131 @@ package body et_libraries is
 		use et_string_processing;
 		use et_configuration;
 
+		component_category : type_component_category;
+	
 		-- After the precheck for valid characters the value is stored here:
 		value_prechecked : type_component_value.bounded_string;
 
 		value_length : natural := type_component_value.length (value);
-		char_pos : positive;
 
-		procedure test_if_first_character_is_digit is
-		-- tests if the first character of value_prechecked is a digit.
+		procedure value_invalid is
 		begin
-			if not is_digit (element (value_prechecked, 1)) then
-				log_indentation_reset;
-				log (message_error & "component " & to_string (reference) 
-					 & " value " & to_string (value_prechecked) & " invalid !",
-					 console => true);
-				raise constraint_error;
-			end if;
-		end test_if_first_character_is_digit;
+			log_indentation_reset;
+			log (message_error & "component " & to_string (reference) 
+				& " value " & to_string (value) & " invalid !",
+				console => true);
+			raise constraint_error;
+		end value_invalid;
 
+		procedure no_value_warning is
+		begin
+			log (message_warning & "component " & to_string (reference) 
+				& " has no value !");
+		end no_value_warning;
+		
+		procedure no_value_error is
+		begin
+			log_indentation_reset;
+			log (message_error & "component " & to_string (reference) 
+				& " has no value !", 
+				console => true);
+			raise constraint_error;
+		end no_value_error;
+		
 		procedure test_unit_of_measurement is
-		-- tests if the correct unit of measurement comes after the first digit
+		-- Tests if the unit of measurement is valid and placed properly in something like 220k56 .
+		-- Tests if the first character is a digit.
 			use ada.strings.maps.constants;
-			unit_start : natural;
--- 			unit_end : natural;
-		begin
-			null;
-			-- get position of first non-digit character in something like 220k498
-			--unit_start := index (value_prechecked, decimal_digit_set, outside);
-			--unit_start := index (value_prechecked, decimal_digit_set, outside);
--- 			case category (reference) is
--- 				when resistor =>
--- 					-- get position of first digit character after unit_start
--- 			unit_end := index (value_prechecked, decimal_digit_set, inside); --, from => unit_start);
+			place		: positive := 1; -- the pointer to the character being examined
+			char 		: character; -- the character being examined
+
+			unit_start	: natural; -- the position where the unit of measurement begins
+			unit_ok 	: boolean := false; -- goes true once the unit of measurement is considered as ok
+		
+			use type_component_unit;
+			use type_component_units;
+			
+			-- This cursor points to the unit of measurement being probed
+			unit_cursor : type_component_units.cursor := component_units.first;
+		
+		begin -- test_unit_of_measurement
+			-- We process one character after another in the given value.
+			while place <= value_length loop
+				char := element (value, place);
+
+				-- Test if first character is a digit.
+				if place = 1 and not is_digit (char) then
+					value_invalid;
+				end if;
+				
+				-- Initially we assume there has no unit of measurement been found.
+				-- So we advance until the first non-digit is found to check the unit.
+				-- Once a valid unit was found, we expect ONLY digits after the unit 
+				-- of measurement.
+				if not unit_ok then
+				
+					if not is_digit (char) then -- integer part complete
+						-- Now the unit of measurement begins.
+
+						-- Probe units of measurement according to component category.
+						-- For picking up the units we use the map key (KILOOHM, MIRCROFARAD, ...)
+						-- in order to get to the actual unit as defined in configuration file (k, u, ...).
+						-- Unit_start becomes greater zero if the unit of measurement has been found
+						-- at the current place.
+						while unit_cursor /= type_component_units.no_element loop
+							case key (unit_cursor) is
+
+-- 								case component_category is
+-- 									when RESISTOR | RESISTOR_NETWORK =>
+								
+								when MILLIOHM | OHM | KILOOHM | MEGAOHM | GIGAOHM =>
+									-- if component_category = RESISTOR or component_category = RESISTOR_NETWORK
+									unit_start := index (value, to_string (element (unit_cursor)), place);
+									if unit_start = place then
+										-- advance place to end of unit
+										place := place + length (element (unit_cursor)) - 1;
+
+										 -- unit valid, no further probing required
+										unit_ok := true;
+										exit;
+									end if;
+									
+								when others => null;
+								
+							end case;
+
+							next (unit_cursor);
+						end loop;
+
+						-- After probing the units, if unit not valid -> abort.
+						if not unit_ok then
+							value_invalid;
+						end if;
+					end if;
+
+				else 
+					-- Unit is valid. expect trailing digits exclusively after the unit of measurement.
+					-- Abort on non-digit charcters.
+					if not is_digit (char) then
+						value_invalid;
+					end if;
+				end if;
+
+				-- advance to next character in given value
+				place := place + 1;
+
+			end loop;
+
+			-- After processing the given value, if no valid unit of measurement found, abort.
+			if not unit_ok then
+				value_invalid;
+			end if;
+
 		end test_unit_of_measurement;
 
 	begin
-		-- As a general rule, each component should have a value assigned. If not issue warning.
+		-- If a value is provided, means it has non-zero length we conduct some tests.
+		-- If no value provided, the category determines whether to abort or not.
 		if value_length > 0 then
 
 			-- Rule #1: There are only those characters allowed as specified 
@@ -568,42 +659,56 @@ package body et_libraries is
 				
 				when sch_pcb => 
 
+					component_category := category (reference);
+					
 					-- For certain component categories the value must start 
 					-- with a digit (like 3n3, 1V8, ...):
-					case category (reference) is
-						when battery | capacitor | fuse | inductor | resistor | resistor_network | quartz => -- CS: others ?
-							test_if_first_character_is_digit;
+					case component_category is
+						when BATTERY | CAPACITOR | FUSE | INDUCTOR | RESISTOR | RESISTOR_NETWORK | QUARTZ => -- CS: others ?
 							test_unit_of_measurement;
+
 						when others => null;
 					end case;
 
 					
-
-					
-				when others => null; -- CS
+				when others => null; -- CS: value check for others ?
 			end case;
-
-
--- 							for char_pos in 1..value_length loop
--- null;
--- 							end loop;
--- 							else
-								
--- end if;
 
 			
 		else
-			log (message_warning & "component " & to_string (reference) & " has no value !");
-		end if;
+			-- no value provided
+			
+			-- For certain component categories there is no need for a value. The properties of such parts
+			-- are available via the part code.
+			-- For other categories (R, L, C, ...) the value is essential for reading and understanding the schematic.
+			case appearance is
+				when sch_pcb =>
+					case category (reference) is
 
-		
+						-- no value required for:
+						when HEATSINK | JUMPER | MOTOR | MICROPHONE | NETCHANGER | SWITCH | TESTPOINT | CONNECTOR =>
+							null;
+
+						-- value essential for all other categories:
+						when others =>
+							no_value_error;
+
+					end case;
+
+				when others => no_value_error; -- CS: probably it would be sufficient to output a warning instead (use no_value_warning)
+					-- CS: check value against generic name in libarary ?
+			end case;
+					
+		end if;
+				
+
 
 		return true;
 		
 		exception
 			when others => 
 				-- CS: explain what is wrong
-
+				value_invalid;
 				return false;
 
 	end component_value_valid;

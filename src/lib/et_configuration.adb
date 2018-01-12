@@ -199,25 +199,27 @@ package body et_configuration is
 		new_line (configuration_file_handle);
 		put_line (configuration_file_handle, comment & "unit meaning");
 		new_line (configuration_file_handle);
-		put_line (configuration_file_handle, "R" & to_string (OHM));
 		put_line (configuration_file_handle, "m" & to_string (MILLIOHM));
+		put_line (configuration_file_handle, "R" & to_string (OHM));
 		put_line (configuration_file_handle, "k" & to_string (KILOOHM));
 		put_line (configuration_file_handle, "M" & to_string (MEGAOHM));
+		put_line (configuration_file_handle, "G" & to_string (GIGAOHM));		
 
-		put_line (configuration_file_handle, "F" & to_string (FARAD));
-		put_line (configuration_file_handle, "m" & to_string (MILLIFARAD));
-		put_line (configuration_file_handle, "u" & to_string (MICROFARAD));
+		put_line (configuration_file_handle, "p" & to_string (PICOFARAD));		
 		put_line (configuration_file_handle, "n" & to_string (NANOFARAD));
-		put_line (configuration_file_handle, "p" & to_string (PICOFARAD));
+		put_line (configuration_file_handle, "u" & to_string (MICROFARAD));
+		put_line (configuration_file_handle, "m" & to_string (MILLIFARAD));
+		put_line (configuration_file_handle, "F" & to_string (FARAD));
 
-		put_line (configuration_file_handle, "H" & to_string (HENRY));
-		put_line (configuration_file_handle, "m" & to_string (MILLIHENRY));
+		put_line (configuration_file_handle, "n" & to_string (NANOHENRY));		
 		put_line (configuration_file_handle, "u" & to_string (MICROHENRY));
-		put_line (configuration_file_handle, "n" & to_string (NANOHENRY));
+		put_line (configuration_file_handle, "m" & to_string (MILLIHENRY));
+		put_line (configuration_file_handle, "H" & to_string (HENRY));
 
 		put_line (configuration_file_handle, "V" & to_string (VOLT));
+
+		put_line (configuration_file_handle, "m" & to_string (MILLIAMPERE));		
 		put_line (configuration_file_handle, "A" & to_string (AMPERE));
-		put_line (configuration_file_handle, "m" & to_string (MILLIAMPERE));
 		
 		new_line (configuration_file_handle);
 		new_line (configuration_file_handle);		

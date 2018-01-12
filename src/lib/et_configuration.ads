@@ -114,22 +114,27 @@ package et_configuration is
 	-- found, returns category UNKNOWN.
 	
 	type type_component_unit_meaning is (
-		OHM,
 		MILLIOHM,
+		OHM,
 		KILOOHM,
 		MEGAOHM,
-		FARAD,
-		MILLIFARAD,
-		MICROFARAD,
-		NANOFARAD,
+		GIGAOHM,
+
 		PICOFARAD,
-		HENRY,
-		MILLIHENRY,
-		MICROHENRY,
+		NANOFARAD,
+		MICROFARAD,
+		MILLIFARAD,
+		FARAD,
+		
 		NANOHENRY,
+		MICROHENRY,		
+		MILLIHENRY,	
+		HENRY,
+
 		VOLT,
-		AMPERE,
-		MILLIAMPERE
+
+		MILLIAMPERE,
+		AMPERE
 		);
 
 	function to_string (meaning : in type_component_unit_meaning) return string;
