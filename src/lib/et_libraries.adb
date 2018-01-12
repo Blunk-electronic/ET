@@ -509,12 +509,12 @@ package body et_libraries is
 		return to_lower (type_bom'image (bom));
 	end to_string;
 	
-	function component_value_valid ( -- CS: should be a procedure
-	-- Returns true if the given component value meets certain conventions.									   
+	procedure validate_component_value (
+	-- Tests if the given component value meets certain conventions.
 		value 		: in type_component_value.bounded_string;
 		reference	: in type_component_reference;
 		appearance	: in type_component_appearance)
-		return boolean is
+		is
 
 		use et_libraries.type_component_value;
 		use et_string_processing;
@@ -709,7 +709,7 @@ package body et_libraries is
 
 		end test_unit_of_measurement;
 
-	begin -- component_value_valid
+	begin -- validate_component_value
 		-- If a value is provided, means it has non-zero length we conduct some tests.
 		-- If no value provided, the category determines whether to abort or not.
 		if value_length > 0 then
@@ -768,17 +768,12 @@ package body et_libraries is
 					
 		end if;
 				
-
-
-		return true;
-		
 		exception
 			when others => 
 				-- CS: explain more detailled what is wrong
 				value_invalid;
-				return false;
 
-	end component_value_valid;
+	end validate_component_value;
 
 	function to_string (reference : in type_component_reference) return string is
 	-- Returns the given component reference as string.

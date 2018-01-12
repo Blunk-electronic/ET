@@ -398,13 +398,11 @@ package et_libraries is
 		-- ...
 		);
 	
-	function component_value_valid (
-	-- Returns true if the given component value meets certain conventions.									   
+	procedure validate_component_value (
+	-- Tests if the given component value meets certain conventions.
 		value 		: in type_component_value.bounded_string;
 		reference	: in type_component_reference;
-		appearance	: in type_component_appearance) 
-		return boolean;
-
+		appearance	: in type_component_appearance);
 	
 	-- PACKAGES AND VARIANTS
 	-- A component package is something like "SOT32" or "NDIP14". It is a more or less standardized (JEDEC)
