@@ -568,6 +568,7 @@ package body et_libraries is
 			unit_cursor : type_component_units.cursor := component_units.first;
 
 			procedure test_if_unit_ok is
+			-- Raises alarm if unit_ok if false.
 			begin
 				if not unit_ok then
 					value_invalid;
@@ -575,16 +576,18 @@ package body et_libraries is
 			end test_if_unit_ok;
 
 			function unit_found return boolean is
+			-- Sets unit_ok flag and returns true if the unit (indicated by unit_cursor)
+			-- is placed at position "place".
+			-- Advances "place" to the position of the last character of the unit.
 			begin
 				unit_start := index (value, to_string (element (unit_cursor)), place);
 				if unit_start = place then
-					-- advance place to end of unit
+					-- unit valid. advance place to end of unit and return true.
 					place := place + length (element (unit_cursor)) - 1;
-
-					-- unit valid, no further probing required
 					unit_ok := true;
 					return true;
 				else
+					-- unit invalid. return false
 					unit_ok := false;
 					return false;
 				end if;
@@ -689,7 +692,8 @@ package body et_libraries is
 					end if;
 
 				else 
-					-- Unit is valid. expect trailing digits exclusively after the unit of measurement.
+					-- Unit has been found valid. 
+					-- Expect trailing digits exclusively after the unit of measurement.
 					-- Abort on non-digit charcters.
 					if not is_digit (char) then
 						value_invalid;
@@ -698,17 +702,14 @@ package body et_libraries is
 
 				-- advance to next character in given value
 				place := place + 1;
-
 			end loop;
 
 			-- After processing the given value, if no valid unit of measurement found, abort.
-			if not unit_ok then
-				value_invalid;
-			end if;
+			test_if_unit_ok;
 
 		end test_unit_of_measurement;
 
-	begin
+	begin -- component_value_valid
 		-- If a value is provided, means it has non-zero length we conduct some tests.
 		-- If no value provided, the category determines whether to abort or not.
 		if value_length > 0 then
@@ -773,7 +774,7 @@ package body et_libraries is
 		
 		exception
 			when others => 
-				-- CS: explain what is wrong
+				-- CS: explain more detailled what is wrong
 				value_invalid;
 				return false;
 
