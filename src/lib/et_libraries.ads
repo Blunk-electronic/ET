@@ -420,10 +420,17 @@ package et_libraries is
 	package type_component_package_name is new generic_bounded_length(component_package_name_length_max);
 	--use type_component_package_name;
 
-	-- The component partcode is something like "R_PAC_S_0805_VAL_"
+	-- The component partcode is something like "R_PAC_S_0805_VAL_100R_PMAX_125_TOL_5"
 	component_partocde_length_max : constant positive := 200;
 	package type_component_partcode is new generic_bounded_length (component_partocde_length_max);
-
+	partcode_default 			: constant string (1..10) := "?PARTCODE?";
+	partcode_separator 			: constant string (1..1) := "_";
+	partcode_keyword_package 	: constant string (1..3) := "PAC";
+	partcode_keyword_value		: constant string (1..3) := "VAL";
+	partcode_keyword_tolerance	: constant string (1..3) := "TOL";
+	partcode_keyword_power_max	: constant string (1..4) := "PMAX";
+	partcode_keyword_volts_max	: constant string (1..4) := "VMAX";	
+	
 	function to_string (partcode : in type_component_partcode.bounded_string) return string;
 	-- Returns the given partcode as string.
 	
@@ -687,6 +694,22 @@ package et_libraries is
 
 	function to_string (bom : in type_bom) return string;
 	-- Returns the given bom variable as string.
+
+	procedure validate_library_partcode (
+	-- Tests if the given partcode of a library component is correct.
+		partcode	: in type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_
+		prefix		: in type_component_prefix.bounded_string;			-- R
+		packge		: in type_component_package_name.bounded_string;	-- S_0805
+		bom			: in type_bom);	-- YES, NO
+	
+	procedure validate_schematic_partcode (
+	-- Tests if the given partcode of a schematic component is correct.
+		partcode	: in type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_100R
+		reference	: in type_component_reference;						-- R45
+		packge		: in type_component_package_name.bounded_string;	-- S_0805
+		value 		: in type_component_value.bounded_string; 			-- 100R
+		bom			: in type_bom);	-- YES, NO
+
 	
 -- COMPONENTS
 	type type_power_flag is (YES, NO);

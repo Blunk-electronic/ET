@@ -502,12 +502,78 @@ package body et_libraries is
 	begin
 		return " add level " & type_unit_add_level'image (add_level);
 	end to_string;
-	
+
 	function to_string (bom : in type_bom) return string is
 	-- Returns the given bom variable as string.	
 	begin
 		return to_lower (type_bom'image (bom));
 	end to_string;
+
+	procedure validate_library_partcode (
+	-- Tests if the given partcode of a library component is correct.
+		partcode	: in type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_
+		prefix		: in type_component_prefix.bounded_string;			-- R
+		packge		: in type_component_package_name.bounded_string;	-- S_0805
+		bom			: in type_bom)	-- YES, NO
+		is
+	begin
+		null; -- CS
+	end validate_library_partcode;
+		
+	procedure validate_schematic_partcode (
+	-- Tests if the given partcode of a schematic component is correct.
+		partcode	: in type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_100R
+		reference	: in type_component_reference;						-- R45
+		packge		: in type_component_package_name.bounded_string;	-- S_0805
+		value 		: in type_component_value.bounded_string;			-- 100R
+		bom			: in type_bom)	-- YES, NO
+		is
+		use et_string_processing;
+		use type_component_partcode;
+
+		procedure partcode_invalid is
+		begin
+			log_indentation_reset;
+			log (message_error & "component " & to_string (reference)
+				 & " partcode " & to_string (partcode) & " invalid !",
+				console => true
+				);
+			-- CS: show package, value and partcode as it should be
+			raise constraint_error;
+		end partcode_invalid;
+
+-- 		procedure partcode_default_missing is
+-- 		begin
+-- 			log (message_warning & "component " & to_string (reference)
+-- 				 & " is not mounted and should have the default partcode "
+-- 					-- CS: show package, value and partcode as it should be
+-- 			raise constraint_error;
+-- 		end partcode_default_missing;
+
+		
+		place : natural;
+	begin -- validate_schematic_partcode
+
+		-- The partcode must be valid for mounted components only.
+		case bom is
+			when YES =>
+		
+				-- Step #1: we expect the prefix at the first position 
+				place := index (partcode, to_string (reference.prefix), from => 1);
+				if place /= 1 then
+					partcode_invalid;
+				end if;
+
+			when NO =>
+				null;
+				-- CS: expect partcode_default ?
+-- 				if to_string (partcode) /= partcode_default then
+-- 					partcode_default_missing;
+-- 				end if;
+
+		end case;
+	end validate_schematic_partcode;
+
 	
 	procedure validate_component_value (
 	-- Tests if the given component value meets certain conventions.

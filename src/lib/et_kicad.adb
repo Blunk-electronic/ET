@@ -4510,8 +4510,22 @@ package body et_kicad is
 							if not text_partcode_found then
 								missing_field (et_libraries.partcode);
 							else
-								null;
-								-- CS: check content of text_partcode
+								validate_schematic_partcode (
+									-- the content of the partcode field like R_PAC_S_0805_VAL_100R
+									partcode => type_component_partcode.to_bounded_string (content (text_partcode)),
+
+									-- the component reference like R45
+									reference => reference,
+
+									-- the component package name like S_0805
+									packge => type_component_package_name.to_bounded_string (content (text_package)),
+
+									-- the content of the value field like 200R or 10u
+									value => type_component_value.to_bounded_string (content (text_value)),
+
+									-- the BOM status
+									bom => type_bom'value (content (text_bom))
+									);
 							end if;
 							
 							-- purpose
