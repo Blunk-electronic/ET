@@ -4470,8 +4470,10 @@ package body et_kicad is
 						
 						if et_libraries.to_string (reference) /= et_libraries.content (text_reference) then
 							log_indentation_reset;
-							log (message_error & " reference mismatch !");
-							log (et_libraries.to_string (reference) & " vs " & et_libraries.content (text_reference));
+							log (message_error & "reference mismatch ! Header reads " 
+								 & et_libraries.to_string (reference) & " but field contains " 
+								 & et_libraries.content (text_reference),
+								console => true);
 							raise constraint_error;
 						end if;
 					end if;
