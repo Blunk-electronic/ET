@@ -3,13 +3,13 @@ An Electronic Tool for checking style and desgin conventions
 - Supposed to import various CAE formats like KiCad, EAGLE, ...
 - Currently only KiCad V4 is supported.
 
-- First generate a configuration file where prefixes, units of measurement and other things are defined with this command:
+- First change into the root directory of your KiCad projects and generate a configuration file where prefixes, units of measurement and other things are defined with this command:
 
  et --make_configuration my_configuration.txt
 
-- Edit this file according to your own customs.
+- This file is now placed in the root directory of your KiCad projects. Edit this file according to your own customs.
 
-- To import a KiCad V4 design change into the root directory of your KiCad projects and run this command: 
+- To import a KiCad V4 design run this command: 
 
  et --configuration_file my_configuration.txt --import_format kicad_v4 --import_project my_kicad_project/
 
