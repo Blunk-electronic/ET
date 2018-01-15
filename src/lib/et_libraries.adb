@@ -533,15 +533,60 @@ package body et_libraries is
 			);
 	end compose_partcode_root;
 	
-	procedure validate_component_partcode_in_library (
+	function validate_component_partcode_in_library (
 	-- Tests if the given partcode of a library component is correct.
 		partcode	: in type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_
+		name		: in type_component_name.bounded_string;			-- 74LS00
 		prefix		: in type_component_prefix.bounded_string;			-- R
 		packge		: in type_component_package_name.bounded_string;	-- S_0805
 		bom			: in type_bom)	-- YES, NO
-		is
+		return type_component_partcode.bounded_string is
+
+		use et_string_processing;
+		use type_component_partcode;
+		
+		partcode_expect : type_component_partcode.bounded_string;
+
+		procedure partcode_invalid is
+		begin
+			log_indentation_reset;
+			log (message_error & "component " & to_string (name)
+				 & " partcode invalid !", console => true);
+			log ("found    '" & to_string (partcode) & "'", console => true);
+			log ("expected '" & to_string (partcode_expect) & "'", console => true);
+			raise constraint_error;
+		end partcode_invalid;
+
+		place : natural;		
+	
 	begin
-		null; -- CS
+		-- The partcode must be valid for mounted components only.
+		case bom is
+			when YES =>
+
+				-- Compose the root of the partcode as it should be.
+				-- The root is usually something like R_PAC_S_0805_VAL_ which contains
+				-- the given prefix and package name.
+				partcode_expect := compose_partcode_root (
+					prefix => prefix,
+					packge => packge);
+
+				-- the root of the partcode must be the very first part of the given partcode.
+				place := index (partcode, to_string (partcode_expect));
+				if place /= 1 then
+					partcode_invalid;
+				end if;
+
+			when NO =>
+				null;
+				-- CS: expect partcode_default ?
+-- 				if to_string (partcode) /= partcode_default then
+-- 					partcode_default_missing;
+-- 				end if;
+
+		end case;
+
+		return partcode;
 	end validate_component_partcode_in_library;
 
 	
@@ -588,7 +633,7 @@ package body et_libraries is
 			when YES =>
 
 				-- Compose the root of the partcode as it should be.
-				-- The root is usually something like R_PAC_S_0805_VAL_ which contains
+				-- The root is usually something like R_PAC_S_0805_VAL_100R which contains
 				-- the given prefix, package name and - if provided - the value.
 				partcode_expect := compose_partcode_root (
 					prefix => reference.prefix,

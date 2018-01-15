@@ -621,11 +621,6 @@ package body et_kicad is
 				tmp_unit_global := false;
 			end init_temp_variables;
 
-			procedure check_text_fields is
-			begin
-				null; -- CS: do useful prechecks of the fields
-			end check_text_fields;
-			
 			function to_swap_level (swap_in : in string)
 			-- Converts the kicad interchangeable flag to the et swap level.
 			-- Since Kicad has only one swap level (interchangeable yes or no) 
@@ -1232,6 +1227,7 @@ package body et_kicad is
 				return text;
 			end read_field;
 
+
 			procedure insert_component (
 			-- NOTE: This is library related stuff.
 			-- Updates the current library by inserting the component.
@@ -1241,11 +1237,11 @@ package body et_kicad is
 				components	: in out type_components.map) is
 			begin -- insert_component
 
-				-- Do a precheck of the text fields. -- CS most of the checks is already done in procedure read_field.
-				check_text_fields; -- CS: currently emtpy. nothing happens.
-
 -- 				-- For the logfile write the component name.
 -- 				-- If the component contains more than one unit, write number of units.
+
+				-- CS: do a field precheck (as with schematic components) in a dedicated procedure.
+				-- This would simplify the following stuff
 
 				case tmp_appearance is
 					when sch =>
@@ -1253,7 +1249,7 @@ package body et_kicad is
 						-- we insert into the given components list a new component
 						type_components.insert(
 							container	=> components,
-							key			=> tmp_component_name, -- #PWR, #FLG 
+							key			=> tmp_component_name, -- generic name like #PWR, #FLG 
 							position	=> comp_cursor,
 							inserted	=> comp_inserted,
 							new_item	=> (
@@ -1295,7 +1291,7 @@ package body et_kicad is
 						-- we insert into the given components list a new component
 						type_components.insert(
 							container	=> components,
-							key			=> tmp_component_name, -- 74LS00
+							key			=> tmp_component_name, -- generic name like 74LS00
 							position	=> comp_cursor,
 							inserted	=> comp_inserted,
 							new_item	=> (
@@ -1328,7 +1324,34 @@ package body et_kicad is
 								package_filter	=> type_package_filter.empty_set,
 								datasheet		=> type_component_datasheet.to_bounded_string (content (tmp_datasheet)),
 								purpose			=> type_component_purpose.to_bounded_string (content (tmp_purpose)),
-								partcode		=> type_component_partcode.to_bounded_string (content (tmp_partcode)),
+
+								-- The partcode is composed of prefix and package name and must be validated
+								-- before being assigned to the component.
+								partcode		=> --type_component_partcode.to_bounded_string (content (tmp_partcode)),
+
+									validate_component_partcode_in_library (
+										-- the content of the partcode field like R_PAC_S_0805_VAL_
+										partcode => type_component_partcode.to_bounded_string (content (tmp_partcode)),
+
+										name => tmp_component_name, -- 74LS00
+										
+										-- the component prefix like LED
+										prefix => tmp_prefix,
+
+										-- The component package name like S_0805 must be extracted from the field text_package.
+										-- The field contains something like bel_ic:S_SO14 . 
+										-- The part after the colon is the package name. The part before the colon is the library
+										-- name which is not of interest here.
+										packge => type_component_package_name.to_bounded_string (field (
+											line => read_line (
+												line => content (tmp_package), -- bel_ic:S_SO14
+												ifs => latin_1.colon),
+											position => 2)), -- the block after the colon
+
+										-- the BOM status
+										bom => type_bom'value (content (tmp_bom))
+										),
+
 								bom				=> type_bom'value (content (tmp_bom))
 								)
 							);

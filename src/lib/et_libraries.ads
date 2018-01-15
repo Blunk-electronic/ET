@@ -297,7 +297,7 @@ package et_libraries is
 
 	-- The generic name of a component in the library. 
  	component_name_length_max : constant natural := 100;
-	package type_component_name is new generic_bounded_length (component_name_length_max); use type_component_name;
+	package type_component_name is new generic_bounded_length (component_name_length_max); use type_component_name; -- CS: rename to type_generic_component_name
 	-- Only those characters are allowed for the generic component name.
 	-- See et_import.check_component_name for customization depending on CAD format.
 	component_name_characters : character_set := to_set 
@@ -704,12 +704,14 @@ package et_libraries is
 	function to_string (bom : in type_bom) return string;
 	-- Returns the given bom variable as string.
 
-	procedure validate_component_partcode_in_library (
+	function validate_component_partcode_in_library (
 	-- Tests if the given partcode of a library component is correct.
 		partcode	: in type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_
+		name		: in type_component_name.bounded_string;			-- 74LS00	
 		prefix		: in type_component_prefix.bounded_string;			-- R
 		packge		: in type_component_package_name.bounded_string;	-- S_0805
-		bom			: in type_bom);	-- YES, NO
+		bom			: in type_bom)	-- YES, NO
+		return type_component_partcode.bounded_string;
 	
 	procedure validate_component_partcode_in_schematic (
 	-- Tests if the given partcode of a schematic component is correct.
