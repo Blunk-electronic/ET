@@ -489,17 +489,16 @@ package body et_configuration is
 
 	end read_configuration;
 
-	function validate_prefix (prefix : in et_libraries.type_component_prefix.bounded_string) 
-		return et_libraries.type_component_prefix.bounded_string is
+	procedure validate_prefix (prefix : in et_libraries.type_component_prefix.bounded_string) is
 	-- Tests if the given prefix is a power_flag_prefix or a power_symbol_prefix.
-	-- Raises exception if not. Otherwise returns the given prefix unchanged.
+	-- Raises exception if not.
 		use et_libraries.type_component_prefix;
 		use type_component_prefixes;
 	
 		prefix_cursor : type_component_prefixes.cursor;
 	begin
 		if component_prefixes.find (prefix) /= type_component_prefixes.no_element then
-			return prefix;
+			null;
 		else
 			log_indentation_reset;
 			log (message_error & "invalid prefix "

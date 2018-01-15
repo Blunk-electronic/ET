@@ -401,14 +401,12 @@ package body et_libraries is
 		return type_component_value.to_string(value);
 	end to_string;
 
-	function check_value_characters (
+	procedure check_value_characters (
 		value : in type_component_value.bounded_string;
-		characters : in character_set)
-		return type_component_value.bounded_string is
+		characters : in character_set) is
 	-- Tests if the given value contains only valid characters as specified
 	-- by given character set.
 	-- Raises exception if invalid character found.
-	-- Returns value unchanged otherwise.	
 		use et_string_processing;
 		use type_component_value;
 		invalid_character_position : natural := 0;
@@ -427,8 +425,6 @@ package body et_libraries is
 				);
 			raise constraint_error;
 		end if;
-		
-		return value;
 	end check_value_characters;
 	
 	function to_string (prefix : in type_component_prefix.bounded_string) return string is
@@ -457,7 +453,9 @@ package body et_libraries is
 			log_indentation_reset;
 			log (message_error & "component prefix " & to_string (prefix) 
 				 & " has invalid character at position"
-				 & natural'image (invalid_character_position));
+				 & natural'image (invalid_character_position),
+				console => true
+				);
 			raise constraint_error;
 		end if;
 		
@@ -659,10 +657,6 @@ package body et_libraries is
 		use et_configuration;
 
 		component_category : type_component_category;
-	
-		-- After the precheck for valid characters the value is stored here:
-		value_prechecked : type_component_value.bounded_string;
-
 		value_length : natural := type_component_value.length (value);
 
 		procedure value_invalid is
@@ -854,7 +848,7 @@ package body et_libraries is
 
 			-- Rule #1: There are only those characters allowed as specified 
 			-- in component_value_characters:
-			value_prechecked := check_value_characters (
+			check_value_characters (
 				value => value,
 				characters => component_value_characters);
 

@@ -190,10 +190,9 @@ package et_configuration is
 	-- Reads the given configuration file.
 	-- Fills component_prefixes.
 
-	function validate_prefix (prefix : in et_libraries.type_component_prefix.bounded_string) 
-		return et_libraries.type_component_prefix.bounded_string;
+	procedure validate_prefix (prefix : in et_libraries.type_component_prefix.bounded_string); 
 	-- Tests if the given prefix is valid as specified in the configuration file.
-	-- Raises exception if not. Otherwise returns the given prefix unchanged.
+	-- Raises exception if not.
 	
 	function validate_prefix (reference : in et_libraries.type_component_reference)
 		return et_libraries.type_component_reference;

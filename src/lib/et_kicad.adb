@@ -104,15 +104,14 @@ package body et_kicad is
 		raise constraint_error;
 	end invalid_field;
 
-	function validate_prefix (prefix : in et_libraries.type_component_prefix.bounded_string) 
-		return et_libraries.type_component_prefix.bounded_string is
+	procedure validate_prefix (prefix : in et_libraries.type_component_prefix.bounded_string) is
 	-- Tests if the given prefix is a power_flag_prefix or a power_symbol_prefix.
-	-- Raises exception if not. Otherwise returns the given prefix unchanged.
+	-- Raises exception if not.
 		use et_string_processing;
 		use et_libraries.type_component_prefix;
 	begin
 		if to_string (prefix) = power_flag_prefix or to_string (prefix) = power_symbol_prefix then
-			return prefix;
+			null;
 		else
 			log_indentation_reset;
 			log (message_error & "invalid prefix "
@@ -1235,43 +1234,72 @@ package body et_kicad is
 				log ("component " & to_string (tmp_component_name) & " prechecking fields ...", level => log_threshold);
 				log_indentation_up;
 
-				if tmp_appearance = sch_pcb then
+				log ("value", level => log_threshold + 1);
+				check_value_characters (
+					value => type_component_value.to_bounded_string (content (tmp_value)),
+					characters => component_value_characters);
 
-					log ("package/footprint", level => log_threshold + 1);
-					validate_component_package_name (
-						type_component_package_name.to_bounded_string (field (
-							line => read_line (
-								line => content (tmp_package), -- bel_ic:S_SO14
-								ifs => latin_1.colon),
-							position => 2))); -- the block after the colon
+				case tmp_appearance is
+					when sch_pcb =>
+						-- This is a real component.
 
-
-					
-					log ("partcode", level => log_threshold + 1);
-					validate_component_partcode_in_library (
-						-- the content of the partcode field like R_PAC_S_0805_VAL_
-						partcode => type_component_partcode.to_bounded_string (content (tmp_partcode)),
-
-						name => tmp_component_name, -- 74LS00
+						-- Since this is a real component. we do the prefix character check 
+						-- against the default character set for prefixes as specified in et_libraries.
+						-- Afterward we validate the prefix. The prefixes for real components are specified
+						-- in the et configuration file (see et_configuration).						
+						log ("prefix", level => log_threshold + 1);
+						et_configuration.validate_prefix (
+							check_prefix_characters (
+								prefix => tmp_prefix,
+								characters => et_libraries.component_prefix_characters)
+							);
 						
-						-- the component prefix like LED
-						prefix => tmp_prefix,
+						log ("package/footprint", level => log_threshold + 1);
+						validate_component_package_name (
+							type_component_package_name.to_bounded_string (field (
+								line => read_line (
+									line => content (tmp_package), -- bel_ic:S_SO14
+									ifs => latin_1.colon),
+								position => 2))); -- the block after the colon
+						
+						log ("partcode", level => log_threshold + 1);
+						validate_component_partcode_in_library (
+							-- the content of the partcode field like R_PAC_S_0805_VAL_
+							partcode => type_component_partcode.to_bounded_string (content (tmp_partcode)),
 
-						-- The component package name like S_0805 must be extracted from the field text_package.
-						-- The field contains something like bel_ic:S_SO14 . 
-						-- The part after the colon is the package name. The part before the colon is the library
-						-- name which is not of interest here.
-						packge => type_component_package_name.to_bounded_string (field (
-							line => read_line (
-								line => content (tmp_package), -- bel_ic:S_SO14
-								ifs => latin_1.colon),
-							position => 2)), -- the block after the colon
+							name => tmp_component_name, -- 74LS00
+							
+							-- the component prefix like LED
+							prefix => tmp_prefix,
 
-						-- the BOM status
-						bom => type_bom'value (content (tmp_bom))
-						);
+							-- The component package name like S_0805 must be extracted from the field text_package.
+							-- The field contains something like bel_ic:S_SO14 . 
+							-- The part after the colon is the package name. The part before the colon is the library
+							-- name which is not of interest here.
+							packge => type_component_package_name.to_bounded_string (field (
+								line => read_line (
+									line => content (tmp_package), -- bel_ic:S_SO14
+									ifs => latin_1.colon),
+								position => 2)), -- the block after the colon
 
-				end if;
+							-- the BOM status
+							bom => type_bom'value (content (tmp_bom))
+							);
+
+						
+					when sch =>
+						-- Since this is a virtual component, we do the prefix character check
+						-- against the Kicad specific character set for prefixes. see et_kicad.ads.
+						-- Afterward we validate the prefix. The prefixes for virtual components
+						-- are KiCad specific.
+						log ("prefix", level => log_threshold + 1);
+						validate_prefix (check_prefix_characters (
+							prefix => tmp_prefix,
+							characters => component_prefix_characters));
+
+					when pcb => null; --CS
+						
+				end case;
 				
 				log_indentation_down;
 				log_indentation_down;				
@@ -1313,21 +1341,8 @@ package body et_kicad is
 														text_in => to_string (tmp_prefix) & "0", -- #FLG0
 														allow_special_character_in_prefix => true)), -- because of the '#'
 
-								-- Since this is a virtual component, we do the prefix character check
-								-- against the Kicad specific character set for prefixes. see et_kicad.ads.
-								-- Afterward we validate the prefix. The prefixes for virtual components
-								-- are KiCad specific.
-								prefix			=> validate_prefix ( -- CS: move to check_text_fields
-													check_prefix_characters (
-														prefix => tmp_prefix,
-														characters => component_prefix_characters)
-													),
-								
-								-- The value must be validated before being used further on:
-								value			=> check_value_characters ( -- CS: move to check_text_fields
-													value => type_component_value.to_bounded_string (content (tmp_value)),
-													characters => component_value_characters),
-								
+								prefix			=> tmp_prefix,
+								value			=> type_component_value.to_bounded_string (content (tmp_value)),
 								commissioned	=> et_string_processing.type_date (content (tmp_commissioned)),
 								updated			=> et_string_processing.type_date (content (tmp_updated)),
 								author			=> type_person_name.to_bounded_string (content (tmp_author)),
@@ -1346,22 +1361,8 @@ package body et_kicad is
 							inserted	=> comp_inserted,
 							new_item	=> (
 								appearance		=> sch_pcb,
-
-								-- Since this is a real component. we do the prefix character check 
-								-- against the default character set for prefixes as specified in et_libraries.
-								-- Afterward we validate the prefix. The prefixes for real components are specified
-								-- in the et configuration file (see et_configuration).
-								prefix			=> et_configuration.validate_prefix ( -- CS: move to check_text_fields
-													check_prefix_characters (
-														prefix => tmp_prefix,
-														characters => et_libraries.component_prefix_characters)
-													),
-																	
-								-- The value must be validated before being used further on:
-								value			=> check_value_characters ( -- CS: move to check_text_fields
-													value => type_component_value.to_bounded_string (content (tmp_value)),
-													characters => component_value_characters),
-								
+								prefix			=> tmp_prefix,
+								value			=> type_component_value.to_bounded_string (content (tmp_value)),								
 								commissioned	=> et_string_processing.type_date (content (tmp_commissioned)),
 								updated			=> et_string_processing.type_date (content (tmp_updated)),
 								author			=> type_person_name.to_bounded_string (content (tmp_author)),
