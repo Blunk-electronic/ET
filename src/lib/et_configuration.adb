@@ -187,6 +187,7 @@ package body et_configuration is
 		put_line (configuration_file_handle, "TF " & to_string (TRANSFORMER));
 		put_line (configuration_file_handle, "TP " & to_string (TESTPOINT));
 		put_line (configuration_file_handle, "TH " & to_string (THYRISTOR));
+		put_line (configuration_file_handle, "TR " & to_string (TRIAC));
 		put_line (configuration_file_handle, "TUB" & to_string (TUBE));		
 		--put_line (configuration_file_handle, "W" & to_string (WIRE));
 		put_line (configuration_file_handle, "X  " & to_string (CONNECTOR));

@@ -91,6 +91,7 @@ package et_configuration is
 		SWITCH,					-- push buttons, breakers, makers, rotary encoders, ...
 		TESTPOINT,				-- a point where measurements can be taken
 		THYRISTOR,
+		TRIAC,
 		TUBE,					-- triodes, pentodes, thyratrons, klystrons, ...
 		UNKNOWN					-- not specified
 -- 		WIRE

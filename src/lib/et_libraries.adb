@@ -259,14 +259,6 @@ package body et_libraries is
 		return type_component_purpose.to_string (purpose);
 	end to_string;
 
-	
-	function to_string (packge : in type_component_package_name.bounded_string) return string is
-	-- Returns the given package name as as string.
-	-- CS: provide a parameter that turns the pretext on/off
-	begin
-		return (type_component_package_name.to_string(packge));
-	end to_string;
-	
 	function to_string ( variant : in type_component_variant) return string is
 	-- Returns the given variant as string.
 	-- NOTE: This displays the type_component_variant (see et_libraries.ads).
@@ -533,14 +525,14 @@ package body et_libraries is
 			);
 	end compose_partcode_root;
 	
-	function validate_component_partcode_in_library (
+	procedure validate_component_partcode_in_library (
 	-- Tests if the given partcode of a library component is correct.
 		partcode	: in type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_
 		name		: in type_component_name.bounded_string;			-- 74LS00
 		prefix		: in type_component_prefix.bounded_string;			-- R
 		packge		: in type_component_package_name.bounded_string;	-- S_0805
 		bom			: in type_bom)	-- YES, NO
-		return type_component_partcode.bounded_string is
+		is
 
 		use et_string_processing;
 		use type_component_partcode;
@@ -585,8 +577,6 @@ package body et_libraries is
 -- 				end if;
 
 		end case;
-
-		return partcode;
 	end validate_component_partcode_in_library;
 
 	
@@ -924,6 +914,61 @@ package body et_libraries is
 
 	end validate_component_value;
 
+	function to_string (packge : in type_component_package_name.bounded_string) return string is
+	-- Returns the given package name as string.
+	-- CS: provide a parameter that turns the preamble on/off
+	begin
+		return type_component_package_name.to_string (packge);
+	end to_string;
+		
+	procedure check_package_characters (
+		packge		: in type_component_package_name.bounded_string;
+		characters	: in character_set)
+		is
+	-- Tests if the given package name contains only valid characters as specified
+	-- by given character set.
+	-- Raises exception if invalid character found.
+		use et_string_processing;
+		use type_component_package_name;
+		invalid_character_position : natural := 0;
+	begin
+		invalid_character_position := index (
+			source => packge,
+			set => characters,
+			test => outside);
+
+		if invalid_character_position > 0 then
+			log_indentation_reset;
+			log (message_error & "component package name " & to_string (packge) 
+				 & " has invalid character at position"
+				 & natural'image (invalid_character_position),
+				console => true
+				);
+			raise constraint_error;
+		end if;
+	end check_package_characters;
+	
+	procedure validate_component_package_name (name : in type_component_package_name.bounded_string) is
+	-- Tests if the given component package name meets certain conventions.
+		use type_component_package_name;
+		use et_string_processing;
+		
+		procedure no_package is
+		begin
+			log_indentation_reset;
+			log (message_error & "no package associated !", 
+				console => true);
+			raise constraint_error;
+		end no_package;
+			
+	begin
+		if length (name) > 0 then
+			check_package_characters (name, component_package_characters);
+		else
+			no_package;
+		end if;
+	end validate_component_package_name;
+	
 	function to_string (reference : in type_component_reference) return string is
 	-- Returns the given component reference as string.
 	-- Prepends leading zeros according to reference.id_width.

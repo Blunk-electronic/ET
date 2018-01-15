@@ -1227,7 +1227,58 @@ package body et_kicad is
 				return text;
 			end read_field;
 
+			procedure check_text_fields (log_threshold : in type_log_level) is
+			begin
+				log_indentation_up;
 
+				-- write precheck preamble
+				log ("component " & to_string (tmp_component_name) & " prechecking fields ...", level => log_threshold);
+				log_indentation_up;
+
+				if tmp_appearance = sch_pcb then
+
+					log ("package/footprint", level => log_threshold + 1);
+					validate_component_package_name (
+						type_component_package_name.to_bounded_string (field (
+							line => read_line (
+								line => content (tmp_package), -- bel_ic:S_SO14
+								ifs => latin_1.colon),
+							position => 2))); -- the block after the colon
+
+
+					
+					log ("partcode", level => log_threshold + 1);
+					validate_component_partcode_in_library (
+						-- the content of the partcode field like R_PAC_S_0805_VAL_
+						partcode => type_component_partcode.to_bounded_string (content (tmp_partcode)),
+
+						name => tmp_component_name, -- 74LS00
+						
+						-- the component prefix like LED
+						prefix => tmp_prefix,
+
+						-- The component package name like S_0805 must be extracted from the field text_package.
+						-- The field contains something like bel_ic:S_SO14 . 
+						-- The part after the colon is the package name. The part before the colon is the library
+						-- name which is not of interest here.
+						packge => type_component_package_name.to_bounded_string (field (
+							line => read_line (
+								line => content (tmp_package), -- bel_ic:S_SO14
+								ifs => latin_1.colon),
+							position => 2)), -- the block after the colon
+
+						-- the BOM status
+						bom => type_bom'value (content (tmp_bom))
+						);
+
+				end if;
+				
+				log_indentation_down;
+				log_indentation_down;				
+
+			end check_text_fields;
+
+			
 			procedure insert_component (
 			-- NOTE: This is library related stuff.
 			-- Updates the current library by inserting the component.
@@ -1240,8 +1291,7 @@ package body et_kicad is
 -- 				-- For the logfile write the component name.
 -- 				-- If the component contains more than one unit, write number of units.
 
-				-- CS: do a field precheck (as with schematic components) in a dedicated procedure.
-				-- This would simplify the following stuff
+				check_text_fields (log_threshold + 1);
 
 				case tmp_appearance is
 					when sch =>
@@ -1267,14 +1317,14 @@ package body et_kicad is
 								-- against the Kicad specific character set for prefixes. see et_kicad.ads.
 								-- Afterward we validate the prefix. The prefixes for virtual components
 								-- are KiCad specific.
-								prefix			=> validate_prefix (
+								prefix			=> validate_prefix ( -- CS: move to check_text_fields
 													check_prefix_characters (
 														prefix => tmp_prefix,
 														characters => component_prefix_characters)
 													),
 								
 								-- The value must be validated before being used further on:
-								value			=> check_value_characters (
+								value			=> check_value_characters ( -- CS: move to check_text_fields
 													value => type_component_value.to_bounded_string (content (tmp_value)),
 													characters => component_value_characters),
 								
@@ -1301,14 +1351,14 @@ package body et_kicad is
 								-- against the default character set for prefixes as specified in et_libraries.
 								-- Afterward we validate the prefix. The prefixes for real components are specified
 								-- in the et configuration file (see et_configuration).
-								prefix			=> et_configuration.validate_prefix (
+								prefix			=> et_configuration.validate_prefix ( -- CS: move to check_text_fields
 													check_prefix_characters (
 														prefix => tmp_prefix,
 														characters => et_libraries.component_prefix_characters)
 													),
 																	
 								-- The value must be validated before being used further on:
-								value			=> check_value_characters (
+								value			=> check_value_characters ( -- CS: move to check_text_fields
 													value => type_component_value.to_bounded_string (content (tmp_value)),
 													characters => component_value_characters),
 								
@@ -1325,32 +1375,7 @@ package body et_kicad is
 								datasheet		=> type_component_datasheet.to_bounded_string (content (tmp_datasheet)),
 								purpose			=> type_component_purpose.to_bounded_string (content (tmp_purpose)),
 
-								-- The partcode is composed of prefix and package name and must be validated
-								-- before being assigned to the component.
-								partcode		=> --type_component_partcode.to_bounded_string (content (tmp_partcode)),
-
-									validate_component_partcode_in_library (
-										-- the content of the partcode field like R_PAC_S_0805_VAL_
-										partcode => type_component_partcode.to_bounded_string (content (tmp_partcode)),
-
-										name => tmp_component_name, -- 74LS00
-										
-										-- the component prefix like LED
-										prefix => tmp_prefix,
-
-										-- The component package name like S_0805 must be extracted from the field text_package.
-										-- The field contains something like bel_ic:S_SO14 . 
-										-- The part after the colon is the package name. The part before the colon is the library
-										-- name which is not of interest here.
-										packge => type_component_package_name.to_bounded_string (field (
-											line => read_line (
-												line => content (tmp_package), -- bel_ic:S_SO14
-												ifs => latin_1.colon),
-											position => 2)), -- the block after the colon
-
-										-- the BOM status
-										bom => type_bom'value (content (tmp_bom))
-										),
+								partcode		=> type_component_partcode.to_bounded_string (content (tmp_partcode)),
 
 								bom				=> type_bom'value (content (tmp_bom))
 								)
