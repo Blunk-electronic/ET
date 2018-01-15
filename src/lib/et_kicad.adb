@@ -1933,7 +1933,9 @@ package body et_kicad is
 					-- for the log:
 					write_text_properies (type_text (tmp_value), log_threshold + 1);
 
-				-- If we have a footprint field like "F2 "" 0 -100 50 H V C CNN"
+				-- If we have a footprint field like "F2 "bel_resistors:S_0805" 0 -100 50 H V C CNN"
+				-- NOTE: the part before the colon is the containing library. The part after the colon 
+				-- is the actual footprint/package name.
 				when packge =>
 				
 					tmp_package := read_field (meaning => packge);
@@ -4325,7 +4327,7 @@ package body et_kicad is
 				text_commissioned 	: type_text (meaning => commissioned);
 				text_updated		: type_text (meaning => updated);
 				text_author			: type_text (meaning => author);
-				text_package		: type_text (meaning => packge); -- like "SOT23"
+				text_package		: type_text (meaning => packge); -- like "bel_primiteves:S_SOT23"
 				text_datasheet		: type_text (meaning => datasheet); -- might be useful for some special components
 				text_purpose		: type_text (meaning => purpose); -- to be filled in schematic later by the user
 				text_partcode		: type_text (meaning => partcode); -- like "R_PAC_S_0805_VAL_"
@@ -4510,15 +4512,22 @@ package body et_kicad is
 							if not text_partcode_found then
 								missing_field (et_libraries.partcode);
 							else
-								validate_schematic_partcode (
+								validate_component_partcode_in_schematic (
 									-- the content of the partcode field like R_PAC_S_0805_VAL_100R
 									partcode => type_component_partcode.to_bounded_string (content (text_partcode)),
 
 									-- the component reference like R45
 									reference => reference,
 
-									-- the component package name like S_0805
-									packge => type_component_package_name.to_bounded_string (content (text_package)),
+									-- The component package name like S_0805 must be extracted from the field text_package.
+									-- The field contains something like bel_ic:S_SO14 . 
+									-- The part after the colon is the package name. The part before the colon is the library
+									-- name which is not of interest here.
+									packge => type_component_package_name.to_bounded_string (field (
+										line => read_line (
+											line => content (text_package), -- bel_ic:S_SO14
+											ifs => latin_1.colon),
+										position => 2)), -- the block after the colon
 
 									-- the content of the value field like 200R or 10u
 									value => type_component_value.to_bounded_string (content (text_value)),

@@ -416,9 +416,18 @@ package et_libraries is
 
 	-- component package names like "SOT23" or "TO220" are stored in bounded strings:
 	-- Kicad refers to them as "footprints".
+	component_package_characters : character_set := to_set 
+		(ranges => (('A','Z'),('0','9'))) 
+		--or to_set('-') 
+		or to_set('_'); 
+
 	component_package_name_length_max : constant positive := 100;
 	package type_component_package_name is new generic_bounded_length(component_package_name_length_max);
 	--use type_component_package_name;
+
+	-- CS: procedure validate_component_package_name
+	-- CS: function to_string (package_name : in type_component_package_name.bounded_string) return string;
+	-- Returns the given package name as string.
 
 	-- The component partcode is something like "R_PAC_S_0805_VAL_100R_PMAX_125_TOL_5"
 	component_partocde_length_max : constant positive := 200;
@@ -434,7 +443,7 @@ package et_libraries is
 	function to_string (partcode : in type_component_partcode.bounded_string) return string;
 	-- Returns the given partcode as string.
 	
-	-- Components that require operator interaction like connectors, LEDs or switches have purpose.
+	-- Components that require operator interaction like connectors, LEDs or switches must have a purpose assigned.
 	-- Example: The purpose of connector X44 is "power in". The purpose of LED5 is "system fail":
 	component_purpose_length_max : constant positive := 100;
 	package type_component_purpose is new generic_bounded_length (component_purpose_length_max);
@@ -695,14 +704,14 @@ package et_libraries is
 	function to_string (bom : in type_bom) return string;
 	-- Returns the given bom variable as string.
 
-	procedure validate_library_partcode (
+	procedure validate_component_partcode_in_library (
 	-- Tests if the given partcode of a library component is correct.
 		partcode	: in type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_
 		prefix		: in type_component_prefix.bounded_string;			-- R
 		packge		: in type_component_package_name.bounded_string;	-- S_0805
 		bom			: in type_bom);	-- YES, NO
 	
-	procedure validate_schematic_partcode (
+	procedure validate_component_partcode_in_schematic (
 	-- Tests if the given partcode of a schematic component is correct.
 		partcode	: in type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_100R
 		reference	: in type_component_reference;						-- R45

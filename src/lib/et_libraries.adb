@@ -509,7 +509,31 @@ package body et_libraries is
 		return to_lower (type_bom'image (bom));
 	end to_string;
 
-	procedure validate_library_partcode (
+	function compose_partcode_root (
+		prefix		: in type_component_prefix.bounded_string;			-- R
+		packge		: in type_component_package_name.bounded_string;	-- S_0805
+		value 		: in type_component_value.bounded_string := type_component_value.to_bounded_string ("")) -- 100R
+		return type_component_partcode.bounded_string is
+
+		use type_component_prefix;
+		use type_component_package_name;
+		use type_component_value;
+		use type_component_partcode;
+	begin
+		return to_bounded_string (
+			to_string (prefix)			-- R
+			& partcode_separator		-- _
+			& partcode_keyword_package	-- PAC
+			& partcode_separator		-- _
+			& to_string (packge)		-- S_0805
+			& partcode_separator		-- _
+			& partcode_keyword_value	-- VAL
+			& partcode_separator		-- _
+			& to_string (value)			-- 100R
+			);
+	end compose_partcode_root;
+	
+	procedure validate_component_partcode_in_library (
 	-- Tests if the given partcode of a library component is correct.
 		partcode	: in type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_
 		prefix		: in type_component_prefix.bounded_string;			-- R
@@ -518,9 +542,10 @@ package body et_libraries is
 		is
 	begin
 		null; -- CS
-	end validate_library_partcode;
-		
-	procedure validate_schematic_partcode (
+	end validate_component_partcode_in_library;
+
+	
+	procedure validate_component_partcode_in_schematic (
 	-- Tests if the given partcode of a schematic component is correct.
 		partcode	: in type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_100R
 		reference	: in type_component_reference;						-- R45
@@ -531,14 +556,15 @@ package body et_libraries is
 		use et_string_processing;
 		use type_component_partcode;
 
+		partcode_expect : type_component_partcode.bounded_string;
+		
 		procedure partcode_invalid is
 		begin
 			log_indentation_reset;
 			log (message_error & "component " & to_string (reference)
-				 & " partcode " & to_string (partcode) & " invalid !",
-				console => true
-				);
-			-- CS: show package, value and partcode as it should be
+				 & " partcode invalid !", console => true);
+			log ("found    '" & to_string (partcode) & "'", console => true);
+			log ("expected '" & to_string (partcode_expect) & "'", console => true);
 			raise constraint_error;
 		end partcode_invalid;
 
@@ -552,14 +578,25 @@ package body et_libraries is
 
 		
 		place : natural;
-	begin -- validate_schematic_partcode
+
+
+		
+	begin -- validate_component_partcode_in_schematic
 
 		-- The partcode must be valid for mounted components only.
 		case bom is
 			when YES =>
-		
-				-- Step #1: we expect the prefix at the first position 
-				place := index (partcode, to_string (reference.prefix), from => 1);
+
+				-- Compose the root of the partcode as it should be.
+				-- The root is usually something like R_PAC_S_0805_VAL_ which contains
+				-- the given prefix, package name and - if provided - the value.
+				partcode_expect := compose_partcode_root (
+					prefix => reference.prefix,
+					packge => packge,
+					value => value);
+
+				-- the root of the partcode must be the very first part of the given partcode.
+				place := index (partcode, to_string (partcode_expect));
 				if place /= 1 then
 					partcode_invalid;
 				end if;
@@ -572,7 +609,7 @@ package body et_libraries is
 -- 				end if;
 
 		end case;
-	end validate_schematic_partcode;
+	end validate_component_partcode_in_schematic;
 
 	
 	procedure validate_component_value (
@@ -813,6 +850,7 @@ package body et_libraries is
 			
 			-- For certain component categories there is no need for a value. The properties of such parts
 			-- are available via the part code.
+			-- NOTE: Some CAE tools insist on a value. KiCad does. EAGLE does not.
 			-- For other categories (R, L, C, ...) the value is essential for reading and understanding the schematic.
 			case appearance is
 				when sch_pcb =>
