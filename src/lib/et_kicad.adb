@@ -4484,8 +4484,8 @@ package body et_kicad is
 			
 				-- These are the "field found" flags. They signal if a particular text field has been found.
 				-- They are evaluated when a component section is read completely, before assembling the unit/component.
-				text_reference_found	: boolean := false;
-				text_value_found		: boolean := false;
+				text_reference_found	: boolean := false; -- CS: rename them to field_reference_found
+				text_value_found		: boolean := false; -- CS: rename to field_value_found ...
 				text_commissioned_found	: boolean := false;
 				text_updated_found		: boolean := false;
 				text_author_found		: boolean := false;
@@ -4495,9 +4495,9 @@ package body et_kicad is
 				text_partcode_found		: boolean := false;
 				text_bom_found			: boolean := false;
 
-				text_reference		: type_text (meaning => et_libraries.reference);
-				text_value			: type_text (meaning => value);
-				text_commissioned 	: type_text (meaning => commissioned);
+				field_reference		: type_text (meaning => et_libraries.reference);
+				field_value			: type_text (meaning => value);
+				field_commissioned 	: type_text (meaning => commissioned);
 				text_updated		: type_text (meaning => updated);
 				text_author			: type_text (meaning => author);
 				text_package		: type_text (meaning => packge); -- like "bel_primiteves:S_SOT23"
@@ -4593,11 +4593,11 @@ package body et_kicad is
 						-- P 4100 4000
 						-- F 0 "IC1" H 4100 4050 50  0000 C BIB <- text_reference
 						
-						if et_libraries.to_string (reference) /= et_libraries.content (text_reference) then
+						if et_libraries.to_string (reference) /= et_libraries.content (field_reference) then
 							log_indentation_reset;
 							log (message_error & "reference mismatch ! Header reads " 
 								 & et_libraries.to_string (reference) & " but field contains " 
-								 & et_libraries.content (text_reference),
+								 & et_libraries.content (field_reference),
 								console => true);
 							raise constraint_error;
 						end if;
@@ -4612,7 +4612,7 @@ package body et_kicad is
 						validate_component_value (
 														 
 							-- the content of the value field like 200R or 10u
-							value => type_component_value.to_bounded_string (content (text_value)), 
+							value => type_component_value.to_bounded_string (content (field_value)), 
 								
 							-- the component reference such as R4 or IC34
 							reference => reference,
@@ -4627,7 +4627,7 @@ package body et_kicad is
 					else
 						-- The commissioned time must be checked for plausibility and syntax.
 						-- The string length is indirecty checked on converting the field content to derived type_date.
-						commissioned := et_string_processing.type_date (et_libraries.content (text_commissioned));
+						commissioned := et_string_processing.type_date (et_libraries.content (field_commissioned));
 						if not et_string_processing.date_valid (commissioned) 
 							then raise constraint_error;
 						end if;
@@ -4706,7 +4706,7 @@ package body et_kicad is
 										position => 2)), -- the block after the colon
 
 									-- the content of the value field like 200R or 10u
-									value => type_component_value.to_bounded_string (content (text_value)),
+									value => type_component_value.to_bounded_string (content (field_value)),
 
 									-- the BOM status
 									bom => type_bom'value (content (text_bom))
@@ -4889,8 +4889,8 @@ package body et_kicad is
 									library_name	=> generic_name_to_library (generic_name_in_lbr, reference),
 									name_in_library	=> generic_name_in_lbr,
 									
-									value 			=> type_component_value.to_bounded_string (content (text_value)),
-									commissioned 	=> type_date (et_libraries.content (text_commissioned)),
+									value 			=> type_component_value.to_bounded_string (content (field_value)),
+									commissioned 	=> type_date (et_libraries.content (field_commissioned)),
 									updated 		=> type_date (et_libraries.content (text_updated)),
 									author 			=> type_person_name.to_bounded_string (content (text_author)),
 
@@ -4918,8 +4918,8 @@ package body et_kicad is
 									library_name	=> generic_name_to_library (generic_name_in_lbr, reference),
 									name_in_library	=> generic_name_in_lbr,
 									
-									value			=> type_component_value.to_bounded_string (content (text_value)),
-									commissioned	=> type_date (content (text_commissioned)),
+									value			=> type_component_value.to_bounded_string (content (field_value)),
+									commissioned	=> type_date (content (field_commissioned)),
 									updated			=> type_date (content (text_updated)),
 									author			=> type_person_name.to_bounded_string (content (text_author)),
 
@@ -5031,16 +5031,16 @@ package body et_kicad is
 
 									-- placeholders:
 									-- Convert tmp_component_text_* to a placeholder while maintaining the text meaning.
-									reference		=> (type_text_basic (text_reference)
-														with meaning => text_reference.meaning),
-									value			=> (type_text_basic (text_value)
-														with meaning => text_value.meaning),
+									reference		=> (type_text_basic (field_reference)
+														with meaning => field_reference.meaning),
+									value			=> (type_text_basic (field_value)
+														with meaning => field_value.meaning),
 									updated			=> (type_text_basic (text_updated)
 														with meaning => text_updated.meaning),
 									author			=> (type_text_basic (text_author)
 														with meaning => text_author.meaning),
-									commissioned	=> (type_text_basic (text_commissioned)
-														with meaning => text_commissioned.meaning)),
+									commissioned	=> (type_text_basic (field_commissioned)
+														with meaning => field_commissioned.meaning)),
 								log_threshold => log_threshold + 1);
 												
 
@@ -5060,10 +5060,10 @@ package body et_kicad is
 
 									-- placeholders:
 									-- Convert tmp_component_text_* to a placeholder while maintaining the text meaning.
-									reference		=> (type_text_basic (text_reference)
-														with meaning => text_reference.meaning),
-									value			=> (type_text_basic (text_value)
-														with meaning => text_value.meaning),
+									reference		=> (type_text_basic (field_reference)
+														with meaning => field_reference.meaning),
+									value			=> (type_text_basic (field_value)
+														with meaning => field_value.meaning),
 									packge			=> (type_text_basic (text_package)
 														with meaning => text_package.meaning),
 									datasheet		=> (type_text_basic (text_datasheet)
@@ -5076,8 +5076,8 @@ package body et_kicad is
 														with meaning => text_updated.meaning),
 									author			=> (type_text_basic (text_author)
 														with meaning => text_author.meaning),
-									commissioned	=> (type_text_basic (text_commissioned)
-														with meaning => text_commissioned.meaning),
+									commissioned	=> (type_text_basic (field_commissioned)
+														with meaning => field_commissioned.meaning),
 									bom				=> (type_text_basic (text_bom)
 														with meaning => text_bom.meaning)),
 								log_threshold => log_threshold + 1);
@@ -5367,11 +5367,13 @@ package body et_kicad is
 						case type_component_field_id'value (field (et_kicad.line,2)) is
 							when component_field_reference =>
 								text_reference_found	:= true;
-								text_reference 			:= to_text;
+								field_reference 		:= to_text;
+								-- CS: validate prefix
 
 							when component_field_value =>
 								text_value_found		:= true;
-								text_value 				:= to_text;
+								field_value 			:= to_text;
+								-- CS: check_value_characters. no need for validate_component_value to do that.
 								
 							when component_field_footprint =>
 								text_packge_found		:= true;
@@ -5391,11 +5393,13 @@ package body et_kicad is
 								
 							when component_field_commissioned =>
 								text_commissioned_found	:= true;
-								text_commissioned 		:= to_text;
+								field_commissioned 		:= to_text;
+								-- CS: check_date_characters
 								
 							when component_field_updated =>
 								text_updated_found	:= true;
 								text_updated 			:= to_text;
+								-- CS: check_date_characters
 								
 							when component_field_author =>
 								text_author_found		:= true;
