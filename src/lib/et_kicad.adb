@@ -591,18 +591,19 @@ package body et_kicad is
 			tmp_unit_add_level	: type_unit_add_level := type_unit_add_level'first;
 			tmp_unit_global		: boolean := false; -- specifies if a unit harbors component wide pins (such as power supply)
 			
-			tmp_reference		: type_text (meaning => reference); -- CS: should be field_prefix as it contains just the prefix 
-			tmp_value			: type_text (meaning => value);
-			tmp_commissioned	: type_text (meaning => commissioned);
-			tmp_updated			: type_text (meaning => updated);
-			tmp_author			: type_text (meaning => author);
-			tmp_package			: type_text (meaning => packge);
-			tmp_datasheet		: type_text (meaning => datasheet);
-			tmp_purpose			: type_text (meaning => purpose);
-			tmp_partcode		: type_text (meaning => partcode);
-			tmp_bom				: type_text (meaning => bom);
+			field_reference		: type_text (meaning => reference); -- CS: should be field_prefix as it contains just the prefix 
+			field_value			: type_text (meaning => value);
+			field_commissioned	: type_text (meaning => commissioned);
+			field_updated		: type_text (meaning => updated);
+			field_author		: type_text (meaning => author);
+			field_package		: type_text (meaning => packge);
+			field_datasheet		: type_text (meaning => datasheet);
+			field_purpose		: type_text (meaning => purpose);
+			field_partcode		: type_text (meaning => partcode);
+			field_bom			: type_text (meaning => bom);
 
-			-- "field found flags"
+			-- "field found flags" go true once the corresponding field was detected
+			-- Evaluated by procedure check_text_fields.
 			field_prefix_found			: boolean := false;
 			field_value_found			: boolean := false;
 			field_commissioned_found	: boolean := false;
@@ -1270,10 +1271,10 @@ package body et_kicad is
 
 				log ("value", level => log_threshold + 1);				
 				if not field_value_found then
-					missing_field (tmp_value.meaning);
+					missing_field (field_value.meaning);
 				else
 					check_value_characters (
-						value => type_component_value.to_bounded_string (content (tmp_value)),
+						value => type_component_value.to_bounded_string (content (field_value)),
 						characters => component_value_characters);
 				end if;
 					
@@ -1296,14 +1297,14 @@ package body et_kicad is
 						validate_component_package_name (
 							type_component_package_name.to_bounded_string (field (
 								line => read_line (
-									line => content (tmp_package), -- bel_ic:S_SO14
+									line => content (field_package), -- bel_ic:S_SO14
 									ifs => latin_1.colon),
 								position => 2))); -- the block after the colon
 						
 						log ("partcode", level => log_threshold + 1);
 						validate_component_partcode_in_library (
 							-- the content of the partcode field like R_PAC_S_0805_VAL_
-							partcode => type_component_partcode.to_bounded_string (content (tmp_partcode)),
+							partcode => type_component_partcode.to_bounded_string (content (field_partcode)),
 
 							name => tmp_component_name, -- 74LS00
 							
@@ -1316,12 +1317,12 @@ package body et_kicad is
 							-- name which is not of interest here.
 							packge => type_component_package_name.to_bounded_string (field (
 								line => read_line (
-									line => content (tmp_package), -- bel_ic:S_SO14
+									line => content (field_package), -- bel_ic:S_SO14
 									ifs => latin_1.colon),
 								position => 2)), -- the block after the colon
 
 							-- the BOM status
-							bom => type_bom'value (content (tmp_bom))
+							bom => type_bom'value (content (field_bom))
 							);
 
 						
@@ -1380,10 +1381,10 @@ package body et_kicad is
 														allow_special_character_in_prefix => true)), -- because of the '#'
 
 								prefix			=> tmp_prefix,
-								value			=> type_component_value.to_bounded_string (content (tmp_value)),
-								commissioned	=> et_string_processing.type_date (content (tmp_commissioned)),
-								updated			=> et_string_processing.type_date (content (tmp_updated)),
-								author			=> type_person_name.to_bounded_string (content (tmp_author)),
+								value			=> type_component_value.to_bounded_string (content (field_value)),
+								commissioned	=> et_string_processing.type_date (content (field_commissioned)),
+								updated			=> et_string_processing.type_date (content (field_updated)),
+								author			=> type_person_name.to_bounded_string (content (field_author)),
 								units_internal	=> type_units_internal.empty_map,
 								units_external	=> type_units_external.empty_map
 								)
@@ -1400,10 +1401,10 @@ package body et_kicad is
 							new_item	=> (
 								appearance		=> sch_pcb,
 								prefix			=> tmp_prefix,
-								value			=> type_component_value.to_bounded_string (content (tmp_value)),								
-								commissioned	=> et_string_processing.type_date (content (tmp_commissioned)),
-								updated			=> et_string_processing.type_date (content (tmp_updated)),
-								author			=> type_person_name.to_bounded_string (content (tmp_author)),
+								value			=> type_component_value.to_bounded_string (content (field_value)),
+								commissioned	=> et_string_processing.type_date (content (field_commissioned)),
+								updated			=> et_string_processing.type_date (content (field_updated)),
+								author			=> type_person_name.to_bounded_string (content (field_author)),
 								units_internal	=> type_units_internal.empty_map,
 								units_external	=> type_units_external.empty_map,
 
@@ -1411,12 +1412,12 @@ package body et_kicad is
 								-- NOTE: kicad does not know about package variants (as EAGLE does). So the variants list here is empty.
 								-- Instead we provide the so called package filter, which is empty for the moment.
 								package_filter	=> type_package_filter.empty_set,
-								datasheet		=> type_component_datasheet.to_bounded_string (content (tmp_datasheet)),
-								purpose			=> type_component_purpose.to_bounded_string (content (tmp_purpose)),
+								datasheet		=> type_component_datasheet.to_bounded_string (content (field_datasheet)),
+								purpose			=> type_component_purpose.to_bounded_string (content (field_purpose)),
 
-								partcode		=> type_component_partcode.to_bounded_string (content (tmp_partcode)),
+								partcode		=> type_component_partcode.to_bounded_string (content (field_partcode)),
 
-								bom				=> type_bom'value (content (tmp_bom))
+								bom				=> type_bom'value (content (field_bom))
 								)
 							);
 
@@ -1662,19 +1663,19 @@ package body et_kicad is
 					-- The content (in this example "IC") is not relevant here as it applies for the whole component.
 					-- We convert the text field downward to a type_text_basic (which strips off the content) first.
 					-- Then we convert the type_text_basic upward to type_text_placeholder by providing the meaning:
-					unit.symbol.reference	:= (type_text_basic (tmp_reference)		with meaning => reference);
-					unit.symbol.value		:= (type_text_basic (tmp_value)			with meaning => value);
-					unit.symbol.commissioned:= (type_text_basic (tmp_commissioned)	with meaning => commissioned);
-					unit.symbol.updated		:= (type_text_basic (tmp_updated)		with meaning => updated);
-					unit.symbol.author		:= (type_text_basic (tmp_author)		with meaning => author);
+					unit.symbol.reference	:= (type_text_basic (field_reference)		with meaning => reference);
+					unit.symbol.value		:= (type_text_basic (field_value)			with meaning => value);
+					unit.symbol.commissioned:= (type_text_basic (field_commissioned)	with meaning => commissioned);
+					unit.symbol.updated		:= (type_text_basic (field_updated)			with meaning => updated);
+					unit.symbol.author		:= (type_text_basic (field_author)			with meaning => author);
 
 					case unit.symbol.appearance is
 						when sch_pcb =>
-							unit.symbol.packge		:= (type_text_basic (tmp_package)	with meaning => packge);
-							unit.symbol.datasheet	:= (type_text_basic (tmp_datasheet)	with meaning => datasheet);
-							unit.symbol.purpose		:= (type_text_basic (tmp_purpose)	with meaning => purpose);
-							unit.symbol.partcode	:= (type_text_basic (tmp_partcode)	with meaning => partcode);
-							unit.symbol.bom			:= (type_text_basic (tmp_bom)		with meaning => bom);
+							unit.symbol.packge		:= (type_text_basic (field_package)		with meaning => packge);
+							unit.symbol.datasheet	:= (type_text_basic (field_datasheet)	with meaning => datasheet);
+							unit.symbol.purpose		:= (type_text_basic (field_purpose)		with meaning => purpose);
+							unit.symbol.partcode	:= (type_text_basic (field_partcode)	with meaning => partcode);
+							unit.symbol.bom			:= (type_text_basic (field_bom)			with meaning => bom);
 						when others => null;
 					end case;
 				end set;
@@ -1974,7 +1975,7 @@ package body et_kicad is
 
 			procedure read_field (line : in type_fields_of_line) is
 			-- NOTE: This is library related stuff.
-			-- Reads the text field of a component in a set of temporarily variables tmp_reference, tmp_value, ...
+			-- Reads the text field of a component in a set of temporarily variables field_reference, field_value, ...
 			-- Sets the "field found flag" according to the field being detected.
 			-- Text fields look like:
 			-- F0 "#PWR" 0 -200 50 H I C CNN
@@ -2009,17 +2010,17 @@ package body et_kicad is
 						end if;
 
 						field_prefix_found := true;
-						tmp_reference := read_field (meaning => reference);
+						field_reference := read_field (meaning => reference);
 						-- for the log:
-						write_text_properies (type_text (tmp_reference), log_threshold + 1);
+						write_text_properies (type_text (field_reference), log_threshold + 1);
 
 					-- If we have a value field like "F1 "74LS00" 0 -100 50 H V C CNN"
 					when value =>
 						field_value_found := true;
-						tmp_value := read_field (meaning => value);
+						field_value := read_field (meaning => value);
 						
 						-- for the log:
-						write_text_properies (type_text (tmp_value), log_threshold + 1);
+						write_text_properies (type_text (field_value), log_threshold + 1);
 
 					-- If we have a footprint field like "F2 "bel_resistors:S_0805" 0 -100 50 H V C CNN"
 					-- NOTE: the part before the colon is the containing library. The part after the colon 
@@ -2027,17 +2028,17 @@ package body et_kicad is
 					when packge =>
 
 						field_package_found := true;
-						tmp_package := read_field (meaning => packge);
+						field_package := read_field (meaning => packge);
 						-- for the log:
-						write_text_properies (type_text (tmp_package), log_threshold + 1);
+						write_text_properies (type_text (field_package), log_threshold + 1);
 
 					-- If we have a datasheet field like "F3 "" 0 -100 50 H V C CNN"
 					when datasheet =>
 
 						field_datasheet_found := true;
-						tmp_datasheet := read_field (meaning => datasheet);
+						field_datasheet := read_field (meaning => datasheet);
 						-- for the log:
-						write_text_properies (type_text (tmp_datasheet), log_threshold + 1);
+						write_text_properies (type_text (field_datasheet), log_threshold + 1);
 
 					-- Other mandatory fields like function and partcode are detected by F4 and F5 
 					-- (not by subfield #10 !) So F4 enforces a function, F5 enforces a partcode.
@@ -2049,9 +2050,9 @@ package body et_kicad is
 					
 						if to_lower (strip_quotes (field (line,10))) = to_lower (type_text_meaning'image (purpose)) then
 							field_purpose_found := true;
-							tmp_purpose := read_field (meaning => purpose);
+							field_purpose := read_field (meaning => purpose);
 							-- for the log:
-							write_text_properies (type_text (tmp_purpose), log_threshold + 1);
+							write_text_properies (type_text (field_purpose), log_threshold + 1);
 							-- basic_text_check(fnction); -- CS
 						else
 							invalid_field (line);
@@ -2064,9 +2065,9 @@ package body et_kicad is
 					
 						if to_lower (strip_quotes(field (line,10))) = to_lower (type_text_meaning'image (partcode)) then
 							field_partcode_found := true;
-							tmp_partcode := read_field (meaning => partcode);
+							field_partcode := read_field (meaning => partcode);
 							-- for the log:
-							write_text_properies (type_text (tmp_partcode), log_threshold + 1);
+							write_text_properies (type_text (field_partcode), log_threshold + 1);
 							-- basic_text_check(partcode); -- CS
 						else
 							invalid_field (line);
@@ -2079,9 +2080,9 @@ package body et_kicad is
 					
 						if to_lower (strip_quotes(field (line,10))) = to_lower (type_text_meaning'image (commissioned)) then
 							field_commissioned_found := true;
-							tmp_commissioned := read_field (meaning => commissioned);
+							field_commissioned := read_field (meaning => commissioned);
 							-- for the log:
-							write_text_properies (type_text (tmp_commissioned), log_threshold + 1);
+							write_text_properies (type_text (field_commissioned), log_threshold + 1);
 							-- basic_text_check(commissioned); -- CS
 						else
 							invalid_field (line);
@@ -2094,9 +2095,9 @@ package body et_kicad is
 					
 						if to_lower (strip_quotes(field (line,10))) = to_lower (type_text_meaning'image (updated)) then
 							field_updated_found := true;
-							tmp_updated := read_field (meaning => updated);
+							field_updated := read_field (meaning => updated);
 							-- for the log:
-							write_text_properies (type_text (tmp_updated), log_threshold + 1);
+							write_text_properies (type_text (field_updated), log_threshold + 1);
 							-- basic_text_check(updated); -- CS
 						else
 							invalid_field (line);
@@ -2109,9 +2110,9 @@ package body et_kicad is
 					
 						if to_lower (strip_quotes(field (line,10))) = to_lower (type_text_meaning'image (author)) then
 							field_author_found := true;
-							tmp_author := read_field (meaning => author);
+							field_author := read_field (meaning => author);
 							-- for the log:
-							write_text_properies (type_text (tmp_author), log_threshold + 1);
+							write_text_properies (type_text (field_author), log_threshold + 1);
 							-- basic_text_check(author); -- CS
 						else
 							invalid_field (line);
@@ -2124,9 +2125,9 @@ package body et_kicad is
 					
 						if to_lower (strip_quotes (field (line,10))) = to_lower (type_text_meaning'image (bom)) then
 							field_bom_found := true;
-							tmp_bom := read_field (meaning => bom);
+							field_bom := read_field (meaning => bom);
 							-- for the log:
-							write_text_properies (type_text (tmp_bom), log_threshold + 1);
+							write_text_properies (type_text (field_bom), log_threshold + 1);
 							-- basic_text_check (bom); -- CS
 						else
 							invalid_field (line);
