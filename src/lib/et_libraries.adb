@@ -495,9 +495,29 @@ package body et_libraries is
 	function to_string (bom : in type_bom) return string is
 	-- Returns the given bom variable as string.	
 	begin
-		return to_lower (type_bom'image (bom));
+		return type_bom'image (bom);
 	end to_string;
 
+	procedure validate_bom_status (text : in string) is
+	-- Validates BOM status. Case sensitive !
+		use et_string_processing;
+	begin
+		if text = type_bom'image (YES) then
+			null;
+		elsif text = type_bom'image (NO) then
+			null;
+		else
+			log_indentation_reset;
+			log (message_error & "BOM status '"
+					& text & "' invalid !" 
+					& " Must be either "
+					& to_string (YES) & " or "
+					& to_string (NO) & " !",
+				console => true);
+			raise constraint_error;
+		end if;
+	end validate_bom_status;
+	
 	function compose_partcode_root (
 		prefix		: in type_component_prefix.bounded_string;			-- R
 		packge		: in type_component_package_name.bounded_string;	-- S_0805

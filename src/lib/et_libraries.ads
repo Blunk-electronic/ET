@@ -712,6 +712,9 @@ package et_libraries is
 	function to_string (bom : in type_bom) return string;
 	-- Returns the given bom variable as string.
 
+	procedure validate_bom_status (text : in string);
+	-- Validates BOM status. Case sensitive !	
+	
 	procedure validate_component_partcode_in_library (
 	-- Tests if the given partcode of a library component is correct.
 		partcode	: in type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_

@@ -146,8 +146,7 @@ package body et_kicad is
 			raise constraint_error;
 		end if;
 	end validate_prefix;
-		
-	
+			
 	function to_point (x_in, y_in : in string) return type_2d_point is
 		point : type_2d_point;
 		x : type_distance_xy;
@@ -625,6 +624,7 @@ package body et_kicad is
 			tmp_draw_port		: type_port;
 			
 			procedure init_temp_variables is
+			-- Resets "field found flags".
 			begin
 				-- CS: init other variables
 				extra_unit_available := false;
@@ -945,7 +945,6 @@ package body et_kicad is
 				-- CS: log properties
 				return arc;
 			end to_arc;
-
 	
 			function to_text (line : in et_string_processing.type_fields_of_line) return type_symbol_text is
 			-- Returns from the given fields of a text a type_symbol_text.
@@ -1007,7 +1006,6 @@ package body et_kicad is
 
 					return a;
 				end to_style;
-
 
 				function to_content (text_in : in string) return type_text_content.bounded_string is
 				-- Replaces tildss in given string by space and returns a type_text_content.bounded_string.
@@ -1200,9 +1198,11 @@ package body et_kicad is
 			function read_field (meaning : in type_text_meaning) return type_text is
 			-- Reads general text field properties from subfields 3..9 and returns a type_text with 
 			-- the meaning as given in parameter "meaning".
-			-- Checks basic properties of text fields (text size, aligment, ...)
+			-- Checks basic properties of text fields (allowed charactes, content, text size, aligment, ...)
 				use et_coordinates;
-				text : type_text(meaning);
+				use et_libraries.type_text_content;
+			
+				text : type_text (meaning);
 
 				function field (line : in type_fields_of_line; position : in positive) return string renames
 					et_string_processing.get_field_from_line;
@@ -1217,7 +1217,25 @@ package body et_kicad is
 				-- 9 : aligment vertical (TNN, CNN, BNN) / font normal, italic, bold, bold_italic (TBI, TBN)
 
 				text.content := type_text_content.to_bounded_string (strip_quotes (field (line,2)));
-				-- CS: check content vs. meaning
+				
+				-- check content vs. meaning. 
+				-- NOTE: Not all fields can be checked here due to missing context with other fields.
+				-- For example: 
+				--   - prefix -> depends on appearance
+				case meaning is
+
+					when VALUE =>
+						check_value_characters (
+							value => type_component_value.to_bounded_string (to_string (text.content)),
+							characters => component_value_characters);
+					
+					when BOM =>
+						validate_bom_status (to_string (text.content));
+
+					
+					when others => null; -- CS
+
+				end case;
 				
 				set_x (text.position, mil_to_distance (mil => field (line,3), warn_on_negative => false));
 				set_y (text.position, mil_to_distance (mil => field (line,4), warn_on_negative => false));
@@ -1253,7 +1271,8 @@ package body et_kicad is
 			procedure check_text_fields (log_threshold : in type_log_level) is
 			-- Tests if all text fields have been found by evaluating the "field found flags".
 			-- Checks the content of the fields.
-
+			-- NOTE: This is library related stuff.
+			
 				procedure missing_field (meaning : in et_libraries.type_text_meaning) is 
 				begin
 					log_indentation_reset;
@@ -1273,9 +1292,7 @@ package body et_kicad is
 				if not field_value_found then
 					missing_field (field_value.meaning);
 				else
-					check_value_characters (
-						value => type_component_value.to_bounded_string (content (field_value)),
-						characters => component_value_characters);
+					null; -- CS
 				end if;
 
 				log ("author", level => log_threshold + 1);				
@@ -2360,7 +2377,7 @@ package body et_kicad is
 											active_section := draw;
 											log ("draw begin", level => log_threshold + 2);
 										else
-											-- Read the text fields in a set of temporarily variables tmp_reference, tmp_value, ...
+											-- Read the text fields in a set of temporarily variables field_prefix, field_value, ...
 											read_field (line);
 										end if;
 
