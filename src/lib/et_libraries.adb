@@ -284,11 +284,10 @@ package body et_libraries is
 	end to_string;
 
 
-	function to_string ( meaning : in type_text_meaning) return string is
-	-- Converts meaning to string.
+	function to_string (meaning : in type_text_meaning) return string is
+	-- Returns the given text meaning as uppercase string.
 	begin
-		-- we can do a direct conversion
-		return to_lower(type_text_meaning'image(meaning));
+		return type_text_meaning'image (meaning);
 	end to_string;
 
 	procedure write_placeholder_properties (

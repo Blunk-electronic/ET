@@ -591,7 +591,7 @@ package body et_kicad is
 			tmp_unit_add_level	: type_unit_add_level := type_unit_add_level'first;
 			tmp_unit_global		: boolean := false; -- specifies if a unit harbors component wide pins (such as power supply)
 			
-			tmp_reference		: type_text (meaning => reference);
+			tmp_reference		: type_text (meaning => reference); -- CS: should be field_prefix as it contains just the prefix 
 			tmp_value			: type_text (meaning => value);
 			tmp_commissioned	: type_text (meaning => commissioned);
 			tmp_updated			: type_text (meaning => updated);
@@ -602,6 +602,18 @@ package body et_kicad is
 			tmp_partcode		: type_text (meaning => partcode);
 			tmp_bom				: type_text (meaning => bom);
 
+			-- "field found flags"
+			field_prefix_found			: boolean := false;
+			field_value_found			: boolean := false;
+			field_commissioned_found	: boolean := false;
+			field_updated_found			: boolean := false;
+			field_author_found			: boolean := false;
+			field_package_found			: boolean := false;
+			field_datasheet_found		: boolean := false;
+			field_purpose_found			: boolean := false;
+			field_partcode_found		: boolean := false;
+			field_bom_found				: boolean := false;
+			
 			-- temporarily used variables to store draw elements (polylines, arcs, pins, ...) 
 			-- before they are added to a unit.
 			tmp_draw_polyline	: type_polyline;
@@ -610,7 +622,6 @@ package body et_kicad is
 			tmp_draw_circle 	: type_circle;
 			tmp_draw_text		: type_symbol_text;
 			tmp_draw_port		: type_port;
--- 			tmp_draw_port_name	: type_port_name.bounded_string; -- CS: maybe not used anymore
 			
 			procedure init_temp_variables is
 			begin
@@ -618,6 +629,18 @@ package body et_kicad is
 				extra_unit_available := false;
 				tmp_unit_add_level := type_unit_add_level'first;
 				tmp_unit_global := false;
+
+				field_prefix_found			:= false;
+				field_value_found			:= false;
+				field_commissioned_found	:= false;
+				field_updated_found			:= false;
+				field_author_found			:= false;
+				field_package_found			:= false;
+				field_datasheet_found		:= false;
+				field_purpose_found			:= false;
+				field_partcode_found		:= false;
+				field_bom_found				:= false;
+				
 			end init_temp_variables;
 
 			function to_swap_level (swap_in : in string)
@@ -1227,18 +1250,33 @@ package body et_kicad is
 			end read_field;
 
 			procedure check_text_fields (log_threshold : in type_log_level) is
-			begin
+			-- Tests if all text fields have been found.
+			-- Checks the content of the fields.
+
+				procedure missing_field (meaning : in et_libraries.type_text_meaning) is 
+				begin
+					log_indentation_reset;
+					log (message_error & "text field " & to_string (meaning) & " missing !",
+						console => true);
+					raise constraint_error;
+				end missing_field;
+
+			begin -- check_text_fields
 				log_indentation_up;
 
 				-- write precheck preamble
 				log ("component " & to_string (tmp_component_name) & " prechecking fields ...", level => log_threshold);
 				log_indentation_up;
 
-				log ("value", level => log_threshold + 1);
-				check_value_characters (
-					value => type_component_value.to_bounded_string (content (tmp_value)),
-					characters => component_value_characters);
-
+				log ("value", level => log_threshold + 1);				
+				if not field_value_found then
+					missing_field (tmp_value.meaning);
+				else
+					check_value_characters (
+						value => type_component_value.to_bounded_string (content (tmp_value)),
+						characters => component_value_characters);
+				end if;
+					
 				case tmp_appearance is
 					when sch_pcb =>
 						-- This is a real component.
@@ -1673,427 +1711,436 @@ package body et_kicad is
 				
 			end set_text_placeholder_properties;
 			
-		procedure read_draw_object (line : in type_fields_of_line) is
-		-- Creates a symbol element from the given line and adds it to the unit indicated by tmp_unit_id.
-			function field (line : in type_fields_of_line; position : in positive) return string renames
-				et_string_processing.get_field_from_line;
-				
-			function to_unit_id (text : in string) return type_unit_id is
-			-- converts a unit id given as string to type_unit_id
-			begin 
-				return type_unit_id'value (text);
-				-- CS: exception handler
-			end to_unit_id;
+			procedure read_draw_object (line : in type_fields_of_line) is
+			-- Creates a symbol element from the given line and adds it to the unit indicated by tmp_unit_id.
+				function field (line : in type_fields_of_line; position : in positive) return string renames
+					et_string_processing.get_field_from_line;
+					
+				function to_unit_id (text : in string) return type_unit_id is
+				-- converts a unit id given as string to type_unit_id
+				begin 
+					return type_unit_id'value (text);
+					-- CS: exception handler
+				end to_unit_id;
 
-			procedure write_scope_of_object (unit : in type_unit_id) is
-			-- Outputs whether the current draw object is common to all units or not.
-			begin
+				procedure write_scope_of_object (unit : in type_unit_id) is
+				-- Outputs whether the current draw object is common to all units or not.
+				begin
+					log_indentation_up;
+				
+					if unit = 0 then
+						log ("scope: common to all units", log_threshold + 1);
+					else
+						log ("scope: unit" & type_unit_id'image (unit), log_threshold + 1);
+					end if;
+					
+					log_indentation_down;
+				end write_scope_of_object;
+
+				draw_object : constant string (1..12) := "draw object ";
+				
+			begin -- read_draw_object
+				--log ("draw object", level => log_threshold + 1);
+				--log_indentation_up;
+
+				-- At a certain log level we report the bare line of a draw object as it is:
+				--log (to_string (line), log_threshold + 2);
+				
+				case type_library_draw'value (field (line,1)) is
+					when P => -- polyline
+						log (draw_object & "polyline", level => log_threshold + 1);
+						-- A polyline is defined by a string like "P 3 0 1 10 0 0 100 50 70 0 N"
+						-- field meaning:
+						--  #2 : number of bends (incl. start and end points) (3)
+						--  #3 : 0 -> common to all units, otherwise unit id it belongs to
+						--  #4 : 1 -> not common to all body styles (alternative representation or DeMorgan) -- CS: verify
+						--  #5 : line width
+						--  #6.. 7  : start point (x/y) (0/0) 
+						--  #8.. 9  : bend point (x/y) (0/100)
+						-- #10..11  : end point (x/y) (50/70)
+						-- last field : fill style N/F/f no fill/foreground/background
+
+						log (to_string (line), level => log_threshold + 2);
+						-- CS: output properites in a human readable form instead.
+						
+						tmp_unit_id := to_unit_id (field (line,3));
+						write_scope_of_object (tmp_unit_id);
+
+						-- compose polyline
+						tmp_draw_polyline := to_polyline (line);
+
+						-- add polyline to unit
+						add_symbol_element (component_libraries, polyline);
+						
+					when S => -- rectangle
+						log (draw_object & "rectangle", level => log_threshold + 1);
+						-- A rectangle is defined by a string like "S -40 -100 40 100 0 1 10 N"
+						-- field meaning;
+						-- #2..5 : start point -40/-100   end point 40/100
+						-- #6 : 0 -> common to all units, otherwise unit id it belongs to
+						-- #7 : 1 -> not common to all body styles (alternative representation or DeMorgan) -- CS: verify
+						-- #8 : line width
+						-- #9 : fill style N/F/f no fill/foreground/background
+
+						log (to_string (line), level => log_threshold + 2);
+						-- CS: output properites in a human readable form instead.
+						
+						tmp_unit_id := to_unit_id (field (line,6));
+						write_scope_of_object (tmp_unit_id);
+
+						-- compose rectangle
+						tmp_draw_rectangle := to_rectangle (line);
+
+						-- add rectangle to unit
+						add_symbol_element (component_libraries, rectangle);
+						
+					when C => -- circle
+						log (draw_object & "circle", level => log_threshold + 1);
+						-- A circle is defined by a string like "C 0 0 112 0 1 23 N"
+						-- field meaning:
+						--  #2..3 : center (x/y)
+						--  #4 : radius
+						--  #5 : 0 -> common to all units, otherwise unit id it belongs to
+						--  #6 : 1 -> not common to all body styles (alternative representation or DeMorgan) -- CS: verify
+						--  #7 : line width (23)
+						--  #8 : fill style N/F/f no fill/foreground/background
+
+						log (to_string (line), level => log_threshold + 2);
+						-- CS: output properites in a human readable form instead.
+						
+						tmp_unit_id := to_unit_id (field (line,5));
+						write_scope_of_object (tmp_unit_id);
+
+						-- compose circle
+						tmp_draw_circle := to_circle (line);
+						
+						-- add circle to unit
+						add_symbol_element (component_libraries, circle);
+						
+					when A => -- arc
+						log (draw_object & "arc", level => log_threshold + 1);
+						-- An arc is defined by a string like "A 150 0 150 1800 900 0 1 33 N 0 0 150 150"
+						-- NOTE: kicad bug: multiply all y values by -1
+						-- field meaning:
+						--  #2..3 : center (x/y) 
+						--  #4 : radius (150)
+						--  #5 : start angle in tenth of degrees (1800)
+						--  #6 : end angle in tenth of degrees (900)
+						--  #7 : 0 -> common to all units, otherwise unit id it belongs to
+						--  #8 : 1 -> not common to all body styles (alternative representation or DeMorgan) -- CS: verify
+						--  #9 : line width 33
+						-- #10 : fill style N/F/f no fill/foreground/background
+						-- #11..12 : start point (x/y)
+						-- #13..14 : end point (x/y)
+
+						log (to_string (line), level => log_threshold + 2);
+						-- CS: output properites in a human readable form instead.
+						
+						tmp_unit_id := to_unit_id (field (line,7));
+						write_scope_of_object (tmp_unit_id);
+
+						-- compose arc
+						tmp_draw_arc := to_arc (line);
+						
+						-- add arc to unit
+						add_symbol_element (component_libraries, arc);
+
+					when T => -- text
+						log (draw_object & "text", level => log_threshold + 1);
+						-- A text is defined by a string like "T 0 0 300 60 0 0 0 leuchtdiode Normal 0 C C"
+						-- Space characters whitin the actual text are replaced by tilde as in this example:
+						-- "T 0 -100 0 60 0 1 0 gate~C Normal 0 C C"
+						-- field meaning:
+						--  #2 : rotation in tenth of degrees (counter clock wise), assumes only values of 0 or 900
+						--  #3..4 : center (x/y)
+						--  #5 : size 
+						--  #6 : ? - unknown CS
+						--  #7 : 0 -> common to all units, otherwise unit id it belongs to
+						--  #8 : 1 -> not common to all body styles (alternative representation or DeMorgan) -- CS: verify
+						--  #9 : content "leuchtdiode"
+						-- #10 : style Nomal/Italic
+						-- #11 : bold on/off (0/1) 
+						-- #12 : alignment left/center/right L/C/R
+						-- #13 : alignment top/center/bottom T/C/B
+
+						log (to_string (line), level => log_threshold + 2);
+						-- CS: output properites in a human readable form instead.
+						
+						tmp_unit_id := to_unit_id (field (line,7));
+						write_scope_of_object (tmp_unit_id);
+
+						-- compose text
+						tmp_draw_text := to_text (line);
+						
+						-- add text to unit
+						add_symbol_element (component_libraries, text);
+						
+					when X => -- port
+						log (draw_object & "port", level => log_threshold + 1);
+						-- A port is defined by a string like "X ~ 1 0 150 52 D 51 50 1 1 P"
+						-- field meaning:
+						--  #2 : port name (~)
+						--  #3 : pin number (1)
+						--  #4..5 : position x/y (0/150)
+						--  #6 : pin length (52)
+						--  #7 : orientation up/down/left/right (U/D/L/R)
+						--  #8 : pin number size (51)
+						--  #9 : port name size (50)
+						-- #10 : 0 -> common to all units, otherwise unit id it belongs to
+						-- #11 : 1 -> not common to all body styles (alternative representation or DeMorgan) -- CS: verify
+						-- #12 : electrical type (direction), see et_kicad.ads for more
+						-- #13 : optional field: pin style, see et_kicad.ads for more
+
+						log (to_string (line), level => log_threshold + 2);
+						-- CS: output properites in a human readable form instead.
+						
+						tmp_unit_id := to_unit_id (field (line,10));
+						write_scope_of_object (tmp_unit_id);
+
+						-- compose port
+						tmp_draw_port := to_port (line);
+	-- 					tmp_draw_port_name := type_port_name.to_bounded_string (field (line,2));
+
+						-- If this is a unit specific port it gets added to the unit. If it applies for the
+						-- whole component, we create an extra unit and insert it there. An extra unit is
+						-- created ONLY ONCE. Successive unit-wide ports are added there.
+						-- An extra unit always has the add level "request" since it harbors the supply ports.
+						-- When adding a port, tmp_unit_id is always greater zero.
+						if tmp_unit_id > 0 then
+							-- add unit specific port to unit
+
+							--log ("unit id " & type_unit_id'image (tmp_unit_id) , level => log_threshold);
+							add_symbol_element (component_libraries, port);
+						else 
+							-- The unit id changes from 0 to tmp_units_total + 1 (one notch above the total number) :
+							tmp_unit_id := type_unit_id (tmp_units_total) + 1;
+							-- If no extra unit has been created yet -> create one with add level "request".
+							if not extra_unit_available then 
+								tmp_unit_add_level := request;
+								tmp_unit_global := true; -- this is a unit with power supply pins that apply for the whole component
+								add_unit (component_libraries);
+								extra_unit_available := true;
+							else
+								null;
+							end if;
+							-- insert the port in the extra unit
+							--log ("unit id " & type_unit_id'image (tmp_unit_id) , level => log_threshold);						
+							add_symbol_element (component_libraries, port);
+						end if;
+				end case;
+
+				--log_indentation_down;
+			end read_draw_object;
+
+			procedure add_footprint (line : in type_fields_of_line) is
+			-- Reads the proposed footprint and adds it to the package filter of the current component.
+				fp : type_package_proposal.bounded_string;
+
+				function field (line : in type_fields_of_line; position : in positive) return string renames
+					et_string_processing.get_field_from_line;
+				
+				procedure do_it (libraries : in out type_libraries.map) is
+				-- Adds the footprint finally.
+					procedure insert_footprint (
+						key			: in type_component_name.bounded_string;
+						component	: in out type_component) is
+					begin
+						component.package_filter.insert (fp);
+					end insert_footprint;
+					
+					procedure locate_component ( 
+						key			: in type_full_library_name.bounded_string;
+						components	: in out type_components.map) is
+					begin
+						components.update_element (comp_cursor, insert_footprint'access);
+					end locate_component;
+
+				begin -- add_footprint
+					libraries.update_element (lib_cursor, locate_component'access);
+				end do_it;
+				
+			begin -- add_footprint
+	-- 			log ("footpint/package filter", level => log_threshold + 1);
 				log_indentation_up;
-			
-				if unit = 0 then
-					log ("scope: common to all units", log_threshold + 1);
-				else
-					log ("scope: unit" & type_unit_id'image (unit), log_threshold + 1);
-				end if;
+
+				fp := type_package_proposal.to_bounded_string (field (line,1));
+				log (type_package_proposal.to_string(fp), level => log_threshold + 1);
+
+				do_it (component_libraries);
 				
 				log_indentation_down;
-			end write_scope_of_object;
-
-			draw_object : constant string (1..12) := "draw object ";
-			
-		begin -- read_draw_object
-			--log ("draw object", level => log_threshold + 1);
-			--log_indentation_up;
-
-			-- At a certain log level we report the bare line of a draw object as it is:
-			--log (to_string (line), log_threshold + 2);
-			
-			case type_library_draw'value (field (line,1)) is
-				when P => -- polyline
-					log (draw_object & "polyline", level => log_threshold + 1);
-					-- A polyline is defined by a string like "P 3 0 1 10 0 0 100 50 70 0 N"
-					-- field meaning:
-					--  #2 : number of bends (incl. start and end points) (3)
-					--  #3 : 0 -> common to all units, otherwise unit id it belongs to
-					--  #4 : 1 -> not common to all body styles (alternative representation or DeMorgan) -- CS: verify
-					--  #5 : line width
-					--  #6.. 7  : start point (x/y) (0/0) 
-					--  #8.. 9  : bend point (x/y) (0/100)
-					-- #10..11  : end point (x/y) (50/70)
-					-- last field : fill style N/F/f no fill/foreground/background
-
-					log (to_string (line), level => log_threshold + 2);
-					-- CS: output properites in a human readable form instead.
-					
-					tmp_unit_id := to_unit_id (field (line,3));
-					write_scope_of_object (tmp_unit_id);
-
-					-- compose polyline
-					tmp_draw_polyline := to_polyline (line);
-
-					-- add polyline to unit
-					add_symbol_element (component_libraries, polyline);
-					
-				when S => -- rectangle
-					log (draw_object & "rectangle", level => log_threshold + 1);
-					-- A rectangle is defined by a string like "S -40 -100 40 100 0 1 10 N"
-					-- field meaning;
-					-- #2..5 : start point -40/-100   end point 40/100
-					-- #6 : 0 -> common to all units, otherwise unit id it belongs to
-					-- #7 : 1 -> not common to all body styles (alternative representation or DeMorgan) -- CS: verify
-					-- #8 : line width
-					-- #9 : fill style N/F/f no fill/foreground/background
-
-					log (to_string (line), level => log_threshold + 2);
-					-- CS: output properites in a human readable form instead.
-					
-					tmp_unit_id := to_unit_id (field (line,6));
-					write_scope_of_object (tmp_unit_id);
-
-					-- compose rectangle
-					tmp_draw_rectangle := to_rectangle (line);
-
-					-- add rectangle to unit
-					add_symbol_element (component_libraries, rectangle);
-					
-				when C => -- circle
-					log (draw_object & "circle", level => log_threshold + 1);
-					-- A circle is defined by a string like "C 0 0 112 0 1 23 N"
-					-- field meaning:
-					--  #2..3 : center (x/y)
-					--  #4 : radius
-					--  #5 : 0 -> common to all units, otherwise unit id it belongs to
-					--  #6 : 1 -> not common to all body styles (alternative representation or DeMorgan) -- CS: verify
-					--  #7 : line width (23)
-					--  #8 : fill style N/F/f no fill/foreground/background
-
-					log (to_string (line), level => log_threshold + 2);
-					-- CS: output properites in a human readable form instead.
-					
-					tmp_unit_id := to_unit_id (field (line,5));
-					write_scope_of_object (tmp_unit_id);
-
-					-- compose circle
-					tmp_draw_circle := to_circle (line);
-					
-					-- add circle to unit
-					add_symbol_element (component_libraries, circle);
-					
-				when A => -- arc
-					log (draw_object & "arc", level => log_threshold + 1);
-					-- An arc is defined by a string like "A 150 0 150 1800 900 0 1 33 N 0 0 150 150"
-					-- NOTE: kicad bug: multiply all y values by -1
-					-- field meaning:
-					--  #2..3 : center (x/y) 
-					--  #4 : radius (150)
-					--  #5 : start angle in tenth of degrees (1800)
-					--  #6 : end angle in tenth of degrees (900)
-					--  #7 : 0 -> common to all units, otherwise unit id it belongs to
-					--  #8 : 1 -> not common to all body styles (alternative representation or DeMorgan) -- CS: verify
-					--  #9 : line width 33
-					-- #10 : fill style N/F/f no fill/foreground/background
-					-- #11..12 : start point (x/y)
-					-- #13..14 : end point (x/y)
-
-					log (to_string (line), level => log_threshold + 2);
-					-- CS: output properites in a human readable form instead.
-					
-					tmp_unit_id := to_unit_id (field (line,7));
-					write_scope_of_object (tmp_unit_id);
-
-					-- compose arc
-					tmp_draw_arc := to_arc (line);
-					
-					-- add arc to unit
-					add_symbol_element (component_libraries, arc);
-
-				when T => -- text
-					log (draw_object & "text", level => log_threshold + 1);
-					-- A text is defined by a string like "T 0 0 300 60 0 0 0 leuchtdiode Normal 0 C C"
-					-- Space characters whitin the actual text are replaced by tilde as in this example:
-					-- "T 0 -100 0 60 0 1 0 gate~C Normal 0 C C"
-					-- field meaning:
-					--  #2 : rotation in tenth of degrees (counter clock wise), assumes only values of 0 or 900
-					--  #3..4 : center (x/y)
-					--  #5 : size 
-					--  #6 : ? - unknown CS
-					--  #7 : 0 -> common to all units, otherwise unit id it belongs to
-					--  #8 : 1 -> not common to all body styles (alternative representation or DeMorgan) -- CS: verify
-					--  #9 : content "leuchtdiode"
-					-- #10 : style Nomal/Italic
-					-- #11 : bold on/off (0/1) 
-					-- #12 : alignment left/center/right L/C/R
-					-- #13 : alignment top/center/bottom T/C/B
-
-					log (to_string (line), level => log_threshold + 2);
-					-- CS: output properites in a human readable form instead.
-					
-					tmp_unit_id := to_unit_id (field (line,7));
-					write_scope_of_object (tmp_unit_id);
-
-					-- compose text
-					tmp_draw_text := to_text (line);
-					
-					-- add text to unit
-					add_symbol_element (component_libraries, text);
-					
-				when X => -- port
-					log (draw_object & "port", level => log_threshold + 1);
-					-- A port is defined by a string like "X ~ 1 0 150 52 D 51 50 1 1 P"
-					-- field meaning:
-					--  #2 : port name (~)
-					--  #3 : pin number (1)
-					--  #4..5 : position x/y (0/150)
-					--  #6 : pin length (52)
-					--  #7 : orientation up/down/left/right (U/D/L/R)
-					--  #8 : pin number size (51)
-					--  #9 : port name size (50)
-					-- #10 : 0 -> common to all units, otherwise unit id it belongs to
-					-- #11 : 1 -> not common to all body styles (alternative representation or DeMorgan) -- CS: verify
-					-- #12 : electrical type (direction), see et_kicad.ads for more
-					-- #13 : optional field: pin style, see et_kicad.ads for more
-
-					log (to_string (line), level => log_threshold + 2);
-					-- CS: output properites in a human readable form instead.
-					
-					tmp_unit_id := to_unit_id (field (line,10));
-					write_scope_of_object (tmp_unit_id);
-
-					-- compose port
-					tmp_draw_port := to_port (line);
--- 					tmp_draw_port_name := type_port_name.to_bounded_string (field (line,2));
-
-					-- If this is a unit specific port it gets added to the unit. If it applies for the
-					-- whole component, we create an extra unit and insert it there. An extra unit is
-					-- created ONLY ONCE. Successive unit-wide ports are added there.
-					-- An extra unit always has the add level "request" since it harbors the supply ports.
-					-- When adding a port, tmp_unit_id is always greater zero.
-					if tmp_unit_id > 0 then
-						-- add unit specific port to unit
-
-						--log ("unit id " & type_unit_id'image (tmp_unit_id) , level => log_threshold);
-						add_symbol_element (component_libraries, port);
-					else 
-						-- The unit id changes from 0 to tmp_units_total + 1 (one notch above the total number) :
-						tmp_unit_id := type_unit_id (tmp_units_total) + 1;
-						-- If no extra unit has been created yet -> create one with add level "request".
-						if not extra_unit_available then 
-							tmp_unit_add_level := request;
-							tmp_unit_global := true; -- this is a unit with power supply pins that apply for the whole component
-							add_unit (component_libraries);
-							extra_unit_available := true;
-						else
-							null;
-						end if;
-						-- insert the port in the extra unit
-						--log ("unit id " & type_unit_id'image (tmp_unit_id) , level => log_threshold);						
-						add_symbol_element (component_libraries, port);
-					end if;
-			end case;
-
-			--log_indentation_down;
-		end read_draw_object;
-
-		procedure add_footprint (line : in type_fields_of_line) is
-		-- Reads the proposed footprint and adds it to the package filter of the current component.
--- 			log_threshold : type_log_level := 2;
-			fp : type_package_proposal.bounded_string;
-
-			function field (line : in type_fields_of_line; position : in positive) return string renames
-				et_string_processing.get_field_from_line;
-			
-			procedure do_it (libraries : in out type_libraries.map) is
-			-- Adds the footprint finally.
-				procedure insert_footprint (
-					key			: in type_component_name.bounded_string;
-					component	: in out type_component) is
-				begin
-					component.package_filter.insert (fp);
-				end insert_footprint;
-				
-				procedure locate_component ( 
-					key			: in type_full_library_name.bounded_string;
-					components	: in out type_components.map) is
-				begin
-					components.update_element (comp_cursor, insert_footprint'access);
-				end locate_component;
-
-			begin -- add_footprint
-				libraries.update_element (lib_cursor, locate_component'access);
-			end do_it;
-			
-		begin
--- 			log ("footpint/package filter", level => log_threshold + 1);
-			log_indentation_up;
-
-			fp := type_package_proposal.to_bounded_string (field (line,1));
-			log (type_package_proposal.to_string(fp), level => log_threshold + 1);
-
-			do_it (component_libraries);
-			
-			log_indentation_down;
-		end add_footprint;
+			end add_footprint;
 		
 
-		procedure read_field (line : in type_fields_of_line) is
-		-- NOTE: This is library related stuff.
-		-- Reads the text field of a component in a set of temporarily variables tmp_reference, tmp_value, ...
-		-- Text fields look like:
-		-- F0 "#PWR" 0 -200 50 H I C CNN
-		-- F1 "GND" 0 -100 50 H V C CNN
-		-- F2 "" 0 0 50 H I C CNN
-		-- F3 "" 0 0 50 H I C CNN
-		-- F4 "1974-12-27T23:04:22" 650 100 60 H I C CNN "commissioned"
-		-- F5 "2017-01-23T23:04:22" 650 0 60 H I C CNN "updated"
-		-- F6 "MBL" 450 -100 60 H I C CNN "author"
+			procedure read_field (line : in type_fields_of_line) is
+			-- NOTE: This is library related stuff.
+			-- Reads the text field of a component in a set of temporarily variables tmp_reference, tmp_value, ...
+			-- Sets the "field found flag" according to the field being detected.
+			-- Text fields look like:
+			-- F0 "#PWR" 0 -200 50 H I C CNN
+			-- F1 "GND" 0 -100 50 H V C CNN
+			-- F2 "" 0 0 50 H I C CNN
+			-- F3 "" 0 0 50 H I C CNN
+			-- F4 "1974-12-27T23:04:22" 650 100 60 H I C CNN "commissioned"
+			-- F5 "2017-01-23T23:04:22" 650 0 60 H I C CNN "updated"
+			-- F6 "MBL" 450 -100 60 H I C CNN "author"
 
-			function field (line : in type_fields_of_line; position : in positive) return string renames
-				et_string_processing.get_field_from_line;
-				
-			use et_string_processing;
-
-			-- CS: flags that indicate the finding of a field. raise alarm if field missing. mind appearance
-			
-		begin -- read_field
-			
-			-- read text fields from a component library (thats why scheamtic => false)
-			case to_text_meaning (line => line, schematic => false) is
-
-				-- If we have the reference field like "F0 "U" 0 50 50 H V C CNN"
-				when reference =>
-								
-					-- CS: Do a cross check of prefix and reference -- "U" 
-					-- CS: why this redundance ? Ask the kicad makers...
-					if strip_quotes (field (line,2)) = type_component_prefix.to_string (tmp_prefix) then
-						null; -- fine
-					else
-						log (message_warning & affected_line (line) & ": prefix vs. reference mismatch !");
-					end if;
-
-					tmp_reference := read_field (meaning => reference);
-					-- for the log:
-					write_text_properies (type_text (tmp_reference), log_threshold + 1);
-
-				-- If we have a value field like "F1 "74LS00" 0 -100 50 H V C CNN"
-				when value =>
-
-					tmp_value := read_field (meaning => value);
+				function field (line : in type_fields_of_line; position : in positive) return string renames
+					et_string_processing.get_field_from_line;
 					
-					-- for the log:
-					write_text_properies (type_text (tmp_value), log_threshold + 1);
+				use et_string_processing;
 
-				-- If we have a footprint field like "F2 "bel_resistors:S_0805" 0 -100 50 H V C CNN"
-				-- NOTE: the part before the colon is the containing library. The part after the colon 
-				-- is the actual footprint/package name.
-				when packge =>
+			begin -- read_field
 				
-					tmp_package := read_field (meaning => packge);
-					-- for the log:
-					write_text_properies (type_text (tmp_package), log_threshold + 1);
+				-- read text fields from a component library (thats why scheamtic => false)
+				case to_text_meaning (line => line, schematic => false) is
 
-				-- If we have a datasheet field like "F3 "" 0 -100 50 H V C CNN"
-				when datasheet =>
-				
-					tmp_datasheet := read_field (meaning => datasheet);
-					-- for the log:
-					write_text_properies (type_text (tmp_datasheet), log_threshold + 1);
+					-- If we have the prefix field like "F0 "U" 0 50 50 H V C CNN"
+					when reference =>
+									
+						-- CS: Do a cross check of prefix and reference -- "U" 
+						-- The prefix is already defined in the component hearder. 
+						-- Why this redundance ? Ask the kicad makers...
+						if strip_quotes (field (line,2)) = type_component_prefix.to_string (tmp_prefix) then
+							null; -- fine
+						else
+							log (message_warning & affected_line (line) & ": prefix vs. reference mismatch !");
+							-- CS: better raise constraint_error
+						end if;
 
-				-- Other mandatory fields like function and partcode are detected by F4 and F5 
-				-- (not by subfield #10 !) So F4 enforces a function, F5 enforces a partcode.
-				
-				-- If we have a purpose field like "F9 "" 0 -100 50 H V C CNN" "purpose",
-				-- we test subfield #10 against the prescribed meaning. If ok the field is read like
-				-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
-				when purpose =>
-				
-					if to_lower (strip_quotes (field (line,10))) = to_lower (type_text_meaning'image (purpose)) then
-						tmp_purpose := read_field (meaning => purpose);
+						field_prefix_found := true;
+						tmp_reference := read_field (meaning => reference);
 						-- for the log:
-						write_text_properies (type_text (tmp_purpose), log_threshold + 1);
-						-- basic_text_check(fnction); -- CS
-					else
-						invalid_field(line);
-					end if;
+						write_text_properies (type_text (tmp_reference), log_threshold + 1);
 
-				-- If we have a partcode field like "F7 "" 0 -100 50 H V C CNN" "partcode",
-				-- we test subfield #10 against the prescribed meaning. If ok the field is read like
-				-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
-				when partcode =>
-				
-					if to_lower (strip_quotes(field (line,10))) = to_lower (type_text_meaning'image (partcode)) then
-						tmp_partcode := read_field (meaning => partcode);
+					-- If we have a value field like "F1 "74LS00" 0 -100 50 H V C CNN"
+					when value =>
+						field_value_found := true;
+						tmp_value := read_field (meaning => value);
+						
 						-- for the log:
-						write_text_properies (type_text (tmp_partcode), log_threshold + 1);
-						-- basic_text_check(partcode); -- CS
-					else
-						invalid_field(line);
-					end if;
+						write_text_properies (type_text (tmp_value), log_threshold + 1);
 
-				-- If we have a "commissioned" field like "F4 "" 0 -100 50 H V C CNN" "commissioned",
-				-- we test subfield #10 against the prescribed meaning. If ok the field is read like
-				-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
-				when commissioned =>
-				
-					if to_lower (strip_quotes(field (line,10))) = to_lower (type_text_meaning'image (commissioned)) then
-						tmp_commissioned := read_field (meaning => commissioned);
+					-- If we have a footprint field like "F2 "bel_resistors:S_0805" 0 -100 50 H V C CNN"
+					-- NOTE: the part before the colon is the containing library. The part after the colon 
+					-- is the actual footprint/package name.
+					when packge =>
+
+						field_package_found := true;
+						tmp_package := read_field (meaning => packge);
 						-- for the log:
-						write_text_properies (type_text (tmp_commissioned), log_threshold + 1);
-						-- basic_text_check(commissioned); -- CS
-					else
-						invalid_field(line);
-					end if;
+						write_text_properies (type_text (tmp_package), log_threshold + 1);
 
-				-- If we have an "updated" field like "F5 "" 0 -100 50 H V C CNN" "updated",
-				-- we test subfield #10 against the prescribed meaning. If ok the field is read like
-				-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
-				when updated =>
-				
-					if to_lower (strip_quotes(field (line,10))) = to_lower (type_text_meaning'image (updated)) then
-						tmp_updated := read_field (meaning => updated);
+					-- If we have a datasheet field like "F3 "" 0 -100 50 H V C CNN"
+					when datasheet =>
+
+						field_datasheet_found := true;
+						tmp_datasheet := read_field (meaning => datasheet);
 						-- for the log:
-						write_text_properies (type_text (tmp_updated), log_threshold + 1);
-						-- basic_text_check(updated); -- CS
-					else
-						invalid_field(line);
-					end if;
+						write_text_properies (type_text (tmp_datasheet), log_threshold + 1);
 
-				-- If we have an "author" field like "F6 "" 0 -100 50 H V C CNN" "author",
-				-- we test subfield #10 against the prescribed meaning. If ok the field is read like
-				-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
-				when author =>
-				
-					if to_lower (strip_quotes(field (line,10))) = to_lower (type_text_meaning'image (author)) then
-						tmp_author := read_field (meaning => author);
-						-- for the log:
-						write_text_properies (type_text (tmp_author), log_threshold + 1);
-						-- basic_text_check(author); -- CS
-					else
-						invalid_field(line);
-					end if;
-
-				-- If we have a "bom" field like "F8 "" 0 -100 50 H V C CNN" "bom",
-				-- we test subfield #10 against the prescribed meaning. If ok the field is read like
-				-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
-				when bom =>
-				
-					if to_lower (strip_quotes (field (line,10))) = to_lower (type_text_meaning'image (bom)) then
-						tmp_bom := read_field (meaning => bom);
-						-- for the log:
-						write_text_properies (type_text (tmp_bom), log_threshold + 1);
-						-- basic_text_check (bom); -- CS
-					else
-						invalid_field (line);
-					end if;
-
+					-- Other mandatory fields like function and partcode are detected by F4 and F5 
+					-- (not by subfield #10 !) So F4 enforces a function, F5 enforces a partcode.
 					
-				when others => null;
-					-- CS: warning about illegal fields ?
-					-- CS: other text fields ?
-			end case;
+					-- If we have a purpose field like "F9 "" 0 -100 50 H V C CNN" "purpose",
+					-- we test subfield #10 against the prescribed meaning. If ok the field is read like
+					-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
+					when purpose =>
+					
+						if to_lower (strip_quotes (field (line,10))) = to_lower (type_text_meaning'image (purpose)) then
+							field_purpose_found := true;
+							tmp_purpose := read_field (meaning => purpose);
+							-- for the log:
+							write_text_properies (type_text (tmp_purpose), log_threshold + 1);
+							-- basic_text_check(fnction); -- CS
+						else
+							invalid_field (line);
+						end if;
 
-			
-			-- CS: check appearance vs. function vs. partcode -- see stock_manager	
-		end read_field;
+					-- If we have a partcode field like "F7 "" 0 -100 50 H V C CNN" "partcode",
+					-- we test subfield #10 against the prescribed meaning. If ok the field is read like
+					-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
+					when partcode =>
+					
+						if to_lower (strip_quotes(field (line,10))) = to_lower (type_text_meaning'image (partcode)) then
+							field_partcode_found := true;
+							tmp_partcode := read_field (meaning => partcode);
+							-- for the log:
+							write_text_properies (type_text (tmp_partcode), log_threshold + 1);
+							-- basic_text_check(partcode); -- CS
+						else
+							invalid_field (line);
+						end if;
+
+					-- If we have a "commissioned" field like "F4 "" 0 -100 50 H V C CNN" "commissioned",
+					-- we test subfield #10 against the prescribed meaning. If ok the field is read like
+					-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
+					when commissioned =>
+					
+						if to_lower (strip_quotes(field (line,10))) = to_lower (type_text_meaning'image (commissioned)) then
+							field_commissioned_found := true;
+							tmp_commissioned := read_field (meaning => commissioned);
+							-- for the log:
+							write_text_properies (type_text (tmp_commissioned), log_threshold + 1);
+							-- basic_text_check(commissioned); -- CS
+						else
+							invalid_field (line);
+						end if;
+
+					-- If we have an "updated" field like "F5 "" 0 -100 50 H V C CNN" "updated",
+					-- we test subfield #10 against the prescribed meaning. If ok the field is read like
+					-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
+					when updated =>
+					
+						if to_lower (strip_quotes(field (line,10))) = to_lower (type_text_meaning'image (updated)) then
+							field_updated_found := true;
+							tmp_updated := read_field (meaning => updated);
+							-- for the log:
+							write_text_properies (type_text (tmp_updated), log_threshold + 1);
+							-- basic_text_check(updated); -- CS
+						else
+							invalid_field (line);
+						end if;
+
+					-- If we have an "author" field like "F6 "" 0 -100 50 H V C CNN" "author",
+					-- we test subfield #10 against the prescribed meaning. If ok the field is read like
+					-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
+					when author =>
+					
+						if to_lower (strip_quotes(field (line,10))) = to_lower (type_text_meaning'image (author)) then
+							field_author_found := true;
+							tmp_author := read_field (meaning => author);
+							-- for the log:
+							write_text_properies (type_text (tmp_author), log_threshold + 1);
+							-- basic_text_check(author); -- CS
+						else
+							invalid_field (line);
+						end if;
+
+					-- If we have a "bom" field like "F8 "" 0 -100 50 H V C CNN" "bom",
+					-- we test subfield #10 against the prescribed meaning. If ok the field is read like
+					-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
+					when bom =>
+					
+						if to_lower (strip_quotes (field (line,10))) = to_lower (type_text_meaning'image (bom)) then
+							field_bom_found := true;
+							tmp_bom := read_field (meaning => bom);
+							-- for the log:
+							write_text_properies (type_text (tmp_bom), log_threshold + 1);
+							-- basic_text_check (bom); -- CS
+						else
+							invalid_field (line);
+						end if;
+
+						
+					when others => null;
+						-- CS: warning about illegal fields ?
+						-- CS: other text fields ?
+				end case;
+
+				
+				-- CS: check appearance vs. function vs. partcode -- see stock_manager	
+			end read_field;
 
 		
 		begin -- read_library
@@ -4437,7 +4484,7 @@ package body et_kicad is
 								& latin_1.space
 								& to_string (position => position)
 								& latin_1.lf
-								& "text field '" & et_libraries.to_string (m) & "' missing !",
+								& "text field " & et_libraries.to_string (m) & " missing !",
 							console => true);
 						
 						raise constraint_error;
@@ -4450,7 +4497,7 @@ package body et_kicad is
 
 					-- write precheck preamble
 					log ("component " 
-						& to_string(reference) & " prechecking fields ...", level => log_threshold);
+						& to_string (reference) & " prechecking fields ...", level => log_threshold);
 					log_indentation_up;
 					
 					-- reference
@@ -4458,6 +4505,7 @@ package body et_kicad is
 					log ("reference", level => log_threshold + 1);
 					if not text_reference_found then
 						missing_field (et_libraries.reference);
+						-- CS: use missing_field (text_reference.meaning); -- apply this to other calls of missing_field too
 					else
 						-- verify text_reference equals reference. @kicad: why this redundance ?
 						-- KiCad stores redundant information on the component reference as in this example;
