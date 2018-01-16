@@ -1251,7 +1251,7 @@ package body et_kicad is
 			end read_field;
 
 			procedure check_text_fields (log_threshold : in type_log_level) is
-			-- Tests if all text fields have been found.
+			-- Tests if all text fields have been found by evaluating the "field found flags".
 			-- Checks the content of the fields.
 
 				procedure missing_field (meaning : in et_libraries.type_text_meaning) is 
@@ -1277,7 +1277,29 @@ package body et_kicad is
 						value => type_component_value.to_bounded_string (content (field_value)),
 						characters => component_value_characters);
 				end if;
-					
+
+				log ("author", level => log_threshold + 1);				
+				if not field_author_found then
+					missing_field (field_author.meaning);
+				else
+					null; -- CS
+				end if;
+
+				log ("commissioned", level => log_threshold + 1);
+				if not field_commissioned_found then
+					missing_field (field_commissioned.meaning);
+				else
+					null; -- CS
+				end if;
+
+				log ("updated", level => log_threshold + 1);
+				if not field_updated_found then
+					missing_field (field_updated.meaning);
+				else
+					null; -- CS
+				end if;
+				
+				
 				case tmp_appearance is
 					when sch_pcb =>
 						-- This is a real component.
@@ -1287,43 +1309,76 @@ package body et_kicad is
 						-- Afterward we validate the prefix. The prefixes for real components are specified
 						-- in the et configuration file (see et_configuration).						
 						log ("prefix", level => log_threshold + 1);
-						et_configuration.validate_prefix (
-							check_prefix_characters (
-								prefix => tmp_prefix,
-								characters => et_libraries.component_prefix_characters)
-							);
-						
+						if not field_prefix_found then
+							missing_field (field_reference.meaning);
+						else
+							et_configuration.validate_prefix (
+								check_prefix_characters (
+									prefix => tmp_prefix,
+									characters => et_libraries.component_prefix_characters)
+								);
+						end if;
+							
 						log ("package/footprint", level => log_threshold + 1);
-						validate_component_package_name (
-							type_component_package_name.to_bounded_string (field (
-								line => read_line (
-									line => content (field_package), -- bel_ic:S_SO14
-									ifs => latin_1.colon),
-								position => 2))); -- the block after the colon
+						if not field_package_found then
+							missing_field (field_package.meaning);
+						else
+							validate_component_package_name (
+								type_component_package_name.to_bounded_string (field (
+									line => read_line (
+										line => content (field_package), -- bel_ic:S_SO14
+										ifs => latin_1.colon),
+									position => 2))); -- the block after the colon
+						end if;
 						
 						log ("partcode", level => log_threshold + 1);
-						validate_component_partcode_in_library (
-							-- the content of the partcode field like R_PAC_S_0805_VAL_
-							partcode => type_component_partcode.to_bounded_string (content (field_partcode)),
+						if not field_partcode_found then
+							missing_field (field_partcode.meaning);
+						else
+							validate_component_partcode_in_library (
+								-- the content of the partcode field like R_PAC_S_0805_VAL_
+								partcode => type_component_partcode.to_bounded_string (content (field_partcode)),
 
-							name => tmp_component_name, -- 74LS00
-							
-							-- the component prefix like LED
-							prefix => tmp_prefix,
+								name => tmp_component_name, -- 74LS00
+								
+								-- the component prefix like LED
+								prefix => tmp_prefix,
 
-							-- The component package name like S_0805 must be extracted from the field text_package.
-							-- The field contains something like bel_ic:S_SO14 . 
-							-- The part after the colon is the package name. The part before the colon is the library
-							-- name which is not of interest here.
-							packge => type_component_package_name.to_bounded_string (field (
-								line => read_line (
-									line => content (field_package), -- bel_ic:S_SO14
-									ifs => latin_1.colon),
-								position => 2)), -- the block after the colon
+								-- The component package name like S_0805 must be extracted from the field text_package.
+								-- The field contains something like bel_ic:S_SO14 . 
+								-- The part after the colon is the package name. The part before the colon is the library
+								-- name which is not of interest here.
+								packge => type_component_package_name.to_bounded_string (field (
+									line => read_line (
+										line => content (field_package), -- bel_ic:S_SO14
+										ifs => latin_1.colon),
+									position => 2)), -- the block after the colon
 
-							-- the BOM status
-							bom => type_bom'value (content (field_bom))
-							);
+								-- the BOM status
+								bom => type_bom'value (content (field_bom))
+								);
+						end if;
+
+						log ("datasheet", level => log_threshold + 1);
+						if not field_datasheet_found then
+							missing_field (field_datasheet.meaning);
+						else
+							null; -- CS
+						end if;
+
+						log ("bom", level => log_threshold + 1);
+						if not field_bom_found then
+							missing_field (field_bom.meaning);
+						else
+							null; -- CS
+						end if;
+						
+						log ("purpose", level => log_threshold + 1);
+						if not field_purpose_found then
+							missing_field (field_purpose.meaning);
+						else
+							null; -- CS
+						end if;
 
 						
 					when sch =>
@@ -1332,10 +1387,14 @@ package body et_kicad is
 						-- Afterward we validate the prefix. The prefixes for virtual components
 						-- are KiCad specific.
 						log ("prefix", level => log_threshold + 1);
-						validate_prefix (check_prefix_characters (
-							prefix => tmp_prefix,
-							characters => component_prefix_characters));
-
+						if not field_prefix_found then
+							missing_field (field_reference.meaning);
+						else
+							validate_prefix (check_prefix_characters (
+								prefix => tmp_prefix,
+								characters => component_prefix_characters));
+						end if;
+						
 					when pcb => null; --CS
 						
 				end case;
