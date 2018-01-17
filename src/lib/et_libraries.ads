@@ -443,7 +443,10 @@ package et_libraries is
 	procedure validate_component_package_name (name : in type_component_package_name.bounded_string);
 	-- Tests if the given component package name meets certain conventions.
 	
-
+	-- Newly created fields may contain things like "?PARTCODE?" or "?PURPOSE?". For checking their
+	-- content we need this character set:
+	component_initial_field_characters : character_set := to_set 
+		(span => ('A','Z')) or to_set('?'); 
 
 	-- The component partcode is something like "R_PAC_S_0805_VAL_100R_PMAX_125_TOL_5"
 	component_partocde_length_max : constant positive := 200;
@@ -461,12 +464,23 @@ package et_libraries is
 	
 	-- Components that require operator interaction like connectors, LEDs or switches must have a purpose assigned.
 	-- Example: The purpose of connector X44 is "power in". The purpose of LED5 is "system fail":
+	component_purpose_characters : character_set := to_set 
+		(ranges => (('a','z'),('A','Z'),('0','9'))) 
+		or to_set('_'); 
+	
 	component_purpose_length_max : constant positive := 100;
 	package type_component_purpose is new generic_bounded_length (component_purpose_length_max);
 
 	function to_string (purpose : in type_component_purpose.bounded_string) return string;
 	-- Returns the given purpose as string.
 	
+	procedure check_purpose_characters (
+		purpose		: in type_component_purpose.bounded_string;
+		characters	: in character_set := component_purpose_characters);
+	-- Tests if the given purpose contains only valid characters as specified
+	-- by given character set.
+	-- Raises exception if invalid character found.
+
 	
 	-- VARIANT NAMES
 	-- If a component has package variants, a suffix after the component type indicates the package

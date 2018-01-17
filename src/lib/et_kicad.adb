@@ -1225,6 +1225,10 @@ package body et_kicad is
 				-- check content vs. meaning. 
 				case meaning is
 
+						-- CS: check_author_characters, check_date_characters,
+						-- check_partcode_characters, 
+
+					
 					when REFERENCE =>
 						check_prefix_characters (
 							prefix => type_component_prefix.to_bounded_string (content (text)),
@@ -1238,15 +1242,16 @@ package body et_kicad is
 					when BOM =>
 						check_bom_characters (content (text));
 
-						-- CS: check_author_characters, check_date_characters,
-						-- check_partcode_characters, 
-						-- check_purpose_characters
-
 					when PACKGE =>
 						check_package_characters (
 							packge => type_component_package_name.to_bounded_string (content (text)),
 							characters => et_kicad.component_package_characters);
-					
+
+					when PURPOSE =>
+						check_purpose_characters (
+							purpose => type_component_purpose.to_bounded_string (content (text)),
+							characters => component_initial_field_characters);
+						
 					when others => null; -- CS
 
 				end case;
@@ -5439,12 +5444,14 @@ package body et_kicad is
 							when component_field_function =>
 								field_purpose_found	:= true;
 								field_purpose 			:= to_field;
-								-- CS: check_purpose_characters
+								check_purpose_characters (
+									purpose => type_component_purpose.to_bounded_string (content (field_purpose)),
+									characters => component_initial_field_characters);
 								
 							when component_field_partcode =>
 								field_partcode_found	:= true;
 								field_partcode 			:= to_field;
-								-- CS: check_partcode_characters
+								-- CS: check_partcode_characters . adapt function to_field 1197
 								
 							when component_field_commissioned =>
 								field_commissioned_found	:= true;

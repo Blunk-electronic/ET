@@ -212,6 +212,33 @@ package body et_libraries is
 		return type_component_purpose.to_string (purpose);
 	end to_string;
 
+	procedure check_purpose_characters (
+		purpose		: in type_component_purpose.bounded_string;
+		characters	: in character_set := component_purpose_characters) is
+	-- Tests if the given purpose contains only valid characters as specified
+	-- by given character set.
+	-- Raises exception if invalid character found.
+		use et_string_processing;
+		use type_component_purpose;
+		invalid_character_position : natural := 0;
+	begin
+		invalid_character_position := index (
+			source => purpose,
+			set => characters,
+			test => outside);
+
+		if invalid_character_position > 0 then
+			log_indentation_reset;
+			log (message_error & "component purpose " & to_string (purpose) 
+				 & " has invalid character at position"
+				 & natural'image (invalid_character_position),
+				console => true
+				);
+			raise constraint_error;
+		end if;
+	end check_purpose_characters;
+	
+
 	function to_string ( variant : in type_component_variant) return string is
 	-- Returns the given variant as string.
 	-- NOTE: This displays the type_component_variant (see et_libraries.ads).
