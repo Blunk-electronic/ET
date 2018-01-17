@@ -284,7 +284,7 @@ package et_kicad is
 	type type_library_component_appearance is (N, P); -- normal or power
 
 	
-	-- In schematic, a power symbol/component has a hash as first character like "L P3V3 #PWR07"
+	-- In schematic, a power symbol/component has a hash as first character in a line like "L P3V3 #PWR07"
 	schematic_component_power_symbol_prefix: constant character := '#';
 	
 	-- power flags and symbols have a special prefix which distinguishes 
@@ -305,6 +305,8 @@ package et_kicad is
 	-- Therefore the character set used here includes the colon additionally.
 	component_package_characters : character_set := et_libraries.component_package_characters or to_set (':');
 
+	-- In the library a component name may have a tilde. Therefore we extend the standard character set by a tilde.
+	component_generic_name_characters : character_set := et_libraries.component_generic_name_characters or to_set ('~');
 	
 	type type_symbol_interchangeable is (L, F); -- L means swapping not allowed, F means swapping allowed 
 	type type_show_pin_number is (Y, N); -- show pin/pad number yes/no

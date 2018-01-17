@@ -2282,8 +2282,10 @@ package body et_kicad is
 								tmp_component_name := et_libraries.type_component_name.to_bounded_string (field (line,2)); -- 74LS00
 
 								-- The generic component name must be checked for invalid characters.
-								-- Since this is a kicad_v4 import, the test is to be customized (due to heading tilde characters)
-								check_generic_name_characters (name => tmp_component_name, customized => true);
+								-- NOTE: we test against the kicad specific character set that allows a tilde.
+								check_generic_name_characters (
+									name => tmp_component_name,
+									characters => component_generic_name_characters);
 								
 								-- for the log:
 								log (field (line,2), log_threshold); -- 74LS00
@@ -2305,6 +2307,7 @@ package body et_kicad is
 								tmp_prefix := type_component_prefix.to_bounded_string (field (line,3)); -- U
 
 								-- Detect invalid characters in tmp_prefix:
+								-- NOTE: we test against the kicad specific character set that allows a #
 								check_prefix_characters (
 									prefix => tmp_prefix,
 									characters => et_kicad.component_prefix_characters);
@@ -5321,7 +5324,8 @@ package body et_kicad is
 
 						check_generic_name_characters (
 							name => generic_name_in_lbr, -- "SN74LS00"
-							customized => false); -- we do not allow tilde characters here. they occur ONLY in the library.
+							-- NOTE: We do not allow tilde characters here. they occur ONLY in the library:
+							characters => et_libraries.component_generic_name_characters); 
 
 						appearance := to_appearance (line => et_kicad.line, schematic => true);
 

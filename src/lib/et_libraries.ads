@@ -300,7 +300,7 @@ package et_libraries is
 	package type_component_name is new generic_bounded_length (component_name_length_max); use type_component_name; -- CS: rename to type_generic_component_name
 	-- Only those characters are allowed for the generic component name.
 	-- See et_import.check_component_name for customization depending on CAD format.
-	component_name_characters : character_set := to_set 
+	component_generic_name_characters : character_set := to_set 
 		(ranges => (('A','Z'),('0','9'))) 
 		or to_set('-') 
 		or to_set('_'); 
@@ -308,8 +308,7 @@ package et_libraries is
 	procedure check_generic_name_characters (
 	-- Checks if the the given generic component name meets certain conventions.
 		name : in type_component_name.bounded_string; -- TRANSISTOR_NPN
-		customized : in boolean := false); -- when true use customized character set -- CS: pass character set instead
-		-- for the test (depends on import CAD format).
+		characters : in character_set := component_generic_name_characters);
 
 	function strip_tilde (generic_name : in type_component_name.bounded_string) return
 		type_component_name.bounded_string;
