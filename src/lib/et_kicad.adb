@@ -1226,11 +1226,12 @@ package body et_kicad is
 
 					when VALUE =>
 						check_value_characters (
-							value => type_component_value.to_bounded_string (to_string (text.content)),
+						   --value => type_component_value.to_bounded_string (to_string (text.content)),
+							value => type_component_value.to_bounded_string (content (text)),
 							characters => component_value_characters);
 					
 					when BOM =>
-						validate_bom_status (to_string (text.content));
+						validate_bom_status (content (text));
 
 					
 					when others => null; -- CS
@@ -4482,29 +4483,29 @@ package body et_kicad is
 				timestamp					: type_timestamp;
 				alternative_representation	: et_schematic.type_alternative_representation;
 			
-				-- These are the "field found" flags. They signal if a particular text field has been found.
+				-- These are the "field found flags". They signal if a particular text field has been found.
 				-- They are evaluated when a component section is read completely, before assembling the unit/component.
-				text_reference_found	: boolean := false; -- CS: rename them to field_reference_found
-				text_value_found		: boolean := false; -- CS: rename to field_value_found ...
-				text_commissioned_found	: boolean := false;
-				text_updated_found		: boolean := false;
-				text_author_found		: boolean := false;
-				text_packge_found		: boolean := false;
-				text_datasheet_found	: boolean := false;
-				text_purpose_found		: boolean := false;
-				text_partcode_found		: boolean := false;
-				text_bom_found			: boolean := false;
+				field_reference_found		: boolean := false;
+				field_value_found			: boolean := false;
+				field_commissioned_found	: boolean := false;
+				field_updated_found			: boolean := false;
+				field_author_found			: boolean := false;
+				field_package_found			: boolean := false;
+				field_datasheet_found		: boolean := false;
+				field_purpose_found			: boolean := false;
+				field_partcode_found		: boolean := false;
+				field_bom_found				: boolean := false;
 
 				field_reference		: type_text (meaning => et_libraries.reference);
 				field_value			: type_text (meaning => value);
 				field_commissioned 	: type_text (meaning => commissioned);
-				text_updated		: type_text (meaning => updated);
-				text_author			: type_text (meaning => author);
-				text_package		: type_text (meaning => packge); -- like "bel_primiteves:S_SOT23"
-				text_datasheet		: type_text (meaning => datasheet); -- might be useful for some special components
-				text_purpose		: type_text (meaning => purpose); -- to be filled in schematic later by the user
-				text_partcode		: type_text (meaning => partcode); -- like "R_PAC_S_0805_VAL_"
-				text_bom			: type_text (meaning => bom);
+				field_updated		: type_text (meaning => updated);
+				field_author		: type_text (meaning => author);
+				field_package		: type_text (meaning => packge); -- like "bel_primiteves:S_SOT23"
+				field_datasheet		: type_text (meaning => datasheet); -- might be useful for some special components
+				field_purpose		: type_text (meaning => purpose); -- to be filled in schematic later by the user
+				field_partcode		: type_text (meaning => partcode); -- like "R_PAC_S_0805_VAL_"
+				field_bom			: type_text (meaning => bom);
 			
 				function to_text return et_libraries.type_text is
 				-- Converts a field like "F 1 "green" H 2700 2750 50  0000 C CNN" to a type_text
@@ -4547,10 +4548,11 @@ package body et_kicad is
 
 				procedure check_text_fields (log_threshold : in type_log_level) is 
 				-- Tests if any "field found" flag is still cleared and raises an alarm in that case.
-				-- Perfoms a plausibility and syntax check on the text fields before they are used to 
+				-- Perfoms a plausibility and context check on the text fields before they are used to 
 				-- assemble and insert the component into the component list of the module.
 				-- This can be regarded as a kind of pre-check.
-				-- CS: check text size and width
+				
+				-- CS: check text size and width in regard to meaning
 				
 					procedure missing_field (m : in et_libraries.type_text_meaning) is 
 					begin
@@ -4580,7 +4582,7 @@ package body et_kicad is
 					-- reference
 					-- NOTE: the reference prefix has been checked already in main of procedure make_component
 					log ("reference", level => log_threshold + 1);
-					if not text_reference_found then
+					if not field_reference_found then
 						missing_field (et_libraries.reference);
 						-- CS: use missing_field (text_reference.meaning); -- apply this to other calls of missing_field too
 					else
@@ -4605,7 +4607,7 @@ package body et_kicad is
 
 					-- value
 					log ("value", level => log_threshold + 1);
-					if not text_value_found then
+					if not field_value_found then
 						missing_field (et_libraries.value);
 					else
 						-- depending on the component reference (like R12 or C9) the value must meet certain conventions:
@@ -4622,7 +4624,7 @@ package body et_kicad is
 
 					-- commissioned
 					log ("commissioned", level => log_threshold + 1);
-					if not text_commissioned_found then
+					if not field_commissioned_found then
 						missing_field (et_libraries.commissioned);
 					else
 						-- The commissioned time must be checked for plausibility and syntax.
@@ -4635,12 +4637,12 @@ package body et_kicad is
 
 					-- updated
 					log ("updated", level => log_threshold + 1);
-					if not text_updated_found then
+					if not field_updated_found then
 						missing_field (et_libraries.updated);
 					else
 						-- The update time must be checked for plausibility and syntax.
 						-- The string length is indirecty checked on converting the field content to derived type_date.					
-						updated := et_string_processing.type_date (et_libraries.content (text_updated));
+						updated := et_string_processing.type_date (et_libraries.content (field_updated));
 						if not et_string_processing.date_valid (updated) 
 							then raise constraint_error;
 						end if;
@@ -4652,7 +4654,7 @@ package body et_kicad is
 
 					-- author
 					log ("author", level => log_threshold + 1);
-					if not text_author_found then
+					if not field_author_found then
 						missing_field (et_libraries.author);
 					else
 						null;
@@ -4667,41 +4669,41 @@ package body et_kicad is
 								
 							-- package
 							log ("package/footprint", level => log_threshold + 1);
-							if not text_packge_found then
+							if not field_package_found then
 								missing_field (et_libraries.packge);
 							else
 								null;
-								-- CS: check content of text_package
+								-- CS: check content of field_package
 							end if;
 
 							-- datasheet
 							log ("datasheet", level => log_threshold + 1);
-							if not text_datasheet_found then
+							if not field_datasheet_found then
 								missing_field (et_libraries.datasheet);
 							else
 								null;
-								-- CS: check content of text_datasheet
+								-- CS: check content of field_datasheet
 							end if;
 
 							-- partcode
 							log ("partcode", level => log_threshold + 1);
-							if not text_partcode_found then
+							if not field_partcode_found then
 								missing_field (et_libraries.partcode);
 							else
 								validate_component_partcode_in_schematic (
 									-- the content of the partcode field like R_PAC_S_0805_VAL_100R
-									partcode => type_component_partcode.to_bounded_string (content (text_partcode)),
+									partcode => type_component_partcode.to_bounded_string (content (field_partcode)),
 
 									-- the component reference like R45
 									reference => reference,
 
-									-- The component package name like S_0805 must be extracted from the field text_package.
+									-- The component package name like S_0805 must be extracted from the field field_package.
 									-- The field contains something like bel_ic:S_SO14 . 
 									-- The part after the colon is the package name. The part before the colon is the library
 									-- name which is not of interest here.
 									packge => type_component_package_name.to_bounded_string (field (
 										line => read_line (
-											line => content (text_package), -- bel_ic:S_SO14
+											line => content (field_package), -- bel_ic:S_SO14
 											ifs => latin_1.colon),
 										position => 2)), -- the block after the colon
 
@@ -4709,13 +4711,13 @@ package body et_kicad is
 									value => type_component_value.to_bounded_string (content (field_value)),
 
 									-- the BOM status
-									bom => type_bom'value (content (text_bom))
+									bom => type_bom'value (content (field_bom))
 									);
 							end if;
 							
 							-- purpose
 							log ("purpose", level => log_threshold + 1);
-							if not text_purpose_found then
+							if not field_purpose_found then
 								missing_field (et_libraries.purpose);
 							else
 								null;
@@ -4724,11 +4726,11 @@ package body et_kicad is
 
 							-- bom
 							log ("bom", level => log_threshold + 1);
-							if not text_bom_found then
+							if not field_bom_found then
 								missing_field (et_libraries.bom);
 							else
 								null;
-								-- CS: check content of text_bom
+								-- CS: check content of field_bom
 							end if;
 
 							
@@ -4891,8 +4893,8 @@ package body et_kicad is
 									
 									value 			=> type_component_value.to_bounded_string (content (field_value)),
 									commissioned 	=> type_date (et_libraries.content (field_commissioned)),
-									updated 		=> type_date (et_libraries.content (text_updated)),
-									author 			=> type_person_name.to_bounded_string (content (text_author)),
+									updated 		=> type_date (et_libraries.content (field_updated)),
+									author 			=> type_person_name.to_bounded_string (content (field_author)),
 
 									-- At this stage we do not know if and how many units there are. So the unit list is empty.
 									units 			=> type_units.empty_map),
@@ -4902,7 +4904,7 @@ package body et_kicad is
 
 							-- break down the footprint content like "bel_opto:LED_S_0805".
 							tmp_library_footprint := read_line (
-									line => content (text_package),
+									line => content (field_package),
 									ifs => latin_1.colon);
 
 							et_schematic.add_component ( 
@@ -4920,14 +4922,14 @@ package body et_kicad is
 									
 									value			=> type_component_value.to_bounded_string (content (field_value)),
 									commissioned	=> type_date (content (field_commissioned)),
-									updated			=> type_date (content (text_updated)),
-									author			=> type_person_name.to_bounded_string (content (text_author)),
+									updated			=> type_date (content (field_updated)),
+									author			=> type_person_name.to_bounded_string (content (field_author)),
 
 									-- properties of a real component (appears in schematic and layout);
-									datasheet		=> type_component_datasheet.to_bounded_string (content (text_datasheet)),
-									partcode		=> type_component_partcode.to_bounded_string (content (text_partcode)),
-									purpose			=> type_component_purpose.to_bounded_string (content (text_purpose)),
-									bom				=> type_bom'value (content (text_bom)),
+									datasheet		=> type_component_datasheet.to_bounded_string (content (field_datasheet)),
+									partcode		=> type_component_partcode.to_bounded_string (content (field_partcode)),
+									purpose			=> type_component_purpose.to_bounded_string (content (field_purpose)),
+									bom				=> type_bom'value (content (field_bom)),
 									-- Assemble the package variant.
 									-- NOTE: There is no way to identifiy the name of the package variant like TL084D or TL084N.
 									-- For this reason we leave the variant name empty.
@@ -4955,7 +4957,7 @@ package body et_kicad is
 
 								
 								-- Test if footprint has been associated with the component.
-								if content (text_package)'size = 0 then
+								if content (field_package)'size = 0 then
 									log_indentation_reset;
 									log (
 										text => message_error & "component " & to_string (reference) 
@@ -5035,10 +5037,10 @@ package body et_kicad is
 														with meaning => field_reference.meaning),
 									value			=> (type_text_basic (field_value)
 														with meaning => field_value.meaning),
-									updated			=> (type_text_basic (text_updated)
-														with meaning => text_updated.meaning),
-									author			=> (type_text_basic (text_author)
-														with meaning => text_author.meaning),
+									updated			=> (type_text_basic (field_updated)
+														with meaning => field_updated.meaning),
+									author			=> (type_text_basic (field_author)
+														with meaning => field_author.meaning),
 									commissioned	=> (type_text_basic (field_commissioned)
 														with meaning => field_commissioned.meaning)),
 								log_threshold => log_threshold + 1);
@@ -5064,22 +5066,22 @@ package body et_kicad is
 														with meaning => field_reference.meaning),
 									value			=> (type_text_basic (field_value)
 														with meaning => field_value.meaning),
-									packge			=> (type_text_basic (text_package)
-														with meaning => text_package.meaning),
-									datasheet		=> (type_text_basic (text_datasheet)
-														with meaning => text_datasheet.meaning),
-									purpose			=> (type_text_basic (text_purpose)
-														with meaning => text_purpose.meaning),
-									partcode		=> (type_text_basic (text_partcode)
-														with meaning => text_partcode.meaning),
-									updated			=> (type_text_basic (text_updated)
-														with meaning => text_updated.meaning),
-									author			=> (type_text_basic (text_author)
-														with meaning => text_author.meaning),
+									packge			=> (type_text_basic (field_package)
+														with meaning => field_package.meaning),
+									datasheet		=> (type_text_basic (field_datasheet)
+														with meaning => field_datasheet.meaning),
+									purpose			=> (type_text_basic (field_purpose)
+														with meaning => field_purpose.meaning),
+									partcode		=> (type_text_basic (field_partcode)
+														with meaning => field_partcode.meaning),
+									updated			=> (type_text_basic (field_updated)
+														with meaning => field_updated.meaning),
+									author			=> (type_text_basic (field_author)
+														with meaning => field_author.meaning),
 									commissioned	=> (type_text_basic (field_commissioned)
 														with meaning => field_commissioned.meaning),
-									bom				=> (type_text_basic (text_bom)
-														with meaning => text_bom.meaning)),
+									bom				=> (type_text_basic (field_bom)
+														with meaning => field_bom.meaning)),
 								log_threshold => log_threshold + 1);
 
 						when others => null; -- CS
@@ -5366,49 +5368,54 @@ package body et_kicad is
 						
 						case type_component_field_id'value (field (et_kicad.line,2)) is
 							when component_field_reference =>
-								text_reference_found	:= true;
+								field_reference_found	:= true;
 								field_reference 		:= to_text;
 								-- CS: validate prefix
 
 							when component_field_value =>
-								text_value_found		:= true;
+								field_value_found		:= true;
 								field_value 			:= to_text;
 								-- CS: check_value_characters. no need for validate_component_value to do that.
 								
 							when component_field_footprint =>
-								text_packge_found		:= true;
-								text_package 			:= to_text;
+								field_package_found		:= true;
+								field_package 			:= to_text;
+								-- CS: check_footprint_characters --> kicad special
 								
 							when component_field_datasheet =>
-								text_datasheet_found	:= true;
-								text_datasheet 			:= to_text;
+								field_datasheet_found	:= true;
+								field_datasheet 		:= to_text;
+								-- CS: check_datasheet_characters
 								
 							when component_field_function =>
-								text_purpose_found	:= true;
-								text_purpose 			:= to_text;
+								field_purpose_found	:= true;
+								field_purpose 			:= to_text;
+								-- CS: check_purpose_characters
 								
 							when component_field_partcode =>
-								text_partcode_found		:= true;
-								text_partcode 			:= to_text;
+								field_partcode_found	:= true;
+								field_partcode 			:= to_text;
+								-- CS: check_partcode_characters
 								
 							when component_field_commissioned =>
-								text_commissioned_found	:= true;
-								field_commissioned 		:= to_text;
+								field_commissioned_found	:= true;
+								field_commissioned 			:= to_text;
 								-- CS: check_date_characters
 								
 							when component_field_updated =>
-								text_updated_found	:= true;
-								text_updated 			:= to_text;
+								field_updated_found	:= true;
+								field_updated 			:= to_text;
 								-- CS: check_date_characters
 								
 							when component_field_author =>
-								text_author_found		:= true;
-								text_author 			:= to_text;
+								field_author_found		:= true;
+								field_author 			:= to_text;
+								-- CS: check_author_characters
 
 							when component_field_bom =>
-								text_bom_found			:= true;
-								text_bom				:= to_text;
-
+								field_bom_found			:= true;
+								field_bom				:= to_text;
+								validate_bom_status (content (field_bom));
 								
 							when others => null; -- CS: other fields are ignored. warning ?
 						end case;

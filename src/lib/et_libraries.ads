@@ -194,7 +194,7 @@ package et_libraries is
 		text : in et_libraries.type_text;
 		log_threshold : in et_string_processing.type_log_level);
 
-	function content ( text : in type_text) return string;
+	function content (text : in type_text) return string;
 	-- Returns the content of the given text as string.
 
 
