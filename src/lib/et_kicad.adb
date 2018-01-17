@@ -2267,7 +2267,7 @@ package body et_kicad is
 
 								-- The generic component name must be checked for invalid characters.
 								-- Since this is a kicad_v4 import, the test is to be customized (due to heading tilde characters)
-								check_component_name (name => tmp_component_name, customized => true);
+								check_generic_name_characters (name => tmp_component_name, customized => true);
 								
 								-- for the log:
 								log (field  (line,2), log_threshold); -- 74LS00
@@ -5286,8 +5286,7 @@ package body et_kicad is
 						
 						generic_name_in_lbr := type_component_name.to_bounded_string (field (et_kicad.line,2)); -- "SN74LS00"
 
-						-- test the name of the generic model 
-						check_component_name (
+						check_generic_name_characters (
 							name => generic_name_in_lbr, -- "SN74LS00"
 							customized => false); -- we do not allow tilde characters here. they occur ONLY in the library.
 
@@ -5311,6 +5310,8 @@ package body et_kicad is
 								-- Afterward we validate the prefix of the reference. 
 								-- It is about a REAL component. Its prefix must be one 
 								-- of those defined in the configuration file (see et_configuration).
+								-- CS check_prefix_characters (reference.prefix, component_prefix_characters);
+								
 								reference := et_configuration.validate_prefix (to_component_reference (
 									text_in => field (et_kicad.line,3),
 									allow_special_character_in_prefix => false));
@@ -5329,7 +5330,7 @@ package body et_kicad is
 
 						-- KiCad uses positive numbers to identifiy units. But in general a unit name can
 						-- be a string as well. Therefore we handle the unit id as string.
-						unit_name := type_unit_name.to_bounded_string (
+						unit_name := type_unit_name.to_bounded_string ( -- CS: check_unit_name_characters
 							field (et_kicad.line,2)); -- the unit id
 
 						-- Read DeMorgan flag:

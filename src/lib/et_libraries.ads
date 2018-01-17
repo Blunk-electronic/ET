@@ -305,7 +305,7 @@ package et_libraries is
 		or to_set('-') 
 		or to_set('_'); 
 
-	procedure check_component_name (
+	procedure check_generic_name_characters (
 	-- Checks if the the given generic component name meets certain conventions.
 		name : in type_component_name.bounded_string; -- TRANSISTOR_NPN
 		customized : in boolean := false); -- when true use customized character set

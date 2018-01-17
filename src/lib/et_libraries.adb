@@ -126,7 +126,7 @@ package body et_libraries is
 		return type_pin_name.to_string (pin_name);
 	end to_string;
 
-	procedure check_component_name (
+	procedure check_generic_name_characters (
 	-- Checks if the given generic component name meets certain conventions.
 		name : in type_component_name.bounded_string; -- TRANSISTOR_NPN
 		customized : in boolean := false) -- when true use customized character set
@@ -201,7 +201,7 @@ package body et_libraries is
 
 		-- CS: other checks ?
 
-	end check_component_name;
+	end check_generic_name_characters;
 
 	function strip_tilde (generic_name : in type_component_name.bounded_string) return
 		type_component_name.bounded_string is
