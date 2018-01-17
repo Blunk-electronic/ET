@@ -307,13 +307,6 @@ package et_kicad is
 
 -- IMPORT
 
-	-- section flags
-	section_eeschema_entered 			: boolean := false;
-	section_eeschema_libraries_entered	: boolean := false;            
-
-	procedure clear_section_entered_flags;
-	-- clears section_eeschema_entered and section_eeschema_libraries_entered.
-
 	schematic_version_valid 	: boolean := false;	
 	sheet_header_entered		: boolean := false;	
 	description_entered			: boolean := false;

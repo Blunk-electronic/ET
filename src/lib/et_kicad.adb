@@ -1201,7 +1201,8 @@ package body et_kicad is
 				return type_text is
 			-- Reads general text field properties from subfields 3..9 and returns a type_text with 
 			-- the meaning as given in parameter "meaning".
-			-- Checks basic properties of text fields (allowed charactes, content, text size, aligment, ...)
+			-- Checks basic properties of text fields (allowed charactes, text size, aligment, ...)
+			-- NOTE: The contextual validation takes place in procedure check_text_fields.
 				use et_coordinates;
 				use et_libraries.type_text_content;
 
@@ -1280,7 +1281,7 @@ package body et_kicad is
 
 			procedure check_text_fields (log_threshold : in type_log_level) is
 			-- Tests if all text fields have been found by evaluating the "field found flags".
-			-- Checks the content of the fields.
+			-- Validates the fields in context with each other.
 			-- NOTE: This is library related stuff.
 			
 				procedure missing_field (meaning : in et_libraries.type_text_meaning) is 
@@ -2534,14 +2535,6 @@ package body et_kicad is
 	end read_components_libraries;
 
 
-	procedure clear_section_entered_flags is
-	-- clears section_eeschema_entered and section_eeschema_libraries_entered.
-	begin
-		section_eeschema_entered := false;
-		section_eeschema_libraries_entered := false;
-	end clear_section_entered_flags;
-
-	
 	procedure import_design (log_threshold : in et_string_processing.type_log_level) is
 		--use et_import.type_schematic_file_name;
 		use et_libraries.type_library_directory;
@@ -2569,6 +2562,17 @@ package body et_kicad is
 			use et_libraries;
 			use et_schematic;
 
+			-- "section entered flags"
+			section_eeschema_entered 			: boolean := false;
+			section_eeschema_libraries_entered	: boolean := false;            
+		
+			procedure clear_section_entered_flags is
+			-- clears section_eeschema_entered and section_eeschema_libraries_entered.
+			begin
+				section_eeschema_entered := false;
+				section_eeschema_libraries_entered := false;
+			end clear_section_entered_flags;
+		
 		begin -- read_project_file
 			log_indentation_reset;
 			log (
@@ -2682,8 +2686,6 @@ package body et_kicad is
 					);
 		end read_project_file;
 
-
-		
 		function to_angle (text_in : in string) return et_coordinates.type_angle is
 		-- Converts the label orientation to type_angle.
 		-- CS: use a dedicated type for input parameter.
@@ -2699,7 +2701,6 @@ package body et_kicad is
 			return o_out;
 			-- CS: exception handler
 		end to_angle;
-
 		
 		function to_direction (text_in : in string) return type_label_direction is
 		-- Converts the direction of a label to a type_label_direction. 
@@ -2724,7 +2725,6 @@ package body et_kicad is
 			
 			return d_out;
 		end to_direction;		
-
 
 		-- Prodcedures that set the s,e or picked flag in a wild net segment. 
 		-- CS: move them to function search_for_same_coordinates
@@ -4452,7 +4452,8 @@ package body et_kicad is
 			
 			procedure make_component (lines : in type_lines.list) is
 			-- Builds a unit or a component and inserts it in the component list of 
-			-- current module.
+			-- current module. The information required to make a component is provided
+			-- in parameter "lines".
 
 			-- Some entries of the component section are relevant for the whole component.
 			-- Some entries are unit specific.
@@ -4485,10 +4486,10 @@ package body et_kicad is
 				use et_libraries;
 				use et_string_processing;
 
-				reference					: type_component_reference;			
+				reference					: type_component_reference;	-- like IC5	
 				appearance					: type_component_appearance := et_libraries.sch; -- CS: why this default ?
 				generic_name_in_lbr			: type_component_name.bounded_string; -- like TRANSISTOR_PNP
-				unit_name					: type_unit_name.bounded_string;			
+				unit_name					: type_unit_name.bounded_string; -- A, B, PWR, CT, IO-BANK1 ...
 				position					: et_coordinates.type_coordinates;
 				orientation					: et_coordinates.type_angle;
 				mirror						: type_mirror;
@@ -4496,7 +4497,7 @@ package body et_kicad is
 				alternative_representation	: et_schematic.type_alternative_representation;
 			
 				-- These are the "field found flags". They signal if a particular text field has been found.
-				-- They are evaluated when a component section is read completely, before assembling the unit/component.
+				-- They are evaluated once the given lines are read completely.
 				field_reference_found		: boolean := false;
 				field_value_found			: boolean := false;
 				field_commissioned_found	: boolean := false;
@@ -4508,21 +4509,22 @@ package body et_kicad is
 				field_partcode_found		: boolean := false;
 				field_bom_found				: boolean := false;
 
-				field_reference		: type_text (meaning => et_libraries.reference);
-				field_value			: type_text (meaning => value);
-				field_commissioned 	: type_text (meaning => commissioned);
-				field_updated		: type_text (meaning => updated);
-				field_author		: type_text (meaning => author);
+				-- These are the actual fields that descibe the component more detailled.
+				-- They are contextual validated once the given lines are read completely.
+				field_reference		: type_text (meaning => et_libraries.reference); -- like IC5 (redundant information with referenc, see above)
+				field_value			: type_text (meaning => value);	-- like 74LS00
+				field_commissioned 	: type_text (meaning => commissioned); -- 2018-01-04T03:56:09
+				field_updated		: type_text (meaning => updated); -- 2018-02-04T03:56:09
+				field_author		: type_text (meaning => author); -- like Steve Miller
 				field_package		: type_text (meaning => packge); -- like "bel_primiteves:S_SOT23"
 				field_datasheet		: type_text (meaning => datasheet); -- might be useful for some special components
 				field_purpose		: type_text (meaning => purpose); -- to be filled in schematic later by the user
 				field_partcode		: type_text (meaning => partcode); -- like "R_PAC_S_0805_VAL_"
-				field_bom			: type_text (meaning => bom);
+				field_bom			: type_text (meaning => bom); -- yes/no
 			
-				function to_text return et_libraries.type_text is
+				function to_field return et_libraries.type_text is
 				-- Converts a field like "F 1 "green" H 2700 2750 50  0000 C CNN" to a type_text
 					function field (line : in type_fields_of_line; position : in positive) return string renames get_field_from_line;
-			
 					text_position : type_2d_point;
 				begin
 					set_x (text_position, mil_to_distance (field (et_kicad.line,5)));
@@ -4556,13 +4558,12 @@ package body et_kicad is
 										horizontal	=> to_alignment_horizontal (field (et_kicad.line,9)),
 										vertical	=> to_alignment_vertical   (field (et_kicad.line,10)))
 						);
-				end to_text;
+				end to_field;
 
 				procedure check_text_fields (log_threshold : in type_log_level) is 
 				-- Tests if any "field found" flag is still cleared and raises an alarm in that case.
-				-- Perfoms a plausibility and context check on the text fields before they are used to 
+				-- Perfoms a contextual validation of the text fields before they are used to 
 				-- assemble and insert the component into the component list of the module.
-				-- This can be regarded as a kind of pre-check.
 				
 				-- CS: check text size and width in regard to meaning
 				
@@ -5382,52 +5383,52 @@ package body et_kicad is
 						case type_component_field_id'value (field (et_kicad.line,2)) is
 							when component_field_reference =>
 								field_reference_found	:= true;
-								field_reference 		:= to_text;
-								-- CS: validate prefix
+								field_reference 		:= to_field;
+								-- CS: check_prefix_characters
 
 							when component_field_value =>
 								field_value_found		:= true;
-								field_value 			:= to_text;
+								field_value 			:= to_field;
 								-- CS: check_value_characters. no need for validate_component_value to do that.
 								
 							when component_field_footprint =>
 								field_package_found		:= true;
-								field_package 			:= to_text;
+								field_package 			:= to_field;
 								-- CS: check_footprint_characters --> kicad special
 								
 							when component_field_datasheet =>
 								field_datasheet_found	:= true;
-								field_datasheet 		:= to_text;
+								field_datasheet 		:= to_field;
 								-- CS: check_datasheet_characters
 								
 							when component_field_function =>
 								field_purpose_found	:= true;
-								field_purpose 			:= to_text;
+								field_purpose 			:= to_field;
 								-- CS: check_purpose_characters
 								
 							when component_field_partcode =>
 								field_partcode_found	:= true;
-								field_partcode 			:= to_text;
+								field_partcode 			:= to_field;
 								-- CS: check_partcode_characters
 								
 							when component_field_commissioned =>
 								field_commissioned_found	:= true;
-								field_commissioned 			:= to_text;
+								field_commissioned 			:= to_field;
 								-- CS: check_date_characters
 								
 							when component_field_updated =>
 								field_updated_found	:= true;
-								field_updated 			:= to_text;
+								field_updated 			:= to_field;
 								-- CS: check_date_characters
 								
 							when component_field_author =>
 								field_author_found		:= true;
-								field_author 			:= to_text;
+								field_author 			:= to_field;
 								-- CS: check_author_characters
 
 							when component_field_bom =>
 								field_bom_found			:= true;
-								field_bom				:= to_text;
+								field_bom				:= to_field;
 								validate_bom_status (content (field_bom));
 								
 							when others => null; -- CS: other fields are ignored. warning ?
