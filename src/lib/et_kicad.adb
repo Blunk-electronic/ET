@@ -1223,12 +1223,13 @@ package body et_kicad is
 				text.content := type_text_content.to_bounded_string (strip_quotes (field (line,2)));
 				
 				-- check content vs. meaning. 
-				-- NOTE: Not all fields can be checked here due to missing context with other fields.
-				-- These checks are posponed until call of procedure check_text_fields. 
-				-- For example: 
-				--   - prefix -> depends on appearance 
 				case meaning is
 
+					when REFERENCE =>
+						check_prefix_characters (
+							prefix => type_component_prefix.to_bounded_string (content (text)),
+							characters => et_kicad.component_prefix_characters);
+					
 					when VALUE =>
 						check_value_characters (
 							value => type_component_value.to_bounded_string (content (text)),
@@ -2285,7 +2286,7 @@ package body et_kicad is
 								check_generic_name_characters (name => tmp_component_name, customized => true);
 								
 								-- for the log:
-								log (field  (line,2), log_threshold); -- 74LS00
+								log (field (line,2), log_threshold); -- 74LS00
 
 								-- From the header we extract some basic information about the component:
 								
@@ -2301,10 +2302,16 @@ package body et_kicad is
 								--  #9 : all units not interchangeable L (otherwise F), (similar to swap level in EAGLE)
 								--  #10: power symbol P (otherwise N)
 
-								tmp_prefix := type_component_prefix.to_bounded_string (field  (line,3)); -- U
+								tmp_prefix := type_component_prefix.to_bounded_string (field (line,3)); -- U
+
+								-- Detect invalid characters in tmp_prefix:
+								check_prefix_characters (
+									prefix => tmp_prefix,
+									characters => et_kicad.component_prefix_characters);
+								
 								tmp_port_name_offset	:= mil_to_distance (mil => field  (line,5), warn_on_negative => false); -- relevant for supply pins only
-								tmp_pin_name_visible	:= to_pin_visibile (field  (line,6));
-								tmp_port_name_visible	:= to_port_visibile (field  (line,7));
+								tmp_pin_name_visible	:= to_pin_visibile (field (line,6));
+								tmp_port_name_visible	:= to_port_visibile (field (line,7));
 								
 								-- Get number of units and set swap level as specified in field #9.
 								-- Swap level assumes default if only one unit available.
@@ -2768,6 +2775,15 @@ package body et_kicad is
 			-- this container for temporarily storage of anonymous strands.
 			anonymous_strands : type_anonymous_strands.list; 
 
+			procedure error_in_schematic_file (line : in type_fields_of_line) is
+			begin
+				log_indentation_reset;
+				log (message_error & "in schematic file '" 
+					& to_string (current_schematic) & "' " 
+					& et_string_processing.affected_line (line),
+					console => true);
+			end error_in_schematic_file;
+		
 			procedure add_segment_to_anonymous_strand (segment_cursor : in type_wild_segments.cursor) is
 			-- Adds a net segment (indicated by given cursor) to anonymous_strand.
 			-- This procedure happens to be called for a certain segment more than once (unavoidable). So the flag "picked" serves
@@ -5486,6 +5502,11 @@ package body et_kicad is
 
 				-- We update the component with the collected unit information.
 				insert_unit;
+
+				exception
+					when others => 
+						error_in_schematic_file (et_kicad.line);
+						raise;
 				
 			end make_component;
 
@@ -5846,24 +5867,8 @@ package body et_kicad is
 			return list_of_submodules;
 
 			exception
-				-- CS: log exception message
-				when event:
-					constraint_error =>
-						log_indentation_reset;
-						log (message_error & "in schematic file '" 
-							& to_string (current_schematic) & "' " 
-							& et_string_processing.affected_line (line),
-							console => true);
-							et_import.close_report;
--- 						put_line (standard_output, "Read import report for warnings and error messages !"); -- CS: show path to report file
-						raise;
-
 				when others =>
-					log_indentation_reset;
-					log (message_error & "in schematic file '" 
-						 & to_string (current_schematic) & "' " 
-						 & et_string_processing.affected_line (line),
-						console => true);
+					error_in_schematic_file (line);
 					et_import.close_report;
 -- 					put_line (standard_output, "Read import report for warnings and error messages !"); -- CS: show path to report file
 					raise;					

@@ -308,7 +308,7 @@ package et_libraries is
 	procedure check_generic_name_characters (
 	-- Checks if the the given generic component name meets certain conventions.
 		name : in type_component_name.bounded_string; -- TRANSISTOR_NPN
-		customized : in boolean := false); -- when true use customized character set
+		customized : in boolean := false); -- when true use customized character set -- CS: pass character set instead
 		-- for the test (depends on import CAD format).
 
 	function strip_tilde (generic_name : in type_component_name.bounded_string) return

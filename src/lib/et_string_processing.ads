@@ -221,12 +221,12 @@ package et_string_processing is
 	function get_field_from_line (line : in type_fields_of_line; position : in positive) return string; 
 	-- CS: rename to "field". position should be a count_type
 
-	function to_string ( line : in type_fields_of_line) return string;
+	function to_string (line : in type_fields_of_line) return string;
 
-	function affected_line ( line : in type_fields_of_line ) return string;
+	function affected_line (line : in type_fields_of_line) return string;
 	-- Returns the line number of the given line in a string like "line x:"
 
-	function field_count ( line : in type_fields_of_line) return count_type;
+	function field_count (line : in type_fields_of_line) return count_type;
 	-- Returns the number of fields in the given line.
 
 	function lines_equally (left, right : in type_fields_of_line) return boolean;
