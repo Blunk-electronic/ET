@@ -432,14 +432,11 @@ package body et_libraries is
 		return type_component_prefix.to_string (prefix);
 	end to_string;
 
-	function check_prefix_characters (
+	procedure check_prefix_characters (
 		prefix : in type_component_prefix.bounded_string;
-		characters : in character_set)
-		return type_component_prefix.bounded_string is
+		characters : in character_set) is
 	-- Tests if the given prefix contains only valid characters as specified
-	-- by given character set.
-	-- Raises exception if invalid character found.
-	-- Returns prefix unchanged otherwise.	
+	-- by given character set. Raises exception if invalid character found.
 		use et_string_processing;
 		invalid_character_position : natural := 0;
 	begin
@@ -457,8 +454,6 @@ package body et_libraries is
 				);
 			raise constraint_error;
 		end if;
-		
-		return prefix;
 	end check_prefix_characters;
 	
 	function to_string (appearance : in type_component_appearance) return string is
@@ -498,6 +493,28 @@ package body et_libraries is
 		return type_bom'image (bom);
 	end to_string;
 
+	procedure check_bom_characters (bom : in string) is
+	-- Checks if given string is a bom status. Case sensitive ! 
+		use et_string_processing;
+	begin
+		if bom = type_bom'image (YES) then
+			null;
+		elsif bom = type_bom'image (NO) then
+			null;
+		else
+			log_indentation_reset;
+			log (message_error & "BOM status '"
+					& bom & "' invalid !" 
+					& " Must be either "
+					& to_string (YES) & " or "
+					& to_string (NO) & " !",
+				console => true);
+			raise constraint_error;
+		end if;
+
+		-- CS: warning if lower case used
+	end check_bom_characters;
+	
 	procedure validate_bom_status (text : in string) is
 	-- Validates BOM status. Case sensitive !
 		use et_string_processing;

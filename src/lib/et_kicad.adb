@@ -1195,19 +1195,23 @@ package body et_kicad is
 			end to_port;
 
 					
-			function read_field (meaning : in type_text_meaning) return type_text is
+			function to_field (
+				line 	: in type_fields_of_line;
+				meaning	: in type_text_meaning) 
+				return type_text is
 			-- Reads general text field properties from subfields 3..9 and returns a type_text with 
 			-- the meaning as given in parameter "meaning".
 			-- Checks basic properties of text fields (allowed charactes, content, text size, aligment, ...)
 				use et_coordinates;
 				use et_libraries.type_text_content;
-			
+
+				-- instantiate a text field as speficied by given parameter meaning
 				text : type_text (meaning);
 
 				function field (line : in type_fields_of_line; position : in positive) return string renames
 					et_string_processing.get_field_from_line;
 			
-			begin
+			begin -- to_field
 				-- field #:
 				-- 3/4 : x/y coordinates
 				-- 5 : size
@@ -1220,8 +1224,9 @@ package body et_kicad is
 				
 				-- check content vs. meaning. 
 				-- NOTE: Not all fields can be checked here due to missing context with other fields.
+				-- These checks are posponed until call of procedure check_text_fields. 
 				-- For example: 
-				--   - prefix -> depends on appearance
+				--   - prefix -> depends on appearance 
 				case meaning is
 
 					when VALUE =>
@@ -1231,8 +1236,12 @@ package body et_kicad is
 							characters => component_value_characters);
 					
 					when BOM =>
-						validate_bom_status (content (text));
+						check_bom_characters (content (text));
 
+						-- CS: check_author_characters, check_date_characters,
+						-- check_partcode_characters, 
+						-- check_footprint_characters -> kicad specific
+						-- check_purpose_characters
 					
 					when others => null; -- CS
 
@@ -1267,7 +1276,7 @@ package body et_kicad is
 				
 				-- NOTE: text.line_width assumes default as no explicit line width is provided here.
 				return text;
-			end read_field;
+			end to_field;
 
 			procedure check_text_fields (log_threshold : in type_log_level) is
 			-- Tests if all text fields have been found by evaluating the "field found flags".
@@ -1293,31 +1302,31 @@ package body et_kicad is
 				if not field_value_found then
 					missing_field (field_value.meaning);
 				else
-					null; -- CS
+					null; -- CS validate_value ?
 				end if;
 
 				log ("author", level => log_threshold + 1);				
 				if not field_author_found then
 					missing_field (field_author.meaning);
 				else
-					null; -- CS
+					null; -- CS validate_author
 				end if;
 
 				log ("commissioned", level => log_threshold + 1);
 				if not field_commissioned_found then
 					missing_field (field_commissioned.meaning);
 				else
-					null; -- CS
+					null; -- CS validate_commissioned
 				end if;
 
 				log ("updated", level => log_threshold + 1);
 				if not field_updated_found then
 					missing_field (field_updated.meaning);
 				else
-					null; -- CS
+					null; -- CS validate_updated
 				end if;
 				
-				
+				-- appearance specifig fields:
 				case tmp_appearance is
 					when sch_pcb =>
 						-- This is a real component.
@@ -1330,11 +1339,11 @@ package body et_kicad is
 						if not field_prefix_found then
 							missing_field (field_reference.meaning);
 						else
-							et_configuration.validate_prefix (
-								check_prefix_characters (
-									prefix => tmp_prefix,
-									characters => et_libraries.component_prefix_characters)
-								);
+							check_prefix_characters (
+								prefix => tmp_prefix,
+								characters => et_libraries.component_prefix_characters);
+							
+							et_configuration.validate_prefix (tmp_prefix);
 						end if;
 							
 						log ("package/footprint", level => log_threshold + 1);
@@ -1381,6 +1390,7 @@ package body et_kicad is
 						if not field_datasheet_found then
 							missing_field (field_datasheet.meaning);
 						else
+							-- CS validate_datasheet
 							null; -- CS
 						end if;
 
@@ -1388,6 +1398,7 @@ package body et_kicad is
 						if not field_bom_found then
 							missing_field (field_bom.meaning);
 						else
+							-- CS validate_bom_status
 							null; -- CS
 						end if;
 						
@@ -1395,6 +1406,7 @@ package body et_kicad is
 						if not field_purpose_found then
 							missing_field (field_purpose.meaning);
 						else
+							-- CS: validate_purpose
 							null; -- CS
 						end if;
 
@@ -1408,9 +1420,11 @@ package body et_kicad is
 						if not field_prefix_found then
 							missing_field (field_reference.meaning);
 						else
-							validate_prefix (check_prefix_characters (
+							check_prefix_characters (
 								prefix => tmp_prefix,
-								characters => component_prefix_characters));
+								characters => component_prefix_characters);
+							
+							validate_prefix (tmp_prefix);
 						end if;
 						
 					when pcb => null; --CS
@@ -2062,7 +2076,6 @@ package body et_kicad is
 			-- F4 "1974-12-27T23:04:22" 650 100 60 H I C CNN "commissioned"
 			-- F5 "2017-01-23T23:04:22" 650 0 60 H I C CNN "updated"
 			-- F6 "MBL" 450 -100 60 H I C CNN "author"
-
 				function field (line : in type_fields_of_line; position : in positive) return string renames
 					et_string_processing.get_field_from_line;
 					
@@ -2087,14 +2100,14 @@ package body et_kicad is
 						end if;
 
 						field_prefix_found := true;
-						field_reference := read_field (meaning => reference);
+						field_reference := to_field (line => line, meaning => reference);
 						-- for the log:
 						write_text_properies (type_text (field_reference), log_threshold + 1);
 
 					-- If we have a value field like "F1 "74LS00" 0 -100 50 H V C CNN"
 					when value =>
 						field_value_found := true;
-						field_value := read_field (meaning => value);
+						field_value := to_field (line => line, meaning => value);
 						
 						-- for the log:
 						write_text_properies (type_text (field_value), log_threshold + 1);
@@ -2105,7 +2118,7 @@ package body et_kicad is
 					when packge =>
 
 						field_package_found := true;
-						field_package := read_field (meaning => packge);
+						field_package := to_field (line => line, meaning => packge);
 						-- for the log:
 						write_text_properies (type_text (field_package), log_threshold + 1);
 
@@ -2113,7 +2126,7 @@ package body et_kicad is
 					when datasheet =>
 
 						field_datasheet_found := true;
-						field_datasheet := read_field (meaning => datasheet);
+						field_datasheet := to_field (line => line, meaning => datasheet);
 						-- for the log:
 						write_text_properies (type_text (field_datasheet), log_threshold + 1);
 
@@ -2127,7 +2140,7 @@ package body et_kicad is
 					
 						if to_lower (strip_quotes (field (line,10))) = to_lower (type_text_meaning'image (purpose)) then
 							field_purpose_found := true;
-							field_purpose := read_field (meaning => purpose);
+							field_purpose := to_field (line => line, meaning => purpose);
 							-- for the log:
 							write_text_properies (type_text (field_purpose), log_threshold + 1);
 							-- basic_text_check(fnction); -- CS
@@ -2142,7 +2155,7 @@ package body et_kicad is
 					
 						if to_lower (strip_quotes(field (line,10))) = to_lower (type_text_meaning'image (partcode)) then
 							field_partcode_found := true;
-							field_partcode := read_field (meaning => partcode);
+							field_partcode := to_field (line => line, meaning => partcode);
 							-- for the log:
 							write_text_properies (type_text (field_partcode), log_threshold + 1);
 							-- basic_text_check(partcode); -- CS
@@ -2157,7 +2170,7 @@ package body et_kicad is
 					
 						if to_lower (strip_quotes(field (line,10))) = to_lower (type_text_meaning'image (commissioned)) then
 							field_commissioned_found := true;
-							field_commissioned := read_field (meaning => commissioned);
+							field_commissioned := to_field (line => line, meaning => commissioned);
 							-- for the log:
 							write_text_properies (type_text (field_commissioned), log_threshold + 1);
 							-- basic_text_check(commissioned); -- CS
@@ -2172,7 +2185,7 @@ package body et_kicad is
 					
 						if to_lower (strip_quotes(field (line,10))) = to_lower (type_text_meaning'image (updated)) then
 							field_updated_found := true;
-							field_updated := read_field (meaning => updated);
+							field_updated := to_field (line => line, meaning => updated);
 							-- for the log:
 							write_text_properies (type_text (field_updated), log_threshold + 1);
 							-- basic_text_check(updated); -- CS
@@ -2187,7 +2200,7 @@ package body et_kicad is
 					
 						if to_lower (strip_quotes(field (line,10))) = to_lower (type_text_meaning'image (author)) then
 							field_author_found := true;
-							field_author := read_field (meaning => author);
+							field_author := to_field (line => line, meaning => author);
 							-- for the log:
 							write_text_properies (type_text (field_author), log_threshold + 1);
 							-- basic_text_check(author); -- CS
@@ -2202,7 +2215,7 @@ package body et_kicad is
 					
 						if to_lower (strip_quotes (field (line,10))) = to_lower (type_text_meaning'image (bom)) then
 							field_bom_found := true;
-							field_bom := read_field (meaning => bom);
+							field_bom := to_field (line => line, meaning => bom);
 							-- for the log:
 							write_text_properies (type_text (field_bom), log_threshold + 1);
 							-- basic_text_check (bom); -- CS
@@ -2219,7 +2232,6 @@ package body et_kicad is
 				
 				-- CS: check appearance vs. function vs. partcode -- see stock_manager	
 			end read_field;
-
 		
 		begin -- read_library
 			log_indentation_up;

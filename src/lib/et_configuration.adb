@@ -313,7 +313,9 @@ package body et_configuration is
 					log (message_warning & affected_line (element (line_cursor)) & "multiple occurence of assignment ! Entry ignored !");
 				end if;
 			end test_multiple_occurences;
-		
+
+			prefix : type_component_prefix.bounded_string;
+			
 			-- CS: check field count in sections respecitvely. issue warning if too many fields. 
 		begin
 			next (line_cursor); -- the first line of the section is its header itself and can be skipped
@@ -326,9 +328,15 @@ package body et_configuration is
 				when component_prefixes =>
 					log ("component prefixes ...", log_threshold + 1);
 					log_indentation_up;
+
 					while line_cursor /= type_lines.no_element loop
 						log (to_string (element (line_cursor)), log_threshold + 2);
 
+						-- Test if prefix contains only allowed characters. Then use it as key in this map.
+						-- We test against the default character set as specified in et_libraries.
+						prefix := type_component_prefix.to_bounded_string (field (element (line_cursor), 1));
+						check_prefix_characters (prefix, component_prefix_characters);
+						
 						-- insert the prefix assignment in container component_prefixes
 						type_component_prefixes.insert (
 							container => et_configuration.component_prefixes,
@@ -336,12 +344,8 @@ package body et_configuration is
 
 							-- If entry already in map, this flag goes true. Warning issued later. see below.
 							inserted => inserted,
-							
-							-- Test if prefix contains only allowed characters. Then use it as key in this map.
-							-- We test against the default character set as specified in et_libraries.
-							key => check_prefix_characters (
-								prefix => type_component_prefix.to_bounded_string (field (element (line_cursor), 1)),
-								characters => component_prefix_characters),
+	
+							key => prefix,
 
 							-- Test if component category is valid. Then use it as new item.
 							new_item => type_component_category'value (field (element (line_cursor), 2)));
@@ -370,7 +374,7 @@ package body et_configuration is
 							key => type_component_unit_meaning'value (field (element (line_cursor), 2)),
 							
 							-- the item is the unit of measurement. it must be validated before.
-							new_item => check_unit_characters (
+							new_item => check_unit_characters ( -- CS: should be a procedure. separate value for unit (as with prefix)
 									unit => type_component_unit.to_bounded_string (field (element (line_cursor), 1)),
 									characters => component_unit_characters)
 							);

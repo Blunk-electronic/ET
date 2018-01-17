@@ -342,8 +342,7 @@ package et_libraries is
 		value : in type_component_value.bounded_string;
 		characters : in character_set);
 	-- Tests if the given value contains only valid characters as specified
-	-- by given character set.
-	-- Raises exception if invalid character found.
+	-- by given character set. Raises exception if invalid character found.
 	
 	-- For some component (not all !) it is helpful to have an URL to the datasheet:
 	component_datasheet_length_max : constant positive := 1000;
@@ -359,14 +358,12 @@ package et_libraries is
 	function to_string (prefix : in type_component_prefix.bounded_string) return string;
 	-- returns the given prefix as string
 
-	function check_prefix_characters (
+	procedure check_prefix_characters (
 		prefix : in type_component_prefix.bounded_string;
-		characters : in character_set)
-		return type_component_prefix.bounded_string;
+		characters : in character_set);
 	-- Tests if the given prefix contains only valid characters as specified
 	-- by given character set.
 	-- Raises exception if invalid character found.
-	-- Returns prefix unchanged otherwise.	
 	
 	type type_component_reference_element is (PREFIX, ID);
 	component_reference_prefix_default : constant type_component_prefix.bounded_string := to_bounded_string("?");
@@ -712,7 +709,10 @@ package et_libraries is
 	function to_string (bom : in type_bom) return string;
 	-- Returns the given bom variable as string.
 
-	procedure validate_bom_status (text : in string);
+	procedure check_bom_characters (bom : in string);
+	-- Checks if given string is a bom status. Case sensitive !
+	
+	procedure validate_bom_status (text : in string); -- CS: requires appearance and category
 	-- Validates BOM status. Case sensitive !	
 	
 	procedure validate_component_partcode_in_library (
