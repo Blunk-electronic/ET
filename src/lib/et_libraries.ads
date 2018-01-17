@@ -296,8 +296,9 @@ package et_libraries is
 
 
 	-- The generic name of a component in the library. 
- 	component_name_length_max : constant natural := 100;
-	package type_component_name is new generic_bounded_length (component_name_length_max); use type_component_name; -- CS: rename to type_generic_component_name
+ 	component_generic_name_length_max : constant natural := 100;
+	package type_component_generic_name is new generic_bounded_length (component_generic_name_length_max);
+	use type_component_generic_name;
 	-- Only those characters are allowed for the generic component name.
 	-- See et_import.check_component_name for customization depending on CAD format.
 	component_generic_name_characters : character_set := to_set 
@@ -307,20 +308,20 @@ package et_libraries is
 
 	procedure check_generic_name_characters (
 	-- Checks if the the given generic component name meets certain conventions.
-		name : in type_component_name.bounded_string; -- TRANSISTOR_NPN
+		name : in type_component_generic_name.bounded_string; -- TRANSISTOR_NPN
 		characters : in character_set := component_generic_name_characters);
 
-	function strip_tilde (generic_name : in type_component_name.bounded_string) return
-		type_component_name.bounded_string;
+	function strip_tilde (generic_name : in type_component_generic_name.bounded_string) return
+		type_component_generic_name.bounded_string;
 	-- Removes a heading tilde character from a generic component name.
 	-- example: ~TRANSISTOR_NPN becomes TRANSISTOR_NPN
 
-	function prepend_tilde (generic_name : in type_component_name.bounded_string) return
-		type_component_name.bounded_string;
+	function prepend_tilde (generic_name : in type_component_generic_name.bounded_string) return
+		type_component_generic_name.bounded_string;
 	-- Prepends a heading tilde character to a generic component name.
 	-- example: TRANSISTOR_NPN becomes ~TRANSISTOR_NPN
 	
-	function to_string (name_in_library : in type_component_name.bounded_string) return string;
+	function to_string (name_in_library : in type_component_generic_name.bounded_string) return string;
 	-- Returns the given name_in_library as as string.
 
 	-- The component value is something like 330R or 100n or 74LS00
@@ -726,7 +727,7 @@ package et_libraries is
 	procedure validate_component_partcode_in_library (
 	-- Tests if the given partcode of a library component is correct.
 		partcode	: in type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_
-		name		: in type_component_name.bounded_string;			-- 74LS00	
+		name		: in type_component_generic_name.bounded_string;	-- 74LS00	
 		prefix		: in type_component_prefix.bounded_string;			-- R
 		packge		: in type_component_package_name.bounded_string;	-- S_0805
 		bom			: in type_bom);	-- YES, NO
@@ -780,7 +781,7 @@ package et_libraries is
 	-- Components are stored in a map.
 	-- Within the map they are accessed by a key type_component_name (something like "CAPACITOR").
 	package type_components is new indefinite_ordered_maps (
-		key_type => type_component_name.bounded_string, -- example: "TRANSISTOR_PNP"
+		key_type => type_component_generic_name.bounded_string, -- example: "TRANSISTOR_PNP"
 		element_type => type_component);
 	use type_components;
 
@@ -803,7 +804,7 @@ package et_libraries is
 	function find_component (
 	-- Searches the given library for the given component. Returns a cursor to that component.
 		library		: in type_full_library_name.bounded_string;
-		component	: in type_component_name.bounded_string) 
+		component	: in type_component_generic_name.bounded_string) 
 		return type_components.cursor;
 
 	function first_internal_unit (
@@ -819,7 +820,7 @@ package et_libraries is
 	procedure no_generic_model_found (
 		reference : in type_component_reference; -- IC303
 		library : in type_full_library_name.bounded_string; -- ../lib/xilinx.lib
-		generic_name : in type_component_name.bounded_string);
+		generic_name : in type_component_generic_name.bounded_string);
 
 		
 		

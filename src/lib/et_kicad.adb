@@ -575,7 +575,7 @@ package body et_kicad is
 			-- These are variables used to temporarily hold component properties before the component
 			-- gets fully assembled and inserted into the component list of a particular library.
 			-- These properties apply for the whole component (means for all its units): -- CS: move them to specs ?
-			tmp_component_name		: type_component_name.bounded_string; -- 74LS00
+			tmp_component_name		: type_component_generic_name.bounded_string; -- 74LS00
 			tmp_prefix				: type_component_prefix.bounded_string; -- IC
 			tmp_appearance			: type_component_appearance;
 
@@ -1550,7 +1550,7 @@ package body et_kicad is
 		
 				procedure locate_unit (
 				-- sets the unit_cursor
-					key			: in type_component_name.bounded_string;
+					key			: in type_component_generic_name.bounded_string;
 					component	: in type_component) is
 				begin
 					unit_cursor := component.units_internal.find (to_unit_name (tmp_unit_id));
@@ -1590,7 +1590,7 @@ package body et_kicad is
 			
 				procedure insert_unit (
 				-- Inserts an internal unit in a component.
-					key			: in type_component_name.bounded_string;
+					key			: in type_component_generic_name.bounded_string;
 					component	: in out type_component) is
 
 					unit : type_unit_internal (tmp_appearance);
@@ -1706,7 +1706,7 @@ package body et_kicad is
 				
 				procedure locate_unit (
 				-- Locates the unit indicated by unit_cursor.
-					key			: in type_component_name.bounded_string;
+					key			: in type_component_generic_name.bounded_string;
 					component	: in out type_component) is
 				begin
 					component.units_internal.update_element (unit_cursor, insert'access);
@@ -1777,7 +1777,7 @@ package body et_kicad is
 				
 				procedure locate_unit (
 				-- Locates the unit indicated by unit_cursor.
-					key			: in type_component_name.bounded_string;
+					key			: in type_component_generic_name.bounded_string;
 					component	: in out type_component) is
 				begin
 					component.units_internal.update_element (unit_cursor, set'access);
@@ -2038,7 +2038,7 @@ package body et_kicad is
 				procedure do_it (libraries : in out type_libraries.map) is
 				-- Adds the footprint finally.
 					procedure insert_footprint (
-						key			: in type_component_name.bounded_string;
+						key			: in type_component_generic_name.bounded_string;
 						component	: in out type_component) is
 					begin
 						component.package_filter.insert (fp);
@@ -2279,7 +2279,7 @@ package body et_kicad is
 								active_section := fields;
 
 								-- The commponent header provides the first component properties:
-								tmp_component_name := et_libraries.type_component_name.to_bounded_string (field (line,2)); -- 74LS00
+								tmp_component_name := et_libraries.type_component_generic_name.to_bounded_string (field (line,2)); -- 74LS00
 
 								-- The generic component name must be checked for invalid characters.
 								-- NOTE: we test against the kicad specific character set that allows a tilde.
@@ -4509,7 +4509,7 @@ package body et_kicad is
 
 				reference					: type_component_reference;	-- like IC5	
 				appearance					: type_component_appearance := et_libraries.sch; -- CS: why this default ?
-				generic_name_in_lbr			: type_component_name.bounded_string; -- like TRANSISTOR_PNP
+				generic_name_in_lbr			: type_component_generic_name.bounded_string; -- like TRANSISTOR_PNP
 				unit_name					: type_unit_name.bounded_string; -- A, B, PWR, CT, IO-BANK1 ...
 				position					: et_coordinates.type_coordinates;
 				orientation					: et_coordinates.type_angle;
@@ -4797,7 +4797,7 @@ package body et_kicad is
 				-- Returns the full name of the library where given generic component is contained.
 				-- The given reference serves to provide a helpful error message on the affected 
 				-- component in the schematic.
-					component : in type_component_name.bounded_string; -- the generic name like "RESISTOR"
+					component : in type_component_generic_name.bounded_string; -- the generic name like "RESISTOR"
 					reference : in type_component_reference) -- the reference in the schematic like "R4"
 					return type_full_library_name.bounded_string is -- the full library name like "../libraries/resistors.lib"
 
@@ -4816,7 +4816,7 @@ package body et_kicad is
 						components : in et_libraries.type_components.map) is
 						use et_libraries.type_components;
 						component_cursor : et_libraries.type_components.cursor := components.first;
-						use et_libraries.type_component_name;
+						use et_libraries.type_component_generic_name;
 					begin
 						log_indentation_up;
 						while component_cursor /= et_libraries.type_components.no_element loop
@@ -5320,7 +5320,7 @@ package body et_kicad is
 					-- It is also required for validation of the reference (like R12 or C4).
 					if field (et_kicad.line,1) = schematic_component_identifier_name then -- "L"
 						
-						generic_name_in_lbr := type_component_name.to_bounded_string (field (et_kicad.line,2)); -- "SN74LS00"
+						generic_name_in_lbr := type_component_generic_name.to_bounded_string (field (et_kicad.line,2)); -- "SN74LS00"
 
 						check_generic_name_characters (
 							name => generic_name_in_lbr, -- "SN74LS00"

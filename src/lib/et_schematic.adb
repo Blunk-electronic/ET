@@ -4018,7 +4018,7 @@ package body et_schematic is
 				component_lib : et_libraries.type_components.cursor := components.first;
 
 				procedure query_units_lib (
-					component_name : in type_component_name.bounded_string;
+					component_name : in type_component_generic_name.bounded_string;
 					component : in et_libraries.type_component) is
 					use et_libraries.type_units_internal;
 					unit_internal : et_libraries.type_units_internal.cursor := component.units_internal.first;
@@ -4113,7 +4113,7 @@ package body et_schematic is
 					
 				end query_units_lib;
 
-				use et_libraries.type_component_name;
+				use et_libraries.type_component_generic_name;
 				generic_model_found : boolean := false; -- goes true once the generic model was found
 				
 			begin -- query_library_components

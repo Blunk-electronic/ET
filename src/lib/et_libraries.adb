@@ -128,7 +128,7 @@ package body et_libraries is
 
 	procedure check_generic_name_characters (
 	-- Checks if the given generic component name meets certain conventions.
-		name : in type_component_name.bounded_string; -- TRANSISTOR_NPN
+		name : in type_component_generic_name.bounded_string; -- TRANSISTOR_NPN
 		characters : in character_set := component_generic_name_characters)
 		is
 
@@ -156,19 +156,19 @@ package body et_libraries is
 		end if;
 	end check_generic_name_characters;
 
-	function strip_tilde (generic_name : in type_component_name.bounded_string) return
-		type_component_name.bounded_string is
+	function strip_tilde (generic_name : in type_component_generic_name.bounded_string) return
+		type_component_generic_name.bounded_string is
 	-- Removes a possible heading tilde character from a generic component name.
 	-- example: ~TRANSISTOR_NPN becomes TRANSISTOR_NPN	
 	-- This function is a kicad_v4 requirement. It has no meaning for other CAD formats and
 	-- returns generic_name as it is.
 		use et_import;
-		length : type_component_name.length_range;
+		length : type_component_generic_name.length_range;
 	begin
 		if et_import.cad_format = kicad_v4 then
 			if element (generic_name, 1) = '~' then
-				length := type_component_name.length (generic_name);
-				return type_component_name.bounded_slice (generic_name, 2, length);
+				length := type_component_generic_name.length (generic_name);
+				return type_component_generic_name.bounded_slice (generic_name, 2, length);
 			else
 				return generic_name;
 			end if;
@@ -177,8 +177,8 @@ package body et_libraries is
 		end if;
 	end strip_tilde;
 
-	function prepend_tilde (generic_name : in type_component_name.bounded_string) return
-		type_component_name.bounded_string is
+	function prepend_tilde (generic_name : in type_component_generic_name.bounded_string) return
+		type_component_generic_name.bounded_string is
 	-- Prepends a heading tilde character to a generic component name.
 	-- example: TRANSISTOR_NPN becomes ~TRANSISTOR_NPN
 	-- This function is a kicad_v4 requirement. It has no meaning for other CAD formats and
@@ -192,12 +192,12 @@ package body et_libraries is
 		end if;
 	end prepend_tilde;
 	
-	function to_string (name_in_library : in type_component_name.bounded_string) return string is
+	function to_string (name_in_library : in type_component_generic_name.bounded_string) return string is
 	-- Returns the given name_in_library as as string.
 	-- CS: provide a parameter that turns the pretext like "name in library" on/off
 	begin
-		--return ("name in library " & type_component_name.to_string(name_in_library));
-		return (type_component_name.to_string(name_in_library));
+		--return ("name in library " & type_component_generic_name.to_string(name_in_library));
+		return (type_component_generic_name.to_string(name_in_library));
 	end to_string;
 
 	function to_string (partcode : in type_component_partcode.bounded_string) return string is
@@ -515,7 +515,7 @@ package body et_libraries is
 	procedure validate_component_partcode_in_library (
 	-- Tests if the given partcode of a library component is correct.
 		partcode	: in type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_
-		name		: in type_component_name.bounded_string;			-- 74LS00
+		name		: in type_component_generic_name.bounded_string;			-- 74LS00
 		prefix		: in type_component_prefix.bounded_string;			-- R
 		packge		: in type_component_package_name.bounded_string;	-- S_0805
 		bom			: in type_bom)	-- YES, NO
@@ -1023,7 +1023,7 @@ package body et_libraries is
 -- 		log ("component properties");
 -- 		
 -- 		-- component name in library
--- 		log ("name " & type_component_name.to_string (type_components.key (component)));
+-- 		log ("name " & type_component_generic_name.to_string (type_components.key (component)));
 -- 
 -- 		-- number of internal units
 -- 		unit_count := length (element (component).units_internal);
@@ -1081,7 +1081,7 @@ package body et_libraries is
 	function find_component (
 	-- Searches the given library for the given component. Returns a cursor to that component.
 		library		: in type_full_library_name.bounded_string;
-		component	: in type_component_name.bounded_string) 
+		component	: in type_component_generic_name.bounded_string) 
 		return type_components.cursor is
 
 		lib_cursor	: type_libraries.cursor;
@@ -1130,7 +1130,7 @@ package body et_libraries is
 		unit_cursor : type_units_internal.cursor;
 
 		procedure locate (
-			name : in type_component_name.bounded_string;
+			name : in type_component_generic_name.bounded_string;
 			component : in type_component) is
 
 			use type_units_internal;
@@ -1200,7 +1200,7 @@ package body et_libraries is
 	procedure no_generic_model_found (
 		reference : in type_component_reference; -- IC303
 		library : in type_full_library_name.bounded_string; -- ../lib/transistors.lib
-		generic_name : in type_component_name.bounded_string) -- TRANSISTOR_NPN
+		generic_name : in type_component_generic_name.bounded_string) -- TRANSISTOR_NPN
 		is
 		use et_string_processing;
 	begin
