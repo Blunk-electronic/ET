@@ -292,9 +292,19 @@ package et_kicad is
 	power_flag_prefix : constant string (1..4) := "#FLG";
 	power_symbol_prefix : constant string (1..4) := "#PWR";	
 
-	-- Thes are the characters allowed for a component prefix:
+	-- These are the characters allowed for a component prefix:
 	component_prefix_characters : character_set := et_libraries.component_prefix_characters 
 		or to_set (schematic_component_power_symbol_prefix);
+
+	-- These characters are allowed for a component reference. 
+	-- This character set is used for prechecking references (like IC904 or #PWR) if 
+	-- provided as string together with procedure check_reference_characters (see et_libraries):
+	component_reference_characters : character_set := component_prefix_characters or to_set (span => ('0','9'));
+
+	-- Kicad combines the library and package/footprint name in a single string like bel_capacitors:S_0805
+	-- Therefore the character set used here includes the colon additionally.
+	component_package_characters : character_set := et_libraries.component_package_characters or to_set (':');
+
 	
 	type type_symbol_interchangeable is (L, F); -- L means swapping not allowed, F means swapping allowed 
 	type type_show_pin_number is (Y, N); -- show pin/pad number yes/no

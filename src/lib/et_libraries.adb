@@ -882,13 +882,7 @@ package body et_libraries is
 		-- If no value provided, the category determines whether to abort or not.
 		if value_length > 0 then
 
-			-- Rule #1: There are only those characters allowed as specified 
-			-- in component_value_characters:
-			check_value_characters (
-				value => value,
-				characters => component_value_characters);
-
-			-- Rule #2 for real components only: 
+			-- Rule for real components only: 
 			-- Units of measurement must be in accordance with the component category
 			case appearance is
 				
@@ -953,7 +947,7 @@ package body et_libraries is
 		
 	procedure check_package_characters (
 		packge		: in type_component_package_name.bounded_string;
-		characters	: in character_set)
+		characters	: in character_set := component_package_characters)
 		is
 	-- Tests if the given package name contains only valid characters as specified
 	-- by given character set.
@@ -1029,6 +1023,31 @@ package body et_libraries is
 		return reference.prefix;
 	end prefix;
 
+	procedure check_reference_characters (
+	-- Tests if the given reference like IC702 (as string) contains valid characters.
+	-- Unless a special character set is passed, it defaults to component_reference_characters.
+		reference : in string; -- IC704
+		characters : in character_set := component_reference_characters) is
+
+		use et_string_processing;
+		invalid_character_position : natural := 0;
+	begin
+		invalid_character_position := index (
+			source => reference,
+			set => characters,
+			test => outside);
+
+		if invalid_character_position > 0 then
+			log_indentation_reset;
+			log (message_error & "component reference " & to_string (packge) 
+				 & " has invalid character at position"
+				 & natural'image (invalid_character_position),
+				console => true
+				);
+			raise constraint_error;
+		end if;
+	end check_reference_characters;
+	
 	function component_appearance (cursor : in type_components.cursor)
 	-- Returns the component appearance where cursor points to.
 		return type_component_appearance is

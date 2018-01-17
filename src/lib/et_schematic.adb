@@ -665,7 +665,7 @@ package body et_schematic is
 	-- NOTE: Leading zeroes in the id are removed.
 	-- CS: text prefix characters against character set component_prefix_characters
 		text_in : in string;
-		allow_special_character_in_prefix : in boolean := false		
+		allow_special_character_in_prefix : in boolean := false -- CS: provide CAD system specific character set instead
 		) return type_component_reference is
 
 		r : type_component_reference := (

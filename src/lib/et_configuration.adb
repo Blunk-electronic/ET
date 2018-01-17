@@ -514,15 +514,14 @@ package body et_configuration is
 		end if;
 	end validate_prefix;
 	
-	function validate_prefix (reference : in et_libraries.type_component_reference)
-		return et_libraries.type_component_reference is
+	procedure validate_prefix (reference : in et_libraries.type_component_reference) is
 	-- Tests if the given reference has a valid prefix as specified in the configuration file.
-	-- Raises exception if not. Otherwise returns the given reference unchanged.
+	-- Raises exception if not.
 		use et_libraries.type_component_prefix;
 		use type_component_prefixes;
 	begin
 		if component_prefixes.find (reference.prefix) /= type_component_prefixes.no_element then
-			return reference;
+			null;
 		else
 			log_indentation_reset;
 			log (message_error & "invalid prefix in component reference "

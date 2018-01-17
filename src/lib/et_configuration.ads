@@ -194,10 +194,9 @@ package et_configuration is
 	-- Tests if the given prefix is valid as specified in the configuration file.
 	-- Raises exception if not.
 	
-	function validate_prefix (reference : in et_libraries.type_component_reference)
-		return et_libraries.type_component_reference;
+	procedure validate_prefix (reference : in et_libraries.type_component_reference);
 	-- Tests if the given reference has a valid prefix as specified in the configuration file.
-	-- Raises exception if not. Otherwise returns the given reference unchanged.
+	-- Raises exception if not.
 
 end et_configuration;
 

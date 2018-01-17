@@ -125,14 +125,13 @@ package body et_kicad is
 		end if;
 	end validate_prefix;
 
-	function validate_prefix (reference : in et_libraries.type_component_reference)
-		return et_libraries.type_component_reference is
+	procedure validate_prefix (reference : in et_libraries.type_component_reference) is
 	-- Tests if the given reference has a power_flag_prefix or a power_symbol_prefix.
-	-- Raises exception if not. Otherwise returns the given reference unchanged.
+	-- Raises exception if not.
 		use et_libraries.type_component_prefix;
 	begin
 		if to_string (reference.prefix) = power_flag_prefix or to_string (reference.prefix) = power_symbol_prefix then
-			return reference;
+			null;
 		else
 			log_indentation_reset;
 			log (message_error & "invalid prefix in component reference "
@@ -1232,7 +1231,6 @@ package body et_kicad is
 
 					when VALUE =>
 						check_value_characters (
-						   --value => type_component_value.to_bounded_string (to_string (text.content)),
 							value => type_component_value.to_bounded_string (content (text)),
 							characters => component_value_characters);
 					
@@ -1241,8 +1239,12 @@ package body et_kicad is
 
 						-- CS: check_author_characters, check_date_characters,
 						-- check_partcode_characters, 
-						-- check_footprint_characters -> kicad specific
 						-- check_purpose_characters
+
+					when PACKGE =>
+						check_package_characters (
+							packge => type_component_package_name.to_bounded_string (content (text)),
+							characters => et_kicad.component_package_characters);
 					
 					when others => null; -- CS
 
@@ -5294,7 +5296,9 @@ package body et_kicad is
 					log ("component line: " & to_string (et_kicad.line), log_threshold + 3);
 
 					-- Read component name and annotation from a line like "L NetChanger N1". 
-					-- From this entry we reason the component appearance.
+					-- From this entry we reason the component appearance. 
+					-- The appearance is important for contextual validation of the fields (like field_partcode, field_bom, ...).
+					-- It is also required for validation of the reference (like R12 or C4).
 					if field (et_kicad.line,1) = schematic_component_identifier_name then -- "L"
 						
 						generic_name_in_lbr := type_component_name.to_bounded_string (field (et_kicad.line,2)); -- "SN74LS00"
@@ -5310,24 +5314,26 @@ package body et_kicad is
 						
 							when et_libraries.sch => 
 								-- We have a line like "L P3V3 #PWR07".
-								-- Test if the reference contains allowed characters.
-								-- Afterward we validate the prefix of the reference. It must be those
-								-- of a power symbol or a power flag.
-								reference := validate_prefix (to_component_reference (
+								-- Build a reference type from the given reference string.
+								-- Afterward we validate the prefix of the reference. It must be
+								-- a power symbol or a power flag (#PWR or #FLG).
+								reference := to_component_reference (
 									text_in => field (et_kicad.line,3),
-									allow_special_character_in_prefix => true));
+									allow_special_character_in_prefix => true); 
+
+								validate_prefix (reference);
 
 							when et_libraries.sch_pcb =>
-								-- we have a line like "L 74LS00 U1"
-								-- Test if the reference contains allowed characters.
+								-- we have a line like "L 74LS00 IC13"
+								-- -- Build a reference type from the given reference string.
 								-- Afterward we validate the prefix of the reference. 
 								-- It is about a REAL component. Its prefix must be one 
 								-- of those defined in the configuration file (see et_configuration).
-								-- CS check_prefix_characters (reference.prefix, component_prefix_characters);
-								
-								reference := et_configuration.validate_prefix (to_component_reference (
+								reference := to_component_reference ( -- character check included
 									text_in => field (et_kicad.line,3),
-									allow_special_character_in_prefix => false));
+									allow_special_character_in_prefix => false);
+
+								et_configuration.validate_prefix (reference);
 
 							when others => -- CS: This should never happen. A subtype of type_component_appearance could be a solution.
 								null;
@@ -5360,7 +5366,6 @@ package body et_kicad is
 						set_y (position, mil_to_distance (field (et_kicad.line,3))); -- "4500"
 
 						-- The unit coordinates is more than just x/y :
-						-- unit_scratch.coordinates.main_module := module.name;
 						set_path (position, path_to_submodule);
 						set_sheet (position, sheet_number_current);
 
@@ -5373,28 +5378,38 @@ package body et_kicad is
 					-- read unit fields 0..2 from lines like:
 					-- 			"F 0 "N701" H 2600 2100 39  0000 C CNN"
 					--			"F 1 "NetChanger" H 2600 2250 60  0001 C CNN"
-					--			"F 2 "bel_netchanger:N_0.2MM" H 2600 2100 60  0001 C CNN"
-					--
-					-- set "field found" flags
+					--			"F 2 "bel_netchanger:0.2MM" H 2600 2100 60  0001 C CNN"
+
+					-- Set "field found flags" accordingly.
+					-- Do a basic check for allowed characters.
 					elsif field (et_kicad.line,1) = component_field_identifier then -- "F"
 
 						--log ("unit field A: " & to_string (et_kicad.line));
 						
 						case type_component_field_id'value (field (et_kicad.line,2)) is
+							
 							when component_field_reference =>
 								field_reference_found	:= true;
 								field_reference 		:= to_field;
-								-- CS: check_prefix_characters
+								check_reference_characters (
+									reference => content (field_reference),
+									characters => et_kicad.component_reference_characters);
+								-- NOTE: This is a redundant field. Its content must match the reference (see above).
+								-- This test is performed in procedure check_text_fields.
 
 							when component_field_value =>
 								field_value_found		:= true;
 								field_value 			:= to_field;
-								-- CS: check_value_characters. no need for validate_component_value to do that.
+								check_value_characters (
+									value => type_component_value.to_bounded_string (content (field_value)),
+									characters => component_value_characters);
 								
 							when component_field_footprint =>
 								field_package_found		:= true;
 								field_package 			:= to_field;
-								-- CS: check_footprint_characters --> kicad special
+								check_package_characters (
+									packge => type_component_package_name.to_bounded_string (content (field_package)),
+									characters => et_kicad.component_package_characters);
 								
 							when component_field_datasheet =>
 								field_datasheet_found	:= true;

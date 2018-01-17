@@ -368,14 +368,14 @@ package et_libraries is
 	type type_component_reference_element is (PREFIX, ID);
 	component_reference_prefix_default : constant type_component_prefix.bounded_string := to_bounded_string("?");
 	component_reference_id_default : constant natural := 0;
-
+	
 	type type_component_reference is record -- CS: should be private
 		prefix		: type_component_prefix.bounded_string := component_reference_prefix_default; -- like "IC"
 		id			: natural := component_reference_id_default; -- like "303"
 		id_width	: positive; -- the number of digits in the id. 3 in case of an id of 303
 		-- NOTE: This allows something like R091 or IC0 (there are reasons for such strange things ...)
 	end record;
-
+	
 	function to_string (reference : in type_component_reference) return string;
 	-- Returns the given component reference as string.
 	-- Prepends leading zeros according to reference.id_width.
@@ -383,6 +383,16 @@ package et_libraries is
 	function prefix (reference : in type_component_reference) return type_component_prefix.bounded_string;
 	-- Returns the prefix of the given component reference.
 
+	-- These characters are allowed for a component reference. 
+	-- This character set is used for prechecking references (like IC904) if provided as string together
+	-- with procedure check_reference_characters.
+	component_reference_characters : character_set := component_prefix_characters or to_set (span => ('0','9'));
+	procedure check_reference_characters (
+	-- Tests if the given reference (as string) contains valid characters.
+	-- Unless a special character set is passed, it defaults to component_reference_characters.
+		reference : in string; -- IC904
+		characters : in character_set := component_reference_characters);
+	
 	type type_component_appearance is ( 
 		sch,		-- a component that exists in the schematic only (like power symbols)
 		sch_pcb,	-- a component that exists in both schematic and soldered on a pcb
@@ -409,8 +419,7 @@ package et_libraries is
 	-- Example: An opamp made by TI can be the type TL084N or TL084D. N means the NDIP14 package
 	-- whereas D means the SO14 package.
 
-	-- component package names like "SOT23" or "TO220" are stored in bounded strings:
-	-- Kicad refers to them as "footprints".
+	-- component package/footprint names like "SOT23" or "TO220" are stored in bounded strings:
 	component_package_characters : character_set := to_set 
 		(ranges => (('a','z'),('A','Z'),('0','9'))) 
 		or to_set('.')
@@ -426,7 +435,7 @@ package et_libraries is
 	
 	procedure check_package_characters (
 		packge		: in type_component_package_name.bounded_string;
-		characters	: in character_set);
+		characters	: in character_set := component_package_characters);
 	-- Tests if the given package name contains only valid characters as specified
 	-- by given character set.
 	-- Raises exception if invalid character found.
