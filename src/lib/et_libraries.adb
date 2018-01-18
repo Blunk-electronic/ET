@@ -264,6 +264,73 @@ package body et_libraries is
 			raise constraint_error;
 		end if;
 	end check_purpose_characters;
+
+	procedure date_format_error (date : in string) is
+		use et_string_processing;
+	begin
+		log_indentation_reset;
+		log (message_error & date & " date format invalid ! Expected format is " 
+			& component_date_format & " Example: " & string (component_date_example),
+			console => true);
+	end date_format_error;
+
+	procedure check_date_length (date : in string) is	
+	begin
+		if date'length /= component_date_length then
+			date_format_error (date);
+		end if;
+	end check_date_length;
+		
+	procedure check_date_characters (
+		date		: in type_component_date;
+		characters	: in character_set := component_date_characters) is
+	-- Tests if the given date contains only valid characters as specified
+	-- by given character set.
+	-- Raises exception if invalid character found.
+		use et_string_processing;
+		invalid_character_position : natural := 0;
+	begin
+		invalid_character_position := index (
+			source => string (date),
+			set => characters,
+			test => outside);
+
+		if invalid_character_position > 0 then
+			log_indentation_reset;
+			log (message_error & "component date " & string (date)
+				 & " has invalid character at position"
+				 & natural'image (invalid_character_position),
+				console => true
+				);
+			raise constraint_error;
+		end if;
+	end check_date_characters;
+
+	procedure check_author_characters (
+		author		: in type_component_author.bounded_string;
+		characters	: in character_set := component_author_characters) is
+	-- Tests if the given author contains only valid characters as specified
+	-- by given character set.
+	-- Raises exception if invalid character found.
+		use et_string_processing;
+		use type_component_author;
+		invalid_character_position : natural := 0;
+	begin
+		invalid_character_position := index (
+			source => author,
+			set => characters,
+			test => outside);
+
+		if invalid_character_position > 0 then
+			log_indentation_reset;
+			log (message_error & "component author " & to_string (author)
+				 & " has invalid character at position"
+				 & natural'image (invalid_character_position),
+				console => true
+				);
+			raise constraint_error;
+		end if;
+	end check_author_characters;
 	
 
 	function to_string ( variant : in type_component_variant) return string is
@@ -522,7 +589,7 @@ package body et_libraries is
 		-- CS: warning if lower case used
 	end check_bom_characters;
 	
-	procedure validate_bom_status (text : in string) is
+	procedure validate_bom_status (text : in string) is -- CS: sse spec
 	-- Validates BOM status. Case sensitive !
 		use et_string_processing;
 	begin

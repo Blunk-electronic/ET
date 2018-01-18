@@ -1226,34 +1226,48 @@ package body et_kicad is
 				case meaning is
 
 					when REFERENCE =>
+						-- CS: length check						
 						check_prefix_characters (
 							prefix => type_component_prefix.to_bounded_string (content (text)),
 							characters => et_kicad.component_prefix_characters);
 					
 					when VALUE =>
+						-- CS: length check						
 						check_value_characters (
 							value => type_component_value.to_bounded_string (content (text)),
 							characters => component_value_characters);
 					
 					when BOM =>
+						-- NOTE: length check already included in check_bom_characters
 						check_bom_characters (content (text));
 
 					when PACKGE =>
+						-- CS: length check						
 						check_package_characters (
 							packge => type_component_package_name.to_bounded_string (content (text)),
 							characters => et_kicad.component_package_characters);
 
 					when PURPOSE =>
+						-- CS: length check
 						check_purpose_characters (
 							purpose => type_component_purpose.to_bounded_string (content (text)),
 							characters => component_initial_field_characters);
 
 					when PARTCODE =>
+						-- CS: length check
 						check_partcode_characters (
 							partcode => type_component_partcode.to_bounded_string (content (text)),
 							characters => component_initial_field_characters);
 
-					-- CS: check_author_characters, check_date_characters,						
+					when COMMISSIONED | UPDATED =>
+						check_date_length (content (text));
+						check_date_characters (
+							date => type_component_date (content (text)));
+
+					when AUTHOR =>
+						-- CS: length check
+						check_author_characters (
+							author => type_component_author.to_bounded_string (content (text)));
 						
 					when others => null; -- CS
 
@@ -1279,15 +1293,16 @@ package body et_kicad is
 					schematic	=> false);
 				-- CS: check visibility.
 
-				text.alignment.horizontal := to_alignment_horizontal (field  (line,8));
+				text.alignment.horizontal := to_alignment_horizontal (field (line,8));
 				-- CS: check hor aligment.
-				text.alignment.vertical   := to_alignment_vertical (field  (line,9));
+				text.alignment.vertical   := to_alignment_vertical (field (line,9));
 				-- CS: check vert aligment.
 				text.style := to_text_style (style_in => field (line,9), text => false);
 				-- CS: check style.
 				
 				-- NOTE: text.line_width assumes default as no explicit line width is provided here.
 				return text;
+
 			end to_field;
 
 			procedure check_text_fields (log_threshold : in type_log_level) is
@@ -2791,7 +2806,8 @@ package body et_kicad is
 				log_indentation_reset;
 				log (message_error & "in schematic file '" 
 					& to_string (current_schematic) & "' " 
-					& et_string_processing.affected_line (line),
+					& et_string_processing.affected_line (line)
+					& to_string (line),
 					console => true);
 			end error_in_schematic_file;
 		
@@ -5419,6 +5435,7 @@ package body et_kicad is
 							when component_field_reference =>
 								field_reference_found	:= true;
 								field_reference 		:= to_field;
+								-- CS: length check
 								check_reference_characters (
 									reference => content (field_reference),
 									characters => et_kicad.component_reference_characters);
@@ -5428,6 +5445,7 @@ package body et_kicad is
 							when component_field_value =>
 								field_value_found		:= true;
 								field_value 			:= to_field;
+								-- CS: length check								
 								check_value_characters (
 									value => type_component_value.to_bounded_string (content (field_value)),
 									characters => component_value_characters);
@@ -5435,6 +5453,7 @@ package body et_kicad is
 							when component_field_footprint =>
 								field_package_found		:= true;
 								field_package 			:= to_field;
+								-- CS: length check
 								check_package_characters (
 									packge => type_component_package_name.to_bounded_string (content (field_package)),
 									characters => et_kicad.component_package_characters);
@@ -5442,11 +5461,13 @@ package body et_kicad is
 							when component_field_datasheet =>
 								field_datasheet_found	:= true;
 								field_datasheet 		:= to_field;
+								-- CS: length check
 								-- CS: check_datasheet_characters
 								
 							when component_field_purpose =>
 								field_purpose_found	:= true;
 								field_purpose 			:= to_field;
+								-- CS: length check
 								check_purpose_characters (
 									purpose => type_component_purpose.to_bounded_string (content (field_purpose)),
 									characters => component_initial_field_characters);
@@ -5454,6 +5475,7 @@ package body et_kicad is
 							when component_field_partcode =>
 								field_partcode_found	:= true;
 								field_partcode 			:= to_field;
+								-- CS: length check
 								check_partcode_characters (
 									partcode => type_component_partcode.to_bounded_string (content (field_partcode)),
 									characters => component_initial_field_characters);
@@ -5461,23 +5483,30 @@ package body et_kicad is
 							when component_field_commissioned =>
 								field_commissioned_found	:= true;
 								field_commissioned 			:= to_field;
-								-- CS: check_date_characters
+								check_date_length (content (field_commissioned));
+								check_date_characters (
+									date => type_component_date (content (field_commissioned)));
 								
 							when component_field_updated =>
 								field_updated_found	:= true;
 								field_updated 			:= to_field;
-								-- CS: check_date_characters
+								check_date_length (content (field_updated));
+								check_date_characters (
+									date => type_component_date (content (field_updated)));
 								-- adapt function to_field 1260
 								
 							when component_field_author =>
 								field_author_found		:= true;
 								field_author 			:= to_field;
-								-- CS: check_author_characters
+								-- CS: length check
+								check_author_characters (
+									author => type_component_author.to_bounded_string (content (field_author)));
 
 							when component_field_bom =>
 								field_bom_found			:= true;
 								field_bom				:= to_field;
-								validate_bom_status (content (field_bom));
+								-- NOTE: length check already included in check_bom_characters
+								check_bom_characters (content (field_bom));
 								
 							when others => null; -- CS: other fields are ignored. warning ?
 						end case;

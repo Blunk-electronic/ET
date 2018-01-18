@@ -98,7 +98,7 @@ package et_string_processing is
 	
 -- DATE
 	date_characters : character_set := to_set (span => ('0','9')) or to_set ("-:T");
-	type type_date is new string (1..19); -- "2017-08-17T14:17:25" -- CS: define a type that allows only those characters
+	type type_date is new string (1..19); -- "2017-08-17T14:17:25"
 
 	function to_string (date : in type_date) return string;
 	-- Returns the given date as string.

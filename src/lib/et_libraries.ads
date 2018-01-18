@@ -477,7 +477,6 @@ package et_libraries is
 	-- Example: The purpose of connector X44 is "power in". The purpose of LED5 is "system fail":
 	component_purpose_characters : character_set := to_set 
 		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set('_') or to_set(' '); 
-	
 	component_purpose_length_max : constant positive := 100;
 	package type_component_purpose is new generic_bounded_length (component_purpose_length_max);
 
@@ -491,6 +490,35 @@ package et_libraries is
 	-- by given character set.
 	-- Raises exception if invalid character found.
 
+	component_date_characters : character_set := to_set (span => ('0','9')) or to_set ("-:T");
+	component_date_length : constant positive := 19; -- "2017-08-17T14:17:25" -- CS: probably way to accurate
+	type type_component_date is new string (1..component_date_length); 
+	component_date_format  : string (1..component_date_length) := "YYYY-MM-DDTHH:MM:SS";
+	component_date_example : type_component_date := "2017-12-31T23:55:04";
+	component_date_default : type_component_date := "1970-01-01T00:00:00";
+
+	procedure date_format_error (date : in string);
+	procedure check_date_length (date : in string);
+	
+	procedure check_date_characters (
+		date		: in type_component_date;
+		characters	: in character_set := component_date_characters);
+	-- Tests if the given date contains only valid characters as specified
+	-- by given character set.
+	-- Raises exception if invalid character found.
+
+	component_author_characters : character_set := to_set (span => ('A','Z')) or to_set (" -");
+	component_author_length_max : constant positive := 20;
+	package type_component_author is new generic_bounded_length (component_author_length_max);
+	component_author_format  : constant string (1..16) := ("FORENAME SURNAME");
+	component_author_example : constant string (1..12) := ("STEVE MILLER");
+
+	procedure check_author_characters (
+		author		: in type_component_author.bounded_string;
+		characters	: in character_set := component_author_characters);
+	-- Tests if the given author contains only valid characters as specified
+	-- by given character set.
+	-- Raises exception if invalid character found.
 	
 	-- VARIANT NAMES
 	-- If a component has package variants, a suffix after the component type indicates the package
