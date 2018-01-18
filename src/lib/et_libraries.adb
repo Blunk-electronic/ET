@@ -265,6 +265,24 @@ package body et_libraries is
 		end if;
 	end check_purpose_characters;
 
+	function compare_date (left, right : in type_component_date) return boolean is
+	-- Returns true if left comes before right.
+	-- If left equals right, the return is false.
+	begin
+		-- 2017-12-31T23:55:04 is before 2017-12-31T23:55:06
+		if left < right then
+			return true;
+		else
+			return false;
+		end if;
+	end compare_date;
+	
+	function to_string (date : in type_component_date) return string is
+	-- Returns the given date as string.
+	begin
+		return " date " & string (date);
+	end to_string;
+	
 	procedure date_format_error (date : in string) is
 		use et_string_processing;
 	begin

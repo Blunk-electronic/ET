@@ -117,21 +117,21 @@ package body et_string_processing is
 		return "NOTE : ";
 	end message_note;
 	
-	procedure check_updated_vs_commissioned ( commissioned , updated : in type_date) is
-	-- Checks whether updated is later or equal commissioned.		
-	begin
-		if updated < commissioned then -- if updated before commissioned
-			write_message (
-				file_handle => current_output,
-				text => message_error & "The time of update is before the time of commission !"
-					& latin_1.lf 
-					& "commissioned : " & string(commissioned) & latin_1.lf
-					& "updated      : " & string(updated),
-					console => true);
-			
-			raise constraint_error;
-		end if;
-	end check_updated_vs_commissioned;
+-- 	procedure check_updated_vs_commissioned ( commissioned , updated : in type_date) is
+-- 	-- Checks whether updated is later or equal commissioned.		
+-- 	begin
+-- 		if updated < commissioned then -- if updated before commissioned
+-- 			write_message (
+-- 				file_handle => current_output,
+-- 				text => message_error & "The time of update is before the time of commission !"
+-- 					& latin_1.lf 
+-- 					& "commissioned : " & string(commissioned) & latin_1.lf
+-- 					& "updated      : " & string(updated),
+-- 					console => true);
+-- 			
+-- 			raise constraint_error;
+-- 		end if;
+-- 	end check_updated_vs_commissioned;
 
 	procedure reset_warnings_counter is
 	begin

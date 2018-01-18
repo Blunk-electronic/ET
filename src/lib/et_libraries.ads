@@ -507,6 +507,13 @@ package et_libraries is
 	component_date_example : type_component_date := "2017-12-31T23:55:04";
 	component_date_default : type_component_date := "1970-01-01T00:00:00";
 
+	function compare_date (left, right : in type_component_date) return boolean;
+	-- Returns true if left comes before right.
+	-- If left equals right, the return is false.
+	
+	function to_string (date : in type_component_date) return string;
+	-- Returns the given date as string.
+	
 	procedure date_format_error (date : in string);
 	procedure check_date_length (date : in string);
 	
@@ -811,8 +818,8 @@ package et_libraries is
 		value			: type_component_value.bounded_string; -- 74LS00
 		units_internal	: type_units_internal.map := type_units_internal.empty_map;
 		units_external	: type_units_external.map := type_units_external.empty_map;
-		commissioned	: et_string_processing.type_date;
-		updated			: et_string_processing.type_date;
+		commissioned	: type_component_date;
+		updated			: type_component_date;
 		author			: type_person_name.bounded_string;
 
 		case appearance is

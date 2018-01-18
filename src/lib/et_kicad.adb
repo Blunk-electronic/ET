@@ -1363,7 +1363,13 @@ package body et_kicad is
 				if not field_updated_found then
 					missing_field (field_updated.meaning);
 				else
-					null; -- CS validate_updated
+					-- The update must be later than the commission date:
+					if compare_date (
+						left => type_component_date (content (field_updated)),
+						right => type_component_date (content (field_commissioned))) then
+						log (message_warning & "commission date must be before update !");
+						-- CS: show reference, commission and update time
+					end if;
 				end if;
 				
 				-- appearance specifig fields:
@@ -1513,8 +1519,8 @@ package body et_kicad is
 
 								prefix			=> tmp_prefix,
 								value			=> type_component_value.to_bounded_string (content (field_value)),
-								commissioned	=> et_string_processing.type_date (content (field_commissioned)),
-								updated			=> et_string_processing.type_date (content (field_updated)),
+								commissioned	=> type_component_date (content (field_commissioned)),
+								updated			=> type_component_date (content (field_updated)),
 								author			=> type_person_name.to_bounded_string (content (field_author)),
 								units_internal	=> type_units_internal.empty_map,
 								units_external	=> type_units_external.empty_map
@@ -1533,8 +1539,8 @@ package body et_kicad is
 								appearance		=> sch_pcb,
 								prefix			=> tmp_prefix,
 								value			=> type_component_value.to_bounded_string (content (field_value)),
-								commissioned	=> et_string_processing.type_date (content (field_commissioned)),
-								updated			=> et_string_processing.type_date (content (field_updated)),
+								commissioned	=> type_component_date (content (field_commissioned)),
+								updated			=> type_component_date (content (field_updated)),
 								author			=> type_person_name.to_bounded_string (content (field_author)),
 								units_internal	=> type_units_internal.empty_map,
 								units_external	=> type_units_external.empty_map,
@@ -4718,9 +4724,14 @@ package body et_kicad is
 							then raise constraint_error;
 						end if;
 
-						-- make sure the update was later (or at the same time as) the commission date
-						check_updated_vs_commissioned (commissioned, updated);
-
+						-- The update must be later than the commission date:
+						if compare_date (
+							left => type_component_date (content (field_updated)),
+							right => type_component_date (content (field_commissioned))) then
+							log (message_warning & "commission date must be before update !");
+							-- CS: show reference, commission and update time
+						end if;
+						
 					end if;
 
 					-- author

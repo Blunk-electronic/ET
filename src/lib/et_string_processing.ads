@@ -108,7 +108,7 @@ package et_string_processing is
 	
 	function date_now return type_date;
 
-	procedure check_updated_vs_commissioned (commissioned , updated : in type_date);
+--	procedure check_updated_vs_commissioned (commissioned , updated : in type_date);
 	-- Checks whether updated is later or equal commissioned.
 
 	row_separator_length 	: constant positive := 150;
