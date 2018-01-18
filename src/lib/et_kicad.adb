@@ -1323,19 +1323,14 @@ package body et_kicad is
 					raise constraint_error;
 				end missing_field;
 
+				use et_configuration;
+				
 			begin -- check_text_fields
 				log_indentation_up;
 
 				-- write precheck preamble
 				log ("component " & to_string (tmp_component_name) & " prechecking fields ...", level => log_threshold);
 				log_indentation_up;
-
-				log ("value", level => log_threshold + 1);				
-				if not field_value_found then
-					missing_field (field_value.meaning);
-				else
-					null; -- CS validate_value ?
-				end if;
 
 				log ("author", level => log_threshold + 1);				
 				if not field_author_found then
@@ -1377,7 +1372,21 @@ package body et_kicad is
 							
 							et_configuration.validate_prefix (tmp_prefix);
 						end if;
-							
+
+						log ("value", level => log_threshold + 1);
+						if not field_value_found then
+							missing_field (field_value.meaning);
+						else
+							case category (tmp_prefix) is
+								when CAPACITOR | INDUCTOR | RESISTOR =>
+									null;
+
+								when others => null;
+									
+							end case;
+						end if;
+
+						
 						log ("package/footprint", level => log_threshold + 1);
 						if not field_package_found then
 							missing_field (field_package.meaning);
@@ -1458,6 +1467,14 @@ package body et_kicad is
 							
 							validate_prefix (tmp_prefix);
 						end if;
+
+						log ("value", level => log_threshold + 1);
+						if not field_value_found then
+							missing_field (field_value.meaning);
+						else
+							null; -- CS
+						end if;
+
 						
 					when pcb => null; --CS
 						
