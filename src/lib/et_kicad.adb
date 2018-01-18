@@ -1241,8 +1241,13 @@ package body et_kicad is
 						-- NOTE: length check already included in check_bom_characters
 						check_bom_characters (content (text));
 
+					when DATASHEET =>
+						-- CS: length check
+						check_datasheet_characters (
+							datasheet => type_component_datasheet.to_bounded_string (content (text)));
+						
 					when PACKGE =>
-						-- CS: length check						
+						-- CS: length check
 						check_package_characters (
 							packge => type_component_package_name.to_bounded_string (content (text)),
 							characters => et_kicad.component_package_characters);
@@ -5462,7 +5467,8 @@ package body et_kicad is
 								field_datasheet_found	:= true;
 								field_datasheet 		:= to_field;
 								-- CS: length check
-								-- CS: check_datasheet_characters
+								check_datasheet_characters (
+									datasheet => type_component_datasheet.to_bounded_string (content (field_datasheet)));
 								
 							when component_field_purpose =>
 								field_purpose_found	:= true;
@@ -5493,7 +5499,6 @@ package body et_kicad is
 								check_date_length (content (field_updated));
 								check_date_characters (
 									date => type_component_date (content (field_updated)));
-								-- adapt function to_field 1260
 								
 							when component_field_author =>
 								field_author_found		:= true;

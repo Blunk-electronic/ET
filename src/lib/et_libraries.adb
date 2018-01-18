@@ -499,6 +499,32 @@ package body et_libraries is
 			raise constraint_error;
 		end if;
 	end check_value_characters;
+
+	procedure check_datasheet_characters (
+		datasheet : in type_component_datasheet.bounded_string;
+		characters : in character_set := component_datasheet_characters) is
+	-- Tests if the given URL contains only valid characters as specified
+	-- by given character set. Raises exception if invalid character found.
+		use et_string_processing;
+		use type_component_datasheet;
+		invalid_character_position : natural := 0;
+	begin
+		invalid_character_position := index (
+			source => datasheet,
+			set => characters,
+			test => outside);
+
+		if invalid_character_position > 0 then
+			log_indentation_reset;
+			log (message_error & "URL to datasheet " & to_string (datasheet) 
+				 & " has invalid character at position"
+				 & natural'image (invalid_character_position),
+				 console => true
+				);
+			raise constraint_error;
+		end if;
+	end check_datasheet_characters;
+
 	
 	function to_string (prefix : in type_component_prefix.bounded_string) return string is
 	-- returns the given prefix as string

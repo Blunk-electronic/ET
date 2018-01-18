@@ -345,9 +345,19 @@ package et_libraries is
 	-- by given character set. Raises exception if invalid character found.
 	
 	-- For some component (not all !) it is helpful to have an URL to the datasheet:
+	component_datasheet_characters : character_set := 
+		to_set (ranges => (('A','Z'),('a','z'),('0','9'))) 
+		or to_set (":/._-&");
 	component_datasheet_length_max : constant positive := 1000;
 	package type_component_datasheet is new generic_bounded_length (component_datasheet_length_max);
 
+	procedure check_datasheet_characters (
+		datasheet : in type_component_datasheet.bounded_string;
+		characters : in character_set := component_datasheet_characters);
+	-- Tests if the given URL contains only valid characters as specified
+	-- by given character set. Raises exception if invalid character found.
+
+	
 	-- A component reference (in Eagle "device name") consists of a prefix (like R, C, IC, ..)
 	-- and a consecutive number. Both form something like "IC702"
 	component_prefix_characters : character_set := to_set (span => ('A','Z'));
