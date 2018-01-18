@@ -574,20 +574,20 @@ package body et_kicad is
 			
 			-- These are variables used to temporarily hold component properties before the component
 			-- gets fully assembled and inserted into the component list of a particular library.
-			-- These properties apply for the whole component (means for all its units): -- CS: move them to specs ?
-			tmp_component_name		: type_component_generic_name.bounded_string; -- 74LS00
-			tmp_prefix				: type_component_prefix.bounded_string; -- IC
-			tmp_appearance			: type_component_appearance;
+			-- These properties apply for the whole component (means for all its units):
+			tmp_component_name		: type_component_generic_name.bounded_string; -- 74LS00 -- CS: rename to generic_name
+			tmp_prefix				: type_component_prefix.bounded_string; -- IC -- CS: rename to prefix
+			tmp_appearance			: type_component_appearance; -- CS: rename to appearance
 
-			tmp_port_name_visible	: type_port_visible;
-			tmp_pin_name_visible	: type_pin_visible;
-			tmp_port_name_offset	: type_distance;
+			tmp_port_name_visible	: type_port_visible; -- CS: rename to port_name_visible
+			tmp_pin_name_visible	: type_pin_visible; -- CS: rename to terminal_name_visible
+			tmp_port_name_offset	: type_distance; -- CS: rename to port_name_offset
 			
-			tmp_units_total		: type_units_total; -- see spec for range			
-			tmp_unit_id			: type_unit_id; -- assumes 0 if all units are affected, -- see spec			
-			tmp_unit_swap_level	: type_unit_swap_level := unit_swap_level_default;
-			tmp_unit_add_level	: type_unit_add_level := type_unit_add_level'first;
-			tmp_unit_global		: boolean := false; -- specifies if a unit harbors component wide pins (such as power supply)
+			tmp_units_total		: type_units_total; -- see spec for range -- CS rename to units_total	
+			tmp_unit_id			: type_unit_id; -- assumes 0 if all units are affected, -- see spec	-- CS rename to unit_id		
+			tmp_unit_swap_level	: type_unit_swap_level := unit_swap_level_default; -- CS: rename to unit_swap_level
+			tmp_unit_add_level	: type_unit_add_level := type_unit_add_level'first; -- CS: rename to unit_add_level
+			tmp_unit_global		: boolean := false; -- specifies if a unit harbors component wide pins (such as power supply) -- CS: rename to unit_global
 			
 			field_reference		: type_text (meaning => reference); -- CS: should be field_prefix as it contains just the prefix 
 			field_value			: type_text (meaning => value);

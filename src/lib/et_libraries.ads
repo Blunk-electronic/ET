@@ -201,7 +201,7 @@ package et_libraries is
 	
 	
 	
--- COMPONENTS, PACKAGES, PORTS AND PINS
+-- COMPONENTS, PACKAGES, PORTS AND TERMINALS
 
 	-- A port is something where a net can be attached to.
 	-- The name of a port represents the function of the port like (A14 or RST_N)
@@ -227,8 +227,8 @@ package et_libraries is
 		preamble	: in boolean := true) return string;
 	-- Returns the given port direction as string.
 
-	type type_port_visible is (ON, OFF);
-	type type_pin_visible is (ON, OFF);
+	type type_port_visible is (ON, OFF); -- CS rename to type_port_name_visible
+	type type_pin_visible is (ON, OFF); -- CS rename to type_terminal_name_visible
 
 	type type_port_style is ( -- CS: find a better name
 		NONE,
@@ -257,9 +257,9 @@ package et_libraries is
 	function to_string (port_name : in type_port_name.bounded_string) return string;
 	-- Returns the given port name as string.
 
-	-- The name of a pin may have 10 characters which seems sufficient for now.
- 	pin_name_length	: constant natural := 10;
-	package type_pin_name is new generic_bounded_length(pin_name_length); use type_pin_name;
+	-- The name of a terminal may have 10 characters which seems sufficient for now.
+ 	pin_name_length	: constant natural := 10; -- CS: rename to terminal_name_length_max
+	package type_pin_name is new generic_bounded_length(pin_name_length); use type_pin_name; -- CS: rename to type_terminal_name
 
 	function to_string (pin_name : in type_pin_name.bounded_string) return string;
 	-- Returns the given pin name as string.
@@ -344,10 +344,10 @@ package et_libraries is
 	-- Tests if the given value contains only valid characters as specified
 	-- by given character set. Raises exception if invalid character found.
 	
-	-- For some component (not all !) it is helpful to have an URL to the datasheet:
+	-- For some components (not all !) it is helpful to have an URL to the datasheet.
+	-- We limit the URL to reansonable 1000 characters. Excessive google URLs are thus not allowed.
 	component_datasheet_characters : character_set := 
-		to_set (ranges => (('A','Z'),('a','z'),('0','9'))) 
-		or to_set (":/._-&");
+		to_set (ranges => (('A','Z'),('a','z'),('0','9'))) or to_set (":/._-&");
 	component_datasheet_length_max : constant positive := 1000;
 	package type_component_datasheet is new generic_bounded_length (component_datasheet_length_max);
 

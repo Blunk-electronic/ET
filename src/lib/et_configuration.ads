@@ -109,6 +109,11 @@ package et_configuration is
 	-- After reading the configuration, we store the component prefixes for the design here:
 	component_prefixes : type_component_prefixes.map;
 
+-- 	function category (reference : in et_libraries.type_component_reference) return
+-- 		type_component_category;
+	-- Returns the category of the given component reference. If no category could be
+	-- found, returns category UNKNOWN.
+	
 	function category (reference : in et_libraries.type_component_reference) return
 		type_component_category;
 	-- Returns the category of the given component reference. If no category could be
