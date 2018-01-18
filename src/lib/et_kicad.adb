@@ -1312,7 +1312,7 @@ package body et_kicad is
 
 			procedure check_text_fields (log_threshold : in type_log_level) is
 			-- Tests if all text fields have been found by evaluating the "field found flags".
-			-- Validates the fields in context with each other.
+			-- Validates the fields in CONTEXT WITH EACH OTHER.
 			-- NOTE: This is library related stuff.
 			
 				procedure missing_field (meaning : in et_libraries.type_text_meaning) is 
@@ -1332,6 +1332,19 @@ package body et_kicad is
 				log ("component " & to_string (tmp_component_name) & " prechecking fields ...", level => log_threshold);
 				log_indentation_up;
 
+				log ("value", level => log_threshold + 1);
+				if not field_value_found then
+					missing_field (field_value.meaning);
+				else
+					-- KiCad insists that the value contains something.
+					-- So the first choice is to set value like the generic component name:
+					if content (field_value) /= to_string (strip_tilde (tmp_component_name)) then
+						log (message_warning & "default value " 
+							& content (field_value) & " differs from name "
+							& to_string (tmp_component_name) & " !");
+					end if;
+				end if;
+				
 				log ("author", level => log_threshold + 1);				
 				if not field_author_found then
 					missing_field (field_author.meaning);
@@ -1373,20 +1386,6 @@ package body et_kicad is
 							et_configuration.validate_prefix (tmp_prefix);
 						end if;
 
-						log ("value", level => log_threshold + 1);
-						if not field_value_found then
-							missing_field (field_value.meaning);
-						else
-							case category (tmp_prefix) is
-								when CAPACITOR | INDUCTOR | RESISTOR =>
-									null;
-
-								when others => null;
-									
-							end case;
-						end if;
-
-						
 						log ("package/footprint", level => log_threshold + 1);
 						if not field_package_found then
 							missing_field (field_package.meaning);
@@ -1468,14 +1467,6 @@ package body et_kicad is
 							validate_prefix (tmp_prefix);
 						end if;
 
-						log ("value", level => log_threshold + 1);
-						if not field_value_found then
-							missing_field (field_value.meaning);
-						else
-							null; -- CS
-						end if;
-
-						
 					when pcb => null; --CS
 						
 				end case;
@@ -4629,7 +4620,7 @@ package body et_kicad is
 
 				procedure check_text_fields (log_threshold : in type_log_level) is 
 				-- Tests if any "field found" flag is still cleared and raises an alarm in that case.
-				-- Perfoms a contextual validation of the text fields before they are used to 
+				-- Perfoms a CONTEXTUAL VALIDATION of the text fields before they are used to 
 				-- assemble and insert the component into the component list of the module.
 				
 				-- CS: check text size and width in regard to meaning
