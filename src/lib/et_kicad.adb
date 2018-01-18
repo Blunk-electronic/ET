@@ -198,7 +198,7 @@ package body et_kicad is
 						when component_field_value			=> meaning := et_libraries.value;
 						when component_field_footprint		=> meaning := et_libraries.packge;
 						when component_field_datasheet		=> meaning := et_libraries.datasheet;
-						when component_field_function		=> meaning := et_libraries.purpose;
+						when component_field_purpose		=> meaning := et_libraries.purpose;
 						when component_field_partcode		=> meaning := et_libraries.partcode;
 						when component_field_commissioned	=> meaning := et_libraries.commissioned;
 						when component_field_updated		=> meaning := et_libraries.updated;
@@ -223,7 +223,7 @@ package body et_kicad is
 						when component_field_value			=> meaning := et_libraries.value;
 						when component_field_footprint		=> meaning := et_libraries.packge;
 						when component_field_datasheet		=> meaning := et_libraries.datasheet;
-						when component_field_function		=> meaning := et_libraries.purpose;
+						when component_field_purpose		=> meaning := et_libraries.purpose;
 						when component_field_partcode		=> meaning := et_libraries.partcode;
 						when component_field_commissioned	=> meaning := et_libraries.commissioned;
 						when component_field_updated		=> meaning := et_libraries.updated;
@@ -1225,10 +1225,6 @@ package body et_kicad is
 				-- check content vs. meaning. 
 				case meaning is
 
-						-- CS: check_author_characters, check_date_characters,
-						-- check_partcode_characters, 
-
-					
 					when REFERENCE =>
 						check_prefix_characters (
 							prefix => type_component_prefix.to_bounded_string (content (text)),
@@ -1251,6 +1247,13 @@ package body et_kicad is
 						check_purpose_characters (
 							purpose => type_component_purpose.to_bounded_string (content (text)),
 							characters => component_initial_field_characters);
+
+					when PARTCODE =>
+						check_partcode_characters (
+							partcode => type_component_partcode.to_bounded_string (content (text)),
+							characters => component_initial_field_characters);
+
+					-- CS: check_author_characters, check_date_characters,						
 						
 					when others => null; -- CS
 
@@ -5312,7 +5315,7 @@ package body et_kicad is
 				
 				use type_lines;
 			
-			begin -- make_component
+			begin -- make_component (schematic)
 				
 				line_cursor := type_lines.first (lines);
 				while line_cursor /= type_lines.no_element loop
@@ -5441,7 +5444,7 @@ package body et_kicad is
 								field_datasheet 		:= to_field;
 								-- CS: check_datasheet_characters
 								
-							when component_field_function =>
+							when component_field_purpose =>
 								field_purpose_found	:= true;
 								field_purpose 			:= to_field;
 								check_purpose_characters (
@@ -5451,7 +5454,9 @@ package body et_kicad is
 							when component_field_partcode =>
 								field_partcode_found	:= true;
 								field_partcode 			:= to_field;
-								-- CS: check_partcode_characters . adapt function to_field 1197
+								check_partcode_characters (
+									partcode => type_component_partcode.to_bounded_string (content (field_partcode)),
+									characters => component_initial_field_characters);
 								
 							when component_field_commissioned =>
 								field_commissioned_found	:= true;
@@ -5462,6 +5467,7 @@ package body et_kicad is
 								field_updated_found	:= true;
 								field_updated 			:= to_field;
 								-- CS: check_date_characters
+								-- adapt function to_field 1260
 								
 							when component_field_author =>
 								field_author_found		:= true;

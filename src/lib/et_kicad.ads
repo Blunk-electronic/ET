@@ -99,7 +99,7 @@ package et_kicad is
 	component_field_author			: constant type_component_field_id := 6;
 	component_field_partcode		: constant type_component_field_id := 7;
 	component_field_bom				: constant type_component_field_id := 8;
-	component_field_function		: constant type_component_field_id := 9;
+	component_field_purpose			: constant type_component_field_id := 9;
 
 
 -- GRID AND COORDINATES

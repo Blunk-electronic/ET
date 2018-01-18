@@ -446,14 +446,17 @@ package et_libraries is
 	-- Newly created fields may contain things like "?PARTCODE?" or "?PURPOSE?". For checking their
 	-- content we need this character set:
 	component_initial_field_characters : character_set := to_set 
-		(span => ('A','Z')) or to_set('?'); 
+		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set('_') or to_set('?'); 
 
 	-- The component partcode is something like "R_PAC_S_0805_VAL_100R_PMAX_125_TOL_5"
+	component_partcode_characters : character_set := to_set
+		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set('_'); 
 	component_partocde_length_max : constant positive := 200;
 	package type_component_partcode is new generic_bounded_length (component_partocde_length_max);
 	partcode_default 			: constant string (1..10) := "?PARTCODE?";
 	partcode_separator 			: constant string (1..1) := "_";
 	partcode_keyword_package 	: constant string (1..3) := "PAC";
+	partcode_keyword_pitch		: constant string (1..5) := "PITCH";	
 	partcode_keyword_value		: constant string (1..3) := "VAL";
 	partcode_keyword_tolerance	: constant string (1..3) := "TOL";
 	partcode_keyword_power_max	: constant string (1..4) := "PMAX";
@@ -461,12 +464,19 @@ package et_libraries is
 	
 	function to_string (partcode : in type_component_partcode.bounded_string) return string;
 	-- Returns the given partcode as string.
+
+	procedure check_partcode_characters (
+		partcode	: in type_component_partcode.bounded_string;
+		characters	: in character_set := component_partcode_characters);
+	-- Tests if the given partcode contains only valid characters as specified
+	-- by given character set.
+	-- Raises exception if invalid character found.
+
 	
 	-- Components that require operator interaction like connectors, LEDs or switches must have a purpose assigned.
 	-- Example: The purpose of connector X44 is "power in". The purpose of LED5 is "system fail":
 	component_purpose_characters : character_set := to_set 
-		(ranges => (('a','z'),('A','Z'),('0','9'))) 
-		or to_set('_'); 
+		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set('_') or to_set(' '); 
 	
 	component_purpose_length_max : constant positive := 100;
 	package type_component_purpose is new generic_bounded_length (component_purpose_length_max);
