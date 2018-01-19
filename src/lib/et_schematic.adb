@@ -447,35 +447,35 @@ package body et_schematic is
 		-- alternative representation
 		log ("alternative (deMorgan) representation " 
 			 & to_lower (type_alternative_representation'image (type_units.element (unit).alt_repres)),
-			 log_threshold + 1);
+			 log_threshold);
 
 		-- timestamp
 		log ("timestamp " 
-			& string (type_units.element (unit).timestamp), log_threshold + 1);
+			& string (type_units.element (unit).timestamp), log_threshold);
 
 		-- position
-		log (to_string (position => type_units.element (unit).position), log_threshold + 1);
+		log (to_string (position => type_units.element (unit).position), log_threshold);
 
 		-- orientation or angle
-		log (to_string (type_units.element (unit).orientation), log_threshold + 1);
+		log (to_string (type_units.element (unit).orientation), log_threshold);
 
 		-- mirror style
-		log (to_string (type_units.element (unit).mirror), log_threshold + 1);
+		log (to_string (type_units.element (unit).mirror), log_threshold);
 
 		
 		-- placeholders
-		log ("placeholders", log_threshold + 1);
+		log ("placeholders", log_threshold);
 		log_indentation_up;
 
 			-- reference
 			et_libraries.write_placeholder_properties (
 				placeholder => type_units.element (unit).reference,
-				log_threshold => log_threshold + 1);
+				log_threshold => log_threshold);
 
 			-- value
 			et_libraries.write_placeholder_properties (
 				placeholder => type_units.element (unit).value,
-				log_threshold => log_threshold + 1);
+				log_threshold => log_threshold);
 
 			-- some placeholders exist depending on the component appearance
 			case type_units.element (unit).appearance is
@@ -484,27 +484,27 @@ package body et_schematic is
 					-- package/footprint
 					et_libraries.write_placeholder_properties (
 						placeholder => type_units.element (unit).packge,
-						log_threshold => log_threshold + 1);
+						log_threshold => log_threshold);
 
 					-- datasheet
 					et_libraries.write_placeholder_properties (
 						placeholder => type_units.element (unit).datasheet,
-						log_threshold => log_threshold + 1);
+						log_threshold => log_threshold);
 
 					-- purpose
 					et_libraries.write_placeholder_properties (
 						placeholder => type_units.element (unit).purpose,
-						log_threshold => log_threshold + 1);
+						log_threshold => log_threshold);
 					
 					-- partcode
 					et_libraries.write_placeholder_properties (
 						placeholder => type_units.element (unit).partcode,
-						log_threshold => log_threshold + 1);
+						log_threshold => log_threshold);
 
 					-- bom
 					et_libraries.write_placeholder_properties (
 						placeholder => type_units.element (unit).bom,
-						log_threshold => log_threshold + 1);
+						log_threshold => log_threshold);
 					
 				when others => null;
 			end case;
@@ -512,17 +512,17 @@ package body et_schematic is
 			-- commissioned
 			et_libraries.write_placeholder_properties (
 				placeholder => type_units.element (unit).commissioned,
-				log_threshold => log_threshold + 1);
+				log_threshold => log_threshold);
 
 			-- updated
 			et_libraries.write_placeholder_properties (
 				placeholder => type_units.element (unit).updated,
-				log_threshold => log_threshold + 1);
+				log_threshold => log_threshold);
 
 			-- author
 			et_libraries.write_placeholder_properties (
 				placeholder => type_units.element (unit).author,
-				log_threshold => log_threshold + 1);
+				log_threshold => log_threshold);
 
 		log_indentation_down;
 		log_indentation_down;
@@ -2852,9 +2852,7 @@ package body et_schematic is
 				);
 
 			if inserted then -- fine. unit was inserted successfully
--- 				if log_level >= 2 then				
-					write_unit_properties (unit => cursor, log_threshold => log_threshold);
--- 				end if;
+				write_unit_properties (unit => cursor, log_threshold => log_threshold + 1);
 			else -- not inserted, unit already in component -> failure
 				log_indentation_reset;
 				log (
