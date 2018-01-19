@@ -92,7 +92,7 @@ package et_kicad is
 	type type_component_field_id is range 0..library_component_field_count_max;
 	component_field_reference		: constant type_component_field_id := 0;
 	component_field_value			: constant type_component_field_id := 1;
-	component_field_footprint		: constant type_component_field_id := 2;
+	component_field_package			: constant type_component_field_id := 2;
 	component_field_datasheet		: constant type_component_field_id := 3;
 	component_field_commissioned	: constant type_component_field_id := 4;
 	component_field_updated			: constant type_component_field_id := 5;

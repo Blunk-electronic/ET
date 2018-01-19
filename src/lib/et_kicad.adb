@@ -196,7 +196,7 @@ package body et_kicad is
 					case type_component_field_id'value(field(line,2)) is -- "0..2"
 						when component_field_reference		=> meaning := et_libraries.reference;
 						when component_field_value			=> meaning := et_libraries.value;
-						when component_field_footprint		=> meaning := et_libraries.packge;
+						when component_field_package		=> meaning := et_libraries.packge;
 						when component_field_datasheet		=> meaning := et_libraries.datasheet;
 						when component_field_purpose		=> meaning := et_libraries.purpose;
 						when component_field_partcode		=> meaning := et_libraries.partcode;
@@ -221,7 +221,7 @@ package body et_kicad is
 					case type_component_field_id'value ( strip_f (field(line,1) ) ) is
 						when component_field_reference		=> meaning := et_libraries.reference;
 						when component_field_value			=> meaning := et_libraries.value;
-						when component_field_footprint		=> meaning := et_libraries.packge;
+						when component_field_package		=> meaning := et_libraries.packge;
 						when component_field_datasheet		=> meaning := et_libraries.datasheet;
 						when component_field_purpose		=> meaning := et_libraries.purpose;
 						when component_field_partcode		=> meaning := et_libraries.partcode;
@@ -5475,7 +5475,7 @@ package body et_kicad is
 									value => type_component_value.to_bounded_string (content (field_value)),
 									characters => component_value_characters);
 								
-							when component_field_footprint => -- CS: rename to component_field_package
+							when component_field_package =>
 								field_package_found		:= true;
 								field_package 			:= to_field;
 								check_package_length (content (field_package));
