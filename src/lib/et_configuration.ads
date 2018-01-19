@@ -100,6 +100,9 @@ package et_configuration is
 	function to_string (cat : in type_component_category) return string;
 	-- returns the given component category as string
 
+	function to_category (category : in string) return type_component_category;
+	-- Converts a string to type_component_category.
+	
 	-- component prefixes and their category are stored in a map:
 	package type_component_prefixes is new ordered_maps (
 		key_type => et_libraries.type_component_prefix.bounded_string, -- IC

@@ -64,6 +64,22 @@ package body et_configuration is
 		return latin_1.space & type_component_category'image (cat);
 	end to_string;
 
+	function to_category (category : in string) return type_component_category is
+	-- Converts a string to type_component_category.
+		use et_string_processing;
+		category_out : type_component_category;
+	begin
+		category_out := type_component_category'value (category);
+		return category_out;
+
+		exception
+			when others =>
+				log_indentation_reset;
+				log (message_error & category & " is not a supported component category !",
+					 console => true);
+				raise constraint_error;
+	end to_category;
+	
 	function category (prefix : in et_libraries.type_component_prefix.bounded_string) return
 		type_component_category is
 	-- Returns the category of the given component prefix. If no category could be
@@ -338,6 +354,7 @@ package body et_configuration is
 
 			prefix	: type_component_prefix.bounded_string;
 			unit	: type_component_unit.bounded_string;
+			cat		: type_component_category;
 			
 			-- CS: check field count in sections respecitvely. issue warning if too many fields. 
 		begin
@@ -355,23 +372,25 @@ package body et_configuration is
 					while line_cursor /= type_lines.no_element loop
 						log (to_string (element (line_cursor)), log_threshold + 2);
 
-						-- Test if prefix contains only allowed characters. Then use it as key in this map.
+						-- Build the prefix from field #1:
+						-- Test if prefix is not too long, if it contains only allowed characters.
 						-- We test against the default character set as specified in et_libraries.
+						check_prefix_length (field (element (line_cursor), 1));
 						prefix := type_component_prefix.to_bounded_string (field (element (line_cursor), 1));
 						check_prefix_characters (prefix, component_prefix_characters);
+
+						-- build the component category from field #2:
+						cat := to_category (field (element (line_cursor), 2));
 						
 						-- insert the prefix assignment in container component_prefixes
 						type_component_prefixes.insert (
 							container => et_configuration.component_prefixes,
 							position => component_prefix_cursor,
-
-							-- If entry already in map, this flag goes true. Warning issued later. see below.
-							inserted => inserted,
-	
 							key => prefix,
-
-							-- Test if component category is valid. Then use it as new item.
-							new_item => type_component_category'value (field (element (line_cursor), 2)));
+							new_item => cat,
+							
+							-- If entry already in map, this flag goes true. Warning issued later. see below.
+							inserted => inserted);
 
 						test_multiple_occurences;
 						next (line_cursor);
