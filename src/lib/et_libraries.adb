@@ -313,14 +313,18 @@ package body et_libraries is
 		use et_string_processing;
 	begin
 		log_indentation_reset;
-		log (message_error & date & " date format invalid ! Expected format is " 
+		log (message_error & date & "date format invalid ! Expected format is " 
 			& component_date_format & " Example: " & string (component_date_example),
 			console => true);
+		raise constraint_error;
 	end date_format_error;
 
 	procedure check_date_length (date : in string) is	
+-- 		use et_string_processing;
 	begin
 		if date'length /= component_date_length then
+-- 			log ("date length is     " & natural'image (date'length));
+-- 			log ("date length should " & natural'image (component_date_length));
 			date_format_error (date);
 		end if;
 	end check_date_length;

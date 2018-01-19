@@ -4592,6 +4592,9 @@ package body et_kicad is
 					function field (line : in type_fields_of_line; position : in positive) return string renames get_field_from_line;
 					text_position : type_2d_point;
 				begin
+					-- test if the field content is longer than allowed:
+					check_text_content_length (strip_quotes (field (et_kicad.line,3)));
+					
 					set_x (text_position, mil_to_distance (field (et_kicad.line,5)));
 					set_y (text_position, mil_to_distance (field (et_kicad.line,6)));
 					return (
@@ -5459,79 +5462,78 @@ package body et_kicad is
 							
 							when component_field_reference =>
 								field_reference_found := true;
-								check_text_content_length (content (field_reference)); -- a general field lenght check will do
+								field_reference := to_field;
 								check_reference_characters (
 									reference => content (field_reference),
 									characters => et_kicad.component_reference_characters);
 								-- NOTE: This is a redundant field. Its content must match the reference (see above).
 								-- This test is performed in procedure check_text_fields.
-								field_reference := to_field;
 								
 							when component_field_value =>
 								field_value_found := true;
+								field_value := to_field;
 								check_value_length (content (field_value));
 								check_value_characters (
 									value => type_component_value.to_bounded_string (content (field_value)),
 									characters => component_value_characters);
-								field_value := to_field;
 								
 							when component_field_package =>
 								field_package_found := true;
+								field_package := to_field;
 								check_package_length (content (field_package));
 								check_package_characters (
 									packge => type_component_package_name.to_bounded_string (content (field_package)),
 									characters => et_kicad.component_package_characters);
-								field_package := to_field;
 								
 							when component_field_datasheet =>
 								field_datasheet_found := true;
+								field_datasheet := to_field;
 								check_datasheet_length (content (field_datasheet));
 								check_datasheet_characters (
 									datasheet => type_component_datasheet.to_bounded_string (content (field_datasheet)));
-								field_datasheet := to_field;
 								
 							when component_field_purpose =>
 								field_purpose_found	:= true;
+								field_purpose := to_field;
 								check_purpose_length (content (field_purpose));
 								check_purpose_characters (
 									purpose => type_component_purpose.to_bounded_string (content (field_purpose)),
 									characters => component_initial_field_characters);
-								field_purpose := to_field;
 								
 							when component_field_partcode =>
 								field_partcode_found := true;
+								field_partcode := to_field;
 								check_partcode_length (content (field_partcode));
 								check_partcode_characters (
 									partcode => type_component_partcode.to_bounded_string (content (field_partcode)),
 									characters => component_initial_field_characters);
-								field_partcode := to_field;
 								
 							when component_field_commissioned =>
 								field_commissioned_found := true;
+								field_commissioned := to_field;
 								check_date_length (content (field_commissioned));
 								check_date_characters (
 									date => type_component_date (content (field_commissioned)));
-								field_commissioned := to_field;
 								
 							when component_field_updated =>
 								field_updated_found	:= true;
+								field_updated := to_field;
 								check_date_length (content (field_updated));
 								check_date_characters (
 									date => type_component_date (content (field_updated)));
-								field_updated := to_field;
 								
 							when component_field_author =>
 								field_author_found := true;
+								field_author := to_field;
 								check_author_length (content (field_author));
 								check_author_characters (
 									author => type_component_author.to_bounded_string (content (field_author)));
-								field_author := to_field;
 								
 							when component_field_bom =>
 								field_bom_found := true;
+								field_bom := to_field;
 								-- NOTE: length check already included in check_bom_characters
 								check_bom_characters (content (field_bom));
-								field_bom := to_field;
 
 							when others => null; -- CS: other fields are ignored. warning ?
 						end case;

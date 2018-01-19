@@ -120,14 +120,12 @@ package body et_configuration is
 		return latin_1.space & type_component_unit_meaning'image (meaning);
 	end to_string;
 
-	function check_unit_characters (
+	procedure check_unit_characters (
 		unit : in type_component_unit.bounded_string;
-		characters : in character_set)
-		return type_component_unit.bounded_string is
+		characters : in character_set) is
 	-- Tests if the given unit of measurement contains only valid characters as specified
 	-- by given character set.
 	-- Raises exception if invalid character found.
-	-- Returns unit of measurement unchanged otherwise.	
 		use et_string_processing;
 		use type_component_unit;
 		invalid_character_position : natural := 0;
@@ -144,8 +142,6 @@ package body et_configuration is
 				 & natural'image (invalid_character_position));
 			raise constraint_error;
 		end if;
-		
-		return unit;
 	end check_unit_characters;
 
 
@@ -340,7 +336,8 @@ package body et_configuration is
 				end if;
 			end test_multiple_occurences;
 
-			prefix : type_component_prefix.bounded_string;
+			prefix	: type_component_prefix.bounded_string;
+			unit	: type_component_unit.bounded_string;
 			
 			-- CS: check field count in sections respecitvely. issue warning if too many fields. 
 		begin
@@ -388,6 +385,11 @@ package body et_configuration is
 					while line_cursor /= type_lines.no_element loop
 						log (to_string (element (line_cursor)), log_threshold + 2);
 
+						-- Test if unit of measurement contains only allowed characters.
+						-- We test against the character set specified for units of measurement.
+						unit := type_component_unit.to_bounded_string (field (element (line_cursor), 1));
+						check_unit_characters (unit, component_unit_characters);
+						
 						-- insert the unit of measurement assignment in container component_units
 						type_component_units.insert (
 							container => et_configuration.component_units,
@@ -399,10 +401,8 @@ package body et_configuration is
 							-- the key in this map is the meeaning like MICROFARAD or NANOHENRY
 							key => type_component_unit_meaning'value (field (element (line_cursor), 2)),
 							
-							-- the item is the unit of measurement. it must be validated before.
-							new_item => check_unit_characters ( -- CS: should be a procedure. separate value for unit (as with prefix)
-									unit => type_component_unit.to_bounded_string (field (element (line_cursor), 1)),
-									characters => component_unit_characters)
+							-- the item is the unit of measurement
+							new_item => unit
 							);
 
 						test_multiple_occurences;

@@ -159,14 +159,12 @@ package et_configuration is
 	component_unit_length_max : constant positive := 2;
 	package type_component_unit is new generic_bounded_length (component_unit_length_max);
 
-	function check_unit_characters (
+	procedure check_unit_characters (
 		unit : in type_component_unit.bounded_string;
-		characters : in character_set)
-		return type_component_unit.bounded_string;
+		characters : in character_set);
 	-- Tests if the given unit of measurement contains only valid characters as specified
 	-- by given character set.
 	-- Raises exception if invalid character found.
-	-- Returns unit of measurement unchanged otherwise.	
 	
 	-- component values and their meaning are stored in a map:
 	package type_component_units is new ordered_maps (

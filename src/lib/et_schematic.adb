@@ -439,7 +439,7 @@ package body et_schematic is
 		log_indentation_up;
 		
 		-- unit name
-		log ("unit " 
+		log ("properties of unit " 
 			& to_string (type_units.key (unit)), log_threshold);
 
 		log_indentation_up;
