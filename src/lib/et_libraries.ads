@@ -174,7 +174,10 @@ package et_libraries is
 
 	-- A text have 200 characters which seems sufficient for now.
  	text_length_max : constant natural := 200;
-	package type_text_content is new generic_bounded_length(text_length_max); use type_text_content;
+	package type_text_content is new generic_bounded_length (text_length_max); use type_text_content;
+
+	procedure check_text_content_length (content : in string);
+	-- Tests if the content not longer than allowed.
 	
 	-- This is a real text with its content:
 	type type_text (meaning : type_text_meaning) is new type_text_basic with record
@@ -325,7 +328,7 @@ package et_libraries is
 	-- Returns the given name_in_library as as string.
 
 	-- The component value is something like 330R or 100n or 74LS00
-	component_value_length_max : constant positive := 100;
+	component_value_length_max : constant positive := 50;
 
 	-- Define the characters that are allowed for a component value:
 	component_value_characters : character_set := 
@@ -338,6 +341,9 @@ package et_libraries is
 	function to_string (value : in type_component_value.bounded_string) return string;
 	-- Returns the given value as string.
 
+	procedure check_value_length (value : in string);
+	-- Tests if the given value is longer than allowed.
+	
 	procedure check_value_characters (
 		value : in type_component_value.bounded_string;
 		characters : in character_set);
@@ -345,12 +351,15 @@ package et_libraries is
 	-- by given character set. Raises exception if invalid character found.
 	
 	-- For some components (not all !) it is helpful to have an URL to the datasheet.
-	-- We limit the URL to reansonable 1000 characters. Excessive google URLs are thus not allowed.
+	-- We limit the URL to reansonable 500 characters. Excessive Google URLs are thus not allowed.
 	component_datasheet_characters : character_set := 
 		to_set (ranges => (('A','Z'),('a','z'),('0','9'))) or to_set (":/._-&");
-	component_datasheet_length_max : constant positive := 1000;
+	component_datasheet_length_max : constant positive := 500;
 	package type_component_datasheet is new generic_bounded_length (component_datasheet_length_max);
 
+	procedure check_datasheet_length (datasheet : in string);
+	-- Tests if the given datasheet is longer than allowed.
+	
 	procedure check_datasheet_characters (
 		datasheet : in type_component_datasheet.bounded_string;
 		characters : in character_set := component_datasheet_characters);
@@ -368,6 +377,9 @@ package et_libraries is
 	function to_string (prefix : in type_component_prefix.bounded_string) return string;
 	-- returns the given prefix as string
 
+	procedure check_prefix_length (prefix : in string);
+	-- Tests if the given prefix is longer than allowed.
+	
 	procedure check_prefix_characters (
 		prefix : in type_component_prefix.bounded_string;
 		characters : in character_set);
@@ -442,6 +454,9 @@ package et_libraries is
 	function to_string (packge : in type_component_package_name.bounded_string) return string;
 	-- Returns the given package name as as string.
 	-- CS: provide a parameter that turns the preamble on/off
+
+	procedure check_package_length (packge : in string);
+	-- Tests if the given package name is longer than allowed.
 	
 	procedure check_package_characters (
 		packge		: in type_component_package_name.bounded_string;
@@ -461,8 +476,8 @@ package et_libraries is
 	-- The component partcode is something like "R_PAC_S_0805_VAL_100R_PMAX_125_TOL_5"
 	component_partcode_characters : character_set := to_set
 		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set('_'); 
-	component_partocde_length_max : constant positive := 200;
-	package type_component_partcode is new generic_bounded_length (component_partocde_length_max);
+	component_partcode_length_max : constant positive := 100;
+	package type_component_partcode is new generic_bounded_length (component_partcode_length_max);
 	partcode_default 			: constant string (1..10) := "?PARTCODE?";
 	partcode_separator 			: constant string (1..1) := "_";
 	partcode_keyword_package 	: constant string (1..3) := "PAC";
@@ -475,6 +490,9 @@ package et_libraries is
 	function to_string (partcode : in type_component_partcode.bounded_string) return string;
 	-- Returns the given partcode as string.
 
+	procedure check_partcode_length (partcode : in string);
+	-- Tests if the given partcode is longer than allowed.
+	
 	procedure check_partcode_characters (
 		partcode	: in type_component_partcode.bounded_string;
 		characters	: in character_set := component_partcode_characters);
@@ -492,6 +510,9 @@ package et_libraries is
 
 	function to_string (purpose : in type_component_purpose.bounded_string) return string;
 	-- Returns the given purpose as string.
+
+	procedure check_purpose_length (purpose : in string);
+	-- Tests if the given purpose is longer than allowed.
 	
 	procedure check_purpose_characters (
 		purpose		: in type_component_purpose.bounded_string;
@@ -515,7 +536,9 @@ package et_libraries is
 	-- Returns the given date as string.
 	
 	procedure date_format_error (date : in string);
+	
 	procedure check_date_length (date : in string);
+	-- Tests if the given date is longer than allowed.
 	
 	procedure check_date_characters (
 		date		: in type_component_date;
@@ -530,6 +553,9 @@ package et_libraries is
 	component_author_format  : constant string (1..16) := ("FORENAME SURNAME");
 	component_author_example : constant string (1..12) := ("STEVE MILLER");
 
+	procedure check_author_length (author : in string);
+	-- Tests if the given author is longer than allowed.
+	
 	procedure check_author_characters (
 		author		: in type_component_author.bounded_string;
 		characters	: in character_set := component_author_characters);

@@ -206,6 +206,19 @@ package body et_libraries is
 		return type_component_partcode.to_string (partcode);
 	end to_string;
 
+	procedure check_partcode_length (partcode : in string) is
+	-- Tests if the given partcode is longer than allowed.
+		use et_string_processing;
+	begin
+		if partcode'length > component_partcode_length_max then
+			log_indentation_reset;
+			log (message_error & "max. number of characters for partcode is" 
+				 & positive'image (component_partcode_length_max) & " !",
+				 console => true);
+			raise constraint_error;
+		end if;
+	end check_partcode_length;
+	
 	procedure check_partcode_characters (
 		partcode	: in type_component_partcode.bounded_string;
 		characters	: in character_set := component_partcode_characters) is
@@ -239,6 +252,19 @@ package body et_libraries is
 		return type_component_purpose.to_string (purpose);
 	end to_string;
 
+	procedure check_purpose_length (purpose : in string) is
+	-- Tests if the given purpose is longer than allowed.
+		use et_string_processing;
+	begin
+		if purpose'length > component_purpose_length_max then
+			log_indentation_reset;
+			log (message_error & "max. number of characters for purpose is" 
+				 & positive'image (component_purpose_length_max) & " !",
+				console => true);
+			raise constraint_error;
+		end if;
+	end check_purpose_length;
+	
 	procedure check_purpose_characters (
 		purpose		: in type_component_purpose.bounded_string;
 		characters	: in character_set := component_purpose_characters) is
@@ -324,6 +350,19 @@ package body et_libraries is
 		end if;
 	end check_date_characters;
 
+	procedure check_author_length (author : in string) is
+	-- Tests if the given author is longer than allowed.
+		use et_string_processing;
+	begin
+		if author'length > component_author_length_max then
+			log_indentation_reset;
+			log (message_error & "max. number of characters for author name is" 
+				 & positive'image (component_author_length_max) & " !",
+				 console => true);
+			raise constraint_error;
+		end if;
+	end check_author_length;
+	
 	procedure check_author_characters (
 		author		: in type_component_author.bounded_string;
 		characters	: in character_set := component_author_characters) is
@@ -382,6 +421,19 @@ package body et_libraries is
 		return type_text_meaning'image (meaning);
 	end to_string;
 
+	procedure check_text_content_length (content : in string) is
+	-- Tests if the content is longer than allowed.
+		use et_string_processing;
+	begin
+		if content'length > text_length_max then
+			log_indentation_reset;
+			log (message_error & "max. number of characters for a text field is" 
+				 & positive'image (text_length_max) & " !",
+				 console => true);
+			raise constraint_error;
+		end if;
+	end check_text_content_length;
+	
 	procedure write_placeholder_properties (
 	-- Writes the properties of the given placeholder.
 		placeholder		: in type_text_placeholder;
@@ -492,6 +544,19 @@ package body et_libraries is
 		return type_component_value.to_string(value);
 	end to_string;
 
+	procedure check_value_length (value : in string) is
+	-- Tests if the given value is longer than allowed.
+		use et_string_processing;
+	begin
+		if value'length > component_value_length_max then
+			log_indentation_reset;
+			log (message_error & "max. number of characters for value is" 
+				 & positive'image (component_value_length_max) & " !",
+				console => true);
+			raise constraint_error;
+		end if;
+	end check_value_length;
+	
 	procedure check_value_characters (
 		value : in type_component_value.bounded_string;
 		characters : in character_set) is
@@ -518,6 +583,18 @@ package body et_libraries is
 		end if;
 	end check_value_characters;
 
+	procedure check_datasheet_length (datasheet : in string) is
+	-- Tests if the given datasheet is longer than allowed.
+		use et_string_processing;
+	begin
+		if datasheet'length > component_datasheet_length_max then
+			log (message_error & "max. number of characters for URL is" 
+				 & positive'image (component_datasheet_length_max) & " !",
+				console => true);
+			raise constraint_error;
+		end if;
+	end check_datasheet_length;
+	
 	procedure check_datasheet_characters (
 		datasheet : in type_component_datasheet.bounded_string;
 		characters : in character_set := component_datasheet_characters) is
@@ -550,6 +627,19 @@ package body et_libraries is
 		return type_component_prefix.to_string (prefix);
 	end to_string;
 
+	procedure check_prefix_length (prefix : in string) is
+	-- Tests if the given prefix is longer than allowed.
+		use et_string_processing;
+	begin
+		if prefix'length > component_prefix_length_max then
+			log_indentation_reset;
+			log (message_error & "max. number of characters for component prefix is" 
+				 & positive'image (component_prefix_length_max) & " !",
+				console => true);
+			raise constraint_error;
+		end if;
+	end check_prefix_length;
+	
 	procedure check_prefix_characters (
 		prefix : in type_component_prefix.bounded_string;
 		characters : in character_set) is
@@ -1063,6 +1153,20 @@ package body et_libraries is
 		return type_component_package_name.to_string (packge);
 	end to_string;
 		
+
+	procedure check_package_length (packge : in string) is
+	-- Tests if the given package is longer than allowed.
+		use et_string_processing;
+	begin
+		if packge'length > component_package_name_length_max then
+			log_indentation_reset;
+			log (message_error & "max. number of characters for package/footprint is" 
+				 & positive'image (component_package_name_length_max) & " !",
+				console => true);
+			raise constraint_error;
+		end if;
+	end check_package_length;
+
 	procedure check_package_characters (
 		packge		: in type_component_package_name.bounded_string;
 		characters	: in character_set := component_package_characters)

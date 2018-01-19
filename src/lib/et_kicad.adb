@@ -1220,19 +1220,20 @@ package body et_kicad is
 				-- 8 : aligment horizontal (R,C,L)
 				-- 9 : aligment vertical (TNN, CNN, BNN) / font normal, italic, bold, bold_italic (TBI, TBN)
 
+				check_text_content_length (strip_quotes (field (line,2)));
 				text.content := type_text_content.to_bounded_string (strip_quotes (field (line,2)));
-				
+					
 				-- check content vs. meaning. 
 				case meaning is
 
 					when REFERENCE =>
-						-- CS: length check						
+						check_prefix_length (content (text));
 						check_prefix_characters (
 							prefix => type_component_prefix.to_bounded_string (content (text)),
 							characters => et_kicad.component_prefix_characters);
 					
 					when VALUE =>
-						-- CS: length check						
+						check_value_length (content (text));
 						check_value_characters (
 							value => type_component_value.to_bounded_string (content (text)),
 							characters => component_value_characters);
@@ -1242,24 +1243,24 @@ package body et_kicad is
 						check_bom_characters (content (text));
 
 					when DATASHEET =>
-						-- CS: length check
+						check_datasheet_length (content (text));
 						check_datasheet_characters (
 							datasheet => type_component_datasheet.to_bounded_string (content (text)));
 						
 					when PACKGE =>
-						-- CS: length check
+						check_package_length (content (text));
 						check_package_characters (
 							packge => type_component_package_name.to_bounded_string (content (text)),
 							characters => et_kicad.component_package_characters);
 
 					when PURPOSE =>
-						-- CS: length check
+						check_purpose_length (content (text));
 						check_purpose_characters (
 							purpose => type_component_purpose.to_bounded_string (content (text)),
 							characters => component_initial_field_characters);
 
 					when PARTCODE =>
-						-- CS: length check
+						check_partcode_length (content (text));
 						check_partcode_characters (
 							partcode => type_component_partcode.to_bounded_string (content (text)),
 							characters => component_initial_field_characters);
@@ -1270,7 +1271,7 @@ package body et_kicad is
 							date => type_component_date (content (text)));
 
 					when AUTHOR =>
-						-- CS: length check
+						check_author_length (content (text));
 						check_author_characters (
 							author => type_component_author.to_bounded_string (content (text)));
 						
@@ -5459,7 +5460,7 @@ package body et_kicad is
 							when component_field_reference =>
 								field_reference_found	:= true;
 								field_reference 		:= to_field;
-								-- CS: length check
+								check_text_content_length (content (field_reference)); -- a general field lenght check will do
 								check_reference_characters (
 									reference => content (field_reference),
 									characters => et_kicad.component_reference_characters);
@@ -5469,15 +5470,15 @@ package body et_kicad is
 							when component_field_value =>
 								field_value_found		:= true;
 								field_value 			:= to_field;
-								-- CS: length check								
+								check_value_length (content (field_value));
 								check_value_characters (
 									value => type_component_value.to_bounded_string (content (field_value)),
 									characters => component_value_characters);
 								
-							when component_field_footprint =>
+							when component_field_footprint => -- CS: rename to component_field_package
 								field_package_found		:= true;
 								field_package 			:= to_field;
-								-- CS: length check
+								check_package_length (content (field_package));
 								check_package_characters (
 									packge => type_component_package_name.to_bounded_string (content (field_package)),
 									characters => et_kicad.component_package_characters);
@@ -5485,14 +5486,14 @@ package body et_kicad is
 							when component_field_datasheet =>
 								field_datasheet_found	:= true;
 								field_datasheet 		:= to_field;
-								-- CS: length check
+								check_datasheet_length (content (field_datasheet));
 								check_datasheet_characters (
 									datasheet => type_component_datasheet.to_bounded_string (content (field_datasheet)));
 								
 							when component_field_purpose =>
 								field_purpose_found	:= true;
 								field_purpose 			:= to_field;
-								-- CS: length check
+								check_purpose_length (content (field_purpose));
 								check_purpose_characters (
 									purpose => type_component_purpose.to_bounded_string (content (field_purpose)),
 									characters => component_initial_field_characters);
@@ -5500,7 +5501,7 @@ package body et_kicad is
 							when component_field_partcode =>
 								field_partcode_found	:= true;
 								field_partcode 			:= to_field;
-								-- CS: length check
+								check_partcode_length (content (field_partcode));
 								check_partcode_characters (
 									partcode => type_component_partcode.to_bounded_string (content (field_partcode)),
 									characters => component_initial_field_characters);
@@ -5522,7 +5523,7 @@ package body et_kicad is
 							when component_field_author =>
 								field_author_found		:= true;
 								field_author 			:= to_field;
-								-- CS: length check
+								check_author_length (content (field_author));
 								check_author_characters (
 									author => type_component_author.to_bounded_string (content (field_author)));
 
