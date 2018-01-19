@@ -941,11 +941,11 @@ package body et_libraries is
 			unit_start	: natural; -- the position where the unit of measurement begins
 			unit_ok 	: boolean := false; -- goes true once the unit of measurement is considered as ok
 		
-			use type_component_unit;
-			use type_component_units;
+			use type_unit_abbrevation;
+			use type_units_of_measurement;
 			
 			-- This cursor points to the unit of measurement being probed
-			unit_cursor : type_component_units.cursor := component_units.first;
+			unit_cursor : type_units_of_measurement.cursor := component_units.first;
 
 			procedure test_if_unit_ok is
 			-- Raises alarm if unit_ok if false.
@@ -1000,7 +1000,7 @@ package body et_libraries is
 						case component_category is
 
 							when BATTERY =>
-								while unit_cursor /= type_component_units.no_element loop
+								while unit_cursor /= type_units_of_measurement.no_element loop
 									case key (unit_cursor) is
 										when VOLT =>
 											if unit_found then exit; end if;
@@ -1011,7 +1011,7 @@ package body et_libraries is
 								test_if_unit_ok;
 							
 							when CAPACITOR =>
-								while unit_cursor /= type_component_units.no_element loop
+								while unit_cursor /= type_units_of_measurement.no_element loop
 									case key (unit_cursor) is
 										when PICOFARAD | NANOFARAD | MICROFARAD | MILLIFARAD | FARAD =>
 											if unit_found then exit; end if;
@@ -1022,7 +1022,7 @@ package body et_libraries is
 								test_if_unit_ok;
 
 							when FUSE =>
-								while unit_cursor /= type_component_units.no_element loop
+								while unit_cursor /= type_units_of_measurement.no_element loop
 									case key (unit_cursor) is
 										when MILLIAMPERE | AMPERE =>
 											if unit_found then exit; end if;
@@ -1033,7 +1033,7 @@ package body et_libraries is
 								test_if_unit_ok;
 								
 							when INDUCTOR =>
-								while unit_cursor /= type_component_units.no_element loop
+								while unit_cursor /= type_units_of_measurement.no_element loop
 									case key (unit_cursor) is
 										when NANOHENRY | MICROHENRY | MILLIHENRY | HENRY =>
 											if unit_found then exit; end if;
@@ -1044,7 +1044,7 @@ package body et_libraries is
 								test_if_unit_ok;
 								
 							when RESISTOR | RESISTOR_NETWORK =>
-								while unit_cursor /= type_component_units.no_element loop
+								while unit_cursor /= type_units_of_measurement.no_element loop
 									case key (unit_cursor) is
 										when MILLIOHM | OHM | KILOOHM | MEGAOHM | GIGAOHM =>
 											if unit_found then exit; end if;
@@ -1055,7 +1055,7 @@ package body et_libraries is
 								test_if_unit_ok;
 
 							when QUARTZ =>
-								while unit_cursor /= type_component_units.no_element loop
+								while unit_cursor /= type_units_of_measurement.no_element loop
 									case key (unit_cursor) is
 										when KILOHERTZ | MEGAHERTZ | GIGAHERTZ =>
 											if unit_found then exit; end if;

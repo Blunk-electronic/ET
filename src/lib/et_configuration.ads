@@ -45,7 +45,7 @@ with ada.containers;            use ada.containers;
 -- with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
 -- with ada.containers.indefinite_ordered_maps;
--- with ada.containers.ordered_sets;
+with ada.containers.ordered_sets;
 
 with ada.text_io;				use ada.text_io;
 with ada.directories;			use ada.directories;
@@ -69,28 +69,38 @@ package et_configuration is
 		BUZZER,
 -- 		CABLE,
 		CAPACITOR,
+		CAPACITOR_ADJUSTABLE,	-- adjustable capacitor (also known as trimmer)
 		CONNECTOR,				-- component where another component of opposide gender is plugged
+		DIAC,
 		DIODE,
+		DIODE_PHOTO,			-- light sensitive diode
+		DISPLAY,				-- display, LCD, LED, VFD, ...
 		FUSE,
 		HEATSINK,				-- a bulk of metal that absorbs and dissipates excessive heat
 		INDUCTOR,
 		INTEGRATED_CIRCUIT,
 		JUMPER,					-- a component that allows tieing nets via a removable bridge
-		LIGHT_EMMITTING_DIODE,	-- an LED
+		KEYPAD,					-- array of push buttons, keys, switches, ...
+		LIGHT_EMMITTING_DIODE,	-- an LED, LASER-diode, IRED-LED, ...
 		LOUDSPEAKER,
 		MICROPHONE,
 		NETCHANGER,				-- ties two nets together
 		MOTOR,
 		OPTOCOUPLER,
 		QUARTZ,					-- quartz crystal resonators
-		TRANSFORMER,
-		TRANSISTOR,				-- NPN, PNP, NFET, MOSFET, ...
+		POTENTIOMETER,			-- variable resistor
 		RELAY,
 		RESISTOR,				-- varistors, trimmers, potentiometers, photoresistors
+		RESISTOR_ADJUSTABLE,	-- adjustable resistor
 		RESISTOR_NETWORK,		-- a collection of resistors in a single housing
+		RESISTOR_PHOTO,			-- light sensitive resistor
 		SWITCH,					-- push buttons, breakers, makers, rotary encoders, ...
 		TESTPOINT,				-- a point where measurements can be taken
 		THYRISTOR,
+		THYRISTOR_PHOTO,		-- light sensitive thyristor
+		TRANSFORMER,
+		TRANSISTOR,				-- NPN, PNP, NFET, MOSFET, ...
+		TRANSISTOR_PHOTO,		-- light sensitive transistor
 		TRIAC,
 		TUBE,					-- triodes, pentodes, thyratrons, klystrons, ...
 		UNKNOWN					-- not specified
@@ -122,7 +132,7 @@ package et_configuration is
 	-- Returns the category of the given component reference. If no category could be
 	-- found, returns category UNKNOWN.
 	
-	type type_component_unit_meaning is (
+	type type_unit_of_measurement is ( -- CS: rename to type_unit_of_measurement
 		MILLIOHM,
 		OHM,
 		KILOOHM,
@@ -150,33 +160,43 @@ package et_configuration is
 		GIGAHERTZ
 		);
 
-	function to_string (meaning : in type_component_unit_meaning) return string;
-	-- returns the meaning of the given unit meaning string. (things like OHM, KILOOHM, MEGAOHM, ...)
+	function to_unit_of_measurement (unit : in string) return type_unit_of_measurement;
+	-- Converts a string to type_unit_of_measurement.
+	
+	function to_string (unit : in type_unit_of_measurement) return string;
+	-- returns the given unit of measurement as string. (things like OHM, KILOOHM, MEGAOHM, ...)
 
-	-- The units of measurement express the value of a component and are limited to two characters.
+	-- The abbrevations of units of measurement are limited to two characters.
 	-- So the user could define units like uF or mH. More than two characters are not common.
 	-- However, the recommendation is to use just one character like u, m, k, M. Reason: how to express
 	-- something like 3.3Ohms since the Ohm character is a special character ?
 	-- By the category of the component we can reason that it is about Ohms, Henry or Farad.
-	component_unit_characters : character_set := to_set (ranges => (('A','Z'),('a','z')));
-	component_unit_length_max : constant positive := 2;
-	package type_component_unit is new generic_bounded_length (component_unit_length_max);
+	unit_abbrevation_characters : character_set := to_set (ranges => (('A','Z'),('a','z')));
+	unit_abbrevation_length_max : constant positive := 2;
+	package type_unit_abbrevation is new generic_bounded_length (unit_abbrevation_length_max);
 
-	procedure check_unit_characters (
-		unit : in type_component_unit.bounded_string;
+	procedure check_abbrevation_of_unit_characters (
+		abbrevation : in type_unit_abbrevation.bounded_string;
 		characters : in character_set);
-	-- Tests if the given unit of measurement contains only valid characters as specified
-	-- by given character set.
-	-- Raises exception if invalid character found.
+	-- Tests if the given abbrevation contains only valid characters as specified
+	-- by given character set. Raises exception if invalid character found.
 	
-	-- component values and their meaning are stored in a map:
-	package type_component_units is new ordered_maps (
-		key_type => type_component_unit_meaning, -- OHMS, KILOOHM, MEGAOHM, ...
-		element_type => type_component_unit.bounded_string, -- R, m, k, ...
-		"=" => type_component_unit."=");
+	-- Units of measurement and their abbrevation are stored in a map:
+	package type_units_of_measurement is new ordered_maps (
+		key_type => type_unit_of_measurement, -- OHMS, KILOOHM, MEGAOHM, ...
+		element_type => type_unit_abbrevation.bounded_string, -- R, m, k, ...
+		"=" => type_unit_abbrevation."=");
 
-	-- After reading the configuration, we store the component units for the design here:
-	component_units : type_component_units.map;
+	-- After reading the configuration, we store the units of measurement for the design here:
+	component_units : type_units_of_measurement.map;
+
+
+	-- Component categories that requires operator interaction are stored in a set.
+	package type_categories_with_operator_interacton is new ordered_sets (
+		element_type => type_component_category);
+	-- After reading the configuration, we store them here:
+	component_categories_with_operator_interaction : type_categories_with_operator_interacton.set;
+
 	
 	configuration_file_handle : ada.text_io.file_type;
 

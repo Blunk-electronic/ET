@@ -77,6 +77,9 @@ package body et_configuration is
 				log_indentation_reset;
 				log (message_error & category & " is not a supported component category !",
 					 console => true);
+
+				-- CS: show supported categories
+				
 				raise constraint_error;
 	end to_category;
 	
@@ -129,36 +132,56 @@ package body et_configuration is
 			return element (prefix_cursor);
 		end if;
 	end category;
-	
-	function to_string (meaning : in type_component_unit_meaning) return string is
-	-- returns the meaning of the given unit meaning string. (things like OHM, KILOOHM, MEGAOHM, ...)
-	begin
-		return latin_1.space & type_component_unit_meaning'image (meaning);
-	end to_string;
 
-	procedure check_unit_characters (
-		unit : in type_component_unit.bounded_string;
-		characters : in character_set) is
-	-- Tests if the given unit of measurement contains only valid characters as specified
-	-- by given character set.
-	-- Raises exception if invalid character found.
+	function to_unit_of_measurement (unit : in string) return type_unit_of_measurement is
+	-- Converts a string to type_component_unit_meaning.
 		use et_string_processing;
-		use type_component_unit;
+		unit_out : type_unit_of_measurement;
+	begin
+		unit_out := type_unit_of_measurement'value (unit);
+		return unit_out;
+
+		exception
+			when others =>
+				log_indentation_reset;
+				log (message_error & unit & " is not a supported unit of measurement !",
+					 console => true);
+
+				-- CS: show supported units
+				
+				raise constraint_error;
+	end to_unit_of_measurement;
+	
+	function to_string (unit : in type_unit_of_measurement) return string is
+	-- returns the given unit of measurement as string. (things like OHM, KILOOHM, MEGAOHM, ...)
+	begin
+		return latin_1.space & type_unit_of_measurement'image (unit);
+	end to_string;
+	
+	procedure check_abbrevation_of_unit_characters (
+		abbrevation : in type_unit_abbrevation.bounded_string;
+		characters : in character_set) is
+	-- Tests if the given abbrevation contains only valid characters as specified
+	-- by given character set. Raises exception if invalid character found.
+		use et_string_processing;
+		use type_unit_abbrevation;
 		invalid_character_position : natural := 0;
 	begin
 		invalid_character_position := index (
-			source => unit,
+			source => abbrevation,
 			set => characters,
 			test => outside);
 
 		if invalid_character_position > 0 then
 			log_indentation_reset;
-			log (message_error & "unit of measurement " & to_string (unit) 
-				 & " has invalid character at position"
-				 & natural'image (invalid_character_position));
+			log (message_error & "abbrevaton of unit of measurement " 
+				& to_string (abbrevation) 
+				& " has invalid character at position"
+				& natural'image (invalid_character_position),
+				console => true);
 			raise constraint_error;
 		end if;
-	end check_unit_characters;
+	end check_abbrevation_of_unit_characters;
 
 
 	
@@ -203,13 +226,18 @@ package body et_configuration is
 		put_line (configuration_file_handle, "B  " & to_string (BUZZER));
 		put_line (configuration_file_handle, "BAT" & to_string (BATTERY));
 		put_line (configuration_file_handle, "C  " & to_string (CAPACITOR));
+		put_line (configuration_file_handle, "CA " & to_string (CAPACITOR_ADJUSTABLE));
 		--put_line (configuration_file_handle, "CBL" & to_string (CABLE));
 		put_line (configuration_file_handle, "D  " & to_string (DIODE));
+		put_line (configuration_file_handle, "DPH" & to_string (DIODE_PHOTO));
+		put_line (configuration_file_handle, "DI " & to_string (DIAC));
+		put_line (configuration_file_handle, "DIS" & to_string (DISPLAY));
 		put_line (configuration_file_handle, "F  " & to_string (FUSE));
 		put_line (configuration_file_handle, "HS " & to_string (HEATSINK));
 		put_line (configuration_file_handle, "IC " & to_string (INTEGRATED_CIRCUIT));
 		put_line (configuration_file_handle, "J  " & to_string (JUMPER));
 		put_line (configuration_file_handle, "K  " & to_string (RELAY));
+		put_line (configuration_file_handle, "KP " & to_string (KEYPAD));
 		put_line (configuration_file_handle, "L  " & to_string (INDUCTOR));
 		put_line (configuration_file_handle, "LS " & to_string (LOUDSPEAKER));
 		put_line (configuration_file_handle, "LED" & to_string (LIGHT_EMMITTING_DIODE));
@@ -219,12 +247,17 @@ package body et_configuration is
 		put_line (configuration_file_handle, "OC " & to_string (OPTOCOUPLER));		
 		put_line (configuration_file_handle, "Q  " & to_string (QUARTZ));
 		put_line (configuration_file_handle, "R  " & to_string (RESISTOR));
+		put_line (configuration_file_handle, "RA " & to_string (RESISTOR_ADJUSTABLE));
 		put_line (configuration_file_handle, "RN " & to_string (RESISTOR_NETWORK));
+		put_line (configuration_file_handle, "RP " & to_string (POTENTIOMETER));
+		put_line (configuration_file_handle, "RPH" & to_string (RESISTOR_PHOTO));
 		put_line (configuration_file_handle, "S  " & to_string (SWITCH));
 		put_line (configuration_file_handle, "T  " & to_string (TRANSISTOR));
+		put_line (configuration_file_handle, "TP " & to_string (TRANSISTOR_PHOTO));
 		put_line (configuration_file_handle, "TF " & to_string (TRANSFORMER));
-		put_line (configuration_file_handle, "TP " & to_string (TESTPOINT));
+		put_line (configuration_file_handle, "TPT" & to_string (TESTPOINT));
 		put_line (configuration_file_handle, "TH " & to_string (THYRISTOR));
+		put_line (configuration_file_handle, "THP" & to_string (THYRISTOR_PHOTO));
 		put_line (configuration_file_handle, "TR " & to_string (TRIAC));
 		put_line (configuration_file_handle, "TUB" & to_string (TUBE));		
 		--put_line (configuration_file_handle, "W" & to_string (WIRE));
@@ -236,7 +269,7 @@ package body et_configuration is
 		-- UNITS OF COMPONENT VALUES
 		put_line (configuration_file_handle, section_component_units); -- section header
 		new_line (configuration_file_handle);
-		put_line (configuration_file_handle, comment & "unit meaning");
+		put_line (configuration_file_handle, comment & "abbrevation unit_of_measurement");
 		new_line (configuration_file_handle);
 		put_line (configuration_file_handle, "m" & to_string (MILLIOHM));
 		put_line (configuration_file_handle, "R" & to_string (OHM));
@@ -267,16 +300,27 @@ package body et_configuration is
 		new_line (configuration_file_handle);
 		new_line (configuration_file_handle);		
 
-		-- COMPONENT WITH OPERATOR INTERACTION
+		-- COMPONENT THAT REQUIRE OPERATOR INTERACTION
 		put_line (configuration_file_handle, section_components_with_operator_interaction); -- section header
 		new_line (configuration_file_handle);		
-		put_line (configuration_file_handle, comment & "prefix");
+		put_line (configuration_file_handle, comment & "category");
 		new_line (configuration_file_handle);		
-		put_line (configuration_file_handle, "LED");
-		put_line (configuration_file_handle, "S");
-		put_line (configuration_file_handle, "B");
-		put_line (configuration_file_handle, "X");
-		put_line (configuration_file_handle, "J");
+		put_line (configuration_file_handle, to_string (BUZZER));
+		put_line (configuration_file_handle, to_string (CAPACITOR_ADJUSTABLE));
+		put_line (configuration_file_handle, to_string (CONNECTOR));
+		put_line (configuration_file_handle, to_string (DIODE_PHOTO));
+		put_line (configuration_file_handle, to_string (DISPLAY));
+		put_line (configuration_file_handle, to_string (FUSE));
+		put_line (configuration_file_handle, to_string (JUMPER));
+		put_line (configuration_file_handle, to_string (KEYPAD));
+		put_line (configuration_file_handle, to_string (LIGHT_EMMITTING_DIODE));
+		put_line (configuration_file_handle, to_string (RESISTOR_ADJUSTABLE));
+		put_line (configuration_file_handle, to_string (RESISTOR_PHOTO));
+		put_line (configuration_file_handle, to_string (POTENTIOMETER));
+		put_line (configuration_file_handle, to_string (SWITCH));
+		put_line (configuration_file_handle, to_string (TESTPOINT));
+		put_line (configuration_file_handle, to_string (THYRISTOR_PHOTO));
+
 		new_line (configuration_file_handle);
 		
 
@@ -340,7 +384,7 @@ package body et_configuration is
 		-- Clears "lines" after processing.
 			line_cursor : type_lines.cursor := lines.first; -- points to the line being processed
 			component_prefix_cursor : type_component_prefixes.cursor; -- CS: rename to prefix_cursor
-			unit_cursor : type_component_units.cursor;
+			unit_cursor : type_units_of_measurement.cursor;
 			inserted : boolean := false;
 
 			use et_libraries;
@@ -352,9 +396,10 @@ package body et_configuration is
 				end if;
 			end test_multiple_occurences;
 
-			prefix	: type_component_prefix.bounded_string;
-			unit	: type_component_unit.bounded_string;
-			cat		: type_component_category;
+			prefix 		: type_component_prefix.bounded_string;
+			cat 		: type_component_category;
+			abbrevation	: type_unit_abbrevation.bounded_string;
+			unit		: type_unit_of_measurement;
 			
 			-- CS: check field count in sections respecitvely. issue warning if too many fields. 
 		begin
@@ -404,24 +449,28 @@ package body et_configuration is
 					while line_cursor /= type_lines.no_element loop
 						log (to_string (element (line_cursor)), log_threshold + 2);
 
-						-- Test if unit of measurement contains only allowed characters.
-						-- We test against the character set specified for units of measurement.
-						unit := type_component_unit.to_bounded_string (field (element (line_cursor), 1));
-						check_unit_characters (unit, component_unit_characters);
+						-- Build the unit abbrevation from field #1:
+						-- Test if abbrevation contains only allowed characters.
+						-- We test against the character set specified for abbrevations of units of measurement.
+						abbrevation := type_unit_abbrevation.to_bounded_string (field (element (line_cursor), 1));
+						check_abbrevation_of_unit_characters (abbrevation, unit_abbrevation_characters);
+
+						-- Build the unit of measurement from field #2:
+						unit := to_unit_of_measurement (field (element (line_cursor), 2));
 						
-						-- insert the unit of measurement assignment in container component_units
-						type_component_units.insert (
+						-- insert the abbrevation to unit of measurement assignment in container component_units
+						type_units_of_measurement.insert (
 							container => et_configuration.component_units,
 							position => unit_cursor,
 
 							-- If entry already in map, this flag goes true. Warning issued later. see below.
 							inserted => inserted,
 
-							-- the key in this map is the meeaning like MICROFARAD or NANOHENRY
-							key => type_component_unit_meaning'value (field (element (line_cursor), 2)),
+							-- the key in this map is the unit of measurement like MICROFARAD or NANOHENRY
+							key => unit,
 							
-							-- the item is the unit of measurement
-							new_item => unit
+							-- the item is the abbrevation of unit of measurement
+							new_item => abbrevation
 							);
 
 						test_multiple_occurences;
@@ -431,11 +480,19 @@ package body et_configuration is
 
 				-- COMPONENTS WITH USER INTERACTON
 				when components_with_operator_interaction =>
-					log ("components with operator interaction ...", log_threshold + 1);
+					log ("component categories with operator interaction ...", log_threshold + 1);
 					log_indentation_up;
 					while line_cursor /= type_lines.no_element loop
 						log (to_string (element (line_cursor)), log_threshold + 2);
-						-- CS
+
+						-- build the component category from field #1:
+						cat := to_category (field (element (line_cursor), 1));
+
+						-- insert the category in container component_categories_with_operator_interaction
+						type_categories_with_operator_interacton.insert (
+							container => component_categories_with_operator_interaction,
+							new_item => cat);
+						
 						next (line_cursor);
 					end loop;
 					log_indentation_down;
