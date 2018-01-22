@@ -507,7 +507,11 @@ package et_libraries is
 		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set('_') or to_set(' '); 
 	component_purpose_length_max : constant positive := 100;
 	package type_component_purpose is new generic_bounded_length (component_purpose_length_max);
+	purpose_default : constant string (1..9) := "?PURPOSE?";
 
+	procedure validate_purpose (purpose : in string);
+	-- Raises alarm if purpose is empty, purpose_default or nonsense.
+	
 	function to_string (purpose : in type_component_purpose.bounded_string) return string;
 	-- Returns the given purpose as string.
 

@@ -40,6 +40,7 @@ with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.text_io;				use ada.text_io;
 with ada.strings; 				use ada.strings;
+--with ada.strings.maps;
 with ada.strings.maps.constants;
 with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.strings.bounded; 		use ada.strings.bounded;
@@ -245,6 +246,44 @@ package body et_libraries is
 		end if;
 	end check_partcode_characters;
 
+	procedure validate_purpose (purpose : in string) is
+	-- Raises alarm if purpose is empty, purpose_default or nonsense.
+		use et_string_processing;
+		procedure purpose_invalid is
+		begin
+			log_indentation_reset;
+			log (message_error & "purpose '" & purpose & "' not sufficiently specified !",
+				 console => true);
+			raise constraint_error;
+		end purpose_invalid;
+
+		place : natural := 0;
+	begin -- validate_purpose
+
+		-- test for the default string
+		if purpose = purpose_default then
+			purpose_invalid;
+		end if;
+
+		-- test if length is non-zero
+		if purpose'length = 0 then 
+			log_indentation_reset;
+			log (message_error & "no purpose specified !",
+				 console => true);
+			raise constraint_error;
+		end if;
+
+		-- test for keywords and characters
+		
+		place := ada.strings.fixed.count (to_lower (purpose), "purpose");
+		if place > 0 then purpose_invalid; end if;
+
+		place := ada.strings.fixed.count (purpose, "?");
+		if place > 0 then purpose_invalid; end if;
+
+		-- CS: others like "to do, TODO, TBD
+		
+	end validate_purpose;
 	
 	function to_string (purpose : in type_component_purpose.bounded_string) return string is
 	-- Returns the given purpose as string.

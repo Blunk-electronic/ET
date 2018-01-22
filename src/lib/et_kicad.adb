@@ -1373,7 +1373,7 @@ package body et_kicad is
 					end if;
 				end if;
 				
-				-- appearance specifig fields:
+				-- appearance specific fields:
 				case tmp_appearance is
 					when sch_pcb =>
 						-- This is a real component.
@@ -1453,8 +1453,10 @@ package body et_kicad is
 						if not field_purpose_found then
 							missing_field (field_purpose.meaning);
 						else
-							-- CS: validate_purpose
-							null; -- CS
+							-- we do not expect a dedicated purpose here but only the purpose_default string
+							if content (field_purpose) /= purpose_default then
+								log (message_warning & "expected default " & purpose_default & " !");
+							end if;
 						end if;
 
 						
@@ -4806,7 +4808,19 @@ package body et_kicad is
 							if not field_purpose_found then
 								missing_field (et_libraries.purpose);
 							else
-								null;
+								case et_configuration.requires_operator_interaction (reference.prefix) is
+
+									-- Even if no interaction is required, we expect at least 
+									-- the purpose_default string.
+									when et_configuration.NO =>
+										if content (field_purpose) /= purpose_default then
+											log (message_warning & "expected default " & purpose_default & " !");
+										end if;
+										
+									-- If operator interaction is required, we expect something other:
+									when et_configuration.YES =>
+										validate_purpose (content (field_purpose));
+								end case;									
 								-- CS: check content of tmp_component_text_fnction
 							end if;
 
@@ -4815,8 +4829,8 @@ package body et_kicad is
 							if not field_bom_found then
 								missing_field (et_libraries.bom);
 							else
-								null;
 								-- CS: check content of field_bom
+								null;
 							end if;
 
 							
