@@ -183,6 +183,46 @@ package body et_configuration is
 		end if;
 	end check_abbrevation_of_unit_characters;
 
+	function requires_operator_interaction (
+		prefix : in et_libraries.type_component_prefix.bounded_string) 
+		return type_component_requires_operator_interaction is
+	-- Returns YES is given prefix requires operator interaction.
+		cat : type_component_category;
+		use type_categories_with_operator_interacton;		
+		cat_cursor : type_categories_with_operator_interacton.cursor;
+	begin
+		-- get category from given prefix
+		cat := category (prefix);
+
+		-- search in container component_categories_with_operator_interaction for
+		-- category cat.
+		cat_cursor := component_categories_with_operator_interaction.find (cat);
+
+		if cat_cursor = no_element then
+			return NO; -- no operator interaction required
+		else
+			return YES; -- operator interaction required
+		end if;
+	end requires_operator_interaction;
+		
+-- 	function requires_operator_interaction (
+-- 		reference : in et_libraries.type_component_reference) 
+-- 		return type_component_requires_operator_interaction is
+-- 		cat : type_component_category;
+-- 		use type_categories_with_operator_interacton;
+-- 		cat_cursor : type_categories_with_operator_interacton.cursor;
+-- 	begin
+-- 		cat := category (reference);
+-- 
+-- 		cat_cursor := component_categories_with_operator_interaction.find (cat);
+-- 
+-- 		if cat_cursor = no_element then
+-- 			return NO;
+-- 		else
+-- 			return YES;
+-- 		end if;
+-- 
+-- 	end requires_operator_interaction;
 
 	
 	procedure make_default_configuration (

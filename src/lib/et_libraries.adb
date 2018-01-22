@@ -392,9 +392,8 @@ package body et_libraries is
 			raise constraint_error;
 		end if;
 	end check_author_characters;
-	
 
-	function to_string ( variant : in type_component_variant) return string is
+	function to_string (variant : in type_component_variant) return string is
 	-- Returns the given variant as string.
 	-- NOTE: This displays the type_component_variant (see et_libraries.ads).
 	-- Do not confuse with type_variant (see et_schematic.ads) which also contains the variant name

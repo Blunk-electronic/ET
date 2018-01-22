@@ -562,6 +562,7 @@ package et_libraries is
 	-- Tests if the given author contains only valid characters as specified
 	-- by given character set.
 	-- Raises exception if invalid character found.
+
 	
 	-- VARIANT NAMES
 	-- If a component has package variants, a suffix after the component type indicates the package

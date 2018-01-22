@@ -197,9 +197,20 @@ package et_configuration is
 	-- After reading the configuration, we store them here:
 	component_categories_with_operator_interaction : type_categories_with_operator_interacton.set;
 
+	type type_component_requires_operator_interaction is (YES, NO);
+	
+	function requires_operator_interaction (
+		prefix : in et_libraries.type_component_prefix.bounded_string) 
+		return type_component_requires_operator_interaction;
+	-- Returns YES is given prefix requires operator interaction.
+	
+-- 	function requires_operator_interaction (
+-- 		reference : in et_libraries.type_component_reference)
+-- 		return type_component_requires_operator_interaction;	
+
 	
 	configuration_file_handle : ada.text_io.file_type;
-
+	
 	-- The name of the configuration file may have 100 characters which seems sufficient for now.
  	configuraton_file_name_length : constant natural := 100;
 	package type_configuration_file_name is new generic_bounded_length (configuraton_file_name_length); 
