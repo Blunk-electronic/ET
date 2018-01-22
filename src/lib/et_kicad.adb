@@ -4817,11 +4817,10 @@ package body et_kicad is
 											log (message_warning & "expected default " & purpose_default & " !");
 										end if;
 										
-									-- If operator interaction is required, we expect something other:
+									-- If operator interaction is required, we expect something useful:
 									when et_configuration.YES =>
 										validate_purpose (content (field_purpose));
 								end case;									
-								-- CS: check content of tmp_component_text_fnction
 							end if;
 
 							-- bom
@@ -5387,13 +5386,15 @@ package body et_kicad is
 					if field (et_kicad.line,1) = schematic_component_identifier_name then -- "L"
 						
 						generic_name_in_lbr := type_component_generic_name.to_bounded_string (field (et_kicad.line,2)); -- "SN74LS00"
-
+						log ("generic name " & to_string (generic_name_in_lbr), log_threshold + 3);
+						
 						check_generic_name_characters (
 							name => generic_name_in_lbr, -- "SN74LS00"
 							-- NOTE: We do not allow tilde characters here. they occur ONLY in the library:
 							characters => et_libraries.component_generic_name_characters); 
 
 						appearance := to_appearance (line => et_kicad.line, schematic => true);
+						log (to_string (appearance), log_threshold + 3);
 
 						-- Depending on the appearance of the component the reference is built and checked.
 						case appearance is
@@ -5407,6 +5408,7 @@ package body et_kicad is
 									text_in => field (et_kicad.line,3),
 									allow_special_character_in_prefix => true); 
 
+								log ("reference " & to_string (reference), log_threshold + 3);
 								validate_prefix (reference);
 
 							when et_libraries.sch_pcb =>
@@ -5419,6 +5421,8 @@ package body et_kicad is
 									text_in => field (et_kicad.line,3),
 									allow_special_character_in_prefix => false);
 
+								log ("reference " & to_string (reference), log_threshold + 3);
+								
 								et_configuration.validate_prefix (reference);
 
 							when others => -- CS: This should never happen. A subtype of type_component_appearance could be a solution.
@@ -5673,6 +5677,7 @@ package body et_kicad is
 								line => get_line,
 								number => ada.text_io.line (current_input),
 								comment_mark => "", -- there are no comment marks in the schematic file
+								delimiter_wrap => true,
 								ifs => latin_1.space); -- fields are separated by space
 					
 					case field_count (line) is

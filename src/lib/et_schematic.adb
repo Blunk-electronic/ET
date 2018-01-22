@@ -690,6 +690,7 @@ package body et_schematic is
 
 		use et_libraries.type_component_prefix;
 	begin
+-- 		et_string_processing.log ("to component reference >" & text_in & "<");
 		-- assemble prefix
 		for i in text_in'first .. text_in'last loop
 			c := text_in(i);
@@ -701,6 +702,7 @@ package body et_schematic is
 				when 1 => 
 					case allow_special_character_in_prefix is
 						when false =>
+-- 							et_string_processing.log ("false");							
 							if is_upper(c) then
 								r.prefix := r.prefix & c;
 							else 
@@ -708,6 +710,7 @@ package body et_schematic is
 							end if;
 
 						when true =>
+-- 							et_string_processing.log ("true");
 							if is_upper(c) or is_special(c) then -- CS: test for et_kicad.schematic_component_power_symbol_prefix instead.
 								r.prefix := r.prefix & c;
 							else 

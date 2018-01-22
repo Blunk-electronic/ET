@@ -261,7 +261,7 @@ package body et_string_processing is
 				when others => -- comment somewhere in the line 
 				
 					if test_whole_line then --> delete comment
-						return delete(text_in, position_of_comment, text_in'length); -- remove comment
+						return delete (text_in, position_of_comment, text_in'length); -- remove comment
 					else
 						return text_in; --> return line as it is
 					end if;
@@ -390,6 +390,8 @@ package body et_string_processing is
 		char_current	: character;					-- holds current character being processed
 		char_last		: character := ifs;				-- holds character processed previous to char_current
 	begin -- get_field
+		--log ("get field from line " & text_in);
+	
 		if character_count > 0 then
 			char_pt := 1;
 			for char_pt in 1..character_count loop
@@ -490,32 +492,75 @@ package body et_string_processing is
 		list : type_list_of_strings.vector;
 -- 		field_count : natural := ada.strings.fixed.count (line, ifs);
 
-		procedure read_fields ( line : in string) is
-			end_of_line : boolean := false;
-			i : natural := 0;
+-- 		procedure read_fields (line : in string) is
+-- 			end_of_line : boolean := false;
+-- 			i : natural := 0;
+-- 		begin
+-- -- 			put_line(line);
+-- 			while not end_of_line loop
+-- 				i := i + 1;
+-- 				if get_field_from_line (line, i, ifs)'last > 0 then
+-- 					type_list_of_strings.append (list, get_field_from_line (line, i, ifs));
+-- 				else
+-- 					end_of_line := true;
+-- 				end if;
+-- 			end loop;
+-- 		end read_fields;
+
+		procedure read_fields (line : in string) is
+			field_start : positive := 1;
+
+			field_entered : boolean := true;
+			field_left : boolean := false;
+			
+			length : natural := line'length;
+			place : natural := 0;
+			char : character;
 		begin
--- 			put_line(line);
-			while not end_of_line loop
-				i := i + 1;
-				if get_field_from_line(line, i, ifs)'last > 0 then
-					type_list_of_strings.append(list, get_field_from_line(line, i, ifs));
-				else
-					end_of_line := true;
-				end if;
-			end loop;
+			if line'length > 0 then
+				log ("line >" & line & "<");
+				loop
+					place := place + 1;
+					char := line (place);
+					
+					if char = ifs then
+						if field_entered then
+							field_entered := false;
+							type_list_of_strings.append (list, line (field_start..place-1));
+						end if;
+							
+-- 					elsif char = delimiter then
+-- 						null;
+
+					else
+						if not field_entered then
+							field_entered := true;
+							field_start := place;
+						end if;
+					end if;
+
+					if place = length then
+						type_list_of_strings.append (list, line (field_start..place));
+						exit;
+					end if;
+					
+				end loop;
+
+			end if;
 		end read_fields;
 
 	begin -- read_line
 		-- If comment_mark is an empty string ("") no comments are to be removed (line remains unchanged).
 		-- Otherwise the comment as specified by comment_mark is to be removed.
 		if comment_mark'length = 0 then
-			read_fields(line); -- no comment specified, leave line as it is
+			log ("no comment");
+			read_fields (trim (line,both)); -- no comment specified, leave line as it is
 		else
-			read_fields(remove_comment_from_line(
+			log ("comment");	
+			read_fields (trim (remove_comment_from_line (
 				text_in => line,
 				comment_mark => comment_mark,
-				test_whole_line => test_whole_line
-				));
+				test_whole_line => test_whole_line),both));
 		end if;
 		
 		--1 + ada.strings.fixed.count(line,row_separator_1a);
