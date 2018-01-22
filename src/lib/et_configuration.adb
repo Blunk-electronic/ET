@@ -222,7 +222,7 @@ package body et_configuration is
 		new_line (configuration_file_handle);		
 		put_line (configuration_file_handle, comment & "prefix category");
 		new_line (configuration_file_handle);		
-		put_line (configuration_file_handle, "ANT" & to_string (ANTENNA));		
+		put_line (configuration_file_handle, "ANT" & to_string (ANTENNA)); -- CS: short desciption as comment for all
 		put_line (configuration_file_handle, "B  " & to_string (BUZZER));
 		put_line (configuration_file_handle, "BAT" & to_string (BATTERY));
 		put_line (configuration_file_handle, "C  " & to_string (CAPACITOR));
@@ -236,6 +236,7 @@ package body et_configuration is
 		put_line (configuration_file_handle, "HS " & to_string (HEATSINK));
 		put_line (configuration_file_handle, "IC " & to_string (INTEGRATED_CIRCUIT));
 		put_line (configuration_file_handle, "J  " & to_string (JUMPER));
+		put_line (configuration_file_handle, "JD " & to_string (JUMPER));
 		put_line (configuration_file_handle, "K  " & to_string (RELAY));
 		put_line (configuration_file_handle, "KP " & to_string (KEYPAD));
 		put_line (configuration_file_handle, "L  " & to_string (INDUCTOR));
@@ -262,6 +263,7 @@ package body et_configuration is
 		put_line (configuration_file_handle, "TUB" & to_string (TUBE));		
 		--put_line (configuration_file_handle, "W" & to_string (WIRE));
 		put_line (configuration_file_handle, "X  " & to_string (CONNECTOR));
+		put_line (configuration_file_handle, "XD " & to_string (CONNECTOR));
 		
 		new_line (configuration_file_handle);
 		new_line (configuration_file_handle);		
