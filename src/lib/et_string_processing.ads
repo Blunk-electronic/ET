@@ -197,8 +197,11 @@ package et_string_processing is
 		trailer_to 	: in character := latin_1.semicolon
 		) return string;
 
-	-- CS: comments
-	package type_list_of_strings is new indefinite_vectors (index_type => positive, element_type => string);
+	-- This type serves to collect strings. It MUST be a vector, because
+	-- this allows do pick out arbitrary strings by their indexes:
+	package type_list_of_strings is new indefinite_vectors (
+		index_type => positive, 
+		element_type => string);
 
 	-- This type is required when reading lines from files. It is a composite type
 	-- whose components are hidden. The can only be accessed by special functions and procedures. See below.
