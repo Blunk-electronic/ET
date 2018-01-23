@@ -517,6 +517,8 @@ package body et_string_processing is
 			place : natural := 0; -- the character position being tested
 			char : character; -- the character being tested
 
+			wrap_started : boolean := false;
+			
 			procedure append (text_a : in string) is
 			-- The given string text_a has a lower bound greater than zero.
 			-- Convert the given string text_a to a string that has the lower bound of 1.
@@ -551,42 +553,94 @@ package body et_string_processing is
 			-- Otherwise test each character in the line whether it is an ifs or field content.
 			if line'length > 0 then
 				--log ("line >" & line & "<");
-		
-				loop
-					place := place + 1;
-					char := line (place);
 
-					if not field_entered then
-						if ifs_found then
-							null; -- skip all ifs
+				if not delimiter_wrap then
+					loop
+						place := place + 1;
+						char := line (place);
+
+						if not field_entered then
+							if ifs_found then
+								null; -- skip all ifs
+							else -- field reached
+								field_entered := true;
+								field_start := place;
+							end if;
 						else
-							field_entered := true;
-							field_start := place;
+							-- We are inside a field. If an ifs is detected,
+							-- the field is appended to the list.
+							if ifs_found then
+								field_entered := false;
+								append (line (field_start..place-1));
+							end if;
 						end if;
-					else
-						-- We are inside of a field. If an ifs is detected,
-						-- the field is appended to the list.
-						if ifs_found then
-							field_entered := false;
-							append (line (field_start..place-1));
+
+						-- Exit loop on last character. If this is
+						-- the last charcter of a field, append the field to list.
+						if place = length then
+							if field_entered then
+								append (line (field_start..place));
+							end if;
+							exit;
 						end if;
-					end if;
+					end loop;
 
-							
--- 					elsif char = delimiter then
--- 						null;						
+				else
+				
+					loop
+						place := place + 1;
+						char := line (place);
 
-					-- Exit loop on last character. If this is
-					-- the last charcter of a field, append the field to list.
-					if place = length then
-						if field_entered then
-							append (line (field_start..place));
+						if not field_entered then
+							if ifs_found then
+								null; -- skip all ifs
+							else -- field reached
+	-- 							if delimiter_wrap then
+	-- 								if char = delimiter then
+	-- 									wrap_started := true;
+	-- 								else
+	-- 									field_entered := true;
+	-- 									field_start := place;
+	-- 								end if;
+	-- 							else
+									field_entered := true;
+									field_start := place;
+	-- 							end if;
+							end if;
+						else
+	-- 						if delimiter_wrap then
+	-- 							if wrap_started then
+	-- 								if char = delimiter then
+	-- 									wrap_started := false;
+	-- 									append (line (field_start..place-1));
+	-- 								end if;
+	-- 							else
+	-- 								if ifs_found then
+	-- 									field_entered := false;
+	-- 								end if;
+	-- 							end if;
+	--						else
+								-- We are inside a field. If an ifs is detected,
+								-- the field is appended to the list.
+								if ifs_found then
+									field_entered := false;
+									append (line (field_start..place-1));
+								end if;
+	--						end if;
 						end if;
-						exit;
-					end if;
-					
-				end loop;
 
+						-- Exit loop on last character. If this is
+						-- the last charcter of a field, append the field to list.
+						if place = length then
+							if field_entered then
+								append (line (field_start..place));
+							end if;
+							exit;
+						end if;
+						
+					end loop;
+
+				end if;
 			end if;
 		end read_fields;
 
@@ -594,10 +648,10 @@ package body et_string_processing is
 		-- If comment_mark is an empty string ("") no comments are to be removed (line remains unchanged).
 		-- Otherwise the comment as specified by comment_mark is to be removed.
 		if comment_mark'length = 0 then
-			log ("no comment");
+-- 			log ("no comment");
 			read_fields (line); -- no comment specified, leave line as it is
 		else
-			log ("comment");	
+-- 			log ("comment");	
 			read_fields (remove_comment_from_line (
 				text_in => line,
 				comment_mark => comment_mark,
