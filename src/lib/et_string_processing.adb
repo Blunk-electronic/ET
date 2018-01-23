@@ -38,6 +38,7 @@ with ada.strings;				use ada.strings;
 with ada.strings.unbounded; 	use ada.strings.unbounded;
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.strings.fixed; 		use ada.strings.fixed;
+--with ada.strings.maps;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
@@ -516,6 +517,13 @@ package body et_string_processing is
 			length : natural := line'length;
 			place : natural := 0;
 			char : character;
+
+			procedure append (text_a : in string) is
+				text_b : string (1..text_a'length) := text_a;
+			begin
+				type_list_of_strings.append (list, text_b);
+			end append;
+				
 		begin
 			if line'length > 0 then
 				log ("line >" & line & "<");
@@ -526,7 +534,7 @@ package body et_string_processing is
 					if char = ifs then
 						if field_entered then
 							field_entered := false;
-							type_list_of_strings.append (list, line (field_start..place-1));
+							append (line (field_start..place-1));
 						end if;
 							
 -- 					elsif char = delimiter then
@@ -540,7 +548,7 @@ package body et_string_processing is
 					end if;
 
 					if place = length then
-						type_list_of_strings.append (list, line (field_start..place));
+						append (line (field_start..place));
 						exit;
 					end if;
 					
