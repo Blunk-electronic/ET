@@ -511,7 +511,7 @@ package body et_string_processing is
 		procedure read_fields (line : in string) is
 			field_start : positive := 1;
 
-			field_entered : boolean := true;
+			field_entered : boolean := false;
 			field_left : boolean := false;
 			
 			length : natural := line'length;
@@ -523,15 +523,34 @@ package body et_string_processing is
 			begin
 				type_list_of_strings.append (list, text_b);
 			end append;
-				
+
+			function ifs_found return boolean is
+			begin
+				if ifs = latin_1.space then
+					if char = ifs or char = latin_1.ht then
+						return true;
+					else
+						return false;
+					end if;
+				else
+					if char = ifs then
+						return true;
+					else
+						return false;
+					end if;
+				end if;
+			end ifs_found;
+			
 		begin
 			if line'length > 0 then
 				log ("line >" & line & "<");
+
+		
 				loop
 					place := place + 1;
 					char := line (place);
 					
-					if char = ifs then
+					if ifs_found then
 						if field_entered then
 							field_entered := false;
 							append (line (field_start..place-1));
