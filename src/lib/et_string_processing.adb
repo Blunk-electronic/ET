@@ -509,25 +509,30 @@ package body et_string_processing is
 -- 		end read_fields;
 
 		procedure read_fields (line : in string) is
-			field_start : positive := 1;
-
-			field_entered : boolean := false;
-			field_left : boolean := false;
-			
-			length : natural := line'length;
-			place : natural := 0;
-			char : character;
+		-- Breaks down the given line into smaller strings separated by ifs.
+		-- Adds those smaller strings in container "list".
+			field_start : positive := 1; -- temporarily storage of the position where a field starts
+			field_entered : boolean := false; -- goes true once the first character of a field was found
+			length : natural := line'length; -- the length of the given line
+			place : natural := 0; -- the character position being tested
+			char : character; -- the character being tested
 
 			procedure append (text_a : in string) is
+			-- The given string text_a has a lower bound greater than zero.
+			-- Convert the given string text_a to a string that has the lower bound of 1.
+			-- Then append the new string to the list of strings.
 				text_b : string (1..text_a'length) := text_a;
 			begin
 				type_list_of_strings.append (list, text_b);
 			end append;
 
 			function ifs_found return boolean is
+			-- Tests if char is an ifs. Returns true in that case.
+			-- If the given ifs is a space character,
+			-- horizontal tabulators are threated like spaces.
 			begin
 				if ifs = latin_1.space then
-					if char = ifs or char = latin_1.ht then
+					if char = ifs or char = latin_1.ht then -- threat space like horizontal tabulator
 						return true;
 					else
 						return false;
@@ -541,33 +546,38 @@ package body et_string_processing is
 				end if;
 			end ifs_found;
 			
-		begin
+		begin -- read_fields
+			-- If the given string "line" does not contain anything, there is nothing to do.
+			-- Otherwise test each character in the line whether it is an ifs or field content.
 			if line'length > 0 then
-				log ("line >" & line & "<");
-
+				--log ("line >" & line & "<");
 		
 				loop
 					place := place + 1;
 					char := line (place);
-					
-					if ifs_found then
-						if field_entered then
-							field_entered := false;
-							append (line (field_start..place-1));
-						end if;
-							
--- 					elsif char = delimiter then
--- 						null;
 
-					else
-						if not field_entered then
+					if not field_entered then
+						if ifs_found then
+							null; -- skip all ifs
+						else
 							field_entered := true;
 							field_start := place;
 						end if;
+					else		
+						if ifs_found then
+							field_entered := false;
+							append (line (field_start..place-1));
+						end if;
 					end if;
 
+							
+-- 					elsif char = delimiter then
+-- 						null;						
+
 					if place = length then
-						append (line (field_start..place));
+						if field_entered then
+							append (line (field_start..place));
+						end if;
 						exit;
 					end if;
 					
@@ -581,13 +591,13 @@ package body et_string_processing is
 		-- Otherwise the comment as specified by comment_mark is to be removed.
 		if comment_mark'length = 0 then
 			log ("no comment");
-			read_fields (trim (line,both)); -- no comment specified, leave line as it is
+			read_fields (line); -- no comment specified, leave line as it is
 		else
 			log ("comment");	
-			read_fields (trim (remove_comment_from_line (
+			read_fields (remove_comment_from_line (
 				text_in => line,
 				comment_mark => comment_mark,
-				test_whole_line => test_whole_line),both));
+				test_whole_line => test_whole_line));
 		end if;
 		
 		--1 + ada.strings.fixed.count(line,row_separator_1a);
