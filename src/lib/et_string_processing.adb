@@ -563,7 +563,9 @@ package body et_string_processing is
 							field_entered := true;
 							field_start := place;
 						end if;
-					else		
+					else
+						-- We are inside of a field. If an ifs is detected,
+						-- the field is appended to the list.
 						if ifs_found then
 							field_entered := false;
 							append (line (field_start..place-1));
@@ -574,6 +576,8 @@ package body et_string_processing is
 -- 					elsif char = delimiter then
 -- 						null;						
 
+					-- Exit loop on last character. If this is
+					-- the last charcter of a field, append the field to list.
 					if place = length then
 						if field_entered then
 							append (line (field_start..place));
