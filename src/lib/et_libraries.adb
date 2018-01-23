@@ -352,7 +352,7 @@ package body et_libraries is
 		use et_string_processing;
 	begin
 		log_indentation_reset;
-		log (message_error & date & "date format invalid ! Expected format is " 
+		log (message_error & date & " date format invalid ! Expected format is " 
 			& component_date_format & " Example: " & string (component_date_example),
 			console => true);
 		raise constraint_error;

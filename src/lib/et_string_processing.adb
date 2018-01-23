@@ -475,11 +475,8 @@ package body et_string_processing is
 		return to_string(field);
 	end get_field_from_line;
 
-	-- CS: comments
 	function read_line ( 
 	-- Breaks down a given string and returns a type_fields_of_line.
-	-- CS: poor performance -> rework !
-	-- CS: do the delimiter stuff
 		line			: in string; -- the line to be broken down
 		number			: in positive_count := positive_count'first; -- the line number
 		comment_mark	: in string := et_general.comment_mark; -- the comment mark like "--" or "#"
@@ -489,24 +486,11 @@ package body et_string_processing is
 		delimiter_wrap	: in boolean := false; -- true if text in delimiters is to be wrapped into a single field
 		delimiter		: in character := latin_1.quotation -- the text delimiter sign (mostly ")
 		) return type_fields_of_line is
-	
-		list : type_list_of_strings.vector;
--- 		field_count : natural := ada.strings.fixed.count (line, ifs);
 
--- 		procedure read_fields (line : in string) is
--- 			end_of_line : boolean := false;
--- 			i : natural := 0;
--- 		begin
--- -- 			put_line(line);
--- 			while not end_of_line loop
--- 				i := i + 1;
--- 				if get_field_from_line (line, i, ifs)'last > 0 then
--- 					type_list_of_strings.append (list, get_field_from_line (line, i, ifs));
--- 				else
--- 					end_of_line := true;
--- 				end if;
--- 			end loop;
--- 		end read_fields;
+		-- The list where we collect the fields contents.
+		-- It MUST be a vector, because this allows do pick out arbitrary fields
+		-- by their indexes.
+		list : type_list_of_strings.vector;
 
 		procedure read_fields (line : in string) is
 		-- Breaks down the given line into smaller strings separated by ifs.
@@ -514,10 +498,23 @@ package body et_string_processing is
 			field_start : positive := 1; -- temporarily storage of the position where a field starts
 			field_entered : boolean := false; -- goes true once the first character of a field was found
 			length : natural := line'length; -- the length of the given line
-			place : natural := 0; -- the character position being tested
+
+			-- As a safety measure, the pointer to the character being processed must be constrained
+			-- so that it never becomes greater than the acutal length of the given line:
+			subtype type_place is natural range 0..length;
+			place : type_place := type_place'first; -- the character position being tested
+
 			char : character; -- the character being tested
 
-			wrap_started : boolean := false;
+			-- The offset is used to determine the last character of a delimited field.
+			-- For safety reasons it is constrained.
+			-- The flag wrap_started goes true once a delimited field was found. It goes
+			-- false when the delimited field ends.
+			subtype type_offset is natural range 0..1;
+			offset : type_offset := type_offset'first; 
+			wrap_started : boolean := false; 
+
+			-- CS: replace ht in given line by space
 			
 			procedure append (text_a : in string) is
 			-- The given string text_a has a lower bound greater than zero.
@@ -554,12 +551,19 @@ package body et_string_processing is
 			if line'length > 0 then
 				--log ("line >" & line & "<");
 
+				-- To make the reading of the code easier, we distinguish between processing a line
+				-- that contains wrapped fields (delimiter_wrap cleared) and regular fields exclusively
+				-- (delimiter_wrap set).
+
+				-- PROCESS A LINE WITHOUT WRAPPED FIELDS.
+				-- example: L P3V3 #PWR05
 				if not delimiter_wrap then
 					loop
 						place := place + 1;
 						char := line (place);
 
 						if not field_entered then
+							-- We are outside a field.
 							if ifs_found then
 								null; -- skip all ifs
 							else -- field reached
@@ -585,56 +589,76 @@ package body et_string_processing is
 						end if;
 					end loop;
 
+				-- PROCESS A LINE WITH WRAPPED FIELDS
+				-- example: F 9 "PWR CTRL IN" H 1725 2950 51  0001 L BNN "purpose"
 				else
-				
 					loop
 						place := place + 1;
 						char := line (place);
 
 						if not field_entered then
+							-- We are outside a field.
 							if ifs_found then
 								null; -- skip all ifs
 							else -- field reached
-	-- 							if delimiter_wrap then
-	-- 								if char = delimiter then
-	-- 									wrap_started := true;
-	-- 								else
-	-- 									field_entered := true;
-	-- 									field_start := place;
-	-- 								end if;
-	-- 							else
-									field_entered := true;
-									field_start := place;
-	-- 							end if;
+								-- If a delimiter was found, signal that a wrapped field
+								-- has started. Save the start position of the field content.
+								-- The content starts right after the delimiter.
+								-- If other charcter found, a regular field has started 
+								-- where place is pointing at.
+								-- In both cases a field has been entered.
+								if char = delimiter then
+									wrap_started := true; -- wrapped field has started
+									field_start := place + 1; -- content right after the delimiter
+								else
+									field_start := place; -- regular field started
+								end if;
+	
+								field_entered := true;
 							end if;
 						else
-	-- 						if delimiter_wrap then
-	-- 							if wrap_started then
-	-- 								if char = delimiter then
-	-- 									wrap_started := false;
-	-- 									append (line (field_start..place-1));
-	-- 								end if;
-	-- 							else
-	-- 								if ifs_found then
-	-- 									field_entered := false;
-	-- 								end if;
-	-- 							end if;
-	--						else
-								-- We are inside a field. If an ifs is detected,
-								-- the field is appended to the list.
-								if ifs_found then
+							-- We are inside a field. 
+							-- If an ifs is detected and a wrapped field has started, the ifs is skipped
+							-- because it is part of the wrapped field.
+							-- If an ifs is detected and a regular field has started, then the regular
+							-- field is appended to the list. The field started at field_start and ends
+							-- at place - 1. Offset in this case is zero. 
+							-- If a delimiter is detected, the wrapped field ends. Offset assumes 1 so 
+							-- that on passing the ifs (right after delimiter) the last character position
+							-- of the wrapped field can be computed.
+							if ifs_found then
+								if wrap_started then
+									null; -- skip ifs
+								else 
 									field_entered := false;
-									append (line (field_start..place-1));
+									append (line (field_start..place - 1 - offset));
+									offset := 0; -- reset offset for next wrapped field
 								end if;
-	--						end if;
+							else
+								if char = delimiter then
+									wrap_started := false;
+									offset := 1;
+								end if;
+							end if;
 						end if;
 
 						-- Exit loop on last character. If this is
 						-- the last charcter of a field, append the field to list.
+						-- If last field was a wrapped field, the position of its last character
+						-- is obtained by subtacting the offset (which is 1 in that case).
+						-- Rais alarm on missing delimiter at end of line (flag wrap_started still set).
 						if place = length then
 							if field_entered then
-								append (line (field_start..place));
+								append (line (field_start..place - offset));
 							end if;
+
+							if wrap_started then
+								log_indentation_reset;
+								log (message_error & "missing delimiter " & delimiter & " at end of line !", console => true);
+								log ("line: " & line, console => true);
+								raise constraint_error;
+							end if;
+							
 							exit;
 						end if;
 						
@@ -648,22 +672,18 @@ package body et_string_processing is
 		-- If comment_mark is an empty string ("") no comments are to be removed (line remains unchanged).
 		-- Otherwise the comment as specified by comment_mark is to be removed.
 		if comment_mark'length = 0 then
--- 			log ("no comment");
 			read_fields (line); -- no comment specified, leave line as it is
 		else
--- 			log ("comment");	
 			read_fields (remove_comment_from_line (
 				text_in => line,
 				comment_mark => comment_mark,
 				test_whole_line => test_whole_line));
 		end if;
-		
-		--1 + ada.strings.fixed.count(line,row_separator_1a);
--- 		type_list_of_strings.reserve_capacity(
--- 			list, 
--- 			count_type( ada.strings.fixed.count (line, ifs) ));
-		
-		return ( fields => list, field_count => type_list_of_strings.length(list), number => number);
+
+		return (
+			fields => list,
+			field_count => type_list_of_strings.length (list),
+			number => number);
 	end read_line;
 
 	function append (left : in type_fields_of_line; right : in type_fields_of_line) return type_fields_of_line is

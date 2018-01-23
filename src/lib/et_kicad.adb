@@ -4595,7 +4595,7 @@ package body et_kicad is
 					text_position : type_2d_point;
 				begin
 					-- test if the field content is longer than allowed:
-					check_text_content_length (strip_quotes (field (et_kicad.line,3)));
+					check_text_content_length (field (et_kicad.line,3));
 					
 					set_x (text_position, mil_to_distance (field (et_kicad.line,5)));
 					set_y (text_position, mil_to_distance (field (et_kicad.line,6)));
@@ -4604,7 +4604,7 @@ package body et_kicad is
 						meaning 	=> to_text_meaning (line => et_kicad.line, schematic => true),
 
 						-- read content like "N701" or "NetChanger" from field position 3
-						content		=> type_text_content.to_bounded_string (strip_quotes (field (et_kicad.line,3))),
+						content		=> type_text_content.to_bounded_string (field (et_kicad.line,3)),
 
 						-- read orientation like "H"
 						orientation	=> to_field_orientation (field (et_kicad.line,4)),
@@ -5516,7 +5516,7 @@ package body et_kicad is
 								check_purpose_length (content (field_purpose));
 								check_purpose_characters (
 									purpose => type_component_purpose.to_bounded_string (content (field_purpose)),
-									characters => component_initial_field_characters);
+									characters => component_initial_purpose_characters);
 								
 							when component_field_partcode =>
 								field_partcode_found := true;
@@ -5677,8 +5677,10 @@ package body et_kicad is
 								line => get_line,
 								number => ada.text_io.line (current_input),
 								comment_mark => "", -- there are no comment marks in the schematic file
-								delimiter_wrap => true,
+								delimiter_wrap => true, -- there are fields wrapped in delimiters
 								ifs => latin_1.space); -- fields are separated by space
+					-- CS: If read_line exits with an exception, the exception handler of read_schematic
+					-- outputs the line BEFORE the faulty line. Thus misleading the operator.
 					
 					case field_count (line) is
 						when 0 => null; -- we skip empty lines
