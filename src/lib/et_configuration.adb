@@ -257,6 +257,13 @@ package body et_configuration is
 		put_line (configuration_file_handle, comment & row_separator_double);
 		new_line (configuration_file_handle);
 
+		-- MODULES TO BE IMPORTED
+		put_line (configuration_file_handle, section_import_modules); -- section header
+		new_line (configuration_file_handle);		
+		put_line (configuration_file_handle, comment & "module cad_format");
+		new_line (configuration_file_handle);		
+		
+		
 		-- COMPONENT PREFIXES
 		put_line (configuration_file_handle, section_component_prefixes); -- section header
 		new_line (configuration_file_handle);		

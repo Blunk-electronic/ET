@@ -61,8 +61,13 @@ package et_configuration is
 	section_component_prefixes						: constant string (1..20) := "[COMPONENT_PREFIXES]";
 	section_component_units							: constant string (1..22) := "[UNITS_OF_MEASUREMENT]";
 	section_components_with_operator_interaction 	: constant string (1..31) := "[OPERATOR_INTERACTION_REQUIRED]";
-	section_connector_gnd_terminal					: constant string (1..24) := "[CONNECTOR_GND_TERMINAL]";
+	-- CS: section_connector_gnd_terminal					: constant string (1..24) := "[CONNECTOR_GND_TERMINAL]";
+	section_import_modules							: constant string (1..16) := "[IMPORT_MODULES]";
 
+-- 	package type_import_modules is new ordered_maps (
+-- 		key_type => et_schematic.type_component_prefix.bounded_string, -- IC
+-- 		element_type => type_component_category, -- INTEGRATED_CIRCUIT
+	
 	type type_component_category is (
 		ANTENNA,
 		BATTERY,

@@ -63,31 +63,21 @@ package et_schematic is
 
 -- NAMES GENERAL
 
-	-- The name of a module may have 100 characters which seems sufficient for now.
- 	module_name_length : constant natural := 100;
-	package type_module_name is new generic_bounded_length(module_name_length); use type_module_name;
-
-
-    -- A sheet title may have 100 characters which seems sufficient for now.
- 	sheet_title_length : constant natural := 100;    
-	package type_sheet_title is new generic_bounded_length(sheet_title_length); use type_sheet_title;
-    
-    sheet_comment_length : constant natural := 100;
-    package type_sheet_comment is new generic_bounded_length(sheet_comment_length); use type_sheet_comment;
-
 	-- This is the root directory where all projects live:
 	projects_root_dir_length : constant natural := 100;
 	package type_projects_root_dir is new generic_bounded_length (projects_root_dir_length);
-	--use type_projects_root_dir;
 	projects_root_dir : type_projects_root_dir.bounded_string;
 	
 	-- The name of a project may have 100 characters which seems sufficient for now.
  	project_name_length : constant natural := 100;
-	package type_project_name is new generic_bounded_length (project_name_length); use type_project_name;
+	package type_project_name is new generic_bounded_length (project_name_length); 
+	use type_project_name;
 	project_name : type_project_name.bounded_string;
+	project_file_handle	: ada.text_io.file_type;
 	
 	schematic_file_name_length : constant positive := project_name_length + 4; -- includes extension
-	package type_schematic_file_name is new generic_bounded_length (schematic_file_name_length); use type_schematic_file_name;
+	package type_schematic_file_name is new generic_bounded_length (schematic_file_name_length); 
+	use type_schematic_file_name;
 
 	top_level_schematic	: type_schematic_file_name.bounded_string;
 	
@@ -96,13 +86,19 @@ package et_schematic is
 	function to_string (schematic : in type_schematic_file_name.bounded_string) return string;
 	-- Returns the given schematic file name as string.
 
-	-- The project file name may have the same length as the project name itself plus extension (*.pro, *.prj, ...):
--- 	package type_project_file_name is new generic_bounded_length (project_name_length + 4); use type_project_file_name;
--- 	project_file_name	: type_project_file_name.bounded_string;
-	project_file_handle	: ada.text_io.file_type;
+-- SHEETS
+    -- A sheet title may have 100 characters which seems sufficient for now.
+ 	sheet_title_length : constant natural := 100;    
+	package type_sheet_title is new generic_bounded_length (sheet_title_length);
+	use type_sheet_title;
+    
+    sheet_comment_length : constant natural := 100;
+	package type_sheet_comment is new generic_bounded_length (sheet_comment_length); 
+	use type_sheet_comment;
 	
 	-- Sheet names may have the same length as schematic files.
-	package type_sheet_name is new generic_bounded_length (schematic_file_name_length); use type_sheet_name;
+	package type_sheet_name is new generic_bounded_length (schematic_file_name_length); 
+	use type_sheet_name;
    
 -- PAPER SIZES
     type type_paper_size is (A0, A1, A2, A4); -- CS: others ?
