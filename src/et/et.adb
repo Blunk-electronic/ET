@@ -49,6 +49,7 @@ with ada.directories;			use ada.directories;
 
 with et_general;				use et_general;
 with et_string_processing;		use et_string_processing;
+with et_coordinates;
 with et_schematic;
 with et_import;
 with et_export;
@@ -66,12 +67,13 @@ procedure et is
 	begin
 		loop 
 			case getopt (switch_version 
-						& latin_1.space & switch_help
+						& latin_1.space & switch_help -- no parameter
+						& latin_1.space & switch_make_default_conf & latin_1.equals_sign
 						& latin_1.space & switch_log_level & latin_1.equals_sign
 						--& latin_1.space & switch_import_file & latin_1.equals_sign -- CS: see below
 						& latin_1.space & switch_import_project & latin_1.equals_sign
 						& latin_1.space & switch_import_format & latin_1.equals_sign
-						& latin_1.space & switch_make_default_conf & latin_1.equals_sign
+						& latin_1.space & switch_import_modules -- no parameter
 						& latin_1.space & switch_configuration_file & latin_1.equals_sign
 					) is
 
@@ -98,6 +100,12 @@ procedure et is
 						put_line ("import format " & parameter);
 						et_import.cad_format := et_import.type_cad_format'value (parameter);
 
+					elsif full_switch = switch_import_modules then
+						put_line ("import modules as specified by configuraton file");
+
+						-- set operator action
+						operator_action := import_modules;
+						
 					elsif full_switch = switch_make_default_conf then -- make configuration file
 						put_line ("configuration file " & parameter);
 
@@ -207,6 +215,8 @@ procedure et is
 		-- The design import requires changing of directories. So we backup the current directory.
 		-- After the import, we restore the directory.
 		backup_projects_root_directory;
+
+		-- CS: use case construct to probe cad formats
 		et_kicad.import_design (log_threshold => 0);
 		restore_projects_root_directory;
 
@@ -271,7 +281,57 @@ procedure et is
 		
 	end check_design;
 
+	procedure import_modules is
+		use et_schematic;
+		use et_schematic.type_project_name;
+		use et_configuration;
+		use type_import_modules;
+		use et_coordinates.type_submodule_name;
+		module_cursor : type_import_modules.cursor;
+	begin
+		log ("importing modules ...");
 		
+		create_work_directory;
+		create_report_directory;
+		et_import.create_report; -- directs all puts to the report file
+
+		-- read configuration file if specified. otherwise issue warning -- CS: make a procedure as this is used by procedure import_desing too.
+		if et_configuration.type_configuration_file_name.length (conf_file_name) > 0 then
+			et_configuration.read_configuration (file_name => conf_file_name, log_threshold => 0);
+		else
+			log (message_warning & "no configuration file specified !");
+		end if;
+		
+		-- The design import requires changing of directories. So we backup the current directory.
+		-- After the import, we restore the directory.
+		backup_projects_root_directory;
+		
+		-- loop in et_configuration.import_module and import module per module
+		module_cursor := et_configuration.import_modules.first;
+		while module_cursor /= type_import_modules.no_element loop
+			log ("module " & to_string (element (module_cursor).name), console => true);
+			project_name := to_bounded_string (to_string (element (module_cursor).name));
+			et_import.cad_format := element (module_cursor).format;
+
+			-- CS: use case construct to probe cad formats
+			et_kicad.import_design (log_threshold => 0);
+			
+			next (module_cursor);
+		end loop;
+		
+		restore_projects_root_directory;
+
+		et_import.close_report;
+
+		exception
+			when event:
+				others =>
+					et_import.close_report;
+					put_line (standard_output, message_error & "Read import report for warnings and error messages !"); -- CS: show path to report file
+					raise;
+
+
+	end import_modules;
 	
 begin -- main
 
@@ -282,6 +342,9 @@ begin -- main
 		when request_help =>
 			null; -- CS
 
+		when make_configuration =>
+			et_configuration.make_default_configuration (conf_file_name, log_threshold => 0);
+			
 		when import_design =>
 	
 			-- import design indicated by variable project_name
@@ -290,9 +353,9 @@ begin -- main
 			-- check the imported design
 			check_design;
 			
-		when make_configuration =>
-			null;
-			et_configuration.make_default_configuration (conf_file_name, log_threshold => 0);
+		when import_modules =>
+			import_modules;
+			
 	end case;
 			
 

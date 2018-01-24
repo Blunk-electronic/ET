@@ -471,6 +471,7 @@ package body et_configuration is
 						check_submodule_name_length (field (element (line_cursor),1));
 						module.name := type_submodule_name.to_bounded_string (field (element (line_cursor),1));
 						check_submodule_name_characters (module.name);
+						-- CS: check if module exists
 
 						et_import.validate_cad_format (field (element (line_cursor),2));
 						module.format := et_import.to_cad_format (field (element (line_cursor),2));
