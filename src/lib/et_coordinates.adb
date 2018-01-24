@@ -329,12 +329,54 @@ package body et_coordinates is
 		return type_distance (dis);
 	end distance;
 
+	procedure check_submodule_name_length (name : in string) is
+	-- Checks if the given submodule name is not longer than allowed.
+		use et_string_processing;
+	begin
+		if name'length > submodule_name_length then
+			log_indentation_reset;
+			log (message_error & "max. number of characters for module name is" 
+				 & positive'image (submodule_name_length) & " !",
+				console => true);
+			raise constraint_error;
+		end if;
+	end check_submodule_name_length;
+
+	procedure check_submodule_name_characters (
+		name : in type_submodule_name.bounded_string;
+		characters : in character_set := submodule_name_characters) is
+	-- Checks for forbiddedn characters in submodule name.
+	begin
+		null;
+	end check_submodule_name_characters;
+	
 	function to_string (submodule : in type_submodule_name.bounded_string) return string is
 	-- Returns the given submodule name as string.
 	begin
 		return type_submodule_name.to_string (submodule);
 	end to_string;
 
+	procedure check_number_of_instances (instances : in string) is
+	-- Checks if given instances is a digit and if it is within allowed range.
+		use et_string_processing;
+	begin
+		-- CS: check charactes. all must be digits
+
+		-- Test if within range:
+		if positive'value (instances) not in type_submodule_instance then
+			log_indentation_reset;
+			log (message_error & "max. number of instances per module is" 
+				 & type_submodule_instance'image (type_submodule_instance'last) & " !",
+				console => true);
+			raise constraint_error;
+		end if;
+	end check_number_of_instances;
+
+	function to_number_of_instances (instances : in string) return type_submodule_instance is
+	begin
+		return type_submodule_instance'value (instances);
+	end to_number_of_instances;
+	
 	function to_string (
 		path : in type_path_to_submodule.list;
 		top_module : in boolean := true) return string is -- CS: probably no longer required

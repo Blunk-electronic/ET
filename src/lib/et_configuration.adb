@@ -205,26 +205,6 @@ package body et_configuration is
 		end if;
 	end requires_operator_interaction;
 		
--- 	function requires_operator_interaction (
--- 		reference : in et_libraries.type_component_reference) 
--- 		return type_component_requires_operator_interaction is
--- 		cat : type_component_category;
--- 		use type_categories_with_operator_interacton;
--- 		cat_cursor : type_categories_with_operator_interacton.cursor;
--- 	begin
--- 		cat := category (reference);
--- 
--- 		cat_cursor := component_categories_with_operator_interaction.find (cat);
--- 
--- 		if cat_cursor = no_element then
--- 			return NO;
--- 		else
--- 			return YES;
--- 		end if;
--- 
--- 	end requires_operator_interaction;
-
-	
 	procedure make_default_configuration (
 		file_name		: in type_configuration_file_name.bounded_string;
 		log_threshold	: in et_string_processing.type_log_level) is
@@ -260,7 +240,7 @@ package body et_configuration is
 		-- MODULES TO BE IMPORTED
 		put_line (configuration_file_handle, section_import_modules); -- section header
 		new_line (configuration_file_handle);		
-		put_line (configuration_file_handle, comment & "module cad_format");
+		put_line (configuration_file_handle, comment & "module cad_format number_of_instances");
 		new_line (configuration_file_handle);		
 		
 		
@@ -413,6 +393,7 @@ package body et_configuration is
 
 		type type_section is (
 			none,
+			import_modules,
 			component_prefixes,
 			component_units,
 			components_with_operator_interaction
@@ -437,6 +418,8 @@ package body et_configuration is
 			inserted : boolean := false;
 
 			use et_libraries;
+			use et_coordinates;
+			use type_import_modules;
 
 			procedure test_multiple_occurences is 
 			begin
@@ -445,12 +428,32 @@ package body et_configuration is
 				end if;
 			end test_multiple_occurences;
 
+			procedure test_multiple_occurences (module : in type_import_module) is
+			-- Tests if given module is already in the import_modules list.
+				module_cursor : type_import_modules.cursor := et_configuration.import_modules.first;
+				use type_submodule_name;
+			begin
+				while module_cursor /= type_import_modules.no_element loop
+					if element (module_cursor).name = module.name then
+						log_indentation_reset;
+						log (message_error & affected_line (element (line_cursor)) 
+								& "duplicated entry !",
+								console => true);
+						raise constraint_error;
+					end if;
+					next (module_cursor);
+				end loop;
+			end test_multiple_occurences;
+			
+			module		: type_import_module;
+			
 			prefix 		: type_component_prefix.bounded_string;
 			cat 		: type_component_category;
+			
 			abbrevation	: type_unit_abbrevation.bounded_string;
 			unit		: type_unit_of_measurement;
 			
-			-- CS: check field count in sections respecitvely. issue warning if too many fields. 
+			-- CS: check field count in sections respectively. issue warning if too many fields. 
 		begin
 			next (line_cursor); -- the first line of the section is its header itself and can be skipped
 			log_indentation_up;
@@ -458,6 +461,38 @@ package body et_configuration is
 			case section_entered is
 				when none => null;
 
+				-- MODULES TO BE IMPORTED
+				when import_modules =>
+					log ("import modules ...", log_threshold + 1);
+					log_indentation_up;
+
+					while line_cursor /= type_lines.no_element loop
+						log (to_string (element (line_cursor)), log_threshold + 2);
+						check_submodule_name_length (field (element (line_cursor),1));
+						module.name := type_submodule_name.to_bounded_string (field (element (line_cursor),1));
+						check_submodule_name_characters (module.name);
+
+						et_import.validate_cad_format (field (element (line_cursor),2));
+						module.format := et_import.to_cad_format (field (element (line_cursor),2));
+						-- CS: default if not provided
+
+						check_number_of_instances (field (element (line_cursor),3));
+						module.instances := to_number_of_instances (field (element (line_cursor),3));
+						-- CS: default if not provided
+
+						-- test multiple occurences of module name
+						test_multiple_occurences (module);
+
+						-- insert module in container
+						type_import_modules.append (
+							container => et_configuration.import_modules,
+							new_item => module);
+						
+						next (line_cursor);
+					end loop;
+					log_indentation_down;
+
+						
 				-- COMPONENT PREFIXES
 				when component_prefixes =>
 					log ("component prefixes ...", log_threshold + 1);
@@ -601,6 +636,11 @@ package body et_configuration is
 						-- Once a header was found, the PREVIOUS section is regarded as complete.
 						-- The PREVIOUS section is then processed with all its lines in container "lines".
 						-- Set section_entered according to the section BEING entered.
+						if field (line, 1) = section_import_modules then
+							process_previous_section;
+							section_entered := import_modules;
+						end if;
+
 						if field (line, 1) = section_component_prefixes then
 							process_previous_section;
 							section_entered := component_prefixes;

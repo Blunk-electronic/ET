@@ -41,7 +41,7 @@ with ada.strings.bounded;       use ada.strings.bounded;
 -- with ada.strings.unbounded; 	use ada.strings.unbounded;
 with ada.containers;            use ada.containers;
 -- with ada.containers.vectors;
--- with ada.containers.doubly_linked_lists;
+with ada.containers.doubly_linked_lists;
 -- with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
 -- with ada.containers.indefinite_ordered_maps;
@@ -50,9 +50,10 @@ with ada.containers.ordered_sets;
 with ada.text_io;				use ada.text_io;
 with ada.directories;			use ada.directories;
 
--- with et_coordinates;
+with et_coordinates;
 with et_libraries;
--- with et_schematic;
+with et_schematic;
+with et_import;
 with et_string_processing;
 
 package et_configuration is
@@ -64,9 +65,19 @@ package et_configuration is
 	-- CS: section_connector_gnd_terminal					: constant string (1..24) := "[CONNECTOR_GND_TERMINAL]";
 	section_import_modules							: constant string (1..16) := "[IMPORT_MODULES]";
 
--- 	package type_import_modules is new ordered_maps (
--- 		key_type => et_schematic.type_component_prefix.bounded_string, -- IC
--- 		element_type => type_component_category, -- INTEGRATED_CIRCUIT
+	-- A module to be imported has a name and a CAD format. 
+	-- We collect these modules in a simple list because the order must be kept.
+	type type_import_module is record
+		name		: et_coordinates.type_submodule_name.bounded_string; -- MOTOR_DRIVER
+		format		: et_import.type_cad_format; -- KICAD_V4, EAGLE_V7
+		instances	: et_coordinates.type_submodule_instance; -- 4 
+	end record;
+
+	package type_import_modules is new doubly_linked_lists (
+		element_type => type_import_module);
+
+	-- Finally the container where the modules to be imported are stored is this:
+	import_modules : type_import_modules.list;
 	
 	type type_component_category is (
 		ANTENNA,

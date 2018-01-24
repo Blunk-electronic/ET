@@ -50,6 +50,29 @@ package body et_import is
 			extension => report_extension
 			);
 	end file_report_import;
+
+	procedure validate_cad_format (format : in string) is
+		use et_string_processing;
+	begin
+		-- CS: use a loop to probe formats
+		if format = to_lower (type_cad_format'image (kicad_v4)) then
+			null;
+		else
+			log_indentation_reset;
+			log (message_error & "CAD format '"
+					& format & "' invalid !" 
+					& " Supported formats: "
+					& type_cad_format'image (kicad_v4) -- CS: use a loop to offer formats
+					& " !",
+				console => true);
+			raise constraint_error;
+		end if;
+	end validate_cad_format;
+
+	function to_cad_format (format : in string) return type_cad_format is
+	begin
+		return type_cad_format'value (format);
+	end to_cad_format;
 	
 	procedure create_report is
 	-- Creates the report file in report_directory.

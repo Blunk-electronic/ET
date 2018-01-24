@@ -39,7 +39,7 @@ with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 
--- with ada.strings.maps;			use ada.strings.maps;
+with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 
@@ -145,11 +145,31 @@ package et_coordinates is
 	-- Returns the distance between the given points.
 	
 	-- The name of a submodule may have 100 characters which seems sufficient for now.
- 	submodule_name_length : constant natural := 100;
+ 	submodule_name_length : constant natural := 100; -- CS: rename to submodule_name_length_max
 	package type_submodule_name is new generic_bounded_length (submodule_name_length); use type_submodule_name;
+	submodule_name_characters : character_set := to_set 
+		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set("-_"); 
 
+	procedure check_submodule_name_length (name : in string);
+	-- Checks if the given submodule name is not longer than allowed.
+
+	procedure check_submodule_name_characters (
+		name : in type_submodule_name.bounded_string;
+		characters : in character_set := submodule_name_characters);
+	-- Checks for forbiddedn characters in submodule name.
+	
 	function to_string (submodule : in type_submodule_name.bounded_string) return string;
 	-- Returns the given submodule name as string.
+
+	-- A submodule can be instantiated multiples times.
+	-- CS: currently we limit the number of instances to this value. increase if neccessary.
+	submodule_instances_max : constant positive := 10; 
+	subtype type_submodule_instance is positive range 1..submodule_instances_max;
+
+	procedure check_number_of_instances (instances : in string);
+	-- Checks if given instances is a digit and if it is within allowed range.
+
+	function to_number_of_instances (instances : in string) return type_submodule_instance;
 	
     -- The location of a submodule within the design hierarchy is reflected by
     -- a list of submodule names like motor_driver.counter.supply
