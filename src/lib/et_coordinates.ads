@@ -145,7 +145,7 @@ package et_coordinates is
 	-- Returns the distance between the given points.
 	
 	-- The name of a submodule may have 100 characters which seems sufficient for now.
- 	submodule_name_length : constant natural := 100; -- CS: rename to submodule_name_length_max
+ 	submodule_name_length : constant positive := 100; -- CS: rename to submodule_name_length_max
 	package type_submodule_name is new generic_bounded_length (submodule_name_length); use type_submodule_name;
 	submodule_name_characters : character_set := to_set 
 		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set("-_"); 
@@ -161,6 +161,27 @@ package et_coordinates is
 	function to_string (submodule : in type_submodule_name.bounded_string) return string;
 	-- Returns the given submodule name as string.
 
+	function to_submodule_name (submodule : in string) return type_submodule_name.bounded_string;
+	-- Converts a string to type_submodule_name.
+	
+	-- Instead of full submodule names, abbrevations like "MCU" or "MOT" are used:
+	submodule_abbrevation_characters : character_set := to_set (span => ('A','Z')); 
+	submodule_abbrevation_length_max : constant positive := 5;
+	package type_submodule_abbrevation is new generic_bounded_length (submodule_abbrevation_length_max);
+	procedure check_submodule_abbrevation_length (abbrevation : in string);
+	-- Checks if the given submodule abbrevation is not longer than allowed.
+
+	procedure check_submodule_abbrevation_characters (
+	abbrevation : in type_submodule_abbrevation.bounded_string;
+	characters : in character_set := submodule_abbrevation_characters);
+	-- Checks for forbidden characters in submodule abbrevation.
+	
+	function to_string (abbrevation : in type_submodule_abbrevation.bounded_string) return string;
+	-- Returns the given submodule abbrevation as string.
+
+	function to_abbrevation (abbrevation : in string) return type_submodule_abbrevation.bounded_string;
+	-- Converts a string to type_submodule_abbrevation.
+	
 	-- A submodule can be instantiated multiples times.
 	-- CS: currently we limit the number of instances to this value. increase if neccessary.
 	submodule_instances_max : constant positive := 10; 

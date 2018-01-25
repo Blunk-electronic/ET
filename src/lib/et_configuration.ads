@@ -64,11 +64,13 @@ package et_configuration is
 	section_components_with_operator_interaction 	: constant string (1..31) := "[OPERATOR_INTERACTION_REQUIRED]";
 	-- CS: section_connector_gnd_terminal					: constant string (1..24) := "[CONNECTOR_GND_TERMINAL]";
 	section_import_modules							: constant string (1..16) := "[IMPORT_MODULES]";
+	section_module_interconnections					: constant string (1..25) := "[MODULE_INTERCONNECTIONS]";
 
 	-- A module to be imported has a name and a CAD format. 
 	-- We collect these modules in a simple list because the order must be kept.
 	type type_import_module is record
 		name		: et_coordinates.type_submodule_name.bounded_string; -- MOTOR_DRIVER
+		abbrevation	: et_coordinates.type_submodule_abbrevation.bounded_string; -- MOT
 		format		: et_import.type_cad_format; -- KICAD_V4, EAGLE_V7
 		instances	: et_coordinates.type_submodule_instance; -- 4 
 	end record;
@@ -78,6 +80,17 @@ package et_configuration is
 
 	-- Finally the container where the modules to be imported are stored is this:
 	import_modules : type_import_modules.list;
+
+	type type_connector is record
+		abbrevation	: et_coordinates.type_submodule_abbrevation.bounded_string; -- MOT
+		instance	: et_coordinates.type_submodule_instance; -- 4 
+		purpose		: et_libraries.type_component_purpose.bounded_string; -- MOTOR_CTRL_IN
+	end record;
+	
+	type type_module_interconnection is record
+		peer_A	: type_connector;
+		peer_B	: type_connector;
+	end record;
 	
 	type type_component_category is (
 		ANTENNA,

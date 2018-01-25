@@ -291,6 +291,12 @@ package body et_libraries is
 		return type_component_purpose.to_string (purpose);
 	end to_string;
 
+	function to_purpose (purpose : in string) return type_component_purpose.bounded_string is
+	-- Converts a string to type_component_purpose	
+	begin
+		return type_component_purpose.to_bounded_string (purpose);
+	end to_purpose;
+
 	procedure check_purpose_length (purpose : in string) is
 	-- Tests if the given purpose is longer than allowed.
 		use et_string_processing;

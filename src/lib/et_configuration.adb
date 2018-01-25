@@ -240,9 +240,20 @@ package body et_configuration is
 		-- MODULES TO BE IMPORTED
 		put_line (configuration_file_handle, section_import_modules); -- section header
 		new_line (configuration_file_handle);		
-		put_line (configuration_file_handle, comment & "module cad_format number_of_instances");
+		put_line (configuration_file_handle, comment & "module abbrevation cad_format [number_of_instances]");
+		put_line (configuration_file_handle, comment & "examples:");
+		put_line (configuration_file_handle, comment & "nucleo_core NCC kicad_v4 1");
+		put_line (configuration_file_handle, comment & "motor_driver MOT kicad_v4 2");
 		new_line (configuration_file_handle);		
-		
+
+		-- MODULE INTERCONNECTIONS
+		put_line (configuration_file_handle, section_module_interconnections); -- section header
+		new_line (configuration_file_handle);		
+		put_line (configuration_file_handle, comment & "abbrevation instance connector_purpose abbrevation instance connector_purpose");
+		put_line (configuration_file_handle, comment & "examples:");
+		put_line (configuration_file_handle, comment & "NCC 1 MOTOR_CTRL_OUT_1 MOT 1 MOTOR_CTRL_IN");
+		put_line (configuration_file_handle, comment & "NCC 1 MOTOR_CTRL_OUT_2 MOT 2 MOTOR_CTRL_IN");
+		new_line (configuration_file_handle);		
 		
 		-- COMPONENT PREFIXES
 		put_line (configuration_file_handle, section_component_prefixes); -- section header
@@ -394,6 +405,7 @@ package body et_configuration is
 		type type_section is (
 			none,
 			import_modules,
+			module_interconnections,
 			component_prefixes,
 			component_units,
 			components_with_operator_interaction
@@ -417,6 +429,14 @@ package body et_configuration is
 			unit_cursor : type_units_of_measurement.cursor;
 			inserted : boolean := false;
 
+			-- we deal with columns and need to index them
+			subtype type_column is positive range 1..6;
+			column_module_name	: type_column;
+			column_cad_format	: type_column;
+			column_abbrevation_A,	column_abbrevation_B	: type_column;
+			column_instance_A, 		column_instance_B		: type_column;		
+			column_purpose_A,		column_purpose_B		: type_column;
+					
 			use et_libraries;
 			use et_coordinates;
 			use type_import_modules;
@@ -446,6 +466,7 @@ package body et_configuration is
 			end test_multiple_occurences;
 			
 			module		: type_import_module;
+			connection	: type_module_interconnection;
 			
 			prefix 		: type_component_prefix.bounded_string;
 			cat 		: type_component_category;
@@ -466,19 +487,35 @@ package body et_configuration is
 					log ("import modules ...", log_threshold + 1);
 					log_indentation_up;
 
+					-- Mind table header in conf. file when changing anything here.
+					-- See procedure make_default_configuration.
+					column_module_name		:= 1; 
+					column_abbrevation_A	:= 2;
+					column_cad_format		:= 3;
+					column_instance_A		:= 4;
+					
 					while line_cursor /= type_lines.no_element loop
 						log (to_string (element (line_cursor)), log_threshold + 2);
-						check_submodule_name_length (field (element (line_cursor),1));
-						module.name := type_submodule_name.to_bounded_string (field (element (line_cursor),1));
+
+						-- read module name
+						check_submodule_name_length (field (element (line_cursor), column_module_name));
+						module.name := to_submodule_name (field (element (line_cursor), column_module_name));
 						check_submodule_name_characters (module.name);
 						-- CS: check if module exists
 
-						et_import.validate_cad_format (field (element (line_cursor),2));
-						module.format := et_import.to_cad_format (field (element (line_cursor),2));
+						-- read abbrevation
+						check_submodule_abbrevation_length (field (element (line_cursor), column_abbrevation_A));
+						module.abbrevation := to_abbrevation (field (element (line_cursor), column_abbrevation_A));
+						check_submodule_abbrevation_characters (module.abbrevation);
+
+						-- read cad format
+						et_import.validate_cad_format (field (element (line_cursor), column_cad_format));
+						module.format := et_import.to_cad_format (field (element (line_cursor), column_cad_format));
 						-- CS: default if not provided
 
-						check_number_of_instances (field (element (line_cursor),3));
-						module.instances := to_number_of_instances (field (element (line_cursor),3));
+						-- read number of instances
+						check_number_of_instances (field (element (line_cursor), column_instance_A)); -- character check included
+						module.instances := to_number_of_instances (field (element (line_cursor), column_instance_A));
 						-- CS: default if not provided
 
 						-- test multiple occurences of module name
@@ -493,7 +530,73 @@ package body et_configuration is
 					end loop;
 					log_indentation_down;
 
+				-- MODULE INTERCONNECTIONS
+				when module_interconnections =>
+					log ("module interconnections ...", log_threshold + 1);
+					log_indentation_up;
+
+					-- Mind table header in conf. file when changing anything here.
+					-- See procedure make_default_configuration.
+					column_abbrevation_A	:= 1;
+					column_instance_A		:= 2;
+					column_purpose_A		:= 3;
+					column_abbrevation_B	:= 4;
+					column_instance_B		:= 5;
+					column_purpose_B		:= 6;
+
+					-- we read a line like "# NCC 1 MOTOR_CTRL_OUT_1 MOT 1 MOTOR_CTRL_IN"
+					while line_cursor /= type_lines.no_element loop
+						log (to_string (element (line_cursor)), log_threshold + 2);
+
+						-- read module abbrevation A
+						check_submodule_abbrevation_length (field (element (line_cursor), column_abbrevation_A));
+						connection.peer_A.abbrevation := to_abbrevation (field (element (line_cursor), column_abbrevation_A));
+						check_submodule_abbrevation_characters (connection.peer_A.abbrevation);
+						-- CS: check if abbrevation exists in et_configuration.import_modules
+
+						-- read number of instances
+						check_number_of_instances (field (element (line_cursor), column_instance_A)); -- character check included
+						connection.peer_A.instance := to_number_of_instances (field (element (line_cursor), column_instance_A));
+						-- CS check if instance in range of instances of particular module
 						
+						-- read connector purpose A
+						check_purpose_length (field (element (line_cursor), column_purpose_A));
+						validate_purpose (field (element (line_cursor), column_purpose_A));
+						connection.peer_A.purpose := to_purpose (field (element (line_cursor), column_purpose_A));
+						check_purpose_characters (connection.peer_A.purpose);
+						-- CS check if there is a connector with this purpose in the module
+						
+						-- read module abbrevation B
+						check_submodule_abbrevation_length (field (element (line_cursor), column_abbrevation_B));
+						connection.peer_B.abbrevation := to_abbrevation (field (element (line_cursor), column_abbrevation_B));
+						check_submodule_abbrevation_characters (connection.peer_B.abbrevation);
+						-- CS: check if abbrevation exists in et_configuration.import_modules
+
+						-- read number of instances
+						check_number_of_instances (field (element (line_cursor), column_instance_B)); -- character check included
+						connection.peer_B.instance := to_number_of_instances (field (element (line_cursor), column_instance_B));
+						-- CS check if instance in range of instances of particular module
+						
+						-- read connector purpose B
+						check_purpose_length (field (element (line_cursor), column_purpose_B));
+						validate_purpose (field (element (line_cursor), column_purpose_B));
+						connection.peer_B.purpose := to_purpose (field (element (line_cursor), column_purpose_B));
+						check_purpose_characters (connection.peer_B.purpose);
+						-- CS check if there is a connector with this purpose in the module
+						
+						-- test multiple occurences of module name
+-- 						test_multiple_occurences (module);
+-- 
+-- 						-- insert module in container
+-- 						type_import_modules.append (
+-- 							container => et_configuration.import_modules,
+-- 							new_item => module);
+						
+						next (line_cursor);
+					end loop;
+					log_indentation_down;
+
+					
 				-- COMPONENT PREFIXES
 				when component_prefixes =>
 					log ("component prefixes ...", log_threshold + 1);
@@ -622,6 +725,7 @@ package body et_configuration is
 					line => get_line,
 					number => ada.text_io.line (current_input),
 					comment_mark => et_general.comment_mark,
+					-- CS delimiter_wrap => true, -- if connector purpose is given in quotations
 					ifs => latin_1.space); -- fields are separated by space
 
 				case field_count (line) is
@@ -642,6 +746,11 @@ package body et_configuration is
 							section_entered := import_modules;
 						end if;
 
+						if field (line, 1) = section_module_interconnections then
+							process_previous_section;
+							section_entered := module_interconnections;
+						end if;
+						
 						if field (line, 1) = section_component_prefixes then
 							process_previous_section;
 							section_entered := component_prefixes;

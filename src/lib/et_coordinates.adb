@@ -345,9 +345,9 @@ package body et_coordinates is
 	procedure check_submodule_name_characters (
 		name : in type_submodule_name.bounded_string;
 		characters : in character_set := submodule_name_characters) is
-	-- Checks for forbiddedn characters in submodule name.
+	-- Checks for forbidden characters in submodule name.
 	begin
-		null;
+		null; -- CS
 	end check_submodule_name_characters;
 	
 	function to_string (submodule : in type_submodule_name.bounded_string) return string is
@@ -356,11 +356,50 @@ package body et_coordinates is
 		return type_submodule_name.to_string (submodule);
 	end to_string;
 
+	function to_submodule_name (submodule : in string) return type_submodule_name.bounded_string is
+	-- Converts a string to type_submodule_name.
+	begin
+		return type_submodule_name.to_bounded_string (submodule);
+	end to_submodule_name;
+	
+	procedure check_submodule_abbrevation_length (abbrevation : in string) is
+	-- Checks if the given submodule abbrevation is not longer than allowed.
+		use et_string_processing;
+	begin
+		if abbrevation'length > submodule_abbrevation_length_max then
+			log_indentation_reset;
+			log (message_error & "max. number of characters for submodule abbrevation is" 
+				 & positive'image (submodule_abbrevation_length_max) & " !",
+				console => true);
+			raise constraint_error;
+		end if;
+	end check_submodule_abbrevation_length;
+
+	procedure check_submodule_abbrevation_characters (
+		abbrevation : in type_submodule_abbrevation.bounded_string;
+		characters : in character_set := submodule_abbrevation_characters) is
+	-- Checks for forbidden characters in submodule abbrevation.
+	begin
+		null; -- CS
+	end check_submodule_abbrevation_characters;
+
+	function to_string (abbrevation : in type_submodule_abbrevation.bounded_string) return string is
+	-- Returns the given submodule abbrevation as string.
+	begin
+		return type_submodule_abbrevation.to_string (abbrevation);
+	end to_string;
+	
+	function to_abbrevation (abbrevation : in string) return type_submodule_abbrevation.bounded_string is
+	-- Converts a string to type_submodule_abbrevation.
+	begin
+		return type_submodule_abbrevation.to_bounded_string (abbrevation);
+	end to_abbrevation;
+
 	procedure check_number_of_instances (instances : in string) is
 	-- Checks if given instances is a digit and if it is within allowed range.
 		use et_string_processing;
 	begin
-		-- CS: check charactes. all must be digits
+		-- CS: check characters. all must be digits
 
 		-- Test if within range:
 		if positive'value (instances) not in type_submodule_instance then
