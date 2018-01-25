@@ -192,6 +192,9 @@ package et_coordinates is
 
 	function to_number_of_instances (instances : in string) return type_submodule_instance;
 	
+	function to_string (instance : in type_submodule_instance) return string;
+	-- Converts a submodule instance index to a string.
+	
     -- The location of a submodule within the design hierarchy is reflected by
     -- a list of submodule names like motor_driver.counter.supply
     -- The first item in this list is the name of the top level module.

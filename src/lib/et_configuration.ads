@@ -81,6 +81,7 @@ package et_configuration is
 	-- Finally the container where the modules to be imported are stored is this:
 	import_modules : type_import_modules.list;
 
+	-- Module interconnections are collected in a simple list:
 	type type_connector is record
 		abbrevation	: et_coordinates.type_submodule_abbrevation.bounded_string; -- MOT
 		instance	: et_coordinates.type_submodule_instance; -- 4 
@@ -91,7 +92,13 @@ package et_configuration is
 		peer_A	: type_connector;
 		peer_B	: type_connector;
 	end record;
-	
+
+	-- This is the container with the module interconnections:
+	package type_module_interconnections is new doubly_linked_lists (
+		element_type => type_module_interconnection);
+
+	module_interconnections : type_module_interconnections.list;
+
 	type type_component_category is (
 		ANTENNA,
 		BATTERY,
@@ -135,6 +142,15 @@ package et_configuration is
 		UNKNOWN					-- not specified
 -- 		WIRE
 		);
+
+	procedure check_multiple_purpose (
+	-- Tests if the given purpose is used only ONCE for the given category.
+	-- Example: It is forbidden to have a two or more connectors with purpose "PWR_IN".
+		category : in type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
+		purpose : in et_libraries.type_component_purpose.bounded_string); -- PWR_IN, SYS_FAIL, ...
+	
+	procedure validate_module_interconnection (connection : in type_module_interconnection);
+
 	
 	function to_string (cat : in type_component_category) return string;
 	-- returns the given component category as string

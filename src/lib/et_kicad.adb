@@ -4817,9 +4817,17 @@ package body et_kicad is
 											log (message_warning & "expected default " & purpose_default & " !");
 										end if;
 										
-									-- If operator interaction is required, we expect something useful:
+									-- If operator interaction is required, we expect something useful in 
+									-- the purpose field. 
+									-- Furhter-on there must be no other component of this category with 
+									-- the same purpose. Example: It is forbidden to have 
+									-- an X1 and an X2 both with purpose "PWR_IN"
 									when et_configuration.YES =>
-										validate_purpose (content (field_purpose));
+										validate_purpose (content (field_purpose)); -- must be something useful
+
+										et_configuration.check_multiple_purpose (
+											category => et_configuration.category (reference),
+											purpose => to_purpose (content (field_purpose)));
 								end case;									
 							end if;
 

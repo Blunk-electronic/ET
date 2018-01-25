@@ -415,6 +415,12 @@ package body et_coordinates is
 	begin
 		return type_submodule_instance'value (instances);
 	end to_number_of_instances;
+
+	function to_string (instance : in type_submodule_instance) return string is
+	-- Converts a submodule instance index to a string.
+	begin
+		return trim (type_submodule_instance'image (instance), left);
+	end to_string;
 	
 	function to_string (
 		path : in type_path_to_submodule.list;

@@ -52,12 +52,88 @@ with ada.containers.doubly_linked_lists;
 with ada.directories;
 
 with et_general;
+with et_coordinates;
 with et_libraries;
+with et_schematic;
 with et_string_processing;		use et_string_processing;
 with et_export;
 
 package body et_configuration is
 
+	function to_submodule (abbrevation : in et_coordinates.type_submodule_abbrevation.bounded_string) 
+		return type_import_module is
+	-- Looks up the container import_modules for the given abbrevation and returns the submodule.
+	-- Raises alarm if no full submodule name could be found -> abbrevation invalid.	
+		use et_coordinates.type_submodule_abbrevation;
+		use type_import_modules;
+		module_cursor : type_import_modules.cursor := import_modules.first;
+	begin
+		while module_cursor /= type_import_modules.no_element loop
+			if element (module_cursor).abbrevation = abbrevation then
+				return element (module_cursor);
+			end if;
+
+			next (module_cursor);
+		end loop;
+
+		-- search without success:
+		log_indentation_reset;
+		log (message_error & "module abbrevation " & to_string (abbrevation) & " invalid !", console => true);
+		raise constraint_error;
+	end to_submodule;
+
+	procedure check_multiple_purpose (
+	-- Tests current module (indicated by module_cursor) if the given purpose is used
+	-- only ONCE for the given category.
+	-- Example: It is forbidden to have a two or more connectors with purpose "PWR_IN".
+		category : in type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
+		purpose : in et_libraries.type_component_purpose.bounded_string) is -- PWR_IN, SYS_FAIL, ...
+	begin
+		null; -- CS
+	end check_multiple_purpose;
+	
+	
+	function to_component_reference (
+		module_name : in et_coordinates.type_submodule_name.bounded_string;
+		connector_purpose : in et_libraries.type_component_purpose.bounded_string) 
+		return et_libraries.type_component_reference is
+
+		ref : et_libraries.type_component_reference;
+	begin
+		return ref;
+	end to_component_reference;
+		
+	procedure validate_module_interconnection (connection : in type_module_interconnection) is
+		use et_coordinates;
+		module_A, module_B : type_import_module;
+
+		procedure instance_invalid (
+			name : type_submodule_name.bounded_string;
+			instance_is, instance_max : type_submodule_instance) is
+		begin
+			log_indentation_reset;
+			log (message_error & "instance index " & to_string (instance_is) 
+				& " for submodule " & to_string (name) & " invalid !", console => true);
+			log ("Max number of instances specified in section " & section_import_modules & " is " 
+				 & to_string (instance_max) & " !", console => true);
+			raise constraint_error;
+		end instance_invalid;
+		
+	begin
+		-- load module A/B from the given abbrevation.
+		-- Test if given abbrevation is in range of total number of instances for the module.
+		module_A := to_submodule (connection.peer_A.abbrevation);
+		if connection.peer_A.instance > module_A.instances then
+			instance_invalid (module_A.name, connection.peer_A.instance, module_A.instances);
+		end if;
+		
+		module_B := to_submodule (connection.peer_B.abbrevation);
+		if connection.peer_B.instance > module_B.instances then
+			instance_invalid (module_B.name, connection.peer_B.instance, module_B.instances);
+		end if;
+
+	end validate_module_interconnection;
+	
 	function to_string (cat : in type_component_category) return string is
 	-- returns the given component category as string
 	begin
@@ -464,6 +540,21 @@ package body et_configuration is
 					next (module_cursor);
 				end loop;
 			end test_multiple_occurences;
+
+			procedure test_multiple_occurences (connection : in type_module_interconnection) is
+			-- Tests if given module inteconnection is already in the module_interconnections list.
+				use type_module_interconnections;
+			begin
+				if find (et_configuration.module_interconnections, connection) /= 
+					type_module_interconnections.no_element then
+						log_indentation_reset;
+						log (message_error & affected_line (element (line_cursor)) 
+							& "duplicated entry !",
+							console => true);
+						raise constraint_error;
+				end if;
+			end test_multiple_occurences;
+
 			
 			module		: type_import_module;
 			connection	: type_module_interconnection;
@@ -584,13 +675,15 @@ package body et_configuration is
 						check_purpose_characters (connection.peer_B.purpose);
 						-- CS check if there is a connector with this purpose in the module
 						
-						-- test multiple occurences of module name
--- 						test_multiple_occurences (module);
--- 
--- 						-- insert module in container
--- 						type_import_modules.append (
--- 							container => et_configuration.import_modules,
--- 							new_item => module);
+						-- test multiple occurences of connection
+						test_multiple_occurences (connection);
+
+						validate_module_interconnection (connection);
+						
+						-- insert interconnection in container
+						type_module_interconnections.append (
+							container => et_configuration.module_interconnections,
+							new_item => connection);
 						
 						next (line_cursor);
 					end loop;
