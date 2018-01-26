@@ -1498,7 +1498,7 @@ package body et_kicad is
 -- 				-- For the logfile write the component name.
 -- 				-- If the component contains more than one unit, write number of units.
 
-				check_text_fields (log_threshold + 1);
+				check_text_fields (log_threshold + 2);
 
 				case tmp_appearance is
 					when sch =>
@@ -1852,7 +1852,7 @@ package body et_kicad is
 				
 			end set_text_placeholder_properties;
 			
-			procedure read_draw_object (line : in type_fields_of_line) is
+			procedure read_draw_object (line : in type_fields_of_line; log_threshold : in type_log_level) is
 			-- Creates a symbol element from the given line and adds it to the unit indicated by tmp_unit_id.
 				function field (line : in type_fields_of_line; position : in positive) return string renames
 					et_string_processing.get_field_from_line;
@@ -1889,7 +1889,7 @@ package body et_kicad is
 				
 				case type_library_draw'value (field (line,1)) is
 					when P => -- polyline
-						log (draw_object & "polyline", level => log_threshold + 1);
+						log (draw_object & "polyline", log_threshold);
 						-- A polyline is defined by a string like "P 3 0 1 10 0 0 100 50 70 0 N"
 						-- field meaning:
 						--  #2 : number of bends (incl. start and end points) (3)
@@ -1901,7 +1901,7 @@ package body et_kicad is
 						-- #10..11  : end point (x/y) (50/70)
 						-- last field : fill style N/F/f no fill/foreground/background
 
-						log (to_string (line), level => log_threshold + 2);
+						log (to_string (line), log_threshold + 1);
 						-- CS: output properites in a human readable form instead.
 						
 						tmp_unit_id := to_unit_id (field (line,3));
@@ -1914,7 +1914,7 @@ package body et_kicad is
 						add_symbol_element (component_libraries, polyline);
 						
 					when S => -- rectangle
-						log (draw_object & "rectangle", level => log_threshold + 1);
+						log (draw_object & "rectangle", log_threshold);
 						-- A rectangle is defined by a string like "S -40 -100 40 100 0 1 10 N"
 						-- field meaning;
 						-- #2..5 : start point -40/-100   end point 40/100
@@ -1923,7 +1923,7 @@ package body et_kicad is
 						-- #8 : line width
 						-- #9 : fill style N/F/f no fill/foreground/background
 
-						log (to_string (line), level => log_threshold + 2);
+						log (to_string (line), log_threshold + 1);
 						-- CS: output properites in a human readable form instead.
 						
 						tmp_unit_id := to_unit_id (field (line,6));
@@ -1936,7 +1936,7 @@ package body et_kicad is
 						add_symbol_element (component_libraries, rectangle);
 						
 					when C => -- circle
-						log (draw_object & "circle", level => log_threshold + 1);
+						log (draw_object & "circle", log_threshold);
 						-- A circle is defined by a string like "C 0 0 112 0 1 23 N"
 						-- field meaning:
 						--  #2..3 : center (x/y)
@@ -1946,7 +1946,7 @@ package body et_kicad is
 						--  #7 : line width (23)
 						--  #8 : fill style N/F/f no fill/foreground/background
 
-						log (to_string (line), level => log_threshold + 2);
+						log (to_string (line), log_threshold + 1);
 						-- CS: output properites in a human readable form instead.
 						
 						tmp_unit_id := to_unit_id (field (line,5));
@@ -1959,7 +1959,7 @@ package body et_kicad is
 						add_symbol_element (component_libraries, circle);
 						
 					when A => -- arc
-						log (draw_object & "arc", level => log_threshold + 1);
+						log (draw_object & "arc", log_threshold);
 						-- An arc is defined by a string like "A 150 0 150 1800 900 0 1 33 N 0 0 150 150"
 						-- NOTE: kicad bug: multiply all y values by -1
 						-- field meaning:
@@ -1974,7 +1974,7 @@ package body et_kicad is
 						-- #11..12 : start point (x/y)
 						-- #13..14 : end point (x/y)
 
-						log (to_string (line), level => log_threshold + 2);
+						log (to_string (line), log_threshold + 1);
 						-- CS: output properites in a human readable form instead.
 						
 						tmp_unit_id := to_unit_id (field (line,7));
@@ -1987,7 +1987,7 @@ package body et_kicad is
 						add_symbol_element (component_libraries, arc);
 
 					when T => -- text
-						log (draw_object & "text", level => log_threshold + 1);
+						log (draw_object & "text", log_threshold);
 						-- A text is defined by a string like "T 0 0 300 60 0 0 0 leuchtdiode Normal 0 C C"
 						-- Space characters whitin the actual text are replaced by tilde as in this example:
 						-- "T 0 -100 0 60 0 1 0 gate~C Normal 0 C C"
@@ -2004,7 +2004,7 @@ package body et_kicad is
 						-- #12 : alignment left/center/right L/C/R
 						-- #13 : alignment top/center/bottom T/C/B
 
-						log (to_string (line), level => log_threshold + 2);
+						log (to_string (line), log_threshold + 1);
 						-- CS: output properites in a human readable form instead.
 						
 						tmp_unit_id := to_unit_id (field (line,7));
@@ -2017,7 +2017,7 @@ package body et_kicad is
 						add_symbol_element (component_libraries, text);
 						
 					when X => -- port
-						log (draw_object & "port", level => log_threshold + 1);
+						log (draw_object & "port", log_threshold);
 						-- A port is defined by a string like "X ~ 1 0 150 52 D 51 50 1 1 P"
 						-- field meaning:
 						--  #2 : port name (~)
@@ -2032,7 +2032,7 @@ package body et_kicad is
 						-- #12 : electrical type (direction), see et_kicad.ads for more
 						-- #13 : optional field: pin style, see et_kicad.ads for more
 
-						log (to_string (line), level => log_threshold + 2);
+						log (to_string (line), log_threshold + 1);
 						-- CS: output properites in a human readable form instead.
 						
 						tmp_unit_id := to_unit_id (field (line,10));
@@ -2073,7 +2073,7 @@ package body et_kicad is
 				--log_indentation_down;
 			end read_draw_object;
 
-			procedure add_footprint (line : in type_fields_of_line) is
+			procedure add_footprint (line : in type_fields_of_line; log_threshold : in type_log_level) is
 			-- Reads the proposed footprint and adds it to the package filter of the current component.
 				fp : type_package_proposal.bounded_string;
 
@@ -2105,7 +2105,7 @@ package body et_kicad is
 				log_indentation_up;
 
 				fp := type_package_proposal.to_bounded_string (field (line,1));
-				log (type_package_proposal.to_string(fp), level => log_threshold + 1);
+				log (type_package_proposal.to_string (fp), log_threshold);
 
 				do_it (component_libraries);
 				
@@ -2113,7 +2113,7 @@ package body et_kicad is
 			end add_footprint;
 		
 
-			procedure read_field (line : in type_fields_of_line) is
+			procedure read_field (line : in type_fields_of_line; log_threshold : in type_log_level) is
 			-- NOTE: This is library related stuff.
 			-- Reads the text field of a component in a set of temporarily variables field_reference, field_value, ...
 			-- Sets the "field found flag" according to the field being detected.
@@ -2285,7 +2285,7 @@ package body et_kicad is
 		begin -- read_library
 			log_indentation_up;
 			
-			log ("components", log_threshold);
+			log ("components", log_threshold + 1);
 			log_indentation_up;
 			
 			while not end_of_file loop
@@ -2333,7 +2333,8 @@ package body et_kicad is
 									characters => component_generic_name_characters);
 								
 								-- for the log:
-								log (field (line,2), log_threshold); -- 74LS00
+								--log (field (line,2), log_threshold + 1); -- 74LS00
+								log (to_string (tmp_component_name), log_threshold + 1); -- 74LS00
 
 								-- From the header we extract some basic information about the component:
 								
@@ -2366,7 +2367,7 @@ package body et_kicad is
 								tmp_units_total := type_units_total'value (field  (line,8));
 								if tmp_units_total > 1 then
 									log_indentation_up;
-									log ("with" & type_units_total'image (tmp_units_total) & " units", level => log_threshold);
+									log ("with" & type_units_total'image (tmp_units_total) & " units", log_threshold + 2);
 
 									-- From the "interchangeable" flag we set the component wide swap level. It applies for 
 									-- all units of the component (except extra units):
@@ -2431,7 +2432,7 @@ package body et_kicad is
 											
 											active_section := footprints;
 											--log ("footprint/package filter begin", level => log_threshold + 1);
-											log ("footprint/package filter", level => log_threshold + 1);
+											log ("footprint/package filter", level => log_threshold + 2);
 
 										elsif field  (line,1) = et_kicad.draw then
 
@@ -2446,10 +2447,10 @@ package body et_kicad is
 											create_units;
 
 											active_section := draw;
-											log ("draw begin", level => log_threshold + 2);
+											log ("draw begin", level => log_threshold + 3);
 										else
 											-- Read the text fields in a set of temporarily variables field_prefix, field_value, ...
-											read_field (line);
+											read_field (line, log_threshold + 2);
 										end if;
 
 									when footprints =>
@@ -2473,7 +2474,7 @@ package body et_kicad is
 											--log ("footprint/package filter end", level => log_threshold + 1);
 										else
 											-- Process lines:
-											add_footprint (line);
+											add_footprint (line, log_threshold + 2);
 										end if;
 
 									when draw =>
@@ -2485,10 +2486,10 @@ package body et_kicad is
 										-- thate this subsection has been processed.
 										if field  (line,1) = et_kicad.enddraw then
 											active_section := none;
-											log ("draw end", level => log_threshold + 2);
+											log ("draw end", level => log_threshold + 3);
 										else
 											-- Read draw objects
-											read_draw_object (line);
+											read_draw_object (line, log_threshold + 2);
 										end if;
 										
 									when none =>
@@ -2497,7 +2498,7 @@ package body et_kicad is
 										-- NOTE #2: the active section "fields" is not set here but when the fields are read (see NOTE #1)
 										if field  (line,1) = et_kicad.draw then
 											active_section := draw;
-											log ("draw begin", level => log_threshold + 2);
+											log ("draw begin", level => log_threshold + 3);
 										end if;
 
 								end case; -- active_section
@@ -2531,7 +2532,7 @@ package body et_kicad is
 		if et_schematic.number_of_libraries = 0 then -- CS: use length
 			log (message_warning & "no component libraries defined in project file !");
 		else
-			log (text => "Loading component libraries ...", console => true);
+			log ("Loading component libraries ...", log_threshold);
 			log_indentation_up;
 			
 			-- We loop in the list of project libraries:
@@ -2541,7 +2542,7 @@ package body et_kicad is
 				lib_file_name := element (project_lib_cursor);
 
 				-- log library file name
-				log (to_string (lib_file_name), console => true, level => log_threshold);
+				log (to_string (lib_file_name), log_threshold + 1);
 				
 				if exists (to_string (lib_file_name)) then
 					open (
@@ -2560,19 +2561,15 @@ package body et_kicad is
 						inserted	=> lib_inserted
 						);
 
-					-- this is a double check. should never fail.
-					-- CS: the library could have been inserted earlier by reading another project.
-					-- This would not be an error. The library should be skipped instead of an error message.
+					-- The library could have been inserted earlier by reading another project,
+					-- thus the library is skipped.
 					if lib_inserted then
 						-- Now we read the library file and add components
 						-- to the library pointed to by lib_cursor:
 						set_input (library_handle);
 						read_library (log_threshold + 1);
 					else
-						log_indentation_reset;
-						log (message_error & to_string (lib_file_name) & " already in component libraries !",
-							 console => true);
-						raise constraint_error;
+						log (" already loaded -> skipped", log_threshold + 1);
 					end if;
 					
 					close (library_handle);

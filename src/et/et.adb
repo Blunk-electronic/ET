@@ -298,7 +298,7 @@ procedure et is
 		-- CS: for multiple instances use element copy instead of importing the same module over and over.
 		module_cursor := et_configuration.import_modules.first;
 		while module_cursor /= type_import_modules.no_element loop
-			log ("module " & to_string (element (module_cursor).name), console => true);
+			log ("importing module " & to_string (element (module_cursor).name) & " ...", console => true);
 
 			-- The design import requires changing of directories. So we backup the current directory.
 			-- After the import, we restore the directory.
@@ -348,7 +348,7 @@ procedure et is
 		-- module_cursor points to the module in the rig.
 		while module_cursor /= type_rig.no_element loop
 
-			log ("module " & et_coordinates.to_string (key (module_cursor)));
+			log ("checking module " & et_coordinates.to_string (key (module_cursor)) & " ...", console => true);
 			log_indentation_up;
 			
 			-- detect missing or orphaned junctions
