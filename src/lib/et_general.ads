@@ -73,7 +73,7 @@ package et_general is
 	type type_operator_action is (
 		request_help,
 		make_configuration,
-		import_design, -- note SINGULAR -- CS: rename to import_module
+		import_module, -- note SINGULAR
 		import_modules -- note PLURAL
 		-- CS: others ?
 		);

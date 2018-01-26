@@ -94,7 +94,7 @@ procedure et is
 						project_name := type_project_name.to_bounded_string (parameter);
 
 						-- set operator action
-						operator_action := import_design;
+						operator_action := import_module;
 
 					elsif full_switch = switch_import_format then
 						put_line ("import format " & parameter);
@@ -171,7 +171,8 @@ procedure et is
 		end if;
 	end create_report_directory;
 	
-	procedure import_design is
+	procedure import_module is
+	-- This imports a single module.
 		use et_schematic;
 		use et_schematic.type_project_name;
 		use et_import;
@@ -221,56 +222,8 @@ procedure et is
 					put_line (standard_output, message_error & "Read import report for warnings and error messages !"); -- CS: show path to report file
 					raise;
 
-	end import_design;
+	end import_module;
 
--- 	procedure check_design is
--- 		use et_schematic;
--- 	begin
--- 		-- export useful things from the imported project
--- 		et_export.create_report;
--- 		reset_warnings_counter;
--- 
--- 		-- detect missing or orphaned junctions
--- 		check_junctions (log_threshold => 0);
--- 		check_orphaned_junctions (log_threshold => 0);
--- 		check_misplaced_junctions (log_threshold => 0);	
--- 
--- 		-- detect misplaced no-connect-flags
--- 		check_misplaced_no_connection_flags (log_threshold => 0);
--- 
--- 		-- detect orphaned no-connect-flags
--- 		check_orphaned_no_connection_flags (log_threshold => 0);
--- 
--- 		-- make netlists
--- 		make_netlists (log_threshold => 0);
--- 
--- 		-- detect unintentionally left open ports (must happen AFTER make_netlists !)
--- 		check_open_ports (log_threshold => 0);
--- 
--- 		-- detect non-deployed units
--- 		check_non_deployed_units (log_threshold => 0);
--- 
--- 		-- test nets for inputs, outputs, bidirs, ...
--- 		net_test (log_threshold => 0);
--- 		
--- 		-- export netlists (requires that make_netlists has been called previously)
--- 		export_netlists (log_threshold => 0);
--- 		
--- 		-- export statistics
--- 		write_statistics (log_threshold => 0);
--- 
--- 		-- export bom
--- 		export_bom (log_threshold => 0);
--- 		
--- 		et_export.close_report;
--- 
--- 		exception
--- 			when event:
--- 				others => 
--- 					et_export.close_report;
--- 					put_line (standard_output, message_error & "Read export report for warnings and error messages !"); -- CS: show path to report file
--- 		
--- 	end check_design;
 
 	procedure import_modules is
 	-- Imports modules as specified in configuration file and inserts them in the rig.
@@ -332,68 +285,60 @@ procedure et is
 
 
 	procedure check_modules is
+	-- This can be regarded as a kind of extended electrical rule check (ERC).
 		use et_schematic;
 		use type_rig;
 		use et_configuration;
---		import_module_cursor : type_import_modules.cursor;
-
 	begin
 		-- export useful things from the imported modules
 		et_export.create_report;
 		reset_warnings_counter;
 
-		first_module;
+		log ("checking modules ...", console => true);
+		log_indentation_up;
+		
+		-- detect missing or orphaned junctions
+		check_junctions (log_threshold => 0);
+		check_orphaned_junctions (log_threshold => 0);
+		check_misplaced_junctions (log_threshold => 0);	
 
-		-- Process one rig module after another.
-		-- module_cursor points to the module in the rig.
-		while module_cursor /= type_rig.no_element loop
+		-- detect misplaced no-connect-flags
+		check_misplaced_no_connection_flags (log_threshold => 0);
 
-			log ("checking module " & et_coordinates.to_string (key (module_cursor)) & " ...", console => true);
-			log_indentation_up;
-			
-			-- detect missing or orphaned junctions
-			check_junctions (log_threshold => 0);
-			check_orphaned_junctions (log_threshold => 0);
-			check_misplaced_junctions (log_threshold => 0);	
+		-- detect orphaned no-connect-flags
+		check_orphaned_no_connection_flags (log_threshold => 0);
 
-			-- detect misplaced no-connect-flags
-			check_misplaced_no_connection_flags (log_threshold => 0);
+		-- make netlists
+		make_netlists (log_threshold => 0);
 
-			-- detect orphaned no-connect-flags
-			check_orphaned_no_connection_flags (log_threshold => 0);
+		-- detect unintentionally left open ports (must happen AFTER make_netlists !)
+		check_open_ports (log_threshold => 0);
 
-			-- make netlists
-			make_netlists (log_threshold => 0);
+		-- detect non-deployed units
+		check_non_deployed_units (log_threshold => 0);
 
-			-- detect unintentionally left open ports (must happen AFTER make_netlists !)
-			check_open_ports (log_threshold => 0);
+		-- test nets for inputs, outputs, bidirs, ...
+		net_test (log_threshold => 0);
+		
+		-- export netlists (requires that make_netlists has been called previously)
+		export_netlists (log_threshold => 0);
+		
+		-- export statistics
+		write_statistics (log_threshold => 0);
 
-			-- detect non-deployed units
-			check_non_deployed_units (log_threshold => 0);
+		-- export bom
+		export_bom (log_threshold => 0);
+		
 
-			-- test nets for inputs, outputs, bidirs, ...
-			net_test (log_threshold => 0);
-			
-			-- export netlists (requires that make_netlists has been called previously)
-			export_netlists (log_threshold => 0);
-			
-			-- export statistics
-			write_statistics (log_threshold => 0);
-
-			-- export bom
-			export_bom (log_threshold => 0);
-
-			
-			log_indentation_down;
-			next (module_cursor);
-		end loop;
 
 		-- If there is more than one module, interconnections must be validated 
 		-- as specified in configuration file.
 		if module_count > 1 then
 			validate_module_interconnections (log_threshold => 0);
 		end if;
+
 		
+		log_indentation_down;
 		et_export.close_report;
 	
 		exception
@@ -415,18 +360,22 @@ begin -- main
 
 		when make_configuration =>
 			et_configuration.make_default_configuration (conf_file_name, log_threshold => 0);
-			
-		when import_design =>
-	
-			-- import design indicated by variable project_name
-			import_design;
 
-			-- check the imported design
+
+			
+		when import_module =>
+	
+			-- import a single module indicated by variable project_name
+			import_module;
+
+			-- check the imported module
 			check_modules;
+
+
 			
 		when import_modules =>
 
-			-- import modules as specified in configuration file
+			-- import many modules as specified in configuration file
 			import_modules;
 
 			-- check modules

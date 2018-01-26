@@ -3267,12 +3267,15 @@ package body et_schematic is
 		-- Process one rig module after another.
 		-- module_cursor points to the module in the rig.
 		while module_cursor /= type_rig.no_element loop
+			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log_indentation_up;
 			
 			-- query strands of current module
 			query_element (
 				position => module_cursor,
 				process => query_strands_prim'access);
-			
+
+			log_indentation_down;
 			next (module_cursor);
 		end loop;
 
@@ -3380,7 +3383,8 @@ package body et_schematic is
 		-- Process one rig module after another.
 		-- module_cursor points to the module in the rig.
 		while module_cursor /= type_rig.no_element loop
-			
+			log ("module " & to_string (key (module_cursor)), log_threshold);
+		
 			-- query strands of current module
 			query_element (
 				position => module_cursor,
@@ -3557,7 +3561,8 @@ package body et_schematic is
 		-- Process one rig module after another.
 		-- module_cursor points to the module in the rig.
 		while module_cursor /= type_rig.no_element loop
-			
+			log ("module " & to_string (key (module_cursor)), log_threshold);
+		
 			-- query strands of current module
 			query_element (
 				position => module_cursor,
@@ -3695,12 +3700,15 @@ package body et_schematic is
 		-- Process one rig module after another.
 		-- module_cursor points to the module in the rig.
 		while module_cursor /= type_rig.no_element loop
+			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log_indentation_up;
 			
 			-- query strands of current module and check of any misplaced no_connection_flags
 			query_element (
 				position => module_cursor,
 				process => query_strands'access);
-			
+
+			log_indentation_down;
 			next (module_cursor);
 		end loop;
 
@@ -3785,7 +3793,7 @@ package body et_schematic is
 		end query_no_connect_flags;
 
 	begin -- check_orphaned_no_connection_flags
-		log ("checking orphaned no-connection-flags ...", log_threshold);
+		log ("detecting orphaned no-connection-flags ...", log_threshold);
 		log_indentation_up;
 
 		-- We start with the first module of the rig.
@@ -3794,13 +3802,16 @@ package body et_schematic is
 		-- Process one rig module after another.
 		-- module_cursor points to the module in the rig.
 		while module_cursor /= type_rig.no_element loop
+			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log_indentation_up;
 			
 			-- query no_connection_flags of current module and test if any of them
 			-- is not placed at a port
 			query_element (
 				position => module_cursor,
 				process => query_no_connect_flags'access);
-			
+
+			log_indentation_down;
 			next (module_cursor);
 		end loop;
 
@@ -4006,13 +4017,16 @@ package body et_schematic is
 		-- Process one rig module after another.
 		-- module_cursor points to the module in the rig.
 		while module_cursor /= type_rig.no_element loop
+			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log_indentation_up;
 			
 			-- query no_connection_flags of current module and test if any of them
 			-- is not placed at a port
 			query_element (
 				position => module_cursor,
 				process => query_portlists'access);
-			
+
+			log_indentation_down;
 			next (module_cursor);
 		end loop;
 
@@ -4214,12 +4228,15 @@ package body et_schematic is
 		-- Process one rig module after another.
 		-- module_cursor points to the module in the rig.
 		while module_cursor /= type_rig.no_element loop
+			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log_indentation_up;
 			
 			-- query components in schematic
 			query_element (
 				position => module_cursor,
 				process => query_schematic_components'access);
-			
+
+			log_indentation_down;
 			next (module_cursor);
 		end loop;
 
@@ -4459,7 +4476,7 @@ package body et_schematic is
 		-- Process one rig module after another.
 		-- module_cursor points to the module in the rig.
 		while module_cursor /= type_rig.no_element loop
-			log ("module " & to_string (key (module_cursor)), log_threshold + 1);
+			log ("module " & to_string (key (module_cursor)), log_threshold);
 		
 			-- query nets in netlist
 			query_element (
@@ -4743,14 +4760,17 @@ package body et_schematic is
 		-- Process one rig module after another.
 		-- module_cursor points to the module in the rig.
 		while module_cursor /= type_rig.no_element loop
-			log ("module " & to_string (key (module_cursor)), log_threshold + 1);
-
+			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log_indentation_up;
+			
 			update_element (
 				container => rig,
 				position => module_cursor,
 				process => add_netlist'access);
 
-			log (" net count total" & count_type'image (net_count), log_threshold + 1);
+			log ("net count total" & count_type'image (net_count), log_threshold + 1);
+			log_indentation_down;
+			
 			next (module_cursor);
 		end loop;
 
@@ -4842,12 +4862,11 @@ package body et_schematic is
 		log_indentation_up;
 		
 		while module_cursor /= type_rig.no_element loop
-			log ("module " & to_string (key (module_cursor)), log_threshold + 1);
-
+			log ("module " & to_string (key (module_cursor)), log_threshold);
 			log_indentation_up;
-			
+
+			create_project_directory (to_string (key (module_cursor)), log_threshold + 2);			
 			-- compose the netlist file name and its path like "../ET/motor_driver/CAM/motor_driver.net"
-			create_project_directory (to_string (key (module_cursor)), log_threshold + 2);
 			netlist_file_name := type_netlist_file_name.to_bounded_string 
 				(
 				compose (
@@ -4861,7 +4880,7 @@ package body et_schematic is
 				);
 
 			-- create the netlist (which inevitably and intentionally overwrites the previous file)
-			log ("creating netlist file " & type_netlist_file_name.to_string (netlist_file_name), log_threshold + 2);
+			log ("creating netlist file " & type_netlist_file_name.to_string (netlist_file_name), log_threshold + 1);
 			create (
 				file => netlist_handle,
 				mode => out_file, 
@@ -4971,14 +4990,19 @@ package body et_schematic is
 		end query_components;
 		
 	begin -- export_bom
-		first_module;
-		
 		log ("exporting BOM ...", log_threshold);
+		log_indentation_up;
 
+		-- We start with the first module of the rig.		
+		first_module;
+
+		-- Process one rig module after another.
+		-- module_cursor points to the module in the rig.
 		while module_cursor /= type_rig.no_element loop
+			log ("module " & to_string (key (module_cursor)), log_threshold);
 			log_indentation_up;
-			log ("module " & to_string (key (module_cursor)), log_threshold + 1);
 
+			create_project_directory (to_string (key (module_cursor)), log_threshold + 2);
 			-- compose the bom file name and its path like "../ET/motor_driver/CAM/motor_driver.csv"
 			bom_file_name := type_bom_file_name.to_bounded_string 
 				(
@@ -4993,8 +5017,7 @@ package body et_schematic is
 				);
 
 			-- create the BOM (which inevitably and intentionally overwrites the previous file)
-			log_indentation_up;
-			log ("BOM file " & type_bom_file_name.to_string (bom_file_name), log_threshold + 2);
+			log ("creating BOM file " & type_bom_file_name.to_string (bom_file_name), log_threshold + 1);
 			create (
 				file => bom_handle,
 				mode => out_file, 
@@ -5025,10 +5048,10 @@ package body et_schematic is
 			
 			close (bom_handle);
 			log_indentation_down;
-			log_indentation_down;
 			next (module_cursor);
 		end loop;
-		
+
+		log_indentation_down;
 	end export_bom;
 
 	
@@ -5199,6 +5222,7 @@ package body et_schematic is
 		use et_general;
 		use type_rig;
 		use et_string_processing;
+		use et_export;
 
 	begin -- write_statistics
 		first_module;
@@ -5207,11 +5231,11 @@ package body et_schematic is
 		log_indentation_up;
 		
 		while module_cursor /= type_rig.no_element loop
-
-			log ("module " & to_string (key (module_cursor)), log_threshold + 1);
+			log ("module " & to_string (key (module_cursor)), log_threshold);
 			log_indentation_up;
 
 			-- CAD
+			create_project_directory (to_string (key (module_cursor)), log_threshold + 2);			
 			-- compose the CAD statistics file name and its path like "../ET/motor_driver/motor_driver.stat"
 			statistics_file_name_cad := type_statistic_file_name.to_bounded_string 
 				(
@@ -5222,7 +5246,7 @@ package body et_schematic is
 				);
 
 			-- create the statistics file (which inevitably and intentionally overwrites the previous file)
-			log ("CAD statistics file " & type_statistic_file_name.to_string (statistics_file_name_cad), log_threshold + 2);
+			log ("creating CAD statistics file " & type_statistic_file_name.to_string (statistics_file_name_cad), log_threshold + 1);
 			create (
 				file => statistics_handle_cad,
 				mode => out_file, 
@@ -5240,8 +5264,7 @@ package body et_schematic is
 			put_line (statistics_handle_cad, "components");
 			put_line (statistics_handle_cad, " total    " & query_statistics (statistics, components_total));
 			put_line (statistics_handle_cad, " real     " & query_statistics (statistics, components_real));
-			put_line (statistics_handle_cad, latin_1.space & et_string_processing.mounted & latin_1.space 
-				& query_statistics (statistics, components_mounted));
+			put_line (statistics_handle_cad, " mounted  " & query_statistics (statistics, components_mounted));
 			put_line (statistics_handle_cad, " virtual  " & query_statistics (statistics, components_virtual));
 
 			-- As for the total number of ports, we take all ports into account (inc. virtual ports 
