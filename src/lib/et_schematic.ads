@@ -134,7 +134,7 @@ package et_schematic is
 	function to_submodule_name (file_name : in type_schematic_file_name.bounded_string)
 		return et_coordinates.type_submodule_name.bounded_string;
 	-- Returns the base name of the given schematic file name as submodule name.
-	
+
 	-- CS: negative schematic coordinates should be forbidden	
 -- 	type type_coordinates is new et_coordinates.type_2d_point with private;	
 -- 	type type_coordinates is new et_libraries.type_coordinates with record
@@ -750,7 +750,10 @@ package et_schematic is
 -- 		libraries	: type_libraries.map;
 -- 		modules		: type_modules.map;
 -- 	end record;
-	
+
+	function module_count return natural;
+	-- Returns the number of modules of the rig.
+
 	procedure first_module;
 	-- Resets the module_cursor to the first module of the rig.
 

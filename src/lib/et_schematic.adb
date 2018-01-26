@@ -105,7 +105,7 @@ package body et_schematic is
 		--return to_bounded_string (base_name (et_coordinates.to_string (submodule)));
 		return type_submodule_name.to_bounded_string (base_name (to_string (file_name)));
 	end to_submodule_name;
-	
+
 	function to_string (net_name : in type_net_name.bounded_string) return string is
 	-- Returns the given net name as string.
 	begin
@@ -820,7 +820,12 @@ package body et_schematic is
 		return result;
 	end equal_reference;
 	
-
+	function module_count return natural is
+	-- Returns the number of modules of the rig.
+		use type_rig;
+	begin
+		return natural (length (rig));
+	end module_count;
 
 	procedure first_module is
 	-- Resets the module_cursor to the first module of the rig.

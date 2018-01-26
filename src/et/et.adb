@@ -223,57 +223,57 @@ procedure et is
 
 	end import_design;
 
-	procedure check_design is
-		use et_schematic;
-	begin
-		-- export useful things from the imported project(s)
-		et_export.create_report;
-		reset_warnings_counter;
-
-		-- detect missing or orphaned junctions
-		check_junctions (log_threshold => 0);
-		check_orphaned_junctions (log_threshold => 0);
-		check_misplaced_junctions (log_threshold => 0);	
-
-		-- detect misplaced no-connect-flags
-		check_misplaced_no_connection_flags (log_threshold => 0);
-
-		-- detect orphaned no-connect-flags
-		check_orphaned_no_connection_flags (log_threshold => 0);
-
-		-- make netlists
-		make_netlists (log_threshold => 0);
-
-		-- detect unintentionally left open ports (must happen AFTER make_netlists !)
-		check_open_ports (log_threshold => 0);
-
-		-- detect non-deployed units
-		check_non_deployed_units (log_threshold => 0);
-
-		-- test nets for inputs, outputs, bidirs, ...
-		net_test (log_threshold => 0);
-		
-		-- export netlists (requires that make_netlists has been called previously)
-		export_netlists (log_threshold => 0);
-		
-		-- export statistics
-		write_statistics (log_threshold => 0);
-
-		-- export bom
-		export_bom (log_threshold => 0);
-		
-		et_export.close_report;
-
-		exception
-			when event:
-				others => 
-					et_export.close_report;
-					put_line (standard_output, message_error & "Read export report for warnings and error messages !"); -- CS: show path to report file
-
-		
-	end check_design;
+-- 	procedure check_design is
+-- 		use et_schematic;
+-- 	begin
+-- 		-- export useful things from the imported project
+-- 		et_export.create_report;
+-- 		reset_warnings_counter;
+-- 
+-- 		-- detect missing or orphaned junctions
+-- 		check_junctions (log_threshold => 0);
+-- 		check_orphaned_junctions (log_threshold => 0);
+-- 		check_misplaced_junctions (log_threshold => 0);	
+-- 
+-- 		-- detect misplaced no-connect-flags
+-- 		check_misplaced_no_connection_flags (log_threshold => 0);
+-- 
+-- 		-- detect orphaned no-connect-flags
+-- 		check_orphaned_no_connection_flags (log_threshold => 0);
+-- 
+-- 		-- make netlists
+-- 		make_netlists (log_threshold => 0);
+-- 
+-- 		-- detect unintentionally left open ports (must happen AFTER make_netlists !)
+-- 		check_open_ports (log_threshold => 0);
+-- 
+-- 		-- detect non-deployed units
+-- 		check_non_deployed_units (log_threshold => 0);
+-- 
+-- 		-- test nets for inputs, outputs, bidirs, ...
+-- 		net_test (log_threshold => 0);
+-- 		
+-- 		-- export netlists (requires that make_netlists has been called previously)
+-- 		export_netlists (log_threshold => 0);
+-- 		
+-- 		-- export statistics
+-- 		write_statistics (log_threshold => 0);
+-- 
+-- 		-- export bom
+-- 		export_bom (log_threshold => 0);
+-- 		
+-- 		et_export.close_report;
+-- 
+-- 		exception
+-- 			when event:
+-- 				others => 
+-- 					et_export.close_report;
+-- 					put_line (standard_output, message_error & "Read export report for warnings and error messages !"); -- CS: show path to report file
+-- 		
+-- 	end check_design;
 
 	procedure import_modules is
+	-- Imports modules as specified in configuration file and inserts them in the rig.
 		use et_schematic;
 		use et_schematic.type_project_name;
 		use et_configuration;
@@ -294,24 +294,29 @@ procedure et is
 			log (message_warning & "no configuration file specified !");
 		end if;
 		
-		-- The design import requires changing of directories. So we backup the current directory.
-		-- After the import, we restore the directory.
-		backup_projects_root_directory;
-		
-		-- loop in et_configuration.import_module and import module per module
+		-- Loop in et_configuration.import_module and import module per module.
+		-- CS: for multiple instances use element copy instead of importing the same module over and over.
 		module_cursor := et_configuration.import_modules.first;
 		while module_cursor /= type_import_modules.no_element loop
 			log ("module " & to_string (element (module_cursor).name), console => true);
+
+			-- The design import requires changing of directories. So we backup the current directory.
+			-- After the import, we restore the directory.
+			backup_projects_root_directory;
+
 			project_name := to_bounded_string (to_string (element (module_cursor).name));
 			et_import.cad_format := element (module_cursor).format;
 
 			-- CS: use case construct to probe cad formats
 			et_kicad.import_design (log_threshold => 0);
+
+			restore_projects_root_directory;
+			
 			
 			next (module_cursor);
 		end loop;
 		
-		restore_projects_root_directory;
+
 
 		et_import.close_report;
 
@@ -324,7 +329,81 @@ procedure et is
 
 
 	end import_modules;
+
+
+	procedure check_modules is
+		use et_schematic;
+		use type_rig;
+		use et_configuration;
+--		import_module_cursor : type_import_modules.cursor;
+
+	begin
+		-- export useful things from the imported modules
+		et_export.create_report;
+		reset_warnings_counter;
+
+		first_module;
+
+		-- Process one rig module after another.
+		-- module_cursor points to the module in the rig.
+		while module_cursor /= type_rig.no_element loop
+
+			log ("module " & et_coordinates.to_string (key (module_cursor)));
+			log_indentation_up;
+			
+			-- detect missing or orphaned junctions
+			check_junctions (log_threshold => 0);
+			check_orphaned_junctions (log_threshold => 0);
+			check_misplaced_junctions (log_threshold => 0);	
+
+			-- detect misplaced no-connect-flags
+			check_misplaced_no_connection_flags (log_threshold => 0);
+
+			-- detect orphaned no-connect-flags
+			check_orphaned_no_connection_flags (log_threshold => 0);
+
+			-- make netlists
+			make_netlists (log_threshold => 0);
+
+			-- detect unintentionally left open ports (must happen AFTER make_netlists !)
+			check_open_ports (log_threshold => 0);
+
+			-- detect non-deployed units
+			check_non_deployed_units (log_threshold => 0);
+
+			-- test nets for inputs, outputs, bidirs, ...
+			net_test (log_threshold => 0);
+			
+			-- export netlists (requires that make_netlists has been called previously)
+			export_netlists (log_threshold => 0);
+			
+			-- export statistics
+			write_statistics (log_threshold => 0);
+
+			-- export bom
+			export_bom (log_threshold => 0);
+
+			
+			log_indentation_down;
+			next (module_cursor);
+		end loop;
+
+		-- If there is more than one module, interconnections must be validated 
+		-- as specified in configuration file.
+		if module_count > 1 then
+			validate_module_interconnections (log_threshold => 0);
+		end if;
+		
+		et_export.close_report;
 	
+		exception
+			when event:
+				others => 
+					et_export.close_report;
+					put_line (standard_output, message_error & "Read export report for warnings and error messages !"); -- CS: show path to report file
+
+	end check_modules;
+		
 begin -- main
 
 	-- process command line arguments
@@ -343,10 +422,15 @@ begin -- main
 			import_design;
 
 			-- check the imported design
-			check_design;
+			check_modules;
 			
 		when import_modules =>
+
+			-- import modules as specified in configuration file
 			import_modules;
+
+			-- check modules
+			check_modules;
 			
 	end case;
 			

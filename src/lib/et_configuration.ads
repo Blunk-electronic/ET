@@ -155,7 +155,7 @@ package et_configuration is
 	-- checks if something like "NCC 1 MOTOR_CTRL_OUT_2 MOT 2 MOTOR_CTRL_IN" makes sense
 	-- in connection with entries in section import_modules
 
-	procedure validate_module_interconnections;
+	procedure validate_module_interconnections (log_threshold: in et_string_processing.type_log_level);
 	-- Tests if module interconnections at net level make sense.
 	-- NOTE: call AFTER modules have been imported !
 	
