@@ -74,6 +74,9 @@ package et_schematic is
 	use type_project_name;
 	project_name : type_project_name.bounded_string;
 	project_file_handle	: ada.text_io.file_type;
+
+	function to_project_name (name : in string) return type_project_name.bounded_string;
+	-- Converts the given string to type_project_name.
 	
 	schematic_file_name_length : constant positive := project_name_length + 4; -- includes extension
 	package type_schematic_file_name is new generic_bounded_length (schematic_file_name_length); 
@@ -750,6 +753,10 @@ package et_schematic is
 	
 	procedure first_module;
 	-- Resets the module_cursor to the first module of the rig.
+
+	procedure validate_module (
+		module_name : in et_coordinates.type_submodule_name.bounded_string);
+	-- Tests if the given module exists in the rig. Raises error if not existent.
 	
 	procedure set_module (
 	-- Sets the active module. Leaves module_cursor pointing
@@ -890,6 +897,7 @@ package et_schematic is
 
 	procedure net_test (log_threshold : in et_string_processing.type_log_level);
 	-- Tests nets for number of inputs, outputs, bidirs, ...
+
 	
 -- NETLISTS
 	-- Whenever we deal with netlist files this type should be used:

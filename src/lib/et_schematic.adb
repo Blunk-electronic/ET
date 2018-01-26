@@ -59,6 +59,12 @@ with et_csv;
 
 package body et_schematic is
 
+	function to_project_name (name : in string) return type_project_name.bounded_string is
+	-- Converts the given string to type_project_name.
+	begin
+		return type_project_name.to_bounded_string (name);
+	end to_project_name;
+	
 	function to_string (schematic : in type_schematic_file_name.bounded_string) return string is
 	-- Returns the given schematic file name as string.
 	begin
@@ -822,6 +828,22 @@ package body et_schematic is
 		module_cursor := rig.first;
 		-- CS: exception handler in case given module does not exist
 	end first_module;
+
+	procedure validate_module (
+		module_name : in et_coordinates.type_submodule_name.bounded_string) is
+	-- Tests if the given module exists in the rig. Raises error if not existent.
+		module_cursor : type_rig.cursor;
+		use type_rig;
+		use et_string_processing;
+	begin
+		if find (rig, module_name) = type_rig.no_element then
+			log_indentation_reset;
+			log (message_error & "module " & to_string (module_name)
+				 & " does not exist in the rig !",
+				console => true);
+			raise constraint_error;
+		end if;
+	end validate_module;
 	
 
 	procedure set_module (

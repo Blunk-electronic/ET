@@ -181,15 +181,7 @@ procedure et is
 
 			-- If project name was provided with a trailing directory separator it must be removed.
 			project_name := to_bounded_string (strip_directory_separator (to_string (project_name)));
-			
-			if exists (to_string (project_name)) then
-				--put_line( "project file: " & to_string(et_import.project_file_name));
-				null; -- fine
-			else
-				put_line (message_error & "project '" & to_string (project_name) 
-					& "' not found ! (working directory correct ?)");
-				raise constraint_error;
-			end if;
+			validate_project (project_name, et_import.cad_format);
 		else
 			put_line (message_error & "project name not specified !");
 			raise constraint_error;

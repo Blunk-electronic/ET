@@ -66,7 +66,9 @@ package et_configuration is
 	section_import_modules							: constant string (1..16) := "[IMPORT_MODULES]";
 	section_module_interconnections					: constant string (1..25) := "[MODULE_INTERCONNECTIONS]";
 
-	-- A module to be imported has a name and a CAD format. 
+	-- A module to be imported has a name, an abbrevation, a CAD format and a certain 
+	-- number of instances.
+	-- Example: nucleo_core NCC kicad_v4 1
 	-- We collect these modules in a simple list because the order must be kept.
 	type type_import_module is record
 		name		: et_coordinates.type_submodule_name.bounded_string; -- MOTOR_DRIVER
@@ -150,7 +152,12 @@ package et_configuration is
 		purpose : in et_libraries.type_component_purpose.bounded_string); -- PWR_IN, SYS_FAIL, ...
 	
 	procedure validate_module_interconnection (connection : in type_module_interconnection);
+	-- checks if something like "NCC 1 MOTOR_CTRL_OUT_2 MOT 2 MOTOR_CTRL_IN" makes sense
+	-- in connection with entries in section import_modules
 
+	procedure validate_module_interconnections;
+	-- Tests if module interconnections at net level make sense.
+	-- NOTE: call AFTER modules have been imported !
 	
 	function to_string (cat : in type_component_category) return string;
 	-- returns the given component category as string

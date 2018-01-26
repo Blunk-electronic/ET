@@ -57,13 +57,14 @@ with et_libraries;
 with et_schematic;
 with et_string_processing;		use et_string_processing;
 with et_export;
+with et_import;
 
 package body et_configuration is
 
 	function to_submodule (abbrevation : in et_coordinates.type_submodule_abbrevation.bounded_string) 
 		return type_import_module is
 	-- Looks up the container import_modules for the given abbrevation and returns the submodule.
-	-- Raises alarm if no full submodule name could be found -> abbrevation invalid.	
+	-- Raises alarm if no submodule could be found -> abbrevation invalid.	
 		use et_coordinates.type_submodule_abbrevation;
 		use type_import_modules;
 		module_cursor : type_import_modules.cursor := import_modules.first;
@@ -92,18 +93,10 @@ package body et_configuration is
 		null; -- CS
 	end check_multiple_purpose;
 	
-	
-	function to_component_reference (
-		module_name : in et_coordinates.type_submodule_name.bounded_string;
-		connector_purpose : in et_libraries.type_component_purpose.bounded_string) 
-		return et_libraries.type_component_reference is
-
-		ref : et_libraries.type_component_reference;
-	begin
-		return ref;
-	end to_component_reference;
 		
 	procedure validate_module_interconnection (connection : in type_module_interconnection) is
+	-- checks if something like "NCC 1 MOTOR_CTRL_OUT_2 MOT 2 MOTOR_CTRL_IN" makes sense
+	-- in connection with entries in section import_modules
 		use et_coordinates;
 		module_A, module_B : type_import_module;
 
@@ -119,20 +112,54 @@ package body et_configuration is
 			raise constraint_error;
 		end instance_invalid;
 		
-	begin
+	begin --validate_module_interconnection
 		-- load module A/B from the given abbrevation.
 		-- Test if given abbrevation is in range of total number of instances for the module.
-		module_A := to_submodule (connection.peer_A.abbrevation);
-		if connection.peer_A.instance > module_A.instances then
+		module_A := to_submodule (connection.peer_A.abbrevation); -- reason from NCC to "nucleo_core NCC kicad_v4 1"
+		if connection.peer_A.instance > module_A.instances then -- instance index check
 			instance_invalid (module_A.name, connection.peer_A.instance, module_A.instances);
 		end if;
 		
-		module_B := to_submodule (connection.peer_B.abbrevation);
-		if connection.peer_B.instance > module_B.instances then
+		module_B := to_submodule (connection.peer_B.abbrevation); -- reason from MOT to "motor_driver MOT kicad_v4 2"
+		if connection.peer_B.instance > module_B.instances then -- instance index check
 			instance_invalid (module_B.name, connection.peer_B.instance, module_B.instances);
 		end if;
-
 	end validate_module_interconnection;
+
+	function to_component_reference (
+	-- Returns the reference (like X4) of the connector (in the given module) with the given purpose.
+		module_name : in et_coordinates.type_submodule_name.bounded_string;
+		connector_purpose : in et_libraries.type_component_purpose.bounded_string) 
+		return et_libraries.type_component_reference is
+
+		use et_schematic;
+		use type_rig;
+		module_cursor : type_rig.cursor;
+		ref : et_libraries.type_component_reference;
+	begin
+		-- locate the module in the rig
+		module_cursor := find (rig, module_name);
+-- 		if module_cursor = no_element then
+-- 			log_indentation_reset;
+-- 			log (message_error & "
+		
+		return ref;
+	end to_component_reference;
+	
+	procedure validate_module_interconnections is
+	-- Tests if module interconnections at net level make sense.
+	-- NOTE: call AFTER modules have been imported !
+		reference_A, reference_B : et_libraries.type_component_reference;
+	begin
+
+		-- From the module name (nucleo_core) and the purpose (MOTOR_CTRL_OUT_2) of the connector
+		-- we reason the references like X1, X46
+-- 		reference_A := to_component_reference (module_A.name, connection.peer_A.purpose);
+-- 		reference_B := to_component_reference (module_B.name, connection.peer_B.purpose);		
+
+	
+		null;
+	end validate_module_interconnections;
 	
 	function to_string (cat : in type_component_category) return string is
 	-- returns the given component category as string
@@ -592,7 +619,7 @@ package body et_configuration is
 						check_submodule_name_length (field (element (line_cursor), column_module_name));
 						module.name := to_submodule_name (field (element (line_cursor), column_module_name));
 						check_submodule_name_characters (module.name);
-						-- CS: check if module exists
+						et_import.validate_project (et_schematic.to_project_name (field (element (line_cursor), column_module_name)));
 
 						-- read abbrevation
 						check_submodule_abbrevation_length (field (element (line_cursor), column_abbrevation_A));
@@ -602,12 +629,12 @@ package body et_configuration is
 						-- read cad format
 						et_import.validate_cad_format (field (element (line_cursor), column_cad_format));
 						module.format := et_import.to_cad_format (field (element (line_cursor), column_cad_format));
-						-- CS: default if not provided
+						-- CS: default if not provided ?
 
 						-- read number of instances
 						check_number_of_instances (field (element (line_cursor), column_instance_A)); -- character check included
 						module.instances := to_number_of_instances (field (element (line_cursor), column_instance_A));
-						-- CS: default if not provided
+						-- CS: default if not provided ?
 
 						-- test multiple occurences of module name
 						test_multiple_occurences (module);
@@ -643,41 +670,40 @@ package body et_configuration is
 						check_submodule_abbrevation_length (field (element (line_cursor), column_abbrevation_A));
 						connection.peer_A.abbrevation := to_abbrevation (field (element (line_cursor), column_abbrevation_A));
 						check_submodule_abbrevation_characters (connection.peer_A.abbrevation);
-						-- CS: check if abbrevation exists in et_configuration.import_modules
 
 						-- read number of instances
 						check_number_of_instances (field (element (line_cursor), column_instance_A)); -- character check included
 						connection.peer_A.instance := to_number_of_instances (field (element (line_cursor), column_instance_A));
-						-- CS check if instance in range of instances of particular module
 						
 						-- read connector purpose A
 						check_purpose_length (field (element (line_cursor), column_purpose_A));
 						validate_purpose (field (element (line_cursor), column_purpose_A));
 						connection.peer_A.purpose := to_purpose (field (element (line_cursor), column_purpose_A));
 						check_purpose_characters (connection.peer_A.purpose);
-						-- CS check if there is a connector with this purpose in the module
+						-- NOTE: The question whether there is a connector with this purpose in the module can
+						-- not be answered here, because the project has not been imported yet.
 						
 						-- read module abbrevation B
 						check_submodule_abbrevation_length (field (element (line_cursor), column_abbrevation_B));
 						connection.peer_B.abbrevation := to_abbrevation (field (element (line_cursor), column_abbrevation_B));
 						check_submodule_abbrevation_characters (connection.peer_B.abbrevation);
-						-- CS: check if abbrevation exists in et_configuration.import_modules
 
 						-- read number of instances
 						check_number_of_instances (field (element (line_cursor), column_instance_B)); -- character check included
 						connection.peer_B.instance := to_number_of_instances (field (element (line_cursor), column_instance_B));
-						-- CS check if instance in range of instances of particular module
 						
 						-- read connector purpose B
 						check_purpose_length (field (element (line_cursor), column_purpose_B));
 						validate_purpose (field (element (line_cursor), column_purpose_B));
 						connection.peer_B.purpose := to_purpose (field (element (line_cursor), column_purpose_B));
 						check_purpose_characters (connection.peer_B.purpose);
-						-- CS check if there is a connector with this purpose in the module
+						-- NOTE: The question whether there is a connector with this purpose in the module can
+						-- not be answered here, because the project has not been imported yet.
 						
 						-- test multiple occurences of connection
 						test_multiple_occurences (connection);
 
+						-- check if all this makes sense in connection with entries in section import_modules
 						validate_module_interconnection (connection);
 						
 						-- insert interconnection in container
@@ -689,7 +715,6 @@ package body et_configuration is
 					end loop;
 					log_indentation_down;
 
-					
 				-- COMPONENT PREFIXES
 				when component_prefixes =>
 					log ("component prefixes ...", log_threshold + 1);

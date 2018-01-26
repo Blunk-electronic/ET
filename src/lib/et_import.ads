@@ -58,8 +58,6 @@ package et_import is
 	-- Returns the relative path and name of the import report file.
 	
 	report_handle		: ada.text_io.file_type;
-
-
     
 	-- CAD FORMATS
 	type type_cad_format is (unknown, kicad_v4); -- CS: eagle_vx
@@ -70,6 +68,11 @@ package et_import is
 	procedure validate_cad_format (format : in string);
 
 	function to_cad_format (format : in string) return type_cad_format;
+
+	procedure validate_project (
+		name : in type_project_name.bounded_string;
+		cad_format : in type_cad_format := UNKNOWN);
+	-- Checks if the given project of the given format exists in the current working directory.
 	
 	
 	procedure create_report;

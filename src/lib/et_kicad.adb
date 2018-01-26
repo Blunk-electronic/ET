@@ -2663,10 +2663,10 @@ package body et_kicad is
 				line := read_line(
 							line => get_line,
 							comment_mark => "#", -- use constant comment_mark
-							number => ada.text_io.line(current_input),
+							number => ada.text_io.line (current_input),
 							ifs => latin_1.equals_sign); -- fields are separated by equals sign (=)
 
-				case field_count(line) is
+				case field_count (line) is
 					when 0 => null; -- we skip empty lines
 					when 1 => -- we have a line with just one field. those lines contain headers like "[eeschema]"
 

@@ -35,6 +35,8 @@
 --   history of changes:
 --
 
+with ada.directories;
+
 with et_general;
 with et_schematic;
 with et_string_processing;			use et_string_processing;
@@ -73,6 +75,24 @@ package body et_import is
 	begin
 		return type_cad_format'value (format);
 	end to_cad_format;
+
+	procedure validate_project (
+		name : in type_project_name.bounded_string;
+		cad_format : in type_cad_format := UNKNOWN) is
+	-- Checks if the given project of the given format exists in the current working directory.
+	-- CS: currently this is just a test, whether the directory "name" exists.
+	-- CS: do a more detailled check depending on cad format (look for project files).
+	begin
+		if exists (type_project_name.to_string (name)) then
+			null; -- fine
+		else
+			log_indentation_reset;
+			log (message_error & "project '" & type_project_name.to_string (name) 
+				& "' not found ! Working directory correct ?",
+				console => true);
+			raise constraint_error;
+		end if;
+	end validate_project;
 	
 	procedure create_report is
 	-- Creates the report file in report_directory.
