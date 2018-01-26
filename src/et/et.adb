@@ -209,6 +209,9 @@ procedure et is
 		-- After the import, we restore the directory.
 		backup_projects_root_directory;
 
+		log ("importing module " & to_string (project_name) & " ...");
+		log ("CAD format " & to_string (et_import.cad_format));
+		
 		-- CS: use case construct to probe cad formats
 		et_kicad.import_design (log_threshold => 0);
 		restore_projects_root_directory;
@@ -251,7 +254,6 @@ procedure et is
 		-- CS: for multiple instances use element copy instead of importing the same module over and over.
 		module_cursor := et_configuration.import_modules.first;
 		while module_cursor /= type_import_modules.no_element loop
-			log ("importing module " & to_string (element (module_cursor).name) & " ...", console => true);
 
 			-- The design import requires changing of directories. So we backup the current directory.
 			-- After the import, we restore the directory.
@@ -260,6 +262,10 @@ procedure et is
 			project_name := to_bounded_string (to_string (element (module_cursor).name));
 			et_import.cad_format := element (module_cursor).format;
 
+			log ("importing module " & to_string (project_name) & " ...");
+			log ("CAD format " & et_import.to_string (et_import.cad_format));
+
+			
 			-- CS: use case construct to probe cad formats
 			et_kicad.import_design (log_threshold => 0);
 

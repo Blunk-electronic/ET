@@ -62,10 +62,10 @@ package body et_export is
 
 		set_output (et_export.report_handle);
 		
-		put_line (et_general.system_name & " export report");
-		put_line ("project " & et_schematic.type_project_name.to_string (et_schematic.project_name));
+		put_line (et_general.system_name & " " & et_general.version & " export report");
+-- 		put_line ("project " & et_schematic.type_project_name.to_string (et_schematic.project_name));
 		put_line ("date " & string (date_now));
-		put_line ("CAD format " & type_cad_format'image (cad_format));
+-- 		put_line ("CAD format " & type_cad_format'image (cad_format));
 		put_line ("CAUTION: Measurement system is METRIC. All dimensions given in millimeters !");
 		put_line ("CAUTION: All angles are given in degrees !");
 		put_line ("log level" & type_log_level'image (log_level));
@@ -97,7 +97,8 @@ package body et_export is
 			close (et_export.report_handle);
 
 			if warning_counter > 0 then
-				put_line (standard_output, "Read export report for warnings and error messages !"); -- CS: show path to report file
+				put_line (standard_output, "WARNING ! "
+					& "Read export report for warnings and error messages !"); -- CS: show path to report file
 			end if;
 		end if;
 			

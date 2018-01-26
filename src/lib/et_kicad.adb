@@ -2689,9 +2689,9 @@ package body et_kicad is
 								lib_dir := to_bounded_string (field (line,2));
 
 								-- For the log write something like "LibDir ../../lbr"
-								log (
-									text => project_keyword_library_directory & " " & et_libraries.to_string (lib_dir),
-									level => log_threshold + 1);
+								log (project_keyword_library_directory 
+									 & " " & et_libraries.to_string (lib_dir),
+									log_threshold + 2);
 							end if;
 							
 						end if;
@@ -2714,7 +2714,7 @@ package body et_kicad is
 											extension				=> file_extension_schematic_lib)));
 								
 								-- For the log write something like "LibName bel_connectors_and_jumpers"
-								log (text => field (line,1) & " " & field (line,2), level => log_threshold + 1);
+								log (field (line,1) & " " & field (line,2), log_threshold + 2);
 							end if;
 
 						end if;
@@ -5664,7 +5664,8 @@ package body et_kicad is
 			log_indentation_up;
 			
 			if exists (to_string (current_schematic)) then
-				log (text => "reading schematic file " & to_string (current_schematic) & " ...",
+				log ("reading schematic file " & to_string (current_schematic) & " ...",
+					 log_threshold + 1,
 					 console => true);
 
 				-- log module path as recorded by parent unit

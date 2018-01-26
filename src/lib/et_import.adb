@@ -76,6 +76,12 @@ package body et_import is
 		return type_cad_format'value (format);
 	end to_cad_format;
 
+	function to_string (format : in type_cad_format) return string is
+	-- Converts the given cad format to a string.
+	begin
+		return type_cad_format'image (format);
+	end to_string;
+	
 	procedure validate_project (
 		name : in type_project_name.bounded_string;
 		cad_format : in type_cad_format := UNKNOWN) is
@@ -104,10 +110,10 @@ package body et_import is
 
 		set_output (et_import.report_handle);
 		
-		put_line (system_name & " import report");
-		put_line ("project " & et_schematic.type_project_name.to_string (et_schematic.project_name)); -- CS: function that returns the project name
+		put_line (system_name & " " & version & " import report");
+-- 		put_line ("project " & et_schematic.type_project_name.to_string (et_schematic.project_name)); -- CS: function that returns the project name
 		put_line ("date " & string (date_now));
-		put_line ("CAD format " & type_cad_format'image (cad_format));
+-- 		put_line ("CAD format " & type_cad_format'image (cad_format));
 		put_line ("CAUTION: Measurement system is METRIC. All dimensions given in millimeters !"); -- CS: function that returns this text
 		put_line ("CAUTION: All angles are given in degrees !"); -- CS: function that returns this text
 		put_line ("log level" & type_log_level'image (log_level)); -- CS: function that returns the log level
@@ -138,7 +144,8 @@ package body et_import is
 			close (et_import.report_handle);
 
 			if warning_counter > 0 then
-				put_line (standard_output, "Read import report for warnings and error messages !"); -- CS: show path to report file
+				put_line (standard_output, "WARNING ! "
+					& "Read import report for warnings and error messages !"); -- CS: show path to report file
 			end if;
 -- 			put_line (standard_output, "successful !");
 -- 			put_line ("Read import and export reports for warnings and error messages !"); -- CS: show path to report file

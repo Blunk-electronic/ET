@@ -152,7 +152,7 @@ package body et_configuration is
 		interconnection_cursor : type_module_interconnections.cursor := module_interconnections.first;
 		reference_A, reference_B : et_libraries.type_component_reference;
 	begin
-		log ("validating module interconnections ...", log_threshold + 1);
+		log ("validating module interconnections ...", log_threshold);
 		-- From the module name (nucleo_core) and the purpose (MOTOR_CTRL_OUT_2) of the connector
 		-- we reason the references like X1, X46
 -- 		reference_A := to_component_reference (module_A.name, connection.peer_A.purpose);
