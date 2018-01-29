@@ -230,8 +230,8 @@ package et_libraries is
 		preamble	: in boolean := true) return string;
 	-- Returns the given port direction as string.
 
-	type type_port_visible is (ON, OFF); -- CS rename to type_port_name_visible
-	type type_pin_visible is (ON, OFF); -- CS rename to type_terminal_name_visible
+	type type_port_name_visible is (ON, OFF); -- CS rename to type_port_name_visible
+	type type_terminal_name_visible is (ON, OFF);
 
 	type type_port_style is ( -- CS: find a better name
 		NONE,
@@ -254,18 +254,20 @@ package et_libraries is
 		INVISIBLE_NON_LOGIC);
 
 	
- 	port_name_length	: constant natural := 100;
-	package type_port_name is new generic_bounded_length(port_name_length); use type_port_name;
+ 	port_name_length_max : constant natural := 100;
+	package type_port_name is new generic_bounded_length (port_name_length_max);
+	use type_port_name;
 
-	function to_string (port_name : in type_port_name.bounded_string) return string;
+	function to_string (port : in type_port_name.bounded_string) return string;
 	-- Returns the given port name as string.
 
 	-- The name of a terminal may have 10 characters which seems sufficient for now.
- 	pin_name_length	: constant natural := 10; -- CS: rename to terminal_name_length_max
-	package type_pin_name is new generic_bounded_length(pin_name_length); use type_pin_name; -- CS: rename to type_terminal_name
+ 	terminal_name_length_max : constant natural := 10;
+	package type_terminal_name is new generic_bounded_length (terminal_name_length_max);
+	use type_terminal_name;
 
-	function to_string (pin_name : in type_pin_name.bounded_string) return string;
-	-- Returns the given pin name as string.
+	function to_string (terminal : in type_terminal_name.bounded_string) return string;
+	-- Returns the given terminal name as string.
 	
 	-- Initially, at the library level, a port has a name, direction,
 	-- coordinates, orientation, flags for making port and pin name visible. 
@@ -277,9 +279,9 @@ package et_libraries is
 		coordinates			: type_2d_point; -- there is only x and y
 		length				: type_port_length;
 		orientation			: type_angle;
-		port_name_visible	: type_port_visible;
-		pin_name_visible	: type_pin_visible;
-		pin					: type_pin_name.bounded_string; -- example: "144" or in case of a BGA package "E14"
+		port_name_visible	: type_port_name_visible;
+		pin_name_visible	: type_terminal_name_visible;
+		pin					: type_terminal_name.bounded_string; -- example: "144" or in case of a BGA package "E14"
 		port_name_size		: type_text_size;
 		pin_name_size		: type_text_size;
 		port_name_offset	: type_distance; -- the clearance between symbol outline and port name -- CS: define a reasonable range
@@ -610,7 +612,9 @@ package et_libraries is
 	
 	
 
-
+-- 	type type_port_terminal_map is new ordered_maps (
+-- 		key_type => type_port_name.bounded_string,
+-- 		element_type => type_terminal_name.bounded_string);
 
 
 	

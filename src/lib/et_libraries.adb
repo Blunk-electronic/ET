@@ -115,16 +115,16 @@ package body et_libraries is
 		end if;
 	end to_string;
 	
-	function to_string (port_name : in type_port_name.bounded_string) return string is
+	function to_string (port : in type_port_name.bounded_string) return string is
 	-- Returns the given port name as string.
 	begin
-		return type_port_name.to_string (port_name);
+		return type_port_name.to_string (port);
 	end to_string;
 
-	function to_string (pin_name : in type_pin_name.bounded_string) return string is
-	-- Returns the given pin name as string.
+	function to_string (terminal : in type_terminal_name.bounded_string) return string is
+	-- Returns the given terminal name as string.
 	begin
-		return type_pin_name.to_string (pin_name);
+		return type_terminal_name.to_string (terminal);
 	end to_string;
 
 	procedure check_generic_name_characters (

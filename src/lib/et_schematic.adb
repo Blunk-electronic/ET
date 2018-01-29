@@ -3002,7 +3002,7 @@ package body et_schematic is
 			result := true;
 
 		-- If equal references, compare pin names
-		elsif type_pin_name.">" (left.pin, right.pin) then
+		elsif type_terminal_name.">" (left.pin, right.pin) then
 			result := true;
 
 		-- If equal pin names, compare port names -- CS: should never happen. raise alarm ?

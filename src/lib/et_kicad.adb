@@ -579,8 +579,8 @@ package body et_kicad is
 			tmp_prefix				: type_component_prefix.bounded_string; -- IC -- CS: rename to prefix
 			tmp_appearance			: type_component_appearance; -- CS: rename to appearance
 
-			tmp_port_name_visible	: type_port_visible; -- CS: rename to port_name_visible
-			tmp_pin_name_visible	: type_pin_visible; -- CS: rename to terminal_name_visible
+			tmp_port_name_visible		: type_port_name_visible;
+			tmp_terminal_name_visible	: type_terminal_name_visible;
 			tmp_port_name_offset	: type_distance; -- CS: rename to port_name_offset
 			
 			tmp_units_total		: type_units_total; -- see spec for range -- CS rename to units_total	
@@ -676,12 +676,12 @@ package body et_kicad is
 			end to_swap_level;
 
 			function to_pin_visibile (vis_in : in string)
-			-- Converts the kicad "show pin number" flag to the et type_pin_visible.
+			-- Converts the kicad "show pin number" flag to the et type_terminal_name_visible.
 			-- Used when reading component libraries.		
-				return type_pin_visible is
+				return type_terminal_name_visible is
 
 				v_in	: type_show_pin_number;
-				v_out	: type_pin_visible;
+				v_out	: type_terminal_name_visible;
 			begin
 				log_indentation_up;
 				
@@ -707,12 +707,12 @@ package body et_kicad is
 			end to_pin_visibile;
 
 			function to_port_visibile (vis_in : in string)
-			-- Converts the kicad "show pin name" flag to the et type_port_visible.
+			-- Converts the kicad "show pin name" flag to the et type_port_name_visible.
 			-- Used when reading component libraries.		
-				return type_port_visible is
+				return type_port_name_visible is
 
 				v_in	: type_show_pin_name;
-				v_out	: type_port_visible;
+				v_out	: type_port_name_visible;
 			begin
 				log_indentation_up;
 				
@@ -1151,7 +1151,7 @@ package body et_kicad is
 				port.name := type_port_name.to_bounded_string (field (line,2));
 				
 				-- compose pin name
-				port.pin			:= type_pin_name.to_bounded_string (field (line,3));
+				port.pin			:= type_terminal_name.to_bounded_string (field (line,3));
 
 				-- compose position
 				set_x (port.coordinates, mil_to_distance (mil => field (line,4), warn_on_negative => false));
@@ -1178,7 +1178,7 @@ package body et_kicad is
 
 				-- visibility port and pin names
 				port.port_name_visible	:= tmp_port_name_visible;
-				port.pin_name_visible	:= tmp_pin_name_visible;
+				port.pin_name_visible	:= tmp_terminal_name_visible;
 
 				-- port name offset
 				port.port_name_offset	:= tmp_port_name_offset;
@@ -2359,7 +2359,7 @@ package body et_kicad is
 									characters => et_kicad.component_prefix_characters);
 								
 								tmp_port_name_offset	:= mil_to_distance (mil => field  (line,5), warn_on_negative => false); -- relevant for supply pins only
-								tmp_pin_name_visible	:= to_pin_visibile (field (line,6));
+								tmp_terminal_name_visible	:= to_pin_visibile (field (line,6));
 								tmp_port_name_visible	:= to_port_visibile (field (line,7));
 								
 								-- Get number of units and set swap level as specified in field #9.
