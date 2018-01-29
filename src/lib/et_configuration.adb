@@ -236,6 +236,16 @@ package body et_configuration is
 							log ("found -> " & et_libraries.to_string (key (component)), log_threshold);
 							connector_found := true;
 							ref := key (component);
+
+							-- The connector must be mounted. Otherwise abort.
+							if element (component).bom = NO then -- not to be mounted
+								log_indentation_reset;
+								log (message_error & "connector " & to_string (ref) 
+									 & " is NOT supposed for assembly ! Module interconnection not possible !",
+									 console => true);
+								raise constraint_error;
+							end if;
+							
 							exit;
 						end if;
 					end if;
@@ -277,6 +287,35 @@ package body et_configuration is
 		log_indentation_down;
 		return ref;
 	end to_connector_reference;
+
+	procedure compare_terminals (
+		module_A		: in et_coordinates.type_submodule_name.bounded_string;
+		reference_A		: in et_libraries.type_component_reference;
+		variant_A		: in et_libraries.type_component_variant_name.bounded_string;
+		module_B		: in et_coordinates.type_submodule_name.bounded_string;
+		reference_B		: in et_libraries.type_component_reference;
+		variant_B		: in et_libraries.type_component_variant_name.bounded_string;
+		log_threshold	: in type_log_level) is
+	begin
+		log ("comparing terminals ...", log_threshold);
+		log_indentation_up;
+		-- CS:
+		log_indentation_down;
+	end compare_terminals;
+
+
+	procedure compare_nets (
+		module_A	: in et_coordinates.type_submodule_name.bounded_string;
+		referenc_A	: in et_libraries.type_component_reference;
+		module_B	: in et_coordinates.type_submodule_name.bounded_string;		
+		referenc_B	: in et_libraries.type_component_reference;
+		log_threshold : in type_log_level) is
+	begin
+		log ("comparing net names ...", log_threshold);
+		log_indentation_up;
+		-- CS:
+		log_indentation_down;
+	end compare_nets;
 	
 	procedure validate_module_interconnections (log_threshold: in et_string_processing.type_log_level) is
 	-- Tests if module interconnections at net level make sense.
@@ -315,6 +354,13 @@ package body et_configuration is
 			log ("reference A " & to_string (reference_A), log_threshold + 1);
 			reference_B := to_connector_reference (module_B.name, purpose_B, log_threshold + 2);
 			log ("reference B " & to_string (reference_B), log_threshold + 1);
+
+			-- CS compare terminals (via package variant)
+-- 			compare_terminals (module_A.name, reference_A, variant_A, 
+-- 							   module_B.name, reference_B, variant_B, log_threshold + 1);
+			
+			-- compare net names (via module.netlist)
+			compare_nets (module_A.name, reference_A, module_B.name, reference_B, log_threshold + 1);
 			
 			next (interconnection_cursor);
 		end loop;
