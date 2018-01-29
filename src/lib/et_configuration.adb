@@ -83,15 +83,90 @@ package body et_configuration is
 		raise constraint_error;
 	end to_submodule;
 
-	procedure check_multiple_purpose (
-	-- Tests current module (indicated by module_cursor) if the given purpose is used
-	-- only ONCE for the given category.
-	-- Example: It is forbidden to have a two or more connectors with purpose "PWR_IN".
+	procedure multiple_purpose_error (
+	-- Outputs an error message on multiple usage of a purpose of a component category.
 		category : in type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
-		purpose : in et_libraries.type_component_purpose.bounded_string) is -- PWR_IN, SYS_FAIL, ...
+		purpose : in et_libraries.type_component_purpose.bounded_string) -- PWR_IN, SYS_FAIL, ...
+		is
 	begin
-		null; -- CS
-	end check_multiple_purpose;
+		log_indentation_reset;
+		log (message_error & "There must be ONLY ONE " 
+			 & to_string (category) 
+			 & " with purpose " 
+			 & enclose_in_quotes (et_libraries.to_string (purpose)) & " !",
+			 console => true);
+		-- CS: show the affected components by reference and coordinates
+		raise constraint_error;
+	end multiple_purpose_error;
+		
+	
+	function multiple_purpose (
+	-- Returns the number of occurences of components with the given purpose and category.
+	-- Example: If there are two connectors with purpose "PWR_IN" the return is 2.
+		category : in type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
+		purpose : in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
+		log_threshold : in et_string_processing.type_log_level)
+		return natural is
+
+		occurences : natural := 0; -- to be returned
+
+		use et_coordinates;
+		use et_schematic;
+		use et_libraries;
+		use type_rig;
+	
+		procedure locate_component (
+		-- Searches the component list of the module for a connector with the given purpose.
+		-- Exits on the first matching connector. There should not be any others.
+			module_name : in type_submodule_name.bounded_string;
+			module : in type_module) is
+			use et_schematic.type_components;
+			use type_component_purpose;
+			component : et_schematic.type_components.cursor := module.components.first;
+		begin
+			log ("detecting multiple usage of purpose " 
+				 & enclose_in_quotes (et_libraries.to_string (purpose)) 
+				 & " in component category" & to_string (category) 
+				 & " ...", log_threshold);
+			log_indentation_up;
+
+			while component /= et_schematic.type_components.no_element loop
+				if element (component).appearance = sch_pcb then -- it must be a real component
+					if et_configuration.category (key (component)) = category then -- category must match
+						if element (component).purpose = purpose then -- purpose must match
+							log (et_libraries.to_string (key (component)), log_threshold + 1);
+							occurences := occurences + 1;
+						end if;
+					end if;
+				end if;
+				next (component);
+			end loop;
+
+			log_indentation_down;
+		end locate_component;
+
+	begin -- multiple_purpose
+
+		query_element (
+			position => module_cursor,
+			process => locate_component'access);
+
+		-- Show the result of the search:
+		if occurences = 0 then
+			log_indentation_up;
+			log ("none found. very good.", log_threshold + 1);
+			log_indentation_down;
+		else
+			log (message_warning & "for component category " 
+				& to_string (category) 
+				& " the purpose " 
+				& enclose_in_quotes (et_libraries.to_string (purpose)) 
+				& " is used multiple times !");
+			-- CS: show the affected components by reference and coordinates
+		end if;
+		
+		return occurences;
+	end multiple_purpose;
 	
 		
 	procedure validate_module_interconnection (connection : in type_module_interconnection) is
@@ -126,40 +201,125 @@ package body et_configuration is
 		end if;
 	end validate_module_interconnection;
 
-	function to_component_reference (
+	function to_connector_reference (
 	-- Returns the reference (like X4) of the connector (in the given module) with the given purpose.
+	-- Raises error if no connector with given purpose could be found in the module.
 		module_name : in et_coordinates.type_submodule_name.bounded_string;
-		connector_purpose : in et_libraries.type_component_purpose.bounded_string) 
+		purpose : in et_libraries.type_component_purpose.bounded_string;
+		log_threshold : in type_log_level) 
 		return et_libraries.type_component_reference is
 
+		use et_coordinates;
 		use et_schematic;
+		use et_libraries;
 		use type_rig;
 		module_cursor : type_rig.cursor;
-		ref : et_libraries.type_component_reference;
-	begin
+		connector_found : boolean := false; -- goes true once a suitable connector was found
+		ref : et_libraries.type_component_reference; -- the reference to be returned
+
+		procedure locate_component (
+		-- Searches the component list of the module for a connector with the given purpose.
+		-- Exits on the first matching connector. There should not be any others.
+			module_name : in type_submodule_name.bounded_string;
+			module : in type_module) is
+			use et_schematic.type_components;
+			use type_component_purpose;
+			component : et_schematic.type_components.cursor := module.components.first;
+		begin
+			log ("searching connector ...", log_threshold);
+			log_indentation_up;
+
+			while component /= et_schematic.type_components.no_element loop
+				if element (component).appearance = sch_pcb then -- it must be a real component
+					if category (key (component)) = CONNECTOR then -- it must be a connector
+						if element (component).purpose = purpose then -- purpose must match
+							log ("found -> " & et_libraries.to_string (key (component)), log_threshold);
+							connector_found := true;
+							ref := key (component);
+							exit;
+						end if;
+					end if;
+				end if;
+				next (component);
+			end loop;
+
+			-- if no connector was found, the error is raised here:
+			if not connector_found then
+				log_indentation_reset;
+				log (message_error & "module " & to_string (module_name) 
+					 & " does not have a" & to_string (connector) & " with purpose "
+					 & enclose_in_quotes (et_libraries.to_string (purpose))
+					 & " !",
+					 console => true);
+				raise constraint_error;
+			end if;
+			
+			log_indentation_down;
+		end locate_component;
+		
+	begin -- to_connector_reference
+		log ("locating module in rig ...", log_threshold);
+		log_indentation_up;
+
 		-- locate the module in the rig
 		module_cursor := find (rig, module_name);
--- 		if module_cursor = no_element then
--- 			log_indentation_reset;
--- 			log (message_error & "
-		
+		if module_cursor /= no_element then
+			query_element (
+				position => module_cursor,
+				process => locate_component'access);
+		else
+			-- module does not exist in rig
+			log_indentation_reset;
+			log (message_error & "module " & to_string (module_name) & " does not exist in the rig !", console => true);
+			raise constraint_error;
+		end if;
+
+		log_indentation_down;
 		return ref;
-	end to_component_reference;
+	end to_connector_reference;
 	
 	procedure validate_module_interconnections (log_threshold: in et_string_processing.type_log_level) is
 	-- Tests if module interconnections at net level make sense.
 	-- NOTE: call AFTER modules have been imported !
-		interconnection_cursor : type_module_interconnections.cursor := module_interconnections.first;
-		reference_A, reference_B : et_libraries.type_component_reference;
+		use type_module_interconnections;
+		use et_coordinates;
+		use et_libraries;
+		interconnection_cursor		: type_module_interconnections.cursor := module_interconnections.first;
+		module_A, module_B			: type_import_module;
+		purpose_A, purpose_B 		: et_libraries.type_component_purpose.bounded_string;
+		reference_A, reference_B	: et_libraries.type_component_reference;
 	begin
 		log ("validating module interconnections ...", log_threshold);
+		log_indentation_up;
 		-- From the module name (nucleo_core) and the purpose (MOTOR_CTRL_OUT_2) of the connector
 		-- we reason the references like X1, X46
--- 		reference_A := to_component_reference (module_A.name, connection.peer_A.purpose);
--- 		reference_B := to_component_reference (module_B.name, connection.peer_B.purpose);		
 
-	
-		null;
+		-- From the module interconnection like "NCC 1 MOTOR_CTRL_OUT_2 MOT 2 MOTOR_CTRL_IN" we 
+		-- reason the full module name and the reference of the connector: 
+		-- NCC stands for "nucleo_core" and purpose "MOTOR_CTRL_OUT_2" stands for connector X46.
+		while interconnection_cursor /= no_element loop
+
+			-- map from abbrevation to full module name:
+			module_A := to_submodule (element (interconnection_cursor).peer_A.abbrevation);
+			log ("module A " & to_string (module_A.name), log_threshold + 1);
+			module_B := to_submodule (element (interconnection_cursor).peer_B.abbrevation);
+			log ("module B " & to_string (module_B.name), log_threshold + 1);
+			
+			-- map from module name and purpose to reference
+			purpose_A := element (interconnection_cursor).peer_A.purpose;
+			log ("purpose A " & enclose_in_quotes (to_string (purpose_A)), log_threshold + 1);
+			purpose_B := element (interconnection_cursor).peer_B.purpose;
+			log ("purpose B " & enclose_in_quotes (to_string (purpose_B)), log_threshold + 1);
+			
+			reference_A := to_connector_reference (module_A.name, purpose_A, log_threshold + 2);
+			log ("reference A " & to_string (reference_A), log_threshold + 1);
+			reference_B := to_connector_reference (module_B.name, purpose_B, log_threshold + 2);
+			log ("reference B " & to_string (reference_B), log_threshold + 1);
+			
+			next (interconnection_cursor);
+		end loop;
+
+		log_indentation_down;
 	end validate_module_interconnections;
 	
 	function to_string (cat : in type_component_category) return string is
@@ -844,7 +1004,7 @@ package body et_configuration is
 					line => get_line,
 					number => ada.text_io.line (current_input),
 					comment_mark => et_general.comment_mark,
-					-- CS delimiter_wrap => true, -- if connector purpose is given in quotations
+					delimiter_wrap => true, -- if connector purpose is given in quotations
 					ifs => latin_1.space); -- fields are separated by space
 
 				case field_count (line) is

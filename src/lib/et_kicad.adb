@@ -4805,26 +4805,35 @@ package body et_kicad is
 							if not field_purpose_found then
 								missing_field (et_libraries.purpose);
 							else
+								-- Depending on the status of operator interaction:
 								case et_configuration.requires_operator_interaction (reference.prefix) is
 
-									-- Even if no interaction is required, we expect at least 
+									-- Even if NO INTERACTION is required, we expect at least 
 									-- the purpose_default string.
 									when et_configuration.NO =>
 										if content (field_purpose) /= purpose_default then
 											log (message_warning & "expected default " & purpose_default & " !");
 										end if;
 										
-									-- If operator interaction is required, we expect something useful in 
+									-- If operator INTERACTION IS REQUIRED, we expect something useful in 
 									-- the purpose field. 
-									-- Furhter-on there must be no other component of this category with 
+									-- Furhter-on there must be NO other component already of this category with 
 									-- the same purpose. Example: It is forbidden to have 
 									-- an X1 and an X2 both with purpose "PWR_IN"
 									when et_configuration.YES =>
 										validate_purpose (content (field_purpose)); -- must be something useful
 
-										et_configuration.check_multiple_purpose (
-											category => et_configuration.category (reference),
-											purpose => to_purpose (content (field_purpose)));
+										-- test if purpose already used for this category 
+										if et_configuration.multiple_purpose (
+											category => et_configuration.category (reference), -- derive cat from reference
+											purpose => to_purpose (content (field_purpose)),
+											log_threshold => log_threshold + 2) > 0 then
+
+												-- purpose already in use -> error
+												et_configuration.multiple_purpose_error (
+													category => et_configuration.category (reference),
+													purpose => to_purpose (content (field_purpose)));
+										end if;
 								end case;									
 							end if;
 
