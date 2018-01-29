@@ -272,8 +272,11 @@ package et_libraries is
 	-- Initially, at the library level, a port has a name, direction,
 	-- coordinates, orientation, flags for making port and pin name visible. 
 	-- Later, other values are assigned like pin name. CS: set defaults
-	type type_port is record
-		name				: type_port_name.bounded_string; -- like "CLOCK" or "CE"		
+	type type_port_basic is tagged record
+		name				: type_port_name.bounded_string; -- like CLOCK or CE
+	end record;
+	
+	type type_port is new type_port_basic with record
 		direction			: type_port_direction; -- example: "passive"
 		style				: type_port_style;
 		coordinates			: type_2d_point; -- there is only x and y
@@ -581,9 +584,11 @@ package et_libraries is
 	-- component package variant names like "N" or "D" are stored in short bounded strings:
 	component_variant_characters : character_set := to_set (span => ('A','Z')) or to_set ("-");
 	component_variant_name_length_max : constant positive := 10;
-	package type_component_variant_name is new generic_bounded_length(component_variant_name_length_max);
+	package type_component_variant_name is new generic_bounded_length (component_variant_name_length_max);
 	use type_component_variant_name;
 
+	component_variant_default : constant type_component_variant_name.bounded_string := type_component_variant_name.to_bounded_string ("default");
+	
 	-- A component variant is a composite of the package, the library it is stored in and
 	-- a connection list. The connection list maps from port names to pin/pad names.
 	type type_component_variant is record
@@ -610,13 +615,6 @@ package et_libraries is
 	package type_package_filter is new ordered_sets (type_package_proposal.bounded_string);
 
 	
-	
-
--- 	type type_port_terminal_map is new ordered_maps (
--- 		key_type => type_port_name.bounded_string,
--- 		element_type => type_terminal_name.bounded_string);
-
-
 	
 -- SHAPES 
 
@@ -733,7 +731,6 @@ package et_libraries is
 	type type_symbol (appearance : type_component_appearance) is record
 		shapes		: type_shapes; -- the collection of shapes
 		texts		: type_symbol_texts.list; -- the collection of texts (meaning misc)
-		--ports		: type_ports.map := type_ports.empty_map; -- the ports of the symbol
 		ports		: type_ports.list := type_ports.empty_list; -- the ports of the symbol
 		
 		-- Placeholders for component wide texts. To be filled with content when 
@@ -852,6 +849,31 @@ package et_libraries is
 
 	
 -- COMPONENTS
+
+	type type_port_in_port_terminal_map is new type_port_basic with record
+		unit	: type_unit_name.bounded_string;
+	end record;
+
+	
+	package type_port_terminal_map is new ordered_maps (
+		key_type => type_terminal_name.bounded_string, -- GND
+		element_type => type_port_in_port_terminal_map); -- unit A, OE1
+
+	type type_component_variant_2 is record
+		packge	: type_component_package_name.bounded_string; -- SOT23
+		library	: type_full_library_name.bounded_string; -- projects/lbr/smd_packages.pac
+		port_terminal_map : type_port_terminal_map.map;
+	end record;
+
+	package type_component_variants_2 is new ordered_maps (
+		key_type => type_component_variant_name.bounded_string, -- D, N
+		element_type => type_component_variant_2);
+
+
+
+
+
+	
 	type type_power_flag is (YES, NO);
 
 	type type_component (appearance : type_component_appearance) is record
@@ -883,6 +905,9 @@ package et_libraries is
 				purpose		: type_component_purpose.bounded_string;
 				partcode	: type_component_partcode.bounded_string;
 				bom			: type_bom;
+
+				variants_2	: type_component_variants_2.map;
+				
 			when others => null; -- CS
 		end case;
 

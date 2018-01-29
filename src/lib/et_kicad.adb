@@ -621,6 +621,8 @@ package body et_kicad is
 			tmp_draw_circle 	: type_circle;
 			tmp_draw_text		: type_symbol_text;
 			tmp_draw_port		: type_port;
+
+			tmp_port_terminal_map : type_port_terminal_map.map;
 			
 			procedure init_temp_variables is
 			-- Resets "field found flags".
@@ -640,7 +642,8 @@ package body et_kicad is
 				field_purpose_found			:= false;
 				field_partcode_found		:= false;
 				field_bom_found				:= false;
-				
+
+				type_port_terminal_map.clear (tmp_port_terminal_map);
 			end init_temp_variables;
 
 			function to_swap_level (swap_in : in string)
@@ -1045,7 +1048,7 @@ package body et_kicad is
 			end to_text;
 
 			function to_port (line : in et_string_processing.type_fields_of_line) return type_port is
-			-- Returns from the given fields of a port as a type_port.
+			-- Converts the given line to a type_port.
 				port	: type_port;
 
 				function field (line : in type_fields_of_line; position : in positive) return string renames
@@ -1151,8 +1154,15 @@ package body et_kicad is
 				port.name := type_port_name.to_bounded_string (field (line,2));
 				
 				-- compose pin name
-				port.pin			:= type_terminal_name.to_bounded_string (field (line,3));
+				port.pin := type_terminal_name.to_bounded_string (field (line,3));
 
+				type_port_terminal_map.insert (
+					container => tmp_port_terminal_map,
+					key => type_terminal_name.to_bounded_string (field (line,3)),
+					new_item => (
+						name => type_port_name.to_bounded_string (field (line,2)),
+						unit => type_unit_name.to_bounded_string (field (line,10))));
+				
 				-- compose position
 				set_x (port.coordinates, mil_to_distance (mil => field (line,4), warn_on_negative => false));
 				set_y (port.coordinates, mil_to_distance (mil => field (line,5), warn_on_negative => false));
@@ -1557,7 +1567,9 @@ package body et_kicad is
 
 								partcode		=> type_component_partcode.to_bounded_string (content (field_partcode)),
 
-								bom				=> type_bom'value (content (field_bom))
+								bom				=> type_bom'value (content (field_bom)),
+
+								variants_2		=> type_component_variants_2.empty_map
 								)
 							);
 
