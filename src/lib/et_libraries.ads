@@ -89,6 +89,11 @@ package et_libraries is
 
 	function to_string (full_library_name : in type_full_library_name.bounded_string) return string;
 	-- Returns the given full library name as string;
+
+	function to_full_library_name (
+		root_dir : in type_library_directory.bounded_string;
+		lib_name : in type_library_name.bounded_string) return type_full_library_name.bounded_string;
+	-- composes the full library name from the given rood directory and the actual lib name.
 	
 	-- Full library names can be stored further-on in a simple list:
 	-- We use a simple list because the order of the library names sometimes matters and must be kept.

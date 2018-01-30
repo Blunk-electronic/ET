@@ -74,6 +74,16 @@ package body et_libraries is
 		return type_full_library_name.to_string (full_library_name);
 	end to_string;
 
+	function to_full_library_name (
+		root_dir : in type_library_directory.bounded_string;
+		lib_name : in type_library_name.bounded_string) return type_full_library_name.bounded_string is
+		-- composes the full library name from the given rood directory and the actual lib name.
+	begin
+		return type_full_library_name.to_bounded_string (
+			compose (to_string (root_dir), to_string (lib_name))
+			);
+	end to_full_library_name;
+	
 	function to_string (person : in type_person_name.bounded_string) return string is
 	-- Returns the given person name as string.
 	begin

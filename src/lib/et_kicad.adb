@@ -159,6 +159,34 @@ package body et_kicad is
 		return point;
 	end to_point;
 	
+	function library_name (text : in string) return et_libraries.type_library_name.bounded_string is
+	-- extracts from a string like "bel_ic:S_SO14" the library name "bel_ic"
+		function field (line : in type_fields_of_line; position : in positive) return string renames
+			et_string_processing.get_field_from_line;
+	begin
+		return et_libraries.type_library_name.to_bounded_string (
+			field (
+				read_line (
+					line => text,
+					ifs => latin_1.colon), 
+				position => 1) -- the part before the colon
+				);
+	end library_name;
+
+	function package_name (text : in string) return et_libraries.type_component_package_name.bounded_string is
+	-- extracts from a string like "bel_ic:S_SO14" the package name "S_SO14"
+		function field (line : in type_fields_of_line; position : in positive) return string renames
+			et_string_processing.get_field_from_line;
+	begin
+		return et_libraries.type_component_package_name.to_bounded_string (
+			field (
+				read_line (
+					line => text,
+					ifs => latin_1.colon), 
+				position => 2) -- the part after the colon
+				);
+	end package_name;
+
 	function to_text_meaning (
 	-- Extracts from a scheamtic field like "F 0 "#PWR01" H 2000 3050 50  0001 C CNN" its meaning.
 	-- Extracts from a component field like "F0 "IC" 0 50 50 H V C CNN" its meaning.
@@ -582,9 +610,11 @@ package body et_kicad is
 			tmp_port_name_visible		: type_port_name_visible;
 			tmp_terminal_name_visible	: type_terminal_name_visible;
 			tmp_port_name_offset	: type_distance; -- CS: rename to port_name_offset
+			tmp_terminal_name	: type_terminal_name.bounded_string;
 			
 			tmp_units_total		: type_units_total; -- see spec for range -- CS rename to units_total	
-			tmp_unit_id			: type_unit_id; -- assumes 0 if all units are affected, -- see spec	-- CS rename to unit_id		
+			tmp_unit_id			: type_unit_id; -- assumes 0 if all units are affected, -- see spec	-- CS rename to unit_id
+
 			tmp_unit_swap_level	: type_unit_swap_level := unit_swap_level_default; -- CS: rename to unit_swap_level
 			tmp_unit_add_level	: type_unit_add_level := type_unit_add_level'first; -- CS: rename to unit_add_level
 			tmp_unit_global		: boolean := false; -- specifies if a unit harbors component wide pins (such as power supply) -- CS: rename to unit_global
@@ -1151,18 +1181,12 @@ package body et_kicad is
 				log_indentation_up;
 
 				-- port name. to be taken from field #2 of the given line
-				port.name := type_port_name.to_bounded_string (field (line,2));
+				port.name := type_port_name.to_bounded_string (field (line,2)); -- GND, GPIO2
 				
-				-- compose pin name
+				-- compose terminal name
 				port.pin := type_terminal_name.to_bounded_string (field (line,3));
+				tmp_terminal_name := type_terminal_name.to_bounded_string (field (line,3)); -- H5, 14
 
-				type_port_terminal_map.insert (
-					container => tmp_port_terminal_map,
-					key => type_terminal_name.to_bounded_string (field (line,3)),
-					new_item => (
-						name => type_port_name.to_bounded_string (field (line,2)),
-						unit => type_unit_name.to_bounded_string (field (line,10))));
-				
 				-- compose position
 				set_x (port.coordinates, mil_to_distance (mil => field (line,4), warn_on_negative => false));
 				set_y (port.coordinates, mil_to_distance (mil => field (line,5), warn_on_negative => false));
@@ -1409,7 +1433,7 @@ package body et_kicad is
 						else
 							validate_component_package_name (
 								type_component_package_name.to_bounded_string (field (
-									line => read_line (
+									line => read_line ( -- CS use function package_name
 										line => content (field_package), -- bel_ic:S_SO14
 										ifs => latin_1.colon),
 									position => 2))); -- the block after the colon
@@ -1433,7 +1457,7 @@ package body et_kicad is
 								-- The part after the colon is the package name. The part before the colon is the library
 								-- name which is not of interest here.
 								packge => type_component_package_name.to_bounded_string (field (
-									line => read_line (
+									line => read_line ( -- CS use function package_name
 										line => content (field_package), -- bel_ic:S_SO14
 										ifs => latin_1.colon),
 									position => 2)), -- the block after the colon
@@ -1627,7 +1651,7 @@ package body et_kicad is
 			end set_unit_cursor;
 				
 			
-			procedure add_unit (libraries : in out type_libraries.map) is
+			procedure add_unit (libraries : in out type_libraries.map) is -- CS: no need for parameter libraries. use component_libraries directly on update
 			-- Add the unit with current tmp_unit_id to current component (indicated by comp_cursor).
 			-- Leaves unit_cursor pointing to unit that has been added.
 			
@@ -1695,12 +1719,10 @@ package body et_kicad is
 				
 			procedure add_symbol_element (
 			-- Adds a symbol element (circle, arcs, lines, ports, etc.) to the unit with the current tmp_unit_id.
-			-- If the tmp_unit_id is 0, the symbol element is inserted into all units (except extra units).
-			
 			-- The kind of symbol element is given by parameter "element".
 			-- The symbol properties are taken from the temporarily variables named tmp_draw_*.
 						
-				libraries	: in out type_libraries.map;
+				libraries	: in out type_libraries.map; -- CS: no need for parameter libraries. use component_libraries directly on update
 				element		: in type_symbol_element) is
 
 				procedure insert (
@@ -1732,8 +1754,15 @@ package body et_kicad is
 							pos := 110;
 							-- CS: test if pin name not used by other units
 							pos := 190;
-							--unit.symbol.ports.insert (key => tmp_draw_port_name, new_item => tmp_draw_port);
 							unit.symbol.ports.append (tmp_draw_port);
+
+							type_port_terminal_map.insert (
+								container => tmp_port_terminal_map,
+								key => tmp_terminal_name, -- terminal name
+								new_item => (
+									name => tmp_draw_port.name, -- port name
+									unit => to_unit_name (tmp_unit_id))); -- unit name
+							
 							
 						when others =>
 							raise constraint_error;
@@ -1802,7 +1831,7 @@ package body et_kicad is
 			end add_symbol_element;
 			
 
-			procedure set_text_placeholder_properties (libraries : in out type_libraries.map) is
+			procedure set_text_placeholder_properties (libraries : in out type_libraries.map) is -- CS: no need for parameter libraries. use component_libraries directly on update
 			-- Sets the properties of placeholders in all units of the component indicated by comp_cursor.
 			
 				procedure set (
@@ -1850,6 +1879,7 @@ package body et_kicad is
 
 				-- Set the number of units to be updated:
 				total : type_unit_id := type_unit_id (tmp_units_total);
+				
 			begin -- set_text_placeholder_properties
 
 				-- The number of units to be updated increases by one if an extra unit has been created:
@@ -2045,14 +2075,13 @@ package body et_kicad is
 						-- #13 : optional field: pin style, see et_kicad.ads for more
 
 						log (to_string (line), log_threshold + 1);
-						-- CS: output properites in a human readable form instead.
+						-- CS: output properties in a human readable form instead.
 						
 						tmp_unit_id := to_unit_id (field (line,10));
 						write_scope_of_object (tmp_unit_id);
 
 						-- compose port
 						tmp_draw_port := to_port (line);
-	-- 					tmp_draw_port_name := type_port_name.to_bounded_string (field (line,2));
 
 						-- If this is a unit specific port it gets added to the unit. If it applies for the
 						-- whole component, we create an extra unit and insert it there. An extra unit is
@@ -2061,9 +2090,8 @@ package body et_kicad is
 						-- When adding a port, tmp_unit_id is always greater zero.
 						if tmp_unit_id > 0 then
 							-- add unit specific port to unit
-
 							--log ("unit id " & type_unit_id'image (tmp_unit_id) , level => log_threshold);
-							add_symbol_element (component_libraries, port);
+							add_symbol_element (libraries => component_libraries, element => port);
 						else 
 							-- The unit id changes from 0 to tmp_units_total + 1 (one notch above the total number) :
 							tmp_unit_id := type_unit_id (tmp_units_total) + 1;
@@ -2078,7 +2106,7 @@ package body et_kicad is
 							end if;
 							-- insert the port in the extra unit
 							--log ("unit id " & type_unit_id'image (tmp_unit_id) , level => log_threshold);						
-							add_symbol_element (component_libraries, port);
+							add_symbol_element (libraries => component_libraries, element => port);
 						end if;
 				end case;
 
@@ -2092,7 +2120,7 @@ package body et_kicad is
 				function field (line : in type_fields_of_line; position : in positive) return string renames
 					et_string_processing.get_field_from_line;
 				
-				procedure do_it (libraries : in out type_libraries.map) is
+				procedure do_it (libraries : in out type_libraries.map) is -- CS: no need for parameter libraries. use component_libraries directly on update
 				-- Adds the footprint finally.
 					procedure insert_footprint (
 						key			: in type_component_generic_name.bounded_string;
@@ -2294,6 +2322,65 @@ package body et_kicad is
 				-- CS: check appearance vs. function vs. partcode -- see stock_manager	
 			end read_field;
 		
+
+			procedure build_package_variant is
+			-- Builds from tmp_port_terminal_map and field_package the default package variant.
+			-- NOTE: Since kicad does not know package variants, we can only build the
+			-- one and only DEFAULT variant.
+				
+				procedure locate_component (
+					lib_name	: in type_full_library_name.bounded_string;
+					components	: in out type_components.map) is
+
+					procedure build (
+						comp_name	: in type_component_generic_name.bounded_string;
+						component	: in out type_component) is
+
+						use type_component_variants_2;
+						variants : type_component_variants_2.map; -- temporarily used for building the variant
+					begin
+						case component.appearance is
+							when sch_pcb =>
+
+								insert (
+									container => variants,
+									key => component_variant_default, -- because kicad does not know package variants
+									new_item => (
+										-- The package field contains something like "bel_ic:S_SO14".
+										-- This provides the library name and the package name.
+										packge => package_name (content (field_package)), -- S_SO14
+										
+										-- We compose the full library name from lib_dir (global variable) and the library name.
+										library => to_full_library_name (lib_dir, library_name (content (field_package))), -- projects/lbr/bel_ic.pac
+
+										-- The terminal to port map tmp_port_terminal_map is now finally copied
+										-- to its final destination:
+										port_terminal_map => tmp_port_terminal_map)); -- H4/GPIO2
+
+								-- assign package variant to component
+								component.variants_2 := variants;
+
+							when others => null;
+						end case;
+					end build;
+					
+				begin -- locate_component
+					components.update_element (comp_cursor, build'access);
+				end locate_component;
+				
+			begin -- build_package_variant
+				log_indentation_up;
+				log ("building package variant ...", log_threshold + 1);
+				type_libraries.update_element ( 
+					container	=> component_libraries,
+					position	=> lib_cursor,
+					process		=> locate_component'access);
+				
+				log_indentation_down;
+			end build_package_variant;
+			
+
+			
 		begin -- read_library
 			log_indentation_up;
 			
@@ -2404,6 +2491,11 @@ package body et_kicad is
 								-- The placeholder properties are known from the field-section.
 								-- The placeholder properties apply for all units.
 								set_text_placeholder_properties (component_libraries);
+
+								-- If this is a real component, build package variant from tmp_port_terminal_map
+								if tmp_appearance = sch_pcb then
+									build_package_variant;
+								end if;
 								
 								-- log component properties
 								-- CS: currently no need to output a summary of the component
@@ -2430,7 +2522,7 @@ package body et_kicad is
 										-- added to the component when the section "DRAW" is processed..
 										
 										-- As long as none of those headers occurs, we read the text fields.
-										if field  (line,1) = et_kicad.fplist then
+										if field (line,1) = et_kicad.fplist then
 											
 											-- Insert the component into the current library (indicated by lib_cursor):
 											type_libraries.update_element ( 
@@ -2446,7 +2538,7 @@ package body et_kicad is
 											--log ("footprint/package filter begin", level => log_threshold + 1);
 											log ("footprint/package filter", level => log_threshold + 2);
 
-										elsif field  (line,1) = et_kicad.draw then
+										elsif field (line,1) = et_kicad.draw then
 
 											-- Insert the component into the current library (indicated by lib_cursor):
 											type_libraries.update_element ( 
