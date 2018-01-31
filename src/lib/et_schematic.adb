@@ -4791,7 +4791,8 @@ package body et_schematic is
 		function to_terminal_name (
 			port : in type_port_with_reference;
 			log_threshold : in type_log_level)
-			return type_terminal_name.bounded_string is
+			--return type_terminal_name.bounded_string is
+			return type_port_in_port_terminal_map is
 		-- Returns the terminal name of the given port.
 		-- NOTE: In contrast to Kicad, the terminal name is stored in a package variant. The package variant in
 		-- turn is maintained in the symbol component library.
@@ -4802,7 +4803,9 @@ package body et_schematic is
 		-- 4. look up the library, locate 7400 in library
 		-- 5. get package variant
 		-- 6. look up given port name and get terminal name
-			terminal : type_terminal_name.bounded_string;
+		
+			--terminal : type_terminal_name.bounded_string;
+			terminal : type_port_in_port_terminal_map;
 
 			procedure locate_component_in_schematic (
 				module_name : in type_submodule_name.bounded_string;
@@ -4834,7 +4837,31 @@ package body et_schematic is
 
 						variant_cursor : et_libraries.type_component_variants_2.cursor;
 						variant_found : boolean := false;
-					begin
+
+						procedure locate_terminal (
+							variant_name : in type_component_variant_name.bounded_string;
+							variant : in type_component_variant_2) is
+							use type_port_terminal_map;
+							use type_port_name;
+							terminal_cursor : type_port_terminal_map.cursor := variant.port_terminal_map.first;
+							terminal_found : boolean := false;
+						begin
+							-- Search in terminal_port_map for the given port name.
+							-- On first match load the terminal which is a composite of
+							-- terminal name and unit name (see spec of type_port_in_port_terminal_map)
+							while terminal_cursor /= type_port_terminal_map.no_element loop
+								if element (terminal_cursor).name = port.port then
+									terminal := element (terminal_cursor);
+									terminal_found := true;
+									exit;
+								end if;
+
+								-- CS: if not terminal_found then ...
+								next (terminal_cursor);
+							end loop;
+						end locate_terminal;
+						
+					begin -- query_variants
 						log ("locating variant with package " & to_string (packge => package_name)
 							& " ...", log_threshold + 4);
 						log_indentation_up;
@@ -4855,7 +4882,10 @@ package body et_schematic is
 						end loop;
 
 						if variant_found then
-							null; -- CS: query port-terminal map
+							query_element (
+								position => variant_cursor,
+								process => locate_terminal'access);
+							
 						else
 							log_indentation_reset;
 							log (message_error & "no package variant with package " 
@@ -4960,7 +4990,7 @@ package body et_schematic is
 				ports		: in type_ports_with_reference.set) is
 				port_cursor : type_ports_with_reference.cursor := ports.first;
 		
-				terminal_name : type_terminal_name.bounded_string;
+				terminal : type_port_in_port_terminal_map;
 			begin
 				log_indentation_up;
 				--log ("ports" & count_type'image (length (ports)), log_threshold + 3);
@@ -4979,7 +5009,8 @@ package body et_schematic is
 							& to_string (element (port_cursor).direction),
 							log_threshold + 3);
 
-						terminal_name := to_terminal_name (element (port_cursor), log_threshold + 1);
+						terminal := to_terminal_name (element (port_cursor), log_threshold + 1);
+						-- CS: show unit, terminal, port
 						
 						-- write reference, port, pin in netlist (all in a single line)
 						put_line (netlist_handle, 

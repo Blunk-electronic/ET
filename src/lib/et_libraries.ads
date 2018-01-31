@@ -855,19 +855,19 @@ package et_libraries is
 	
 -- COMPONENTS
 
-	type type_port_in_port_terminal_map is new type_port_basic with record
+	type type_port_in_port_terminal_map is new type_port_basic with record -- CS rename to type_port_in_terminal_port_map
 		unit	: type_unit_name.bounded_string;
 	end record;
 
 	
-	package type_port_terminal_map is new ordered_maps (
+	package type_port_terminal_map is new ordered_maps ( -- CS rename to type_terminal_port_map
 		key_type => type_terminal_name.bounded_string, -- GND
 		element_type => type_port_in_port_terminal_map); -- unit A, OE1
 
 	type type_component_variant_2 is record
 		packge	: type_component_package_name.bounded_string; -- SOT23
 		library	: type_full_library_name.bounded_string; -- projects/lbr/smd_packages.pac
-		port_terminal_map : type_port_terminal_map.map;
+		port_terminal_map : type_port_terminal_map.map; -- rename to terminal_port_map
 	end record;
 
 	package type_component_variants_2 is new ordered_maps (
