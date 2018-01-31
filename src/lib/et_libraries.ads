@@ -905,7 +905,7 @@ package et_libraries is
 			-- with at least one package/footprint variant. We store variants in a map.
 			when sch_pcb => 
 				variants	: type_component_variants.map;
-				package_filter : type_package_filter.set := type_package_filter.empty_set;
+				package_filter : type_package_filter.set := type_package_filter.empty_set; -- kicad requirement
 				datasheet	: type_component_datasheet.bounded_string;
 				purpose		: type_component_purpose.bounded_string;
 				partcode	: type_component_partcode.bounded_string;
@@ -933,7 +933,6 @@ package et_libraries is
 	-- procedure write_component_properties (component : in type_components.cursor);
 	-- Writes the properties of the component indicated by the given cursor.
 
-	--package type_libraries is new indefinite_ordered_maps (	
 	package type_libraries is new ordered_maps (
 		key_type => type_full_library_name.bounded_string,
 		element_type => type_components.map);

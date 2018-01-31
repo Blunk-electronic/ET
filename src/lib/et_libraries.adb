@@ -1426,6 +1426,9 @@ package body et_libraries is
 			-- If no match, sarch for the given component with a tilde prepended.
 			-- If still no match, comp_cursor is empty (no_element).
 			comp_cursor := components.find (component); -- TRANSISTOR_NPN
+
+			-- CS: the follwing is kicad stuff and should be executed
+			-- if the import format is kicad_v4
 			if comp_cursor = type_components.no_element then
 				comp_cursor := components.find (prepend_tilde (component)); -- ~TRANSISTOR_NPN
 				--CS: log ?

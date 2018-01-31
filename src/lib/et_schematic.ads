@@ -252,14 +252,6 @@ package et_schematic is
 		units : in type_units.map) -- the list of units
 		return type_angle;
 	
-	-- After associating (by the operator) a schematic component with a package, the composite
-	-- type_variant is set according to the desired package.
-	type type_variant is record
-		name	: et_libraries.type_component_variant_name.bounded_string;	-- the variant name like TL084N or TL084D
-		variant	: et_libraries.type_component_variant; -- incorporates package, full library name, connection list
-	end record;
-
-
 	-- This is a component as it appears in the schematic.
 	type type_component (appearance : type_appearance_schematic) is record
 		library_name	: type_full_library_name.bounded_string; -- ../libraries/transistors.lib
@@ -272,13 +264,12 @@ package et_schematic is
 		case appearance is
 			-- If a component appears in both schematic and layout it has got:
 			when sch_pcb => 
-				variant		: type_variant; -- includes the footprint/package
-				-- CS package_library_name : type_full_library_name.bounded_string; -- Kicad requirement
-				-- CS packge : type_component_package_name.bounded_string;
-				partcode	: et_libraries.type_component_partcode.bounded_string;
-				purpose		: et_libraries.type_component_purpose.bounded_string;
-				datasheet	: et_libraries.type_component_datasheet.bounded_string;
-				bom			: et_libraries.type_bom;
+				package_library	: type_library_name.bounded_string; -- Kicad requirement
+				packge 			: type_component_package_name.bounded_string; -- S_SOT23
+				partcode		: type_component_partcode.bounded_string;
+				purpose			: type_component_purpose.bounded_string;
+				datasheet		: type_component_datasheet.bounded_string;
+				bom				: type_bom;
 				
 			-- If a component appears in the schematic only, it does not
 			-- have any package variants.

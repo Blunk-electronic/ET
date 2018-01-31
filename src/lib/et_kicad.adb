@@ -4863,6 +4863,11 @@ package body et_kicad is
 							else
 								null;
 								-- CS: check content of field_package
+								-- use library_name (content (field_package))
+								-- check/validate library name (length, characters, ...)
+								-- make sure the library exists. mind search order of footprint libraries
+								-- use package_name (content (field_package)
+								-- check/validate package name (length, characters, ...)
 							end if;
 
 							-- datasheet
@@ -4891,7 +4896,7 @@ package body et_kicad is
 									-- The part after the colon is the package name. The part before the colon is the library
 									-- name which is not of interest here.
 									packge => type_component_package_name.to_bounded_string (field (
-										line => read_line (
+										line => read_line ( -- CS use package_name (content (field_package)
 											line => content (field_package), -- bel_ic:S_SO14
 											ifs => latin_1.colon),
 										position => 2)), -- the block after the colon
@@ -5070,12 +5075,6 @@ package body et_kicad is
 				-- The component to be inserted gets assembled from the temporarily variables assigned until now.
 				-- Tests if a footprint has been associated with the component.
 
-					-- This is required as scratch variable when breaking down the content of the footprint content.
-					-- Kicad saves library and footprint name in a string like "bel_opto:LED_S_0805" separated by colon.
-					-- When a real component (appearance sch_pcb) is inserted, this variable is loaded with
-					-- the library name and the footprint.
-					tmp_library_footprint : et_string_processing.type_fields_of_line;
-
 					function field (
 						line		: in et_string_processing.type_fields_of_line;
 						position	: in positive) return string renames et_string_processing.get_field_from_line;
@@ -5119,11 +5118,6 @@ package body et_kicad is
 
 						when sch_pcb => -- we have a line like "L 74LS00 U1"
 
-							-- break down the footprint content like "bel_opto:LED_S_0805".
-							tmp_library_footprint := read_line (
-									line => content (field_package),
-									ifs => latin_1.colon);
-
 							et_schematic.add_component ( 
 								reference => reference,
 								component => (
@@ -5147,32 +5141,17 @@ package body et_kicad is
 									partcode		=> type_component_partcode.to_bounded_string (content (field_partcode)),
 									purpose			=> type_component_purpose.to_bounded_string (content (field_purpose)),
 									bom				=> type_bom'value (content (field_bom)),
-									-- Assemble the package variant.
-									-- NOTE: There is no way to identifiy the name of the package variant like TL084D or TL084N.
-									-- For this reason we leave the variant name empty.
-									variant =>
-										( 
-										variant => (
 
-											-- get the package name from the footprint field 
-											packge => 
-												type_component_package_name.to_bounded_string(
-													field (line => tmp_library_footprint, position => 2)),
+									-- Kicad requirement
+									package_library => library_name (content (field_package)), -- bel_primitives, bel_transistors
 
-											-- get the library file name from the footpint field
-											library => type_full_library_name.to_bounded_string(
-													field (line => tmp_library_footprint, position => 1))),
-
-										-- The variant name is left empty.
-										name => type_component_variant_name.to_bounded_string("")
-										),
-
+									packge => package_name (content (field_package)), -- S_SOT23
+										
 									-- At this stage we do not know if and how many units there are. So the unit list is empty for the moment.
 									units => type_units.empty_map),
 
 								log_threshold => log_threshold +1);
 
-								
 								-- Test if footprint has been associated with the component.
 								if content (field_package)'size = 0 then
 									log_indentation_reset;
