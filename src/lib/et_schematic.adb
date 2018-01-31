@@ -4494,8 +4494,6 @@ package body et_schematic is
 	-- Addresses ALL components both virtual and real. Virtual components are things like GND or VCC symbols.
 	-- Virtual components are filtered out on exporting the netlist in a file.
 	-- Bases on the portlists and nets/strands information of the module.
-	-- Netlists are exported in individual project directories in the work directory of ET.
-	-- These project directories have the same name as the module indicated by module_cursor.
 
 	-- Detects if a junction is missing where a port is connected with a net.
 	
@@ -4776,9 +4774,11 @@ package body et_schematic is
 
 		log_indentation_down;
 	end make_netlists;
-	
+
 	procedure export_netlists (log_threshold : in et_string_processing.type_log_level) is
 	-- Exports/Writes the netlists of the rig in separate files.
+	-- Netlists are exported in individual project directories in the work directory of ET.
+	-- These project directories have the same name as the module indicated by module_cursor.
 	-- Addresses real components exclusively. Virtual things like GND symbols are not exported.
 	-- Call this procedure after executing procedure make_netlist !
 		use type_rig;
@@ -4789,7 +4789,45 @@ package body et_schematic is
 		
 		netlist_handle : ada.text_io.file_type;
 		netlist_file_name : type_netlist_file_name.bounded_string;
-	
+
+		function to_terminal_name (port : in type_port_with_reference) return type_terminal_name.bounded_string is
+		-- Returns the terminal name of the given port.
+		-- General workflow:
+		-- 1. The given port provides the component reference like IC34
+		-- 2. look up IC34 in module.components
+		-- 3. get library name, generic name like 7400, package name 
+		-- 4. look up the library, locate 7400 in library
+		-- 5. get package variant
+		-- 6. look up given port name ang get terminal name
+			terminal : type_terminal_name.bounded_string;
+
+			procedure locate_component (
+				module_name : in type_submodule_name.bounded_string;
+				module		: in type_module) is
+
+				use type_components;
+				component_cursor: type_components.cursor := module.components.find (port.reference);
+				library_name	: type_full_library_name.bounded_string;
+				generic_name	: type_component_generic_name.bounded_string;
+				package_name	: type_component_package_name.bounded_string;
+			begin -- locate_component
+				library_name := element (component_cursor).library_name;
+				generic_name := element (component_cursor).generic_name;
+				--package_name := element (component_cursor).package;
+			end locate_component;
+		
+		begin -- to_terminal_name
+
+
+			query_element (
+				position	=> module_cursor,
+				process		=> locate_component'access);
+			
+			return terminal; 
+		end to_terminal_name;
+
+
+		
 		procedure query_nets (
 			module_name	: in type_submodule_name.bounded_string;
 			module		: in type_module) is

@@ -273,6 +273,8 @@ package et_schematic is
 			-- If a component appears in both schematic and layout it has got:
 			when sch_pcb => 
 				variant		: type_variant; -- includes the footprint/package
+				-- CS package_library_name : type_full_library_name.bounded_string; -- Kicad requirement
+				-- CS packge : type_component_package_name.bounded_string;
 				partcode	: et_libraries.type_component_partcode.bounded_string;
 				purpose		: et_libraries.type_component_purpose.bounded_string;
 				datasheet	: et_libraries.type_component_datasheet.bounded_string;
@@ -845,8 +847,7 @@ package et_schematic is
 	function units_of_component (component_cursor : in type_components.cursor) return type_units.map;
 	-- Returns the units of the given component.
 
-
-    
+   
 -- MISC
 
     -- When reading a schematic sheet, submodules might be discovered.
@@ -911,9 +912,15 @@ package et_schematic is
 	extension_netlist : constant string (1..3) := "net";
 
 	procedure make_netlists (log_threshold : in et_string_processing.type_log_level);
-
+	-- Builds the netlists of all modules of the rig.
+	-- Addresses ALL components both virtual and real. Virtual components are things like GND or VCC symbols.
+	-- Virtual components are filtered out on exporting the netlist in a file.
+	-- Bases on the portlists and nets/strands information of the module.
+	
 	procedure export_netlists (log_threshold : in et_string_processing.type_log_level);
 	-- Exports/Writes the netlists of the rig in separate files.
+	-- Netlists are exported in individual project directories in the work directory of ET.
+	-- These project directories have the same name as the module indicated by module_cursor.
 	-- Addresses real components exclusively. Virtual things like GND symbols are not exported.
 	-- Call this procedure after executing procedure make_netlist !
 
