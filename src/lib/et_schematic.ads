@@ -263,7 +263,7 @@ package et_schematic is
 	-- This is a component as it appears in the schematic.
 	type type_component (appearance : type_appearance_schematic) is record
 		library_name	: type_full_library_name.bounded_string; -- ../libraries/transistors.lib
-		name_in_library : et_libraries.type_component_generic_name.bounded_string; -- example: "TRANSISTOR_PNP" -- CS: rename to generic_name ?
+		generic_name	: et_libraries.type_component_generic_name.bounded_string; -- example: "TRANSISTOR_PNP"
 		value			: et_libraries.type_component_value.bounded_string; -- 470R
 		commissioned	: et_string_processing.type_date; -- 2017-08-17T14:17:25
 		updated			: et_string_processing.type_date; -- 2017-10-30T08:33:56

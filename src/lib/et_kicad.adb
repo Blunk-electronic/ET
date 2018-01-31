@@ -5106,7 +5106,7 @@ package body et_kicad is
 									-- project file. It is the first libaray in this succession that contains the model.
 									-- The function generic_name_to_library does the job.
 									library_name	=> generic_name_to_library (generic_name_in_lbr, reference),
-									name_in_library	=> generic_name_in_lbr,
+									generic_name	=> generic_name_in_lbr,
 									
 									value 			=> type_component_value.to_bounded_string (content (field_value)),
 									commissioned 	=> type_date (et_libraries.content (field_commissioned)),
@@ -5135,7 +5135,7 @@ package body et_kicad is
 									-- project file. It is the first libaray in this succession that contains the model.
 									-- The function generic_name_to_library does the job.
 									library_name	=> generic_name_to_library (generic_name_in_lbr, reference),
-									name_in_library	=> generic_name_in_lbr,
+									generic_name	=> generic_name_in_lbr,
 									
 									value			=> type_component_value.to_bounded_string (content (field_value)),
 									commissioned	=> type_date (content (field_commissioned)),

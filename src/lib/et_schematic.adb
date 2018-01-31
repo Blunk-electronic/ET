@@ -269,7 +269,7 @@ package body et_schematic is
 		-- CS: library file name
 		-- name in library
 		log ("name in library "
-			& to_string (type_components.element (component).name_in_library), log_threshold);
+			& to_string (type_components.element (component).generic_name), log_threshold);
 		
 		-- value
 		log ("value "
@@ -1538,7 +1538,7 @@ package body et_schematic is
 
 			-- log particular library to be searched in.
 			log ("generic name " 
-					& to_string (element (component_cursor_sch).name_in_library) 
+					& to_string (element (component_cursor_sch).generic_name) 
 					& " in " & to_string (element (component_cursor_sch).library_name),
 					log_threshold + 2);
 
@@ -1548,7 +1548,7 @@ package body et_schematic is
 			-- of that component. Procedure extract_ports uses component_cursor_lib.
 			component_cursor_lib := find_component (
 				library => element (component_cursor_sch).library_name, -- like ../lib/transistors.lib
-				component => element (component_cursor_sch).name_in_library); -- like TRANSISTOR_PNP
+				component => element (component_cursor_sch).generic_name); -- like TRANSISTOR_PNP
 				
 			if component_cursor_lib = et_libraries.type_components.no_element then
 				-- component not found
@@ -1559,7 +1559,7 @@ package body et_schematic is
 					library => element (component_cursor_sch).library_name,
 					-- like ../lib/transistors.lib
 					
-					generic_name => element (component_cursor_sch).name_in_library);
+					generic_name => element (component_cursor_sch).generic_name);
 					-- like TRANSISTOR_PNP or LED
 				else
 					-- As a safety measure we make sure that the appearance of the component
@@ -4172,7 +4172,7 @@ package body et_schematic is
 
 					-- Sometimes the generic name in the libarary starts with a tilde.
 					-- It must be removed before testing the name.
-					if strip_tilde (key (component_lib)) = element (component_sch).name_in_library then
+					if strip_tilde (key (component_lib)) = element (component_sch).generic_name then
 				
 						query_element (
 							position => component_lib,
@@ -4192,7 +4192,7 @@ package body et_schematic is
 					no_generic_model_found (
 						reference => key (component_sch),
 						library => element (component_sch).library_name,
-						generic_name => element (component_sch).name_in_library);
+						generic_name => element (component_sch).generic_name);
 				end if;
 					
 			end query_library_components;
@@ -4965,7 +4965,7 @@ package body et_schematic is
 
 						put_field (file => bom_handle, text => to_string (key (component)));
 						put_field (file => bom_handle, text => to_string (element (component).value));
-						put_field (file => bom_handle, text => to_string (element (component).name_in_library));
+						put_field (file => bom_handle, text => to_string (element (component).generic_name));
 						put_field (file => bom_handle, text => to_string (element (component).variant.variant.packge));
 						put_field (file => bom_handle, text => to_string (element (component).author));
 						put_field (file => bom_handle, text => to_string (element (component).bom));
