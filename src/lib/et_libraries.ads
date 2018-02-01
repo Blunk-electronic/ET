@@ -533,7 +533,7 @@ package et_libraries is
 	-- However, it is up to the user to define the syntax of the partcode. The keywords in the following
 	-- refer the the recommended form like "R_PAC_S_0805_VAL_100R_PMAX_125_TOL_5":
 	component_partcode_characters : character_set := to_set
-		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set('_'); 
+		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ('_'); 
 	component_partcode_length_max : constant positive := 100;
 	package type_component_partcode is new generic_bounded_length (component_partcode_length_max);
 	partcode_default 			: constant string (1..10) := "?PARTCODE?";
@@ -564,9 +564,9 @@ package et_libraries is
 	-- MUST have a purpose assigned.
 	-- Example: The purpose of connector X44 is "power in". The purpose of LED5 is "system fail":
 	component_initial_purpose_characters : character_set := 
-		component_initial_field_characters or to_set(' '); 
+		component_initial_field_characters or to_set (' '); 
 	component_purpose_characters : character_set := to_set 
-		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set("_- "); 
+		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_- "); 
 	component_purpose_length_max : constant positive := 100;
 	package type_component_purpose is new generic_bounded_length (component_purpose_length_max);
 	purpose_default : constant string (1..9) := "?PURPOSE?";
@@ -904,6 +904,8 @@ package et_libraries is
 	use type_component_variant_name;
 
 	component_variant_name_default : constant type_component_variant_name.bounded_string := type_component_variant_name.to_bounded_string ("default");
+
+	-- CS: procedure check_variant_name_length (variant : in string);
 	
 	procedure check_variant_name_characters (
 		variant		: in type_component_variant_name.bounded_string;

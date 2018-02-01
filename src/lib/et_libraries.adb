@@ -146,7 +146,7 @@ package body et_libraries is
 		use et_string_processing;
 		invalid_character_position : natural := 0;
 	begin
-		-- Test given generic name and get position of possible invalid characters.
+		-- Test given variant name and get position of possible invalid characters.
 		invalid_character_position := index (
 			source => variant,
 			set => characters,

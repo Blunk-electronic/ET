@@ -533,6 +533,43 @@ package body et_schematic is
 		log_indentation_down;		
 	end write_unit_properties;
 
+	procedure check_net_name_length (net : in string) is
+	-- Tests if the given net name is longer than allowed.	
+		use et_string_processing;
+	begin
+		if net'length > net_name_length_max then
+			log_indentation_reset;
+			log (message_error & "max. number of characters for net name is" 
+				 & positive'image (net_name_length_max) & " !",
+				 console => true);
+			raise constraint_error;
+		end if;
+	end check_net_name_length;
+
+	procedure check_net_name_characters (
+		net			: in type_net_name.bounded_string;
+		characters	: in character_set := net_name_characters) is
+	-- Tests if the given net name contains only valid characters as specified
+	-- by given character set.
+		use et_string_processing;
+		invalid_character_position : natural := 0;
+	begin
+		-- Test given net name and get position of possible invalid characters.
+		invalid_character_position := index (
+			source => net,
+			set => characters,
+			test => outside);
+
+		-- Evaluate position of invalid character.
+		if invalid_character_position > 0 then
+			log_indentation_reset;
+			log (message_error & "invalid character in net name '" 
+				& to_string (net) & "' at position" & natural'image (invalid_character_position),
+				console => true);
+			raise constraint_error;
+		end if;
+	end check_net_name_characters;
+	
 	function length (segment : in type_net_segment) return type_distance is
 	-- Returns the length of the given net segment.
 		len : type_distance;
