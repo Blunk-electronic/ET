@@ -4806,15 +4806,15 @@ package body et_schematic is
 				-- Looks up the list of variants of the component.
 					name 		: in et_libraries.type_component_generic_name.bounded_string;
 					component 	: in et_libraries.type_component) is
-					use type_component_variants_2;
+					use type_component_variants;
 					use type_component_package_name;
 
-					variant_cursor : et_libraries.type_component_variants_2.cursor;
+					variant_cursor : et_libraries.type_component_variants.cursor;
 					variant_found : boolean := false;
 
 					procedure locate_terminal (
 						variant_name 	: in type_component_variant_name.bounded_string;
-						variant 		: in type_component_variant_2) is
+						variant 		: in type_component_variant) is
 						use type_terminal_port_map;
 						use type_port_name;
 						terminal_cursor : type_terminal_port_map.cursor := variant.terminal_port_map.first;
@@ -4844,10 +4844,10 @@ package body et_schematic is
 					log_indentation_up;
 
 					-- set variant cursor at first variant
-					variant_cursor := component.variants_2.first;
+					variant_cursor := component.variants.first;
 
 					-- search variants for given package name. exit loop on first match (CS: show other matches ?)
-					while variant_cursor /= type_component_variants_2.no_element loop
+					while variant_cursor /= type_component_variants.no_element loop
 						if element (variant_cursor).packge = package_name then -- variant found
 							log ("package variant " 
 									& type_component_variant_name.to_string (key (variant_cursor)), -- CS: make function to_string
@@ -4872,12 +4872,12 @@ package body et_schematic is
 							console => true);
 
 						-- show available variants
-						variant_cursor := component.variants_2.first;
+						variant_cursor := component.variants.first;
 						log ("available variants:");
 						log ("variant package library");
 						log_indentation_up;
 						
-						while variant_cursor /= type_component_variants_2.no_element loop
+						while variant_cursor /= type_component_variants.no_element loop
 							log (type_component_variant_name.to_string (key (variant_cursor)) -- CS: make function to_string
 								& latin_1.space 
 								& to_string (packge => element (variant_cursor).packge)

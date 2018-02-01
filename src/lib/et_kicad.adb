@@ -1590,7 +1590,7 @@ package body et_kicad is
 
 								bom				=> type_bom'value (content (field_bom)),
 
-								variants_2		=> type_component_variants_2.empty_map
+								variants		=> type_component_variants.empty_map
 								)
 							);
 
@@ -2333,8 +2333,8 @@ package body et_kicad is
 						comp_name	: in type_component_generic_name.bounded_string;
 						component	: in out type_component) is
 
-						use type_component_variants_2;
-						variants : type_component_variants_2.map; -- temporarily used for building the variant
+						use type_component_variants;
+						variants : type_component_variants.map; -- temporarily used for building the variant
 					begin
 						case component.appearance is
 							when sch_pcb =>
@@ -2355,7 +2355,7 @@ package body et_kicad is
 										terminal_port_map => tmp_terminal_port_map)); -- H4/GPIO2
 
 								-- assign package variant to component
-								component.variants_2 := variants;
+								component.variants := variants;
 
 							when others => null;
 						end case;

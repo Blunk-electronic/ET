@@ -209,7 +209,7 @@ package et_libraries is
 	
 	
 	
--- COMPONENTS, PACKAGES, PORTS AND TERMINALS
+-- PORTS
 
 	-- A port is something where a net can be attached to.
 	-- The name of a port represents the function of the port like (A14 or RST_N)
@@ -257,7 +257,6 @@ package et_libraries is
 		INVISIBLE_OUTPUT_LOW,
 		INVISIBLE_FALLING_EDGE_CLK, INVISIBLE_RISING_EDGE_CLK,
 		INVISIBLE_NON_LOGIC);
-
 	
  	port_name_length_max : constant natural := 100;
 	package type_port_name is new generic_bounded_length (port_name_length_max);
@@ -266,22 +265,12 @@ package et_libraries is
 	function to_string (port : in type_port_name.bounded_string) return string;
 	-- Returns the given port name as string.
 
-	-- The name of a terminal may have 10 characters which seems sufficient for now.
- 	terminal_name_length_max : constant natural := 10;
-	package type_terminal_name is new generic_bounded_length (terminal_name_length_max);
-	use type_terminal_name;
-
-	function to_string (terminal : in type_terminal_name.bounded_string) return string;
-	-- Returns the given terminal name as string.
-	
-	-- Initially, at the library level, a port has a name, direction,
-	-- coordinates, orientation, flags for making port and pin name visible. 
-	-- Later, other values are assigned like pin name. CS: set defaults
+	-- Initially, a port has at least a name.
 	type type_port_basic is tagged record
 		name				: type_port_name.bounded_string; -- like CLOCK or CE
 	end record;
 	
-	type type_port is new type_port_basic with record
+	type type_port is new type_port_basic with record 	-- CS: set defaults
 		direction			: type_port_direction; -- example: "passive"
 		style				: type_port_style;
 		coordinates			: type_2d_point; -- there is only x and y
@@ -291,23 +280,24 @@ package et_libraries is
 		terminal_visible	: type_terminal_name_visible;
 		port_name_size		: type_text_size;
 		terminal_name_size	: type_text_size;
-		port_name_offset	: type_distance; -- the clearance between symbol outline and port name -- CS: define a reasonable range
+
+		-- kicad requirement: the clearance between symbol outline and port name 
+		-- CS: define a reasonable range
+		port_name_offset	: type_distance; 
+		
 		-- CS : obsolete ? pin_position_offset ?
 		-- CS: port swap level ?
 	end record;
 
 	-- Ports of a component are collected in a simple list. A list, because multiple ports
-	-- with the same name (but differing pin/pad names) may exist. For example lots of GND
-	-- ports at large ICs.
--- 	package type_ports is new ordered_maps ( 
--- 		key_type => type_port_name.bounded_string, -- like "CLOCK" or "CE"
--- 		element_type => type_port); 
-	package type_ports is new doubly_linked_lists ( 
--- 		key_type => type_port_name.bounded_string, -- like "CLOCK" or "CE"
-		element_type => type_port); 
+	-- with the same name (but differing terminal names) may exist. For example lots of GND
+	-- ports at FPGAs.
+	package type_ports is new doubly_linked_lists (element_type => type_port); 
 
 
-	-- The generic name of a component in the library. 
+	
+-- COMPONENT GENERIC NAMES
+	-- The generic name of a component in the library is something like TRANSISTOR_NPN or RESISTOR
  	component_generic_name_length_max : constant natural := 100;
 	package type_component_generic_name is new generic_bounded_length (component_generic_name_length_max);
 	use type_component_generic_name;
@@ -325,17 +315,21 @@ package et_libraries is
 
 	function strip_tilde (generic_name : in type_component_generic_name.bounded_string) return
 		type_component_generic_name.bounded_string;
-	-- Removes a heading tilde character from a generic component name.
+	-- Kicad requirement: Removes a heading tilde character from a generic component name.
 	-- example: ~TRANSISTOR_NPN becomes TRANSISTOR_NPN
 
 	function prepend_tilde (generic_name : in type_component_generic_name.bounded_string) return
 		type_component_generic_name.bounded_string;
-	-- Prepends a heading tilde character to a generic component name.
+	-- Kicad requirement: Prepends a heading tilde character to a generic component name.
 	-- example: TRANSISTOR_NPN becomes ~TRANSISTOR_NPN
 	
-	function to_string (name_in_library : in type_component_generic_name.bounded_string) return string;
-	-- Returns the given name_in_library as as string.
+	function to_string (generic_name : in type_component_generic_name.bounded_string) return string;
+	-- Returns the given generic name as as string.
 
+
+
+	
+-- COMPONENT VALUES
 	-- The component value is something like 330R or 100n or 74LS00
 	component_value_length_max : constant positive := 50;
 
@@ -359,6 +353,9 @@ package et_libraries is
 	-- Tests if the given value contains only valid characters as specified
 	-- by given character set. Raises exception if invalid character found.
 	
+
+
+-- COMPONENT DATASHEET (kicad requirement)
 	-- For some components (not all !) it is helpful to have an URL to the datasheet.
 	-- We limit the URL to reansonable 500 characters. Excessive Google URLs are thus not allowed.
 	component_datasheet_characters : character_set := 
@@ -375,7 +372,11 @@ package et_libraries is
 	-- Tests if the given URL contains only valid characters as specified
 	-- by given character set. Raises exception if invalid character found.
 
+
+
 	
+
+-- COMPONENT PREFIXES AND REFERENCES
 	-- A component reference (in Eagle "device name") consists of a prefix (like R, C, IC, ..)
 	-- and a consecutive number. Both form something like "IC702"
 	component_prefix_characters : character_set := to_set (span => ('A','Z'));
@@ -423,7 +424,11 @@ package et_libraries is
 	-- Unless a special character set is passed, it defaults to component_reference_characters.
 		reference : in string; -- IC904
 		characters : in character_set := component_reference_characters);
+
+
+
 	
+-- COMPONENT APPEARANCE	
 	type type_component_appearance is ( 
 		sch,		-- a component that exists in the schematic only (like power symbols)
 		sch_pcb,	-- a component that exists in both schematic and soldered on a pcb
@@ -433,22 +438,25 @@ package et_libraries is
 		-- CS: net-ties, netchanger
 		-- ...
 		);
+
+	function to_string (appearance : in type_component_appearance) return string;
+	-- Returns the given component appearance as string.
+
+
 	
+-- COMPONENT VALUES
 	procedure validate_component_value (
 	-- Tests if the given component value meets certain conventions.
 		value 		: in type_component_value.bounded_string;
 		reference	: in type_component_reference;
 		appearance	: in type_component_appearance);
+
+
 	
-	-- PACKAGES AND VARIANTS
+-- COMPONENT PACKAGES
 	-- A component package is something like "SOT32" or "NDIP14". It is a more or less standardized (JEDEC)
 	-- designator for the housing or the case of an electronical component. The package name is independed of
 	-- the actual purpose of a component. An LED can have an SOT23 package and a transistor can also come in an SOT23.
-
-	-- The variant is usually a suffix in a component name, given by its manufacturer. The variant is a manufacturer
-	-- specific abbrevation for the package a component comes with.
-	-- Example: An opamp made by TI can be the type TL084N or TL084D. N means the NDIP14 package
-	-- whereas D means the SO14 package.
 
 	-- component package/footprint names like "SOT23" or "TO220" are stored in bounded strings:
 	component_package_characters : character_set := to_set 
@@ -476,13 +484,30 @@ package et_libraries is
 	
 	procedure validate_component_package_name (name : in type_component_package_name.bounded_string);
 	-- Tests if the given component package name meets certain conventions.
+
+	-- COMPONENT PACKAGE FILTER (kicad requirement)
+	-- If certain packages are to be proposed they are collected in a so called "package filter"
+	package_proposal_length_max : constant positive := 100;
+	package type_package_proposal is new generic_bounded_length (package_proposal_length_max);
+	use type_package_proposal;
+	package type_package_filter is new ordered_sets (type_package_proposal.bounded_string);
+
 	
+
+-- MISCELLANEOUS
 	-- Newly created fields may contain things like "?PARTCODE?" or "?PURPOSE?". For checking their
 	-- content we need this character set:
 	component_initial_field_characters : character_set := to_set 
 		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set('_') or to_set('?'); 
 
-	-- The component partcode is something like "R_PAC_S_0805_VAL_100R_PMAX_125_TOL_5"
+
+
+
+-- COMPONENT PARTCODES
+	-- The component partcode is THE key into the ERP system of the user. It can be a crytic SAP number
+	-- or something human readable like "R_PAC_S_0805_VAL_100R_PMAX_125_TOL_5".
+	-- However, it is up to the user to define the syntax of the partcode. The keywords in the following
+	-- refer the the recommended form like "R_PAC_S_0805_VAL_100R_PMAX_125_TOL_5":
 	component_partcode_characters : character_set := to_set
 		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set('_'); 
 	component_partcode_length_max : constant positive := 100;
@@ -509,8 +534,10 @@ package et_libraries is
 	-- by given character set.
 	-- Raises exception if invalid character found.
 
-	
-	-- Components that require operator interaction like connectors, LEDs or switches must have a purpose assigned.
+
+-- COMPONENT PURPUSE
+	-- Components that require operator interaction like connectors, LEDs or switches 
+	-- MUST have a purpose assigned.
 	-- Example: The purpose of connector X44 is "power in". The purpose of LED5 is "system fail":
 	component_initial_purpose_characters : character_set := 
 		component_initial_field_characters or to_set(' '); 
@@ -539,6 +566,9 @@ package et_libraries is
 	-- by given character set.
 	-- Raises exception if invalid character found.
 
+	
+
+-- COMPONENT COMMISSION AND UPDATE DATE
 	component_date_characters : character_set := to_set (span => ('0','9')) or to_set ("-:T");
 	component_date_length : constant positive := 19; -- "2017-08-17T14:17:25" -- CS: probably way to accurate
 	type type_component_date is new string (1..component_date_length); 
@@ -565,6 +595,10 @@ package et_libraries is
 	-- by given character set.
 	-- Raises exception if invalid character found.
 
+
+
+
+-- COMPONENT AUTHOR
 	component_author_characters : character_set := to_set (span => ('A','Z')) or to_set (" -");
 	component_author_length_max : constant positive := 20;
 	package type_component_author is new generic_bounded_length (component_author_length_max);
@@ -581,29 +615,8 @@ package et_libraries is
 	-- by given character set.
 	-- Raises exception if invalid character found.
 
-	
-	-- VARIANT NAMES
-	-- If a component has package variants, a suffix after the component type indicates the package
-	-- The variant name is manufacturer specific. example: TL084D or TL084N
-	-- component package variant names like "N" or "D" are stored in short bounded strings:
-	component_variant_characters : character_set := to_set (span => ('A','Z')) or to_set ("-");
-	component_variant_name_length_max : constant positive := 10;
-	package type_component_variant_name is new generic_bounded_length (component_variant_name_length_max);
-	use type_component_variant_name;
 
-	component_variant_default : constant type_component_variant_name.bounded_string := type_component_variant_name.to_bounded_string ("default");
-	
--- 	function to_string (variant : in type_component_variant) return string;
-	-- Returns the given variant as string.
-	-- NOTE: This displays the type_component_variant (see et_libraries.ads).
-	-- Do not confuse with type_variant (see et_schematic.ads) which also contains the variant name
-	-- like in TL084D or TL084N.
 
-	-- If certain packages are to be proposed they are collected in a so called "package filter"
-	package_proposal_length_max : constant positive := 100;
-	package type_package_proposal is new generic_bounded_length (package_proposal_length_max);
-	use type_package_proposal;
-	package type_package_filter is new ordered_sets (type_package_proposal.bounded_string);
 
 	
 	
@@ -716,9 +729,6 @@ package et_libraries is
 	type type_symbol_text is new type_text (meaning => misc) with null record;
 	package type_symbol_texts is new doubly_linked_lists (element_type => type_symbol_text);
 
-	function to_string (appearance : in type_component_appearance) return string;
-	-- Returns the given component appearance as string.
-	
 	type type_symbol (appearance : type_component_appearance) is record
 		shapes		: type_shapes; -- the collection of shapes
 		texts		: type_symbol_texts.list; -- the collection of texts (meaning misc)
@@ -838,10 +848,47 @@ package et_libraries is
 		value 		: in type_component_value.bounded_string; 			-- 100R
 		bom			: in type_bom);	-- YES, NO
 
-	
--- COMPONENTS
 
-	-- PACKAGE VARIANT HANDLING
+
+	
+-- TERMINALS
+	-- A terminal is where electrical energy is fed in or provided by a component.
+	-- Other CAE systems refer to "pins" or "pads". In order to use only a single word
+	-- we furhter-on speak about "terminals".
+	-- The name of a terminal may have 10 characters which seems sufficient for now.
+ 	terminal_name_length_max : constant natural := 10;
+	package type_terminal_name is new generic_bounded_length (terminal_name_length_max);
+	use type_terminal_name;
+
+	function to_string (terminal : in type_terminal_name.bounded_string) return string;
+	-- Returns the given terminal name as string.
+
+
+	
+	
+-- COMPONENT VARIANTS
+	-- The variant is usually a suffix in a component value, given by its manufacturer. The variant is a manufacturer
+	-- specific abbrevation for the package a component comes with.
+	-- Example: An opamp made by TI can be the type TL084N or TL084D. N means the NDIP14 package
+	-- whereas D means the SO14 package.
+	-- If a component has package variants, a suffix after the component type indicates the package
+	-- The variant name is manufacturer specific. example: TL084D or TL084N
+	-- component package variant names like "N" or "D" are stored in short bounded strings:
+	component_variant_characters : character_set := to_set (span => ('A','Z')) or to_set ("-");
+	component_variant_name_length_max : constant positive := 10;
+	package type_component_variant_name is new generic_bounded_length (component_variant_name_length_max);
+	use type_component_variant_name;
+
+	component_variant_default : constant type_component_variant_name.bounded_string := type_component_variant_name.to_bounded_string ("default");
+
+	-- CS procedure check_variant_characters
+	
+-- 	function to_string (variant : in type_component_variant) return string;
+	-- Returns the given variant as string.
+	-- NOTE: This displays the type_component_variant (see et_libraries.ads).
+	-- Do not confuse with type_variant (see et_schematic.ads) which also contains the variant name
+	-- like in TL084D or TL084N.
+
 	type type_port_in_terminal_port_map is new type_port_basic with record
 		unit	: type_unit_name.bounded_string;
 	end record;
@@ -850,15 +897,15 @@ package et_libraries is
 		key_type => type_terminal_name.bounded_string, -- H7, 14
 		element_type => type_port_in_terminal_port_map); -- unit A, OE1
 
-	type type_component_variant_2 is record
+	type type_component_variant is record
 		packge	: type_component_package_name.bounded_string; -- SOT23
 		library	: type_full_library_name.bounded_string; -- projects/lbr/smd_packages.pac
 		terminal_port_map : type_terminal_port_map.map;
 	end record;
 
-	package type_component_variants_2 is new ordered_maps (
+	package type_component_variants is new ordered_maps (
 		key_type => type_component_variant_name.bounded_string, -- D, N
-		element_type => type_component_variant_2);
+		element_type => type_component_variant);
 
 	type type_terminal is record
 		name	: type_terminal_name.bounded_string; -- H7
@@ -867,10 +914,12 @@ package et_libraries is
 	end record;
 
 
-
-	
+-- POWER FLAGS (kicad requirement)
 	type type_power_flag is (YES, NO);
 
+
+
+-- COMPONENTS
 	type type_component (appearance : type_component_appearance) is record
 		prefix			: type_component_prefix.bounded_string; -- R, C, IC, ...
 		value			: type_component_value.bounded_string; -- 74LS00
@@ -900,7 +949,7 @@ package et_libraries is
 				partcode	: type_component_partcode.bounded_string;
 				bom			: type_bom;
 
-				variants_2	: type_component_variants_2.map;
+				variants	: type_component_variants.map;
 				
 			when others => null; -- CS
 		end case;
@@ -922,6 +971,7 @@ package et_libraries is
 	-- procedure write_component_properties (component : in type_components.cursor);
 	-- Writes the properties of the component indicated by the given cursor.
 
+	-- LIBRARIES
 	package type_libraries is new ordered_maps (
 		key_type => type_full_library_name.bounded_string,
 		element_type => type_components.map);
@@ -944,7 +994,7 @@ package et_libraries is
 	-- Returns the cursor to the first port of the given unit
 		unit_cursor : in type_units_internal.cursor)
 		return type_ports.cursor;
-
+	
 	procedure no_generic_model_found (
 		reference : in type_component_reference; -- IC303
 		library : in type_full_library_name.bounded_string; -- ../lib/xilinx.lib

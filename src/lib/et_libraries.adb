@@ -203,12 +203,12 @@ package body et_libraries is
 		end if;
 	end prepend_tilde;
 	
-	function to_string (name_in_library : in type_component_generic_name.bounded_string) return string is
-	-- Returns the given name_in_library as as string.
-	-- CS: provide a parameter that turns the pretext like "name in library" on/off
+	function to_string (generic_name : in type_component_generic_name.bounded_string) return string is
+	-- Returns the given generic name as as string.
+	-- CS: provide a parameter that turns the pretext like "generic name" on/off
 	begin
-		--return ("name in library " & type_component_generic_name.to_string(name_in_library));
-		return (type_component_generic_name.to_string(name_in_library));
+		--return ("generic name " & type_component_generic_name.to_string (name_in_library));
+		return (type_component_generic_name.to_string (generic_name));
 	end to_string;
 
 	function to_string (partcode : in type_component_partcode.bounded_string) return string is
@@ -1473,7 +1473,7 @@ package body et_libraries is
 			if unit_cursor = type_units_internal.no_element then
 				log_indentation_reset;
 				log (message_error & "generic component " 
-						& to_string (name_in_library => type_components.key (component_cursor)) 
+						& to_string (generic_name => type_components.key (component_cursor)) 
 						& " has no units !",
 					console => true);
 				raise constraint_error;
