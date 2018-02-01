@@ -137,11 +137,36 @@ package body et_libraries is
 		return type_terminal_name.to_string (terminal);
 	end to_string;
 
+	procedure check_variant_name_characters (
+		variant		: in type_component_variant_name.bounded_string;
+		characters	: in character_set := component_variant_name_characters) is
+	-- Tests if the given variant name contains only valid characters as specified
+	-- by given character set.
+	-- Raises exception if invalid character found.
+		use et_string_processing;
+		invalid_character_position : natural := 0;
+	begin
+		-- Test given generic name and get position of possible invalid characters.
+		invalid_character_position := index (
+			source => variant,
+			set => characters,
+			test => outside);
+
+		-- Evaluate position of invalid character.
+		if invalid_character_position > 0 then
+			log_indentation_reset;
+			log (message_error & "invalid character in variant name '" 
+				& to_string (variant) & "' at position" & natural'image (invalid_character_position),
+				console => true);
+			raise constraint_error;
+		end if;
+	end check_variant_name_characters;
+
+	
 	procedure check_generic_name_characters (
 	-- Checks if the given generic component name meets certain conventions.
 		name : in type_component_generic_name.bounded_string; -- TRANSISTOR_NPN
-		characters : in character_set := component_generic_name_characters)
-		is
+		characters : in character_set := component_generic_name_characters) is
 
 		use et_string_processing;
 		invalid_character_position : natural := 0;
@@ -161,8 +186,7 @@ package body et_libraries is
 			log_indentation_reset;
 			log (message_error & "invalid character in generic component name '" 
 				& to_string (name) & "' at position" & natural'image (invalid_character_position),
-				console => true
-				);
+				console => true);
 			raise constraint_error;
 		end if;
 	end check_generic_name_characters;
@@ -1212,7 +1236,7 @@ package body et_libraries is
 	end to_string;
 		
 
-	procedure check_package_length (packge : in string) is
+	procedure check_package_name_length (packge : in string) is
 	-- Tests if the given package is longer than allowed.
 		use et_string_processing;
 	begin
@@ -1223,11 +1247,11 @@ package body et_libraries is
 				console => true);
 			raise constraint_error;
 		end if;
-	end check_package_length;
+	end check_package_name_length;
 
-	procedure check_package_characters (
+	procedure check_package_name_characters (
 		packge		: in type_component_package_name.bounded_string;
-		characters	: in character_set := component_package_characters)
+		characters	: in character_set := component_package_name_characters)
 		is
 	-- Tests if the given package name contains only valid characters as specified
 	-- by given character set.
@@ -1250,7 +1274,7 @@ package body et_libraries is
 				);
 			raise constraint_error;
 		end if;
-	end check_package_characters;
+	end check_package_name_characters;
 	
 	procedure validate_component_package_name (name : in type_component_package_name.bounded_string) is
 	-- Tests if the given component package name meets certain conventions.
@@ -1267,7 +1291,7 @@ package body et_libraries is
 			
 	begin
 		if length (name) > 0 then
-			check_package_characters (name, component_package_characters);
+			check_package_name_characters (name, component_package_name_characters);
 		else
 			no_package;
 		end if;

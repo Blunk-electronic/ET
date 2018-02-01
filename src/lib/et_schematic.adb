@@ -4765,7 +4765,7 @@ package body et_schematic is
 		log_threshold 	: in et_string_processing.type_log_level) -- see et_libraries spec
 		return type_terminal is -- see et_libraries spec
 	-- Returns the terminal and unit name of the given port in a composite type.
-	-- Requies module_cursor (global variable) to point to the current module.
+	-- Requires module_cursor (global variable) to point to the current module.
 
 	-- NOTE: In contrast to Kicad, the terminal name is stored in a package variant. The package variant in
 	-- turn is maintained in the symbol component library.

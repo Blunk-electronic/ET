@@ -303,7 +303,7 @@ package et_kicad is
 
 	-- Kicad combines the library and package/footprint name in a single string like bel_capacitors:S_0805
 	-- Therefore the character set used here includes the colon additionally.
-	component_package_characters : character_set := et_libraries.component_package_characters or to_set (':');
+	component_package_name_characters : character_set := et_libraries.component_package_name_characters or to_set (':');
 
 	-- In the library a component name may have a tilde. Therefore we extend the standard character set by a tilde.
 	component_generic_name_characters : character_set := et_libraries.component_generic_name_characters or to_set ('~');

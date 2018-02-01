@@ -690,6 +690,12 @@ package et_schematic is
 	-- Returns true if left comes before right. Compares by component reference and port name.
 	-- If left equals right, the return is false.	
 
+	function to_terminal (
+		port 			: in type_port_with_reference; -- see et_schematic spec
+		log_threshold 	: in et_string_processing.type_log_level) -- see et_libraries spec
+		return type_terminal; -- see et_libraries spec
+	-- Returns the terminal and unit name of the given port in a composite type.
+	
 	-- This is a set of ports as we need in the netlist.
 	package type_ports_with_reference is new ordered_sets (
 		element_type => type_port_with_reference,
@@ -906,7 +912,7 @@ package et_schematic is
 	-- Addresses ALL components both virtual and real. Virtual components are things like GND or VCC symbols.
 	-- Virtual components are filtered out on exporting the netlist in a file.
 	-- Bases on the portlists and nets/strands information of the module.
-	
+
 	procedure export_netlists (log_threshold : in et_string_processing.type_log_level);
 	-- Exports/Writes the netlists of the rig in separate files.
 	-- Netlists are exported in individual project directories in the work directory of ET.

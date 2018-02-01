@@ -459,7 +459,7 @@ package et_libraries is
 	-- the actual purpose of a component. An LED can have an SOT23 package and a transistor can also come in an SOT23.
 
 	-- component package/footprint names like "SOT23" or "TO220" are stored in bounded strings:
-	component_package_characters : character_set := to_set 
+	component_package_name_characters : character_set := to_set 
 		(ranges => (('a','z'),('A','Z'),('0','9'))) 
 		or to_set('.')
 		or to_set('_'); 
@@ -472,12 +472,12 @@ package et_libraries is
 	-- Returns the given package name as as string.
 	-- CS: provide a parameter that turns the preamble on/off
 
-	procedure check_package_length (packge : in string);
+	procedure check_package_name_length (packge : in string);
 	-- Tests if the given package name is longer than allowed.
 	
-	procedure check_package_characters (
+	procedure check_package_name_characters (
 		packge		: in type_component_package_name.bounded_string;
-		characters	: in character_set := component_package_characters);
+		characters	: in character_set := component_package_name_characters);
 	-- Tests if the given package name contains only valid characters as specified
 	-- by given character set.
 	-- Raises exception if invalid character found.
@@ -492,7 +492,31 @@ package et_libraries is
 	use type_package_proposal;
 	package type_package_filter is new ordered_sets (type_package_proposal.bounded_string);
 
-	
+-- 	type type_package_technology is (
+-- 		THT,		-- Through Hole Technology
+-- 		SMT,		-- Surface Mount Technology
+-- 		THT_SMT		-- mixed THT & SMT
+-- 		);
+
+-- 	type type_connector_gender is (UNKNOWN, FEMALE, MALE);
+
+	--type type_component_package (technology : type_package_technology) is record
+	--type type_component_package (category : type_component_category) is record
+	type type_component_package is record
+		name : type_component_package_name.bounded_string; -- S_SOT23
+		terminal_count : positive;
+-- 		case technology is
+-- 			when THT => 
+-- 				pad_tht_count : positive; -- 14 for a NDIP14 package
+-- 
+-- 			when SMT => 
+-- 				pad_smt_count : positive; -- 3 for a S_SOT23 package
+-- 
+-- 			when THT_SMT => 
+-- 				pad_tht_count : positive; -- 8 for heat dissipation
+-- 				pad_smt_count : positive; -- 32 for a TSSOP32 package
+-- 		end case;
+	end record;
 
 -- MISCELLANEOUS
 	-- Newly created fields may contain things like "?PARTCODE?" or "?PURPOSE?". For checking their
@@ -874,15 +898,21 @@ package et_libraries is
 	-- If a component has package variants, a suffix after the component type indicates the package
 	-- The variant name is manufacturer specific. example: TL084D or TL084N
 	-- component package variant names like "N" or "D" are stored in short bounded strings:
-	component_variant_characters : character_set := to_set (span => ('A','Z')) or to_set ("-");
+	component_variant_name_characters : character_set := to_set (span => ('A','Z')) or to_set ("-");
 	component_variant_name_length_max : constant positive := 10;
 	package type_component_variant_name is new generic_bounded_length (component_variant_name_length_max);
 	use type_component_variant_name;
 
-	component_variant_default : constant type_component_variant_name.bounded_string := type_component_variant_name.to_bounded_string ("default");
-
-	-- CS procedure check_variant_characters
+	component_variant_name_default : constant type_component_variant_name.bounded_string := type_component_variant_name.to_bounded_string ("default");
 	
+	procedure check_variant_name_characters (
+		variant		: in type_component_variant_name.bounded_string;
+		characters	: in character_set := component_variant_name_characters);
+	-- Tests if the given variant name contains only valid characters as specified
+	-- by given character set.
+	-- Raises exception if invalid character found.
+
+		
 -- 	function to_string (variant : in type_component_variant) return string;
 	-- Returns the given variant as string.
 	-- NOTE: This displays the type_component_variant (see et_libraries.ads).
@@ -898,7 +928,8 @@ package et_libraries is
 		element_type => type_port_in_terminal_port_map); -- unit A, OE1
 
 	type type_component_variant is record
-		packge	: type_component_package_name.bounded_string; -- SOT23
+		packge	: type_component_package_name.bounded_string; -- S_SOT23
+		-- CS packge	: type_component_package;
 		library	: type_full_library_name.bounded_string; -- projects/lbr/smd_packages.pac
 		terminal_port_map : type_terminal_port_map.map;
 	end record;
@@ -943,13 +974,12 @@ package et_libraries is
 			-- If a component appears in both schematic and layout it comes 
 			-- with at least one package/footprint variant. We store variants in a map.
 			when sch_pcb => 
-				package_filter : type_package_filter.set := type_package_filter.empty_set; -- kicad requirement
-				datasheet	: type_component_datasheet.bounded_string;
-				purpose		: type_component_purpose.bounded_string;
-				partcode	: type_component_partcode.bounded_string;
-				bom			: type_bom;
-
-				variants	: type_component_variants.map;
+				package_filter	: type_package_filter.set := type_package_filter.empty_set; -- kicad requirement
+				datasheet		: type_component_datasheet.bounded_string; -- kicad requirement
+				purpose			: type_component_purpose.bounded_string;
+				partcode		: type_component_partcode.bounded_string;
+				bom				: type_bom;
+				variants		: type_component_variants.map;
 				
 			when others => null; -- CS
 		end case;

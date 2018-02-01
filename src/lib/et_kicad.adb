@@ -1282,10 +1282,10 @@ package body et_kicad is
 							datasheet => type_component_datasheet.to_bounded_string (content (text)));
 						
 					when PACKGE =>
-						check_package_length (content (text));
-						check_package_characters (
+						check_package_name_length (content (text));
+						check_package_name_characters (
 							packge => type_component_package_name.to_bounded_string (content (text)),
-							characters => et_kicad.component_package_characters);
+							characters => et_kicad.component_package_name_characters);
 
 					when PURPOSE =>
 						check_purpose_length (content (text));
@@ -2341,7 +2341,7 @@ package body et_kicad is
 
 								insert (
 									container => variants,
-									key => component_variant_default, -- because kicad does not know package variants
+									key => component_variant_name_default, -- because kicad does not know package variants
 									new_item => (
 										-- The package field contains something like "bel_ic:S_SO14".
 										-- This provides the library name and the package name.
@@ -5592,10 +5592,10 @@ package body et_kicad is
 							when component_field_package =>
 								field_package_found := true;
 								field_package := to_field;
-								check_package_length (content (field_package));
-								check_package_characters (
+								check_package_name_length (content (field_package));
+								check_package_name_characters (
 									packge => type_component_package_name.to_bounded_string (content (field_package)),
-									characters => et_kicad.component_package_characters);
+									characters => et_kicad.component_package_name_characters);
 								
 							when component_field_datasheet =>
 								field_datasheet_found := true;

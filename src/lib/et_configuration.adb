@@ -291,10 +291,8 @@ package body et_configuration is
 	procedure compare_terminals (
 		module_A		: in et_coordinates.type_submodule_name.bounded_string;
 		reference_A		: in et_libraries.type_component_reference;
-		variant_A		: in et_libraries.type_component_variant_name.bounded_string;
 		module_B		: in et_coordinates.type_submodule_name.bounded_string;
 		reference_B		: in et_libraries.type_component_reference;
-		variant_B		: in et_libraries.type_component_variant_name.bounded_string;
 		log_threshold	: in type_log_level) is
 	begin
 		log ("comparing terminals ...", log_threshold);
@@ -355,9 +353,10 @@ package body et_configuration is
 			reference_B := to_connector_reference (module_B.name, purpose_B, log_threshold + 2);
 			log ("reference B " & to_string (reference_B), log_threshold + 1);
 
-			-- CS compare terminals (via package variant)
--- 			compare_terminals (module_A.name, reference_A, variant_A, 
--- 							   module_B.name, reference_B, variant_B, log_threshold + 1);
+			-- CS compare terminals
+			compare_terminals (module_A.name, reference_A,
+							   module_B.name, reference_B,
+							   log_threshold + 1);
 			
 			-- compare net names (via module.netlist)
 			compare_nets (module_A.name, reference_A, module_B.name, reference_B, log_threshold + 1);
