@@ -235,7 +235,7 @@ package et_libraries is
 		preamble	: in boolean := true) return string;
 	-- Returns the given port direction as string.
 
-	type type_port_name_visible is (ON, OFF); -- CS rename to type_port_name_visible
+	type type_port_name_visible is (ON, OFF);
 	type type_terminal_name_visible is (ON, OFF);
 
 	type type_port_style is ( -- CS: find a better name
@@ -288,9 +288,9 @@ package et_libraries is
 		length				: type_port_length;
 		orientation			: type_angle;
 		port_name_visible	: type_port_name_visible;
-		pin_name_visible	: type_terminal_name_visible; -- CS rename to terminal_name_visible
+		terminal_visible	: type_terminal_name_visible;
 		port_name_size		: type_text_size;
-		pin_name_size		: type_text_size; -- CS rename to terminal_name_size
+		terminal_name_size	: type_text_size;
 		port_name_offset	: type_distance; -- the clearance between symbol outline and port name -- CS: define a reasonable range
 		-- CS : obsolete ? pin_position_offset ?
 		-- CS: port swap level ?
@@ -855,18 +855,18 @@ package et_libraries is
 -- COMPONENTS
 
 	-- PACKAGE VARIANT HANDLING
-	type type_port_in_port_terminal_map is new type_port_basic with record -- CS rename to type_port_in_terminal_port_map
+	type type_port_in_terminal_port_map is new type_port_basic with record
 		unit	: type_unit_name.bounded_string;
 	end record;
 	
-	package type_port_terminal_map is new ordered_maps ( -- CS rename to type_terminal_port_map
+	package type_terminal_port_map is new ordered_maps (
 		key_type => type_terminal_name.bounded_string, -- H7, 14
-		element_type => type_port_in_port_terminal_map); -- unit A, OE1
+		element_type => type_port_in_terminal_port_map); -- unit A, OE1
 
 	type type_component_variant_2 is record
 		packge	: type_component_package_name.bounded_string; -- SOT23
 		library	: type_full_library_name.bounded_string; -- projects/lbr/smd_packages.pac
-		port_terminal_map : type_port_terminal_map.map; -- rename to terminal_port_map
+		terminal_port_map : type_terminal_port_map.map;
 	end record;
 
 	package type_component_variants_2 is new ordered_maps (
@@ -874,9 +874,9 @@ package et_libraries is
 		element_type => type_component_variant_2);
 
 	type type_terminal is record
-		name	: type_terminal_name.bounded_string;
-		unit	: type_unit_name.bounded_string;
-		port	: type_port_name.bounded_string;
+		name	: type_terminal_name.bounded_string; -- H7
+		unit	: type_unit_name.bounded_string; -- IO-BANK1
+		port	: type_port_name.bounded_string; -- GPIO3
 	end record;
 
 

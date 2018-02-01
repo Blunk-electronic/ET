@@ -652,7 +652,7 @@ package body et_kicad is
 			tmp_draw_text		: type_symbol_text;
 			tmp_draw_port		: type_port;
 
-			tmp_port_terminal_map : type_port_terminal_map.map;
+			tmp_terminal_port_map : type_terminal_port_map.map;
 			
 			procedure init_temp_variables is
 			-- Resets "field found flags".
@@ -673,7 +673,7 @@ package body et_kicad is
 				field_partcode_found		:= false;
 				field_bom_found				:= false;
 
-				type_port_terminal_map.clear (tmp_port_terminal_map);
+				type_terminal_port_map.clear (tmp_terminal_port_map);
 			end init_temp_variables;
 
 			function to_swap_level (swap_in : in string)
@@ -1198,8 +1198,8 @@ package body et_kicad is
 				-- compose orientation
 				-- CS: port.orientation	:= type_library_pin_orientation
 
-				-- port and pin name text size
-				port.pin_name_size	:= mil_to_distance (mil => field (line,8), warn_on_negative => false);
+				-- port and termnal name text size
+				port.terminal_name_size := mil_to_distance (mil => field (line,8), warn_on_negative => false);
 				port.port_name_size	:= type_text_size'value (field (line,9));
 
 				-- direction
@@ -1212,7 +1212,7 @@ package body et_kicad is
 
 				-- visibility port and pin names
 				port.port_name_visible	:= tmp_port_name_visible;
-				port.pin_name_visible	:= tmp_terminal_name_visible;
+				port.terminal_visible	:= tmp_terminal_name_visible;
 
 				-- port name offset
 				port.port_name_offset	:= tmp_port_name_offset;
@@ -1756,8 +1756,8 @@ package body et_kicad is
 							pos := 190;
 							unit.symbol.ports.append (tmp_draw_port);
 
-							type_port_terminal_map.insert (
-								container => tmp_port_terminal_map,
+							type_terminal_port_map.insert (
+								container => tmp_terminal_port_map,
 								key => tmp_terminal_name, -- terminal name
 								new_item => (
 									name => tmp_draw_port.name, -- port name
@@ -2324,7 +2324,7 @@ package body et_kicad is
 		
 
 			procedure build_package_variant is
-			-- Builds from tmp_port_terminal_map and field_package the default package variant.
+			-- Builds from tmp_terminal_port_map and field_package the default package variant.
 			-- NOTE: Since kicad does not know package variants, we can only build the
 			-- one and only DEFAULT variant.
 				
@@ -2353,9 +2353,9 @@ package body et_kicad is
 										-- We compose the full library name from lib_dir (global variable) and the library name.
 										library => to_full_library_name (lib_dir, library_name (content (field_package))), -- projects/lbr/bel_ic.pac
 
-										-- The terminal to port map tmp_port_terminal_map is now finally copied
+										-- The terminal to port map tmp_terminal_port_map is now finally copied
 										-- to its final destination:
-										port_terminal_map => tmp_port_terminal_map)); -- H4/GPIO2
+										terminal_port_map => tmp_terminal_port_map)); -- H4/GPIO2
 
 								-- assign package variant to component
 								component.variants_2 := variants;
@@ -2492,7 +2492,7 @@ package body et_kicad is
 								-- The placeholder properties apply for all units.
 								set_text_placeholder_properties (component_libraries);
 
-								-- If this is a real component, build package variant from tmp_port_terminal_map
+								-- If this is a real component, build package variant from tmp_terminal_port_map
 								if tmp_appearance = sch_pcb then
 									build_package_variant;
 								end if;

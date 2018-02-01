@@ -1270,9 +1270,7 @@ package body et_schematic is
 								new_item => (
 
 									-- library defined properites:
-									--port		=> key (port_cursor), -- the port name
-									port		=> element (port_cursor).name, -- the port name
-									--pin			=> element (port_cursor).pin, -- the pin name
+									name		=> element (port_cursor).name, -- the port name like GPIO4
 									direction	=> element (port_cursor).direction, -- the port direction
 
 									-- Set the power_flag status (by taking it from the schematic component begin processed).
@@ -1300,9 +1298,7 @@ package body et_schematic is
 								new_item => (
 
 									-- library defined properites:
-									--port		=> key (port_cursor), -- the port name
-									port		=> element (port_cursor).name, -- the port name
-									--pin			=> element (port_cursor).pin, -- the pin name
+									name		=> element (port_cursor).name, -- the port name like GPIO4
 									direction	=> element (port_cursor).direction, -- the port direction
 
 									-- This port does not belong to a power_flag, because real components can never be.
@@ -1928,23 +1924,20 @@ package body et_schematic is
 								-- because power out ports are allowed in global strands exclusively !
 								if et_schematic.anonymous (element (strand).name) then
 									log ("component " & et_libraries.to_string (key (component)) 
-										--& " pin " & to_string (element (port).pin)
-										& " port name " & to_string (element (port).port) 
+										& " port name " & to_string (element (port).name) 
 										& " is a power output -> port name sets strand name", log_threshold + 2);
 
 									-- rename strand
 									et_schematic.rename_strands (
 										name_before => element (strand).name,
-										name_after => to_net_name (element (port).port),
+										name_after => to_net_name (element (port).name),
 										log_threshold => log_threshold + 3);
 
 								elsif element (strand).scope /= global then -- strand has a name and is local or hierarchic
 							
 										log_indentation_reset;
 										log (message_error & "component " & et_libraries.to_string (key (component)) 
-											 --& " POWER OUT pin " & to_string (element (port).pin)
-											& " POWER OUT port " & to_string (element (port).port) 
-											--& " port name " & to_string (element (port).port) 
+											& " POWER OUT port " & to_string (element (port).name) 
 											& latin_1.lf
 											& "at " & to_string (element (port).coordinates, module)
 											& latin_1.lf
@@ -2999,12 +2992,8 @@ package body et_schematic is
 		if compare_reference (left.reference, right.reference) then
 			result := true;
 
--- 		-- If equal references, compare pin names
--- 		elsif type_terminal_name.">" (left.pin, right.pin) then
--- 			result := true;
-
 		-- If equal pin names, compare port names -- CS: should never happen. raise alarm ?
-		elsif type_port_name.">" (left.port, right.port) then
+		elsif type_port_name.">" (left.name, right.name) then
 			result := true;
 			
 		else
@@ -3933,7 +3922,7 @@ package body et_schematic is
 					-- search the portlist but skip the port of origin
 					while port_cursor_secondary /= type_ports.no_element loop
 						if port_cursor_secondary /= port_cursor then -- skip original port
-							if element (port_cursor_secondary).port = element (port_cursor).port then
+							if element (port_cursor_secondary).name = element (port_cursor).name then
 
 								if 	element (port_cursor_secondary).intended_open = false and
 									element (port_cursor_secondary).connected = YES then
@@ -4306,7 +4295,7 @@ package body et_schematic is
 			
 					-- log reference, port and direction (all in one line)
 					log ("reference " & to_string (element (port_cursor).reference)
-						& " port " & to_string (element (port_cursor).port)
+						& " port " & to_string (element (port_cursor).name)
 						& to_string (element (port_cursor).direction, preamble => true),
 						log_threshold + 3);
 
@@ -4618,8 +4607,7 @@ package body et_schematic is
 								
 										log_indentation_up;
 										log ("probing " & to_string (component) 
-											--& " pin/pad " & to_string (element (port_cursor).pin)
-											& " port " & to_string (element (port_cursor).port)
+											& " port " & to_string (element (port_cursor).name)
 											& latin_1.space
 											& to_string (position => element (port_cursor).coordinates, scope => et_coordinates.module),
 											log_threshold + 5);
@@ -4629,8 +4617,7 @@ package body et_schematic is
 											log_indentation_up;
 										
 											log ("connected with " & to_string (component) 
-												 --	& " pin/pad " & to_string (element (port_cursor).pin)
-												& " port " & to_string (element (port_cursor).port)
+												& " port " & to_string (element (port_cursor).name)
 												& latin_1.space
 												& to_string (position => element (port_cursor).coordinates, scope => et_coordinates.module),
 												log_threshold + 3);
@@ -4828,16 +4815,16 @@ package body et_schematic is
 					procedure locate_terminal (
 						variant_name 	: in type_component_variant_name.bounded_string;
 						variant 		: in type_component_variant_2) is
-						use type_port_terminal_map;
+						use type_terminal_port_map;
 						use type_port_name;
-						terminal_cursor : type_port_terminal_map.cursor := variant.port_terminal_map.first;
+						terminal_cursor : type_terminal_port_map.cursor := variant.terminal_port_map.first;
 						terminal_found : boolean := false;
 					begin
 						-- Search in terminal_port_map for the given port name.
 						-- On first match load the terminal which is a composite of
 						-- terminal name and unit name (see spec of type_port_in_port_terminal_map)
-						while terminal_cursor /= type_port_terminal_map.no_element loop
-							if element (terminal_cursor).name = port.port then
+						while terminal_cursor /= type_terminal_port_map.no_element loop
+							if element (terminal_cursor).name = port.name then
 								terminal.name := key (terminal_cursor); -- to be returned
 								terminal.unit := element (terminal_cursor).unit; -- to be returned
 								terminal.port := element (terminal_cursor).name; -- to be returned
@@ -4958,7 +4945,7 @@ package body et_schematic is
 	
 	begin -- to_terminal
 		log ("locating terminal for " & to_string (port.reference) 
-			& " port " & to_string (port.port) & " ...", log_threshold);
+			& " port " & to_string (port.name) & " ...", log_threshold);
 		log_indentation_up;
 		
 		query_element (

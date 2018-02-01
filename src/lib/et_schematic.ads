@@ -659,7 +659,7 @@ package et_schematic is
 	
 	-- For portlists and netlists we need a component port with its basic elements:
 	type type_port is tagged record -- CS: use a controlled type since some selectors do not apply for virtual ports
-		port			: type_port_name.bounded_string; -- the port name like GPIO1, GPIO2 -- CS: rename to "name"
+		name			: type_port_name.bounded_string; -- the port name like GPIO1, GPIO2
 		coordinates 	: type_coordinates;
 		direction		: type_port_direction; -- example: "passive"
 		style			: type_port_style;
