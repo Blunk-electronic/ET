@@ -861,7 +861,7 @@ package et_libraries is
 
 	
 	package type_port_terminal_map is new ordered_maps ( -- CS rename to type_terminal_port_map
-		key_type => type_terminal_name.bounded_string, -- GND
+		key_type => type_terminal_name.bounded_string, -- H7, 14
 		element_type => type_port_in_port_terminal_map); -- unit A, OE1
 
 	type type_component_variant_2 is record
@@ -874,7 +874,11 @@ package et_libraries is
 		key_type => type_component_variant_name.bounded_string, -- D, N
 		element_type => type_component_variant_2);
 
-
+	type type_terminal is record
+		name	: type_terminal_name.bounded_string;
+		unit	: type_unit_name.bounded_string;
+		port	: type_port_name.bounded_string;
+	end record;
 
 
 

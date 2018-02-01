@@ -4773,6 +4773,204 @@ package body et_schematic is
 		log_indentation_down;
 	end make_netlists;
 
+	function to_terminal (
+		port 			: in type_port_with_reference; -- see et_schematic spec
+		log_threshold 	: in et_string_processing.type_log_level) -- see et_libraries spec
+		return type_terminal is -- see et_libraries spec
+	-- Returns the terminal and unit name of the given port in a composite type.
+	-- Requies module_cursor (global variable) to point to the current module.
+
+	-- NOTE: In contrast to Kicad, the terminal name is stored in a package variant. The package variant in
+	-- turn is maintained in the symbol component library.
+	-- General workflow:
+	-- 1. The given port provides the component reference like IC34
+	-- 2. look up IC34 in module.components
+	-- 3. get library name where the symbol is stored in, generic name like 7400, package name like S_SOT23
+	-- 4. look up the library, locate 7400 in library
+	-- 5. get package variant
+	-- 6. look up given port name and return terminal/unit name
+
+		use type_rig;
+		use et_string_processing;
+		terminal : type_terminal; -- to be returned
+
+		procedure locate_component_in_schematic (
+			module_name : in type_submodule_name.bounded_string;
+			module		: in type_module) is
+			use type_components;
+		
+			component_cursor: type_components.cursor;
+			
+			library_name	: type_full_library_name.bounded_string;
+			generic_name	: type_component_generic_name.bounded_string;
+			package_name	: type_component_package_name.bounded_string;
+
+			use type_libraries;
+			library_cursor	: type_libraries.cursor;
+
+			procedure locate_component_in_library (
+				library_name 	: in type_full_library_name.bounded_string;
+				components 		: in et_libraries.type_components.map) is
+				use et_libraries.type_components;
+
+				component_cursor : et_libraries.type_components.cursor;
+
+				procedure query_variants (
+				-- Looks up the list of variants of the component.
+					name 		: in et_libraries.type_component_generic_name.bounded_string;
+					component 	: in et_libraries.type_component) is
+					use type_component_variants_2;
+					use type_component_package_name;
+
+					variant_cursor : et_libraries.type_component_variants_2.cursor;
+					variant_found : boolean := false;
+
+					procedure locate_terminal (
+						variant_name 	: in type_component_variant_name.bounded_string;
+						variant 		: in type_component_variant_2) is
+						use type_port_terminal_map;
+						use type_port_name;
+						terminal_cursor : type_port_terminal_map.cursor := variant.port_terminal_map.first;
+						terminal_found : boolean := false;
+					begin
+						-- Search in terminal_port_map for the given port name.
+						-- On first match load the terminal which is a composite of
+						-- terminal name and unit name (see spec of type_port_in_port_terminal_map)
+						while terminal_cursor /= type_port_terminal_map.no_element loop
+							if element (terminal_cursor).name = port.port then
+								terminal.name := key (terminal_cursor); -- to be returned
+								terminal.unit := element (terminal_cursor).unit; -- to be returned
+								terminal.port := element (terminal_cursor).name; -- to be returned
+								
+								terminal_found := true;
+								exit;
+							end if;
+
+							-- CS: if not terminal_found then ...
+							next (terminal_cursor);
+						end loop;
+					end locate_terminal;
+					
+				begin -- query_variants
+					log ("locating variant with package " & to_string (packge => package_name)
+						& " ...", log_threshold + 3);
+					log_indentation_up;
+
+					-- set variant cursor at first variant
+					variant_cursor := component.variants_2.first;
+
+					-- search variants for given package name. exit loop on first match (CS: show other matches ?)
+					while variant_cursor /= type_component_variants_2.no_element loop
+						if element (variant_cursor).packge = package_name then -- variant found
+							log ("package variant " 
+									& type_component_variant_name.to_string (key (variant_cursor)), -- CS: make function to_string
+									log_threshold + 3);
+							variant_found := true;
+							exit;
+						end if;
+						next (variant_cursor);
+					end loop;
+
+					if variant_found then
+						query_element (
+							position => variant_cursor,
+							process => locate_terminal'access);
+						
+					else
+						log_indentation_reset;
+						log (message_error & "no package variant with package " 
+							& to_string (packge => package_name) & " found for " 
+							& to_string (generic_name) & latin_1.space 
+							& to_string (port.reference) & " !",
+							console => true);
+
+						-- show available variants
+						variant_cursor := component.variants_2.first;
+						log ("available variants:");
+						log ("variant package library");
+						log_indentation_up;
+						
+						while variant_cursor /= type_component_variants_2.no_element loop
+							log (type_component_variant_name.to_string (key (variant_cursor)) -- CS: make function to_string
+								& latin_1.space 
+								& to_string (packge => element (variant_cursor).packge)
+								& latin_1.space
+								& to_string (element (variant_cursor).library));
+							next (variant_cursor);
+						end loop;
+							
+						log_indentation_down;
+						raise constraint_error;
+					end if;
+
+					log_indentation_down;	
+				end query_variants;
+				
+			begin -- locate_component_in_library
+				log ("locating generic component " & to_string (generic_name) 
+						& " in library " & to_string (library_name) 
+						& " ...", log_threshold + 2);
+				log_indentation_up;
+
+				-- Set the component_cursor right away to the position of the generic component
+				component_cursor := components.find (generic_name); -- search for generic name NETCHANGER
+
+				-- If we are importing a kicad_v4 project, the generic name might have not been found.
+				-- Why ? The generic component name might have a tilde prepended. So the search must
+				-- be started over with a tilde prepended to the generic_name.
+				if component_cursor = et_libraries.type_components.no_element then
+					case et_import.cad_format is
+						when et_import.kicad_v4 =>
+							-- search for generic name ~NETCHANGER
+							component_cursor := components.find (prepend_tilde (generic_name));
+						when others => null;
+					end case;
+				end if;
+					
+				et_libraries.type_components.query_element (
+					position => component_cursor,
+					process => query_variants'access);
+
+				log_indentation_down;
+			end locate_component_in_library;
+			
+		begin -- locate_component_in_schematic
+			log ("locating component in schematic ...", log_threshold + 1);
+			log_indentation_up;
+
+			-- The component cursor is set according to the position of the reference:
+			-- NOTE: Assumption is that there is a component with this reference.
+			component_cursor := module.components.find (port.reference);
+		
+			library_name := element (component_cursor).library_name; -- get library name where the symbol is stored in
+			generic_name := element (component_cursor).generic_name; -- get generic component name in the library
+			package_name := element (component_cursor).packge; -- get the package name of the component
+
+			-- set library cursor. NOTE: assumption is that there is a library with this name
+			library_cursor := component_libraries.find (library_name); 
+
+			query_element (
+				position => library_cursor,
+				process => locate_component_in_library'access);
+
+			log_indentation_down;
+		end locate_component_in_schematic;
+	
+	begin -- to_terminal
+		log ("locating terminal for " & to_string (port.reference) 
+			& " port " & to_string (port.port) & " ...", log_threshold);
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> locate_component_in_schematic'access);
+
+		log_indentation_down;
+		return terminal; 
+	end to_terminal;
+
+
+	
 	procedure export_netlists (log_threshold : in et_string_processing.type_log_level) is
 	-- Exports/Writes the netlists of the rig in separate files.
 	-- Netlists are exported in individual project directories in the work directory of ET.
@@ -4787,197 +4985,6 @@ package body et_schematic is
 		
 		netlist_handle : ada.text_io.file_type;
 		netlist_file_name : type_netlist_file_name.bounded_string;
-
-		function to_terminal_name (
-			port : in type_port_with_reference;
-			log_threshold : in type_log_level)
-			return type_port_in_port_terminal_map is
-		-- Returns the terminal and unit name of the given port in a composite type.
-	
-		-- NOTE: In contrast to Kicad, the terminal name is stored in a package variant. The package variant in
-		-- turn is maintained in the symbol component library.
-		-- General workflow:
-		-- 1. The given port provides the component reference like IC34
-		-- 2. look up IC34 in module.components
-		-- 3. get library name where the symbol is stored in, generic name like 7400, package name like S_SOT23
-		-- 4. look up the library, locate 7400 in library
-		-- 5. get package variant
-		-- 6. look up given port name and get terminal name
-		
-			terminal : type_port_in_port_terminal_map;
-
-			procedure locate_component_in_schematic (
-				module_name : in type_submodule_name.bounded_string;
-				module		: in type_module) is
-				use type_components;
-			
-				component_cursor: type_components.cursor;
-				
-				library_name	: type_full_library_name.bounded_string;
-				generic_name	: type_component_generic_name.bounded_string;
-				package_name	: type_component_package_name.bounded_string;
-
-				use type_libraries;
-				library_cursor	: type_libraries.cursor;
-
-				procedure locate_component_in_library (
-					library_name : in type_full_library_name.bounded_string;
-					components : in et_libraries.type_components.map) is
-					use et_libraries.type_components;
-
-					component_cursor : et_libraries.type_components.cursor;
-
-					procedure query_variants (
-					-- Looks up the list of variants of the component.
-						name : in et_libraries.type_component_generic_name.bounded_string;
-						component : in et_libraries.type_component) is
-						use type_component_variants_2;
-						use type_component_package_name;
-
-						variant_cursor : et_libraries.type_component_variants_2.cursor;
-						variant_found : boolean := false;
-
-						procedure locate_terminal (
-							variant_name : in type_component_variant_name.bounded_string;
-							variant : in type_component_variant_2) is
-							use type_port_terminal_map;
-							use type_port_name;
-							terminal_cursor : type_port_terminal_map.cursor := variant.port_terminal_map.first;
-							terminal_found : boolean := false;
-						begin
-							-- Search in terminal_port_map for the given port name.
-							-- On first match load the terminal which is a composite of
-							-- terminal name and unit name (see spec of type_port_in_port_terminal_map)
-							while terminal_cursor /= type_port_terminal_map.no_element loop
-								if element (terminal_cursor).name = port.port then
-									terminal := element (terminal_cursor);
-									terminal_found := true;
-									exit;
-								end if;
-
-								-- CS: if not terminal_found then ...
-								next (terminal_cursor);
-							end loop;
-						end locate_terminal;
-						
-					begin -- query_variants
-						log ("locating variant with package " & to_string (packge => package_name)
-							& " ...", log_threshold + 4);
-						log_indentation_up;
-
-						-- set variant cursor at first variant
-						variant_cursor := component.variants_2.first;
-
-						-- search variants for given package name. exit loop on first match (CS: show other matches ?)
-						while variant_cursor /= type_component_variants_2.no_element loop
-							if element (variant_cursor).packge = package_name then -- variant found
-								log ("package variant " 
-									 & type_component_variant_name.to_string (key (variant_cursor)), -- CS: make function to_string
-									 log_threshold + 3);
-								variant_found := true;
-								exit;
-							end if;
-							next (variant_cursor);
-						end loop;
-
-						if variant_found then
-							query_element (
-								position => variant_cursor,
-								process => locate_terminal'access);
-							
-						else
-							log_indentation_reset;
-							log (message_error & "no package variant with package " 
-								& to_string (packge => package_name) & " found for " 
-								& to_string (generic_name) & latin_1.space 
-								& to_string (port.reference) & " !",
-								console => true);
-
-							-- show available variants
-							variant_cursor := component.variants_2.first;
-							log ("available variants:");
-							log ("variant package library");
-							log_indentation_up;
-							
-							while variant_cursor /= type_component_variants_2.no_element loop
-								log (type_component_variant_name.to_string (key (variant_cursor)) -- CS: make function to_string
-									& latin_1.space 
-									& to_string (packge => element (variant_cursor).packge)
-									& latin_1.space
-									& to_string (element (variant_cursor).library));
-								next (variant_cursor);
-							end loop;
-								
-							log_indentation_down;
-							raise constraint_error;
-						end if;
-
-						log_indentation_down;	
-					end query_variants;
-					
-				begin -- locate_component_in_library
-					log ("locating generic component " & to_string (generic_name) 
-						 & " in library " & to_string (library_name) 
-						 & " ...", log_threshold + 3);
-					log_indentation_up;
-
-					-- Set the component_cursor right away to the position of the generic component
-					component_cursor := components.find (generic_name); -- search for generic name NETCHANGER
-
-					-- If we are importing a kicad_v4 project, the generic name might have not been found.
-					-- Why ? The generic component name might have a tilde prepended. So the search must
-					-- be started over with a tilde prepended to the generic_name.
-					if component_cursor = et_libraries.type_components.no_element then
-						case et_import.cad_format is
-							when et_import.kicad_v4 =>
-								-- search for generic name ~NETCHANGER
-								component_cursor := components.find (prepend_tilde (generic_name));
-							when others => null;
-						end case;
-					end if;
-						
-					et_libraries.type_components.query_element (
-						position => component_cursor,
-						process => query_variants'access);
-
-					log_indentation_down;
-				end locate_component_in_library;
-				
-			begin -- locate_component_in_schematic
-				log ("locating component in schematic ...", log_threshold + 2);
-				log_indentation_up;
-
-				-- The component cursor is set according to the position of the reference:
-				-- NOTE: Assumption is that there is a component with this reference.
-				component_cursor := module.components.find (port.reference);
-			
-				library_name := element (component_cursor).library_name; -- get library name where the symbol is stored in
-				generic_name := element (component_cursor).generic_name; -- get generic component name in the library
-				package_name := element (component_cursor).packge; -- get the package name of the component
-
-				-- set library cursor. NOTE: assumption is that there is a library with this name
-				library_cursor := component_libraries.find (library_name); 
-
-				query_element (
-					position => library_cursor,
-					process => locate_component_in_library'access);
-
-				log_indentation_down;
-			end locate_component_in_schematic;
-		
-		begin -- to_terminal_name
-			log ("locating terminal ...", log_threshold + 1);
-			log_indentation_up;
-			
-			query_element (
-				position	=> module_cursor,
-				process		=> locate_component_in_schematic'access);
-
-			log_indentation_down;
-			return terminal; 
-		end to_terminal_name;
-
-
 		
 		procedure query_nets (
 			module_name	: in type_submodule_name.bounded_string;
@@ -4989,7 +4996,7 @@ package body et_schematic is
 				ports		: in type_ports_with_reference.set) is
 				port_cursor : type_ports_with_reference.cursor := ports.first;
 		
-				terminal : type_port_in_port_terminal_map;
+				terminal : type_terminal;
 			begin
 				log_indentation_up;
 				--log ("ports" & count_type'image (length (ports)), log_threshold + 3);
@@ -4999,25 +5006,22 @@ package body et_schematic is
 					-- we export only ports of real components
 					if element (port_cursor).appearance = sch_pcb then
 
-						-- write reference, port, pin in netlist (all in a single line)
-						log ( 
-							to_string (element (port_cursor).reference) & latin_1.space
-							& to_string (element (port_cursor).port) & latin_1.space
-							& to_string (element (port_cursor).pin) -- CS: remove
--- 							& latin_1.space
-							& to_string (element (port_cursor).direction),
+						terminal := to_terminal (element (port_cursor), log_threshold + 4);
+					
+						-- log reference, unit, port, direction, terminal (all in one line)
+						log ("reference " & to_string (element (port_cursor).reference)
+							& " unit " & to_string (terminal.unit)
+							& " port " & to_string (terminal.port)
+							& to_string (element (port_cursor).direction)
+							& " terminal " & to_string (terminal.name),
 							log_threshold + 3);
 
-						terminal := to_terminal_name (element (port_cursor), log_threshold + 1);
-						-- CS: show unit, terminal, port
-						
-						-- write reference, port, pin in netlist (all in a single line)
+						-- write reference, port, direction, terminal in netlist (all in one line)
 						put_line (netlist_handle, 
 							to_string (element (port_cursor).reference) & latin_1.space
-							& to_string (element (port_cursor).port) & latin_1.space
-							& to_string (element (port_cursor).pin) -- CS: remove
-							--& to_string (to_terminal_name (element (port_cursor), log_threshold + 1))
-							& to_string (element (port_cursor).direction, preamble => false));
+							& to_string (terminal.port)
+							& to_string (element (port_cursor).direction, preamble => false) & latin_1.space
+							& to_string (terminal.name)); 
 
 					end if;
 						
@@ -5054,7 +5058,7 @@ package body et_schematic is
 		-- We start with the first module of the rig.
 		first_module;
 
-		log ("exporting rig netlists ...", log_threshold);
+		log ("exporting netlists ...", log_threshold);
 		log_indentation_up;
 		
 		while module_cursor /= type_rig.no_element loop
@@ -5082,7 +5086,7 @@ package body et_schematic is
 				mode => out_file, 
 				name => type_netlist_file_name.to_string (netlist_file_name));
 
-			put_line (netlist_handle, comment_mark & " " & system_name & " netlist");
+			put_line (netlist_handle, comment_mark & " " & system_name & " " & et_general.version & " netlist");
 			put_line (netlist_handle, comment_mark & " date " & string (date_now));
 			put_line (netlist_handle, comment_mark & " module " & to_string (key (module_cursor)));
 			put_line (netlist_handle, comment_mark & " " & row_separator_double);
@@ -5091,8 +5095,8 @@ package body et_schematic is
 			
 			put_line (netlist_handle, comment_mark);
 			put_line (netlist_handle, comment_mark & " legend:");
-			put_line (netlist_handle, comment_mark & "  net name");
-			put_line (netlist_handle, comment_mark & "  component port pin/pad direction");
+			put_line (netlist_handle, comment_mark & "  net_name");
+			put_line (netlist_handle, comment_mark & "  reference/component port direction terminal/pin/pad");
 			put_line (netlist_handle, comment_mark & " " & row_separator_single);
 
 			-- do the export
