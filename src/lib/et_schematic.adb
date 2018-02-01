@@ -4791,9 +4791,9 @@ package body et_schematic is
 		function to_terminal_name (
 			port : in type_port_with_reference;
 			log_threshold : in type_log_level)
-			--return type_terminal_name.bounded_string is
 			return type_port_in_port_terminal_map is
-		-- Returns the terminal name of the given port.
+		-- Returns the terminal and unit name of the given port in a composite type.
+	
 		-- NOTE: In contrast to Kicad, the terminal name is stored in a package variant. The package variant in
 		-- turn is maintained in the symbol component library.
 		-- General workflow:
@@ -4804,7 +4804,6 @@ package body et_schematic is
 		-- 5. get package variant
 		-- 6. look up given port name and get terminal name
 		
-			--terminal : type_terminal_name.bounded_string;
 			terminal : type_port_in_port_terminal_map;
 
 			procedure locate_component_in_schematic (

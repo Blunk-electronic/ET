@@ -288,10 +288,10 @@ package et_libraries is
 		length				: type_port_length;
 		orientation			: type_angle;
 		port_name_visible	: type_port_name_visible;
-		pin_name_visible	: type_terminal_name_visible;
-		pin					: type_terminal_name.bounded_string; -- example: "144" or in case of a BGA package "E14"
+		pin_name_visible	: type_terminal_name_visible; -- CS rename to terminal_name_visible
+		pin					: type_terminal_name.bounded_string; -- example: "144" or in case of a BGA package "E14" -- CS remove
 		port_name_size		: type_text_size;
-		pin_name_size		: type_text_size;
+		pin_name_size		: type_text_size; -- CS rename to terminal_name_size
 		port_name_offset	: type_distance; -- the clearance between symbol outline and port name -- CS: define a reasonable range
 		-- CS : obsolete ? pin_position_offset ?
 		-- CS: port swap level ?
