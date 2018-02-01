@@ -1582,9 +1582,6 @@ package body et_kicad is
 								units_internal	=> type_units_internal.empty_map,
 								units_external	=> type_units_external.empty_map,
 
-								variants		=> type_component_variants.empty_map,
-								-- NOTE: kicad does not know about package variants (as EAGLE does). So the variants list here is empty.
-								-- Instead we provide the so called package filter, which is empty for the moment.
 								package_filter	=> type_package_filter.empty_set,
 								datasheet		=> type_component_datasheet.to_bounded_string (content (field_datasheet)),
 								purpose			=> type_component_purpose.to_bounded_string (content (field_purpose)),

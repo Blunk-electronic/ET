@@ -593,24 +593,11 @@ package et_libraries is
 
 	component_variant_default : constant type_component_variant_name.bounded_string := type_component_variant_name.to_bounded_string ("default");
 	
-	-- A component variant is a composite of the package, the library it is stored in and
-	-- a connection list. The connection list maps from port names to pin/pad names.
-	type type_component_variant is record
-		packge	: type_component_package_name.bounded_string;	-- like "SOT23"
-		library	: type_full_library_name.bounded_string;		-- like "/home/abc/lib/smd.mod"
-		-- CS: connection list
-	end record;
-
-	function to_string (variant : in type_component_variant) return string;
+-- 	function to_string (variant : in type_component_variant) return string;
 	-- Returns the given variant as string.
 	-- NOTE: This displays the type_component_variant (see et_libraries.ads).
 	-- Do not confuse with type_variant (see et_schematic.ads) which also contains the variant name
 	-- like in TL084D or TL084N.
-	
-	-- Component variants are stored in a map where they are accessed by the variant name.
-	package type_component_variants is new ordered_maps (
-		key_type => type_component_variant_name.bounded_string,
-		element_type => type_component_variant);
 
 	-- If certain packages are to be proposed they are collected in a so called "package filter"
 	package_proposal_length_max : constant positive := 100;
@@ -907,7 +894,6 @@ package et_libraries is
 			-- If a component appears in both schematic and layout it comes 
 			-- with at least one package/footprint variant. We store variants in a map.
 			when sch_pcb => 
-				variants	: type_component_variants.map;
 				package_filter : type_package_filter.set := type_package_filter.empty_set; -- kicad requirement
 				datasheet	: type_component_datasheet.bounded_string;
 				purpose		: type_component_purpose.bounded_string;
