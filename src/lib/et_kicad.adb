@@ -1183,8 +1183,8 @@ package body et_kicad is
 				-- port name. to be taken from field #2 of the given line
 				port.name := type_port_name.to_bounded_string (field (line,2)); -- GND, GPIO2
 				
-				-- compose terminal name
-				port.pin := type_terminal_name.to_bounded_string (field (line,3));
+				-- compose terminal name. must be stored temporarily. will be inserted in default package variant
+-- 				port.pin := type_terminal_name.to_bounded_string (field (line,3));
 				tmp_terminal_name := type_terminal_name.to_bounded_string (field (line,3)); -- H5, 14
 
 				-- compose position

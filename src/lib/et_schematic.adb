@@ -1272,7 +1272,7 @@ package body et_schematic is
 									-- library defined properites:
 									--port		=> key (port_cursor), -- the port name
 									port		=> element (port_cursor).name, -- the port name
-									pin			=> element (port_cursor).pin, -- the pin name
+									--pin			=> element (port_cursor).pin, -- the pin name
 									direction	=> element (port_cursor).direction, -- the port direction
 
 									-- Set the power_flag status (by taking it from the schematic component begin processed).
@@ -1302,7 +1302,7 @@ package body et_schematic is
 									-- library defined properites:
 									--port		=> key (port_cursor), -- the port name
 									port		=> element (port_cursor).name, -- the port name
-									pin			=> element (port_cursor).pin, -- the pin name
+									--pin			=> element (port_cursor).pin, -- the pin name
 									direction	=> element (port_cursor).direction, -- the port direction
 
 									-- This port does not belong to a power_flag, because real components can never be.
@@ -1367,8 +1367,8 @@ package body et_schematic is
 						while port_cursor /= et_libraries.type_ports.no_element loop
 
 							--log ("port " & type_port_name.to_string (key (port_cursor))
-							log (text => "port " & type_port_name.to_string (element (port_cursor).name)
-									& " pin/pad " & to_string (element (port_cursor).pin),
+							log ("port " & to_string (element (port_cursor).name),
+									--& " pin/pad " & to_string (element (port_cursor).pin),
 								 level => log_threshold + 2);
 
 							-- Build a new port and append port to portlist of the 
@@ -1422,10 +1422,9 @@ package body et_schematic is
 					while port_cursor /= et_libraries.type_ports.no_element loop
 						log_indentation_up;
 						--log ("port " & type_port_name.to_string (key (port_cursor))
-						log (text => "port " & type_port_name.to_string (element (port_cursor).name)
-								& " pin/pad " & to_string (element (port_cursor).pin),
-							 level => log_threshold + 2
-							);
+						log ("port " & to_string (element (port_cursor).name),
+								--& " pin/pad " & to_string (element (port_cursor).pin),
+							 level => log_threshold + 2);
 						
 						-- Build a new port and append port to portlist of the 
 						-- current component (indicated by component_cursor_portlists).
@@ -1929,7 +1928,7 @@ package body et_schematic is
 								-- because power out ports are allowed in global strands exclusively !
 								if et_schematic.anonymous (element (strand).name) then
 									log ("component " & et_libraries.to_string (key (component)) 
-										& " pin " & to_string (element (port).pin)
+										--& " pin " & to_string (element (port).pin)
 										& " port name " & to_string (element (port).port) 
 										& " is a power output -> port name sets strand name", log_threshold + 2);
 
@@ -1943,8 +1942,9 @@ package body et_schematic is
 							
 										log_indentation_reset;
 										log (message_error & "component " & et_libraries.to_string (key (component)) 
-											& " POWER OUT pin " & to_string (element (port).pin)
-											& " port name " & to_string (element (port).port) 
+											 --& " POWER OUT pin " & to_string (element (port).pin)
+											& " POWER OUT port " & to_string (element (port).port) 
+											--& " port name " & to_string (element (port).port) 
 											& latin_1.lf
 											& "at " & to_string (element (port).coordinates, module)
 											& latin_1.lf
@@ -2987,7 +2987,7 @@ package body et_schematic is
 	end units_of_component;
 
 	function compare_ports (left, right : in type_port_with_reference) return boolean is
-	-- Returns true if left comes before right. Compares by component name and pin name.
+	-- Returns true if left comes before right. Compares by component reference and port name.
 	-- If left equals right, the return is false.	
 	-- CS: needs verification !
 		result : boolean := false;
@@ -2999,9 +2999,9 @@ package body et_schematic is
 		if compare_reference (left.reference, right.reference) then
 			result := true;
 
-		-- If equal references, compare pin names
-		elsif type_terminal_name.">" (left.pin, right.pin) then
-			result := true;
+-- 		-- If equal references, compare pin names
+-- 		elsif type_terminal_name.">" (left.pin, right.pin) then
+-- 			result := true;
 
 		-- If equal pin names, compare port names -- CS: should never happen. raise alarm ?
 		elsif type_port_name.">" (left.port, right.port) then
@@ -4304,12 +4304,10 @@ package body et_schematic is
 
 				while port_cursor /= type_ports_with_reference.no_element loop
 			
-					-- write reference, port, pin in netlist (all in a single line)
-					log ( 
-						to_string (element (port_cursor).reference) & latin_1.space
-						& to_string (element (port_cursor).port) & latin_1.space
-						& to_string (element (port_cursor).pin)
-						& to_string (element (port_cursor).direction, preamble => false),
+					-- log reference, port and direction (all in one line)
+					log ("reference " & to_string (element (port_cursor).reference)
+						& " port " & to_string (element (port_cursor).port)
+						& to_string (element (port_cursor).direction, preamble => true),
 						log_threshold + 3);
 
 					-- count ports by direction
@@ -4620,9 +4618,10 @@ package body et_schematic is
 								
 										log_indentation_up;
 										log ("probing " & to_string (component) 
-												& " pin/pad " & to_string (element (port_cursor).pin)
-												& latin_1.space
-												& to_string (position => element (port_cursor).coordinates, scope => et_coordinates.module),
+											--& " pin/pad " & to_string (element (port_cursor).pin)
+											& " port " & to_string (element (port_cursor).port)
+											& latin_1.space
+											& to_string (position => element (port_cursor).coordinates, scope => et_coordinates.module),
 											log_threshold + 5);
 
 										-- test if port sits on segment
@@ -4630,9 +4629,10 @@ package body et_schematic is
 											log_indentation_up;
 										
 											log ("connected with " & to_string (component) 
-													& " pin/pad " & to_string (element (port_cursor).pin)
-													& latin_1.space
-													& to_string (position => element (port_cursor).coordinates, scope => et_coordinates.module),
+												 --	& " pin/pad " & to_string (element (port_cursor).pin)
+												& " port " & to_string (element (port_cursor).port)
+												& latin_1.space
+												& to_string (position => element (port_cursor).coordinates, scope => et_coordinates.module),
 												log_threshold + 3);
 											
 											log_indentation_down;

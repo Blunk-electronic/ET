@@ -289,7 +289,6 @@ package et_libraries is
 		orientation			: type_angle;
 		port_name_visible	: type_port_name_visible;
 		pin_name_visible	: type_terminal_name_visible; -- CS rename to terminal_name_visible
-		pin					: type_terminal_name.bounded_string; -- example: "144" or in case of a BGA package "E14" -- CS remove
 		port_name_size		: type_text_size;
 		pin_name_size		: type_text_size; -- CS rename to terminal_name_size
 		port_name_offset	: type_distance; -- the clearance between symbol outline and port name -- CS: define a reasonable range
@@ -855,10 +854,10 @@ package et_libraries is
 	
 -- COMPONENTS
 
+	-- PACKAGE VARIANT HANDLING
 	type type_port_in_port_terminal_map is new type_port_basic with record -- CS rename to type_port_in_terminal_port_map
 		unit	: type_unit_name.bounded_string;
 	end record;
-
 	
 	package type_port_terminal_map is new ordered_maps ( -- CS rename to type_terminal_port_map
 		key_type => type_terminal_name.bounded_string, -- H7, 14

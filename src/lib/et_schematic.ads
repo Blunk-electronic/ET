@@ -659,7 +659,6 @@ package et_schematic is
 	
 	-- For portlists and netlists we need a component port with its basic elements:
 	type type_port is tagged record -- CS: use a controlled type since some selectors do not apply for virtual ports
-		pin				: type_terminal_name.bounded_string; -- the terminal name like 3,4 or E3, A2 -- CS remove
 		port			: type_port_name.bounded_string; -- the port name like GPIO1, GPIO2 -- CS: rename to "name"
 		coordinates 	: type_coordinates;
 		direction		: type_port_direction; -- example: "passive"
@@ -688,7 +687,7 @@ package et_schematic is
 	end record;
 
 	function compare_ports (left, right : in type_port_with_reference) return boolean;
-	-- Returns true if left comes before right. Compares by component name and pin name.
+	-- Returns true if left comes before right. Compares by component reference and port name.
 	-- If left equals right, the return is false.	
 
 	-- This is a set of ports as we need in the netlist.
