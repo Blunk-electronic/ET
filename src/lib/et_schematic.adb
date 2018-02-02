@@ -4885,7 +4885,7 @@ package body et_schematic is
 
 					-- search variants for given package name. exit loop on first match (CS: show other matches ?)
 					while variant_cursor /= type_component_variants.no_element loop
-						if element (variant_cursor).packge = package_name then -- variant found
+						if element (variant_cursor).packge.name = package_name then -- variant found
 							log ("package variant " 
 									& type_component_variant_name.to_string (key (variant_cursor)), -- CS: make function to_string
 									log_threshold + 3);
@@ -4917,9 +4917,9 @@ package body et_schematic is
 						while variant_cursor /= type_component_variants.no_element loop
 							log (type_component_variant_name.to_string (key (variant_cursor)) -- CS: make function to_string
 								& latin_1.space 
-								& to_string (packge => element (variant_cursor).packge)
+								& to_string (packge => element (variant_cursor).packge.name)
 								& latin_1.space
-								& to_string (element (variant_cursor).library));
+								& to_string (element (variant_cursor).packge.library));
 							next (variant_cursor);
 						end loop;
 							

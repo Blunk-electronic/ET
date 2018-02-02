@@ -2339,6 +2339,7 @@ package body et_kicad is
 						component	: in out type_component) is
 
 						use type_component_variants;
+						use type_terminal_port_map;
 						tmp_variants : type_component_variants.map; -- temporarily used for building the variant
 					begin
 						case component.appearance is
@@ -2351,10 +2352,27 @@ package body et_kicad is
 									new_item => (
 										-- The package field contains something like "bel_ic:S_SO14".
 										-- This provides the library name and the package name.
-										packge => package_name (content (field_package)), -- S_SO14
-										
-										-- We compose the full library name from lib_dir (global variable) and the library name.
-										library => to_full_library_name (lib_dir, library_name (content (field_package))), -- projects/lbr/bel_ic.pac
+										-- The only way to obtain the number of terminals is to read the
+										-- length of the tmp_terminal_port_map.
+										-- CS: NOTE: Since not all terminals of the package may be mapped to ports,
+										-- this approach implies the risk of a wrong terminal count !
+										-- Example: If a S_SO14 housing contains just a single NAND gate (with supply) the
+										-- tmp_terminal_port_map would have a length of 5 whereas the package
+										-- would have 14 terminals.
+										-- CS: A function is required that guesses from the package name the
+										-- real number of terminals.
+										packge => (
+											name => package_name (content (field_package)), -- S_SO14
+
+											-- We compose the full library name from lib_dir (global variable) and the 
+											-- library name. example: projects/lbr/bel_ic.pac
+											library => to_full_library_name (
+												root_dir => lib_dir,
+												lib_name => library_name (content (field_package))), 
+
+											-- derive terminal count from tmp_terminal_port_map
+											-- CS: see comments above
+											terminal_count => type_terminal_count (length (tmp_terminal_port_map))),
 
 										-- The terminal to port map tmp_terminal_port_map is now finally copied
 										-- to its final destination:
