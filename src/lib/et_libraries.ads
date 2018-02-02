@@ -964,8 +964,8 @@ package et_libraries is
 
 		case appearance is
 
-			-- If a component appears in the schematic only, it does not
-			-- have any package variants.
+			-- If a component appears in the schematic only, it is a virtual component 
+			-- and thus does not have any package variants.
 			-- Such components are power symbols or power flags. Later when building netlists
 			-- those components enforce net names (like GND or P3V3). Power flags do not
 			-- enforce net names. In order to distinguish them from regular power symbols the

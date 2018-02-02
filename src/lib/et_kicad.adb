@@ -652,6 +652,9 @@ package body et_kicad is
 			tmp_draw_text		: type_symbol_text;
 			tmp_draw_port		: type_port;
 
+			-- The terminal-port map of the current component is stored here temporarily.
+			-- When building the package variant (there will be only the default variant)
+			-- this map is used by procedure build_package_variant.
 			tmp_terminal_port_map : type_terminal_port_map.map;
 			
 			procedure init_temp_variables is
@@ -673,6 +676,7 @@ package body et_kicad is
 				field_partcode_found		:= false;
 				field_bom_found				:= false;
 
+				-- clear terminal-port map for the new component
 				type_terminal_port_map.clear (tmp_terminal_port_map);
 			end init_temp_variables;
 
@@ -2324,6 +2328,7 @@ package body et_kicad is
 			-- Builds from tmp_terminal_port_map and field_package the default package variant.
 			-- NOTE: Since kicad does not know package variants, we can only build the
 			-- one and only DEFAULT variant.
+			-- All this applies for real components only (appearance sch_pcb).
 				
 				procedure locate_component (
 					lib_name	: in type_full_library_name.bounded_string;
@@ -2334,13 +2339,14 @@ package body et_kicad is
 						component	: in out type_component) is
 
 						use type_component_variants;
-						variants : type_component_variants.map; -- temporarily used for building the variant
+						tmp_variants : type_component_variants.map; -- temporarily used for building the variant
 					begin
 						case component.appearance is
-							when sch_pcb =>
+							when sch_pcb => -- real component
 
+								-- Insert in tmp_variants (which is temporarily) the default variant.
 								insert (
-									container => variants,
+									container => tmp_variants,
 									key => component_variant_name_default, -- because kicad does not know package variants
 									new_item => (
 										-- The package field contains something like "bel_ic:S_SO14".
@@ -2354,8 +2360,8 @@ package body et_kicad is
 										-- to its final destination:
 										terminal_port_map => tmp_terminal_port_map)); -- H4/GPIO2
 
-								-- assign package variant to component
-								component.variants := variants;
+								-- Assign package variant to component
+								component.variants := tmp_variants;
 
 							when others => null;
 						end case;
