@@ -288,30 +288,114 @@ package body et_configuration is
 		return ref;
 	end to_connector_reference;
 
-	procedure compare_terminals (
-		module_A		: in et_coordinates.type_submodule_name.bounded_string;
-		reference_A		: in et_libraries.type_component_reference;
-		module_B		: in et_coordinates.type_submodule_name.bounded_string;
-		reference_B		: in et_libraries.type_component_reference;
+	procedure compare_connector_terminal_count (
+	-- Compares the number of terminals of the given connectors.
+	-- Raises error if numbers differ.
+	-- CS: verificaton required
+		module_A		: in et_coordinates.type_submodule_name.bounded_string; -- nucleo_core
+		reference_A		: in et_libraries.type_component_reference;				-- X46
+		module_B		: in et_coordinates.type_submodule_name.bounded_string;	-- motor_driver
+		reference_B		: in et_libraries.type_component_reference;				-- X701
 		log_threshold	: in type_log_level) is
-	begin
-		log ("comparing terminals ...", log_threshold);
+
+		use et_coordinates;
+		use et_schematic;
+		use et_libraries;
+		use type_rig;
+
+		terminal_count_A, terminal_count_B : et_libraries.type_terminal_count;
+
+		procedure module_not_found (module : in et_coordinates.type_submodule_name.bounded_string) is
+		begin
+			log_indentation_reset;
+			log (message_error & "module " & to_string (module) & " not found !",
+				 console => true);
+			raise constraint_error;
+		end module_not_found;
+			
+	begin -- compare_connector_terminal_count
+		log ("comparing connector terminals ...", log_threshold);
 		log_indentation_up;
-		-- CS:
+
+		-- set the GLOBAL module cursor to module_A
+		module_cursor := type_rig.find (rig, module_A);
+
+		-- the module should be found. then get the terminal count of connector A
+		if module_cursor /= type_rig.no_element then
+			terminal_count_A := terminal_count (reference_A, log_threshold + 2);
+			log ("module " & to_string (module_A) & " connector " 
+				& to_string (reference_A) & to_string (terminal_count_A),
+				log_threshold + 1);
+		else -- safety measure in case the module could not be found. should never happen
+			module_not_found (module_A);
+		end if;
+
+		-- set the GLOBAL module cursor to module_B
+		module_cursor := type_rig.find (rig, module_B);
+	
+		if module_cursor /= type_rig.no_element then
+			terminal_count_B := terminal_count (reference_B, log_threshold + 2);
+			log ("module " & to_string (module_B) & " connector " 
+				& to_string (reference_B) & to_string (terminal_count_B),
+				log_threshold + 1);
+		else -- safety measure in case the module could not be found. should never happen
+			module_not_found (module_B);
+		end if;
+
+		-- if terminal counts differ, abort
+		if terminal_count_A /= terminal_count_B then
+			log_indentation_reset;
+			log (message_error & " module " & to_string (module_A) & " connector " & to_string (reference_A)
+				 & " and module " & to_string (module_B) & " connector " & to_string (reference_B)
+				 & " do not match !",
+				 console => true);
+			raise constraint_error;
+		end if;
+				 
 		log_indentation_down;
-	end compare_terminals;
+	end compare_connector_terminal_count;
 
 
 	procedure compare_nets (
-		module_A	: in et_coordinates.type_submodule_name.bounded_string;
-		referenc_A	: in et_libraries.type_component_reference;
-		module_B	: in et_coordinates.type_submodule_name.bounded_string;		
-		referenc_B	: in et_libraries.type_component_reference;
-		log_threshold : in type_log_level) is
-	begin
+	-- Compares net names of the given connectors (via module.netlist).
+	-- Warns if names differ. CS: needs a parameter that raises error instead.
+		module_A		: in et_coordinates.type_submodule_name.bounded_string;
+		referenc_A		: in et_libraries.type_component_reference;
+		module_B		: in et_coordinates.type_submodule_name.bounded_string;		
+		referenc_B		: in et_libraries.type_component_reference;
+		log_threshold	: in type_log_level) is
+
+		use et_coordinates;
+		use et_schematic;
+-- 		use et_libraries;
+		use type_rig;
+		
+		procedure module_not_found (module : in et_coordinates.type_submodule_name.bounded_string) is
+		begin
+			log_indentation_reset;
+			log (message_error & "module " & to_string (module) & " not found !",
+				 console => true);
+			raise constraint_error;
+		end module_not_found;
+
+	begin -- compare_nets
 		log ("comparing net names ...", log_threshold);
 		log_indentation_up;
-		-- CS:
+		
+
+		-- set the GLOBAL module cursor to module_A
+		module_cursor := type_rig.find (rig, module_A);
+
+		-- the module should be found. then get the terminal count of connector A
+		if module_cursor /= type_rig.no_element then
+			null;
+		else -- safety measure in case the module could not be found. should never happen
+			null;
+			--module_not_found (;
+		end if;
+
+
+		
 		log_indentation_down;
 	end compare_nets;
 	
@@ -336,27 +420,37 @@ package body et_configuration is
 		-- NCC stands for "nucleo_core" and purpose "MOTOR_CTRL_OUT_2" stands for connector X46.
 		while interconnection_cursor /= no_element loop
 
-			-- map from abbrevation to full module name:
+			-- A map from abbrevation to full module name:
 			module_A := to_submodule (element (interconnection_cursor).peer_A.abbrevation);
-			log ("module A " & to_string (module_A.name), log_threshold + 1);
-			module_B := to_submodule (element (interconnection_cursor).peer_B.abbrevation);
-			log ("module B " & to_string (module_B.name), log_threshold + 1);
+			log ("module A " & to_string (module_A.name), log_threshold + 2);
 			
-			-- map from module name and purpose to reference
+			-- A map from module name and purpose to reference
 			purpose_A := element (interconnection_cursor).peer_A.purpose;
-			log ("purpose A " & enclose_in_quotes (to_string (purpose_A)), log_threshold + 1);
-			purpose_B := element (interconnection_cursor).peer_B.purpose;
-			log ("purpose B " & enclose_in_quotes (to_string (purpose_B)), log_threshold + 1);
-			
-			reference_A := to_connector_reference (module_A.name, purpose_A, log_threshold + 2);
-			log ("reference A " & to_string (reference_A), log_threshold + 1);
-			reference_B := to_connector_reference (module_B.name, purpose_B, log_threshold + 2);
-			log ("reference B " & to_string (reference_B), log_threshold + 1);
+			log ("purpose connector A " & enclose_in_quotes (to_string (purpose_A)), log_threshold + 2);
 
-			-- CS compare terminals
-			compare_terminals (module_A.name, reference_A,
-							   module_B.name, reference_B,
-							   log_threshold + 1);
+			reference_A := to_connector_reference (module_A.name, purpose_A, log_threshold + 3);
+			log ("reference connector A " & to_string (reference_A), log_threshold + 2);
+
+			
+			
+			-- B map from abbrevation to full module name:			
+			module_B := to_submodule (element (interconnection_cursor).peer_B.abbrevation);
+			log ("module B " & to_string (module_B.name), log_threshold + 2);
+			
+			-- B map from module name and purpose to reference
+			purpose_B := element (interconnection_cursor).peer_B.purpose;
+			log ("purpose connector B " & enclose_in_quotes (to_string (purpose_B)), log_threshold + 2);
+			
+			reference_B := to_connector_reference (module_B.name, purpose_B, log_threshold + 3);
+			log ("reference connector B " & to_string (reference_B), log_threshold + 2);
+
+
+			
+			-- compare connector terminal counts. each peer must have the same number of terminals
+			compare_connector_terminal_count (
+				module_A.name, reference_A, -- nucleo_core, X46
+				module_B.name, reference_B, -- motor_driver, X701
+				log_threshold + 1);
 			
 			-- compare net names (via module.netlist)
 			compare_nets (module_A.name, reference_A, module_B.name, reference_B, log_threshold + 1);

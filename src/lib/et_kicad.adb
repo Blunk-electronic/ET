@@ -2361,6 +2361,8 @@ package body et_kicad is
 										-- would have 14 terminals.
 										-- CS: A function is required that guesses from the package name the
 										-- real number of terminals.
+										-- CS: Even better a function that fetches the pad count from the 
+										-- package model (package et_pcb) ?
 										packge => (
 											name => package_name (content (field_package)), -- S_SO14
 

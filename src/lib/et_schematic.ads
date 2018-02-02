@@ -701,11 +701,19 @@ package et_schematic is
 	-- Returns true if left comes before right. Compares by component reference and port name.
 	-- If left equals right, the return is false.	
 
+	function terminal_count (
+		reference		: in type_component_reference;
+		log_threshold	: in et_string_processing.type_log_level)
+		return type_terminal_count;
+	-- Returns the number of terminals of the given component reference.
+	-- Requires module_cursor (global variable) to point to the current module.
+	
 	function to_terminal (
 		port 			: in type_port_with_reference; -- see et_schematic spec
-		log_threshold 	: in et_string_processing.type_log_level) -- see et_libraries spec
+		log_threshold 	: in et_string_processing.type_log_level)
 		return type_terminal; -- see et_libraries spec
 	-- Returns the terminal and unit name of the given port in a composite type.
+	-- Requires module_cursor (global variable) to point to the current module.
 	
 	-- This is a set of ports as we need in the netlist.
 	package type_ports_with_reference is new ordered_sets (

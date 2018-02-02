@@ -495,6 +495,9 @@ package et_libraries is
 -- TERMINALS
 	type type_terminal_count is new count_type; -- CS: limit to a reasonable range ?
 
+	function to_string (terminals : in type_terminal_count) return string;
+	-- Returns the given number of terminals as string.
+
 
 -- COMPONENT PACKAGES
 	type type_component_package is record
@@ -917,9 +920,7 @@ package et_libraries is
 		element_type => type_port_in_terminal_port_map); -- unit A, OE1
 
 	type type_component_variant is record
-		--packge	: type_component_package_name.bounded_string; -- S_SOT23
 		packge	: type_component_package;
-		--library	: type_full_library_name.bounded_string; -- projects/lbr/smd_packages.pac
 		terminal_port_map : type_terminal_port_map.map;
 	end record;
 

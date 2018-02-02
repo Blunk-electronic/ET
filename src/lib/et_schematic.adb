@@ -4797,6 +4797,168 @@ package body et_schematic is
 		log_indentation_down;
 	end make_netlists;
 
+	function terminal_count (
+		reference		: in type_component_reference;
+		log_threshold	: in et_string_processing.type_log_level)
+		return type_terminal_count is
+	-- Returns the number of terminals of the given component reference.
+	-- Requires module_cursor (global variable) to point to the current module.
+
+		use type_rig;
+		use et_string_processing;
+		terminals : type_terminal_count; -- to be returned
+
+		procedure locate_component_in_schematic (
+			module_name : in type_submodule_name.bounded_string;
+			module		: in type_module) is
+			use type_components;
+		
+			component_cursor: type_components.cursor;
+			
+			library_name	: type_full_library_name.bounded_string;
+			generic_name	: type_component_generic_name.bounded_string;
+			package_name	: type_component_package_name.bounded_string;
+
+			use type_libraries;
+			library_cursor	: type_libraries.cursor;
+
+			procedure locate_component_in_library (
+				library_name 	: in type_full_library_name.bounded_string;
+				components 		: in et_libraries.type_components.map) is
+				use et_libraries.type_components;
+
+				component_cursor : et_libraries.type_components.cursor;
+
+				procedure query_variants (
+				-- Looks up the list of variants of the component.
+					name 		: in et_libraries.type_component_generic_name.bounded_string;
+					component 	: in et_libraries.type_component) is
+					use type_component_variants;
+					use type_component_package_name;
+
+					variant_cursor : et_libraries.type_component_variants.cursor;
+					variant_found : boolean := false;
+
+				begin -- query_variants
+					log ("locating variant with package " & to_string (packge => package_name)
+						& " ...", log_threshold + 3);
+					log_indentation_up;
+
+					-- set variant cursor at first variant
+					variant_cursor := component.variants.first;
+
+					-- search variants for given package name. exit loop on first match (CS: show other matches ?)
+					while variant_cursor /= type_component_variants.no_element loop
+						if element (variant_cursor).packge.name = package_name then -- variant found
+							log ("package variant " 
+								& type_component_variant_name.to_string (key (variant_cursor)), -- CS: make function to_string
+								log_threshold + 3);
+							variant_found := true;
+							exit;
+						end if;
+						next (variant_cursor);
+					end loop;
+
+					if variant_found then
+						-- get the number of terminals from the variant
+						terminals := element (variant_cursor).packge.terminal_count;
+						log_indentation_up;
+						log (to_string (terminals), log_threshold + 1);
+						log_indentation_down;
+					else
+						log_indentation_reset;
+						log (message_error & "no package variant with package " 
+							& to_string (packge => package_name) & " found for " 
+							& to_string (generic_name) & latin_1.space 
+							& to_string (reference) & " !",
+							console => true);
+
+						-- show available variants
+						variant_cursor := component.variants.first;
+						log ("available variants:");
+						log ("variant package library");
+						log_indentation_up;
+						
+						while variant_cursor /= type_component_variants.no_element loop
+							log (type_component_variant_name.to_string (key (variant_cursor)) -- CS: make function to_string
+								& latin_1.space 
+								& to_string (packge => element (variant_cursor).packge.name)
+								& latin_1.space
+								& to_string (element (variant_cursor).packge.library));
+							next (variant_cursor);
+						end loop;
+							
+						log_indentation_down;
+						raise constraint_error;
+					end if;
+
+					log_indentation_down;	
+				end query_variants;
+				
+			begin -- locate_component_in_library
+				log ("locating generic component " & to_string (generic_name) 
+						& " in library " & to_string (library_name) 
+						& " ...", log_threshold + 2);
+				log_indentation_up;
+
+				-- Set the component_cursor right away to the position of the generic component
+				component_cursor := components.find (generic_name); -- search for generic name NETCHANGER
+
+				-- If we are importing a kicad_v4 project, the generic name might have not been found.
+				-- Why ? The generic component name might have a tilde prepended. So the search must
+				-- be started over with a tilde prepended to the generic_name.
+				if component_cursor = et_libraries.type_components.no_element then
+					case et_import.cad_format is
+						when et_import.kicad_v4 =>
+							-- search for generic name ~NETCHANGER
+							component_cursor := components.find (prepend_tilde (generic_name));
+						when others => null;
+					end case;
+				end if;
+					
+				et_libraries.type_components.query_element (
+					position => component_cursor,
+					process => query_variants'access);
+
+				log_indentation_down;
+			end locate_component_in_library;
+			
+		begin -- locate_component_in_schematic
+			log ("locating component in schematic ...", log_threshold + 1);
+			log_indentation_up;
+
+			-- The component cursor is set according to the position of the reference:
+			-- NOTE: Assumption is that there is a component with this reference.
+			component_cursor := module.components.find (reference);
+		
+			library_name := element (component_cursor).library_name; -- get library name where the symbol is stored in
+			generic_name := element (component_cursor).generic_name; -- get generic component name in the library
+			package_name := element (component_cursor).packge; -- get the package name of the component
+
+			-- set library cursor. NOTE: assumption is that there is a library with this name
+			library_cursor := component_libraries.find (library_name); 
+
+			query_element (
+				position => library_cursor,
+				process => locate_component_in_library'access);
+
+			log_indentation_down;
+		end locate_component_in_schematic;
+		
+	begin -- terminal_count
+		log ("fetching terminal count of " & to_string (reference) & " ...", log_threshold);
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> locate_component_in_schematic'access);
+
+		log_indentation_down;
+
+		return terminals;
+	end terminal_count;
+
+	
 	function to_terminal (
 		port 			: in type_port_with_reference; -- see et_schematic spec
 		log_threshold 	: in et_string_processing.type_log_level) -- see et_libraries spec

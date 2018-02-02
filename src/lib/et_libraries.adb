@@ -1289,13 +1289,19 @@ package body et_libraries is
 			raise constraint_error;
 		end no_package;
 			
-	begin
+	begin -- validate_component_package_name
 		if length (name) > 0 then
 			check_package_name_characters (name, component_package_name_characters);
 		else
 			no_package;
 		end if;
 	end validate_component_package_name;
+
+	function to_string (terminals : in type_terminal_count) return string is
+	-- Returns the given number of terminals as string.
+	begin
+		return " terminal count" & type_terminal_count'image (terminals);
+	end to_string;
 	
 	function to_string (reference : in type_component_reference) return string is
 	-- Returns the given component reference as string.
