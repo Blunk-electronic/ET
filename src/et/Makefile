@@ -1,7 +1,7 @@
 TARGET = et
 
 VPATH = include
-OBJS = $(TARGET).o et_coordinates.o et_general.o et_schematic.o et_operations.o et_import.o et_export.o et_geometry.o et_kicad.o et_string_processing.o et_configuration.o et_libraries.o et_math.o et_csv.o
+OBJS = $(TARGET).o et_coordinates.o et_general.o et_schematic.o et_operations.o et_import.o et_export.o et_geometry.o et_kicad.o et_string_processing.o et_configuration.o et_libraries.o et_math.o et_csv.o et_pcb.o
 
 
 PREFIX = $(HOME)

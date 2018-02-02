@@ -83,8 +83,12 @@ package et_configuration is
 	-- Finally the container where the modules to be imported are stored is this:
 	import_modules : type_import_modules.list;
 
+
 	-- Module interconnections are collected in a simple list:
+	-- CS type type_connector_gender is (UNKNOWN, FEMALE, MALE);
+	
 	type type_connector is record
+		-- CS: gender ?
 		abbrevation	: et_coordinates.type_submodule_abbrevation.bounded_string; -- MOT
 		instance	: et_coordinates.type_submodule_instance; -- 4 
 		purpose		: et_libraries.type_component_purpose.bounded_string; -- MOTOR_CTRL_IN

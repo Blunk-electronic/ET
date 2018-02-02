@@ -492,35 +492,19 @@ package et_libraries is
 	use type_package_proposal;
 	package type_package_filter is new ordered_sets (type_package_proposal.bounded_string);
 
--- 	type type_package_technology is (
--- 		THT,		-- Through Hole Technology
--- 		SMT,		-- Surface Mount Technology
--- 		THT_SMT		-- mixed THT & SMT
--- 		);
-
--- 	type type_connector_gender is (UNKNOWN, FEMALE, MALE);
-
+-- TERMINALS
 	type type_terminal_count is new count_type; -- CS: limit to a reasonable range ?
 
-	--type type_component_package (technology : type_package_technology) is record
-	--type type_component_package (category : type_component_category) is record
+
+-- COMPONENT PACKAGES
 	type type_component_package is record
 		name 			: type_component_package_name.bounded_string; -- S_SOT23
 		library			: type_full_library_name.bounded_string; -- projects/lbr/smd_packages.pac
 		terminal_count	: type_terminal_count; -- 14
--- 		case technology is
--- 			when THT => 
--- 				pad_tht_count : positive; -- 14 for a NDIP14 package
--- 
--- 			when SMT => 
--- 				pad_smt_count : positive; -- 3 for a S_SOT23 package
--- 
--- 			when THT_SMT => 
--- 				pad_tht_count : positive; -- 8 for heat dissipation
--- 				pad_smt_count : positive; -- 32 for a TSSOP32 package
--- 		end case;
 	end record;
 
+
+	
 -- MISCELLANEOUS
 	-- Newly created fields may contain things like "?PARTCODE?" or "?PURPOSE?". For checking their
 	-- content we need this character set:
