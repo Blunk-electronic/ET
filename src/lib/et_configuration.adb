@@ -373,6 +373,14 @@ package body et_configuration is
 		module_cursor_A, module_cursor_B : type_rig.cursor;
 		net_A, net_B : type_net_name.bounded_string;
 		port_A, port_B : type_port_with_reference;
+
+		module_right : type_submodule_name.bounded_string := module_A;
+		module_left : type_submodule_name.bounded_string := module_B;
+		module_swap : type_submodule_name.bounded_string;
+	
+		reference_right : type_component_reference := reference_A;
+		reference_left : type_component_reference := reference_B;
+		reference_swap : type_component_reference;
 	
 -- 		procedure module_not_found (module : in et_coordinates.type_submodule_name.bounded_string) is
 -- 		begin
@@ -395,22 +403,37 @@ package body et_configuration is
 				net_name	: in type_net_name.bounded_string;
 				ports		: in type_ports_with_reference.set) is
 				use type_ports_with_reference;
+				use type_port_name;
 				port_cursor : type_ports_with_reference.cursor := ports.first;
+				port_found : boolean := false;
 			begin -- query_ports_B
 				log_indentation_up;
-				log ("locating " & to_string (reference_B) 
-					 & " port " & to_string (port_A.name) & " ...", log_threshold + 3);
-				log_indentation_up;
+				log ("locating " & to_string (reference => reference_B) 
+					 & " port " & to_string (port => port_A.name) & " ...", log_threshold + 3);
 
 				while port_cursor /= type_ports_with_reference.no_element loop
--- 					if element (port_cursor).reference = reference_A then
--- null;
---log (to_string (reference_A) & " port " 
--- 					end if;					
+					port_B := element (port_cursor);
+					if port_B.reference = reference_B then
+						log (" connector " & to_string (reference_B) & " found", log_threshold + 4);
+						if port_B.name = port_A.name then
+							log (" port " & to_string (port => port_A.name) & " found", log_threshold + 4);
+							port_found := true;
+							exit;
+						end if;
+					end if;
 					next (port_cursor);
 				end loop;
+
+				if not port_found then
+					log_indentation_reset;
+					log (message_error & "net " & to_string (net_name => net_B) 
+						& " is not connected with " & to_string (reference_B)
+						& " port " & to_string (port => port_A.name)
+						& " !",
+						console => true); 
+					raise constraint_error;
+				end if;
 								  
-				log_indentation_down;
 				log_indentation_down;
 			end query_ports_B;
 			
@@ -470,7 +493,7 @@ package body et_configuration is
 					if element (port_cursor).reference = reference_A then
 						port_A := element (port_cursor);
 						log (to_string (reference_A) & " port " 
-							 & to_string (port_A.name), log_threshold + 3);
+							 & to_string (port => port_A.name), log_threshold + 3);
 						log_indentation_up;
 						
 						-- look up nets in module B
@@ -520,6 +543,24 @@ package body et_configuration is
 		query_element (
 			position => module_cursor_A,
 			process => query_nets_A'access);
+
+		
+		-- swap places
+-- 		module_swap := module_A; -- backup name of module A
+-- 		module_B := module_A;
+-- 		module_A := module_swap;
+-- 
+-- 		reference_swap := reference_A, -- backup name of component reference A
+-- 		reference_B := reference_A;
+-- 		reference_A := reference_swap;
+-- 
+-- 		-- set the local module cursors
+-- 		module_cursor_A := type_rig.find (rig, module_A);
+-- 		module_cursor_B := type_rig.find (rig, module_B);
+-- 		
+-- 		query_element (
+-- 			position => module_cursor_A,
+-- 			process => query_nets_A'access);
 		
 		-- the module should be found. then get the terminal count of connector A
 		if module_cursor /= type_rig.no_element then
