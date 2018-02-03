@@ -59,13 +59,16 @@ with et_string_processing;
 package et_configuration is
 
 	-- configuration file section headers
-	section_component_prefixes						: constant string (1..20) := "[COMPONENT_PREFIXES]";
-	section_component_units							: constant string (1..22) := "[UNITS_OF_MEASUREMENT]";
-	section_components_with_operator_interaction 	: constant string (1..31) := "[OPERATOR_INTERACTION_REQUIRED]";
+	section_component_prefixes						: constant string (1..20)	:= "[COMPONENT_PREFIXES]";
+	section_component_units							: constant string (1..22)	:= "[UNITS_OF_MEASUREMENT]";
+	section_components_with_operator_interaction 	: constant string (1..31)	:= "[OPERATOR_INTERACTION_REQUIRED]";
 	-- CS: section_connector_gnd_terminal					: constant string (1..24) := "[CONNECTOR_GND_TERMINAL]";
-	section_import_modules							: constant string (1..16) := "[IMPORT_MODULES]";
-	section_module_interconnections					: constant string (1..25) := "[MODULE_INTERCONNECTIONS]";
+	section_import_modules							: constant string (1..16)	:= "[IMPORT_MODULES]";
+	section_module_interconnections					: constant string (1..25)	:= "[MODULE_INTERCONNECTIONS]";
 
+	option_module_interconnections_no_net_check		: constant string (1..12)	:= "no_net_check";
+	option_module_interconnections_warn_only		: constant string (1..9) 	:= "warn_only";	
+	
 	-- A module to be imported has a name, an abbrevation, a CAD format and a certain 
 	-- number of instances.
 	-- Example: nucleo_core NCC kicad_v4 1

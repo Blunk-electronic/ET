@@ -631,8 +631,15 @@ package body et_configuration is
 				module_B.name, reference_B, -- motor_driver, X701
 				log_threshold + 1);
 			
-			-- compare net names (via module.netlist)
-			compare_nets (module_A.name, reference_A, module_B.name, reference_B, log_threshold + 1);
+			-- compare net names
+			-- CS: do not compare if disabled by option
+			compare_nets (
+				module_A => module_A.name,
+				reference_A => reference_A, 
+				module_B => module_B.name,
+				reference_B => reference_B,
+
+				log_threshold => log_threshold + 1);
 			
 			next (interconnection_cursor);
 		end loop;
@@ -831,10 +838,16 @@ package body et_configuration is
 		-- MODULE INTERCONNECTIONS
 		put_line (configuration_file_handle, section_module_interconnections); -- section header
 		new_line (configuration_file_handle);		
-		put_line (configuration_file_handle, comment & "abbrevation instance connector_purpose abbrevation instance connector_purpose");
+		put_line (configuration_file_handle, comment 
+			& "abbrevation instance connector_purpose abbrevation instance connector_purpose [options]");
 		put_line (configuration_file_handle, comment & "examples:");
-		put_line (configuration_file_handle, comment & "NCC 1 MOTOR_CTRL_OUT_1 MOT 1 MOTOR_CTRL_IN");
-		put_line (configuration_file_handle, comment & "NCC 1 MOTOR_CTRL_OUT_2 MOT 2 MOTOR_CTRL_IN");
+		put_line (configuration_file_handle, comment & "NCC 1 MOTOR_CTRL_OUT_1 MOT 1 MOTOR_CTRL_IN "
+			& comment & option_module_interconnections_no_net_check
+			& latin_1.space & option_module_interconnections_warn_only);
+		
+		put_line (configuration_file_handle, comment & "NCC 1 MOTOR_CTRL_OUT_2 MOT 2 MOTOR_CTRL_IN "
+			& comment & option_module_interconnections_no_net_check
+			& latin_1.space & option_module_interconnections_warn_only);
 		new_line (configuration_file_handle);		
 		
 		-- COMPONENT PREFIXES
@@ -1072,7 +1085,7 @@ package body et_configuration is
 			unit		: type_unit_of_measurement;
 			
 			-- CS: check field count in sections respectively. issue warning if too many fields. 
-		begin
+		begin -- process_previous_section
 			next (line_cursor); -- the first line of the section is its header itself and can be skipped
 			log_indentation_up;
 
@@ -1178,6 +1191,8 @@ package body et_configuration is
 						check_purpose_characters (connection.peer_B.purpose);
 						-- NOTE: The question whether there is a connector with this purpose in the module can
 						-- not be answered here, because the project has not been imported yet.
+
+						-- CS: read options (depends on number of fields, if more than 6)
 						
 						-- test multiple occurences of connection
 						test_multiple_occurences (connection);
