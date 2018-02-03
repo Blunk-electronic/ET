@@ -553,6 +553,7 @@ package body et_schematic is
 	-- by given character set.
 		use et_string_processing;
 		invalid_character_position : natural := 0;
+		inversion_mark_position : natural := 0;
 	begin
 		-- Test given net name and get position of possible invalid characters.
 		invalid_character_position := index (
@@ -568,6 +569,19 @@ package body et_schematic is
 				console => true);
 			raise constraint_error;
 		end if;
+
+		-- If there is an inversion mark, it must be at the very end of the net name.
+		inversion_mark_position := type_net_name.index (net, net_inversion_mark);
+		if inversion_mark_position > 0 then
+			if inversion_mark_position /= type_net_name.length (net) then
+				log_indentation_reset;
+				log (message_error & "net " & to_string (net) 
+					& " inversion mark must be at the end of the net name !",
+					console => true);
+				raise constraint_error;
+			end if;
+		end if;
+		
 	end check_net_name_characters;
 	
 	function length (segment : in type_net_segment) return type_distance is

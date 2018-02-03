@@ -293,14 +293,15 @@ package et_schematic is
 -- LABELS AND NETS
 
 	-- The name of a net may have 100 characters which seems sufficient for now.
-	net_name_characters : character_set := to_set (ranges => (('A','Z'),('0','9'))) or to_set ("/_-"); 
+	net_name_characters : character_set := to_set (ranges => (('A','Z'),('0','9'))) or to_set ("_-#");
+	net_inversion_mark : constant string (1..1) := "#";
  	net_name_length_max : constant natural := 100;
 	package type_net_name is new generic_bounded_length (net_name_length_max); use type_net_name;
 
-	procedure check_net_name_length (net : in string); -- CS use it in et_kicad
+	procedure check_net_name_length (net : in string);
 	-- Tests if the given net name is longer than allowed.
 	
-	procedure check_net_name_characters ( -- CS use it in et_kicad
+	procedure check_net_name_characters (
 		net			: in type_net_name.bounded_string;
 		characters	: in character_set := net_name_characters);
 	-- Tests if the given net name contains only valid characters as specified

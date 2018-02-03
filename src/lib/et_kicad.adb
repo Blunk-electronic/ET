@@ -4503,9 +4503,16 @@ package body et_kicad is
 
 				next (line_cursor);
 
+				-- Make sure the label text (later this will be a net name) is not longer
+				-- than allowed.
+				check_net_name_length (field (et_kicad.line,1));
+				
 				-- get label text and put it to temporarily simple label
 				label.text := type_net_name.to_bounded_string (field (et_kicad.line,1));
 
+				-- Make sure there are no forbidden characters in the net name.
+				check_net_name_characters (label.text);
+				
 				-- for the log
 				if log_level >= log_threshold + 1 then
 					log_indentation_up;
@@ -4568,8 +4575,15 @@ package body et_kicad is
 
 				next (line_cursor);
 
+				-- Make sure the label text (later this will be a net name) is not longer
+				-- than allowed.
+				check_net_name_length (field (et_kicad.line,1));
+				
 				-- get label text
 				label.text := type_net_name.to_bounded_string (field (et_kicad.line,1));
+				
+				-- Make sure there are no forbidden characters in the net name.
+				check_net_name_characters (label.text);
 
 				-- for the log
 				if log_level >= log_threshold + 1 then
