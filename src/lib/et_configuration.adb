@@ -360,32 +360,167 @@ package body et_configuration is
 	-- Compares net names of the given connectors (via module.netlist).
 	-- Warns if names differ. CS: needs a parameter that raises error instead.
 		module_A		: in et_coordinates.type_submodule_name.bounded_string;
-		referenc_A		: in et_libraries.type_component_reference;
+		reference_A		: in et_libraries.type_component_reference;
 		module_B		: in et_coordinates.type_submodule_name.bounded_string;		
-		referenc_B		: in et_libraries.type_component_reference;
+		reference_B		: in et_libraries.type_component_reference;
 		log_threshold	: in type_log_level) is
 
 		use et_coordinates;
 		use et_schematic;
--- 		use et_libraries;
+		use et_libraries;
 		use type_rig;
-		
-		procedure module_not_found (module : in et_coordinates.type_submodule_name.bounded_string) is
-		begin
-			log_indentation_reset;
-			log (message_error & "module " & to_string (module) & " not found !",
-				 console => true);
-			raise constraint_error;
-		end module_not_found;
 
+		module_cursor_A, module_cursor_B : type_rig.cursor;
+		net_A, net_B : type_net_name.bounded_string;
+		port_A, port_B : type_port_with_reference;
+	
+-- 		procedure module_not_found (module : in et_coordinates.type_submodule_name.bounded_string) is
+-- 		begin
+-- 			log_indentation_reset;
+-- 			log (message_error & "module " & to_string (module) & " not found !",
+-- 				 console => true);
+-- 			raise constraint_error;
+-- 		end module_not_found;
+
+		procedure query_nets_B (
+			module_name : in type_submodule_name.bounded_string;
+			module		: in type_module) is
+			use type_netlist;
+			net_cursor : type_netlist.cursor := module.netlist.first;
+
+			use type_net_name;
+			net_found : boolean := false;
+			
+			procedure query_ports_B (
+				net_name	: in type_net_name.bounded_string;
+				ports		: in type_ports_with_reference.set) is
+				use type_ports_with_reference;
+				port_cursor : type_ports_with_reference.cursor := ports.first;
+			begin -- query_ports_B
+				log_indentation_up;
+				log ("locating " & to_string (reference_B) 
+					 & " port " & to_string (port_A.name) & " ...", log_threshold + 3);
+				log_indentation_up;
+
+				while port_cursor /= type_ports_with_reference.no_element loop
+-- 					if element (port_cursor).reference = reference_A then
+-- null;
+--log (to_string (reference_A) & " port " 
+-- 					end if;					
+					next (port_cursor);
+				end loop;
+								  
+				log_indentation_down;
+				log_indentation_down;
+			end query_ports_B;
+			
+		begin -- query_nets_B
+			log ("locating net " & to_string (net_name => net_A) 
+				& " in module " & to_string (module_B) & " ...", log_threshold + 1);
+			log_indentation_up;
+
+			while net_cursor /= type_netlist.no_element loop
+
+				net_B := key (net_cursor);
+				log (to_string (net_name => net_B), log_threshold + 2);
+
+				if net_B = net_A then
+					net_found := true;
+					query_element (
+						position => net_cursor,
+						process => query_ports_B'access);
+					exit;
+				end if;
+-- 		
+				next (net_cursor);
+			end loop;
+
+			if not net_found then
+				log_indentation_reset;
+				log (message_error & "net " & to_string (net_name => net_A)
+					 & " not found in module " & to_string (module_B) & " !",
+					console => true); 
+				raise constraint_error;
+			end if;
+
+			log_indentation_down;
+		end query_nets_B;
+		
+		procedure query_nets_A (
+			module_name : in type_submodule_name.bounded_string;
+			module		: in type_module) is
+			use type_netlist;
+			net_cursor : type_netlist.cursor := module.netlist.first;
+
+			procedure query_ports_A (
+				net_name	: in type_net_name.bounded_string;
+				ports		: in type_ports_with_reference.set) is
+				use type_ports_with_reference;
+				port_cursor : type_ports_with_reference.cursor := ports.first;
+			begin -- query_ports_A
+				net_A := net_name;
+				log (to_string (net_A), log_threshold + 1);
+
+				log_indentation_up;				
+				log ("querying ports ...", log_threshold + 2);
+				log_indentation_up;
+				
+				-- search for ports that have reference A
+				while port_cursor /= type_ports_with_reference.no_element loop
+					if element (port_cursor).reference = reference_A then
+						port_A := element (port_cursor);
+						log (to_string (reference_A) & " port " 
+							 & to_string (port_A.name), log_threshold + 3);
+						log_indentation_up;
+						
+						-- look up nets in module B
+						query_element (
+							position => module_cursor_B,
+							process => query_nets_B'access);
+
+						log_indentation_down;
+					end if;					
+					next (port_cursor);
+				end loop;
+								  
+				log_indentation_down;
+				log_indentation_down;
+			end query_ports_A;
+			
+		begin -- query_nets_A
+			log ("querying nets in module " & to_string (module_A) & " ...", log_threshold + 1);
+			log_indentation_up;
+
+			while net_cursor /= type_netlist.no_element loop
+
+				query_element (
+					position => net_cursor,
+					process => query_ports_A'access);
+
+				next (net_cursor);
+			end loop;
+
+			log_indentation_down;			
+		end query_nets_A;
+		
 	begin -- compare_nets
 		log ("comparing net names ...", log_threshold);
 		log_indentation_up;
+
+		log ("module " & to_string (module_A)
+			 & " connector " & to_string (reference_A), log_threshold + 1);
+
+		log ("module " & to_string (module_B)
+			 & " connector " & to_string (reference_B), log_threshold + 1);
 		
+		-- set the local module cursors
+		module_cursor_A := type_rig.find (rig, module_A);
+		module_cursor_B := type_rig.find (rig, module_B);
 
-		-- set the GLOBAL module cursor to module_A
-		module_cursor := type_rig.find (rig, module_A);
-
+		query_element (
+			position => module_cursor_A,
+			process => query_nets_A'access);
+		
 		-- the module should be found. then get the terminal count of connector A
 		if module_cursor /= type_rig.no_element then
 			null;
