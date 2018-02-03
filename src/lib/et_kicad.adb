@@ -4966,6 +4966,17 @@ package body et_kicad is
 													category => et_configuration.category (reference),
 													purpose => to_purpose (content (field_purpose)));
 										end if;
+
+										-- make sure the purpose text is visible in the graphical representation:
+										if field_purpose.visible = no then
+											log_indentation_reset;
+											log (message_error & "component " 
+												 & et_libraries.to_string (reference)
+												 & " purpose not visible !",
+												 console => true);
+											raise constraint_error;
+										end if;
+										
 								end case;									
 							end if;
 
