@@ -1495,6 +1495,20 @@ package body et_kicad is
 							if content (field_purpose) /= purpose_default then
 								log (message_warning & "expected default " & purpose_default & " !");
 							end if;
+
+							-- If component requires user interaction,
+							-- make sure the purpose text is visible in the graphical representation:
+							if requires_operator_interaction (tmp_prefix) = YES then
+								if field_purpose.visible = no then
+									log_indentation_reset;
+									log (message_error & "component "
+										& to_string (tmp_component_name)
+										& " purpose not visible !",
+										console => true);
+									raise constraint_error;
+								end if;
+							end if;
+							
 						end if;
 
 						
