@@ -66,7 +66,8 @@ package et_configuration is
 	section_import_modules							: constant string (1..16)	:= "[IMPORT_MODULES]";
 	section_module_interconnections					: constant string (1..25)	:= "[MODULE_INTERCONNECTIONS]";
 
-	option_module_interconnections_no_net_check		: constant string (1..12)	:= "no_net_check";
+	option_module_interconnections_comparator_off	: constant string (1..18)	:= "net_comparator_off";
+	option_module_interconnections_comparator_on	: constant string (1..17)	:= "net_comparator_on";
 	option_module_interconnections_warn_only		: constant string (1..9) 	:= "warn_only";	
 	
 	-- A module to be imported has a name, an abbrevation, a CAD format and a certain 
@@ -96,10 +97,26 @@ package et_configuration is
 		instance	: et_coordinates.type_submodule_instance; -- 4 
 		purpose		: et_libraries.type_component_purpose.bounded_string; -- MOTOR_CTRL_IN
 	end record;
+
+	type type_net_comparator_on_off is (ON, OFF);
+	
+	function to_string (net_comparator_on_off : in type_net_comparator_on_off) return string;
+	-- Returns the given net comparator status as string.
+	
+	type type_net_comparator_warn_only is (ON, OFF);
+
+	function to_string (net_comparator_warn : in type_net_comparator_warn_only) return string;
+	-- Returns the given net comparator warning status as string.
+	
+	type type_module_interconnection_options is record
+		comparator	: type_net_comparator_on_off := ON; -- net_comparator_off
+		warn_only 	: type_net_comparator_warn_only := OFF; -- warn_only
+	end record;
 	
 	type type_module_interconnection is record
 		peer_A	: type_connector;
 		peer_B	: type_connector;
+		options	: type_module_interconnection_options;
 	end record;
 
 	-- This is the container with the module interconnections:

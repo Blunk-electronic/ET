@@ -61,6 +61,18 @@ with et_import;
 
 package body et_configuration is
 
+	function to_string (net_comparator_on_off : in type_net_comparator_on_off) return string is
+	-- Returns the given net comparator status as string.
+	begin
+		return "net name comparator " & type_net_comparator_on_off'image (net_comparator_on_off);
+	end to_string;
+
+	function to_string (net_comparator_warn : in type_net_comparator_warn_only) return string is
+	-- Returns the given net comparator warning status as string.
+	begin
+		return "warnings only " & type_net_comparator_warn_only'image (net_comparator_warn);
+	end to_string;
+	
 	function to_submodule (abbrevation : in et_coordinates.type_submodule_abbrevation.bounded_string) 
 		return type_import_module is
 	-- Looks up the container import_modules for the given abbrevation and returns the submodule.
@@ -361,15 +373,15 @@ package body et_configuration is
 	-- The net names on both sides of the board-to-board connection must be equal.
 	-- If the names differ or a net does not exist on the other side, a warning
 	-- is issued.
-	-- CS: needs a parameter that raises error instead.
 
 	-- CS: comment
 	-- CS: describe alternative (time saving) approach via portlists ?
 	
-		module_A		: in et_coordinates.type_submodule_name.bounded_string;
-		reference_A		: in et_libraries.type_component_reference;
-		module_B		: in et_coordinates.type_submodule_name.bounded_string;		
-		reference_B		: in et_libraries.type_component_reference;
+		module_A		: in et_coordinates.type_submodule_name.bounded_string;	-- nucleo_core
+		reference_A		: in et_libraries.type_component_reference;				-- X!
+		module_B		: in et_coordinates.type_submodule_name.bounded_string;	-- motor_driver
+		reference_B		: in et_libraries.type_component_reference;				-- X701
+		warn_only		: in type_net_comparator_warn_only;						-- warn or abort on difference
 		log_threshold	: in type_log_level) is
 
 		use et_coordinates;
@@ -405,6 +417,15 @@ package body et_configuration is
 				use type_port_name;
 				port_cursor : type_ports_with_reference.cursor := ports.first;
 				port_found : boolean := false;
+
+				function port_not_found return string is
+				begin
+					return "module " & to_string (module_name)
+						& " : expect net " & to_string (net_name => net_left) 
+						& " connected with " & to_string (reference_left)
+						& " port " & to_string (port => port_right.name) & " !";
+				end port_not_found;
+				
 			begin -- query_ports_B
 				log_indentation_up;
 				log ("locating " & to_string (reference => reference_left) 
@@ -423,20 +444,27 @@ package body et_configuration is
 					next (port_cursor);
 				end loop;
 
+				-- If the expected port could not be found, issue warning or abort as specified
+				-- by input parameter warn_only.
 				if not port_found then
-					--log_indentation_reset;
-					log (message_warning & "module " & to_string (module_name)
-						& " : expect net " & to_string (net_name => net_left) 
-						& " connected with " & to_string (reference_left)
-						& " port "
-						& to_string (port => port_right.name)
-						& " !",
-						console => false); 
-					--raise constraint_error;
+					case warn_only is
+						when ON => 	log (message_warning & port_not_found); 
+						when OFF =>	
+							log_indentation_reset;
+							log (message_error & port_not_found, console => true); 
+							raise constraint_error;
+					end case;
 				end if;
 								  
 				log_indentation_down;
 			end query_ports_left;
+
+			function net_not_found return string is
+			begin
+				return "module " & to_string (module_left) 
+					& " : net " & to_string (net_name => net_right)
+					& " not found !";
+			end net_not_found;
 			
 		begin -- query_nets_left
 			log ("locating net " & to_string (net_name => net_right) 
@@ -459,13 +487,17 @@ package body et_configuration is
 				next (net_cursor);
 			end loop;
 
+			-- If expected net not found, issue warning or abort as specified by
+			-- input parameter warn_only.
 			if not net_found then
-				--log_indentation_reset;
-				log (message_warning & "module " & to_string (module_left) 
-					 & " : net " & to_string (net_name => net_right)
-					 & " not found !",
-					console => false); 
-				--raise constraint_error;
+				case warn_only is
+					when ON => log (message_warning & net_not_found); 
+					when OFF =>
+						log_indentation_reset;
+						log (message_error & net_not_found,
+							console => true); 
+						raise constraint_error;
+				end case;
 			end if;
 
 			log_indentation_down;
@@ -632,15 +664,22 @@ package body et_configuration is
 				log_threshold + 1);
 			
 			-- compare net names
-			-- CS: do not compare if disabled by option
-			compare_nets (
-				module_A => module_A.name,
-				reference_A => reference_A, 
-				module_B => module_B.name,
-				reference_B => reference_B,
+			-- If net name comparator is turned off for this connection, this step is skipped.
+			-- Otherwise net names are compared on both sides of the module interconnection.
+			case element (interconnection_cursor).options.comparator is
+				when ON =>
+					compare_nets (
+						module_A => module_A.name,	-- nucleo_core
+						reference_A => reference_A, -- X1
+						module_B => module_B.name,	-- motor_driver
+						reference_B => reference_B,	-- X701
+						warn_only => element (interconnection_cursor).options.warn_only, -- warnings or abort on difference
+						log_threshold => log_threshold + 1);
 
-				log_threshold => log_threshold + 1);
-			
+				when OFF =>
+					log ("net name comparing skipped !", log_threshold + 2);
+			end case;
+					
 			next (interconnection_cursor);
 		end loop;
 
@@ -840,13 +879,13 @@ package body et_configuration is
 		new_line (configuration_file_handle);		
 		put_line (configuration_file_handle, comment 
 			& "abbrevation instance connector_purpose abbrevation instance connector_purpose [options]");
-		put_line (configuration_file_handle, comment & "examples:");
+		put_line (configuration_file_handle, comment & "examples:"); -- CS more expanation and examples on options
 		put_line (configuration_file_handle, comment & "NCC 1 MOTOR_CTRL_OUT_1 MOT 1 MOTOR_CTRL_IN "
-			& comment & option_module_interconnections_no_net_check
+			& comment & option_module_interconnections_comparator_off
 			& latin_1.space & option_module_interconnections_warn_only);
 		
 		put_line (configuration_file_handle, comment & "NCC 1 MOTOR_CTRL_OUT_2 MOT 2 MOTOR_CTRL_IN "
-			& comment & option_module_interconnections_no_net_check
+			& comment & option_module_interconnections_comparator_off
 			& latin_1.space & option_module_interconnections_warn_only);
 		new_line (configuration_file_handle);		
 		
@@ -1025,13 +1064,14 @@ package body et_configuration is
 			inserted : boolean := false;
 
 			-- we deal with columns and need to index them
-			subtype type_column is positive range 1..6;
+			subtype type_column is positive range 1..8;
 			column_module_name	: type_column;
 			column_cad_format	: type_column;
 			column_abbrevation_A,	column_abbrevation_B	: type_column;
 			column_instance_A, 		column_instance_B		: type_column;		
 			column_purpose_A,		column_purpose_B		: type_column;
-					
+			column_first_option	: type_column;
+		
 			use et_libraries;
 			use et_coordinates;
 			use type_import_modules;
@@ -1061,16 +1101,47 @@ package body et_configuration is
 			end test_multiple_occurences;
 
 			procedure test_multiple_occurences (connection : in type_module_interconnection) is
-			-- Tests if given module inteconnection is already in the module_interconnections list.
+			-- Tests if given module interconnection uses a connector that is already used.
 				use type_module_interconnections;
-			begin
-				if find (et_configuration.module_interconnections, connection) /= 
-					type_module_interconnections.no_element then
-						log_indentation_reset;
-						log (message_error & affected_line (element (line_cursor)) 
-							& "duplicated entry !",
-							console => true);
-						raise constraint_error;
+				connection_cursor : type_module_interconnections.cursor;
+				connection_scratch : type_module_interconnection;
+			
+				procedure connector_already_used (connector : in type_connector) is
+				begin
+					log_indentation_reset;
+					log (message_error & "connector " & to_string (connector.abbrevation) 
+						 & " instance " & to_string (connector.instance)
+						 & " already used !",
+						 console => true);
+					raise constraint_error;
+				end connector_already_used;
+			
+			begin -- test_multiple_occurences
+
+				-- This test does only make sense if any connection have been read already.
+				-- If there are connections, we test if the given connections uses a connector
+				-- that has been used already.
+				if not is_empty (et_configuration.module_interconnections) then
+					connection_cursor := et_configuration.module_interconnections.first;
+
+					-- loop through connections 
+					while connection_cursor /= type_module_interconnections.no_element loop
+						connection_scratch := element (connection_cursor);
+
+						-- test peer A
+						if 	connection_scratch.peer_A = connection.peer_A or 
+							connection_scratch.peer_A = connection.peer_B then
+							connector_already_used (connection_scratch.peer_A);
+						end if;
+
+						-- test peer B
+						if 	connection_scratch.peer_B = connection.peer_A or 
+							connection_scratch.peer_B = connection.peer_B then
+							connector_already_used (connection_scratch.peer_B);
+						end if;
+						
+						next (connection_cursor);
+					end loop;
 				end if;
 			end test_multiple_occurences;
 
@@ -1153,6 +1224,7 @@ package body et_configuration is
 					column_abbrevation_B	:= 4;
 					column_instance_B		:= 5;
 					column_purpose_B		:= 6;
+					column_first_option		:= 7;
 
 					-- we read a line like "# NCC 1 MOTOR_CTRL_OUT_1 MOT 1 MOTOR_CTRL_IN"
 					while line_cursor /= type_lines.no_element loop
@@ -1192,8 +1264,50 @@ package body et_configuration is
 						-- NOTE: The question whether there is a connector with this purpose in the module can
 						-- not be answered here, because the project has not been imported yet.
 
-						-- CS: read options (depends on number of fields, if more than 6)
-						
+						-- read options 
+						-- If any provided the number of fields is greater thatn column_first_option).
+						-- example: LMX 1 "PWR CTRL IN" PWR 1 "PWR CTRL OUT" net_comparator_off #warn_only
+						-- CS: If mutually exclusive options given, then the last one overrides the previous.
+						if field_count (element (line_cursor)) >= count_type (column_first_option) then
+							log ("options provided", log_threshold + 1);
+							log_indentation_up;
+
+							-- Loop in options and test for options. Once a supported option occurs, set the
+							-- corresponding option in the connection being built.
+							for pos in positive (column_first_option) .. positive (field_count (element (line_cursor))) loop
+
+								-- test option keywords
+								if field (element (line_cursor), pos) = option_module_interconnections_comparator_off then
+									connection.options.comparator := OFF;
+								elsif field (element (line_cursor), pos) = option_module_interconnections_comparator_on then
+									connection.options.comparator := ON;
+								elsif field (element (line_cursor), pos) = option_module_interconnections_warn_only then
+									connection.options.warn_only := ON;
+								else
+									log_indentation_reset;
+									log (message_error & "unknown option " & field (element (line_cursor), pos), console => true);
+									raise constraint_error;
+								end if;
+								
+							end loop;
+
+							log (to_string (connection.options.comparator), log_threshold + 1);
+							log (to_string (connection.options.warn_only), log_threshold + 1);
+
+							-- comparator OFF and warnings only at the same time does not make sense:
+							if connection.options.comparator = OFF and connection.options.warn_only = ON then
+								log_indentation_reset;
+								log (message_error & "mutually exclusive options : " 
+									& to_string (connection.options.comparator) & " and "
+									& to_string (connection.options.warn_only) & " does not make sense !",
+									console => true);
+								raise constraint_error;
+							end if;
+							
+
+							log_indentation_down;
+						end if;
+
 						-- test multiple occurences of connection
 						test_multiple_occurences (connection);
 
