@@ -370,13 +370,33 @@ package body et_configuration is
 
 	procedure compare_nets (
 	-- Compares net names of the given connectors (via module.netlist).
-	-- The net names on both sides of the board-to-board connection must be equal.
+	-- The net names, the ports and the terminal names on both sides of
+	-- the board-to-board connection must be equal.
 
-	-- CS: comment
-	-- CS: describe alternative (time saving) approach via portlists ?
+	-- The workflow in general:
+	-- 1. The comparing is conducted first from the right to the left. Means
+	-- module_A and reference_A are assumed to be on the right of the connection
+	-- while module_B and reference_B are assumed on the left.
+	-- 2. In module_right all nets having reference_right are located. Each occurence
+	-- stands for the port and terminal (pin/pad) of the connector on the right.
+	-- This is based on the netlist of the module (see type_module)
+	-- 3. For each port on the right the connector on the left is probed. The port on the left
+	-- must be connected to a net with the same name as the one on the right. 
+	-- Otherwise a warning is issued or error raised (parameter warn_only).
+	-- The left side connector is reference_left which must have the same port and terminal
+	-- name. Otherwise a warning is issued or error raised (parameter warn_only). Since the 
+	-- terminal names are not in the netlist, they are fetched via the connector reference
+	-- by function to_terminal.
+	-- 4. The modules A and B swap places. Means module_A and reference_A are assumed to be 
+	-- on the LEFT of the connection while module_B and reference_B are assumed on the RIGHT.
+	-- Why ? This way open ports are detected.
+	-- 5. Steps 2 and 3 are repeated.
+	
+	-- CS: There could be a time saving approach via the portlists of the modules. The connectors
+	-- ports and terminals could be tested for connected nets and compared ...
 	
 		module_A		: in et_coordinates.type_submodule_name.bounded_string;	-- nucleo_core
-		reference_A		: in et_libraries.type_component_reference;				-- X!
+		reference_A		: in et_libraries.type_component_reference;				-- X1
 		module_B		: in et_coordinates.type_submodule_name.bounded_string;	-- motor_driver
 		reference_B		: in et_libraries.type_component_reference;				-- X701
 		warn_only		: in type_net_comparator_warn_only;						-- warn or abort on difference
@@ -388,16 +408,16 @@ package body et_configuration is
 		use type_rig;
 
 		module_cursor_right, module_cursor_left : type_rig.cursor;
-		net_right, net_left : type_net_name.bounded_string;
-		port_right, port_left : type_port_with_reference;
-		terminal_right, terminal_left : type_terminal;
+		net_right, net_left : type_net_name.bounded_string;	-- motor_on_off
+		port_right, port_left : type_port_with_reference;	-- 4
+		terminal_right, terminal_left : type_terminal;		-- 4, B3
 	
-		module_right : type_submodule_name.bounded_string := module_A;
-		module_left : type_submodule_name.bounded_string := module_B;
+		module_right : type_submodule_name.bounded_string := module_A;	-- nucleo_core
+		module_left : type_submodule_name.bounded_string := module_B;	-- motor_driver
 		module_swap : type_submodule_name.bounded_string;
 	
-		reference_right : type_component_reference := reference_A;
-		reference_left : type_component_reference := reference_B;
+		reference_right : type_component_reference := reference_A;	-- X1
+		reference_left : type_component_reference := reference_B;	-- X701
 		reference_swap : type_component_reference;
 
 		procedure query_nets_left (
@@ -408,6 +428,14 @@ package body et_configuration is
 
 			use type_net_name;
 			net_found : boolean := false;
+
+			function net_or_terminal_not_found return string is
+			begin
+				return "module " & to_string (module_left) 
+					& " : expect net " & to_string (net_name => net_right)
+					& " connected with " & to_string (reference_left)
+					& to_string (terminal_right) & "!";
+			end net_or_terminal_not_found;
 			
 			procedure query_ports_left (
 				net_name	: in type_net_name.bounded_string;
@@ -416,23 +444,9 @@ package body et_configuration is
 				use type_port_name;
 				port_cursor : type_ports_with_reference.cursor := ports.first;
 				terminal_found : boolean := false;
-				
-				function terminal_not_found return string is
-				begin
-					return "module " & to_string (module_name)
-						& " : expect net " & to_string (net_name => net_left) 
-						& " connected with" & to_string (reference_left)
-						& to_string (terminal_right)
-						--& " port " & to_string (port => port_right.name) 
-						--& " terminal " & to_string (terminal_right.name) 
-						& "!";
-				end terminal_not_found;
-				
 			begin -- query_ports_left
 				log_indentation_up;
 				log ("locating connector " & to_string (reference => reference_left) 
-					--& " port " & to_string (port => port_right.name) 
-					--& " terminal " & to_string (terminal_right.name)
 					& to_string (terminal_right) & "...", log_threshold + 8);
 
 				log_indentation_up;
@@ -461,14 +475,14 @@ package body et_configuration is
 				end loop;
 				log_indentation_down;
 
-				-- If the expected port could not be found, issue warning or abort as specified
+				-- If the expected terminal could not be found, issue warning or abort as specified
 				-- by input parameter warn_only.
 				if not terminal_found then
 					case warn_only is
-						when ON => 	log (message_warning & terminal_not_found); 
+						when ON => 	log (message_warning & net_or_terminal_not_found); 
 						when OFF =>	
 							log_indentation_reset;
-							log (message_error & terminal_not_found, console => true); 
+							log (message_error & net_or_terminal_not_found, console => true); 
 							raise constraint_error;
 					end case;
 				end if;
@@ -476,13 +490,6 @@ package body et_configuration is
 				log_indentation_down;
 			end query_ports_left;
 
-			function net_not_found return string is
-			begin
-				return "module " & to_string (module_left) 
-					& " : net " & to_string (net_name => net_right)
-					& " not found !";
-			end net_not_found;
-			
 		begin -- query_nets_left
 			log ("locating net " & to_string (net_name => net_right) 
 				& " in module " & to_string (module_left) & " ...", log_threshold + 6);
@@ -507,10 +514,10 @@ package body et_configuration is
 			-- input parameter warn_only.
 			if not net_found then
 				case warn_only is
-					when ON => log (message_warning & net_not_found); 
+					when ON => log (message_warning & net_or_terminal_not_found); 
 					when OFF =>
 						log_indentation_reset;
-						log (message_error & net_not_found,
+						log (message_error & net_or_terminal_not_found,
 							console => true); 
 						raise constraint_error;
 				end case;
@@ -547,8 +554,6 @@ package body et_configuration is
 						terminal_right := to_terminal (port_right, module_name, log_threshold + 6);
 						
 						log (to_string (reference_right)
-							--& " port " & to_string (port => port_right.name)
-							--& " terminal " & to_string (terminal_right.name),
 							& to_string (terminal_right), log_threshold + 5);
 						
 						log_indentation_up;
@@ -587,7 +592,7 @@ package body et_configuration is
 		log ("comparing net names ...", log_threshold);
 		log_indentation_up;
 
-		-- step #1: Test connection from right to left.
+		-- Test connection from right to left.
 		log ("module right " & to_string (module_right)
 			 & " connector right " & to_string (reference_right), log_threshold + 1);
 
@@ -604,7 +609,7 @@ package body et_configuration is
 			process => query_nets_right'access);
 		log_indentation_down;
 		
-		-- step #2: Test connection from left to right
+		-- Test connection from left to right
 		-- swap places
 		module_swap := module_left; -- backup name of module left
 		module_left := module_right; -- left becomes right
