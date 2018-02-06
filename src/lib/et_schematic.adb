@@ -4975,10 +4975,10 @@ package body et_schematic is
 	
 	function to_terminal (
 		port 			: in type_port_with_reference; -- see et_schematic spec
+		module			: in type_submodule_name.bounded_string; -- the name of the module
 		log_threshold 	: in et_string_processing.type_log_level) -- see et_libraries spec
 		return type_terminal is -- see et_libraries spec
 	-- Returns the terminal and unit name of the given port in a composite type.
-	-- Requires module_cursor (global variable) to point to the current module.
 
 	-- NOTE: In contrast to Kicad, the terminal name is stored in a package variant. The package variant in
 	-- turn is maintained in the symbol component library.
@@ -5157,12 +5157,12 @@ package body et_schematic is
 		end locate_component_in_schematic;
 	
 	begin -- to_terminal
-		log ("locating terminal for " & to_string (port.reference) 
+		log ("locating in " & to_string (module) & " terminal for " & to_string (port.reference) 
 			& " port " & to_string (port.name) & " ...", log_threshold);
 		log_indentation_up;
-		
+
 		query_element (
-			position	=> module_cursor,
+			position	=> find (rig, module), -- sets indirectly the cursor to the module
 			process		=> locate_component_in_schematic'access);
 
 		log_indentation_down;
@@ -5206,7 +5206,11 @@ package body et_schematic is
 					-- we export only ports of real components
 					if element (port_cursor).appearance = sch_pcb then
 
-						terminal := to_terminal (element (port_cursor), log_threshold + 4);
+						-- fetch the terminal from the port in the current module
+						terminal := to_terminal (
+							port => element (port_cursor),
+							module => key (module_cursor),	-- nucleo_core
+							log_threshold => log_threshold + 4);
 					
 						-- log reference, unit, port, direction, terminal (all in one line)
 						log ("reference " & to_string (element (port_cursor).reference)

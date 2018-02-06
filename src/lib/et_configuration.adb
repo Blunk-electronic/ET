@@ -417,7 +417,8 @@ package body et_configuration is
 				use type_port_name;
 				port_cursor : type_ports_with_reference.cursor := ports.first;
 				port_found : boolean := false;
-
+				terminal : type_terminal;
+				
 				function port_not_found return string is
 				begin
 					return "module " & to_string (module_name)
@@ -437,6 +438,7 @@ package body et_configuration is
 						log (" connector " & to_string (reference_left) & " found", log_threshold + 4);
 						if port_left.name = port_right.name then
 							log (" port " & to_string (port => port_right.name) & " found", log_threshold + 4);
+							-- cs terminal := to_terminal (port_right, log_threshold + 5);
 							port_found := true;
 							exit;
 						end if;
