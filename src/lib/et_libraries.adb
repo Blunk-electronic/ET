@@ -162,6 +162,47 @@ package body et_libraries is
 		end if;
 	end check_variant_name_characters;
 
+	function to_string (
+		terminal	: in type_terminal;
+		show_unit	: in boolean := false;
+		preamble	: in boolean := true)
+		return string is
+	-- Returns the given terminal as string. 
+	-- If show_unit is true, the unit name is output.
+	-- If preamble is true, each property of the terminal is headed by a short preamble.
+	begin
+		case preamble is
+			when true =>
+				case show_unit is
+					when true =>
+						return (" port " & to_string (port => terminal.port) 
+							& " unit " & to_string (terminal.unit)
+							& " terminal " & to_string (terminal.name)
+							& latin_1.space);
+						
+					when false =>
+						return (" port " & to_string (port => terminal.port) 
+							& " terminal " & to_string (terminal.name)
+							& latin_1.space);
+				end case;
+						
+			when false =>
+				case show_unit is
+					when true =>
+						return (latin_1.space & to_string (port => terminal.port) 
+							& latin_1.space & to_string (terminal.unit)
+							& latin_1.space & to_string (terminal.name)
+							& latin_1.space);
+						
+					when false =>
+						return (latin_1.space & to_string (port => terminal.port) 
+							& latin_1.space & to_string (terminal.name)
+							& latin_1.space);
+				end case;
+		end case;
+		
+	end to_string;
+
 	
 	procedure check_generic_name_characters (
 	-- Checks if the given generic component name meets certain conventions.

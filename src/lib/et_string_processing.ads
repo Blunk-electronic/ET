@@ -64,7 +64,7 @@ with et_general;
 
 package et_string_processing is
 
-	type type_log_level is range 0..10;
+	type type_log_level is range 0..15;
 	log_level : type_log_level := type_log_level'first;
 
 	type type_indentation_level is range 0..20;

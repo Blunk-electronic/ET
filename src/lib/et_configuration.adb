@@ -326,7 +326,7 @@ package body et_configuration is
 		end module_not_found;
 			
 	begin -- compare_connector_terminal_count
-		log ("comparing connector terminals ...", log_threshold);
+		log ("comparing connector terminal count ...", log_threshold);
 		log_indentation_up;
 
 		-- set the GLOBAL module cursor to module_A
@@ -371,8 +371,6 @@ package body et_configuration is
 	procedure compare_nets (
 	-- Compares net names of the given connectors (via module.netlist).
 	-- The net names on both sides of the board-to-board connection must be equal.
-	-- If the names differ or a net does not exist on the other side, a warning
-	-- is issued.
 
 	-- CS: comment
 	-- CS: describe alternative (time saving) approach via portlists ?
@@ -392,7 +390,8 @@ package body et_configuration is
 		module_cursor_right, module_cursor_left : type_rig.cursor;
 		net_right, net_left : type_net_name.bounded_string;
 		port_right, port_left : type_port_with_reference;
-
+		terminal_right, terminal_left : type_terminal;
+	
 		module_right : type_submodule_name.bounded_string := module_A;
 		module_left : type_submodule_name.bounded_string := module_B;
 		module_swap : type_submodule_name.bounded_string;
@@ -416,44 +415,60 @@ package body et_configuration is
 				use type_ports_with_reference;
 				use type_port_name;
 				port_cursor : type_ports_with_reference.cursor := ports.first;
-				port_found : boolean := false;
-				terminal : type_terminal;
+				terminal_found : boolean := false;
 				
-				function port_not_found return string is
+				function terminal_not_found return string is
 				begin
 					return "module " & to_string (module_name)
 						& " : expect net " & to_string (net_name => net_left) 
-						& " connected with " & to_string (reference_left)
-						& " port " & to_string (port => port_right.name) & " !";
-				end port_not_found;
+						& " connected with" & to_string (reference_left)
+						& to_string (terminal_right)
+						--& " port " & to_string (port => port_right.name) 
+						--& " terminal " & to_string (terminal_right.name) 
+						& "!";
+				end terminal_not_found;
 				
-			begin -- query_ports_B
+			begin -- query_ports_left
 				log_indentation_up;
-				log ("locating " & to_string (reference => reference_left) 
-					 & " port " & to_string (port => port_right.name) & " ...", log_threshold + 3);
+				log ("locating connector " & to_string (reference => reference_left) 
+					--& " port " & to_string (port => port_right.name) 
+					--& " terminal " & to_string (terminal_right.name)
+					& to_string (terminal_right) & "...", log_threshold + 8);
 
+				log_indentation_up;
 				while port_cursor /= type_ports_with_reference.no_element loop
 					port_left := element (port_cursor);
+
 					if port_left.reference = reference_left then
-						log (" connector " & to_string (reference_left) & " found", log_threshold + 4);
+						log ("connector found", log_threshold + 9);
+						
 						if port_left.name = port_right.name then
-							log (" port " & to_string (port => port_right.name) & " found", log_threshold + 4);
-							-- cs terminal := to_terminal (port_right, log_threshold + 5);
-							port_found := true;
-							exit;
+							log ("port found", log_threshold + 9);
+
+							-- fetch terminal name from port_left and current module
+							terminal_left := to_terminal (port_left, module_name, log_threshold + 10);
+
+							-- compare terminal names. on match exit loop.
+							if terminal_left = terminal_right then
+								log ("terminal found", log_threshold + 9);
+								terminal_found := true;
+								exit;
+							end if;
+								
 						end if;
 					end if;
 					next (port_cursor);
 				end loop;
+				log_indentation_down;
 
 				-- If the expected port could not be found, issue warning or abort as specified
 				-- by input parameter warn_only.
-				if not port_found then
+				if not terminal_found then
 					case warn_only is
-						when ON => 	log (message_warning & port_not_found); 
+						when ON => 	log (message_warning & terminal_not_found); 
 						when OFF =>	
 							log_indentation_reset;
-							log (message_error & port_not_found, console => true); 
+							log (message_error & terminal_not_found, console => true); 
 							raise constraint_error;
 					end case;
 				end if;
@@ -470,13 +485,12 @@ package body et_configuration is
 			
 		begin -- query_nets_left
 			log ("locating net " & to_string (net_name => net_right) 
-				& " in module " & to_string (module_left) & " ...", log_threshold + 1);
+				& " in module " & to_string (module_left) & " ...", log_threshold + 6);
 			log_indentation_up;
 
 			while net_cursor /= type_netlist.no_element loop
-
 				net_left := key (net_cursor);
-				log (to_string (net_name => net_left), log_threshold + 2);
+				log (to_string (net_name => net_left), log_threshold + 7);
 
 				if net_left = net_right then
 					net_found := true;
@@ -518,18 +532,25 @@ package body et_configuration is
 				port_cursor : type_ports_with_reference.cursor := ports.first;
 			begin -- query_ports_right
 				net_right := net_name;
-				log (to_string (net_right), log_threshold + 1);
+				log (to_string (net_right), log_threshold + 3);
 
 				log_indentation_up;				
-				log ("querying ports ...", log_threshold + 2);
+				log ("querying connector terminals ...", log_threshold + 4);
 				log_indentation_up;
 				
-				-- search for ports that have reference A
+				-- search for ports that have reference_right
 				while port_cursor /= type_ports_with_reference.no_element loop
 					if element (port_cursor).reference = reference_right then
 						port_right := element (port_cursor);
-						log (to_string (reference_right) & " port " 
-							 & to_string (port => port_right.name), log_threshold + 3);
+
+						-- fetch terminal of port_right
+						terminal_right := to_terminal (port_right, module_name, log_threshold + 6);
+						
+						log (to_string (reference_right)
+							--& " port " & to_string (port => port_right.name)
+							--& " terminal " & to_string (terminal_right.name),
+							& to_string (terminal_right), log_threshold + 5);
+						
 						log_indentation_up;
 						
 						-- look up nets in module left
@@ -547,7 +568,7 @@ package body et_configuration is
 			end query_ports_right;
 			
 		begin -- query_nets_right
-			log ("querying nets in module " & to_string (module_right) & " ...", log_threshold + 1);
+			log ("querying nets in module " & to_string (module_right) & " ...", log_threshold + 2);
 			log_indentation_up;
 
 			while net_cursor /= type_netlist.no_element loop
@@ -577,10 +598,11 @@ package body et_configuration is
 		module_cursor_right := type_rig.find (rig, module_right);
 		module_cursor_left := type_rig.find (rig, module_left);
 
+		log_indentation_up;
 		query_element (
 			position => module_cursor_right,
 			process => query_nets_right'access);
-
+		log_indentation_down;
 		
 		-- step #2: Test connection from left to right
 		-- swap places
@@ -601,11 +623,13 @@ package body et_configuration is
 		-- set module cursors
 		module_cursor_right := type_rig.find (rig, module_right);
 		module_cursor_left := type_rig.find (rig, module_left);
-		
+
+		log_indentation_up;
 		query_element (
 			position => module_cursor_right,
 			process => query_nets_right'access);
-	
+		log_indentation_down;
+
 		log_indentation_down;
 
 		-- CS: The modules should be found. Place exception handler in case

@@ -5157,7 +5157,8 @@ package body et_schematic is
 		end locate_component_in_schematic;
 	
 	begin -- to_terminal
-		log ("locating in " & to_string (module) & " terminal for " & to_string (port.reference) 
+		log ("locating in module " & to_string (module) & " terminal (according to package variant) for " 
+			& to_string (port.reference) 
 			& " port " & to_string (port.name) & " ...", log_threshold);
 		log_indentation_up;
 

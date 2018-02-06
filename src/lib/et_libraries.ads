@@ -770,6 +770,7 @@ package et_libraries is
 
 
 	unit_name_length_max : constant natural := 50;	
+	-- CS unit_name_characters, length check, character check
 	package type_unit_name is new generic_bounded_length (unit_name_length_max); use type_unit_name;
 
 	function to_string (unit_name : in type_unit_name.bounded_string) return string;
@@ -934,7 +935,15 @@ package et_libraries is
 		port	: type_port_name.bounded_string; -- GPIO3
 	end record;
 
-
+	function to_string (
+		terminal	: in type_terminal;
+		show_unit	: in boolean := false;
+		preamble	: in boolean := true)
+		return string;
+	-- Returns the given terminal as string. 
+	-- If show_unit is true, the unit name is output.
+	-- If preamble is true, each property of the terminal is headed by a short preamble.
+	
 -- POWER FLAGS (kicad requirement)
 	type type_power_flag is (YES, NO);
 
