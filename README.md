@@ -1,5 +1,5 @@
 # ET
-## An Electronic Tool for checking style and desgin conventions
+## A tool for checking style and design conventions
 - Supposed to import various CAE formats like KiCad, EAGLE, ...
 - Currently only KiCad V4 is supported.
 
@@ -9,7 +9,7 @@
 $ et --make_configuration my_configuration.txt
 ```
 
-- This file is now placed in the root directory of your KiCad projects. Edit this file according to your own customs.
+- This file is now placed in the root directory of your KiCad projects. Edit it according to your customs.
 
 - To import a single KiCad V4 design run this command: 
 
