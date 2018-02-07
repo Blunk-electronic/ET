@@ -11,7 +11,7 @@ $ et --make_configuration my_configuration.txt
 
 - This file is now placed in the root directory of your KiCad projects. Edit this file according to your own customs.
 
-- To import a KiCad V4 design run this command: 
+- To import a single KiCad V4 design run this command: 
 
 ```sh
  et --configuration_file my_configuration.txt --import_format kicad_v4 --import_project my_kicad_project/
@@ -31,9 +31,9 @@ optionally provide a log level for debugging:
  et --import_modules --configuration_file my_configuration.txt --log_level 1
 ```
 
-Installation:
-- install the GNAT Ada compiler (version 7 or later)
-- run the install script install.sh as non-root user
-- The script installs the executable binary in $HOME/bin and further-on creates a hidden directory .ET in $HOME where configuration files live
-- currently there is nothing to do in the configuration directory -> leave it as it is
-- for help contact info@blunk-electronic.de . You are highly welcome :-)
+### Installation
+- Install the GNAT Ada compiler (version 7 or later). It should come along with major linux distros.
+- Run the install script install.sh as non-root user.
+- The script installs the executable binary et in $HOME/bin and further-on creates a hidden directory .ET in $HOME where other configuration files live.
+- Currently there is nothing to do in the configuration directory -> leave it as it is.
+- For help contact info@blunk-electronic.de . You are highly welcome :-)
