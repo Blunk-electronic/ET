@@ -886,7 +886,7 @@ package body et_configuration is
 					net_name := key (net_cursor);
 					net_changers := components_in_net (module_name, net_name, NETCHANGER, log_threshold + 2);
 
-					-- CS 
+					-- CS connected_net (module_name, port, log_threshold +x);
 					next (net_cursor);
 				end loop;
 			else
@@ -913,7 +913,14 @@ package body et_configuration is
 		
 		log_indentation_down;
 	end make_routing_tables;
-	
+
+	procedure export_routing_tables is -- CS requires specification
+	-- Exports/Writes the routing tables of the rig in separate files.
+	-- Tables are exported in individual project directories in the work directory of ET.
+	-- These project directories have the same name as the modules.
+	begin
+		null; -- CS
+	end export_routing_tables;
 	
 	function to_unit_of_measurement (unit : in string) return type_unit_of_measurement is
 	-- Converts a string to type_component_unit_meaning.

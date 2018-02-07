@@ -222,6 +222,7 @@ package et_configuration is
 
 	procedure make_routing_tables (log_threshold : in et_string_processing.type_log_level);
 	-- Creates the routing tables for modules and the whole rig.
+	-- CS not called yet from anywhere
 	
 	type type_unit_of_measurement is (
 		MILLIOHM,
