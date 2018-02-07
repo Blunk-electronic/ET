@@ -914,7 +914,10 @@ package body et_configuration is
 		log_indentation_down;
 	end make_routing_tables;
 
-	procedure export_routing_tables is -- CS requires specification
+	procedure export_routing_tables is 
+	-- CS requires specification. 
+	-- CS not called yet from anywhere
+	
 	-- Exports/Writes the routing tables of the rig in separate files.
 	-- Tables are exported in individual project directories in the work directory of ET.
 	-- These project directories have the same name as the modules.
