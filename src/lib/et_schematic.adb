@@ -5178,7 +5178,114 @@ package body et_schematic is
 		return terminal; 
 	end to_terminal;
 
+	function connected_net (
+		module 			: in type_submodule_name.bounded_string;	-- nucleo_core
+		port			: in type_port_with_reference;				-- X701 port 4
+		log_threshold	: in et_string_processing.type_log_level)
+		return type_net_name.bounded_string is
+	-- Returns the name of the net connected with the given port.
+	-- Searches the netlist of the given module for the given port. 
+	-- The net which is connected with the port is the net whose name
+	-- is to be returned.
+	-- If not net could be found, an empty string is returned.
 
+		use et_string_processing;
+		use type_rig;
+
+		module_cursor : type_rig.cursor; -- points to the module being searched in
+
+		net_name_to_return : type_net_name.bounded_string; -- to be returned
+
+		procedure query_nets (
+			module_name	: in type_submodule_name.bounded_string;
+			module		: in type_module) is
+			net_cursor	: type_netlist.cursor;
+		
+			net_found : boolean := false; -- goes true once a suitable net found (should be only one)
+			
+			procedure query_ports (
+				net_name	: in type_net_name.bounded_string;
+				ports		: in type_ports_with_reference.set) is
+				port_cursor : type_ports_with_reference.cursor;
+			begin -- query_ports
+				log ("querying ports ...", log_threshold + 2);
+				log_indentation_up;
+
+				-- If the net as any ports, search for the given port.
+				-- Flag net_found goes true on match which terminates the
+				-- loop that picks up the nets (see main of procedure query_nets).
+				if not is_empty (ports) then
+					port_cursor := ports.first;
+					while port_cursor /= type_ports_with_reference.no_element loop
+						log (to_string (element (port_cursor)), log_threshold + 3);
+						if element (port_cursor) = port then
+							net_found := true;
+							net_name_to_return := net_name;
+							exit;
+						end if;
+						next (port_cursor);
+					end loop;
+				end if;
+
+				log_indentation_down;	
+			end query_ports;
+			
+		begin -- query_nets
+			log ("querying nets ...", log_threshold + 1);
+			log_indentation_up;
+			
+			if not is_empty (module.netlist) then
+
+				-- Loop in nets of module and query ports. Once the given port
+				-- was found this loop exits prematurely. Otherwise, the port
+				-- is considered as not connected -> issue warning
+				net_cursor := module.netlist.first;
+				while not net_found and net_cursor /= type_netlist.no_element loop
+					log (to_string (key (net_cursor)), log_threshold + 2);
+					query_element (
+						position => net_cursor,
+						process => query_ports'access);
+					next (net_cursor);
+				end loop;
+
+				-- If no port was found, issue warning.
+				if not net_found then
+					log (message_warning & "module " & to_string (module_name) 
+						& " port " & to_string (port) & " is not connected to any net !");
+				end if;
+					
+			else
+				log (message_warning & "module " & to_string (module_name) & " does not have any nets !");
+			end if;
+
+			log_indentation_down;
+		end query_nets;
+		
+	begin -- connected_net
+		log ("locating in module " & to_string (module) & " net connected with " & to_string (port) & " ...",
+			 log_threshold);
+		log_indentation_up;
+
+		module_cursor := find (rig, module); -- set the cursor to the module
+
+		-- If module exists, locate the given net in the module.
+		-- Otherwise raise alarm and exit.
+		if module_cursor /= type_rig.no_element then
+			--log (to_string (key (module_cursor)), log_threshold + 1);
+			query_element (
+				position => module_cursor, 
+				process => query_nets'access);
+			
+		else -- module not found
+			log_indentation_reset;
+			log (message_error & "module " & to_string (module) & " not found !", console => true);
+			raise constraint_error;
+		end if;
+		
+		log_indentation_down;
+	
+		return net_name_to_return;
+	end connected_net;
 	
 	procedure export_netlists (log_threshold : in et_string_processing.type_log_level) is
 	-- Exports/Writes the netlists of the rig in separate files.
@@ -5337,7 +5444,7 @@ package body et_schematic is
 		net				: in type_net_name.bounded_string;			-- motor_on_off
 		log_threshold	: in et_string_processing.type_log_level)
 		return type_ports_with_reference.set is
-	-- Returns a set of component ports that are connected with the given net.
+	-- Returns a list of component ports that are connected with the given net.
 
 		use et_string_processing;
 		use type_rig;
@@ -5356,11 +5463,14 @@ package body et_schematic is
 			port_count : count_type;
 		begin
 			log ("locating net ... ", log_threshold + 1);
+			log_indentation_up;
 			net_cursor := find (module.netlist, net);
 
 			-- If net exists in module load ports with all the ports
 			-- connected with the net. Otherwise raise alarm and abort.
 			if net_cursor /= type_netlist.no_element then
+				--log (to_string (key (net_cursor)), log_threshold + 2);
+			
 				ports := element (net_cursor);
 				port_count := length (ports);
 
@@ -5397,6 +5507,7 @@ package body et_schematic is
 				raise constraint_error;
 			end if;
 
+			log_indentation_down;
 		end locate_net;
 			
 	begin -- components_in_net

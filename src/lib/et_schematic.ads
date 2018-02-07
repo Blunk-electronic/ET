@@ -718,6 +718,17 @@ package et_schematic is
 		log_threshold 	: in et_string_processing.type_log_level)
 		return type_terminal; -- see et_libraries spec
 	-- Returns the terminal and unit name of the given port in a composite type.
+
+	function connected_net (
+		module 			: in type_submodule_name.bounded_string;	-- nucleo_core
+		port			: in type_port_with_reference;				-- X701 port 4
+		log_threshold	: in et_string_processing.type_log_level)
+		return type_net_name.bounded_string;
+	-- Returns the name of the net connected with the given port.
+	-- Searches the netlist of the given module for the given port. 
+	-- The net which is connected with the port is the net whose name
+	-- is to be returned.
+	-- If not net could be found, an empty string is returned.
 	
 	-- This is a set of ports as we need in the netlist.
 	package type_ports_with_reference is new ordered_sets (
@@ -948,7 +959,7 @@ package et_schematic is
 		net				: in type_net_name.bounded_string;			-- motor_on_off
 		log_threshold	: in et_string_processing.type_log_level)
 		return type_ports_with_reference.set;
-	-- Returns a set of component ports that are connected with the given net.
+	-- Returns a list of component ports that are connected with the given net.
 	
 -- BOM
 	-- Whenever we deal with BOM files this type should be used:

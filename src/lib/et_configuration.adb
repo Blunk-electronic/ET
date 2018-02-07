@@ -886,6 +886,7 @@ package body et_configuration is
 					net_name := key (net_cursor);
 					net_changers := components_in_net (module_name, net_name, NETCHANGER, log_threshold + 2);
 
+					-- CS 
 					next (net_cursor);
 				end loop;
 			else
