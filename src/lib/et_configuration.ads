@@ -210,8 +210,20 @@ package et_configuration is
 		type_component_category;
 	-- Returns the category of the given component reference. If no category could be
 	-- found, returns category UNKNOWN.
+
+	function components_in_net (
+		module 			: in et_coordinates.type_submodule_name.bounded_string;	-- nucleo_core
+		net				: in et_schematic.type_net_name.bounded_string;			-- motor_on_off
+		category		: in type_component_category;				-- netchanger, connector
+		log_threshold	: in et_string_processing.type_log_level)
+		return et_schematic.type_ports_with_reference.set;
+	-- Returns a set of component ports that are connected with the given net.
+	-- Returns only components of given category.
+
+	procedure make_routing_tables (log_threshold : in et_string_processing.type_log_level);
+	-- Creates the routing tables for modules and the whole rig.
 	
-	type type_unit_of_measurement is ( -- CS: rename to type_unit_of_measurement
+	type type_unit_of_measurement is (
 		MILLIOHM,
 		OHM,
 		KILOOHM,

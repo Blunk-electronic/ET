@@ -3030,6 +3030,14 @@ package body et_schematic is
 		return u;
 	end units_of_component;
 
+	function to_string (port : in type_port_with_reference) return string is
+	-- Returns the properties of the given port as string.
+	begin
+		return "reference " & to_string (port.reference) 
+			& " name " & to_string (port.name)
+			& " coordinates " & to_string (position => port.coordinates, scope => module);
+	end to_string;
+	
 	function compare_ports (left, right : in type_port_with_reference) return boolean is
 	-- Returns true if left comes before right. Compares by component reference and port name.
 	-- If left equals right, the return is false.	
@@ -5323,6 +5331,97 @@ package body et_schematic is
 		log_indentation_down;
 		
 	end export_netlists;
+
+	function components_in_net (
+		module 			: in type_submodule_name.bounded_string;	-- nucleo_core
+		net				: in type_net_name.bounded_string;			-- motor_on_off
+		log_threshold	: in et_string_processing.type_log_level)
+		return type_ports_with_reference.set is
+	-- Returns a set of component ports that are connected with the given net.
+
+		use et_string_processing;
+		use type_rig;
+
+		module_cursor : type_rig.cursor;
+		
+		ports : type_ports_with_reference.set; -- to be returned
+
+		procedure locate_net (
+			module_name : in type_submodule_name.bounded_string;
+			module 		: in type_module) is
+			net_cursor : type_netlist.cursor;
+			port_cursor : type_ports_with_reference.cursor;
+			port : type_port_with_reference;
+			terminal : type_terminal;
+			port_count : count_type;
+		begin
+			log ("locating net ... ", log_threshold + 1);
+			net_cursor := find (module.netlist, net);
+
+			-- If net exists in module load ports with all the ports
+			-- connected with the net. Otherwise raise alarm and abort.
+			if net_cursor /= type_netlist.no_element then
+				ports := element (net_cursor);
+				port_count := length (ports);
+
+				-- show component ports, units, coordinates and terminal names
+				if log_level > log_threshold + 2 then
+					log_indentation_up;
+					log ("listing of " & count_type'image (port_count) & " component ports");
+					log_indentation_up;
+
+					-- If there are ports in the given net, set port cursor to first port in net
+					-- and log ports one after another.
+					-- If no ports in net, issue a warning.
+					if not is_empty (ports) then
+						port_cursor := ports.first;
+						while port_cursor /= type_ports_with_reference.no_element loop
+							port := element (port_cursor); -- load the port
+							terminal := to_terminal (port, module_name, log_threshold + 3); -- fetch the terminal
+							log (to_string (port) & to_string (terminal, show_unit => true, preamble => true));
+							next (port_cursor);
+						end loop;
+					else
+						log (message_warning & "net " & to_string (net) & " is not connected with any ports !");
+					end if;
+
+					log_indentation_down;
+					log_indentation_down;
+				end if;
+					
+			else -- net does not exist -> abort
+				log_indentation_reset;
+				log (message_error & "in module " 
+					 & to_string (module_name) & " net " & to_string (net) 
+					 & " not found !", console => true);
+				raise constraint_error;
+			end if;
+
+		end locate_net;
+			
+	begin -- components_in_net
+		log ("locating components in module " & to_string (module) & " net " & to_string (net) & " ...",
+			 log_threshold);
+		log_indentation_up;
+
+		module_cursor := find (rig, module); -- set the cursor to the module
+
+		-- If module exists, locate the given net in the module.
+		-- Otherwise raise alarm and exit.
+		if module_cursor /= type_rig.no_element then
+			query_element (
+				position => module_cursor, 
+				process => locate_net'access);
+			
+		else -- module not found
+			log_indentation_reset;
+			log (message_error & "module " & to_string (module) & " not found !", console => true);
+			raise constraint_error;
+		end if;
+		
+		log_indentation_down;
+		return ports;
+	end components_in_net;
 
 	procedure export_bom (log_threshold : in et_string_processing.type_log_level) is
 	-- Generates a bom file. This file is csv formatted and is to be processed by

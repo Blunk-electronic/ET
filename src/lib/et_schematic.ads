@@ -698,6 +698,9 @@ package et_schematic is
 		reference : type_component_reference;
 	end record;
 
+	function to_string (port : in type_port_with_reference) return string;
+	-- Returns the properties of the given port as string.
+
 	function compare_ports (left, right : in type_port_with_reference) return boolean;
 	-- Returns true if left comes before right. Compares by component reference and port name.
 	-- If left equals right, the return is false.	
@@ -940,6 +943,12 @@ package et_schematic is
 	-- Addresses real components exclusively. Virtual things like GND symbols are not exported.
 	-- Call this procedure after executing procedure make_netlist !
 
+	function components_in_net (
+		module 			: in type_submodule_name.bounded_string;	-- nucleo_core
+		net				: in type_net_name.bounded_string;			-- motor_on_off
+		log_threshold	: in et_string_processing.type_log_level)
+		return type_ports_with_reference.set;
+	-- Returns a set of component ports that are connected with the given net.
 	
 -- BOM
 	-- Whenever we deal with BOM files this type should be used:

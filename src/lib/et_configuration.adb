@@ -792,6 +792,128 @@ package body et_configuration is
 		end if;
 	end category;
 
+
+	function components_in_net (
+		module 			: in et_coordinates.type_submodule_name.bounded_string;	-- nucleo_core
+		net				: in et_schematic.type_net_name.bounded_string;			-- motor_on_off
+		category		: in type_component_category;				-- netchanger, connector
+		log_threshold	: in et_string_processing.type_log_level)
+		return et_schematic.type_ports_with_reference.set is
+	-- Returns a set of component ports that are connected with the given net.
+	-- Returns only components of given category.
+
+		use et_libraries;
+		use et_schematic;
+		use et_coordinates;
+		use et_string_processing;
+		use type_rig;
+		use type_ports_with_reference;
+
+		module_cursor : type_rig.cursor;
+		
+		ports_all : type_ports_with_reference.set;	-- all ports of the net
+		ports_by_category : type_ports_with_reference.set; -- to be returned
+		port_cursor : type_ports_with_reference.cursor;
+		port_scratch : type_port_with_reference;
+		terminal : type_terminal;
+
+	begin -- components_in_net
+		log ("locating components of category " & to_string (category) 
+			 & " in module " & to_string (module) & " net " & to_string (net) & " ...",
+			 log_threshold);
+		
+		log_indentation_up;
+
+		-- Get all the component ports in the net.
+		ports_all := et_schematic.components_in_net (module, net, log_threshold + 2);
+
+		-- If there are ports in the given net, set port cursor to first port in net,
+		-- filter ports by category and log ports one after another.
+		-- If no ports in net, issue a warning.
+		if not is_empty (ports_all) then
+			port_cursor := ports_all.first;
+			while port_cursor /= type_ports_with_reference.no_element loop
+				port_scratch := element (port_cursor); -- load the port
+
+				-- filter by given category and insert the current port_scratch in ports_by_category 
+				if et_configuration.category (port_scratch.reference) = category then
+					terminal := to_terminal (port_scratch, module, log_threshold + 3); -- fetch the terminal
+					log (to_string (port_scratch) & to_string (terminal, show_unit => true, preamble => true),
+						log_threshold + 1);
+
+					-- insert in container (to be returned)
+					insert (
+						container => ports_by_category,
+						new_item => port_scratch);
+				end if;
+				
+				next (port_cursor);
+			end loop;
+		else
+			log (message_warning & "net " & to_string (net) & " is not connected with any ports !");
+		end if;
+
+		-- show number of component ports that have been found by given category.
+		log ("found " & count_type'image (ports_by_category.length) & " ports !", log_threshold + 1);
+		
+		log_indentation_down;
+		return ports_by_category;
+	end components_in_net;
+
+	procedure make_routing_tables (log_threshold : in et_string_processing.type_log_level) is
+	-- Creates the routing tables for modules and the whole rig.
+		use et_string_processing;
+		use et_coordinates;
+		use et_schematic;
+		use type_rig;
+
+		module_cursor : type_rig.cursor;
+
+		procedure query_nets (
+			module_name : in type_submodule_name.bounded_string;
+			module : in type_module) is
+			use type_netlist;
+			netlist : type_netlist.map := module.netlist;
+			net_cursor : type_netlist.cursor;
+			net_name : type_net_name.bounded_string;
+
+			net_changers : type_ports_with_reference.set;
+			
+		begin -- query_nets
+			if not is_empty (netlist) then
+				net_cursor := netlist.first;
+				while net_cursor /= type_netlist.no_element loop
+					net_name := key (net_cursor);
+					net_changers := components_in_net (module_name, net_name, NETCHANGER, log_threshold + 2);
+
+					next (net_cursor);
+				end loop;
+			else
+				log (message_warning & "module " & to_string (module_name) & " does not have any nets !");
+			end if;
+				
+		end query_nets;
+	
+	begin -- make_routing_tables
+		log ("making routing tables ...", log_threshold + 1);
+		log_indentation_up;
+
+		while module_cursor /= type_rig.no_element loop
+			log ("module " & to_string (key (module_cursor)), log_threshold + 1);
+			log_indentation_up;
+
+			query_element (
+				position => module_cursor,
+				process => query_nets'access);
+			
+			log_indentation_down;
+			next (module_cursor);
+		end loop;
+		
+		log_indentation_down;
+	end make_routing_tables;
+	
+	
 	function to_unit_of_measurement (unit : in string) return type_unit_of_measurement is
 	-- Converts a string to type_component_unit_meaning.
 		use et_string_processing;
