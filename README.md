@@ -19,6 +19,10 @@ An Electronic Tool for checking style and desgin conventions
 
 - ET creates in the projects root directory a folder named "ET" where you find logfiles, reports, netlists, statistics, BOMs, ...
 
+- If there are lots of projects to be imported, write their names in the configuration file in section [IMPORT_MODULES]. Then run this command
+
+ et --import_modules --configuration_file my_configuration.txt --log_level 1
+
 Installation:
 - install the GNAT Ada compiler (version 7 or later)
 - run the install script install.sh as non-root user
