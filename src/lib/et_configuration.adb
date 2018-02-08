@@ -226,6 +226,7 @@ package body et_configuration is
 		use et_libraries;
 		use type_rig;
 		module_cursor : type_rig.cursor;
+		module_found : boolean := false;
 		connector_found : boolean := false; -- goes true once a suitable connector was found
 		ref : et_libraries.type_component_reference; -- the reference to be returned
 
@@ -278,21 +279,29 @@ package body et_configuration is
 			
 			log_indentation_down;
 		end locate_component;
+
+		use type_submodule_name;
 		
 	begin -- to_connector_reference
 		log ("locating module in rig ...", log_threshold);
 		log_indentation_up;
 
-		-- locate the module in the rig
-		module_cursor := find (rig, module_name);
-		if module_cursor /= no_element then
-			query_element (
-				position => module_cursor,
-				process => locate_component'access);
-		else
-			-- module does not exist in rig
+		-- locate the module in the rig by its generic name
+		module_cursor := rig.first;
+		while module_cursor /= no_element loop
+			if element (module_cursor).generic_name = module_name then
+				query_element (
+					position => module_cursor,
+					process => locate_component'access);
+				module_found := true;
+				exit;
+			end if;
+		end loop;
+
+		if not module_found then
 			log_indentation_reset;
-			log (message_error & "module " & to_string (module_name) & " does not exist in the rig !", console => true);
+			log (message_error & "no module with generic name " & to_string (submodule => module_name)
+				 & " found in the rig !", console => true);
 			raise constraint_error;
 		end if;
 
