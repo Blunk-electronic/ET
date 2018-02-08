@@ -748,6 +748,9 @@ package et_schematic is
 -- MODULES
 	
 	type type_module is record
+		generic_name	: type_submodule_name.bounded_string;
+		instance		: type_submodule_instance;
+		
 		libraries		: type_full_library_names.list;	
 		-- The list of project library names in the order as defined in project file.
 		

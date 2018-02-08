@@ -6171,6 +6171,10 @@ package body et_kicad is
 												base_name (to_string (top_level_schematic))),
 										instance => type_submodule_instance'first),
 						module => (
+							generic_name	=> type_submodule_name.to_bounded_string (
+												base_name (to_string (top_level_schematic))),
+							instance		=> type_submodule_instance'first,
+							
 							libraries		=> tmp_project_libraries, -- set project libraries
 							strands			=> type_strands.empty_list,
 							junctions		=> type_junctions.empty_list,
@@ -6190,6 +6194,10 @@ package body et_kicad is
 						module_name	=> type_submodule_name.to_bounded_string (
 											base_name (to_string (top_level_schematic))),
 						module => (
+							generic_name	=> type_submodule_name.to_bounded_string (
+												base_name (to_string (top_level_schematic))),
+							instance		=> type_submodule_instance'first,
+
 							libraries		=> tmp_project_libraries, -- set project libraries
 							strands			=> type_strands.empty_list,
 							junctions		=> type_junctions.empty_list,

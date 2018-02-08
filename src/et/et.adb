@@ -290,18 +290,18 @@ procedure et is
 				for i in type_submodule_instance'first .. instances loop
 										
 					if i = type_submodule_instance'first then
-						log (to_string (project_name) & " ...");
+						log ("instance " & to_string (i) & " ...");
 						
 						-- CS: use case construct to probe cad formats
 						et_kicad.import_design (first_instance => true, log_threshold => 0);
 					else
-						log (to_string (project_name) & " ...");
+						log ("instance " & to_string (i) & " ...");
 
-						--instance_name := append_instance (name => project_name, instance => i);
-						type_rig.insert (
-							container => rig,
-							new_item => type_rig.element (module_cursor),
-							key => instance_name);
+-- 						--instance_name := append_instance (name => project_name, instance => i);
+-- 						type_rig.insert (
+-- 							container => rig,
+-- 							new_item => type_rig.element (module_cursor),
+-- 							key => instance_name);
 							
 						-- CS: use case construct to probe cad formats
 						--et_kicad.import_design (log_threshold => 0);
