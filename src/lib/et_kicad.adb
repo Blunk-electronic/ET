@@ -2730,7 +2730,17 @@ package body et_kicad is
 	end read_components_libraries;
 
 
-	procedure import_design (log_threshold : in et_string_processing.type_log_level) is
+	procedure import_design (
+		first_instance 	: in boolean := false;
+		log_threshold	: in et_string_processing.type_log_level) is
+	-- Imports the design as indicated by global variable project_name. (CS should be a parameter)
+	-- Inserts the created submodule in the rig (see et_schematic.type_rig).
+	-- Leaves the global module_cursor pointing where the module was inserted.
+	-- If first_instance is false, the module gets the name as defined in the kicad project file.
+	-- For a regular single design import this is the default.
+	-- If first_instance is true, the module name further-on gets the instance appended.
+	-- This is required for multiple design instantiations. (things like nucleo_core_1).
+		
 		--use et_import.type_schematic_file_name;
 		use et_libraries.type_library_directory;
 		use et_schematic;
@@ -6134,7 +6144,7 @@ package body et_kicad is
 
 		-- change to given project directory
 		log (
-			text => "changing to project directory '" & (type_project_name.to_string (et_schematic.project_name) & "' ..."),
+			text => "changing to project directory " & (type_project_name.to_string (et_schematic.project_name) & " ..."),
 			level => log_threshold
 			);
 		set_directory (type_project_name.to_string (et_schematic.project_name));
@@ -6152,24 +6162,48 @@ package body et_kicad is
 				-- The first element to set is the project libraries which we collected earlier when the
 				-- project file was read.
 				-- CS: remove add_module and directly insert in rig. module_cursor would be set here instead.
-				add_module (
-					module_name	=> type_submodule_name.to_bounded_string (
-										base_name (to_string (top_level_schematic))),
-					module => (
-						libraries		=> tmp_project_libraries, -- set project libraries
-						strands			=> type_strands.empty_list,
-						junctions		=> type_junctions.empty_list,
-						nets			=> type_nets.empty_map,
-						components		=> type_components.empty_map,
-						no_connections	=> type_no_connection_flags.empty_list,
-						portlists		=> type_portlists.empty_map,
-						netlist			=> type_netlist.empty_map,
-						submodules		=> type_gui_submodules.empty_map,
-						frames			=> type_frames.empty_list,
-						title_blocks	=> type_title_blocks.empty_list,
-						notes			=> type_texts.empty_list,
-						sheet_headers	=> type_sheet_headers.empty_map));
-				
+
+				if first_instance then -- instance must be appended to module name
+					add_module (
+						module_name	=> append_instance (
+										submodule =>
+											type_submodule_name.to_bounded_string (
+												base_name (to_string (top_level_schematic))),
+										instance => type_submodule_instance'first),
+						module => (
+							libraries		=> tmp_project_libraries, -- set project libraries
+							strands			=> type_strands.empty_list,
+							junctions		=> type_junctions.empty_list,
+							nets			=> type_nets.empty_map,
+							components		=> type_components.empty_map,
+							no_connections	=> type_no_connection_flags.empty_list,
+							portlists		=> type_portlists.empty_map,
+							netlist			=> type_netlist.empty_map,
+							submodules		=> type_gui_submodules.empty_map,
+							frames			=> type_frames.empty_list,
+							title_blocks	=> type_title_blocks.empty_list,
+							notes			=> type_texts.empty_list,
+							sheet_headers	=> type_sheet_headers.empty_map));
+
+				else -- default mode: regular design import. set module name as top_level_schematic
+					add_module (
+						module_name	=> type_submodule_name.to_bounded_string (
+											base_name (to_string (top_level_schematic))),
+						module => (
+							libraries		=> tmp_project_libraries, -- set project libraries
+							strands			=> type_strands.empty_list,
+							junctions		=> type_junctions.empty_list,
+							nets			=> type_nets.empty_map,
+							components		=> type_components.empty_map,
+							no_connections	=> type_no_connection_flags.empty_list,
+							portlists		=> type_portlists.empty_map,
+							netlist			=> type_netlist.empty_map,
+							submodules		=> type_gui_submodules.empty_map,
+							frames			=> type_frames.empty_list,
+							title_blocks	=> type_title_blocks.empty_list,
+							notes			=> type_texts.empty_list,
+							sheet_headers	=> type_sheet_headers.empty_map));
+				end if;
 				
 				read_components_libraries (log_threshold); -- as stored in element "libraries" of the current module
 				current_schematic := top_level_schematic;

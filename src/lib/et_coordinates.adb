@@ -421,6 +421,18 @@ package body et_coordinates is
 	begin
 		return trim (type_submodule_instance'image (instance), left);
 	end to_string;
+
+	function append_instance (
+		submodule	: in type_submodule_name.bounded_string; -- nucleo_core
+		separator	: in string := "_";
+		instance	: in type_submodule_instance) -- 4
+		return type_submodule_name.bounded_string is -- nucleo_core_4
+	begin
+		return 
+			submodule -- nucleo_core
+			& type_submodule_name.to_bounded_string (separator) -- "_"
+			& type_submodule_name.to_bounded_string (trim (type_submodule_instance'image (instance), left)); -- 4
+	end append_instance;
 	
 	function to_string (
 		path : in type_path_to_submodule.list;

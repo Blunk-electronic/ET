@@ -194,6 +194,13 @@ package et_coordinates is
 	
 	function to_string (instance : in type_submodule_instance) return string;
 	-- Converts a submodule instance index to a string.
+
+	function append_instance (
+		submodule	: in type_submodule_name.bounded_string; -- nucleo_core
+		separator	: in string := "_";
+		instance	: in type_submodule_instance) -- 4
+		return type_submodule_name.bounded_string; -- nucleo_core_4
+
 	
     -- The location of a submodule within the design hierarchy is reflected by
     -- a list of submodule names like motor_driver.counter.supply

@@ -961,7 +961,14 @@ package body et_configuration is
 
 		return ports_of_interconnection;
 	end module_interconnections_in_net;
-	
+
+-- CS function opposide_peer (
+-- 		module			: in et_coordinates.type_submodule_name.bounded_string;
+-- 		port			: in et_schematic.type_port_with_reference;
+-- 		log_threshold	: in et_string_processing.type_log_level 
+
+
+							   
 	procedure make_routing_tables (log_threshold : in et_string_processing.type_log_level) is
 	-- Creates the routing tables for modules and the whole rig.
 		use et_string_processing;
@@ -1106,9 +1113,7 @@ package body et_configuration is
 		log_threshold	: in et_string_processing.type_log_level) is
 	-- Creates a default configuration file.
 		use et_general;
-
 		function comment return string is begin return comment_mark & latin_1.space; end comment;
-
 	begin
 		et_export.create_report;
 		reset_warnings_counter;

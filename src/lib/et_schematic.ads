@@ -72,6 +72,7 @@ package et_schematic is
  	project_name_length : constant natural := 100;
 	package type_project_name is new generic_bounded_length (project_name_length); 
 	use type_project_name;
+
 	project_name : type_project_name.bounded_string;
 	project_file_handle	: ada.text_io.file_type;
 

@@ -234,8 +234,14 @@ procedure et is
 		use et_schematic.type_project_name;
 		use et_configuration;
 		use type_import_modules;
-		use et_coordinates.type_submodule_name;
-		module_cursor : type_import_modules.cursor;
+		use et_coordinates;
+
+		module_cursor_import : type_import_modules.cursor;
+		instances : type_submodule_instance;
+		instance_name : type_submodule_name.bounded_string;
+
+		module_cursor_rig : type_rig.cursor;
+	
 	begin
 		log ("importing modules ...");
 		
@@ -252,27 +258,62 @@ procedure et is
 		
 		-- Loop in et_configuration.import_module and import module per module.
 		-- CS: for multiple instances use element copy instead of importing the same module over and over.
-		module_cursor := et_configuration.import_modules.first;
-		while module_cursor /= type_import_modules.no_element loop
+		module_cursor_import := et_configuration.import_modules.first;
+		while module_cursor_import /= type_import_modules.no_element loop
 
 			-- The design import requires changing of directories. So we backup the current directory.
 			-- After the import, we restore the directory.
 			backup_projects_root_directory;
 
-			project_name := to_bounded_string (to_string (element (module_cursor).name));
-			et_import.cad_format := element (module_cursor).format;
+			project_name := to_bounded_string (to_string (element (module_cursor_import).name));
+			et_import.cad_format := element (module_cursor_import).format;
+			instances := element (module_cursor_import).instances;
 
-			log ("importing module " & to_string (project_name) & " ...");
-			log ("CAD format " & et_import.to_string (et_import.cad_format));
-
+			-- If the design is not to be instantiated multiple times we do a regular design import.
+			-- If more than one instance is required, we append the instance to the project name 
+			-- and just copy.
 			
-			-- CS: use case construct to probe cad formats
-			et_kicad.import_design (log_threshold => 0);
+			if instances = type_submodule_instance'first then -- do a regular single design import
+				log ("importing module " & to_string (project_name) & " ...");
+				log ("CAD format " & et_import.to_string (et_import.cad_format));
+				
+				-- CS: use case construct to probe cad formats
+				et_kicad.import_design (log_threshold => 0);
 
+			else -- multi-instances
+				log ("importing and instantiating module " & to_string (project_name) & " ...");
+				log ("CAD format " & et_import.to_string (et_import.cad_format));
+				
+				-- For each instance append the instance id to the project name.
+				-- Import the project only once. For instances greater 1 we instruct
+				-- the design imported to just copy the first project.
+				for i in type_submodule_instance'first .. instances loop
+										
+					if i = type_submodule_instance'first then
+						log (to_string (project_name) & " ...");
+						
+						-- CS: use case construct to probe cad formats
+						et_kicad.import_design (first_instance => true, log_threshold => 0);
+					else
+						log (to_string (project_name) & " ...");
+
+						--instance_name := append_instance (name => project_name, instance => i);
+						type_rig.insert (
+							container => rig,
+							new_item => type_rig.element (module_cursor),
+							key => instance_name);
+							
+						-- CS: use case construct to probe cad formats
+						--et_kicad.import_design (log_threshold => 0);
+					end if;
+				end loop;
+
+			end if;
+			
 			restore_projects_root_directory;
 			
 			
-			next (module_cursor);
+			next (module_cursor_import);
 		end loop;
 		
 

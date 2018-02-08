@@ -66,7 +66,16 @@ package et_kicad is
     
     schematic_version                   : constant positive := 2;
     
-	procedure import_design (log_threshold : in et_string_processing.type_log_level); 
+	procedure import_design (
+		first_instance 	: in boolean := false;
+		log_threshold	: in et_string_processing.type_log_level); 
+	-- Imports the design as indicated by global variable project_name. (CS should be a parameter)
+	-- Inserts the created submodule in the rig (see et_schematic.type_rig).
+	-- Leaves the global module_cursor pointing where the module was inserted.
+	-- If first_instance is false, the module gets the name as defined in the kicad project file.
+	-- For a regular single design import this is the default.
+	-- If first_instance is true, the module name further-on gets the instance appended.
+	-- This is required for multiple design instantiations. (things like nucleo_core_1).
 
 -- COMMENT MARKS
 	comment_mark							: constant string (1..1) := "#";
