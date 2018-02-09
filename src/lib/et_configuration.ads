@@ -222,7 +222,12 @@ package et_configuration is
 
 	procedure make_routing_tables (log_threshold : in et_string_processing.type_log_level);
 	-- Creates the routing tables for modules and the whole rig.
-	-- CS not called yet from anywhere
+
+	procedure export_routing_tables (log_threshold : in et_string_processing.type_log_level);
+	-- Exports/Writes the routing tables of the rig in separate files.
+	-- Tables are exported in individual project directories in the work directory of ET.
+	-- These project directories have the same name as the modules.
+
 	
 	type type_unit_of_measurement is (
 		MILLIOHM,

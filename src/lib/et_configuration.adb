@@ -960,20 +960,26 @@ package body et_configuration is
 	end components_in_net;
 
 	function is_module_interconnector (
-	-- Returns true if the given reference in given module is part of a module interconnection.
-		module			: in et_coordinates.type_submodule_name.bounded_string;
-		reference		: in et_libraries.type_component_reference;
+	-- Looks up the module_interconnections as specified in configuration file
+	-- in section MODULE_INTERCONNECTIONS.
+	-- Returns true if the given reference in given module is part of any module interconnection.
+	-- The given module name is the GENERIC name of the module.
+		module			: in et_coordinates.type_submodule_name.bounded_string;	-- nucleo_core, led_matrix
+		instance		: in et_coordinates.type_submodule_instance;			-- 2
+		reference		: in et_libraries.type_component_reference;				-- X701
 		log_threshold	: in et_string_processing.type_log_level 
 		) return boolean is
+		
 		use et_libraries;
 		use et_coordinates.type_submodule_name;
 		use type_module_interconnections;
+
 		connection_cursor : type_module_interconnections.cursor;
-		purpose : type_component_purpose.bounded_string;
+		connection : type_module_interconnection;
 		result : boolean := false;
-	begin
-		log ("testing whether component " & to_string (reference) 
-			 & " in module " & to_string (module)
+	begin -- is_module_interconnector
+		log ("testing whether connector " & to_string (reference) 
+			 & " in generic module " & to_string (module) & " instance " & et_coordinates.to_string (instance)
 			 & " is part of a module interconnection ...", log_threshold);
 		log_indentation_up;
 		
@@ -983,25 +989,36 @@ package body et_configuration is
 		if not is_empty (module_interconnections) then
 			connection_cursor := module_interconnections.first;
 			while connection_cursor /= type_module_interconnections.no_element loop
-
+				connection := element (connection_cursor);
+				
 				-- probe interconnection at peer A. Test if the connector reference at peer A 
 				-- matches the the given reference. On match return true.
-				if to_submodule (element (connection_cursor).peer_A.abbrevation).name = module then
-					purpose := element (connection_cursor).peer_A.purpose;
--- CS					if to_connector_reference (module, purpose, log_threshold + 1) = reference then
--- 						result := true;
--- 						exit;
--- 					end if;
+				if to_submodule (connection.peer_A.abbrevation).name = module then
+					if connection.peer_A.instance = instance then
+						if to_connector_reference (
+								generic_module_name	=> module,
+								instance 			=> instance,
+								purpose				=> connection.peer_A.purpose,
+								log_threshold		=> log_threshold + 1) = reference then
+							result := true;
+							exit;
+						end if;
+					end if;
 				end if;
 
 				-- probe interconnection at peer B. Test if the connector reference at peer B
 				-- matches the the given reference. On match return true.				
-				if to_submodule (element (connection_cursor).peer_B.abbrevation).name = module then
-					purpose := element (connection_cursor).peer_B.purpose;
--- CS					if to_connector_reference (module, purpose, log_threshold + 1) = reference then
--- 						result := true;
--- 						exit;
--- 					end if;
+				if to_submodule (connection.peer_B.abbrevation).name = module then
+					if connection.peer_B.instance = instance then
+						if to_connector_reference (
+								generic_module_name	=> module,
+								instance 			=> instance,
+								purpose				=> connection.peer_B.purpose,
+								log_threshold		=> log_threshold + 1) = reference then
+							result := true;
+							exit;
+						end if;
+					end if;
 				end if;
 				
 				next (connection_cursor);
@@ -1021,7 +1038,9 @@ package body et_configuration is
 	-- Returns for the given net the ports which belong to a module interconnection.
 	-- If the net is not connected with any module interconnectors the returned list is empty.
 	-- If there are no module interactions declared at all, ther returned list is empty.
-		module 			: in et_coordinates.type_submodule_name.bounded_string;	-- nucleo_core
+		module 			: in et_coordinates.type_submodule_name.bounded_string;	-- led_matrix_2
+		generic_name 	: in et_coordinates.type_submodule_name.bounded_string; -- led_matrix
+		instance		: in et_coordinates.type_submodule_instance;			-- 2
 		net				: in et_schematic.type_net_name.bounded_string;			-- motor_on_off
 		log_threshold	: in et_string_processing.type_log_level)
 		return et_schematic.type_ports_with_reference.set is
@@ -1048,9 +1067,14 @@ package body et_configuration is
 			port_cursor := ports_all.first;
 			while port_cursor /= type_ports_with_reference.no_element loop
 
-				-- If port belongs to module interaction, insert it in the list 
+				-- If port belongs to module interconnection, insert it in the list 
 				-- ports_of_interconnection (to be returned later).
-				if is_module_interconnector (module, element (port_cursor).reference, log_threshold + 1) then
+				if is_module_interconnector (
+						module			=> generic_name,					-- led_matrix
+						instance		=> instance,						-- 2
+						reference		=> element (port_cursor).reference,	-- X701
+						log_threshold	=> log_threshold + 1) then
+					
 					insert (ports_of_interconnection, element (port_cursor));
 				end if;
 				
@@ -1089,12 +1113,25 @@ package body et_configuration is
 			connectors 	: type_ports_with_reference.set; -- the module interconnectors connected with the net
 			
 		begin -- query_nets
+			log ("querying nets ...", log_threshold + 2);
+			log_indentation_up;
+			
 			if not is_empty (netlist) then
 				net_cursor := netlist.first;
 				while net_cursor /= type_netlist.no_element loop
 					net_name := key (net_cursor);
+					log (to_string (net_name), log_threshold + 3);
+	
+					-- load all netchangers connected with this net
 					netchangers := components_in_net (module_name, net_name, NETCHANGER, log_threshold + 2);
-					connectors := module_interconnections_in_net (module_name, net_name, log_threshold + 2);
+
+-- 					-- load all connectors used for module interconnections
+-- 					connectors := module_interconnections_in_net (
+-- 								module			=> module_name, 		-- led_matrix_2
+-- 								generic_name 	=> module.generic_name,	-- led_matrix
+-- 								instance 		=> module.instance,		-- 2
+-- 								net				=> net_name,			-- motor_on_off
+-- 								log_threshold	=> log_threshold + 2);
 
 					-- CS connected_net (module_name, port, log_threshold +x);
 					next (net_cursor);
@@ -1102,13 +1139,16 @@ package body et_configuration is
 			else
 				log (message_warning & "module " & to_string (module_name) & " does not have any nets !");
 			end if;
-				
+
+			log_indentation_down;
 		end query_nets;
 	
 	begin -- make_routing_tables
 		log ("making routing tables ...", log_threshold + 1);
 		log_indentation_up;
 
+		module_cursor := rig.first;
+		
 		while module_cursor /= type_rig.no_element loop
 			log ("module " & to_string (key (module_cursor)), log_threshold + 1);
 			log_indentation_up;
@@ -1124,10 +1164,7 @@ package body et_configuration is
 		log_indentation_down;
 	end make_routing_tables;
 
-	procedure export_routing_tables is 
-	-- CS requires specification. 
-	-- CS not called yet from anywhere
-	
+	procedure export_routing_tables (log_threshold : in et_string_processing.type_log_level) is 
 	-- Exports/Writes the routing tables of the rig in separate files.
 	-- Tables are exported in individual project directories in the work directory of ET.
 	-- These project directories have the same name as the modules.
