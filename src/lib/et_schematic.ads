@@ -787,6 +787,11 @@ package et_schematic is
 -- 		modules		: type_modules.map;
 -- 	end record;
 
+	procedure copy_module (
+		name_origin		: in type_submodule_name.bounded_string; -- nucleo_core_3
+-- 		instance_new 	: in type_submodule_instance; -- 
+		log_threshold	: in et_string_processing.type_log_level);
+
 	function module_count return natural;
 	-- Returns the number of modules of the rig.
 

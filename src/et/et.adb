@@ -238,8 +238,6 @@ procedure et is
 
 		module_cursor_import : type_import_modules.cursor;
 		instances : type_submodule_instance;
-		instance_name : type_submodule_name.bounded_string;
-
 		module_cursor_rig : type_rig.cursor;
 	
 	begin
@@ -296,15 +294,9 @@ procedure et is
 						et_kicad.import_design (first_instance => true, log_threshold => 0);
 					else
 						log ("instance " & to_string (i) & " ...");
-
--- 						--instance_name := append_instance (name => project_name, instance => i);
--- 						type_rig.insert (
--- 							container => rig,
--- 							new_item => type_rig.element (module_cursor),
--- 							key => instance_name);
-							
-						-- CS: use case construct to probe cad formats
-						--et_kicad.import_design (log_threshold => 0);
+						copy_module (
+							name_origin => type_rig.key (module_cursor),
+							log_threshold => 0);
 					end if;
 				end loop;
 

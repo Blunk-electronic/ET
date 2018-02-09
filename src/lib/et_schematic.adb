@@ -868,6 +868,75 @@ package body et_schematic is
 
 		return result;
 	end equal_reference;
+
+	procedure copy_module (
+		name_origin		: in type_submodule_name.bounded_string; -- nucleo_core_3
+-- 		instance_new 	: in type_submodule_instance; -- 
+		log_threshold	: in et_string_processing.type_log_level) is
+
+		use et_string_processing;
+		use type_rig;
+
+		module_cursor_origin : type_rig.cursor;
+		generic_name_origin : type_submodule_name.bounded_string;
+		instance_origin : type_submodule_instance;
+		instance_new : type_submodule_instance;
+		module_cursor_new : type_rig.cursor;
+		name_new : type_submodule_name.bounded_string;
+		inserted : boolean := false;
+
+		procedure set_instance (
+			module_name	: in type_submodule_name.bounded_string;
+			module		: in out type_module) is
+		begin
+			module.instance := instance_new;
+		end set_instance;
+
+	begin -- copy_module
+		log ("copying module " & to_string (name_origin) & " ...", log_threshold);
+		log_indentation_up;
+		
+		module_cursor_origin := find (rig, name_origin);
+
+		if module_cursor_origin = type_rig.no_element then
+			log_indentation_reset;
+			log (message_error & " module " & to_string (name_origin) & " not found !", console => true);
+			raise constraint_error;
+		end if;
+
+		-- load generic name and instance of origin module
+		generic_name_origin := element (module_cursor_origin).generic_name; -- nucleo_core
+		log ("generic name    : " & to_string (generic_name_origin), log_threshold + 1);
+		instance_origin := element (module_cursor_origin).instance; -- 3
+		log ("instance origin : " & to_string (instance_origin), log_threshold + 1);
+		instance_new := instance_origin + 1;
+		log ("instance new    : " & to_string (instance_new), log_threshold + 1);
+		name_new := append_instance (submodule => name_origin, instance => instance_new);
+		log ("name new        : " & to_string (name_new), log_threshold);
+		
+		-- create new module
+		insert (
+			container	=> rig,
+			key 		=> name_new,
+			position 	=> module_cursor_new,
+			new_item	=> element (module_cursor_origin),
+			inserted 	=> inserted);
+		
+		if not inserted then
+			log_indentation_reset;
+			log (message_error & " module " & to_string (name_new) & " not created !", console => true);
+			raise constraint_error;
+		end if;
+
+		-- set the new instance in the newly create module
+		update_element (
+			container	=> rig,
+			position	=> module_cursor_new,
+			process		=> set_instance'access);
+		
+		log_indentation_down;
+	end copy_module;
+
 	
 	function module_count return natural is
 	-- Returns the number of modules of the rig.
