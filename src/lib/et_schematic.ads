@@ -788,8 +788,12 @@ package et_schematic is
 -- 	end record;
 
 	procedure copy_module (
-		name_origin		: in type_submodule_name.bounded_string; -- nucleo_core_3
--- 		instance_new 	: in type_submodule_instance; -- 
+	-- Copyies the a rig module. 
+	-- If copy_last is true (default) the last module in the rig is copied. 
+	-- If copy_last is false, the module with given name_origin is copied.
+	-- The module instance is always incremented automatically.
+		copy_last		: in boolean := true;						  
+		name_origin		: in type_submodule_name.bounded_string := type_submodule_name.to_bounded_string (""); -- nucleo_core_3
 		log_threshold	: in et_string_processing.type_log_level);
 
 	function module_count return natural;
@@ -807,12 +811,6 @@ package et_schematic is
 	-- to the module.
 		module_name : in et_coordinates.type_submodule_name.bounded_string);
 	
-	procedure add_module (
-	-- Adds a module into the rig. Leaves module_cursor pointing
-	-- to the module inserted last.
-		module_name : in et_coordinates.type_submodule_name.bounded_string;
-		module		: in type_module);
-
 	procedure add_gui_submodule (
 	-- Inserts a gui submodule in the module (indicated by module_cursor)
 		name		: in et_coordinates.type_submodule_name.bounded_string;

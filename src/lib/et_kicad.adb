@@ -6139,6 +6139,8 @@ package body et_kicad is
 
 		end read_schematic;
 
+		module_name : type_submodule_name.bounded_string; -- the name of the module to be created
+		module_inserted : boolean := false; -- goes true if module already created. should never happen
 
 	begin -- import_design
 
@@ -6158,59 +6160,52 @@ package body et_kicad is
 				-- derive top level schematic file name from project name
 				top_level_schematic	:= read_project_file;
 				
-				-- The top level schematic file dictates the module name. So we create the module here.
-				-- The first element to set is the project libraries which we collected earlier when the
-				-- project file was read.
-				-- CS: remove add_module and directly insert in rig. module_cursor would be set here instead.
-
-				if first_instance then -- instance must be appended to module name
-					add_module (
-						module_name	=> append_instance (
+				-- The top level schematic file dictates the module name. 
+				-- If parameter first_instance is true, the name of the first
+				-- instance must be appended to the module_name.
+				if first_instance then 
+					-- Append instance to module name
+					module_name := append_instance (
 										submodule =>
 											type_submodule_name.to_bounded_string (
 												base_name (to_string (top_level_schematic))),
-										instance => type_submodule_instance'first),
-						module => (
-							generic_name	=> type_submodule_name.to_bounded_string (
-												base_name (to_string (top_level_schematic))),
-							instance		=> type_submodule_instance'first,
-							
-							libraries		=> tmp_project_libraries, -- set project libraries
-							strands			=> type_strands.empty_list,
-							junctions		=> type_junctions.empty_list,
-							nets			=> type_nets.empty_map,
-							components		=> type_components.empty_map,
-							no_connections	=> type_no_connection_flags.empty_list,
-							portlists		=> type_portlists.empty_map,
-							netlist			=> type_netlist.empty_map,
-							submodules		=> type_gui_submodules.empty_map,
-							frames			=> type_frames.empty_list,
-							title_blocks	=> type_title_blocks.empty_list,
-							notes			=> type_texts.empty_list,
-							sheet_headers	=> type_sheet_headers.empty_map));
+										instance => type_submodule_instance'first);
+				else
+					-- default mode: regular design import. set module name as top_level_schematic
+					module_name := type_submodule_name.to_bounded_string (
+											base_name (to_string (top_level_schematic)));
+				end if;
 
-				else -- default mode: regular design import. set module name as top_level_schematic
-					add_module (
-						module_name	=> type_submodule_name.to_bounded_string (
+				-- create the module:
+				type_rig.insert (
+					container	=> rig,
+					key			=> module_name,
+					new_item 	=> (
+						generic_name	=> type_submodule_name.to_bounded_string (
 											base_name (to_string (top_level_schematic))),
-						module => (
-							generic_name	=> type_submodule_name.to_bounded_string (
-												base_name (to_string (top_level_schematic))),
-							instance		=> type_submodule_instance'first,
+						instance		=> type_submodule_instance'first,
+						
+						libraries		=> tmp_project_libraries, -- set project libraries (collected via project file)
+						strands			=> type_strands.empty_list,
+						junctions		=> type_junctions.empty_list,
+						nets			=> type_nets.empty_map,
+						components		=> type_components.empty_map,
+						no_connections	=> type_no_connection_flags.empty_list,
+						portlists		=> type_portlists.empty_map,
+						netlist			=> type_netlist.empty_map,
+						submodules		=> type_gui_submodules.empty_map,
+						frames			=> type_frames.empty_list,
+						title_blocks	=> type_title_blocks.empty_list,
+						notes			=> type_texts.empty_list,
+						sheet_headers	=> type_sheet_headers.empty_map),
 
-							libraries		=> tmp_project_libraries, -- set project libraries
-							strands			=> type_strands.empty_list,
-							junctions		=> type_junctions.empty_list,
-							nets			=> type_nets.empty_map,
-							components		=> type_components.empty_map,
-							no_connections	=> type_no_connection_flags.empty_list,
-							portlists		=> type_portlists.empty_map,
-							netlist			=> type_netlist.empty_map,
-							submodules		=> type_gui_submodules.empty_map,
-							frames			=> type_frames.empty_list,
-							title_blocks	=> type_title_blocks.empty_list,
-							notes			=> type_texts.empty_list,
-							sheet_headers	=> type_sheet_headers.empty_map));
+					position	=> module_cursor,
+					inserted	=> module_inserted);
+
+				if not module_inserted then -- CS should never happen
+					log_indentation_reset;
+					log (message_error & "module " & to_string (module_name) & " already in rig !");
+					raise constraint_error;
 				end if;
 				
 				read_components_libraries (log_threshold); -- as stored in element "libraries" of the current module

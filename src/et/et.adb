@@ -238,7 +238,6 @@ procedure et is
 
 		module_cursor_import : type_import_modules.cursor;
 		instances : type_submodule_instance;
-		module_cursor_rig : type_rig.cursor;
 	
 	begin
 		log ("importing modules ...");
@@ -255,7 +254,6 @@ procedure et is
 		end if;
 		
 		-- Loop in et_configuration.import_module and import module per module.
-		-- CS: for multiple instances use element copy instead of importing the same module over and over.
 		module_cursor_import := et_configuration.import_modules.first;
 		while module_cursor_import /= type_import_modules.no_element loop
 
@@ -267,11 +265,11 @@ procedure et is
 			et_import.cad_format := element (module_cursor_import).format;
 			instances := element (module_cursor_import).instances;
 
-			-- If the design is not to be instantiated multiple times we do a regular design import.
-			-- If more than one instance is required, we append the instance to the project name 
-			-- and just copy.
-			
-			if instances = type_submodule_instance'first then -- do a regular single design import
+			-- If the design is to be instantiated multiple times we import only the first instance.
+			-- All other instances are created by copying the latest instance.
+
+			if instances = type_submodule_instance'first then 
+				-- Only one instance requried -> do a regular single design import.
 				log ("importing module " & to_string (project_name) & " ...");
 				log ("CAD format " & et_import.to_string (et_import.cad_format));
 				
@@ -282,28 +280,24 @@ procedure et is
 				log ("importing and instantiating module " & to_string (project_name) & " ...");
 				log ("CAD format " & et_import.to_string (et_import.cad_format));
 				
-				-- For each instance append the instance id to the project name.
-				-- Import the project only once. For instances greater 1 we instruct
-				-- the design imported to just copy the first project.
+				-- Import the project only once.
 				for i in type_submodule_instance'first .. instances loop
-										
-					if i = type_submodule_instance'first then
-						log ("instance " & to_string (i) & " ...");
+					log ("instance " & to_string (i) & " ...");
+
+					if i = type_submodule_instance'first then -- first instance
 						
 						-- CS: use case construct to probe cad formats
 						et_kicad.import_design (first_instance => true, log_threshold => 0);
 					else
-						log ("instance " & to_string (i) & " ...");
-						copy_module (
-							name_origin => type_rig.key (module_cursor),
-							log_threshold => 0);
+						-- Copy the last module.
+						-- The module instance is incremented by copy_module automatically.
+						copy_module (log_threshold => 0);
 					end if;
 				end loop;
 
 			end if;
 			
 			restore_projects_root_directory;
-			
 			
 			next (module_cursor_import);
 		end loop;
@@ -316,6 +310,7 @@ procedure et is
 			when event:
 				others =>
 					et_import.close_report;
+					--put (exception_message (event));
 					put_line (standard_output, message_error & "Read import report for warnings and error messages !"); -- CS: show path to report file
 					raise;
 

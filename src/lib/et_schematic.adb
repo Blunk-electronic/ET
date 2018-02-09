@@ -870,8 +870,12 @@ package body et_schematic is
 	end equal_reference;
 
 	procedure copy_module (
-		name_origin		: in type_submodule_name.bounded_string; -- nucleo_core_3
--- 		instance_new 	: in type_submodule_instance; -- 
+	-- Copyies the a rig module. 
+	-- If copy_last is true (default) the last module in the rig is copied. 
+	-- If copy_last is false, the module with given name_origin is copied.
+	-- The module instance is always incremented automatically.
+		copy_last		: in boolean := true;
+		name_origin		: in type_submodule_name.bounded_string := type_submodule_name.to_bounded_string (""); -- nucleo_core_3
 		log_threshold	: in et_string_processing.type_log_level) is
 
 		use et_string_processing;
@@ -882,6 +886,7 @@ package body et_schematic is
 		instance_origin : type_submodule_instance;
 		instance_new : type_submodule_instance;
 		module_cursor_new : type_rig.cursor;
+		name_origin_scratch : type_submodule_name.bounded_string := name_origin;
 		name_new : type_submodule_name.bounded_string;
 		inserted : boolean := false;
 
@@ -893,33 +898,46 @@ package body et_schematic is
 		end set_instance;
 
 	begin -- copy_module
-		log ("copying module " & to_string (name_origin) & " ...", log_threshold);
-		log_indentation_up;
-		
-		module_cursor_origin := find (rig, name_origin);
+		if copy_last then -- default mode
+			log ("copying last module ...", log_threshold);
+			module_cursor_origin := last (rig); -- set module cursor to last module in rig
+		else
+			log ("copying module " & to_string (name_origin) & " ...", log_threshold);
+			module_cursor_origin := find (rig, name_origin); -- set module cursor to given origin module
 
-		if module_cursor_origin = type_rig.no_element then
-			log_indentation_reset;
-			log (message_error & " module " & to_string (name_origin) & " not found !", console => true);
-			raise constraint_error;
+			-- if given module does not exist, raise error
+			if module_cursor_origin = type_rig.no_element then
+				log_indentation_reset;
+				log (message_error & " module " & to_string (name_origin) & " not found !", console => true);
+				raise constraint_error;
+			end if;
 		end if;
+			
+		log_indentation_up;
 
-		-- load generic name and instance of origin module
+		-- load generic name of origin module
 		generic_name_origin := element (module_cursor_origin).generic_name; -- nucleo_core
 		log ("generic name    : " & to_string (generic_name_origin), log_threshold + 1);
+
+		-- load instance of origin module		
 		instance_origin := element (module_cursor_origin).instance; -- 3
 		log ("instance origin : " & to_string (instance_origin), log_threshold + 1);
+
+		-- compute instance of new module
 		instance_new := instance_origin + 1;
 		log ("instance new    : " & to_string (instance_new), log_threshold + 1);
-		name_new := append_instance (submodule => name_origin, instance => instance_new);
+
+		-- build name of new module
+		name_new := append_instance (submodule => generic_name_origin, instance => instance_new);
 		log ("name new        : " & to_string (name_new), log_threshold);
 		
-		-- create new module
+		-- Create new module: The module indicated by module_cursor_origin is inserted again.
+		-- afterward module_cursor_new points to the newly create module.
 		insert (
 			container	=> rig,
+			new_item	=> element (module_cursor_origin),
 			key 		=> name_new,
 			position 	=> module_cursor_new,
-			new_item	=> element (module_cursor_origin),
 			inserted 	=> inserted);
 		
 		if not inserted then
@@ -977,28 +995,6 @@ package body et_schematic is
 		module_cursor := rig.find (module_name);
 		-- CS: exception handler in case given module does not exist
 	end set_module;
-
-	
-	procedure add_module (
-	-- Adds a module into the rig. Leaves module_cursor pointing
-	-- to the module inserted last.
-		module_name : in et_coordinates.type_submodule_name.bounded_string;
-		module		: in type_module) is
-		
-		inserted : boolean := false;
-	begin
-		rig.insert (
-			key			=> module_name,
-			new_item	=> module,
-			position	=> module_cursor,
-			inserted	=> inserted
-			);
-
-		if not inserted then
-			null; -- CS: error message
-			raise constraint_error;
-		end if;
-	end add_module;
 
 
 	procedure add_gui_submodule (
