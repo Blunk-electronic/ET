@@ -3099,7 +3099,7 @@ package body et_schematic is
 	-- Returns the properties of the given port as string.
 	begin
 		return "reference " & to_string (port.reference) 
-			& " name " & to_string (port.name)
+			& " port " & to_string (port.name)
 			& " coordinates " & to_string (position => port.coordinates, scope => module);
 	end to_string;
 	

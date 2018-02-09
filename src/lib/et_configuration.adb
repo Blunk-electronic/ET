@@ -892,7 +892,7 @@ package body et_configuration is
 	end category;
 
 
-	function components_in_net (
+	function components_in_net ( -- CS: rename to ports_in_net
 		module 			: in et_coordinates.type_submodule_name.bounded_string;	-- nucleo_core
 		net				: in et_schematic.type_net_name.bounded_string;			-- motor_on_off
 		category		: in type_component_category;				-- netchanger, connector
@@ -917,8 +917,8 @@ package body et_configuration is
 		terminal : type_terminal;
 
 	begin -- components_in_net
-		log ("locating components of category " & to_string (category) 
-			 & " in module " & to_string (module) & " net " & to_string (net) & " ...",
+		log ("locating" & to_string (category) & " ports in module " 
+			 & to_string (module) & " net " & to_string (net) & " ...",
 			 log_threshold);
 		
 		log_indentation_up;
@@ -927,23 +927,29 @@ package body et_configuration is
 		ports_all := et_schematic.components_in_net (module, net, log_threshold + 2);
 
 		-- If there are ports in the given net, set port cursor to first port in net,
-		-- filter ports by category and log ports one after another.
+		-- filter ports by appearance, category and log ports one after another.
 		-- If no ports in net, issue a warning.
 		if not is_empty (ports_all) then
 			port_cursor := ports_all.first;
 			while port_cursor /= type_ports_with_reference.no_element loop
 				port_scratch := element (port_cursor); -- load the port
 
-				-- filter by given category and insert the current port_scratch in ports_by_category 
-				if et_configuration.category (port_scratch.reference) = category then
-					terminal := to_terminal (port_scratch, module, log_threshold + 3); -- fetch the terminal
-					log (to_string (port_scratch) & to_string (terminal, show_unit => true, preamble => true),
-						log_threshold + 1);
+				-- only real components matter here:
+				if port_scratch.appearance = sch_pcb then
+					
+					-- filter by given category and insert the current port_scratch in ports_by_category 
+					if et_configuration.category (port_scratch.reference) = category then
+						terminal := to_terminal (port_scratch, module, log_threshold + 3); -- fetch the terminal
+						--log (to_string (port_scratch) & to_string (terminal, show_unit => true, preamble => true),
+						log (to_string (port_scratch) 
+							& " terminal " & to_string (terminal.name), --, show_unit => true, preamble => true),
+							log_threshold + 1);
 
-					-- insert in container (to be returned)
-					insert (
-						container => ports_by_category,
-						new_item => port_scratch);
+						-- insert in container (to be returned)
+						insert (
+							container => ports_by_category,
+							new_item => port_scratch);
+					end if;
 				end if;
 				
 				next (port_cursor);
@@ -953,7 +959,7 @@ package body et_configuration is
 		end if;
 
 		-- show number of component ports that have been found by given category.
-		log ("found " & count_type'image (ports_by_category.length) & " ports !", log_threshold + 1);
+		log ("found" & count_type'image (ports_by_category.length) & " ports", log_threshold + 1);
 		
 		log_indentation_down;
 		return ports_by_category;
@@ -1121,7 +1127,8 @@ package body et_configuration is
 				while net_cursor /= type_netlist.no_element loop
 					net_name := key (net_cursor);
 					log (to_string (net_name), log_threshold + 3);
-	
+					log_indentation_up;
+					
 					-- load all netchangers connected with this net
 					netchangers := components_in_net (module_name, net_name, NETCHANGER, log_threshold + 2);
 
@@ -1134,6 +1141,8 @@ package body et_configuration is
 -- 								log_threshold	=> log_threshold + 2);
 
 					-- CS connected_net (module_name, port, log_threshold +x);
+
+					log_indentation_down;
 					next (net_cursor);
 				end loop;
 			else
@@ -1144,7 +1153,7 @@ package body et_configuration is
 		end query_nets;
 	
 	begin -- make_routing_tables
-		log ("making routing tables ...", log_threshold + 1);
+		log ("making routing tables ...", log_threshold);
 		log_indentation_up;
 
 		module_cursor := rig.first;
