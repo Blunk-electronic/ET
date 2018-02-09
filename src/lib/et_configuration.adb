@@ -214,11 +214,13 @@ package body et_configuration is
 	end validate_module_interconnection;
 
 	function to_connector_reference (
-	-- Returns the reference (like X4) of the connector (in the given module) with the given purpose.
-	-- Raises error if no connector with given purpose could be found in the module.
-		module_name : in et_coordinates.type_submodule_name.bounded_string;
-		purpose : in et_libraries.type_component_purpose.bounded_string;
-		log_threshold : in type_log_level) 
+	-- Returns the reference (like X4) of the connector in the given generic module with 
+	-- given instance with the given purpose.
+	-- Raises error if connector could be found.
+		generic_module_name	: in et_coordinates.type_submodule_name.bounded_string;		-- led_matrix
+		instance			: in et_coordinates.type_submodule_instance;				-- 1
+		purpose				: in et_libraries.type_component_purpose.bounded_string;	-- "PWR CTRL IN"
+		log_threshold		: in type_log_level) 
 		return et_libraries.type_component_reference is
 
 		use et_coordinates;
@@ -283,24 +285,28 @@ package body et_configuration is
 		use type_submodule_name;
 		
 	begin -- to_connector_reference
-		log ("locating module in rig ...", log_threshold);
+		log ("locating module " & to_string (submodule => generic_module_name) & " in rig ...", log_threshold);
 		log_indentation_up;
 
-		-- locate the module in the rig by its generic name
+		-- locate the module in the rig by its generic name and instance
 		module_cursor := rig.first;
 		while module_cursor /= no_element loop
-			if element (module_cursor).generic_name = module_name then
-				query_element (
-					position => module_cursor,
-					process => locate_component'access);
-				module_found := true;
-				exit;
+			if element (module_cursor).generic_name = generic_module_name then
+				if element (module_cursor).instance = instance then
+					query_element (
+						position => module_cursor,
+						process => locate_component'access);
+					module_found := true;
+					exit;
+				end if;
 			end if;
+			next (module_cursor);
 		end loop;
 
 		if not module_found then
 			log_indentation_reset;
-			log (message_error & "no module with generic name " & to_string (submodule => module_name)
+			log (message_error & "no generic module " & to_string (submodule => generic_module_name)
+				 & " with instance " & to_string (instance)
 				 & " found in the rig !", console => true);
 			raise constraint_error;
 		end if;
@@ -313,24 +319,32 @@ package body et_configuration is
 	-- Compares the number of terminals of the given connectors.
 	-- Raises error if numbers differ.
 	-- CS: verificaton required
-		module_A		: in et_coordinates.type_submodule_name.bounded_string; -- nucleo_core
+		module_A		: in et_coordinates.type_submodule_name.bounded_string; -- generic name like nucleo_core
+		instance_A		: in et_coordinates.type_submodule_instance;			-- 1
 		reference_A		: in et_libraries.type_component_reference;				-- X46
-		module_B		: in et_coordinates.type_submodule_name.bounded_string;	-- motor_driver
+		module_B		: in et_coordinates.type_submodule_name.bounded_string;	-- generic name like motor_driver
+		instance_B		: in et_coordinates.type_submodule_instance;			-- 4
 		reference_B		: in et_libraries.type_component_reference;				-- X701
 		log_threshold	: in type_log_level) is
 
 		use et_coordinates;
 		use et_schematic;
+		use et_coordinates.type_submodule_name;
 		use et_libraries;
 		use type_rig;
 
+		module_found : boolean := false;
+	
 		terminal_count_A, terminal_count_B : et_libraries.type_terminal_count;
 
-		procedure module_not_found (module : in et_coordinates.type_submodule_name.bounded_string) is
+		procedure module_not_found (
+			name		: in et_coordinates.type_submodule_name.bounded_string;
+			instance	: in et_coordinates.type_submodule_instance) is
 		begin
 			log_indentation_reset;
-			log (message_error & "module " & to_string (module) & " not found !",
-				 console => true);
+			log (message_error & "module " & to_string (submodule => name) 
+				& " instance " & to_string (instance) & " not found !",
+				console => true);
 			raise constraint_error;
 		end module_not_found;
 			
@@ -338,38 +352,66 @@ package body et_configuration is
 		log ("comparing connector terminal count ...", log_threshold);
 		log_indentation_up;
 
-		-- set the GLOBAL module cursor to module_A
-		module_cursor := type_rig.find (rig, module_A);
+		-- locate module A in the rig by its generic name and instance
+		module_cursor := rig.first; -- via the GLOBAL module cursor
+		while module_cursor /= no_element loop
+			if element (module_cursor).generic_name = module_A then
+				if element (module_cursor).instance = instance_A then
+					-- get the terminal count of connector A
+					terminal_count_A := terminal_count (reference_A, log_threshold + 2);
+					log ("module " & to_string (submodule => module_A) & " instance " 
+						& to_string (instance_A) & " connector " 
+						& to_string (reference_A) & to_string (terminal_count_A),
+						log_threshold + 1);
+					module_found := true;
+					exit;
+				end if;
+			end if;
+			next (module_cursor);
+		end loop;
 
-		-- the module should be found. then get the terminal count of connector A
-		if module_cursor /= type_rig.no_element then
-			terminal_count_A := terminal_count (reference_A, log_threshold + 2);
-			log ("module " & to_string (module_A) & " connector " 
-				& to_string (reference_A) & to_string (terminal_count_A),
-				log_threshold + 1);
-		else -- safety measure in case the module could not be found. should never happen
-			module_not_found (module_A);
+		if not module_found then -- safety measure in case the module could not be found. should never happen
+			module_not_found (module_A, instance_A);
 		end if;
 
-		-- set the GLOBAL module cursor to module_B
-		module_cursor := type_rig.find (rig, module_B);
-	
-		if module_cursor /= type_rig.no_element then
-			terminal_count_B := terminal_count (reference_B, log_threshold + 2);
-			log ("module " & to_string (module_B) & " connector " 
-				& to_string (reference_B) & to_string (terminal_count_B),
-				log_threshold + 1);
-		else -- safety measure in case the module could not be found. should never happen
-			module_not_found (module_B);
+		
+		-- locate module B in the rig by its generic name and instance
+		module_cursor := rig.first; -- via the GLOBAL module cursor
+		while module_cursor /= no_element loop
+			if element (module_cursor).generic_name = module_B then
+				if element (module_cursor).instance = instance_B then
+					-- get the terminal count of connector B
+					terminal_count_B := terminal_count (reference_B, log_threshold + 2);
+					log ("module " & to_string (submodule => module_B) & " instance " 
+						& to_string (instance_B) & " connector " 
+						& to_string (reference_B) & to_string (terminal_count_B),
+						log_threshold + 1);
+					module_found := true;
+					exit;
+				end if;
+			end if;
+			next (module_cursor);
+		end loop;
+
+		if not module_found then -- safety measure in case the module could not be found. should never happen
+			module_not_found (module_B, instance_B);
 		end if;
 
+
+
+		
 		-- if terminal counts differ, abort
 		if terminal_count_A /= terminal_count_B then
 			log_indentation_reset;
-			log (message_error & " module " & to_string (module_A) & " connector " & to_string (reference_A)
-				 & " and module " & to_string (module_B) & " connector " & to_string (reference_B)
-				 & " do not match !",
-				 console => true);
+			log (message_error 
+				& " module " & to_string (submodule => module_A) 
+				& " instance " & to_string (instance_A)
+				& " connector " & to_string (reference_A)
+				& " and module " & to_string (submodule => module_B)
+				& " instance " & to_string (instance_B)
+				& " connector " & to_string (reference_B)
+				& " do not match !",
+				console => true);
 			raise constraint_error;
 		end if;
 				 
@@ -405,8 +447,10 @@ package body et_configuration is
 	-- ports and terminals could be tested for connected nets and compared ...
 	
 		module_A		: in et_coordinates.type_submodule_name.bounded_string;	-- nucleo_core
+		instance_A		: in et_coordinates.type_submodule_instance;			-- 1
 		reference_A		: in et_libraries.type_component_reference;				-- X1
 		module_B		: in et_coordinates.type_submodule_name.bounded_string;	-- motor_driver
+		instance_B		: in et_coordinates.type_submodule_instance;			-- 4
 		reference_B		: in et_libraries.type_component_reference;				-- X701
 		warn_only		: in type_net_comparator_warn_only;						-- warn or abort on difference
 		log_threshold	: in type_log_level) is
@@ -424,11 +468,15 @@ package body et_configuration is
 		module_right : type_submodule_name.bounded_string := module_A;	-- nucleo_core
 		module_left : type_submodule_name.bounded_string := module_B;	-- motor_driver
 		module_swap : type_submodule_name.bounded_string;
+
+		instance_right : type_submodule_instance := instance_A; -- 1
+		instance_left : type_submodule_instance := instance_B; -- 4
+		instance_swap : type_submodule_instance;
 	
 		reference_right : type_component_reference := reference_A;	-- X1
 		reference_left : type_component_reference := reference_B;	-- X701
 		reference_swap : type_component_reference;
-
+	
 		procedure query_nets_left (
 			module_name : in type_submodule_name.bounded_string;
 			module		: in type_module) is
@@ -596,27 +644,60 @@ package body et_configuration is
 
 			log_indentation_down;			
 		end query_nets_right;
+
+		
+		procedure set_module_cursors is
+			use type_submodule_name;
+		begin
+			log ("module right " & to_string (submodule => module_right) 
+				& " instance " & to_string (instance_right)
+				& " connector right " & to_string (reference_right), log_threshold + 1);
+
+			log ("module left " & to_string (submodule => module_left) 
+				& " instance " & to_string (instance_left)
+				& " connector left " & to_string (reference_left), log_threshold + 1);
+
+			-- locate the module in the rig by its generic name and instance
+			module_cursor_right := rig.first;
+			while module_cursor_right /= no_element loop
+				if element (module_cursor_right).generic_name = module_right then
+					if element (module_cursor).instance = instance_right then
+						exit;
+					end if;
+				end if;
+				next (module_cursor_right);
+			end loop;
+			-- now module_cursor_right should point to module right
+			-- CS: abort if module not found
+
+			-- locate the module in the rig by its generic name and instance			
+			module_cursor_left := rig.first;
+			while module_cursor_left /= no_element loop
+				if element (module_cursor_left).generic_name = module_left then
+					if element (module_cursor).instance = instance_left then
+						exit;
+					end if;
+				end if;
+				next (module_cursor_left);
+			end loop;
+			-- now module_cursor_left should point to module right
+			-- CS: abort gracefully if module not found
+
+			log_indentation_up;
+			query_element (
+				position => module_cursor_right,
+				process => query_nets_right'access);
+			log_indentation_down;
+
+		end set_module_cursors;
+
 		
 	begin -- compare_nets
 		log ("comparing net names ...", log_threshold);
 		log_indentation_up;
 
 		-- Test connection from right to left.
-		log ("module right " & to_string (module_right)
-			 & " connector right " & to_string (reference_right), log_threshold + 1);
-
-		log ("module left " & to_string (module_left)
-			 & " connector left " & to_string (reference_left), log_threshold + 1);
-
-		-- set module cursors		
-		module_cursor_right := type_rig.find (rig, module_right);
-		module_cursor_left := type_rig.find (rig, module_left);
-
-		log_indentation_up;
-		query_element (
-			position => module_cursor_right,
-			process => query_nets_right'access);
-		log_indentation_down;
+		set_module_cursors;
 		
 		-- Test connection from left to right
 		-- swap places
@@ -624,83 +705,90 @@ package body et_configuration is
 		module_left := module_right; -- left becomes right
 		module_right := module_swap; -- right becomes left
 
+		instance_swap := instance_left; -- backup instance on the left
+		instance_left := instance_right; -- left becomes right
+		instance_right := instance_swap; -- right becomes left
+		
 		reference_swap := reference_left; -- backup name of component reference left
 		reference_left := reference_right; -- left becomes right
 		reference_right := reference_swap; -- right becomes left
 
-		log ("module right " & to_string (module_right)
-			 & " connector right " & to_string (reference_right), log_threshold + 1);
-
-		log ("module left " & to_string (module_left)
-			 & " connector left " & to_string (reference_left), log_threshold + 1);
-		
-		-- set module cursors
-		module_cursor_right := type_rig.find (rig, module_right);
-		module_cursor_left := type_rig.find (rig, module_left);
-
-		log_indentation_up;
-		query_element (
-			position => module_cursor_right,
-			process => query_nets_right'access);
-		log_indentation_down;
+		set_module_cursors;
 
 		log_indentation_down;
-
-		-- CS: The modules should be found. Place exception handler in case
-		-- a module does not exist.
 	end compare_nets;
 	
 	procedure validate_module_interconnections (log_threshold: in et_string_processing.type_log_level) is
-	-- Tests if module interconnections at net level make sense.
+	-- Tests if module interconnections like "LMX 1 "PWR CTRL IN" PWR 1 "PWR CTRL OUT"" 
+	-- make sense at net level.
 	-- NOTE: call AFTER modules have been imported !
 		use type_module_interconnections;
 		use et_coordinates;
 		use et_libraries;
 		interconnection_cursor		: type_module_interconnections.cursor := module_interconnections.first;
 		module_A, module_B			: type_import_module;
+		instance_A, instance_B		: type_submodule_instance;
 		purpose_A, purpose_B 		: et_libraries.type_component_purpose.bounded_string;
 		reference_A, reference_B	: et_libraries.type_component_reference;
 	begin
 		log ("validating module interconnections ...", log_threshold);
 		log_indentation_up;
-		-- From the module name (nucleo_core) and the purpose (MOTOR_CTRL_OUT_2) of the connector
-		-- we reason the references like X1, X46
 
-		-- From the module interconnection like "NCC 1 MOTOR_CTRL_OUT_2 MOT 2 MOTOR_CTRL_IN" we 
-		-- reason the full module name and the reference of the connector: 
-		-- NCC stands for "nucleo_core" and purpose "MOTOR_CTRL_OUT_2" stands for connector X46.
+		-- From the generic module name (led_matrix), the module instance (1) and the 
+		-- purpose (PWR CTRL IN) of the connector we reason the references like X46.
+		-- This must be done on both sides of the interconnection (A and B)
 		while interconnection_cursor /= no_element loop
 
-			-- A map from abbrevation to full module name:
-			module_A := to_submodule (element (interconnection_cursor).peer_A.abbrevation);
-			log ("module A " & to_string (module_A.name), log_threshold + 2);
+			-- PEER A
 			
-			-- A map from module name and purpose to reference
+			-- A: map from abbrevation to import module (like led_matrix LMX kicad_v4 2) :
+			module_A := to_submodule (element (interconnection_cursor).peer_A.abbrevation); -- LMX to led_matrix
+			log ("generic module A " & to_string (module_A.name), log_threshold + 2); -- led_matrix
+
+			instance_A := element (interconnection_cursor).peer_A.instance; -- 2
+			log ("instance A " & to_string (instance_A), log_threshold + 2);
+			
+			-- A: map from module name and purpose to reference
 			purpose_A := element (interconnection_cursor).peer_A.purpose;
 			log ("purpose connector A " & enclose_in_quotes (to_string (purpose_A)), log_threshold + 2);
 
-			reference_A := to_connector_reference (module_A.name, purpose_A, log_threshold + 3);
+			reference_A := to_connector_reference (
+				generic_module_name	=> module_A.name,	-- led_matrix
+				instance 			=> instance_A,		-- 1
+				purpose				=> purpose_A,		-- "PWR CTRL IN"
+				log_threshold => log_threshold + 3);
+			
 			log ("reference connector A " & to_string (reference_A), log_threshold + 2);
 
+
+			-- PEER B
 			
-			
-			-- B map from abbrevation to full module name:			
+			-- B: map from abbrevation to to import module (like pwr_supply PWR kicad_v4 1) :
 			module_B := to_submodule (element (interconnection_cursor).peer_B.abbrevation);
-			log ("module B " & to_string (module_B.name), log_threshold + 2);
+			log ("generic module B " & to_string (module_B.name), log_threshold + 2);
+
+			instance_B := element (interconnection_cursor).peer_B.instance;
+			log ("instance B " & to_string (instance_B), log_threshold + 2);
 			
-			-- B map from module name and purpose to reference
+			-- B: map from module name and purpose to reference
 			purpose_B := element (interconnection_cursor).peer_B.purpose;
 			log ("purpose connector B " & enclose_in_quotes (to_string (purpose_B)), log_threshold + 2);
 			
-			reference_B := to_connector_reference (module_B.name, purpose_B, log_threshold + 3);
+			reference_B := to_connector_reference (
+				generic_module_name	=> module_B.name,
+				instance			=> instance_B,
+				purpose				=> purpose_B,
+				log_threshold		=> log_threshold + 3);
+
 			log ("reference connector B " & to_string (reference_B), log_threshold + 2);
 
 
 			
+
 			-- compare connector terminal counts. each peer must have the same number of terminals
 			compare_connector_terminal_count (
-				module_A.name, reference_A, -- nucleo_core, X46
-				module_B.name, reference_B, -- motor_driver, X701
+				module_A.name, instance_A, reference_A, -- led_matrix, 1, X46
+				module_B.name, instance_B, reference_B, -- pwr_supply, 1, X701
 				log_threshold + 1);
 			
 			-- compare net names
@@ -709,15 +797,17 @@ package body et_configuration is
 			case element (interconnection_cursor).options.comparator is
 				when ON =>
 					compare_nets (
-						module_A => module_A.name,	-- nucleo_core
-						reference_A => reference_A, -- X1
-						module_B => module_B.name,	-- motor_driver
-						reference_B => reference_B,	-- X701
-						warn_only => element (interconnection_cursor).options.warn_only, -- warnings or abort on difference
-						log_threshold => log_threshold + 1);
+						module_A		=> module_A.name,	-- led_matrix
+						instance_A		=> instance_A,		-- 1
+						reference_A		=> reference_A, 	-- X46
+						module_B 		=> module_B.name,	-- motor_driver
+						instance_B		=> instance_B,		-- 1
+						reference_B 	=> reference_B,		-- X701
+						warn_only		=> element (interconnection_cursor).options.warn_only, -- warnings or abort on difference
+						log_threshold 	=> log_threshold + 1);
 
 				when OFF =>
-					log ("net name comparing skipped !", log_threshold + 2);
+					log ("net comparator off -> name comparing skipped !", log_threshold + 2);
 			end case;
 					
 			next (interconnection_cursor);
@@ -898,20 +988,20 @@ package body et_configuration is
 				-- matches the the given reference. On match return true.
 				if to_submodule (element (connection_cursor).peer_A.abbrevation).name = module then
 					purpose := element (connection_cursor).peer_A.purpose;
-					if to_connector_reference (module, purpose, log_threshold + 1) = reference then
-						result := true;
-						exit;
-					end if;
+-- CS					if to_connector_reference (module, purpose, log_threshold + 1) = reference then
+-- 						result := true;
+-- 						exit;
+-- 					end if;
 				end if;
 
 				-- probe interconnection at peer B. Test if the connector reference at peer B
 				-- matches the the given reference. On match return true.				
 				if to_submodule (element (connection_cursor).peer_B.abbrevation).name = module then
 					purpose := element (connection_cursor).peer_B.purpose;
-					if to_connector_reference (module, purpose, log_threshold + 1) = reference then
-						result := true;
-						exit;
-					end if;
+-- CS					if to_connector_reference (module, purpose, log_threshold + 1) = reference then
+-- 						result := true;
+-- 						exit;
+-- 					end if;
 				end if;
 				
 				next (connection_cursor);
