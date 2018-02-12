@@ -633,6 +633,14 @@ package et_schematic is
 		"<" => compare_reference,
  		element_type => type_component);
 
+	function purpose (
+	-- Returns the purpose of the given component in the given module.
+	-- If no purpose specified for the component, an empty string is returned.						 
+		module_name		: in type_submodule_name.bounded_string; -- led_matrix_2
+		reference		: in type_component_reference; -- X701
+		log_threshold	: in et_string_processing.type_log_level)
+		return type_component_purpose.bounded_string;
+	
 	procedure write_component_properties (
 	-- Writes the properties of the component indicated by the given cursor.
 		component : in type_components.cursor;
@@ -967,7 +975,7 @@ package et_schematic is
 		log_threshold	: in et_string_processing.type_log_level)
 		return type_ports_with_reference.set;
 	-- Returns a list of component ports that are connected with the given net.
-	
+
 -- BOM
 	-- Whenever we deal with BOM files this type should be used:
 	bom_file_name_length : constant positive := 100; -- CS: should suffice for now

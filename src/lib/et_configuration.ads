@@ -211,8 +211,8 @@ package et_configuration is
 	-- Returns the category of the given component reference. If no category could be
 	-- found, returns category UNKNOWN.
 
-	function components_in_net (
-		module 			: in et_coordinates.type_submodule_name.bounded_string;	-- nucleo_core
+	function ports_in_net (
+		module 			: in et_coordinates.type_submodule_name.bounded_string;	-- led_matrix_2
 		net				: in et_schematic.type_net_name.bounded_string;			-- motor_on_off
 		category		: in type_component_category;				-- netchanger, connector
 		log_threshold	: in et_string_processing.type_log_level)

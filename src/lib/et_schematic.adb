@@ -106,6 +106,14 @@ package body et_schematic is
 		return type_submodule_name.to_bounded_string (base_name (to_string (file_name)));
 	end to_submodule_name;
 
+	procedure module_not_found (module : in type_submodule_name.bounded_string) is
+		use et_string_processing;
+	begin
+		log_indentation_reset;
+		log (message_error & " module " & to_string (module) & " not found !");
+		raise constraint_error;
+	end module_not_found;
+	
 	function to_string (net_name : in type_net_name.bounded_string) return string is
 	-- Returns the given net name as string.
 	begin
@@ -251,6 +259,74 @@ package body et_schematic is
 		log_indentation_down;
 		log_indentation_down;
 	end write_note_properties;
+
+	function purpose (
+	-- Returns the purpose of the given component in the given module.
+	-- If no purpose specified for the component, an empty string is returned.
+		module_name		: in type_submodule_name.bounded_string; -- led_matrix_2
+		reference		: in type_component_reference; -- X701
+		log_threshold	: in et_string_processing.type_log_level)
+		return type_component_purpose.bounded_string is
+
+		use et_string_processing;	
+		use type_component_purpose;
+		use type_rig;
+	
+		module_cursor : type_rig.cursor;
+		purpose : type_component_purpose.bounded_string; -- to be returned
+	
+		procedure query_components (
+		-- Searches the components of the module for the given reference.
+			module_name : in type_submodule_name.bounded_string;
+			module		: in type_module) is
+			use type_components;
+			component_cursor : type_components.cursor := module.components.first;
+		begin
+			log ("querying components ...", log_threshold + 1);
+			log_indentation_up;
+
+			while component_cursor /= type_components.no_element loop
+				if key (component_cursor) = reference then
+
+					-- component with given reference found.
+					purpose := element (component_cursor).purpose;
+					exit; -- no need for further searching
+					
+				end if;
+				next (component_cursor);
+			end loop;
+
+			log_indentation_down;
+		end query_components;
+			
+	begin -- purpose
+		log ("module " & to_string (module_name) 
+			 & " looking up purpose of " 
+			 & to_string (reference) & " ...", log_threshold);
+		log_indentation_up;
+
+		-- set module cursor
+		module_cursor := find (rig, module_name);
+
+		-- if module exists, query its component list
+		if module_cursor /= type_rig.no_element then
+			query_element (
+				position => module_cursor,
+				process => query_components'access);
+		else
+			module_not_found (module_name); -- module does not exist -> error
+		end if;
+
+		-- Show purpose.
+		if length (purpose) = 0 then
+			log ("no purpose specified", log_threshold + 1);
+		else
+			log ("purpose " & et_libraries.to_string (purpose), log_threshold + 1);
+		end if;
+		
+		log_indentation_down;
+		return purpose;
+	end purpose;
 	
 	procedure write_component_properties (
 	-- Writes the properties of the component indicated by the given cursor.
