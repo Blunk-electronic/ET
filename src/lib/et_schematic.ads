@@ -729,7 +729,7 @@ package et_schematic is
 	-- Returns the terminal and unit name of the given port in a composite type.
 
 	function connected_net (
-		module 			: in type_submodule_name.bounded_string;	-- nucleo_core
+		module 			: in type_submodule_name.bounded_string;	-- nucleo_core_1
 		port			: in type_port_with_reference;				-- X701 port 4
 		log_threshold	: in et_string_processing.type_log_level)
 		return type_net_name.bounded_string;

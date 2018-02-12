@@ -1125,8 +1125,9 @@ package body et_configuration is
 	end connectors_in_net;
 
 	type type_opposide_connector_port is record
-		module	: et_coordinates.type_submodule_name.bounded_string;
-		port	: et_schematic.type_port_with_reference;
+		module		: et_coordinates.type_submodule_name.bounded_string;
+		reference	: et_libraries.type_component_reference;
+		name		: et_libraries.type_port_name.bounded_string;
 	end record;
 	
 	function opposide_connector_port (
@@ -1144,39 +1145,45 @@ package body et_configuration is
 		connector_found : boolean := false; -- goes true once the opposide connector has been found
 	
 		generic_module_name_opposide : et_coordinates.type_submodule_name.bounded_string; -- pwr_supply
-		reference_opposide : et_libraries.type_component_reference;
--- 		instance_A : et_coordinates.type_submodule_instance; -- 2
--- 		purpose_A : et_libraries.type_component_purpose.bounded_string; -- PWR_IN
-	
--- 		use et_coordinates.type_submodule_abbrevation;
--- 		abbrevation_A : et_coordinates.type_submodule_abbrevation.bounded_string; -- LMX
+		reference_opposide : et_libraries.type_component_reference; -- X45
 
 		use type_module_interconnections;
 		interconnection_cursor : type_module_interconnections.cursor := module_interconnections.first;
-		interconnection : type_module_interconnection;
-		connector : type_connector;
+		interconnection : type_module_interconnection; -- for temporarily storage of a module interconnection
+		connector : type_connector; -- temporarily storage of a connector
 	
 	begin -- opposide_connector_port
-		log ("locating opposide connector port of port " 
-			& to_string (port.reference)
-			& latin_1.space & to_string (port.name)
-			& " in module interconnections ...",
-			 log_threshold);
-
-		-- set module cursor
+		log ("locating opposide connector port of " & to_string (port.reference)
+			& " port " & to_string (port.name) & " ...", log_threshold);
+		log_indentation_up;
+		
+		-- set module cursor to the given module. CS it should be found, otherwise exception occurs.
 		module_cursor := find (rig, module_name);
+
+		-- BUILD GIVEN CONNECTOR 
+		log ("given module " & et_coordinates.to_string (module_name), log_threshold + 1);
+		
+		-- fetch abbrevation of module
+		connector.abbrevation := to_abbrevation (module_name);
+		log ("given module abbrevation " & et_coordinates.to_string (connector.abbrevation), log_threshold + 1);
 		
 		-- fetch module instance
 		connector.instance := element (module_cursor).instance;
-
-		-- fetch abbrevation of module
-		connector.abbrevation := to_abbrevation (module_name);
-
+		log ("given module instance " & et_coordinates.to_string (connector.instance), log_threshold + 1);
+		
 		-- fetch purpose of component of given port
 		connector.purpose := purpose (module_name, port.reference, log_threshold + 1);
+		log ("given connector purpose " & to_string (connector.purpose), log_threshold + 1);
 
+		log ("given connector reference " & to_string (port.reference), log_threshold + 1);
+		log ("given connector port name " & to_string (port.name), log_threshold + 1);
+
+		
+		-- SEARCH GIVEN CONNECTOR
+		
 		-- Loop through module interconnections and test whether the connector is
-		-- peer A or B.
+		-- peer A or B. On match variable "connector" assumes the connector properties
+		-- of the opposide.
 		while interconnection_cursor /= type_module_interconnections.no_element loop
 			interconnection := element (interconnection_cursor);
 
@@ -1207,25 +1214,60 @@ package body et_configuration is
 			raise constraint_error;
 		end if;
 
+		-- BUILD OPPOSIDE CONNECTOR
+		log ("opposide module abbrevation "	& et_coordinates.to_string (connector.abbrevation), log_threshold + 1);		
+		log ("opposide module instance " 	& et_coordinates.to_string (connector.instance), log_threshold + 1);
+		log ("opposide connector purpose "	& to_string (connector.purpose), log_threshold + 1);
+		
 		-- fetch generic module name of opposide peer
 		generic_module_name_opposide := to_submodule (connector.abbrevation).name;
-
-		-- fetch reference on opposide 
-		reference_opposide := to_connector_reference (
-			generic_module_name	=> generic_module_name_opposide,
-			instance			=> connector.instance,
-			purpose				=> connector.purpose,
+		log ("opposide generic module " & et_coordinates.to_string (generic_module_name_opposide), log_threshold + 1);
+		
+		-- fetch connector reference on opposide 
+		reference_opposide := to_connector_reference ( -- x45
+			generic_module_name	=> generic_module_name_opposide,	-- pwr_supply
+			instance			=> connector.instance,				-- 1
+			purpose				=> connector.purpose,				-- PWR_OUT
 			log_threshold		=> log_threshold + 1);
 
-		opposide_port.module := et_coordinates.append_instance (
-				submodule 	=> generic_module_name_opposide,
-				instance	=> connector.instance);
+		-- The module name is composed of the generic module name and the instance.
+		opposide_port.module := et_coordinates.append_instance (	-- pwr_supply_1
+				submodule 	=> generic_module_name_opposide,		-- pwr_supply
+				instance	=> connector.instance);					-- 1
 
-		--opposide_port.port 
+		log ("opposide module " & et_coordinates.to_string (opposide_port.module), log_threshold + 1);
+		
+		opposide_port.reference := reference_opposide; -- X45
+		log ("opposide connector reference " & to_string (opposide_port.reference), log_threshold + 1);
+
+		-- The port name is the same as the given port name.
+		opposide_port.name := port.name;
+		log ("opposide port " & to_string (opposide_port.name), log_threshold + 1);
 		
 		return opposide_port;
 	end opposide_connector_port;
-							   
+
+	function opposide_netchanger_port (
+	-- Returns the opposide port of the given netchanger port. If given port 1 returns port 2 and vice versa.
+		port : in et_libraries.type_port_name.bounded_string) return et_libraries.type_port_name.bounded_string is
+		use et_libraries;
+		use type_port_name;
+		name : type_port_name.bounded_string;
+	begin
+		if port = to_bounded_string ("1") then 
+			name := to_bounded_string ("2");
+		elsif port = to_bounded_string ("2") then
+			name := to_bounded_string ("1");
+		else
+			log_indentation_reset;
+			log (message_error & "components of category " & to_string (NETCHANGER) 
+				 & " must have port names like '1' or '2' !");
+			raise constraint_error;
+		end if;
+
+		return name;
+	end opposide_netchanger_port;
+	
 	procedure make_routing_tables (log_threshold : in et_string_processing.type_log_level) is
 	-- Creates the routing tables for modules and the whole rig.
 		use et_string_processing;
@@ -1263,7 +1305,9 @@ package body et_configuration is
 								net				=> net_name,	-- motor_on_off
 								category		=> NETCHANGER,
 								log_threshold	=>log_threshold + 2);
-
+					
+					-- CS port_name := opposide_netchanger_port (port.name);
+					
 					-- Load all connectors used for module interconnections connected with this net.
 					-- This requires to look up the interconnections declared in the configuration file.
 					-- So the generic module name and the instance matter here.
@@ -1274,6 +1318,8 @@ package body et_configuration is
 								net				=> net_name,			-- motor_on_off
 								log_threshold	=> log_threshold + 2);
 
+					-- CS opposide_connector := opposide_connector_port (module, port);
+					
 					-- CS connected_net (module_name, port, log_threshold +x);
 
 					log_indentation_down;
