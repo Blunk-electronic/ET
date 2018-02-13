@@ -64,11 +64,27 @@ with et_general;
 
 package et_string_processing is
 
-	type type_log_level is range 0..15;
-	log_level : type_log_level := type_log_level'first;
+	-- The log level is limited to a reasonable value.
+	log_level_max : constant positive := 50; -- CS increase if neccessary
+	-- Functions and procedures pass each other this log level type.
+	-- Theoretically it may assume indefinite values (for example during creation of 
+	-- routing tables). However, it is limited to a reasonable value. See above.
+	type type_log_level is range 0..log_level_max;
 
-	type type_indentation_level is range 0..20;
+	--log_level : type_log_level := type_log_level'first;
+
+	log_level_cmd_line_max : constant type_log_level := 15;
+	subtype type_log_level_cmd_line is type_log_level range 0..log_level_cmd_line_max;
+
+	-- This global variable is set on launching ET. See et.adb. It receives its
+	-- value via the command line. It is a subtype of type_log_level and thus
+	-- limited to a reasonable value.
+	log_level : type_log_level_cmd_line := type_log_level_cmd_line'first;
+
+	log_indentation_max : constant positive := 30;
+	type type_indentation_level is range 0..log_indentation_max;
 	log_indentation : type_indentation_level := type_indentation_level'first;
+	
 	procedure log_indentation_up;
 	procedure log_indentation_down;
 	procedure log_indentation_reset;

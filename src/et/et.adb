@@ -119,7 +119,7 @@ procedure et is
 						
 					elsif full_switch = switch_log_level then
 						put_line ("log level " & parameter);
-						log_level := type_log_level'value (parameter);
+						log_level := type_log_level_cmd_line'value (parameter);
 					end if;
 
 					

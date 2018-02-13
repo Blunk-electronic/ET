@@ -5621,7 +5621,7 @@ package body et_schematic is
 				-- show component ports, units, coordinates and terminal names
 				if log_level > log_threshold + 2 then
 					log_indentation_up;
-					log ("listing of " & count_type'image (port_count) & " component ports");
+					log ("listing of" & count_type'image (port_count) & " component ports");
 					log_indentation_up;
 
 					-- If there are ports in the given net, set port cursor to first port in net

@@ -940,9 +940,10 @@ package body et_configuration is
 		terminal : type_terminal;
 
 	begin -- ports_in_net
-		log ("locating" & to_string (category) & " ports in module " 
-			 & to_string (module) & " net " & to_string (net) & " ...",
-			 log_threshold);
+-- 		log ("locating" & to_string (category) & " ports in module " 
+-- 			 & to_string (module) & " net " & to_string (net) & " ...",
+-- 			 log_threshold);
+		log ("locating" & to_string (category) & " ports ...", log_threshold);
 		
 		log_indentation_up;
 
@@ -985,7 +986,7 @@ package body et_configuration is
 		end if;
 
 		-- show number of component ports that have been found by given category.
-		log ("found" & count_type'image (ports_by_category.length) & " ports", log_threshold + 1);
+		log (" found" & count_type'image (ports_by_category.length) & " ports", log_threshold + 1);
 		
 		log_indentation_down;
 		return ports_by_category;
@@ -1010,9 +1011,11 @@ package body et_configuration is
 		connection : type_module_interconnection;
 		result : boolean := false; -- to be returned
 	begin -- is_module_interconnector
-		log ("testing whether connector " & to_string (reference) 
-			 & " in generic module " & to_string (module) & " instance " & et_coordinates.to_string (instance)
-			 & " is a module connector ...", log_threshold);
+-- 		log ("testing whether connector " & to_string (reference) 
+-- 			 & " in generic module " & to_string (module) & " instance " & et_coordinates.to_string (instance)
+-- 			 & " is a module connector ...", log_threshold);
+		log ("testing whether " & to_string (reference) & " is a module connector ...", log_threshold);
+
 		log_indentation_up;
 		
 		-- If there are module interconnections (specified in configuration file section MODULE_INTERCONNECTIONS)
@@ -1094,7 +1097,8 @@ package body et_configuration is
 		port_cursor : type_ports_with_reference.cursor;
 
 	begin -- connectors_in_net
-		log ("locating ports of module interconnections in net " & to_string (net) & " ...", log_threshold);
+		--log ("locating ports of module interconnections in net " & to_string (net) & " ...", log_threshold);
+		log ("locating interconnection ports ...", log_threshold);
 		log_indentation_up;
 
 		-- Module interactions are made of connectors only. So we first load ALL connectors
@@ -1105,6 +1109,8 @@ package body et_configuration is
 		-- we start looping through ports_all and filter out those connectors which belong
 		-- to a module interconnection.
 		if not is_empty (ports_all) then
+			log_indentation_up;
+			
 			port_cursor := ports_all.first;
 			while port_cursor /= type_ports_with_reference.no_element loop
 
@@ -1114,13 +1120,15 @@ package body et_configuration is
 						module			=> generic_name,					-- led_matrix
 						instance		=> instance,						-- 2
 						reference		=> element (port_cursor).reference,	-- X701
-						log_threshold	=> log_threshold + 1) then
+						log_threshold	=> log_threshold + 2) then
 					
 					insert (ports_of_interconnection, element (port_cursor));
 				end if;
 				
 				next (port_cursor);
 			end loop;
+
+			log_indentation_down;
 		end if;
 
 		log_indentation_down;
@@ -1265,112 +1273,113 @@ package body et_configuration is
 		return name;
 	end opposide_netchanger_port;
 
-	procedure find_ports_by_net (
-		module_name		: in et_coordinates.type_submodule_name.bounded_string;	-- the module to search in
-		net_name		: in et_schematic.type_net_name.bounded_string;			-- the net name
-		log_threshold	: in type_log_level) is
-
-		use et_libraries;
-		use et_schematic;		
-		use type_net_name;
-		use type_ports_with_reference;
-
-		port_name_opposide : type_port_name.bounded_string;
-		net_name_opposide : type_net_name.bounded_string;
-		
-		netchangers	: type_ports_with_reference.set; -- the netchangers connected with the net
-		netchanger_cursor : type_ports_with_reference.cursor;
-		
-		connectors 	: type_ports_with_reference.set; -- the module interconnectors connected with the net
-
-		use type_rig;
-		module_cursor : type_rig.cursor := find (rig, module_name);
-
-	begin
-		log ("locating ports in module " & et_coordinates.to_string (module_name) 
-			 & " net " & et_schematic.to_string (net_name) & " ...", log_threshold);
-		log_indentation_up;
-
-		-- load all netchangers connected with this net
-		netchangers := ports_in_net (
-					module 			=> module_name, -- led_matrix_2
-					net				=> net_name,	-- motor_on_off
-					category		=> NETCHANGER,
-					log_threshold	=> log_threshold + 1);
-
-		if not is_empty (netchangers) then
-			log_indentation_up;
-			log ("locating nets connected with netchangers ...", log_threshold + 1);
-			log_indentation_up;
-
-			-- set cursor to first netchanger in this net
-			netchanger_cursor := netchangers.first;
-
-			-- loop in netchangers of this net
-			-- Get opposide port and net. The component reference on the opposide is the same.
-			while netchanger_cursor /= type_ports_with_reference.no_element loop
-				log (to_string (element (netchanger_cursor).reference) 
-					& " port " & to_string (element (netchanger_cursor).name),
-					log_threshold + 2);
-				log_indentation_up;
-
-				-- get opposide port
-				port_name_opposide := opposide_netchanger_port (element (netchanger_cursor).name);
-
-				-- get opposide net
-				net_name_opposide := connected_net (
-										port => (
-											module => module_name, -- led_matrix_2
-											reference => element (netchanger_cursor).reference, -- X405
-											name => port_name_opposide), -- 1
-										log_threshold => log_threshold + 3);
-
-				-- If there is a net connected at the other side, find ports connected with this net.
-				-- If no net connected, we hava a dead end and issue a warning.
-				if length (net_name_opposide) > 0 then
-					log_indentation_up;
-					log ("connected with net " & et_schematic.to_string (net_name_opposide), log_threshold + 2);
-					log_indentation_up;
-					
-					-- locate ports of this net
-					find_ports_by_net (module_name, net_name_opposide, log_threshold + 3);
-					log_indentation_down;
-					log_indentation_down;
-				else
-					-- dead end. netchanger port not connected
-					log (message_warning & " no net connected with " 
-						& to_string (element (netchanger_cursor).reference) 
-						& " port " & to_string (element (netchanger_cursor).name));
-				end if;
-				
-				next (netchanger_cursor);
-				log_indentation_down;
-			end loop;
-			
-			log_indentation_down;
-			log_indentation_down;
-		end if;
-		
-		-- Load all connectors used for module interconnections connected with this net.
-		-- This requires to look up the interconnections declared in the configuration file.
-		-- So the generic module name and the instance matter here.
-		connectors := connectors_in_net (
-					module			=> module_name, 							-- led_matrix_2
-					generic_name 	=> element (module_cursor).generic_name,	-- led_matrix
-					instance 		=> element (module_cursor).instance,		-- 2
-					net				=> net_name,								-- motor_on_off
-					log_threshold	=> log_threshold + 1);
-
-
-		log_indentation_down;
-
-		exception
-			when event:
-				others =>
-					log_indentation_reset;
-					put_line (ada.exceptions.exception_message (event));
-				
-	end find_ports_by_net;
+-- 	procedure find_ports_by_net (
+-- 		module_name		: in et_coordinates.type_submodule_name.bounded_string;	-- the module to search in
+-- 		net_name		: in et_schematic.type_net_name.bounded_string;			-- the net name
+-- 		log_threshold	: in type_log_level) is
+-- 
+-- 		use et_libraries;
+-- 		use et_schematic;		
+-- 		use type_net_name;
+-- 		use type_ports_with_reference;
+-- 
+-- 		port_name_opposide : type_port_name.bounded_string;
+-- 		net_name_opposide : type_net_name.bounded_string;
+-- 		
+-- 		netchangers	: type_ports_with_reference.set; -- the netchangers connected with the net
+-- 		netchanger_cursor : type_ports_with_reference.cursor;
+-- 		
+-- 		connectors 	: type_ports_with_reference.set; -- the module interconnectors connected with the net
+-- 
+-- 		use type_rig;
+-- 		module_cursor : type_rig.cursor := find (rig, module_name);
+-- 
+-- 	begin
+-- 		log ("locating ports in module " & et_coordinates.to_string (module_name) 
+-- 			 & " net " & et_schematic.to_string (net_name) & " ...", log_threshold);
+-- 		log_indentation_up;
+-- 
+-- 		-- load all netchangers connected with this net
+-- 		netchangers := ports_in_net (
+-- 					module 			=> module_name, -- led_matrix_2
+-- 					net				=> net_name,	-- motor_on_off
+-- 					category		=> NETCHANGER,
+-- 					log_threshold	=> log_threshold + 1);
+-- 
+-- 		if not is_empty (netchangers) then
+-- 			log_indentation_up;
+-- 			log ("locating nets connected with netchangers ...", log_threshold + 1);
+-- 			log_indentation_up;
+-- 
+-- 			-- set cursor to first netchanger in this net
+-- 			netchanger_cursor := netchangers.first;
+-- 
+-- 			-- loop in netchangers of this net
+-- 			-- Get opposide port and net. The component reference on the opposide is the same.
+-- 			while netchanger_cursor /= type_ports_with_reference.no_element loop
+-- 				log (to_string (element (netchanger_cursor).reference) 
+-- 					& " port " & to_string (element (netchanger_cursor).name),
+-- 					log_threshold + 2);
+-- 				log_indentation_up;
+-- 
+-- 				-- get opposide port
+-- 				port_name_opposide := opposide_netchanger_port (element (netchanger_cursor).name);
+-- 
+-- 				-- get opposide net
+-- 				net_name_opposide := connected_net (
+-- 										port => (
+-- 											module => module_name, -- led_matrix_2
+-- 											reference => element (netchanger_cursor).reference, -- X405
+-- 											name => port_name_opposide), -- 1
+-- 										log_threshold => log_threshold + 3);
+-- 
+-- 				-- If there is a net connected at the other side, find ports connected with this net.
+-- 				-- If no net connected, we hava a dead end and issue a warning.
+-- 				if length (net_name_opposide) > 0 then
+-- 					log_indentation_up;
+-- 					log ("connected with net " & et_schematic.to_string (net_name_opposide), log_threshold + 2);
+-- 					log_indentation_up;
+-- 					
+-- 					-- locate ports of this net
+-- 					find_ports_by_net (module_name, net_name_opposide, log_threshold + 3);
+-- 					log_indentation_down;
+-- 					log_indentation_down;
+-- 				else
+-- 					-- dead end. netchanger port not connected
+-- 					log (message_warning & " no net connected with " 
+-- 						& to_string (element (netchanger_cursor).reference) 
+-- 						& " port " & to_string (element (netchanger_cursor).name));
+-- 				end if;
+-- 				
+-- 				next (netchanger_cursor);
+-- 				log_indentation_down;
+-- 			end loop;
+-- 			
+-- 			log_indentation_down;
+-- 			log_indentation_down;
+-- 		end if;
+-- 		
+-- 		-- Load all connectors used for module interconnections connected with this net.
+-- 		-- This requires to look up the interconnections declared in the configuration file.
+-- 		-- So the generic module name and the instance matter here.
+-- 		connectors := connectors_in_net (
+-- 					module			=> module_name, 							-- led_matrix_2
+-- 					generic_name 	=> element (module_cursor).generic_name,	-- led_matrix
+-- 					instance 		=> element (module_cursor).instance,		-- 2
+-- 					net				=> net_name,								-- motor_on_off
+-- 					log_threshold	=> log_threshold + 1);
+-- 
+-- 
+-- 		log_indentation_down;
+-- 
+-- 		exception
+-- 			when event:
+-- 				others =>
+-- 					log_indentation_reset;
+-- 					put_line (ada.exceptions.exception_message (event));
+-- 					raise;
+-- 				
+-- 	end find_ports_by_net;
 
 	
 	procedure make_routing_tables (log_threshold : in et_string_processing.type_log_level) is
@@ -1381,6 +1390,163 @@ package body et_configuration is
 		use type_rig;
 
 		module_cursor : type_rig.cursor;
+
+		type type_net is record
+			module	: type_submodule_name.bounded_string;
+			net		: type_net_name.bounded_string;
+		end record;
+
+		function compare_nets (left, right : in type_net) return boolean is
+		-- Returns true if right comes before left.
+			use type_submodule_name;
+			use type_net_name;
+		begin
+			if left.module > right.module then
+				return true;
+			elsif left.module < right.module then
+				return false;
+			elsif left.net > right.net then
+-- 			if type_net_name.">" (left.net, right.net) then
+				return true;
+			else 
+				return false;
+			end if;
+		end compare_nets;
+
+		-- nets that have been processed are stored in a list of this type
+		package type_nets is new ordered_sets (element_type => type_net, "<" => compare_nets); use type_nets;
+		processed_nets : type_nets.set; -- finally stored here
+
+		procedure find_ports_by_net (
+			module_name		: in et_coordinates.type_submodule_name.bounded_string;	-- the module to search in
+			net_name		: in et_schematic.type_net_name.bounded_string;			-- the net name
+			log_threshold	: in type_log_level) is
+
+			use et_libraries;
+			use type_net_name;
+			use type_ports_with_reference;
+
+			net_not_processed_yet : boolean; -- true if the given net has NOT been processed already
+			net_cursor : type_nets.cursor; -- no evaluation
+			
+			port_name_opposide : type_port_name.bounded_string;
+			net_name_opposide : type_net_name.bounded_string;
+			
+			netchangers	: type_ports_with_reference.set; -- the netchangers connected with the net
+			netchanger_cursor : type_ports_with_reference.cursor;
+			
+			connectors 	: type_ports_with_reference.set; -- the module interconnectors connected with the net
+
+			module_cursor : type_rig.cursor := find (rig, module_name);
+
+		begin -- find_ports_by_net
+-- 			log ("locating ports in module " & et_coordinates.to_string (module_name) 
+-- 				& " net " & et_schematic.to_string (net_name) & " ...", log_threshold);
+-- 			log_indentation_up;
+-- 			
+			insert (
+				container	=> processed_nets, 
+				new_item	=> (module => module_name, net => net_name),
+				position	=> net_cursor, -- no further evaluation
+				inserted	=> net_not_processed_yet);
+
+			-- If the net has been processed already we do nothing. Otherwise the ports 
+			-- of netchangers and module interconnections are located.
+			if net_not_processed_yet then
+-- 				log ("locating ports in module " & et_coordinates.to_string (module_name) 
+-- 					& " net " & et_schematic.to_string (net_name) & " ...", log_threshold);
+-- 				log_indentation_up;
+
+				log ("locating routing ports ...", log_threshold);
+				log_indentation_up;
+
+				-- load all netchangers connected with this net
+				netchangers := ports_in_net (
+							module 			=> module_name, -- led_matrix_2
+							net				=> net_name,	-- motor_on_off
+							category		=> NETCHANGER,
+							log_threshold	=> log_threshold + 1);
+
+				if not is_empty (netchangers) then
+					log_indentation_up;
+					log ("locating nets connected with netchangers ...", log_threshold + 1);
+					log_indentation_up;
+
+					-- set cursor to first netchanger in this net
+					netchanger_cursor := netchangers.first;
+
+					-- loop in netchangers of this net
+					-- Get opposide port and net. The component reference on the opposide is the same.
+					while netchanger_cursor /= type_ports_with_reference.no_element loop
+						log (to_string (element (netchanger_cursor).reference) 
+							& " port " & to_string (element (netchanger_cursor).name),
+							log_threshold + 2);
+						log_indentation_up;
+
+						-- get opposide port
+						port_name_opposide := opposide_netchanger_port (element (netchanger_cursor).name);
+
+						-- get opposide net
+						net_name_opposide := connected_net (
+												port => (
+													module => module_name, -- led_matrix_2
+													reference => element (netchanger_cursor).reference, -- X405
+													name => port_name_opposide), -- 1
+												log_threshold => log_threshold + 3);
+
+						-- If there is a net connected at the other side, find ports connected with this net.
+						-- If no net connected, we hava a dead end and issue a warning.
+						if length (net_name_opposide) > 0 then
+							log_indentation_up;
+							log ("connected with net " & et_schematic.to_string (net_name_opposide), log_threshold + 2);
+							log_indentation_up;
+							
+							-- locate ports of this net
+							find_ports_by_net (module_name, net_name_opposide, log_threshold + 3);
+							log_indentation_down;
+							log_indentation_down;
+						else
+							-- dead end. netchanger port not connected
+							log (message_warning & " no net connected with " 
+								& to_string (element (netchanger_cursor).reference) 
+								& " port " & to_string (element (netchanger_cursor).name));
+						end if;
+						
+						next (netchanger_cursor);
+						log_indentation_down;
+					end loop;
+					
+					log_indentation_down;
+					log_indentation_down;
+				end if;
+				
+				-- Load all connectors used for module interconnections connected with this net.
+				-- This requires to look up the interconnections declared in the configuration file.
+				-- So the generic module name and the instance matter here.
+				connectors := connectors_in_net (
+							module			=> module_name, 							-- led_matrix_2
+							generic_name 	=> element (module_cursor).generic_name,	-- led_matrix
+							instance 		=> element (module_cursor).instance,		-- 2
+							net				=> net_name,								-- motor_on_off
+							log_threshold	=> log_threshold + 1);
+
+
+				log_indentation_down;
+			else
+				log ("already processed -> skipped", log_threshold);
+			end if;
+
+-- 			log_indentation_down;
+			
+			exception
+				when event:
+					others =>
+						log_indentation_reset;
+						put_line (ada.exceptions.exception_message (event));
+						raise;
+					
+		end find_ports_by_net;
+
 	
 		procedure query_nets (
 			module_name	: in type_submodule_name.bounded_string;	-- led_matrix_2
