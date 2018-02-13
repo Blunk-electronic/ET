@@ -50,6 +50,7 @@ with ada.containers.doubly_linked_lists;
 
 
 with ada.directories;
+with ada.exceptions;
 
 with et_general;
 with et_coordinates;
@@ -1265,12 +1266,13 @@ package body et_configuration is
 	end opposide_netchanger_port;
 
 	procedure find_ports_by_net (
-		module_name		: in et_coordinates.type_submodule_name.bounded_string;
-		net_name		: in et_schematic.type_net_name.bounded_string;
+		module_name		: in et_coordinates.type_submodule_name.bounded_string;	-- the module to search in
+		net_name		: in et_schematic.type_net_name.bounded_string;			-- the net name
 		log_threshold	: in type_log_level) is
 
 		use et_libraries;
 		use et_schematic;		
+		use type_net_name;
 		use type_ports_with_reference;
 
 		port_name_opposide : type_port_name.bounded_string;
@@ -1286,7 +1288,7 @@ package body et_configuration is
 
 	begin
 		log ("locating ports in module " & et_coordinates.to_string (module_name) 
-			 & " net " & to_string (net_name) & " ...", log_threshold);
+			 & " net " & et_schematic.to_string (net_name) & " ...", log_threshold);
 		log_indentation_up;
 
 		-- load all netchangers connected with this net
@@ -1297,29 +1299,55 @@ package body et_configuration is
 					log_threshold	=> log_threshold + 1);
 
 		if not is_empty (netchangers) then
-			log ("probing netchangers ...", log_threshold + 1);
+			log_indentation_up;
+			log ("locating nets connected with netchangers ...", log_threshold + 1);
 			log_indentation_up;
 
 			-- set cursor to first netchanger in this net
 			netchanger_cursor := netchangers.first;
 
 			-- loop in netchangers of this net
+			-- Get opposide port and net. The component reference on the opposide is the same.
 			while netchanger_cursor /= type_ports_with_reference.no_element loop
 				log (to_string (element (netchanger_cursor).reference) 
 					& " port " & to_string (element (netchanger_cursor).name),
 					log_threshold + 2);
 				log_indentation_up;
 
-				-- get name of port opposide of the current port
+				-- get opposide port
 				port_name_opposide := opposide_netchanger_port (element (netchanger_cursor).name);
 
-				-- get name of net connected with the opposide port
-				--net_name_opposide := connected_net (module_name, port_name_opposide, log_threshold + 3);
+				-- get opposide net
+				net_name_opposide := connected_net (
+										port => (
+											module => module_name, -- led_matrix_2
+											reference => element (netchanger_cursor).reference, -- X405
+											name => port_name_opposide), -- 1
+										log_threshold => log_threshold + 3);
+
+				-- If there is a net connected at the other side, find ports connected with this net.
+				-- If no net connected, we hava a dead end and issue a warning.
+				if length (net_name_opposide) > 0 then
+					log_indentation_up;
+					log ("connected with net " & et_schematic.to_string (net_name_opposide), log_threshold + 2);
+					log_indentation_up;
+					
+					-- locate ports of this net
+					find_ports_by_net (module_name, net_name_opposide, log_threshold + 3);
+					log_indentation_down;
+					log_indentation_down;
+				else
+					-- dead end. netchanger port not connected
+					log (message_warning & " no net connected with " 
+						& to_string (element (netchanger_cursor).reference) 
+						& " port " & to_string (element (netchanger_cursor).name));
+				end if;
 				
 				next (netchanger_cursor);
 				log_indentation_down;
 			end loop;
 			
+			log_indentation_down;
 			log_indentation_down;
 		end if;
 		
@@ -1335,6 +1363,13 @@ package body et_configuration is
 
 
 		log_indentation_down;
+
+		exception
+			when event:
+				others =>
+					log_indentation_reset;
+					put_line (ada.exceptions.exception_message (event));
+				
 	end find_ports_by_net;
 
 	

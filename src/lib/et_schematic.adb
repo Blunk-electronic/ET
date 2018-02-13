@@ -5320,15 +5320,14 @@ package body et_schematic is
 	end to_terminal;
 
 	function connected_net (
-		module 			: in type_submodule_name.bounded_string;	-- nucleo_core_1
-		port			: in type_port_with_reference;				-- X701 port 4
+		port			: in type_port_of_module; -- contains something like nucleo_core_1 X701 port 4
 		log_threshold	: in et_string_processing.type_log_level)
 		return type_net_name.bounded_string is
 	-- Returns the name of the net connected with the given port.
 	-- Searches the netlist of the given module for the given port. 
 	-- The net which is connected with the port is the net whose name
 	-- is to be returned.
-	-- If net could not be found, an empty string is returned.
+	-- If no net connected with the given port, an empty string is returned.
 
 		use et_string_processing;
 		use type_rig;
@@ -5348,6 +5347,7 @@ package body et_schematic is
 				net_name	: in type_net_name.bounded_string;
 				ports		: in type_ports_with_reference.set) is
 				port_cursor : type_ports_with_reference.cursor;
+				use type_port_name;
 			begin -- query_ports
 				log ("querying ports ...", log_threshold + 2);
 				log_indentation_up;
@@ -5359,10 +5359,12 @@ package body et_schematic is
 					port_cursor := ports.first;
 					while port_cursor /= type_ports_with_reference.no_element loop
 						log (to_string (element (port_cursor)), log_threshold + 3);
-						if element (port_cursor) = port then
-							net_found := true;
-							net_name_to_return := net_name;
-							exit;
+						if element (port_cursor).reference = port.reference then
+							if element (port_cursor).name = port.name then
+								net_found := true;
+								net_name_to_return := net_name;
+								exit;
+							end if;
 						end if;
 						next (port_cursor);
 					end loop;
@@ -5392,7 +5394,7 @@ package body et_schematic is
 				-- If no port was found, issue warning.
 				if not net_found then
 					log (message_warning & "module " & to_string (module_name) 
-						& " port " & to_string (port) & " is not connected to any net !");
+						& " port " & to_string (port.name) & " is not connected with any net !");
 				end if;
 					
 			else
@@ -5403,11 +5405,12 @@ package body et_schematic is
 		end query_nets;
 		
 	begin -- connected_net
-		log ("locating in module " & to_string (module) & " net connected with " & to_string (port) & " ...",
+		log ("locating in module " & to_string (port.module) & " net connected with " 
+			& to_string (port.reference) & " port " & to_string (port.name) & " ...",
 			 log_threshold);
 		log_indentation_up;
 
-		module_cursor := find (rig, module); -- set the cursor to the module
+		module_cursor := find (rig, port.module); -- set the cursor to the module
 
 		-- If module exists, locate the given net in the module.
 		-- Otherwise raise alarm and exit.
@@ -5419,7 +5422,7 @@ package body et_schematic is
 			
 		else -- module not found
 			log_indentation_reset;
-			log (message_error & "module " & to_string (module) & " not found !", console => true);
+			log (message_error & "module " & to_string (port.module) & " not found !", console => true);
 			raise constraint_error;
 		end if;
 		

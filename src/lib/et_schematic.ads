@@ -736,16 +736,14 @@ package et_schematic is
 	end record;
 	
 	function connected_net (
-		module 			: in type_submodule_name.bounded_string;	-- nucleo_core_1
-		port			: in type_port_with_reference;				-- X701 port 4
--- 		port			: type_port_of_module;
+		port			: type_port_of_module; -- contains something like nucleo_core_1 X701 port 4
 		log_threshold	: in et_string_processing.type_log_level)
 		return type_net_name.bounded_string;
 	-- Returns the name of the net connected with the given port.
 	-- Searches the netlist of the given module for the given port. 
 	-- The net which is connected with the port is the net whose name
 	-- is to be returned.
-	-- If not net could be found, an empty string is returned.
+	-- If no net connected with the given port, an empty string is returned.
 	
 	-- This is a set of ports as we need in the netlist.
 	package type_ports_with_reference is new ordered_sets (
