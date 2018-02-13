@@ -5328,7 +5328,7 @@ package body et_schematic is
 	-- Searches the netlist of the given module for the given port. 
 	-- The net which is connected with the port is the net whose name
 	-- is to be returned.
-	-- If not net could be found, an empty string is returned.
+	-- If net could not be found, an empty string is returned.
 
 		use et_string_processing;
 		use type_rig;

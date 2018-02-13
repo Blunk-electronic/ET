@@ -728,9 +728,17 @@ package et_schematic is
 		return type_terminal; -- see et_libraries spec
 	-- Returns the terminal and unit name of the given port in a composite type.
 
+	-- When inquiring the net connected with certain component we use this composite:
+	type type_port_of_module is record
+		module		: et_coordinates.type_submodule_name.bounded_string;	-- nucleo_core_3
+		reference	: et_libraries.type_component_reference;				-- N409
+		name		: et_libraries.type_port_name.bounded_string;			-- 2
+	end record;
+	
 	function connected_net (
 		module 			: in type_submodule_name.bounded_string;	-- nucleo_core_1
 		port			: in type_port_with_reference;				-- X701 port 4
+-- 		port			: type_port_of_module;
 		log_threshold	: in et_string_processing.type_log_level)
 		return type_net_name.bounded_string;
 	-- Returns the name of the net connected with the given port.
