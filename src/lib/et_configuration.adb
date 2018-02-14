@@ -1602,8 +1602,15 @@ package body et_configuration is
 	-- Exports/Writes the routing tables of the rig in separate files.
 	-- Tables are exported in individual project directories in the work directory of ET.
 	-- These project directories have the same name as the modules.
+-- 		use type_rig;
+-- 		module_cursor : type_rig.cursor;
 	begin
 		null; -- CS
+		log ("exporting routing table ...", log_threshold);
+		log_indentation_up;
+
+
+		log_indentation_down;
 	end export_routing_tables;
 	
 	function to_unit_of_measurement (unit : in string) return type_unit_of_measurement is
