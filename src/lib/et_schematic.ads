@@ -727,7 +727,8 @@ package et_schematic is
 		log_threshold 	: in et_string_processing.type_log_level)
 		return type_terminal; -- see et_libraries spec
 	-- Returns the terminal and unit name of the given port in a composite type.
-
+	-- Raises error if given port is of a virtual component (appearance sch).
+	
 	-- When inquiring the net connected with certain component we use this composite:
 	type type_port_of_module is record
 		module		: et_coordinates.type_submodule_name.bounded_string;	-- nucleo_core_3

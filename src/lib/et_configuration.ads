@@ -220,6 +220,15 @@ package et_configuration is
 	-- Returns a set of component ports that are connected with the given net.
 	-- Returns only components of given category.
 
+-- 	type type_net is record
+-- 		module	: et_coordinates.type_submodule_name.bounded_string;
+-- 		net		: et_schematic.type_net_name.bounded_string;
+-- 	end record;
+-- 	
+-- 	package type_route is new ordered_sets (
+-- 		element_type => type_net,
+-- 		"<" => compare_nets);
+	
 	procedure make_routing_tables (log_threshold : in et_string_processing.type_log_level);
 	-- Creates the routing tables for modules and the whole rig.
 

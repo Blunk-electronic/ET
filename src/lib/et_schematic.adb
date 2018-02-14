@@ -5128,6 +5128,7 @@ package body et_schematic is
 		log_threshold 	: in et_string_processing.type_log_level) -- see et_libraries spec
 		return type_terminal is -- see et_libraries spec
 	-- Returns the terminal and unit name of the given port in a composite type.
+	-- Raises error if given port is of a virtual component (appearance sch).
 
 	-- NOTE: In contrast to Kicad, the terminal name is stored in a package variant. The package variant in
 	-- turn is maintained in the symbol component library.
@@ -5311,10 +5312,20 @@ package body et_schematic is
 			& " port " & to_string (port.name) & " ...", log_threshold);
 		log_indentation_up;
 
-		query_element (
-			position	=> find (rig, module), -- sets indirectly the cursor to the module
-			process		=> locate_component_in_schematic'access);
+		-- Abort if given port is not a real component.
+		if port.appearance = sch_pcb then -- real component
 
+			query_element (
+				position	=> find (rig, module), -- sets indirectly the cursor to the module
+				process		=> locate_component_in_schematic'access);
+			
+		else -- abort
+			log_indentation_reset;
+			log (message_error & to_string (port.reference) 
+				& " is a virtual component and thus has no package !");
+			raise constraint_error;
+		end if;
+			
 		log_indentation_down;
 		return terminal; 
 	end to_terminal;
@@ -5358,7 +5369,8 @@ package body et_schematic is
 				if not is_empty (ports) then
 					port_cursor := ports.first;
 					while port_cursor /= type_ports_with_reference.no_element loop
-						log (to_string (element (port_cursor)), log_threshold + 3);
+						log (to_string (element (port_cursor)), log_threshold + 3); -- show port name
+
 						if element (port_cursor).reference = port.reference then
 							if element (port_cursor).name = port.name then
 								net_found := true;
@@ -5366,6 +5378,7 @@ package body et_schematic is
 								exit;
 							end if;
 						end if;
+
 						next (port_cursor);
 					end loop;
 				end if;
@@ -5384,10 +5397,14 @@ package body et_schematic is
 				-- is considered as not connected -> issue warning
 				net_cursor := module.netlist.first;
 				while not net_found and net_cursor /= type_netlist.no_element loop
-					log (to_string (key (net_cursor)), log_threshold + 2);
+					log (to_string (key (net_cursor)), log_threshold + 2); -- show net name
+					log_indentation_up;
+					
 					query_element (
 						position => net_cursor,
 						process => query_ports'access);
+
+					log_indentation_down;
 					next (net_cursor);
 				end loop;
 
@@ -5598,6 +5615,8 @@ package body et_schematic is
 		ports : type_ports_with_reference.set; -- to be returned
 
 		procedure locate_net (
+		-- Locates the given net in the netlist of the given module.
+		-- The ports connected with the net are copied to variable "ports".
 			module_name : in type_submodule_name.bounded_string;
 			module 		: in type_module) is
 			net_cursor : type_netlist.cursor;
@@ -5614,7 +5633,8 @@ package body et_schematic is
 			-- connected with the net. Otherwise raise alarm and abort.
 			if net_cursor /= type_netlist.no_element then
 				--log (to_string (key (net_cursor)), log_threshold + 2);
-			
+
+				-- copy ports of net to "ports" (which is returned to the caller)
 				ports := element (net_cursor);
 				port_count := length (ports);
 
@@ -5631,8 +5651,19 @@ package body et_schematic is
 						port_cursor := ports.first;
 						while port_cursor /= type_ports_with_reference.no_element loop
 							port := element (port_cursor); -- load the port
-							terminal := to_terminal (port, module_name, log_threshold + 3); -- fetch the terminal
-							log (to_string (port) & to_string (terminal, show_unit => true, preamble => true));
+
+							-- Depending on the appearance of the component we output just the 
+							-- port name or both the terminal name and the port name.
+							case port.appearance is
+								when sch_pcb =>
+									terminal := to_terminal (port, module_name, log_threshold + 3); -- fetch the terminal
+									log (to_string (port) 
+										& to_string (terminal, show_unit => true, preamble => true));
+
+								when sch =>
+									log (to_string (port));
+							end case;
+								
 							next (port_cursor);
 						end loop;
 					else

@@ -81,6 +81,8 @@ package et_string_processing is
 	-- limited to a reasonable value.
 	log_level : type_log_level_cmd_line := type_log_level_cmd_line'first;
 
+	-- The log indentation is a global variable that serves to shift log messages
+	-- to the right.
 	log_indentation_max : constant positive := 30;
 	type type_indentation_level is range 0..log_indentation_max;
 	log_indentation : type_indentation_level := type_indentation_level'first;
