@@ -1281,6 +1281,22 @@ package body et_configuration is
 		return name;
 	end opposide_netchanger_port;
 
+	function compare_nets (left, right : in type_net) return boolean is
+	-- Returns true if left net comes before right net.
+		use et_coordinates.type_submodule_name;
+		use et_schematic.type_net_name;
+	begin
+		if left.module > right.module then
+			return true;
+		elsif left.module < right.module then
+			return false;
+		elsif left.net > right.net then
+			return true;
+		else 
+			return false;
+		end if;
+	end compare_nets;
+	
 	procedure make_routing_tables (log_threshold : in et_string_processing.type_log_level) is
 	-- Creates the routing tables for modules and the whole rig.
 		use et_string_processing;
@@ -1288,34 +1304,17 @@ package body et_configuration is
 		use et_schematic;
 		use type_rig;
 
-		module_cursor : type_rig.cursor;
-
-		type type_net is record
-			module	: type_submodule_name.bounded_string;
-			net		: type_net_name.bounded_string;
-		end record;
-
-		function compare_nets (left, right : in type_net) return boolean is
-		-- Returns true if right comes before left.
-			use type_submodule_name;
-			use type_net_name;
-		begin
-			if left.module > right.module then
-				return true;
-			elsif left.module < right.module then
-				return false;
-			elsif left.net > right.net then
-				return true;
-			else 
-				return false;
-			end if;
-		end compare_nets;
-
+		module_cursor : type_rig.cursor; -- points to the module being processed
+		route : type_route.set; -- for temporarily storage of a single route. 
+	
 		-- nets that have been processed are stored in a list of this type
 		package type_nets is new ordered_sets (element_type => type_net, "<" => compare_nets); use type_nets;
 		processed_nets : type_nets.set; -- finally stored here
 
 		procedure find_ports_by_net (
+		-- Insertes the net (if not already processed) in the current route.
+		-- Locates netchanger and connector ports in the given net.
+		-- Locates the nets connected with the netchangers and connectors and calls itself again.
 			module_name		: in et_coordinates.type_submodule_name.bounded_string;	-- the module to search in
 			net_name		: in et_schematic.type_net_name.bounded_string;			-- the net name
 			log_threshold	: in type_log_level) is
@@ -1351,12 +1350,19 @@ package body et_configuration is
 				position	=> net_cursor, -- no further evaluation
 				inserted	=> net_not_processed_yet);
 
-			-- If the net has been processed already we do nothing. Otherwise the ports 
-			-- of netchangers and module interconnections are located.
+			-- If the net has been processed already we do nothing. Otherwise the 
+			-- net is inserted in the route being built currently.
+			-- Then ports of netchangers and module interconnections are located.
 			if net_not_processed_yet then
 -- 				log ("locating ports in module " & et_coordinates.to_string (module_name) 
 -- 					& " net " & et_schematic.to_string (net_name) & " ...", log_threshold);
 -- 				log_indentation_up;
+
+				-- Insert net module and net name in current route.
+				type_route.insert (
+					container => route,
+-- 					position => route_cursor,
+					new_item => (module => module_name, net => net_name));
 
 				log ("locating routing ports ...", log_threshold);
 				log_indentation_up;
@@ -1516,6 +1522,11 @@ package body et_configuration is
 
 	
 		procedure query_nets (
+		-- Loops in netlist of current module. For each net the procedure find_ports_by_net
+		-- is called. find_ports_by_net calls itself over and over until all connected
+		-- nets have been located. A new route starts if the loop below calls find_ports_by_net.
+		-- Once find_ports_by_net finishes, the current route is complete. If more than one 
+		-- net is in the route, the route is appended to the global rig wide routing table.
 			module_name	: in type_submodule_name.bounded_string;	-- led_matrix_2
 			module		: in type_module) is
 			use type_netlist;
@@ -1541,15 +1552,22 @@ package body et_configuration is
 					log_indentation := indentation_backup;
 					log (to_string (net_name), log_threshold + 3);
 
-					-- CS here a new route starts
-					
-
+					-- here a new route starts, clean up container "route" from previous spins:
+					type_route.clear (route);
 					
 					log_indentation_up;
-
 					find_ports_by_net (module_name, net_name, log_threshold + 4);
-
 					log_indentation_down;
+
+					-- Here the route ends. If more than one net collected in container "route"
+					-- we regard the collection as route -> append to routing table.
+					-- If there is only one net in the route it is discarded.
+					if type_route.length (route) > 1 then
+						type_routing_table.append (
+							container => routing_table,
+							new_item => route);
+					end if;
+					
 					next (net_cursor);
 				end loop;
 			else

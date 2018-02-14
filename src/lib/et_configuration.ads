@@ -220,14 +220,27 @@ package et_configuration is
 	-- Returns a set of component ports that are connected with the given net.
 	-- Returns only components of given category.
 
--- 	type type_net is record
--- 		module	: et_coordinates.type_submodule_name.bounded_string;
--- 		net		: et_schematic.type_net_name.bounded_string;
--- 	end record;
--- 	
--- 	package type_route is new ordered_sets (
--- 		element_type => type_net,
--- 		"<" => compare_nets);
+	-- Handling routing information requires this type:
+	type type_net is record
+		module	: et_coordinates.type_submodule_name.bounded_string;
+		net		: et_schematic.type_net_name.bounded_string;
+	end record;
+
+	function compare_nets (left, right : in type_net) return boolean;
+	-- Returns true if left net comes before right net.
+	
+	-- If nets of type_net are collected in a set, we have a type_route.
+	package type_route is new ordered_sets (element_type => type_net, "<" => compare_nets);
+	--use type_route;
+
+	-- Lots of routes are collected in a simple list.
+	-- So we have a list of routes.
+	package type_routing_table is new doubly_linked_lists (
+		element_type => type_route.set,
+		"=" => type_route."=");
+
+	-- This is the rig wide routing table:
+	routing_table : type_routing_table.list;
 	
 	procedure make_routing_tables (log_threshold : in et_string_processing.type_log_level);
 	-- Creates the routing tables for modules and the whole rig.
