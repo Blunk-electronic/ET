@@ -375,7 +375,7 @@ procedure et is
 		-- Even if there is just a single module, a routing table is useful.
 		make_routing_tables (log_threshold => 0);
 
-		-- CS: export_routing_tables (log_threshold => 0);
+		export_routing_tables (log_threshold => 0);
 		
 		log_indentation_down;
 		et_export.close_report;

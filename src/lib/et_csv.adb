@@ -35,11 +35,13 @@
 --   history of changes:
 --
 
+with ada.text_io;				use ada.text_io;
+with ada.strings; 				use ada.strings;
+with ada.strings.fixed; 		use ada.strings.fixed;
+-- with ada.strings.bounded; 		use ada.strings.bounded;
+-- with ada.strings.unbounded; 	use ada.strings.unbounded;
 
-with ada.strings; 			use ada.strings;
-with ada.strings.bounded; 	use ada.strings.bounded;
-with ada.strings.unbounded; use ada.strings.unbounded;
-with ada.text_io;			use ada.text_io;
+with et_string_processing;
 
 package body et_csv is
 
@@ -216,35 +218,69 @@ package body et_csv is
 -- 	return text_in; -- return string unchanged if empty
 -- 	end strip_text_delimiters;
 
-	procedure put_field
-	-- Puts a field into a csv file. If field is empty (default), no delimiters are used.
-		(
-		file	:	ada.text_io.file_type := current_output; -- default to current output if not specified otherwise
-		text	:	string := "";
-		ifs		:	character := ascii.semicolon; -- field separator
-		delim 	:	character := ascii.quotation  -- text delimiter
-		) is
+	function to_string (column : in type_column) return string is
+	-- Returns the given column as string.
 	begin
-		if text = "" then -- if empty field, just put an ifs
-			put(file, ifs);
-		else
-			put(file, delim & to_string (trim (to_unbounded_string(text),both)) & delim & ifs); -- otherwise enclose trimmed text with delimiters
-		end if;
+		return trim (type_column'image (column),left);
+	end to_string;
+	
+	procedure reset_column is
+	begin
+		column := type_column'first;
+	end reset_column;
+
+	procedure next_column is
+	begin
+		column := column + 1;
+	end next_column;
+
+	
+	procedure put_field (
+	-- Puts a field into a csv file.
+	-- Each field (even if empty) is enclosed in delimiters.
+	-- Counts columns in variable "column".
+		file	: in ada.text_io.file_type := current_output; -- default to current output if not specified otherwise
+		text	: in string := "";
+		ifs		: in character := ascii.semicolon; -- field separator
+		delim 	: in character := ascii.quotation) is  -- text delimiter
+	begin
+		put (file, delim & text & delim & ifs);
+		next_column;
 	end put_field;
 
 
-	procedure put_lf
-	-- Puts a new_line into a csv file.
-		(
-		file	:	ada.text_io.file_type := current_output; -- default to current output if not specified otherwise
-		count	:	natural := 1
-		) 
-		is
+	procedure put_lf (
+	-- Puts a line feed into a csv file.
+	-- Resets columns variable "column".
+		file		: in ada.text_io.file_type := current_output; -- default to current output if not specified otherwise
+		field_count	: in type_column) is -- the number of empty fields to append before line feed
+
+		use et_string_processing;
+	
+		fill_fields : type_column;
 	begin
-		for i in 1..count
-		loop
-			put(file, ascii.lf);
-		end loop;
+		if column < field_count then -- less columns than field_count -> fill pad fields
+			fill_fields := field_count - column; -- number of fields to fill
+
+			-- write empty pad fields
+			for i in 1..fill_fields loop
+				put_field (file);
+			end loop;
+
+		elsif column > field_count then -- column must not exceed field_count -> error
+			
+			log_indentation_reset;
+			log (message_error & " record length "
+				& to_string (field_count)
+				& " less than current column "
+				& to_string (column)
+				& " !");
+			raise constraint_error;
+		end if;
+		
+		new_line (file);
+
+		reset_column;
 	end put_lf;
 		
 end et_csv;

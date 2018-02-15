@@ -40,6 +40,8 @@ with ada.text_io;					use ada.text_io;
 
 package et_csv is
 
+	file_extension		: constant string (1..3) := "csv";
+	
 	row_separator_1 	: constant string (1..10) := "----------";
 	row_separator_2 	: constant string (1..20) := "--------------------";
 
@@ -84,21 +86,32 @@ package et_csv is
 -- 		)
 -- 		return string;
 
-	procedure put_field
-	-- Puts a field into a csv file. If field is empty (default), no delimiters are used.
-		(
-		file	:	ada.text_io.file_type := current_output; -- default to current output if not specified otherwise
-		text	:	string := "";
-		ifs		:	character := ascii.semicolon; -- field separator
-		delim 	:	character := ascii.quotation  -- text delimiter
-		);
+	columns_max : constant natural := 1000; -- CS this is the limit of columns a csv file can have.
+	type type_column is range 0..columns_max;
+	column : type_column := type_column'first;
 
-	procedure put_lf
-	-- Puts a new_line into a csv file.
-		(
-		file	:	ada.text_io.file_type := current_output; -- default to current output if not specified otherwise
-		count	:	natural := 1
-		);
+	function to_string (column : in type_column) return string;
+	-- Returns the given column as string.
+
+	procedure reset_column;
+
+	procedure next_column;
+
+	procedure put_field (
+	-- Puts a field into a csv file.
+	-- Each field (even if empty) is enclosed in delimiters.
+	-- Counts columns in variable "column".
+		file	: in ada.text_io.file_type := current_output; -- default to current output if not specified otherwise
+		text	: in string := "";
+		ifs		: in character := ascii.semicolon; -- field separator
+		delim 	: in character := ascii.quotation);  -- text delimiter
+
+
+	procedure put_lf (
+	-- Puts a line feed into a csv file.
+	-- Resets columns variable "column".
+		file		: in ada.text_io.file_type := current_output; -- default to current output if not specified otherwise
+		field_count	: in type_column); -- the number of empty fields to append before line feed
 
 end et_csv;
 

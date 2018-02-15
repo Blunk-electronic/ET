@@ -59,6 +59,7 @@ with et_schematic;
 with et_string_processing;		use et_string_processing;
 with et_export;
 with et_import;
+with et_csv;
 
 package body et_configuration is
 
@@ -1602,14 +1603,112 @@ package body et_configuration is
 	-- Exports/Writes the routing tables of the rig in separate files.
 	-- Tables are exported in individual project directories in the work directory of ET.
 	-- These project directories have the same name as the modules.
--- 		use type_rig;
--- 		module_cursor : type_rig.cursor;
-	begin
-		null; -- CS
+		use et_csv;
+
+		-- get number of routes. This number determines the number of columns of hte table.
+		routes_total : et_csv.type_column := et_csv.type_column (type_routing_table.length (routing_table));
+		columns_min : constant et_csv.type_column := 3; -- depends on max. number of fields required by file header
+		columns_total : et_csv.type_column;
+
+		routing_file_name : type_routing_table_file_name.bounded_string;
+		routing_handle : ada.text_io.file_type;
+	
+		function file_routing_table return string is
+		-- Returns the relative path and name of the routing table file.
+			use et_general;
+		begin
+			return compose ( 
+				containing_directory => compose (work_directory, report_directory),
+				name => "routing_table",
+				extension => et_csv.file_extension
+				);
+		end file_routing_table;
+
+		procedure create_routing_table_header is
+		-- Creates the routing table file in report_directory.
+		-- Leaves the file open for further puts.
+		begin
+			create (file => routing_handle, mode => out_file, name => file_routing_table);
+
+			-- write file header
+			reset_column;
+			put_field (file => routing_handle, text => et_general.system_name);
+			put_field (file => routing_handle, text => et_general.version);
+			put_field (file => routing_handle, text => "routing table");
+			put_lf (file => routing_handle, field_count => columns_total);
+
+			-- CS rig name
+
+			put_field (file => routing_handle, text => "date");
+			put_field (file => routing_handle, text => string (date_now));
+			put_lf (file => routing_handle, field_count => columns_total);
+			
+			-- number of routes
+			put_field (file => routing_handle, text => "routes");
+			put_field (file => routing_handle, text => to_string (routes_total));
+			put_lf (file => routing_handle, field_count => columns_total);
+
+			put_field (file => routing_handle, text => et_csv.row_separator_1);
+			put_lf (file => routing_handle, field_count => columns_total);
+		end create_routing_table_header;
+
+		procedure write_routes is
+			use type_routing_table;
+			route_cursor : type_routing_table.cursor := routing_table.first;
+		begin
+			while route_cursor /= type_routing_table.no_element loop
+				
+
+				next (route_cursor);
+			end loop;
+
+			-- lenght of individual route
+		end write_routes;
+
+		
+		procedure close_routing_table is
+		-- Writes the table footer and closes the file.
+		-- Sets the output back to standard_output.
+		begin
+			if is_open (routing_handle) then
+
+				-- write file footer
+				put_field (file => routing_handle, text => et_csv.row_separator_1);
+				put_lf (file => routing_handle, field_count => columns_total);
+				
+				put_field (file => routing_handle, text => "routing table end");
+				put_lf (file => routing_handle, field_count => columns_total);
+
+				close (routing_handle);
+			end if;
+				
+		end close_routing_table;
+		
+
+	begin -- export_routing_tables
+		
 		log ("exporting routing table ...", log_threshold);
 		log_indentation_up;
+		
+		if routes_total > 0 then
 
+			if routes_total > columns_min then
+				columns_total := routes_total;
+			else
+				columns_total := columns_min;
+			end if;
+			
+			log ("in file " & file_routing_table, log_threshold + 1);
+			create_routing_table_header;
 
+			write_routes;
+
+			log ("closing file " & file_routing_table, log_threshold + 1);
+			close_routing_table;
+		else
+			log ("no routes found -> nothing to do", log_threshold + 1);
+		end if;
+			
 		log_indentation_down;
 	end export_routing_tables;
 	

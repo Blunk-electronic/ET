@@ -5752,7 +5752,8 @@ package body et_schematic is
 						log (to_string (key (component)), log_threshold + 2);
 
 						-- CS: warning if netchanger/net-ties occur here. they should have the bom flag set to NO.
-
+						et_csv.reset_column;
+						
 						put_field (file => bom_handle, text => to_string (key (component)));
 						put_field (file => bom_handle, text => to_string (element (component).value));
 						put_field (file => bom_handle, text => to_string (element (component).generic_name));
@@ -5768,7 +5769,7 @@ package body et_schematic is
 						put_field (file => bom_handle, text => "");
 
 						put_field (file => bom_handle, text => to_string (element (component).updated));
-						put_lf    (file => bom_handle);
+						put_lf    (file => bom_handle, field_count => et_csv.column);
 
 					end if;
 				end if;
@@ -5816,6 +5817,7 @@ package body et_schematic is
 			-- CS: A nice header should be placed. First make sure stock_manager can handle it.
 
 			-- write the BOM table header
+			et_csv.reset_column;
 			put_field (file => bom_handle, text => column_component);
 			put_field (file => bom_handle, text => column_value);
 			put_field (file => bom_handle, text => column_generic_name);
@@ -5827,7 +5829,7 @@ package body et_schematic is
 			put_field (file => bom_handle, text => column_part_code);
 			put_field (file => bom_handle, text => column_part_code_ext);
 			put_field (file => bom_handle, text => column_updated);
-			put_lf    (file => bom_handle);
+			put_lf    (file => bom_handle, field_count => et_csv.column);
 
 			query_element (
 				position	=> module_cursor,

@@ -241,6 +241,9 @@ package et_configuration is
 
 	-- This is the rig wide routing table:
 	routing_table : type_routing_table.list;
+
+	routing_table_file_name_length : constant positive := 100; -- CS: should suffice for now
+	package type_routing_table_file_name is new generic_bounded_length (routing_table_file_name_length);
 	
 	procedure make_routing_tables (log_threshold : in et_string_processing.type_log_level);
 	-- Creates the routing tables for modules and the whole rig.
