@@ -242,6 +242,18 @@ package et_configuration is
 	-- This is the rig wide routing table:
 	routing_table : type_routing_table.list;
 
+	-- The minimum length of a route is 2 nets.
+	-- The maximum length is set here to a reasonable value. CS: increase if neccessary
+	route_length_max : constant positive := 50; 
+	type type_route_length is range 2..route_length_max;
+
+	function to_string (route_length : in type_route_length) return string;
+	-- Returns the given route length as string;
+	
+	function longest_route (table : in type_routing_table.list) return type_route_length;
+	-- Returns the lenght of the longest route in the given routing table.
+	-- NOTE: assumes that the given routing table is not empty. Raises error othewise.
+	
 	routing_table_file_name_length : constant positive := 100; -- CS: should suffice for now
 	package type_routing_table_file_name is new generic_bounded_length (routing_table_file_name_length);
 	

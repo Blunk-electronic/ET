@@ -42,7 +42,7 @@ with ada.strings; 				use ada.strings;
 --with ada.strings.maps;			use ada.strings.maps;
 
 -- with ada.characters.handling;	use ada.characters.handling;
--- with ada.strings.fixed; 		use ada.strings.fixed;
+with ada.strings.fixed; 		use ada.strings.fixed;
 
 
 with ada.containers;            use ada.containers;
@@ -1297,7 +1297,40 @@ package body et_configuration is
 			return false;
 		end if;
 	end compare_nets;
+
+	function to_string (route_length : in type_route_length) return string is
+	-- Returns the given route length as string;
+	begin
+		return trim (type_route_length'image (route_length), left);
+	end to_string;
 	
+	function longest_route (table : in type_routing_table.list) return type_route_length is
+	-- Returns the length of the longest route in the given routing table.
+	-- NOTE: assumes that the given routing table is not empty. Raises error othewise.
+		use type_routing_table;
+		use type_route;
+		route_cursor : type_routing_table.cursor := table.first;
+		route_length_scratch : type_route_length;
+		route_length : type_route_length := type_route_length'first; -- to be returned
+	begin
+		-- Loop in routes of given routing table.
+		while route_cursor /= type_routing_table.no_element loop
+
+			-- get length of current route
+			route_length_scratch := type_route_length (length (element (route_cursor)));
+
+			-- if current length is greater than previous length, 
+			-- update route_length. Otherwise route_length remains unchanged.
+			if route_length_scratch > route_length then
+				route_length := route_length_scratch;
+			end if;
+			
+			next (route_cursor);
+		end loop;
+
+		return route_length;
+	end longest_route;
+		
 	procedure make_routing_tables (log_threshold : in et_string_processing.type_log_level) is
 	-- Creates the routing tables for modules and the whole rig.
 		use et_string_processing;
@@ -1607,6 +1640,8 @@ package body et_configuration is
 
 		-- get number of routes. This number determines the number of columns of hte table.
 		routes_total : et_csv.type_column := et_csv.type_column (type_routing_table.length (routing_table));
+		longest_route : type_route_length;
+	
 		columns_min : constant et_csv.type_column := 3; -- depends on max. number of fields required by file header
 		columns_total : et_csv.type_column;
 
@@ -1652,7 +1687,33 @@ package body et_configuration is
 			put_lf (file => routing_handle, field_count => columns_total);
 		end create_routing_table_header;
 
-		procedure write_routes is
+		type type_routing_matrix is array (positive range <>, positive range <>) of type_net;
+		
+		function create_routing_matrix return type_routing_matrix is
+			-- 			use type_routing_table;
+			-- By the total number of routes and the longest route among them the routing
+			-- matrix can be constrained:
+			subtype type_routing_matrix_sized is type_routing_matrix (
+				positive'first .. positive (routes_total), 		-- width
+				positive'first .. positive (longest_route));	-- length
+			
+			routing_matrix : type_routing_matrix_sized;
+-- 			route_cursor : type_routing_table.cursor := routing_table.first;
+		begin
+			log ("number of routes " & to_string (routes_total), log_threshold + 2);
+			log ("longest route has " & to_string (longest_route) & " nets", log_threshold + 2);
+
+-- 			while route_cursor /= type_routing_table.no_element loop
+				
+
+-- 				next (route_cursor);
+-- 			end loop;
+
+-- lenght of individual route
+			return routing_matrix;
+		end create_routing_matrix;
+		
+		procedure write_routes (routing_matrix : in type_routing_matrix) is
 			use type_routing_table;
 			route_cursor : type_routing_table.cursor := routing_table.first;
 		begin
@@ -1701,9 +1762,10 @@ package body et_configuration is
 			log ("in file " & file_routing_table, log_threshold + 1);
 			create_routing_table_header;
 
-			write_routes;
+			longest_route := et_configuration.longest_route (routing_table);
+			write_routes (create_routing_matrix); -- the matrix dimensions will be: width routes_total and length longest_route
 
-			log ("closing file " & file_routing_table, log_threshold + 1);
+			log ("closing file " & file_routing_table, log_threshold + 2);
 			close_routing_table;
 		else
 			log ("no routes found -> nothing to do", log_threshold + 1);
