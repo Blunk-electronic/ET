@@ -226,6 +226,11 @@ package et_configuration is
 		net		: et_schematic.type_net_name.bounded_string;
 	end record;
 
+	function to_string (
+		net			: in type_net;
+		separator	: in character := '.') return string;
+	-- Returns the given net as string. In a form like "led_matrix.master_clock"
+	
 	function compare_nets (left, right : in type_net) return boolean;
 	-- Returns true if left net comes before right net.
 	
@@ -258,12 +263,14 @@ package et_configuration is
 	package type_routing_table_file_name is new generic_bounded_length (routing_table_file_name_length);
 	
 	procedure make_routing_tables (log_threshold : in et_string_processing.type_log_level);
-	-- Creates the routing tables for modules and the whole rig.
-
+	-- Creates the routing table for the whole rig in global variable routin_table.
+	-- CS: create routing tables for projects separately.
+	
 	procedure export_routing_tables (log_threshold : in et_string_processing.type_log_level);
-	-- Exports/Writes the routing tables of the rig in separate files.
-	-- Tables are exported in individual project directories in the work directory of ET.
-	-- These project directories have the same name as the modules.
+	-- Exports/Writes the routing table of the rig in a csv file.
+	-- Reads the global rig wide routing table variable routing_table. 
+	-- Requires that procedure make_routing_tables has been executed before.
+	-- CS: Export routing tables for projects separately.
 
 	
 	type type_unit_of_measurement is (

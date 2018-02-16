@@ -993,6 +993,22 @@ package body et_configuration is
 		return ports_by_category;
 	end ports_in_net;
 
+	function to_string (
+		net			: in type_net;
+		separator	: in character := '.') return string is
+		-- Returns the given net as string. In a form like "led_matrix.master_clock"
+
+		use et_coordinates.type_submodule_name;
+		use et_schematic.type_net_name;
+	begin
+		if length (net.module) = 0 or length (net.net) = 0 then
+			return "";
+		else
+			return to_string (net.module) & separator & to_string (net.net);
+		end if;
+	end to_string;
+	
+
 	function is_module_interconnector (
 	-- Looks up the module_interconnections as specified in configuration file
 	-- in section MODULE_INTERCONNECTIONS.
@@ -1287,11 +1303,11 @@ package body et_configuration is
 		use et_coordinates.type_submodule_name;
 		use et_schematic.type_net_name;
 	begin
-		if left.module > right.module then
+		if left.module < right.module then
 			return true;
-		elsif left.module < right.module then
+		elsif left.module > right.module then
 			return false;
-		elsif left.net > right.net then
+		elsif left.net < right.net then
 			return true;
 		else 
 			return false;
@@ -1332,7 +1348,8 @@ package body et_configuration is
 	end longest_route;
 		
 	procedure make_routing_tables (log_threshold : in et_string_processing.type_log_level) is
-	-- Creates the routing tables for modules and the whole rig.
+	-- Creates the routing table for the whole rig in global variable routin_table.
+	-- CS: create routing tables for projects separately.	
 		use et_string_processing;
 		use et_coordinates;
 		use et_schematic;
@@ -1633,23 +1650,28 @@ package body et_configuration is
 	end make_routing_tables;
 
 	procedure export_routing_tables (log_threshold : in et_string_processing.type_log_level) is 
-	-- Exports/Writes the routing tables of the rig in separate files.
-	-- Tables are exported in individual project directories in the work directory of ET.
-	-- These project directories have the same name as the modules.
+	-- Exports/Writes the routing table of the rig in a csv file.
+	-- Reads the global rig wide routing table variable routing_table. 
+	-- Requires that procedure make_routing_tables has been executed before.
+	-- CS: Export routing tables for projects separately.
+	
 		use et_csv;
 
-		-- get number of routes. This number determines the number of columns of hte table.
+		-- Get number of routes. This number determines the number of columns in the csv file.
 		routes_total : et_csv.type_column := et_csv.type_column (type_routing_table.length (routing_table));
-		longest_route : type_route_length;
-	
-		columns_min : constant et_csv.type_column := 3; -- depends on max. number of fields required by file header
+		longest_route : type_route_length; -- will later hold the greates length of a route
+
+		-- The min. number of columns in the csv file depends on max. number of fields required by file header.
+		-- NOTE: Adapt this constant when changing the csv file header.
+		columns_min : constant et_csv.type_column := 3; 
+
+		-- This variable assumes the number of columns required for the csv file.
 		columns_total : et_csv.type_column;
 
-		routing_file_name : type_routing_table_file_name.bounded_string;
-		routing_handle : ada.text_io.file_type;
+		routing_handle : ada.text_io.file_type; -- the csv file handle
 	
 		function file_routing_table return string is
-		-- Returns the relative path and name of the routing table file.
+		-- Returns the relative path and name of the routing table csv file.
 			use et_general;
 		begin
 			return compose ( 
@@ -1660,9 +1682,11 @@ package body et_configuration is
 		end file_routing_table;
 
 		procedure create_routing_table_header is
-		-- Creates the routing table file in report_directory.
+		-- Creates the routing table csv file in report_directory.
+		-- Writes some statistical information.
 		-- Leaves the file open for further puts.
 		begin
+			-- create the file. overwrites the previous one.
 			create (file => routing_handle, mode => out_file, name => file_routing_table);
 
 			-- write file header
@@ -1672,77 +1696,149 @@ package body et_configuration is
 			put_field (file => routing_handle, text => "routing table");
 			put_lf (file => routing_handle, field_count => columns_total);
 
-			-- CS rig name
+			-- CS rig name. mind columns_min. see note above.
 
+			-- write date
 			put_field (file => routing_handle, text => "date");
 			put_field (file => routing_handle, text => string (date_now));
 			put_lf (file => routing_handle, field_count => columns_total);
 			
 			-- number of routes
-			put_field (file => routing_handle, text => "routes");
+			put_field (file => routing_handle, text => "routes total");
 			put_field (file => routing_handle, text => to_string (routes_total));
 			put_lf (file => routing_handle, field_count => columns_total);
 
+			-- longest route
+			put_field (file => routing_handle, text => "greatest length");
+			put_field (file => routing_handle, text => to_string (longest_route));
+			put_lf (file => routing_handle, field_count => columns_total);
+
+			-- row separator
 			put_field (file => routing_handle, text => et_csv.row_separator_1);
 			put_lf (file => routing_handle, field_count => columns_total);
+			
 		end create_routing_table_header;
 
-		type type_routing_matrix is array (positive range <>, positive range <>) of type_net;
+		-- For exporting the routing_table in a csv file, this intermediate array type is 
+		-- required. For the moment it is unconstrained. The columns will later hold the
+		-- routes, while the rows hold the nets.
+		type type_routing_matrix is array (
+			positive range <>,	-- columns (or the width)
+			positive range <>) 	-- rows (or the length)
+			of type_net;
 		
 		function create_routing_matrix return type_routing_matrix is
-			-- 			use type_routing_table;
-			-- By the total number of routes and the longest route among them the routing
-			-- matrix can be constrained:
+		-- By the total number of routes and the longest route among them the routing
+		-- matrix can be constrained and filled by the content of the routing_table.
+		-- The routing matrix is returned finally.
+			first_column	: constant positive := positive'first;
+			first_row		: constant positive := positive'first;
+
+			column	: positive := first_column;
+			row		: positive := first_row;
+
+			procedure increment_column is begin column := column + 1; end increment_column;
+			procedure reset_column is begin column := first_column; end reset_column;
+			procedure increment_row is begin row := row + 1; end increment_row;
+			procedure reset_row is begin row := first_row; end reset_row;
+
+			-- constrain the routing matrix
 			subtype type_routing_matrix_sized is type_routing_matrix (
-				positive'first .. positive (routes_total), 		-- width
-				positive'first .. positive (longest_route));	-- length
-			
+				first_column .. positive (routes_total), 	-- columns/width
+				first_row    .. positive (longest_route));	-- rowss/length
+
+			-- this is the routing matrix finally
 			routing_matrix : type_routing_matrix_sized;
--- 			route_cursor : type_routing_table.cursor := routing_table.first;
-		begin
-			log ("number of routes " & to_string (routes_total), log_threshold + 2);
-			log ("longest route has " & to_string (longest_route) & " nets", log_threshold + 2);
 
--- 			while route_cursor /= type_routing_table.no_element loop
-				
+			-- set route cursor to first route in routing_table
+			use type_routing_table;
+			route_cursor : type_routing_table.cursor := routing_table.first;
 
--- 				next (route_cursor);
--- 			end loop;
+			-- for temporarily storage of a single route:
+			route : type_route.set;
+			
+			use type_route;
+			net_cursor : type_route.cursor;	-- points to a single net of a route
 
--- lenght of individual route
+			-- for temporarily storage of a single net
+			net : type_net;
+			
+		begin -- create_routing_matrix
+			log ("routes total " & to_string (routes_total), log_threshold + 2);
+			log ("greatest length " & to_string (longest_route), log_threshold + 2);
+
+			-- Loop in routes and nets and fill routing_matrix.
+			reset_column;
+			while route_cursor /= type_routing_table.no_element loop
+
+				-- fetch a route from the routing_table
+				route := element (route_cursor);
+
+				-- set cursor to first net of route
+				net_cursor := route.first;
+				reset_row; -- we start with the topmost row
+
+				-- loop in nets of current route
+				while net_cursor /= type_route.no_element loop
+
+					-- Fetch a net from the current route and write
+					-- it in the routing_matrix:
+					net := element (net_cursor);
+					routing_matrix (column,row) := net;
+
+					increment_row;
+					next (net_cursor);
+				end loop;
+
+				increment_column;
+				next (route_cursor);
+			end loop;
+
 			return routing_matrix;
 		end create_routing_matrix;
 		
 		procedure write_routes (routing_matrix : in type_routing_matrix) is
-			use type_routing_table;
-			route_cursor : type_routing_table.cursor := routing_table.first;
+		-- Reads the given routing_matrix and dumps its content in the csv file.
 		begin
-			while route_cursor /= type_routing_table.no_element loop
-				
+			log ("matrix rows" & positive'image (routing_matrix'first (2)) & " .."
+				& positive'image (routing_matrix'last (2)), log_threshold + 3);
+			log ("matrix cols" & positive'image (routing_matrix'first (1)) & " .."
+				& positive'image (routing_matrix'last (1)), log_threshold + 3);
 
-				next (route_cursor);
+			-- write the column header: route #1, route #2, route #3 ...
+			reset_column;
+			for column in routing_matrix'first (1) .. routing_matrix'last (1) loop 
+				put_field (file => routing_handle, text => "route #" & positive'image (column));
 			end loop;
+			put_lf (file => routing_handle, field_count => routes_total);
+			put_lf (file => routing_handle, field_count => routes_total); -- empty line
+			
+			-- loop in rows which are the nets
+			for row in routing_matrix'first (2) .. routing_matrix'last (2) loop 
 
-			-- lenght of individual route
+				-- loop in columns which are the routes
+				reset_column;
+				for column in routing_matrix'first (1) .. routing_matrix'last (1) loop 
+					put_field (
+						file => routing_handle,
+						text => to_string (routing_matrix (column,row)));
+				end loop;
+				put_lf (file => routing_handle, field_count => routes_total);
+				
+			end loop;
 		end write_routes;
-
 		
 		procedure close_routing_table is
-		-- Writes the table footer and closes the file.
-		-- Sets the output back to standard_output.
+		-- Writes the table footer and closes the csv file.
 		begin
-			if is_open (routing_handle) then
+			-- write file footer
+			put_field (file => routing_handle, text => et_csv.row_separator_1);
+			put_lf (file => routing_handle, field_count => columns_total);
+			
+			put_field (file => routing_handle, text => "routing table end");
+			put_lf (file => routing_handle, field_count => columns_total);
 
-				-- write file footer
-				put_field (file => routing_handle, text => et_csv.row_separator_1);
-				put_lf (file => routing_handle, field_count => columns_total);
-				
-				put_field (file => routing_handle, text => "routing table end");
-				put_lf (file => routing_handle, field_count => columns_total);
-
-				close (routing_handle);
-			end if;
-				
+			close (routing_handle);
 		end close_routing_table;
 		
 
@@ -1750,20 +1846,29 @@ package body et_configuration is
 		
 		log ("exporting routing table ...", log_threshold);
 		log_indentation_up;
-		
+
+		-- Export anything if there are routes at all. Otherwise nothing to do here.
 		if routes_total > 0 then
 
+			-- Adjust number of columns required for csv file.
+			-- If more routes required than columns_min (defined by file header)
+			-- columns_total is set as number of routes. Otherwise columns_total
+			-- is set by the columns_min.
 			if routes_total > columns_min then
 				columns_total := routes_total;
 			else
 				columns_total := columns_min;
 			end if;
+
+			-- get the longest route of the routing_table. This value later defines the
+			-- length of the routing matrix and thus the number of rows in the csv file.
+			longest_route := et_configuration.longest_route (routing_table);
 			
 			log ("in file " & file_routing_table, log_threshold + 1);
-			create_routing_table_header;
+			create_routing_table_header; -- csv file header
 
-			longest_route := et_configuration.longest_route (routing_table);
-			write_routes (create_routing_matrix); -- the matrix dimensions will be: width routes_total and length longest_route
+			-- the matrix dimensions will be: width routes_total and length longest_route
+			write_routes (create_routing_matrix); 
 
 			log ("closing file " & file_routing_table, log_threshold + 2);
 			close_routing_table;
