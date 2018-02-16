@@ -1012,11 +1012,18 @@ package et_schematic is
 		-- CS: nets_global, nets_hierarchic
 		junctions,
 		ports_total,
+		connectors,
 		capacitors,
 		diodes,
+		integrated_circuits,
+		jumpers,
 		leds,
+		netchangers,
+		relays,
 		resistors,
-		transistors
+		testpoints,
+		transistors,
+		inductors
 		-- CS: no_connection_flags
 		);
 	
@@ -1044,9 +1051,16 @@ package et_schematic is
 			junctions			: count_type := 0;
 			ports_total			: count_type := 0;
 			capacitors			: count_type := 0;
+			connectors			: count_type := 0;
 			diodes				: count_type := 0;
+			inductors			: count_type := 0;			
+			integrated_circuits	: count_type := 0;
+			jumpers				: count_type := 0;
 			leds				: count_type := 0;
+			netchangers			: count_type := 0;
+			relays				: count_type := 0;
 			resistors			: count_type := 0;
+			testpoints			: count_type := 0;
 			transistors			: count_type := 0;
 -- CS		ports_virtual		: count_type := 0;
 -- CS		ports_real			: count_type := 0;

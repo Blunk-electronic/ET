@@ -2028,6 +2028,7 @@ package body et_configuration is
 		put_line (configuration_file_handle, "K  " & to_string (RELAY));
 		put_line (configuration_file_handle, "KP " & to_string (KEYPAD));
 		put_line (configuration_file_handle, "L  " & to_string (INDUCTOR));
+		put_line (configuration_file_handle, "LA " & to_string (INDUCTOR_ADJUSTABLE));
 		put_line (configuration_file_handle, "LS " & to_string (LOUDSPEAKER));
 		put_line (configuration_file_handle, "LED" & to_string (LIGHT_EMMITTING_DIODE));
 		put_line (configuration_file_handle, "LDA" & to_string (LIGHT_EMMITTING_DIODE_ARRAY));
@@ -2102,9 +2103,11 @@ package body et_configuration is
 		put_line (configuration_file_handle, to_string (DIODE_PHOTO));
 		put_line (configuration_file_handle, to_string (DISPLAY));
 		put_line (configuration_file_handle, to_string (FUSE));
+		put_line (configuration_file_handle, to_string (INDUCTOR_ADJUSTABLE));
 		put_line (configuration_file_handle, to_string (JUMPER));
 		put_line (configuration_file_handle, to_string (KEYPAD));
 		put_line (configuration_file_handle, to_string (LIGHT_EMMITTING_DIODE));
+		put_line (configuration_file_handle, to_string (LIGHT_EMMITTING_DIODE_ARRAY));
 		put_line (configuration_file_handle, to_string (RESISTOR_ADJUSTABLE));
 		put_line (configuration_file_handle, to_string (RESISTOR_PHOTO));
 		put_line (configuration_file_handle, to_string (POTENTIOMETER));

@@ -136,6 +136,7 @@ package et_configuration is
 		FUSE,
 		HEATSINK,				-- a bulk of metal that absorbs and dissipates excessive heat
 		INDUCTOR,
+		INDUCTOR_ADJUSTABLE,
 		INTEGRATED_CIRCUIT,
 		JUMPER,					-- a component that allows tieing nets via a removable bridge
 		KEYPAD,					-- array of push buttons, keys, switches, ...

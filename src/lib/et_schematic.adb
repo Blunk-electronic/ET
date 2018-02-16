@@ -5901,9 +5901,16 @@ package body et_schematic is
 						-- count components by category
 						case category (key (component)) is
 							when CAPACITOR | CAPACITOR_ADJUSTABLE => statistics.capacitors := statistics.capacitors + 1;
+							when CONNECTOR => statistics.connectors := statistics.connectors + 1;
 							when DIODE | DIODE_PHOTO => statistics.diodes := statistics.diodes + 1;
+							when INDUCTOR | INDUCTOR_ADJUSTABLE => statistics.inductors := statistics.inductors + 1;
+							when INTEGRATED_CIRCUIT => statistics.integrated_circuits := statistics.integrated_circuits + 1;
+							when JUMPER => statistics.jumpers := statistics.jumpers + 1;
 							when LIGHT_EMMITTING_DIODE | LIGHT_EMMITTING_DIODE_ARRAY => statistics.leds := statistics.leds + 1;
+							when NETCHANGER => statistics.netchangers := statistics.netchangers + 1;
+							when RELAY => statistics.relays := statistics.relays + 1;
 							when RESISTOR | RESISTOR_ADJUSTABLE | RESISTOR_NETWORK | POTENTIOMETER => statistics.resistors := statistics.resistors + 1;
+							when TESTPOINT => statistics.testpoints := statistics.testpoints + 1;
 							when TRANSISTOR | TRANSISTOR_PHOTO => statistics.transistors := statistics.transistors + 1;
 							
 							when others => null;
@@ -6005,22 +6012,45 @@ package body et_schematic is
 
 			when junctions =>
 				return count_type'image (statistics.junctions);
-				
+
 			when ports_total =>
 				return count_type'image (statistics.ports_total);
 
+
+				
 			when capacitors =>
 				return count_type'image (statistics.capacitors);
 
+			when connectors =>
+				return count_type'image (statistics.connectors);
+				
 			when diodes =>
 				return count_type'image (statistics.diodes);
-			
+
+			when inductors =>
+				return count_type'image (statistics.inductors);
+
+			when integrated_circuits =>
+				return count_type'image (statistics.integrated_circuits);
+
+			when jumpers =>
+				return count_type'image (statistics.jumpers);
+				
 			when leds =>
 				return count_type'image (statistics.leds);
+
+			when netchangers =>
+				return count_type'image (statistics.netchangers);
+				
+			when relays =>
+				return count_type'image (statistics.relays);
 				
 			when resistors =>
 				return count_type'image (statistics.resistors);
 
+			when testpoints =>
+				return count_type'image (statistics.testpoints);
+				
 			when transistors =>
 				return count_type'image (statistics.transistors);
 
@@ -6092,17 +6122,25 @@ package body et_schematic is
 			-- of virtual components like GND symbols).
 			new_line (statistics_handle_cad);
 			put_line (statistics_handle_cad, "ports       " & query_statistics (statistics, ports_total));
-
-			-- components by category
-			put_line (statistics_handle_cad, "capacitors  " & query_statistics (statistics, capacitors));
-			put_line (statistics_handle_cad, "diodes      " & query_statistics (statistics, diodes));
-			put_line (statistics_handle_cad, "LEDs        " & query_statistics (statistics, leds));
-			put_line (statistics_handle_cad, "resistors   " & query_statistics (statistics, resistors));
-			put_line (statistics_handle_cad, "transistors " & query_statistics (statistics, transistors));
-			
 			-- nets
 			put_line (statistics_handle_cad, "nets        " & query_statistics (statistics, nets_total));
 			put_line (statistics_handle_cad, "junctions   " & query_statistics (statistics, junctions));
+			new_line (statistics_handle_cad);
+			
+			-- components by category
+			put_line (statistics_handle_cad, "capacitors  " & query_statistics (statistics, capacitors));
+			put_line (statistics_handle_cad, "connectors  " & query_statistics (statistics, connectors));
+			put_line (statistics_handle_cad, "diodes      " & query_statistics (statistics, diodes));
+			put_line (statistics_handle_cad, "inductors   " & query_statistics (statistics, inductors));
+			put_line (statistics_handle_cad, "ICs         " & query_statistics (statistics, integrated_circuits));
+			put_line (statistics_handle_cad, "jumpers     " & query_statistics (statistics, jumpers));
+			put_line (statistics_handle_cad, "LEDs        " & query_statistics (statistics, leds));
+			put_line (statistics_handle_cad, "netchangers " & query_statistics (statistics, netchangers));
+			put_line (statistics_handle_cad, "relays      " & query_statistics (statistics, relays));
+			put_line (statistics_handle_cad, "resistors   " & query_statistics (statistics, resistors));
+			put_line (statistics_handle_cad, "testpoints  " & query_statistics (statistics, testpoints));			
+			put_line (statistics_handle_cad, "transistors " & query_statistics (statistics, transistors));
+			
 
 			-- finish statistics			
 			new_line (statistics_handle_cad);
