@@ -1011,9 +1011,13 @@ package et_schematic is
 		nets_total,
 		-- CS: nets_global, nets_hierarchic
 		junctions,
-		ports_total
+		ports_total,
+		capacitors,
+		diodes,
+		leds,
+		resistors,
+		transistors
 		-- CS: no_connection_flags
-		-- CS: capacitors, resistors, ...?
 		);
 	
 	function make_statistics (log_threshold : in et_string_processing.type_log_level)
@@ -1039,6 +1043,11 @@ package et_schematic is
 			nets_total			: count_type := 0;
 			junctions			: count_type := 0;
 			ports_total			: count_type := 0;
+			capacitors			: count_type := 0;
+			diodes				: count_type := 0;
+			leds				: count_type := 0;
+			resistors			: count_type := 0;
+			transistors			: count_type := 0;
 -- CS		ports_virtual		: count_type := 0;
 -- CS		ports_real			: count_type := 0;
 		end record;	

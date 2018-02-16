@@ -2030,6 +2030,7 @@ package body et_configuration is
 		put_line (configuration_file_handle, "L  " & to_string (INDUCTOR));
 		put_line (configuration_file_handle, "LS " & to_string (LOUDSPEAKER));
 		put_line (configuration_file_handle, "LED" & to_string (LIGHT_EMMITTING_DIODE));
+		put_line (configuration_file_handle, "LDA" & to_string (LIGHT_EMMITTING_DIODE_ARRAY));
 		put_line (configuration_file_handle, "M  " & to_string (MOTOR));
 		put_line (configuration_file_handle, "MIC" & to_string (MICROPHONE));
 		put_line (configuration_file_handle, "N  " & to_string (NETCHANGER));

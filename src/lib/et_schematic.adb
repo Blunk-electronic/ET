@@ -5866,6 +5866,7 @@ package body et_schematic is
 		
 			component : type_components.cursor := module.components.first;
 			use type_components;
+			use et_configuration;
 
 			procedure log_component (mounted : in boolean := true) is
 			-- This is for logging mounted or not mounted components.
@@ -5896,7 +5897,19 @@ package body et_schematic is
 
 					when sch_pcb => -- real
 						statistics.components_real := statistics.components_real + 1;
-					
+
+						-- count components by category
+						case category (key (component)) is
+							when CAPACITOR | CAPACITOR_ADJUSTABLE => statistics.capacitors := statistics.capacitors + 1;
+							when DIODE | DIODE_PHOTO => statistics.diodes := statistics.diodes + 1;
+							when LIGHT_EMMITTING_DIODE | LIGHT_EMMITTING_DIODE_ARRAY => statistics.leds := statistics.leds + 1;
+							when RESISTOR | RESISTOR_ADJUSTABLE | RESISTOR_NETWORK | POTENTIOMETER => statistics.resistors := statistics.resistors + 1;
+							when TRANSISTOR | TRANSISTOR_PHOTO => statistics.transistors := statistics.transistors + 1;
+							
+							when others => null;
+						end case;
+
+						-- count mounted components
 						if element (component).bom = YES then
 							log_component;
 							statistics.components_mounted := statistics.components_mounted + 1;
@@ -5995,6 +6008,22 @@ package body et_schematic is
 				
 			when ports_total =>
 				return count_type'image (statistics.ports_total);
+
+			when capacitors =>
+				return count_type'image (statistics.capacitors);
+
+			when diodes =>
+				return count_type'image (statistics.diodes);
+			
+			when leds =>
+				return count_type'image (statistics.leds);
+				
+			when resistors =>
+				return count_type'image (statistics.resistors);
+
+			when transistors =>
+				return count_type'image (statistics.transistors);
+
 				
 		end case;
 	end query_statistics;
@@ -6054,22 +6083,26 @@ package body et_schematic is
 			
 			-- components
 			put_line (statistics_handle_cad, "components");
-			put_line (statistics_handle_cad, " total    " & query_statistics (statistics, components_total));
-			put_line (statistics_handle_cad, " real     " & query_statistics (statistics, components_real));
-			put_line (statistics_handle_cad, " mounted  " & query_statistics (statistics, components_mounted));
-			put_line (statistics_handle_cad, " virtual  " & query_statistics (statistics, components_virtual));
+			put_line (statistics_handle_cad, " total      " & query_statistics (statistics, components_total));
+			put_line (statistics_handle_cad, " real       " & query_statistics (statistics, components_real));
+			put_line (statistics_handle_cad, " mounted    " & query_statistics (statistics, components_mounted));
+			put_line (statistics_handle_cad, " virtual    " & query_statistics (statistics, components_virtual));
 
 			-- As for the total number of ports, we take all ports into account (inc. virtual ports 
 			-- of virtual components like GND symbols).
 			new_line (statistics_handle_cad);
-			put_line (statistics_handle_cad, "ports     " & query_statistics (statistics, ports_total));
+			put_line (statistics_handle_cad, "ports       " & query_statistics (statistics, ports_total));
 
-			-- CS: resitors, leds, transitors, ...
-			new_line (statistics_handle_cad);
-
+			-- components by category
+			put_line (statistics_handle_cad, "capacitors  " & query_statistics (statistics, capacitors));
+			put_line (statistics_handle_cad, "diodes      " & query_statistics (statistics, diodes));
+			put_line (statistics_handle_cad, "LEDs        " & query_statistics (statistics, leds));
+			put_line (statistics_handle_cad, "resistors   " & query_statistics (statistics, resistors));
+			put_line (statistics_handle_cad, "transistors " & query_statistics (statistics, transistors));
+			
 			-- nets
-			put_line (statistics_handle_cad, "nets      " & query_statistics (statistics, nets_total));
-			put_line (statistics_handle_cad, "junctions " & query_statistics (statistics, junctions));
+			put_line (statistics_handle_cad, "nets        " & query_statistics (statistics, nets_total));
+			put_line (statistics_handle_cad, "junctions   " & query_statistics (statistics, junctions));
 
 			-- finish statistics			
 			new_line (statistics_handle_cad);
