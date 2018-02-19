@@ -153,7 +153,8 @@ package body et_schematic is
 			return false;
 		end if;
 	end anonymous;
-	
+
+
 	procedure write_label_properties (label : in type_net_label) is
 	-- Writes the properties of the given net label in the logfile.
 		use et_string_processing;

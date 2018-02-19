@@ -324,6 +324,10 @@ package et_schematic is
 	-- The label carries the name of the net. 
 	-- In case the appearance is "tag", the property "direction" exists.
 	-- The "direction" indicates the flow of energy or information on the net.
+
+	subtype type_net_label_text_size is type_distance range 1.0 .. 5.0; -- unit is mm
+	net_label_text_size_default : constant type_net_label_text_size := 1.27; -- equals 50mil
+	-- CS change to 1.3 once the inch system is discarded completely.
 	
 	type type_label_direction is (input, output, bidir, tristate, passive);
 	type type_label_appearance is (simple, tag);

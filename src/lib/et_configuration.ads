@@ -61,6 +61,7 @@ package et_configuration is
 	-- CS: section_connector_gnd_terminal					: constant string (1..24) := "[CONNECTOR_GND_TERMINAL]";
 	section_import_modules							: constant string (1..16)	:= "[IMPORT_MODULES]";
 	section_module_interconnections					: constant string (1..25)	:= "[MODULE_INTERCONNECTIONS]";
+	section_text_sizes_schematic					: constant string (1..22)	:= "[TEXT_SIZES_SCHEMATIC]";
 
 	option_module_interconnections_comparator_off	: constant string (1..18)	:= "net_comparator_off";
 	option_module_interconnections_comparator_on	: constant string (1..17)	:= "net_comparator_on";
@@ -351,7 +352,15 @@ package et_configuration is
 -- 		reference : in et_libraries.type_component_reference)
 -- 		return type_component_requires_operator_interaction;	
 
-	
+	-- This type is required for handling text sizes:
+	type type_text_schematic is (
+		NET_LABEL,
+		PORT_NAME,
+		TERMINAL_NAME);
+
+	function to_string (text : in type_text_schematic) return string;
+	-- returns the given text type as string.
+
 	configuration_file_handle : ada.text_io.file_type;
 	
 	-- The name of the configuration file may have 100 characters which seems sufficient for now.

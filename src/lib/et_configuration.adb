@@ -1950,7 +1950,13 @@ package body et_configuration is
 			return YES; -- operator interaction required
 		end if;
 	end requires_operator_interaction;
-		
+
+	function to_string (text : in type_text_schematic) return string is
+	-- returns the given text type as string.
+	begin
+		return type_text_schematic'image (text);
+	end to_string;
+	
 	procedure make_default_configuration (
 		file_name		: in type_configuration_file_name.bounded_string;
 		log_threshold	: in et_string_processing.type_log_level) is
@@ -2092,7 +2098,7 @@ package body et_configuration is
 		new_line (configuration_file_handle);
 		new_line (configuration_file_handle);		
 
-		-- COMPONENT THAT REQUIRE OPERATOR INTERACTION
+		-- COMPONENTS THAT REQUIRE OPERATOR INTERACTION
 		put_line (configuration_file_handle, section_components_with_operator_interaction); -- section header
 		new_line (configuration_file_handle);		
 		put_line (configuration_file_handle, comment & "category");
@@ -2116,8 +2122,20 @@ package body et_configuration is
 		put_line (configuration_file_handle, to_string (THYRISTOR_PHOTO));
 
 		new_line (configuration_file_handle);
+		new_line (configuration_file_handle);
 		
-
+		-- TEXT SIZES IN SCHEMATIC
+		put_line (configuration_file_handle, section_text_sizes_schematic); -- section header
+		new_line (configuration_file_handle);		
+		put_line (configuration_file_handle, comment & "category" & latin_1.space & "mm");
+		new_line (configuration_file_handle);		
+		put_line (configuration_file_handle, to_string (NET_LABEL) & latin_1.space 
+			& et_libraries.to_string (et_schematic.net_label_text_size_default));
+		put_line (configuration_file_handle, to_string (PORT_NAME) & latin_1.space 
+			& et_libraries.to_string (et_libraries.port_name_text_size_default));
+		put_line (configuration_file_handle, to_string (TERMINAL_NAME) & latin_1.space 
+			& et_libraries.to_string (et_libraries.terminal_name_text_size_default));
+		
 		-- CONNECTOR GND TERMINAL
         -- CS
 -- 		put_line (configuration_file_handle, section_connector_gnd_terminal); -- section header
