@@ -131,7 +131,9 @@ package et_libraries is
 	-- Reports a warning if text size out of range.
 	-- CS: make use of it wherever possible !
 
-	function to_string (size : in type_text_size) return string;
+	function to_string (
+		size 		: in type_text_size;
+		preamble	: in boolean := true) return string;
 	-- Returns the given text size as string.
 
 	subtype type_text_line_width is type_distance range 0.0 .. 5.0; -- unit is mm

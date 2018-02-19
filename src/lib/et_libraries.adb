@@ -96,15 +96,24 @@ package body et_libraries is
 		use et_string_processing;
 	begin
 		if size not in type_text_size then
-			log (message_warning & "text size " & to_string (size) & " out of range !");
+			log (message_warning & "text " 
+				 & to_string (size => size, preamble => true)  
+				 & " out of range !");
+			-- CS: show range
 		end if;
 		return size;
 	end to_text_size;
 	
-	function to_string (size : in type_text_size) return string is
+	function to_string (
+		size		: in type_text_size;
+		preamble	: in boolean := true) return string is
 	-- Returns the given text size as string.
 	begin
-		return "size " & et_coordinates.to_string (size);
+		if preamble then
+			return "size " & et_coordinates.to_string (size);
+		else
+			return latin_1.space & et_coordinates.to_string (size);
+		end if;
 	end to_string;
 
 	function width_to_string (width : in type_text_line_width) return string is
@@ -572,7 +581,7 @@ package body et_libraries is
 		log (to_string (placeholder.position), log_threshold);
 
 		-- size
-		log ("size " & to_string (placeholder.size), log_threshold);
+		log (et_libraries.to_string (placeholder.size), log_threshold);
 
 		-- style
 		log ("style "

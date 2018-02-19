@@ -2129,12 +2129,15 @@ package body et_configuration is
 		new_line (configuration_file_handle);		
 		put_line (configuration_file_handle, comment & "category" & latin_1.space & "mm");
 		new_line (configuration_file_handle);		
-		put_line (configuration_file_handle, to_string (NET_LABEL) & latin_1.space 
-			& et_libraries.to_string (et_schematic.net_label_text_size_default));
-		put_line (configuration_file_handle, to_string (PORT_NAME) & latin_1.space 
-			& et_libraries.to_string (et_libraries.port_name_text_size_default));
-		put_line (configuration_file_handle, to_string (TERMINAL_NAME) & latin_1.space 
-			& et_libraries.to_string (et_libraries.terminal_name_text_size_default));
+		put_line (configuration_file_handle, to_string (NET_LABEL)
+			& et_libraries.to_string (et_schematic.net_label_text_size_default, preamble => false));
+		put_line (configuration_file_handle, to_string (PORT_NAME) 
+			& et_libraries.to_string (et_libraries.port_name_text_size_default, preamble => false));
+		put_line (configuration_file_handle, to_string (TERMINAL_NAME) 
+			& et_libraries.to_string (et_libraries.terminal_name_text_size_default, preamble => false));
+
+		new_line (configuration_file_handle);
+		new_line (configuration_file_handle);
 		
 		-- CONNECTOR GND TERMINAL
         -- CS
@@ -2143,7 +2146,6 @@ package body et_configuration is
 
 		-- CS LINE WIDTHS
 
-		-- CS TEXT SIZES
 	
 		
 		put_line (configuration_file_handle, comment & row_separator_double);		
