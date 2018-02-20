@@ -1951,6 +1951,25 @@ package body et_configuration is
 		end if;
 	end requires_operator_interaction;
 
+	function to_text (text : in string) return type_text_schematic is
+	-- Converts a string to type_text_schematic.
+		use et_string_processing;
+		text_out : type_text_schematic;
+	begin
+		text_out := type_text_schematic'value (text);
+		return text_out;
+
+		exception
+			when others =>
+				log_indentation_reset;
+				log (message_error & text & " is not a supported text category !",
+					 console => true);
+
+				-- CS: show supported categories
+				
+				raise constraint_error;
+	end to_text;
+	
 	function to_string (text : in type_text_schematic) return string is
 	-- returns the given text type as string.
 	begin
@@ -2182,7 +2201,8 @@ package body et_configuration is
 			module_interconnections,
 			component_prefixes,
 			component_units,
-			components_with_operator_interaction
+			components_with_operator_interaction,
+			text_sizes_schematic
 			);
 		
 		section_entered : type_section := none;
@@ -2294,6 +2314,9 @@ package body et_configuration is
 			
 			abbrevation	: type_unit_abbrevation.bounded_string;
 			unit		: type_unit_of_measurement;
+
+			text		: type_text_schematic;
+			size		: et_libraries.type_text_size;
 			
 			-- CS: check field count in sections respectively. issue warning if too many fields. 
 		begin -- process_previous_section
@@ -2551,7 +2574,42 @@ package body et_configuration is
 					end loop;
 					log_indentation_down;
 
-					
+				-- TEXT SIZES SCHEMATIC
+				when text_sizes_schematic =>
+					log ("text sizes in schematic ...", log_threshold + 1);
+					log_indentation_up;
+					while line_cursor /= type_lines.no_element loop
+						log (to_string (element (line_cursor)), log_threshold + 2);
+
+						-- build the text category from field #1:
+						text := to_text (field (element (line_cursor), 1));
+
+						-- build the text size from field #2. 
+						-- Depending on the text category the string is passed through
+						-- the corresponding text size subtypes for that category:
+						case text is
+							when NET_LABEL =>
+								size := et_schematic.to_net_label_text_size (field (element (line_cursor), 2));
+
+							when PORT_NAME =>
+								size := to_port_name_text_size (field (element (line_cursor), 2));
+
+							when TERMINAL_NAME =>
+								size := to_terminal_name_text_size (field (element (line_cursor), 2));
+
+						end case;
+						
+						-- insert the text category and size in container text_sizes_schematic
+						type_text_sizes_schematic.insert (
+							container => et_configuration.text_sizes_schematic,
+							key => text,
+							new_item => size);
+						
+						next (line_cursor);
+					end loop;
+					log_indentation_down;
+
+
 			end case;
 			
 			log_indentation_down;
@@ -2632,6 +2690,12 @@ package body et_configuration is
 							section_entered := components_with_operator_interaction;
 						end if;
 
+						if field (line, 1) = section_text_sizes_schematic then
+							process_previous_section;
+							section_entered := text_sizes_schematic;
+						end if;
+
+						
 						-- CS: place other sections header tests here
 						
 						-- For all entered sections collect lines in container "lines".

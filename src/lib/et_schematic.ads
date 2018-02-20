@@ -328,6 +328,10 @@ package et_schematic is
 	subtype type_net_label_text_size is type_distance range 1.0 .. 5.0; -- unit is mm
 	net_label_text_size_default : constant type_net_label_text_size := 1.27; -- equals 50mil
 	-- CS change to 1.3 once the inch system is discarded completely.
+
+	function to_net_label_text_size (text : in string) return type_net_label_text_size;
+	-- Converts a string to type_net_label_text_size.
+
 	
 	type type_label_direction is (input, output, bidir, tristate, passive);
 	type type_label_appearance is (simple, tag);

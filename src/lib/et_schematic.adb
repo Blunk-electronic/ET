@@ -154,7 +154,13 @@ package body et_schematic is
 		end if;
 	end anonymous;
 
+	function to_net_label_text_size (text : in string) return type_net_label_text_size is
+	-- Converts a string to type_net_label_text_size.
+	begin
+		return type_net_label_text_size'value (text);
+	end to_net_label_text_size;
 
+	
 	procedure write_label_properties (label : in type_net_label) is
 	-- Writes the properties of the given net label in the logfile.
 		use et_string_processing;

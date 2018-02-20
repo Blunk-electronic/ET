@@ -358,6 +358,18 @@ package et_configuration is
 		PORT_NAME,
 		TERMINAL_NAME);
 
+	function to_text (text : in string) return type_text_schematic;
+	-- Converts a string to type_text_schematic.
+
+	-- Text sizes of various categories are collected in a map:
+	package type_text_sizes_schematic is new ordered_maps (
+		key_type => type_text_schematic,
+		element_type => et_coordinates.type_distance,
+		"=" => et_coordinates."=");
+
+	-- After reading the configuration file, text sizes are collected here:
+	text_sizes_schematic : type_text_sizes_schematic.map;
+
 	function to_string (text : in type_text_schematic) return string;
 	-- returns the given text type as string.
 

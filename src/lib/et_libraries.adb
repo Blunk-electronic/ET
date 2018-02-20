@@ -140,12 +140,24 @@ package body et_libraries is
 		return type_port_name.to_string (port);
 	end to_string;
 
+	function to_port_name_text_size (text : in string) return type_port_name_text_size is
+	-- Converts a string to type_port_name_text_size.
+	begin
+		return type_port_name_text_size'value (text);
+	end to_port_name_text_size;
+	
 	function to_string (terminal : in type_terminal_name.bounded_string) return string is
 	-- Returns the given terminal name as string.
 	begin
 		return type_terminal_name.to_string (terminal);
 	end to_string;
 
+	function to_terminal_name_text_size (text : in string) return type_terminal_name_text_size is
+	-- Converts a string to type_terminal_name_text_size.
+	begin
+		return type_terminal_name_text_size'value (text);
+	end to_terminal_name_text_size;
+	
 	procedure check_variant_name_characters (
 		variant		: in type_component_variant_name.bounded_string;
 		characters	: in character_set := component_variant_name_characters) is

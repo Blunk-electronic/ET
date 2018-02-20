@@ -271,6 +271,10 @@ package et_libraries is
 	port_name_text_size_default : constant type_port_name_text_size := 1.27; -- equals 50mil
 	-- CS change to 1.3 once the inch system is discarded completely.
 
+	function to_port_name_text_size (text : in string) return type_port_name_text_size;
+	-- Converts a string to type_port_name_text_size.
+	
+	
 	-- Initially, a port has at least a name.
 	type type_port_basic is tagged record
 		name				: type_port_name.bounded_string; -- like CLOCK or CE
@@ -888,7 +892,9 @@ package et_libraries is
 	terminal_name_text_size_default : constant type_terminal_name_text_size := 1.27; -- equals 50mil
 	-- CS change to 1.3 once the inch system is discarded completely.
 
-	
+	function to_terminal_name_text_size (text : in string) return type_terminal_name_text_size;
+	-- Converts a string to type_terminal_name_text_size.
+
 	
 -- COMPONENT VARIANTS
 	-- The variant is usually a suffix in a component value, given by its manufacturer. The variant is a manufacturer
