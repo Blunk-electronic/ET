@@ -374,6 +374,11 @@ package et_configuration is
 	-- returns the given text type as string.
 
 	configuration_file_handle : ada.text_io.file_type;
+
+	procedure check_schematic_text_size (
+		category 	: in type_text_schematic;
+		size		: in et_libraries.type_text_size);
+	-- Checks the given text size by its category.
 	
 	-- The name of the configuration file may have 100 characters which seems sufficient for now.
  	configuraton_file_name_length : constant natural := 100;

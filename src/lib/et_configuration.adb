@@ -1975,6 +1975,49 @@ package body et_configuration is
 	begin
 		return type_text_schematic'image (text);
 	end to_string;
+
+	procedure check_schematic_text_size (
+		category 	: in type_text_schematic;
+		size		: in et_libraries.type_text_size) is
+	-- Checks the given text size by its category.
+		use et_string_processing;
+		use et_coordinates;
+		use type_text_sizes_schematic;
+		cursor : type_text_sizes_schematic.cursor;
+		--size : et_libraries.type_text_size;
+	
+		procedure size_out_of_range is begin
+			-- log_indentation_reset;
+			log (message_warning & " text size invalid for category " & to_string (category) & " !");
+		end size_out_of_range;
+	begin
+		if not is_empty (text_sizes_schematic) then
+			cursor := text_sizes_schematic.find (category);
+			
+			case category is
+				when NET_LABEL =>
+					
+					if size /= element (cursor) then
+						size_out_of_range; 
+						-- CS show expected size
+					end if;
+					
+				when PORT_NAME =>
+					if size /= element (cursor) then
+						size_out_of_range; 
+						-- CS show range
+					end if;
+
+				when TERMINAL_NAME =>
+					if size not in et_libraries.type_terminal_name_text_size then
+						size_out_of_range; 
+						-- CS show range
+					end if;
+
+			end case;
+		end if;
+		
+	end check_schematic_text_size;
 	
 	procedure make_default_configuration (
 		file_name		: in type_configuration_file_name.bounded_string;
