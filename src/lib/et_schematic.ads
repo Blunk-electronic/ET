@@ -326,8 +326,7 @@ package et_schematic is
 	-- The "direction" indicates the flow of energy or information on the net.
 
 	subtype type_net_label_text_size is type_distance range 1.0 .. 5.0; -- unit is mm
-	net_label_text_size_default : constant type_net_label_text_size := 1.27; -- equals 50mil
-	-- CS change to 1.3 once the inch system is discarded completely.
+	net_label_text_size_default : constant type_net_label_text_size := 1.3;
 
 	function to_net_label_text_size (text : in string) return type_net_label_text_size;
 	-- Converts a string to type_net_label_text_size.

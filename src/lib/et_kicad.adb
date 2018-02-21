@@ -1084,7 +1084,9 @@ package body et_kicad is
 
 			function to_port (line : in et_string_processing.type_fields_of_line) return type_port is
 			-- Converts the given line to a type_port.
-				port	: type_port;
+				use et_configuration;
+			
+				port : type_port; -- the port being built
 
 				function field (line : in type_fields_of_line; position : in positive) return string renames
 					et_string_processing.get_field_from_line;
@@ -1092,11 +1094,11 @@ package body et_kicad is
 				-- A port is defined by a string like "X ~ 1 0 150 52 D 51 50 1 1 P"
 				-- field meaning:
 				--  #2 : port name (~)
-				--  #3 : pin number (1)
+				--  #3 : terminal name (1)
 				--  #4..5 : position x/y (0/150)
-				--  #6 : pin length (52)
+				--  #6 : port length (52)
 				--  #7 : orientation up/down/left/right (U/D/L/R)
-				--  #8 : pin number size (51)
+				--  #8 : terminal name size (51)
 				--  #9 : port name size (50)
 				-- #10 : 0 -> common to all units, otherwise unit id it belongs to
 				-- #11 : 1 -> not common to all body styles (alternative representation or DeMorgan) -- CS: verify
@@ -1198,21 +1200,24 @@ package body et_kicad is
 				mirror (point => port.coordinates, axis => x);
 
 				-- compose length
-				port.length			:= mil_to_distance (mil => field (line,6), warn_on_negative => false);
+				port.length := mil_to_distance (mil => field (line,6), warn_on_negative => false);
 
 				-- compose orientation
 				-- CS: port.orientation	:= type_library_pin_orientation
 
 				-- port and termnal name text size
 				port.terminal_name_size := mil_to_distance (mil => field (line,8), warn_on_negative => false);
-				port.port_name_size	:= type_text_size'value (field (line,9));
+				check_schematic_text_size (category => TERMINAL_NAME, size => port.terminal_name_size);
+
+				port.port_name_size	:= mil_to_distance (mil => field (line,9), warn_on_negative => false);
+				check_schematic_text_size (category => PORT_NAME, size => port.port_name_size);
 
 				-- direction
-				port.direction		:= to_direction (field (line,12));
+				port.direction := to_direction (field (line,12));
 
 				-- port style (optional, to be composed if field #13 present)
 				if field_count (line) = 13 then
-					port.style		:= to_style (field (line,13));
+					port.style := to_style (field (line,13));
 				end if;
 
 				-- visibility port and pin names
@@ -4491,7 +4496,9 @@ package body et_kicad is
 
 				-- The label header "Text Label 2350 3250 0 60 ~ 0" and the next line like
 				-- "net_name_abc" is read here. It contains the supposed net name.
-			
+
+				use et_configuration;
+				
 				label : type_net_label_simple; -- the label being built
 			begin
 				line_cursor := type_lines.first (lines);
@@ -4501,16 +4508,11 @@ package body et_kicad is
 				set_sheet (label.coordinates, sheet_number_current);
 				set_x (label.coordinates, mil_to_distance (field (et_kicad.line,3)));
 				set_y (label.coordinates, mil_to_distance (field (et_kicad.line,4)));
-				label.orientation := to_angle (field (et_kicad.line,5));
 
+				label.orientation := to_angle (field (et_kicad.line,5));
 				label.size := mil_to_distance (field (et_kicad.line,6));
-				-- CS: check label text size 1.27
-				
 				label.style := to_text_style (style_in => field (et_kicad.line,7), text => true);
-				-- cS: check label style
-				
 				label.width := et_libraries.type_text_line_width'value (field (et_kicad.line,8));
-				-- CS: check label line width
 
 				next (line_cursor);
 
@@ -4530,6 +4532,10 @@ package body et_kicad is
 					log ("simple label at " & to_string (label => type_net_label (label), scope => xy));
 					log_indentation_down;
 				end if;
+
+				check_schematic_text_size (category => net_label, size => label.size);
+				-- CS: check label style
+				-- CS: check label line width
 				
 				-- The simple labels are to be collected in a wild list of simple labels.
 				type_simple_labels.append (wild_simple_labels, label);
@@ -4556,7 +4562,9 @@ package body et_kicad is
 
 				-- The label header "Text GLabel 4700 3200 1 60 UnSpc ~ 0" and the next line like
 				-- "net_name_abc" is read here. It contains the supposed net name.
-			
+
+				use et_configuration;
+				
 				label : type_net_label_tag; -- the label being built
 			begin
 				line_cursor := type_lines.first (lines);
@@ -4575,8 +4583,8 @@ package body et_kicad is
 				set_sheet (label.coordinates, sheet_number_current);
 				set_x (label.coordinates, mil_to_distance (field (et_kicad.line,3)));
 				set_y (label.coordinates, mil_to_distance (field (et_kicad.line,4)));
+
 				label.orientation := to_angle (field (et_kicad.line,5));
-				
 				label.direction := to_direction (field (et_kicad.line,7));
 
 				-- build text attributes from size, font and line width
@@ -4602,6 +4610,9 @@ package body et_kicad is
 					log ("tag label at " & to_string (label => type_net_label (label), scope => xy));
 					log_indentation_down;
 				end if;
+
+				check_schematic_text_size (category => net_label, size => label.size);
+				-- CS: check style and line width
 				
 				-- The tag labels are to be collected in a wild list of tag labels for later sorting.
 				type_tag_labels.append (wild_tag_labels, label);

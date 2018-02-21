@@ -268,8 +268,7 @@ package et_libraries is
 	-- Returns the given port name as string.
 
 	subtype type_port_name_text_size is type_distance range 1.0 .. 5.0; -- unit is mm
-	port_name_text_size_default : constant type_port_name_text_size := 1.27; -- equals 50mil
-	-- CS change to 1.3 once the inch system is discarded completely.
+	port_name_text_size_default : constant type_port_name_text_size := 1.3;
 
 	function to_port_name_text_size (text : in string) return type_port_name_text_size;
 	-- Converts a string to type_port_name_text_size.
@@ -889,8 +888,7 @@ package et_libraries is
 	-- Returns the given terminal name as string.
 
 	subtype type_terminal_name_text_size is type_distance range 1.0 .. 5.0; -- unit is mm
-	terminal_name_text_size_default : constant type_terminal_name_text_size := 1.27; -- equals 50mil
-	-- CS change to 1.3 once the inch system is discarded completely.
+	terminal_name_text_size_default : constant type_terminal_name_text_size := 1.3;
 
 	function to_terminal_name_text_size (text : in string) return type_terminal_name_text_size;
 	-- Converts a string to type_terminal_name_text_size.
