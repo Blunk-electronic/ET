@@ -62,16 +62,8 @@ package body et_coordinates is
 		d_in : type_distance_intermediate;
 		distance : type_distance_xy; -- the distance to be returned
 	begin
--- 		log_indentation_up;
--- 		log ("mil in " & mil, level => 6);
  		d_in := type_distance_intermediate'value (mil);
--- 		
--- 		log ("mil to mm: mil in " & mil, level => 6);
--- 		log_indentation_down;
-
 		distance := type_distance (d_in * (25.4 * 0.001));
-
--- 		log ("mm out " & type_distance'image (distance), level => 6);
 
 		if warn_on_negative then
 			if distance < zero_distance then
@@ -85,8 +77,11 @@ package body et_coordinates is
 			when event:
 				others =>
 					log_indentation_reset;
-					log (message_error & "mil numbers must be in range " 
-						& float'image (mil_min) & " .." & float'image (mil_max) & " !", console => true);
+					log (message_error & "mil value " & mil & " invalid !", console => true);
+					log ("Allowed range for mil numbers is" 
+						& float'image (mil_min) & " .." & float'image (mil_max) & ".", console => true);
+
+					-- log ("mm out " & type_distance'image (distance));
 					put_line (ada.exceptions.exception_message (event));
 					raise;
 
@@ -94,7 +89,9 @@ package body et_coordinates is
 
 	function to_mil_string (distance : in type_distance_xy) return string is
 	-- Returns the given distance as string in mil.
-		type type_distance_mm is digits 10 range -400_000_000.0 .. 400_000_000.0; -- CS: increase digits if accuracy not sufficient
+		type type_distance_mm is digits 10 range -400_000_000.0 .. 400_000_000.0; 
+		-- CS: increase digits if accuracy not sufficient
+	
 		scratch : type_distance_mm;
 
 		-- This is the output type:
@@ -370,8 +367,25 @@ package body et_coordinates is
 		name : in type_submodule_name.bounded_string;
 		characters : in character_set := submodule_name_characters) is
 	-- Checks for forbidden characters in submodule name.
+
+		use et_string_processing;
+		invalid_character_position : natural := 0;
+
 	begin
-		null; -- CS
+		-- Test given submodule name and get position of possible invalid characters.
+		invalid_character_position := index (
+			source => name,
+			set => characters,
+			test => outside);
+
+		-- Evaluate position of invalid character.
+		if invalid_character_position > 0 then
+			log_indentation_reset;
+			log (message_error & "invalid character in submodule name '" 
+				& to_string (name) & "' at position" & natural'image (invalid_character_position),
+				console => true);
+			raise constraint_error;
+		end if;
 	end check_submodule_name_characters;
 	
 	function to_string (submodule : in type_submodule_name.bounded_string) return string is

@@ -97,7 +97,7 @@ package body et_schematic is
 
 	function to_submodule_name (file_name : in type_schematic_file_name.bounded_string)
 		return et_coordinates.type_submodule_name.bounded_string is
-	-- Retruns the base name of the given schematic file name as submodule name.
+	-- Returns the base name of the given schematic file name as submodule name.
 		use ada.directories;
 	begin
 		-- CS: test if given submodule has an extension. if not return

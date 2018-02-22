@@ -1965,7 +1965,12 @@ package body et_configuration is
 				log (message_error & text & " is not a supported text category !",
 					 console => true);
 
-				-- CS: show supported categories
+				-- show supported text categories
+				log ("Available categories are :");
+				for cat in type_text_schematic'pos (type_text_schematic'first) .. type_text_schematic'pos (type_text_schematic'last) loop
+					log ("- " & type_text_schematic'image (type_text_schematic'val (cat)));
+					null;
+				end loop;
 				
 				raise constraint_error;
 	end to_text;
@@ -1990,14 +1995,18 @@ package body et_configuration is
 		-- nothing happens if no text sizes specified
 		if not is_empty (text_sizes_schematic) then
 
-			-- locate text size by given category
+			-- Locate text size by given category. If there is
+			-- no specification in configuration file, nothing happens.
 			cursor := text_sizes_schematic.find (category);
+			if cursor /= no_element then
 			
-			if size /= element (cursor) then
-				log (message_warning & "Text size " & to_string (size) 
-					& " invalid for category " & to_string (category) 
-					& " ! " & "Expected size " & to_string (element (cursor)) 
-					& " ! (equals " & to_mil_string (element (cursor)) & " mil)");
+				if size /= element (cursor) then
+					log (message_warning & "Text size " & to_string (size) 
+						& " invalid for category " & to_string (category) 
+						& " ! " & "Expected size " & to_string (element (cursor)) 
+						& " ! (equals " & to_mil_string (element (cursor)) & " mil)");
+				end if;
+
 			end if;
 		end if;
 		
@@ -2172,7 +2181,8 @@ package body et_configuration is
 		
 		-- TEXT SIZES IN SCHEMATIC
 		put_line (configuration_file_handle, section_text_sizes_schematic); -- section header
-		new_line (configuration_file_handle);		
+		new_line (configuration_file_handle);
+		put_line (configuration_file_handle, comment & "Specify sizes for various kinds of texts in schematic."); 
 		put_line (configuration_file_handle, comment & "category" & latin_1.space & "mm");
 		new_line (configuration_file_handle);		
 		put_line (configuration_file_handle, to_string (NET_LABEL)
@@ -2752,43 +2762,47 @@ package body et_configuration is
 	end read_configuration;
 
 	procedure validate_prefix (prefix : in et_libraries.type_component_prefix.bounded_string) is
-	-- Tests if the given prefix is a power_flag_prefix or a power_symbol_prefix.
-	-- Raises exception if not.
+	-- Tests if the given prefix is specified in the configuration file.
+	-- Raises exception if not. If no prefixes specified, nothing happens.
 		use et_libraries.type_component_prefix;
 		use type_component_prefixes;
-	
-		prefix_cursor : type_component_prefixes.cursor;
 	begin
-		if component_prefixes.find (prefix) /= type_component_prefixes.no_element then
-			null;
-		else
-			log_indentation_reset;
-			log (message_error & "invalid prefix "
-				 & to_string (prefix) & " !"
-				 & " See configuration file for valid prefixes.",
-				console => true
-				);
-			raise constraint_error;
+		-- if there are prefixes specified, test if the given particular prefix is among them
+		if not is_empty (component_prefixes) then
+
+			-- if prefix not found, raise error
+			if component_prefixes.find (prefix) = type_component_prefixes.no_element then
+				log_indentation_reset;
+				log (message_error & "invalid prefix "
+					& to_string (prefix) & " !"
+					& " See configuration file for valid prefixes.",
+					console => true);
+				raise constraint_error;
+			end if;
+
 		end if;
 	end validate_prefix;
 	
 	procedure validate_prefix (reference : in et_libraries.type_component_reference) is
 	-- Tests if the given reference has a valid prefix as specified in the configuration file.
-	-- Raises exception if not.
+	-- Raises exception if not. If no prefixes specified, nothing happens.
 		use et_libraries.type_component_prefix;
 		use type_component_prefixes;
 	begin
-		if component_prefixes.find (reference.prefix) /= type_component_prefixes.no_element then
-			null;
-		else
-			log_indentation_reset;
-			log (message_error & "invalid prefix in component reference "
-				 & et_libraries.to_string (reference) & " !"
-				 & " See configuration file for valid prefixes.",
-				console => true
-				);
-			-- CS: show coordinates of affected component
-			raise constraint_error;
+		-- if there are prefixes specified, test if the given particular prefix is among them
+		if not is_empty (component_prefixes) then
+
+			-- if prefix not found, raise error
+			if component_prefixes.find (reference.prefix) = type_component_prefixes.no_element then
+				log_indentation_reset;
+				log (message_error & "invalid prefix in component reference "
+					& et_libraries.to_string (reference) & " !"
+					& " See configuration file for valid prefixes.",
+					console => true);
+				-- CS: show coordinates of affected component
+				raise constraint_error;
+			end if;
+
 		end if;
 	end validate_prefix;
 

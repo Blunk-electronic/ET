@@ -5837,7 +5837,7 @@ package body et_kicad is
 		begin -- read_schematic
 			log_indentation_reset;
 			log_indentation_up;
-			
+		
 			if exists (to_string (current_schematic)) then
 				log ("reading schematic file " & to_string (current_schematic) & " ...",
 					 log_threshold + 1,
@@ -6221,7 +6221,8 @@ package body et_kicad is
 				
 				read_components_libraries (log_threshold); -- as stored in element "libraries" of the current module
 				current_schematic := top_level_schematic;
-
+				check_submodule_name_characters (to_submodule_name (current_schematic));
+				
                 -- The top level schematic file is the first entry in the module path.
 				-- The top level schematic file is the root in the module path.
 				-- Starting from the top level module, we read its schematic file. The result can be a list 
@@ -6264,6 +6265,8 @@ package body et_kicad is
 								type_submodule_names.element (
 									container => list_of_submodules.list,
 									index => list_of_submodules.id)));
+
+						check_submodule_name_characters (to_submodule_name (current_schematic));
 						
 						-- backup list_of_submodules OF THIS LEVEL on stack (including the current submodule id)
 						push (list_of_submodules);
