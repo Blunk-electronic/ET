@@ -75,6 +75,9 @@ package et_coordinates is
 		return type_distance_xy;
 	-- Returns the given mils to type_distance_xy.
 
+	function to_mil_string (distance : in type_distance_xy) return string;
+	-- Returns the given distance as string in mil.
+	
 	function to_string (distance : in type_distance) return string;
 	-- Returns the given distance as a string.
 

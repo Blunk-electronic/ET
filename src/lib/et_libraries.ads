@@ -207,8 +207,16 @@ package et_libraries is
 	function content (text : in type_text) return string;
 	-- Returns the content of the given text as string.
 
-
 	
+-- TERMINALS
+	
+	subtype type_terminal_name_text_size is type_distance range 1.0 .. 5.0; -- unit is mm
+	terminal_name_text_size_default : constant type_terminal_name_text_size := 1.3;
+
+	function to_terminal_name_text_size (text : in string) return type_terminal_name_text_size;
+	-- Converts a string to type_terminal_name_text_size.
+
+
 	
 	
 -- PORTS
@@ -287,8 +295,8 @@ package et_libraries is
 		orientation			: type_angle;
 		port_name_visible	: type_port_name_visible;
 		terminal_visible	: type_terminal_name_visible;
-		port_name_size		: type_text_size;
-		terminal_name_size	: type_text_size;
+		port_name_size		: type_port_name_text_size;
+		terminal_name_size	: type_terminal_name_text_size;
 
 		-- kicad requirement: the clearance between symbol outline and port name 
 		-- CS: define a reasonable range
@@ -886,13 +894,6 @@ package et_libraries is
 
 	function to_string (terminal : in type_terminal_name.bounded_string) return string;
 	-- Returns the given terminal name as string.
-
-	subtype type_terminal_name_text_size is type_distance range 1.0 .. 5.0; -- unit is mm
-	terminal_name_text_size_default : constant type_terminal_name_text_size := 1.3;
-
-	function to_terminal_name_text_size (text : in string) return type_terminal_name_text_size;
-	-- Converts a string to type_terminal_name_text_size.
-
 	
 -- COMPONENT VARIANTS
 	-- The variant is usually a suffix in a component value, given by its manufacturer. The variant is a manufacturer

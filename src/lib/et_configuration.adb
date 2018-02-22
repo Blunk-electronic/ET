@@ -1985,13 +1985,6 @@ package body et_configuration is
 		use et_coordinates;
 		use type_text_sizes_schematic;
 		cursor : type_text_sizes_schematic.cursor; -- points to a text size 
-	-- CS clean up here
-	
--- 		procedure size_invalid (size : in et_libraries.type_text_size) is begin
--- 			-- log_indentation_reset;
--- 			log (message_warning & "Text size invalid for category " & to_string (category) 
--- 				 & " ! " & "Expected size " & to_string (size) & " !");
--- 		end size_invalid;
 	
 	begin -- check_schematic_text_size
 		-- nothing happens if no text sizes specified
@@ -2000,27 +1993,12 @@ package body et_configuration is
 			-- locate text size by given category
 			cursor := text_sizes_schematic.find (category);
 			
--- 			case category is
--- 				when NET_LABEL =>
-					
 			if size /= element (cursor) then
--- 				size_invalid (element (cursor)); 
 				log (message_warning & "Text size " & to_string (size) 
 					& " invalid for category " & to_string (category) 
-					& " ! " & "Expected size " & to_string (element (cursor)) & " !");
+					& " ! " & "Expected size " & to_string (element (cursor)) 
+					& " ! (equals " & to_mil_string (element (cursor)) & " mil)");
 			end if;
--- 					
--- 				when PORT_NAME =>
--- 					if size /= element (cursor) then
--- 						size_invalid (element (cursor)); 
--- 					end if;
--- 
--- 				when TERMINAL_NAME =>
--- 					if size not in et_libraries.type_terminal_name_text_size then
--- 						size_invalid (element (cursor)); 
--- 					end if;
--- 
--- 			end case;
 		end if;
 		
 	end check_schematic_text_size;

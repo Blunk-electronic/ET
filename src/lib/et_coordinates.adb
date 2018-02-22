@@ -82,6 +82,20 @@ package body et_coordinates is
 		-- CS: exception handler
 	end mil_to_distance;
 
+	function to_mil_string (distance : in type_distance_xy) return string is
+	-- Returns the given distance as string in mil.
+		type type_distance_mm is digits 10 range -400_000_000.0 .. 400_000_000.0; -- CS: increase digits if accuracy not sufficient
+		scratch : type_distance_mm;
+
+		-- This is the output type:
+		--type type_distance_mil is delta 0.1 range -400_000_000.0 .. 400_000_000.0;
+		type type_distance_mil is range -400_000_000 .. 400_000_000;
+	begin
+		scratch := type_distance_mm (distance) * 1000.00 / 25.4;
+
+		return trim (type_distance_mil'image (type_distance_mil (scratch)), left);
+	end to_mil_string;
+	
 	function to_string (distance : in type_distance) return string is
 	-- Returns the given distance to a string.
 	begin
