@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -347,10 +347,10 @@ package body et_coordinates is
 	-- Checks if the given submodule name is not longer than allowed.
 		use et_string_processing;
 	begin
-		if name'length > submodule_name_length then
+		if name'length > submodule_name_length_max then
 			log_indentation_reset;
 			log (message_error & "max. number of characters for module name is" 
-				 & positive'image (submodule_name_length) & " !",
+				 & positive'image (submodule_name_length_max) & " !",
 				console => true);
 			raise constraint_error;
 		end if;

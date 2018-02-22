@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -148,8 +148,8 @@ package et_coordinates is
 	-- Returns the distance between the given points.
 	
 	-- The name of a submodule may have 100 characters which seems sufficient for now.
- 	submodule_name_length : constant positive := 100; -- CS: rename to submodule_name_length_max
-	package type_submodule_name is new generic_bounded_length (submodule_name_length); use type_submodule_name;
+ 	submodule_name_length_max : constant positive := 100;
+	package type_submodule_name is new generic_bounded_length (submodule_name_length_max); use type_submodule_name;
 	submodule_name_characters : character_set := to_set 
 		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set("-_"); 
 
