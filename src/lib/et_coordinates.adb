@@ -43,6 +43,8 @@ with ada.strings;				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.strings.unbounded;
 
+with ada.exceptions;
+
 with ada.numerics.generic_elementary_functions;
 with et_string_processing;
 with et_math;
@@ -53,23 +55,23 @@ package body et_coordinates is
 		return type_distance_xy is
 	-- Returns the given mils to type_distance_xy.
 		use et_string_processing;
-		type type_distance_intermediate is digits 13 range -10000000.0 .. 1000000.0;
-		-- unit is mil
+
+		type type_distance_intermediate is digits 13 range mil_min .. mil_max; -- unit is mil
 		-- CS: refine range and delta if required
 
 		d_in : type_distance_intermediate;
 		distance : type_distance_xy; -- the distance to be returned
 	begin
-		d_in := type_distance_intermediate'value (mil);
-
-		log_indentation_up;
-		log ("mil to mm: mil in " & mil, level => 6);
-		log_indentation_down;
+-- 		log_indentation_up;
+-- 		log ("mil in " & mil, level => 6);
+ 		d_in := type_distance_intermediate'value (mil);
+-- 		
+-- 		log ("mil to mm: mil in " & mil, level => 6);
+-- 		log_indentation_down;
 
 		distance := type_distance (d_in * (25.4 * 0.001));
 
-		log ("mm out " & type_distance'image (distance), level => 6);
-		--log ("mil as distance " & type_distance'image (type_distance (d_in * (25.4 * 0.001))));
+-- 		log ("mm out " & type_distance'image (distance), level => 6);
 
 		if warn_on_negative then
 			if distance < zero_distance then
@@ -79,7 +81,15 @@ package body et_coordinates is
 		
 		return distance;
 		
-		-- CS: exception handler
+		exception
+			when event:
+				others =>
+					log_indentation_reset;
+					log (message_error & "mil numbers must be in range " 
+						& float'image (mil_min) & " .." & float'image (mil_max) & " !", console => true);
+					put_line (ada.exceptions.exception_message (event));
+					raise;
+
 	end mil_to_distance;
 
 	function to_mil_string (distance : in type_distance_xy) return string is

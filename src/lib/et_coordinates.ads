@@ -71,6 +71,9 @@ package et_coordinates is
 
 	-- CS: type_grid ?
 
+	mil_min : constant float := -390_000_000.0; -- equals approx. type_distance_xy'first
+	mil_max : constant float :=  390_000_000.0; -- equals approx. type_distance_xy'last
+	
 	function mil_to_distance (mil : in string; warn_on_negative : boolean := true) 
 		return type_distance_xy;
 	-- Returns the given mils to type_distance_xy.
