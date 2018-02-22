@@ -447,6 +447,18 @@ package body et_coordinates is
 			& type_submodule_name.to_bounded_string (separator) -- "_"
 			& type_submodule_name.to_bounded_string (trim (type_submodule_instance'image (instance), left)); -- 4
 	end append_instance;
+
+	function to_string (sheet_number : in type_submodule_sheet_number) return string is
+	-- Returns a sheet number to a string.
+	begin
+		return type_submodule_sheet_number'image (sheet_number);
+	end to_string;
+
+	function to_sheet_number (sheet_number : in string) return type_submodule_sheet_number is
+	-- Converts a string to type_submodule_sheet_number
+	begin
+		return type_submodule_sheet_number'value (sheet_number);
+	end to_sheet_number;
 	
 	function to_string (
 		path : in type_path_to_submodule.list;
@@ -495,7 +507,6 @@ package body et_coordinates is
 			sheet_number	=> 1
 			);
 	end to_coordinates;
-
 	
 	function to_string (
 	-- Returns the given position as string. Scope specifies how much position is to
@@ -512,7 +523,7 @@ package body et_coordinates is
 					& to_string (position.path) & latin_1.space & hierarchy_separator & latin_1.space
 -- 					& to_string (position.module)
 -- 					& latin_1.space & axis_separator & latin_1.space
-					& trim (positive'image (position.sheet_number),left) 
+					& to_string (position.sheet_number) 
 					& latin_1.space & axis_separator & latin_1.space
 					& to_string (distance_x (position))
 					& latin_1.space & axis_separator & latin_1.space
@@ -520,7 +531,7 @@ package body et_coordinates is
 				
 			when sheet =>
 				return coordinates_preamble_sheet
-					& trim (positive'image (position.sheet_number),left) 
+					& to_string (position.sheet_number) 
 					& latin_1.space & axis_separator & latin_1.space
 					& to_string (distance_x (position))
 					& latin_1.space & axis_separator & latin_1.space
@@ -542,8 +553,8 @@ package body et_coordinates is
 	begin
 		return position.path;
 	end path;
-
-	function sheet (position : in type_coordinates) return positive is
+	
+	function sheet (position : in type_coordinates) return type_submodule_sheet_number is
 	begin
 		return position.sheet_number;
 	end sheet;
@@ -569,7 +580,7 @@ package body et_coordinates is
 		position.path := path;
 	end set_path;
 
-	procedure set_sheet (position : in out type_coordinates; sheet : in positive) is
+	procedure set_sheet (position : in out type_coordinates; sheet : in type_submodule_sheet_number) is
 	-- Sets the sheet number in given position.
 	begin
 		position.sheet_number := sheet;

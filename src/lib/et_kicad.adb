@@ -2959,7 +2959,7 @@ package body et_kicad is
 			line : et_string_processing.type_fields_of_line; -- the line of the schematic file being processed
 		
 			sheet_file : type_schematic_file_name.bounded_string;
-			sheet_count_total, sheet_number_current : positive;
+			sheet_count_total, sheet_number_current : type_submodule_sheet_number;
 
 			wild_simple_labels	: type_simple_labels.list;
             wild_tag_labels 	: type_tag_labels.list;
@@ -4093,9 +4093,9 @@ package body et_kicad is
 				-- read sheet number from a line like "Sheet 1 7"
 				if field (et_kicad.line,1) = schematic_keyword_sheet then
 					-- CS test field count					
-					sheet_number_current := positive'value (field (et_kicad.line,2));
-					log ("sheet" & positive'image (sheet_number_current) & " ...", log_threshold + 1);
-					sheet_count_total := positive'value (field (et_kicad.line,3));
+					sheet_number_current := to_sheet_number (field (et_kicad.line,2));
+					log ("sheet" & to_string (sheet_number_current) & " ...", log_threshold + 1);
+					sheet_count_total := to_sheet_number (field (et_kicad.line,3));
 					-- CS: sheet_count_total must not change from sheet to sheet. Check required.
 					if sheet_count_total > 1 then
 						-- Set in the list_of_submodules (to be returned) the parent_module. The schematic file 

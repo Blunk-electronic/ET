@@ -215,6 +215,20 @@ package et_coordinates is
 	-- Example: net name "HEATER_CONTROL/DRIVER/CLK"
 	--hierarchy_separator : constant string (1..1) := ".";
 	hierarchy_separator : constant string (1..1) := "/";
+
+	-- A submodule may have up to x sheets.
+	submodule_sheet_count_max : constant positive := 100;
+	type type_submodule_sheet_number is new positive range 1..submodule_sheet_count_max;
+
+	function to_string (sheet_number : in type_submodule_sheet_number) return string;
+	-- Returns a sheet number to a string.
+
+	function to_sheet_number (sheet_number : in string) return type_submodule_sheet_number;
+	-- Converts a string to type_submodule_sheet_number
+	
+	-- The whole schematic may have a total of x pages.
+	schematic_page_count_max : constant positive := 100;
+	type type_schematic_page_number is new positive range 1..schematic_page_count_max; -- CS: not uses yet
 	
 	function to_string (
 		path : in type_path_to_submodule.list;
@@ -250,13 +264,14 @@ package et_coordinates is
 		& "x"
 		& axis_separator
 		& "y) ";
+
 	
 	type type_scope is (
 		xy, -- only x an y pos.
 		sheet, 	-- coordinates sheet related
 		module); -- coordinates with the module in scope
 		-- CS: rig ? -- with the whole rig is scope
-	
+
 	function to_string (
 	-- Returns the given position as string. Scope specifies how much position is to
 	-- be displayed. See type_scope comments.
@@ -264,8 +279,9 @@ package et_coordinates is
 		scope		: in type_scope := sheet)
 		return string;
 
-	function path   (position : in type_coordinates) return type_path_to_submodule.list;
-	function sheet  (position : in type_coordinates) return positive;
+	function path (position : in type_coordinates) return type_path_to_submodule.list;
+	
+	function sheet (position : in type_coordinates) return type_submodule_sheet_number;
 
 	function same_path_and_sheet (left, right : in type_coordinates) return boolean;
 	-- Returns true if the given coordinates have same path and sheet.
@@ -273,7 +289,7 @@ package et_coordinates is
 	procedure set_path (position : in out type_coordinates; path : in type_path_to_submodule.list);
 	-- Sets the path in given position.
 
-	procedure set_sheet (position : in out type_coordinates; sheet : in positive);
+	procedure set_sheet (position : in out type_coordinates; sheet : in type_submodule_sheet_number);
 	-- Sets the sheet number in given position.
 
 	
@@ -288,12 +304,12 @@ package et_coordinates is
 	
 		type type_coordinates is new type_2d_point with record
 			path            : type_path_to_submodule.list;
-			sheet_number	: positive; -- CS: dedicated type
+			sheet_number	: type_submodule_sheet_number;
 		end record;
 
 		zero_position : constant type_coordinates := (
 			path			=> type_path_to_submodule.empty_list,
-			sheet_number	=> 1,
+			sheet_number	=> type_submodule_sheet_number'first,
 			x				=> 0.0,
 			y				=> 0.0 );
 		
