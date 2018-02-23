@@ -914,7 +914,7 @@ package body et_libraries is
 	procedure validate_component_partcode_in_library (
 	-- Tests if the given partcode of a library component is correct.
 		partcode	: in type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_
-		name		: in type_component_generic_name.bounded_string;			-- 74LS00
+		name		: in type_component_generic_name.bounded_string;	-- 74LS00
 		prefix		: in type_component_prefix.bounded_string;			-- R
 		packge		: in type_component_package_name.bounded_string;	-- S_0805
 		bom			: in type_bom)	-- YES, NO
@@ -955,6 +955,8 @@ package body et_libraries is
 					partcode_invalid;
 				end if;
 
+				-- CS Test other keywords like TOL VMAX PMAX ...
+				
 			when NO =>
 				null;
 				-- CS: expect partcode_default ?
@@ -1022,6 +1024,7 @@ package body et_libraries is
 					partcode_invalid;
 				end if;
 
+				-- CS Test other keywords like TOL VMAX PMAX ...
 			when NO =>
 				null;
 				-- CS: expect partcode_default ?

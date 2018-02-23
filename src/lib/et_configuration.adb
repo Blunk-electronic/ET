@@ -2024,7 +2024,6 @@ package body et_configuration is
 				log ("Available categories are :");
 				for cat in type_text_schematic'pos (type_text_schematic'first) .. type_text_schematic'pos (type_text_schematic'last) loop
 					log ("- " & type_text_schematic'image (type_text_schematic'val (cat)));
-					null;
 				end loop;
 				
 				raise constraint_error;
@@ -2036,6 +2035,39 @@ package body et_configuration is
 		return type_text_schematic'image (text);
 	end to_string;
 
+	function to_partcode_keyword (keyword : in string) return type_partcode_keyword.bounded_string is
+	-- Converts a string to a type_partcode_keyword.
+	begin
+		return type_partcode_keyword.to_bounded_string (keyword);
+	end to_partcode_keyword;
+	
+	function to_partcode_section (text : in string) return type_partcode_section is
+	-- converts a string to a type_partcode_section.
+	begin
+		return type_partcode_section'value (text);
+
+		exception
+			when others =>
+				log_indentation_reset;
+				log (message_error & text & " is not a supported partcode section !",
+					 console => true);
+
+				-- show supported sections
+				log ("Available sections are :");
+				for section in type_partcode_section'pos (type_partcode_section'first) .. type_partcode_section'pos (type_partcode_section'last) loop
+					log ("- " & type_partcode_section'image (type_partcode_section'val (section)));
+				end loop;
+				
+				raise constraint_error;
+
+	end to_partcode_section;
+
+	function to_string (partcode_section : in type_partcode_section) return string is
+	-- converts a type_partcode_section to a string.
+	begin
+		return type_partcode_section'image (partcode_section);
+	end to_string;
+	
 	procedure check_schematic_text_size (
 		category 	: in type_text_schematic;
 		size		: in et_libraries.type_text_size) is
@@ -2126,50 +2158,50 @@ package body et_configuration is
 		new_line (configuration_file_handle);		
 		put_line (configuration_file_handle, comment & "prefix category");
 		new_line (configuration_file_handle);		
-		put_line (configuration_file_handle, "ANT" & to_string (ANTENNA)); -- CS: short desciption as comment for all
-		put_line (configuration_file_handle, "B  " & to_string (BUZZER));
-		put_line (configuration_file_handle, "BAT" & to_string (BATTERY));
-		put_line (configuration_file_handle, "C  " & to_string (CAPACITOR));
-		put_line (configuration_file_handle, "CA " & to_string (CAPACITOR_ADJUSTABLE));
+		put_line (configuration_file_handle, "ANT " & to_string (ANTENNA)); -- CS: short desciption as comment for all
+		put_line (configuration_file_handle, "B   " & to_string (BUZZER));
+		put_line (configuration_file_handle, "BAT " & to_string (BATTERY));
+		put_line (configuration_file_handle, "C   " & to_string (CAPACITOR));
+		put_line (configuration_file_handle, "CA  " & to_string (CAPACITOR_ADJUSTABLE));
 		--put_line (configuration_file_handle, "CBL" & to_string (CABLE));
-		put_line (configuration_file_handle, "D  " & to_string (DIODE));
-		put_line (configuration_file_handle, "DPH" & to_string (DIODE_PHOTO));
-		put_line (configuration_file_handle, "DI " & to_string (DIAC));
-		put_line (configuration_file_handle, "DIS" & to_string (DISPLAY));
-		put_line (configuration_file_handle, "F  " & to_string (FUSE));
-		put_line (configuration_file_handle, "HS " & to_string (HEATSINK));
-		put_line (configuration_file_handle, "IC " & to_string (INTEGRATED_CIRCUIT));
-		put_line (configuration_file_handle, "J  " & to_string (JUMPER));
-		put_line (configuration_file_handle, "JD " & to_string (JUMPER));
-		put_line (configuration_file_handle, "K  " & to_string (RELAY));
-		put_line (configuration_file_handle, "KP " & to_string (KEYPAD));
-		put_line (configuration_file_handle, "L  " & to_string (INDUCTOR));
-		put_line (configuration_file_handle, "LA " & to_string (INDUCTOR_ADJUSTABLE));
-		put_line (configuration_file_handle, "LS " & to_string (LOUDSPEAKER));
-		put_line (configuration_file_handle, "LED" & to_string (LIGHT_EMMITTING_DIODE));
-		put_line (configuration_file_handle, "LDA" & to_string (LIGHT_EMMITTING_DIODE_ARRAY));
-		put_line (configuration_file_handle, "M  " & to_string (MOTOR));
-		put_line (configuration_file_handle, "MIC" & to_string (MICROPHONE));
-		put_line (configuration_file_handle, "N  " & to_string (NETCHANGER));
-		put_line (configuration_file_handle, "OC " & to_string (OPTOCOUPLER));		
-		put_line (configuration_file_handle, "Q  " & to_string (QUARTZ));
-		put_line (configuration_file_handle, "R  " & to_string (RESISTOR));
-		put_line (configuration_file_handle, "RA " & to_string (RESISTOR_ADJUSTABLE));
-		put_line (configuration_file_handle, "RN " & to_string (RESISTOR_NETWORK));
-		put_line (configuration_file_handle, "RP " & to_string (POTENTIOMETER));
-		put_line (configuration_file_handle, "RPH" & to_string (RESISTOR_PHOTO));
-		put_line (configuration_file_handle, "S  " & to_string (SWITCH));
-		put_line (configuration_file_handle, "T  " & to_string (TRANSISTOR));
-		put_line (configuration_file_handle, "TP " & to_string (TRANSISTOR_PHOTO));
-		put_line (configuration_file_handle, "TF " & to_string (TRANSFORMER));
-		put_line (configuration_file_handle, "TPT" & to_string (TESTPOINT));
-		put_line (configuration_file_handle, "TH " & to_string (THYRISTOR));
-		put_line (configuration_file_handle, "THP" & to_string (THYRISTOR_PHOTO));
-		put_line (configuration_file_handle, "TR " & to_string (TRIAC));
-		put_line (configuration_file_handle, "TUB" & to_string (TUBE));		
-		--put_line (configuration_file_handle, "W" & to_string (WIRE));
-		put_line (configuration_file_handle, "X  " & to_string (CONNECTOR));
-		put_line (configuration_file_handle, "XD " & to_string (CONNECTOR));
+		put_line (configuration_file_handle, "D   " & to_string (DIODE));
+		put_line (configuration_file_handle, "DPH " & to_string (DIODE_PHOTO));
+		put_line (configuration_file_handle, "DI  " & to_string (DIAC));
+		put_line (configuration_file_handle, "DIS " & to_string (DISPLAY));
+		put_line (configuration_file_handle, "F   " & to_string (FUSE));
+		put_line (configuration_file_handle, "HS  " & to_string (HEATSINK));
+		put_line (configuration_file_handle, "IC  " & to_string (INTEGRATED_CIRCUIT));
+		put_line (configuration_file_handle, "J   " & to_string (JUMPER));
+		put_line (configuration_file_handle, "JD  " & to_string (JUMPER));
+		put_line (configuration_file_handle, "K   " & to_string (RELAY));
+		put_line (configuration_file_handle, "KP  " & to_string (KEYPAD));
+		put_line (configuration_file_handle, "L   " & to_string (INDUCTOR));
+		put_line (configuration_file_handle, "LA  " & to_string (INDUCTOR_ADJUSTABLE));
+		put_line (configuration_file_handle, "LS  " & to_string (LOUDSPEAKER));
+		put_line (configuration_file_handle, "LED " & to_string (LIGHT_EMMITTING_DIODE));
+		put_line (configuration_file_handle, "LDA " & to_string (LIGHT_EMMITTING_DIODE_ARRAY));
+		put_line (configuration_file_handle, "M   " & to_string (MOTOR));
+		put_line (configuration_file_handle, "MIC " & to_string (MICROPHONE));
+		put_line (configuration_file_handle, "N   " & to_string (NETCHANGER));
+		put_line (configuration_file_handle, "OC  " & to_string (OPTOCOUPLER));		
+		put_line (configuration_file_handle, "Q   " & to_string (QUARTZ));
+		put_line (configuration_file_handle, "R   " & to_string (RESISTOR));
+		put_line (configuration_file_handle, "RA  " & to_string (RESISTOR_ADJUSTABLE));
+		put_line (configuration_file_handle, "RN  " & to_string (RESISTOR_NETWORK));
+		put_line (configuration_file_handle, "RP  " & to_string (POTENTIOMETER));
+		put_line (configuration_file_handle, "RPH " & to_string (RESISTOR_PHOTO));
+		put_line (configuration_file_handle, "S   " & to_string (SWITCH));
+		put_line (configuration_file_handle, "T   " & to_string (TRANSISTOR));
+		put_line (configuration_file_handle, "TP  " & to_string (TRANSISTOR_PHOTO));
+		put_line (configuration_file_handle, "TF  " & to_string (TRANSFORMER));
+		put_line (configuration_file_handle, "TPT " & to_string (TESTPOINT));
+		put_line (configuration_file_handle, "TH  " & to_string (THYRISTOR));
+		put_line (configuration_file_handle, "THP " & to_string (THYRISTOR_PHOTO));
+		put_line (configuration_file_handle, "TR  " & to_string (TRIAC));
+		put_line (configuration_file_handle, "TUB " & to_string (TUBE));		
+		--put_line (configuration_file_handle, "W " & to_string (WIRE));
+		put_line (configuration_file_handle, "X   " & to_string (CONNECTOR));
+		put_line (configuration_file_handle, "XD  " & to_string (CONNECTOR));
 		
 		new_line (configuration_file_handle);
 		new_line (configuration_file_handle);		
@@ -2237,7 +2269,7 @@ package body et_configuration is
 		-- TEXT SIZES IN SCHEMATIC
 		put_line (configuration_file_handle, section_text_sizes_schematic); -- section header
 		new_line (configuration_file_handle);
-		put_line (configuration_file_handle, comment & "Specify sizes for various kinds of texts in schematic."); 
+		put_line (configuration_file_handle, comment & "sizes for various kinds of texts in schematic"); 
 		put_line (configuration_file_handle, comment & "category" & latin_1.space & "mm");
 		new_line (configuration_file_handle);		
 		put_line (configuration_file_handle, to_string (NET_LABEL)
@@ -2257,8 +2289,25 @@ package body et_configuration is
 
 		-- CS LINE WIDTHS
 
-	
-		
+		-- PARTCODE KEYWORDS
+		put_line (configuration_file_handle, section_partcode_keywords); -- section header
+		new_line (configuration_file_handle);
+		put_line (configuration_file_handle, comment & "sections in component part code and their keywords"); 
+		put_line (configuration_file_handle, comment & "keyword" & latin_1.space & "section");
+		new_line (configuration_file_handle);
+		put_line (configuration_file_handle, "PAC  " & to_string (COMPONENT_PACKAGE));
+		put_line (configuration_file_handle, "VAL  " & to_string (COMPONENT_VALUE));
+		put_line (configuration_file_handle, "TOL  " & to_string (TOLERANCE));
+		put_line (configuration_file_handle, "VMAX " & to_string (MAXIMUM_VOLTAGE));
+		put_line (configuration_file_handle, "PMAX " & to_string (MAXIMUM_POWER));
+		put_line (configuration_file_handle, "TYPE " & to_string (PART_TYPE));
+		put_line (configuration_file_handle, "PN   " & to_string (PART_NUMBER));
+
+
+		new_line (configuration_file_handle);
+		new_line (configuration_file_handle);
+
+
 		put_line (configuration_file_handle, comment & row_separator_double);		
 		put_line (configuration_file_handle, comment & system_name & " configuration end");
 		close (configuration_file_handle);
@@ -2294,7 +2343,8 @@ package body et_configuration is
 			component_prefixes,
 			component_units,
 			components_with_operator_interaction,
-			text_sizes_schematic
+			text_sizes_schematic,
+			partcode_keywords
 			);
 		
 		section_entered : type_section := none;
@@ -2409,6 +2459,9 @@ package body et_configuration is
 
 			text		: type_text_schematic;
 			size		: et_libraries.type_text_size;
+
+			partcode_keyword	: type_partcode_keyword.bounded_string;
+			partcode_section	: type_partcode_section;
 			
 			-- CS: check field count in sections respectively. issue warning if too many fields. 
 		begin -- process_previous_section
@@ -2707,6 +2760,30 @@ package body et_configuration is
 					end loop;
 					log_indentation_down;
 
+				-- PARTCODE KEYWORDS
+				when partcode_keywords =>
+					log ("part code keywords ...", log_threshold + 1);
+					log_indentation_up;
+					while line_cursor /= type_lines.no_element loop
+						log (to_string (element (line_cursor)), log_threshold + 2);
+
+						-- build the partcode keyword from field #1:
+						partcode_keyword := to_partcode_keyword (field (element (line_cursor), 1));
+
+						-- build the partcode section name from field #2. 
+						partcode_section := to_partcode_section (field (element (line_cursor), 2));
+						
+						-- insert the text category and size in container text_sizes_schematic
+						type_partcode_keywords.insert (
+							container => et_configuration.partcode_keywords,
+							key => partcode_keyword,
+							new_item => partcode_section);
+						
+						next (line_cursor);
+					end loop;
+					log_indentation_down;
+
+					
 
 			end case;
 			
@@ -2793,6 +2870,11 @@ package body et_configuration is
 							section_entered := text_sizes_schematic;
 						end if;
 
+						if field (line, 1) = section_partcode_keywords then
+							process_previous_section;
+							section_entered := partcode_keywords;
+						end if;
+						
 						
 						-- CS: place other sections header tests here
 						

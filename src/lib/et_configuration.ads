@@ -58,6 +58,7 @@ package et_configuration is
 	section_component_prefixes						: constant string (1..20)	:= "[COMPONENT_PREFIXES]";
 	section_component_units							: constant string (1..22)	:= "[UNITS_OF_MEASUREMENT]";
 	section_components_with_operator_interaction 	: constant string (1..31)	:= "[OPERATOR_INTERACTION_REQUIRED]";
+	section_partcode_keywords						: constant string (1..20)	:= "[PART_CODE_KEYWORDS]";
 	-- CS: section_connector_gnd_terminal					: constant string (1..24) := "[CONNECTOR_GND_TERMINAL]";
 	section_import_modules							: constant string (1..16)	:= "[IMPORT_MODULES]";
 	section_module_interconnections					: constant string (1..25)	:= "[MODULE_INTERCONNECTIONS]";
@@ -380,6 +381,47 @@ package et_configuration is
 	function to_string (text : in type_text_schematic) return string;
 	-- returns the given text type as string.
 
+
+	
+	-- PARTCODE KEYWORDS
+
+	-- for introduction have a look at:
+	-- https://www.clearlyinventory.com/inventory-basics/how-to-design-good-item-numbers-for-products-in-inventory
+
+	type type_partcode_section is (
+		COMPONENT_PACKAGE,
+		COMPONENT_VALUE,
+		TOLERANCE,
+		MAXIMUM_VOLTAGE,
+		MAXIMUM_POWER,
+		PART_NUMBER,
+		PART_TYPE);
+
+	partcode_keyword_length_max : constant positive := 5;
+	package type_partcode_keyword is new generic_bounded_length (partcode_keyword_length_max);
+
+	function to_partcode_keyword (keyword : in string) return type_partcode_keyword.bounded_string;
+	-- Converts a string to a type_partcode_keyword.
+	
+	package type_partcode_keywords is new ordered_maps (
+		key_type => type_partcode_keyword.bounded_string, -- VMAX, PMAX, TOL
+		element_type => type_partcode_section, -- MAXIMUM_VOLTAGE, MAXIMUM_POWER, ...
+		"<" => type_partcode_keyword."<");
+
+	partcode_keyword_separator : constant character := '_';
+
+	function to_partcode_section (text : in string) return type_partcode_section;
+	-- converts a string to a type_partcode_section.
+
+	function to_string (partcode_section : in type_partcode_section) return string;
+	-- converts a type_partcode_section to a string.
+
+	
+	partcode_keywords : type_partcode_keywords.map;
+	
+
+	
+	
 	configuration_file_handle : ada.text_io.file_type;
 
 	procedure check_schematic_text_size (
