@@ -4986,47 +4986,53 @@ package body et_kicad is
 							if not field_purpose_found then
 								missing_field (et_libraries.purpose);
 							else
-								-- Depending on the status of operator interaction:
-								case et_configuration.requires_operator_interaction (reference.prefix) is
+								-- A more detailled test of the purpose can be performed if component prefixes
+								-- are specified in the configuration file:
+								if et_configuration.component_prefixes_specified then
+								
+									-- Depending on the status of operator interaction:
+									case et_configuration.requires_operator_interaction (reference.prefix) is
 
-									-- Even if NO INTERACTION is required, we expect at least 
-									-- the purpose_default string.
-									when et_configuration.NO =>
-										if content (field_purpose) /= purpose_default then
-											log (message_warning & "expected default " & purpose_default & " !");
-										end if;
-										
-									-- If operator INTERACTION IS REQUIRED, we expect something useful in 
-									-- the purpose field. 
-									-- Furhter-on there must be NO other component already of this category with 
-									-- the same purpose. Example: It is forbidden to have 
-									-- an X1 and an X2 both with purpose "PWR_IN"
-									when et_configuration.YES =>
-										validate_purpose (content (field_purpose)); -- must be something useful
+										-- Even if NO INTERACTION is required, we expect at least 
+										-- the purpose_default string.
+										when et_configuration.NO =>
+											if content (field_purpose) /= purpose_default then
+												log (message_warning & "expected default " & purpose_default & " !");
+											end if;
+											
+										-- If operator INTERACTION IS REQUIRED, we expect something useful in 
+										-- the purpose field. 
+										-- Furhter-on there must be NO other component already of this category with 
+										-- the same purpose. Example: It is forbidden to have 
+										-- an X1 and an X2 both with purpose "PWR_IN"
+										when et_configuration.YES =>
+											validate_purpose (content (field_purpose)); -- must be something useful
 
-										-- test if purpose already used for this category 
-										if et_configuration.multiple_purpose (
-											category => et_configuration.category (reference), -- derive cat from reference
-											purpose => to_purpose (content (field_purpose)),
-											log_threshold => log_threshold + 2) > 0 then
+											-- test if purpose already used for this category 
+											if et_configuration.multiple_purpose (
+												category => et_configuration.category (reference), -- derive cat from reference
+												purpose => to_purpose (content (field_purpose)),
+												log_threshold => log_threshold + 2) > 0 then
 
-												-- purpose already in use -> error
-												et_configuration.multiple_purpose_error (
-													category => et_configuration.category (reference),
-													purpose => to_purpose (content (field_purpose)));
-										end if;
+													-- purpose already in use -> error
+													et_configuration.multiple_purpose_error (
+														category => et_configuration.category (reference),
+														purpose => to_purpose (content (field_purpose)));
+											end if;
 
-										-- make sure the purpose text is visible in the graphical representation:
-										if field_purpose.visible = no then
-											log_indentation_reset;
-											log (message_error & "component " 
-												 & et_libraries.to_string (reference)
-												 & " purpose not visible !",
-												 console => true);
-											raise constraint_error;
-										end if;
-										
-								end case;									
+											-- make sure the purpose text is visible in the graphical representation:
+											if field_purpose.visible = no then
+												log_indentation_reset;
+												log (message_error & "component " 
+													& et_libraries.to_string (reference)
+													& " purpose not visible !",
+													console => true);
+												raise constraint_error;
+											end if;
+											
+									end case;
+											
+								end if;
 							end if;
 
 							-- bom

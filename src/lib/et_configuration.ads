@@ -204,6 +204,9 @@ package et_configuration is
 	-- After reading the configuration, we store the component prefixes for the design here:
 	component_prefixes : type_component_prefixes.map;
 
+	function component_prefixes_specified return boolean;
+	-- Returns true if any component prefixes are specified via configuration file.
+	
 	function category (prefix : in et_libraries.type_component_prefix.bounded_string) return
 		type_component_category;
 	-- Returns the category of the given component prefix. If no category could be
@@ -347,6 +350,9 @@ package et_configuration is
 		prefix : in et_libraries.type_component_prefix.bounded_string) 
 		return type_component_requires_operator_interaction;
 	-- Returns YES is given prefix requires operator interaction.
+	-- Returns NO if prefixs does not require interaction or if no prefixes
+	-- specified at all (in configuration file section COMPONENT_PREFIXES).
+
 	
 -- 	function requires_operator_interaction (
 -- 		reference : in et_libraries.type_component_reference)

@@ -1035,6 +1035,8 @@ package body et_libraries is
 	
 	procedure validate_component_value (
 	-- Tests if the given component value meets certain conventions.
+	-- This test depends on the category of the component. If no prefixes specified
+	-- in the configuration file, this test does nothing.
 		value 		: in type_component_value.bounded_string;
 		reference	: in type_component_reference;
 		appearance	: in type_component_appearance)
@@ -1230,59 +1232,64 @@ package body et_libraries is
 		end test_unit_of_measurement;
 
 	begin -- validate_component_value
-		-- If a value is provided, means it has non-zero length we conduct some tests.
-		-- If no value provided, the category determines whether to abort or not.
-		if value_length > 0 then
+		-- Do the test if component prefixes specified. Otherwise do nothing.
+		if component_prefixes_specified then
+	
+			-- If a value is provided, means it has non-zero length we conduct some tests.
+			-- If no value provided, the category determines whether to abort or not.
+			if value_length > 0 then
 
-			-- Rule for real components only: 
-			-- Units of measurement must be in accordance with the component category
-			case appearance is
+				-- Rule for real components only: 
+				-- Units of measurement must be in accordance with the component category
+				case appearance is
+					
+					when sch_pcb => 
+
+						component_category := category (reference);
+						
+						-- For certain component categories the value must start 
+						-- with a digit (like 3n3, 1V8, ...):
+						case component_category is
+							when BATTERY | CAPACITOR | FUSE | INDUCTOR | RESISTOR | RESISTOR_NETWORK | QUARTZ => -- CS: others ?
+								test_unit_of_measurement;
+
+							when others => null;
+						end case;
+
+						
+					when others => null; -- CS: value check for others ?
+				end case;
+
 				
-				when sch_pcb => 
+			else
+				-- no value provided
+				
+				-- For certain component categories there is no need for a value. The properties of such parts
+				-- are available via the part code.
+				-- NOTE: Some CAE tools insist on a value. KiCad does. EAGLE does not.
+				-- For other categories (R, L, C, ...) the value is essential for reading and understanding the schematic.
+				case appearance is
+					when sch_pcb =>
+						case category (reference) is
 
-					component_category := category (reference);
-					
-					-- For certain component categories the value must start 
-					-- with a digit (like 3n3, 1V8, ...):
-					case component_category is
-						when BATTERY | CAPACITOR | FUSE | INDUCTOR | RESISTOR | RESISTOR_NETWORK | QUARTZ => -- CS: others ?
-							test_unit_of_measurement;
+							-- no value required for:
+							when HEATSINK | JUMPER | MOTOR | MICROPHONE | NETCHANGER | SWITCH | TESTPOINT | CONNECTOR =>
+								null;
 
-						when others => null;
-					end case;
+							-- value essential for all other categories:
+							when others =>
+								no_value_error;
 
-					
-				when others => null; -- CS: value check for others ?
-			end case;
+						end case;
 
-			
-		else
-			-- no value provided
-			
-			-- For certain component categories there is no need for a value. The properties of such parts
-			-- are available via the part code.
-			-- NOTE: Some CAE tools insist on a value. KiCad does. EAGLE does not.
-			-- For other categories (R, L, C, ...) the value is essential for reading and understanding the schematic.
-			case appearance is
-				when sch_pcb =>
-					case category (reference) is
+					when others => no_value_error; -- CS: probably it would be sufficient to output a warning instead (use no_value_warning)
+						-- CS: check value against generic name in libarary ?
+				end case;
+						
+			end if;
 
-						-- no value required for:
-						when HEATSINK | JUMPER | MOTOR | MICROPHONE | NETCHANGER | SWITCH | TESTPOINT | CONNECTOR =>
-							null;
-
-						-- value essential for all other categories:
-						when others =>
-							no_value_error;
-
-					end case;
-
-				when others => no_value_error; -- CS: probably it would be sufficient to output a warning instead (use no_value_warning)
-					-- CS: check value against generic name in libarary ?
-			end case;
-					
 		end if;
-				
+			
 		exception
 			when others => 
 				-- CS: explain more detailled what is wrong

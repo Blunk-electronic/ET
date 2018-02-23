@@ -864,6 +864,17 @@ package body et_configuration is
 				
 				raise constraint_error;
 	end to_category;
+
+	function component_prefixes_specified return boolean is
+	-- Returns true if any component prefixes are specified via configuration file.
+		use type_component_prefixes;
+	begin
+		if is_empty (component_prefixes) then -- no prefixes specified
+			return false;
+		else -- prefixes are specified
+			return true;
+		end if;
+	end component_prefixes_specified;
 	
 	function category (prefix : in et_libraries.type_component_prefix.bounded_string) return
 		type_component_category is
@@ -1933,21 +1944,29 @@ package body et_configuration is
 		prefix : in et_libraries.type_component_prefix.bounded_string) 
 		return type_component_requires_operator_interaction is
 	-- Returns YES is given prefix requires operator interaction.
+	-- Returns NO if prefixs does not require interaction or if no prefixes
+	-- specified at all (in configuration file section COMPONENT_PREFIXES).
 		cat : type_component_category;
-		use type_categories_with_operator_interacton;		
+		use type_categories_with_operator_interacton;
 		cat_cursor : type_categories_with_operator_interacton.cursor;
 	begin
-		-- get category from given prefix
-		cat := category (prefix);
+		if component_prefixes_specified then
 
-		-- search in container component_categories_with_operator_interaction for
-		-- category cat.
-		cat_cursor := component_categories_with_operator_interaction.find (cat);
+			-- get category from given prefix
+			cat := category (prefix);
+			
+			-- search in container component_categories_with_operator_interaction for
+			-- category cat.
+			cat_cursor := component_categories_with_operator_interaction.find (cat);
 
-		if cat_cursor = no_element then
-			return NO; -- no operator interaction required
-		else
-			return YES; -- operator interaction required
+			if cat_cursor = type_categories_with_operator_interacton.no_element then
+				return NO; -- no operator interaction required
+			else
+				return YES; -- operator interaction required
+			end if;
+			
+		else  -- no prefixes specified
+			return NO;
 		end if;
 	end requires_operator_interaction;
 
@@ -2595,6 +2614,12 @@ package body et_configuration is
 				-- COMPONENTS WITH USER INTERACTON
 				when components_with_operator_interaction =>
 					log ("component categories with operator interaction ...", log_threshold + 1);
+					
+					if not component_prefixes_specified then
+						log (message_warning & "section " & section_component_prefixes & " empty or missing !");
+						log (message_warning & "section " & section_components_with_operator_interaction & " without effect !");
+					end if;
+					
 					log_indentation_up;
 					while line_cursor /= type_lines.no_element loop
 						log (to_string (element (line_cursor)), log_threshold + 2);
@@ -2768,7 +2793,7 @@ package body et_configuration is
 		use type_component_prefixes;
 	begin
 		-- if there are prefixes specified, test if the given particular prefix is among them
-		if not is_empty (component_prefixes) then
+		if component_prefixes_specified then
 
 			-- if prefix not found, raise error
 			if component_prefixes.find (prefix) = type_component_prefixes.no_element then

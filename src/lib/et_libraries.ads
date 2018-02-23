@@ -464,6 +464,8 @@ package et_libraries is
 -- COMPONENT VALUES
 	procedure validate_component_value (
 	-- Tests if the given component value meets certain conventions.
+	-- This test depends on the category of the component. If no prefixes specified
+	-- in the configuration file, this test does nothing.
 		value 		: in type_component_value.bounded_string;
 		reference	: in type_component_reference;
 		appearance	: in type_component_appearance);
