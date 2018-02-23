@@ -171,7 +171,8 @@ package et_configuration is
 	procedure multiple_purpose_error (
 	-- Outputs an error message on multiple usage of a purpose of a component category.
 		category : in type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
-		purpose : in et_libraries.type_component_purpose.bounded_string); -- PWR_IN, SYS_FAIL, ...
+		purpose : in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
+		log_threshold : in et_string_processing.type_log_level);
 	
 	function multiple_purpose (
 	-- Returns the number of occurences of components with the given purpose and category.

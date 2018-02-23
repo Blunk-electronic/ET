@@ -231,7 +231,7 @@ package et_coordinates is
 	
 	-- The whole schematic may have a total of x pages.
 	schematic_page_count_max : constant positive := 100;
-	type type_schematic_page_number is new positive range 1..schematic_page_count_max; -- CS: not uses yet
+	type type_schematic_page_number is new positive range 1..schematic_page_count_max; -- CS: not usesd yet
 	
 	function to_string (
 		path : in type_path_to_submodule.list;

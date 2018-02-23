@@ -507,7 +507,7 @@ package body et_coordinates is
 	
 	function to_string (
 		path : in type_path_to_submodule.list;
-		top_module : in boolean := true) return string is -- CS: probably no longer required
+		top_module : in boolean := true) return string is
 	-- Returns the given path as string with hierarchy_separator.
 	-- If top_module = false, the name of the top module is omitted.
 	

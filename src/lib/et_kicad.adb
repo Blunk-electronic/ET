@@ -5017,7 +5017,8 @@ package body et_kicad is
 													-- purpose already in use -> error
 													et_configuration.multiple_purpose_error (
 														category => et_configuration.category (reference),
-														purpose => to_purpose (content (field_purpose)));
+														purpose => to_purpose (content (field_purpose)),
+														log_threshold => log_threshold + 2);
 											end if;
 
 											-- make sure the purpose text is visible in the graphical representation:

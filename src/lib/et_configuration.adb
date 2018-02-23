@@ -122,16 +122,52 @@ package body et_configuration is
 	procedure multiple_purpose_error (
 	-- Outputs an error message on multiple usage of a purpose of a component category.
 		category : in type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
-		purpose : in et_libraries.type_component_purpose.bounded_string) -- PWR_IN, SYS_FAIL, ...
-		is
-	begin
+		purpose : in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
+		log_threshold : in et_string_processing.type_log_level) is
+		
+		use et_string_processing;
+		use et_coordinates;
+		use et_libraries;
+		use et_schematic;
+		use type_rig;
+		
+		procedure locate_component (
+		-- Searches the component list of the module for a connector with the given purpose.
+			module_name : in type_submodule_name.bounded_string;
+			module : in type_module) is
+			use et_schematic.type_components;
+			use type_component_purpose;
+			component : et_schematic.type_components.cursor := module.components.first;
+		begin
+			log ("purpose already used by component");
+			log_indentation_up;
+
+			while component /= et_schematic.type_components.no_element loop
+				if element (component).appearance = sch_pcb then -- it must be a real component
+					if et_configuration.category (key (component)) = category then -- category must match
+						if element (component).purpose = purpose then -- purpose must match
+							log (et_libraries.to_string (key (component)));
+						end if;
+					end if;
+				end if;
+				next (component);
+			end loop;
+
+			log_indentation_down;
+		end locate_component;
+			
+	begin -- multiple_purpose_error
 		log_indentation_reset;
 		log (message_error & "There must be ONLY ONE " 
 			 & to_string (category) 
 			 & " with purpose " 
 			 & enclose_in_quotes (et_libraries.to_string (purpose)) & " !",
 			 console => true);
-		-- CS: show the affected components by reference and coordinates
+
+		query_element (
+			position => module_cursor,
+			process => locate_component'access);
+
 		raise constraint_error;
 	end multiple_purpose_error;
 		
@@ -843,7 +879,7 @@ package body et_configuration is
 	function to_string (cat : in type_component_category) return string is
 	-- returns the given component category as string
 	begin
-		return latin_1.space & type_component_category'image (cat);
+		return type_component_category'image (cat);
 	end to_string;
 
 	function to_category (category : in string) return type_component_category is
