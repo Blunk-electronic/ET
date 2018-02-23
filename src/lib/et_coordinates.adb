@@ -451,7 +451,14 @@ package body et_coordinates is
 	-- Checks if given instances is a digit and if it is within allowed range.
 		use et_string_processing;
 	begin
-		-- CS: check characters. all must be digits
+		-- check characters. all must be digits
+		for place in instances'first .. instances'last loop
+			if not is_digit (instances (place)) then
+				log_indentation_reset;
+				log (message_error & "instances must contain only digits !", console => true);
+				raise constraint_error;
+			end if;
+		end loop;
 
 		-- Test if within range:
 		if positive'value (instances) not in type_submodule_instance then
