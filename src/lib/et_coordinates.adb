@@ -364,13 +364,11 @@ package body et_coordinates is
 	end check_submodule_name_length;
 
 	procedure check_submodule_name_characters (
+	-- Checks for forbidden characters in submodule name.
 		name : in type_submodule_name.bounded_string;
 		characters : in character_set := submodule_name_characters) is
-	-- Checks for forbidden characters in submodule name.
-
 		use et_string_processing;
 		invalid_character_position : natural := 0;
-
 	begin
 		-- Test given submodule name and get position of possible invalid characters.
 		invalid_character_position := index (
@@ -414,11 +412,27 @@ package body et_coordinates is
 	end check_submodule_abbrevation_length;
 
 	procedure check_submodule_abbrevation_characters (
+	-- Checks for forbidden characters in submodule abbrevation.
 		abbrevation : in type_submodule_abbrevation.bounded_string;
 		characters : in character_set := submodule_abbrevation_characters) is
-	-- Checks for forbidden characters in submodule abbrevation.
+		use et_string_processing;
+		invalid_character_position : natural := 0;
 	begin
-		null; -- CS
+		-- Test given submodule abbrevation and get position of possible invalid characters.
+		invalid_character_position := type_submodule_abbrevation.index (
+			source => abbrevation,
+			set => characters,
+			test => outside);
+
+		-- Evaluate position of invalid character.
+		if invalid_character_position > 0 then
+			log_indentation_reset;
+			log (message_error & "invalid character in submodule abbrevation '" 
+				& to_string (abbrevation) & "' at position" & natural'image (invalid_character_position),
+				console => true);
+			raise constraint_error;
+		end if;
+
 	end check_submodule_abbrevation_characters;
 
 	function to_string (abbrevation : in type_submodule_abbrevation.bounded_string) return string is
