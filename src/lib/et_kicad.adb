@@ -1247,7 +1247,6 @@ package body et_kicad is
 			-- NOTE: The contextual validation takes place in procedure check_text_fields.
 				use et_coordinates;
 				use et_libraries.type_text_content;
-				use et_configuration;
 
 				-- instantiate a text field as speficied by given parameter meaning
 				text : type_text (meaning);
@@ -1327,23 +1326,17 @@ package body et_kicad is
 				set_y (text.position, mil_to_distance (mil => field (line,4), warn_on_negative => false));
 				text.size := mil_to_distance (mil => field (line,5), warn_on_negative => false);
 
-				-- check text size of fields
-				check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => text.size);
-
 				text.orientation := to_field_orientation (field  (line,6));
-				-- CS: check orientation.
 				
 				text.visible := to_field_visible (
 					vis_in		=> field  (line,7),
 					schematic	=> false);
-				-- CS: check visibility.
-
+			
 				text.alignment.horizontal := to_alignment_horizontal (field (line,8));
-				-- CS: check hor aligment.
+
 				text.alignment.vertical   := to_alignment_vertical (field (line,9));
-				-- CS: check vert aligment.
+
 				text.style := to_text_style (style_in => field (line,9), text => false);
-				-- CS: check style.
 				
 				-- NOTE: text.line_width assumes default as no explicit line width is provided here.
 				return text;
@@ -1354,6 +1347,13 @@ package body et_kicad is
 			-- Tests if all text fields have been found by evaluating the "field found flags".
 			-- Validates the fields in CONTEXT WITH EACH OTHER.
 			-- NOTE: This is library related stuff.
+
+				-- CS: check orientation.
+				-- CS: check visibility.
+				-- CS: check hor aligment.
+				-- CS: check vert aligment.
+				-- CS: check style.
+
 			
 				procedure missing_field (meaning : in et_libraries.type_text_meaning) is 
 				begin
@@ -1383,12 +1383,15 @@ package body et_kicad is
 							& content (field_value) & " differs from name "
 							& to_string (tmp_component_name) & " !");
 					end if;
+
+					check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_value.size);
 				end if;
 				
 				log ("author", level => log_threshold + 1);				
 				if not field_author_found then
 					missing_field (field_author.meaning);
 				else
+					check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_author.size);
 					null; -- CS validate_author
 				end if;
 
@@ -1396,6 +1399,7 @@ package body et_kicad is
 				if not field_commissioned_found then
 					missing_field (field_commissioned.meaning);
 				else
+					check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_commissioned.size);
 					null; -- CS validate_commissioned
 				end if;
 
@@ -1410,6 +1414,8 @@ package body et_kicad is
 						log (message_warning & "commission date must be before update !");
 						-- CS: show reference, commission and update time
 					end if;
+
+					check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_updated.size);
 				end if;
 				
 				-- appearance specific fields:
@@ -1430,6 +1436,8 @@ package body et_kicad is
 								characters => et_libraries.component_prefix_characters);
 							
 							et_configuration.validate_prefix (tmp_prefix);
+							
+							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_reference.size);
 						end if;
 
 						log ("package/footprint", level => log_threshold + 1);
@@ -1442,6 +1450,8 @@ package body et_kicad is
 										line => content (field_package), -- bel_ic:S_SO14
 										ifs => latin_1.colon),
 									position => 2))); -- the block after the colon
+
+							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_package.size);
 						end if;
 						
 						log ("partcode", level => log_threshold + 1);
@@ -1470,6 +1480,8 @@ package body et_kicad is
 								-- the BOM status
 								bom => type_bom'value (content (field_bom))
 								);
+							
+							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_partcode.size);
 						end if;
 
 						log ("datasheet", level => log_threshold + 1);
@@ -1477,7 +1489,7 @@ package body et_kicad is
 							missing_field (field_datasheet.meaning);
 						else
 							-- CS validate_datasheet
-							null; -- CS
+							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_datasheet.size);
 						end if;
 
 						log ("bom", level => log_threshold + 1);
@@ -1485,7 +1497,7 @@ package body et_kicad is
 							missing_field (field_bom.meaning);
 						else
 							-- CS validate_bom_status
-							null; -- CS
+							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_bom.size);
 						end if;
 						
 						log ("purpose", level => log_threshold + 1);
@@ -1509,7 +1521,8 @@ package body et_kicad is
 									raise constraint_error;
 								end if;
 							end if;
-							
+
+							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_purpose.size);
 						end if;
 
 						
@@ -1527,6 +1540,8 @@ package body et_kicad is
 								characters => component_prefix_characters);
 							
 							validate_prefix (tmp_prefix);
+
+							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_reference.size);
 						end if;
 
 					when pcb => null; --CS
@@ -2479,7 +2494,7 @@ package body et_kicad is
 								-- The fields meaning is as follows:
 								--  #2 : name, like 74LS00
 								--  #3 : prefix, like U
-								--  #4 : unknown -- CS: what is it good for ?
+								--  #4 : unknown, always zero. CS What is it good for ?
 								--  #5 : pin name position offset of supply pins, if "place pin names inside" is off. the offset assumes zero
 								--  #6 : show pin/pad number Y/N,
 								--  #7 : show pin/port name Y/N,
@@ -2494,6 +2509,11 @@ package body et_kicad is
 								check_prefix_characters (
 									prefix => tmp_prefix,
 									characters => et_kicad.component_prefix_characters);
+
+								-- The unknown field #4 is always a zero
+								if field (line, 4) /= "0" then
+									log (message_warning & "expect 0 in field #4 !");
+								end if;
 								
 								tmp_port_name_offset	:= mil_to_distance (mil => field  (line,5), warn_on_negative => false); -- relevant for supply pins only
 								tmp_terminal_name_visible	:= to_pin_visibile (field (line,6));
@@ -4763,7 +4783,6 @@ package body et_kicad is
 					function field (line : in type_fields_of_line; position : in positive) return string renames get_field_from_line;
 					text_position : type_2d_point;
 
-					use et_configuration;
 					size : type_text_size;
 				begin
 					-- test if the field content is longer than allowed:
@@ -4773,8 +4792,7 @@ package body et_kicad is
 					set_y (text_position, mil_to_distance (field (et_kicad.line,6)));
 
 					size := mil_to_distance (field (et_kicad.line,7));
-					check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => size);
-					
+
 					return (
 						-- read text field meaning
 						meaning 	=> to_text_meaning (line => et_kicad.line, schematic => true),
@@ -4788,7 +4806,7 @@ package body et_kicad is
 						-- read coordinates
 						position	=> text_position,
 										
-						size		=> size, --mil_to_distance (field (et_kicad.line,7)),
+						size		=> size,
 						style		=> to_text_style (style_in => field (et_kicad.line,10), text => false),
 						line_width	=> type_text_line_width'first,
 
@@ -4808,8 +4826,8 @@ package body et_kicad is
 				-- Tests if any "field found" flag is still cleared and raises an alarm in that case.
 				-- Perfoms a CONTEXTUAL VALIDATION of the text fields before they are used to 
 				-- assemble and insert the component into the component list of the module.
-				
-				-- CS: check text size and width in regard to meaning
+
+					use et_configuration;
 				
 					procedure missing_field (m : in et_libraries.type_text_meaning) is 
 					begin
@@ -4860,6 +4878,8 @@ package body et_kicad is
 								console => true);
 							raise constraint_error;
 						end if;
+
+						check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_reference.size);
 					end if;
 
 					-- value
@@ -4877,6 +4897,8 @@ package body et_kicad is
 							reference => reference,
 
 							appearance => appearance);
+
+						check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_value.size);
 					end if;
 
 					-- commissioned
@@ -4890,6 +4912,8 @@ package body et_kicad is
 						if not et_string_processing.date_valid (commissioned) 
 							then raise constraint_error;
 						end if;
+						
+						check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_commissioned.size);
 					end if;
 
 					-- updated
@@ -4911,7 +4935,8 @@ package body et_kicad is
 							log (message_warning & "commission date must be before update !");
 							-- CS: show reference, commission and update time
 						end if;
-						
+
+						check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_updated.size);
 					end if;
 
 					-- author
@@ -4919,7 +4944,7 @@ package body et_kicad is
 					if not field_author_found then
 						missing_field (et_libraries.author);
 					else
-						null;
+						check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_author.size);
 						-- CS: check content of text_author
 					end if;
 
@@ -4934,7 +4959,7 @@ package body et_kicad is
 							if not field_package_found then
 								missing_field (et_libraries.packge);
 							else
-								null;
+								check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_package.size);
 								-- CS: check content of field_package
 								-- use library_name (content (field_package))
 								-- check/validate library name (length, characters, ...)
@@ -4948,7 +4973,7 @@ package body et_kicad is
 							if not field_datasheet_found then
 								missing_field (et_libraries.datasheet);
 							else
-								null;
+								check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_datasheet.size);
 								-- CS: check content of field_datasheet
 							end if;
 
@@ -4980,6 +5005,8 @@ package body et_kicad is
 									-- the BOM status
 									bom => type_bom'value (content (field_bom))
 									);
+
+								check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_partcode.size);
 							end if;
 							
 							-- purpose
@@ -5033,8 +5060,10 @@ package body et_kicad is
 											end if;
 											
 									end case;
-											
+
 								end if;
+									
+								check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_purpose.size);
 							end if;
 
 							-- bom
@@ -5042,10 +5071,9 @@ package body et_kicad is
 							if not field_bom_found then
 								missing_field (et_libraries.bom);
 							else
+								check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_bom.size);
 								-- CS: check content of field_bom
-								null;
 							end if;
-
 							
 							-- put_line (indent(indentation + 1) & "crosschecks");
 							-- CS: test partcode, verify agsinst prefix, value and package
@@ -5565,7 +5593,7 @@ package body et_kicad is
 				line_cursor := type_lines.first (lines);
 				while line_cursor /= type_lines.no_element loop
 
-					log ("component line: " & to_string (et_kicad.line), log_threshold + 3);
+					log ("component line: " & to_string (et_kicad.line), log_threshold + 4);
 
 					-- Read component name and annotation from a line like "L NetChanger N1". 
 					-- From this entry we reason the component appearance. 
