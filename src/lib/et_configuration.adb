@@ -2325,10 +2325,10 @@ package body et_configuration is
 
 
 	procedure read_configuration (
-		file_name		: in type_configuration_file_name.bounded_string;
+		file_name		: in type_configuration_file_name.bounded_string; -- configuration file name
+		single_module	: in boolean; -- if true, sections addressing multi-board support are ignored
 		log_threshold	: in et_string_processing.type_log_level) is
 	-- Reads the given configuration file.
-	-- Fills component_prefixes.
 
 		use et_string_processing;
 		line : et_string_processing.type_fields_of_line; -- the line of the file
@@ -2816,6 +2816,14 @@ package body et_configuration is
 			open (file => configuration_file_handle, mode => in_file, name => to_string (file_name));
 			set_input (configuration_file_handle);
 
+			-- Sections regarding multi-board support are skipped if just a single project
+			-- is to be imported. Notify operator:			
+			if single_module then
+				log (" single project import -> sections " & section_import_modules & " and " 
+					& section_module_interconnections & " ignored",
+					log_threshold + 1);
+			end if;
+			
 			-- read configuration file line per line
 			while not end_of_file loop
 
@@ -2840,14 +2848,19 @@ package body et_configuration is
 						-- Once a header was found, the PREVIOUS section is regarded as complete.
 						-- The PREVIOUS section is then processed with all its lines in container "lines".
 						-- Set section_entered according to the section BEING entered.
-						if field (line, 1) = section_import_modules then
-							process_previous_section;
-							section_entered := import_modules;
-						end if;
 
-						if field (line, 1) = section_module_interconnections then
-							process_previous_section;
-							section_entered := module_interconnections;
+						-- Sections regarding multi-board support are skipped if just a single project
+						-- is to be imported.
+						if not single_module then
+							if field (line, 1) = section_import_modules then
+								process_previous_section;
+								section_entered := import_modules;
+							end if;
+
+							if field (line, 1) = section_module_interconnections then
+								process_previous_section;
+								section_entered := module_interconnections;
+							end if;
 						end if;
 						
 						if field (line, 1) = section_component_prefixes then

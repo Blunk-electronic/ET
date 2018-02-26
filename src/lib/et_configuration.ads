@@ -440,10 +440,10 @@ package et_configuration is
 	-- Creates a default configuration file.
 
 	procedure read_configuration (
-		file_name		: in type_configuration_file_name.bounded_string;
+		file_name		: in type_configuration_file_name.bounded_string; -- configuration file name
+		single_module	: in boolean; -- if true, sections addressing multi-board support are ignored
 		log_threshold	: in et_string_processing.type_log_level);
 	-- Reads the given configuration file.
-	-- Fills component_prefixes.
 
 	procedure validate_prefix (prefix : in et_libraries.type_component_prefix.bounded_string); 
 	-- Tests if the given prefix is valid as specified in the configuration file.

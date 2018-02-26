@@ -200,7 +200,10 @@ procedure et is
 
 		-- read configuration file if specified. otherwise issue warning
 		if et_configuration.type_configuration_file_name.length (conf_file_name) > 0 then
-			et_configuration.read_configuration (file_name => conf_file_name, log_threshold => 0);
+			et_configuration.read_configuration (
+				file_name => conf_file_name,
+				single_module => true, -- we are dealing a single project
+				log_threshold => 0);
 		else
 			log (message_warning & "no configuration file specified !");
 		end if;
@@ -246,9 +249,13 @@ procedure et is
 		create_report_directory;
 		et_import.create_report; -- directs all puts to the report file
 
-		-- read configuration file if specified. otherwise issue warning -- CS: make a procedure as this is used by procedure import_desing too.
+		-- Read configuration file if specified. otherwise issue warning 
+		-- CS: make a procedure as this is used by procedure import_desing too.
 		if et_configuration.type_configuration_file_name.length (conf_file_name) > 0 then
-			et_configuration.read_configuration (file_name => conf_file_name, log_threshold => 0);
+			et_configuration.read_configuration (
+				file_name => conf_file_name,
+				single_module => false, -- we are dealing with more than one module
+				log_threshold => 0);
 		else
 			log (message_warning & "no configuration file specified !");
 		end if;
