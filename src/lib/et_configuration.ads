@@ -364,7 +364,9 @@ package et_configuration is
 	type type_text_schematic is (
 		NET_LABEL,
 		PORT_NAME,
-		TERMINAL_NAME);
+		TERMINAL_NAME,
+		COMPONENT_ATTRIBUTE
+		);
 
 	function to_text (text : in string) return type_text_schematic;
 	-- Converts a string to type_text_schematic.

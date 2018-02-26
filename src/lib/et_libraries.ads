@@ -124,7 +124,7 @@ package et_libraries is
 	-- Texts of any kind must have a size between 0.1 and 50mm
 	subtype type_text_size is type_distance range 0.1 .. 50.0; -- unit is mm
 
-	text_size_field_default	: constant type_text_size := 1.27;
+	text_size_field_default	: constant type_text_size := 1.27; -- CS: really required ?
 
 	function to_text_size (size : in type_distance) return type_text_size;
 	-- Converts given size to type_text_size.
@@ -168,6 +168,12 @@ package et_libraries is
 	function to_string (meaning : in type_text_meaning) return string;
 	-- Converts meaning to string.
 
+	subtype type_placeholder_text_size is type_distance range 1.0 .. 5.0; -- unit is mm
+	placeholder_text_size_default : constant type_placeholder_text_size := 1.3;
+
+	function to_component_attribute_text_size (text : in string) return type_placeholder_text_size;
+	-- Converts a string to a type_placeholder_text_size.
+	
 	-- These are basic properties a text has got:
 	type type_text_basic is tagged record
 		position	: type_2d_point;
@@ -179,7 +185,7 @@ package et_libraries is
 		alignment	: type_text_aligment;
 	end record;
 
-	-- A text have 200 characters which seems sufficient for now.
+	-- A text may have up to 200 characters which seems sufficient for now.
  	text_length_max : constant natural := 200;
 	package type_text_content is new generic_bounded_length (text_length_max); use type_text_content;
 
@@ -194,6 +200,8 @@ package et_libraries is
 	-- This is a placeholder for a text. It does not have content yet, but a meaning:
 	type type_text_placeholder (meaning : type_text_meaning) is new type_text_basic with null record;
 
+
+	
 	procedure write_placeholder_properties (
 	-- Writes the properties of the given placeholder.
 		placeholder		: in type_text_placeholder;

@@ -565,6 +565,12 @@ package body et_libraries is
 		return type_text_meaning'image (meaning);
 	end to_string;
 
+	function to_component_attribute_text_size (text : in string) return type_placeholder_text_size is
+	-- Converts a string to a type_placeholder_text_size.
+	begin
+		return type_placeholder_text_size'value (text);
+	end to_component_attribute_text_size;
+
 	procedure check_text_content_length (content : in string) is
 	-- Tests if the content is longer than allowed.
 		use et_string_processing;

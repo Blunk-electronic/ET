@@ -1247,6 +1247,7 @@ package body et_kicad is
 			-- NOTE: The contextual validation takes place in procedure check_text_fields.
 				use et_coordinates;
 				use et_libraries.type_text_content;
+				use et_configuration;
 
 				-- instantiate a text field as speficied by given parameter meaning
 				text : type_text (meaning);
@@ -1327,13 +1328,8 @@ package body et_kicad is
 				text.size := mil_to_distance (mil => field (line,5), warn_on_negative => false);
 
 				-- check text size of fields
-				if text.size /= text_size_field_default then
-					log (message_warning 
-						 & "text size of field '" & to_string (meaning)
-						 & "' invalid. Found " & to_string (size => text.size) 
-						 & ". Expected " & to_string (size => text_size_field_default) & " !");
-				end if;
-				
+				check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => text.size);
+
 				text.orientation := to_field_orientation (field  (line,6));
 				-- CS: check orientation.
 				
@@ -4766,12 +4762,19 @@ package body et_kicad is
 				-- Converts a field like "F 1 "green" H 2700 2750 50  0000 C CNN" to a type_text
 					function field (line : in type_fields_of_line; position : in positive) return string renames get_field_from_line;
 					text_position : type_2d_point;
+
+					use et_configuration;
+					size : type_text_size;
 				begin
 					-- test if the field content is longer than allowed:
 					check_text_content_length (field (et_kicad.line,3));
 					
 					set_x (text_position, mil_to_distance (field (et_kicad.line,5)));
 					set_y (text_position, mil_to_distance (field (et_kicad.line,6)));
+
+					size := mil_to_distance (field (et_kicad.line,7));
+					check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => size);
+					
 					return (
 						-- read text field meaning
 						meaning 	=> to_text_meaning (line => et_kicad.line, schematic => true),
@@ -4783,11 +4786,9 @@ package body et_kicad is
 						orientation	=> to_field_orientation (field (et_kicad.line,4)),
 
 						-- read coordinates
-						position	=> --(x => mil_to_distance (field(line,5)),
-										--y => mil_to_distance (field(line,6))),
-										text_position,
+						position	=> text_position,
 										
-						size		=> mil_to_distance (field (et_kicad.line,7)),
+						size		=> size, --mil_to_distance (field (et_kicad.line,7)),
 						style		=> to_text_style (style_in => field (et_kicad.line,10), text => false),
 						line_width	=> type_text_line_width'first,
 
