@@ -335,56 +335,68 @@ procedure et is
 		et_export.create_report;
 		reset_warnings_counter;
 
-		log ("checking modules ...", console => true);
-		log_indentation_up;
+		-- If there are no modules, there is nothing to check:
+		if et_schematic.module_count > 0 then
 		
-		-- detect missing or orphaned junctions
-		check_junctions (log_threshold => 0);
-		check_orphaned_junctions (log_threshold => 0);
-		check_misplaced_junctions (log_threshold => 0);	
+			log ("checking modules ...", console => true);
+			log_indentation_up;
+			
+			-- detect missing or orphaned junctions
+			check_junctions (log_threshold => 0);
+			check_orphaned_junctions (log_threshold => 0);
+			check_misplaced_junctions (log_threshold => 0);	
 
-		-- detect misplaced no-connect-flags
-		check_misplaced_no_connection_flags (log_threshold => 0);
+			-- detect misplaced no-connect-flags
+			check_misplaced_no_connection_flags (log_threshold => 0);
 
-		-- detect orphaned no-connect-flags
-		check_orphaned_no_connection_flags (log_threshold => 0);
+			-- detect orphaned no-connect-flags
+			check_orphaned_no_connection_flags (log_threshold => 0);
 
-		-- make netlists
-		make_netlists (log_threshold => 0);
+			-- make netlists
+			make_netlists (log_threshold => 0);
 
-		-- detect unintentionally left open ports (must happen AFTER make_netlists !)
-		check_open_ports (log_threshold => 0);
+			-- detect unintentionally left open ports (must happen AFTER make_netlists !)
+			check_open_ports (log_threshold => 0);
 
-		-- detect non-deployed units
-		check_non_deployed_units (log_threshold => 0);
+			-- detect non-deployed units
+			check_non_deployed_units (log_threshold => 0);
 
-		-- test nets for inputs, outputs, bidirs, ...
-		net_test (log_threshold => 0);
-		
-		-- export netlists (requires that make_netlists has been called previously)
-		export_netlists (log_threshold => 0);
-		
-		-- export statistics
-		write_statistics (log_threshold => 0);
+			-- test nets for inputs, outputs, bidirs, ...
+			net_test (log_threshold => 0);
+			
+			-- export netlists (requires that make_netlists has been called previously)
+			export_netlists (log_threshold => 0);
+			
+			-- export statistics
+			write_statistics (log_threshold => 0);
 
-		-- export bom
-		export_bom (log_threshold => 0);
-		
+			-- export bom
+			export_bom (log_threshold => 0);
+			
 
 
-		-- If there is more than one module, interconnections must be validated 
-		-- as specified in configuration file.
-		if module_count > 1 then
-			validate_module_interconnections (log_threshold => 0);
+			-- If there is more than one module, interconnections must be validated 
+			-- as specified in configuration file.
+			if et_schematic.module_count > 1 then
+				validate_module_interconnections (log_threshold => 0);
+			end if;
+
+			-- Create routing tables.
+			-- Even if there is just a single module, a routing table is useful.
+			make_routing_tables (log_threshold => 0);
+
+			export_routing_tables (log_threshold => 0);
+			
+			log_indentation_down;
+
+		else
+			log ("no modules -> nothing to check and nothing to export");
+
+			-- CS: remove stale directories and files from earlier imports
+			-- CS: remove all directories in folder ET (except reports)
+			-- CS: remove routing table in ET/reports
 		end if;
-
-		-- Create routing tables.
-		-- Even if there is just a single module, a routing table is useful.
-		make_routing_tables (log_threshold => 0);
-
-		export_routing_tables (log_threshold => 0);
 		
-		log_indentation_down;
 		et_export.close_report;
 	
 		exception

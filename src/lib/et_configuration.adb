@@ -336,6 +336,10 @@ package body et_configuration is
 					 & enclose_in_quotes (et_libraries.to_string (purpose))
 					 & " !",
 					 console => true);
+				
+				log ("Make sure prefixes are specified in configuration file section "
+					 & section_component_prefixes & " !");
+
 				raise constraint_error;
 			end if;
 			
