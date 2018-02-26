@@ -332,7 +332,7 @@ package body et_configuration is
 			if not connector_found then
 				log_indentation_reset;
 				log (message_error & "module " & to_string (module_name) 
-					 & " does not have a" & to_string (connector) & " with purpose "
+					 & " does not have a " & to_string (connector) & " with purpose "
 					 & enclose_in_quotes (et_libraries.to_string (purpose))
 					 & " !",
 					 console => true);
@@ -955,7 +955,7 @@ package body et_configuration is
 		if prefix_cursor = type_component_prefixes.no_element then
 			log (message_warning & " category of component " 
 				 & et_libraries.to_string (reference)
-				 & to_string (UNKNOWN) & " !");
+				 & latin_1.space & to_string (UNKNOWN) & " !");
 			return UNKNOWN;
 		else
 			return element (prefix_cursor);
@@ -2447,6 +2447,9 @@ package body et_configuration is
 				end if;
 			end test_multiple_occurences;
 
+			function reduced_check_coverage return string is begin 
+				return " Design check coverage reduced !";
+			end reduced_check_coverage;
 			
 			module		: type_import_module;
 			connection	: type_module_interconnection;
@@ -2517,6 +2520,11 @@ package body et_configuration is
 						
 						next (line_cursor);
 					end loop;
+
+					-- Notify operator if no modules specified for import:
+					if type_import_modules.is_empty (et_configuration.import_modules) then
+						log (message_warning & "no modules specified ! Nothing will be imported !");
+					end if;
 					log_indentation_down;
 
 				-- MODULE INTERCONNECTIONS
@@ -2629,6 +2637,11 @@ package body et_configuration is
 						
 						next (line_cursor);
 					end loop;
+
+					-- Notify operator if no interconnections specified:
+					if type_module_interconnections.is_empty (et_configuration.module_interconnections) then
+						log (message_warning & "no module interconnections specified !");
+					end if;
 					log_indentation_down;
 
 				-- COMPONENT PREFIXES
@@ -2662,12 +2675,19 @@ package body et_configuration is
 						test_multiple_occurences;
 						next (line_cursor);
 					end loop;
+
+					-- Notify operator if no prefixes specified:
+					if type_component_prefixes.is_empty (et_configuration.component_prefixes) then
+						log (message_warning & "no component prefixes specified !" & reduced_check_coverage);
+					end if;
+					
 					log_indentation_down;
 
 				-- COMPONENT UNITS OF MEASUREMENT
 				when component_units =>
 					log ("component units of measurement ...", log_threshold + 1);
 					log_indentation_up;
+					
 					while line_cursor /= type_lines.no_element loop
 						log (to_string (element (line_cursor)), log_threshold + 2);
 
@@ -2698,18 +2718,23 @@ package body et_configuration is
 						test_multiple_occurences;
 						next (line_cursor);
 					end loop;
+
+					-- Notify operator if no units of measurement specified:
+					if type_units_of_measurement.is_empty (et_configuration.component_units) then
+						log (message_warning & "no units of measurement specified !" & reduced_check_coverage);
+					end if;
 					log_indentation_down;
 
 				-- COMPONENTS WITH USER INTERACTON
 				when components_with_operator_interaction =>
 					log ("component categories with operator interaction ...", log_threshold + 1);
-					
+					log_indentation_up;
+
 					if not component_prefixes_specified then
 						log (message_warning & "section " & section_component_prefixes & " empty or missing !");
 						log (message_warning & "section " & section_components_with_operator_interaction & " without effect !");
 					end if;
 					
-					log_indentation_up;
 					while line_cursor /= type_lines.no_element loop
 						log (to_string (element (line_cursor)), log_threshold + 2);
 
@@ -2723,12 +2748,18 @@ package body et_configuration is
 						
 						next (line_cursor);
 					end loop;
+
+					-- Notify operator if no components specified:
+					if type_categories_with_operator_interacton.is_empty (et_configuration.component_categories_with_operator_interaction) then
+						log (message_warning & "no categories specified !" & reduced_check_coverage);
+					end if;
 					log_indentation_down;
 
 				-- TEXT SIZES SCHEMATIC
 				when text_sizes_schematic =>
 					log ("text sizes in schematic ...", log_threshold + 1);
 					log_indentation_up;
+					
 					while line_cursor /= type_lines.no_element loop
 						log (to_string (element (line_cursor)), log_threshold + 2);
 
@@ -2758,12 +2789,18 @@ package body et_configuration is
 						
 						next (line_cursor);
 					end loop;
+
+					-- Notify operator if no sizes specified:
+					if type_text_sizes_schematic.is_empty (et_configuration.text_sizes_schematic) then
+						log (message_warning & "no text sizes specified !" & reduced_check_coverage);
+					end if;
 					log_indentation_down;
 
 				-- PARTCODE KEYWORDS
 				when partcode_keywords =>
 					log ("part code keywords ...", log_threshold + 1);
 					log_indentation_up;
+					
 					while line_cursor /= type_lines.no_element loop
 						log (to_string (element (line_cursor)), log_threshold + 2);
 
@@ -2781,9 +2818,12 @@ package body et_configuration is
 						
 						next (line_cursor);
 					end loop;
-					log_indentation_down;
 
-					
+					-- Notify operator if no keywrds specified:
+					if type_partcode_keywords.is_empty (et_configuration.partcode_keywords) then
+						log (message_warning & "no part code keywords specified !" & reduced_check_coverage);
+					end if;
+					log_indentation_down;
 
 			end case;
 			
