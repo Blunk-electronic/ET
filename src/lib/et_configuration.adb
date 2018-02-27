@@ -2039,6 +2039,37 @@ package body et_configuration is
 		return type_text_schematic'image (text);
 	end to_string;
 
+	procedure check_schematic_text_size (
+		category 	: in type_text_schematic;
+		size		: in et_libraries.type_text_size) is
+	-- Checks the given text size by its category. Does nothing if no text sizes
+	-- specified in configuration file in section TEXT_SIZES_SCHEMATIC.
+		use et_string_processing;
+		use et_coordinates;
+		use type_text_sizes_schematic;
+		cursor : type_text_sizes_schematic.cursor; -- points to a text size 
+	
+	begin -- check_schematic_text_size
+		-- nothing happens if no text sizes specified
+		if not is_empty (text_sizes_schematic) then
+
+			-- Locate text size by given category. If there is
+			-- no specification in configuration file, nothing happens.
+			cursor := text_sizes_schematic.find (category);
+			if cursor /= no_element then
+			
+				if size /= element (cursor) then
+					log (message_warning & "Text size " & to_string (size) 
+						& " invalid for category " & to_string (category) 
+						& " ! " & "Expected size " & to_string (element (cursor)) 
+						& " ! (equals " & to_mil_string (element (cursor)) & " mil)");
+				end if;
+
+			end if;
+		end if;
+		
+	end check_schematic_text_size;
+	
 	function to_partcode_keyword (keyword : in string) return type_partcode_keyword.bounded_string is
 	-- Converts a string to a type_partcode_keyword.
 	begin
@@ -2071,37 +2102,6 @@ package body et_configuration is
 	begin
 		return type_partcode_section'image (partcode_section);
 	end to_string;
-	
-	procedure check_schematic_text_size (
-		category 	: in type_text_schematic;
-		size		: in et_libraries.type_text_size) is
-	-- Checks the given text size by its category. Does nothing if no text sizes
-	-- specified in configuration file in section TEXT_SIZES_SCHEMATIC.
-		use et_string_processing;
-		use et_coordinates;
-		use type_text_sizes_schematic;
-		cursor : type_text_sizes_schematic.cursor; -- points to a text size 
-	
-	begin -- check_schematic_text_size
-		-- nothing happens if no text sizes specified
-		if not is_empty (text_sizes_schematic) then
-
-			-- Locate text size by given category. If there is
-			-- no specification in configuration file, nothing happens.
-			cursor := text_sizes_schematic.find (category);
-			if cursor /= no_element then
-			
-				if size /= element (cursor) then
-					log (message_warning & "Text size " & to_string (size) 
-						& " invalid for category " & to_string (category) 
-						& " ! " & "Expected size " & to_string (element (cursor)) 
-						& " ! (equals " & to_mil_string (element (cursor)) & " mil)");
-				end if;
-
-			end if;
-		end if;
-		
-	end check_schematic_text_size;
 	
 	procedure make_default_configuration (
 		file_name		: in type_configuration_file_name.bounded_string;

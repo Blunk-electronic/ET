@@ -124,7 +124,7 @@ package et_libraries is
 	-- Texts of any kind must have a size between 0.1 and 50mm
 	subtype type_text_size is type_distance range 0.1 .. 50.0; -- unit is mm
 
-	text_size_field_default	: constant type_text_size := 1.27; -- CS: really required ?
+	text_size_default : constant type_text_size := 1.3;
 
 	function to_text_size (size : in type_distance) return type_text_size;
 	-- Converts given size to type_text_size.
@@ -141,10 +141,10 @@ package et_libraries is
 	function width_to_string (width : in type_text_line_width) return string;
 	-- Returns the given line width as string.
 	
-	type type_text_style is ( normal, italic, bold, italic_bold);
+	type type_text_style is (normal, italic, bold, italic_bold);
 	type type_text_visible is (yes, no);
-    type type_text_alignment_horizontal is ( left, center , right);
-	type type_text_alignment_vertical is ( top, center , bottom);    
+    type type_text_alignment_horizontal is (left, center , right);
+	type type_text_alignment_vertical is (top, center , bottom);    
 	type type_text_aligment is record
 		horizontal	: type_text_alignment_horizontal := center;
 		vertical	: type_text_alignment_vertical := center;
@@ -177,7 +177,7 @@ package et_libraries is
 	-- These are basic properties a text has got:
 	type type_text_basic is tagged record
 		position	: type_2d_point;
-        size    	: type_text_size := text_size_field_default;
+        size    	: type_text_size := text_size_default;
         style		: type_text_style := type_text_style'first;
         line_width	: type_text_line_width := type_text_line_width'first; -- CS: use a general type_line_width ?
         orientation	: type_angle := 0.0;

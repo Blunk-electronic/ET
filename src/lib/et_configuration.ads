@@ -383,6 +383,12 @@ package et_configuration is
 	function to_string (text : in type_text_schematic) return string;
 	-- returns the given text type as string.
 
+	procedure check_schematic_text_size (
+		category 	: in type_text_schematic;
+		size		: in et_libraries.type_text_size);
+	-- Checks the given text size by its category.
+
+
 
 	
 	-- PARTCODE KEYWORDS
@@ -417,7 +423,6 @@ package et_configuration is
 
 	function to_string (partcode_section : in type_partcode_section) return string;
 	-- converts a type_partcode_section to a string.
-
 	
 	partcode_keywords : type_partcode_keywords.map;
 	
@@ -425,11 +430,6 @@ package et_configuration is
 	
 	
 	configuration_file_handle : ada.text_io.file_type;
-
-	procedure check_schematic_text_size (
-		category 	: in type_text_schematic;
-		size		: in et_libraries.type_text_size);
-	-- Checks the given text size by its category.
 	
 	-- The name of the configuration file may have 100 characters which seems sufficient for now.
  	configuraton_file_name_length : constant natural := 100;
