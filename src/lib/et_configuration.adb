@@ -2102,6 +2102,42 @@ package body et_configuration is
 	begin
 		return type_partcode_section'image (partcode_section);
 	end to_string;
+
+	function partcode_keywords_specified return boolean is
+	-- Returns true if any part code keywords are specified via configuration file.
+		use type_partcode_keywords;
+	begin
+		if is_empty (partcode_keywords) then -- no keywords specified
+			return false;
+		else -- keywords are specified
+			return true;
+		end if;
+	end partcode_keywords_specified;
+	
+	function to_partcode_keyword (section : in type_partcode_section) return type_partcode_keyword.bounded_string is
+	-- Returns for the given partcode section the corresponding keyword as specified
+	-- in the configuration file section [PART_CODE_KEYWORDS].
+	-- If no keyword specified (or no conf. file applied) returns an empty string.
+		keyword : type_partcode_keyword.bounded_string;
+		use type_partcode_keywords;
+		cursor : type_partcode_keywords.cursor;
+	begin
+		if partcode_keywords_specified then
+
+			-- Search in partcode_keywords the given section name and
+			-- load keyword.
+			cursor := partcode_keywords.first;
+			while cursor /= type_partcode_keywords.no_element loop
+				if element (cursor) = section then -- MAXIMUM_POWER
+					keyword := key (cursor); -- PMAX
+					exit; -- no further search required
+				end if;
+				next (cursor);
+			end loop;
+			
+		end if;
+		return keyword;
+	end to_partcode_keyword;
 	
 	procedure make_default_configuration (
 		file_name		: in type_configuration_file_name.bounded_string;

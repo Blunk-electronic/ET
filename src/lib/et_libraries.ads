@@ -576,7 +576,7 @@ package et_libraries is
 	-- Raises exception if invalid character found.
 
 
--- COMPONENT PURPUSE
+-- COMPONENT PURPOSE
 	-- Components that require operator interaction like connectors, LEDs or switches 
 	-- MUST have a purpose assigned.
 	-- Example: The purpose of connector X44 is "power in". The purpose of LED5 is "system fail":

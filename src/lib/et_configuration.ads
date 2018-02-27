@@ -425,9 +425,14 @@ package et_configuration is
 	-- converts a type_partcode_section to a string.
 	
 	partcode_keywords : type_partcode_keywords.map;
-	
 
+	function partcode_keywords_specified return boolean;
+	-- Returns true if any part code keywords are specified via configuration file.
 	
+	function to_partcode_keyword (section : in type_partcode_section) return type_partcode_keyword.bounded_string;
+	-- Returns for the given partcode section the corresponding keyword as specified
+	-- in the configuration file section [PART_CODE_KEYWORDS].
+	-- If no keyword specified (or no conf. file applied) returns an empty string.
 	
 	configuration_file_handle : ada.text_io.file_type;
 	
