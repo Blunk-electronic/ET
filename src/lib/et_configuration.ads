@@ -422,6 +422,11 @@ package et_configuration is
 	-- Tests if the given keyword contains only valid characters as specified
 	-- by given character set.
 	-- Raises exception if invalid character found.
+
+	function is_partcode_keyword (keyword : in string) return boolean;
+	-- Returns true if given keyword is specified in 
+	-- in the configuration file section [PART_CODE_KEYWORDS].
+	-- NOTE: Assumes there are keywords specified at all.
 	
 	function to_partcode_keyword (keyword : in string) return type_partcode_keyword.bounded_string;
 	-- Converts a string to a type_partcode_keyword.

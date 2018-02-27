@@ -2085,6 +2085,25 @@ package body et_configuration is
 	begin
 		null; -- CS
 	end check_partcode_keyword_characters;
+
+	function is_partcode_keyword (keyword : in string) return boolean is
+	-- Returns true if given keyword is specified in 
+	-- in the configuration file section [PART_CODE_KEYWORDS].
+	-- NOTE: Assumes there are keywords specified at all.
+		use type_partcode_keywords;
+		use type_partcode_keyword;
+		cursor : type_partcode_keywords.cursor := partcode_keywords.first;
+		keyword_bounded : type_partcode_keyword.bounded_string := to_bounded_string (keyword);
+	begin
+		while cursor /= type_partcode_keywords.no_element loop
+			if key (cursor) = keyword_bounded then
+				return true;
+			end if;
+			next (cursor);
+		end loop;
+		
+		return false;
+	end is_partcode_keyword;
 	
 	function to_partcode_keyword (keyword : in string) return type_partcode_keyword.bounded_string is
 	-- Converts a string to a type_partcode_keyword.

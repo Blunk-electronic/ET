@@ -920,6 +920,17 @@ package body et_libraries is
 			& to_string (value)				-- 100R
 			);
 	end compose_partcode_root;
+
+	procedure validate_other_partcode_keywords (
+		partcode	: in type_component_partcode.bounded_string;
+		from		: in positive) is
+
+		use et_configuration.type_partcode_keywords;
+		place : positive;
+	begin
+		null;
+		-- is_partcode_keyword (blabla)
+	end validate_other_partcode_keywords;
 	
 	procedure validate_component_partcode_in_library (
 	-- Tests if the given partcode of a library component is correct.
@@ -973,7 +984,10 @@ package body et_libraries is
 					partcode_invalid;
 				end if;
 
-				-- CS Test other keywords like TOL VMAX PMAX ...
+				validate_other_partcode_keywords (
+					partcode => partcode, -- the partcode to be validated
+					from => length (partcode_expect)); -- last character position of root part code
+				
 			end if;
 		end if;
 	end validate_component_partcode_in_library;
@@ -1032,7 +1046,9 @@ package body et_libraries is
 					partcode_invalid;
 				end if;
 
-				-- CS Test other keywords like TOL VMAX PMAX ...
+				validate_other_partcode_keywords (
+					partcode => partcode, -- the partcode to be validated
+					from => length (partcode_expect)); -- last character position of root part code
 
 			end if;
 		end if;
