@@ -396,6 +396,10 @@ package et_configuration is
 	-- for introduction have a look at:
 	-- https://www.clearlyinventory.com/inventory-basics/how-to-design-good-item-numbers-for-products-in-inventory
 
+	-- It is up to the user to define the syntax of the partcode. The keywords in the following
+	-- refer the the recommended form like "R_PAC_S_0805_VAL_100R_PMAX_125_TOL_5":
+
+	
 	type type_partcode_section is (
 		COMPONENT_PACKAGE,
 		COMPONENT_VALUE,
@@ -406,8 +410,19 @@ package et_configuration is
 		PART_TYPE);
 
 	partcode_keyword_length_max : constant positive := 5;
+	partcode_keyword_characters : character_set := to_set (span => ('A','Z')); 
 	package type_partcode_keyword is new generic_bounded_length (partcode_keyword_length_max);
 
+	procedure check_partcode_keyword_length (keyword : in string);
+	-- Tests if the given partcode keyword is longer than allowed.
+	
+	procedure check_partcode_keyword_characters (
+		keyword		: in type_partcode_keyword.bounded_string;
+		characters	: in character_set := partcode_keyword_characters);
+	-- Tests if the given keyword contains only valid characters as specified
+	-- by given character set.
+	-- Raises exception if invalid character found.
+	
 	function to_partcode_keyword (keyword : in string) return type_partcode_keyword.bounded_string;
 	-- Converts a string to a type_partcode_keyword.
 	
@@ -429,7 +444,7 @@ package et_configuration is
 	function partcode_keywords_specified return boolean;
 	-- Returns true if any part code keywords are specified via configuration file.
 	
-	function to_partcode_keyword (section : in type_partcode_section) return type_partcode_keyword.bounded_string;
+	function to_partcode_keyword (section : in type_partcode_section) return string;
 	-- Returns for the given partcode section the corresponding keyword as specified
 	-- in the configuration file section [PART_CODE_KEYWORDS].
 	-- If no keyword specified (or no conf. file applied) returns an empty string.

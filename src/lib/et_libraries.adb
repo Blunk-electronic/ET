@@ -894,6 +894,9 @@ package body et_libraries is
 	end validate_bom_status;
 	
 	function compose_partcode_root (
+	-- The root of a partcode in general is something like R_PAC_S_0805_VAL_ .
+	-- If optionally the value is provided, it gets appended which would result
+	-- in something like R_PAC_S_0805_VAL_100R.
 		prefix		: in type_component_prefix.bounded_string;			-- R
 		packge		: in type_component_package_name.bounded_string;	-- S_0805
 		value 		: in type_component_value.bounded_string := type_component_value.to_bounded_string ("")) -- 100R
@@ -903,22 +906,31 @@ package body et_libraries is
 		use type_component_package_name;
 		use type_component_value;
 		use type_component_partcode;
+		use et_configuration;
 	begin
 		return to_bounded_string (
-			to_string (prefix)			-- R
-			& partcode_separator		-- _
-			& partcode_keyword_package	-- PAC
-			& partcode_separator		-- _
-			& to_string (packge)		-- S_0805
-			& partcode_separator		-- _
-			& partcode_keyword_value	-- VAL
-			& partcode_separator		-- _
-			& to_string (value)			-- 100R
+			to_string (prefix)				-- R
+			& partcode_keyword_separator	-- _
+			& to_partcode_keyword (COMPONENT_PACKAGE) -- PAC
+			& partcode_keyword_separator	-- _
+			& to_string (packge)			-- S_0805
+			& partcode_keyword_separator	-- _
+			& to_partcode_keyword (COMPONENT_VALUE) -- VAL
+			& partcode_keyword_separator	-- _
+			& to_string (value)				-- 100R
 			);
 	end compose_partcode_root;
 	
 	procedure validate_component_partcode_in_library (
 	-- Tests if the given partcode of a library component is correct.
+	-- The given properties are assumed to be those of a real component.
+	-- If the component is not to be mounted, no validation takes place.
+	-- Otherwise:
+	--  - If partcode keywords are not specified in the 
+	--    configuration file, nothing is validated. It is the users responsibility 
+	--    to specify a correct partcode.
+	--  - If partcode keywords are specified in the configuration file,
+	--    the root part (like R_PAC_S_0805_VAL_) is validated.
 		partcode	: in type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_
 		name		: in type_component_generic_name.bounded_string;	-- 74LS00
 		prefix		: in type_component_prefix.bounded_string;			-- R
@@ -926,28 +938,28 @@ package body et_libraries is
 		bom			: in type_bom)	-- YES, NO
 		is
 
+		use et_configuration;
 		use et_string_processing;
 		use type_component_partcode;
-		
-		partcode_expect : type_component_partcode.bounded_string;
 
+		partcode_expect : type_component_partcode.bounded_string;		
+		place : natural;
+		
 		procedure partcode_invalid is
 		begin
 			log_indentation_reset;
 			log (message_error & "component " & to_string (name)
-				 & " partcode invalid !", console => true);
+				 & " part code invalid !", console => true);
 			log ("found    '" & to_string (partcode) & "'", console => true);
 			log ("expected '" & to_string (partcode_expect) & "'", console => true);
 			raise constraint_error;
 		end partcode_invalid;
-
-		place : natural;		
 	
-	begin
-		-- The partcode must be valid for mounted components only.
-		case bom is
-			when YES =>
-
+	begin -- validate_component_partcode_in_library
+		-- We validate only mounted components and if partcode keywords are specified.
+		if bom = YES then
+			if partcode_keywords_specified then
+				
 				-- Compose the root of the partcode as it should be.
 				-- The root is usually something like R_PAC_S_0805_VAL_ which contains
 				-- the given prefix and package name.
@@ -962,59 +974,49 @@ package body et_libraries is
 				end if;
 
 				-- CS Test other keywords like TOL VMAX PMAX ...
-				
-			when NO =>
-				null;
-				-- CS: expect partcode_default ?
--- 				if to_string (partcode) /= partcode_default then
--- 					partcode_default_missing;
--- 				end if;
-
-		end case;
+			end if;
+		end if;
 	end validate_component_partcode_in_library;
 
 	
 	procedure validate_component_partcode_in_schematic (
 	-- Tests if the given partcode of a schematic component is correct.
+	-- The given properties are assumed to be those of a real component.
+	-- If the component is not to be mounted, no validation takes place.
+	-- Otherwise:
+	--  - If partcode keywords are not specified in the 
+	--    configuration file, nothing is validated. It is the users responsibility 
+	--    to specify a correct partcode.
+	--  - If partcode keywords are specified in the configuration file,
+	--    the root part (like R_PAC_S_0805_VAL_) is validated.
 		partcode	: in type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_100R
 		reference	: in type_component_reference;						-- R45
 		packge		: in type_component_package_name.bounded_string;	-- S_0805
 		value 		: in type_component_value.bounded_string;			-- 100R
 		bom			: in type_bom)	-- YES, NO
 		is
+
+		use et_configuration;
 		use et_string_processing;
 		use type_component_partcode;
 
+		place : natural;
 		partcode_expect : type_component_partcode.bounded_string;
 		
 		procedure partcode_invalid is
 		begin
 			log_indentation_reset;
 			log (message_error & "component " & to_string (reference)
-				 & " partcode invalid !", console => true);
+				 & " part code invalid !", console => true);
 			log ("found    '" & to_string (partcode) & "'", console => true);
 			log ("expected '" & to_string (partcode_expect) & "'", console => true);
 			raise constraint_error;
 		end partcode_invalid;
 
--- 		procedure partcode_default_missing is
--- 		begin
--- 			log (message_warning & "component " & to_string (reference)
--- 				 & " is not mounted and should have the default partcode "
--- 					-- CS: show package, value and partcode as it should be
--- 			raise constraint_error;
--- 		end partcode_default_missing;
-
-		
-		place : natural;
-
-
-		
 	begin -- validate_component_partcode_in_schematic
-
-		-- The partcode must be valid for mounted components only.
-		case bom is
-			when YES =>
+		-- We validate only mounted components and if partcode keywords are specified.
+		if bom = YES then
+			if partcode_keywords_specified then
 
 				-- Compose the root of the partcode as it should be.
 				-- The root is usually something like R_PAC_S_0805_VAL_100R which contains
@@ -1031,14 +1033,9 @@ package body et_libraries is
 				end if;
 
 				-- CS Test other keywords like TOL VMAX PMAX ...
-			when NO =>
-				null;
-				-- CS: expect partcode_default ?
--- 				if to_string (partcode) /= partcode_default then
--- 					partcode_default_missing;
--- 				end if;
 
-		end case;
+			end if;
+		end if;
 	end validate_component_partcode_in_schematic;
 
 	

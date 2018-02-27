@@ -2069,6 +2069,22 @@ package body et_configuration is
 		end if;
 		
 	end check_schematic_text_size;
+
+	procedure check_partcode_keyword_length (keyword : in string) is
+	-- Tests if the given partcode keyword is longer than allowed.
+	begin
+		null; -- CS
+	end check_partcode_keyword_length;
+	
+	procedure check_partcode_keyword_characters (
+		keyword		: in type_partcode_keyword.bounded_string;
+		characters	: in character_set := partcode_keyword_characters) is
+	-- Tests if the given keyword contains only valid characters as specified
+	-- by given character set.
+	-- Raises exception if invalid character found.
+	begin
+		null; -- CS
+	end check_partcode_keyword_characters;
 	
 	function to_partcode_keyword (keyword : in string) return type_partcode_keyword.bounded_string is
 	-- Converts a string to a type_partcode_keyword.
@@ -2114,7 +2130,7 @@ package body et_configuration is
 		end if;
 	end partcode_keywords_specified;
 	
-	function to_partcode_keyword (section : in type_partcode_section) return type_partcode_keyword.bounded_string is
+	function to_partcode_keyword (section : in type_partcode_section) return string is
 	-- Returns for the given partcode section the corresponding keyword as specified
 	-- in the configuration file section [PART_CODE_KEYWORDS].
 	-- If no keyword specified (or no conf. file applied) returns an empty string.
@@ -2136,7 +2152,7 @@ package body et_configuration is
 			end loop;
 			
 		end if;
-		return keyword;
+		return type_partcode_keyword.to_string (keyword);
 	end to_partcode_keyword;
 	
 	procedure make_default_configuration (
@@ -2851,7 +2867,9 @@ package body et_configuration is
 						log (to_string (element (line_cursor)), log_threshold + 2);
 
 						-- build the partcode keyword from field #1:
+						check_partcode_keyword_length (field (element (line_cursor), 1));
 						partcode_keyword := to_partcode_keyword (field (element (line_cursor), 1));
+						check_partcode_keyword_characters (partcode_keyword);
 
 						-- build the partcode section name from field #2. 
 						partcode_section := to_partcode_section (field (element (line_cursor), 2));

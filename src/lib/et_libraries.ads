@@ -536,8 +536,8 @@ package et_libraries is
 
 	
 -- MISCELLANEOUS
-	-- Newly created fields may contain things like "?PARTCODE?" or "?PURPOSE?". For checking their
-	-- content we need this character set:
+	-- Newly created fields may contain things like "?PARTCODE?" or "?PURPOSE?". 
+	-- For checking their content we need this character set:
 	component_initial_field_characters : character_set := to_set 
 		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set('_') or to_set('?'); 
 
@@ -547,20 +547,11 @@ package et_libraries is
 -- COMPONENT PARTCODES
 	-- The component partcode is THE key into the ERP system of the user. It can be a crytic SAP number
 	-- or something human readable like "R_PAC_S_0805_VAL_100R_PMAX_125_TOL_5".
-	-- However, it is up to the user to define the syntax of the partcode. The keywords in the following
-	-- refer the the recommended form like "R_PAC_S_0805_VAL_100R_PMAX_125_TOL_5":
+	-- The keywords for the latter can be specified via the configuration file. See package et_configuration.
 	component_partcode_characters : character_set := to_set
 		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ('_'); 
 	component_partcode_length_max : constant positive := 100;
 	package type_component_partcode is new generic_bounded_length (component_partcode_length_max);
-	partcode_default 			: constant string (1..10) := "?PARTCODE?";
-	partcode_separator 			: constant string (1..1) := "_";
-	partcode_keyword_package 	: constant string (1..3) := "PAC";
-	partcode_keyword_pitch		: constant string (1..5) := "PITCH";	
-	partcode_keyword_value		: constant string (1..3) := "VAL";
-	partcode_keyword_tolerance	: constant string (1..3) := "TOL";
-	partcode_keyword_power_max	: constant string (1..4) := "PMAX";
-	partcode_keyword_volts_max	: constant string (1..4) := "VMAX";	
 	
 	function to_string (partcode : in type_component_partcode.bounded_string) return string;
 	-- Returns the given partcode as string.
@@ -876,6 +867,14 @@ package et_libraries is
 	
 	procedure validate_component_partcode_in_library (
 	-- Tests if the given partcode of a library component is correct.
+	-- The given properties are assumed to be those of a real component.
+	-- If the component is not to be mounted, no validation takes place.
+	-- Otherwise:
+	--  - If partcode keywords are not specified in the 
+	--    configuration file, nothing is validated. It is the users responsibility 
+	--    to specify a correct partcode.
+	--  - If partcode keywords are specified in the configuration file,
+	--    the root part (like R_PAC_S_0805_VAL_) is validated.
 		partcode	: in type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_
 		name		: in type_component_generic_name.bounded_string;	-- 74LS00	
 		prefix		: in type_component_prefix.bounded_string;			-- R
@@ -884,6 +883,14 @@ package et_libraries is
 	
 	procedure validate_component_partcode_in_schematic (
 	-- Tests if the given partcode of a schematic component is correct.
+	-- The given properties are assumed to be those of a real component.
+	-- If the component is not to be mounted, no validation takes place.
+	-- Otherwise:
+	--  - If partcode keywords are not specified in the 
+	--    configuration file, nothing is validated. It is the users responsibility 
+	--    to specify a correct partcode.
+	--  - If partcode keywords are specified in the configuration file,
+	--    the root part (like R_PAC_S_0805_VAL_) is validated.
 		partcode	: in type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_100R
 		reference	: in type_component_reference;						-- R45
 		packge		: in type_component_package_name.bounded_string;	-- S_0805
