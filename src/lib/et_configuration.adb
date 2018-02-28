@@ -2070,6 +2070,12 @@ package body et_configuration is
 		
 	end check_schematic_text_size;
 
+	function to_string (keyword : in type_partcode_keyword.bounded_string) return string is
+	-- Converts a type_partcode_keyword to a string.
+	begin
+		return type_partcode_keyword.to_string (keyword);
+	end to_string;
+	
 	procedure check_partcode_keyword_length (keyword : in string) is
 	-- Tests if the given partcode keyword is longer than allowed.
 	begin
@@ -2086,24 +2092,37 @@ package body et_configuration is
 		null; -- CS
 	end check_partcode_keyword_characters;
 
-	function is_partcode_keyword (keyword : in string) return boolean is
-	-- Returns true if given keyword is specified in 
+	procedure validate_partcode_keyword (keyword : in type_partcode_keyword.bounded_string) is
+	-- Checks whether given keyword is specified in 
 	-- in the configuration file section [PART_CODE_KEYWORDS].
 	-- NOTE: Assumes there are keywords specified at all.
 		use type_partcode_keywords;
 		use type_partcode_keyword;
 		cursor : type_partcode_keywords.cursor := partcode_keywords.first;
-		keyword_bounded : type_partcode_keyword.bounded_string := to_bounded_string (keyword);
+		valid : boolean := false;
 	begin
 		while cursor /= type_partcode_keywords.no_element loop
-			if key (cursor) = keyword_bounded then
-				return true;
+			if key (cursor) = keyword then
+				valid := true;
+				exit;
 			end if;
 			next (cursor);
 		end loop;
+
+		if not valid then
+			log_indentation_reset;
+			log (message_error & "invalid keyword " & to_string (keyword) & " in part code !");
+			log ("Available keywords are:");
+			cursor := partcode_keywords.first;
+			while cursor /= type_partcode_keywords.no_element loop
+				log ("- " & to_string (key (cursor)));
+				next (cursor);
+			end loop;
+
+			raise constraint_error;
+		end if;
 		
-		return false;
-	end is_partcode_keyword;
+	end validate_partcode_keyword;
 	
 	function to_partcode_keyword (keyword : in string) return type_partcode_keyword.bounded_string is
 	-- Converts a string to a type_partcode_keyword.

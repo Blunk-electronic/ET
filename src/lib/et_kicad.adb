@@ -1458,6 +1458,8 @@ package body et_kicad is
 						if not field_partcode_found then
 							missing_field (field_partcode.meaning);
 						else
+							log_indentation_up;
+							
 							validate_component_partcode_in_library (
 								-- the content of the partcode field like R_PAC_S_0805_VAL_
 								partcode => type_component_partcode.to_bounded_string (content (field_partcode)),
@@ -1478,10 +1480,14 @@ package body et_kicad is
 									position => 2)), -- the block after the colon
 
 								-- the BOM status
-								bom => type_bom'value (content (field_bom))
+								bom => type_bom'value (content (field_bom)),
+
+								log_threshold => log_threshold + 1
 								);
 							
 							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_partcode.size);
+
+							log_indentation_down;
 						end if;
 
 						log ("datasheet", level => log_threshold + 1);
@@ -4982,6 +4988,8 @@ package body et_kicad is
 							if not field_partcode_found then
 								missing_field (et_libraries.partcode);
 							else
+								log_indentation_up;
+							
 								validate_component_partcode_in_schematic (
 									-- the content of the partcode field like R_PAC_S_0805_VAL_100R
 									partcode => type_component_partcode.to_bounded_string (content (field_partcode)),
@@ -5003,10 +5011,14 @@ package body et_kicad is
 									value => type_component_value.to_bounded_string (content (field_value)),
 
 									-- the BOM status
-									bom => type_bom'value (content (field_bom))
+									bom => type_bom'value (content (field_bom)),
+
+									log_threshold => log_threshold + 1
 									);
 
-								check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_partcode.size);
+									check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_partcode.size);
+
+								log_indentation_down;
 							end if;
 							
 							-- purpose

@@ -413,6 +413,9 @@ package et_configuration is
 	partcode_keyword_characters : character_set := to_set (span => ('A','Z')); 
 	package type_partcode_keyword is new generic_bounded_length (partcode_keyword_length_max);
 
+	function to_string (keyword : in type_partcode_keyword.bounded_string) return string;
+	-- Converts a type_partcode_keyword to a string.
+	
 	procedure check_partcode_keyword_length (keyword : in string);
 	-- Tests if the given partcode keyword is longer than allowed.
 	
@@ -423,8 +426,8 @@ package et_configuration is
 	-- by given character set.
 	-- Raises exception if invalid character found.
 
-	function is_partcode_keyword (keyword : in string) return boolean;
-	-- Returns true if given keyword is specified in 
+	procedure validate_partcode_keyword (keyword : in type_partcode_keyword.bounded_string);
+	-- Checks whehter given keyword is specified in 
 	-- in the configuration file section [PART_CODE_KEYWORDS].
 	-- NOTE: Assumes there are keywords specified at all.
 	

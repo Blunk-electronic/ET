@@ -922,14 +922,78 @@ package body et_libraries is
 	end compose_partcode_root;
 
 	procedure validate_other_partcode_keywords (
-		partcode	: in type_component_partcode.bounded_string;
-		from		: in positive) is
+	-- Validates optional keywords as specified in configuration file.
+	-- Starts the validation from the given character position.
+		partcode		: in type_component_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R_TOL_5_PMAX_0W125
+		from			: in positive; -- the character position to start from
+		log_threshold	: in et_string_processing.type_log_level) is
 
 		use et_configuration.type_partcode_keywords;
-		place : positive;
+		use et_libraries.type_component_partcode;
+		use et_configuration;
+		use et_string_processing;
+		
+		len 		: positive := length (partcode); 	-- the length of the given partcode
+		place 		: positive := from; 				-- the position of the character being processed
+		keyword_end : positive;							-- the last character position of the current keyword
+
+		keyword_follows : boolean;	-- goes true if a keyword is expected next
+
+		keyword : type_partcode_keyword.bounded_string;	-- the keyword being processed
 	begin
-		null;
-		-- is_partcode_keyword (blabla)
+		log ("validating optional keywords ...", log_threshold);
+		log_indentation_up;
+
+		-- If the first character to start with, is a separator, then an argument follows.
+		-- Otherwise a keyword follows. Example:
+		-- _100R_TOL_5_PMAX_0W125 -> argument follows
+		-- x_TOL_5_PMAX_0W125 -> keyword follows
+		if element (partcode, place) = partcode_keyword_separator then
+			keyword_follows := false;
+		else
+			keyword_follows := true;
+		end if;
+
+		-- advance through the partcode characters
+		while place < len loop
+
+			if keyword_follows then
+-- 				log ("reading keyword");				
+				if element (partcode, place) = partcode_keyword_separator then
+					place := place + 1;
+					keyword_end := index (partcode, (1 => partcode_keyword_separator), from => place) - 1;
+					keyword := to_partcode_keyword (slice (partcode, place, keyword_end));
+					place := keyword_end + 1;
+					
+					keyword_follows := false;
+					validate_partcode_keyword (keyword);
+					log (to_string (keyword), log_threshold + 1);
+				else
+					place := place + 1;	
+				end if;
+
+			else
+-- 				log ("reading argument");
+				place := place + 1;
+				-- CS: process argument here
+				if element (partcode, place) = partcode_keyword_separator then
+					keyword_follows := true;
+-- 					log ("keyword start at " & positive'image (place));
+				end if;
+			end if;
+			
+		end loop;
+
+		log_indentation_down;
+
+		exception
+			when event:
+				others =>
+					log_indentation_reset;
+					log (message_error & "part code " & to_string (partcode) & " invalid !", console => true);
+					log (ada.exceptions.exception_message (event));
+					raise;
+		
 	end validate_other_partcode_keywords;
 	
 	procedure validate_component_partcode_in_library (
@@ -942,11 +1006,12 @@ package body et_libraries is
 	--    to specify a correct partcode.
 	--  - If partcode keywords are specified in the configuration file,
 	--    the root part (like R_PAC_S_0805_VAL_) is validated.
-		partcode	: in type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_
-		name		: in type_component_generic_name.bounded_string;	-- 74LS00
-		prefix		: in type_component_prefix.bounded_string;			-- R
-		packge		: in type_component_package_name.bounded_string;	-- S_0805
-		bom			: in type_bom)	-- YES, NO
+		partcode		: in type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_
+		name			: in type_component_generic_name.bounded_string;	-- 74LS00
+		prefix			: in type_component_prefix.bounded_string;			-- R
+		packge			: in type_component_package_name.bounded_string;	-- S_0805
+		bom				: in type_bom;										-- YES, NO
+		log_threshold	: in et_string_processing.type_log_level)
 		is
 
 		use et_configuration;
@@ -967,9 +1032,14 @@ package body et_libraries is
 		end partcode_invalid;
 	
 	begin -- validate_component_partcode_in_library
+		log ("validating part code in library ...", log_threshold);
+		log_indentation_up;
+		
 		-- We validate only mounted components and if partcode keywords are specified.
 		if bom = YES then
 			if partcode_keywords_specified then
+
+				log (to_string (partcode), log_threshold + 1);
 				
 				-- Compose the root of the partcode as it should be.
 				-- The root is usually something like R_PAC_S_0805_VAL_ which contains
@@ -985,11 +1055,14 @@ package body et_libraries is
 				end if;
 
 				validate_other_partcode_keywords (
-					partcode => partcode, -- the partcode to be validated
-					from => length (partcode_expect)); -- last character position of root part code
+					partcode => partcode, 				-- the partcode to be validated
+					from => length (partcode_expect), 	-- last character position of root part code
+					log_threshold => log_threshold + 1);
 				
 			end if;
 		end if;
+
+		log_indentation_down;
 	end validate_component_partcode_in_library;
 
 	
@@ -1003,11 +1076,12 @@ package body et_libraries is
 	--    to specify a correct partcode.
 	--  - If partcode keywords are specified in the configuration file,
 	--    the root part (like R_PAC_S_0805_VAL_) is validated.
-		partcode	: in type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_100R
-		reference	: in type_component_reference;						-- R45
-		packge		: in type_component_package_name.bounded_string;	-- S_0805
-		value 		: in type_component_value.bounded_string;			-- 100R
-		bom			: in type_bom)	-- YES, NO
+		partcode		: in type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_100R
+		reference		: in type_component_reference;						-- R45
+		packge			: in type_component_package_name.bounded_string;	-- S_0805
+		value 			: in type_component_value.bounded_string;			-- 100R
+		bom				: in type_bom;										-- YES, NO
+		log_threshold	: in et_string_processing.type_log_level)
 		is
 
 		use et_configuration;
@@ -1028,6 +1102,9 @@ package body et_libraries is
 		end partcode_invalid;
 
 	begin -- validate_component_partcode_in_schematic
+		log ("validating part code in schematic ...", log_threshold);
+		log_indentation_up;
+		
 		-- We validate only mounted components and if partcode keywords are specified.
 		if bom = YES then
 			if partcode_keywords_specified then
@@ -1048,10 +1125,13 @@ package body et_libraries is
 
 				validate_other_partcode_keywords (
 					partcode => partcode, -- the partcode to be validated
-					from => length (partcode_expect)); -- last character position of root part code
+					from => length (partcode_expect), -- last character position of root part code
+					log_threshold => log_threshold + 1);
 
 			end if;
 		end if;
+
+		log_indentation_down;
 	end validate_component_partcode_in_schematic;
 
 	
