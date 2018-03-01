@@ -2070,6 +2070,18 @@ package body et_configuration is
 		
 	end check_schematic_text_size;
 
+	function to_partcode_keyword_argument (argument : in string) return type_partcode_keyword_argument.bounded_string is
+	-- Converts a string to a type_partcode_keyword_argument.
+	begin
+		return type_partcode_keyword_argument.to_bounded_string (argument);
+	end to_partcode_keyword_argument;
+
+	function to_string (argument : in type_partcode_keyword_argument.bounded_string) return string is
+	-- Converts a type_partcode_keyword_argument to a string.
+	begin
+		return type_partcode_keyword_argument.to_string (argument);
+	end to_string;
+	
 	function to_string (keyword : in type_partcode_keyword.bounded_string) return string is
 	-- Converts a type_partcode_keyword to a string.
 	begin

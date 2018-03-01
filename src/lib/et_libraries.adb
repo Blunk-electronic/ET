@@ -931,6 +931,7 @@ package body et_libraries is
 		use et_configuration.type_partcode_keywords;
 		use et_libraries.type_component_partcode;
 		use et_configuration;
+		use et_configuration.type_partcode_keyword_argument;
 		use et_string_processing;
 		
 		len 		: positive := length (partcode); 	-- the length of the given partcode
@@ -941,8 +942,25 @@ package body et_libraries is
 
 		keyword : type_partcode_keyword.bounded_string;	-- the keyword being processed
 
+		argument_start : positive;
+		argument : type_partcode_keyword_argument.bounded_string; -- the argument being processed
+
+		procedure validate_argument (
+			kw : in type_partcode_keyword.bounded_string;
+			arg : in type_partcode_keyword_argument.bounded_string) is
+		begin
+			log ("keyword " & to_string (kw) 
+				 & " argument " & to_string (argument => argument), log_threshold + 1);
+
+			-- CS: currently no validation ! Here the argument could be checked against the keyword
+			-- example: after PMAX must follow something like 15 (for 15W watts)
+			-- after VMAX must follow 6V3 ...
+			-- Instead of comma, use unit of measurement (same scheme as in component value).
+			-- The format of the argument should be specified in the configuration file.
+		end validate_argument;
+			
 	begin -- validate_other_partcode_keywords
-		log ("validating optional keywords ...", log_threshold);
+		log ("optional keywords ...", log_threshold);
 		log_indentation_up;
 
 		-- If the first character to start with, is a separator, then an argument follows.
@@ -965,9 +983,10 @@ package body et_libraries is
 					keyword_end := index (partcode, (1 => partcode_keyword_separator), from => place) - 1;
 					
 					keyword := to_partcode_keyword (slice (partcode, place, keyword_end));
-					log (to_string (keyword), log_threshold + 1);
+					log ("keyword " & to_string (keyword), log_threshold + 2);
 					
-					place := keyword_end + 1;
+					place := keyword_end + 1; -- point to separator right after keyword
+					argument_start := place + 1; -- so the argument is expected after the separator
 					
 					keyword_follows := false;
 					validate_partcode_keyword (keyword);
@@ -979,16 +998,37 @@ package body et_libraries is
 						raise constraint_error;
 					end if;
 				else
-					place := place + 1;	
+					place := place + 1;	-- next character of keyword
 				end if;
 
-			else
+			else -- argument follows
 				-- log ("reading argument");
 				place := place + 1;
-				-- CS: process argument here
+				-- If the argument starts, "place" points to the first character of the argument.
+
+				-- If a separator occurs, the argument ends.
 				if element (partcode, place) = partcode_keyword_separator then
+
+					-- detect missing argument
+					if place = argument_start then
+						log_indentation_reset;
+						log (message_error & "expect argument at position" & positive'image (place) & " !");
+						raise constraint_error;
+					end if;
+					
 					keyword_follows := true;
+
+					-- The argument can now be sliced from argument_start to the place before the separator:
+					argument := to_partcode_keyword_argument (slice (partcode, argument_start, place - 1));
+					validate_argument (keyword, argument);
+					
+				elsif place = len then -- last argument in partcode
+					
+					-- The argument can now be sliced from argument_start to the end of the partcode:
+					argument := to_partcode_keyword_argument (slice (partcode, argument_start, place));
+					validate_argument (keyword, argument);
 				end if;
+
 			end if;
 			
 		end loop;

@@ -412,6 +412,15 @@ package et_configuration is
 	partcode_keyword_characters : character_set := to_set (span => ('A','Z')); 
 	package type_partcode_keyword is new generic_bounded_length (partcode_keyword_length_max);
 
+	partcode_keyword_argument_lenght_max : constant positive := 10;
+	package type_partcode_keyword_argument is new generic_bounded_length (partcode_keyword_argument_lenght_max);
+
+	function to_partcode_keyword_argument (argument : in string) return type_partcode_keyword_argument.bounded_string;
+	-- Converts a string to a type_partcode_keyword_argument.
+
+	function to_string (argument : in type_partcode_keyword_argument.bounded_string) return string;
+	-- Converts a type_partcode_keyword_argument to a string.
+	
 	function to_string (keyword : in type_partcode_keyword.bounded_string) return string;
 	-- Converts a type_partcode_keyword to a string.
 	
