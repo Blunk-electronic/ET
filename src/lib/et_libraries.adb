@@ -940,7 +940,8 @@ package body et_libraries is
 		keyword_follows : boolean;	-- goes true if a keyword is expected next
 
 		keyword : type_partcode_keyword.bounded_string;	-- the keyword being processed
-	begin
+
+	begin -- validate_other_partcode_keywords
 		log ("validating optional keywords ...", log_threshold);
 		log_indentation_up;
 
@@ -958,27 +959,35 @@ package body et_libraries is
 		while place < len loop
 
 			if keyword_follows then
--- 				log ("reading keyword");				
+				-- log ("reading keyword");				
 				if element (partcode, place) = partcode_keyword_separator then
 					place := place + 1;
 					keyword_end := index (partcode, (1 => partcode_keyword_separator), from => place) - 1;
+					
 					keyword := to_partcode_keyword (slice (partcode, place, keyword_end));
+					log (to_string (keyword), log_threshold + 1);
+					
 					place := keyword_end + 1;
 					
 					keyword_follows := false;
 					validate_partcode_keyword (keyword);
-					log (to_string (keyword), log_threshold + 1);
+					
+					-- A keyword must occur only once. Otherwise raise error:
+					if type_component_partcode.count (partcode, to_string (keyword)) > 1 then
+						log_indentation_reset;
+						log (message_error & "keyword " & to_string (keyword) & " can be used only once !");
+						raise constraint_error;
+					end if;
 				else
 					place := place + 1;	
 				end if;
 
 			else
--- 				log ("reading argument");
+				-- log ("reading argument");
 				place := place + 1;
 				-- CS: process argument here
 				if element (partcode, place) = partcode_keyword_separator then
 					keyword_follows := true;
--- 					log ("keyword start at " & positive'image (place));
 				end if;
 			end if;
 			

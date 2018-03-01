@@ -398,7 +398,6 @@ package et_configuration is
 
 	-- It is up to the user to define the syntax of the partcode. The keywords in the following
 	-- refer the the recommended form like "R_PAC_S_0805_VAL_100R_PMAX_125_TOL_5":
-
 	
 	type type_partcode_section is (
 		COMPONENT_PACKAGE,

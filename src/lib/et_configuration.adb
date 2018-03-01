@@ -198,7 +198,7 @@ package body et_configuration is
 		begin
 			log ("detecting multiple usage of purpose " 
 				 & enclose_in_quotes (et_libraries.to_string (purpose)) 
-				 & " in component category" & to_string (category) 
+				 & " in component category " & to_string (category) 
 				 & " ...", log_threshold);
 			log_indentation_up;
 
@@ -2391,13 +2391,13 @@ package body et_configuration is
 		put_line (configuration_file_handle, comment & "sections in component part code and their keywords"); 
 		put_line (configuration_file_handle, comment & "keyword" & latin_1.space & "section");
 		new_line (configuration_file_handle);
-		put_line (configuration_file_handle, "PAC  " & to_string (COMPONENT_PACKAGE));
-		put_line (configuration_file_handle, "VAL  " & to_string (COMPONENT_VALUE));
-		put_line (configuration_file_handle, "TOL  " & to_string (TOLERANCE));
-		put_line (configuration_file_handle, "VMAX " & to_string (MAXIMUM_VOLTAGE));
-		put_line (configuration_file_handle, "PMAX " & to_string (MAXIMUM_POWER));
-		put_line (configuration_file_handle, "TYPE " & to_string (PART_TYPE));
-		put_line (configuration_file_handle, "PN   " & to_string (PART_NUMBER));
+		put_line (configuration_file_handle, "PAC   " & to_string (COMPONENT_PACKAGE));
+		put_line (configuration_file_handle, "VAL   " & to_string (COMPONENT_VALUE));
+		put_line (configuration_file_handle, "TOL   " & to_string (TOLERANCE));
+		put_line (configuration_file_handle, "VMAX  " & to_string (MAXIMUM_VOLTAGE));
+		put_line (configuration_file_handle, "PMAX  " & to_string (MAXIMUM_POWER));
+		put_line (configuration_file_handle, "TYPE  " & to_string (PART_TYPE));
+		put_line (configuration_file_handle, "PN    " & to_string (PART_NUMBER));
 
 
 		new_line (configuration_file_handle);
