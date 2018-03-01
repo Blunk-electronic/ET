@@ -309,11 +309,24 @@ package body et_string_processing is
 
 
 	function strip_quotes (text_in : in string) return string is
-	-- removes heading and trailing quotation from given string		
+	-- removes heading and trailing quotation from given string
+		quote : constant character := latin_1.quotation;
 	begin
-		-- CS: do not strip anything if no quotes present
-		-- if text_in(text_in'first) = latin_1.quote
-		return text_in(text_in'first+1..text_in'last-1);
+		-- if quote is first and last character
+		if text_in (text_in'first) = quote and text_in (text_in'last) = quote then
+			return text_in (text_in'first + 1 .. text_in'last - 1);
+	
+		-- if quote is first character
+		elsif text_in (text_in'first) = quote then
+			return text_in (text_in'first + 1 .. text_in'last);
+
+		-- if quote is last character
+		elsif text_in (text_in'last) = quote then
+			return text_in (text_in'first .. text_in'last - 1);
+
+		else
+			return text_in;
+		end if;
 	end strip_quotes;
 
 	function enclose_in_quotes (text_in : in string; quote : in character := latin_1.apostrophe) return string is

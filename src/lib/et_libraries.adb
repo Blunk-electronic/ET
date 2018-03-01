@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -91,15 +91,21 @@ package body et_libraries is
 	end to_string;
 
 	function to_text_size (size : in type_distance) return type_text_size is
-	-- Converts given size to type_text_size.
-	-- Reports a warning if text size out of range.
+	-- Converts given distance to type_text_size. Raises error on excessive text size.
 		use et_string_processing;
 	begin
 		if size not in type_text_size then
-			log (message_warning & "text " 
+			log_indentation_reset;
+			log (message_error & "text " 
 				 & to_string (size => size, preamble => true)  
-				 & " out of range !");
-			-- CS: show range
+				 & " out of range !",
+				 console => true);
+
+			log ("Allowed range is " & to_string (type_text_size'first, preamble => false) & " .. "
+				 & to_string (type_text_size'last, preamble => false),
+				 console => true);
+
+			raise constraint_error;
 		end if;
 		return size;
 	end to_text_size;

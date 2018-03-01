@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -127,10 +127,8 @@ package et_libraries is
 	text_size_default : constant type_text_size := 1.3;
 
 	function to_text_size (size : in type_distance) return type_text_size;
-	-- Converts given size to type_text_size.
-	-- Reports a warning if text size out of range.
-	-- CS: make use of it wherever possible !
-
+	-- Converts given distance to type_text_size. Raises error on excessive text size.
+	
 	function to_string (
 		size 		: in type_text_size;
 		preamble	: in boolean := true) return string;

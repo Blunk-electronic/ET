@@ -4050,8 +4050,10 @@ package body et_kicad is
 
 			end make_sheet_header;
 
-			procedure make_drawing_frame (lines : in type_lines.list) is
+			procedure make_drawing_frame (
 			-- Builds the drawing frame.
+				lines 			: in type_lines.list;
+				log_threshold	: in type_log_level) is
 				
 				-- These are the components of the drawing frame. At the end
 				-- of this procedure they are assembled to a drawing frame:
@@ -4082,6 +4084,9 @@ package body et_kicad is
 				use type_lines;
 			
 			begin -- make_drawing_frame
+				log ("making drawing frame ...", log_threshold);
+				log_indentation_up;
+			
 				line_cursor := type_lines.first (lines);
 
 				-- read drawing frame dimensions from a line like "$Descr A4 11693 8268"
@@ -4137,9 +4142,8 @@ package body et_kicad is
 				if field (et_kicad.line,1) = schematic_keyword_title then                        
 					-- CS test field count					
 					title_block_text.meaning := TITLE;
-					title_block_text.text := type_title_block_text_string.to_bounded_string(
-						strip_quotes ((field (et_kicad.line,2))));
-						type_title_block_texts.append (title_block_texts, title_block_text);
+					title_block_text.text := type_title_block_text_string.to_bounded_string((field (et_kicad.line,2)));
+					type_title_block_texts.append (title_block_texts, title_block_text);
 				end if;
 
 				next (line_cursor);
@@ -4148,9 +4152,8 @@ package body et_kicad is
 				if field (et_kicad.line,1) = schematic_keyword_date then                        
 					-- CS test field count					
 					title_block_text.meaning := DRAWN_DATE;
-					title_block_text.text := type_title_block_text_string.to_bounded_string(
-						strip_quotes ((field (et_kicad.line,2))));
-						type_title_block_texts.append (title_block_texts, title_block_text);
+					title_block_text.text := type_title_block_text_string.to_bounded_string((field (et_kicad.line,2)));
+					type_title_block_texts.append (title_block_texts, title_block_text);
 				end if;
 
 				next (line_cursor);
@@ -4159,9 +4162,8 @@ package body et_kicad is
 				if field (et_kicad.line,1) = schematic_keyword_revision then                        
 					-- CS test field count					
 					title_block_text.meaning := REVISION;
-					title_block_text.text := type_title_block_text_string.to_bounded_string (
-						strip_quotes ((field (line,2))));
-						type_title_block_texts.append (title_block_texts, title_block_text);
+					title_block_text.text := type_title_block_text_string.to_bounded_string ((field (line,2)));
+					type_title_block_texts.append (title_block_texts, title_block_text);
 				end if;
 
 				next (line_cursor);
@@ -4170,8 +4172,7 @@ package body et_kicad is
 				if field (et_kicad.line,1) = schematic_keyword_company then
 					-- CS test field count					
 					title_block_text.meaning := COMPANY;
-					title_block_text.text := type_title_block_text_string.to_bounded_string(
-					strip_quotes ((field (et_kicad.line,2))));
+					title_block_text.text := type_title_block_text_string.to_bounded_string((field (et_kicad.line,2)));
 					type_title_block_texts.append (title_block_texts, title_block_text);
 				end if;
 
@@ -4183,10 +4184,9 @@ package body et_kicad is
 					field (et_kicad.line,1) = schematic_keyword_comment_3 or 
 					field (et_kicad.line,1) = schematic_keyword_comment_4 then
 					-- CS test field count
-						title_block_text.meaning := MISC;
-						title_block_text.text := type_title_block_text_string.to_bounded_string (
-						strip_quotes ((field (et_kicad.line,2))));
-						type_title_block_texts.append (title_block_texts, title_block_text);
+					title_block_text.meaning := MISC;
+					title_block_text.text := type_title_block_text_string.to_bounded_string ((field (et_kicad.line,2)));
+					type_title_block_texts.append (title_block_texts, title_block_text);
 				end if;
 
 				-- FINALIZE
@@ -4209,21 +4209,36 @@ package body et_kicad is
 				-- append temporarily drawing frame to module
 				add_frame (frame);
 
+				log_indentation_down;
+
+				exception
+					when event:
+						others =>
+							log_indentation_reset;
+							--log (message_error , console => true);
+							log (ada.exceptions.exception_message (event));
+							raise;
+				
 			end make_drawing_frame;
 
 
-			procedure make_gui_sheet (lines : in type_lines.list) is
+			procedure make_gui_sheet (
+				lines 			: in type_lines.list;
+				log_threshold	: in type_log_level) is
 			-- Builds the GUI sheet.
 				sheet : et_schematic.type_gui_submodule; -- the hierarchical GUI sheet being built
 				name, file : et_coordinates.type_submodule_name.bounded_string; -- sheet name and file name (must be equal)
 
 				port_inserted : boolean; -- used to detect multiple ports with the same name
 				port_cursor : type_gui_submodule_ports.cursor; -- obligatory, but not read
-				
+
 				use type_lines;
 				use et_coordinates.type_submodule_name;
 				use et_libraries;
+				use et_configuration;
 
+				text_size : type_text_size; -- temporarily storage of a text size before being checked
+			
 				function to_direction (dir_in : in string) return type_port_direction is
 				-- Converts a string to type_port_direction.
 					result : type_port_direction;
@@ -4280,7 +4295,9 @@ package body et_kicad is
 				end to_orientation;
 					
 			begin -- make_gui_sheet
-				--line_cursor := first (lines);
+				log ("making gui sheet ...", log_threshold);
+				log_indentation_up;
+				
 				line_cursor := type_lines.first (lines);
 -- 				log (to_string (et_kicad.line), log_threshold + 1);
 
@@ -4340,46 +4357,69 @@ package body et_kicad is
 						type_submodule_name.to_bounded_string (strip_quotes (field (et_kicad.line,2))));
 				end if;
 
-				log_indentation_up;
 				log ("hierarchic sheet " & type_submodule_name.to_string (name), log_threshold + 1);
 				
 				-- Read sheet ports from a line like "F2 "SENSOR_GND" I R 2250 3100 60".
 				-- The index after the F is a successive number that increments on every port:
 				-- So the next port would be "F3 "SENSOR_VCC" I R 2250 3300 60" ...
 				next (line_cursor);
-				while line_cursor /= no_element loop
-					log_indentation_up;
-					log ("port " & strip_quotes (field (et_kicad.line, 2)), log_threshold + 2);
 
-					-- add port
-					type_gui_submodule_ports.insert (
-						container => sheet.ports,
-						key => type_net_name.to_bounded_string (strip_quotes (field (et_kicad.line, 2))), -- port name
-						new_item => (
-							direction => to_direction (field (et_kicad.line, 3)),
-							orientation => to_orientation (field (et_kicad.line, 4)),
-							coordinates => to_point (field (et_kicad.line, 5), field (et_kicad.line, 6)),
-                            text_size => to_text_size (mil_to_distance (field (et_kicad.line, 7))),
-                            processed => false),
-						inserted => port_inserted,
-                        position => port_cursor
-						);
-
-					-- if port could not be inserted -> abort
-					if not port_inserted then
-						log_indentation_reset;
-						log (message_error & "multiple usage of port " & strip_quotes (field (et_kicad.line, 2)) & " !");
-						raise constraint_error;
-					end if;
+				-- Read ports of hierachic sheet if any. Otherwise output a warning.
+				-- If no ports available, the line cursor points to a no_element.
+				if line_cursor /= no_element then
 					
-					log_indentation_down;
-					next (line_cursor);
-				end loop;
+					-- Test of excessive text size.
+					text_size := to_text_size (mil_to_distance (field (et_kicad.line, 7)));
 
-				log_indentation_down;
+					-- Test text size by category.
+					check_schematic_text_size (category => PORT_NAME, size => text_size);
+					
+					while line_cursor /= no_element loop
+						log_indentation_up;
+						log ("port " & strip_quotes (field (et_kicad.line, 2)), log_threshold + 2);
+
+						-- add port
+						type_gui_submodule_ports.insert (
+							container => sheet.ports,
+							key => type_net_name.to_bounded_string (strip_quotes (field (et_kicad.line, 2))), -- port name
+							new_item => (
+								direction 	=> to_direction (field (et_kicad.line, 3)),
+								orientation	=> to_orientation (field (et_kicad.line, 4)),
+								coordinates	=> to_point (field (et_kicad.line, 5), field (et_kicad.line, 6)),
+								text_size	=> text_size,
+								processed	=> false),
+							inserted => port_inserted,
+							position => port_cursor
+							);
+
+						-- if port could not be inserted -> abort
+						if not port_inserted then
+							log_indentation_reset;
+							log (message_error & "multiple usage of port " & strip_quotes (field (et_kicad.line, 2)) & " !");
+							raise constraint_error;
+						end if;
+						
+						log_indentation_down;
+						next (line_cursor);
+					end loop;
+
+				else -- sheet has no ports -> warning
+					log (message_warning & "hierarchic sheet '" & type_submodule_name.to_string (name) & "' has no ports !");
+				end if;
 
 				-- insert the hierarchical GUI sheet in module (see et_schematic type_module)
 				add_gui_submodule (name, sheet);
+
+				log_indentation_down;
+				
+				exception
+					when event:
+						others =>
+							log_indentation_reset;
+							--log (message_error , console => true);
+							log (ada.exceptions.exception_message (event));
+							raise;
+
 			end make_gui_sheet;
 
 
@@ -5983,7 +6023,7 @@ package body et_kicad is
 									description_entered := false; -- we are leaving the description
 									description_processed := true;
 
-									make_drawing_frame (lines);
+									make_drawing_frame (lines, log_threshold + 1);
 									clear (lines); -- clean up line collector
 								else
 									add (line);
@@ -6015,7 +6055,7 @@ package body et_kicad is
 									if field (line,1) = schematic_sheet_footer then -- $EndSheet
 										sheet_description_entered := false; -- we are leaving the sheet description
 
-										make_gui_sheet (lines);
+										make_gui_sheet (lines, log_threshold + 1);
 										clear (lines);
 									else
 										--log (to_string (line));
