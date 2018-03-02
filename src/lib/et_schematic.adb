@@ -5934,7 +5934,8 @@ package body et_schematic is
 							when LIGHT_EMMITTING_DIODE | LIGHT_EMMITTING_DIODE_ARRAY => statistics.leds := statistics.leds + 1;
 							when NETCHANGER => statistics.netchangers := statistics.netchangers + 1;
 							when RELAY => statistics.relays := statistics.relays + 1;
-							when RESISTOR | RESISTOR_ADJUSTABLE | RESISTOR_NETWORK | POTENTIOMETER => statistics.resistors := statistics.resistors + 1;
+							when RESISTOR | RESISTOR_ADJUSTABLE | RESISTOR_NETWORK | RESISTOR_PHOTO | POTENTIOMETER => 
+									statistics.resistors := statistics.resistors + 1;
 							when TESTPOINT => statistics.testpoints := statistics.testpoints + 1;
 							when TRANSISTOR | TRANSISTOR_PHOTO => statistics.transistors := statistics.transistors + 1;
 							
