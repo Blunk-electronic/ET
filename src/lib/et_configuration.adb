@@ -2090,8 +2090,15 @@ package body et_configuration is
 	
 	procedure check_partcode_keyword_length (keyword : in string) is
 	-- Tests if the given partcode keyword is longer than allowed.
+		use et_string_processing;
 	begin
-		null; -- CS
+		if keyword'length > partcode_keyword_length_max then
+			log_indentation_reset;
+			log (message_error & "max. number of characters for part code keyword is" 
+				 & positive'image (partcode_keyword_length_max) & " !",
+				 console => true);
+			raise constraint_error;
+		end if;
 	end check_partcode_keyword_length;
 	
 	procedure check_partcode_keyword_characters (
@@ -2100,8 +2107,27 @@ package body et_configuration is
 	-- Tests if the given keyword contains only valid characters as specified
 	-- by given character set.
 	-- Raises exception if invalid character found.
+		use et_string_processing;
+		use type_partcode_keyword;
+		invalid_character_position : natural := 0;
 	begin
-		null; -- CS
+		-- Test given keyword and get position of possible invalid characters.
+		invalid_character_position := index (
+			source => keyword,
+			set => characters,
+			test => outside);
+
+		-- Evaluate position of invalid character.
+		if invalid_character_position > 0 then
+			log_indentation_reset;
+			log (message_error & "invalid character in part code keyword '" 
+				& to_string (keyword) & "' at position" & natural'image (invalid_character_position) & " !",
+				console => true);
+
+			-- CS: show allowed characters
+			raise constraint_error;
+		end if;
+
 	end check_partcode_keyword_characters;
 
 	procedure validate_partcode_keyword (keyword : in type_partcode_keyword.bounded_string) is

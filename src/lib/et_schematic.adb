@@ -666,8 +666,11 @@ package body et_schematic is
 		if invalid_character_position > 0 then
 			log_indentation_reset;
 			log (message_error & "invalid character in net name '" 
-				& to_string (net) & "' at position" & natural'image (invalid_character_position),
-				console => true);
+				 & to_string (net) & "' at position" 
+				 & natural'image (invalid_character_position) & " !",
+				 console => true);
+
+			-- CS: show allowed characters
 			raise constraint_error;
 		end if;
 
