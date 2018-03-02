@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -42,9 +42,6 @@ with ada.strings;		 		use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.directories;			use ada.directories;
 with ada.strings.bounded; 		use ada.strings.bounded;
--- with ada.containers; 			use ada.containers;
--- with ada.containers.vectors;
--- with ada.containers.doubly_linked_lists;
 
 with et_general;				use et_general;
 with et_schematic;				use et_schematic;

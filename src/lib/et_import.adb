@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -111,9 +111,7 @@ package body et_import is
 		set_output (et_import.report_handle);
 		
 		put_line (system_name & " " & version & " import report");
--- 		put_line ("project " & et_schematic.type_project_name.to_string (et_schematic.project_name)); -- CS: function that returns the project name
 		put_line ("date " & string (date_now));
--- 		put_line ("CAD format " & type_cad_format'image (cad_format));
 		put_line ("CAUTION: Measurement system is METRIC. All dimensions given in millimeters !"); -- CS: function that returns this text
 		put_line ("CAUTION: All angles are given in degrees !"); -- CS: function that returns this text
 		put_line ("log level" & type_log_level'image (log_level)); -- CS: function that returns the log level
@@ -145,10 +143,9 @@ package body et_import is
 
 			if warning_counter > 0 then
 				put_line (standard_output, "WARNING ! "
-					& "Read import report for warnings and error messages !"); -- CS: show path to report file
+					& "Read import report " & file_report_import & " for warnings and error messages !");
 			end if;
--- 			put_line (standard_output, "successful !");
--- 			put_line ("Read import and export reports for warnings and error messages !"); -- CS: show path to report file
+			
 		end if;
 	end close_report;
 
