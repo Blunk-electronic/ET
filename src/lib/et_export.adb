@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -96,7 +96,8 @@ package body et_export is
 
 			if warning_counter > 0 then
 				put_line (standard_output, "WARNING ! "
-					& "Read export report for warnings and error messages !"); -- CS: show path to report file
+					& "Read export report " & file_report_export 
+					& " for warnings and error messages !");
 			end if;
 		end if;
 			
