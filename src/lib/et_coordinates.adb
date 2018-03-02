@@ -222,9 +222,6 @@ package body et_coordinates is
 		-- Do nothing if the given rotation is zero.
 		if angle /= 0.0 then
 
-			-- CS: in order to improve performance some ops can be skipped or simplified
-			-- if point.x or point.y are zero
-			
 			-- compute distance of given point to origin
 			if point.x = zero_distance and point.y = zero_distance then
 				distance_to_origin := type_float_distance (zero_distance);
@@ -313,30 +310,23 @@ package body et_coordinates is
 
 	function distance (point_1, point_2 : in type_2d_point) return type_distance is
 	-- Returns the distance between the given points.
--- 		dis : type_distance;
 		dis : float;
 		package functions_distance is new ada.numerics.generic_elementary_functions (float);
 		use functions_distance;
-
 		use et_string_processing;
 	begin
 		-- To save computing time a few simple checks:
 		
 		if point_1 = point_2 then -- points have same x/y position -> zero difference
--- 			log (text => "equal points", level => 4);
 			dis := float (zero_distance);
 			
 		elsif point_1.x = point_2.x then -- points are in a vertical line
--- 			log (text => "vertical", level => 4);
 			dis := float (abs (point_2.y - point_1.y));
 			
 		elsif point_1.y = point_2.y then -- points are in a horizontal line
--- 			log (text => "horizontal", level => 4);
 			dis := float (abs (point_2.x - point_1.x));
 
 		else -- distance = sqrt (delta_x^2 + delta_y^2)
--- 			log (text => "diagonal", level => 4);
-			
 			dis := sqrt (
 					(float (abs (point_2.x - point_1.x))) ** 2
 					+
@@ -496,7 +486,7 @@ package body et_coordinates is
 	function to_string (sheet_number : in type_submodule_sheet_number) return string is
 	-- Returns a sheet number to a string.
 	begin
-		return type_submodule_sheet_number'image (sheet_number);
+		return trim (type_submodule_sheet_number'image (sheet_number), left);
 	end to_string;
 
 	function to_sheet_number (sheet_number : in string) return type_submodule_sheet_number is
@@ -566,8 +556,6 @@ package body et_coordinates is
 			when module =>
 				return coordinates_preamble_module
 					& to_string (position.path) & latin_1.space & hierarchy_separator & latin_1.space
--- 					& to_string (position.module)
--- 					& latin_1.space & axis_separator & latin_1.space
 					& to_string (position.sheet_number) 
 					& latin_1.space & axis_separator & latin_1.space
 					& to_string (distance_x (position))
@@ -589,9 +577,6 @@ package body et_coordinates is
 					& to_string (distance_y (position));
 
 		end case;
-		-- CS: output in both mil and mm
-		
-		-- CS: exception handler
 	end to_string;
 
 	function path (position : in type_coordinates) return type_path_to_submodule.list is
