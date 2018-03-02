@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -34,12 +34,6 @@
 --
 --   history of changes:
 --
-with ada.strings;				use ada.strings;
-with ada.strings.unbounded; 	use ada.strings.unbounded;
-with ada.characters;			use ada.characters;
-with ada.characters.handling;	use ada.characters.handling;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with et_string_processing;
 
 package body et_general is
 

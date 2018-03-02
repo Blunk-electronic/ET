@@ -108,11 +108,19 @@ package et_string_processing is
 	-- Writes the given text with the current log_indentation in the current output. 
 	-- If the system wide log level is greater or equal the the given log_level the given text is put on the log.
 
+
+
+	
 -- CHARACTERS IN NOTES, TEXT, LABELS, ...
+
+	comment_mark : constant string (1..1) := "#";
+	
 	-- Since we want designs readable and portable in as many languages as possible we accept only those characters:
 	general_characters : character_set := 
 		to_set (ranges => (('a','z'),('A','Z'),('0','9'))) -- letters and numbers
 		or to_set ("!?.-: "); -- other characters -- CS: add others if neccessary
+
+
 	
 -- DATE
 	date_characters : character_set := to_set (span => ('0','9')) or to_set ("-:T");
@@ -229,7 +237,7 @@ package et_string_processing is
 	-- Breaks down a given string and returns a type_fields_of_line.
 		line			: in string; -- the line to be broken down
 		number			: in positive_count := positive_count'first; -- the line number	
-		comment_mark	: in string := et_general.comment_mark; -- the comment mark like "--" or "#"
+		comment_mark	: in string := et_string_processing.comment_mark; -- the comment mark like "--" or "#"
 		test_whole_line	: in boolean := true; -- when false, cares for the comment mark at line begin only
 												 -- further comment marks are ignored
 		ifs				: in character := latin_1.space;	-- field separator
