@@ -14,13 +14,13 @@ $ et --make_configuration my_configuration.txt
 - To import a single KiCad V4 design run this command: 
 
 ```sh
-$ et --configuration_file my_configuration.txt --import_format kicad_v4 --import_project my_kicad_project/
+$ et --configuration_file my_configuration.txt --import_format kicad_v4 --import_module my_kicad_project/
 ```
  
 optionally provide a log level for debugging:
 
 ```sh 
-$ et --configuration_file my_configuration.txt --import_format kicad_v4 --import_project my_kicad_project/ --log_level 2
+$ et --configuration_file my_configuration.txt --import_format kicad_v4 --import_module my_kicad_project/ --log_level 2
 ```
 
 - ET creates in the projects root directory a folder named "ET" where you find logfiles, reports, netlists, statistics, BOMs, ...
