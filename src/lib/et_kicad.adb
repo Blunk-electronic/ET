@@ -144,7 +144,6 @@ package body et_kicad is
 				 & power_symbol_prefix & " !",
 				console => true
 				);
-			-- CS: show coordinates of affected component
 			raise constraint_error;
 		end if;
 	end validate_prefix;
@@ -431,14 +430,10 @@ package body et_kicad is
 			position	: in positive) return string renames get_field_from_line;
 
 		procedure invalid_appearance is
-		-- CS: display field meaning ?
-			-- 	meaning : in et_general.type_text_meaning) return string is
 		begin
 			log_indentation_reset;
-			log (text => message_error & et_string_processing.affected_line(line) & "invalid visibility flag !",
-				console => true);
-		
-				-- CS: refine output.
+			log (message_error & et_string_processing.affected_line (line) 
+				 & "invalid visibility flag !", console => true);
 			raise constraint_error;
 		end invalid_appearance;	
 
@@ -448,22 +443,18 @@ package body et_kicad is
 		case schematic is
 
 			when true =>
-				--put(3 * latin_1.space & keyword_appears);
-				
 				-- If it is about a schematic component we just test if the first
-				-- character of the 3ed subfield is a hash sign.
-				if field(line,3)(field(line,3)'first) = schematic_component_power_symbol_prefix then
+				-- character of the 3rd subfield is a hash sign.
+				if field (line,3) (field (line,3)'first) = schematic_component_power_symbol_prefix then
 					comp_app := sch;
 				else
 					comp_app := sch_pcb;
 				end if;
 				
 			when false =>
-				--put(4 * latin_1.space & keyword_appears);
-				
 				-- If it is about a library component we test the whole letter
 				-- in subfield #10.
-				lca := type_library_component_appearance'value(field(line,10));
+				lca := type_library_component_appearance'value (field (line,10));
 
 				-- Evaluate lca and set comp_app accordingly.
 				case lca is
@@ -490,7 +481,7 @@ package body et_kicad is
 
 		use et_schematic;
 	
-		function field ( line : in type_fields_of_line; pos : in positive) return string 
+		function field (line : in type_fields_of_line; pos : in positive) return string 
 			renames et_string_processing.get_field_from_line;
 		
 		rep_in : type_alternative_representation;
@@ -502,18 +493,23 @@ package body et_kicad is
 			when alternative_representation_yes =>
 				rep_out := yes;
 
-				-- CS: currently we do not support alternative representations
+				-- We do not support alternative representations.
 				log_indentation_reset;
-				log (text => message_error & "alternative representation (DeMorgan) not supported currently !",
-					console => true);
+				log (text => message_error & "alternative representation (DeMorgan) not supported !",
+					 console => true);
+				raise constraint_error;
 				
 			when alternative_representation_no =>
 				rep_out := no;
 		end case;
 		
 		return rep_out;
+
+		exception
+			when others => 
+				log (message_error & "invalid alternative representation flag !", console => true);
+				raise;			
 		
-		-- CS exception handler
 	end to_alternative_representation;
 
 	function to_degrees (angle : in string) return et_coordinates.type_angle is
