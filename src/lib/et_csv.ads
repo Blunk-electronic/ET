@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -44,47 +44,6 @@ package et_csv is
 	
 	row_separator_1 	: constant string (1..10) := "----------";
 	row_separator_2 	: constant string (1..20) := "--------------------";
-
--- 	function date_to_natural
--- 	-- Takes an iso date like 1974-07-04 and converts into a natural from 0 to 99999999.
--- 		(
--- 		date 	: string -- (1..10) := "0000-00-00"
--- 		)
--- 		return natural;
--- 
--- 	function get_field_count
--- 	-- Returns number of fields separated by ifs. if line is empty zero will be returned.
--- 		(
--- 		line	: unbounded_string;
--- 		ifs		: character := ';'	-- default separator is semicolon
--- 		)
--- 		return natural;
--- 
--- 	function get_field_position
--- 	-- Returns position of first field containing given string. Ff string not found, returns 0.
--- 		(
--- 		line	: unbounded_string;
--- 		text 	: string;
--- 		ifs		: character := ';'	-- default separator is semicolon
--- 		)
--- 		return natural;
--- 
--- 	function get_field
--- 	-- Returns field content indicated by field position and separated by ifs.
--- 	-- If line is empty, "" will be returned.		
--- 		(
--- 		line	: unbounded_string;
--- 		pos 	: natural;
--- 		ifs		: character := ';'	-- default separator is semicolon
--- 		)
--- 		return string;
--- 
--- 	function strip_text_delimiters 
--- 	-- Used to delete text delimiters such as quotes (" or ')
--- 		(
--- 		text_in		: string
--- 		)
--- 		return string;
 
 	columns_max : constant natural := 1000; -- CS this is the limit of columns a csv file can have.
 	type type_column is range 0..columns_max;
