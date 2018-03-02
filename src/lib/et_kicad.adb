@@ -2759,8 +2759,9 @@ package body et_kicad is
 
 	procedure import_design (
 		first_instance 	: in boolean := false;
+		project			: in et_schematic.type_project_name.bounded_string;
 		log_threshold	: in et_string_processing.type_log_level) is
-	-- Imports the design as indicated by global variable project_name. (CS should be a parameter)
+	-- Imports the design as specified by project.
 	-- Inserts the created submodule in the rig (see et_schematic.type_rig).
 	-- Leaves the global module_cursor pointing where the module was inserted.
 	-- If first_instance is false, the module gets the name as defined in the kicad project file.
@@ -2810,7 +2811,7 @@ package body et_kicad is
 			log (
 				text => "reading project file " 
 				 & compose (
-					name		=> type_project_name.to_string (project_name), 
+					name		=> type_project_name.to_string (project), 
 					extension	=> file_extension_project) & " ...",
 				level => log_threshold + 1);
 			log_indentation_up;
@@ -2827,7 +2828,7 @@ package body et_kicad is
 				file => project_file_handle,
 				mode => in_file,
 				name => compose (
-							name		=> et_schematic.type_project_name.to_string (et_schematic.project_name), 
+							name		=> et_schematic.type_project_name.to_string (project), 
 							extension	=> file_extension_project)
 				);
 			set_input (project_file_handle);
@@ -2913,7 +2914,7 @@ package body et_kicad is
 			-- It is just a matter of file extension.
 			return type_schematic_file_name.to_bounded_string (
 				compose (
-					name		=> et_schematic.type_project_name.to_string (project_name), 
+					name		=> et_schematic.type_project_name.to_string (project), 
 					extension	=> file_extension_schematic)
 					);
 		end read_project_file;
@@ -6272,10 +6273,10 @@ package body et_kicad is
 
 		-- change to given project directory
 		log (
-			text => "changing to project directory " & (type_project_name.to_string (et_schematic.project_name) & " ..."),
+			text => "changing to project directory " & (type_project_name.to_string (project) & " ..."),
 			level => log_threshold
 			);
-		set_directory (type_project_name.to_string (et_schematic.project_name));
+		set_directory (type_project_name.to_string (project));
 		
 		case et_import.cad_format is
 			when et_import.kicad_v4 =>

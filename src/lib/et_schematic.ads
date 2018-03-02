@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -73,7 +73,6 @@ package et_schematic is
 	package type_project_name is new generic_bounded_length (project_name_length); 
 	use type_project_name;
 
-	project_name : type_project_name.bounded_string;
 	project_file_handle	: ada.text_io.file_type;
 
 	function to_project_name (name : in string) return type_project_name.bounded_string;

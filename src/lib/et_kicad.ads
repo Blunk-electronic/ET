@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -68,8 +68,9 @@ package et_kicad is
     
 	procedure import_design (
 		first_instance 	: in boolean := false;
+		project			: in et_schematic.type_project_name.bounded_string;								
 		log_threshold	: in et_string_processing.type_log_level); 
-	-- Imports the design as indicated by global variable project_name. (CS should be a parameter)
+	-- Imports the design as specified by project_name.
 	-- Inserts the created submodule in the rig (see et_schematic.type_rig).
 	-- Leaves the global module_cursor pointing where the module was inserted.
 	-- If first_instance is false, the module gets the name as defined in the kicad project file.
@@ -95,8 +96,9 @@ package et_kicad is
 	-- In compoenent libraries and schematic, a text field is indicated by letter "F":
 	component_field_identifier				: constant string (1..1) := "F";
 
+	-- We limit the number of fields in the component library to this constant.
 	library_component_field_count_max 	: constant positive := 9;
-	-- CS: we limit the number of fields in the compoentn library. Useful limit ?
+
 
 	type type_component_field_id is range 0..library_component_field_count_max;
 	component_field_reference		: constant type_component_field_id := 0;

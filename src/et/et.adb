@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -61,6 +61,8 @@ procedure et is
 	-- Depending on the command line arguments this variable tells what the operator wants to do:
 	operator_action : type_operator_action := request_help;
 	conf_file_name	: et_configuration.type_configuration_file_name.bounded_string;	
+
+	project_name : et_schematic.type_project_name.bounded_string; -- used for single module import
 	
 	procedure get_commandline_arguments is
 		use et_schematic;
@@ -150,7 +152,7 @@ procedure et is
 		use et_schematic.type_projects_root_dir;
 	begin
 		log_indentation_reset;
-		log (text => "changing back to projects directory '" & to_string (projects_root_dir) & "' ...",
+		log (text => "changing back to projects directory " & to_string (projects_root_dir) & " ...",
 			 level => 1);
 		set_directory (to_string (projects_root_dir));
 	end restore_projects_root_directory;
@@ -158,7 +160,7 @@ procedure et is
 	procedure create_work_directory is
 	begin
 		if not exists (work_directory) then
-			put_line ("creating " & system_name & " work directory '" & work_directory & "' ...");
+			put_line ("creating " & system_name & " work directory " & work_directory & " ...");
 			create_directory (work_directory);
 		end if;
 	end create_work_directory;
@@ -173,6 +175,7 @@ procedure et is
 	
 	procedure import_module is
 	-- This imports a single module.
+	-- CAUTION: uses the global variable project_name !!!
 		use et_schematic;
 		use et_schematic.type_project_name;
 		use et_import;
@@ -189,7 +192,7 @@ procedure et is
 		end if;
 
 		-- Test if cad format specified:
-		if et_import.cad_format = unknown then
+		if et_import.cad_format = UNKNOWN then
 			put_line (message_error & "CAD format not specified !");
 			raise constraint_error;
 		end if;		
@@ -216,7 +219,7 @@ procedure et is
 		log ("CAD format " & to_string (et_import.cad_format));
 		
 		-- CS: use case construct to probe cad formats
-		et_kicad.import_design (log_threshold => 0);
+		et_kicad.import_design (project => project_name, log_threshold => 0);
 		restore_projects_root_directory;
 
 		et_import.close_report;
@@ -241,6 +244,7 @@ procedure et is
 
 		module_cursor_import : type_import_modules.cursor;
 		instances : type_submodule_instance;
+		module : type_project_name.bounded_string; -- when importing multiple projects, we regard them as modules
 	
 	begin
 		log ("importing modules ...");
@@ -268,7 +272,7 @@ procedure et is
 			-- After the import, we restore the directory.
 			backup_projects_root_directory;
 
-			project_name := to_bounded_string (to_string (element (module_cursor_import).name));
+			module := to_bounded_string (to_string (element (module_cursor_import).name));
 			et_import.cad_format := element (module_cursor_import).format;
 			instances := element (module_cursor_import).instances;
 
@@ -277,14 +281,14 @@ procedure et is
 
 			if instances = type_submodule_instance'first then 
 				-- Only one instance requried -> do a regular single design import.
-				log ("importing module " & to_string (project_name) & " ...");
+				log ("importing module " & to_string (module) & " ...");
 				log ("CAD format " & et_import.to_string (et_import.cad_format));
 				
 				-- CS: use case construct to probe cad formats
-				et_kicad.import_design (log_threshold => 0);
+				et_kicad.import_design (project => module, log_threshold => 0);
 
 			else -- multi-instances
-				log ("importing and instantiating module " & to_string (project_name) & " ...");
+				log ("importing and instantiating module " & to_string (module) & " ...");
 				log ("CAD format " & et_import.to_string (et_import.cad_format));
 				
 				-- Import the project only once.
@@ -294,7 +298,7 @@ procedure et is
 					if i = type_submodule_instance'first then -- first instance
 						
 						-- CS: use case construct to probe cad formats
-						et_kicad.import_design (first_instance => true, log_threshold => 0);
+						et_kicad.import_design (first_instance => true, project => module, log_threshold => 0);
 					else
 						-- Copy the last module.
 						-- The module instance is incremented by copy_module automatically.
