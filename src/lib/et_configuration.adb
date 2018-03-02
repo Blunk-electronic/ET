@@ -1949,15 +1949,19 @@ package body et_configuration is
 				log (message_error & unit & " is not a supported unit of measurement !",
 					 console => true);
 
-				-- CS: show supported units
-				
+				log ("supported units are:");
+				for uom in type_unit_of_measurement'pos (type_unit_of_measurement'first) .. 
+					type_unit_of_measurement'pos (type_unit_of_measurement'last) loop
+					log ("- " & to_string (type_unit_of_measurement'val (uom)));
+				end loop;
+						
 				raise constraint_error;
 	end to_unit_of_measurement;
 	
 	function to_string (unit : in type_unit_of_measurement) return string is
 	-- returns the given unit of measurement as string. (things like OHM, KILOOHM, MEGAOHM, ...)
 	begin
-		return latin_1.space & type_unit_of_measurement'image (unit);
+		return type_unit_of_measurement'image (unit);
 	end to_string;
 	
 	procedure check_abbrevation_of_unit_characters (
@@ -2348,31 +2352,31 @@ package body et_configuration is
 		new_line (configuration_file_handle);
 		put_line (configuration_file_handle, comment & "abbrevation unit_of_measurement");
 		new_line (configuration_file_handle);
-		put_line (configuration_file_handle, "m" & to_string (MILLIOHM));
-		put_line (configuration_file_handle, "R" & to_string (OHM));
-		put_line (configuration_file_handle, "k" & to_string (KILOOHM));
-		put_line (configuration_file_handle, "M" & to_string (MEGAOHM));
-		put_line (configuration_file_handle, "G" & to_string (GIGAOHM));		
+		put_line (configuration_file_handle, "m " & to_string (MILLIOHM));
+		put_line (configuration_file_handle, "R " & to_string (OHM));
+		put_line (configuration_file_handle, "k " & to_string (KILOOHM));
+		put_line (configuration_file_handle, "M " & to_string (MEGAOHM));
+		put_line (configuration_file_handle, "G " & to_string (GIGAOHM));		
 
-		put_line (configuration_file_handle, "p" & to_string (PICOFARAD));		
-		put_line (configuration_file_handle, "n" & to_string (NANOFARAD));
-		put_line (configuration_file_handle, "u" & to_string (MICROFARAD));
-		put_line (configuration_file_handle, "m" & to_string (MILLIFARAD));
-		put_line (configuration_file_handle, "F" & to_string (FARAD));
+		put_line (configuration_file_handle, "p " & to_string (PICOFARAD));		
+		put_line (configuration_file_handle, "n " & to_string (NANOFARAD));
+		put_line (configuration_file_handle, "u " & to_string (MICROFARAD));
+		put_line (configuration_file_handle, "m " & to_string (MILLIFARAD));
+		put_line (configuration_file_handle, "F " & to_string (FARAD));
 
-		put_line (configuration_file_handle, "n" & to_string (NANOHENRY));		
-		put_line (configuration_file_handle, "u" & to_string (MICROHENRY));
-		put_line (configuration_file_handle, "m" & to_string (MILLIHENRY));
-		put_line (configuration_file_handle, "H" & to_string (HENRY));
+		put_line (configuration_file_handle, "n " & to_string (NANOHENRY));		
+		put_line (configuration_file_handle, "u " & to_string (MICROHENRY));
+		put_line (configuration_file_handle, "m " & to_string (MILLIHENRY));
+		put_line (configuration_file_handle, "H " & to_string (HENRY));
 
-		put_line (configuration_file_handle, "V" & to_string (VOLT));
+		put_line (configuration_file_handle, "V " & to_string (VOLT));
 
-		put_line (configuration_file_handle, "m" & to_string (MILLIAMPERE));		
-		put_line (configuration_file_handle, "A" & to_string (AMPERE));
+		put_line (configuration_file_handle, "m " & to_string (MILLIAMPERE));		
+		put_line (configuration_file_handle, "A " & to_string (AMPERE));
 
-		put_line (configuration_file_handle, "k" & to_string (KILOHERTZ));
-		put_line (configuration_file_handle, "M" & to_string (MEGAHERTZ));
-		put_line (configuration_file_handle, "G" & to_string (GIGAHERTZ));
+		put_line (configuration_file_handle, "k " & to_string (KILOHERTZ));
+		put_line (configuration_file_handle, "M " & to_string (MEGAHERTZ));
+		put_line (configuration_file_handle, "G " & to_string (GIGAHERTZ));
 		
 		new_line (configuration_file_handle);
 		new_line (configuration_file_handle);		
