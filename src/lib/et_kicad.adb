@@ -91,17 +91,19 @@ package body et_kicad is
 	end line;
 	
 	procedure invalid_field (line : in type_fields_of_line) is
-	-- CS: display field meaning ?
-		-- 	meaning : in et_general.type_text_meaning) return string is
 	begin
 		log_indentation_reset;
-		log (text => message_error & affected_line (line) & "invalid field !",
+		log (message_error & affected_line (line) & "invalid field !", console => true);
+
+		log (to_string (line), console => true);
+
+		log ("Field indexes must be in range" 
+			 & type_component_field_id'image (type_component_field_id'first)
+			 & " .." 
+			 & type_component_field_id'image (type_component_field_id'last)
+			 & " !", 
 			console => true);
 
-		log (text => to_string (line),
-			console => true);
-
-		-- CS: refine output.
 		raise constraint_error;
 	end invalid_field;
 
@@ -218,11 +220,11 @@ package body et_kicad is
 				-- In a schematic the meaning of a text field is identified by "F 0 ...".
 
 				-- So the first thing to do is test if the letter F at the begin of the line:
-				if field(line,1) = component_field_identifier then
+				if field (line,1) = component_field_identifier then
 
 					-- Then we test the field id.
 					-- The field id must be mapped to the actual field meaning:
-					case type_component_field_id'value(field(line,2)) is -- "0..2"
+					case type_component_field_id'value (field (line,2)) is -- "0..9"
 						when component_field_reference		=> meaning := et_libraries.reference;
 						when component_field_value			=> meaning := et_libraries.value;
 						when component_field_package		=> meaning := et_libraries.packge;
@@ -242,12 +244,12 @@ package body et_kicad is
 				
 			when false =>
 
-				-- In a library the meaning of a text field is identified by "F0 ...".
+				-- In a library the meaning of a text field is identified by "F0 .. F9".
 				
 				-- So the first thing to do is test if the letter F at the begin of the line:
-				if strip_id(field(line,1)) = component_field_identifier then
+				if strip_id (field (line,1)) = component_field_identifier then
 				
-					case type_component_field_id'value ( strip_f (field(line,1) ) ) is
+					case type_component_field_id'value (strip_f (field (line,1))) is
 						when component_field_reference		=> meaning := et_libraries.reference;
 						when component_field_value			=> meaning := et_libraries.value;
 						when component_field_package		=> meaning := et_libraries.packge;
@@ -5849,7 +5851,7 @@ package body et_kicad is
 								-- NOTE: length check already included in check_bom_characters
 								check_bom_characters (content (field_bom));
 
-							when others => null; -- CS: other fields are ignored. warning ?
+							when others => invalid_field (et_kicad.line); -- other fields are not accepted and cause an error
 						end case;
 
 						--log ("unit field B: " & to_string (et_kicad.line));
