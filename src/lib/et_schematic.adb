@@ -64,12 +64,24 @@ package body et_schematic is
 	begin
 		return type_project_name.to_bounded_string (name);
 	end to_project_name;
+
+	function to_file_name_text_size (size : in string) return type_file_name_text_size is
+	-- Converts a string to type_file_name_text_size.
+	begin
+		return type_file_name_text_size'value (size);
+	end to_file_name_text_size;
 	
 	function to_string (schematic : in type_schematic_file_name.bounded_string) return string is
 	-- Returns the given schematic file name as string.
 	begin
 		return type_schematic_file_name.to_string (schematic);
 	end to_string;
+
+	function to_sheet_name_text_size (size : in string) return type_sheet_name_text_size is
+	-- Converts a string to type_sheet_name_text_size.
+	begin
+		return type_sheet_name_text_size'value (size);
+	end to_sheet_name_text_size;
 	
 	-- Here we append a submodule name to the path_to_submodule.
 	-- CS: unify with procedure delete_last_module_name_from_path
@@ -113,6 +125,12 @@ package body et_schematic is
 		log (message_error & " module " & to_string (module) & " not found !");
 		raise constraint_error;
 	end module_not_found;
+
+	function to_net_name (net_name : in string) return type_net_name.bounded_string is
+	-- Converts a string to a type_net_name.
+	begin
+		return type_net_name.to_bounded_string (net_name);
+	end to_net_name;
 	
 	function to_string (net_name : in type_net_name.bounded_string) return string is
 	-- Returns the given net name as string.

@@ -83,6 +83,12 @@ package et_schematic is
 	package type_schematic_file_name is new generic_bounded_length (schematic_file_name_length); 
 	use type_schematic_file_name;
 
+	subtype type_file_name_text_size is type_distance range 1.0 .. 5.0; -- unit is mm
+	file_name_text_size_default : constant type_file_name_text_size := 1.3;
+
+	function to_file_name_text_size (size : in string) return type_file_name_text_size;
+	-- Converts a string to type_file_name_text_size.
+
 	top_level_schematic	: type_schematic_file_name.bounded_string;
 	
 	schematic_handle	: ada.text_io.file_type;
@@ -103,7 +109,14 @@ package et_schematic is
 	-- Sheet names may have the same length as schematic files.
 	package type_sheet_name is new generic_bounded_length (schematic_file_name_length); 
 	use type_sheet_name;
-   
+
+	subtype type_sheet_name_text_size is type_distance range 1.0 .. 5.0; -- unit is mm
+	sheet_name_text_size_default : constant type_sheet_name_text_size := 1.3;
+
+	function to_sheet_name_text_size (size : in string) return type_sheet_name_text_size;
+	-- Converts a string to type_sheet_name_text_size.
+
+	
 -- PAPER SIZES
     type type_paper_size is (A0, A1, A2, A4); -- CS: others ?
     paper_size_default : type_paper_size := A4;
@@ -308,6 +321,8 @@ package et_schematic is
 	-- Tests if the given net name contains only valid characters as specified
 	-- by given character set.
 
+	function to_net_name (net_name : in string) return type_net_name.bounded_string;
+	-- Converts a string to a type_net_name.
 	
 	function to_string (net_name : in type_net_name.bounded_string) return string;
 	-- Returns the given net name as string;

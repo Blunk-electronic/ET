@@ -4330,8 +4330,13 @@ package body et_kicad is
 				-- The sheet name will later be compared with the sheet file name.
 				if field (et_kicad.line,1) = schematic_keyword_sheet_name then
 					-- CS test field count					
-					name := type_submodule_name.to_bounded_string (strip_quotes (field (et_kicad.line,2)));
-					sheet.text_size_of_name := mil_to_distance (field (et_kicad.line,3));
+					name := to_submodule_name (field (et_kicad.line,2));
+
+					-- set text size of sheet name and test for excessive text size.
+					sheet.text_size_of_name := to_text_size (mil_to_distance (field (et_kicad.line,3)));
+
+					-- Test text size by category.
+					check_schematic_text_size (category => SHEET_NAME, size => sheet.text_size_of_name);
 				end if;
 
 				next (line_cursor);
@@ -4339,25 +4344,30 @@ package body et_kicad is
 				-- Read sheet file name from a line like "F1 "mcu_stm32f030.sch" 60".
 				if field (et_kicad.line,1) = schematic_keyword_sheet_file then
 					-- CS test field count					
-					file := type_submodule_name.to_bounded_string (base_name (strip_quotes (field (et_kicad.line,2))));
-					sheet.text_size_of_file := mil_to_distance (field (et_kicad.line,3));
+					file := to_submodule_name (submodule => base_name (field (et_kicad.line,2)));
+
+					-- set text size of file name and test for excessive text size
+					sheet.text_size_of_file := to_text_size (mil_to_distance (field (et_kicad.line,3)));
+
+					-- Test text size by category.
+					check_schematic_text_size (category => FILE_NAME, size => sheet.text_size_of_file);
 					
 					-- Test if sheet name and file name match:
 					if name /= file then
 						log_indentation_reset;
 						log (text => message_error & "name mismatch: sheet name '" 
-							& type_submodule_name.to_string (name) & "' differs from file name '"
-							& type_submodule_name.to_string (file));
+							& to_string (submodule => name) & "' differs from file name '"
+							& to_string (submodule => file));
 						raise constraint_error;
 					end if;
 
 					-- append sheet file name (with extension) to list_of_submodules to be returned to parent unit
 					type_submodule_names.append (
 						list_of_submodules.list,
-						type_submodule_name.to_bounded_string (strip_quotes (field (et_kicad.line,2))));
+						to_submodule_name (submodule => field (et_kicad.line,2)));
 				end if;
 
-				log ("hierarchic sheet " & type_submodule_name.to_string (name), log_threshold + 1);
+				log ("hierarchic sheet " & to_string (submodule => name), log_threshold + 1);
 				
 				-- Read sheet ports from a line like "F2 "SENSOR_GND" I R 2250 3100 60".
 				-- The index after the F is a successive number that increments on every port:
@@ -4381,7 +4391,7 @@ package body et_kicad is
 						-- add port
 						type_gui_submodule_ports.insert (
 							container => sheet.ports,
-							key => type_net_name.to_bounded_string (strip_quotes (field (et_kicad.line, 2))), -- port name
+							key => to_net_name (field (et_kicad.line, 2)), -- port name
 							new_item => (
 								direction 	=> to_direction (field (et_kicad.line, 3)),
 								orientation	=> to_orientation (field (et_kicad.line, 4)),
@@ -4395,7 +4405,7 @@ package body et_kicad is
 						-- if port could not be inserted -> abort
 						if not port_inserted then
 							log_indentation_reset;
-							log (message_error & "multiple usage of port " & strip_quotes (field (et_kicad.line, 2)) & " !");
+							log (message_error & "multiple usage of port " & field (et_kicad.line, 2) & " !");
 							raise constraint_error;
 						end if;
 						
@@ -4404,7 +4414,7 @@ package body et_kicad is
 					end loop;
 
 				else -- sheet has no ports -> warning
-					log (message_warning & "hierarchic sheet '" & type_submodule_name.to_string (name) & "' has no ports !");
+					log (message_warning & "hierarchic sheet '" & to_string (submodule => name) & "' has no ports !");
 				end if;
 
 				-- insert the hierarchical GUI sheet in module (see et_schematic type_module)
@@ -4438,7 +4448,9 @@ package body et_kicad is
 				return result;
 			end net_segment_header;
 			
-			procedure make_net_segment (lines : in type_lines.list) is
+			procedure make_net_segment (
+				lines			: in type_lines.list;
+				log_threshold	: in type_log_level) is
 			-- Builds a net segment and appends it to the collection of wild segments.
 
 				-- After the segment heaser "Wire Wire Line" the next line like
@@ -4447,6 +4459,9 @@ package body et_kicad is
 			
 				segment : type_wild_net_segment; -- the segment being built
 			begin
+				log ("making net segment ...", log_threshold);
+				log_indentation_up;
+
 				line_cursor := type_lines.first (lines);
 				
 				-- Build a temporarily net segment with fully specified coordinates:
@@ -4469,11 +4484,7 @@ package body et_kicad is
 				if length (segment) > zero_distance then 
 
 					-- The net segments are to be collected in a wild list of segments for later sorting.
-					if log_level >= log_threshold + 1 then
-						log_indentation_up;
-						log ("net segment " & to_string (segment => segment, scope => xy));
-						log_indentation_down;
-					end if;
+					log (to_string (segment => segment, scope => xy), log_threshold + 1);
 					
 					type_wild_segments.append (wild_segments, segment);
 					
@@ -4481,6 +4492,7 @@ package body et_kicad is
 					log (message_warning & affected_line (et_kicad.line) & "Net segment with zero length found -> ignored !");
 				end if; -- length
 
+				log_indentation_down;
 			end make_net_segment;
 
 			function junction_header (line : in type_fields_of_line) return boolean is
@@ -4496,7 +4508,9 @@ package body et_kicad is
 				return result;
 			end junction_header;
 
-			procedure make_junction (line : in type_fields_of_line) is
+			procedure make_junction (
+				line			: in type_fields_of_line;
+				log_threshold	: in type_log_level) is
 			-- Builds a net junction and stores it both in the 
 			-- junction list of the module (for statistics, ERC, ...) 
 			-- AND in the wild list junctions.
@@ -4516,17 +4530,16 @@ package body et_kicad is
 				end append_junction;
 				
 			begin -- make_junction
+				log ("making net junction ...", log_threshold);
+				log_indentation_up;
+				
 				set_path (junction.coordinates, path_to_submodule);
 				set_sheet (junction.coordinates, sheet_number_current);
 				set_x (junction.coordinates, mil_to_distance (field (line,3)));
 				set_y (junction.coordinates, mil_to_distance (field (line,4)));
 
 				-- for the log
-				if log_level >= log_threshold + 1 then
-					log_indentation_up;
-					log ("junction at " & to_string (junction => junction, scope => xy));
-					log_indentation_down;
-				end if;
+				log (to_string (junction => junction, scope => xy));
 
 				-- add to wild list of junctions
 				type_junctions.append (wild_junctions, junction);
@@ -4536,7 +4549,8 @@ package body et_kicad is
 					container => rig,
 					position => module_cursor,
 					process => append_junction'access);
-				
+
+				log_indentation_down;
 			end make_junction;
 
 			function simple_label_header (line : in type_fields_of_line) return boolean is
@@ -4552,7 +4566,9 @@ package body et_kicad is
 				return result;
 			end simple_label_header;
 
-			procedure make_simple_label (lines : in type_lines.list) is
+			procedure make_simple_label (
+				lines 			: in type_lines.list;
+				log_threshold	: in type_log_level) is
 			-- Builds a simple net label and appends it to the collection of wild simple labels.
 
 				-- The label header "Text Label 2350 3250 0 60 ~ 0" and the next line like
@@ -4562,6 +4578,9 @@ package body et_kicad is
 				
 				label : type_net_label_simple; -- the label being built
 			begin
+				log ("making simple label ...", log_threshold);
+				log_indentation_up;
+				
 				line_cursor := type_lines.first (lines);
 
 				-- Build a temporarily simple label from a line like "Text Label 5350 3050 0    60   ~ 0" :
@@ -4588,11 +4607,7 @@ package body et_kicad is
 				check_net_name_characters (label.text);
 				
 				-- for the log
-				if log_level >= log_threshold + 1 then
-					log_indentation_up;
-					log ("simple label at " & to_string (label => type_net_label (label), scope => xy));
-					log_indentation_down;
-				end if;
+				log (to_string (label => type_net_label (label), scope => xy));
 
 				check_schematic_text_size (category => net_label, size => label.size);
 				-- CS: check label style
@@ -4600,7 +4615,8 @@ package body et_kicad is
 				
 				-- The simple labels are to be collected in a wild list of simple labels.
 				type_simple_labels.append (wild_simple_labels, label);
-				
+
+				log_indentation_down;
 			end make_simple_label;
 
 			function tag_label_header (line : in type_fields_of_line) return boolean is
@@ -4618,7 +4634,9 @@ package body et_kicad is
 				return result;
 			end tag_label_header;
 
-			procedure make_tag_label (lines : in type_lines.list) is
+			procedure make_tag_label (
+				lines 			: in type_lines.list;
+				log_threshold	: in type_log_level) is
 			-- Builds a global or hierachical label and appends it to the collection of wild tag labels.
 
 				-- The label header "Text GLabel 4700 3200 1 60 UnSpc ~ 0" and the next line like
@@ -4628,6 +4646,9 @@ package body et_kicad is
 				
 				label : type_net_label_tag; -- the label being built
 			begin
+				log ("making tag label ...", log_threshold);
+				log_indentation_up;
+
 				line_cursor := type_lines.first (lines);
 
 				-- Build a temporarily hierarchic/global label from a line like "Text GLabel 1850 3100 0 58 BiDi ~ 0"
@@ -4666,18 +4687,15 @@ package body et_kicad is
 				check_net_name_characters (label.text);
 
 				-- for the log
-				if log_level >= log_threshold + 1 then
-					log_indentation_up;
-					log ("tag label at " & to_string (label => type_net_label (label), scope => xy));
-					log_indentation_down;
-				end if;
+				log (to_string (label => type_net_label (label), scope => xy));
 
 				check_schematic_text_size (category => net_label, size => label.size);
 				-- CS: check style and line width
 				
 				-- The tag labels are to be collected in a wild list of tag labels for later sorting.
 				type_tag_labels.append (wild_tag_labels, label);
-				
+
+				log_indentation_down;
 			end make_tag_label;
 
 			function text_note_header (line : in type_fields_of_line) return boolean is
@@ -4694,7 +4712,9 @@ package body et_kicad is
 				return result;
 			end text_note_header;
 
-			procedure make_text_note (lines : in type_lines.list) is
+			procedure make_text_note (
+				lines			: in type_lines.list;
+				log_threshold	: in type_log_level) is
 			-- Builds a text note and appends it to the collection of text notes.
 
 				-- The label header "Text Notes 3400 2800 0 60 Italic 12" and the next line like
@@ -4702,6 +4722,9 @@ package body et_kicad is
 			
 				note : type_note; -- the text note being built
 			begin
+				log ("making text note ...", log_threshold);
+				log_indentation_up;
+				
 				line_cursor := type_lines.first (lines);
 
 				-- set coordinates
@@ -4711,7 +4734,10 @@ package body et_kicad is
 				set_y (note.coordinates, mil_to_distance (field (et_kicad.line,4)));
 				
 				note.orientation   := to_angle (field (et_kicad.line,5));
-				note.size := mil_to_distance (field (et_kicad.line,6));
+
+				-- set text size and check for excessive size
+				note.size := et_libraries.to_text_size (mil_to_distance (field (et_kicad.line,6)));
+				
 				note.style := to_text_style (style_in => field (et_kicad.line,7), text => true);
 				note.line_width := mil_to_distance (field (et_kicad.line,8));
 
@@ -4727,6 +4753,7 @@ package body et_kicad is
 				-- the notes are to be collected in the list of notes
 				add_note (note);
 
+				log_indentation_down;
 			end make_text_note;
 
 			function component_header (line : in type_fields_of_line) return boolean is
@@ -6079,7 +6106,7 @@ package body et_kicad is
 								else
 									net_segment_entered := false; -- we are leaving a net segment
 									add (line);
-									make_net_segment (lines);
+									make_net_segment (lines, log_threshold + 1);
 									clear (lines);
 								end if;
 
@@ -6088,7 +6115,7 @@ package body et_kicad is
 								-- Connection ~ 4650 4600
 
 								if junction_header (line) then
-									make_junction (line);
+									make_junction (line, log_threshold + 1);
 								end if;
 									
 								-- READ SIMPLE NET LABELS (they do not have a tag, but just a text) 
@@ -6104,7 +6131,7 @@ package body et_kicad is
 								else
 									simple_label_entered := false; -- we are leaving a simple label
 									add (line);
-									make_simple_label (lines);
+									make_simple_label (lines, log_threshold + 1);
 									clear (lines);
 								end if;
 								
@@ -6121,7 +6148,7 @@ package body et_kicad is
 								else
 									tag_label_entered := false; -- we are leaving a tag label
 									add (line);
-									make_tag_label (lines);
+									make_tag_label (lines, log_threshold + 1);
 									clear (lines);
 								end if;
 
@@ -6138,7 +6165,7 @@ package body et_kicad is
 								else 
 									note_entered := false; -- we are leaving a note
 									add (line);
-									make_text_note (lines);
+									make_text_note (lines, log_threshold + 1);
 									clear (lines);
 								end if;
 								

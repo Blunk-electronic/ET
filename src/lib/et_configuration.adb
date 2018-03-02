@@ -2386,7 +2386,12 @@ package body et_configuration is
 			& et_libraries.to_string (et_libraries.terminal_name_text_size_default, preamble => false));
 		put_line (configuration_file_handle, to_string (COMPONENT_ATTRIBUTE) 
 			& et_libraries.to_string (et_libraries.placeholder_text_size_default, preamble => false));
+		put_line (configuration_file_handle, to_string (SHEET_NAME) 
+			& et_libraries.to_string (et_schematic.sheet_name_text_size_default, preamble => false));
+		put_line (configuration_file_handle, to_string (et_configuration.FILE_NAME) 
+			& et_libraries.to_string (et_schematic.file_name_text_size_default, preamble => false));
 
+		
 		new_line (configuration_file_handle);
 		new_line (configuration_file_handle);
 		
@@ -2890,6 +2895,11 @@ package body et_configuration is
 							when COMPONENT_ATTRIBUTE =>
 								size := to_component_attribute_text_size (field (element (line_cursor), 2));
 
+							when SHEET_NAME =>
+								size := et_schematic.to_sheet_name_text_size (field (element (line_cursor), 2));
+
+							when et_configuration.FILE_NAME =>
+								size := et_schematic.to_file_name_text_size (field (element (line_cursor), 2));
 								
 						end case;
 						

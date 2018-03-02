@@ -365,7 +365,9 @@ package et_configuration is
 		NET_LABEL,
 		PORT_NAME,
 		TERMINAL_NAME,
-		COMPONENT_ATTRIBUTE
+		COMPONENT_ATTRIBUTE,
+		SHEET_NAME,
+		FILE_NAME
 		);
 
 	function to_text (text : in string) return type_text_schematic;
