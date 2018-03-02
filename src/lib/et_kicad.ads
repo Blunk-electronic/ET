@@ -62,7 +62,7 @@ package et_kicad is
 	file_extension_project   			: constant string (1..3) := "pro";
 	file_extension_schematic 			: constant string (1..3) := "sch";
 	file_extension_schematic_lib		: constant string (1..3) := "lib";
-	--CS: file_extension_board	 			: constant string (1..3) := "brd";
+	file_extension_board	 			: constant string (1..9) := "kicad_pcb";
     
     schematic_version                   : constant positive := 2;
     
