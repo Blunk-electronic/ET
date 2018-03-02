@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -71,7 +71,7 @@ procedure et is
 						& latin_1.space & switch_make_default_conf & latin_1.equals_sign
 						& latin_1.space & switch_log_level & latin_1.equals_sign
 						--& latin_1.space & switch_import_file & latin_1.equals_sign -- CS: see below
-						& latin_1.space & switch_import_project & latin_1.equals_sign
+						& latin_1.space & switch_import_module & latin_1.equals_sign
 						& latin_1.space & switch_import_format & latin_1.equals_sign
 						& latin_1.space & switch_import_modules -- no parameter
 						& latin_1.space & switch_configuration_file & latin_1.equals_sign
@@ -89,8 +89,8 @@ procedure et is
 -- 					elsif full_switch = switch_import_file then
 -- 						put_line("import file " & parameter); 
 
-					elsif full_switch = switch_import_project then
-						put_line ("import project " & strip_directory_separator (parameter));
+					elsif full_switch = switch_import_module then
+						put_line ("import module " & strip_directory_separator (parameter));
 						project_name := type_project_name.to_bounded_string (parameter);
 
 						-- set operator action

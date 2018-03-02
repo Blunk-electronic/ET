@@ -3015,10 +3015,10 @@ package body et_configuration is
 			open (file => configuration_file_handle, mode => in_file, name => to_string (file_name));
 			set_input (configuration_file_handle);
 
-			-- Sections regarding multi-board support are skipped if just a single project
+			-- Sections regarding multi-board support are skipped if just a single module
 			-- is to be imported. Notify operator:			
 			if single_module then
-				log (" single project import -> sections " & section_import_modules & " and " 
+				log (" single module import -> sections " & section_import_modules & " and " 
 					& section_module_interconnections & " ignored",
 					log_threshold + 1);
 			end if;

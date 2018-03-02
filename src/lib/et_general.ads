@@ -38,7 +38,7 @@
 
 package et_general is
 
-	version					: constant string (1..11) := "version 000";	
+	version					: constant string (1..11) := "version 000";
 	system_name				: constant string (1..9) := "SYSTEM ET";
 
 
@@ -58,7 +58,7 @@ package et_general is
 	switch_log_level			: constant string (1..10)	:= "-log_level";
 	switch_help					: constant string (1..5)	:= "-help"; -- long switch	
 	switch_make_default_conf	: constant string (1..19) 	:= "-make_configuration";
-	switch_import_project		: constant string (1..15)	:= "-import_project";	-- long switch -- CS rename to import_module
+	switch_import_module		: constant string (1..14)	:= "-import_module";	-- long switch
 	switch_import_modules		: constant string (1..15)	:= "-import_modules";	-- long switch
 	switch_import_format		: constant string (1..14)	:= "-import_format";	-- long switch
 	switch_configuration_file	: constant string (1..19)	:= "-configuration_file";
