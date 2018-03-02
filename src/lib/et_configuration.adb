@@ -900,7 +900,12 @@ package body et_configuration is
 				log (message_error & category & " is not a supported component category !",
 					 console => true);
 
-				-- CS: show supported categories
+				log ("supported categories are:");
+				for cat in type_component_category'pos (type_component_category'first) .. 
+					type_component_category'pos (type_component_category'last) loop
+
+					log ("- " & to_string (type_component_category'val (cat)));
+				end loop;
 				
 				raise constraint_error;
 	end to_category;
