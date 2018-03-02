@@ -5596,7 +5596,7 @@ package body et_schematic is
 				name => type_netlist_file_name.to_string (netlist_file_name));
 
 			put_line (netlist_handle, comment_mark & " " & system_name & " " & et_general.version & " netlist");
-			put_line (netlist_handle, comment_mark & " date " & string (date_now));
+			put_line (netlist_handle, comment_mark & " " & date);
 			put_line (netlist_handle, comment_mark & " module " & to_string (key (module_cursor)));
 			put_line (netlist_handle, comment_mark & " " & row_separator_double);
 			put_line (netlist_handle, comment_mark & " net count total" & count_type'image (net_count));
@@ -6134,7 +6134,7 @@ package body et_schematic is
 
 			log_indentation_up;
 			put_line (statistics_handle_cad, comment_mark & " " & system_name & " CAD statistics");
-			put_line (statistics_handle_cad, comment_mark & " date " & string (date_now));
+			put_line (statistics_handle_cad, comment_mark & " " & date);
 			put_line (statistics_handle_cad, comment_mark & " module " & to_string (key (module_cursor)));
 			put_line (statistics_handle_cad, comment_mark & " " & row_separator_double);
 
@@ -6203,7 +6203,7 @@ package body et_schematic is
 
 			log_indentation_up;
 			put_line (statistics_handle_cam, comment_mark & " " & system_name & " CAM statistics");
-			put_line (statistics_handle_cam, comment_mark & " date " & string (date_now));
+			put_line (statistics_handle_cam, comment_mark & " " & date);
 			put_line (statistics_handle_cam, comment_mark & " module " & to_string (key (module_cursor)));
 			put_line (statistics_handle_cam, comment_mark & " " & row_separator_double);
 

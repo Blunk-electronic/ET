@@ -111,10 +111,10 @@ package body et_import is
 		set_output (et_import.report_handle);
 		
 		put_line (system_name & " " & version & " import report");
-		put_line ("date " & string (date_now));
-		put_line ("CAUTION: Measurement system is METRIC. All dimensions given in millimeters !"); -- CS: function that returns this text
-		put_line ("CAUTION: All angles are given in degrees !"); -- CS: function that returns this text
-		put_line ("log level" & type_log_level'image (log_level)); -- CS: function that returns the log level
+		put_line (date);
+		put_line (metric_system);
+		put_line (angles_in_degrees);
+		put_line (to_string (log_level));
 		put_line (row_separator_double);		
 	end create_report;
 
@@ -134,7 +134,7 @@ package body et_import is
 			
 			put_line (row_separator_single);
 			
-			put_line ("date " & string (date_now));
+			put_line (date);
 			put_line (system_name & " import report end");
 
 			set_output (standard_output);

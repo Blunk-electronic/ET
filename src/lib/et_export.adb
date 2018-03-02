@@ -63,10 +63,10 @@ package body et_export is
 		set_output (et_export.report_handle);
 		
 		put_line (et_general.system_name & " " & et_general.version & " export report");
-		put_line ("date " & string (date_now));
-		put_line ("CAUTION: Measurement system is METRIC. All dimensions given in millimeters !");
-		put_line ("CAUTION: All angles are given in degrees !");
-		put_line ("log level" & type_log_level'image (log_level));
+		put_line (date);
+		put_line (metric_system);
+		put_line (angles_in_degrees);
+		put_line (to_string (log_level));
 		put_line (row_separator_double);
 		log_indentation_reset;
 	end create_report;
@@ -87,7 +87,7 @@ package body et_export is
 			
 			put_line (row_separator_single);
 			
-			put_line ("date " & string(date_now));
+			put_line (date);
 			put_line (et_general.system_name & " export report end");
 
 			set_output (standard_output);

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -38,7 +38,6 @@ with ada.strings;				use ada.strings;
 with ada.strings.unbounded; 	use ada.strings.unbounded;
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.strings.fixed; 		use ada.strings.fixed;
---with ada.strings.maps;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
@@ -46,6 +45,19 @@ with ada.text_io;				use ada.text_io;
 
 package body et_string_processing is
 
+	function to_string (
+	-- Returns the given log level as string. 
+		log_level	: in type_log_level;
+		preamble	: in boolean := true) -- if true -> prepend preamble
+		return string is
+	begin
+		if preamble then
+			return "log level" & type_log_level'image (log_level);
+		else
+			return trim (type_log_level'image (log_level), left);
+		end if;
+	end to_string;
+	
 	procedure log_indentation_up is
 	begin
 		log_indentation := log_indentation + 1;
@@ -101,10 +113,33 @@ package body et_string_processing is
 		now		: time := clock;
 		date	: string (1..19) := image(now, time_zone => utc_time_offset(now));
 	begin
-		date(11) := 'T'; -- inserts a T so that the result is "2017-08-17T14:17:25"
-		return type_date(date);
+		date (11) := 'T'; -- inserts a T so that the result is "2017-08-17T14:17:25"
+		return type_date (date);
 	end date_now;
 
+	function date (preamble : in boolean := true) return string is
+	-- Returns the current date as string in the format YYYY-MM-DDTHH:MM:SS
+	begin
+		if preamble then
+			return "date " & string (date_now);
+		else
+			return string (date_now);
+		end if;
+	end date;
+
+	
+	function metric_system return string is
+	-- Returns a message about the metric system used.
+	begin
+		return "CAUTION: Measurement system is METRIC. All dimensions given in millimeters !";
+	end metric_system;
+
+	function angles_in_degrees return string is
+	-- Returns a message about the degrees used.
+	begin
+		return "CAUTION: All angles are given in degrees (1/360) !";
+	end angles_in_degrees;	
+	
 	function message_warning return string is
 	-- Returns a warning string and increments the warning counter.
 	begin

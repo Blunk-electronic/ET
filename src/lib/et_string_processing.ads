@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -34,8 +34,6 @@
 --
 --   history of changes:
 
-
--- with ada.strings.unbounded; 	use ada.strings.unbounded;
 with ada.directories;			use ada.directories;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
@@ -46,14 +44,10 @@ with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.strings.maps;			use ada.strings.maps;
 with ada.text_io;				use ada.text_io;
--- with ada.float_text_io;			use ada.float_text_io;
-
 with ada.containers;            use ada.containers;
---with ada.containers.vectors;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_vectors;
 
--- with interfaces;				use interfaces;
 -- with ada.exceptions;
 
 with ada.calendar;				use ada.calendar;
@@ -71,6 +65,12 @@ package et_string_processing is
 	-- routing tables). However, it is limited to a reasonable value. See above.
 	type type_log_level is range 0..log_level_max;
 
+	function to_string (
+	-- Returns the given log level as string. 
+		log_level	: in type_log_level;
+		preamble	: in boolean := true) -- if true -> prepend preamble
+		return string;
+	
 	--log_level : type_log_level := type_log_level'first;
 
 	log_level_cmd_line_max : constant type_log_level := 15;
@@ -132,8 +132,9 @@ package et_string_processing is
 	function date_valid (date : in type_date) return boolean;
 	-- Returns true if given date is valid and plausible.
 	
-	function date_now return type_date;
-
+	function date (preamble : in boolean := true) return string;
+	-- Returns the current date as string in the format YYYY-MM-DDTHH:MM:SS
+	
 --	procedure check_updated_vs_commissioned (commissioned , updated : in type_date);
 	-- Checks whether updated is later or equal commissioned.
 
@@ -143,6 +144,12 @@ package et_string_processing is
 	item_not_specified		: constant string (1..7) := "missing";
 	
 -- WARNING AND ERROR MESSAGES
+	function metric_system return string;
+	-- Returns a message about the metric system used.
+
+	function angles_in_degrees return string;
+	-- Returns a message about the degrees used.
+	
 	message_error : constant string (1..8)	:= "ERROR ! ";
 	type type_warning_counter is new natural; -- CS: rename to type_warnings_counter. should be private
 	warning_counter : type_warning_counter := 0;
