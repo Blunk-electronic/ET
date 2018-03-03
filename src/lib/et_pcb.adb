@@ -56,7 +56,16 @@ package body et_pcb is
 
 	procedure dummy is begin null; end dummy;
 	
-		
+	function position_placement_default return type_position_placement is
+	begin
+		return (
+			x => et_pcb.zero_distance,
+			y => et_pcb.zero_distance,
+			z => et_pcb.zero_distance,
+			face => TOP,
+			angle => zero_angle);
+	end position_placement_default;
+	
 end et_pcb;
 
 -- Soli Deo Gloria

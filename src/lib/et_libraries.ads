@@ -490,7 +490,7 @@ package et_libraries is
 		or to_set('_'); 
 
 	component_package_name_length_max : constant positive := 100;
-	package type_component_package_name is new generic_bounded_length(component_package_name_length_max);
+	package type_component_package_name is new generic_bounded_length (component_package_name_length_max);
 	--use type_component_package_name;
 
 	function to_string (packge : in type_component_package_name.bounded_string) return string;
@@ -948,17 +948,17 @@ package et_libraries is
 	end record;
 	
 	package type_terminal_port_map is new ordered_maps (
-		key_type => type_terminal_name.bounded_string, -- H7, 14
-		element_type => type_port_in_terminal_port_map); -- unit A, OE1
+		key_type 		=> type_terminal_name.bounded_string, -- H7, 14
+		element_type 	=> type_port_in_terminal_port_map); -- unit A, OE1
 
 	type type_component_variant is record
-		packge	: type_component_package;
-		terminal_port_map : type_terminal_port_map.map;
+		packge				: type_component_package; -- includes package and lib name
+		terminal_port_map	: type_terminal_port_map.map; -- which port is connected with with terminal
 	end record;
 
 	package type_component_variants is new ordered_maps (
-		key_type => type_component_variant_name.bounded_string, -- D, N
-		element_type => type_component_variant);
+		key_type 		=> type_component_variant_name.bounded_string, -- D, N
+		element_type 	=> type_component_variant);
 
 	type type_terminal is record
 		name	: type_terminal_name.bounded_string; -- H7
@@ -999,7 +999,7 @@ package et_libraries is
 			-- enforce net names. In order to distinguish them from regular power symbols the
 			-- power_flag is provided.
 			when sch => 
-				power_flag	: type_power_flag := no;
+				power_flag		: type_power_flag := no;
 
 			-- If a component appears in both schematic and layout it comes 
 			-- with at least one package/footprint variant. We store variants in a map.

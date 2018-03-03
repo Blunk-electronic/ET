@@ -49,10 +49,30 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
-with et_coordinates;			use et_coordinates;
-with et_string_processing;
+--with et_coordinates;			--use et_coordinates;
+--with et_string_processing;
 
 package et_pcb is
+
+	type type_axis is (X, Y, Z);
+	type type_face is (TOP, BOTTOM);
+	
+	-- The total distance between two objects:
+	type type_distance_total is delta 0.001 range -100_000_000.00 .. 100_000_000.00; -- unit is metric millimeter
+	for type_distance_total'small use 0.001; -- this is the accuracy required for layout
+
+	-- The x and y position of an object:
+	subtype type_distance is type_distance_total range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter
+	zero_distance : constant type_distance := 0.0;
+	
+	type type_angle is delta 0.01 range -359.9 .. 359.9;
+	for type_angle'small use 0.01;
+	zero_angle : constant type_angle := 0.0;
+
+	type type_position is tagged private;
+	type type_position_placement is private;
+
+	function position_placement_default return type_position_placement;
 
 	type type_package_technology is (
 		THT,		-- Through Hole Technology
@@ -80,6 +100,20 @@ package et_pcb is
 -- 	end record;
 
 	procedure dummy;
+
+	private
+
+		type type_position is tagged record
+			x, y, z : type_distance := zero_distance;
+		end record;
+
+		zero : constant type_position := (others => zero_distance);
+
+		type type_position_placement is new type_position with record
+			face	: type_face := TOP;
+			angle	: type_angle := zero_angle;
+		end record;
+
 		
 end et_pcb;
 

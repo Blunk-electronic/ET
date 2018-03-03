@@ -62,6 +62,7 @@ with et_geometry;
 
 with et_general;
 with et_string_processing;		use et_string_processing;
+with et_pcb;
 
 package body et_kicad is
 
@@ -5339,6 +5340,8 @@ package body et_kicad is
 									purpose			=> type_component_purpose.to_bounded_string (content (field_purpose)),
 									bom				=> type_bom'value (content (field_bom)),
 
+									position		=> et_pcb.position_placement_default,
+									
 									-- Kicad requirement
 									package_library => library_name (content (field_package)), -- bel_primitives, bel_transistors
 

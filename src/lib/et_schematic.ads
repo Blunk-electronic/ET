@@ -57,7 +57,7 @@ with ada.containers.ordered_sets;
 with et_coordinates;			use et_coordinates;
 with et_libraries;				use et_libraries;
 with et_string_processing;
-
+with et_pcb;
 
 package et_schematic is
 
@@ -267,7 +267,7 @@ package et_schematic is
 	
 	-- This is a component as it appears in the schematic.
 	type type_component (appearance : type_appearance_schematic) is record
-		library_name	: type_full_library_name.bounded_string; -- ../libraries/transistors.lib
+		library_name	: type_full_library_name.bounded_string; -- symbol lib like ../libraries/transistors.lib
 		generic_name	: et_libraries.type_component_generic_name.bounded_string; -- example: "TRANSISTOR_PNP"
 		value			: et_libraries.type_component_value.bounded_string; -- 470R
 		commissioned	: et_string_processing.type_date; -- 2017-08-17T14:17:25
@@ -283,6 +283,8 @@ package et_schematic is
 				purpose			: type_component_purpose.bounded_string;
 				datasheet		: type_component_datasheet.bounded_string;
 				bom				: type_bom;
+
+				position		: et_pcb.type_position_placement;
 				
 			-- If a component appears in the schematic only, it does not
 			-- have any package variants.
