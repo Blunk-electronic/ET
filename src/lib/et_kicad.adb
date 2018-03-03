@@ -5263,6 +5263,17 @@ package body et_kicad is
 					end if;
 					
 				end generic_name_to_library;
+
+				function to_package_variant (
+					component_library 	: in type_full_library_name.bounded_string; 		-- bel_logic
+					generic_name 		: in type_component_generic_name.bounded_string; 	-- 7400
+					package_library 	: in type_library_name.bounded_string; 				-- bel_ic
+					packge_name 		: in type_component_package_name.bounded_string)	-- S_SO14
+					return type_component_variant_name.bounded_string is -- D
+					variant : type_component_variant_name.bounded_string; -- to be returned
+				begin
+					return variant;
+				end to_package_variant;
 				
 				procedure insert_component is
 				-- Inserts the component in the component list of the module (indicated by module_cursor).
