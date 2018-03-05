@@ -929,6 +929,9 @@ package et_libraries is
 		type_component_variant_name.to_bounded_string ("default");
 
 	-- CS function to_string (package_variant : in type_component_variant_name) return string;
+	
+	-- CS function to_component_variant_name (variant_name : in string) 
+	--	return type_component_variant_name.bounded_string;
 
 	-- CS: procedure check_variant_name_length (variant : in string);
 	

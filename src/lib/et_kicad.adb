@@ -2384,6 +2384,7 @@ package body et_kicad is
 								insert (
 									container => tmp_variants,
 									key => component_variant_name_default, -- because kicad does not know package variants
+									-- CS package_name (content (field_package)), -- S_SO14
 									new_item => (
 										-- The package field contains something like "bel_ic:S_SO14".
 										-- This provides the library name and the package name.
@@ -2802,8 +2803,9 @@ package body et_kicad is
 					-- if the variant name is the default name then the default variant is used.
 					if 	element (variant_cursor).packge.library = full_package_library_name and
 						element (variant_cursor).packge.name = package_name and 
+						--key (variant_cursor) = component_variant_name_default then
 						key (variant_cursor) = component_variant_name_default then
-							log ("default variant used", log_threshold + 1);
+							log ("default variant used", log_threshold + 1); -- CS show variant name
 							exit;
 					else
 						log (message_error & "unknown variant used !", console => true);
