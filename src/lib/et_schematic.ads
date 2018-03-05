@@ -283,7 +283,7 @@ package et_schematic is
 				purpose			: type_component_purpose.bounded_string;
 				datasheet		: type_component_datasheet.bounded_string;
 				bom				: type_bom;
-				--variant			: type_component_variant_name.bounded_string; -- D, N
+-- 				variant			: type_component_variant_name.bounded_string; -- D, N
 				position		: et_pcb.type_position_placement;
 				
 			-- If a component appears in the schematic only, it does not

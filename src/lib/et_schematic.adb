@@ -395,9 +395,9 @@ package body et_schematic is
 		case type_components.element(component).appearance is
 			when sch_pcb =>
 
-				-- package
-				log ("package " 
-					& to_string (type_components.element (component).packge), log_threshold);
+-- 				-- package
+-- 				log ("package " 
+-- 					& to_string (type_components.element (component).packge), log_threshold);
 
 				-- datasheet
 				log ("datasheet "

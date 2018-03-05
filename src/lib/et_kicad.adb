@@ -194,7 +194,7 @@ package body et_kicad is
 	-- Extracts from a scheamtic field like "F 0 "#PWR01" H 2000 3050 50  0001 C CNN" its meaning.
 	-- Extracts from a component field like "F0 "IC" 0 50 50 H V C CNN" its meaning.
 	-- Since the fields start different in libaray and schematic we also need a flag that tells
-	-- the function whether we are dealing with scheamtic or library fields.
+	-- the function whether we are dealing with schematic or library fields.
 		line : in type_fields_of_line;
 		schematic : in boolean) -- set false if it is about fields in a library, true if it is about a schematic field	
 		return et_libraries.type_text_meaning is
@@ -5268,9 +5268,9 @@ package body et_kicad is
 					component_library 	: in type_full_library_name.bounded_string; 		-- bel_logic
 					generic_name 		: in type_component_generic_name.bounded_string; 	-- 7400
 					package_library 	: in type_library_name.bounded_string; 				-- bel_ic
-					packge_name 		: in type_component_package_name.bounded_string)	-- S_SO14
+					package_name 		: in type_component_package_name.bounded_string)	-- S_SO14
 					return type_component_variant_name.bounded_string is -- D
-					variant : type_component_variant_name.bounded_string; -- to be returned
+					variant : type_component_variant_name.bounded_string; -- variant name to be returned
 				begin
 					return variant;
 				end to_package_variant;
@@ -5350,6 +5350,11 @@ package body et_kicad is
 									partcode		=> type_component_partcode.to_bounded_string (content (field_partcode)),
 									purpose			=> type_component_purpose.to_bounded_string (content (field_purpose)),
 									bom				=> type_bom'value (content (field_bom)),
+-- 									variant			=> to_package_variant (
+-- 															component_library => generic_name_to_library (generic_name_in_lbr, reference),	-- bel_logic
+-- 															generic_name => generic_name_in_lbr, -- 7400
+-- 															package_library => library_name (content (field_package)), -- bel_ic
+-- 															package_name => package_name (content (field_package))), -- S_SO14
 
 									position		=> et_pcb.position_placement_default,
 									
