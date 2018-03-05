@@ -277,13 +277,13 @@ package et_schematic is
 		case appearance is
 			-- If a component appears in both schematic and layout it has got:
 			when sch_pcb => 
-				package_library	: type_library_name.bounded_string; -- Kicad requirement
-				packge 			: type_component_package_name.bounded_string; -- S_SOT23
+-- 				package_library	: type_library_name.bounded_string; -- Kicad requirement
+-- 				packge 			: type_component_package_name.bounded_string; -- S_SOT23
 				partcode		: type_component_partcode.bounded_string;
 				purpose			: type_component_purpose.bounded_string;
 				datasheet		: type_component_datasheet.bounded_string;
 				bom				: type_bom;
--- 				variant			: type_component_variant_name.bounded_string; -- D, N
+				variant			: type_component_variant_name.bounded_string; -- D, N
 				position		: et_pcb.type_position_placement;
 				
 			-- If a component appears in the schematic only, it does not
@@ -299,6 +299,14 @@ package et_schematic is
 		end case;
 	end record;
 
+	function to_package_name (
+		library_name	: in type_full_library_name.bounded_string; -- symbol lib like ../libraries/transistors.lib
+		generic_name	: in et_libraries.type_component_generic_name.bounded_string; -- example: "TRANSISTOR_PNP"
+		package_variant	: in type_component_variant_name.bounded_string) -- N, D
+		return type_component_package_name.bounded_string;
+	-- Returns the package name for of the given component.
+		
+	
 	procedure write_unit_properties (
 	-- Writes the properties of the unit indicated by the given cursor.
 		unit			: in type_units.cursor;

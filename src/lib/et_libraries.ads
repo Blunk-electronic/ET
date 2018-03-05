@@ -920,12 +920,15 @@ package et_libraries is
 	-- If a component has package variants, a suffix after the component type indicates the package
 	-- The variant name is manufacturer specific. example: TL084D or TL084N
 	-- component package variant names like "N" or "D" are stored in short bounded strings:
-	component_variant_name_characters : character_set := to_set (span => ('A','Z')) or to_set ("-");
+	component_variant_name_characters : character_set := to_set (span => ('A','Z')) or to_set ("-"); -- CS rename to package_variant_name_characters
 	component_variant_name_length_max : constant positive := 10;
 	package type_component_variant_name is new generic_bounded_length (component_variant_name_length_max);
 	use type_component_variant_name;
 
-	component_variant_name_default : constant type_component_variant_name.bounded_string := type_component_variant_name.to_bounded_string ("default");
+	component_variant_name_default : constant type_component_variant_name.bounded_string := 
+		type_component_variant_name.to_bounded_string ("default");
+
+	-- CS function to_string (package_variant : in type_component_variant_name) return string;
 
 	-- CS: procedure check_variant_name_length (variant : in string);
 	

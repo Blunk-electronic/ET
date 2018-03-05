@@ -2402,7 +2402,7 @@ package body et_kicad is
 											name => package_name (content (field_package)), -- S_SO14
 
 											-- We compose the full library name from lib_dir (global variable) and the 
-											-- library name. example: projects/lbr/bel_ic.pac
+											-- library name. example: projects/lbr/bel_ic
 											library => to_full_library_name (
 												root_dir => lib_dir,
 												lib_name => library_name (content (field_package))), 
@@ -2756,6 +2756,103 @@ package body et_kicad is
 	end read_components_libraries;
 
 
+	function to_package_variant (
+		component_library 	: in et_libraries.type_full_library_name.bounded_string; 		-- ../lbr/bel_logic.lib
+		generic_name 		: in et_libraries.type_component_generic_name.bounded_string; 	-- 7400
+		package_library 	: in et_libraries.type_library_name.bounded_string; 			-- bel_ic
+		package_name 		: in et_libraries.type_component_package_name.bounded_string;	-- S_SO14
+		log_threshold		: in et_string_processing.type_log_level)
+		return et_libraries.type_component_variant_name.bounded_string is 					-- D
+
+		use et_libraries;
+		library_cursor : type_libraries.cursor;
+		
+		use et_string_processing;
+		variant : type_component_variant_name.bounded_string := component_variant_name_default; -- variant name to be returned
+
+		procedure locate_component (
+			library_name	: in type_full_library_name.bounded_string;
+			components 		: in type_components.map) is
+			component_cursor : type_components.cursor;
+
+			procedure query_variants (
+				component_name	: in type_component_generic_name.bounded_string;
+				component 		: in type_component) is
+
+				use type_component_package_name;
+				use type_full_library_name;
+				use type_component_variants;
+				use type_component_variant_name;
+				
+				variant_cursor : type_component_variants.cursor := component.variants.first;
+
+				 -- This is the temporarily used library name where packages are stored in.
+				full_library_name : type_full_library_name.bounded_string;
+
+			begin -- query_variants
+				log ("querying package variants ...", log_threshold + 2);
+				log_indentation_up;
+
+				while variant_cursor /= type_component_variants.no_element loop
+
+					-- The given package library has this full name:
+					full_library_name := to_full_library_name (root_dir => lib_dir, lib_name => package_library);
+
+					-- If the variant in the library has the same full library name
+					if element (variant_cursor).packge.library = full_library_name then
+
+						-- if the variant in the library has the same package name
+						if element (variant_cursor).packge.name = package_name then
+							if key (variant_cursor) = component_variant_name_default then
+								log ("default variant used", log_threshold + 1);
+								exit;
+							else
+								log (message_error & "unknown variant used !", console => true);
+								raise constraint_error;
+							end if;
+						end if;
+					end if;
+
+					next (variant_cursor);
+				end loop;
+
+				log_indentation_down;
+				
+				exception
+					when event:
+						others =>
+							log_indentation_reset;
+							put_line (ada.exceptions.exception_message (event));
+							raise;
+
+			end query_variants;
+			
+		begin -- locate_component
+			log ("locating generic component in library ...", log_threshold + 1);
+			log_indentation_up;
+			
+			component_cursor := components.find (generic_name);
+			type_components.query_element (
+				position 	=> component_cursor,
+				process 	=> query_variants'access);
+
+			log_indentation_down;
+		end locate_component;
+		
+	begin
+		log ("making package variant ...", log_threshold);
+		log_indentation_up;
+
+		library_cursor := component_libraries.find (component_library);
+		type_libraries.query_element (
+			position	=> library_cursor,
+			process		=> locate_component'access);
+		
+		log_indentation_down;
+		return variant;
+	end to_package_variant;
+
+	
 	procedure import_design (
 		first_instance 	: in boolean := false;
 		project			: in et_schematic.type_project_name.bounded_string;
@@ -5264,17 +5361,6 @@ package body et_kicad is
 					
 				end generic_name_to_library;
 
-				function to_package_variant (
-					component_library 	: in type_full_library_name.bounded_string; 		-- bel_logic
-					generic_name 		: in type_component_generic_name.bounded_string; 	-- 7400
-					package_library 	: in type_library_name.bounded_string; 				-- bel_ic
-					package_name 		: in type_component_package_name.bounded_string)	-- S_SO14
-					return type_component_variant_name.bounded_string is -- D
-					variant : type_component_variant_name.bounded_string; -- variant name to be returned
-				begin
-					return variant;
-				end to_package_variant;
-				
 				procedure insert_component is
 				-- Inserts the component in the component list of the module (indicated by module_cursor).
 				-- Components may occur multiple times, which implies they are
@@ -5350,18 +5436,19 @@ package body et_kicad is
 									partcode		=> type_component_partcode.to_bounded_string (content (field_partcode)),
 									purpose			=> type_component_purpose.to_bounded_string (content (field_purpose)),
 									bom				=> type_bom'value (content (field_bom)),
--- 									variant			=> to_package_variant (
--- 															component_library => generic_name_to_library (generic_name_in_lbr, reference),	-- bel_logic
--- 															generic_name => generic_name_in_lbr, -- 7400
--- 															package_library => library_name (content (field_package)), -- bel_ic
--- 															package_name => package_name (content (field_package))), -- S_SO14
+									variant			=> to_package_variant (
+															component_library => generic_name_to_library (generic_name_in_lbr, reference),	-- bel_logic
+															generic_name => generic_name_in_lbr, -- 7400
+															package_library => library_name (content (field_package)), -- bel_ic
+															package_name => package_name (content (field_package)), -- S_SO14
+															log_threshold => log_threshold + 1),
 
 									position		=> et_pcb.position_placement_default,
 									
 									-- Kicad requirement
-									package_library => library_name (content (field_package)), -- bel_primitives, bel_transistors
+-- 									package_library => library_name (content (field_package)), -- bel_primitives, bel_transistors
 
-									packge => package_name (content (field_package)), -- S_SOT23
+-- 									packge => package_name (content (field_package)), -- S_SOT23
 										
 									-- At this stage we do not know if and how many units there are. So the unit list is empty for the moment.
 									units => type_units.empty_map),

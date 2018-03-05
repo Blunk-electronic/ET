@@ -532,6 +532,18 @@ package body et_schematic is
 	end orientation_of_unit;
 	
 
+	function to_package_name (
+		library_name	: in type_full_library_name.bounded_string; -- symbol lib like ../libraries/transistors.lib
+		generic_name	: in et_libraries.type_component_generic_name.bounded_string; -- example: "TRANSISTOR_PNP"
+		package_variant	: in type_component_variant_name.bounded_string) -- N, D
+		return type_component_package_name.bounded_string is
+	-- Returns the package name for of the given component.
+
+		package_name : type_component_package_name.bounded_string; -- to be returned
+	begin -- to_package_name
+		-- CS
+		return package_name;
+	end to_package_name;
 	
 	procedure write_unit_properties (
 	-- Writes the properties of the unit indicated by the given cursor.
@@ -5008,7 +5020,7 @@ package body et_schematic is
 			
 			library_name	: type_full_library_name.bounded_string;
 			generic_name	: type_component_generic_name.bounded_string;
-			package_name	: type_component_package_name.bounded_string;
+			package_variant	: type_component_variant_name.bounded_string;
 
 			use type_libraries;
 			library_cursor	: type_libraries.cursor;
@@ -5025,63 +5037,67 @@ package body et_schematic is
 					name 		: in et_libraries.type_component_generic_name.bounded_string;
 					component 	: in et_libraries.type_component) is
 					use type_component_variants;
-					use type_component_package_name;
+-- 					use type_component_package_name;
 
 					variant_cursor : et_libraries.type_component_variants.cursor;
-					variant_found : boolean := false;
+-- 					variant_found : boolean := false;
 
 				begin -- query_variants
-					log ("locating variant with package " & to_string (packge => package_name)
+					log ("locating variant " & type_component_variant_name.to_string (package_variant)
 						& " ...", log_threshold + 3);
 					log_indentation_up;
 
 					-- set variant cursor at first variant
-					variant_cursor := component.variants.first;
+-- 					variant_cursor := component.variants.first;
 
-					-- search variants for given package name. exit loop on first match (CS: show other matches ?)
-					while variant_cursor /= type_component_variants.no_element loop
-						if element (variant_cursor).packge.name = package_name then -- variant found
-							log ("package variant " 
-								& type_component_variant_name.to_string (key (variant_cursor)), -- CS: make function to_string
-								log_threshold + 3);
-							variant_found := true;
-							exit;
-						end if;
-						next (variant_cursor);
-					end loop;
+					-- The variant should be found (because the component has been inserted in the library earlier).
+					-- Otherwise an exception would occur here:
+					variant_cursor := component.variants.find (package_variant);
+-- 
+-- 					-- search variants for given package name. exit loop on first match (CS: show other matches ?)
+-- 					while variant_cursor /= type_component_variants.no_element loop
+-- 						if element (variant_cursor).packge.name = package_name then -- variant found
+-- 							log ("package variant " 
+-- 								& type_component_variant_name.to_string (key (variant_cursor)), -- CS: make function to_string
+-- 								log_threshold + 3);
+-- 							variant_found := true;
+-- 							exit;
+-- 						end if;
+-- 						next (variant_cursor);
+-- 					end loop;
 
-					if variant_found then
+-- 					if variant_found then
 						-- get the number of terminals from the variant
 						terminals := element (variant_cursor).packge.terminal_count;
-						log_indentation_up;
-						log (to_string (terminals), log_threshold + 1);
-						log_indentation_down;
-					else
-						log_indentation_reset;
-						log (message_error & "no package variant with package " 
-							& to_string (packge => package_name) & " found for " 
-							& to_string (generic_name) & latin_1.space 
-							& to_string (reference) & " !",
-							console => true);
-
-						-- show available variants
-						variant_cursor := component.variants.first;
-						log ("available variants:");
-						log ("variant package library");
-						log_indentation_up;
-						
-						while variant_cursor /= type_component_variants.no_element loop
-							log (type_component_variant_name.to_string (key (variant_cursor)) -- CS: make function to_string
-								& latin_1.space 
-								& to_string (packge => element (variant_cursor).packge.name)
-								& latin_1.space
-								& to_string (element (variant_cursor).packge.library));
-							next (variant_cursor);
-						end loop;
-							
-						log_indentation_down;
-						raise constraint_error;
-					end if;
+-- 						log_indentation_up;
+-- 						log (to_string (terminals), log_threshold + 1);
+-- 						log_indentation_down;
+-- 					else
+-- 						log_indentation_reset;
+-- 						log (message_error & "no package variant with package " 
+-- 							& to_string (packge => package_name) & " found for " 
+-- 							& to_string (generic_name) & latin_1.space 
+-- 							& to_string (reference) & " !",
+-- 							console => true);
+-- 
+-- 						-- show available variants
+-- 						variant_cursor := component.variants.first;
+-- 						log ("available variants:");
+-- 						log ("variant package library");
+-- 						log_indentation_up;
+-- 						
+-- 						while variant_cursor /= type_component_variants.no_element loop
+-- 							log (type_component_variant_name.to_string (key (variant_cursor)) -- CS: make function to_string
+-- 								& latin_1.space 
+-- 								& to_string (packge => element (variant_cursor).packge.name)
+-- 								& latin_1.space
+-- 								& to_string (element (variant_cursor).packge.library));
+-- 							next (variant_cursor);
+-- 						end loop;
+-- 							
+-- 						log_indentation_down;
+-- 						raise constraint_error;
+-- 					end if;
 
 					log_indentation_down;	
 				end query_variants;
@@ -5124,7 +5140,7 @@ package body et_schematic is
 		
 			library_name := element (component_cursor).library_name; -- get library name where the symbol is stored in
 			generic_name := element (component_cursor).generic_name; -- get generic component name in the library
-			package_name := element (component_cursor).packge; -- get the package name of the component
+			package_variant := element (component_cursor).variant; -- get the package variant name of the component
 
 			-- set library cursor. NOTE: assumption is that there is a library with this name
 			library_cursor := component_libraries.find (library_name); 
@@ -5181,7 +5197,7 @@ package body et_schematic is
 			
 			library_name	: type_full_library_name.bounded_string;
 			generic_name	: type_component_generic_name.bounded_string;
-			package_name	: type_component_package_name.bounded_string;
+			package_variant	: type_component_variant_name.bounded_string;
 
 			use type_libraries;
 			library_cursor	: type_libraries.cursor;
@@ -5198,10 +5214,10 @@ package body et_schematic is
 					name 		: in et_libraries.type_component_generic_name.bounded_string;
 					component 	: in et_libraries.type_component) is
 					use type_component_variants;
-					use type_component_package_name;
+-- 					use type_component_package_name;
 
 					variant_cursor : et_libraries.type_component_variants.cursor;
-					variant_found : boolean := false;
+-- 					variant_found : boolean := false;
 
 					procedure locate_terminal (
 						variant_name 	: in type_component_variant_name.bounded_string;
@@ -5230,56 +5246,57 @@ package body et_schematic is
 					end locate_terminal;
 					
 				begin -- query_variants
-					log ("locating variant with package " & to_string (packge => package_name)
+					log ("locating variant " & type_component_variant_name.to_string (package_variant)
 						& " ...", log_threshold + 3);
 					log_indentation_up;
 
-					-- set variant cursor at first variant
+					-- The variant should be found (because the component has been inserted in the library earlier).
+					-- Otherwise an exception would occur here:
 					variant_cursor := component.variants.first;
 
-					-- search variants for given package name. exit loop on first match (CS: show other matches ?)
-					while variant_cursor /= type_component_variants.no_element loop
-						if element (variant_cursor).packge.name = package_name then -- variant found
-							log ("package variant " 
-									& type_component_variant_name.to_string (key (variant_cursor)), -- CS: make function to_string
-									log_threshold + 3);
-							variant_found := true;
-							exit;
-						end if;
-						next (variant_cursor);
-					end loop;
-
-					if variant_found then
+-- 					-- search variants for given package name. exit loop on first match (CS: show other matches ?)
+-- 					while variant_cursor /= type_component_variants.no_element loop
+-- 						if element (variant_cursor).packge.name = package_name then -- variant found
+-- 							log ("package variant " 
+-- 									& type_component_variant_name.to_string (key (variant_cursor)), -- CS: make function to_string
+-- 									log_threshold + 3);
+-- 							variant_found := true;
+-- 							exit;
+-- 						end if;
+-- 						next (variant_cursor);
+-- 					end loop;
+-- 
+-- 					if variant_found then
 						query_element (
 							position => variant_cursor,
 							process => locate_terminal'access);
 						
-					else
-						log_indentation_reset;
-						log (message_error & "no package variant with package " 
-							& to_string (packge => package_name) & " found for " 
-							& to_string (generic_name) & latin_1.space 
-							& to_string (port.reference) & " !",
-							console => true);
-
-						-- show available variants
-						variant_cursor := component.variants.first;
-						log ("available variants:");
-						log ("variant package library");
-						log_indentation_up;
-						
-						while variant_cursor /= type_component_variants.no_element loop
-							log (type_component_variant_name.to_string (key (variant_cursor)) -- CS: make function to_string
-								& latin_1.space 
-								& to_string (packge => element (variant_cursor).packge.name)
-								& latin_1.space
-								& to_string (element (variant_cursor).packge.library));
-							next (variant_cursor);
-						end loop;
-							
-						log_indentation_down;
-						raise constraint_error;
-					end if;
+-- 					else
+-- 						log_indentation_reset;
+-- 						log (message_error & "no package variant with package " 
+-- 							& to_string (packge => package_name) & " found for " 
+-- 							& to_string (generic_name) & latin_1.space 
+-- 							& to_string (port.reference) & " !",
+-- 							console => true);
+-- 
+-- 						-- show available variants
+-- 						variant_cursor := component.variants.first;
+-- 						log ("available variants:");
+-- 						log ("variant package library");
+-- 						log_indentation_up;
+-- 						
+-- 						while variant_cursor /= type_component_variants.no_element loop
+-- 							log (type_component_variant_name.to_string (key (variant_cursor)) -- CS: make function to_string
+-- 								& latin_1.space 
+-- 								& to_string (packge => element (variant_cursor).packge.name)
+-- 								& latin_1.space
+-- 								& to_string (element (variant_cursor).packge.library));
+-- 							next (variant_cursor);
+-- 						end loop;
+-- 							
+-- 						log_indentation_down;
+-- 						raise constraint_error;
+-- 					end if;
 
 					log_indentation_down;	
 				end query_variants;
@@ -5322,7 +5339,7 @@ package body et_schematic is
 		
 			library_name := element (component_cursor).library_name; -- get library name where the symbol is stored in
 			generic_name := element (component_cursor).generic_name; -- get generic component name in the library
-			package_name := element (component_cursor).packge; -- get the package name of the component
+			package_variant := element (component_cursor).variant; -- get the package variant name of the component
 
 			-- set library cursor. NOTE: assumption is that there is a library with this name
 			library_cursor := component_libraries.find (library_name); 
@@ -5782,10 +5799,13 @@ package body et_schematic is
 						-- CS: warning if netchanger/net-ties occur here. they should have the bom flag set to NO.
 						et_csv.reset_column;
 						
-						put_field (file => bom_handle, text => to_string (key (component)));
-						put_field (file => bom_handle, text => to_string (element (component).value));
-						put_field (file => bom_handle, text => to_string (element (component).generic_name));
-						put_field (file => bom_handle, text => to_string (element (component).packge));
+						put_field (file => bom_handle, text => to_string (key (component))); -- R6
+						put_field (file => bom_handle, text => to_string (element (component).value)); -- 100R
+						put_field (file => bom_handle, text => to_string (element (component).generic_name)); -- RESISTOR
+						put_field (file => bom_handle, text => to_string (to_package_name (
+																library_name => element (component).library_name,
+																generic_name => element (component).generic_name,
+																package_variant => element (component).variant)));
 						put_field (file => bom_handle, text => to_string (element (component).author));
 						put_field (file => bom_handle, text => to_string (element (component).bom));
 						put_field (file => bom_handle, text => to_string (element (component).commissioned));
