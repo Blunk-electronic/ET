@@ -2769,48 +2769,45 @@ package body et_kicad is
 		
 		use et_string_processing;
 		variant : type_component_variant_name.bounded_string := component_variant_name_default; -- variant name to be returned
-
+		
+		-- temporarily here the name of the package library is stored:
+		use type_full_library_name;
+		full_package_library_name : type_full_library_name.bounded_string;
+		
 		procedure locate_component (
 			library_name	: in type_full_library_name.bounded_string;
 			components 		: in type_components.map) is
-			component_cursor : type_components.cursor;
 
+			use type_components;
+			component_cursor : type_components.cursor;
+			
 			procedure query_variants (
 				component_name	: in type_component_generic_name.bounded_string;
 				component 		: in type_component) is
 
 				use type_component_package_name;
-				use type_full_library_name;
 				use type_component_variants;
 				use type_component_variant_name;
 				
 				variant_cursor : type_component_variants.cursor := component.variants.first;
 
-				 -- This is the temporarily used library name where packages are stored in.
-				full_library_name : type_full_library_name.bounded_string;
-
 			begin -- query_variants
 				log ("querying package variants ...", log_threshold + 2);
 				log_indentation_up;
-
+				
 				while variant_cursor /= type_component_variants.no_element loop
 
-					-- The given package library has this full name:
-					full_library_name := to_full_library_name (root_dir => lib_dir, lib_name => package_library);
-
-					-- If the variant in the library has the same full library name
-					if element (variant_cursor).packge.library = full_library_name then
-
-						-- if the variant in the library has the same package name
-						if element (variant_cursor).packge.name = package_name then
-							if key (variant_cursor) = component_variant_name_default then
-								log ("default variant used", log_threshold + 1);
-								exit;
-							else
-								log (message_error & "unknown variant used !", console => true);
-								raise constraint_error;
-							end if;
-						end if;
+					-- If the variant in the library has the same full library name AND
+					-- if the variant in the library has the same package name AND
+					-- if the variant name is the default name then the default variant is used.
+					if 	element (variant_cursor).packge.library = full_package_library_name and
+						element (variant_cursor).packge.name = package_name and 
+						key (variant_cursor) = component_variant_name_default then
+							log ("default variant used", log_threshold + 1);
+							exit;
+					else
+						log (message_error & "unknown variant used !", console => true);
+						raise constraint_error; -- CS
 					end if;
 
 					next (variant_cursor);
@@ -2830,19 +2827,38 @@ package body et_kicad is
 		begin -- locate_component
 			log ("locating generic component in library ...", log_threshold + 1);
 			log_indentation_up;
-			
+
+			-- Locate the component in the library by its generic name.
+			-- If not found, search the component again with a tilde prepended to
+			-- to the generic name:
 			component_cursor := components.find (generic_name);
+			if component_cursor = type_components.no_element then
+				component_cursor := components.find (prepend_tilde (generic_name));
+			end if;
+
 			type_components.query_element (
 				position 	=> component_cursor,
 				process 	=> query_variants'access);
 
 			log_indentation_down;
+
+			exception
+				when event:
+					others =>
+						log_indentation_reset;
+						put_line (ada.exceptions.exception_message (event));
+						raise;
+
 		end locate_component;
 		
 	begin
 		log ("making package variant ...", log_threshold);
 		log_indentation_up;
 
+		-- The given package library has this full name:
+		full_package_library_name := to_full_library_name (root_dir => lib_dir, lib_name => package_library);
+
+		
 		library_cursor := component_libraries.find (component_library);
 		type_libraries.query_element (
 			position	=> library_cursor,
