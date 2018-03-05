@@ -49,7 +49,8 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
-with et_coordinates;			use et_coordinates;
+-- with et_coordinates;			use et_coordinates;
+with et_libraries;
 with et_string_processing;
 
 package body et_pcb is
@@ -65,6 +66,16 @@ package body et_pcb is
 			face => TOP,
 			angle => zero_angle);
 	end position_placement_default;
+
+	function terminal_port_map_fits (
+		library_name		: in et_libraries.type_full_library_name.bounded_string;
+		package_name 		: in et_libraries.type_component_package_name.bounded_string;
+		terminal_port_map	: in et_libraries.type_terminal_port_map.map) 
+		return boolean is
+	begin
+		return false;
+	end terminal_port_map_fits;
+
 	
 end et_pcb;
 

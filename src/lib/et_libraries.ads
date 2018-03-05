@@ -919,9 +919,11 @@ package et_libraries is
 	-- whereas D means the SO14 package.
 	-- If a component has package variants, a suffix after the component type indicates the package
 	-- The variant name is manufacturer specific. example: TL084D or TL084N
-	-- component package variant names like "N" or "D" are stored in short bounded strings:
-	component_variant_name_characters : character_set := to_set (span => ('A','Z')) or to_set ("-"); -- CS rename to package_variant_name_characters
-	component_variant_name_length_max : constant positive := 10;
+	-- component package variant names like "N" or "D" are stored in bounded strings.
+	component_variant_name_characters : character_set := 
+		to_set (ranges => (('A','Z'),('a','z'),('0','9'))) or to_set ("_-"); -- CS rename to package_variant_name_characters
+	
+	component_variant_name_length_max : constant positive := 50;
 	package type_component_variant_name is new generic_bounded_length (component_variant_name_length_max);
 	use type_component_variant_name;
 

@@ -2362,7 +2362,7 @@ package body et_kicad is
 			procedure build_package_variant is
 			-- Builds from tmp_terminal_port_map and field_package the default package variant.
 			-- NOTE: Since kicad does not know package variants, we can only build the
-			-- one and only DEFAULT variant.
+			-- one and only DEFAULT variant. The default variant name is the same as the package name.
 			-- All this applies for real components only (appearance sch_pcb).
 				
 				procedure locate_component (
@@ -2375,16 +2375,25 @@ package body et_kicad is
 
 						use type_component_variants;
 						use type_terminal_port_map;
+
+						tmp_variant_name : type_component_variant_name.bounded_string; -- temporarily used for building the variant name
 						tmp_variants : type_component_variants.map; -- temporarily used for building the variant
 					begin
 						case component.appearance is
 							when sch_pcb => -- real component
 
+								-- The name of the default variant is the package 
+								-- name (instead of an empty string or a string like "default"):
+								check_variant_name_length (to_string (package_name (content (field_package)))); -- S_SO14
+								tmp_variant_name := to_component_variant_name (to_string (package_name (content (field_package)))); -- S_SO14
+								check_variant_name_characters (tmp_variant_name);
+
 								-- Insert in tmp_variants (which is temporarily) the default variant.
 								insert (
 									container => tmp_variants,
-									key => component_variant_name_default, -- because kicad does not know package variants
-									-- CS package_name (content (field_package)), -- S_SO14
+
+									key => tmp_variant_name, -- S_SO14
+									
 									new_item => (
 										-- The package field contains something like "bel_ic:S_SO14".
 										-- This provides the library name and the package name.
@@ -2798,18 +2807,33 @@ package body et_kicad is
 				
 				while variant_cursor /= type_component_variants.no_element loop
 
-					-- If the variant in the library has the same full library name AND
-					-- if the variant in the library has the same package name AND
-					-- if the variant name is the default name then the default variant is used.
+					-- From the library and package name we can reason to the variant name.
 					if 	element (variant_cursor).packge.library = full_package_library_name and
-						element (variant_cursor).packge.name = package_name and 
-						--key (variant_cursor) = component_variant_name_default then
-						key (variant_cursor) = component_variant_name_default then
-							log ("default variant used", log_threshold + 1); -- CS show variant name
-							exit;
+						element (variant_cursor).packge.name = package_name then 
+						log ("variant " 
+							& to_string (package_variant => key (variant_cursor)) 
+							& " used", log_threshold + 1);
+
+						variant := key (variant_cursor);
+						exit;
 					else
+						-- Package variant not defined in library. Make sure
+						-- the terminal_port_map (there is only one) can be applied 
+						-- on this package variant.
 						log (message_error & "unknown variant used !", console => true);
-						raise constraint_error; -- CS
+						
+						if et_pcb.terminal_port_map_fits (
+							library_name 		=> full_package_library_name,
+							package_name 		=> package_name,
+							terminal_port_map	=> element (variant_cursor).terminal_port_map) then
+
+							-- CS: update library with new variant
+							null;
+						else
+							log_indentation_reset;
+							log ("terminal-port map does not fit !", console => true); -- CS: more details
+							raise constraint_error; -- CS
+						end if;
 					end if;
 
 					next (variant_cursor);
@@ -2853,13 +2877,16 @@ package body et_kicad is
 
 		end locate_component;
 		
-	begin
+	begin -- to_package_variant
 		log ("making package variant ...", log_threshold);
 		log_indentation_up;
 
-		-- The given package library has this full name:
+		-- CS check package_library name and package name for valid length and characters ?
+		
+		-- Compose the full name of the package library:
 		full_package_library_name := to_full_library_name (root_dir => lib_dir, lib_name => package_library);
 
+-- 		check_variant_name_length (to_string (package_name));
 		
 		library_cursor := component_libraries.find (component_library);
 		type_libraries.query_element (

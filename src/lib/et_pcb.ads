@@ -51,6 +51,7 @@ with ada.containers.ordered_sets;
 
 --with et_coordinates;			--use et_coordinates;
 --with et_string_processing;
+with et_libraries;
 
 package et_pcb is
 
@@ -98,6 +99,12 @@ package et_pcb is
 -- 				pad_smt_count : positive; -- 32 for a TSSOP32 package
 -- 		end case;
 -- 	end record;
+
+	function terminal_port_map_fits (
+		library_name		: in et_libraries.type_full_library_name.bounded_string;
+		package_name 		: in et_libraries.type_component_package_name.bounded_string;
+		terminal_port_map	: in et_libraries.type_terminal_port_map.map) 
+		return boolean;
 
 	procedure dummy;
 
