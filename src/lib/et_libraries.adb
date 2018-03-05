@@ -163,6 +163,32 @@ package body et_libraries is
 	begin
 		return type_terminal_name_text_size'value (text);
 	end to_terminal_name_text_size;
+
+	function to_string (package_variant : in type_component_variant_name.bounded_string) return string is
+	-- converts a type_component_variant_name to a string.
+	begin
+		return type_component_variant_name.to_string (package_variant);
+	end to_string;
+
+	function to_component_variant_name (variant_name : in string) 
+		return type_component_variant_name.bounded_string is
+	-- converts a string to a variant name
+	begin
+		return type_component_variant_name.to_bounded_string (variant_name);
+	end to_component_variant_name;
+
+	procedure check_variant_name_length (variant_name : in string) is
+	-- tests if the given variant name is not longer than allowed
+		use et_string_processing;
+	begin
+		if variant_name'length > component_variant_name_length_max then
+			log_indentation_reset;
+			log (message_error & "max. number of characters for package variant name is" 
+				 & positive'image (component_variant_name_length_max) & " !",
+				 console => true);
+			raise constraint_error;
+		end if;
+	end check_variant_name_length;
 	
 	procedure check_variant_name_characters (
 		variant		: in type_component_variant_name.bounded_string;
@@ -315,7 +341,7 @@ package body et_libraries is
 	begin
 		if partcode'length > component_partcode_length_max then
 			log_indentation_reset;
-			log (message_error & "max. number of characters for partcode is" 
+			log (message_error & "max. number of characters for part code is" 
 				 & positive'image (component_partcode_length_max) & " !",
 				 console => true);
 			raise constraint_error;
@@ -339,7 +365,7 @@ package body et_libraries is
 
 		if invalid_character_position > 0 then
 			log_indentation_reset;
-			log (message_error & "component partcode " & to_string (partcode) 
+			log (message_error & "component part code " & to_string (partcode) 
 				 & " has invalid character at position"
 				 & natural'image (invalid_character_position),
 				console => true

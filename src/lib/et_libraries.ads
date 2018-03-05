@@ -928,12 +928,15 @@ package et_libraries is
 	component_variant_name_default : constant type_component_variant_name.bounded_string := 
 		type_component_variant_name.to_bounded_string ("default");
 
-	-- CS function to_string (package_variant : in type_component_variant_name) return string;
+	function to_string (package_variant : in type_component_variant_name.bounded_string) return string;
+	-- converts a type_component_variant_name to a string.
 	
-	-- CS function to_component_variant_name (variant_name : in string) 
-	--	return type_component_variant_name.bounded_string;
+	function to_component_variant_name (variant_name : in string) 
+		return type_component_variant_name.bounded_string;
+	-- converts a string to a variant name
 
-	-- CS: procedure check_variant_name_length (variant : in string);
+	procedure check_variant_name_length (variant_name : in string);
+	-- tests if the given variant name is not longer than allowed
 	
 	procedure check_variant_name_characters (
 		variant		: in type_component_variant_name.bounded_string;
