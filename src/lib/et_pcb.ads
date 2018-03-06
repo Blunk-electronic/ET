@@ -49,7 +49,6 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
---with et_coordinates;			--use et_coordinates;
 with et_string_processing;
 with et_libraries;
 
@@ -92,8 +91,6 @@ package et_pcb is
 	package_libraries : type_packages.map;
 
 
-	procedure read_package_libraries (
-		log_threshold 	: in et_string_processing.type_log_level);
 
 
 	
@@ -135,8 +132,6 @@ package et_pcb is
 		package_name 		: in et_libraries.type_component_package_name.bounded_string;
 		terminal_port_map	: in et_libraries.type_terminal_port_map.map) 
 		return boolean;
-
-	procedure dummy;
 
 	private
 

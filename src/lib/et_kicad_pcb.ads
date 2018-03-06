@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                           SYSTEM ET PCB                                  --
+--                           SYSTEM ET KICAD PCB                            --
 --                                                                          --
 --                                 ET                                       --
 --                                                                          --
---                               B o d y                                    --
+--                               S p e c                                    --
 --                                                                          --
 --         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
 --                                                                          --
@@ -49,44 +49,16 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
+with et_string_processing;
 with et_libraries;
-with et_string_processing;		use et_string_processing;
 
-package body et_pcb is
+package et_kicad_pcb is
 
+	procedure read_package_libraries (
+		log_threshold 	: in et_string_processing.type_log_level);
 
-	function position_placement_default return type_position_placement is
-	begin
-		return (
-			x => et_pcb.zero_distance,
-			y => et_pcb.zero_distance,
-			z => et_pcb.zero_distance,
-			face => TOP,
-			angle => zero_angle);
-	end position_placement_default;
 
 	
-	function terminal_count (
-		library_name		: in et_libraries.type_full_library_name.bounded_string;
-		package_name 		: in et_libraries.type_component_package_name.bounded_string)
-		return et_libraries.type_terminal_count is
-	begin
-		return 100;
-	end terminal_count;
-	
-	function terminal_port_map_fits (
-	-- Used when terminal_port_maps are to be used for packages.
-	-- The given package is specified by the library name and package name.
-	-- Returns true if the terminal_port_map fits on the given package.
-		library_name		: in et_libraries.type_full_library_name.bounded_string;
-		package_name 		: in et_libraries.type_component_package_name.bounded_string;
-		terminal_port_map	: in et_libraries.type_terminal_port_map.map) 
-		return boolean is
-	begin
-		return true;
-	end terminal_port_map_fits;
-
-	
-end et_pcb;
+end et_kicad_pcb;
 
 -- Soli Deo Gloria

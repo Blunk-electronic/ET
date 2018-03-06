@@ -63,6 +63,7 @@ with et_geometry;
 with et_general;
 with et_string_processing;		use et_string_processing;
 with et_pcb;
+with et_kicad_pcb;
 
 package body et_kicad is
 
@@ -6526,7 +6527,7 @@ package body et_kicad is
 				read_components_libraries (log_threshold);
 
 				-- read package libraries (in lib_dir)
-				et_pcb.read_package_libraries (log_threshold);
+				et_kicad_pcb.read_package_libraries (log_threshold);
 				
 				current_schematic := top_level_schematic;
 				check_submodule_name_characters (to_submodule_name (current_schematic));
