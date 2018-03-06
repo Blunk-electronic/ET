@@ -556,7 +556,7 @@ package body et_kicad is
 	end to_power_flag;
 	
 	procedure read_components_libraries (log_threshold : in type_log_level) is
-	-- Reads components from libraries as stored in lib_dir and project libraries:
+	-- Reads component libraries. Root directory is et_libraries.lib_dir.
 		
         use et_libraries; -- most of the following stuff is specified there
 		use et_libraries.type_full_library_names;
@@ -583,18 +583,18 @@ package body et_kicad is
 
 		
 		procedure read_library (log_threshold : in type_log_level) is
-			line				: type_fields_of_line; -- the line being processed
+			line : type_fields_of_line; -- the line being processed
 
 			function field (line : in type_fields_of_line; position : in positive) return string renames
 				et_string_processing.get_field_from_line;
 			
 			-- This flag goes true once a component section is entered. It is cleared
 			-- when the component section is left.
-			component_entered	: boolean := false; 
+			component_entered : boolean := false; 
 
 			-- The subsection of a component is indicated by variable active_section:			
 			type type_active_section is ( none, fields, footprints, draw);
-			active_section		: type_active_section := none; 
+			active_section : type_active_section := none; 
 
 			-- This flag is used when ports are added to an extra unit (supply symbols).
 			-- It is initialzed by procedure init_temp_variables on entering a component section.
@@ -2466,7 +2466,7 @@ package body et_kicad is
 							line => get_line,
 							comment_mark => "#",
 							test_whole_line => false,
-							number => ada.text_io.line(current_input));
+							number => ada.text_io.line (current_input));
 				
 				case field_count (line) is
 					when 0 => null; -- we skip empty lines
@@ -6521,8 +6521,13 @@ package body et_kicad is
 					log (message_error & "module " & to_string (module_name) & " already in rig !");
 					raise constraint_error;
 				end if;
+
+				-- read component libraries (in lib_dir)
+				read_components_libraries (log_threshold);
+
+				-- read package libraries (in lib_dir)
+				et_pcb.read_package_libraries (log_threshold);
 				
-				read_components_libraries (log_threshold); -- as stored in element "libraries" of the current module
 				current_schematic := top_level_schematic;
 				check_submodule_name_characters (to_submodule_name (current_schematic));
 				

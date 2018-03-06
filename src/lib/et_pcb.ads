@@ -50,7 +50,7 @@ with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 --with et_coordinates;			--use et_coordinates;
---with et_string_processing;
+with et_string_processing;
 with et_libraries;
 
 package et_pcb is
@@ -75,6 +75,28 @@ package et_pcb is
 
 	function position_placement_default return type_position_placement;
 
+	type type_package is record
+		dummy : natural;
+	end record;
+
+	use et_libraries.type_component_package_name;
+	
+	package type_packages is new indefinite_ordered_maps (
+		key_type 		=> et_libraries.type_component_package_name.bounded_string, -- S_SO14
+		element_type 	=> type_package);
+
+
+
+	
+	-- All package models are collected here:
+	package_libraries : type_packages.map;
+
+
+	procedure read_package_libraries (
+		log_threshold 	: in et_string_processing.type_log_level);
+
+
+	
 	type type_package_technology is (
 		THT,		-- Through Hole Technology
 		SMT,		-- Surface Mount Technology

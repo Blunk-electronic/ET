@@ -51,7 +51,7 @@ with ada.containers.ordered_sets;
 
 -- with et_coordinates;			use et_coordinates;
 with et_libraries;
-with et_string_processing;
+with et_string_processing;		use et_string_processing;
 
 package body et_pcb is
 
@@ -67,6 +67,19 @@ package body et_pcb is
 			angle => zero_angle);
 	end position_placement_default;
 
+	procedure read_package_libraries (
+	-- Reads package libraries. Root directory is et_libraries.lib_dir.
+		--lib_dir 		: in et_libraries.type_library_directory.bounded_string;
+		log_threshold 	: in et_string_processing.type_log_level) is
+	begin
+		log ("Loading package libraries ...", log_threshold);
+		log_indentation_up;
+
+
+		log_indentation_down;
+	end read_package_libraries;
+
+	
 	function terminal_count (
 		library_name		: in et_libraries.type_full_library_name.bounded_string;
 		package_name 		: in et_libraries.type_component_package_name.bounded_string)
