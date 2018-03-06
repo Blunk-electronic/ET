@@ -5191,8 +5191,10 @@ package body et_kicad is
 								-- use library_name (content (field_package))
 								-- check/validate library name (length, characters, ...)
 								-- make sure the library exists. mind search order of footprint libraries
-								-- use package_name (content (field_package)
+
 								-- check/validate package name (length, characters, ...)
+								check_package_name_length (to_string (package_name (content (field_package))));
+								check_package_name_characters (package_name (content (field_package)));
 							end if;
 
 							-- datasheet

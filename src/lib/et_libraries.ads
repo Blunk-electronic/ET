@@ -60,6 +60,8 @@ package et_libraries is
 	library_name_length_max : constant natural := 100; -- CS: increase if necessary
     package type_library_name is new generic_bounded_length (library_name_length_max); use type_library_name;
 
+	-- CS: for type_library_name: character set, check characters, check length
+	
 	function to_string (library_name : in type_library_name.bounded_string) return string;
 	-- Returns the given library name as string.
 	
@@ -87,6 +89,8 @@ package et_libraries is
 	package type_full_library_name is new generic_bounded_length (library_full_name_max);
 	use type_full_library_name;
 
+	-- CS: for type_full_library_name: character set, check characters, check length
+	
 	function to_string (full_library_name : in type_full_library_name.bounded_string) return string;
 	-- Returns the given full library name as string;
 
@@ -103,11 +107,6 @@ package et_libraries is
 	-- When accessing library files we need this:
 	library_handle : ada.text_io.file_type;
 	
-	-- Full library names can be stored furhter-on in an ordered set like this:
-	-- We use a doubly linked list because the order of the library names sometimes matters.
--- 	package type_list_of_full_library_names is new doubly_linked_lists (
--- 		element_type => type_library_full_name.bounded_string);
-
 	-- The name of the person who has drawn, checked or approved something may have 100 characters which seems sufficient for now.
  	person_name_length : constant natural := 100;
 	package type_person_name is new generic_bounded_length (person_name_length);
