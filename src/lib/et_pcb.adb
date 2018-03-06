@@ -68,12 +68,15 @@ package body et_pcb is
 	end position_placement_default;
 
 	function terminal_port_map_fits (
+	-- Used when terminal_port_maps are to be used for other packages.
+	-- The given package is specified by the library name and package name.
+	-- Returns true if the terminal_port_map fits on the given package.
 		library_name		: in et_libraries.type_full_library_name.bounded_string;
 		package_name 		: in et_libraries.type_component_package_name.bounded_string;
 		terminal_port_map	: in et_libraries.type_terminal_port_map.map) 
 		return boolean is
 	begin
-		return false;
+		return true;
 	end terminal_port_map_fits;
 
 	

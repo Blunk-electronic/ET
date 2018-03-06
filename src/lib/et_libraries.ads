@@ -541,8 +541,8 @@ package et_libraries is
 
 
 
--- COMPONENT PARTCODES
-	-- The component partcode is THE key into the ERP system of the user. It can be a crytic SAP number
+-- COMPONENT PART CODES
+	-- The component part code is THE key into the ERP system of the user. It can be a crytic SAP number
 	-- or something human readable like "R_PAC_S_0805_VAL_100R_PMAX_125_TOL_5".
 	-- The keywords for the latter can be specified via the configuration file. See package et_configuration.
 	component_partcode_characters : character_set := to_set

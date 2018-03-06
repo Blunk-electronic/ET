@@ -2790,7 +2790,7 @@ package body et_kicad is
 		procedure locate_component (
 		-- Locates the given generic component in the component libraray.
 			library_name	: in type_full_library_name.bounded_string;
-			components 		: in type_components.map) is
+			components 		: in out type_components.map) is
 
 			use type_components;
 			component_cursor : type_components.cursor; -- points to the generic component
@@ -2798,7 +2798,7 @@ package body et_kicad is
 			procedure query_variants (
 			-- Queries the package variants of the generic component.
 				component_name	: in type_component_generic_name.bounded_string; -- RESISTOR
-				component 		: in type_component) is
+				component 		: in out type_component) is
 
 				use type_component_package_name;
 				use type_component_variants;
@@ -2807,6 +2807,9 @@ package body et_kicad is
 				-- This cursor points to the package variant being queryied.
 				variant_cursor : type_component_variants.cursor := component.variants.first;
 
+				-- If a new package variant is to be built, it is temporarily stored here:
+				new_variant : type_component_variant;
+			
 			begin -- query_variants
 				log ("querying package variants ...", log_threshold + 2);
 				log_indentation_up;
@@ -2826,29 +2829,60 @@ package body et_kicad is
 
 						variant := key (variant_cursor);
 						exit; -- no further search required
-						
-					else
-						-- Package variant not defined in library. Make sure
-						-- the terminal_port_map (there is only one) can be applied 
-						-- on this package variant.
-						log (message_error & "unknown variant used !", console => true);
-						
-						if et_pcb.terminal_port_map_fits (
-							library_name 		=> full_package_library_name,
-							package_name 		=> package_name,
-							terminal_port_map	=> element (variant_cursor).terminal_port_map) then
-
-							-- CS: update library with new variant
-							null;
-						else
-							log_indentation_reset;
-							log ("terminal-port map does not fit !", console => true); -- CS: more details
-							raise constraint_error; -- CS
-						end if;
 					end if;
 
 					next (variant_cursor);
 				end loop;
+
+				-- If no suitable package variant has been found, a new one must be created.
+				if variant_cursor = type_component_variants.no_element then
+					
+					-- Package variant not defined in library. Make sure
+					-- the terminal_port_map (there is only one) can be applied 
+					-- on this package variant.
+					log ("unknown variant found. validating ...", log_threshold + 3);
+					log_indentation_up;
+
+					-- Set variant cursor to default variant. Later the terminal_port_map is 
+					-- copied from here.
+					variant_cursor := component.variants.first; 
+
+					-- Test whether the new variant complies with the terminal_port_map
+					if et_pcb.terminal_port_map_fits (
+						library_name 		=> full_package_library_name,
+						package_name 		=> package_name,
+						terminal_port_map	=> element (variant_cursor).terminal_port_map) then
+
+						-- The new package variant is composed of the given to_full_library_name,
+						-- the given package name and the same terminal_port_map as the default variant.
+						-- A default package variant is always available.
+
+						log ("updating library ...", log_threshold + 4);
+
+						-- build the new package variant
+						new_variant := (
+							packge 				=> (library		=> full_package_library_name,
+													name 		=> package_name,
+													terminal_count => 0 -- CS soon not used any more
+													),
+							terminal_port_map	=> element (variant_cursor).terminal_port_map
+							);
+
+						-- insert the new package variant in the component (in library)
+						type_component_variants.insert (
+							container	=> component.variants,
+							key			=> to_component_variant_name (to_string (packge => package_name)),
+							new_item	=> new_variant
+							);
+
+					else
+						log_indentation_reset;
+						log ("terminal-port map does not fit !", console => true); -- CS: more details
+						raise constraint_error; -- CS
+					end if;
+
+					log_indentation_down;
+				end if;
 
 				log_indentation_down;
 				
@@ -2874,7 +2908,8 @@ package body et_kicad is
 			end if;
 
 			-- query the package variants of the generic component
-			type_components.query_element (
+			type_components.update_element (
+				container	=> components,
 				position 	=> component_cursor,
 				process 	=> query_variants'access);
 
@@ -2890,7 +2925,7 @@ package body et_kicad is
 		end locate_component;
 		
 	begin -- to_package_variant
-		log ("making package variant ...", log_threshold);
+		log ("validating/making package variant ...", log_threshold);
 		log_indentation_up;
 
 		-- Compose the full name of the package library:
@@ -2900,7 +2935,8 @@ package body et_kicad is
 		library_cursor := component_libraries.find (component_library);
 
 		-- locate the given generic component
-		type_libraries.query_element (
+		type_libraries.update_element (
+			container	=> component_libraries,
 			position	=> library_cursor,
 			process		=> locate_component'access);
 		
@@ -4933,7 +4969,9 @@ package body et_kicad is
 			end component_footer;
 
 			
-			procedure make_component (lines : in type_lines.list) is
+			procedure make_component (
+				lines 			: in type_lines.list;
+				log_threshold	: in type_log_level) is
 			-- Builds a unit or a component and inserts it in the component list of 
 			-- current module. The information required to make a component is provided
 			-- in parameter "lines".
@@ -5339,8 +5377,9 @@ package body et_kicad is
 				-- Returns the full name of the library where given generic component is contained.
 				-- The given reference serves to provide a helpful error message on the affected 
 				-- component in the schematic.
-					component : in type_component_generic_name.bounded_string; -- the generic name like "RESISTOR"
-					reference : in type_component_reference) -- the reference in the schematic like "R4"
+					component 		: in type_component_generic_name.bounded_string; -- the generic name like "RESISTOR"
+					reference 		: in type_component_reference; -- the reference in the schematic like "R4"
+					log_threshold	: in et_string_processing.type_log_level)
 					return type_full_library_name.bounded_string is -- the full library name like "../libraries/resistors.lib"
 
 					use type_libraries;
@@ -5354,8 +5393,8 @@ package body et_kicad is
 					procedure query_components (
 					-- Queries the components in the current library. Exits prematurely once the 
 					-- given generic component was found.
-						lib_name : in type_full_library_name.bounded_string;
-						components : in et_libraries.type_components.map) is
+						lib_name 	: in type_full_library_name.bounded_string;
+						components 	: in et_libraries.type_components.map) is
 						use et_libraries.type_components;
 						component_cursor : et_libraries.type_components.cursor := components.first;
 						use et_libraries.type_component_generic_name;
@@ -5363,7 +5402,7 @@ package body et_kicad is
 						log_indentation_up;
 						while component_cursor /= et_libraries.type_components.no_element loop
 							
-							log (et_libraries.to_string (key (component_cursor)), log_threshold + 4);
+							log (et_libraries.to_string (key (component_cursor)), log_threshold + 2);
 
 							-- Sometimes generic names in the library start with a tilde. it must
 							-- be removed before testing the name.
@@ -5379,14 +5418,14 @@ package body et_kicad is
 					
 				begin -- generic_name_to_library
 					log_indentation_up;
-					log ("locating library containing generic component " & to_string (component) & " ...", log_threshold + 2);
+					log ("locating library containing generic component " & to_string (component) & " ...", log_threshold);
 					
 					-- loop in libraries and exit prematurely once a library with the given component was found
 					while lib_cursor /= type_libraries.no_element loop
 						log_indentation_up;
 						log ("probing " 
 							 & et_libraries.to_string (key (lib_cursor)) 
-							 & " ...", log_threshold + 3);
+							 & " ...", log_threshold + 1);
 
 						query_element (
 							position => lib_cursor,
@@ -5439,8 +5478,10 @@ package body et_kicad is
 					-- project file. It is the first libraray in this list that contains the model.
 					-- The function generic_name_to_library does the job and sets the full_component_library_name
 					-- here right away:
-					full_component_library_name : type_full_library_name.bounded_string := 
-														generic_name_to_library (generic_name_in_lbr, reference);
+					full_component_library_name : type_full_library_name.bounded_string := generic_name_to_library (
+													component		=> generic_name_in_lbr,
+													reference		=> reference,
+													log_threshold	=> log_threshold + 3);
 					
 				begin -- insert_component
 					log_indentation_up;
@@ -5472,7 +5513,7 @@ package body et_kicad is
 
 									-- At this stage we do not know if and how many units there are. So the unit list is empty.
 									units 			=> type_units.empty_map),
-								log_threshold => log_threshold +1);
+								log_threshold => log_threshold + 2);
 
 						when sch_pcb => -- we have a line like "L 74LS00 U1"
 
@@ -5501,14 +5542,14 @@ package body et_kicad is
 															generic_name		=> generic_name_in_lbr, -- 7400
 															package_library		=> library_name (content (field_package)), -- bel_ic
 															package_name		=> package_name (content (field_package)), -- S_SO14
-															log_threshold		=> log_threshold + 1),
+															log_threshold		=> log_threshold + 2),
 
 									position		=> et_pcb.position_placement_default,
 									
 									-- At this stage we do not know if and how many units there are. So the unit list is empty for the moment.
 									units => type_units.empty_map),
 
-								log_threshold => log_threshold +1);
+								log_threshold => log_threshold + 2);
 
 								-- Test if footprint has been associated with the component.
 								if content (field_package)'size = 0 then
@@ -5578,7 +5619,8 @@ package body et_kicad is
 														with meaning => field_author.meaning),
 									commissioned	=> (type_text_basic (field_commissioned)
 														with meaning => field_commissioned.meaning)),
-								log_threshold => log_threshold + 1);
+								
+								log_threshold => log_threshold + 2);
 												
 
 						when sch_pcb =>
@@ -5617,7 +5659,8 @@ package body et_kicad is
 														with meaning => field_commissioned.meaning),
 									bom				=> (type_text_basic (field_bom)
 														with meaning => field_bom.meaning)),
-								log_threshold => log_threshold + 1);
+								
+								log_threshold => log_threshold + 2);
 
 						when others => null; -- CS
 					end case;
@@ -5809,11 +5852,13 @@ package body et_kicad is
 				use type_lines;
 			
 			begin -- make_component (schematic)
-				
+				log ("making component ...", log_threshold);
+				log_indentation_up;
+			
 				line_cursor := type_lines.first (lines);
 				while line_cursor /= type_lines.no_element loop
 
-					log ("component line: " & to_string (et_kicad.line), log_threshold + 4);
+					log ("component line: " & to_string (et_kicad.line), log_threshold + 6);
 
 					-- Read component name and annotation from a line like "L NetChanger N1". 
 					-- From this entry we reason the component appearance. 
@@ -5822,7 +5867,7 @@ package body et_kicad is
 					if field (et_kicad.line,1) = schematic_component_identifier_name then -- "L"
 						
 						generic_name_in_lbr := type_component_generic_name.to_bounded_string (field (et_kicad.line,2)); -- "SN74LS00"
-						log ("generic name " & to_string (generic_name_in_lbr), log_threshold + 3);
+						log ("generic name " & to_string (generic_name_in_lbr), log_threshold + 1);
 						
 						check_generic_name_characters (
 							name => generic_name_in_lbr, -- "SN74LS00"
@@ -5844,7 +5889,7 @@ package body et_kicad is
 									text_in => field (et_kicad.line,3),
 									allow_special_character_in_prefix => true); 
 
-								log ("reference " & to_string (reference), log_threshold + 3);
+								log ("reference " & to_string (reference), log_threshold);
 								validate_prefix (reference);
 
 							when et_libraries.sch_pcb =>
@@ -5857,7 +5902,7 @@ package body et_kicad is
 									text_in => field (et_kicad.line,3),
 									allow_special_character_in_prefix => false);
 
-								log ("reference " & to_string (reference), log_threshold + 3);
+								log ("reference " & to_string (reference), log_threshold);
 								
 								et_configuration.validate_prefix (reference);
 
@@ -6018,7 +6063,7 @@ package body et_kicad is
 					next (line_cursor);
 				end loop;
 
-				-- Check if all required text fields have been found.
+				-- Check whether all required text fields have been found.
 				-- Check content of text fields for syntax and plausibility.
 				check_text_fields (log_threshold + 1);
 				
@@ -6030,6 +6075,8 @@ package body et_kicad is
 				-- We update the component with the collected unit information.
 				insert_unit;
 
+				log_indentation_down;
+				
 				exception
 					when others => 
 						error_in_schematic_file (et_kicad.line);
@@ -6111,11 +6158,11 @@ package body et_kicad is
 
 					-- Store line in variable "line" (see et_string_processing.ads)
 					line := et_string_processing.read_line (
-								line => get_line,
-								number => ada.text_io.line (current_input),
-								comment_mark => "", -- there are no comment marks in the schematic file
-								delimiter_wrap => true, -- there are fields wrapped in delimiters
-								ifs => latin_1.space); -- fields are separated by space
+								line 			=> get_line,
+								number 			=> ada.text_io.line (current_input),
+								comment_mark 	=> "", -- there are no comment marks in the schematic file
+								delimiter_wrap 	=> true, -- there are fields wrapped in delimiters
+								ifs 			=> latin_1.space); -- fields are separated by space
 					-- CS: If read_line exits with an exception, the exception handler of read_schematic
 					-- outputs the line BEFORE the faulty line. Thus misleading the operator.
 					
@@ -6124,7 +6171,7 @@ package body et_kicad is
 						when others =>
 
 							-- At a certain log level we report the whole line as it is:
- 							log (to_string (line), log_threshold + 3);
+ 							log (to_string (line), log_threshold + 7);
 
 							-- The first line should be the headline with the schematic version:
 							-- READ SCHEMATIC HEADLINE:
@@ -6350,7 +6397,7 @@ package body et_kicad is
 									if component_footer (line) then
 										component_entered := false; -- we are leaving the component
 
-										make_component (lines);
+										make_component (lines, log_threshold + 1);
 										clear (lines);
 									else -- read lines of unit/component
 										add (line);
