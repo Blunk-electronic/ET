@@ -2767,6 +2767,9 @@ package body et_kicad is
 
 
 	function to_package_variant (
+	-- Used when reading schematic. Returns the package variant of a component.
+	-- Input parameters: the full name of the component library, generic name therein,
+	-- name of package library and package name.
 		component_library 	: in et_libraries.type_full_library_name.bounded_string; 		-- ../lbr/bel_logic.lib
 		generic_name 		: in et_libraries.type_component_generic_name.bounded_string; 	-- 7400
 		package_library 	: in et_libraries.type_library_name.bounded_string; 			-- bel_ic
@@ -2775,47 +2778,55 @@ package body et_kicad is
 		return et_libraries.type_component_variant_name.bounded_string is 					-- D
 
 		use et_libraries;
-		library_cursor : type_libraries.cursor;
+		library_cursor : type_libraries.cursor; -- points to the component library
 		
 		use et_string_processing;
-		variant : type_component_variant_name.bounded_string := component_variant_name_default; -- variant name to be returned
+		variant : type_component_variant_name.bounded_string; -- variant name to be returned
 		
 		-- temporarily here the name of the package library is stored:
 		use type_full_library_name;
-		full_package_library_name : type_full_library_name.bounded_string;
+		full_package_library_name : type_full_library_name.bounded_string; -- ../lbr/bel_ic
 		
 		procedure locate_component (
+		-- Locates the given generic component in the component libraray.
 			library_name	: in type_full_library_name.bounded_string;
 			components 		: in type_components.map) is
 
 			use type_components;
-			component_cursor : type_components.cursor;
+			component_cursor : type_components.cursor; -- points to the generic component
 			
 			procedure query_variants (
-				component_name	: in type_component_generic_name.bounded_string;
+			-- Queries the package variants of the generic component.
+				component_name	: in type_component_generic_name.bounded_string; -- RESISTOR
 				component 		: in type_component) is
 
 				use type_component_package_name;
 				use type_component_variants;
 				use type_component_variant_name;
-				
+
+				-- This cursor points to the package variant being queryied.
 				variant_cursor : type_component_variants.cursor := component.variants.first;
 
 			begin -- query_variants
 				log ("querying package variants ...", log_threshold + 2);
 				log_indentation_up;
-				
+
+				-- Loop through package variants:
 				while variant_cursor /= type_component_variants.no_element loop
 
-					-- From the library and package name we can reason to the variant name.
+					-- From the library and package name we can reason the variant name.
+					-- So if both the given library and package name match, the variant name
+					-- is set to be returned.
 					if 	element (variant_cursor).packge.library = full_package_library_name and
 						element (variant_cursor).packge.name = package_name then 
+						
 						log ("variant " 
 							& to_string (package_variant => key (variant_cursor)) 
 							& " used", log_threshold + 1);
 
 						variant := key (variant_cursor);
-						exit;
+						exit; -- no further search required
+						
 					else
 						-- Package variant not defined in library. Make sure
 						-- the terminal_port_map (there is only one) can be applied 
@@ -2862,6 +2873,7 @@ package body et_kicad is
 				component_cursor := components.find (prepend_tilde (generic_name));
 			end if;
 
+			-- query the package variants of the generic component
 			type_components.query_element (
 				position 	=> component_cursor,
 				process 	=> query_variants'access);
@@ -2881,19 +2893,19 @@ package body et_kicad is
 		log ("making package variant ...", log_threshold);
 		log_indentation_up;
 
-		-- CS check package_library name and package name for valid length and characters ?
-		
 		-- Compose the full name of the package library:
 		full_package_library_name := to_full_library_name (root_dir => lib_dir, lib_name => package_library);
 
--- 		check_variant_name_length (to_string (package_name));
-		
+		-- locate the given component library
 		library_cursor := component_libraries.find (component_library);
+
+		-- locate the given generic component
 		type_libraries.query_element (
 			position	=> library_cursor,
 			process		=> locate_component'access);
 		
 		log_indentation_down;
+
 		return variant;
 	end to_package_variant;
 
@@ -5419,6 +5431,15 @@ package body et_kicad is
 						line		: in et_string_processing.type_fields_of_line;
 						position	: in positive) return string renames et_string_processing.get_field_from_line;
 
+					-- KiCad does not provide an exact name of the library where the generic component
+					-- model can be found. It only provides the generic name of the model.
+					-- The library is determined by the order of the library names in the 
+					-- project file. It is the first libraray in this list that contains the model.
+					-- The function generic_name_to_library does the job and sets the full_component_library_name
+					-- here right away:
+					full_component_library_name : type_full_library_name.bounded_string := 
+														generic_name_to_library (generic_name_in_lbr, reference);
+					
 				begin -- insert_component
 					log_indentation_up;
 					
@@ -5439,12 +5460,7 @@ package body et_kicad is
 									-- Whether the component is a "power flag" can be reasoned from its reference:
 									power_flag		=> to_power_flag (reference),
 
-									-- KiCad does not provide an exact name of the library where the generic component
-									-- model can be found. It only provides the generic name of the model.
-									-- The library is determined by the order of the library names in the 
-									-- project file. It is the first libaray in this succession that contains the model.
-									-- The function generic_name_to_library does the job.
-									library_name	=> generic_name_to_library (generic_name_in_lbr, reference),
+									library_name	=> full_component_library_name, -- ../lbr/bel_logic.lib
 									generic_name	=> generic_name_in_lbr,
 									
 									value 			=> type_component_value.to_bounded_string (content (field_value)),
@@ -5463,12 +5479,7 @@ package body et_kicad is
 								component => (
 									appearance		=> sch_pcb,
 
-									-- KiCad does not provide an exact name of the library where the generic component
-									-- model can be found. It only provides the generic name of the model.
-									-- The library is determined by the order of the library names in the 
-									-- project file. It is the first libaray in this succession that contains the model.
-									-- The function generic_name_to_library does the job.
-									library_name	=> generic_name_to_library (generic_name_in_lbr, reference),
+									library_name	=> full_component_library_name, -- ../lbr/bel_logic.lib
 									generic_name	=> generic_name_in_lbr,
 									
 									value			=> type_component_value.to_bounded_string (content (field_value)),
@@ -5481,20 +5492,17 @@ package body et_kicad is
 									partcode		=> type_component_partcode.to_bounded_string (content (field_partcode)),
 									purpose			=> type_component_purpose.to_bounded_string (content (field_purpose)),
 									bom				=> type_bom'value (content (field_bom)),
+
+									-- the package variant is determined by the package library and package name:
 									variant			=> to_package_variant (
-															component_library => generic_name_to_library (generic_name_in_lbr, reference),	-- bel_logic
-															generic_name => generic_name_in_lbr, -- 7400
-															package_library => library_name (content (field_package)), -- bel_ic
-															package_name => package_name (content (field_package)), -- S_SO14
-															log_threshold => log_threshold + 1),
+															component_library	=> full_component_library_name, -- ../lbr/bel_logic.lib
+															generic_name		=> generic_name_in_lbr, -- 7400
+															package_library		=> library_name (content (field_package)), -- bel_ic
+															package_name		=> package_name (content (field_package)), -- S_SO14
+															log_threshold		=> log_threshold + 1),
 
 									position		=> et_pcb.position_placement_default,
 									
-									-- Kicad requirement
--- 									package_library => library_name (content (field_package)), -- bel_primitives, bel_transistors
-
--- 									packge => package_name (content (field_package)), -- S_SOT23
-										
 									-- At this stage we do not know if and how many units there are. So the unit list is empty for the moment.
 									units => type_units.empty_map),
 
@@ -5509,25 +5517,6 @@ package body et_kicad is
 										console => true);
 									raise constraint_error;
 								end if;
-
-								-- The libaray and footpint name could be tested separately.
-	-- 							-- Test footprint contains a libaray name. example: "bel_opto:LED_S_0805"
-	-- 							if field(line => tmp_library_footprint, position => 1)'size = 0 then
-	-- 								write_message(
-	-- 									file_handle => current_output,
-	-- 									text => message_error & et_general.to_string(reference) & ": footprint library not specified !",
-	-- 									console => true);
-	-- 								raise constraint_error;
-	-- 							end if;
-	-- 
-	-- 							-- Test if footprint has been associated with the component.
-	-- 							if field(line => tmp_library_footprint, position => 2)'size = 0 then
-	-- 								write_message(
-	-- 									file_handle => current_output,
-	-- 									text => message_error & et_general.to_string(reference) & ": footprint not specified !",
-	-- 									console => true);
-	-- 								raise constraint_error;
-	-- 							end if;
 
 						when others => -- CS: This should never happen. A subtype of type_component_appearance could be a solution.
 							null;

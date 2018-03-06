@@ -276,8 +276,6 @@ package et_schematic is
 		case appearance is
 			-- If a component appears in both schematic and layout it has got:
 			when sch_pcb => 
--- 				package_library	: type_library_name.bounded_string; -- Kicad requirement
--- 				packge 			: type_component_package_name.bounded_string; -- S_SOT23
 				partcode		: type_component_partcode.bounded_string;
 				purpose			: type_component_purpose.bounded_string;
 				datasheet		: type_component_datasheet.bounded_string;

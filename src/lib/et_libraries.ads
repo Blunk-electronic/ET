@@ -927,9 +927,6 @@ package et_libraries is
 	package type_component_variant_name is new generic_bounded_length (component_variant_name_length_max);
 	use type_component_variant_name;
 
-	component_variant_name_default : constant type_component_variant_name.bounded_string := 
-		type_component_variant_name.to_bounded_string ("default");
-
 	function to_string (package_variant : in type_component_variant_name.bounded_string) return string;
 	-- converts a type_component_variant_name to a string.
 	
