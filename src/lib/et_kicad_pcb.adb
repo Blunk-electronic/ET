@@ -50,6 +50,7 @@ with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 with et_libraries;
+with et_pcb;
 with et_string_processing;		use et_string_processing;
 
 package body et_kicad_pcb is
