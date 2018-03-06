@@ -5210,10 +5210,8 @@ package body et_schematic is
 					name 		: in et_libraries.type_component_generic_name.bounded_string;
 					component 	: in et_libraries.type_component) is
 					use type_component_variants;
--- 					use type_component_package_name;
 
 					variant_cursor : et_libraries.type_component_variants.cursor;
--- 					variant_found : boolean := false;
 
 					procedure locate_terminal (
 						variant_name 	: in type_component_variant_name.bounded_string;
@@ -5242,57 +5240,17 @@ package body et_schematic is
 					end locate_terminal;
 					
 				begin -- query_variants
-					log ("locating variant " & type_component_variant_name.to_string (package_variant)
+					log ("locating variant " & to_string (package_variant)
 						& " ...", log_threshold + 3);
 					log_indentation_up;
 
 					-- The variant should be found (because the component has been inserted in the library earlier).
-					-- Otherwise an exception would occur here:
-					variant_cursor := component.variants.first;
+					-- CS Otherwise an exception would occur here:
+					variant_cursor := component.variants.find (package_variant);
 
--- 					-- search variants for given package name. exit loop on first match (CS: show other matches ?)
--- 					while variant_cursor /= type_component_variants.no_element loop
--- 						if element (variant_cursor).packge.name = package_name then -- variant found
--- 							log ("package variant " 
--- 									& type_component_variant_name.to_string (key (variant_cursor)), -- CS: make function to_string
--- 									log_threshold + 3);
--- 							variant_found := true;
--- 							exit;
--- 						end if;
--- 						next (variant_cursor);
--- 					end loop;
--- 
--- 					if variant_found then
-						query_element (
-							position => variant_cursor,
-							process => locate_terminal'access);
-						
--- 					else
--- 						log_indentation_reset;
--- 						log (message_error & "no package variant with package " 
--- 							& to_string (packge => package_name) & " found for " 
--- 							& to_string (generic_name) & latin_1.space 
--- 							& to_string (port.reference) & " !",
--- 							console => true);
--- 
--- 						-- show available variants
--- 						variant_cursor := component.variants.first;
--- 						log ("available variants:");
--- 						log ("variant package library");
--- 						log_indentation_up;
--- 						
--- 						while variant_cursor /= type_component_variants.no_element loop
--- 							log (type_component_variant_name.to_string (key (variant_cursor)) -- CS: make function to_string
--- 								& latin_1.space 
--- 								& to_string (packge => element (variant_cursor).packge.name)
--- 								& latin_1.space
--- 								& to_string (element (variant_cursor).packge.library));
--- 							next (variant_cursor);
--- 						end loop;
--- 							
--- 						log_indentation_down;
--- 						raise constraint_error;
--- 					end if;
+					query_element (
+						position => variant_cursor,
+						process => locate_terminal'access);
 
 					log_indentation_down;	
 				end query_variants;
