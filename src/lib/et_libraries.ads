@@ -527,7 +527,6 @@ package et_libraries is
 	type type_component_package is record
 		name 			: type_component_package_name.bounded_string; -- S_SOT23
 		library			: type_full_library_name.bounded_string; -- projects/lbr/smd_packages.pac
-		terminal_count	: type_terminal_count; -- 14
 	end record;
 
 

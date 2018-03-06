@@ -5045,9 +5045,11 @@ package body et_schematic is
 					-- Otherwise an exception would occur here:
 					variant_cursor := component.variants.find (package_variant);
 
-					-- get the number of terminals from the variant
-					terminals := element (variant_cursor).packge.terminal_count;
-
+					-- get the number of terminals of this package variant
+					terminals := et_pcb.terminal_count (
+									library_name	=> element (variant_cursor).packge.library,	-- ../lbr/bel_ic
+									package_name	=> element (variant_cursor).packge.name);	-- S_SO14
+					
 					log_indentation_down;	
 				end query_variants;
 				

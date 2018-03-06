@@ -100,8 +100,13 @@ package et_pcb is
 -- 		end case;
 -- 	end record;
 
+	function terminal_count (
+		library_name		: in et_libraries.type_full_library_name.bounded_string;
+		package_name 		: in et_libraries.type_component_package_name.bounded_string)
+		return et_libraries.type_terminal_count;
+
 	function terminal_port_map_fits (
-	-- Used when terminal_port_maps are to be used for other packages.
+	-- Used when terminal_port_maps are to be used for packages.
 	-- The given package is specified by the library name and package name.
 	-- Returns true if the terminal_port_map fits on the given package.
 		library_name		: in et_libraries.type_full_library_name.bounded_string;

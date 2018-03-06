@@ -2388,46 +2388,45 @@ package body et_kicad is
 								tmp_variant_name := to_component_variant_name (to_string (package_name (content (field_package)))); -- S_SO14
 								check_variant_name_characters (tmp_variant_name);
 
-								-- Insert in tmp_variants (which is temporarily) the default variant.
-								insert (
-									container => tmp_variants,
-
-									key => tmp_variant_name, -- S_SO14
+								-- Test whether library and package and terminal_port_map fit together:
+								if et_pcb.terminal_port_map_fits (
+									library_name		=> to_full_library_name ( -- ../lbr/bel_ic
+																root_dir => lib_dir,
+																lib_name => library_name (content (field_package))),
+									package_name		=> package_name (content (field_package)), -- S_SO14
+									terminal_port_map	=> tmp_terminal_port_map) then
+								
+										-- Insert in tmp_variants (which is temporarily) the default variant.
+										insert (
+											container => tmp_variants,
+											key => tmp_variant_name, -- the same as the package name -- S_SO14
 									
-									new_item => (
-										-- The package field contains something like "bel_ic:S_SO14".
-										-- This provides the library name and the package name.
-										-- The only way to obtain the number of terminals is to read the
-										-- length of the tmp_terminal_port_map.
-										-- CS: NOTE: Since not all terminals of the package may be mapped to ports,
-										-- this approach implies the risk of a wrong terminal count !
-										-- Example: If a S_SO14 housing contains just a single NAND gate (with supply) the
-										-- tmp_terminal_port_map would have a length of 5 whereas the package
-										-- would have 14 terminals.
-										-- CS: A function is required that guesses from the package name the
-										-- real number of terminals.
-										-- CS: Even better a function that fetches the pad count from the 
-										-- package model (package et_pcb) ?
-										packge => (
-											name => package_name (content (field_package)), -- S_SO14
+											new_item => (
+												-- The package field contains something like "bel_ic:S_SO14".
+												-- This provides the library name and the package name.
 
-											-- We compose the full library name from lib_dir (global variable) and the 
-											-- library name. example: projects/lbr/bel_ic
-											library => to_full_library_name (
-												root_dir => lib_dir,
-												lib_name => library_name (content (field_package))), 
+												-- create package variant
+												packge => (
+													name => package_name (content (field_package)), -- S_SO14
 
-											-- derive terminal count from tmp_terminal_port_map
-											-- CS: see comments above
-											terminal_count => type_terminal_count (length (tmp_terminal_port_map))),
+													-- We compose the full library name from lib_dir (global variable) and the 
+													-- library name. example: projects/lbr/bel_ic
+													library => to_full_library_name (
+														root_dir => lib_dir,
+														lib_name => library_name (content (field_package)))), 
 
-										-- The terminal to port map tmp_terminal_port_map is now finally copied
-										-- to its final destination:
-										terminal_port_map => tmp_terminal_port_map)); -- H4/GPIO2
+												-- The terminal to port map tmp_terminal_port_map is now finally copied
+												-- to its final destination:
+												terminal_port_map => tmp_terminal_port_map)); -- H4/GPIO2
 
-								-- Assign package variant to component
-								component.variants := tmp_variants;
-
+										log (to_string (tmp_variant_name), log_threshold + 2); 
+									
+										-- Assign package variant to component
+										component.variants := tmp_variants;
+								else
+									null; -- CS variant could not be built, output something here, raise constraint error ?
+								end if;
+								
 							when others => null;
 						end case;
 					end build;
@@ -2438,12 +2437,15 @@ package body et_kicad is
 				
 			begin -- build_package_variant
 				log_indentation_up;
-				log ("building package variant ...", log_threshold + 1);
+				log ("building default package variant ...", log_threshold + 1);
+				log_indentation_up;
+				
 				type_libraries.update_element ( 
 					container	=> component_libraries,
 					position	=> lib_cursor,
 					process		=> locate_component'access);
 				
+				log_indentation_down;
 				log_indentation_down;
 			end build_package_variant;
 			
@@ -2862,9 +2864,8 @@ package body et_kicad is
 						-- build the new package variant
 						new_variant := (
 							packge 				=> (library		=> full_package_library_name,
-													name 		=> package_name,
-													terminal_count => 0 -- CS soon not used any more
-													),
+													name 		=> package_name),
+							
 							terminal_port_map	=> element (variant_cursor).terminal_port_map
 							);
 
@@ -2872,8 +2873,7 @@ package body et_kicad is
 						type_component_variants.insert (
 							container	=> component.variants,
 							key			=> to_component_variant_name (to_string (packge => package_name)),
-							new_item	=> new_variant
-							);
+							new_item	=> new_variant);
 
 					else
 						log_indentation_reset;
