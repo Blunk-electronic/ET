@@ -4730,7 +4730,7 @@ package body et_kicad is
 				set_y (junction.coordinates, mil_to_distance (field (line,4)));
 
 				-- for the log
-				log (to_string (junction => junction, scope => xy));
+				log (to_string (junction => junction, scope => xy), log_threshold + 1);
 
 				-- add to wild list of junctions
 				type_junctions.append (wild_junctions, junction);
@@ -4798,7 +4798,7 @@ package body et_kicad is
 				check_net_name_characters (label.text);
 				
 				-- for the log
-				log (to_string (label => type_net_label (label), scope => xy));
+				log (to_string (label => type_net_label (label), scope => xy), log_threshold + 1);
 
 				check_schematic_text_size (category => net_label, size => label.size);
 				-- CS: check label style
@@ -4878,7 +4878,7 @@ package body et_kicad is
 				check_net_name_characters (label.text);
 
 				-- for the log
-				log (to_string (label => type_net_label (label), scope => xy));
+				log (to_string (label => type_net_label (label), scope => xy), log_threshold + 1);
 
 				check_schematic_text_size (category => net_label, size => label.size);
 				-- CS: check style and line width

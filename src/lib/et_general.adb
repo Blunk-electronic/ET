@@ -35,9 +35,53 @@
 --   history of changes:
 --
 
+with ada.directories;
+
 package body et_general is
 
 	
+	function directory_entries (
+	-- Returns the entries of the given directory. Parameter category determines whether to
+	-- search for directories, ordinary files or special files.
+		target_directory	: in string;						-- ../lbr
+		category			: in ada.directories.file_kind;		-- directory, ordinary_file, special_file
+		pattern				: in string) 						-- *.txt
+		return type_directory_entries.list is
+
+		use ada.directories;
+		filter : filter_type;
+		entries : type_directory_entries.list; -- to be returned
+		
+		procedure do_it (item : in directory_entry_type) is
+		-- appends items to the container "entries"
+		begin
+			type_directory_entries.append (
+				container => entries,
+				new_item => simple_name (item));
+		end do_it;
+
+	begin -- directory_entries
+
+		-- set filter according to the item category:
+		case category is
+			when directory =>
+				filter := (directory => true, others => false);
+
+			when ordinary_file =>
+				filter := (ordinary_file => true, others => false);
+
+			when special_file =>
+				filter := (special_file => true, others => false);
+		end case;
+
+		-- start search
+		search (target_directory, pattern, filter, do_it'access);
+		
+		return entries;
+	end directory_entries;
+
+
+
 	
 	-- GENERICS
 	

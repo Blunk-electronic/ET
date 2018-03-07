@@ -80,17 +80,29 @@ package et_pcb is
 
 	use et_libraries.type_component_package_name;
 	
-	package type_packages is new indefinite_ordered_maps (
+	package type_packages is new indefinite_ordered_maps ( -- CS try ordered_maps instead
 		key_type 		=> et_libraries.type_component_package_name.bounded_string, -- S_SO14
 		element_type 	=> type_package);
+	use type_packages;
 
+	library_name_length_max : constant positive := 200;
+	package type_library_name is new generic_bounded_length (library_name_length_max);
+	use type_library_name;
 
+	function to_string (library_name : in type_library_name.bounded_string) return string;
+	-- Converts a library name to a string.
+
+	function to_library_name (library_name : in string) return type_library_name.bounded_string;
+	-- Converts a string to a type_library_name.
+	
+	package type_libraries is new ordered_maps (
+		key_type		=> type_library_name.bounded_string, -- bel_ic, bel_connectors
+		element_type	=> type_packages.map);
+
+	-- All package models are collected here:
+	package_libraries : type_libraries.map;
 
 	
-	-- All package models are collected here:
-	package_libraries : type_packages.map;
-
-
 
 
 	

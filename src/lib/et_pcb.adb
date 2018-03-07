@@ -65,6 +65,17 @@ package body et_pcb is
 			angle => zero_angle);
 	end position_placement_default;
 
+	function to_string (library_name : in type_library_name.bounded_string) return string is
+	-- Converts a library name to a string.
+	begin
+		return type_library_name.to_string (library_name);
+	end to_string;
+
+	function to_library_name (library_name : in string) return type_library_name.bounded_string is
+	-- Converts a string to a type_library_name.
+	begin
+		return type_library_name.to_bounded_string (library_name);
+	end to_library_name;
 	
 	function terminal_count (
 		library_name		: in et_libraries.type_full_library_name.bounded_string;
