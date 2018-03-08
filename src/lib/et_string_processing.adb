@@ -779,13 +779,19 @@ package body et_string_processing is
 		return to_string(s);
 	end to_string;
 
-	function affected_line ( line : in type_fields_of_line ) return string is
+	function line_number (line : in type_fields_of_line) return positive is
+	-- Returns the line number of the given line.
+	begin
+		return positive (line.number);
+	end line_number;
+	
+	function affected_line (line : in type_fields_of_line ) return string is
 	-- Returns the line number of the given line in a string like "line x:"
 	begin
-		return ("line" & positive_count'image(line.number) & ": ");
+		return ("line" & positive_count'image (line.number) & ": ");
 	end affected_line;
 
-	function field_count ( line : in type_fields_of_line) return count_type is
+	function field_count (line : in type_fields_of_line) return count_type is
 	-- Returns the number of fields in the given line.
 	begin
 		return line.field_count;

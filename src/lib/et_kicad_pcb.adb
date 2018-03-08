@@ -40,7 +40,9 @@ with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 
 with ada.directories;
+with ada.strings;				use ada.strings;
 with ada.strings.maps;			use ada.strings.maps;
+with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 
@@ -71,17 +73,261 @@ package body et_kicad_pcb is
 	
 		use et_pcb.type_lines;
 		line_cursor : et_pcb.type_lines.cursor := lines.first; -- points to the line being processed
+
+		ob : constant character := '(';
+		cb : constant character := ')';
+
+		term_char_seq : constant string (1..2) := latin_1.space & ')';
+		term_char_set : character_set := to_set (term_char_seq);
+
+		sec_prefix : constant string (1..4) := "sec_";
+		type type_section is (
+			sec_module,
+			sec_layer,
+			sec_tedit,
+			sec_desc,
+			sec_tags,
+			sec_attr,
+			sec_fp_text,
+			sec_at,
+			sec_effects,
+			sec_font,
+			sec_size,
+			sec_thinkness,
+			sec_fp_line,
+			sec_start,
+			sec_end,
+			sec_width,
+			sec_pad,
+			sec_layers,
+			sec_model,
+			sec_scale,
+			sec_rotate,
+			sec_xyz
+			);
+
+		section : type_section;
+
+		argument_length_max : constant positive := 50;
+		package type_argument is new generic_bounded_length (argument_length_max);
+		use type_argument;
+		arg : type_argument.bounded_string; -- here the argument goes
+		
+		package sections_stack is new et_general.stack_lifo (max => 20, item => type_section);
+
+		line_length_max : constant positive := 200;
+		package type_current_line is new generic_bounded_length (line_length_max);
+		use type_current_line;
+		current_line : type_current_line.bounded_string;
+		character_cursor : natural;
+
+		procedure get_next_line is
+		-- Fetches a new line. 
+		begin
+			next (line_cursor);
+			if line_cursor /= et_pcb.type_lines.no_element then
+				current_line := type_current_line.to_bounded_string (to_string (element (line_cursor)));
+				log (to_string (current_line), log_threshold + 1);
+			else
+				-- no more lines
+				null;
+			end if;
+		end get_next_line;
+
+		
+		procedure p1 is
+		-- Updates the cursor position to the position of the next
+		-- non_space character starting from the current cursor position.
+		-- Fetches a new line if no further characters after current cursor position.
+		begin
+			character_cursor := index_non_blank (source => current_line, from => character_cursor + 1);
+			while character_cursor = 0 loop
+				get_next_line;
+				character_cursor := index_non_blank (source => current_line, from => character_cursor + 1);
+			end loop;
+		end p1;
+
+		procedure read_section is 
+		-- Reads the section name from current cursor position until termination
+		-- character or its last character.
+		-- Stores the section name on sections_stack.
+			end_of_kw : integer;  -- may become negative if no terminating character present
+		begin
+			--put_line("kw start at: " & natural'image(cursor));
+
+			-- get position of last character
+			end_of_kw := index (source => current_line, from => character_cursor, set => term_char_set) - 1;
+
+			-- if no terminating character found, end_of_kw assumes length of line
+			if end_of_kw = -1 then
+				end_of_kw := length (current_line);
+			end if;
+
+			--put_line("kw end at  : " & positive'image(end_of_kw));
+
+			-- Compose section name from cursor..end_of_kw.
+			-- This is an implicit general test whether the keyword is a valid keyword.
+			section := type_section'value (sec_prefix & slice (current_line, character_cursor, end_of_kw));
+
+			-- update cursor
+			character_cursor := end_of_kw;
+
+			-- save section name on stack
+			sections_stack.push (section);
+
+			log ("section " & type_section'image (section), log_threshold + 1);
+-- 			verify_section;
+
+ 			--put_line("LEVEL" & natural'image(sections_stack.depth)); 
+			--put_line(" INIT " & strip_prefix(section));
+
+-- 			exception
+--                 when constraint_error =>
+--                     write_message(
+--                         file_handle => file_import_cad_messages,
+--                         text => message_error & "line" 
+--                             & positive'image(line_counter) & " : "
+--                             & "invalid keyword '"
+--                             & slice(line,cursor,end_of_kw) & "'",
+--                         console => true);
+-- 					raise;
+		end read_section;
+		
+
+		procedure read_arg is
+		-- Reads the argument of a section (or keyword).
+		-- Mostly the argument is separated from the section name by space.
+		-- Some arguments are wrapped in quotations.
+		-- Leaves the cursor at the position of the last character of the argument.
+		-- If the argument was enclosed in quotations the cursor is left at
+		-- the position of the trailing quotation.
+			end_of_arg : integer; -- may become negative if no terminating character present
+		begin
+			--put_line("arg start at: " & natural'image(cursor));
+
+			-- We handle an argument that is wrapped in quotation different than
+			-- a non-wrapped argument:
+			if element (current_line, character_cursor) = latin_1.quotation then
+				-- Read the quotation-wrapped argument (strip quotations)
+
+				-- get position of last character (before trailing quotation)
+				end_of_arg := index (source => current_line, from => character_cursor + 1, pattern => 1 * latin_1.quotation) - 1;
+
+				--put_line("arg end at  : " & positive'image(end_of_arg));
+
+				-- if no trailing quotation found -> error
+				if end_of_arg = -1 then
+					log_indentation_reset;
+					log (message_error & affected_line (element (line_cursor))
+						& latin_1.space & latin_1.quotation & " expected");
+						raise constraint_error;
+				end if;
+
+				-- compose argument from first character after quotation until end_of_arg
+				arg := to_bounded_string (slice (current_line, character_cursor + 1, end_of_arg));
+
+				-- update cursor (to position of trailing quotation)
+				character_cursor := end_of_arg + 1;
+			else
+				-- Read the argument from current cursor position until termination
+				-- character or its last character.
+
+				-- get position of last character
+				end_of_arg := index (source => current_line, from => character_cursor, set => term_char_set) - 1;
+
+				-- if no terminating character found, end_of_arg assumes length of line
+				if end_of_arg = -1 then
+					end_of_arg := length (current_line);
+				end if;
+
+				--put_line("arg end at  : " & positive'image(end_of_arg));
+
+				-- compose argument from cursor..end_of_arg
+				arg := to_bounded_string (slice (current_line, character_cursor, end_of_arg));
+
+				-- update cursor
+				character_cursor := end_of_arg;
+			end if;
+
+			log ("arg " & to_string (arg), log_threshold + 1);
+
+		end read_arg;
+
+
+		procedure exec_section is
+		begin
+			-- Pop last section name from stack.
+			-- That is the section name encountered after the last opening bracket.
+			section := sections_stack.pop;
+
+			case section is
+
+			-- GENERAL STUFF
+				when sec_model =>
+					--netlist_version := type_netlist_version'value(to_string(arg));
+					log ("xxx " & to_string (arg), log_threshold + 1);
+
+					
+				when others => null;
+			end case;
+
+
+		end exec_section;
+		
+		
 	begin
 		log ("parsing/building model ...", log_threshold);
 		log_indentation_up;
 
-		-- process given lines
-		while line_cursor /= et_pcb.type_lines.no_element loop
-			log (to_string (element (line_cursor)), log_threshold + 1);
+		sections_stack.init;
 
-			next (line_cursor);
+		-- get first line
+		current_line := type_current_line.to_bounded_string (to_string (element (line_cursor)));
+		log ("line " & to_string (current_line), log_threshold + 1);
+		
+		-- get position of first opening bracket
+		character_cursor := type_current_line.index (current_line, 1 * ob);
+
+		loop
+			<<label_1>>
+				p1;
+				read_section;
+				p1;
+				if element (current_line, character_cursor) = ob then goto label_1; end if;
+
+			<<label_3>>
+				read_arg;
+				p1;
+				if element (current_line, character_cursor) /= cb then
+					log_indentation_reset;
+					log (message_error & affected_line (element (line_cursor))
+						& latin_1.space & cb & " expected");
+						raise constraint_error;
+				end if;
+
+			<<label_2>>
+				exec_section;
+
+				if sections_stack.depth = 0 then exit; end if;
+				p1;
+
+				-- Test for cb, ob or other character:
+				case element (current_line, character_cursor) is
+
+					-- If closing bracket after argument. example: (libpart (lib conn) (part CONN_01X02)
+					when cb => goto label_2;
+
+					-- If another section at a deeper level follows. example: (lib conn)
+					when ob => goto label_1;
+
+					-- In case an argument not enclosed in brackets 
+					-- follows a closing bracket. example: (field (name Reference) P)
+					when others => goto label_3; 
+				end case;
+
+				
 		end loop;
-
+		
 		log_indentation_down;
 		return model;
 	end to_package_model;
@@ -163,9 +409,10 @@ package body et_kicad_pcb is
 
 					-- Store line in variable "line" (see et_string_processing.ads)
 					line := et_string_processing.read_line (
-								line 	=> get_line,
-								number 	=> ada.text_io.line (current_input),
-								ifs 	=> latin_1.space); -- fields are separated by space
+								line 			=> get_line,
+								number 			=> ada.text_io.line (current_input),
+								--delimiter_wrap	=> true, -- some things are enclosed in quotations
+								ifs 			=> latin_1.space); -- fields are separated by space
 
 					-- insert line in container "lines"
 					if field_count (line) > 0 then -- we skip empty or commented lines

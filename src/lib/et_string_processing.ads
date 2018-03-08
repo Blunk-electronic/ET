@@ -259,6 +259,9 @@ package et_string_processing is
 
 	function to_string (line : in type_fields_of_line) return string;
 
+	function line_number (line : in type_fields_of_line) return positive;
+	-- Returns the line number of the given line.
+	
 	function affected_line (line : in type_fields_of_line) return string;
 	-- Returns the line number of the given line in a string like "line x:"
 
