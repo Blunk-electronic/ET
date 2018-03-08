@@ -67,7 +67,8 @@ with et_kicad_pcb;
 
 package body et_kicad is
 
-	procedure clear (lines : in out type_lines.list) is
+	procedure clear (lines : in out type_lines.list) is -- CS no paramter required
+	-- CS procedure clear is
 	begin
 		type_lines.clear (lines);
 	end clear;

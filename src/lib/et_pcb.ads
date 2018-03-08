@@ -54,6 +54,27 @@ with et_libraries;
 
 package et_pcb is
 
+	-- If lines of a file are to be collected we use this simple list:
+	package type_lines is new doubly_linked_lists (
+		element_type => et_string_processing.type_fields_of_line,
+		"=" => et_string_processing.lines_equally);
+	
+-- 	line_cursor : type_lines.cursor;
+	
+-- 	procedure clear;
+
+-- 	procedure add (line : in et_string_processing.type_fields_of_line);
+	
+-- 	function first (lines : in type_lines.list) return type_lines.cursor;
+
+-- 	procedure next (line : in out type_lines.cursor);
+
+-- 	function line return et_string_processing.type_fields_of_line;
+
+
+
+	
+	
 	type type_axis is (X, Y, Z);
 	type type_face is (TOP, BOTTOM);
 	

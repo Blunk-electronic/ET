@@ -55,6 +55,36 @@ with et_string_processing;		use et_string_processing;
 package body et_pcb is
 
 
+-- 	procedure clear is
+-- 	begin
+-- 		type_lines.clear (lines);
+-- 	end clear;
+-- 
+-- 	procedure add (line : in et_string_processing.type_fields_of_line) is
+-- 	begin
+-- 		lines.append (line);
+-- 	end add;
+	
+-- 	function first (lines : in type_lines.list) return type_lines.cursor is
+-- 	begin
+-- 		return type_lines.first (lines);
+-- 	end first;
+
+-- 	procedure next (line : in out type_lines.cursor) is
+-- 	begin
+-- 		type_lines.next (line);
+-- 	end next;
+-- 
+-- 	function line return et_string_processing.type_fields_of_line is
+-- 	begin
+-- 		return type_lines.element (line_cursor);
+-- 	end line;
+
+
+
+
+	
+	
 	function position_placement_default return type_position_placement is
 	begin
 		return (

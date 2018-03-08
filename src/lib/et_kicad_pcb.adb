@@ -59,6 +59,33 @@ with et_string_processing;		use et_string_processing;
 
 package body et_kicad_pcb is
 
+	function to_package_model (
+	-- Builds a package model from the given lines.
+		name			: in et_libraries.type_component_package_name.bounded_string; -- S_SO14
+		lines			: in et_pcb.type_lines.list;
+		log_threshold	: in et_string_processing.type_log_level)
+		return et_pcb.type_package is
+		
+		use et_pcb;
+		model : type_package; -- to be returned
+	
+		use et_pcb.type_lines;
+		line_cursor : et_pcb.type_lines.cursor := lines.first; -- points to the line being processed
+	begin
+		log ("parsing/building model ...", log_threshold);
+		log_indentation_up;
+
+		-- process given lines
+		while line_cursor /= et_pcb.type_lines.no_element loop
+			log (to_string (element (line_cursor)), log_threshold + 1);
+
+			next (line_cursor);
+		end loop;
+
+		log_indentation_down;
+		return model;
+	end to_package_model;
+	
 	procedure read_libraries (
 	-- Reads package libraries. Root directory is et_libraries.lib_dir.
 	-- The libraries in the container are named after the libraries found in lib_dir.
@@ -92,9 +119,14 @@ package body et_kicad_pcb is
 			packages		: in out type_packages.map) is
 
 			package_names : type_directory_entries.list;
-			package_cursor : type_directory_entries.cursor;
+			package_name_cursor : type_directory_entries.cursor;
 			
 			library_handle : ada.text_io.file_type;
+			line : type_fields_of_line; -- a line of a package model
+
+			use et_pcb.type_lines;
+			lines : et_pcb.type_lines.list; -- all lines of a single package model
+
 		begin -- read_package_names
 			log ("reading package names in " & current_directory & " ...", log_threshold + 3);
 			log_indentation_up;
@@ -113,32 +145,52 @@ package body et_kicad_pcb is
 			
 			log_indentation_up;
 
-			package_cursor := package_names.first;
-			while package_cursor /= type_directory_entries.no_element loop
-				log (element (package_cursor), log_threshold + 5);
-
+			package_name_cursor := package_names.first;
+			while package_name_cursor /= type_directory_entries.no_element loop
+				log (element (package_name_cursor), log_threshold + 5);
+				log_indentation_up;
+				
+				-- open package model file
 				open (
 					file => library_handle,
 					mode => in_file,
-					name => element (package_cursor));
+					name => element (package_name_cursor));
 
+				-- read lines of model file
 				set_input (library_handle);
-				
 				while not end_of_file loop
-					log (get_line);
+-- 					log (get_line);
 
--- 					-- Store line in variable "line" (see et_string_processing.ads)
--- 					line := et_string_processing.read_line (
--- 								line 			=> get_line,
--- 								number 			=> ada.text_io.line (current_input),
--- 								comment_mark 	=> "", -- there are no comment marks in package model file
--- 								ifs 			=> latin_1.space); -- fields are separated by space
-					
+					-- Store line in variable "line" (see et_string_processing.ads)
+					line := et_string_processing.read_line (
+								line 	=> get_line,
+								number 	=> ada.text_io.line (current_input),
+								ifs 	=> latin_1.space); -- fields are separated by space
+
+					-- insert line in container "lines"
+					if field_count (line) > 0 then -- we skip empty or commented lines
+						append (lines, line);
+					end if;
+						
 				end loop;
-				
 				close (library_handle);
+
+				-- From the collected lines the package model can be built and inserted in the 
+				-- package list right away:
+				type_packages.insert (
+					container	=> packages,
+					key			=> to_package_name (element (package_name_cursor)), -- S_SO14
+					new_item	=> to_package_model (
+										name 			=> to_package_name (element (package_name_cursor)), -- S_SO14
+										lines			=> lines,
+										log_threshold	=> log_threshold + 6));
 				
-				next (package_cursor);
+				-- Once the package model file has been read, the collection of lines
+				--must be cleared for the next model.
+				clear (lines);
+
+				log_indentation_down;
+				next (package_name_cursor);
 			end loop;
 
 			log_indentation_down;

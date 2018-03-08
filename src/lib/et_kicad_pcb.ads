@@ -51,11 +51,20 @@ with ada.containers.ordered_sets;
 
 with et_string_processing;
 with et_libraries;
+with et_pcb;
 
 package et_kicad_pcb is
 
 	library_pattern : constant string (1..8)	:= "*.pretty";
 	package_pattern : constant string (1..11)	:= "*.kicad_mod";
+
+	function to_package_model (
+	-- Builds a package model from the given lines.
+		name			: in et_libraries.type_component_package_name.bounded_string; -- S_SO14
+		lines			: in et_pcb.type_lines.list;
+		log_threshold	: in et_string_processing.type_log_level)
+		return et_pcb.type_package;
+
 	
 	procedure read_libraries (
 	-- Reads package libraries. Root directory is et_libraries.lib_dir.

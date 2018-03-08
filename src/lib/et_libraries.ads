@@ -496,6 +496,9 @@ package et_libraries is
 	-- Returns the given package name as as string.
 	-- CS: provide a parameter that turns the preamble on/off
 
+	function to_package_name (package_name : in string) return type_component_package_name.bounded_string;
+	-- Converts a string to a type_component_package_name.
+	
 	procedure check_package_name_length (packge : in string);
 	-- Tests if the given package name is longer than allowed.
 	

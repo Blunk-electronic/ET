@@ -1486,8 +1486,13 @@ package body et_libraries is
 	begin
 		return type_component_package_name.to_string (packge);
 	end to_string;
-		
 
+	function to_package_name (package_name : in string) return type_component_package_name.bounded_string is
+	-- Converts a string to a type_component_package_name.	
+	begin
+		return type_component_package_name.to_bounded_string (package_name);
+	end to_package_name;
+	
 	procedure check_package_name_length (packge : in string) is
 	-- Tests if the given package is longer than allowed.
 		use et_string_processing;
