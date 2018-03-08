@@ -6527,7 +6527,7 @@ package body et_kicad is
 				read_components_libraries (log_threshold);
 
 				-- read package libraries (in lib_dir)
-				et_kicad_pcb.read_package_libraries (log_threshold);
+				et_kicad_pcb.read_libraries (log_threshold);
 				
 				current_schematic := top_level_schematic;
 				check_submodule_name_characters (to_submodule_name (current_schematic));

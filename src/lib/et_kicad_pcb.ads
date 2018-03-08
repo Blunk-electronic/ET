@@ -54,11 +54,11 @@ with et_libraries;
 
 package et_kicad_pcb is
 
-	package_library_pattern : constant string (1..8) := "*.pretty";
+	library_pattern : constant string (1..8)	:= "*.pretty";
+	package_pattern : constant string (1..11)	:= "*.kicad_mod";
 	
-	procedure read_package_libraries (
+	procedure read_libraries (
 	-- Reads package libraries. Root directory is et_libraries.lib_dir.
-	-- Creates empty libraries in container package_libraries.
 	-- The libraries in the container are named after the libraries found in lib_dir.
 		log_threshold 	: in et_string_processing.type_log_level);
 

@@ -65,6 +65,19 @@ package body et_pcb is
 			angle => zero_angle);
 	end position_placement_default;
 
+	
+	function to_string (directory_name : in type_directory_name.bounded_string) return string is
+	-- Converts a directory name to a string.
+	begin
+		return type_directory_name.to_string (directory_name);
+	end to_string;
+	
+	function to_directory (directory_name : in string) return type_directory_name.bounded_string is
+	-- Converts a string to a type_directory_name.
+	begin
+		return type_directory_name.to_bounded_string (directory_name);
+	end to_directory;
+	
 	function to_string (library_name : in type_library_name.bounded_string) return string is
 	-- Converts a library name to a string.
 	begin

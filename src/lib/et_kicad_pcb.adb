@@ -59,63 +59,151 @@ with et_string_processing;		use et_string_processing;
 
 package body et_kicad_pcb is
 
-	procedure read_libraries_names (
+	procedure read_libraries (
 	-- Reads package libraries. Root directory is et_libraries.lib_dir.
-	-- Creates empty libraries in container package_libraries.
 	-- The libraries in the container are named after the libraries found in lib_dir.
 		log_threshold 	: in et_string_processing.type_log_level) is
 
+		use ada.directories;
+		use et_libraries;
 		use et_general;
 		use et_general.type_directory_entries;
 		use et_pcb;
 
+		-- backup the directory of origin
+		use type_directory_name;
+		origin_directory : type_directory_name.bounded_string := to_bounded_string (current_directory);
+	
 		-- After fetching the names of the package libraries, their names
 		-- are stored here. When processing the list we use the library_name_cursor.
-		package_library_names : type_directory_entries.list;
+		library_names : type_directory_entries.list;
 		library_name_cursor : type_directory_entries.cursor;
 
 		-- While inserting the libraries the flag library_inserted goes true once
 		-- inserting was successuful. It goes false if the library is already in the list.
 		-- The library_cursor points to the library in the container package_libraries.
 		library_inserted : boolean;
-		library_cursor : type_libraries.cursor;
+		library_cursor : et_pcb.type_libraries.cursor;
+
+		procedure read_package_names (
+		-- Creates empty packages in the package_libraries. The package names are
+		-- named after the packages found in the library directories.
+			library_name	: in et_pcb.type_library_name.bounded_string;
+			packages		: in out type_packages.map) is
+
+			package_names : type_directory_entries.list;
+			package_cursor : type_directory_entries.cursor;
+			
+			library_handle : ada.text_io.file_type;
+		begin -- read_package_names
+			log ("reading package names in " & current_directory & " ...", log_threshold + 3);
+			log_indentation_up;
+
+			package_names := directory_entries (
+								target_directory	=> current_directory, 
+								category			=> ada.directories.ordinary_file,
+								pattern				=> package_pattern);
+
+			-- show number of package libraries
+			if is_empty (package_names) then
+				log (message_warning & "library is empty !");
+			else
+				log ("found" & count_type'image (length (package_names)) & " packages", log_threshold + 4);
+			end if;
+			
+			log_indentation_up;
+
+			package_cursor := package_names.first;
+			while package_cursor /= type_directory_entries.no_element loop
+				log (element (package_cursor), log_threshold + 5);
+
+				open (
+					file => library_handle,
+					mode => in_file,
+					name => element (package_cursor));
+
+				set_input (library_handle);
+				
+				while not end_of_file loop
+					log (get_line);
+
+-- 					-- Store line in variable "line" (see et_string_processing.ads)
+-- 					line := et_string_processing.read_line (
+-- 								line 			=> get_line,
+-- 								number 			=> ada.text_io.line (current_input),
+-- 								comment_mark 	=> "", -- there are no comment marks in package model file
+-- 								ifs 			=> latin_1.space); -- fields are separated by space
+					
+				end loop;
+				
+				close (library_handle);
+				
+				next (package_cursor);
+			end loop;
+
+			log_indentation_down;
+			log_indentation_down;
+
+			exception
+				when event:
+					others =>
+						log_indentation_reset;
+						put_line (ada.exceptions.exception_message (event));
+						raise;
+
+		end read_package_names;
+
 	
-	begin -- read_libraries_names
-		log ("Loading package libraries ...", log_threshold);
+	begin -- read_libraries
+		log ("reading package libraries ...", log_threshold);
 
 		-- fetch package library names from lib_dir
-		package_library_names := directory_entries (
-								target_directory	=> et_libraries.to_string (et_libraries.lib_dir), 
-								category			=> ada.directories.directory,
-								pattern				=> package_library_pattern);
+		library_names := directory_entries (
+							target_directory	=> et_libraries.to_string (et_libraries.lib_dir), 
+							category			=> ada.directories.directory,
+							pattern				=> library_pattern);
 
 		log_indentation_up;
 
 		-- Abort if there are no package libraries. Otherwise loop through the library names
 		-- and create the libraries in container package_libraries.
-		if is_empty (package_library_names) then
+		if is_empty (library_names) then
 			log_indentation_reset;
 			log (message_error & "no package libraries found !");
 			raise constraint_error;
 		else
 			-- show number of package libraries
-			log ("found" & count_type'image (length (package_library_names)) & " libraries", log_threshold + 1);
+			log ("found" & count_type'image (length (library_names)) & " libraries", log_threshold + 1);
 			log_indentation_up;
 
 			-- Loop through library names and create the actual libraries in container package_libraries:
-			library_name_cursor := package_library_names.first;
+			library_name_cursor := library_names.first;
 			while library_name_cursor /= type_directory_entries.no_element loop
 				log ("reading " & element (library_name_cursor) & " ...", log_threshold + 2);
 
 				-- create the (empty) library
-				type_libraries.insert (
+				et_pcb.type_libraries.insert (
 					container	=> package_libraries,
 					key			=> to_library_name (element (library_name_cursor)),
 					inserted	=> library_inserted,
 					position	=> library_cursor,
 					new_item	=> type_packages.empty_map);
 
-				if not library_inserted then
+				if library_inserted then
+					log_indentation_up;
+					
+					-- change in library (the kicad package library is just a directory like ../lbr/bel_ic.pretty)
+					set_directory (compose (to_string (lib_dir), element (library_name_cursor)));
+					
+					et_pcb.type_libraries.update_element (
+						container	=> package_libraries,
+						position	=> library_cursor,
+						process		=> read_package_names'access);
+
+					-- change back to directory of origin
+					set_directory (et_pcb.to_string (origin_directory));
+					log_indentation_down;
+				else
 					log_indentation_up;
 					log ("already loaded -> skipped", log_threshold + 2);
 					log_indentation_down;
@@ -136,51 +224,10 @@ package body et_kicad_pcb is
 					put_line (ada.exceptions.exception_message (event));
 					raise;
 
-	end read_libraries_names;
+	end read_libraries;
 
 	
-	procedure read_package_names (
-	-- Creates empty packages in the package_libraries. The package names are
-	-- named after the packages found in the library directories.
-		log_threshold 	: in et_string_processing.type_log_level) is
 
-		use et_general;
-		use et_general.type_directory_entries;
-		use et_pcb;
-
-		use et_pcb.type_libraries;
-		-- This cursor points to the library being processed:
-		library_cursor : type_libraries.cursor := package_libraries.first;
-
-	begin -- read_package_names
-		log ("Loading package names ...", log_threshold);
-		log_indentation_up;
-
-		while library_cursor /= type_libraries.no_element loop
-			log ("library " & to_string (library_name => key (library_cursor)), log_threshold + 1);
-
-			next (library_cursor);
-		end loop;
-
-		log_indentation_down;
-
-		exception
-			when event:
-				others =>
-					log_indentation_reset;
-					put_line (ada.exceptions.exception_message (event));
-					raise;
-
-	end read_package_names;
-	
-		
-
-	procedure read_package_libraries (
-		log_threshold 	: in et_string_processing.type_log_level) is
-	begin
-		read_libraries_names (log_threshold);
-		read_package_names (log_threshold);
-	end read_package_libraries;
 	
 end et_kicad_pcb;
 
