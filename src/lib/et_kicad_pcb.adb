@@ -82,36 +82,69 @@ package body et_kicad_pcb is
 
 		sec_prefix : constant string (1..4) := "sec_";
 		type type_section is (
-			sec_module,
-			sec_layer,
-			sec_tedit,
-			sec_desc,
-			sec_tags,
-			sec_attr,
-			sec_fp_text,
 			sec_at,
+			sec_attr,
+			sec_angle,
+			sec_center,
+			sec_clearance,
+			sec_descr,
+			sec_drill,
 			sec_effects,
-			sec_font,
-			sec_size,
-			sec_thinkness,
-			sec_fp_line,
-			sec_start,
 			sec_end,
-			sec_width,
-			sec_pad,
+			sec_font,
+			sec_fp_arc,
+			sec_fp_circle,
+			sec_fp_line,
+			sec_fp_text,
+			sec_justify,
+			sec_layer,
 			sec_layers,
 			sec_model,
-			sec_scale,
+			sec_module,
+			sec_pad,
 			sec_rotate,
+			sec_scale,
+			sec_size,
+			sec_solder_mask_margin,
+			sec_start,
+			sec_tags,
+			sec_tedit,
+			sec_thickness,
+			sec_width,
 			sec_xyz
 			);
 
 		section : type_section;
 
-		argument_length_max : constant positive := 50;
+		argument_length_max : constant positive := 200;
 		package type_argument is new generic_bounded_length (argument_length_max);
 		use type_argument;
 		arg : type_argument.bounded_string; -- here the argument goes
+
+		package type_arguments is new doubly_linked_lists (element_type => type_argument.bounded_string);
+		use type_arguments;
+		arguments : type_arguments.list;
+
+		function to_string (arguments : in type_arguments.list) return string is
+			arg_cursor : type_arguments.cursor := arguments.first;
+			
+			package type_result is new 
+				generic_bounded_length ((argument_length_max + 1) * positive (length (arguments)));
+			use type_result;
+				
+			argument : type_argument.bounded_string; -- a single argument
+			result : type_result.bounded_string; -- lots of arguments to be returned
+		begin
+			while arg_cursor /= type_arguments.no_element loop
+				argument := element (arg_cursor);
+-- 				log (to_string (argument), log_threshold + 1);
+				
+				result := result & to_bounded_string (latin_1.space & to_string (argument));
+				next (arg_cursor);
+			end loop;
+
+			return to_string (result);
+		end to_string;
 		
 		package sections_stack is new et_general.stack_lifo (max => 20, item => type_section);
 
@@ -127,7 +160,7 @@ package body et_kicad_pcb is
 			next (line_cursor);
 			if line_cursor /= et_pcb.type_lines.no_element then
 				current_line := type_current_line.to_bounded_string (to_string (element (line_cursor)));
-				log (to_string (current_line), log_threshold + 1);
+				log ("line " & to_string (current_line), log_threshold + 3);
 			else
 				-- no more lines
 				null;
@@ -154,6 +187,7 @@ package body et_kicad_pcb is
 			end_of_kw : integer;  -- may become negative if no terminating character present
 		begin
 			--put_line("kw start at: " & natural'image(cursor));
+-- 			clear (arguments);
 
 			-- get position of last character
 			end_of_kw := index (source => current_line, from => character_cursor, set => term_char_set) - 1;
@@ -175,7 +209,7 @@ package body et_kicad_pcb is
 			-- save section name on stack
 			sections_stack.push (section);
 
-			log ("section " & type_section'image (section), log_threshold + 1);
+			log ("section " & type_section'image (section), log_threshold + 2);
 -- 			verify_section;
 
  			--put_line("LEVEL" & natural'image(sections_stack.depth)); 
@@ -249,8 +283,9 @@ package body et_kicad_pcb is
 				character_cursor := end_of_arg;
 			end if;
 
-			log ("arg " & to_string (arg), log_threshold + 1);
+			log ("arg " & to_string (arg), log_threshold + 2);
 
+			--append (arguments, arg);
 		end read_arg;
 
 
@@ -260,17 +295,20 @@ package body et_kicad_pcb is
 			-- That is the section name encountered after the last opening bracket.
 			section := sections_stack.pop;
 
-			case section is
+-- 			case section is
+-- 			-- GENERAL STUFF
+-- 				when sec_model =>
+-- 					--netlist_version := type_netlist_version'value(to_string(arg));
+-- 					log ("xxx " & to_string (arg), log_threshold + 1);
+-- 
+-- 					
+-- 				when others => null;
+-- 			end case;
 
-			-- GENERAL STUFF
-				when sec_model =>
-					--netlist_version := type_netlist_version'value(to_string(arg));
-					log ("xxx " & to_string (arg), log_threshold + 1);
-
-					
-				when others => null;
-			end case;
-
+-- 			log ("execute section " & type_section'image (section) & " arguments" 
+-- 				& to_string (arguments), log_threshold + 1);
+			
+-- 			clear (arguments);
 
 		end exec_section;
 		
@@ -283,7 +321,7 @@ package body et_kicad_pcb is
 
 		-- get first line
 		current_line := type_current_line.to_bounded_string (to_string (element (line_cursor)));
-		log ("line " & to_string (current_line), log_threshold + 1);
+		log ("line " & to_string (current_line), log_threshold + 3);
 		
 		-- get position of first opening bracket
 		character_cursor := type_current_line.index (current_line, 1 * ob);
@@ -298,12 +336,18 @@ package body et_kicad_pcb is
 			<<label_3>>
 				read_arg;
 				p1;
-				if element (current_line, character_cursor) /= cb then
-					log_indentation_reset;
-					log (message_error & affected_line (element (line_cursor))
-						& latin_1.space & cb & " expected");
-						raise constraint_error;
-				end if;
+				-- Test for cb, ob or other character:
+				case element (current_line, character_cursor) is
+
+					-- If closing bracket after argument.
+					when cb => goto label_2;
+
+					-- If another section at a deeper level follows.
+					when ob => goto label_1;
+
+					-- In case another argument follows:
+					when others => goto label_3; 
+				end case;
 
 			<<label_2>>
 				exec_section;
@@ -314,14 +358,13 @@ package body et_kicad_pcb is
 				-- Test for cb, ob or other character:
 				case element (current_line, character_cursor) is
 
-					-- If closing bracket after argument. example: (libpart (lib conn) (part CONN_01X02)
+					-- If closing bracket after argument.
 					when cb => goto label_2;
 
-					-- If another section at a deeper level follows. example: (lib conn)
+					-- If another section at a deeper level follows.
 					when ob => goto label_1;
 
-					-- In case an argument not enclosed in brackets 
-					-- follows a closing bracket. example: (field (name Reference) P)
+					-- In case an argument follows:
 					when others => goto label_3; 
 				end case;
 
