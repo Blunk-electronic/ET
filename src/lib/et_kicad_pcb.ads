@@ -60,7 +60,7 @@ package et_kicad_pcb is
 
 	function to_package_model (
 	-- Builds a package model from the given lines.
-		name			: in et_libraries.type_component_package_name.bounded_string; -- S_SO14
+		package_name	: in et_libraries.type_component_package_name.bounded_string; -- S_SO14
 		lines			: in et_pcb.type_lines.list;
 		log_threshold	: in et_string_processing.type_log_level)
 		return et_pcb.type_package;

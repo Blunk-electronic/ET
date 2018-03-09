@@ -63,7 +63,7 @@ package body et_kicad_pcb is
 
 	function to_package_model (
 	-- Builds a package model from the given lines.
-		name			: in et_libraries.type_component_package_name.bounded_string; -- S_SO14
+		package_name	: in et_libraries.type_component_package_name.bounded_string; -- S_SO14
 		lines			: in et_pcb.type_lines.list;
 		log_threshold	: in et_string_processing.type_log_level)
 		return et_pcb.type_package is
@@ -82,38 +82,49 @@ package body et_kicad_pcb is
 
 		sec_prefix : constant string (1..4) := "sec_";
 		type type_section is (
-			sec_at,
-			sec_attr,
-			sec_angle,
-			sec_center,
-			sec_clearance,
-			sec_descr,
-			sec_drill,
-			sec_effects,
-			sec_end,
-			sec_font,
-			sec_fp_arc,
-			sec_fp_circle,
-			sec_fp_line,
-			sec_fp_text,
-			sec_justify,
-			sec_layer,
-			sec_layers,
-			sec_model,
-			sec_module,
-			sec_pad,
-			sec_rotate,
-			sec_scale,
-			sec_size,
-			sec_solder_mask_margin,
-			sec_start,
-			sec_tags,
-			sec_tedit,
-			sec_thickness,
-			sec_width,
-			sec_xyz
+			SEC_AT,
+			SEC_ATTR,
+			SEC_ANGLE,
+			SEC_CENTER,
+			SEC_CLEARANCE,
+			SEC_DESCR,
+			SEC_DRILL,
+			SEC_EFFECTS,
+			SEC_END,
+			SEC_FONT,
+			SEC_FP_ARC,
+			SEC_FP_CIRCLE,
+			SEC_FP_LINE,
+			SEC_FP_TEXT,
+			SEC_JUSTIFY,
+			SEC_LAYER,
+			SEC_LAYERS,
+			SEC_MODEL,
+			SEC_MODULE,
+			SEC_PAD,
+			SEC_ROTATE,
+			SEC_SCALE,
+			SEC_SIZE,
+			SEC_SOLDER_MASK_MARGIN,
+			SEC_START,
+			SEC_TAGS,
+			SEC_TEDIT,
+			SEC_THICKNESS,
+			SEC_WIDTH,
+			SEC_XYZ
 			);
 
+		function to_string (section : in type_section) return string is
+		begin
+			return to_lower (type_section'image (section));
+		end to_string;
+
+		function expect_keyword (section : in type_section) return string is
+			len : positive := to_string (section)'last;
+		begin
+			return "expect keyword '" & to_string (section)(sec_prefix'last+1 .. len) & "'";
+		end expect_keyword;
+		
 		section : type_section;
 
 		entry_length_max : constant positive := 200;
@@ -124,13 +135,38 @@ package body et_kicad_pcb is
 -- 		arguments : type_arguments.list;
 
 
-		package type_entry is new generic_bounded_length (entry_length_max);
-		use type_entry;
+		package type_entry_string is new generic_bounded_length (entry_length_max);
+		use type_entry_string;
 
-		package type_entries is new doubly_linked_lists (element_type => type_entry.bounded_string);
+		type type_entry is record
+			entry_string	: type_entry_string.bounded_string;
+			line_number		: positive;
+		end record;
+
+		package type_entries is new doubly_linked_lists (element_type => type_entry);
 		use type_entries;
 		entries : type_entries.list;
 		entry_cursor : type_entries.cursor;
+
+		procedure next_entry is
+		begin
+			next (entry_cursor);
+		end next_entry;
+		
+		function the_entry (keep_capitalization : boolean := false) return string is
+		begin
+			if keep_capitalization then
+				return to_string (element (entry_cursor).entry_string);
+			else
+				return to_lower (to_string (element (entry_cursor).entry_string));
+			end if;
+		end the_entry;
+
+		function line_number return string is
+		begin
+			return positive'image (element (entry_cursor).line_number);
+		end line_number;
+
 		
 -- 		function to_string (arguments : in type_arguments.list) return string is
 -- 			arg_cursor : type_arguments.cursor := arguments.first;
@@ -173,7 +209,6 @@ package body et_kicad_pcb is
 				null;
 			end if;
 		end get_next_line;
-
 		
 		procedure p1 is
 		-- Updates the cursor position to the position of the next
@@ -211,10 +246,11 @@ package body et_kicad_pcb is
 			-- save section name on stack
 			sections_stack.push (section);
 
-			log ("section " & type_section'image (section), log_threshold + 2);
+			log ("section " & type_section'image (section), log_threshold + 3);
 
-			-- append section name to entries
-			append (entries, type_entry.to_bounded_string (type_section'image (section)));
+			-- append section name and line number to entries
+			append (entries, (entry_string => to_bounded_string (type_section'image (section)),
+							  line_number => line_number (element (line_cursor))));
 		end read_section;
 		
 
@@ -270,10 +306,12 @@ package body et_kicad_pcb is
 				character_cursor := end_of_arg;
 			end if;
 
-			log ("arg " & to_string (arg), log_threshold + 2);
+			log ("arg " & to_string (arg), log_threshold + 3);
 
-			-- append argument to entries
-			append (entries, type_entry.to_bounded_string (to_string (arg)));
+			-- append argument and line number to entries
+			append (entries, (entry_string => to_bounded_string (to_string (arg)),
+							  line_number => line_number (element (line_cursor))));
+
 		end read_arg;
 
 		
@@ -334,12 +372,39 @@ package body et_kicad_pcb is
 				
 		end loop;
 
+		-- check section name. must be top level section
+		if section /= SEC_MODULE then
+			log_indentation_reset;
+			log (message_error & "top level section not closed !");
+			raise constraint_error;
+		end if;
+		
 		-- process entries
 		log ("proessing entries ...", log_threshold + 1);
 		log_indentation_up;
 		entry_cursor := entries.first;
+
+		if the_entry = to_string (SEC_MODULE) then
+			next_entry;
+
+			if the_entry (keep_capitalization => true) = et_libraries.to_string (package_name) then
+				null;
+			else
+				log_indentation_reset;
+				log (message_error & "expect package name " & et_libraries.to_string (package_name) 
+					 & " in line" & line_number
+					 & ". Found " & the_entry (keep_capitalization => true) & " !", console => true);
+				raise constraint_error;
+			end if;
+		else
+			log_indentation_reset;
+			log (message_error & expect_keyword (SEC_MODULE) & " in line" & line_number, console => true);
+			raise constraint_error;
+		end if;		
+
 		while entry_cursor /= type_entries.no_element loop
-			log (to_string (element (entry_cursor)), log_threshold + 2);
+			log (the_entry, log_threshold + 2);
+
 
 			next (entry_cursor);
 		end loop;
@@ -422,7 +487,7 @@ package body et_kicad_pcb is
 				open (
 					file => library_handle,
 					mode => in_file,
-					name => element (package_name_cursor));
+					name => element (package_name_cursor)); -- S_0201.kicad_mod
 
 				-- read lines of model file
 				set_input (library_handle);
@@ -448,9 +513,9 @@ package body et_kicad_pcb is
 				-- package list right away:
 				type_packages.insert (
 					container	=> packages,
-					key			=> to_package_name (element (package_name_cursor)), -- S_SO14
+					key			=> to_package_name (base_name (element (package_name_cursor))), -- S_0201
 					new_item	=> to_package_model (
-										name 			=> to_package_name (element (package_name_cursor)), -- S_SO14
+										package_name 	=> to_package_name (base_name (element (package_name_cursor))), -- S_SO14
 										lines			=> lines,
 										log_threshold	=> log_threshold + 6));
 				
