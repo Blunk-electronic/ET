@@ -116,35 +116,42 @@ package body et_kicad_pcb is
 
 		section : type_section;
 
-		argument_length_max : constant positive := 200;
-		package type_argument is new generic_bounded_length (argument_length_max);
-		use type_argument;
-		arg : type_argument.bounded_string; -- here the argument goes
+		entry_length_max : constant positive := 200;
+		package type_argument is new generic_bounded_length (entry_length_max);
 
-		package type_arguments is new doubly_linked_lists (element_type => type_argument.bounded_string);
-		use type_arguments;
-		arguments : type_arguments.list;
+-- 		package type_arguments is new doubly_linked_lists (element_type => type_argument.bounded_string);
+-- 		use type_arguments;
+-- 		arguments : type_arguments.list;
 
-		function to_string (arguments : in type_arguments.list) return string is
-			arg_cursor : type_arguments.cursor := arguments.first;
-			
-			package type_result is new 
-				generic_bounded_length ((argument_length_max + 1) * positive (length (arguments)));
-			use type_result;
-				
-			argument : type_argument.bounded_string; -- a single argument
-			result : type_result.bounded_string; -- lots of arguments to be returned
-		begin
-			while arg_cursor /= type_arguments.no_element loop
-				argument := element (arg_cursor);
--- 				log (to_string (argument), log_threshold + 1);
-				
-				result := result & to_bounded_string (latin_1.space & to_string (argument));
-				next (arg_cursor);
-			end loop;
 
-			return to_string (result);
-		end to_string;
+		package type_entry is new generic_bounded_length (entry_length_max);
+		use type_entry;
+
+		package type_entries is new doubly_linked_lists (element_type => type_entry.bounded_string);
+		use type_entries;
+		entries : type_entries.list;
+		entry_cursor : type_entries.cursor;
+		
+-- 		function to_string (arguments : in type_arguments.list) return string is
+-- 			arg_cursor : type_arguments.cursor := arguments.first;
+-- 			
+-- 			package type_result is new 
+-- 				generic_bounded_length ((argument_length_max + 1) * positive (length (arguments)));
+-- 			use type_result;
+-- 				
+-- 			argument : type_argument.bounded_string; -- a single argument
+-- 			result : type_result.bounded_string; -- lots of arguments to be returned
+-- 		begin
+-- 			while arg_cursor /= type_arguments.no_element loop
+-- 				argument := element (arg_cursor);
+-- -- 				log (to_string (argument), log_threshold + 1);
+-- 				
+-- 				result := result & to_bounded_string (latin_1.space & to_string (argument));
+-- 				next (arg_cursor);
+-- 			end loop;
+-- 
+-- 			return to_string (result);
+-- 		end to_string;
 		
 		package sections_stack is new et_general.stack_lifo (max => 20, item => type_section);
 
@@ -162,7 +169,7 @@ package body et_kicad_pcb is
 				current_line := type_current_line.to_bounded_string (to_string (element (line_cursor)));
 				log ("line " & to_string (current_line), log_threshold + 3);
 			else
-				-- no more lines
+				-- no more lines -- CS raise error ?
 				null;
 			end if;
 		end get_next_line;
@@ -186,9 +193,6 @@ package body et_kicad_pcb is
 		-- Stores the section name on sections_stack.
 			end_of_kw : integer;  -- may become negative if no terminating character present
 		begin
-			--put_line("kw start at: " & natural'image(cursor));
--- 			clear (arguments);
-
 			-- get position of last character
 			end_of_kw := index (source => current_line, from => character_cursor, set => term_char_set) - 1;
 
@@ -196,8 +200,6 @@ package body et_kicad_pcb is
 			if end_of_kw = -1 then
 				end_of_kw := length (current_line);
 			end if;
-
-			--put_line("kw end at  : " & positive'image(end_of_kw));
 
 			-- Compose section name from cursor..end_of_kw.
 			-- This is an implicit general test whether the keyword is a valid keyword.
@@ -210,21 +212,9 @@ package body et_kicad_pcb is
 			sections_stack.push (section);
 
 			log ("section " & type_section'image (section), log_threshold + 2);
--- 			verify_section;
 
- 			--put_line("LEVEL" & natural'image(sections_stack.depth)); 
-			--put_line(" INIT " & strip_prefix(section));
-
--- 			exception
---                 when constraint_error =>
---                     write_message(
---                         file_handle => file_import_cad_messages,
---                         text => message_error & "line" 
---                             & positive'image(line_counter) & " : "
---                             & "invalid keyword '"
---                             & slice(line,cursor,end_of_kw) & "'",
---                         console => true);
--- 					raise;
+			-- append section name to entries
+			append (entries, type_entry.to_bounded_string (type_section'image (section)));
 		end read_section;
 		
 
@@ -236,18 +226,17 @@ package body et_kicad_pcb is
 		-- If the argument was enclosed in quotations the cursor is left at
 		-- the position of the trailing quotation.
 			end_of_arg : integer; -- may become negative if no terminating character present
-		begin
-			--put_line("arg start at: " & natural'image(cursor));
 
-			-- We handle an argument that is wrapped in quotation different than
-			-- a non-wrapped argument:
+			use type_argument;
+			arg : type_argument.bounded_string; -- here the argument goes temporarily
+
+		begin
+			-- We handle an argument that is wrapped in quotation different from a non-wrapped argument:
 			if element (current_line, character_cursor) = latin_1.quotation then
 				-- Read the quotation-wrapped argument (strip quotations)
 
 				-- get position of last character (before trailing quotation)
 				end_of_arg := index (source => current_line, from => character_cursor + 1, pattern => 1 * latin_1.quotation) - 1;
-
-				--put_line("arg end at  : " & positive'image(end_of_arg));
 
 				-- if no trailing quotation found -> error
 				if end_of_arg = -1 then
@@ -274,8 +263,6 @@ package body et_kicad_pcb is
 					end_of_arg := length (current_line);
 				end if;
 
-				--put_line("arg end at  : " & positive'image(end_of_arg));
-
 				-- compose argument from cursor..end_of_arg
 				arg := to_bounded_string (slice (current_line, character_cursor, end_of_arg));
 
@@ -285,35 +272,12 @@ package body et_kicad_pcb is
 
 			log ("arg " & to_string (arg), log_threshold + 2);
 
-			--append (arguments, arg);
+			-- append argument to entries
+			append (entries, type_entry.to_bounded_string (to_string (arg)));
 		end read_arg;
 
-
-		procedure exec_section is
-		begin
-			-- Pop last section name from stack.
-			-- That is the section name encountered after the last opening bracket.
-			section := sections_stack.pop;
-
--- 			case section is
--- 			-- GENERAL STUFF
--- 				when sec_model =>
--- 					--netlist_version := type_netlist_version'value(to_string(arg));
--- 					log ("xxx " & to_string (arg), log_threshold + 1);
--- 
--- 					
--- 				when others => null;
--- 			end case;
-
--- 			log ("execute section " & type_section'image (section) & " arguments" 
--- 				& to_string (arguments), log_threshold + 1);
-			
--- 			clear (arguments);
-
-		end exec_section;
 		
-		
-	begin
+	begin -- to_package_model
 		log ("parsing/building model ...", log_threshold);
 		log_indentation_up;
 
@@ -350,7 +314,7 @@ package body et_kicad_pcb is
 				end case;
 
 			<<label_2>>
-				exec_section;
+				section := sections_stack.pop;
 
 				if sections_stack.depth = 0 then exit; end if;
 				p1;
@@ -367,11 +331,26 @@ package body et_kicad_pcb is
 					-- In case an argument follows:
 					when others => goto label_3; 
 				end case;
-
 				
 		end loop;
+
+		-- process entries
+		log ("proessing entries ...", log_threshold + 1);
+		log_indentation_up;
+		entry_cursor := entries.first;
+		while entry_cursor /= type_entries.no_element loop
+			log (to_string (element (entry_cursor)), log_threshold + 2);
+
+			next (entry_cursor);
+		end loop;
+		log_indentation_down;
+
+
+
 		
 		log_indentation_down;
+
+		
 		return model;
 	end to_package_model;
 	
