@@ -140,6 +140,7 @@ package body et_kicad_pcb is
 
 		type type_entry is record
 			entry_string	: type_entry_string.bounded_string;
+			keyword			: boolean;
 			line_number		: positive;
 		end record;
 
@@ -162,6 +163,11 @@ package body et_kicad_pcb is
 			end if;
 		end the_entry;
 
+		function is_keyword return boolean is
+		begin
+			return element (entry_cursor).keyword;
+		end is_keyword;
+		
 		function line_number return string is
 		begin
 			return positive'image (element (entry_cursor).line_number);
@@ -250,6 +256,7 @@ package body et_kicad_pcb is
 
 			-- append section name and line number to entries
 			append (entries, (entry_string => to_bounded_string (type_section'image (section)),
+							  keyword => true,
 							  line_number => line_number (element (line_cursor))));
 		end read_section;
 		
@@ -310,6 +317,7 @@ package body et_kicad_pcb is
 
 			-- append argument and line number to entries
 			append (entries, (entry_string => to_bounded_string (to_string (arg)),
+							  keyword => false,
 							  line_number => line_number (element (line_cursor))));
 
 		end read_arg;
@@ -388,7 +396,62 @@ package body et_kicad_pcb is
 			next_entry;
 
 			if the_entry (keep_capitalization => true) = et_libraries.to_string (package_name) then
-				null;
+
+-- 				while entry_cursor /= type_entries.no_element loop
+					next_entry;
+
+-- 					log ("the_entry " & the_entry);
+-- 					if is_keyword and the_entry = to_string (SEC_LAYER) then
+-- 						next_entry;
+-- 						-- F.Cu
+-- 					else
+-- 						log_indentation_reset;
+-- 						log (message_error & expect_keyword (SEC_LAYER) & " in line " & line_number, console => true);
+-- 						raise constraint_error;
+-- 					end if;
+-- 
+-- 					if is_keyword and the_entry = to_string (SEC_TEDIT) then
+-- 						next_entry;
+-- 						-- 5412D524
+-- 					else
+-- 						log_indentation_reset;
+-- 						log (message_error & expect_keyword (SEC_TEDIT) & " in line " & line_number, console => true);
+-- 						raise constraint_error;
+-- 					end if;
+
+					if is_keyword then
+-- 						log ("the_entry " & the_entry);
+						
+						case type_section'value (the_entry) is
+							when SEC_LAYER =>
+								null;
+								log ("the_layer " & the_entry);
+-- 								next_entry;
+
+							when SEC_TEDIT =>
+								null;
+-- 								next_entry;
+
+							when SEC_FP_TEXT =>
+								null;	
+-- 								next_entry;
+
+							when others =>
+								log_indentation_reset;
+								log (message_error & "unknown keyword in line " & line_number, console => true);
+								raise constraint_error;
+
+								
+						end case;
+						
+					else
+						log_indentation_reset;
+						log (message_error & "expect keyword in line " & line_number, console => true);
+						raise constraint_error;						
+					end if;
+					
+-- 				end loop;
+				
 			else
 				log_indentation_reset;
 				log (message_error & "expect package name " & et_libraries.to_string (package_name) 
@@ -402,12 +465,12 @@ package body et_kicad_pcb is
 			raise constraint_error;
 		end if;		
 
-		while entry_cursor /= type_entries.no_element loop
-			log (the_entry, log_threshold + 2);
+
+-- 			log (the_entry, log_threshold + 2);
 
 
-			next (entry_cursor);
-		end loop;
+-- 			next (entry_cursor);
+-- 		end loop;
 		log_indentation_down;
 
 
