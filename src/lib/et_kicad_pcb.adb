@@ -179,6 +179,9 @@ package body et_kicad_pcb is
 		terminal_shape_tht : type_terminal_shape_tht;
 		terminal_shape_smt : type_terminal_shape_smt;
 		terminals : type_terminals.map;
+
+-- 		position_x, position_y, position_z : et_pcb_coordinates.type_distance;
+		object_position : et_pcb_coordinates.type_point_3d;
 		
 		package sections_stack is new et_general.stack_lifo (max => 20, item => type_section);
 
@@ -255,6 +258,8 @@ package body et_kicad_pcb is
 			end_of_arg : integer; -- may become negative if no terminating character present
 
 			use type_argument;
+			use et_pcb_coordinates;
+		
 			arg : type_argument.bounded_string; -- here the argument goes temporarily
 
 		begin
@@ -303,6 +308,14 @@ package body et_kicad_pcb is
 
 			-- validate arguments according to current section
 			case section is
+				when SEC_AT =>
+					case argument_counter is
+						when 0 => null;
+						when 1 => set (axis => X, point => object_position, value => to_distance (to_string (arg)));
+						when 2 => set (axis => Y, point => object_position, value => to_distance (to_string (arg)));
+						when others => null; -- CS error
+					end case;
+					
 				when SEC_PAD =>
 					case argument_counter is
 						when 0 => null;
@@ -346,6 +359,11 @@ package body et_kicad_pcb is
 			section := sections_stack.pop;
 
 			case section is
+
+				when SEC_AT =>
+					null; -- nothing to do. object_position already fully set
+
+				
 				when SEC_PAD =>
 
 					-- Insert a terminal in the list "terminals":

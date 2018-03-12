@@ -53,6 +53,11 @@ with et_string_processing;		use et_string_processing;
 
 package body et_pcb_coordinates is
 
+	function to_distance (distance : in string) return type_distance is
+	begin
+		return type_distance'value (distance);
+	end to_distance;
+	
 	function terminal_position_default return type_terminal_position is
 	begin
 		return (
@@ -72,7 +77,17 @@ package body et_pcb_coordinates is
 			angle => zero_angle);
 	end package_position_default;
 
-
+	procedure set (
+		axis 	: in type_axis;
+		value	: in type_distance;
+		point	: in out type_point_3d) is
+	begin
+		case axis is
+			when X => point.x := value;
+			when Y => point.y := value;
+			when Z => point.z := value;
+		end case;
+	end set;
 	
 end et_pcb_coordinates;
 

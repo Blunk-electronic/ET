@@ -64,6 +64,8 @@ package et_pcb_coordinates is
 	-- The x and y position of an object:
 	subtype type_distance is type_distance_total range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter
 	zero_distance : constant type_distance := 0.0;
+
+	function to_distance (distance : in string) return type_distance;
 	
 	type type_angle is delta 0.01 range -359.9 .. 359.9;
 	for type_angle'small use 0.01;
@@ -78,7 +80,10 @@ package et_pcb_coordinates is
 
 	function package_position_default return type_package_position;
 
-	
+	procedure set (
+		axis 	: in type_axis;
+		value	: in type_distance;					 
+		point	: in out type_point_3d);
 
 	private
 
