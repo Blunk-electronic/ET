@@ -906,12 +906,16 @@ package et_libraries is
 	-- Other CAE systems refer to "pins" or "pads". In order to use only a single word
 	-- we furhter-on speak about "terminals".
 	-- The name of a terminal may have 10 characters which seems sufficient for now.
+	-- CS: character set, length check, charcter check
  	terminal_name_length_max : constant natural := 10;
 	package type_terminal_name is new generic_bounded_length (terminal_name_length_max);
 	use type_terminal_name;
 
 	function to_string (terminal : in type_terminal_name.bounded_string) return string;
 	-- Returns the given terminal name as string.
+
+	function to_terminal_name (terminal : in string) return type_terminal_name.bounded_string;
+	-- Converts a string to a type_terminal_name.
 	
 -- COMPONENT VARIANTS
 	-- The variant is usually a suffix in a component value, given by its manufacturer. The variant is a manufacturer

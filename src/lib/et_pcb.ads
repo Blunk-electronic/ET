@@ -50,7 +50,8 @@ with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 with et_string_processing;
-with et_libraries;
+with et_libraries;				use et_libraries;
+with et_pcb_coordinates;		use et_pcb_coordinates;
 
 package et_pcb is
 
@@ -59,46 +60,6 @@ package et_pcb is
 		element_type => et_string_processing.type_fields_of_line,
 		"=" => et_string_processing.lines_equally);
 	
--- 	line_cursor : type_lines.cursor;
-	
--- 	procedure clear;
-
--- 	procedure add (line : in et_string_processing.type_fields_of_line);
-	
--- 	function first (lines : in type_lines.list) return type_lines.cursor;
-
--- 	procedure next (line : in out type_lines.cursor);
-
--- 	function line return et_string_processing.type_fields_of_line;
-
-
-
-	
-	
-	type type_axis is (X, Y, Z);
-	type type_face is (TOP, BOTTOM);
-	
-	-- The total distance between two objects:
-	type type_distance_total is delta 0.001 range -100_000_000.00 .. 100_000_000.00; -- unit is metric millimeter
-	for type_distance_total'small use 0.001; -- this is the accuracy required for layout
-
-	-- The x and y position of an object:
-	subtype type_distance is type_distance_total range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter
-	zero_distance : constant type_distance := 0.0;
-	
-	type type_angle is delta 0.01 range -359.9 .. 359.9;
-	for type_angle'small use 0.01;
-	zero_angle : constant type_angle := 0.0;
-
-	type type_position is tagged private;
-	type type_position_placement is private;
-
-	function position_placement_default return type_position_placement;
-
-	type type_package is record
-		dummy : natural;
-	end record;
-
 	use et_libraries.type_component_package_name;
 
 	directory_name_length_max : constant positive := 200;
@@ -112,10 +73,6 @@ package et_pcb is
 
 	
 	
-	package type_packages is new indefinite_ordered_maps ( -- CS try ordered_maps instead
-		key_type 		=> et_libraries.type_component_package_name.bounded_string, -- S_SO14
-		element_type 	=> type_package);
-	use type_packages;
 
 	library_name_length_max : constant positive := 200;
 	package type_library_name is new generic_bounded_length (library_name_length_max);
@@ -127,23 +84,38 @@ package et_pcb is
 	function to_library_name (library_name : in string) return type_library_name.bounded_string;
 	-- Converts a string to a type_library_name.
 	
-	package type_libraries is new ordered_maps (
-		key_type		=> type_library_name.bounded_string, -- bel_ic, bel_connectors
-		element_type	=> type_packages.map);
-
-	-- All package models are collected here:
-	package_libraries : type_libraries.map;
 
 	
 
 
 	
-	type type_package_technology is (
-		THT,		-- Through Hole Technology
-		SMT,		-- Surface Mount Technology
-		THT_SMT		-- mixed THT & SMT
+	type type_assembly_technology is (
+		THT,	-- Through Hole Technology
+		SMT		-- Surface Mount Technology
 		);
 
+	type type_terminal_shape_tht is (OCTAGON, RECTANGLE, SQUARE, LONG, LONG_OFFSET);
+	type type_terminal_shape_smt is (RECTANGLE, ROUND, LONG);
+	
+	type type_terminal (
+		technology : type_assembly_technology;
+		shape_tht : type_terminal_shape_tht;
+		shape_smt : type_terminal_shape_smt) is record
+		position	: type_terminal_position;
+	end record;
+
+	package type_terminals is new indefinite_ordered_maps (
+		key_type		=> type_terminal_name.bounded_string,
+		element_type	=> type_terminal,
+		"<"				=> type_terminal_name."<");
+
+
+	type type_package is record
+		dummy : natural;
+		terminals	: type_terminals.map;
+	end record;
+
+	
 	--type type_component_package (technology : type_package_technology) is record
 	--type type_component_package (category : type_component_category) is record
 -- 	type type_component_package is record
@@ -163,32 +135,35 @@ package et_pcb is
 -- 		end case;
 -- 	end record;
 
+	package type_packages is new indefinite_ordered_maps ( -- CS try ordered_maps instead
+		key_type 		=> type_component_package_name.bounded_string, -- S_SO14
+		element_type 	=> type_package);
+	use type_packages;
+
+	package type_libraries is new ordered_maps (
+		key_type		=> type_library_name.bounded_string, -- bel_ic, bel_connectors
+		element_type	=> type_packages.map);
+
+	-- All package models are collected here:
+	package_libraries : type_libraries.map;
+
+
+
+	
+
 	function terminal_count (
-		library_name		: in et_libraries.type_full_library_name.bounded_string;
-		package_name 		: in et_libraries.type_component_package_name.bounded_string)
+		library_name		: in type_full_library_name.bounded_string;
+		package_name 		: in type_component_package_name.bounded_string)
 		return et_libraries.type_terminal_count;
 
 	function terminal_port_map_fits (
 	-- Used when terminal_port_maps are to be used for packages.
 	-- The given package is specified by the library name and package name.
 	-- Returns true if the terminal_port_map fits on the given package.
-		library_name		: in et_libraries.type_full_library_name.bounded_string;
-		package_name 		: in et_libraries.type_component_package_name.bounded_string;
-		terminal_port_map	: in et_libraries.type_terminal_port_map.map) 
+		library_name		: in type_full_library_name.bounded_string;
+		package_name 		: in type_component_package_name.bounded_string;
+		terminal_port_map	: in type_terminal_port_map.map) 
 		return boolean;
-
-	private
-
-		type type_position is tagged record
-			x, y, z : type_distance := zero_distance;
-		end record;
-
-		zero : constant type_position := (others => zero_distance);
-
-		type type_position_placement is new type_position with record
-			face	: type_face := TOP;
-			angle	: type_angle := zero_angle;
-		end record;
 
 		
 end et_pcb;

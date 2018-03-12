@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                           SYSTEM ET PCB                                  --
+--                      SYSTEM ET PCB COORDINATES                           --
 --                                                                          --
 --                                 ET                                       --
 --                                                                          --
@@ -49,57 +49,31 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
-with et_libraries;
 with et_string_processing;		use et_string_processing;
 
-package body et_pcb is
+package body et_pcb_coordinates is
+
+	function terminal_position_default return type_terminal_position is
+	begin
+		return (
+			x => zero_distance,
+			y => zero_distance,
+			z => zero_distance,
+			angle => zero_angle);
+	end terminal_position_default;
+	
+	function package_position_default return type_package_position is
+	begin
+		return (
+			x => zero_distance,
+			y => zero_distance,
+			z => zero_distance,
+			face => TOP,
+			angle => zero_angle);
+	end package_position_default;
 
 
-	function to_string (directory_name : in type_directory_name.bounded_string) return string is
-	-- Converts a directory name to a string.
-	begin
-		return type_directory_name.to_string (directory_name);
-	end to_string;
 	
-	function to_directory (directory_name : in string) return type_directory_name.bounded_string is
-	-- Converts a string to a type_directory_name.
-	begin
-		return type_directory_name.to_bounded_string (directory_name);
-	end to_directory;
-	
-	function to_string (library_name : in type_library_name.bounded_string) return string is
-	-- Converts a library name to a string.
-	begin
-		return type_library_name.to_string (library_name);
-	end to_string;
-
-	function to_library_name (library_name : in string) return type_library_name.bounded_string is
-	-- Converts a string to a type_library_name.
-	begin
-		return type_library_name.to_bounded_string (library_name);
-	end to_library_name;
-	
-	function terminal_count (
-		library_name		: in type_full_library_name.bounded_string;
-		package_name 		: in type_component_package_name.bounded_string)
-		return et_libraries.type_terminal_count is
-	begin
-		return 100;
-	end terminal_count;
-	
-	function terminal_port_map_fits (
-	-- Used when terminal_port_maps are to be used for packages.
-	-- The given package is specified by the library name and package name.
-	-- Returns true if the terminal_port_map fits on the given package.
-		library_name		: in type_full_library_name.bounded_string;
-		package_name 		: in type_component_package_name.bounded_string;
-		terminal_port_map	: in type_terminal_port_map.map) 
-		return boolean is
-	begin
-		return true;
-	end terminal_port_map_fits;
-
-	
-end et_pcb;
+end et_pcb_coordinates;
 
 -- Soli Deo Gloria

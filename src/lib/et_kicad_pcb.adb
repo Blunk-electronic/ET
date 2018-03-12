@@ -55,12 +55,51 @@ with ada.containers.ordered_sets;
 with ada.exceptions;
 
 with et_general;
-with et_libraries;
+with et_libraries;				use et_libraries;
 with et_pcb;
+with et_pcb_coordinates;
 with et_string_processing;		use et_string_processing;
 
 package body et_kicad_pcb is
 
+	function to_assembly_technology (tech : in string) return et_pcb.type_assembly_technology is
+		use et_pcb;
+	begin
+		if tech = "smd" then return SMT;
+		elsif tech = "thru_hole" then return THT;
+		else
+			log_indentation_reset;
+			log (message_error & "invalid assembly technology", console => true);
+			raise constraint_error;
+		end if;
+	end to_assembly_technology;
+			
+	function to_terminal_shape_tht (shape : in string) return et_pcb.type_terminal_shape_tht is
+		use et_pcb;
+	begin
+		if shape = "rect" then return RECTANGLE;
+		elsif shape = "oval" then return LONG;
+		else
+			log_indentation_reset;
+			log (message_error & "invalid shape for a THT terminal !", console => true);
+			raise constraint_error;
+		end if;
+	end to_terminal_shape_tht;
+
+	function to_terminal_shape_smt (shape : in string) return et_pcb.type_terminal_shape_smt is
+		use et_pcb;
+	begin
+		if shape = "rect" then return RECTANGLE;
+		elsif shape = "oval" then return LONG;
+		elsif shape = "circle" then return ROUND;
+		else
+			log_indentation_reset;
+			log (message_error & "invalid shape for an SMT terminal !", console => true);
+			raise constraint_error;
+		end if;
+	end to_terminal_shape_smt;
+
+	
 	function to_package_model (
 	-- Builds a package model from the given lines.
 		package_name	: in et_libraries.type_component_package_name.bounded_string; -- S_SO14
@@ -130,70 +169,14 @@ package body et_kicad_pcb is
 		entry_length_max : constant positive := 200;
 		package type_argument is new generic_bounded_length (entry_length_max);
 
--- 		package type_arguments is new doubly_linked_lists (element_type => type_argument.bounded_string);
--- 		use type_arguments;
--- 		arguments : type_arguments.list;
-
-
--- 		package type_entry_string is new generic_bounded_length (entry_length_max);
--- 		use type_entry_string;
--- 
--- 		type type_entry is record
--- 			entry_string	: type_entry_string.bounded_string;
--- 			keyword			: boolean;
--- 			line_number		: positive;
--- 		end record;
-
--- 		package type_entries is new doubly_linked_lists (element_type => type_entry);
--- 		use type_entries;
--- 		entries : type_entries.list;
--- 		entry_cursor : type_entries.cursor;
--- 
--- 		procedure next_entry is
--- 		begin
--- 			next (entry_cursor);
--- 		end next_entry;
+		type type_argument_counter is range 0..3;
+		argument_counter : type_argument_counter;
 		
--- 		function the_entry (keep_capitalization : boolean := false) return string is
--- 		begin
--- 			if keep_capitalization then
--- 				return to_string (element (entry_cursor).entry_string);
--- 			else
--- 				return to_lower (to_string (element (entry_cursor).entry_string));
--- 			end if;
--- 		end the_entry;
--- 
--- 		function is_keyword return boolean is
--- 		begin
--- 			return element (entry_cursor).keyword;
--- 		end is_keyword;
--- 		
--- 		function line_number return string is
--- 		begin
--- 			return positive'image (element (entry_cursor).line_number);
--- 		end line_number;
-
-		
--- 		function to_string (arguments : in type_arguments.list) return string is
--- 			arg_cursor : type_arguments.cursor := arguments.first;
--- 			
--- 			package type_result is new 
--- 				generic_bounded_length ((argument_length_max + 1) * positive (length (arguments)));
--- 			use type_result;
--- 				
--- 			argument : type_argument.bounded_string; -- a single argument
--- 			result : type_result.bounded_string; -- lots of arguments to be returned
--- 		begin
--- 			while arg_cursor /= type_arguments.no_element loop
--- 				argument := element (arg_cursor);
--- -- 				log (to_string (argument), log_threshold + 1);
--- 				
--- 				result := result & to_bounded_string (latin_1.space & to_string (argument));
--- 				next (arg_cursor);
--- 			end loop;
--- 
--- 			return to_string (result);
--- 		end to_string;
+		terminal_name : type_terminal_name.bounded_string;
+		terminal_technology : type_assembly_technology;
+		terminal_shape_tht : type_terminal_shape_tht;
+		terminal_shape_smt : type_terminal_shape_smt;
+		terminals : type_terminals.map;
 		
 		package sections_stack is new et_general.stack_lifo (max => 20, item => type_section);
 
@@ -232,6 +215,7 @@ package body et_kicad_pcb is
 		-- Reads the section name from current cursor position until termination
 		-- character or its last character.
 		-- Stores the section name on sections_stack.
+		-- Resets the argument counter for arguments following the section name.
 			end_of_kw : integer;  -- may become negative if no terminating character present
 		begin
 			-- get position of last character
@@ -254,17 +238,15 @@ package body et_kicad_pcb is
 
 			log ("section " & type_section'image (section), log_threshold + 3);
 
-			-- append section name and line number to entries
--- 			append (entries, (entry_string => to_bounded_string (type_section'image (section)),
--- 							  keyword => true,
--- 							  line_number => line_number (element (line_cursor))));
+			argument_counter := 0;
+			
 		end read_section;
 		
 
 		procedure read_arg is
-		-- Reads the argument of a section (or keyword).
-		-- Mostly the argument is separated from the section name by space.
-		-- Some arguments are wrapped in quotations.
+		-- Reads the arguments of a section.
+		-- Increments the argument counter after each argument.
+		-- Validates the arguments according to the current section.
 		-- Leaves the cursor at the position of the last character of the argument.
 		-- If the argument was enclosed in quotations the cursor is left at
 		-- the position of the trailing quotation.
@@ -313,20 +295,85 @@ package body et_kicad_pcb is
 				character_cursor := end_of_arg;
 			end if;
 
-			log ("arg " & to_string (arg), log_threshold + 3);
+			argument_counter := argument_counter + 1;
+			
+			log ("arg" & type_argument_counter'image (argument_counter) & latin_1.space & to_string (arg), log_threshold + 3);
 
-			-- append argument and line number to entries
--- 			append (entries, (entry_string => to_bounded_string (to_string (arg)),
--- 							  keyword => false,
--- 							  line_number => line_number (element (line_cursor))));
+			-- validate arguments according to current section
+			case section is
+				when SEC_PAD =>
+					case argument_counter is
+						when 0 => null;
+						
+						when 1 => null;
+							-- CS: check terminal name length
+							terminal_name := to_terminal_name (to_string (arg));
+							-- CS: check characters
+
+						when 2 =>
+							terminal_technology := to_assembly_technology (to_string (arg));
+
+						when 3 =>
+							case terminal_technology is
+								when SMT => terminal_shape_smt := to_terminal_shape_smt (to_string (arg));
+								when THT => terminal_shape_tht := to_terminal_shape_tht (to_string (arg));
+							end case;
+							
+					end case;
+					
+				when others => null;
+			end case;
+			
+			exception
+				when event:
+					others =>
+						log_indentation_reset;
+						log (message_error & affected_line (element (line_cursor)) 
+							& to_string (element (line_cursor)), console => true);
+						log (ada.exceptions.exception_message (event));
+						raise;
 
 		end read_arg;
 
 		procedure exec_section is
+		-- Performs an operation according to the active section and variables that have been
+		-- set earlier (when processing the arguments. see procedure read_arg).
+			use et_pcb_coordinates;
 		begin
+			-- fetch name of active section from stack
 			section := sections_stack.pop;
 
-			-- CS: do the work
+			case section is
+				when SEC_PAD =>
+
+					-- Insert a terminal in the list "terminals":
+					case terminal_technology is
+						when THT =>
+							terminals.insert (
+								key 		=> terminal_name, 
+								new_item 	=> (
+												technology 	=> terminal_technology,
+												shape_tht 	=> terminal_shape_tht,
+												shape_smt 	=> terminal_shape_smt,
+												position 	=> terminal_position_default
+											   ));
+
+						when SMT =>
+							terminals.insert (
+								key 		=> terminal_name, 
+								new_item 	=> (
+												technology 	=> terminal_technology,
+												shape_tht 	=> terminal_shape_tht,
+												shape_smt 	=> terminal_shape_smt,
+												position 	=> terminal_position_default
+											   ));
+
+					end case;
+
+				when others => null;
+			end case;
+			
+
 		end exec_section;
 		
 		
@@ -387,102 +434,16 @@ package body et_kicad_pcb is
 				
 		end loop;
 
-		-- check section name. must be top level section
-		if section /= SEC_MODULE then
-			log_indentation_reset;
-			log (message_error & "top level section not closed !");
-			raise constraint_error;
-		end if;
-		
--- 		-- process entries
--- 		log ("proessing entries ...", log_threshold + 1);
--- 		log_indentation_up;
--- 		entry_cursor := entries.first;
--- 
--- 		if the_entry = to_string (SEC_MODULE) then
--- 			next_entry;
--- 
--- 			if the_entry (keep_capitalization => true) = et_libraries.to_string (package_name) then
-
--- 				while entry_cursor /= type_entries.no_element loop
--- 					next_entry;
-
--- 					log ("the_entry " & the_entry);
--- 					if is_keyword and the_entry = to_string (SEC_LAYER) then
--- 						next_entry;
--- 						-- F.Cu
--- 					else
--- 						log_indentation_reset;
--- 						log (message_error & expect_keyword (SEC_LAYER) & " in line " & line_number, console => true);
--- 						raise constraint_error;
--- 					end if;
--- 
--- 					if is_keyword and the_entry = to_string (SEC_TEDIT) then
--- 						next_entry;
--- 						-- 5412D524
--- 					else
--- 						log_indentation_reset;
--- 						log (message_error & expect_keyword (SEC_TEDIT) & " in line " & line_number, console => true);
--- 						raise constraint_error;
--- 					end if;
-
--- 					if is_keyword then
--- 						log ("the_entry " & the_entry);
-						
--- 						case type_section'value (the_entry) is
--- 							when SEC_LAYER =>
--- 								null;
--- 								log ("the_layer " & the_entry);
--- -- 								next_entry;
--- 
--- 							when SEC_TEDIT =>
--- 								null;
--- -- 								next_entry;
--- 
--- 							when SEC_FP_TEXT =>
--- 								null;	
--- -- 								next_entry;
--- 
--- 							when others =>
--- 								log_indentation_reset;
--- 								log (message_error & "unknown keyword in line " & line_number, console => true);
--- 								raise constraint_error;
--- 
--- 								
--- 						end case;
--- 						
--- 					else
--- 						log_indentation_reset;
--- 						log (message_error & "expect keyword in line " & line_number, console => true);
--- 						raise constraint_error;						
--- 					end if;
--- 					
--- -- 				end loop;
--- 				
--- 			else
--- 				log_indentation_reset;
--- 				log (message_error & "expect package name " & et_libraries.to_string (package_name) 
--- 					 & " in line" & line_number
--- 					 & ". Found " & the_entry (keep_capitalization => true) & " !", console => true);
--- 				raise constraint_error;
--- 			end if;
--- 		else
+-- 		-- check section name. must be top level section
+-- 		if section /= SEC_MODULE then
 -- 			log_indentation_reset;
--- 			log (message_error & expect_keyword (SEC_MODULE) & " in line" & line_number, console => true);
+-- 			log (message_error & "top level section not closed !");
 -- 			raise constraint_error;
--- 		end if;		
+-- 		end if;
 
+		-- assemble package model with
+		-- - terminals
 
--- 			log (the_entry, log_threshold + 2);
-
-
--- 			next (entry_cursor);
--- 		end loop;
--- 		log_indentation_down;
-
-
-
-		
 		log_indentation_down;
 
 		

@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                           SYSTEM ET PCB                                  --
+--                      SYSTEM ET PCB COORDINATES                           --
 --                                                                          --
 --                                 ET                                       --
 --                                                                          --
---                               B o d y                                    --
+--                               S p e c                                    --
 --                                                                          --
 --         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
 --                                                                          --
@@ -49,57 +49,56 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
-with et_libraries;
-with et_string_processing;		use et_string_processing;
+with et_string_processing;
 
-package body et_pcb is
-
-
-	function to_string (directory_name : in type_directory_name.bounded_string) return string is
-	-- Converts a directory name to a string.
-	begin
-		return type_directory_name.to_string (directory_name);
-	end to_string;
-	
-	function to_directory (directory_name : in string) return type_directory_name.bounded_string is
-	-- Converts a string to a type_directory_name.
-	begin
-		return type_directory_name.to_bounded_string (directory_name);
-	end to_directory;
-	
-	function to_string (library_name : in type_library_name.bounded_string) return string is
-	-- Converts a library name to a string.
-	begin
-		return type_library_name.to_string (library_name);
-	end to_string;
-
-	function to_library_name (library_name : in string) return type_library_name.bounded_string is
-	-- Converts a string to a type_library_name.
-	begin
-		return type_library_name.to_bounded_string (library_name);
-	end to_library_name;
-	
-	function terminal_count (
-		library_name		: in type_full_library_name.bounded_string;
-		package_name 		: in type_component_package_name.bounded_string)
-		return et_libraries.type_terminal_count is
-	begin
-		return 100;
-	end terminal_count;
-	
-	function terminal_port_map_fits (
-	-- Used when terminal_port_maps are to be used for packages.
-	-- The given package is specified by the library name and package name.
-	-- Returns true if the terminal_port_map fits on the given package.
-		library_name		: in type_full_library_name.bounded_string;
-		package_name 		: in type_component_package_name.bounded_string;
-		terminal_port_map	: in type_terminal_port_map.map) 
-		return boolean is
-	begin
-		return true;
-	end terminal_port_map_fits;
+package et_pcb_coordinates is
 
 	
-end et_pcb;
+	type type_axis is (X, Y, Z);
+	type type_face is (TOP, BOTTOM);
+	
+	-- The total distance between two objects:
+	type type_distance_total is delta 0.001 range -100_000_000.00 .. 100_000_000.00; -- unit is metric millimeter
+	for type_distance_total'small use 0.001; -- this is the accuracy required for layout
+
+	-- The x and y position of an object:
+	subtype type_distance is type_distance_total range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter
+	zero_distance : constant type_distance := 0.0;
+	
+	type type_angle is delta 0.01 range -359.9 .. 359.9;
+	for type_angle'small use 0.01;
+	zero_angle : constant type_angle := 0.0;
+
+	type type_point_3d is private;
+	type type_terminal_position is private;
+	type type_package_position is private;
+
+
+	function terminal_position_default return type_terminal_position;
+
+	function package_position_default return type_package_position;
+
+	
+
+	private
+
+		type type_point_3d is tagged record
+			x, y, z : type_distance := zero_distance;
+		end record;
+
+		zero : constant type_point_3d := (others => zero_distance);
+
+		
+		type type_terminal_position is new type_point_3d with record
+			angle	: type_angle := zero_angle;
+		end record;
+		
+		type type_package_position is new type_point_3d with record
+			angle	: type_angle := zero_angle;			
+			face	: type_face := TOP;
+		end record;
+
+		
+end et_pcb_coordinates;
 
 -- Soli Deo Gloria

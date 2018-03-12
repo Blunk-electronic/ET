@@ -158,6 +158,12 @@ package body et_libraries is
 		return type_terminal_name.to_string (terminal);
 	end to_string;
 
+	function to_terminal_name (terminal : in string) return type_terminal_name.bounded_string is
+	-- Converts a string to a type_terminal_name.	
+	begin
+		return type_terminal_name.to_bounded_string (terminal);
+	end to_terminal_name;
+	
 	function to_terminal_name_text_size (text : in string) return type_terminal_name_text_size is
 	-- Converts a string to type_terminal_name_text_size.
 	begin

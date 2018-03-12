@@ -63,6 +63,7 @@ with et_geometry;
 with et_general;
 with et_string_processing;		use et_string_processing;
 with et_pcb;
+with et_pcb_coordinates;
 with et_kicad_pcb;
 
 package body et_kicad is
@@ -5546,7 +5547,7 @@ package body et_kicad is
 															package_name		=> package_name (content (field_package)), -- S_SO14
 															log_threshold		=> log_threshold + 2),
 
-									position		=> et_pcb.position_placement_default,
+									position		=> et_pcb_coordinates.package_position_default,
 									
 									-- At this stage we do not know if and how many units there are. So the unit list is empty for the moment.
 									units => type_units.empty_map),

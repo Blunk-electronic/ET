@@ -57,6 +57,7 @@ with et_coordinates;			use et_coordinates;
 with et_libraries;				use et_libraries;
 with et_string_processing;
 with et_pcb;
+with et_pcb_coordinates;
 
 package et_schematic is
 
@@ -281,7 +282,7 @@ package et_schematic is
 				datasheet		: type_component_datasheet.bounded_string;
 				bom				: type_bom;
 				variant			: type_component_variant_name.bounded_string; -- D, N
-				position		: et_pcb.type_position_placement;
+				position		: et_pcb_coordinates.type_package_position;
 				
 			-- If a component appears in the schematic only, it does not
 			-- have any package variants.
