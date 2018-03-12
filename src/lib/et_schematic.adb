@@ -43,6 +43,7 @@ with ada.strings.fixed; 		use ada.strings.fixed;
 
 with ada.text_io;				use ada.text_io;
 
+with ada.exceptions;
 with ada.directories;
 
 with ada.containers;            use ada.containers;
@@ -56,6 +57,7 @@ with et_export;
 with et_import;
 with et_configuration;
 with et_csv;
+with et_kicad;
 
 package body et_schematic is
 
@@ -5033,9 +5035,9 @@ package body et_schematic is
 					name 		: in et_libraries.type_component_generic_name.bounded_string;
 					component 	: in et_libraries.type_component) is
 					use type_component_variants;
+					use et_import;
 
 					variant_cursor : et_libraries.type_component_variants.cursor;
-
 				begin -- query_variants
 					log ("locating variant " & type_component_variant_name.to_string (package_variant)
 						& " ...", log_threshold + 3);
@@ -5045,12 +5047,31 @@ package body et_schematic is
 					-- Otherwise an exception would occur here:
 					variant_cursor := component.variants.find (package_variant);
 
-					-- get the number of terminals of this package variant
-					terminals := et_pcb.terminal_count (
+					-- Get the number of terminals of this package variant
+					-- This is achieved by looking up the library (full name provided in package_variant)
+					-- and the package name.
+					-- If a kicad_v4 project is imported, the library name must be extended by the "pretty" extension.
+					if cad_format = kicad_v4 then
+						terminals := et_pcb.terminal_count (
+									library_name	=> to_full_library_name (
+														to_string (element (variant_cursor).packge.library) -- ../lbr/bel_ic
+														& et_kicad.package_library_directory_extension), -- .pretty
+									package_name	=> element (variant_cursor).packge.name);	-- S_SO14
+					else
+						terminals := et_pcb.terminal_count (
 									library_name	=> element (variant_cursor).packge.library,	-- ../lbr/bel_ic
 									package_name	=> element (variant_cursor).packge.name);	-- S_SO14
-					
+					end if;
+						
 					log_indentation_down;	
+
+					exception
+						when event:
+							others =>
+								log_indentation_reset;
+								log (ada.exceptions.exception_message (event), console => true);
+								raise;
+					
 				end query_variants;
 				
 			begin -- locate_component_in_library

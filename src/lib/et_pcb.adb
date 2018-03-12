@@ -49,6 +49,8 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
+with ada.exceptions;
+
 with et_libraries;
 with et_string_processing;		use et_string_processing;
 
@@ -67,24 +69,52 @@ package body et_pcb is
 		return type_directory_name.to_bounded_string (directory_name);
 	end to_directory;
 	
-	function to_string (library_name : in type_library_name.bounded_string) return string is
-	-- Converts a library name to a string.
-	begin
-		return type_library_name.to_string (library_name);
-	end to_string;
-
-	function to_library_name (library_name : in string) return type_library_name.bounded_string is
-	-- Converts a string to a type_library_name.
-	begin
-		return type_library_name.to_bounded_string (library_name);
-	end to_library_name;
-	
 	function terminal_count (
+	-- Returns the number of terminals of the given package in the given library.
 		library_name		: in type_full_library_name.bounded_string;
 		package_name 		: in type_component_package_name.bounded_string)
 		return et_libraries.type_terminal_count is
-	begin
-		return 100;
+
+		use type_libraries;
+		
+		terminals : et_libraries.type_terminal_count; -- to be returned
+		library_cursor : type_libraries.cursor; -- points to the library
+
+		procedure locate_package (
+			library_name	: in type_full_library_name.bounded_string;
+			packages		: in type_packages.map) is
+			use type_terminals;
+			package_cursor : type_packages.cursor;
+		begin
+			-- locate the package
+			package_cursor := packages.find (package_name);
+
+			-- get number of terminals
+			terminals := type_terminal_count (length (element (package_cursor).terminals));
+		end locate_package;
+		
+	begin -- terminal_count
+		-- locate the library
+		library_cursor := type_libraries.find (package_libraries, library_name);
+
+		if library_cursor = type_libraries.no_element then
+			log_indentation_reset;
+			log (message_error & to_string (library_name) & " not found !", console => true);
+			raise constraint_error;
+		else
+			-- query packages in library
+			type_libraries.query_element (library_cursor, locate_package'access);
+		end if;
+		
+		return terminals;
+
+		exception
+			when event:
+				others =>
+					log_indentation_reset;
+					log (ada.exceptions.exception_message (event), console => true);
+					raise;
+
 	end terminal_count;
 	
 	function terminal_port_map_fits (
@@ -96,7 +126,7 @@ package body et_pcb is
 		terminal_port_map	: in type_terminal_port_map.map) 
 		return boolean is
 	begin
-		return true;
+		return true; -- CS
 	end terminal_port_map_fits;
 
 	

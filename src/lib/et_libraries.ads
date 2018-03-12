@@ -60,6 +60,9 @@ package et_libraries is
 	library_name_length_max : constant natural := 100; -- CS: increase if necessary
     package type_library_name is new generic_bounded_length (library_name_length_max); use type_library_name;
 
+	function to_library_name (library_name : in string) return type_library_name.bounded_string;
+	-- converts a string to a type_library_name
+	
 	-- CS: for type_library_name: character set, check characters, check length
 	
 	function to_string (library_name : in type_library_name.bounded_string) return string;
@@ -94,10 +97,13 @@ package et_libraries is
 	function to_string (full_library_name : in type_full_library_name.bounded_string) return string;
 	-- Returns the given full library name as string;
 
+	function to_full_library_name (full_library_name : in string) return type_full_library_name.bounded_string;
+	-- converts a string to a full library name.
+	
 	function to_full_library_name (
 		root_dir : in type_library_directory.bounded_string;
 		lib_name : in type_library_name.bounded_string) return type_full_library_name.bounded_string;
-	-- composes the full library name from the given rood directory and the actual lib name.
+	-- composes the full library name from the given root directory and the actual lib name.
 	
 	-- Full library names can be stored further-on in a simple list:
 	-- We use a simple list because the order of the library names sometimes matters and must be kept.

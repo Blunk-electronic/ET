@@ -68,26 +68,10 @@ package et_pcb is
 	function to_string (directory_name : in type_directory_name.bounded_string) return string;
 	-- Converts a directory name to a string.
 
-	function to_directory (directory_name : in string) return type_directory_name.bounded_string;
-	-- Converts a string to a type_directory_name.
+-- 	function to_directory (directory_name : in string) return type_directory_name.bounded_string;
+-- 	-- Converts a string to a type_directory_name.
 
 	
-	
-
-	library_name_length_max : constant positive := 200;
-	package type_library_name is new generic_bounded_length (library_name_length_max);
-	use type_library_name;
-
-	function to_string (library_name : in type_library_name.bounded_string) return string;
-	-- Converts a library name to a string.
-
-	function to_library_name (library_name : in string) return type_library_name.bounded_string;
-	-- Converts a string to a type_library_name.
-	
-
-	
-
-
 	
 	type type_assembly_technology is (
 		THT,	-- Through Hole Technology
@@ -98,9 +82,10 @@ package et_pcb is
 	type type_terminal_shape_smt is (RECTANGLE, ROUND, LONG);
 	
 	type type_terminal (
-		technology : type_assembly_technology;
-		shape_tht : type_terminal_shape_tht;
-		shape_smt : type_terminal_shape_smt) is record
+		technology	: type_assembly_technology;
+		shape_tht	: type_terminal_shape_tht;
+		shape_smt	: type_terminal_shape_smt) 
+	is record
 		position	: type_terminal_position;
 	end record;
 
@@ -111,7 +96,6 @@ package et_pcb is
 
 
 	type type_package is record
-		dummy : natural;
 		terminals	: type_terminals.map;
 	end record;
 
@@ -141,8 +125,9 @@ package et_pcb is
 	use type_packages;
 
 	package type_libraries is new ordered_maps (
-		key_type		=> type_library_name.bounded_string, -- bel_ic, bel_connectors
-		element_type	=> type_packages.map);
+		key_type		=> type_full_library_name.bounded_string, -- projects/lbr/smd_packages.pac
+		element_type	=> type_packages.map,
+		"<"				=> type_full_library_name."<");
 
 	-- All package models are collected here:
 	package_libraries : type_libraries.map;

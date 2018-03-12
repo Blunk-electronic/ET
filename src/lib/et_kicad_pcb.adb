@@ -60,6 +60,8 @@ with et_pcb;
 with et_pcb_coordinates;
 with et_string_processing;		use et_string_processing;
 
+with et_kicad;
+
 package body et_kicad_pcb is
 
 	function to_assembly_technology (tech : in string) return et_pcb.type_assembly_technology is
@@ -446,8 +448,9 @@ package body et_kicad_pcb is
 
 		log_indentation_down;
 
-		
-		return model;
+		return (
+				   terminals => terminals
+			   );
 	end to_package_model;
 	
 	procedure read_libraries (
@@ -479,7 +482,7 @@ package body et_kicad_pcb is
 		procedure read_package_names (
 		-- Creates empty packages in the package_libraries. The package names are
 		-- named after the packages found in the library directories.
-			library_name	: in et_pcb.type_library_name.bounded_string;
+			library_name	: in type_full_library_name.bounded_string;
 			packages		: in out type_packages.map) is
 
 			package_names : type_directory_entries.list;
@@ -498,7 +501,7 @@ package body et_kicad_pcb is
 			package_names := directory_entries (
 								target_directory	=> current_directory, 
 								category			=> ada.directories.ordinary_file,
-								pattern				=> package_pattern);
+								pattern				=> et_kicad.package_pattern);
 
 			-- show number of package libraries
 			if is_empty (package_names) then
@@ -565,7 +568,7 @@ package body et_kicad_pcb is
 				when event:
 					others =>
 						log_indentation_reset;
-						put_line (ada.exceptions.exception_message (event));
+						log (ada.exceptions.exception_message (event), console => true);
 						raise;
 
 		end read_package_names;
@@ -578,7 +581,7 @@ package body et_kicad_pcb is
 		library_names := directory_entries (
 							target_directory	=> et_libraries.to_string (et_libraries.lib_dir), 
 							category			=> ada.directories.directory,
-							pattern				=> library_pattern);
+							pattern				=> et_kicad.package_library_pattern);
 
 		log_indentation_up;
 
@@ -601,7 +604,10 @@ package body et_kicad_pcb is
 				-- create the (empty) library
 				et_pcb.type_libraries.insert (
 					container	=> package_libraries,
-					key			=> to_library_name (element (library_name_cursor)),
+-- 					key			=> to_library_name (element (library_name_cursor)),
+					key			=> to_full_library_name (
+										root_dir => lib_dir,
+										lib_name => to_library_name (element (library_name_cursor))),
 					inserted	=> library_inserted,
 					position	=> library_cursor,
 					new_item	=> type_packages.empty_map);

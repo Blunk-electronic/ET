@@ -55,9 +55,6 @@ with et_pcb;
 
 package et_kicad_pcb is
 
-	library_pattern : constant string (1..8)	:= "*.pretty";
-	package_pattern : constant string (1..11)	:= "*.kicad_mod";
-
 	function to_package_model (
 	-- Builds a package model from the given lines.
 		package_name	: in et_libraries.type_component_package_name.bounded_string; -- S_SO14

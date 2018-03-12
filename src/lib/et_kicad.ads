@@ -65,7 +65,16 @@ package et_kicad is
 	file_extension_board	 			: constant string (1..9) := "kicad_pcb";
     
     schematic_version                   : constant positive := 2;
-    
+
+	-- NOTE: this is not a real file extension but just a part of a directory name:
+	package_library_directory_extension	: constant string (1..7) := ".pretty";
+	package_file_extension				: constant string (1..9) := "kicad_mod";
+
+	-- These constants are required for directory entry searches:
+	package_library_pattern	: constant string (1..8)	:= "*" & package_library_directory_extension;
+	package_pattern 		: constant string (1..11)	:= "*." & package_file_extension;
+
+	
 	procedure import_design (
 		first_instance 	: in boolean := false;
 		project			: in et_schematic.type_project_name.bounded_string;								
