@@ -2391,11 +2391,14 @@ package body et_kicad is
 								tmp_variant_name := to_component_variant_name (to_string (package_name (content (field_package)))); -- S_SO14
 								check_variant_name_characters (tmp_variant_name);
 
-								-- Test whether library and package and terminal_port_map fit together:
+								-- Test whether library and package and terminal_port_map fit together.
+								-- NOTE: The library name must be extended by the "pretty" extension.
 								if et_pcb.terminal_port_map_fits (
-									library_name		=> to_full_library_name ( -- ../lbr/bel_ic
-																root_dir => lib_dir,
-																lib_name => library_name (content (field_package))),
+									library_name		=> to_full_library_name (
+															to_string (to_full_library_name (
+																root_dir => lib_dir, -- ../lbr
+																lib_name => library_name (content (field_package)))) -- bel_ic
+															& package_library_directory_extension),
 									package_name		=> package_name (content (field_package)), -- S_SO14
 									terminal_port_map	=> tmp_terminal_port_map) then
 								
@@ -2853,8 +2856,11 @@ package body et_kicad is
 					variant_cursor := component.variants.first; 
 
 					-- Test whether the new variant complies with the terminal_port_map
+					-- NOTE: The library name must be extended by the "pretty" extension.
 					if et_pcb.terminal_port_map_fits (
-						library_name 		=> full_package_library_name,
+						library_name 		=> to_full_library_name (
+												et_libraries.to_string (full_package_library_name) -- ../lbr/bel_ic
+												& package_library_directory_extension), -- .pretty
 						package_name 		=> package_name,
 						terminal_port_map	=> element (variant_cursor).terminal_port_map) then
 
