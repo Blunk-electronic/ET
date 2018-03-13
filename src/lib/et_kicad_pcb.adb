@@ -178,7 +178,30 @@ package body et_kicad_pcb is
 		terminal_technology : type_assembly_technology;
 		terminal_shape_tht : type_terminal_shape_tht;
 		terminal_shape_smt : type_terminal_shape_smt;
+		terminal_inserted : boolean;
 		terminals : type_terminals.map;
+		terminal_cursor : type_terminals.cursor;
+
+		procedure show_terminal_properties (
+			cursor : in type_terminals.cursor;
+			log_threshold : in type_log_level) is
+			use type_terminals;
+			use et_pcb_coordinates;
+		begin
+			log ("terminal name " & to_string (key (cursor))
+				& " technology " & to_string (element (cursor).technology)
+				& to_string (type_point_3d (element (cursor).position))
+				& to_string (angle => get_angle (element (cursor).position), preamble => true),
+				log_threshold + 1);
+
+			log_indentation_up;
+			case element (cursor).technology is
+				when THT => log ("shape " & to_string (element (cursor).shape_tht), log_threshold + 2);
+				when SMT => log ("shape " & to_string (element (cursor).shape_smt), log_threshold + 2);
+			end case;
+
+			log_indentation_down;
+		end show_terminal_properties;
 
 -- 		position_x, position_y, position_z : et_pcb_coordinates.type_distance;
 		object_position : et_pcb_coordinates.type_point_3d;
@@ -311,8 +334,8 @@ package body et_kicad_pcb is
 				when SEC_AT =>
 					case argument_counter is
 						when 0 => null;
-						when 1 => set (axis => X, point => object_position, value => to_distance (to_string (arg)));
-						when 2 => set (axis => Y, point => object_position, value => to_distance (to_string (arg)));
+						when 1 => set_point (axis => X, point => object_position, value => to_distance (to_string (arg)));
+						when 2 => set_point (axis => Y, point => object_position, value => to_distance (to_string (arg)));
 						when others => null; -- CS error
 					end case;
 					
@@ -370,29 +393,41 @@ package body et_kicad_pcb is
 					case terminal_technology is
 						when THT =>
 							terminals.insert (
-								key 		=> terminal_name, 
+								key 		=> terminal_name,
+								position	=> terminal_cursor,
+								inserted	=> terminal_inserted,
 								new_item 	=> (
 												technology 	=> terminal_technology,
 												shape_tht 	=> terminal_shape_tht,
 												shape_smt 	=> terminal_shape_smt,
-												position 	=> terminal_position_default
+												position	=> type_terminal_position (to_terminal_position (object_position, zero_angle))
 											   ));
 
 						when SMT =>
 							terminals.insert (
 								key 		=> terminal_name, 
+								position	=> terminal_cursor,
+								inserted	=> terminal_inserted,
 								new_item 	=> (
 												technology 	=> terminal_technology,
 												shape_tht 	=> terminal_shape_tht,
 												shape_smt 	=> terminal_shape_smt,
-												position 	=> terminal_position_default
+												position	=> type_terminal_position (to_terminal_position (object_position, zero_angle))
 											   ));
 
 					end case;
 
+					if terminal_inserted then
+						show_terminal_properties (terminal_cursor, log_threshold + 1);
+					else
+						log_indentation_reset;
+						log (message_error & "duplicated terminal " & to_string (terminal_name) & " !");
+						raise constraint_error;
+					end if;
+					
 				when others => null;
 			end case;
-			
+
 
 		end exec_section;
 		

@@ -68,6 +68,21 @@ package body et_pcb is
 	begin
 		return type_directory_name.to_bounded_string (directory_name);
 	end to_directory;
+
+	function to_string (technology : in type_assembly_technology) return string is
+	begin
+		return type_assembly_technology'image (technology);
+	end to_string;
+
+	function to_string (shape : in type_terminal_shape_tht) return string is
+	begin
+		return type_terminal_shape_tht'image (shape);
+	end to_string;
+
+	function to_string (shape : in type_terminal_shape_smt) return string is
+	begin
+		return type_terminal_shape_smt'image (shape);
+	end to_string;
 	
 	function terminal_count (
 	-- Returns the number of terminals of the given package in the given library.

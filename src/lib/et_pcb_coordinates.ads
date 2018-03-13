@@ -49,6 +49,7 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
+with et_coordinates;
 with et_string_processing;
 
 package et_pcb_coordinates is
@@ -61,30 +62,57 @@ package et_pcb_coordinates is
 	type type_distance_total is delta 0.001 range -100_000_000.00 .. 100_000_000.00; -- unit is metric millimeter
 	for type_distance_total'small use 0.001; -- this is the accuracy required for layout
 
+	function to_string (distance : in type_distance_total) return string;
+	
 	-- The x and y position of an object:
 	subtype type_distance is type_distance_total range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter
 	zero_distance : constant type_distance := 0.0;
 
+	position_preamble_3d : constant string (1..14) := " pos. "
+		& "(x"
+		& et_coordinates.axis_separator
+		& "y"
+		& et_coordinates.axis_separator
+		& "z) ";
+	
 	function to_distance (distance : in string) return type_distance;
 	
 	type type_angle is delta 0.01 range -359.9 .. 359.9;
 	for type_angle'small use 0.01;
 	zero_angle : constant type_angle := 0.0;
 
-	type type_point_3d is private;
-	type type_terminal_position is private;
-	type type_package_position is private;
+	function to_string (
+		angle 		: in type_angle;
+		preamble 	: in boolean := false)
+		return string;
 
+	type type_point_3d is tagged private;
+	type type_terminal_position is new type_point_3d with private;
+	type type_package_position is new type_point_3d with private;
+
+	function to_string (point : in type_point_3d) return string;
 
 	function terminal_position_default return type_terminal_position;
 
 	function package_position_default return type_package_position;
 
-	procedure set (
+	procedure set_point (
 		axis 	: in type_axis;
 		value	: in type_distance;					 
 		point	: in out type_point_3d);
 
+	procedure set_angle (
+		value	: in type_angle;
+		point	: in out type_terminal_position);
+
+	function get_angle (point : in type_terminal_position) return type_angle;
+	
+	function to_terminal_position (
+		point	: in type_point_3d;
+		angle	: in type_angle)
+		return type_terminal_position'class;
+
+	
 	private
 
 		type type_point_3d is tagged record
@@ -92,11 +120,12 @@ package et_pcb_coordinates is
 		end record;
 
 		zero : constant type_point_3d := (others => zero_distance);
-
 		
 		type type_terminal_position is new type_point_3d with record
 			angle	: type_angle := zero_angle;
 		end record;
+
+
 		
 		type type_package_position is new type_point_3d with record
 			angle	: type_angle := zero_angle;			

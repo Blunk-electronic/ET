@@ -78,8 +78,13 @@ package et_pcb is
 		SMT		-- Surface Mount Technology
 		);
 
+	function to_string (technology : in type_assembly_technology) return string;
+
 	type type_terminal_shape_tht is (OCTAGON, RECTANGLE, SQUARE, LONG, LONG_OFFSET);
+	function to_string (shape : in type_terminal_shape_tht) return string;
+	
 	type type_terminal_shape_smt is (RECTANGLE, ROUND, LONG);
+	function to_string (shape : in type_terminal_shape_smt) return string;	
 	
 	type type_terminal (
 		technology	: type_assembly_technology;
