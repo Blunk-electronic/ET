@@ -55,6 +55,18 @@ with et_pcb;
 
 package et_kicad_pcb is
 
+	layer_top_copper			: constant string (1..4)	:= "F.Cu";
+	layer_bot_copper			: constant string (1..4)	:= "B.Cu";
+	layer_all_copper			: constant string (1..4)	:= "*.Cu";
+	
+	layer_top_solder_paste		: constant string (1..7)	:= "F.Paste";
+	layer_bot_solder_paste		: constant string (1..7)	:= "B.Paste";
+
+	layer_top_stop_mask			: constant string (1..6)	:= "F.Mask";
+	layer_bot_stop_mask			: constant string (1..6)	:= "B.Mask";
+	layer_all_stop_mask			: constant string (1..6)	:= "*.Mask";
+
+	
 	function to_package_model (
 	-- Builds a package model from the given lines.
 		package_name	: in et_libraries.type_component_package_name.bounded_string; -- S_SO14

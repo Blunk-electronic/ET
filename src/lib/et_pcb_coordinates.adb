@@ -55,6 +55,11 @@ with et_string_processing;		use et_string_processing;
 
 package body et_pcb_coordinates is
 
+	function to_string (face : in type_face) return string is
+	begin
+		return type_face'image (face);
+	end to_string;
+	
 	function to_distance (distance : in string) return type_distance is
 	begin
 		return type_distance'value (distance);

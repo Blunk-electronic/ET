@@ -83,6 +83,31 @@ package body et_pcb is
 	begin
 		return type_terminal_shape_smt'image (shape);
 	end to_string;
+
+	procedure terminal_properties (
+	-- Logs the properties of the terminal indicated by cursor.
+		cursor 			: in type_terminals.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_terminals;
+		use et_pcb_coordinates;
+	begin
+		log ("terminal name " & to_string (key (cursor))
+			& " technology " & to_string (element (cursor).technology)
+			& to_string (type_point_3d (element (cursor).position))
+			& to_string (angle => get_angle (element (cursor).position), preamble => true),
+			log_threshold + 1);
+
+		log_indentation_up;
+		case element (cursor).technology is
+			when THT => log ("shape " & to_string (element (cursor).shape_tht), log_threshold + 2);
+			when SMT => 
+				log ("shape " & to_string (element (cursor).shape_smt), log_threshold + 2);
+				log ("face  " & to_string (element (cursor).face), log_threshold + 2);
+		end case;
+
+		log_indentation_down;
+	end terminal_properties;
+
 	
 	function terminal_count (
 	-- Returns the number of terminals of the given package in the given library.

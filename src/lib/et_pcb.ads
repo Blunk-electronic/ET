@@ -80,18 +80,52 @@ package et_pcb is
 
 	function to_string (technology : in type_assembly_technology) return string;
 
-	type type_terminal_shape_tht is (OCTAGON, RECTANGLE, SQUARE, LONG, LONG_OFFSET);
+	type type_terminal_shape is (CIRCULAR, NON_CIRCULAR);
+	
+	type type_terminal_shape_tht is (OCTAGON, CIRCULAR, RECTANGLE, LONG, LONG_OFFSET);
 	function to_string (shape : in type_terminal_shape_tht) return string;
 	
-	type type_terminal_shape_smt is (RECTANGLE, ROUND, LONG);
+	type type_terminal_shape_smt is (RECTANGLE, CIRCULAR, LONG);
 	function to_string (shape : in type_terminal_shape_smt) return string;	
+
+	type type_terminal_solder_paste is (NONE, APPLIED);
+	type type_terminal_stop_mask is (CLOSED, OPEN);
 	
 	type type_terminal (
 		technology	: type_assembly_technology;
-		shape_tht	: type_terminal_shape_tht;
-		shape_smt	: type_terminal_shape_smt) 
+		shape		: type_terminal_shape)
 	is record
 		position	: type_terminal_position;
+
+		case technology is
+			when THT =>
+				-- restring_outer_layer : type_distance; -- CS use subtype for reasonable range
+				-- restring_inner_layer : type_distance; -- CS use subtype for reasonable range
+				shape_tht : type_terminal_shape_tht;
+
+				case shape is
+					when CIRCULAR =>
+						null;
+						
+					WHEN NON_CIRCULAR =>
+						size_tht_x, size_tht_y : type_distance;  -- CS use subtype for reasonable range
+				end case;
+
+				
+			when SMT =>
+				shape_smt		: type_terminal_shape_smt;
+				face			: type_face;
+				stop_mask 		: type_terminal_stop_mask;
+				solder_paste	: type_terminal_solder_paste;
+				case shape is
+					when CIRCULAR =>
+						null;
+						
+					WHEN NON_CIRCULAR =>
+						size_smt_x, size_smt_y : type_distance;  -- CS use subtype for reasonable range
+				end case;
+
+		end case;
 	end record;
 
 	package type_terminals is new indefinite_ordered_maps (
@@ -138,6 +172,10 @@ package et_pcb is
 	package_libraries : type_libraries.map;
 
 
+	procedure terminal_properties (
+	-- Logs the properties of the terminal indicated by cursor.
+		cursor 			: in type_terminals.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
 
 	
 
