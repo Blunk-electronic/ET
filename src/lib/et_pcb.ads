@@ -106,7 +106,8 @@ package et_pcb is
 		case technology is
 			when THT =>
 				-- restring_outer_layer : type_distance; -- CS use subtype for reasonable range
-				-- restring_inner_layer : type_distance; -- CS use subtype for reasonable range
+				width_inner_layers : type_distance; -- CS use subtype for reasonable range
+				
 				shape_tht 	: type_terminal_shape_tht;
 
 				case shape is

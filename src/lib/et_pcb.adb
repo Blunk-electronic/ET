@@ -111,7 +111,7 @@ package body et_pcb is
 		case element (cursor).technology is
 			when THT => 
 				log ("shape " & to_string (element (cursor).shape_tht), log_threshold + 2);
-
+				log ("copper with inner layers " & to_string (element (cursor).width_inner_layers), log_threshold + 2);
 				case element (cursor).shape is
 					when NON_CIRCULAR =>
 						log ("size x " & to_string (element (cursor).size_tht_x), log_threshold + 2);

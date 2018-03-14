@@ -179,6 +179,9 @@ package body et_kicad_pcb is
 		terminal_shape_tht : type_terminal_shape_tht;
 		terminal_shape_smt : type_terminal_shape_smt;
 		terminal_inserted : boolean;
+
+-- 		terminal_copper_width_outer_layers : et_pcb_coordinates.type_distance;
+		terminal_copper_width_inner_layers : et_pcb_coordinates.type_distance := 1.0; -- CS load from DRU
 		
 		terminal_top_solder_paste, terminal_bot_solder_paste : type_terminal_solder_paste;
 		terminal_solder_paste : type_terminal_solder_paste;
@@ -340,12 +343,11 @@ package body et_kicad_pcb is
 				raise constraint_error;
 			end invalid;
 
-			procedure to_many_arguments is begin
+			procedure too_many_arguments is begin
 				log_indentation_reset;
 				log (message_error & "too many arguments !", console => true);
 				raise constraint_error;
-			end to_many_arguments;
-
+			end too_many_arguments;
 			
 		begin -- read_arg
 			-- We handle an argument that is wrapped in quotation different from a non-wrapped argument:
@@ -400,14 +402,14 @@ package body et_kicad_pcb is
 						when 1 => set_point (axis => X, point => object_position, value => to_distance (to_string (arg)));
 						when 2 => set_point (axis => Y, point => object_position, value => to_distance (to_string (arg)));
 						when 3 => object_angle := to_angle (to_string (arg));
-						when others => to_many_arguments;
+						when others => too_many_arguments;
 					end case;
 
 				when SEC_DRILL =>
 					case argument_counter is
 						when 0 => null;
 						when 1 => object_drill_size := to_distance (to_string (arg));
-						when others => to_many_arguments;
+						when others => too_many_arguments;
 					end case;
 					
 				when SEC_LAYERS => -- applies for terminals exclusively
@@ -512,6 +514,7 @@ package body et_kicad_pcb is
 					-- Insert a terminal in the list "terminals":
 					case terminal_technology is
 						when THT =>
+
 							if terminal_shape_tht = CIRCULAR then
 								terminals.insert (
 									key 		=> terminal_name,
@@ -521,6 +524,7 @@ package body et_kicad_pcb is
 													technology 		=> THT,
 													shape 			=> CIRCULAR,
 													tht_hole		=> DRILLED,
+													width_inner_layers => terminal_copper_width_inner_layers,
 													drill_size_cir	=> object_drill_size,
 													shape_tht		=> terminal_shape_tht,
 													position		=> type_terminal_position (to_terminal_position (object_position, object_angle))
@@ -534,6 +538,7 @@ package body et_kicad_pcb is
 													technology 		=> THT,
 													shape			=> NON_CIRCULAR,
 													tht_hole		=> DRILLED,
+													width_inner_layers => terminal_copper_width_inner_layers,
 													drill_size_dri	=> object_drill_size,
 													shape_tht		=> terminal_shape_tht,
 													position		=> type_terminal_position (to_terminal_position (object_position, object_angle)),
