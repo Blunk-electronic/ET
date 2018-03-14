@@ -89,11 +89,17 @@ package et_pcb is
 	function to_string (shape : in type_terminal_shape_smt) return string;	
 
 	type type_terminal_solder_paste is (NONE, APPLIED);
+	function to_string (solder_paste : in type_terminal_solder_paste) return string;
+	
 	type type_terminal_stop_mask is (CLOSED, OPEN);
+	function to_string (stop_mask : in type_terminal_stop_mask) return string;
+
+	type type_terminal_tht_hole is (DRILLED, MILLED);
 	
 	type type_terminal (
 		technology	: type_assembly_technology;
-		shape		: type_terminal_shape)
+		shape		: type_terminal_shape;
+		tht_hole	: type_terminal_tht_hole) -- without meaning if technology is SMT
 	is record
 		position	: type_terminal_position;
 
@@ -101,14 +107,23 @@ package et_pcb is
 			when THT =>
 				-- restring_outer_layer : type_distance; -- CS use subtype for reasonable range
 				-- restring_inner_layer : type_distance; -- CS use subtype for reasonable range
-				shape_tht : type_terminal_shape_tht;
+				shape_tht 	: type_terminal_shape_tht;
 
 				case shape is
 					when CIRCULAR =>
-						null;
+						drill_size_cir : type_distance; -- CS use subtype for reasonable range
 						
 					WHEN NON_CIRCULAR =>
 						size_tht_x, size_tht_y : type_distance;  -- CS use subtype for reasonable range
+
+						case tht_hole is
+							when DRILLED =>
+								drill_size_dri : type_distance; -- CS use subtype for reasonable range
+
+							when MILLED =>
+								null; -- cs
+						end case;
+						
 				end case;
 
 				

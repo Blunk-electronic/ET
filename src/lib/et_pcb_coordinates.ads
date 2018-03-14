@@ -88,11 +88,15 @@ package et_pcb_coordinates is
 		preamble 	: in boolean := false)
 		return string;
 
+	function to_angle (angle : in string) return type_angle;
+	
 	type type_point_3d is tagged private;
 	type type_terminal_position is new type_point_3d with private;
 	type type_package_position is new type_point_3d with private;
 
 	function to_string (point : in type_point_3d) return string;
+	
+-- 	function point_zero return type_point_3d;
 
 	function terminal_position_default return type_terminal_position;
 
@@ -122,7 +126,7 @@ package et_pcb_coordinates is
 		end record;
 
 		zero : constant type_point_3d := (others => zero_distance);
-		
+
 		type type_terminal_position is new type_point_3d with record
 			angle	: type_angle := zero_angle;
 		end record;

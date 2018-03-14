@@ -83,6 +83,11 @@ package body et_pcb_coordinates is
 			return trim (type_angle'image (angle), left);
 		end if;
 	end to_string;
+
+	function to_angle (angle : in string) return type_angle is
+	begin
+		return type_angle'value (angle);
+	end to_angle;
 	
 	function to_string (point : in type_point_3d) return string is
 	begin
@@ -97,6 +102,11 @@ package body et_pcb_coordinates is
 			& latin_1.space
 			& to_string (point.z);
 	end to_string;
+
+-- 	function point_zero return type_point_3d is
+-- 	begin
+-- 		return zero;
+-- 	end point_zero;
 	
 	function terminal_position_default return type_terminal_position is
 	begin

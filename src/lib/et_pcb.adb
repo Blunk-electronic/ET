@@ -84,6 +84,16 @@ package body et_pcb is
 		return type_terminal_shape_smt'image (shape);
 	end to_string;
 
+	function to_string (solder_paste : in type_terminal_solder_paste) return string is
+	begin
+		return type_terminal_solder_paste'image (solder_paste);
+	end to_string;
+
+	function to_string (stop_mask : in type_terminal_stop_mask) return string is
+	begin
+		return type_terminal_stop_mask'image (stop_mask);
+	end to_string;
+	
 	procedure terminal_properties (
 	-- Logs the properties of the terminal indicated by cursor.
 		cursor 			: in type_terminals.cursor;
@@ -99,10 +109,38 @@ package body et_pcb is
 
 		log_indentation_up;
 		case element (cursor).technology is
-			when THT => log ("shape " & to_string (element (cursor).shape_tht), log_threshold + 2);
+			when THT => 
+				log ("shape " & to_string (element (cursor).shape_tht), log_threshold + 2);
+
+				case element (cursor).shape is
+					when NON_CIRCULAR =>
+						log ("size x " & to_string (element (cursor).size_tht_x), log_threshold + 2);
+						log ("size y " & to_string (element (cursor).size_tht_y), log_threshold + 2);
+						case element (cursor).tht_hole is
+							when DRILLED =>
+								log ("drill " & to_string (element (cursor).drill_size_dri), log_threshold + 2); 
+							when MILLED =>
+								log ("plated milling contour ", log_threshold + 2);
+						end case;
+						
+					when CIRCULAR =>
+						log ("drill " & to_string (element (cursor).drill_size_cir), log_threshold + 2); 
+				end case;
+				
 			when SMT => 
 				log ("shape " & to_string (element (cursor).shape_smt), log_threshold + 2);
-				log ("face  " & to_string (element (cursor).face), log_threshold + 2);
+
+				case element (cursor).shape is
+					when NON_CIRCULAR =>
+						log ("size x " & to_string (element (cursor).size_smt_x), log_threshold + 2);
+						log ("size y " & to_string (element (cursor).size_smt_y), log_threshold + 2);
+					when CIRCULAR =>
+						null; -- CS 
+				end case;
+				
+				log ("face " & to_string (element (cursor).face), log_threshold + 2);
+				log ("stop mask " & to_string (element (cursor).stop_mask), log_threshold + 2);
+				log ("solder paste " & to_string (element (cursor).solder_paste), log_threshold + 2);
 		end case;
 
 		log_indentation_down;

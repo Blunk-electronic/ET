@@ -189,9 +189,23 @@ package body et_kicad_pcb is
 		terminals : type_terminals.map;
 		terminal_cursor : type_terminals.cursor;
 
+		-- CS use subtypes for reasonable sizes below:
 		object_size_x, object_size_y : et_pcb_coordinates.type_distance;
+		object_drill_size : et_pcb_coordinates.type_distance; 
 		object_position : et_pcb_coordinates.type_point_3d;
+		object_angle : et_pcb_coordinates.type_angle;
 		object_face : et_pcb_coordinates.type_face;
+
+-- 		procedure init_object is 
+-- 			use et_pcb_coordinates;
+-- 		begin
+-- 			object_size_x := zero_distance;
+-- 			object_size_y := zero_distance;
+-- 			object_drill_size := zero_distance;
+-- 			--CS object_position := point_zero;
+-- 			object_angle := zero_angle;
+-- 			object_face := TOP;
+-- 		end init_object;
 		
 		procedure init_terminal_layers is begin
 			terminal_top_solder_paste := type_terminal_solder_paste'first;
@@ -207,10 +221,10 @@ package body et_kicad_pcb is
 				log_indentation_reset;
 				log (message_error & "contradicting layers in terminal !", console => true);
 				log ("face " & to_string (object_face), console => true);
-				log (" solder paste top " & type_terminal_solder_paste'image (terminal_top_solder_paste), console => true);
-				log (" solder paste bot " & type_terminal_solder_paste'image (terminal_bot_solder_paste), console => true);
-				log (" stop mask top    " & type_terminal_stop_mask'image (terminal_top_stop_mask), console => true);
-				log (" stop mask bot    " & type_terminal_stop_mask'image (terminal_bot_stop_mask), console => true);
+				log (" solder paste top " & to_string (terminal_top_solder_paste), console => true);
+				log (" solder paste bot " & to_string (terminal_bot_solder_paste), console => true);
+				log (" stop mask top    " & to_string (terminal_top_stop_mask), console => true);
+				log (" stop mask bot    " & to_string (terminal_bot_stop_mask), console => true);
 				raise constraint_error;
 			end invalid; 
 				
@@ -326,6 +340,13 @@ package body et_kicad_pcb is
 				raise constraint_error;
 			end invalid;
 
+			procedure to_many_arguments is begin
+				log_indentation_reset;
+				log (message_error & "too many arguments !", console => true);
+				raise constraint_error;
+			end to_many_arguments;
+
+			
 		begin -- read_arg
 			-- We handle an argument that is wrapped in quotation different from a non-wrapped argument:
 			if element (current_line, character_cursor) = latin_1.quotation then
@@ -368,22 +389,30 @@ package body et_kicad_pcb is
 
 			argument_counter := argument_counter + 1;
 			
-			log ("arg" & type_argument_counter'image (argument_counter) & latin_1.space & to_string (arg), log_threshold + 3);
+			log ("arg" & type_argument_counter'image (argument_counter) & latin_1.space & to_string (arg), log_threshold + 4);
 
 			-- validate arguments according to current section
 			case section is
 				when SEC_AT =>
+					object_angle := zero_angle; -- angle is optionally provided. if not provided default to zero.
 					case argument_counter is
 						when 0 => null;
 						when 1 => set_point (axis => X, point => object_position, value => to_distance (to_string (arg)));
 						when 2 => set_point (axis => Y, point => object_position, value => to_distance (to_string (arg)));
-						when others => null; -- CS error
+						when 3 => object_angle := to_angle (to_string (arg));
+						when others => to_many_arguments;
 					end case;
 
-				when SEC_LAYERS => -- applies for terminals exclusively
+				when SEC_DRILL =>
 					case argument_counter is
 						when 0 => null;
-						
+						when 1 => object_drill_size := to_distance (to_string (arg));
+						when others => to_many_arguments;
+					end case;
+					
+				when SEC_LAYERS => -- applies for terminals exclusively
+					case argument_counter is
+						when 0 => null;	
 						when others => 	
 
 							case terminal_technology is
@@ -478,10 +507,6 @@ package body et_kicad_pcb is
 
 			case section is
 
-				when SEC_AT =>
-					null; -- nothing to do. object_position already fully set
-
-				
 				when SEC_PAD =>
 
 					-- Insert a terminal in the list "terminals":
@@ -493,10 +518,12 @@ package body et_kicad_pcb is
 									position	=> terminal_cursor,
 									inserted	=> terminal_inserted,
 									new_item 	=> (
-													technology 	=> THT,
-													shape 		=> CIRCULAR,
-													shape_tht	=> terminal_shape_tht,
-													position	=> type_terminal_position (to_terminal_position (object_position, zero_angle))
+													technology 		=> THT,
+													shape 			=> CIRCULAR,
+													tht_hole		=> DRILLED,
+													drill_size_cir	=> object_drill_size,
+													shape_tht		=> terminal_shape_tht,
+													position		=> type_terminal_position (to_terminal_position (object_position, object_angle))
 												   ));
 							else
 								terminals.insert (
@@ -504,12 +531,14 @@ package body et_kicad_pcb is
 									position	=> terminal_cursor,
 									inserted	=> terminal_inserted,
 									new_item 	=> (
-													technology 	=> THT,
-													shape		=> NON_CIRCULAR,
-													shape_tht	=> terminal_shape_tht,
-													position	=> type_terminal_position (to_terminal_position (object_position, zero_angle)),
-													size_tht_x	=> object_size_x,
-													size_tht_y	=> object_size_y
+													technology 		=> THT,
+													shape			=> NON_CIRCULAR,
+													tht_hole		=> DRILLED,
+													drill_size_dri	=> object_drill_size,
+													shape_tht		=> terminal_shape_tht,
+													position		=> type_terminal_position (to_terminal_position (object_position, object_angle)),
+													size_tht_x		=> object_size_x,
+													size_tht_y		=> object_size_y
 												));
 							end if;
 
@@ -526,8 +555,9 @@ package body et_kicad_pcb is
 									new_item 	=> (
 													technology 		=> SMT,
 													shape			=> CIRCULAR,
+													tht_hole		=> DRILLED, -- has no meaning here
 													shape_smt		=> terminal_shape_smt,
-													position		=> type_terminal_position (to_terminal_position (object_position, zero_angle)),
+													position		=> type_terminal_position (to_terminal_position (object_position, object_angle)),
 													face 			=> object_face,
 													stop_mask		=> terminal_stop_mask,
 													solder_paste	=> terminal_solder_paste
@@ -540,8 +570,9 @@ package body et_kicad_pcb is
 									new_item 	=> (
 													technology 		=> SMT,
 													shape			=> NON_CIRCULAR,
+													tht_hole		=> DRILLED, -- has no meaning here
 													shape_smt		=> terminal_shape_smt,
-													position		=> type_terminal_position (to_terminal_position (object_position, zero_angle)),
+													position		=> type_terminal_position (to_terminal_position (object_position, object_angle)),
 													face 			=> object_face,
 													stop_mask		=> terminal_stop_mask,
 													solder_paste	=> terminal_solder_paste,
@@ -552,6 +583,7 @@ package body et_kicad_pcb is
 
 							init_terminal_layers;
 					end case;
+
 
 					if terminal_inserted then
 						terminal_properties (terminal_cursor, log_threshold + 1);
@@ -564,7 +596,8 @@ package body et_kicad_pcb is
 				when others => null;
 			end case;
 
-
+-- 			init_object;
+			
 			exception
 				when event:
 					others =>
@@ -585,12 +618,13 @@ package body et_kicad_pcb is
 
 		-- get first line
 		current_line := type_current_line.to_bounded_string (to_string (element (line_cursor)));
-		log ("line " & to_string (current_line), log_threshold + 3);
+		log ("line " & to_string (current_line), log_threshold + 4);
 		
 		-- get position of first opening bracket
 		character_cursor := type_current_line.index (current_line, 1 * ob);
 
 		init_terminal_layers;
+-- 		init_object;
 		
 		loop
 			<<label_1>>
