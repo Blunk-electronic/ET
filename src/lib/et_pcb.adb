@@ -109,6 +109,7 @@ package body et_pcb is
 		log_threshold 	: in et_string_processing.type_log_level) is
 		use type_terminals;
 		use et_pcb_coordinates;
+		use et_libraries;
 	begin
 		log ("terminal name " & to_string (key (cursor))
 			& " technology " & to_string (element (cursor).technology)
@@ -158,10 +159,11 @@ package body et_pcb is
 	
 	function terminal_count (
 	-- Returns the number of terminals of the given package in the given library.
-		library_name		: in type_full_library_name.bounded_string;
-		package_name 		: in type_component_package_name.bounded_string)
+		library_name		: in et_libraries.type_full_library_name.bounded_string;
+		package_name 		: in et_libraries.type_component_package_name.bounded_string)
 		return et_libraries.type_terminal_count is
 
+		use et_libraries;
 		use type_libraries;
 		
 		terminals : et_libraries.type_terminal_count; -- to be returned
@@ -208,9 +210,9 @@ package body et_pcb is
 	-- Used when terminal_port_maps are to be used for packages.
 	-- The given package is specified by the library name and package name.
 	-- Returns true if the terminal_port_map fits on the given package.
-		library_name		: in type_full_library_name.bounded_string;
-		package_name 		: in type_component_package_name.bounded_string;
-		terminal_port_map	: in type_terminal_port_map.map) 
+		library_name		: in et_libraries.type_full_library_name.bounded_string;
+		package_name 		: in et_libraries.type_component_package_name.bounded_string;
+		terminal_port_map	: in et_libraries.type_terminal_port_map.map) 
 		return boolean is
 	begin
 		return true; -- CS

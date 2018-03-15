@@ -50,7 +50,7 @@ with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 with et_string_processing;
-with et_libraries;				use et_libraries;
+with et_libraries;				--use et_libraries;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 
 package et_pcb is
@@ -85,87 +85,18 @@ package et_pcb is
 		alignment	: et_libraries.type_text_aligment;
 	end record;
 
-	type type_text_placeholder (meaning : type_text_meaning) is new type_text_basic with null record;
+	type type_package_text_placeholder (meaning : et_libraries.type_text_meaning) is new type_text_basic with null record;
+
+	-- CS type type_pcb_text_placeholder (meaning : type_pcb_text_meaning) is new type_text_basic with null record;
+	-- should be a defined via configuration file:
+	-- project, drawing number, drawn, checked, approved, ...
 	
-	type type_text is new type_text_basic with record
+	type type_general_purpose_text is new type_text_basic with record
 		content		: et_libraries.type_text_content.bounded_string;
 	end record;
-		
+
+	package type_general_purpose_texts is new doubly_linked_lists (element_type => type_general_purpose_text);
 	
-	type type_assembly_technology is (
-		THT,	-- Through Hole Technology
-		SMT		-- Surface Mount Technology
-		);
-
-	function to_string (technology : in type_assembly_technology) return string;
-
-	type type_terminal_shape is (CIRCULAR, NON_CIRCULAR);
-	
-	type type_terminal_shape_tht is (OCTAGON, CIRCULAR, RECTANGLE, LONG, LONG_OFFSET);
-	function to_string (shape : in type_terminal_shape_tht) return string;
-	
-	type type_terminal_shape_smt is (RECTANGLE, CIRCULAR, LONG);
-	function to_string (shape : in type_terminal_shape_smt) return string;	
-
-	type type_terminal_solder_paste is (NONE, APPLIED);
-	function to_string (solder_paste : in type_terminal_solder_paste) return string;
-	
-	type type_terminal_stop_mask is (CLOSED, OPEN);
-	function to_string (stop_mask : in type_terminal_stop_mask) return string;
-
-	type type_terminal_tht_hole is (DRILLED, MILLED);
-	
-	type type_terminal (
-		technology	: type_assembly_technology;
-		shape		: type_terminal_shape;
-		tht_hole	: type_terminal_tht_hole) -- without meaning if technology is SMT
-	is record
-		position	: type_terminal_position;
-
-		case technology is
-			when THT =>
-				width_inner_layers : type_distance; -- CS use subtype for reasonable range
-				
-				shape_tht 	: type_terminal_shape_tht;
-
-				case shape is
-					when CIRCULAR =>
-						drill_size_cir : type_distance; -- CS use subtype for reasonable range
-						
-					WHEN NON_CIRCULAR =>
-						size_tht_x, size_tht_y : type_distance;  -- CS use subtype for reasonable range
-
-						case tht_hole is
-							when DRILLED =>
-								drill_size_dri : type_distance; -- CS use subtype for reasonable range
-
-							when MILLED =>
-								null; -- CS: list of lines, arcs, circles for milling contour
-						end case;
-						
-				end case;
-
-				
-			when SMT =>
-				shape_smt		: type_terminal_shape_smt;
-				face			: type_face;
-				stop_mask 		: type_terminal_stop_mask;
-				solder_paste	: type_terminal_solder_paste;
-				case shape is
-					when CIRCULAR =>
-						null;
-						
-					WHEN NON_CIRCULAR =>
-						size_smt_x, size_smt_y : type_distance;  -- CS use subtype for reasonable range
-				end case;
-
-		end case;
-	end record;
-
-	package type_terminals is new indefinite_ordered_maps (
-		key_type		=> type_terminal_name.bounded_string,
-		element_type	=> type_terminal,
-		"<"				=> type_terminal_name."<");
 
 
 	-- LINE
@@ -200,20 +131,26 @@ package et_pcb is
 	type type_pcb_contour_circle is new type_circle with null record;
 	package type_pcb_contour_circles is new doubly_linked_lists (type_pcb_contour_circle);
 	
-	type type_pcb_contour is record
+	type type_pcb_contour is record -- PCB contour defined for the PCB as a whole
 		lines 	: type_pcb_contour_lines.list;
 		arcs	: type_pcb_contour_arcs.list;
 		circles	: type_pcb_contour_arcs.list;
 	end record;
 
-	type type_pcb_contour_plated is record
+	type type_package_pcb_contour is record -- PCB contour as defined by the package
+		lines 	: type_pcb_contour_lines.list;
+		arcs	: type_pcb_contour_arcs.list;
+		circles	: type_pcb_contour_arcs.list;
+	end record;
+	
+	type type_package_pcb_contour_plated is record -- plated PCB contour as defined by the package
 		lines 	: type_pcb_contour_lines.list;
 		arcs	: type_pcb_contour_arcs.list;
 		circles	: type_pcb_contour_arcs.list;
 	end record;
 
 	
-	-- PACKAGE CONTOUR/OUTLINE
+	-- PACKAGE CONTOUR/OUTLINE -- for 3d only
 	type type_package_contour_line is new type_line with null record;
 	package type_package_contour_lines is new doubly_linked_lists (type_package_contour_line);
 
@@ -259,17 +196,17 @@ package et_pcb is
 		lines 		: type_silk_lines.list;
 		arcs		: type_silk_arcs.list;
 		circles		: type_silk_circles.list;
-		reference	: type_text_placeholder (meaning => et_libraries.REFERENCE);
-		purpose		: type_text_placeholder (meaning => et_libraries.PURPOSE);
-		-- CS list of other general texts
+		reference	: type_package_text_placeholder (meaning => et_libraries.REFERENCE);
+		purpose		: type_package_text_placeholder (meaning => et_libraries.PURPOSE);
+		texts		: type_general_purpose_texts.list;
 	end record;
 
 	type type_pcb_silk_screen is record
-		lines 	: type_silk_lines.list;
-		arcs	: type_silk_arcs.list;
-		circles	: type_silk_circles.list;
-		-- CS placeholder for revision, board name, misc ...
-		-- CS list of other general texts
+		lines 		: type_silk_lines.list;
+		arcs		: type_silk_arcs.list;
+		circles		: type_silk_circles.list;
+		texts		: type_general_purpose_texts.list;
+		-- CS placeholder for revision, board name, misc ... defined via configuration file
 	end record;
 	
 
@@ -295,17 +232,17 @@ package et_pcb is
 	package type_doc_circles is new doubly_linked_lists (type_doc_circle);
 	
 	type type_package_assembly_documentation is record
-		lines 	: type_doc_lines.list;
-		arcs	: type_doc_arcs.list;
-		circles	: type_doc_circles.list;
-		-- CS list of other general texts
+		lines 		: type_doc_lines.list;
+		arcs		: type_doc_arcs.list;
+		circles		: type_doc_circles.list;
+		texts		: type_general_purpose_texts.list;
 	end record;
 
 	type type_pcb_assembly_documentation is record
-		lines 	: type_doc_lines.list;
-		arcs	: type_doc_arcs.list;
-		circles	: type_doc_circles.list;
-		-- CS list of other general texts
+		lines 		: type_doc_lines.list;
+		arcs		: type_doc_arcs.list;
+		circles		: type_doc_circles.list;
+		texts		: type_general_purpose_texts.list;
 	end record;
 
 
@@ -395,47 +332,115 @@ package et_pcb is
 	
 
 
+
+
+	
+
+	type type_assembly_technology is (
+		THT,	-- Through Hole Technology
+		SMT		-- Surface Mount Technology
+		);
+
+	function to_string (technology : in type_assembly_technology) return string;
+
+	type type_terminal_shape is (CIRCULAR, NON_CIRCULAR);
+	
+	type type_terminal_shape_tht is (OCTAGON, CIRCULAR, RECTANGLE, LONG, LONG_OFFSET);
+	function to_string (shape : in type_terminal_shape_tht) return string;
+	
+	type type_terminal_shape_smt is (RECTANGLE, CIRCULAR, LONG);
+	function to_string (shape : in type_terminal_shape_smt) return string;	
+
+	type type_terminal_solder_paste is (NONE, APPLIED);
+	function to_string (solder_paste : in type_terminal_solder_paste) return string;
+	
+	type type_terminal_stop_mask is (CLOSED, OPEN);
+	function to_string (stop_mask : in type_terminal_stop_mask) return string;
+
+	type type_terminal_tht_hole is (DRILLED, MILLED);
+	
+	type type_terminal (
+		technology	: type_assembly_technology;
+		shape		: type_terminal_shape;
+		tht_hole	: type_terminal_tht_hole) -- without meaning if technology is SMT
+	is record
+		position	: type_terminal_position;
+
+		case technology is
+			when THT =>
+				width_inner_layers : type_distance; -- CS use subtype for reasonable range
+				
+				shape_tht 	: type_terminal_shape_tht;
+
+				case shape is
+					when CIRCULAR =>
+						drill_size_cir : type_distance; -- CS use subtype for reasonable range
+						
+					WHEN NON_CIRCULAR =>
+						size_tht_x, size_tht_y : type_distance;  -- CS use subtype for reasonable range
+
+						case tht_hole is
+							when DRILLED =>
+								drill_size_dri : type_distance; -- CS use subtype for reasonable range
+
+							when MILLED =>
+								millings : type_package_pcb_contour_plated;
+						end case;
+						
+				end case;
+
+				
+			when SMT =>
+				shape_smt		: type_terminal_shape_smt;
+				face			: type_face;
+				stop_mask 		: type_terminal_stop_mask;
+				solder_paste	: type_terminal_solder_paste;
+				case shape is
+					when CIRCULAR =>
+						null;
+						
+					WHEN NON_CIRCULAR =>
+						size_smt_x, size_smt_y : type_distance;  -- CS use subtype for reasonable range
+				end case;
+
+		end case;
+	end record;
+
+	package type_terminals is new indefinite_ordered_maps (
+		key_type		=> et_libraries.type_terminal_name.bounded_string,
+		element_type	=> type_terminal,
+		"<"				=> et_libraries.type_terminal_name."<");
+
+	
+
+
+
 	
 	type type_package is record
-		--value		: type_text_placeholder (meaning => et_libraries.VALUE) 
+		--value		: type_component_text_placeholder (meaning => et_libraries.VALUE) 
 		contours	: type_package_contour;
 		-- 		silk_screen	: type_package_silk_screen; -- incl. reference and purpose
 		--assy_doc	: type_package_assembly_documentation;
 		-- keepout : type_package_keepout;
 		-- route_restrict : type_package_route_restrict;
 		-- via_restrict : type_package_via_restrict;
+		-- holes
+		--pcb_contours	: type_package_pcb_contour;
 		terminals	: type_terminals.map;
 	end record;
 
-	
-	--type type_component_package (technology : type_package_technology) is record
-	--type type_component_package (category : type_component_category) is record
--- 	type type_component_package is record
--- 		name 			: type_component_package_name.bounded_string; -- S_SOT23
--- 		library			: type_full_library_name.bounded_string; -- projects/lbr/smd_packages.pac
--- 		terminal_count	: type_terminal_count; -- 14
--- 		case technology is
--- 			when THT => 
--- 				pad_tht_count : positive; -- 14 for a NDIP14 package
--- 
--- 			when SMT => 
--- 				pad_smt_count : positive; -- 3 for a S_SOT23 package
--- 
--- 			when THT_SMT => 
--- 				pad_tht_count : positive; -- 8 for heat dissipation
--- 				pad_smt_count : positive; -- 32 for a TSSOP32 package
--- 		end case;
--- 	end record;
 
+
+	
 	package type_packages is new indefinite_ordered_maps ( -- CS try ordered_maps instead
-		key_type 		=> type_component_package_name.bounded_string, -- S_SO14
+		key_type 		=> et_libraries.type_component_package_name.bounded_string, -- S_SO14
 		element_type 	=> type_package);
 	use type_packages;
 
 	package type_libraries is new ordered_maps (
-		key_type		=> type_full_library_name.bounded_string, -- projects/lbr/smd_packages.pac
+		key_type		=> et_libraries.type_full_library_name.bounded_string, -- projects/lbr/smd_packages.pac
 		element_type	=> type_packages.map,
-		"<"				=> type_full_library_name."<");
+		"<"				=> et_libraries.type_full_library_name."<");
 
 	-- All package models are collected here:
 	package_libraries : type_libraries.map;
@@ -449,17 +454,17 @@ package et_pcb is
 	
 
 	function terminal_count (
-		library_name		: in type_full_library_name.bounded_string;
-		package_name 		: in type_component_package_name.bounded_string)
+		library_name		: in et_libraries.type_full_library_name.bounded_string;
+		package_name 		: in et_libraries.type_component_package_name.bounded_string)
 		return et_libraries.type_terminal_count;
 
 	function terminal_port_map_fits (
 	-- Used when terminal_port_maps are to be used for packages.
 	-- The given package is specified by the library name and package name.
 	-- Returns true if the terminal_port_map fits on the given package.
-		library_name		: in type_full_library_name.bounded_string;
-		package_name 		: in type_component_package_name.bounded_string;
-		terminal_port_map	: in type_terminal_port_map.map) 
+		library_name		: in et_libraries.type_full_library_name.bounded_string;
+		package_name 		: in et_libraries.type_component_package_name.bounded_string;
+		terminal_port_map	: in et_libraries.type_terminal_port_map.map) 
 		return boolean;
 
 		
