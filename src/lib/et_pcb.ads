@@ -71,7 +71,26 @@ package et_pcb is
 -- 	function to_directory (directory_name : in string) return type_directory_name.bounded_string;
 -- 	-- Converts a string to a type_directory_name.
 
+	signal_layer_top : constant positive := 1;
+	signal_layer_bot : constant positive := 100;
+	type type_signal_layer is range signal_layer_top .. signal_layer_bot;
+
+	package type_signal_layers is new ordered_sets (type_signal_layer);
+
+	type type_text_basic is abstract tagged record
+		position	: type_point_3d;
+		size		: type_distance; -- CS use subtype for reasonable range
+		width		: type_distance; -- CS use subtype for reasonable range
+		angle		: type_angle;
+		alignment	: et_libraries.type_text_aligment;
+	end record;
+
+	type type_text_placeholder (meaning : type_text_meaning) is new type_text_basic with null record;
 	
+	type type_text is new type_text_basic with record
+		content		: et_libraries.type_text_content.bounded_string;
+	end record;
+		
 	
 	type type_assembly_technology is (
 		THT,	-- Through Hole Technology
@@ -105,7 +124,6 @@ package et_pcb is
 
 		case technology is
 			when THT =>
-				-- restring_outer_layer : type_distance; -- CS use subtype for reasonable range
 				width_inner_layers : type_distance; -- CS use subtype for reasonable range
 				
 				shape_tht 	: type_terminal_shape_tht;
@@ -122,7 +140,7 @@ package et_pcb is
 								drill_size_dri : type_distance; -- CS use subtype for reasonable range
 
 							when MILLED =>
-								null; -- cs
+								null; -- CS: list of lines, arcs, circles for milling contour
 						end case;
 						
 				end case;
@@ -150,7 +168,242 @@ package et_pcb is
 		"<"				=> type_terminal_name."<");
 
 
+	-- LINE
+	type type_line is abstract tagged record
+		start_point 	: type_point_3d;
+		end_point   	: type_point_3d;
+	end record;
+
+	-- ARC
+	type type_arc is abstract tagged record
+		center			: type_point_3d;
+		radius  		: type_distance;
+		start_point		: type_point_3d;
+		end_point		: type_point_3d;
+		start_angle		: type_angle;
+	end record;
+
+	-- CIRCLE
+	type type_circle is abstract tagged record
+		center			: type_point_3d;
+		radius  		: type_distance;
+	end record;
+
+
+	-- PCB CONTOUR/OUTLINE
+	type type_pcb_contour_line is new type_line with null record;
+	package type_pcb_contour_lines is new doubly_linked_lists (type_pcb_contour_line);
+
+	type type_pcb_contour_arc is new type_arc with null record;
+	package type_pcb_contour_arcs is new doubly_linked_lists (type_pcb_contour_arc);
+
+	type type_pcb_contour_circle is new type_circle with null record;
+	package type_pcb_contour_circles is new doubly_linked_lists (type_pcb_contour_circle);
+	
+	type type_pcb_contour is record
+		lines 	: type_pcb_contour_lines.list;
+		arcs	: type_pcb_contour_arcs.list;
+		circles	: type_pcb_contour_arcs.list;
+	end record;
+
+	type type_pcb_contour_plated is record
+		lines 	: type_pcb_contour_lines.list;
+		arcs	: type_pcb_contour_arcs.list;
+		circles	: type_pcb_contour_arcs.list;
+	end record;
+
+	
+	-- PACKAGE CONTOUR/OUTLINE
+	type type_package_contour_line is new type_line with null record;
+	package type_package_contour_lines is new doubly_linked_lists (type_package_contour_line);
+
+	type type_package_contour_arc is new type_arc with null record;
+	package type_package_contour_arcs is new doubly_linked_lists (type_package_contour_arc);
+
+	type type_package_contour_circle is new type_circle with null record;
+	package type_package_contour_circles is new doubly_linked_lists (type_package_contour_circle);
+	
+	type type_package_contour is record
+		lines 	: type_package_contour_lines.list;
+		arcs	: type_package_contour_arcs.list;
+		circles	: type_package_contour_circles.list;
+	end record;
+
+	function no_contour return type_package_contour;
+	-- Returns an empty package contour.
+
+
+
+	-- SILK SCREEN
+	type type_silk_line is new type_line with record
+		width	: type_distance; -- CS use subtype for reasonable range
+	end record;
+
+	package type_silk_lines is new doubly_linked_lists (type_silk_line);
+
+
+	type type_silk_arc is new type_arc with record
+		width	: type_distance; -- CS use subtype for reasonable range
+	end record;
+
+	package type_silk_arcs is new doubly_linked_lists (type_silk_arc);
+
+	
+	type type_silk_circle is new type_circle with record
+		width	: type_distance; -- CS use subtype for reasonable range
+	end record;
+
+	package type_silk_circles is new doubly_linked_lists (type_silk_circle);
+	
+	type type_package_silk_screen is record
+		lines 		: type_silk_lines.list;
+		arcs		: type_silk_arcs.list;
+		circles		: type_silk_circles.list;
+		reference	: type_text_placeholder (meaning => et_libraries.REFERENCE);
+		purpose		: type_text_placeholder (meaning => et_libraries.PURPOSE);
+		-- CS list of other general texts
+	end record;
+
+	type type_pcb_silk_screen is record
+		lines 	: type_silk_lines.list;
+		arcs	: type_silk_arcs.list;
+		circles	: type_silk_circles.list;
+		-- CS placeholder for revision, board name, misc ...
+		-- CS list of other general texts
+	end record;
+	
+
+	-- ASSEMBLY DOCUMENTATION
+	type type_doc_line is new type_line with record
+		width	: type_distance; -- CS use subtype for reasonable range
+	end record;
+
+	package type_doc_lines is new doubly_linked_lists (type_doc_line);
+
+
+	type type_doc_arc is new type_arc with record
+		width	: type_distance; -- CS use subtype for reasonable range
+	end record;
+
+	package type_doc_arcs is new doubly_linked_lists (type_doc_arc);
+
+	
+	type type_doc_circle is new type_circle with record
+		width	: type_distance; -- CS use subtype for reasonable range
+	end record;
+
+	package type_doc_circles is new doubly_linked_lists (type_doc_circle);
+	
+	type type_package_assembly_documentation is record
+		lines 	: type_doc_lines.list;
+		arcs	: type_doc_arcs.list;
+		circles	: type_doc_circles.list;
+		-- CS list of other general texts
+	end record;
+
+	type type_pcb_assembly_documentation is record
+		lines 	: type_doc_lines.list;
+		arcs	: type_doc_arcs.list;
+		circles	: type_doc_circles.list;
+		-- CS list of other general texts
+	end record;
+
+
+	-- KEEPOUT
+	type type_keepout_line is new type_line with null record;
+	package type_keepout_lines is new doubly_linked_lists (type_keepout_line);
+
+	type type_keepout_arc is new type_arc with null record;
+	package type_keepout_arcs is new doubly_linked_lists (type_keepout_arc);
+	
+	type type_keepout_circle is new type_circle with null record;
+	package type_keepout_circles is new doubly_linked_lists (type_keepout_circle);
+	
+	type type_package_keepout is record
+		lines 	: type_keepout_lines.list;
+		arcs	: type_keepout_arcs.list;
+		circles	: type_keepout_lines.list;
+		-- CS polygons
+	end record;
+	
+
+	-- ROUTE RESTRICT
+	type type_route_restrict_line is new type_line with record
+		layers : type_signal_layers.set;
+	end record;
+	
+	package type_route_restrict_lines is new doubly_linked_lists (type_route_restrict_line);
+
+	type type_route_restrict_arc is new type_arc with record
+		layers : type_signal_layers.set;
+	end record;
+	
+	package type_route_restrict_arcs is new doubly_linked_lists (type_route_restrict_arc);
+	
+	type type_route_restrict_circle is new type_circle with record
+		layers : type_signal_layers.set;
+	end record;
+	package type_route_restrict_circles is new doubly_linked_lists (type_route_restrict_circle);
+	
+	type type_package_route_restrict is record
+		lines 	: type_route_restrict_lines.list;
+		arcs	: type_route_restrict_arcs.list;
+		circles	: type_route_restrict_lines.list;
+		-- CS polygons
+	end record;
+	
+	type type_pcb_route_restrict is record
+		lines 	: type_route_restrict_lines.list;
+		arcs	: type_route_restrict_arcs.list;
+		circles	: type_route_restrict_lines.list;
+		-- CS polygons
+	end record;
+
+
+	-- VIA RESTRICT
+	type type_via_restrict_line is new type_line with record
+		layers : type_signal_layers.set;
+	end record;
+	
+	package type_via_restrict_lines is new doubly_linked_lists (type_via_restrict_line);
+
+	type type_via_restrict_arc is new type_arc with record
+		layers : type_signal_layers.set;
+	end record;
+	
+	package type_via_restrict_arcs is new doubly_linked_lists (type_via_restrict_arc);
+	
+	type type_via_restrict_circle is new type_circle with record
+		layers : type_signal_layers.set;
+	end record;
+	
+	package type_via_restrict_circles is new doubly_linked_lists (type_via_restrict_circle);
+	
+	type type_package_via_restrict is record
+		lines 	: type_via_restrict_lines.list;
+		arcs	: type_via_restrict_arcs.list;
+		circles	: type_via_restrict_lines.list;
+		-- CS polygons
+	end record;
+	
+	type type_pcb_via_restrict is record
+		lines 	: type_via_restrict_lines.list;
+		arcs	: type_via_restrict_arcs.list;
+		circles	: type_via_restrict_lines.list;
+		-- CS polygons
+	end record;
+	
+
+
+	
 	type type_package is record
+		--value		: type_text_placeholder (meaning => et_libraries.VALUE) 
+		contours	: type_package_contour;
+		-- 		silk_screen	: type_package_silk_screen; -- incl. reference and purpose
+		--assy_doc	: type_package_assembly_documentation;
+		-- keepout : type_package_keepout;
+		-- route_restrict : type_package_route_restrict;
+		-- via_restrict : type_package_via_restrict;
 		terminals	: type_terminals.map;
 	end record;
 

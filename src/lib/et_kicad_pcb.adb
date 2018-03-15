@@ -688,7 +688,8 @@ package body et_kicad_pcb is
 		log_indentation_down;
 
 		return (
-				   terminals => terminals
+			contours	=> no_contour, -- CS to be filled from 3d model
+			terminals	=> terminals
 			   );
 	end to_package_model;
 	

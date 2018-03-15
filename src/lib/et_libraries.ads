@@ -148,7 +148,7 @@ package et_libraries is
 	type type_text_visible is (yes, no);
     type type_text_alignment_horizontal is (left, center , right);
 	type type_text_alignment_vertical is (top, center , bottom);    
-	type type_text_aligment is record
+	type type_text_aligment is record -- CS typing error rename to type_text_alignment
 		horizontal	: type_text_alignment_horizontal := center;
 		vertical	: type_text_alignment_vertical := center;
 	end record;

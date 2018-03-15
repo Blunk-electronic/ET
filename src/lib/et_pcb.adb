@@ -93,6 +93,15 @@ package body et_pcb is
 	begin
 		return type_terminal_stop_mask'image (stop_mask);
 	end to_string;
+
+	function no_contour return type_package_contour is
+	-- Returns an empty package contour.		
+	begin
+		return (
+			lines 	=> type_package_contour_lines.empty_list,
+			arcs 	=> type_package_contour_arcs.empty_list,
+			circles	=> type_package_contour_circles.empty_list);
+	end no_contour;
 	
 	procedure terminal_properties (
 	-- Logs the properties of the terminal indicated by cursor.
