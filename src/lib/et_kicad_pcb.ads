@@ -66,6 +66,15 @@ package et_kicad_pcb is
 	layer_bot_stop_mask			: constant string (1..6)	:= "B.Mask";
 	layer_all_stop_mask			: constant string (1..6)	:= "*.Mask";
 
+	layer_top_silk_screen		: constant string (1..7)	:= "F.SilkS";
+	layer_bot_silk_screen		: constant string (1..7)	:= "B.SilkS";
+
+	layer_top_assy_doc			: constant string (1..5)	:= "F.Fab";
+	layer_bot_assy_doc			: constant string (1..5)	:= "B.Fab";
+
+	layer_top_keepout			: constant string (1..7)	:= "F.CrtYd";
+	layer_bot_keepout			: constant string (1..7)	:= "B.CrtYd";
+	
 	
 	function to_package_model (
 	-- Builds a package model from the given lines.

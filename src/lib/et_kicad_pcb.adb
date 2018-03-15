@@ -173,6 +173,8 @@ package body et_kicad_pcb is
 
 		type type_argument_counter is range 0..3;
 		argument_counter : type_argument_counter;
+
+		line_start, line_end : et_pcb_coordinates.type_point_3d;
 		
 		terminal_name : type_terminal_name.bounded_string;
 		terminal_technology : type_assembly_technology;
@@ -198,6 +200,18 @@ package body et_kicad_pcb is
 		object_position : et_pcb_coordinates.type_point_3d;
 		object_angle : et_pcb_coordinates.type_angle;
 		object_face : et_pcb_coordinates.type_face;
+
+		type type_layer is (
+			TOP_SILK, BOT_SILK,
+			TOP_ASSY, BOT_ASSY,
+			TOP_KEEPOUT, BOT_KEEPOUT
+			);
+
+		object_layer : type_layer;
+
+		top_silk_screen_objects, bot_silk_screen_objects 	: type_package_silk_screen;
+		top_assy_doc_objects, bot_assy_doc_objects			: type_package_assembly_documentation;
+		top_keepout_objects, bot_keepout_objects			: type_package_keepout;
 
 -- 		procedure init_object is 
 -- 			use et_pcb_coordinates;
@@ -345,7 +359,8 @@ package body et_kicad_pcb is
 
 			procedure too_many_arguments is begin
 				log_indentation_reset;
-				log (message_error & "too many arguments !", console => true);
+				log (message_error & "too many arguments in " & type_section'image (section) & " !", console => true);
+				log ("excessive argument reads '" & to_string (arg) & "'", console => true);
 				raise constraint_error;
 			end too_many_arguments;
 			
@@ -395,13 +410,51 @@ package body et_kicad_pcb is
 
 			-- validate arguments according to current section
 			case section is
+				when SEC_START | SEC_END =>
+					case argument_counter is
+						when 0 => null;
+						when 1 => 
+							set_point (axis => X, point => object_position, value => to_distance (to_string (arg)));
+						when 2 => 
+							set_point (axis => Y, point => object_position, value => to_distance (to_string (arg)));
+							set_point (axis => Z, point => object_position, value => to_distance (to_string (arg)));
+						when others => too_many_arguments;
+					end case;
+
+				when SEC_LAYER =>
+					case argument_counter is
+						when 0 => null;
+						when 1 => 
+							if to_string (arg) = layer_top_silk_screen then
+								object_layer := TOP_SILK;
+							elsif to_string (arg) = layer_bot_silk_screen then
+								object_layer := BOT_SILK;
+							elsif to_string (arg) = layer_top_assy_doc then
+								object_layer := TOP_ASSY;
+							elsif to_string (arg) = layer_bot_assy_doc then
+								object_layer := BOT_ASSY;
+							elsif to_string (arg) = layer_top_keepout then
+								object_layer := TOP_KEEPOUT;
+							elsif to_string (arg) = layer_bot_keepout then
+								object_layer := BOT_KEEPOUT;
+							else
+								null; -- CS 
+							end if;
+
+						when others => too_many_arguments;
+					end case;
+					
 				when SEC_AT =>
 					object_angle := zero_angle; -- angle is optionally provided. if not provided default to zero.
 					case argument_counter is
 						when 0 => null;
-						when 1 => set_point (axis => X, point => object_position, value => to_distance (to_string (arg)));
-						when 2 => set_point (axis => Y, point => object_position, value => to_distance (to_string (arg)));
-						when 3 => object_angle := to_angle (to_string (arg));
+						when 1 => 
+							set_point (axis => X, point => object_position, value => to_distance (to_string (arg)));
+						when 2 => 
+							set_point (axis => Y, point => object_position, value => to_distance (to_string (arg)));
+							set_point (axis => Z, point => object_position, value => to_distance (to_string (arg)));
+						when 3 => 
+							object_angle := to_angle (to_string (arg));
 						when others => too_many_arguments;
 					end case;
 
@@ -509,6 +562,30 @@ package body et_kicad_pcb is
 
 			case section is
 
+				when SEC_START =>
+					line_start := object_position;
+
+				when SEC_END =>
+					line_end := object_position;
+					
+				when SEC_FP_LINE =>
+					case object_layer is
+						when TOP_SILK =>
+							top_silk_screen_objects.lines.append ((line_start, line_end, 0.0));
+						when BOT_SILK =>
+							bot_silk_screen_objects.lines.append ((line_start, line_end, 0.0));
+						when TOP_ASSY =>
+							top_assy_doc_objects.lines.append ((line_start, line_end, 0.0));
+						when BOT_ASSY =>
+							bot_assy_doc_objects.lines.append ((line_start, line_end, 0.0));
+						when TOP_KEEPOUT =>
+							top_keepout_objects.lines.append ((line_start, line_end));
+						when BOT_KEEPOUT =>
+							bot_keepout_objects.lines.append ((line_start, line_end));
+						when others =>
+							null; -- CS
+					end case;
+				
 				when SEC_PAD =>
 
 					-- Insert a terminal in the list "terminals":

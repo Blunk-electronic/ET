@@ -120,15 +120,22 @@ package et_pcb is
 		radius  		: type_distance;
 	end record;
 
+	type type_locked is (NO, YES);
 
 	-- PCB CONTOUR/OUTLINE
-	type type_pcb_contour_line is new type_line with null record;
+	type type_pcb_contour_line is new type_line with record
+		locked : type_locked := type_locked'first;
+	end record;
 	package type_pcb_contour_lines is new doubly_linked_lists (type_pcb_contour_line);
 
-	type type_pcb_contour_arc is new type_arc with null record;
+	type type_pcb_contour_arc is new type_arc with record
+		locked : type_locked := type_locked'first;
+	end record;
 	package type_pcb_contour_arcs is new doubly_linked_lists (type_pcb_contour_arc);
 
-	type type_pcb_contour_circle is new type_circle with null record;
+	type type_pcb_contour_circle is new type_circle with record
+		locked : type_locked := type_locked'first;
+	end record;
 	package type_pcb_contour_circles is new doubly_linked_lists (type_pcb_contour_circle);
 	
 	type type_pcb_contour is record -- PCB contour defined for the PCB as a whole
