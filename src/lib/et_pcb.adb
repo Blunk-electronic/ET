@@ -102,6 +102,70 @@ package body et_pcb is
 			arcs 	=> type_package_contour_arcs.empty_list,
 			circles	=> type_package_contour_circles.empty_list);
 	end no_contour;
+
+	function to_string (line : in type_line) return string is
+	-- Returns the start and end point of the given line as string.
+	begin
+		return "start" & to_string (line.start_point) 
+			& " end" & to_string (line.end_point);
+	end to_string;
+	
+	procedure line_silk_screen_properties (
+	-- Logs the properties of the given line of silk screen
+		face			: in type_face;
+		cursor			: in type_silk_lines.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_silk_lines;
+		line : type_silk_line;
+	begin
+		line := element (cursor);
+		log ("silk screen line face " & to_string (face) & latin_1.space 
+			 & to_string (type_line (line))
+			 & " width " & to_string (line.width), log_threshold);
+	end line_silk_screen_properties;
+
+	procedure line_assy_doc_properties (
+	-- Logs the properties of the given line of assembly documentation
+		face			: in type_face;
+		cursor			: in type_doc_lines.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_doc_lines;
+		line : type_doc_line;
+	begin
+		line := element (cursor);
+		log ("assembly doc line face " & to_string (face) & latin_1.space
+			 & to_string (type_line (line))
+			 & " width " & to_string (line.width), log_threshold);
+	end line_assy_doc_properties;
+
+	procedure line_keepout_properties (
+	-- Logs the properties of the given line of keepout
+		face			: in type_face;
+		cursor			: in type_keepout_lines.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_keepout_lines;
+		line : type_keepout_line;
+	begin
+		line := element (cursor);
+		log ("keepout line face " & to_string (face) & latin_1.space
+			 & to_string (type_line (line)),
+			 log_threshold);
+	end line_keepout_properties;
+
+	procedure line_route_restrict_properties (
+	-- Logs the properties of the given line of route restrict
+		face			: in type_face;
+		cursor			: in type_route_restrict_lines.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_route_restrict_lines;
+		line : type_route_restrict_line;
+	begin
+		line := element (cursor);
+		log ("route restrict line face " & to_string (face) & latin_1.space
+			 & to_string (type_line (line)),
+			 log_threshold);
+	end line_route_restrict_properties;
+	
 	
 	procedure terminal_properties (
 	-- Logs the properties of the terminal indicated by cursor.
@@ -110,47 +174,48 @@ package body et_pcb is
 		use type_terminals;
 		use et_pcb_coordinates;
 		use et_libraries;
+		log_threshold_1 : type_log_level := log_threshold + 1;
 	begin
 		log ("terminal name " & to_string (key (cursor))
 			& " technology " & to_string (element (cursor).technology)
 			& to_string (type_point_3d (element (cursor).position))
 			& to_string (angle => get_angle (element (cursor).position), preamble => true),
-			log_threshold + 1);
+			log_threshold);
 
 		log_indentation_up;
 		case element (cursor).technology is
 			when THT => 
-				log ("shape " & to_string (element (cursor).shape_tht), log_threshold + 2);
-				log ("copper with inner layers " & to_string (element (cursor).width_inner_layers), log_threshold + 2);
+				log ("shape " & to_string (element (cursor).shape_tht), log_threshold_1);
+				log ("copper with inner layers " & to_string (element (cursor).width_inner_layers), log_threshold_1);
 				case element (cursor).shape is
 					when NON_CIRCULAR =>
-						log ("size x " & to_string (element (cursor).size_tht_x), log_threshold + 2);
-						log ("size y " & to_string (element (cursor).size_tht_y), log_threshold + 2);
+						log ("size x " & to_string (element (cursor).size_tht_x), log_threshold_1);
+						log ("size y " & to_string (element (cursor).size_tht_y), log_threshold_1);
 						case element (cursor).tht_hole is
 							when DRILLED =>
-								log ("drill " & to_string (element (cursor).drill_size_dri), log_threshold + 2); 
+								log ("drill " & to_string (element (cursor).drill_size_dri), log_threshold_1); 
 							when MILLED =>
-								log ("plated milling contour ", log_threshold + 2);
+								log ("plated milling contour ", log_threshold_1);
 						end case;
 						
 					when CIRCULAR =>
-						log ("drill " & to_string (element (cursor).drill_size_cir), log_threshold + 2); 
+						log ("drill " & to_string (element (cursor).drill_size_cir), log_threshold_1); 
 				end case;
 				
 			when SMT => 
-				log ("shape " & to_string (element (cursor).shape_smt), log_threshold + 2);
+				log ("shape " & to_string (element (cursor).shape_smt), log_threshold_1);
 
 				case element (cursor).shape is
 					when NON_CIRCULAR =>
-						log ("size x " & to_string (element (cursor).size_smt_x), log_threshold + 2);
-						log ("size y " & to_string (element (cursor).size_smt_y), log_threshold + 2);
+						log ("size x " & to_string (element (cursor).size_smt_x), log_threshold_1);
+						log ("size y " & to_string (element (cursor).size_smt_y), log_threshold_1);
 					when CIRCULAR =>
 						null; -- CS 
 				end case;
 				
-				log ("face " & to_string (element (cursor).face), log_threshold + 2);
-				log ("stop mask " & to_string (element (cursor).stop_mask), log_threshold + 2);
-				log ("solder paste " & to_string (element (cursor).solder_paste), log_threshold + 2);
+				log ("face " & to_string (element (cursor).face), log_threshold_1);
+				log ("stop mask " & to_string (element (cursor).stop_mask), log_threshold_1);
+				log ("solder paste " & to_string (element (cursor).solder_paste), log_threshold_1);
 		end case;
 
 		log_indentation_down;

@@ -208,7 +208,6 @@ package body et_kicad_pcb is
 		terminal_stop_mask : type_terminal_stop_mask;
 
 		terminals : type_terminals.map;
-		terminal_cursor : type_terminals.cursor;
 
 		-- CS use subtypes for reasonable sizes below:
 		object_size_x, object_size_y : et_pcb_coordinates.type_distance;
@@ -436,7 +435,7 @@ package body et_kicad_pcb is
 							set_point (axis => X, point => object_position, value => to_distance (to_string (arg)));
 						when 2 => 
 							set_point (axis => Y, point => object_position, value => to_distance (to_string (arg)));
-							set_point (axis => Z, point => object_position, value => to_distance (to_string (arg)));
+							set_point (axis => Z, point => object_position, value => zero_distance);
 						when others => too_many_arguments;
 					end case;
 
@@ -478,7 +477,7 @@ package body et_kicad_pcb is
 							set_point (axis => X, point => object_position, value => to_distance (to_string (arg)));
 						when 2 => 
 							set_point (axis => Y, point => object_position, value => to_distance (to_string (arg)));
-							set_point (axis => Z, point => object_position, value => to_distance (to_string (arg)));
+							set_point (axis => Z, point => object_position, value => zero_distance);
 						when 3 => 
 							object_angle := to_angle (to_string (arg));
 						when others => too_many_arguments;
@@ -583,6 +582,8 @@ package body et_kicad_pcb is
 		-- set earlier (when processing the arguments. see procedure read_arg).
 		-- Restores the previous section name and argument counter.
 			use et_pcb_coordinates;
+			terminal_cursor			: type_terminals.cursor;
+			silk_screen_line_cursor	: type_silk_lines.cursor;
 		begin
 			log (process_section (section.name), log_threshold + 4);
 			case section.name is
@@ -594,21 +595,26 @@ package body et_kicad_pcb is
 					line_end := object_position;
 					
 				when SEC_FP_LINE =>
+					-- Append the line to the container correspoinding to the layer. Then log the line properties.
 					case object_layer is
 						when TOP_SILK =>
 							top_silk_screen_objects.lines.append ((line_start, line_end, line_width));
+							line_silk_screen_properties (TOP, top_silk_screen_objects.lines.last, log_threshold + 1);
 						when BOT_SILK =>
 							bot_silk_screen_objects.lines.append ((line_start, line_end, line_width));
+							line_silk_screen_properties (BOTTOM, bot_silk_screen_objects.lines.last, log_threshold + 1);
 						when TOP_ASSY =>
 							top_assy_doc_objects.lines.append ((line_start, line_end, line_width));
+							line_assy_doc_properties (TOP, top_assy_doc_objects.lines.last, log_threshold + 1);
 						when BOT_ASSY =>
 							bot_assy_doc_objects.lines.append ((line_start, line_end, line_width));
+							line_assy_doc_properties (BOTTOM, bot_assy_doc_objects.lines.last, log_threshold + 1);
 						when TOP_KEEPOUT =>
 							top_keepout_objects.lines.append ((line_start, line_end));
+							line_keepout_properties (TOP, top_keepout_objects.lines.last, log_threshold + 1);
 						when BOT_KEEPOUT =>
 							bot_keepout_objects.lines.append ((line_start, line_end));
-						when others =>
-							null; -- CS
+							line_keepout_properties (BOTTOM, top_keepout_objects.lines.last, log_threshold + 1);
 					end case;
 				
 				when SEC_PAD =>
@@ -786,6 +792,8 @@ package body et_kicad_pcb is
 			raise constraint_error;
 		end if;
 
+		-- CS: check if all objects are in top layer. warning if otherwise
+		
 		log_indentation_down;
 
 		return (

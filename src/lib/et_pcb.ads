@@ -453,6 +453,32 @@ package et_pcb is
 	package_libraries : type_libraries.map;
 
 
+	procedure line_silk_screen_properties (
+	-- Logs the properties of the given line of silk screen
+		face			: in type_face;
+		cursor			: in type_silk_lines.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+
+	procedure line_assy_doc_properties (
+	-- Logs the properties of the given line of assembly documentation
+		face			: in type_face;
+		cursor			: in type_doc_lines.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+
+	procedure line_keepout_properties (
+	-- Logs the properties of the given line of keepout
+		face			: in type_face;
+		cursor			: in type_keepout_lines.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+
+	procedure line_route_restrict_properties (
+	-- Logs the properties of the given line of route restrict
+		face			: in type_face;
+		cursor			: in type_route_restrict_lines.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+
+
+	
 	procedure terminal_properties (
 	-- Logs the properties of the terminal indicated by cursor.
 		cursor 			: in type_terminals.cursor;
