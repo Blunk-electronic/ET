@@ -181,14 +181,14 @@ package body et_kicad_pcb is
 			return ("processing section " & to_string (section));
 		end process_section;
 	
-		section : type_section := INIT;
-
 		entry_length_max : constant positive := 200;
 		package type_argument is new generic_bounded_length (entry_length_max);
 
 		type type_argument_counter is range 0..3;
-		argument_counter : type_argument_counter;
-
+		function to_string (arg_count : in type_argument_counter) return string is begin
+			return trim (type_argument_counter'image (arg_count), left);
+		end to_string;			
+		
 		line_start, line_end : et_pcb_coordinates.type_point_3d;
 		
 		terminal_name : type_terminal_name.bounded_string;
@@ -287,11 +287,11 @@ package body et_kicad_pcb is
 		end set_stop_and_mask;
 		
 		type type_section_and_argument_counter is record
-			name 		: type_section;
-			arg_counter	: type_argument_counter;
+			name 		: type_section := INIT;
+			arg_counter	: type_argument_counter := type_argument_counter'first;
 		end record;
 
-		section_and_argument_counter_tmp : type_section_and_argument_counter;
+		section : type_section_and_argument_counter;
 		
 		package sections_stack is new et_general.stack_lifo (max => 20, item => type_section_and_argument_counter);
 
@@ -333,8 +333,8 @@ package body et_kicad_pcb is
 			end_of_kw : integer;  -- may become negative if no terminating character present
 		begin
 			-- save previous section and argument counter on stack
-			sections_stack.push ((section, argument_counter));
-			argument_counter := 0;
+			sections_stack.push (section);
+			section.arg_counter := 0;
 			
 			-- get position of last character
 			end_of_kw := index (source => current_line, from => character_cursor, set => term_char_set) - 1;
@@ -346,12 +346,12 @@ package body et_kicad_pcb is
 
 			-- Compose section name from cursor..end_of_kw.
 			-- This is an implicit general test whether the keyword is a valid keyword.
-			section := type_section'value (sec_prefix & slice (current_line, character_cursor, end_of_kw));
+			section.name := type_section'value (sec_prefix & slice (current_line, character_cursor, end_of_kw));
 
 			-- update cursor
 			character_cursor := end_of_kw;
 
-			log (enter_section (section), log_threshold + 3);
+			log (enter_section (section.name), log_threshold + 3);
 		end read_section;
 		
 
@@ -377,7 +377,7 @@ package body et_kicad_pcb is
 
 			procedure too_many_arguments is begin
 				log_indentation_reset;
-				log (message_error & "too many arguments in " & to_string (section) & " !", console => true);
+				log (message_error & "too many arguments in " & to_string (section.name) & " !", console => true);
 				log ("excessive argument reads '" & to_string (arg) & "'", console => true);
 				raise constraint_error;
 			end too_many_arguments;
@@ -422,14 +422,14 @@ package body et_kicad_pcb is
 				character_cursor := end_of_arg;
 			end if;
 
-			argument_counter := argument_counter + 1;
+			section.arg_counter := section.arg_counter + 1;
 			
-			log ("arg" & type_argument_counter'image (argument_counter) & latin_1.space & to_string (arg), log_threshold + 4);
+			log ("arg" & to_string (section.arg_counter) & latin_1.space & to_string (arg), log_threshold + 4);
 
 			-- validate arguments according to current section
-			case section is
+			case section.name is
 				when SEC_START | SEC_END =>
-					case argument_counter is
+					case section.arg_counter is
 						when 0 => null;
 						when 1 => 
 							set_point (axis => X, point => object_position, value => to_distance (to_string (arg)));
@@ -440,7 +440,7 @@ package body et_kicad_pcb is
 					end case;
 
 				when SEC_LAYER =>
-					case argument_counter is
+					case section.arg_counter is
 						when 0 => null;
 						when 1 => 
 							if to_string (arg) = layer_top_silk_screen then
@@ -464,7 +464,7 @@ package body et_kicad_pcb is
 					
 				when SEC_AT =>
 					object_angle := zero_angle; -- angle is optionally provided. if not provided default to zero.
-					case argument_counter is
+					case section.arg_counter is
 						when 0 => null;
 						when 1 => 
 							set_point (axis => X, point => object_position, value => to_distance (to_string (arg)));
@@ -477,14 +477,14 @@ package body et_kicad_pcb is
 					end case;
 
 				when SEC_DRILL =>
-					case argument_counter is
+					case section.arg_counter is
 						when 0 => null;
 						when 1 => object_drill_size := to_distance (to_string (arg));
 						when others => too_many_arguments;
 					end case;
 					
 				when SEC_LAYERS => -- applies for terminals exclusively
-					case argument_counter is
+					case section.arg_counter is
 						when 0 => null;	
 						when others => 	
 
@@ -529,7 +529,7 @@ package body et_kicad_pcb is
 					end case;
 					
 				when SEC_PAD =>
-					case argument_counter is
+					case section.arg_counter is
 						when 0 => null;
 						
 						when 1 => null;
@@ -549,7 +549,7 @@ package body et_kicad_pcb is
 					end case;
 
 				when SEC_SIZE =>
-					case argument_counter is
+					case section.arg_counter is
 						when 0 => null;
 						when 1 => object_size_x := to_distance (to_string (arg));
 						when 2 => object_size_y := to_distance (to_string (arg));
@@ -576,8 +576,8 @@ package body et_kicad_pcb is
 		-- Restores the previous section name and argument counter.
 			use et_pcb_coordinates;
 		begin
-			log (process_section (section), log_threshold + 4);
-			case section is
+			log (process_section (section.name), log_threshold + 4);
+			case section.name is
 
 				when SEC_START =>
 					line_start := object_position;
@@ -696,10 +696,8 @@ package body et_kicad_pcb is
 			end case;
 
 			-- restore previous section and argument counter from stack
-			section_and_argument_counter_tmp := sections_stack.pop;
-			section := section_and_argument_counter_tmp.name;
-			argument_counter := section_and_argument_counter_tmp.arg_counter;
-			log (return_to_section (section), log_threshold + 3);
+			section := sections_stack.pop;
+			log (return_to_section (section.name), log_threshold + 3);
 			
 			exception
 				when event:
@@ -774,7 +772,7 @@ package body et_kicad_pcb is
 		end loop;
 
 		-- check section name. must be top level section
-		if section /= INIT then
+		if section.name /= INIT then
 			log_indentation_reset;
 			log (message_error & "top level section not closed !");
 			raise constraint_error;
