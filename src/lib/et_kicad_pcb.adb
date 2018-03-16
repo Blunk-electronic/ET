@@ -121,6 +121,7 @@ package body et_kicad_pcb is
 		term_char_seq : constant string (1..2) := latin_1.space & ')';
 		term_char_set : character_set := to_set (term_char_seq);
 
+		-- the section prefix is a workaround due to GNAT reserved keywords.
 		sec_prefix : constant string (1..4) := "sec_";
 		type type_section is (
 			INIT,
@@ -157,16 +158,29 @@ package body et_kicad_pcb is
 			);
 
 		function to_string (section : in type_section) return string is
+			len : positive := type_section'image (section)'last;
 		begin
-			return to_lower (type_section'image (section));
+			return to_lower (type_section'image (section)(sec_prefix'last+1 ..len));
 		end to_string;
-
+	
 		function expect_keyword (section : in type_section) return string is
 			len : positive := to_string (section)'last;
 		begin
-			return "expect keyword '" & to_string (section)(sec_prefix'last+1 .. len) & "'";
+			return "expect keyword '" & to_string (section) & "'";
 		end expect_keyword;
-		
+
+		function enter_section (section : in type_section) return string is begin
+			return ("entering section " & to_string (section));
+		end enter_section;
+
+		function return_to_section (section : in type_section) return string is begin
+			return ("returning to section " & to_string (section));
+		end return_to_section;
+
+		function process_section (section : in type_section) return string is begin
+			return ("processing section " & to_string (section));
+		end process_section;
+	
 		section : type_section := INIT;
 
 		entry_length_max : constant positive := 200;
@@ -184,7 +198,7 @@ package body et_kicad_pcb is
 		terminal_inserted : boolean;
 
 -- 		terminal_copper_width_outer_layers : et_pcb_coordinates.type_distance;
-		terminal_copper_width_inner_layers : et_pcb_coordinates.type_distance := 1.0; -- CS load from DRU
+		terminal_copper_width_inner_layers : et_pcb_coordinates.type_distance := 1.0; -- CS load from DRU ?
 		
 		terminal_top_solder_paste, terminal_bot_solder_paste : type_terminal_solder_paste;
 		terminal_solder_paste : type_terminal_solder_paste;
@@ -313,10 +327,9 @@ package body et_kicad_pcb is
 		end p1;
 
 		procedure read_section is 
+		-- Stores the section name and current argument counter on sections_stack.
 		-- Reads the section name from current cursor position until termination
 		-- character or its last character.
-		-- Stores the section name on sections_stack.
-		-- Resets the argument counter for arguments following the section name.
 			end_of_kw : integer;  -- may become negative if no terminating character present
 		begin
 			-- save previous section and argument counter on stack
@@ -338,7 +351,7 @@ package body et_kicad_pcb is
 			-- update cursor
 			character_cursor := end_of_kw;
 
-			log ("entering section " & type_section'image (section), log_threshold + 3);
+			log (enter_section (section), log_threshold + 3);
 		end read_section;
 		
 
@@ -364,8 +377,7 @@ package body et_kicad_pcb is
 
 			procedure too_many_arguments is begin
 				log_indentation_reset;
-				log (message_error & "too many arguments in " & type_section'image (section) & " !", console => true);
-				-- CS: more user friendly output please
+				log (message_error & "too many arguments in " & to_string (section) & " !", console => true);
 				log ("excessive argument reads '" & to_string (arg) & "'", console => true);
 				raise constraint_error;
 			end too_many_arguments;
@@ -561,9 +573,10 @@ package body et_kicad_pcb is
 		procedure exec_section is
 		-- Performs an operation according to the active section and variables that have been
 		-- set earlier (when processing the arguments. see procedure read_arg).
+		-- Restores the previous section name and argument counter.
 			use et_pcb_coordinates;
 		begin
-			log ("executing section " & type_section'image (section), log_threshold + 4);
+			log (process_section (section), log_threshold + 4);
 			case section is
 
 				when SEC_START =>
@@ -686,7 +699,7 @@ package body et_kicad_pcb is
 			section_and_argument_counter_tmp := sections_stack.pop;
 			section := section_and_argument_counter_tmp.name;
 			argument_counter := section_and_argument_counter_tmp.arg_counter;
-			log ("returning to section " & type_section'image (section), log_threshold + 3);
+			log (return_to_section (section), log_threshold + 3);
 			
 			exception
 				when event:
@@ -760,15 +773,12 @@ package body et_kicad_pcb is
 				
 		end loop;
 
--- 		-- check section name. must be top level section
--- 		if section /= SEC_MODULE then
--- 			log_indentation_reset;
--- 			log (message_error & "top level section not closed !");
--- 			raise constraint_error;
--- 		end if;
-
-		-- assemble package model with
-		-- - terminals
+		-- check section name. must be top level section
+		if section /= INIT then
+			log_indentation_reset;
+			log (message_error & "top level section not closed !");
+			raise constraint_error;
+		end if;
 
 		log_indentation_down;
 
