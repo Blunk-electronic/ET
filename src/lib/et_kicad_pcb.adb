@@ -190,6 +190,7 @@ package body et_kicad_pcb is
 		end to_string;			
 		
 		line_start, line_end : et_pcb_coordinates.type_point_3d;
+		line_width : et_pcb_coordinates.type_distance;
 		
 		terminal_name : type_terminal_name.bounded_string;
 		terminal_technology : type_assembly_technology;
@@ -461,6 +462,13 @@ package body et_kicad_pcb is
 
 						when others => too_many_arguments;
 					end case;
+
+				when SEC_WIDTH =>
+					case section.arg_counter is
+						when 0 => null;
+						when 1 => line_width := to_distance (to_string (arg));
+						when others => too_many_arguments;
+					end case;
 					
 				when SEC_AT =>
 					object_angle := zero_angle; -- angle is optionally provided. if not provided default to zero.
@@ -588,13 +596,13 @@ package body et_kicad_pcb is
 				when SEC_FP_LINE =>
 					case object_layer is
 						when TOP_SILK =>
-							top_silk_screen_objects.lines.append ((line_start, line_end, 0.0));
+							top_silk_screen_objects.lines.append ((line_start, line_end, line_width));
 						when BOT_SILK =>
-							bot_silk_screen_objects.lines.append ((line_start, line_end, 0.0));
+							bot_silk_screen_objects.lines.append ((line_start, line_end, line_width));
 						when TOP_ASSY =>
-							top_assy_doc_objects.lines.append ((line_start, line_end, 0.0));
+							top_assy_doc_objects.lines.append ((line_start, line_end, line_width));
 						when BOT_ASSY =>
-							bot_assy_doc_objects.lines.append ((line_start, line_end, 0.0));
+							bot_assy_doc_objects.lines.append ((line_start, line_end, line_width));
 						when TOP_KEEPOUT =>
 							top_keepout_objects.lines.append ((line_start, line_end));
 						when BOT_KEEPOUT =>
