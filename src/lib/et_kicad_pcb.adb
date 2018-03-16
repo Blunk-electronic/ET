@@ -123,6 +123,7 @@ package body et_kicad_pcb is
 
 		sec_prefix : constant string (1..4) := "sec_";
 		type type_section is (
+			INIT,
 			SEC_AT,
 			SEC_ATTR,
 			SEC_ANGLE,
@@ -166,7 +167,7 @@ package body et_kicad_pcb is
 			return "expect keyword '" & to_string (section)(sec_prefix'last+1 .. len) & "'";
 		end expect_keyword;
 		
-		section : type_section;
+		section : type_section := INIT;
 
 		entry_length_max : constant positive := 200;
 		package type_argument is new generic_bounded_length (entry_length_max);
@@ -271,8 +272,14 @@ package body et_kicad_pcb is
 			end case;
 		end set_stop_and_mask;
 		
+		type type_section_and_argument_counter is record
+			name 		: type_section;
+			arg_counter	: type_argument_counter;
+		end record;
+
+		section_and_argument_counter_tmp : type_section_and_argument_counter;
 		
-		package sections_stack is new et_general.stack_lifo (max => 20, item => type_section);
+		package sections_stack is new et_general.stack_lifo (max => 20, item => type_section_and_argument_counter);
 
 		line_length_max : constant positive := 200;
 		package type_current_line is new generic_bounded_length (line_length_max);
@@ -286,7 +293,7 @@ package body et_kicad_pcb is
 			next (line_cursor);
 			if line_cursor /= et_pcb.type_lines.no_element then
 				current_line := type_current_line.to_bounded_string (to_string (element (line_cursor)));
-				log ("line " & to_string (current_line), log_threshold + 3);
+				log ("line " & to_string (current_line), log_threshold + 4);
 			else
 				-- no more lines -- CS raise error ?
 				null;
@@ -312,6 +319,10 @@ package body et_kicad_pcb is
 		-- Resets the argument counter for arguments following the section name.
 			end_of_kw : integer;  -- may become negative if no terminating character present
 		begin
+			-- save previous section and argument counter on stack
+			sections_stack.push ((section, argument_counter));
+			argument_counter := 0;
+			
 			-- get position of last character
 			end_of_kw := index (source => current_line, from => character_cursor, set => term_char_set) - 1;
 
@@ -327,13 +338,7 @@ package body et_kicad_pcb is
 			-- update cursor
 			character_cursor := end_of_kw;
 
-			-- save section name on stack
-			sections_stack.push (section);
-
-			log ("section " & type_section'image (section), log_threshold + 3);
-
-			argument_counter := 0;
-			
+			log ("entering section " & type_section'image (section), log_threshold + 3);
 		end read_section;
 		
 
@@ -360,6 +365,7 @@ package body et_kicad_pcb is
 			procedure too_many_arguments is begin
 				log_indentation_reset;
 				log (message_error & "too many arguments in " & type_section'image (section) & " !", console => true);
+				-- CS: more user friendly output please
 				log ("excessive argument reads '" & to_string (arg) & "'", console => true);
 				raise constraint_error;
 			end too_many_arguments;
@@ -557,9 +563,7 @@ package body et_kicad_pcb is
 		-- set earlier (when processing the arguments. see procedure read_arg).
 			use et_pcb_coordinates;
 		begin
-			-- fetch name of active section from stack
-			section := sections_stack.pop;
-
+			log ("executing section " & type_section'image (section), log_threshold + 4);
 			case section is
 
 				when SEC_START =>
@@ -678,7 +682,11 @@ package body et_kicad_pcb is
 				when others => null;
 			end case;
 
--- 			init_object;
+			-- restore previous section and argument counter from stack
+			section_and_argument_counter_tmp := sections_stack.pop;
+			section := section_and_argument_counter_tmp.name;
+			argument_counter := section_and_argument_counter_tmp.arg_counter;
+			log ("returning to section " & type_section'image (section), log_threshold + 3);
 			
 			exception
 				when event:
