@@ -110,8 +110,6 @@ package body et_kicad_pcb is
 		return et_pcb.type_package is
 		
 		use et_pcb;
-		model : type_package; -- to be returned
-	
 		use et_pcb.type_lines;
 		line_cursor : et_pcb.type_lines.cursor := lines.first; -- points to the line being processed
 
@@ -219,15 +217,19 @@ package body et_kicad_pcb is
 		type type_layer is (
 			TOP_SILK, BOT_SILK,
 			TOP_ASSY, BOT_ASSY,
-			TOP_KEEPOUT, BOT_KEEPOUT
+			TOP_KEEP, BOT_KEEP
 			);
 
 		object_layer : type_layer;
 
-		top_silk_screen_objects, bot_silk_screen_objects 	: type_package_silk_screen;
-		top_assy_doc_objects, bot_assy_doc_objects			: type_package_assembly_documentation;
-		top_keepout_objects, bot_keepout_objects			: type_package_keepout;
+		top_silk_screen, bot_silk_screen 	: type_package_silk_screen;
+		top_assy_doc, bot_assy_doc			: type_package_assembly_documentation;
+		top_keepout, bot_keepout			: type_package_keepout;
 
+		pcb_contours			: type_package_pcb_contour;		
+		pcb_contours_plated 	: type_package_pcb_contour_plated;
+		route_restrict 			: type_package_route_restrict;
+		via_restrict 			: type_package_via_restrict;
 -- 		procedure init_object is 
 -- 			use et_pcb_coordinates;
 -- 		begin
@@ -452,9 +454,9 @@ package body et_kicad_pcb is
 							elsif to_string (arg) = layer_bot_assy_doc then
 								object_layer := BOT_ASSY;
 							elsif to_string (arg) = layer_top_keepout then
-								object_layer := TOP_KEEPOUT;
+								object_layer := TOP_KEEP;
 							elsif to_string (arg) = layer_bot_keepout then
-								object_layer := BOT_KEEPOUT;
+								object_layer := BOT_KEEP;
 							else
 								null; -- CS 
 							end if;
@@ -598,23 +600,23 @@ package body et_kicad_pcb is
 					-- Append the line to the container correspoinding to the layer. Then log the line properties.
 					case object_layer is
 						when TOP_SILK =>
-							top_silk_screen_objects.lines.append ((line_start, line_end, line_width));
-							line_silk_screen_properties (TOP, top_silk_screen_objects.lines.last, log_threshold + 1);
+							top_silk_screen.lines.append ((line_start, line_end, line_width));
+							line_silk_screen_properties (TOP, top_silk_screen.lines.last, log_threshold + 1);
 						when BOT_SILK =>
-							bot_silk_screen_objects.lines.append ((line_start, line_end, line_width));
-							line_silk_screen_properties (BOTTOM, bot_silk_screen_objects.lines.last, log_threshold + 1);
+							bot_silk_screen.lines.append ((line_start, line_end, line_width));
+							line_silk_screen_properties (BOTTOM, bot_silk_screen.lines.last, log_threshold + 1);
 						when TOP_ASSY =>
-							top_assy_doc_objects.lines.append ((line_start, line_end, line_width));
-							line_assy_doc_properties (TOP, top_assy_doc_objects.lines.last, log_threshold + 1);
+							top_assy_doc.lines.append ((line_start, line_end, line_width));
+							line_assy_doc_properties (TOP, top_assy_doc.lines.last, log_threshold + 1);
 						when BOT_ASSY =>
-							bot_assy_doc_objects.lines.append ((line_start, line_end, line_width));
-							line_assy_doc_properties (BOTTOM, bot_assy_doc_objects.lines.last, log_threshold + 1);
-						when TOP_KEEPOUT =>
-							top_keepout_objects.lines.append ((line_start, line_end));
-							line_keepout_properties (TOP, top_keepout_objects.lines.last, log_threshold + 1);
-						when BOT_KEEPOUT =>
-							bot_keepout_objects.lines.append ((line_start, line_end));
-							line_keepout_properties (BOTTOM, top_keepout_objects.lines.last, log_threshold + 1);
+							bot_assy_doc.lines.append ((line_start, line_end, line_width));
+							line_assy_doc_properties (BOTTOM, bot_assy_doc.lines.last, log_threshold + 1);
+						when TOP_KEEP =>
+							top_keepout.lines.append ((line_start, line_end));
+							line_keepout_properties (TOP, top_keepout.lines.last, log_threshold + 1);
+						when BOT_KEEP =>
+							bot_keepout.lines.append ((line_start, line_end));
+							line_keepout_properties (BOTTOM, top_keepout.lines.last, log_threshold + 1);
 					end case;
 				
 				when SEC_PAD =>
@@ -792,13 +794,18 @@ package body et_kicad_pcb is
 			raise constraint_error;
 		end if;
 
-		-- CS: check if all objects are in top layer. warning if otherwise
-		
 		log_indentation_down;
 
 		return (
-			contours	=> no_contour, -- CS to be filled from 3d model
-			terminals	=> terminals
+			package_contours		=> no_contour, -- CS to be filled from 3d model
+			pcb_contours			=> pcb_contours,
+			pcb_contours_plated 	=> pcb_contours_plated,
+			terminals				=> terminals,
+			silk_screen				=> (top => top_silk_screen, bottom => bot_silk_screen),
+			keepout					=> (top => top_keepout, bottom => bot_keepout),
+			route_restrict 			=> route_restrict,
+			via_restrict 			=> via_restrict,
+			assembly_documentation 	=> (top => top_assy_doc, bottom => bot_assy_doc)
 			   );
 	end to_package_model;
 	

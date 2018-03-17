@@ -122,6 +122,8 @@ package et_pcb is
 
 	type type_locked is (NO, YES);
 
+
+	
 	-- PCB CONTOUR/OUTLINE
 	type type_pcb_contour_line is new type_line with record
 		locked : type_locked := type_locked'first;
@@ -208,12 +210,22 @@ package et_pcb is
 		texts		: type_general_purpose_texts.list;
 	end record;
 
+	type type_package_silk_screen_both_faces is record
+		top		: type_package_silk_screen;
+		bottom	: type_package_silk_screen;
+	end record;
+	
 	type type_pcb_silk_screen is record
 		lines 		: type_silk_lines.list;
 		arcs		: type_silk_arcs.list;
 		circles		: type_silk_circles.list;
 		texts		: type_general_purpose_texts.list;
 		-- CS placeholder for revision, board name, misc ... defined via configuration file
+	end record;
+
+	type type_pcb_silk_screen_both_faces is record
+		top 	: type_pcb_silk_screen;
+		bottom	: type_pcb_silk_screen;
 	end record;
 	
 
@@ -245,6 +257,11 @@ package et_pcb is
 		texts		: type_general_purpose_texts.list;
 	end record;
 
+	type type_package_assembly_documentation_both_faces is record
+		top		: type_package_assembly_documentation;
+		bottom	: type_package_assembly_documentation;
+	end record;
+	
 	type type_pcb_assembly_documentation is record
 		lines 		: type_doc_lines.list;
 		arcs		: type_doc_arcs.list;
@@ -268,6 +285,11 @@ package et_pcb is
 		arcs	: type_keepout_arcs.list;
 		circles	: type_keepout_lines.list;
 		-- CS polygons
+	end record;
+
+	type type_package_keepout_both_faces is record
+		top 	: type_package_keepout;
+		bottom	: type_package_keepout;
 	end record;
 	
 
@@ -295,7 +317,7 @@ package et_pcb is
 		circles	: type_route_restrict_lines.list;
 		-- CS polygons
 	end record;
-	
+
 	type type_pcb_route_restrict is record
 		lines 	: type_route_restrict_lines.list;
 		arcs	: type_route_restrict_arcs.list;
@@ -425,15 +447,16 @@ package et_pcb is
 	
 	type type_package is record
 		--value		: type_component_text_placeholder (meaning => et_libraries.VALUE) 
-		contours	: type_package_contour;
-		-- 		silk_screen	: type_package_silk_screen; -- incl. reference and purpose
-		--assy_doc	: type_package_assembly_documentation;
-		-- keepout : type_package_keepout;
-		-- route_restrict : type_package_route_restrict;
-		-- via_restrict : type_package_via_restrict;
+		package_contours		: type_package_contour;
+		silk_screen				: type_package_silk_screen_both_faces; -- incl. reference and purpose
+		assembly_documentation	: type_package_assembly_documentation_both_faces;
+		keepout 				: type_package_keepout_both_faces;
+		route_restrict 			: type_package_route_restrict;
+		via_restrict 			: type_package_via_restrict;
 		-- holes
-		--pcb_contours	: type_package_pcb_contour;
-		terminals	: type_terminals.map;
+		pcb_contours			: type_package_pcb_contour;
+		pcb_contours_plated 	: type_package_pcb_contour_plated;
+		terminals				: type_terminals.map;
 	end record;
 
 
