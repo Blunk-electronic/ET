@@ -79,8 +79,9 @@ package et_pcb is
 
 	type type_text_basic is abstract tagged record
 		position	: type_point_3d;
-		size		: type_distance; -- CS use subtype for reasonable range
-		width		: type_distance; -- CS use subtype for reasonable range
+		size_x		: type_distance; -- CS use subtype for reasonable range
+		size_y		: type_distance; -- CS use subtype for reasonable range
+		width		: type_distance; -- CS use subtype for reasonable range		
 		angle		: type_angle;
 		alignment	: et_libraries.type_text_aligment;
 	end record;

@@ -186,6 +186,8 @@ package body et_kicad_pcb is
 		function to_string (arg_count : in type_argument_counter) return string is begin
 			return trim (type_argument_counter'image (arg_count), left);
 		end to_string;			
+
+		text : type_general_purpose_text;
 		
 		line_start, line_end : et_pcb_coordinates.type_point_3d;
 		line_width : et_pcb_coordinates.type_distance;
@@ -430,6 +432,24 @@ package body et_kicad_pcb is
 
 			-- validate arguments according to current section
 			case section.name is
+				when SEC_FP_TEXT =>
+					case section.arg_counter is
+						when 0 => null;
+						when 1 => 
+							if to_string (arg) = "reference" then
+								null;
+							elsif to_string (arg) = "value" then
+								null;
+							else
+								null; -- error
+							end if;
+						when 2 => 
+							null; -- case meaning is
+						when 3 => 
+							null; -- hide
+						when others => too_many_arguments;
+					end case;
+					
 				when SEC_START | SEC_END =>
 					case section.arg_counter is
 						when 0 => null;
@@ -464,7 +484,7 @@ package body et_kicad_pcb is
 						when others => too_many_arguments;
 					end case;
 
-				when SEC_WIDTH =>
+				when SEC_WIDTH | SEC_THICKNESS =>
 					case section.arg_counter is
 						when 0 => null;
 						when 1 => line_width := to_distance (to_string (arg));
@@ -595,6 +615,16 @@ package body et_kicad_pcb is
 
 				when SEC_END =>
 					line_end := object_position;
+
+				when SEC_FONT =>
+					text.size_x		:= object_size_x;
+					text.size_y		:= object_size_y;
+					text.width 		:= line_width;
+					text.angle 		:= object_angle;
+					text.alignment 	:= (horizontal => CENTER, vertical => BOTTOM);
+
+				when SEC_FP_TEXT =>
+					text.position	:= object_position;
 					
 				when SEC_FP_LINE =>
 					-- Append the line to the container correspoinding to the layer. Then log the line properties.
