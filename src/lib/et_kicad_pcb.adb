@@ -188,6 +188,9 @@ package body et_kicad_pcb is
 		end to_string;			
 
 		text : type_general_purpose_text;
+
+		fp_text_meaning : type_fp_text_meaning;
+		fp_text_hidden : boolean;
 		
 		line_start, line_end : et_pcb_coordinates.type_point_3d;
 		line_width : et_pcb_coordinates.type_distance;
@@ -369,6 +372,7 @@ package body et_kicad_pcb is
 			end_of_arg : integer; -- may become negative if no terminating character present
 
 			use type_argument;
+			use et_libraries.type_text_content;
 			use et_pcb_coordinates;
 		
 			arg : type_argument.bounded_string; -- here the argument goes temporarily
@@ -385,6 +389,37 @@ package body et_kicad_pcb is
 				log ("excessive argument reads '" & to_string (arg) & "'", console => true);
 				raise constraint_error;
 			end too_many_arguments;
+
+			procedure invalid_fp_text_keyword is begin
+				log_indentation_reset;
+				log (message_error & "expect keyword '" & keyword_fp_text_reference 
+					 & "' or '" & keyword_fp_text_value 
+					 & "' or '" & keyword_fp_text_user
+					 & "' ! found '" & to_string (arg) & "'", console => true);
+				raise constraint_error;
+			end invalid_fp_text_keyword;
+
+			procedure invalid_placeholder_reference is begin
+				log_indentation_reset;
+				log (message_error & "expect reference placeholder '" & placeholder_reference & "' !"
+					 & " found '" & to_string (arg) & "'", console => true);
+				raise constraint_error;
+			end invalid_placeholder_reference;
+
+			procedure invalid_placeholder_value is begin
+				log_indentation_reset;
+				log (message_error & "expect value placeholder '" & to_string (package_name) & "' !"
+					 & " found '" & to_string (arg) & "'", console => true);
+				raise constraint_error;
+			end invalid_placeholder_value;
+
+			procedure invalid_package_name is begin
+				log_indentation_reset;
+				log (message_error & "expect package name '" & to_string (package_name) & "' !"
+					 & " found '" & to_string (arg) & "'", console => true);
+				raise constraint_error;
+			end invalid_package_name;
+
 			
 		begin -- read_arg
 			-- We handle an argument that is wrapped in quotation different from a non-wrapped argument:
@@ -432,21 +467,53 @@ package body et_kicad_pcb is
 
 			-- validate arguments according to current section
 			case section.name is
+				when SEC_MODULE =>
+					case section.arg_counter is
+						when 0 => null;
+						when 1 =>
+							if to_string (arg) /= to_string (package_name) then
+								invalid_package_name;
+							end if;
+						when others => 
+							too_many_arguments;
+					end case;
+					
 				when SEC_FP_TEXT =>
+					fp_text_hidden := false; -- "hide" flag is optionally provided. if not, default to false
 					case section.arg_counter is
 						when 0 => null;
 						when 1 => 
-							if to_string (arg) = "reference" then
-								null;
-							elsif to_string (arg) = "value" then
-								null;
+							if to_string (arg) = keyword_fp_text_reference then
+								fp_text_meaning := REFERENCE;
+							elsif to_string (arg) = keyword_fp_text_value then
+								fp_text_meaning := VALUE;
+							elsif to_string (arg) = keyword_fp_text_user then
+								fp_text_meaning := USER;
 							else
-								null; -- error
+								invalid_fp_text_keyword;
 							end if;
+							
 						when 2 => 
-							null; -- case meaning is
+							-- CS length check
+							text.content := to_bounded_string (to_string (arg));
+							case fp_text_meaning is
+								when REFERENCE => 
+									if to_string (text.content) /= placeholder_reference then
+										invalid_placeholder_reference;
+									end if;
+								when VALUE =>
+									if to_string (text.content) /= to_string (package_name) then
+										invalid_placeholder_value;
+									end if;
+								when USER =>
+									null; 
+									-- CS character check
+							end case;
+							
 						when 3 => 
-							null; -- hide
+							if to_string (arg) = keyword_fp_text_hide then
+								fp_text_hidden := true;
+							end if;
 						when others => too_many_arguments;
 					end case;
 					
@@ -606,6 +673,24 @@ package body et_kicad_pcb is
 			use et_pcb_coordinates;
 			terminal_cursor			: type_terminals.cursor;
 			silk_screen_line_cursor	: type_silk_lines.cursor;
+
+			procedure invalid_layer_reference is begin
+				log_indentation_reset;
+				log (message_error & "reference placeholder must be in a silk screen layer !", console => true);
+				raise constraint_error;
+			end invalid_layer_reference;
+
+			procedure invalid_layer_value is begin
+				log (message_warning & "value placeholder should be in a fabrication layer !");
+			end invalid_layer_value;
+
+			procedure invalid_layer_user is begin
+				log_indentation_reset;
+				log (message_error & "user text must be in a silk screen or fabrication layer !", console => true);
+				raise constraint_error;
+			end invalid_layer_user;
+
+			
 		begin
 			log (process_section (section.name), log_threshold + 4);
 			case section.name is
@@ -625,6 +710,48 @@ package body et_kicad_pcb is
 
 				when SEC_FP_TEXT =>
 					text.position	:= object_position;
+					text.hidden		:= fp_text_hidden;
+					case fp_text_meaning is
+						when REFERENCE =>
+							if object_layer = TOP_SILK then
+								top_silk_screen.texts.append (text);
+								text_silk_screen_properties (TOP, top_silk_screen.texts.last, log_threshold + 1);
+							elsif object_layer =  BOT_SILK then
+								bot_silk_screen.texts.append (text);
+								text_silk_screen_properties (BOTTOM, bot_silk_screen.texts.last, log_threshold + 1);
+							else
+								invalid_layer_reference;
+							end if;
+
+						when VALUE =>
+							if object_layer = TOP_ASSY then
+								top_assy_doc.texts.append (text);
+								text_assy_doc_properties (TOP, top_assy_doc.texts.last, log_threshold + 1);
+							elsif object_layer =  BOT_ASSY then
+								bot_assy_doc.texts.append (text);
+								text_assy_doc_properties (BOTTOM, bot_assy_doc.texts.last, log_threshold + 1);
+							else
+								invalid_layer_value;
+							end if;
+							
+						when USER =>
+							case object_layer is
+								when TOP_SILK => 
+									top_silk_screen.texts.append (text);
+									text_silk_screen_properties (TOP, top_silk_screen.texts.last, log_threshold + 1);
+								when BOT_SILK => 
+									bot_silk_screen.texts.append (text);
+									text_silk_screen_properties (BOTTOM, bot_silk_screen.texts.last, log_threshold + 1);
+								when TOP_ASSY => 
+									top_assy_doc.texts.append (text);
+									text_assy_doc_properties (TOP, top_assy_doc.texts.last, log_threshold + 1);
+								when BOT_ASSY => 
+									bot_assy_doc.texts.append (text);
+									text_assy_doc_properties (BOTTOM, bot_assy_doc.texts.last, log_threshold + 1);
+								when others 
+									=> invalid_layer_user;
+							end case;
+					end case;
 					
 				when SEC_FP_LINE =>
 					-- Append the line to the container correspoinding to the layer. Then log the line properties.

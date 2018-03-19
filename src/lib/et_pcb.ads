@@ -84,9 +84,10 @@ package et_pcb is
 		width		: type_distance; -- CS use subtype for reasonable range		
 		angle		: type_angle;
 		alignment	: et_libraries.type_text_aligment;
+		hidden		: boolean;
 	end record;
 
-	type type_package_text_placeholder (meaning : et_libraries.type_text_meaning) is new type_text_basic with null record;
+-- 	type type_package_text_placeholder (meaning : et_libraries.type_text_meaning) is new type_text_basic with null record;
 
 	-- CS type type_pcb_text_placeholder (meaning : type_pcb_text_meaning) is new type_text_basic with null record;
 	-- should be a defined via configuration file:
@@ -206,8 +207,6 @@ package et_pcb is
 		lines 		: type_silk_lines.list;
 		arcs		: type_silk_arcs.list;
 		circles		: type_silk_circles.list;
-		reference	: type_package_text_placeholder (meaning => et_libraries.REFERENCE);
-		purpose		: type_package_text_placeholder (meaning => et_libraries.PURPOSE);
 		texts		: type_general_purpose_texts.list;
 	end record;
 
@@ -501,7 +500,17 @@ package et_pcb is
 		cursor			: in type_route_restrict_lines.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
+	procedure text_silk_screen_properties (
+	-- Logs the properties of the given silk screen text
+		face			: in type_face;
+		cursor			: in type_general_purpose_texts.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
 
+	procedure text_assy_doc_properties (
+	-- Logs the properties of the given assembly documentation text
+		face			: in type_face;
+		cursor			: in type_general_purpose_texts.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
 	
 	procedure terminal_properties (
 	-- Logs the properties of the terminal indicated by cursor.

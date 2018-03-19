@@ -74,7 +74,15 @@ package et_kicad_pcb is
 
 	layer_top_keepout			: constant string (1..7)	:= "F.CrtYd";
 	layer_bot_keepout			: constant string (1..7)	:= "B.CrtYd";
+
+	keyword_fp_text_reference	: constant string (1..9)	:= "reference";
+	keyword_fp_text_value		: constant string (1..5)	:= "value";
+	keyword_fp_text_user		: constant string (1..4)	:= "user";
+	keyword_fp_text_hide		: constant string (1..4)	:= "hide";
+
+	placeholder_reference		: constant string (1..5)	:= "REF**";
 	
+	type type_fp_text_meaning is (REFERENCE, VALUE, USER);
 	
 	function to_package_model (
 	-- Builds a package model from the given lines.

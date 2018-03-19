@@ -166,6 +166,38 @@ package body et_pcb is
 			 log_threshold);
 	end line_route_restrict_properties;
 	
+	procedure text_silk_screen_properties (
+	-- Logs the properties of the given silk screen text
+	-- CS parameter "meaning" could be useful so that the meaning could be logged
+		face			: in type_face;
+		cursor			: in type_general_purpose_texts.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use et_libraries.type_text_content;
+		use type_general_purpose_texts;
+		text : type_general_purpose_text;
+	begin
+		text := element (cursor);
+		log ("silk screen text " & to_string (face) & latin_1.space
+			 & "content '" & to_string (text.content) & "'", log_threshold);
+		-- CS: other text properties
+	end text_silk_screen_properties;
+
+	procedure text_assy_doc_properties (
+	-- Logs the properties of the given assembly documentation text
+	-- CS parameter "meaning" could be useful so that the meaning could be logged
+		face			: in type_face;
+		cursor			: in type_general_purpose_texts.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use et_libraries.type_text_content;
+		use type_general_purpose_texts;
+		text : type_general_purpose_text;
+	begin
+		text := element (cursor);
+		log ("assembly doc text " & to_string (face) & latin_1.space
+			 & "content '" & to_string (text.content) & "'", log_threshold);
+		-- CS: other text properties		
+	end text_assy_doc_properties;
+	
 	
 	procedure terminal_properties (
 	-- Logs the properties of the terminal indicated by cursor.
