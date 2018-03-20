@@ -55,7 +55,7 @@ with ada.containers.ordered_sets;
 with ada.exceptions;
 
 with et_general;
-with et_libraries;				use et_libraries;
+with et_libraries;
 with et_pcb;
 with et_pcb_coordinates;
 with et_string_processing;		use et_string_processing;
@@ -187,7 +187,7 @@ package body et_kicad_pcb is
 			return trim (type_argument_counter'image (arg_count), left);
 		end to_string;			
 
-		text : type_general_purpose_text;
+		text : type_text_with_content;
 
 		fp_text_meaning : type_fp_text_meaning;
 		fp_text_hidden : boolean;
@@ -195,7 +195,7 @@ package body et_kicad_pcb is
 		line_start, line_end : et_pcb_coordinates.type_point_3d;
 		line_width : et_pcb_coordinates.type_distance;
 		
-		terminal_name : type_terminal_name.bounded_string;
+		terminal_name : et_libraries.type_terminal_name.bounded_string;
 		terminal_technology : type_assembly_technology;
 		terminal_shape_tht : type_terminal_shape_tht;
 		terminal_shape_smt : type_terminal_shape_smt;
@@ -372,6 +372,7 @@ package body et_kicad_pcb is
 			end_of_arg : integer; -- may become negative if no terminating character present
 
 			use type_argument;
+			use et_libraries;
 			use et_libraries.type_text_content;
 			use et_pcb_coordinates;
 		
@@ -406,14 +407,16 @@ package body et_kicad_pcb is
 				raise constraint_error;
 			end invalid_placeholder_reference;
 
-			procedure invalid_placeholder_value is begin
+			procedure invalid_placeholder_value is
+			begin
 				log_indentation_reset;
 				log (message_error & "expect value placeholder '" & to_string (package_name) & "' !"
 					 & " found '" & to_string (arg) & "'", console => true);
 				raise constraint_error;
 			end invalid_placeholder_value;
 
-			procedure invalid_package_name is begin
+			procedure invalid_package_name is
+			begin
 				log_indentation_reset;
 				log (message_error & "expect package name '" & to_string (package_name) & "' !"
 					 & " found '" & to_string (arg) & "'", console => true);
@@ -671,6 +674,7 @@ package body et_kicad_pcb is
 		-- set earlier (when processing the arguments. see procedure read_arg).
 		-- Restores the previous section name and argument counter.
 			use et_pcb_coordinates;
+			use et_libraries;
 			terminal_cursor			: type_terminals.cursor;
 			silk_screen_line_cursor	: type_silk_lines.cursor;
 
@@ -690,8 +694,7 @@ package body et_kicad_pcb is
 				raise constraint_error;
 			end invalid_layer_user;
 
-			
-		begin
+		begin -- exec_section
 			log (process_section (section.name), log_threshold + 4);
 			case section.name is
 

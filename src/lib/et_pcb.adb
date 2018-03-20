@@ -62,6 +62,11 @@ package body et_pcb is
 	begin
 		return type_directory_name.to_string (directory_name);
 	end to_string;
+
+	function to_string (text_meaning : in type_package_text_meaning) return string is
+	begin
+		return type_package_text_meaning'image (text_meaning);
+	end to_string;
 	
 	function to_directory (directory_name : in string) return type_directory_name.bounded_string is
 	-- Converts a string to a type_directory_name.
@@ -170,11 +175,11 @@ package body et_pcb is
 	-- Logs the properties of the given silk screen text
 	-- CS parameter "meaning" could be useful so that the meaning could be logged
 		face			: in type_face;
-		cursor			: in type_general_purpose_texts.cursor;
+		cursor			: in type_texts_with_content.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
 		use et_libraries.type_text_content;
-		use type_general_purpose_texts;
-		text : type_general_purpose_text;
+		use type_texts_with_content;
+		text : type_text_with_content;
 	begin
 		text := element (cursor);
 		log ("silk screen text " & to_string (face) & latin_1.space
@@ -186,11 +191,11 @@ package body et_pcb is
 	-- Logs the properties of the given assembly documentation text
 	-- CS parameter "meaning" could be useful so that the meaning could be logged
 		face			: in type_face;
-		cursor			: in type_general_purpose_texts.cursor;
+		cursor			: in type_texts_with_content.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
 		use et_libraries.type_text_content;
-		use type_general_purpose_texts;
-		text : type_general_purpose_text;
+		use type_texts_with_content;
+		text : type_text_with_content;
 	begin
 		text := element (cursor);
 		log ("assembly doc text " & to_string (face) & latin_1.space

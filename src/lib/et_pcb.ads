@@ -77,7 +77,9 @@ package et_pcb is
 
 	package type_signal_layers is new ordered_sets (type_signal_layer);
 
-	type type_text_basic is abstract tagged record
+
+	-- TEXT IN GENERAL
+	type type_text is abstract tagged record
 		position	: type_point_3d;
 		size_x		: type_distance; -- CS use subtype for reasonable range
 		size_y		: type_distance; -- CS use subtype for reasonable range
@@ -87,19 +89,44 @@ package et_pcb is
 		hidden		: boolean;
 	end record;
 
--- 	type type_package_text_placeholder (meaning : et_libraries.type_text_meaning) is new type_text_basic with null record;
 
-	-- CS type type_pcb_text_placeholder (meaning : type_pcb_text_meaning) is new type_text_basic with null record;
-	-- should be a defined via configuration file:
-	-- project, drawing number, drawn, checked, approved, ...
 	
-	type type_general_purpose_text is new type_text_basic with record
-		content		: et_libraries.type_text_content.bounded_string;
+	-- PLACEHOLDERS FOR TEXTS IN A PACKAGE
+	type type_package_text_meaning is (REFERENCE, VALUE); -- CS: purpose ?
+
+	function to_string (text_meaning : in type_package_text_meaning) return string;
+	
+	type type_package_text_placeholder is new type_text with record
+		meaning : type_package_text_meaning;
 	end record;
 
-	package type_general_purpose_texts is new doubly_linked_lists (element_type => type_general_purpose_text);
+	package type_package_text_placeholders is new doubly_linked_lists (
+		element_type => type_package_text_placeholder);
+
+
+
+
+
+	-- TEXTS WITH CONTENT
+	type type_text_with_content is new type_text with record
+		content : et_libraries.type_text_content.bounded_string;
+	end record;
+
+	package type_texts_with_content is new doubly_linked_lists (
+		element_type => type_text_with_content);
 	
 
+
+
+
+	-- PLACEHOLDERS FOR PCB
+	-- CS type type_pcb_text_placeholder (meaning : type_pcb_text_meaning) is new type_text with null record;
+	-- should be a defined via configuration file:
+	-- project, drawing number, drawn, checked, approved, ...
+
+	
+
+	
 
 	-- LINE
 	type type_line is abstract tagged record
@@ -207,7 +234,7 @@ package et_pcb is
 		lines 		: type_silk_lines.list;
 		arcs		: type_silk_arcs.list;
 		circles		: type_silk_circles.list;
-		texts		: type_general_purpose_texts.list;
+		texts		: type_texts_with_content.list;
 	end record;
 
 	type type_package_silk_screen_both_faces is record
@@ -219,7 +246,7 @@ package et_pcb is
 		lines 		: type_silk_lines.list;
 		arcs		: type_silk_arcs.list;
 		circles		: type_silk_circles.list;
-		texts		: type_general_purpose_texts.list;
+		texts		: type_texts_with_content.list;
 		-- CS placeholder for revision, board name, misc ... defined via configuration file
 	end record;
 
@@ -254,7 +281,7 @@ package et_pcb is
 		lines 		: type_doc_lines.list;
 		arcs		: type_doc_arcs.list;
 		circles		: type_doc_circles.list;
-		texts		: type_general_purpose_texts.list;
+		texts		: type_texts_with_content.list;
 	end record;
 
 	type type_package_assembly_documentation_both_faces is record
@@ -266,7 +293,7 @@ package et_pcb is
 		lines 		: type_doc_lines.list;
 		arcs		: type_doc_arcs.list;
 		circles		: type_doc_circles.list;
-		texts		: type_general_purpose_texts.list;
+		texts		: type_texts_with_content.list;
 	end record;
 
 
@@ -503,13 +530,13 @@ package et_pcb is
 	procedure text_silk_screen_properties (
 	-- Logs the properties of the given silk screen text
 		face			: in type_face;
-		cursor			: in type_general_purpose_texts.cursor;
+		cursor			: in type_texts_with_content.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure text_assy_doc_properties (
 	-- Logs the properties of the given assembly documentation text
 		face			: in type_face;
-		cursor			: in type_general_purpose_texts.cursor;
+		cursor			: in type_texts_with_content.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 	
 	procedure terminal_properties (
