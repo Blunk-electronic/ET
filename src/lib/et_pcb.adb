@@ -73,7 +73,7 @@ package body et_pcb is
 			& to_string (text.size_x) & latin_1.space & axis_separator & latin_1.space & to_string (text.size_y)
 			& " line width " & to_string (text.width)
 			& " angle " & to_string (text.angle)
-			--& " alignment hor/vert" & to_string (text.alignment.horizontal)
+			& et_libraries.to_string (text.alignment)
 			& " hidden " & boolean'image (text.hidden)
 			;
 	end text_properties;

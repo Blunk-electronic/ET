@@ -144,14 +144,21 @@ package et_libraries is
 	function width_to_string (width : in type_text_line_width) return string;
 	-- Returns the given line width as string.
 	
-	type type_text_style is (normal, italic, bold, italic_bold);
-	type type_text_visible is (yes, no);
-    type type_text_alignment_horizontal is (left, center , right);
-	type type_text_alignment_vertical is (top, center , bottom);    
-	type type_text_aligment is record -- CS typing error rename to type_text_alignment
+	type type_text_style is (NORMAL, ITALIC, BOLD, ITALIC_BOLD);
+	type type_text_visible is (YES, NO);
+	
+	type type_text_alignment_horizontal is (LEFT, CENTER, RIGHT);
+	function to_string (alignment : in type_text_alignment_horizontal) return string;
+	
+	type type_text_alignment_vertical is (TOP, CENTER, BOTTOM);
+	function to_string (alignment : in type_text_alignment_vertical) return string;
+	
+	type type_text_alignment is record
 		horizontal	: type_text_alignment_horizontal := center;
 		vertical	: type_text_alignment_vertical := center;
 	end record;
+
+	function to_string (alignment : in type_text_alignment) return string;
 	
 	type type_text_meaning is (
 		REFERENCE,		-- for things like R301 or X9
@@ -185,7 +192,7 @@ package et_libraries is
         line_width	: type_text_line_width := type_text_line_width'first; -- CS: use a general type_line_width ?
         orientation	: type_angle := 0.0;
 		visible		: type_text_visible := yes; -- unless assigned otherwise all texts are visible by default
-		alignment	: type_text_aligment;
+		alignment	: type_text_alignment;
 	end record;
 
 	-- A text may have up to 200 characters which seems sufficient for now.

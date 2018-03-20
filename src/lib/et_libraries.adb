@@ -139,6 +139,28 @@ package body et_libraries is
 	begin
 		return "width " & et_coordinates.to_string (width);
 	end width_to_string;
+
+
+	-- TEXT ALIGNMENT
+	function to_string (alignment : in type_text_alignment_horizontal) return string is
+	begin
+		return type_text_alignment_horizontal'image (alignment);
+	end to_string;
+
+	function to_string (alignment : in type_text_alignment_vertical) return string is
+	begin
+		return type_text_alignment_vertical'image (alignment);
+	end to_string;
+
+	function to_string (alignment : in type_text_alignment) return string is
+	begin
+		return " alignment (hor./vert.) "
+			& to_string (alignment.horizontal)
+			& " / "
+			& to_string (alignment.vertical);
+	end to_string;
+	
+
 	
 	function to_string (
 		direction	: in type_port_direction;

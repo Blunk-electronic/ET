@@ -85,8 +85,8 @@ package et_pcb is
 		size_y		: type_distance; -- CS use subtype for reasonable range
 		width		: type_distance; -- CS use subtype for reasonable range		
 		angle		: type_angle;
-		alignment	: et_libraries.type_text_aligment;
-		hidden		: boolean;
+		alignment	: et_libraries.type_text_alignment;
+		hidden		: boolean; -- CS use type with yes or no
 	end record;
 
 	function text_properties (text : in type_text) return string;
