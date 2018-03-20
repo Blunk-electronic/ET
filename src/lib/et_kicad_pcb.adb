@@ -471,7 +471,8 @@ package body et_kicad_pcb is
 			
 			log ("arg" & to_string (section.arg_counter) & latin_1.space & to_string (arg), log_threshold + 4);
 
-			-- validate arguments according to current section
+			-- Validate arguments according to current section.
+			-- Load variables. When a section closes, the variables are used to build an object. see exec_section.
 			case section.name is
 				when SEC_MODULE =>
 					case section.arg_counter is
@@ -485,7 +486,7 @@ package body et_kicad_pcb is
 					end case;
 					
 				when SEC_FP_TEXT =>
-					fp_text_hidden := false; -- "hide" flag is optionally provided. if not, default to false
+					fp_text_hidden := false; -- "hide" flag is optionally provided as last argument. if not, default to false
 					case section.arg_counter is
 						when 0 => null;
 						when 1 => 
@@ -566,7 +567,7 @@ package body et_kicad_pcb is
 					end case;
 					
 				when SEC_AT =>
-					object_angle := zero_angle; -- angle is optionally provided. if not provided default to zero.
+					object_angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
 					case section.arg_counter is
 						when 0 => null;
 						when 1 => 
@@ -895,6 +896,54 @@ package body et_kicad_pcb is
 			
 		end exec_section;
 		
+		procedure check_placeholders is
+		-- Checks if there is at least one placeholder for reference and for value.
+		-- CS: validate text sizes and width according to specifications in configuration file
+			use et_pcb_coordinates;
+			use type_package_text_placeholders;
+			cursor : type_package_text_placeholders.cursor;
+			placeholder : type_package_text_placeholder;
+			reference_found, value_found : boolean := false;
+		begin
+			-- There must be a placeholder for the reference in the top silk screen:
+			cursor := top_silk_screen.placeholders.first;
+			while cursor /= type_package_text_placeholders.no_element loop
+				placeholder := element (cursor);
+				if placeholder.meaning = REFERENCE then
+					reference_found := true;
+					exit;
+				end if;
+				next (cursor);
+			end loop;
+
+			if not reference_found then
+				log_indentation_reset;
+				log (message_error & "no placeholder for component " 
+					 & to_string (REFERENCE) 
+					 & " found in " & to_string (TOP) & " silk screen !", console => true);
+				raise constraint_error;
+			end if;
+
+			-- There must be a placeholder for the value in the top assembly documentation:
+			cursor := top_assy_doc.placeholders.first;
+			while cursor /= type_package_text_placeholders.no_element loop
+				placeholder := element (cursor);
+				if placeholder.meaning = VALUE then
+					value_found := true;
+					exit;
+				end if;
+				next (cursor);
+			end loop;
+
+			if not value_found then
+				log_indentation_reset;
+				log (message_error & "no placeholder for component " 
+					 & to_string (VALUE) 
+					 & " found in " & to_string (TOP) & " assembly documentation !", console => true);
+				raise constraint_error;
+			end if;
+			
+		end check_placeholders;
 		
 	begin -- to_package_model
 		log ("parsing/building model ...", log_threshold);
@@ -963,6 +1012,9 @@ package body et_kicad_pcb is
 			raise constraint_error;
 		end if;
 
+		-- check the most relevant placeholders
+		check_placeholders;
+		
 		log_indentation_down;
 
 		return (
