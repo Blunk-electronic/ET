@@ -187,7 +187,11 @@ package body et_kicad_pcb is
 			return trim (type_argument_counter'image (arg_count), left);
 		end to_string;			
 
+		type type_text_base is new type_text with null record;
+		text_basic : type_text_base;
 		text : type_text_with_content;
+		text_content : et_libraries.type_text_content.bounded_string;
+		placeholder : type_package_text_placeholder;
 
 		fp_text_meaning : type_fp_text_meaning;
 		fp_text_hidden : boolean;
@@ -423,7 +427,6 @@ package body et_kicad_pcb is
 				raise constraint_error;
 			end invalid_package_name;
 
-			
 		begin -- read_arg
 			-- We handle an argument that is wrapped in quotation different from a non-wrapped argument:
 			if element (current_line, character_cursor) = latin_1.quotation then
@@ -497,19 +500,20 @@ package body et_kicad_pcb is
 							end if;
 							
 						when 2 => 
-							-- CS length check
-							text.content := to_bounded_string (to_string (arg));
 							case fp_text_meaning is
 								when REFERENCE => 
-									if to_string (text.content) /= placeholder_reference then
+									if to_string (arg) /= placeholder_reference then
 										invalid_placeholder_reference;
 									end if;
+
 								when VALUE =>
-									if to_string (text.content) /= to_string (package_name) then
+									if to_string (arg) /= to_string (package_name) then
 										invalid_placeholder_value;
 									end if;
+
 								when USER =>
-									null; 
+									-- CS length check
+									text_content := to_bounded_string (to_string (arg));
 									-- CS character check
 							end case;
 							
@@ -705,39 +709,44 @@ package body et_kicad_pcb is
 					line_end := object_position;
 
 				when SEC_FONT =>
-					text.size_x		:= object_size_x;
-					text.size_y		:= object_size_y;
-					text.width 		:= line_width;
-					text.angle 		:= object_angle;
-					text.alignment 	:= (horizontal => CENTER, vertical => BOTTOM);
-
+					text_basic.size_x		:= object_size_x;
+					text_basic.size_y		:= object_size_y;
+					text_basic.width 		:= line_width;
+					text_basic.angle 		:= object_angle;
+					text_basic.alignment 	:= (horizontal => CENTER, vertical => BOTTOM);
+					
 				when SEC_FP_TEXT =>
-					text.position	:= object_position;
-					text.hidden		:= fp_text_hidden;
+					text_basic.position		:= object_position;
+					text_basic.hidden		:= fp_text_hidden;
+
 					case fp_text_meaning is
 						when REFERENCE =>
+							placeholder := (et_pcb.type_text (text_basic) with meaning => REFERENCE);
+							
 							if object_layer = TOP_SILK then
-								top_silk_screen.texts.append (text);
-								text_silk_screen_properties (TOP, top_silk_screen.texts.last, log_threshold + 1);
+								top_silk_screen.placeholders.append (placeholder);
+								placeholder_silk_screen_properties (TOP, top_silk_screen.placeholders.last, log_threshold + 1);
 							elsif object_layer =  BOT_SILK then
-								bot_silk_screen.texts.append (text);
-								text_silk_screen_properties (BOTTOM, bot_silk_screen.texts.last, log_threshold + 1);
+								bot_silk_screen.placeholders.append (placeholder);
+								placeholder_silk_screen_properties (BOTTOM, bot_silk_screen.placeholders.last, log_threshold + 1);
 							else
 								invalid_layer_reference;
 							end if;
 
 						when VALUE =>
+							placeholder := (et_pcb.type_text (text_basic) with meaning => VALUE);
 							if object_layer = TOP_ASSY then
-								top_assy_doc.texts.append (text);
-								text_assy_doc_properties (TOP, top_assy_doc.texts.last, log_threshold + 1);
+								top_assy_doc.placeholders.append (placeholder);
+								placeholder_assy_doc_properties (TOP, top_assy_doc.placeholders.last, log_threshold + 1);
 							elsif object_layer =  BOT_ASSY then
-								bot_assy_doc.texts.append (text);
-								text_assy_doc_properties (BOTTOM, bot_assy_doc.texts.last, log_threshold + 1);
+								bot_assy_doc.placeholders.append (placeholder);
+								placeholder_assy_doc_properties (BOTTOM, bot_assy_doc.placeholders.last, log_threshold + 1);
 							else
 								invalid_layer_value;
 							end if;
 							
 						when USER =>
+							text := (et_pcb.type_text (text_basic) with content => text_content);
 							case object_layer is
 								when TOP_SILK => 
 									top_silk_screen.texts.append (text);

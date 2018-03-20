@@ -89,7 +89,9 @@ package et_pcb is
 		hidden		: boolean;
 	end record;
 
-
+	function text_properties (text : in type_text) return string;
+	-- Returns the properties of the given text in a long single string.	
+	
 	
 	-- PLACEHOLDERS FOR TEXTS IN A PACKAGE
 	type type_package_text_meaning is (REFERENCE, VALUE); -- CS: purpose ?
@@ -235,6 +237,7 @@ package et_pcb is
 		arcs		: type_silk_arcs.list;
 		circles		: type_silk_circles.list;
 		texts		: type_texts_with_content.list;
+		placeholders: type_package_text_placeholders.list;
 	end record;
 
 	type type_package_silk_screen_both_faces is record
@@ -282,6 +285,7 @@ package et_pcb is
 		arcs		: type_doc_arcs.list;
 		circles		: type_doc_circles.list;
 		texts		: type_texts_with_content.list;
+		placeholders: type_package_text_placeholders.list;
 	end record;
 
 	type type_package_assembly_documentation_both_faces is record
@@ -527,6 +531,18 @@ package et_pcb is
 		cursor			: in type_route_restrict_lines.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
+	procedure placeholder_silk_screen_properties (
+	-- Logs the properties of the given silk screen placeholder
+		face			: in type_face;
+		cursor			: in type_package_text_placeholders.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+
+	procedure placeholder_assy_doc_properties (
+	-- Logs the properties of the given assembly documentation placeholder
+		face			: in type_face;
+		cursor			: in type_package_text_placeholders.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+	
 	procedure text_silk_screen_properties (
 	-- Logs the properties of the given silk screen text
 		face			: in type_face;

@@ -51,6 +51,7 @@ with ada.containers.ordered_sets;
 
 with ada.exceptions;
 
+with et_coordinates;
 with et_libraries;
 with et_string_processing;		use et_string_processing;
 
@@ -63,6 +64,20 @@ package body et_pcb is
 		return type_directory_name.to_string (directory_name);
 	end to_string;
 
+	function text_properties (text : in type_text) return string is
+	-- Returns the properties of the given text in a long single string.
+		use et_coordinates;
+	begin
+		return to_string (text.position) & latin_1.space
+			& "size (x" & axis_separator & "y) " 
+			& to_string (text.size_x) & latin_1.space & axis_separator & latin_1.space & to_string (text.size_y)
+			& " line width " & to_string (text.width)
+			& " angle " & to_string (text.angle)
+			--& " alignment hor/vert" & to_string (text.alignment.horizontal)
+			& " hidden " & boolean'image (text.hidden)
+			;
+	end text_properties;
+	
 	function to_string (text_meaning : in type_package_text_meaning) return string is
 	begin
 		return type_package_text_meaning'image (text_meaning);
@@ -170,10 +185,43 @@ package body et_pcb is
 			 & to_string (type_line (line)),
 			 log_threshold);
 	end line_route_restrict_properties;
+
+	procedure placeholder_silk_screen_properties (
+	-- Logs the properties of the given silk screen placeholder
+		face			: in type_face;
+		cursor			: in type_package_text_placeholders.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_package_text_placeholders;
+		placeholder : type_package_text_placeholder;
+	begin
+		placeholder := element (cursor);
+		log ("silk screen placeholder " & to_string (face)
+			 & " for " & to_string (placeholder.meaning), log_threshold);
+		
+		log_indentation_up;
+		log (text_properties (type_text (placeholder)), log_threshold + 1);
+		log_indentation_down;
+	end placeholder_silk_screen_properties;
+
+	procedure placeholder_assy_doc_properties (
+	-- Logs the properties of the given assembly documentation placeholder
+		face			: in type_face;
+		cursor			: in type_package_text_placeholders.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_package_text_placeholders;
+		placeholder : type_package_text_placeholder;
+	begin
+		placeholder := element (cursor);
+		log ("assembly doc placeholder " & to_string (face)
+			 & " for " & to_string (placeholder.meaning), log_threshold);
+
+		log_indentation_up;
+		log (text_properties (type_text (placeholder)), log_threshold + 1);
+		log_indentation_down;
+	end placeholder_assy_doc_properties;
 	
 	procedure text_silk_screen_properties (
 	-- Logs the properties of the given silk screen text
-	-- CS parameter "meaning" could be useful so that the meaning could be logged
 		face			: in type_face;
 		cursor			: in type_texts_with_content.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
@@ -184,12 +232,14 @@ package body et_pcb is
 		text := element (cursor);
 		log ("silk screen text " & to_string (face) & latin_1.space
 			 & "content '" & to_string (text.content) & "'", log_threshold);
-		-- CS: other text properties
+
+		log_indentation_up;
+		log (text_properties (type_text (text)), log_threshold + 1);
+		log_indentation_down;
 	end text_silk_screen_properties;
 
 	procedure text_assy_doc_properties (
 	-- Logs the properties of the given assembly documentation text
-	-- CS parameter "meaning" could be useful so that the meaning could be logged
 		face			: in type_face;
 		cursor			: in type_texts_with_content.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
@@ -200,7 +250,10 @@ package body et_pcb is
 		text := element (cursor);
 		log ("assembly doc text " & to_string (face) & latin_1.space
 			 & "content '" & to_string (text.content) & "'", log_threshold);
-		-- CS: other text properties		
+
+		log_indentation_up;
+		log (text_properties (type_text (text)), log_threshold + 1);
+		log_indentation_down;
 	end text_assy_doc_properties;
 	
 	
