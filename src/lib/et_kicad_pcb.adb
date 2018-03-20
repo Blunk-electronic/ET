@@ -382,11 +382,11 @@ package body et_kicad_pcb is
 		
 			arg : type_argument.bounded_string; -- here the argument goes temporarily
 
-			procedure invalid is begin
+			procedure invalid_layer is begin
 				log_indentation_reset;
 				log (message_error & "invalid layer " & to_string (arg), console => true);
 				raise constraint_error;
-			end invalid;
+			end invalid_layer;
 
 			procedure too_many_arguments is begin
 				log_indentation_reset;
@@ -614,7 +614,7 @@ package body et_kicad_pcb is
 										terminal_top_stop_mask := OPEN;
 
 									else
-										invalid;
+										invalid_layer;
 									end if;
 
 										
@@ -625,7 +625,7 @@ package body et_kicad_pcb is
 									or to_string (arg) = layer_all_stop_mask then
 										null; -- fine
 									else
-										invalid;
+										invalid_layer;
 									end if;
 									
 							end case;
