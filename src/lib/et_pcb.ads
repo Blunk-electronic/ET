@@ -487,9 +487,8 @@ package et_pcb is
 
 	
 	
-	type type_package is record
+	type type_package (appearance : type_package_appearance) is record
 		description				: type_package_description.bounded_string;
-		package_contours		: type_package_contour;
 		silk_screen				: type_package_silk_screen_both_faces; -- incl. reference and purpose
 		assembly_documentation	: type_package_assembly_documentation_both_faces;
 		keepout 				: type_package_keepout_both_faces;
@@ -500,12 +499,21 @@ package et_pcb is
 		pcb_contours_plated 	: type_package_pcb_contour_plated;
 		terminals				: type_terminals.map;
 		timestamp				: et_string_processing.type_timestamp;
+		technology				: type_assembly_technology; -- set by majority of terminals
+		
+		-- Only REAL packages have 3d contours:
+		case appearance is
+			when REAL =>
+				package_contours : type_package_contour;
+			when VIRTUAL =>
+				null;
+		end case;
 	end record;
 
 
 
 	
-	package type_packages is new indefinite_ordered_maps ( -- CS try ordered_maps instead
+	package type_packages is new indefinite_ordered_maps (
 		key_type 		=> et_libraries.type_component_package_name.bounded_string, -- S_SO14
 		element_type 	=> type_package);
 	use type_packages;

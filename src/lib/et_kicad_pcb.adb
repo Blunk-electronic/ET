@@ -193,7 +193,7 @@ package body et_kicad_pcb is
 
 		type type_attribute is (SMD, THT, VIRTUAL);
 		package_technology : type_assembly_technology := THT; -- according to the majority of terminals
-		package_appearance : type_package_appearance;
+		package_appearance : type_package_appearance := REAL;
 		
 		type type_text_base is new type_text with null record;
 		text_basic : type_text_base;
@@ -547,13 +547,12 @@ package body et_kicad_pcb is
 						when 1 =>
 							-- CS check length
 							if to_string (arg) = attribute_technology_smd then
-								package_technology := SMT;
+								package_technology := SMT; -- overwrite default (see declarations)
 							elsif to_string (arg) = attribute_technology_virtual then
-								package_appearance := VIRTUAL;
+								package_appearance := VIRTUAL;  -- overwrite default (see declarations)
 							else
 								invalid_attribute;
 							end if;
-
 						when others => 
 							too_many_arguments;
 					end case;
@@ -1039,6 +1038,20 @@ package body et_kicad_pcb is
 			end if;
 			
 		end check_placeholders;
+
+		procedure check_technology is
+			use type_terminals;
+			cursor : type_terminals.cursor;
+			tht_count, smt_count : natural := 0; -- the number of THT or SMT terminals
+		begin
+			while cursor /= type_terminals.no_element loop
+				case element (cursor).technology is
+					when THT => tht_count := tht_count + 1;
+					when SMT => smt_count := smt_count + 1;
+				end case;
+				next (cursor);
+			end loop;
+		end check_technology;
 		
 	begin -- to_package_model
 		log ("parsing/building model ...", log_threshold);
@@ -1109,22 +1122,46 @@ package body et_kicad_pcb is
 
 		-- check the most relevant placeholders
 		check_placeholders;
+
+		check_technology;
 		
 		log_indentation_down;
 
-		return (
-			package_contours		=> no_contour, -- CS to be filled from 3d model
-			pcb_contours			=> pcb_contours,
-			pcb_contours_plated 	=> pcb_contours_plated,
-			terminals				=> terminals,
-			silk_screen				=> (top => top_silk_screen, bottom => bot_silk_screen),
-			keepout					=> (top => top_keepout, bottom => bot_keepout),
-			route_restrict 			=> route_restrict,
-			via_restrict 			=> via_restrict,
-			assembly_documentation 	=> (top => top_assy_doc, bottom => bot_assy_doc),
-			timestamp				=> timestamp,
-			description				=> description
-			   );
+		case package_appearance is
+			when REAL =>
+				return (
+					appearance				=> REAL,
+					package_contours		=> no_contour, -- CS to be filled from 3d model
+					pcb_contours			=> pcb_contours,
+					pcb_contours_plated 	=> pcb_contours_plated,
+					terminals				=> terminals,
+					silk_screen				=> (top => top_silk_screen, bottom => bot_silk_screen),
+					keepout					=> (top => top_keepout, bottom => bot_keepout),
+					route_restrict 			=> route_restrict,
+					via_restrict 			=> via_restrict,
+					assembly_documentation 	=> (top => top_assy_doc, bottom => bot_assy_doc),
+					timestamp				=> timestamp,
+					description				=> description,
+					technology				=> package_technology
+					);
+
+			when VIRTUAL => -- no package_contours
+				return (
+					appearance				=> VIRTUAL,
+					pcb_contours			=> pcb_contours,
+					pcb_contours_plated 	=> pcb_contours_plated,
+					terminals				=> terminals,
+					silk_screen				=> (top => top_silk_screen, bottom => bot_silk_screen),
+					keepout					=> (top => top_keepout, bottom => bot_keepout),
+					route_restrict 			=> route_restrict,
+					via_restrict 			=> via_restrict,
+					assembly_documentation 	=> (top => top_assy_doc, bottom => bot_assy_doc),
+					timestamp				=> timestamp,
+					description				=> description,
+					technology				=> package_technology
+					);
+		end case;
+				
 	end to_package_model;
 	
 	procedure read_libraries (
