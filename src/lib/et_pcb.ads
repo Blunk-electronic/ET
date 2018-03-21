@@ -393,8 +393,10 @@ package et_pcb is
 
 
 
-
-	
+	type type_package_appearance is (
+		REAL,
+		VIRTUAL
+		);	
 
 	type type_assembly_technology is (
 		THT,	-- Through Hole Technology
@@ -471,13 +473,22 @@ package et_pcb is
 		element_type	=> type_terminal,
 		"<"				=> et_libraries.type_terminal_name."<");
 
+
+	package_description_length_max : constant positive := 200;
+	package type_package_description is new generic_bounded_length (package_description_length_max);
+
+	function to_string (description : in type_package_description.bounded_string) return string;
+
 	
+	package_tags_length_max : constant positive := 200;
+	package type_package_tags is new generic_bounded_length (package_tags_length_max);
 
+	function to_string (tags : in type_package_tags.bounded_string) return string;
 
-
+	
 	
 	type type_package is record
-		--value		: type_component_text_placeholder (meaning => et_libraries.VALUE) 
+		description				: type_package_description.bounded_string;
 		package_contours		: type_package_contour;
 		silk_screen				: type_package_silk_screen_both_faces; -- incl. reference and purpose
 		assembly_documentation	: type_package_assembly_documentation_both_faces;
@@ -488,6 +499,7 @@ package et_pcb is
 		pcb_contours			: type_package_pcb_contour;
 		pcb_contours_plated 	: type_package_pcb_contour_plated;
 		terminals				: type_terminals.map;
+		timestamp				: et_string_processing.type_timestamp;
 	end record;
 
 

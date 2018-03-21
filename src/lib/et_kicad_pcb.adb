@@ -187,6 +187,14 @@ package body et_kicad_pcb is
 			return trim (type_argument_counter'image (arg_count), left);
 		end to_string;			
 
+		timestamp : type_timestamp;
+		description : type_package_description.bounded_string;
+		tags : type_package_tags.bounded_string;
+
+		type type_attribute is (SMD, THT, VIRTUAL);
+		package_technology : type_assembly_technology := THT; -- according to the majority of terminals
+		package_appearance : type_package_appearance;
+		
 		type type_text_base is new type_text with null record;
 		text_basic : type_text_base;
 		text : type_text_with_content;
@@ -390,7 +398,7 @@ package body et_kicad_pcb is
 
 			procedure too_many_arguments is begin
 				log_indentation_reset;
-				log (message_error & "too many arguments in " & to_string (section.name) & " !", console => true);
+				log (message_error & "too many arguments in section " & to_string (section.name) & " !", console => true);
 				log ("excessive argument reads '" & to_string (arg) & "'", console => true);
 				raise constraint_error;
 			end too_many_arguments;
@@ -427,6 +435,21 @@ package body et_kicad_pcb is
 				raise constraint_error;
 			end invalid_package_name;
 
+			procedure invalid_component_assembly_face is
+			begin
+				log_indentation_reset;
+				log (message_error & "default assembly face " & et_pcb_coordinates.to_string (BOTTOM) 
+					 & " found. Must be " & et_pcb_coordinates.to_string (TOP) & " !", console => true);
+				raise constraint_error;
+			end invalid_component_assembly_face;
+
+			procedure invalid_attribute is
+			begin
+				log_indentation_reset;
+				log (message_error & "invalid attribute !", console => true);
+				raise constraint_error;
+			end invalid_attribute;
+			
 		begin -- read_arg
 			-- We handle an argument that is wrapped in quotation different from a non-wrapped argument:
 			if element (current_line, character_cursor) = latin_1.quotation then
@@ -481,6 +504,56 @@ package body et_kicad_pcb is
 							if to_string (arg) /= to_string (package_name) then
 								invalid_package_name;
 							end if;
+						when others => 
+							too_many_arguments;
+					end case;
+
+				when SEC_DESCR =>
+					case section.arg_counter is
+						when 0 => null;
+						when 1 =>
+							-- CS check length
+							description := type_package_description.to_bounded_string (to_string (arg));
+							-- CS check description
+						when others => 
+							too_many_arguments;
+					end case;
+
+				when SEC_TAGS =>
+					case section.arg_counter is
+						when 0 => null;
+						when 1 =>
+							-- CS check length
+							tags := type_package_tags.to_bounded_string (to_string (arg));
+							-- CS check tags
+						when others => 
+							too_many_arguments;
+					end case;
+					
+				when SEC_TEDIT =>
+					case section.arg_counter is
+						when 0 => null;
+						when 1 =>
+							-- CS check length
+							timestamp := type_timestamp (to_string (arg));
+							et_string_processing.check_timestamp (timestamp);
+						when others => 
+							too_many_arguments;
+					end case;
+
+				when SEC_ATTR =>
+					case section.arg_counter is
+						when 0 => null;
+						when 1 =>
+							-- CS check length
+							if to_string (arg) = attribute_technology_smd then
+								package_technology := SMT;
+							elsif to_string (arg) = attribute_technology_virtual then
+								package_appearance := VIRTUAL;
+							else
+								invalid_attribute;
+							end if;
+
 						when others => 
 							too_many_arguments;
 					end case;
@@ -540,21 +613,34 @@ package body et_kicad_pcb is
 					case section.arg_counter is
 						when 0 => null;
 						when 1 => 
-							if to_string (arg) = layer_top_silk_screen then
-								object_layer := TOP_SILK;
-							elsif to_string (arg) = layer_bot_silk_screen then
-								object_layer := BOT_SILK;
-							elsif to_string (arg) = layer_top_assy_doc then
-								object_layer := TOP_ASSY;
-							elsif to_string (arg) = layer_bot_assy_doc then
-								object_layer := BOT_ASSY;
-							elsif to_string (arg) = layer_top_keepout then
-								object_layer := TOP_KEEP;
-							elsif to_string (arg) = layer_bot_keepout then
-								object_layer := BOT_KEEP;
-							else
-								null; -- CS 
-							end if;
+							-- NOTE: the LAYER statement is also used to identify the face
+							-- where the component is placed on by default. So the stack depth 
+							-- matters here.
+							case sections_stack.depth is
+								when 2 => -- it is about the face the component is placed on
+									if to_string (arg) = layer_bot_copper then
+										invalid_component_assembly_face;
+									elsif to_string (arg) /= layer_top_copper then
+										invalid_layer;
+									end if;
+									
+								when others =>
+									if to_string (arg) = layer_top_silk_screen then
+										object_layer := TOP_SILK;
+									elsif to_string (arg) = layer_bot_silk_screen then
+										object_layer := BOT_SILK;
+									elsif to_string (arg) = layer_top_assy_doc then
+										object_layer := TOP_ASSY;
+									elsif to_string (arg) = layer_bot_assy_doc then
+										object_layer := BOT_ASSY;
+									elsif to_string (arg) = layer_top_keepout then
+										object_layer := TOP_KEEP;
+									elsif to_string (arg) = layer_bot_keepout then
+										object_layer := BOT_KEEP;
+									else
+										null; -- CS 
+									end if;
+							end case;
 
 						when others => too_many_arguments;
 					end case;
@@ -703,6 +789,15 @@ package body et_kicad_pcb is
 			log (process_section (section.name), log_threshold + 4);
 			case section.name is
 
+				when SEC_TEDIT =>
+					log ("timestamp " & string (timestamp), log_threshold + 1);
+
+				when SEC_DESCR =>
+					log (to_string (description), log_threshold + 1);
+
+				when SEC_TAGS =>
+					log (to_string (tags), log_threshold + 1);
+					
 				when SEC_START =>
 					line_start := object_position;
 
@@ -1026,7 +1121,9 @@ package body et_kicad_pcb is
 			keepout					=> (top => top_keepout, bottom => bot_keepout),
 			route_restrict 			=> route_restrict,
 			via_restrict 			=> via_restrict,
-			assembly_documentation 	=> (top => top_assy_doc, bottom => bot_assy_doc)
+			assembly_documentation 	=> (top => top_assy_doc, bottom => bot_assy_doc),
+			timestamp				=> timestamp,
+			description				=> description
 			   );
 	end to_package_model;
 	

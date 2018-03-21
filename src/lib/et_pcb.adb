@@ -129,6 +129,16 @@ package body et_pcb is
 		return "start" & to_string (line.start_point) 
 			& " end" & to_string (line.end_point);
 	end to_string;
+
+	function to_string (description : in type_package_description.bounded_string) return string is
+	begin
+		return "description '" & type_package_description.to_string (description) & "'";
+	end to_string;
+
+	function to_string (tags : in type_package_tags.bounded_string) return string is
+	begin
+		return "tags '" & type_package_tags.to_string (tags) & "'";
+	end to_string;
 	
 	procedure line_silk_screen_properties (
 	-- Logs the properties of the given line of silk screen

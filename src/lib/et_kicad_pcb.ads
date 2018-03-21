@@ -81,6 +81,9 @@ package et_kicad_pcb is
 	keyword_fp_text_hide		: constant string (1..4)	:= "hide";
 
 	placeholder_reference		: constant string (1..5)	:= "REF**";
+
+	attribute_technology_smd		: constant string (1..3)	:= "smd";
+	attribute_technology_virtual	: constant string (1..7)	:= "virtual";
 	
 	type type_fp_text_meaning is (REFERENCE, VALUE, USER);
 	
