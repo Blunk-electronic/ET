@@ -398,6 +398,8 @@ package et_pcb is
 		VIRTUAL
 		);	
 
+	function to_string (appearance : in type_package_appearance) return string;
+	
 	type type_assembly_technology is (
 		THT,	-- Through Hole Technology
 		SMT		-- Surface Mount Technology

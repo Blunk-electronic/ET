@@ -89,6 +89,11 @@ package body et_pcb is
 		return type_directory_name.to_bounded_string (directory_name);
 	end to_directory;
 
+	function to_string (appearance : in type_package_appearance) return string is
+	begin
+		return type_package_appearance'image (appearance);
+	end to_string;
+	
 	function to_string (technology : in type_assembly_technology) return string is
 	begin
 		return type_assembly_technology'image (technology);

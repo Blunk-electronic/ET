@@ -793,9 +793,12 @@ package body et_kicad_pcb is
 
 				when SEC_DESCR =>
 					log (to_string (description), log_threshold + 1);
-
+					
 				when SEC_TAGS =>
 					log (to_string (tags), log_threshold + 1);
+
+				when SEC_ATTR =>
+					null;
 					
 				when SEC_START =>
 					line_start := object_position;
@@ -1040,17 +1043,52 @@ package body et_kicad_pcb is
 		end check_placeholders;
 
 		procedure check_technology is
+		-- If the package is REAL, counts the tht and smd terminals. 
+		-- Warns operator if the package technology
+		-- is not set according to the majority of terminals respectively.
 			use type_terminals;
-			cursor : type_terminals.cursor;
+			cursor : type_terminals.cursor := terminals.first;
 			tht_count, smt_count : natural := 0; -- the number of THT or SMT terminals
-		begin
-			while cursor /= type_terminals.no_element loop
-				case element (cursor).technology is
-					when THT => tht_count := tht_count + 1;
-					when SMT => smt_count := smt_count + 1;
+
+			function number (count : in natural) return string is begin
+				return " (" & trim (positive'image (count), left) & "). ";
+			end number;
+		
+		begin -- check_technology
+			log ("checking package technology vs. terminal count ...", log_threshold + 1);
+			log_indentation_up;
+			
+			log ("appearance " & to_string (package_appearance), log_threshold + 1);
+			
+			if package_appearance = REAL then
+				log ("assembly technology " & to_string (package_technology), log_threshold + 1);
+			
+				while cursor /= type_terminals.no_element loop
+					case element (cursor).technology is
+						when THT => tht_count := tht_count + 1;
+						when SMT => smt_count := smt_count + 1;
+					end case;
+					next (cursor);
+				end loop;
+
+				case package_technology is
+					when THT =>
+						if tht_count < smt_count then
+							log (message_warning & "majority of terminals is " & to_string (SMT)
+								& number (smt_count)
+								& "Package technology should be " & to_string (SMT) & " !");
+						end if;
+
+					when SMT =>
+						if smt_count < tht_count then
+							log (message_warning & "majority of terminals is " & to_string (THT)
+								& number (tht_count)
+								& "Package technology should be " & to_string (THT) & " !");
+						end if;
 				end case;
-				next (cursor);
-			end loop;
+
+			end if;
+			log_indentation_down;
 		end check_technology;
 		
 	begin -- to_package_model
@@ -1123,10 +1161,12 @@ package body et_kicad_pcb is
 		-- check the most relevant placeholders
 		check_placeholders;
 
+		-- check assembly technology vs. terminal count
 		check_technology;
 		
 		log_indentation_down;
 
+		-- depending on the attribute we return a real or a virtual package
 		case package_appearance is
 			when REAL =>
 				return (
