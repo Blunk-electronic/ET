@@ -663,6 +663,13 @@ package body et_kicad_pcb is
 						when others => too_many_arguments;
 					end case;
 					
+				when SEC_ANGLE =>
+					case section.arg_counter is
+						when 0 => null;
+						when 1 => object_angle := to_angle (to_string (arg));
+						when others => too_many_arguments;
+					end case;
+					
 				when SEC_AT =>
 					object_angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
 					case section.arg_counter is
@@ -780,6 +787,9 @@ package body et_kicad_pcb is
 			terminal_cursor			: type_terminals.cursor;
 			silk_screen_line_cursor	: type_silk_lines.cursor;
 
+			type type_arc is new et_pcb.type_arc with null record;
+			arc : type_arc;
+		
 			procedure invalid_layer_reference is begin
 				log_indentation_reset;
 				log (message_error & "reference placeholder must be in a silk screen layer !", console => true);
@@ -897,7 +907,44 @@ package body et_kicad_pcb is
 							bot_keepout.lines.append ((line_start, line_end));
 							line_keepout_properties (BOTTOM, top_keepout.lines.last, log_threshold + 1);
 					end case;
-				
+
+				when SEC_FP_ARC =>
+					-- Append the arc to the container correspoinding to the layer. Then log the arc properties.
+					arc := (center => line_start, start_point => line_end,
+							end_point => line_end); -- CS must be calculated
+					
+					case object_layer is
+						when TOP_SILK =>
+							top_silk_screen.arcs.append ((et_pcb.type_arc (arc) with line_width));
+							arc_silk_screen_properties (TOP, top_silk_screen.arcs.last, log_threshold + 1);
+							
+						when BOT_SILK =>
+							bot_silk_screen.arcs.append ((et_pcb.type_arc (arc) with line_width));
+							arc_silk_screen_properties (BOTTOM, bot_silk_screen.arcs.last, log_threshold + 1);
+							
+						when TOP_ASSY =>
+							top_assy_doc.arcs.append ((et_pcb.type_arc (arc) with line_width));
+							arc_assy_doc_properties (TOP, top_assy_doc.arcs.last, log_threshold + 1);
+							
+						when BOT_ASSY =>
+							bot_assy_doc.arcs.append ((et_pcb.type_arc (arc) with line_width));
+							arc_assy_doc_properties (BOTTOM, bot_assy_doc.arcs.last, log_threshold + 1);
+							
+						when TOP_KEEP =>
+							top_keepout.arcs.append ((
+								center 		=> arc.center,
+								start_point	=> arc.start_point, 
+								end_point	=> arc.end_point));
+							arc_keepout_properties (TOP, top_keepout.arcs.last, log_threshold + 1);
+							
+						when BOT_KEEP =>
+							bot_keepout.arcs.append ((
+								center 		=> arc.center,
+								start_point	=> arc.start_point, 
+								end_point	=> arc.end_point));
+							arc_keepout_properties (BOTTOM, top_keepout.arcs.last, log_threshold + 1);
+					end case;
+					
 				when SEC_PAD =>
 
 					-- Insert a terminal in the list "terminals":

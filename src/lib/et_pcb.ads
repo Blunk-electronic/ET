@@ -139,10 +139,10 @@ package et_pcb is
 	-- ARC
 	type type_arc is abstract tagged record
 		center			: type_point_3d;
-		radius  		: type_distance;
+-- 		radius  		: type_distance;
 		start_point		: type_point_3d;
 		end_point		: type_point_3d;
-		start_angle		: type_angle;
+-- 		angle			: type_angle;
 	end record;
 
 	-- CIRCLE
@@ -535,24 +535,66 @@ package et_pcb is
 		cursor			: in type_silk_lines.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
+	procedure arc_silk_screen_properties (
+	-- Logs the properties of the given arc of silk screen
+		face			: in type_face;
+		cursor			: in type_silk_arcs.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+
+	
 	procedure line_assy_doc_properties (
 	-- Logs the properties of the given line of assembly documentation
 		face			: in type_face;
 		cursor			: in type_doc_lines.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
+	procedure arc_assy_doc_properties (
+	-- Logs the properties of the given arc of assembly documentation
+		face			: in type_face;
+		cursor			: in type_doc_arcs.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+	
+	
 	procedure line_keepout_properties (
 	-- Logs the properties of the given line of keepout
 		face			: in type_face;
 		cursor			: in type_keepout_lines.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
+	procedure arc_keepout_properties (
+	-- Logs the properties of the given arc of keepout
+		face			: in type_face;
+		cursor			: in type_keepout_arcs.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+
+	
 	procedure line_route_restrict_properties (
 	-- Logs the properties of the given line of route restrict
 		face			: in type_face;
 		cursor			: in type_route_restrict_lines.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
+	procedure arc_route_restrict_properties (
+	-- Logs the properties of the given arc of route restrict
+		face			: in type_face;
+		cursor			: in type_route_restrict_arcs.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+
+	
+	procedure line_via_restrict_properties (
+	-- Logs the properties of the given line of via restrict
+		face			: in type_face;
+		cursor			: in type_via_restrict_lines.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+
+	procedure arc_via_restrict_properties (
+	-- Logs the properties of the given arc of via restrict
+		face			: in type_face;
+		cursor			: in type_via_restrict_arcs.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+
+	
+	
 	procedure placeholder_silk_screen_properties (
 	-- Logs the properties of the given silk screen placeholder
 		face			: in type_face;

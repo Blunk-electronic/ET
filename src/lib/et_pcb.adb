@@ -135,6 +135,14 @@ package body et_pcb is
 			& " end" & to_string (line.end_point);
 	end to_string;
 
+	function to_string (arc : in type_arc) return string is
+	-- Returns the start, end point and angle of the given arc as string.
+	begin
+		return "center" & to_string (arc.center) 
+			& " start" & to_string (arc.start_point) 
+			& " end" & to_string (arc.end_point);
+	end to_string;
+	
 	function to_string (description : in type_package_description.bounded_string) return string is
 	begin
 		return "description '" & type_package_description.to_string (description) & "'";
@@ -159,6 +167,21 @@ package body et_pcb is
 			 & " width " & to_string (line.width), log_threshold);
 	end line_silk_screen_properties;
 
+	procedure arc_silk_screen_properties (
+	-- Logs the properties of the given arc of silk screen
+		face			: in type_face;
+		cursor			: in type_silk_arcs.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_silk_arcs;
+		arc : type_silk_arc;
+	begin
+		arc := element (cursor);
+		log ("silk screen arc face " & to_string (face) & latin_1.space 
+			 & to_string (type_arc (arc))
+			 & " width " & to_string (arc.width), log_threshold);
+	end arc_silk_screen_properties;
+	
+	
 	procedure line_assy_doc_properties (
 	-- Logs the properties of the given line of assembly documentation
 		face			: in type_face;
@@ -173,6 +196,21 @@ package body et_pcb is
 			 & " width " & to_string (line.width), log_threshold);
 	end line_assy_doc_properties;
 
+	procedure arc_assy_doc_properties (
+	-- Logs the properties of the given arc of assembly documentation
+		face			: in type_face;
+		cursor			: in type_doc_arcs.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_doc_arcs;
+		arc : type_doc_arc;
+	begin
+		arc := element (cursor);
+		log ("assembly doc arc face " & to_string (face) & latin_1.space 
+			 & to_string (type_arc (arc))
+			 & " width " & to_string (arc.width), log_threshold);
+	end arc_assy_doc_properties;
+
+	
 	procedure line_keepout_properties (
 	-- Logs the properties of the given line of keepout
 		face			: in type_face;
@@ -187,6 +225,20 @@ package body et_pcb is
 			 log_threshold);
 	end line_keepout_properties;
 
+	procedure arc_keepout_properties (
+	-- Logs the properties of the given arc of keepout
+		face			: in type_face;
+		cursor			: in type_keepout_arcs.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_keepout_arcs;
+		arc : type_keepout_arc;
+	begin
+		arc := element (cursor);
+		log ("keepout arc face " & to_string (face) & latin_1.space 
+			 & to_string (type_arc (arc)), log_threshold);
+	end arc_keepout_properties;
+
+	
 	procedure line_route_restrict_properties (
 	-- Logs the properties of the given line of route restrict
 		face			: in type_face;
@@ -197,10 +249,50 @@ package body et_pcb is
 	begin
 		line := element (cursor);
 		log ("route restrict line face " & to_string (face) & latin_1.space
-			 & to_string (type_line (line)),
-			 log_threshold);
+			 & to_string (type_line (line)), log_threshold);
 	end line_route_restrict_properties;
 
+	procedure arc_route_restrict_properties (
+	-- Logs the properties of the given arc of route restrict
+		face			: in type_face;
+		cursor			: in type_route_restrict_arcs.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_route_restrict_arcs;
+		arc : type_route_restrict_arc;
+	begin
+		arc := element (cursor);
+		log ("route restrict arc face " & to_string (face) & latin_1.space 
+			 & to_string (type_arc (arc)), log_threshold);
+	end arc_route_restrict_properties;
+
+	
+	procedure line_via_restrict_properties (
+	-- Logs the properties of the given line of via restrict
+		face			: in type_face;
+		cursor			: in type_via_restrict_lines.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_via_restrict_lines;
+		line : type_via_restrict_line;
+	begin
+		line := element (cursor);
+		log ("via restrict line face " & to_string (face) & latin_1.space
+			 & to_string (type_line (line)), log_threshold);
+	end line_via_restrict_properties;
+
+	procedure arc_via_restrict_properties (
+	-- Logs the properties of the given arc of via restrict
+		face			: in type_face;
+		cursor			: in type_via_restrict_arcs.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_via_restrict_arcs;
+		arc : type_via_restrict_arc;
+	begin
+		arc := element (cursor);
+		log ("via restrict arc face " & to_string (face) & latin_1.space 
+			 & to_string (type_arc (arc)), log_threshold);
+	end arc_via_restrict_properties;
+
+	
 	procedure placeholder_silk_screen_properties (
 	-- Logs the properties of the given silk screen placeholder
 		face			: in type_face;
