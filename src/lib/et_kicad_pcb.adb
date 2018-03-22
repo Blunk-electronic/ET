@@ -127,7 +127,7 @@ package body et_kicad_pcb is
 			SEC_ATTR,
 			SEC_ANGLE,
 			SEC_CENTER,
-			SEC_CLEARANCE,
+			--SEC_CLEARANCE,
 			SEC_DESCR,
 			SEC_DRILL,
 			SEC_EFFECTS,
@@ -137,7 +137,7 @@ package body et_kicad_pcb is
 			SEC_FP_CIRCLE,
 			SEC_FP_LINE,
 			SEC_FP_TEXT,
-			SEC_JUSTIFY,
+			--SEC_JUSTIFY,
 			SEC_LAYER,
 			SEC_LAYERS,
 			SEC_MODEL,
@@ -146,7 +146,7 @@ package body et_kicad_pcb is
 			SEC_ROTATE,
 			SEC_SCALE,
 			SEC_SIZE,
-			SEC_SOLDER_MASK_MARGIN,
+			--SEC_SOLDER_MASK_MARGIN,
 			SEC_START,
 			SEC_TAGS,
 			SEC_TEDIT,
@@ -371,6 +371,18 @@ package body et_kicad_pcb is
 			character_cursor := end_of_kw;
 
 			log (enter_section (section.name), log_threshold + 3);
+
+			exception
+				when event:
+					others =>
+						log_indentation_reset;
+						log (message_error & affected_line (element (line_cursor)) 
+							& to_string (element (line_cursor)), console => true);
+
+						log (message_error & "section '" & slice (current_line, character_cursor, end_of_kw) 
+							& "' invalid or not supported yet", console => true);
+						raise;
+			
 		end read_section;
 		
 
@@ -1163,6 +1175,8 @@ package body et_kicad_pcb is
 
 		-- check assembly technology vs. terminal count
 		check_technology;
+
+		-- CS validate description
 		
 		log_indentation_down;
 
