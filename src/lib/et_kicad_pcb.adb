@@ -340,12 +340,12 @@ package body et_kicad_pcb is
 		
 		type type_section_and_argument_counter is record
 			name 		: type_section := INIT;
--- 			parent		: type_section;
+			parent		: type_section := INIT;
 			arg_counter	: type_argument_counter := type_argument_counter'first;
 		end record;
 
 		section : type_section_and_argument_counter;
-		parent_section : type_section;
+-- 		parent_section : type_section;
 		
 		package sections_stack is new et_general.stack_lifo (max => 20, item => type_section_and_argument_counter);
 
@@ -387,9 +387,9 @@ package body et_kicad_pcb is
 			end_of_kw : integer;  -- may become negative if no terminating character present
 		begin
 			-- save previous section and argument counter on stack
--- 			section.parent := section.name;
+			section.parent := section.name;
 			sections_stack.push (section);
-			parent_section := section.name;
+-- 			parent_section := section.name;
 			
 			section.arg_counter := 0;
 			
@@ -504,7 +504,7 @@ package body et_kicad_pcb is
 			begin
 				log_indentation_reset;
 				log (message_error & "invalid subsection '" & to_string (section.name) 
-					 & "' in parent section '" & to_string (parent_section) & "' !", console => true);
+					 & "' in parent section '" & to_string (section.parent) & "' !", console => true);
 				raise constraint_error;
 			end invalid_section;
 				
@@ -616,7 +616,7 @@ package body et_kicad_pcb is
 					end case;
 					
 				when SEC_FP_TEXT =>
-					case parent_section is
+					case section.parent is
 						when SEC_MODULE =>
 							text_2.hidden := false; -- "hide" flag is optionally provided as last argument. if not, default to false
 							case section.arg_counter is
@@ -662,7 +662,7 @@ package body et_kicad_pcb is
 					end case;
 
 				when SEC_CENTER =>
-					case parent_section is
+					case section.parent is
 						when SEC_FP_CIRCLE =>
 							case section.arg_counter is
 								when 0 => null;
@@ -678,7 +678,7 @@ package body et_kicad_pcb is
 					end case;
 					
 				when SEC_START =>
-					case parent_section is
+					case section.parent is
 						when SEC_FP_LINE =>
 							case section.arg_counter is
 								when 0 => null;
@@ -705,7 +705,7 @@ package body et_kicad_pcb is
 					end case;
 
 				when SEC_END =>
-					case parent_section is
+					case section.parent is
 						when SEC_FP_LINE =>
 							case section.arg_counter is
 								when 0 => null;
@@ -743,7 +743,7 @@ package body et_kicad_pcb is
 					end case;
 
 				when SEC_ANGLE =>
-					case parent_section is
+					case section.parent is
 						when SEC_FP_ARC =>
 							case section.arg_counter is
 								when 0 => null;
@@ -755,7 +755,7 @@ package body et_kicad_pcb is
 					end case;
 					
 				when SEC_LAYER =>
-					case parent_section is
+					case section.parent is
 						when SEC_MODULE =>
 							case section.arg_counter is
 								when 0 => null;
@@ -842,7 +842,7 @@ package body et_kicad_pcb is
 					end case;
 
 				when SEC_WIDTH =>
-					case parent_section is
+					case section.parent is
 						when SEC_FP_LINE =>
 							case section.arg_counter is
 								when 0 => null;
@@ -868,7 +868,7 @@ package body et_kicad_pcb is
 					end case;
 
 				when SEC_SIZE =>
-					case parent_section is
+					case section.parent is
 						when SEC_FONT =>
 							case section.arg_counter is
 								when 0 => null;
@@ -889,7 +889,7 @@ package body et_kicad_pcb is
 					end case;
 					
 				when SEC_THICKNESS =>
-					case parent_section is
+					case section.parent is
 						when SEC_FONT =>
 							case section.arg_counter is
 								when 0 => null;
@@ -901,7 +901,7 @@ package body et_kicad_pcb is
 					end case;
 					
 				when SEC_AT =>
-					case parent_section is
+					case section.parent is
 						when SEC_PAD =>
 							terminal_angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
 							case section.arg_counter is
@@ -934,7 +934,7 @@ package body et_kicad_pcb is
 					end case;
 							
 				when SEC_DRILL =>
-					case parent_section is
+					case section.parent is
 						when SEC_PAD =>
 							case section.arg_counter is
 								when 0 => null;
@@ -947,7 +947,7 @@ package body et_kicad_pcb is
 					end case;
 					
 				when SEC_LAYERS => -- applies for terminals exclusively
-					case parent_section is
+					case section.parent is
 						when SEC_PAD =>
 							case section.arg_counter is
 								when 0 => null;	
@@ -995,7 +995,7 @@ package body et_kicad_pcb is
 					end case;
 					
 				when SEC_PAD =>
-					case parent_section is
+					case section.parent is
 						when SEC_MODULE =>
 							case section.arg_counter is
 								when 0 => null;
@@ -1041,8 +1041,8 @@ package body et_kicad_pcb is
 			terminal_cursor			: type_terminals.cursor;
 			silk_screen_line_cursor	: type_silk_lines.cursor;
 
-			type type_arc is new et_pcb.type_arc with null record;
-			arc : type_arc;
+-- 			type type_arc is new et_pcb.type_arc with null record;
+-- 			arc : type_arc;
 		
 			procedure invalid_layer_reference is begin
 				log_indentation_reset;
@@ -1144,47 +1144,44 @@ package body et_kicad_pcb is
 					
 				when SEC_FP_LINE =>
 					-- Append the line to the container correspoinding to the layer. Then log the line properties.
-					case object_layer is
+					case line.layer is
 						when TOP_SILK =>
-							top_silk_screen.lines.append ((line_start, line_end, line_width));
+							top_silk_screen.lines.append ((line.start_point, line.end_point, line.width));
 							line_silk_screen_properties (TOP, top_silk_screen.lines.last, log_threshold + 1);
 						when BOT_SILK =>
-							bot_silk_screen.lines.append ((line_start, line_end, line_width));
+							bot_silk_screen.lines.append ((line.start_point, line.end_point, line.width));
 							line_silk_screen_properties (BOTTOM, bot_silk_screen.lines.last, log_threshold + 1);
 						when TOP_ASSY =>
-							top_assy_doc.lines.append ((line_start, line_end, line_width));
+							top_assy_doc.lines.append ((line.start_point, line.end_point, line.width));
 							line_assy_doc_properties (TOP, top_assy_doc.lines.last, log_threshold + 1);
 						when BOT_ASSY =>
-							bot_assy_doc.lines.append ((line_start, line_end, line_width));
+							bot_assy_doc.lines.append ((line.start_point, line.end_point, line.width));
 							line_assy_doc_properties (BOTTOM, bot_assy_doc.lines.last, log_threshold + 1);
 						when TOP_KEEP =>
-							top_keepout.lines.append ((line_start, line_end));
+							top_keepout.lines.append ((line.start_point, line.end_point));
 							line_keepout_properties (TOP, top_keepout.lines.last, log_threshold + 1);
 						when BOT_KEEP =>
-							bot_keepout.lines.append ((line_start, line_end));
+							bot_keepout.lines.append ((line.start_point, line.end_point));
 							line_keepout_properties (BOTTOM, top_keepout.lines.last, log_threshold + 1);
 					end case;
 
 				when SEC_FP_ARC =>
 					-- Append the arc to the container correspoinding to the layer. Then log the arc properties.
-					arc := (center => line_start, start_point => line_end,
-							end_point => line_end); -- CS must be calculated
-					
-					case object_layer is
+					case arc.layer is
 						when TOP_SILK =>
-							top_silk_screen.arcs.append ((et_pcb.type_arc (arc) with line_width));
+							top_silk_screen.arcs.append ((et_pcb.type_arc (arc) with arc.width));
 							arc_silk_screen_properties (TOP, top_silk_screen.arcs.last, log_threshold + 1);
 							
 						when BOT_SILK =>
-							bot_silk_screen.arcs.append ((et_pcb.type_arc (arc) with line_width));
+							bot_silk_screen.arcs.append ((et_pcb.type_arc (arc) with arc.width));
 							arc_silk_screen_properties (BOTTOM, bot_silk_screen.arcs.last, log_threshold + 1);
 							
 						when TOP_ASSY =>
-							top_assy_doc.arcs.append ((et_pcb.type_arc (arc) with line_width));
+							top_assy_doc.arcs.append ((et_pcb.type_arc (arc) with arc.width));
 							arc_assy_doc_properties (TOP, top_assy_doc.arcs.last, log_threshold + 1);
 							
 						when BOT_ASSY =>
-							bot_assy_doc.arcs.append ((et_pcb.type_arc (arc) with line_width));
+							bot_assy_doc.arcs.append ((et_pcb.type_arc (arc) with arc.width));
 							arc_assy_doc_properties (BOTTOM, bot_assy_doc.arcs.last, log_threshold + 1);
 							
 						when TOP_KEEP =>
