@@ -386,10 +386,11 @@ package body et_kicad_pcb is
 		-- character or its last character.
 			end_of_kw : integer;  -- may become negative if no terminating character present
 		begin
-			-- save previous section and argument counter on stack
-			section.parent := section.name;
+			-- save previous section on stack
 			sections_stack.push (section);
--- 			parent_section := section.name;
+
+			-- the former actvie section name becomes the parent section name
+			section.parent := section.name;
 			
 			section.arg_counter := 0;
 			
