@@ -195,37 +195,6 @@ package body et_kicad_pcb is
 		package_technology : type_assembly_technology := THT; -- according to the majority of terminals
 		package_appearance : type_package_appearance := REAL;
 		
-		text : type_text_with_content;
-		text_content : et_libraries.type_text_content.bounded_string;
-		placeholder : type_package_text_placeholder;
-
-		fp_text_meaning : type_fp_text_meaning;
-		
-		line_start, line_end : et_pcb_coordinates.type_point_3d;
-		
-		terminal_name : et_libraries.type_terminal_name.bounded_string;
-		terminal_technology : type_assembly_technology;
-		terminal_shape_tht : type_terminal_shape_tht;
-		terminal_shape_smt : type_terminal_shape_smt;
-		terminal_inserted : boolean;
-
--- 		terminal_copper_width_outer_layers : et_pcb_coordinates.type_distance;
-		terminal_copper_width_inner_layers : et_pcb_coordinates.type_distance := 1.0; -- CS load from DRU ?
-		
-		terminal_top_solder_paste, terminal_bot_solder_paste : type_terminal_solder_paste;
-		terminal_solder_paste : type_terminal_solder_paste;
-		
-		terminal_top_stop_mask, terminal_bot_stop_mask : type_terminal_stop_mask;
-		terminal_stop_mask : type_terminal_stop_mask;
-
-		terminals : type_terminals.map;
-
-		-- CS use subtypes for reasonable sizes below:
-		object_size_x, object_size_y : et_pcb_coordinates.type_distance;
-		terminal_drill_size : et_pcb_coordinates.type_distance; 
-		object_position : et_pcb_coordinates.type_point_3d;
-		object_angle : et_pcb_coordinates.type_angle;
-
 		type type_layer is (
 			TOP_COPPER, BOT_COPPER,
 			TOP_SILK, BOT_SILK,
@@ -253,17 +222,40 @@ package body et_kicad_pcb is
 		end record;
 		circle : type_circle;
 
-		terminal_face : et_pcb_coordinates.type_face;
-		terminal_position : et_pcb_coordinates.type_point_3d;
-		terminal_size_x : et_pcb_coordinates.type_distance;
-		terminal_size_y : et_pcb_coordinates.type_distance;		
-		terminal_angle : et_pcb_coordinates.type_angle;
+
+		terminal_name 		: et_libraries.type_terminal_name.bounded_string;
+		terminal_technology	: type_assembly_technology;
+		terminal_shape_tht 	: type_terminal_shape_tht;
+		terminal_shape_smt 	: type_terminal_shape_smt;
+
+		terminal_face 		: et_pcb_coordinates.type_face;
+		-- CS use subtypes for reasonable sizes below:
+		terminal_drill_size	: et_pcb_coordinates.type_distance; 
+		terminal_position	: et_pcb_coordinates.type_point_3d;
+		terminal_size_x 	: et_pcb_coordinates.type_distance;
+		terminal_size_y 	: et_pcb_coordinates.type_distance;		
+		terminal_angle 		: et_pcb_coordinates.type_angle;
+
+-- 		terminal_copper_width_outer_layers : et_pcb_coordinates.type_distance;
+		terminal_copper_width_inner_layers : et_pcb_coordinates.type_distance := 1.0; -- CS load from DRU ?
+		
+		terminal_top_solder_paste, terminal_bot_solder_paste : type_terminal_solder_paste;
+		terminal_solder_paste : type_terminal_solder_paste;
+		
+		terminal_top_stop_mask, terminal_bot_stop_mask : type_terminal_stop_mask;
+		terminal_stop_mask : type_terminal_stop_mask;
+
+		terminals : type_terminals.map;
+		terminal_inserted : boolean;
 		
 		type type_text is new et_pcb.type_text with record
 			content	: et_libraries.type_text_content.bounded_string;
 			layer	: type_layer;
 		end record;
 		text_2 : type_text; -- CS rename to text
+
+		placeholder : type_package_text_placeholder;
+		fp_text_meaning : type_fp_text_meaning;
 		
 		top_silk_screen, bot_silk_screen 	: type_package_silk_screen;
 		top_assy_doc, bot_assy_doc			: type_package_assembly_documentation;
@@ -951,7 +943,7 @@ package body et_kicad_pcb is
 							end case;
 
 						when SEC_FP_TEXT =>
-							text.angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
+							text_2.angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
@@ -960,7 +952,7 @@ package body et_kicad_pcb is
 									set_point (axis => Y, point => text_2.position, value => to_distance (to_string (arg)));
 									set_point (axis => Z, point => text_2.position, value => zero_distance);
 								when 3 => 
-									text.angle := to_angle (to_string (arg));
+									text_2.angle := to_angle (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 							
@@ -1271,7 +1263,6 @@ package body et_kicad_pcb is
 
 					end case;
 					
-					
 				when SEC_PAD =>
 					-- Insert a terminal in the list "terminals":
 					case terminal_technology is
@@ -1289,7 +1280,9 @@ package body et_kicad_pcb is
 													width_inner_layers => terminal_copper_width_inner_layers,
 													drill_size_cir	=> terminal_drill_size,
 													shape_tht		=> terminal_shape_tht,
-													position		=> type_terminal_position (to_terminal_position (object_position, object_angle))
+
+													-- Compose from the terminal position and angel the full terminal position
+													position		=> type_terminal_position (to_terminal_position (terminal_position, terminal_angle))
 												   ));
 							else
 								terminals.insert (
@@ -1303,9 +1296,12 @@ package body et_kicad_pcb is
 													width_inner_layers => terminal_copper_width_inner_layers,
 													drill_size_dri	=> terminal_drill_size,
 													shape_tht		=> terminal_shape_tht,
-													position		=> type_terminal_position (to_terminal_position (object_position, object_angle)),
-													size_tht_x		=> object_size_x,
-													size_tht_y		=> object_size_y
+
+													-- Compose from the terminal position and angel the full terminal position
+													position		=> type_terminal_position (to_terminal_position (terminal_position, terminal_angle)),
+
+													size_tht_x		=> terminal_size_x,
+													size_tht_y		=> terminal_size_y
 												));
 							end if;
 
@@ -1324,7 +1320,10 @@ package body et_kicad_pcb is
 													shape			=> CIRCULAR,
 													tht_hole		=> DRILLED, -- has no meaning here
 													shape_smt		=> terminal_shape_smt,
-													position		=> type_terminal_position (to_terminal_position (object_position, object_angle)),
+
+													-- Compose from the terminal position and angel the full terminal position
+													position		=> type_terminal_position (to_terminal_position (terminal_position, terminal_angle)),
+
 													face 			=> terminal_face,
 													stop_mask		=> terminal_stop_mask,
 													solder_paste	=> terminal_solder_paste
@@ -1339,12 +1338,15 @@ package body et_kicad_pcb is
 													shape			=> NON_CIRCULAR,
 													tht_hole		=> DRILLED, -- has no meaning here
 													shape_smt		=> terminal_shape_smt,
-													position		=> type_terminal_position (to_terminal_position (object_position, object_angle)),
+
+													-- Compose from the terminal position and angel the full terminal position
+													position		=> type_terminal_position (to_terminal_position (terminal_position, terminal_angle)),
+
 													face 			=> terminal_face,
 													stop_mask		=> terminal_stop_mask,
 													solder_paste	=> terminal_solder_paste,
-													size_smt_x		=> object_size_x,
-													size_smt_y		=> object_size_y
+													size_smt_x		=> terminal_size_x,
+													size_smt_y		=> terminal_size_y
 												));
 							end if;
 

@@ -114,6 +114,7 @@ package et_pcb_coordinates is
 	function get_angle (point : in type_terminal_position) return type_angle;
 	
 	function to_terminal_position (
+	-- Composes from a given point and angle the terminal position.
 		point	: in type_point_3d;
 		angle	: in type_angle)
 		return type_terminal_position'class;
