@@ -38,7 +38,7 @@
 with ada.numerics.generic_elementary_functions;
 with et_string_processing;		use et_string_processing;
 with et_coordinates;
-with et_math;
+
 
 package body et_geometry is
 	

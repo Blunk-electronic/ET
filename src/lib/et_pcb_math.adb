@@ -1,12 +1,12 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                          SYSTEM ET MATHEMATICS                           --
+--                          SYSTEM ET PCB MATHEMATICS                       --
 --                                                                          --
 --                                 ET                                       --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -36,61 +36,31 @@
 --
 --   ToDo: 
 
--- with ada.text_io;				use ada.text_io;
--- with ada.strings.maps;			use ada.strings.maps;
--- with ada.strings.bounded;       use ada.strings.bounded;
--- with ada.strings.unbounded; 	use ada.strings.unbounded;
--- with ada.containers;            use ada.containers;
--- with ada.containers.vectors;
--- with ada.containers.doubly_linked_lists;
--- with ada.containers.indefinite_doubly_linked_lists;
--- with ada.containers.ordered_maps;
--- with ada.containers.indefinite_ordered_maps;
--- with ada.containers.ordered_sets;
--- 
-with et_coordinates;			use et_coordinates;
+with et_pcb_coordinates;		use et_pcb_coordinates;
+with ada.numerics.generic_elementary_functions;
 
 with et_string_processing;
 
 
-package body et_math is
+package body et_pcb_math is
 
-	procedure dummy is begin null; end dummy;
+	type type_float is digits 11 range type_distance_total'first .. type_distance_total'last; -- CS adjust accuracy ?
+	package functions is new ada.numerics.generic_elementary_functions (type_float);
 	
--- 	function round (
--- 	-- Rounds the given float_in according to the given accuracy.
--- 	-- Accuracy must be a power of ten (0.01, 0.1, 1, 10, ..).
--- 		float_in : in et_coordinates.type_distance;
--- 		accuracy : in et_coordinates.type_distance) return et_coordinates.type_distance is
--- 		use et_coordinates;
--- 		use et_string_processing;
+	function distance (point_one, point_two : in type_point_3d) return type_distance_total is
+	-- Computes the total distance between point_one and point_two.	
+		distance : type_distance_total; -- to be returned
+		delta_x, delta_y, delta_z : type_float := 0.0;
+	begin
+		delta_x := type_float (get_axis (X, point_one) - get_axis (X, point_two));
+		delta_y := type_float (get_axis (Y, point_one) - get_axis (Y, point_two));
+		delta_z := type_float (get_axis (Z, point_one) - get_axis (Z, point_two));
 
--- 		package functions_distance is new ada.numerics.generic_elementary_functions (type_distance);
--- 		use functions_distance;
--- 		
--- 		a : type_distance;
--- 
--- 		d : type_distance;
--- 		i : integer;
--- 	begin
-		-- CS: check if accuracy is in type_accuracy
--- 		if type_distance (accuracy) in type_accuracy then
--- 			null;
--- 		end if;
-
--- 		a := accuracy ** (-1.0); -- the reciprocal of the accuracy
--- 		d := float_in * a; -- multiply the given float_in by the reciprocal of the accuracy
--- 		i := integer (d); -- round result to integer
--- 		d := type_distance (i); -- convert result back to float and divide by reciprocal of accuracy
--- 		d := d / a;
+		distance := type_distance_total (functions.sqrt (delta_x ** 2) + (delta_y ** 2) + (delta_z ** 2));
 		
--- 		return d;
--- 		return float_in;
--- 	end round;
-
-
+		return distance;
+	end distance;
 	
-	
-end et_math;
+end et_pcb_math;
 
 -- Soli Deo Gloria

@@ -58,6 +58,7 @@ with et_general;
 with et_libraries;
 with et_pcb;
 with et_pcb_coordinates;
+with et_pcb_math;
 with et_string_processing;		use et_string_processing;
 
 with et_kicad;
@@ -1323,35 +1324,37 @@ package body et_kicad_pcb is
 					case circle.layer is
 						when TOP_SILK =>
 							top_silk_screen.circles.append ((et_pcb.type_circle (circle) with circle.width));
-							-- CS circle_silk_screen_properties (TOP, top_silk_screen.circles.last, log_threshold + 1);
+							circle_silk_screen_properties (TOP, top_silk_screen.circles.last, log_threshold + 1);
 							
 						when BOT_SILK =>
 							bot_silk_screen.circles.append ((et_pcb.type_circle (circle) with circle.width));
-							-- CS circle_silk_screen_properties (BOTTOM, bot_silk_screen.circles.last, log_threshold + 1);
+							circle_silk_screen_properties (BOTTOM, bot_silk_screen.circles.last, log_threshold + 1);
 							
 						when TOP_ASSY =>
 							top_assy_doc.circles.append ((et_pcb.type_circle (circle) with circle.width));
-							-- CS circle_assy_doc_properties (TOP, top_assy_doc.circles.last, log_threshold + 1);
+							circle_assy_doc_properties (TOP, top_assy_doc.circles.last, log_threshold + 1);
 							
 						when BOT_ASSY =>
 							bot_assy_doc.circles.append ((et_pcb.type_circle (circle) with circle.width));
-							-- CS circle_assy_doc_properties (BOTTOM, bot_assy_doc.circles.last, log_threshold + 1);
+							circle_assy_doc_properties (BOTTOM, bot_assy_doc.circles.last, log_threshold + 1);
 							
 						when TOP_KEEP =>
 							top_keepout.circles.append ((
 								center 		=> circle.center,
-								radius		=> 0.0 -- CS: calculate radius from circle.center and circle.point
+								-- The radius must be calculated from center and point on circle:
+								radius		=> et_pcb_math.distance (circle.center, circle.point)
 								-- NOTE: circle.width ignored
 								));
-							-- CS circle_keepout_properties (TOP, top_keepout.circles.last, log_threshold + 1);
+							circle_keepout_properties (TOP, top_keepout.circles.last, log_threshold + 1);
 							
 						when BOT_KEEP =>
 							bot_keepout.circles.append ((
 								center 		=> circle.center,
-								radius		=> 0.0 -- CS: calculate radius from circle.center and circle.point
+								-- The radius must be calculated from center and point on circle:
+								radius		=> et_pcb_math.distance (circle.center, circle.point)
 								-- NOTE: circle.width ignored
 								));
-							-- CS circle_keepout_properties (BOTTOM, top_keepout.circles.last, log_threshold + 1);
+							circle_keepout_properties (BOTTOM, top_keepout.circles.last, log_threshold + 1);
 
 						when TOP_COPPER | BOT_COPPER => 
 							null; -- CS

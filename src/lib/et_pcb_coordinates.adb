@@ -130,6 +130,18 @@ package body et_pcb_coordinates is
 		end case;
 	end set_point;
 
+	function get_axis (
+		axis	: in type_axis;
+		point	: in type_point_3d)
+		return type_distance_total is
+	begin
+		case axis is
+			when X => return point.x;
+			when Y => return point.y;
+			when Z => return point.z;
+		end case;
+	end get_axis;
+	
 	procedure set_angle (
 		value	: in type_angle;
 		point	: in out type_terminal_position) is

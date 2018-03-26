@@ -107,6 +107,11 @@ package et_pcb_coordinates is
 		value	: in type_distance;					 
 		point	: in out type_point_3d);
 
+	function get_axis ( -- CS find a better name
+		axis	: in type_axis;
+		point	: in type_point_3d)
+		return type_distance_total;
+	
 	procedure set_angle (
 		value	: in type_angle;
 		point	: in out type_terminal_position);

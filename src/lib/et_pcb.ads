@@ -547,6 +547,8 @@ package et_pcb is
 	package_libraries : type_libraries.map;
 
 
+	
+-- PROPERTIES OF OBJECTS IN SILK SCREEN	
 	procedure line_silk_screen_properties (
 	-- Logs the properties of the given line of silk screen
 		face			: in type_face;
@@ -559,7 +561,15 @@ package et_pcb is
 		cursor			: in type_silk_arcs.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
+	procedure circle_silk_screen_properties (
+	-- Logs the properties of the given circle of silk screen
+		face			: in type_face;
+		cursor			: in type_silk_circles.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+
+
 	
+-- PROPERTIES OF OBJECTS IN ASSEMBLY DOCUMENTATION	
 	procedure line_assy_doc_properties (
 	-- Logs the properties of the given line of assembly documentation
 		face			: in type_face;
@@ -571,8 +581,16 @@ package et_pcb is
 		face			: in type_face;
 		cursor			: in type_doc_arcs.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
+
+	procedure circle_assy_doc_properties (
+	-- Logs the properties of the given circle of assembly documentation
+		face			: in type_face;
+		cursor			: in type_doc_circles.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
 	
+
 	
+-- PROPERTIES OF OBJECTS IN KEEPOUT	
 	procedure line_keepout_properties (
 	-- Logs the properties of the given line of keepout
 		face			: in type_face;
@@ -585,7 +603,15 @@ package et_pcb is
 		cursor			: in type_keepout_arcs.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
+	procedure circle_keepout_properties (
+	-- Logs the properties of the given circle of keepout
+		face			: in type_face;
+		cursor			: in type_keepout_circles.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+
+
 	
+-- PROPERTIES OF OBJECTS IN ROUTE RESTRIC	
 	procedure line_route_restrict_properties (
 	-- Logs the properties of the given line of route restrict
 		face			: in type_face;
@@ -598,7 +624,9 @@ package et_pcb is
 		cursor			: in type_route_restrict_arcs.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
+
 	
+-- PROPERTIES OF OBJECTS IN VIA RESTRICT		
 	procedure line_via_restrict_properties (
 	-- Logs the properties of the given line of via restrict
 		face			: in type_face;

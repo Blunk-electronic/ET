@@ -1,12 +1,12 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                          SYSTEM ET MATHEMATICS                           --
+--                          SYSTEM ET PCB MATHEMATICS                       --
 --                                                                          --
 --                                 ET                                       --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -36,33 +36,16 @@
 --
 --   ToDo: 
 
-with ada.text_io;				use ada.text_io;
--- with ada.strings.maps;			use ada.strings.maps;
--- with ada.strings.bounded;       use ada.strings.bounded;
--- with ada.strings.unbounded; 	use ada.strings.unbounded;
--- with ada.containers;            use ada.containers;
--- with ada.containers.vectors;
--- with ada.containers.doubly_linked_lists;
--- with ada.containers.indefinite_doubly_linked_lists;
--- with ada.containers.ordered_maps;
--- with ada.containers.indefinite_ordered_maps;
--- with ada.containers.ordered_sets;
+with et_pcb_coordinates;		use et_pcb_coordinates;
 
-with et_coordinates;			use et_coordinates;
--- with et_string_processing;
-with ada.numerics.generic_elementary_functions;
 
-package et_math is
+package et_pcb_math is
 
-	procedure dummy;
 	
--- 	function round (
--- 	-- Rounds the given float_in according to the given accuracy.
--- 	-- Accuracy must be a power of ten (0.01, 0.1, 1, 10, ..).
--- 		float_in : in et_coordinates.type_distance;
--- 		accuracy : in et_coordinates.type_distance) return et_coordinates.type_distance;
+	function distance (point_one, point_two : in type_point_3d) return type_distance_total;
+	-- Computes the total distance between point_one and point_two.
+		
 	
-	
-end et_math;
+end et_pcb_math;
 
 -- Soli Deo Gloria
