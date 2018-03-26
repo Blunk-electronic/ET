@@ -314,7 +314,7 @@ package et_pcb is
 	type type_package_keepout is record
 		lines 	: type_keepout_lines.list;
 		arcs	: type_keepout_arcs.list;
-		circles	: type_keepout_lines.list;
+		circles	: type_keepout_circles.list;
 		-- CS polygons
 	end record;
 

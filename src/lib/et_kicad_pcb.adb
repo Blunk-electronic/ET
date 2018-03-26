@@ -229,9 +229,10 @@ package body et_kicad_pcb is
 		drill_size : et_pcb_coordinates.type_distance; 
 		object_position : et_pcb_coordinates.type_point_3d;
 		object_angle : et_pcb_coordinates.type_angle;
-		object_face : et_pcb_coordinates.type_face;
+--		object_face : et_pcb_coordinates.type_face;
 
 		type type_layer is (
+			TOP_COPPER, BOT_COPPER,
 			TOP_SILK, BOT_SILK,
 			TOP_ASSY, BOT_ASSY,
 			TOP_KEEP, BOT_KEEP
@@ -250,9 +251,10 @@ package body et_kicad_pcb is
 		end record;
 		arc : type_arc;
 
-		type type_circle is new et_pcb.type_circle with record
-			width : et_pcb_coordinates.type_distance;
-			point : et_pcb_coordinates.type_point_3d;
+		type type_circle is new et_pcb.type_circle with record -- center and radius incl.
+			width 	: et_pcb_coordinates.type_distance;
+			point 	: et_pcb_coordinates.type_point_3d;
+			layer	: type_layer;
 		end record;
 		circle : type_circle;
 
@@ -263,8 +265,8 @@ package body et_kicad_pcb is
 		terminal_angle : et_pcb_coordinates.type_angle;
 		
 
-		object_layer : type_layer;
-		text_layer : type_layer;
+-- 		object_layer : type_layer;
+-- 		text_layer : type_layer;
 
 		type type_text is new et_pcb.type_text with record
 			content	: et_libraries.type_text_content.bounded_string;
@@ -304,7 +306,7 @@ package body et_kicad_pcb is
 			procedure invalid is begin
 				log_indentation_reset;
 				log (message_error & "contradicting layers in terminal !", console => true);
-				log ("face " & to_string (object_face), console => true);
+				log ("face " & to_string (terminal_face), console => true);
 				log (" solder paste top " & to_string (terminal_top_solder_paste), console => true);
 				log (" solder paste bot " & to_string (terminal_bot_solder_paste), console => true);
 				log (" stop mask top    " & to_string (terminal_top_stop_mask), console => true);
@@ -313,7 +315,7 @@ package body et_kicad_pcb is
 			end invalid; 
 				
 		begin -- set_stop_and_mask
-			case object_face is
+			case terminal_face is
 				when TOP =>
 					terminal_solder_paste := terminal_top_solder_paste;
 					if terminal_bot_solder_paste = APPLIED then
@@ -808,6 +810,10 @@ package body et_kicad_pcb is
 										line.layer := TOP_KEEP;
 									elsif to_string (arg) = layer_bot_keepout then
 										line.layer := BOT_KEEP;
+									elsif to_string (arg) = layer_top_copper then
+										line.layer := TOP_COPPER;
+									elsif to_string (arg) = layer_bot_copper then
+										line.layer := BOT_COPPER;
 									else
 										invalid_layer; -- CS copper layers ?
 									end if;
@@ -815,7 +821,7 @@ package body et_kicad_pcb is
 								when others => too_many_arguments;
 							end case;
 
-						when SEC_FP_ARC => -- SEC_FP_CIRCLE =>
+						when SEC_FP_ARC =>
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
@@ -838,6 +844,28 @@ package body et_kicad_pcb is
 								when others => too_many_arguments;
 							end case;
 
+						when SEC_FP_CIRCLE =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									if to_string (arg) = layer_top_silk_screen then
+										circle.layer := TOP_SILK;
+									elsif to_string (arg) = layer_bot_silk_screen then
+										circle.layer := BOT_SILK;
+									elsif to_string (arg) = layer_top_assy_doc then
+										circle.layer := TOP_ASSY;
+									elsif to_string (arg) = layer_bot_assy_doc then
+										circle.layer := BOT_ASSY;
+									elsif to_string (arg) = layer_top_keepout then
+										circle.layer := TOP_KEEP;
+									elsif to_string (arg) = layer_bot_keepout then
+										circle.layer := BOT_KEEP;
+									else
+										invalid_layer; -- CS copper layers ?
+									end if;
+
+								when others => too_many_arguments;
+							end case;
 							
 						when others => invalid_section;
 					end case;
@@ -1164,6 +1192,8 @@ package body et_kicad_pcb is
 						when BOT_KEEP =>
 							bot_keepout.lines.append ((line.start_point, line.end_point));
 							line_keepout_properties (BOTTOM, top_keepout.lines.last, log_threshold + 1);
+						when TOP_COPPER | BOT_COPPER => 
+							null; -- CS
 					end case;
 
 				when SEC_FP_ARC =>
@@ -1198,7 +1228,52 @@ package body et_kicad_pcb is
 								start_point	=> arc.start_point, 
 								end_point	=> arc.end_point));
 							arc_keepout_properties (BOTTOM, top_keepout.arcs.last, log_threshold + 1);
+
+						when TOP_COPPER | BOT_COPPER => 
+							null; -- CS
+
 					end case;
+
+				when SEC_FP_CIRCLE =>
+					-- Append the circle to the container correspoinding to the layer. Then log the circle properties.
+					case circle.layer is
+						when TOP_SILK =>
+							top_silk_screen.circles.append ((et_pcb.type_circle (circle) with circle.width));
+							-- CS circle_silk_screen_properties (TOP, top_silk_screen.circles.last, log_threshold + 1);
+							
+						when BOT_SILK =>
+							bot_silk_screen.circles.append ((et_pcb.type_circle (circle) with circle.width));
+							-- CS circle_silk_screen_properties (BOTTOM, bot_silk_screen.circles.last, log_threshold + 1);
+							
+						when TOP_ASSY =>
+							top_assy_doc.circles.append ((et_pcb.type_circle (circle) with circle.width));
+							-- CS circle_assy_doc_properties (TOP, top_assy_doc.circles.last, log_threshold + 1);
+							
+						when BOT_ASSY =>
+							bot_assy_doc.circles.append ((et_pcb.type_circle (circle) with circle.width));
+							-- CS circle_assy_doc_properties (BOTTOM, bot_assy_doc.circles.last, log_threshold + 1);
+							
+						when TOP_KEEP =>
+							top_keepout.circles.append ((
+								center 		=> circle.center,
+								radius		=> 0.0 -- CS: calculate radius from circle.center and circle.point
+								-- NOTE: circle.width ignored
+								));
+							-- CS circle_keepout_properties (TOP, top_keepout.circles.last, log_threshold + 1);
+							
+						when BOT_KEEP =>
+							bot_keepout.circles.append ((
+								center 		=> circle.center,
+								radius		=> 0.0 -- CS: calculate radius from circle.center and circle.point
+								-- NOTE: circle.width ignored
+								));
+							-- CS circle_keepout_properties (BOTTOM, top_keepout.circles.last, log_threshold + 1);
+
+						when TOP_COPPER | BOT_COPPER => 
+							null; -- CS
+
+					end case;
+					
 					
 				when SEC_PAD =>
 
@@ -1254,7 +1329,7 @@ package body et_kicad_pcb is
 													tht_hole		=> DRILLED, -- has no meaning here
 													shape_smt		=> terminal_shape_smt,
 													position		=> type_terminal_position (to_terminal_position (object_position, object_angle)),
-													face 			=> object_face,
+													face 			=> terminal_face,
 													stop_mask		=> terminal_stop_mask,
 													solder_paste	=> terminal_solder_paste
 												));
@@ -1269,7 +1344,7 @@ package body et_kicad_pcb is
 													tht_hole		=> DRILLED, -- has no meaning here
 													shape_smt		=> terminal_shape_smt,
 													position		=> type_terminal_position (to_terminal_position (object_position, object_angle)),
-													face 			=> object_face,
+													face 			=> terminal_face,
 													stop_mask		=> terminal_stop_mask,
 													solder_paste	=> terminal_solder_paste,
 													size_smt_x		=> object_size_x,
