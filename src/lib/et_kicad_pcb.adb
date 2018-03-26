@@ -195,17 +195,13 @@ package body et_kicad_pcb is
 		package_technology : type_assembly_technology := THT; -- according to the majority of terminals
 		package_appearance : type_package_appearance := REAL;
 		
-		type type_text_base is new type_text with null record;
-		text_basic : type_text_base;
 		text : type_text_with_content;
 		text_content : et_libraries.type_text_content.bounded_string;
 		placeholder : type_package_text_placeholder;
 
 		fp_text_meaning : type_fp_text_meaning;
-		fp_text_hidden : boolean;
 		
 		line_start, line_end : et_pcb_coordinates.type_point_3d;
-		line_width : et_pcb_coordinates.type_distance;
 		
 		terminal_name : et_libraries.type_terminal_name.bounded_string;
 		terminal_technology : type_assembly_technology;
@@ -226,10 +222,9 @@ package body et_kicad_pcb is
 
 		-- CS use subtypes for reasonable sizes below:
 		object_size_x, object_size_y : et_pcb_coordinates.type_distance;
-		drill_size : et_pcb_coordinates.type_distance; 
+		terminal_drill_size : et_pcb_coordinates.type_distance; 
 		object_position : et_pcb_coordinates.type_point_3d;
 		object_angle : et_pcb_coordinates.type_angle;
---		object_face : et_pcb_coordinates.type_face;
 
 		type type_layer is (
 			TOP_COPPER, BOT_COPPER,
@@ -264,10 +259,6 @@ package body et_kicad_pcb is
 		terminal_size_y : et_pcb_coordinates.type_distance;		
 		terminal_angle : et_pcb_coordinates.type_angle;
 		
-
--- 		object_layer : type_layer;
--- 		text_layer : type_layer;
-
 		type type_text is new et_pcb.type_text with record
 			content	: et_libraries.type_text_content.bounded_string;
 			layer	: type_layer;
@@ -282,16 +273,7 @@ package body et_kicad_pcb is
 		pcb_contours_plated 	: type_package_pcb_contour_plated;
 		route_restrict 			: type_package_route_restrict;
 		via_restrict 			: type_package_via_restrict;
--- 		procedure init_object is 
--- 			use et_pcb_coordinates;
--- 		begin
--- 			object_size_x := zero_distance;
--- 			object_size_y := zero_distance;
--- 			object_drill_size := zero_distance;
--- 			--CS object_position := point_zero;
--- 			object_angle := zero_angle;
--- 			object_face := TOP;
--- 		end init_object;
+
 		
 		procedure init_terminal_layers is begin
 			terminal_top_solder_paste := type_terminal_solder_paste'first;
@@ -347,8 +329,6 @@ package body et_kicad_pcb is
 		end record;
 
 		section : type_section_and_argument_counter;
--- 		parent_section : type_section;
-		
 		package sections_stack is new et_general.stack_lifo (max => 20, item => type_section_and_argument_counter);
 
 		line_length_max : constant positive := 200;
@@ -559,65 +539,90 @@ package body et_kicad_pcb is
 			-- Load variables. When a section closes, the variables are used to build an object. see exec_section.
 			case section.name is
 				when SEC_MODULE =>
-					case section.arg_counter is
-						when 0 => null;
-						when 1 =>
-							if to_string (arg) /= to_string (package_name) then
-								invalid_package_name;
-							end if;
-						when others => 
-							too_many_arguments;
-					end case;
+					case section.parent is
+						when INIT =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 =>
+									if to_string (arg) /= to_string (package_name) then
+										invalid_package_name;
+									end if;
+								when others => 
+									too_many_arguments;
+							end case;
 
+						when others => invalid_section;
+					end case;
+					
 				when SEC_DESCR =>
-					case section.arg_counter is
-						when 0 => null;
-						when 1 =>
-							-- CS check length
-							description := type_package_description.to_bounded_string (to_string (arg));
-							-- CS check description
-						when others => 
-							too_many_arguments;
-					end case;
+					case section.parent is
+						when SEC_MODULE =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 =>
+									-- CS check length
+									description := type_package_description.to_bounded_string (to_string (arg));
+									-- CS check description
+								when others => 
+									too_many_arguments;
+							end case;
 
+						when others => invalid_section;
+					end case;
+					
 				when SEC_TAGS =>
-					case section.arg_counter is
-						when 0 => null;
-						when 1 =>
-							-- CS check length
-							tags := type_package_tags.to_bounded_string (to_string (arg));
-							-- CS check tags
-						when others => 
-							too_many_arguments;
+					case section.parent is
+						when SEC_MODULE =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 =>
+									-- CS check length
+									tags := type_package_tags.to_bounded_string (to_string (arg));
+									-- CS check tags
+								when others => 
+									too_many_arguments;
+							end case;
+
+						when others => invalid_section;
 					end case;
 					
 				when SEC_TEDIT =>
-					case section.arg_counter is
-						when 0 => null;
-						when 1 =>
-							-- CS check length
-							timestamp := type_timestamp (to_string (arg));
-							et_string_processing.check_timestamp (timestamp);
-						when others => 
-							too_many_arguments;
-					end case;
+					case section.parent is
+						when SEC_MODULE =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 =>
+									-- CS check length
+									timestamp := type_timestamp (to_string (arg));
+									et_string_processing.check_timestamp (timestamp);
+								when others => 
+									too_many_arguments;
+							end case;
 
-				when SEC_ATTR =>
-					case section.arg_counter is
-						when 0 => null;
-						when 1 =>
-							-- CS check length
-							if to_string (arg) = attribute_technology_smd then
-								package_technology := SMT; -- overwrite default (see declarations)
-							elsif to_string (arg) = attribute_technology_virtual then
-								package_appearance := VIRTUAL;  -- overwrite default (see declarations)
-							else
-								invalid_attribute;
-							end if;
-						when others => 
-							too_many_arguments;
+						when others => invalid_section;
 					end case;
 					
+				when SEC_ATTR =>
+					case section.parent is
+						when SEC_MODULE =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 =>
+									-- CS check length
+									if to_string (arg) = attribute_technology_smd then
+										package_technology := SMT; -- overwrite default (see declarations)
+									elsif to_string (arg) = attribute_technology_virtual then
+										package_appearance := VIRTUAL;  -- overwrite default (see declarations)
+									else
+										invalid_attribute;
+									end if;
+								when others => 
+									too_many_arguments;
+							end case;
+
+						when others => invalid_section;
+					end case;
+							
 				when SEC_FP_TEXT =>
 					case section.parent is
 						when SEC_MODULE =>
@@ -968,7 +973,7 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									drill_size := to_distance (to_string (arg));
+									terminal_drill_size := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -1070,9 +1075,6 @@ package body et_kicad_pcb is
 			terminal_cursor			: type_terminals.cursor;
 			silk_screen_line_cursor	: type_silk_lines.cursor;
 
--- 			type type_arc is new et_pcb.type_arc with null record;
--- 			arc : type_arc;
-		
 			procedure invalid_layer_reference is begin
 				log_indentation_reset;
 				log (message_error & "reference placeholder must be in a silk screen layer !", console => true);
@@ -1106,21 +1108,16 @@ package body et_kicad_pcb is
 					null;
 					
 				when SEC_START =>
-					line_start := object_position;
+					null;
 
 				when SEC_END =>
-					line_end := object_position;
+					null;
 
 				when SEC_FONT =>
-					text_basic.size_x		:= object_size_x;
-					text_basic.size_y		:= object_size_y;
-					text_basic.width 		:= line_width;
-					text_basic.angle 		:= object_angle;
-					text_basic.alignment 	:= (horizontal => CENTER, vertical => BOTTOM);
+					null;
 					
 				when SEC_FP_TEXT =>
-					text_basic.position		:= object_position;
-					text_basic.hidden		:= fp_text_hidden;
+					--CS text_basic.alignment 	:= (horizontal => CENTER, vertical => BOTTOM);
 
 					case fp_text_meaning is
 						when REFERENCE =>
@@ -1276,7 +1273,6 @@ package body et_kicad_pcb is
 					
 					
 				when SEC_PAD =>
-
 					-- Insert a terminal in the list "terminals":
 					case terminal_technology is
 						when THT =>
@@ -1291,7 +1287,7 @@ package body et_kicad_pcb is
 													shape 			=> CIRCULAR,
 													tht_hole		=> DRILLED,
 													width_inner_layers => terminal_copper_width_inner_layers,
-													drill_size_cir	=> drill_size,
+													drill_size_cir	=> terminal_drill_size,
 													shape_tht		=> terminal_shape_tht,
 													position		=> type_terminal_position (to_terminal_position (object_position, object_angle))
 												   ));
@@ -1305,7 +1301,7 @@ package body et_kicad_pcb is
 													shape			=> NON_CIRCULAR,
 													tht_hole		=> DRILLED,
 													width_inner_layers => terminal_copper_width_inner_layers,
-													drill_size_dri	=> drill_size,
+													drill_size_dri	=> terminal_drill_size,
 													shape_tht		=> terminal_shape_tht,
 													position		=> type_terminal_position (to_terminal_position (object_position, object_angle)),
 													size_tht_x		=> object_size_x,
@@ -1355,7 +1351,6 @@ package body et_kicad_pcb is
 							init_terminal_layers;
 					end case;
 
-
 					if terminal_inserted then
 						terminal_properties (terminal_cursor, log_threshold + 1);
 					else
@@ -1387,7 +1382,7 @@ package body et_kicad_pcb is
 		-- CS: validate text sizes and width according to specifications in configuration file
 			use et_pcb_coordinates;
 			use type_package_text_placeholders;
-			cursor : type_package_text_placeholders.cursor;
+			cursor 		: type_package_text_placeholders.cursor;
 			placeholder : type_package_text_placeholder;
 			reference_found, value_found : boolean := false;
 		begin
@@ -1494,7 +1489,6 @@ package body et_kicad_pcb is
 		character_cursor := type_current_line.index (current_line, 1 * ob);
 
 		init_terminal_layers;
--- 		init_object;
 		
 		loop
 			<<label_1>>
