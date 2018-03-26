@@ -116,13 +116,16 @@ package body et_kicad_pcb is
 		ob : constant character := '(';
 		cb : constant character := ')';
 
-		term_char_seq : constant string (1..2) := latin_1.space & ')';
+		term_char_seq : constant string (1..2) := latin_1.space & cb;
 		term_char_set : character_set := to_set (term_char_seq);
 
 		-- the section prefix is a workaround due to GNAT reserved keywords.
 		sec_prefix : constant string (1..4) := "sec_";
-		type type_section is (
-			INIT,
+
+		-- These are the keywords used in the package model. They prelude a certain section.
+		-- See <https://www.compuphase.com/electronics/LibraryFileFormats.pdf> for more.
+		type type_keyword is (
+			INIT,	-- initial section before anything is done. does not occur in package model
 			SEC_AT,
 			SEC_ATTR,
 			SEC_ANGLE,
@@ -155,53 +158,95 @@ package body et_kicad_pcb is
 			SEC_XYZ
 			);
 
-		function to_string (section : in type_section) return string is
-			len : positive := type_section'image (section)'last;
-		begin
-			return to_lower (type_section'image (section)(sec_prefix'last+1 ..len));
-		end to_string;
-	
-		function expect_keyword (section : in type_section) return string is
-			len : positive := to_string (section)'last;
-		begin
-			return "expect keyword '" & to_string (section) & "'";
-		end expect_keyword;
+		argument_length_max : constant positive := 200; -- CS: could become an issue if long URLs used ...
+		package type_argument is new generic_bounded_length (argument_length_max);
 
-		function enter_section (section : in type_section) return string is begin
-			return ("entering section " & to_string (section));
-		end enter_section;
-
-		function return_to_section (section : in type_section) return string is begin
-			return ("returning to section " & to_string (section));
-		end return_to_section;
-
-		function process_section (section : in type_section) return string is begin
-			return ("processing section " & to_string (section));
-		end process_section;
-	
-		entry_length_max : constant positive := 200;
-		package type_argument is new generic_bounded_length (entry_length_max);
-
+		-- After a section name, arguments follow. For each section arguments are counted:
 		type type_argument_counter is range 0..3;
+
 		function to_string (arg_count : in type_argument_counter) return string is begin
+		-- Returns the given argument count as string.
 			return trim (type_argument_counter'image (arg_count), left);
 		end to_string;			
 
-		timestamp : type_timestamp;
-		description : type_package_description.bounded_string;
-		tags : type_package_tags.bounded_string;
+		-- Type contains the current section name, the parent section name and the pointer to the argument.
+		-- The argument counter is reset on entering a section.
+		-- It is incremented once an argument is complete.
+		type type_section is record
+			name 		: type_keyword := INIT;
+			parent		: type_keyword := INIT;
+			arg_counter	: type_argument_counter := type_argument_counter'first;
+		end record;
 
-		type type_attribute is (SMD, THT, VIRTUAL);
-		package_technology : type_assembly_technology := THT; -- according to the majority of terminals
-		package_appearance : type_package_appearance := REAL;
+		section : type_section; -- the section being processed
+
+		-- Since there are numerous subsections we store sections on a stack.
+		-- Once a subsection as been entered the previous section is pushed 
+		-- on stack (see procedure read_section).
+		-- One leaving a subsection the previous section is popped 
+		-- from stack (see end of procedure exec_section).
+		package sections_stack is new et_general.stack_lifo (max => 20, item => type_section);
+
+
+
+
 		
+	
+		function to_string (section : in type_keyword) return string is
+		-- Converts a section name to a string.
+			len : positive := type_keyword'image (section)'last;
+		begin
+			-- Due to the workaround with the SEC_ prefix (see above), it must be removed from
+			-- the section image.
+			return to_lower (type_keyword'image (section)(sec_prefix'last+1 ..len));
+		end to_string;
+	
+		function enter_section (section : in type_keyword) return string is begin
+			return ("entering section " & to_string (section));
+		end enter_section;
+
+		function return_to_section (section : in type_keyword) return string is begin
+			return ("returning to section " & to_string (section));
+		end return_to_section;
+
+		function process_section (section : in type_keyword) return string is begin
+			return ("processing section " & to_string (section));
+		end process_section;
+
+
+
+	
+
+		
+		timestamp	: type_timestamp; -- temporarily storage of package timestamp
+		description	: type_package_description.bounded_string; -- temp. storage of package description
+		tags 		: type_package_tags.bounded_string; -- temp. storage of package keywords
+
+		type type_attribute is (
+			SMD,
+			THT,
+			VIRTUAL	-- for things that do not have a package (ISA-Board edge connectors, ...)
+			);
+
+		-- The majority of terminals dictates the package technology. The default is THT.
+		package_technology : type_assembly_technology := THT;
+
+		-- By default a package is something real (with x,y,z dimension)
+		package_appearance : type_package_appearance := REAL;
+
+		-- For the package import we need a special set of layers. 
 		type type_layer is (
 			TOP_COPPER, BOT_COPPER,
 			TOP_SILK, BOT_SILK,
-			TOP_ASSY, BOT_ASSY,
-			TOP_KEEP, BOT_KEEP
+			TOP_ASSY, BOT_ASSY, -- in kicad this is the fab layer
+			TOP_KEEP, BOT_KEEP -- in kicad this is the crtyrd layer
 			);
 
+	-- LINES, ARCS, CIRCLES
+		-- Temporarily we need special types for lines, arcs and circles for the import. 
+		-- They are derived from the abstract anchestor types in et_pcb.ads.
+		-- Their additional components (width, layer, angle, ...) are later 
+		-- copied to the final lines, arcs and circles as specified in type_package:
 		type type_line is new et_pcb.type_line with record
 			width	: et_pcb_coordinates.type_distance;
 			layer	: type_layer;
@@ -222,7 +267,12 @@ package body et_kicad_pcb is
 		end record;
 		circle : type_circle;
 
+		
 
+	-- TERMINALS
+		-- Temporarily we need lots of variables for terminal properties.
+		-- Later when the final terminals are assigned to the package, these variables
+		-- compose the final terminal.
 		terminal_name 		: et_libraries.type_terminal_name.bounded_string;
 		terminal_technology	: type_assembly_technology;
 		terminal_shape_tht 	: type_terminal_shape_tht;
@@ -238,27 +288,58 @@ package body et_kicad_pcb is
 
 -- 		terminal_copper_width_outer_layers : et_pcb_coordinates.type_distance;
 		terminal_copper_width_inner_layers : et_pcb_coordinates.type_distance := 1.0; -- CS load from DRU ?
-		
+
+		-- Temporarily these flags hold the solder paste status of an SMT terminal.
+		-- They are initialized by procedure init_terminal_layers and validated by
+		-- procedure set_stop_and_mask.
 		terminal_top_solder_paste, terminal_bot_solder_paste : type_terminal_solder_paste;
+
+		-- This is the flag for the solder paste status of an SMT terminal.
+		-- Read when finally building a terminal.
 		terminal_solder_paste : type_terminal_solder_paste;
-		
+
+		-- Temporarily these flags hold the solder paste status of an SMT terminal.
+		-- They are initialized by procedure init_terminal_layers and validated by
+		-- procedure set_stop_and_mask.
 		terminal_top_stop_mask, terminal_bot_stop_mask : type_terminal_stop_mask;
+
+		-- This is the flag for the stop mask status of an SMT terminal.
+		-- Read when finally building a terminal.
 		terminal_stop_mask : type_terminal_stop_mask;
 
+		-- Here we collect all kinds of terminals after they have been built.
 		terminals : type_terminals.map;
+
+		-- This flag goes true once a terminal is to be inserted that already exists (by its name).
 		terminal_inserted : boolean;
-		
+
+
+
+	-- TEXTS
+		-- Temporarily this text is required to handle texts in silk screen, assembly doc, ...
+		-- When inserting the text in the final package, it is decomposed again.
 		type type_text is new et_pcb.type_text with record
 			content	: et_libraries.type_text_content.bounded_string;
 			layer	: type_layer;
+			meaning	: type_fp_text_meaning;
 		end record;
-		text_2 : type_text; -- CS rename to text
+		text : type_text;
 
+		-- Temporarily text placeholders for reference and value are required. 
 		placeholder : type_package_text_placeholder;
-		fp_text_meaning : type_fp_text_meaning;
+
+
 		
+		
+	-- CONTAINERS 
+
+		-- SILK SCREEN OBJECTS (lines, arcs, circles, texts, text placeholders)
 		top_silk_screen, bot_silk_screen 	: type_package_silk_screen;
+
+		-- ASSEMBLY DOC (FAB) OBJECTS (lines, arcs, circles, texts, text placeholders)
 		top_assy_doc, bot_assy_doc			: type_package_assembly_documentation;
+
+		-- KEEPOUT OBJECTS (lines, arcs, circles)
 		top_keepout, bot_keepout			: type_package_keepout;
 
 		pcb_contours			: type_package_pcb_contour;		
@@ -267,14 +348,17 @@ package body et_kicad_pcb is
 		via_restrict 			: type_package_via_restrict;
 
 		
-		procedure init_terminal_layers is begin
+		procedure init_stop_and_mask is begin
+		-- Resets the temporarily status flags of solder paste and stop mask of an SMT terminal.
+		-- Does not affect THT terminals (stop mask always open, solder paste never applied).
 			terminal_top_solder_paste := type_terminal_solder_paste'first;
 			terminal_bot_solder_paste := type_terminal_solder_paste'first;
 			terminal_top_stop_mask := type_terminal_stop_mask'first;
 			terminal_bot_stop_mask := type_terminal_stop_mask'first;
-		end init_terminal_layers;
+		end init_stop_and_mask;
 
-		procedure set_stop_and_mask is 
+		procedure set_stop_and_mask is
+		-- From the SMT terminal face, validates the status of stop mask and solder paste.
 			use et_pcb_coordinates;
 			
 			procedure invalid is begin
@@ -290,39 +374,47 @@ package body et_kicad_pcb is
 				
 		begin -- set_stop_and_mask
 			case terminal_face is
-				when TOP =>
+				when TOP => 
+
 					terminal_solder_paste := terminal_top_solder_paste;
+					-- CS warning if solder paste not applied ?
+
+					-- A TOP terminal must NOT have BOTTOM paste applied.
 					if terminal_bot_solder_paste = APPLIED then
 						invalid;
 					end if;
-					
+
 					terminal_stop_mask := terminal_top_stop_mask;
+					-- CS warning if stop mask closed ?
+					
+					-- A TOP terminal must have the BOTTOM stop mask OPEN.
 					if terminal_bot_stop_mask = OPEN then
 						invalid;
 					end if;
 
+					
 				when BOTTOM =>
+
 					terminal_solder_paste := terminal_bot_solder_paste;
+					-- CS warning if solder paste not applied ?
+					
+					-- A BOTTOM terminal must NOT have TOP paste applied.
 					if terminal_top_solder_paste = APPLIED then
 						invalid;
 					end if;
-					
+
 					terminal_stop_mask := terminal_bot_stop_mask;
+					-- CS warning if stop mask closed ?					
+
+					-- A BOTTOM terminal must have the TOP stop mask OPEN.
 					if terminal_top_stop_mask = OPEN then
 						invalid;
 					end if;
 			end case;
 		end set_stop_and_mask;
 		
-		type type_section_and_argument_counter is record
-			name 		: type_section := INIT;
-			parent		: type_section := INIT;
-			arg_counter	: type_argument_counter := type_argument_counter'first;
-		end record;
 
-		section : type_section_and_argument_counter;
-		package sections_stack is new et_general.stack_lifo (max => 20, item => type_section_and_argument_counter);
-
+		-- CS: need comments
 		line_length_max : constant positive := 200;
 		package type_current_line is new generic_bounded_length (line_length_max);
 		use type_current_line;
@@ -378,7 +470,7 @@ package body et_kicad_pcb is
 
 			-- Compose section name from cursor..end_of_kw.
 			-- This is an implicit general test whether the keyword is a valid keyword.
-			section.name := type_section'value (sec_prefix & slice (current_line, character_cursor, end_of_kw));
+			section.name := type_keyword'value (sec_prefix & slice (current_line, character_cursor, end_of_kw));
 
 			-- update cursor
 			character_cursor := end_of_kw;
@@ -523,6 +615,7 @@ package body et_kicad_pcb is
 				character_cursor := end_of_arg;
 			end if;
 
+			-- Argument complete. Increment argument counter of section.
 			section.arg_counter := section.arg_counter + 1;
 			
 			log ("arg" & to_string (section.arg_counter) & latin_1.space & to_string (arg), log_threshold + 4);
@@ -618,22 +711,22 @@ package body et_kicad_pcb is
 				when SEC_FP_TEXT =>
 					case section.parent is
 						when SEC_MODULE =>
-							text_2.hidden := false; -- "hide" flag is optionally provided as last argument. if not, default to false
+							text.hidden := false; -- "hide" flag is optionally provided as last argument. if not, default to false
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
 									if to_string (arg) = keyword_fp_text_reference then
-										fp_text_meaning := REFERENCE;
+										text.meaning := REFERENCE;
 									elsif to_string (arg) = keyword_fp_text_value then
-										fp_text_meaning := VALUE;
+										text.meaning := VALUE;
 									elsif to_string (arg) = keyword_fp_text_user then
-										fp_text_meaning := USER;
+										text.meaning := USER;
 									else
 										invalid_fp_text_keyword;
 									end if;
 									
 								when 2 => 
-									case fp_text_meaning is
+									case text.meaning is
 										when REFERENCE => 
 											if to_string (arg) /= placeholder_reference then
 												invalid_placeholder_reference;
@@ -646,13 +739,13 @@ package body et_kicad_pcb is
 
 										when USER =>
 											-- CS length check
-											text_2.content := to_bounded_string (to_string (arg));
+											text.content := to_bounded_string (to_string (arg));
 											-- CS character check
 									end case;
 									
 								when 3 => 
 									if to_string (arg) = keyword_fp_text_hide then
-										text_2.hidden := true;
+										text.hidden := true;
 									end if;
 									
 								when others => too_many_arguments;
@@ -773,17 +866,17 @@ package body et_kicad_pcb is
 								when 0 => null;
 								when 1 => 
 									if to_string (arg) = layer_top_silk_screen then
-										text_2.layer := TOP_SILK;
+										text.layer := TOP_SILK;
 									elsif to_string (arg) = layer_bot_silk_screen then
-										text_2.layer := BOT_SILK;
+										text.layer := BOT_SILK;
 									elsif to_string (arg) = layer_top_assy_doc then
-										text_2.layer := TOP_ASSY;
+										text.layer := TOP_ASSY;
 									elsif to_string (arg) = layer_bot_assy_doc then
-										text_2.layer := BOT_ASSY;
+										text.layer := BOT_ASSY;
 									elsif to_string (arg) = layer_top_keepout then
-										text_2.layer := TOP_KEEP;
+										text.layer := TOP_KEEP;
 									elsif to_string (arg) = layer_bot_keepout then
-										text_2.layer := BOT_KEEP;
+										text.layer := BOT_KEEP;
 									else
 										invalid_layer; -- CS copper layers ?
 									end if;
@@ -898,8 +991,8 @@ package body et_kicad_pcb is
 						when SEC_FONT =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => text_2.size_x := to_distance (to_string (arg));
-								when 2 => text_2.size_y := to_distance (to_string (arg));
+								when 1 => text.size_x := to_distance (to_string (arg));
+								when 2 => text.size_y := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -919,7 +1012,7 @@ package body et_kicad_pcb is
 						when SEC_FONT =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => text_2.width := to_distance (to_string (arg));
+								when 1 => text.width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -943,16 +1036,16 @@ package body et_kicad_pcb is
 							end case;
 
 						when SEC_FP_TEXT =>
-							text_2.angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
+							text.angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => text_2.position, value => to_distance (to_string (arg)));
+									set_point (axis => X, point => text.position, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => text_2.position, value => to_distance (to_string (arg)));
-									set_point (axis => Z, point => text_2.position, value => zero_distance);
+									set_point (axis => Y, point => text.position, value => to_distance (to_string (arg)));
+									set_point (axis => Z, point => text.position, value => zero_distance);
 								when 3 => 
-									text_2.angle := to_angle (to_string (arg));
+									text.angle := to_angle (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 							
@@ -1109,13 +1202,15 @@ package body et_kicad_pcb is
 					null;
 					
 				when SEC_FP_TEXT =>
-					--CS text_basic.alignment 	:= (horizontal => CENTER, vertical => BOTTOM);
 
-					case fp_text_meaning is
+					-- Since there is no alignment information provided, use default values:
+					text.alignment := (horizontal => CENTER, vertical => BOTTOM);
+
+					case text.meaning is
 						when REFERENCE =>
-							placeholder := (et_pcb.type_text (text_2) with meaning => REFERENCE);
+							placeholder := (et_pcb.type_text (text) with meaning => REFERENCE);
 							
-							case text_2.layer is
+							case text.layer is
 								when TOP_SILK =>
 									top_silk_screen.placeholders.append (placeholder);
 									placeholder_silk_screen_properties (TOP, top_silk_screen.placeholders.last, log_threshold + 1);
@@ -1127,9 +1222,9 @@ package body et_kicad_pcb is
 							end case;
 
 						when VALUE =>
-							placeholder := (et_pcb.type_text (text_2) with meaning => VALUE);
+							placeholder := (et_pcb.type_text (text) with meaning => VALUE);
 							
-							case text_2.layer is
+							case text.layer is
 								when TOP_ASSY =>
 									top_assy_doc.placeholders.append (placeholder);
 									placeholder_assy_doc_properties (TOP, top_assy_doc.placeholders.last, log_threshold + 1);
@@ -1142,18 +1237,18 @@ package body et_kicad_pcb is
 							
 						when USER =>
 							--text := (et_pcb.type_text (text_basic) with content => text_content);
-							case text_2.layer is
+							case text.layer is
 								when TOP_SILK => 
-									top_silk_screen.texts.append ((et_pcb.type_text (text_2) with content => text_2.content));
+									top_silk_screen.texts.append ((et_pcb.type_text (text) with content => text.content));
 									text_silk_screen_properties (TOP, top_silk_screen.texts.last, log_threshold + 1);
 								when BOT_SILK => 
-									bot_silk_screen.texts.append ((et_pcb.type_text (text_2) with content => text_2.content));
+									bot_silk_screen.texts.append ((et_pcb.type_text (text) with content => text.content));
 									text_silk_screen_properties (BOTTOM, bot_silk_screen.texts.last, log_threshold + 1);
 								when TOP_ASSY => 
-									top_assy_doc.texts.append ((et_pcb.type_text (text_2) with content => text_2.content));
+									top_assy_doc.texts.append ((et_pcb.type_text (text) with content => text.content));
 									text_assy_doc_properties (TOP, top_assy_doc.texts.last, log_threshold + 1);
 								when BOT_ASSY => 
-									bot_assy_doc.texts.append ((et_pcb.type_text (text_2) with content => text_2.content));
+									bot_assy_doc.texts.append ((et_pcb.type_text (text) with content => text.content));
 									text_assy_doc_properties (BOTTOM, bot_assy_doc.texts.last, log_threshold + 1);
 								when others -- should never happen 
 									=> invalid_layer_user;
@@ -1308,6 +1403,7 @@ package body et_kicad_pcb is
 							
 						when SMT =>
 
+							-- From the SMT terminal face, validate the status of stop mask and solder paste.
 							set_stop_and_mask;
 							
 							if terminal_shape_smt = CIRCULAR then
@@ -1350,7 +1446,7 @@ package body et_kicad_pcb is
 												));
 							end if;
 
-							init_terminal_layers;
+							init_stop_and_mask; -- relevant for SMT terminals only (stop mask always open, solder paste never applied)
 					end case;
 
 					if terminal_inserted then
@@ -1490,7 +1586,7 @@ package body et_kicad_pcb is
 		-- get position of first opening bracket
 		character_cursor := type_current_line.index (current_line, 1 * ob);
 
-		init_terminal_layers;
+		init_stop_and_mask; -- relevant for SMT terminals only (stop mask always open, solder paste never applied)
 		
 		loop
 			<<label_1>>

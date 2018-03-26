@@ -315,6 +315,7 @@ package et_pcb is
 		lines 	: type_keepout_lines.list;
 		arcs	: type_keepout_arcs.list;
 		circles	: type_keepout_circles.list;
+		-- CS texts		: type_texts_with_content.list; -- for placement note ?
 		-- CS polygons
 	end record;
 
@@ -323,7 +324,20 @@ package et_pcb is
 		bottom	: type_package_keepout;
 	end record;
 	
+	type type_pcb_keepout is record
+		lines 	: type_keepout_lines.list;
+		arcs	: type_keepout_arcs.list;
+		circles	: type_keepout_circles.list;
+		-- CS texts		: type_texts_with_content.list; -- for placement note ?
+		-- CS polygons
+	end record;
 
+	type type_pcb_keepout_both_faces is record
+		top 	: type_pcb_keepout;
+		bottom	: type_pcb_keepout;
+	end record;
+
+	
 	-- ROUTE RESTRICT
 	type type_route_restrict_line is new type_line with record
 		layers : type_signal_layers.set;
@@ -346,6 +360,7 @@ package et_pcb is
 		lines 	: type_route_restrict_lines.list;
 		arcs	: type_route_restrict_arcs.list;
 		circles	: type_route_restrict_lines.list;
+		-- CS texts		: type_texts_with_content.list; -- for routing notes ?		
 		-- CS polygons
 	end record;
 
@@ -353,6 +368,7 @@ package et_pcb is
 		lines 	: type_route_restrict_lines.list;
 		arcs	: type_route_restrict_arcs.list;
 		circles	: type_route_restrict_lines.list;
+		-- CS texts		: type_texts_with_content.list; -- for routing notes ?
 		-- CS polygons
 	end record;
 
@@ -380,6 +396,7 @@ package et_pcb is
 		lines 	: type_via_restrict_lines.list;
 		arcs	: type_via_restrict_arcs.list;
 		circles	: type_via_restrict_lines.list;
+		-- CS texts		: type_texts_with_content.list; -- for via notes ?
 		-- CS polygons
 	end record;
 	
@@ -387,6 +404,7 @@ package et_pcb is
 		lines 	: type_via_restrict_lines.list;
 		arcs	: type_via_restrict_arcs.list;
 		circles	: type_via_restrict_lines.list;
+		-- CS texts		: type_texts_with_content.list; -- for via notes ?
 		-- CS polygons
 	end record;
 	
@@ -394,8 +412,8 @@ package et_pcb is
 
 
 	type type_package_appearance is (
-		REAL,
-		VIRTUAL
+		REAL,	-- packages with x,y,z dimension
+		VIRTUAL -- for things that do not have a package (ISA-Board edge connectors, ...)
 		);	
 
 	function to_string (appearance : in type_package_appearance) return string;
