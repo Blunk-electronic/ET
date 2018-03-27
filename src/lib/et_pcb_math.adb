@@ -60,6 +60,22 @@ package body et_pcb_math is
 		
 		return distance;
 	end distance;
+
+
+	function arc_end_point (
+	-- Computes the end point of an arc.
+		center		: in type_point_3d;
+		start_point	: in type_point_3d;	
+		angle 		: in type_angle)
+		return type_point_3d is
+		end_point : type_point_3d; -- to be returned
+	begin
+		set_point (X, zero_distance, end_point);
+		set_point (Y, zero_distance, end_point);
+		set_point (Z, zero_distance, end_point);
+		
+		return end_point;
+	end arc_end_point;
 	
 end et_pcb_math;
 

@@ -1414,6 +1414,9 @@ package body et_kicad_pcb is
 					end case;
 
 				when SEC_FP_ARC =>
+					-- compute end point of arc
+					arc.end_point := et_pcb_math.arc_end_point (arc.center, arc.start_point, arc.angle);
+
 					-- Append the arc to the container corresponding to the layer. Then log the arc properties.
 					case arc.layer is
 						when TOP_SILK =>

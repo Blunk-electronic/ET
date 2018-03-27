@@ -175,7 +175,7 @@ package body et_pcb is
 		line := element (cursor);
 		log ("copper line face" & to_string (face) & latin_1.space 
 			 & to_string (type_line (line))
-			 & " width " & to_string (line.width), log_threshold);
+			 & " width" & to_string (line.width), log_threshold);
 	end line_copper_properties;
 
 	procedure arc_copper_properties (
@@ -189,7 +189,7 @@ package body et_pcb is
 		arc := element (cursor);
 		log ("copper arc face" & to_string (face) & latin_1.space 
 			 & to_string (type_arc (arc))
-			 & " width " & to_string (arc.width), log_threshold);
+			 & " width" & to_string (arc.width), log_threshold);
 	end arc_copper_properties;
 	
 	procedure circle_copper_properties (
@@ -203,7 +203,7 @@ package body et_pcb is
 		circle := element (cursor);
 		log ("copper circle face" & to_string (face) & latin_1.space 
 			 & to_string (type_circle (circle))
-			 & " width " & to_string (circle.width), log_threshold);
+			 & " width" & to_string (circle.width), log_threshold);
 	end circle_copper_properties;
 
 
@@ -221,7 +221,7 @@ package body et_pcb is
 		line := element (cursor);
 		log ("silk screen line face" & to_string (face) & latin_1.space 
 			 & to_string (type_line (line))
-			 & " width " & to_string (line.width), log_threshold);
+			 & " width" & to_string (line.width), log_threshold);
 	end line_silk_screen_properties;
 
 	procedure arc_silk_screen_properties (
@@ -235,7 +235,7 @@ package body et_pcb is
 		arc := element (cursor);
 		log ("silk screen arc face" & to_string (face) & latin_1.space 
 			 & to_string (type_arc (arc))
-			 & " width " & to_string (arc.width), log_threshold);
+			 & " width" & to_string (arc.width), log_threshold);
 	end arc_silk_screen_properties;
 	
 	procedure circle_silk_screen_properties (
@@ -249,7 +249,7 @@ package body et_pcb is
 		circle := element (cursor);
 		log ("silk screen circle face" & to_string (face) & latin_1.space 
 			 & to_string (type_circle (circle))
-			 & " width " & to_string (circle.width), log_threshold);
+			 & " width" & to_string (circle.width), log_threshold);
 	end circle_silk_screen_properties;
 
 
@@ -266,7 +266,7 @@ package body et_pcb is
 		line := element (cursor);
 		log ("assembly doc line face" & to_string (face) & latin_1.space
 			 & to_string (type_line (line))
-			 & " width " & to_string (line.width), log_threshold);
+			 & " width" & to_string (line.width), log_threshold);
 	end line_assy_doc_properties;
 
 	procedure arc_assy_doc_properties (
@@ -280,7 +280,7 @@ package body et_pcb is
 		arc := element (cursor);
 		log ("assembly doc arc face" & to_string (face) & latin_1.space 
 			 & to_string (type_arc (arc))
-			 & " width " & to_string (arc.width), log_threshold);
+			 & " width" & to_string (arc.width), log_threshold);
 	end arc_assy_doc_properties;
 
 	procedure circle_assy_doc_properties (
@@ -294,7 +294,7 @@ package body et_pcb is
 		circle := element (cursor);
 		log ("assembly doc circle face" & to_string (face) & latin_1.space 
 			 & to_string (type_circle (circle))
-			 & " width " & to_string (circle.width), log_threshold);
+			 & " width" & to_string (circle.width), log_threshold);
 	end circle_assy_doc_properties;
 
 
@@ -310,8 +310,7 @@ package body et_pcb is
 	begin
 		line := element (cursor);
 		log ("keepout line face" & to_string (face) & latin_1.space
-			 & to_string (type_line (line)),
-			 log_threshold);
+			 & to_string (type_line (line)), log_threshold);
 	end line_keepout_properties;
 
 	procedure arc_keepout_properties (

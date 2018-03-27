@@ -45,6 +45,13 @@ package et_pcb_math is
 	function distance (point_one, point_two : in type_point_3d) return type_distance_total;
 	-- Computes the total distance between point_one and point_two.
 		
+	function arc_end_point (
+	-- Computes the end point of an arc.
+		center		: in type_point_3d;
+		start_point	: in type_point_3d;	
+		angle 		: in type_angle)
+		return type_point_3d;
+		
 	
 end et_pcb_math;
 
