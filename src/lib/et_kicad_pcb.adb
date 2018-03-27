@@ -1284,6 +1284,12 @@ package body et_kicad_pcb is
 			terminal_cursor			: type_terminals.cursor;
 			silk_screen_line_cursor	: type_silk_lines.cursor;
 
+			procedure invalid_layer is begin
+				log_indentation_reset;
+				log (message_error & "invalid layer for this object !", console => true);
+				raise constraint_error;
+			end invalid_layer;
+		
 			procedure invalid_layer_reference is begin
 				log_indentation_reset;
 				log (message_error & "reference placeholder must be in a silk screen layer !", console => true);
@@ -1313,18 +1319,6 @@ package body et_kicad_pcb is
 				when SEC_TAGS =>
 					log (to_string (tags), log_threshold + 1);
 
-				when SEC_ATTR =>
-					null;
-					
-				when SEC_START =>
-					null;
-
-				when SEC_END =>
-					null;
-
-				when SEC_FONT =>
-					null;
-					
 				when SEC_FP_TEXT =>
 
 					-- Since there is no alignment information provided, use default values:
@@ -1380,32 +1374,38 @@ package body et_kicad_pcb is
 					end case;
 					
 				when SEC_FP_LINE =>
-					-- Append the line to the container correspoinding to the layer. Then log the line properties.
+					-- Append the line to the container corresponding to the layer. Then log the line properties.
 					case line.layer is
 						when TOP_SILK =>
 							top_silk_screen.lines.append ((line.start_point, line.end_point, line.width));
 							line_silk_screen_properties (TOP, top_silk_screen.lines.last, log_threshold + 1);
+
 						when BOT_SILK =>
 							bot_silk_screen.lines.append ((line.start_point, line.end_point, line.width));
 							line_silk_screen_properties (BOTTOM, bot_silk_screen.lines.last, log_threshold + 1);
+
 						when TOP_ASSY =>
 							top_assy_doc.lines.append ((line.start_point, line.end_point, line.width));
 							line_assy_doc_properties (TOP, top_assy_doc.lines.last, log_threshold + 1);
+
 						when BOT_ASSY =>
 							bot_assy_doc.lines.append ((line.start_point, line.end_point, line.width));
 							line_assy_doc_properties (BOTTOM, bot_assy_doc.lines.last, log_threshold + 1);
+
 						when TOP_KEEP =>
 							top_keepout.lines.append ((line.start_point, line.end_point));
 							line_keepout_properties (TOP, top_keepout.lines.last, log_threshold + 1);
+
 						when BOT_KEEP =>
 							bot_keepout.lines.append ((line.start_point, line.end_point));
 							line_keepout_properties (BOTTOM, top_keepout.lines.last, log_threshold + 1);
+
 						when TOP_COPPER | BOT_COPPER => 
-							null; -- CS
+							invalid_layer; -- CS
 					end case;
 
 				when SEC_FP_ARC =>
-					-- Append the arc to the container correspoinding to the layer. Then log the arc properties.
+					-- Append the arc to the container corresponding to the layer. Then log the arc properties.
 					case arc.layer is
 						when TOP_SILK =>
 							top_silk_screen.arcs.append ((et_pcb.type_arc (arc) with arc.width));
@@ -1438,7 +1438,7 @@ package body et_kicad_pcb is
 							arc_keepout_properties (BOTTOM, top_keepout.arcs.last, log_threshold + 1);
 
 						when TOP_COPPER | BOT_COPPER => 
-							null; -- CS
+							invalid_layer; -- CS
 
 					end case;
 
@@ -1480,7 +1480,7 @@ package body et_kicad_pcb is
 							circle_keepout_properties (BOTTOM, top_keepout.circles.last, log_threshold + 1);
 
 						when TOP_COPPER | BOT_COPPER => 
-							null; -- CS
+							invalid_layer; -- CS
 
 					end case;
 					
