@@ -69,10 +69,10 @@ package body et_pcb is
 		use et_coordinates;
 	begin
 		return to_string (text.position) & latin_1.space
-			& "size (x" & axis_separator & "y) " 
-			& to_string (text.size_x) & latin_1.space & axis_separator & latin_1.space & to_string (text.size_y)
-			& " line width " & to_string (text.width)
-			& " angle " & to_string (text.angle)
+			& "size (x" & axis_separator & "y)" 
+			& to_string (text.size_x) & latin_1.space & axis_separator & to_string (text.size_y)
+			& " line width" & to_string (text.width)
+			& to_string (text.angle, preamble => true)
 			& et_libraries.to_string (text.alignment)
 			& " hidden " & boolean'image (text.hidden)
 			;
@@ -147,7 +147,7 @@ package body et_pcb is
 	-- Returns the center and radius of the given circle as string.
 	begin
 		return "center" & to_string (circle.center) 
-			& " radiusx" & to_string (circle.radius);
+			& " radius" & to_string (circle.radius);
 	end to_string;
 
 	
@@ -172,7 +172,7 @@ package body et_pcb is
 		line : type_silk_line;
 	begin
 		line := element (cursor);
-		log ("silk screen line face " & to_string (face) & latin_1.space 
+		log ("silk screen line face" & to_string (face) & latin_1.space 
 			 & to_string (type_line (line))
 			 & " width " & to_string (line.width), log_threshold);
 	end line_silk_screen_properties;
@@ -186,7 +186,7 @@ package body et_pcb is
 		arc : type_silk_arc;
 	begin
 		arc := element (cursor);
-		log ("silk screen arc face " & to_string (face) & latin_1.space 
+		log ("silk screen arc face" & to_string (face) & latin_1.space 
 			 & to_string (type_arc (arc))
 			 & " width " & to_string (arc.width), log_threshold);
 	end arc_silk_screen_properties;
@@ -200,7 +200,7 @@ package body et_pcb is
 		circle : type_silk_circle;
 	begin
 		circle := element (cursor);
-		log ("silk screen circle face " & to_string (face) & latin_1.space 
+		log ("silk screen circle face" & to_string (face) & latin_1.space 
 			 & to_string (type_circle (circle))
 			 & " width " & to_string (circle.width), log_threshold);
 	end circle_silk_screen_properties;
@@ -217,7 +217,7 @@ package body et_pcb is
 		line : type_doc_line;
 	begin
 		line := element (cursor);
-		log ("assembly doc line face " & to_string (face) & latin_1.space
+		log ("assembly doc line face" & to_string (face) & latin_1.space
 			 & to_string (type_line (line))
 			 & " width " & to_string (line.width), log_threshold);
 	end line_assy_doc_properties;
@@ -231,7 +231,7 @@ package body et_pcb is
 		arc : type_doc_arc;
 	begin
 		arc := element (cursor);
-		log ("assembly doc arc face " & to_string (face) & latin_1.space 
+		log ("assembly doc arc face" & to_string (face) & latin_1.space 
 			 & to_string (type_arc (arc))
 			 & " width " & to_string (arc.width), log_threshold);
 	end arc_assy_doc_properties;
@@ -245,7 +245,7 @@ package body et_pcb is
 		circle : type_doc_circle;
 	begin
 		circle := element (cursor);
-		log ("assembly doc circle face " & to_string (face) & latin_1.space 
+		log ("assembly doc circle face" & to_string (face) & latin_1.space 
 			 & to_string (type_circle (circle))
 			 & " width " & to_string (circle.width), log_threshold);
 	end circle_assy_doc_properties;
@@ -262,7 +262,7 @@ package body et_pcb is
 		line : type_keepout_line;
 	begin
 		line := element (cursor);
-		log ("keepout line face " & to_string (face) & latin_1.space
+		log ("keepout line face" & to_string (face) & latin_1.space
 			 & to_string (type_line (line)),
 			 log_threshold);
 	end line_keepout_properties;
@@ -276,7 +276,7 @@ package body et_pcb is
 		arc : type_keepout_arc;
 	begin
 		arc := element (cursor);
-		log ("keepout arc face " & to_string (face) & latin_1.space 
+		log ("keepout arc face" & to_string (face) & latin_1.space 
 			 & to_string (type_arc (arc)), log_threshold);
 	end arc_keepout_properties;
 
@@ -289,7 +289,7 @@ package body et_pcb is
 		circle : type_keepout_circle;
 	begin
 		circle := element (cursor);
-		log ("keepout circle face " & to_string (face) & latin_1.space 
+		log ("keepout circle face" & to_string (face) & latin_1.space 
 			 & to_string (type_circle (circle)), log_threshold);
 	end circle_keepout_properties;
 
@@ -305,7 +305,7 @@ package body et_pcb is
 		line : type_route_restrict_line;
 	begin
 		line := element (cursor);
-		log ("route restrict line face " & to_string (face) & latin_1.space
+		log ("route restrict line face" & to_string (face) & latin_1.space
 			 & to_string (type_line (line)), log_threshold);
 	end line_route_restrict_properties;
 
@@ -318,7 +318,7 @@ package body et_pcb is
 		arc : type_route_restrict_arc;
 	begin
 		arc := element (cursor);
-		log ("route restrict arc face " & to_string (face) & latin_1.space 
+		log ("route restrict arc face" & to_string (face) & latin_1.space 
 			 & to_string (type_arc (arc)), log_threshold);
 	end arc_route_restrict_properties;
 
@@ -334,7 +334,7 @@ package body et_pcb is
 		line : type_via_restrict_line;
 	begin
 		line := element (cursor);
-		log ("via restrict line face " & to_string (face) & latin_1.space
+		log ("via restrict line face" & to_string (face) & latin_1.space
 			 & to_string (type_line (line)), log_threshold);
 	end line_via_restrict_properties;
 
@@ -347,7 +347,7 @@ package body et_pcb is
 		arc : type_via_restrict_arc;
 	begin
 		arc := element (cursor);
-		log ("via restrict arc face " & to_string (face) & latin_1.space 
+		log ("via restrict arc face" & to_string (face) & latin_1.space 
 			 & to_string (type_arc (arc)), log_threshold);
 	end arc_via_restrict_properties;
 
@@ -362,7 +362,7 @@ package body et_pcb is
 		placeholder : type_package_text_placeholder;
 	begin
 		placeholder := element (cursor);
-		log ("silk screen placeholder " & to_string (face)
+		log ("silk screen placeholder face" & to_string (face)
 			 & " for " & to_string (placeholder.meaning), log_threshold);
 		
 		log_indentation_up;
@@ -379,7 +379,7 @@ package body et_pcb is
 		placeholder : type_package_text_placeholder;
 	begin
 		placeholder := element (cursor);
-		log ("assembly doc placeholder " & to_string (face)
+		log ("assembly doc placeholder face" & to_string (face)
 			 & " for " & to_string (placeholder.meaning), log_threshold);
 
 		log_indentation_up;
@@ -397,7 +397,7 @@ package body et_pcb is
 		text : type_text_with_content;
 	begin
 		text := element (cursor);
-		log ("silk screen text " & to_string (face) & latin_1.space
+		log ("silk screen text face" & to_string (face) & latin_1.space
 			 & "content '" & to_string (text.content) & "'", log_threshold);
 
 		log_indentation_up;
@@ -415,7 +415,7 @@ package body et_pcb is
 		text : type_text_with_content;
 	begin
 		text := element (cursor);
-		log ("assembly doc text " & to_string (face) & latin_1.space
+		log ("assembly doc text face" & to_string (face) & latin_1.space
 			 & "content '" & to_string (text.content) & "'", log_threshold);
 
 		log_indentation_up;

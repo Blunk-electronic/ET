@@ -70,12 +70,12 @@ package et_pcb_coordinates is
 	subtype type_distance is type_distance_total range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter
 	zero_distance : constant type_distance := 0.0;
 
-	position_preamble_3d : constant string (1..14) := " pos. "
+	position_preamble_3d : constant string (1..13) := " pos. "
 		& "(x"
 		& et_coordinates.axis_separator
 		& "y"
 		& et_coordinates.axis_separator
-		& "z) ";
+		& "z)";
 	
 	function to_distance (distance : in string) return type_distance;
 	

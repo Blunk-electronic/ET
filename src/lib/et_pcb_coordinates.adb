@@ -57,7 +57,7 @@ package body et_pcb_coordinates is
 
 	function to_string (face : in type_face) return string is
 	begin
-		return type_face'image (face);
+		return latin_1.space & type_face'image (face);
 	end to_string;
 	
 	function to_distance (distance : in string) return type_distance is
@@ -67,7 +67,7 @@ package body et_pcb_coordinates is
 
 	function to_string (distance : in type_distance_total) return string is
 	begin
-		return trim (type_distance_total'image (distance), left);
+		return latin_1.space & trim (type_distance_total'image (distance), left);
 	end to_string;
 
 	function to_string (
@@ -77,10 +77,9 @@ package body et_pcb_coordinates is
 	begin
 		if preamble then
 			return " angle " 
-				& trim (type_angle'image (angle), left) 
-				& latin_1.space & "degrees";
+				& trim (type_angle'image (angle), left); 
 		else
-			return trim (type_angle'image (angle), left);
+			return latin_1.space & trim (type_angle'image (angle), left);
 		end if;
 	end to_string;
 
@@ -95,11 +94,9 @@ package body et_pcb_coordinates is
 			& to_string (point.x)
 			& latin_1.space
 			& et_coordinates.axis_separator
-			& latin_1.space			
 			& to_string (point.y)
 			& latin_1.space			
 			& et_coordinates.axis_separator
-			& latin_1.space
 			& to_string (point.z);
 	end to_string;
 
