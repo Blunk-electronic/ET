@@ -336,6 +336,9 @@ package body et_kicad_pcb is
 		
 	-- CONTAINERS 
 
+		-- COPPER OBJECTS (lines, arcs, circles, texts)
+		top_copper_objects, bot_copper_objects : type_package_copper;
+	
 		-- SILK SCREEN OBJECTS (lines, arcs, circles, texts, text placeholders)
 		top_silk_screen, bot_silk_screen 	: type_package_silk_screen;
 
@@ -1400,8 +1403,14 @@ package body et_kicad_pcb is
 							bot_keepout.lines.append ((line.start_point, line.end_point));
 							line_keepout_properties (BOTTOM, top_keepout.lines.last, log_threshold + 1);
 
-						when TOP_COPPER | BOT_COPPER => 
-							invalid_layer; -- CS
+						when TOP_COPPER => 
+							top_copper_objects.lines.append ((line.start_point, line.end_point, line.width));
+							line_copper_properties (TOP, top_copper_objects.lines.last, log_threshold + 1);
+
+						when BOT_COPPER => 
+							bot_copper_objects.lines.append ((line.start_point, line.end_point, line.width));
+							line_copper_properties (BOTTOM, bot_copper_objects.lines.last, log_threshold + 1);
+
 					end case;
 
 				when SEC_FP_ARC =>
@@ -1437,9 +1446,14 @@ package body et_kicad_pcb is
 								end_point	=> arc.end_point));
 							arc_keepout_properties (BOTTOM, top_keepout.arcs.last, log_threshold + 1);
 
-						when TOP_COPPER | BOT_COPPER => 
-							invalid_layer; -- CS
+						when TOP_COPPER => 
+							top_copper_objects.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+							arc_copper_properties (TOP, top_copper_objects.arcs.last, log_threshold + 1);
 
+						when BOT_COPPER => 
+							bot_copper_objects.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+							arc_copper_properties (BOTTOM, bot_copper_objects.arcs.last, log_threshold + 1);
+							
 					end case;
 
 				when SEC_FP_CIRCLE =>
@@ -1479,8 +1493,13 @@ package body et_kicad_pcb is
 								));
 							circle_keepout_properties (BOTTOM, top_keepout.circles.last, log_threshold + 1);
 
-						when TOP_COPPER | BOT_COPPER => 
-							invalid_layer; -- CS
+						when TOP_COPPER => 
+							top_copper_objects.circles.append ((et_pcb.type_circle (circle) with circle.width));
+							circle_copper_properties (TOP, top_copper_objects.circles.last, log_threshold + 1);
+
+						when BOT_COPPER => 
+							bot_copper_objects.circles.append ((et_pcb.type_circle (circle) with circle.width));
+							circle_copper_properties (BOTTOM, bot_copper_objects.circles.last, log_threshold + 1);
 
 					end case;
 					
@@ -1784,6 +1803,7 @@ package body et_kicad_pcb is
 					pcb_contours			=> pcb_contours,
 					pcb_contours_plated 	=> pcb_contours_plated,
 					terminals				=> terminals,
+					copper					=> (top => top_copper_objects, bottom => bot_copper_objects),
 					silk_screen				=> (top => top_silk_screen, bottom => bot_silk_screen),
 					keepout					=> (top => top_keepout, bottom => bot_keepout),
 					route_restrict 			=> route_restrict,
@@ -1800,6 +1820,7 @@ package body et_kicad_pcb is
 					pcb_contours			=> pcb_contours,
 					pcb_contours_plated 	=> pcb_contours_plated,
 					terminals				=> terminals,
+					copper					=> (top => top_copper_objects, bottom => bot_copper_objects),
 					silk_screen				=> (top => top_silk_screen, bottom => bot_silk_screen),
 					keepout					=> (top => top_keepout, bottom => bot_keepout),
 					route_restrict 			=> route_restrict,

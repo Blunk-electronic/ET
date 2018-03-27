@@ -149,6 +149,7 @@ package et_pcb is
 	type type_circle is abstract tagged record
 		center			: type_point_3d;
 		radius  		: type_distance;
+		-- CS filled : boolean;
 	end record;
 
 	type type_locked is (NO, YES);
@@ -210,6 +211,41 @@ package et_pcb is
 	-- Returns an empty package contour.
 
 
+	-- COPPER STRUCTURES (NON ELECTRIC !!)
+	type type_copper_line is new type_line with record
+		width	: type_distance; -- CS use subtype for reasonable range
+	end record;
+
+	package type_copper_lines is new doubly_linked_lists (type_copper_line);
+
+
+	type type_copper_arc is new type_arc with record
+		width	: type_distance; -- CS use subtype for reasonable range
+	end record;
+
+	package type_copper_arcs is new doubly_linked_lists (type_copper_arc);
+
+
+	type type_copper_circle is new type_circle with record
+		width	: type_distance; -- CS use subtype for reasonable range
+	end record;
+
+	package type_copper_circles is new doubly_linked_lists (type_copper_circle);
+
+	
+	type type_package_copper is record -- NON ELECTRIC !!
+		lines 		: type_copper_lines.list;
+		arcs		: type_copper_arcs.list;
+		circles		: type_copper_circles.list;
+		texts		: type_texts_with_content.list;
+	end record;
+
+	type type_package_copper_both_faces is record
+		top		: type_package_copper;
+		bottom	: type_package_copper;
+	end record;
+
+	
 
 	-- SILK SCREEN
 	type type_silk_line is new type_line with record
@@ -231,6 +267,7 @@ package et_pcb is
 	end record;
 
 	package type_silk_circles is new doubly_linked_lists (type_silk_circle);
+
 	
 	type type_package_silk_screen is record
 		lines 		: type_silk_lines.list;
@@ -509,6 +546,7 @@ package et_pcb is
 	
 	type type_package (appearance : type_package_appearance) is record
 		description				: type_package_description.bounded_string;
+		copper					: type_package_copper_both_faces;
 		silk_screen				: type_package_silk_screen_both_faces; -- incl. reference and purpose
 		assembly_documentation	: type_package_assembly_documentation_both_faces;
 		keepout 				: type_package_keepout_both_faces;
@@ -546,6 +584,26 @@ package et_pcb is
 	-- All package models are collected here:
 	package_libraries : type_libraries.map;
 
+
+-- PROPERTIES OF OBJECTS IN COPPER (NON ELECTRIC !!)
+	procedure line_copper_properties (
+	-- Logs the properties of the given line of copper
+		face			: in type_face;
+		cursor			: in type_copper_lines.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+
+	procedure arc_copper_properties (
+	-- Logs the properties of the given arc of copper
+		face			: in type_face;
+		cursor			: in type_copper_arcs.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+
+	procedure circle_copper_properties (
+	-- Logs the properties of the given circle of copper
+		face			: in type_face;
+		cursor			: in type_copper_circles.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+	
 
 	
 -- PROPERTIES OF OBJECTS IN SILK SCREEN	
