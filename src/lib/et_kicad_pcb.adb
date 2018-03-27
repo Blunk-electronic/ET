@@ -112,7 +112,9 @@ package body et_kicad_pcb is
 		
 		use et_pcb;
 		use et_pcb.type_lines;
-		line_cursor : et_pcb.type_lines.cursor := lines.first; -- points to the line being processed
+
+		-- This cursor points to the line being processed (in the list of lines given in "lines"):
+		line_cursor : et_pcb.type_lines.cursor := lines.first;
 
 		ob : constant character := '(';
 		cb : constant character := ')';
@@ -415,23 +417,31 @@ package body et_kicad_pcb is
 		end set_stop_and_mask;
 		
 
-		-- CS: need comments
-		line_length_max : constant positive := 200;
+		-- When a line is fetched from the given list of lines, it is stored in variable
+		-- "current_line". CS: The line length is limited by line_length_max and should be increased
+		-- if neccessary. 
+		-- The character_cursor points to the character being tested or processed in that line.
+		line_length_max : constant positive := 300;
 		package type_current_line is new generic_bounded_length (line_length_max);
 		use type_current_line;
 		current_line : type_current_line.bounded_string;
 		character_cursor : natural;
 
 		procedure get_next_line is
-		-- Fetches a new line. 
+		-- Fetches a new line from the given list of lines (see header of procedure to_package_model).
 		begin
 			next (line_cursor);
 			if line_cursor /= et_pcb.type_lines.no_element then
+
+				-- Since a single line in container "lines" (where line_cursor points to) is a list 
+				-- of strings itself, we convert them first to a fixed string and then to a bounded string.
 				current_line := type_current_line.to_bounded_string (to_string (element (line_cursor)));
 				log ("line " & to_string (current_line), log_threshold + 4);
 			else
-				-- no more lines -- CS raise error ?
-				null;
+				-- This should never happen:
+				log_indentation_reset;
+				log (message_error & "no more lines available !", console => true);
+				raise constraint_error;
 			end if;
 		end get_next_line;
 		
@@ -452,6 +462,14 @@ package body et_kicad_pcb is
 		-- Reads the section name from current cursor position until termination
 		-- character or its last character.
 			end_of_kw : integer;  -- may become negative if no terminating character present
+
+			procedure invalid_section is
+			begin
+				log_indentation_reset;
+				log (message_error & "invalid subsection '" & to_string (section.name) 
+					 & "' in parent section '" & to_string (section.parent) & "' !", console => true);
+				raise constraint_error;
+			end invalid_section;
 		begin
 			-- save previous section on stack
 			sections_stack.push (section);
@@ -473,6 +491,68 @@ package body et_kicad_pcb is
 			-- This is an implicit general test whether the keyword is a valid keyword.
 			section.name := type_keyword'value (sec_prefix & slice (current_line, character_cursor, end_of_kw));
 
+			-- This is the validation of a section regarding its parent section.
+			-- If an invalid subsection occurs, raise alarm and abort.
+			case section.parent is
+				when SEC_MODULE =>
+					case section.name is
+						when SEC_FP_TEXT | SEC_FP_LINE | SEC_FP_ARC | SEC_FP_CIRCLE | SEC_TAGS |
+							SEC_MODEL | SEC_PAD | SEC_DESCR | SEC_ATTR | SEC_LAYER | SEC_TEDIT => null;
+						when others => invalid_section;
+					end case;
+
+				when SEC_FP_TEXT =>
+					case section.name is
+						when SEC_AT | SEC_LAYER | SEC_EFFECTS => null;
+						when others => invalid_section;
+					end case;
+
+				when SEC_EFFECTS =>
+					case section.name is
+						when SEC_FONT => null;
+						when others => invalid_section;
+					end case;
+					
+				when SEC_FONT =>
+					case section.name is
+						when SEC_SIZE | SEC_THICKNESS => null;
+						when others => invalid_section;
+					end case;
+
+				when SEC_FP_LINE =>
+					case section.name is
+						when SEC_START | SEC_END | SEC_LAYER | SEC_WIDTH => null;
+						when others => invalid_section;
+					end case;
+
+				when SEC_FP_ARC =>
+					case section.name is
+						when SEC_START | SEC_END | SEC_ANGLE | SEC_LAYER | SEC_WIDTH => null;
+						when others => invalid_section;
+					end case;
+
+				when SEC_FP_CIRCLE =>
+					case section.name is
+						when SEC_CENTER | SEC_END | SEC_LAYER | SEC_WIDTH => null;
+						when others => invalid_section;
+					end case;
+
+				when SEC_PAD =>
+					case section.name is
+						when SEC_AT | SEC_SIZE | SEC_LAYERS | SEC_DRILL => null;
+						when others => invalid_section;
+					end case;
+
+				when SEC_MODEL =>
+					case section.name is
+						when SEC_AT | SEC_ROTATE | SEC_SCALE => null;
+						when others => invalid_section;
+					end case;
+					
+				when others => null;
+			end case;
+
+			
 			-- update cursor
 			character_cursor := end_of_kw;
 
@@ -496,8 +576,8 @@ package body et_kicad_pcb is
 		-- Reads the arguments of a section.
 		-- Increments the argument counter after each argument.
 		-- Validates the arguments according to the current section.
-		-- Leaves the cursor at the position of the last character of the argument.
-		-- If the argument was enclosed in quotations the cursor is left at
+		-- Leaves the character_cursor at the position of the last character of the argument.
+		-- If the argument was enclosed in quotations the character_cursor is left at
 		-- the position of the trailing quotation.
 			end_of_arg : integer; -- may become negative if no terminating character present
 
@@ -621,9 +701,11 @@ package body et_kicad_pcb is
 			
 			log ("arg" & to_string (section.arg_counter) & latin_1.space & to_string (arg), log_threshold + 4);
 
-			-- Validate arguments according to current section.
+			-- Validate arguments according to current section and the parent section.
 			-- Load variables. When a section closes, the variables are used to build an object. see exec_section.
 			case section.name is
+				when INIT => raise constraint_error; -- should never happen
+				
 				when SEC_MODULE =>
 					case section.parent is
 						when INIT =>
@@ -1137,8 +1219,49 @@ package body et_kicad_pcb is
 						when others => invalid_section;
 					end case;
 					
+				when SEC_EFFECTS =>
+					case section.parent is
+						when SEC_FP_TEXT => null; -- CS currently no direct (non-wrapped) arguments follow
+						when others => invalid_section;
+					end case;
+
+				when SEC_FONT =>
+					case section.parent is
+						when SEC_EFFECTS => null; -- CS currently no direct (non-wrapped) arguments follow
+						when others => invalid_section;
+					end case;
+
+				when SEC_FP_LINE | SEC_FP_ARC | SEC_FP_CIRCLE =>
+					case section.parent is
+						when SEC_MODULE => null; -- CS currently no direct (non-wrapped) arguments follow
+						when others => invalid_section;
+					end case;
+
+				when SEC_MODEL =>
+					case section.parent is
+						when SEC_MODULE =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => null; -- CS read name of 3d model
+								when others => too_many_arguments;
+							end case;
+						when others => invalid_section;
+					end case;
 					
-				when others => null;
+				when SEC_ROTATE | SEC_SCALE =>
+					case section.parent is
+						when SEC_MODULE => null; -- CS currently no direct (non-wrapped) arguments follow
+						when others => invalid_section;
+					end case;
+
+				when SEC_XYZ =>
+					case section.parent is
+						when SEC_AT => null; -- CS
+						when SEC_SCALE => null; -- CS
+						when SEC_ROTATE => null; -- CS
+						when others => invalid_section;
+					end case;
+
 			end case;
 			
 			exception
@@ -1155,7 +1278,7 @@ package body et_kicad_pcb is
 		procedure exec_section is
 		-- Performs an operation according to the active section and variables that have been
 		-- set earlier (when processing the arguments. see procedure read_arg).
-		-- Restores the previous section name and argument counter.
+		-- Restores the previous section.
 			use et_pcb_coordinates;
 			use et_libraries;
 			terminal_cursor			: type_terminals.cursor;
@@ -1463,7 +1586,7 @@ package body et_kicad_pcb is
 				when others => null;
 			end case;
 
-			-- restore previous section and argument counter from stack
+			-- restore previous section from stack
 			section := sections_stack.pop;
 			log (return_to_section (section.name), log_threshold + 3);
 			
