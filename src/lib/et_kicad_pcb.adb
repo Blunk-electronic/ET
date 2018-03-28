@@ -448,7 +448,7 @@ package body et_kicad_pcb is
 			end if;
 		end get_next_line;
 		
-		procedure p1 is
+		procedure next_character is
 		-- Updates the cursor position to the position of the next
 		-- non_space character starting from the current cursor position.
 		-- Fetches a new line if no further characters after current cursor position.
@@ -458,7 +458,7 @@ package body et_kicad_pcb is
 				get_next_line;
 				character_cursor := index_non_blank (source => current_line, from => character_cursor + 1);
 			end loop;
-		end p1;
+		end next_character;
 
 		procedure read_section is 
 		-- Stores the section name and current argument counter on sections_stack.
@@ -1357,7 +1357,6 @@ package body et_kicad_pcb is
 							end case;
 							
 						when USER =>
-							--text := (et_pcb.type_text (text_basic) with content => text_content);
 							case text.layer is
 								when TOP_SILK => 
 									top_silk_screen.texts.append ((et_pcb.type_text (text) with content => text.content));
@@ -1371,7 +1370,7 @@ package body et_kicad_pcb is
 								when BOT_ASSY => 
 									bot_assy_doc.texts.append ((et_pcb.type_text (text) with content => text.content));
 									text_assy_doc_properties (BOTTOM, bot_assy_doc.texts.last, log_threshold + 1);
-								when others -- should never happen 
+								when others -- should never happen. kicad does not allow texts in signal layers 
 									=> invalid_layer_user;
 							end case;
 					end case;
@@ -1735,55 +1734,74 @@ package body et_kicad_pcb is
 		character_cursor := type_current_line.index (current_line, 1 * ob);
 
 		init_stop_and_mask; -- relevant for SMT terminals only (stop mask always open, solder paste never applied)
-		
-		loop
-			<<label_1>>
-				p1;
-				read_section;
-				p1;
-				if element (current_line, character_cursor) = ob then goto label_1; end if;
 
-			<<label_3>>
+		-- This is the central loop where decisions are made whether to read a section name,
+		-- an argument or whether to "execute" a section.
+		-- An opening bracket indicates a new (sub)section. A closing bracket indicates that a section
+		-- finishes and is to be executed. The loop comes to an end if the sections stack depth 
+		-- reaches zero.
+		loop
+			-- read (sub)section
+			<<label_read_section>>
+				next_character; -- set character cursor to next character
+				read_section;
+				next_character; -- set character cursor to next character
+
+				-- if a new subsection starts, read subsection
+				if element (current_line, character_cursor) = ob then goto label_read_section; end if;
+
+			-- read argument
+			<<label_read_argument>>
 				read_arg;
-				p1;
-				-- Test for cb, ob or other character:
+				next_character; -- set character cursor to next character
+			
+				-- Test for cb, ob or other character after argument:
 				case element (current_line, character_cursor) is
 
-					-- If closing bracket after argument.
-					when cb => goto label_2;
+					-- If closing bracket after argument, the (sub)section ends
+					-- and must be executed:
+					when cb => goto label_execute_section;
 
-					-- If another section at a deeper level follows.
-					when ob => goto label_1;
+					-- If another section at a deeper level follows,
+					-- read (sub)section:
+					when ob => goto label_read_section;
 
-					-- In case another argument follows:
-					when others => goto label_3; 
+					-- In case another argument follows, it must be read:
+					when others => goto label_read_argument; 
 				end case;
 
-			<<label_2>>
+			-- execute section
+			<<label_execute_section>>
 				exec_section;
 
+				-- After executing the section, check the stack depth.
+				-- Exit when zero reached (topmost section has been executed).
 				if sections_stack.depth = 0 then exit; end if;
-				p1;
+				
+				next_character; -- set character cursor to next character
 
-				-- Test for cb, ob or other character:
+				-- Test for cb, ob or other character after closed section:
 				case element (current_line, character_cursor) is
 
-					-- If closing bracket after argument.
-					when cb => goto label_2;
+					-- If closing bracket after closed section,
+					-- execute parent section:
+					when cb => goto label_execute_section;
 
-					-- If another section at a deeper level follows.
-					when ob => goto label_1;
+					-- If another section at a deeper level follows,
+					-- read subsection:
+					when ob => goto label_read_section;
 
-					-- In case an argument follows:
-					when others => goto label_3; 
+					-- In case an argument follows, it belongs to the parent
+					-- section and is to be read:
+					when others => goto label_read_argument; 
 				end case;
 				
 		end loop;
 
 		-- check section name. must be top level section
-		if section.name /= INIT then
+		if section.name /= INIT then -- should never happen
 			log_indentation_reset;
-			log (message_error & "top level section not closed !");
+			log (message_error & "top level section not closed !", console => true);
 			raise constraint_error;
 		end if;
 
