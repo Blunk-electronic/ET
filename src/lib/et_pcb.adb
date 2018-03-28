@@ -64,6 +64,72 @@ package body et_pcb is
 		return type_directory_name.to_string (directory_name);
 	end to_string;
 
+	procedure validate_text_size (size : in type_distance) is
+	-- Checks whether given text size is in range of type_text_size.
+	begin
+		if size not in type_text_size then
+			log_indentation_reset;
+			log (message_error & "text size invalid ! Allowed range is" 
+				 & to_string (type_text_size'first) & " .."
+				 & to_string (type_text_size'last),
+				 console => true);
+			raise constraint_error;
+		end if;
+	end validate_text_size;
+
+	procedure validate_general_line_width (width : in type_distance) is
+	-- Checks whether given line width is in range of type_general_line_width
+	begin
+		if width not in type_general_line_width then
+			log_indentation_reset;
+			log (message_error & "line width invalid ! Allowed range is" 
+				 & to_string (type_general_line_width'first) & " .."
+				 & to_string (type_general_line_width'last),
+				 console => true);
+			raise constraint_error;
+		end if;
+	end validate_general_line_width;
+
+	procedure validate_text_line_width (width : in type_distance) is
+	-- Checks whether given line width is in range of type_text_line_width
+	begin
+		if width not in type_text_line_width then
+			log_indentation_reset;
+			log (message_error & "line width invalid ! Allowed range is" 
+				 & to_string (type_text_line_width'first) & " .."
+				 & to_string (type_text_line_width'last),
+				 console => true);
+			raise constraint_error;
+		end if;
+	end validate_text_line_width;
+
+	procedure validate_drill_size (drill : in type_distance) is
+	-- Checks whether given drill size is in range of type_drill_size
+	begin
+		if drill not in type_drill_size then
+			log_indentation_reset;
+			log (message_error & "drill size invalid ! Allowed range is" 
+				 & to_string (type_drill_size'first) & " .."
+				 & to_string (type_drill_size'last),
+				 console => true);
+			raise constraint_error;
+		end if;
+	end validate_drill_size;
+
+	procedure validate_pad_size (size : in type_distance) is
+	-- Checks whether given pad size is in range of type_pad_size
+	begin
+		if size not in type_pad_size then
+			log_indentation_reset;
+			log (message_error & "pad size invalid ! Allowed range is" 
+				 & to_string (type_pad_size'first) & " .."
+				 & to_string (type_pad_size'last),
+				 console => true);
+			raise constraint_error;
+		end if;
+	end validate_pad_size;
+	
+	
 	function text_properties (text : in type_text) return string is
 	-- Returns the properties of the given text in a long single string.
 		use et_coordinates;

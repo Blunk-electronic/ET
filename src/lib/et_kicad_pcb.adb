@@ -251,20 +251,20 @@ package body et_kicad_pcb is
 		-- Their additional components (width, layer, angle, ...) are later 
 		-- copied to the final lines, arcs and circles as specified in type_package:
 		type type_line is new et_pcb.type_line with record
-			width	: et_pcb_coordinates.type_distance;
+			width	: type_text_line_width;
 			layer	: type_layer;
 		end record;
 		line : type_line;
 
 		type type_arc is new et_pcb.type_arc with record
-			width 	: et_pcb_coordinates.type_distance;
+			width 	: type_text_line_width;
 			angle 	: et_pcb_coordinates.type_angle;
 			layer	: type_layer;
 		end record;
 		arc : type_arc;
 
 		type type_circle is new et_pcb.type_circle with record -- center and radius incl.
-			width 	: et_pcb_coordinates.type_distance;
+			width 	: type_text_line_width;
 			point 	: et_pcb_coordinates.type_point_3d;
 			layer	: type_layer;
 		end record;
@@ -283,10 +283,10 @@ package body et_kicad_pcb is
 
 		terminal_face 		: et_pcb_coordinates.type_face;
 		-- CS use subtypes for reasonable sizes below:
-		terminal_drill_size	: et_pcb_coordinates.type_distance; 
+		terminal_drill_size	: type_drill_size; 
 		terminal_position	: et_pcb_coordinates.type_point_3d;
-		terminal_size_x 	: et_pcb_coordinates.type_distance;
-		terminal_size_y 	: et_pcb_coordinates.type_distance;		
+		terminal_size_x 	: type_pad_size;
+		terminal_size_y 	: type_pad_size;		
 		terminal_angle 		: et_pcb_coordinates.type_angle;
 
 -- 		terminal_copper_width_outer_layers : et_pcb_coordinates.type_distance;
@@ -1051,21 +1051,27 @@ package body et_kicad_pcb is
 						when SEC_FP_LINE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => line.width := to_distance (to_string (arg));
+								when 1 => 
+									validate_general_line_width (to_distance (to_string (arg)));
+									line.width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_FP_ARC =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => arc.width := to_distance (to_string (arg));
+								when 1 => 
+									validate_general_line_width (to_distance (to_string (arg)));
+									arc.width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_FP_CIRCLE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => circle.width := to_distance (to_string (arg));
+								when 1 => 
+									validate_general_line_width (to_distance (to_string (arg)));
+									circle.width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -1085,8 +1091,12 @@ package body et_kicad_pcb is
 						when SEC_PAD =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => terminal_size_x := to_distance (to_string (arg));
-								when 2 => terminal_size_y := to_distance (to_string (arg));
+								when 1 => 
+									validate_pad_size (to_distance (to_string (arg)));
+									terminal_size_x := to_distance (to_string (arg));
+								when 2 => 
+									validate_pad_size (to_distance (to_string (arg)));
+									terminal_size_y := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 							
@@ -1144,6 +1154,7 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
+									validate_drill_size (to_distance (to_string (arg)));
 									terminal_drill_size := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;

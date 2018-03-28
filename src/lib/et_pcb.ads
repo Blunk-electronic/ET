@@ -77,13 +77,50 @@ package et_pcb is
 
 	package type_signal_layers is new ordered_sets (type_signal_layer);
 
+	text_size_min : constant type_distance := 1.0;
+	text_size_max : constant type_distance := 100.0;
+	subtype type_text_size is type_distance range text_size_min .. text_size_max;
 
+	procedure validate_text_size (size : in type_distance);
+	-- Checks whether given text size is in range of type_text_size.
+
+	
+	line_width_min : constant type_distance := 0.15;
+	line_width_max : constant type_distance := 10.0;
+	subtype type_text_line_width is type_distance range line_width_min .. line_width_max;
+
+	procedure validate_text_line_width (width : in type_distance);
+	-- Checks whether given line width is in range of type_text_line_width
+
+
+	subtype type_general_line_width is type_distance range line_width_min .. line_width_max;
+
+	procedure validate_general_line_width (width : in type_distance);
+	-- Checks whether given line width is in range of type_general_line_width
+
+
+	drill_size_min : constant type_distance := 0.05;
+	drill_size_max : constant type_distance := 10.0;
+	subtype type_drill_size is type_distance range drill_size_min .. drill_size_max;
+
+	procedure validate_drill_size (drill : in type_distance);
+	-- Checks whether given drill size is in range of type_drill_size
+
+
+	pad_size_min : constant type_distance := 0.05;
+	pad_size_max : constant type_distance := 10.0;
+	subtype type_pad_size is type_distance range pad_size_min .. pad_size_max;
+
+	procedure validate_pad_size (size : in type_distance);
+	-- Checks whether given pad size is in range of type_pad_size
+	
+	
 	-- TEXT IN GENERAL
 	type type_text is abstract tagged record
 		position	: type_point_3d;
-		size_x		: type_distance; -- CS use subtype for reasonable range
-		size_y		: type_distance; -- CS use subtype for reasonable range
-		width		: type_distance; -- CS use subtype for reasonable range		
+		size_x		: type_text_size;
+		size_y		: type_text_size;
+		width		: type_text_line_width;
 		angle		: type_angle;
 		alignment	: et_libraries.type_text_alignment;
 		hidden		: boolean; -- CS use type with yes or no
@@ -139,7 +176,6 @@ package et_pcb is
 	-- ARC
 	type type_arc is abstract tagged record
 		center			: type_point_3d;
--- 		radius  		: type_distance;
 		start_point		: type_point_3d;
 		end_point		: type_point_3d;
 -- 		angle			: type_angle;
@@ -213,21 +249,21 @@ package et_pcb is
 
 	-- COPPER STRUCTURES (NON ELECTRIC !!)
 	type type_copper_line is new type_line with record
-		width	: type_distance; -- CS use subtype for reasonable range
+		width	: type_general_line_width;
 	end record;
 
 	package type_copper_lines is new doubly_linked_lists (type_copper_line);
 
 
 	type type_copper_arc is new type_arc with record
-		width	: type_distance; -- CS use subtype for reasonable range
+		width	: type_general_line_width;
 	end record;
 
 	package type_copper_arcs is new doubly_linked_lists (type_copper_arc);
 
 
 	type type_copper_circle is new type_circle with record
-		width	: type_distance; -- CS use subtype for reasonable range
+		width	: type_general_line_width;
 	end record;
 
 	package type_copper_circles is new doubly_linked_lists (type_copper_circle);
@@ -249,21 +285,21 @@ package et_pcb is
 
 	-- SILK SCREEN
 	type type_silk_line is new type_line with record
-		width	: type_distance; -- CS use subtype for reasonable range
+		width	: type_general_line_width;
 	end record;
 
 	package type_silk_lines is new doubly_linked_lists (type_silk_line);
 
 
 	type type_silk_arc is new type_arc with record
-		width	: type_distance; -- CS use subtype for reasonable range
+		width	: type_general_line_width;
 	end record;
 
 	package type_silk_arcs is new doubly_linked_lists (type_silk_arc);
 
 	
 	type type_silk_circle is new type_circle with record
-		width	: type_distance; -- CS use subtype for reasonable range
+		width	: type_general_line_width;
 	end record;
 
 	package type_silk_circles is new doubly_linked_lists (type_silk_circle);
@@ -298,21 +334,21 @@ package et_pcb is
 
 	-- ASSEMBLY DOCUMENTATION
 	type type_doc_line is new type_line with record
-		width	: type_distance; -- CS use subtype for reasonable range
+		width	: type_general_line_width;
 	end record;
 
 	package type_doc_lines is new doubly_linked_lists (type_doc_line);
 
 
 	type type_doc_arc is new type_arc with record
-		width	: type_distance; -- CS use subtype for reasonable range
+		width	: type_general_line_width;
 	end record;
 
 	package type_doc_arcs is new doubly_linked_lists (type_doc_arc);
 
 	
 	type type_doc_circle is new type_circle with record
-		width	: type_distance; -- CS use subtype for reasonable range
+		width	: type_general_line_width;
 	end record;
 
 	package type_doc_circles is new doubly_linked_lists (type_doc_circle);
@@ -493,14 +529,14 @@ package et_pcb is
 
 				case shape is
 					when CIRCULAR =>
-						drill_size_cir : type_distance; -- CS use subtype for reasonable range
+						drill_size_cir : type_drill_size;
 						
 					WHEN NON_CIRCULAR =>
-						size_tht_x, size_tht_y : type_distance;  -- CS use subtype for reasonable range
+						size_tht_x, size_tht_y : type_pad_size;
 
 						case tht_hole is
 							when DRILLED =>
-								drill_size_dri : type_distance; -- CS use subtype for reasonable range
+								drill_size_dri : type_drill_size;
 
 							when MILLED =>
 								millings : type_package_pcb_contour_plated;
@@ -519,7 +555,7 @@ package et_pcb is
 						null;
 						
 					WHEN NON_CIRCULAR =>
-						size_smt_x, size_smt_y : type_distance;  -- CS use subtype for reasonable range
+						size_smt_x, size_smt_y : type_pad_size;
 				end case;
 
 		end case;
