@@ -654,14 +654,38 @@ package body et_pcb is
 		library_cursor : type_libraries.cursor;
 
 		procedure validate_terminals (package_terminals : in type_terminals.map) is
-			terminal_cursor : et_libraries.type_terminal_port_map.cursor;
-		begin
+		-- Test if the terminals of the terminal_port_map are also in the given package.
+		-- Raises constraint_error if a terminal could not be found in the package.
+			use type_terminals; -- the terminals of the package
+			use et_libraries.type_terminal_port_map;
+		
+			-- This cursor points to the terminal in the terminal_port_map
+			terminal_cursor : et_libraries.type_terminal_port_map.cursor; 
+
+			-- For temporarily storage of a terminal name:
+			terminal_name_in_map : et_libraries.type_terminal_name.bounded_string;
+		begin -- validate_terminals
+			-- Loop in terminal_port_map. Test each terminal whether it occurs
+			-- in the package_terminals.
 			terminal_cursor := terminal_port_map.first;
-			null;
+			while terminal_cursor /= type_terminal_port_map.no_element loop
+				terminal_name_in_map := key (terminal_cursor);
+
+				if package_terminals.find (terminal_name_in_map) = type_terminals.no_element then
+					log_indentation_reset;
+					log (message_error & "package " & to_string (packge => package_name)
+						 & " does not have a terminal '" 
+						 & to_string (terminal_name_in_map) & "' !", console => true);
+					raise constraint_error;
+				end if;
+				
+				next (terminal_cursor);
+			end loop;
 		end validate_terminals;
 			
 	
 		procedure locate_package (
+		-- Locates the package by package_name in the given package library.
 			library_name	: in type_full_library_name.bounded_string;
 			packages		: in type_packages.map) is
 			package_cursor : type_packages.cursor;
@@ -716,7 +740,7 @@ package body et_pcb is
 					 & " !", console => true);
 				raise constraint_error;
 			else
-				null;
+				-- locate the given package (by package_name) in the given package library:
 				query_element (
 					position	=> library_cursor,
 					process		=> locate_package'access);
