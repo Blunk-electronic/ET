@@ -644,12 +644,89 @@ package body et_pcb is
 	-- Used when terminal_port_maps are to be used for packages.
 	-- The given package is specified by the library name and package name.
 	-- Returns true if the terminal_port_map fits on the given package.
-		library_name		: in et_libraries.type_full_library_name.bounded_string;
-		package_name 		: in et_libraries.type_component_package_name.bounded_string;
+		library_name		: in et_libraries.type_full_library_name.bounded_string;		-- ../lbr/bel_ic.pretty
+		package_name 		: in et_libraries.type_component_package_name.bounded_string;	-- S_SO14
 		terminal_port_map	: in et_libraries.type_terminal_port_map.map) 
 		return boolean is
-	begin
-		return true; -- CS
+
+		use et_libraries;
+		use type_libraries;
+		library_cursor : type_libraries.cursor;
+
+		procedure locate_package (
+			library_name	: in type_full_library_name.bounded_string;
+			packages		: in type_packages.map) is
+			package_cursor : type_packages.cursor;
+
+			use type_terminals;
+			use type_terminal_port_map;
+			terminals : et_libraries.type_terminal_count;
+		begin
+			if is_empty (packages) then
+				log_indentation_reset;
+				log (message_error & "package library " & to_string (library_name)
+					 & " is empty !", console => true);
+				raise constraint_error;
+			else
+				-- locate the package
+				package_cursor := packages.find (package_name);
+				if package_cursor = type_packages.no_element then
+					log_indentation_reset;
+					log (message_error & "package " & to_string (packge => package_name)
+						& " not found in library " & to_string (library_name)
+						& " !", console => true);
+					raise constraint_error;
+				else
+					-- load the total number of terminals the package provides
+					terminals := type_terminal_count (length (element (package_cursor).terminals));
+
+					-- If the package has less terminals than the given terminal_port_map abort:
+					if terminals < type_terminal_count (length (terminal_port_map)) then
+						log_indentation_reset;
+						log (message_error & "package " & to_string (packge => package_name)
+							& " as too little terminals !",
+							console => true);
+						raise constraint_error;
+					end if;
+					
+				end if;
+
+			end if;
+			
+		end locate_package;
+		
+	begin -- terminal_port_map_fits
+		if not is_empty (package_libraries) then
+			library_cursor := package_libraries.find (library_name);
+
+			if library_cursor = type_libraries.no_element then
+				log_indentation_reset;
+				log (message_error & "package library " & to_string (library_name)
+					 & " not found in " & to_string (lib_dir) 
+					 & " !", console => true);
+				raise constraint_error;
+			else
+				null;
+				query_element (
+					position	=> library_cursor,
+					process		=> locate_package'access);
+			end if;
+				
+		else
+			log_indentation_reset;
+			log (message_error & "no package libraries available !", console => true);
+			raise constraint_error;
+		end if;
+
+		return true;
+
+		exception
+			when event:
+				others =>
+					log_indentation_reset;
+					log (ada.exceptions.exception_message (event), console => true);
+					raise;
+
 	end terminal_port_map_fits;
 
 	

@@ -2959,8 +2959,8 @@ package body et_kicad is
 		first_instance 	: in boolean := false;
 		project			: in et_schematic.type_project_name.bounded_string;
 		log_threshold	: in et_string_processing.type_log_level) is
-	-- Imports the design as specified by project.
-	-- Inserts the created submodule in the rig (see et_schematic.type_rig).
+	-- Imports the design libraries and the actual design as specified by parameter "project".
+	-- Inserts the created (sub)module in the rig (see et_schematic.type_rig).
 	-- Leaves the global module_cursor pointing where the module was inserted.
 	-- If first_instance is false, the module gets the name as defined in the kicad project file.
 	-- For a regular single design import this is the default.
@@ -6531,12 +6531,12 @@ package body et_kicad is
 					raise constraint_error;
 				end if;
 
-				-- read component libraries (in lib_dir)
-				read_components_libraries (log_threshold);
-
 				-- read package libraries (in lib_dir)
 				et_kicad_pcb.read_libraries (log_threshold);
 				
+				-- read component libraries (in lib_dir)
+				read_components_libraries (log_threshold);
+
 				current_schematic := top_level_schematic;
 				check_submodule_name_characters (to_submodule_name (current_schematic));
 				
