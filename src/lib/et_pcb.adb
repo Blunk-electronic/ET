@@ -653,6 +653,14 @@ package body et_pcb is
 		use type_libraries;
 		library_cursor : type_libraries.cursor;
 
+		procedure validate_terminals (package_terminals : in type_terminals.map) is
+			terminal_cursor : et_libraries.type_terminal_port_map.cursor;
+		begin
+			terminal_cursor := terminal_port_map.first;
+			null;
+		end validate_terminals;
+			
+	
 		procedure locate_package (
 			library_name	: in type_full_library_name.bounded_string;
 			packages		: in type_packages.map) is
@@ -687,6 +695,8 @@ package body et_pcb is
 							& " as too little terminals !",
 							console => true);
 						raise constraint_error;
+					else
+						validate_terminals (element (package_cursor).terminals);
 					end if;
 					
 				end if;
