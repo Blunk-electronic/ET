@@ -118,6 +118,7 @@ package body et_kicad_pcb is
 			et_libraries.to_package_name (ada.directories.base_name (file_name)); 
 
 		function path_and_file_name return string is
+		-- returns the path and file name. used for error messages.
 			use et_libraries;
 		begin
 			return "file " & ada.directories.compose (
@@ -1961,12 +1962,11 @@ package body et_kicad_pcb is
 				while not end_of_file loop
 -- 					log (get_line);
 
-					-- Store line in variable "line" (see et_string_processing.ads)
+					-- Store a single line in variable "line" (see et_string_processing.ads)
 					line := et_string_processing.read_line (
-								line 			=> get_line,
-								number 			=> ada.text_io.line (current_input),
-								--delimiter_wrap	=> true, -- some things are enclosed in quotations
-								ifs 			=> latin_1.space); -- fields are separated by space
+								line 	=> get_line,
+								number 	=> ada.text_io.line (current_input),
+								ifs 	=> latin_1.space); -- fields are separated by space
 
 					-- insert line in container "lines"
 					if field_count (line) > 0 then -- we skip empty or commented lines
@@ -2082,8 +2082,87 @@ package body et_kicad_pcb is
 
 	end read_libraries;
 
-	
 
+	function to_board (
+		file_name		: in string; -- pwr_supply.kicad_pcb
+		lines			: in et_pcb.type_lines.list;
+		log_threshold	: in et_string_processing.type_log_level) 
+		return type_board is
+
+		use et_pcb;
+		use et_pcb.type_lines;
+
+		-- This cursor points to the line being processed (in the list of lines given in "lines"):
+		line_cursor : et_pcb.type_lines.cursor := lines.first;
+
+		ob : constant character := '(';
+		cb : constant character := ')';
+
+		term_char_seq : constant string (1..2) := latin_1.space & cb;
+		term_char_set : character_set := to_set (term_char_seq);
+
+		-- the section prefix is a workaround due to GNAT reserved keywords.
+		sec_prefix : constant string (1..4) := "sec_";
+
+		
+		board : type_board;
+	begin
+		return board;
+	end to_board;
+
+	
+	procedure read_board (
+		file_name 		: in string;
+		log_threshold	: in et_string_processing.type_log_level) is
+
+		board_handle : ada.text_io.file_type;
+		line : type_fields_of_line; -- a line of the board file
+
+		use et_pcb.type_lines;
+		lines : et_pcb.type_lines.list; -- all lines of the board file
+
+		-- Here the board data goes. 
+		-- CS: If Kicad supports multi boards some day, this must become a list of boards.
+		board : type_board;
+		
+	begin -- read_board
+		log ("reading board file ...", log_threshold);
+		log_indentation_up;
+
+		if ada.directories.exists (file_name) then
+			open (
+				file => board_handle,
+				mode => in_file,
+				name => file_name); -- pwr_supply.kicad_pcb
+
+			-- read board file
+			set_input (board_handle);
+			while not end_of_file loop
+				-- log (get_line);
+
+				-- Store a single line in variable "line" (see et_string_processing.ads)
+				line := et_string_processing.read_line (
+							line 	=> get_line,
+							number 	=> ada.text_io.line (current_input),
+							ifs 	=> latin_1.space); -- fields are separated by space
+
+				-- insert line in container "lines"
+				if field_count (line) > 0 then -- we skip empty or commented lines
+					append (lines, line);
+				end if;
+					
+			end loop;
+			close (board_handle);
+
+			-- process the board data stored in "lines"
+			board := to_board (file_name, lines, log_threshold + 1);
+			
+		else
+			log ("board file " & file_name & " not available. nothing to do.", log_threshold);
+		end if;
+		
+		log_indentation_down;
+	end read_board;
 	
 end et_kicad_pcb;
 
