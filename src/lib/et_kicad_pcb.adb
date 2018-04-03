@@ -128,10 +128,10 @@ package body et_kicad_pcb is
 		-- This cursor points to the line being processed (in the list of lines given in "lines"):
 		line_cursor : et_pcb.type_lines.cursor := lines.first;
 
-		ob : constant character := '(';
-		cb : constant character := ')';
+		opening_bracket : constant character := '(';
+		closing_bracket : constant character := ')';
 
-		term_char_seq : constant string (1..2) := latin_1.space & cb;
+		term_char_seq : constant string (1..2) := latin_1.space & closing_bracket;
 		term_char_set : character_set := to_set (term_char_seq);
 
 		-- the section prefix is a workaround due to GNAT reserved keywords.
@@ -1762,7 +1762,7 @@ package body et_kicad_pcb is
 		log ("line " & to_string (current_line), log_threshold + 4);
 		
 		-- get position of first opening bracket
-		character_cursor := type_current_line.index (current_line, 1 * ob);
+		character_cursor := type_current_line.index (current_line, 1 * opening_bracket);
 
 		init_stop_and_mask; -- relevant for SMT terminals only (stop mask always open, solder paste never applied)
 
@@ -1779,23 +1779,23 @@ package body et_kicad_pcb is
 				next_character; -- set character cursor to next character
 
 				-- if a new subsection starts, read subsection
-				if element (current_line, character_cursor) = ob then goto label_read_section; end if;
+				if element (current_line, character_cursor) = opening_bracket then goto label_read_section; end if;
 
 			-- read argument
 			<<label_read_argument>>
 				read_arg;
 				next_character; -- set character cursor to next character
 			
-				-- Test for cb, ob or other character after argument:
+				-- Test for cb, opening_bracket or other character after argument:
 				case element (current_line, character_cursor) is
 
 					-- If closing bracket after argument, the (sub)section ends
 					-- and must be executed:
-					when cb => goto label_execute_section;
+					when closing_bracket => goto label_execute_section;
 
 					-- If another section at a deeper level follows,
 					-- read (sub)section:
-					when ob => goto label_read_section;
+					when opening_bracket => goto label_read_section;
 
 					-- In case another argument follows, it must be read:
 					when others => goto label_read_argument; 
@@ -1811,16 +1811,16 @@ package body et_kicad_pcb is
 				
 				next_character; -- set character cursor to next character
 
-				-- Test for cb, ob or other character after closed section:
+				-- Test for cb, opening_bracket or other character after closed section:
 				case element (current_line, character_cursor) is
 
 					-- If closing bracket after closed section,
 					-- execute parent section:
-					when cb => goto label_execute_section;
+					when closing_bracket => goto label_execute_section;
 
 					-- If another section at a deeper level follows,
 					-- read subsection:
-					when ob => goto label_read_section;
+					when opening_bracket => goto label_read_section;
 
 					-- In case an argument follows, it belongs to the parent
 					-- section and is to be read:
@@ -2095,10 +2095,10 @@ package body et_kicad_pcb is
 		-- This cursor points to the line being processed (in the list of lines given in "lines"):
 		line_cursor : et_pcb.type_lines.cursor := lines.first;
 
-		ob : constant character := '(';
-		cb : constant character := ')';
+		opening_bracket : constant character := '(';
+		closing_bracket : constant character := ')';
 
-		term_char_seq : constant string (1..2) := latin_1.space & cb;
+		term_char_seq : constant string (1..2) := latin_1.space & closing_bracket;
 		term_char_set : character_set := to_set (term_char_seq);
 
 		-- the section prefix is a workaround due to GNAT reserved keywords.
