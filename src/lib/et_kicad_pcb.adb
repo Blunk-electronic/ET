@@ -105,7 +105,7 @@ package body et_kicad_pcb is
 	
 	function to_package_model (
 	-- Builds a package model from the given lines.
-		package_name	: in et_libraries.type_component_package_name.bounded_string; -- S_SO14
+		file_name		: in string; -- S_0201.kicad_mod
 		lines			: in et_pcb.type_lines.list;
 		log_threshold	: in et_string_processing.type_log_level)
 		return et_pcb.type_package is
@@ -113,6 +113,17 @@ package body et_kicad_pcb is
 		use et_pcb;
 		use et_pcb.type_lines;
 
+		-- Extract the actual package name (like S_0201) from the given file name:
+		package_name : et_libraries.type_component_package_name.bounded_string :=
+			et_libraries.to_package_name (ada.directories.base_name (file_name)); 
+
+		function path_and_file_name return string is
+			use et_libraries;
+		begin
+			return "file " & ada.directories.compose (
+				to_string (lib_dir), file_name);
+		end path_and_file_name;
+		
 		-- This cursor points to the line being processed (in the list of lines given in "lines"):
 		line_cursor : et_pcb.type_lines.cursor := lines.first;
 
@@ -443,6 +454,7 @@ package body et_kicad_pcb is
 			else
 				-- This should never happen:
 				log_indentation_reset;
+				log (message_error & "in " & path_and_file_name, console => true);
 				log (message_error & "no more lines available !", console => true);
 				raise constraint_error;
 			end if;
@@ -565,6 +577,7 @@ package body et_kicad_pcb is
 				when event:
 					others =>
 						log_indentation_reset;
+						log (message_error & "in " & path_and_file_name, console => true);
 						log (message_error & affected_line (element (line_cursor)) 
 							& to_string (element (line_cursor)), console => true);
 
@@ -1282,6 +1295,7 @@ package body et_kicad_pcb is
 				when event:
 					others =>
 						log_indentation_reset;
+						log (message_error & "in " & path_and_file_name, console => true);
 						log (message_error & affected_line (element (line_cursor)) 
 							& to_string (element (line_cursor)), console => true);
 						log (ada.exceptions.exception_message (event));
@@ -1611,7 +1625,7 @@ package body et_kicad_pcb is
 						terminal_properties (terminal_cursor, log_threshold + 1);
 					else
 						log_indentation_reset;
-						log (message_error & "duplicated terminal " & to_string (terminal_name) & " !");
+						log (message_error & "duplicated terminal " & to_string (terminal_name) & " !", console => true);
 						raise constraint_error;
 					end if;
 					
@@ -1626,6 +1640,7 @@ package body et_kicad_pcb is
 				when event:
 					others =>
 						log_indentation_reset;
+						log (message_error & "in " & path_and_file_name, console => true);
 						log (message_error & affected_line (element (line_cursor)) 
 							& to_string (element (line_cursor)), console => true);
 						log (ada.exceptions.exception_message (event));
@@ -1655,6 +1670,7 @@ package body et_kicad_pcb is
 
 			if not reference_found then
 				log_indentation_reset;
+				log (message_error & "in " & path_and_file_name, console => true);
 				log (message_error & "no placeholder for component " 
 					 & to_string (REFERENCE) 
 					 & " found in " & to_string (TOP) & " silk screen !", console => true);
@@ -1674,6 +1690,7 @@ package body et_kicad_pcb is
 
 			if not value_found then
 				log_indentation_reset;
+				log (message_error & "in " & path_and_file_name, console => true);
 				log (message_error & "no placeholder for component " 
 					 & to_string (VALUE) 
 					 & " found in " & to_string (TOP) & " assembly documentation !", console => true);
@@ -1714,6 +1731,7 @@ package body et_kicad_pcb is
 				case package_technology is
 					when THT =>
 						if tht_count < smt_count then
+							log (message_warning & "in " & path_and_file_name);
 							log (message_warning & "majority of terminals is " & to_string (SMT)
 								& number (smt_count)
 								& "Package technology should be " & to_string (SMT) & " !");
@@ -1721,6 +1739,7 @@ package body et_kicad_pcb is
 
 					when SMT =>
 						if smt_count < tht_count then
+							log (message_warning & "in " & path_and_file_name);
 							log (message_warning & "majority of terminals is " & to_string (THT)
 								& number (tht_count)
 								& "Package technology should be " & to_string (THT) & " !");
@@ -1812,6 +1831,7 @@ package body et_kicad_pcb is
 		-- check section name. must be top level section
 		if section.name /= INIT then -- should never happen
 			log_indentation_reset;
+			log (message_error & "in " & path_and_file_name, console => true);
 			log (message_error & "top level section not closed !", console => true);
 			raise constraint_error;
 		end if;
@@ -1962,7 +1982,7 @@ package body et_kicad_pcb is
 					container	=> packages,
 					key			=> to_package_name (base_name (element (package_name_cursor))), -- S_0201
 					new_item	=> to_package_model (
-										package_name 	=> to_package_name (base_name (element (package_name_cursor))), -- S_SO14
+										file_name 		=> element (package_name_cursor), -- S_0201.kicad_mod
 										lines			=> lines,
 										log_threshold	=> log_threshold + 6));
 				
