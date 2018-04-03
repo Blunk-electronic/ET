@@ -2089,6 +2089,8 @@ package body et_kicad_pcb is
 		log_threshold	: in et_string_processing.type_log_level) 
 		return type_board is
 
+		board : type_board; -- to be returned
+		
 		use et_pcb;
 		use et_pcb.type_lines;
 
@@ -2104,9 +2106,1450 @@ package body et_kicad_pcb is
 		-- the section prefix is a workaround due to GNAT reserved keywords.
 		sec_prefix : constant string (1..4) := "sec_";
 
+		-- These are the keywords used in the board file. They prelude a certain section.
+		-- See <https://www.compuphase.com/electronics/LibraryFileFormats.pdf> for more.
+		type type_keyword is (
+			INIT,	-- initial section before anything is done. does not occur in board file
+			SEC_AREA,
+-- 			SEC_AT,
+-- 			SEC_ATTR,
+-- 			SEC_ANGLE,
+-- 			SEC_CENTER,
+			--SEC_CLEARANCE,
+			-- 			SEC_DESCR,
+			SEC_DRAWINGS,
+-- 			SEC_DRILL,
+-- 			SEC_EFFECTS,
+-- 			SEC_END,
+-- 			SEC_FONT,
+-- 			SEC_FP_ARC,
+-- 			SEC_FP_CIRCLE,
+-- 			SEC_FP_LINE,
+-- 			SEC_FP_TEXT,
+			SEC_GENERAL,
+			SEC_HOST,
+			--SEC_JUSTIFY,
+			SEC_KICAD_PCB,
+			-- 			SEC_LAYER,
+			SEC_LAYERS,
+			SEC_LINKS,
+-- 			SEC_MODEL,
+			SEC_MODULES,
+			SEC_NETS,
+			SEC_NO_CONNECTS,
+			-- 			SEC_PAD,
+			SEC_PAGE,
+-- 			SEC_ROTATE,
+-- 			SEC_SCALE,
+-- 			SEC_SIZE,
+			--SEC_SOLDER_MASK_MARGIN,
+-- 			SEC_START,
+-- 			SEC_TAGS,
+-- 			SEC_TEDIT,
+			SEC_TRACKS,
+			SEC_THICKNESS,
+			SEC_VERSION,
+-- 			SEC_WIDTH,
+-- 			SEC_XYZ
+			SEC_ZONES
+			);
 		
-		board : type_board;
-	begin
+		argument_length_max : constant positive := 200; -- CS: could become an issue if long URLs used ...
+		package type_argument is new generic_bounded_length (argument_length_max);
+
+		-- After a section name, arguments follow. For each section arguments are counted:
+		type type_argument_counter is range 0..4;
+
+		function to_string (arg_count : in type_argument_counter) return string is begin
+		-- Returns the given argument count as string.
+			return trim (type_argument_counter'image (arg_count), left);
+		end to_string;			
+
+		-- Type contains the current section name, the parent section name and the pointer to the argument.
+		-- The argument counter is reset on entering a section.
+		-- It is incremented once an argument is complete.
+		type type_section is record
+			name 		: type_keyword := INIT;
+			parent		: type_keyword := INIT;
+			arg_counter	: type_argument_counter := type_argument_counter'first;
+		end record;
+
+		section : type_section; -- the section being processed
+
+		-- Since there are numerous subsections we store sections on a stack.
+		-- Once a subsection as been entered the previous section is pushed 
+		-- on stack (see procedure read_section).
+		-- One leaving a subsection the previous section is popped 
+		-- from stack (see end of procedure exec_section).
+		package sections_stack is new et_general.stack_lifo (max => 20, item => type_section);
+
+
+
+
+		
+	
+		function to_string (section : in type_keyword) return string is
+		-- Converts a section name to a string.
+			len : positive := type_keyword'image (section)'last;
+		begin
+			-- Due to the workaround with the SEC_ prefix (see above), it must be removed from
+			-- the section image.
+			return to_lower (type_keyword'image (section)(sec_prefix'last+1 ..len));
+		end to_string;
+	
+		function enter_section (section : in type_keyword) return string is begin
+			return ("entering section " & to_string (section));
+		end enter_section;
+
+		function return_to_section (section : in type_keyword) return string is begin
+			return ("returning to section " & to_string (section));
+		end return_to_section;
+
+		function process_section (section : in type_keyword) return string is begin
+			return ("processing section " & to_string (section));
+		end process_section;
+
+
+
+		-- When a line is fetched from the given list of lines, it is stored in variable
+		-- "current_line". CS: The line length is limited by line_length_max and should be increased
+		-- if neccessary. 
+		-- The character_cursor points to the character being tested or processed in that line.
+		line_length_max : constant positive := 300;
+		package type_current_line is new generic_bounded_length (line_length_max);
+		use type_current_line;
+		current_line : type_current_line.bounded_string;
+		character_cursor : natural;
+
+		procedure get_next_line is
+		-- Fetches a new line from the given list of lines (see header of procedure to_board).
+		begin
+			next (line_cursor);
+			if line_cursor /= et_pcb.type_lines.no_element then
+
+				-- Since a single line in container "lines" (where line_cursor points to) is a list 
+				-- of strings itself, we convert them first to a fixed string and then to a bounded string.
+				current_line := type_current_line.to_bounded_string (to_string (element (line_cursor)));
+				log ("line " & to_string (current_line), log_threshold + 4);
+			else
+				-- This should never happen:
+				log_indentation_reset;
+				log (message_error & "in " & file_name, console => true);
+				log (message_error & "no more lines available !", console => true);
+				raise constraint_error;
+			end if;
+		end get_next_line;
+
+		procedure next_character is
+		-- Updates the cursor position to the position of the next
+		-- non_space character starting from the current cursor position.
+		-- Fetches a new line if no further characters after current cursor position.
+		begin
+			character_cursor := index_non_blank (source => current_line, from => character_cursor + 1);
+			while character_cursor = 0 loop
+				get_next_line;
+				character_cursor := index_non_blank (source => current_line, from => character_cursor + 1);
+			end loop;
+		end next_character;
+
+
+		procedure read_section is 
+		-- Stores the section name and current argument counter on sections_stack.
+		-- Reads the section name from current cursor position until termination
+		-- character or its last character.
+			end_of_kw : integer;  -- may become negative if no terminating character present
+
+			procedure invalid_section is
+			begin
+				log_indentation_reset;
+				log (message_error & "invalid subsection '" & to_string (section.name) 
+					 & "' in parent section '" & to_string (section.parent) & "' !", console => true);
+				raise constraint_error;
+			end invalid_section;
+
+			layer_id : type_layer_id;
+		begin
+			-- save previous section on stack
+			sections_stack.push (section);
+
+			-- the former actvie section name becomes the parent section name
+			section.parent := section.name;
+			
+			section.arg_counter := 0;
+			
+			-- get position of last character
+			end_of_kw := index (source => current_line, from => character_cursor, set => term_char_set) - 1;
+
+			-- if no terminating character found, end_of_kw assumes length of line
+			if end_of_kw = -1 then
+				end_of_kw := length (current_line);
+			end if;
+
+			-- Usually a section name starts with a letter. In this case
+			-- compose section name from cursor..end_of_kw.
+			-- This is an implicit general test whether the keyword is a valid keyword.
+			-- If the section name starts with a digit, it is about a layer id in parent section "layers".
+			if is_letter (element (current_line, character_cursor)) then
+				section.name := type_keyword'value (sec_prefix & slice (current_line, character_cursor, end_of_kw));
+			else
+				if section.parent = SEC_LAYERS then
+					-- CS: more careful range check
+					layer_id := type_layer_id'value (slice (current_line, character_cursor, end_of_kw));
+				else
+					log_indentation_reset;
+					log (message_error & "expect subsection name !", console => true);
+					raise constraint_error;
+				end if;
+			end if;
+			
+			-- This is the validation of a section regarding its parent section.
+			-- If an invalid subsection occurs, raise alarm and abort.
+			case section.parent is
+				when SEC_KICAD_PCB =>
+					case section.name is
+						when SEC_VERSION | SEC_HOST | SEC_GENERAL | SEC_PAGE |
+							SEC_LAYERS => null;
+						when others => invalid_section;
+					end case;
+					
+-- 				when SEC_MODULE =>
+-- 					case section.name is
+-- 						when SEC_FP_TEXT | SEC_FP_LINE | SEC_FP_ARC | SEC_FP_CIRCLE | SEC_TAGS |
+-- 							SEC_MODEL | SEC_PAD | SEC_DESCR | SEC_ATTR | SEC_LAYER | SEC_TEDIT => null;
+-- 						when others => invalid_section;
+-- 					end case;
+-- 
+-- 				when SEC_FP_TEXT =>
+-- 					case section.name is
+-- 						when SEC_AT | SEC_LAYER | SEC_EFFECTS => null;
+-- 						when others => invalid_section;
+-- 					end case;
+-- 
+-- 				when SEC_EFFECTS =>
+-- 					case section.name is
+-- 						when SEC_FONT => null;
+-- 						when others => invalid_section;
+-- 					end case;
+-- 					
+-- 				when SEC_FONT =>
+-- 					case section.name is
+-- 						when SEC_SIZE | SEC_THICKNESS => null;
+-- 						when others => invalid_section;
+-- 					end case;
+-- 
+-- 				when SEC_FP_LINE =>
+-- 					case section.name is
+-- 						when SEC_START | SEC_END | SEC_LAYER | SEC_WIDTH => null;
+-- 						when others => invalid_section;
+-- 					end case;
+-- 
+-- 				when SEC_FP_ARC =>
+-- 					case section.name is
+-- 						when SEC_START | SEC_END | SEC_ANGLE | SEC_LAYER | SEC_WIDTH => null;
+-- 						when others => invalid_section;
+-- 					end case;
+-- 
+-- 				when SEC_FP_CIRCLE =>
+-- 					case section.name is
+-- 						when SEC_CENTER | SEC_END | SEC_LAYER | SEC_WIDTH => null;
+-- 						when others => invalid_section;
+-- 					end case;
+
+				when SEC_GENERAL =>
+					case section.name is
+						when SEC_LINKS | SEC_NO_CONNECTS | SEC_AREA | SEC_THICKNESS | SEC_DRAWINGS |
+							SEC_TRACKS | SEC_ZONES | SEC_MODULES | SEC_NETS => null;
+						when others => invalid_section;
+					end case;
+
+-- 
+-- 				when SEC_PAD =>
+-- 					case section.name is
+-- 						when SEC_AT | SEC_SIZE | SEC_LAYERS | SEC_DRILL => null;
+-- 						when others => invalid_section;
+-- 					end case;
+-- 
+-- 				when SEC_MODEL =>
+-- 					case section.name is
+-- 						when SEC_AT | SEC_ROTATE | SEC_SCALE => null;
+-- 						when others => invalid_section;
+-- 					end case;
+-- 					
+				when others => null;
+			end case;
+
+			
+			-- update cursor
+			character_cursor := end_of_kw;
+
+			log (enter_section (section.name), log_threshold + 3);
+
+			exception
+				when event:
+					others =>
+						log_indentation_reset;
+						log (message_error & "in " & file_name, console => true);
+						log (message_error & affected_line (element (line_cursor)) 
+							& to_string (element (line_cursor)), console => true);
+
+						log (message_error & "section '" & slice (current_line, character_cursor, end_of_kw) 
+							& "' invalid or not supported yet", console => true);
+						raise;
+			
+		end read_section;
+		
+
+		procedure read_arg is
+		-- Reads the arguments of a section.
+		-- Increments the argument counter after each argument.
+		-- Validates the arguments according to the current section.
+		-- Leaves the character_cursor at the position of the last character of the argument.
+		-- If the argument was enclosed in quotations the character_cursor is left at
+		-- the position of the trailing quotation.
+			end_of_arg : integer; -- may become negative if no terminating character present
+
+			use type_argument;
+			use et_libraries;
+			use et_libraries.type_text_content;
+			use et_pcb_coordinates;
+		
+			arg : type_argument.bounded_string; -- here the argument goes temporarily
+
+-- 			procedure invalid_layer is begin
+-- 				log_indentation_reset;
+-- 				log (message_error & "invalid layer " & to_string (arg), console => true);
+-- 				raise constraint_error;
+-- 			end invalid_layer;
+-- 
+-- 			procedure too_many_arguments is begin
+-- 				log_indentation_reset;
+-- 				log (message_error & "too many arguments in section " & to_string (section.name) & " !", console => true);
+-- 				log ("excessive argument reads '" & to_string (arg) & "'", console => true);
+-- 				raise constraint_error;
+-- 			end too_many_arguments;
+-- 
+-- 			procedure invalid_fp_text_keyword is begin
+-- 				log_indentation_reset;
+-- 				log (message_error & "expect keyword '" & keyword_fp_text_reference 
+-- 					 & "' or '" & keyword_fp_text_value 
+-- 					 & "' or '" & keyword_fp_text_user
+-- 					 & "' ! found '" & to_string (arg) & "'", console => true);
+-- 				raise constraint_error;
+-- 			end invalid_fp_text_keyword;
+-- 
+-- 			procedure invalid_placeholder_reference is begin
+-- 				log_indentation_reset;
+-- 				log (message_error & "expect reference placeholder '" & placeholder_reference & "' !"
+-- 					 & " found '" & to_string (arg) & "'", console => true);
+-- 				raise constraint_error;
+-- 			end invalid_placeholder_reference;
+-- 
+-- 			procedure invalid_placeholder_value is
+-- 			begin
+-- 				log_indentation_reset;
+-- 				log (message_error & "expect value placeholder '" & to_string (package_name) & "' !"
+-- 					 & " found '" & to_string (arg) & "'", console => true);
+-- 				raise constraint_error;
+-- 			end invalid_placeholder_value;
+-- 
+-- 			procedure invalid_package_name is
+-- 			begin
+-- 				log_indentation_reset;
+-- 				log (message_error & "expect package name '" & to_string (package_name) & "' !"
+-- 					 & " found '" & to_string (arg) & "'", console => true);
+-- 				raise constraint_error;
+-- 			end invalid_package_name;
+-- 
+-- 			procedure invalid_component_assembly_face is
+-- 			begin
+-- 				log_indentation_reset;
+-- 				log (message_error & "default assembly face " & et_pcb_coordinates.to_string (BOTTOM) 
+-- 					 & " found. Must be " & et_pcb_coordinates.to_string (TOP) & " !", console => true);
+-- 				raise constraint_error;
+-- 			end invalid_component_assembly_face;
+-- 
+-- 			procedure invalid_attribute is
+-- 			begin
+-- 				log_indentation_reset;
+-- 				log (message_error & "invalid attribute !", console => true);
+-- 				raise constraint_error;
+-- 			end invalid_attribute;
+-- 
+-- 			procedure invalid_section is
+-- 			begin
+-- 				log_indentation_reset;
+-- 				log (message_error & "invalid subsection '" & to_string (section.name) 
+-- 					 & "' in parent section '" & to_string (section.parent) & "' !", console => true);
+-- 				raise constraint_error;
+-- 			end invalid_section;
+				
+		begin -- read_arg
+			-- We handle an argument that is wrapped in quotation different from a non-wrapped argument:
+			if element (current_line, character_cursor) = latin_1.quotation then
+				-- Read the quotation-wrapped argument (strip quotations)
+
+				-- get position of last character (before trailing quotation)
+				end_of_arg := index (source => current_line, from => character_cursor + 1, pattern => 1 * latin_1.quotation) - 1;
+
+				-- if no trailing quotation found -> error
+				if end_of_arg = -1 then
+					log_indentation_reset;
+					log (message_error & affected_line (element (line_cursor))
+						& latin_1.space & latin_1.quotation & " expected");
+						raise constraint_error;
+				end if;
+
+				-- compose argument from first character after quotation until end_of_arg
+				arg := to_bounded_string (slice (current_line, character_cursor + 1, end_of_arg));
+
+				-- update cursor (to position of trailing quotation)
+				character_cursor := end_of_arg + 1;
+			else
+				-- Read the argument from current cursor position until termination
+				-- character or its last character.
+
+				-- get position of last character
+				end_of_arg := index (source => current_line, from => character_cursor, set => term_char_set) - 1;
+
+				-- if no terminating character found, end_of_arg assumes length of line
+				if end_of_arg = -1 then
+					end_of_arg := length (current_line);
+				end if;
+
+				-- compose argument from cursor..end_of_arg
+				arg := to_bounded_string (slice (current_line, character_cursor, end_of_arg));
+
+				-- update cursor
+				character_cursor := end_of_arg;
+			end if;
+
+			-- Argument complete. Increment argument counter of section.
+			section.arg_counter := section.arg_counter + 1;
+			
+			log ("arg" & to_string (section.arg_counter) & latin_1.space & to_string (arg), log_threshold + 4);
+
+			-- Validate arguments according to current section and the parent section.
+			-- Load variables. When a section closes, the variables are used to build an object. see exec_section.
+-- 			case section.name is
+-- 				when INIT => raise constraint_error; -- should never happen
+-- 				
+-- 				when SEC_MODULE =>
+-- 					case section.parent is
+-- 						when INIT =>
+-- 							case section.arg_counter is
+-- 								when 0 => null;
+-- 								when 1 =>
+-- 									if to_string (arg) /= to_string (package_name) then
+-- 										invalid_package_name;
+-- 									end if;
+-- 								when others => 
+-- 									too_many_arguments;
+-- 							end case;
+-- 
+-- 						when others => invalid_section;
+-- 					end case;
+-- 					
+-- 				when SEC_DESCR =>
+-- 					case section.parent is
+-- 						when SEC_MODULE =>
+-- 							case section.arg_counter is
+-- 								when 0 => null;
+-- 								when 1 =>
+-- 									-- CS check length
+-- 									description := type_package_description.to_bounded_string (to_string (arg));
+-- 									-- CS check description
+-- 								when others => 
+-- 									too_many_arguments;
+-- 							end case;
+-- 
+-- 						when others => invalid_section;
+-- 					end case;
+-- 					
+-- 				when SEC_TAGS =>
+-- 					case section.parent is
+-- 						when SEC_MODULE =>
+-- 							case section.arg_counter is
+-- 								when 0 => null;
+-- 								when 1 =>
+-- 									-- CS check length
+-- 									tags := type_package_tags.to_bounded_string (to_string (arg));
+-- 									-- CS check tags
+-- 								when others => 
+-- 									too_many_arguments;
+-- 							end case;
+-- 
+-- 						when others => invalid_section;
+-- 					end case;
+-- 					
+-- 				when SEC_TEDIT =>
+-- 					case section.parent is
+-- 						when SEC_MODULE =>
+-- 							case section.arg_counter is
+-- 								when 0 => null;
+-- 								when 1 =>
+-- 									-- CS check length
+-- 									timestamp := type_timestamp (to_string (arg));
+-- 									et_string_processing.check_timestamp (timestamp);
+-- 								when others => 
+-- 									too_many_arguments;
+-- 							end case;
+-- 
+-- 						when others => invalid_section;
+-- 					end case;
+-- 					
+-- 				when SEC_ATTR =>
+-- 					case section.parent is
+-- 						when SEC_MODULE =>
+-- 							case section.arg_counter is
+-- 								when 0 => null;
+-- 								when 1 =>
+-- 									-- CS check length
+-- 									if to_string (arg) = attribute_technology_smd then
+-- 										package_technology := SMT; -- overwrite default (see declarations)
+-- 									elsif to_string (arg) = attribute_technology_virtual then
+-- 										package_appearance := VIRTUAL;  -- overwrite default (see declarations)
+-- 									else
+-- 										invalid_attribute;
+-- 									end if;
+-- 								when others => 
+-- 									too_many_arguments;
+-- 							end case;
+-- 
+-- 						when others => invalid_section;
+-- 					end case;
+-- 							
+-- 				when SEC_FP_TEXT =>
+-- 					case section.parent is
+-- 						when SEC_MODULE =>
+-- 							text.hidden := false; -- "hide" flag is optionally provided as last argument. if not, default to false
+-- 							case section.arg_counter is
+-- 								when 0 => null;
+-- 								when 1 => 
+-- 									if to_string (arg) = keyword_fp_text_reference then
+-- 										text.meaning := REFERENCE;
+-- 									elsif to_string (arg) = keyword_fp_text_value then
+-- 										text.meaning := VALUE;
+-- 									elsif to_string (arg) = keyword_fp_text_user then
+-- 										text.meaning := USER;
+-- 									else
+-- 										invalid_fp_text_keyword;
+-- 									end if;
+-- 									
+-- 								when 2 => 
+-- 									case text.meaning is
+-- 										when REFERENCE => 
+-- 											if to_string (arg) /= placeholder_reference then
+-- 												invalid_placeholder_reference;
+-- 											end if;
+-- 
+-- 										when VALUE =>
+-- 											if to_string (arg) /= to_string (package_name) then
+-- 												invalid_placeholder_value;
+-- 											end if;
+-- 
+-- 										when USER =>
+-- 											-- CS length check
+-- 											text.content := to_bounded_string (to_string (arg));
+-- 											-- CS character check
+-- 									end case;
+-- 									
+-- 								when 3 => 
+-- 									if to_string (arg) = keyword_fp_text_hide then
+-- 										text.hidden := true;
+-- 									end if;
+-- 									
+-- 								when others => too_many_arguments;
+-- 							end case;
+-- 
+-- 						when others => invalid_section;
+-- 					end case;
+-- 
+-- 				when SEC_CENTER =>
+-- 					case section.parent is
+-- 						when SEC_FP_CIRCLE =>
+-- 							case section.arg_counter is
+-- 								when 0 => null;
+-- 								when 1 => 
+-- 									set_point (axis => X, point => circle.center, value => to_distance (to_string (arg)));
+-- 								when 2 => 
+-- 									set_point (axis => Y, point => circle.center, value => to_distance (to_string (arg)));
+-- 									set_point (axis => Z, point => circle.center, value => zero_distance);
+-- 								when others => too_many_arguments;
+-- 							end case;
+-- 
+-- 						when others => invalid_section;
+-- 					end case;
+-- 					
+-- 				when SEC_START =>
+-- 					case section.parent is
+-- 						when SEC_FP_LINE =>
+-- 							case section.arg_counter is
+-- 								when 0 => null;
+-- 								when 1 => 
+-- 									set_point (axis => X, point => line.start_point, value => to_distance (to_string (arg)));
+-- 								when 2 => 
+-- 									set_point (axis => Y, point => line.start_point, value => to_distance (to_string (arg)));
+-- 									set_point (axis => Z, point => line.start_point, value => zero_distance);
+-- 								when others => too_many_arguments;
+-- 							end case;
+-- 
+-- 						when SEC_FP_ARC =>
+-- 							case section.arg_counter is
+-- 								when 0 => null;
+-- 								when 1 => 
+-- 									set_point (axis => X, point => arc.center, value => to_distance (to_string (arg)));
+-- 								when 2 => 
+-- 									set_point (axis => Y, point => arc.center, value => to_distance (to_string (arg)));
+-- 									set_point (axis => Z, point => arc.center, value => zero_distance);
+-- 								when others => too_many_arguments;
+-- 							end case;
+-- 							
+-- 						when others => invalid_section;
+-- 					end case;
+-- 
+-- 				when SEC_END =>
+-- 					case section.parent is
+-- 						when SEC_FP_LINE =>
+-- 							case section.arg_counter is
+-- 								when 0 => null;
+-- 								when 1 => 
+-- 									set_point (axis => X, point => line.end_point, value => to_distance (to_string (arg)));
+-- 								when 2 => 
+-- 									set_point (axis => Y, point => line.end_point, value => to_distance (to_string (arg)));
+-- 									set_point (axis => Z, point => line.end_point, value => zero_distance);
+-- 								when others => too_many_arguments;
+-- 							end case;
+-- 
+-- 						when SEC_FP_ARC =>
+-- 							case section.arg_counter is
+-- 								when 0 => null;
+-- 								when 1 => 
+-- 									set_point (axis => X, point => arc.start_point, value => to_distance (to_string (arg)));
+-- 								when 2 => 
+-- 									set_point (axis => Y, point => arc.start_point, value => to_distance (to_string (arg)));
+-- 									set_point (axis => Z, point => arc.start_point, value => zero_distance);
+-- 								when others => too_many_arguments;
+-- 							end case;
+-- 
+-- 						when SEC_FP_CIRCLE =>
+-- 							case section.arg_counter is
+-- 								when 0 => null;
+-- 								when 1 => 
+-- 									set_point (axis => X, point => circle.point, value => to_distance (to_string (arg)));
+-- 								when 2 => 
+-- 									set_point (axis => Y, point => circle.point, value => to_distance (to_string (arg)));
+-- 									set_point (axis => Z, point => circle.point, value => zero_distance);
+-- 								when others => too_many_arguments;
+-- 							end case;
+-- 
+-- 						when others => invalid_section;
+-- 					end case;
+-- 
+-- 				when SEC_ANGLE =>
+-- 					case section.parent is
+-- 						when SEC_FP_ARC =>
+-- 							case section.arg_counter is
+-- 								when 0 => null;
+-- 								when 1 => arc.angle := to_angle (to_string (arg));
+-- 								when others => too_many_arguments;
+-- 							end case;
+-- 
+-- 						when others => invalid_section;
+-- 					end case;
+-- 					
+-- 				when SEC_LAYER =>
+-- 					case section.parent is
+-- 						when SEC_MODULE =>
+-- 							case section.arg_counter is
+-- 								when 0 => null;
+-- 								when 1 => 
+-- 									if to_string (arg) = layer_bot_copper then
+-- 										invalid_component_assembly_face;
+-- 									elsif to_string (arg) /= layer_top_copper then
+-- 										invalid_layer;
+-- 									end if;
+-- 								when others => too_many_arguments;
+-- 							end case;
+-- 									
+-- 						when SEC_FP_TEXT =>
+-- 							case section.arg_counter is
+-- 								when 0 => null;
+-- 								when 1 => 
+-- 									if to_string (arg) = layer_top_silk_screen then
+-- 										text.layer := TOP_SILK;
+-- 									elsif to_string (arg) = layer_bot_silk_screen then
+-- 										text.layer := BOT_SILK;
+-- 									elsif to_string (arg) = layer_top_assy_doc then
+-- 										text.layer := TOP_ASSY;
+-- 									elsif to_string (arg) = layer_bot_assy_doc then
+-- 										text.layer := BOT_ASSY;
+-- 									elsif to_string (arg) = layer_top_keepout then
+-- 										text.layer := TOP_KEEP;
+-- 									elsif to_string (arg) = layer_bot_keepout then
+-- 										text.layer := BOT_KEEP;
+-- 									else
+-- 										invalid_layer; -- CS copper layers ?
+-- 									end if;
+-- 
+-- 								when others => too_many_arguments;
+-- 							end case;
+-- 
+-- 						when SEC_FP_LINE =>
+-- 							case section.arg_counter is
+-- 								when 0 => null;
+-- 								when 1 => 
+-- 									if to_string (arg) = layer_top_silk_screen then
+-- 										line.layer := TOP_SILK;
+-- 									elsif to_string (arg) = layer_bot_silk_screen then
+-- 										line.layer := BOT_SILK;
+-- 									elsif to_string (arg) = layer_top_assy_doc then
+-- 										line.layer := TOP_ASSY;
+-- 									elsif to_string (arg) = layer_bot_assy_doc then
+-- 										line.layer := BOT_ASSY;
+-- 									elsif to_string (arg) = layer_top_keepout then
+-- 										line.layer := TOP_KEEP;
+-- 									elsif to_string (arg) = layer_bot_keepout then
+-- 										line.layer := BOT_KEEP;
+-- 									elsif to_string (arg) = layer_top_copper then
+-- 										line.layer := TOP_COPPER;
+-- 									elsif to_string (arg) = layer_bot_copper then
+-- 										line.layer := BOT_COPPER;
+-- 									else
+-- 										invalid_layer; -- CS copper layers ?
+-- 									end if;
+-- 
+-- 								when others => too_many_arguments;
+-- 							end case;
+-- 
+-- 						when SEC_FP_ARC =>
+-- 							case section.arg_counter is
+-- 								when 0 => null;
+-- 								when 1 => 
+-- 									if to_string (arg) = layer_top_silk_screen then
+-- 										arc.layer := TOP_SILK;
+-- 									elsif to_string (arg) = layer_bot_silk_screen then
+-- 										arc.layer := BOT_SILK;
+-- 									elsif to_string (arg) = layer_top_assy_doc then
+-- 										arc.layer := TOP_ASSY;
+-- 									elsif to_string (arg) = layer_bot_assy_doc then
+-- 										arc.layer := BOT_ASSY;
+-- 									elsif to_string (arg) = layer_top_keepout then
+-- 										arc.layer := TOP_KEEP;
+-- 									elsif to_string (arg) = layer_bot_keepout then
+-- 										arc.layer := BOT_KEEP;
+-- 									else
+-- 										invalid_layer; -- CS copper layers ?
+-- 									end if;
+-- 
+-- 								when others => too_many_arguments;
+-- 							end case;
+-- 
+-- 						when SEC_FP_CIRCLE =>
+-- 							case section.arg_counter is
+-- 								when 0 => null;
+-- 								when 1 => 
+-- 									if to_string (arg) = layer_top_silk_screen then
+-- 										circle.layer := TOP_SILK;
+-- 									elsif to_string (arg) = layer_bot_silk_screen then
+-- 										circle.layer := BOT_SILK;
+-- 									elsif to_string (arg) = layer_top_assy_doc then
+-- 										circle.layer := TOP_ASSY;
+-- 									elsif to_string (arg) = layer_bot_assy_doc then
+-- 										circle.layer := BOT_ASSY;
+-- 									elsif to_string (arg) = layer_top_keepout then
+-- 										circle.layer := TOP_KEEP;
+-- 									elsif to_string (arg) = layer_bot_keepout then
+-- 										circle.layer := BOT_KEEP;
+-- 									else
+-- 										invalid_layer; -- CS copper layers ?
+-- 									end if;
+-- 
+-- 								when others => too_many_arguments;
+-- 							end case;
+-- 							
+-- 						when others => invalid_section;
+-- 					end case;
+-- 
+-- 				when SEC_WIDTH =>
+-- 					case section.parent is
+-- 						when SEC_FP_LINE =>
+-- 							case section.arg_counter is
+-- 								when 0 => null;
+-- 								when 1 => 
+-- 									validate_general_line_width (to_distance (to_string (arg)));
+-- 									line.width := to_distance (to_string (arg));
+-- 								when others => too_many_arguments;
+-- 							end case;
+-- 
+-- 						when SEC_FP_ARC =>
+-- 							case section.arg_counter is
+-- 								when 0 => null;
+-- 								when 1 => 
+-- 									validate_general_line_width (to_distance (to_string (arg)));
+-- 									arc.width := to_distance (to_string (arg));
+-- 								when others => too_many_arguments;
+-- 							end case;
+-- 
+-- 						when SEC_FP_CIRCLE =>
+-- 							case section.arg_counter is
+-- 								when 0 => null;
+-- 								when 1 => 
+-- 									validate_general_line_width (to_distance (to_string (arg)));
+-- 									circle.width := to_distance (to_string (arg));
+-- 								when others => too_many_arguments;
+-- 							end case;
+-- 
+-- 						when others => invalid_section;
+-- 					end case;
+-- 
+-- 				when SEC_SIZE =>
+-- 					case section.parent is
+-- 						when SEC_FONT =>
+-- 							case section.arg_counter is
+-- 								when 0 => null;
+-- 								when 1 => text.size_x := to_distance (to_string (arg));
+-- 								when 2 => text.size_y := to_distance (to_string (arg));
+-- 								when others => too_many_arguments;
+-- 							end case;
+-- 
+-- 						when SEC_PAD =>
+-- 							case section.arg_counter is
+-- 								when 0 => null;
+-- 								when 1 => 
+-- 									validate_pad_size (to_distance (to_string (arg)));
+-- 									terminal_size_x := to_distance (to_string (arg));
+-- 								when 2 => 
+-- 									validate_pad_size (to_distance (to_string (arg)));
+-- 									terminal_size_y := to_distance (to_string (arg));
+-- 								when others => too_many_arguments;
+-- 							end case;
+-- 							
+-- 						when others => invalid_section;
+-- 					end case;
+-- 					
+-- 				when SEC_THICKNESS =>
+-- 					case section.parent is
+-- 						when SEC_FONT =>
+-- 							case section.arg_counter is
+-- 								when 0 => null;
+-- 								when 1 => text.width := to_distance (to_string (arg));
+-- 								when others => too_many_arguments;
+-- 							end case;
+-- 
+-- 						when others => invalid_section;
+-- 					end case;
+-- 					
+-- 				when SEC_AT =>
+-- 					case section.parent is
+-- 						when SEC_PAD =>
+-- 							terminal_angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
+-- 							case section.arg_counter is
+-- 								when 0 => null;
+-- 								when 1 => 
+-- 									set_point (axis => X, point => terminal_position, value => to_distance (to_string (arg)));
+-- 								when 2 => 
+-- 									set_point (axis => Y, point => terminal_position, value => to_distance (to_string (arg)));
+-- 									set_point (axis => Z, point => terminal_position, value => zero_distance);
+-- 								when 3 => 
+-- 									terminal_angle := to_angle (to_string (arg));
+-- 								when others => too_many_arguments;
+-- 							end case;
+-- 
+-- 						when SEC_FP_TEXT =>
+-- 							text.angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
+-- 							case section.arg_counter is
+-- 								when 0 => null;
+-- 								when 1 => 
+-- 									set_point (axis => X, point => text.position, value => to_distance (to_string (arg)));
+-- 								when 2 => 
+-- 									set_point (axis => Y, point => text.position, value => to_distance (to_string (arg)));
+-- 									set_point (axis => Z, point => text.position, value => zero_distance);
+-- 								when 3 => 
+-- 									text.angle := to_angle (to_string (arg));
+-- 								when others => too_many_arguments;
+-- 							end case;
+-- 							
+-- 						when others => invalid_section;
+-- 					end case;
+-- 							
+-- 				when SEC_DRILL =>
+-- 					case section.parent is
+-- 						when SEC_PAD =>
+-- 							case section.arg_counter is
+-- 								when 0 => null;
+-- 								when 1 => 
+-- 									validate_drill_size (to_distance (to_string (arg)));
+-- 									terminal_drill_size := to_distance (to_string (arg));
+-- 								when others => too_many_arguments;
+-- 							end case;
+-- 
+-- 						when others => invalid_section;
+-- 					end case;
+-- 					
+-- 				when SEC_LAYERS => -- applies for terminals exclusively
+-- 					case section.parent is
+-- 						when SEC_PAD =>
+-- 							case section.arg_counter is
+-- 								when 0 => null;	
+-- 								when others => 	
+-- 									case terminal_technology is
+-- 										when SMT =>
+-- 
+-- 											-- copper
+-- 											if to_string (arg) = layer_top_copper then
+-- 												terminal_face := TOP;
+-- 											elsif to_string (arg) = layer_bot_copper then
+-- 												terminal_face := BOTTOM;
+-- 
+-- 											-- solder paste
+-- 											elsif to_string (arg) = layer_top_solder_paste then
+-- 												terminal_top_solder_paste := APPLIED;
+-- 											elsif to_string (arg) = layer_bot_solder_paste then
+-- 												terminal_bot_solder_paste := APPLIED;
+-- 
+-- 											-- stop mask
+-- 											elsif to_string (arg) = layer_bot_stop_mask then
+-- 												terminal_bot_stop_mask := OPEN;
+-- 											elsif to_string (arg) = layer_top_stop_mask then
+-- 												terminal_top_stop_mask := OPEN;
+-- 
+-- 											else
+-- 												invalid_layer;
+-- 											end if;
+-- 
+-- 												
+-- 										when THT =>
+-- 
+-- 											-- copper and stop mask
+-- 											if to_string (arg) = layer_all_copper 
+-- 											or to_string (arg) = layer_all_stop_mask then
+-- 												null; -- fine
+-- 											else
+-- 												invalid_layer;
+-- 											end if;
+-- 											
+-- 									end case;
+-- 							end case;
+-- 
+-- 						when others => invalid_section;
+-- 					end case;
+-- 					
+-- 				when SEC_PAD =>
+-- 					case section.parent is
+-- 						when SEC_MODULE =>
+-- 							case section.arg_counter is
+-- 								when 0 => null;
+-- 								
+-- 								when 1 => null;
+-- 									-- CS: check terminal name length
+-- 									terminal_name := to_terminal_name (to_string (arg));
+-- 									-- CS: check characters
+-- 								when 2 =>
+-- 									terminal_technology := to_assembly_technology (to_string (arg));
+-- 								when 3 =>
+-- 									case terminal_technology is
+-- 										when SMT => terminal_shape_smt := to_terminal_shape_smt (to_string (arg));
+-- 										when THT => terminal_shape_tht := to_terminal_shape_tht (to_string (arg));
+-- 									end case;
+-- 								when others => too_many_arguments;
+-- 							end case;
+-- 
+-- 						when others => invalid_section;
+-- 					end case;
+-- 					
+-- 				when SEC_EFFECTS =>
+-- 					case section.parent is
+-- 						when SEC_FP_TEXT => null; -- CS currently no direct (non-wrapped) arguments follow
+-- 						when others => invalid_section;
+-- 					end case;
+-- 
+-- 				when SEC_FONT =>
+-- 					case section.parent is
+-- 						when SEC_EFFECTS => null; -- CS currently no direct (non-wrapped) arguments follow
+-- 						when others => invalid_section;
+-- 					end case;
+-- 
+-- 				when SEC_FP_LINE | SEC_FP_ARC | SEC_FP_CIRCLE =>
+-- 					case section.parent is
+-- 						when SEC_MODULE => null; -- CS currently no direct (non-wrapped) arguments follow
+-- 						when others => invalid_section;
+-- 					end case;
+-- 
+-- 				when SEC_MODEL =>
+-- 					case section.parent is
+-- 						when SEC_MODULE =>
+-- 							case section.arg_counter is
+-- 								when 0 => null;
+-- 								when 1 => null; -- CS read name of 3d model
+-- 								when others => too_many_arguments;
+-- 							end case;
+-- 						when others => invalid_section;
+-- 					end case;
+-- 					
+-- 				when SEC_ROTATE | SEC_SCALE =>
+-- 					case section.parent is
+-- 						when SEC_MODULE => null; -- CS currently no direct (non-wrapped) arguments follow
+-- 						when others => invalid_section;
+-- 					end case;
+-- 
+-- 				when SEC_XYZ =>
+-- 					case section.parent is
+-- 						when SEC_AT => null; -- CS
+-- 						when SEC_SCALE => null; -- CS
+-- 						when SEC_ROTATE => null; -- CS
+-- 						when others => invalid_section;
+-- 					end case;
+-- 
+-- 			end case;
+			
+			exception
+				when event:
+					others =>
+						log_indentation_reset;
+						log (message_error & "in " & file_name, console => true);
+						log (message_error & affected_line (element (line_cursor)) 
+							& to_string (element (line_cursor)), console => true);
+						log (ada.exceptions.exception_message (event));
+						raise;
+
+		end read_arg;
+
+		procedure exec_section is
+		-- Performs an operation according to the active section and variables that have been
+		-- set earlier (when processing the arguments. see procedure read_arg).
+		-- Restores the previous section.
+			use et_pcb_coordinates;
+			use et_libraries;
+			terminal_cursor			: type_terminals.cursor;
+			silk_screen_line_cursor	: type_silk_lines.cursor;
+
+-- 			procedure invalid_layer is begin
+-- 				log_indentation_reset;
+-- 				log (message_error & "invalid layer for this object !", console => true);
+-- 				raise constraint_error;
+-- 			end invalid_layer;
+-- 		
+-- 			procedure invalid_layer_reference is begin
+-- 				log_indentation_reset;
+-- 				log (message_error & "reference placeholder must be in a silk screen layer !", console => true);
+-- 				raise constraint_error;
+-- 			end invalid_layer_reference;
+-- 
+-- 			procedure invalid_layer_value is begin
+-- 				log (message_warning & "value placeholder should be in a fabrication layer !");
+-- 			end invalid_layer_value;
+-- 
+-- 			procedure invalid_layer_user is begin
+-- 				log_indentation_reset;
+-- 				log (message_error & "user text must be in a silk screen or fabrication layer !", console => true);
+-- 				raise constraint_error;
+-- 			end invalid_layer_user;
+
+		begin -- exec_section
+			log (process_section (section.name), log_threshold + 4);
+-- 			case section.name is
+-- 
+-- 				when SEC_TEDIT =>
+-- 					log ("timestamp " & string (timestamp), log_threshold + 1);
+-- 
+-- 				when SEC_DESCR =>
+-- 					log (to_string (description), log_threshold + 1);
+-- 					
+-- 				when SEC_TAGS =>
+-- 					log (to_string (tags), log_threshold + 1);
+-- 
+-- 				when SEC_FP_TEXT =>
+-- 
+-- 					-- Since there is no alignment information provided, use default values:
+-- 					text.alignment := (horizontal => CENTER, vertical => BOTTOM);
+-- 
+-- 					case text.meaning is
+-- 						when REFERENCE =>
+-- 							placeholder := (et_pcb.type_text (text) with meaning => REFERENCE);
+-- 							
+-- 							case text.layer is
+-- 								when TOP_SILK =>
+-- 									top_silk_screen.placeholders.append (placeholder);
+-- 									placeholder_silk_screen_properties (TOP, top_silk_screen.placeholders.last, log_threshold + 1);
+-- 								when BOT_SILK =>
+-- 									bot_silk_screen.placeholders.append (placeholder);
+-- 									placeholder_silk_screen_properties (BOTTOM, bot_silk_screen.placeholders.last, log_threshold + 1);
+-- 								when others => -- should never happen
+-- 									invalid_layer_reference; 
+-- 							end case;
+-- 
+-- 						when VALUE =>
+-- 							placeholder := (et_pcb.type_text (text) with meaning => VALUE);
+-- 							
+-- 							case text.layer is
+-- 								when TOP_ASSY =>
+-- 									top_assy_doc.placeholders.append (placeholder);
+-- 									placeholder_assy_doc_properties (TOP, top_assy_doc.placeholders.last, log_threshold + 1);
+-- 								when BOT_ASSY =>
+-- 									bot_assy_doc.placeholders.append (placeholder);
+-- 									placeholder_assy_doc_properties (BOTTOM, bot_assy_doc.placeholders.last, log_threshold + 1);
+-- 								when others => -- should never happen
+-- 									invalid_layer_value;
+-- 							end case;
+-- 							
+-- 						when USER =>
+-- 							case text.layer is
+-- 								when TOP_SILK => 
+-- 									top_silk_screen.texts.append ((et_pcb.type_text (text) with content => text.content));
+-- 									text_silk_screen_properties (TOP, top_silk_screen.texts.last, log_threshold + 1);
+-- 								when BOT_SILK => 
+-- 									bot_silk_screen.texts.append ((et_pcb.type_text (text) with content => text.content));
+-- 									text_silk_screen_properties (BOTTOM, bot_silk_screen.texts.last, log_threshold + 1);
+-- 								when TOP_ASSY => 
+-- 									top_assy_doc.texts.append ((et_pcb.type_text (text) with content => text.content));
+-- 									text_assy_doc_properties (TOP, top_assy_doc.texts.last, log_threshold + 1);
+-- 								when BOT_ASSY => 
+-- 									bot_assy_doc.texts.append ((et_pcb.type_text (text) with content => text.content));
+-- 									text_assy_doc_properties (BOTTOM, bot_assy_doc.texts.last, log_threshold + 1);
+-- 								when others -- should never happen. kicad does not allow texts in signal layers 
+-- 									=> invalid_layer_user;
+-- 							end case;
+-- 					end case;
+-- 					
+-- 				when SEC_FP_LINE =>
+-- 					-- Append the line to the container corresponding to the layer. Then log the line properties.
+-- 					case line.layer is
+-- 						when TOP_SILK =>
+-- 							top_silk_screen.lines.append ((line.start_point, line.end_point, line.width));
+-- 							line_silk_screen_properties (TOP, top_silk_screen.lines.last, log_threshold + 1);
+-- 
+-- 						when BOT_SILK =>
+-- 							bot_silk_screen.lines.append ((line.start_point, line.end_point, line.width));
+-- 							line_silk_screen_properties (BOTTOM, bot_silk_screen.lines.last, log_threshold + 1);
+-- 
+-- 						when TOP_ASSY =>
+-- 							top_assy_doc.lines.append ((line.start_point, line.end_point, line.width));
+-- 							line_assy_doc_properties (TOP, top_assy_doc.lines.last, log_threshold + 1);
+-- 
+-- 						when BOT_ASSY =>
+-- 							bot_assy_doc.lines.append ((line.start_point, line.end_point, line.width));
+-- 							line_assy_doc_properties (BOTTOM, bot_assy_doc.lines.last, log_threshold + 1);
+-- 
+-- 						when TOP_KEEP =>
+-- 							top_keepout.lines.append ((line.start_point, line.end_point));
+-- 							line_keepout_properties (TOP, top_keepout.lines.last, log_threshold + 1);
+-- 
+-- 						when BOT_KEEP =>
+-- 							bot_keepout.lines.append ((line.start_point, line.end_point));
+-- 							line_keepout_properties (BOTTOM, top_keepout.lines.last, log_threshold + 1);
+-- 
+-- 						when TOP_COPPER => 
+-- 							top_copper_objects.lines.append ((line.start_point, line.end_point, line.width));
+-- 							line_copper_properties (TOP, top_copper_objects.lines.last, log_threshold + 1);
+-- 
+-- 						when BOT_COPPER => 
+-- 							bot_copper_objects.lines.append ((line.start_point, line.end_point, line.width));
+-- 							line_copper_properties (BOTTOM, bot_copper_objects.lines.last, log_threshold + 1);
+-- 
+-- 					end case;
+-- 
+-- 				when SEC_FP_ARC =>
+-- 					-- compute end point of arc
+-- 					arc.end_point := et_pcb_math.arc_end_point (arc.center, arc.start_point, arc.angle);
+-- 
+-- 					-- Append the arc to the container corresponding to the layer. Then log the arc properties.
+-- 					case arc.layer is
+-- 						when TOP_SILK =>
+-- 							top_silk_screen.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+-- 							arc_silk_screen_properties (TOP, top_silk_screen.arcs.last, log_threshold + 1);
+-- 							
+-- 						when BOT_SILK =>
+-- 							bot_silk_screen.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+-- 							arc_silk_screen_properties (BOTTOM, bot_silk_screen.arcs.last, log_threshold + 1);
+-- 							
+-- 						when TOP_ASSY =>
+-- 							top_assy_doc.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+-- 							arc_assy_doc_properties (TOP, top_assy_doc.arcs.last, log_threshold + 1);
+-- 							
+-- 						when BOT_ASSY =>
+-- 							bot_assy_doc.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+-- 							arc_assy_doc_properties (BOTTOM, bot_assy_doc.arcs.last, log_threshold + 1);
+-- 							
+-- 						when TOP_KEEP =>
+-- 							top_keepout.arcs.append ((
+-- 								center 		=> arc.center,
+-- 								start_point	=> arc.start_point, 
+-- 								end_point	=> arc.end_point));
+-- 							arc_keepout_properties (TOP, top_keepout.arcs.last, log_threshold + 1);
+-- 							
+-- 						when BOT_KEEP =>
+-- 							bot_keepout.arcs.append ((
+-- 								center 		=> arc.center,
+-- 								start_point	=> arc.start_point, 
+-- 								end_point	=> arc.end_point));
+-- 							arc_keepout_properties (BOTTOM, top_keepout.arcs.last, log_threshold + 1);
+-- 
+-- 						when TOP_COPPER => 
+-- 							top_copper_objects.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+-- 							arc_copper_properties (TOP, top_copper_objects.arcs.last, log_threshold + 1);
+-- 
+-- 						when BOT_COPPER => 
+-- 							bot_copper_objects.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+-- 							arc_copper_properties (BOTTOM, bot_copper_objects.arcs.last, log_threshold + 1);
+-- 							
+-- 					end case;
+-- 
+-- 				when SEC_FP_CIRCLE =>
+-- 					-- Append the circle to the container correspoinding to the layer. Then log the circle properties.
+-- 					case circle.layer is
+-- 						when TOP_SILK =>
+-- 							top_silk_screen.circles.append ((et_pcb.type_circle (circle) with circle.width));
+-- 							circle_silk_screen_properties (TOP, top_silk_screen.circles.last, log_threshold + 1);
+-- 							
+-- 						when BOT_SILK =>
+-- 							bot_silk_screen.circles.append ((et_pcb.type_circle (circle) with circle.width));
+-- 							circle_silk_screen_properties (BOTTOM, bot_silk_screen.circles.last, log_threshold + 1);
+-- 							
+-- 						when TOP_ASSY =>
+-- 							top_assy_doc.circles.append ((et_pcb.type_circle (circle) with circle.width));
+-- 							circle_assy_doc_properties (TOP, top_assy_doc.circles.last, log_threshold + 1);
+-- 							
+-- 						when BOT_ASSY =>
+-- 							bot_assy_doc.circles.append ((et_pcb.type_circle (circle) with circle.width));
+-- 							circle_assy_doc_properties (BOTTOM, bot_assy_doc.circles.last, log_threshold + 1);
+-- 							
+-- 						when TOP_KEEP =>
+-- 							top_keepout.circles.append ((
+-- 								center 		=> circle.center,
+-- 								-- The radius must be calculated from center and point on circle:
+-- 								radius		=> et_pcb_math.distance (circle.center, circle.point)
+-- 								-- NOTE: circle.width ignored
+-- 								));
+-- 							circle_keepout_properties (TOP, top_keepout.circles.last, log_threshold + 1);
+-- 							
+-- 						when BOT_KEEP =>
+-- 							bot_keepout.circles.append ((
+-- 								center 		=> circle.center,
+-- 								-- The radius must be calculated from center and point on circle:
+-- 								radius		=> et_pcb_math.distance (circle.center, circle.point)
+-- 								-- NOTE: circle.width ignored
+-- 								));
+-- 							circle_keepout_properties (BOTTOM, top_keepout.circles.last, log_threshold + 1);
+-- 
+-- 						when TOP_COPPER => 
+-- 							top_copper_objects.circles.append ((et_pcb.type_circle (circle) with circle.width));
+-- 							circle_copper_properties (TOP, top_copper_objects.circles.last, log_threshold + 1);
+-- 
+-- 						when BOT_COPPER => 
+-- 							bot_copper_objects.circles.append ((et_pcb.type_circle (circle) with circle.width));
+-- 							circle_copper_properties (BOTTOM, bot_copper_objects.circles.last, log_threshold + 1);
+-- 
+-- 					end case;
+-- 					
+-- 				when SEC_PAD =>
+-- 					-- Insert a terminal in the list "terminals":
+-- 					case terminal_technology is
+-- 						when THT =>
+-- 
+-- 							if terminal_shape_tht = CIRCULAR then
+-- 								terminals.insert (
+-- 									key 		=> terminal_name,
+-- 									position	=> terminal_cursor,
+-- 									inserted	=> terminal_inserted,
+-- 									new_item 	=> (
+-- 													technology 		=> THT,
+-- 													shape 			=> CIRCULAR,
+-- 													tht_hole		=> DRILLED,
+-- 													width_inner_layers => terminal_copper_width_inner_layers,
+-- 													drill_size_cir	=> terminal_drill_size,
+-- 													shape_tht		=> terminal_shape_tht,
+-- 
+-- 													-- Compose from the terminal position and angel the full terminal position
+-- 													position		=> type_terminal_position (to_terminal_position (terminal_position, terminal_angle))
+-- 												   ));
+-- 							else
+-- 								terminals.insert (
+-- 									key 		=> terminal_name,
+-- 									position	=> terminal_cursor,
+-- 									inserted	=> terminal_inserted,
+-- 									new_item 	=> (
+-- 													technology 		=> THT,
+-- 													shape			=> NON_CIRCULAR,
+-- 													tht_hole		=> DRILLED,
+-- 													width_inner_layers => terminal_copper_width_inner_layers,
+-- 													drill_size_dri	=> terminal_drill_size,
+-- 													shape_tht		=> terminal_shape_tht,
+-- 
+-- 													-- Compose from the terminal position and angel the full terminal position
+-- 													position		=> type_terminal_position (to_terminal_position (terminal_position, terminal_angle)),
+-- 
+-- 													size_tht_x		=> terminal_size_x,
+-- 													size_tht_y		=> terminal_size_y
+-- 												));
+-- 							end if;
+-- 
+-- 							
+-- 						when SMT =>
+-- 
+-- 							-- From the SMT terminal face, validate the status of stop mask and solder paste.
+-- 							set_stop_and_mask;
+-- 							
+-- 							if terminal_shape_smt = CIRCULAR then
+-- 								terminals.insert (
+-- 									key 		=> terminal_name, 
+-- 									position	=> terminal_cursor,
+-- 									inserted	=> terminal_inserted,
+-- 									new_item 	=> (
+-- 													technology 		=> SMT,
+-- 													shape			=> CIRCULAR,
+-- 													tht_hole		=> DRILLED, -- has no meaning here
+-- 													shape_smt		=> terminal_shape_smt,
+-- 
+-- 													-- Compose from the terminal position and angel the full terminal position
+-- 													position		=> type_terminal_position (to_terminal_position (terminal_position, terminal_angle)),
+-- 
+-- 													face 			=> terminal_face,
+-- 													stop_mask		=> terminal_stop_mask,
+-- 													solder_paste	=> terminal_solder_paste
+-- 												));
+-- 							else
+-- 								terminals.insert (
+-- 									key 		=> terminal_name, 
+-- 									position	=> terminal_cursor,
+-- 									inserted	=> terminal_inserted,
+-- 									new_item 	=> (
+-- 													technology 		=> SMT,
+-- 													shape			=> NON_CIRCULAR,
+-- 													tht_hole		=> DRILLED, -- has no meaning here
+-- 													shape_smt		=> terminal_shape_smt,
+-- 
+-- 													-- Compose from the terminal position and angel the full terminal position
+-- 													position		=> type_terminal_position (to_terminal_position (terminal_position, terminal_angle)),
+-- 
+-- 													face 			=> terminal_face,
+-- 													stop_mask		=> terminal_stop_mask,
+-- 													solder_paste	=> terminal_solder_paste,
+-- 													size_smt_x		=> terminal_size_x,
+-- 													size_smt_y		=> terminal_size_y
+-- 												));
+-- 							end if;
+-- 
+-- 							init_stop_and_mask; -- relevant for SMT terminals only (stop mask always open, solder paste never applied)
+-- 					end case;
+-- 
+-- 					if terminal_inserted then
+-- 						terminal_properties (terminal_cursor, log_threshold + 1);
+-- 					else
+-- 						log_indentation_reset;
+-- 						log (message_error & "duplicated terminal " & to_string (terminal_name) & " !", console => true);
+-- 						raise constraint_error;
+-- 					end if;
+-- 					
+-- 				when others => null;
+-- 			end case;
+
+			-- restore previous section from stack
+			section := sections_stack.pop;
+			log (return_to_section (section.name), log_threshold + 3);
+			
+			exception
+				when event:
+					others =>
+						log_indentation_reset;
+						log (message_error & "in " & file_name, console => true);
+						log (message_error & affected_line (element (line_cursor)) 
+							& to_string (element (line_cursor)), console => true);
+						log (ada.exceptions.exception_message (event));
+						raise;
+			
+		end exec_section;
+		
+
+
+		
+		
+	begin -- to_board
+		log ("parsing/building board ...", log_threshold);
+		log_indentation_up;
+
+		sections_stack.init;
+
+		-- get first line
+		current_line := type_current_line.to_bounded_string (to_string (element (line_cursor)));
+		log ("line " & to_string (current_line), log_threshold + 4);
+
+		-- get position of first opening bracket
+		character_cursor := type_current_line.index (current_line, 1 * opening_bracket);
+
+		--init_stop_and_mask; -- relevant for SMT terminals only (stop mask always open, solder paste never applied)
+
+		-- This is the central loop where decisions are made whether to read a section name,
+		-- an argument or whether to "execute" a section.
+		-- An opening bracket indicates a new (sub)section. A closing bracket indicates that a section
+		-- finishes and is to be executed. The loop comes to an end if the sections stack depth 
+		-- reaches zero.
+		loop
+			-- read (sub)section
+			<<label_read_section>>
+				next_character; -- set character cursor to next character
+				read_section;
+				next_character; -- set character cursor to next character
+
+				-- if a new subsection starts, read subsection
+				if element (current_line, character_cursor) = opening_bracket then goto label_read_section; end if;
+
+			-- read argument
+			<<label_read_argument>>
+				read_arg;
+				next_character; -- set character cursor to next character
+			
+				-- Test for cb, opening_bracket or other character after argument:
+				case element (current_line, character_cursor) is
+
+					-- If closing bracket after argument, the (sub)section ends
+					-- and must be executed:
+					when closing_bracket => goto label_execute_section;
+
+					-- If another section at a deeper level follows,
+					-- read (sub)section:
+					when opening_bracket => goto label_read_section;
+
+					-- In case another argument follows, it must be read:
+					when others => goto label_read_argument; 
+				end case;
+
+			-- execute section
+			<<label_execute_section>>
+				exec_section;
+
+				-- After executing the section, check the stack depth.
+				-- Exit when zero reached (topmost section has been executed).
+				if sections_stack.depth = 0 then exit; end if;
+				
+				next_character; -- set character cursor to next character
+
+				-- Test for cb, opening_bracket or other character after closed section:
+				case element (current_line, character_cursor) is
+
+					-- If closing bracket after closed section,
+					-- execute parent section:
+					when closing_bracket => goto label_execute_section;
+
+					-- If another section at a deeper level follows,
+					-- read subsection:
+					when opening_bracket => goto label_read_section;
+
+					-- In case an argument follows, it belongs to the parent
+					-- section and is to be read:
+					when others => goto label_read_argument; 
+				end case;
+				
+		end loop;
+
+		-- check section name. must be top level section
+		if section.name /= INIT then -- should never happen
+			log_indentation_reset;
+			log (message_error & "in " & file_name, console => true);
+			log (message_error & "top level section not closed !", console => true);
+			raise constraint_error;
+		end if;
+		
+		
 		return board;
 	end to_board;
 

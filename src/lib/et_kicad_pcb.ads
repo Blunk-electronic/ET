@@ -100,6 +100,8 @@ package et_kicad_pcb is
 	-- The libraries in the container are named after the libraries found in lib_dir.
 		log_threshold 	: in et_string_processing.type_log_level);
 
+	type type_layer_id is range 0..49;
+	
 	type type_board is record
 		nat : natural;
 	end record;
