@@ -120,6 +120,8 @@ package et_schematic is
     type type_paper_size is (A0, A1, A2, A4); -- CS: others ?
     paper_size_default : type_paper_size := A4;
 
+	function to_paper_size (paper_size : in string) return type_paper_size;
+	-- converts a string to type_paper_size
 	
 -- COORDINATES
    

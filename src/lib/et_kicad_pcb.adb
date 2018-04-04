@@ -2110,49 +2110,112 @@ package body et_kicad_pcb is
 		-- See <https://www.compuphase.com/electronics/LibraryFileFormats.pdf> for more.
 		type type_keyword is (
 			INIT,	-- initial section before anything is done. does not occur in board file
+			SEC_ADD_NET,
 			SEC_AREA,
--- 			SEC_AT,
--- 			SEC_ATTR,
+			SEC_AUX_AXIS_ORIGIN,
+			SEC_AT,
+			SEC_ATTR,
 -- 			SEC_ANGLE,
 -- 			SEC_CENTER,
-			--SEC_CLEARANCE,
-			-- 			SEC_DESCR,
+			SEC_CLEARANCE,
+			SEC_DESCR,
 			SEC_DRAWINGS,
--- 			SEC_DRILL,
--- 			SEC_EFFECTS,
--- 			SEC_END,
--- 			SEC_FONT,
+			SEC_DRILL,
+			SEC_DRILLSHAPE,
+			SEC_EDGE_WIDTH,
+			SEC_EFFECTS,
+			SEC_END,
+			SEC_EXCLUDEEDGELAYER,
+			SEC_FONT,
 -- 			SEC_FP_ARC,
 -- 			SEC_FP_CIRCLE,
--- 			SEC_FP_LINE,
--- 			SEC_FP_TEXT,
+			SEC_FP_LINE,
+			SEC_FP_TEXT,
 			SEC_GENERAL,
 			SEC_HOST,
+			SEC_HPGLPENDIAMETER,
+			SEC_HPGLPENNUMBER,
+			SEC_HPGLPENOVERLAY,
+			SEC_HPGLPENSPEED,			
 			--SEC_JUSTIFY,
 			SEC_KICAD_PCB,
 			-- 			SEC_LAYER,
+			SEC_LAST_TRACE_WIDTH,
+			SEC_LAYER,
 			SEC_LAYERS,
+			SEC_LAYERSELECTION,
+			SEC_LINEWIDTH,
 			SEC_LINKS,
--- 			SEC_MODEL,
+			SEC_MODEL,
+			SEC_MODE,
+			SEC_MODULE,
 			SEC_MODULES,
+			SEC_MOD_EDGE_WIDTH,
+			SEC_MOD_TEXT_SIZE,
+			SEC_MOD_TEXT_WIDTH,
+			SEC_MIRROR,
+			SEC_NET,
+			SEC_NET_CLASS,
 			SEC_NETS,
 			SEC_NO_CONNECTS,
-			-- 			SEC_PAD,
+			SEC_OUTPUTDIRECTORY,
+			SEC_OUTPUTFORMAT,
+			SEC_PAD,
+			SEC_PAD_DRILL,
+			SEC_PAD_SIZE,
+			SEC_PAD_TO_MASK_CLEARANCE,
+			SEC_PADSONSILK,
 			SEC_PAGE,
--- 			SEC_ROTATE,
--- 			SEC_SCALE,
--- 			SEC_SIZE,
+			SEC_PATH,
+			SEC_PCBPLOTPARAMS,
+			SEC_PCB_TEXT_SIZE,
+			SEC_PCB_TEXT_WIDTH,
+			SEC_PLOTFRAMEREF,
+			SEC_PLOTINVISIBLETEXT,
+			SEC_PLOTREFERENCE,
+			SEC_PLOTVALUE,
+			SEC_PSA4OUTPUT, 
+			SEC_PSNEGATIVE,
+			SEC_ROTATE,
+			SEC_SCALE,
+			SEC_SCALESELECTION,
+			SEC_SEGMENT_WIDTH,
+			SEC_SETUP,
+			SEC_SUBTRACTMASKFROMSILK,
+			SEC_SIZE,
 			--SEC_SOLDER_MASK_MARGIN,
--- 			SEC_START,
--- 			SEC_TAGS,
--- 			SEC_TEDIT,
+			SEC_START,
+			SEC_TAGS,
+			SEC_TEDIT,
+			SEC_TRACE_CLEARANCE,
+			SEC_TRACE_MIN,
+			SEC_TRACE_WIDTH,
 			SEC_TRACKS,
 			SEC_THICKNESS,
+			SEC_TSTAMP,
+			SEC_USEAUXORIGIN,
+			SEC_USEGERBEREXTENSIONS,
+			SEC_UVIAS_ALLOWED,
+			SEC_UVIA_DIA,
+			SEC_UVIA_DRILL,
+			SEC_UVIA_MIN_DRILL,
+			SEC_UVIA_MIN_SIZE,
+			SEC_UVIA_SIZE,
 			SEC_VERSION,
--- 			SEC_WIDTH,
--- 			SEC_XYZ
+			SEC_VIA_DIA,
+			SEC_VIA_DRILL,
+			SEC_VIA_MIN_DRILL,
+			SEC_VIA_MIN_SIZE,
+			SEC_VIA_SIZE,
+			SEC_VISIBLE_ELEMENTS,
+			SEC_VIASONMASK,
+			SEC_WIDTH,
+			SEC_XYZ,
+			SEC_ZONE_45_ONLY,
+			SEC_ZONE_CLEARANCE,
 			SEC_ZONES
 			);
+                      		
 		
 		argument_length_max : constant positive := 200; -- CS: could become an issue if long URLs used ...
 		package type_argument is new generic_bounded_length (argument_length_max);
@@ -2210,6 +2273,16 @@ package body et_kicad_pcb is
 		end process_section;
 
 
+
+		-- temporarily storage places
+		type type_net_class is record
+			name		: type_net_class_name.bounded_string;
+			description	: type_net_class_description.bounded_string;
+			clearance	: type_signal_clearance;
+			-- CS width		: 
+		end record;
+
+		net_class : type_net_class;
 
 		-- When a line is fetched from the given list of lines, it is stored in variable
 		-- "current_line". CS: The line length is limited by line_length_max and should be increased
@@ -2308,41 +2381,73 @@ package body et_kicad_pcb is
 				when SEC_KICAD_PCB =>
 					case section.name is
 						when SEC_VERSION | SEC_HOST | SEC_GENERAL | SEC_PAGE |
-							SEC_LAYERS => null;
+							SEC_LAYERS | SEC_SETUP | SEC_NET | SEC_NET_CLASS |
+							SEC_MODULE => null;
+						when others => invalid_section;
+					end case;
+
+				when SEC_SETUP =>
+					case section.name is
+						when SEC_LAST_TRACE_WIDTH | SEC_TRACE_CLEARANCE | SEC_ZONE_CLEARANCE | SEC_ZONE_45_ONLY |
+							SEC_TRACE_MIN | SEC_SEGMENT_WIDTH | SEC_EDGE_WIDTH | SEC_VIA_SIZE | SEC_VIA_DRILL |
+							SEC_VIA_MIN_SIZE | SEC_VIA_MIN_DRILL | SEC_UVIA_SIZE | SEC_UVIA_DRILL | SEC_UVIAS_ALLOWED |
+							SEC_UVIA_MIN_SIZE | SEC_UVIA_MIN_DRILL | SEC_PCB_TEXT_WIDTH | SEC_PCB_TEXT_SIZE |
+							SEC_MOD_EDGE_WIDTH | SEC_MOD_TEXT_SIZE | SEC_MOD_TEXT_WIDTH |
+							SEC_PAD_SIZE | SEC_PAD_DRILL | SEC_PAD_TO_MASK_CLEARANCE | SEC_AUX_AXIS_ORIGIN |
+							SEC_VISIBLE_ELEMENTS | SEC_PCBPLOTPARAMS => null;
+						when others => invalid_section;
+					end case;
+
+				when SEC_PCBPLOTPARAMS =>
+					case section.name is
+						when SEC_LAYERSELECTION | SEC_USEGERBEREXTENSIONS | SEC_EXCLUDEEDGELAYER | SEC_LINEWIDTH |
+							SEC_PLOTFRAMEREF | SEC_VIASONMASK | SEC_MODE | SEC_USEAUXORIGIN | SEC_HPGLPENNUMBER |
+							SEC_HPGLPENSPEED | SEC_HPGLPENDIAMETER | SEC_HPGLPENOVERLAY | SEC_PSNEGATIVE |
+							SEC_PSA4OUTPUT | SEC_PLOTREFERENCE | SEC_PLOTVALUE | SEC_PLOTINVISIBLETEXT |
+							SEC_PADSONSILK | SEC_SUBTRACTMASKFROMSILK | SEC_OUTPUTFORMAT | SEC_MIRROR |
+							SEC_DRILLSHAPE | SEC_SCALESELECTION | SEC_OUTPUTDIRECTORY => null;
+						when others => invalid_section;
+					end case;
+
+				when SEC_NET_CLASS =>
+					case section.name is
+						when SEC_CLEARANCE | SEC_TRACE_WIDTH | SEC_VIA_DIA | SEC_VIA_DRILL |
+							SEC_UVIA_DIA | SEC_UVIA_DRILL | SEC_ADD_NET => null;
+						when others => invalid_section;
+					end case;
+
+				when SEC_MODULE =>
+					case section.name is
+						when SEC_FP_TEXT | SEC_FP_LINE | -- SEC_FP_ARC | -- SEC_FP_CIRCLE
+							SEC_PAD | SEC_LAYER | SEC_TEDIT | SEC_DESCR | SEC_TSTAMP | SEC_ATTR | SEC_TAGS |
+							SEC_AT | SEC_PATH | SEC_MODEL => null;
+						when others => invalid_section;
+					end case;
+
+				when SEC_FP_TEXT =>
+					case section.name is
+						when SEC_AT | SEC_LAYER | SEC_EFFECTS => null;
+						when others => invalid_section;
+					end case;
+
+				when SEC_EFFECTS =>
+					case section.name is
+						when SEC_FONT => null;
 						when others => invalid_section;
 					end case;
 					
--- 				when SEC_MODULE =>
--- 					case section.name is
--- 						when SEC_FP_TEXT | SEC_FP_LINE | SEC_FP_ARC | SEC_FP_CIRCLE | SEC_TAGS |
--- 							SEC_MODEL | SEC_PAD | SEC_DESCR | SEC_ATTR | SEC_LAYER | SEC_TEDIT => null;
--- 						when others => invalid_section;
--- 					end case;
--- 
--- 				when SEC_FP_TEXT =>
--- 					case section.name is
--- 						when SEC_AT | SEC_LAYER | SEC_EFFECTS => null;
--- 						when others => invalid_section;
--- 					end case;
--- 
--- 				when SEC_EFFECTS =>
--- 					case section.name is
--- 						when SEC_FONT => null;
--- 						when others => invalid_section;
--- 					end case;
--- 					
--- 				when SEC_FONT =>
--- 					case section.name is
--- 						when SEC_SIZE | SEC_THICKNESS => null;
--- 						when others => invalid_section;
--- 					end case;
--- 
--- 				when SEC_FP_LINE =>
--- 					case section.name is
--- 						when SEC_START | SEC_END | SEC_LAYER | SEC_WIDTH => null;
--- 						when others => invalid_section;
--- 					end case;
--- 
+				when SEC_FONT =>
+					case section.name is
+						when SEC_SIZE | SEC_THICKNESS => null;
+						when others => invalid_section;
+					end case;
+
+				when SEC_FP_LINE =>
+					case section.name is
+						when SEC_START | SEC_END | SEC_LAYER | SEC_WIDTH => null;
+						when others => invalid_section;
+					end case;
+
 -- 				when SEC_FP_ARC =>
 -- 					case section.name is
 -- 						when SEC_START | SEC_END | SEC_ANGLE | SEC_LAYER | SEC_WIDTH => null;
@@ -2362,19 +2467,18 @@ package body et_kicad_pcb is
 						when others => invalid_section;
 					end case;
 
--- 
--- 				when SEC_PAD =>
--- 					case section.name is
--- 						when SEC_AT | SEC_SIZE | SEC_LAYERS | SEC_DRILL => null;
--- 						when others => invalid_section;
--- 					end case;
--- 
--- 				when SEC_MODEL =>
--- 					case section.name is
--- 						when SEC_AT | SEC_ROTATE | SEC_SCALE => null;
--- 						when others => invalid_section;
--- 					end case;
--- 					
+				when SEC_PAD =>
+					case section.name is
+						when SEC_AT | SEC_SIZE | SEC_LAYERS | SEC_DRILL | SEC_NET => null;
+						when others => invalid_section;
+					end case;
+
+				when SEC_MODEL =>
+					case section.name is
+						when SEC_AT | SEC_ROTATE | SEC_SCALE => null;
+						when others => invalid_section;
+					end case;
+					
 				when others => null;
 			end case;
 
@@ -2420,14 +2524,14 @@ package body et_kicad_pcb is
 -- 				log (message_error & "invalid layer " & to_string (arg), console => true);
 -- 				raise constraint_error;
 -- 			end invalid_layer;
--- 
--- 			procedure too_many_arguments is begin
--- 				log_indentation_reset;
--- 				log (message_error & "too many arguments in section " & to_string (section.name) & " !", console => true);
--- 				log ("excessive argument reads '" & to_string (arg) & "'", console => true);
--- 				raise constraint_error;
--- 			end too_many_arguments;
--- 
+
+			procedure too_many_arguments is begin
+				log_indentation_reset;
+				log (message_error & "too many arguments in section " & to_string (section.name) & " !", console => true);
+				log ("excessive argument reads '" & to_string (arg) & "'", console => true);
+				raise constraint_error;
+			end too_many_arguments;
+
 -- 			procedure invalid_fp_text_keyword is begin
 -- 				log_indentation_reset;
 -- 				log (message_error & "expect keyword '" & keyword_fp_text_reference 
@@ -2474,15 +2578,35 @@ package body et_kicad_pcb is
 -- 				log (message_error & "invalid attribute !", console => true);
 -- 				raise constraint_error;
 -- 			end invalid_attribute;
--- 
--- 			procedure invalid_section is
--- 			begin
--- 				log_indentation_reset;
--- 				log (message_error & "invalid subsection '" & to_string (section.name) 
--- 					 & "' in parent section '" & to_string (section.parent) & "' !", console => true);
--- 				raise constraint_error;
--- 			end invalid_section;
-				
+
+			procedure invalid_section is begin
+				log_indentation_reset;
+				log (message_error & "invalid subsection '" & to_string (section.name) 
+					 & "' in parent section '" & to_string (section.parent) & "' !", console => true);
+				raise constraint_error;
+			end invalid_section;
+
+			procedure invalid_file_format is begin
+				log_indentation_reset;
+				log (message_error & "invalid file format ! Expect format version " & pcb_file_format_version_4 & " !",
+					 console => true);
+				raise constraint_error;
+			end invalid_file_format;
+
+			procedure invalid_host_name is begin
+				log_indentation_reset;
+				log (message_error & "invalid host name ! Expect " & host_name_pcbnew & " !",
+					 console => true);
+				raise constraint_error;
+			end invalid_host_name;
+
+			procedure invalid_pcbnew_version is begin
+				log_indentation_reset;
+				log (message_error & "invalid " & host_name_pcbnew & " version ! Expect " & pcb_new_version_4_0_7 & " !",
+					 console => true);
+				raise constraint_error;
+			end invalid_pcbnew_version;
+			
 		begin -- read_arg
 			-- We handle an argument that is wrapped in quotation different from a non-wrapped argument:
 			if element (current_line, character_cursor) = latin_1.quotation then
@@ -2530,9 +2654,74 @@ package body et_kicad_pcb is
 
 			-- Validate arguments according to current section and the parent section.
 			-- Load variables. When a section closes, the variables are used to build an object. see exec_section.
--- 			case section.name is
--- 				when INIT => raise constraint_error; -- should never happen
--- 				
+			case section.parent is
+				when SEC_KICAD_PCB =>
+					case section.name is
+						when SEC_VERSION =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 =>
+									if to_string (arg) /= pcb_file_format_version_4 then
+										invalid_file_format;
+									end if;
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_HOST =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 =>
+									if to_string (arg) /= host_name_pcbnew then
+										invalid_host_name;
+									end if;
+								when 2 =>
+									if to_string (arg) /= pcb_new_version_4_0_7 then
+										invalid_pcbnew_version;
+									end if;
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_PAGE =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => board.paper_size := et_schematic.to_paper_size (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_NET_CLASS =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => net_class.name := type_net_class_name.to_bounded_string (to_string (arg));
+								when 2 => net_class.description := type_net_class_description.to_bounded_string (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_NET =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => null; -- CS  net id
+								when 2 => null; -- CS  net name
+								when others => too_many_arguments;
+							end case;
+							
+						when others => invalid_section;
+					end case;
+
+				-- parent section
+				when SEC_NET_CLASS => 
+					case section.name is
+						when SEC_CLEARANCE =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									validate_signal_clearance (to_distance (to_string (arg)));
+									net_class.clearance := (to_distance (to_string (arg)));
+								when others => too_many_arguments;
+							end case;
+
+						when others => invalid_section;
+					end case;
+					
 -- 				when SEC_MODULE =>
 -- 					case section.parent is
 -- 						when INIT =>
@@ -3099,8 +3288,9 @@ package body et_kicad_pcb is
 -- 						when SEC_ROTATE => null; -- CS
 -- 						when others => invalid_section;
 -- 					end case;
--- 
--- 			end case;
+
+				when others => null; -- CS remove 
+			end case;
 			
 			exception
 				when event:
@@ -3585,9 +3775,10 @@ package body et_kicad_pcb is
 
 				-- Store a single line in variable "line" (see et_string_processing.ads)
 				line := et_string_processing.read_line (
-							line 	=> get_line,
-							number 	=> ada.text_io.line (current_input),
-							ifs 	=> latin_1.space); -- fields are separated by space
+						line 			=> get_line,
+						test_whole_line	=> false, -- comment marks at begin of line matter
+						number 			=> ada.text_io.line (current_input),
+						ifs 			=> latin_1.space); -- fields are separated by space
 
 				-- insert line in container "lines"
 				if field_count (line) > 0 then -- we skip empty or commented lines

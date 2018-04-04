@@ -113,7 +113,35 @@ package et_pcb is
 
 	procedure validate_pad_size (size : in type_distance);
 	-- Checks whether given pad size is in range of type_pad_size
+
+
 	
+	-- NET CLASSES
+	net_class_name_length_max : constant positive := 50;
+	package type_net_class_name is new generic_bounded_length (net_class_name_length_max);
+
+	net_class_description_length_max : constant positive := 100;
+	package type_net_class_description is new generic_bounded_length (net_class_description_length_max);
+	
+
+	
+	-- COPPER STRUCTURES GENERAL
+	copper_structure_size_min : constant type_distance := 0.05;
+	copper_clearance_min : constant type_distance := copper_structure_size_min;
+
+
+	
+	-- SIGNALS
+	subtype type_signal_clearance is type_distance range copper_clearance_min .. type_distance'last;
+
+	procedure validate_signal_clearance (signal_clearance : in type_distance);
+	-- Checks whether the given signal clearance is in range of type_signal_clearance.
+
+
+
+	--track_width_min : constant type_distance := copper_structure_size_min;
+
+
 	
 	-- TEXT IN GENERAL
 	type type_text is abstract tagged record

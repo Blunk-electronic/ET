@@ -128,6 +128,19 @@ package body et_pcb is
 			raise constraint_error;
 		end if;
 	end validate_pad_size;
+
+	procedure validate_signal_clearance (signal_clearance : in type_distance) is
+	-- Checks whether the given signal clearance is in range of type_signal_clearance.
+	begin
+		if signal_clearance not in type_signal_clearance then
+			log_indentation_reset;
+			log (message_error & "signal clearance invalid ! Allowed range is" 
+				 & to_string (type_signal_clearance'first) & " .."
+				 & to_string (type_signal_clearance'last),
+				 console => true);
+			raise constraint_error;
+		end if;
+	end validate_signal_clearance;
 	
 	
 	function text_properties (text : in type_text) return string is

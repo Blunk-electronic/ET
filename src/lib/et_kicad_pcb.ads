@@ -51,10 +51,15 @@ with ada.containers.ordered_sets;
 
 with et_string_processing;
 with et_libraries;
+with et_schematic;
 with et_pcb;
 
 package et_kicad_pcb is
 
+	pcb_new_version_4_0_7		: constant string (1..5)	:= "4.0.7";
+	pcb_file_format_version_4	: constant string (1..1)	:= "4";
+	host_name_pcbnew			: constant string (1..6)	:= "pcbnew";
+	
 	layer_top_copper			: constant string (1..4)	:= "F.Cu";
 	layer_bot_copper			: constant string (1..4)	:= "B.Cu";
 	layer_all_copper			: constant string (1..4)	:= "*.Cu";
@@ -100,10 +105,14 @@ package et_kicad_pcb is
 	-- The libraries in the container are named after the libraries found in lib_dir.
 		log_threshold 	: in et_string_processing.type_log_level);
 
-	type type_layer_id is range 0..49;
+	layer_id_max : constant positive := 49;
+	type type_layer_id is range 0..layer_id_max;
+
+
+
 	
 	type type_board is record
-		nat : natural;
+		paper_size : et_schematic.type_paper_size;
 	end record;
 
 	procedure read_board (
