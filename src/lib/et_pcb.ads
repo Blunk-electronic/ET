@@ -154,6 +154,8 @@ package et_pcb is
 	net_class_name_length_max : constant positive := 50;
 	package type_net_class_name is new generic_bounded_length (net_class_name_length_max);
 
+	function to_string (net_class_name : in type_net_class_name.bounded_string) return string;
+	
 	net_class_description_length_max : constant positive := 100;
 	package type_net_class_description is new generic_bounded_length (net_class_description_length_max);
 

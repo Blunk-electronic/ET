@@ -57,6 +57,7 @@ with ada.exceptions;
 with et_general;
 with et_libraries;
 with et_schematic;
+with et_kicad;
 with et_pcb;
 with et_pcb_coordinates;
 with et_pcb_math;
@@ -234,7 +235,7 @@ package body et_kicad_pcb is
 	
 
 		
-		timestamp	: type_timestamp; -- temporarily storage of package timestamp
+		time_stamp	: type_timestamp; -- temporarily storage of package timestamp
 		description	: type_package_description.bounded_string; -- temp. storage of package description
 		tags 		: type_package_tags.bounded_string; -- temp. storage of package keywords
 
@@ -779,8 +780,8 @@ package body et_kicad_pcb is
 								when 0 => null;
 								when 1 =>
 									-- CS check length
-									timestamp := type_timestamp (to_string (arg));
-									et_string_processing.check_timestamp (timestamp);
+									time_stamp := type_timestamp (to_string (arg));
+									et_string_processing.check_timestamp (time_stamp);
 								when others => 
 									too_many_arguments;
 							end case;
@@ -1341,7 +1342,7 @@ package body et_kicad_pcb is
 			case section.name is
 
 				when SEC_TEDIT =>
-					log ("timestamp " & string (timestamp), log_threshold + 1);
+					log ("timestamp " & string (time_stamp), log_threshold + 1);
 
 				when SEC_DESCR =>
 					log (to_string (description), log_threshold + 1);
@@ -1863,7 +1864,7 @@ package body et_kicad_pcb is
 					route_restrict 			=> route_restrict,
 					via_restrict 			=> via_restrict,
 					assembly_documentation 	=> (top => top_assy_doc, bottom => bot_assy_doc),
-					timestamp				=> timestamp,
+					timestamp				=> time_stamp,
 					description				=> description,
 					technology				=> package_technology
 					);
@@ -1880,7 +1881,7 @@ package body et_kicad_pcb is
 					route_restrict 			=> route_restrict,
 					via_restrict 			=> via_restrict,
 					assembly_documentation 	=> (top => top_assy_doc, bottom => bot_assy_doc),
-					timestamp				=> timestamp,
+					timestamp				=> time_stamp,
 					description				=> description,
 					technology				=> package_technology
 					);
@@ -2276,7 +2277,12 @@ package body et_kicad_pcb is
 
 
 		-- temporarily storage places
+		time_stamp	: type_timestamp; -- temporarily storage of package timestamp
+		time_edit	: type_timestamp; -- temporarily storage of package time of edit
+		description	: type_package_description.bounded_string; -- temp. storage of package description
+		tags 		: type_package_tags.bounded_string; -- temp. storage of package keywords
 
+		
 		-- NET CLASSES
 		-- KiCad keeps a list of net names which are in a certain net class.
 		package type_nets_of_class is new doubly_linked_lists (
@@ -2291,9 +2297,14 @@ package body et_kicad_pcb is
 
 		-- Since there are lots of net classes, they are stored in a map:
 		package type_net_classes is new ordered_maps (
-			key_type		=> type_net_class_name.bounded_string;
-			element_type	=> type_net_class);
+			key_type		=> type_net_class_name.bounded_string,
+			element_type	=> type_net_class,
+			"<"				=> type_net_class_name."<"
+			);
 
+		net_class_inserted : boolean := false;
+		net_class_cursor : type_net_classes.cursor;
+		
 		net_class_via_diameter			: et_pcb_coordinates.type_distance;
 		net_class_micro_via_diameter	: et_pcb_coordinates.type_distance;
 		net_class_via_restring			: et_pcb_coordinates.type_distance;		
@@ -2301,6 +2312,12 @@ package body et_kicad_pcb is
 		net_class_name 	: type_net_class_name.bounded_string;	-- PWR, HIGH_CURRENT, ...
 		net_class 		: type_net_class;
 		net_classes 	: type_net_classes.map;
+
+
+		-- PACKAGES
+		package_name : et_libraries.type_component_package_name.bounded_string;
+		library_name : et_libraries.type_library_name.bounded_string;
+		assembly_face : et_pcb_coordinates.type_face;
 
 		-- When a line is fetched from the given list of lines, it is stored in variable
 		-- "current_line". CS: The line length is limited by line_length_max and should be increased
@@ -2582,14 +2599,6 @@ package body et_kicad_pcb is
 -- 				raise constraint_error;
 -- 			end invalid_package_name;
 -- 
--- 			procedure invalid_component_assembly_face is
--- 			begin
--- 				log_indentation_reset;
--- 				log (message_error & "default assembly face " & et_pcb_coordinates.to_string (BOTTOM) 
--- 					 & " found. Must be " & et_pcb_coordinates.to_string (TOP) & " !", console => true);
--- 				raise constraint_error;
--- 			end invalid_component_assembly_face;
--- 
 -- 			procedure invalid_attribute is
 -- 			begin
 -- 				log_indentation_reset;
@@ -2721,6 +2730,16 @@ package body et_kicad_pcb is
 								when 2 => null; -- CS  net name
 								when others => too_many_arguments;
 							end case;
+
+						when SEC_MODULE =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => -- break down something like bel_ic:S_SO14 into package and lib name
+									library_name := et_kicad.library_name (to_string (arg));
+									package_name := et_kicad.package_name (to_string (arg));
+									-- CS make sure library and package exist
+								when others => too_many_arguments;
+							end case;
 							
 						when others => invalid_section;
 					end case;
@@ -2790,25 +2809,48 @@ package body et_kicad_pcb is
 								when others => too_many_arguments;
 							end case;
 
+						when others => invalid_section;
+					end case;
+
+				-- parent section
+				when SEC_MODULE =>
+					case section.name is
+						when SEC_LAYER => 
+							case section.arg_counter is
+								when 0 => null;
+								when 1 =>
+									if to_string (arg) = layer_bot_copper then
+										assembly_face := BOTTOM;
+									elsif to_string (arg) /= layer_top_copper then
+										assembly_face := TOP;
+									end if;
+								when others => too_many_arguments;
+							end case;
+							
+						when SEC_TEDIT =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 =>
+									-- CS check length
+									time_edit := type_timestamp (to_string (arg));
+									et_string_processing.check_timestamp (time_edit);
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_TSTAMP =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 =>
+									-- CS check length
+									time_stamp := type_timestamp (to_string (arg));
+									et_string_processing.check_timestamp (time_stamp);
+								when others => too_many_arguments;
+							end case;
+
+						-- CS when SEC_AT
 							
 						when others => invalid_section;
 					end case;
-					
--- 				when SEC_MODULE =>
--- 					case section.parent is
--- 						when INIT =>
--- 							case section.arg_counter is
--- 								when 0 => null;
--- 								when 1 =>
--- 									if to_string (arg) /= to_string (package_name) then
--- 										invalid_package_name;
--- 									end if;
--- 								when others => 
--- 									too_many_arguments;
--- 							end case;
--- 
--- 						when others => invalid_section;
--- 					end case;
 -- 					
 -- 				when SEC_DESCR =>
 -- 					case section.parent is
@@ -2835,22 +2877,6 @@ package body et_kicad_pcb is
 -- 									-- CS check length
 -- 									tags := type_package_tags.to_bounded_string (to_string (arg));
 -- 									-- CS check tags
--- 								when others => 
--- 									too_many_arguments;
--- 							end case;
--- 
--- 						when others => invalid_section;
--- 					end case;
--- 					
--- 				when SEC_TEDIT =>
--- 					case section.parent is
--- 						when SEC_MODULE =>
--- 							case section.arg_counter is
--- 								when 0 => null;
--- 								when 1 =>
--- 									-- CS check length
--- 									timestamp := type_timestamp (to_string (arg));
--- 									et_string_processing.check_timestamp (timestamp);
 -- 								when others => 
 -- 									too_many_arguments;
 -- 							end case;
@@ -3407,6 +3433,13 @@ package body et_kicad_pcb is
 -- 				raise constraint_error;
 -- 			end invalid_layer_user;
 
+			procedure net_class_already_defined is begin
+				log_indentation_reset;
+				log (message_error & "net class " & to_string (net_class_name) & " already defined !", console => true);
+				raise constraint_error;
+			end net_class_already_defined;
+
+
 		begin -- exec_section
 			log (process_section (section.name), log_threshold + 4);
 			case section.name is
@@ -3420,8 +3453,22 @@ package body et_kicad_pcb is
 					validate_restring_width (net_class_via_restring);
 					net_class.micro_via_restring_min := net_class_via_restring;
 
--- 					net_classes.append (net_class);
--- 
+					net_classes.insert (
+						key			=> net_class_name,
+						new_item 	=> net_class,
+						position	=> net_class_cursor,
+						inserted	=> net_class_inserted
+						);
+
+					if not net_class_inserted then
+						net_class_already_defined;
+					end if;
+
+					-- Clean up list of net names for next net class.
+					-- CS: We assume, all other components of net_class are provided in 
+					-- next net class section and thus become overwritten.
+					net_class.net_names.clear;
+					
 -- 				when SEC_TEDIT =>
 -- 					log ("timestamp " & string (timestamp), log_threshold + 1);
 -- 

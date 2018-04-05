@@ -383,6 +383,13 @@ package et_kicad is
 		element_type => type_anonymous_strand);
 
 
+
+	function library_name (text : in string) return et_libraries.type_library_name.bounded_string;
+	-- extracts from a string like "bel_ic:S_SO14" the library name "bel_ic"
+
+	function package_name (text : in string) return et_libraries.type_component_package_name.bounded_string;
+	-- extracts from a string like "bel_ic:S_SO14" the package name "S_SO14"
+
 	
 end et_kicad;
 

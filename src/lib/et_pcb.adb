@@ -168,6 +168,11 @@ package body et_pcb is
 		end if;
 	end validate_restring_width;
 	
+	function to_string (net_class_name : in type_net_class_name.bounded_string) return string is
+	begin
+		return type_net_class_name.to_string (net_class_name);
+	end to_string;
+
 	
 	function text_properties (text : in type_text) return string is
 	-- Returns the properties of the given text in a long single string.
