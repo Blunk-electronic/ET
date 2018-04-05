@@ -160,7 +160,7 @@ package et_pcb is
 	type type_net_class is tagged record
 		description				: type_net_class_description.bounded_string;
 		clearance				: type_signal_clearance;
-		track_width_min			: type_signal_width;
+		signal_width_min		: type_signal_width;
 		via_drill_min			: type_drill_size;
 		via_restring_min		: type_restring_width;
 		micro_via_drill_min		: type_drill_size;

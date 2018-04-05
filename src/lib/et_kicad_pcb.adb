@@ -2697,14 +2697,14 @@ package body et_kicad_pcb is
 						when SEC_PAGE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board.paper_size := et_general.to_paper_size (to_string (arg));
+								when 1 => board.paper_size := et_general.to_paper_size (to_string (arg)); -- A4
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_NET_CLASS =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => net_class_name := type_net_class_name.to_bounded_string (to_string (arg));
+								when 1 => net_class_name := type_net_class_name.to_bounded_string (to_string (arg)); -- PWR, HIGH_CURRENT, ...
 								when 2 => net_class.description := type_net_class_description.to_bounded_string (to_string (arg));
 								when others => too_many_arguments;
 							end case;
@@ -2732,6 +2732,16 @@ package body et_kicad_pcb is
 								when others => too_many_arguments;
 							end case;
 
+						when SEC_TRACE_WIDTH =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									validate_signal_width (to_distance (to_string (arg)));
+									net_class.signal_width_min := (to_distance (to_string (arg)));
+								when others => too_many_arguments;
+							end case;
+
+							
 						when others => invalid_section;
 					end case;
 					
