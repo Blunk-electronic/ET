@@ -141,6 +141,32 @@ package body et_pcb is
 			raise constraint_error;
 		end if;
 	end validate_signal_clearance;
+
+	procedure validate_signal_width (signal_width : in type_distance) is
+	-- Checks whether the given signal width is in range of type_signal_width.
+	begin
+		if signal_width not in type_signal_width then
+			log_indentation_reset;
+			log (message_error & "signal width invalid ! Allowed range is" 
+				 & to_string (type_signal_width'first) & " .."
+				 & to_string (type_signal_width'last),
+				 console => true);
+			raise constraint_error;
+		end if;
+	end validate_signal_width;
+
+	procedure validate_restring_width (restring_width : in type_distance) is
+	-- Checks whether the given restring width is in range of type_restring_width.	
+	begin
+		if restring_width not in type_restring_width then
+			log_indentation_reset;
+			log (message_error & "restring width invalid ! Allowed range is" 
+				 & to_string (type_restring_width'first) & " .."
+				 & to_string (type_restring_width'last),
+				 console => true);
+			raise constraint_error;
+		end if;
+	end validate_restring_width;
 	
 	
 	function text_properties (text : in type_text) return string is

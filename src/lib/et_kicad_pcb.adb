@@ -56,6 +56,7 @@ with ada.exceptions;
 
 with et_general;
 with et_libraries;
+with et_schematic;
 with et_pcb;
 with et_pcb_coordinates;
 with et_pcb_math;
@@ -2275,14 +2276,26 @@ package body et_kicad_pcb is
 
 
 		-- temporarily storage places
-		type type_net_class is record
-			name		: type_net_class_name.bounded_string;
-			description	: type_net_class_description.bounded_string;
-			clearance	: type_signal_clearance;
-			-- CS width		: 
+
+		-- NET CLASSES
+		-- KiCad keeps a list of net names which are in a certain net class.
+		package type_nets_of_class is new doubly_linked_lists (
+			element_type	=> et_schematic.type_net_name.bounded_string,
+			"="				=> et_schematic.type_net_name."=");
+
+		-- The net class type used here extends the basic net class by the list
+		-- of net names:
+		type type_net_class is new et_pcb.type_net_class with record
+			net_names : type_nets_of_class.list;
 		end record;
 
-		net_class : type_net_class;
+		-- Since there are lots of net classes, they are stored in a simple list:
+		package type_net_classes is new doubly_linked_lists (
+			element_type	=> type_net_class);
+
+		net_class_name 	: type_net_class_name.bounded_string;	-- PWR, HIGH_CURRENT, ...
+		net_class 		: type_net_class;
+		net_classes 	: type_net_classes.list;
 
 		-- When a line is fetched from the given list of lines, it is stored in variable
 		-- "current_line". CS: The line length is limited by line_length_max and should be increased
@@ -2691,7 +2704,7 @@ package body et_kicad_pcb is
 						when SEC_NET_CLASS =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => net_class.name := type_net_class_name.to_bounded_string (to_string (arg));
+								when 1 => net_class_name := type_net_class_name.to_bounded_string (to_string (arg));
 								when 2 => net_class.description := type_net_class_description.to_bounded_string (to_string (arg));
 								when others => too_many_arguments;
 							end case;

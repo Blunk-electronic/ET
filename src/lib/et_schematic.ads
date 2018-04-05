@@ -473,6 +473,7 @@ package et_schematic is
 	type type_net is record
 		scope 		: type_net_scope := type_net_scope'first; -- example "local"
 		strands		: type_strands.list;
+		-- CS class : et_pcb.type_net_class_name.bounded_string
 	end record;
 
 	-- Nets are collected in a map:
@@ -794,19 +795,20 @@ package et_schematic is
 		libraries		: type_full_library_names.list;	
 		-- The list of project library names in the order as defined in project file.
 		
-		strands	    	: type_strands.list;		-- the strands of the module
-		junctions		: type_junctions.list;		-- net junctions
-		nets 	    	: type_nets.map;			-- the nets of the module
-		components		: type_components.map;		-- the components of the module
-		no_connections	: type_no_connection_flags.list; -- the list of no-connection-flags
-		portlists		: type_portlists.map;		-- the portlists of the module
-		netlist			: type_netlist.map;			-- the netlist
-		submodules  	: type_gui_submodules.map;	-- graphical representations of submodules. -- GUI relevant
-        frames      	: type_frames.list;			-- frames -- GUI relevant
-        title_blocks	: type_title_blocks.list;	-- title blocks -- GUI relevant
-		notes       	: type_texts.list;			-- notes
+		strands	    	: type_strands.list;			-- the strands of the module
+		junctions		: type_junctions.list;			-- net junctions
+		nets 	    	: type_nets.map;				-- the nets of the module
+		components		: type_components.map;			-- the components of the module
+		net_classes		: et_pcb.type_net_classes.map;	-- the net classes
+		no_connections	: type_no_connection_flags.list;-- the list of no-connection-flags
+		portlists		: type_portlists.map;			-- the portlists of the module
+		netlist			: type_netlist.map;				-- the netlist
+		submodules  	: type_gui_submodules.map;		-- graphical representations of submodules. -- GUI relevant
+        frames      	: type_frames.list;				-- frames -- GUI relevant
+        title_blocks	: type_title_blocks.list;		-- title blocks -- GUI relevant
+		notes       	: type_texts.list;				-- notes
 
-		sheet_headers	: type_sheet_headers.map;	-- the list of sheet headers -- kicad requirement
+		sheet_headers	: type_sheet_headers.map;		-- the list of sheet headers -- kicad requirement
         -- CS: images
 	end record;
 

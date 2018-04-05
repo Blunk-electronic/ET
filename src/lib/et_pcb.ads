@@ -99,6 +99,8 @@ package et_pcb is
 	-- Checks whether given line width is in range of type_general_line_width
 
 
+	
+
 	drill_size_min : constant type_distance := 0.05;
 	drill_size_max : constant type_distance := 10.0;
 	subtype type_drill_size is type_distance range drill_size_min .. drill_size_max;
@@ -107,6 +109,8 @@ package et_pcb is
 	-- Checks whether given drill size is in range of type_drill_size
 
 
+
+	
 	pad_size_min : constant type_distance := 0.05;
 	pad_size_max : constant type_distance := 10.0;
 	subtype type_pad_size is type_distance range pad_size_min .. pad_size_max;
@@ -116,14 +120,6 @@ package et_pcb is
 
 
 	
-	-- NET CLASSES
-	net_class_name_length_max : constant positive := 50;
-	package type_net_class_name is new generic_bounded_length (net_class_name_length_max);
-
-	net_class_description_length_max : constant positive := 100;
-	package type_net_class_description is new generic_bounded_length (net_class_description_length_max);
-	
-
 	
 	-- COPPER STRUCTURES GENERAL
 	copper_structure_size_min : constant type_distance := 0.05;
@@ -137,10 +133,46 @@ package et_pcb is
 	procedure validate_signal_clearance (signal_clearance : in type_distance);
 	-- Checks whether the given signal clearance is in range of type_signal_clearance.
 
+	signal_width_max : constant type_distance := 100.0;
+	subtype type_signal_width is type_distance range copper_clearance_min .. signal_width_max;
+
+	procedure validate_signal_width (signal_width : in type_distance);
+	-- Checks whether the given signal width is in range of type_signal_width.
 
 
-	--track_width_min : constant type_distance := copper_structure_size_min;
+	-- RESTRING
+	restring_width_max : constant type_distance := 5.0;
+	subtype type_restring_width is type_distance range copper_structure_size_min .. restring_width_max;
 
+	procedure validate_restring_width (restring_width : in type_distance);
+	-- Checks whether the given restring width is in range of type_restring_width.
+
+
+	
+
+	-- NET CLASSES
+	net_class_name_length_max : constant positive := 50;
+	package type_net_class_name is new generic_bounded_length (net_class_name_length_max);
+
+	net_class_description_length_max : constant positive := 100;
+	package type_net_class_description is new generic_bounded_length (net_class_description_length_max);
+
+	type type_net_class is tagged record
+		description				: type_net_class_description.bounded_string;
+		clearance				: type_signal_clearance;
+		track_width_min			: type_signal_width;
+		via_drill_min			: type_drill_size;
+		via_restring_min		: type_restring_width;
+		micro_via_drill_min		: type_drill_size;
+		micro_via_restring_min	: type_restring_width;
+	end record;
+
+	package type_net_classes is new ordered_maps (
+		key_type		=> type_net_class_name.bounded_string,
+		element_type	=> type_net_class,
+		"<"				=> type_net_class_name."<"
+		);
+	
 
 	
 	-- TEXT IN GENERAL
