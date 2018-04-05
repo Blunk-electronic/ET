@@ -2289,13 +2289,18 @@ package body et_kicad_pcb is
 			net_names : type_nets_of_class.list;
 		end record;
 
-		-- Since there are lots of net classes, they are stored in a simple list:
-		package type_net_classes is new doubly_linked_lists (
+		-- Since there are lots of net classes, they are stored in a map:
+		package type_net_classes is new ordered_maps (
+			key_type		=> type_net_class_name.bounded_string;
 			element_type	=> type_net_class);
 
+		net_class_via_diameter			: et_pcb_coordinates.type_distance;
+		net_class_micro_via_diameter	: et_pcb_coordinates.type_distance;
+		net_class_via_restring			: et_pcb_coordinates.type_distance;		
+		
 		net_class_name 	: type_net_class_name.bounded_string;	-- PWR, HIGH_CURRENT, ...
 		net_class 		: type_net_class;
-		net_classes 	: type_net_classes.list;
+		net_classes 	: type_net_classes.map;
 
 		-- When a line is fetched from the given list of lines, it is stored in variable
 		-- "current_line". CS: The line length is limited by line_length_max and should be increased
@@ -2738,6 +2743,50 @@ package body et_kicad_pcb is
 								when 1 => 
 									validate_signal_width (to_distance (to_string (arg)));
 									net_class.signal_width_min := (to_distance (to_string (arg)));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_VIA_DIA =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									net_class_via_diameter := (to_distance (to_string (arg)));
+									-- validation takes place once the class section is read completely
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_VIA_DRILL =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									validate_drill_size (to_distance (to_string (arg)));
+									net_class.via_drill_min := (to_distance (to_string (arg)));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_UVIA_DIA =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									net_class_micro_via_diameter := (to_distance (to_string (arg)));
+									-- validation takes place once the class section is read completely
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_UVIA_DRILL =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									validate_drill_size (to_distance (to_string (arg)));
+									net_class.micro_via_drill_min := (to_distance (to_string (arg)));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_ADD_NET =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									net_class.net_names.append (et_schematic.to_net_name (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -3360,7 +3409,18 @@ package body et_kicad_pcb is
 
 		begin -- exec_section
 			log (process_section (section.name), log_threshold + 4);
--- 			case section.name is
+			case section.name is
+				when SEC_NET_CLASS =>
+					-- calculate validate restring for regular and micro vias
+					net_class_via_restring := (net_class_via_diameter - net_class.via_drill_min) / 2;
+					validate_restring_width (net_class_via_restring);
+					net_class.via_restring_min := net_class_via_restring;
+
+					net_class_via_restring := (net_class_micro_via_diameter - net_class.micro_via_drill_min) / 2;
+					validate_restring_width (net_class_via_restring);
+					net_class.micro_via_restring_min := net_class_via_restring;
+
+-- 					net_classes.append (net_class);
 -- 
 -- 				when SEC_TEDIT =>
 -- 					log ("timestamp " & string (timestamp), log_threshold + 1);
@@ -3653,8 +3713,8 @@ package body et_kicad_pcb is
 -- 						raise constraint_error;
 -- 					end if;
 -- 					
--- 				when others => null;
--- 			end case;
+				when others => null;
+			end case;
 
 			-- restore previous section from stack
 			section := sections_stack.pop;
