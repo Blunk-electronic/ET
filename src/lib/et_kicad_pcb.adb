@@ -2684,7 +2684,7 @@ package body et_kicad_pcb is
 						when SEC_PAGE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board.paper_size := et_schematic.to_paper_size (to_string (arg));
+								when 1 => board.paper_size := et_general.to_paper_size (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 

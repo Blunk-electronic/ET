@@ -53,6 +53,7 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
+with et_general;
 with et_coordinates;			use et_coordinates;
 with et_libraries;				use et_libraries;
 with et_string_processing;
@@ -115,13 +116,6 @@ package et_schematic is
 	function to_sheet_name_text_size (size : in string) return type_sheet_name_text_size;
 	-- Converts a string to type_sheet_name_text_size.
 
-	
--- PAPER SIZES
-    type type_paper_size is (A0, A1, A2, A4); -- CS: others ?
-    paper_size_default : type_paper_size := A4;
-
-	function to_paper_size (paper_size : in string) return type_paper_size;
-	-- converts a string to type_paper_size
 	
 -- COORDINATES
    
@@ -546,7 +540,7 @@ package et_schematic is
     -- the final drawing frame
     type type_frame is record
         coordinates     : type_coordinates; -- the position of the frame
-        paper_size      : type_paper_size; -- the size of the paper
+        paper_size      : et_general.type_paper_size; -- the size of the paper
         size_x, size_y  : type_distance; -- the dimensions of the frame (should fit into paper_size) 
         lines           : type_frame_lines.list;
         texts           : type_frame_texts.list;

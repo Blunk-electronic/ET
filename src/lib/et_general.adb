@@ -81,6 +81,12 @@ package body et_general is
 	end directory_entries;
 
 
+	function to_paper_size (paper_size : in string) return type_paper_size is
+	-- converts a string to type_paper_size
+	begin
+		return type_paper_size'value (paper_size);
+	end to_paper_size;
+	
 
 	
 	-- GENERICS

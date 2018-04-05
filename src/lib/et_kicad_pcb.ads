@@ -51,7 +51,7 @@ with ada.containers.ordered_sets;
 
 with et_string_processing;
 with et_libraries;
-with et_schematic;
+with et_general;
 with et_pcb;
 
 package et_kicad_pcb is
@@ -112,7 +112,7 @@ package et_kicad_pcb is
 
 	
 	type type_board is record
-		paper_size : et_schematic.type_paper_size;
+		paper_size : et_general.type_paper_size;
 	end record;
 
 	procedure read_board (

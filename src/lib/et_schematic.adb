@@ -85,12 +85,6 @@ package body et_schematic is
 		return type_sheet_name_text_size'value (size);
 	end to_sheet_name_text_size;
 
-	function to_paper_size (paper_size : in string) return type_paper_size is
-	-- converts a string to type_paper_size
-	begin
-		return type_paper_size'value (paper_size);
-	end to_paper_size;
-	
 	-- Here we append a submodule name to the path_to_submodule.
 	-- CS: unify with procedure delete_last_module_name_from_path
 	procedure append_name_of_parent_module_to_path (submodule : in et_coordinates.type_submodule_name.bounded_string) is
