@@ -99,7 +99,14 @@ package et_kicad_pcb is
 -- 		log_threshold	: in et_string_processing.type_log_level)
 -- 		return et_pcb.type_package;
 
-	
+
+	type type_attribute is (
+		SMD,
+		THT,
+		VIRTUAL	-- for things that do not have a package (ISA-Board edge connectors, ...)
+		);
+
+
 	procedure read_libraries (
 	-- Reads package libraries. Root directory is et_libraries.lib_dir.
 	-- The libraries in the container are named after the libraries found in lib_dir.

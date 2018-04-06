@@ -239,11 +239,11 @@ package body et_kicad_pcb is
 		description	: type_package_description.bounded_string; -- temp. storage of package description
 		tags 		: type_package_tags.bounded_string; -- temp. storage of package keywords
 
-		type type_attribute is (
-			SMD,
-			THT,
-			VIRTUAL	-- for things that do not have a package (ISA-Board edge connectors, ...)
-			);
+-- 		type type_attribute is (
+-- 			SMD,
+-- 			THT,
+-- 			VIRTUAL	-- for things that do not have a package (ISA-Board edge connectors, ...)
+-- 			);
 
 		-- The majority of terminals dictates the package technology. The default is THT.
 		package_technology : type_assembly_technology := THT;
