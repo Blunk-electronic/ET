@@ -2270,13 +2270,6 @@ package body et_kicad_pcb is
 
 
 		-- temporarily storage places
-		time_stamp	: type_timestamp; -- temporarily storage of package timestamp
-		time_edit	: type_timestamp; -- temporarily storage of package time of edit
-		description	: type_package_description.bounded_string; -- temp. storage of package description
-		tags 		: type_package_tags.bounded_string; -- temp. storage of package keywords
-
-
-
 		
 		-- NET CLASSES
 		-- KiCad keeps a list of net names which are in a certain net class.
@@ -2327,6 +2320,10 @@ package body et_kicad_pcb is
 		package_reference 	: et_libraries.type_component_reference;
 		package_value 		: et_libraries.type_component_value.bounded_string;
 
+		package_time_stamp	: type_timestamp; -- temporarily storage of package timestamp
+		package_time_edit	: type_timestamp; -- temporarily storage of package time of edit
+		package_description	: type_package_description.bounded_string; -- temp. storage of package description
+		package_tags 		: type_package_tags.bounded_string; -- temp. storage of package keywords
 		
 		
 		-- When a line is fetched from the given list of lines, it is stored in variable
@@ -2381,7 +2378,7 @@ package body et_kicad_pcb is
 			begin
 				log_indentation_reset;
 				log (message_error & "invalid subsection '" & to_string (section.name) 
-					 & "' in parent section '" & to_string (section.parent) & "' !", console => true);
+					 & "' in parent section '" & to_string (section.parent) & "' ! (read section)", console => true);
 				raise constraint_error;
 			end invalid_section;
 
@@ -2564,11 +2561,11 @@ package body et_kicad_pcb is
 		
 			arg : type_argument.bounded_string; -- here the argument goes temporarily
 
--- 			procedure invalid_layer is begin
--- 				log_indentation_reset;
--- 				log (message_error & "invalid layer " & to_string (arg), console => true);
--- 				raise constraint_error;
--- 			end invalid_layer;
+			procedure invalid_layer is begin
+				log_indentation_reset;
+				log (message_error & "invalid layer " & to_string (arg), console => true);
+				raise constraint_error;
+			end invalid_layer;
 
 			procedure too_many_arguments is begin
 				log_indentation_reset;
@@ -2619,7 +2616,7 @@ package body et_kicad_pcb is
 			procedure invalid_section is begin
 				log_indentation_reset;
 				log (message_error & "invalid subsection '" & to_string (section.name) 
-					 & "' in parent section '" & to_string (section.parent) & "' !", console => true);
+					 & "' in parent section '" & to_string (section.parent) & "' ! (read argument)", console => true);
 				raise constraint_error;
 			end invalid_section;
 
@@ -2842,8 +2839,8 @@ package body et_kicad_pcb is
 								when 0 => null;
 								when 1 =>
 									-- CS check length
-									time_edit := type_timestamp (to_string (arg));
-									et_string_processing.check_timestamp (time_edit);
+									package_time_edit := type_timestamp (to_string (arg));
+									et_string_processing.check_timestamp (package_time_edit);
 								when others => too_many_arguments;
 							end case;
 
@@ -2852,11 +2849,29 @@ package body et_kicad_pcb is
 								when 0 => null;
 								when 1 =>
 									-- CS check length
-									time_stamp := type_timestamp (to_string (arg));
-									et_string_processing.check_timestamp (time_stamp);
+									package_time_stamp := type_timestamp (to_string (arg));
+									et_string_processing.check_timestamp (package_time_stamp);
 								when others => too_many_arguments;
 							end case;
 
+						when SEC_DESCR =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									package_description := type_package_description.to_bounded_string (to_string (arg));
+									-- CS check length and characters
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_TAGS =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 =>
+									package_tags := type_package_tags.to_bounded_string (to_string (arg));
+									-- CS check length and characters
+								when others => too_many_arguments;
+							end case;
+							
 						when SEC_AT =>
 							case section.arg_counter is
 								when 0 => null;
@@ -2933,6 +2948,23 @@ package body et_kicad_pcb is
 									
 								when others => too_many_arguments;
 							end case;
+
+						when SEC_PAD =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => null; -- CS pad name
+								when 2 => null; -- CS pad techno
+								when 3 => null; -- CS pad shape
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_MODEL =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => null; -- CS path to 3d model
+								when others => too_many_arguments;
+							end case;
+
 							
 						when others => invalid_section;
 					end case;
@@ -2953,44 +2985,35 @@ package body et_kicad_pcb is
 									package_text.angle := to_angle (to_string (arg));
 								when others => too_many_arguments;
 							end case;
-							
-						when others => invalid_section;
+
+						when SEC_LAYER =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									if to_string (arg) = layer_top_silk_screen then
+										package_text.layer := TOP_SILK;
+									elsif to_string (arg) = layer_bot_silk_screen then
+										package_text.layer := BOT_SILK;
+									elsif to_string (arg) = layer_top_assy_doc then
+										package_text.layer := TOP_ASSY;
+									elsif to_string (arg) = layer_bot_assy_doc then
+										package_text.layer := BOT_ASSY;
+									elsif to_string (arg) = layer_top_keepout then
+										package_text.layer := TOP_KEEP;
+									elsif to_string (arg) = layer_bot_keepout then
+										package_text.layer := BOT_KEEP;
+									else
+										invalid_layer; -- CS copper layers ?
+									end if;
+
+								when others => too_many_arguments;
+							end case;
+
+						when others => null;
 					end case;
 
+				-- CS when SEC_EFFECTS =>
 					
--- 					
--- 				when SEC_DESCR =>
--- 					case section.parent is
--- 						when SEC_MODULE =>
--- 							case section.arg_counter is
--- 								when 0 => null;
--- 								when 1 =>
--- 									-- CS check length
--- 									description := type_package_description.to_bounded_string (to_string (arg));
--- 									-- CS check description
--- 								when others => 
--- 									too_many_arguments;
--- 							end case;
--- 
--- 						when others => invalid_section;
--- 					end case;
--- 					
--- 				when SEC_TAGS =>
--- 					case section.parent is
--- 						when SEC_MODULE =>
--- 							case section.arg_counter is
--- 								when 0 => null;
--- 								when 1 =>
--- 									-- CS check length
--- 									tags := type_package_tags.to_bounded_string (to_string (arg));
--- 									-- CS check tags
--- 								when others => 
--- 									too_many_arguments;
--- 							end case;
--- 
--- 						when others => invalid_section;
--- 					end case;
--- 					
 -- 				when SEC_CENTER =>
 -- 					case section.parent is
 -- 						when SEC_FP_CIRCLE =>
@@ -3086,40 +3109,6 @@ package body et_kicad_pcb is
 -- 					
 -- 				when SEC_LAYER =>
 -- 					case section.parent is
--- 						when SEC_MODULE =>
--- 							case section.arg_counter is
--- 								when 0 => null;
--- 								when 1 => 
--- 									if to_string (arg) = layer_bot_copper then
--- 										invalid_component_assembly_face;
--- 									elsif to_string (arg) /= layer_top_copper then
--- 										invalid_layer;
--- 									end if;
--- 								when others => too_many_arguments;
--- 							end case;
--- 									
--- 						when SEC_FP_TEXT =>
--- 							case section.arg_counter is
--- 								when 0 => null;
--- 								when 1 => 
--- 									if to_string (arg) = layer_top_silk_screen then
--- 										text.layer := TOP_SILK;
--- 									elsif to_string (arg) = layer_bot_silk_screen then
--- 										text.layer := BOT_SILK;
--- 									elsif to_string (arg) = layer_top_assy_doc then
--- 										text.layer := TOP_ASSY;
--- 									elsif to_string (arg) = layer_bot_assy_doc then
--- 										text.layer := BOT_ASSY;
--- 									elsif to_string (arg) = layer_top_keepout then
--- 										text.layer := TOP_KEEP;
--- 									elsif to_string (arg) = layer_bot_keepout then
--- 										text.layer := BOT_KEEP;
--- 									else
--- 										invalid_layer; -- CS copper layers ?
--- 									end if;
--- 
--- 								when others => too_many_arguments;
--- 							end case;
 -- 
 -- 						when SEC_FP_LINE =>
 -- 							case section.arg_counter is
@@ -3384,11 +3373,6 @@ package body et_kicad_pcb is
 -- 						when others => invalid_section;
 -- 					end case;
 -- 					
--- 				when SEC_EFFECTS =>
--- 					case section.parent is
--- 						when SEC_FP_TEXT => null; -- CS currently no direct (non-wrapped) arguments follow
--- 						when others => invalid_section;
--- 					end case;
 -- 
 -- 				when SEC_FONT =>
 -- 					case section.parent is
