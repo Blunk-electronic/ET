@@ -379,6 +379,8 @@ package et_libraries is
 	function to_string (value : in type_component_value.bounded_string) return string;
 	-- Returns the given value as string.
 
+	function to_value (value : in string) return type_component_value.bounded_string;
+	
 	procedure check_value_length (value : in string);
 	-- Tests if the given value is longer than allowed.
 	

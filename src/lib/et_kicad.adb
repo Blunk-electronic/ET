@@ -1280,7 +1280,7 @@ package body et_kicad is
 					when VALUE =>
 						check_value_length (content (text));
 						check_value_characters (
-							value => type_component_value.to_bounded_string (content (text)),
+							value => to_value (content (text)),
 							characters => component_value_characters);
 					
 					when BOM =>
@@ -1597,7 +1597,7 @@ package body et_kicad is
 														allow_special_character_in_prefix => true)), -- because of the '#'
 
 								prefix			=> tmp_prefix,
-								value			=> type_component_value.to_bounded_string (content (field_value)),
+								value			=> to_value (content (field_value)),
 								commissioned	=> type_component_date (content (field_commissioned)),
 								updated			=> type_component_date (content (field_updated)),
 								author			=> type_person_name.to_bounded_string (content (field_author)),
@@ -1617,7 +1617,7 @@ package body et_kicad is
 							new_item	=> (
 								appearance		=> sch_pcb,
 								prefix			=> tmp_prefix,
-								value			=> type_component_value.to_bounded_string (content (field_value)),
+								value			=> to_value (content (field_value)),
 								commissioned	=> type_component_date (content (field_commissioned)),
 								updated			=> type_component_date (content (field_updated)),
 								author			=> type_person_name.to_bounded_string (content (field_author)),
@@ -5165,7 +5165,7 @@ package body et_kicad is
 						validate_component_value (
 														 
 							-- the content of the value field like 200R or 10u
-							value => type_component_value.to_bounded_string (content (field_value)), 
+							value => to_value (content (field_value)), 
 								
 							-- the component reference such as R4 or IC34
 							reference => reference,
@@ -5278,7 +5278,7 @@ package body et_kicad is
 										position => 2)), -- the block after the colon
 
 									-- the content of the value field like 200R or 10u
-									value => type_component_value.to_bounded_string (content (field_value)),
+									value => to_value (content (field_value)),
 
 									-- the BOM status
 									bom => type_bom'value (content (field_bom)),
@@ -5515,7 +5515,7 @@ package body et_kicad is
 									library_name	=> full_component_library_name, -- ../lbr/bel_logic.lib
 									generic_name	=> generic_name_in_lbr,
 									
-									value 			=> type_component_value.to_bounded_string (content (field_value)),
+									value 			=> to_value (content (field_value)),
 									commissioned 	=> type_date (et_libraries.content (field_commissioned)),
 									updated 		=> type_date (et_libraries.content (field_updated)),
 									author 			=> type_person_name.to_bounded_string (content (field_author)),
@@ -5534,7 +5534,7 @@ package body et_kicad is
 									library_name	=> full_component_library_name, -- ../lbr/bel_logic.lib
 									generic_name	=> generic_name_in_lbr,
 									
-									value			=> type_component_value.to_bounded_string (content (field_value)),
+									value			=> to_value (content (field_value)),
 									commissioned	=> type_date (content (field_commissioned)),
 									updated			=> type_date (content (field_updated)),
 									author			=> type_person_name.to_bounded_string (content (field_author)),
@@ -5982,7 +5982,7 @@ package body et_kicad is
 								field_value := to_field;
 								check_value_length (content (field_value));
 								check_value_characters (
-									value => type_component_value.to_bounded_string (content (field_value)),
+									value => to_value (content (field_value)),
 									characters => component_value_characters);
 								
 							when component_field_package =>

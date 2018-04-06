@@ -251,13 +251,13 @@ package body et_kicad_pcb is
 		-- By default a package is something real (with x,y,z dimension)
 		package_appearance : type_package_appearance := REAL;
 
-		-- For the package import we need a special set of layers. 
-		type type_layer is (
-			TOP_COPPER, BOT_COPPER,
-			TOP_SILK, BOT_SILK,
-			TOP_ASSY, BOT_ASSY, -- in kicad this is the fab layer
-			TOP_KEEP, BOT_KEEP -- in kicad this is the crtyrd layer
-			);
+-- 		-- For the package import we need a special set of layers. 
+-- 		type type_layer is (
+-- 			TOP_COPPER, BOT_COPPER,
+-- 			TOP_SILK, BOT_SILK,
+-- 			TOP_ASSY, BOT_ASSY, -- in kicad this is the fab layer
+-- 			TOP_KEEP, BOT_KEEP -- in kicad this is the crtyrd layer
+-- 			);
 
 	-- LINES, ARCS, CIRCLES
 		-- Temporarily we need special types for lines, arcs and circles for the import. 
@@ -333,14 +333,7 @@ package body et_kicad_pcb is
 
 
 	-- TEXTS
-		-- Temporarily this text is required to handle texts in silk screen, assembly doc, ...
-		-- When inserting the text in the final package, it is decomposed again.
-		type type_text is new et_pcb.type_text with record
-			content	: et_libraries.type_text_content.bounded_string;
-			layer	: type_layer;
-			meaning	: type_fp_text_meaning;
-		end record;
-		text : type_text;
+		text : type_package_text;
 
 		-- Temporarily text placeholders for reference and value are required. 
 		placeholder : type_package_text_placeholder;
@@ -2282,6 +2275,8 @@ package body et_kicad_pcb is
 		description	: type_package_description.bounded_string; -- temp. storage of package description
 		tags 		: type_package_tags.bounded_string; -- temp. storage of package keywords
 
+
+
 		
 		-- NET CLASSES
 		-- KiCad keeps a list of net names which are in a certain net class.
@@ -2321,6 +2316,18 @@ package body et_kicad_pcb is
 		package_position		: et_pcb_coordinates.type_point_3d;
 		package_angle			: et_pcb_coordinates.type_angle; -- in degrees like 45.7
 		package_path			: et_schematic.type_path_to_package; -- the link to the symbol in the schematic like 59F208B2
+
+		-- The majority of terminals dictates the package technology. The default is THT.
+		package_technology : type_assembly_technology := THT;
+
+		-- By default a package is something real (with x,y,z dimension)
+		package_appearance : type_package_appearance := REAL;
+
+		package_text 		: type_package_text;
+		package_reference 	: et_libraries.type_component_reference;
+		package_value 		: et_libraries.type_component_value.bounded_string;
+
+		
 		
 		-- When a line is fetched from the given list of lines, it is stored in variable
 		-- "current_line". CS: The line length is limited by line_length_max and should be increased
@@ -2570,15 +2577,15 @@ package body et_kicad_pcb is
 				raise constraint_error;
 			end too_many_arguments;
 
--- 			procedure invalid_fp_text_keyword is begin
--- 				log_indentation_reset;
--- 				log (message_error & "expect keyword '" & keyword_fp_text_reference 
--- 					 & "' or '" & keyword_fp_text_value 
--- 					 & "' or '" & keyword_fp_text_user
--- 					 & "' ! found '" & to_string (arg) & "'", console => true);
--- 				raise constraint_error;
--- 			end invalid_fp_text_keyword;
--- 
+			procedure invalid_fp_text_keyword is begin
+				log_indentation_reset;
+				log (message_error & "expect keyword '" & keyword_fp_text_reference 
+					 & "' or '" & keyword_fp_text_value 
+					 & "' or '" & keyword_fp_text_user
+					 & "' ! found '" & to_string (arg) & "'", console => true);
+				raise constraint_error;
+			end invalid_fp_text_keyword;
+
 -- 			procedure invalid_placeholder_reference is begin
 -- 				log_indentation_reset;
 -- 				log (message_error & "expect reference placeholder '" & placeholder_reference & "' !"
@@ -2601,13 +2608,13 @@ package body et_kicad_pcb is
 -- 					 & " found '" & to_string (arg) & "'", console => true);
 -- 				raise constraint_error;
 -- 			end invalid_package_name;
--- 
--- 			procedure invalid_attribute is
--- 			begin
--- 				log_indentation_reset;
--- 				log (message_error & "invalid attribute !", console => true);
--- 				raise constraint_error;
--- 			end invalid_attribute;
+
+			procedure invalid_attribute is
+			begin
+				log_indentation_reset;
+				log (message_error & "invalid attribute !", console => true);
+				raise constraint_error;
+			end invalid_attribute;
 
 			procedure invalid_section is begin
 				log_indentation_reset;
@@ -2873,6 +2880,59 @@ package body et_kicad_pcb is
 								when others => too_many_arguments;
 							end case;
 
+						when SEC_ATTR =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 =>
+									-- CS check length
+									if to_string (arg) = attribute_technology_smd then
+										package_technology := SMT; -- overwrite default (see declarations)
+									elsif to_string (arg) = attribute_technology_virtual then
+										package_appearance := VIRTUAL;  -- overwrite default (see declarations)
+									else
+										invalid_attribute;
+									end if;
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_FP_TEXT =>
+							package_text.hidden := false; -- "hide" flag is optionally provided as last argument. if not, default to false
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									if to_string (arg) = keyword_fp_text_reference then
+										package_text.meaning := REFERENCE;
+									elsif to_string (arg) = keyword_fp_text_value then
+										package_text.meaning := VALUE;
+									elsif to_string (arg) = keyword_fp_text_user then
+										package_text.meaning := USER;
+									else
+										invalid_fp_text_keyword;
+									end if;
+									
+								when 2 => 
+									case package_text.meaning is
+										when REFERENCE => 
+											package_reference := et_schematic.to_component_reference (to_string (arg));
+
+										when VALUE =>
+											check_value_length (to_string (arg));
+											package_value := et_libraries.to_value (to_string (arg));
+											check_value_characters (package_value);
+											
+										when USER =>
+											-- CS length check
+											package_text.content := to_bounded_string (to_string (arg));
+											-- CS character check
+									end case;
+									
+								when 3 => 
+									if to_string (arg) = keyword_fp_text_hide then
+										package_text.hidden := true;
+									end if;
+									
+								when others => too_many_arguments;
+							end case;
 							
 						when others => invalid_section;
 					end case;
@@ -2909,73 +2969,6 @@ package body et_kicad_pcb is
 -- 						when others => invalid_section;
 -- 					end case;
 -- 					
--- 				when SEC_ATTR =>
--- 					case section.parent is
--- 						when SEC_MODULE =>
--- 							case section.arg_counter is
--- 								when 0 => null;
--- 								when 1 =>
--- 									-- CS check length
--- 									if to_string (arg) = attribute_technology_smd then
--- 										package_technology := SMT; -- overwrite default (see declarations)
--- 									elsif to_string (arg) = attribute_technology_virtual then
--- 										package_appearance := VIRTUAL;  -- overwrite default (see declarations)
--- 									else
--- 										invalid_attribute;
--- 									end if;
--- 								when others => 
--- 									too_many_arguments;
--- 							end case;
--- 
--- 						when others => invalid_section;
--- 					end case;
--- 							
--- 				when SEC_FP_TEXT =>
--- 					case section.parent is
--- 						when SEC_MODULE =>
--- 							text.hidden := false; -- "hide" flag is optionally provided as last argument. if not, default to false
--- 							case section.arg_counter is
--- 								when 0 => null;
--- 								when 1 => 
--- 									if to_string (arg) = keyword_fp_text_reference then
--- 										text.meaning := REFERENCE;
--- 									elsif to_string (arg) = keyword_fp_text_value then
--- 										text.meaning := VALUE;
--- 									elsif to_string (arg) = keyword_fp_text_user then
--- 										text.meaning := USER;
--- 									else
--- 										invalid_fp_text_keyword;
--- 									end if;
--- 									
--- 								when 2 => 
--- 									case text.meaning is
--- 										when REFERENCE => 
--- 											if to_string (arg) /= placeholder_reference then
--- 												invalid_placeholder_reference;
--- 											end if;
--- 
--- 										when VALUE =>
--- 											if to_string (arg) /= to_string (package_name) then
--- 												invalid_placeholder_value;
--- 											end if;
--- 
--- 										when USER =>
--- 											-- CS length check
--- 											text.content := to_bounded_string (to_string (arg));
--- 											-- CS character check
--- 									end case;
--- 									
--- 								when 3 => 
--- 									if to_string (arg) = keyword_fp_text_hide then
--- 										text.hidden := true;
--- 									end if;
--- 									
--- 								when others => too_many_arguments;
--- 							end case;
--- 
--- 						when others => invalid_section;
--- 					end case;
--- 
 -- 				when SEC_CENTER =>
 -- 					case section.parent is
 -- 						when SEC_FP_CIRCLE =>

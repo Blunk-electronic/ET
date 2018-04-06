@@ -757,15 +757,20 @@ package body et_libraries is
 		c : type_text_content.bounded_string;
 	begin
 		c := text.content;
-		return type_text_content.to_string(c);
+		return type_text_content.to_string (c);
 	end content;
 
 	function to_string (value : in type_component_value.bounded_string) return string is
 	-- Returns the given value as string.
 	begin
-		return type_component_value.to_string(value);
+		return type_component_value.to_string (value);
 	end to_string;
 
+	function to_value (value : in string) return type_component_value.bounded_string is
+	begin
+		return type_component_value.to_bounded_string (value);
+	end to_value;
+	
 	procedure check_value_length (value : in string) is
 	-- Tests if the given value is longer than allowed.
 		use et_string_processing;

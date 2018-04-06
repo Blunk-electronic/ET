@@ -100,11 +100,22 @@ package et_kicad_pcb is
 -- 		return et_pcb.type_package;
 
 
-	type type_attribute is (
-		SMD,
-		THT,
-		VIRTUAL	-- for things that do not have a package (ISA-Board edge connectors, ...)
+	-- For the package import we need a special set of layers. 
+	type type_layer is (
+		TOP_COPPER, BOT_COPPER,
+		TOP_SILK, BOT_SILK,
+		TOP_ASSY, BOT_ASSY, -- in kicad this is the fab layer
+		TOP_KEEP, BOT_KEEP -- in kicad this is the crtyrd layer
 		);
+
+	-- Temporarily this type is required to handle texts in silk screen, assembly doc, ...
+	-- When inserting the text in the final package, it is decomposed again.
+	type type_package_text is new et_pcb.type_text with record
+		content	: et_libraries.type_text_content.bounded_string;
+		layer	: type_layer;
+		meaning	: type_fp_text_meaning;
+	end record;
+
 
 
 	procedure read_libraries (
