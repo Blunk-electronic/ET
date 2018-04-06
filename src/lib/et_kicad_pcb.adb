@@ -2936,6 +2936,28 @@ package body et_kicad_pcb is
 							
 						when others => invalid_section;
 					end case;
+
+				-- parent section
+				when SEC_FP_TEXT =>
+					case section.name is
+						when SEC_AT =>
+							package_text.angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									set_point (axis => X, point => package_text.position, value => to_distance (to_string (arg)));
+								when 2 => 
+									set_point (axis => Y, point => package_text.position, value => to_distance (to_string (arg)));
+									set_point (axis => Z, point => package_text.position, value => zero_distance);
+								when 3 => 
+									package_text.angle := to_angle (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+							
+						when others => invalid_section;
+					end case;
+
+					
 -- 					
 -- 				when SEC_DESCR =>
 -- 					case section.parent is
