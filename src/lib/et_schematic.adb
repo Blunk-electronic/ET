@@ -565,9 +565,9 @@ package body et_schematic is
 			 & to_lower (type_alternative_representation'image (type_units.element (unit).alt_repres)),
 			 log_threshold);
 
-		-- timestamp
-		log ("timestamp " 
-			& string (type_units.element (unit).timestamp), log_threshold);
+		-- path to package
+		log ("path to package " 
+			& string (type_units.element (unit).path_to_package), log_threshold);
 
 		-- position
 		log (to_string (position => type_units.element (unit).position), log_threshold);

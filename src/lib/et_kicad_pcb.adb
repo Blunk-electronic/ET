@@ -2315,10 +2315,13 @@ package body et_kicad_pcb is
 
 
 		-- PACKAGES
-		package_name : et_libraries.type_component_package_name.bounded_string;
-		library_name : et_libraries.type_library_name.bounded_string;
-		assembly_face : et_pcb_coordinates.type_face;
-
+		package_name 			: et_libraries.type_component_package_name.bounded_string;
+		package_library_name	: et_libraries.type_library_name.bounded_string;
+		package_assembly_face	: et_pcb_coordinates.type_face;
+		package_position		: et_pcb_coordinates.type_point_3d;
+		package_angle			: et_pcb_coordinates.type_angle; -- in degrees like 45.7
+		package_path			: et_schematic.type_path_to_package; -- the link to the symbol in the schematic like 59F208B2
+		
 		-- When a line is fetched from the given list of lines, it is stored in variable
 		-- "current_line". CS: The line length is limited by line_length_max and should be increased
 		-- if neccessary. 
@@ -2735,7 +2738,7 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => -- break down something like bel_ic:S_SO14 into package and lib name
-									library_name := et_kicad.library_name (to_string (arg));
+									package_library_name := et_kicad.library_name (to_string (arg));
 									package_name := et_kicad.package_name (to_string (arg));
 									-- CS make sure library and package exist
 								when others => too_many_arguments;
@@ -2820,9 +2823,9 @@ package body et_kicad_pcb is
 								when 0 => null;
 								when 1 =>
 									if to_string (arg) = layer_bot_copper then
-										assembly_face := BOTTOM;
+										package_assembly_face := BOTTOM;
 									elsif to_string (arg) /= layer_top_copper then
-										assembly_face := TOP;
+										package_assembly_face := TOP;
 									end if;
 								when others => too_many_arguments;
 							end case;
@@ -2847,7 +2850,29 @@ package body et_kicad_pcb is
 								when others => too_many_arguments;
 							end case;
 
-						-- CS when SEC_AT
+						when SEC_AT =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 =>
+									set_point (axis => X, point => package_position, value => to_distance (to_string (arg)));
+								when 2 =>
+									set_point (axis => Y, point => package_position, value => to_distance (to_string (arg)));
+									set_point (axis => Z, point => package_position, value => zero_distance);
+								when 3 =>
+									package_angle := to_angle (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_PATH =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 =>
+									-- the path is given like this /59F207B1. The forward slash must be removed:
+									package_path := et_schematic.type_path_to_package (
+										to_string (arg)(2..package_path'length + 1));
+								when others => too_many_arguments;
+							end case;
+
 							
 						when others => invalid_section;
 					end case;

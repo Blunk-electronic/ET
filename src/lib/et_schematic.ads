@@ -193,23 +193,28 @@ package et_schematic is
 	-- In a schematic we handle only virtual components (like GND symbols)
 	-- and those which appear in both schematic an layout (so called real compoenents):
 	subtype type_appearance_schematic is type_component_appearance range sch .. sch_pcb;
+
+	-- KiCad uses an 8 digit string like 59969508 to link a unit from schematic to package (in board file).
+	-- Other CAE systmes might use this approach too. If longer strings or variying lenght is used,
+	-- the type should become a bounded string or whatsoever:
+	type type_path_to_package is new string (1..8);
 	
 	-- In a schematic we find units spread all over.
 	-- A unit is a subsection of a component.
 	-- A unit has placeholders for text like reference (like IC303), value (like 7400), ...
 	-- Some placeholders are available when the component appears in both schematic and layout.
 	type type_unit (appearance : type_appearance_schematic) is record
-		position	: et_coordinates.type_coordinates;
-		orientation	: et_coordinates.type_angle;
-		mirror		: type_mirror;
-		timestamp	: et_string_processing.type_timestamp;
-		name		: et_libraries.type_unit_name.bounded_string;
-		alt_repres	: type_alternative_representation;
-		reference	: et_libraries.type_text_placeholder (meaning => et_libraries.reference);
-		value		: et_libraries.type_text_placeholder (meaning => et_libraries.value);
-		commissioned: et_libraries.type_text_placeholder (meaning => et_libraries.commissioned);		
-		updated		: et_libraries.type_text_placeholder (meaning => et_libraries.updated);		
-		author		: et_libraries.type_text_placeholder (meaning => et_libraries.author);
+		position		: et_coordinates.type_coordinates;
+		orientation		: et_coordinates.type_angle;
+		mirror			: type_mirror;
+		path_to_package	: type_path_to_package;
+		name			: et_libraries.type_unit_name.bounded_string;
+		alt_repres		: type_alternative_representation;
+		reference		: et_libraries.type_text_placeholder (meaning => et_libraries.reference);
+		value			: et_libraries.type_text_placeholder (meaning => et_libraries.value);
+		commissioned	: et_libraries.type_text_placeholder (meaning => et_libraries.commissioned);		
+		updated			: et_libraries.type_text_placeholder (meaning => et_libraries.updated);		
+		author			: et_libraries.type_text_placeholder (meaning => et_libraries.author);
 		case appearance is
 			when sch => null; -- CS
 			when sch_pcb =>

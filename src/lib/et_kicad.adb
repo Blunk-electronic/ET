@@ -4990,8 +4990,8 @@ package body et_kicad is
 			-- The component section looks like this example:
 			
 			-- L 74LS00 U1		-- component specific
-			-- U 4 1 5965E676	-- unit specific
-			-- P 4100 4000		-- unit specific
+			-- U 4 1 5965E676	-- unit 1 of 4, link to package in board file
+			-- P 4100 4000		-- unit position x/y
 			-- F 0 "U1" H 4100 4050 50  0000 C CNN		-- text fields
 			-- F 1 "74LS00" H 4100 3900 50  0000 C CNN	
 			-- F 2 "bel_ic:S_SO14" H 4100 4000 50  0001 C CNN
@@ -5023,7 +5023,7 @@ package body et_kicad is
 				position					: et_coordinates.type_coordinates;
 				orientation					: et_coordinates.type_angle;
 				mirror						: type_mirror;
-				timestamp					: type_timestamp;
+				path_to_package				: type_path_to_package; -- 59F202F2
 				alternative_representation	: et_schematic.type_alternative_representation;
 			
 				-- These are the "field found flags". They signal if a particular text field has been found.
@@ -5613,7 +5613,7 @@ package body et_kicad is
 									orientation		=> orientation,
 									mirror			=> mirror,
 									name			=> unit_name,
-									timestamp		=> timestamp,
+									path_to_package	=> path_to_package,
 									alt_repres		=> alternative_representation,
 
 									-- placeholders:
@@ -5643,7 +5643,7 @@ package body et_kicad is
 									orientation		=> orientation,
 									mirror			=> mirror,
 									name			=> unit_name,
-									timestamp		=> timestamp,
+									path_to_package	=> path_to_package,
 									alt_repres		=> alternative_representation,
 
 									-- placeholders:
@@ -5924,7 +5924,8 @@ package body et_kicad is
 						-- CS: check proper annotation
 
 					-- read line like "U 2 1 4543D4D3F" 
-					-- U is the line indicator, 2 is the unit id, 1 is the demorgan flag, last field is the timestamp
+					-- U is the line indicator, 2 is the unit id, 1 is the demorgan flag.
+					-- Last field is the link to the package in the board file.
 					elsif field (et_kicad.line,1) = schematic_component_identifier_unit then -- "U"
 
 						-- KiCad uses positive numbers to identifiy units. But in general a unit name can
@@ -5935,9 +5936,8 @@ package body et_kicad is
 						-- Read DeMorgan flag:
 						alternative_representation := to_alternative_representation (line => et_kicad.line, schematic => true);
 
-						-- Read and check the timestamp:
-						timestamp := type_timestamp (field (et_kicad.line,4));
-						et_string_processing.check_timestamp (timestamp);
+						-- Read and check the link to the board file:
+						path_to_package := type_path_to_package (field (et_kicad.line,4));
 
 					-- Read unit coordinates from a line like "P 3200 4500".
 					elsif field (et_kicad.line,1) = schematic_component_identifier_coord then -- "P"
