@@ -1279,9 +1279,7 @@ package body et_kicad is
 					
 					when VALUE =>
 						check_value_length (content (text));
-						check_value_characters (
-							value => to_value (content (text)),
-							characters => component_value_characters);
+						check_value_characters (to_value (content (text)));
 					
 					when BOM =>
 						-- NOTE: length check already included in check_bom_characters
@@ -5981,9 +5979,7 @@ package body et_kicad is
 								field_value_found := true;
 								field_value := to_field;
 								check_value_length (content (field_value));
-								check_value_characters (
-									value => to_value (content (field_value)),
-									characters => component_value_characters);
+								check_value_characters (to_value (content (field_value)));
 								
 							when component_field_package =>
 								field_package_found := true;

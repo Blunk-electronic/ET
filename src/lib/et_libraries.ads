@@ -386,7 +386,7 @@ package et_libraries is
 	
 	procedure check_value_characters (
 		value : in type_component_value.bounded_string;
-		characters : in character_set);
+		characters : in character_set := component_value_characters);
 	-- Tests if the given value contains only valid characters as specified
 	-- by given character set. Raises exception if invalid character found.
 	
