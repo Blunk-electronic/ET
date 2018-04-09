@@ -259,29 +259,29 @@ package body et_kicad_pcb is
 -- 			TOP_KEEP, BOT_KEEP -- in kicad this is the crtyrd layer
 -- 			);
 
-	-- LINES, ARCS, CIRCLES
-		-- Temporarily we need special types for lines, arcs and circles for the import. 
-		-- They are derived from the abstract anchestor types in et_pcb.ads.
-		-- Their additional components (width, layer, angle, ...) are later 
-		-- copied to the final lines, arcs and circles as specified in type_package:
-		type type_line is new et_pcb.type_line with record
-			width	: type_text_line_width;
-			layer	: type_layer;
-		end record;
+-- 	-- LINES, ARCS, CIRCLES
+-- 		-- Temporarily we need special types for lines, arcs and circles for the import. 
+-- 		-- They are derived from the abstract anchestor types in et_pcb.ads.
+-- 		-- Their additional components (width, layer, angle, ...) are later 
+-- 		-- copied to the final lines, arcs and circles as specified in type_package:
+-- 		type type_line is new et_pcb.type_line with record
+-- 			width	: type_text_line_width;
+-- 			layer	: type_layer;
+-- 		end record;
 		line : type_line;
 
-		type type_arc is new et_pcb.type_arc with record
-			width 	: type_text_line_width;
-			angle 	: et_pcb_coordinates.type_angle;
-			layer	: type_layer;
-		end record;
+-- 		type type_arc is new et_pcb.type_arc with record
+-- 			width 	: type_text_line_width;
+-- 			angle 	: et_pcb_coordinates.type_angle;
+-- 			layer	: type_layer;
+-- 		end record;
 		arc : type_arc;
 
-		type type_circle is new et_pcb.type_circle with record -- center and radius incl.
-			width 	: type_text_line_width;
-			point 	: et_pcb_coordinates.type_point_3d;
-			layer	: type_layer;
-		end record;
+-- 		type type_circle is new et_pcb.type_circle with record -- center and radius incl.
+-- 			width 	: type_text_line_width;
+-- 			point 	: et_pcb_coordinates.type_point_3d;
+-- 			layer	: type_layer;
+-- 		end record;
 		circle : type_circle;
 
 		
@@ -2110,8 +2110,8 @@ package body et_kicad_pcb is
 			SEC_AUX_AXIS_ORIGIN,
 			SEC_AT,
 			SEC_ATTR,
--- 			SEC_ANGLE,
--- 			SEC_CENTER,
+			SEC_ANGLE,
+			SEC_CENTER,
 			SEC_CLEARANCE,
 			SEC_DESCR,
 			SEC_DRAWINGS,
@@ -2122,8 +2122,8 @@ package body et_kicad_pcb is
 			SEC_END,
 			SEC_EXCLUDEEDGELAYER,
 			SEC_FONT,
--- 			SEC_FP_ARC,
--- 			SEC_FP_CIRCLE,
+			SEC_FP_ARC,
+			SEC_FP_CIRCLE,
 			SEC_FP_LINE,
 			SEC_FP_TEXT,
 			SEC_GENERAL,
@@ -2270,25 +2270,27 @@ package body et_kicad_pcb is
 
 
 		-- temporarily storage places
+		netlist_net_id 		: type_net_id;
+		netlist_net_name	: et_schematic.type_net_name.bounded_string;
 		
-		-- NET CLASSES
-		-- KiCad keeps a list of net names which are in a certain net class.
-		package type_nets_of_class is new doubly_linked_lists (
-			element_type	=> et_schematic.type_net_name.bounded_string,
-			"="				=> et_schematic.type_net_name."=");
-
-		-- The net class type used here extends the basic net class by the list
-		-- of net names:
-		type type_net_class is new et_pcb.type_net_class with record
-			net_names : type_nets_of_class.list;
-		end record;
-
-		-- Since there are lots of net classes, they are stored in a map:
-		package type_net_classes is new ordered_maps (
-			key_type		=> type_net_class_name.bounded_string,
-			element_type	=> type_net_class,
-			"<"				=> type_net_class_name."<"
-			);
+-- 		-- NET CLASSES
+-- 		-- KiCad keeps a list of net names which are in a certain net class.
+-- 		package type_nets_of_class is new doubly_linked_lists (
+-- 			element_type	=> et_schematic.type_net_name.bounded_string,
+-- 			"="				=> et_schematic.type_net_name."=");
+-- 
+-- 		-- The net class type used here extends the basic net class by the list
+-- 		-- of net names:
+-- 		type type_net_class is new et_pcb.type_net_class with record
+-- 			net_names : type_nets_of_class.list;
+-- 		end record;
+-- 
+-- 		-- Since there are lots of net classes, they are stored in a map:
+-- 		package type_net_classes is new ordered_maps (
+-- 			key_type		=> type_net_class_name.bounded_string,
+-- 			element_type	=> type_net_class,
+-- 			"<"				=> type_net_class_name."<"
+-- 			);
 
 		net_class_inserted : boolean := false;
 		net_class_cursor : type_net_classes.cursor;
@@ -2324,7 +2326,59 @@ package body et_kicad_pcb is
 		package_time_edit	: type_timestamp; -- temporarily storage of package time of edit
 		package_description	: type_package_description.bounded_string; -- temp. storage of package description
 		package_tags 		: type_package_tags.bounded_string; -- temp. storage of package keywords
+
+		package_line 		: type_line;
+		package_arc			: type_arc;
+		package_circle 		: type_circle;
+
+	-- TERMINALS
+		-- Temporarily we need lots of variables for terminal properties.
+		-- Later when the final terminals are assigned to the package, these variables
+		-- compose the final terminal.
+		terminal_name 		: et_libraries.type_terminal_name.bounded_string;
+		terminal_technology	: type_assembly_technology;
+		terminal_shape_tht 	: type_terminal_shape_tht;
+		terminal_shape_smt 	: type_terminal_shape_smt;
+
+		terminal_face 		: et_pcb_coordinates.type_face;
+		-- CS use subtypes for reasonable sizes below:
+		terminal_drill_size	: type_drill_size; 
+		terminal_position	: et_pcb_coordinates.type_point_3d;
+		terminal_size_x 	: type_pad_size;
+		terminal_size_y 	: type_pad_size;		
+		terminal_angle 		: et_pcb_coordinates.type_angle;
+
+		terminal_net_name	: et_schematic.type_net_name.bounded_string;
+		terminal_net_id		: type_net_id_terminal;
+	
+-- 		terminal_copper_width_outer_layers : et_pcb_coordinates.type_distance;
+		terminal_copper_width_inner_layers : et_pcb_coordinates.type_distance := 1.0; -- CS load from DRU ?
+
+		-- Temporarily these flags hold the solder paste status of an SMT terminal.
+		-- They are initialized by procedure init_terminal_layers and validated by
+		-- procedure set_stop_and_mask.
+		terminal_top_solder_paste, terminal_bot_solder_paste : type_terminal_solder_paste;
+
+		-- This is the flag for the solder paste status of an SMT terminal.
+		-- Read when finally building a terminal.
+		terminal_solder_paste : type_terminal_solder_paste;
+
+		-- Temporarily these flags hold the solder paste status of an SMT terminal.
+		-- They are initialized by procedure init_terminal_layers and validated by
+		-- procedure set_stop_and_mask.
+		terminal_top_stop_mask, terminal_bot_stop_mask : type_terminal_stop_mask;
+
+		-- This is the flag for the stop mask status of an SMT terminal.
+		-- Read when finally building a terminal.
+		terminal_stop_mask : type_terminal_stop_mask;
+
+		-- Here we collect all kinds of terminals after they have been built.
+		terminals : type_terminals.map;
+
+		-- This flag goes true once a terminal is to be inserted that already exists (by its name).
+		terminal_inserted : boolean;
 		
+
 		
 		-- When a line is fetched from the given list of lines, it is stored in variable
 		-- "current_line". CS: The line length is limited by line_length_max and should be increased
@@ -2490,17 +2544,17 @@ package body et_kicad_pcb is
 						when others => invalid_section;
 					end case;
 
--- 				when SEC_FP_ARC =>
--- 					case section.name is
--- 						when SEC_START | SEC_END | SEC_ANGLE | SEC_LAYER | SEC_WIDTH => null;
--- 						when others => invalid_section;
--- 					end case;
--- 
--- 				when SEC_FP_CIRCLE =>
--- 					case section.name is
--- 						when SEC_CENTER | SEC_END | SEC_LAYER | SEC_WIDTH => null;
--- 						when others => invalid_section;
--- 					end case;
+				when SEC_FP_ARC =>
+					case section.name is
+						when SEC_START | SEC_END | SEC_ANGLE | SEC_LAYER | SEC_WIDTH => null;
+						when others => invalid_section;
+					end case;
+
+				when SEC_FP_CIRCLE =>
+					case section.name is
+						when SEC_CENTER | SEC_END | SEC_LAYER | SEC_WIDTH => null;
+						when others => invalid_section;
+					end case;
 
 				when SEC_GENERAL =>
 					case section.name is
@@ -2582,29 +2636,6 @@ package body et_kicad_pcb is
 					 & "' ! found '" & to_string (arg) & "'", console => true);
 				raise constraint_error;
 			end invalid_fp_text_keyword;
-
--- 			procedure invalid_placeholder_reference is begin
--- 				log_indentation_reset;
--- 				log (message_error & "expect reference placeholder '" & placeholder_reference & "' !"
--- 					 & " found '" & to_string (arg) & "'", console => true);
--- 				raise constraint_error;
--- 			end invalid_placeholder_reference;
--- 
--- 			procedure invalid_placeholder_value is
--- 			begin
--- 				log_indentation_reset;
--- 				log (message_error & "expect value placeholder '" & to_string (package_name) & "' !"
--- 					 & " found '" & to_string (arg) & "'", console => true);
--- 				raise constraint_error;
--- 			end invalid_placeholder_value;
--- 
--- 			procedure invalid_package_name is
--- 			begin
--- 				log_indentation_reset;
--- 				log (message_error & "expect package name '" & to_string (package_name) & "' !"
--- 					 & " found '" & to_string (arg) & "'", console => true);
--- 				raise constraint_error;
--- 			end invalid_package_name;
 
 			procedure invalid_attribute is
 			begin
@@ -2733,8 +2764,8 @@ package body et_kicad_pcb is
 						when SEC_NET =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => null; -- CS  net id
-								when 2 => null; -- CS  net name
+								when 1 => netlist_net_id := type_net_id'value (to_string (arg));
+								when 2 => netlist_net_name := et_schematic.to_net_name (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -2952,9 +2983,17 @@ package body et_kicad_pcb is
 						when SEC_PAD =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => null; -- CS pad name
-								when 2 => null; -- CS pad techno
-								when 3 => null; -- CS pad shape
+								when 1 => null;
+									-- CS: check terminal name length
+									terminal_name := to_terminal_name (to_string (arg));
+									-- CS: check characters
+								when 2 =>
+									terminal_technology := to_assembly_technology (to_string (arg));
+								when 3 =>
+									case terminal_technology is
+										when SMT => terminal_shape_smt := to_terminal_shape_smt (to_string (arg));
+										when THT => terminal_shape_tht := to_terminal_shape_tht (to_string (arg));
+									end case;
 								when others => too_many_arguments;
 							end case;
 
@@ -2965,7 +3004,6 @@ package body et_kicad_pcb is
 								when others => too_many_arguments;
 							end case;
 
-							
 						when others => invalid_section;
 					end case;
 
@@ -3009,382 +3047,323 @@ package body et_kicad_pcb is
 								when others => too_many_arguments;
 							end case;
 
-						when others => null;
+						when others => invalid_section;
 					end case;
 
-				-- CS when SEC_EFFECTS =>
+				-- parent section
+				when SEC_FONT =>	
+					case section.name is
+						when SEC_SIZE => 
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => package_text.size_x := to_distance (to_string (arg));
+								when 2 => package_text.size_y := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_THICKNESS =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => package_text.width := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when others => invalid_section;
+					end case;
+
+				-- parent section
+				when SEC_FP_LINE =>
+					case section.name is
+						when SEC_START =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									set_point (axis => X, point => package_line.start_point, value => to_distance (to_string (arg)));
+								when 2 => 
+									set_point (axis => Y, point => package_line.start_point, value => to_distance (to_string (arg)));
+									set_point (axis => Z, point => package_line.start_point, value => zero_distance);
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_END =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									set_point (axis => X, point => package_line.end_point, value => to_distance (to_string (arg)));
+								when 2 => 
+									set_point (axis => Y, point => package_line.end_point, value => to_distance (to_string (arg)));
+									set_point (axis => Z, point => package_line.end_point, value => zero_distance);
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_LAYER =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									if to_string (arg) = layer_top_silk_screen then
+										package_line.layer := TOP_SILK;
+									elsif to_string (arg) = layer_bot_silk_screen then
+										package_line.layer := BOT_SILK;
+									elsif to_string (arg) = layer_top_assy_doc then
+										package_line.layer := TOP_ASSY;
+									elsif to_string (arg) = layer_bot_assy_doc then
+										package_line.layer := BOT_ASSY;
+									elsif to_string (arg) = layer_top_keepout then
+										package_line.layer := TOP_KEEP;
+									elsif to_string (arg) = layer_bot_keepout then
+										package_line.layer := BOT_KEEP;
+									elsif to_string (arg) = layer_top_copper then
+										package_line.layer := TOP_COPPER;
+									elsif to_string (arg) = layer_bot_copper then
+										package_line.layer := BOT_COPPER;
+									else
+										invalid_layer; -- CS copper layers ?
+									end if;
+
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_WIDTH =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									validate_general_line_width (to_distance (to_string (arg)));
+									package_line.width := to_distance (to_string (arg));
+									
+								when others => too_many_arguments;
+							end case;
+
+						when others => invalid_section;
+					end case;
+
+				-- parent section
+				when SEC_FP_CIRCLE =>
+					case section.name is
+						when SEC_CENTER =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									set_point (axis => X, point => package_circle.center, value => to_distance (to_string (arg)));
+								when 2 => 
+									set_point (axis => Y, point => package_circle.center, value => to_distance (to_string (arg)));
+									set_point (axis => Z, point => package_circle.center, value => zero_distance);
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_END =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									set_point (axis => X, point => package_circle.point, value => to_distance (to_string (arg)));
+								when 2 => 
+									set_point (axis => Y, point => package_circle.point, value => to_distance (to_string (arg)));
+									set_point (axis => Z, point => package_circle.point, value => zero_distance);
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_LAYER =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									if to_string (arg) = layer_top_silk_screen then
+										package_circle.layer := TOP_SILK;
+									elsif to_string (arg) = layer_bot_silk_screen then
+										package_circle.layer := BOT_SILK;
+									elsif to_string (arg) = layer_top_assy_doc then
+										package_circle.layer := TOP_ASSY;
+									elsif to_string (arg) = layer_bot_assy_doc then
+										package_circle.layer := BOT_ASSY;
+									elsif to_string (arg) = layer_top_keepout then
+										package_circle.layer := TOP_KEEP;
+									elsif to_string (arg) = layer_bot_keepout then
+										package_circle.layer := BOT_KEEP;
+									elsif to_string (arg) = layer_top_copper then
+										package_circle.layer := TOP_COPPER;
+									elsif to_string (arg) = layer_bot_copper then
+										package_circle.layer := BOT_COPPER;
+									else
+										invalid_layer; -- CS copper layers ?
+									end if;
+
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_WIDTH =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									validate_general_line_width (to_distance (to_string (arg)));
+									package_circle.width := to_distance (to_string (arg));
+									
+								when others => too_many_arguments;
+							end case;
+
+						when others => invalid_section;
+					end case;
+
+				-- parent section
+				when SEC_FP_ARC =>
+					case section.name is
+						when SEC_START =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									set_point (axis => X, point => package_arc.center, value => to_distance (to_string (arg)));
+								when 2 => 
+									set_point (axis => Y, point => package_arc.center, value => to_distance (to_string (arg)));
+									set_point (axis => Z, point => package_arc.center, value => zero_distance);
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_END =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									set_point (axis => X, point => package_arc.start_point, value => to_distance (to_string (arg)));
+								when 2 => 
+									set_point (axis => Y, point => package_arc.start_point, value => to_distance (to_string (arg)));
+									set_point (axis => Z, point => package_arc.start_point, value => zero_distance);
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_ANGLE =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => package_arc.angle := to_angle (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+								
+						when SEC_LAYER =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									if to_string (arg) = layer_top_silk_screen then
+										package_arc.layer := TOP_SILK;
+									elsif to_string (arg) = layer_bot_silk_screen then
+										package_arc.layer := BOT_SILK;
+									elsif to_string (arg) = layer_top_assy_doc then
+										package_arc.layer := TOP_ASSY;
+									elsif to_string (arg) = layer_bot_assy_doc then
+										package_arc.layer := BOT_ASSY;
+									elsif to_string (arg) = layer_top_keepout then
+										package_arc.layer := TOP_KEEP;
+									elsif to_string (arg) = layer_bot_keepout then
+										package_arc.layer := BOT_KEEP;
+									elsif to_string (arg) = layer_top_copper then
+										package_arc.layer := TOP_COPPER;
+									elsif to_string (arg) = layer_bot_copper then
+										package_arc.layer := BOT_COPPER;
+									else
+										invalid_layer; -- CS copper layers ?
+									end if;
+
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_WIDTH =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									validate_general_line_width (to_distance (to_string (arg)));
+									package_arc.width := to_distance (to_string (arg));
+									
+								when others => too_many_arguments;
+							end case;
+
+						when others => invalid_section;
+					end case;
 					
--- 				when SEC_CENTER =>
--- 					case section.parent is
--- 						when SEC_FP_CIRCLE =>
--- 							case section.arg_counter is
--- 								when 0 => null;
--- 								when 1 => 
--- 									set_point (axis => X, point => circle.center, value => to_distance (to_string (arg)));
--- 								when 2 => 
--- 									set_point (axis => Y, point => circle.center, value => to_distance (to_string (arg)));
--- 									set_point (axis => Z, point => circle.center, value => zero_distance);
--- 								when others => too_many_arguments;
--- 							end case;
--- 
--- 						when others => invalid_section;
--- 					end case;
--- 					
--- 				when SEC_START =>
--- 					case section.parent is
--- 						when SEC_FP_LINE =>
--- 							case section.arg_counter is
--- 								when 0 => null;
--- 								when 1 => 
--- 									set_point (axis => X, point => line.start_point, value => to_distance (to_string (arg)));
--- 								when 2 => 
--- 									set_point (axis => Y, point => line.start_point, value => to_distance (to_string (arg)));
--- 									set_point (axis => Z, point => line.start_point, value => zero_distance);
--- 								when others => too_many_arguments;
--- 							end case;
--- 
--- 						when SEC_FP_ARC =>
--- 							case section.arg_counter is
--- 								when 0 => null;
--- 								when 1 => 
--- 									set_point (axis => X, point => arc.center, value => to_distance (to_string (arg)));
--- 								when 2 => 
--- 									set_point (axis => Y, point => arc.center, value => to_distance (to_string (arg)));
--- 									set_point (axis => Z, point => arc.center, value => zero_distance);
--- 								when others => too_many_arguments;
--- 							end case;
--- 							
--- 						when others => invalid_section;
--- 					end case;
--- 
--- 				when SEC_END =>
--- 					case section.parent is
--- 						when SEC_FP_LINE =>
--- 							case section.arg_counter is
--- 								when 0 => null;
--- 								when 1 => 
--- 									set_point (axis => X, point => line.end_point, value => to_distance (to_string (arg)));
--- 								when 2 => 
--- 									set_point (axis => Y, point => line.end_point, value => to_distance (to_string (arg)));
--- 									set_point (axis => Z, point => line.end_point, value => zero_distance);
--- 								when others => too_many_arguments;
--- 							end case;
--- 
--- 						when SEC_FP_ARC =>
--- 							case section.arg_counter is
--- 								when 0 => null;
--- 								when 1 => 
--- 									set_point (axis => X, point => arc.start_point, value => to_distance (to_string (arg)));
--- 								when 2 => 
--- 									set_point (axis => Y, point => arc.start_point, value => to_distance (to_string (arg)));
--- 									set_point (axis => Z, point => arc.start_point, value => zero_distance);
--- 								when others => too_many_arguments;
--- 							end case;
--- 
--- 						when SEC_FP_CIRCLE =>
--- 							case section.arg_counter is
--- 								when 0 => null;
--- 								when 1 => 
--- 									set_point (axis => X, point => circle.point, value => to_distance (to_string (arg)));
--- 								when 2 => 
--- 									set_point (axis => Y, point => circle.point, value => to_distance (to_string (arg)));
--- 									set_point (axis => Z, point => circle.point, value => zero_distance);
--- 								when others => too_many_arguments;
--- 							end case;
--- 
--- 						when others => invalid_section;
--- 					end case;
--- 
--- 				when SEC_ANGLE =>
--- 					case section.parent is
--- 						when SEC_FP_ARC =>
--- 							case section.arg_counter is
--- 								when 0 => null;
--- 								when 1 => arc.angle := to_angle (to_string (arg));
--- 								when others => too_many_arguments;
--- 							end case;
--- 
--- 						when others => invalid_section;
--- 					end case;
--- 					
--- 				when SEC_LAYER =>
--- 					case section.parent is
--- 
--- 						when SEC_FP_LINE =>
--- 							case section.arg_counter is
--- 								when 0 => null;
--- 								when 1 => 
--- 									if to_string (arg) = layer_top_silk_screen then
--- 										line.layer := TOP_SILK;
--- 									elsif to_string (arg) = layer_bot_silk_screen then
--- 										line.layer := BOT_SILK;
--- 									elsif to_string (arg) = layer_top_assy_doc then
--- 										line.layer := TOP_ASSY;
--- 									elsif to_string (arg) = layer_bot_assy_doc then
--- 										line.layer := BOT_ASSY;
--- 									elsif to_string (arg) = layer_top_keepout then
--- 										line.layer := TOP_KEEP;
--- 									elsif to_string (arg) = layer_bot_keepout then
--- 										line.layer := BOT_KEEP;
--- 									elsif to_string (arg) = layer_top_copper then
--- 										line.layer := TOP_COPPER;
--- 									elsif to_string (arg) = layer_bot_copper then
--- 										line.layer := BOT_COPPER;
--- 									else
--- 										invalid_layer; -- CS copper layers ?
--- 									end if;
--- 
--- 								when others => too_many_arguments;
--- 							end case;
--- 
--- 						when SEC_FP_ARC =>
--- 							case section.arg_counter is
--- 								when 0 => null;
--- 								when 1 => 
--- 									if to_string (arg) = layer_top_silk_screen then
--- 										arc.layer := TOP_SILK;
--- 									elsif to_string (arg) = layer_bot_silk_screen then
--- 										arc.layer := BOT_SILK;
--- 									elsif to_string (arg) = layer_top_assy_doc then
--- 										arc.layer := TOP_ASSY;
--- 									elsif to_string (arg) = layer_bot_assy_doc then
--- 										arc.layer := BOT_ASSY;
--- 									elsif to_string (arg) = layer_top_keepout then
--- 										arc.layer := TOP_KEEP;
--- 									elsif to_string (arg) = layer_bot_keepout then
--- 										arc.layer := BOT_KEEP;
--- 									else
--- 										invalid_layer; -- CS copper layers ?
--- 									end if;
--- 
--- 								when others => too_many_arguments;
--- 							end case;
--- 
--- 						when SEC_FP_CIRCLE =>
--- 							case section.arg_counter is
--- 								when 0 => null;
--- 								when 1 => 
--- 									if to_string (arg) = layer_top_silk_screen then
--- 										circle.layer := TOP_SILK;
--- 									elsif to_string (arg) = layer_bot_silk_screen then
--- 										circle.layer := BOT_SILK;
--- 									elsif to_string (arg) = layer_top_assy_doc then
--- 										circle.layer := TOP_ASSY;
--- 									elsif to_string (arg) = layer_bot_assy_doc then
--- 										circle.layer := BOT_ASSY;
--- 									elsif to_string (arg) = layer_top_keepout then
--- 										circle.layer := TOP_KEEP;
--- 									elsif to_string (arg) = layer_bot_keepout then
--- 										circle.layer := BOT_KEEP;
--- 									else
--- 										invalid_layer; -- CS copper layers ?
--- 									end if;
--- 
--- 								when others => too_many_arguments;
--- 							end case;
--- 							
--- 						when others => invalid_section;
--- 					end case;
--- 
--- 				when SEC_WIDTH =>
--- 					case section.parent is
--- 						when SEC_FP_LINE =>
--- 							case section.arg_counter is
--- 								when 0 => null;
--- 								when 1 => 
--- 									validate_general_line_width (to_distance (to_string (arg)));
--- 									line.width := to_distance (to_string (arg));
--- 								when others => too_many_arguments;
--- 							end case;
--- 
--- 						when SEC_FP_ARC =>
--- 							case section.arg_counter is
--- 								when 0 => null;
--- 								when 1 => 
--- 									validate_general_line_width (to_distance (to_string (arg)));
--- 									arc.width := to_distance (to_string (arg));
--- 								when others => too_many_arguments;
--- 							end case;
--- 
--- 						when SEC_FP_CIRCLE =>
--- 							case section.arg_counter is
--- 								when 0 => null;
--- 								when 1 => 
--- 									validate_general_line_width (to_distance (to_string (arg)));
--- 									circle.width := to_distance (to_string (arg));
--- 								when others => too_many_arguments;
--- 							end case;
--- 
--- 						when others => invalid_section;
--- 					end case;
--- 
--- 				when SEC_SIZE =>
--- 					case section.parent is
--- 						when SEC_FONT =>
--- 							case section.arg_counter is
--- 								when 0 => null;
--- 								when 1 => text.size_x := to_distance (to_string (arg));
--- 								when 2 => text.size_y := to_distance (to_string (arg));
--- 								when others => too_many_arguments;
--- 							end case;
--- 
--- 						when SEC_PAD =>
--- 							case section.arg_counter is
--- 								when 0 => null;
--- 								when 1 => 
--- 									validate_pad_size (to_distance (to_string (arg)));
--- 									terminal_size_x := to_distance (to_string (arg));
--- 								when 2 => 
--- 									validate_pad_size (to_distance (to_string (arg)));
--- 									terminal_size_y := to_distance (to_string (arg));
--- 								when others => too_many_arguments;
--- 							end case;
--- 							
--- 						when others => invalid_section;
--- 					end case;
--- 					
--- 				when SEC_THICKNESS =>
--- 					case section.parent is
--- 						when SEC_FONT =>
--- 							case section.arg_counter is
--- 								when 0 => null;
--- 								when 1 => text.width := to_distance (to_string (arg));
--- 								when others => too_many_arguments;
--- 							end case;
--- 
--- 						when others => invalid_section;
--- 					end case;
--- 					
--- 				when SEC_AT =>
--- 					case section.parent is
--- 						when SEC_PAD =>
--- 							terminal_angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
--- 							case section.arg_counter is
--- 								when 0 => null;
--- 								when 1 => 
--- 									set_point (axis => X, point => terminal_position, value => to_distance (to_string (arg)));
--- 								when 2 => 
--- 									set_point (axis => Y, point => terminal_position, value => to_distance (to_string (arg)));
--- 									set_point (axis => Z, point => terminal_position, value => zero_distance);
--- 								when 3 => 
--- 									terminal_angle := to_angle (to_string (arg));
--- 								when others => too_many_arguments;
--- 							end case;
--- 
--- 						when SEC_FP_TEXT =>
--- 							text.angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
--- 							case section.arg_counter is
--- 								when 0 => null;
--- 								when 1 => 
--- 									set_point (axis => X, point => text.position, value => to_distance (to_string (arg)));
--- 								when 2 => 
--- 									set_point (axis => Y, point => text.position, value => to_distance (to_string (arg)));
--- 									set_point (axis => Z, point => text.position, value => zero_distance);
--- 								when 3 => 
--- 									text.angle := to_angle (to_string (arg));
--- 								when others => too_many_arguments;
--- 							end case;
--- 							
--- 						when others => invalid_section;
--- 					end case;
--- 							
--- 				when SEC_DRILL =>
--- 					case section.parent is
--- 						when SEC_PAD =>
--- 							case section.arg_counter is
--- 								when 0 => null;
--- 								when 1 => 
--- 									validate_drill_size (to_distance (to_string (arg)));
--- 									terminal_drill_size := to_distance (to_string (arg));
--- 								when others => too_many_arguments;
--- 							end case;
--- 
--- 						when others => invalid_section;
--- 					end case;
--- 					
--- 				when SEC_LAYERS => -- applies for terminals exclusively
--- 					case section.parent is
--- 						when SEC_PAD =>
--- 							case section.arg_counter is
--- 								when 0 => null;	
--- 								when others => 	
--- 									case terminal_technology is
--- 										when SMT =>
--- 
--- 											-- copper
--- 											if to_string (arg) = layer_top_copper then
--- 												terminal_face := TOP;
--- 											elsif to_string (arg) = layer_bot_copper then
--- 												terminal_face := BOTTOM;
--- 
--- 											-- solder paste
--- 											elsif to_string (arg) = layer_top_solder_paste then
--- 												terminal_top_solder_paste := APPLIED;
--- 											elsif to_string (arg) = layer_bot_solder_paste then
--- 												terminal_bot_solder_paste := APPLIED;
--- 
--- 											-- stop mask
--- 											elsif to_string (arg) = layer_bot_stop_mask then
--- 												terminal_bot_stop_mask := OPEN;
--- 											elsif to_string (arg) = layer_top_stop_mask then
--- 												terminal_top_stop_mask := OPEN;
--- 
--- 											else
--- 												invalid_layer;
--- 											end if;
--- 
--- 												
--- 										when THT =>
--- 
--- 											-- copper and stop mask
--- 											if to_string (arg) = layer_all_copper 
--- 											or to_string (arg) = layer_all_stop_mask then
--- 												null; -- fine
--- 											else
--- 												invalid_layer;
--- 											end if;
--- 											
--- 									end case;
--- 							end case;
--- 
--- 						when others => invalid_section;
--- 					end case;
--- 					
--- 				when SEC_PAD =>
--- 					case section.parent is
--- 						when SEC_MODULE =>
--- 							case section.arg_counter is
--- 								when 0 => null;
--- 								
--- 								when 1 => null;
--- 									-- CS: check terminal name length
--- 									terminal_name := to_terminal_name (to_string (arg));
--- 									-- CS: check characters
--- 								when 2 =>
--- 									terminal_technology := to_assembly_technology (to_string (arg));
--- 								when 3 =>
--- 									case terminal_technology is
--- 										when SMT => terminal_shape_smt := to_terminal_shape_smt (to_string (arg));
--- 										when THT => terminal_shape_tht := to_terminal_shape_tht (to_string (arg));
--- 									end case;
--- 								when others => too_many_arguments;
--- 							end case;
--- 
--- 						when others => invalid_section;
--- 					end case;
--- 					
--- 
--- 				when SEC_FONT =>
--- 					case section.parent is
--- 						when SEC_EFFECTS => null; -- CS currently no direct (non-wrapped) arguments follow
--- 						when others => invalid_section;
--- 					end case;
--- 
--- 				when SEC_FP_LINE | SEC_FP_ARC | SEC_FP_CIRCLE =>
--- 					case section.parent is
--- 						when SEC_MODULE => null; -- CS currently no direct (non-wrapped) arguments follow
--- 						when others => invalid_section;
--- 					end case;
+				-- parent_section
+				when SEC_PAD =>
+					case section.name is
+						when SEC_SIZE =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									validate_pad_size (to_distance (to_string (arg)));
+									terminal_size_x := to_distance (to_string (arg));
+								when 2 => 
+									validate_pad_size (to_distance (to_string (arg)));
+									terminal_size_y := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+							
+						when SEC_AT =>
+							terminal_angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									set_point (axis => X, point => terminal_position, value => to_distance (to_string (arg)));
+								when 2 => 
+									set_point (axis => Y, point => terminal_position, value => to_distance (to_string (arg)));
+									set_point (axis => Z, point => terminal_position, value => zero_distance);
+								when 3 => 
+									terminal_angle := to_angle (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+							
+						when SEC_DRILL =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									validate_drill_size (to_distance (to_string (arg)));
+									terminal_drill_size := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_LAYERS =>
+							case section.arg_counter is
+								when 0 => null;	
+								when others => 	
+									case terminal_technology is
+										when SMT =>
+
+											-- copper
+											if to_string (arg) = layer_top_copper then
+												terminal_face := TOP;
+											elsif to_string (arg) = layer_bot_copper then
+												terminal_face := BOTTOM;
+
+											-- solder paste
+											elsif to_string (arg) = layer_top_solder_paste then
+												terminal_top_solder_paste := APPLIED;
+											elsif to_string (arg) = layer_bot_solder_paste then
+												terminal_bot_solder_paste := APPLIED;
+
+											-- stop mask
+											elsif to_string (arg) = layer_bot_stop_mask then
+												terminal_bot_stop_mask := OPEN;
+											elsif to_string (arg) = layer_top_stop_mask then
+												terminal_top_stop_mask := OPEN;
+
+											else
+												invalid_layer;
+											end if;
+
+												
+										when THT =>
+
+											-- copper and stop mask
+											if to_string (arg) = layer_all_copper 
+											or to_string (arg) = layer_all_stop_mask then
+												null; -- fine
+											else
+												invalid_layer;
+											end if;
+											
+									end case;
+							end case;
+
+						when SEC_NET =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => terminal_net_id := type_net_id_terminal'value (to_string (arg));
+								when 2 => terminal_net_name := et_schematic.to_net_name (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when others => invalid_section;
+					end case;
 -- 
 -- 				when SEC_MODEL =>
 -- 					case section.parent is

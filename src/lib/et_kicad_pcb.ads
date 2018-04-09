@@ -51,8 +51,10 @@ with ada.containers.ordered_sets;
 
 with et_string_processing;
 with et_libraries;
+with et_schematic;
 with et_general;
 with et_pcb;
+with et_pcb_coordinates;
 
 package et_kicad_pcb is
 
@@ -108,6 +110,60 @@ package et_kicad_pcb is
 		TOP_KEEP, BOT_KEEP -- in kicad this is the crtyrd layer
 		);
 
+	-- LINES, ARCS, CIRCLES
+	-- Temporarily we need special types for lines, arcs and circles for the import. 
+	-- They are derived from the abstract anchestor types in et_pcb.ads.
+	-- Their additional components (width, layer, angle, ...) are later 
+	-- copied to the final lines, arcs and circles as specified in type_package:
+	type type_line is new et_pcb.type_line with record
+		width	: et_pcb.type_text_line_width;
+		layer	: type_layer;
+	end record;
+
+	type type_arc is new et_pcb.type_arc with record
+		width 	: et_pcb.type_text_line_width;
+		angle 	: et_pcb_coordinates.type_angle;
+		layer	: type_layer;
+	end record;
+
+	type type_circle is new et_pcb.type_circle with record -- center and radius incl.
+		width 	: et_pcb.type_text_line_width;
+		point 	: et_pcb_coordinates.type_point_3d;
+		layer	: type_layer;
+	end record;
+
+	
+
+	-- nets are assigned an id:
+	net_id_max : constant positive := 1_000_000;
+	type type_net_id is range 0..net_id_max;
+	type type_net_id_terminal is range 1..net_id_max;
+	
+
+	
+	-- NET CLASSES
+	-- KiCad keeps a list of net names which are in a certain net class.
+	package type_nets_of_class is new doubly_linked_lists (
+		element_type	=> et_schematic.type_net_name.bounded_string,
+		"="				=> et_schematic.type_net_name."=");
+
+	-- The net class type used here extends the basic net class by the list
+	-- of net names:
+	type type_net_class is new et_pcb.type_net_class with record
+		net_names : type_nets_of_class.list;
+	end record;
+
+	-- Since there are lots of net classes, they are stored in a map:
+	package type_net_classes is new ordered_maps (
+		key_type		=> et_pcb.type_net_class_name.bounded_string,
+		element_type	=> type_net_class,
+		"<"				=> et_pcb.type_net_class_name."<"
+		);
+
+
+
+	
+	
 	-- Temporarily this type is required to handle texts in silk screen, assembly doc, ...
 	-- When inserting the text in the final package, it is decomposed again.
 	type type_package_text is new et_pcb.type_text with record
