@@ -295,9 +295,12 @@ package body et_kicad_pcb is
 		terminal_shape_tht 	: type_terminal_shape_tht;
 		terminal_shape_smt 	: type_terminal_shape_smt;
 
-		terminal_face 		: et_pcb_coordinates.type_face;
-		-- CS use subtypes for reasonable sizes below:
-		terminal_drill_size	: type_drill_size; 
+		terminal_face 			: et_pcb_coordinates.type_face;
+		terminal_drill_size		: type_drill_size; 
+		terminal_drill_shape	: type_drill_shape; -- for slotted holes
+		terminal_milling_size_x	: type_pad_milling_size;
+		terminal_milling_size_y	: type_pad_milling_size;
+
 		terminal_position	: et_pcb_coordinates.type_point_3d;
 		terminal_size_x 	: type_pad_size;
 		terminal_size_y 	: type_pad_size;		
@@ -1163,8 +1166,24 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									validate_drill_size (to_distance (to_string (arg)));
-									terminal_drill_size := to_distance (to_string (arg));
+									if to_string (arg) = drill_shape_oval then -- (drill oval 1.2 5.5)
+										terminal_drill_shape := SLOTTED;
+									else
+										terminal_drill_shape := CIRCULAR; -- (drill 2.2)
+										validate_drill_size (to_distance (to_string (arg)));
+										terminal_drill_size := to_distance (to_string (arg));
+									end if;
+								when 2 =>
+									case terminal_drill_shape is
+										when CIRCULAR => too_many_arguments;
+										when SLOTTED => terminal_milling_size_x := to_distance (to_string (arg)); -- 1.2
+									end case;
+								when 3 =>
+									case terminal_drill_shape is
+										when CIRCULAR => too_many_arguments;
+										when SLOTTED => terminal_milling_size_y := to_distance (to_string (arg)); -- 5.5
+									end case;
+									
 								when others => too_many_arguments;
 							end case;
 
@@ -2340,9 +2359,12 @@ package body et_kicad_pcb is
 		terminal_shape_tht 	: type_terminal_shape_tht;
 		terminal_shape_smt 	: type_terminal_shape_smt;
 
-		terminal_face 		: et_pcb_coordinates.type_face;
-		-- CS use subtypes for reasonable sizes below:
-		terminal_drill_size	: type_drill_size; 
+		terminal_face 			: et_pcb_coordinates.type_face;
+		terminal_drill_size		: type_drill_size; 
+		terminal_drill_shape	: type_drill_shape; -- for slotted holes
+		terminal_milling_size_x	: type_pad_milling_size;
+		terminal_milling_size_y	: type_pad_milling_size;
+
 		terminal_position	: et_pcb_coordinates.type_point_3d;
 		terminal_size_x 	: type_pad_size;
 		terminal_size_y 	: type_pad_size;		
@@ -2637,8 +2659,7 @@ package body et_kicad_pcb is
 				raise constraint_error;
 			end invalid_fp_text_keyword;
 
-			procedure invalid_attribute is
-			begin
+			procedure invalid_attribute is begin
 				log_indentation_reset;
 				log (message_error & "invalid attribute !", console => true);
 				raise constraint_error;
@@ -3306,8 +3327,24 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									validate_drill_size (to_distance (to_string (arg)));
-									terminal_drill_size := to_distance (to_string (arg));
+									if to_string (arg) = drill_shape_oval then -- (drill oval 1.2 5.5)
+										terminal_drill_shape := SLOTTED;
+									else
+										terminal_drill_shape := CIRCULAR; -- (drill 2.2)
+										validate_drill_size (to_distance (to_string (arg)));
+										terminal_drill_size := to_distance (to_string (arg));
+									end if;
+								when 2 =>
+									case terminal_drill_shape is
+										when CIRCULAR => too_many_arguments;
+										when SLOTTED => terminal_milling_size_x := to_distance (to_string (arg)); -- 1.2
+									end case;
+								when 3 =>
+									case terminal_drill_shape is
+										when CIRCULAR => too_many_arguments;
+										when SLOTTED => terminal_milling_size_y := to_distance (to_string (arg)); -- 5.5
+									end case;
+									
 								when others => too_many_arguments;
 							end case;
 

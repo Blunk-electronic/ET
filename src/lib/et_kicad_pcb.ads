@@ -91,6 +91,14 @@ package et_kicad_pcb is
 
 	attribute_technology_smd		: constant string (1..3)	:= "smd";
 	attribute_technology_virtual	: constant string (1..7)	:= "virtual";
+
+	drill_shape_oval	: constant string (1..4) := "oval"; -- used with slotted holes
+	pad_drill_offset	: constant string (1..6) := "offset";
+	type type_drill_shape is (CIRCULAR, SLOTTED);
+
+	-- "Slotted drills" or "plated millings" for terminals are limited by drill sizes because
+	-- the PCB manufacturer starts the milling with a drill.
+	subtype type_pad_milling_size is et_pcb_coordinates.type_distance range et_pcb.drill_size_min .. et_pcb.drill_size_max;
 	
 	type type_fp_text_meaning is (REFERENCE, VALUE, USER);
 	
