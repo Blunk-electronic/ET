@@ -107,6 +107,11 @@ package et_pcb_coordinates is
 		value	: in type_distance;					 
 		point	: in out type_point_3d);
 
+	procedure rotate (
+	-- Rotates the given point by the given angle with the origin as center.
+		point	: in out type_point_3d; -- z axis ignored
+		angle	: in type_angle);
+	
 	function get_axis ( -- CS find a better name
 		axis	: in type_axis;
 		point	: in type_point_3d)

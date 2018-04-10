@@ -109,8 +109,6 @@ package et_pcb is
 	-- Checks whether given drill size is in range of type_drill_size
 
 
-
-	
 	pad_size_min : constant type_distance := 0.05;
 	pad_size_max : constant type_distance := 10.0;
 	subtype type_pad_size is type_distance range pad_size_min .. pad_size_max;
@@ -119,6 +117,10 @@ package et_pcb is
 	-- Checks whether given pad size is in range of type_pad_size
 
 
+	pad_drill_offset_min : constant type_distance := zero_distance;
+	pad_drill_offset_max : constant type_distance := pad_size_max * 0.5;
+	subtype type_pad_drill_offset is type_distance range pad_drill_offset_min .. pad_drill_offset_max;
+	
 	
 	
 	-- COPPER STRUCTURES GENERAL
@@ -258,37 +260,56 @@ package et_pcb is
 	type type_pcb_contour_line is new type_line with record
 		locked : type_locked := type_locked'first;
 	end record;
+
+	procedure line_pcb_contour_properties (
+		pcb_contour_line 	: in type_pcb_contour_line);
+
 	package type_pcb_contour_lines is new doubly_linked_lists (type_pcb_contour_line);
 
+	
 	type type_pcb_contour_arc is new type_arc with record
 		locked : type_locked := type_locked'first;
 	end record;
 	package type_pcb_contour_arcs is new doubly_linked_lists (type_pcb_contour_arc);
 
+	
 	type type_pcb_contour_circle is new type_circle with record
 		locked : type_locked := type_locked'first;
 	end record;
 	package type_pcb_contour_circles is new doubly_linked_lists (type_pcb_contour_circle);
+
 	
 	type type_pcb_contour is record -- PCB contour defined for the PCB as a whole
 		lines 	: type_pcb_contour_lines.list;
 		arcs	: type_pcb_contour_arcs.list;
-		circles	: type_pcb_contour_arcs.list;
+		circles	: type_pcb_contour_circles.list;
 	end record;
 
 	type type_package_pcb_contour is record -- PCB contour as defined by the package
 		lines 	: type_pcb_contour_lines.list;
 		arcs	: type_pcb_contour_arcs.list;
-		circles	: type_pcb_contour_arcs.list;
+		circles	: type_pcb_contour_circles.list;
 	end record;
 	
 	type type_package_pcb_contour_plated is record -- plated PCB contour as defined by the package
 		lines 	: type_pcb_contour_lines.list;
 		arcs	: type_pcb_contour_arcs.list;
-		circles	: type_pcb_contour_arcs.list;
+		circles	: type_pcb_contour_circles.list;
 	end record;
 
-	
+	procedure log_plated_millings (
+		millings 		: in type_package_pcb_contour_plated);
+-- 		log_threshold	: in et_string_processing.type_log_level);
+
+	function contour_milled_rectangle_of_pad (
+	-- Converts the given dimensions to a list of lines of pcb contours.
+		center		: type_terminal_position; -- the terminal position (incl. angle, (z axis ignored))
+		size_x		: type_pad_size;	-- the size in x of the hole
+		size_y		: type_pad_size;	-- the size in y of the hole
+		offset_x	: type_pad_drill_offset;	-- the offset of the hole from the center in x
+		offset_y	: type_pad_drill_offset)	-- the offset of the hole from the center in y		return type_pcb_contour_lines.list;
+		return type_pcb_contour_lines.list;
+		
 	-- PACKAGE CONTOUR/OUTLINE -- for 3d only
 	type type_package_contour_line is new type_line with null record;
 	package type_package_contour_lines is new doubly_linked_lists (type_package_contour_line);
@@ -587,14 +608,16 @@ package et_pcb is
 			when THT =>
 				width_inner_layers : type_distance; -- CS use subtype for reasonable range
 				
-				shape_tht 	: type_terminal_shape_tht;
+				shape_tht 	: type_terminal_shape_tht; -- OCTAGON, CIRCULAR, RECTANGLE, LONG, LONG_OFFSET
 
 				case shape is
 					when CIRCULAR =>
 						drill_size_cir : type_drill_size;
+						offset_x : type_pad_drill_offset; -- CS use a composite type for x/y
+						offset_y : type_pad_drill_offset;
 						
 					WHEN NON_CIRCULAR =>
-						size_tht_x, size_tht_y : type_pad_size;
+						size_tht_x, size_tht_y : type_pad_size; -- CS use a composite type for x/y
 
 						case tht_hole is
 							when DRILLED =>
@@ -617,7 +640,7 @@ package et_pcb is
 						null;
 						
 					WHEN NON_CIRCULAR =>
-						size_smt_x, size_smt_y : type_pad_size;
+						size_smt_x, size_smt_y : type_pad_size; -- CS use a composite type for x/y
 				end case;
 
 		end case;
@@ -767,7 +790,7 @@ package et_pcb is
 
 
 	
--- PROPERTIES OF OBJECTS IN ROUTE RESTRIC	
+-- PROPERTIES OF OBJECTS IN ROUTE RESTRICT	
 	procedure line_route_restrict_properties (
 	-- Logs the properties of the given line of route restrict
 		face			: in type_face;

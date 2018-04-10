@@ -127,6 +127,114 @@ package body et_pcb_coordinates is
 		end case;
 	end set_point;
 
+	procedure rotate (
+	-- Rotates the given point by the given angle with the origin as center.
+		point	: in out type_point_3d; -- z axis ignored
+		angle	: in type_angle) is
+
+		type type_float_distance is digits 7 range -1000.0 .. 1000.0; -- CS: refine
+		package functions_distance is new ada.numerics.generic_elementary_functions (type_float_distance);
+		use functions_distance;
+		
+		type type_float_angle is digits 4 range -719.9 .. 719.9; -- CS: refine			
+		package functions_angle is new ada.numerics.generic_elementary_functions (type_float_angle);
+		use functions_angle;
+
+		angle_out			: type_float_angle;		-- unit is degrees
+		distance_to_origin	: type_float_distance;	-- unit is mm
+		scratch				: type_float_distance;
+
+	begin
+		-- Do nothing if the given rotation is zero.
+		if angle /= 0.0 then
+
+			-- compute distance of given point to origin
+			if point.x = zero_distance and point.y = zero_distance then
+				distance_to_origin := type_float_distance (zero_distance);
+			elsif point.x = zero_distance then
+				distance_to_origin := type_float_distance (abs (point.y));
+			elsif point.y = zero_distance then
+				distance_to_origin := type_float_distance (abs (point.x));
+			else
+				distance_to_origin := sqrt (
+					type_float_distance (abs (point.x)) ** type_float_distance (2) 
+					+
+					type_float_distance (abs (point.y)) ** type_float_distance (2)
+					);
+			end if;
+			
+			-- compute the current angle of the given point (in degrees)
+
+			if point.x = zero_distance then
+				if point.y > zero_distance then
+					angle_out := 90.0;
+				elsif point.y < zero_distance then
+					angle_out := -90.0;
+				else
+					angle_out := 0.0;
+				end if;
+
+			elsif point.y = zero_distance then
+				if point.x > zero_distance then
+					angle_out := 0.0;
+				elsif point.x < zero_distance then
+					angle_out := 180.0;
+				else
+					angle_out := 0.0;
+				end if;
+
+			else
+				angle_out := type_float_angle (arctan (
+					x => type_float_distance (point.x),
+					y => type_float_distance (point.y),
+					cycle => type_float_distance (units_per_cycle))
+					);
+			end if;
+
+			-- Compute new angle by adding current angle and given angle.
+			-- This computation depends on the Y axis style. The in the conventional style (Y going upwards positive)
+			-- we add the given angle to the current angle. In the old fashioned stlyle (Y going downwards positive)
+			-- we subtract the given angle from the current angle.
+			log_indentation_up;
+			log ("angle in  " & to_string (type_angle (angle_out)), log_threshold);
+			if Y_axis_positive = upwards then
+				angle_out := angle_out + type_float_angle (angle);
+			else
+				angle_out := angle_out - type_float_angle (angle);
+			end if;
+			log ("angle out " & type_float_angle'image (angle_out), log_threshold);
+			
+	-- 		-- Remove multiturns in angle_out. 
+	-- 		CS: no need because angle_out is invisible to the outside world.
+	-- 		-- example 1: angle_out =  370 degrees.  370 - 360 =  10. so angle_out equals  10 degrees.
+	-- 		-- example 2: angle_out = -370 degrees. -370 + 360 = -10. so angle_out equals -10 degrees.
+	-- 		if angle_out > type_float_angle (type_angle'last) then
+	-- 			angle_out := angle_out - type_float_angle (units_per_cycle);
+	-- 		elsif angle_out < type_float_angle (type_angle'first) then
+	-- 			angle_out := angle_out + type_float_angle (units_per_cycle);
+	-- 		else
+	-- 			null;
+	-- 		end if;
+
+			-- compute new x   -- (cos angle_out) * distance_to_origin
+			scratch := cos (type_float_distance (angle_out), type_float_distance (units_per_cycle));
+			--point.x := type_distance (scratch * distance_to_origin);
+			--point.x := et_math.round (float_in => type_distance (scratch * distance_to_origin), accuracy => accuracy_schematic);
+			point.x := type_distance (scratch * distance_to_origin);
+			--log ("x in sch. " & to_string (point.x), log_threshold);
+
+			-- compute new y   -- (sin angle_out) * distance_to_origin
+			scratch := sin (type_float_distance (angle_out), type_float_distance (units_per_cycle));
+			--point.y := et_math.round (float_in => type_distance (scratch * distance_to_origin), accuracy => accuracy_schematic);
+			point.y := type_distance (scratch * distance_to_origin);
+			--log ("y in sch. " & to_string (point.y), log_threshold);
+			log ("point out " & to_string (point), log_threshold);
+			log_indentation_down;
+	
+		end if; -- if angle not zero
+		
+	end rotate;
+	
 	function get_axis (
 		axis	: in type_axis;
 		point	: in type_point_3d)

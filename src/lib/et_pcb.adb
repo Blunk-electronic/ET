@@ -199,6 +199,108 @@ package body et_pcb is
 		return type_directory_name.to_bounded_string (directory_name);
 	end to_directory;
 
+	procedure line_pcb_contour_properties (
+		pcb_contour_line 	: in type_pcb_contour_line)
+		--log_threshold		: in et_string_processing.type_log_level)
+		is
+	begin
+		log ("line start" & to_string (pcb_contour_line.start_point)
+			 & " end" & to_string (pcb_contour_line.end_point)
+			 & " locked " & type_locked'image (pcb_contour_line.locked)
+			);
+
+	end line_pcb_contour_properties;
+		
+	procedure log_plated_millings (
+		millings 		: in type_package_pcb_contour_plated)
+-- 		log_threshold	: in et_string_processing.type_log_level)
+		is
+		use type_pcb_contour_lines;
+		use type_pcb_contour_arcs;
+		use type_pcb_contour_circles;
+		line_cursor 	: type_pcb_contour_lines.cursor;
+		arc_cursor		: type_pcb_contour_arcs.cursor;
+		circle_cursor	: type_pcb_contour_circles.cursor;
+
+	begin
+		if not is_empty (millings.lines) then
+			line_cursor := millings.lines.first;
+			while line_cursor /= type_pcb_contour_lines.no_element loop
+				line_pcb_contour_properties (element (line_cursor));
+				next (line_cursor);
+			end loop;
+		end if;
+		--log_indentation : type_indentation_level
+		null;
+	end log_plated_millings;
+	
+	function contour_milled_rectangle_of_pad (
+	-- Converts the given dimensions to a list of lines of pcb contours.
+		center		: type_terminal_position; -- the terminal position (incl. angle, (z axis ignored))
+		size_x		: type_pad_size;	-- the size in x of the hole
+		size_y		: type_pad_size;	-- the size in y of the hole
+		offset_x	: type_pad_drill_offset;	-- the offset of the hole from the center in x
+		offset_y	: type_pad_drill_offset)	-- the offset of the hole from the center in y
+		return type_pcb_contour_lines.list is
+		
+		lines : type_pcb_contour_lines.list; -- to be returned
+		line_horizontal	: type_pcb_contour_line;
+		line_vertical 	: type_pcb_contour_line;
+		size_x_half : type_pad_size;
+		size_y_half : type_pad_size;
+	begin
+		size_x_half := size_x * 0.5;
+		size_y_half := size_y * 0.5;
+
+		-- HORIZONAL LINE
+		-- start point x
+		set_point (X, 
+			value => offset_x + get_axis (X, type_point_3d (center)) - size_x_half,
+			point => line_horizontal.start_point);
+
+		-- start point y
+		set_point (Y, 
+			value => offset_y + get_axis (Y, type_point_3d (center)) - size_y_half,
+			point => line_horizontal.start_point);
+
+		-- end point x
+		set_point (X,
+			value => offset_x + get_axis (X, type_point_3d (center)) + size_x_half,
+			point => line_horizontal.end_point);
+
+		-- end point y
+		set_point (Y,
+			value => offset_y + get_axis (Y, type_point_3d (center)) - size_y_half,
+			point => line_horizontal.end_point);
+
+
+		-- VERTICAL LINE
+		-- start point x
+		set_point (X,
+			value => offset_x + get_axis (X, type_point_3d (center)) - size_x_half,
+			point => line_vertical.start_point);
+
+		-- start point y
+		set_point (Y,
+			value => offset_y + get_axis (Y, type_point_3d (center)) - size_y_half,
+			point => line_vertical.start_point);
+
+		-- end point x
+		set_point (X,
+			value => offset_x + get_axis (X, type_point_3d (center)) - size_x_half,
+			point => line_vertical.end_point);
+
+		-- end point y
+		set_point (Y,
+			value => offset_y + get_axis (Y, type_point_3d (center)) + size_y_half,
+			point => line_vertical.end_point);
+
+		lines.append (line_horizontal);
+		lines.append (line_vertical);
+		return lines;
+	end contour_milled_rectangle_of_pad;
+		
+	
 	function to_string (appearance : in type_package_appearance) return string is
 	begin
 		return type_package_appearance'image (appearance);
@@ -599,16 +701,21 @@ package body et_pcb is
 		case element (cursor).technology is
 			when THT => 
 				log ("shape " & to_string (element (cursor).shape_tht), log_threshold_1);
-				log ("copper with inner layers " & to_string (element (cursor).width_inner_layers), log_threshold_1);
+				log ("copper width of inner layers" & to_string (element (cursor).width_inner_layers), log_threshold_1);
 				case element (cursor).shape is
 					when NON_CIRCULAR =>
-						log ("size x " & to_string (element (cursor).size_tht_x), log_threshold_1);
-						log ("size y " & to_string (element (cursor).size_tht_y), log_threshold_1);
+						log ("size x" & to_string (element (cursor).size_tht_x), log_threshold_1);
+						log ("size y" & to_string (element (cursor).size_tht_y), log_threshold_1);
 						case element (cursor).tht_hole is
 							when DRILLED =>
-								log ("drill " & to_string (element (cursor).drill_size_dri), log_threshold_1); 
+								log ("drill" & to_string (element (cursor).drill_size_dri), log_threshold_1); 
 							when MILLED =>
-								log ("plated milling contour ", log_threshold_1);
+								if log_level >= log_threshold_1 then
+									log ("plated milling contour ");
+									log_indentation_up;
+									log_plated_millings (element (cursor).millings);
+									log_indentation_down;
+								end if;
 						end case;
 						
 					when CIRCULAR =>
