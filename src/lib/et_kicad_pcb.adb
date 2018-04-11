@@ -2609,7 +2609,7 @@ package body et_kicad_pcb is
 				raise constraint_error;
 			end invalid_section;
 
-		begin
+		begin -- read_section
 			-- save previous section on stack
 			sections_stack.push (section);
 
@@ -2743,6 +2743,12 @@ package body et_kicad_pcb is
 						when others => invalid_section;
 					end case;
 
+				when SEC_LAYERS =>
+					case section.name is
+						when SEC_LAYER_ID => null;
+						when others => invalid_section;
+					end case;
+					
 				when SEC_PAD =>
 					case section.name is
 						when SEC_AT | SEC_SIZE | SEC_LAYERS | SEC_DRILL | SEC_NET => null;
@@ -3654,344 +3660,381 @@ package body et_kicad_pcb is
 
 		begin -- exec_section
 			log (process_section (section.name), log_threshold + 4);
-			case section.name is
-				when SEC_VERSION =>
-					log (et_kicad.system_name & " version " & pcb_file_format_version_4, log_threshold + 1); 
+			case section.parent is
+				when SEC_KICAD_PCB =>
+					case section.name is
+						when SEC_VERSION =>
+							log (et_kicad.system_name & " version " & pcb_file_format_version_4, log_threshold + 1); 
 
-				when SEC_HOST =>
-					log ("host " & host_name_pcbnew & " version " & pcb_new_version_4_0_7, log_threshold + 1);
+						when SEC_HOST =>
+							log ("host " & host_name_pcbnew & " version " & pcb_new_version_4_0_7, log_threshold + 1);
 
-				when SEC_GENERAL =>
-					null; -- CS log general information
+						when SEC_GENERAL =>
+							null; -- CS log general information
 
-				when SEC_PAGE =>
-					log ("paper size " & et_general.to_string (board.paper_size), log_threshold + 1);
+						when SEC_PAGE =>
+							log ("paper size " & et_general.to_string (board.paper_size), log_threshold + 1);
 
-				--when SEC_LAYERS =>
+						when SEC_LAYERS =>
+							null; -- CS log board layers ? single layers already logged
+
+						when SEC_SETUP =>
+							null; -- CS log setup (DRC stuff)
+
+						when SEC_NET =>
+							null; -- CS log net
+							
+						when SEC_NET_CLASS =>
+							-- calculate validate restring for regular and micro vias
+							net_class_via_restring := (net_class_via_diameter - net_class.via_drill_min) / 2;
+							validate_restring_width (net_class_via_restring);
+							net_class.via_restring_min := net_class_via_restring;
+
+							net_class_via_restring := (net_class_micro_via_diameter - net_class.micro_via_drill_min) / 2;
+							validate_restring_width (net_class_via_restring);
+							net_class.micro_via_restring_min := net_class_via_restring;
+
+							net_classes.insert (
+								key			=> net_class_name,
+								new_item 	=> net_class,
+								position	=> net_class_cursor,
+								inserted	=> net_class_inserted
+								);
+
+							if not net_class_inserted then
+								net_class_already_defined;
+							end if;
+
+							-- CS log net class properties more detailled
+							log ("net class " & to_string (net_class_name), log_threshold + 1);
+							
+							-- Clean up list of net names for next net class.
+							-- CS: We assume, all other components of net_class are provided in 
+							-- next net class section and thus become overwritten.
+							net_class.net_names.clear;
+
+						when SEC_MODULE =>
+							null; -- CS log package
+							
+						when others => null;
+					end case;
+
+				-- parent section
+				when SEC_LAYERS =>
+					case section.name is
+						when SEC_LAYER_ID =>
+							null; -- CS log board layer
+
+						when others => null;
+					end case;
+
+				-- parent section
+				when SEC_SETUP =>
+					case section.name is
+
+						when others => null; -- CS
+					end case;
 					
-				when SEC_NET_CLASS =>
-					-- calculate validate restring for regular and micro vias
-					net_class_via_restring := (net_class_via_diameter - net_class.via_drill_min) / 2;
-					validate_restring_width (net_class_via_restring);
-					net_class.via_restring_min := net_class_via_restring;
+				-- parent section
+				when SEC_MODULE =>
+					case section.name is
+						when SEC_TEDIT =>
+							log ("time edit  " & string (package_time_edit), log_threshold + 1);
 
-					net_class_via_restring := (net_class_micro_via_diameter - net_class.micro_via_drill_min) / 2;
-					validate_restring_width (net_class_via_restring);
-					net_class.micro_via_restring_min := net_class_via_restring;
+						when SEC_TSTAMP =>
+							log ("time stamp " & string (package_time_stamp), log_threshold + 1);
+							
+						when SEC_DESCR =>
+							log (to_string (package_description), log_threshold + 1);
+							
+						when SEC_TAGS =>
+							log (to_string (package_tags), log_threshold + 1);
 
-					net_classes.insert (
-						key			=> net_class_name,
-						new_item 	=> net_class,
-						position	=> net_class_cursor,
-						inserted	=> net_class_inserted
-						);
-
-					if not net_class_inserted then
-						net_class_already_defined;
-					end if;
-
-					-- CS log net class properties more detailled
-					log ("net class " & to_string (net_class_name), log_threshold + 1);
-					
-					-- Clean up list of net names for next net class.
-					-- CS: We assume, all other components of net_class are provided in 
-					-- next net class section and thus become overwritten.
-					net_class.net_names.clear;
-					
-				when SEC_TEDIT =>
-					log ("time edit  " & string (package_time_edit), log_threshold + 1);
-
-				when SEC_TSTAMP =>
-					log ("time stamp " & string (package_time_stamp), log_threshold + 1);
-					
-				when SEC_DESCR =>
-					log (to_string (package_description), log_threshold + 1);
-					
-				when SEC_TAGS =>
-					log (to_string (package_tags), log_threshold + 1);
-
--- 				when SEC_FP_TEXT =>
--- 
--- 					-- Since there is no alignment information provided, use default values:
--- 					text.alignment := (horizontal => CENTER, vertical => BOTTOM);
--- 
--- 					case text.meaning is
--- 						when REFERENCE =>
--- 							placeholder := (et_pcb.type_text (text) with meaning => REFERENCE);
--- 							
--- 							case text.layer is
--- 								when TOP_SILK =>
--- 									top_silk_screen.placeholders.append (placeholder);
--- 									placeholder_silk_screen_properties (TOP, top_silk_screen.placeholders.last, log_threshold + 1);
--- 								when BOT_SILK =>
--- 									bot_silk_screen.placeholders.append (placeholder);
--- 									placeholder_silk_screen_properties (BOTTOM, bot_silk_screen.placeholders.last, log_threshold + 1);
--- 								when others => -- should never happen
--- 									invalid_layer_reference; 
--- 							end case;
--- 
--- 						when VALUE =>
--- 							placeholder := (et_pcb.type_text (text) with meaning => VALUE);
--- 							
--- 							case text.layer is
--- 								when TOP_ASSY =>
--- 									top_assy_doc.placeholders.append (placeholder);
--- 									placeholder_assy_doc_properties (TOP, top_assy_doc.placeholders.last, log_threshold + 1);
--- 								when BOT_ASSY =>
--- 									bot_assy_doc.placeholders.append (placeholder);
--- 									placeholder_assy_doc_properties (BOTTOM, bot_assy_doc.placeholders.last, log_threshold + 1);
--- 								when others => -- should never happen
--- 									invalid_layer_value;
--- 							end case;
--- 							
--- 						when USER =>
--- 							case text.layer is
--- 								when TOP_SILK => 
--- 									top_silk_screen.texts.append ((et_pcb.type_text (text) with content => text.content));
--- 									text_silk_screen_properties (TOP, top_silk_screen.texts.last, log_threshold + 1);
--- 								when BOT_SILK => 
--- 									bot_silk_screen.texts.append ((et_pcb.type_text (text) with content => text.content));
--- 									text_silk_screen_properties (BOTTOM, bot_silk_screen.texts.last, log_threshold + 1);
--- 								when TOP_ASSY => 
--- 									top_assy_doc.texts.append ((et_pcb.type_text (text) with content => text.content));
--- 									text_assy_doc_properties (TOP, top_assy_doc.texts.last, log_threshold + 1);
--- 								when BOT_ASSY => 
--- 									bot_assy_doc.texts.append ((et_pcb.type_text (text) with content => text.content));
--- 									text_assy_doc_properties (BOTTOM, bot_assy_doc.texts.last, log_threshold + 1);
--- 								when others -- should never happen. kicad does not allow texts in signal layers 
--- 									=> invalid_layer_user;
--- 							end case;
--- 					end case;
--- 					
--- 				when SEC_FP_LINE =>
--- 					-- Append the line to the container corresponding to the layer. Then log the line properties.
--- 					case line.layer is
--- 						when TOP_SILK =>
--- 							top_silk_screen.lines.append ((line.start_point, line.end_point, line.width));
--- 							line_silk_screen_properties (TOP, top_silk_screen.lines.last, log_threshold + 1);
--- 
--- 						when BOT_SILK =>
--- 							bot_silk_screen.lines.append ((line.start_point, line.end_point, line.width));
--- 							line_silk_screen_properties (BOTTOM, bot_silk_screen.lines.last, log_threshold + 1);
--- 
--- 						when TOP_ASSY =>
--- 							top_assy_doc.lines.append ((line.start_point, line.end_point, line.width));
--- 							line_assy_doc_properties (TOP, top_assy_doc.lines.last, log_threshold + 1);
--- 
--- 						when BOT_ASSY =>
--- 							bot_assy_doc.lines.append ((line.start_point, line.end_point, line.width));
--- 							line_assy_doc_properties (BOTTOM, bot_assy_doc.lines.last, log_threshold + 1);
--- 
--- 						when TOP_KEEP =>
--- 							top_keepout.lines.append ((line.start_point, line.end_point));
--- 							line_keepout_properties (TOP, top_keepout.lines.last, log_threshold + 1);
--- 
--- 						when BOT_KEEP =>
--- 							bot_keepout.lines.append ((line.start_point, line.end_point));
--- 							line_keepout_properties (BOTTOM, top_keepout.lines.last, log_threshold + 1);
--- 
--- 						when TOP_COPPER => 
--- 							top_copper_objects.lines.append ((line.start_point, line.end_point, line.width));
--- 							line_copper_properties (TOP, top_copper_objects.lines.last, log_threshold + 1);
--- 
--- 						when BOT_COPPER => 
--- 							bot_copper_objects.lines.append ((line.start_point, line.end_point, line.width));
--- 							line_copper_properties (BOTTOM, bot_copper_objects.lines.last, log_threshold + 1);
--- 
--- 					end case;
--- 
--- 				when SEC_FP_ARC =>
--- 					-- compute end point of arc
--- 					arc.end_point := et_pcb_math.arc_end_point (arc.center, arc.start_point, arc.angle);
--- 
--- 					-- Append the arc to the container corresponding to the layer. Then log the arc properties.
--- 					case arc.layer is
--- 						when TOP_SILK =>
--- 							top_silk_screen.arcs.append ((et_pcb.type_arc (arc) with arc.width));
--- 							arc_silk_screen_properties (TOP, top_silk_screen.arcs.last, log_threshold + 1);
--- 							
--- 						when BOT_SILK =>
--- 							bot_silk_screen.arcs.append ((et_pcb.type_arc (arc) with arc.width));
--- 							arc_silk_screen_properties (BOTTOM, bot_silk_screen.arcs.last, log_threshold + 1);
--- 							
--- 						when TOP_ASSY =>
--- 							top_assy_doc.arcs.append ((et_pcb.type_arc (arc) with arc.width));
--- 							arc_assy_doc_properties (TOP, top_assy_doc.arcs.last, log_threshold + 1);
--- 							
--- 						when BOT_ASSY =>
--- 							bot_assy_doc.arcs.append ((et_pcb.type_arc (arc) with arc.width));
--- 							arc_assy_doc_properties (BOTTOM, bot_assy_doc.arcs.last, log_threshold + 1);
--- 							
--- 						when TOP_KEEP =>
--- 							top_keepout.arcs.append ((
--- 								center 		=> arc.center,
--- 								start_point	=> arc.start_point, 
--- 								end_point	=> arc.end_point));
--- 							arc_keepout_properties (TOP, top_keepout.arcs.last, log_threshold + 1);
--- 							
--- 						when BOT_KEEP =>
--- 							bot_keepout.arcs.append ((
--- 								center 		=> arc.center,
--- 								start_point	=> arc.start_point, 
--- 								end_point	=> arc.end_point));
--- 							arc_keepout_properties (BOTTOM, top_keepout.arcs.last, log_threshold + 1);
--- 
--- 						when TOP_COPPER => 
--- 							top_copper_objects.arcs.append ((et_pcb.type_arc (arc) with arc.width));
--- 							arc_copper_properties (TOP, top_copper_objects.arcs.last, log_threshold + 1);
--- 
--- 						when BOT_COPPER => 
--- 							bot_copper_objects.arcs.append ((et_pcb.type_arc (arc) with arc.width));
--- 							arc_copper_properties (BOTTOM, bot_copper_objects.arcs.last, log_threshold + 1);
--- 							
--- 					end case;
--- 
--- 				when SEC_FP_CIRCLE =>
--- 					-- Append the circle to the container correspoinding to the layer. Then log the circle properties.
--- 					case circle.layer is
--- 						when TOP_SILK =>
--- 							top_silk_screen.circles.append ((et_pcb.type_circle (circle) with circle.width));
--- 							circle_silk_screen_properties (TOP, top_silk_screen.circles.last, log_threshold + 1);
--- 							
--- 						when BOT_SILK =>
--- 							bot_silk_screen.circles.append ((et_pcb.type_circle (circle) with circle.width));
--- 							circle_silk_screen_properties (BOTTOM, bot_silk_screen.circles.last, log_threshold + 1);
--- 							
--- 						when TOP_ASSY =>
--- 							top_assy_doc.circles.append ((et_pcb.type_circle (circle) with circle.width));
--- 							circle_assy_doc_properties (TOP, top_assy_doc.circles.last, log_threshold + 1);
--- 							
--- 						when BOT_ASSY =>
--- 							bot_assy_doc.circles.append ((et_pcb.type_circle (circle) with circle.width));
--- 							circle_assy_doc_properties (BOTTOM, bot_assy_doc.circles.last, log_threshold + 1);
--- 							
--- 						when TOP_KEEP =>
--- 							top_keepout.circles.append ((
--- 								center 		=> circle.center,
--- 								-- The radius must be calculated from center and point on circle:
--- 								radius		=> et_pcb_math.distance (circle.center, circle.point)
--- 								-- NOTE: circle.width ignored
--- 								));
--- 							circle_keepout_properties (TOP, top_keepout.circles.last, log_threshold + 1);
--- 							
--- 						when BOT_KEEP =>
--- 							bot_keepout.circles.append ((
--- 								center 		=> circle.center,
--- 								-- The radius must be calculated from center and point on circle:
--- 								radius		=> et_pcb_math.distance (circle.center, circle.point)
--- 								-- NOTE: circle.width ignored
--- 								));
--- 							circle_keepout_properties (BOTTOM, top_keepout.circles.last, log_threshold + 1);
--- 
--- 						when TOP_COPPER => 
--- 							top_copper_objects.circles.append ((et_pcb.type_circle (circle) with circle.width));
--- 							circle_copper_properties (TOP, top_copper_objects.circles.last, log_threshold + 1);
--- 
--- 						when BOT_COPPER => 
--- 							bot_copper_objects.circles.append ((et_pcb.type_circle (circle) with circle.width));
--- 							circle_copper_properties (BOTTOM, bot_copper_objects.circles.last, log_threshold + 1);
--- 
--- 					end case;
--- 					
--- 				when SEC_PAD =>
--- 					-- Insert a terminal in the list "terminals":
--- 					case terminal_technology is
--- 						when THT =>
--- 
--- 							if terminal_shape_tht = CIRCULAR then
--- 								terminals.insert (
--- 									key 		=> terminal_name,
--- 									position	=> terminal_cursor,
--- 									inserted	=> terminal_inserted,
--- 									new_item 	=> (
--- 													technology 		=> THT,
--- 													shape 			=> CIRCULAR,
--- 													tht_hole		=> DRILLED,
--- 													width_inner_layers => terminal_copper_width_inner_layers,
--- 													drill_size_cir	=> terminal_drill_size,
--- 													shape_tht		=> terminal_shape_tht,
--- 
--- 													-- Compose from the terminal position and angel the full terminal position
--- 													position		=> type_terminal_position (to_terminal_position (terminal_position, terminal_angle))
--- 												   ));
--- 							else
--- 								terminals.insert (
--- 									key 		=> terminal_name,
--- 									position	=> terminal_cursor,
--- 									inserted	=> terminal_inserted,
--- 									new_item 	=> (
--- 													technology 		=> THT,
--- 													shape			=> NON_CIRCULAR,
--- 													tht_hole		=> DRILLED,
--- 													width_inner_layers => terminal_copper_width_inner_layers,
--- 													drill_size_dri	=> terminal_drill_size,
--- 													shape_tht		=> terminal_shape_tht,
--- 
--- 													-- Compose from the terminal position and angel the full terminal position
--- 													position		=> type_terminal_position (to_terminal_position (terminal_position, terminal_angle)),
--- 
--- 													size_tht_x		=> terminal_size_x,
--- 													size_tht_y		=> terminal_size_y
--- 												));
--- 							end if;
--- 
--- 							
--- 						when SMT =>
--- 
--- 							-- From the SMT terminal face, validate the status of stop mask and solder paste.
--- 							set_stop_and_mask;
--- 							
--- 							if terminal_shape_smt = CIRCULAR then
--- 								terminals.insert (
--- 									key 		=> terminal_name, 
--- 									position	=> terminal_cursor,
--- 									inserted	=> terminal_inserted,
--- 									new_item 	=> (
--- 													technology 		=> SMT,
--- 													shape			=> CIRCULAR,
--- 													tht_hole		=> DRILLED, -- has no meaning here
--- 													shape_smt		=> terminal_shape_smt,
--- 
--- 													-- Compose from the terminal position and angel the full terminal position
--- 													position		=> type_terminal_position (to_terminal_position (terminal_position, terminal_angle)),
--- 
--- 													face 			=> terminal_face,
--- 													stop_mask		=> terminal_stop_mask,
--- 													solder_paste	=> terminal_solder_paste
--- 												));
--- 							else
--- 								terminals.insert (
--- 									key 		=> terminal_name, 
--- 									position	=> terminal_cursor,
--- 									inserted	=> terminal_inserted,
--- 									new_item 	=> (
--- 													technology 		=> SMT,
--- 													shape			=> NON_CIRCULAR,
--- 													tht_hole		=> DRILLED, -- has no meaning here
--- 													shape_smt		=> terminal_shape_smt,
--- 
--- 													-- Compose from the terminal position and angel the full terminal position
--- 													position		=> type_terminal_position (to_terminal_position (terminal_position, terminal_angle)),
--- 
--- 													face 			=> terminal_face,
--- 													stop_mask		=> terminal_stop_mask,
--- 													solder_paste	=> terminal_solder_paste,
--- 													size_smt_x		=> terminal_size_x,
--- 													size_smt_y		=> terminal_size_y
--- 												));
--- 							end if;
--- 
--- 							init_stop_and_mask; -- relevant for SMT terminals only (stop mask always open, solder paste never applied)
--- 					end case;
--- 
--- 					if terminal_inserted then
--- 						terminal_properties (terminal_cursor, log_threshold + 1);
--- 					else
--- 						log_indentation_reset;
--- 						log (message_error & "duplicated terminal " & to_string (terminal_name) & " !", console => true);
--- 						raise constraint_error;
--- 					end if;
--- 					
+-- 						when SEC_FP_TEXT =>
+-- 		
+-- 							-- Since there is no alignment information provided, use default values:
+-- 							package_text.alignment := (horizontal => CENTER, vertical => BOTTOM);
+-- 		
+-- 							case package_text.meaning is
+-- 								when REFERENCE =>
+-- 									placeholder := (et_pcb.type_text (text) with meaning => REFERENCE);
+-- 									
+-- 									case text.layer is
+-- 										when TOP_SILK =>
+-- 											top_silk_screen.placeholders.append (placeholder);
+-- 											placeholder_silk_screen_properties (TOP, top_silk_screen.placeholders.last, log_threshold + 1);
+-- 										when BOT_SILK =>
+-- 											bot_silk_screen.placeholders.append (placeholder);
+-- 											placeholder_silk_screen_properties (BOTTOM, bot_silk_screen.placeholders.last, log_threshold + 1);
+-- 										when others => -- should never happen
+-- 											invalid_layer_reference; 
+-- 									end case;
+		
+		-- 						when VALUE =>
+		-- 							placeholder := (et_pcb.type_text (text) with meaning => VALUE);
+		-- 							
+		-- 							case text.layer is
+		-- 								when TOP_ASSY =>
+		-- 									top_assy_doc.placeholders.append (placeholder);
+		-- 									placeholder_assy_doc_properties (TOP, top_assy_doc.placeholders.last, log_threshold + 1);
+		-- 								when BOT_ASSY =>
+		-- 									bot_assy_doc.placeholders.append (placeholder);
+		-- 									placeholder_assy_doc_properties (BOTTOM, bot_assy_doc.placeholders.last, log_threshold + 1);
+		-- 								when others => -- should never happen
+		-- 									invalid_layer_value;
+		-- 							end case;
+		-- 							
+		-- 						when USER =>
+		-- 							case text.layer is
+		-- 								when TOP_SILK => 
+		-- 									top_silk_screen.texts.append ((et_pcb.type_text (text) with content => text.content));
+		-- 									text_silk_screen_properties (TOP, top_silk_screen.texts.last, log_threshold + 1);
+		-- 								when BOT_SILK => 
+		-- 									bot_silk_screen.texts.append ((et_pcb.type_text (text) with content => text.content));
+		-- 									text_silk_screen_properties (BOTTOM, bot_silk_screen.texts.last, log_threshold + 1);
+		-- 								when TOP_ASSY => 
+		-- 									top_assy_doc.texts.append ((et_pcb.type_text (text) with content => text.content));
+		-- 									text_assy_doc_properties (TOP, top_assy_doc.texts.last, log_threshold + 1);
+		-- 								when BOT_ASSY => 
+		-- 									bot_assy_doc.texts.append ((et_pcb.type_text (text) with content => text.content));
+		-- 									text_assy_doc_properties (BOTTOM, bot_assy_doc.texts.last, log_threshold + 1);
+		-- 								when others -- should never happen. kicad does not allow texts in signal layers 
+		-- 									=> invalid_layer_user;
+		-- 							end case;
+		-- 					end case;
+		-- 					
+		-- 				when SEC_FP_LINE =>
+		-- 					-- Append the line to the container corresponding to the layer. Then log the line properties.
+		-- 					case line.layer is
+		-- 						when TOP_SILK =>
+		-- 							top_silk_screen.lines.append ((line.start_point, line.end_point, line.width));
+		-- 							line_silk_screen_properties (TOP, top_silk_screen.lines.last, log_threshold + 1);
+		-- 
+		-- 						when BOT_SILK =>
+		-- 							bot_silk_screen.lines.append ((line.start_point, line.end_point, line.width));
+		-- 							line_silk_screen_properties (BOTTOM, bot_silk_screen.lines.last, log_threshold + 1);
+		-- 
+		-- 						when TOP_ASSY =>
+		-- 							top_assy_doc.lines.append ((line.start_point, line.end_point, line.width));
+		-- 							line_assy_doc_properties (TOP, top_assy_doc.lines.last, log_threshold + 1);
+		-- 
+		-- 						when BOT_ASSY =>
+		-- 							bot_assy_doc.lines.append ((line.start_point, line.end_point, line.width));
+		-- 							line_assy_doc_properties (BOTTOM, bot_assy_doc.lines.last, log_threshold + 1);
+		-- 
+		-- 						when TOP_KEEP =>
+		-- 							top_keepout.lines.append ((line.start_point, line.end_point));
+		-- 							line_keepout_properties (TOP, top_keepout.lines.last, log_threshold + 1);
+		-- 
+		-- 						when BOT_KEEP =>
+		-- 							bot_keepout.lines.append ((line.start_point, line.end_point));
+		-- 							line_keepout_properties (BOTTOM, top_keepout.lines.last, log_threshold + 1);
+		-- 
+		-- 						when TOP_COPPER => 
+		-- 							top_copper_objects.lines.append ((line.start_point, line.end_point, line.width));
+		-- 							line_copper_properties (TOP, top_copper_objects.lines.last, log_threshold + 1);
+		-- 
+		-- 						when BOT_COPPER => 
+		-- 							bot_copper_objects.lines.append ((line.start_point, line.end_point, line.width));
+		-- 							line_copper_properties (BOTTOM, bot_copper_objects.lines.last, log_threshold + 1);
+		-- 
+		-- 					end case;
+		-- 
+		-- 				when SEC_FP_ARC =>
+		-- 					-- compute end point of arc
+		-- 					arc.end_point := et_pcb_math.arc_end_point (arc.center, arc.start_point, arc.angle);
+		-- 
+		-- 					-- Append the arc to the container corresponding to the layer. Then log the arc properties.
+		-- 					case arc.layer is
+		-- 						when TOP_SILK =>
+		-- 							top_silk_screen.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+		-- 							arc_silk_screen_properties (TOP, top_silk_screen.arcs.last, log_threshold + 1);
+		-- 							
+		-- 						when BOT_SILK =>
+		-- 							bot_silk_screen.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+		-- 							arc_silk_screen_properties (BOTTOM, bot_silk_screen.arcs.last, log_threshold + 1);
+		-- 							
+		-- 						when TOP_ASSY =>
+		-- 							top_assy_doc.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+		-- 							arc_assy_doc_properties (TOP, top_assy_doc.arcs.last, log_threshold + 1);
+		-- 							
+		-- 						when BOT_ASSY =>
+		-- 							bot_assy_doc.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+		-- 							arc_assy_doc_properties (BOTTOM, bot_assy_doc.arcs.last, log_threshold + 1);
+		-- 							
+		-- 						when TOP_KEEP =>
+		-- 							top_keepout.arcs.append ((
+		-- 								center 		=> arc.center,
+		-- 								start_point	=> arc.start_point, 
+		-- 								end_point	=> arc.end_point));
+		-- 							arc_keepout_properties (TOP, top_keepout.arcs.last, log_threshold + 1);
+		-- 							
+		-- 						when BOT_KEEP =>
+		-- 							bot_keepout.arcs.append ((
+		-- 								center 		=> arc.center,
+		-- 								start_point	=> arc.start_point, 
+		-- 								end_point	=> arc.end_point));
+		-- 							arc_keepout_properties (BOTTOM, top_keepout.arcs.last, log_threshold + 1);
+		-- 
+		-- 						when TOP_COPPER => 
+		-- 							top_copper_objects.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+		-- 							arc_copper_properties (TOP, top_copper_objects.arcs.last, log_threshold + 1);
+		-- 
+		-- 						when BOT_COPPER => 
+		-- 							bot_copper_objects.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+		-- 							arc_copper_properties (BOTTOM, bot_copper_objects.arcs.last, log_threshold + 1);
+		-- 							
+		-- 					end case;
+		-- 
+		-- 				when SEC_FP_CIRCLE =>
+		-- 					-- Append the circle to the container correspoinding to the layer. Then log the circle properties.
+		-- 					case circle.layer is
+		-- 						when TOP_SILK =>
+		-- 							top_silk_screen.circles.append ((et_pcb.type_circle (circle) with circle.width));
+		-- 							circle_silk_screen_properties (TOP, top_silk_screen.circles.last, log_threshold + 1);
+		-- 							
+		-- 						when BOT_SILK =>
+		-- 							bot_silk_screen.circles.append ((et_pcb.type_circle (circle) with circle.width));
+		-- 							circle_silk_screen_properties (BOTTOM, bot_silk_screen.circles.last, log_threshold + 1);
+		-- 							
+		-- 						when TOP_ASSY =>
+		-- 							top_assy_doc.circles.append ((et_pcb.type_circle (circle) with circle.width));
+		-- 							circle_assy_doc_properties (TOP, top_assy_doc.circles.last, log_threshold + 1);
+		-- 							
+		-- 						when BOT_ASSY =>
+		-- 							bot_assy_doc.circles.append ((et_pcb.type_circle (circle) with circle.width));
+		-- 							circle_assy_doc_properties (BOTTOM, bot_assy_doc.circles.last, log_threshold + 1);
+		-- 							
+		-- 						when TOP_KEEP =>
+		-- 							top_keepout.circles.append ((
+		-- 								center 		=> circle.center,
+		-- 								-- The radius must be calculated from center and point on circle:
+		-- 								radius		=> et_pcb_math.distance (circle.center, circle.point)
+		-- 								-- NOTE: circle.width ignored
+		-- 								));
+		-- 							circle_keepout_properties (TOP, top_keepout.circles.last, log_threshold + 1);
+		-- 							
+		-- 						when BOT_KEEP =>
+		-- 							bot_keepout.circles.append ((
+		-- 								center 		=> circle.center,
+		-- 								-- The radius must be calculated from center and point on circle:
+		-- 								radius		=> et_pcb_math.distance (circle.center, circle.point)
+		-- 								-- NOTE: circle.width ignored
+		-- 								));
+		-- 							circle_keepout_properties (BOTTOM, top_keepout.circles.last, log_threshold + 1);
+		-- 
+		-- 						when TOP_COPPER => 
+		-- 							top_copper_objects.circles.append ((et_pcb.type_circle (circle) with circle.width));
+		-- 							circle_copper_properties (TOP, top_copper_objects.circles.last, log_threshold + 1);
+		-- 
+		-- 						when BOT_COPPER => 
+		-- 							bot_copper_objects.circles.append ((et_pcb.type_circle (circle) with circle.width));
+		-- 							circle_copper_properties (BOTTOM, bot_copper_objects.circles.last, log_threshold + 1);
+		-- 
+		-- 					end case;
+		-- 					
+		-- 				when SEC_PAD =>
+		-- 					-- Insert a terminal in the list "terminals":
+		-- 					case terminal_technology is
+		-- 						when THT =>
+		-- 
+		-- 							if terminal_shape_tht = CIRCULAR then
+		-- 								terminals.insert (
+		-- 									key 		=> terminal_name,
+		-- 									position	=> terminal_cursor,
+		-- 									inserted	=> terminal_inserted,
+		-- 									new_item 	=> (
+		-- 													technology 		=> THT,
+		-- 													shape 			=> CIRCULAR,
+		-- 													tht_hole		=> DRILLED,
+		-- 													width_inner_layers => terminal_copper_width_inner_layers,
+		-- 													drill_size_cir	=> terminal_drill_size,
+		-- 													shape_tht		=> terminal_shape_tht,
+		-- 
+		-- 													-- Compose from the terminal position and angel the full terminal position
+		-- 													position		=> type_terminal_position (to_terminal_position (terminal_position, terminal_angle))
+		-- 												   ));
+		-- 							else
+		-- 								terminals.insert (
+		-- 									key 		=> terminal_name,
+		-- 									position	=> terminal_cursor,
+		-- 									inserted	=> terminal_inserted,
+		-- 									new_item 	=> (
+		-- 													technology 		=> THT,
+		-- 													shape			=> NON_CIRCULAR,
+		-- 													tht_hole		=> DRILLED,
+		-- 													width_inner_layers => terminal_copper_width_inner_layers,
+		-- 													drill_size_dri	=> terminal_drill_size,
+		-- 													shape_tht		=> terminal_shape_tht,
+		-- 
+		-- 													-- Compose from the terminal position and angel the full terminal position
+		-- 													position		=> type_terminal_position (to_terminal_position (terminal_position, terminal_angle)),
+		-- 
+		-- 													size_tht_x		=> terminal_size_x,
+		-- 													size_tht_y		=> terminal_size_y
+		-- 												));
+		-- 							end if;
+		-- 
+		-- 							
+		-- 						when SMT =>
+		-- 
+		-- 							-- From the SMT terminal face, validate the status of stop mask and solder paste.
+		-- 							set_stop_and_mask;
+		-- 							
+		-- 							if terminal_shape_smt = CIRCULAR then
+		-- 								terminals.insert (
+		-- 									key 		=> terminal_name, 
+		-- 									position	=> terminal_cursor,
+		-- 									inserted	=> terminal_inserted,
+		-- 									new_item 	=> (
+		-- 													technology 		=> SMT,
+		-- 													shape			=> CIRCULAR,
+		-- 													tht_hole		=> DRILLED, -- has no meaning here
+		-- 													shape_smt		=> terminal_shape_smt,
+		-- 
+		-- 													-- Compose from the terminal position and angel the full terminal position
+		-- 													position		=> type_terminal_position (to_terminal_position (terminal_position, terminal_angle)),
+		-- 
+		-- 													face 			=> terminal_face,
+		-- 													stop_mask		=> terminal_stop_mask,
+		-- 													solder_paste	=> terminal_solder_paste
+		-- 												));
+		-- 							else
+		-- 								terminals.insert (
+		-- 									key 		=> terminal_name, 
+		-- 									position	=> terminal_cursor,
+		-- 									inserted	=> terminal_inserted,
+		-- 									new_item 	=> (
+		-- 													technology 		=> SMT,
+		-- 													shape			=> NON_CIRCULAR,
+		-- 													tht_hole		=> DRILLED, -- has no meaning here
+		-- 													shape_smt		=> terminal_shape_smt,
+		-- 
+		-- 													-- Compose from the terminal position and angel the full terminal position
+		-- 													position		=> type_terminal_position (to_terminal_position (terminal_position, terminal_angle)),
+		-- 
+		-- 													face 			=> terminal_face,
+		-- 													stop_mask		=> terminal_stop_mask,
+		-- 													solder_paste	=> terminal_solder_paste,
+		-- 													size_smt_x		=> terminal_size_x,
+		-- 													size_smt_y		=> terminal_size_y
+		-- 												));
+		-- 							end if;
+		-- 
+		-- 							init_stop_and_mask; -- relevant for SMT terminals only (stop mask always open, solder paste never applied)
+		-- 					end case;
+		-- 
+		-- 					if terminal_inserted then
+		-- 						terminal_properties (terminal_cursor, log_threshold + 1);
+		-- 					else
+		-- 						log_indentation_reset;
+		-- 						log (message_error & "duplicated terminal " & to_string (terminal_name) & " !", console => true);
+		-- 						raise constraint_error;
+		-- 					end if;
+		-- 					
+						when others => null;
+					end case;
+						
 				when others => null;
 			end case;
 

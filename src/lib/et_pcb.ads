@@ -658,8 +658,8 @@ package et_pcb is
 	type type_package (appearance : type_package_appearance) is record
 		description				: type_package_description.bounded_string;
 		copper					: type_package_copper_both_faces;
-		silk_screen				: type_package_silk_screen_both_faces; -- incl. reference and purpose
-		assembly_documentation	: type_package_assembly_documentation_both_faces;
+		silk_screen				: type_package_silk_screen_both_faces; -- incl. placeholder for reference and purpose
+		assembly_documentation	: type_package_assembly_documentation_both_faces; -- incl. placeholder for value
 		keepout 				: type_package_keepout_both_faces;
 		route_restrict 			: type_package_route_restrict;
 		via_restrict 			: type_package_via_restrict;
