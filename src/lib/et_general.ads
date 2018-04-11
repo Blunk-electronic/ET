@@ -100,7 +100,7 @@ package et_general is
 	function to_paper_size (paper_size : in string) return type_paper_size;
 	-- converts a string to type_paper_size
 
-
+	function to_string (paper_size : in type_paper_size) return string;
 	
 -- GENERICS
 	

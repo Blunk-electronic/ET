@@ -2317,6 +2317,7 @@ package body et_kicad_pcb is
 			-- 			SEC_LAYER,
 			SEC_LAST_TRACE_WIDTH,
 			SEC_LAYER,
+			SEC_LAYER_ID, -- "artificially" does not occur in board file (see procedure read_section)
 			SEC_LAYERS,
 			SEC_LAYERSELECTION,
 			SEC_LINEWIDTH,
@@ -2451,28 +2452,14 @@ package body et_kicad_pcb is
 
 
 		-- temporarily storage places
+		
+		layer_id : type_layer_id; -- used when reading the board layers (SEC_LAYERS)
+
+		
 		netlist_net_id 		: type_net_id;
 		netlist_net_name	: et_schematic.type_net_name.bounded_string;
 		
--- 		-- NET CLASSES
--- 		-- KiCad keeps a list of net names which are in a certain net class.
--- 		package type_nets_of_class is new doubly_linked_lists (
--- 			element_type	=> et_schematic.type_net_name.bounded_string,
--- 			"="				=> et_schematic.type_net_name."=");
--- 
--- 		-- The net class type used here extends the basic net class by the list
--- 		-- of net names:
--- 		type type_net_class is new et_pcb.type_net_class with record
--- 			net_names : type_nets_of_class.list;
--- 		end record;
--- 
--- 		-- Since there are lots of net classes, they are stored in a map:
--- 		package type_net_classes is new ordered_maps (
--- 			key_type		=> type_net_class_name.bounded_string,
--- 			element_type	=> type_net_class,
--- 			"<"				=> type_net_class_name."<"
--- 			);
-
+		-- NET CLASSES
 		net_class_inserted : boolean := false;
 		net_class_cursor : type_net_classes.cursor;
 		
@@ -2622,7 +2609,6 @@ package body et_kicad_pcb is
 				raise constraint_error;
 			end invalid_section;
 
-			layer_id : type_layer_id;
 		begin
 			-- save previous section on stack
 			sections_stack.push (section);
@@ -2643,13 +2629,21 @@ package body et_kicad_pcb is
 			-- Usually a section name starts with a letter. In this case
 			-- compose section name from cursor..end_of_kw.
 			-- This is an implicit general test whether the keyword is a valid keyword.
-			-- If the section name starts with a digit, it is about a layer id in parent section "layers".
+			
+			-- If the section name starts with a digit (like 31 B.Cu signal), it is about a layer id 
+			-- in parent section "layers".
+			-- NOTE: The section name becomes SEC_LAYER_ID (this section is "artificially" and does
+			-- not occur in the board file. Why this approach ? A section must have a name.
+			-- So we invent an artificial name for the section that contains the particular layer id
+			-- layer name and meaning like "(31 B.Cu signal)".
 			if is_letter (element (current_line, character_cursor)) then
 				section.name := type_keyword'value (sec_prefix & slice (current_line, character_cursor, end_of_kw));
 			else
 				if section.parent = SEC_LAYERS then
 					-- CS: more careful range check
 					layer_id := type_layer_id'value (slice (current_line, character_cursor, end_of_kw));
+					-- NOTE: The layer_id must be set here and further processed in procedure read_arg.
+					section.name := SEC_LAYER_ID; -- see comments above
 				else
 					log_indentation_reset;
 					log (message_error & "expect subsection name !", console => true);
@@ -3661,6 +3655,20 @@ package body et_kicad_pcb is
 		begin -- exec_section
 			log (process_section (section.name), log_threshold + 4);
 			case section.name is
+				when SEC_VERSION =>
+					log (et_kicad.system_name & " version " & pcb_file_format_version_4, log_threshold + 1); 
+
+				when SEC_HOST =>
+					log ("host " & host_name_pcbnew & " version " & pcb_new_version_4_0_7, log_threshold + 1);
+
+				when SEC_GENERAL =>
+					null; -- CS log general information
+
+				when SEC_PAGE =>
+					log ("paper size " & et_general.to_string (board.paper_size), log_threshold + 1);
+
+				--when SEC_LAYERS =>
+					
 				when SEC_NET_CLASS =>
 					-- calculate validate restring for regular and micro vias
 					net_class_via_restring := (net_class_via_diameter - net_class.via_drill_min) / 2;
@@ -3682,20 +3690,26 @@ package body et_kicad_pcb is
 						net_class_already_defined;
 					end if;
 
+					-- CS log net class properties more detailled
+					log ("net class " & to_string (net_class_name), log_threshold + 1);
+					
 					-- Clean up list of net names for next net class.
 					-- CS: We assume, all other components of net_class are provided in 
 					-- next net class section and thus become overwritten.
 					net_class.net_names.clear;
 					
--- 				when SEC_TEDIT =>
--- 					log ("timestamp " & string (timestamp), log_threshold + 1);
--- 
--- 				when SEC_DESCR =>
--- 					log (to_string (description), log_threshold + 1);
--- 					
--- 				when SEC_TAGS =>
--- 					log (to_string (tags), log_threshold + 1);
--- 
+				when SEC_TEDIT =>
+					log ("time edit  " & string (package_time_edit), log_threshold + 1);
+
+				when SEC_TSTAMP =>
+					log ("time stamp " & string (package_time_stamp), log_threshold + 1);
+					
+				when SEC_DESCR =>
+					log (to_string (package_description), log_threshold + 1);
+					
+				when SEC_TAGS =>
+					log (to_string (package_tags), log_threshold + 1);
+
 -- 				when SEC_FP_TEXT =>
 -- 
 -- 					-- Since there is no alignment information provided, use default values:

@@ -87,7 +87,10 @@ package body et_general is
 		return type_paper_size'value (paper_size);
 	end to_paper_size;
 	
-
+	function to_string (paper_size : in type_paper_size) return string is
+	begin
+		return type_paper_size'image (paper_size);
+	end to_string;
 	
 	-- GENERICS
 	
