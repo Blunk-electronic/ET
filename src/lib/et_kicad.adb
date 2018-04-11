@@ -6473,7 +6473,7 @@ package body et_kicad is
 		case et_import.cad_format is
 			when et_import.kicad_v4 =>
 
-				-- Kicad uses Y axis positive downwards style
+				-- Kicad uses Y axis positive downwards style (in both schematic and board)
 				Y_axis_positive := downwards;
 				
 				-- derive top level schematic file name from project name

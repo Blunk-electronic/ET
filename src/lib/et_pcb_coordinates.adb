@@ -51,6 +51,9 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
+with ada.numerics;
+with ada.numerics.generic_elementary_functions;
+
 with et_string_processing;		use et_string_processing;
 
 package body et_pcb_coordinates is
@@ -144,40 +147,41 @@ package body et_pcb_coordinates is
 		distance_to_origin	: type_float_distance;	-- unit is mm
 		scratch				: type_float_distance;
 
+		use et_coordinates;
 	begin
 		-- Do nothing if the given rotation is zero.
 		if angle /= 0.0 then
 
 			-- compute distance of given point to origin
-			if point.x = zero_distance and point.y = zero_distance then
+			if get_axis (X, point) = zero_distance and get_axis (Y, point) = zero_distance then
 				distance_to_origin := type_float_distance (zero_distance);
-			elsif point.x = zero_distance then
-				distance_to_origin := type_float_distance (abs (point.y));
-			elsif point.y = zero_distance then
-				distance_to_origin := type_float_distance (abs (point.x));
+			elsif get_axis (X, point) = zero_distance then
+				distance_to_origin := type_float_distance (abs (get_axis (Y, point)));
+			elsif get_axis (Y, point) = zero_distance then
+				distance_to_origin := type_float_distance (abs (get_axis (X, point)));
 			else
 				distance_to_origin := sqrt (
-					type_float_distance (abs (point.x)) ** type_float_distance (2) 
+					type_float_distance (abs (get_axis (X, point))) ** type_float_distance (2) 
 					+
-					type_float_distance (abs (point.y)) ** type_float_distance (2)
+					type_float_distance (abs (get_axis (Y, point))) ** type_float_distance (2)
 					);
 			end if;
 			
 			-- compute the current angle of the given point (in degrees)
 
-			if point.x = zero_distance then
-				if point.y > zero_distance then
+			if get_axis (X, point) = zero_distance then
+				if get_axis (Y, point) > zero_distance then
 					angle_out := 90.0;
-				elsif point.y < zero_distance then
+				elsif get_axis (Y, point) < zero_distance then
 					angle_out := -90.0;
 				else
 					angle_out := 0.0;
 				end if;
 
-			elsif point.y = zero_distance then
-				if point.x > zero_distance then
+			elsif get_axis (Y, point) = zero_distance then
+				if get_axis (X, point) > zero_distance then
 					angle_out := 0.0;
-				elsif point.x < zero_distance then
+				elsif get_axis (X, point) < zero_distance then
 					angle_out := 180.0;
 				else
 					angle_out := 0.0;
@@ -185,8 +189,8 @@ package body et_pcb_coordinates is
 
 			else
 				angle_out := type_float_angle (arctan (
-					x => type_float_distance (point.x),
-					y => type_float_distance (point.y),
+					x => type_float_distance (get_axis (X, point)),
+					y => type_float_distance (get_axis (Y, point)),
 					cycle => type_float_distance (units_per_cycle))
 					);
 			end if;
@@ -195,41 +199,19 @@ package body et_pcb_coordinates is
 			-- This computation depends on the Y axis style. The in the conventional style (Y going upwards positive)
 			-- we add the given angle to the current angle. In the old fashioned stlyle (Y going downwards positive)
 			-- we subtract the given angle from the current angle.
-			log_indentation_up;
-			log ("angle in  " & to_string (type_angle (angle_out)), log_threshold);
 			if Y_axis_positive = upwards then
 				angle_out := angle_out + type_float_angle (angle);
 			else
 				angle_out := angle_out - type_float_angle (angle);
 			end if;
-			log ("angle out " & type_float_angle'image (angle_out), log_threshold);
-			
-	-- 		-- Remove multiturns in angle_out. 
-	-- 		CS: no need because angle_out is invisible to the outside world.
-	-- 		-- example 1: angle_out =  370 degrees.  370 - 360 =  10. so angle_out equals  10 degrees.
-	-- 		-- example 2: angle_out = -370 degrees. -370 + 360 = -10. so angle_out equals -10 degrees.
-	-- 		if angle_out > type_float_angle (type_angle'last) then
-	-- 			angle_out := angle_out - type_float_angle (units_per_cycle);
-	-- 		elsif angle_out < type_float_angle (type_angle'first) then
-	-- 			angle_out := angle_out + type_float_angle (units_per_cycle);
-	-- 		else
-	-- 			null;
-	-- 		end if;
 
 			-- compute new x   -- (cos angle_out) * distance_to_origin
 			scratch := cos (type_float_distance (angle_out), type_float_distance (units_per_cycle));
-			--point.x := type_distance (scratch * distance_to_origin);
-			--point.x := et_math.round (float_in => type_distance (scratch * distance_to_origin), accuracy => accuracy_schematic);
-			point.x := type_distance (scratch * distance_to_origin);
-			--log ("x in sch. " & to_string (point.x), log_threshold);
+			set_point (axis => X, point => point, value => type_distance (scratch * distance_to_origin));
 
 			-- compute new y   -- (sin angle_out) * distance_to_origin
 			scratch := sin (type_float_distance (angle_out), type_float_distance (units_per_cycle));
-			--point.y := et_math.round (float_in => type_distance (scratch * distance_to_origin), accuracy => accuracy_schematic);
-			point.y := type_distance (scratch * distance_to_origin);
-			--log ("y in sch. " & to_string (point.y), log_threshold);
-			log ("point out " & to_string (point), log_threshold);
-			log_indentation_down;
+			set_point (axis => Y, point => point, value => type_distance (scratch * distance_to_origin));
 	
 		end if; -- if angle not zero
 		

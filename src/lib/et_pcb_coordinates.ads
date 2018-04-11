@@ -56,6 +56,7 @@ package et_pcb_coordinates is
 
 	
 	type type_axis is (X, Y, Z);
+
 	type type_face is (TOP, BOTTOM);
 
 	function to_string (face : in type_face) return string;
@@ -78,7 +79,8 @@ package et_pcb_coordinates is
 		& "z)";
 	
 	function to_distance (distance : in string) return type_distance;
-	
+
+	units_per_cycle : constant float := 360.0;
 	type type_angle is delta 0.01 range -359.9 .. 359.9;
 	for type_angle'small use 0.01;
 	zero_angle : constant type_angle := 0.0;

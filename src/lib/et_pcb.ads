@@ -299,16 +299,6 @@ package et_pcb is
 
 	procedure log_plated_millings (
 		millings 		: in type_package_pcb_contour_plated);
--- 		log_threshold	: in et_string_processing.type_log_level);
-
-	function contour_milled_rectangle_of_pad (
-	-- Converts the given dimensions to a list of lines of pcb contours.
-		center		: type_terminal_position; -- the terminal position (incl. angle, (z axis ignored))
-		size_x		: type_pad_size;	-- the size in x of the hole
-		size_y		: type_pad_size;	-- the size in y of the hole
-		offset_x	: type_pad_drill_offset;	-- the offset of the hole from the center in x
-		offset_y	: type_pad_drill_offset)	-- the offset of the hole from the center in y		return type_pcb_contour_lines.list;
-		return type_pcb_contour_lines.list;
 		
 	-- PACKAGE CONTOUR/OUTLINE -- for 3d only
 	type type_package_contour_line is new type_line with null record;

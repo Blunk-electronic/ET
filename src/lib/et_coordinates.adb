@@ -278,30 +278,14 @@ package body et_coordinates is
 			end if;
 			log ("angle out " & type_float_angle'image (angle_out), log_threshold);
 			
-	-- 		-- Remove multiturns in angle_out. 
-	-- 		CS: no need because angle_out is invisible to the outside world.
-	-- 		-- example 1: angle_out =  370 degrees.  370 - 360 =  10. so angle_out equals  10 degrees.
-	-- 		-- example 2: angle_out = -370 degrees. -370 + 360 = -10. so angle_out equals -10 degrees.
-	-- 		if angle_out > type_float_angle (type_angle'last) then
-	-- 			angle_out := angle_out - type_float_angle (units_per_cycle);
-	-- 		elsif angle_out < type_float_angle (type_angle'first) then
-	-- 			angle_out := angle_out + type_float_angle (units_per_cycle);
-	-- 		else
-	-- 			null;
-	-- 		end if;
-
 			-- compute new x   -- (cos angle_out) * distance_to_origin
 			scratch := cos (type_float_distance (angle_out), type_float_distance (units_per_cycle));
-			--point.x := type_distance (scratch * distance_to_origin);
-			--point.x := et_math.round (float_in => type_distance (scratch * distance_to_origin), accuracy => accuracy_schematic);
 			point.x := type_distance (scratch * distance_to_origin);
 			--log ("x in sch. " & to_string (point.x), log_threshold);
 
 			-- compute new y   -- (sin angle_out) * distance_to_origin
 			scratch := sin (type_float_distance (angle_out), type_float_distance (units_per_cycle));
-			--point.y := et_math.round (float_in => type_distance (scratch * distance_to_origin), accuracy => accuracy_schematic);
 			point.y := type_distance (scratch * distance_to_origin);
-			--log ("y in sch. " & to_string (point.y), log_threshold);
 			log ("point out " & to_string (point), log_threshold);
 			log_indentation_down;
 	

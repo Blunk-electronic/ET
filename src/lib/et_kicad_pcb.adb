@@ -104,6 +104,159 @@ package body et_kicad_pcb is
 		end if;
 	end to_terminal_shape_smt;
 
+
+	function contour_milled_rectangle_of_pad (
+	-- Converts the given position and dimensions of a rectangular slotted hole
+	-- to a list with four lines (top, bottom, right, left).
+		center		: et_pcb_coordinates.type_terminal_position; -- the terminal position (incl. angle, (z axis ignored))
+		size_x		: et_pcb.type_pad_size;	-- the size in x of the hole
+		size_y		: et_pcb.type_pad_size;	-- the size in y of the hole
+		offset_x	: et_pcb.type_pad_drill_offset;	-- the offset of the hole from the center in x
+		offset_y	: et_pcb.type_pad_drill_offset)	-- the offset of the hole from the center in y
+		return et_pcb.type_pcb_contour_lines.list is
+
+		use et_pcb;
+		use et_pcb_coordinates;
+	
+		lines : type_pcb_contour_lines.list; -- to be returned
+		line_horizontal_bottom	: type_pcb_contour_line;
+		line_horizontal_top		: type_pcb_contour_line;	
+		line_vertical_left 		: type_pcb_contour_line;
+		line_vertical_right 	: type_pcb_contour_line;
+		size_x_half : type_pad_size;
+		size_y_half : type_pad_size;
+	begin
+		size_x_half := size_x * 0.5;
+		size_y_half := size_y * 0.5;
+
+		-- HORIZONAL LINES
+		
+		-- bottom
+		-- start point x
+		set_point (X, 
+			value => offset_x + get_axis (X, type_point_3d (center)) - size_x_half,
+			point => line_horizontal_bottom.start_point);
+
+		-- start point y
+		set_point (Y, 
+			value => offset_y + get_axis (Y, type_point_3d (center)) - size_y_half,
+			point => line_horizontal_bottom.start_point);
+
+		-- rotate start point by angle of pad
+		rotate (point => line_horizontal_bottom.start_point, angle => get_angle (center));
+		
+		-- end point x
+		set_point (X,
+			value => offset_x + get_axis (X, type_point_3d (center)) + size_x_half,
+			point => line_horizontal_bottom.end_point);
+
+		-- end point y
+		set_point (Y,
+			value => offset_y + get_axis (Y, type_point_3d (center)) - size_y_half,
+			point => line_horizontal_bottom.end_point);
+
+		-- rotate end point by angle of pad
+		rotate (point => line_horizontal_bottom.end_point, angle => get_angle (center));
+
+
+		-- top
+		-- start point x
+		set_point (X, 
+			value => offset_x + get_axis (X, type_point_3d (center)) - size_x_half,
+			point => line_horizontal_top.start_point);
+
+		-- start point y
+		set_point (Y, 
+			value => offset_y + get_axis (Y, type_point_3d (center)) + size_y_half,
+			point => line_horizontal_top.start_point);
+
+		-- rotate start point by angle of pad
+		rotate (point => line_horizontal_top.start_point, angle => get_angle (center));
+		
+		-- end point x
+		set_point (X,
+			value => offset_x + get_axis (X, type_point_3d (center)) + size_x_half,
+			point => line_horizontal_top.end_point);
+
+		-- end point y
+		set_point (Y,
+			value => offset_y + get_axis (Y, type_point_3d (center)) + size_y_half,
+			point => line_horizontal_top.end_point);
+
+		-- rotate end point by angle of pad
+		rotate (point => line_horizontal_top.end_point, angle => get_angle (center));
+
+
+		
+
+		-- VERTICAL LINE
+
+		-- left
+		-- start point x
+		set_point (X,
+			value => offset_x + get_axis (X, type_point_3d (center)) - size_x_half,
+			point => line_vertical_left.start_point);
+
+		-- start point y
+		set_point (Y,
+			value => offset_y + get_axis (Y, type_point_3d (center)) - size_y_half,
+			point => line_vertical_left.start_point);
+
+		-- rotate start point by angle of pad
+		rotate (point => line_vertical_left.start_point, angle => get_angle (center));
+		
+		-- end point x
+		set_point (X,
+			value => offset_x + get_axis (X, type_point_3d (center)) - size_x_half,
+			point => line_vertical_left.end_point);
+
+		-- end point y
+		set_point (Y,
+			value => offset_y + get_axis (Y, type_point_3d (center)) + size_y_half,
+			point => line_vertical_left.end_point);
+
+		-- rotate end point by angle of pad
+		rotate (point => line_vertical_left.end_point, angle => get_angle (center));
+
+
+
+		-- right
+		-- start point x
+		set_point (X,
+			value => offset_x + get_axis (X, type_point_3d (center)) + size_x_half,
+			point => line_vertical_right.start_point);
+
+		-- start point y
+		set_point (Y,
+			value => offset_y + get_axis (Y, type_point_3d (center)) - size_y_half,
+			point => line_vertical_right.start_point);
+
+		-- rotate start point by angle of pad
+		rotate (point => line_vertical_right.start_point, angle => get_angle (center));
+		
+		-- end point x
+		set_point (X,
+			value => offset_x + get_axis (X, type_point_3d (center)) + size_x_half,
+			point => line_vertical_right.end_point);
+
+		-- end point y
+		set_point (Y,
+			value => offset_y + get_axis (Y, type_point_3d (center)) + size_y_half,
+			point => line_vertical_right.end_point);
+
+		-- rotate end point by angle of pad
+		rotate (point => line_vertical_right.end_point, angle => get_angle (center));
+
+
+		
+		lines.append (line_horizontal_top);
+		lines.append (line_horizontal_bottom);
+		lines.append (line_vertical_left);
+		lines.append (line_vertical_right);		
+		
+		return lines;
+	end contour_milled_rectangle_of_pad;
+
 	
 	function to_package_model (
 	-- Builds a package model from the given lines.
@@ -240,51 +393,15 @@ package body et_kicad_pcb is
 		description	: type_package_description.bounded_string; -- temp. storage of package description
 		tags 		: type_package_tags.bounded_string; -- temp. storage of package keywords
 
--- 		type type_attribute is (
--- 			SMD,
--- 			THT,
--- 			VIRTUAL	-- for things that do not have a package (ISA-Board edge connectors, ...)
--- 			);
-
 		-- The majority of terminals dictates the package technology. The default is THT.
 		package_technology : type_assembly_technology := THT;
 
 		-- By default a package is something real (with x,y,z dimension)
 		package_appearance : type_package_appearance := REAL;
 
--- 		-- For the package import we need a special set of layers. 
--- 		type type_layer is (
--- 			TOP_COPPER, BOT_COPPER,
--- 			TOP_SILK, BOT_SILK,
--- 			TOP_ASSY, BOT_ASSY, -- in kicad this is the fab layer
--- 			TOP_KEEP, BOT_KEEP -- in kicad this is the crtyrd layer
--- 			);
-
--- 	-- LINES, ARCS, CIRCLES
--- 		-- Temporarily we need special types for lines, arcs and circles for the import. 
--- 		-- They are derived from the abstract anchestor types in et_pcb.ads.
--- 		-- Their additional components (width, layer, angle, ...) are later 
--- 		-- copied to the final lines, arcs and circles as specified in type_package:
--- 		type type_line is new et_pcb.type_line with record
--- 			width	: type_text_line_width;
--- 			layer	: type_layer;
--- 		end record;
-		line : type_line;
-
--- 		type type_arc is new et_pcb.type_arc with record
--- 			width 	: type_text_line_width;
--- 			angle 	: et_pcb_coordinates.type_angle;
--- 			layer	: type_layer;
--- 		end record;
-		arc : type_arc;
-
--- 		type type_circle is new et_pcb.type_circle with record -- center and radius incl.
--- 			width 	: type_text_line_width;
--- 			point 	: et_pcb_coordinates.type_point_3d;
--- 			layer	: type_layer;
--- 		end record;
-		circle : type_circle;
-
+		line	: type_line;
+		arc		: type_arc;
+		circle	: type_circle;
 		
 
 	-- TERMINALS
