@@ -323,6 +323,7 @@ package et_pcb is
 	-- COPPER STRUCTURES (NON ELECTRIC !!)
 	type type_copper_line is new type_line with record
 		width	: type_general_line_width;
+		--layers : type_signal_layer;
 	end record;
 
 	package type_copper_lines is new doubly_linked_lists (type_copper_line);
@@ -341,18 +342,22 @@ package et_pcb is
 
 	package type_copper_circles is new doubly_linked_lists (type_copper_circle);
 
-	
-	type type_package_copper is record -- NON ELECTRIC !!
+	-- base type for NON ELECTRIC !! copper objects
+	type type_copper is tagged record 
 		lines 		: type_copper_lines.list;
 		arcs		: type_copper_arcs.list;
 		circles		: type_copper_circles.list;
 		texts		: type_texts_with_content.list;
+		-- CS polygons
 	end record;
 
-	type type_package_copper_both_faces is record
-		top		: type_package_copper;
-		bottom	: type_package_copper;
+	-- since NON ELECTRIC copper objects of a package can be on both sides 
+	-- of the board we need this type:
+	type type_copper_package_both_sides is record
+		top		: type_copper;
+		bottom	: type_copper;
 	end record;
+
 
 	
 
@@ -377,32 +382,37 @@ package et_pcb is
 
 	package type_silk_circles is new doubly_linked_lists (type_silk_circle);
 
-	
-	type type_package_silk_screen is record
+
+	-- This is the base type for silk screen objects in general:
+	type type_silk_screen is tagged record
 		lines 		: type_silk_lines.list;
 		arcs		: type_silk_arcs.list;
 		circles		: type_silk_circles.list;
 		texts		: type_texts_with_content.list;
+	end record;
+
+	-- Silk screen objects of a package include placeholders:
+	type type_silk_screen_package is new type_silk_screen with record
 		placeholders: type_package_text_placeholders.list;
 	end record;
 
-	type type_package_silk_screen_both_faces is record
-		top		: type_package_silk_screen;
-		bottom	: type_package_silk_screen;
-	end record;
-	
-	type type_pcb_silk_screen is record
-		lines 		: type_silk_lines.list;
-		arcs		: type_silk_arcs.list;
-		circles		: type_silk_circles.list;
-		texts		: type_texts_with_content.list;
-		-- CS placeholder for revision, board name, misc ... defined via configuration file
+	-- Because silk screen is about two sides of the board this composite is required:
+	type type_silk_screen_package_both_sides is record
+		top		: type_silk_screen_package;
+		bottom	: type_silk_screen_package;
 	end record;
 
-	type type_pcb_silk_screen_both_faces is record
-		top 	: type_pcb_silk_screen;
-		bottom	: type_pcb_silk_screen;
+	-- For silk screen objects that do not belong to any packages use this type:
+	type type_silk_screen_pcb is new type_silk_screen with null record;
+		-- CS placeholder for revision, board name, misc ... defined via configuration file
+
+	-- Because silk screen is about two sides of the board this composite is required:	
+	type type_silk_screen_pcb_both_sides is record
+		top 	: type_silk_screen_pcb;
+		bottom	: type_silk_screen_pcb;
 	end record;
+
+
 	
 
 	-- ASSEMBLY DOCUMENTATION
@@ -425,28 +435,39 @@ package et_pcb is
 	end record;
 
 	package type_doc_circles is new doubly_linked_lists (type_doc_circle);
-	
-	type type_package_assembly_documentation is record
+
+	-- This is the base type for assembly documentation objects in general:
+	type type_assembly_documentation is tagged record
 		lines 		: type_doc_lines.list;
 		arcs		: type_doc_arcs.list;
 		circles		: type_doc_circles.list;
 		texts		: type_texts_with_content.list;
+	end record;
+
+	-- Aassembly documentation objects of a package include placeholders:
+	type type_assembly_documentation_package is new type_assembly_documentation with record
 		placeholders: type_package_text_placeholders.list;
 	end record;
 
-	type type_package_assembly_documentation_both_faces is record
-		top		: type_package_assembly_documentation;
-		bottom	: type_package_assembly_documentation;
+	-- Because assembly documentation is about two sides of the board this composite is required:
+	type type_assembly_documentation_package_both_sides is record
+		top		: type_assembly_documentation_package;
+		bottom	: type_assembly_documentation_package;
 	end record;
+
+	-- For assembly documentation objects that do not belong to any packages use this type:
+	type type_assembly_documentation_pcb is new type_assembly_documentation with null record;
+		-- CS placeholder for revision, board name, misc ... defined via configuration file
+
+	-- Because assembly documentation is about two sides of the board this composite is required:	
+	type type_assembly_documentation_pcb_both_sides is record
+		top 	: type_assembly_documentation_pcb;
+		bottom	: type_assembly_documentation_pcb;
+	end record;
+
+
 	
-	type type_pcb_assembly_documentation is record
-		lines 		: type_doc_lines.list;
-		arcs		: type_doc_arcs.list;
-		circles		: type_doc_circles.list;
-		texts		: type_texts_with_content.list;
-	end record;
-
-
+	
 	-- KEEPOUT
 	type type_keepout_line is new type_line with null record;
 	package type_keepout_lines is new doubly_linked_lists (type_keepout_line);
@@ -457,7 +478,7 @@ package et_pcb is
 	type type_keepout_circle is new type_circle with null record;
 	package type_keepout_circles is new doubly_linked_lists (type_keepout_circle);
 	
-	type type_package_keepout is record
+	type type_keepout is record
 		lines 	: type_keepout_lines.list;
 		arcs	: type_keepout_arcs.list;
 		circles	: type_keepout_circles.list;
@@ -465,23 +486,16 @@ package et_pcb is
 		-- CS polygons
 	end record;
 
-	type type_package_keepout_both_faces is record
-		top 	: type_package_keepout;
-		bottom	: type_package_keepout;
+	type type_keepout_package_both_sides is record
+		top 	: type_keepout;
+		bottom	: type_keepout;
 	end record;
 	
-	type type_pcb_keepout is record
-		lines 	: type_keepout_lines.list;
-		arcs	: type_keepout_arcs.list;
-		circles	: type_keepout_circles.list;
-		-- CS texts		: type_texts_with_content.list; -- for placement note ?
-		-- CS polygons
+	type type_keepout_pcb_both_sides is record
+		top 	: type_keepout;
+		bottom	: type_keepout;
 	end record;
 
-	type type_pcb_keepout_both_faces is record
-		top 	: type_pcb_keepout;
-		bottom	: type_pcb_keepout;
-	end record;
 
 	
 	-- ROUTE RESTRICT
@@ -501,23 +515,22 @@ package et_pcb is
 		layers : type_signal_layers.set;
 	end record;
 	package type_route_restrict_circles is new doubly_linked_lists (type_route_restrict_circle);
-	
-	type type_package_route_restrict is record
+
+	-- this is the base type for route restrict objects
+	type type_route_restrict is tagged record
 		lines 	: type_route_restrict_lines.list;
 		arcs	: type_route_restrict_arcs.list;
 		circles	: type_route_restrict_lines.list;
+		-- CS polygons
 		-- CS texts		: type_texts_with_content.list; -- for routing notes ?		
-		-- CS polygons
 	end record;
+	
+	type type_route_restrict_package is new type_route_restrict with null record;
+	type type_route_restrict_pcb is new type_route_restrict with null record;
 
-	type type_pcb_route_restrict is record
-		lines 	: type_route_restrict_lines.list;
-		arcs	: type_route_restrict_arcs.list;
-		circles	: type_route_restrict_lines.list;
-		-- CS texts		: type_texts_with_content.list; -- for routing notes ?
-		-- CS polygons
-	end record;
 
+
+	
 
 	-- VIA RESTRICT
 	type type_via_restrict_line is new type_line with record
@@ -537,8 +550,9 @@ package et_pcb is
 	end record;
 	
 	package type_via_restrict_circles is new doubly_linked_lists (type_via_restrict_circle);
-	
-	type type_package_via_restrict is record
+
+	-- this is the base type for via restrict objects
+	type type_via_restrict is tagged record
 		lines 	: type_via_restrict_lines.list;
 		arcs	: type_via_restrict_arcs.list;
 		circles	: type_via_restrict_lines.list;
@@ -546,20 +560,15 @@ package et_pcb is
 		-- CS polygons
 	end record;
 	
-	type type_pcb_via_restrict is record
-		lines 	: type_via_restrict_lines.list;
-		arcs	: type_via_restrict_arcs.list;
-		circles	: type_via_restrict_lines.list;
-		-- CS texts		: type_texts_with_content.list; -- for via notes ?
-		-- CS polygons
-	end record;
+	type type_via_restrict_package is new type_via_restrict with null record;
+	type type_via_restrict_pcb is new type_via_restrict with null record;
 	
 
 
 
 	type type_package_appearance is (
 		REAL,	-- packages with x,y,z dimension
-		VIRTUAL -- for things that do not have a package (ISA-Board edge connectors, ...)
+		VIRTUAL -- for things that do not have a package (netchangers, testpoints, ISA-Board edge connectors, ...)
 		);	
 
 	function to_string (appearance : in type_package_appearance) return string;
@@ -586,12 +595,13 @@ package et_pcb is
 	function to_string (stop_mask : in type_terminal_stop_mask) return string;
 
 	type type_terminal_tht_hole is (DRILLED, MILLED);
-	
-	type type_terminal (
+
+	-- This is the base type specification of a terminal:
+	type type_terminal_base (
 		technology	: type_assembly_technology;
 		shape		: type_terminal_shape;
 		tht_hole	: type_terminal_tht_hole) -- without meaning if technology is SMT
-	is record
+	is tagged record
 		position	: type_terminal_position;
 
 		case technology is
@@ -638,7 +648,7 @@ package et_pcb is
 
 	package type_terminals is new indefinite_ordered_maps (
 		key_type		=> et_libraries.type_terminal_name.bounded_string,
-		element_type	=> type_terminal,
+		element_type	=> type_terminal_base,
 		"<"				=> et_libraries.type_terminal_name."<");
 
 
@@ -657,12 +667,12 @@ package et_pcb is
 	
 	type type_package (appearance : type_package_appearance) is record
 		description				: type_package_description.bounded_string;
-		copper					: type_package_copper_both_faces;
-		silk_screen				: type_package_silk_screen_both_faces; -- incl. placeholder for reference and purpose
-		assembly_documentation	: type_package_assembly_documentation_both_faces; -- incl. placeholder for value
-		keepout 				: type_package_keepout_both_faces;
-		route_restrict 			: type_package_route_restrict;
-		via_restrict 			: type_package_via_restrict;
+		copper					: type_copper_package_both_sides;
+		silk_screen				: type_silk_screen_package_both_sides; -- incl. placeholder for reference and purpose
+		assembly_documentation	: type_assembly_documentation_package_both_sides; -- incl. placeholder for value
+		keepout 				: type_keepout_package_both_sides;
+		route_restrict 			: type_route_restrict_package;
+		via_restrict 			: type_via_restrict_package;
 		-- holes
 		pcb_contours			: type_package_pcb_contour;
 		pcb_contours_plated 	: type_package_pcb_contour_plated;
@@ -675,7 +685,7 @@ package et_pcb is
 			when REAL =>
 				package_contours : type_package_contour;
 			when VIRTUAL =>
-				null;
+				null; -- netchangers, testpoints, ISA-Board edge connectors, ...
 		end case;
 	end record;
 

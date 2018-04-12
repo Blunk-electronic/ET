@@ -466,22 +466,22 @@ package body et_kicad_pcb is
 		
 	-- CONTAINERS 
 
-		-- COPPER OBJECTS (lines, arcs, circles, texts)
-		top_copper_objects, bot_copper_objects : type_package_copper;
+		-- NON ELECTRIC !!! COPPER OBJECTS (lines, arcs, circles, texts)
+		top_copper_objects, bot_copper_objects : type_copper;
 	
 		-- SILK SCREEN OBJECTS (lines, arcs, circles, texts, text placeholders)
-		top_silk_screen, bot_silk_screen 	: type_package_silk_screen;
+		top_silk_screen, bot_silk_screen 	: type_silk_screen_package;
 
 		-- ASSEMBLY DOC (FAB) OBJECTS (lines, arcs, circles, texts, text placeholders)
-		top_assy_doc, bot_assy_doc			: type_package_assembly_documentation;
+		top_assy_doc, bot_assy_doc			: type_assembly_documentation_package;
 
 		-- KEEPOUT OBJECTS (lines, arcs, circles)
-		top_keepout, bot_keepout			: type_package_keepout;
+		top_keepout, bot_keepout			: type_keepout;
 
 		pcb_contours			: type_package_pcb_contour;		
 		pcb_contours_plated 	: type_package_pcb_contour_plated;
-		route_restrict 			: type_package_route_restrict;
-		via_restrict 			: type_package_via_restrict;
+		route_restrict 			: type_route_restrict_package;
+		via_restrict 			: type_via_restrict_package;
 
 		
 		procedure init_stop_and_mask is begin

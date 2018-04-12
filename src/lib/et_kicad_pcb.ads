@@ -182,7 +182,51 @@ package et_kicad_pcb is
 	layer_id_max : constant positive := 49;
 	type type_layer_id is range 0..layer_id_max;
 
+	-- Packages (modules) as they are listed in the board file are similar to
+	-- packages in the libraries. However, there are differences, which requires
+	-- a distinct type for them. 
+	-- Differences are: 
+	-- - no placeholders for reference and value
+	-- - x/y position and angle of the package 
+	-- - pads with net names
 
+	-- silk screen objects without text placeholders:
+	type type_silk_screen_package_both_sides is record
+		top		: et_pcb.type_silk_screen;
+		bottom	: et_pcb.type_silk_screen;
+	end record;
+
+	-- assembly documentation objects without text placeholders:
+	type type_assembly_documentation_package_both_sides is record
+		top		: et_pcb.type_assembly_documentation;
+		bottom	: et_pcb.type_assembly_documentation;
+	end record;
+	
+
+	
+	type type_board_package (appearance : et_pcb.type_package_appearance) is record
+		description				: et_pcb.type_package_description.bounded_string;
+		copper					: et_pcb.type_copper_package_both_sides;
+		silk_screen				: type_silk_screen_package_both_sides;
+		assembly_documentation	: type_assembly_documentation_package_both_sides;
+		keepout 				: et_pcb.type_keepout_package_both_sides;
+		route_restrict 			: et_pcb.type_route_restrict_package;
+		via_restrict 			: et_pcb.type_via_restrict_package;
+		-- holes
+		pcb_contours			: et_pcb.type_package_pcb_contour;
+		pcb_contours_plated 	: et_pcb.type_package_pcb_contour_plated;
+		terminals				: et_pcb.type_terminals.map;
+		timestamp				: et_string_processing.type_timestamp;
+		technology				: et_pcb.type_assembly_technology; -- set by majority of terminals
+		
+		-- Only REAL packages have 3d contours:
+		case appearance is
+			when et_pcb.REAL =>
+				package_contours : et_pcb.type_package_contour;
+			when et_pcb.VIRTUAL =>
+				null;
+		end case;
+	end record;
 
 	
 	type type_board is record
