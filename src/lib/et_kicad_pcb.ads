@@ -203,7 +203,7 @@ package et_kicad_pcb is
 	end record;
 	
 
-	
+	-- CS
 	type type_board_package (appearance : et_pcb.type_package_appearance) is record
 		description				: et_pcb.type_package_description.bounded_string;
 		copper					: et_pcb.type_copper_package_both_sides;
@@ -215,7 +215,7 @@ package et_kicad_pcb is
 		-- holes
 		pcb_contours			: et_pcb.type_package_pcb_contour;
 		pcb_contours_plated 	: et_pcb.type_package_pcb_contour_plated;
-		terminals				: et_pcb.type_terminals.map;
+		terminals				: et_pcb.type_terminals.map; -- CS
 		timestamp				: et_string_processing.type_timestamp;
 		technology				: et_pcb.type_assembly_technology; -- set by majority of terminals
 		

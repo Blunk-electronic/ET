@@ -459,7 +459,7 @@ package body et_kicad_pcb is
 		text : type_package_text;
 
 		-- Temporarily text placeholders for reference and value are required. 
-		placeholder : type_package_text_placeholder;
+		placeholder : type_text_placeholder_package;
 
 
 		
@@ -1828,14 +1828,14 @@ package body et_kicad_pcb is
 		-- Checks if there is at least one placeholder for reference and for value.
 		-- CS: validate text sizes and width according to specifications in configuration file
 			use et_pcb_coordinates;
-			use type_package_text_placeholders;
-			cursor 		: type_package_text_placeholders.cursor;
-			placeholder : type_package_text_placeholder;
+			use type_text_placeholders_package;
+			cursor 		: type_text_placeholders_package.cursor;
+			placeholder : type_text_placeholder_package;
 			reference_found, value_found : boolean := false;
 		begin
 			-- There must be a placeholder for the reference in the top silk screen:
 			cursor := top_silk_screen.placeholders.first;
-			while cursor /= type_package_text_placeholders.no_element loop
+			while cursor /= type_text_placeholders_package.no_element loop
 				placeholder := element (cursor);
 				if placeholder.meaning = REFERENCE then
 					reference_found := true;
@@ -1855,7 +1855,7 @@ package body et_kicad_pcb is
 
 			-- There must be a placeholder for the value in the top assembly documentation:
 			cursor := top_assy_doc.placeholders.first;
-			while cursor /= type_package_text_placeholders.no_element loop
+			while cursor /= type_text_placeholders_package.no_element loop
 				placeholder := element (cursor);
 				if placeholder.meaning = VALUE then
 					value_found := true;

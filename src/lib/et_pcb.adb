@@ -188,9 +188,9 @@ package body et_pcb is
 			;
 	end text_properties;
 	
-	function to_string (text_meaning : in type_package_text_meaning) return string is
+	function to_string (text_meaning : in type_text_meaning_package) return string is
 	begin
-		return type_package_text_meaning'image (text_meaning);
+		return type_text_meaning_package'image (text_meaning);
 	end to_string;
 	
 	function to_directory (directory_name : in string) return type_directory_name.bounded_string is
@@ -549,10 +549,10 @@ package body et_pcb is
 	procedure placeholder_silk_screen_properties (
 	-- Logs the properties of the given silk screen placeholder
 		face			: in type_face;
-		cursor			: in type_package_text_placeholders.cursor;
+		cursor			: in type_text_placeholders_package.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_package_text_placeholders;
-		placeholder : type_package_text_placeholder;
+		use type_text_placeholders_package;
+		placeholder : type_text_placeholder_package;
 	begin
 		placeholder := element (cursor);
 		log ("silk screen placeholder face" & to_string (face)
@@ -566,10 +566,10 @@ package body et_pcb is
 	procedure placeholder_assy_doc_properties (
 	-- Logs the properties of the given assembly documentation placeholder
 		face			: in type_face;
-		cursor			: in type_package_text_placeholders.cursor;
+		cursor			: in type_text_placeholders_package.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_package_text_placeholders;
-		placeholder : type_package_text_placeholder;
+		use type_text_placeholders_package;
+		placeholder : type_text_placeholder_package;
 	begin
 		placeholder := element (cursor);
 		log ("assembly doc placeholder face" & to_string (face)

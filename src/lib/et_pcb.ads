@@ -195,16 +195,58 @@ package et_pcb is
 	
 	
 	-- PLACEHOLDERS FOR TEXTS IN A PACKAGE
-	type type_package_text_meaning is (REFERENCE, VALUE); -- CS: purpose ?
+	type type_text_meaning_package is (REFERENCE, VALUE); -- CS: purpose ?
 
-	function to_string (text_meaning : in type_package_text_meaning) return string;
+	function to_string (text_meaning : in type_text_meaning_package) return string;
 	
-	type type_package_text_placeholder is new type_text with record
-		meaning : type_package_text_meaning;
+	type type_text_placeholder_package is new type_text with record
+		meaning : type_text_meaning_package;
 	end record;
 
-	package type_package_text_placeholders is new doubly_linked_lists (
-		element_type => type_package_text_placeholder);
+	package type_text_placeholders_package is new doubly_linked_lists (
+		element_type => type_text_placeholder_package);
+
+	
+
+	-- PLACEHOLDERS FOR TEXTS IN ALL COPPER LAYERS
+	type type_text_meaning_copper is (
+		PROJECT_NAME,
+		REVISION,
+		SIGNAL_LAYER_ID,
+		SIGNAL_NAME
+		);
+
+	type type_text_placeholder_copper is new type_text with record
+		meaning : type_text_meaning_copper;
+		layer	: type_signal_layer;	-- the layer the placeholder is placed at
+	end record;
+
+	package type_text_placeholders_copper is new doubly_linked_lists (
+		element_type => type_text_placeholder_copper);
+
+
+	
+	
+	-- PLACEHOLDERS FOR TEXTS IN BOARD DRAWING
+	type type_text_meaning_pcb is (
+		PROJECT_NAME,
+		PROJECT_STATUS,
+		DRAWING_NUMBER,
+		DRAWING_STATUS,
+		PERSON_NAME_DRAWN,
+		PERSON_NAME_CHECKED,
+		PERSON_NAME_APPROVED,
+		DATE_DRAWN,
+		DATE_CHECKED,
+		DATE_APPROVED,
+		CUSTOMER,
+		REVISION
+		);
+		-- CS should be defined via configuration file:
+	
+	type type_text_placeholder_pcb is new type_text with record
+		meaning : type_text_meaning_pcb;
+	end record;
 
 
 
@@ -220,14 +262,6 @@ package et_pcb is
 	
 
 
-
-
-	-- PLACEHOLDERS FOR PCB
-	-- CS type type_pcb_text_placeholder (meaning : type_pcb_text_meaning) is new type_text with null record;
-	-- should be a defined via configuration file:
-	-- project, drawing number, drawn, checked, approved, ...
-
-	
 
 	
 
@@ -255,6 +289,9 @@ package et_pcb is
 	type type_locked is (NO, YES);
 
 
+
+
+	
 	
 	-- PCB CONTOUR/OUTLINE
 	type type_pcb_contour_line is new type_line with record
@@ -320,35 +357,36 @@ package et_pcb is
 	-- Returns an empty package contour.
 
 
+
+	
+
 	-- COPPER STRUCTURES (NON ELECTRIC !!)
 	type type_copper_line is new type_line with record
 		width	: type_general_line_width;
-		--layers : type_signal_layer;
+		-- CS layer	: type_signal_layer;
 	end record;
-
 	package type_copper_lines is new doubly_linked_lists (type_copper_line);
-
 
 	type type_copper_arc is new type_arc with record
 		width	: type_general_line_width;
+		-- CS layer	: type_signal_layer;		
 	end record;
-
 	package type_copper_arcs is new doubly_linked_lists (type_copper_arc);
-
 
 	type type_copper_circle is new type_circle with record
 		width	: type_general_line_width;
+		-- CS layer	: type_signal_layer;
 	end record;
-
 	package type_copper_circles is new doubly_linked_lists (type_copper_circle);
 
 	-- base type for NON ELECTRIC !! copper objects
-	type type_copper is tagged record 
+	type type_copper is record 
 		lines 		: type_copper_lines.list;
 		arcs		: type_copper_arcs.list;
 		circles		: type_copper_circles.list;
 		texts		: type_texts_with_content.list;
 		-- CS polygons
+		-- CS placeholders : type_text_placeholders_copper.list;
 	end record;
 
 	-- since NON ELECTRIC copper objects of a package can be on both sides 
@@ -393,7 +431,7 @@ package et_pcb is
 
 	-- Silk screen objects of a package include placeholders:
 	type type_silk_screen_package is new type_silk_screen with record
-		placeholders: type_package_text_placeholders.list;
+		placeholders: type_text_placeholders_package.list;
 	end record;
 
 	-- Because silk screen is about two sides of the board this composite is required:
@@ -446,7 +484,7 @@ package et_pcb is
 
 	-- Aassembly documentation objects of a package include placeholders:
 	type type_assembly_documentation_package is new type_assembly_documentation with record
-		placeholders: type_package_text_placeholders.list;
+		placeholders: type_text_placeholders_package.list;
 	end record;
 
 	-- Because assembly documentation is about two sides of the board this composite is required:
@@ -823,13 +861,13 @@ package et_pcb is
 	procedure placeholder_silk_screen_properties (
 	-- Logs the properties of the given silk screen placeholder
 		face			: in type_face;
-		cursor			: in type_package_text_placeholders.cursor;
+		cursor			: in type_text_placeholders_package.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure placeholder_assy_doc_properties (
 	-- Logs the properties of the given assembly documentation placeholder
 		face			: in type_face;
-		cursor			: in type_package_text_placeholders.cursor;
+		cursor			: in type_text_placeholders_package.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 	
 	procedure text_silk_screen_properties (
