@@ -203,12 +203,13 @@ package et_pcb is
 		meaning : type_text_meaning_package;
 	end record;
 
+	-- There can be lots of placeholders of this kind. So they can be are stored in a list:	
 	package type_text_placeholders_package is new doubly_linked_lists (
 		element_type => type_text_placeholder_package);
 
 	
 
-	-- PLACEHOLDERS FOR TEXTS IN ALL COPPER LAYERS
+	-- PLACEHOLDERS FOR TEXTS IN COPPER LAYERS
 	type type_text_meaning_copper is (
 		PROJECT_NAME,
 		REVISION,
@@ -218,9 +219,10 @@ package et_pcb is
 
 	type type_text_placeholder_copper is new type_text with record
 		meaning : type_text_meaning_copper;
-		layer	: type_signal_layer;	-- the layer the placeholder is placed at
+		layer	: type_signal_layer;	-- the copper layer the placeholder is placed at
 	end record;
 
+	-- There can be lots of placeholders of this kind. So they can be are stored in a list:
 	package type_text_placeholders_copper is new doubly_linked_lists (
 		element_type => type_text_placeholder_copper);
 
@@ -243,7 +245,8 @@ package et_pcb is
 		REVISION
 		);
 		-- CS should be defined via configuration file:
-	
+
+	-- There can be lots of placeholders of this kind. So they can be are stored in a list:
 	type type_text_placeholder_pcb is new type_text with record
 		meaning : type_text_meaning_pcb;
 	end record;
@@ -360,43 +363,75 @@ package et_pcb is
 
 	
 
-	-- COPPER STRUCTURES (NON ELECTRIC !!)
+	-- COPPER OBJECTS (NON ELECTRIC !!) OF A PACKAGE
 	type type_copper_line is new type_line with record
 		width	: type_general_line_width;
-		-- CS layer	: type_signal_layer;
 	end record;
 	package type_copper_lines is new doubly_linked_lists (type_copper_line);
 
 	type type_copper_arc is new type_arc with record
 		width	: type_general_line_width;
-		-- CS layer	: type_signal_layer;		
 	end record;
 	package type_copper_arcs is new doubly_linked_lists (type_copper_arc);
 
 	type type_copper_circle is new type_circle with record
 		width	: type_general_line_width;
-		-- CS layer	: type_signal_layer;
 	end record;
 	package type_copper_circles is new doubly_linked_lists (type_copper_circle);
 
-	-- base type for NON ELECTRIC !! copper objects
+	-- Type for NON ELECTRIC !! copper objects of a package:
 	type type_copper is record 
 		lines 		: type_copper_lines.list;
 		arcs		: type_copper_arcs.list;
 		circles		: type_copper_circles.list;
 		texts		: type_texts_with_content.list;
 		-- CS polygons
-		-- CS placeholders : type_text_placeholders_copper.list;
 	end record;
-
+	
 	-- since NON ELECTRIC copper objects of a package can be on both sides 
-	-- of the board we need this type:
+	-- of the board we need this type. There is no reason for NON ELECTRIC 
+	-- copper objects in inner layers. So we deal with top and bottom side only:
 	type type_copper_package_both_sides is record
 		top		: type_copper;
 		bottom	: type_copper;
 	end record;
 
 
+
+
+	-- COPPER OBJECTS (NON ELECTRIC !!) OF A PCB
+	-- In a pcb drawing copper objects can be placed at various copper layers.
+	-- This requires a layer id for the object.
+	type type_copper_line_pcb is new type_copper_line with record
+		layer	: type_signal_layer;
+	end record;
+	package type_copper_lines_pcb is new doubly_linked_lists (type_copper_line_pcb);
+
+	type type_copper_arc_pcb is new type_copper_arc with record
+		layer	: type_signal_layer;		
+	end record;
+	package type_copper_arcs_pcb is new doubly_linked_lists (type_copper_arc_pcb);
+
+	type type_copper_circle_pcb is new type_copper_circle with record
+		layer	: type_signal_layer;
+	end record;
+	package type_copper_circles_pcb is new doubly_linked_lists (type_copper_circle_pcb);
+
+	-- Type for NON ELECTRIC !! copper objects:
+	-- NON ELECTRIC copper objects of a pcb may also include text placeholders:
+	type type_copper_pcb is record 
+		lines 			: type_copper_lines.list;
+		arcs			: type_copper_arcs.list;
+		circles			: type_copper_circles.list;
+		texts			: type_texts_with_content.list;
+		placeholders	: type_text_placeholders_copper.list;		
+		-- CS polygons
+	end record;
+	
+
+
+
+	
 	
 
 	-- SILK SCREEN
