@@ -670,11 +670,11 @@ package et_pcb is
 	type type_terminal_tht_hole is (DRILLED, MILLED);
 
 	-- This is the base type specification of a terminal:
-	type type_terminal_base (
+	type type_terminal (
 		technology	: type_assembly_technology;
 		shape		: type_terminal_shape;
 		tht_hole	: type_terminal_tht_hole) -- without meaning if technology is SMT
-	is tagged record
+		is tagged record
 		position	: type_terminal_position;
 
 		case technology is
@@ -699,9 +699,7 @@ package et_pcb is
 							when MILLED =>
 								millings : type_package_pcb_contour_plated;
 						end case;
-						
 				end case;
-
 				
 			when SMT =>
 				shape_smt		: type_terminal_shape_smt;
@@ -721,7 +719,7 @@ package et_pcb is
 
 	package type_terminals is new indefinite_ordered_maps (
 		key_type		=> et_libraries.type_terminal_name.bounded_string,
-		element_type	=> type_terminal_base,
+		element_type	=> type_terminal,
 		"<"				=> et_libraries.type_terminal_name."<");
 
 
@@ -750,7 +748,7 @@ package et_pcb is
 		pcb_contours			: type_package_pcb_contour;
 		pcb_contours_plated 	: type_package_pcb_contour_plated;
 		terminals				: type_terminals.map;
-		timestamp				: et_string_processing.type_timestamp;
+		time_stamp				: et_string_processing.type_timestamp;
 		technology				: type_assembly_technology; -- set by majority of terminals
 		
 		-- Only REAL packages have 3d contours:

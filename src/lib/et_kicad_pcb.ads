@@ -201,9 +201,20 @@ package et_kicad_pcb is
 		top		: et_pcb.type_assembly_documentation;
 		bottom	: et_pcb.type_assembly_documentation;
 	end record;
-	
 
-	-- CS
+	-- In the pcb drawing, a terminal has a net attached. For this reason a
+	-- list of terminals is declared here:
+	type type_terminal is new et_pcb.type_terminal with record
+		net_name : et_schematic.type_net_name.bounded_string;
+	end record;
+
+	-- the list of terminals of a package:
+	package type_terminals is new indefinite_ordered_maps (
+		key_type		=> et_libraries.type_terminal_name.bounded_string,
+		element_type	=> type_terminal,
+		"<"				=> et_libraries.type_terminal_name."<");
+
+	
 	type type_board_package (appearance : et_pcb.type_package_appearance) is record
 		description				: et_pcb.type_package_description.bounded_string;
 		copper					: et_pcb.type_copper_package_both_sides;
@@ -212,11 +223,12 @@ package et_kicad_pcb is
 		keepout 				: et_pcb.type_keepout_package_both_sides;
 		route_restrict 			: et_pcb.type_route_restrict_package;
 		via_restrict 			: et_pcb.type_via_restrict_package;
-		-- holes
+		-- CS holes
 		pcb_contours			: et_pcb.type_package_pcb_contour;
 		pcb_contours_plated 	: et_pcb.type_package_pcb_contour_plated;
-		terminals				: et_pcb.type_terminals.map; -- CS
-		timestamp				: et_string_processing.type_timestamp;
+		terminals				: type_terminals.map;
+		time_stamp				: et_string_processing.type_timestamp;
+		time_edit				: et_string_processing.type_timestamp;
 		technology				: et_pcb.type_assembly_technology; -- set by majority of terminals
 		
 		-- Only REAL packages have 3d contours:

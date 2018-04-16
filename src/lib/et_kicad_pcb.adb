@@ -448,7 +448,7 @@ package body et_kicad_pcb is
 		terminal_stop_mask : type_terminal_stop_mask;
 
 		-- Here we collect all kinds of terminals after they have been built.
-		terminals : type_terminals.map;
+		terminals : et_pcb.type_terminals.map;
 
 		-- This flag goes true once a terminal is to be inserted that already exists (by its name).
 		terminal_inserted : boolean;
@@ -1456,7 +1456,7 @@ package body et_kicad_pcb is
 		-- Restores the previous section.
 			use et_pcb_coordinates;
 			use et_libraries;
-			terminal_cursor			: type_terminals.cursor;
+			terminal_cursor			: et_pcb.type_terminals.cursor;
 			silk_screen_line_cursor	: type_silk_lines.cursor;
 
 			procedure invalid_layer is begin
@@ -1879,8 +1879,8 @@ package body et_kicad_pcb is
 		-- If the package is REAL, counts the tht and smd terminals. 
 		-- Warns operator if the package technology
 		-- is not set according to the majority of terminals respectively.
-			use type_terminals;
-			cursor : type_terminals.cursor := terminals.first;
+			use et_pcb.type_terminals;
+			cursor : et_pcb.type_terminals.cursor := terminals.first;
 			tht_count, smt_count : natural := 0; -- the number of THT or SMT terminals
 
 			function number (count : in natural) return string is begin
@@ -1896,7 +1896,7 @@ package body et_kicad_pcb is
 			if package_appearance = REAL then
 				log ("assembly technology " & to_string (package_technology), log_threshold + 1);
 			
-				while cursor /= type_terminals.no_element loop
+				while cursor /= et_pcb.type_terminals.no_element loop
 					case element (cursor).technology is
 						when THT => tht_count := tht_count + 1;
 						when SMT => smt_count := smt_count + 1;
@@ -2037,7 +2037,7 @@ package body et_kicad_pcb is
 					route_restrict 			=> route_restrict,
 					via_restrict 			=> via_restrict,
 					assembly_documentation 	=> (top => top_assy_doc, bottom => bot_assy_doc),
-					timestamp				=> time_stamp,
+					time_stamp				=> time_stamp,
 					description				=> description,
 					technology				=> package_technology
 					);
@@ -2054,7 +2054,7 @@ package body et_kicad_pcb is
 					route_restrict 			=> route_restrict,
 					via_restrict 			=> via_restrict,
 					assembly_documentation 	=> (top => top_assy_doc, bottom => bot_assy_doc),
-					timestamp				=> time_stamp,
+					time_stamp				=> time_stamp,
 					description				=> description,
 					technology				=> package_technology
 					);
@@ -2546,6 +2546,7 @@ package body et_kicad_pcb is
 		terminal_stop_mask : type_terminal_stop_mask;
 
 		-- Here we collect all kinds of terminals after they have been built.
+		-- NOTE: This is the type_terminals as specified in et_kicad_pcb ! (includes net names)
 		terminals : type_terminals.map;
 
 		-- This flag goes true once a terminal is to be inserted that already exists (by its name).
