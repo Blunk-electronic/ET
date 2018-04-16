@@ -734,20 +734,16 @@ package et_pcb is
 
 	function to_string (tags : in type_package_tags.bounded_string) return string;
 
-	
-	
-	type type_package (appearance : type_package_appearance) is record
+	-- This is the base type of a package:
+	type type_package (appearance : type_package_appearance) is tagged record
 		description				: type_package_description.bounded_string;
 		copper					: type_copper_package_both_sides;
-		silk_screen				: type_silk_screen_package_both_sides; -- incl. placeholder for reference and purpose
-		assembly_documentation	: type_assembly_documentation_package_both_sides; -- incl. placeholder for value
 		keepout 				: type_keepout_package_both_sides;
 		route_restrict 			: type_route_restrict_package;
 		via_restrict 			: type_via_restrict_package;
-		-- holes
+		-- CS holes
 		pcb_contours			: type_package_pcb_contour;
 		pcb_contours_plated 	: type_package_pcb_contour_plated;
-		terminals				: type_terminals.map;
 		time_stamp				: et_string_processing.type_timestamp;
 		technology				: type_assembly_technology; -- set by majority of terminals
 		
@@ -760,12 +756,17 @@ package et_pcb is
 		end case;
 	end record;
 
+	-- A package in the library extends the base package type:
+	type type_package_library is new type_package with record
+		silk_screen				: type_silk_screen_package_both_sides; -- incl. placeholder for reference and purpose
+		assembly_documentation	: type_assembly_documentation_package_both_sides; -- incl. placeholder for value
+		terminals				: type_terminals.map;
+	end record;
 
-
-	
-	package type_packages is new indefinite_ordered_maps (
+	-- Lots of library packages can be collected in a map:
+	package type_packages is new indefinite_ordered_maps ( -- cS rename to type_packages_library
 		key_type 		=> et_libraries.type_component_package_name.bounded_string, -- S_SO14
-		element_type 	=> type_package);
+		element_type 	=> type_package_library);
 	use type_packages;
 
 	package type_libraries is new ordered_maps (

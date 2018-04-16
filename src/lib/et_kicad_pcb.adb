@@ -263,7 +263,7 @@ package body et_kicad_pcb is
 		file_name		: in string; -- S_0201.kicad_mod
 		lines			: in et_pcb.type_lines.list;
 		log_threshold	: in et_string_processing.type_log_level)
-		return et_pcb.type_package is
+		return et_pcb.type_package_library is
 		
 		use et_pcb;
 		use et_pcb.type_lines;
@@ -466,7 +466,8 @@ package body et_kicad_pcb is
 		
 	-- CONTAINERS 
 
-		-- NON ELECTRIC !!! COPPER OBJECTS (lines, arcs, circles, texts)
+		-- NON ELECTRIC !!! COPPER OBJECTS (lines, arcs, circles)
+		-- NOTE: Does not include texts as kicad does not allow texts in signal layers.
 		top_copper_objects, bot_copper_objects : type_copper;
 	
 		-- SILK SCREEN OBJECTS (lines, arcs, circles, texts, text placeholders)
@@ -1485,6 +1486,9 @@ package body et_kicad_pcb is
 			
 		begin -- exec_section
 			log (process_section (section.name), log_threshold + 4);
+
+			-- CS case construct for section.parent (as with board packages)
+			
 			case section.name is
 
 				when SEC_TEDIT =>
@@ -2317,7 +2321,7 @@ package body et_kicad_pcb is
 			-- 			SEC_LAYER,
 			SEC_LAST_TRACE_WIDTH,
 			SEC_LAYER,
-			SEC_LAYER_ID, -- "artificially" does not occur in board file (see procedure read_section)
+			SEC_LAYER_ID, -- "artificially". does not occur in board file (see procedure read_section)
 			SEC_LAYERS,
 			SEC_LAYERSELECTION,
 			SEC_LINEWIDTH,
