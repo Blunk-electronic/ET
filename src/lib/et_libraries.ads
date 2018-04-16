@@ -199,6 +199,8 @@ package et_libraries is
  	text_length_max : constant natural := 200;
 	package type_text_content is new generic_bounded_length (text_length_max); use type_text_content;
 
+	function to_string (text_content : in type_text_content.bounded_string) return string;
+	
 	procedure check_text_content_length (content : in string);
 	-- Tests if the content not longer than allowed.
 	

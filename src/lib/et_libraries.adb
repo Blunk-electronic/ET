@@ -643,6 +643,11 @@ package body et_libraries is
 		return type_placeholder_text_size'value (text);
 	end to_component_attribute_text_size;
 
+	function to_string (text_content : in type_text_content.bounded_string) return string is
+	begin
+		return type_text_content.to_string (text_content);
+	end to_string;
+	
 	procedure check_text_content_length (content : in string) is
 	-- Tests if the content is longer than allowed.
 		use et_string_processing;

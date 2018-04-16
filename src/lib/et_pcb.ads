@@ -464,7 +464,7 @@ package et_pcb is
 		texts		: type_texts_with_content.list;
 	end record;
 
-	-- Silk screen objects of a package include placeholders:
+	-- Silk screen objects of a package (in the library) include placeholders:
 	type type_silk_screen_package is new type_silk_screen with record
 		placeholders: type_text_placeholders_package.list;
 	end record;

@@ -2503,6 +2503,12 @@ package body et_kicad_pcb is
 		package_arc			: type_arc;
 		package_circle 		: type_circle;
 
+		package_top_silk_screen	: et_pcb.type_silk_screen; -- without placeholders
+		package_bot_silk_screen	: et_pcb.type_silk_screen; -- without placeholders
+
+		package_top_assy_doc	: et_pcb.type_assembly_documentation; -- without placeholders
+		package_bot_assy_doc	: et_pcb.type_assembly_documentation; -- without placeholders
+		
 	-- TERMINALS
 		-- Temporarily we need lots of variables for terminal properties.
 		-- Later when the final terminals are assigned to the package, these variables
@@ -3639,22 +3645,23 @@ package body et_kicad_pcb is
 -- 				log (message_error & "invalid layer for this object !", console => true);
 -- 				raise constraint_error;
 -- 			end invalid_layer;
--- 		
--- 			procedure invalid_layer_reference is begin
--- 				log_indentation_reset;
--- 				log (message_error & "reference placeholder must be in a silk screen layer !", console => true);
--- 				raise constraint_error;
--- 			end invalid_layer_reference;
--- 
--- 			procedure invalid_layer_value is begin
--- 				log (message_warning & "value placeholder should be in a fabrication layer !");
--- 			end invalid_layer_value;
--- 
--- 			procedure invalid_layer_user is begin
--- 				log_indentation_reset;
--- 				log (message_error & "user text must be in a silk screen or fabrication layer !", console => true);
--- 				raise constraint_error;
--- 			end invalid_layer_user;
+		
+			procedure invalid_layer_reference is begin
+				log_indentation_reset;
+				log (message_error & "reference " & to_string (package_reference) & " must be in a silk screen layer !", console => true);
+				raise constraint_error;
+			end invalid_layer_reference;
+
+			procedure invalid_layer_value is begin
+				log (message_warning & "value " & to_string (package_value) & " should be in a fabrication layer !");
+			end invalid_layer_value;
+
+			procedure invalid_layer_user is begin
+				log_indentation_reset;
+				log (message_error & "user text " & to_string (package_text.content) 
+					 & " must be in a silk screen or fabrication layer !", console => true);
+				raise constraint_error;
+			end invalid_layer_user;
 
 			procedure net_class_already_defined is begin
 				log_indentation_reset;
@@ -3755,58 +3762,71 @@ package body et_kicad_pcb is
 						when SEC_TAGS =>
 							log (to_string (package_tags), log_threshold + 1);
 
--- 						when SEC_FP_TEXT =>
--- 		
--- 							-- Since there is no alignment information provided, use default values:
--- 							package_text.alignment := (horizontal => CENTER, vertical => BOTTOM);
--- 		
--- 							case package_text.meaning is
--- 								when REFERENCE =>
--- 									placeholder := (et_pcb.type_text (text) with meaning => REFERENCE);
--- 									
--- 									case text.layer is
--- 										when TOP_SILK =>
--- 											top_silk_screen.placeholders.append (placeholder);
--- 											placeholder_silk_screen_properties (TOP, top_silk_screen.placeholders.last, log_threshold + 1);
--- 										when BOT_SILK =>
--- 											bot_silk_screen.placeholders.append (placeholder);
--- 											placeholder_silk_screen_properties (BOTTOM, bot_silk_screen.placeholders.last, log_threshold + 1);
--- 										when others => -- should never happen
--- 											invalid_layer_reference; 
--- 									end case;
+						when SEC_FP_TEXT =>
 		
-		-- 						when VALUE =>
-		-- 							placeholder := (et_pcb.type_text (text) with meaning => VALUE);
-		-- 							
-		-- 							case text.layer is
-		-- 								when TOP_ASSY =>
-		-- 									top_assy_doc.placeholders.append (placeholder);
-		-- 									placeholder_assy_doc_properties (TOP, top_assy_doc.placeholders.last, log_threshold + 1);
-		-- 								when BOT_ASSY =>
-		-- 									bot_assy_doc.placeholders.append (placeholder);
-		-- 									placeholder_assy_doc_properties (BOTTOM, bot_assy_doc.placeholders.last, log_threshold + 1);
-		-- 								when others => -- should never happen
-		-- 									invalid_layer_value;
-		-- 							end case;
-		-- 							
-		-- 						when USER =>
-		-- 							case text.layer is
-		-- 								when TOP_SILK => 
-		-- 									top_silk_screen.texts.append ((et_pcb.type_text (text) with content => text.content));
-		-- 									text_silk_screen_properties (TOP, top_silk_screen.texts.last, log_threshold + 1);
-		-- 								when BOT_SILK => 
-		-- 									bot_silk_screen.texts.append ((et_pcb.type_text (text) with content => text.content));
-		-- 									text_silk_screen_properties (BOTTOM, bot_silk_screen.texts.last, log_threshold + 1);
+							-- Since there is no alignment information provided, use default values:
+							package_text.alignment := (horizontal => CENTER, vertical => BOTTOM);
+		
+							case package_text.meaning is
+								when REFERENCE =>
+
+									-- Insert the reference text in the list of texts of silk screen.
+									-- In order to get the basic properties of package_text it must be
+									-- converted back to its anchestor (type_text). The content of package_text
+									-- is passed separately (via "with" statement).
+									case package_text.layer is
+										when TOP_SILK =>
+											package_top_silk_screen.texts.append (
+												(et_pcb.type_text (package_text) with content => package_text.content));
+											text_silk_screen_properties (TOP, package_top_silk_screen.texts.last, log_threshold + 1);
+										when BOT_SILK =>
+											package_bot_silk_screen.texts.append (
+												(et_pcb.type_text (package_text) with content => package_text.content));
+											text_silk_screen_properties (BOTTOM, package_bot_silk_screen.texts.last, log_threshold + 1);
+										when others => -- should never happen
+											invalid_layer_reference; 
+									end case;
+		
+								when VALUE =>
+
+									-- Insert the value text in the list of texts of silk screen.
+									-- In order to get the basic properties of package_text it must be
+									-- converted back to its anchestor (type_text). The content of package_text
+									-- is passed separately (via "with" statement).
+									case package_text.layer is
+										when TOP_ASSY =>
+											package_top_assy_doc.texts.append (
+												(et_pcb.type_text (package_text) with content => package_text.content));
+											text_assy_doc_properties (TOP, package_top_assy_doc.texts.last, log_threshold + 1);
+										when BOT_ASSY =>
+											package_bot_assy_doc.texts.append (
+												(et_pcb.type_text (package_text) with content => package_text.content));
+											text_assy_doc_properties (BOTTOM, package_bot_assy_doc.texts.last, log_threshold + 1);
+										when others => -- should never happen
+											invalid_layer_value;
+									end case;
+
+								when USER =>
+
+									case package_text.layer is
+										when TOP_SILK => 
+											package_top_silk_screen.texts.append (
+												(et_pcb.type_text (package_text) with content => package_text.content));
+											text_silk_screen_properties (TOP, package_top_silk_screen.texts.last, log_threshold + 1);
+										when BOT_SILK => 
+											package_bot_silk_screen.texts.append (
+												(et_pcb.type_text (package_text) with content => package_text.content));
+											text_silk_screen_properties (BOTTOM, package_bot_silk_screen.texts.last, log_threshold + 1);
 		-- 								when TOP_ASSY => 
 		-- 									top_assy_doc.texts.append ((et_pcb.type_text (text) with content => text.content));
 		-- 									text_assy_doc_properties (TOP, top_assy_doc.texts.last, log_threshold + 1);
 		-- 								when BOT_ASSY => 
 		-- 									bot_assy_doc.texts.append ((et_pcb.type_text (text) with content => text.content));
 		-- 									text_assy_doc_properties (BOTTOM, bot_assy_doc.texts.last, log_threshold + 1);
-		-- 								when others -- should never happen. kicad does not allow texts in signal layers 
-		-- 									=> invalid_layer_user;
-		-- 							end case;
-		-- 					end case;
+										when others -- should never happen. kicad does not allow texts in signal layers 
+											=> invalid_layer_user;
+									end case;
+							end case;
 		-- 					
 		-- 				when SEC_FP_LINE =>
 		-- 					-- Append the line to the container corresponding to the layer. Then log the line properties.
