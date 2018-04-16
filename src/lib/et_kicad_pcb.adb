@@ -2096,7 +2096,7 @@ package body et_kicad_pcb is
 		-- Creates empty packages in the package_libraries. The package names are
 		-- named after the packages found in the library directories.
 			library_name	: in type_full_library_name.bounded_string;
-			packages		: in out type_packages.map) is
+			packages		: in out type_packages_library.map) is
 
 			package_names : type_directory_entries.list;
 			package_name_cursor : type_directory_entries.cursor;
@@ -2157,7 +2157,7 @@ package body et_kicad_pcb is
 
 				-- From the collected lines the package model can be built and inserted in the 
 				-- package list right away:
-				type_packages.insert (
+				type_packages_library.insert (
 					container	=> packages,
 					key			=> to_package_name (base_name (element (package_name_cursor))), -- S_0201
 					new_item	=> to_package_model (
@@ -2222,7 +2222,7 @@ package body et_kicad_pcb is
 										lib_name => to_library_name (element (library_name_cursor))),
 					inserted	=> library_inserted,
 					position	=> library_cursor,
-					new_item	=> type_packages.empty_map);
+					new_item	=> type_packages_library.empty_map);
 
 				if library_inserted then
 					log_indentation_up;

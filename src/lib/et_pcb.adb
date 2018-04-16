@@ -691,9 +691,9 @@ package body et_pcb is
 
 		procedure locate_package (
 			library_name	: in type_full_library_name.bounded_string;
-			packages		: in type_packages.map) is
+			packages		: in type_packages_library.map) is
 			use type_terminals;
-			package_cursor : type_packages.cursor;
+			package_cursor : type_packages_library.cursor;
 		begin
 			-- locate the package
 			package_cursor := packages.find (package_name);
@@ -773,8 +773,8 @@ package body et_pcb is
 		procedure locate_package (
 		-- Locates the package by package_name in the given package library.
 			library_name	: in type_full_library_name.bounded_string;
-			packages		: in type_packages.map) is
-			package_cursor : type_packages.cursor;
+			packages		: in type_packages_library.map) is
+			package_cursor : type_packages_library.cursor;
 
 			use type_terminals;
 			use type_terminal_port_map;
@@ -788,7 +788,7 @@ package body et_pcb is
 			else
 				-- locate the package
 				package_cursor := packages.find (package_name);
-				if package_cursor = type_packages.no_element then
+				if package_cursor = type_packages_library.no_element then
 					log_indentation_reset;
 					log (message_error & "package " & to_string (packge => package_name)
 						& " not found in library " & to_string (library_name)

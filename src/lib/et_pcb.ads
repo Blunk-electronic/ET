@@ -734,8 +734,13 @@ package et_pcb is
 
 	function to_string (tags : in type_package_tags.bounded_string) return string;
 
+
+
+	
 	-- This is the base type of a package:
-	type type_package (appearance : type_package_appearance) is tagged record
+	-- Depending on whether it is about a library or a board this type is
+	-- extended by other properties.
+	type type_package (appearance : type_package_appearance) is abstract tagged record
 		description				: type_package_description.bounded_string;
 		copper					: type_copper_package_both_sides;
 		keepout 				: type_keepout_package_both_sides;
@@ -756,6 +761,9 @@ package et_pcb is
 		end case;
 	end record;
 
+
+	
+	
 	-- A package in the library extends the base package type:
 	type type_package_library is new type_package with record
 		silk_screen				: type_silk_screen_package_both_sides; -- incl. placeholder for reference and purpose
@@ -763,21 +771,25 @@ package et_pcb is
 		terminals				: type_terminals.map;
 	end record;
 
-	-- Lots of library packages can be collected in a map:
-	package type_packages is new indefinite_ordered_maps ( -- cS rename to type_packages_library
+	-- Lots of packages (in a library) can be collected in a map:
+	package type_packages_library is new indefinite_ordered_maps (
 		key_type 		=> et_libraries.type_component_package_name.bounded_string, -- S_SO14
 		element_type 	=> type_package_library);
-	use type_packages;
+	use type_packages_library;
 
 	package type_libraries is new ordered_maps (
 		key_type		=> et_libraries.type_full_library_name.bounded_string, -- projects/lbr/smd_packages.pac
-		element_type	=> type_packages.map,
+		element_type	=> type_packages_library.map,
 		"<"				=> et_libraries.type_full_library_name."<");
 
 	-- All package models are collected here:
 	package_libraries : type_libraries.map;
 
 
+
+
+
+	
 -- PROPERTIES OF OBJECTS IN COPPER (NON ELECTRIC !!)
 	procedure line_copper_properties (
 	-- Logs the properties of the given line of copper
