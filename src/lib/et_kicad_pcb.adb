@@ -865,7 +865,7 @@ package body et_kicad_pcb is
 								when 0 => null;
 								when 1 =>
 									-- CS check length
-									description := type_package_description.to_bounded_string (to_string (arg));
+									description := to_package_description (to_string (arg));
 									-- CS check description
 								when others => 
 									too_many_arguments;
@@ -881,7 +881,7 @@ package body et_kicad_pcb is
 								when 0 => null;
 								when 1 =>
 									-- CS check length
-									tags := type_package_tags.to_bounded_string (to_string (arg));
+									tags := to_package_tags (to_string (arg));
 									-- CS check tags
 								when others => 
 									too_many_arguments;
@@ -1457,8 +1457,7 @@ package body et_kicad_pcb is
 		-- Restores the previous section.
 			use et_pcb_coordinates;
 			use et_libraries;
-			terminal_cursor			: et_pcb.type_terminals.cursor;
-			silk_screen_line_cursor	: type_silk_lines.cursor;
+			terminal_cursor : et_pcb.type_terminals.cursor;
 
 			procedure invalid_layer is begin
 				log_indentation_reset;
@@ -2464,8 +2463,8 @@ package body et_kicad_pcb is
 		netlist_net_name	: et_schematic.type_net_name.bounded_string;
 		
 		-- NET CLASSES
-		net_class_inserted : boolean := false;
-		net_class_cursor : type_net_classes.cursor;
+		net_class_inserted	: boolean := false;
+		net_class_cursor	: type_net_classes.cursor;
 		
 		net_class_via_diameter			: et_pcb_coordinates.type_distance;
 		net_class_micro_via_diameter	: et_pcb_coordinates.type_distance;
@@ -2485,13 +2484,13 @@ package body et_kicad_pcb is
 		package_path			: et_schematic.type_path_to_package; -- the link to the symbol in the schematic like 59F208B2
 
 		-- The majority of terminals dictates the package technology. The default is THT.
-		package_technology : type_assembly_technology := THT;
+		package_technology 	: type_assembly_technology := THT;
 
 		-- By default a package is something real (with x,y,z dimension)
-		package_appearance : type_package_appearance := REAL;
+		package_appearance 	: type_package_appearance := REAL;
 
 		package_text 		: type_package_text;
-		package_reference 	: et_libraries.type_component_reference;
+		package_reference 	: et_libraries.type_component_reference := et_schematic.default_component_reference;
 		package_value 		: et_libraries.type_component_value.bounded_string;
 
 		package_time_stamp	: type_timestamp; -- temporarily storage of package timestamp
@@ -2512,17 +2511,17 @@ package body et_kicad_pcb is
 		package_top_keepout		: et_pcb.type_keepout;
 		package_bot_keepout		: et_pcb.type_keepout;
 
-		package_top_copper_objects	: et_pcb.type_copper;
-		package_bot_copper_objects	: et_pcb.type_copper;
+		package_top_copper		: et_pcb.type_copper;
+		package_bot_copper		: et_pcb.type_copper;
 		
 	-- TERMINALS
 		-- Temporarily we need lots of variables for terminal properties.
 		-- Later when the final terminals are assigned to the package, these variables
 		-- compose the final terminal.
-		terminal_name 		: et_libraries.type_terminal_name.bounded_string;
-		terminal_technology	: type_assembly_technology;
-		terminal_shape_tht 	: type_terminal_shape_tht;
-		terminal_shape_smt 	: type_terminal_shape_smt;
+		terminal_name 			: et_libraries.type_terminal_name.bounded_string;
+		terminal_technology		: type_assembly_technology;
+		terminal_shape_tht 		: type_terminal_shape_tht;
+		terminal_shape_smt 		: type_terminal_shape_smt;
 
 		terminal_face 			: et_pcb_coordinates.type_face;
 		terminal_drill_size		: type_drill_size; 
@@ -2568,7 +2567,75 @@ package body et_kicad_pcb is
 		-- This flag goes true once a terminal is to be inserted that already exists (by its name).
 		terminal_inserted : boolean;
 		
+		procedure init_stop_and_mask is begin
+		-- Resets the temporarily status flags of solder paste and stop mask of an SMT terminal.
+		-- Does not affect THT terminals (stop mask always open, solder paste never applied).
+			terminal_top_solder_paste := type_terminal_solder_paste'first;
+			terminal_bot_solder_paste := type_terminal_solder_paste'first;
+			terminal_top_stop_mask := type_terminal_stop_mask'first;
+			terminal_bot_stop_mask := type_terminal_stop_mask'first;
+		end init_stop_and_mask;
 
+		procedure set_stop_and_mask is
+		-- From the SMT terminal face, validates the status of stop mask and solder paste.
+			use et_pcb_coordinates;
+			
+			procedure invalid is begin
+				log_indentation_reset;
+				log (message_error & "contradicting layers in terminal !", console => true);
+				log ("face " & to_string (terminal_face), console => true);
+				log (" solder paste top " & to_string (terminal_top_solder_paste), console => true);
+				log (" solder paste bot " & to_string (terminal_bot_solder_paste), console => true);
+				log (" stop mask top    " & to_string (terminal_top_stop_mask), console => true);
+				log (" stop mask bot    " & to_string (terminal_bot_stop_mask), console => true);
+				raise constraint_error;
+			end invalid; 
+				
+		begin -- set_stop_and_mask
+			case terminal_face is
+				when TOP => 
+
+					terminal_solder_paste := terminal_top_solder_paste;
+					-- CS warning if solder paste not applied ?
+
+					-- A TOP terminal must NOT have BOTTOM paste applied.
+					if terminal_bot_solder_paste = APPLIED then
+						invalid;
+					end if;
+
+					terminal_stop_mask := terminal_top_stop_mask;
+					-- CS warning if stop mask closed ?
+					
+					-- A TOP terminal must have the BOTTOM stop mask OPEN.
+					if terminal_bot_stop_mask = OPEN then
+						invalid;
+					end if;
+
+					
+				when BOTTOM =>
+
+					terminal_solder_paste := terminal_bot_solder_paste;
+					-- CS warning if solder paste not applied ?
+					
+					-- A BOTTOM terminal must NOT have TOP paste applied.
+					if terminal_top_solder_paste = APPLIED then
+						invalid;
+					end if;
+
+					terminal_stop_mask := terminal_bot_stop_mask;
+					-- CS warning if stop mask closed ?					
+
+					-- A BOTTOM terminal must have the TOP stop mask OPEN.
+					if terminal_top_stop_mask = OPEN then
+						invalid;
+					end if;
+			end case;
+		end set_stop_and_mask;
+		
+		procedure init_terminal_net_name is begin
+		-- Clears the terminal_net_name.
+			terminal_net_name := et_schematic.to_net_name ("");
+		end init_terminal_net_name;
 		
 		-- When a line is fetched from the given list of lines, it is stored in variable
 		-- "current_line". CS: The line length is limited by line_length_max and should be increased
@@ -2618,8 +2685,7 @@ package body et_kicad_pcb is
 		-- character or its last character.
 			end_of_kw : integer;  -- may become negative if no terminating character present
 
-			procedure invalid_section is
-			begin
+			procedure invalid_section is begin
 				log_indentation_reset;
 				log (message_error & "invalid subsection '" & to_string (section.name) 
 					 & "' in parent section '" & to_string (section.parent) & "' ! (read section)", console => true);
@@ -3091,7 +3157,7 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									package_description := type_package_description.to_bounded_string (to_string (arg));
+									package_description := to_package_description (to_string (arg));
 									-- CS check length and characters
 								when others => too_many_arguments;
 							end case;
@@ -3100,7 +3166,7 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 =>
-									package_tags := type_package_tags.to_bounded_string (to_string (arg));
+									package_tags := to_package_tags (to_string (arg));
 									-- CS check length and characters
 								when others => too_many_arguments;
 							end case;
@@ -3161,9 +3227,21 @@ package body et_kicad_pcb is
 								when 2 => 
 									case package_text.meaning is
 										when REFERENCE => 
-											package_reference := et_schematic.to_component_reference (to_string (arg));
+											-- The reference (like R45) is both the text content and the reference itself.
+										
+											-- CS length check
+											package_text.content := to_bounded_string (to_string (arg));
+											-- CS character check
 
+											package_reference := et_schematic.to_component_reference (to_string (arg));
+											
 										when VALUE =>
+											-- The value (like 220R) is both the text content and the value itself.
+										
+											-- CS length check
+											package_text.content := to_bounded_string (to_string (arg));
+											-- CS character check
+
 											check_value_length (to_string (arg));
 											package_value := et_libraries.to_value (to_string (arg));
 											check_value_characters (package_value);
@@ -3643,14 +3721,7 @@ package body et_kicad_pcb is
 		-- Restores the previous section.
 			use et_pcb_coordinates;
 			use et_libraries;
-			terminal_cursor			: type_terminals.cursor;
-			silk_screen_line_cursor	: type_silk_lines.cursor;
-
--- 			procedure invalid_layer is begin
--- 				log_indentation_reset;
--- 				log (message_error & "invalid layer for this object !", console => true);
--- 				raise constraint_error;
--- 			end invalid_layer;
+			terminal_cursor : type_terminals.cursor;
 		
 			procedure invalid_layer_reference is begin
 				log_indentation_reset;
@@ -3675,7 +3746,16 @@ package body et_kicad_pcb is
 				raise constraint_error;
 			end net_class_already_defined;
 
-
+			procedure warn_on_missing_net is begin
+			-- Warns operator if a terminal is not connected to a net.
+				if et_schematic.type_net_name.length (terminal_net_name) = 0 then
+					log (message_warning & to_string (package_reference) & latin_1.space
+						 & to_string (terminal_name) & " not connected with a net !");
+				end if;
+			end warn_on_missing_net;
+			
+			terminal_position_full : type_terminal_position; -- temporarily used
+			
 		begin -- exec_section
 			log (process_section (section.name), log_threshold + 4);
 			case section.parent is
@@ -3732,7 +3812,68 @@ package body et_kicad_pcb is
 							net_class.net_names.clear;
 
 						when SEC_MODULE =>
-							null; -- CS log package
+							-- Once a package has been read completely, some variables
+							-- must be reset and lists must be cleared for the next package.
+							package_description := to_package_description ("");
+							package_tags := to_package_tags ("");
+
+							package_technology := THT;
+							package_appearance := REAL;
+
+							-- CS warning if package_reference is default_component_reference
+							package_reference := et_schematic.default_component_reference;
+
+							package_value := to_value ("");
+							
+							terminals.clear;
+
+							-- silk screen
+							package_top_silk_screen.lines.clear;
+							package_top_silk_screen.arcs.clear;
+							package_top_silk_screen.circles.clear;
+							package_top_silk_screen.texts.clear;
+
+							package_bot_silk_screen.lines.clear;
+							package_bot_silk_screen.arcs.clear;
+							package_bot_silk_screen.circles.clear;
+							package_bot_silk_screen.texts.clear;
+
+							-- assembly documentation
+							package_top_assy_doc.lines.clear;
+							package_top_assy_doc.arcs.clear;
+							package_top_assy_doc.circles.clear;
+							package_top_assy_doc.texts.clear;
+
+							package_bot_assy_doc.lines.clear;
+							package_bot_assy_doc.arcs.clear;
+							package_bot_assy_doc.circles.clear;
+							package_bot_assy_doc.texts.clear;
+
+							-- keepout
+							package_top_keepout.lines.clear;
+							package_top_keepout.arcs.clear;
+							package_top_keepout.circles.clear;
+							--package_top_keepout.texts.clear;
+
+							package_bot_keepout.lines.clear;
+							package_bot_keepout.arcs.clear;
+							package_bot_keepout.circles.clear;
+							--package_bot_keepout.texts.clear;
+
+							-- copper
+							package_top_copper.lines.clear;
+							package_top_copper.arcs.clear;
+							package_top_copper.circles.clear;
+							package_top_copper.texts.clear;
+
+							package_bot_copper.lines.clear;
+							package_bot_copper.arcs.clear;
+							package_bot_copper.circles.clear;
+							package_bot_copper.texts.clear;
+
+							
+							-- CS log package ?
+							-- CS insert package in board
 							
 						when others => null;
 					end case;
@@ -3869,12 +4010,12 @@ package body et_kicad_pcb is
 									line_keepout_properties (BOTTOM, package_bot_keepout.lines.last, log_threshold + 1);
 		
 								when TOP_COPPER => 
-									package_top_copper_objects.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
-									line_copper_properties (TOP, package_top_copper_objects.lines.last, log_threshold + 1);
+									package_top_copper.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
+									line_copper_properties (TOP, package_top_copper.lines.last, log_threshold + 1);
 		
 								when BOT_COPPER => 
-									package_bot_copper_objects.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
-									line_copper_properties (BOTTOM, package_bot_copper_objects.lines.last, log_threshold + 1);
+									package_bot_copper.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
+									line_copper_properties (BOTTOM, package_bot_copper.lines.last, log_threshold + 1);
 							end case;
 		
 						when SEC_FP_ARC =>
@@ -3914,12 +4055,12 @@ package body et_kicad_pcb is
 									arc_keepout_properties (BOTTOM, package_bot_keepout.arcs.last, log_threshold + 1);
 		
 								when TOP_COPPER => 
-									package_top_copper_objects.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
-									arc_copper_properties (TOP, package_top_copper_objects.arcs.last, log_threshold + 1);
+									package_top_copper.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
+									arc_copper_properties (TOP, package_top_copper.arcs.last, log_threshold + 1);
 		
 								when BOT_COPPER => 
-									package_bot_copper_objects.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
-									arc_copper_properties (BOTTOM, package_bot_copper_objects.arcs.last, log_threshold + 1);
+									package_bot_copper.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
+									arc_copper_properties (BOTTOM, package_bot_copper.arcs.last, log_threshold + 1);
 							end case;
 		
 						when SEC_FP_CIRCLE =>
@@ -3960,113 +4101,161 @@ package body et_kicad_pcb is
 									circle_keepout_properties (BOTTOM, package_bot_keepout.circles.last, log_threshold + 1);
 		
 								when TOP_COPPER => 
-									package_top_copper_objects.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
-									circle_copper_properties (TOP, package_top_copper_objects.circles.last, log_threshold + 1);
+									package_top_copper.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
+									circle_copper_properties (TOP, package_top_copper.circles.last, log_threshold + 1);
 		
 								when BOT_COPPER => 
-									package_bot_copper_objects.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
-									circle_copper_properties (BOTTOM, package_bot_copper_objects.circles.last, log_threshold + 1);
+									package_bot_copper.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
+									circle_copper_properties (BOTTOM, package_bot_copper.circles.last, log_threshold + 1);
 							end case;
-		-- 					
-		-- 				when SEC_PAD =>
-		-- 					-- Insert a terminal in the list "terminals":
-		-- 					case terminal_technology is
-		-- 						when THT =>
-		-- 
-		-- 							if terminal_shape_tht = CIRCULAR then
-		-- 								terminals.insert (
-		-- 									key 		=> terminal_name,
-		-- 									position	=> terminal_cursor,
-		-- 									inserted	=> terminal_inserted,
-		-- 									new_item 	=> (
-		-- 													technology 		=> THT,
-		-- 													shape 			=> CIRCULAR,
-		-- 													tht_hole		=> DRILLED,
-		-- 													width_inner_layers => terminal_copper_width_inner_layers,
-		-- 													drill_size_cir	=> terminal_drill_size,
-		-- 													shape_tht		=> terminal_shape_tht,
-		-- 
-		-- 													-- Compose from the terminal position and angel the full terminal position
-		-- 													position		=> type_terminal_position (to_terminal_position (terminal_position, terminal_angle))
-		-- 												   ));
-		-- 							else
-		-- 								terminals.insert (
-		-- 									key 		=> terminal_name,
-		-- 									position	=> terminal_cursor,
-		-- 									inserted	=> terminal_inserted,
-		-- 									new_item 	=> (
-		-- 													technology 		=> THT,
-		-- 													shape			=> NON_CIRCULAR,
-		-- 													tht_hole		=> DRILLED,
-		-- 													width_inner_layers => terminal_copper_width_inner_layers,
-		-- 													drill_size_dri	=> terminal_drill_size,
-		-- 													shape_tht		=> terminal_shape_tht,
-		-- 
-		-- 													-- Compose from the terminal position and angel the full terminal position
-		-- 													position		=> type_terminal_position (to_terminal_position (terminal_position, terminal_angle)),
-		-- 
-		-- 													size_tht_x		=> terminal_size_x,
-		-- 													size_tht_y		=> terminal_size_y
-		-- 												));
-		-- 							end if;
-		-- 
-		-- 							
-		-- 						when SMT =>
-		-- 
-		-- 							-- From the SMT terminal face, validate the status of stop mask and solder paste.
-		-- 							set_stop_and_mask;
-		-- 							
-		-- 							if terminal_shape_smt = CIRCULAR then
-		-- 								terminals.insert (
-		-- 									key 		=> terminal_name, 
-		-- 									position	=> terminal_cursor,
-		-- 									inserted	=> terminal_inserted,
-		-- 									new_item 	=> (
-		-- 													technology 		=> SMT,
-		-- 													shape			=> CIRCULAR,
-		-- 													tht_hole		=> DRILLED, -- has no meaning here
-		-- 													shape_smt		=> terminal_shape_smt,
-		-- 
-		-- 													-- Compose from the terminal position and angel the full terminal position
-		-- 													position		=> type_terminal_position (to_terminal_position (terminal_position, terminal_angle)),
-		-- 
-		-- 													face 			=> terminal_face,
-		-- 													stop_mask		=> terminal_stop_mask,
-		-- 													solder_paste	=> terminal_solder_paste
-		-- 												));
-		-- 							else
-		-- 								terminals.insert (
-		-- 									key 		=> terminal_name, 
-		-- 									position	=> terminal_cursor,
-		-- 									inserted	=> terminal_inserted,
-		-- 									new_item 	=> (
-		-- 													technology 		=> SMT,
-		-- 													shape			=> NON_CIRCULAR,
-		-- 													tht_hole		=> DRILLED, -- has no meaning here
-		-- 													shape_smt		=> terminal_shape_smt,
-		-- 
-		-- 													-- Compose from the terminal position and angel the full terminal position
-		-- 													position		=> type_terminal_position (to_terminal_position (terminal_position, terminal_angle)),
-		-- 
-		-- 													face 			=> terminal_face,
-		-- 													stop_mask		=> terminal_stop_mask,
-		-- 													solder_paste	=> terminal_solder_paste,
-		-- 													size_smt_x		=> terminal_size_x,
-		-- 													size_smt_y		=> terminal_size_y
-		-- 												));
-		-- 							end if;
-		-- 
-		-- 							init_stop_and_mask; -- relevant for SMT terminals only (stop mask always open, solder paste never applied)
-		-- 					end case;
-		-- 
-		-- 					if terminal_inserted then
-		-- 						terminal_properties (terminal_cursor, log_threshold + 1);
-		-- 					else
-		-- 						log_indentation_reset;
-		-- 						log (message_error & "duplicated terminal " & to_string (terminal_name) & " !", console => true);
-		-- 						raise constraint_error;
-		-- 					end if;
-		-- 					
+							
+						when SEC_PAD =>
+							-- Insert a terminal in the list "terminals":
+
+							-- Compose from the terminal position and angel the full terminal position
+							terminal_position_full := type_terminal_position (to_terminal_position (terminal_position, terminal_angle));
+
+							case terminal_technology is
+								when THT =>
+		
+									if terminal_shape_tht = CIRCULAR then
+										terminals.insert (
+											key 		=> terminal_name,
+											position	=> terminal_cursor,
+											inserted	=> terminal_inserted,
+											new_item 	=> (
+															technology 		=> THT,
+															shape 			=> CIRCULAR,
+															tht_hole		=> DRILLED,
+															width_inner_layers => terminal_copper_width_inner_layers,
+															drill_size_cir	=> terminal_drill_size,
+															offset_x		=> terminal_drill_offset_x,
+															offset_y		=> terminal_drill_offset_y,
+															shape_tht		=> terminal_shape_tht,
+															position		=> terminal_position_full,
+
+															-- the pad is connected with a certain net
+															net_name		=> terminal_net_name
+														   ));
+									else -- NON_CIRCULAR
+										case terminal_drill_shape is
+											when CIRCULAR =>
+												terminals.insert (
+													key 		=> terminal_name,
+													position	=> terminal_cursor,
+													inserted	=> terminal_inserted,
+													new_item 	=> (
+																	technology 		=> THT,
+																	shape			=> NON_CIRCULAR,
+																	tht_hole		=> DRILLED,
+																	width_inner_layers => terminal_copper_width_inner_layers,
+																	drill_size_dri	=> terminal_drill_size,
+																	shape_tht		=> terminal_shape_tht,
+																	position		=> terminal_position_full,
+																	size_tht_x		=> terminal_size_x,
+																	size_tht_y		=> terminal_size_y,
+
+																	-- the pad is connected with a certain net
+																	net_name		=> terminal_net_name
+																));
+
+											when SLOTTED =>
+												terminals.insert (
+													key 		=> terminal_name,
+													position	=> terminal_cursor,
+													inserted	=> terminal_inserted,
+													new_item 	=> (
+																	technology 		=> THT,
+																	shape			=> NON_CIRCULAR,
+																	tht_hole		=> MILLED,
+																	width_inner_layers => terminal_copper_width_inner_layers,
+
+																	-- The plated millings of the hole is a list of lines.
+																	-- KiCad does not allow arcs or circles for plated millings.
+																	millings		=> (lines => contour_milled_rectangle_of_pad
+																						(center => type_terminal_position (to_terminal_position (terminal_position, terminal_angle)),
+																						size_x => terminal_milling_size_x,
+																						size_y => terminal_milling_size_y,
+																						offset_x => terminal_drill_offset_x,
+																						offset_y => terminal_drill_offset_y),
+																						
+																						arcs => type_pcb_contour_arcs.empty_list,
+																						circles => type_pcb_contour_circles.empty_list),
+																	shape_tht		=> terminal_shape_tht,
+																	position		=> terminal_position_full,
+																	size_tht_x		=> terminal_size_x,
+																	size_tht_y		=> terminal_size_y,
+
+																	-- the pad is connected with a certain net
+																	net_name		=> terminal_net_name
+																));
+										end case;
+
+									end if;
+		
+									
+								when SMT =>
+		
+									-- From the SMT terminal face, validate the status of stop mask and solder paste.
+									set_stop_and_mask;
+									
+									if terminal_shape_smt = CIRCULAR then
+										terminals.insert (
+											key 		=> terminal_name, 
+											position	=> terminal_cursor,
+											inserted	=> terminal_inserted,
+											new_item 	=> (
+															technology 		=> SMT,
+															shape			=> CIRCULAR,
+															tht_hole		=> DRILLED, -- has no meaning here
+															shape_smt		=> terminal_shape_smt,
+															position		=> terminal_position_full,
+
+															-- the pad is connected with a certain net
+															net_name		=> terminal_net_name,
+															
+															face 			=> terminal_face,
+															stop_mask		=> terminal_stop_mask,
+															solder_paste	=> terminal_solder_paste
+														));
+									else
+										terminals.insert (
+											key 		=> terminal_name, 
+											position	=> terminal_cursor,
+											inserted	=> terminal_inserted,
+											new_item 	=> (
+															technology 		=> SMT,
+															shape			=> NON_CIRCULAR,
+															tht_hole		=> DRILLED, -- has no meaning here
+															shape_smt		=> terminal_shape_smt,
+															position		=> terminal_position_full,
+															
+															-- the pad is connected with a certain net
+															net_name		=> terminal_net_name,
+															
+															face 			=> terminal_face,
+															stop_mask		=> terminal_stop_mask,
+															solder_paste	=> terminal_solder_paste,
+															size_smt_x		=> terminal_size_x,
+															size_smt_y		=> terminal_size_y
+														));
+									end if;
+		
+									init_stop_and_mask; -- relevant for SMT terminals only (stop mask always open, solder paste never applied)
+							end case;
+
+							init_terminal_net_name; -- in case the next terminal has no net connected
+							terminal_drill_offset_x := pad_drill_offset_min; -- in case the next terminal drill has no offset
+							terminal_drill_offset_y := pad_drill_offset_min; -- in case the next terminal drill has no offset
+							
+							if terminal_inserted then
+								NULL; -- CS terminal_properties (terminal_cursor, log_threshold + 1);
+							else
+								log_indentation_reset;
+								log (message_error & "duplicated terminal " & to_string (terminal_name) & " !", console => true);
+								raise constraint_error;
+							end if;
+							
 						when others => null;
 					end case;
 						
@@ -4106,8 +4295,9 @@ package body et_kicad_pcb is
 		-- get position of first opening bracket
 		character_cursor := type_current_line.index (current_line, 1 * opening_bracket);
 
-		--init_stop_and_mask; -- relevant for SMT terminals only (stop mask always open, solder paste never applied)
-
+		init_stop_and_mask; -- relevant for SMT terminals only (stop mask always open, solder paste never applied)
+		init_terminal_net_name; -- in case the next terminal has no net connected
+		
 		-- This is the central loop where decisions are made whether to read a section name,
 		-- an argument or whether to "execute" a section.
 		-- An opening bracket indicates a new (sub)section. A closing bracket indicates that a section

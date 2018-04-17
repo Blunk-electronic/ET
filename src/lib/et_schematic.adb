@@ -931,6 +931,16 @@ package body et_schematic is
 		return r;
 	end to_component_reference;
 
+	function default_component_reference return type_component_reference is
+	-- Returns a default component reference with an empty prefix and and id 0.
+	-- Used to initialize a component reference.	
+	begin
+		return ((
+			prefix		=> type_component_prefix.to_bounded_string (""),
+			id			=> component_reference_id_default,
+			id_width	=> 1));
+	end default_component_reference;
+		
 	function compare_reference (left, right : in type_component_reference) return boolean is
 	-- Returns true if left comes before right.
 	-- If left equals right, the return is false.

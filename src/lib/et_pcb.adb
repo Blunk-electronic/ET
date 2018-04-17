@@ -303,12 +303,24 @@ package body et_pcb is
 		return "description '" & type_package_description.to_string (description) & "'";
 	end to_string;
 
+	function to_package_description (description : in string) return type_package_description.bounded_string is
+	begin
+		return type_package_description.to_bounded_string (description);
+	end to_package_description;
+
+	
 	function to_string (tags : in type_package_tags.bounded_string) return string is
 	begin
 		return "tags '" & type_package_tags.to_string (tags) & "'";
 	end to_string;
 
+	function to_package_tags (tags : in string) return type_package_tags.bounded_string is
+	begin
+		return type_package_tags.to_bounded_string (tags);
+	end to_package_tags;
 
+
+	
 	
 -- PROPERTIES OF OBJECTS IN COPPER (NON ELECTRIC !!)
 	procedure line_copper_properties (

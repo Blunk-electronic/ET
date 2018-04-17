@@ -643,6 +643,10 @@ package et_schematic is
 		allow_special_character_in_prefix : in boolean := false) -- CS: provide CAD system specific character set instead
 		return type_component_reference;
 
+	function default_component_reference return type_component_reference;
+	-- Returns a default component reference with an empty prefix and and id 0.
+	-- Used to initialize a component reference.
+	
 	function compare_reference (left, right : in type_component_reference) return boolean;
 	-- Returns true if left comes before right.
 	-- If left equals right, the return is false.	

@@ -728,13 +728,14 @@ package et_pcb is
 
 	function to_string (description : in type_package_description.bounded_string) return string;
 
+	function to_package_description (description : in string) return type_package_description.bounded_string;
 	
 	package_tags_length_max : constant positive := 200;
 	package type_package_tags is new generic_bounded_length (package_tags_length_max);
 
 	function to_string (tags : in type_package_tags.bounded_string) return string;
 
-
+	function to_package_tags (tags : in string) return type_package_tags.bounded_string;
 
 	
 	-- This is the base type of a package:
