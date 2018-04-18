@@ -350,13 +350,13 @@ package et_pcb is
 	type type_package_contour_circle is new type_circle with null record;
 	package type_package_contour_circles is new doubly_linked_lists (type_package_contour_circle);
 	
-	type type_package_contour is record
+	type type_package_contours is record
 		lines 	: type_package_contour_lines.list;
 		arcs	: type_package_contour_arcs.list;
 		circles	: type_package_contour_circles.list;
 	end record;
 
-	function no_contour return type_package_contour;
+	function no_contour return type_package_contours;
 	-- Returns an empty package contour.
 
 
@@ -754,15 +754,20 @@ package et_pcb is
 		route_restrict 			: type_route_restrict_package;
 		via_restrict 			: type_via_restrict_package;
 		-- CS holes
-		pcb_contours			: type_package_pcb_contour;
+
+		-- PCB contours non-plated. Kicad refers to them as "edge cuts".
+		pcb_contours			: type_package_pcb_contour; -- non-plated millings
+
+		-- Plated millings. NOTE: NOT FOR SLITTED HOLES ! See type_terminal instead.
 		pcb_contours_plated 	: type_package_pcb_contour_plated;
+		
 		time_stamp				: et_string_processing.type_timestamp;
 		technology				: type_assembly_technology; -- set by majority of terminals
 		
 		-- Only REAL packages have 3d contours:
 		case appearance is
 			when REAL =>
-				package_contours : type_package_contour;
+				package_contours : type_package_contours;
 			when VIRTUAL =>
 				null; -- netchangers, testpoints, ISA-Board edge connectors, ...
 		end case;

@@ -2482,7 +2482,7 @@ package body et_kicad_pcb is
 		package_name 			: et_libraries.type_component_package_name.bounded_string;
 		package_library_name	: et_libraries.type_library_name.bounded_string;
 		package_assembly_face	: et_pcb_coordinates.type_face;
-		package_position		: et_pcb_coordinates.type_point_3d;
+		package_position_xyz	: et_pcb_coordinates.type_point_3d;
 		package_angle			: et_pcb_coordinates.type_angle; -- in degrees like 45.7
 		package_path			: et_schematic.type_path_to_package; -- the link to the symbol in the schematic like 59F208B2
 
@@ -2516,6 +2516,21 @@ package body et_kicad_pcb is
 
 		package_top_copper		: et_pcb.type_copper;
 		package_bot_copper		: et_pcb.type_copper;
+
+		-- kicad refers to pcb contours as "edge cuts":
+		package_pcb_contours		: et_pcb.type_package_pcb_contour; -- CS not assigned yet
+
+		-- never assigned because kicad does not feature plated millings in a package:
+		package_pcb_contours_plated	: et_pcb.type_package_pcb_contour_plated;
+		
+		-- never assigned because kicad does not feature route restrict in a package:
+		package_route_restrict		: et_pcb.type_route_restrict_package;
+
+		-- never assigned because kicad does not feature via restrict in a package:
+		package_via_restrict		: et_pcb.type_via_restrict_package;
+
+		-- countours of a package as provided by the 3d model:
+		package_contours			: et_pcb.type_package_contours; -- CS not assigned yet
 		
 	-- TERMINALS
 		-- Temporarily we need lots of variables for terminal properties.
@@ -2567,9 +2582,9 @@ package body et_kicad_pcb is
 		-- NOTE: This is the type_terminals as specified in et_kicad_pcb ! (includes net names)
 		terminals : type_terminals.map;
 
-		-- This flag goes true once a terminal is to be inserted that already exists (by its name).
-		terminal_inserted : boolean;
-		
+		-- Temporarily, all packages of components go here. 
+		packages : type_packages_board.map;
+
 		procedure init_stop_and_mask is begin
 		-- Resets the temporarily status flags of solder paste and stop mask of an SMT terminal.
 		-- Does not affect THT terminals (stop mask always open, solder paste never applied).
@@ -3178,10 +3193,10 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 =>
-									set_point (axis => X, point => package_position, value => to_distance (to_string (arg)));
+									set_point (axis => X, point => package_position_xyz, value => to_distance (to_string (arg)));
 								when 2 =>
-									set_point (axis => Y, point => package_position, value => to_distance (to_string (arg)));
-									set_point (axis => Z, point => package_position, value => zero_distance);
+									set_point (axis => Y, point => package_position_xyz, value => to_distance (to_string (arg)));
+									set_point (axis => Z, point => package_position_xyz, value => zero_distance);
 								when 3 =>
 									package_angle := to_angle (to_string (arg));
 								when others => too_many_arguments;
@@ -3724,7 +3739,12 @@ package body et_kicad_pcb is
 		-- Restores the previous section.
 			use et_pcb_coordinates;
 			use et_libraries;
+
+			-- This cursor points to the last inserted terminal:
 			terminal_cursor : et_kicad_pcb.type_terminals.cursor;
+			-- This flag goes true once a terminal is to be inserted that already exists (by its name).
+			terminal_inserted : boolean;
+
 		
 			procedure invalid_layer_reference is begin
 				log_indentation_reset;
@@ -3758,6 +3778,93 @@ package body et_kicad_pcb is
 			end warn_on_missing_net;
 			
 			terminal_position_full : type_terminal_position; -- temporarily used
+
+			procedure insert_package is 
+			-- Builds and inserts package in temporarily container "packages".
+			-- Raises alarm if package already in container.
+			
+				-- This cursor points to the last inserted package:
+				package_cursor : et_kicad_pcb.type_packages_board.cursor;
+
+				-- This flag goes true once a package is to be inserted that already exists (by its reference).
+				package_inserted : boolean;
+
+				position : type_package_position;
+				
+			begin -- insert_package
+				set_point (
+					axis 	=> X, 
+					value 	=> get_axis (X, package_position_xyz),
+					point	=> type_point_3d (position));
+			
+				case package_appearance is
+					when REAL =>
+						packages.insert (
+							position	=> package_cursor,
+							inserted	=> package_inserted,
+							key			=> package_reference,
+							new_item	=> (
+								position		=> position,
+								appearance		=> REAL, -- !!!!!!!
+								technology		=> package_technology,
+								description		=> package_description,
+								time_stamp		=> package_time_stamp,
+								time_edit		=> package_time_edit,
+								value			=> package_value,
+								silk_screen		=> (top => package_top_silk_screen, bottom => package_bot_silk_screen),
+								terminals		=> terminals,
+								copper			=> (top => package_top_copper, bottom => package_bot_copper),
+								keepout			=> (top => package_top_keepout, bottom => package_bot_keepout),
+								route_restrict	=> package_route_restrict, -- always empty
+								via_restrict	=> package_via_restrict, -- always empty
+								assembly_documentation	=> (top => package_top_assy_doc, bottom => package_bot_assy_doc),
+								pcb_contours		=> package_pcb_contours,
+								pcb_contours_plated	=> package_pcb_contours_plated,
+								package_contours	=> package_contours
+								)
+							);
+						
+					when VIRTUAL =>
+						packages.insert (
+							position	=> package_cursor,
+							inserted	=> package_inserted,
+							key			=> package_reference,
+							new_item	=> (
+								position		=> position,
+								appearance		=> VIRTUAL, --- !!!!!!!!
+								technology		=> package_technology,
+								description		=> package_description,
+								time_stamp		=> package_time_stamp,
+								time_edit		=> package_time_edit,
+								value			=> package_value,
+								silk_screen		=> (top => package_top_silk_screen, bottom => package_bot_silk_screen),
+								terminals		=> terminals,
+								copper			=> (top => package_top_copper, bottom => package_bot_copper),
+								keepout			=> (top => package_top_keepout, bottom => package_bot_keepout),
+								route_restrict	=> package_route_restrict, -- always empty
+								via_restrict	=> package_via_restrict, -- always empty
+								assembly_documentation	=> (top => package_top_assy_doc, bottom => package_bot_assy_doc),
+								pcb_contours		=> package_pcb_contours,
+								pcb_contours_plated	=> package_pcb_contours_plated
+								-- a virtual package does not have contours
+								)
+							);
+					
+				end case;
+
+				if package_inserted then
+					null;
+					-- CS log package properties (at least reference, value, position)
+					log ("package " & to_string (package_reference),
+						 --& " position " & to_string (package_position),
+						 log_threshold + 1);
+				else
+					log_indentation_reset;
+					log (message_error & "package reference " & to_string (package_reference) & " already used !");
+					raise constraint_error;
+				end if;
+						
+			end insert_package;
 			
 		begin -- exec_section
 			log (process_section (section.name), log_threshold + 4);
@@ -3815,6 +3922,8 @@ package body et_kicad_pcb is
 							net_class.net_names.clear;
 
 						when SEC_MODULE =>
+							insert_package; -- in temporarily container "packages"
+
 							-- Once a package has been read completely, some variables
 							-- must be reset and lists must be cleared for the next package.
 							package_description := to_package_description ("");
@@ -3875,8 +3984,7 @@ package body et_kicad_pcb is
 							package_bot_copper.texts.clear;
 
 							
-							-- CS log package ?
-							-- CS insert package in board
+
 							
 						when others => null;
 					end case;
