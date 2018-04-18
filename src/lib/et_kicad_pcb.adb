@@ -1801,7 +1801,10 @@ package body et_kicad_pcb is
 					end case;
 
 					if terminal_inserted then
-						terminal_properties (terminal_cursor, log_threshold + 1);
+						et_pcb.terminal_properties (
+							terminal		=> et_pcb.type_terminals.element (terminal_cursor),
+							name			=> et_pcb.type_terminals.key (terminal_cursor),
+							log_threshold	=> log_threshold + 1);
 					else
 						log_indentation_reset;
 						log (message_error & "duplicated terminal " & to_string (terminal_name) & " !", console => true);
@@ -3721,7 +3724,7 @@ package body et_kicad_pcb is
 		-- Restores the previous section.
 			use et_pcb_coordinates;
 			use et_libraries;
-			terminal_cursor : type_terminals.cursor;
+			terminal_cursor : et_kicad_pcb.type_terminals.cursor;
 		
 			procedure invalid_layer_reference is begin
 				log_indentation_reset;
@@ -4193,6 +4196,9 @@ package body et_kicad_pcb is
 
 									end if;
 		
+									-- resert drill offset
+									terminal_drill_offset_x := pad_drill_offset_min; -- in case the next terminal drill has no offset
+									terminal_drill_offset_y := pad_drill_offset_min; -- in case the next terminal drill has no offset
 									
 								when SMT =>
 		
@@ -4244,13 +4250,30 @@ package body et_kicad_pcb is
 									init_stop_and_mask; -- relevant for SMT terminals only (stop mask always open, solder paste never applied)
 							end case;
 
-							init_terminal_net_name; -- in case the next terminal has no net connected
-							terminal_drill_offset_x := pad_drill_offset_min; -- in case the next terminal drill has no offset
-							terminal_drill_offset_y := pad_drill_offset_min; -- in case the next terminal drill has no offset
-							
+							-- Log terminal properties and reset net name if terminal could be inserted.
+							-- Otherwise abort due to a duplicated usage:
 							if terminal_inserted then
-								NULL; -- CS terminal_properties (terminal_cursor, log_threshold + 1);
-							else
+								et_pcb.terminal_properties (
+									terminal		=> et_pcb.type_terminal (et_kicad_pcb.type_terminals.element (terminal_cursor)),
+									name			=> et_kicad_pcb.type_terminals.key (terminal_cursor),
+									log_threshold	=> log_threshold + 1);
+
+								-- Whether the terminal is connected with a net or not, can be followed by the lenght of
+								-- the terminal_net_name. If the terminal (pad) has no net name provided (section SEC_PAD)
+								-- the terminal_net_name is empty.
+								log_indentation_up;
+								if et_schematic.type_net_name.length (terminal_net_name) > 0 then
+									log ("connected with net " & et_schematic.to_string (terminal_net_name),
+										log_threshold + 1);
+								else
+									log ("not connected", log_threshold + 1);
+								end if;
+								log_indentation_down;
+
+								-- reset net name 
+								init_terminal_net_name; -- in case the next terminal has no net connected
+
+							else -- terminal could not be inserted
 								log_indentation_reset;
 								log (message_error & "duplicated terminal " & to_string (terminal_name) & " !", console => true);
 								raise constraint_error;

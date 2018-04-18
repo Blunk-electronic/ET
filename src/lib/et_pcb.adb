@@ -243,27 +243,27 @@ package body et_pcb is
 	
 	function to_string (technology : in type_assembly_technology) return string is
 	begin
-		return type_assembly_technology'image (technology);
+		return latin_1.space & type_assembly_technology'image (technology);
 	end to_string;
 
 	function to_string (shape : in type_terminal_shape_tht) return string is
 	begin
-		return type_terminal_shape_tht'image (shape);
+		return latin_1.space & type_terminal_shape_tht'image (shape);
 	end to_string;
 
 	function to_string (shape : in type_terminal_shape_smt) return string is
 	begin
-		return type_terminal_shape_smt'image (shape);
+		return latin_1.space & type_terminal_shape_smt'image (shape);
 	end to_string;
 
 	function to_string (solder_paste : in type_terminal_solder_paste) return string is
 	begin
-		return type_terminal_solder_paste'image (solder_paste);
+		return latin_1.space & type_terminal_solder_paste'image (solder_paste);
 	end to_string;
 
 	function to_string (stop_mask : in type_terminal_stop_mask) return string is
 	begin
-		return type_terminal_stop_mask'image (stop_mask);
+		return latin_1.space & type_terminal_stop_mask'image (stop_mask);
 	end to_string;
 
 	function no_contour return type_package_contour is
@@ -628,65 +628,66 @@ package body et_pcb is
 		log_indentation_down;
 	end text_assy_doc_properties;
 	
-	
+
 	procedure terminal_properties (
-	-- Logs the properties of the terminal indicated by cursor.
-		cursor 			: in type_terminals.cursor;
+	-- Logs the properties of the given terminal.
+		terminal		: in et_pcb.type_terminal;
+		name			: in et_libraries.type_terminal_name.bounded_string;
 		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_terminals;
 		use et_pcb_coordinates;
 		use et_libraries;
 		log_threshold_1 : type_log_level := log_threshold + 1;
 	begin
-		log ("terminal name " & to_string (key (cursor))
-			& " technology " & to_string (element (cursor).technology)
-			& to_string (type_point_3d (element (cursor).position))
-			& to_string (angle => get_angle (element (cursor).position), preamble => true),
+		log ("terminal name " & to_string (name)
+			& " technology" & to_string (terminal.technology)
+			& to_string (type_point_3d (terminal.position))
+			& to_string (angle => get_angle (terminal.position), preamble => true),
 			log_threshold);
 
 		log_indentation_up;
-		case element (cursor).technology is
+		case terminal.technology is
 			when THT => 
-				log ("shape " & to_string (element (cursor).shape_tht), log_threshold_1);
-				log ("copper width of inner layers" & to_string (element (cursor).width_inner_layers), log_threshold_1);
-				case element (cursor).shape is
+				log ("shape" & to_string (terminal.shape_tht), log_threshold_1);
+				log ("copper width of inner layers" & to_string (terminal.width_inner_layers), log_threshold_1);
+				case terminal.shape is
 					when NON_CIRCULAR =>
-						log ("size x" & to_string (element (cursor).size_tht_x), log_threshold_1);
-						log ("size y" & to_string (element (cursor).size_tht_y), log_threshold_1);
-						case element (cursor).tht_hole is
+						log ("size x" & to_string (terminal.size_tht_x), log_threshold_1);
+						log ("size y" & to_string (terminal.size_tht_y), log_threshold_1);
+						case terminal.tht_hole is
 							when DRILLED =>
-								log ("drill" & to_string (element (cursor).drill_size_dri), log_threshold_1); 
+								log ("drill" & to_string (terminal.drill_size_dri), log_threshold_1); 
 							when MILLED =>
 								if log_level >= log_threshold_1 then
 									log ("plated milling contour ");
 									log_indentation_up;
-									log_plated_millings (element (cursor).millings);
+									log_plated_millings (terminal.millings);
 									log_indentation_down;
 								end if;
 						end case;
 						
 					when CIRCULAR =>
-						log ("drill " & to_string (element (cursor).drill_size_cir), log_threshold_1); 
+						log ("drill" & to_string (terminal.drill_size_cir), log_threshold_1); 
 				end case;
 				
 			when SMT => 
-				log ("shape " & to_string (element (cursor).shape_smt), log_threshold_1);
+				log ("shape" & to_string (terminal.shape_smt), log_threshold_1);
 
-				case element (cursor).shape is
+				case terminal.shape is
 					when NON_CIRCULAR =>
-						log ("size x " & to_string (element (cursor).size_smt_x), log_threshold_1);
-						log ("size y " & to_string (element (cursor).size_smt_y), log_threshold_1);
+						log ("size x" & to_string (terminal.size_smt_x), log_threshold_1);
+						log ("size y" & to_string (terminal.size_smt_y), log_threshold_1);
 					when CIRCULAR =>
 						null; -- CS 
 				end case;
 				
-				log ("face " & to_string (element (cursor).face), log_threshold_1);
-				log ("stop mask " & to_string (element (cursor).stop_mask), log_threshold_1);
-				log ("solder paste " & to_string (element (cursor).solder_paste), log_threshold_1);
+				log ("face" & to_string (terminal.face), log_threshold_1);
+				log ("stop mask" & to_string (terminal.stop_mask), log_threshold_1);
+				log ("solder paste" & to_string (terminal.solder_paste), log_threshold_1);
 		end case;
 
 		log_indentation_down;
 	end terminal_properties;
+
 
 	
 	function terminal_count (

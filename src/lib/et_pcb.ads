@@ -717,6 +717,12 @@ package et_pcb is
 		end case;
 	end record;
 
+	procedure terminal_properties (
+	-- Logs the properties of the given terminal.
+		terminal		: in et_pcb.type_terminal;
+		name			: in et_libraries.type_terminal_name.bounded_string;
+		log_threshold 	: in et_string_processing.type_log_level);
+	
 	package type_terminals is new indefinite_ordered_maps (
 		key_type		=> et_libraries.type_terminal_name.bounded_string,
 		element_type	=> type_terminal,
@@ -929,10 +935,6 @@ package et_pcb is
 		cursor			: in type_texts_with_content.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 	
-	procedure terminal_properties (
-	-- Logs the properties of the terminal indicated by cursor.
-		cursor 			: in type_terminals.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
 
 	
 
