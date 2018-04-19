@@ -421,10 +421,10 @@ package body et_kicad_pcb is
 		terminal_drill_offset_x	: type_pad_drill_offset;
 		terminal_drill_offset_y	: type_pad_drill_offset;
 	
-		terminal_position	: et_pcb_coordinates.type_point_3d;
+		terminal_position	: et_pcb_coordinates.type_terminal_position;
 		terminal_size_x 	: type_pad_size;
 		terminal_size_y 	: type_pad_size;		
-		terminal_angle 		: et_pcb_coordinates.type_angle;
+-- 		terminal_angle 		: et_pcb_coordinates.type_angle;
 
 -- 		terminal_copper_width_outer_layers : et_pcb_coordinates.type_distance;
 		terminal_copper_width_inner_layers : et_pcb_coordinates.type_distance := 1.0; -- CS load from DRU ?
@@ -1251,7 +1251,7 @@ package body et_kicad_pcb is
 				when SEC_AT =>
 					case section.parent is
 						when SEC_PAD =>
-							terminal_angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
+							set_angle (point => terminal_position, value => zero_angle); -- angle is optionally provided as last argument. if not provided default to zero.
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
@@ -1260,7 +1260,7 @@ package body et_kicad_pcb is
 									set_point (axis => Y, point => terminal_position, value => to_distance (to_string (arg)));
 									set_point (axis => Z, point => terminal_position, value => zero_distance);
 								when 3 => 
-									terminal_angle := to_angle (to_string (arg));
+									set_angle (point => terminal_position, value => to_angle (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -1481,8 +1481,6 @@ package body et_kicad_pcb is
 				raise constraint_error;
 			end invalid_layer_user;
 
-			terminal_position_full : type_terminal_position; -- temporarily used
-			
 		begin -- exec_section
 			log (process_section (section.name), log_threshold + 4);
 
@@ -1686,7 +1684,7 @@ package body et_kicad_pcb is
 					-- Insert a terminal in the list "terminals":
 
 					-- Compose from the terminal position and angel the full terminal position
-					terminal_position_full := type_terminal_position (to_terminal_position (terminal_position, terminal_angle));
+					--terminal_position_full := type_terminal_position (to_terminal_position (terminal_position, terminal_angle));
 					
 					case terminal_technology is
 						when THT =>
@@ -1705,7 +1703,7 @@ package body et_kicad_pcb is
 													offset_x		=> terminal_drill_offset_x,
 													offset_y		=> terminal_drill_offset_y,
 													shape_tht		=> terminal_shape_tht,
-													position		=> terminal_position_full
+													position		=> terminal_position
 												   ));
 							else -- NON_CIRCULAR
 								case terminal_drill_shape is
@@ -1721,7 +1719,7 @@ package body et_kicad_pcb is
 															width_inner_layers => terminal_copper_width_inner_layers,
 															drill_size_dri	=> terminal_drill_size,
 															shape_tht		=> terminal_shape_tht,
-															position		=> terminal_position_full,
+															position		=> terminal_position,
 															size_tht_x		=> terminal_size_x,
 															size_tht_y		=> terminal_size_y
 														));
@@ -1740,7 +1738,7 @@ package body et_kicad_pcb is
 															-- The plated millings of the hole is a list of lines.
 															-- KiCad does not allow arcs or circles for plated millings.
 															millings		=> (lines => contour_milled_rectangle_of_pad
-																				 (center => terminal_position_full,
+																				 (center => terminal_position,
 																				  size_x => terminal_milling_size_x,
 																				  size_y => terminal_milling_size_y,
 																				  offset_x => terminal_drill_offset_x,
@@ -1749,7 +1747,7 @@ package body et_kicad_pcb is
 																				arcs => type_pcb_contour_arcs.empty_list,
 																				circles => type_pcb_contour_circles.empty_list),
 															shape_tht		=> terminal_shape_tht,
-															position		=> terminal_position_full,
+															position		=> terminal_position,
 															size_tht_x		=> terminal_size_x,
 															size_tht_y		=> terminal_size_y
 														));
@@ -1773,7 +1771,7 @@ package body et_kicad_pcb is
 													shape			=> CIRCULAR,
 													tht_hole		=> DRILLED, -- has no meaning here
 													shape_smt		=> terminal_shape_smt,
-													position		=> terminal_position_full,
+													position		=> terminal_position,
 													face 			=> terminal_face,
 													stop_mask		=> terminal_stop_mask,
 													solder_paste	=> terminal_solder_paste
@@ -1788,7 +1786,7 @@ package body et_kicad_pcb is
 													shape			=> NON_CIRCULAR,
 													tht_hole		=> DRILLED, -- has no meaning here
 													shape_smt		=> terminal_shape_smt,
-													position		=> terminal_position_full,
+													position		=> terminal_position,
 													face 			=> terminal_face,
 													stop_mask		=> terminal_stop_mask,
 													solder_paste	=> terminal_solder_paste,
