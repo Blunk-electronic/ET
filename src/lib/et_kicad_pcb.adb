@@ -424,7 +424,6 @@ package body et_kicad_pcb is
 		terminal_position	: et_pcb_coordinates.type_terminal_position;
 		terminal_size_x 	: type_pad_size;
 		terminal_size_y 	: type_pad_size;		
--- 		terminal_angle 		: et_pcb_coordinates.type_angle;
 
 -- 		terminal_copper_width_outer_layers : et_pcb_coordinates.type_distance;
 		terminal_copper_width_inner_layers : et_pcb_coordinates.type_distance := 1.0; -- CS load from DRU ?
@@ -3775,7 +3774,7 @@ package body et_kicad_pcb is
 			
 			procedure insert_package is 
 			-- Builds and inserts package in temporarily container "packages".
-			-- Raises alarm if package already in container.
+			-- Raises alarm if package already exists in container.
 			
 				-- This cursor points to the last inserted package:
 				package_cursor : et_kicad_pcb.type_packages_board.cursor;
@@ -3783,6 +3782,8 @@ package body et_kicad_pcb is
 				-- This flag goes true once a package is to be inserted that already exists (by its reference).
 				package_inserted : boolean;
 			begin -- insert_package
+				-- CS warning if package_reference is default_component_reference
+				-- CS warning if value is empty ?
 			
 				case package_appearance is
 					when REAL =>
@@ -3839,15 +3840,21 @@ package body et_kicad_pcb is
 					
 				end case;
 
+				-- abort if package already in board file, otherwise log coordinates and properties
 				if package_inserted then
-					null;
-					-- CS log package properties (at least reference, value, position)
-					log ("package " & to_string (package_reference),
-						 --& " position " & to_string (package_position),
+
+					-- log package coordinates
+					log ("package " & to_string (package_reference)
+						 & et_pcb.package_position (package_position), -- this is a function that returns package coordinates !
 						 log_threshold + 1);
+					
+					-- CS log package properties (at least reference, value, ...) ?
 				else
 					log_indentation_reset;
-					log (message_error & "package reference " & to_string (package_reference) & " already used !");
+					log (message_error & "package " & to_string (package_reference) 
+						& et_pcb.package_position (package_position)
+						& " already used !",
+						 console => true);
 					raise constraint_error;
 				end if;
 						
@@ -3913,20 +3920,23 @@ package body et_kicad_pcb is
 
 							-- Once a package has been read completely, some variables
 							-- must be reset and lists must be cleared for the next package.
+
+							-- reset description and tags
 							package_description := to_package_description ("");
 							package_tags := to_package_tags ("");
 
+							-- reset technology and appearance
 							package_technology := THT;
 							package_appearance := REAL;
 
-							-- CS warning if package_reference is default_component_reference
+							-- reset reference and value
 							package_reference := et_schematic.default_component_reference;
-
 							package_value := to_value ("");
-							
+
+							-- delete list of terminals
 							terminals.clear;
 
-							-- silk screen
+							-- clear silk screen
 							package_top_silk_screen.lines.clear;
 							package_top_silk_screen.arcs.clear;
 							package_top_silk_screen.circles.clear;
@@ -3937,7 +3947,7 @@ package body et_kicad_pcb is
 							package_bot_silk_screen.circles.clear;
 							package_bot_silk_screen.texts.clear;
 
-							-- assembly documentation
+							-- clear assembly documentation
 							package_top_assy_doc.lines.clear;
 							package_top_assy_doc.arcs.clear;
 							package_top_assy_doc.circles.clear;
@@ -3948,18 +3958,18 @@ package body et_kicad_pcb is
 							package_bot_assy_doc.circles.clear;
 							package_bot_assy_doc.texts.clear;
 
-							-- keepout
+							-- clear keepout
 							package_top_keepout.lines.clear;
 							package_top_keepout.arcs.clear;
 							package_top_keepout.circles.clear;
-							--package_top_keepout.texts.clear;
+							-- CS package_top_keepout.texts.clear;
 
 							package_bot_keepout.lines.clear;
 							package_bot_keepout.arcs.clear;
 							package_bot_keepout.circles.clear;
-							--package_bot_keepout.texts.clear;
+							-- CS package_bot_keepout.texts.clear;
 
-							-- copper
+							-- clear copper
 							package_top_copper.lines.clear;
 							package_top_copper.arcs.clear;
 							package_top_copper.circles.clear;
@@ -3969,9 +3979,6 @@ package body et_kicad_pcb is
 							package_bot_copper.arcs.clear;
 							package_bot_copper.circles.clear;
 							package_bot_copper.texts.clear;
-
-							
-
 							
 						when others => null;
 					end case;
@@ -4287,7 +4294,7 @@ package body et_kicad_pcb is
 
 									end if;
 		
-									-- resert drill offset
+									-- reset drill offset
 									terminal_drill_offset_x := pad_drill_offset_min; -- in case the next terminal drill has no offset
 									terminal_drill_offset_y := pad_drill_offset_min; -- in case the next terminal drill has no offset
 									

@@ -129,6 +129,9 @@ package et_pcb_coordinates is
 	procedure set_face (
 		face	: in type_face;
 		position: in out type_package_position);
+
+	function get_face (packge : in type_package_position)
+		return type_face;
 	
 	function to_terminal_position (
 	-- Composes from a given point and angle the terminal position.

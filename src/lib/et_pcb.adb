@@ -319,8 +319,13 @@ package body et_pcb is
 		return type_package_tags.to_bounded_string (tags);
 	end to_package_tags;
 
-
-	
+	function package_position (position : in type_package_position) return string is
+	-- Returns the coordinates of a package (in a board) as string.
+	begin
+		return (" position" & to_string (position)
+			& " angle" & to_string (get_angle (position))
+			& " face" & to_string (get_face (position)));
+	end package_position;
 	
 -- PROPERTIES OF OBJECTS IN COPPER (NON ELECTRIC !!)
 	procedure line_copper_properties (

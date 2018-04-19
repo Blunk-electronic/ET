@@ -252,6 +252,12 @@ package body et_pcb_coordinates is
 	begin
 		position.face := face;
 	end set_face;
+
+	function get_face (packge : in type_package_position)
+		return type_face is
+	begin
+		return packge.face;
+	end get_face;
 	
 	
 	function to_terminal_position (

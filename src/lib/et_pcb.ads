@@ -773,6 +773,8 @@ package et_pcb is
 		end case;
 	end record;
 
+	function package_position (position : in type_package_position) return string;
+	-- Returns the coordinates of a package (in a board) as string.
 
 	
 	
