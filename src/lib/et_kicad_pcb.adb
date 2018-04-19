@@ -2481,7 +2481,6 @@ package body et_kicad_pcb is
 		-- PACKAGES
 		package_name 			: et_libraries.type_component_package_name.bounded_string;
 		package_library_name	: et_libraries.type_library_name.bounded_string;
-		package_assembly_face	: et_pcb_coordinates.type_face;
 		package_position		: et_pcb_coordinates.type_package_position;
 		package_path			: et_schematic.type_path_to_package; -- the link to the symbol in the schematic like 59F208B2
 
@@ -2548,10 +2547,9 @@ package body et_kicad_pcb is
 		terminal_drill_offset_x	: type_pad_drill_offset;
 		terminal_drill_offset_y	: type_pad_drill_offset;
 
-		terminal_position	: et_pcb_coordinates.type_point_3d;
+		terminal_position	: et_pcb_coordinates.type_terminal_position;
 		terminal_size_x 	: type_pad_size;
 		terminal_size_y 	: type_pad_size;		
-		terminal_angle 		: et_pcb_coordinates.type_angle;
 
 		terminal_net_name	: et_schematic.type_net_name.bounded_string;
 		terminal_net_id		: type_net_id_terminal;
@@ -3143,9 +3141,9 @@ package body et_kicad_pcb is
 								when 0 => null;
 								when 1 =>
 									if to_string (arg) = layer_bot_copper then
-										package_assembly_face := BOTTOM;
+										set_face (face => BOTTOM, position => package_position);
 									elsif to_string (arg) /= layer_top_copper then
-										package_assembly_face := TOP;
+										set_face (face => TOP, position => package_position);
 									end if;
 								when others => too_many_arguments;
 							end case;
@@ -3586,7 +3584,8 @@ package body et_kicad_pcb is
 							end case;
 							
 						when SEC_AT =>
-							terminal_angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
+							--terminal_angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
+							set_angle (point => terminal_position, value => zero_angle);
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
@@ -3595,7 +3594,7 @@ package body et_kicad_pcb is
 									set_point (axis => Y, point => terminal_position, value => to_distance (to_string (arg)));
 									set_point (axis => Z, point => terminal_position, value => zero_distance);
 								when 3 => 
-									terminal_angle := to_angle (to_string (arg));
+									set_angle (point => terminal_position, value => to_angle (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 							
@@ -3776,8 +3775,6 @@ package body et_kicad_pcb is
 				end if;
 			end warn_on_missing_net;
 			
-			terminal_position_full : type_terminal_position; -- temporarily used
-
 			procedure insert_package is 
 			-- Builds and inserts package in temporarily container "packages".
 			-- Raises alarm if package already in container.
@@ -3787,14 +3784,7 @@ package body et_kicad_pcb is
 
 				-- This flag goes true once a package is to be inserted that already exists (by its reference).
 				package_inserted : boolean;
-
-				--position : type_package_position;
-				
 			begin -- insert_package
--- 				set_point (
--- 					axis 	=> X, 
--- 					value 	=> get_axis (X, package_position_xyz),
--- 					point	=> position);
 			
 				case package_appearance is
 					when REAL =>
@@ -4221,10 +4211,6 @@ package body et_kicad_pcb is
 							
 						when SEC_PAD =>
 							-- Insert a terminal in the list "terminals":
-
-							-- Compose from the terminal position and angel the full terminal position
-							terminal_position_full := type_terminal_position (to_terminal_position (terminal_position, terminal_angle));
-
 							case terminal_technology is
 								when THT =>
 		
@@ -4242,7 +4228,7 @@ package body et_kicad_pcb is
 															offset_x		=> terminal_drill_offset_x,
 															offset_y		=> terminal_drill_offset_y,
 															shape_tht		=> terminal_shape_tht,
-															position		=> terminal_position_full,
+															position		=> terminal_position,
 
 															-- the pad is connected with a certain net
 															net_name		=> terminal_net_name
@@ -4261,7 +4247,7 @@ package body et_kicad_pcb is
 																	width_inner_layers => terminal_copper_width_inner_layers,
 																	drill_size_dri	=> terminal_drill_size,
 																	shape_tht		=> terminal_shape_tht,
-																	position		=> terminal_position_full,
+																	position		=> terminal_position,
 																	size_tht_x		=> terminal_size_x,
 																	size_tht_y		=> terminal_size_y,
 
@@ -4283,16 +4269,16 @@ package body et_kicad_pcb is
 																	-- The plated millings of the hole is a list of lines.
 																	-- KiCad does not allow arcs or circles for plated millings.
 																	millings		=> (lines => contour_milled_rectangle_of_pad
-																						(center => type_terminal_position (to_terminal_position (terminal_position, terminal_angle)),
+																						(center => terminal_position,
 																						size_x => terminal_milling_size_x,
 																						size_y => terminal_milling_size_y,
 																						offset_x => terminal_drill_offset_x,
 																						offset_y => terminal_drill_offset_y),
-																						
+
 																						arcs => type_pcb_contour_arcs.empty_list,
 																						circles => type_pcb_contour_circles.empty_list),
 																	shape_tht		=> terminal_shape_tht,
-																	position		=> terminal_position_full,
+																	position		=> terminal_position,
 																	size_tht_x		=> terminal_size_x,
 																	size_tht_y		=> terminal_size_y,
 
@@ -4322,7 +4308,7 @@ package body et_kicad_pcb is
 															shape			=> CIRCULAR,
 															tht_hole		=> DRILLED, -- has no meaning here
 															shape_smt		=> terminal_shape_smt,
-															position		=> terminal_position_full,
+															position		=> terminal_position,
 
 															-- the pad is connected with a certain net
 															net_name		=> terminal_net_name,
@@ -4341,7 +4327,7 @@ package body et_kicad_pcb is
 															shape			=> NON_CIRCULAR,
 															tht_hole		=> DRILLED, -- has no meaning here
 															shape_smt		=> terminal_shape_smt,
-															position		=> terminal_position_full,
+															position		=> terminal_position,
 															
 															-- the pad is connected with a certain net
 															net_name		=> terminal_net_name,
