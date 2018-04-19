@@ -4489,7 +4489,9 @@ package body et_kicad_pcb is
 			log (message_error & "top level section not closed !", console => true);
 			raise constraint_error;
 		end if;
-		
+
+		-- copy all the packages (in temporarily container "packages") the board to be returned:
+		board.packages := packages;
 		
 		return board;
 	end to_board;

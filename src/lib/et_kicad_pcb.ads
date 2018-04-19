@@ -243,7 +243,8 @@ package et_kicad_pcb is
 	
 
 	type type_board is record
-		paper_size : et_general.type_paper_size;
+		paper_size 	: et_general.type_paper_size;
+		packages	: type_packages_board.map;
 	end record;
 
 	procedure read_board (
