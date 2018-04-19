@@ -246,6 +246,13 @@ package body et_pcb_coordinates is
 		return point.angle;
 	end get_angle;
 		
+	procedure set_face (
+		face	: in type_face;
+		position: in out type_package_position) is
+	begin
+		position.face := face;
+	end set_face;
+	
 	
 	function to_terminal_position (
 	-- Composes from a given point and angle the terminal position.

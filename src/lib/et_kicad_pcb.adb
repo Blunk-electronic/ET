@@ -2482,8 +2482,7 @@ package body et_kicad_pcb is
 		package_name 			: et_libraries.type_component_package_name.bounded_string;
 		package_library_name	: et_libraries.type_library_name.bounded_string;
 		package_assembly_face	: et_pcb_coordinates.type_face;
-		package_position_xyz	: et_pcb_coordinates.type_point_3d;
-		package_angle			: et_pcb_coordinates.type_angle; -- in degrees like 45.7
+		package_position		: et_pcb_coordinates.type_package_position;
 		package_path			: et_schematic.type_path_to_package; -- the link to the symbol in the schematic like 59F208B2
 
 		-- The majority of terminals dictates the package technology. The default is THT.
@@ -3193,12 +3192,12 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 =>
-									set_point (axis => X, point => package_position_xyz, value => to_distance (to_string (arg)));
+									set_point (axis => X, point => package_position, value => to_distance (to_string (arg)));
 								when 2 =>
-									set_point (axis => Y, point => package_position_xyz, value => to_distance (to_string (arg)));
-									set_point (axis => Z, point => package_position_xyz, value => zero_distance);
+									set_point (axis => Y, point => package_position, value => to_distance (to_string (arg)));
+									set_point (axis => Z, point => package_position, value => zero_distance);
 								when 3 =>
-									package_angle := to_angle (to_string (arg));
+									set_angle (point => package_position, value => to_angle (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -3789,13 +3788,13 @@ package body et_kicad_pcb is
 				-- This flag goes true once a package is to be inserted that already exists (by its reference).
 				package_inserted : boolean;
 
-				position : type_package_position;
+				--position : type_package_position;
 				
 			begin -- insert_package
-				set_point (
-					axis 	=> X, 
-					value 	=> get_axis (X, package_position_xyz),
-					point	=> position);
+-- 				set_point (
+-- 					axis 	=> X, 
+-- 					value 	=> get_axis (X, package_position_xyz),
+-- 					point	=> position);
 			
 				case package_appearance is
 					when REAL =>
@@ -3804,7 +3803,7 @@ package body et_kicad_pcb is
 							inserted	=> package_inserted,
 							key			=> package_reference,
 							new_item	=> (
-								position		=> position,
+								position		=> package_position,
 								appearance		=> REAL, -- !!!!!!!
 								technology		=> package_technology,
 								description		=> package_description,
@@ -3830,7 +3829,7 @@ package body et_kicad_pcb is
 							inserted	=> package_inserted,
 							key			=> package_reference,
 							new_item	=> (
-								position		=> position,
+								position		=> package_position,
 								appearance		=> VIRTUAL, --- !!!!!!!!
 								technology		=> package_technology,
 								description		=> package_description,
