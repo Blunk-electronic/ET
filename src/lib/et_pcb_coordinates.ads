@@ -94,13 +94,13 @@ package et_pcb_coordinates is
 	
 	type type_point_3d is tagged private;
 	type type_terminal_position is new type_point_3d with private;
-	type type_package_position is new type_point_3d with private;
+	type type_package_position is new type_terminal_position with private;
 
-	function to_string (point : in type_point_3d) return string;
+	function to_string (point : in type_point_3d'class) return string;
 	
--- 	function point_zero return type_point_3d;
+	function point_zero return type_point_3d'class;
 
-	function terminal_position_default return type_terminal_position;
+	function terminal_position_default return type_terminal_position'class;
 
 	function package_position_default return type_package_position;
 
@@ -111,19 +111,20 @@ package et_pcb_coordinates is
 
 	procedure rotate (
 	-- Rotates the given point by the given angle with the origin as center.
-		point	: in out type_point_3d; -- z axis ignored
+		point	: in out type_point_3d'class; -- z axis ignored -> rotation in z-plane
 		angle	: in type_angle);
 	
 	function get_axis ( -- CS find a better name
 		axis	: in type_axis;
-		point	: in type_point_3d)
+		point	: in type_point_3d'class)
 		return type_distance_total;
 	
 	procedure set_angle (
 		value	: in type_angle;
-		point	: in out type_terminal_position);
+		point	: in out type_terminal_position'class);
 
-	function get_angle (point : in type_terminal_position) return type_angle;
+	function get_angle (point : in type_terminal_position'class)
+		return type_angle;
 	
 	function to_terminal_position (
 	-- Composes from a given point and angle the terminal position.
@@ -143,11 +144,8 @@ package et_pcb_coordinates is
 		type type_terminal_position is new type_point_3d with record
 			angle	: type_angle := zero_angle;
 		end record;
-
-
 		
-		type type_package_position is new type_point_3d with record
-			angle	: type_angle := zero_angle;			
+		type type_package_position is new type_terminal_position with record
 			face	: type_face := TOP;
 		end record;
 

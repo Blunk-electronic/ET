@@ -91,7 +91,7 @@ package body et_pcb_coordinates is
 		return type_angle'value (angle);
 	end to_angle;
 	
-	function to_string (point : in type_point_3d) return string is
+	function to_string (point : in type_point_3d'class) return string is
 	begin
 		return position_preamble_3d
 			& to_string (point.x)
@@ -103,14 +103,19 @@ package body et_pcb_coordinates is
 			& to_string (point.z);
 	end to_string;
 
--- 	function point_zero return type_point_3d is
--- 	begin
--- 		return zero;
--- 	end point_zero;
-	
-	function terminal_position_default return type_terminal_position is
+	function point_zero return type_point_3d'class is
 	begin
-		return (zero with zero_angle);
+		return zero;
+	end point_zero;
+	
+	function terminal_position_default return type_terminal_position'class is
+		pos : type_terminal_position;
+	begin
+		pos.x := zero_distance;
+		pos.y := zero_distance;
+		pos.z := zero_distance;
+		pos.angle := zero_angle;
+		return pos;
 	end terminal_position_default;
 	
 	function package_position_default return type_package_position is
@@ -132,7 +137,7 @@ package body et_pcb_coordinates is
 
 	procedure rotate (
 	-- Rotates the given point by the given angle with the origin as center.
-		point	: in out type_point_3d; -- z axis ignored
+		point	: in out type_point_3d'class; -- z axis ignored -> rotation in z-plane
 		angle	: in type_angle) is
 
 		type type_float_distance is digits 7 range -1000.0 .. 1000.0; -- CS: refine
@@ -219,7 +224,7 @@ package body et_pcb_coordinates is
 	
 	function get_axis (
 		axis	: in type_axis;
-		point	: in type_point_3d)
+		point	: in type_point_3d'class)
 		return type_distance_total is
 	begin
 		case axis is
@@ -231,12 +236,12 @@ package body et_pcb_coordinates is
 	
 	procedure set_angle (
 		value	: in type_angle;
-		point	: in out type_terminal_position) is
+		point	: in out type_terminal_position'class) is
 	begin
 		point.angle := value;
 	end set_angle;
 
-	function get_angle (point : in type_terminal_position) return type_angle is
+	function get_angle (point : in type_terminal_position'class) return type_angle is
 	begin
 		return point.angle;
 	end get_angle;
