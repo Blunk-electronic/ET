@@ -2261,6 +2261,16 @@ package body et_kicad_pcb is
 	end read_libraries;
 
 
+	function to_layer_name (name : in string) return type_layer_name.bounded_string is
+	begin
+		return type_layer_name.to_bounded_string (name);
+	end to_layer_name;
+
+	function to_layer_meaning (meaning : in string) return type_layer_meaning is
+	begin
+		return type_layer_meaning'value (meaning);
+	end to_layer_meaning;
+
 	function to_board (
 		file_name		: in string; -- pwr_supply.kicad_pcb
 		lines			: in et_pcb.type_lines.list;
@@ -2454,9 +2464,14 @@ package body et_kicad_pcb is
 
 
 
-		-- temporarily storage places
+		-- TEMPORARILY STORAGE PLACES
+
 		
-		layer_id : type_layer_id; -- used when reading the board layers (SEC_LAYERS)
+		-- Used when reading the board layers (SEC_LAYERS)
+		-- like (0 F.Cu signal) or (31 B.Cu signal) we have those variables.
+		layer_id 	: type_layer_id; 
+		layer		: type_layer;
+		layers		: type_layers.map;
 
 		
 		netlist_net_id 		: type_net_id;
@@ -3687,6 +3702,20 @@ package body et_kicad_pcb is
 						when others => invalid_section;
 					end case;
 
+				-- parent section
+				when SEC_LAYERS =>
+					case section.name is
+						when SEC_LAYER_ID =>  -- NOTE: this is an "artificial" layer. See procedure read_section.
+							-- layer_id already set (see procedure read_section)
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => layer.name := to_layer_name (to_string (arg));
+								when 2 => layer.meaning := to_layer_meaning (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+						when others => invalid_section;
+					end case;
+						
 					-- 
 -- 				when SEC_MODEL =>
 -- 					case section.parent is
@@ -3859,6 +3888,33 @@ package body et_kicad_pcb is
 				end if;
 						
 			end insert_package;
+
+			procedure insert_layer is
+			-- Inserts the layer (when reading section "layers") in the temporarily container "layers".
+				layer_cursor : et_kicad_pcb.type_layers.cursor; -- mandatory, never read
+				layer_inserted : boolean; -- goes true if layer id already used
+			begin -- insert_layer
+
+				-- insert in container "layers"
+				layers.insert (
+					new_item	=> layer,		-- components set in procedure read_arg
+					key			=> layer_id,	-- set in procedure read_section
+					inserted	=> layer_inserted,
+					position	=> layer_cursor);
+
+				-- Abort if layer already in use. The criteria is the layer id.
+				if layer_inserted then
+					log ("layer id" & type_layer_id'image (layer_id) 
+						 & " name " & type_layer_name.to_string (layer.name)
+						 & " meaning " & type_layer_meaning'image (layer.meaning), log_threshold + 2);
+				else
+					log_indentation_reset;
+					log (message_error & "layer id" & type_layer_id'image (layer_id) & " already used !", 
+						 console => true);
+					raise constraint_error;
+				end if;
+					
+			end insert_layer;
 			
 		begin -- exec_section
 			log (process_section (section.name), log_threshold + 4);
@@ -3987,7 +4043,7 @@ package body et_kicad_pcb is
 				when SEC_LAYERS =>
 					case section.name is
 						when SEC_LAYER_ID =>
-							null; -- CS log board layer
+							insert_layer; -- in temporarily container "layers"
 
 						when others => null;
 					end case;
@@ -4490,8 +4546,17 @@ package body et_kicad_pcb is
 			raise constraint_error;
 		end if;
 
+
+		
+		-- COPY TEMPORARILY CONTAINERS IN BOARD TO BE RETURNED
+		
+		-- copy container "layers" in board
+		board.layers := layers;
+		
 		-- copy all the packages (in temporarily container "packages") the board to be returned:
 		board.packages := packages;
+
+		
 		
 		return board;
 	end to_board;

@@ -46,6 +46,7 @@ with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
+--with ada.containers.vectors;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
@@ -103,7 +104,7 @@ package et_kicad_pcb is
 	type type_fp_text_meaning is (REFERENCE, VALUE, USER);
 	
 	-- For the package import we need a special set of layers. 
-	type type_layer is (
+	type type_layer_abbrevation is (
 		TOP_COPPER, BOT_COPPER,
 		TOP_SILK, BOT_SILK,
 		TOP_ASSY, BOT_ASSY, -- in kicad this is the fab layer
@@ -117,19 +118,19 @@ package et_kicad_pcb is
 	-- copied to the final lines, arcs and circles as specified in type_package:
 	type type_line is new et_pcb.type_line with record
 		width	: et_pcb.type_text_line_width;
-		layer	: type_layer;
+		layer	: type_layer_abbrevation;
 	end record;
 
 	type type_arc is new et_pcb.type_arc with record
 		width 	: et_pcb.type_text_line_width;
 		angle 	: et_pcb_coordinates.type_angle;
-		layer	: type_layer;
+		layer	: type_layer_abbrevation;
 	end record;
 
 	type type_circle is new et_pcb.type_circle with record -- center and radius incl.
 		width 	: et_pcb.type_text_line_width;
 		point 	: et_pcb_coordinates.type_point_3d;
-		layer	: type_layer;
+		layer	: type_layer_abbrevation;
 	end record;
 
 	
@@ -168,7 +169,7 @@ package et_kicad_pcb is
 	-- When inserting the text in the final package, it is decomposed again.
 	type type_package_text is new et_pcb.type_text with record
 		content	: et_libraries.type_text_content.bounded_string;
-		layer	: type_layer;
+		layer	: type_layer_abbrevation;
 		meaning	: type_fp_text_meaning;
 	end record;
 
@@ -179,9 +180,32 @@ package et_kicad_pcb is
 	-- The libraries in the container are named after the libraries found in lib_dir.
 		log_threshold 	: in et_string_processing.type_log_level);
 
+
+
+	
+	-- For things in section layers like (0 F.Cu signal) or (31 B.Cu signal) we have those specs.
+	-- This is board file related.
 	layer_id_max : constant positive := 49;
 	type type_layer_id is range 0..layer_id_max;
+	layer_name_length_max : constant positive := 9;
+	package type_layer_name is new generic_bounded_length (layer_name_length_max); -- B.Cu
+	function to_layer_name (name : in string) return type_layer_name.bounded_string;
+	type type_layer_meaning is (SIGNAL, USER);
+	function to_layer_meaning (meaning : in string) return type_layer_meaning;
+	
+	type type_layer is record
+		name	: type_layer_name.bounded_string;
+		meaning	: type_layer_meaning;
+	end record;
 
+	package type_layers is new ordered_maps (
+		key_type		=> type_layer_id,
+		element_type	=> type_layer);
+
+
+
+
+	
 	-- Packages (modules) as they are listed in the board file are similar to
 	-- packages in the libraries. However, there are differences, which requires
 	-- a distinct type for them. 
@@ -244,6 +268,7 @@ package et_kicad_pcb is
 
 	type type_board is record
 		paper_size 	: et_general.type_paper_size;
+		layers		: type_layers.map;
 		packages	: type_packages_board.map;
 	end record;
 
