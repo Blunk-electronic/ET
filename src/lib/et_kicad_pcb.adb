@@ -3795,7 +3795,7 @@ package body et_kicad_pcb is
 				set_point (
 					axis 	=> X, 
 					value 	=> get_axis (X, package_position_xyz),
-					point	=> type_point_3d (position));
+					point	=> position);
 			
 				case package_appearance is
 					when REAL =>

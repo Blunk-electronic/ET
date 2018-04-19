@@ -121,7 +121,7 @@ package body et_pcb_coordinates is
 	procedure set_point (
 		axis 	: in type_axis;
 		value	: in type_distance;
-		point	: in out type_point_3d) is
+		point	: in out type_point_3d'class) is
 	begin
 		case axis is
 			when X => point.x := value;

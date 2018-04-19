@@ -107,7 +107,7 @@ package et_pcb_coordinates is
 	procedure set_point (
 		axis 	: in type_axis;
 		value	: in type_distance;					 
-		point	: in out type_point_3d);
+		point	: in out type_point_3d'class);
 
 	procedure rotate (
 	-- Rotates the given point by the given angle with the origin as center.
