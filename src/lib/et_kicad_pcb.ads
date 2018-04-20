@@ -135,12 +135,34 @@ package et_kicad_pcb is
 
 	
 
-	-- nets are assigned an id:
-	net_id_max : constant positive := 1_000_000;
-	type type_net_id is range 0..net_id_max;
-	type type_net_id_terminal is range 1..net_id_max;
-	
+	-- NETLIST ((things like (net 4 /LED_ANODE) ):
+	-- NOTE: this has nothing to do with any kicad netlist file !
+	net_id_max : constant positive := 1_000_000; -- one million nets should be sufficient
+	type type_net_id is range 0..net_id_max; -- used in the "netlist" section
+	type type_net_id_terminal is range 1..net_id_max; -- used with pads in module section
 
+	type type_netlist_net is record
+		id		: type_net_id;
+		name	: et_schematic.type_net_name.bounded_string;
+	end record;
+
+	-- When nets are collected in an ordered set, the next two functions serve to
+	-- detect double usage of net id or net name:
+	function right_net_before_left (right, left : in type_netlist_net) return boolean;
+	-- Returns true if the right net id comes beforr the left net id AND
+	-- if the right net name differs from the left net name.
+
+	function right_net_equals_left (right, left : in type_netlist_net) return boolean;
+	-- Returns true if the right net id equals the left net id OR
+	-- if the right net name equals the left net name.
+
+	-- Nets are collected in an ordered set, that uses the aforementioned two functions:
+	package type_netlist is new ordered_sets (
+		element_type 	=> type_netlist_net,
+		"<"				=> right_net_before_left,
+		"="				=> right_net_equals_left);
+
+	
 	
 	-- NET CLASSES
 	-- KiCad keeps a list of net names which are in a certain net class.
@@ -260,15 +282,15 @@ package et_kicad_pcb is
 		element_type 	=> type_package_board,
 		"<"				=> et_schematic.compare_reference
 		);
-	--use type_packages_board;
 
 
 
 	
-
+	-- This is the data type for the Kicad Board design:
 	type type_board is record
 		paper_size 	: et_general.type_paper_size;
 		layers		: type_layers.map;
+		netlist		: type_netlist.set;
 		net_classes	: type_net_classes.map;
 		packages	: type_packages_board.map;
 	end record;

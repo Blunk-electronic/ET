@@ -67,6 +67,38 @@ with et_kicad;
 
 package body et_kicad_pcb is
 
+	function right_net_before_left (right, left : in type_netlist_net) return boolean is
+	-- Returns true if the right net id comes beforr the left net id AND
+	-- if the right net name differs from the left net name.
+		use et_schematic.type_net_name;
+	begin
+		if 
+			right.id > left.id 
+			and
+			right.name /= left.name
+
+		then return true;
+		else return false;
+		
+		end if;
+	end right_net_before_left;
+
+	function right_net_equals_left (right, left : in type_netlist_net) return boolean is
+	-- Returns true if the right net id equals the left net id OR
+	-- if the right net name equals the left net name.
+		use et_schematic.type_net_name;
+	begin
+		if 
+			right.id = left.id 
+			or 
+			right.name = left.name 
+			
+		then return true;
+		else return false;
+		
+		end if;
+	end right_net_equals_left;
+	
 	function to_assembly_technology (tech : in string) return et_pcb.type_assembly_technology is
 		use et_pcb;
 	begin
@@ -2473,9 +2505,10 @@ package body et_kicad_pcb is
 		layer		: type_layer;
 		layers		: type_layers.map;
 
-		
-		netlist_net_id 		: type_net_id;
-		netlist_net_name	: et_schematic.type_net_name.bounded_string;
+		-- NETLIST (things like (net 4 /LED_ANODE) )
+		-- NOTE: this has nothing to do with any kicad netlist file !
+		netlist_net 		: type_netlist_net;
+		netlist				: type_netlist.set;
 		
 		-- NET CLASSES
 		net_class_via_diameter			: et_pcb_coordinates.type_distance;
@@ -3056,8 +3089,8 @@ package body et_kicad_pcb is
 						when SEC_NET =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => netlist_net_id := type_net_id'value (to_string (arg));
-								when 2 => netlist_net_name := et_schematic.to_net_name (to_string (arg));
+								when 1 => netlist_net.id := type_net_id'value (to_string (arg));
+								when 2 => netlist_net.name := et_schematic.to_net_name (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -4001,10 +4034,40 @@ package body et_kicad_pcb is
 					net_class.net_names.clear;
 				else
 					log_indentation_reset;
-					log (message_error & "net class " & to_string (net_class_name) & " already defined !", console => true);
+					log (message_error & "net class '" & to_string (net_class_name) & "' already defined !", console => true);
 					raise constraint_error;
 				end if;
 			end insert_net_class;
+
+
+			procedure insert_net is
+			-- Inserts the net in the "netlist" container.
+				net_inserted	: boolean := false;
+				net_cursor		: type_netlist.cursor;
+			begin
+
+				type_netlist.insert (
+					container	=> netlist,
+					new_item	=> netlist_net,
+					position	=> net_cursor,
+					inserted	=> net_inserted);
+
+				if net_inserted then
+					-- log the net id and name. but skip the first dummy net with id 0
+					if netlist_net.id > type_net_id'first then
+						log ("net id" & type_net_id'image (netlist_net.id) & " name " 
+							& et_schematic.to_string (netlist_net.name),
+							log_threshold + 1);
+					end if;
+				else
+					log_indentation_reset;
+					log (message_error & "either net id" & type_net_id'image (netlist_net.id) 
+						& " or net name '" & et_schematic.to_string (netlist_net.name) & "' already used !",
+						 console => true);
+					raise constraint_error;
+				end if;
+					
+			end insert_net;
 			
 		begin -- exec_section
 			log (process_section (section.name), log_threshold + 4);
@@ -4030,7 +4093,7 @@ package body et_kicad_pcb is
 							null; -- CS log setup (DRC stuff)
 
 						when SEC_NET =>
-							null; -- CS log net
+							insert_net;
 							
 						when SEC_NET_CLASS =>
 							insert_net_class;
@@ -4558,6 +4621,9 @@ package body et_kicad_pcb is
 		-- copy all the packages (in temporarily container "packages") the board to be returned:
 		board.packages := packages;
 
+		-- copy netlist in board -- NOTE: this has nothing to do with any kicad netlist file !
+		board.netlist := netlist;
+		
 		-- copy container "net_classes" in board
 		board.net_classes := net_classes;
 		
