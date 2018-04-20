@@ -2478,9 +2478,6 @@ package body et_kicad_pcb is
 		netlist_net_name	: et_schematic.type_net_name.bounded_string;
 		
 		-- NET CLASSES
-		net_class_inserted	: boolean := false;
-		net_class_cursor	: type_net_classes.cursor;
-		
 		net_class_via_diameter			: et_pcb_coordinates.type_distance;
 		net_class_micro_via_diameter	: et_pcb_coordinates.type_distance;
 		net_class_via_restring			: et_pcb_coordinates.type_distance;		
@@ -3787,12 +3784,6 @@ package body et_kicad_pcb is
 				raise constraint_error;
 			end invalid_layer_user;
 
-			procedure net_class_already_defined is begin
-				log_indentation_reset;
-				log (message_error & "net class " & to_string (net_class_name) & " already defined !", console => true);
-				raise constraint_error;
-			end net_class_already_defined;
-
 			procedure warn_on_missing_net is begin
 			-- Warns operator if a terminal is not connected to a net.
 				if et_schematic.type_net_name.length (terminal_net_name) = 0 then
@@ -3878,6 +3869,69 @@ package body et_kicad_pcb is
 						 log_threshold + 1);
 					
 					-- CS log package properties (at least reference, value, ...) ?
+
+					-- Once a package has been read completely, some variables
+					-- must be reset and lists must be cleared for the next package:
+
+					-- reset description and tags
+					package_description := to_package_description ("");
+					package_tags := to_package_tags ("");
+
+					-- reset technology and appearance
+					package_technology := THT;
+					package_appearance := REAL;
+
+					-- reset reference and value
+					package_reference := et_schematic.default_component_reference;
+					package_value := to_value ("");
+
+					-- delete list of terminals
+					terminals.clear;
+
+					-- clear silk screen
+					package_top_silk_screen.lines.clear;
+					package_top_silk_screen.arcs.clear;
+					package_top_silk_screen.circles.clear;
+					package_top_silk_screen.texts.clear;
+
+					package_bot_silk_screen.lines.clear;
+					package_bot_silk_screen.arcs.clear;
+					package_bot_silk_screen.circles.clear;
+					package_bot_silk_screen.texts.clear;
+
+					-- clear assembly documentation
+					package_top_assy_doc.lines.clear;
+					package_top_assy_doc.arcs.clear;
+					package_top_assy_doc.circles.clear;
+					package_top_assy_doc.texts.clear;
+
+					package_bot_assy_doc.lines.clear;
+					package_bot_assy_doc.arcs.clear;
+					package_bot_assy_doc.circles.clear;
+					package_bot_assy_doc.texts.clear;
+
+					-- clear keepout
+					package_top_keepout.lines.clear;
+					package_top_keepout.arcs.clear;
+					package_top_keepout.circles.clear;
+					-- CS package_top_keepout.texts.clear;
+
+					package_bot_keepout.lines.clear;
+					package_bot_keepout.arcs.clear;
+					package_bot_keepout.circles.clear;
+					-- CS package_bot_keepout.texts.clear;
+
+					-- clear copper
+					package_top_copper.lines.clear;
+					package_top_copper.arcs.clear;
+					package_top_copper.circles.clear;
+					package_top_copper.texts.clear;
+
+					package_bot_copper.lines.clear;
+					package_bot_copper.arcs.clear;
+					package_bot_copper.circles.clear;
+					package_bot_copper.texts.clear;
+
 				else
 					log_indentation_reset;
 					log (message_error & "package " & to_string (package_reference) 
@@ -3915,6 +3969,42 @@ package body et_kicad_pcb is
 				end if;
 					
 			end insert_layer;
+
+			procedure insert_net_class is
+			-- Inserts the net class in temporarily container "net_classes"
+				net_class_inserted	: boolean := false;
+				net_class_cursor	: type_net_classes.cursor;
+			begin -- insert_net_class
+				-- calculate validate restring for regular and micro vias
+				net_class_via_restring := (net_class_via_diameter - net_class.via_drill_min) / 2;
+				validate_restring_width (net_class_via_restring);
+				net_class.via_restring_min := net_class_via_restring;
+
+				net_class_via_restring := (net_class_micro_via_diameter - net_class.micro_via_drill_min) / 2;
+				validate_restring_width (net_class_via_restring);
+				net_class.micro_via_restring_min := net_class_via_restring;
+
+				net_classes.insert (
+					key			=> net_class_name,
+					new_item 	=> net_class,
+					position	=> net_class_cursor,
+					inserted	=> net_class_inserted
+					);
+
+				if net_class_inserted then
+					-- CS log net class properties more detailled
+					log ("net class " & to_string (net_class_name), log_threshold + 1);
+					
+					-- Clean up list of net names for next net class.
+					-- CS: We assume, all other components of net_class are provided in 
+					-- next net class section and thus become overwritten.
+					net_class.net_names.clear;
+				else
+					log_indentation_reset;
+					log (message_error & "net class " & to_string (net_class_name) & " already defined !", console => true);
+					raise constraint_error;
+				end if;
+			end insert_net_class;
 			
 		begin -- exec_section
 			log (process_section (section.name), log_threshold + 4);
@@ -3943,99 +4033,11 @@ package body et_kicad_pcb is
 							null; -- CS log net
 							
 						when SEC_NET_CLASS =>
-							-- calculate validate restring for regular and micro vias
-							net_class_via_restring := (net_class_via_diameter - net_class.via_drill_min) / 2;
-							validate_restring_width (net_class_via_restring);
-							net_class.via_restring_min := net_class_via_restring;
-
-							net_class_via_restring := (net_class_micro_via_diameter - net_class.micro_via_drill_min) / 2;
-							validate_restring_width (net_class_via_restring);
-							net_class.micro_via_restring_min := net_class_via_restring;
-
-							net_classes.insert (
-								key			=> net_class_name,
-								new_item 	=> net_class,
-								position	=> net_class_cursor,
-								inserted	=> net_class_inserted
-								);
-
-							if not net_class_inserted then
-								net_class_already_defined;
-							end if;
-
-							-- CS log net class properties more detailled
-							log ("net class " & to_string (net_class_name), log_threshold + 1);
-							
-							-- Clean up list of net names for next net class.
-							-- CS: We assume, all other components of net_class are provided in 
-							-- next net class section and thus become overwritten.
-							net_class.net_names.clear;
+							insert_net_class;
 
 						when SEC_MODULE =>
 							insert_package; -- in temporarily container "packages"
-
-							-- Once a package has been read completely, some variables
-							-- must be reset and lists must be cleared for the next package.
-
-							-- reset description and tags
-							package_description := to_package_description ("");
-							package_tags := to_package_tags ("");
-
-							-- reset technology and appearance
-							package_technology := THT;
-							package_appearance := REAL;
-
-							-- reset reference and value
-							package_reference := et_schematic.default_component_reference;
-							package_value := to_value ("");
-
-							-- delete list of terminals
-							terminals.clear;
-
-							-- clear silk screen
-							package_top_silk_screen.lines.clear;
-							package_top_silk_screen.arcs.clear;
-							package_top_silk_screen.circles.clear;
-							package_top_silk_screen.texts.clear;
-
-							package_bot_silk_screen.lines.clear;
-							package_bot_silk_screen.arcs.clear;
-							package_bot_silk_screen.circles.clear;
-							package_bot_silk_screen.texts.clear;
-
-							-- clear assembly documentation
-							package_top_assy_doc.lines.clear;
-							package_top_assy_doc.arcs.clear;
-							package_top_assy_doc.circles.clear;
-							package_top_assy_doc.texts.clear;
-
-							package_bot_assy_doc.lines.clear;
-							package_bot_assy_doc.arcs.clear;
-							package_bot_assy_doc.circles.clear;
-							package_bot_assy_doc.texts.clear;
-
-							-- clear keepout
-							package_top_keepout.lines.clear;
-							package_top_keepout.arcs.clear;
-							package_top_keepout.circles.clear;
-							-- CS package_top_keepout.texts.clear;
-
-							package_bot_keepout.lines.clear;
-							package_bot_keepout.arcs.clear;
-							package_bot_keepout.circles.clear;
-							-- CS package_bot_keepout.texts.clear;
-
-							-- clear copper
-							package_top_copper.lines.clear;
-							package_top_copper.arcs.clear;
-							package_top_copper.circles.clear;
-							package_top_copper.texts.clear;
-
-							package_bot_copper.lines.clear;
-							package_bot_copper.arcs.clear;
-							package_bot_copper.circles.clear;
-							package_bot_copper.texts.clear;
-							
+						
 						when others => null;
 					end case;
 
@@ -4556,7 +4558,8 @@ package body et_kicad_pcb is
 		-- copy all the packages (in temporarily container "packages") the board to be returned:
 		board.packages := packages;
 
-		
+		-- copy container "net_classes" in board
+		board.net_classes := net_classes;
 		
 		return board;
 	end to_board;

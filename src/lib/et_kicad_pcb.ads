@@ -269,6 +269,7 @@ package et_kicad_pcb is
 	type type_board is record
 		paper_size 	: et_general.type_paper_size;
 		layers		: type_layers.map;
+		net_classes	: type_net_classes.map;
 		packages	: type_packages_board.map;
 	end record;
 
