@@ -2505,6 +2505,36 @@ package body et_kicad_pcb is
 		layer		: type_layer;
 		layers		: type_layers.map;
 
+
+		-- SETUP
+		setup_last_trace_width		: type_signal_width;
+		setup_trace_clearance		: type_signal_clearance;
+		setup_zone_clearance		: type_signal_clearance;
+		setup_zone_45_only			: type_zone_45_only;
+		setup_trace_min				: type_signal_width;
+		setup_segment_width			: type_signal_width;
+		setup_edge_width			: type_edge_cut_line_width;
+		setup_via_size				: type_via_diameter;	-- regular vias
+		setup_via_drill				: type_drill_size;		-- regular vias
+		setup_via_min_size			: type_via_diameter;	-- regular vias
+		setup_via_min_drill			: type_drill_size;		-- regular vias
+		setup_micro_via_size		: type_via_diameter;	-- micro vias
+		setup_micro_via_drill		: type_drill_size;		-- micro vias
+		setup_micro_vias_allowed	: type_micro_vias_allowed;
+		setup_micro_via_min_size	: type_via_diameter;	-- micro vias
+		setup_micro_via_min_drill	: type_drill_size;		-- micro vias
+		setup_pcb_text_width		: type_text_line_width;	-- all kinds of texts (no matter what layer)
+		setup_pcb_text_size_x		: type_text_size;
+		setup_pcb_text_size_y		: type_text_size;		
+		setup_module_edge_width		: type_general_line_width;
+		setup_module_text_size_x	: type_text_size;
+		setup_module_text_size_y	: type_text_size;
+		setup_module_text_width		: type_text_line_width; -- line width
+		setup_pad_size_x			: type_pad_size;
+		setup_pad_size_y			: type_pad_size;
+		setup_pad_drill				: type_drill_size;
+		--setup_pad_to_mask_clearance	:
+		
 		-- NETLIST (things like (net 4 /LED_ANODE) )
 		-- NOTE: this has nothing to do with any kicad netlist file !
 		netlist_net 		: type_netlist_net;
@@ -3746,7 +3776,198 @@ package body et_kicad_pcb is
 						when others => invalid_section;
 					end case;
 						
-					-- 
+				-- parent section
+				when SEC_SETUP =>
+					case section.name is
+						when SEC_LAST_TRACE_WIDTH =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => setup_last_trace_width := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_TRACE_CLEARANCE =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => setup_trace_clearance := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_ZONE_CLEARANCE =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => setup_zone_clearance := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_ZONE_45_ONLY =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => setup_zone_45_only := type_zone_45_only'value (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_TRACE_MIN =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => setup_trace_min := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_SEGMENT_WIDTH =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => setup_segment_width := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_EDGE_WIDTH =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => setup_edge_width := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_VIA_SIZE => -- regular vias
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => setup_via_size := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_VIA_DRILL => -- regular vias
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => setup_via_drill := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_VIA_MIN_SIZE => -- regular vias
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => setup_via_min_size := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_VIA_MIN_DRILL => -- regular vias
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => setup_via_min_drill := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_UVIA_SIZE => -- micro vias
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => setup_micro_via_size := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_UVIA_DRILL => -- micro vias
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => setup_micro_via_drill := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_UVIAS_ALLOWED => -- micro vias
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => setup_micro_vias_allowed := to_micro_vias_allowed (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_UVIA_MIN_SIZE => -- micro vias
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => setup_micro_via_min_size := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_UVIA_MIN_DRILL => -- micro vias
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => setup_micro_via_min_drill := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_PCB_TEXT_WIDTH =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => setup_pcb_text_width := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_PCB_TEXT_SIZE =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => setup_pcb_text_size_x := to_distance (to_string (arg));
+								when 2 => setup_pcb_text_size_y := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_MOD_EDGE_WIDTH =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => setup_module_edge_width := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+							
+						when SEC_MOD_TEXT_SIZE =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => setup_module_text_size_x := to_distance (to_string (arg));
+								when 2 => setup_module_text_size_y := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_MOD_TEXT_WIDTH => -- line width
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => setup_module_text_width := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_PAD_SIZE =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => setup_pad_size_x := to_distance (to_string (arg));
+								when 2 => setup_pad_size_y := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_PAD_DRILL =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => setup_pad_drill := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_PAD_TO_MASK_CLEARANCE =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => null; -- CS
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_AUX_AXIS_ORIGIN =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => null; -- CS
+								when 2 => null; -- CS
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_VISIBLE_ELEMENTS =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => null; -- CS
+								when others => too_many_arguments;
+							end case;
+
+						when others => null;
+					end case;
+							
 -- 				when SEC_MODEL =>
 -- 					case section.parent is
 -- 						when SEC_MODULE =>
@@ -4087,7 +4308,7 @@ package body et_kicad_pcb is
 							log ("paper size " & et_general.to_string (board.paper_size), log_threshold + 1);
 
 						when SEC_LAYERS =>
-							null; -- CS log board layers ? single layers already logged
+							null; -- nothing to do. work already done on leaving SEC_LAYER_ID
 
 						when SEC_SETUP =>
 							null; -- CS log setup (DRC stuff)

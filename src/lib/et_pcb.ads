@@ -100,7 +100,7 @@ package et_pcb is
 
 
 	
-
+	-- We fit the via diameter (incl. microvias) in a reasonable range via a subtype:
 	drill_size_min : constant type_distance := 0.05;
 	drill_size_max : constant type_distance := 10.0;
 	subtype type_drill_size is type_distance range drill_size_min .. drill_size_max;
@@ -150,6 +150,10 @@ package et_pcb is
 	-- Checks whether the given restring width is in range of type_restring_width.
 
 
+	-- VIAS
+	type type_micro_vias_allowed is (NO, YES);
+	function to_micro_vias_allowed (allowed : in string) return type_micro_vias_allowed;
+	function to_string (allowed : in type_micro_vias_allowed) return string;
 	
 
 	-- NET CLASSES
@@ -430,9 +434,9 @@ package et_pcb is
 	
 
 
-
-	
-	
+	-- STOP MASK
+	-- CS same specs as slik screen ?
+	-- CS subtype pad/via-mask clearance
 
 	-- SILK SCREEN
 	type type_silk_line is new type_line with record

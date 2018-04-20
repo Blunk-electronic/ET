@@ -167,12 +167,26 @@ package body et_pcb is
 			raise constraint_error;
 		end if;
 	end validate_restring_width;
+
+
 	
+	-- VIAS
+	function to_micro_vias_allowed (allowed : in string) return type_micro_vias_allowed is begin
+		return type_micro_vias_allowed'value (allowed);
+	end to_micro_vias_allowed;
+	
+	function to_string (allowed : in type_micro_vias_allowed) return string is begin
+		return " micro vias allowed " & type_micro_vias_allowed'image (allowed);
+	end to_string;
+
+
+	-- NET CLASSES
 	function to_string (net_class_name : in type_net_class_name.bounded_string) return string is
 	begin
 		return type_net_class_name.to_string (net_class_name);
 	end to_string;
 
+	
 	
 	function text_properties (text : in type_text) return string is
 	-- Returns the properties of the given text in a long single string.

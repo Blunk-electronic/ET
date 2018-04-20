@@ -133,8 +133,27 @@ package et_kicad_pcb is
 		layer	: type_layer_abbrevation;
 	end record;
 
-	
 
+	-- SETUP
+	type type_zone_45_only is (NO, YES);
+
+	-- board contours
+	-- NOTE: It is not reasonable to draw outlines with a line width other than zero.
+	-- Reason: The manufacturer is to cut or mill along these lines and must calculate
+	-- the center of the line. However, as kicad allows line with here, it must 
+	-- fit in a reasonable range, thus a subtype:
+	edge_cut_line_width_min : constant et_pcb_coordinates.type_distance := 0.1;
+	edge_cut_line_width_max : constant et_pcb_coordinates.type_distance := 1.0;
+	subtype type_edge_cut_line_width is et_pcb_coordinates.type_distance 
+		range edge_cut_line_width_min .. edge_cut_line_width_max;
+
+	-- The via diameter is the drill size + 2*restring width. 
+	-- We fit the via diameter (incl. microvias) in a reasonable range via a subtype:
+	via_diameter_min : constant et_pcb_coordinates.type_distance := 0.1;
+	via_diameter_max : constant et_pcb_coordinates.type_distance := 10.0;
+	subtype type_via_diameter is et_pcb_coordinates.type_distance
+		range via_diameter_min .. via_diameter_max;
+	
 	-- NETLIST ((things like (net 4 /LED_ANODE) ):
 	-- NOTE: this has nothing to do with any kicad netlist file !
 	net_id_max : constant positive := 1_000_000; -- one million nets should be sufficient
