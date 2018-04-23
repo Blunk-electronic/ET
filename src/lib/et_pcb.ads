@@ -434,10 +434,89 @@ package et_pcb is
 	
 
 
-	-- STOP MASK
-	-- CS same specs as slik screen ?
-	-- CS subtype pad/via-mask clearance
+	-- SOLDER STOP MASK
+	type type_stop_line is new type_line with record
+		width	: type_general_line_width;
+	end record;
 
+	package type_stop_lines is new doubly_linked_lists (type_stop_line);
+
+
+	type type_stop_arc is new type_arc with record
+		width	: type_general_line_width;
+	end record;
+
+	package type_stop_arcs is new doubly_linked_lists (type_stop_arc);
+
+	
+	type type_stop_circle is new type_circle with record
+		width	: type_general_line_width;
+	end record;
+
+	package type_stop_circles is new doubly_linked_lists (type_stop_circle);
+
+	-- This is the base type for stop mask objects in general:
+	type type_stop_mask is tagged record
+		lines 		: type_stop_lines.list;
+		arcs		: type_stop_arcs.list;
+		circles		: type_stop_circles.list;
+		texts		: type_texts_with_content.list;
+	end record;
+
+	-- Because stop mask is about two sides of the board this composite is required:
+	type type_stop_mask_both_sides is record
+		top		: type_stop_mask;
+		bottom	: type_stop_mask;
+	end record;
+
+	stop_mask_expansion_min : constant type_distance := 0.02;
+	stop_mask_expansion_max : constant type_distance := 0.2;
+	subtype type_stop_mask_expansion is type_distance range stop_mask_expansion_min .. stop_mask_expansion_max;
+	-- see <https://docs.oshpark.com/tips+tricks/stop-mask-expansion/>
+
+
+
+
+
+	-- SOLDER PASTE STENCIL
+	type type_stencil_line is new type_line with record
+		width	: type_general_line_width;
+	end record;
+
+	package type_stencil_lines is new doubly_linked_lists (type_stencil_line);
+
+
+	type type_stencil_arc is new type_arc with record
+		width	: type_general_line_width;
+	end record;
+
+	package type_stencil_arcs is new doubly_linked_lists (type_stencil_arc);
+
+	
+	type type_stencil_circle is new type_circle with record
+		width	: type_general_line_width;
+	end record;
+
+	package type_stencil_circles is new doubly_linked_lists (type_stencil_circle);
+
+	-- This is the base type for solder paste stencil objects in general:
+	type type_stencil is tagged record
+		lines 		: type_stencil_lines.list;
+		arcs		: type_stencil_arcs.list;
+		circles		: type_stencil_circles.list;
+	end record;
+
+	-- Because stencil is about two sides of the board this composite is required:
+	type type_stencil_both_sides is record
+		top		: type_stencil;
+		bottom	: type_stencil;
+	end record;
+
+
+
+	
+	
+	
 	-- SILK SCREEN
 	type type_silk_line is new type_line with record
 		width	: type_general_line_width;
@@ -755,6 +834,9 @@ package et_pcb is
 		description				: type_package_description.bounded_string;
 		copper					: type_copper_package_both_sides;
 		keepout 				: type_keepout_package_both_sides;
+		-- CS stop_mask				: type_stop_mask_both_sides;
+		-- CS solder_stencil			: type_stencil_both_sides;
+
 		route_restrict 			: type_route_restrict_package;
 		via_restrict 			: type_via_restrict_package;
 		-- CS holes

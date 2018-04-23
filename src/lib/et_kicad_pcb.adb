@@ -500,6 +500,14 @@ package body et_kicad_pcb is
 		-- NON ELECTRIC !!! COPPER OBJECTS (lines, arcs, circles)
 		-- NOTE: Does not include texts as kicad does not allow texts in signal layers.
 		top_copper_objects, bot_copper_objects : type_copper;
+
+		-- STOP MASK OBJECTS
+		top_stop_mask, bot_stop_mask : et_pcb.type_stop_mask; -- CS not assigned yet
+		-- CS: mind objects explicitely drawn and such auto generated
+
+		-- SOLDER STENCIL OBJECTS
+		top_stencil, bot_stencil : et_pcb.type_stencil;  -- CS not assigned yet
+		-- CS: mind objects explicitely drawn and such auto generated
 	
 		-- SILK SCREEN OBJECTS (lines, arcs, circles, texts, text placeholders)
 		top_silk_screen, bot_silk_screen 	: type_silk_screen_package;
@@ -2533,7 +2541,7 @@ package body et_kicad_pcb is
 		setup_pad_size_x			: type_pad_size;
 		setup_pad_size_y			: type_pad_size;
 		setup_pad_drill				: type_drill_size;
-		--setup_pad_to_mask_clearance	:
+		setup_stop_mask_expansion	: type_stop_mask_expansion;
 		
 		-- NETLIST (things like (net 4 /LED_ANODE) )
 		-- NOTE: this has nothing to do with any kicad netlist file !
@@ -2575,6 +2583,14 @@ package body et_kicad_pcb is
 		package_arc			: type_arc;
 		package_circle 		: type_circle;
 
+		package_top_stop_mask	: et_pcb.type_stop_mask; -- CS not assigned yet
+		package_bot_stop_mask	: et_pcb.type_stop_mask; -- CS not assigned yet
+		-- CS: mind objects explicitely drawn and such auto generated
+		
+		package_top_stencil		: et_pcb.type_stencil;  -- CS not assigned yet
+		package_bot_stencil		: et_pcb.type_stencil;  -- CS not assigned yet
+		-- CS: mind objects explicitely drawn and such auto generated
+		
 		package_top_silk_screen	: et_pcb.type_silk_screen; -- without placeholders
 		package_bot_silk_screen	: et_pcb.type_silk_screen; -- without placeholders
 
@@ -2586,7 +2602,7 @@ package body et_kicad_pcb is
 
 		package_top_copper		: et_pcb.type_copper;
 		package_bot_copper		: et_pcb.type_copper;
-
+		
 		-- kicad refers to pcb contours as "edge cuts":
 		package_pcb_contours		: et_pcb.type_package_pcb_contour; -- CS not assigned yet
 
@@ -3946,7 +3962,7 @@ package body et_kicad_pcb is
 						when SEC_PAD_TO_MASK_CLEARANCE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => null; -- CS
+								when 1 => setup_stop_mask_expansion := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
