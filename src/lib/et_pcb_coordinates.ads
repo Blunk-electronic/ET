@@ -71,6 +71,14 @@ package et_pcb_coordinates is
 	subtype type_distance is type_distance_total range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter
 	zero_distance : constant type_distance := 0.0;
 
+	mil_min : constant float := -390_000_000.0; -- equals approx. type_distance'first
+	mil_max : constant float :=  390_000_000.0; -- equals approx. type_distance'last
+	
+	function mil_to_distance (mil : in string; warn_on_negative : boolean := true) 
+		return type_distance;
+	-- Converts a mil number (given as a string) to millimeters.	
+
+	
 	position_preamble_3d : constant string (1..13) := " pos. "
 		& "(x"
 		& et_coordinates.axis_separator

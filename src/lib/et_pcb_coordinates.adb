@@ -51,6 +51,7 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
+with ada.exceptions;
 with ada.numerics;
 with ada.numerics.generic_elementary_functions;
 
@@ -68,6 +69,42 @@ package body et_pcb_coordinates is
 		return type_distance'value (distance);
 	end to_distance;
 
+	function mil_to_distance (mil : in string; warn_on_negative : boolean := true) 
+		return type_distance is
+	-- Converts a mil number (given as a string) to millimeters.
+		use et_string_processing;
+		
+		type type_distance_intermediate is digits 13 range mil_min .. mil_max; -- unit is mil
+		-- CS: refine range and delta if required
+
+		d_in : type_distance_intermediate;
+		distance : type_distance; -- the distance to be returned
+	begin
+ 		d_in := type_distance_intermediate'value (mil);
+		distance := type_distance (d_in * (25.4 * 0.001));
+
+		if warn_on_negative then
+			if distance < zero_distance then
+				log (text => message_warning & "negative coordinates found !");
+			end if;
+		end if;
+		
+		return distance;
+		
+		exception
+			when event:
+				others =>
+					log_indentation_reset;
+					log (message_error & "mil value " & mil & " invalid !", console => true);
+					log ("Allowed range for mil numbers is" 
+						& float'image (mil_min) & " .." & float'image (mil_max) & ".", console => true);
+
+					-- log ("mm out " & type_distance'image (distance));
+					log (ada.exceptions.exception_message (event));
+					raise;
+
+	end mil_to_distance;
+	
 	function to_string (distance : in type_distance_total) return string is
 	begin
 		return latin_1.space & trim (type_distance_total'image (distance), left);

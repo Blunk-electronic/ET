@@ -146,6 +146,99 @@ package et_kicad_pcb is
 	-- CS meaning not clear yet
 	type type_visible_elements is new string (1..8);
 	
+	-- PLOT PARAMETERS
+
+	-- layerselection
+	-- CS meaning not clear yet. for the time being we save the layerselection argument (like 0x00030_80000001)
+	-- in a bounded string.
+	layer_selection_length_max : constant positive := 20;
+	package type_layer_selection_string is new generic_bounded_length (layer_selection_length_max);
+
+	-- usergerberextensions
+	type type_user_gerber_extensions is new boolean;
+	-- CS functions to_user_gerber_extensions and to_string
+
+	-- excludeedgelayer
+	type type_exclude_edge_layer is new boolean;
+	-- CS functions to_exclude_edge_layer and to_string
+
+	-- plotframeref
+	type type_plot_frame_ref is new boolean;
+	-- CS functions to_plot_frame_ref and to_string
+
+	-- viasonmask
+	type type_vias_on_mask is new boolean;
+	-- CS functions to_vias_on_mask and to_string
+
+	-- mode
+	type type_fill_mode is range 1..2; -- 1 filled, 2 sketch
+
+	-- useauxorigin
+	type type_use_aux_origin is new boolean;
+	-- CS functions to_use_aux_origin and to_string
+
+	-- hpglpennumber
+	type type_hpgl_pen_number is range 1..1; -- CS so far nothing more known
+
+	-- hpglpenspeed
+	type type_hpgl_pen_speed is range 20..20; -- CS so far nothing more known
+
+	-- hpglpendiameter -- given in mil
+	hpgl_pen_diameter_min : constant et_pcb_coordinates.type_distance := 0.1;
+	hpgl_pen_diameter_max : constant et_pcb_coordinates.type_distance := 1.0;
+	subtype type_hpgl_pen_diameter is et_pcb_coordinates.type_distance 
+		range hpgl_pen_diameter_min .. hpgl_pen_diameter_max;
+
+	-- hpglpenoverlay
+	hpgl_pen_overlay_min : constant et_pcb_coordinates.type_distance := 0.05; -- CS refine range if required
+	hpgl_pen_overlay_max : constant et_pcb_coordinates.type_distance := 0.1;  -- CS refine range if required
+	subtype type_hpgl_pen_overlay is et_pcb_coordinates.type_distance
+		range hpgl_pen_overlay_min .. hpgl_pen_overlay_max;
+
+	-- psnegative
+	type type_ps_negative is new boolean;
+	-- CS functions to_ps_negative and to_string
+
+	-- psa4output
+	type type_psa_4_output is new boolean;
+	-- CS function to_psa_4_output and to_string
+
+	-- plotreference
+	type type_plot_reference is new boolean;
+	-- CS function to_plot_reference and to_string
+
+	-- plotvalue
+	type type_plot_value is new boolean;
+	-- CS function to_plot_value and to_string
+	
+	-- plotinvisibletext
+	type type_plot_invisible_text is new boolean;
+	-- CS function to_plot_invisible_text and to_string
+
+	-- padsonsilk
+	type type_pads_on_silk is new boolean;
+	-- CS function to_pads_on_silk and to_string
+
+	-- subtractmaskfromsilk
+	type type_subtract_mask_from_silk is new boolean;
+	-- CS function to_subtract_mask_from_silk and to_string
+
+	-- outputformat
+	type type_output_format is range 0..5; 
+		-- 0 hpgl
+		-- 1 gerber
+		-- 2 postscript
+		-- 3 dxf
+		-- 4 pdf
+		-- 5 svg
+	
+	-- mirror
+	type type_mirror is new boolean;
+	-- CS function to_mirror and to_string
+	
+	-- drillshape
+	-- CS 
+	
 	
 	-- board contours
 	-- NOTE: It is not reasonable to draw outlines with a line width other than zero.
