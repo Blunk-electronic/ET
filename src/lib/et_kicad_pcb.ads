@@ -137,6 +137,12 @@ package et_kicad_pcb is
 	-- SETUP
 	type type_zone_45_only is (NO, YES);
 
+	-- CS it is not fully clear what aux_axis_origin is good for:
+	aux_axis_origin_min : constant et_pcb_coordinates.type_distance := et_pcb_coordinates.zero_distance;
+	aux_axis_origin_max : constant et_pcb_coordinates.type_distance := 500.0;
+	subtype type_aux_axis_origin is et_pcb_coordinates.type_distance 
+		range aux_axis_origin_min .. aux_axis_origin_max;
+	
 	-- board contours
 	-- NOTE: It is not reasonable to draw outlines with a line width other than zero.
 	-- Reason: The manufacturer is to cut or mill along these lines and must calculate

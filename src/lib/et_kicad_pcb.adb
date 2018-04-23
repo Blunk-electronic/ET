@@ -2542,6 +2542,8 @@ package body et_kicad_pcb is
 		setup_pad_size_y			: type_pad_size;
 		setup_pad_drill				: type_drill_size;
 		setup_stop_mask_expansion	: type_stop_mask_expansion;
+		setup_aux_axis_origin_x		: type_aux_axis_origin;
+		setup_aux_axis_origin_y		: type_aux_axis_origin;			
 		
 		-- NETLIST (things like (net 4 /LED_ANODE) )
 		-- NOTE: this has nothing to do with any kicad netlist file !
@@ -3969,8 +3971,8 @@ package body et_kicad_pcb is
 						when SEC_AUX_AXIS_ORIGIN =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => null; -- CS
-								when 2 => null; -- CS
+								when 1 => setup_aux_axis_origin_x := to_distance (to_string (arg));
+								when 2 => setup_aux_axis_origin_y := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
