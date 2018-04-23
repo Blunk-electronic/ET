@@ -142,6 +142,10 @@ package et_kicad_pcb is
 	aux_axis_origin_max : constant et_pcb_coordinates.type_distance := 500.0;
 	subtype type_aux_axis_origin is et_pcb_coordinates.type_distance 
 		range aux_axis_origin_min .. aux_axis_origin_max;
+
+	-- CS meaning not clear yet
+	type type_visible_elements is new string (1..8);
+	
 	
 	-- board contours
 	-- NOTE: It is not reasonable to draw outlines with a line width other than zero.

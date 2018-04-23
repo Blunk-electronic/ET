@@ -2543,7 +2543,8 @@ package body et_kicad_pcb is
 		setup_pad_drill				: type_drill_size;
 		setup_stop_mask_expansion	: type_stop_mask_expansion;
 		setup_aux_axis_origin_x		: type_aux_axis_origin;
-		setup_aux_axis_origin_y		: type_aux_axis_origin;			
+		setup_aux_axis_origin_y		: type_aux_axis_origin;
+		setup_visible_elements		: type_visible_elements;
 		
 		-- NETLIST (things like (net 4 /LED_ANODE) )
 		-- NOTE: this has nothing to do with any kicad netlist file !
@@ -3979,13 +3980,15 @@ package body et_kicad_pcb is
 						when SEC_VISIBLE_ELEMENTS =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => null; -- CS
+								when 1 => setup_visible_elements := type_visible_elements (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when others => null;
 					end case;
-							
+
+				-- parent section
+					
 -- 				when SEC_MODEL =>
 -- 					case section.parent is
 -- 						when SEC_MODULE =>
