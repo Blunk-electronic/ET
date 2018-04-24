@@ -2526,61 +2526,8 @@ package body et_kicad_pcb is
 
 
 		-- SETUP
-		setup_last_trace_width		: type_signal_width;
-		setup_trace_clearance		: type_signal_clearance;
-		setup_zone_clearance		: type_signal_clearance;
-		setup_zone_45_only			: type_zone_45_only;
-		setup_trace_min				: type_signal_width;
-		setup_segment_width			: type_signal_width;
-		setup_edge_width			: type_edge_cut_line_width;
-		setup_via_size				: type_via_diameter;	-- regular vias
-		setup_via_drill				: type_drill_size;		-- regular vias
-		setup_via_min_size			: type_via_diameter;	-- regular vias
-		setup_via_min_drill			: type_drill_size;		-- regular vias
-		setup_micro_via_size		: type_via_diameter;	-- micro vias
-		setup_micro_via_drill		: type_drill_size;		-- micro vias
-		setup_micro_vias_allowed	: type_micro_vias_allowed;
-		setup_micro_via_min_size	: type_via_diameter;	-- micro vias
-		setup_micro_via_min_drill	: type_drill_size;		-- micro vias
-		setup_pcb_text_width		: type_text_line_width;	-- all kinds of texts (no matter what layer)
-		setup_pcb_text_size_x		: type_text_size;
-		setup_pcb_text_size_y		: type_text_size;		
-		setup_module_edge_width		: type_general_line_width;
-		setup_module_text_size_x	: type_text_size;
-		setup_module_text_size_y	: type_text_size;
-		setup_module_text_width		: type_text_line_width; -- line width
-		setup_pad_size_x			: type_pad_size;
-		setup_pad_size_y			: type_pad_size;
-		setup_pad_drill				: type_drill_size;
-		setup_stop_mask_expansion	: type_stop_mask_expansion;
-		setup_aux_axis_origin_x		: type_aux_axis_origin;
-		setup_aux_axis_origin_y		: type_aux_axis_origin;
-		setup_visible_elements		: type_visible_elements;
-
-		plot_layer_selection		: type_plot_layer_selection_string.bounded_string;
-		plot_user_gerber_extensions	: type_plot_user_gerber_extensions;
-		plot_exclude_edge_layer		: type_plot_exclude_edge_layer;
-		plot_line_width				: type_general_line_width;	-- for lines without given width
-		plot_frame_ref				: type_plot_frame_ref;
-		plot_vias_on_mask			: type_plot_vias_on_mask;
-		plot_fill_mode				: type_plot_fill_mode;
-		plot_use_aux_origin			: type_plot_use_aux_origin;
-		plot_hpgl_pen_number		: type_plot_hpgl_pen_number;
-		plot_hpgl_pen_speed			: type_plot_hpgl_pen_speed;
-		plot_hpgl_pen_diameter		: type_plot_hpgl_pen_diameter;
-		plot_hpgl_pen_overlay		: type_plot_hpgl_pen_overlay;
-		plot_ps_negative			: type_plot_ps_negative;
-		plot_psa_4_output			: type_plot_psa_4_output;
-		plot_reference				: type_plot_reference;
-		plot_value					: type_plot_value;
-		plot_invisble_text			: type_plot_invisible_text;
-		plot_pads_on_silk			: type_pads_on_silk;
-		plot_subtract_mask_from_silk: type_plot_subtract_mask_from_silk;
-		plot_output_format			: type_plot_output_format;
-		plot_mirror					: type_plot_mirror;
-		plot_drill_shape			: type_plot_drill_shape;
-		plot_scale_selection		: type_plot_scale_selection;
-		plot_output_directory 		: type_plot_output_directory.bounded_string;
+		board_setup	: type_board_setup; -- design rule stuff goes here
+		plot_setup	: type_plot_setup; -- plot stuff ("CAM processor") goes here
 		
 		-- NETLIST (things like (net 4 /LED_ANODE) )
 		-- NOTE: this has nothing to do with any kicad netlist file !
@@ -3837,190 +3784,190 @@ package body et_kicad_pcb is
 						when SEC_LAST_TRACE_WIDTH =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => setup_last_trace_width := to_distance (to_string (arg));
+								when 1 => board_setup.last_trace_width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_TRACE_CLEARANCE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => setup_trace_clearance := to_distance (to_string (arg));
+								when 1 => board_setup.trace_clearance := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_ZONE_CLEARANCE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => setup_zone_clearance := to_distance (to_string (arg));
+								when 1 => board_setup.zone_clearance := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_ZONE_45_ONLY =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => setup_zone_45_only := type_zone_45_only'value (to_string (arg));
+								when 1 => board_setup.zone_45_only := type_zone_45_only'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_TRACE_MIN =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => setup_trace_min := to_distance (to_string (arg));
+								when 1 => board_setup.trace_min := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_SEGMENT_WIDTH =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => setup_segment_width := to_distance (to_string (arg));
+								when 1 => board_setup.segment_width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_EDGE_WIDTH =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => setup_edge_width := to_distance (to_string (arg));
+								when 1 => board_setup.edge_width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_VIA_SIZE => -- regular vias
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => setup_via_size := to_distance (to_string (arg));
+								when 1 => board_setup.via_size := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_VIA_DRILL => -- regular vias
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => setup_via_drill := to_distance (to_string (arg));
+								when 1 => board_setup.via_drill := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_VIA_MIN_SIZE => -- regular vias
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => setup_via_min_size := to_distance (to_string (arg));
+								when 1 => board_setup.via_min_size := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_VIA_MIN_DRILL => -- regular vias
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => setup_via_min_drill := to_distance (to_string (arg));
+								when 1 => board_setup.via_min_drill := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_UVIA_SIZE => -- micro vias
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => setup_micro_via_size := to_distance (to_string (arg));
+								when 1 => board_setup.micro_via_size := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_UVIA_DRILL => -- micro vias
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => setup_micro_via_drill := to_distance (to_string (arg));
+								when 1 => board_setup.micro_via_drill := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_UVIAS_ALLOWED => -- micro vias
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => setup_micro_vias_allowed := to_micro_vias_allowed (to_string (arg));
+								when 1 => board_setup.micro_vias_allowed := to_micro_vias_allowed (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_UVIA_MIN_SIZE => -- micro vias
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => setup_micro_via_min_size := to_distance (to_string (arg));
+								when 1 => board_setup.micro_via_min_size := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_UVIA_MIN_DRILL => -- micro vias
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => setup_micro_via_min_drill := to_distance (to_string (arg));
+								when 1 => board_setup.micro_via_min_drill := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_PCB_TEXT_WIDTH =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => setup_pcb_text_width := to_distance (to_string (arg));
+								when 1 => board_setup.pcb_text_width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_PCB_TEXT_SIZE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => setup_pcb_text_size_x := to_distance (to_string (arg));
-								when 2 => setup_pcb_text_size_y := to_distance (to_string (arg));
+								when 1 => board_setup.pcb_text_size_x := to_distance (to_string (arg));
+								when 2 => board_setup.pcb_text_size_y := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_MOD_EDGE_WIDTH =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => setup_module_edge_width := to_distance (to_string (arg));
+								when 1 => board_setup.module_edge_width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 							
 						when SEC_MOD_TEXT_SIZE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => setup_module_text_size_x := to_distance (to_string (arg));
-								when 2 => setup_module_text_size_y := to_distance (to_string (arg));
+								when 1 => board_setup.module_text_size_x := to_distance (to_string (arg));
+								when 2 => board_setup.module_text_size_y := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_MOD_TEXT_WIDTH => -- line width
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => setup_module_text_width := to_distance (to_string (arg));
+								when 1 => board_setup.module_text_width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_PAD_SIZE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => setup_pad_size_x := to_distance (to_string (arg));
-								when 2 => setup_pad_size_y := to_distance (to_string (arg));
+								when 1 => board_setup.pad_size_x := to_distance (to_string (arg));
+								when 2 => board_setup.pad_size_y := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_PAD_DRILL =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => setup_pad_drill := to_distance (to_string (arg));
+								when 1 => board_setup.pad_drill := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_PAD_TO_MASK_CLEARANCE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => setup_stop_mask_expansion := to_distance (to_string (arg));
+								when 1 => board_setup.stop_mask_expansion := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_AUX_AXIS_ORIGIN =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => setup_aux_axis_origin_x := to_distance (to_string (arg));
-								when 2 => setup_aux_axis_origin_y := to_distance (to_string (arg));
+								when 1 => board_setup.aux_axis_origin_x := to_distance (to_string (arg));
+								when 2 => board_setup.aux_axis_origin_y := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_VISIBLE_ELEMENTS =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => setup_visible_elements := type_visible_elements (to_string (arg));
+								when 1 => board_setup.visible_elements := type_visible_elements (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
-						when others => null;
+						when others => invalid_section;
 					end case;
 
 				-- parent section
@@ -4029,168 +3976,168 @@ package body et_kicad_pcb is
 						when SEC_LAYERSELECTION =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_layer_selection := type_plot_layer_selection_string.to_bounded_string (to_string (arg));
+								when 1 => plot_setup.layer_selection := type_plot_layer_selection_string.to_bounded_string (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_USEGERBEREXTENSIONS =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_user_gerber_extensions := type_plot_user_gerber_extensions'value (to_string (arg));
+								when 1 => plot_setup.user_gerber_extensions := type_plot_user_gerber_extensions'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 							
 						when SEC_EXCLUDEEDGELAYER =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_exclude_edge_layer := type_plot_exclude_edge_layer'value (to_string (arg));
+								when 1 => plot_setup.exclude_edge_layer := type_plot_exclude_edge_layer'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_LINEWIDTH =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_line_width := to_distance (to_string (arg));
+								when 1 => plot_setup.line_width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_PLOTFRAMEREF =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_frame_ref := type_plot_frame_ref'value (to_string (arg));
+								when 1 => plot_setup.frame_ref := type_plot_frame_ref'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 							
 						when SEC_VIASONMASK =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_vias_on_mask := type_plot_vias_on_mask'value (to_string (arg));
+								when 1 => plot_setup.vias_on_mask := type_plot_vias_on_mask'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_MODE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_fill_mode := type_plot_fill_mode'value (to_string (arg));
+								when 1 => plot_setup.fill_mode := type_plot_fill_mode'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_USEAUXORIGIN =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_use_aux_origin := type_plot_use_aux_origin'value (to_string (arg));
+								when 1 => plot_setup.use_aux_origin := type_plot_use_aux_origin'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 							
 						when SEC_HPGLPENNUMBER =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_hpgl_pen_number := type_plot_hpgl_pen_number'value (to_string (arg));
+								when 1 => plot_setup.hpgl_pen_number := type_plot_hpgl_pen_number'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_HPGLPENSPEED =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_hpgl_pen_speed := type_plot_hpgl_pen_speed'value (to_string (arg));
+								when 1 => plot_setup.hpgl_pen_speed := type_plot_hpgl_pen_speed'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_HPGLPENDIAMETER =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_hpgl_pen_diameter := mil_to_distance (to_string (arg));
+								when 1 => plot_setup.hpgl_pen_diameter := mil_to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_HPGLPENOVERLAY =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_hpgl_pen_overlay := mil_to_distance (to_string (arg));
+								when 1 => plot_setup.hpgl_pen_overlay := mil_to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_PSNEGATIVE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_ps_negative := type_plot_ps_negative'value (to_string (arg));
+								when 1 => plot_setup.ps_negative := type_plot_ps_negative'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 							
 						when SEC_PSA4OUTPUT =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_psa_4_output := type_plot_psa_4_output'value (to_string (arg));
+								when 1 => plot_setup.psa_4_output := type_plot_psa_4_output'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_PLOTREFERENCE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_reference := type_plot_reference'value (to_string (arg));
+								when 1 => plot_setup.reference := type_plot_reference'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_PLOTVALUE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_value := type_plot_value'value (to_string (arg));
+								when 1 => plot_setup.value := type_plot_value'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 							
 						when SEC_PLOTINVISIBLETEXT =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_invisble_text := type_plot_invisible_text'value (to_string (arg));
+								when 1 => plot_setup.invisble_text := type_plot_invisible_text'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_PADSONSILK =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_pads_on_silk := type_pads_on_silk'value (to_string (arg));
+								when 1 => plot_setup.pads_on_silk := type_pads_on_silk'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_SUBTRACTMASKFROMSILK =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_subtract_mask_from_silk := type_plot_subtract_mask_from_silk'value (to_string (arg));
+								when 1 => plot_setup.subtract_mask_from_silk := type_plot_subtract_mask_from_silk'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_OUTPUTFORMAT =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_output_format := type_plot_output_format'value (to_string (arg));
+								when 1 => plot_setup.output_format := type_plot_output_format'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_MIRROR =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_mirror := type_plot_mirror'value (to_string (arg));
+								when 1 => plot_setup.mirror := type_plot_mirror'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_DRILLSHAPE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_drill_shape := type_plot_drill_shape'value (to_string (arg));
+								when 1 => plot_setup.drill_shape := type_plot_drill_shape'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_SCALESELECTION =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_scale_selection := type_plot_scale_selection'value (to_string (arg));
+								when 1 => plot_setup.scale_selection := type_plot_scale_selection'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_OUTPUTDIRECTORY =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_output_directory := to_plot_output_directory (to_string (arg));
+								when 1 => plot_setup.output_directory := to_plot_output_directory (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -4539,7 +4486,7 @@ package body et_kicad_pcb is
 							null; -- nothing to do. work already done on leaving SEC_LAYER_ID
 
 						when SEC_SETUP =>
-							null; -- CS log setup (DRC stuff)
+							null; -- CS board log setup (DRC stuff)
 
 						when SEC_NET =>
 							insert_net;
@@ -4565,7 +4512,9 @@ package body et_kicad_pcb is
 				-- parent section
 				when SEC_SETUP =>
 					case section.name is
-
+						when SEC_PCBPLOTPARAMS =>
+							null; -- CS log plot parameters
+						
 						when others => null; -- CS
 					end case;
 					
@@ -5066,6 +5015,12 @@ package body et_kicad_pcb is
 		
 		-- copy container "layers" in board
 		board.layers := layers;
+
+		-- copy board_setup in board
+		board.setup := board_setup;
+
+		-- copy plot/CAM stuff in board
+		board.plot := plot_setup;
 		
 		-- copy all the packages (in temporarily container "packages") the board to be returned:
 		board.packages := packages;

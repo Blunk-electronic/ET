@@ -134,17 +134,7 @@ package et_kicad_pcb is
 	end record;
 
 
-	-- SETUP
-	type type_zone_45_only is (NO, YES);
 
-	-- CS it is not fully clear what aux_axis_origin is good for:
-	aux_axis_origin_min : constant et_pcb_coordinates.type_distance := et_pcb_coordinates.zero_distance;
-	aux_axis_origin_max : constant et_pcb_coordinates.type_distance := 500.0;
-	subtype type_aux_axis_origin is et_pcb_coordinates.type_distance 
-		range aux_axis_origin_min .. aux_axis_origin_max;
-
-	-- CS meaning not clear yet
-	type type_visible_elements is new string (1..8);
 	
 	-- PLOT PARAMETERS
 
@@ -247,6 +237,36 @@ package et_kicad_pcb is
 	package type_plot_output_directory is new generic_bounded_length (plot_output_directory_length_max);
 	function to_plot_output_directory (directory : in string) return type_plot_output_directory.bounded_string;
 	function to_string (directory : in type_plot_output_directory.bounded_string) return string;
+
+	type type_plot_setup is record
+		layer_selection			: type_plot_layer_selection_string.bounded_string;
+		user_gerber_extensions	: type_plot_user_gerber_extensions;
+		exclude_edge_layer		: type_plot_exclude_edge_layer;
+		line_width				: et_pcb.type_general_line_width;	-- for lines without given width
+		frame_ref				: type_plot_frame_ref;
+		vias_on_mask			: type_plot_vias_on_mask;
+		fill_mode				: type_plot_fill_mode;
+		use_aux_origin			: type_plot_use_aux_origin;
+		hpgl_pen_number			: type_plot_hpgl_pen_number;
+		hpgl_pen_speed			: type_plot_hpgl_pen_speed;
+		hpgl_pen_diameter		: type_plot_hpgl_pen_diameter;
+		hpgl_pen_overlay		: type_plot_hpgl_pen_overlay;
+		ps_negative				: type_plot_ps_negative;
+		psa_4_output			: type_plot_psa_4_output;
+		reference				: type_plot_reference;
+		value					: type_plot_value;
+		invisble_text			: type_plot_invisible_text;
+		pads_on_silk			: type_pads_on_silk;
+		subtract_mask_from_silk	: type_plot_subtract_mask_from_silk;
+		output_format			: type_plot_output_format;
+		mirror					: type_plot_mirror;
+		drill_shape				: type_plot_drill_shape;
+		scale_selection			: type_plot_scale_selection;
+		output_directory 		: type_plot_output_directory.bounded_string;
+	end record;
+
+
+
 	
 	-- board contours
 	-- NOTE: It is not reasonable to draw outlines with a line width other than zero.
@@ -264,6 +284,56 @@ package et_kicad_pcb is
 	via_diameter_max : constant et_pcb_coordinates.type_distance := 10.0;
 	subtype type_via_diameter is et_pcb_coordinates.type_distance
 		range via_diameter_min .. via_diameter_max;
+
+
+
+	-- BOARD SETUP
+	type type_zone_45_only is (NO, YES);
+
+	-- CS it is not fully clear what aux_axis_origin is good for:
+	aux_axis_origin_min : constant et_pcb_coordinates.type_distance := et_pcb_coordinates.zero_distance;
+	aux_axis_origin_max : constant et_pcb_coordinates.type_distance := 500.0;
+	subtype type_aux_axis_origin is et_pcb_coordinates.type_distance 
+		range aux_axis_origin_min .. aux_axis_origin_max;
+
+	-- CS meaning not clear yet
+	type type_visible_elements is new string (1..8);
+
+	type type_board_setup is record
+		last_trace_width	: et_pcb.type_signal_width;
+		trace_clearance		: et_pcb.type_signal_clearance;
+		zone_clearance		: et_pcb.type_signal_clearance;
+		zone_45_only		: type_zone_45_only;
+		trace_min			: et_pcb.type_signal_width;
+		segment_width		: et_pcb.type_signal_width;
+		edge_width			: type_edge_cut_line_width;
+		via_size			: type_via_diameter;	-- regular vias
+		via_drill			: et_pcb.type_drill_size;		-- regular vias
+		via_min_size		: type_via_diameter;	-- regular vias
+		via_min_drill		: et_pcb.type_drill_size;		-- regular vias
+		micro_via_size		: type_via_diameter;	-- micro vias
+		micro_via_drill		: et_pcb.type_drill_size;		-- micro vias
+		micro_vias_allowed	: et_pcb.type_micro_vias_allowed;
+		micro_via_min_size	: type_via_diameter;	-- micro vias
+		micro_via_min_drill	: et_pcb.type_drill_size;		-- micro vias
+		pcb_text_width		: et_pcb.type_text_line_width;	-- all kinds of texts (no matter what layer)
+		pcb_text_size_x		: et_pcb.type_text_size;
+		pcb_text_size_y		: et_pcb.type_text_size;		
+		module_edge_width	: et_pcb.type_general_line_width;
+		module_text_size_x	: et_pcb.type_text_size;
+		module_text_size_y	: et_pcb.type_text_size;
+		module_text_width	: et_pcb.type_text_line_width; -- line width
+		pad_size_x			: et_pcb.type_pad_size;
+		pad_size_y			: et_pcb.type_pad_size;
+		pad_drill			: et_pcb.type_drill_size;
+		stop_mask_expansion	: et_pcb.type_stop_mask_expansion;
+		aux_axis_origin_x	: type_aux_axis_origin;
+		aux_axis_origin_y	: type_aux_axis_origin;
+		visible_elements	: type_visible_elements;
+	end record;
+
+
+
 	
 	-- NETLIST ((things like (net 4 /LED_ANODE) ):
 	-- NOTE: this has nothing to do with any kicad netlist file !
@@ -418,6 +488,8 @@ package et_kicad_pcb is
 	
 	-- This is the data type for the Kicad Board design:
 	type type_board is record
+		setup		: type_board_setup;
+		plot		: type_plot_setup;
 		paper_size 	: et_general.type_paper_size;
 		layers		: type_layers.map;
 		netlist		: type_netlist.set;
