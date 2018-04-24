@@ -67,6 +67,17 @@ with et_kicad;
 
 package body et_kicad_pcb is
 
+	function to_plot_output_directory (directory : in string) return type_plot_output_directory.bounded_string is
+	begin
+		return type_plot_output_directory.to_bounded_string (directory);
+	end to_plot_output_directory;
+	
+	function to_string (directory : in type_plot_output_directory.bounded_string) return string is
+	begin
+		return type_plot_output_directory.to_string (directory);
+	end to_string;
+
+	
 	function right_net_before_left (right, left : in type_netlist_net) return boolean is
 	-- Returns true if the right net id comes beforr the left net id AND
 	-- if the right net name differs from the left net name.
@@ -2546,27 +2557,30 @@ package body et_kicad_pcb is
 		setup_aux_axis_origin_y		: type_aux_axis_origin;
 		setup_visible_elements		: type_visible_elements;
 
-		plot_layer_selection		: type_layer_selection_string.bounded_string;
-		plot_user_gerber_extensions	: type_user_gerber_extensions;
-		plot_exclude_edge_layer		: type_exclude_edge_layer;
+		plot_layer_selection		: type_plot_layer_selection_string.bounded_string;
+		plot_user_gerber_extensions	: type_plot_user_gerber_extensions;
+		plot_exclude_edge_layer		: type_plot_exclude_edge_layer;
 		plot_line_width				: type_general_line_width;	-- for lines without given width
 		plot_frame_ref				: type_plot_frame_ref;
-		plot_vias_on_mask			: type_vias_on_mask;
-		plot_fill_mode				: type_fill_mode;
-		plot_use_aux_origin			: type_use_aux_origin;
-		plot_hpgl_pen_number		: type_hpgl_pen_number;
-		plot_hpgl_pen_speed			: type_hpgl_pen_speed;
-		plot_hpgl_pen_diameter		: type_hpgl_pen_diameter;
-		plot_hpgl_pen_overlay		: type_hpgl_pen_overlay;
-		plot_ps_negative			: type_ps_negative;
-		plot_psa_4_output			: type_psa_4_output;
+		plot_vias_on_mask			: type_plot_vias_on_mask;
+		plot_fill_mode				: type_plot_fill_mode;
+		plot_use_aux_origin			: type_plot_use_aux_origin;
+		plot_hpgl_pen_number		: type_plot_hpgl_pen_number;
+		plot_hpgl_pen_speed			: type_plot_hpgl_pen_speed;
+		plot_hpgl_pen_diameter		: type_plot_hpgl_pen_diameter;
+		plot_hpgl_pen_overlay		: type_plot_hpgl_pen_overlay;
+		plot_ps_negative			: type_plot_ps_negative;
+		plot_psa_4_output			: type_plot_psa_4_output;
 		plot_reference				: type_plot_reference;
 		plot_value					: type_plot_value;
 		plot_invisble_text			: type_plot_invisible_text;
 		plot_pads_on_silk			: type_pads_on_silk;
-		plot_subtract_mask_from_silk: type_subtract_mask_from_silk;
-		plot_output_format			: type_output_format;
-		plot_mirror					: type_mirror;
+		plot_subtract_mask_from_silk: type_plot_subtract_mask_from_silk;
+		plot_output_format			: type_plot_output_format;
+		plot_mirror					: type_plot_mirror;
+		plot_drill_shape			: type_plot_drill_shape;
+		plot_scale_selection		: type_plot_scale_selection;
+		plot_output_directory 		: type_plot_output_directory.bounded_string;
 		
 		-- NETLIST (things like (net 4 /LED_ANODE) )
 		-- NOTE: this has nothing to do with any kicad netlist file !
@@ -4015,21 +4029,21 @@ package body et_kicad_pcb is
 						when SEC_LAYERSELECTION =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_layer_selection := type_layer_selection_string.to_bounded_string (to_string (arg));
+								when 1 => plot_layer_selection := type_plot_layer_selection_string.to_bounded_string (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_USEGERBEREXTENSIONS =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_user_gerber_extensions := type_user_gerber_extensions'value (to_string (arg));
+								when 1 => plot_user_gerber_extensions := type_plot_user_gerber_extensions'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 							
 						when SEC_EXCLUDEEDGELAYER =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_exclude_edge_layer := type_exclude_edge_layer'value (to_string (arg));
+								when 1 => plot_exclude_edge_layer := type_plot_exclude_edge_layer'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -4050,35 +4064,35 @@ package body et_kicad_pcb is
 						when SEC_VIASONMASK =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_vias_on_mask := type_vias_on_mask'value (to_string (arg));
+								when 1 => plot_vias_on_mask := type_plot_vias_on_mask'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_MODE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_fill_mode := type_fill_mode'value (to_string (arg));
+								when 1 => plot_fill_mode := type_plot_fill_mode'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_USEAUXORIGIN =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_use_aux_origin := type_use_aux_origin'value (to_string (arg));
+								when 1 => plot_use_aux_origin := type_plot_use_aux_origin'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 							
 						when SEC_HPGLPENNUMBER =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_hpgl_pen_number := type_hpgl_pen_number'value (to_string (arg));
+								when 1 => plot_hpgl_pen_number := type_plot_hpgl_pen_number'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_HPGLPENSPEED =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_hpgl_pen_speed := type_hpgl_pen_speed'value (to_string (arg));
+								when 1 => plot_hpgl_pen_speed := type_plot_hpgl_pen_speed'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -4099,14 +4113,14 @@ package body et_kicad_pcb is
 						when SEC_PSNEGATIVE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_ps_negative := type_ps_negative'value (to_string (arg));
+								when 1 => plot_ps_negative := type_plot_ps_negative'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 							
 						when SEC_PSA4OUTPUT =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_psa_4_output := type_psa_4_output'value (to_string (arg));
+								when 1 => plot_psa_4_output := type_plot_psa_4_output'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -4141,46 +4155,46 @@ package body et_kicad_pcb is
 						when SEC_SUBTRACTMASKFROMSILK =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_subtract_mask_from_silk := type_subtract_mask_from_silk'value (to_string (arg));
+								when 1 => plot_subtract_mask_from_silk := type_plot_subtract_mask_from_silk'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_OUTPUTFORMAT =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_output_format := type_output_format'value (to_string (arg));
+								when 1 => plot_output_format := type_plot_output_format'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_MIRROR =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_mirror := type_mirror'value (to_string (arg));
+								when 1 => plot_mirror := type_plot_mirror'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_DRILLSHAPE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => null;
+								when 1 => plot_drill_shape := type_plot_drill_shape'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_SCALESELECTION =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => null;
+								when 1 => plot_scale_selection := type_plot_scale_selection'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_OUTPUTDIRECTORY =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => null;
+								when 1 => plot_output_directory := to_plot_output_directory (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
-						when others => null;
+						when others => invalid_section;
 					end case;
 							
 -- 					case section.parent is
