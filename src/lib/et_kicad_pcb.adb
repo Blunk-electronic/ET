@@ -2525,6 +2525,9 @@ package body et_kicad_pcb is
 		layers		: type_layers.map;
 
 
+		-- GENERAL BOARD INFO
+		general_info : type_general_board_info;
+		
 		-- SETUP
 		board_setup	: type_board_setup; -- design rule stuff goes here
 		plot_setup	: type_plot_setup; -- plot stuff ("CAM processor") goes here
@@ -4144,6 +4147,79 @@ package body et_kicad_pcb is
 						when others => invalid_section;
 					end case;
 							
+				-- parent section
+				when SEC_GENERAL =>
+					case section.name is
+						when SEC_LINKS =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => general_info.links := type_general_links'value (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_NO_CONNECTS =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => general_info.no_connects := type_general_no_connects'value (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_AREA =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => general_info.area_x1 := to_distance (to_string (arg));
+								when 2 => general_info.area_y1 := to_distance (to_string (arg));								
+								when 3 => general_info.area_x2 := to_distance (to_string (arg));
+								when 4 => general_info.area_y2 := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_THICKNESS =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => general_info.thickness := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_DRAWINGS =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => general_info.drawings := type_general_drawings'value (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_TRACKS =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => general_info.tracks := type_general_tracks'value (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_ZONES =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => general_info.zones := type_general_zones'value (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_MODULES =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => general_info.modules := type_general_modules'value (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+							
+						when SEC_NETS =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => general_info.nets := type_net_id_terminal'value (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when others => invalid_section;
+					end case;
+
+				
 -- 					case section.parent is
 -- 						when SEC_MODULE =>
 -- 							case section.arg_counter is
@@ -5012,6 +5088,9 @@ package body et_kicad_pcb is
 
 		
 		-- COPY TEMPORARILY CONTAINERS IN BOARD TO BE RETURNED
+
+		-- general board information
+		board.general := general_info;
 		
 		-- copy container "layers" in board
 		board.layers := layers;

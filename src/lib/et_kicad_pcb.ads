@@ -340,7 +340,8 @@ package et_kicad_pcb is
 	net_id_max : constant positive := 1_000_000; -- one million nets should be sufficient
 	type type_net_id is range 0..net_id_max; -- used in the "netlist" section
 	type type_net_id_terminal is range 1..net_id_max; -- used with pads in module section
-
+	-- CS function to_net_id and to_string
+	
 	type type_netlist_net is record
 		id		: type_net_id;
 		name	: et_schematic.type_net_name.bounded_string;
@@ -362,7 +363,48 @@ package et_kicad_pcb is
 		"<"				=> right_net_before_left,
 		"="				=> right_net_equals_left);
 
-	
+
+
+	-- GENERAL BOARD INFORMATION
+	-- The estimation is that the number of links is about 10 times the
+	-- number of nets. A link is a connection from one terminal to another.
+	general_links_max : constant positive := 10 * net_id_max; 
+	type type_general_links is range 0 .. general_links_max;
+
+	-- CS The meaning of no_connects is not clear yet. However, it
+	-- must be limited. For the time being the limit equals the number of links:
+	general_no_connects_max : constant positive := general_links_max;
+	type type_general_no_connects is range 0 .. general_no_connects_max;
+
+	-- The total number of lines, arcs, circles the board outlines consists of:
+	type type_general_drawings is new natural; -- no limit because there can be millions
+
+	-- The total number of tracks
+	type type_general_tracks is new natural; -- no limit because there can be millions
+
+	-- zones 
+	-- CS: meaning not clear yet.
+	type type_general_zones is new natural; -- should be limited ot a reasonable value
+
+	-- modules
+	-- The total number of component packages.
+	general_modules_max : constant positive := 1_000_000; -- CS adjust if nessecary
+	type type_general_modules is range 0 .. general_modules_max;
+
+	type type_general_board_info is record
+		links		: type_general_links;
+		no_connects	: type_general_no_connects;
+		area_x1		: et_pcb_coordinates.type_distance; -- CS meaning not clear yet. unit mm ?
+		area_y1		: et_pcb_coordinates.type_distance; -- CS meaning not clear yet. unit mm ?
+		area_x2		: et_pcb_coordinates.type_distance; -- CS meaning not clear yet. unit mm ?
+		area_y2		: et_pcb_coordinates.type_distance; -- CS meaning not clear yet. unit mm ?
+		thickness	: et_pcb_coordinates.type_pcb_thickness;
+		drawings	: type_general_drawings;
+		tracks		: type_general_tracks;
+		zones		: type_general_zones;
+		modules		: type_general_modules;
+		nets		: type_net_id_terminal; -- the total number of nets
+	end record;
 	
 	-- NET CLASSES
 	-- KiCad keeps a list of net names which are in a certain net class.
@@ -488,6 +530,7 @@ package et_kicad_pcb is
 	
 	-- This is the data type for the Kicad Board design:
 	type type_board is record
+		general		: type_general_board_info;
 		setup		: type_board_setup;
 		plot		: type_plot_setup;
 		paper_size 	: et_general.type_paper_size;

@@ -71,6 +71,11 @@ package et_pcb_coordinates is
 	subtype type_distance is type_distance_total range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter
 	zero_distance : constant type_distance := 0.0;
 
+	-- PCB thickness (limited to reasonable range. CS adjust if required)
+	pcb_thickness_min : constant type_distance := 0.1;
+	pcb_thickness_max : constant type_distance := 20.0;	
+	subtype type_pcb_thickness is type_distance_total range pcb_thickness_min .. pcb_thickness_max;
+	
 	mil_min : constant float := -390_000_000.0; -- equals approx. type_distance'first
 	mil_max : constant float :=  390_000_000.0; -- equals approx. type_distance'last
 	
