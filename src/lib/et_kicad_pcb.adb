@@ -1147,7 +1147,7 @@ package body et_kicad_pcb is
 									elsif to_string (arg) = layer_bot_keepout then
 										text.layer := BOT_KEEP;
 									else
-										invalid_layer; -- CS copper layers ?
+										invalid_layer;
 									end if;
 
 								when others => too_many_arguments;
@@ -1161,28 +1161,33 @@ package body et_kicad_pcb is
 										line.layer := TOP_SILK;
 									elsif to_string (arg) = layer_bot_silk_screen then
 										line.layer := BOT_SILK;
+										
 									elsif to_string (arg) = layer_top_assy_doc then
 										line.layer := TOP_ASSY;
 									elsif to_string (arg) = layer_bot_assy_doc then
 										line.layer := BOT_ASSY;
+										
 									elsif to_string (arg) = layer_top_keepout then
 										line.layer := TOP_KEEP;
 									elsif to_string (arg) = layer_bot_keepout then
 										line.layer := BOT_KEEP;
+										
 									elsif to_string (arg) = layer_top_copper then
 										line.layer := TOP_COPPER;
 									elsif to_string (arg) = layer_bot_copper then
 										line.layer := BOT_COPPER;
+										
 									elsif to_string (arg) = layer_top_stop_mask then
 										line.layer := TOP_STOP;
 									elsif to_string (arg) = layer_bot_stop_mask then
 										line.layer := BOT_STOP;
+										
 									elsif to_string (arg) = layer_top_solder_paste then
 										line.layer := TOP_PASTE;
 									elsif to_string (arg) = layer_bot_solder_paste then
 										line.layer := BOT_PASTE;
 									else
-										invalid_layer; -- CS copper layers ?
+										invalid_layer;
 									end if;
 
 								when others => too_many_arguments;
@@ -1196,24 +1201,33 @@ package body et_kicad_pcb is
 										arc.layer := TOP_SILK;
 									elsif to_string (arg) = layer_bot_silk_screen then
 										arc.layer := BOT_SILK;
+										
 									elsif to_string (arg) = layer_top_assy_doc then
 										arc.layer := TOP_ASSY;
 									elsif to_string (arg) = layer_bot_assy_doc then
 										arc.layer := BOT_ASSY;
+										
 									elsif to_string (arg) = layer_top_keepout then
 										arc.layer := TOP_KEEP;
 									elsif to_string (arg) = layer_bot_keepout then
 										arc.layer := BOT_KEEP;
+
+									elsif to_string (arg) = layer_top_copper then
+										arc.layer := TOP_COPPER;
+									elsif to_string (arg) = layer_bot_copper then
+										arc.layer := BOT_COPPER;
+										
 									elsif to_string (arg) = layer_top_stop_mask then
 										arc.layer := TOP_STOP;
 									elsif to_string (arg) = layer_bot_stop_mask then
 										arc.layer := BOT_STOP;
+										
 									elsif to_string (arg) = layer_top_solder_paste then
 										arc.layer := TOP_PASTE;
 									elsif to_string (arg) = layer_bot_solder_paste then
 										arc.layer := BOT_PASTE;
 									else
-										invalid_layer; -- CS copper layers ?
+										invalid_layer;
 									end if;
 
 								when others => too_many_arguments;
@@ -1227,24 +1241,33 @@ package body et_kicad_pcb is
 										circle.layer := TOP_SILK;
 									elsif to_string (arg) = layer_bot_silk_screen then
 										circle.layer := BOT_SILK;
+										
 									elsif to_string (arg) = layer_top_assy_doc then
 										circle.layer := TOP_ASSY;
 									elsif to_string (arg) = layer_bot_assy_doc then
 										circle.layer := BOT_ASSY;
+										
 									elsif to_string (arg) = layer_top_keepout then
 										circle.layer := TOP_KEEP;
 									elsif to_string (arg) = layer_bot_keepout then
 										circle.layer := BOT_KEEP;
+
+									elsif to_string (arg) = layer_top_copper then
+										circle.layer := TOP_COPPER;
+									elsif to_string (arg) = layer_bot_copper then
+										circle.layer := BOT_COPPER;
+										
 									elsif to_string (arg) = layer_top_stop_mask then
 										circle.layer := TOP_STOP;
 									elsif to_string (arg) = layer_bot_stop_mask then
 										circle.layer := BOT_STOP;
+										
 									elsif to_string (arg) = layer_top_solder_paste then
 										circle.layer := TOP_PASTE;
 									elsif to_string (arg) = layer_bot_solder_paste then
 										circle.layer := BOT_PASTE;
 									else
-										invalid_layer; -- CS copper layers ?
+										invalid_layer;
 									end if;
 
 								when others => too_many_arguments;
@@ -3552,20 +3575,33 @@ package body et_kicad_pcb is
 										package_line.layer := TOP_SILK;
 									elsif to_string (arg) = layer_bot_silk_screen then
 										package_line.layer := BOT_SILK;
+
 									elsif to_string (arg) = layer_top_assy_doc then
 										package_line.layer := TOP_ASSY;
 									elsif to_string (arg) = layer_bot_assy_doc then
 										package_line.layer := BOT_ASSY;
+									
 									elsif to_string (arg) = layer_top_keepout then
 										package_line.layer := TOP_KEEP;
 									elsif to_string (arg) = layer_bot_keepout then
 										package_line.layer := BOT_KEEP;
+									
 									elsif to_string (arg) = layer_top_copper then
 										package_line.layer := TOP_COPPER;
 									elsif to_string (arg) = layer_bot_copper then
 										package_line.layer := BOT_COPPER;
+
+									elsif to_string (arg) = layer_top_stop_mask then
+										package_line.layer := TOP_STOP;
+									elsif to_string (arg) = layer_bot_stop_mask then
+										package_line.layer := BOT_STOP;
+										
+									elsif to_string (arg) = layer_top_solder_paste then
+										package_line.layer := TOP_PASTE;
+									elsif to_string (arg) = layer_bot_solder_paste then
+										package_line.layer := BOT_PASTE;
 									else
-										invalid_layer; -- CS copper layers ?
+										invalid_layer;
 									end if;
 
 								when others => too_many_arguments;
@@ -3617,20 +3653,33 @@ package body et_kicad_pcb is
 										package_circle.layer := TOP_SILK;
 									elsif to_string (arg) = layer_bot_silk_screen then
 										package_circle.layer := BOT_SILK;
+									
 									elsif to_string (arg) = layer_top_assy_doc then
 										package_circle.layer := TOP_ASSY;
 									elsif to_string (arg) = layer_bot_assy_doc then
 										package_circle.layer := BOT_ASSY;
+
 									elsif to_string (arg) = layer_top_keepout then
 										package_circle.layer := TOP_KEEP;
 									elsif to_string (arg) = layer_bot_keepout then
 										package_circle.layer := BOT_KEEP;
+									
 									elsif to_string (arg) = layer_top_copper then
 										package_circle.layer := TOP_COPPER;
 									elsif to_string (arg) = layer_bot_copper then
 										package_circle.layer := BOT_COPPER;
+
+									elsif to_string (arg) = layer_top_stop_mask then
+										package_circle.layer := TOP_STOP;
+									elsif to_string (arg) = layer_bot_stop_mask then
+										package_circle.layer := BOT_STOP;
+										
+									elsif to_string (arg) = layer_top_solder_paste then
+										package_circle.layer := TOP_PASTE;
+									elsif to_string (arg) = layer_bot_solder_paste then
+										package_circle.layer := BOT_PASTE;
 									else
-										invalid_layer; -- CS copper layers ?
+										invalid_layer;
 									end if;
 
 								when others => too_many_arguments;
@@ -3689,20 +3738,33 @@ package body et_kicad_pcb is
 										package_arc.layer := TOP_SILK;
 									elsif to_string (arg) = layer_bot_silk_screen then
 										package_arc.layer := BOT_SILK;
+									
 									elsif to_string (arg) = layer_top_assy_doc then
 										package_arc.layer := TOP_ASSY;
 									elsif to_string (arg) = layer_bot_assy_doc then
 										package_arc.layer := BOT_ASSY;
+									
 									elsif to_string (arg) = layer_top_keepout then
 										package_arc.layer := TOP_KEEP;
 									elsif to_string (arg) = layer_bot_keepout then
 										package_arc.layer := BOT_KEEP;
+									
 									elsif to_string (arg) = layer_top_copper then
 										package_arc.layer := TOP_COPPER;
 									elsif to_string (arg) = layer_bot_copper then
 										package_arc.layer := BOT_COPPER;
+
+									elsif to_string (arg) = layer_top_stop_mask then
+										package_arc.layer := TOP_STOP;
+									elsif to_string (arg) = layer_bot_stop_mask then
+										package_arc.layer := BOT_STOP;
+										
+									elsif to_string (arg) = layer_top_solder_paste then
+										package_arc.layer := TOP_PASTE;
+									elsif to_string (arg) = layer_bot_solder_paste then
+										package_arc.layer := BOT_PASTE;
 									else
-										invalid_layer; -- CS copper layers ?
+										invalid_layer;
 									end if;
 
 								when others => too_many_arguments;
