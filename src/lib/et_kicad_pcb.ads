@@ -83,6 +83,8 @@ package et_kicad_pcb is
 	layer_top_keepout			: constant string (1..7)	:= "F.CrtYd";
 	layer_bot_keepout			: constant string (1..7)	:= "B.CrtYd";
 
+	layer_edge_cuts				: constant string (1..9)	:= "Edge.Cuts";
+	
 	keyword_fp_text_reference	: constant string (1..9)	:= "reference";
 	keyword_fp_text_value		: constant string (1..5)	:= "value";
 	keyword_fp_text_user		: constant string (1..4)	:= "user";
@@ -117,7 +119,7 @@ package et_kicad_pcb is
 	-- Temporarily we need special types for lines, arcs and circles for the import. 
 	-- They are derived from the abstract anchestor types in et_pcb.ads.
 	-- Their additional components (width, layer, angle, ...) are later 
-	-- copied to the final lines, arcs and circles as specified in type_package:
+	-- copied to the final lines, arcs and circles as specified in et_pcb.ads:
 	type type_line is new et_pcb.type_line with record
 		width	: et_pcb.type_text_line_width;
 		layer	: type_layer_abbrevation;
@@ -543,6 +545,7 @@ package et_kicad_pcb is
 		netlist		: type_netlist.set;
 		net_classes	: type_net_classes.map;
 		packages	: type_packages_board.map;
+		contour		: et_pcb.type_pcb_contour;
 	end record;
 
 	procedure read_board (

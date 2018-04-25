@@ -529,8 +529,16 @@ package body et_kicad_pcb is
 		-- KEEPOUT OBJECTS (lines, arcs, circles)
 		top_keepout, bot_keepout			: type_keepout;
 
+		-- kicad does not allow pcb contours (edge cuts) in a package model.
+		-- For this reason, variable pcb_contours is never assigned. Its containers
+		-- remain empty:
 		pcb_contours			: type_package_pcb_contour;		
+
+		-- kicad does not allow plated pcb contours (plated edge cuts) in a package model.
+		-- For this reason, variable pcb_contours_plated is never assigned. Its containers
+		-- remain empty:
 		pcb_contours_plated 	: type_package_pcb_contour_plated;
+		
 		route_restrict 			: type_route_restrict_package;
 		via_restrict 			: type_via_restrict_package;
 
@@ -2470,6 +2478,9 @@ package body et_kicad_pcb is
 			SEC_FP_LINE,
 			SEC_FP_TEXT,
 			SEC_GENERAL,
+			SEC_GR_ARC,		-- board outlines, edge cuts
+			SEC_GR_CIRCLE,	-- board outlines, edge cuts
+			SEC_GR_LINE,	-- board outlines, edge cuts
 			SEC_HOST,
 			SEC_HPGLPENDIAMETER,
 			SEC_HPGLPENNUMBER,
@@ -2691,10 +2702,14 @@ package body et_kicad_pcb is
 		package_top_copper		: et_pcb.type_copper;
 		package_bot_copper		: et_pcb.type_copper;
 		
-		-- kicad refers to pcb contours as "edge cuts":
-		package_pcb_contours		: et_pcb.type_package_pcb_contour; -- CS not assigned yet
+		-- kicad does not allow pcb contours (edge cuts) in a package model.
+		-- For this reason, variable package_pcb_contours is never assigned. Its containers
+		-- remain empty:
+		package_pcb_contours		: et_pcb.type_package_pcb_contour;
 
-		-- never assigned because kicad does not feature plated millings in a package:
+		-- kicad does not allow plated pcb contours (edge cuts) in a package model.
+		-- For this reason, variable package_pcb_contours_plated is never assigned. Its containers
+		-- remain empty:
 		package_pcb_contours_plated	: et_pcb.type_package_pcb_contour_plated;
 		
 		-- never assigned because kicad does not feature route restrict in a package:
@@ -2757,6 +2772,21 @@ package body et_kicad_pcb is
 
 		-- Temporarily, all packages of components go here. 
 		packages : type_packages_board.map;
+
+
+
+		-- BOARD OUTLINES (EDGE CUTS)
+		board_contour_line 		: type_line;
+
+		-- NOTE: these variables are types with a line width.
+		-- The line width is assigned but later discarded as board
+		-- contours do not possess a width (millings never have a width)
+		board_contour_arc		: type_arc;
+		board_contour_circle	: type_circle;
+		board_contour 			: type_pcb_contour;
+
+
+
 
 		procedure init_stop_and_mask is begin
 		-- Resets the temporarily status flags of solder paste and stop mask of an SMT terminal.
@@ -2932,7 +2962,7 @@ package body et_kicad_pcb is
 					case section.name is
 						when SEC_VERSION | SEC_HOST | SEC_GENERAL | SEC_PAGE |
 							SEC_LAYERS | SEC_SETUP | SEC_NET | SEC_NET_CLASS |
-							SEC_MODULE => null;
+							SEC_MODULE | SEC_GR_LINE | SEC_GR_ARC | SEC_GR_CIRCLE => null;
 						when others => invalid_section;
 					end case;
 
@@ -3034,6 +3064,20 @@ package body et_kicad_pcb is
 						when SEC_AT | SEC_ROTATE | SEC_SCALE => null;
 						when others => invalid_section;
 					end case;
+
+				-- parent section
+				when SEC_GR_CIRCLE =>
+					case section.name is
+						when SEC_CENTER | SEC_END | SEC_LAYER | SEC_WIDTH => null;
+						when others => invalid_section;
+					end case;
+
+				when SEC_GR_ARC | SEC_GR_LINE =>
+					case section.name is
+						when SEC_START | SEC_END | SEC_ANGLE | SEC_LAYER | SEC_WIDTH => null;
+						when others => invalid_section;
+					end case;
+
 					
 				when others => null;
 			end case;
@@ -4357,7 +4401,173 @@ package body et_kicad_pcb is
 						when others => invalid_section;
 					end case;
 
-				
+				-- parent section
+				when SEC_GR_ARC =>
+					case section.name is
+						when SEC_START =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									set_point (axis => X, point => board_contour_arc.center, value => to_distance (to_string (arg)));
+								when 2 => 
+									set_point (axis => Y, point => board_contour_arc.center, value => to_distance (to_string (arg)));
+									set_point (axis => Z, point => board_contour_arc.center, value => zero_distance);
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_END =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									set_point (axis => X, point => board_contour_arc.start_point, value => to_distance (to_string (arg)));
+								when 2 => 
+									set_point (axis => Y, point => board_contour_arc.start_point, value => to_distance (to_string (arg)));
+									set_point (axis => Z, point => board_contour_arc.start_point, value => zero_distance);
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_ANGLE =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => board_contour_arc.angle := to_angle (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_LAYER =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => -- here the layer must be "Edge.Cuts". otherwise error
+									if to_string (arg) /= layer_edge_cuts then
+										invalid_layer;
+									end if;
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_WIDTH =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									-- NOTE: The width of the contour does not matter for the manufacturer.
+									-- But for the sake of completeness we check the line width anyway.
+									-- The line width will be discarded later anyway.
+									validate_general_line_width (to_distance (to_string (arg)));
+									board_contour_arc.width := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+							
+						when others => null;
+					end case;
+
+				-- parent section
+				when SEC_GR_CIRCLE =>
+					case section.name is
+						when SEC_CENTER =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									set_point (axis => X, point => board_contour_circle.center, value => to_distance (to_string (arg)));
+								when 2 => 
+									set_point (axis => Y, point => board_contour_circle.center, value => to_distance (to_string (arg)));
+									set_point (axis => Z, point => board_contour_circle.center, value => zero_distance);
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_END =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									set_point (axis => X, point => board_contour_circle.point, value => to_distance (to_string (arg)));
+								when 2 => 
+									set_point (axis => Y, point => board_contour_circle.point, value => to_distance (to_string (arg)));
+									set_point (axis => Z, point => board_contour_circle.point, value => zero_distance);
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_LAYER =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => -- here the layer must be "Edge.Cuts". otherwise error
+									if to_string (arg) /= layer_edge_cuts then
+										invalid_layer;
+									end if;
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_WIDTH =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									-- NOTE: The width of the contour does not matter for the manufacturer.
+									-- But for the sake of completeness we check the line width anyway.
+									-- The line width will be discarded later anyway.
+									validate_general_line_width (to_distance (to_string (arg)));
+									board_contour_circle.width := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+							
+						when others => null;
+					end case;
+					
+				-- parent section
+				when SEC_GR_LINE =>
+					case section.name is
+						when SEC_START =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									set_point (axis => X, point => board_contour_line.start_point, value => to_distance (to_string (arg)));
+								when 2 => 
+									set_point (axis => Y, point => board_contour_line.start_point, value => to_distance (to_string (arg)));
+									set_point (axis => Z, point => board_contour_line.start_point, value => zero_distance);
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_END =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									set_point (axis => X, point => board_contour_line.end_point, value => to_distance (to_string (arg)));
+								when 2 => 
+									set_point (axis => Y, point => board_contour_line.end_point, value => to_distance (to_string (arg)));
+									set_point (axis => Z, point => board_contour_line.end_point, value => zero_distance);
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_ANGLE =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => null; -- CS no need to read the angle. start and end point are sufficient.
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_LAYER =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => -- here the layer must be "Edge.Cuts". otherwise error
+									if to_string (arg) /= layer_edge_cuts then
+										invalid_layer;
+									end if;
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_WIDTH =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									-- NOTE: The width of the contour does not matter for the manufacturer.
+									-- But for the sake of completeness we check the line width anyway.
+									-- The line width will be discarded later anyway.
+									validate_general_line_width (to_distance (to_string (arg)));
+									board_contour_line.width := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+							
+						when others => null;
+					end case;
+
+
+					
 -- 					case section.parent is
 -- 						when SEC_MODULE =>
 -- 							case section.arg_counter is
@@ -4653,7 +4863,6 @@ package body et_kicad_pcb is
 				end if;
 			end insert_net_class;
 
-
 			procedure insert_net is
 			-- Inserts the net in the "netlist" container.
 				net_inserted	: boolean := false;
@@ -4682,6 +4891,31 @@ package body et_kicad_pcb is
 				end if;
 					
 			end insert_net;
+
+			procedure insert_board_contour_arc is
+			begin
+				null;
+				--board_contour.arcs.append (
+				--		(et_pcb.type_arc (board_contour_arc) with locked => NO));
+				-- CS compute end_point from board_contour_arc.angle
+			end insert_board_contour_arc;
+
+			procedure insert_board_contour_circle is
+			begin
+				null; -- CS
+				--board_contour.arcs.append (
+				--		(et_pcb.type_arc (board_contour_arc) with locked => NO));
+				-- CS compute end_point from board_contour_arc.angle
+			end insert_board_contour_circle;
+
+			procedure insert_board_contour_line is
+			begin
+				null; -- CS
+				--board_contour.arcs.append (
+				--		(et_pcb.type_arc (board_contour_arc) with locked => NO));
+				-- CS compute end_point from board_contour_arc.angle
+			end insert_board_contour_line;
+			
 			
 		begin -- exec_section
 			log (process_section (section.name), log_threshold + 4);
@@ -4714,7 +4948,16 @@ package body et_kicad_pcb is
 
 						when SEC_MODULE =>
 							insert_package; -- in temporarily container "packages"
-						
+
+						when SEC_GR_ARC =>
+							insert_board_contour_arc;
+
+						when SEC_GR_CIRCLE =>
+							insert_board_contour_circle;
+
+						when SEC_GR_LINE =>
+							insert_board_contour_line;
+							
 						when others => null;
 					end case;
 
@@ -5302,6 +5545,9 @@ package body et_kicad_pcb is
 		
 		-- copy container "net_classes" in board
 		board.net_classes := net_classes;
+
+		-- copy container "board_contour" in board
+		board.contour := board_contour;
 		
 		return board;
 	end to_board;
