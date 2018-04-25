@@ -500,7 +500,7 @@ package et_pcb is
 	package type_stencil_circles is new doubly_linked_lists (type_stencil_circle);
 
 	-- This is the base type for solder paste stencil objects in general:
-	type type_stencil is tagged record
+	type type_stencil is record
 		lines 		: type_stencil_lines.list;
 		arcs		: type_stencil_arcs.list;
 		circles		: type_stencil_circles.list;
