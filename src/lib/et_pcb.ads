@@ -455,12 +455,12 @@ package et_pcb is
 
 	package type_stop_circles is new doubly_linked_lists (type_stop_circle);
 
-	-- This is the base type for stop mask objects in general:
-	type type_stop_mask is tagged record
+	-- This is the type for stop mask objects in general:
+	type type_stop_mask is record
 		lines 		: type_stop_lines.list;
 		arcs		: type_stop_arcs.list;
 		circles		: type_stop_circles.list;
-		texts		: type_texts_with_content.list;
+		texts		: type_texts_with_content.list; -- for texts in copper to be exposed
 	end record;
 
 	-- Because stop mask is about two sides of the board this composite is required:

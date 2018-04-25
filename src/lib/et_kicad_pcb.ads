@@ -405,6 +405,9 @@ package et_kicad_pcb is
 		modules		: type_general_modules;
 		nets		: type_net_id_terminal; -- the total number of nets
 	end record;
+
+
+
 	
 	-- NET CLASSES
 	-- KiCad keeps a list of net names which are in a certain net class.
