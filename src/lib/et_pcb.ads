@@ -834,7 +834,7 @@ package et_pcb is
 		description				: type_package_description.bounded_string;
 		copper					: type_copper_package_both_sides;
 		keepout 				: type_keepout_package_both_sides;
-		-- CS stop_mask				: type_stop_mask_both_sides;
+		stop_mask				: type_stop_mask_both_sides;
 		-- CS solder_stencil			: type_stencil_both_sides;
 
 		route_restrict 			: type_route_restrict_package;

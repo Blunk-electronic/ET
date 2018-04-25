@@ -513,7 +513,7 @@ package body et_kicad_pcb is
 		top_copper_objects, bot_copper_objects : type_copper;
 
 		-- STOP MASK OBJECTS
-		top_stop_mask, bot_stop_mask : et_pcb.type_stop_mask; -- CS not assigned yet
+		top_stop_mask, bot_stop_mask : et_pcb.type_stop_mask;
 		-- CS: mind objects explicitely drawn and such auto generated
 
 		-- SOLDER STENCIL OBJECTS
@@ -1173,6 +1173,10 @@ package body et_kicad_pcb is
 										line.layer := TOP_COPPER;
 									elsif to_string (arg) = layer_bot_copper then
 										line.layer := BOT_COPPER;
+									elsif to_string (arg) = layer_top_stop_mask then
+										line.layer := TOP_STOP;
+									elsif to_string (arg) = layer_bot_stop_mask then
+										line.layer := BOT_STOP;
 									else
 										invalid_layer; -- CS copper layers ?
 									end if;
@@ -1196,6 +1200,10 @@ package body et_kicad_pcb is
 										arc.layer := TOP_KEEP;
 									elsif to_string (arg) = layer_bot_keepout then
 										arc.layer := BOT_KEEP;
+									elsif to_string (arg) = layer_top_stop_mask then
+										arc.layer := TOP_STOP;
+									elsif to_string (arg) = layer_bot_stop_mask then
+										arc.layer := BOT_STOP;
 									else
 										invalid_layer; -- CS copper layers ?
 									end if;
@@ -1219,6 +1227,10 @@ package body et_kicad_pcb is
 										circle.layer := TOP_KEEP;
 									elsif to_string (arg) = layer_bot_keepout then
 										circle.layer := BOT_KEEP;
+									elsif to_string (arg) = layer_top_stop_mask then
+										circle.layer := TOP_STOP;
+									elsif to_string (arg) = layer_bot_stop_mask then
+										circle.layer := BOT_STOP;
 									else
 										invalid_layer; -- CS copper layers ?
 									end if;
@@ -1635,6 +1647,14 @@ package body et_kicad_pcb is
 							bot_copper_objects.lines.append ((line.start_point, line.end_point, line.width));
 							line_copper_properties (BOTTOM, bot_copper_objects.lines.last, log_threshold + 1);
 
+						when TOP_STOP => 
+							top_stop_mask.lines.append ((line.start_point, line.end_point, line.width));
+							-- CS line_stop_mask_properties (TOP, top_stop_mask.lines.last, log_threshold + 1);
+
+						when BOT_STOP => 
+							bot_stop_mask.lines.append ((line.start_point, line.end_point, line.width));
+							-- CS line_stop_mask_properties (BOTTOM, bot_stop_mask.lines.last, log_threshold + 1);
+							
 					end case;
 
 				when SEC_FP_ARC =>
@@ -1680,7 +1700,15 @@ package body et_kicad_pcb is
 						when BOT_COPPER => 
 							bot_copper_objects.arcs.append ((et_pcb.type_arc (arc) with arc.width));
 							arc_copper_properties (BOTTOM, bot_copper_objects.arcs.last, log_threshold + 1);
-							
+
+						when TOP_STOP =>
+							top_stop_mask.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+							-- CS arc_stop_mask_properties (TOP, top_stop_mask.arcs.last, log_threshold + 1);
+
+						when BOT_STOP =>
+							bot_stop_mask.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+							-- CS arc_stop_mask_properties (BOTTOM, bot_stop_mask.arcs.last, log_threshold + 1);
+						
 					end case;
 
 				when SEC_FP_CIRCLE =>
@@ -1727,6 +1755,14 @@ package body et_kicad_pcb is
 						when BOT_COPPER => 
 							bot_copper_objects.circles.append ((et_pcb.type_circle (circle) with circle.width));
 							circle_copper_properties (BOTTOM, bot_copper_objects.circles.last, log_threshold + 1);
+
+						when TOP_STOP =>
+							top_stop_mask.circles.append ((et_pcb.type_circle (circle) with circle.width));
+							-- CS circle_stop_mask_properties (TOP, top_stop_mask.circles.last, log_threshold + 1);
+
+						when BOT_STOP =>
+							bot_stop_mask.circles.append ((et_pcb.type_circle (circle) with circle.width));
+							-- CS circle_stop_mask_properties (BOTTOM, bot_stop_mask.circles.last, log_threshold + 1);
 
 					end case;
 					
@@ -2088,6 +2124,7 @@ package body et_kicad_pcb is
 					copper					=> (top => top_copper_objects, bottom => bot_copper_objects),
 					silk_screen				=> (top => top_silk_screen, bottom => bot_silk_screen),
 					keepout					=> (top => top_keepout, bottom => bot_keepout),
+					stop_mask				=> (top => top_stop_mask, bottom => bot_stop_mask),
 					route_restrict 			=> route_restrict,
 					via_restrict 			=> via_restrict,
 					assembly_documentation 	=> (top => top_assy_doc, bottom => bot_assy_doc),
@@ -2105,6 +2142,7 @@ package body et_kicad_pcb is
 					copper					=> (top => top_copper_objects, bottom => bot_copper_objects),
 					silk_screen				=> (top => top_silk_screen, bottom => bot_silk_screen),
 					keepout					=> (top => top_keepout, bottom => bot_keepout),
+					stop_mask				=> (top => top_stop_mask, bottom => bot_stop_mask),
 					route_restrict 			=> route_restrict,
 					via_restrict 			=> via_restrict,
 					assembly_documentation 	=> (top => top_assy_doc, bottom => bot_assy_doc),
@@ -2572,8 +2610,8 @@ package body et_kicad_pcb is
 		package_arc			: type_arc;
 		package_circle 		: type_circle;
 
-		package_top_stop_mask	: et_pcb.type_stop_mask; -- CS not assigned yet
-		package_bot_stop_mask	: et_pcb.type_stop_mask; -- CS not assigned yet
+		package_top_stop_mask	: et_pcb.type_stop_mask;
+		package_bot_stop_mask	: et_pcb.type_stop_mask;
 		-- CS: mind objects explicitely drawn and such auto generated
 		
 		package_top_stencil		: et_pcb.type_stencil;  -- CS not assigned yet
@@ -4328,6 +4366,7 @@ package body et_kicad_pcb is
 								terminals		=> terminals,
 								copper			=> (top => package_top_copper, bottom => package_bot_copper),
 								keepout			=> (top => package_top_keepout, bottom => package_bot_keepout),
+								stop_mask		=> (top => package_top_stop_mask, bottom => package_bot_stop_mask),
 								route_restrict	=> package_route_restrict, -- always empty
 								via_restrict	=> package_via_restrict, -- always empty
 								assembly_documentation	=> (top => package_top_assy_doc, bottom => package_bot_assy_doc),
@@ -4354,6 +4393,7 @@ package body et_kicad_pcb is
 								terminals		=> terminals,
 								copper			=> (top => package_top_copper, bottom => package_bot_copper),
 								keepout			=> (top => package_top_keepout, bottom => package_bot_keepout),
+								stop_mask		=> (top => package_top_stop_mask, bottom => package_bot_stop_mask),
 								route_restrict	=> package_route_restrict, -- always empty
 								via_restrict	=> package_via_restrict, -- always empty
 								assembly_documentation	=> (top => package_top_assy_doc, bottom => package_bot_assy_doc),
@@ -4716,6 +4756,15 @@ package body et_kicad_pcb is
 								when BOT_COPPER => 
 									package_bot_copper.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
 									line_copper_properties (BOTTOM, package_bot_copper.lines.last, log_threshold + 1);
+
+								when TOP_STOP =>
+									package_top_stop_mask.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
+									-- CS line_stop_properties (TOP, package_top_stop_mask.lines.last, log_threshold + 1);
+
+								when BOT_STOP =>
+									package_bot_stop_mask.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
+									-- CS line_stop_properties (BOTTOM, package_bot_stop_mask.lines.last, log_threshold + 1);
+									
 							end case;
 		
 						when SEC_FP_ARC =>
@@ -4761,6 +4810,15 @@ package body et_kicad_pcb is
 								when BOT_COPPER => 
 									package_bot_copper.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
 									arc_copper_properties (BOTTOM, package_bot_copper.arcs.last, log_threshold + 1);
+
+								when TOP_STOP =>
+									package_top_stop_mask.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
+									-- CS arc_stop_mask_properties (TOP, package_top_stop_mask.arcs.last, log_threshold + 1);
+
+								when BOT_STOP =>
+									package_bot_stop_mask.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
+									-- CS arc_stop_mask_properties (BOTTOM, package_bot_stop_mask.arcs.last, log_threshold + 1);
+
 							end case;
 		
 						when SEC_FP_CIRCLE =>
@@ -4807,6 +4865,15 @@ package body et_kicad_pcb is
 								when BOT_COPPER => 
 									package_bot_copper.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
 									circle_copper_properties (BOTTOM, package_bot_copper.circles.last, log_threshold + 1);
+
+								when TOP_STOP =>
+									package_top_stop_mask.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
+									-- CS circle_stop_mask_properties (TOP, package_top_stop_mask.circles.last, log_threshold + 1);
+
+								when BOT_STOP =>
+									package_bot_stop_mask.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
+									-- CS circle_stop_mask_properties (BOTTOM, package_bot_stop_mask.circles.last, log_threshold + 1);
+									
 							end case;
 							
 						when SEC_PAD =>
