@@ -499,7 +499,7 @@ package et_pcb is
 
 	package type_stencil_circles is new doubly_linked_lists (type_stencil_circle);
 
-	-- This is the base type for solder paste stencil objects in general:
+	-- This is the type for solder paste stencil objects in general:
 	type type_stencil is record
 		lines 		: type_stencil_lines.list;
 		arcs		: type_stencil_arcs.list;
@@ -835,7 +835,7 @@ package et_pcb is
 		copper					: type_copper_package_both_sides;
 		keepout 				: type_keepout_package_both_sides;
 		stop_mask				: type_stop_mask_both_sides;
-		-- CS solder_stencil			: type_stencil_both_sides;
+		solder_stencil			: type_stencil_both_sides;
 
 		route_restrict 			: type_route_restrict_package;
 		via_restrict 			: type_via_restrict_package;

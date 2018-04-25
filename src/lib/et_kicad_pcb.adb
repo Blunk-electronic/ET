@@ -517,7 +517,7 @@ package body et_kicad_pcb is
 		-- CS: mind objects explicitely drawn and such auto generated
 
 		-- SOLDER STENCIL OBJECTS
-		top_stencil, bot_stencil : et_pcb.type_stencil;  -- CS not assigned yet
+		top_stencil, bot_stencil : et_pcb.type_stencil;
 		-- CS: mind objects explicitely drawn and such auto generated
 	
 		-- SILK SCREEN OBJECTS (lines, arcs, circles, texts, text placeholders)
@@ -1177,6 +1177,10 @@ package body et_kicad_pcb is
 										line.layer := TOP_STOP;
 									elsif to_string (arg) = layer_bot_stop_mask then
 										line.layer := BOT_STOP;
+									elsif to_string (arg) = layer_top_solder_paste then
+										line.layer := TOP_PASTE;
+									elsif to_string (arg) = layer_bot_solder_paste then
+										line.layer := BOT_PASTE;
 									else
 										invalid_layer; -- CS copper layers ?
 									end if;
@@ -1204,6 +1208,10 @@ package body et_kicad_pcb is
 										arc.layer := TOP_STOP;
 									elsif to_string (arg) = layer_bot_stop_mask then
 										arc.layer := BOT_STOP;
+									elsif to_string (arg) = layer_top_solder_paste then
+										arc.layer := TOP_PASTE;
+									elsif to_string (arg) = layer_bot_solder_paste then
+										arc.layer := BOT_PASTE;
 									else
 										invalid_layer; -- CS copper layers ?
 									end if;
@@ -1231,6 +1239,10 @@ package body et_kicad_pcb is
 										circle.layer := TOP_STOP;
 									elsif to_string (arg) = layer_bot_stop_mask then
 										circle.layer := BOT_STOP;
+									elsif to_string (arg) = layer_top_solder_paste then
+										circle.layer := TOP_PASTE;
+									elsif to_string (arg) = layer_bot_solder_paste then
+										circle.layer := BOT_PASTE;
 									else
 										invalid_layer; -- CS copper layers ?
 									end if;
@@ -1654,7 +1666,15 @@ package body et_kicad_pcb is
 						when BOT_STOP => 
 							bot_stop_mask.lines.append ((line.start_point, line.end_point, line.width));
 							-- CS line_stop_mask_properties (BOTTOM, bot_stop_mask.lines.last, log_threshold + 1);
-							
+
+						when TOP_PASTE => 
+							top_stencil.lines.append ((line.start_point, line.end_point, line.width));
+							-- CS line_stencil_properties (TOP, top_stencil.lines.last, log_threshold + 1);
+
+						when BOT_PASTE => 
+							bot_stencil.lines.append ((line.start_point, line.end_point, line.width));
+							-- CS line_stencil_properties (BOTTOM, bot_stencil.lines.last, log_threshold + 1);
+
 					end case;
 
 				when SEC_FP_ARC =>
@@ -1708,7 +1728,15 @@ package body et_kicad_pcb is
 						when BOT_STOP =>
 							bot_stop_mask.arcs.append ((et_pcb.type_arc (arc) with arc.width));
 							-- CS arc_stop_mask_properties (BOTTOM, bot_stop_mask.arcs.last, log_threshold + 1);
-						
+
+						when TOP_PASTE =>
+							top_stencil.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+							-- CS arc_stencil_properties (TOP, top_stencil.arcs.last, log_threshold + 1);
+
+						when BOT_PASTE =>
+							bot_stencil.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+							-- CS arc_stencil_properties (BOTTOM, bot_stencil.arcs.last, log_threshold + 1);
+							
 					end case;
 
 				when SEC_FP_CIRCLE =>
@@ -1764,6 +1792,14 @@ package body et_kicad_pcb is
 							bot_stop_mask.circles.append ((et_pcb.type_circle (circle) with circle.width));
 							-- CS circle_stop_mask_properties (BOTTOM, bot_stop_mask.circles.last, log_threshold + 1);
 
+						when TOP_PASTE =>
+							top_stencil.circles.append ((et_pcb.type_circle (circle) with circle.width));
+							-- CS circle_stencil_properties (TOP, top_stencil.circles.last, log_threshold + 1);
+
+						when BOT_PASTE =>
+							bot_stencil.circles.append ((et_pcb.type_circle (circle) with circle.width));
+							-- CS circle_stencil_properties (BOTTOM, bot_stencil.circles.last, log_threshold + 1);
+							
 					end case;
 					
 				when SEC_PAD =>
@@ -2125,6 +2161,7 @@ package body et_kicad_pcb is
 					silk_screen				=> (top => top_silk_screen, bottom => bot_silk_screen),
 					keepout					=> (top => top_keepout, bottom => bot_keepout),
 					stop_mask				=> (top => top_stop_mask, bottom => bot_stop_mask),
+					solder_stencil			=> (top => top_stencil, bottom => bot_stencil),
 					route_restrict 			=> route_restrict,
 					via_restrict 			=> via_restrict,
 					assembly_documentation 	=> (top => top_assy_doc, bottom => bot_assy_doc),
@@ -2143,6 +2180,7 @@ package body et_kicad_pcb is
 					silk_screen				=> (top => top_silk_screen, bottom => bot_silk_screen),
 					keepout					=> (top => top_keepout, bottom => bot_keepout),
 					stop_mask				=> (top => top_stop_mask, bottom => bot_stop_mask),
+					solder_stencil			=> (top => top_stencil, bottom => bot_stencil),
 					route_restrict 			=> route_restrict,
 					via_restrict 			=> via_restrict,
 					assembly_documentation 	=> (top => top_assy_doc, bottom => bot_assy_doc),
@@ -2614,8 +2652,8 @@ package body et_kicad_pcb is
 		package_bot_stop_mask	: et_pcb.type_stop_mask;
 		-- CS: mind objects explicitely drawn and such auto generated
 		
-		package_top_stencil		: et_pcb.type_stencil;  -- CS not assigned yet
-		package_bot_stencil		: et_pcb.type_stencil;  -- CS not assigned yet
+		package_top_stencil		: et_pcb.type_stencil;
+		package_bot_stencil		: et_pcb.type_stencil;
 		-- CS: mind objects explicitely drawn and such auto generated
 		
 		package_top_silk_screen	: et_pcb.type_silk_screen; -- without placeholders
@@ -4367,6 +4405,7 @@ package body et_kicad_pcb is
 								copper			=> (top => package_top_copper, bottom => package_bot_copper),
 								keepout			=> (top => package_top_keepout, bottom => package_bot_keepout),
 								stop_mask		=> (top => package_top_stop_mask, bottom => package_bot_stop_mask),
+								solder_stencil	=> (top => package_top_stencil, bottom => package_bot_stencil),
 								route_restrict	=> package_route_restrict, -- always empty
 								via_restrict	=> package_via_restrict, -- always empty
 								assembly_documentation	=> (top => package_top_assy_doc, bottom => package_bot_assy_doc),
@@ -4394,6 +4433,7 @@ package body et_kicad_pcb is
 								copper			=> (top => package_top_copper, bottom => package_bot_copper),
 								keepout			=> (top => package_top_keepout, bottom => package_bot_keepout),
 								stop_mask		=> (top => package_top_stop_mask, bottom => package_bot_stop_mask),
+								solder_stencil	=> (top => package_top_stencil, bottom => package_bot_stencil),
 								route_restrict	=> package_route_restrict, -- always empty
 								via_restrict	=> package_via_restrict, -- always empty
 								assembly_documentation	=> (top => package_top_assy_doc, bottom => package_bot_assy_doc),
@@ -4764,6 +4804,14 @@ package body et_kicad_pcb is
 								when BOT_STOP =>
 									package_bot_stop_mask.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
 									-- CS line_stop_properties (BOTTOM, package_bot_stop_mask.lines.last, log_threshold + 1);
+
+								when TOP_PASTE =>
+									package_top_stencil.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
+									-- CS line_stencil_properties (TOP, package_top_stencil.lines.last, log_threshold + 1);
+
+								when BOT_PASTE =>
+									package_bot_stencil.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
+									-- CS line_stencil_properties (BOTTOM, package_bot_stencil.lines.last, log_threshold + 1);
 									
 							end case;
 		
@@ -4819,6 +4867,14 @@ package body et_kicad_pcb is
 									package_bot_stop_mask.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
 									-- CS arc_stop_mask_properties (BOTTOM, package_bot_stop_mask.arcs.last, log_threshold + 1);
 
+								when TOP_PASTE =>
+									package_top_stencil.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
+									-- CS arc_stencil_properties (TOP, package_top_stencil.arcs.last, log_threshold + 1);
+
+								when BOT_PASTE =>
+									package_bot_stencil.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
+									-- CS arc_stencil_properties (BOTTOM, package_bot_stencil.arcs.last, log_threshold + 1);
+									
 							end case;
 		
 						when SEC_FP_CIRCLE =>
@@ -4873,7 +4929,15 @@ package body et_kicad_pcb is
 								when BOT_STOP =>
 									package_bot_stop_mask.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
 									-- CS circle_stop_mask_properties (BOTTOM, package_bot_stop_mask.circles.last, log_threshold + 1);
-									
+
+								when TOP_PASTE =>
+									package_top_stencil.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
+									-- CS circle_stencil_properties (TOP, package_top_stencil.circles.last, log_threshold + 1);
+
+								when BOT_PASTE =>
+									package_bot_stencil.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
+									-- CS circle_stencil_properties (BOTTOM, package_bot_stencil.circles.last, log_threshold + 1);
+
 							end case;
 							
 						when SEC_PAD =>

@@ -109,6 +109,7 @@ package et_kicad_pcb is
 		TOP_SILK, BOT_SILK,
 		TOP_ASSY, BOT_ASSY, -- in kicad this is the fab layer
 		TOP_STOP, BOT_STOP, -- solder stop mask
+		TOP_PASTE, BOT_PASTE, -- stencil, solder paste, cream
 		TOP_KEEP, BOT_KEEP -- in kicad this is the crtyrd layer
 		);
 
