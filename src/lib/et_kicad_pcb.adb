@@ -1909,6 +1909,60 @@ package body et_kicad_pcb is
 
 			end insert_terminal;
 
+			procedure insert_fp_text is begin
+					
+				-- Since there is no alignment information provided, use default values:
+				text.alignment := (horizontal => CENTER, vertical => BOTTOM);
+
+				case text.meaning is
+					when REFERENCE =>
+						placeholder := (et_pcb.type_text (text) with meaning => REFERENCE);
+						
+						case text.layer is
+							when TOP_SILK =>
+								top_silk_screen.placeholders.append (placeholder);
+								placeholder_silk_screen_properties (TOP, top_silk_screen.placeholders.last, log_threshold + 1);
+							when BOT_SILK =>
+								bot_silk_screen.placeholders.append (placeholder);
+								placeholder_silk_screen_properties (BOTTOM, bot_silk_screen.placeholders.last, log_threshold + 1);
+							when others => -- should never happen
+								invalid_layer_reference; 
+						end case;
+
+					when VALUE =>
+						placeholder := (et_pcb.type_text (text) with meaning => VALUE);
+						
+						case text.layer is
+							when TOP_ASSY =>
+								top_assy_doc.placeholders.append (placeholder);
+								placeholder_assy_doc_properties (TOP, top_assy_doc.placeholders.last, log_threshold + 1);
+							when BOT_ASSY =>
+								bot_assy_doc.placeholders.append (placeholder);
+								placeholder_assy_doc_properties (BOTTOM, bot_assy_doc.placeholders.last, log_threshold + 1);
+							when others => -- should never happen
+								invalid_layer_value;
+						end case;
+						
+					when USER =>
+						case text.layer is
+							when TOP_SILK => 
+								top_silk_screen.texts.append ((et_pcb.type_text (text) with content => text.content));
+								text_silk_screen_properties (TOP, top_silk_screen.texts.last, log_threshold + 1);
+							when BOT_SILK => 
+								bot_silk_screen.texts.append ((et_pcb.type_text (text) with content => text.content));
+								text_silk_screen_properties (BOTTOM, bot_silk_screen.texts.last, log_threshold + 1);
+							when TOP_ASSY => 
+								top_assy_doc.texts.append ((et_pcb.type_text (text) with content => text.content));
+								text_assy_doc_properties (TOP, top_assy_doc.texts.last, log_threshold + 1);
+							when BOT_ASSY => 
+								bot_assy_doc.texts.append ((et_pcb.type_text (text) with content => text.content));
+								text_assy_doc_properties (BOTTOM, bot_assy_doc.texts.last, log_threshold + 1);
+							when others -- should never happen. kicad does not allow texts in signal layers 
+								=> invalid_layer_user;
+						end case;
+				end case;
+			end insert_fp_text;
+
 			
 		begin -- exec_section
 			log (process_section (section.name), log_threshold + 4);
@@ -1927,59 +1981,8 @@ package body et_kicad_pcb is
 					log (to_string (tags), log_threshold + 1);
 
 				when SEC_FP_TEXT =>
-					-- CS move this stuff to a procedure
-					
-					-- Since there is no alignment information provided, use default values:
-					text.alignment := (horizontal => CENTER, vertical => BOTTOM);
-
-					case text.meaning is
-						when REFERENCE =>
-							placeholder := (et_pcb.type_text (text) with meaning => REFERENCE);
-							
-							case text.layer is
-								when TOP_SILK =>
-									top_silk_screen.placeholders.append (placeholder);
-									placeholder_silk_screen_properties (TOP, top_silk_screen.placeholders.last, log_threshold + 1);
-								when BOT_SILK =>
-									bot_silk_screen.placeholders.append (placeholder);
-									placeholder_silk_screen_properties (BOTTOM, bot_silk_screen.placeholders.last, log_threshold + 1);
-								when others => -- should never happen
-									invalid_layer_reference; 
-							end case;
-
-						when VALUE =>
-							placeholder := (et_pcb.type_text (text) with meaning => VALUE);
-							
-							case text.layer is
-								when TOP_ASSY =>
-									top_assy_doc.placeholders.append (placeholder);
-									placeholder_assy_doc_properties (TOP, top_assy_doc.placeholders.last, log_threshold + 1);
-								when BOT_ASSY =>
-									bot_assy_doc.placeholders.append (placeholder);
-									placeholder_assy_doc_properties (BOTTOM, bot_assy_doc.placeholders.last, log_threshold + 1);
-								when others => -- should never happen
-									invalid_layer_value;
-							end case;
-							
-						when USER =>
-							case text.layer is
-								when TOP_SILK => 
-									top_silk_screen.texts.append ((et_pcb.type_text (text) with content => text.content));
-									text_silk_screen_properties (TOP, top_silk_screen.texts.last, log_threshold + 1);
-								when BOT_SILK => 
-									bot_silk_screen.texts.append ((et_pcb.type_text (text) with content => text.content));
-									text_silk_screen_properties (BOTTOM, bot_silk_screen.texts.last, log_threshold + 1);
-								when TOP_ASSY => 
-									top_assy_doc.texts.append ((et_pcb.type_text (text) with content => text.content));
-									text_assy_doc_properties (TOP, top_assy_doc.texts.last, log_threshold + 1);
-								when BOT_ASSY => 
-									bot_assy_doc.texts.append ((et_pcb.type_text (text) with content => text.content));
-									text_assy_doc_properties (BOTTOM, bot_assy_doc.texts.last, log_threshold + 1);
-								when others -- should never happen. kicad does not allow texts in signal layers 
-									=> invalid_layer_user;
-							end case;
-					end case;
-					
+					insert_fp_text;
+	
 				when SEC_FP_LINE =>
 					insert_fp_line;
 
@@ -5320,7 +5323,81 @@ package body et_kicad_pcb is
 				end if;
 					
 			end insert_terminal;
-				
+
+			procedure insert_fp_text is begin
+			
+				-- Since there is no alignment information provided, use default values:
+				package_text.alignment := (horizontal => CENTER, vertical => BOTTOM);
+
+				case package_text.meaning is
+					when REFERENCE =>
+
+						-- Insert the reference text in the list of texts of silk screen.
+						-- In order to get the basic properties of package_text it must be
+						-- converted back to its anchestor (type_text). The content of package_text
+						-- is passed separately (via "with" statement).
+						case package_text.layer is
+							when TOP_SILK =>
+								package_top_silk_screen.texts.append (
+									(et_pcb.type_text (package_text) with content => package_text.content));
+								text_silk_screen_properties (TOP, package_top_silk_screen.texts.last, log_threshold + 1);
+							when BOT_SILK =>
+								package_bot_silk_screen.texts.append (
+									(et_pcb.type_text (package_text) with content => package_text.content));
+								text_silk_screen_properties (BOTTOM, package_bot_silk_screen.texts.last, log_threshold + 1);
+							when others => -- should never happen
+								invalid_layer_reference; 
+						end case;
+
+					when VALUE =>
+
+						-- Insert the value text in the list of texts of silk screen.
+						-- In order to get the basic properties of package_text it must be
+						-- converted back to its anchestor (type_text). The content of package_text
+						-- is passed separately (via "with" statement).
+						case package_text.layer is
+							when TOP_ASSY =>
+								package_top_assy_doc.texts.append (
+									(et_pcb.type_text (package_text) with content => package_text.content));
+								text_assy_doc_properties (TOP, package_top_assy_doc.texts.last, log_threshold + 1);
+							when BOT_ASSY =>
+								package_bot_assy_doc.texts.append (
+									(et_pcb.type_text (package_text) with content => package_text.content));
+								text_assy_doc_properties (BOTTOM, package_bot_assy_doc.texts.last, log_threshold + 1);
+							when others => -- should never happen
+								invalid_layer_value;
+						end case;
+
+					when USER =>
+
+						-- Insert the value text in the list of texts of silk screen.
+						-- In order to get the basic properties of package_text it must be
+						-- converted back to its anchestor (type_text). The content of package_text
+						-- is passed separately (via "with" statement).
+						-- User specific texts may be placed in both silk screen or assembly documentation.
+						case package_text.layer is
+							when TOP_SILK => 
+								package_top_silk_screen.texts.append (
+									(et_pcb.type_text (package_text) with content => package_text.content));
+								text_silk_screen_properties (TOP, package_top_silk_screen.texts.last, log_threshold + 1);
+							when BOT_SILK => 
+								package_bot_silk_screen.texts.append (
+									(et_pcb.type_text (package_text) with content => package_text.content));
+								text_silk_screen_properties (BOTTOM, package_bot_silk_screen.texts.last, log_threshold + 1);
+							when TOP_ASSY => 
+								package_top_assy_doc.texts.append (
+									(et_pcb.type_text (package_text) with content => package_text.content));
+								text_assy_doc_properties (TOP, package_top_assy_doc.texts.last, log_threshold + 1);
+							when BOT_ASSY => 
+								package_bot_assy_doc.texts.append (
+									(et_pcb.type_text (package_text) with content => package_text.content));
+								text_assy_doc_properties (BOTTOM, package_bot_assy_doc.texts.last, log_threshold + 1);
+							when others -- should never happen. kicad does not allow texts in signal layers 
+								=> invalid_layer_user;
+						end case;
+				end case;
+		
+			end insert_fp_text;
 			
 		begin -- exec_section
 			log (process_section (section.name), log_threshold + 4);
@@ -5400,79 +5477,8 @@ package body et_kicad_pcb is
 							log (to_string (package_tags), log_threshold + 1);
 
 						when SEC_FP_TEXT =>
-						-- CS move this stuff to a procedure
+							insert_fp_text;
 		
-							-- Since there is no alignment information provided, use default values:
-							package_text.alignment := (horizontal => CENTER, vertical => BOTTOM);
-		
-							case package_text.meaning is
-								when REFERENCE =>
-
-									-- Insert the reference text in the list of texts of silk screen.
-									-- In order to get the basic properties of package_text it must be
-									-- converted back to its anchestor (type_text). The content of package_text
-									-- is passed separately (via "with" statement).
-									case package_text.layer is
-										when TOP_SILK =>
-											package_top_silk_screen.texts.append (
-												(et_pcb.type_text (package_text) with content => package_text.content));
-											text_silk_screen_properties (TOP, package_top_silk_screen.texts.last, log_threshold + 1);
-										when BOT_SILK =>
-											package_bot_silk_screen.texts.append (
-												(et_pcb.type_text (package_text) with content => package_text.content));
-											text_silk_screen_properties (BOTTOM, package_bot_silk_screen.texts.last, log_threshold + 1);
-										when others => -- should never happen
-											invalid_layer_reference; 
-									end case;
-		
-								when VALUE =>
-
-									-- Insert the value text in the list of texts of silk screen.
-									-- In order to get the basic properties of package_text it must be
-									-- converted back to its anchestor (type_text). The content of package_text
-									-- is passed separately (via "with" statement).
-									case package_text.layer is
-										when TOP_ASSY =>
-											package_top_assy_doc.texts.append (
-												(et_pcb.type_text (package_text) with content => package_text.content));
-											text_assy_doc_properties (TOP, package_top_assy_doc.texts.last, log_threshold + 1);
-										when BOT_ASSY =>
-											package_bot_assy_doc.texts.append (
-												(et_pcb.type_text (package_text) with content => package_text.content));
-											text_assy_doc_properties (BOTTOM, package_bot_assy_doc.texts.last, log_threshold + 1);
-										when others => -- should never happen
-											invalid_layer_value;
-									end case;
-
-								when USER =>
-
-									-- Insert the value text in the list of texts of silk screen.
-									-- In order to get the basic properties of package_text it must be
-									-- converted back to its anchestor (type_text). The content of package_text
-									-- is passed separately (via "with" statement).
-									-- User specific texts may be placed in both silk screen or assembly documentation.
-									case package_text.layer is
-										when TOP_SILK => 
-											package_top_silk_screen.texts.append (
-												(et_pcb.type_text (package_text) with content => package_text.content));
-											text_silk_screen_properties (TOP, package_top_silk_screen.texts.last, log_threshold + 1);
-										when BOT_SILK => 
-											package_bot_silk_screen.texts.append (
-												(et_pcb.type_text (package_text) with content => package_text.content));
-											text_silk_screen_properties (BOTTOM, package_bot_silk_screen.texts.last, log_threshold + 1);
-										when TOP_ASSY => 
-											package_top_assy_doc.texts.append (
-												(et_pcb.type_text (package_text) with content => package_text.content));
-											text_assy_doc_properties (TOP, package_top_assy_doc.texts.last, log_threshold + 1);
-										when BOT_ASSY => 
-											package_bot_assy_doc.texts.append (
-												(et_pcb.type_text (package_text) with content => package_text.content));
-											text_assy_doc_properties (BOTTOM, package_bot_assy_doc.texts.last, log_threshold + 1);
-										when others -- should never happen. kicad does not allow texts in signal layers 
-											=> invalid_layer_user;
-									end case;
-							end case;
-							
 						when SEC_FP_LINE =>
 							insert_fp_line;
 
