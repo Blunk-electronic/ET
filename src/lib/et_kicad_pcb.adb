@@ -4932,6 +4932,8 @@ package body et_kicad_pcb is
 				-- is formed and appended to the list of board contour arcs.
 				board_contour.arcs.append (
 					(et_pcb.type_arc (board_contour_arc) with locked => NO));
+
+				-- CS log
 			end insert_board_contour_arc;
 
 			procedure insert_board_contour_circle is
@@ -4947,6 +4949,8 @@ package body et_kicad_pcb is
 				-- is formed and appended to the list of board contour circles.
 				board_contour.circles.append (
 					(et_pcb.type_circle (board_contour_circle) with locked => NO));
+
+				-- CS log
 			end insert_board_contour_circle;
 
 			procedure insert_board_contour_line is
@@ -4956,7 +4960,9 @@ package body et_kicad_pcb is
 				-- and then extended with the "locked" flag. Thus a type_pcb_contour_line
 				-- is formed and appended to the list of board contour lines.
 				board_contour.lines.append (
-					(et_pcb.type_line (board_contour_line) with locked => NO));
+				   (et_pcb.type_line (board_contour_line) with locked => NO));
+
+				-- CS log
 			end insert_board_contour_line;
 
 			procedure insert_fp_arc is begin
