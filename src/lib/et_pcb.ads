@@ -647,7 +647,7 @@ package et_pcb is
 		bottom	: type_keepout;
 	end record;
 	
-	type type_keepout_pcb_both_sides is record
+	type type_keepout_pcb_both_sides is record -- CS why like type_keepout_package_both_sides ?
 		top 	: type_keepout;
 		bottom	: type_keepout;
 	end record;

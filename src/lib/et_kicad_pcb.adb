@@ -459,13 +459,13 @@ package body et_kicad_pcb is
 		terminal_face 			: et_pcb_coordinates.type_face;
 		terminal_drill_size		: type_drill_size; 
 		terminal_drill_shape	: type_drill_shape; -- for slotted holes
-		terminal_milling_size_x	: type_pad_milling_size;
-		terminal_milling_size_y	: type_pad_milling_size;
-		terminal_drill_offset_x	: type_pad_drill_offset;
+		terminal_milling_size_x	: type_pad_milling_size;  -- CS use a composite instead ?
+		terminal_milling_size_y	: type_pad_milling_size; 
+		terminal_drill_offset_x	: type_pad_drill_offset;  -- CS use a composite instead ?
 		terminal_drill_offset_y	: type_pad_drill_offset;
 	
 		terminal_position	: et_pcb_coordinates.type_terminal_position;
-		terminal_size_x 	: type_pad_size;
+		terminal_size_x 	: type_pad_size;  -- CS use a composite instead ?
 		terminal_size_y 	: type_pad_size;		
 
 -- 		terminal_copper_width_outer_layers : et_pcb_coordinates.type_distance;
@@ -507,24 +507,24 @@ package body et_kicad_pcb is
 
 		-- NON ELECTRIC !!! COPPER OBJECTS (lines, arcs, circles)
 		-- NOTE: Does not include texts as kicad does not allow texts in signal layers.
-		top_copper_objects, bot_copper_objects : type_copper;
+		top_copper_objects, bot_copper_objects : type_copper;  -- CS use a composite instead ?
 
 		-- STOP MASK OBJECTS
-		top_stop_mask, bot_stop_mask : et_pcb.type_stop_mask;
+		top_stop_mask, bot_stop_mask : et_pcb.type_stop_mask;  -- CS use a composite instead ?
 		-- CS: mind objects explicitely drawn and such auto generated
 
 		-- SOLDER STENCIL OBJECTS
-		top_stencil, bot_stencil : et_pcb.type_stencil;
+		top_stencil, bot_stencil : et_pcb.type_stencil;  -- CS use a composite instead ?
 		-- CS: mind objects explicitely drawn and such auto generated
 	
 		-- SILK SCREEN OBJECTS (lines, arcs, circles, texts, text placeholders)
-		top_silk_screen, bot_silk_screen 	: type_silk_screen_package;
+		top_silk_screen, bot_silk_screen 	: type_silk_screen_package;  -- CS use a composite instead ?
 
 		-- ASSEMBLY DOC (FAB) OBJECTS (lines, arcs, circles, texts, text placeholders)
-		top_assy_doc, bot_assy_doc			: type_assembly_documentation_package;
+		top_assy_doc, bot_assy_doc			: type_assembly_documentation_package;  -- CS use a composite instead ?
 
 		-- KEEPOUT OBJECTS (lines, arcs, circles)
-		top_keepout, bot_keepout			: type_keepout;
+		top_keepout, bot_keepout			: type_keepout;  -- CS use a composite instead ?
 
 		-- kicad does not allow pcb contours (edge cuts) in a package model.
 		-- For this reason, variable pcb_contours is never assigned. Its containers
@@ -1646,7 +1646,8 @@ package body et_kicad_pcb is
 					when BOT_PASTE =>
 						bot_stencil.arcs.append ((et_pcb.type_arc (arc) with arc.width));
 						-- CS arc_stencil_properties (BOTTOM, bot_stencil.arcs.last, log_threshold + 1);
-						
+
+					when others => invalid_layer;
 				end case;
 
 			end insert_fp_arc;
@@ -1713,7 +1714,8 @@ package body et_kicad_pcb is
 					when BOT_PASTE =>
 						bot_stencil.circles.append ((et_pcb.type_circle (circle) with circle.width));
 						-- CS circle_stencil_properties (BOTTOM, bot_stencil.circles.last, log_threshold + 1);
-						
+
+					when others => invalid_layer;
 				end case;
 
 			end insert_fp_circle;
@@ -1770,6 +1772,7 @@ package body et_kicad_pcb is
 						bot_stencil.lines.append ((line.start_point, line.end_point, line.width));
 						-- CS line_stencil_properties (BOTTOM, bot_stencil.lines.last, log_threshold + 1);
 
+					when others => invalid_layer;
 				end case;
 
 			end insert_fp_line;
@@ -2715,24 +2718,24 @@ package body et_kicad_pcb is
 		package_arc			: type_arc;
 		package_circle 		: type_circle;
 
-		package_top_stop_mask	: et_pcb.type_stop_mask;
+		package_top_stop_mask	: et_pcb.type_stop_mask; -- CS use type_stop_mask_both_sides instead ?
 		package_bot_stop_mask	: et_pcb.type_stop_mask;
 		-- CS: mind objects explicitely drawn and such auto generated
 		
-		package_top_stencil		: et_pcb.type_stencil;
+		package_top_stencil		: et_pcb.type_stencil;  -- CS use type_stencil_bot_sides instead ?
 		package_bot_stencil		: et_pcb.type_stencil;
 		-- CS: mind objects explicitely drawn and such auto generated
 		
-		package_top_silk_screen	: et_pcb.type_silk_screen; -- without placeholders
+		package_top_silk_screen	: et_pcb.type_silk_screen; -- without placeholders -- CS use et_kicad_pcb.type_silk_screen_package_both_sides instead ?
 		package_bot_silk_screen	: et_pcb.type_silk_screen; -- without placeholders
 
-		package_top_assy_doc	: et_pcb.type_assembly_documentation; -- without placeholders
+		package_top_assy_doc	: et_pcb.type_assembly_documentation; -- without placeholders -- CS use a composite instead ?
 		package_bot_assy_doc	: et_pcb.type_assembly_documentation; -- without placeholders
 
-		package_top_keepout		: et_pcb.type_keepout;
+		package_top_keepout		: et_pcb.type_keepout;  -- CS use a composite instead ?
 		package_bot_keepout		: et_pcb.type_keepout;
 
-		package_top_copper		: et_pcb.type_copper;
+		package_top_copper		: et_pcb.type_copper;  -- CS use a composite instead ?
 		package_bot_copper		: et_pcb.type_copper;
 		
 		-- kicad does not allow pcb contours (edge cuts) in a package model.
@@ -2808,15 +2811,28 @@ package body et_kicad_pcb is
 
 
 
-		-- BOARD OUTLINES (EDGE CUTS)
-		board_contour_line 		: type_line;
+		-- OBJECTS DRAWN DIRECTLY IN THE BOARD (NON-PACKAGE STUFF)
+		board_line 		: type_line;
+		board_arc		: type_arc;
+		board_circle	: type_circle;
 
-		-- NOTE: these variables are types with a line width.
-		-- The line width is assigned but later discarded as board
-		-- contours do not possess a width (millings never have a width)
-		board_contour_arc		: type_arc;
-		board_contour_circle	: type_circle;
-		board_contour 			: type_pcb_contour;
+		-- containers for silk screen objects
+		board_top_silk_screen, board_bot_silk_screen : type_silk_screen_pcb;
+
+		-- containers for asembly documentation objects
+		board_top_assy_doc, board_bot_assy_doc : type_silk_screen_pcb;
+
+		-- containers for solder paste / stencil objects
+		board_top_stencil, board_bot_stencil : et_pcb.type_stencil;
+
+		-- containers for stop mask
+		board_stop_mask : et_pcb.type_stop_mask_both_sides;
+
+		-- containers for keepout
+		board_keepout : et_pcb.type_keepout_pcb_both_sides;
+
+		-- container for board contour
+		board_contour : type_pcb_contour;
 
 
 
@@ -4441,10 +4457,10 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => board_contour_arc.center, value => to_distance (to_string (arg)));
+									set_point (axis => X, point => board_arc.center, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => board_contour_arc.center, value => to_distance (to_string (arg)));
-									set_point (axis => Z, point => board_contour_arc.center, value => zero_distance);
+									set_point (axis => Y, point => board_arc.center, value => to_distance (to_string (arg)));
+									set_point (axis => Z, point => board_arc.center, value => zero_distance);
 								when others => too_many_arguments;
 							end case;
 
@@ -4452,27 +4468,55 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => board_contour_arc.start_point, value => to_distance (to_string (arg)));
+									set_point (axis => X, point => board_arc.start_point, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => board_contour_arc.start_point, value => to_distance (to_string (arg)));
-									set_point (axis => Z, point => board_contour_arc.start_point, value => zero_distance);
+									set_point (axis => Y, point => board_arc.start_point, value => to_distance (to_string (arg)));
+									set_point (axis => Z, point => board_arc.start_point, value => zero_distance);
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_ANGLE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board_contour_arc.angle := to_angle (to_string (arg));
+								when 1 => board_arc.angle := to_angle (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_LAYER =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => -- here the layer must be "Edge.Cuts". otherwise error
-									if to_string (arg) /= layer_edge_cuts then
+								when 1 =>
+									if to_string (arg) = layer_top_silk_screen then
+										board_arc.layer := TOP_SILK;
+									elsif to_string (arg) = layer_bot_silk_screen then
+										board_arc.layer := BOT_SILK;
+
+									elsif to_string (arg) = layer_top_assy_doc then
+										board_arc.layer := TOP_ASSY;
+									elsif to_string (arg) = layer_bot_assy_doc then
+										board_arc.layer := BOT_ASSY;
+									
+									elsif to_string (arg) = layer_top_keepout then
+										board_arc.layer := TOP_KEEP;
+									elsif to_string (arg) = layer_bot_keepout then
+										board_arc.layer := BOT_KEEP;
+									
+									elsif to_string (arg) = layer_top_stop_mask then
+										board_arc.layer := TOP_STOP;
+									elsif to_string (arg) = layer_bot_stop_mask then
+										board_arc.layer := BOT_STOP;
+										
+									elsif to_string (arg) = layer_top_solder_paste then
+										board_arc.layer := TOP_PASTE;
+									elsif to_string (arg) = layer_bot_solder_paste then
+										board_arc.layer := BOT_PASTE;
+
+									elsif to_string (arg) = layer_edge_cuts then
+										board_arc.layer := EDGE_CUTS;
+									else
 										invalid_layer;
 									end if;
+
 								when others => too_many_arguments;
 							end case;
 
@@ -4484,7 +4528,7 @@ package body et_kicad_pcb is
 									-- But for the sake of completeness we check the line width anyway.
 									-- The line width will be discarded later anyway.
 									validate_general_line_width (to_distance (to_string (arg)));
-									board_contour_arc.width := to_distance (to_string (arg));
+									board_arc.width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 							
@@ -4498,10 +4542,10 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => board_contour_circle.center, value => to_distance (to_string (arg)));
+									set_point (axis => X, point => board_circle.center, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => board_contour_circle.center, value => to_distance (to_string (arg)));
-									set_point (axis => Z, point => board_contour_circle.center, value => zero_distance);
+									set_point (axis => Y, point => board_circle.center, value => to_distance (to_string (arg)));
+									set_point (axis => Z, point => board_circle.center, value => zero_distance);
 								when others => too_many_arguments;
 							end case;
 
@@ -4509,18 +4553,45 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => board_contour_circle.point, value => to_distance (to_string (arg)));
+									set_point (axis => X, point => board_circle.point, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => board_contour_circle.point, value => to_distance (to_string (arg)));
-									set_point (axis => Z, point => board_contour_circle.point, value => zero_distance);
+									set_point (axis => Y, point => board_circle.point, value => to_distance (to_string (arg)));
+									set_point (axis => Z, point => board_circle.point, value => zero_distance);
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_LAYER =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => -- here the layer must be "Edge.Cuts". otherwise error
-									if to_string (arg) /= layer_edge_cuts then
+								when 1 =>
+									if to_string (arg) = layer_top_silk_screen then
+										board_circle.layer := TOP_SILK;
+									elsif to_string (arg) = layer_bot_silk_screen then
+										board_circle.layer := BOT_SILK;
+
+									elsif to_string (arg) = layer_top_assy_doc then
+										board_circle.layer := TOP_ASSY;
+									elsif to_string (arg) = layer_bot_assy_doc then
+										board_circle.layer := BOT_ASSY;
+									
+									elsif to_string (arg) = layer_top_keepout then
+										board_circle.layer := TOP_KEEP;
+									elsif to_string (arg) = layer_bot_keepout then
+										board_circle.layer := BOT_KEEP;
+									
+									elsif to_string (arg) = layer_top_stop_mask then
+										board_circle.layer := TOP_STOP;
+									elsif to_string (arg) = layer_bot_stop_mask then
+										board_circle.layer := BOT_STOP;
+										
+									elsif to_string (arg) = layer_top_solder_paste then
+										board_circle.layer := TOP_PASTE;
+									elsif to_string (arg) = layer_bot_solder_paste then
+										board_circle.layer := BOT_PASTE;
+
+									elsif to_string (arg) = layer_edge_cuts then
+										board_circle.layer := EDGE_CUTS;
+									else
 										invalid_layer;
 									end if;
 								when others => too_many_arguments;
@@ -4534,7 +4605,7 @@ package body et_kicad_pcb is
 									-- But for the sake of completeness we check the line width anyway.
 									-- The line width will be discarded later anyway.
 									validate_general_line_width (to_distance (to_string (arg)));
-									board_contour_circle.width := to_distance (to_string (arg));
+									board_circle.width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 							
@@ -4548,10 +4619,10 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => board_contour_line.start_point, value => to_distance (to_string (arg)));
+									set_point (axis => X, point => board_line.start_point, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => board_contour_line.start_point, value => to_distance (to_string (arg)));
-									set_point (axis => Z, point => board_contour_line.start_point, value => zero_distance);
+									set_point (axis => Y, point => board_line.start_point, value => to_distance (to_string (arg)));
+									set_point (axis => Z, point => board_line.start_point, value => zero_distance);
 								when others => too_many_arguments;
 							end case;
 
@@ -4559,10 +4630,10 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => board_contour_line.end_point, value => to_distance (to_string (arg)));
+									set_point (axis => X, point => board_line.end_point, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => board_contour_line.end_point, value => to_distance (to_string (arg)));
-									set_point (axis => Z, point => board_contour_line.end_point, value => zero_distance);
+									set_point (axis => Y, point => board_line.end_point, value => to_distance (to_string (arg)));
+									set_point (axis => Z, point => board_line.end_point, value => zero_distance);
 								when others => too_many_arguments;
 							end case;
 
@@ -4576,8 +4647,35 @@ package body et_kicad_pcb is
 						when SEC_LAYER =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => -- here the layer must be "Edge.Cuts". otherwise error
-									if to_string (arg) /= layer_edge_cuts then
+								when 1 =>
+									if to_string (arg) = layer_top_silk_screen then
+										board_line.layer := TOP_SILK;
+									elsif to_string (arg) = layer_bot_silk_screen then
+										board_line.layer := BOT_SILK;
+
+									elsif to_string (arg) = layer_top_assy_doc then
+										board_line.layer := TOP_ASSY;
+									elsif to_string (arg) = layer_bot_assy_doc then
+										board_line.layer := BOT_ASSY;
+									
+									elsif to_string (arg) = layer_top_keepout then
+										board_line.layer := TOP_KEEP;
+									elsif to_string (arg) = layer_bot_keepout then
+										board_line.layer := BOT_KEEP;
+									
+									elsif to_string (arg) = layer_top_stop_mask then
+										board_line.layer := TOP_STOP;
+									elsif to_string (arg) = layer_bot_stop_mask then
+										board_line.layer := BOT_STOP;
+										
+									elsif to_string (arg) = layer_top_solder_paste then
+										board_line.layer := TOP_PASTE;
+									elsif to_string (arg) = layer_bot_solder_paste then
+										board_line.layer := BOT_PASTE;
+
+									elsif to_string (arg) = layer_edge_cuts then
+										board_line.layer := EDGE_CUTS;
+									else
 										invalid_layer;
 									end if;
 								when others => too_many_arguments;
@@ -4591,7 +4689,7 @@ package body et_kicad_pcb is
 									-- But for the sake of completeness we check the line width anyway.
 									-- The line width will be discarded later anyway.
 									validate_general_line_width (to_distance (to_string (arg)));
-									board_contour_line.width := to_distance (to_string (arg));
+									board_line.width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -4663,6 +4761,12 @@ package body et_kicad_pcb is
 					 & " must be in a silk screen or fabrication layer !", console => true);
 				raise constraint_error;
 			end invalid_layer_user;
+
+			procedure invalid_layer is begin
+				log_indentation_reset;
+				log (message_error & "invalid layer for this object !", console => true);
+				raise constraint_error;
+			end invalid_layer;
 
 			procedure warn_on_missing_net is begin
 			-- Warns operator if a terminal is not connected to a net.
@@ -4919,51 +5023,201 @@ package body et_kicad_pcb is
 					
 			end insert_net;
 
-			procedure insert_board_contour_arc is
-			begin
-				-- Compute the arc end point from its center, start point and angle:
-				board_contour_arc.end_point := et_pcb_math.arc_end_point (
-					board_contour_arc.center, board_contour_arc.start_point, board_contour_arc.angle);
+			procedure insert_board_arc is begin
+				-- Compute the arc end point from its center, start point and angle.
+				-- Later the angle is discarded.
+				board_arc.end_point := et_pcb_math.arc_end_point (
+					board_arc.center, board_arc.start_point, board_arc.angle);
 
-				-- The angle, the line width of the board_contour_arc and
-				-- its layer are now discarded
-				-- as the board_contour_arc is converted back to its anchestor
-				-- and then extended with the "locked" flag. Thus a type_pcb_contour_arc
-				-- is formed and appended to the list of board contour arcs.
-				board_contour.arcs.append (
-					(et_pcb.type_arc (board_contour_arc) with locked => NO));
+				-- The board_arc is converted back to its anchestor and
+				-- depending on the layer extended with specific properties.
+				case board_arc.layer is
+					when TOP_SILK =>
+						board_top_silk_screen.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
+						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
-				-- CS log
-			end insert_board_contour_arc;
+					when BOT_SILK =>
+						board_bot_silk_screen.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
+						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
-			procedure insert_board_contour_circle is
-			begin
-				-- Compute the circle radius from its center and point at circle:
-				board_contour_circle.radius := 
-					et_pcb_math.distance (board_contour_circle.center, board_contour_circle.point);
-			
-				-- The point at the circle, the line width of the board_contour_circle and
-				-- its layer are now discarded
-				-- as the board_contour_circle is converted back to its anchestor
-				-- and then extended with the "locked" flag. Thus a type_pcb_contour_circle
-				-- is formed and appended to the list of board contour circles.
-				board_contour.circles.append (
-					(et_pcb.type_circle (board_contour_circle) with locked => NO));
+						
+					when TOP_ASSY =>
+						board_top_assy_doc.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
+						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
-				-- CS log
-			end insert_board_contour_circle;
+					when BOT_ASSY =>
+						board_bot_assy_doc.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
+						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
-			procedure insert_board_contour_line is
-			begin
-				-- The line width of the board_contour_line and its layer are now discarded
-				-- as the board_contour_line is converted back to its anchestor
-				-- and then extended with the "locked" flag. Thus a type_pcb_contour_line
-				-- is formed and appended to the list of board contour lines.
-				board_contour.lines.append (
-				   (et_pcb.type_line (board_contour_line) with locked => NO));
+						
+					when TOP_PASTE =>
+						board_top_stencil.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
+						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
-				-- CS log
-			end insert_board_contour_line;
+					when BOT_PASTE =>
+						board_bot_stencil.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
+						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+
+						
+					when TOP_STOP =>
+						board_stop_mask.top.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
+						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+
+					when BOT_STOP =>
+						board_stop_mask.bottom.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
+						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+
+
+					when TOP_KEEP =>
+						board_keepout.top.arcs.append ((
+							center 		=> board_arc.center, 
+							start_point	=> board_arc.start_point,
+							end_point	=> board_arc.end_point));  -- line width discarded because this is keepout
+						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+
+					when BOT_KEEP =>
+						board_keepout.bottom.arcs.append ((
+							center 		=> board_arc.center, 
+							start_point	=> board_arc.start_point,
+							end_point	=> board_arc.end_point)); -- line width discarded because this is keepout
+						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						
+					when EDGE_CUTS =>
+						board_contour.arcs.append ((et_pcb.type_arc (board_arc) with locked => NO));
+						-- CS log
+						
+					when others => invalid_layer;
+				end case;
+			end insert_board_arc;
+
+			procedure insert_board_circle is begin
+				-- Compute the circle radius from its center and point at circle.
+				-- Later the angle is discarded.
+				board_circle.radius := et_pcb_math.distance (board_circle.center, board_circle.point);
+
+				-- The board_circle is converted back to its anchestor and
+				-- depending on the layer extended with specific properties.
+				case board_circle.layer is
+					when TOP_SILK =>
+						board_top_silk_screen.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
+						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+
+					when BOT_SILK =>
+						board_bot_silk_screen.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
+						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+
+						
+					when TOP_ASSY =>
+						board_top_assy_doc.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
+						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+
+					when BOT_ASSY =>
+						board_bot_assy_doc.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
+						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+
+						
+					when TOP_PASTE =>
+						board_top_stencil.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
+						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+
+					when BOT_PASTE =>
+						board_bot_stencil.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
+						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						
+
+					when TOP_STOP =>
+						board_stop_mask.top.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
+						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+
+					when BOT_STOP =>
+						board_stop_mask.bottom.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
+						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+
+						
+					when TOP_KEEP =>
+						board_keepout.top.circles.append ((
+							center	=> board_circle.center,
+							radius	=> board_circle.radius));
+						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+
+					when BOT_KEEP =>
+						board_keepout.bottom.circles.append ((
+							center	=> board_circle.center,
+							radius	=> board_circle.radius));
+						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+
+						
+					when EDGE_CUTS =>
+						board_contour.circles.append ((et_pcb.type_circle (board_circle) with locked => NO));
+						-- CS log
+						
+					when others => invalid_layer;
+				end case;
+
+			end insert_board_circle;
+
+			procedure insert_board_line is begin
+				-- The board_line is converted back to its anchestor and
+				-- depending on the layer extended with specific properties.
+				case board_line.layer is
+
+					when TOP_SILK =>
+						board_top_silk_screen.lines.append ((et_pcb.type_line (board_line) with board_line.width));
+						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+
+					when BOT_SILK =>
+						board_bot_silk_screen.lines.append ((et_pcb.type_line (board_line) with board_line.width));
+						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+
+						
+					when TOP_ASSY =>
+						board_top_assy_doc.lines.append ((et_pcb.type_line (board_line) with board_line.width));
+						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+
+					when BOT_ASSY =>
+						board_bot_assy_doc.lines.append ((et_pcb.type_line (board_line) with board_line.width));
+						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+
+
+					when TOP_PASTE =>
+						board_top_stencil.lines.append ((et_pcb.type_line (board_line) with board_line.width));
+						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+
+					when BOT_PASTE =>
+						board_bot_stencil.lines.append ((et_pcb.type_line (board_line) with board_line.width));
+						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+
+						
+					when TOP_STOP =>
+						board_stop_mask.top.lines.append ((et_pcb.type_line (board_line) with board_line.width));
+						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+
+					when BOT_STOP =>
+						board_stop_mask.bottom.lines.append ((et_pcb.type_line (board_line) with board_line.width));
+						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+
+
+					when TOP_KEEP =>
+						board_keepout.top.lines.append ((
+							start_point	=> board_line.start_point,
+							end_point	=> board_line.end_point ));
+						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+
+					when BOT_KEEP =>
+						board_keepout.bottom.lines.append ((
+							start_point	=> board_line.start_point,
+							end_point	=> board_line.end_point ));
+						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+
+						
+					when EDGE_CUTS =>
+						board_contour.lines.append ((et_pcb.type_line (board_line) with locked => NO));
+						-- CS log
+
+					when others => invalid_layer;
+				end case;
+					
+			end insert_board_line;
 
 			procedure insert_fp_arc is begin
 			-- Append the arc to the container corresponding to the layer. Then log the arc properties.
@@ -5030,7 +5284,8 @@ package body et_kicad_pcb is
 					when BOT_PASTE =>
 						package_bot_stencil.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
 						-- CS arc_stencil_properties (BOTTOM, package_bot_stencil.arcs.last, log_threshold + 1);
-						
+
+					when others => invalid_layer;
 				end case;
 
 			end insert_fp_arc;
@@ -5099,6 +5354,7 @@ package body et_kicad_pcb is
 						package_bot_stencil.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
 						-- CS circle_stencil_properties (BOTTOM, package_bot_stencil.circles.last, log_threshold + 1);
 
+					when others => invalid_layer;
 				end case;
 
 			end insert_fp_circle;
@@ -5153,7 +5409,8 @@ package body et_kicad_pcb is
 					when BOT_PASTE =>
 						package_bot_stencil.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
 						-- CS line_stencil_properties (BOTTOM, package_bot_stencil.lines.last, log_threshold + 1);
-						
+
+					when others => invalid_layer;
 				end case;
 
 			end insert_fp_line;
@@ -5438,13 +5695,13 @@ package body et_kicad_pcb is
 							insert_package; -- in temporarily container "packages"
 
 						when SEC_GR_ARC =>
-							insert_board_contour_arc;
+							insert_board_arc;
 
 						when SEC_GR_CIRCLE =>
-							insert_board_contour_circle;
+							insert_board_circle;
 
 						when SEC_GR_LINE =>
-							insert_board_contour_line;
+							insert_board_line;
 							
 						when others => null;
 					end case;

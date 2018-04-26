@@ -107,6 +107,7 @@ package et_kicad_pcb is
 	
 	-- For the package import we need a special set of layers. 
 	type type_layer_abbrevation is (
+		EDGE_CUTS,	-- the board outline or contour
 		TOP_COPPER, BOT_COPPER,
 		TOP_SILK, BOT_SILK,
 		TOP_ASSY, BOT_ASSY, -- in kicad this is the fab layer
