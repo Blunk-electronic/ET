@@ -1771,7 +1771,8 @@ package body et_kicad_pcb is
 					end case;
 
 				when SEC_FP_CIRCLE =>
-					-- Append the circle to the container correspoinding to the layer. Then log the circle properties.
+					-- Append the circle to the container corresponding to the layer. Then log the circle properties.
+					-- CS: fix radius computation and move this stuff to a procedure
 					case circle.layer is
 						when TOP_SILK =>
 							top_silk_screen.circles.append ((et_pcb.type_circle (circle) with circle.width));
@@ -4894,26 +4895,42 @@ package body et_kicad_pcb is
 
 			procedure insert_board_contour_arc is
 			begin
-				null;
-				--board_contour.arcs.append (
-				--		(et_pcb.type_arc (board_contour_arc) with locked => NO));
-				-- CS compute end_point from board_contour_arc.angle
+				-- Compute the arc end point from its center, start point and angle:
+				board_contour_arc.end_point := et_pcb_math.arc_end_point (
+					board_contour_arc.center, board_contour_arc.start_point, board_contour_arc.angle);
+
+				-- The angle, the line width of the board_contour_arc and
+				-- its layer are now discarded
+				-- as the board_contour_arc is converted back to its anchestor
+				-- and then extended with the "locked" flag. Thus a type_pcb_contour_arc
+				-- is formed and appended to the list of board contour arcs.
+				board_contour.arcs.append (
+					(et_pcb.type_arc (board_contour_arc) with locked => NO));
 			end insert_board_contour_arc;
 
 			procedure insert_board_contour_circle is
 			begin
-				null; -- CS
-				--board_contour.arcs.append (
-				--		(et_pcb.type_arc (board_contour_arc) with locked => NO));
-				-- CS compute end_point from board_contour_arc.angle
+				-- Compute the circle radius from its center and point at circle:
+				board_contour_circle.radius := 
+					et_pcb_math.distance (board_contour_circle.center, board_contour_circle.point);
+			
+				-- The point at the circle, the line width of the board_contour_circle and
+				-- its layer are now discarded
+				-- as the board_contour_circle is converted back to its anchestor
+				-- and then extended with the "locked" flag. Thus a type_pcb_contour_circle
+				-- is formed and appended to the list of board contour circles.
+				board_contour.circles.append (
+					(et_pcb.type_circle (board_contour_circle) with locked => NO));
 			end insert_board_contour_circle;
 
 			procedure insert_board_contour_line is
 			begin
-				null; -- CS
-				--board_contour.arcs.append (
-				--		(et_pcb.type_arc (board_contour_arc) with locked => NO));
-				-- CS compute end_point from board_contour_arc.angle
+				-- The line width of the board_contour_line and its layer are now discarded
+				-- as the board_contour_line is converted back to its anchestor
+				-- and then extended with the "locked" flag. Thus a type_pcb_contour_line
+				-- is formed and appended to the list of board contour lines.
+				board_contour.lines.append (
+					(et_pcb.type_line (board_contour_line) with locked => NO));
 			end insert_board_contour_line;
 			
 			
@@ -5183,7 +5200,8 @@ package body et_kicad_pcb is
 							end case;
 		
 						when SEC_FP_CIRCLE =>
-							-- Append the circle to the container correspoinding to the layer. Then log the circle properties.
+							-- Append the circle to the container corresponding to the layer. Then log the circle properties.
+							-- CS: fix radius computation and move this stuff to a procedure
 							case package_circle.layer is
 								when TOP_SILK =>
 									package_top_silk_screen.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
