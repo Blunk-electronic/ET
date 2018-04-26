@@ -492,9 +492,6 @@ package body et_kicad_pcb is
 		-- Here we collect all kinds of terminals after they have been built.
 		terminals : et_pcb.type_terminals.map;
 
-		-- This flag goes true once a terminal is to be inserted that already exists (by its name).
-		terminal_inserted : boolean;
-
 
 
 	-- TEXTS
@@ -1562,7 +1559,6 @@ package body et_kicad_pcb is
 		-- Restores the previous section.
 			use et_pcb_coordinates;
 			use et_libraries;
-			terminal_cursor : et_pcb.type_terminals.cursor;
 
 			procedure invalid_layer is begin
 				log_indentation_reset;
@@ -1778,6 +1774,142 @@ package body et_kicad_pcb is
 
 			end insert_fp_line;
 			
+
+			procedure insert_terminal is 
+			-- Insert a terminal in the list "terminals":
+
+				-- this cursor points to the terminal inserted last
+				terminal_cursor : et_pcb.type_terminals.cursor;
+				-- This flag goes true once a terminal is to be inserted that already exists (by its name).
+				terminal_inserted : boolean;
+			begin -- insert_terminal
+	
+				case terminal_technology is
+					when THT =>
+
+						if terminal_shape_tht = CIRCULAR then
+							terminals.insert (
+								key 		=> terminal_name,
+								position	=> terminal_cursor,
+								inserted	=> terminal_inserted,
+								new_item 	=> (
+												technology 		=> THT,
+												shape 			=> CIRCULAR,
+												tht_hole		=> DRILLED,
+												width_inner_layers => terminal_copper_width_inner_layers,
+												drill_size_cir	=> terminal_drill_size,
+												offset_x		=> terminal_drill_offset_x,
+												offset_y		=> terminal_drill_offset_y,
+												shape_tht		=> terminal_shape_tht,
+												position		=> terminal_position
+												));
+						else -- NON_CIRCULAR
+							case terminal_drill_shape is
+								when CIRCULAR =>
+									terminals.insert (
+										key 		=> terminal_name,
+										position	=> terminal_cursor,
+										inserted	=> terminal_inserted,
+										new_item 	=> (
+														technology 		=> THT,
+														shape			=> NON_CIRCULAR,
+														tht_hole		=> DRILLED,
+														width_inner_layers => terminal_copper_width_inner_layers,
+														drill_size_dri	=> terminal_drill_size,
+														shape_tht		=> terminal_shape_tht,
+														position		=> terminal_position,
+														size_tht_x		=> terminal_size_x,
+														size_tht_y		=> terminal_size_y
+													));
+
+								when SLOTTED =>
+									terminals.insert (
+										key 		=> terminal_name,
+										position	=> terminal_cursor,
+										inserted	=> terminal_inserted,
+										new_item 	=> (
+														technology 		=> THT,
+														shape			=> NON_CIRCULAR,
+														tht_hole		=> MILLED,
+														width_inner_layers => terminal_copper_width_inner_layers,
+
+														-- The plated millings of the hole is a list of lines.
+														-- KiCad does not allow arcs or circles for plated millings.
+														millings		=> (lines => contour_milled_rectangle_of_pad
+																				(center => terminal_position,
+																				size_x => terminal_milling_size_x,
+																				size_y => terminal_milling_size_y,
+																				offset_x => terminal_drill_offset_x,
+																				offset_y => terminal_drill_offset_y),
+																				
+																			arcs => type_pcb_contour_arcs.empty_list,
+																			circles => type_pcb_contour_circles.empty_list),
+														shape_tht		=> terminal_shape_tht,
+														position		=> terminal_position,
+														size_tht_x		=> terminal_size_x,
+														size_tht_y		=> terminal_size_y
+													));
+							end case;
+
+						end if;
+
+						
+					when SMT =>
+
+						-- From the SMT terminal face, validate the status of stop mask and solder paste.
+						set_stop_and_mask;
+						
+						if terminal_shape_smt = CIRCULAR then
+							terminals.insert (
+								key 		=> terminal_name, 
+								position	=> terminal_cursor,
+								inserted	=> terminal_inserted,
+								new_item 	=> (
+												technology 		=> SMT,
+												shape			=> CIRCULAR,
+												tht_hole		=> DRILLED, -- has no meaning here
+												shape_smt		=> terminal_shape_smt,
+												position		=> terminal_position,
+												face 			=> terminal_face,
+												stop_mask		=> terminal_stop_mask,
+												solder_paste	=> terminal_solder_paste
+											));
+						else
+							terminals.insert (
+								key 		=> terminal_name, 
+								position	=> terminal_cursor,
+								inserted	=> terminal_inserted,
+								new_item 	=> (
+												technology 		=> SMT,
+												shape			=> NON_CIRCULAR,
+												tht_hole		=> DRILLED, -- has no meaning here
+												shape_smt		=> terminal_shape_smt,
+												position		=> terminal_position,
+												face 			=> terminal_face,
+												stop_mask		=> terminal_stop_mask,
+												solder_paste	=> terminal_solder_paste,
+												size_smt_x		=> terminal_size_x,
+												size_smt_y		=> terminal_size_y
+											));
+						end if;
+
+						init_stop_and_mask; -- relevant for SMT terminals only (stop mask always open, solder paste never applied)
+				end case;
+
+				if terminal_inserted then
+					et_pcb.terminal_properties (
+						terminal		=> et_pcb.type_terminals.element (terminal_cursor),
+						name			=> et_pcb.type_terminals.key (terminal_cursor),
+						log_threshold	=> log_threshold + 1);
+				else
+					log_indentation_reset;
+					log (message_error & "duplicated terminal " & to_string (terminal_name) & " !", console => true);
+					raise constraint_error;
+				end if;
+
+			end insert_terminal;
+
+			
 		begin -- exec_section
 			log (process_section (section.name), log_threshold + 4);
 
@@ -1858,135 +1990,7 @@ package body et_kicad_pcb is
 					insert_fp_circle;
 					
 				when SEC_PAD =>
-					-- CS move this stuff to a procedure
-					
-					-- Insert a terminal in the list "terminals":
-
-					-- Compose from the terminal position and angel the full terminal position
-					--terminal_position_full := type_terminal_position (to_terminal_position (terminal_position, terminal_angle));
-					
-					case terminal_technology is
-						when THT =>
-
-							if terminal_shape_tht = CIRCULAR then
-								terminals.insert (
-									key 		=> terminal_name,
-									position	=> terminal_cursor,
-									inserted	=> terminal_inserted,
-									new_item 	=> (
-													technology 		=> THT,
-													shape 			=> CIRCULAR,
-													tht_hole		=> DRILLED,
-													width_inner_layers => terminal_copper_width_inner_layers,
-													drill_size_cir	=> terminal_drill_size,
-													offset_x		=> terminal_drill_offset_x,
-													offset_y		=> terminal_drill_offset_y,
-													shape_tht		=> terminal_shape_tht,
-													position		=> terminal_position
-												   ));
-							else -- NON_CIRCULAR
-								case terminal_drill_shape is
-									when CIRCULAR =>
-										terminals.insert (
-											key 		=> terminal_name,
-											position	=> terminal_cursor,
-											inserted	=> terminal_inserted,
-											new_item 	=> (
-															technology 		=> THT,
-															shape			=> NON_CIRCULAR,
-															tht_hole		=> DRILLED,
-															width_inner_layers => terminal_copper_width_inner_layers,
-															drill_size_dri	=> terminal_drill_size,
-															shape_tht		=> terminal_shape_tht,
-															position		=> terminal_position,
-															size_tht_x		=> terminal_size_x,
-															size_tht_y		=> terminal_size_y
-														));
-
-									when SLOTTED =>
-										terminals.insert (
-											key 		=> terminal_name,
-											position	=> terminal_cursor,
-											inserted	=> terminal_inserted,
-											new_item 	=> (
-															technology 		=> THT,
-															shape			=> NON_CIRCULAR,
-															tht_hole		=> MILLED,
-															width_inner_layers => terminal_copper_width_inner_layers,
-
-															-- The plated millings of the hole is a list of lines.
-															-- KiCad does not allow arcs or circles for plated millings.
-															millings		=> (lines => contour_milled_rectangle_of_pad
-																				 (center => terminal_position,
-																				  size_x => terminal_milling_size_x,
-																				  size_y => terminal_milling_size_y,
-																				  offset_x => terminal_drill_offset_x,
-																				  offset_y => terminal_drill_offset_y),
-																				  
-																				arcs => type_pcb_contour_arcs.empty_list,
-																				circles => type_pcb_contour_circles.empty_list),
-															shape_tht		=> terminal_shape_tht,
-															position		=> terminal_position,
-															size_tht_x		=> terminal_size_x,
-															size_tht_y		=> terminal_size_y
-														));
-								end case;
-
-							end if;
-
-							
-						when SMT =>
-
-							-- From the SMT terminal face, validate the status of stop mask and solder paste.
-							set_stop_and_mask;
-							
-							if terminal_shape_smt = CIRCULAR then
-								terminals.insert (
-									key 		=> terminal_name, 
-									position	=> terminal_cursor,
-									inserted	=> terminal_inserted,
-									new_item 	=> (
-													technology 		=> SMT,
-													shape			=> CIRCULAR,
-													tht_hole		=> DRILLED, -- has no meaning here
-													shape_smt		=> terminal_shape_smt,
-													position		=> terminal_position,
-													face 			=> terminal_face,
-													stop_mask		=> terminal_stop_mask,
-													solder_paste	=> terminal_solder_paste
-												));
-							else
-								terminals.insert (
-									key 		=> terminal_name, 
-									position	=> terminal_cursor,
-									inserted	=> terminal_inserted,
-									new_item 	=> (
-													technology 		=> SMT,
-													shape			=> NON_CIRCULAR,
-													tht_hole		=> DRILLED, -- has no meaning here
-													shape_smt		=> terminal_shape_smt,
-													position		=> terminal_position,
-													face 			=> terminal_face,
-													stop_mask		=> terminal_stop_mask,
-													solder_paste	=> terminal_solder_paste,
-													size_smt_x		=> terminal_size_x,
-													size_smt_y		=> terminal_size_y
-												));
-							end if;
-
-							init_stop_and_mask; -- relevant for SMT terminals only (stop mask always open, solder paste never applied)
-					end case;
-
-					if terminal_inserted then
-						et_pcb.terminal_properties (
-							terminal		=> et_pcb.type_terminals.element (terminal_cursor),
-							name			=> et_pcb.type_terminals.key (terminal_cursor),
-							log_threshold	=> log_threshold + 1);
-					else
-						log_indentation_reset;
-						log (message_error & "duplicated terminal " & to_string (terminal_name) & " !", console => true);
-						raise constraint_error;
-					end if;
+					insert_terminal;
 					
 				when others => null;
 			end case;
@@ -4640,12 +4644,6 @@ package body et_kicad_pcb is
 			use et_pcb_coordinates;
 			use et_libraries;
 
-			-- This cursor points to the last inserted terminal:
-			terminal_cursor : et_kicad_pcb.type_terminals.cursor;
-			-- This flag goes true once a terminal is to be inserted that already exists (by its name).
-			terminal_inserted : boolean;
-
-		
 			procedure invalid_layer_reference is begin
 				log_indentation_reset;
 				log (message_error & "reference " & to_string (package_reference) & " must be in a silk screen layer !", console => true);
@@ -5150,6 +5148,178 @@ package body et_kicad_pcb is
 				end case;
 
 			end insert_fp_line;
+
+			procedure insert_terminal is 
+			-- Insert a terminal in the list "terminals":
+			
+				-- This cursor points to the last inserted terminal:
+				terminal_cursor : et_kicad_pcb.type_terminals.cursor;
+				-- This flag goes true once a terminal is to be inserted that already exists (by its name).
+				terminal_inserted : boolean;
+			begin -- insert_terminal
+
+				case terminal_technology is
+					when THT =>
+
+						if terminal_shape_tht = CIRCULAR then
+							terminals.insert (
+								key 		=> terminal_name,
+								position	=> terminal_cursor,
+								inserted	=> terminal_inserted,
+								new_item 	=> (
+												technology 		=> THT,
+												shape 			=> CIRCULAR,
+												tht_hole		=> DRILLED,
+												width_inner_layers => terminal_copper_width_inner_layers,
+												drill_size_cir	=> terminal_drill_size,
+												offset_x		=> terminal_drill_offset_x,
+												offset_y		=> terminal_drill_offset_y,
+												shape_tht		=> terminal_shape_tht,
+												position		=> terminal_position,
+
+												-- the pad is connected with a certain net
+												net_name		=> terminal_net_name
+												));
+						else -- NON_CIRCULAR
+							case terminal_drill_shape is
+								when CIRCULAR =>
+									terminals.insert (
+										key 		=> terminal_name,
+										position	=> terminal_cursor,
+										inserted	=> terminal_inserted,
+										new_item 	=> (
+														technology 		=> THT,
+														shape			=> NON_CIRCULAR,
+														tht_hole		=> DRILLED,
+														width_inner_layers => terminal_copper_width_inner_layers,
+														drill_size_dri	=> terminal_drill_size,
+														shape_tht		=> terminal_shape_tht,
+														position		=> terminal_position,
+														size_tht_x		=> terminal_size_x,
+														size_tht_y		=> terminal_size_y,
+
+														-- the pad is connected with a certain net
+														net_name		=> terminal_net_name
+													));
+
+								when SLOTTED =>
+									terminals.insert (
+										key 		=> terminal_name,
+										position	=> terminal_cursor,
+										inserted	=> terminal_inserted,
+										new_item 	=> (
+														technology 		=> THT,
+														shape			=> NON_CIRCULAR,
+														tht_hole		=> MILLED,
+														width_inner_layers => terminal_copper_width_inner_layers,
+
+														-- The plated millings of the hole is a list of lines.
+														-- KiCad does not allow arcs or circles for plated millings.
+														millings		=> (lines => contour_milled_rectangle_of_pad
+																			(center => terminal_position,
+																			size_x => terminal_milling_size_x,
+																			size_y => terminal_milling_size_y,
+																			offset_x => terminal_drill_offset_x,
+																			offset_y => terminal_drill_offset_y),
+
+																			arcs => type_pcb_contour_arcs.empty_list,
+																			circles => type_pcb_contour_circles.empty_list),
+														shape_tht		=> terminal_shape_tht,
+														position		=> terminal_position,
+														size_tht_x		=> terminal_size_x,
+														size_tht_y		=> terminal_size_y,
+
+														-- the pad is connected with a certain net
+														net_name		=> terminal_net_name
+													));
+							end case;
+
+						end if;
+
+						-- reset drill offset
+						terminal_drill_offset_x := pad_drill_offset_min; -- in case the next terminal drill has no offset
+						terminal_drill_offset_y := pad_drill_offset_min; -- in case the next terminal drill has no offset
+						
+					when SMT =>
+
+						-- From the SMT terminal face, validate the status of stop mask and solder paste.
+						set_stop_and_mask;
+						
+						if terminal_shape_smt = CIRCULAR then
+							terminals.insert (
+								key 		=> terminal_name, 
+								position	=> terminal_cursor,
+								inserted	=> terminal_inserted,
+								new_item 	=> (
+												technology 		=> SMT,
+												shape			=> CIRCULAR,
+												tht_hole		=> DRILLED, -- has no meaning here
+												shape_smt		=> terminal_shape_smt,
+												position		=> terminal_position,
+
+												-- the pad is connected with a certain net
+												net_name		=> terminal_net_name,
+												
+												face 			=> terminal_face,
+												stop_mask		=> terminal_stop_mask,
+												solder_paste	=> terminal_solder_paste
+											));
+						else
+							terminals.insert (
+								key 		=> terminal_name, 
+								position	=> terminal_cursor,
+								inserted	=> terminal_inserted,
+								new_item 	=> (
+												technology 		=> SMT,
+												shape			=> NON_CIRCULAR,
+												tht_hole		=> DRILLED, -- has no meaning here
+												shape_smt		=> terminal_shape_smt,
+												position		=> terminal_position,
+												
+												-- the pad is connected with a certain net
+												net_name		=> terminal_net_name,
+												
+												face 			=> terminal_face,
+												stop_mask		=> terminal_stop_mask,
+												solder_paste	=> terminal_solder_paste,
+												size_smt_x		=> terminal_size_x,
+												size_smt_y		=> terminal_size_y
+											));
+						end if;
+
+						init_stop_and_mask; -- relevant for SMT terminals only (stop mask always open, solder paste never applied)
+				end case;
+
+				-- Log terminal properties and reset net name if terminal could be inserted.
+				-- Otherwise abort due to a duplicated usage:
+				if terminal_inserted then
+					et_pcb.terminal_properties (
+						terminal		=> et_pcb.type_terminal (et_kicad_pcb.type_terminals.element (terminal_cursor)),
+						name			=> et_kicad_pcb.type_terminals.key (terminal_cursor),
+						log_threshold	=> log_threshold + 1);
+
+					-- Whether the terminal is connected with a net or not, can be followed by the lenght of
+					-- the terminal_net_name. If the terminal (pad) has no net name provided (section SEC_PAD)
+					-- the terminal_net_name is empty.
+					log_indentation_up;
+					if et_schematic.type_net_name.length (terminal_net_name) > 0 then
+						log ("connected with net " & et_schematic.to_string (terminal_net_name),
+							log_threshold + 1);
+					else
+						log ("not connected", log_threshold + 1);
+					end if;
+					log_indentation_down;
+
+					-- reset net name 
+					init_terminal_net_name; -- in case the next terminal has no net connected
+
+				else -- terminal could not be inserted
+					log_indentation_reset;
+					log (message_error & "duplicated terminal " & to_string (terminal_name) & " !", console => true);
+					raise constraint_error;
+				end if;
+					
+			end insert_terminal;
 				
 			
 		begin -- exec_section
@@ -5313,170 +5483,8 @@ package body et_kicad_pcb is
 							insert_fp_circle;
 							
 						when SEC_PAD =>
-							-- CS move this stuff to a procedure
-							
-							-- Insert a terminal in the list "terminals":
-							case terminal_technology is
-								when THT =>
-		
-									if terminal_shape_tht = CIRCULAR then
-										terminals.insert (
-											key 		=> terminal_name,
-											position	=> terminal_cursor,
-											inserted	=> terminal_inserted,
-											new_item 	=> (
-															technology 		=> THT,
-															shape 			=> CIRCULAR,
-															tht_hole		=> DRILLED,
-															width_inner_layers => terminal_copper_width_inner_layers,
-															drill_size_cir	=> terminal_drill_size,
-															offset_x		=> terminal_drill_offset_x,
-															offset_y		=> terminal_drill_offset_y,
-															shape_tht		=> terminal_shape_tht,
-															position		=> terminal_position,
-
-															-- the pad is connected with a certain net
-															net_name		=> terminal_net_name
-														   ));
-									else -- NON_CIRCULAR
-										case terminal_drill_shape is
-											when CIRCULAR =>
-												terminals.insert (
-													key 		=> terminal_name,
-													position	=> terminal_cursor,
-													inserted	=> terminal_inserted,
-													new_item 	=> (
-																	technology 		=> THT,
-																	shape			=> NON_CIRCULAR,
-																	tht_hole		=> DRILLED,
-																	width_inner_layers => terminal_copper_width_inner_layers,
-																	drill_size_dri	=> terminal_drill_size,
-																	shape_tht		=> terminal_shape_tht,
-																	position		=> terminal_position,
-																	size_tht_x		=> terminal_size_x,
-																	size_tht_y		=> terminal_size_y,
-
-																	-- the pad is connected with a certain net
-																	net_name		=> terminal_net_name
-																));
-
-											when SLOTTED =>
-												terminals.insert (
-													key 		=> terminal_name,
-													position	=> terminal_cursor,
-													inserted	=> terminal_inserted,
-													new_item 	=> (
-																	technology 		=> THT,
-																	shape			=> NON_CIRCULAR,
-																	tht_hole		=> MILLED,
-																	width_inner_layers => terminal_copper_width_inner_layers,
-
-																	-- The plated millings of the hole is a list of lines.
-																	-- KiCad does not allow arcs or circles for plated millings.
-																	millings		=> (lines => contour_milled_rectangle_of_pad
-																						(center => terminal_position,
-																						size_x => terminal_milling_size_x,
-																						size_y => terminal_milling_size_y,
-																						offset_x => terminal_drill_offset_x,
-																						offset_y => terminal_drill_offset_y),
-
-																						arcs => type_pcb_contour_arcs.empty_list,
-																						circles => type_pcb_contour_circles.empty_list),
-																	shape_tht		=> terminal_shape_tht,
-																	position		=> terminal_position,
-																	size_tht_x		=> terminal_size_x,
-																	size_tht_y		=> terminal_size_y,
-
-																	-- the pad is connected with a certain net
-																	net_name		=> terminal_net_name
-																));
-										end case;
-
-									end if;
-		
-									-- reset drill offset
-									terminal_drill_offset_x := pad_drill_offset_min; -- in case the next terminal drill has no offset
-									terminal_drill_offset_y := pad_drill_offset_min; -- in case the next terminal drill has no offset
-									
-								when SMT =>
-		
-									-- From the SMT terminal face, validate the status of stop mask and solder paste.
-									set_stop_and_mask;
-									
-									if terminal_shape_smt = CIRCULAR then
-										terminals.insert (
-											key 		=> terminal_name, 
-											position	=> terminal_cursor,
-											inserted	=> terminal_inserted,
-											new_item 	=> (
-															technology 		=> SMT,
-															shape			=> CIRCULAR,
-															tht_hole		=> DRILLED, -- has no meaning here
-															shape_smt		=> terminal_shape_smt,
-															position		=> terminal_position,
-
-															-- the pad is connected with a certain net
-															net_name		=> terminal_net_name,
-															
-															face 			=> terminal_face,
-															stop_mask		=> terminal_stop_mask,
-															solder_paste	=> terminal_solder_paste
-														));
-									else
-										terminals.insert (
-											key 		=> terminal_name, 
-											position	=> terminal_cursor,
-											inserted	=> terminal_inserted,
-											new_item 	=> (
-															technology 		=> SMT,
-															shape			=> NON_CIRCULAR,
-															tht_hole		=> DRILLED, -- has no meaning here
-															shape_smt		=> terminal_shape_smt,
-															position		=> terminal_position,
-															
-															-- the pad is connected with a certain net
-															net_name		=> terminal_net_name,
-															
-															face 			=> terminal_face,
-															stop_mask		=> terminal_stop_mask,
-															solder_paste	=> terminal_solder_paste,
-															size_smt_x		=> terminal_size_x,
-															size_smt_y		=> terminal_size_y
-														));
-									end if;
-		
-									init_stop_and_mask; -- relevant for SMT terminals only (stop mask always open, solder paste never applied)
-							end case;
-
-							-- Log terminal properties and reset net name if terminal could be inserted.
-							-- Otherwise abort due to a duplicated usage:
-							if terminal_inserted then
-								et_pcb.terminal_properties (
-									terminal		=> et_pcb.type_terminal (et_kicad_pcb.type_terminals.element (terminal_cursor)),
-									name			=> et_kicad_pcb.type_terminals.key (terminal_cursor),
-									log_threshold	=> log_threshold + 1);
-
-								-- Whether the terminal is connected with a net or not, can be followed by the lenght of
-								-- the terminal_net_name. If the terminal (pad) has no net name provided (section SEC_PAD)
-								-- the terminal_net_name is empty.
-								log_indentation_up;
-								if et_schematic.type_net_name.length (terminal_net_name) > 0 then
-									log ("connected with net " & et_schematic.to_string (terminal_net_name),
-										log_threshold + 1);
-								else
-									log ("not connected", log_threshold + 1);
-								end if;
-								log_indentation_down;
-
-								-- reset net name 
-								init_terminal_net_name; -- in case the next terminal has no net connected
-
-							else -- terminal could not be inserted
-								log_indentation_reset;
-								log (message_error & "duplicated terminal " & to_string (terminal_name) & " !", console => true);
-								raise constraint_error;
-							end if;
-							
+							insert_terminal;
+						
 						when others => null;
 					end case;
 						
