@@ -1586,6 +1586,198 @@ package body et_kicad_pcb is
 				raise constraint_error;
 			end invalid_layer_user;
 
+			procedure insert_fp_arc is begin
+			-- Append the arc to the container corresponding to the layer. Then log the arc properties.
+				
+				-- compute end point of arc from center, start_point and angle
+				arc.end_point := et_pcb_math.arc_end_point (arc.center, arc.start_point, arc.angle);
+
+				-- The angle of the arc and its layer are now discarded
+				-- as the arc is converted back to its anchestor
+				-- and then extended with the line width. Thus a type_silk_arc
+				-- is formed and appended to the list of silk screen circles.
+				case arc.layer is
+					when TOP_SILK =>
+						top_silk_screen.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+						arc_silk_screen_properties (TOP, top_silk_screen.arcs.last, log_threshold + 1);
+						
+					when BOT_SILK =>
+						bot_silk_screen.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+						arc_silk_screen_properties (BOTTOM, bot_silk_screen.arcs.last, log_threshold + 1);
+						
+					when TOP_ASSY =>
+						top_assy_doc.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+						arc_assy_doc_properties (TOP, top_assy_doc.arcs.last, log_threshold + 1);
+						
+					when BOT_ASSY =>
+						bot_assy_doc.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+						arc_assy_doc_properties (BOTTOM, bot_assy_doc.arcs.last, log_threshold + 1);
+						
+					when TOP_KEEP =>
+						top_keepout.arcs.append ((
+							center 		=> arc.center,
+							start_point	=> arc.start_point, 
+							end_point	=> arc.end_point));  -- line with discarded because this is keepout
+						arc_keepout_properties (TOP, top_keepout.arcs.last, log_threshold + 1);
+						
+					when BOT_KEEP =>
+						bot_keepout.arcs.append ((
+							center 		=> arc.center,
+							start_point	=> arc.start_point, 
+							end_point	=> arc.end_point));  -- line with discarded because this is keepout
+						arc_keepout_properties (BOTTOM, bot_keepout.arcs.last, log_threshold + 1);
+
+					when TOP_COPPER => 
+						top_copper_objects.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+						arc_copper_properties (TOP, top_copper_objects.arcs.last, log_threshold + 1);
+
+					when BOT_COPPER => 
+						bot_copper_objects.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+						arc_copper_properties (BOTTOM, bot_copper_objects.arcs.last, log_threshold + 1);
+
+					when TOP_STOP =>
+						top_stop_mask.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+						-- CS arc_stop_mask_properties (TOP, top_stop_mask.arcs.last, log_threshold + 1);
+
+					when BOT_STOP =>
+						bot_stop_mask.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+						-- CS arc_stop_mask_properties (BOTTOM, bot_stop_mask.arcs.last, log_threshold + 1);
+
+					when TOP_PASTE =>
+						top_stencil.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+						-- CS arc_stencil_properties (TOP, top_stencil.arcs.last, log_threshold + 1);
+
+					when BOT_PASTE =>
+						bot_stencil.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+						-- CS arc_stencil_properties (BOTTOM, bot_stencil.arcs.last, log_threshold + 1);
+						
+				end case;
+
+			end insert_fp_arc;
+
+			procedure insert_fp_circle is begin
+			-- Append the circle to the container corresponding to the layer. Then log the circle properties.
+				
+				-- Compute the circle radius from its center and point at circle:
+				circle.radius := et_pcb_math.distance (circle.center, circle.point);
+
+				-- The point at the circle and its layer are now discarded
+				-- as the circle is converted back to its anchestor
+				-- and then extended with the line width. Thus a type_silk_circle
+				-- is formed and appended to the list of silk screen circles.
+				case circle.layer is
+					when TOP_SILK =>
+						top_silk_screen.circles.append ((et_pcb.type_circle (circle) with circle.width));
+						circle_silk_screen_properties (TOP, top_silk_screen.circles.last, log_threshold + 1);
+						
+					when BOT_SILK =>
+						bot_silk_screen.circles.append ((et_pcb.type_circle (circle) with circle.width));
+						circle_silk_screen_properties (BOTTOM, bot_silk_screen.circles.last, log_threshold + 1);
+						
+					when TOP_ASSY =>
+						top_assy_doc.circles.append ((et_pcb.type_circle (circle) with circle.width));
+						circle_assy_doc_properties (TOP, top_assy_doc.circles.last, log_threshold + 1);
+						
+					when BOT_ASSY =>
+						bot_assy_doc.circles.append ((et_pcb.type_circle (circle) with circle.width));
+						circle_assy_doc_properties (BOTTOM, bot_assy_doc.circles.last, log_threshold + 1);
+						
+					when TOP_KEEP =>
+						top_keepout.circles.append ((
+							center 		=> circle.center,
+							radius		=> circle.radius )); -- line with discarded because this is keepout
+						circle_keepout_properties (TOP, top_keepout.circles.last, log_threshold + 1);
+						
+					when BOT_KEEP =>
+						bot_keepout.circles.append ((
+							center 		=> circle.center,
+							radius		=> circle.radius )); -- line with discarded because this is keepout
+						circle_keepout_properties (BOTTOM, bot_keepout.circles.last, log_threshold + 1);
+
+					when TOP_COPPER => 
+						top_copper_objects.circles.append ((et_pcb.type_circle (circle) with circle.width));
+						circle_copper_properties (TOP, top_copper_objects.circles.last, log_threshold + 1);
+
+					when BOT_COPPER => 
+						bot_copper_objects.circles.append ((et_pcb.type_circle (circle) with circle.width));
+						circle_copper_properties (BOTTOM, bot_copper_objects.circles.last, log_threshold + 1);
+
+					when TOP_STOP =>
+						top_stop_mask.circles.append ((et_pcb.type_circle (circle) with circle.width));
+						-- CS circle_stop_mask_properties (TOP, top_stop_mask.circles.last, log_threshold + 1);
+
+					when BOT_STOP =>
+						bot_stop_mask.circles.append ((et_pcb.type_circle (circle) with circle.width));
+						-- CS circle_stop_mask_properties (BOTTOM, bot_stop_mask.circles.last, log_threshold + 1);
+
+					when TOP_PASTE =>
+						top_stencil.circles.append ((et_pcb.type_circle (circle) with circle.width));
+						-- CS circle_stencil_properties (TOP, top_stencil.circles.last, log_threshold + 1);
+
+					when BOT_PASTE =>
+						bot_stencil.circles.append ((et_pcb.type_circle (circle) with circle.width));
+						-- CS circle_stencil_properties (BOTTOM, bot_stencil.circles.last, log_threshold + 1);
+						
+				end case;
+
+			end insert_fp_circle;
+
+			procedure insert_fp_line is begin
+			-- Append the line to the container corresponding to the layer. Then log the line properties.
+				
+				case line.layer is
+					when TOP_SILK =>
+						top_silk_screen.lines.append ((line.start_point, line.end_point, line.width));
+						line_silk_screen_properties (TOP, top_silk_screen.lines.last, log_threshold + 1);
+
+					when BOT_SILK =>
+						bot_silk_screen.lines.append ((line.start_point, line.end_point, line.width));
+						line_silk_screen_properties (BOTTOM, bot_silk_screen.lines.last, log_threshold + 1);
+
+					when TOP_ASSY =>
+						top_assy_doc.lines.append ((line.start_point, line.end_point, line.width));
+						line_assy_doc_properties (TOP, top_assy_doc.lines.last, log_threshold + 1);
+
+					when BOT_ASSY =>
+						bot_assy_doc.lines.append ((line.start_point, line.end_point, line.width));
+						line_assy_doc_properties (BOTTOM, bot_assy_doc.lines.last, log_threshold + 1);
+
+					when TOP_KEEP =>
+						top_keepout.lines.append ((line.start_point, line.end_point));
+						line_keepout_properties (TOP, top_keepout.lines.last, log_threshold + 1);
+
+					when BOT_KEEP =>
+						bot_keepout.lines.append ((line.start_point, line.end_point));
+						line_keepout_properties (BOTTOM, bot_keepout.lines.last, log_threshold + 1);
+
+					when TOP_COPPER => 
+						top_copper_objects.lines.append ((line.start_point, line.end_point, line.width));
+						line_copper_properties (TOP, top_copper_objects.lines.last, log_threshold + 1);
+
+					when BOT_COPPER => 
+						bot_copper_objects.lines.append ((line.start_point, line.end_point, line.width));
+						line_copper_properties (BOTTOM, bot_copper_objects.lines.last, log_threshold + 1);
+
+					when TOP_STOP => 
+						top_stop_mask.lines.append ((line.start_point, line.end_point, line.width));
+						-- CS line_stop_mask_properties (TOP, top_stop_mask.lines.last, log_threshold + 1);
+
+					when BOT_STOP => 
+						bot_stop_mask.lines.append ((line.start_point, line.end_point, line.width));
+						-- CS line_stop_mask_properties (BOTTOM, bot_stop_mask.lines.last, log_threshold + 1);
+
+					when TOP_PASTE => 
+						top_stencil.lines.append ((line.start_point, line.end_point, line.width));
+						-- CS line_stencil_properties (TOP, top_stencil.lines.last, log_threshold + 1);
+
+					when BOT_PASTE => 
+						bot_stencil.lines.append ((line.start_point, line.end_point, line.width));
+						-- CS line_stencil_properties (BOTTOM, bot_stencil.lines.last, log_threshold + 1);
+
+				end case;
+
+			end insert_fp_line;
+			
 		begin -- exec_section
 			log (process_section (section.name), log_threshold + 4);
 
@@ -1603,7 +1795,8 @@ package body et_kicad_pcb is
 					log (to_string (tags), log_threshold + 1);
 
 				when SEC_FP_TEXT =>
-
+					-- CS move this stuff to a procedure
+					
 					-- Since there is no alignment information provided, use default values:
 					text.alignment := (horizontal => CENTER, vertical => BOTTOM);
 
@@ -1656,185 +1849,17 @@ package body et_kicad_pcb is
 					end case;
 					
 				when SEC_FP_LINE =>
-					-- Append the line to the container corresponding to the layer. Then log the line properties.
-					case line.layer is
-						when TOP_SILK =>
-							top_silk_screen.lines.append ((line.start_point, line.end_point, line.width));
-							line_silk_screen_properties (TOP, top_silk_screen.lines.last, log_threshold + 1);
-
-						when BOT_SILK =>
-							bot_silk_screen.lines.append ((line.start_point, line.end_point, line.width));
-							line_silk_screen_properties (BOTTOM, bot_silk_screen.lines.last, log_threshold + 1);
-
-						when TOP_ASSY =>
-							top_assy_doc.lines.append ((line.start_point, line.end_point, line.width));
-							line_assy_doc_properties (TOP, top_assy_doc.lines.last, log_threshold + 1);
-
-						when BOT_ASSY =>
-							bot_assy_doc.lines.append ((line.start_point, line.end_point, line.width));
-							line_assy_doc_properties (BOTTOM, bot_assy_doc.lines.last, log_threshold + 1);
-
-						when TOP_KEEP =>
-							top_keepout.lines.append ((line.start_point, line.end_point));
-							line_keepout_properties (TOP, top_keepout.lines.last, log_threshold + 1);
-
-						when BOT_KEEP =>
-							bot_keepout.lines.append ((line.start_point, line.end_point));
-							line_keepout_properties (BOTTOM, bot_keepout.lines.last, log_threshold + 1);
-
-						when TOP_COPPER => 
-							top_copper_objects.lines.append ((line.start_point, line.end_point, line.width));
-							line_copper_properties (TOP, top_copper_objects.lines.last, log_threshold + 1);
-
-						when BOT_COPPER => 
-							bot_copper_objects.lines.append ((line.start_point, line.end_point, line.width));
-							line_copper_properties (BOTTOM, bot_copper_objects.lines.last, log_threshold + 1);
-
-						when TOP_STOP => 
-							top_stop_mask.lines.append ((line.start_point, line.end_point, line.width));
-							-- CS line_stop_mask_properties (TOP, top_stop_mask.lines.last, log_threshold + 1);
-
-						when BOT_STOP => 
-							bot_stop_mask.lines.append ((line.start_point, line.end_point, line.width));
-							-- CS line_stop_mask_properties (BOTTOM, bot_stop_mask.lines.last, log_threshold + 1);
-
-						when TOP_PASTE => 
-							top_stencil.lines.append ((line.start_point, line.end_point, line.width));
-							-- CS line_stencil_properties (TOP, top_stencil.lines.last, log_threshold + 1);
-
-						when BOT_PASTE => 
-							bot_stencil.lines.append ((line.start_point, line.end_point, line.width));
-							-- CS line_stencil_properties (BOTTOM, bot_stencil.lines.last, log_threshold + 1);
-
-					end case;
+					insert_fp_line;
 
 				when SEC_FP_ARC =>
-					-- compute end point of arc
-					arc.end_point := et_pcb_math.arc_end_point (arc.center, arc.start_point, arc.angle);
-
-					-- Append the arc to the container corresponding to the layer. Then log the arc properties.
-					case arc.layer is
-						when TOP_SILK =>
-							top_silk_screen.arcs.append ((et_pcb.type_arc (arc) with arc.width));
-							arc_silk_screen_properties (TOP, top_silk_screen.arcs.last, log_threshold + 1);
-							
-						when BOT_SILK =>
-							bot_silk_screen.arcs.append ((et_pcb.type_arc (arc) with arc.width));
-							arc_silk_screen_properties (BOTTOM, bot_silk_screen.arcs.last, log_threshold + 1);
-							
-						when TOP_ASSY =>
-							top_assy_doc.arcs.append ((et_pcb.type_arc (arc) with arc.width));
-							arc_assy_doc_properties (TOP, top_assy_doc.arcs.last, log_threshold + 1);
-							
-						when BOT_ASSY =>
-							bot_assy_doc.arcs.append ((et_pcb.type_arc (arc) with arc.width));
-							arc_assy_doc_properties (BOTTOM, bot_assy_doc.arcs.last, log_threshold + 1);
-							
-						when TOP_KEEP =>
-							top_keepout.arcs.append ((
-								center 		=> arc.center,
-								start_point	=> arc.start_point, 
-								end_point	=> arc.end_point));
-							arc_keepout_properties (TOP, top_keepout.arcs.last, log_threshold + 1);
-							
-						when BOT_KEEP =>
-							bot_keepout.arcs.append ((
-								center 		=> arc.center,
-								start_point	=> arc.start_point, 
-								end_point	=> arc.end_point));
-							arc_keepout_properties (BOTTOM, bot_keepout.arcs.last, log_threshold + 1);
-
-						when TOP_COPPER => 
-							top_copper_objects.arcs.append ((et_pcb.type_arc (arc) with arc.width));
-							arc_copper_properties (TOP, top_copper_objects.arcs.last, log_threshold + 1);
-
-						when BOT_COPPER => 
-							bot_copper_objects.arcs.append ((et_pcb.type_arc (arc) with arc.width));
-							arc_copper_properties (BOTTOM, bot_copper_objects.arcs.last, log_threshold + 1);
-
-						when TOP_STOP =>
-							top_stop_mask.arcs.append ((et_pcb.type_arc (arc) with arc.width));
-							-- CS arc_stop_mask_properties (TOP, top_stop_mask.arcs.last, log_threshold + 1);
-
-						when BOT_STOP =>
-							bot_stop_mask.arcs.append ((et_pcb.type_arc (arc) with arc.width));
-							-- CS arc_stop_mask_properties (BOTTOM, bot_stop_mask.arcs.last, log_threshold + 1);
-
-						when TOP_PASTE =>
-							top_stencil.arcs.append ((et_pcb.type_arc (arc) with arc.width));
-							-- CS arc_stencil_properties (TOP, top_stencil.arcs.last, log_threshold + 1);
-
-						when BOT_PASTE =>
-							bot_stencil.arcs.append ((et_pcb.type_arc (arc) with arc.width));
-							-- CS arc_stencil_properties (BOTTOM, bot_stencil.arcs.last, log_threshold + 1);
-							
-					end case;
+					insert_fp_arc;
 
 				when SEC_FP_CIRCLE =>
-					-- Append the circle to the container corresponding to the layer. Then log the circle properties.
-					-- CS: fix radius computation and move this stuff to a procedure
-					case circle.layer is
-						when TOP_SILK =>
-							top_silk_screen.circles.append ((et_pcb.type_circle (circle) with circle.width));
-							circle_silk_screen_properties (TOP, top_silk_screen.circles.last, log_threshold + 1);
-							
-						when BOT_SILK =>
-							bot_silk_screen.circles.append ((et_pcb.type_circle (circle) with circle.width));
-							circle_silk_screen_properties (BOTTOM, bot_silk_screen.circles.last, log_threshold + 1);
-							
-						when TOP_ASSY =>
-							top_assy_doc.circles.append ((et_pcb.type_circle (circle) with circle.width));
-							circle_assy_doc_properties (TOP, top_assy_doc.circles.last, log_threshold + 1);
-							
-						when BOT_ASSY =>
-							bot_assy_doc.circles.append ((et_pcb.type_circle (circle) with circle.width));
-							circle_assy_doc_properties (BOTTOM, bot_assy_doc.circles.last, log_threshold + 1);
-							
-						when TOP_KEEP =>
-							top_keepout.circles.append ((
-								center 		=> circle.center,
-								-- The radius must be calculated from center and point on circle:
-								radius		=> et_pcb_math.distance (circle.center, circle.point)
-								-- NOTE: circle.width ignored
-								));
-							circle_keepout_properties (TOP, top_keepout.circles.last, log_threshold + 1);
-							
-						when BOT_KEEP =>
-							bot_keepout.circles.append ((
-								center 		=> circle.center,
-								-- The radius must be calculated from center and point on circle:
-								radius		=> et_pcb_math.distance (circle.center, circle.point)
-								-- NOTE: circle.width ignored
-								));
-							circle_keepout_properties (BOTTOM, bot_keepout.circles.last, log_threshold + 1);
-
-						when TOP_COPPER => 
-							top_copper_objects.circles.append ((et_pcb.type_circle (circle) with circle.width));
-							circle_copper_properties (TOP, top_copper_objects.circles.last, log_threshold + 1);
-
-						when BOT_COPPER => 
-							bot_copper_objects.circles.append ((et_pcb.type_circle (circle) with circle.width));
-							circle_copper_properties (BOTTOM, bot_copper_objects.circles.last, log_threshold + 1);
-
-						when TOP_STOP =>
-							top_stop_mask.circles.append ((et_pcb.type_circle (circle) with circle.width));
-							-- CS circle_stop_mask_properties (TOP, top_stop_mask.circles.last, log_threshold + 1);
-
-						when BOT_STOP =>
-							bot_stop_mask.circles.append ((et_pcb.type_circle (circle) with circle.width));
-							-- CS circle_stop_mask_properties (BOTTOM, bot_stop_mask.circles.last, log_threshold + 1);
-
-						when TOP_PASTE =>
-							top_stencil.circles.append ((et_pcb.type_circle (circle) with circle.width));
-							-- CS circle_stencil_properties (TOP, top_stencil.circles.last, log_threshold + 1);
-
-						when BOT_PASTE =>
-							bot_stencil.circles.append ((et_pcb.type_circle (circle) with circle.width));
-							-- CS circle_stencil_properties (BOTTOM, bot_stencil.circles.last, log_threshold + 1);
-							
-					end case;
+					insert_fp_circle;
 					
 				when SEC_PAD =>
+					-- CS move this stuff to a procedure
+					
 					-- Insert a terminal in the list "terminals":
 
 					-- Compose from the terminal position and angel the full terminal position
@@ -4940,7 +4965,7 @@ package body et_kicad_pcb is
 				package_arc.end_point := 
 					et_pcb_math.arc_end_point (package_arc.center, package_arc.start_point, package_arc.angle);
 
-				-- The angle of the circle and its layer are now discarded
+				-- The angle of the arc and its layer are now discarded
 				-- as the package_arc is converted back to its anchestor
 				-- and then extended with the line width. Thus a type_silk_arc
 				-- is formed and appended to the list of silk screen circles.
@@ -4965,14 +4990,14 @@ package body et_kicad_pcb is
 						package_top_keepout.arcs.append ((
 							center 		=> package_arc.center,
 							start_point	=> package_arc.start_point, 
-							end_point	=> package_arc.end_point));
+							end_point	=> package_arc.end_point)); -- line with discarded because this is keepout
 						arc_keepout_properties (TOP, package_top_keepout.arcs.last, log_threshold + 1);
 						
 					when BOT_KEEP =>
 						package_bot_keepout.arcs.append ((
 							center 		=> package_arc.center,
 							start_point	=> package_arc.start_point, 
-							end_point	=> package_arc.end_point));
+							end_point	=> package_arc.end_point));  -- line with discarded because this is keepout
 						arc_keepout_properties (BOTTOM, package_bot_keepout.arcs.last, log_threshold + 1);
 
 					when TOP_COPPER => 
@@ -5034,13 +5059,13 @@ package body et_kicad_pcb is
 					when TOP_KEEP =>
 						package_top_keepout.circles.append ((
 							center 		=> package_circle.center,
-							radius		=> package_circle.radius ));
+							radius		=> package_circle.radius ));  -- line with discarded because this is keepout
 						circle_keepout_properties (TOP, package_top_keepout.circles.last, log_threshold + 1);
 						
 					when BOT_KEEP =>
 						package_bot_keepout.circles.append ((
 							center 		=> package_circle.center,
-							radius		=> package_circle.radius ));
+							radius		=> package_circle.radius ));  -- line with discarded because this is keepout
 						circle_keepout_properties (BOTTOM, package_bot_keepout.circles.last, log_threshold + 1);
 
 					when TOP_COPPER => 
@@ -5123,7 +5148,6 @@ package body et_kicad_pcb is
 						-- CS line_stencil_properties (BOTTOM, package_bot_stencil.lines.last, log_threshold + 1);
 						
 				end case;
-
 
 			end insert_fp_line;
 				
