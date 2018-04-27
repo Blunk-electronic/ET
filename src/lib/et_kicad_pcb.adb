@@ -1637,20 +1637,20 @@ package body et_kicad_pcb is
 						
 					when TOP_STOP =>
 						stop_mask.top.arcs.append ((et_pcb.type_arc (arc) with arc.width));
-						-- CS arc_stop_mask_properties (TOP, top_stop_mask.arcs.last, log_threshold + 1);
+						arc_stop_mask_properties (TOP, stop_mask.top.arcs.last, log_threshold + 1);
 
 					when BOT_STOP =>
 						stop_mask.bottom.arcs.append ((et_pcb.type_arc (arc) with arc.width));
-						-- CS arc_stop_mask_properties (BOTTOM, bot_stop_mask.arcs.last, log_threshold + 1);
+						arc_stop_mask_properties (BOTTOM, stop_mask.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_PASTE =>
 						stencil.top.arcs.append ((et_pcb.type_arc (arc) with arc.width));
-						-- CS arc_stencil_properties (TOP, top_stencil.arcs.last, log_threshold + 1);
+						arc_stencil_properties (TOP, stencil.top.arcs.last, log_threshold + 1);
 
 					when BOT_PASTE =>
 						stencil.bottom.arcs.append ((et_pcb.type_arc (arc) with arc.width));
-						-- CS arc_stencil_properties (BOTTOM, bot_stencil.arcs.last, log_threshold + 1);
+						arc_stencil_properties (BOTTOM, stencil.bottom.arcs.last, log_threshold + 1);
 
 					when others => invalid_layer;
 				end case;
@@ -1710,20 +1710,20 @@ package body et_kicad_pcb is
 						
 					when TOP_STOP =>
 						stop_mask.top.circles.append ((et_pcb.type_circle (circle) with circle.width));
-						-- CS circle_stop_mask_properties (TOP, top_stop_mask.circles.last, log_threshold + 1);
+						circle_stop_mask_properties (TOP, stop_mask.top.circles.last, log_threshold + 1);
 
 					when BOT_STOP =>
 						stop_mask.bottom.circles.append ((et_pcb.type_circle (circle) with circle.width));
-						-- CS circle_stop_mask_properties (BOTTOM, bot_stop_mask.circles.last, log_threshold + 1);
+						circle_stop_mask_properties (BOTTOM, stop_mask.bottom.circles.last, log_threshold + 1);
 
 						
 					when TOP_PASTE =>
 						stencil.top.circles.append ((et_pcb.type_circle (circle) with circle.width));
-						-- CS circle_stencil_properties (TOP, top_stencil.circles.last, log_threshold + 1);
+						circle_stencil_properties (TOP, stencil.top.circles.last, log_threshold + 1);
 
 					when BOT_PASTE =>
 						stencil.bottom.circles.append ((et_pcb.type_circle (circle) with circle.width));
-						-- CS circle_stencil_properties (BOTTOM, bot_stencil.circles.last, log_threshold + 1);
+						circle_stencil_properties (BOTTOM, stencil.bottom.circles.last, log_threshold + 1);
 
 					when others => invalid_layer;
 				end case;
@@ -1772,20 +1772,20 @@ package body et_kicad_pcb is
 						
 					when TOP_STOP => 
 						stop_mask.top.lines.append ((line.start_point, line.end_point, line.width));
-						-- CS line_stop_mask_properties (TOP, top_stop_mask.lines.last, log_threshold + 1);
+						line_stop_mask_properties (TOP, stop_mask.top.lines.last, log_threshold + 1);
 
 					when BOT_STOP => 
 						stop_mask.bottom.lines.append ((line.start_point, line.end_point, line.width));
-						-- CS line_stop_mask_properties (BOTTOM, bot_stop_mask.lines.last, log_threshold + 1);
+						line_stop_mask_properties (BOTTOM, stop_mask.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_PASTE => 
 						stencil.top.lines.append ((line.start_point, line.end_point, line.width));
-						-- CS line_stencil_properties (TOP, top_stencil.lines.last, log_threshold + 1);
+						line_stencil_properties (TOP, stencil.top.lines.last, log_threshold + 1);
 
 					when BOT_PASTE => 
 						stencil.bottom.lines.append ((line.start_point, line.end_point, line.width));
-						-- CS line_stencil_properties (BOTTOM, bot_stencil.lines.last, log_threshold + 1);
+						line_stencil_properties (BOTTOM, stencil.bottom.lines.last, log_threshold + 1);
 
 					when others => invalid_layer;
 				end case;
@@ -5255,20 +5255,20 @@ package body et_kicad_pcb is
 						
 					when TOP_STOP =>
 						package_stop_mask.top.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
-						-- CS arc_stop_mask_properties (TOP, package_top_stop_mask.arcs.last, log_threshold + 1);
+						arc_stop_mask_properties (TOP, package_stop_mask.top.arcs.last, log_threshold + 1);
 
 					when BOT_STOP =>
 						package_stop_mask.bottom.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
-						-- CS arc_stop_mask_properties (BOTTOM, package_bot_stop_mask.arcs.last, log_threshold + 1);
+						arc_stop_mask_properties (BOTTOM, package_stop_mask.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_PASTE =>
 						package_stencil.top.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
-						-- CS arc_stencil_properties (TOP, package_top_stencil.arcs.last, log_threshold + 1);
+						arc_stencil_properties (TOP, package_stencil.top.arcs.last, log_threshold + 1);
 
 					when BOT_PASTE =>
 						package_stencil.bottom.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
-						-- CS arc_stencil_properties (BOTTOM, package_bot_stencil.arcs.last, log_threshold + 1);
+						arc_stencil_properties (BOTTOM, package_stencil.bottom.arcs.last, log_threshold + 1);
 
 					when others => invalid_layer;
 				end case;
@@ -5329,20 +5329,20 @@ package body et_kicad_pcb is
 						
 					when TOP_STOP =>
 						package_stop_mask.top.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
-						-- CS circle_stop_mask_properties (TOP, package_top_stop_mask.circles.last, log_threshold + 1);
+						circle_stop_mask_properties (TOP, package_stop_mask.top.circles.last, log_threshold + 1);
 
 					when BOT_STOP =>
 						package_stop_mask.bottom.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
-						-- CS circle_stop_mask_properties (BOTTOM, package_bot_stop_mask.circles.last, log_threshold + 1);
+						circle_stop_mask_properties (BOTTOM, package_stop_mask.bottom.circles.last, log_threshold + 1);
 
 						
 					when TOP_PASTE =>
 						package_stencil.top.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
-						-- CS circle_stencil_properties (TOP, package_top_stencil.circles.last, log_threshold + 1);
+						circle_stencil_properties (TOP, package_stencil.top.circles.last, log_threshold + 1);
 
 					when BOT_PASTE =>
 						package_stencil.bottom.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
-						-- CS circle_stencil_properties (BOTTOM, package_bot_stencil.circles.last, log_threshold + 1);
+						circle_stencil_properties (BOTTOM, package_stencil.bottom.circles.last, log_threshold + 1);
 
 					when others => invalid_layer;
 				end case;
@@ -5390,20 +5390,20 @@ package body et_kicad_pcb is
 						
 					when TOP_STOP =>
 						package_stop_mask.top.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
-						-- CS line_stop_properties (TOP, package_top_stop_mask.lines.last, log_threshold + 1);
+						line_stop_mask_properties (TOP, package_stop_mask.top.lines.last, log_threshold + 1);
 
 					when BOT_STOP =>
 						package_stop_mask.bottom.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
-						-- CS line_stop_properties (BOTTOM, package_bot_stop_mask.lines.last, log_threshold + 1);
+						line_stop_mask_properties (BOTTOM, package_stop_mask.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_PASTE =>
 						package_stencil.top.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
-						-- CS line_stencil_properties (TOP, package_top_stencil.lines.last, log_threshold + 1);
+						line_stencil_properties (TOP, package_stencil.top.lines.last, log_threshold + 1);
 
 					when BOT_PASTE =>
 						package_stencil.bottom.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
-						-- CS line_stencil_properties (BOTTOM, package_bot_stencil.lines.last, log_threshold + 1);
+						line_stencil_properties (BOTTOM, package_stencil.bottom.lines.last, log_threshold + 1);
 
 					when others => invalid_layer;
 				end case;

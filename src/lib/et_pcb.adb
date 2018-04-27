@@ -385,7 +385,6 @@ package body et_pcb is
 	end circle_copper_properties;
 
 
-	
 
 -- PROPERTIES OF OBJECTS IN SILK SCREEN
 	procedure line_silk_screen_properties (
@@ -517,6 +516,89 @@ package body et_pcb is
 			 & to_string (type_circle (circle)), log_threshold);
 	end circle_keepout_properties;
 
+
+-- PROPERTIES OF OBJECTS IN STOP MASK
+	procedure arc_stop_mask_properties (
+	-- Logs the properties of the given arc of stop mask
+		face			: in type_face;
+		cursor			: in type_stop_arcs.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_stop_arcs;
+		arc : type_stop_arc;
+	begin
+		arc := element (cursor);
+		log ("stop mask arc face" & to_string (face) & latin_1.space 
+			 & to_string (type_arc (arc)), log_threshold);
+	end arc_stop_mask_properties;
+
+	procedure circle_stop_mask_properties (
+	-- Logs the properties of the given circle of stop mask
+		face			: in type_face;
+		cursor			: in type_stop_circles.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_stop_circles;
+		circle : type_stop_circle;
+	begin
+		circle := element (cursor);
+		log ("stop mask circle face" & to_string (face) & latin_1.space 
+			 & to_string (type_circle (circle)), log_threshold);
+	end circle_stop_mask_properties;
+
+	procedure line_stop_mask_properties (
+	-- Logs the properties of the given line of stop mask
+		face			: in type_face;
+		cursor			: in type_stop_lines.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_stop_lines;
+		line : type_stop_line;
+	begin
+		line := element (cursor);
+		log ("stop mask line face" & to_string (face) & latin_1.space
+			 & to_string (type_line (line)), log_threshold);
+	end line_stop_mask_properties;
+
+
+
+-- PROPERTIES OF OBJECTS IN SOLDER PASTE / STENCIL
+	procedure arc_stencil_properties (
+	-- Logs the properties of the given arc of stencil
+		face			: in type_face;
+		cursor			: in type_stencil_arcs.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_stencil_arcs;
+		arc : type_stencil_arc;
+	begin
+		arc := element (cursor);
+		log ("solder paste (stencil) arc face" & to_string (face) & latin_1.space 
+			 & to_string (type_arc (arc)), log_threshold);
+	end arc_stencil_properties;
+
+	procedure circle_stencil_properties (
+	-- Logs the properties of the given circle of stencil
+		face			: in type_face;
+		cursor			: in type_stencil_circles.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_stencil_circles;
+		circle : type_stencil_circle;
+	begin
+		circle := element (cursor);
+		log ("solder paste (stencil) circle face" & to_string (face) & latin_1.space 
+			 & to_string (type_circle (circle)), log_threshold);
+	end circle_stencil_properties;
+
+	procedure line_stencil_properties (
+	-- Logs the properties of the given line of stencil
+		face			: in type_face;
+		cursor			: in type_stencil_lines.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_stencil_lines;
+		line : type_stencil_line;
+	begin
+		line := element (cursor);
+		log ("solder paste (stencil) line face" & to_string (face) & latin_1.space
+			 & to_string (type_line (line)), log_threshold);
+	end line_stencil_properties;
+	
 	
 	
 -- PROPERTIES OF OBJECTS IN ROUTE RESTRIC

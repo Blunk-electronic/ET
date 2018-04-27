@@ -973,6 +973,49 @@ package et_pcb is
 		log_threshold 	: in et_string_processing.type_log_level);
 
 
+
+-- PROPERTIES OF OBJECTS IN STOP MASK
+	procedure arc_stop_mask_properties (
+	-- Logs the properties of the given arc of stop mask
+		face			: in type_face;
+		cursor			: in type_stop_arcs.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+
+	procedure circle_stop_mask_properties (
+	-- Logs the properties of the given circle of stop mask
+		face			: in type_face;
+		cursor			: in type_stop_circles.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+
+	procedure line_stop_mask_properties (
+	-- Logs the properties of the given line of stop mask
+		face			: in type_face;
+		cursor			: in type_stop_lines.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+
+	
+
+-- PROPERTIES OF OBJECTS IN SOLDER PASTE / STENCIL
+	procedure arc_stencil_properties (
+	-- Logs the properties of the given arc of stencil
+		face			: in type_face;
+		cursor			: in type_stencil_arcs.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+
+	procedure circle_stencil_properties (
+	-- Logs the properties of the given circle of stencil
+		face			: in type_face;
+		cursor			: in type_stencil_circles.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+
+	procedure line_stencil_properties (
+	-- Logs the properties of the given line of stencil
+		face			: in type_face;
+		cursor			: in type_stencil_lines.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+	
+
+	
 	
 -- PROPERTIES OF OBJECTS IN ROUTE RESTRICT	
 	procedure line_route_restrict_properties (
