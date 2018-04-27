@@ -2668,20 +2668,10 @@ package body et_kicad_pcb is
 		-- like (0 F.Cu signal) or (31 B.Cu signal) we have those variables.
 		layer_id 	: type_layer_id; 
 		layer		: type_layer;
-		layers		: type_layers.map;
 
-
-		-- GENERAL BOARD INFO
-		general_info : type_general_board_info;
-		
-		-- SETUP
-		board_setup	: type_board_setup; -- design rule stuff goes here
-		plot_setup	: type_plot_setup; -- plot stuff ("CAM processor") goes here
-		
 		-- NETLIST (things like (net 4 /LED_ANODE) )
 		-- NOTE: this has nothing to do with any kicad netlist file !
 		netlist_net 		: type_netlist_net;
-		netlist				: type_netlist.set;
 		
 		-- NET CLASSES
 		net_class_via_diameter			: et_pcb_coordinates.type_distance;
@@ -2690,7 +2680,6 @@ package body et_kicad_pcb is
 		
 		net_class_name 	: type_net_class_name.bounded_string;	-- PWR, HIGH_CURRENT, ...
 		net_class 		: type_net_class;
-		net_classes 	: type_net_classes.map;
 
 
 		-- PACKAGES
@@ -2806,8 +2795,6 @@ package body et_kicad_pcb is
 		-- NOTE: This is the type_terminals as specified in et_kicad_pcb ! (includes net names)
 		terminals : type_terminals.map;
 
-		-- Temporarily, all packages of components go here. 
-		packages : type_packages_board.map;
 
 
 
@@ -2815,27 +2802,6 @@ package body et_kicad_pcb is
 		board_line 		: type_line;
 		board_arc		: type_arc;
 		board_circle	: type_circle;
-
-		-- containers for silk screen objects
-		board_top_silk_screen, board_bot_silk_screen : type_silk_screen_pcb;
-
-		-- containers for asembly documentation objects
-		board_top_assy_doc, board_bot_assy_doc : type_silk_screen_pcb;
-
-		-- containers for solder paste / stencil objects
-		board_top_stencil, board_bot_stencil : et_pcb.type_stencil;
-
-		-- containers for stop mask
-		board_stop_mask : et_pcb.type_stop_mask_both_sides;
-
-		-- containers for keepout
-		board_keepout : et_pcb.type_keepout_pcb_both_sides;
-
-		-- container for board contour
-		board_contour : type_pcb_contour;
-
-
-
 
 		procedure init_stop_and_mask is begin
 		-- Resets the temporarily status flags of solder paste and stop mask of an SMT terminal.
@@ -4018,186 +3984,186 @@ package body et_kicad_pcb is
 						when SEC_LAST_TRACE_WIDTH =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board_setup.last_trace_width := to_distance (to_string (arg));
+								when 1 => board.setup.last_trace_width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_TRACE_CLEARANCE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board_setup.trace_clearance := to_distance (to_string (arg));
+								when 1 => board.setup.trace_clearance := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_ZONE_CLEARANCE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board_setup.zone_clearance := to_distance (to_string (arg));
+								when 1 => board.setup.zone_clearance := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_ZONE_45_ONLY =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board_setup.zone_45_only := type_zone_45_only'value (to_string (arg));
+								when 1 => board.setup.zone_45_only := type_zone_45_only'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_TRACE_MIN =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board_setup.trace_min := to_distance (to_string (arg));
+								when 1 => board.setup.trace_min := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_SEGMENT_WIDTH =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board_setup.segment_width := to_distance (to_string (arg));
+								when 1 => board.setup.segment_width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_EDGE_WIDTH =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board_setup.edge_width := to_distance (to_string (arg));
+								when 1 => board.setup.edge_width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_VIA_SIZE => -- regular vias
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board_setup.via_size := to_distance (to_string (arg));
+								when 1 => board.setup.via_size := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_VIA_DRILL => -- regular vias
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board_setup.via_drill := to_distance (to_string (arg));
+								when 1 => board.setup.via_drill := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_VIA_MIN_SIZE => -- regular vias
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board_setup.via_min_size := to_distance (to_string (arg));
+								when 1 => board.setup.via_min_size := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_VIA_MIN_DRILL => -- regular vias
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board_setup.via_min_drill := to_distance (to_string (arg));
+								when 1 => board.setup.via_min_drill := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_UVIA_SIZE => -- micro vias
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board_setup.micro_via_size := to_distance (to_string (arg));
+								when 1 => board.setup.micro_via_size := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_UVIA_DRILL => -- micro vias
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board_setup.micro_via_drill := to_distance (to_string (arg));
+								when 1 => board.setup.micro_via_drill := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_UVIAS_ALLOWED => -- micro vias
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board_setup.micro_vias_allowed := to_micro_vias_allowed (to_string (arg));
+								when 1 => board.setup.micro_vias_allowed := to_micro_vias_allowed (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_UVIA_MIN_SIZE => -- micro vias
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board_setup.micro_via_min_size := to_distance (to_string (arg));
+								when 1 => board.setup.micro_via_min_size := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_UVIA_MIN_DRILL => -- micro vias
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board_setup.micro_via_min_drill := to_distance (to_string (arg));
+								when 1 => board.setup.micro_via_min_drill := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_PCB_TEXT_WIDTH =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board_setup.pcb_text_width := to_distance (to_string (arg));
+								when 1 => board.setup.pcb_text_width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_PCB_TEXT_SIZE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board_setup.pcb_text_size_x := to_distance (to_string (arg));
-								when 2 => board_setup.pcb_text_size_y := to_distance (to_string (arg));
+								when 1 => board.setup.pcb_text_size_x := to_distance (to_string (arg));
+								when 2 => board.setup.pcb_text_size_y := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_MOD_EDGE_WIDTH =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board_setup.module_edge_width := to_distance (to_string (arg));
+								when 1 => board.setup.module_edge_width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 							
 						when SEC_MOD_TEXT_SIZE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board_setup.module_text_size_x := to_distance (to_string (arg));
-								when 2 => board_setup.module_text_size_y := to_distance (to_string (arg));
+								when 1 => board.setup.module_text_size_x := to_distance (to_string (arg));
+								when 2 => board.setup.module_text_size_y := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_MOD_TEXT_WIDTH => -- line width
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board_setup.module_text_width := to_distance (to_string (arg));
+								when 1 => board.setup.module_text_width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_PAD_SIZE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board_setup.pad_size_x := to_distance (to_string (arg));
-								when 2 => board_setup.pad_size_y := to_distance (to_string (arg));
+								when 1 => board.setup.pad_size_x := to_distance (to_string (arg));
+								when 2 => board.setup.pad_size_y := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_PAD_DRILL =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board_setup.pad_drill := to_distance (to_string (arg));
+								when 1 => board.setup.pad_drill := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_PAD_TO_MASK_CLEARANCE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board_setup.stop_mask_expansion := to_distance (to_string (arg));
+								when 1 => board.setup.stop_mask_expansion := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_AUX_AXIS_ORIGIN =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board_setup.aux_axis_origin_x := to_distance (to_string (arg));
-								when 2 => board_setup.aux_axis_origin_y := to_distance (to_string (arg));
+								when 1 => board.setup.aux_axis_origin_x := to_distance (to_string (arg));
+								when 2 => board.setup.aux_axis_origin_y := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_VISIBLE_ELEMENTS =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board_setup.visible_elements := type_visible_elements (to_string (arg));
+								when 1 => board.setup.visible_elements := type_visible_elements (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -4210,168 +4176,168 @@ package body et_kicad_pcb is
 						when SEC_LAYERSELECTION =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_setup.layer_selection := type_plot_layer_selection_string.to_bounded_string (to_string (arg));
+								when 1 => board.plot.layer_selection := type_plot_layer_selection_string.to_bounded_string (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_USEGERBEREXTENSIONS =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_setup.user_gerber_extensions := type_plot_user_gerber_extensions'value (to_string (arg));
+								when 1 => board.plot.user_gerber_extensions := type_plot_user_gerber_extensions'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 							
 						when SEC_EXCLUDEEDGELAYER =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_setup.exclude_edge_layer := type_plot_exclude_edge_layer'value (to_string (arg));
+								when 1 => board.plot.exclude_edge_layer := type_plot_exclude_edge_layer'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_LINEWIDTH =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_setup.line_width := to_distance (to_string (arg));
+								when 1 => board.plot.line_width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_PLOTFRAMEREF =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_setup.frame_ref := type_plot_frame_ref'value (to_string (arg));
+								when 1 => board.plot.frame_ref := type_plot_frame_ref'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 							
 						when SEC_VIASONMASK =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_setup.vias_on_mask := type_plot_vias_on_mask'value (to_string (arg));
+								when 1 => board.plot.vias_on_mask := type_plot_vias_on_mask'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_MODE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_setup.fill_mode := type_plot_fill_mode'value (to_string (arg));
+								when 1 => board.plot.fill_mode := type_plot_fill_mode'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_USEAUXORIGIN =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_setup.use_aux_origin := type_plot_use_aux_origin'value (to_string (arg));
+								when 1 => board.plot.use_aux_origin := type_plot_use_aux_origin'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 							
 						when SEC_HPGLPENNUMBER =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_setup.hpgl_pen_number := type_plot_hpgl_pen_number'value (to_string (arg));
+								when 1 => board.plot.hpgl_pen_number := type_plot_hpgl_pen_number'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_HPGLPENSPEED =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_setup.hpgl_pen_speed := type_plot_hpgl_pen_speed'value (to_string (arg));
+								when 1 => board.plot.hpgl_pen_speed := type_plot_hpgl_pen_speed'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_HPGLPENDIAMETER =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_setup.hpgl_pen_diameter := mil_to_distance (to_string (arg));
+								when 1 => board.plot.hpgl_pen_diameter := mil_to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_HPGLPENOVERLAY =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_setup.hpgl_pen_overlay := mil_to_distance (to_string (arg));
+								when 1 => board.plot.hpgl_pen_overlay := mil_to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_PSNEGATIVE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_setup.ps_negative := type_plot_ps_negative'value (to_string (arg));
+								when 1 => board.plot.ps_negative := type_plot_ps_negative'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 							
 						when SEC_PSA4OUTPUT =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_setup.psa_4_output := type_plot_psa_4_output'value (to_string (arg));
+								when 1 => board.plot.psa_4_output := type_plot_psa_4_output'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_PLOTREFERENCE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_setup.reference := type_plot_reference'value (to_string (arg));
+								when 1 => board.plot.reference := type_plot_reference'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_PLOTVALUE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_setup.value := type_plot_value'value (to_string (arg));
+								when 1 => board.plot.value := type_plot_value'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 							
 						when SEC_PLOTINVISIBLETEXT =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_setup.invisble_text := type_plot_invisible_text'value (to_string (arg));
+								when 1 => board.plot.invisble_text := type_plot_invisible_text'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_PADSONSILK =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_setup.pads_on_silk := type_pads_on_silk'value (to_string (arg));
+								when 1 => board.plot.pads_on_silk := type_pads_on_silk'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_SUBTRACTMASKFROMSILK =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_setup.subtract_mask_from_silk := type_plot_subtract_mask_from_silk'value (to_string (arg));
+								when 1 => board.plot.subtract_mask_from_silk := type_plot_subtract_mask_from_silk'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_OUTPUTFORMAT =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_setup.output_format := type_plot_output_format'value (to_string (arg));
+								when 1 => board.plot.output_format := type_plot_output_format'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_MIRROR =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_setup.mirror := type_plot_mirror'value (to_string (arg));
+								when 1 => board.plot.mirror := type_plot_mirror'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_DRILLSHAPE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_setup.drill_shape := type_plot_drill_shape'value (to_string (arg));
+								when 1 => board.plot.drill_shape := type_plot_drill_shape'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_SCALESELECTION =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_setup.scale_selection := type_plot_scale_selection'value (to_string (arg));
+								when 1 => board.plot.scale_selection := type_plot_scale_selection'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_OUTPUTDIRECTORY =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => plot_setup.output_directory := to_plot_output_directory (to_string (arg));
+								when 1 => board.plot.output_directory := to_plot_output_directory (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -4384,66 +4350,66 @@ package body et_kicad_pcb is
 						when SEC_LINKS =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => general_info.links := type_general_links'value (to_string (arg));
+								when 1 => board.general.links := type_general_links'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_NO_CONNECTS =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => general_info.no_connects := type_general_no_connects'value (to_string (arg));
+								when 1 => board.general.no_connects := type_general_no_connects'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_AREA =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => general_info.area_x1 := to_distance (to_string (arg));
-								when 2 => general_info.area_y1 := to_distance (to_string (arg));								
-								when 3 => general_info.area_x2 := to_distance (to_string (arg));
-								when 4 => general_info.area_y2 := to_distance (to_string (arg));
+								when 1 => board.general.area_x1 := to_distance (to_string (arg));
+								when 2 => board.general.area_y1 := to_distance (to_string (arg));								
+								when 3 => board.general.area_x2 := to_distance (to_string (arg));
+								when 4 => board.general.area_y2 := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_THICKNESS =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => general_info.thickness := to_distance (to_string (arg));
+								when 1 => board.general.thickness := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_DRAWINGS =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => general_info.drawings := type_general_drawings'value (to_string (arg));
+								when 1 => board.general.drawings := type_general_drawings'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_TRACKS =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => general_info.tracks := type_general_tracks'value (to_string (arg));
+								when 1 => board.general.tracks := type_general_tracks'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_ZONES =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => general_info.zones := type_general_zones'value (to_string (arg));
+								when 1 => board.general.zones := type_general_zones'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_MODULES =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => general_info.modules := type_general_modules'value (to_string (arg));
+								when 1 => board.general.modules := type_general_modules'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 							
 						when SEC_NETS =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => general_info.nets := type_net_id_terminal'value (to_string (arg));
+								when 1 => board.general.nets := type_net_id_terminal'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -4777,7 +4743,7 @@ package body et_kicad_pcb is
 			end warn_on_missing_net;
 			
 			procedure insert_package is 
-			-- Builds and inserts package in temporarily container "packages".
+			-- Builds and inserts package in board.
 			-- Raises alarm if package already exists in container.
 			
 				-- This cursor points to the last inserted package:
@@ -4791,7 +4757,7 @@ package body et_kicad_pcb is
 			
 				case package_appearance is
 					when REAL =>
-						packages.insert (
+						board.packages.insert (
 							position	=> package_cursor,
 							inserted	=> package_inserted,
 							key			=> package_reference,
@@ -4819,7 +4785,7 @@ package body et_kicad_pcb is
 							);
 						
 					when VIRTUAL =>
-						packages.insert (
+						board.packages.insert (
 							position	=> package_cursor,
 							inserted	=> package_inserted,
 							key			=> package_reference,
@@ -4938,7 +4904,7 @@ package body et_kicad_pcb is
 			begin -- insert_layer
 
 				-- insert in container "layers"
-				layers.insert (
+				board.layers.insert (
 					new_item	=> layer,		-- components set in procedure read_arg
 					key			=> layer_id,	-- set in procedure read_section
 					inserted	=> layer_inserted,
@@ -4959,7 +4925,7 @@ package body et_kicad_pcb is
 			end insert_layer;
 
 			procedure insert_net_class is
-			-- Inserts the net class in temporarily container "net_classes"
+			-- Inserts the net class in board
 				net_class_inserted	: boolean := false;
 				net_class_cursor	: type_net_classes.cursor;
 			begin -- insert_net_class
@@ -4972,7 +4938,7 @@ package body et_kicad_pcb is
 				validate_restring_width (net_class_via_restring);
 				net_class.micro_via_restring_min := net_class_via_restring;
 
-				net_classes.insert (
+				board.net_classes.insert (
 					key			=> net_class_name,
 					new_item 	=> net_class,
 					position	=> net_class_cursor,
@@ -4995,13 +4961,13 @@ package body et_kicad_pcb is
 			end insert_net_class;
 
 			procedure insert_net is
-			-- Inserts the net in the "netlist" container.
+			-- Inserts the net in the board
 				net_inserted	: boolean := false;
 				net_cursor		: type_netlist.cursor;
 			begin
 
 				type_netlist.insert (
-					container	=> netlist,
+					container	=> board.netlist,
 					new_item	=> netlist_net,
 					position	=> net_cursor,
 					inserted	=> net_inserted);
@@ -5033,57 +4999,57 @@ package body et_kicad_pcb is
 				-- depending on the layer extended with specific properties.
 				case board_arc.layer is
 					when TOP_SILK =>
-						board_top_silk_screen.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
+						board.silk_screen.top.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
 						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
 					when BOT_SILK =>
-						board_bot_silk_screen.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
+						board.silk_screen.bottom.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
 						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
-						board_top_assy_doc.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
+						board.assy_doc.top.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
 						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
 					when BOT_ASSY =>
-						board_bot_assy_doc.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
+						board.assy_doc.bottom.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
 						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
 						
 					when TOP_PASTE =>
-						board_top_stencil.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
+						board.stencil.top.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
 						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						board_bot_stencil.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
+						board.stencil.bottom.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
 						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
 						
 					when TOP_STOP =>
-						board_stop_mask.top.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
+						board.stop_mask.top.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
 						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						board_stop_mask.bottom.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
+						board.stop_mask.bottom.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
 						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
 
 					when TOP_KEEP =>
-						board_keepout.top.arcs.append ((
+						board.keepout.top.arcs.append ((
 							center 		=> board_arc.center, 
 							start_point	=> board_arc.start_point,
 							end_point	=> board_arc.end_point));  -- line width discarded because this is keepout
 						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
 					when BOT_KEEP =>
-						board_keepout.bottom.arcs.append ((
+						board.keepout.bottom.arcs.append ((
 							center 		=> board_arc.center, 
 							start_point	=> board_arc.start_point,
 							end_point	=> board_arc.end_point)); -- line width discarded because this is keepout
 						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 						
 					when EDGE_CUTS =>
-						board_contour.arcs.append ((et_pcb.type_arc (board_arc) with locked => NO));
+						board.contour.arcs.append ((et_pcb.type_arc (board_arc) with locked => NO));
 						-- CS log
 						
 					when others => invalid_layer;
@@ -5099,56 +5065,56 @@ package body et_kicad_pcb is
 				-- depending on the layer extended with specific properties.
 				case board_circle.layer is
 					when TOP_SILK =>
-						board_top_silk_screen.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
+						board.silk_screen.top.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
 						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
 					when BOT_SILK =>
-						board_bot_silk_screen.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
+						board.silk_screen.bottom.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
 						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
-						board_top_assy_doc.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
+						board.assy_doc.top.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
 						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
 					when BOT_ASSY =>
-						board_bot_assy_doc.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
+						board.assy_doc.bottom.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
 						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
 						
 					when TOP_PASTE =>
-						board_top_stencil.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
+						board.stencil.top.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
 						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						board_bot_stencil.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
+						board.stencil.bottom.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
 						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 						
 
 					when TOP_STOP =>
-						board_stop_mask.top.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
+						board.stop_mask.top.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
 						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						board_stop_mask.bottom.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
+						board.stop_mask.bottom.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
 						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
 						
 					when TOP_KEEP =>
-						board_keepout.top.circles.append ((
+						board.keepout.top.circles.append ((
 							center	=> board_circle.center,
 							radius	=> board_circle.radius));
 						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
 					when BOT_KEEP =>
-						board_keepout.bottom.circles.append ((
+						board.keepout.bottom.circles.append ((
 							center	=> board_circle.center,
 							radius	=> board_circle.radius));
 						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
 						
 					when EDGE_CUTS =>
-						board_contour.circles.append ((et_pcb.type_circle (board_circle) with locked => NO));
+						board.contour.circles.append ((et_pcb.type_circle (board_circle) with locked => NO));
 						-- CS log
 						
 					when others => invalid_layer;
@@ -5162,56 +5128,56 @@ package body et_kicad_pcb is
 				case board_line.layer is
 
 					when TOP_SILK =>
-						board_top_silk_screen.lines.append ((et_pcb.type_line (board_line) with board_line.width));
+						board.silk_screen.top.lines.append ((et_pcb.type_line (board_line) with board_line.width));
 						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
 					when BOT_SILK =>
-						board_bot_silk_screen.lines.append ((et_pcb.type_line (board_line) with board_line.width));
+						board.silk_screen.bottom.lines.append ((et_pcb.type_line (board_line) with board_line.width));
 						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
-						board_top_assy_doc.lines.append ((et_pcb.type_line (board_line) with board_line.width));
+						board.assy_doc.top.lines.append ((et_pcb.type_line (board_line) with board_line.width));
 						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
 					when BOT_ASSY =>
-						board_bot_assy_doc.lines.append ((et_pcb.type_line (board_line) with board_line.width));
+						board.assy_doc.bottom.lines.append ((et_pcb.type_line (board_line) with board_line.width));
 						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
 
 					when TOP_PASTE =>
-						board_top_stencil.lines.append ((et_pcb.type_line (board_line) with board_line.width));
+						board.stencil.top.lines.append ((et_pcb.type_line (board_line) with board_line.width));
 						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						board_bot_stencil.lines.append ((et_pcb.type_line (board_line) with board_line.width));
+						board.stencil.bottom.lines.append ((et_pcb.type_line (board_line) with board_line.width));
 						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
 						
 					when TOP_STOP =>
-						board_stop_mask.top.lines.append ((et_pcb.type_line (board_line) with board_line.width));
+						board.stop_mask.top.lines.append ((et_pcb.type_line (board_line) with board_line.width));
 						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						board_stop_mask.bottom.lines.append ((et_pcb.type_line (board_line) with board_line.width));
+						board.stop_mask.bottom.lines.append ((et_pcb.type_line (board_line) with board_line.width));
 						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
 
 					when TOP_KEEP =>
-						board_keepout.top.lines.append ((
+						board.keepout.top.lines.append ((
 							start_point	=> board_line.start_point,
 							end_point	=> board_line.end_point ));
 						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
 					when BOT_KEEP =>
-						board_keepout.bottom.lines.append ((
+						board.keepout.bottom.lines.append ((
 							start_point	=> board_line.start_point,
 							end_point	=> board_line.end_point ));
 						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
 
 						
 					when EDGE_CUTS =>
-						board_contour.lines.append ((et_pcb.type_line (board_line) with locked => NO));
+						board.contour.lines.append ((et_pcb.type_line (board_line) with locked => NO));
 						-- CS log
 
 					when others => invalid_layer;
@@ -5868,33 +5834,6 @@ package body et_kicad_pcb is
 		end if;
 
 
-		
-		-- COPY TEMPORARILY CONTAINERS IN BOARD TO BE RETURNED
-
-		-- general board information
-		board.general := general_info;
-		
-		-- copy container "layers" in board
-		board.layers := layers;
-
-		-- copy board_setup in board
-		board.setup := board_setup;
-
-		-- copy plot/CAM stuff in board
-		board.plot := plot_setup;
-		
-		-- copy all the packages (in temporarily container "packages") the board to be returned:
-		board.packages := packages;
-
-		-- copy netlist in board -- NOTE: this has nothing to do with any kicad netlist file !
-		board.netlist := netlist;
-		
-		-- copy container "net_classes" in board
-		board.net_classes := net_classes;
-
-		-- copy container "board_contour" in board
-		board.contour := board_contour;
-		
 		return board;
 	end to_board;
 
