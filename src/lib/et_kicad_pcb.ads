@@ -551,7 +551,7 @@ package et_kicad_pcb is
 		assy_doc	: et_pcb.type_assembly_documentation_pcb_both_sides;
 		stencil		: et_pcb.type_stencil_both_sides;
 		stop_mask	: et_pcb.type_stop_mask_both_sides;
-		keepout		: et_pcb.type_keepout_pcb_both_sides;		
+		keepout		: et_pcb.type_keepout_both_sides;		
 		contour		: et_pcb.type_pcb_contour;
 	end record;
 

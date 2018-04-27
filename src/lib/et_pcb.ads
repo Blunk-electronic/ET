@@ -642,15 +642,15 @@ package et_pcb is
 		-- CS polygons
 	end record;
 
-	type type_keepout_package_both_sides is record
+	type type_keepout_both_sides is record
 		top 	: type_keepout;
 		bottom	: type_keepout;
 	end record;
 	
-	type type_keepout_pcb_both_sides is record -- CS why like type_keepout_package_both_sides ?
-		top 	: type_keepout;
-		bottom	: type_keepout;
-	end record;
+-- 	type type_keepout_pcb_both_sides is record -- CS no need ?
+-- 		top 	: type_keepout;
+-- 		bottom	: type_keepout;
+-- 	end record;
 
 
 	
@@ -833,7 +833,7 @@ package et_pcb is
 	type type_package (appearance : type_package_appearance) is abstract tagged record
 		description				: type_package_description.bounded_string;
 		copper					: type_copper_package_both_sides;
-		keepout 				: type_keepout_package_both_sides;
+		keepout 				: type_keepout_both_sides;
 		stop_mask				: type_stop_mask_both_sides;
 		solder_stencil			: type_stencil_both_sides;
 

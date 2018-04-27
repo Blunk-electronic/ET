@@ -2715,7 +2715,7 @@ package body et_kicad_pcb is
 		
 		package_silk_screen		: et_kicad_pcb.type_silk_screen_package_both_sides;
 		package_assy_doc		: et_kicad_pcb.type_assembly_documentation_package_both_sides; -- without placeholders
-		package_keepout			: et_pcb.type_keepout_package_both_sides;
+		package_keepout			: et_pcb.type_keepout_both_sides;
 		package_copper			: et_pcb.type_copper_package_both_sides;
 		
 		-- kicad does not allow pcb contours (edge cuts) in a package model.
