@@ -507,24 +507,24 @@ package body et_kicad_pcb is
 
 		-- NON ELECTRIC !!! COPPER OBJECTS (lines, arcs, circles)
 		-- NOTE: Does not include texts as kicad does not allow texts in signal layers.
-		top_copper_objects, bot_copper_objects : type_copper;  -- CS use a composite instead ?
+		copper : et_pcb.type_copper_package_both_sides;
 
 		-- STOP MASK OBJECTS
-		top_stop_mask, bot_stop_mask : et_pcb.type_stop_mask;  -- CS use a composite instead ?
+		stop_mask : et_pcb.type_stop_mask_both_sides;
 		-- CS: mind objects explicitely drawn and such auto generated
 
 		-- SOLDER STENCIL OBJECTS
-		top_stencil, bot_stencil : et_pcb.type_stencil;  -- CS use a composite instead ?
+		stencil : et_pcb.type_stencil_both_sides;
 		-- CS: mind objects explicitely drawn and such auto generated
 	
 		-- SILK SCREEN OBJECTS (lines, arcs, circles, texts, text placeholders)
-		top_silk_screen, bot_silk_screen 	: type_silk_screen_package;  -- CS use a composite instead ?
-
+		silk_screen : et_pcb.type_silk_screen_package_both_sides;
+	
 		-- ASSEMBLY DOC (FAB) OBJECTS (lines, arcs, circles, texts, text placeholders)
-		top_assy_doc, bot_assy_doc			: type_assembly_documentation_package;  -- CS use a composite instead ?
+		assy_doc : et_pcb.type_assembly_documentation_package_both_sides;
 
 		-- KEEPOUT OBJECTS (lines, arcs, circles)
-		top_keepout, bot_keepout			: type_keepout;  -- CS use a composite instead ?
+		keepout : et_pcb.type_keepout_both_sides;
 
 		-- kicad does not allow pcb contours (edge cuts) in a package model.
 		-- For this reason, variable pcb_contours is never assigned. Its containers
@@ -1594,57 +1594,62 @@ package body et_kicad_pcb is
 				-- is formed and appended to the list of silk screen circles.
 				case arc.layer is
 					when TOP_SILK =>
-						top_silk_screen.arcs.append ((et_pcb.type_arc (arc) with arc.width));
-						arc_silk_screen_properties (TOP, top_silk_screen.arcs.last, log_threshold + 1);
+						silk_screen.top.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+						arc_silk_screen_properties (TOP, silk_screen.top.arcs.last, log_threshold + 1);
 						
 					when BOT_SILK =>
-						bot_silk_screen.arcs.append ((et_pcb.type_arc (arc) with arc.width));
-						arc_silk_screen_properties (BOTTOM, bot_silk_screen.arcs.last, log_threshold + 1);
+						silk_screen.bottom.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+						arc_silk_screen_properties (BOTTOM, silk_screen.bottom.arcs.last, log_threshold + 1);
+
 						
 					when TOP_ASSY =>
-						top_assy_doc.arcs.append ((et_pcb.type_arc (arc) with arc.width));
-						arc_assy_doc_properties (TOP, top_assy_doc.arcs.last, log_threshold + 1);
+						assy_doc.top.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+						arc_assy_doc_properties (TOP, assy_doc.top.arcs.last, log_threshold + 1);
 						
 					when BOT_ASSY =>
-						bot_assy_doc.arcs.append ((et_pcb.type_arc (arc) with arc.width));
-						arc_assy_doc_properties (BOTTOM, bot_assy_doc.arcs.last, log_threshold + 1);
+						assy_doc.bottom.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+						arc_assy_doc_properties (BOTTOM, assy_doc.bottom.arcs.last, log_threshold + 1);
+
 						
 					when TOP_KEEP =>
-						top_keepout.arcs.append ((
+						keepout.top.arcs.append ((
 							center 		=> arc.center,
 							start_point	=> arc.start_point, 
 							end_point	=> arc.end_point));  -- line with discarded because this is keepout
-						arc_keepout_properties (TOP, top_keepout.arcs.last, log_threshold + 1);
+						arc_keepout_properties (TOP, keepout.top.arcs.last, log_threshold + 1);
 						
 					when BOT_KEEP =>
-						bot_keepout.arcs.append ((
+						keepout.bottom.arcs.append ((
 							center 		=> arc.center,
 							start_point	=> arc.start_point, 
 							end_point	=> arc.end_point));  -- line with discarded because this is keepout
-						arc_keepout_properties (BOTTOM, bot_keepout.arcs.last, log_threshold + 1);
+						arc_keepout_properties (BOTTOM, keepout.bottom.arcs.last, log_threshold + 1);
 
+						
 					when TOP_COPPER => 
-						top_copper_objects.arcs.append ((et_pcb.type_arc (arc) with arc.width));
-						arc_copper_properties (TOP, top_copper_objects.arcs.last, log_threshold + 1);
+						copper.top.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+						arc_copper_properties (TOP, copper.top.arcs.last, log_threshold + 1);
 
 					when BOT_COPPER => 
-						bot_copper_objects.arcs.append ((et_pcb.type_arc (arc) with arc.width));
-						arc_copper_properties (BOTTOM, bot_copper_objects.arcs.last, log_threshold + 1);
+						copper.bottom.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+						arc_copper_properties (BOTTOM, copper.bottom.arcs.last, log_threshold + 1);
 
+						
 					when TOP_STOP =>
-						top_stop_mask.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+						stop_mask.top.arcs.append ((et_pcb.type_arc (arc) with arc.width));
 						-- CS arc_stop_mask_properties (TOP, top_stop_mask.arcs.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						bot_stop_mask.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+						stop_mask.bottom.arcs.append ((et_pcb.type_arc (arc) with arc.width));
 						-- CS arc_stop_mask_properties (BOTTOM, bot_stop_mask.arcs.last, log_threshold + 1);
 
+						
 					when TOP_PASTE =>
-						top_stencil.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+						stencil.top.arcs.append ((et_pcb.type_arc (arc) with arc.width));
 						-- CS arc_stencil_properties (TOP, top_stencil.arcs.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						bot_stencil.arcs.append ((et_pcb.type_arc (arc) with arc.width));
+						stencil.bottom.arcs.append ((et_pcb.type_arc (arc) with arc.width));
 						-- CS arc_stencil_properties (BOTTOM, bot_stencil.arcs.last, log_threshold + 1);
 
 					when others => invalid_layer;
@@ -1664,55 +1669,60 @@ package body et_kicad_pcb is
 				-- is formed and appended to the list of silk screen circles.
 				case circle.layer is
 					when TOP_SILK =>
-						top_silk_screen.circles.append ((et_pcb.type_circle (circle) with circle.width));
-						circle_silk_screen_properties (TOP, top_silk_screen.circles.last, log_threshold + 1);
+						silk_screen.top.circles.append ((et_pcb.type_circle (circle) with circle.width));
+						circle_silk_screen_properties (TOP, silk_screen.top.circles.last, log_threshold + 1);
 						
 					when BOT_SILK =>
-						bot_silk_screen.circles.append ((et_pcb.type_circle (circle) with circle.width));
-						circle_silk_screen_properties (BOTTOM, bot_silk_screen.circles.last, log_threshold + 1);
+						silk_screen.bottom.circles.append ((et_pcb.type_circle (circle) with circle.width));
+						circle_silk_screen_properties (BOTTOM, silk_screen.bottom.circles.last, log_threshold + 1);
+
 						
 					when TOP_ASSY =>
-						top_assy_doc.circles.append ((et_pcb.type_circle (circle) with circle.width));
-						circle_assy_doc_properties (TOP, top_assy_doc.circles.last, log_threshold + 1);
+						assy_doc.top.circles.append ((et_pcb.type_circle (circle) with circle.width));
+						circle_assy_doc_properties (TOP, assy_doc.top.circles.last, log_threshold + 1);
 						
 					when BOT_ASSY =>
-						bot_assy_doc.circles.append ((et_pcb.type_circle (circle) with circle.width));
-						circle_assy_doc_properties (BOTTOM, bot_assy_doc.circles.last, log_threshold + 1);
+						assy_doc.bottom.circles.append ((et_pcb.type_circle (circle) with circle.width));
+						circle_assy_doc_properties (BOTTOM, assy_doc.bottom.circles.last, log_threshold + 1);
+
 						
 					when TOP_KEEP =>
-						top_keepout.circles.append ((
+						keepout.top.circles.append ((
 							center 		=> circle.center,
 							radius		=> circle.radius )); -- line with discarded because this is keepout
-						circle_keepout_properties (TOP, top_keepout.circles.last, log_threshold + 1);
+						circle_keepout_properties (TOP, keepout.top.circles.last, log_threshold + 1);
 						
 					when BOT_KEEP =>
-						bot_keepout.circles.append ((
+						keepout.bottom.circles.append ((
 							center 		=> circle.center,
 							radius		=> circle.radius )); -- line with discarded because this is keepout
-						circle_keepout_properties (BOTTOM, bot_keepout.circles.last, log_threshold + 1);
+						circle_keepout_properties (BOTTOM, keepout.bottom.circles.last, log_threshold + 1);
 
+						
 					when TOP_COPPER => 
-						top_copper_objects.circles.append ((et_pcb.type_circle (circle) with circle.width));
-						circle_copper_properties (TOP, top_copper_objects.circles.last, log_threshold + 1);
+						copper.top.circles.append ((et_pcb.type_circle (circle) with circle.width));
+						circle_copper_properties (TOP, copper.top.circles.last, log_threshold + 1);
 
 					when BOT_COPPER => 
-						bot_copper_objects.circles.append ((et_pcb.type_circle (circle) with circle.width));
-						circle_copper_properties (BOTTOM, bot_copper_objects.circles.last, log_threshold + 1);
+						copper.bottom.circles.append ((et_pcb.type_circle (circle) with circle.width));
+						circle_copper_properties (BOTTOM, copper.bottom.circles.last, log_threshold + 1);
 
+						
 					when TOP_STOP =>
-						top_stop_mask.circles.append ((et_pcb.type_circle (circle) with circle.width));
+						stop_mask.top.circles.append ((et_pcb.type_circle (circle) with circle.width));
 						-- CS circle_stop_mask_properties (TOP, top_stop_mask.circles.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						bot_stop_mask.circles.append ((et_pcb.type_circle (circle) with circle.width));
+						stop_mask.bottom.circles.append ((et_pcb.type_circle (circle) with circle.width));
 						-- CS circle_stop_mask_properties (BOTTOM, bot_stop_mask.circles.last, log_threshold + 1);
 
+						
 					when TOP_PASTE =>
-						top_stencil.circles.append ((et_pcb.type_circle (circle) with circle.width));
+						stencil.top.circles.append ((et_pcb.type_circle (circle) with circle.width));
 						-- CS circle_stencil_properties (TOP, top_stencil.circles.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						bot_stencil.circles.append ((et_pcb.type_circle (circle) with circle.width));
+						stencil.bottom.circles.append ((et_pcb.type_circle (circle) with circle.width));
 						-- CS circle_stencil_properties (BOTTOM, bot_stencil.circles.last, log_threshold + 1);
 
 					when others => invalid_layer;
@@ -1725,51 +1735,56 @@ package body et_kicad_pcb is
 				
 				case line.layer is
 					when TOP_SILK =>
-						top_silk_screen.lines.append ((line.start_point, line.end_point, line.width));
-						line_silk_screen_properties (TOP, top_silk_screen.lines.last, log_threshold + 1);
+						silk_screen.top.lines.append ((line.start_point, line.end_point, line.width));
+						line_silk_screen_properties (TOP, silk_screen.top.lines.last, log_threshold + 1);
 
 					when BOT_SILK =>
-						bot_silk_screen.lines.append ((line.start_point, line.end_point, line.width));
-						line_silk_screen_properties (BOTTOM, bot_silk_screen.lines.last, log_threshold + 1);
+						silk_screen.bottom.lines.append ((line.start_point, line.end_point, line.width));
+						line_silk_screen_properties (BOTTOM, silk_screen.bottom.lines.last, log_threshold + 1);
 
+						
 					when TOP_ASSY =>
-						top_assy_doc.lines.append ((line.start_point, line.end_point, line.width));
-						line_assy_doc_properties (TOP, top_assy_doc.lines.last, log_threshold + 1);
+						assy_doc.top.lines.append ((line.start_point, line.end_point, line.width));
+						line_assy_doc_properties (TOP, assy_doc.top.lines.last, log_threshold + 1);
 
 					when BOT_ASSY =>
-						bot_assy_doc.lines.append ((line.start_point, line.end_point, line.width));
-						line_assy_doc_properties (BOTTOM, bot_assy_doc.lines.last, log_threshold + 1);
+						assy_doc.bottom.lines.append ((line.start_point, line.end_point, line.width));
+						line_assy_doc_properties (BOTTOM, assy_doc.bottom.lines.last, log_threshold + 1);
 
+						
 					when TOP_KEEP =>
-						top_keepout.lines.append ((line.start_point, line.end_point));
-						line_keepout_properties (TOP, top_keepout.lines.last, log_threshold + 1);
+						keepout.top.lines.append ((line.start_point, line.end_point));
+						line_keepout_properties (TOP, keepout.top.lines.last, log_threshold + 1);
 
 					when BOT_KEEP =>
-						bot_keepout.lines.append ((line.start_point, line.end_point));
-						line_keepout_properties (BOTTOM, bot_keepout.lines.last, log_threshold + 1);
+						keepout.bottom.lines.append ((line.start_point, line.end_point));
+						line_keepout_properties (BOTTOM, keepout.bottom.lines.last, log_threshold + 1);
 
+						
 					when TOP_COPPER => 
-						top_copper_objects.lines.append ((line.start_point, line.end_point, line.width));
-						line_copper_properties (TOP, top_copper_objects.lines.last, log_threshold + 1);
+						copper.top.lines.append ((line.start_point, line.end_point, line.width));
+						line_copper_properties (TOP, copper.top.lines.last, log_threshold + 1);
 
 					when BOT_COPPER => 
-						bot_copper_objects.lines.append ((line.start_point, line.end_point, line.width));
-						line_copper_properties (BOTTOM, bot_copper_objects.lines.last, log_threshold + 1);
+						copper.bottom.lines.append ((line.start_point, line.end_point, line.width));
+						line_copper_properties (BOTTOM, copper.bottom.lines.last, log_threshold + 1);
 
+						
 					when TOP_STOP => 
-						top_stop_mask.lines.append ((line.start_point, line.end_point, line.width));
+						stop_mask.top.lines.append ((line.start_point, line.end_point, line.width));
 						-- CS line_stop_mask_properties (TOP, top_stop_mask.lines.last, log_threshold + 1);
 
 					when BOT_STOP => 
-						bot_stop_mask.lines.append ((line.start_point, line.end_point, line.width));
+						stop_mask.bottom.lines.append ((line.start_point, line.end_point, line.width));
 						-- CS line_stop_mask_properties (BOTTOM, bot_stop_mask.lines.last, log_threshold + 1);
 
+						
 					when TOP_PASTE => 
-						top_stencil.lines.append ((line.start_point, line.end_point, line.width));
+						stencil.top.lines.append ((line.start_point, line.end_point, line.width));
 						-- CS line_stencil_properties (TOP, top_stencil.lines.last, log_threshold + 1);
 
 					when BOT_PASTE => 
-						bot_stencil.lines.append ((line.start_point, line.end_point, line.width));
+						stencil.bottom.lines.append ((line.start_point, line.end_point, line.width));
 						-- CS line_stencil_properties (BOTTOM, bot_stencil.lines.last, log_threshold + 1);
 
 					when others => invalid_layer;
@@ -1923,11 +1938,13 @@ package body et_kicad_pcb is
 						
 						case text.layer is
 							when TOP_SILK =>
-								top_silk_screen.placeholders.append (placeholder);
-								placeholder_silk_screen_properties (TOP, top_silk_screen.placeholders.last, log_threshold + 1);
+								silk_screen.top.placeholders.append (placeholder);
+								placeholder_silk_screen_properties (TOP, silk_screen.top.placeholders.last, log_threshold + 1);
+								
 							when BOT_SILK =>
-								bot_silk_screen.placeholders.append (placeholder);
-								placeholder_silk_screen_properties (BOTTOM, bot_silk_screen.placeholders.last, log_threshold + 1);
+								silk_screen.bottom.placeholders.append (placeholder);
+								placeholder_silk_screen_properties (BOTTOM, silk_screen.bottom.placeholders.last, log_threshold + 1);
+								
 							when others => -- should never happen
 								invalid_layer_reference; 
 						end case;
@@ -1937,11 +1954,13 @@ package body et_kicad_pcb is
 						
 						case text.layer is
 							when TOP_ASSY =>
-								top_assy_doc.placeholders.append (placeholder);
-								placeholder_assy_doc_properties (TOP, top_assy_doc.placeholders.last, log_threshold + 1);
+								assy_doc.top.placeholders.append (placeholder);
+								placeholder_assy_doc_properties (TOP, assy_doc.top.placeholders.last, log_threshold + 1);
+								
 							when BOT_ASSY =>
-								bot_assy_doc.placeholders.append (placeholder);
-								placeholder_assy_doc_properties (BOTTOM, bot_assy_doc.placeholders.last, log_threshold + 1);
+								assy_doc.bottom.placeholders.append (placeholder);
+								placeholder_assy_doc_properties (BOTTOM, assy_doc.bottom.placeholders.last, log_threshold + 1);
+								
 							when others => -- should never happen
 								invalid_layer_value;
 						end case;
@@ -1949,17 +1968,21 @@ package body et_kicad_pcb is
 					when USER =>
 						case text.layer is
 							when TOP_SILK => 
-								top_silk_screen.texts.append ((et_pcb.type_text (text) with content => text.content));
-								text_silk_screen_properties (TOP, top_silk_screen.texts.last, log_threshold + 1);
+								silk_screen.top.texts.append ((et_pcb.type_text (text) with content => text.content));
+								text_silk_screen_properties (TOP, silk_screen.top.texts.last, log_threshold + 1);
+								
 							when BOT_SILK => 
-								bot_silk_screen.texts.append ((et_pcb.type_text (text) with content => text.content));
-								text_silk_screen_properties (BOTTOM, bot_silk_screen.texts.last, log_threshold + 1);
+								silk_screen.bottom.texts.append ((et_pcb.type_text (text) with content => text.content));
+								text_silk_screen_properties (BOTTOM, silk_screen.bottom.texts.last, log_threshold + 1);
+								
 							when TOP_ASSY => 
-								top_assy_doc.texts.append ((et_pcb.type_text (text) with content => text.content));
-								text_assy_doc_properties (TOP, top_assy_doc.texts.last, log_threshold + 1);
+								assy_doc.top.texts.append ((et_pcb.type_text (text) with content => text.content));
+								text_assy_doc_properties (TOP, assy_doc.top.texts.last, log_threshold + 1);
+								
 							when BOT_ASSY => 
-								bot_assy_doc.texts.append ((et_pcb.type_text (text) with content => text.content));
-								text_assy_doc_properties (BOTTOM, bot_assy_doc.texts.last, log_threshold + 1);
+								assy_doc.bottom.texts.append ((et_pcb.type_text (text) with content => text.content));
+								text_assy_doc_properties (BOTTOM, assy_doc.bottom.texts.last, log_threshold + 1);
+								
 							when others -- should never happen. kicad does not allow texts in signal layers 
 								=> invalid_layer_user;
 						end case;
@@ -2027,7 +2050,7 @@ package body et_kicad_pcb is
 			reference_found, value_found : boolean := false;
 		begin
 			-- There must be a placeholder for the reference in the top silk screen:
-			cursor := top_silk_screen.placeholders.first;
+			cursor := silk_screen.top.placeholders.first;
 			while cursor /= type_text_placeholders_package.no_element loop
 				placeholder := element (cursor);
 				if placeholder.meaning = REFERENCE then
@@ -2047,7 +2070,7 @@ package body et_kicad_pcb is
 			end if;
 
 			-- There must be a placeholder for the value in the top assembly documentation:
-			cursor := top_assy_doc.placeholders.first;
+			cursor := assy_doc.top.placeholders.first;
 			while cursor /= type_text_placeholders_package.no_element loop
 				placeholder := element (cursor);
 				if placeholder.meaning = VALUE then
@@ -2224,14 +2247,14 @@ package body et_kicad_pcb is
 					pcb_contours			=> pcb_contours,
 					pcb_contours_plated 	=> pcb_contours_plated,
 					terminals				=> terminals,
-					copper					=> (top => top_copper_objects, bottom => bot_copper_objects),
-					silk_screen				=> (top => top_silk_screen, bottom => bot_silk_screen),
-					keepout					=> (top => top_keepout, bottom => bot_keepout),
-					stop_mask				=> (top => top_stop_mask, bottom => bot_stop_mask),
-					solder_stencil			=> (top => top_stencil, bottom => bot_stencil),
+					copper					=> copper, -- non electric !
+					silk_screen				=> silk_screen,
+					keepout					=> keepout,
+					stop_mask				=> stop_mask,
+					solder_stencil			=> stencil,
 					route_restrict 			=> route_restrict,
 					via_restrict 			=> via_restrict,
-					assembly_documentation 	=> (top => top_assy_doc, bottom => bot_assy_doc),
+					assembly_documentation 	=> assy_doc,
 					time_stamp				=> time_stamp,
 					description				=> description,
 					technology				=> package_technology
@@ -2243,14 +2266,14 @@ package body et_kicad_pcb is
 					pcb_contours			=> pcb_contours,
 					pcb_contours_plated 	=> pcb_contours_plated,
 					terminals				=> terminals,
-					copper					=> (top => top_copper_objects, bottom => bot_copper_objects),
-					silk_screen				=> (top => top_silk_screen, bottom => bot_silk_screen),
-					keepout					=> (top => top_keepout, bottom => bot_keepout),
-					stop_mask				=> (top => top_stop_mask, bottom => bot_stop_mask),
-					solder_stencil			=> (top => top_stencil, bottom => bot_stencil),
+					copper					=> copper, -- non electric !
+					silk_screen				=> silk_screen,
+					keepout					=> keepout,
+					stop_mask				=> stop_mask,
+					solder_stencil			=> stencil,
 					route_restrict 			=> route_restrict,
 					via_restrict 			=> via_restrict,
-					assembly_documentation 	=> (top => top_assy_doc, bottom => bot_assy_doc),
+					assembly_documentation 	=> assy_doc,
 					time_stamp				=> time_stamp,
 					description				=> description,
 					technology				=> package_technology
