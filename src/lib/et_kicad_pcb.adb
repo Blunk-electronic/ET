@@ -2707,25 +2707,16 @@ package body et_kicad_pcb is
 		package_arc			: type_arc;
 		package_circle 		: type_circle;
 
-		package_top_stop_mask	: et_pcb.type_stop_mask; -- CS use type_stop_mask_both_sides instead ?
-		package_bot_stop_mask	: et_pcb.type_stop_mask;
+		package_stop_mask		: et_pcb.type_stop_mask_both_sides;
 		-- CS: mind objects explicitely drawn and such auto generated
 		
-		package_top_stencil		: et_pcb.type_stencil;  -- CS use type_stencil_bot_sides instead ?
-		package_bot_stencil		: et_pcb.type_stencil;
+		package_stencil			: et_pcb.type_stencil_both_sides;
 		-- CS: mind objects explicitely drawn and such auto generated
 		
-		package_top_silk_screen	: et_pcb.type_silk_screen; -- without placeholders -- CS use et_kicad_pcb.type_silk_screen_package_both_sides instead ?
-		package_bot_silk_screen	: et_pcb.type_silk_screen; -- without placeholders
-
-		package_top_assy_doc	: et_pcb.type_assembly_documentation; -- without placeholders -- CS use a composite instead ?
-		package_bot_assy_doc	: et_pcb.type_assembly_documentation; -- without placeholders
-
-		package_top_keepout		: et_pcb.type_keepout;  -- CS use a composite instead ?
-		package_bot_keepout		: et_pcb.type_keepout;
-
-		package_top_copper		: et_pcb.type_copper;  -- CS use a composite instead ?
-		package_bot_copper		: et_pcb.type_copper;
+		package_silk_screen		: et_kicad_pcb.type_silk_screen_package_both_sides;
+		package_assy_doc		: et_kicad_pcb.type_assembly_documentation_package_both_sides; -- without placeholders
+		package_keepout			: et_pcb.type_keepout_package_both_sides;
+		package_copper			: et_pcb.type_copper_package_both_sides;
 		
 		-- kicad does not allow pcb contours (edge cuts) in a package model.
 		-- For this reason, variable package_pcb_contours is never assigned. Its containers
@@ -4769,15 +4760,15 @@ package body et_kicad_pcb is
 								time_stamp		=> package_time_stamp,
 								time_edit		=> package_time_edit,
 								value			=> package_value,
-								silk_screen		=> (top => package_top_silk_screen, bottom => package_bot_silk_screen),
+								silk_screen		=> package_silk_screen,
 								terminals		=> terminals,
-								copper			=> (top => package_top_copper, bottom => package_bot_copper),
-								keepout			=> (top => package_top_keepout, bottom => package_bot_keepout),
-								stop_mask		=> (top => package_top_stop_mask, bottom => package_bot_stop_mask),
-								solder_stencil	=> (top => package_top_stencil, bottom => package_bot_stencil),
+								copper			=> package_copper,
+								keepout			=> package_keepout,
+								stop_mask		=> package_stop_mask,
+								solder_stencil	=> package_stencil,
 								route_restrict	=> package_route_restrict, -- always empty
 								via_restrict	=> package_via_restrict, -- always empty
-								assembly_documentation	=> (top => package_top_assy_doc, bottom => package_bot_assy_doc),
+								assembly_documentation	=> package_assy_doc,
 								pcb_contours		=> package_pcb_contours,
 								pcb_contours_plated	=> package_pcb_contours_plated,
 								package_contours	=> package_contours
@@ -4797,15 +4788,15 @@ package body et_kicad_pcb is
 								time_stamp		=> package_time_stamp,
 								time_edit		=> package_time_edit,
 								value			=> package_value,
-								silk_screen		=> (top => package_top_silk_screen, bottom => package_bot_silk_screen),
+								silk_screen		=> package_silk_screen,
 								terminals		=> terminals,
-								copper			=> (top => package_top_copper, bottom => package_bot_copper),
-								keepout			=> (top => package_top_keepout, bottom => package_bot_keepout),
-								stop_mask		=> (top => package_top_stop_mask, bottom => package_bot_stop_mask),
-								solder_stencil	=> (top => package_top_stencil, bottom => package_bot_stencil),
+								copper			=> package_copper,
+								keepout			=> package_keepout,
+								stop_mask		=> package_stop_mask,
+								solder_stencil	=> package_stencil,
 								route_restrict	=> package_route_restrict, -- always empty
 								via_restrict	=> package_via_restrict, -- always empty
-								assembly_documentation	=> (top => package_top_assy_doc, bottom => package_bot_assy_doc),
+								assembly_documentation	=> package_assy_doc,
 								pcb_contours		=> package_pcb_contours,
 								pcb_contours_plated	=> package_pcb_contours_plated
 								-- a virtual package does not have contours
@@ -4843,48 +4834,48 @@ package body et_kicad_pcb is
 					terminals.clear;
 
 					-- clear silk screen
-					package_top_silk_screen.lines.clear;
-					package_top_silk_screen.arcs.clear;
-					package_top_silk_screen.circles.clear;
-					package_top_silk_screen.texts.clear;
+					package_silk_screen.top.lines.clear;
+					package_silk_screen.top.arcs.clear;
+					package_silk_screen.top.circles.clear;
+					package_silk_screen.top.texts.clear;
 
-					package_bot_silk_screen.lines.clear;
-					package_bot_silk_screen.arcs.clear;
-					package_bot_silk_screen.circles.clear;
-					package_bot_silk_screen.texts.clear;
+					package_silk_screen.bottom.lines.clear;
+					package_silk_screen.bottom.arcs.clear;
+					package_silk_screen.bottom.circles.clear;
+					package_silk_screen.bottom.texts.clear;
 
 					-- clear assembly documentation
-					package_top_assy_doc.lines.clear;
-					package_top_assy_doc.arcs.clear;
-					package_top_assy_doc.circles.clear;
-					package_top_assy_doc.texts.clear;
+					package_assy_doc.top.lines.clear;
+					package_assy_doc.top.arcs.clear;
+					package_assy_doc.top.circles.clear;
+					package_assy_doc.top.texts.clear;
 
-					package_bot_assy_doc.lines.clear;
-					package_bot_assy_doc.arcs.clear;
-					package_bot_assy_doc.circles.clear;
-					package_bot_assy_doc.texts.clear;
+					package_assy_doc.bottom.lines.clear;
+					package_assy_doc.bottom.arcs.clear;
+					package_assy_doc.bottom.circles.clear;
+					package_assy_doc.bottom.texts.clear;
 
 					-- clear keepout
-					package_top_keepout.lines.clear;
-					package_top_keepout.arcs.clear;
-					package_top_keepout.circles.clear;
+					package_keepout.top.lines.clear;
+					package_keepout.top.arcs.clear;
+					package_keepout.top.circles.clear;
 					-- CS package_top_keepout.texts.clear;
 
-					package_bot_keepout.lines.clear;
-					package_bot_keepout.arcs.clear;
-					package_bot_keepout.circles.clear;
+					package_keepout.bottom.lines.clear;
+					package_keepout.bottom.arcs.clear;
+					package_keepout.bottom.circles.clear;
 					-- CS package_bot_keepout.texts.clear;
 
 					-- clear copper
-					package_top_copper.lines.clear;
-					package_top_copper.arcs.clear;
-					package_top_copper.circles.clear;
-					package_top_copper.texts.clear;
+					package_copper.top.lines.clear;
+					package_copper.top.arcs.clear;
+					package_copper.top.circles.clear;
+					package_copper.top.texts.clear;
 
-					package_bot_copper.lines.clear;
-					package_bot_copper.arcs.clear;
-					package_bot_copper.circles.clear;
-					package_bot_copper.texts.clear;
+					package_copper.bottom.lines.clear;
+					package_copper.bottom.arcs.clear;
+					package_copper.bottom.circles.clear;
+					package_copper.bottom.texts.clear;
 
 				else
 					log_indentation_reset;
@@ -5198,57 +5189,62 @@ package body et_kicad_pcb is
 				-- is formed and appended to the list of silk screen circles.
 				case package_arc.layer is
 					when TOP_SILK =>
-						package_top_silk_screen.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
-						arc_silk_screen_properties (TOP, package_top_silk_screen.arcs.last, log_threshold + 1);
+						package_silk_screen.top.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
+						arc_silk_screen_properties (TOP, package_silk_screen.top.arcs.last, log_threshold + 1);
 						
 					when BOT_SILK =>
-						package_bot_silk_screen.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
-						arc_silk_screen_properties (BOTTOM, package_bot_silk_screen.arcs.last, log_threshold + 1);
+						package_silk_screen.bottom.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
+						arc_silk_screen_properties (BOTTOM, package_silk_screen.bottom.arcs.last, log_threshold + 1);
+
 						
 					when TOP_ASSY =>
-						package_top_assy_doc.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
-						arc_assy_doc_properties (TOP, package_top_assy_doc.arcs.last, log_threshold + 1);
+						package_assy_doc.top.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
+						arc_assy_doc_properties (TOP, package_assy_doc.top.arcs.last, log_threshold + 1);
 						
 					when BOT_ASSY =>
-						package_bot_assy_doc.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
-						arc_assy_doc_properties (BOTTOM, package_bot_assy_doc.arcs.last, log_threshold + 1);
+						package_assy_doc.bottom.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
+						arc_assy_doc_properties (BOTTOM, package_assy_doc.bottom.arcs.last, log_threshold + 1);
+
 						
 					when TOP_KEEP =>
-						package_top_keepout.arcs.append ((
+						package_keepout.top.arcs.append ((
 							center 		=> package_arc.center,
 							start_point	=> package_arc.start_point, 
 							end_point	=> package_arc.end_point)); -- line with discarded because this is keepout
-						arc_keepout_properties (TOP, package_top_keepout.arcs.last, log_threshold + 1);
+						arc_keepout_properties (TOP, package_keepout.top.arcs.last, log_threshold + 1);
 						
 					when BOT_KEEP =>
-						package_bot_keepout.arcs.append ((
+						package_keepout.bottom.arcs.append ((
 							center 		=> package_arc.center,
 							start_point	=> package_arc.start_point, 
 							end_point	=> package_arc.end_point));  -- line with discarded because this is keepout
-						arc_keepout_properties (BOTTOM, package_bot_keepout.arcs.last, log_threshold + 1);
+						arc_keepout_properties (BOTTOM, package_keepout.bottom.arcs.last, log_threshold + 1);
 
+						
 					when TOP_COPPER => 
-						package_top_copper.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
-						arc_copper_properties (TOP, package_top_copper.arcs.last, log_threshold + 1);
+						package_copper.top.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
+						arc_copper_properties (TOP, package_copper.top.arcs.last, log_threshold + 1);
 
 					when BOT_COPPER => 
-						package_bot_copper.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
-						arc_copper_properties (BOTTOM, package_bot_copper.arcs.last, log_threshold + 1);
+						package_copper.bottom.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
+						arc_copper_properties (BOTTOM, package_copper.bottom.arcs.last, log_threshold + 1);
 
+						
 					when TOP_STOP =>
-						package_top_stop_mask.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
+						package_stop_mask.top.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
 						-- CS arc_stop_mask_properties (TOP, package_top_stop_mask.arcs.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						package_bot_stop_mask.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
+						package_stop_mask.bottom.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
 						-- CS arc_stop_mask_properties (BOTTOM, package_bot_stop_mask.arcs.last, log_threshold + 1);
 
+						
 					when TOP_PASTE =>
-						package_top_stencil.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
+						package_stencil.top.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
 						-- CS arc_stencil_properties (TOP, package_top_stencil.arcs.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						package_bot_stencil.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
+						package_stencil.bottom.arcs.append ((et_pcb.type_arc (package_arc) with package_arc.width));
 						-- CS arc_stencil_properties (BOTTOM, package_bot_stencil.arcs.last, log_threshold + 1);
 
 					when others => invalid_layer;
@@ -5269,55 +5265,60 @@ package body et_kicad_pcb is
 				-- is formed and appended to the list of silk screen circles.
 				case package_circle.layer is
 					when TOP_SILK =>
-						package_top_silk_screen.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
-						circle_silk_screen_properties (TOP, package_top_silk_screen.circles.last, log_threshold + 1);
+						package_silk_screen.top.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
+						circle_silk_screen_properties (TOP, package_silk_screen.top.circles.last, log_threshold + 1);
 						
 					when BOT_SILK =>
-						package_bot_silk_screen.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
-						circle_silk_screen_properties (BOTTOM, package_bot_silk_screen.circles.last, log_threshold + 1);
+						package_silk_screen.bottom.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
+						circle_silk_screen_properties (BOTTOM, package_silk_screen.bottom.circles.last, log_threshold + 1);
+
 						
 					when TOP_ASSY =>
-						package_top_assy_doc.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
-						circle_assy_doc_properties (TOP, package_top_assy_doc.circles.last, log_threshold + 1);
+						package_assy_doc.top.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
+						circle_assy_doc_properties (TOP, package_assy_doc.top.circles.last, log_threshold + 1);
 						
 					when BOT_ASSY =>
-						package_bot_assy_doc.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
-						circle_assy_doc_properties (BOTTOM, package_bot_assy_doc.circles.last, log_threshold + 1);
+						package_assy_doc.bottom.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
+						circle_assy_doc_properties (BOTTOM, package_assy_doc.bottom.circles.last, log_threshold + 1);
+
 						
 					when TOP_KEEP =>
-						package_top_keepout.circles.append ((
+						package_keepout.top.circles.append ((
 							center 		=> package_circle.center,
 							radius		=> package_circle.radius ));  -- line with discarded because this is keepout
-						circle_keepout_properties (TOP, package_top_keepout.circles.last, log_threshold + 1);
+						circle_keepout_properties (TOP, package_keepout.top.circles.last, log_threshold + 1);
 						
 					when BOT_KEEP =>
-						package_bot_keepout.circles.append ((
+						package_keepout.bottom.circles.append ((
 							center 		=> package_circle.center,
 							radius		=> package_circle.radius ));  -- line with discarded because this is keepout
-						circle_keepout_properties (BOTTOM, package_bot_keepout.circles.last, log_threshold + 1);
+						circle_keepout_properties (BOTTOM, package_keepout.bottom.circles.last, log_threshold + 1);
 
+						
 					when TOP_COPPER => 
-						package_top_copper.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
-						circle_copper_properties (TOP, package_top_copper.circles.last, log_threshold + 1);
+						package_copper.top.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
+						circle_copper_properties (TOP, package_copper.top.circles.last, log_threshold + 1);
 
 					when BOT_COPPER => 
-						package_bot_copper.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
-						circle_copper_properties (BOTTOM, package_bot_copper.circles.last, log_threshold + 1);
+						package_copper.bottom.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
+						circle_copper_properties (BOTTOM, package_copper.bottom.circles.last, log_threshold + 1);
 
+						
 					when TOP_STOP =>
-						package_top_stop_mask.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
+						package_stop_mask.top.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
 						-- CS circle_stop_mask_properties (TOP, package_top_stop_mask.circles.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						package_bot_stop_mask.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
+						package_stop_mask.bottom.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
 						-- CS circle_stop_mask_properties (BOTTOM, package_bot_stop_mask.circles.last, log_threshold + 1);
 
+						
 					when TOP_PASTE =>
-						package_top_stencil.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
+						package_stencil.top.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
 						-- CS circle_stencil_properties (TOP, package_top_stencil.circles.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						package_bot_stencil.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
+						package_stencil.bottom.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
 						-- CS circle_stencil_properties (BOTTOM, package_bot_stencil.circles.last, log_threshold + 1);
 
 					when others => invalid_layer;
@@ -5329,51 +5330,56 @@ package body et_kicad_pcb is
 			-- Append the line to the container corresponding to the layer. Then log the line properties.
 				case package_line.layer is
 					when TOP_SILK =>
-						package_top_silk_screen.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
-						line_silk_screen_properties (TOP, package_top_silk_screen.lines.last, log_threshold + 1);
+						package_silk_screen.top.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
+						line_silk_screen_properties (TOP, package_silk_screen.top.lines.last, log_threshold + 1);
 
 					when BOT_SILK =>
-						package_bot_silk_screen.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
-						line_silk_screen_properties (BOTTOM, package_bot_silk_screen.lines.last, log_threshold + 1);
+						package_silk_screen.bottom.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
+						line_silk_screen_properties (BOTTOM, package_silk_screen.bottom.lines.last, log_threshold + 1);
 
+						
 					when TOP_ASSY =>
-						package_top_assy_doc.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
-						line_assy_doc_properties (TOP, package_top_assy_doc.lines.last, log_threshold + 1);
+						package_assy_doc.top.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
+						line_assy_doc_properties (TOP, package_assy_doc.top.lines.last, log_threshold + 1);
 
 					when BOT_ASSY =>
-						package_bot_assy_doc.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
-						line_assy_doc_properties (BOTTOM, package_bot_assy_doc.lines.last, log_threshold + 1);
+						package_assy_doc.bottom.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
+						line_assy_doc_properties (BOTTOM, package_assy_doc.bottom.lines.last, log_threshold + 1);
 
+						
 					when TOP_KEEP =>
-						package_top_keepout.lines.append ((package_line.start_point, package_line.end_point));
-						line_keepout_properties (TOP, package_top_keepout.lines.last, log_threshold + 1);
+						package_keepout.top.lines.append ((package_line.start_point, package_line.end_point));
+						line_keepout_properties (TOP, package_keepout.top.lines.last, log_threshold + 1);
 
 					when BOT_KEEP =>
-						package_bot_keepout.lines.append ((package_line.start_point, package_line.end_point));
-						line_keepout_properties (BOTTOM, package_bot_keepout.lines.last, log_threshold + 1);
+						package_keepout.bottom.lines.append ((package_line.start_point, package_line.end_point));
+						line_keepout_properties (BOTTOM, package_keepout.bottom.lines.last, log_threshold + 1);
 
+						
 					when TOP_COPPER => 
-						package_top_copper.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
-						line_copper_properties (TOP, package_top_copper.lines.last, log_threshold + 1);
+						package_copper.top.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
+						line_copper_properties (TOP, package_copper.top.lines.last, log_threshold + 1);
 
 					when BOT_COPPER => 
-						package_bot_copper.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
-						line_copper_properties (BOTTOM, package_bot_copper.lines.last, log_threshold + 1);
+						package_copper.bottom.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
+						line_copper_properties (BOTTOM, package_copper.bottom.lines.last, log_threshold + 1);
 
+						
 					when TOP_STOP =>
-						package_top_stop_mask.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
+						package_stop_mask.top.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
 						-- CS line_stop_properties (TOP, package_top_stop_mask.lines.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						package_bot_stop_mask.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
+						package_stop_mask.bottom.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
 						-- CS line_stop_properties (BOTTOM, package_bot_stop_mask.lines.last, log_threshold + 1);
 
+						
 					when TOP_PASTE =>
-						package_top_stencil.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
+						package_stencil.top.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
 						-- CS line_stencil_properties (TOP, package_top_stencil.lines.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						package_bot_stencil.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
+						package_stencil.bottom.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
 						-- CS line_stencil_properties (BOTTOM, package_bot_stencil.lines.last, log_threshold + 1);
 
 					when others => invalid_layer;
@@ -5567,13 +5573,14 @@ package body et_kicad_pcb is
 						-- is passed separately (via "with" statement).
 						case package_text.layer is
 							when TOP_SILK =>
-								package_top_silk_screen.texts.append (
+								package_silk_screen.top.texts.append (
 									(et_pcb.type_text (package_text) with content => package_text.content));
-								text_silk_screen_properties (TOP, package_top_silk_screen.texts.last, log_threshold + 1);
+								text_silk_screen_properties (TOP, package_silk_screen.top.texts.last, log_threshold + 1);
+								
 							when BOT_SILK =>
-								package_bot_silk_screen.texts.append (
+								package_silk_screen.bottom.texts.append (
 									(et_pcb.type_text (package_text) with content => package_text.content));
-								text_silk_screen_properties (BOTTOM, package_bot_silk_screen.texts.last, log_threshold + 1);
+								text_silk_screen_properties (BOTTOM, package_silk_screen.bottom.texts.last, log_threshold + 1);
 							when others => -- should never happen
 								invalid_layer_reference; 
 						end case;
@@ -5586,13 +5593,15 @@ package body et_kicad_pcb is
 						-- is passed separately (via "with" statement).
 						case package_text.layer is
 							when TOP_ASSY =>
-								package_top_assy_doc.texts.append (
+								package_assy_doc.top.texts.append (
 									(et_pcb.type_text (package_text) with content => package_text.content));
-								text_assy_doc_properties (TOP, package_top_assy_doc.texts.last, log_threshold + 1);
+								text_assy_doc_properties (TOP, package_assy_doc.top.texts.last, log_threshold + 1);
+								
 							when BOT_ASSY =>
-								package_bot_assy_doc.texts.append (
+								package_assy_doc.bottom.texts.append (
 									(et_pcb.type_text (package_text) with content => package_text.content));
-								text_assy_doc_properties (BOTTOM, package_bot_assy_doc.texts.last, log_threshold + 1);
+								text_assy_doc_properties (BOTTOM, package_assy_doc.bottom.texts.last, log_threshold + 1);
+								
 							when others => -- should never happen
 								invalid_layer_value;
 						end case;
@@ -5606,21 +5615,25 @@ package body et_kicad_pcb is
 						-- User specific texts may be placed in both silk screen or assembly documentation.
 						case package_text.layer is
 							when TOP_SILK => 
-								package_top_silk_screen.texts.append (
+								package_silk_screen.top.texts.append (
 									(et_pcb.type_text (package_text) with content => package_text.content));
-								text_silk_screen_properties (TOP, package_top_silk_screen.texts.last, log_threshold + 1);
+								text_silk_screen_properties (TOP, package_silk_screen.top.texts.last, log_threshold + 1);
+								
 							when BOT_SILK => 
-								package_bot_silk_screen.texts.append (
+								package_silk_screen.bottom.texts.append (
 									(et_pcb.type_text (package_text) with content => package_text.content));
-								text_silk_screen_properties (BOTTOM, package_bot_silk_screen.texts.last, log_threshold + 1);
+								text_silk_screen_properties (BOTTOM, package_silk_screen.bottom.texts.last, log_threshold + 1);
+								
 							when TOP_ASSY => 
-								package_top_assy_doc.texts.append (
+								package_assy_doc.top.texts.append (
 									(et_pcb.type_text (package_text) with content => package_text.content));
-								text_assy_doc_properties (TOP, package_top_assy_doc.texts.last, log_threshold + 1);
+								text_assy_doc_properties (TOP, package_assy_doc.top.texts.last, log_threshold + 1);
+								
 							when BOT_ASSY => 
-								package_bot_assy_doc.texts.append (
+								package_assy_doc.bottom.texts.append (
 									(et_pcb.type_text (package_text) with content => package_text.content));
-								text_assy_doc_properties (BOTTOM, package_bot_assy_doc.texts.last, log_threshold + 1);
+								text_assy_doc_properties (BOTTOM, package_assy_doc.bottom.texts.last, log_threshold + 1);
+								
 							when others -- should never happen. kicad does not allow texts in signal layers 
 								=> invalid_layer_user;
 						end case;

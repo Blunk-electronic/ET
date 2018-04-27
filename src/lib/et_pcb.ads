@@ -600,7 +600,7 @@ package et_pcb is
 		texts		: type_texts_with_content.list;
 	end record;
 
-	-- Aassembly documentation objects of a package include placeholders:
+	-- Aassembly documentation objects of a package (in the library) include placeholders:
 	type type_assembly_documentation_package is new type_assembly_documentation with record
 		placeholders: type_text_placeholders_package.list;
 	end record;
