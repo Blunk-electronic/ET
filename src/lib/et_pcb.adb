@@ -213,7 +213,7 @@ package body et_pcb is
 		return type_directory_name.to_bounded_string (directory_name);
 	end to_directory;
 
-	procedure line_pcb_contour_properties (
+	procedure line_pcb_contour_properties ( -- CS overloaded -> remove ?
 		pcb_contour_line 	: in type_pcb_contour_line)
 		--log_threshold		: in et_string_processing.type_log_level)
 		is
@@ -340,6 +340,8 @@ package body et_pcb is
 			& " angle" & to_string (get_angle (position))
 			& " face" & to_string (get_face (position)));
 	end package_position;
+
+	
 	
 -- PROPERTIES OF OBJECTS IN COPPER (NON ELECTRIC !!)
 	procedure line_copper_properties (
@@ -670,6 +672,48 @@ package body et_pcb is
 	end arc_via_restrict_properties;
 
 
+-- PROPERTIES OF OBJECTS IN BOARD CONTOUR / OUTLINE / EDGE CUTS
+	procedure line_pcb_contour_properties (
+	-- Logs the properties of the given line of pcb contour
+		face			: in type_face;
+		cursor			: in type_pcb_contour_lines.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_pcb_contour_lines;
+		line : type_pcb_contour_line;
+	begin
+		line := element (cursor);
+		log ("PCB contour (edge cuts / outline) line face" & to_string (face) & latin_1.space
+			 & to_string (type_line (line)), log_threshold);
+	end line_pcb_contour_properties;
+
+	procedure arc_pcb_contour_properties (
+	-- Logs the properties of the given arc of pcb contour
+		cursor			: in type_pcb_contour_arcs.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_pcb_contour_arcs;
+		arc : type_pcb_contour_arc;
+	begin
+		arc := element (cursor);
+		log ("PCB contour (edge cuts / outline) arc" & latin_1.space 
+			 & to_string (type_arc (arc)), log_threshold);
+	end arc_pcb_contour_properties;
+
+	procedure circle_pcb_contour_properties (
+	-- Logs the properties of the given circle of pcb contour
+		face			: in type_face;
+		cursor			: in type_pcb_contour_circles.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_pcb_contour_circles;
+		circle : type_pcb_contour_circle;
+	begin
+		circle := element (cursor);
+		log ("PCB contour (edge cuts / outline) circle face" & to_string (face) & latin_1.space 
+			 & to_string (type_circle (circle)), log_threshold);
+	end circle_pcb_contour_properties;
+
+
+	
+	
 	
 	procedure placeholder_silk_screen_properties (
 	-- Logs the properties of the given silk screen placeholder

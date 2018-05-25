@@ -1192,7 +1192,7 @@ package body et_kicad_pcb is
 									elsif to_string (arg) = layer_bot_solder_paste then
 										line.layer := BOT_PASTE;
 									else
-										invalid_layer;
+										invalid_layer; -- e.g. objects in layer EDGE_CUTS
 									end if;
 
 								when others => too_many_arguments;
@@ -1232,7 +1232,7 @@ package body et_kicad_pcb is
 									elsif to_string (arg) = layer_bot_solder_paste then
 										arc.layer := BOT_PASTE;
 									else
-										invalid_layer;
+										invalid_layer;  -- e.g. objects in layer EDGE_CUTS
 									end if;
 
 								when others => too_many_arguments;
@@ -1272,7 +1272,7 @@ package body et_kicad_pcb is
 									elsif to_string (arg) = layer_bot_solder_paste then
 										circle.layer := BOT_PASTE;
 									else
-										invalid_layer;
+										invalid_layer;  -- e.g. objects in layer EDGE_CUTS
 									end if;
 
 								when others => too_many_arguments;
@@ -5064,7 +5064,7 @@ package body et_kicad_pcb is
 						
 					when EDGE_CUTS =>
 						board.contour.arcs.append ((et_pcb.type_arc (board_arc) with locked => NO));
-						-- CS log
+						arc_pcb_contour_properties (board.contour.arcs.last, log_threshold + 1);
 						
 					when others => invalid_layer;
 				end case;
