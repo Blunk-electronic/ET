@@ -5014,38 +5014,38 @@ package body et_kicad_pcb is
 				case board_arc.layer is
 					when TOP_SILK =>
 						board.silk_screen.top.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
-						--arc_silk_screen_properties (TOP, board.silk_screen.arcs.last, log_threshold + 1);
+						arc_silk_screen_properties (TOP, board.silk_screen.top.arcs.last, log_threshold + 1);
 
 					when BOT_SILK =>
 						board.silk_screen.bottom.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
-						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						arc_silk_screen_properties (BOTTOM, board.silk_screen.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
 						board.assy_doc.top.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
-						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						arc_assy_doc_properties (TOP, board.assy_doc.top.arcs.last, log_threshold + 1);
 
 					when BOT_ASSY =>
 						board.assy_doc.bottom.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
-						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						arc_assy_doc_properties (BOTTOM, board.assy_doc.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_PASTE =>
 						board.stencil.top.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
-						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						arc_stencil_properties (TOP, board.stencil.top.arcs.last, log_threshold + 1);
 
 					when BOT_PASTE =>
 						board.stencil.bottom.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
-						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						arc_stencil_properties (BOTTOM, board.stencil.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_STOP =>
 						board.stop_mask.top.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
-						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						arc_stop_mask_properties (TOP, board.stop_mask.top.arcs.last, log_threshold + 1);
 
 					when BOT_STOP =>
 						board.stop_mask.bottom.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
-						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						arc_stop_mask_properties (BOTTOM, board.stop_mask.bottom.arcs.last, log_threshold + 1);
 
 
 					when TOP_KEEP =>
@@ -5053,14 +5053,14 @@ package body et_kicad_pcb is
 							center 		=> board_arc.center, 
 							start_point	=> board_arc.start_point,
 							end_point	=> board_arc.end_point));  -- line width discarded because this is keepout
-						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						arc_keepout_properties (TOP, board.keepout.top.arcs.last, log_threshold + 1);
 
 					when BOT_KEEP =>
 						board.keepout.bottom.arcs.append ((
 							center 		=> board_arc.center, 
 							start_point	=> board_arc.start_point,
 							end_point	=> board_arc.end_point)); -- line width discarded because this is keepout
-						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						arc_keepout_properties (BOTTOM, board.keepout.bottom.arcs.last, log_threshold + 1);
 						
 					when EDGE_CUTS =>
 						board.contour.arcs.append ((et_pcb.type_arc (board_arc) with locked => NO));
@@ -5080,51 +5080,51 @@ package body et_kicad_pcb is
 				case board_circle.layer is
 					when TOP_SILK =>
 						board.silk_screen.top.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
-						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						circle_silk_screen_properties (TOP, board.silk_screen.top.circles.last, log_threshold + 1);
 
 					when BOT_SILK =>
 						board.silk_screen.bottom.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
-						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						circle_silk_screen_properties (BOTTOM, board.silk_screen.bottom.circles.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
 						board.assy_doc.top.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
-						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						circle_assy_doc_properties (TOP, board.assy_doc.top.circles.last, log_threshold + 1);
 
 					when BOT_ASSY =>
 						board.assy_doc.bottom.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
-						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						circle_assy_doc_properties (BOTTOM, board.assy_doc.bottom.circles.last, log_threshold + 1);
 
 						
 					when TOP_PASTE =>
 						board.stencil.top.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
-						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						circle_stencil_properties (TOP, board.stencil.top.circles.last, log_threshold + 1);
 
 					when BOT_PASTE =>
 						board.stencil.bottom.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
-						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						circle_stencil_properties (BOTTOM, board.stencil.bottom.circles.last, log_threshold + 1);
 						
 
 					when TOP_STOP =>
 						board.stop_mask.top.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
-						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						circle_stop_mask_properties (TOP, board.stop_mask.top.circles.last, log_threshold + 1);
 
 					when BOT_STOP =>
 						board.stop_mask.bottom.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
-						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						circle_stop_mask_properties (BOTTOM, board.stop_mask.bottom.circles.last, log_threshold + 1);
 
 						
 					when TOP_KEEP =>
 						board.keepout.top.circles.append ((
 							center	=> board_circle.center,
 							radius	=> board_circle.radius));
-						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						circle_keepout_properties (TOP, board.keepout.top.circles.last, log_threshold + 1);
 
 					when BOT_KEEP =>
 						board.keepout.bottom.circles.append ((
 							center	=> board_circle.center,
 							radius	=> board_circle.radius));
-						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						circle_keepout_properties (BOTTOM, board.keepout.bottom.circles.last, log_threshold + 1);
 
 						
 					when EDGE_CUTS =>
@@ -5143,51 +5143,51 @@ package body et_kicad_pcb is
 
 					when TOP_SILK =>
 						board.silk_screen.top.lines.append ((et_pcb.type_line (board_line) with board_line.width));
-						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						line_silk_screen_properties (TOP, board.silk_screen.top.lines.last, log_threshold + 1);
 
 					when BOT_SILK =>
 						board.silk_screen.bottom.lines.append ((et_pcb.type_line (board_line) with board_line.width));
-						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						line_silk_screen_properties (BOTTOM, board.silk_screen.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
 						board.assy_doc.top.lines.append ((et_pcb.type_line (board_line) with board_line.width));
-						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						line_assy_doc_properties (TOP, board.assy_doc.top.lines.last, log_threshold + 1);
 
 					when BOT_ASSY =>
 						board.assy_doc.bottom.lines.append ((et_pcb.type_line (board_line) with board_line.width));
-						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						line_assy_doc_properties (BOTTOM, board.assy_doc.bottom.lines.last, log_threshold + 1);
 
 
 					when TOP_PASTE =>
 						board.stencil.top.lines.append ((et_pcb.type_line (board_line) with board_line.width));
-						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						line_stencil_properties (TOP, board.stencil.top.lines.last, log_threshold + 1);
 
 					when BOT_PASTE =>
 						board.stencil.bottom.lines.append ((et_pcb.type_line (board_line) with board_line.width));
-						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						line_stencil_properties (BOTTOM, board.stencil.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_STOP =>
 						board.stop_mask.top.lines.append ((et_pcb.type_line (board_line) with board_line.width));
-						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						line_stop_mask_properties (TOP, board.stop_mask.top.lines.last, log_threshold + 1);
 
 					when BOT_STOP =>
 						board.stop_mask.bottom.lines.append ((et_pcb.type_line (board_line) with board_line.width));
-						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						line_stop_mask_properties (BOTTOM, board.stop_mask.bottom.lines.last, log_threshold + 1);
 
 
 					when TOP_KEEP =>
 						board.keepout.top.lines.append ((
 							start_point	=> board_line.start_point,
 							end_point	=> board_line.end_point ));
-						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						line_keepout_properties (TOP, board.keepout.top.lines.last, log_threshold + 1);
 
 					when BOT_KEEP =>
 						board.keepout.bottom.lines.append ((
 							start_point	=> board_line.start_point,
 							end_point	=> board_line.end_point ));
-						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						line_keepout_properties (BOTTOM, board.keepout.bottom.lines.last, log_threshold + 1);
 
 						
 					when EDGE_CUTS =>
