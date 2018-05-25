@@ -1615,14 +1615,14 @@ package body et_kicad_pcb is
 						keepout.top.arcs.append ((
 							center 		=> arc.center,
 							start_point	=> arc.start_point, 
-							end_point	=> arc.end_point));  -- line with discarded because this is keepout
+							end_point	=> arc.end_point));  -- line width discarded because this is keepout
 						arc_keepout_properties (TOP, keepout.top.arcs.last, log_threshold + 1);
 						
 					when BOT_KEEP =>
 						keepout.bottom.arcs.append ((
 							center 		=> arc.center,
 							start_point	=> arc.start_point, 
-							end_point	=> arc.end_point));  -- line with discarded because this is keepout
+							end_point	=> arc.end_point));  -- line width discarded because this is keepout
 						arc_keepout_properties (BOTTOM, keepout.bottom.arcs.last, log_threshold + 1);
 
 						
@@ -1689,13 +1689,13 @@ package body et_kicad_pcb is
 					when TOP_KEEP =>
 						keepout.top.circles.append ((
 							center 		=> circle.center,
-							radius		=> circle.radius )); -- line with discarded because this is keepout
+							radius		=> circle.radius )); -- line width discarded because this is keepout
 						circle_keepout_properties (TOP, keepout.top.circles.last, log_threshold + 1);
 						
 					when BOT_KEEP =>
 						keepout.bottom.circles.append ((
 							center 		=> circle.center,
-							radius		=> circle.radius )); -- line with discarded because this is keepout
+							radius		=> circle.radius )); -- line width discarded because this is keepout
 						circle_keepout_properties (BOTTOM, keepout.bottom.circles.last, log_threshold + 1);
 
 						
@@ -1753,11 +1753,11 @@ package body et_kicad_pcb is
 
 						
 					when TOP_KEEP =>
-						keepout.top.lines.append ((line.start_point, line.end_point));
+						keepout.top.lines.append ((line.start_point, line.end_point)); -- line width discarded because this is keepout
 						line_keepout_properties (TOP, keepout.top.lines.last, log_threshold + 1);
 
 					when BOT_KEEP =>
-						keepout.bottom.lines.append ((line.start_point, line.end_point));
+						keepout.bottom.lines.append ((line.start_point, line.end_point)); -- line width discarded because this is keepout
 						line_keepout_properties (BOTTOM, keepout.bottom.lines.last, log_threshold + 1);
 
 						
@@ -5014,7 +5014,7 @@ package body et_kicad_pcb is
 				case board_arc.layer is
 					when TOP_SILK =>
 						board.silk_screen.top.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
-						-- CS arc_silk_screen_properties (TOP, board_top_silk_screen.arcs.last, log_threshold + 1);
+						--arc_silk_screen_properties (TOP, board.silk_screen.arcs.last, log_threshold + 1);
 
 					when BOT_SILK =>
 						board.silk_screen.bottom.arcs.append ((et_pcb.type_arc (board_arc) with board_arc.width));
@@ -5233,14 +5233,14 @@ package body et_kicad_pcb is
 						package_keepout.top.arcs.append ((
 							center 		=> package_arc.center,
 							start_point	=> package_arc.start_point, 
-							end_point	=> package_arc.end_point)); -- line with discarded because this is keepout
+							end_point	=> package_arc.end_point)); -- line width discarded because this is keepout
 						arc_keepout_properties (TOP, package_keepout.top.arcs.last, log_threshold + 1);
 						
 					when BOT_KEEP =>
 						package_keepout.bottom.arcs.append ((
 							center 		=> package_arc.center,
 							start_point	=> package_arc.start_point, 
-							end_point	=> package_arc.end_point));  -- line with discarded because this is keepout
+							end_point	=> package_arc.end_point));  -- line width discarded because this is keepout
 						arc_keepout_properties (BOTTOM, package_keepout.bottom.arcs.last, log_threshold + 1);
 
 						
@@ -5308,13 +5308,13 @@ package body et_kicad_pcb is
 					when TOP_KEEP =>
 						package_keepout.top.circles.append ((
 							center 		=> package_circle.center,
-							radius		=> package_circle.radius ));  -- line with discarded because this is keepout
+							radius		=> package_circle.radius ));  -- line width discarded because this is keepout
 						circle_keepout_properties (TOP, package_keepout.top.circles.last, log_threshold + 1);
 						
 					when BOT_KEEP =>
 						package_keepout.bottom.circles.append ((
 							center 		=> package_circle.center,
-							radius		=> package_circle.radius ));  -- line with discarded because this is keepout
+							radius		=> package_circle.radius ));  -- line width discarded because this is keepout
 						circle_keepout_properties (BOTTOM, package_keepout.bottom.circles.last, log_threshold + 1);
 
 						
@@ -5371,11 +5371,11 @@ package body et_kicad_pcb is
 
 						
 					when TOP_KEEP =>
-						package_keepout.top.lines.append ((package_line.start_point, package_line.end_point));
+						package_keepout.top.lines.append ((package_line.start_point, package_line.end_point)); -- line width discarded because this is keepout
 						line_keepout_properties (TOP, package_keepout.top.lines.last, log_threshold + 1);
 
 					when BOT_KEEP =>
-						package_keepout.bottom.lines.append ((package_line.start_point, package_line.end_point));
+						package_keepout.bottom.lines.append ((package_line.start_point, package_line.end_point)); -- line width discarded because this is keepout
 						line_keepout_properties (BOTTOM, package_keepout.bottom.lines.last, log_threshold + 1);
 
 						
