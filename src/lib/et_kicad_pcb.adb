@@ -5192,7 +5192,7 @@ package body et_kicad_pcb is
 						
 					when EDGE_CUTS =>
 						board.contour.lines.append ((et_pcb.type_line (board_line) with locked => NO));
-						-- CS log
+						--line_pcb_contour_properties (
 
 					when others => invalid_layer;
 				end case;

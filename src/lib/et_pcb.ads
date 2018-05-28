@@ -305,8 +305,8 @@ package et_pcb is
 		locked : type_locked := type_locked'first;
 	end record;
 
-	procedure line_pcb_contour_properties (
-		pcb_contour_line 	: in type_pcb_contour_line);
+-- 	procedure line_pcb_contour_properties (
+-- 		pcb_contour_line 	: in type_pcb_contour_line);
 
 	package type_pcb_contour_lines is new doubly_linked_lists (type_pcb_contour_line);
 
@@ -342,7 +342,8 @@ package et_pcb is
 	end record;
 
 	procedure log_plated_millings (
-		millings 		: in type_package_pcb_contour_plated);
+		millings 		: in type_package_pcb_contour_plated;
+		log_threshold	: in et_string_processing.type_log_level);
 		
 	-- PACKAGE CONTOUR/OUTLINE -- for 3d only
 	type type_package_contour_line is new type_line with null record;
@@ -1050,7 +1051,6 @@ package et_pcb is
 -- PROPERTIES OF OBJECTS IN BOARD CONTOUR / OUTLINE / EDGE CUTS
 	procedure line_pcb_contour_properties (
 	-- Logs the properties of the given line of pcb contour
-		face			: in type_face;
 		cursor			: in type_pcb_contour_lines.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
@@ -1061,7 +1061,6 @@ package et_pcb is
 
 	procedure circle_pcb_contour_properties (
 	-- Logs the properties of the given circle of pcb contour
-		face			: in type_face;
 		cursor			: in type_pcb_contour_circles.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 	

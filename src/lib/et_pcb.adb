@@ -213,21 +213,9 @@ package body et_pcb is
 		return type_directory_name.to_bounded_string (directory_name);
 	end to_directory;
 
-	procedure line_pcb_contour_properties ( -- CS overloaded -> remove ?
-		pcb_contour_line 	: in type_pcb_contour_line)
-		--log_threshold		: in et_string_processing.type_log_level)
-		is
-	begin
-		log ("line start" & to_string (pcb_contour_line.start_point)
-			 & " end" & to_string (pcb_contour_line.end_point)
-			 & " locked " & type_locked'image (pcb_contour_line.locked)
-			);
-
-	end line_pcb_contour_properties;
-		
 	procedure log_plated_millings (
-		millings 		: in type_package_pcb_contour_plated)
--- 		log_threshold	: in et_string_processing.type_log_level)
+		millings 		: in type_package_pcb_contour_plated;
+		log_threshold	: in et_string_processing.type_log_level)
 		is
 		use type_pcb_contour_lines;
 		use type_pcb_contour_arcs;
@@ -235,17 +223,14 @@ package body et_pcb is
 		line_cursor 	: type_pcb_contour_lines.cursor;
 		arc_cursor		: type_pcb_contour_arcs.cursor;
 		circle_cursor	: type_pcb_contour_circles.cursor;
-
 	begin
 		if not is_empty (millings.lines) then
 			line_cursor := millings.lines.first;
 			while line_cursor /= type_pcb_contour_lines.no_element loop
-				line_pcb_contour_properties (element (line_cursor));
+				line_pcb_contour_properties (line_cursor, log_threshold);
 				next (line_cursor);
 			end loop;
 		end if;
-		--log_indentation : type_indentation_level
-		null;
 	end log_plated_millings;
 	
 		
@@ -675,14 +660,13 @@ package body et_pcb is
 -- PROPERTIES OF OBJECTS IN BOARD CONTOUR / OUTLINE / EDGE CUTS
 	procedure line_pcb_contour_properties (
 	-- Logs the properties of the given line of pcb contour
-		face			: in type_face;
 		cursor			: in type_pcb_contour_lines.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
 		use type_pcb_contour_lines;
 		line : type_pcb_contour_line;
 	begin
 		line := element (cursor);
-		log ("PCB contour (edge cuts / outline) line face" & to_string (face) & latin_1.space
+		log ("PCB contour (edge cuts / outline) line face" & latin_1.space
 			 & to_string (type_line (line)), log_threshold);
 	end line_pcb_contour_properties;
 
@@ -700,14 +684,13 @@ package body et_pcb is
 
 	procedure circle_pcb_contour_properties (
 	-- Logs the properties of the given circle of pcb contour
-		face			: in type_face;
 		cursor			: in type_pcb_contour_circles.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
 		use type_pcb_contour_circles;
 		circle : type_pcb_contour_circle;
 	begin
 		circle := element (cursor);
-		log ("PCB contour (edge cuts / outline) circle face" & to_string (face) & latin_1.space 
+		log ("PCB contour (edge cuts / outline) circle face" & latin_1.space 
 			 & to_string (type_circle (circle)), log_threshold);
 	end circle_pcb_contour_properties;
 
@@ -817,7 +800,7 @@ package body et_pcb is
 								if log_level >= log_threshold_1 then
 									log ("plated milling contour ");
 									log_indentation_up;
-									log_plated_millings (terminal.millings);
+									log_plated_millings (terminal.millings, log_threshold_1);
 									log_indentation_down;
 								end if;
 						end case;
