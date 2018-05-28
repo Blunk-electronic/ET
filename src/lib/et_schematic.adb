@@ -994,7 +994,7 @@ package body et_schematic is
 	end equal_reference;
 
 	procedure copy_module (
-	-- Copyies the a rig module. 
+	-- Copyies a rig module. 
 	-- If copy_last is true (default) the last module in the rig is copied. 
 	-- If copy_last is false, the module with given name_origin is copied.
 	-- The module instance is always incremented automatically.

@@ -305,9 +305,6 @@ package et_pcb is
 		locked : type_locked := type_locked'first;
 	end record;
 
--- 	procedure line_pcb_contour_properties (
--- 		pcb_contour_line 	: in type_pcb_contour_line);
-
 	package type_pcb_contour_lines is new doubly_linked_lists (type_pcb_contour_line);
 
 	
@@ -833,7 +830,7 @@ package et_pcb is
 	-- extended by other properties.
 	type type_package (appearance : type_package_appearance) is abstract tagged record
 		description				: type_package_description.bounded_string;
-		copper					: type_copper_package_both_sides;
+		copper					: type_copper_package_both_sides; -- non-electric objects
 		keepout 				: type_keepout_both_sides;
 		stop_mask				: type_stop_mask_both_sides;
 		solder_stencil			: type_stencil_both_sides;

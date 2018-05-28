@@ -114,6 +114,7 @@ package et_kicad_pcb is
 		TOP_STOP, BOT_STOP, -- solder stop mask
 		TOP_PASTE, BOT_PASTE, -- stencil, solder paste, cream
 		TOP_KEEP, BOT_KEEP -- in kicad this is the crtyrd layer
+		-- CS TOP_GLUE, BOT_GLUE
 		);
 
 	-- LINES, ARCS, CIRCLES
@@ -553,6 +554,8 @@ package et_kicad_pcb is
 		stop_mask	: et_pcb.type_stop_mask_both_sides;
 		keepout		: et_pcb.type_keepout_both_sides;		
 		contour		: et_pcb.type_pcb_contour;
+		-- NOTE: non-electric objects in signal layers are not allowed in kicad
+		-- CS objects in other layers (user defined, glue, ...)
 	end record;
 
 	procedure read_board (
