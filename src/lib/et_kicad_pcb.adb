@@ -5129,7 +5129,7 @@ package body et_kicad_pcb is
 						
 					when EDGE_CUTS =>
 						board.contour.circles.append ((et_pcb.type_circle (board_circle) with locked => NO));
-						-- CS log
+						circle_pcb_contour_properties (board.contour.circles.last, log_threshold + 1);
 						
 					when others => invalid_layer;
 				end case;
@@ -5192,7 +5192,7 @@ package body et_kicad_pcb is
 						
 					when EDGE_CUTS =>
 						board.contour.lines.append ((et_pcb.type_line (board_line) with locked => NO));
-						--line_pcb_contour_properties (
+						line_pcb_contour_properties (board.contour.lines.last, log_threshold + 1);
 
 					when others => invalid_layer;
 				end case;
