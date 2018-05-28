@@ -2479,11 +2479,13 @@ package body et_kicad_pcb is
 
 
 	function to_layer_name (name : in string) return type_layer_name.bounded_string is
+	-- converts a layer name given as string to a bounded string
 	begin
 		return type_layer_name.to_bounded_string (name);
 	end to_layer_name;
 
 	function to_layer_meaning (meaning : in string) return type_layer_meaning is
+	-- converts a layer meaning given as string to a bounded string		
 	begin
 		return type_layer_meaning'value (meaning);
 	end to_layer_meaning;
@@ -2589,12 +2591,14 @@ package body et_kicad_pcb is
 			SEC_ROTATE,
 			SEC_SCALE,
 			SEC_SCALESELECTION,
+			SEC_SEGMENT,
 			SEC_SEGMENT_WIDTH,
 			SEC_SETUP,
 			SEC_SUBTRACTMASKFROMSILK,
 			SEC_SIZE,
 			--SEC_SOLDER_MASK_MARGIN,
 			SEC_START,
+			SEC_STATUS,
 			SEC_TAGS,
 			SEC_TEDIT,
 			SEC_TRACE_CLEARANCE,
@@ -2704,6 +2708,8 @@ package body et_kicad_pcb is
 		net_class_name 	: type_net_class_name.bounded_string;	-- PWR, HIGH_CURRENT, ...
 		net_class 		: type_net_class;
 
+		-- SEGMENTS
+		segment : type_segment;
 
 		-- PACKAGES
 		package_name 			: et_libraries.type_component_package_name.bounded_string;
@@ -2990,7 +2996,7 @@ package body et_kicad_pcb is
 				when SEC_KICAD_PCB =>
 					case section.name is
 						when SEC_VERSION | SEC_HOST | SEC_GENERAL | SEC_PAGE |
-							SEC_LAYERS | SEC_SETUP | SEC_NET | SEC_NET_CLASS |
+							SEC_LAYERS | SEC_SEGMENT | SEC_SETUP | SEC_NET | SEC_NET_CLASS |
 							SEC_MODULE | SEC_GR_LINE | SEC_GR_ARC | SEC_GR_CIRCLE => null;
 						when others => invalid_section;
 					end case;
@@ -3107,7 +3113,12 @@ package body et_kicad_pcb is
 						when others => invalid_section;
 					end case;
 
-					
+				when SEC_SEGMENT =>
+					case section.name is
+						when SEC_START | SEC_END | SEC_LAYER | SEC_WIDTH | SEC_NET | SEC_STATUS | SEC_TSTAMP => null;
+						when others => invalid_section;
+					end case;
+						
 				when others => null;
 			end case;
 
@@ -4677,6 +4688,24 @@ package body et_kicad_pcb is
 						when others => null;
 					end case;
 
+
+				-- parent section
+				when SEC_SEGMENT =>
+					case section.name is
+						when SEC_START =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									set_point (axis => X, point => segment.start_point, value => to_distance (to_string (arg)));
+								when 2 => 
+									set_point (axis => Y, point => segment.start_point, value => to_distance (to_string (arg)));
+									set_point (axis => Z, point => segment.start_point, value => zero_distance);
+								when others => too_many_arguments;
+							end case;
+					
+						when others => null;
+
+					end case;
 
 					
 -- 					case section.parent is

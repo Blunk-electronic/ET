@@ -66,7 +66,7 @@ package et_kicad_pcb is
 	layer_top_copper			: constant string (1..4)	:= "F.Cu";
 	layer_bot_copper			: constant string (1..4)	:= "B.Cu";
 	layer_all_copper			: constant string (1..4)	:= "*.Cu";
-	
+
 	layer_top_solder_paste		: constant string (1..7)	:= "F.Paste";
 	layer_bot_solder_paste		: constant string (1..7)	:= "B.Paste";
 
@@ -342,7 +342,7 @@ package et_kicad_pcb is
 
 	
 	-- NETLIST ((things like (net 4 /LED_ANODE) ):
-	-- NOTE: this has nothing to do with any kicad netlist file !
+	-- NOTE: this has nothing to do with the kicad netlist file !
 	net_id_max : constant positive := 1_000_000; -- one million nets should be sufficient
 	type type_net_id is range 0..net_id_max; -- used in the "netlist" section
 	type type_net_id_terminal is range 1..net_id_max; -- used with pads in module section
@@ -456,15 +456,19 @@ package et_kicad_pcb is
 
 
 	
-	-- For things in section layers like (0 F.Cu signal) or (31 B.Cu signal) we have those specs.
+	-- For things in section layers like (0 F.Cu signal) or (49 F.Fab user) we have those specs.
 	-- This is board file related.
-	layer_id_max : constant positive := 49;
+	layer_id_max : constant positive := 49; -- includes ALL layers (signal and non-signal)
 	type type_layer_id is range 0..layer_id_max;
 	layer_name_length_max : constant positive := 9;
 	package type_layer_name is new generic_bounded_length (layer_name_length_max); -- B.Cu
+	
 	function to_layer_name (name : in string) return type_layer_name.bounded_string;
+	-- converts a layer name given as string to a bounded string
+
 	type type_layer_meaning is (SIGNAL, USER);
 	function to_layer_meaning (meaning : in string) return type_layer_meaning;
+	-- converts a layer meaning given as string to a bounded string
 	
 	type type_layer is record
 		name	: type_layer_name.bounded_string;
@@ -536,6 +540,26 @@ package et_kicad_pcb is
 
 
 
+	
+	-- For handling inner signal layers we have a prefix and a suffix
+	-- Together with the layer number something like In5.Cu is formed.
+	layer_inner_prefix			: constant string (1..2)	:= "In";
+	layer_inner_suffix			: constant string (1..3)	:= ".Cu";	
+
+	signal_layer_id_top		: constant type_layer_id := 0;
+	signal_layer_id_bottom	: constant type_layer_id := 32;	
+	subtype type_signal_layer_id is type_layer_id range signal_layer_id_top..signal_layer_id_bottom;
+	
+	type type_segment is new et_pcb.type_copper_line with record
+		net_id		: type_net_id;
+		layer		: type_signal_layer_id;
+		timestamp	: et_string_processing.type_timestamp;
+		-- CS status
+	end record;
+
+
+
+	
 	
 	-- This is the data type for the Kicad Board design:
 	type type_board is record

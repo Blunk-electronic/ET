@@ -401,7 +401,7 @@ package et_pcb is
 
 
 
-	-- COPPER OBJECTS (NON ELECTRIC !!) OF A PCB
+	-- COPPER OBJECTS OF A PCB
 	-- In a pcb drawing copper objects can be placed at various copper layers.
 	-- This requires a layer id for the object.
 	type type_copper_line_pcb is new type_copper_line with record
@@ -419,17 +419,33 @@ package et_pcb is
 	end record;
 	package type_copper_circles_pcb is new doubly_linked_lists (type_copper_circle_pcb);
 
+	type type_text_with_content_pcb is new type_text_with_content with record
+		layer	: type_signal_layer;
+	end record;
+
+	package type_texts_with_content_pcb is new doubly_linked_lists (
+		element_type => type_text_with_content_pcb);
+
+
+	
 	-- Type for NON ELECTRIC !! copper objects:
 	-- NON ELECTRIC copper objects of a pcb may also include text placeholders:
 	type type_copper_pcb is record 
-		lines 			: type_copper_lines.list;
-		arcs			: type_copper_arcs.list;
-		circles			: type_copper_circles.list;
-		texts			: type_texts_with_content.list;
-		placeholders	: type_text_placeholders_copper.list;		
+		lines 			: type_copper_lines_pcb.list;
+		arcs			: type_copper_arcs_pcb.list;
+		circles			: type_copper_circles_pcb.list;
+		texts			: type_texts_with_content_pcb.list;
+		placeholders	: type_text_placeholders_copper.list;
 		-- CS polygons
 	end record;
-	
+
+	-- tracks / traces/ signals 
+	type type_signal is tagged record 
+		lines 			: type_copper_lines_pcb.list;
+		arcs			: type_copper_arcs_pcb.list;
+		-- CS polygons
+		-- CS vias
+	end record;
 
 
 	-- SOLDER STOP MASK
