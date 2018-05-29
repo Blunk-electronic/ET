@@ -136,7 +136,7 @@ package et_pcb is
 	-- Checks whether the given signal clearance is in range of type_signal_clearance.
 
 	signal_width_max : constant type_distance := 100.0;
-	subtype type_signal_width is type_distance range copper_clearance_min .. signal_width_max;
+	subtype type_signal_width is type_distance range copper_structure_size_min .. signal_width_max;
 
 	procedure validate_signal_width (signal_width : in type_distance);
 	-- Checks whether the given signal width is in range of type_signal_width.

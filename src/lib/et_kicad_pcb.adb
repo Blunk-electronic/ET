@@ -2615,6 +2615,7 @@ package body et_kicad_pcb is
 			SEC_UVIA_MIN_DRILL,
 			SEC_UVIA_MIN_SIZE,
 			SEC_UVIA_SIZE,
+			SEC_VIA,
 			SEC_VERSION,
 			SEC_VIA_DIA,
 			SEC_VIA_DRILL,
@@ -2996,7 +2997,7 @@ package body et_kicad_pcb is
 				when SEC_KICAD_PCB =>
 					case section.name is
 						when SEC_VERSION | SEC_HOST | SEC_GENERAL | SEC_PAGE |
-							SEC_LAYERS | SEC_SEGMENT | SEC_SETUP | SEC_NET | SEC_NET_CLASS |
+							SEC_LAYERS | SEC_SEGMENT | SEC_VIA | SEC_SETUP | SEC_NET | SEC_NET_CLASS |
 							SEC_MODULE | SEC_GR_LINE | SEC_GR_ARC | SEC_GR_CIRCLE => null;
 						when others => invalid_section;
 					end case;
@@ -3215,6 +3216,38 @@ package body et_kicad_pcb is
 				raise constraint_error;
 			end invalid_pcbnew_version;
 			
+			function to_signal_layer_id (layer : in string) return type_signal_layer_id is
+			-- Translates a string like F.Cu or In2.Cu or or In15.Cu to a type_signal_layer_id (0..31) -- see spec
+				id : type_signal_layer_id; -- to be returned
+			begin
+				-- if the given layer is top or bottom (0 or 31):
+				if layer = layer_top_copper then id := type_signal_layer_id'first; 
+				elsif layer = layer_bot_copper then id := type_signal_layer_id'last;
+
+				-- If the given layer is an inner signal layer:
+				-- Check for the layer_inner_prefix ("In") on the very left:
+				elsif layer (layer'first .. layer'first - 1 + layer_inner_prefix'last) = layer_inner_prefix
+
+					-- And check for the layer_inner_suffix (".Cu") on the very right:
+					and layer (layer'length - layer_inner_suffix'length + 1 .. layer'last) = layer_inner_suffix then
+
+					-- Convert the characters between prefix and suffix to a layer id.
+					-- If that fails, an exception is raised. see exception handler below.
+						id := type_signal_layer_id'value (layer (
+							layer'first + layer_inner_prefix'last 
+							.. layer'last - layer_inner_suffix'length));
+
+				-- All other layers are invalid:
+				else
+					invalid_layer;
+				end if;
+				
+				return id;
+
+				exception
+					when constraint_error => invalid_layer; raise;
+			end to_signal_layer_id;
+
 		begin -- read_arg
 			-- We handle an argument that is wrapped in quotation different from a non-wrapped argument:
 			if element (current_line, character_cursor) = latin_1.quotation then
@@ -4688,7 +4721,19 @@ package body et_kicad_pcb is
 						when others => null;
 					end case;
 
+				-- parent section
+				when SEC_VIA =>	
+					case section.name is
+						when SEC_AT =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => null;
+								when others => null;
+							end case;
 
+						when others => null;
+					end case;
+							
 				-- parent section
 				when SEC_SEGMENT =>
 					case section.name is
@@ -4703,6 +4748,60 @@ package body et_kicad_pcb is
 								when others => too_many_arguments;
 							end case;
 					
+						when SEC_END =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									set_point (axis => X, point => segment.end_point, value => to_distance (to_string (arg)));
+								when 2 => 
+									set_point (axis => Y, point => segment.end_point, value => to_distance (to_string (arg)));
+									set_point (axis => Z, point => segment.end_point, value => zero_distance);
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_WIDTH =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									validate_signal_width (to_distance (to_string (arg)));
+									segment.width := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_LAYER =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 =>
+									-- convert the layer name to a layer id (incl. validation)
+									segment.layer := to_signal_layer_id (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_NET =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 =>
+									segment.net_id := type_net_id'value (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_TSTAMP =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 =>
+									segment.timestamp := type_timestamp (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_STATUS =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 =>
+									-- CS some things might be to do. see https://forum.kicad.info/t/meaning-of-segment-status/10912/1
+									segment.status := type_segment_status.to_bounded_string (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+							
 						when others => null;
 
 					end case;

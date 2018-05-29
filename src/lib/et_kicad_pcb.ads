@@ -542,22 +542,28 @@ package et_kicad_pcb is
 
 	
 	-- For handling inner signal layers we have a prefix and a suffix
-	-- Together with the layer number something like In5.Cu is formed.
+	-- Together with the layer number something like In5.Cu is evaluated.
 	layer_inner_prefix			: constant string (1..2)	:= "In";
 	layer_inner_suffix			: constant string (1..3)	:= ".Cu";	
 
 	signal_layer_id_top		: constant type_layer_id := 0;
-	signal_layer_id_bottom	: constant type_layer_id := 32;	
+	signal_layer_id_bottom	: constant type_layer_id := 31;
 	subtype type_signal_layer_id is type_layer_id range signal_layer_id_top..signal_layer_id_bottom;
+
+	segment_status_length_max : constant positive := 8;
+	package type_segment_status is new generic_bounded_length (segment_status_length_max);
+
+	-- CS function to_segment_status and to_string
 	
 	type type_segment is new et_pcb.type_copper_line with record
 		net_id		: type_net_id;
 		layer		: type_signal_layer_id;
 		timestamp	: et_string_processing.type_timestamp;
-		-- CS status
+		status		: type_segment_status.bounded_string; -- CS a strange hex number. see https://forum.kicad.info/t/meaning-of-segment-status/10912/1
 	end record;
 
-
+	-- CS type type_via is
+	
 
 	
 	
