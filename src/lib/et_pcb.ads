@@ -108,6 +108,11 @@ package et_pcb is
 	procedure validate_drill_size (drill : in type_distance);
 	-- Checks whether given drill size is in range of type_drill_size
 
+	-- DRILLS
+	type type_drill is tagged record
+		position	: type_point_3d; -- CS usa 2d point or set z always to zero
+		diameter	: type_drill_size;
+	end record;
 
 	pad_size_min : constant type_distance := 0.05;
 	pad_size_max : constant type_distance := 10.0;
@@ -296,7 +301,15 @@ package et_pcb is
 	type type_locked is (NO, YES);
 
 
+	
+	function to_string (line : in type_line) return string;
+	-- Returns the start and end point of the given line as string.
 
+	function to_string (arc : in type_arc) return string;
+	-- Returns the start, end point and angle of the given arc as string.
+
+	function to_string (circle : in type_circle) return string;
+	-- Returns the center and radius of the given circle as string.
 
 	
 	
@@ -439,6 +452,14 @@ package et_pcb is
 		-- CS polygons
 	end record;
 
+	-- vias
+	type type_via is new type_drill with record
+		restring_outer	: type_restring_width;	-- restring in outer layers (top/bottom)
+		restring_inner	: type_restring_width;	-- restring in inner layers (mostly wider than restring_outer)
+		layer_start		: type_signal_layer;
+		layer_end		: type_signal_layer;
+	end record;
+	
 	-- tracks / traces/ signals 
 	type type_signal is tagged record 
 		lines 			: type_copper_lines_pcb.list;

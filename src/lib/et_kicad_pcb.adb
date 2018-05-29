@@ -2709,9 +2709,10 @@ package body et_kicad_pcb is
 		net_class_name 	: type_net_class_name.bounded_string;	-- PWR, HIGH_CURRENT, ...
 		net_class 		: type_net_class;
 
-		-- SEGMENTS
+		-- SEGMENTS and VIAS
 		segment : type_segment;
-
+		via : type_via;
+		
 		-- PACKAGES
 		package_name 			: et_libraries.type_component_package_name.bounded_string;
 		package_library_name	: et_libraries.type_library_name.bounded_string;
@@ -4727,11 +4728,52 @@ package body et_kicad_pcb is
 						when SEC_AT =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => null;
-								when others => null;
+								when 1 =>
+									set_point (axis => X, point => via.position, value => to_distance (to_string (arg)));
+								when 2 =>
+									set_point (axis => Y, point => via.position, value => to_distance (to_string (arg)));
+									set_point (axis => Z, point => via.position, value => zero_distance);
+								when others => too_many_arguments;
 							end case;
 
-						when others => null;
+						when SEC_SIZE =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 =>
+									via.diameter_total := to_distance (to_string (arg)); -- drill diameter + 2 * restring !
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_DRILL =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 =>
+									validate_drill_size (to_distance (to_string (arg)));
+									via.diameter := to_distance (to_string (arg)); -- this is the drill diameter !
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_LAYERS =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 =>
+									-- convert the start layer name to a layer id (incl. validation)
+									via.layer_start := to_signal_layer_id (to_string (arg));
+								when 2 =>
+									-- convert the end layer name to a layer id (incl. validation)
+									via.layer_end := to_signal_layer_id (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_NET =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 =>
+									via.net_id := type_net_id'value (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+							
+						when others => invalid_section;
 					end case;
 							
 				-- parent section
@@ -4802,7 +4844,7 @@ package body et_kicad_pcb is
 								when others => too_many_arguments;
 							end case;
 							
-						when others => null;
+						when others => invalid_section;
 
 					end case;
 
@@ -5791,6 +5833,27 @@ package body et_kicad_pcb is
 				end case;
 		
 			end insert_fp_text;
+
+			procedure insert_segment is
+			-- inserts a segment in the list "segments"
+			begin
+				type_segments.append (
+					container	=> board.segments,
+					new_item	=> segment);
+
+				log ("segment " & to_string (et_pcb.type_line (segment)) &
+					 " width" & to_string (segment.width) &
+					 " layer" & type_signal_layer_id'image (segment.layer) &
+					 " net id" & type_net_id'image (segment.net_id) &
+					 " status " & type_segment_status.to_string (segment.status),
+					 log_threshold + 1);
+			end insert_segment;
+
+			procedure insert_via is
+			-- inserts a via in the list "vias"
+			begin
+				null;
+			end insert_via;
 			
 		begin -- exec_section
 			log (process_section (section.name), log_threshold + 4);
@@ -5832,6 +5895,12 @@ package body et_kicad_pcb is
 
 						when SEC_GR_LINE =>
 							insert_board_line;
+	
+						when SEC_SEGMENT =>
+							insert_segment;
+
+						when SEC_VIA =>
+							insert_via;
 							
 						when others => null;
 					end case;

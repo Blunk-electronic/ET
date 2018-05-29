@@ -562,8 +562,18 @@ package et_kicad_pcb is
 		status		: type_segment_status.bounded_string; -- CS a strange hex number. see https://forum.kicad.info/t/meaning-of-segment-status/10912/1
 	end record;
 
-	-- CS type type_via is
+	-- segments are stored in lists
+	package type_segments is new doubly_linked_lists (type_segment);
 	
+	type type_via is new et_pcb.type_drill with record
+		net_id			: type_net_id;
+		diameter_total	: et_pcb_coordinates.type_distance; -- drill + 2 * restring
+		layer_start		: type_signal_layer_id;
+		layer_end		: type_signal_layer_id;		
+	end record;
+	
+	-- vias are stored in lists
+	package type_vias is new doubly_linked_lists (type_via);
 
 	
 	
@@ -586,6 +596,9 @@ package et_kicad_pcb is
 		contour		: et_pcb.type_pcb_contour;
 		-- NOTE: non-electric objects in signal layers are not allowed in kicad
 		-- CS objects in other layers (user defined, glue, ...)
+
+		segments	: type_segments.list;
+		vias		: type_vias.list;
 	end record;
 
 	procedure read_board (
