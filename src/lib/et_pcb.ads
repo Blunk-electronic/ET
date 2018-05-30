@@ -463,12 +463,11 @@ package et_pcb is
 		layer_end		: type_signal_layer;
 	end record;
 	
-	-- tracks / traces/ signals 
+	-- tracks / traces
 	type type_signal is tagged record 
 		lines 			: type_copper_lines_pcb.list;
 		arcs			: type_copper_arcs_pcb.list;
 		-- CS polygons
-		-- CS vias
 	end record;
 
 
