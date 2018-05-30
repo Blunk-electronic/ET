@@ -4855,7 +4855,6 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 =>
-									-- CS some things might be to do. see https://forum.kicad.info/t/meaning-of-segment-status/10912/1
 									segment.status := type_segment_status.to_bounded_string (to_string (arg));
 								when others => too_many_arguments;
 							end case;

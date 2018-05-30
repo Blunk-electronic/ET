@@ -559,6 +559,8 @@ package et_kicad_pcb is
 	signal_layer_id_bottom	: constant type_layer_id := 31;
 	subtype type_signal_layer_id is type_layer_id range signal_layer_id_top..signal_layer_id_bottom;
 
+	-- This is a hex number for lock information or differential signals:
+	-- see https://forum.kicad.info/t/meaning-of-segment-status/10912/1
 	segment_status_length_max : constant positive := 8;
 	package type_segment_status is new generic_bounded_length (segment_status_length_max);
 
@@ -568,7 +570,7 @@ package et_kicad_pcb is
 		net_id		: type_net_id;
 		layer		: type_signal_layer_id;
 		timestamp	: et_string_processing.type_timestamp;
-		status		: type_segment_status.bounded_string; -- CS a strange hex number. see https://forum.kicad.info/t/meaning-of-segment-status/10912/1
+		status		: type_segment_status.bounded_string;
 	end record;
 
 	-- segments are stored in lists
