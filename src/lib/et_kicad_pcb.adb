@@ -5868,6 +5868,12 @@ package body et_kicad_pcb is
 			procedure insert_via is
 			-- inserts a via in the list "vias"
 			begin
+				if via.layer_start > via.layer_end then
+					log_indentation_reset;
+					log (message_error & "via start layer id must be less than end layer id !", console => true);
+					raise constraint_error;
+				end if;
+			
 				type_vias.append (
 					container	=> board.vias,
 					new_item	=> via);
