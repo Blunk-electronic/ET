@@ -55,6 +55,7 @@ with ada.containers.ordered_sets;
 with ada.exceptions;
 
 with et_general;
+with et_coordinates;
 with et_libraries;
 with et_schematic;
 with et_kicad;
@@ -6102,6 +6103,8 @@ package body et_kicad_pcb is
 
 	
 	procedure read_board (
+	-- Reads the board file. Copies general board stuff to the schematic module.
+	-- Global module_cursor is expected to point to the schematic module.
 		file_name 		: in string;
 		log_threshold	: in et_string_processing.type_log_level) is
 
@@ -6114,6 +6117,48 @@ package body et_kicad_pcb is
 		-- Here the board data goes. 
 		-- CS: If Kicad supports multi boards some day, this must become a list of boards.
 		board : type_board;
+
+		procedure merge_board_and_schematic (log_threshold : in type_log_level) is
+		-- Merges the board with the schematic module.
+		-- The board is specified in et_kicad_pcb.board.
+		-- The schematic module is specified in et_schematic.type_module.
+		-- The schematic module is indicated by the module_cursor.
+			use et_coordinates;
+			use et_schematic;
+		
+			procedure add_general_board_stuff (
+				mod_name : in type_submodule_name.bounded_string;
+				module   : in out type_module) is
+			begin
+				module.board.silk_screen := board.silk_screen;
+				module.board.assy_doc := board.assy_doc;
+				module.board.stencil := board.stencil;
+				module.board.stop_mask := board.stop_mask;
+				module.board.keepout := board.keepout;
+				module.board.contour := board.contour;
+				
+			end add_general_board_stuff;
+				
+		begin -- merge_board_and_schematic
+			log ("merging board and schematic ...", log_threshold + 1);
+			log_indentation_up;
+
+			rig.update_element (
+				position => module_cursor,
+				process => add_general_board_stuff'access);
+
+			
+			log_indentation_down;
+
+			exception
+				when event:
+					others =>
+						log_indentation_reset;
+						log (ada.exceptions.exception_message (event), console => true);
+						raise;
+			
+		end merge_board_and_schematic;
+
 		
 	begin -- read_board
 		log ("reading board file ...", log_threshold);
@@ -6147,6 +6192,8 @@ package body et_kicad_pcb is
 
 			-- process the board data stored in "lines"
 			board := to_board (file_name, lines, log_threshold + 1);
+
+			merge_board_and_schematic (log_threshold + 1);
 			
 		else
 			log ("board file " & file_name & " not available. nothing to do.", log_threshold);
@@ -6154,6 +6201,7 @@ package body et_kicad_pcb is
 		
 		log_indentation_down;
 	end read_board;
+
 	
 end et_kicad_pcb;
 

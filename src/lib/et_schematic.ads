@@ -818,7 +818,9 @@ package et_schematic is
 		notes       	: type_texts.list;				-- notes
 
 		sheet_headers	: type_sheet_headers.map;		-- the list of sheet headers -- kicad requirement
-        -- CS: images
+		-- CS: images
+
+		board			: et_pcb.type_board;			-- general board stuff (silk screen, documentation, ...)
 	end record;
 
 

@@ -1143,7 +1143,19 @@ package et_pcb is
 		terminal_port_map	: in et_libraries.type_terminal_port_map.map) 
 		return boolean;
 
-		
+
+	-- This is general board stuff:
+	type type_board is record
+		silk_screen	: type_silk_screen_pcb_both_sides;
+		assy_doc	: type_assembly_documentation_pcb_both_sides;
+		stencil		: type_stencil_both_sides;
+		stop_mask	: type_stop_mask_both_sides;
+		keepout		: type_keepout_both_sides;		
+		contour		: type_pcb_contour;
+		-- CS non electric copper stuff
+	end record;
+
+	
 end et_pcb;
 
 -- Soli Deo Gloria

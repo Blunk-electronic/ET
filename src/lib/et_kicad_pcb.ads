@@ -581,6 +581,7 @@ package et_kicad_pcb is
 		diameter_total	: et_pcb_coordinates.type_distance; -- drill + 2 * restring
 		layer_start		: type_signal_layer_id;
 		layer_end		: type_signal_layer_id;		
+		-- CS via status
 	end record;
 	
 	-- vias are stored in lists
