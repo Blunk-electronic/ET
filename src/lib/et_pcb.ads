@@ -110,10 +110,13 @@ package et_pcb is
 
 	-- DRILLS
 	type type_drill is tagged record
-		position	: type_point_3d; -- CS usa 2d point or set z always to zero
+		position	: type_point_3d; -- CS us a 2d point or set z always to zero
 		diameter	: type_drill_size;
 	end record;
 
+	function to_string (drill : in type_drill) return string;
+	-- returns the properties of the given drill as string.
+	
 	pad_size_min : constant type_distance := 0.05;
 	pad_size_max : constant type_distance := 10.0;
 	subtype type_pad_size is type_distance range pad_size_min .. pad_size_max;

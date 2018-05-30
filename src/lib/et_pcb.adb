@@ -129,6 +129,12 @@ package body et_pcb is
 		end if;
 	end validate_pad_size;
 
+	function to_string (drill : in type_drill) return string is
+	-- returns the properties of the given drill as string.
+	begin
+		return (to_string (drill.position) & " drill_diameter" & to_string (drill.diameter));
+	end to_string;
+	
 	procedure validate_signal_clearance (signal_clearance : in type_distance) is
 	-- Checks whether the given signal clearance is in range of type_signal_clearance.
 	begin

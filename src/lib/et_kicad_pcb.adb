@@ -77,6 +77,17 @@ package body et_kicad_pcb is
 		return type_plot_output_directory.to_string (directory);
 	end to_string;
 
+	function to_net_id (net_id : in string) return type_net_id is
+	-- returns the given net id as type_net_id
+	begin
+		return type_net_id'value (net_id);
+	end to_net_id;
+	
+	function to_string (net_id : in type_net_id) return string is
+	-- returns the given net id as string.
+	begin
+		return type_net_id'image (net_id);
+	end to_string;
 	
 	function right_net_before_left (right, left : in type_netlist_net) return boolean is
 	-- Returns true if the right net id comes beforr the left net id AND
@@ -2477,7 +2488,12 @@ package body et_kicad_pcb is
 
 	end read_libraries;
 
-
+	function to_string (layer : in type_layer_id) return string is
+	-- returns the given layer id as string.
+	begin
+		return type_layer_id'image (layer);
+	end to_string;
+	
 	function to_layer_name (name : in string) return type_layer_name.bounded_string is
 	-- converts a layer name given as string to a bounded string
 	begin
@@ -3341,7 +3357,7 @@ package body et_kicad_pcb is
 						when SEC_NET =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => netlist_net.id := type_net_id'value (to_string (arg));
+								when 1 => netlist_net.id := to_net_id (to_string (arg));
 								when 2 => netlist_net.name := et_schematic.to_net_name (to_string (arg));
 								when others => too_many_arguments;
 							end case;
@@ -4769,7 +4785,7 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 =>
-									via.net_id := type_net_id'value (to_string (arg));
+									via.net_id := to_net_id (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 							
@@ -4823,7 +4839,7 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 =>
-									segment.net_id := type_net_id'value (to_string (arg));
+									segment.net_id := to_net_id (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -5159,13 +5175,13 @@ package body et_kicad_pcb is
 				if net_inserted then
 					-- log the net id and name. but skip the first dummy net with id 0
 					if netlist_net.id > type_net_id'first then
-						log ("net id" & type_net_id'image (netlist_net.id) & " name " 
+						log ("net id" & to_string (netlist_net.id) & " name " 
 							& et_schematic.to_string (netlist_net.name),
 							log_threshold + 1);
 					end if;
 				else
 					log_indentation_reset;
-					log (message_error & "either net id" & type_net_id'image (netlist_net.id) 
+					log (message_error & "either net id" & to_string (netlist_net.id) 
 						& " or net name '" & et_schematic.to_string (netlist_net.name) & "' already used !",
 						 console => true);
 					raise constraint_error;
@@ -5841,10 +5857,10 @@ package body et_kicad_pcb is
 					container	=> board.segments,
 					new_item	=> segment);
 
-				log ("segment " & to_string (et_pcb.type_line (segment)) &
+				log ("segment " & to_string (et_pcb.type_line (segment)) & -- start and end point
 					 " width" & to_string (segment.width) &
-					 " layer" & type_signal_layer_id'image (segment.layer) &
-					 " net id" & type_net_id'image (segment.net_id) &
+					 " layer" & to_string (segment.layer) &
+					 " net_id" & to_string (segment.net_id) &
 					 " status " & type_segment_status.to_string (segment.status),
 					 log_threshold + 1);
 			end insert_segment;
@@ -5852,7 +5868,16 @@ package body et_kicad_pcb is
 			procedure insert_via is
 			-- inserts a via in the list "vias"
 			begin
-				null;
+				type_vias.append (
+					container	=> board.vias,
+					new_item	=> via);
+
+				log ("via" & to_string (et_pcb.type_drill (via)) & -- position and drill diameter
+					" diameter_total" & to_string (via.diameter_total) &
+					" layer_start" & to_string (via.layer_start) &
+					" layer_end" & to_string (via.layer_end) &
+					" net_id" & to_string (via.net_id),
+					log_threshold + 1);
 			end insert_via;
 			
 		begin -- exec_section

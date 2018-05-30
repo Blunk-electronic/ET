@@ -347,6 +347,9 @@ package et_kicad_pcb is
 	type type_net_id is range 0..net_id_max; -- used in the "netlist" section
 	type type_net_id_terminal is range 1..net_id_max; -- used with pads in module section
 	-- CS function to_net_id and to_string
+
+	function to_string (net_id : in type_net_id) return string;
+	-- returns the given net id as string.
 	
 	type type_netlist_net is record
 		id		: type_net_id;
@@ -460,6 +463,10 @@ package et_kicad_pcb is
 	-- This is board file related.
 	layer_id_max : constant positive := 49; -- includes ALL layers (signal and non-signal)
 	type type_layer_id is range 0..layer_id_max;
+
+	function to_string (layer : in type_layer_id) return string;
+	-- returns the given layer id as string.
+	
 	layer_name_length_max : constant positive := 9;
 	package type_layer_name is new generic_bounded_length (layer_name_length_max); -- B.Cu
 	
