@@ -345,8 +345,10 @@ package et_kicad_pcb is
 	-- NOTE: this has nothing to do with the kicad netlist file !
 	net_id_max : constant positive := 1_000_000; -- one million nets should be sufficient
 	type type_net_id is range 0..net_id_max; -- used in the "netlist" section
-	type type_net_id_terminal is range 1..net_id_max; -- used with pads in module section
-	-- CS function to_net_id and to_string
+	subtype type_net_id_terminal is type_net_id range 1 .. type_net_id'last; -- used with pads in module section
+
+	function to_net_id (net_id : in string) return type_net_id;
+	-- returns the given net id as type_net_id
 
 	function to_string (net_id : in type_net_id) return string;
 	-- returns the given net id as string.

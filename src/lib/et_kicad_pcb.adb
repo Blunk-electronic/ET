@@ -4018,7 +4018,7 @@ package body et_kicad_pcb is
 						when SEC_NET =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => terminal_net_id := type_net_id_terminal'value (to_string (arg));
+								when 1 => terminal_net_id := to_net_id (to_string (arg));
 								when 2 => terminal_net_name := et_schematic.to_net_name (to_string (arg));
 								when others => too_many_arguments;
 							end case;
@@ -4484,7 +4484,7 @@ package body et_kicad_pcb is
 						when SEC_NETS =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board.general.nets := type_net_id_terminal'value (to_string (arg));
+								when 1 => board.general.nets := to_net_id (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
