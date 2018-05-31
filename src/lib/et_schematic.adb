@@ -3008,17 +3008,17 @@ package body et_schematic is
 			log ("net report");
 			log_indentation_up;
 				
-			first_module;
-			while module_cursor /= type_rig.no_element loop
+			--first_module;
+			--while module_cursor /= type_rig.no_element loop
 					
-				log ("module " & to_string (key (module_cursor)));
+			--	log ("module " & to_string (key (module_cursor)));
 
 				query_element (
 					position => module_cursor,
 					process => query_net'access);
 				
-				next (module_cursor);
-			end loop;
+			--	next (module_cursor);
+			--end loop;
 
 			log_indentation_down;
 		end if;

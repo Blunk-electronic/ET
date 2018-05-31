@@ -6656,7 +6656,10 @@ package body et_kicad is
 				-- IMPORTANT: Hierarchic nets are nothing more than extensions of
 				-- local or global nets !
 				et_schematic.process_hierarchic_nets (log_threshold + 1);
-
+				
+				-- write net report
+				et_schematic.write_nets (log_threshold + 1);
+				
 				-- read the layout file
 				et_kicad_pcb.read_board (
 					file_name => compose (
@@ -6665,9 +6668,6 @@ package body et_kicad is
 					log_threshold => log_threshold + 1);
 
 
-				
-				-- write net report
-				et_schematic.write_nets (log_threshold + 1); -- leaves module_cursor pointing to no_element
 
 				
 			when others =>
