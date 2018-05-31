@@ -575,13 +575,19 @@ package et_kicad_pcb is
 
 	-- segments are stored in lists
 	package type_segments is new doubly_linked_lists (type_segment);
+
+
+	-- This is a hex number for lock information and other stuff:
+	-- see https://forum.kicad.info/t/meaning-of-segment-status/10912/1
+	via_status_length_max : constant positive := 8;
+	package type_via_status is new generic_bounded_length (via_status_length_max);
 	
 	type type_via is new et_pcb.type_drill with record
 		net_id			: type_net_id;
 		diameter_total	: et_pcb_coordinates.type_distance; -- drill + 2 * restring
 		layer_start		: type_signal_layer_id;
 		layer_end		: type_signal_layer_id;		
-		-- CS via status
+		status			: type_via_status.bounded_string;
 	end record;
 	
 	-- vias are stored in lists

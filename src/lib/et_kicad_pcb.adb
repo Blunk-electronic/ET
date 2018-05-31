@@ -3137,7 +3137,13 @@ package body et_kicad_pcb is
 						when SEC_START | SEC_END | SEC_LAYER | SEC_WIDTH | SEC_NET | SEC_STATUS | SEC_TSTAMP => null;
 						when others => invalid_section;
 					end case;
-						
+
+				when SEC_VIA =>
+					case section.name is
+						when SEC_AT | SEC_SIZE | SEC_DRILL | SEC_LAYERS | SEC_NET | SEC_STATUS => null;
+						when others => invalid_section;
+					end case;
+					
 				when others => null;
 			end case;
 
@@ -4789,6 +4795,14 @@ package body et_kicad_pcb is
 									via.net_id := to_net_id (to_string (arg));
 								when others => too_many_arguments;
 							end case;
+
+						when SEC_STATUS =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 =>
+									via.status := type_via_status.to_bounded_string (to_string (arg));
+								when others => too_many_arguments;
+							end case;
 							
 						when others => invalid_section;
 					end case;
@@ -5862,6 +5876,8 @@ package body et_kicad_pcb is
 					 " layer" & to_string (segment.layer) &
 					 " net_id" & to_string (segment.net_id) &
 					 " status " & type_segment_status.to_string (segment.status),
+					 -- CS status should be decoded and detailled output. 
+					 -- see -- see https://forum.kicad.info/t/meaning-of-segment-status/10912/1
 					 log_threshold + 1);
 			end insert_segment;
 
@@ -5882,7 +5898,10 @@ package body et_kicad_pcb is
 					" diameter_total" & to_string (via.diameter_total) &
 					" layer_start" & to_string (via.layer_start) &
 					" layer_end" & to_string (via.layer_end) &
-					" net_id" & to_string (via.net_id),
+					" net_id" & to_string (via.net_id) &
+					" status " & type_via_status.to_string (via.status),
+					 -- CS status should be decoded and detailled output. 
+					 -- see -- see https://forum.kicad.info/t/meaning-of-segment-status/10912/1
 					log_threshold + 1);
 			end insert_via;
 			
