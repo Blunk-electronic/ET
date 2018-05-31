@@ -233,7 +233,7 @@ package et_kicad_pcb is
 	-- CS function to_mirror and to_string
 	
 	-- drillshape. NOTE: DO NOT CONFUSE WITH type_drill_shape (see above)
-	type type_plot_drill_shape is range 0..0; -- CS so far nothing more known.
+	type type_plot_drill_shape is range 0..1; -- CS so far nothing more known.
 	
 	-- scaleselection
 	type type_plot_scale_selection is range 1..1; -- CS no far nothing more known
@@ -373,7 +373,6 @@ package et_kicad_pcb is
 		element_type 	=> type_netlist_net,
 		"<"				=> right_net_before_left,
 		"="				=> right_net_equals_left);
-
 
 
 	-- GENERAL BOARD INFORMATION
@@ -623,7 +622,7 @@ package et_kicad_pcb is
 		file_name 		: in string;
 		log_threshold	: in et_string_processing.type_log_level);
 
-	
+
 end et_kicad_pcb;
 
 -- Soli Deo Gloria

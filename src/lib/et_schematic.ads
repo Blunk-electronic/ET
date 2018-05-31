@@ -478,6 +478,7 @@ package et_schematic is
 	type type_net is record
 		scope 		: type_net_scope := type_net_scope'first; -- example "local"
 		strands		: type_strands.list;
+		route		: et_pcb.type_route;
 		-- CS class : et_pcb.type_net_class_name.bounded_string
 	end record;
 
@@ -820,7 +821,8 @@ package et_schematic is
 		sheet_headers	: type_sheet_headers.map;		-- the list of sheet headers -- kicad requirement
 		-- CS: images
 
-		board			: et_pcb.type_board;			-- general board stuff (silk screen, documentation, ...)
+		-- General non-component related board stuff (silk screen, documentation, ...):
+		board			: et_pcb.type_board;
 	end record;
 
 

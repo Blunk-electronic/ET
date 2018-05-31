@@ -6144,27 +6144,84 @@ package body et_kicad_pcb is
 		-- The schematic module is indicated by the module_cursor.
 			use et_coordinates;
 			use et_schematic;
-		
-			procedure add_general_board_stuff (
+			
+			procedure add_board_objects (
+			-- Adds board objects to the schematic module.
 				mod_name : in type_submodule_name.bounded_string;
 				module   : in out type_module) is
-			begin
-				module.board.silk_screen := board.silk_screen;
-				module.board.assy_doc := board.assy_doc;
-				module.board.stencil := board.stencil;
-				module.board.stop_mask := board.stop_mask;
-				module.board.keepout := board.keepout;
-				module.board.contour := board.contour;
+
+				-- The nets of the module are copied here. Later segments and vias
+				-- will be added. Nets will then overwrite the previous nets of
+				-- the module.
+				use et_schematic.type_nets;
+				nets 		: et_schematic.type_nets.map := module.nets;
+				net_cursor	: et_schematic.type_nets.cursor := nets.first;
+				net_id		: type_net_id;
 				
-			end add_general_board_stuff;
+				function to_net_id (name : in type_net_name.bounded_string) return type_net_id is
+				-- Converts the given net name to a net id. It looks up the board.netlist 
+				-- for the given net name. On match returns corresponding net id.
+					use type_net_name;
+					use type_netlist;
+					net_cursor : type_netlist.cursor := board.netlist.first;
+				begin -- to_net_id
+					while net_cursor /= type_netlist.no_element loop
+						if element (net_cursor).name = name then
+							return element (net_cursor).id;
+						end if;
+						next (net_cursor);
+					end loop;
+
+					-- NO GOOD IDEA !!!!!!!
+-- 					net_cursor := board.netlist.first;
+-- 					while net_cursor /= type_netlist.no_element loop
+-- 						if et_coordinates.hierarchy_separator &
+-- 							to_string (net_name => element (net_cursor).name) = to_string (net_name => name) then
+-- 							return element (net_cursor).id;
+-- 						end if;
+-- 						next (net_cursor);
+-- 					end loop;
+					
+					-- If this code is reached, the given net could not be located in the board.
+					-- schematic and board are not consistent.
+					log_indentation_reset;
+					log (message_error & "net '" & to_string (net_name => name) & "' not found in board !");
+					raise constraint_error;
+				end to_net_id;
 				
+			begin -- add_board_objects
+				-- General board stuff (not related to any components) is
+				-- copied right away:
+				module.board.silk_screen	:= board.silk_screen;
+				module.board.assy_doc		:= board.assy_doc;
+				module.board.stencil 		:= board.stencil;
+				module.board.stop_mask 		:= board.stop_mask;
+				module.board.keepout 		:= board.keepout;
+				module.board.contour 		:= board.contour;
+
+				-- segments and vias
+				log ("nets ...", log_threshold + 2);
+				log_indentation_up;
+				while net_cursor /= type_nets.no_element loop
+					
+					log (to_string (key (net_cursor)), log_threshold + 3);
+					net_id := to_net_id (key (net_cursor));
+					log (" id " & to_string (net_id), log_threshold + 3);
+
+					next (net_cursor);
+				end loop;
+				log_indentation_down;
+				
+			end add_board_objects;
+
+			
 		begin -- merge_board_and_schematic
 			log ("merging board and schematic ...", log_threshold + 1);
 			log_indentation_up;
 
 			rig.update_element (
 				position => module_cursor,
-				process => add_general_board_stuff'access);
+				process => add_board_objects'access);
 
 			
 			log_indentation_down;

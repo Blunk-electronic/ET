@@ -455,6 +455,7 @@ package et_pcb is
 		-- CS polygons
 	end record;
 
+	-- Types for ELECTRIC !! copper objects:
 	-- vias
 	type type_via is new type_drill with record
 		restring_outer	: type_restring_width;	-- restring in outer layers (top/bottom)
@@ -462,15 +463,20 @@ package et_pcb is
 		layer_start		: type_signal_layer;
 		layer_end		: type_signal_layer;
 	end record;
+
+	-- vias are collected in simple lists
+	package type_vias is new doubly_linked_lists (type_via);
 	
-	-- tracks / traces
-	type type_signal is tagged record 
+	-- route
+	type type_route is record 
 		lines 			: type_copper_lines_pcb.list;
 		arcs			: type_copper_arcs_pcb.list;
+		vias			: type_vias.list;
 		-- CS polygons
 	end record;
 
-
+	
+	
 	-- SOLDER STOP MASK
 	type type_stop_line is new type_line with record
 		width	: type_general_line_width;
