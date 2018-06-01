@@ -6144,6 +6144,56 @@ package body et_kicad_pcb is
 		-- The schematic module is indicated by the module_cursor.
 			use et_coordinates;
 			use et_schematic;
+
+			function to_net_name (
+			-- Returns for the given component reference and terminal the attached net name.
+				reference	: in et_libraries.type_component_reference;	-- IC45
+				terminal	: in et_libraries.type_terminal_name.bounded_string) -- G7
+				return type_net_name.bounded_string is
+				net : type_net_name.bounded_string; -- to be returned
+
+				use type_packages_board;
+				package_cursor : type_packages_board.cursor;
+
+				use type_terminals;
+				terminals : type_terminals.map;
+				terminal_cursor : type_terminals.cursor;
+				
+			begin -- to_net_name
+				-- Locate the given component in the board. If component does not
+				-- exist in the board -> raise alarm and abort.
+				package_cursor := board.packages.find (reference);
+				
+				if package_cursor /= type_packages_board.no_element then
+					-- The component exists. The package cursor points to given component package.
+					-- Load the terminals of the component package:
+					terminals := element (package_cursor).terminals;
+
+					-- Locate the given terminal in the terminals list and fetch
+					-- the name of the connected net. 
+					-- If the terminal does not exist -> raise alarm and abort
+					terminal_cursor := terminals.find (terminal);
+					if terminal_cursor /= type_terminals.no_element then -- terminal found
+						net := element (terminal_cursor).net_name;
+					else
+						log_indentation_reset;
+						log (message_error & "component reference " & et_libraries.to_string (reference) &
+							" terminal " & et_libraries.to_string (terminal) &
+							 " not found in board !",
+							console => true);
+						raise constraint_error;
+					end if;
+				else -- component package does not exist
+					log_indentation_reset;
+					log (message_error & "component reference " & et_libraries.to_string (reference) &
+						 " not found in board !",
+						 console => true);
+					raise constraint_error;
+				end if;
+				
+				return net;
+			end to_net_name;
+
 			
 			procedure add_board_objects (
 			-- Adds board objects to the schematic module.
@@ -6159,34 +6209,71 @@ package body et_kicad_pcb is
 				net_id		: type_net_id;
 				
 				function to_net_id (name : in type_net_name.bounded_string) return type_net_id is
-				-- Converts the given net name to a net id. It looks up the board.netlist 
-				-- for the given net name. On match returns corresponding net id.
+				-- Converts the given net name to a net id.
 					use type_net_name;
 					use type_netlist;
 					net_cursor : type_netlist.cursor := board.netlist.first;
-				begin -- to_net_id
-					while net_cursor /= type_netlist.no_element loop
-						if element (net_cursor).name = name then
-							return element (net_cursor).id;
-						end if;
-						next (net_cursor);
-					end loop;
-
-					-- NO GOOD IDEA !!!!!!!
--- 					net_cursor := board.netlist.first;
--- 					while net_cursor /= type_netlist.no_element loop
--- 						if et_coordinates.hierarchy_separator &
--- 							to_string (net_name => element (net_cursor).name) = to_string (net_name => name) then
--- 							return element (net_cursor).id;
--- 						end if;
--- 						next (net_cursor);
--- 					end loop;
+					id : type_net_id; -- to be returned
 					
-					-- If this code is reached, the given net could not be located in the board.
-					-- schematic and board are not consistent.
-					log_indentation_reset;
-					log (message_error & "net '" & to_string (net_name => name) & "' not found in board !");
-					raise constraint_error;
+					use type_ports_with_reference;
+					portlist : type_ports_with_reference.set;
+					port : type_port_with_reference;
+					terminal : et_libraries.type_terminal;
+					net_name_in_board : type_net_name.bounded_string;
+				begin -- to_net_id
+
+					-- If the given net has a proper name (like MCU_CLK), then the net id
+					-- can be obtained by just looking up board.netlist.
+					if not anonymous (name) then -- net has an explicitely given name
+
+						while net_cursor /= type_netlist.no_element loop
+							if element (net_cursor).name = name then
+								id := element (net_cursor).id;
+								--net_name_in_board := name;
+								exit;
+							end if;
+							next (net_cursor);
+						end loop;
+
+					else -- The net has no explicitely given name. the name is something like N$56.
+						portlist := real_components_in_net (module => mod_name, net => name, log_threshold => log_threshold + 2);
+						-- Returns a list of component ports that are connected with the given net.
+
+						-- Load the first port of the portlist. 
+						-- Port contains the component reference (like IC45 and the port name like GPIO4).
+						port := element (portlist.first);
+
+						-- The physical terminal name must be obtained now:
+						terminal := to_terminal (port, mod_name, log_threshold + 2);
+
+						-- Terminal contains the component reference (like IC45) and the
+						-- physical terminal name (like G7).
+						-- Now the connected net can be looked for:
+						net_name_in_board := to_net_name (port.reference, terminal.name);
+
+						if length (net_name_in_board) > 0 then
+							while net_cursor /= type_netlist.no_element loop
+								if element (net_cursor).name = net_name_in_board then
+									id := element (net_cursor).id;
+									exit;
+								end if;
+								next (net_cursor);
+							end loop;
+						end if;
+							
+					end if;
+
+-- 					-- If the net could not be located in the board, then this could be the case:
+-- 					-- 1. schematic and board are not consistent.
+-- 					-- 2. the net has only one port connected (in the schematic)
+-- 					-- CS: for the time being we issue a warning. check port count of net for more detailled diagnosis
+-- 					if length (net_name_in_board) = 0 then
+-- 						--log_indentation_reset;
+-- 						log (message_warning & "net '" & to_string (net_name => name) & "' not found in board !");
+-- 						--raise constraint_error;
+-- 					end if;
+
+					return id;
 				end to_net_id;
 				
 			begin -- add_board_objects
@@ -6203,10 +6290,19 @@ package body et_kicad_pcb is
 				log ("nets ...", log_threshold + 2);
 				log_indentation_up;
 				while net_cursor /= type_nets.no_element loop
-					
-					log (to_string (key (net_cursor)), log_threshold + 3);
-					net_id := to_net_id (key (net_cursor));
-					log (" id " & to_string (net_id), log_threshold + 3);
+
+					-- We are interested in nets that have more than one terminal connected.
+					-- Nets with only one terminal do not appear in a kicad board file and must be skipped here.
+					if real_components_in_net (
+						module			=> mod_name,
+						net 			=> key (net_cursor),
+						log_threshold	=> log_threshold + 3).length > 1 then
+
+							log (to_string (key (net_cursor)), log_threshold + 3);
+							net_id := to_net_id (key (net_cursor));
+							log (" id " & to_string (net_id), log_threshold + 3);
+						
+					end if;
 
 					next (net_cursor);
 				end loop;

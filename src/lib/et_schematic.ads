@@ -1023,6 +1023,14 @@ package et_schematic is
 		return type_ports_with_reference.set;
 	-- Returns a list of component ports that are connected with the given net.
 
+	function real_components_in_net (
+		module 			: in type_submodule_name.bounded_string;	-- nucleo_core
+		net				: in type_net_name.bounded_string;			-- motor_on_off
+		log_threshold	: in et_string_processing.type_log_level)
+		return type_ports_with_reference.set;
+	-- Returns a list of real component ports that are connected with the given net.
+
+	
 -- BOM
 	-- Whenever we deal with BOM files this type should be used:
 	bom_file_name_length : constant positive := 100; -- CS: should suffice for now

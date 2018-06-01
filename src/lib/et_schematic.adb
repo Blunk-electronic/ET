@@ -5694,6 +5694,94 @@ package body et_schematic is
 		return ports;
 	end components_in_net;
 
+	function real_components_in_net (
+		module 			: in type_submodule_name.bounded_string;	-- nucleo_core
+		net				: in type_net_name.bounded_string;			-- motor_on_off
+		log_threshold	: in et_string_processing.type_log_level)
+		return type_ports_with_reference.set is
+	-- Returns a list of real component ports that are connected with the given net.
+
+		use et_string_processing;
+		use type_rig;
+
+		module_cursor : type_rig.cursor;
+		
+		ports_real : type_ports_with_reference.set; -- to be returned
+
+		procedure locate_net (
+		-- Locates the given net in the netlist of the given module.
+		-- The ports connected with the net are copied to variable "ports".
+			module_name : in type_submodule_name.bounded_string;
+			module 		: in type_module) is
+			net_cursor	: type_netlist.cursor;
+			port_cursor : type_ports_with_reference.cursor;
+			ports_all 	: type_ports_with_reference.set; -- all ports of the net
+		begin
+			log ("locating net ... ", log_threshold + 1);
+			log_indentation_up;
+			net_cursor := find (module.netlist, net);
+
+			-- If net exists in module load ports with all the ports
+			-- connected with the net. Otherwise raise alarm and abort.
+			if net_cursor /= type_netlist.no_element then
+
+				-- load all ports of the net
+				ports_all := element (net_cursor);
+
+				-- If there are ports in the given net, set port cursor to first port in net,
+				-- loop in list of all ports and filter out the real ports.
+				if not is_empty (ports_all) then
+					port_cursor := ports_all.first;
+					while port_cursor /= type_ports_with_reference.no_element loop
+
+						if element (port_cursor).appearance = sch_pcb then
+							ports_real.insert (element (port_cursor)); -- insert real port in list to be returned
+
+							-- CS log info similar as in function components_in_net (see above)
+						end if;
+							
+						next (port_cursor);
+					end loop;
+				else
+					log (message_warning & "net " & to_string (net) & " is not connected with any ports !");
+				end if;
+					
+			else -- net does not exist -> abort
+				log_indentation_reset;
+				log (message_error & "in module " 
+					 & to_string (module_name) & " net " & to_string (net) 
+					 & " not found !", console => true);
+				raise constraint_error;
+			end if;
+
+			log_indentation_down;
+		end locate_net;
+			
+	begin -- real_components_in_net
+		log ("locating real components in module " & to_string (module) & " net " & to_string (net) & " ...",
+			 log_threshold);
+		log_indentation_up;
+
+		module_cursor := find (rig, module); -- set the cursor to the module
+
+		-- If module exists, locate the given net in the module.
+		-- Otherwise raise alarm and exit.
+		if module_cursor /= type_rig.no_element then
+			query_element (
+				position => module_cursor, 
+				process => locate_net'access);
+			
+		else -- module not found
+			log_indentation_reset;
+			log (message_error & "module " & to_string (module) & " not found !", console => true);
+			raise constraint_error;
+		end if;
+		
+		log_indentation_down;
+		return ports_real;
+	end real_components_in_net;
+
+	
 	procedure export_bom (log_threshold : in et_string_processing.type_log_level) is
 	-- Generates a bom file. This file is csv formatted and is to be processed by
 	-- other ERP tools (like stock_manager, see <https://github.com/Blunk-electronic/stock_manager>)
