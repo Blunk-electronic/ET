@@ -6146,7 +6146,9 @@ package body et_kicad_pcb is
 			use et_schematic;
 
 			function to_net_name (
-			-- Returns for the given component reference and terminal the attached net name.
+			-- Returns for the given component reference and terminal the name of the attached net.
+			-- The information required is sotred in the terminals of a package.
+			-- Example: (pad 1 smd rect (at -2.925 -3.81) (size 2 0.6) (layers F.Cu F.Paste F.Mask) (net 1 /IN))
 				reference	: in et_libraries.type_component_reference;	-- IC45
 				terminal	: in et_libraries.type_terminal_name.bounded_string) -- G7
 				return type_net_name.bounded_string is
@@ -6226,17 +6228,26 @@ package body et_kicad_pcb is
 					-- can be obtained by just looking up board.netlist.
 					if not anonymous (name) then -- net has an explicitely given name
 
+						-- search the given net name in the board netlist:
 						while net_cursor /= type_netlist.no_element loop
 							if element (net_cursor).name = name then
 								id := element (net_cursor).id;
-								--net_name_in_board := name;
+								net_name_in_board := name;
 								exit;
 							end if;
 							next (net_cursor);
 						end loop;
 
+						-- if the net could not be found, then board and schematic are not consistent -> error
+						if length (net_name_in_board) = 0 then
+							log_indentation_reset;
+							log (message_error & "net '" & to_string (net_name => name) & "' not found in board !", console => true);
+							raise constraint_error;
+						end if;
+
+						
 					else -- The net has no explicitely given name. the name is something like N$56.
-						portlist := real_components_in_net (module => mod_name, net => name, log_threshold => log_threshold + 2);
+						portlist := real_components_in_net (module => mod_name, net => name, log_threshold => log_threshold + 3);
 						-- Returns a list of component ports that are connected with the given net.
 
 						-- Load the first port of the portlist. 
@@ -6244,7 +6255,7 @@ package body et_kicad_pcb is
 						port := element (portlist.first);
 
 						-- The physical terminal name must be obtained now:
-						terminal := to_terminal (port, mod_name, log_threshold + 2);
+						terminal := to_terminal (port, mod_name, log_threshold + 3);
 
 						-- Terminal contains the component reference (like IC45) and the
 						-- physical terminal name (like G7).
@@ -6252,6 +6263,8 @@ package body et_kicad_pcb is
 						net_name_in_board := to_net_name (port.reference, terminal.name);
 
 						if length (net_name_in_board) > 0 then
+
+						-- From the net_name_in_board the net id follows as:
 							while net_cursor /= type_netlist.no_element loop
 								if element (net_cursor).name = net_name_in_board then
 									id := element (net_cursor).id;
@@ -6262,16 +6275,6 @@ package body et_kicad_pcb is
 						end if;
 							
 					end if;
-
--- 					-- If the net could not be located in the board, then this could be the case:
--- 					-- 1. schematic and board are not consistent.
--- 					-- 2. the net has only one port connected (in the schematic)
--- 					-- CS: for the time being we issue a warning. check port count of net for more detailled diagnosis
--- 					if length (net_name_in_board) = 0 then
--- 						--log_indentation_reset;
--- 						log (message_warning & "net '" & to_string (net_name => name) & "' not found in board !");
--- 						--raise constraint_error;
--- 					end if;
 
 					return id;
 				end to_net_id;
@@ -6287,20 +6290,27 @@ package body et_kicad_pcb is
 				module.board.contour 		:= board.contour;
 
 				-- segments and vias
-				log ("nets ...", log_threshold + 2);
+				--log ("nets ...", log_threshold + 2);
 				log_indentation_up;
 				while net_cursor /= type_nets.no_element loop
 
 					-- We are interested in nets that have more than one terminal connected.
 					-- Nets with only one terminal do not appear in a kicad board file and must be skipped here.
+					
+					-- NOTE: Nets without explicitely given name are named like N$1, N$2, ... 
+					-- The Kicad notation like "Net-(X1-Pad5)" is NOT used !!!
+					-- The id of a name-less net (like N$5) can be obtained still, by looking up the terminals
+					-- of a component package. See details in procedure to_net_id.
 					if real_components_in_net (
 						module			=> mod_name,
 						net 			=> key (net_cursor),
-						log_threshold	=> log_threshold + 3).length > 1 then
+						log_threshold	=> log_threshold + 4).length > 1 then
 
-							log (to_string (key (net_cursor)), log_threshold + 3);
+-- 							log ("pre net " & to_string (key (net_cursor)), log_threshold + 2);
 							net_id := to_net_id (key (net_cursor));
-							log (" id " & to_string (net_id), log_threshold + 3);
+							log ("net " & to_string (key (net_cursor)) & " id" &
+								 to_string (net_id), log_threshold + 2);
+							--log (" id " & to_string (net_id), log_threshold + 3);
 						
 					end if;
 
@@ -6313,14 +6323,10 @@ package body et_kicad_pcb is
 			
 		begin -- merge_board_and_schematic
 			log ("merging board and schematic ...", log_threshold + 1);
-			log_indentation_up;
 
 			rig.update_element (
 				position => module_cursor,
 				process => add_board_objects'access);
-
-			
-			log_indentation_down;
 
 			exception
 				when event:
@@ -6333,7 +6339,7 @@ package body et_kicad_pcb is
 
 		
 	begin -- read_board
-		log ("reading board file ...", log_threshold);
+		log ("reading board file " & file_name & " ...", log_threshold);
 		log_indentation_up;
 
 		if ada.directories.exists (file_name) then
@@ -6362,7 +6368,7 @@ package body et_kicad_pcb is
 			end loop;
 			close (board_handle);
 
-			-- process the board data stored in "lines"
+			-- parse and process the board data stored in "lines"
 			board := to_board (file_name, lines, log_threshold + 1);
 
 			merge_board_and_schematic (log_threshold + 1);
@@ -6374,6 +6380,37 @@ package body et_kicad_pcb is
 		log_indentation_down;
 	end read_board;
 
+	procedure read_boards (log_threshold : in et_string_processing.type_log_level) is
+	-- Imports layout files. The files to be imported are named after the schematic modules.
+	-- The schematic modules are indicated by module_cursor.
+		use et_schematic;
+		use et_coordinates;
+		use type_rig;
+		use et_string_processing;
+		use ada.directories;
+		use et_kicad;
+	begin
+		-- We start with the first module of the rig.
+		first_module;
+
+		-- Process one rig module after another.
+		-- module_cursor points to the module in the rig.
+		while module_cursor /= type_rig.no_element loop
+			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log_indentation_up;
+	
+			-- read the layout file
+			et_kicad_pcb.read_board (
+				file_name => compose (
+						containing_directory	=> to_string (key (module_cursor)),
+						name 					=> to_string (key (module_cursor)),
+						extension				=> file_extension_board),
+				log_threshold 	=> log_threshold + 1);
+
+			log_indentation_down;
+			next (module_cursor);
+		end loop;
+	end read_boards;
 	
 end et_kicad_pcb;
 

@@ -5604,11 +5604,11 @@ package body et_schematic is
 		-- The ports connected with the net are copied to variable "ports".
 			module_name : in type_submodule_name.bounded_string;
 			module 		: in type_module) is
-			net_cursor : type_netlist.cursor;
+			net_cursor 	: type_netlist.cursor;
 			port_cursor : type_ports_with_reference.cursor;
-			port : type_port_with_reference;
-			terminal : type_terminal;
-			port_count : count_type;
+			port 		: type_port_with_reference;
+			terminal 	: type_terminal;
+			port_count 	: count_type;
 		begin
 			log ("locating net ... ", log_threshold + 1);
 			log_indentation_up;
@@ -5716,6 +5716,8 @@ package body et_schematic is
 			net_cursor	: type_netlist.cursor;
 			port_cursor : type_ports_with_reference.cursor;
 			ports_all 	: type_ports_with_reference.set; -- all ports of the net
+			port 		: type_port_with_reference;
+			terminal 	: type_terminal;
 		begin
 			log ("locating net ... ", log_threshold + 1);
 			log_indentation_up;
@@ -5733,11 +5735,14 @@ package body et_schematic is
 				if not is_empty (ports_all) then
 					port_cursor := ports_all.first;
 					while port_cursor /= type_ports_with_reference.no_element loop
-
+						port := element (port_cursor); -- load the port
+					
 						if element (port_cursor).appearance = sch_pcb then
-							ports_real.insert (element (port_cursor)); -- insert real port in list to be returned
+							ports_real.insert (port); -- insert real port in list to be returned
 
-							-- CS log info similar as in function components_in_net (see above)
+							-- log terminal
+							terminal := to_terminal (port, module_name, log_threshold + 2); -- fetch the terminal
+							log (to_string (port) & to_string (terminal, show_unit => true, preamble => true), log_threshold + 2);
 						end if;
 							
 						next (port_cursor);

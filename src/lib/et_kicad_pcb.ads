@@ -623,6 +623,10 @@ package et_kicad_pcb is
 		log_threshold	: in et_string_processing.type_log_level);
 
 
+	procedure read_boards (log_threshold : in et_string_processing.type_log_level);
+	-- Imports layout files. The files to be imported are named after the schematic modules.
+	-- The schematic modules are indicated by module_cursor.
+	
 end et_kicad_pcb;
 
 -- Soli Deo Gloria

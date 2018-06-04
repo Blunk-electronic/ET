@@ -55,6 +55,7 @@ with et_import;
 with et_export;
 with et_configuration;
 with et_kicad;
+with et_kicad_pcb;
 
 procedure et is
 
@@ -331,6 +332,7 @@ procedure et is
 
 	procedure check_modules is
 	-- This can be regarded as a kind of extended electrical rule check (ERC).
+	-- Updates the netlist of ALL modules.	
 		use et_schematic;
 		use type_rig;
 		use et_configuration;
@@ -401,7 +403,7 @@ procedure et is
 			-- CS: remove routing table in ET/reports
 		end if;
 		
-		et_export.close_report;
+-- CS		et_export.close_report;
 	
 		exception
 			when event:
@@ -410,7 +412,28 @@ procedure et is
 					put_line (standard_output, message_error & "Read export report for warnings and error messages !"); -- CS: show path to report file
 
 	end check_modules;
+
+
+	procedure read_boards is
+		use et_schematic;
+		use type_rig;
+		use et_configuration;
+	begin
+		-- If there are no modules, there is nothing to check:
+		if et_schematic.module_count > 0 then
 		
+			log ("importing layouts/boards ...", console => true);
+			log_indentation_up;
+
+			-- CS: use case construct to probe cad formats
+			et_kicad_pcb.read_boards (log_threshold => 0);
+			
+			log_indentation_down;
+		end if;
+
+		et_export.close_report; -- CS
+	end read_boards;
+	
 begin -- main
 
 	-- process command line arguments
@@ -428,21 +451,22 @@ begin -- main
 		when import_module =>
 	
 			-- import a single module indicated by variable project_name
-			import_module;
+			import_module; -- calls import_design (according to CAD format)
 
 			-- check the imported module
-			check_modules;
+			check_modules; -- updates the netlists of all modules
 
-
+			read_boards;
 			
 		when import_modules =>
 
 			-- import many modules as specified in configuration file
-			import_modules;
+			import_modules; -- calls import_design (according to CAD format)
 
 			-- check modules
-			check_modules;
-			
+			check_modules; -- updates the netlists of all modules
+
+			read_boards;
 	end case;
 			
 

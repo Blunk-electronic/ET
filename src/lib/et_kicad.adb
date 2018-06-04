@@ -6659,19 +6659,10 @@ package body et_kicad is
 				
 				-- write net report
 				et_schematic.write_nets (log_threshold + 1);
-				
-				-- read the layout file
-				et_kicad_pcb.read_board (
-					file_name => compose (
-									name => type_project_name.to_string (project),
-									extension => file_extension_board),
-					log_threshold => log_threshold + 1);
-
-
 
 				
 			when others =>
-				null; -- CS: add import of other CAD formats here
+				null; -- CS: add import of other CAD kicad formats (v5, v6, ..) here
 
 				
 		end case;
