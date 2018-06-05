@@ -223,7 +223,9 @@ procedure et is
 		et_kicad.import_design (project => project_name, log_threshold => 0);
 		restore_projects_root_directory;
 
-		et_import.close_report;
+		--et_import.close_report;
+		-- keep import report open for things that follow later (for example layout import)
+		set_output (standard_output);
 
 		exception
 			when event:
@@ -246,7 +248,6 @@ procedure et is
 		module_cursor_import : type_import_modules.cursor;
 		instances : type_submodule_instance;
 		module : type_project_name.bounded_string; -- when importing multiple projects, we regard them as modules
-	
 	begin
 		log ("importing modules ...");
 		
@@ -314,9 +315,9 @@ procedure et is
 			next (module_cursor_import);
 		end loop;
 		
-
-
-		et_import.close_report;
+		--et_import.close_report;
+		-- keep import report open for things that follow later (for example layout import)
+		set_output (standard_output);
 
 		exception
 			when event:
@@ -325,7 +326,6 @@ procedure et is
 					--put (exception_message (event));
 					put_line (standard_output, message_error & "Read import report for warnings and error messages !"); -- CS: show path to report file
 					raise;
-
 
 	end import_modules;
 
@@ -403,7 +403,8 @@ procedure et is
 			-- CS: remove routing table in ET/reports
 		end if;
 		
--- CS		et_export.close_report;
+		et_export.close_report;
+		-- CS might be good to leave the export report open for other things that follow (layout export in native format)
 	
 		exception
 			when event:
@@ -419,6 +420,9 @@ procedure et is
 		use type_rig;
 		use et_configuration;
 	begin
+		-- Log messages go in the import report:
+		set_output (et_import.report_handle);
+		
 		-- If there are no modules, there is nothing to check:
 		if et_schematic.module_count > 0 then
 		
@@ -431,7 +435,9 @@ procedure et is
 			log_indentation_down;
 		end if;
 
-		et_export.close_report; -- CS
+		et_import.close_report;
+		-- CS might be good to leave the import report open for other things that follow
+		
 	end read_boards;
 	
 begin -- main
