@@ -6640,7 +6640,8 @@ package body et_kicad is
 				
 				log_indentation_down;
 
-				-- Update strand names according to power out ports connected with them:
+				-- Update strand names according to power in/out ports connected with them:
+				-- This is CAE-system depended ! See details in procedure spec and body.
 				et_schematic.update_strand_names (log_threshold + 1); -- includes portlist generation
 
 				-- write strands report

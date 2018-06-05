@@ -68,6 +68,9 @@ package et_import is
 
 	function to_string (format : in type_cad_format) return string;
 	-- Converts the given cad format to a string.
+
+	function invalid_cad_format (format : in type_cad_format) return string;
+	-- Returns a message that the given format is not supported.
 	
 	procedure validate_project (
 		name : in type_project_name.bounded_string;

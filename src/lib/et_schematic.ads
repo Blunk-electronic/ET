@@ -892,6 +892,7 @@ package et_schematic is
 
 	procedure update_strand_names (log_threshold : in et_string_processing.type_log_level);
 	-- Tests if a power out port is connected to a strand and renames the strand if necessary.	
+	-- Depending on the CAE system power-out or power-in ports may enforce their name on a strand.
 	
 	procedure write_strands (log_threshold : in et_string_processing.type_log_level);
 	-- Writes a nice overview of strands, net segments and labels

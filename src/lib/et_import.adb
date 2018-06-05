@@ -81,6 +81,12 @@ package body et_import is
 	begin
 		return type_cad_format'image (format);
 	end to_string;
+
+	function invalid_cad_format (format : in type_cad_format) return string is
+	-- Returns a message that the given format is not supported.
+	begin
+		return "CAD format '" & to_string (format) & "' not supported or invalid !";
+	end invalid_cad_format;
 	
 	procedure validate_project (
 		name : in type_project_name.bounded_string;

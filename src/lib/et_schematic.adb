@@ -2093,7 +2093,8 @@ package body et_schematic is
 
 	
 	procedure update_strand_names (log_threshold : in et_string_processing.type_log_level) is
-	-- Tests if a power out port is connected to a strand and renames the strand if necessary.
+	-- Tests if a power in/out port is connected to a strand and renames the strand if necessary.
+	-- Depending on the CAE system power-out or power-in ports may enforce their name on a strand.
 		use et_string_processing;
 	
 		portlists : type_portlists.map := type_portlists.empty_map;
@@ -2146,50 +2147,79 @@ package body et_schematic is
 					while port /= type_ports.no_element loop
 						log_indentation_up;
 
-						-- We are interested in power out ports exclusively. Only such ports may enforce their
-						-- name on a strand. NOTE: Power_flags also have a (single) power_out port, but they 
-						-- do NOT enforce their name on the strand.
-						if element (port).direction = POWER_OUT and element (port).power_flag = NO then
 						-- CS: skip already processed ports to improve performance
 
-							log ("probing port " & to_string (position => element (port).coordinates), log_threshold + 4);
+						log ("probing port " & to_string (position => element (port).coordinates), log_threshold + 4);
 
-							-- test if port is connected with segment
-							if port_connected_with_segment (element (port), element (segment)) then
-								log_indentation_up;
+						-- test if port is connected with segment
+						if port_connected_with_segment (element (port), element (segment)) then
+							log_indentation_up;
 -- 								log ("match", log_threshold + 2);
 
-								-- If strand has no name yet, it is to be named after the name of the port that sits on it.
-								-- If strand has a name already, its scope must be global
-								-- because power out ports are allowed in global strands exclusively !
-								if et_schematic.anonymous (element (strand).name) then
-									log ("component " & et_libraries.to_string (key (component)) 
-										& " port name " & to_string (element (port).name) 
-										& " is a power output -> port name sets strand name", log_threshold + 2);
+							-- Depending on the CAE system power-out or power-in ports may enforce their name
+							-- on a strand.
+							case et_import.cad_format is
 
-									-- rename strand
-									et_schematic.rename_strands (
-										name_before => element (strand).name,
-										name_after => to_net_name (element (port).name),
-										log_threshold => log_threshold + 3);
+								-- With kicad, power-in ports enforce their name on the strand.
+								when et_import.kicad_v4 =>
 
-								elsif element (strand).scope /= global then -- strand has a name and is local or hierarchic
-							
-										log_indentation_reset;
-										log (message_error & "component " & et_libraries.to_string (key (component)) 
-											& " POWER OUT port " & to_string (element (port).name) 
-											& latin_1.lf
-											& "at " & to_string (element (port).coordinates, module)
-											& latin_1.lf
-											& "conflicts with " & to_string (element (strand).scope) 
-											& " net " & et_schematic.to_string (element (strand).name) & " !");
-										raise constraint_error;
+									-- We are interested in "power in" ports exclusively. Only such ports may enforce their
+									-- name on a strand.
+									if element (port).direction = POWER_IN then
 
-								end if;
-								
-								log_indentation_down;
-							end if;
+										-- If strand has no name yet, it is to be named after the name of the port that sits on it.
+										-- If strand has a name already, its scope must be global
+										-- because power-in ports are allowed in global strands exclusively !
+										if et_schematic.anonymous (element (strand).name) then
+											log ("component " & et_libraries.to_string (key (component)) 
+												& " port name " & to_string (element (port).name) 
+												& " is a power input -> port name sets strand name", log_threshold + 2);
 
+											-- rename strand
+											et_schematic.rename_strands (
+												name_before => element (strand).name,
+												name_after => to_net_name (element (port).name),
+												log_threshold => log_threshold + 3);
+
+										-- If strand has been given a name already (for example by previous power-in ports) AND
+										-- if strand name differs from name of current power-in port -> error and abort
+										elsif to_string (element (strand).name) /= to_string (element (port).name) then
+											log_indentation_reset;
+											log (message_error & "component " & et_libraries.to_string (key (component)) 
+												& " POWER IN port " & to_string (element (port).name) 
+												& latin_1.lf
+												& "at " & to_string (element (port).coordinates, module)
+												& latin_1.lf
+												& "conflicts with net " & et_schematic.to_string (element (strand).name) & " !");
+											raise constraint_error;
+
+										-- If strand has a name and is local or hierarchic -> error and abort
+										elsif element (strand).scope /= global then
+											log_indentation_reset;
+											log (message_error & "component " & et_libraries.to_string (key (component)) 
+												& " POWER IN port " & to_string (element (port).name) 
+												& latin_1.lf
+												& "at " & to_string (element (port).coordinates, module)
+												& latin_1.lf
+												& "conflicts with " & to_string (element (strand).scope) 
+												& " net " & et_schematic.to_string (element (strand).name) & " !");
+											raise constraint_error;
+
+										end if;
+										
+									end if;
+
+								-- With eagle, power-out ports enforce their name on the strand.
+								-- when et_import.eagle =>
+									
+								when others =>
+									log_indentation_reset;
+									log (message_error & et_import.invalid_cad_format (et_import.cad_format));
+									raise constraint_error;
+									
+							end case;
+
+							log_indentation_down;
 						end if;
 						
 						log_indentation_down;
