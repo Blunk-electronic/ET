@@ -39,7 +39,7 @@ with ada.text_io;				use ada.text_io;
 with ada.directories;			use ada.directories;
 
 with et_general;
-with et_string_processing;
+with et_string_processing;		--use et_string_processing;
 
 package et_export is
 
@@ -47,7 +47,17 @@ package et_export is
 	function file_report_export return string;
 	-- Returns the relative path and name of the export report file.
 
-	report_handle		: ada.text_io.file_type;
+	type type_warning_counter is private;
+	
+	procedure increment_warning_counter;
+	-- Increments the warning counter by one.
+
+	function warning_count return string;
+	-- Returns the number of warnings as string.
+
+	
+	report_handle : ada.text_io.file_type;
+
 
 	
 	-- CAD FORMATS
@@ -73,6 +83,11 @@ package et_export is
 	-- Creates subdirectory for CAM
 		project			: in string;
 		log_threshold	: in et_string_processing.type_log_level);
+
+	private
+		type type_warning_counter is new natural;
+		
+		warning_counter : type_warning_counter := 0;
 	
 end et_export;
 

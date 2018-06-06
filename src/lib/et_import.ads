@@ -45,7 +45,8 @@ with ada.strings.bounded; 		use ada.strings.bounded;
 
 with et_general;				use et_general;
 with et_schematic;				use et_schematic;
-with et_libraries;
+
+with et_string_processing;		use et_string_processing;
 
 package et_import is
 
@@ -54,8 +55,16 @@ package et_import is
 	function file_report_import return string;
 	-- Returns the relative path and name of the import report file.
 	
-	report_handle		: ada.text_io.file_type;
-    
+	report_handle : ada.text_io.file_type;
+
+	type type_warning_counter is private;
+	
+	procedure increment_warning_counter;
+	-- Increments the warning counter by one.
+
+	function warning_count return string;
+	-- Returns the number of warnings as string.
+	
 	-- CAD FORMATS
 	type type_cad_format is (unknown, kicad_v4); -- CS: eagle_vx
 	-- If no format specified via cmd line, a default applies so that the operator can be 
@@ -87,7 +96,11 @@ package et_import is
 	-- Writes the report footer and closes the report file.
 	-- Sets the output back to standard_output.
 
-	
+	private
+		type type_warning_counter is new natural;
+		
+		warning_counter : type_warning_counter := 0;
+
 end et_import;
 
 -- Soli Deo Gloria

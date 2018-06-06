@@ -339,7 +339,7 @@ procedure et is
 	begin
 		-- export useful things from the imported modules
 		et_export.create_report;
-		reset_warnings_counter;
+		--reset_warnings_counter;
 
 		-- If there are no modules, there is nothing to check:
 		if et_schematic.module_count > 0 then

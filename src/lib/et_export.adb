@@ -52,6 +52,16 @@ package body et_export is
 			);
 	end file_report_export;
 
+	procedure increment_warning_counter is begin
+	-- Increments the warning counter by one.
+		warning_counter := warning_counter + 1;
+	end increment_warning_counter;
+
+	function warning_count return string is begin
+	-- Returns the number of warnings as string.
+		return type_warning_counter'image (warning_counter);
+	end warning_count;
+	
 	procedure create_report is
 	-- Creates the report file in report_directory.
 	-- Sets the output to the report file.

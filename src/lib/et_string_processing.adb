@@ -43,6 +43,9 @@ with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.text_io;				use ada.text_io;
 
+with et_import;
+with et_export;
+
 package body et_string_processing is
 
 	function to_string (
@@ -141,10 +144,20 @@ package body et_string_processing is
 	end angles_in_degrees;	
 	
 	function message_warning return string is
-	-- Returns a warning string and increments the warning counter.
+	-- Returns a warning string and increments the import/export warning counter.
+		warning : constant string (1..9) := "WARNING #";
+		use et_import;
+		use et_export;
 	begin
-		warning_counter := warning_counter + 1;
-		return "WARNING #" & trim (type_warning_counter'image (warning_counter),left) & " : ";
+		if name (current_output) = name (et_import.report_handle) then
+			et_import.increment_warning_counter;
+			return warning & et_import.warning_count & " : ";
+		elsif name (current_output) = name (et_export.report_handle) then
+			et_export.increment_warning_counter;
+			return warning & et_export.warning_count & " : ";
+		else
+			return warning (1..7) & " : ";
+		end if;
 	end message_warning;
 
 	function message_note return string is
@@ -169,10 +182,6 @@ package body et_string_processing is
 -- 		end if;
 -- 	end check_updated_vs_commissioned;
 
-	procedure reset_warnings_counter is
-	begin
-		warning_counter := 0;
-	end reset_warnings_counter;
 	
 	function to_string (date : in type_date) return string is
 	-- Returns the given date as string.

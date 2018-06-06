@@ -39,7 +39,7 @@ with ada.directories;
 
 with et_general;
 with et_schematic;
-with et_string_processing;			use et_string_processing;
+with et_string_processing;			--use et_string_processing;
 
 package body et_import is
 
@@ -53,6 +53,16 @@ package body et_import is
 			);
 	end file_report_import;
 
+	procedure increment_warning_counter is begin
+	-- Increments the warning counter by one.
+		warning_counter := warning_counter + 1;
+	end increment_warning_counter;
+
+	function warning_count return string is begin
+	-- Returns the number of warnings as string.
+		return type_warning_counter'image (warning_counter);
+	end warning_count;
+	
 	procedure validate_cad_format (format : in string) is
 		use et_string_processing;
 	begin
@@ -131,7 +141,7 @@ package body et_import is
 		if is_open (et_import.report_handle) then
 	
 			put_line (row_separator_double);
-			
+
 			if warning_counter = 0 then
 				put_line ("no warnings");
 			else

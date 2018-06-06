@@ -2248,7 +2248,7 @@ package body et_configuration is
 		function comment return string is begin return comment_mark & latin_1.space; end comment;
 	begin
 		et_export.create_report;
-		reset_warnings_counter;
+		--reset_warnings_counter;
 
 	
 		log ("generating default configuration file " & to_string (file_name), log_threshold);

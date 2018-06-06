@@ -151,11 +151,9 @@ package et_string_processing is
 	-- Returns a message about the degrees used.
 	
 	message_error : constant string (1..8)	:= "ERROR ! ";
-	type type_warning_counter is new natural; -- CS: rename to type_warnings_counter. should be private
-	warning_counter : type_warning_counter := 0;
-	procedure reset_warnings_counter;
+
 	function message_warning return string;
-	-- Returns a warning string and increments the warning counter.
+	-- Returns a warning string and increments the import/export) warning counter.
 
 	function message_note return string;
 	-- Returns a notification string.
