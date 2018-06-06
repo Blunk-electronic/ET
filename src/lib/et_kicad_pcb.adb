@@ -6279,6 +6279,56 @@ package body et_kicad_pcb is
 					return id;
 				end to_net_id;
 				
+
+				r : et_pcb.type_route; -- cs remove
+				
+				function route (net_id : in type_net_id) return et_pcb.type_route is
+					route : et_pcb.type_route; -- to be returned
+					use type_segments;
+					segment_cursor : type_segments.cursor := board.segments.first;
+
+					line : et_pcb.type_copper_line_pcb; -- et segment
+				begin -- route
+					--log_indentation_up;
+					--log ("collecting segments ...", log_threshold + 2);
+				
+					-- Find all segments that have the given net_id.
+					-- Append segments to route.lines.
+					log_indentation_up;
+					while segment_cursor /= type_segments.no_element loop
+						if element (segment_cursor).net_id = net_id then
+
+							-- copy start/end point and line width (by a conversion to the base type)
+							line := (et_pcb.type_copper_line (element (segment_cursor)) with 
+
+									-- Translate the kicad layer id to the ET signal layer:
+									layer => et_pcb.type_signal_layer (element (segment_cursor).layer + 1)
+
+									-- CS Translate the locked and differential status
+									--CS locked => et_pcb.NO -- translate from segment status to locked status
+									--CS differential -- translate from segment status to differential status
+									);
+
+							route.lines.append (line); -- append the segment to the lines of the route
+							et_pcb.route_line_properties (route.lines.last, log_threshold + 3);
+
+						end if;
+						
+						next (segment_cursor);
+					end loop;
+
+					-- Find all vias that have the given net_id.
+					-- Append vias to route.vias
+					
+					
+					log_indentation_down;
+					
+					--log_indentation_down;
+					return route;
+				end route;
+
+
+				
 			begin -- add_board_objects
 				-- General board stuff (not related to any components) is
 				-- copied right away:
@@ -6295,7 +6345,7 @@ package body et_kicad_pcb is
 				while net_cursor /= type_nets.no_element loop
 
 					-- We are interested in nets that have more than one terminal connected.
-					-- Nets with only one terminal do not appear in a kicad board file and must be skipped here.
+					-- Nets with less than two terminals do not appear in a kicad board file and must be skipped here.
 					
 					-- NOTE: Nets without explicitely given name are named like N$1, N$2, ... 
 					-- The Kicad notation like "Net-(X1-Pad5)" is NOT used !!!
@@ -6306,10 +6356,11 @@ package body et_kicad_pcb is
 						net 			=> key (net_cursor),
 						log_threshold	=> log_threshold + 4).length > 1 then
 
--- 							log ("pre net " & to_string (key (net_cursor)), log_threshold + 2);
+							-- log ("pre net " & to_string (key (net_cursor)), log_threshold + 2);
 							net_id := to_net_id (key (net_cursor));
 							log ("net " & to_string (key (net_cursor)) & " id" &
 								 to_string (net_id), log_threshold + 2);
+							r := route (net_id);
 							--log (" id " & to_string (net_id), log_threshold + 3);
 						
 					end if;

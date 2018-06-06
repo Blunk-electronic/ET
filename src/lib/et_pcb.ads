@@ -75,6 +75,8 @@ package et_pcb is
 	signal_layer_bot : constant positive := 100;
 	type type_signal_layer is range signal_layer_top .. signal_layer_bot;
 
+	function to_string (signal_layer : in type_signal_layer) return string;
+
 	package type_signal_layers is new ordered_sets (type_signal_layer);
 
 	text_size_min : constant type_distance := 1.0;
@@ -384,6 +386,7 @@ package et_pcb is
 	-- COPPER OBJECTS (NON ELECTRIC !!) OF A PACKAGE
 	type type_copper_line is new type_line with record
 		width	: type_general_line_width;
+		-- CS locked	: type_locked;
 	end record;
 	package type_copper_lines is new doubly_linked_lists (type_copper_line);
 
@@ -472,6 +475,7 @@ package et_pcb is
 		lines 			: type_copper_lines_pcb.list;
 		arcs			: type_copper_arcs_pcb.list;
 		vias			: type_vias.list;
+		-- CS differential status
 		-- CS polygons
 	end record;
 
@@ -951,6 +955,15 @@ package et_pcb is
 		face			: in type_face;
 		cursor			: in type_copper_circles.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
+
+	
+
+-- PROPERTIES OF OBJECTS IN COPPER LAYERS (SIGNAL LAYERS !!)
+	procedure route_line_properties (
+	-- Logs the properties of the given line of a route
+		cursor			: in type_copper_lines_pcb.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+
 	
 
 	

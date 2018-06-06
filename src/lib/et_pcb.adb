@@ -39,7 +39,9 @@ with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 
+with ada.strings;				use ada.strings;
 with ada.strings.maps;			use ada.strings.maps;
+with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 
@@ -64,6 +66,11 @@ package body et_pcb is
 		return type_directory_name.to_string (directory_name);
 	end to_string;
 
+	function to_string (signal_layer : in type_signal_layer) return string is
+	begin
+		return trim (type_signal_layer'image (signal_layer), left);
+	end to_string;
+	
 	procedure validate_text_size (size : in type_distance) is
 	-- Checks whether given text size is in range of type_text_size.
 	begin
@@ -378,6 +385,24 @@ package body et_pcb is
 	end circle_copper_properties;
 
 
+
+-- PROPERTIES OF OBJECTS IN COPPER LAYERS (SIGNAL LAYERS !!)
+	procedure route_line_properties (
+	-- Logs the properties of the given line of a route
+		cursor			: in type_copper_lines_pcb.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_copper_lines_pcb;
+		line : type_copper_line_pcb;
+	begin
+		line := element (cursor);
+		log ("segment " & et_pcb.to_string (type_line (line)) &
+			 " width" & to_string (line.width) &
+			 " layer " & to_string (line.layer)
+			 -- CS locked
+			 , log_threshold);
+	end route_line_properties;
+	
+	
 
 -- PROPERTIES OF OBJECTS IN SILK SCREEN
 	procedure line_silk_screen_properties (
