@@ -2135,18 +2135,18 @@ package body et_kicad_pcb is
 				case package_technology is
 					when THT =>
 						if tht_count < smt_count then
-							log (message_warning & "in " & path_and_file_name);
-							log (message_warning & "majority of terminals is " & to_string (SMT)
-								& number (smt_count)
-								& "Package technology should be " & to_string (SMT) & " !");
+							log (message_warning & "in " & path_and_file_name &
+								" majority of terminals is" & to_string (SMT) &
+								number (smt_count) &
+								"Package technology should be" & to_string (SMT) & " !");
 						end if;
 
 					when SMT =>
 						if smt_count < tht_count then
-							log (message_warning & "in " & path_and_file_name);
-							log (message_warning & "majority of terminals is " & to_string (THT)
-								& number (tht_count)
-								& "Package technology should be " & to_string (THT) & " !");
+							log (message_warning & "in " & path_and_file_name &
+								" majority of terminals is" & to_string (THT) &
+								number (tht_count) &
+								"Package technology should be" & to_string (THT) & " !");
 						end if;
 				end case;
 
@@ -2346,7 +2346,7 @@ package body et_kicad_pcb is
 
 			-- show number of package libraries
 			if is_empty (package_names) then
-				log (message_warning & "library is empty !");
+				log (message_warning & "library " & to_string (library_name) & " is empty !");
 			else
 				log ("found" & count_type'image (length (package_names)) & " packages", log_threshold + 4);
 			end if;

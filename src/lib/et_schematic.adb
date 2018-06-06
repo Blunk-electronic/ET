@@ -2187,10 +2187,10 @@ package body et_schematic is
 											--log_indentation_reset;
 											log (message_warning & "component " & et_libraries.to_string (key (component)) 
 												& " POWER IN port " & to_string (element (port).name) 
-												& latin_1.lf
-												& "at " & to_string (element (port).coordinates, module)
-												& latin_1.lf
-												& "conflicts with net " & et_schematic.to_string (element (strand).name) & " !");
+												--& latin_1.lf
+												& " at " & to_string (element (port).coordinates, module)
+												--& latin_1.lf
+												& " conflicts with net " & et_schematic.to_string (element (strand).name) & " !");
 											--raise constraint_error;
 
 										-- If strand has a name and is local or hierarchic -> error and abort
@@ -2198,10 +2198,10 @@ package body et_schematic is
 											log_indentation_reset;
 											log (message_error & "component " & et_libraries.to_string (key (component)) 
 												& " POWER IN port " & to_string (element (port).name) 
-												& latin_1.lf
-												& "at " & to_string (element (port).coordinates, module)
-												& latin_1.lf
-												& "conflicts with " & to_string (element (strand).scope) 
+												--& latin_1.lf
+												& " at " & to_string (element (port).coordinates, module)
+												--& latin_1.lf
+												& " conflicts with " & to_string (element (strand).scope) 
 												& " net " & et_schematic.to_string (element (strand).name) & " !");
 											raise constraint_error;
 
