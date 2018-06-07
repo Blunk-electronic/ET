@@ -2296,6 +2296,7 @@ package body et_kicad_pcb is
 	
 	procedure read_libraries (
 	-- Reads package libraries. Root directory is et_libraries.lib_dir.
+	-- Create the libraries in container package_libraries (see et_pcb specs).
 	-- The libraries in the container are named after the libraries found in lib_dir.
 		log_threshold 	: in et_string_processing.type_log_level) is
 
@@ -6202,13 +6203,22 @@ package body et_kicad_pcb is
 				mod_name : in type_submodule_name.bounded_string;
 				module   : in out type_module) is
 
-				-- The nets of the module are copied here. Later segments and vias
-				-- will be added. Nets will then overwrite the previous nets of
-				-- the module.
+				-- The nets of the module are copied here (in their present state):
 				use et_schematic.type_nets;
 				nets 		: et_schematic.type_nets.map := module.nets;
 				net_cursor	: et_schematic.type_nets.cursor := nets.first;
-				net_id		: type_net_id;
+				
+				net_id		: type_net_id; -- the net id used by kicad
+
+				-- The components of the module are copied here (in their present state):
+				use et_schematic.type_components;
+				components			: et_schematic.type_components.map := module.components;
+				component_cursor	: et_schematic.type_components.cursor := components.first;
+
+				use type_packages_board;
+				package_cursor		: type_packages_board.cursor;
+				package_reference	: et_libraries.type_component_reference;
+				package_position	: et_pcb_coordinates.type_package_position;
 				
 				function to_net_id (name : in type_net_name.bounded_string) return type_net_id is
 				-- Converts the given net name to a net id.
@@ -6364,11 +6374,20 @@ package body et_kicad_pcb is
 				end route;
 
 				procedure add_route (
+				-- adds routing information to the schematic module
 					net_name	: in et_schematic.type_net_name.bounded_string;
 					net			: in out et_schematic.type_net) is
 				begin
 					net.route := route (net_id);
 				end add_route;
+
+				procedure add_position (
+				-- adds the coordinates of the package to the schematic module
+					comp_ref	: in et_libraries.type_component_reference;
+					component	: in out et_schematic.type_component) is
+				begin
+					component.position := package_position;
+				end add_position;
 				
 			begin -- add_board_objects
 				-- General board stuff (not related to any components) is
@@ -6412,6 +6431,46 @@ package body et_kicad_pcb is
 				end loop;
 
 
+				-- package positions
+				while component_cursor /= type_components.no_element loop
+
+					-- We are interested in real components only. Virtual schematic components
+					-- do not appear in a board and thus are skipped.
+					if et_libraries."=" (element (component_cursor).appearance, et_libraries.sch_pcb) then
+
+						-- set package reference as the component reference (from schematic)
+						package_reference := key (component_cursor);
+						--log ("component " & et_libraries.to_string (package_reference), log_threshold + 3);
+
+						-- source et_kicad_pcb.type_board.board.packages.position
+						-- in the board: locate the package by the given package_reference:
+						package_cursor := find (board.packages, package_reference);
+
+						-- If the package exists, get package_position and update the schematic module
+						-- with the package_position.
+						-- Otherwise the package does not exist in the board -> error and abort
+						if package_cursor /= type_packages_board.no_element then
+
+							package_position := element (package_cursor).position;
+							log ("component " & et_libraries.to_string (package_reference) &
+								 et_pcb.package_position (package_position), log_threshold + 2);
+							
+							update_element (
+								container 	=> module.components,
+								position	=> find (module.components, package_reference),
+								process		=> add_position'access);
+							
+						else
+							log_indentation_reset;
+							log (message_error & "package " & et_libraries.to_string (package_reference) &
+								 " not found in the board !", console => true);
+							raise constraint_error;
+						end if;
+							
+					end if;
+
+					next (component_cursor);
+				end loop;
 
 				log_indentation_down;
 				

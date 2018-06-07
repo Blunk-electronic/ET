@@ -454,6 +454,7 @@ package et_kicad_pcb is
 
 	procedure read_libraries (
 	-- Reads package libraries. Root directory is et_libraries.lib_dir.
+	-- Create the libraries in container package_libraries (see et_pcb specs).								 
 	-- The libraries in the container are named after the libraries found in lib_dir.
 		log_threshold 	: in et_string_processing.type_log_level);
 
@@ -491,7 +492,7 @@ package et_kicad_pcb is
 
 
 	
-	-- Packages (modules) as they are listed in the board file are similar to
+	-- Packages (kicad refers to them as modules) as they are listed in the board file are similar to
 	-- packages in the libraries. However, there are differences, which requires
 	-- a distinct type for them. 
 	-- Differences are: 

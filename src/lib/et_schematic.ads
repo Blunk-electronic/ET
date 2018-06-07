@@ -191,7 +191,7 @@ package et_schematic is
 	-- returns the given mirror style as string
 
 	-- In a schematic we handle only virtual components (like GND symbols)
-	-- and those which appear in both schematic an layout (so called real compoenents):
+	-- and those which appear in both schematic an layout (so called real components):
 	subtype type_appearance_schematic is type_component_appearance range sch .. sch_pcb;
 
 	-- KiCad uses an 8 digit string like 59969508 to link a unit from schematic to package (in board file).
@@ -796,19 +796,21 @@ package et_schematic is
 		key_type => type_net_name.bounded_string, -- net name like "MCU_CLOCK"
 		element_type => type_ports_with_reference.set); -- the list of ports connected with the net
 	use type_netlist;
+
+
 	
 -- MODULES
 	
 	type type_module is record
 		generic_name	: type_submodule_name.bounded_string;
 		instance		: type_submodule_instance;
-		
+
+		-- The list of project library names in the order as defined in project file:
 		libraries		: type_full_library_names.list;	
-		-- The list of project library names in the order as defined in project file.
 		
 		strands	    	: type_strands.list;			-- the strands of the module
 		junctions		: type_junctions.list;			-- net junctions
-		nets 	    	: type_nets.map;				-- the nets of the module
+
 		components		: type_components.map;			-- the components of the module
 		net_classes		: et_pcb.type_net_classes.map;	-- the net classes
 		no_connections	: type_no_connection_flags.list;-- the list of no-connection-flags
@@ -822,6 +824,9 @@ package et_schematic is
 		sheet_headers	: type_sheet_headers.map;		-- the list of sheet headers -- kicad requirement
 		-- CS: images
 
+		-- the nets of the module (incl. routing information from the board):
+		nets 	    	: type_nets.map;				
+		
 		-- General non-component related board stuff (silk screen, documentation, ...):
 		board			: et_pcb.type_board;
 	end record;
