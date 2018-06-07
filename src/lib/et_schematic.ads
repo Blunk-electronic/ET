@@ -480,6 +480,7 @@ package et_schematic is
 		strands		: type_strands.list;
 		route		: et_pcb.type_route;
 		-- CS class : et_pcb.type_net_class_name.bounded_string
+		-- CS differential status
 	end record;
 
 	-- Nets are collected in a map:

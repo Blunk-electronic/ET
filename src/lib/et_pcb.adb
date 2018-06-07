@@ -68,7 +68,8 @@ package body et_pcb is
 
 	function to_string (signal_layer : in type_signal_layer) return string is
 	begin
-		return trim (type_signal_layer'image (signal_layer), left);
+		--return trim (type_signal_layer'image (signal_layer), left);
+		return type_signal_layer'image (signal_layer);
 	end to_string;
 	
 	procedure validate_text_size (size : in type_distance) is
@@ -386,7 +387,7 @@ package body et_pcb is
 
 
 
--- PROPERTIES OF OBJECTS IN COPPER LAYERS (SIGNAL LAYERS !!)
+-- PROPERTIES OF ELECTRIC OBJECTS IN SIGNAL LAYERS
 	procedure route_line_properties (
 	-- Logs the properties of the given line of a route
 		cursor			: in type_copper_lines_pcb.cursor;
@@ -402,6 +403,24 @@ package body et_pcb is
 			 , log_threshold);
 	end route_line_properties;
 	
+	procedure route_via_properties (
+	-- Logs the properties of the given via of a route
+		cursor			: in type_vias.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_vias;
+		via : type_via;
+	begin
+		via := element (cursor);
+		log ("via" & et_pcb.to_string (type_drill (via)) &
+			 " restring_outer" & to_string (via.restring_outer) & -- outer layers
+			 " restring_inner" & to_string (via.restring_inner) & -- inner layers
+			 " layer_start" & to_string (via.layer_start) &
+			 " layer_end" & to_string (via.layer_end)
+			 -- CS locked
+			 , log_threshold);
+	end route_via_properties;
+
+
 	
 
 -- PROPERTIES OF OBJECTS IN SILK SCREEN

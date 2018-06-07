@@ -475,7 +475,6 @@ package et_pcb is
 		lines 			: type_copper_lines_pcb.list;
 		arcs			: type_copper_arcs_pcb.list;
 		vias			: type_vias.list;
-		-- CS differential status
 		-- CS polygons
 	end record;
 
@@ -958,12 +957,18 @@ package et_pcb is
 
 	
 
--- PROPERTIES OF OBJECTS IN COPPER LAYERS (SIGNAL LAYERS !!)
+-- PROPERTIES OF ELECTRIC OBJECTS IN SIGNAL LAYERS
 	procedure route_line_properties (
 	-- Logs the properties of the given line of a route
 		cursor			: in type_copper_lines_pcb.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
+	procedure route_via_properties (
+	-- Logs the properties of the given via of a route
+		cursor			: in type_vias.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+
+	
 	
 
 	

@@ -569,7 +569,7 @@ package et_kicad_pcb is
 		net_id		: type_net_id;
 		layer		: type_signal_layer_id;
 		timestamp	: et_string_processing.type_timestamp;
-		status		: type_segment_status.bounded_string;
+		status		: type_segment_status.bounded_string; -- holds lock status and differential status
 	end record;
 
 	-- segments are stored in lists
@@ -586,7 +586,7 @@ package et_kicad_pcb is
 		diameter_total	: et_pcb_coordinates.type_distance; -- drill + 2 * restring
 		layer_start		: type_signal_layer_id;
 		layer_end		: type_signal_layer_id;		
-		status			: type_via_status.bounded_string;
+		status			: type_via_status.bounded_string;  -- holds lock status and differential status
 	end record;
 	
 	-- vias are stored in lists

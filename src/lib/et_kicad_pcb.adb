@@ -6286,12 +6286,18 @@ package body et_kicad_pcb is
 					route : et_pcb.type_route; -- to be returned
 					use type_segments;
 					segment_cursor : type_segments.cursor := board.segments.first;
+					line : et_pcb.type_copper_line_pcb; -- an ET segment
 
-					line : et_pcb.type_copper_line_pcb; -- et segment
+					use type_vias;
+					via_cursor : type_vias.cursor := board.vias.first;
+					via : et_pcb.type_via; -- an ET via
+					restring : et_pcb.type_restring_width;
+
+					use et_pcb_coordinates;
 				begin -- route
-					--log_indentation_up;
-					--log ("collecting segments ...", log_threshold + 2);
-				
+					log_indentation_up;
+					log ("segments and vias (signal layers in IPC notation (TOP..BOTTOM / 1..n):", log_threshold + 3);
+					 
 					-- Find all segments that have the given net_id.
 					-- Append segments to route.lines.
 					log_indentation_up;
@@ -6302,6 +6308,7 @@ package body et_kicad_pcb is
 							line := (et_pcb.type_copper_line (element (segment_cursor)) with 
 
 									-- Translate the kicad layer id to the ET signal layer:
+									-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
 									layer => et_pcb.type_signal_layer (element (segment_cursor).layer + 1)
 
 									-- CS Translate the locked and differential status
@@ -6319,11 +6326,42 @@ package body et_kicad_pcb is
 
 					-- Find all vias that have the given net_id.
 					-- Append vias to route.vias
+					while via_cursor /= type_vias.no_element loop
+						if element (via_cursor).net_id = net_id then
+
+							-- For converting a kicad via to an ET via, the restring must be calculated.
+							-- It is the (total via diameter - drill diameter) divided by 2:
+							restring := (element (via_cursor).diameter_total - element (via_cursor).diameter) / 2;
+						
+							-- copy position, drill diameter (by a conversion to the base type)
+							via := (et_pcb.type_drill (element (via_cursor)) with 
+
+									-- Translate the kicad layer id to the ET signal layer:
+									-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
+									layer_start	=> et_pcb.type_signal_layer (element (via_cursor).layer_start + 1),
+									layer_end 	=> et_pcb.type_signal_layer (element (via_cursor).layer_end + 1),
+
+									-- Since kicad does not distinguish between restring in outer or inner layers
+									-- both are assigned the same value here:
+									restring_outer => restring,
+									restring_inner => restring
+									
+									-- CS Translate the locked and differential status
+									--CS locked => et_pcb.NO -- translate from segment status to locked status
+									--CS differential -- translate from segment status to differential status
+									);
+
+							route.vias.append (via); -- append the via to the vias of the route
+							et_pcb.route_via_properties (route.vias.last, log_threshold + 3);
+
+						end if;
 					
-					
+						next (via_cursor);
+					end loop;
+						
 					log_indentation_down;
+					log_indentation_down;	
 					
-					--log_indentation_down;
 					return route;
 				end route;
 
