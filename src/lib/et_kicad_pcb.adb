@@ -6280,8 +6280,6 @@ package body et_kicad_pcb is
 				end to_net_id;
 				
 
-				r : et_pcb.type_route; -- cs remove
-				
 				function route (net_id : in type_net_id) return et_pcb.type_route is
 					route : et_pcb.type_route; -- to be returned
 					use type_segments;
@@ -6365,7 +6363,12 @@ package body et_kicad_pcb is
 					return route;
 				end route;
 
-
+				procedure add_route (
+					net_name	: in et_schematic.type_net_name.bounded_string;
+					net			: in out et_schematic.type_net) is
+				begin
+					net.route := route (net_id);
+				end add_route;
 				
 			begin -- add_board_objects
 				-- General board stuff (not related to any components) is
@@ -6378,7 +6381,6 @@ package body et_kicad_pcb is
 				module.board.contour 		:= board.contour;
 
 				-- segments and vias
-				--log ("nets ...", log_threshold + 2);
 				log_indentation_up;
 				while net_cursor /= type_nets.no_element loop
 
@@ -6398,13 +6400,19 @@ package body et_kicad_pcb is
 							net_id := to_net_id (key (net_cursor));
 							log ("net " & to_string (key (net_cursor)) & " id" &
 								 to_string (net_id), log_threshold + 2);
-							r := route (net_id);
-							--log (" id " & to_string (net_id), log_threshold + 3);
-						
+
+							-- add route (segments and vias) to module.nets (see et_schematic type_module)
+							et_schematic.type_nets.update_element (
+								container	=> module.nets,
+								position	=> find (module.nets, key (net_cursor)),
+								process		=> add_route'access);
 					end if;
 
 					next (net_cursor);
 				end loop;
+
+
+
 				log_indentation_down;
 				
 			end add_board_objects;
