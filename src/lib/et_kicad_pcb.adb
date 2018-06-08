@@ -6219,6 +6219,8 @@ package body et_kicad_pcb is
 				package_cursor		: type_packages_board.cursor;
 				package_reference	: et_libraries.type_component_reference;
 				package_position	: et_pcb_coordinates.type_package_position;
+
+				text_placeholders	: et_pcb.type_text_placeholders;
 				
 				function to_net_id (name : in type_net_name.bounded_string) return type_net_id is
 				-- Converts the given net name to a net id.
@@ -6388,6 +6390,28 @@ package body et_kicad_pcb is
 				begin
 					component.position := package_position;
 				end add_position_package;
+
+				function to_placeholders return et_pcb.type_text_placeholders is 
+					placeholders : et_pcb.type_text_placeholders; -- to be returned
+					use et_pcb.type_texts_with_content;
+					text_cursor	: et_pcb.type_texts_with_content.cursor;
+					text_board 	: et_pcb.type_text_with_content;
+					placeholder	: et_pcb.type_text_placeholder_package;
+				begin
+					text_cursor := board.silk_screen.top.texts.first;
+					while text_cursor /= et_pcb.type_texts_with_content.no_element loop
+
+						text_board := element (text_cursor);
+						-- CS placeholder := (et_pcb.type_text (text_board) with meaning => et_pcb.REFERENCE);
+
+						et_pcb.type_text_placeholders_package.append (
+							container	=> placeholders.silk_screen.top,
+							new_item	=> placeholder);
+						
+						next (text_cursor);
+					end loop;
+					return placeholders;
+				end to_placeholders;
 				
 			begin -- add_board_objects
 				-- General board stuff (not related to any components) is
@@ -6450,21 +6474,26 @@ package body et_kicad_pcb is
 						-- Otherwise the package does not exist in the board -> error and abort
 						if package_cursor /= type_packages_board.no_element then
 
-							package_position := element (package_cursor).position;
-							log ("component " & et_libraries.to_string (package_reference) &
-								 et_pcb.package_position (package_position), log_threshold + 2);
-
 							-- Make sure the value in schematic matches value in layout.
 							-- On mismatch -> error and abort
 							if et_libraries.type_component_value."=" (
 								element (component_cursor).value, -- value in schematic
 								element (package_cursor).value) then -- value in layout
+
+								package_position := element (package_cursor).position;
+
+								text_placeholders := to_placeholders;
 								
+								log ("component " & et_libraries.to_string (package_reference) &
+									et_pcb.package_position (package_position), log_threshold + 2);
+
+							
 								update_element (
 									container 	=> module.components,
 									position	=> find (module.components, package_reference),
 									process		=> add_position_package'access);
 
+								
 							else -- value mismatch
 								log_indentation_reset;
 								log (message_error & "value of " & et_libraries.to_string (package_reference) &

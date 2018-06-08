@@ -221,8 +221,31 @@ package et_pcb is
 	package type_text_placeholders_package is new doubly_linked_lists (
 		element_type => type_text_placeholder_package);
 
-	
 
+	
+	-- A collection of text placeholders in silk screen and assembly documentation 
+	-- moodeled by this type. It is used by a schematic module in order to
+	-- store text positions and properties of a package:
+	type type_text_placeholders_silk_screen is record
+		top		: type_text_placeholders_package.list;
+		bottom	: type_text_placeholders_package.list;
+	end record;
+
+	type type_text_placeholders_assembly_documentation is record
+		top		: type_text_placeholders_package.list;
+		bottom	: type_text_placeholders_package.list;
+	end record;
+
+	type type_text_placeholders is record
+		silk_screen	: type_text_placeholders_silk_screen;
+		assy_doc	: type_text_placeholders_assembly_documentation;
+	end record;
+
+
+
+
+	
+		
 	-- PLACEHOLDERS FOR TEXTS IN COPPER LAYERS
 	type type_text_meaning_copper is (
 		PROJECT_NAME,

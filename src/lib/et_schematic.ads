@@ -278,12 +278,16 @@ package et_schematic is
 		case appearance is
 			-- If a component appears in both schematic and layout it has got:
 			when sch_pcb => 
-				partcode		: type_component_partcode.bounded_string;
-				purpose			: type_component_purpose.bounded_string;
-				datasheet		: type_component_datasheet.bounded_string;
-				bom				: type_bom;
-				variant			: type_component_variant_name.bounded_string; -- D, N
-				position		: et_pcb_coordinates.type_package_position;
+				partcode			: type_component_partcode.bounded_string;
+				purpose				: type_component_purpose.bounded_string;
+				datasheet			: type_component_datasheet.bounded_string;
+				bom					: type_bom;
+				variant				: type_component_variant_name.bounded_string; -- D, N
+
+				-- This is layout related. In the layout the package has a position
+				-- and placeholders reference, value, purpose.
+				position			: et_pcb_coordinates.type_package_position; -- incl. angle and face
+				text_placeholders	: et_pcb.type_text_placeholders;
 				
 			-- If a component appears in the schematic only, it does not
 			-- have any package variants.
