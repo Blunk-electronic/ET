@@ -6381,13 +6381,13 @@ package body et_kicad_pcb is
 					net.route := route (net_id);
 				end add_route;
 
-				procedure add_position (
+				procedure add_position_package (
 				-- adds the coordinates of the package to the schematic module
 					comp_ref	: in et_libraries.type_component_reference;
 					component	: in out et_schematic.type_component) is
 				begin
 					component.position := package_position;
-				end add_position;
+				end add_position_package;
 				
 			begin -- add_board_objects
 				-- General board stuff (not related to any components) is
@@ -6432,7 +6432,7 @@ package body et_kicad_pcb is
 
 
 				-- package positions
-				while component_cursor /= type_components.no_element loop
+				while component_cursor /= type_components.no_element loop -- (cursor points to schematic components)
 
 					-- We are interested in real components only. Virtual schematic components
 					-- do not appear in a board and thus are skipped.
@@ -6442,25 +6442,39 @@ package body et_kicad_pcb is
 						package_reference := key (component_cursor);
 						--log ("component " & et_libraries.to_string (package_reference), log_threshold + 3);
 
-						-- source et_kicad_pcb.type_board.board.packages.position
 						-- in the board: locate the package by the given package_reference:
 						package_cursor := find (board.packages, package_reference);
 
-						-- If the package exists, get package_position and update the schematic module
-						-- with the package_position.
+						-- If the package exists, get package_position, verify value
+						-- and update the schematic module with the package_position.
 						-- Otherwise the package does not exist in the board -> error and abort
 						if package_cursor /= type_packages_board.no_element then
 
 							package_position := element (package_cursor).position;
 							log ("component " & et_libraries.to_string (package_reference) &
 								 et_pcb.package_position (package_position), log_threshold + 2);
-							
-							update_element (
-								container 	=> module.components,
-								position	=> find (module.components, package_reference),
-								process		=> add_position'access);
-							
-						else
+
+							-- Make sure the value in schematic matches value in layout.
+							-- On mismatch -> error and abort
+							if et_libraries.type_component_value."=" (
+								element (component_cursor).value, -- value in schematic
+								element (package_cursor).value) then -- value in layout
+								
+								update_element (
+									container 	=> module.components,
+									position	=> find (module.components, package_reference),
+									process		=> add_position_package'access);
+
+							else -- value mismatch
+								log_indentation_reset;
+								log (message_error & "value of " & et_libraries.to_string (package_reference) &
+									 " mismatch ! In schematic: " & et_libraries.to_string (element (component_cursor).value) &
+									 " in layout: " & et_libraries.to_string (element (package_cursor).value),
+									console => true);
+								raise constraint_error;
+							end if;
+								
+						else -- package not found in layout
 							log_indentation_reset;
 							log (message_error & "package " & et_libraries.to_string (package_reference) &
 								 " not found in the board !", console => true);
