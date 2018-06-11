@@ -6542,6 +6542,10 @@ package body et_kicad_pcb is
 
 								package_position := element (package_cursor).position;
 
+								-- Extract the text placeholders for reference and value from the 
+								-- current package (indicated by package_cursor) and store them
+								-- in text_placeholders. procedure update_component_in_schematic will
+								-- later update the component in the schematic with text_placeholders.
 								text_placeholders := to_placeholders;
 								
 								log ("component " & et_libraries.to_string (package_reference) &
