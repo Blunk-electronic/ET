@@ -2762,8 +2762,8 @@ package body et_kicad_pcb is
 		package_stencil			: et_pcb.type_stencil_both_sides;
 		-- CS: mind objects explicitely drawn and such auto generated
 		
-		package_silk_screen		: et_kicad_pcb.type_silk_screen_package_both_sides;
-		package_assy_doc		: et_kicad_pcb.type_assembly_documentation_package_both_sides; -- without placeholders
+		package_silk_screen		: et_pcb.type_silk_screen_package_both_sides;
+		package_assy_doc		: et_pcb.type_assembly_documentation_package_both_sides;
 		package_keepout			: et_pcb.type_keepout_both_sides;
 		package_copper			: et_pcb.type_copper_package_both_sides;
 		
@@ -5791,40 +5791,43 @@ package body et_kicad_pcb is
 				case package_text.meaning is
 					when REFERENCE =>
 
-						-- Insert the reference text in the list of texts of silk screen.
+						-- Insert the properties of package_text in the list of text placeholders of silk screen.
 						-- In order to get the basic properties of package_text it must be
-						-- converted back to its anchestor (type_text). The content of package_text
-						-- is passed separately (via "with" statement).
+						-- converted back to its anchestor (type_text). 
+						-- The meaning of package_text is passed separately (via "with" statement).
+						-- The content of package_text is discarded here. Only text properties and position matter:
 						case package_text.layer is
 							when TOP_SILK =>
-								package_silk_screen.top.texts.append (
-									(et_pcb.type_text (package_text) with content => package_text.content));
-								text_silk_screen_properties (TOP, package_silk_screen.top.texts.last, log_threshold + 1);
+								package_silk_screen.top.placeholders.append (
+									(et_pcb.type_text (package_text) with meaning => REFERENCE));
+								placeholder_silk_screen_properties (TOP, package_silk_screen.top.placeholders.last, log_threshold + 1);
 								
 							when BOT_SILK =>
-								package_silk_screen.bottom.texts.append (
-									(et_pcb.type_text (package_text) with content => package_text.content));
-								text_silk_screen_properties (BOTTOM, package_silk_screen.bottom.texts.last, log_threshold + 1);
+								package_silk_screen.bottom.placeholders.append (
+									(et_pcb.type_text (package_text) with meaning => REFERENCE));
+								placeholder_silk_screen_properties (BOTTOM, package_silk_screen.bottom.placeholders.last, log_threshold + 1);
+
 							when others => -- should never happen
 								invalid_layer_reference; 
 						end case;
 
 					when VALUE =>
 
-						-- Insert the value text in the list of texts of silk screen.
+						-- Insert the properties of package_text in the list of text placeholders of assembly documentation.
 						-- In order to get the basic properties of package_text it must be
-						-- converted back to its anchestor (type_text). The content of package_text
-						-- is passed separately (via "with" statement).
+						-- converted back to its anchestor (type_text). 
+						-- The meaning of package_text is passed separately (via "with" statement).
+						-- The content of package_text is discarded here. Only text properties and position matter:
 						case package_text.layer is
 							when TOP_ASSY =>
-								package_assy_doc.top.texts.append (
-									(et_pcb.type_text (package_text) with content => package_text.content));
-								text_assy_doc_properties (TOP, package_assy_doc.top.texts.last, log_threshold + 1);
+								package_assy_doc.top.placeholders.append (
+									(et_pcb.type_text (package_text) with meaning => VALUE));
+								placeholder_assy_doc_properties (TOP, package_assy_doc.top.placeholders.last, log_threshold + 1);
 								
 							when BOT_ASSY =>
-								package_assy_doc.bottom.texts.append (
-									(et_pcb.type_text (package_text) with content => package_text.content));
-								text_assy_doc_properties (BOTTOM, package_assy_doc.bottom.texts.last, log_threshold + 1);
+								package_assy_doc.bottom.placeholders.append (
+									(et_pcb.type_text (package_text) with meaning => VALUE));
+								placeholder_assy_doc_properties (BOTTOM, package_assy_doc.bottom.placeholders.last, log_threshold + 1);
 								
 							when others => -- should never happen
 								invalid_layer_value;
@@ -5832,11 +5835,14 @@ package body et_kicad_pcb is
 
 					when USER =>
 
-						-- Insert the value text in the list of texts of silk screen.
+						-- Insert the user text in the list of texts of silk screen or assembly documentation.
 						-- In order to get the basic properties of package_text it must be
 						-- converted back to its anchestor (type_text). The content of package_text
 						-- is passed separately (via "with" statement).
-						-- User specific texts may be placed in both silk screen or assembly documentation.
+						-- User specific texts may be placed in silk screen or assembly documentation.
+						-- Here the text properties and the content matter. Since there is no way to distinguish
+						-- these texts they are NOT threated as placeholders. Their content is stored in the list
+						-- of texts (of silk screen or assembly documentation):
 						case package_text.layer is
 							when TOP_SILK => 
 								package_silk_screen.top.texts.append (
@@ -6293,6 +6299,7 @@ package body et_kicad_pcb is
 				
 
 				function route (net_id : in type_net_id) return et_pcb.type_route is
+				-- Collects segments and vias by the given net_id and returns them as a type_route.
 					route : et_pcb.type_route; -- to be returned
 					use type_segments;
 					segment_cursor : type_segments.cursor := board.segments.first;
@@ -6383,33 +6390,86 @@ package body et_kicad_pcb is
 					net.route := route (net_id);
 				end add_route;
 
-				procedure add_position_package (
-				-- adds the coordinates of the package to the schematic module
+				procedure update_component_in_schematic (
+				-- Updates the component in the schematic with position, text placeholders
 					comp_ref	: in et_libraries.type_component_reference;
 					component	: in out et_schematic.type_component) is
 				begin
 					component.position := package_position;
-				end add_position_package;
+					text_placeholders := text_placeholders;
+				end update_component_in_schematic;
 
 				function to_placeholders return et_pcb.type_text_placeholders is 
-					placeholders : et_pcb.type_text_placeholders; -- to be returned
-					use et_pcb.type_texts_with_content;
-					text_cursor	: et_pcb.type_texts_with_content.cursor;
-					text_board 	: et_pcb.type_text_with_content;
-					placeholder	: et_pcb.type_text_placeholder_package;
+				-- Returns the placeholders for reference and value of the current package (indicated by package_cursor).
+				-- The return distinguishes them by the face (TOP/BOTTOM), silk screen and assembly documentation.
+					use et_pcb;
+					placeholders : type_text_placeholders; -- to be returned
+					use et_pcb.type_text_placeholders_package;
+
+					-- points a placeholder in the package (indicated by package_cursor)
+					cursor : et_pcb.type_text_placeholders_package.cursor;
 				begin
-					text_cursor := board.silk_screen.top.texts.first;
-					while text_cursor /= et_pcb.type_texts_with_content.no_element loop
+					-- Collect placeholders for REFERENCE in TOP silk screen:
+					cursor := element (package_cursor).silk_screen.top.placeholders.first;
+					while cursor /= type_text_placeholders_package.no_element loop
 
-						text_board := element (text_cursor);
-						-- CS placeholder := (et_pcb.type_text (text_board) with meaning => et_pcb.REFERENCE);
+						if element (cursor).meaning = REFERENCE then
 
-						et_pcb.type_text_placeholders_package.append (
-							container	=> placeholders.silk_screen.top,
-							new_item	=> placeholder);
+							type_text_placeholders_package.append (
+								container	=> placeholders.silk_screen.top,
+								new_item	=> (type_text (element (cursor)) with meaning => REFERENCE));
+								
+						end if;
 						
-						next (text_cursor);
+						next (cursor);
 					end loop;
+
+					-- Collect placeholders for REFERENCE in BOTTOM silk screen:
+					cursor := element (package_cursor).silk_screen.bottom.placeholders.first;
+					while cursor /= type_text_placeholders_package.no_element loop
+
+						if element (cursor).meaning = REFERENCE then
+
+							type_text_placeholders_package.append (
+								container	=> placeholders.silk_screen.bottom,
+								new_item	=> (type_text (element (cursor)) with meaning => REFERENCE));
+								
+						end if;
+						
+						next (cursor);
+					end loop;
+
+					-- Collect placeholders for VALUE in TOP assembly documentation:
+					cursor := element (package_cursor).assembly_documentation.top.placeholders.first;
+					while cursor /= type_text_placeholders_package.no_element loop
+
+						if element (cursor).meaning = VALUE then
+
+							type_text_placeholders_package.append (
+								container	=> placeholders.assy_doc.top,
+								new_item	=> (type_text (element (cursor)) with meaning => VALUE));
+								
+						end if;
+						
+						next (cursor);
+					end loop;
+
+					-- Collect placeholders for VALUE in BOTTOM assembly documentation:
+					cursor := element (package_cursor).assembly_documentation.bottom.placeholders.first;
+					while cursor /= type_text_placeholders_package.no_element loop
+
+						if element (cursor).meaning = VALUE then
+
+							type_text_placeholders_package.append (
+								container	=> placeholders.assy_doc.bottom,
+								new_item	=> (type_text (element (cursor)) with meaning => VALUE));
+								
+						end if;
+						
+						next (cursor);
+					end loop;
+					
+					
 					return placeholders;
 				end to_placeholders;
 				
@@ -6487,11 +6547,11 @@ package body et_kicad_pcb is
 								log ("component " & et_libraries.to_string (package_reference) &
 									et_pcb.package_position (package_position), log_threshold + 2);
 
-							
+								-- update component in schematic module
 								update_element (
 									container 	=> module.components,
 									position	=> find (module.components, package_reference),
-									process		=> add_position_package'access);
+									process		=> update_component_in_schematic'access);
 
 								
 							else -- value mismatch

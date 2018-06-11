@@ -224,7 +224,7 @@ package et_pcb is
 
 	
 	-- A collection of text placeholders in silk screen and assembly documentation 
-	-- moodeled by this type. It is used by a schematic module in order to
+	-- modelled by this type. It is used by a schematic module in order to
 	-- store text positions and properties of a package:
 	type type_text_placeholders_silk_screen is record
 		top		: type_text_placeholders_package.list;

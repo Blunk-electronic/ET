@@ -493,26 +493,10 @@ package et_kicad_pcb is
 
 	
 	-- Packages (kicad refers to them as modules) as they are listed in the board file are similar to
-	-- packages in the libraries. However, there are differences, which requires
-	-- a distinct type for them. 
-	-- Differences are: 
+	-- packages in the libraries. However, there are differences:
 	-- - no placeholders for reference and value (here the final component reference and value is)
 	-- - x/y position and angle of the package 
 	-- - pads with net names
-
-	-- silk screen objects without text placeholders:
-	type type_silk_screen_package_both_sides is record
-		top		: et_pcb.type_silk_screen;
-		bottom	: et_pcb.type_silk_screen;
-	end record;
-
-	-- assembly documentation objects without text placeholders:
-	type type_assembly_documentation_package_both_sides is record
-		top		: et_pcb.type_assembly_documentation;
-		bottom	: et_pcb.type_assembly_documentation;
-	end record;
-
-
 
 	
 	-- In the pcb drawing, a terminal has a net attached. For this reason a
@@ -532,8 +516,8 @@ package et_kicad_pcb is
 	
 	-- A package in a board extends the base package type:
 	type type_package_board is new et_pcb.type_package with record
-		silk_screen				: type_silk_screen_package_both_sides; -- without placeholders
-		assembly_documentation	: type_assembly_documentation_package_both_sides; -- without placeholders
+		silk_screen				: et_pcb.type_silk_screen_package_both_sides;
+		assembly_documentation	: et_pcb.type_assembly_documentation_package_both_sides;
 		terminals				: type_terminals.map; -- terminals with net names
 		time_edit				: et_string_processing.type_timestamp;
 		value					: et_libraries.type_component_value.bounded_string;
