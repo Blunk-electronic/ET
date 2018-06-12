@@ -758,7 +758,7 @@ package body et_kicad_pcb is
 			-- update cursor
 			character_cursor := end_of_kw;
 
-			log (enter_section (section.name), log_threshold + 3);
+			log (enter_section (section.name), log_threshold + 5);
 
 			exception
 				when event:
@@ -2003,7 +2003,7 @@ package body et_kicad_pcb is
 
 			
 		begin -- exec_section
-			log (process_section (section.name), log_threshold + 4);
+			log (process_section (section.name), log_threshold + 5);
 
 			-- CS case construct for section.parent (as with board packages)
 			
@@ -2038,7 +2038,7 @@ package body et_kicad_pcb is
 
 			-- restore previous section from stack
 			section := sections_stack.pop;
-			log (return_to_section (section.name), log_threshold + 3);
+			log (return_to_section (section.name), log_threshold + 5);
 			
 			exception
 				when event:
@@ -3152,7 +3152,7 @@ package body et_kicad_pcb is
 			-- update cursor
 			character_cursor := end_of_kw;
 
-			log (enter_section (section.name), log_threshold + 3);
+			log (enter_section (section.name), log_threshold + 5);
 
 			exception
 				when event:
@@ -5062,22 +5062,26 @@ package body et_kicad_pcb is
 					package_silk_screen.top.arcs.clear;
 					package_silk_screen.top.circles.clear;
 					package_silk_screen.top.texts.clear;
+					package_silk_screen.top.placeholders.clear;
 
 					package_silk_screen.bottom.lines.clear;
 					package_silk_screen.bottom.arcs.clear;
 					package_silk_screen.bottom.circles.clear;
 					package_silk_screen.bottom.texts.clear;
+					package_silk_screen.bottom.placeholders.clear;
 
 					-- clear assembly documentation
 					package_assy_doc.top.lines.clear;
 					package_assy_doc.top.arcs.clear;
 					package_assy_doc.top.circles.clear;
 					package_assy_doc.top.texts.clear;
+					package_assy_doc.top.placeholders.clear;
 
 					package_assy_doc.bottom.lines.clear;
 					package_assy_doc.bottom.arcs.clear;
 					package_assy_doc.bottom.circles.clear;
 					package_assy_doc.bottom.texts.clear;
+					package_assy_doc.bottom.placeholders.clear;
 
 					-- clear keepout
 					package_keepout.top.lines.clear;
@@ -5913,7 +5917,7 @@ package body et_kicad_pcb is
 			end insert_via;
 			
 		begin -- exec_section
-			log (process_section (section.name), log_threshold + 4);
+			log (process_section (section.name), log_threshold + 5);
 			case section.parent is
 				when SEC_KICAD_PCB =>
 					case section.name is
@@ -6018,7 +6022,7 @@ package body et_kicad_pcb is
 
 			-- restore previous section from stack
 			section := sections_stack.pop;
-			log (return_to_section (section.name), log_threshold + 3);
+			log (return_to_section (section.name), log_threshold + 5);
 			
 			exception
 				when event:
@@ -6403,74 +6407,98 @@ package body et_kicad_pcb is
 				-- Returns the placeholders for reference and value of the current package (indicated by package_cursor).
 				-- The return distinguishes them by the face (TOP/BOTTOM), silk screen and assembly documentation.
 					use et_pcb;
+					use et_pcb_coordinates;
 					placeholders : type_text_placeholders; -- to be returned
-					use et_pcb.type_text_placeholders_package;
 
-					-- points a placeholder in the package (indicated by package_cursor)
-					cursor : et_pcb.type_text_placeholders_package.cursor;
-				begin
-					-- Collect placeholders for REFERENCE in TOP silk screen:
-					cursor := element (package_cursor).silk_screen.top.placeholders.first;
-					while cursor /= type_text_placeholders_package.no_element loop
+					procedure query_placeholders (
+						comp_reference	: in et_libraries.type_component_reference;
+						comp_package	: in type_package_board) is
 
-						if element (cursor).meaning = REFERENCE then
+						use et_pcb.type_text_placeholders_package;
 
-							type_text_placeholders_package.append (
-								container	=> placeholders.silk_screen.top,
-								new_item	=> (type_text (element (cursor)) with meaning => REFERENCE));
-								
-						end if;
+						-- points to a placeholder in the package
+						cursor : et_pcb.type_text_placeholders_package.cursor;
+					begin -- query_placeholders 
+						-- Collect placeholders for REFERENCE in TOP silk screen:
+						cursor := comp_package.silk_screen.top.placeholders.first;
+						while cursor /= type_text_placeholders_package.no_element loop
+
+							if element (cursor).meaning = REFERENCE then
+	
+								type_text_placeholders_package.append (
+									container	=> placeholders.silk_screen.top,
+									new_item	=> (type_text (element (cursor)) with meaning => REFERENCE));
+	
+								-- log placeholder properties
+								placeholder_silk_screen_properties (TOP, placeholders.silk_screen.top.last, log_threshold + 3);
+							end if;
+							
+							next (cursor);
+						end loop;
+
+						-- Collect placeholders for REFERENCE in BOTTOM silk screen:
+						cursor := comp_package.silk_screen.bottom.placeholders.first;
+						while cursor /= type_text_placeholders_package.no_element loop
+
+							if element (cursor).meaning = REFERENCE then
+
+								type_text_placeholders_package.append (
+									container	=> placeholders.silk_screen.bottom,
+									new_item	=> (type_text (element (cursor)) with meaning => REFERENCE));
+
+								-- log placeholder properties
+								placeholder_silk_screen_properties (BOTTOM, placeholders.silk_screen.bottom.last, log_threshold + 3);
+							end if;
+							
+							next (cursor);
+						end loop;
+
+						-- Collect placeholders for VALUE in TOP assembly documentation:
+						cursor := comp_package.assembly_documentation.top.placeholders.first;
+						while cursor /= type_text_placeholders_package.no_element loop
+
+							if element (cursor).meaning = VALUE then
+
+								type_text_placeholders_package.append (
+									container	=> placeholders.assy_doc.top,
+									new_item	=> (type_text (element (cursor)) with meaning => VALUE));
+
+								-- log placeholder properties
+								placeholder_assy_doc_properties (TOP, placeholders.assy_doc.top.last, log_threshold + 3);
+							end if;
+							
+							next (cursor);
+						end loop;
+
+						-- Collect placeholders for VALUE in BOTTOM assembly documentation:
+						cursor := comp_package.assembly_documentation.bottom.placeholders.first;
+						while cursor /= type_text_placeholders_package.no_element loop
+
+							if element (cursor).meaning = VALUE then
+
+								type_text_placeholders_package.append (
+									container	=> placeholders.assy_doc.bottom,
+									new_item	=> (type_text (element (cursor)) with meaning => VALUE));
+
+								-- log placeholder properties
+								placeholder_assy_doc_properties (BOTTOM, placeholders.assy_doc.bottom.last, log_threshold + 3);
+							end if;
+							
+							next (cursor);
+						end loop;
 						
-						next (cursor);
-					end loop;
-
-					-- Collect placeholders for REFERENCE in BOTTOM silk screen:
-					cursor := element (package_cursor).silk_screen.bottom.placeholders.first;
-					while cursor /= type_text_placeholders_package.no_element loop
-
-						if element (cursor).meaning = REFERENCE then
-
-							type_text_placeholders_package.append (
-								container	=> placeholders.silk_screen.bottom,
-								new_item	=> (type_text (element (cursor)) with meaning => REFERENCE));
-								
-						end if;
-						
-						next (cursor);
-					end loop;
-
-					-- Collect placeholders for VALUE in TOP assembly documentation:
-					cursor := element (package_cursor).assembly_documentation.top.placeholders.first;
-					while cursor /= type_text_placeholders_package.no_element loop
-
-						if element (cursor).meaning = VALUE then
-
-							type_text_placeholders_package.append (
-								container	=> placeholders.assy_doc.top,
-								new_item	=> (type_text (element (cursor)) with meaning => VALUE));
-								
-						end if;
-						
-						next (cursor);
-					end loop;
-
-					-- Collect placeholders for VALUE in BOTTOM assembly documentation:
-					cursor := element (package_cursor).assembly_documentation.bottom.placeholders.first;
-					while cursor /= type_text_placeholders_package.no_element loop
-
-						if element (cursor).meaning = VALUE then
-
-							type_text_placeholders_package.append (
-								container	=> placeholders.assy_doc.bottom,
-								new_item	=> (type_text (element (cursor)) with meaning => VALUE));
-								
-						end if;
-						
-						next (cursor);
-					end loop;
+					end query_placeholders;
 					
+				begin -- to_placeholders
+					log_indentation_up;
+
+					query_element (
+						position	=> package_cursor,
+						process		=> query_placeholders'access);
 					
+					log_indentation_down;
 					return placeholders;
+					
 				end to_placeholders;
 				
 			begin -- add_board_objects
@@ -6514,6 +6542,8 @@ package body et_kicad_pcb is
 					next (net_cursor);
 				end loop;
 
+				-- net classes
+				-- CS
 
 				-- package positions
 				while component_cursor /= type_components.no_element loop -- (cursor points to schematic components)
@@ -6542,15 +6572,15 @@ package body et_kicad_pcb is
 
 								package_position := element (package_cursor).position;
 
+								log ("package " & et_libraries.to_string (package_reference) &
+									et_pcb.package_position (package_position), log_threshold + 2);
+
 								-- Extract the text placeholders for reference and value from the 
 								-- current package (indicated by package_cursor) and store them
 								-- in text_placeholders. procedure update_component_in_schematic will
 								-- later update the component in the schematic with text_placeholders.
 								text_placeholders := to_placeholders;
 								
-								log ("component " & et_libraries.to_string (package_reference) &
-									et_pcb.package_position (package_position), log_threshold + 2);
-
 								-- update component in schematic module
 								update_element (
 									container 	=> module.components,
