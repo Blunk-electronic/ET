@@ -3697,7 +3697,7 @@ package body et_kicad_pcb is
 								when 1 => 
 									if to_string (arg) /= keyword_fp_text_mirrored then
 										log_indentation_reset;
-										log (message_error & "expect keyword " & keyword_fp_text_mirrored & " !");
+										log (message_error & "expect keyword '" & keyword_fp_text_mirrored & "' !", console => true);
 										raise constraint_error;
 									end if;
 								when others => too_many_arguments;
