@@ -2565,7 +2565,7 @@ package body et_kicad_pcb is
 			SEC_HPGLPENNUMBER,
 			SEC_HPGLPENOVERLAY,
 			SEC_HPGLPENSPEED,			
-			--SEC_JUSTIFY,
+			SEC_JUSTIFY,	-- for packages on back side (mirrored)
 			SEC_KICAD_PCB,
 			-- 			SEC_LAYER,
 			SEC_LAST_TRACE_WIDTH,
@@ -3067,7 +3067,7 @@ package body et_kicad_pcb is
 
 				when SEC_EFFECTS =>
 					case section.name is
-						when SEC_FONT => null;
+						when SEC_FONT | SEC_JUSTIFY => null;
 						when others => invalid_section;
 					end case;
 					
@@ -3684,6 +3684,29 @@ package body et_kicad_pcb is
 						when others => invalid_section;
 					end case;
 
+				-- parent section
+				when SEC_EFFECTS =>	
+					case section.name is
+						when SEC_JUSTIFY => 
+							-- If a footprint text is placed at the bottom side, it must be mirrored.
+							-- Since this is natural and indicated by the layer (B.SilkS, B.Cu, ...) there is
+							-- no need for the extra flag (justify mirror). So we just test if the
+							-- keyword "mirror" is present.
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									if to_string (arg) /= keyword_fp_text_mirrored then
+										log_indentation_reset;
+										log (message_error & "expect keyword " & keyword_fp_text_mirrored & " !");
+										raise constraint_error;
+									end if;
+								when others => too_many_arguments;
+							end case;
+
+						when others => invalid_section;
+					end case;
+
+					
 				-- parent section
 				when SEC_FP_LINE =>
 					case section.name is
