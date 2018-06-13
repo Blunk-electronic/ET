@@ -159,7 +159,48 @@ package body et_kicad_pcb is
 		end if;
 	end to_terminal_shape_smt;
 
+	function to_signal_layer_id (layer : in string) return type_signal_layer_id is
+	-- Translates a string like F.Cu or In2.Cu or or In15.Cu to a type_signal_layer_id (0..31) -- see spec
+		id : type_signal_layer_id; -- to be returned
 
+		procedure invalid_layer is begin
+			log_indentation_reset;
+			log (message_error & "invalid layer '" & layer & "' !", console => true);
+			raise constraint_error;
+		end invalid_layer;
+
+	begin
+		-- If the given layer is top or bottom (0 or 31):
+		-- The bottom layer in kicad is always number 31. Top layer is always number 0.
+		if layer = layer_top_copper then id := type_signal_layer_id'first; 
+		elsif layer = layer_bot_copper then id := type_signal_layer_id'last;
+
+		-- If the given layer is an inner signal layer:
+		-- Check for the layer_inner_prefix ("In") on the very left:
+		elsif layer (layer'first .. layer'first - 1 + layer_inner_prefix'last) = layer_inner_prefix
+
+			-- And check for the layer_inner_suffix (".Cu") on the very right:
+			and layer (layer'length - layer_inner_suffix'length + 1 .. layer'last) = layer_inner_suffix then
+
+			-- Convert the characters between prefix and suffix to a layer id.
+			-- If that fails, an exception is raised. see exception handler below.
+				id := type_signal_layer_id'value (layer (
+					layer'first + layer_inner_prefix'last 
+					.. layer'last - layer_inner_suffix'length));
+
+		-- All other layers are invalid:
+		else
+			invalid_layer;
+		end if;
+		
+		return id;
+
+		exception
+			when constraint_error => invalid_layer; raise;
+	end to_signal_layer_id;
+
+
+	
 	function contour_milled_rectangle_of_pad (
 	-- Converts the given position and dimensions of a rectangular slotted hole
 	-- to a list with four lines (top, bottom, right, left).
@@ -2495,6 +2536,38 @@ package body et_kicad_pcb is
 	begin
 		return type_layer_id'image (layer);
 	end to_string;
+
+	function to_layer_id (layer : in string) return type_layer_id is
+	-- Converts a string like B.CU or F.Fab to a kicad layer id (0..49)
+		layer_id : type_layer_id; -- to be returned
+	begin
+		-- Translate non-signal layers:
+		if layer = layer_top_solder_paste then layer_id := 35;
+		elsif layer = layer_bot_solder_paste then layer_id := 34;
+
+		elsif layer = layer_top_stop_mask then layer_id := 39;
+		elsif layer = layer_bot_stop_mask then layer_id := 38;
+
+		elsif layer = layer_top_silk_screen then layer_id := 37;
+		elsif layer = layer_bot_silk_screen then layer_id := 36;
+
+		elsif layer = layer_top_keepout then layer_id := 47;
+		elsif layer = layer_bot_keepout then layer_id := 46;
+
+		elsif layer = layer_top_assy_doc then layer_id := 49;
+		elsif layer = layer_bot_assy_doc then layer_id := 48;
+
+		-- CS other layers like adhes, eco, margin, ...
+		-- CS edge cuts not allowed -> error
+
+		-- Translate signal layers
+		else
+			layer_id := to_signal_layer_id (layer);
+		end if;
+		
+		return layer_id;
+		
+	end to_layer_id;
 	
 	function to_layer_name (name : in string) return type_layer_name.bounded_string is
 	-- converts a layer name given as string to a bounded string
@@ -2560,6 +2633,7 @@ package body et_kicad_pcb is
 			SEC_GR_ARC,		-- board outlines, edge cuts
 			SEC_GR_CIRCLE,	-- board outlines, edge cuts
 			SEC_GR_LINE,	-- board outlines, edge cuts
+			SEC_GR_TEXT,
 			SEC_HOST,
 			SEC_HPGLPENDIAMETER,
 			SEC_HPGLPENNUMBER,
@@ -2842,6 +2916,7 @@ package body et_kicad_pcb is
 		board_line 		: type_line;
 		board_arc		: type_arc;
 		board_circle	: type_circle;
+		board_text		: type_text_board;
 
 		procedure init_stop_and_mask is begin
 		-- Resets the temporarily status flags of solder paste and stop mask of an SMT terminal.
@@ -3017,7 +3092,7 @@ package body et_kicad_pcb is
 					case section.name is
 						when SEC_VERSION | SEC_HOST | SEC_GENERAL | SEC_PAGE |
 							SEC_LAYERS | SEC_SEGMENT | SEC_VIA | SEC_SETUP | SEC_NET | SEC_NET_CLASS |
-							SEC_MODULE | SEC_GR_LINE | SEC_GR_ARC | SEC_GR_CIRCLE => null;
+							SEC_MODULE | SEC_GR_LINE | SEC_GR_ARC | SEC_GR_CIRCLE | SEC_GR_TEXT => null;
 						when others => invalid_section;
 					end case;
 
@@ -3059,7 +3134,7 @@ package body et_kicad_pcb is
 						when others => invalid_section;
 					end case;
 
-				when SEC_FP_TEXT =>
+				when SEC_FP_TEXT | SEC_GR_TEXT =>
 					case section.name is
 						when SEC_AT | SEC_LAYER | SEC_EFFECTS => null;
 						when others => invalid_section;
@@ -3241,37 +3316,38 @@ package body et_kicad_pcb is
 				raise constraint_error;
 			end invalid_pcbnew_version;
 			
-			function to_signal_layer_id (layer : in string) return type_signal_layer_id is
-			-- Translates a string like F.Cu or In2.Cu or or In15.Cu to a type_signal_layer_id (0..31) -- see spec
-				id : type_signal_layer_id; -- to be returned
-			begin
-				-- if the given layer is top or bottom (0 or 31):
-				if layer = layer_top_copper then id := type_signal_layer_id'first; 
-				elsif layer = layer_bot_copper then id := type_signal_layer_id'last;
-
-				-- If the given layer is an inner signal layer:
-				-- Check for the layer_inner_prefix ("In") on the very left:
-				elsif layer (layer'first .. layer'first - 1 + layer_inner_prefix'last) = layer_inner_prefix
-
-					-- And check for the layer_inner_suffix (".Cu") on the very right:
-					and layer (layer'length - layer_inner_suffix'length + 1 .. layer'last) = layer_inner_suffix then
-
-					-- Convert the characters between prefix and suffix to a layer id.
-					-- If that fails, an exception is raised. see exception handler below.
-						id := type_signal_layer_id'value (layer (
-							layer'first + layer_inner_prefix'last 
-							.. layer'last - layer_inner_suffix'length));
-
-				-- All other layers are invalid:
-				else
-					invalid_layer;
-				end if;
-				
-				return id;
-
-				exception
-					when constraint_error => invalid_layer; raise;
-			end to_signal_layer_id;
+-- 			function to_signal_layer_id (layer : in string) return type_signal_layer_id is
+-- 			-- Translates a string like F.Cu or In2.Cu or or In15.Cu to a type_signal_layer_id (0..31) -- see spec
+-- 				id : type_signal_layer_id; -- to be returned
+-- 			begin
+-- 				-- If the given layer is top or bottom (0 or 31):
+-- 				-- The bottom layer in kicad is always number 31. Top layer is always number 0.
+-- 				if layer = layer_top_copper then id := type_signal_layer_id'first; 
+-- 				elsif layer = layer_bot_copper then id := type_signal_layer_id'last;
+-- 
+-- 				-- If the given layer is an inner signal layer:
+-- 				-- Check for the layer_inner_prefix ("In") on the very left:
+-- 				elsif layer (layer'first .. layer'first - 1 + layer_inner_prefix'last) = layer_inner_prefix
+-- 
+-- 					-- And check for the layer_inner_suffix (".Cu") on the very right:
+-- 					and layer (layer'length - layer_inner_suffix'length + 1 .. layer'last) = layer_inner_suffix then
+-- 
+-- 					-- Convert the characters between prefix and suffix to a layer id.
+-- 					-- If that fails, an exception is raised. see exception handler below.
+-- 						id := type_signal_layer_id'value (layer (
+-- 							layer'first + layer_inner_prefix'last 
+-- 							.. layer'last - layer_inner_suffix'length));
+-- 
+-- 				-- All other layers are invalid:
+-- 				else
+-- 					invalid_layer;
+-- 				end if;
+-- 				
+-- 				return id;
+-- 
+-- 				exception
+-- 					when constraint_error => invalid_layer; raise;
+-- 			end to_signal_layer_id;
 
 		begin -- read_arg
 			-- We handle an argument that is wrapped in quotation different from a non-wrapped argument:
@@ -3377,6 +3453,13 @@ package body et_kicad_pcb is
 									package_library_name := et_kicad.library_name (to_string (arg));
 									package_name := et_kicad.package_name (to_string (arg));
 									-- CS make sure library and package exist
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_GR_TEXT =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => board_text.content := to_bounded_string (to_string (arg));	
 								when others => too_many_arguments;
 							end case;
 							
@@ -3664,6 +3747,35 @@ package body et_kicad_pcb is
 					end case;
 
 				-- parent section
+				when SEC_GR_TEXT =>
+					case section.name is
+						when SEC_AT =>
+							board_text.angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									set_point (axis => X, point => board_text.position, value => to_distance (to_string (arg)));
+								when 2 => 
+									set_point (axis => Y, point => board_text.position, value => to_distance (to_string (arg)));
+									set_point (axis => Z, point => board_text.position, value => zero_distance);
+								when 3 => 
+									board_text.angle := to_angle (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_LAYER =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									-- Translate the kicad layer names like B.Cu or F.SilkS to layer id (0..49)
+									board_text.layer := to_layer_id (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when others => invalid_section;
+					end case;
+
+				-- parent section
 				when SEC_FONT =>	
 					case section.name is
 						when SEC_SIZE => 
@@ -3706,7 +3818,6 @@ package body et_kicad_pcb is
 						when others => invalid_section;
 					end case;
 
-					
 				-- parent section
 				when SEC_FP_LINE =>
 					case section.name is
@@ -6353,6 +6464,7 @@ package body et_kicad_pcb is
 
 									-- Translate the kicad layer id to the ET signal layer:
 									-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
+									-- The botoom layer in kicad is always number 31. Top layer is number 0.
 									layer => et_pcb.type_signal_layer (element (segment_cursor).layer + 1)
 
 									-- CS Translate the locked and differential status
@@ -6382,6 +6494,7 @@ package body et_kicad_pcb is
 
 									-- Translate the kicad layer id to the ET signal layer:
 									-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
+									-- The botoom layer in kicad is always number 31. Top layer is number 0.
 									layer_start	=> et_pcb.type_signal_layer (element (via_cursor).layer_start + 1),
 									layer_end 	=> et_pcb.type_signal_layer (element (via_cursor).layer_end + 1),
 

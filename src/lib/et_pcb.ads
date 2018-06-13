@@ -1199,7 +1199,7 @@ package et_pcb is
 		stop_mask	: type_stop_mask_both_sides;
 		keepout		: type_keepout_both_sides;		
 		contour		: type_pcb_contour;
-		-- CS non electric copper stuff
+		copper		: type_copper_pcb; -- non-electric copper stuff !
 	end record;
 
 	

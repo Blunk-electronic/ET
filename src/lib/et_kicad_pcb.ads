@@ -370,6 +370,7 @@ package et_kicad_pcb is
 	-- Returns true if the right net id equals the left net id OR
 	-- if the right net name equals the left net name.
 
+	
 	-- Nets are collected in an ordered set, that uses the aforementioned two functions:
 	package type_netlist is new ordered_sets (
 		element_type 	=> type_netlist_net,
@@ -444,14 +445,34 @@ package et_kicad_pcb is
 
 	
 	
-	-- Temporarily this type is required to handle texts in silk screen, assembly doc, ...
+	-- For packages, temporarily this type is required to handle texts in 
+	-- silk screen, assembly doc, ...
 	-- When inserting the text in the final package, it is decomposed again.
-	type type_package_text is new et_pcb.type_text with record
+	type type_package_text is new et_pcb.type_text with record -- CS rename to type_text_package
 		content	: et_libraries.type_text_content.bounded_string;
 		layer	: type_layer_abbrevation;
 		meaning	: type_fp_text_meaning;
 	end record;
 
+
+	-- For things in section layers like (0 F.Cu signal) or (49 F.Fab user) we have those specs.
+	-- This is board file related.
+	layer_id_max : constant positive := 49; -- includes ALL layers (signal and non-signal)
+	type type_layer_id is range 0..layer_id_max;
+
+	function to_string (layer : in type_layer_id) return string;
+	-- returns the given layer id as string.
+
+	function to_layer_id (layer : in string) return type_layer_id;
+	-- Converts a string like B.CU or F.Fab to a kicad layer id (0..49)
+	
+	-- For the board, temporarily this type is required to handle texts in
+	-- copper, silk screen, assembly doc, ...
+	-- When inserting the text in the board, it is decomposed again.	
+	type type_text_board is new et_pcb.type_text with record
+		content	: et_libraries.type_text_content.bounded_string;
+		layer	: type_layer_id; -- 0 .. 49 (ALL layers)
+	end record;
 
 
 	procedure read_libraries (
@@ -463,13 +484,6 @@ package et_kicad_pcb is
 
 
 	
-	-- For things in section layers like (0 F.Cu signal) or (49 F.Fab user) we have those specs.
-	-- This is board file related.
-	layer_id_max : constant positive := 49; -- includes ALL layers (signal and non-signal)
-	type type_layer_id is range 0..layer_id_max;
-
-	function to_string (layer : in type_layer_id) return string;
-	-- returns the given layer id as string.
 	
 	layer_name_length_max : constant positive := 9;
 	package type_layer_name is new generic_bounded_length (layer_name_length_max); -- B.Cu
@@ -541,10 +555,15 @@ package et_kicad_pcb is
 	layer_inner_prefix			: constant string (1..2)	:= "In";
 	layer_inner_suffix			: constant string (1..3)	:= ".Cu";	
 
+	-- The bottom signal layer in kicad is always number 31. Top layer is number 0.
 	signal_layer_id_top		: constant type_layer_id := 0;
 	signal_layer_id_bottom	: constant type_layer_id := 31;
 	subtype type_signal_layer_id is type_layer_id range signal_layer_id_top..signal_layer_id_bottom;
 
+	function to_signal_layer_id (layer : in string) return type_signal_layer_id;
+	-- Translates a string like F.Cu or In2.Cu or or In15.Cu to a type_signal_layer_id (0..31) -- see spec
+
+	
 	-- This is a hex number for lock information or differential signals:
 	-- see https://forum.kicad.info/t/meaning-of-segment-status/10912/1
 	segment_status_length_max : constant positive := 8;
@@ -598,7 +617,8 @@ package et_kicad_pcb is
 		stop_mask	: et_pcb.type_stop_mask_both_sides;
 		keepout		: et_pcb.type_keepout_both_sides;		
 		contour		: et_pcb.type_pcb_contour;
-		-- NOTE: non-electric objects in signal layers are not allowed in kicad
+		copper		: et_pcb.type_copper_pcb;
+		-- NOTE: non-electric graphic objects in signal layers are not allowed in kicad
 		-- CS objects in other layers (user defined, glue, ...)
 
 		segments	: type_segments.list;
