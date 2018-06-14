@@ -5567,11 +5567,11 @@ package body et_kicad_pcb is
 						
 					when layer_top_stop_mask_id =>
 						board.stop_mask.top.texts.append ((et_pcb.type_text (board_text) with board_text.content));
-						--text_sassy_doc_properties (TOP, board.assy_doc.top.texts.last, log_threshold + 1);
+						text_stop_mask_properties (TOP, board.stop_mask.top.texts.last, log_threshold + 1);
 						
 					when layer_bot_stop_mask_id =>
 						board.stop_mask.bottom.texts.append ((et_pcb.type_text (board_text) with board_text.content));
-
+						text_stop_mask_properties (BOTTOM, board.stop_mask.bottom.texts.last, log_threshold + 1);
 
 					when others =>
 

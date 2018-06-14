@@ -466,6 +466,41 @@ package body et_pcb is
 			 & " width" & to_string (circle.width), log_threshold);
 	end circle_silk_screen_properties;
 
+	procedure placeholder_silk_screen_properties (
+	-- Logs the properties of the given silk screen placeholder
+		face			: in type_face;
+		cursor			: in type_text_placeholders_package.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_text_placeholders_package;
+		placeholder : type_text_placeholder_package;
+	begin
+		placeholder := element (cursor);
+		log ("silk screen placeholder face" & to_string (face)
+			 & " for " & to_string (placeholder.meaning), log_threshold);
+		
+		log_indentation_up;
+		log (text_properties (type_text (placeholder)), log_threshold + 1);
+		log_indentation_down;
+	end placeholder_silk_screen_properties;
+	
+	procedure text_silk_screen_properties (
+	-- Logs the properties of the given silk screen text
+		face			: in type_face;
+		cursor			: in type_texts_with_content.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use et_libraries.type_text_content;
+		use type_texts_with_content;
+		text : type_text_with_content;
+	begin
+		text := element (cursor);
+		log ("silk screen text face" & to_string (face) & latin_1.space
+			 & "content '" & to_string (text.content) & "'", log_threshold);
+
+		log_indentation_up;
+		log (text_properties (type_text (text)), log_threshold + 1);
+		log_indentation_down;
+	end text_silk_screen_properties;
+
 
 	
 -- PROPERTIES OF OBJECTS IN ASSEMBLY DOCUMENTATION
@@ -511,7 +546,43 @@ package body et_pcb is
 			 & " width" & to_string (circle.width), log_threshold);
 	end circle_assy_doc_properties;
 
+	procedure placeholder_assy_doc_properties (
+	-- Logs the properties of the given assembly documentation placeholder
+		face			: in type_face;
+		cursor			: in type_text_placeholders_package.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_text_placeholders_package;
+		placeholder : type_text_placeholder_package;
+	begin
+		placeholder := element (cursor);
+		log ("assembly doc placeholder face" & to_string (face)
+			 & " for " & to_string (placeholder.meaning), log_threshold);
 
+		log_indentation_up;
+		log (text_properties (type_text (placeholder)), log_threshold + 1);
+		log_indentation_down;
+	end placeholder_assy_doc_properties;
+
+	procedure text_assy_doc_properties (
+	-- Logs the properties of the given assembly documentation text
+		face			: in type_face;
+		cursor			: in type_texts_with_content.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use et_libraries.type_text_content;
+		use type_texts_with_content;
+		text : type_text_with_content;
+	begin
+		text := element (cursor);
+		log ("assembly doc text face" & to_string (face) & latin_1.space
+			 & "content '" & to_string (text.content) & "'", log_threshold);
+
+		log_indentation_up;
+		log (text_properties (type_text (text)), log_threshold + 1);
+		log_indentation_down;
+	end text_assy_doc_properties;
+
+
+	
 	
 -- PROPERTIES OF OBJECTS IN KEEPOUT
 	procedure line_keepout_properties (
@@ -600,6 +671,23 @@ package body et_pcb is
 			 log_threshold);
 	end line_stop_mask_properties;
 
+	procedure text_stop_mask_properties (
+	-- Logs the properties of the given stop mask text
+		face			: in type_face;
+		cursor			: in type_texts_with_content.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use et_libraries.type_text_content;
+		use type_texts_with_content;
+		text : type_text_with_content;
+	begin
+		text := element (cursor);
+		log ("stop mask text face" & to_string (face) & latin_1.space
+			 & "content '" & to_string (text.content) & "'", log_threshold);
+
+		log_indentation_up;
+		log (text_properties (type_text (text)), log_threshold + 1);
+		log_indentation_down;
+	end text_stop_mask_properties;
 
 
 -- PROPERTIES OF OBJECTS IN SOLDER PASTE / STENCIL
@@ -748,75 +836,6 @@ package body et_pcb is
 	
 	
 	
-	procedure placeholder_silk_screen_properties (
-	-- Logs the properties of the given silk screen placeholder
-		face			: in type_face;
-		cursor			: in type_text_placeholders_package.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_text_placeholders_package;
-		placeholder : type_text_placeholder_package;
-	begin
-		placeholder := element (cursor);
-		log ("silk screen placeholder face" & to_string (face)
-			 & " for " & to_string (placeholder.meaning), log_threshold);
-		
-		log_indentation_up;
-		log (text_properties (type_text (placeholder)), log_threshold + 1);
-		log_indentation_down;
-	end placeholder_silk_screen_properties;
-
-	procedure placeholder_assy_doc_properties (
-	-- Logs the properties of the given assembly documentation placeholder
-		face			: in type_face;
-		cursor			: in type_text_placeholders_package.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_text_placeholders_package;
-		placeholder : type_text_placeholder_package;
-	begin
-		placeholder := element (cursor);
-		log ("assembly doc placeholder face" & to_string (face)
-			 & " for " & to_string (placeholder.meaning), log_threshold);
-
-		log_indentation_up;
-		log (text_properties (type_text (placeholder)), log_threshold + 1);
-		log_indentation_down;
-	end placeholder_assy_doc_properties;
-	
-	procedure text_silk_screen_properties (
-	-- Logs the properties of the given silk screen text
-		face			: in type_face;
-		cursor			: in type_texts_with_content.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use et_libraries.type_text_content;
-		use type_texts_with_content;
-		text : type_text_with_content;
-	begin
-		text := element (cursor);
-		log ("silk screen text face" & to_string (face) & latin_1.space
-			 & "content '" & to_string (text.content) & "'", log_threshold);
-
-		log_indentation_up;
-		log (text_properties (type_text (text)), log_threshold + 1);
-		log_indentation_down;
-	end text_silk_screen_properties;
-
-	procedure text_assy_doc_properties (
-	-- Logs the properties of the given assembly documentation text
-		face			: in type_face;
-		cursor			: in type_texts_with_content.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use et_libraries.type_text_content;
-		use type_texts_with_content;
-		text : type_text_with_content;
-	begin
-		text := element (cursor);
-		log ("assembly doc text face" & to_string (face) & latin_1.space
-			 & "content '" & to_string (text.content) & "'", log_threshold);
-
-		log_indentation_up;
-		log (text_properties (type_text (text)), log_threshold + 1);
-		log_indentation_down;
-	end text_assy_doc_properties;
 	
 
 	procedure terminal_properties (

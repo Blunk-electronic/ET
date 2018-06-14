@@ -1015,7 +1015,19 @@ package et_pcb is
 		cursor			: in type_silk_circles.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
+	procedure placeholder_silk_screen_properties (
+	-- Logs the properties of the given silk screen placeholder
+		face			: in type_face;
+		cursor			: in type_text_placeholders_package.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+	
+	procedure text_silk_screen_properties (
+	-- Logs the properties of the given silk screen text
+		face			: in type_face;
+		cursor			: in type_texts_with_content.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
 
+	
 	
 -- PROPERTIES OF OBJECTS IN ASSEMBLY DOCUMENTATION	
 	procedure line_assy_doc_properties (
@@ -1035,6 +1047,19 @@ package et_pcb is
 		face			: in type_face;
 		cursor			: in type_doc_circles.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
+
+	procedure placeholder_assy_doc_properties (
+	-- Logs the properties of the given assembly documentation placeholder
+		face			: in type_face;
+		cursor			: in type_text_placeholders_package.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+
+	procedure text_assy_doc_properties (
+	-- Logs the properties of the given assembly documentation text
+		face			: in type_face;
+		cursor			: in type_texts_with_content.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+
 	
 
 	
@@ -1076,6 +1101,12 @@ package et_pcb is
 	-- Logs the properties of the given line of stop mask
 		face			: in type_face;
 		cursor			: in type_stop_lines.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+
+	procedure text_stop_mask_properties (
+	-- Logs the properties of the given stop mask text
+		face			: in type_face;
+		cursor			: in type_texts_with_content.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	
@@ -1148,31 +1179,8 @@ package et_pcb is
 		cursor			: in type_pcb_contour_circles.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 	
-	
-	
-	procedure placeholder_silk_screen_properties (
-	-- Logs the properties of the given silk screen placeholder
-		face			: in type_face;
-		cursor			: in type_text_placeholders_package.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
 
-	procedure placeholder_assy_doc_properties (
-	-- Logs the properties of the given assembly documentation placeholder
-		face			: in type_face;
-		cursor			: in type_text_placeholders_package.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
-	
-	procedure text_silk_screen_properties (
-	-- Logs the properties of the given silk screen text
-		face			: in type_face;
-		cursor			: in type_texts_with_content.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
 
-	procedure text_assy_doc_properties (
-	-- Logs the properties of the given assembly documentation text
-		face			: in type_face;
-		cursor			: in type_texts_with_content.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
 	
 
 	
