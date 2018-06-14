@@ -2558,8 +2558,8 @@ package body et_kicad_pcb is
 		elsif layer = layer_bot_assy_doc then layer_id := layer_bot_assy_doc_id;
 
 		-- CS other layers like adhes, eco, margin, ...
-		-- CS edge cuts not allowed -> error -> should be handled by the calling unit of this function
 
+		
 		-- Translate signal layers
 		else
 			layer_id := to_signal_layer_id (layer);
@@ -3316,39 +3316,6 @@ package body et_kicad_pcb is
 				raise constraint_error;
 			end invalid_pcbnew_version;
 			
--- 			function to_signal_layer_id (layer : in string) return type_signal_layer_id is
--- 			-- Translates a string like F.Cu or In2.Cu or or In15.Cu to a type_signal_layer_id (0..31) -- see spec
--- 				id : type_signal_layer_id; -- to be returned
--- 			begin
--- 				-- If the given layer is top or bottom (0 or 31):
--- 				-- The bottom layer in kicad is always number 31. Top layer is always number 0.
--- 				if layer = layer_top_copper then id := type_signal_layer_id'first; 
--- 				elsif layer = layer_bot_copper then id := type_signal_layer_id'last;
--- 
--- 				-- If the given layer is an inner signal layer:
--- 				-- Check for the layer_inner_prefix ("In") on the very left:
--- 				elsif layer (layer'first .. layer'first - 1 + layer_inner_prefix'last) = layer_inner_prefix
--- 
--- 					-- And check for the layer_inner_suffix (".Cu") on the very right:
--- 					and layer (layer'length - layer_inner_suffix'length + 1 .. layer'last) = layer_inner_suffix then
--- 
--- 					-- Convert the characters between prefix and suffix to a layer id.
--- 					-- If that fails, an exception is raised. see exception handler below.
--- 						id := type_signal_layer_id'value (layer (
--- 							layer'first + layer_inner_prefix'last 
--- 							.. layer'last - layer_inner_suffix'length));
--- 
--- 				-- All other layers are invalid:
--- 				else
--- 					invalid_layer;
--- 				end if;
--- 				
--- 				return id;
--- 
--- 				exception
--- 					when constraint_error => invalid_layer; raise;
--- 			end to_signal_layer_id;
-
 		begin -- read_arg
 			-- We handle an argument that is wrapped in quotation different from a non-wrapped argument:
 			if element (current_line, character_cursor) = latin_1.quotation then
@@ -5544,8 +5511,7 @@ package body et_kicad_pcb is
 					
 			end insert_board_line;
 
-			procedure insert_board_text is 
-			begin
+			procedure insert_board_text is begin
 				case board_text.layer is
 					when layer_top_silk_screen_id =>
 						board.silk_screen.top.texts.append ((et_pcb.type_text (board_text) with board_text.content));
