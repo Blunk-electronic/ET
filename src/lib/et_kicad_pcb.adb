@@ -5512,6 +5512,9 @@ package body et_kicad_pcb is
 			end insert_board_line;
 
 			procedure insert_board_text is begin
+			-- Inserts the board_text in the board. 
+			-- According to the kicad layer, the text is appended to the silk_screen, assy_doc, copper ...
+			-- of the board.
 				case board_text.layer is
 					when layer_top_silk_screen_id =>
 						board.silk_screen.top.texts.append ((et_pcb.type_text (board_text) with board_text.content));
@@ -6396,6 +6399,9 @@ package body et_kicad_pcb is
 				package_position	: et_pcb_coordinates.type_package_position;
 
 				text_placeholders	: et_pcb.type_text_placeholders;
+
+				use type_net_classes;
+				net_class_cursor	: type_net_classes.cursor;
 				
 				function to_net_id (name : in type_net_name.bounded_string) return type_net_id is
 				-- Converts the given net name to a net id.
@@ -6711,10 +6717,24 @@ package body et_kicad_pcb is
 					next (net_cursor);
 				end loop;
 
-				-- net classes
-				-- CS
+				-- net classes must be tranferred from board.net_classes to the schematic module
+				-- A kicad net class has a name and a list of net_names
+				-- whereas
+				-- an ET net class has a just a name. In the schematic a particular net has the class name as a property.
+				net_class_cursor := board.net_classes.first;
+				while net_class_cursor /= type_net_classes.no_element loop
+					log ("net class " & et_pcb.to_string (key (net_class_cursor)), log_threshold + 2);
+				
+					module.net_classes.insert (
+						key 		=> key (net_class_cursor),
+						new_item	=> et_pcb.type_net_class (element (net_class_cursor)));
 
-				-- package positions
+					-- module.nets (class)
+					
+					next (net_class_cursor);
+				end loop;
+
+				-- update package positions in schematic module
 				while component_cursor /= type_components.no_element loop -- (cursor points to schematic components)
 
 					-- We are interested in real components only. Virtual schematic components

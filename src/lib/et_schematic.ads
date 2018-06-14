@@ -483,7 +483,7 @@ package et_schematic is
 		scope 		: type_net_scope := type_net_scope'first; -- example "local"
 		strands		: type_strands.list;
 		route		: et_pcb.type_route;
-		-- CS class : et_pcb.type_net_class_name.bounded_string
+		class 		: et_pcb.type_net_class_name.bounded_string; -- default, High_Voltage, EMV-critical, ...
 		-- CS differential status
 	end record;
 
