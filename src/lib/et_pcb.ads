@@ -979,6 +979,11 @@ package et_pcb is
 		cursor			: in type_copper_circles.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
+	procedure text_copper_properties (
+	-- Logs the properties of the given text of copper
+		cursor			: in type_texts_with_content_pcb.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+
 	
 
 -- PROPERTIES OF ELECTRIC OBJECTS IN SIGNAL LAYERS

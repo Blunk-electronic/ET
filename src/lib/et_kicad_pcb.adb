@@ -5584,8 +5584,9 @@ package body et_kicad_pcb is
 							board.copper.texts.append ((
 								et_pcb.type_text (board_text) with
 									content => board_text.content,
-									layer => et_pcb.type_signal_layer (board_text.layer) + 1
+									layer => et_pcb.type_signal_layer ((board_text.layer) + 1)
 								));
+							text_copper_properties (board.copper.texts.last, log_threshold + 1);
 						else
 							-- CS currently there is no reason for texts in stencil, keepout, glue or other layers.
 							-- This would cause an error:

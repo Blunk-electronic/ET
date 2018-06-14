@@ -385,6 +385,25 @@ package body et_pcb is
 			 & " width" & to_string (circle.width), log_threshold);
 	end circle_copper_properties;
 
+	procedure text_copper_properties (
+	-- Logs the properties of the given text of copper
+		cursor			: in type_texts_with_content_pcb.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use et_libraries.type_text_content;
+		use type_texts_with_content_pcb;
+		text : type_text_with_content_pcb;
+	begin
+		text := element (cursor);
+		log ("copper text signal layer" & to_string (text.layer) & latin_1.space
+			& "content '" & to_string (text.content) & "'", log_threshold
+			);
+
+		log_indentation_up;
+		log (text_properties (type_text (text)), log_threshold + 1);
+		log_indentation_down;
+	end text_copper_properties;
+
+	
 
 
 -- PROPERTIES OF ELECTRIC OBJECTS IN SIGNAL LAYERS
