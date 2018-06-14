@@ -2542,23 +2542,23 @@ package body et_kicad_pcb is
 		layer_id : type_layer_id; -- to be returned
 	begin
 		-- Translate non-signal layers:
-		if layer = layer_top_solder_paste then layer_id := 35;
-		elsif layer = layer_bot_solder_paste then layer_id := 34;
+		if layer = layer_top_solder_paste then layer_id := layer_top_solder_paste_id;
+		elsif layer = layer_bot_solder_paste then layer_id := layer_bot_solder_paste_id;
 
-		elsif layer = layer_top_stop_mask then layer_id := 39;
-		elsif layer = layer_bot_stop_mask then layer_id := 38;
+		elsif layer = layer_top_stop_mask then layer_id := layer_top_stop_mask_id;
+		elsif layer = layer_bot_stop_mask then layer_id := layer_bot_stop_mask_id;
 
-		elsif layer = layer_top_silk_screen then layer_id := 37;
-		elsif layer = layer_bot_silk_screen then layer_id := 36;
+		elsif layer = layer_top_silk_screen then layer_id := layer_top_silk_screen_id;
+		elsif layer = layer_bot_silk_screen then layer_id := layer_bot_silk_screen_id;
 
-		elsif layer = layer_top_keepout then layer_id := 47;
-		elsif layer = layer_bot_keepout then layer_id := 46;
+		elsif layer = layer_top_keepout then layer_id := layer_top_keepout_id;
+		elsif layer = layer_bot_keepout then layer_id := layer_bot_keepout_id;
 
-		elsif layer = layer_top_assy_doc then layer_id := 49;
-		elsif layer = layer_bot_assy_doc then layer_id := 48;
+		elsif layer = layer_top_assy_doc then layer_id := layer_top_assy_doc_id;
+		elsif layer = layer_bot_assy_doc then layer_id := layer_bot_assy_doc_id;
 
 		-- CS other layers like adhes, eco, margin, ...
-		-- CS edge cuts not allowed -> error
+		-- CS edge cuts not allowed -> error -> should be handled by the calling unit of this function
 
 		-- Translate signal layers
 		else
@@ -3781,15 +3781,21 @@ package body et_kicad_pcb is
 						when SEC_SIZE => 
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => package_text.size_x := to_distance (to_string (arg));
-								when 2 => package_text.size_y := to_distance (to_string (arg));
+								when 1 => 
+									package_text.size_x := to_distance (to_string (arg));
+									board_text.size_x := to_distance (to_string (arg));
+								when 2 => 
+									package_text.size_y := to_distance (to_string (arg));
+									board_text.size_y := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_THICKNESS =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => package_text.width := to_distance (to_string (arg));
+								when 1 => 
+									package_text.width := to_distance (to_string (arg));
+									board_text.width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -3800,7 +3806,7 @@ package body et_kicad_pcb is
 				when SEC_EFFECTS =>	
 					case section.name is
 						when SEC_JUSTIFY => 
-							-- If a footprint text is placed at the bottom side, it must be mirrored.
+							-- If a text is placed at the bottom side, it must be mirrored.
 							-- Since this is natural and indicated by the layer (B.SilkS, B.Cu, ...) there is
 							-- no need for the extra flag (justify mirror). So we just test if the
 							-- keyword "mirror" is present.
@@ -5476,8 +5482,8 @@ package body et_kicad_pcb is
 			end insert_board_circle;
 
 			procedure insert_board_line is begin
-				-- The board_line is converted back to its anchestor and
-				-- depending on the layer extended with specific properties.
+				-- The board_line is converted back to its anchestor, and
+				-- depending on the layer, extended with specific properties.
 				case board_line.layer is
 
 					when TOP_SILK =>
@@ -5538,6 +5544,61 @@ package body et_kicad_pcb is
 					
 			end insert_board_line;
 
+			procedure insert_board_text is 
+			begin
+				case board_text.layer is
+					when layer_top_silk_screen_id =>
+						board.silk_screen.top.texts.append ((et_pcb.type_text (board_text) with board_text.content));
+						text_silk_screen_properties (TOP, board.silk_screen.top.texts.last, log_threshold + 1);
+						
+					when layer_bot_silk_screen_id =>
+						board.silk_screen.bottom.texts.append ((et_pcb.type_text (board_text) with board_text.content));
+						text_silk_screen_properties (BOTTOM, board.silk_screen.bottom.texts.last, log_threshold + 1);
+
+						
+					when layer_top_assy_doc_id =>
+						board.assy_doc.top.texts.append ((et_pcb.type_text (board_text) with board_text.content));
+						text_assy_doc_properties (TOP, board.assy_doc.top.texts.last, log_threshold + 1);
+						
+					when layer_bot_assy_doc_id =>
+						board.assy_doc.bottom.texts.append ((et_pcb.type_text (board_text) with board_text.content));
+						text_assy_doc_properties (BOTTOM, board.assy_doc.bottom.texts.last, log_threshold + 1);
+
+						
+					when layer_top_stop_mask_id =>
+						board.stop_mask.top.texts.append ((et_pcb.type_text (board_text) with board_text.content));
+						--text_sassy_doc_properties (TOP, board.assy_doc.top.texts.last, log_threshold + 1);
+						
+					when layer_bot_stop_mask_id =>
+						board.stop_mask.bottom.texts.append ((et_pcb.type_text (board_text) with board_text.content));
+
+
+					when others =>
+
+						-- If text is placed in a kicad signal layer (copper) it is added to the list of
+						-- texts in board.copper. The kicad layer id is translated to the ET layer id.
+						-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
+
+						-- If text is placed in other (non-signal) layers -> error
+						if board_text.layer in type_signal_layer_id then
+							board.copper.texts.append ((
+								et_pcb.type_text (board_text) with
+									content => board_text.content,
+									layer => et_pcb.type_signal_layer (board_text.layer) + 1
+								));
+						else
+							-- CS currently there is no reason for texts in stencil, keepout, glue or other layers.
+							-- This would cause an error:
+							log_indentation_reset;
+							log (message_error & "Text not allowed in this layer !", console => true);
+							-- CS output the layer by its full kicad name like B.SilkS or T.CU.
+							-- This requires a function that translates from type_layer_id to layer_top_solder_paste ... 
+							-- see layer name declarations in spec of this package
+							raise constraint_error;
+						end if;
+				end case;
+			end insert_board_text;
+			
 			procedure insert_fp_arc is begin
 			-- Append the arc to the container corresponding to the layer. Then log the arc properties.
 
@@ -6090,7 +6151,10 @@ package body et_kicad_pcb is
 
 						when SEC_GR_LINE =>
 							insert_board_line;
-	
+
+						when SEC_GR_TEXT =>
+							insert_board_text;
+							
 						when SEC_SEGMENT =>
 							insert_segment;
 
@@ -6464,7 +6528,8 @@ package body et_kicad_pcb is
 
 									-- Translate the kicad layer id to the ET signal layer:
 									-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
-									-- The botoom layer in kicad is always number 31. Top layer is number 0.
+									-- The bottom layer in kicad is always number 31. Top layer is number 0.
+									-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
 									layer => et_pcb.type_signal_layer (element (segment_cursor).layer + 1)
 
 									-- CS Translate the locked and differential status
@@ -6494,7 +6559,8 @@ package body et_kicad_pcb is
 
 									-- Translate the kicad layer id to the ET signal layer:
 									-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
-									-- The botoom layer in kicad is always number 31. Top layer is number 0.
+									-- The bottom layer in kicad is always number 31. Top layer is number 0.
+									-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
 									layer_start	=> et_pcb.type_signal_layer (element (via_cursor).layer_start + 1),
 									layer_end 	=> et_pcb.type_signal_layer (element (via_cursor).layer_end + 1),
 

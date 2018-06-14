@@ -67,23 +67,48 @@ package et_kicad_pcb is
 	layer_bot_copper			: constant string (1..4)	:= "B.Cu";
 	layer_all_copper			: constant string (1..4)	:= "*.Cu";
 
-	layer_top_solder_paste		: constant string (1..7)	:= "F.Paste";
-	layer_bot_solder_paste		: constant string (1..7)	:= "B.Paste";
+	-- For things in section layers like (0 F.Cu signal) or (49 F.Fab user) we have those specs.
+	-- This is board file related.
+	layer_id_max : constant positive := 49; -- includes ALL layers (signal and non-signal)
+	type type_layer_id is range 0..layer_id_max;
 
+	function to_string (layer : in type_layer_id) return string;
+	-- returns the given layer id as string.
+
+	function to_layer_id (layer : in string) return type_layer_id;
+	-- Converts a string like B.CU or F.Fab to a kicad layer id (0..49)
+
+	
+	layer_top_solder_paste		: constant string (1..7)	:= "F.Paste";
+	layer_top_solder_paste_id	: constant type_layer_id	:= 35;
+	layer_bot_solder_paste		: constant string (1..7)	:= "B.Paste";
+	layer_bot_solder_paste_id	: constant type_layer_id 	:= 34;
+	
 	layer_top_stop_mask			: constant string (1..6)	:= "F.Mask";
+	layer_top_stop_mask_id		: constant type_layer_id 	:= 39;
 	layer_bot_stop_mask			: constant string (1..6)	:= "B.Mask";
+	layer_bot_stop_mask_id		: constant type_layer_id 	:= 38;	
 	layer_all_stop_mask			: constant string (1..6)	:= "*.Mask";
 
 	layer_top_silk_screen		: constant string (1..7)	:= "F.SilkS";
+	layer_top_silk_screen_id	: constant type_layer_id 	:= 37;
 	layer_bot_silk_screen		: constant string (1..7)	:= "B.SilkS";
-
+	layer_bot_silk_screen_id	: constant type_layer_id 	:= 36;
+	
 	layer_top_assy_doc			: constant string (1..5)	:= "F.Fab";
+	layer_top_assy_doc_id		: constant type_layer_id 	:= 49;
 	layer_bot_assy_doc			: constant string (1..5)	:= "B.Fab";
-
+	layer_bot_assy_doc_id		: constant type_layer_id 	:= 48;
+	
 	layer_top_keepout			: constant string (1..7)	:= "F.CrtYd";
+	layer_top_keepout_id		: constant type_layer_id 	:= 47;
 	layer_bot_keepout			: constant string (1..7)	:= "B.CrtYd";
-
+	layer_bot_keepout_id		: constant type_layer_id 	:= 46;
+	
 	layer_edge_cuts				: constant string (1..9)	:= "Edge.Cuts";
+	layer_edge_cuts_id			: constant type_layer_id 	:= 44;
+	
+	-- CS other layers like adhes, eco, margin, ...
 	
 	keyword_fp_text_reference	: constant string (1..9)	:= "reference";
 	keyword_fp_text_value		: constant string (1..5)	:= "value";
@@ -455,16 +480,6 @@ package et_kicad_pcb is
 	end record;
 
 
-	-- For things in section layers like (0 F.Cu signal) or (49 F.Fab user) we have those specs.
-	-- This is board file related.
-	layer_id_max : constant positive := 49; -- includes ALL layers (signal and non-signal)
-	type type_layer_id is range 0..layer_id_max;
-
-	function to_string (layer : in type_layer_id) return string;
-	-- returns the given layer id as string.
-
-	function to_layer_id (layer : in string) return type_layer_id;
-	-- Converts a string like B.CU or F.Fab to a kicad layer id (0..49)
 	
 	-- For the board, temporarily this type is required to handle texts in
 	-- copper, silk screen, assembly doc, ...
@@ -559,7 +574,9 @@ package et_kicad_pcb is
 	signal_layer_id_top		: constant type_layer_id := 0;
 	signal_layer_id_bottom	: constant type_layer_id := 31;
 	subtype type_signal_layer_id is type_layer_id range signal_layer_id_top..signal_layer_id_bottom;
-
+	-- NOTE: On import, the kicad bottom copper layer becomes the ET signal layer 32 !
+	-- (NOT et_pcb.type_signal_layer'last !!)
+	
 	function to_signal_layer_id (layer : in string) return type_signal_layer_id;
 	-- Translates a string like F.Cu or In2.Cu or or In15.Cu to a type_signal_layer_id (0..31) -- see spec
 
@@ -617,8 +634,9 @@ package et_kicad_pcb is
 		stop_mask	: et_pcb.type_stop_mask_both_sides;
 		keepout		: et_pcb.type_keepout_both_sides;		
 		contour		: et_pcb.type_pcb_contour;
-		copper		: et_pcb.type_copper_pcb;
-		-- NOTE: non-electric graphic objects in signal layers are not allowed in kicad
+		copper		: et_pcb.type_copper_pcb; -- used for texts only
+		-- other non-electric graphic objects in signal layers are not allowed in kicad
+
 		-- CS objects in other layers (user defined, glue, ...)
 
 		segments	: type_segments.list;
