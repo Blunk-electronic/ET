@@ -5462,6 +5462,22 @@ package body et_schematic is
 	
 		return net_name_to_return;
 	end connected_net;
+
+
+	function connected_net (
+		-- Returns the name of the net connected with the given component and terminal.
+		module		: in et_coordinates.type_submodule_name.bounded_string;	-- nucleo_core							   
+		reference	: in type_component_reference;	-- IC45
+		terminal	: in type_terminal_name.bounded_string) -- E14
+		return type_net_name.bounded_string is
+
+		net : type_net_name.bounded_string; -- to be returned
+	begin
+
+		
+		return net;
+	end connected_net;
+
 	
 	procedure export_netlists (log_threshold : in et_string_processing.type_log_level) is
 	-- Exports/Writes the netlists of the rig in separate files.

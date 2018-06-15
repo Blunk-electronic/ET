@@ -6400,9 +6400,6 @@ package body et_kicad_pcb is
 
 				text_placeholders	: et_pcb.type_text_placeholders;
 
-				use type_net_classes;
-				net_class_cursor	: type_net_classes.cursor;
-				
 				function to_net_id (name : in type_net_name.bounded_string) return type_net_id is
 				-- Converts the given net name to a net id.
 					use type_net_name;
@@ -6471,7 +6468,6 @@ package body et_kicad_pcb is
 
 					return id;
 				end to_net_id;
-				
 
 				function route (net_id : in type_net_id) return et_pcb.type_route is
 				-- Collects segments and vias by the given net_id and returns them as a type_route.
@@ -6675,6 +6671,138 @@ package body et_kicad_pcb is
 					return placeholders;
 					
 				end to_placeholders;
+
+				procedure transfer_net_classes is 
+				-- net classes must be tranferred from board.net_classes to the schematic module
+				-- A kicad net class has a name and a list of net_names
+				-- whereas
+				-- an ET net class has a just a name. In the schematic a particular net has the 
+				-- class name as a property.
+					use type_net_classes;
+					net_class_cursor_board	: type_net_classes.cursor;
+
+					use type_nets_of_class;
+					nets_of_class		: type_nets_of_class.list;
+					net_cursor_board	: type_nets_of_class.cursor;
+
+					use et_schematic.type_nets;
+					net_cursor_schematic : et_schematic.type_nets.cursor;
+
+					function to_net_name (net_name_in : in type_net_name.bounded_string)
+					-- Translates from an anonymous kicad net name like "Net-(IC2-Pad11)" to an 
+					-- anonymous ET name like "N$45".
+						return type_net_name.bounded_string is
+						net_name_out : type_net_name.bounded_string; -- to be returned
+
+						package_cursor	: type_packages_board.cursor := board.packages.first;
+						package_name	: et_libraries.type_component_reference;
+						terminal_found	: boolean := false;
+						terminal_name	: et_libraries.type_terminal_name.bounded_string;
+
+						procedure query_terminals (
+							package_name	: in et_libraries.type_component_reference;
+							packge			: in type_package_board) is
+							use type_terminals;
+							terminal_cursor : type_terminals.cursor := packge.terminals.first;
+
+							use type_net_name;
+						begin -- query_terminals
+							-- Loop in terminals of current package until a terminal
+							-- is found that is connected with the given net name_in.
+							-- On match, set the terminal_name and exit the loop.
+							while terminal_cursor /= type_terminals.no_element loop
+								if element (terminal_cursor).net_name = net_name_in then
+									terminal_found := true;
+									terminal_name := key (terminal_cursor);
+									exit;
+								end if;
+								next (terminal_cursor);
+							end loop;
+
+							
+						end query_terminals;
+							
+					begin -- to_net_name
+
+						-- Loop in packages until a suitable terminal has been found.
+						while package_cursor /= type_packages_board.no_element and not terminal_found loop
+
+							query_element (
+								position	=> package_cursor,
+								process		=> query_terminals'access);
+						
+							next (package_cursor);
+						end loop;
+
+						if not terminal_found then
+							log_indentation_reset;
+							log (message_error & "net " & to_string (net_name_in) & " not connected to any package !", console => true);
+							raise constraint_error;
+						end if;
+
+						-- Now we know the given net_name_in is connected with package_name and terminal_name:
+						package_name := key (package_cursor); -- IC49
+						-- terminal_name -- E14
+
+						net_name_out := et_schematic.connected_net (mod_name, package_name, terminal_name);
+						
+						net_name_out := net_name_in;
+						return net_name_out;
+
+						
+					end to_net_name;
+						
+					procedure set_net_class (
+					-- Sets the class of the given net in the schematic module.
+						net_name	: in type_net_name.bounded_string;
+						net 		: in out et_schematic.type_net) is
+					begin
+						net.class := key (net_class_cursor_board);
+						log (" net name " & to_string (net_name), log_threshold + 3);
+					end set_net_class;
+					
+				begin -- transfer_net_classes
+					-- Copy the net class settings from kicad-board to the schematic module:
+					net_class_cursor_board := board.net_classes.first;
+					while net_class_cursor_board /= type_net_classes.no_element loop -- loop in net classes of board
+						log ("net class " & et_pcb.to_string (key (net_class_cursor_board)), log_threshold + 2);
+
+						-- copy net class name and its basic properties
+						module.net_classes.insert (
+							key 		=> key (net_class_cursor_board), -- class name
+							new_item	=> et_pcb.type_net_class (element (net_class_cursor_board))); -- properties
+
+						-- From the board, get the net names of the current class:
+						nets_of_class := element (net_class_cursor_board).net_names;
+
+						-- In the schematic module: Set the current net class for all
+						-- nets listed in nets_of_class:
+						net_cursor_board := nets_of_class.first;
+						while net_cursor_board /= type_nets_of_class.no_element loop -- loop in nets_of_class (in board)
+
+							-- Locate the current net in the schematic module. Anonymous kicad names like
+							-- "Net-(IC2-Pad11)" do not exist in the schematic module. If such a name is given 
+							-- intentionally, it will be found by a regular "find in container" operation. 
+							-- If it could not be found, it is an anonymous net. The name "Net-(IC2-Pad11)" must then
+							-- be translated to the anonymous ET net name like "N$45".
+							net_cursor_schematic := module.nets.find (element (net_cursor_board));
+							if net_cursor_schematic = type_nets.no_element then
+								-- anonymous net -> translate to ET notation
+								net_cursor_schematic := module.nets.find (to_net_name (element (net_cursor_board)));
+							end if;
+						
+							et_schematic.type_nets.update_element (
+								container	=> module.nets, -- the current schematic module
+								position	=> net_cursor_schematic, -- the current net
+								process		=> set_net_class'access); -- set the net class
+						
+							next (net_cursor_board);
+						end loop;
+						
+						next (net_class_cursor_board);
+					end loop;
+
+				end transfer_net_classes;
 				
 			begin -- add_board_objects
 				-- General board stuff (not related to any components) is
@@ -6717,22 +6845,7 @@ package body et_kicad_pcb is
 					next (net_cursor);
 				end loop;
 
-				-- net classes must be tranferred from board.net_classes to the schematic module
-				-- A kicad net class has a name and a list of net_names
-				-- whereas
-				-- an ET net class has a just a name. In the schematic a particular net has the class name as a property.
-				net_class_cursor := board.net_classes.first;
-				while net_class_cursor /= type_net_classes.no_element loop
-					log ("net class " & et_pcb.to_string (key (net_class_cursor)), log_threshold + 2);
-				
-					module.net_classes.insert (
-						key 		=> key (net_class_cursor),
-						new_item	=> et_pcb.type_net_class (element (net_class_cursor)));
-
-					-- module.nets (class)
-					
-					next (net_class_cursor);
-				end loop;
+				transfer_net_classes;
 
 				-- update package positions in schematic module
 				while component_cursor /= type_components.no_element loop -- (cursor points to schematic components)

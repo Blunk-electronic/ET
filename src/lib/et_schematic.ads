@@ -786,6 +786,13 @@ package et_schematic is
 	-- The net which is connected with the port is the net whose name
 	-- is to be returned.
 	-- If no net connected with the given port, an empty string is returned.
+
+	function connected_net (
+	-- Returns the name of the net connected with the given component and terminal.
+		module		: in et_coordinates.type_submodule_name.bounded_string;	-- nucleo_core
+		reference	: in type_component_reference;	-- IC45
+		terminal	: in type_terminal_name.bounded_string) -- E14
+		return type_net_name.bounded_string;
 	
 	-- This is a set of ports as we need in the netlist.
 	package type_ports_with_reference is new ordered_sets (
