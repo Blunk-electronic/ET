@@ -289,10 +289,9 @@ package et_schematic is
 				position			: et_pcb_coordinates.type_package_position; -- incl. angle and face
 				text_placeholders	: et_pcb.type_text_placeholders;
 				
-			-- If a component appears in the schematic only, it does not
-			-- have any package variants.
+			-- If a component appears in the schematic only, it does not have any package variants.
 			-- Such components are power symbols or power flags. Later when building netlists
-			-- those components enforce net names (like GND or P3V3). Power flags do not
+			-- those component may enforce net names (like GND or P3V3). Power flags do not
 			-- enforce net names. In order to distinguish them from regular power symbols the
 			-- power_flag is provided.
 			when sch => 
@@ -307,7 +306,7 @@ package et_schematic is
 		generic_name	: in et_libraries.type_component_generic_name.bounded_string; -- example: "TRANSISTOR_PNP"
 		package_variant	: in type_component_variant_name.bounded_string) -- N, D
 		return type_component_package_name.bounded_string;
-	-- Returns the package name for of the given component.
+	-- Returns the package name of the given component.
 		
 	
 	procedure write_unit_properties (
@@ -778,7 +777,7 @@ package et_schematic is
 	end record;
 	
 	function connected_net (
-		port			: type_port_of_module; -- contains something like nucleo_core_1 X701 port 4
+		port			: in type_port_of_module; -- contains something like nucleo_core_1 X701 port 4
 		log_threshold	: in et_string_processing.type_log_level)
 		return type_net_name.bounded_string;
 	-- Returns the name of the net connected with the given port.
@@ -789,9 +788,10 @@ package et_schematic is
 
 	function connected_net (
 	-- Returns the name of the net connected with the given component and terminal.
-		module		: in et_coordinates.type_submodule_name.bounded_string;	-- nucleo_core
-		reference	: in type_component_reference;	-- IC45
-		terminal	: in type_terminal_name.bounded_string) -- E14
+		module			: in et_coordinates.type_submodule_name.bounded_string;	-- nucleo_core
+		reference		: in type_component_reference;	-- IC45
+		terminal		: in type_terminal_name.bounded_string; -- E14
+		log_threshold	: in et_string_processing.type_log_level)		
 		return type_net_name.bounded_string;
 	
 	-- This is a set of ports as we need in the netlist.

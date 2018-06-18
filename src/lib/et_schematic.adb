@@ -5465,15 +5465,202 @@ package body et_schematic is
 
 
 	function connected_net (
-		-- Returns the name of the net connected with the given component and terminal.
-		module		: in et_coordinates.type_submodule_name.bounded_string;	-- nucleo_core							   
-		reference	: in type_component_reference;	-- IC45
-		terminal	: in type_terminal_name.bounded_string) -- E14
+	-- Returns the name of the net connected with the given component and terminal.
+		module			: in et_coordinates.type_submodule_name.bounded_string;	-- nucleo_core							   
+		reference		: in type_component_reference;	-- IC45
+		terminal		: in type_terminal_name.bounded_string; -- E14
+		log_threshold	: in et_string_processing.type_log_level)		
 		return type_net_name.bounded_string is
 
 		net : type_net_name.bounded_string; -- to be returned
-	begin
 
+		-- As an intermediate storage place here the module name, the component reference and the port name are stored.
+		-- Selector port contains the port name associated with the given terminal name (acc. to. package variant).
+		-- Once the port name has been found, this variable is set (see procedure locate_terminal):
+		port : type_port_of_module; 
+
+		use et_string_processing;
+		use type_rig;
+
+		module_cursor : type_rig.cursor; -- points to the module being searched in
+
+		procedure query_components (
+		-- Searches the components of the module for the given reference.
+			module_name : in type_submodule_name.bounded_string;
+			module		: in type_module) is
+			use type_components;
+			component_cursor_schematic : type_components.cursor := module.components.first;
+
+			--package_name : type_component_package_name.bounded_string;
+
+			library_name	: type_full_library_name.bounded_string;
+			generic_name	: type_component_generic_name.bounded_string;
+			package_variant	: type_component_variant_name.bounded_string;
+
+			use type_libraries;
+			library_cursor	: type_libraries.cursor;
+
+			procedure locate_component_in_library (
+			-- Locates the given component by its generic name in the library.
+				library_name 	: in type_full_library_name.bounded_string;
+				components 		: in et_libraries.type_components.map) is
+
+				use et_libraries.type_components;
+				component_cursor : et_libraries.type_components.cursor;
+
+				procedure query_variants (
+				-- Looks up the list of variants of the component.
+					name 		: in et_libraries.type_component_generic_name.bounded_string;
+					component 	: in et_libraries.type_component) is
+				
+					use type_component_variants;
+					variant_cursor : et_libraries.type_component_variants.cursor;
+
+					procedure locate_terminal (
+					-- Locates the given terminal in the package variant.
+						variant_name 	: in type_component_variant_name.bounded_string;
+						variant 		: in type_component_variant) is
+						use type_terminal_port_map;
+						use type_port_name;
+						terminal_cursor : type_terminal_port_map.cursor;
+					begin -- locate_terminal
+						terminal_cursor := variant.terminal_port_map.find (terminal);
+						if terminal_cursor /= type_terminal_port_map.no_element then -- given terminal found
+
+							-- set the intermediate variable "port". see declarations above.
+							port.module := connected_net.module; -- the name of the given module
+							port.reference := reference; -- the given component reference
+							port.name := element (terminal_cursor).name; -- the port name
+							
+							log ("port name " & et_libraries.to_string (port.name), log_threshold + 4);
+						else
+							log_indentation_reset;
+							log (message_error & " terminal " & to_string (terminal) & " not found !",
+								 console => true);
+							raise constraint_error;
+						end if;
+					end locate_terminal;
+					
+				begin -- query_variants
+					log ("locating variant " & to_string (package_variant) & " ...", log_threshold + 3);
+					log_indentation_up;
+
+					variant_cursor := component.variants.find (package_variant);
+
+					-- Locate the given terminal in the variant.
+					-- The variant should be found (because the component has been inserted in the library earlier).
+					if variant_cursor /= et_libraries.type_component_variants.no_element then
+
+						-- locate the given terminal in the package variant
+						query_element (
+							position 	=> variant_cursor,
+							process 	=> locate_terminal'access);
+
+					else
+						log_indentation_reset;
+						log (message_error & " package variant " & to_string (key (variant_cursor)) &
+							" not found !", console => true);
+						raise constraint_error;
+					end if;
+					log_indentation_down;	
+				end query_variants;
+				
+			begin -- locate_component_in_library
+				log ("locating generic component " & to_string (generic_name) 
+						& " in library " & to_string (library_name) & " ...", log_threshold + 2);
+				log_indentation_up;
+
+				-- Set the component_cursor right away to the position of the generic component
+				component_cursor := components.find (generic_name); -- search for generic name NETCHANGER
+
+				-- If we are importing a kicad_v4 project, the generic name might have not been found.
+				-- Why ? The generic component name might have a tilde prepended. So the search must
+				-- be started over with a tilde prepended to the generic_name.
+				if component_cursor = et_libraries.type_components.no_element then
+					case et_import.cad_format is
+						when et_import.kicad_v4 =>
+							-- search for generic name ~NETCHANGER
+							component_cursor := components.find (prepend_tilde (generic_name));
+						when others => null;
+					end case;
+				end if;
+
+				if component_cursor /= et_libraries.type_components.no_element then
+					-- Query the variants of the component in the library.
+					et_libraries.type_components.query_element (
+						position 	=> component_cursor,
+						process 	=> query_variants'access);
+					
+				else -- generic model not found -> abort
+					log_indentation_reset;
+					log (message_error & " generic model for " & to_string (reference) & " not found !", console => true);
+					raise constraint_error;
+				end if;
+					
+				log_indentation_down;
+			end locate_component_in_library;
+				
+		begin -- query_components
+			log ("querying components in schematic ...", log_threshold + 1);
+			log_indentation_up;
+
+			-- find component with given reference in schematic
+			component_cursor_schematic := module.components.find (reference);
+			if component_cursor_schematic /= type_components.no_element then
+
+				library_name := element (component_cursor_schematic).library_name; -- get library name where the symbol is stored in
+				generic_name := element (component_cursor_schematic).generic_name; -- get generic component name in the library
+				package_variant := element (component_cursor_schematic).variant; -- get the package variant name of the component
+				
+				-- set library cursor. NOTE: assumption is that there is a library with this name.
+				-- Otherwise an exception would occur here.
+				library_cursor := component_libraries.find (library_name); 
+
+				if library_cursor /= type_libraries.no_element then
+					query_element (
+						position	=> library_cursor,
+						process		=> locate_component_in_library'access);
+				else -- library not found -> abort
+					log_indentation_reset;
+					log (message_error & " library " & to_string (library_name) & " not found !", console => true);
+					raise constraint_error;
+				end if;
+
+			else -- component nof found in schematic -> abort
+				log_indentation_reset;
+				log (message_error & " component " & to_string (reference) & " not found !", console => true);
+				raise constraint_error;
+			end if;
+				
+			log_indentation_down;
+		end query_components;
+
+	begin -- connected_net
+		log ("locating in module " & to_string (module) & " net connected with " 
+			& to_string (reference) & " terminal " & to_string (terminal) & " ...", log_threshold);
+		log_indentation_up;
+
+		module_cursor := find (rig, module); -- set the cursor to the module
+
+		-- If module exists, locate the given component in the module.
+		-- Otherwise raise alarm and exit.
+		if module_cursor /= type_rig.no_element then
+
+			query_element (
+				position => module_cursor, 
+				process => query_components'access);
+			
+		else -- module not found
+			log_indentation_reset;
+			log (message_error & "module " & to_string (module) & " not found !", console => true);
+			raise constraint_error;
+		end if;
+
+		-- There is another function connected_net. It returns the net name 
+		-- connected with "port". (Port contains the module name, reference and port name)
+		net := connected_net (port, log_threshold + 1);
+		
+		log_indentation_down;
 		
 		return net;
 	end connected_net;

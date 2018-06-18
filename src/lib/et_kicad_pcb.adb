@@ -6709,24 +6709,34 @@ package body et_kicad_pcb is
 						begin -- query_terminals
 							-- Loop in terminals of current package until a terminal
 							-- is found that is connected with the given net name_in.
-							-- On match, set the terminal_name and exit the loop.
+							-- On match, set the terminal_name, package_name and exit the loop.
+							-- The flag terminal_found indicates the superordinated loop to exit prematurely.
 							while terminal_cursor /= type_terminals.no_element loop
 								if element (terminal_cursor).net_name = net_name_in then
 									terminal_found := true;
-									terminal_name := key (terminal_cursor);
+
+									-- set terminal name
+									terminal_name := key (terminal_cursor); -- E14
+									-- set package_name (in superordinated function to_net_name):
+									to_net_name.package_name := key (package_cursor); -- IC49
+									
 									exit;
 								end if;
 								next (terminal_cursor);
 							end loop;
-
 							
 						end query_terminals;
 							
 					begin -- to_net_name
+						log_indentation_up;
+						log ("translating anonymous kicad net name " & to_string (net_name_in) & " to " &
+							et_general.system_name & " name ... ", log_threshold + 3);
 
 						-- Loop in packages until a suitable terminal has been found.
 						while package_cursor /= type_packages_board.no_element and not terminal_found loop
 
+							-- Query terminals of current package (query_terminals sets the flag terminal_found so that
+							-- this loop ends prematurely once a suitable terminal has been found.
 							query_element (
 								position	=> package_cursor,
 								process		=> query_terminals'access);
@@ -6740,16 +6750,19 @@ package body et_kicad_pcb is
 							raise constraint_error;
 						end if;
 
-						-- Now we know the given net_name_in is connected with package_name and terminal_name:
-						package_name := key (package_cursor); -- IC49
+						-- Now we know: the given net_name_in is connected with package_name and terminal_name:
+						-- package_name -- IC49
 						-- terminal_name -- E14
 
-						net_name_out := et_schematic.connected_net (mod_name, package_name, terminal_name);
-						
-						net_name_out := net_name_in;
-						return net_name_out;
+						-- Get the name of the net connected with the given terminal:
+						net_name_out := et_schematic.connected_net (mod_name, package_name, terminal_name, log_threshold + 4);
 
+						log_indentation_up;
+						log ("the " & et_general.system_name & " net name is " & to_string (net_name_out), log_threshold + 3);
+						log_indentation_down;
 						
+						log_indentation_down;
+						return net_name_out;
 					end to_net_name;
 						
 					procedure set_net_class (
@@ -6845,6 +6858,7 @@ package body et_kicad_pcb is
 					next (net_cursor);
 				end loop;
 
+				-- transfer the kicad net classes to the schematic module
 				transfer_net_classes;
 
 				-- update package positions in schematic module
