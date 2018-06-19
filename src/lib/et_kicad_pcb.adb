@@ -2609,6 +2609,7 @@ package body et_kicad_pcb is
 		type type_keyword is (
 			INIT,	-- initial section before anything is done. does not occur in board file
 			SEC_ADD_NET,
+			SEC_ARC_SEGMENTS,
 			SEC_AREA,
 			SEC_AUX_AXIS_ORIGIN,
 			SEC_AT,
@@ -2616,6 +2617,7 @@ package body et_kicad_pcb is
 			SEC_ANGLE,
 			SEC_CENTER,
 			SEC_CLEARANCE,
+			SEC_CONNECT_PADS,
 			SEC_DESCR,
 			SEC_DRAWINGS,
 			SEC_DRILL,
@@ -2624,6 +2626,8 @@ package body et_kicad_pcb is
 			SEC_EFFECTS,
 			SEC_END,
 			SEC_EXCLUDEEDGELAYER,
+			SEC_FILL,
+			SEC_FILLED_POLYGON,
 			SEC_FONT,
 			SEC_FP_ARC,
 			SEC_FP_CIRCLE,
@@ -2634,6 +2638,7 @@ package body et_kicad_pcb is
 			SEC_GR_CIRCLE,	-- board outlines, edge cuts
 			SEC_GR_LINE,	-- board outlines, edge cuts
 			SEC_GR_TEXT,
+			SEC_HATCH,
 			SEC_HOST,
 			SEC_HPGLPENDIAMETER,
 			SEC_HPGLPENNUMBER,
@@ -2655,9 +2660,11 @@ package body et_kicad_pcb is
 			SEC_MOD_EDGE_WIDTH,
 			SEC_MOD_TEXT_SIZE,
 			SEC_MOD_TEXT_WIDTH,
+			SEC_MIN_THICKNESS,
 			SEC_MIRROR,
 			SEC_NET,
 			SEC_NET_CLASS,
+			SEC_NET_NAME,
 			SEC_NETS,
 			SEC_NO_CONNECTS,
 			SEC_OFFSET,
@@ -2677,8 +2684,10 @@ package body et_kicad_pcb is
 			SEC_PLOTINVISIBLETEXT,
 			SEC_PLOTREFERENCE,
 			SEC_PLOTVALUE,
+			SEC_POLYGON,
 			SEC_PSA4OUTPUT, 
 			SEC_PSNEGATIVE,
+			SEC_PTS,
 			SEC_ROTATE,
 			SEC_SCALE,
 			SEC_SCALESELECTION,
@@ -2692,6 +2701,8 @@ package body et_kicad_pcb is
 			SEC_STATUS,
 			SEC_TAGS,
 			SEC_TEDIT,
+			SEC_THERMAL_BRIDGE_WIDTH,
+			SEC_THERMAL_GAP,
 			SEC_TRACE_CLEARANCE,
 			SEC_TRACE_MIN,
 			SEC_TRACE_WIDTH,
@@ -2716,7 +2727,9 @@ package body et_kicad_pcb is
 			SEC_VISIBLE_ELEMENTS,
 			SEC_VIASONMASK,
 			SEC_WIDTH,
+			SEC_XY,
 			SEC_XYZ,
+			SEC_ZONE,
 			SEC_ZONE_45_ONLY,
 			SEC_ZONE_CLEARANCE,
 			SEC_ZONES
@@ -2800,9 +2813,10 @@ package body et_kicad_pcb is
 		net_class_name 	: type_net_class_name.bounded_string;	-- PWR, HIGH_CURRENT, ...
 		net_class 		: type_net_class;
 
-		-- SEGMENTS and VIAS
-		segment : type_segment;
-		via : type_via;
+		-- SEGMENTS, VIAS, POLYGONS
+		segment	: type_segment;
+		via		: type_via;
+		polygon : type_copper_polygon_pcb; -- NOTE: kicad allows polygons in copper layers exclusively
 		
 		-- PACKAGES
 		package_name 			: et_libraries.type_component_package_name.bounded_string;
@@ -3091,7 +3105,7 @@ package body et_kicad_pcb is
 					case section.name is
 						when SEC_VERSION | SEC_HOST | SEC_GENERAL | SEC_PAGE |
 							SEC_LAYERS | SEC_SEGMENT | SEC_VIA | SEC_SETUP | SEC_NET | SEC_NET_CLASS |
-							SEC_MODULE | SEC_GR_LINE | SEC_GR_ARC | SEC_GR_CIRCLE | SEC_GR_TEXT => null;
+							SEC_MODULE | SEC_GR_LINE | SEC_GR_ARC | SEC_GR_CIRCLE | SEC_GR_TEXT | SEC_ZONE => null;
 						when others => invalid_section;
 					end case;
 
@@ -3218,6 +3232,38 @@ package body et_kicad_pcb is
 						when SEC_AT | SEC_SIZE | SEC_DRILL | SEC_LAYERS | SEC_NET | SEC_STATUS => null;
 						when others => invalid_section;
 					end case;
+
+				when SEC_ZONE =>
+					case section.name is
+						when SEC_NET | SEC_NET_NAME | SEC_LAYER | SEC_TSTAMP | SEC_HATCH |
+							SEC_CONNECT_PADS | SEC_MIN_THICKNESS | SEC_FILL | SEC_POLYGON | SEC_FILLED_POLYGON => null;
+						when others => invalid_section;
+					end case;
+
+				when SEC_CONNECT_PADS =>
+					case section.name is
+						when SEC_CLEARANCE => null;
+						when others => invalid_section;
+					end case;
+
+				when SEC_FILL =>
+					case section.name is
+						when SEC_ARC_SEGMENTS | SEC_THERMAL_GAP | SEC_THERMAL_BRIDGE_WIDTH => null;
+						when others => invalid_section;
+					end case;
+					
+				when SEC_POLYGON | SEC_FILLED_POLYGON =>
+					case section.name is
+						when SEC_PTS => null;
+						when others => invalid_section;
+					end case;
+
+				when SEC_PTS =>
+					case section.name is
+						when SEC_XY => null;
+						when others => invalid_section;
+					end case;
+					
 					
 				when others => null;
 			end case;

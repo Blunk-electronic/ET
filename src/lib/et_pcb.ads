@@ -498,7 +498,7 @@ package et_pcb is
 		lines 			: type_copper_lines_pcb.list;
 		arcs			: type_copper_arcs_pcb.list;
 		circles			: type_copper_circles_pcb.list;
-		polygons		: type_copper_polygons_pcb.list;
+		polygons		: type_copper_polygons_pcb.list; -- CS probably no good idea to allow floating copper polygons
 		texts			: type_texts_with_content_pcb.list;
 		placeholders	: type_text_placeholders_copper.list;
 	end record;
@@ -520,7 +520,7 @@ package et_pcb is
 		lines 			: type_copper_lines_pcb.list;
 		arcs			: type_copper_arcs_pcb.list;
 		vias			: type_vias.list;
-		-- CS polygons
+		polygons		: type_copper_polygons_pcb.list;
 	end record;
 
 	
