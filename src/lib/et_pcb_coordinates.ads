@@ -106,6 +106,12 @@ package et_pcb_coordinates is
 	function to_angle (angle : in string) return type_angle;
 	
 	type type_point_3d is tagged private;
+
+	function right_point_before_left (right, left : in type_point_3d) return boolean;
+	-- Returns true if right point comes before left point.
+	-- Compares axis is this order: x, y, z.
+	-- If right point equals left point, returns false.
+
 	type type_terminal_position is new type_point_3d with private;
 	type type_package_position is new type_terminal_position with private;
 

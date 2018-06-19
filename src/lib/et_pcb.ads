@@ -326,6 +326,19 @@ package et_pcb is
 		-- CS filled : boolean;
 	end record;
 
+	-- POLYGON
+	-- Corner points are collected in an ordered set.
+	-- This prevents placing two identical points on top of each other.
+	package type_polygon_points is new ordered_sets (
+		element_type	=> type_point_3d,
+		"<"				=> right_point_before_left);
+	
+	type type_polygon is abstract tagged record
+		points	: type_polygon_points.set;
+	end record;
+
+
+	-- LOCK STATUS OF AN OBJECT
 	type type_locked is (NO, YES);
 
 
@@ -423,13 +436,16 @@ package et_pcb is
 	end record;
 	package type_copper_circles is new doubly_linked_lists (type_copper_circle);
 
+	type type_copper_polygon is new type_polygon with null record;
+	package type_copper_polygons is new doubly_linked_lists (type_copper_polygon);
+	
 	-- Type for NON ELECTRIC !! copper objects of a package:
 	type type_copper is record 
 		lines 		: type_copper_lines.list;
 		arcs		: type_copper_arcs.list;
 		circles		: type_copper_circles.list;
 		texts		: type_texts_with_content.list;
-		-- CS polygons
+		polygons	: type_copper_polygons.list;
 	end record;
 	
 	-- since NON ELECTRIC copper objects of a package can be on both sides 
@@ -461,6 +477,12 @@ package et_pcb is
 	end record;
 	package type_copper_circles_pcb is new doubly_linked_lists (type_copper_circle_pcb);
 
+	type type_copper_polygon_pcb is new type_copper_polygon with record
+		layer	: type_signal_layer;
+		-- CS fill style, cutout, thermal width, thermals on/off, rank, isolation, ...
+	end record;
+	package type_copper_polygons_pcb is new doubly_linked_lists (type_copper_polygon_pcb);
+	
 	type type_text_with_content_pcb is new type_text_with_content with record
 		layer	: type_signal_layer;
 	end record;
@@ -476,9 +498,9 @@ package et_pcb is
 		lines 			: type_copper_lines_pcb.list;
 		arcs			: type_copper_arcs_pcb.list;
 		circles			: type_copper_circles_pcb.list;
+		polygons		: type_copper_polygons_pcb.list;
 		texts			: type_texts_with_content_pcb.list;
 		placeholders	: type_text_placeholders_copper.list;
-		-- CS polygons
 	end record;
 
 	-- Types for ELECTRIC !! copper objects:
@@ -524,12 +546,18 @@ package et_pcb is
 
 	package type_stop_circles is new doubly_linked_lists (type_stop_circle);
 
+
+	type type_stop_polygon is new type_polygon with null record;
+	package type_stop_polygons is new doubly_linked_lists (type_stop_polygon);
+
+	
 	-- This is the type for stop mask objects in general:
 	type type_stop_mask is record
 		lines 		: type_stop_lines.list;
 		arcs		: type_stop_arcs.list;
 		circles		: type_stop_circles.list;
 		texts		: type_texts_with_content.list; -- for texts in copper to be exposed
+		polygons	: type_stop_polygons.list;
 	end record;
 
 	-- Because stop mask is about two sides of the board this composite is required:
@@ -568,11 +596,17 @@ package et_pcb is
 
 	package type_stencil_circles is new doubly_linked_lists (type_stencil_circle);
 
+
+	type type_stencil_polygon is new type_polygon with null record;
+	package type_stencil_polygons is new doubly_linked_lists (type_stencil_polygon);
+	
+	
 	-- This is the type for solder paste stencil objects in general:
 	type type_stencil is record
 		lines 		: type_stencil_lines.list;
 		arcs		: type_stencil_arcs.list;
 		circles		: type_stencil_circles.list;
+		polygons	: type_stencil_polygons.list;
 		-- CS: texts ? -- not reasonable and a waste of material
 	end record;
 
@@ -609,11 +643,16 @@ package et_pcb is
 	package type_silk_circles is new doubly_linked_lists (type_silk_circle);
 
 
+	type type_silk_polygon is new type_polygon with null record;
+	package type_silk_polygons is new doubly_linked_lists (type_silk_polygon);
+	
+
 	-- This is the base type for silk screen objects in general:
 	type type_silk_screen is tagged record
 		lines 		: type_silk_lines.list;
 		arcs		: type_silk_arcs.list;
 		circles		: type_silk_circles.list;
+		polygons	: type_silk_polygons.list;
 		texts		: type_texts_with_content.list;
 	end record;
 
@@ -662,12 +701,18 @@ package et_pcb is
 
 	package type_doc_circles is new doubly_linked_lists (type_doc_circle);
 
+
+	type type_doc_polygon is new type_polygon with null record;
+	package type_doc_polygons is new doubly_linked_lists (type_doc_polygon);
+
+	
 	-- This is the base type for assembly documentation objects in general:
 	type type_assembly_documentation is tagged record
 		lines 		: type_doc_lines.list;
 		arcs		: type_doc_arcs.list;
 		circles		: type_doc_circles.list;
 		texts		: type_texts_with_content.list;
+		polygons	: type_doc_polygons.list;
 	end record;
 
 	-- Assembly documentation objects of a package (in the library) include placeholders:
@@ -703,13 +748,17 @@ package et_pcb is
 	
 	type type_keepout_circle is new type_circle with null record;
 	package type_keepout_circles is new doubly_linked_lists (type_keepout_circle);
+
+	type type_keepout_polygon is new type_polygon with null record;
+	package type_keepout_polygons is new doubly_linked_lists (type_keepout_polygon);
+
 	
 	type type_keepout is record
-		lines 	: type_keepout_lines.list;
-		arcs	: type_keepout_arcs.list;
-		circles	: type_keepout_circles.list;
-		-- CS texts		: type_texts_with_content.list; -- for placement note ?
-		-- CS polygons
+		lines 		: type_keepout_lines.list;
+		arcs		: type_keepout_arcs.list;
+		circles		: type_keepout_circles.list;
+		polygons	: type_keepout_polygons.list;
+		-- CS texts		: type_texts_with_content.list; -- for placement notes ?
 	end record;
 
 	type type_keepout_both_sides is record
@@ -717,10 +766,6 @@ package et_pcb is
 		bottom	: type_keepout;
 	end record;
 	
--- 	type type_keepout_pcb_both_sides is record -- CS no need ?
--- 		top 	: type_keepout;
--- 		bottom	: type_keepout;
--- 	end record;
 
 
 	
@@ -742,12 +787,16 @@ package et_pcb is
 	end record;
 	package type_route_restrict_circles is new doubly_linked_lists (type_route_restrict_circle);
 
+	type type_route_restrict_polygon is new type_polygon with null record;
+	package type_route_restrict_polygons is new doubly_linked_lists (type_route_restrict_polygon);
+
+	
 	-- this is the base type for route restrict objects
 	type type_route_restrict is tagged record
-		lines 	: type_route_restrict_lines.list;
-		arcs	: type_route_restrict_arcs.list;
-		circles	: type_route_restrict_lines.list;
-		-- CS polygons
+		lines 		: type_route_restrict_lines.list;
+		arcs		: type_route_restrict_arcs.list;
+		circles		: type_route_restrict_lines.list;
+		polygons	: type_route_restrict_polygons.list;
 		-- CS texts		: type_texts_with_content.list; -- for routing notes ?		
 	end record;
 	
@@ -765,11 +814,13 @@ package et_pcb is
 	
 	package type_via_restrict_lines is new doubly_linked_lists (type_via_restrict_line);
 
+	
 	type type_via_restrict_arc is new type_arc with record
 		layers : type_signal_layers.set;
 	end record;
 	
 	package type_via_restrict_arcs is new doubly_linked_lists (type_via_restrict_arc);
+
 	
 	type type_via_restrict_circle is new type_circle with record
 		layers : type_signal_layers.set;
@@ -777,13 +828,20 @@ package et_pcb is
 	
 	package type_via_restrict_circles is new doubly_linked_lists (type_via_restrict_circle);
 
+	
+	type type_via_restrict_polygon is new type_polygon with null record;
+
+	package type_via_restrict_polygons is new doubly_linked_lists (type_via_restrict_polygon);
+
+	
+	
 	-- this is the base type for via restrict objects
 	type type_via_restrict is tagged record
-		lines 	: type_via_restrict_lines.list;
-		arcs	: type_via_restrict_arcs.list;
-		circles	: type_via_restrict_lines.list;
+		lines 		: type_via_restrict_lines.list;
+		arcs		: type_via_restrict_arcs.list;
+		circles		: type_via_restrict_lines.list;
+		polygons	: type_via_restrict_polygons.list;
 		-- CS texts		: type_texts_with_content.list; -- for via notes ?
-		-- CS polygons
 	end record;
 	
 	type type_via_restrict_package is new type_via_restrict with null record;

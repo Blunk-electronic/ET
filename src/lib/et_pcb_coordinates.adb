@@ -69,6 +69,25 @@ package body et_pcb_coordinates is
 		return type_distance'value (distance);
 	end to_distance;
 
+	function right_point_before_left (right, left : in type_point_3d) return boolean is
+	-- Returns true if right point comes before left point.
+	-- Compares axis is this order: x, y, z.
+	-- If right point equals left point, returns false.
+		result : boolean;
+	begin
+		if right.x > left.x then
+			result := true;
+		elsif right.y > left.y then
+			result := true;
+		elsif right.z > left.z then
+			result := true;
+		else
+			result := false;
+		end if;
+		
+		return result;
+	end right_point_before_left;
+	
 	function mil_to_distance (mil : in string; warn_on_negative : boolean := true) 
 		return type_distance is
 	-- Converts a mil number (given as a string) to millimeters.
