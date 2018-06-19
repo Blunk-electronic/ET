@@ -6203,10 +6203,6 @@ package body et_kicad_pcb is
 			
 		end exec_section;
 		
-
-
-		
-		
 	begin -- to_board
 		log ("parsing/building board ...", log_threshold);
 		log_indentation_up;
@@ -6436,7 +6432,7 @@ package body et_kicad_pcb is
 
 						
 					else -- The net has no explicitely given name. the name is something like N$56.
-						portlist := real_components_in_net (module => mod_name, net => name, log_threshold => log_threshold + 3);
+						portlist := real_components_in_net (module => mod_name, net => name, log_threshold => log_threshold + 4);
 						-- Returns a list of component ports that are connected with the given net.
 
 						-- Load the first port of the portlist. 
@@ -6444,7 +6440,7 @@ package body et_kicad_pcb is
 						port := element (portlist.first);
 
 						-- The physical terminal name must be obtained now:
-						terminal := to_terminal (port, mod_name, log_threshold + 3);
+						terminal := to_terminal (port, mod_name, log_threshold + 4);
 
 						-- Terminal contains the component reference (like IC45) and the
 						-- physical terminal name (like G7).
@@ -6501,8 +6497,8 @@ package body et_kicad_pcb is
 									layer => et_pcb.type_signal_layer (element (segment_cursor).layer + 1)
 
 									-- CS Translate the locked and differential status
-									--CS locked => et_pcb.NO -- translate from segment status to locked status
-									--CS differential -- translate from segment status to differential status
+									-- CS locked => et_pcb.NO -- translate from segment status to locked status
+									-- CS differential -- translate from segment status to differential status
 									);
 
 							route.lines.append (line); -- append the segment to the lines of the route
@@ -6513,6 +6509,11 @@ package body et_kicad_pcb is
 						next (segment_cursor);
 					end loop;
 
+					-- Log if the net has no routed segments.
+					if et_pcb.type_copper_lines_pcb.is_empty (route.lines) then
+						log ("no segments", log_threshold + 3);
+					end if;
+					
 					-- Find all vias that have the given net_id.
 					-- Append vias to route.vias
 					while via_cursor /= type_vias.no_element loop
@@ -6538,8 +6539,8 @@ package body et_kicad_pcb is
 									restring_inner => restring
 									
 									-- CS Translate the locked and differential status
-									--CS locked => et_pcb.NO -- translate from segment status to locked status
-									--CS differential -- translate from segment status to differential status
+									-- CS locked => et_pcb.NO -- translate from segment status to locked status
+									-- CS differential -- translate from segment status to differential status
 									);
 
 							route.vias.append (via); -- append the via to the vias of the route
@@ -6549,7 +6550,12 @@ package body et_kicad_pcb is
 					
 						next (via_cursor);
 					end loop;
-						
+
+					-- Log if the net has no vias.
+					if et_pcb.type_vias.is_empty (route.vias) then
+						log ("no vias", log_threshold + 3);
+					end if;
+					
 					log_indentation_down;
 					log_indentation_down;	
 					

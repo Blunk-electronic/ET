@@ -417,7 +417,7 @@ package body et_pcb is
 		line := element (cursor);
 		log ("segment " & et_pcb.to_string (type_line (line)) &
 			 " width" & to_string (line.width) &
-			 " layer " & to_string (line.layer)
+			 " layer" & to_string (line.layer)
 			 -- CS locked
 			 , log_threshold);
 	end route_line_properties;
