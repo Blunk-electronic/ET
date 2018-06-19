@@ -5378,7 +5378,7 @@ package body et_schematic is
 				log ("querying ports ...", log_threshold + 2);
 				log_indentation_up;
 
-				-- If the net as any ports, search for the given port.
+				-- If the net has any ports, search for the given port.
 				-- Flag net_found goes true on match which terminates the
 				-- loop that picks up the nets (see main of procedure query_nets).
 				if not is_empty (ports) then

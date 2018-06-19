@@ -169,7 +169,8 @@ package et_kicad_pcb is
 
 
 	
-	-- PLOT PARAMETERS
+	-- PLOT PARAMETERS (CAM JOB)
+	-- NOTE: plot parameters are directly imprinted in the board. There is no CAM file like in EAGLE.
 
 	-- layerselection
 	-- CS meaning not clear yet. for the time being we save the layerselection argument (like 0x00030_80000001)
@@ -320,7 +321,9 @@ package et_kicad_pcb is
 
 
 
-	-- BOARD SETUP
+	-- BOARD SETUP (DRC)
+	-- NOTE: DRC parameters are directly imprinted in the board. There is no DRC file like in EAGLE.
+
 	type type_zone_45_only is (NO, YES);
 
 	-- CS it is not fully clear what aux_axis_origin is good for:
@@ -448,6 +451,8 @@ package et_kicad_pcb is
 
 	
 	-- NET CLASSES
+	-- NOTE: net class settings are directly imprinted in the board. There is no net class file.
+	
 	-- KiCad keeps a list of net names which are in a certain net class.
 	package type_nets_of_class is new doubly_linked_lists (
 		element_type	=> et_schematic.type_net_name.bounded_string,
@@ -620,8 +625,8 @@ package et_kicad_pcb is
 	-- This is the data type for the Kicad Board design:
 	type type_board is record
 		general		: type_general_board_info;
-		setup		: type_board_setup;
-		plot		: type_plot_setup;
+		setup		: type_board_setup; -- DRC stuff
+		plot		: type_plot_setup; -- CAM job (there is only one)
 		paper_size 	: et_general.type_paper_size;
 		layers		: type_layers.map;
 		netlist		: type_netlist.set;

@@ -2641,7 +2641,6 @@ package body et_kicad_pcb is
 			SEC_HPGLPENSPEED,			
 			SEC_JUSTIFY,	-- for packages on back side (mirrored)
 			SEC_KICAD_PCB,
-			-- 			SEC_LAYER,
 			SEC_LAST_TRACE_WIDTH,
 			SEC_LAYER,
 			SEC_LAYER_ID, -- "artificially". does not occur in board file (see procedure read_section)
@@ -6108,7 +6107,7 @@ package body et_kicad_pcb is
 							insert_net;
 							
 						when SEC_NET_CLASS =>
-							insert_net_class;
+							insert_net_class; -- includes logging of net class settings
 
 						when SEC_MODULE =>
 							insert_package; -- in temporarily container "packages"
@@ -6147,7 +6146,7 @@ package body et_kicad_pcb is
 				when SEC_SETUP =>
 					case section.name is
 						when SEC_PCBPLOTPARAMS =>
-							null; -- CS log plot parameters
+							null; -- CS log plot parameters (the one and only CAM job imprinted in the board)
 						
 						when others => null; -- CS
 					end case;
@@ -6925,6 +6924,11 @@ package body et_kicad_pcb is
 					next (component_cursor);
 				end loop;
 
+				-- CS if export into ET requested by operator:
+				-- CS export in CAM job file (source: board.plot) ?
+				-- CS export in net class file (source: schematic module.net_classes) ?
+				-- CS export in DRC file (source: board.setup) ?
+				
 				log_indentation_down;
 				
 			end add_board_objects;
