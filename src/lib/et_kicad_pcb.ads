@@ -620,7 +620,23 @@ package et_kicad_pcb is
 	-- vias are stored in lists
 	package type_vias is new doubly_linked_lists (type_via);
 
-	
+
+
+	type type_polygon is new et_pcb.type_copper_polygon with record
+		net_name				: et_schematic.type_net_name.bounded_string;
+		net_id					: type_net_id;
+		layer					: type_signal_layer_id;
+		timestamp				: et_string_processing.type_timestamp;
+		hatch_edge				: et_pcb_coordinates.type_distance;	-- CS subtype
+		min_thickness			: et_pcb_coordinates.type_distance;	-- CS subtype
+		connect_pads_clearance	: et_pcb_coordinates.type_distance;	-- CS subtype
+		filled					: boolean;
+		arc_segments			: natural; -- CS subtype ?
+		thermal_gap				: et_pcb_coordinates.type_distance; -- CS subtype
+		thermal_bridge_width	: et_pcb_coordinates.type_distance; -- CS subtype
+	end record;
+
+	package type_polygons is new doubly_linked_lists (type_polygon);
 	
 	-- This is the data type for the Kicad Board design:
 	type type_board is record
@@ -639,13 +655,14 @@ package et_kicad_pcb is
 		stop_mask	: et_pcb.type_stop_mask_both_sides;
 		keepout		: et_pcb.type_keepout_both_sides;		
 		contour		: et_pcb.type_pcb_contour;
-		copper		: et_pcb.type_copper_pcb; -- used for texts only
+		copper		: et_pcb.type_copper_pcb; -- non-electric. used for texts only
 		-- other non-electric graphic objects in signal layers are not allowed in kicad
 
 		-- CS objects in other layers (user defined, glue, ...)
 
 		segments	: type_segments.list;
 		vias		: type_vias.list;
+		polygons	: type_polygons.list;
 	end record;
 
 	procedure read_board (

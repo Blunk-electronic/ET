@@ -2814,9 +2814,10 @@ package body et_kicad_pcb is
 		net_class 		: type_net_class;
 
 		-- SEGMENTS, VIAS, POLYGONS
-		segment	: type_segment;
-		via		: type_via;
-		polygon : type_copper_polygon_pcb; -- NOTE: kicad allows polygons in copper layers exclusively
+		segment			: type_segment;
+		via				: type_via;
+		polygon 		: type_polygon; -- NOTE: kicad allows polygons in copper layers exclusively
+		polygon_point	: et_pcb_coordinates.type_point_3d;
 		
 		-- PACKAGES
 		package_name 			: et_libraries.type_component_package_name.bounded_string;
@@ -5031,6 +5032,127 @@ package body et_kicad_pcb is
 
 					end case;
 
+				-- parent section
+				when SEC_ZONE =>
+					case section.name is
+						when SEC_NET =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => polygon.net_id := to_net_id (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_NET_NAME =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => polygon.net_name := et_schematic.to_net_name (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_LAYER =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 =>
+									-- convert the layer name to a layer id (incl. validation)
+									polygon.layer := to_signal_layer_id (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_TSTAMP =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 =>
+									polygon.timestamp := type_timestamp (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_HATCH =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => null; -- CS expect "edge" , constant for "edge"
+								when 2 =>
+									polygon.hatch_edge := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_MIN_THICKNESS =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 =>
+									polygon.min_thickness := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_FILL =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									if to_string (arg) = "yes" then polygon.filled := true; -- CS constant for "yes"
+									else polygon.filled := false;
+									end if;
+								when others => too_many_arguments;
+							end case;
+							
+						when others => invalid_section;
+					end case;
+
+				-- parent section
+				when SEC_CONNECT_PADS =>
+					case section.name is
+						when SEC_CLEARANCE =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => polygon.connect_pads_clearance := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when others => invalid_section;
+					end case;
+
+				-- parent section
+				when SEC_FILL =>
+					case section.name is
+						when SEC_ARC_SEGMENTS =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => polygon.arc_segments := natural'value (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_THERMAL_GAP =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => polygon.thermal_gap := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_THERMAL_BRIDGE_WIDTH =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => polygon.thermal_bridge_width := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when others => invalid_section;
+					end case;
+
+				-- parent section
+				when SEC_PTS =>
+					case section.name is
+						when SEC_XY =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									set_point (axis => X, point => polygon_point, value => to_distance (to_string (arg)));
+								when 2 =>
+									set_point (axis => Y, point => polygon_point, value => to_distance (to_string (arg)));
+									set_point (axis => Z, point => polygon_point, value => zero_distance);
+								when others => too_many_arguments;
+							end case;
+
+						when others => invalid_section;
+					end case;
+
 					
 -- 					case section.parent is
 -- 						when SEC_MODULE =>
@@ -6125,6 +6247,54 @@ package body et_kicad_pcb is
 					 -- see -- see https://forum.kicad.info/t/meaning-of-segment-status/10912/1
 					log_threshold + 1);
 			end insert_via;
+
+			procedure add_polygon_corner_point is
+			-- adds the current polygon_point to the corner points of the current polygon
+				use type_polygon_points;
+				point_cursor : type_polygon_points.cursor;
+				inserted : boolean := true;
+			begin
+				polygon.points.insert (
+					new_item	=> polygon_point,
+					inserted	=> inserted,
+					position	=> point_cursor
+					);
+
+				if inserted then
+					log ("polygon corner point at" & to_string (polygon_point), log_threshold + 1);
+				else
+					log_indentation_reset;
+					log (message_error & "multiple polygon corner points at" & to_string (polygon_point), console => true);
+					raise constraint_error;
+				end if;
+				
+			end add_polygon_corner_point;
+
+			procedure insert_polygon is
+			-- inserts the current polygon in the list "polygons"
+				use type_polygon_points;
+			begin
+				board.polygons.append (polygon);
+
+				log ("polygon/zone: net " & et_schematic.to_string (polygon.net_name) &
+					 " signal layer" & to_string (polygon.layer) &
+					 " timestamp " & string (polygon.timestamp) &
+					 " hatch_edge" & to_string (polygon.hatch_edge) & -- CS use constant for "hatch edge" ?
+					 " min_thickness" & to_string (polygon.min_thickness) & -- CS use constant
+					 " connect_pads_clearance" & to_string (polygon.connect_pads_clearance) & -- CS use constant
+					 " filled " & boolean'image (polygon.filled) & -- CS use constant
+					 " arc_segments" & natural'image (polygon.arc_segments) & -- CS use constant
+					 " thermal_gap" & to_string (polygon.thermal_gap) & -- CS use constant
+					 " thermal_bridge_width" & to_string (polygon.thermal_bridge_width), -- CS use constant
+					 log_threshold + 1);
+				
+				-- clean up corner points for next polygon (variable "polygon" is a scratch variable)
+				clear (polygon.points);
+
+				-- CS reset other selectors of "polygon" ?
+				-- polygon := (others => <>);
+				
+			end insert_polygon;
 			
 		begin -- exec_section
 			log (process_section (section.name), log_threshold + 5);
@@ -6175,6 +6345,9 @@ package body et_kicad_pcb is
 
 						when SEC_VIA =>
 							insert_via;
+
+						when SEC_ZONE =>
+							insert_polygon;
 							
 						when others => null;
 					end case;
@@ -6229,7 +6402,24 @@ package body et_kicad_pcb is
 						
 						when others => null;
 					end case;
+
+-- 				when SEC_ZONE =>
+-- 					case section.name is
+-- 						when SEC_FILL =>
+-- 							null; --set_fill;
+-- 						
+-- 						when others => null;
+-- 					end case;
+
+				when SEC_PTS =>
+					case section.name is
+						when SEC_XY =>
+							add_polygon_corner_point;
 						
+						when others => null;
+					end case;
+
+					
 				when others => null;
 			end case;
 
@@ -6522,6 +6712,9 @@ package body et_kicad_pcb is
 					via : et_pcb.type_via; -- an ET via
 					restring : et_pcb.type_restring_width;
 
+					use type_polygons;
+					polygon_cursor : type_polygons.cursor := board.polygons.first;
+					
 					use et_pcb_coordinates;
 				begin -- route
 					log_indentation_up;
@@ -6601,6 +6794,12 @@ package body et_kicad_pcb is
 					if et_pcb.type_vias.is_empty (route.vias) then
 						log ("no vias", log_threshold + 3);
 					end if;
+
+					-- Append polygons to route.polygons
+					while polygon_cursor /= type_polygons.no_element loop
+						-- CS transfer kicad polygon to et polygon
+						next (polygon_cursor);
+					end loop;
 					
 					log_indentation_down;
 					log_indentation_down;	

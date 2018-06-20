@@ -477,6 +477,10 @@ package et_pcb is
 	end record;
 	package type_copper_circles_pcb is new doubly_linked_lists (type_copper_circle_pcb);
 
+	polygon_thermal_width_min : constant type_distance := 0.1; -- CS: adjust if nessecariy
+	polygon_thermal_width_max : constant type_distance := 3.0; -- CS: adjust if nessecariy
+	subtype type_polygon_thermal_width is type_distance range polygon_thermal_width_min .. polygon_thermal_width_max;
+	
 	type type_copper_polygon_pcb is new type_copper_polygon with record
 		layer	: type_signal_layer;
 		-- CS fill style, cutout, thermal width, thermals on/off, rank, isolation, ...
