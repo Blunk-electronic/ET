@@ -2685,6 +2685,7 @@ package body et_kicad_pcb is
 			SEC_PLOTREFERENCE,
 			SEC_PLOTVALUE,
 			SEC_POLYGON,
+			SEC_PRIORITY,
 			SEC_PSA4OUTPUT, 
 			SEC_PSNEGATIVE,
 			SEC_PTS,
@@ -3236,7 +3237,7 @@ package body et_kicad_pcb is
 
 				when SEC_ZONE =>
 					case section.name is
-						when SEC_NET | SEC_NET_NAME | SEC_LAYER | SEC_TSTAMP | SEC_HATCH |
+						when SEC_NET | SEC_NET_NAME | SEC_LAYER | SEC_TSTAMP | SEC_HATCH | SEC_PRIORITY |
 							SEC_CONNECT_PADS | SEC_MIN_THICKNESS | SEC_FILL | SEC_POLYGON | SEC_FILLED_POLYGON => null;
 						when others => invalid_section;
 					end case;
@@ -3361,6 +3362,41 @@ package body et_kicad_pcb is
 					 console => true);
 				raise constraint_error;
 			end invalid_pcbnew_version;
+
+			procedure to_polygon_pad_connections (connect_style : in string) is
+			-- Sets the connection style of pads.
+			-- It is about entries in the "zone" section like:
+			-- (connect_pads (clearance 0.8)) -- thermal_relief 
+			-- (connect_pads thru_hole_only (clearance 0.8)) -- tht only
+			-- (connect_pads yes (clearance 0.8)) -- solid
+			-- (connect_pads no (clearance 0.8)) -- none
+			begin -- CS use text constants for string comparing
+				if connect_style = "no" then -- no connections at all
+					polygon.pad_connection := NONE;
+					polygon.pad_technology := BOTH; -- does not matter in this case
+				elsif connect_style = "yes" then -- solid connections
+					polygon.pad_connection := SOLID;
+					polygon.pad_technology := BOTH; -- applies for SMT and THT
+				elsif connect_style = "thru_hole_only" then -- thermals for THT
+					polygon.pad_connection := THERMAL;
+					polygon.pad_technology := THT_ONLY;
+				else -- thermals for SMT and THT
+					polygon.pad_connection := THERMAL;
+					polygon.pad_technology := BOTH;
+				end if;
+			end to_polygon_pad_connections;
+
+			procedure to_polygon_hatch_style (hatch_style : in string) is
+			-- Sets the polygon hatch style.
+			begin -- CS use function to_string (hatch_style) or to_hatch_style (hatch_style)
+				if hatch_style = to_lower (type_polygon_hatch'image (NONE)) then
+					polygon.hatch_style := NONE;
+				elsif hatch_style = to_lower (type_polygon_hatch'image (EDGE)) then
+					polygon.hatch_style := EDGE;
+				elsif hatch_style = to_lower (type_polygon_hatch'image (FULL)) then
+					polygon.hatch_style := FULL;
+				end if;
+			end to_polygon_hatch_style;
 			
 		begin -- read_arg
 			-- We handle an argument that is wrapped in quotation different from a non-wrapped argument:
@@ -5061,7 +5097,7 @@ package body et_kicad_pcb is
 						when SEC_TSTAMP =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 =>
+								when 1 => 
 									polygon.timestamp := type_timestamp (to_string (arg));
 								when others => too_many_arguments;
 							end case;
@@ -5069,12 +5105,30 @@ package body et_kicad_pcb is
 						when SEC_HATCH =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => null; -- CS expect "edge" , constant for "edge"
+								when 1 => to_polygon_hatch_style (to_string (arg));
 								when 2 =>
+									
 									polygon.hatch_edge := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
+						when SEC_PRIORITY =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 =>
+									-- CS validate priority
+									polygon.priority_level := type_polygon_priority'value (to_string (arg)); -- CS use to_polygon_priority
+								when others => too_many_arguments;
+							end case;
+							
+						when SEC_CONNECT_PADS =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									to_polygon_pad_connections (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+							
 						when SEC_MIN_THICKNESS =>
 							case section.arg_counter is
 								when 0 => null;
@@ -5102,7 +5156,7 @@ package body et_kicad_pcb is
 						when SEC_CLEARANCE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => polygon.connect_pads_clearance := to_distance (to_string (arg));
+								when 1 => polygon.isolation_gap := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -5129,7 +5183,7 @@ package body et_kicad_pcb is
 						when SEC_THERMAL_BRIDGE_WIDTH =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => polygon.thermal_bridge_width := to_distance (to_string (arg));
+								when 1 => polygon.thermal_width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -6281,18 +6335,16 @@ package body et_kicad_pcb is
 					 " timestamp " & string (polygon.timestamp) &
 					 " hatch_edge" & to_string (polygon.hatch_edge) & -- CS use constant for "hatch edge" ?
 					 " min_thickness" & to_string (polygon.min_thickness) & -- CS use constant
-					 " connect_pads_clearance" & to_string (polygon.connect_pads_clearance) & -- CS use constant
+					 " isolation_gap" & to_string (polygon.isolation_gap) & -- CS use constant
 					 " filled " & boolean'image (polygon.filled) & -- CS use constant
 					 " arc_segments" & natural'image (polygon.arc_segments) & -- CS use constant
 					 " thermal_gap" & to_string (polygon.thermal_gap) & -- CS use constant
-					 " thermal_bridge_width" & to_string (polygon.thermal_bridge_width), -- CS use constant
+					 " thermal_width" & to_string (polygon.thermal_width), -- CS use constant
 					 log_threshold + 1);
-				
-				-- clean up corner points for next polygon (variable "polygon" is a scratch variable)
-				clear (polygon.points);
 
-				-- CS reset other selectors of "polygon" ?
-				-- polygon := (others => <>);
+				-- Reset selectors of "polygon" (variable "polygon" is a scratch variable).
+				-- Includes cleaning up corner points for next polygon. 
+				polygon := (others => <>);
 				
 			end insert_polygon;
 			

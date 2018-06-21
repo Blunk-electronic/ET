@@ -324,7 +324,11 @@ package et_kicad_pcb is
 	-- BOARD SETUP (DRC)
 	-- NOTE: DRC parameters are directly imprinted in the board. There is no DRC file like in EAGLE.
 
-	type type_zone_45_only is (NO, YES);
+	-- If polygons are allowed to have 45 deg slopes (applies to all polygons)
+	type type_zone_45_only is (
+		NO, -- outline slope "arbitray" in gui
+		YES	-- outline slope "H,V and 45 deg only" in gui
+		 );
 
 	-- CS it is not fully clear what aux_axis_origin is good for:
 	aux_axis_origin_min : constant et_pcb_coordinates.type_distance := et_pcb_coordinates.zero_distance;
@@ -621,19 +625,33 @@ package et_kicad_pcb is
 	package type_vias is new doubly_linked_lists (type_via);
 
 
+	type type_polygon_hatch is ( -- outline style in gui
+		NONE, -- line in gui
+		EDGE, -- hatced in gui
+		FULL); -- fully hatched in gui
+	-- CS function to_string (hatch_style)
+	-- CS function to_hatch_style (hatch_style)
+	
+
+	-- Polygons may be connected with THT pads only or all pad technologies
+	subtype type_polygon_pad_technology is et_pcb.type_polygon_pad_technology range et_pcb.THT_ONLY .. et_pcb.BOTH;
 
 	type type_polygon is new et_pcb.type_copper_polygon with record
-		net_name				: et_schematic.type_net_name.bounded_string;
-		net_id					: type_net_id;
-		layer					: type_signal_layer_id;
-		timestamp				: et_string_processing.type_timestamp;
-		hatch_edge				: et_pcb_coordinates.type_distance;	-- CS subtype
-		min_thickness			: et_pcb_coordinates.type_distance;	-- CS subtype
-		connect_pads_clearance	: et_pcb_coordinates.type_distance;	-- CS subtype
-		filled					: boolean;
-		arc_segments			: natural; -- CS subtype ?
-		thermal_gap				: et_pcb_coordinates.type_distance; -- CS subtype
-		thermal_bridge_width	: et_pcb_coordinates.type_distance; -- CS subtype
+		net_name		: et_schematic.type_net_name.bounded_string;
+		net_id			: type_net_id;
+		layer			: type_signal_layer_id;
+		timestamp		: et_string_processing.type_timestamp;
+		hatch_style		: type_polygon_hatch; -- CS default ?
+		hatch_edge		: et_pcb_coordinates.type_distance;	-- CS subtype -- meaning ?
+		priority_level	: et_pcb.type_polygon_priority := et_pcb.type_polygon_priority'first;
+		min_thickness	: et_pcb_coordinates.type_distance;	-- CS subtype
+		isolation_gap	: et_pcb.type_signal_clearance;
+		filled			: boolean; -- CS probably no need
+		arc_segments	: natural := 0; -- CS subtype ? -- only 16 or 32 allowed
+		thermal_gap		: et_pcb.type_polygon_thermal_gap := et_pcb.type_polygon_thermal_gap'first;
+		thermal_width	: et_pcb.type_polygon_thermal_width := et_pcb.type_polygon_thermal_width'first; -- spoke width
+		pad_technology	: type_polygon_pad_technology := type_polygon_pad_technology'last;
+		pad_connection	: et_pcb.type_polygon_pad_connection := et_pcb.type_polygon_pad_connection'first;
 	end record;
 
 	package type_polygons is new doubly_linked_lists (type_polygon);

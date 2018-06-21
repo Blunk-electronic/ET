@@ -421,7 +421,7 @@ package et_pcb is
 
 	-- COPPER OBJECTS (NON ELECTRIC !!) OF A PACKAGE
 	type type_copper_line is new type_line with record
-		width	: type_general_line_width;
+		width	: type_general_line_width; -- CS shold be type_signal_width
 		-- CS locked	: type_locked;
 	end record;
 	package type_copper_lines is new doubly_linked_lists (type_copper_line);
@@ -477,15 +477,52 @@ package et_pcb is
 	end record;
 	package type_copper_circles_pcb is new doubly_linked_lists (type_copper_circle_pcb);
 
-	polygon_thermal_width_min : constant type_distance := 0.1; -- CS: adjust if nessecariy
-	polygon_thermal_width_max : constant type_distance := 3.0; -- CS: adjust if nessecariy
+	polygon_thermal_width_min : constant type_signal_width := type_signal_width'first;
+	polygon_thermal_width_max : constant type_signal_width := 3.0; -- CS: adjust if nessecariy
 	subtype type_polygon_thermal_width is type_distance range polygon_thermal_width_min .. polygon_thermal_width_max;
+
+	-- If a terminal is connected/associated with a polyon, this is the space between pad and polygon:
+	polygon_thermal_gap_min : constant type_signal_clearance := type_signal_clearance'first;
+	polygon_thermal_gap_max : constant type_signal_clearance := 3.0; -- CS: adjust if nessecariy
+	subtype type_polygon_thermal_gap is type_signal_clearance range polygon_thermal_gap_min .. polygon_thermal_gap_max;
+
+	-- Polgon priority: 0 is weakest, 100 ist strongest.
+	polygon_priority_max : constant natural := 100;
+	subtype type_polygon_priority is natural range natural'first .. polygon_priority_max;
+	-- CS function to_string and to_polygon_priority
 	
-	type type_copper_polygon_pcb is new type_copper_polygon with record
-		layer	: type_signal_layer;
-		-- CS fill style, cutout, thermal width, thermals on/off, rank, isolation, ...
+	-- Polygons may be connected with associated pads via thermals, via solid connection or not at all:
+	type type_polygon_pad_connection is (
+		THERMAL,
+		SOLID,
+		NONE);
+
+	-- Polygons may be connected with SMT, THT or all pad technologies
+	type type_polygon_pad_technology is (
+		SMT_ONLY,
+		THT_ONLY,
+		BOTH);
+	
+	type type_copper_polygon_pcb (pad_connection : type_polygon_pad_connection) is new type_copper_polygon with record
+		layer 			: type_signal_layer;
+		priority_level	: type_polygon_priority;
+		isolation_gap	: type_signal_clearance; -- the space between foreign pads and the polygon
+		pad_technology	: type_polygon_pad_technology; -- whether SMT, THT or both kinds of pads connect with the polygon
+		
+		case pad_connection is
+			when THERMAL =>
+				thermal_width	: type_polygon_thermal_width; -- the spoke width
+				thermal_gap		: type_polygon_thermal_gap; -- the space between associated pads and polygon
+
+			when others => null;
+		end case;
+		
+		
+		
+		-- CS fill style, cutout, ...
 	end record;
-	package type_copper_polygons_pcb is new doubly_linked_lists (type_copper_polygon_pcb);
+	
+	package type_copper_polygons_pcb is new indefinite_doubly_linked_lists (type_copper_polygon_pcb);
 	
 	type type_text_with_content_pcb is new type_text_with_content with record
 		layer	: type_signal_layer;
