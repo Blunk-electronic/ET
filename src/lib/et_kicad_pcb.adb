@@ -2689,6 +2689,7 @@ package body et_kicad_pcb is
 			SEC_PSA4OUTPUT, 
 			SEC_PSNEGATIVE,
 			SEC_PTS,
+			SEC_RADIUS,
 			SEC_ROTATE,
 			SEC_SCALE,
 			SEC_SCALESELECTION,
@@ -2698,6 +2699,7 @@ package body et_kicad_pcb is
 			SEC_SUBTRACTMASKFROMSILK,
 			SEC_SIZE,
 			--SEC_SOLDER_MASK_MARGIN,
+			SEC_SMOOTHING,
 			SEC_START,
 			SEC_STATUS,
 			SEC_TAGS,
@@ -3261,7 +3263,8 @@ package body et_kicad_pcb is
 
 				when SEC_FILL =>
 					case section.name is
-						when SEC_MODE | SEC_ARC_SEGMENTS | SEC_THERMAL_GAP | SEC_THERMAL_BRIDGE_WIDTH => null;
+						when SEC_MODE | SEC_ARC_SEGMENTS | SEC_THERMAL_GAP | SEC_THERMAL_BRIDGE_WIDTH |
+							SEC_SMOOTHING | SEC_RADIUS => null;
 						when others => invalid_section;
 					end case;
 					
@@ -5207,6 +5210,21 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => polygon.thermal_width := to_distance (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_SMOOTHING =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => polygon.corner_easing := to_corner_easing (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_RADIUS =>
+							case section.arg_counter is
+								when 0 => null;
+								-- the corner easing radius applies for both chamfer and fillet type.
+								when 1 => polygon.corner_easing_radius := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 

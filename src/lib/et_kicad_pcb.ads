@@ -648,6 +648,8 @@ package et_kicad_pcb is
 		isolation_gap		: et_pcb.type_signal_clearance;
 		filled				: boolean; -- CS probably no need
 		fill_mode_segment	: boolean := false; -- true on "segment mode", default -> false on "polygon mode"
+		corner_easing		: et_pcb.type_corner_easing := et_pcb.NONE;
+		corner_easing_radius: et_pcb_coordinates.type_distance; -- used for both chamfer and fillet -- CS subtype
 		arc_segments		: natural := 0; -- CS subtype ? -- only 16 or 32 allowed
 		thermal_gap			: et_pcb.type_polygon_thermal_gap := et_pcb.type_polygon_thermal_gap'first;
 		thermal_width		: et_pcb.type_polygon_thermal_width := et_pcb.type_polygon_thermal_width'first; -- spoke width

@@ -420,6 +420,10 @@ package et_pcb is
 	
 
 	-- COPPER OBJECTS (NON ELECTRIC !!) OF A PACKAGE
+	type type_corner_easing is (NONE, CHAMFER, FILLET);
+
+	function to_corner_easing (easing : in string) return type_corner_easing;
+	
 	type type_copper_line is new type_line with record
 		width	: type_general_line_width; -- CS shold be type_signal_width
 		-- CS locked	: type_locked;
@@ -508,6 +512,9 @@ package et_pcb is
 		priority_level	: type_polygon_priority := type_polygon_priority'first;
 		isolation_gap	: type_signal_clearance; -- the space between foreign pads and the polygon
 		pad_technology	: type_polygon_pad_technology; -- whether SMT, THT or both kinds of pads connect with the polygon
+		corner_easing	: type_corner_easing := NONE;
+		fillet_radius	: type_distance; -- CS subtype
+		chamfer_lenght	: type_distance; -- CS subtype
 		
 		case pad_connection is
 			when THERMAL =>

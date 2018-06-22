@@ -288,6 +288,24 @@ package body et_pcb is
 			circles	=> type_package_contour_circles.empty_list);
 	end no_contour;
 
+	function to_corner_easing (easing : in string) return type_corner_easing is
+		easing_out : type_corner_easing;
+	begin
+		if to_lower (easing) = to_lower (type_corner_easing'image (NONE)) then
+			easing_out := NONE;
+		elsif to_lower (easing) = to_lower (type_corner_easing'image (CHAMFER)) then
+			easing_out := CHAMFER;
+		elsif to_lower (easing) = to_lower (type_corner_easing'image (FILLET)) then
+			easing_out := FILLET;
+		else
+			log_indentation_reset;
+			log (message_error & "type of easing '" & easing & "' invalid !", console => true);
+			raise constraint_error;
+		end if;
+
+		return easing_out;
+	end to_corner_easing;
+	
 	function to_string (line : in type_line) return string is
 	-- Returns the start and end point of the given line as string.
 	begin
