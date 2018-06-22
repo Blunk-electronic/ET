@@ -2819,6 +2819,11 @@ package body et_kicad_pcb is
 		via				: type_via;
 		polygon 		: type_polygon; -- NOTE: kicad allows polygons in copper layers exclusively
 		polygon_point	: et_pcb_coordinates.type_point_3d;
+
+		-- Since SEC_POLYGON and SEC_FILLED_POLYGON have the same subsections (SEC_PTS/SEC_XY)
+		-- the flag section_polygon_entered is required. When section SEC_XY is executed,
+		-- the flag indicates whether it is about corner points or fill-points of the polygon.
+		section_polygon_entered : boolean;
 		
 		-- PACKAGES
 		package_name 			: et_libraries.type_component_package_name.bounded_string;
@@ -3238,7 +3243,13 @@ package body et_kicad_pcb is
 				when SEC_ZONE =>
 					case section.name is
 						when SEC_NET | SEC_NET_NAME | SEC_LAYER | SEC_TSTAMP | SEC_HATCH | SEC_PRIORITY |
-							SEC_CONNECT_PADS | SEC_MIN_THICKNESS | SEC_FILL | SEC_POLYGON | SEC_FILLED_POLYGON => null;
+							SEC_CONNECT_PADS | SEC_MIN_THICKNESS | SEC_FILL => null;
+
+						-- Since SEC_POLYGON and SEC_FILLED_POLYGON have the same subsections (SEC_PTS/SEC_XY)
+						-- the flag section_polygon_entered is required. When section SEC_XY is executed,
+						-- the flag indicates whether it is about corner points or fill-points of the polygon.
+						when SEC_POLYGON		=> section_polygon_entered := true;
+						when SEC_FILLED_POLYGON	=> section_polygon_entered := false;
 						when others => invalid_section;
 					end case;
 
@@ -3250,7 +3261,7 @@ package body et_kicad_pcb is
 
 				when SEC_FILL =>
 					case section.name is
-						when SEC_ARC_SEGMENTS | SEC_THERMAL_GAP | SEC_THERMAL_BRIDGE_WIDTH => null;
+						when SEC_MODE | SEC_ARC_SEGMENTS | SEC_THERMAL_GAP | SEC_THERMAL_BRIDGE_WIDTH => null;
 						when others => invalid_section;
 					end case;
 					
@@ -5106,9 +5117,7 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => to_polygon_hatch_style (to_string (arg));
-								when 2 =>
-									
-									polygon.hatch_edge := to_distance (to_string (arg));
+								when 2 => polygon.hatch_width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -5166,6 +5175,20 @@ package body et_kicad_pcb is
 				-- parent section
 				when SEC_FILL =>
 					case section.name is
+						when SEC_MODE =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => 
+									if to_string (arg) = "segment" then polygon.fill_mode_segment := true; -- CS use constant for "segment"
+									else 
+										log_indentation_reset;
+										log (message_error & "expect argument 'segment' for fill mode !", console => true);
+										raise constraint_error;
+									end if;
+									
+								when others => too_many_arguments;
+							end case;
+
 						when SEC_ARC_SEGMENTS =>
 							case section.arg_counter is
 								when 0 => null;
@@ -5232,7 +5255,7 @@ package body et_kicad_pcb is
 -- 						when others => invalid_section;
 -- 					end case;
 
-				when others => null; -- CS remove 
+				when others => null; -- Not all sections require arguments.
 			end case;
 			
 			exception
@@ -6333,7 +6356,7 @@ package body et_kicad_pcb is
 				log ("polygon/zone: net " & et_schematic.to_string (polygon.net_name) &
 					 " signal layer" & to_string (polygon.layer) &
 					 " timestamp " & string (polygon.timestamp) &
-					 " hatch_edge" & to_string (polygon.hatch_edge) & -- CS use constant for "hatch edge" ?
+					 " hatch_width" & to_string (polygon.hatch_width) & -- CS use constant for "hatch width" ?
 					 " min_thickness" & to_string (polygon.min_thickness) & -- CS use constant
 					 " isolation_gap" & to_string (polygon.isolation_gap) & -- CS use constant
 					 " filled " & boolean'image (polygon.filled) & -- CS use constant
@@ -6466,7 +6489,12 @@ package body et_kicad_pcb is
 				when SEC_PTS =>
 					case section.name is
 						when SEC_XY =>
-							add_polygon_corner_point;
+							if section_polygon_entered then
+								add_polygon_corner_point;
+							else
+								null; -- CS add_polygon_fill_point
+								-- CS currently the fill points are not read and thus ignored.
+							end if;
 						
 						when others => null;
 					end case;

@@ -637,21 +637,22 @@ package et_kicad_pcb is
 	subtype type_polygon_pad_technology is et_pcb.type_polygon_pad_technology range et_pcb.THT_ONLY .. et_pcb.BOTH;
 
 	type type_polygon is new et_pcb.type_copper_polygon with record
-		net_name		: et_schematic.type_net_name.bounded_string;
-		net_id			: type_net_id;
-		layer			: type_signal_layer_id;
-		timestamp		: et_string_processing.type_timestamp;
-		hatch_style		: type_polygon_hatch; -- CS default ?
-		hatch_edge		: et_pcb_coordinates.type_distance;	-- CS subtype -- meaning ?
-		priority_level	: et_pcb.type_polygon_priority := et_pcb.type_polygon_priority'first;
-		min_thickness	: et_pcb_coordinates.type_distance;	-- CS subtype
-		isolation_gap	: et_pcb.type_signal_clearance;
-		filled			: boolean; -- CS probably no need
-		arc_segments	: natural := 0; -- CS subtype ? -- only 16 or 32 allowed
-		thermal_gap		: et_pcb.type_polygon_thermal_gap := et_pcb.type_polygon_thermal_gap'first;
-		thermal_width	: et_pcb.type_polygon_thermal_width := et_pcb.type_polygon_thermal_width'first; -- spoke width
-		pad_technology	: type_polygon_pad_technology := type_polygon_pad_technology'last;
-		pad_connection	: et_pcb.type_polygon_pad_connection := et_pcb.type_polygon_pad_connection'first;
+		net_name			: et_schematic.type_net_name.bounded_string;
+		net_id				: type_net_id;
+		layer				: type_signal_layer_id;
+		timestamp			: et_string_processing.type_timestamp;
+		hatch_style			: type_polygon_hatch; -- CS default ?
+		hatch_width			: et_pcb_coordinates.type_distance;	-- CS subtype -- meaning ?
+		priority_level		: et_pcb.type_polygon_priority := et_pcb.type_polygon_priority'first;
+		min_thickness		: et_pcb_coordinates.type_distance;	-- CS subtype
+		isolation_gap		: et_pcb.type_signal_clearance;
+		filled				: boolean; -- CS probably no need
+		fill_mode_segment	: boolean := false; -- true on "segment mode", default -> false on "polygon mode"
+		arc_segments		: natural := 0; -- CS subtype ? -- only 16 or 32 allowed
+		thermal_gap			: et_pcb.type_polygon_thermal_gap := et_pcb.type_polygon_thermal_gap'first;
+		thermal_width		: et_pcb.type_polygon_thermal_width := et_pcb.type_polygon_thermal_width'first; -- spoke width
+		pad_technology		: type_polygon_pad_technology := type_polygon_pad_technology'last;
+		pad_connection		: et_pcb.type_polygon_pad_connection := et_pcb.type_polygon_pad_connection'first;
 	end record;
 
 	package type_polygons is new doubly_linked_lists (type_polygon);

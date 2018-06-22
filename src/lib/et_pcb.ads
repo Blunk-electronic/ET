@@ -505,7 +505,7 @@ package et_pcb is
 	
 	type type_copper_polygon_pcb (pad_connection : type_polygon_pad_connection) is new type_copper_polygon with record
 		layer 			: type_signal_layer;
-		priority_level	: type_polygon_priority;
+		priority_level	: type_polygon_priority := type_polygon_priority'first;
 		isolation_gap	: type_signal_clearance; -- the space between foreign pads and the polygon
 		pad_technology	: type_polygon_pad_technology; -- whether SMT, THT or both kinds of pads connect with the polygon
 		
