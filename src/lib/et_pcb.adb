@@ -288,6 +288,16 @@ package body et_pcb is
 			circles	=> type_package_contour_circles.empty_list);
 	end no_contour;
 
+	function to_string (priority_level : in type_polygon_priority) return string is
+	begin
+		return type_polygon_priority'image (priority_level);
+	end to_string;
+	
+	function to_polygon_priority (priority_level : in string) return type_polygon_priority is
+	begin
+		return type_polygon_priority'value (priority_level);
+	end to_polygon_priority;
+	
 	function to_corner_easing (easing : in string) return type_corner_easing is
 		easing_out : type_corner_easing;
 	begin
@@ -305,6 +315,22 @@ package body et_pcb is
 
 		return easing_out;
 	end to_corner_easing;
+
+	function to_string (easing : in type_corner_easing) return string is
+	begin
+		return latin_1.space & type_corner_easing'image (easing);
+	end to_string;
+
+	function to_string (polygon_pad_connection : in type_polygon_pad_connection) return string is
+	begin
+		return latin_1.space & type_polygon_pad_connection'image (polygon_pad_connection);
+	end to_string;
+
+	function to_string (polygon_pad_technology : in type_polygon_pad_technology) return string is
+	begin
+		return latin_1.space & type_polygon_pad_technology'image (polygon_pad_technology);
+	end to_string;
+
 	
 	function to_string (line : in type_line) return string is
 	-- Returns the start and end point of the given line as string.

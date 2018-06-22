@@ -641,15 +641,15 @@ package et_kicad_pcb is
 		net_id				: type_net_id;
 		layer				: type_signal_layer_id;
 		timestamp			: et_string_processing.type_timestamp;
-		hatch_style			: type_polygon_hatch; -- CS default ?
-		hatch_width			: et_pcb_coordinates.type_distance;	-- CS subtype -- meaning ?
+		hatch_style			: type_polygon_hatch; -- not fully supported by kicad -- CS default ?
+		hatch_width			: et_pcb_coordinates.type_distance;	-- not fully supported by kicad -- CS subtype -- meaning ?
 		priority_level		: et_pcb.type_polygon_priority := et_pcb.type_polygon_priority'first;
-		min_thickness		: et_pcb_coordinates.type_distance;	-- CS subtype
-		isolation_gap		: et_pcb.type_signal_clearance;
+		min_thickness		: et_pcb_coordinates.type_distance;	-- minimum line width, CS subtype
+		isolation_gap		: et_pcb.type_signal_clearance; -- clearance between non-polygon pads and the polygon
 		filled				: boolean; -- CS probably no need
 		fill_mode_segment	: boolean := false; -- true on "segment mode", default -> false on "polygon mode"
 		corner_easing		: et_pcb.type_corner_easing := et_pcb.NONE;
-		corner_easing_radius: et_pcb_coordinates.type_distance; -- used for both chamfer and fillet -- CS subtype
+		easing_radius		: et_pcb_coordinates.type_distance := et_pcb_coordinates.zero_distance; -- used for both chamfer and fillet, center of circle at corner point -- CS subtype
 		arc_segments		: natural := 0; -- CS subtype ? -- only 16 or 32 allowed
 		thermal_gap			: et_pcb.type_polygon_thermal_gap := et_pcb.type_polygon_thermal_gap'first;
 		thermal_width		: et_pcb.type_polygon_thermal_width := et_pcb.type_polygon_thermal_width'first; -- spoke width

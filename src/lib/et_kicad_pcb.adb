@@ -5129,7 +5129,7 @@ package body et_kicad_pcb is
 								when 0 => null;
 								when 1 =>
 									-- CS validate priority
-									polygon.priority_level := type_polygon_priority'value (to_string (arg)); -- CS use to_polygon_priority
+									polygon.priority_level := to_polygon_priority (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 							
@@ -5224,7 +5224,7 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								-- the corner easing radius applies for both chamfer and fillet type.
-								when 1 => polygon.corner_easing_radius := to_distance (to_string (arg));
+								when 1 => polygon.easing_radius := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -6356,7 +6356,7 @@ package body et_kicad_pcb is
 					);
 
 				if inserted then
-					log ("polygon corner point at" & to_string (polygon_point), log_threshold + 1);
+					log ("polygon corner point at" & to_string (polygon_point), log_threshold + 2);
 				else
 					log_indentation_reset;
 					log (message_error & "multiple polygon corner points at" & to_string (polygon_point), console => true);
@@ -6371,17 +6371,27 @@ package body et_kicad_pcb is
 			begin
 				board.polygons.append (polygon);
 
-				log ("polygon/zone: net " & et_schematic.to_string (polygon.net_name) &
-					 " signal layer" & to_string (polygon.layer) &
+				log ("polygon/zone net " & et_schematic.to_string (polygon.net_name) &
+					 " signal_layer" & to_string (polygon.layer) &
 					 " timestamp " & string (polygon.timestamp) &
-					 " hatch_width" & to_string (polygon.hatch_width) & -- CS use constant for "hatch width" ?
-					 " min_thickness" & to_string (polygon.min_thickness) & -- CS use constant
+					 " priority_level" & to_string (polygon.priority_level) &
+					 --" hatch_width" & to_string (polygon.hatch_width) & -- CS use constant for "hatch width" ?
+					 --" hatch_style" & to_string (polygon.hatch_style) & -- CS use constant for "hatch stlye" ?
+					 " min_thickness/width" & to_string (polygon.min_thickness) & -- CS use constant
 					 " isolation_gap" & to_string (polygon.isolation_gap) & -- CS use constant
 					 " filled " & boolean'image (polygon.filled) & -- CS use constant
+					 " fill_mode_segment " & boolean'image (polygon.fill_mode_segment) &
+					 " smooting/easing" & to_string (polygon.corner_easing) &
+					 " easing_radius" & to_string (polygon.easing_radius) &
 					 " arc_segments" & natural'image (polygon.arc_segments) & -- CS use constant
 					 " thermal_gap" & to_string (polygon.thermal_gap) & -- CS use constant
-					 " thermal_width" & to_string (polygon.thermal_width), -- CS use constant
+					 " thermal_width" & to_string (polygon.thermal_width) & -- CS use constant
+					 " pad_connection" & to_string (polygon.pad_connection) &
+					 " pad_technology" & to_string (polygon.pad_technology),
 					 log_threshold + 1);
+
+				-- CS log corner points
+				-- CS log fill points
 
 				-- Reset selectors of "polygon" (variable "polygon" is a scratch variable).
 				-- Includes cleaning up corner points for next polygon. 
@@ -6495,14 +6505,6 @@ package body et_kicad_pcb is
 						
 						when others => null;
 					end case;
-
--- 				when SEC_ZONE =>
--- 					case section.name is
--- 						when SEC_FILL =>
--- 							null; --set_fill;
--- 						
--- 						when others => null;
--- 					end case;
 
 				when SEC_PTS =>
 					case section.name is

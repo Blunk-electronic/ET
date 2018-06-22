@@ -423,6 +423,7 @@ package et_pcb is
 	type type_corner_easing is (NONE, CHAMFER, FILLET);
 
 	function to_corner_easing (easing : in string) return type_corner_easing;
+	function to_string (easing : in type_corner_easing) return string;
 	
 	type type_copper_line is new type_line with record
 		width	: type_general_line_width; -- CS shold be type_signal_width
@@ -493,7 +494,8 @@ package et_pcb is
 	-- Polgon priority: 0 is weakest, 100 ist strongest.
 	polygon_priority_max : constant natural := 100;
 	subtype type_polygon_priority is natural range natural'first .. polygon_priority_max;
-	-- CS function to_string and to_polygon_priority
+	function to_string (priority_level : in type_polygon_priority) return string;
+	function to_polygon_priority (priority_level : in string) return type_polygon_priority;
 	
 	-- Polygons may be connected with associated pads via thermals, via solid connection or not at all:
 	type type_polygon_pad_connection is (
@@ -501,11 +503,15 @@ package et_pcb is
 		SOLID,
 		NONE);
 
+	function to_string (polygon_pad_connection : in type_polygon_pad_connection) return string;
+
 	-- Polygons may be connected with SMT, THT or all pad technologies
 	type type_polygon_pad_technology is (
 		SMT_ONLY,
 		THT_ONLY,
 		BOTH);
+
+	function to_string (polygon_pad_technology : in type_polygon_pad_technology) return string;
 	
 	type type_copper_polygon_pcb (pad_connection : type_polygon_pad_connection) is new type_copper_polygon with record
 		layer 			: type_signal_layer;
@@ -513,8 +519,7 @@ package et_pcb is
 		isolation_gap	: type_signal_clearance; -- the space between foreign pads and the polygon
 		pad_technology	: type_polygon_pad_technology; -- whether SMT, THT or both kinds of pads connect with the polygon
 		corner_easing	: type_corner_easing := NONE;
-		fillet_radius	: type_distance; -- CS subtype
-		chamfer_lenght	: type_distance; -- CS subtype
+		easing_radius	: type_distance; -- center of circle at corner point -- CS subtype
 		
 		case pad_connection is
 			when THERMAL =>
