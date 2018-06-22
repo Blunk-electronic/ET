@@ -441,7 +441,19 @@ package et_pcb is
 	end record;
 	package type_copper_circles is new doubly_linked_lists (type_copper_circle);
 
-	type type_copper_polygon is new type_polygon with null record;
+	-- Polgon priority: 0 is weakest, 100 ist strongest.
+	polygon_priority_max : constant natural := 100;
+	subtype type_polygon_priority is natural range natural'first .. polygon_priority_max;
+	function to_string (priority_level : in type_polygon_priority) return string;
+	function to_polygon_priority (priority_level : in string) return type_polygon_priority;
+	
+	type type_copper_polygon is new type_polygon with record
+		priority_level	: type_polygon_priority := type_polygon_priority'first;
+		isolation_gap	: type_signal_clearance; -- the space between foreign pads and the polygon
+		corner_easing	: type_corner_easing := NONE;
+		easing_radius	: type_distance := zero_distance; -- center of circle at corner point -- CS subtype
+	end record;
+	
 	package type_copper_polygons is new doubly_linked_lists (type_copper_polygon);
 	
 	-- Type for NON ELECTRIC !! copper objects of a package:
@@ -491,12 +503,7 @@ package et_pcb is
 	polygon_thermal_gap_max : constant type_signal_clearance := 3.0; -- CS: adjust if nessecariy
 	subtype type_polygon_thermal_gap is type_signal_clearance range polygon_thermal_gap_min .. polygon_thermal_gap_max;
 
-	-- Polgon priority: 0 is weakest, 100 ist strongest.
-	polygon_priority_max : constant natural := 100;
-	subtype type_polygon_priority is natural range natural'first .. polygon_priority_max;
-	function to_string (priority_level : in type_polygon_priority) return string;
-	function to_polygon_priority (priority_level : in string) return type_polygon_priority;
-	
+
 	-- Polygons may be connected with associated pads via thermals, via solid connection or not at all:
 	type type_polygon_pad_connection is (
 		THERMAL,
@@ -515,11 +522,7 @@ package et_pcb is
 	
 	type type_copper_polygon_pcb (pad_connection : type_polygon_pad_connection) is new type_copper_polygon with record
 		layer 			: type_signal_layer;
-		priority_level	: type_polygon_priority := type_polygon_priority'first;
-		isolation_gap	: type_signal_clearance; -- the space between foreign pads and the polygon
 		pad_technology	: type_polygon_pad_technology; -- whether SMT, THT or both kinds of pads connect with the polygon
-		corner_easing	: type_corner_easing := NONE;
-		easing_radius	: type_distance; -- center of circle at corner point -- CS subtype
 		
 		case pad_connection is
 			when THERMAL =>
