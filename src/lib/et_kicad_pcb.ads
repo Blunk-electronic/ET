@@ -640,16 +640,16 @@ package et_kicad_pcb is
 	
 
 	-- Polygons may be connected with THT pads only or all pad technologies
-	subtype type_polygon_pad_technology is et_pcb.type_polygon_pad_technology range et_pcb.THT_ONLY .. et_pcb.BOTH;
+	subtype type_polygon_pad_technology is et_pcb.type_polygon_pad_technology range et_pcb.THT_ONLY .. et_pcb.SMT_AND_THT;
 
 	type type_polygon is new et_pcb.type_copper_polygon with record
-		net_name			: et_schematic.type_net_name.bounded_string;
-		net_id				: type_net_id;
+		net_name			: et_schematic.type_net_name.bounded_string; -- if name is empty, the polygon is not connected to any net
+		net_id				: type_net_id; -- if id is 0, the polygon is not connected to any net
 		layer				: type_signal_layer_id;
 		timestamp			: et_string_processing.type_timestamp;
 		hatch_style			: type_polygon_hatch := EDGE;
 		hatch_width			: et_pcb_coordinates.type_distance;	-- see spec for type_polygon_hatch. always 0.508. CS use subtype
-		min_thickness		: et_pcb_coordinates.type_distance;	-- minimum line width, CS subtype
+		min_thickness		: et_pcb.type_signal_width;	-- minimum line width
 		filled				: boolean; -- CS probably no need
 		fill_mode_segment	: boolean := false; -- true on "segment mode", default -> false on "polygon mode"
 		arc_segments		: natural := 0; -- CS subtype ? -- only 16 or 32 allowed

@@ -483,8 +483,43 @@ package body et_pcb is
 			 , log_threshold);
 	end route_via_properties;
 
+	procedure route_polygon_properties (
+	-- Logs the properties of the given polygon of a route
+		cursor			: in type_copper_polygons_pcb.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_copper_polygons_pcb;
+	begin
+		-- general stuff
+		log ("polygon in signal layer" & to_string (element (cursor).layer) &
+			 " minimum_width" & to_string (element (cursor).width_min) &
+			 " pad_connection" & to_string (element (cursor).pad_connection) &
+			 " priority_level" & to_string (element (cursor).priority_level) &
+			 " isolation_gap" & to_string (element (cursor).isolation_gap) &
+			 " corner_easing" & to_string (element (cursor).corner_easing) &
+			 " easing_radius" & to_string (element (cursor).easing_radius),
+			 log_threshold);
 
-	
+		log_indentation_up;
+		log ("corner_points : todo ", log_threshold);
+		
+		-- type depended stuff
+		case element (cursor).pad_connection is
+			when THERMAL =>
+				log ("connects with" & to_string (element (cursor).thermal_technology) &
+					" thermal width" & to_string (element (cursor).thermal_width) &
+					" thermal gap" & to_string (element (cursor).thermal_gap),
+					log_threshold);
+
+			when SOLID =>
+				log ("connects with" & to_string (element (cursor).solid_technology),
+					log_threshold);
+				
+			when NONE =>
+				null;
+		end case;
+
+		log_indentation_down;
+	end route_polygon_properties;
 
 -- PROPERTIES OF OBJECTS IN SILK SCREEN
 	procedure line_silk_screen_properties (
