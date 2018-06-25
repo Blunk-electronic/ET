@@ -6375,6 +6375,8 @@ package body et_kicad_pcb is
 					 " signal_layer" & to_string (polygon.layer) &
 					 " timestamp " & string (polygon.timestamp) &
 					 " priority_level" & to_string (polygon.priority_level) &
+					 -- CS: hatch_style and hatch_width are related to the display mode in the GUI.
+					 -- So there is no need to output this stuff here.
 					 --" hatch_width" & to_string (polygon.hatch_width) & -- CS use constant for "hatch width" ?
 					 --" hatch_style" & to_string (polygon.hatch_style) & -- CS use constant for "hatch stlye" ?
 					 " min_thickness/width" & to_string (polygon.min_thickness) & -- CS use constant
@@ -6392,6 +6394,11 @@ package body et_kicad_pcb is
 
 				-- CS log corner points
 				-- CS log fill points
+
+				-- Warn about floating polygons:
+				if et_schematic.type_net_name.length (polygon.net_name) = 0 then
+					log (message_warning & "Polygon is not connected with any net !");
+				end if;
 
 				-- Reset selectors of "polygon" (variable "polygon" is a scratch variable).
 				-- Includes cleaning up corner points for next polygon. 

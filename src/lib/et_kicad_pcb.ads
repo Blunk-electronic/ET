@@ -624,11 +624,17 @@ package et_kicad_pcb is
 	-- vias are stored in lists
 	package type_vias is new doubly_linked_lists (type_via);
 
+	-- The polygon hatch style does not have anything to do with real hatch fill patterns.
+	-- See <https://forum.kicad.info/t/can-i-do-a-hatched-polygon-on-kicad/2761/13>. It is
+	-- about the way the polygon is displayed in the GUI. Likewise, the associated decimal number
+	-- (example "(hatch none 0.508)") tells the GUI how to display the polygon.
+	type type_polygon_hatch is ( -- "outline style" in gui
+		EDGE, -- "hatched" in gui
+		NONE, -- "line" in gui
+		FULL); -- "fully hatched" in gui
 
-	type type_polygon_hatch is ( -- outline style in gui
-		NONE, -- line in gui
-		EDGE, -- hatced in gui
-		FULL); -- fully hatched in gui
+	-- CS: hatch_style and hatch_width are related to the display mode in the GUI.
+	-- Currently there is no need to output this stuff:
 	-- CS function to_string (hatch_style)
 	-- CS function to_hatch_style (hatch_style)
 	
@@ -641,8 +647,8 @@ package et_kicad_pcb is
 		net_id				: type_net_id;
 		layer				: type_signal_layer_id;
 		timestamp			: et_string_processing.type_timestamp;
-		hatch_style			: type_polygon_hatch; -- not fully supported by kicad -- CS default ?
-		hatch_width			: et_pcb_coordinates.type_distance;	-- not fully supported by kicad -- CS subtype -- meaning ?
+		hatch_style			: type_polygon_hatch := EDGE;
+		hatch_width			: et_pcb_coordinates.type_distance;	-- see spec for type_polygon_hatch. always 0.508. CS use subtype
 		min_thickness		: et_pcb_coordinates.type_distance;	-- minimum line width, CS subtype
 		filled				: boolean; -- CS probably no need
 		fill_mode_segment	: boolean := false; -- true on "segment mode", default -> false on "polygon mode"
