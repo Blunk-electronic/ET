@@ -337,7 +337,9 @@ package et_pcb is
 		points	: type_polygon_points.set;
 	end record;
 
+	text_polygon_corner_points : constant string (1..13) := "corner_points";
 
+	
 	-- LOCK STATUS OF AN OBJECT
 	type type_locked is (NO, YES);
 
@@ -453,6 +455,11 @@ package et_pcb is
 		corner_easing	: type_corner_easing := NONE;
 		easing_radius	: type_distance := zero_distance; -- center of circle at corner point -- CS subtype
 	end record;
+
+	text_polygon_priority_level	: constant string (1..14) := "priority_level";
+	text_polygon_isolation_gap	: constant string (1..13) := "isolation_gap";
+	text_polygon_corner_easing	: constant string (1..13) := "corner_easing";
+	text_polygon_easing_radius	: constant string (1..13) := "easing_radius";		
 	
 	package type_copper_polygons is new doubly_linked_lists (type_copper_polygon);
 	
@@ -498,18 +505,23 @@ package et_pcb is
 	polygon_thermal_width_max : constant type_signal_width := 3.0; -- CS: adjust if nessecariy
 	subtype type_polygon_thermal_width is type_distance range polygon_thermal_width_min .. polygon_thermal_width_max;
 
+	text_polygon_thermal_width : constant string (1..13) := "thermal_width";		
+	
 	-- If a terminal is connected/associated with a polyon, this is the space between pad and polygon:
 	polygon_thermal_gap_min : constant type_signal_clearance := type_signal_clearance'first;
 	polygon_thermal_gap_max : constant type_signal_clearance := 3.0; -- CS: adjust if nessecariy
 	subtype type_polygon_thermal_gap is type_signal_clearance range polygon_thermal_gap_min .. polygon_thermal_gap_max;
 
-
+	text_polygon_thermal_gap : constant string (1..11) := "thermal_gap";
+	
 	-- Polygons may be connected with associated pads via thermals, via solid connection or not at all:
 	type type_polygon_pad_connection is (
 		THERMAL,
 		SOLID,
 		NONE);
 
+	text_polygon_pad_connection : constant string (1..14) := "pad_connection";
+	
 	function to_string (polygon_pad_connection : in type_polygon_pad_connection) return string;
 
 	-- Polygons may be connected with SMT, THT or all pad technologies
@@ -518,6 +530,8 @@ package et_pcb is
 		THT_ONLY,
 		SMT_AND_THT);
 
+	text_polygon_pad_technology : constant string (1..15) := "connected_width";
+	
 	function to_string (polygon_pad_technology : in type_polygon_pad_technology) return string;
 
 	-- A polygon in a signal layer is usually connected with a THT or SMD pads (or both) via thermals, solid (or not at all).
@@ -543,6 +557,9 @@ package et_pcb is
 				
 		-- CS fill style, cutout, ...
 	end record;
+
+	text_polygon_signal_layer	: constant string (1..12) := "signal_layer";	
+	text_polygon_width_min		: constant string (1..13) := "minimum_width";
 	
 	package type_copper_polygons_pcb is new indefinite_doubly_linked_lists (type_copper_polygon_pcb);
 

@@ -6372,24 +6372,24 @@ package body et_kicad_pcb is
 				board.polygons.append (polygon);
 
 				log ("polygon/zone net " & et_schematic.to_string (polygon.net_name) &
-					 " signal_layer" & to_string (polygon.layer) &
-					 " timestamp " & string (polygon.timestamp) &
-					 " priority_level" & to_string (polygon.priority_level) &
+					 " " & text_polygon_signal_layer & to_string (polygon.layer) &
+					 " timestamp " & string (polygon.timestamp) & -- CS use constant
+					 " " & text_polygon_priority_level & to_string (polygon.priority_level) &
 					 -- CS: hatch_style and hatch_width are related to the display mode in the GUI.
 					 -- So there is no need to output this stuff here.
 					 --" hatch_width" & to_string (polygon.hatch_width) & -- CS use constant for "hatch width" ?
 					 --" hatch_style" & to_string (polygon.hatch_style) & -- CS use constant for "hatch stlye" ?
-					 " min_thickness/width" & to_string (polygon.min_thickness) & -- CS use constant
-					 " isolation_gap" & to_string (polygon.isolation_gap) & -- CS use constant
+					 " min_thickness/" & text_polygon_width_min & to_string (polygon.min_thickness) &
+					 " " & text_polygon_isolation_gap & to_string (polygon.isolation_gap) &
 					 " filled " & boolean'image (polygon.filled) & -- CS use constant
 					 " fill_mode_segment " & boolean'image (polygon.fill_mode_segment) &
 					 " smooting/easing" & to_string (polygon.corner_easing) &
-					 " easing_radius" & to_string (polygon.easing_radius) &
+					 " " & text_polygon_easing_radius & to_string (polygon.easing_radius) &
 					 " arc_segments" & natural'image (polygon.arc_segments) & -- CS use constant
-					 " thermal_gap" & to_string (polygon.thermal_gap) & -- CS use constant
-					 " thermal_width" & to_string (polygon.thermal_width) & -- CS use constant
-					 " pad_connection" & to_string (polygon.pad_connection) &
-					 " pad_technology" & to_string (polygon.pad_technology),
+					 " " & text_polygon_thermal_gap & to_string (polygon.thermal_gap) &
+					 " " & text_polygon_thermal_width & to_string (polygon.thermal_width) &
+					 " " & text_polygon_pad_connection & to_string (polygon.pad_connection) &
+					 " " & text_polygon_pad_technology & to_string (polygon.pad_technology),
 					 log_threshold + 1);
 
 				-- CS log corner points

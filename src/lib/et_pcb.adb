@@ -490,34 +490,36 @@ package body et_pcb is
 		use type_copper_polygons_pcb;
 	begin
 		-- general stuff
-		log ("polygon in signal layer" & to_string (element (cursor).layer) &
-			 " minimum_width" & to_string (element (cursor).width_min) &
-			 " pad_connection" & to_string (element (cursor).pad_connection) &
-			 " priority_level" & to_string (element (cursor).priority_level) &
-			 " isolation_gap" & to_string (element (cursor).isolation_gap) &
-			 " corner_easing" & to_string (element (cursor).corner_easing) &
-			 " easing_radius" & to_string (element (cursor).easing_radius),
+		log ("polygon" & 
+			 " " & text_polygon_signal_layer & to_string (element (cursor).layer) &
+			 " " & text_polygon_width_min & to_string (element (cursor).width_min) &
+			 " " & text_polygon_pad_connection & to_string (element (cursor).pad_connection) &
+			 " " & text_polygon_priority_level & to_string (element (cursor).priority_level) &
+			 " " & text_polygon_isolation_gap & to_string (element (cursor).isolation_gap) &
+			 " " & text_polygon_corner_easing & to_string (element (cursor).corner_easing) &
+			 " " & text_polygon_easing_radius & to_string (element (cursor).easing_radius),
 			 log_threshold);
 
 		log_indentation_up;
-		log ("corner_points : todo ", log_threshold);
 		
 		-- type depended stuff
 		case element (cursor).pad_connection is
 			when THERMAL =>
-				log ("connects with" & to_string (element (cursor).thermal_technology) &
-					" thermal width" & to_string (element (cursor).thermal_width) &
-					" thermal gap" & to_string (element (cursor).thermal_gap),
+				log (text_polygon_pad_technology & to_string (element (cursor).thermal_technology) &
+					" " & text_polygon_thermal_width & to_string (element (cursor).thermal_width) &
+					" " & text_polygon_thermal_gap & to_string (element (cursor).thermal_gap),
 					log_threshold);
 
 			when SOLID =>
-				log ("connects with" & to_string (element (cursor).solid_technology),
+				log (text_polygon_pad_technology & to_string (element (cursor).solid_technology),
 					log_threshold);
 				
 			when NONE =>
 				null;
 		end case;
 
+		log (text_polygon_corner_points & " todo ", log_threshold); -- CS
+		
 		log_indentation_down;
 	end route_polygon_properties;
 
