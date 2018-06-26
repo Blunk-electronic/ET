@@ -579,20 +579,6 @@ package body et_kicad_pcb is
 		-- KEEPOUT OBJECTS (lines, arcs, circles)
 		keepout : et_pcb.type_keepout_both_sides;
 
-		-- kicad does not allow pcb contours (edge cuts) in a package model.
-		-- For this reason, variable pcb_contours is never assigned. Its containers
-		-- remain empty:
-		pcb_contours			: type_package_pcb_contour;		
-
-		-- kicad does not allow plated pcb contours (plated edge cuts) in a package model.
-		-- For this reason, variable pcb_contours_plated is never assigned. Its containers
-		-- remain empty:
-		pcb_contours_plated 	: type_package_pcb_contour_plated;
-		
-		route_restrict 			: type_route_restrict_package;
-		via_restrict 			: type_via_restrict_package;
-
-		
 		procedure init_stop_and_mask is begin
 		-- Resets the temporarily status flags of solder paste and stop mask of an SMT terminal.
 		-- Does not affect THT terminals (stop mask always open, solder paste never applied).
@@ -1742,13 +1728,15 @@ package body et_kicad_pcb is
 					when TOP_KEEP =>
 						keepout.top.circles.append ((
 							center 		=> circle.center,
-							radius		=> circle.radius )); -- line width discarded because this is keepout
+							radius		=> circle.radius, -- line width discarded because this is keepout
+							filled		=> circle.filled));
 						circle_keepout_properties (TOP, keepout.top.circles.last, log_threshold + 1);
 						
 					when BOT_KEEP =>
 						keepout.bottom.circles.append ((
 							center 		=> circle.center,
-							radius		=> circle.radius )); -- line width discarded because this is keepout
+							radius		=> circle.radius, -- line width discarded because this is keepout
+							filled		=> circle.filled));
 						circle_keepout_properties (BOTTOM, keepout.bottom.circles.last, log_threshold + 1);
 
 						
@@ -2297,16 +2285,16 @@ package body et_kicad_pcb is
 				return (
 					appearance				=> REAL,
 					package_contours		=> no_contour, -- CS to be filled from 3d model
-					pcb_contours			=> pcb_contours,
-					pcb_contours_plated 	=> pcb_contours_plated,
+					pcb_contours			=> (others => <>), -- kicad does allow pcb contours in a package
+					pcb_contours_plated 	=> (others => <>), -- kicad does allow plated pcb contours in a package
 					terminals				=> terminals,
 					copper					=> copper, -- non electric !
 					silk_screen				=> silk_screen,
 					keepout					=> keepout,
 					stop_mask				=> stop_mask,
 					solder_stencil			=> stencil,
-					route_restrict 			=> route_restrict,
-					via_restrict 			=> via_restrict,
+					route_restrict 			=> (others => <>), -- kicad does not know route restrict
+					via_restrict 			=> (others => <>), -- kicad does not know via restrict
 					assembly_documentation 	=> assy_doc,
 					time_stamp				=> time_stamp,
 					description				=> description,
@@ -2316,16 +2304,16 @@ package body et_kicad_pcb is
 			when VIRTUAL => -- no package_contours
 				return (
 					appearance				=> VIRTUAL,
-					pcb_contours			=> pcb_contours,
-					pcb_contours_plated 	=> pcb_contours_plated,
+					pcb_contours			=> (others => <>), -- kicad does allow pcb contours in a package
+					pcb_contours_plated 	=> (others => <>), -- kicad does allow plated pcb contours in a package
 					terminals				=> terminals,
 					copper					=> copper, -- non electric !
 					silk_screen				=> silk_screen,
 					keepout					=> keepout,
 					stop_mask				=> stop_mask,
 					solder_stencil			=> stencil,
-					route_restrict 			=> route_restrict,
-					via_restrict 			=> via_restrict,
+					route_restrict 			=> (others => <>), -- kicad does not know route restrict
+					via_restrict 			=> (others => <>), -- kicad does not know via restrict
 					assembly_documentation 	=> assy_doc,
 					time_stamp				=> time_stamp,
 					description				=> description,
@@ -2863,22 +2851,6 @@ package body et_kicad_pcb is
 		package_keepout			: et_pcb.type_keepout_both_sides;
 		package_copper			: et_pcb.type_copper_package_both_sides;
 		
-		-- kicad does not allow pcb contours (edge cuts) in a package model.
-		-- For this reason, variable package_pcb_contours is never assigned. Its containers
-		-- remain empty:
-		package_pcb_contours		: et_pcb.type_package_pcb_contour;
-
-		-- kicad does not allow plated pcb contours (edge cuts) in a package model.
-		-- For this reason, variable package_pcb_contours_plated is never assigned. Its containers
-		-- remain empty:
-		package_pcb_contours_plated	: et_pcb.type_package_pcb_contour_plated;
-		
-		-- never assigned because kicad does not feature route restrict in a package:
-		package_route_restrict		: et_pcb.type_route_restrict_package;
-
-		-- never assigned because kicad does not feature via restrict in a package:
-		package_via_restrict		: et_pcb.type_via_restrict_package;
-
 		-- countours of a package as provided by the 3d model:
 		package_contours			: et_pcb.type_package_contours; -- CS not assigned yet
 		
@@ -5359,11 +5331,11 @@ package body et_kicad_pcb is
 								keepout			=> package_keepout,
 								stop_mask		=> package_stop_mask,
 								solder_stencil	=> package_stencil,
-								route_restrict	=> package_route_restrict, -- always empty
-								via_restrict	=> package_via_restrict, -- always empty
+								route_restrict	=> (others => <>), -- kicad does not know route restrict
+								via_restrict	=> (others => <>), -- kicad does not know via restrict
 								assembly_documentation	=> package_assy_doc,
-								pcb_contours		=> package_pcb_contours,
-								pcb_contours_plated	=> package_pcb_contours_plated,
+								pcb_contours		=> (others => <>), -- kicad does not allow pcb contours in a package,
+								pcb_contours_plated	=> (others => <>), -- kicad does not allow plated pcb contours in a package
 								package_contours	=> package_contours
 								)
 							);
@@ -5387,11 +5359,11 @@ package body et_kicad_pcb is
 								keepout			=> package_keepout,
 								stop_mask		=> package_stop_mask,
 								solder_stencil	=> package_stencil,
-								route_restrict	=> package_route_restrict, -- always empty
-								via_restrict	=> package_via_restrict, -- always empty
+								route_restrict	=> (others => <>), -- kicad does not know route restrict
+								via_restrict	=> (others => <>), -- kicad does not know via restrict
 								assembly_documentation	=> package_assy_doc,
-								pcb_contours		=> package_pcb_contours,
-								pcb_contours_plated	=> package_pcb_contours_plated
+								pcb_contours		=> (others => <>), -- kicad does not allow pcb contours in a package
+								pcb_contours_plated	=> (others => <>) -- kicad does not allow plated pcb contours in a package
 								-- a virtual package does not have contours
 								)
 							);
@@ -5691,13 +5663,15 @@ package body et_kicad_pcb is
 					when TOP_KEEP =>
 						board.keepout.top.circles.append ((
 							center	=> board_circle.center,
-							radius	=> board_circle.radius));
+							radius	=> board_circle.radius,
+							filled	=> board_circle.filled));
 						circle_keepout_properties (TOP, board.keepout.top.circles.last, log_threshold + 1);
 
 					when BOT_KEEP =>
 						board.keepout.bottom.circles.append ((
 							center	=> board_circle.center,
-							radius	=> board_circle.radius));
+							radius	=> board_circle.radius,
+							filled	=> board_circle.filled));
 						circle_keepout_properties (BOTTOM, board.keepout.bottom.circles.last, log_threshold + 1);
 
 						
@@ -5940,13 +5914,15 @@ package body et_kicad_pcb is
 					when TOP_KEEP =>
 						package_keepout.top.circles.append ((
 							center 		=> package_circle.center,
-							radius		=> package_circle.radius ));  -- line width discarded because this is keepout
+							radius		=> package_circle.radius,  -- line width discarded because this is keepout
+							filled		=> package_circle.filled));
 						circle_keepout_properties (TOP, package_keepout.top.circles.last, log_threshold + 1);
 						
 					when BOT_KEEP =>
 						package_keepout.bottom.circles.append ((
 							center 		=> package_circle.center,
-							radius		=> package_circle.radius ));  -- line width discarded because this is keepout
+							radius		=> package_circle.radius,  -- line width discarded because this is keepout
+							filled		=> package_circle.filled));
 						circle_keepout_properties (BOTTOM, package_keepout.bottom.circles.last, log_threshold + 1);
 
 						

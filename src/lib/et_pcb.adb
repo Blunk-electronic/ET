@@ -388,7 +388,7 @@ package body et_pcb is
 	
 -- PROPERTIES OF OBJECTS IN COPPER (NON ELECTRIC !!)
 	procedure line_copper_properties (
-	-- Logs the properties of the given line of copper screen
+	-- Logs the properties of the given line of copper
 		face			: in type_face;
 		cursor			: in type_copper_lines.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
@@ -402,7 +402,7 @@ package body et_pcb is
 	end line_copper_properties;
 
 	procedure arc_copper_properties (
-	-- Logs the properties of the given arc of copper screen
+	-- Logs the properties of the given arc of copper
 		face			: in type_face;
 		cursor			: in type_copper_arcs.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
@@ -416,7 +416,7 @@ package body et_pcb is
 	end arc_copper_properties;
 	
 	procedure circle_copper_properties (
-	-- Logs the properties of the given circle of copper screen
+	-- Logs the properties of the given circle of copper
 		face			: in type_face;
 		cursor			: in type_copper_circles.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
@@ -426,7 +426,8 @@ package body et_pcb is
 		circle := element (cursor);
 		log ("copper circle face" & to_string (face) & latin_1.space 
 			 & to_string (type_circle (circle))
-			 & " width" & to_string (circle.width), log_threshold);
+			 & " width" & to_string (circle.width)
+			 & " filled " & boolean'image (circle.filled), log_threshold);
 	end circle_copper_properties;
 
 	procedure text_copper_properties (
@@ -573,7 +574,8 @@ package body et_pcb is
 		circle := element (cursor);
 		log ("silk screen circle face" & to_string (face) & latin_1.space 
 			 & to_string (type_circle (circle))
-			 & " width" & to_string (circle.width), log_threshold);
+			 & " width" & to_string (circle.width)
+			 & " filled " & boolean'image (circle.filled), log_threshold);
 	end circle_silk_screen_properties;
 
 	procedure placeholder_silk_screen_properties (
@@ -653,7 +655,8 @@ package body et_pcb is
 		circle := element (cursor);
 		log ("assembly doc circle face" & to_string (face) & latin_1.space 
 			 & to_string (type_circle (circle))
-			 & " width" & to_string (circle.width), log_threshold);
+			 & " width" & to_string (circle.width)
+			 & " filled " & boolean'image (circle.filled), log_threshold);
 	end circle_assy_doc_properties;
 
 	procedure placeholder_assy_doc_properties (
@@ -731,7 +734,8 @@ package body et_pcb is
 	begin
 		circle := element (cursor);
 		log ("keepout (courtyard) circle face" & to_string (face) & latin_1.space 
-			 & to_string (type_circle (circle)), log_threshold);
+			 & to_string (type_circle (circle))
+			 & " filled " & boolean'image (circle.filled), log_threshold);
 	end circle_keepout_properties;
 
 
@@ -762,8 +766,8 @@ package body et_pcb is
 		circle := element (cursor);
 		log ("stop mask circle face" & to_string (face) & latin_1.space 
 			 & to_string (type_circle (circle))
-			 & " width" & to_string (circle.width),
-			 log_threshold);
+			 & " width" & to_string (circle.width)
+			 & " filled " & boolean'image (circle.filled), log_threshold);
 	end circle_stop_mask_properties;
 
 	procedure line_stop_mask_properties (
@@ -827,8 +831,8 @@ package body et_pcb is
 		circle := element (cursor);
 		log ("solder paste (stencil) circle face" & to_string (face) & latin_1.space 
 			 & to_string (type_circle (circle))
- 			 & " width" & to_string (circle.width),
-			 log_threshold);
+			 & " width" & to_string (circle.width)
+			 & " filled " & boolean'image (circle.filled), log_threshold);
 	end circle_stencil_properties;
 
 	procedure line_stencil_properties (
@@ -876,6 +880,8 @@ package body et_pcb is
 	end arc_route_restrict_properties;
 
 
+	-- CS procedure circle_route_restrict_properties
+	
 
 -- PROPERTIES OF OBJECTS IN VIA RESTRICT	
 	procedure line_via_restrict_properties (
@@ -904,7 +910,9 @@ package body et_pcb is
 			 & to_string (type_arc (arc)), log_threshold);
 	end arc_via_restrict_properties;
 
+	-- CS procedure circle_via_restrict_properties
 
+	
 -- PROPERTIES OF OBJECTS IN BOARD CONTOUR / OUTLINE / EDGE CUTS
 	procedure line_pcb_contour_properties (
 	-- Logs the properties of the given line of pcb contour
@@ -939,7 +947,8 @@ package body et_pcb is
 	begin
 		circle := element (cursor);
 		log ("PCB contour (edge cuts / outline) circle face" & latin_1.space 
-			 & to_string (type_circle (circle)), log_threshold);
+			 & to_string (type_circle (circle))
+			 & " filled " & boolean'image (circle.filled), log_threshold);
 	end circle_pcb_contour_properties;
 
 

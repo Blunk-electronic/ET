@@ -209,7 +209,7 @@ package et_pcb is
 	
 	
 	-- PLACEHOLDERS FOR TEXTS IN A PACKAGE
-	type type_text_meaning_package is (REFERENCE, VALUE, PURPOSE); -- CS: purpose ?
+	type type_text_meaning_package is (REFERENCE, VALUE, PURPOSE);
 
 	function to_string (text_meaning : in type_text_meaning_package) return string;
 	
@@ -323,7 +323,7 @@ package et_pcb is
 	type type_circle is abstract tagged record
 		center			: type_point_3d;
 		radius  		: type_distance;
-		-- CS filled : boolean;
+		filled 			: boolean := false;
 	end record;
 
 	-- POLYGON
