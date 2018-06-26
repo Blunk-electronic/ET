@@ -301,10 +301,17 @@ package et_pcb is
 		element_type => type_text_with_content);
 	
 
+	-- FILL STYLE OF OBJECTS WITH A CLOSED CIRCUMFENCE
+	type type_fill_style is (SOLID, HATCHED, CUTOUT);
 
-
+	text_fill_style : constant string (1..11) := " fill_style";
 	
+	function to_string (fill_style : in type_fill_style) return string;
+	function to_fill_style (fill_style : in string) return type_fill_style;
 
+	fill_style_hatching_line_width_default	: constant type_distance := 0.3; -- the width of the lines
+	fill_style_hatching_spacing_default		: constant type_distance := 2.0; -- the space between the lines
+	
 	-- LINE
 	type type_line is abstract tagged record
 		start_point 	: type_point_3d;
@@ -324,6 +331,7 @@ package et_pcb is
 		center			: type_point_3d;
 		radius  		: type_distance;
 		filled 			: boolean := false;
+		fill_style		: type_fill_style := SOLID; -- don't care if filled is false
 	end record;
 
 	-- POLYGON
@@ -332,9 +340,10 @@ package et_pcb is
 	package type_polygon_points is new ordered_sets (
 		element_type	=> type_point_3d,
 		"<"				=> right_point_before_left);
-	
+
 	type type_polygon is abstract tagged record
-		points	: type_polygon_points.set;
+		points			: type_polygon_points.set;
+		fill_style		: type_fill_style := SOLID; -- a polygon is always filled
 	end record;
 
 	text_polygon_corner_points : constant string (1..13) := "corner_points";
@@ -434,12 +443,14 @@ package et_pcb is
 	package type_copper_lines is new doubly_linked_lists (type_copper_line);
 
 	type type_copper_arc is new type_arc with record
-		width	: type_general_line_width;
+		width	: type_signal_width;
 	end record;
 	package type_copper_arcs is new doubly_linked_lists (type_copper_arc);
 
 	type type_copper_circle is new type_circle with record
-		width	: type_general_line_width;
+		width				: type_signal_width;
+		hatching_line_width	: type_signal_width := fill_style_hatching_line_width_default; -- the with of the copper traces
+		hatching_spacing	: type_signal_clearance := fill_style_hatching_spacing_default; -- the space between the copper traces
 	end record;
 	package type_copper_circles is new doubly_linked_lists (type_copper_circle);
 
@@ -453,10 +464,12 @@ package et_pcb is
 	subtype type_polygon_easing_radius is type_distance range type_distance'first .. polygon_easing_radius_max;
 	
 	type type_copper_polygon is new type_polygon with record
-		priority_level	: type_polygon_priority := type_polygon_priority'first;
-		isolation_gap	: type_signal_clearance; -- the space between foreign pads and the polygon
-		corner_easing	: type_corner_easing := NONE;
-		easing_radius	: type_distance := zero_distance; -- center of circle at corner point -- CS subtype
+		priority_level		: type_polygon_priority := type_polygon_priority'first;
+		isolation_gap		: type_signal_clearance; -- the space between foreign pads and the polygon
+		corner_easing		: type_corner_easing := NONE;
+		easing_radius		: type_polygon_easing_radius := zero_distance; -- center of circle at corner point
+		hatching_line_width	: type_signal_width := fill_style_hatching_line_width_default; -- the with of the copper traces
+		hatching_spacing	: type_signal_clearance := fill_style_hatching_spacing_default; -- the space between the copper traces
 	end record;
 
 	text_polygon_priority_level	: constant string (1..14) := "priority_level";
@@ -558,7 +571,6 @@ package et_pcb is
 				-- no more properties required
 		end case;
 				
-		-- CS fill style, cutout, ...
 	end record;
 
 	text_polygon_signal_layer	: constant string (1..12) := "signal_layer";	
@@ -626,13 +638,19 @@ package et_pcb is
 
 	
 	type type_stop_circle is new type_circle with record
-		width	: type_general_line_width;
+		width				: type_general_line_width; -- the width of the circumfence
+		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the copper traces
+		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the copper traces
 	end record;
 
 	package type_stop_circles is new doubly_linked_lists (type_stop_circle);
 
 
-	type type_stop_polygon is new type_polygon with null record;
+	type type_stop_polygon is new type_polygon with record
+		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the copper traces
+		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the copper traces
+	end record;
+	
 	package type_stop_polygons is new doubly_linked_lists (type_stop_polygon);
 
 	
@@ -682,7 +700,7 @@ package et_pcb is
 	package type_stencil_circles is new doubly_linked_lists (type_stencil_circle);
 
 
-	type type_stencil_polygon is new type_polygon with null record;
+	type type_stencil_polygon is new type_polygon with null record; -- fill style hatched does not make sense
 	package type_stencil_polygons is new doubly_linked_lists (type_stencil_polygon);
 	
 	
@@ -722,7 +740,9 @@ package et_pcb is
 
 	
 	type type_silk_circle is new type_circle with record
-		width	: type_general_line_width;
+		width				: type_general_line_width; -- line width of circumfence
+		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the copper traces
+		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the copper traces
 	end record;
 
 	package type_silk_circles is new doubly_linked_lists (type_silk_circle);
@@ -781,7 +801,9 @@ package et_pcb is
 
 	
 	type type_doc_circle is new type_circle with record
-		width	: type_general_line_width;
+		width				: type_general_line_width; -- line width of circumfence
+		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the copper traces
+		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the copper traces
 	end record;
 
 	package type_doc_circles is new doubly_linked_lists (type_doc_circle);

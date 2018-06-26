@@ -647,8 +647,8 @@ package et_kicad_pcb is
 		net_id				: type_net_id; -- if id is 0, the polygon is not connected to any net
 		layer				: type_signal_layer_id;
 		timestamp			: et_string_processing.type_timestamp;
-		hatch_style			: type_polygon_hatch := EDGE;
-		hatch_width			: et_pcb_coordinates.type_distance;	-- see spec for type_polygon_hatch. always 0.508. CS use subtype
+		gui_hatch_style		: type_polygon_hatch := EDGE;
+		gui_hatch_width		: et_pcb_coordinates.type_distance;	-- see spec for type_polygon_hatch. always 0.508. CS use subtype
 		min_thickness		: et_pcb.type_signal_width;	-- minimum line width
 		filled				: boolean; -- CS probably no need
 		fill_mode_segment	: boolean := false; -- true on "segment mode", default -> false on "polygon mode"
