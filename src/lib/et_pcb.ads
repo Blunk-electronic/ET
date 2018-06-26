@@ -428,7 +428,7 @@ package et_pcb is
 	function to_string (easing : in type_corner_easing) return string;
 	
 	type type_copper_line is new type_line with record
-		width	: type_general_line_width; -- CS shold be type_signal_width
+		width	: type_signal_width;
 		-- CS locked	: type_locked;
 	end record;
 	package type_copper_lines is new doubly_linked_lists (type_copper_line);
@@ -448,6 +448,9 @@ package et_pcb is
 	subtype type_polygon_priority is natural range natural'first .. polygon_priority_max;
 	function to_string (priority_level : in type_polygon_priority) return string;
 	function to_polygon_priority (priority_level : in string) return type_polygon_priority;
+
+	polygon_easing_radius_max : constant type_distance := 1.0;
+	subtype type_polygon_easing_radius is type_distance range type_distance'first .. polygon_easing_radius_max;
 	
 	type type_copper_polygon is new type_polygon with record
 		priority_level	: type_polygon_priority := type_polygon_priority'first;
