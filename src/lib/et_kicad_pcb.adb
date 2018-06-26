@@ -6668,6 +6668,17 @@ package body et_kicad_pcb is
 		-- The board is specified in et_kicad_pcb.board.
 		-- The schematic module is specified in et_schematic.type_module.
 		-- The schematic module is indicated by the module_cursor.
+		
+		-- IMPORTANT: Kicad allows component packages in the layout file to be edited by the operator.
+		-- As long as the position of reference and value is edited, everything is ok. But changing position
+		-- of a pad or an element in the silk screen is no good idea. The package in the board file would
+		-- then be no longer a copy of the generic package in the library ! 
+		-- The procedure in the follwing DOES NOT detect local modifications of component packages in the layout.
+		-- We assume, the operator has left the packages in the board file as they are: just copies of packages in
+		-- the library.
+		-- Only the package position, reference position and value position are read and assigned to the
+		-- selectors "position" and "text_placeholders" of a schematic component. See specs et_schematic.type_component
+		-- for details.
 			use et_coordinates;
 			use et_schematic;
 
@@ -7003,7 +7014,7 @@ package body et_kicad_pcb is
 					component	: in out et_schematic.type_component) is
 				begin
 					component.position := package_position;
-					text_placeholders := text_placeholders;
+					component.text_placeholders := text_placeholders;
 				end update_component_in_schematic;
 
 				function to_placeholders return et_pcb.type_text_placeholders is 
