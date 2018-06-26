@@ -482,7 +482,7 @@ package et_kicad_pcb is
 	-- For packages, temporarily this type is required to handle texts in 
 	-- silk screen, assembly doc, ...
 	-- When inserting the text in the final package, it is decomposed again.
-	type type_package_text is new et_pcb.type_text with record -- CS rename to type_text_package
+	type type_text_package is new et_pcb.type_text with record
 		content	: et_libraries.type_text_content.bounded_string;
 		layer	: type_layer_abbrevation;
 		meaning	: type_fp_text_meaning;

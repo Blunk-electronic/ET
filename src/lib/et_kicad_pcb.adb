@@ -548,7 +548,7 @@ package body et_kicad_pcb is
 
 
 	-- TEXTS
-		text : type_package_text;
+		text : type_text_package;
 
 		-- Temporarily text placeholders for reference and value are required. 
 		placeholder : type_text_placeholder_package;
@@ -2840,7 +2840,7 @@ package body et_kicad_pcb is
 		-- By default a package is something real (with x,y,z dimension)
 		package_appearance 	: type_package_appearance := REAL;
 
-		package_text 		: type_package_text;
+		package_text 		: type_text_package;
 		package_reference 	: et_libraries.type_component_reference := et_schematic.default_component_reference;
 		package_value 		: et_libraries.type_component_value.bounded_string;
 
