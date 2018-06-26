@@ -209,7 +209,7 @@ package et_pcb is
 	
 	
 	-- PLACEHOLDERS FOR TEXTS IN A PACKAGE
-	type type_text_meaning_package is (REFERENCE, VALUE); -- CS: purpose ?
+	type type_text_meaning_package is (REFERENCE, VALUE, PURPOSE); -- CS: purpose ?
 
 	function to_string (text_meaning : in type_text_meaning_package) return string;
 	
