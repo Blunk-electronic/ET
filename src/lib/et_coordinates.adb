@@ -319,7 +319,7 @@ package body et_coordinates is
 
 		end if;
 
-		log (text => "distance " & float'image (dis), level => 4);
+		--log (text => "distance " & float'image (dis), level => 4);
 
 		return type_distance (dis);
 	end distance;

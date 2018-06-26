@@ -704,7 +704,7 @@ package body et_schematic is
 		use et_string_processing;
 	begin
 		len := distance (segment.coordinates_start, segment.coordinates_end);
-		log (text => "segment length " & et_coordinates.to_string (len) & "mm", level => 3);
+		--log (text => "segment length " & et_coordinates.to_string (len) & "mm", level => 3);
 		return len;
 	end length;
 	

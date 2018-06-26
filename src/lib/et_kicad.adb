@@ -4684,7 +4684,6 @@ package body et_kicad is
 					log (to_string (segment => segment, scope => xy), log_threshold + 1);
 					
 					type_wild_segments.append (wild_segments, segment);
-					
 				else -- segment has zero length
 					log (message_warning & affected_line (et_kicad.line) & "Net segment with zero length found -> ignored !");
 				end if; -- length
