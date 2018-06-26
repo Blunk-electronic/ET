@@ -304,7 +304,9 @@ package et_pcb is
 	-- FILL STYLE OF OBJECTS WITH A CLOSED CIRCUMFENCE
 	type type_fill_style is (SOLID, HATCHED, CUTOUT);
 
-	text_fill_style : constant string (1..11) := " fill_style";
+	text_fill_style : constant string (1..10) := "fill_style";
+	text_hatching_line_width	: constant string (1..19) := "hatching_line_width";
+	text_hatching_spacing 		: constant string (1..16) := "hatching_spacing";	
 	
 	function to_string (fill_style : in type_fill_style) return string;
 	function to_fill_style (fill_style : in string) return type_fill_style;

@@ -585,7 +585,13 @@ package body et_pcb is
 			 & to_string (type_circle (circle))
 			 & " width" & to_string (circle.width)
 			 & " filled " & boolean'image (circle.filled)
-			 & text_fill_style & to_string (circle.fill_style), log_threshold);
+			 & " " & text_fill_style & to_string (circle.fill_style), log_threshold);
+
+		-- if filled with a hatched pattern, output hatch line width and spacing
+		if circle.fill_style = HATCHED then
+			log (text_hatching_line_width & to_string (circle.hatching_line_width) & " "
+				& text_hatching_spacing & to_string (circle.hatching_spacing), log_threshold);
+		end if;
 	end circle_silk_screen_properties;
 
 	procedure placeholder_silk_screen_properties (
@@ -667,7 +673,13 @@ package body et_pcb is
 			 & to_string (type_circle (circle))
 			 & " width" & to_string (circle.width)
 			 & " filled " & boolean'image (circle.filled)
-			 & text_fill_style & to_string (circle.fill_style), log_threshold);
+			 & " " & text_fill_style & to_string (circle.fill_style), log_threshold);
+
+		-- if filled with a hatched pattern, output hatch line width and spacing
+		if circle.fill_style = HATCHED then
+			log (text_hatching_line_width & to_string (circle.hatching_line_width) & " "
+				& text_hatching_spacing & to_string (circle.hatching_spacing), log_threshold);
+		end if;
 	end circle_assy_doc_properties;
 
 	procedure placeholder_assy_doc_properties (
@@ -747,7 +759,7 @@ package body et_pcb is
 		log ("keepout (courtyard) circle face" & to_string (face) & latin_1.space 
 			& to_string (type_circle (circle))
 			& " filled " & boolean'image (circle.filled)
-			& text_fill_style & to_string (circle.fill_style), log_threshold);
+			& " " & text_fill_style & to_string (circle.fill_style), log_threshold);
 	end circle_keepout_properties;
 
 
@@ -780,7 +792,13 @@ package body et_pcb is
 			& to_string (type_circle (circle))
 			& " width" & to_string (circle.width)
 			& " filled " & boolean'image (circle.filled)
-			& text_fill_style & to_string (circle.fill_style), log_threshold);
+			& " " & text_fill_style & to_string (circle.fill_style), log_threshold);
+
+		-- if filled with a hatched pattern, output hatch line width and spacing
+		if circle.fill_style = HATCHED then
+			log (text_hatching_line_width & to_string (circle.hatching_line_width) & " "
+				& text_hatching_spacing & to_string (circle.hatching_spacing), log_threshold);
+		end if;
 	end circle_stop_mask_properties;
 
 	procedure line_stop_mask_properties (
@@ -846,7 +864,7 @@ package body et_pcb is
 			& to_string (type_circle (circle))
 			& " width" & to_string (circle.width)
 			& " filled " & boolean'image (circle.filled)
-			& text_fill_style & to_string (circle.fill_style), log_threshold);
+			& " " & text_fill_style & to_string (circle.fill_style), log_threshold);
 	end circle_stencil_properties;
 
 	procedure line_stencil_properties (
@@ -963,7 +981,7 @@ package body et_pcb is
 		log ("PCB contour (edge cuts / outline) circle face" & latin_1.space 
 			& to_string (type_circle (circle))
 			& " filled " & boolean'image (circle.filled)
-			& text_fill_style & to_string (circle.fill_style), log_threshold);
+			& " " & text_fill_style & to_string (circle.fill_style), log_threshold);
 	end circle_pcb_contour_properties;
 
 
