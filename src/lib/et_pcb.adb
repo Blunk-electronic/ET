@@ -488,6 +488,9 @@ package body et_pcb is
 		cursor			: in type_copper_polygons_pcb.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
 		use type_copper_polygons_pcb;
+		use type_polygon_points;
+		points : type_polygon_points.set;
+		point_cursor : type_polygon_points.cursor;
 	begin
 		-- general stuff
 		log ("polygon" & 
@@ -518,7 +521,14 @@ package body et_pcb is
 				null;
 		end case;
 
-		log (text_polygon_corner_points & " todo ", log_threshold); -- CS
+		-- corner points
+		log (text_polygon_corner_points, log_threshold);
+		points := element (cursor).points;
+		point_cursor := points.first;
+		while point_cursor /= type_polygon_points.no_element loop
+			log (to_string (element (point_cursor)), log_threshold);
+			next (point_cursor);
+		end loop;
 		
 		log_indentation_down;
 	end route_polygon_properties;

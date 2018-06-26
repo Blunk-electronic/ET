@@ -6356,7 +6356,7 @@ package body et_kicad_pcb is
 					);
 
 				if inserted then
-					log ("polygon corner point at" & to_string (polygon_point), log_threshold + 2);
+					log ("polygon corner point at" & to_string (polygon_point), log_threshold + 3);
 				else
 					log_indentation_reset;
 					log (message_error & "multiple polygon corner points at" & to_string (polygon_point), console => true);
@@ -6390,14 +6390,14 @@ package body et_kicad_pcb is
 					 " " & text_polygon_thermal_width & to_string (polygon.thermal_width) &
 					 " " & text_polygon_pad_connection & to_string (polygon.pad_connection) &
 					 " " & text_polygon_pad_technology & to_string (polygon.pad_technology),
-					 log_threshold + 1);
+					 log_threshold + 3);
 
 				-- CS log corner points
 				-- CS log fill points
 
 				-- Warn about floating polygons:
 				if et_schematic.type_net_name.length (polygon.net_name) = 0 then
-					log (message_warning & "Polygon is not connected with any net !");
+					log (message_warning & "Polygon without connection with any net found !");
 				end if;
 
 				-- Reset selectors of "polygon" (variable "polygon" is a scratch variable).
@@ -6968,10 +6968,8 @@ package body et_kicad_pcb is
 							end case;
 
 							et_pcb.route_polygon_properties (route.polygons.last, log_threshold + 3);
-							
-						end if;
 
-						-- CS floating polygons ? net_id = 0 net_name empty
+						end if;
 							
 						next (polygon_cursor);
 					end loop;
@@ -7241,6 +7239,86 @@ package body et_kicad_pcb is
 					end loop;
 
 				end transfer_net_classes;
+
+				procedure transfer_floating_polygons is
+				-- Transfers floating polygons (their net_id is zero) to the schematic module (selector "board.copper.polygons").
+					use type_polygons;
+					polygon_cursor : type_polygons.cursor := board.polygons.first;
+				begin
+					-- search polygons with a net_id of zero:
+					while polygon_cursor /= type_polygons.no_element loop
+						if element (polygon_cursor).net_id = type_net_id'first then
+						-- Transfer kicad polygon to et polygon:
+
+							-- The polygon to be appended to board.copper.polygons is a controlled type.
+							-- Hence, there are selectors (properties) that exist (or do not exist)
+							-- depending on the kind of pad_connection. See spec for type_copper_polygon_pcb
+							-- for details.
+
+							-- These properites of kicad polygons are discarded as there is no need for them:
+							-- net_id, timestamp, hatch_style, hatch_width, filled, fill_mode_segment, arc_segments
+							
+							case element (polygon_cursor).pad_connection is
+								when et_pcb.THERMAL =>
+									module.board.copper.polygons.append (
+										new_item => (et_pcb.type_copper_polygon (element (polygon_cursor)) with
+											pad_connection		=> et_pcb.THERMAL,
+											width_min			=> element (polygon_cursor).min_thickness,
+
+											-- Translate the kicad layer id to the ET signal layer:
+											-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
+											-- The bottom layer in kicad is always number 31. Top layer is number 0.
+											-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
+											layer 				=> et_pcb.type_signal_layer (element (polygon_cursor).layer + 1),
+
+											-- This is the type depended stuff:
+											thermal_technology	=> element (polygon_cursor).pad_technology,
+											thermal_gap			=> element (polygon_cursor).thermal_gap,
+											thermal_width		=> element (polygon_cursor).thermal_width
+										));
+
+								when et_pcb.SOLID =>
+									module.board.copper.polygons.append (
+										new_item => (et_pcb.type_copper_polygon (element (polygon_cursor)) with
+											pad_connection		=> et_pcb.SOLID,
+											width_min			=> element (polygon_cursor).min_thickness,
+											
+											-- Translate the kicad layer id to the ET signal layer:
+											-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
+											-- The bottom layer in kicad is always number 31. Top layer is number 0.
+											-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
+											layer 				=> et_pcb.type_signal_layer (element (polygon_cursor).layer + 1),
+											
+											-- This is the type depended stuff:
+											solid_technology	=> element (polygon_cursor).pad_technology
+										));
+								
+								when et_pcb.NONE =>
+									module.board.copper.polygons.append (
+										new_item => (et_pcb.type_copper_polygon (element (polygon_cursor)) with
+											pad_connection		=> et_pcb.NONE,
+											width_min			=> element (polygon_cursor).min_thickness,
+											
+											-- Translate the kicad layer id to the ET signal layer:
+											-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
+											-- The bottom layer in kicad is always number 31. Top layer is number 0.
+											-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
+											layer 				=> et_pcb.type_signal_layer (element (polygon_cursor).layer + 1)
+
+											-- no further properties
+										));
+
+							end case;
+
+							et_pcb.route_polygon_properties (module.board.copper.polygons.last, log_threshold + 2);
+							log (message_warning & "polygon is not connected with any net !", log_threshold + 2);
+
+						end if;
+							
+						next (polygon_cursor);
+					end loop;
+					
+				end transfer_floating_polygons;
 				
 			begin -- add_board_objects
 				-- General board stuff (not related to any components) is
@@ -7252,7 +7330,7 @@ package body et_kicad_pcb is
 				module.board.keepout 		:= board.keepout;
 				module.board.contour 		:= board.contour;
 
-				-- segments and vias
+				-- segments, vias and polygons (only those polygons that are connected with a net)
 				log_indentation_up;
 				while net_cursor /= type_nets.no_element loop
 
@@ -7350,6 +7428,8 @@ package body et_kicad_pcb is
 					next (component_cursor);
 				end loop;
 
+				transfer_floating_polygons;
+				
 				-- CS if export into ET requested by operator:
 				-- CS export in CAM job file (source: board.plot) ?
 				-- CS export in net class file (source: schematic module.net_classes) ?
