@@ -883,7 +883,7 @@ package body et_configuration is
 	function to_string (cat : in type_component_category) return string is
 	-- returns the given component category as string
 	begin
-		return type_component_category'image (cat);
+		return " " & type_component_category'image (cat);
 	end to_string;
 
 	function to_category (category : in string) return type_component_category is

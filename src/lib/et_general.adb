@@ -37,6 +37,7 @@
 
 with ada.directories;
 
+
 package body et_general is
 
 	
@@ -91,7 +92,9 @@ package body et_general is
 	begin
 		return type_paper_size'image (paper_size);
 	end to_string;
-	
+
+
+
 	-- GENERICS
 	
 	package body stack_lifo is

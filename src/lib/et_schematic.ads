@@ -72,10 +72,11 @@ package et_schematic is
 	-- The name of a project may have 100 characters which seems sufficient for now.
  	project_name_length : constant natural := 100;
 	package type_project_name is new generic_bounded_length (project_name_length); 
-	use type_project_name;
 
 	project_file_handle	: ada.text_io.file_type;
 
+	function to_string (project_name : in type_project_name.bounded_string) return string;
+	
 	function to_project_name (name : in string) return type_project_name.bounded_string;
 	-- Converts the given string to type_project_name.
 	
@@ -853,6 +854,12 @@ package et_schematic is
 	rig : type_rig.map;
 	module_cursor : type_rig.cursor;
 
+	-- The rig has a name like "Blood Sample Analyzer"
+	-- Mostly this is equal to the project name.
+	rig_name_max : constant natural := 100;
+	package type_rig_name is new generic_bounded_length (rig_name_max);
+	
+
 -- CS: a rig should also contain the libraries
 -- 	type type_rig is record
 -- 		libraries	: type_libraries.map;
@@ -1106,6 +1113,24 @@ package et_schematic is
 	-- Writes the statistics on components and nets of the rig.
 	-- Distinguishes between CAD and CAM related things.
 
+	
+-- NATIVE PROJECT
+
+	et_project_name_max : constant natural := 100;
+	package type_et_project_name is new generic_bounded_length (et_project_name_max);
+
+	et_project_path_max : constant natural := 200;
+	package type_et_project_path is new generic_bounded_length (et_project_path_max);
+
+	procedure create_project_directory (
+	-- Creates given project directory in the given project_path.
+	-- Already existing projects in given project_path are overwritten.
+		project_name	: in type_et_project_name.bounded_string;
+		project_path	: in type_et_project_path.bounded_string;
+		log_threshold	: in et_string_processing.type_log_level);
+
+
+	
 	private
 	
 		type type_statistics is record

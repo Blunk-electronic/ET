@@ -185,7 +185,7 @@ procedure et is
 		if length (project_name) > 0 then
 
 			-- If project name was provided with a trailing directory separator it must be removed.
-			project_name := to_bounded_string (strip_directory_separator (to_string (project_name)));
+			project_name := to_bounded_string (strip_directory_separator (et_schematic.to_string (project_name)));
 			validate_project (project_name, et_import.cad_format);
 		else
 			put_line (message_error & "project name not specified !");
@@ -216,7 +216,7 @@ procedure et is
 		-- After the import, we restore the directory.
 		backup_projects_root_directory;
 
-		log ("importing module " & to_string (project_name) & " ...");
+		log ("importing module " & et_schematic.to_string (project_name) & " ...");
 		log ("CAD format " & to_string (et_import.cad_format));
 		
 		-- CS: use case construct to probe cad formats
@@ -283,14 +283,14 @@ procedure et is
 
 			if instances = type_submodule_instance'first then 
 				-- Only one instance requried -> do a regular single design import.
-				log ("importing module " & to_string (module) & " ...");
+				log ("importing module " & et_schematic.to_string (module) & " ...");
 				log ("CAD format " & et_import.to_string (et_import.cad_format));
 				
 				-- CS: use case construct to probe cad formats
 				et_kicad.import_design (project => module, log_threshold => 0);
 
 			else -- multi-instances
-				log ("importing and instantiating module " & to_string (module) & " ...");
+				log ("importing and instantiating module " & et_schematic.to_string (module) & " ...");
 				log ("CAD format " & et_import.to_string (et_import.cad_format));
 				
 				-- Import the project only once.
@@ -403,7 +403,7 @@ procedure et is
 			-- CS: remove routing table in ET/reports
 		end if;
 		
-		et_export.close_report;
+		--et_export.close_report;
 		-- CS might be good to leave the export report open for other things that follow (layout export in native format)
 	
 		exception
@@ -439,6 +439,8 @@ procedure et is
 		-- CS might be good to leave the import report open for other things that follow
 		
 	end read_boards;
+
+
 	
 begin -- main
 
@@ -460,9 +462,28 @@ begin -- main
 			import_module; -- calls import_design (according to CAD format)
 
 			-- check the imported module
-			check_modules; -- updates the netlists of all modules
+			check_modules; -- updates the netlists of all modules. creates and opens export report
 
-			read_boards;
+			read_boards; -- writes in import report. closes import report
+
+			-- Log messages go in the export report:
+			set_output (et_export.report_handle);
+			
+			-- create a new ET project
+			-- It is to be named after the single project that has just been imported.
+			et_schematic.create_project_directory (
+				project_name	=> et_schematic.type_et_project_name.to_bounded_string (et_schematic.to_string (project_name)),
+				project_path	=> et_schematic.type_et_project_path.to_bounded_string (
+									compose (work_directory, directory_et_imports)),
+
+-- 				project_path	=> et_schematic.type_et_project_path.to_bounded_string (
+-- 									compose (
+-- 										containing_directory => compose (work_directory, directory_et_imports),
+-- 										name => directory_et_projects)),
+				log_threshold 	=> 0);
+
+			et_export.close_report;
+
 			
 		when import_modules =>
 
@@ -470,15 +491,35 @@ begin -- main
 			import_modules; -- calls import_design (according to CAD format)
 
 			-- check modules
-			check_modules; -- updates the netlists of all modules
+			check_modules; -- updates the netlists of all modules. creates and opens export report
 
-			read_boards;
+			read_boards; -- writes in import report. closes import report
+
+			-- Log messages go in the export report:
+			set_output (et_export.report_handle);
+			
+			-- create a new ET project
+			-- CS: It is to be named after the rig name passed as argument. currently statically set to "rig"
+			et_schematic.create_project_directory (
+				project_name	=> et_schematic.type_et_project_name.to_bounded_string ("rig"),
+				project_path	=> et_schematic.type_et_project_path.to_bounded_string (
+									compose (work_directory, directory_et_imports)),
+
+-- 				project_path	=> et_schematic.type_et_project_path.to_bounded_string (
+-- 									compose (
+-- 										containing_directory => compose (work_directory, directory_et_imports),
+-- 										name => directory_et_projects)),
+				log_threshold 	=> 0);
+
+			et_export.close_report;
 	end case;
 			
 
 	exception
 		when event:
 			others => 
+				log (ada.exceptions.exception_message (event), console => true);
+				et_export.close_report;
 				set_exit_status (failure);
 
 end et;

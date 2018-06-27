@@ -61,6 +61,11 @@ with et_kicad;
 
 package body et_schematic is
 
+	function to_string (project_name : in type_project_name.bounded_string) return string is
+	begin
+		return type_project_name.to_string (project_name);
+	end to_string;
+	
 	function to_project_name (name : in string) return type_project_name.bounded_string is
 	-- Converts the given string to type_project_name.
 	begin
@@ -6521,6 +6526,55 @@ package body et_schematic is
 		
 		log_indentation_down;
 	end write_statistics;
+
+	
+-- NATIVE PROJECT
+	
+	procedure create_project_directory (
+	-- Creates given project directory in the given project_path.
+	-- Already existing projects in given project_path are overwritten.
+		project_name	: in type_et_project_name.bounded_string;
+		project_path	: in type_et_project_path.bounded_string;
+		log_threshold	: in et_string_processing.type_log_level) is
+		use et_general;
+		use ada.directories;
+		use et_string_processing;
+		use type_et_project_name;
+		use type_et_project_path;
+	begin
+		log ("creating in " & current_directory & " a new " & et_general.system_name & " project directory " 
+				& compose (to_string (project_path), to_string (project_name)) & " ...",
+			log_threshold);
+
+		-- parent directory
+		create_path (compose (to_string (project_path), to_string (project_name)));
+
+		-- library directory (in parent directory)
+		create_directory (
+			compose (
+				containing_directory => compose (to_string (project_path), to_string (project_name)),
+				name => directory_et_libraries
+				));
+		
+		-- CS conf, cam, net class, dru files etc ...
+
+		-- change in project directory
+		set_directory (compose (to_string (project_path), to_string (project_name)));
+
+-- 		create (
+-- 			file => et_project_file,
+-- 			mode => out_file, 
+-- 			name => compose (to_string (project_path), to_string (project_name)),
+
+		
+		exception when event:
+			others => 
+				log (ada.exceptions.exception_message (event), console => true);
+				raise;
+		
+	end create_project_directory;
+
+	
 
 	
 end et_schematic;
