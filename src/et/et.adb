@@ -56,6 +56,7 @@ with et_export;
 with et_configuration;
 with et_kicad;
 with et_kicad_pcb;
+with et_project;
 
 procedure et is
 
@@ -411,7 +412,8 @@ procedure et is
 				others => 
 					et_export.close_report;
 					put_line (standard_output, message_error & "Read export report for warnings and error messages !"); -- CS: show path to report file
-
+					raise;
+				
 	end check_modules;
 
 
@@ -468,18 +470,24 @@ begin -- main
 
 			-- Log messages go in the export report:
 			set_output (et_export.report_handle);
+
+
+			-- In directory work_directory/et_project.directory_et_import two sub-directories
+			-- are to be created: One for libraries (named by directory_et_import) and another
+			-- for the actual project (same name as project itself):
+
+			-- create a new libraries directory
+			et_project.create_libraries_directory (
+				project_path	=> et_project.type_et_project_path.to_bounded_string (
+									compose (work_directory, et_project.directory_import)),
+				log_threshold 	=> 0);
 			
 			-- create a new ET project
 			-- It is to be named after the single project that has just been imported.
-			et_schematic.create_project_directory (
-				project_name	=> et_schematic.type_et_project_name.to_bounded_string (et_schematic.to_string (project_name)),
-				project_path	=> et_schematic.type_et_project_path.to_bounded_string (
-									compose (work_directory, directory_et_imports)),
-
--- 				project_path	=> et_schematic.type_et_project_path.to_bounded_string (
--- 									compose (
--- 										containing_directory => compose (work_directory, directory_et_imports),
--- 										name => directory_et_projects)),
+			et_project.create_project_directory (
+				project_name	=> et_project.type_et_project_name.to_bounded_string (et_schematic.to_string (project_name)),
+				project_path	=> et_project.type_et_project_path.to_bounded_string (
+									compose (work_directory, et_project.directory_import)),
 				log_threshold 	=> 0);
 
 			et_export.close_report;
@@ -497,18 +505,24 @@ begin -- main
 
 			-- Log messages go in the export report:
 			set_output (et_export.report_handle);
+
+			
+			-- In directory work_directory/et_project.directory_et_import two sub-directories
+			-- are to be created: One for libraries (named by directory_et_import) and another
+			-- for the actual project (same name as project itself):
+			
+			-- create a new libraries directory
+			et_project.create_libraries_directory (
+				project_path	=> et_project.type_et_project_path.to_bounded_string (
+									compose (work_directory, et_project.directory_import)),
+				log_threshold 	=> 0);
 			
 			-- create a new ET project
 			-- CS: It is to be named after the rig name passed as argument. currently statically set to "rig"
-			et_schematic.create_project_directory (
-				project_name	=> et_schematic.type_et_project_name.to_bounded_string ("rig"),
-				project_path	=> et_schematic.type_et_project_path.to_bounded_string (
-									compose (work_directory, directory_et_imports)),
-
--- 				project_path	=> et_schematic.type_et_project_path.to_bounded_string (
--- 									compose (
--- 										containing_directory => compose (work_directory, directory_et_imports),
--- 										name => directory_et_projects)),
+			et_project.create_project_directory (
+				project_name	=> et_project.type_et_project_name.to_bounded_string ("rig"),
+				project_path	=> et_project.type_et_project_path.to_bounded_string (
+									compose (work_directory, et_project.directory_import)),
 				log_threshold 	=> 0);
 
 			et_export.close_report;
@@ -519,6 +533,7 @@ begin -- main
 		when event:
 			others => 
 				log (ada.exceptions.exception_message (event), console => true);
+				--et_import.close_report;
 				et_export.close_report;
 				set_exit_status (failure);
 

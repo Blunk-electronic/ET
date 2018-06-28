@@ -1114,22 +1114,6 @@ package et_schematic is
 	-- Distinguishes between CAD and CAM related things.
 
 	
--- NATIVE PROJECT
-
-	et_project_name_max : constant natural := 100;
-	package type_et_project_name is new generic_bounded_length (et_project_name_max);
-
-	et_project_path_max : constant natural := 200;
-	package type_et_project_path is new generic_bounded_length (et_project_path_max);
-
-	procedure create_project_directory (
-	-- Creates given project directory in the given project_path.
-	-- Already existing projects in given project_path are overwritten.
-		project_name	: in type_et_project_name.bounded_string;
-		project_path	: in type_et_project_path.bounded_string;
-		log_threshold	: in et_string_processing.type_log_level);
-
-
 	
 	private
 	
