@@ -490,6 +490,9 @@ begin -- main
 									compose (work_directory, et_project.directory_import)),
 				log_threshold 	=> 0);
 
+			-- write the ET native libraries			
+			et_project.write_libraries (log_threshold => 0);
+			
 			et_export.close_report;
 
 			
@@ -525,9 +528,13 @@ begin -- main
 									compose (work_directory, et_project.directory_import)),
 				log_threshold 	=> 0);
 
+			-- write the ET native libraries
+			et_project.write_libraries (log_threshold => 0);
+			
 			et_export.close_report;
 	end case;
-			
+
+
 
 	exception
 		when event:

@@ -73,7 +73,7 @@ package body et_project is
 		use type_et_project_name;
 		use type_et_project_path;
 
-		package type_path is new generic_bounded_length (project_name_max + project_path_max + 1); -- incl. directory separator
+		package type_path is new generic_bounded_length (project_path_max + directory_libraries'length + 1); -- incl. directory separator
 		use type_path;
 		path : type_path.bounded_string := to_bounded_string (compose (to_string (project_path), directory_libraries));
 	begin
@@ -81,6 +81,11 @@ package body et_project is
 			 & to_string (path) & " ...",
 			log_threshold);
 
+		-- delete previous libraries directory
+		if exists (to_string (path)) then
+			delete_tree (to_string (path));
+		end if;
+		
 		-- create the libraries directory
 		create_path (to_string (path));
 
@@ -121,8 +126,8 @@ package body et_project is
 			log_threshold);
 
 		-- delete previous project directory
-		if exists (to_string (project_path)) then
-			delete_tree (to_string (project_path));
+		if exists (to_string (path)) then
+			delete_tree (to_string (path));
 		end if;
 		
 		-- create project root directory
@@ -170,7 +175,17 @@ package body et_project is
 	end create_project_directory;
 
 	
+	procedure write_libraries (log_threshold : in et_string_processing.type_log_level) is
+	-- Writes the ET native libraries in libraries_directory_name.
+		use et_string_processing;
+-- 		package type_path is new generic_bounded_length (project_path_max + project_path_max + 1); -- incl. directory separator
+-- 		use type_path;
+--		path : type_path.bounded_string := to_bounded_string (compose (to_string (project_path), to_string (project_name)));
 
+	begin
+		log ("writing native libraries ...", log_threshold);
+
+	end write_libraries;
 	
 end et_project;
 	

@@ -108,6 +108,8 @@ package et_project is
 		log_threshold	: in et_string_processing.type_log_level);
 
 
+	procedure write_libraries (log_threshold : in et_string_processing.type_log_level);
+	-- Writes the ET native libraries in libraries_directory_name.
 	
 end et_project;
 
