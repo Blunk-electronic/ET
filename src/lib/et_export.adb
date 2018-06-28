@@ -86,6 +86,8 @@ package body et_export is
 	-- Sets the output back to standard_output.
 	begin
 		if is_open (et_export.report_handle) then
+
+			set_output (et_export.report_handle);
 			
 			put_line (row_separator_double);
 			

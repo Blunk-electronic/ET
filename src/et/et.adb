@@ -533,7 +533,7 @@ begin -- main
 		when event:
 			others => 
 				log (ada.exceptions.exception_message (event), console => true);
-				--et_import.close_report;
+				et_import.close_report;
 				et_export.close_report;
 				set_exit_status (failure);
 

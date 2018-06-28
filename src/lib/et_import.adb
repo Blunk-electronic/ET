@@ -139,7 +139,9 @@ package body et_import is
 	-- Sets the output back to standard_output.
 	begin
 		if is_open (et_import.report_handle) then
-	
+
+			set_output (et_import.report_handle);
+			
 			put_line (row_separator_double);
 
 			if warning_counter = 0 then
