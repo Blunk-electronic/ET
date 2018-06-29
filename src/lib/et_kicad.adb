@@ -2394,8 +2394,8 @@ package body et_kicad is
 								if et_pcb.terminal_port_map_fits (
 									library_name		=> to_full_library_name (
 															to_string (to_full_library_name (
-																root_dir => lib_dir, -- ../lbr
-																lib_name => library_name (content (field_package)))) -- bel_ic
+																group		=> library_group, -- ../lbr
+																lib_name	=> library_name (content (field_package)))) -- bel_ic
 															& package_library_directory_extension),
 									package_name		=> package_name (content (field_package)), -- S_SO14
 									terminal_port_map	=> tmp_terminal_port_map) then
@@ -2416,8 +2416,8 @@ package body et_kicad is
 													-- We compose the full library name from lib_dir (global variable) and the 
 													-- library name. example: projects/lbr/bel_ic
 													library => to_full_library_name (
-														root_dir => lib_dir,
-														lib_name => library_name (content (field_package)))), 
+														group		=> library_group,
+														lib_name	=> library_name (content (field_package)))), 
 
 												-- The terminal to port map tmp_terminal_port_map is now finally copied
 												-- to its final destination:
@@ -2936,7 +2936,7 @@ package body et_kicad is
 		log_indentation_up;
 
 		-- Compose the full name of the package library:
-		full_package_library_name := to_full_library_name (root_dir => lib_dir, lib_name => package_library);
+		full_package_library_name := to_full_library_name (group => library_group, lib_name => package_library);
 
 		-- locate the given component library
 		library_cursor := component_libraries.find (component_library);
@@ -2966,7 +2966,7 @@ package body et_kicad is
 	-- This is required for multiple design instantiations. (things like nucleo_core_1).
 		
 		--use et_import.type_schematic_file_name;
-		use et_libraries.type_library_directory;
+		use et_libraries.type_library_group;
 		use et_schematic;
 
 		function field (line : in type_fields_of_line; position : in positive) return string renames
@@ -3057,15 +3057,15 @@ package body et_kicad is
 					when 2 =>
 						if section_eeschema_entered then
 
-							-- Get root path to libraries (LibDir) and store it in lib_dir (see et_libraries.ads)
-							-- CS: currently we assume only one path here. Provide procedure that sets lib_dir and checks
+							-- Get library group name (LibDir) and store it in library_group (see et_libraries.ads)
+							-- CS: currently we assume only one path here. Provide procedure that sets library_group and checks
 							-- deviations from this rule.
 							if field (line,1) = project_keyword_library_directory then
-								lib_dir := to_bounded_string (field (line,2));
+								library_group := to_bounded_string (field (line,2));
 
 								-- For the log write something like "LibDir ../../lbr"
 								log (project_keyword_library_directory 
-									 & " " & et_libraries.to_string (lib_dir),
+									 & " " & et_libraries.to_string (library_group),
 									log_threshold + 2);
 							end if;
 							
@@ -3084,7 +3084,7 @@ package body et_kicad is
 									container	=> tmp_project_libraries, 
 									new_item	=> type_full_library_name.to_bounded_string (
 										compose (
-											containing_directory	=> et_libraries.to_string (lib_dir),
+											containing_directory	=> et_libraries.to_string (library_group),
 											name					=> field (line,2),
 											extension				=> file_extension_schematic_lib)));
 								

@@ -1196,7 +1196,7 @@ package body et_pcb is
 			if library_cursor = type_libraries.no_element then
 				log_indentation_reset;
 				log (message_error & "package library " & to_string (library_name)
-					 & " not found in " & to_string (lib_dir) 
+					 & " not found in " & to_string (library_group) 
 					 & " !", console => true);
 				raise constraint_error;
 			else

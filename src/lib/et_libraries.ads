@@ -73,22 +73,18 @@ package et_libraries is
     package type_library_names is new doubly_linked_lists (
 		element_type => type_library_name.bounded_string);
 
-	-- The base directory where libraries live is stored in a bounded string:
-	library_directory_length_max : constant positive := 300; -- CS: increase if necessary
-	package type_library_directory is new generic_bounded_length (library_directory_length_max);
+	-- Libraries are grouped (like passive, active, misc, ...). The group name is specified as:
+	library_group_length_max : constant positive := 300; -- CS: increase if necessary
+	package type_library_group is new generic_bounded_length (library_group_length_max);
 
-	-- This is the library root directory for ALL projects (or for the whole rig).
-	-- We assume all projects have their libraries stored in the same directory.
-	lib_dir : type_library_directory.bounded_string;
-	-- CS: In the future this should be a list of paths as project libraries may be spread
-	-- in other directories. For example kicad defines that in the project file in a manner
-	-- like "LibDir=../../lbr;/home/tmp/.."
+	-- This is the library group directory.
+	library_group : type_library_group.bounded_string;
+	-- CS: currently there is only one group. In the future this should be a list of groups
 
-	function to_string (directory : in type_library_directory.bounded_string) return string;
-	-- Returns the given library directory as string;
+	function to_string (group : in type_library_group.bounded_string) return string;
 	
-	-- If a library is fully specified with path, name and extension we store them in bounded strings:
-	library_full_name_max : constant positive := library_directory_length_max + library_name_length_max + 4;
+	-- If a library is fully specified with group, name and extension we store them in bounded strings:
+	library_full_name_max : constant positive := library_group_length_max + library_name_length_max + 4;
 	package type_full_library_name is new generic_bounded_length (library_full_name_max);
 	use type_full_library_name;
 
@@ -101,9 +97,9 @@ package et_libraries is
 	-- converts a string to a full library name.
 	
 	function to_full_library_name (
-		root_dir : in type_library_directory.bounded_string;
-		lib_name : in type_library_name.bounded_string) return type_full_library_name.bounded_string;
-	-- composes the full library name from the given root directory and the actual lib name.
+		group		: in type_library_group.bounded_string;
+		lib_name 	: in type_library_name.bounded_string) return type_full_library_name.bounded_string;
+	-- composes the full library name from the given group and the actual lib name.
 	
 	-- Full library names can be stored further-on in a simple list:
 	-- We use a simple list because the order of the library names sometimes matters and must be kept.

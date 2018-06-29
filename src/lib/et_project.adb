@@ -179,21 +179,30 @@ package body et_project is
 	procedure write_libraries (log_threshold : in et_string_processing.type_log_level) is
 	-- Writes the ET native libraries in libraries_directory_name.
 	-- Creates sub-directories for library groups (like active, passive, misc, ...)
+	-- CS: currently only one group is supported. See et_libraries.library_group .
 		use et_string_processing;
 		use ada.directories;
-		lib_dir_length : positive := simple_name (et_libraries.to_string (et_libraries.lib_dir))'length;
-		path_length : positive := type_libraries_directory.length (libraries_directory_name) + lib_dir_length + 1; -- incl. directory separator
+		-- The group may be a path like "../../lbr" or "../passive". 
+		-- We are interested in the simple name like "lbr" or "passive".
+		lib_group_length : positive := simple_name (et_libraries.to_string (et_libraries.library_group))'length;
+
+		-- The path where the group is to be stored is composed of the libraries_directory_name and the group name.
+		path_length : positive := type_libraries_directory.length (libraries_directory_name) + lib_group_length + 1; -- incl. directory separator
 		package type_path is new generic_bounded_length (path_length);
 		use type_path;
 		path : type_path.bounded_string;
 
-	begin
+	begin -- write_libraries
+		
+		-- set the path of the library group:
 		path := to_bounded_string (
 				  compose (
-					type_libraries_directory.to_string (libraries_directory_name), 
-					simple_name (et_libraries.to_string (et_libraries.lib_dir))
+					type_libraries_directory.to_string (libraries_directory_name), -- "libraries"
+					simple_name (et_libraries.to_string (et_libraries.library_group)) -- "passive"
 					)
 				);
+
+		create_path (to_string (path));
 		
 		log ("writing native libraries in " & to_string (path) & " ...", log_threshold);
 

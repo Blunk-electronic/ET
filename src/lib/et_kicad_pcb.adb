@@ -373,7 +373,7 @@ package body et_kicad_pcb is
 			use et_libraries;
 		begin
 			return "file " & ada.directories.compose (
-				to_string (lib_dir), file_name);
+				to_string (library_group), file_name);
 		end path_and_file_name;
 		
 		-- This cursor points to the line being processed (in the list of lines given in "lines"):
@@ -2462,7 +2462,7 @@ package body et_kicad_pcb is
 
 		-- fetch package library names from lib_dir
 		library_names := directory_entries (
-							target_directory	=> et_libraries.to_string (et_libraries.lib_dir), 
+							target_directory	=> et_libraries.to_string (et_libraries.library_group), 
 							category			=> ada.directories.directory,
 							pattern				=> et_kicad.package_library_pattern);
 
@@ -2489,8 +2489,8 @@ package body et_kicad_pcb is
 					container	=> package_libraries,
 -- 					key			=> to_library_name (element (library_name_cursor)),
 					key			=> to_full_library_name (
-										root_dir => lib_dir,
-										lib_name => to_library_name (element (library_name_cursor))),
+										group		=> library_group,
+										lib_name	=> to_library_name (element (library_name_cursor))),
 					inserted	=> library_inserted,
 					position	=> library_cursor,
 					new_item	=> type_packages_library.empty_map);
@@ -2499,7 +2499,7 @@ package body et_kicad_pcb is
 					log_indentation_up;
 					
 					-- change in library (the kicad package library is just a directory like ../lbr/bel_ic.pretty)
-					set_directory (compose (to_string (lib_dir), element (library_name_cursor)));
+					set_directory (compose (to_string (library_group), element (library_name_cursor)));
 					
 					et_pcb.type_libraries.update_element (
 						container	=> package_libraries,
