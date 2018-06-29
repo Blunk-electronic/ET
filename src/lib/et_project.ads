@@ -49,7 +49,7 @@ with ada.containers.ordered_sets;
 
 with et_general;
 with et_coordinates;			use et_coordinates;
-with et_libraries;				use et_libraries;
+with et_libraries;				--use et_libraries;
 with et_string_processing;
 
 
@@ -62,7 +62,7 @@ package et_project is
 	directory_projects		: constant string (1..8)	:= "projects";
 
 	-- native ET libraries live in a parent folder
-	directory_libraries		: constant string (1..3)	:= "lbr";
+	directory_libraries		: constant string (1..9)	:= "libraries";
 
 	-- supplementary stuff of a project
 	directory_dru			: constant string (1..12)	:= "design_rules";
@@ -82,7 +82,7 @@ package et_project is
 
 	-- The current project file name is stored here:
 	package type_project_file_name is new generic_bounded_length (project_path_max + project_name_max + 1); -- incl. directory separator
-	project_file_name : type_project_file_name.bounded_string;
+	project_file_name : type_project_file_name.bounded_string; -- et_projects/led_matrix
 
 	project_file_name_extension : constant string (1..2) := "et";
 	
@@ -90,7 +90,7 @@ package et_project is
 
 	-- The current directory where libraries live is stored here:
 	package type_libraries_directory is new generic_bounded_length (project_path_max + directory_libraries'length + 1); -- incl. directory separator
-	libraries_directory_name : type_libraries_directory.bounded_string;
+	libraries_directory_name : type_libraries_directory.bounded_string; -- ET_projects/lbr
 
 	
 	procedure create_libraries_directory (

@@ -52,6 +52,7 @@ with ada.containers.ordered_maps;
 with et_general;
 with et_coordinates;
 with et_string_processing;
+with et_libraries;
 with et_export;
 with et_import;
 
@@ -177,13 +178,29 @@ package body et_project is
 	
 	procedure write_libraries (log_threshold : in et_string_processing.type_log_level) is
 	-- Writes the ET native libraries in libraries_directory_name.
+	-- Creates sub-directories for library groups (like active, passive, misc, ...)
 		use et_string_processing;
--- 		package type_path is new generic_bounded_length (project_path_max + project_path_max + 1); -- incl. directory separator
--- 		use type_path;
---		path : type_path.bounded_string := to_bounded_string (compose (to_string (project_path), to_string (project_name)));
+		use ada.directories;
+		lib_dir_length : positive := simple_name (et_libraries.to_string (et_libraries.lib_dir))'length;
+		path_length : positive := type_libraries_directory.length (libraries_directory_name) + lib_dir_length + 1; -- incl. directory separator
+		package type_path is new generic_bounded_length (path_length);
+		use type_path;
+		path : type_path.bounded_string;
 
 	begin
-		log ("writing native libraries ...", log_threshold);
+		path := to_bounded_string (
+				  compose (
+					type_libraries_directory.to_string (libraries_directory_name), 
+					simple_name (et_libraries.to_string (et_libraries.lib_dir))
+					)
+				);
+		
+		log ("writing native libraries in " & to_string (path) & " ...", log_threshold);
+
+		exception when event:
+			others => 
+				log (ada.exceptions.exception_message (event), console => true);
+				raise;
 
 	end write_libraries;
 	
