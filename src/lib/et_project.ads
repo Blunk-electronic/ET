@@ -61,9 +61,14 @@ package et_project is
 	-- native ET projects live in a parent folder
 	directory_projects		: constant string (1..8)	:= "projects";
 
-	-- native ET libraries live in a parent folder
-	directory_libraries		: constant string (1..9)	:= "libraries";
-
+	-- native library directories
+	directory_libraries 				: constant string (1..9) 	:= "libraries";	
+	directory_libraries_components		: constant string (1..10) 	:= "components";
+	directory_libraries_components_sym	: constant string (1..7) 	:= "symbols";
+	directory_libraries_components_pac	: constant string (1..8) 	:= "packages";	
+	directory_libraries_components_dev	: constant string (1..7) 	:= "devices";	
+	directory_libraries_schemlets		: constant string (1..9) 	:= "schemlets";
+	
 	-- supplementary stuff of a project
 	directory_dru			: constant string (1..12)	:= "design_rules";
 	directory_cam			: constant string (1..3)	:= "CAM";
@@ -89,12 +94,12 @@ package et_project is
 	project_file_handle : ada.text_io.file_type;
 
 	-- The current directory where libraries live is stored here:
-	package type_libraries_directory is new generic_bounded_length (project_path_max + directory_libraries'length + 1); -- incl. directory separator
-	libraries_directory_name : type_libraries_directory.bounded_string; -- ET_projects/lbr
+	package type_libraries_directory is new generic_bounded_length (project_path_max + directory_libraries_components'length + 1); -- incl. directory separator
+	component_libraries_directory_name : type_libraries_directory.bounded_string; -- ET_projects/lbr
 
 	
-	procedure create_libraries_directory (
-	-- Creates a directory where libraries will live.
+	procedure create_libraries_directory_components (
+	-- Creates a directory where component libraries will live.
 	-- An already existing directory will be overwritten.
 		project_path	: in type_et_project_path.bounded_string;
 		log_threshold	: in et_string_processing.type_log_level);
@@ -108,8 +113,8 @@ package et_project is
 		log_threshold	: in et_string_processing.type_log_level);
 
 
-	procedure write_libraries (log_threshold : in et_string_processing.type_log_level);
-	-- Writes the ET native libraries in libraries_directory_name.
+	procedure write_component_libraries (log_threshold : in et_string_processing.type_log_level);
+	-- Writes the ET native component libraries in libraries_directory_name.
 	
 end et_project;
 

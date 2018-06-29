@@ -476,8 +476,10 @@ begin -- main
 			-- are to be created: One for libraries (named by directory_et_import) and another
 			-- for the actual project (same name as project itself):
 
-			-- create a new libraries directory
-			et_project.create_libraries_directory (
+			-- CS clean up previous imports ?
+			
+			-- create a new libraries directory for components
+			et_project.create_libraries_directory_components (
 				project_path	=> et_project.type_et_project_path.to_bounded_string (
 									compose (work_directory, et_project.directory_import)),
 				log_threshold 	=> 0);
@@ -490,8 +492,8 @@ begin -- main
 									compose (work_directory, et_project.directory_import)),
 				log_threshold 	=> 0);
 
-			-- write the ET native libraries			
-			et_project.write_libraries (log_threshold => 0);
+			-- write the ET native component libraries			
+			et_project.write_component_libraries (log_threshold => 0);
 			
 			et_export.close_report;
 
@@ -508,14 +510,15 @@ begin -- main
 
 			-- Log messages go in the export report:
 			set_output (et_export.report_handle);
-
 			
 			-- In directory work_directory/et_project.directory_et_import two sub-directories
 			-- are to be created: One for libraries (named by directory_et_import) and another
 			-- for the actual project (same name as project itself):
+
+			-- CS clean up previous imports ?
 			
-			-- create a new libraries directory
-			et_project.create_libraries_directory (
+			-- create a new libraries directory for components
+			et_project.create_libraries_directory_components (
 				project_path	=> et_project.type_et_project_path.to_bounded_string (
 									compose (work_directory, et_project.directory_import)),
 				log_threshold 	=> 0);
@@ -528,8 +531,8 @@ begin -- main
 									compose (work_directory, et_project.directory_import)),
 				log_threshold 	=> 0);
 
-			-- write the ET native libraries
-			et_project.write_libraries (log_threshold => 0);
+			-- write the ET native component libraries			
+			et_project.write_component_libraries (log_threshold => 0);
 			
 			et_export.close_report;
 	end case;

@@ -86,6 +86,7 @@ package et_libraries is
 	-- If a library is fully specified with group, name and extension we store them in bounded strings:
 	library_full_name_max : constant positive := library_group_length_max + library_name_length_max + 4;
 	package type_full_library_name is new generic_bounded_length (library_full_name_max);
+	-- CS composite of group and lib name ?
 	use type_full_library_name;
 
 	-- CS: for type_full_library_name: character set, check characters, check length
@@ -1059,7 +1060,7 @@ package et_libraries is
 
 	-- LIBRARIES
 	package type_libraries is new ordered_maps (
-		key_type => type_full_library_name.bounded_string,
+		key_type => type_full_library_name.bounded_string, -- consists of group name and actual library name
 		element_type => type_components.map);
 
 	-- All component models are collected here. This collection applies for the whole rig.
@@ -1067,7 +1068,7 @@ package et_libraries is
 
 	function find_component (
 	-- Searches the given library for the given component. Returns a cursor to that component.
-		library		: in type_full_library_name.bounded_string;
+		library		: in type_full_library_name.bounded_string; -- consists of group name and actual library name
 		component	: in type_component_generic_name.bounded_string) 
 		return type_components.cursor;
 
