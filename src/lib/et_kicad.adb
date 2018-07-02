@@ -2966,7 +2966,7 @@ package body et_kicad is
 	-- This is required for multiple design instantiations. (things like nucleo_core_1).
 		
 		--use et_import.type_schematic_file_name;
-		use et_libraries.type_library_group;
+		use et_libraries.type_library_group_name;
 		use et_schematic;
 
 		function field (line : in type_fields_of_line; position : in positive) return string renames

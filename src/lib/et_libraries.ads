@@ -75,13 +75,13 @@ package et_libraries is
 
 	-- Libraries are grouped (like passive, active, misc, ...). The group name is specified as:
 	library_group_length_max : constant positive := 300; -- CS: increase if necessary
-	package type_library_group is new generic_bounded_length (library_group_length_max);
+	package type_library_group_name is new generic_bounded_length (library_group_length_max);
 
 	-- This is the library group directory.
-	library_group : type_library_group.bounded_string;
+	library_group : type_library_group_name.bounded_string;
 	-- CS: currently there is only one group. In the future this should be a list of groups
 
-	function to_string (group : in type_library_group.bounded_string) return string;
+	function to_string (group : in type_library_group_name.bounded_string) return string;
 	
 	-- If a library is fully specified with group, name and extension we store them in bounded strings:
 	library_full_name_max : constant positive := library_group_length_max + library_name_length_max + 4;
@@ -98,7 +98,7 @@ package et_libraries is
 	-- converts a string to a full library name.
 	
 	function to_full_library_name (
-		group		: in type_library_group.bounded_string;
+		group		: in type_library_group_name.bounded_string;
 		lib_name 	: in type_library_name.bounded_string) return type_full_library_name.bounded_string;
 	-- composes the full library name from the given group and the actual lib name.
 	
@@ -1048,7 +1048,7 @@ package et_libraries is
 	package type_components is new indefinite_ordered_maps (
 		key_type => type_component_generic_name.bounded_string, -- example: "TRANSISTOR_PNP"
 		element_type => type_component);
-	use type_components;
+-- 	use type_components;
 
 	function component_appearance (cursor : in type_components.cursor)
 	-- Returns the component appearance where cursor points to.
@@ -1060,12 +1060,32 @@ package et_libraries is
 
 	-- LIBRARIES
 	package type_libraries is new ordered_maps (
-		key_type => type_full_library_name.bounded_string, -- consists of group name and actual library name
-		element_type => type_components.map);
+		key_type 		=> type_full_library_name.bounded_string, -- consists of group name and actual library name
+		element_type 	=> type_components.map,
+		"=" 			=> type_components."=");
 
 	-- All component models are collected here. This collection applies for the whole rig.
 	component_libraries : type_libraries.map; -- CS: should be part of type_rig. see et_schematic type_rig
 
+
+
+	-- Libraries are stored in ordered maps. The key is the library name,
+	-- the element is a list of components (in a map):
+	package type_library_group is new ordered_maps (
+		key_type		=> type_library_name.bounded_string, -- bel_primitives, bel_primitives ...
+		element_type	=> type_components.map,
+		"=" 			=> type_components."=");
+
+	-- Since there can be many groups (like active, passive, ...) they are stored in 
+	-- an ordered map.
+	package type_libraries_new is new ordered_maps (
+		key_type		=> type_library_group_name.bounded_string, -- active, passive, ...
+		"<" 			=> type_library_group_name."<",
+		element_type 	=> type_library_group.map,
+		"=" 			=> type_library_group."=");
+
+	
+	
 	function find_component (
 	-- Searches the given library for the given component. Returns a cursor to that component.
 		library		: in type_full_library_name.bounded_string; -- consists of group name and actual library name
