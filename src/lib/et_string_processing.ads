@@ -220,7 +220,8 @@ package et_string_processing is
 		console : in boolean := false);
 	
 	function get_field_from_line (
-	-- Extracts a field separated by ifs at position. If trailer is true, the trailing content untiil trailer_to is also returned.
+	-- Extracts a field separated by ifs at position. If trailer is true, the 
+	-- trailing content until trailer_to is also returned.
 		text_in 	: in string;
 		position 	: in positive;
 		ifs 		: in character := latin_1.space;

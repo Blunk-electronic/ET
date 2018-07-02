@@ -1078,12 +1078,16 @@ package et_libraries is
 
 	-- Since there can be many groups (like active, passive, ...) they are stored in 
 	-- an ordered map.
-	package type_libraries_new is new ordered_maps (
+	package type_libraries_neu is new ordered_maps (
 		key_type		=> type_library_group_name.bounded_string, -- active, passive, ...
 		"<" 			=> type_library_group_name."<",
 		element_type 	=> type_library_group.map,
 		"=" 			=> type_library_group."=");
 
+	-- All component models are collected here. This collection applies for the whole rig.
+	component_libraries_neu : type_libraries_neu.map; -- CS: should be part of type_rig. see et_schematic type_rig
+	
+	
 	
 	
 	function find_component (

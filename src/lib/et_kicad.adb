@@ -3001,7 +3001,57 @@ package body et_kicad is
 				section_eeschema_entered := false;
 				section_eeschema_libraries_entered := false;
 			end clear_section_entered_flags;
-		
+
+			procedure insert_library_groups (groups : in string) is
+			-- The library directories (we regard them as groups) must be inserted in the project libraries.
+			-- The given string is something like "../../lbr;../connectors;../misc_components".
+			-- library directories are separated by semicolon.
+				use type_library_group_name;
+				directory_count 	: natural;
+				lib_dir_separator 	: constant string (1..1) := ";";
+				group_cursor 		: type_libraries_neu.cursor;
+				group_inserted 		: boolean;
+				group_name 			: type_library_group_name.bounded_string;
+			begin
+				-- If no library directory is specified then issue a warning, otherwise:
+				if groups'length > 0 then
+
+					-- If there is no semicolon, there is 1 directory.
+					-- If there are two semicolons, there are 2 directories ...
+					directory_count := ada.strings.fixed.count (groups, lib_dir_separator) + 1;
+
+					-- extract directory names and create a group for each of them:
+					for place in 1..directory_count loop
+
+						-- get the directory (or group) name where "place" points to:
+						group_name := to_bounded_string (get_field_from_line (
+												text_in 	=> groups,
+												position 	=> place,
+												ifs 		=> lib_dir_separator (1)));
+
+						-- insert the library group in the component_libraries
+						type_libraries_neu.insert (
+							container	=> component_libraries_neu,
+							position	=> group_cursor,
+							inserted	=> group_inserted,
+							key			=> group_name,
+							new_item	=> type_library_group.empty_map);
+
+						if group_inserted then
+							log_indentation_up;
+							log ("library directory " & to_string (group => group_name), log_threshold + 3);
+							log_indentation_down;
+						else
+							log (message_warning & "multiple library directory " & to_string (group => group_name) & " !");
+						end if;
+						
+					end loop;
+				else
+					log (message_warning & "no directory for libraries specified !");
+				end if;
+			end insert_library_groups;
+
+			
 		begin -- read_project_file
 			log_indentation_reset;
 			log (
@@ -3057,16 +3107,19 @@ package body et_kicad is
 					when 2 =>
 						if section_eeschema_entered then
 
-							-- Get library group name (LibDir) and store it in library_group (see et_libraries.ads)
-							-- CS: currently we assume only one path here. Provide procedure that sets library_group and checks
-							-- deviations from this rule.
+							-- Get library group names (LibDir) and store it in library_group (see et_libraries.ads)
+							-- CS: rework comments
 							if field (line,1) = project_keyword_library_directory then
-								library_group := to_bounded_string (field (line,2));
+								library_group := to_bounded_string (field (line,2)); -- CS remove
 
 								-- For the log write something like "LibDir ../../lbr"
 								log (project_keyword_library_directory 
 									 & " " & et_libraries.to_string (library_group),
-									log_threshold + 2);
+									 log_threshold + 2);
+
+								-- The library directories (we regard them as groups) must be
+								-- inserted in the project libraries.
+								insert_library_groups (field (line,2));
 							end if;
 							
 						end if;
