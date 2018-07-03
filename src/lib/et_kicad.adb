@@ -3037,18 +3037,20 @@ package body et_kicad is
 							key			=> group_name,
 							new_item	=> type_library_group.empty_map);
 
-						-- Insert the library group also in the project_lib_dirs.
-						-- project_lib_dirs is a simple list where the group names are kept in the
-						-- same order as they appear in the project file ("../../lbr;../connectors;../misc_components")
-						-- See more in specs of project_lib_dirs in et_kicad.ads.
-						type_project_lib_dirs.append (project_lib_dirs, group_name);
+						-- The library group could have been inserted earlier by reading another project:
+						if group_inserted then						
+							-- Insert the library group also in the project_lib_dirs.
+							-- project_lib_dirs is a simple list where the group names are kept in the
+							-- same order as they appear in the project file ("../../lbr;../connectors;../misc_components")
+							-- See more in specs of project_lib_dirs in et_kicad.ads.
+							type_project_lib_dirs.append (project_lib_dirs, group_name);
 
-						if group_inserted then
 							log_indentation_up;
 							log ("library directory " & to_string (group => group_name), log_threshold + 3);
 							log_indentation_down;
 						else
-							log (message_warning & "multiple library directory " & to_string (group => group_name) & " !");
+							--log ("message_warning & "multiple library directory " & to_string (group => group_name) & " !");
+							log (" already there -> skipped", log_threshold + 3);
 						end if;
 						
 					end loop;
@@ -3057,7 +3059,7 @@ package body et_kicad is
 				end if;
 			end insert_library_groups;
 
-			procedure insert_libraries is
+			procedure insert_empty_libraries is
 			-- 1. The project_libraries is just a simple list of project libraries (specified in the kicad project
 			--    file by something like LibName1=bel_logic).
 			-- 2. At this time we do not know where these libraries live. 
@@ -3065,10 +3067,10 @@ package body et_kicad is
 			--    the kicad project file by something like LibDir=../../lbr;../connectors).
 			-- 4. This procedure searches the project libraries in the groups (as listed in component_libraries_neu).
 			--    If a project library exists there on file system level, it is created in
-			--    component_libraries_neu also.
+			--    component_libraries_neu (as empty library) also.
 				use type_library_names;
 				library_cursor : type_library_names.cursor := project_libraries.first;
-
+			
 				use type_libraries_neu;
 				group_cursor : type_libraries_neu.cursor;
 
@@ -3076,16 +3078,23 @@ package body et_kicad is
 				-- Creates an empty library in the given group.
 					group_name	: in type_library_group_name.bounded_string;
 					group		: in out type_library_group.map) is
+					lib_inserted : boolean;
+					dummy_cursor : et_libraries.type_library_group.cursor;
 				begin
 					type_library_group.insert (
-						container	=> group,
-						key			=> element (library_cursor),
-						new_item	=> et_libraries.type_components.empty_map
-						);
-					
+						container	=> group, -- library group ../../lbr
+						key			=> element (library_cursor), -- library name "bel_logic"
+						inserted	=> lib_inserted,
+						new_item	=> et_libraries.type_components.empty_map,
+						position	=> dummy_cursor);
+
+					-- The library could have been inserted earlier by reading another project:
+					if not lib_inserted then
+						log (" already there -> skipped", log_threshold + 3);
+					end if;
 				end insert_library;
 				
-			begin -- insert_libraries
+			begin -- insert_empty_libraries
 				
 				-- loop in project_libraries (specified in the kicad project file)
 				while library_cursor /= type_library_names.no_element loop
@@ -3124,7 +3133,7 @@ package body et_kicad is
 
 					next (library_cursor);
 				end loop;
-			end insert_libraries;
+			end insert_empty_libraries;
 			
 		begin -- read_project_file
 			log_indentation_reset;
@@ -3215,16 +3224,25 @@ package body et_kicad is
 											name					=> field (line,2),
 											extension				=> file_extension_schematic_lib)));
 
-								type_library_names.append (
-									container	=> project_libraries, 
-									new_item	=> type_library_name.to_bounded_string (field (line,2)));
+								-- The library could have been referenced by another project already. If so,
+								-- there is no need to append it again to project_libraries.
+								if not type_library_names.contains (
+									container 	=> project_libraries,
+									item		=> type_library_name.to_bounded_string (field (line,2))) then
+									
+										type_library_names.append (
+											container	=> project_libraries, 
+											new_item	=> type_library_name.to_bounded_string (field (line,2)));
 
-								-- NOTE: project_libraries keeps the libraries in the same order as they appear
-								-- in the project file. project_libraries assists search operations.
-								-- See specs of project_libraries in et_kicad.ads for more.
-								
-								-- For the log write something like "LibName bel_connectors_and_jumpers"
-								log (field (line,1) & " " & field (line,2), log_threshold + 2);
+										-- NOTE: project_libraries keeps the libraries in the same order as they appear
+										-- in the project file. project_libraries assists search operations.
+										-- See specs of project_libraries in et_kicad.ads for more.
+										
+										-- For the log write something like "LibName bel_connectors_and_jumpers"
+										log (field (line,1) & " " & field (line,2), log_threshold + 2);
+								else
+									log (" already there -> skipped", log_threshold + 2);
+								end if;
 
 							end if;
 
@@ -3240,7 +3258,7 @@ package body et_kicad is
 			end loop;
 
 			-- insert empty libraries in the groups of component_libraries_neu
-			insert_libraries;
+			insert_empty_libraries;
 			
 			close (project_file_handle);
 
@@ -6672,7 +6690,7 @@ package body et_kicad is
 				-- read package libraries (in lib_dir)
 				et_kicad_pcb.read_libraries (log_threshold);
 				
-				-- read component libraries (in lib_dir)
+				-- read component libraries
 				read_components_libraries (log_threshold);
 
 				current_schematic := top_level_schematic;
