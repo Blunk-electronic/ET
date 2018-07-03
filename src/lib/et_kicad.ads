@@ -100,7 +100,16 @@ package et_kicad is
     project_keyword_library_name            : constant string (1..7)  := "LibName"; -- with index like "LibName1"
 
 	-- when reading the projec file, the project library names are collected here temporarily:
-	tmp_project_libraries					: et_libraries.type_full_library_names.list;
+	tmp_project_libraries : et_libraries.type_full_library_names.list; -- CS remove
+
+	-- The order of project libraries and their containing directories 
+	-- matters (for search operations).
+	-- For this reason we keep them in a simple list.
+	project_libraries : et_libraries.type_library_names.list;
+	package type_project_lib_dirs is new doubly_linked_lists (
+		element_type => et_libraries.type_library_group_name.bounded_string, -- active, passive, ...
+		"=" => et_libraries.type_library_group_name."=");
+	project_lib_dirs : type_project_lib_dirs.list;
 
 -- COMPONENT TEXT FIELDS
 

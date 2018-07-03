@@ -104,9 +104,10 @@ package et_libraries is
 	
 	-- Full library names can be stored further-on in a simple list:
 	-- We use a simple list because the order of the library names sometimes matters and must be kept.
-    package type_full_library_names is new doubly_linked_lists (
+    package type_full_library_names is new doubly_linked_lists ( -- CS remove
 		element_type => type_full_library_name.bounded_string);
 
+	
 	-- When accessing library files we need this:
 	library_handle : ada.text_io.file_type;
 	
