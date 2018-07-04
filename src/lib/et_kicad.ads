@@ -104,11 +104,9 @@ package et_kicad is
 
 	-- The order of project libraries and their containing directories 
 	-- matters (for search operations).
-	-- For this reason we keep them in a simple list.
-	-- CS: if multiple projects are imported, their project libraries
-	-- and directories are also appended to the lists. All projects should
-	-- have the same libraries and directories specified in the project files.
-	-- There should be a separtion between indiviudal projects.
+	-- For this reason we keep them in simple lists.
+	-- If multiple projects are imported, these lists are always
+	-- cleared when a project file is read. See procedure read_project_file.
 	project_libraries : et_libraries.type_library_names.list;
 	package type_project_lib_dirs is new doubly_linked_lists (
 		element_type => et_libraries.type_library_group_name.bounded_string, -- active, passive, ...
