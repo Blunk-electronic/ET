@@ -6739,7 +6739,7 @@ package body et_kicad is
 					raise constraint_error;
 				end if;
 
-				-- read package libraries (in lib_dir)
+				-- read package libraries
 				et_kicad_pcb.read_libraries (log_threshold);
 				
 				-- read component libraries

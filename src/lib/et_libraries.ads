@@ -1070,8 +1070,9 @@ package et_libraries is
 
 
 
+	
 	-- Libraries are stored in ordered maps. The key is the library name,
-	-- the element is a list of components (in a map):
+	-- the element is a list of components. This makes a library group:
 	package type_library_group is new ordered_maps (
 		key_type		=> type_library_name.bounded_string, -- bel_primitives, bel_primitives ...
 		element_type	=> type_components.map,

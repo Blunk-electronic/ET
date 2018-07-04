@@ -2348,6 +2348,9 @@ package body et_kicad_pcb is
 		use et_general.type_directory_entries;
 		use et_pcb;
 
+		use et_kicad.type_project_lib_dirs;
+		group_cursor : et_kicad.type_project_lib_dirs.cursor := et_kicad.project_lib_dirs.first;
+	
 		-- backup the directory of origin
 		use type_directory_name;
 		origin_directory : type_directory_name.bounded_string := to_bounded_string (current_directory);
@@ -2459,68 +2462,79 @@ package body et_kicad_pcb is
 	
 	begin -- read_libraries
 		log ("reading package libraries ...", log_threshold);
-
-		-- fetch package library names from lib_dir
-		library_names := directory_entries (
-							target_directory	=> et_libraries.to_string (et_libraries.library_group), 
-							category			=> ada.directories.directory,
-							pattern				=> et_kicad.package_library_pattern);
-
 		log_indentation_up;
 
-		-- Abort if there are no package libraries. Otherwise loop through the library names
-		-- and create the libraries in container package_libraries.
-		if is_empty (library_names) then
-			log_indentation_reset;
-			log (message_error & "no package libraries found !");
-			raise constraint_error;
-		else
-			-- show number of package libraries
-			log ("found" & count_type'image (length (library_names)) & " libraries", log_threshold + 1);
-			log_indentation_up;
-
-			-- Loop through library names and create the actual libraries in container package_libraries:
-			library_name_cursor := library_names.first;
-			while library_name_cursor /= type_directory_entries.no_element loop
-				log ("reading " & element (library_name_cursor) & " ...", log_threshold + 2);
-
-				-- create the (empty) library
-				et_pcb.type_libraries.insert (
-					container	=> package_libraries,
--- 					key			=> to_library_name (element (library_name_cursor)),
-					key			=> to_full_library_name (
-										group		=> library_group,
-										lib_name	=> to_library_name (element (library_name_cursor))),
-					inserted	=> library_inserted,
-					position	=> library_cursor,
-					new_item	=> type_packages_library.empty_map);
-
-				if library_inserted then
-					log_indentation_up;
-					
-					-- change in library (the kicad package library is just a directory like ../lbr/bel_ic.pretty)
-					set_directory (compose (to_string (library_group), element (library_name_cursor)));
-					
-					et_pcb.type_libraries.update_element (
-						container	=> package_libraries,
-						position	=> library_cursor,
-						process		=> read_package_names'access);
-
-					-- change back to directory of origin
-					set_directory (et_pcb.to_string (origin_directory));
-					log_indentation_down;
-				else
-					log_indentation_up;
-					log ("already loaded -> skipped", log_threshold + 2);
-					log_indentation_down;
-				end if;
-				
-				next (library_name_cursor);
-			end loop;
-
-			log_indentation_down;
-		end if;
+		-- CS copy groups from component_libraries_neu to package_libraries_neu
 		
+		while group_cursor /= et_kicad.type_project_lib_dirs.no_element loop
+		
+			-- fetch package library names from group indicated by group_cursor
+			library_names := directory_entries (
+				--target_directory	=> et_libraries.to_string (et_libraries.library_group),
+				target_directory	=> et_libraries.to_string (element (group_cursor)),  
+				category			=> ada.directories.directory,
+				pattern				=> et_kicad.package_library_pattern);
+
+
+			-- Notify operator that there are no package libraries.
+			-- Otherwise loop through the library names
+			-- and create the libraries in container package_libraries.
+			if is_empty (library_names) then
+-- 				log_indentation_reset;
+-- 				log (message_error & "no package libraries found !");
+-- 				raise constraint_error;
+				log ("no package libraries found here");
+			else
+				-- show number of package libraries
+				log ("found" & count_type'image (length (library_names)) & " libraries", log_threshold + 1);
+				log_indentation_up;
+
+				-- Loop through library names and create the actual libraries in container package_libraries:
+				library_name_cursor := library_names.first;
+				while library_name_cursor /= type_directory_entries.no_element loop
+					log ("reading " & element (library_name_cursor) & " ...", log_threshold + 2);
+
+					-- create the (empty) library
+					et_pcb.type_libraries.insert (
+						container	=> package_libraries,
+	-- 					key			=> to_library_name (element (library_name_cursor)),
+						key			=> to_full_library_name (
+											group		=> library_group,
+											lib_name	=> to_library_name (element (library_name_cursor))),
+						inserted	=> library_inserted,
+						position	=> library_cursor,
+						new_item	=> type_packages_library.empty_map);
+
+					if library_inserted then
+						log_indentation_up;
+						
+						-- change in library (the kicad package library is just a directory like ../lbr/bel_ic.pretty)
+						set_directory (compose (to_string (library_group), element (library_name_cursor)));
+						
+						et_pcb.type_libraries.update_element (
+							container	=> package_libraries,
+							position	=> library_cursor,
+							process		=> read_package_names'access);
+
+						-- change back to directory of origin
+						set_directory (et_pcb.to_string (origin_directory));
+						log_indentation_down;
+					else
+						log_indentation_up;
+						log ("already loaded -> skipped", log_threshold + 2);
+						log_indentation_down;
+					end if;
+					
+					next (library_name_cursor);
+				end loop;
+
+				log_indentation_down;
+			end if;
+
+
+			next (group_cursor);
+		end loop;
+
 		log_indentation_down;
 
 		exception
