@@ -799,6 +799,9 @@ package et_libraries is
 		end case;
 	end record;
 
+	package type_symbols is new indefinite_ordered_maps (
+		element_type	=> type_symbol,
+		key_type		=> type_symbol_name.bounded_string);
 
 
 	unit_name_length_max : constant natural := 50;	
@@ -1070,26 +1073,7 @@ package et_libraries is
 
 
 
-	
-	-- Libraries are stored in ordered maps. The key is the library name,
-	-- the element is a list of components. This makes a library group:
-	package type_library_group is new ordered_maps (
-		key_type		=> type_library_name.bounded_string, -- bel_primitives, bel_primitives ...
-		element_type	=> type_components.map,
-		"=" 			=> type_components."=");
 
-	-- Since there can be many groups (like active, passive, ...) they are stored in 
-	-- an ordered map.
-	package type_libraries_neu is new ordered_maps (
-		key_type		=> type_library_group_name.bounded_string, -- active, passive, ...
-		"<" 			=> type_library_group_name."<",
-		element_type 	=> type_library_group.map,
-		"=" 			=> type_library_group."=");
-
-	-- All component models are collected here. This collection applies for the whole rig.
-	component_libraries_neu : type_libraries_neu.map; -- CS: should be part of type_rig. see et_schematic type_rig
-	
-	
 	
 	
 	function find_component (

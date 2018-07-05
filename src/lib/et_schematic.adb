@@ -4318,7 +4318,7 @@ package body et_schematic is
 
 			use type_components;
 			component_sch : type_components.cursor := module.components.first;
-			library_cursor : type_libraries.cursor;
+			library_cursor : et_libraries.type_libraries.cursor;
 
 			use type_libraries;
 			
@@ -4475,12 +4475,12 @@ package body et_schematic is
 
 				-- Set library cursor so that it points to the library
 				-- of the generic model.
-				library_cursor := find (
-					container => component_libraries, -- the collection of project libraries with generic models
+				library_cursor := et_libraries.type_libraries.find (
+					container => et_libraries.component_libraries, -- the collection of project libraries with generic models
 					key => element (component_sch).library_name); -- lib name provided by schematic component
 
 				-- Query the library components.
-				query_element (
+				et_libraries.type_libraries.query_element (
 					position => library_cursor,
 					process => query_library_components'access);
 				
@@ -5066,7 +5066,7 @@ package body et_schematic is
 			package_variant	: type_component_variant_name.bounded_string;
 
 			use type_libraries;
-			library_cursor	: type_libraries.cursor;
+			library_cursor	: et_libraries.type_libraries.cursor;
 
 			procedure locate_component_in_library (
 				library_name 	: in type_full_library_name.bounded_string;
@@ -5160,9 +5160,9 @@ package body et_schematic is
 			package_variant := element (component_cursor).variant; -- get the package variant name of the component
 
 			-- set library cursor. NOTE: assumption is that there is a library with this name
-			library_cursor := component_libraries.find (library_name); 
+			library_cursor := et_libraries.component_libraries.find (library_name); 
 
-			query_element (
+			et_libraries.type_libraries.query_element (
 				position => library_cursor,
 				process => locate_component_in_library'access);
 
@@ -5217,7 +5217,7 @@ package body et_schematic is
 			package_variant	: type_component_variant_name.bounded_string;
 
 			use type_libraries;
-			library_cursor	: type_libraries.cursor;
+			library_cursor	: et_libraries.type_libraries.cursor;
 
 			procedure locate_component_in_library (
 				library_name 	: in type_full_library_name.bounded_string;
@@ -5317,9 +5317,9 @@ package body et_schematic is
 			package_variant := element (component_cursor).variant; -- get the package variant name of the component
 
 			-- set library cursor. NOTE: assumption is that there is a library with this name
-			library_cursor := component_libraries.find (library_name); 
+			library_cursor := et_libraries.component_libraries.find (library_name); 
 
-			query_element (
+			et_libraries.type_libraries.query_element (
 				position => library_cursor,
 				process => locate_component_in_library'access);
 
@@ -5503,7 +5503,7 @@ package body et_schematic is
 			package_variant	: type_component_variant_name.bounded_string;
 
 			use type_libraries;
-			library_cursor	: type_libraries.cursor;
+			library_cursor	: et_libraries.type_libraries.cursor;
 
 			procedure locate_component_in_library (
 			-- Locates the given component by its generic name in the library.
@@ -5619,10 +5619,10 @@ package body et_schematic is
 				
 				-- set library cursor. NOTE: assumption is that there is a library with this name.
 				-- Otherwise an exception would occur here.
-				library_cursor := component_libraries.find (library_name); 
+				library_cursor := et_libraries.component_libraries.find (library_name); 
 
-				if library_cursor /= type_libraries.no_element then
-					query_element (
+				if et_libraries.type_libraries."/=" (library_cursor, et_libraries.type_libraries.no_element) then
+					et_libraries.type_libraries.query_element (
 						position	=> library_cursor,
 						process		=> locate_component_in_library'access);
 				else -- library not found -> abort

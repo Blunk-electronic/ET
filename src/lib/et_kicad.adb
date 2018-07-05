@@ -3016,7 +3016,7 @@ package body et_kicad is
 				use type_library_group_name;
 				directory_count 	: natural;
 				lib_dir_separator 	: constant string (1..1) := ";";
-				group_cursor 		: type_libraries_neu.cursor;
+				group_cursor 		: et_schematic.type_libraries.cursor;
 				group_inserted 		: boolean;
 				group_name 			: type_library_group_name.bounded_string;
 			begin
@@ -3055,12 +3055,11 @@ package body et_kicad is
 						if exists (to_string (group => group_name)) then
 							
 							-- insert the library group in the component_libraries
-							type_libraries_neu.insert (
-								container	=> component_libraries_neu,
+							et_schematic.type_libraries.insert (
+								container	=> et_schematic.component_libraries,
 								position	=> group_cursor,
 								inserted	=> group_inserted,
-								key			=> group_name,
-								new_item	=> type_library_group.empty_map);
+								key			=> group_name);
 
 							-- The library group may have been inserted earlier by reading another project:
 							if not group_inserted then						
@@ -3081,7 +3080,7 @@ package body et_kicad is
 				log_indentation_down;
 			end insert_library_groups;
 
-			procedure insert_empty_libraries (
+			procedure insert_empty_libraries ( -- CS in kicad groups !
 				log_threshold : in type_log_level) is
 			-- Creates empty libraries in the still empty library groups.
 			-- The names of the libraries are taken from the list project_libraries.
@@ -3101,25 +3100,25 @@ package body et_kicad is
 				use type_project_lib_dirs;
 				group_cursor : type_project_lib_dirs.cursor;
 			
-				procedure insert_library (
-				-- Creates an empty library in the given group.
-					group_name	: in type_library_group_name.bounded_string;
-					group		: in out type_library_group.map) is
-					lib_inserted : boolean;
-					dummy_cursor : et_libraries.type_library_group.cursor;
-				begin
-					type_library_group.insert (
-						container	=> group, -- library group ../../lbr
-						key			=> element (library_cursor), -- library name "bel_logic"
-						inserted	=> lib_inserted,
-						new_item	=> et_libraries.type_components.empty_map,
-						position	=> dummy_cursor);
-
-					-- The library could have been inserted earlier by reading another project:
-					if not lib_inserted then
-						log (" already there -> skipped", log_threshold + 3);
-					end if;
-				end insert_library;
+-- 				procedure insert_library (
+-- 				-- Creates an empty library in the given group.
+-- 					group_name	: in type_library_group_name.bounded_string;
+-- 					group		: in out type_library_group.map) is
+-- 					lib_inserted : boolean;
+-- 					dummy_cursor : et_schematic.type_library_group.cursor;
+-- 				begin
+-- 					type_library_group.insert (
+-- 						container	=> group, -- library group ../../lbr
+-- 						key			=> element (library_cursor), -- library name "bel_logic"
+-- 						inserted	=> lib_inserted,
+-- 						new_item	=> et_libraries.type_components.empty_map,
+-- 						position	=> dummy_cursor);
+-- 
+-- 					-- The library could have been inserted earlier by reading another project:
+-- 					if not lib_inserted then
+-- 						log (" already there -> skipped", log_threshold + 3);
+-- 					end if;
+-- 				end insert_library;
 				
 			begin -- insert_empty_libraries
 				log ("creating empty libraries ...", log_threshold);
@@ -3156,10 +3155,11 @@ package body et_kicad is
 								log ("found", log_threshold + 3);
 
 								-- create empty library in the group of component_libraries_neu
-								type_libraries_neu.update_element (
-									container	=> component_libraries_neu,
-									position	=> type_libraries_neu.find (component_libraries_neu, element (group_cursor)),
-									process		=> insert_library'access);
+								-- CS
+								--type_libraries_neu.update_element (
+								--	container	=> component_libraries_neu,
+								--	position	=> type_libraries_neu.find (component_libraries_neu, element (group_cursor)),
+								--	process		=> insert_library'access);
 
 								log_indentation_down;
 
@@ -3308,7 +3308,7 @@ package body et_kicad is
 				
 			end loop;
 
-			-- Insert empty libraries in the groups of component_libraries_neu.
+			-- Insert empty libraries in the groups of kicad libraries ! CS
 			-- The names of the libraries are taken from the list project_libraries.
 			insert_empty_libraries (log_threshold + 3);
 			
@@ -5596,12 +5596,12 @@ package body et_kicad is
 					log_threshold	: in et_string_processing.type_log_level)
 					return type_full_library_name.bounded_string is -- the full library name like "../libraries/resistors.lib"
 
-					use type_libraries;
+					use et_libraries.type_libraries;
 					use type_full_library_name;
 				
 					component_found : boolean := false; -- goes true once the given component was found in any library
 					
-					lib_cursor : type_libraries.cursor := component_libraries.first; -- points to the library being searched in
+					lib_cursor : et_libraries.type_libraries.cursor := et_libraries.component_libraries.first; -- points to the library being searched in
 					library : type_full_library_name.bounded_string; -- the full library name to be returned
 
 					procedure query_components (
@@ -5635,7 +5635,7 @@ package body et_kicad is
 					log ("locating library containing generic component " & to_string (component) & " ...", log_threshold);
 					
 					-- loop in libraries and exit prematurely once a library with the given component was found
-					while lib_cursor /= type_libraries.no_element loop
+					while lib_cursor /= et_libraries.type_libraries.no_element loop
 						log_indentation_up;
 						log ("probing " 
 							 & et_libraries.to_string (key (lib_cursor)) 

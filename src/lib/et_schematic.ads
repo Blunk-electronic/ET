@@ -810,6 +810,21 @@ package et_schematic is
 	use type_netlist;
 
 
+-- LIBRARIES
+	type type_library is record
+		devices		: et_libraries.type_components.map;
+		symbols		: et_libraries.type_symbols.map;
+		packages	: et_pcb.type_packages_library.map;
+	end record;
+		
+	package type_libraries is new ordered_maps (
+		key_type		=> type_library_group_name.bounded_string, -- active, passive, ...
+		"<" 			=> type_library_group_name."<",
+		element_type	=> type_library);
+
+	-- All component models are collected here. This collection applies for the whole rig.
+	component_libraries : type_libraries.map; -- CS: should be part of type_rig. see et_schematic type_rig
+
 	
 -- MODULES
 	

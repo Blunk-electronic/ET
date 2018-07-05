@@ -1124,25 +1124,6 @@ package et_pcb is
 
 
 
-	-- Libraries are stored in ordered maps. The key is the library name,
-	-- the element is a list of packages. This makes a library group:
-	package type_library_group is new ordered_maps (
-		key_type		=> et_libraries.type_library_name.bounded_string, -- smd_packages, tht_packages, ...
-		"<"				=> et_libraries.type_library_name."<",
-		element_type	=> type_packages_library.map);
-
-	-- Since there can be many groups (like active, passive, ...) they are stored in 
-	-- an ordered map.
-	package type_package_libraries_neu is new ordered_maps (
-		key_type		=> et_libraries.type_library_group_name.bounded_string, -- active, passive, ...
-		"<" 			=> et_libraries.type_library_group_name."<",
-		element_type 	=> type_library_group.map,
-		"=" 			=> type_library_group."=");
-
-	-- All packaget models are collected here.
-	package_libraries_neu : type_package_libraries_neu.map;
-
-	
 
 
 
