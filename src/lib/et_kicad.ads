@@ -40,6 +40,7 @@ with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
+with ada.containers.ordered_maps;
 
 with et_schematic;
 with et_import;
@@ -98,6 +99,17 @@ package et_kicad is
     project_keyword_version                 : constant string (1..7)  := "version";
 	project_keyword_library_directory       : constant string (1..6)  := "LibDir";
     project_keyword_library_name            : constant string (1..7)  := "LibName"; -- with index like "LibName1"
+
+
+	-- LIBRARIES
+	package type_libraries is new ordered_maps (
+		key_type 		=> et_libraries.type_full_library_name.bounded_string, -- consists of group name and actual library name
+		"<"				=> et_libraries.type_full_library_name."<",
+		element_type 	=> et_libraries.type_components.map,
+		"=" 			=> et_libraries.type_components."=");
+
+	-- All component models are collected here.
+	component_libraries : type_libraries.map;
 
 	-- when reading the projec file, the project library names are collected here temporarily:
 	tmp_project_libraries : et_libraries.type_full_library_names.list; -- CS remove

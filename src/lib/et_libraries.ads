@@ -1062,14 +1062,14 @@ package et_libraries is
 	-- procedure write_component_properties (component : in type_components.cursor);
 	-- Writes the properties of the component indicated by the given cursor.
 
-	-- LIBRARIES
-	package type_libraries is new ordered_maps (
-		key_type 		=> type_full_library_name.bounded_string, -- consists of group name and actual library name
-		element_type 	=> type_components.map,
-		"=" 			=> type_components."=");
-
-	-- All component models are collected here. This collection applies for the whole rig.
-	component_libraries : type_libraries.map; -- CS: should be part of type_rig. see et_schematic type_rig
+-- 	-- LIBRARIES
+-- 	package type_libraries is new ordered_maps (
+-- 		key_type 		=> type_full_library_name.bounded_string, -- consists of group name and actual library name
+-- 		element_type 	=> type_components.map,
+-- 		"=" 			=> type_components."=");
+-- 
+-- 	-- All component models are collected here. This collection applies for the whole rig.
+-- 	component_libraries : type_libraries.map; -- CS: should be part of type_rig. see et_schematic type_rig
 
 
 

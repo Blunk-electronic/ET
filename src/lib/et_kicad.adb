@@ -572,8 +572,8 @@ package body et_kicad is
 		-- before inserting an empty library in the library list et_libraries.component_libraries :
 		lib_file_name	: et_libraries.type_full_library_name.bounded_string;
 
-		-- This is the library cursor. It points to the library being processed (in the list et_libraries.component_libraries):
-		lib_cursor		: et_libraries.type_libraries.cursor;
+		-- This is the library cursor. It points to the library being processed (in the list component_libraries):
+		lib_cursor		: type_libraries.cursor;
 		lib_inserted	: boolean; -- indicates whether a library has been inserted
 
 		-- This is the component cursor. It points to the component being processed.
@@ -5596,12 +5596,12 @@ package body et_kicad is
 					log_threshold	: in et_string_processing.type_log_level)
 					return type_full_library_name.bounded_string is -- the full library name like "../libraries/resistors.lib"
 
-					use et_libraries.type_libraries;
+					use type_libraries;
 					use type_full_library_name;
 				
 					component_found : boolean := false; -- goes true once the given component was found in any library
 					
-					lib_cursor : et_libraries.type_libraries.cursor := et_libraries.component_libraries.first; -- points to the library being searched in
+					lib_cursor : type_libraries.cursor := component_libraries.first; -- points to the library being searched in
 					library : type_full_library_name.bounded_string; -- the full library name to be returned
 
 					procedure query_components (
@@ -5635,7 +5635,7 @@ package body et_kicad is
 					log ("locating library containing generic component " & to_string (component) & " ...", log_threshold);
 					
 					-- loop in libraries and exit prematurely once a library with the given component was found
-					while lib_cursor /= et_libraries.type_libraries.no_element loop
+					while lib_cursor /= type_libraries.no_element loop
 						log_indentation_up;
 						log ("probing " 
 							 & et_libraries.to_string (key (lib_cursor)) 
