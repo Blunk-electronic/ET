@@ -104,6 +104,7 @@ package et_kicad is
 	-- LIBRARIES
 	package type_libraries is new ordered_maps (
 		key_type 		=> et_libraries.type_full_library_name.bounded_string, -- consists of group name and actual library name
+		-- CS the key should be a composite of lib name and lib group
 		"<"				=> et_libraries.type_full_library_name."<",
 		element_type 	=> et_libraries.type_components.map,
 		"=" 			=> et_libraries.type_components."=");
@@ -111,15 +112,16 @@ package et_kicad is
 	-- All component models are collected here.
 	component_libraries : type_libraries.map;
 
-	-- when reading the projec file, the project library names are collected here temporarily:
+	-- when reading the project file, the project library names are collected here temporarily:
 	tmp_project_libraries : et_libraries.type_full_library_names.list; -- CS remove
 
+	-- LIBRARY SEARCH LISTS
 	-- The order of project libraries and their containing directories 
 	-- matters (for search operations).
 	-- For this reason we keep them in simple lists.
 	-- If multiple projects are imported, these lists are always
 	-- cleared when a project file is read. See procedure read_project_file.
-	project_libraries : et_libraries.type_library_names.list;
+	project_libraries : et_libraries.type_library_names.list; -- bel_logic, bel_primitives, ...
 	package type_project_lib_dirs is new doubly_linked_lists (
 		element_type => et_libraries.type_library_group_name.bounded_string, -- active, passive, ...
 		"=" => et_libraries.type_library_group_name."=");
@@ -415,7 +417,34 @@ package et_kicad is
 	function package_name (text : in string) return et_libraries.type_component_package_name.bounded_string;
 	-- extracts from a string like "bel_ic:S_SO14" the package name "S_SO14"
 
+
+	-- CS derived type_module (from et_schematic)
+	rig : et_schematic.type_rig.map;
+	module_cursor : et_schematic.type_rig.cursor;
+
 	
+
+	function first_strand return et_schematic.type_strands.cursor;
+	-- Returns a cursor pointing to the first strand of the module (indicated by module_cursor).
+
+	
+	procedure update_strand_names (log_threshold : in et_string_processing.type_log_level);
+	-- Tests if a power out port is connected to a strand and renames the strand if necessary.	
+	-- Depending on the CAE system power-out or power-in ports may enforce their name on a strand.
+
+	
+	function find_component (
+	-- Searches the given library for the given component. Returns a cursor to that component.
+		library		: in et_libraries.type_full_library_name.bounded_string; -- consists of group name and actual library name
+		component	: in et_libraries.type_component_generic_name.bounded_string) 
+		return et_libraries.type_components.cursor;
+
+
+	function build_portlists (log_threshold : in et_string_processing.type_log_level) 
+		return et_schematic.type_portlists.map;
+	-- Returns a list of components with the absolute positions of their ports as they are placed in the schematic.
+
+		
 end et_kicad;
 
 -- Soli Deo Gloria

@@ -810,20 +810,20 @@ package et_schematic is
 	use type_netlist;
 
 
--- LIBRARIES
-	type type_library is record
-		devices		: et_libraries.type_components.map;
-		symbols		: et_libraries.type_symbols.map;
-		packages	: et_pcb.type_packages_library.map;
-	end record;
-		
-	package type_libraries is new ordered_maps (
-		key_type		=> type_library_group_name.bounded_string, -- active, passive, ...
-		"<" 			=> type_library_group_name."<",
-		element_type	=> type_library);
-
-	-- All component models are collected here. This collection applies for the whole rig.
-	component_libraries : type_libraries.map; -- CS: should be part of type_rig. see et_schematic type_rig
+-- -- LIBRARIES
+-- 	type type_library is record
+-- 		devices		: et_libraries.type_components.map;
+-- 		symbols		: et_libraries.type_symbols.map;
+-- 		packages	: et_pcb.type_packages_library.map;
+-- 	end record;
+-- 		
+-- 	package type_libraries is new ordered_maps (
+-- 		key_type		=> type_library_group_name.bounded_string, -- active, passive, ...
+-- 		"<" 			=> type_library_group_name."<",
+-- 		element_type	=> type_library);
+-- 
+-- 	-- All component models are collected here. This collection applies for the whole rig.
+-- 	component_libraries : type_libraries.map; -- CS: should be part of type_rig. see et_schematic type_rig
 
 	
 -- MODULES
@@ -926,12 +926,24 @@ package et_schematic is
 	-- Inserts a title block in the module (indicated by module_cursor).
 		tblock	: in et_schematic.type_title_block);
 
-	function first_strand return type_strands.cursor;
-	-- Returns a cursor pointing to the first strand of the module (indicated by module_cursor).
+-- 	function first_strand return type_strands.cursor;
+-- 	-- Returns a cursor pointing to the first strand of the module (indicated by module_cursor).
 
-	procedure update_strand_names (log_threshold : in et_string_processing.type_log_level);
-	-- Tests if a power out port is connected to a strand and renames the strand if necessary.	
-	-- Depending on the CAE system power-out or power-in ports may enforce their name on a strand.
+	function port_connected_with_segment (
+	-- Returns true if the given port sits on the given net segment.
+		port	: in type_port'class;
+		segment	: in type_net_segment'class) 		
+		-- NOTE: Passing a cursor to given segment does not work. This measure would make
+		-- excluding the same segment easier in procedure query_segments. The cursor to the given segment
+		-- would be the same type as the segment being inquired, yet they do not point to the same
+		-- memory location. So forget this idea.
+		return boolean;
+
+
+
+-- 	procedure update_strand_names (log_threshold : in et_string_processing.type_log_level);
+-- 	-- Tests if a power out port is connected to a strand and renames the strand if necessary.	
+-- 	-- Depending on the CAE system power-out or power-in ports may enforce their name on a strand.
 	
 	procedure write_strands (log_threshold : in et_string_processing.type_log_level);
 	-- Writes a nice overview of strands, net segments and labels
@@ -1006,8 +1018,8 @@ package et_schematic is
 	
 	function show_danger (danger : in type_danger) return string;
 	
-	function build_portlists (log_threshold : in et_string_processing.type_log_level) return type_portlists.map;
-	-- Returns a list of components with the absolute positions of their ports as they are placed in the schematic.
+-- 	function build_portlists (log_threshold : in et_string_processing.type_log_level) return type_portlists.map;
+-- 	-- Returns a list of components with the absolute positions of their ports as they are placed in the schematic.
 
 	procedure check_junctions (log_threshold : in et_string_processing.type_log_level);
 	-- Verifies that junctions are placed where net segments are connected with each other.

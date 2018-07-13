@@ -3016,7 +3016,7 @@ package body et_kicad is
 				use type_library_group_name;
 				directory_count 	: natural;
 				lib_dir_separator 	: constant string (1..1) := ";";
-				group_cursor 		: et_schematic.type_libraries.cursor;
+				group_cursor 		: et_libraries.type_libraries.cursor;
 				group_inserted 		: boolean;
 				group_name 			: type_library_group_name.bounded_string;
 			begin
@@ -3055,11 +3055,11 @@ package body et_kicad is
 						if exists (to_string (group => group_name)) then
 							
 							-- insert the library group in the component_libraries
-							et_schematic.type_libraries.insert (
-								container	=> et_schematic.component_libraries,
-								position	=> group_cursor,
-								inserted	=> group_inserted,
-								key			=> group_name);
+-- CS						et_libraries.type_libraries.insert (
+-- 								container	=> et_schematic.component_libraries,
+-- 								position	=> group_cursor,
+-- 								inserted	=> group_inserted,
+-- 								key			=> group_name);
 
 							-- The library group may have been inserted earlier by reading another project:
 							if not group_inserted then						
@@ -6851,7 +6851,7 @@ package body et_kicad is
 
 				-- Update strand names according to power in/out ports connected with them:
 				-- This is CAE-system depended ! See details in procedure spec and body.
-				et_schematic.update_strand_names (log_threshold + 1); -- includes portlist generation
+				update_strand_names (log_threshold + 1); -- includes portlist generation
 
 				-- write strands report
 				et_schematic.write_strands (log_threshold + 1);
@@ -6894,6 +6894,728 @@ package body et_kicad is
 		
 	end import_design;
 
+
+	function first_strand return et_schematic.type_strands.cursor is
+	-- Returns a cursor pointing to the first strand of the module (indicated by module_cursor).
+		cursor : et_schematic.type_strands.cursor;	
+
+		procedure set_cursor (
+			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
+			module		: in et_schematic.type_module) is
+ 		begin
+			cursor := module.strands.first;
+		end set_cursor;
+	
+	begin
+		et_schematic.type_rig.query_element (
+			position	=> module_cursor,
+			process		=> set_cursor'access
+			);
+		return cursor;
+	end first_strand;
+
+	function first_port (component_cursor : in et_schematic.type_portlists.cursor) return et_schematic.type_ports.cursor is
+	-- Returns a cursor pointing to the first port of a component in the portlists.
+		port_cursor : et_schematic.type_ports.cursor;
+	
+		procedure set_cursor (
+			name 	: in et_libraries.type_component_reference;
+			ports	: in et_schematic.type_ports.list) is
+		begin
+			port_cursor := et_schematic.type_ports.first (ports);
+		end set_cursor;
+			
+	begin -- first_port
+		et_schematic.type_portlists.query_element (
+			position	=> component_cursor,
+			process 	=> set_cursor'access);
+
+		return port_cursor;
+	end first_port;
+
+	
+	procedure update_strand_names (log_threshold : in et_string_processing.type_log_level) is
+	-- Tests if a power in/out port is connected to a strand and renames the strand if necessary.
+	-- Depending on the CAE system power-out or power-in ports may enforce their name on a strand.
+		use et_string_processing;
+		--use et_schematic;
+	
+		portlists : et_schematic.type_portlists.map := et_schematic.type_portlists.empty_map;
+
+		use et_coordinates;
+		use et_libraries;
+		
+		strand		: et_schematic.type_strands.cursor := first_strand;
+		segment		: et_schematic.type_net_segments.cursor;
+		component	: et_schematic.type_portlists.cursor;
+		port		: et_schematic.type_ports.cursor;
+		
+		use et_schematic.type_strands;
+		use et_schematic.type_net_segments;
+		use et_schematic.type_portlists;
+		use et_schematic.type_ports;
+
+		function to_net_name (port_name : in type_port_name.bounded_string) 
+		-- Converts the given port name to a net name.
+			return et_schematic.type_net_name.bounded_string is
+		begin
+			return et_schematic.type_net_name.to_bounded_string (to_string (port_name));
+		end to_net_name;
+		
+	begin -- update_strand_names
+		log (text => "updating strand names by power-out ports ...", level => log_threshold);
+
+		-- Generate the portlists of the module indicated by module_cursor.
+		portlists := build_portlists (log_threshold + 1);
+
+		-- LOOP IN STRANDS OF MODULE
+		while strand /= et_schematic.type_strands.no_element loop
+			log_indentation_up;
+			log ("strand of net " & et_schematic.to_string (element (strand).name), log_threshold + 3);
+
+			-- LOOP IN SEGMENTS OF STRAND
+			segment := et_schematic.first_segment (strand);
+			while segment /= et_schematic.type_net_segments.no_element loop
+				log_indentation_up;
+				log ("probing segment " & et_schematic.to_string (element (segment)), log_threshold + 3);
+
+				-- LOOP IN COMPONENTS (of portlists)
+				component := first (portlists);
+				while component /= et_schematic.type_portlists.no_element loop
+					log_indentation_up;
+					log ("probing component " & et_libraries.to_string (key (component)), log_threshold + 4);
+
+					-- LOOP IN PORTLIST (of component)
+					port := first_port (component);
+					while port /= et_schematic.type_ports.no_element loop
+						log_indentation_up;
+
+						-- CS: skip already processed ports to improve performance
+
+						log ("probing port " & to_string (position => element (port).coordinates), log_threshold + 4);
+
+						-- test if port is connected with segment
+						if et_schematic.port_connected_with_segment (element (port), element (segment)) then
+							log_indentation_up;
+-- 								log ("match", log_threshold + 2);
+
+							-- Depending on the CAE system power-out or power-in ports may enforce their name
+							-- on a strand.
+							case et_import.cad_format is
+
+								-- With kicad, power-in ports enforce their name on the strand.
+								when et_import.kicad_v4 =>
+
+									-- We are interested in "power in" ports exclusively. Only such ports may enforce their
+									-- name on a strand.
+									if element (port).direction = POWER_IN then
+
+										-- If strand has no name yet, it is to be named after the name of the port that sits on it.
+										-- If strand has a name already, its scope must be global
+										-- because power-in ports are allowed in global strands exclusively !
+										if et_schematic.anonymous (element (strand).name) then
+											log ("component " & et_libraries.to_string (key (component)) 
+												& " port name " & to_string (element (port).name) 
+												& " is a power input -> port name sets strand name", log_threshold + 2);
+
+											-- rename strand
+											et_schematic.rename_strands (
+												name_before => element (strand).name,
+												name_after => to_net_name (element (port).name),
+												log_threshold => log_threshold + 3);
+
+										-- If strand has been given a name already (for example by previous power-in ports) AND
+										-- if strand name differs from name of current power-in port -> warning
+										elsif to_string (element (strand).name) /= to_string (element (port).name) then
+											--log_indentation_reset;
+											log (message_warning & "component " & et_libraries.to_string (key (component)) 
+												& " POWER IN port " & to_string (element (port).name) 
+												--& latin_1.lf
+												& " at " & to_string (element (port).coordinates, module)
+												--& latin_1.lf
+												& " conflicts with net " & et_schematic.to_string (element (strand).name) & " !");
+											--raise constraint_error;
+
+										-- If strand has a name and is local or hierarchic -> error and abort
+										elsif element (strand).scope /= global then
+											log_indentation_reset;
+											log (message_error & "component " & et_libraries.to_string (key (component)) 
+												& " POWER IN port " & to_string (element (port).name) 
+												--& latin_1.lf
+												& " at " & to_string (element (port).coordinates, module)
+												--& latin_1.lf
+												& " conflicts with " & to_string (element (strand).scope) 
+												& " net " & et_schematic.to_string (element (strand).name) & " !");
+											raise constraint_error;
+
+										end if;
+										
+									end if;
+
+								-- With eagle, power-out ports enforce their name on the strand.
+								-- when et_import.eagle =>
+									
+								when others =>
+									log_indentation_reset;
+									log (message_error & et_import.invalid_cad_format (et_import.cad_format));
+									raise constraint_error;
+									
+							end case;
+
+							log_indentation_down;
+						end if;
+						
+						log_indentation_down;
+						next (port);
+					end loop;
+
+					log_indentation_down;
+					next (component);
+				end loop;
+
+
+				log_indentation_down;
+				next (segment);
+			end loop;
+
+			log_indentation_down;
+			next (strand);
+		end loop;
+		
+	end update_strand_names;
+
+	
+	function find_component (
+	-- Searches the given library for the given component. Returns a cursor to that component.
+		library		: in et_libraries.type_full_library_name.bounded_string;
+		component	: in et_libraries.type_component_generic_name.bounded_string) 
+		return et_libraries.type_components.cursor is
+
+		lib_cursor	: type_libraries.cursor;
+		use type_components;
+		comp_cursor	: type_components.cursor := no_element;
+	
+		use type_libraries;
+		use et_string_processing;
+
+		procedure locate (
+			library : in type_full_library_name.bounded_string;
+			components : in type_components.map) is
+		begin
+			-- Generic names in library sometimes start with a tilde. 
+			-- So, first we search for the given component without tilde.
+			-- If no match, sarch for the given component with a tilde prepended.
+			-- If still no match, comp_cursor is empty (no_element).
+			comp_cursor := components.find (component); -- TRANSISTOR_NPN
+
+			-- CS: the follwing is kicad stuff and should be executed
+			-- if the import format is kicad_v4
+			if comp_cursor = type_components.no_element then
+				comp_cursor := components.find (prepend_tilde (component)); -- ~TRANSISTOR_NPN
+				--CS: log ?
+			end if;
+		end locate;
+	
+	begin
+		lib_cursor := component_libraries.find (library);
+
+		-- If the given library exists, locate the given component therein.
+		-- Otherwise generate a warning.
+		if lib_cursor /= type_libraries.no_element then
+			query_element (
+				position => lib_cursor,
+				process => locate'access);
+		else
+			log (message_warning & "library " & to_string (library) & " not found !");
+			-- CS: raise constraint_error ?
+		end if;
+
+		return comp_cursor;
+	end find_component;
+
+
+	function build_portlists (log_threshold : in et_string_processing.type_log_level) 
+		return et_schematic.type_portlists.map is
+	-- Returns a list of components with the absolute positions of their ports as they are placed in the schematic.
+	-- This applies to the module indicated by module_cursor.
+		
+	-- Locates the components of the schematic in the libraries. 
+	-- Computes the absolute port positions of components from:
+	--  - the port coordinates provided by the librares
+	--  - the unit coordinates provided by the schematic
+	--  - the unit mirror style provided by the schematic
+	--  - the unit orientation provided by the schematic
+
+	-- Special threatment for "common to all units". Such units are global units.
+	-- Their ports apply to all units and are added in the portlist of a component multiple
+	-- times but with different coordinates.
+	-- See comments.
+
+	-- Sets the "open" flag of the port if it was marked with a no-connect-flag.
+	
+	-- Stores the absolute port coordinates in map "portlists". 
+	-- The key into this map is the component reference.
+	
+	-- Saves the portlists in the module (indicated by module_cursor).
+	
+		-- Here we collect the portlists:
+		portlists					: type_portlists.map;
+		component_inserted			: boolean;
+		component_cursor_portlists	: type_portlists.cursor; -- points to the portlist being built
+	
+		use et_libraries;
+		use et_libraries.type_full_library_names;
+		use et_schematic.type_components;
+		use et_string_processing;
+
+		-- This component cursor points to the schematic component being processed.
+		component_cursor_sch: et_schematic.type_components.cursor;
+
+		-- The component reference in the schematic (like R44 or IC34)
+		-- is tempoarily held here:
+		component_reference	: et_libraries.type_component_reference;
+	
+		-- This component cursor points to the library component being processed.
+		use et_libraries.type_components;
+		component_cursor_lib: et_libraries.type_components.cursor;
+
+		-- CS: log_threshold for messages below
+
+		-- For tempoarily storage of units of a component (taken from the schematic):
+		units_sch : et_schematic.type_units.map;
+
+		procedure extract_ports is
+		-- Extracts the ports of the component indicated by component_cursor_lib.
+		-- NOTE: The library contains the relative (x/y) positions of the ports.
+			use et_libraries.type_units_internal;
+			use et_libraries.type_ports;
+			use et_coordinates;
+			use et_schematic;
+		
+			-- The unit cursor of the component advances through the units stored in the library.
+			unit_cursor_internal	: type_units_internal.cursor;
+
+			-- The port cursor of the unit indicates the port of a unit.
+			port_cursor				: et_libraries.type_ports.cursor; 
+
+			unit_name_lib : type_unit_name.bounded_string; -- the unit name in the library. like "A", "B" or "PWR"
+			unit_position : et_coordinates.type_coordinates; -- the coordinates of the current unit
+			-- CS: external units
+
+			procedure add_port is
+			-- Builds a new port and appends it to portlist of the current 
+			-- component (indicated by component_cursor_portlists).
+			
+			-- The library defined properties of the port are taken from where port_cursor points to.
+			-- They are copied to the new port without change.
+			
+			-- Properites set in the schematic such as path, module name, sheet are copied into the
+			-- new port unchanged. X and Y position of the port must be re-computed according to
+			-- the rotation, mirror style and position of the unit in the schematic.
+			-- NOTE: It is important first to rotate, then mirror (if required) and finally to move/offset it.
+
+				procedure add (
+					component	: in type_component_reference;
+					ports		: in out type_ports.list) is
+					use et_coordinates;
+					use type_rig;
+					
+					port_coordinates : type_coordinates;
+
+					function left_open return type_port_open is
+					-- Returns true if a no-connect-flag sits at the port_coordinates.
+
+						port_open : type_port_open := false;
+					
+						procedure query_no_connect_flags (
+							module_name : in type_submodule_name.bounded_string;
+							module : in type_module) is
+							use type_no_connection_flags;
+							flag_cursor : type_no_connection_flags.cursor := module.no_connections.first;
+
+							use type_path_to_submodule;
+						begin
+							-- Compare coordinates of no-connection-flags with port_coordinates
+							-- and exit prematurely with "open" set to true.
+							while flag_cursor /= type_no_connection_flags.no_element loop
+
+-- 								log ("probing port at         " & to_string (port_coordinates, et_coordinates.module));
+-- 								log ("probing no-connect-flag " & to_string (element (flag_cursor), et_coordinates.module));
+
+								-- CS: to improve performance, test if flag has not been processed yet
+								-- But first implement a test that raises error if more than one port 
+								-- sits on the same position.
+								
+ 								if element (flag_cursor).coordinates = port_coordinates then
+									--log (" intentionally left open", log_threshold + 3);
+									log (" has no-connect-flag -> intentionally left open", log_threshold + 1);
+									port_open := true;
+									exit;
+								end if;
+								
+								next (flag_cursor);
+							end loop;
+						end query_no_connect_flags;
+						
+					begin -- left_open
+
+						-- Query no-connect-flags:
+						query_element (
+							position => module_cursor,
+							process => query_no_connect_flags'access);
+
+						-- If this statement is reached, no flag was found -> return false
+						return port_open;
+					end left_open;
+					
+				begin -- add
+					-- Init port coordinates with the coordinates of the port found in the library.
+					-- The port position is a type_2d_point and must be converted to type_coordinates.
+					et_coordinates.set (
+						point		=> port_coordinates,
+						position	=> to_coordinates (element (port_cursor).coordinates)); -- with type conversion
+
+					-- rotate port coordinates
+					rotate (
+						point => port_coordinates,
+						angle => et_schematic.orientation_of_unit (unit_name_lib, units_sch),
+						log_threshold => log_threshold + 3);
+
+					-- Mirror port coordinates if required.
+					case mirror_style_of_unit (unit_name_lib, units_sch) is
+						when none => null; -- unit not mirrored in schematic
+						when x_axis => mirror (point => port_coordinates, axis => x);
+						when y_axis => mirror (point => port_coordinates, axis => y);
+					end case;
+
+					-- offset port coordinates by the coordinates of the unit found in the schematic
+					move (point => port_coordinates, offset => unit_position);
+
+					-- path remains unchanged because the port is still where the unit is
+					set_path (port_coordinates, path (unit_position));
+
+					-- sheet name remains unchanged because the sheet is still the same
+					set_sheet (port_coordinates, sheet (unit_position));
+					
+					-- Insert a the newly built port in the portlist of the component.
+					-- This action depends on the appearance of the schematic component being processed.
+					-- For example: only virtual components can be power_flags.
+					case element (component_cursor_sch).appearance is
+						when sch =>
+							type_ports.append (
+								container => ports,
+								new_item => (
+
+									-- library defined properites:
+									name		=> element (port_cursor).name, -- the port name like GPIO4
+									direction	=> element (port_cursor).direction, -- the port direction
+
+									-- Set the power_flag status (by taking it from the schematic component begin processed).
+									power_flag	=> element (component_cursor_sch).power_flag,
+									
+									style		=> element (port_cursor).style, -- port style
+
+									-- We also set the port appearance (by taking it from the schematic component begin processed).
+									-- Later when writing the netlist, this property
+									-- serves to tell real from virtual ports.
+									appearance	=> et_schematic.component_appearance (component_cursor_sch),
+
+									-- schematic defined properties:
+									coordinates	=> port_coordinates,
+
+									-- if to be left open intentionally, the list of no-connection-flags must be looked up
+									intended_open => left_open,
+									
+									connected	=> no -- used by netlist generator (procedure make_netlists)
+									));
+
+						when sch_pcb =>
+							type_ports.append (
+								container => ports,
+								new_item => (
+
+									-- library defined properites:
+									name		=> element (port_cursor).name, -- the port name like GPIO4
+									direction	=> element (port_cursor).direction, -- the port direction
+
+									-- This port does not belong to a power_flag, because real components can never be.
+									power_flag	=> no,
+									
+									style		=> element (port_cursor).style, -- port style
+
+									-- We also set the port appearance (by taking it from the schematic component begin processed).
+									-- Later when writing the netlist, this property
+									-- serves to tell real from virtual ports.
+									appearance	=> et_schematic.component_appearance (component_cursor_sch),
+
+									-- schematic defined properties:
+									coordinates	=> port_coordinates,
+
+									-- if to be left open intentionally, the list of no-connection-flags must be looked up
+									intended_open => left_open,
+									
+									connected	=> no -- used by netlist generator (procedure make_netlists)
+									));
+
+					end case;
+							
+					log (to_string (last_element (ports).direction), log_threshold + 3);
+					log_indentation_up;
+					-- CS: other port properties
+					log (to_string (position => last_element (ports).coordinates), log_threshold + 3);
+					log_indentation_down;
+				end add;
+				
+			begin -- add_port
+				-- We update the portlist of the component in container portlists.
+				-- The cursor to the portlist was set when the element got inserted (see below in procedure build_portlists).
+				type_portlists.update_element (
+					container	=> portlists,
+					position	=> component_cursor_portlists,
+					process		=> add'access);
+			end add_port;
+
+			procedure ports_of_global_unit is
+			-- Searches in the component (indicated by component_cursor_lib) for units
+			-- with the "global" flag set.
+			-- Sets the port_cursor for each port and leaves the rest of the work to procedure add_port.
+				unit_cursor : type_units_internal.cursor;
+			begin
+				-- Loop in list of internal units:
+				unit_cursor := first_internal_unit (component_cursor_lib);
+				while unit_cursor /= type_units_internal.no_element loop
+					log_indentation_up;
+
+					if element (unit_cursor).global then
+						--log ("global unit " & to_string (key (unit_cursor)));
+
+						-- NOTE: One could think of exiting the loop here once the global unit
+						-- has been found. If it were about KiCad only, this would make sense
+						-- as there can be only one global unit per component.
+						-- As for other CAE tools there might be more global units, so there
+						-- is no early exit here.
+
+						-- Loop in port list of the unit:						
+						port_cursor := first_port (unit_cursor); -- port in library
+						while port_cursor /= et_libraries.type_ports.no_element loop
+
+							--log ("port " & type_port_name.to_string (key (port_cursor))
+							log ("port " & to_string (element (port_cursor).name),
+									--& " pin/pad " & to_string (element (port_cursor).pin),
+								 level => log_threshold + 2);
+
+							-- Build a new port and append port to portlist of the 
+							-- current component (indicated by component_cursor_portlists).
+							add_port;
+							
+							port_cursor := next (port_cursor);
+						end loop;
+					end if;
+
+					log_indentation_down;
+					unit_cursor := next (unit_cursor);
+				end loop;
+
+			end ports_of_global_unit;
+			
+		begin -- extract_ports
+			-- Loop in unit list of the component (indicated by component_cursor_lib).
+			-- unit_cursor_internal points to the unit in the library.
+			-- Frequently, not all units of a component are deployed in the schematic.
+			-- If a unit is not deployed it is ignored. Otherwise the coordinates of the
+			-- unit in the schematic are stored in unit_position.
+
+			-- Init the unit cursor of the current component:
+			unit_cursor_internal := first_internal_unit (component_cursor_lib);
+
+			-- Loop in list of internal units:
+			while unit_cursor_internal /= type_units_internal.no_element loop
+				log_indentation_up;
+
+				-- get the unit name
+				unit_name_lib := key (unit_cursor_internal);
+
+				-- Now the unit name serves as key into the unit list we got from the schematic (unit_sch).
+				-- If the unit is deployed in the schematic, we load unit_position. 
+				-- unit_position holds the position of the unit in the schematic.
+				if unit_exists (name => unit_name_lib, units => units_sch) then -- if unit deployed in schematic
+					log ("unit " & to_string (unit_name_lib), log_threshold + 1);
+					unit_position := position_of_unit (name => unit_name_lib, units => units_sch); -- pos. in schematic
+					log_indentation_up;
+					log (to_string (position => unit_position), log_threshold + 2);
+
+					-- Get the ports of the current unit. Start with the first port of the unit.
+					-- The unit_position plus the relative port position (in library) yields the absolute
+					-- position of the port (in schematic).
+
+					-- Init port cursor
+					port_cursor := first_port (unit_cursor_internal); -- port in library
+
+					-- Loop in port list of the unit:
+					while port_cursor /= et_libraries.type_ports.no_element loop
+						log_indentation_up;
+						--log ("port " & type_port_name.to_string (key (port_cursor))
+						log ("port " & to_string (element (port_cursor).name),
+								--& " pin/pad " & to_string (element (port_cursor).pin),
+							 level => log_threshold + 2);
+						
+						-- Build a new port and append port to portlist of the 
+						-- current component (indicated by component_cursor_portlists).
+						add_port;
+						
+						log_indentation_down;
+						port_cursor := next (port_cursor);
+					end loop;
+
+					-- SEARCH FOR PORTS OF GLOBAL UNITS. 
+					
+					-- NOTE: Have a break before trying to understand the following:
+					
+					-- The problem with ports that are "common to all units" (KiCad terminology) is:
+					--  The unit they belong to, does not appear in the schematic, whereas their ports
+					--  are visible on each unit (kicad button "show hidden pins").
+					-- Solution: We assume all "common to all units" ports belong to all units of the 
+					-- component, thus inheriting the unit_name_lib and the unit_position.
+					-- The the unit_name_lib and unit_position of the current unit are applied
+					-- to the global units.
+					ports_of_global_unit;
+					
+					log_indentation_down;
+				end if;
+
+				log_indentation_down;
+				unit_cursor_internal := next (unit_cursor_internal);
+			end loop;
+			
+		end extract_ports;
+
+		procedure check_appearance_sch_vs_lib is
+		-- Verifies appearance of schematic component against library component.
+		begin
+			if et_schematic.component_appearance (component_cursor_sch) = 
+			   et_libraries.component_appearance (component_cursor_lib) then
+				null; -- fine
+			else
+				-- this should never happen
+				log_indentation_down;
+				log (text => message_error & "comonent appearance mismatch !", console => true);
+				-- CS: provide more details on the affected component
+				raise constraint_error;
+			end if;
+		end check_appearance_sch_vs_lib;
+
+		procedure save_portlists is
+		-- Save the portlists in the module (indicated by module_cursor).
+		-- module_cursor points already there.
+			use type_rig;
+		
+			procedure save (
+				module_name : in type_submodule_name.bounded_string;
+				module : in out type_module) is
+			begin
+				module.portlists := portlists;
+			end save;
+		begin -- save_portlists
+			log ("saving portlists ...", log_threshold + 1);
+			update_element (
+				container => rig,
+				position => module_cursor,
+				process => save'access);
+		end save_portlists;
+		
+	begin -- build_portlists
+		log_indentation_up;
+		log (text => "building portlists ...", level => log_threshold);
+		log_indentation_up;
+
+		-- The library contains the coordinates of the ports whereas
+		-- the schematic provides the coordinates of the units of a component.
+		-- The library coordinates are regarded as relative to the coordinates
+		-- provided by the schematic.
+		-- These coordinates summed up yield the absolute position of the ports.
+		
+		-- Loop in component list of schematic. component_cursor_sch points to the 
+		-- particular component. 
+
+		-- ALL schematic components are addressed. No distinction between real or virtual parts.
+
+		-- For each component, store a list of its units in units_sch.
+		-- This list contains the units found in the schematic with their coordinates.
+		-- These coordinates plus the port coordinates (extracted in 
+		-- procedure (extract_ports) will later yield the absolute positions of the ports.
+		et_schematic.reset_component_cursor (component_cursor_sch);
+		while component_cursor_sch /= et_schematic.type_components.no_element loop
+		
+			-- log component by its reference		
+			component_reference :=  et_schematic.component_reference (component_cursor_sch);
+			log ("reference " & et_libraries.to_string (component_reference), log_threshold + 1);
+			
+			-- Insert component in portlists. for the moment the portlist of this component is empty.
+			-- After that the component_cursor_portlists points to the component. This cursor will
+			-- later be used to add a port to the portlists.
+			type_portlists.insert (
+				container	=> portlists,
+				key			=> component_reference, -- like R44
+				new_item	=> type_ports.empty_list,
+				inserted	=> component_inserted, -- obligatory, no further meaning
+				position	=> component_cursor_portlists -- points to the portlist being built
+				);
+			
+			-- get the units of the current schematic component (indicated by component_cursor_sch)
+			units_sch := et_schematic.units_of_component (component_cursor_sch);
+
+			log_indentation_up;			
+
+			-- log particular library to be searched in.
+			log ("generic name " 
+					& to_string (element (component_cursor_sch).generic_name) 
+					& " in " & to_string (element (component_cursor_sch).library_name),
+					log_threshold + 2);
+
+			-- Set cursor of the generic model in library. If cursor is empty, the component
+			-- is not there -> error and abort.
+			-- Otherwise cursor points to a matching component -> extract ports
+			-- of that component. Procedure extract_ports uses component_cursor_lib.
+			component_cursor_lib := find_component (
+				library => element (component_cursor_sch).library_name, -- like ../lib/transistors.lib
+				component => element (component_cursor_sch).generic_name); -- like TRANSISTOR_PNP
+				
+			if component_cursor_lib = et_libraries.type_components.no_element then
+				-- component not found
+				no_generic_model_found (
+					reference => key (component_cursor_sch),
+					-- like T12					   
+											
+					library => element (component_cursor_sch).library_name,
+					-- like ../lib/transistors.lib
+					
+					generic_name => element (component_cursor_sch).generic_name);
+					-- like TRANSISTOR_PNP or LED
+				else
+					-- As a safety measure we make sure that the appearance of the component
+					-- in the schematic equals that in the library.
+					check_appearance_sch_vs_lib;
+
+					extract_ports; -- uses component_cursor_lib
+				end if;
+
+			log_indentation_down;
+			
+			next (component_cursor_sch); -- advance to next component
+		end loop;
+
+		log_indentation_down;
+-- 		log (text => "portlists complete", level => log_threshold);
+		log_indentation_down;
+
+		-- Save portlists in the module (indicated by module_cursor).
+		-- Why ? The portlists are later essential for netlist generation and ERC.
+		save_portlists;
+		
+		return portlists;
+	end build_portlists;
+	
+	
 end et_kicad;
 
 -- Soli Deo Gloria

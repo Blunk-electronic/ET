@@ -51,6 +51,7 @@ with ada.containers.ordered_sets;
 
 with et_coordinates;			use et_coordinates;
 with et_string_processing;
+--with et_pcb;
 
 package et_libraries is
 
@@ -1071,16 +1072,30 @@ package et_libraries is
 -- 	-- All component models are collected here. This collection applies for the whole rig.
 -- 	component_libraries : type_libraries.map; -- CS: should be part of type_rig. see et_schematic type_rig
 
+-- LIBRARIES
+	type type_library is record
+		devices		: et_libraries.type_components.map;
+		symbols		: et_libraries.type_symbols.map;
+--		packages	: et_pcb.type_packages_library.map;
+	end record;
+		
+	package type_libraries is new ordered_maps (
+		key_type		=> type_library_group_name.bounded_string, -- active, passive, ... -- CS rename to library_name
+		"<" 			=> type_library_group_name."<",
+		element_type	=> type_library);
+
+	-- All component models are collected here. This collection applies for the whole rig.
+	component_libraries : type_libraries.map; -- CS: should be part of type_rig. see et_schematic type_rig
 
 
 
 	
 	
-	function find_component (
-	-- Searches the given library for the given component. Returns a cursor to that component.
-		library		: in type_full_library_name.bounded_string; -- consists of group name and actual library name
-		component	: in type_component_generic_name.bounded_string) 
-		return type_components.cursor;
+-- 	function find_component (
+-- 	-- Searches the given library for the given component. Returns a cursor to that component.
+-- 		library		: in type_full_library_name.bounded_string; -- consists of group name and actual library name
+-- 		component	: in type_component_generic_name.bounded_string) 
+-- 		return type_components.cursor;
 
 	function first_internal_unit (
 	-- Returns the cursor to the first unit of the given component
