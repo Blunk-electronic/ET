@@ -1841,172 +1841,172 @@ package body et_schematic is
 -- 		return port_cursor;
 -- 	end first_port;
 
-	function port_connected_with_segment (
-	-- Returns true if the given port sits on the given net segment.
-		port	: in type_port'class;
-		segment	: in type_net_segment'class) 
-		-- NOTE: Passing a cursor to given segment does not work. This measure would make
-		-- excluding the same segment easier in procedure query_segments. The cursor to the given segment
-		-- would be the same type as the segment being inquired, yet they do not point to the same
-		-- memory location. So forget this idea.
-		return boolean is
-
-		use et_geometry;
-		use et_coordinates;
-		use et_string_processing;
-		
-		sits_on_segment : boolean := false;
-		distance : type_distance_point_from_line;
-
-		function junction_here return boolean is
-		-- Returns true if a junction sits at the coordinates of the given port.
-			junction_found : boolean := false; -- to be returned
-		
-			procedure query_junctions (
-			-- Query junctions. Exits prematurely once a junction is found.
-				module_name : in type_submodule_name.bounded_string;
-				module : in type_module) is
-				use type_junctions;
-				junction_cursor : type_junctions.cursor := module.junctions.first;
-			begin -- query_junctions
-				junction_found := false;
-				while junction_cursor /= type_junctions.no_element loop
-					-- compare coordinates of junction and given port
-					if element (junction_cursor).coordinates = port.coordinates then
-						junction_found := true;
-						exit; -- no further search required
-					end if;
-					next (junction_cursor);	
-				end loop;
-			end query_junctions;
-		
-		begin -- junction_here
-			type_rig.query_element (
-				position => module_cursor,
-				process => query_junctions'access);
-
-			return junction_found;
-		end junction_here;
-
-		function another_segment_here return boolean is
-		-- Returns true if another segment is placed at the coordinates of the given port.
-			segment_found : boolean := false; -- to be returned
-		
-			procedure query_strands (
-			-- Query net segments. Exits prematurely once a segment is found.
-				module_name : in type_submodule_name.bounded_string;
-				module : in type_module) is
-				use type_strands;
-				strand_cursor : type_strands.cursor := module.strands.first;
-
-				procedure query_segments (
-					strand : in type_strand) is
-					use type_net_segments;
-					segment_cursor : type_net_segments.cursor := strand.segments.first;
-				begin
-					while segment_cursor /= type_net_segments.no_element loop
-				
-						-- The inquired segment must not be the same as the given segment:
-						if not (element (segment_cursor).coordinates_start = segment.coordinates_start and
-							element (segment_cursor).coordinates_end = segment.coordinates_end) then
-
-							--log ("probing segment " & to_string (element (segment_cursor)));
-							
-							-- If the inquired segment is placed with start or end point 
-							-- at the given port position, we exit prematurely:
-							if	element (segment_cursor).coordinates_start = port.coordinates or
-								element (segment_cursor).coordinates_end   = port.coordinates then
-									--log ("segment found");
-									segment_found := true;
-									exit;
-							end if;
-
-						end if;
-							
-						next (segment_cursor);
-						
-					end loop;
-				end query_segments;
-				
-			begin -- query_strands
-				-- Once a segment has been found or all strands have been processed:
-				while (not segment_found) and strand_cursor /= type_strands.no_element loop
-
-					type_strands.query_element (
-						position => strand_cursor,
-						process => query_segments'access);
-
-					next (strand_cursor);
-				end loop;
-			end query_strands;
-		
-		begin -- another_segment_here
-			--log ("probing for other segment at " & to_string (port.coordinates, et_coordinates.module));
-		
-			type_rig.query_element (
-				position => module_cursor,
-				process => query_strands'access);
-
-			return segment_found;
-		end another_segment_here;
-
-		procedure test_junction is
-		begin
-			if junction_here then
-				sits_on_segment := true;
-			else
-				log_indentation_reset;
-				log (message_error & "missing junction at " 
-					& to_string (port.coordinates, et_coordinates.module),
-						console => true);
-				raise constraint_error;
-			end if;
-		end test_junction;
-		
-	begin -- port_connected_with_segment
-		-- First make sure the port is to be connected at all. Ports intended to be open
-		-- are regarded as "not connected with the segment".
-		if not port.intended_open then
-	
-			-- Make sure port and segment share the same module path and sheet.
-			-- It is sufficient to check against the segment start coordinates.
-			if same_path_and_sheet (port.coordinates, segment.coordinates_start) then
-
-				-- calculate the shortes distance of point from line.
-				distance := distance_of_point_from_line (
-					point 		=> type_2d_point (port.coordinates),
-					line_start	=> type_2d_point (segment.coordinates_start),
-					line_end	=> type_2d_point (segment.coordinates_end),
-					line_range	=> with_end_points);
-
-				if (not distance.out_of_range) and distance.distance = et_coordinates.zero_distance then
-
-					-- If point sits on either start or end point of given line
-					if distance.sits_on_start or distance.sits_on_end then
-
-						-- If another segment meets here a junction is required:
-						if another_segment_here then
-							test_junction;
-						else 
-							-- no other segment here -> port is connected 
-							-- only with start or end point of given segment:
-							sits_on_segment := true;
-							--log ("port on segment", level => 5);
-						end if;
-							
-					else 
-						-- Point sits between start and end point of given line.
-						-- This case requires a junction:
-						test_junction;
-
-					end if;
-				end if;
-
-			end if;
-		end if;
-		
-		return sits_on_segment;
-	end port_connected_with_segment;
+-- 	function port_connected_with_segment (
+-- 	-- Returns true if the given port sits on the given net segment.
+-- 		port	: in type_port'class;
+-- 		segment	: in type_net_segment'class) 
+-- 		-- NOTE: Passing a cursor to given segment does not work. This measure would make
+-- 		-- excluding the same segment easier in procedure query_segments. The cursor to the given segment
+-- 		-- would be the same type as the segment being inquired, yet they do not point to the same
+-- 		-- memory location. So forget this idea.
+-- 		return boolean is
+-- 
+-- 		use et_geometry;
+-- 		use et_coordinates;
+-- 		use et_string_processing;
+-- 		
+-- 		sits_on_segment : boolean := false;
+-- 		distance : type_distance_point_from_line;
+-- 
+-- 		function junction_here return boolean is
+-- 		-- Returns true if a junction sits at the coordinates of the given port.
+-- 			junction_found : boolean := false; -- to be returned
+-- 		
+-- 			procedure query_junctions (
+-- 			-- Query junctions. Exits prematurely once a junction is found.
+-- 				module_name : in type_submodule_name.bounded_string;
+-- 				module : in type_module) is
+-- 				use type_junctions;
+-- 				junction_cursor : type_junctions.cursor := module.junctions.first;
+-- 			begin -- query_junctions
+-- 				junction_found := false;
+-- 				while junction_cursor /= type_junctions.no_element loop
+-- 					-- compare coordinates of junction and given port
+-- 					if element (junction_cursor).coordinates = port.coordinates then
+-- 						junction_found := true;
+-- 						exit; -- no further search required
+-- 					end if;
+-- 					next (junction_cursor);	
+-- 				end loop;
+-- 			end query_junctions;
+-- 		
+-- 		begin -- junction_here
+-- 			type_rig.query_element (
+-- 				position => module_cursor,
+-- 				process => query_junctions'access);
+-- 
+-- 			return junction_found;
+-- 		end junction_here;
+-- 
+-- 		function another_segment_here return boolean is
+-- 		-- Returns true if another segment is placed at the coordinates of the given port.
+-- 			segment_found : boolean := false; -- to be returned
+-- 		
+-- 			procedure query_strands (
+-- 			-- Query net segments. Exits prematurely once a segment is found.
+-- 				module_name : in type_submodule_name.bounded_string;
+-- 				module : in type_module) is
+-- 				use type_strands;
+-- 				strand_cursor : type_strands.cursor := module.strands.first;
+-- 
+-- 				procedure query_segments (
+-- 					strand : in type_strand) is
+-- 					use type_net_segments;
+-- 					segment_cursor : type_net_segments.cursor := strand.segments.first;
+-- 				begin
+-- 					while segment_cursor /= type_net_segments.no_element loop
+-- 				
+-- 						-- The inquired segment must not be the same as the given segment:
+-- 						if not (element (segment_cursor).coordinates_start = segment.coordinates_start and
+-- 							element (segment_cursor).coordinates_end = segment.coordinates_end) then
+-- 
+-- 							--log ("probing segment " & to_string (element (segment_cursor)));
+-- 							
+-- 							-- If the inquired segment is placed with start or end point 
+-- 							-- at the given port position, we exit prematurely:
+-- 							if	element (segment_cursor).coordinates_start = port.coordinates or
+-- 								element (segment_cursor).coordinates_end   = port.coordinates then
+-- 									--log ("segment found");
+-- 									segment_found := true;
+-- 									exit;
+-- 							end if;
+-- 
+-- 						end if;
+-- 							
+-- 						next (segment_cursor);
+-- 						
+-- 					end loop;
+-- 				end query_segments;
+-- 				
+-- 			begin -- query_strands
+-- 				-- Once a segment has been found or all strands have been processed:
+-- 				while (not segment_found) and strand_cursor /= type_strands.no_element loop
+-- 
+-- 					type_strands.query_element (
+-- 						position => strand_cursor,
+-- 						process => query_segments'access);
+-- 
+-- 					next (strand_cursor);
+-- 				end loop;
+-- 			end query_strands;
+-- 		
+-- 		begin -- another_segment_here
+-- 			--log ("probing for other segment at " & to_string (port.coordinates, et_coordinates.module));
+-- 		
+-- 			type_rig.query_element (
+-- 				position => module_cursor,
+-- 				process => query_strands'access);
+-- 
+-- 			return segment_found;
+-- 		end another_segment_here;
+-- 
+-- 		procedure test_junction is
+-- 		begin
+-- 			if junction_here then
+-- 				sits_on_segment := true;
+-- 			else
+-- 				log_indentation_reset;
+-- 				log (message_error & "missing junction at " 
+-- 					& to_string (port.coordinates, et_coordinates.module),
+-- 						console => true);
+-- 				raise constraint_error;
+-- 			end if;
+-- 		end test_junction;
+-- 		
+-- 	begin -- port_connected_with_segment
+-- 		-- First make sure the port is to be connected at all. Ports intended to be open
+-- 		-- are regarded as "not connected with the segment".
+-- 		if not port.intended_open then
+-- 	
+-- 			-- Make sure port and segment share the same module path and sheet.
+-- 			-- It is sufficient to check against the segment start coordinates.
+-- 			if same_path_and_sheet (port.coordinates, segment.coordinates_start) then
+-- 
+-- 				-- calculate the shortes distance of point from line.
+-- 				distance := distance_of_point_from_line (
+-- 					point 		=> type_2d_point (port.coordinates),
+-- 					line_start	=> type_2d_point (segment.coordinates_start),
+-- 					line_end	=> type_2d_point (segment.coordinates_end),
+-- 					line_range	=> with_end_points);
+-- 
+-- 				if (not distance.out_of_range) and distance.distance = et_coordinates.zero_distance then
+-- 
+-- 					-- If point sits on either start or end point of given line
+-- 					if distance.sits_on_start or distance.sits_on_end then
+-- 
+-- 						-- If another segment meets here a junction is required:
+-- 						if another_segment_here then
+-- 							test_junction;
+-- 						else 
+-- 							-- no other segment here -> port is connected 
+-- 							-- only with start or end point of given segment:
+-- 							sits_on_segment := true;
+-- 							--log ("port on segment", level => 5);
+-- 						end if;
+-- 							
+-- 					else 
+-- 						-- Point sits between start and end point of given line.
+-- 						-- This case requires a junction:
+-- 						test_junction;
+-- 
+-- 					end if;
+-- 				end if;
+-- 
+-- 			end if;
+-- 		end if;
+-- 		
+-- 		return sits_on_segment;
+-- 	end port_connected_with_segment;
 		
 -- 	procedure rename_strands (
 -- 	-- Renames all strands with the name_before to the name_after.
@@ -3287,24 +3287,24 @@ package body et_schematic is
 		return result;
 	end compare_ports;
 	
-	function net_count return count_type is
-	-- Returns the number of nets of the current module as string.
-		count : count_type := 0;
-	
-		procedure count_nets (
-			module_name	: in type_submodule_name.bounded_string;
-			module		: in type_module) is
-		begin
-			count := length (module.netlist);
-		end count_nets;
-
-	begin -- net_count
-		type_rig.query_element (
-			position => module_cursor,
-			process => count_nets'access);
-
-		return count;
-	end net_count;
+-- 	function net_count return count_type is
+-- 	-- Returns the number of nets of the current module as string.
+-- 		count : count_type := 0;
+-- 	
+-- 		procedure count_nets (
+-- 			module_name	: in type_submodule_name.bounded_string;
+-- 			module		: in type_module) is
+-- 		begin
+-- 			count := length (module.netlist);
+-- 		end count_nets;
+-- 
+-- 	begin -- net_count
+-- 		type_rig.query_element (
+-- 			position => module_cursor,
+-- 			process => count_nets'access);
+-- 
+-- 		return count;
+-- 	end net_count;
 
 	function junction_count return count_type is
 	-- Returns the number of junctions of the current module as string.
@@ -4757,598 +4757,598 @@ package body et_schematic is
 		log_indentation_down;
 	end net_test;
 	
-	procedure make_netlists (log_threshold : in et_string_processing.type_log_level) is
-	-- Builds the netlists of all modules of the rig.
-	-- Addresses ALL components both virtual and real. Virtual components are things like GND or VCC symbols.
-	-- Virtual components are filtered out on exporting the netlist in a file.
-	-- Bases on the portlists and nets/strands information of the module.
+-- 	procedure make_netlists (log_threshold : in et_string_processing.type_log_level) is
+-- 	-- Builds the netlists of all modules of the rig.
+-- 	-- Addresses ALL components both virtual and real. Virtual components are things like GND or VCC symbols.
+-- 	-- Virtual components are filtered out on exporting the netlist in a file.
+-- 	-- Bases on the portlists and nets/strands information of the module.
+-- 
+-- 	-- Detects if a junction is missing where a port is connected with a net.
+-- 	
+-- 		use et_string_processing;
+-- 		use type_rig;
+-- 
+-- 		function make_netlist return type_netlist.map is
+-- 		-- Generates the netlist of the current module (indicated by module_cursor).
+-- 		-- module.portlists provide the port coordinates. 
+-- 		-- module.nets provides the strands and nets.
+-- 		-- With this information we make the netlist of the current module.
+-- 		
+-- 			-- the netlist being built. it is returnd to the calling unit.
+-- 			netlist : type_netlist.map;
+-- 
+-- 			procedure query_nets (
+-- 			-- Tests if a net of the given module is connected to any component port.
+-- 			-- Creates a net in the netlist (type_module.netlist) with the same name 
+-- 			-- as the net being examined (type_module.nets).
+-- 			-- Component ports connected with the net are collected in portlist of the 
+-- 			-- net being built (see procedure add_port below).
+-- 				module_name	: in type_submodule_name.bounded_string;
+-- 				module		: in type_module) is
+-- 
+-- 				use type_nets;
+-- 				net_cursor 		: type_nets.cursor := module.nets.first; -- points to the net being read
+-- 				net_in_netlist	: type_netlist.cursor; -- points to the net being built in the netlist
+-- 				net_created		: boolean := false; -- goes true once the net has been created in the netlist
+-- 				
+-- 				procedure query_strands (
+-- 				-- Tests if a strand of the given net is connected to any component port.
+-- 					net_name	: in type_net_name.bounded_string;
+-- 					net			: in type_net) is
+-- 					use type_strands;
+-- 					strand_cursor : type_strands.cursor := net.strands.first; -- points to the first strand of the net
+-- 
+-- 					procedure query_segments (strand : in type_strand) is
+-- 					-- Tests the net segments of the given strand if they are connected with any component ports.
+-- 					-- For every segment, all component ports must be tested.
+-- 						use type_net_segments;
+-- 						segment		: type_net_segments.cursor := strand.segments.first; -- points to the segment being read
+-- 						use type_portlists;
+-- 						component_cursor : type_portlists.cursor; -- points to the component being read
+-- 
+-- 						procedure query_ports (
+-- 						-- Tests the ports of the given component if they sit on the current net segment.
+-- 							component	: in type_component_reference;
+-- 							ports		: in type_ports.list) is
+-- 							use type_ports;
+-- 							port_cursor : type_ports.cursor := ports.first; -- points to the first port of the component
+-- 
+-- 							procedure mark_port_as_connected is
+-- 							-- mark port in portlist as connected
+-- 							
+-- 								procedure locate_component (
+-- 								-- Locates the component within the portlist of the submodule
+-- 									module_name	: in type_submodule_name.bounded_string;
+-- 									module 		: in out type_module) is
+-- 	
+-- 									procedure locate_port (
+-- 									-- Locates the port of the component
+-- 										component	: in type_component_reference;
+-- 										ports		: in out type_ports.list) is
+-- 
+-- 										procedure mark_it (port : in out type_port) is
+-- 										begin
+-- 											port.connected := YES;
+-- 										end mark_it;
+-- 											
+-- 									begin -- locate_port
+-- 										update_element (
+-- 											container => ports,
+-- 											position => port_cursor,
+-- 											process => mark_it'access);
+-- 									end locate_port;
+-- 										
+-- 								begin -- locate_component 
+-- 									type_portlists.update_element (
+-- 										container	=> module.portlists,
+-- 										position	=> component_cursor,
+-- 										process 	=> locate_port'access);
+-- 								end locate_component;
+-- 									
+-- 							begin -- mark_port_as_connected
+-- 								-- locate the submodule in the rig
+-- 								update_element (
+-- 									container => rig,
+-- 									position => module_cursor,
+-- 									process => locate_component'access);
+-- 							end mark_port_as_connected;
+-- 							
+-- 							procedure add_port (
+-- 							-- Adds the port (indicated by cursor "port" to the portlist of the net being built.
+-- 								net_name	: in type_net_name.bounded_string;
+-- 								ports		: in out type_ports_with_reference.set) is
+-- 								inserted : boolean;
+-- 								cursor : type_ports_with_reference.cursor;
+-- 							begin -- add_port
+-- 								-- If a port sits on the point where two segments meet, the same port should be inserted only once.
+-- 								-- Thus we have the obligatory flag "inserted". 
+-- 								type_ports_with_reference.insert (
+-- 									container	=> ports,
+-- 									position	=> cursor,
+-- 									inserted	=> inserted,
+-- 									-- We add the port and extend it with the component reference.
+-- 									new_item	=> (element (port_cursor) with component));
+-- 
+-- 								if not inserted then -- port already in net
+-- 									log_indentation_up;
+-- 									log ("already processed -> skipped", log_threshold + 3);
+-- 									log_indentation_down;
+-- 								end if;
+-- 							end add_port;
+-- 
+-- 						begin -- query_ports
+-- 							while port_cursor /= type_ports.no_element loop
+-- 
+-- 								-- Probe only those ports (in the portlists) which are in the same 
+-- 								-- path and at the same sheet as the port.
+-- 								-- Probing other ports would be a waste of time.
+-- 								if et_coordinates.same_path_and_sheet (
+-- 									left => strand.coordinates, 
+-- 									right => element (port_cursor).coordinates ) then
+-- 
+-- 									if element (port_cursor).connected = NO then
+-- 								
+-- 										log_indentation_up;
+-- 										log ("probing " & to_string (component) 
+-- 											& " port " & to_string (element (port_cursor).name)
+-- 											& latin_1.space
+-- 											& to_string (position => element (port_cursor).coordinates, scope => et_coordinates.module),
+-- 											log_threshold + 5);
+-- 
+-- 										-- test if port sits on segment
+-- 										if port_connected_with_segment (element (port_cursor), element (segment)) then
+-- 											log_indentation_up;
+-- 										
+-- 											log ("connected with " & to_string (component) 
+-- 												& " port " & to_string (element (port_cursor).name)
+-- 												& latin_1.space
+-- 												& to_string (position => element (port_cursor).coordinates, scope => et_coordinates.module),
+-- 												log_threshold + 3);
+-- 											
+-- 											log_indentation_down;
+-- 
+-- 											-- add port to the net being built
+-- 											type_netlist.update_element (
+-- 												container => netlist,
+-- 												position => net_in_netlist,
+-- 												process => add_port'access);
+-- 
+-- 											-- Mark the port (in the portlists) as connected.
+-- 											-- Why ? A port can be connected to ONLY ONE net. So once it is
+-- 											-- detected here, it would be a wast of computing time to 
+-- 											-- test if the port is connected to other nets.
+-- 											mark_port_as_connected;
+-- 										end if;
+-- 											
+-- 										log_indentation_down;
+-- 									end if;
+-- 								end if;
+-- 
+-- 								next (port_cursor);
+-- 							end loop;
+-- 						end query_ports;
+-- 						
+-- 					begin -- query_segments
+-- 						log_indentation_up;
+-- 					
+-- 						while segment /= type_net_segments.no_element loop
+-- 
+-- 							log ("segment " & to_string (element (segment)), log_threshold + 4);
+-- 
+-- 							-- reset the component cursor, then loop in the component list 
+-- 							component_cursor := module.portlists.first;	-- points to the component being read
+-- 							while component_cursor /= type_portlists.no_element loop
+-- 
+-- 								-- query the ports of the component
+-- 								type_portlists.query_element (
+-- 									position => component_cursor,
+-- 									process => query_ports'access);
+-- 
+-- 								next (component_cursor);
+-- 							end loop;
+-- 							
+-- 							next (segment);
+-- 						end loop;
+-- 							
+-- 						log_indentation_down;	
+-- 					end query_segments;
+-- 
+-- 				begin -- query_strands
+-- 					log_indentation_up;
+-- 				
+-- 					while strand_cursor /= type_strands.no_element loop
+-- 
+-- 						-- log strand coordinates
+-- 						log ("strand " & to_string (element (strand_cursor).coordinates, scope => et_coordinates.module),
+-- 							 log_threshold + 3);
+-- 
+-- 						query_element (
+-- 							position => strand_cursor,
+-- 							process => query_segments'access);
+-- 				
+-- 						next (strand_cursor);
+-- 					end loop;
+-- 						
+-- 					log_indentation_down;
+-- 				end query_strands;
+-- 
+-- 			begin -- query_nets
+-- 				log_indentation_up;
+-- 			
+-- 				while net_cursor /= type_nets.no_element loop
+-- 
+-- 					-- log the name of the net being built
+-- 					log (to_string (key (net_cursor)), log_threshold + 2);
+-- 				
+-- 					-- create net in netlist
+-- 					insert (
+-- 						container => netlist,
+-- 						key => key (net_cursor),
+-- 						new_item => type_ports_with_reference.empty_set,
+-- 						position => net_in_netlist,
+-- 						inserted => net_created);
+-- 
+-- 					-- CS: evaluate flag net_created ?
+-- 
+-- 					-- search for ports connected with the net being built
+-- 					query_element (
+-- 						position => net_cursor,
+-- 						process => query_strands'access);
+-- 
+-- 					next (net_cursor);
+-- 				end loop;
+-- 
+-- 				log_indentation_down;	
+-- 			end query_nets;
+-- 					
+-- 		begin -- make_netlist (NOTE: singluar !)
+-- 			query_element (
+-- 				position => module_cursor,
+-- 				process => query_nets'access);
+-- 
+-- 			return netlist;
+-- 		end make_netlist;
+-- 
+-- 		procedure add_netlist (
+-- 			module_name	: in type_submodule_name.bounded_string;
+-- 			module		: in out type_module) is
+-- 		begin
+-- 			module.netlist := make_netlist;
+-- 		end add_netlist;
+-- 
+-- 	begin -- make_netlists (note plural !)
+-- 		log (text => "building rig netlists ...", level => log_threshold);
+-- 		log_indentation_up;
+-- 		
+-- 		-- We start with the first module of the rig.
+-- 		first_module;
+-- 
+-- 		-- Process one rig module after another.
+-- 		-- module_cursor points to the module in the rig.
+-- 		while module_cursor /= type_rig.no_element loop
+-- 			log ("module " & to_string (key (module_cursor)), log_threshold);
+-- 			log_indentation_up;
+-- 			
+-- 			update_element (
+-- 				container => rig,
+-- 				position => module_cursor,
+-- 				process => add_netlist'access);
+-- 
+-- 			log ("net count total" & count_type'image (net_count), log_threshold + 1);
+-- 			log_indentation_down;
+-- 			
+-- 			next (module_cursor);
+-- 		end loop;
+-- 
+-- 		log_indentation_down;
+-- 	end make_netlists;
 
-	-- Detects if a junction is missing where a port is connected with a net.
+-- 	function terminal_count (
+-- 		reference		: in type_component_reference;
+-- 		log_threshold	: in et_string_processing.type_log_level)
+-- 		return type_terminal_count is
+-- 	-- Returns the number of terminals of the given component reference.
+-- 	-- Requires module_cursor (global variable) to point to the current module.
+-- 
+-- 		use type_rig;
+-- 		use et_string_processing;
+-- 		terminals : type_terminal_count; -- to be returned
+-- 
+-- 		procedure locate_component_in_schematic (
+-- 			module_name : in type_submodule_name.bounded_string;
+-- 			module		: in type_module) is
+-- 			use type_components;
+-- 		
+-- 			component_cursor: type_components.cursor;
+-- 			
+-- 			library_name	: type_full_library_name.bounded_string;
+-- 			generic_name	: type_component_generic_name.bounded_string;
+-- 			package_variant	: type_component_variant_name.bounded_string;
+-- 
+-- 			use type_libraries;
+-- 			library_cursor	: et_libraries.type_libraries.cursor;
+-- 
+-- 			procedure locate_component_in_library (
+-- 				library_name 	: in type_full_library_name.bounded_string;
+-- 				components 		: in et_libraries.type_components.map) is
+-- 				use et_libraries.type_components;
+-- 
+-- 				component_cursor : et_libraries.type_components.cursor;
+-- 
+-- 				procedure query_variants (
+-- 				-- Looks up the list of variants of the component.
+-- 					name 		: in et_libraries.type_component_generic_name.bounded_string;
+-- 					component 	: in et_libraries.type_component) is
+-- 					use type_component_variants;
+-- 					use et_import;
+-- 
+-- 					variant_cursor : et_libraries.type_component_variants.cursor;
+-- 				begin -- query_variants
+-- 					log ("locating variant " & type_component_variant_name.to_string (package_variant)
+-- 						& " ...", log_threshold + 3);
+-- 					log_indentation_up;
+-- 
+-- 					-- The variant should be found (because the component has been inserted in the library earlier).
+-- 					-- Otherwise an exception would occur here:
+-- 					variant_cursor := component.variants.find (package_variant);
+-- 
+-- 					-- Get the number of terminals of this package variant
+-- 					-- This is achieved by looking up the library (full name provided in package_variant)
+-- 					-- and the package name.
+-- 					-- If a kicad_v4 project is imported, the library name must be extended by the "pretty" extension.
+-- 					if cad_format = kicad_v4 then
+-- 						terminals := et_pcb.terminal_count (
+-- 									library_name	=> to_full_library_name (
+-- 														to_string (element (variant_cursor).packge.library) -- ../lbr/bel_ic
+-- 														& et_kicad.package_library_directory_extension), -- .pretty
+-- 									package_name	=> element (variant_cursor).packge.name);	-- S_SO14
+-- 					else
+-- 						terminals := et_pcb.terminal_count (
+-- 									library_name	=> element (variant_cursor).packge.library,	-- ../lbr/bel_ic
+-- 									package_name	=> element (variant_cursor).packge.name);	-- S_SO14
+-- 					end if;
+-- 						
+-- 					log_indentation_down;	
+-- 
+-- 					exception
+-- 						when event:
+-- 							others =>
+-- 								log_indentation_reset;
+-- 								log (ada.exceptions.exception_message (event), console => true);
+-- 								raise;
+-- 					
+-- 				end query_variants;
+-- 				
+-- 			begin -- locate_component_in_library
+-- 				log ("locating generic component " & to_string (generic_name) 
+-- 						& " in library " & to_string (library_name) 
+-- 						& " ...", log_threshold + 2);
+-- 				log_indentation_up;
+-- 
+-- 				-- Set the component_cursor right away to the position of the generic component
+-- 				component_cursor := components.find (generic_name); -- search for generic name NETCHANGER
+-- 
+-- 				-- If we are importing a kicad_v4 project, the generic name might have not been found.
+-- 				-- Why ? The generic component name might have a tilde prepended. So the search must
+-- 				-- be started over with a tilde prepended to the generic_name.
+-- 				if component_cursor = et_libraries.type_components.no_element then
+-- 					case et_import.cad_format is
+-- 						when et_import.kicad_v4 =>
+-- 							-- search for generic name ~NETCHANGER
+-- 							component_cursor := components.find (prepend_tilde (generic_name));
+-- 						when others => null;
+-- 					end case;
+-- 				end if;
+-- 					
+-- 				et_libraries.type_components.query_element (
+-- 					position => component_cursor,
+-- 					process => query_variants'access);
+-- 
+-- 				log_indentation_down;
+-- 			end locate_component_in_library;
+-- 			
+-- 		begin -- locate_component_in_schematic
+-- 			log ("locating component in schematic ...", log_threshold + 1);
+-- 			log_indentation_up;
+-- 
+-- 			-- The component cursor is set according to the position of the reference:
+-- 			-- NOTE: Assumption is that there is a component with this reference.
+-- 			component_cursor := module.components.find (reference);
+-- 		
+-- 			library_name := element (component_cursor).library_name; -- get library name where the symbol is stored in
+-- 			generic_name := element (component_cursor).generic_name; -- get generic component name in the library
+-- 			package_variant := element (component_cursor).variant; -- get the package variant name of the component
+-- 
+-- 			-- set library cursor. NOTE: assumption is that there is a library with this name
+-- 			library_cursor := et_libraries.component_libraries.find (library_name); 
+-- 
+-- 			et_libraries.type_libraries.query_element (
+-- 				position => library_cursor,
+-- 				process => locate_component_in_library'access);
+-- 
+-- 			log_indentation_down;
+-- 		end locate_component_in_schematic;
+-- 		
+-- 	begin -- terminal_count
+-- 		log ("fetching terminal count of " & to_string (reference) & " ...", log_threshold);
+-- 		log_indentation_up;
+-- 		
+-- 		query_element (
+-- 			position	=> module_cursor,
+-- 			process		=> locate_component_in_schematic'access);
+-- 
+-- 		log_indentation_down;
+-- 
+-- 		return terminals;
+-- 	end terminal_count;
+
 	
-		use et_string_processing;
-		use type_rig;
-
-		function make_netlist return type_netlist.map is
-		-- Generates the netlist of the current module (indicated by module_cursor).
-		-- module.portlists provide the port coordinates. 
-		-- module.nets provides the strands and nets.
-		-- With this information we make the netlist of the current module.
-		
-			-- the netlist being built. it is returnd to the calling unit.
-			netlist : type_netlist.map;
-
-			procedure query_nets (
-			-- Tests if a net of the given module is connected to any component port.
-			-- Creates a net in the netlist (type_module.netlist) with the same name 
-			-- as the net being examined (type_module.nets).
-			-- Component ports connected with the net are collected in portlist of the 
-			-- net being built (see procedure add_port below).
-				module_name	: in type_submodule_name.bounded_string;
-				module		: in type_module) is
-
-				use type_nets;
-				net_cursor 		: type_nets.cursor := module.nets.first; -- points to the net being read
-				net_in_netlist	: type_netlist.cursor; -- points to the net being built in the netlist
-				net_created		: boolean := false; -- goes true once the net has been created in the netlist
-				
-				procedure query_strands (
-				-- Tests if a strand of the given net is connected to any component port.
-					net_name	: in type_net_name.bounded_string;
-					net			: in type_net) is
-					use type_strands;
-					strand_cursor : type_strands.cursor := net.strands.first; -- points to the first strand of the net
-
-					procedure query_segments (strand : in type_strand) is
-					-- Tests the net segments of the given strand if they are connected with any component ports.
-					-- For every segment, all component ports must be tested.
-						use type_net_segments;
-						segment		: type_net_segments.cursor := strand.segments.first; -- points to the segment being read
-						use type_portlists;
-						component_cursor : type_portlists.cursor; -- points to the component being read
-
-						procedure query_ports (
-						-- Tests the ports of the given component if they sit on the current net segment.
-							component	: in type_component_reference;
-							ports		: in type_ports.list) is
-							use type_ports;
-							port_cursor : type_ports.cursor := ports.first; -- points to the first port of the component
-
-							procedure mark_port_as_connected is
-							-- mark port in portlist as connected
-							
-								procedure locate_component (
-								-- Locates the component within the portlist of the submodule
-									module_name	: in type_submodule_name.bounded_string;
-									module 		: in out type_module) is
-	
-									procedure locate_port (
-									-- Locates the port of the component
-										component	: in type_component_reference;
-										ports		: in out type_ports.list) is
-
-										procedure mark_it (port : in out type_port) is
-										begin
-											port.connected := YES;
-										end mark_it;
-											
-									begin -- locate_port
-										update_element (
-											container => ports,
-											position => port_cursor,
-											process => mark_it'access);
-									end locate_port;
-										
-								begin -- locate_component 
-									type_portlists.update_element (
-										container	=> module.portlists,
-										position	=> component_cursor,
-										process 	=> locate_port'access);
-								end locate_component;
-									
-							begin -- mark_port_as_connected
-								-- locate the submodule in the rig
-								update_element (
-									container => rig,
-									position => module_cursor,
-									process => locate_component'access);
-							end mark_port_as_connected;
-							
-							procedure add_port (
-							-- Adds the port (indicated by cursor "port" to the portlist of the net being built.
-								net_name	: in type_net_name.bounded_string;
-								ports		: in out type_ports_with_reference.set) is
-								inserted : boolean;
-								cursor : type_ports_with_reference.cursor;
-							begin -- add_port
-								-- If a port sits on the point where two segments meet, the same port should be inserted only once.
-								-- Thus we have the obligatory flag "inserted". 
-								type_ports_with_reference.insert (
-									container	=> ports,
-									position	=> cursor,
-									inserted	=> inserted,
-									-- We add the port and extend it with the component reference.
-									new_item	=> (element (port_cursor) with component));
-
-								if not inserted then -- port already in net
-									log_indentation_up;
-									log ("already processed -> skipped", log_threshold + 3);
-									log_indentation_down;
-								end if;
-							end add_port;
-
-						begin -- query_ports
-							while port_cursor /= type_ports.no_element loop
-
-								-- Probe only those ports (in the portlists) which are in the same 
-								-- path and at the same sheet as the port.
-								-- Probing other ports would be a waste of time.
-								if et_coordinates.same_path_and_sheet (
-									left => strand.coordinates, 
-									right => element (port_cursor).coordinates ) then
-
-									if element (port_cursor).connected = NO then
-								
-										log_indentation_up;
-										log ("probing " & to_string (component) 
-											& " port " & to_string (element (port_cursor).name)
-											& latin_1.space
-											& to_string (position => element (port_cursor).coordinates, scope => et_coordinates.module),
-											log_threshold + 5);
-
-										-- test if port sits on segment
-										if port_connected_with_segment (element (port_cursor), element (segment)) then
-											log_indentation_up;
-										
-											log ("connected with " & to_string (component) 
-												& " port " & to_string (element (port_cursor).name)
-												& latin_1.space
-												& to_string (position => element (port_cursor).coordinates, scope => et_coordinates.module),
-												log_threshold + 3);
-											
-											log_indentation_down;
-
-											-- add port to the net being built
-											type_netlist.update_element (
-												container => netlist,
-												position => net_in_netlist,
-												process => add_port'access);
-
-											-- Mark the port (in the portlists) as connected.
-											-- Why ? A port can be connected to ONLY ONE net. So once it is
-											-- detected here, it would be a wast of computing time to 
-											-- test if the port is connected to other nets.
-											mark_port_as_connected;
-										end if;
-											
-										log_indentation_down;
-									end if;
-								end if;
-
-								next (port_cursor);
-							end loop;
-						end query_ports;
-						
-					begin -- query_segments
-						log_indentation_up;
-					
-						while segment /= type_net_segments.no_element loop
-
-							log ("segment " & to_string (element (segment)), log_threshold + 4);
-
-							-- reset the component cursor, then loop in the component list 
-							component_cursor := module.portlists.first;	-- points to the component being read
-							while component_cursor /= type_portlists.no_element loop
-
-								-- query the ports of the component
-								type_portlists.query_element (
-									position => component_cursor,
-									process => query_ports'access);
-
-								next (component_cursor);
-							end loop;
-							
-							next (segment);
-						end loop;
-							
-						log_indentation_down;	
-					end query_segments;
-
-				begin -- query_strands
-					log_indentation_up;
-				
-					while strand_cursor /= type_strands.no_element loop
-
-						-- log strand coordinates
-						log ("strand " & to_string (element (strand_cursor).coordinates, scope => et_coordinates.module),
-							 log_threshold + 3);
-
-						query_element (
-							position => strand_cursor,
-							process => query_segments'access);
-				
-						next (strand_cursor);
-					end loop;
-						
-					log_indentation_down;
-				end query_strands;
-
-			begin -- query_nets
-				log_indentation_up;
-			
-				while net_cursor /= type_nets.no_element loop
-
-					-- log the name of the net being built
-					log (to_string (key (net_cursor)), log_threshold + 2);
-				
-					-- create net in netlist
-					insert (
-						container => netlist,
-						key => key (net_cursor),
-						new_item => type_ports_with_reference.empty_set,
-						position => net_in_netlist,
-						inserted => net_created);
-
-					-- CS: evaluate flag net_created ?
-
-					-- search for ports connected with the net being built
-					query_element (
-						position => net_cursor,
-						process => query_strands'access);
-
-					next (net_cursor);
-				end loop;
-
-				log_indentation_down;	
-			end query_nets;
-					
-		begin -- make_netlist (NOTE: singluar !)
-			query_element (
-				position => module_cursor,
-				process => query_nets'access);
-
-			return netlist;
-		end make_netlist;
-
-		procedure add_netlist (
-			module_name	: in type_submodule_name.bounded_string;
-			module		: in out type_module) is
-		begin
-			module.netlist := make_netlist;
-		end add_netlist;
-
-	begin -- make_netlists (note plural !)
-		log (text => "building rig netlists ...", level => log_threshold);
-		log_indentation_up;
-		
-		-- We start with the first module of the rig.
-		first_module;
-
-		-- Process one rig module after another.
-		-- module_cursor points to the module in the rig.
-		while module_cursor /= type_rig.no_element loop
-			log ("module " & to_string (key (module_cursor)), log_threshold);
-			log_indentation_up;
-			
-			update_element (
-				container => rig,
-				position => module_cursor,
-				process => add_netlist'access);
-
-			log ("net count total" & count_type'image (net_count), log_threshold + 1);
-			log_indentation_down;
-			
-			next (module_cursor);
-		end loop;
-
-		log_indentation_down;
-	end make_netlists;
-
-	function terminal_count (
-		reference		: in type_component_reference;
-		log_threshold	: in et_string_processing.type_log_level)
-		return type_terminal_count is
-	-- Returns the number of terminals of the given component reference.
-	-- Requires module_cursor (global variable) to point to the current module.
-
-		use type_rig;
-		use et_string_processing;
-		terminals : type_terminal_count; -- to be returned
-
-		procedure locate_component_in_schematic (
-			module_name : in type_submodule_name.bounded_string;
-			module		: in type_module) is
-			use type_components;
-		
-			component_cursor: type_components.cursor;
-			
-			library_name	: type_full_library_name.bounded_string;
-			generic_name	: type_component_generic_name.bounded_string;
-			package_variant	: type_component_variant_name.bounded_string;
-
-			use type_libraries;
-			library_cursor	: et_libraries.type_libraries.cursor;
-
-			procedure locate_component_in_library (
-				library_name 	: in type_full_library_name.bounded_string;
-				components 		: in et_libraries.type_components.map) is
-				use et_libraries.type_components;
-
-				component_cursor : et_libraries.type_components.cursor;
-
-				procedure query_variants (
-				-- Looks up the list of variants of the component.
-					name 		: in et_libraries.type_component_generic_name.bounded_string;
-					component 	: in et_libraries.type_component) is
-					use type_component_variants;
-					use et_import;
-
-					variant_cursor : et_libraries.type_component_variants.cursor;
-				begin -- query_variants
-					log ("locating variant " & type_component_variant_name.to_string (package_variant)
-						& " ...", log_threshold + 3);
-					log_indentation_up;
-
-					-- The variant should be found (because the component has been inserted in the library earlier).
-					-- Otherwise an exception would occur here:
-					variant_cursor := component.variants.find (package_variant);
-
-					-- Get the number of terminals of this package variant
-					-- This is achieved by looking up the library (full name provided in package_variant)
-					-- and the package name.
-					-- If a kicad_v4 project is imported, the library name must be extended by the "pretty" extension.
-					if cad_format = kicad_v4 then
-						terminals := et_pcb.terminal_count (
-									library_name	=> to_full_library_name (
-														to_string (element (variant_cursor).packge.library) -- ../lbr/bel_ic
-														& et_kicad.package_library_directory_extension), -- .pretty
-									package_name	=> element (variant_cursor).packge.name);	-- S_SO14
-					else
-						terminals := et_pcb.terminal_count (
-									library_name	=> element (variant_cursor).packge.library,	-- ../lbr/bel_ic
-									package_name	=> element (variant_cursor).packge.name);	-- S_SO14
-					end if;
-						
-					log_indentation_down;	
-
-					exception
-						when event:
-							others =>
-								log_indentation_reset;
-								log (ada.exceptions.exception_message (event), console => true);
-								raise;
-					
-				end query_variants;
-				
-			begin -- locate_component_in_library
-				log ("locating generic component " & to_string (generic_name) 
-						& " in library " & to_string (library_name) 
-						& " ...", log_threshold + 2);
-				log_indentation_up;
-
-				-- Set the component_cursor right away to the position of the generic component
-				component_cursor := components.find (generic_name); -- search for generic name NETCHANGER
-
-				-- If we are importing a kicad_v4 project, the generic name might have not been found.
-				-- Why ? The generic component name might have a tilde prepended. So the search must
-				-- be started over with a tilde prepended to the generic_name.
-				if component_cursor = et_libraries.type_components.no_element then
-					case et_import.cad_format is
-						when et_import.kicad_v4 =>
-							-- search for generic name ~NETCHANGER
-							component_cursor := components.find (prepend_tilde (generic_name));
-						when others => null;
-					end case;
-				end if;
-					
-				et_libraries.type_components.query_element (
-					position => component_cursor,
-					process => query_variants'access);
-
-				log_indentation_down;
-			end locate_component_in_library;
-			
-		begin -- locate_component_in_schematic
-			log ("locating component in schematic ...", log_threshold + 1);
-			log_indentation_up;
-
-			-- The component cursor is set according to the position of the reference:
-			-- NOTE: Assumption is that there is a component with this reference.
-			component_cursor := module.components.find (reference);
-		
-			library_name := element (component_cursor).library_name; -- get library name where the symbol is stored in
-			generic_name := element (component_cursor).generic_name; -- get generic component name in the library
-			package_variant := element (component_cursor).variant; -- get the package variant name of the component
-
-			-- set library cursor. NOTE: assumption is that there is a library with this name
-			library_cursor := et_libraries.component_libraries.find (library_name); 
-
-			et_libraries.type_libraries.query_element (
-				position => library_cursor,
-				process => locate_component_in_library'access);
-
-			log_indentation_down;
-		end locate_component_in_schematic;
-		
-	begin -- terminal_count
-		log ("fetching terminal count of " & to_string (reference) & " ...", log_threshold);
-		log_indentation_up;
-		
-		query_element (
-			position	=> module_cursor,
-			process		=> locate_component_in_schematic'access);
-
-		log_indentation_down;
-
-		return terminals;
-	end terminal_count;
-
-	
-	function to_terminal (
-		port 			: in type_port_with_reference; -- see et_schematic spec
-		module			: in type_submodule_name.bounded_string; -- the name of the module
-		log_threshold 	: in et_string_processing.type_log_level) -- see et_libraries spec
-		return type_terminal is -- see et_libraries spec
-	-- Returns the terminal and unit name of the given port in a composite type.
-	-- Raises error if given port is of a virtual component (appearance sch).
-
-	-- NOTE: In contrast to Kicad, the terminal name is stored in a package variant. The package variant in
-	-- turn is maintained in the symbol component library.
-	-- General workflow:
-	-- 1. The given port provides the component reference like IC34
-	-- 2. look up IC34 in module.components
-	-- 3. get library name where the symbol is stored in, generic name like 7400, package name like S_SOT23
-	-- 4. look up the library, locate 7400 in library
-	-- 5. get package variant
-	-- 6. look up given port name and return terminal/unit name
-
-		use type_rig;
-		use et_string_processing;
-		terminal : type_terminal; -- to be returned
-
-		procedure locate_component_in_schematic (
-			module_name : in type_submodule_name.bounded_string;
-			module		: in type_module) is
-			use type_components;
-		
-			component_cursor: type_components.cursor;
-			
-			library_name	: type_full_library_name.bounded_string;
-			generic_name	: type_component_generic_name.bounded_string;
-			package_variant	: type_component_variant_name.bounded_string;
-
-			use type_libraries;
-			library_cursor	: et_libraries.type_libraries.cursor;
-
-			procedure locate_component_in_library (
-				library_name 	: in type_full_library_name.bounded_string;
-				components 		: in et_libraries.type_components.map) is
-				use et_libraries.type_components;
-
-				component_cursor : et_libraries.type_components.cursor;
-
-				procedure query_variants (
-				-- Looks up the list of variants of the component.
-					name 		: in et_libraries.type_component_generic_name.bounded_string;
-					component 	: in et_libraries.type_component) is
-					use type_component_variants;
-
-					variant_cursor : et_libraries.type_component_variants.cursor;
-
-					procedure locate_terminal (
-						variant_name 	: in type_component_variant_name.bounded_string;
-						variant 		: in type_component_variant) is
-						use type_terminal_port_map;
-						use type_port_name;
-						terminal_cursor : type_terminal_port_map.cursor := variant.terminal_port_map.first;
-						terminal_found : boolean := false;
-					begin
-						-- Search in terminal_port_map for the given port name.
-						-- On first match load the terminal which is a composite of
-						-- terminal name and unit name (see spec of type_port_in_port_terminal_map)
-						while terminal_cursor /= type_terminal_port_map.no_element loop
-							if element (terminal_cursor).name = port.name then
-								terminal.name := key (terminal_cursor); -- to be returned
-								terminal.unit := element (terminal_cursor).unit; -- to be returned
-								terminal.port := element (terminal_cursor).name; -- to be returned
-								
-								terminal_found := true;
-								exit;
-							end if;
-
-							-- CS: if not terminal_found then ...
-							next (terminal_cursor);
-						end loop;
-					end locate_terminal;
-					
-				begin -- query_variants
-					log ("locating variant " & to_string (package_variant)
-						& " ...", log_threshold + 3);
-					log_indentation_up;
-
-					-- The variant should be found (because the component has been inserted in the library earlier).
-					-- CS Otherwise an exception would occur here:
-					variant_cursor := component.variants.find (package_variant);
-
-					query_element (
-						position => variant_cursor,
-						process => locate_terminal'access);
-
-					log_indentation_down;	
-				end query_variants;
-				
-			begin -- locate_component_in_library
-				log ("locating generic component " & to_string (generic_name) 
-						& " in library " & to_string (library_name) 
-						& " ...", log_threshold + 2);
-				log_indentation_up;
-
-				-- Set the component_cursor right away to the position of the generic component
-				component_cursor := components.find (generic_name); -- search for generic name NETCHANGER
-
-				-- If we are importing a kicad_v4 project, the generic name might have not been found.
-				-- Why ? The generic component name might have a tilde prepended. So the search must
-				-- be started over with a tilde prepended to the generic_name.
-				if component_cursor = et_libraries.type_components.no_element then
-					case et_import.cad_format is
-						when et_import.kicad_v4 =>
-							-- search for generic name ~NETCHANGER
-							component_cursor := components.find (prepend_tilde (generic_name));
-						when others => null;
-					end case;
-				end if;
-					
-				et_libraries.type_components.query_element (
-					position => component_cursor,
-					process => query_variants'access);
-
-				log_indentation_down;
-			end locate_component_in_library;
-			
-		begin -- locate_component_in_schematic
-			log ("locating component in schematic ...", log_threshold + 1);
-			log_indentation_up;
-
-			-- The component cursor is set according to the position of the reference:
-			-- NOTE: Assumption is that there is a component with this reference.
-			component_cursor := module.components.find (port.reference);
-		
-			library_name := element (component_cursor).library_name; -- get library name where the symbol is stored in
-			generic_name := element (component_cursor).generic_name; -- get generic component name in the library
-			package_variant := element (component_cursor).variant; -- get the package variant name of the component
-
-			-- set library cursor. NOTE: assumption is that there is a library with this name
-			library_cursor := et_libraries.component_libraries.find (library_name); 
-
-			et_libraries.type_libraries.query_element (
-				position => library_cursor,
-				process => locate_component_in_library'access);
-
-			log_indentation_down;
-		end locate_component_in_schematic;
-	
-	begin -- to_terminal
-		log ("locating in module " & to_string (module) & " terminal (according to package variant) for " 
-			& to_string (port.reference) 
-			& " port " & to_string (port.name) & " ...", log_threshold);
-		log_indentation_up;
-
-		-- Abort if given port is not a real component.
-		if port.appearance = sch_pcb then -- real component
-
-			query_element (
-				position	=> find (rig, module), -- sets indirectly the cursor to the module
-				process		=> locate_component_in_schematic'access);
-			
-		else -- abort
-			log_indentation_reset;
-			log (message_error & to_string (port.reference) 
-				& " is a virtual component and thus has no package !");
-			raise constraint_error;
-		end if;
-			
-		log_indentation_down;
-		return terminal; 
-	end to_terminal;
+-- 	function to_terminal (
+-- 		port 			: in type_port_with_reference; -- see et_schematic spec
+-- 		module			: in type_submodule_name.bounded_string; -- the name of the module
+-- 		log_threshold 	: in et_string_processing.type_log_level) -- see et_libraries spec
+-- 		return type_terminal is -- see et_libraries spec
+-- 	-- Returns the terminal and unit name of the given port in a composite type.
+-- 	-- Raises error if given port is of a virtual component (appearance sch).
+-- 
+-- 	-- NOTE: In contrast to Kicad, the terminal name is stored in a package variant. The package variant in
+-- 	-- turn is maintained in the symbol component library.
+-- 	-- General workflow:
+-- 	-- 1. The given port provides the component reference like IC34
+-- 	-- 2. look up IC34 in module.components
+-- 	-- 3. get library name where the symbol is stored in, generic name like 7400, package name like S_SOT23
+-- 	-- 4. look up the library, locate 7400 in library
+-- 	-- 5. get package variant
+-- 	-- 6. look up given port name and return terminal/unit name
+-- 
+-- 		use type_rig;
+-- 		use et_string_processing;
+-- 		terminal : type_terminal; -- to be returned
+-- 
+-- 		procedure locate_component_in_schematic (
+-- 			module_name : in type_submodule_name.bounded_string;
+-- 			module		: in type_module) is
+-- 			use type_components;
+-- 		
+-- 			component_cursor: type_components.cursor;
+-- 			
+-- 			library_name	: type_full_library_name.bounded_string;
+-- 			generic_name	: type_component_generic_name.bounded_string;
+-- 			package_variant	: type_component_variant_name.bounded_string;
+-- 
+-- 			use type_libraries;
+-- 			library_cursor	: et_libraries.type_libraries.cursor;
+-- 
+-- 			procedure locate_component_in_library (
+-- 				library_name 	: in type_full_library_name.bounded_string;
+-- 				components 		: in et_libraries.type_components.map) is
+-- 				use et_libraries.type_components;
+-- 
+-- 				component_cursor : et_libraries.type_components.cursor;
+-- 
+-- 				procedure query_variants (
+-- 				-- Looks up the list of variants of the component.
+-- 					name 		: in et_libraries.type_component_generic_name.bounded_string;
+-- 					component 	: in et_libraries.type_component) is
+-- 					use type_component_variants;
+-- 
+-- 					variant_cursor : et_libraries.type_component_variants.cursor;
+-- 
+-- 					procedure locate_terminal (
+-- 						variant_name 	: in type_component_variant_name.bounded_string;
+-- 						variant 		: in type_component_variant) is
+-- 						use type_terminal_port_map;
+-- 						use type_port_name;
+-- 						terminal_cursor : type_terminal_port_map.cursor := variant.terminal_port_map.first;
+-- 						terminal_found : boolean := false;
+-- 					begin
+-- 						-- Search in terminal_port_map for the given port name.
+-- 						-- On first match load the terminal which is a composite of
+-- 						-- terminal name and unit name (see spec of type_port_in_port_terminal_map)
+-- 						while terminal_cursor /= type_terminal_port_map.no_element loop
+-- 							if element (terminal_cursor).name = port.name then
+-- 								terminal.name := key (terminal_cursor); -- to be returned
+-- 								terminal.unit := element (terminal_cursor).unit; -- to be returned
+-- 								terminal.port := element (terminal_cursor).name; -- to be returned
+-- 								
+-- 								terminal_found := true;
+-- 								exit;
+-- 							end if;
+-- 
+-- 							-- CS: if not terminal_found then ...
+-- 							next (terminal_cursor);
+-- 						end loop;
+-- 					end locate_terminal;
+-- 					
+-- 				begin -- query_variants
+-- 					log ("locating variant " & to_string (package_variant)
+-- 						& " ...", log_threshold + 3);
+-- 					log_indentation_up;
+-- 
+-- 					-- The variant should be found (because the component has been inserted in the library earlier).
+-- 					-- CS Otherwise an exception would occur here:
+-- 					variant_cursor := component.variants.find (package_variant);
+-- 
+-- 					query_element (
+-- 						position => variant_cursor,
+-- 						process => locate_terminal'access);
+-- 
+-- 					log_indentation_down;	
+-- 				end query_variants;
+-- 				
+-- 			begin -- locate_component_in_library
+-- 				log ("locating generic component " & to_string (generic_name) 
+-- 						& " in library " & to_string (library_name) 
+-- 						& " ...", log_threshold + 2);
+-- 				log_indentation_up;
+-- 
+-- 				-- Set the component_cursor right away to the position of the generic component
+-- 				component_cursor := components.find (generic_name); -- search for generic name NETCHANGER
+-- 
+-- 				-- If we are importing a kicad_v4 project, the generic name might have not been found.
+-- 				-- Why ? The generic component name might have a tilde prepended. So the search must
+-- 				-- be started over with a tilde prepended to the generic_name.
+-- 				if component_cursor = et_libraries.type_components.no_element then
+-- 					case et_import.cad_format is
+-- 						when et_import.kicad_v4 =>
+-- 							-- search for generic name ~NETCHANGER
+-- 							component_cursor := components.find (prepend_tilde (generic_name));
+-- 						when others => null;
+-- 					end case;
+-- 				end if;
+-- 					
+-- 				et_libraries.type_components.query_element (
+-- 					position => component_cursor,
+-- 					process => query_variants'access);
+-- 
+-- 				log_indentation_down;
+-- 			end locate_component_in_library;
+-- 			
+-- 		begin -- locate_component_in_schematic
+-- 			log ("locating component in schematic ...", log_threshold + 1);
+-- 			log_indentation_up;
+-- 
+-- 			-- The component cursor is set according to the position of the reference:
+-- 			-- NOTE: Assumption is that there is a component with this reference.
+-- 			component_cursor := module.components.find (port.reference);
+-- 		
+-- 			library_name := element (component_cursor).library_name; -- get library name where the symbol is stored in
+-- 			generic_name := element (component_cursor).generic_name; -- get generic component name in the library
+-- 			package_variant := element (component_cursor).variant; -- get the package variant name of the component
+-- 
+-- 			-- set library cursor. NOTE: assumption is that there is a library with this name
+-- 			library_cursor := et_libraries.component_libraries.find (library_name); 
+-- 
+-- 			et_libraries.type_libraries.query_element (
+-- 				position => library_cursor,
+-- 				process => locate_component_in_library'access);
+-- 
+-- 			log_indentation_down;
+-- 		end locate_component_in_schematic;
+-- 	
+-- 	begin -- to_terminal
+-- 		log ("locating in module " & to_string (module) & " terminal (according to package variant) for " 
+-- 			& to_string (port.reference) 
+-- 			& " port " & to_string (port.name) & " ...", log_threshold);
+-- 		log_indentation_up;
+-- 
+-- 		-- Abort if given port is not a real component.
+-- 		if port.appearance = sch_pcb then -- real component
+-- 
+-- 			query_element (
+-- 				position	=> find (rig, module), -- sets indirectly the cursor to the module
+-- 				process		=> locate_component_in_schematic'access);
+-- 			
+-- 		else -- abort
+-- 			log_indentation_reset;
+-- 			log (message_error & to_string (port.reference) 
+-- 				& " is a virtual component and thus has no package !");
+-- 			raise constraint_error;
+-- 		end if;
+-- 			
+-- 		log_indentation_down;
+-- 		return terminal; 
+-- 	end to_terminal;
 
 	function connected_net (
 		port			: in type_port_of_module; -- contains something like nucleo_core_1 X701 port 4
@@ -5469,560 +5469,560 @@ package body et_schematic is
 	end connected_net;
 
 
-	function connected_net (
-	-- Returns the name of the net connected with the given component and terminal.
-		module			: in et_coordinates.type_submodule_name.bounded_string;	-- nucleo_core							   
-		reference		: in type_component_reference;	-- IC45
-		terminal		: in type_terminal_name.bounded_string; -- E14
-		log_threshold	: in et_string_processing.type_log_level)		
-		return type_net_name.bounded_string is
-
-		net : type_net_name.bounded_string; -- to be returned
-
-		-- As an intermediate storage place here the module name, the component reference and the port name are stored.
-		-- Selector port contains the port name associated with the given terminal name (acc. to. package variant).
-		-- Once the port name has been found, this variable is set (see procedure locate_terminal):
-		port : type_port_of_module; 
-
-		use et_string_processing;
-		use type_rig;
-
-		module_cursor : type_rig.cursor; -- points to the module being searched in
-
-		procedure query_components (
-		-- Searches the components of the module for the given reference.
-			module_name : in type_submodule_name.bounded_string;
-			module		: in type_module) is
-			use type_components;
-			component_cursor_schematic : type_components.cursor := module.components.first;
-
-			--package_name : type_component_package_name.bounded_string;
-
-			library_name	: type_full_library_name.bounded_string;
-			generic_name	: type_component_generic_name.bounded_string;
-			package_variant	: type_component_variant_name.bounded_string;
-
-			use type_libraries;
-			library_cursor	: et_libraries.type_libraries.cursor;
-
-			procedure locate_component_in_library (
-			-- Locates the given component by its generic name in the library.
-				library_name 	: in type_full_library_name.bounded_string;
-				components 		: in et_libraries.type_components.map) is
-
-				use et_libraries.type_components;
-				component_cursor : et_libraries.type_components.cursor;
-
-				procedure query_variants (
-				-- Looks up the list of variants of the component.
-					name 		: in et_libraries.type_component_generic_name.bounded_string;
-					component 	: in et_libraries.type_component) is
-				
-					use type_component_variants;
-					variant_cursor : et_libraries.type_component_variants.cursor;
-
-					procedure locate_terminal (
-					-- Locates the given terminal in the package variant.
-						variant_name 	: in type_component_variant_name.bounded_string;
-						variant 		: in type_component_variant) is
-						use type_terminal_port_map;
-						use type_port_name;
-						terminal_cursor : type_terminal_port_map.cursor;
-					begin -- locate_terminal
-						terminal_cursor := variant.terminal_port_map.find (terminal);
-						if terminal_cursor /= type_terminal_port_map.no_element then -- given terminal found
-
-							-- set the intermediate variable "port". see declarations above.
-							port.module := connected_net.module; -- the name of the given module
-							port.reference := reference; -- the given component reference
-							port.name := element (terminal_cursor).name; -- the port name
-							
-							log ("port name " & et_libraries.to_string (port.name), log_threshold + 4);
-						else
-							log_indentation_reset;
-							log (message_error & " terminal " & to_string (terminal) & " not found !",
-								 console => true);
-							raise constraint_error;
-						end if;
-					end locate_terminal;
-					
-				begin -- query_variants
-					log ("locating variant " & to_string (package_variant) & " ...", log_threshold + 3);
-					log_indentation_up;
-
-					variant_cursor := component.variants.find (package_variant);
-
-					-- Locate the given terminal in the variant.
-					-- The variant should be found (because the component has been inserted in the library earlier).
-					if variant_cursor /= et_libraries.type_component_variants.no_element then
-
-						-- locate the given terminal in the package variant
-						query_element (
-							position 	=> variant_cursor,
-							process 	=> locate_terminal'access);
-
-					else
-						log_indentation_reset;
-						log (message_error & " package variant " & to_string (key (variant_cursor)) &
-							" not found !", console => true);
-						raise constraint_error;
-					end if;
-					log_indentation_down;	
-				end query_variants;
-				
-			begin -- locate_component_in_library
-				log ("locating generic component " & to_string (generic_name) 
-						& " in library " & to_string (library_name) & " ...", log_threshold + 2);
-				log_indentation_up;
-
-				-- Set the component_cursor right away to the position of the generic component
-				component_cursor := components.find (generic_name); -- search for generic name NETCHANGER
-
-				-- If we are importing a kicad_v4 project, the generic name might have not been found.
-				-- Why ? The generic component name might have a tilde prepended. So the search must
-				-- be started over with a tilde prepended to the generic_name.
-				if component_cursor = et_libraries.type_components.no_element then
-					case et_import.cad_format is
-						when et_import.kicad_v4 =>
-							-- search for generic name ~NETCHANGER
-							component_cursor := components.find (prepend_tilde (generic_name));
-						when others => null;
-					end case;
-				end if;
-
-				if component_cursor /= et_libraries.type_components.no_element then
-					-- Query the variants of the component in the library.
-					et_libraries.type_components.query_element (
-						position 	=> component_cursor,
-						process 	=> query_variants'access);
-					
-				else -- generic model not found -> abort
-					log_indentation_reset;
-					log (message_error & " generic model for " & to_string (reference) & " not found !", console => true);
-					raise constraint_error;
-				end if;
-					
-				log_indentation_down;
-			end locate_component_in_library;
-				
-		begin -- query_components
-			log ("querying components in schematic ...", log_threshold + 1);
-			log_indentation_up;
-
-			-- find component with given reference in schematic
-			component_cursor_schematic := module.components.find (reference);
-			if component_cursor_schematic /= type_components.no_element then
-
-				library_name := element (component_cursor_schematic).library_name; -- get library name where the symbol is stored in
-				generic_name := element (component_cursor_schematic).generic_name; -- get generic component name in the library
-				package_variant := element (component_cursor_schematic).variant; -- get the package variant name of the component
-				
-				-- set library cursor. NOTE: assumption is that there is a library with this name.
-				-- Otherwise an exception would occur here.
-				library_cursor := et_libraries.component_libraries.find (library_name); 
-
-				if et_libraries.type_libraries."/=" (library_cursor, et_libraries.type_libraries.no_element) then
-					et_libraries.type_libraries.query_element (
-						position	=> library_cursor,
-						process		=> locate_component_in_library'access);
-				else -- library not found -> abort
-					log_indentation_reset;
-					log (message_error & " library " & to_string (library_name) & " not found !", console => true);
-					raise constraint_error;
-				end if;
-
-			else -- component nof found in schematic -> abort
-				log_indentation_reset;
-				log (message_error & " component " & to_string (reference) & " not found !", console => true);
-				raise constraint_error;
-			end if;
-				
-			log_indentation_down;
-		end query_components;
-
-	begin -- connected_net
-		log ("locating in module " & to_string (module) & " net connected with " 
-			& to_string (reference) & " terminal " & to_string (terminal) & " ...", log_threshold);
-		log_indentation_up;
-
-		module_cursor := find (rig, module); -- set the cursor to the module
-
-		-- If module exists, locate the given component in the module.
-		-- Otherwise raise alarm and exit.
-		if module_cursor /= type_rig.no_element then
-
-			query_element (
-				position => module_cursor, 
-				process => query_components'access);
-			
-		else -- module not found
-			log_indentation_reset;
-			log (message_error & "module " & to_string (module) & " not found !", console => true);
-			raise constraint_error;
-		end if;
-
-		-- There is another function connected_net. It returns the net name 
-		-- connected with "port". (Port contains the module name, reference and port name)
-		net := connected_net (port, log_threshold + 1);
-		
-		log_indentation_down;
-		
-		return net;
-	end connected_net;
+-- 	function connected_net (
+-- 	-- Returns the name of the net connected with the given component and terminal.
+-- 		module			: in et_coordinates.type_submodule_name.bounded_string;	-- nucleo_core							   
+-- 		reference		: in type_component_reference;	-- IC45
+-- 		terminal		: in type_terminal_name.bounded_string; -- E14
+-- 		log_threshold	: in et_string_processing.type_log_level)		
+-- 		return type_net_name.bounded_string is
+-- 
+-- 		net : type_net_name.bounded_string; -- to be returned
+-- 
+-- 		-- As an intermediate storage place here the module name, the component reference and the port name are stored.
+-- 		-- Selector port contains the port name associated with the given terminal name (acc. to. package variant).
+-- 		-- Once the port name has been found, this variable is set (see procedure locate_terminal):
+-- 		port : type_port_of_module; 
+-- 
+-- 		use et_string_processing;
+-- 		use type_rig;
+-- 
+-- 		module_cursor : type_rig.cursor; -- points to the module being searched in
+-- 
+-- 		procedure query_components (
+-- 		-- Searches the components of the module for the given reference.
+-- 			module_name : in type_submodule_name.bounded_string;
+-- 			module		: in type_module) is
+-- 			use type_components;
+-- 			component_cursor_schematic : type_components.cursor := module.components.first;
+-- 
+-- 			--package_name : type_component_package_name.bounded_string;
+-- 
+-- 			library_name	: type_full_library_name.bounded_string;
+-- 			generic_name	: type_component_generic_name.bounded_string;
+-- 			package_variant	: type_component_variant_name.bounded_string;
+-- 
+-- 			use type_libraries;
+-- 			library_cursor	: et_libraries.type_libraries.cursor;
+-- 
+-- 			procedure locate_component_in_library (
+-- 			-- Locates the given component by its generic name in the library.
+-- 				library_name 	: in type_full_library_name.bounded_string;
+-- 				components 		: in et_libraries.type_components.map) is
+-- 
+-- 				use et_libraries.type_components;
+-- 				component_cursor : et_libraries.type_components.cursor;
+-- 
+-- 				procedure query_variants (
+-- 				-- Looks up the list of variants of the component.
+-- 					name 		: in et_libraries.type_component_generic_name.bounded_string;
+-- 					component 	: in et_libraries.type_component) is
+-- 				
+-- 					use type_component_variants;
+-- 					variant_cursor : et_libraries.type_component_variants.cursor;
+-- 
+-- 					procedure locate_terminal (
+-- 					-- Locates the given terminal in the package variant.
+-- 						variant_name 	: in type_component_variant_name.bounded_string;
+-- 						variant 		: in type_component_variant) is
+-- 						use type_terminal_port_map;
+-- 						use type_port_name;
+-- 						terminal_cursor : type_terminal_port_map.cursor;
+-- 					begin -- locate_terminal
+-- 						terminal_cursor := variant.terminal_port_map.find (terminal);
+-- 						if terminal_cursor /= type_terminal_port_map.no_element then -- given terminal found
+-- 
+-- 							-- set the intermediate variable "port". see declarations above.
+-- 							port.module := connected_net.module; -- the name of the given module
+-- 							port.reference := reference; -- the given component reference
+-- 							port.name := element (terminal_cursor).name; -- the port name
+-- 							
+-- 							log ("port name " & et_libraries.to_string (port.name), log_threshold + 4);
+-- 						else
+-- 							log_indentation_reset;
+-- 							log (message_error & " terminal " & to_string (terminal) & " not found !",
+-- 								 console => true);
+-- 							raise constraint_error;
+-- 						end if;
+-- 					end locate_terminal;
+-- 					
+-- 				begin -- query_variants
+-- 					log ("locating variant " & to_string (package_variant) & " ...", log_threshold + 3);
+-- 					log_indentation_up;
+-- 
+-- 					variant_cursor := component.variants.find (package_variant);
+-- 
+-- 					-- Locate the given terminal in the variant.
+-- 					-- The variant should be found (because the component has been inserted in the library earlier).
+-- 					if variant_cursor /= et_libraries.type_component_variants.no_element then
+-- 
+-- 						-- locate the given terminal in the package variant
+-- 						query_element (
+-- 							position 	=> variant_cursor,
+-- 							process 	=> locate_terminal'access);
+-- 
+-- 					else
+-- 						log_indentation_reset;
+-- 						log (message_error & " package variant " & to_string (key (variant_cursor)) &
+-- 							" not found !", console => true);
+-- 						raise constraint_error;
+-- 					end if;
+-- 					log_indentation_down;	
+-- 				end query_variants;
+-- 				
+-- 			begin -- locate_component_in_library
+-- 				log ("locating generic component " & to_string (generic_name) 
+-- 						& " in library " & to_string (library_name) & " ...", log_threshold + 2);
+-- 				log_indentation_up;
+-- 
+-- 				-- Set the component_cursor right away to the position of the generic component
+-- 				component_cursor := components.find (generic_name); -- search for generic name NETCHANGER
+-- 
+-- 				-- If we are importing a kicad_v4 project, the generic name might have not been found.
+-- 				-- Why ? The generic component name might have a tilde prepended. So the search must
+-- 				-- be started over with a tilde prepended to the generic_name.
+-- 				if component_cursor = et_libraries.type_components.no_element then
+-- 					case et_import.cad_format is
+-- 						when et_import.kicad_v4 =>
+-- 							-- search for generic name ~NETCHANGER
+-- 							component_cursor := components.find (prepend_tilde (generic_name));
+-- 						when others => null;
+-- 					end case;
+-- 				end if;
+-- 
+-- 				if component_cursor /= et_libraries.type_components.no_element then
+-- 					-- Query the variants of the component in the library.
+-- 					et_libraries.type_components.query_element (
+-- 						position 	=> component_cursor,
+-- 						process 	=> query_variants'access);
+-- 					
+-- 				else -- generic model not found -> abort
+-- 					log_indentation_reset;
+-- 					log (message_error & " generic model for " & to_string (reference) & " not found !", console => true);
+-- 					raise constraint_error;
+-- 				end if;
+-- 					
+-- 				log_indentation_down;
+-- 			end locate_component_in_library;
+-- 				
+-- 		begin -- query_components
+-- 			log ("querying components in schematic ...", log_threshold + 1);
+-- 			log_indentation_up;
+-- 
+-- 			-- find component with given reference in schematic
+-- 			component_cursor_schematic := module.components.find (reference);
+-- 			if component_cursor_schematic /= type_components.no_element then
+-- 
+-- 				library_name := element (component_cursor_schematic).library_name; -- get library name where the symbol is stored in
+-- 				generic_name := element (component_cursor_schematic).generic_name; -- get generic component name in the library
+-- 				package_variant := element (component_cursor_schematic).variant; -- get the package variant name of the component
+-- 				
+-- 				-- set library cursor. NOTE: assumption is that there is a library with this name.
+-- 				-- Otherwise an exception would occur here.
+-- 				library_cursor := et_libraries.component_libraries.find (library_name); 
+-- 
+-- 				if et_libraries.type_libraries."/=" (library_cursor, et_libraries.type_libraries.no_element) then
+-- 					et_libraries.type_libraries.query_element (
+-- 						position	=> library_cursor,
+-- 						process		=> locate_component_in_library'access);
+-- 				else -- library not found -> abort
+-- 					log_indentation_reset;
+-- 					log (message_error & " library " & to_string (library_name) & " not found !", console => true);
+-- 					raise constraint_error;
+-- 				end if;
+-- 
+-- 			else -- component nof found in schematic -> abort
+-- 				log_indentation_reset;
+-- 				log (message_error & " component " & to_string (reference) & " not found !", console => true);
+-- 				raise constraint_error;
+-- 			end if;
+-- 				
+-- 			log_indentation_down;
+-- 		end query_components;
+-- 
+-- 	begin -- connected_net
+-- 		log ("locating in module " & to_string (module) & " net connected with " 
+-- 			& to_string (reference) & " terminal " & to_string (terminal) & " ...", log_threshold);
+-- 		log_indentation_up;
+-- 
+-- 		module_cursor := find (rig, module); -- set the cursor to the module
+-- 
+-- 		-- If module exists, locate the given component in the module.
+-- 		-- Otherwise raise alarm and exit.
+-- 		if module_cursor /= type_rig.no_element then
+-- 
+-- 			query_element (
+-- 				position => module_cursor, 
+-- 				process => query_components'access);
+-- 			
+-- 		else -- module not found
+-- 			log_indentation_reset;
+-- 			log (message_error & "module " & to_string (module) & " not found !", console => true);
+-- 			raise constraint_error;
+-- 		end if;
+-- 
+-- 		-- There is another function connected_net. It returns the net name 
+-- 		-- connected with "port". (Port contains the module name, reference and port name)
+-- 		net := connected_net (port, log_threshold + 1);
+-- 		
+-- 		log_indentation_down;
+-- 		
+-- 		return net;
+-- 	end connected_net;
 
 	
-	procedure export_netlists (log_threshold : in et_string_processing.type_log_level) is
-	-- Exports/Writes the netlists of the rig in separate files.
-	-- Netlists are exported in individual project directories in the work directory of ET.
-	-- These project directories have the same name as the module indicated by module_cursor.
-	-- Addresses real components exclusively. Virtual things like GND symbols are not exported.
-	-- Call this procedure after executing procedure make_netlist !
-		use type_rig;
-		use ada.directories;
-		use et_general;
-		use et_string_processing;
-		use et_export;
-		
-		netlist_handle : ada.text_io.file_type;
-		netlist_file_name : type_netlist_file_name.bounded_string;
-		
-		procedure query_nets (
-			module_name	: in type_submodule_name.bounded_string;
-			module		: in type_module) is
-			net_cursor	: type_netlist.cursor := module.netlist.first;
+-- 	procedure export_netlists (log_threshold : in et_string_processing.type_log_level) is
+-- 	-- Exports/Writes the netlists of the rig in separate files.
+-- 	-- Netlists are exported in individual project directories in the work directory of ET.
+-- 	-- These project directories have the same name as the module indicated by module_cursor.
+-- 	-- Addresses real components exclusively. Virtual things like GND symbols are not exported.
+-- 	-- Call this procedure after executing procedure make_netlist !
+-- 		use type_rig;
+-- 		use ada.directories;
+-- 		use et_general;
+-- 		use et_string_processing;
+-- 		use et_export;
+-- 		
+-- 		netlist_handle : ada.text_io.file_type;
+-- 		netlist_file_name : type_netlist_file_name.bounded_string;
+-- 		
+-- 		procedure query_nets (
+-- 			module_name	: in type_submodule_name.bounded_string;
+-- 			module		: in type_module) is
+-- 			net_cursor	: type_netlist.cursor := module.netlist.first;
+-- 
+-- 			procedure query_ports (
+-- 				net_name	: in type_net_name.bounded_string;
+-- 				ports		: in type_ports_with_reference.set) is
+-- 				port_cursor : type_ports_with_reference.cursor := ports.first;
+-- 		
+-- 				terminal : type_terminal;
+-- 			begin
+-- 				log_indentation_up;
+-- 				--log ("ports" & count_type'image (length (ports)), log_threshold + 3);
+-- 
+-- 				while port_cursor /= type_ports_with_reference.no_element loop
+-- 
+-- 					-- we export only ports of real components
+-- 					if element (port_cursor).appearance = sch_pcb then
+-- 
+-- 						-- fetch the terminal from the port in the current module
+-- 						terminal := to_terminal (
+-- 							port => element (port_cursor),
+-- 							module => key (module_cursor),	-- nucleo_core
+-- 							log_threshold => log_threshold + 4);
+-- 					
+-- 						-- log reference, unit, port, direction, terminal (all in one line)
+-- 						log ("reference " & to_string (element (port_cursor).reference)
+-- 							& " unit " & to_string (terminal.unit)
+-- 							& " port " & to_string (terminal.port)
+-- 							& to_string (element (port_cursor).direction)
+-- 							& " terminal " & to_string (terminal.name),
+-- 							log_threshold + 3);
+-- 
+-- 						-- write reference, port, direction, terminal in netlist (all in one line)
+-- 						put_line (netlist_handle, 
+-- 							to_string (element (port_cursor).reference) & latin_1.space
+-- 							& to_string (terminal.port)
+-- 							& to_string (element (port_cursor).direction, preamble => false) & latin_1.space
+-- 							& to_string (terminal.name)); 
+-- 
+-- 					end if;
+-- 						
+-- 					next (port_cursor);
+-- 				end loop;
+-- 
+-- 				log_indentation_down;
+-- 			end query_ports;
+-- 			
+-- 		begin -- query_nets
+-- 			log_indentation_up;
+-- 
+-- 			-- output the net names. then query the ports/pins of the net
+-- 			while net_cursor /= type_netlist.no_element loop
+-- 
+-- 				-- log and write net name in netlist
+-- 				log (to_string (key (net_cursor)), log_threshold + 2);
+-- 				new_line (netlist_handle);
+-- 				put_line (netlist_handle, to_string (key (net_cursor)));
+-- 
+-- 				-- query ports of net
+-- 				type_netlist.query_element (
+-- 					position	=> net_cursor,
+-- 					process		=> query_ports'access);
+-- 				
+-- 				next (net_cursor);
+-- 			end loop;
+-- 				
+-- 			log_indentation_down;	
+-- 		end query_nets;
+-- 
+-- 	begin -- export_netlists
+-- 
+-- 		-- We start with the first module of the rig.
+-- 		first_module;
+-- 
+-- 		log ("exporting netlists ...", log_threshold);
+-- 		log_indentation_up;
+-- 		
+-- 		while module_cursor /= type_rig.no_element loop
+-- 			log ("module " & to_string (key (module_cursor)), log_threshold);
+-- 			log_indentation_up;
+-- 
+-- 			create_project_directory (to_string (key (module_cursor)), log_threshold + 2);			
+-- 			-- compose the netlist file name and its path like "../ET/motor_driver/CAM/motor_driver.net"
+-- 			netlist_file_name := type_netlist_file_name.to_bounded_string 
+-- 				(
+-- 				compose (
+-- 					containing_directory => compose 
+-- 						(
+-- 						containing_directory => compose (work_directory, to_string (key (module_cursor))),
+-- 						name => et_export.directory_cam
+-- 						),
+-- 					name => to_string (key (module_cursor)),
+-- 					extension => extension_netlist)
+-- 				);
+-- 
+-- 			-- create the netlist (which inevitably and intentionally overwrites the previous file)
+-- 			log ("creating netlist file " & type_netlist_file_name.to_string (netlist_file_name), log_threshold + 1);
+-- 			create (
+-- 				file => netlist_handle,
+-- 				mode => out_file, 
+-- 				name => type_netlist_file_name.to_string (netlist_file_name));
+-- 
+-- 			put_line (netlist_handle, comment_mark & " " & system_name & " " & et_general.version & " netlist");
+-- 			put_line (netlist_handle, comment_mark & " " & date);
+-- 			put_line (netlist_handle, comment_mark & " module " & to_string (key (module_cursor)));
+-- 			put_line (netlist_handle, comment_mark & " " & row_separator_double);
+-- 			put_line (netlist_handle, comment_mark & " net count total" & count_type'image (net_count));
+-- 			-- CS: statistics about pin count ?
+-- 			
+-- 			put_line (netlist_handle, comment_mark);
+-- 			put_line (netlist_handle, comment_mark & " legend:");
+-- 			put_line (netlist_handle, comment_mark & "  net_name");
+-- 			put_line (netlist_handle, comment_mark & "  reference/component port direction terminal/pin/pad");
+-- 			put_line (netlist_handle, comment_mark & " " & row_separator_single);
+-- 
+-- 			-- do the export
+-- 			query_element (
+-- 				position	=> module_cursor,
+-- 				process		=> query_nets'access);
+-- 
+-- 			new_line (netlist_handle);
+-- 			put_line (netlist_handle, comment_mark & " " & row_separator_double);
+-- 			put_line (netlist_handle, comment_mark & " end of list");
+-- 			
+-- 			close (netlist_handle);
+-- 			log_indentation_down;
+-- 			
+-- 			next (module_cursor);
+-- 			
+-- 		end loop;
+-- 			
+-- 		log_indentation_down;
+-- 		
+-- 	end export_netlists;
 
-			procedure query_ports (
-				net_name	: in type_net_name.bounded_string;
-				ports		: in type_ports_with_reference.set) is
-				port_cursor : type_ports_with_reference.cursor := ports.first;
-		
-				terminal : type_terminal;
-			begin
-				log_indentation_up;
-				--log ("ports" & count_type'image (length (ports)), log_threshold + 3);
+-- 	function components_in_net (
+-- 		module 			: in type_submodule_name.bounded_string;	-- nucleo_core
+-- 		net				: in type_net_name.bounded_string;			-- motor_on_off
+-- 		log_threshold	: in et_string_processing.type_log_level)
+-- 		return type_ports_with_reference.set is
+-- 	-- Returns a list of component ports that are connected with the given net.
+-- 
+-- 		use et_string_processing;
+-- 		use type_rig;
+-- 
+-- 		module_cursor : type_rig.cursor;
+-- 		
+-- 		ports : type_ports_with_reference.set; -- to be returned
+-- 
+-- 		procedure locate_net (
+-- 		-- Locates the given net in the netlist of the given module.
+-- 		-- The ports connected with the net are copied to variable "ports".
+-- 			module_name : in type_submodule_name.bounded_string;
+-- 			module 		: in type_module) is
+-- 			net_cursor 	: type_netlist.cursor;
+-- 			port_cursor : type_ports_with_reference.cursor;
+-- 			port 		: type_port_with_reference;
+-- 			terminal 	: type_terminal;
+-- 			port_count 	: count_type;
+-- 		begin
+-- 			log ("locating net ... ", log_threshold + 1);
+-- 			log_indentation_up;
+-- 			net_cursor := find (module.netlist, net);
+-- 
+-- 			-- If net exists in module load ports with all the ports
+-- 			-- connected with the net. Otherwise raise alarm and abort.
+-- 			if net_cursor /= type_netlist.no_element then
+-- 				--log (to_string (key (net_cursor)), log_threshold + 2);
+-- 
+-- 				-- copy ports of net to "ports" (which is returned to the caller)
+-- 				ports := element (net_cursor);
+-- 				port_count := length (ports);
+-- 
+-- 				-- show component ports, units, coordinates and terminal names
+-- 				if log_level > log_threshold + 2 then
+-- 					log_indentation_up;
+-- 					log ("listing of" & count_type'image (port_count) & " component ports");
+-- 					log_indentation_up;
+-- 
+-- 					-- If there are ports in the given net, set port cursor to first port in net
+-- 					-- and log ports one after another.
+-- 					-- If no ports in net, issue a warning.
+-- 					if not is_empty (ports) then
+-- 						port_cursor := ports.first;
+-- 						while port_cursor /= type_ports_with_reference.no_element loop
+-- 							port := element (port_cursor); -- load the port
+-- 
+-- 							-- Depending on the appearance of the component we output just the 
+-- 							-- port name or both the terminal name and the port name.
+-- 							case port.appearance is
+-- 								when sch_pcb =>
+-- 									terminal := to_terminal (port, module_name, log_threshold + 3); -- fetch the terminal
+-- 									log (to_string (port) 
+-- 										& to_string (terminal, show_unit => true, preamble => true));
+-- 
+-- 								when sch =>
+-- 									log (to_string (port));
+-- 							end case;
+-- 								
+-- 							next (port_cursor);
+-- 						end loop;
+-- 					else
+-- 						log (message_warning & "net " & to_string (net) & " is not connected with any ports !");
+-- 					end if;
+-- 
+-- 					log_indentation_down;
+-- 					log_indentation_down;
+-- 				end if;
+-- 					
+-- 			else -- net does not exist -> abort
+-- 				log_indentation_reset;
+-- 				log (message_error & "in module " 
+-- 					 & to_string (module_name) & " net " & to_string (net) 
+-- 					 & " not found !", console => true);
+-- 				raise constraint_error;
+-- 			end if;
+-- 
+-- 			log_indentation_down;
+-- 		end locate_net;
+-- 			
+-- 	begin -- components_in_net
+-- 		log ("locating components in module " & to_string (module) & " net " & to_string (net) & " ...",
+-- 			 log_threshold);
+-- 		log_indentation_up;
+-- 
+-- 		module_cursor := find (rig, module); -- set the cursor to the module
+-- 
+-- 		-- If module exists, locate the given net in the module.
+-- 		-- Otherwise raise alarm and exit.
+-- 		if module_cursor /= type_rig.no_element then
+-- 			query_element (
+-- 				position => module_cursor, 
+-- 				process => locate_net'access);
+-- 			
+-- 		else -- module not found
+-- 			log_indentation_reset;
+-- 			log (message_error & "module " & to_string (module) & " not found !", console => true);
+-- 			raise constraint_error;
+-- 		end if;
+-- 		
+-- 		log_indentation_down;
+-- 		return ports;
+-- 	end components_in_net;
 
-				while port_cursor /= type_ports_with_reference.no_element loop
-
-					-- we export only ports of real components
-					if element (port_cursor).appearance = sch_pcb then
-
-						-- fetch the terminal from the port in the current module
-						terminal := to_terminal (
-							port => element (port_cursor),
-							module => key (module_cursor),	-- nucleo_core
-							log_threshold => log_threshold + 4);
-					
-						-- log reference, unit, port, direction, terminal (all in one line)
-						log ("reference " & to_string (element (port_cursor).reference)
-							& " unit " & to_string (terminal.unit)
-							& " port " & to_string (terminal.port)
-							& to_string (element (port_cursor).direction)
-							& " terminal " & to_string (terminal.name),
-							log_threshold + 3);
-
-						-- write reference, port, direction, terminal in netlist (all in one line)
-						put_line (netlist_handle, 
-							to_string (element (port_cursor).reference) & latin_1.space
-							& to_string (terminal.port)
-							& to_string (element (port_cursor).direction, preamble => false) & latin_1.space
-							& to_string (terminal.name)); 
-
-					end if;
-						
-					next (port_cursor);
-				end loop;
-
-				log_indentation_down;
-			end query_ports;
-			
-		begin -- query_nets
-			log_indentation_up;
-
-			-- output the net names. then query the ports/pins of the net
-			while net_cursor /= type_netlist.no_element loop
-
-				-- log and write net name in netlist
-				log (to_string (key (net_cursor)), log_threshold + 2);
-				new_line (netlist_handle);
-				put_line (netlist_handle, to_string (key (net_cursor)));
-
-				-- query ports of net
-				type_netlist.query_element (
-					position	=> net_cursor,
-					process		=> query_ports'access);
-				
-				next (net_cursor);
-			end loop;
-				
-			log_indentation_down;	
-		end query_nets;
-
-	begin -- export_netlists
-
-		-- We start with the first module of the rig.
-		first_module;
-
-		log ("exporting netlists ...", log_threshold);
-		log_indentation_up;
-		
-		while module_cursor /= type_rig.no_element loop
-			log ("module " & to_string (key (module_cursor)), log_threshold);
-			log_indentation_up;
-
-			create_project_directory (to_string (key (module_cursor)), log_threshold + 2);			
-			-- compose the netlist file name and its path like "../ET/motor_driver/CAM/motor_driver.net"
-			netlist_file_name := type_netlist_file_name.to_bounded_string 
-				(
-				compose (
-					containing_directory => compose 
-						(
-						containing_directory => compose (work_directory, to_string (key (module_cursor))),
-						name => et_export.directory_cam
-						),
-					name => to_string (key (module_cursor)),
-					extension => extension_netlist)
-				);
-
-			-- create the netlist (which inevitably and intentionally overwrites the previous file)
-			log ("creating netlist file " & type_netlist_file_name.to_string (netlist_file_name), log_threshold + 1);
-			create (
-				file => netlist_handle,
-				mode => out_file, 
-				name => type_netlist_file_name.to_string (netlist_file_name));
-
-			put_line (netlist_handle, comment_mark & " " & system_name & " " & et_general.version & " netlist");
-			put_line (netlist_handle, comment_mark & " " & date);
-			put_line (netlist_handle, comment_mark & " module " & to_string (key (module_cursor)));
-			put_line (netlist_handle, comment_mark & " " & row_separator_double);
-			put_line (netlist_handle, comment_mark & " net count total" & count_type'image (net_count));
-			-- CS: statistics about pin count ?
-			
-			put_line (netlist_handle, comment_mark);
-			put_line (netlist_handle, comment_mark & " legend:");
-			put_line (netlist_handle, comment_mark & "  net_name");
-			put_line (netlist_handle, comment_mark & "  reference/component port direction terminal/pin/pad");
-			put_line (netlist_handle, comment_mark & " " & row_separator_single);
-
-			-- do the export
-			query_element (
-				position	=> module_cursor,
-				process		=> query_nets'access);
-
-			new_line (netlist_handle);
-			put_line (netlist_handle, comment_mark & " " & row_separator_double);
-			put_line (netlist_handle, comment_mark & " end of list");
-			
-			close (netlist_handle);
-			log_indentation_down;
-			
-			next (module_cursor);
-			
-		end loop;
-			
-		log_indentation_down;
-		
-	end export_netlists;
-
-	function components_in_net (
-		module 			: in type_submodule_name.bounded_string;	-- nucleo_core
-		net				: in type_net_name.bounded_string;			-- motor_on_off
-		log_threshold	: in et_string_processing.type_log_level)
-		return type_ports_with_reference.set is
-	-- Returns a list of component ports that are connected with the given net.
-
-		use et_string_processing;
-		use type_rig;
-
-		module_cursor : type_rig.cursor;
-		
-		ports : type_ports_with_reference.set; -- to be returned
-
-		procedure locate_net (
-		-- Locates the given net in the netlist of the given module.
-		-- The ports connected with the net are copied to variable "ports".
-			module_name : in type_submodule_name.bounded_string;
-			module 		: in type_module) is
-			net_cursor 	: type_netlist.cursor;
-			port_cursor : type_ports_with_reference.cursor;
-			port 		: type_port_with_reference;
-			terminal 	: type_terminal;
-			port_count 	: count_type;
-		begin
-			log ("locating net ... ", log_threshold + 1);
-			log_indentation_up;
-			net_cursor := find (module.netlist, net);
-
-			-- If net exists in module load ports with all the ports
-			-- connected with the net. Otherwise raise alarm and abort.
-			if net_cursor /= type_netlist.no_element then
-				--log (to_string (key (net_cursor)), log_threshold + 2);
-
-				-- copy ports of net to "ports" (which is returned to the caller)
-				ports := element (net_cursor);
-				port_count := length (ports);
-
-				-- show component ports, units, coordinates and terminal names
-				if log_level > log_threshold + 2 then
-					log_indentation_up;
-					log ("listing of" & count_type'image (port_count) & " component ports");
-					log_indentation_up;
-
-					-- If there are ports in the given net, set port cursor to first port in net
-					-- and log ports one after another.
-					-- If no ports in net, issue a warning.
-					if not is_empty (ports) then
-						port_cursor := ports.first;
-						while port_cursor /= type_ports_with_reference.no_element loop
-							port := element (port_cursor); -- load the port
-
-							-- Depending on the appearance of the component we output just the 
-							-- port name or both the terminal name and the port name.
-							case port.appearance is
-								when sch_pcb =>
-									terminal := to_terminal (port, module_name, log_threshold + 3); -- fetch the terminal
-									log (to_string (port) 
-										& to_string (terminal, show_unit => true, preamble => true));
-
-								when sch =>
-									log (to_string (port));
-							end case;
-								
-							next (port_cursor);
-						end loop;
-					else
-						log (message_warning & "net " & to_string (net) & " is not connected with any ports !");
-					end if;
-
-					log_indentation_down;
-					log_indentation_down;
-				end if;
-					
-			else -- net does not exist -> abort
-				log_indentation_reset;
-				log (message_error & "in module " 
-					 & to_string (module_name) & " net " & to_string (net) 
-					 & " not found !", console => true);
-				raise constraint_error;
-			end if;
-
-			log_indentation_down;
-		end locate_net;
-			
-	begin -- components_in_net
-		log ("locating components in module " & to_string (module) & " net " & to_string (net) & " ...",
-			 log_threshold);
-		log_indentation_up;
-
-		module_cursor := find (rig, module); -- set the cursor to the module
-
-		-- If module exists, locate the given net in the module.
-		-- Otherwise raise alarm and exit.
-		if module_cursor /= type_rig.no_element then
-			query_element (
-				position => module_cursor, 
-				process => locate_net'access);
-			
-		else -- module not found
-			log_indentation_reset;
-			log (message_error & "module " & to_string (module) & " not found !", console => true);
-			raise constraint_error;
-		end if;
-		
-		log_indentation_down;
-		return ports;
-	end components_in_net;
-
-	function real_components_in_net (
-		module 			: in type_submodule_name.bounded_string;	-- nucleo_core
-		net				: in type_net_name.bounded_string;			-- motor_on_off
-		log_threshold	: in et_string_processing.type_log_level)
-		return type_ports_with_reference.set is
-	-- Returns a list of real component ports that are connected with the given net.
-
-		use et_string_processing;
-		use type_rig;
-
-		module_cursor : type_rig.cursor;
-		
-		ports_real : type_ports_with_reference.set; -- to be returned
-
-		procedure locate_net (
-		-- Locates the given net in the netlist of the given module.
-		-- The ports connected with the net are copied to variable "ports".
-			module_name : in type_submodule_name.bounded_string;
-			module 		: in type_module) is
-			net_cursor	: type_netlist.cursor;
-			port_cursor : type_ports_with_reference.cursor;
-			ports_all 	: type_ports_with_reference.set; -- all ports of the net
-			port 		: type_port_with_reference;
-			terminal 	: type_terminal;
-		begin
-			log ("locating net ... ", log_threshold + 1);
-			log_indentation_up;
-			net_cursor := find (module.netlist, net);
-
-			-- If net exists in module load ports with all the ports
-			-- connected with the net. Otherwise raise alarm and abort.
-			if net_cursor /= type_netlist.no_element then
-
-				-- load all ports of the net
-				ports_all := element (net_cursor);
-
-				-- If there are ports in the given net, set port cursor to first port in net,
-				-- loop in list of all ports and filter out the real ports.
-				if not is_empty (ports_all) then
-					port_cursor := ports_all.first;
-					while port_cursor /= type_ports_with_reference.no_element loop
-						port := element (port_cursor); -- load the port
-					
-						if element (port_cursor).appearance = sch_pcb then
-							ports_real.insert (port); -- insert real port in list to be returned
-
-							-- log terminal
-							terminal := to_terminal (port, module_name, log_threshold + 2); -- fetch the terminal
-							log (to_string (port) & to_string (terminal, show_unit => true, preamble => true), log_threshold + 2);
-						end if;
-							
-						next (port_cursor);
-					end loop;
-				else
-					log (message_warning & "net " & to_string (net) & " is not connected with any ports !");
-				end if;
-					
-			else -- net does not exist -> abort
-				log_indentation_reset;
-				log (message_error & "in module " 
-					 & to_string (module_name) & " net " & to_string (net) 
-					 & " not found !", console => true);
-				raise constraint_error;
-			end if;
-
-			log_indentation_down;
-		end locate_net;
-			
-	begin -- real_components_in_net
-		log ("locating real components in module " & to_string (module) & " net " & to_string (net) & " ...",
-			 log_threshold);
-		log_indentation_up;
-
-		module_cursor := find (rig, module); -- set the cursor to the module
-
-		-- If module exists, locate the given net in the module.
-		-- Otherwise raise alarm and exit.
-		if module_cursor /= type_rig.no_element then
-			query_element (
-				position => module_cursor, 
-				process => locate_net'access);
-			
-		else -- module not found
-			log_indentation_reset;
-			log (message_error & "module " & to_string (module) & " not found !", console => true);
-			raise constraint_error;
-		end if;
-		
-		log_indentation_down;
-		return ports_real;
-	end real_components_in_net;
+-- 	function real_components_in_net (
+-- 		module 			: in type_submodule_name.bounded_string;	-- nucleo_core
+-- 		net				: in type_net_name.bounded_string;			-- motor_on_off
+-- 		log_threshold	: in et_string_processing.type_log_level)
+-- 		return type_ports_with_reference.set is
+-- 	-- Returns a list of real component ports that are connected with the given net.
+-- 
+-- 		use et_string_processing;
+-- 		use type_rig;
+-- 
+-- 		module_cursor : type_rig.cursor;
+-- 		
+-- 		ports_real : type_ports_with_reference.set; -- to be returned
+-- 
+-- 		procedure locate_net (
+-- 		-- Locates the given net in the netlist of the given module.
+-- 		-- The ports connected with the net are copied to variable "ports".
+-- 			module_name : in type_submodule_name.bounded_string;
+-- 			module 		: in type_module) is
+-- 			net_cursor	: type_netlist.cursor;
+-- 			port_cursor : type_ports_with_reference.cursor;
+-- 			ports_all 	: type_ports_with_reference.set; -- all ports of the net
+-- 			port 		: type_port_with_reference;
+-- 			terminal 	: type_terminal;
+-- 		begin
+-- 			log ("locating net ... ", log_threshold + 1);
+-- 			log_indentation_up;
+-- 			net_cursor := find (module.netlist, net);
+-- 
+-- 			-- If net exists in module load ports with all the ports
+-- 			-- connected with the net. Otherwise raise alarm and abort.
+-- 			if net_cursor /= type_netlist.no_element then
+-- 
+-- 				-- load all ports of the net
+-- 				ports_all := element (net_cursor);
+-- 
+-- 				-- If there are ports in the given net, set port cursor to first port in net,
+-- 				-- loop in list of all ports and filter out the real ports.
+-- 				if not is_empty (ports_all) then
+-- 					port_cursor := ports_all.first;
+-- 					while port_cursor /= type_ports_with_reference.no_element loop
+-- 						port := element (port_cursor); -- load the port
+-- 					
+-- 						if element (port_cursor).appearance = sch_pcb then
+-- 							ports_real.insert (port); -- insert real port in list to be returned
+-- 
+-- 							-- log terminal
+-- 							terminal := to_terminal (port, module_name, log_threshold + 2); -- fetch the terminal
+-- 							log (to_string (port) & to_string (terminal, show_unit => true, preamble => true), log_threshold + 2);
+-- 						end if;
+-- 							
+-- 						next (port_cursor);
+-- 					end loop;
+-- 				else
+-- 					log (message_warning & "net " & to_string (net) & " is not connected with any ports !");
+-- 				end if;
+-- 					
+-- 			else -- net does not exist -> abort
+-- 				log_indentation_reset;
+-- 				log (message_error & "in module " 
+-- 					 & to_string (module_name) & " net " & to_string (net) 
+-- 					 & " not found !", console => true);
+-- 				raise constraint_error;
+-- 			end if;
+-- 
+-- 			log_indentation_down;
+-- 		end locate_net;
+-- 			
+-- 	begin -- real_components_in_net
+-- 		log ("locating real components in module " & to_string (module) & " net " & to_string (net) & " ...",
+-- 			 log_threshold);
+-- 		log_indentation_up;
+-- 
+-- 		module_cursor := find (rig, module); -- set the cursor to the module
+-- 
+-- 		-- If module exists, locate the given net in the module.
+-- 		-- Otherwise raise alarm and exit.
+-- 		if module_cursor /= type_rig.no_element then
+-- 			query_element (
+-- 				position => module_cursor, 
+-- 				process => locate_net'access);
+-- 			
+-- 		else -- module not found
+-- 			log_indentation_reset;
+-- 			log (message_error & "module " & to_string (module) & " not found !", console => true);
+-- 			raise constraint_error;
+-- 		end if;
+-- 		
+-- 		log_indentation_down;
+-- 		return ports_real;
+-- 	end real_components_in_net;
 
 	
 	procedure export_bom (log_threshold : in et_string_processing.type_log_level) is

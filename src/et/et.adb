@@ -360,7 +360,7 @@ procedure et is
 			check_orphaned_no_connection_flags (log_threshold => 0);
 
 			-- make netlists
-			make_netlists (log_threshold => 0);
+			et_kicad.make_netlists (log_threshold => 0);
 
 			-- detect unintentionally left open ports (must happen AFTER make_netlists !)
 			et_kicad.check_open_ports (log_threshold => 0);
@@ -372,7 +372,7 @@ procedure et is
 			net_test (log_threshold => 0);
 			
 			-- export netlists (requires that make_netlists has been called previously)
-			export_netlists (log_threshold => 0);
+			et_kicad.export_netlists (log_threshold => 0);
 			
 			-- export statistics
 			write_statistics (log_threshold => 0);

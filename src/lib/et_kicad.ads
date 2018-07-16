@@ -103,8 +103,7 @@ package et_kicad is
 
 	-- LIBRARIES
 	package type_libraries is new ordered_maps (
-		key_type 		=> et_libraries.type_full_library_name.bounded_string, -- consists of group name and actual library name
-		-- CS the key should be a composite of lib name and lib group
+		key_type 		=> et_libraries.type_full_library_name.bounded_string, -- ../../lbr/passive/capacitors
 		"<"				=> et_libraries.type_full_library_name."<",
 		element_type 	=> et_libraries.type_components.map,
 		"=" 			=> et_libraries.type_components."=");
@@ -451,6 +450,37 @@ package et_kicad is
 	procedure check_non_deployed_units (log_threshold : in et_string_processing.type_log_level);
 	-- Warns about not deployed units and open ports thereof.
 
+	procedure make_netlists (log_threshold : in et_string_processing.type_log_level);
+	-- Builds the netlists of all modules of the rig.
+	-- Addresses ALL components both virtual and real. Virtual components are things like GND or VCC symbols.
+	-- Virtual components are filtered out on exporting the netlist in a file.
+	-- Bases on the portlists and nets/strands information of the module.
+
+	
+	function to_terminal (
+		port 			: in et_schematic.type_port_with_reference;
+		module			: in type_submodule_name.bounded_string; -- the name of the module							 
+		log_threshold 	: in et_string_processing.type_log_level)
+		return et_libraries.type_terminal;
+	-- Returns the terminal and unit name of the given port in a composite type.
+	-- Raises error if given port is of a virtual component (appearance sch).
+
+	function connected_net (
+	-- Returns the name of the net connected with the given component and terminal.
+		module			: in type_submodule_name.bounded_string;	-- nucleo_core
+		reference		: in et_libraries.type_component_reference;	-- IC45
+		terminal		: in et_libraries.type_terminal_name.bounded_string; -- E14
+		log_threshold	: in et_string_processing.type_log_level)		
+		return et_schematic.type_net_name.bounded_string;
+
+	procedure export_netlists (log_threshold : in et_string_processing.type_log_level);
+	-- Exports/Writes the netlists of the rig in separate files.
+	-- Netlists are exported in individual project directories in the work directory of ET.
+	-- These project directories have the same name as the module indicated by module_cursor.
+	-- Addresses real components exclusively. Virtual things like GND symbols are not exported.
+	-- Call this procedure after executing procedure make_netlist !
+
+		
 	
 end et_kicad;
 

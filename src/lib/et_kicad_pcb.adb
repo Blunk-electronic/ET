@@ -6817,7 +6817,7 @@ package body et_kicad_pcb is
 						port := element (portlist.first);
 
 						-- The physical terminal name must be obtained now:
-						terminal := to_terminal (port, mod_name, log_threshold + 4);
+						terminal := et_kicad.to_terminal (port, mod_name, log_threshold + 4);
 
 						-- Terminal contains the component reference (like IC45) and the
 						-- physical terminal name (like G7).
@@ -7212,7 +7212,7 @@ package body et_kicad_pcb is
 						-- terminal_name -- E14
 
 						-- Get the name of the net connected with the given terminal:
-						net_name_out := et_schematic.connected_net (mod_name, package_name, terminal_name, log_threshold + 4);
+						net_name_out := et_kicad.connected_net (mod_name, package_name, terminal_name, log_threshold + 4);
 
 						log_indentation_up;
 						log ("the " & et_general.system_name & " net name is " & to_string (net_name_out), log_threshold + 3);
