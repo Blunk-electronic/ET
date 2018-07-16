@@ -363,10 +363,10 @@ procedure et is
 			make_netlists (log_threshold => 0);
 
 			-- detect unintentionally left open ports (must happen AFTER make_netlists !)
-			check_open_ports (log_threshold => 0);
+			et_kicad.check_open_ports (log_threshold => 0);
 
 			-- detect non-deployed units
-			check_non_deployed_units (log_threshold => 0);
+			et_kicad.check_non_deployed_units (log_threshold => 0);
 
 			-- test nets for inputs, outputs, bidirs, ...
 			net_test (log_threshold => 0);

@@ -444,7 +444,14 @@ package et_kicad is
 		return et_schematic.type_portlists.map;
 	-- Returns a list of components with the absolute positions of their ports as they are placed in the schematic.
 
-		
+
+	procedure check_open_ports (log_threshold : in et_string_processing.type_log_level);
+	-- Warns about unintentionally left open ports. That are ports without a no_connection_flag.
+
+	procedure check_non_deployed_units (log_threshold : in et_string_processing.type_log_level);
+	-- Warns about not deployed units and open ports thereof.
+
+	
 end et_kicad;
 
 -- Soli Deo Gloria

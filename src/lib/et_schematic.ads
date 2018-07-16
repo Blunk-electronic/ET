@@ -948,16 +948,16 @@ package et_schematic is
 	procedure write_strands (log_threshold : in et_string_processing.type_log_level);
 	-- Writes a nice overview of strands, net segments and labels
 
-	function first_segment (cursor : in type_strands.cursor) return type_net_segments.cursor;
-	-- Returns a cursor pointing to the first net segment of the given strand.
+-- 	function first_segment (cursor : in type_strands.cursor) return type_net_segments.cursor;
+-- 	-- Returns a cursor pointing to the first net segment of the given strand.
 
-	function first_net return type_nets.cursor;
-	-- Returns a cursor pointing to the first net of the module (indicated by module_cursor).
+-- 	function first_net return type_nets.cursor;
+-- 	-- Returns a cursor pointing to the first net of the module (indicated by module_cursor).
     
-	procedure link_strands (log_threshold : in et_string_processing.type_log_level);
-	-- Links strands to nets (see type_module.nets).
+-- 	procedure link_strands (log_threshold : in et_string_processing.type_log_level);
+-- 	-- Links strands to nets (see type_module.nets).
 
-	procedure process_hierarchic_nets (log_threshold : in et_string_processing.type_log_level);
+-- 	procedure process_hierarchic_nets (log_threshold : in et_string_processing.type_log_level);
     
 	procedure write_nets (log_threshold : in et_string_processing.type_log_level);
 	-- Writes a nice overview of all nets, strands, segments and labels.
@@ -1037,11 +1037,11 @@ package et_schematic is
 	procedure check_orphaned_no_connection_flags (log_threshold : in et_string_processing.type_log_level);
 	-- Warns about orphaned no_connection_flags.
 
-	procedure check_open_ports (log_threshold : in et_string_processing.type_log_level);
-	-- Warns about unintentionally left open ports. That are ports without a no_connection_flag.
+-- 	procedure check_open_ports (log_threshold : in et_string_processing.type_log_level);
+-- 	-- Warns about unintentionally left open ports. That are ports without a no_connection_flag.
 
-	procedure check_non_deployed_units (log_threshold : in et_string_processing.type_log_level);
-	-- Warns about not deployed units and open ports thereof.
+-- 	procedure check_non_deployed_units (log_threshold : in et_string_processing.type_log_level);
+-- 	-- Warns about not deployed units and open ports thereof.
 
 	procedure net_test (log_threshold : in et_string_processing.type_log_level);
 	-- Tests nets for number of inputs, outputs, bidirs, ...

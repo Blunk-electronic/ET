@@ -7536,19 +7536,20 @@ package body et_kicad_pcb is
 	procedure read_boards (log_threshold : in et_string_processing.type_log_level) is
 	-- Imports layout files. The files to be imported are named after the schematic modules.
 	-- The schematic modules are indicated by module_cursor.
-		use et_schematic;
+		--use et_schematic;
 		use et_coordinates;
-		use type_rig;
+		use et_schematic.type_rig;
 		use et_string_processing;
 		use ada.directories;
 		use et_kicad;
 	begin
 		-- We start with the first module of the rig.
-		first_module;
+		--first_module;
+		module_cursor := rig.first;
 
 		-- Process one rig module after another.
 		-- module_cursor points to the module in the rig.
-		while module_cursor /= type_rig.no_element loop
+		while module_cursor /= et_schematic.type_rig.no_element loop
 			log ("module " & to_string (key (module_cursor)), log_threshold);
 			log_indentation_up;
 	

@@ -349,15 +349,15 @@ package et_libraries is
 		name : in type_component_generic_name.bounded_string; -- TRANSISTOR_NPN
 		characters : in character_set := component_generic_name_characters);
 
-	function strip_tilde (generic_name : in type_component_generic_name.bounded_string) return
-		type_component_generic_name.bounded_string;
-	-- Kicad requirement: Removes a heading tilde character from a generic component name.
-	-- example: ~TRANSISTOR_NPN becomes TRANSISTOR_NPN
+-- 	function strip_tilde (generic_name : in type_component_generic_name.bounded_string) return
+-- 		type_component_generic_name.bounded_string;
+-- 	-- Kicad requirement: Removes a heading tilde character from a generic component name.
+-- 	-- example: ~TRANSISTOR_NPN becomes TRANSISTOR_NPN
 
-	function prepend_tilde (generic_name : in type_component_generic_name.bounded_string) return
-		type_component_generic_name.bounded_string;
-	-- Kicad requirement: Prepends a heading tilde character to a generic component name.
-	-- example: TRANSISTOR_NPN becomes ~TRANSISTOR_NPN
+-- 	function prepend_tilde (generic_name : in type_component_generic_name.bounded_string) return
+-- 		type_component_generic_name.bounded_string;
+-- 	-- Kicad requirement: Prepends a heading tilde character to a generic component name.
+-- 	-- example: TRANSISTOR_NPN becomes ~TRANSISTOR_NPN
 	
 	function to_string (generic_name : in type_component_generic_name.bounded_string) return string;
 	-- Returns the given generic name as as string.

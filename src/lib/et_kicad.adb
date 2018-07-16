@@ -557,6 +557,44 @@ package body et_kicad is
 			return NO;
 		end if;
 	end to_power_flag;
+
+	function strip_tilde (generic_name : in et_libraries.type_component_generic_name.bounded_string) return
+		et_libraries.type_component_generic_name.bounded_string is
+	-- Removes a possible heading tilde character from a generic component name.
+	-- example: ~TRANSISTOR_NPN becomes TRANSISTOR_NPN	
+	-- This function is a kicad_v4 requirement. It has no meaning for other CAD formats and
+	-- returns generic_name as it is.
+		use et_import;
+		use et_libraries.type_component_generic_name;
+		length : et_libraries.type_component_generic_name.length_range;
+	begin
+		if et_import.cad_format = kicad_v4 then
+			if element (generic_name, 1) = '~' then
+				length := et_libraries.type_component_generic_name.length (generic_name);
+				return et_libraries.type_component_generic_name.bounded_slice (generic_name, 2, length);
+			else
+				return generic_name;
+			end if;
+		else
+			return generic_name;
+		end if;
+	end strip_tilde;
+
+	function prepend_tilde (generic_name : in et_libraries.type_component_generic_name.bounded_string) return
+		et_libraries.type_component_generic_name.bounded_string is
+	-- Prepends a heading tilde character to a generic component name.
+	-- example: TRANSISTOR_NPN becomes ~TRANSISTOR_NPN
+	-- This function is a kicad_v4 requirement. It has no meaning for other CAD formats and
+	-- returns generic_name as it is.
+		use et_import;
+		use et_libraries.type_component_generic_name;
+	begin
+		if et_import.cad_format = kicad_v4 then
+			return '~' & generic_name;
+		else
+			return generic_name;
+		end if;
+	end prepend_tilde;
 	
 	procedure read_components_libraries (log_threshold : in type_log_level) is
 	-- Reads component libraries. Root directory is et_libraries.lib_dir.
@@ -2952,6 +2990,601 @@ package body et_kicad is
 		return variant;
 	end to_package_variant;
 
+
+	procedure link_strands (log_threshold : in et_string_processing.type_log_level) is
+	-- Links local and global strands to nets (see type_module.nets).
+
+	-- Builds the nets (see type_module.nets) of the current module from its strands (see type_module.strands).
+	-- NOTE: This is NOT about generating or exporting a netlist. See package et_netlist instead.
+	-- This procdure should be called AFTER netlist generation because some strands may have changed their name.
+	-- (Names of strands have changee due to power-out ports connected with them.)
+
+	-- Build the module nets. Build_nets merges the strands which are still independed of
+	-- each other. For example a strand named "VCC3V3" exists on submodule A on sheet 2. 
+	-- Another strand "VCC3V3" exists on submodule C on sheet 1. They do not "know" each other
+	-- and must be merged into a single net.
+		use et_string_processing;
+		use et_schematic.type_strands;
+
+        net_name : et_schematic.type_net_name.bounded_string;
+	
+		strand	: et_schematic.type_strands.cursor;
+	
+		procedure add_net (
+		-- Creates a net with the name and the scope (local, global) of the current strand. 
+		-- If strand is local, the net name is rendered to a full hierarchic name.
+		-- If the net existed already, then strand is appended to the strands of the net.
+			mod_name : in type_submodule_name.bounded_string;
+			module   : in out et_schematic.type_module) is
+
+			use et_schematic.type_nets;
+			
+			net_created : boolean;
+			net_cursor : et_schematic.type_nets.cursor;
+
+			procedure add_strand (
+				name	: in et_schematic.type_net_name.bounded_string;
+				net		: in out et_schematic.type_net) is
+			begin
+				log ("strand of net " & et_schematic.to_string (name), level => log_threshold + 2);
+				
+				if net_created then -- net has just been created
+					net.scope := element (strand).scope; -- set scope of net
+				end if;
+
+				if log_level >= log_threshold + 2 then
+					log_indentation_up;
+					log ("strand at " & to_string (position => element (strand).coordinates, scope => et_coordinates.module));
+					log_indentation_down;
+				end if;
+				
+				-- append strand to the net
+				net.strands.append (new_item => element (strand));
+			end add_strand;
+
+		begin -- add_net
+			module.nets.insert (
+				key 		=> net_name,
+				position	=> net_cursor,
+				inserted	=> net_created);
+
+			-- If net created or already there, net_cursor points to the net where the strand is to be added.
+			module.nets.update_element (
+				position	=> net_cursor,
+				process		=> add_strand'access);
+		end add_net;
+
+	begin -- link_strands
+		log (text => "linking local and global strands to nets ...", level => log_threshold);
+
+		log_indentation_up;
+
+		-- loop in strands of the current module
+		strand := first_strand;
+		log_indentation_up;
+		while strand /= et_schematic.type_strands.no_element loop
+
+            case et_schematic.type_strands.element (strand).scope is
+                when et_schematic.local =>
+
+					-- Output a warning if strand has no name.
+					if et_schematic.anonymous (element (strand).name) then
+						log (message_warning & "net " & et_schematic.to_string (element (strand).name) 
+							& " at " & to_string (position => element (strand).coordinates, scope => et_coordinates.module)
+							& " has no dedicated name !");
+					end if;
+
+					-- form the net name depending on scope
+					-- For local strands the full hierarchic name of the net must be formed
+					-- in order to get something like "driver.GND" :
+
+-- 					net_name := type_net_name.to_bounded_string (
+-- 						et_coordinates.to_string (et_coordinates.path (element (strand).coordinates), top_module => false)
+-- 							& et_coordinates.to_string (et_coordinates.module (element (strand).coordinates))
+-- 							& et_coordinates.hierarchy_separator & et_schematic.to_string (element (strand).name));
+
+-- 					if ada.directories.base_name (to_string (top_level_schematic)) = to_string (et_coordinates.module (element (strand).coordinates)) then -- CS: make function and use it in procedure write_strands too
+-- 						net_name := type_net_name.to_bounded_string (hierarchy_separator 
+-- 							& et_schematic.to_string (element (strand).name));
+-- 					else
+-- 						net_name := type_net_name.to_bounded_string (
+-- 							et_coordinates.to_string (et_coordinates.path (element (strand).coordinates))
+-- 							& et_coordinates.to_string (et_coordinates.module (element (strand).coordinates))
+-- 							& et_coordinates.hierarchy_separator & et_schematic.to_string (element (strand).name));
+-- 					end if;
+
+					-- if strand is in top module form a net name like "/MASTER_RESET"
+					if type_path_to_submodule.is_empty (et_coordinates.path (element (strand).coordinates)) then
+						net_name := et_schematic.type_net_name.to_bounded_string (
+							hierarchy_separator
+							& et_schematic.to_string (element (strand).name));
+
+					else -- strand is in any submodule. form a net name like "/SENSOR/RESET"
+						net_name := et_schematic.type_net_name.to_bounded_string (
+							et_coordinates.to_string (et_coordinates.path (element (strand).coordinates))
+							& hierarchy_separator 
+							& et_schematic.to_string (element (strand).name));
+					end if;
+				
+                    -- Create net and append strand to module.nets
+                    rig.update_element (
+                        position => module_cursor,
+                        process => add_net'access);
+
+				when et_schematic.global =>
+					-- form the net name depending on scope
+					net_name := element (strand).name;
+
+                    -- Create net and append strand to module.nets
+                    rig.update_element (
+                        position => module_cursor,
+                        process => add_net'access);
+
+				when et_schematic.unknown =>
+					log (message_error & "unknown scope of net !");
+					raise constraint_error; -- CS: should never happen as all strands should have a scope by now
+
+				when et_schematic.hierarchic =>
+					null; -- CS special threatment
+					
+			end case;
+            
+			next (strand);
+		end loop;
+		log_indentation_down;
+		log_indentation_down;
+	end link_strands;
+
+	function first_segment (cursor : in et_schematic.type_strands.cursor) return et_schematic.type_net_segments.cursor is
+	-- Returns a cursor pointing to the first net segment of the given strand.
+		segment_cursor : et_schematic.type_net_segments.cursor;
+
+		procedure set_cursor (
+			strand : in et_schematic.type_strand) is
+		begin
+			segment_cursor := strand.segments.first;
+		end set_cursor;
+
+	begin
+		et_schematic.type_strands.query_element (
+			position	=> cursor,
+			process		=> set_cursor'access
+			);
+		return segment_cursor;
+	end first_segment;
+	
+	function first_net return et_schematic.type_nets.cursor is
+	-- Returns a cursor pointing to the first net of the module (indicated by module_cursor).
+		cursor : et_schematic.type_nets.cursor;	
+
+		procedure set_cursor (
+			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
+			module		: in et_schematic.type_module) is
+ 		begin
+			cursor := module.nets.first;
+		end set_cursor;
+	
+	begin
+		et_schematic.type_rig.query_element (
+			position	=> module_cursor,
+			process		=> set_cursor'access
+			);
+		return cursor;
+	end first_net;
+	
+	procedure process_hierarchic_nets (log_threshold : in et_string_processing.type_log_level) is
+	-- Looks up strands of hierarchic nets and appends them to the local or global nets (if connected via gui_submodules). 
+	-- Hierarchic nets are mere extensions of a global or local net at deeper levels in the design hierarchy. 
+	-- So every hierarchic net is connected with a local or global net at a higher level. 
+	-- The link between a global or local net and a hierarchic net is the gui_submodule (see spec. of type_gui_submodule). 
+	-- IMPORTANT: Gui_submodules and hierarchic nets are virtual components in a graphical GUI. Neither of them exists in reality.
+		use et_string_processing;
+		use et_schematic.type_net_name;
+		use et_schematic.type_nets;
+		use et_schematic.type_strands;
+		net : et_schematic.type_nets.cursor;
+
+		-- Temparily we collect the hierarchic strands that are to be appended 
+		-- (to the net being examined) here. Once the net has been examined completely
+		-- we append hierarchic_strands_tmp to the strands of the net.
+		hierarchic_strands_tmp : et_schematic.type_strands.list := et_schematic.type_strands.empty_list;
+	
+		-- This construct returned after examining a gui_submodule for a suitable hierarchic net at a deeper level:
+        type type_hierachic_net is record
+			available	: boolean := false; -- when false, path and port are without meaning
+			path        : type_path_to_submodule.list := type_path_to_submodule.empty_list;	-- the path of the submodule
+			name		: et_schematic.type_net_name.bounded_string := to_bounded_string (""); -- the name of the hierarchic net -- CS: rename to name
+        end record;
+
+		function on_segment (
+			port 	: in et_schematic.type_gui_submodule_port;
+			segment : in et_schematic.type_net_segment)
+			return boolean is
+		-- Returns true if given port sits on given segment.
+			use et_geometry;
+			distance : type_distance_point_from_line;
+		begin
+			distance := distance_of_point_from_line (
+				point 		=> port.coordinates,
+				line_start	=> type_2d_point (segment.coordinates_start),
+				line_end	=> type_2d_point (segment.coordinates_end),
+				line_range	=> with_end_points);
+
+			-- start and end points of the segment are inclued in the test
+			if not distance.out_of_range and distance.distance = zero_distance then
+				return true;
+			else
+				return false;
+			end if;
+		end on_segment;
+
+		function hierarchic_net (segment : in et_schematic.type_net_segments.cursor) return type_hierachic_net is
+		-- Tests if the given segment is connected with a hierarchic net via a gui_submodule.
+		-- When positive: marks the port as "processed" and returns a type_hierachic_net (see spec above):
+		--	- net.available true
+		--	- path to submodule where the hierarchic net is
+		--	- name of the hierarchic net in the submodule
+
+		-- One submodule after another is loaded. Then its ports are loaded one after another
+		-- and tested if they are connected with the given segment.
+		
+			net : type_hierachic_net;
+			use et_schematic.type_rig;
+
+			procedure query_gui_submodules (
+				mod_name	: in type_submodule_name.bounded_string;
+				module 		: in out et_schematic.type_module) is
+				submodule_cursor : et_schematic.type_gui_submodules.cursor := module.submodules.first; -- CS: rename to gui_submodule_cursor
+				use et_schematic.type_gui_submodules;
+
+				procedure query_ports (
+				-- Tests if the "port" of the given gui_submodule is connected with the given net segment.
+				-- If connected, the path of the gui_submodule and the submodule_name form the path to the real submodule. This
+				-- path is subsequently returned. The query ends.
+					submodule_name	: in type_submodule_name.bounded_string; -- The gui_submodule has a name. It is also the name of the real submodule.
+					gui_submodule	: in out et_schematic.type_gui_submodule -- This is the gui_submodule being queried.
+					) is
+					-- These are the "ports" of the gui_submodule (they represent the hierarchic nets within the real submodule).
+					port : et_schematic.type_gui_submodule_ports.cursor := gui_submodule.ports.first; -- default to first port
+					use et_schematic.type_gui_submodule_ports;
+					use et_schematic.type_net_segments;
+
+					procedure mark_processed (
+						name : in et_schematic.type_net_name.bounded_string;
+						port : in out et_schematic.type_gui_submodule_port) is
+					begin
+						port.processed := true;
+					end mark_processed;
+
+					function append_submodule_to_path (
+					-- This function appends the name of a submodule to a path.
+					-- Required to form the full path to the submodule.
+						path_in		: in type_path_to_submodule.list;
+						submodule	: in type_submodule_name.bounded_string)
+						return et_coordinates.type_path_to_submodule.list is
+						path_out : type_path_to_submodule.list := path_in;
+					begin
+						type_path_to_submodule.append (
+							container => path_out,
+							new_item => submodule);
+						return path_out;
+					end append_submodule_to_path;
+					
+				begin -- query_ports of the given gui_submodule. Test only the non-processed ones.
+					-- If "port" sits on given segment, mark the "port" as processed.
+					-- NOTE: The "processed" mark prevents multiple testing of the same "port" (which could lead to a forever-loop)
+					while port /= et_schematic.type_gui_submodule_ports.no_element loop
+
+						-- we are interested in non-processed ports only
+						if not element (port).processed then
+
+							-- if segment is connected with port
+							if on_segment (element (port), element (segment)) then
+
+								-- mark port as processed
+								update_element (
+									container => gui_submodule.ports,
+									position => port,
+									process => mark_processed'access);
+
+								-- form the return value
+								net := (
+									available	=> true, -- means: there is a subordinated hierarchical net available
+										   
+									-- Form the path of the real submodule (gui_submodule path + submodule name):
+									path		=> append_submodule_to_path (path (gui_submodule.coordinates), submodule_name), -- example /core/LEVEL_SHIFTER
+
+									-- The name of the subordinated hierarchical net:
+									name		=> et_schematic.type_net_name.to_bounded_string (to_string (key (port))));
+
+								-- prematurely exit as the return is ready now
+								exit;
+							end if;
+
+						end if;
+
+						next (port);
+					end loop;
+				end query_ports;
+
+			begin -- query_gui_submodules
+				-- Query gui_submodules. For each gui_submodule query its "ports".
+				-- These "ports" are virtual and tell the name of the subordinated hierarchic net.
+				while submodule_cursor /= et_schematic.type_gui_submodules.no_element loop
+
+					update_element (
+						container => module.submodules,
+						position => submodule_cursor,
+						process => query_ports'access);
+
+					-- Once a hierarchic net has been found, the job is done.
+					if net.available then exit; end if;
+					
+					next (submodule_cursor);
+				end loop;
+			end query_gui_submodules;
+			
+		begin -- hierarchic_net
+
+			-- Locate the rig module as indicated by module_cursor. Then query the gui_submodules.
+			update_element (
+				container => rig,
+				position => module_cursor,
+				process => query_gui_submodules'access);
+			
+			return net;
+		end hierarchic_net;
+
+
+		procedure collect_hierarchic_strands (
+			net				: in type_hierachic_net;
+			log_threshold	: in et_string_processing.type_log_level) is
+		-- Locates hierarchic strands as specified by given hierarchic net.
+		-- "net" provides the "available" flag. If false, this procedure does nothing.
+		-- "net" provides the path to the submodule to search in.
+		-- "net" provides the net name to search for.
+
+		-- IMPORTANT: As a hierarchic strand may have other subordinated hierarchic strands (via gui_submodule)
+		-- the search may decend indefinitely into the hierarchy.
+
+		-- The hierarchic strands found, are collected in the temparily collector hierarchic_strands_tmp.
+		
+			-- Cursor h_strand points to the hierarchic strand being examined.
+			-- Defaults to the first strand of the rig module (indicated by module_cursor):
+			h_strand : et_schematic.type_strands.cursor := first_strand;
+			use et_schematic.type_strands;
+			use type_path_to_submodule;
+			use type_submodule_name;
+
+			-- This flag goes true once the given net has been found in the submodule.
+			-- It serves to warn the operator about a missing hierarchic net.
+			hierarchic_net_found : boolean := false;
+
+			procedure query_segments (
+			-- Tests if the given hierarchic strand is connected to any hierarchical nets.
+				h_strand	: in et_schematic.type_strand -- the hierachic strand being examined
+				) is
+				-- The cursor that points to the segment being examined.
+				-- Defaults to the first segment of h_strand:
+				segment : et_schematic.type_net_segments.cursor := h_strand.segments.first;
+				use et_schematic.type_net_segments;
+
+				-- If a hierarchic net is available, it will be loaded here temparily.
+				h_net : type_hierachic_net;
+			begin
+				-- Test segment if it is connected to a hierarchic net (via gui_submodules):
+				while segment /= et_schematic.type_net_segments.no_element loop
+
+					-- Test if any hierarchic nets are connected (via gui_submodules):
+					h_net := hierarchic_net (segment);
+					-- h_net may contain a suitable hierarchic net
+					
+					-- Append all hierarchic strands (if any) to the net being built
+					-- (see top level code of procedure process_hierarchic_nets. 
+					-- The net being built is indicated by cursor "net").
+					collect_hierarchic_strands (h_net, log_threshold);
+
+					-- If one hierarchic net has been detected, there could be more. 
+					-- This loop goes on until no more hierarchic nets are available.
+					while h_net.available loop
+						h_net := hierarchic_net (segment);
+						collect_hierarchic_strands (h_net, log_threshold);
+					end loop;
+					
+					next (segment);
+				end loop;
+			end query_segments;
+			
+		begin -- collect_hierarchic_strands
+
+			-- If a hierarchic net is available, query all hierarchic strands of
+			-- the rig module.
+			-- We have a match if the path of the given hierarchic net equals the
+			-- path of the h_strand AND
+			-- if the name of the given hierarchic net equals the name of the h_strand.
+			if net.available then
+				log_indentation_up;
+
+				log ("probing hierarchic net " & to_string (net.name) 
+						& " in submodule " & to_string (net.path) & " ...",
+					log_threshold + 2);
+				
+				while h_strand /= et_schematic.type_strands.no_element loop
+					if et_schematic."=" (element (h_strand).scope, et_schematic.hierarchic) then
+						if path (element (h_strand).coordinates) = net.path then
+							if element (h_strand).name = net.name then
+								hierarchic_net_found := true;
+
+								log ("reaches down into submodule " 
+									& to_string (net.path) 
+									& " as net " & to_string (net.name),
+									log_threshold + 1
+									);
+
+								log_indentation_up;
+								log ("strand " & to_string (et_schematic.lowest_xy (element (h_strand), log_threshold + 3)),
+									 log_threshold + 2
+									);
+								log_indentation_down;
+
+								-- append the strand to the temparily collection of hierarchic strands
+								et_schematic.type_strands.append (
+									container	=> hierarchic_strands_tmp,
+									new_item	=> element (h_strand));
+
+								-- Test if hierarchic h_strand itself is connected to any gui_submodules.
+								-- So we query the segments of h_strand for any hierarchic strands connected.
+								query_element (
+									position 	=> h_strand,
+									process 	=> query_segments'access);
+
+							end if;
+						end if;
+					end if;
+					next (h_strand);
+				end loop;
+
+				-- Raise warning if hierarchic net not found in submodule:
+				if not hierarchic_net_found then
+					log (message_warning & "hierarchic net " & to_string (net.name) 
+						& " in submodule " & to_string (net.path) 
+						& " not found ! "
+						& "Hierarchic sheet in parent module requires this net !");
+				end if;
+				
+				log_indentation_down;
+			end if;
+		end collect_hierarchic_strands;
+		
+		procedure query_strands (
+		-- Looks for any hierarchic nets connected via gui_submodules with the given net.
+			net_name : in et_schematic.type_net_name.bounded_string; -- the name of the net being examined
+			net      : in et_schematic.type_net -- the net being examined
+			) is
+			use et_schematic.type_strands;
+			-- The cursor pointing to the strand of the net. Defaults to the first strand.
+			strand : et_schematic.type_strands.cursor := net.strands.first; 
+
+			procedure query_segments (
+			-- Looks for any hierarchic nets connected via gui_submodules with the given net.
+				strand   : in et_schematic.type_strand -- the strand being examined
+				) is 
+				-- The cursor pointing to the segment of the strand. Defaults to the first segment.
+				use et_schematic.type_net_segments;
+				segment  : et_schematic.type_net_segments.cursor := strand.segments.first;
+
+				-- If a hierarchic net is available, it will be loaded here temparily.
+				h_net : type_hierachic_net;
+			begin
+				-- Load one segment after another and test if the segment
+				-- is connected with any hierarchic nets (at deeper levels in the design hierarchy).
+				while segment /= et_schematic.type_net_segments.no_element loop
+
+					-- Test if any hierarchic nets are connected (via gui_submodules):
+					h_net := hierarchic_net (segment);
+					-- h_net may contain a suitable hierarchic net
+					
+					-- Append all hierarchic strands (if any) to the net being built
+					-- (see top level code of procedure process_hierarchic_nets. 
+					-- The net being built is indicated by cursor "net").
+					collect_hierarchic_strands (h_net, log_threshold);
+
+					-- If one hierarchic net has been detected, there could be more. 
+					-- This loop goes on until no more hierarchic nets are available.
+					while h_net.available loop
+						h_net := hierarchic_net (segment);
+						collect_hierarchic_strands (h_net, log_threshold);
+					end loop;
+					
+					next (segment);
+				end loop;
+			end query_segments;
+
+		begin -- query_strands
+			-- Load one strand after another. Then query its segments.
+			while strand /= et_schematic.type_strands.no_element loop
+				query_element (
+					position => strand,
+					process => query_segments'access);
+
+				next (strand);
+			end loop;
+		end query_strands;
+
+		procedure append_hierarchic_strands (
+			--net_name : in type_net_name.bounded_string;
+			net_cursor	: in et_schematic.type_nets.cursor;
+			strands	 	: in et_schematic.type_strands.list
+			) is
+			use et_schematic.type_rig;
+
+			procedure locate_net (
+				module_name	: in type_submodule_name.bounded_string;
+				module		: in out et_schematic.type_module
+				) is
+				use et_schematic.type_nets;
+				--net_cursor : type_nets.cursor;
+
+				procedure append_strands (
+					net_name	: in et_schematic.type_net_name.bounded_string;
+					net			: in out et_schematic.type_net
+					) is
+					use et_schematic.type_strands;
+				begin
+					splice (
+						target => net.strands,
+						before => et_schematic.type_strands.no_element,
+						source => hierarchic_strands_tmp);
+				end append_strands;
+
+			begin -- locate_net
+				et_schematic.type_nets.update_element (
+					container	=> module.nets,
+					position	=> net_cursor,
+					process		=> append_strands'access);
+				
+			end locate_net;
+			
+		begin -- append_hierarchic_strands
+			-- locate module as indicated by module_cursor
+			et_schematic.type_rig.update_element (
+				container	=> rig,
+				position	=> module_cursor,
+				process		=> locate_net'access);
+		end append_hierarchic_strands;
+			
+    begin -- process_hierarchic_nets
+		log (text => "linking hierarchic strands to nets ...", level => log_threshold);
+
+		-- Load one net after another. 
+		-- NOTE: The nets of the module are either local or global (see spec type_net_scope).
+		-- Then query the strands of the net.
+		net := first_net;
+		log_indentation_up;
+		while net /= et_schematic.type_nets.no_element loop
+			log ("net " & to_string (key (net)), log_threshold + 1);
+
+			-- Examine the global or local net for any hierarchical nets connected to it.
+			-- If there are any, they are collected in hierarchic_strands_tmp.
+			query_element (
+				position => net,
+				process => query_strands'access);
+
+			-- What we have collected in hierarchic_strands_tmp is now appended to the net.
+			append_hierarchic_strands (
+				--net_name => key (net),
+				net_cursor => net,
+				strands => hierarchic_strands_tmp); 
+				-- NOTE: clears hierarchic_strands_tmp by its own
+				-- in order to provide a clean collector for the next net.
+
+			next (net);
+		end loop;
+		log_indentation_down;
+
+	end process_hierarchic_nets;
+
+	
 	
 	procedure import_design (
 		first_instance 	: in boolean := false;
@@ -6860,12 +7493,12 @@ package body et_kicad is
 				-- For example a strand named "VCC3V3" exists on submodule A on sheet 2. 
 				-- Another strand "VCC3V3" exists on submodule C on sheet 1. They do not "know" each other
 				-- and must be merged into a single net.
-				et_schematic.link_strands (log_threshold + 1);
+				link_strands (log_threshold + 1);
 
 				-- Append hierarchic strands to global or local nets.
 				-- IMPORTANT: Hierarchic nets are nothing more than extensions of
 				-- local or global nets !
-				et_schematic.process_hierarchic_nets (log_threshold + 1);
+				process_hierarchic_nets (log_threshold + 1);
 				
 				-- write net report
 				et_schematic.write_nets (log_threshold + 1);
@@ -6933,6 +7566,96 @@ package body et_kicad is
 		return port_cursor;
 	end first_port;
 
+	procedure rename_strands (
+	-- Renames all strands with the name_before to the name_after.
+	-- Changes the scope of the affected strands to "global".
+	-- This procdure is required if a strand is connected to a power-out port.
+	-- The power-out port enforces its name onto the strand.
+		name_before		: in et_schematic.type_net_name.bounded_string;
+		name_after		: in et_schematic.type_net_name.bounded_string;
+		log_threshold	: in et_string_processing.type_log_level) is
+
+		use et_string_processing;
+		use et_schematic;
+
+		count : natural := 0;
+	
+		procedure rename (
+			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
+			module		: in out et_schematic.type_module) is
+
+			use et_schematic.type_strands;
+			
+			cursor : type_strands.cursor := module.strands.first;
+			-- Points to the strand being processed
+			
+			renamed : boolean := false; -- signals that a strand renaming took place
+			-- Used to abort renaming after an anonymous strands has been renamed.
+			-- The names of anonymous strands like (N$6) are unique. So after the first
+			-- renaming the procedure comes to an early end.
+
+			procedure do_it (strand : in out type_strand) is
+				use et_schematic.type_net_name;
+			begin
+				-- search for the strand to be renamed
+				if strand.name = name_before then
+
+					count := count + 1;
+					log_indentation_up;
+-- 					log (
+-- 						text => to_string (strand.name) 
+-- 							& " to "
+-- 							& to_string (name_after) & " ...",
+-- 							level => 2
+-- 						);
+					log (to_string (position => strand.coordinates, scope => et_coordinates.module),
+						log_threshold + 1);
+
+					log_indentation_down;
+
+					strand.name := name_after; -- assign new name to strand
+					strand.scope := global;
+
+					renamed := true; -- signal that renaming took place
+				end if;
+			end do_it;
+			
+		begin -- rename
+			while cursor /= type_strands.no_element loop
+				module.strands.update_element (
+					position => cursor,
+					process => do_it'access);
+
+				-- Exit prematurely if name_before was anonymous. anonymous strand names are unique.
+				-- So it is ok to exit prematurely.
+				if renamed and anonymous (name_before) then
+					exit;
+				end if;
+				
+				next (cursor);
+			end loop;
+		end rename;
+		
+	begin -- rename_strands
+		log ("renaming strands from " & to_string (name_before)
+			 & " to " & to_string (name_after) & " ...", log_threshold);
+		
+		rig.update_element (
+			position	=> module_cursor,
+			process		=> rename'access
+			);
+
+		if count > 0 then
+			log ("renamed" & natural'image (count) & " strands", log_threshold);
+		else
+			-- CS: This should never happen
+			log_indentation_reset;
+			log (message_error & "strand " 
+				& to_string (name_before) & " not found !");
+			raise constraint_error;
+		end if;
+	end rename_strands;
+	
 	
 	procedure update_strand_names (log_threshold : in et_string_processing.type_log_level) is
 	-- Tests if a power in/out port is connected to a strand and renames the strand if necessary.
@@ -6954,7 +7677,8 @@ package body et_kicad is
 		use et_schematic.type_net_segments;
 		use et_schematic.type_portlists;
 		use et_schematic.type_ports;
-
+		use et_schematic.type_net_name;
+		
 		function to_net_name (port_name : in type_port_name.bounded_string) 
 		-- Converts the given port name to a net name.
 			return et_schematic.type_net_name.bounded_string is
@@ -6974,7 +7698,7 @@ package body et_kicad is
 			log ("strand of net " & et_schematic.to_string (element (strand).name), log_threshold + 3);
 
 			-- LOOP IN SEGMENTS OF STRAND
-			segment := et_schematic.first_segment (strand);
+			segment := first_segment (strand);
 			while segment /= et_schematic.type_net_segments.no_element loop
 				log_indentation_up;
 				log ("probing segment " & et_schematic.to_string (element (segment)), log_threshold + 3);
@@ -7019,7 +7743,7 @@ package body et_kicad is
 												& " is a power input -> port name sets strand name", log_threshold + 2);
 
 											-- rename strand
-											et_schematic.rename_strands (
+											rename_strands (
 												name_before => element (strand).name,
 												name_after => to_net_name (element (port).name),
 												log_threshold => log_threshold + 3);
@@ -7037,14 +7761,14 @@ package body et_kicad is
 											--raise constraint_error;
 
 										-- If strand has a name and is local or hierarchic -> error and abort
-										elsif element (strand).scope /= global then
+										elsif et_schematic."/=" (element (strand).scope, et_schematic.global) then
 											log_indentation_reset;
 											log (message_error & "component " & et_libraries.to_string (key (component)) 
 												& " POWER IN port " & to_string (element (port).name) 
 												--& latin_1.lf
 												& " at " & to_string (element (port).coordinates, module)
 												--& latin_1.lf
-												& " conflicts with " & to_string (element (strand).scope) 
+												& " conflicts with " & et_schematic.to_string (element (strand).scope) 
 												& " net " & et_schematic.to_string (element (strand).name) & " !");
 											raise constraint_error;
 
@@ -7084,7 +7808,6 @@ package body et_kicad is
 		
 	end update_strand_names;
 
-	
 	function find_component (
 	-- Searches the given library for the given component. Returns a cursor to that component.
 		library		: in et_libraries.type_full_library_name.bounded_string;
@@ -7092,15 +7815,15 @@ package body et_kicad is
 		return et_libraries.type_components.cursor is
 
 		lib_cursor	: type_libraries.cursor;
-		use type_components;
-		comp_cursor	: type_components.cursor := no_element;
+		use et_libraries.type_components;
+		comp_cursor	: et_libraries.type_components.cursor := no_element;
 	
 		use type_libraries;
 		use et_string_processing;
 
 		procedure locate (
-			library : in type_full_library_name.bounded_string;
-			components : in type_components.map) is
+			library 	: in et_libraries.type_full_library_name.bounded_string;
+			components	: in et_libraries.type_components.map) is
 		begin
 			-- Generic names in library sometimes start with a tilde. 
 			-- So, first we search for the given component without tilde.
@@ -7108,9 +7831,8 @@ package body et_kicad is
 			-- If still no match, comp_cursor is empty (no_element).
 			comp_cursor := components.find (component); -- TRANSISTOR_NPN
 
-			-- CS: the follwing is kicad stuff and should be executed
-			-- if the import format is kicad_v4
-			if comp_cursor = type_components.no_element then
+			-- CS: the follwing should be executed if the import format is kicad_v4:
+			if comp_cursor = et_libraries.type_components.no_element then
 				comp_cursor := components.find (prepend_tilde (component)); -- ~TRANSISTOR_NPN
 				--CS: log ?
 			end if;
@@ -7126,7 +7848,7 @@ package body et_kicad is
 				position => lib_cursor,
 				process => locate'access);
 		else
-			log (message_warning & "library " & to_string (library) & " not found !");
+			log (message_warning & "library " & et_libraries.to_string (library) & " not found !");
 			-- CS: raise constraint_error ?
 		end if;
 
@@ -7159,9 +7881,9 @@ package body et_kicad is
 	-- Saves the portlists in the module (indicated by module_cursor).
 	
 		-- Here we collect the portlists:
-		portlists					: type_portlists.map;
+		portlists					: et_schematic.type_portlists.map;
 		component_inserted			: boolean;
-		component_cursor_portlists	: type_portlists.cursor; -- points to the portlist being built
+		component_cursor_portlists	: et_schematic.type_portlists.cursor; -- points to the portlist being built
 	
 		use et_libraries;
 		use et_libraries.type_full_library_names;
@@ -7216,7 +7938,7 @@ package body et_kicad is
 
 				procedure add (
 					component	: in type_component_reference;
-					ports		: in out type_ports.list) is
+					ports		: in out et_schematic.type_ports.list) is
 					use et_coordinates;
 					use type_rig;
 					
@@ -7228,8 +7950,8 @@ package body et_kicad is
 						port_open : type_port_open := false;
 					
 						procedure query_no_connect_flags (
-							module_name : in type_submodule_name.bounded_string;
-							module : in type_module) is
+							module_name	: in type_submodule_name.bounded_string;
+							module 		: in type_module) is
 							use type_no_connection_flags;
 							flag_cursor : type_no_connection_flags.cursor := module.no_connections.first;
 
@@ -7302,7 +8024,7 @@ package body et_kicad is
 					-- For example: only virtual components can be power_flags.
 					case element (component_cursor_sch).appearance is
 						when sch =>
-							type_ports.append (
+							et_schematic.type_ports.append (
 								container => ports,
 								new_item => (
 
@@ -7330,7 +8052,7 @@ package body et_kicad is
 									));
 
 						when sch_pcb =>
-							type_ports.append (
+							et_schematic.type_ports.append (
 								container => ports,
 								new_item => (
 
@@ -7359,10 +8081,10 @@ package body et_kicad is
 
 					end case;
 							
-					log (to_string (last_element (ports).direction), log_threshold + 3);
+					log (et_libraries.to_string (et_schematic.type_ports.last_element (ports).direction), log_threshold + 3);
 					log_indentation_up;
 					-- CS: other port properties
-					log (to_string (position => last_element (ports).coordinates), log_threshold + 3);
+					log (to_string (position => et_schematic.type_ports.last_element (ports).coordinates), log_threshold + 3);
 					log_indentation_down;
 				end add;
 				
@@ -7507,11 +8229,11 @@ package body et_kicad is
 		procedure save_portlists is
 		-- Save the portlists in the module (indicated by module_cursor).
 		-- module_cursor points already there.
-			use type_rig;
+			use et_schematic.type_rig;
 		
 			procedure save (
-				module_name : in type_submodule_name.bounded_string;
-				module : in out type_module) is
+				module_name	: in type_submodule_name.bounded_string;
+				module 		: in out et_schematic.type_module) is
 			begin
 				module.portlists := portlists;
 			end save;
@@ -7553,10 +8275,10 @@ package body et_kicad is
 			-- Insert component in portlists. for the moment the portlist of this component is empty.
 			-- After that the component_cursor_portlists points to the component. This cursor will
 			-- later be used to add a port to the portlists.
-			type_portlists.insert (
+			et_schematic.type_portlists.insert (
 				container	=> portlists,
 				key			=> component_reference, -- like R44
-				new_item	=> type_ports.empty_list,
+				new_item	=> et_schematic.type_ports.empty_list,
 				inserted	=> component_inserted, -- obligatory, no further meaning
 				position	=> component_cursor_portlists -- points to the portlist being built
 				);
@@ -7615,6 +8337,433 @@ package body et_kicad is
 		return portlists;
 	end build_portlists;
 	
+	procedure check_open_ports (log_threshold : in et_string_processing.type_log_level) is
+	-- Warns about unintentionally left open ports. That are ports without a no_connection_flag.
+	-- Must be called AFTER make_netlists !
+	
+		use et_schematic.type_rig;
+		use et_string_processing;
+
+		procedure query_portlists (
+			module_name	: in type_submodule_name.bounded_string;
+			module 		: in et_schematic.type_module) is
+			use et_schematic.type_portlists;
+			portlist_cursor : et_schematic.type_portlists.cursor := module.portlists.first;
+
+			procedure query_ports (
+				component	: in et_libraries.type_component_reference;
+				ports 		: in et_schematic.type_ports.list) is
+				port_cursor : et_schematic.type_ports.cursor := ports.first;
+				use et_schematic.type_ports;
+				use et_import;
+				
+-- NOTE: DO NOT REMOVE THE FOLLWING. MIGHT BE REQUIRED SOME DAY.
+				
+-- 				function no_connection_flag_here return boolean is
+-- 				-- returns true once a no_connection_flag has been found at the port coordinates
+-- 					no_connection_flag_found : boolean := false;
+-- 				
+-- 					procedure query_no_connect_flags (
+-- 						module_name : in type_submodule_name.bounded_string;
+-- 						module : in type_module) is
+-- 						use type_no_connection_flags;
+-- 						no_connection_flag_cursor : type_no_connection_flags.cursor := module.no_connections.first;
+-- 					begin -- query_no_connect_flags
+-- 						log ("quering no_connection_flags ...", log_threshold + 1);
+-- 						while no_connection_flag_cursor /= type_no_connection_flags.no_element loop
+-- 
+-- 							-- Compare coordinates of port and no_connection_flag. 
+-- 							-- On match exit prematurely.
+-- 							if element (port_cursor).coordinates = element (no_connection_flag_cursor).coordinates then
+-- 								log ("match", log_threshold + 1);
+-- 								no_connection_flag_found := true;
+-- 								exit;
+-- 							end if;
+-- 
+-- 							next (no_connection_flag_cursor);	
+-- 						end loop;
+-- 					end query_no_connect_flags;
+-- 						
+-- 				begin -- query_no_connect_flags
+-- 					query_element (
+-- 						position => module_cursor,
+-- 						process => query_no_connect_flags'access);
+-- 
+-- 					return no_connection_flag_found;
+-- 				end no_connection_flag_here;
+
+-- 				function segment_here return boolean is
+-- 				-- Returns true if a net segment is placed at the coordinates of the port.
+-- 					segment_found : boolean := false; -- to be returned
+-- 				
+-- 					procedure query_strands (
+-- 					-- Query net segments. Exits prematurely once a segment is found.
+-- 						module_name : in type_submodule_name.bounded_string;
+-- 						module : in type_module) is
+-- 						use type_strands;
+-- 						strand_cursor : type_strands.cursor := module.strands.first;
+-- 
+-- 						procedure query_segments (
+-- 							strand : in type_strand) is
+-- 							use type_net_segments;
+-- 							segment_cursor : type_net_segments.cursor := strand.segments.first;
+-- 						begin
+-- 							while segment_cursor /= type_net_segments.no_element loop
+-- 						
+-- 								-- Compare the coordinates of the port with the coordinates of the segment:
+-- 								if	element (port_cursor).coordinates = element (segment_cursor).coordinates_start or
+-- 									element (port_cursor).coordinates = element (segment_cursor).coordinates_end then
+-- 
+-- 									segment_found := true;
+-- 									exit;
+-- 								end if;
+-- 
+-- 								next (segment_cursor);
+-- 							end loop;
+-- 						end query_segments;
+-- 						
+-- 					begin -- query_strands
+-- 						while (not segment_found) and strand_cursor /= type_strands.no_element loop
+-- 
+-- 							type_strands.query_element (
+-- 								position => strand_cursor,
+-- 								process => query_segments'access);
+-- 
+-- 							next (strand_cursor);
+-- 						end loop;
+-- 					end query_strands;
+-- 				
+-- 				begin -- segment_here
+-- 					type_rig.query_element (
+-- 						position => module_cursor,
+-- 						process => query_strands'access);
+-- 
+-- 					return segment_found;
+-- 				end segment_here;
+-- DO NOT REMOVE ! END OF BLOCK.
+
+				function connected_by_other_unit return boolean is
+				-- Searches the portlist for another port with same name.
+				-- Tests if the port is NOT intentionally left open
+				-- AND if the port is connected to any net segment. When positive, exits 
+				-- prematurely with a return value "true". If no suitable port found, 
+				-- returns "false".
+					port_cursor_secondary : et_schematic.type_ports.cursor := ports.first;
+					use et_libraries.type_port_name;
+					use et_schematic;
+				begin
+					-- search the portlist but skip the port of origin
+					while port_cursor_secondary /= et_schematic.type_ports.no_element loop
+						if port_cursor_secondary /= port_cursor then -- skip original port
+							if element (port_cursor_secondary).name = element (port_cursor).name then
+
+								if 	element (port_cursor_secondary).intended_open = false and
+									element (port_cursor_secondary).connected = YES then
+									return true;
+								end if;
+									
+							end if;
+						end if;
+						next (port_cursor_secondary);
+					end loop;
+
+					-- no other connected port found
+					return false;
+				end connected_by_other_unit;
+
+			begin -- query_ports
+				-- Test the port if it is NOT intentionally left open AND
+				-- if it is not connected to any net segment.
+				-- The easiest is to evaluate the flags "intended_open" and "connected".
+				-- Those flags have been set while portlist and netlist generation
+				-- (See procedures build_portlists and make_netlists).
+				-- This method requires those procedures executed previously. Otherwise
+				-- the code in comments (see above) can be used to detect no_connection_flags and 
+				-- net segments attached to the port.
+				while port_cursor /= et_schematic.type_ports.no_element loop
+
+					if et_schematic."=" (element (port_cursor).intended_open, et_schematic.false) and -- port intentionally not open
+						et_schematic."=" (element (port_cursor).connected, et_schematic.NO) then -- port not connected to any net segment
+
+						-- for kicad_v4 we must do something special:
+						if et_import.cad_format = kicad_v4 then
+
+							-- Special threatment for ports of global units (power supply ports) requried.
+							-- Such ports may be not connected at certain units, yet connected at other units
+							-- of the same component. So we search for other ports (in the portlist of the component)
+							-- bearing the same name. If one of them is connected things are fine. Otherwise
+							-- the power supply port is indeed not connected -> raise alarm and abort.
+							-- For ports with other directions, issue a warning.
+							if et_libraries."=" (element (port_cursor).direction, et_libraries.power_in) then
+								if not connected_by_other_unit then
+									log (message_error & "power supply not connected at " 
+										& to_string (element (port_cursor).coordinates, et_coordinates.module)
+										& " nor via other units of this component !");
+									raise constraint_error;
+								end if;
+							else
+								log (message_warning & "port not connected at " 
+									& to_string (element (port_cursor).coordinates, et_coordinates.module));
+							end if;
+
+						else
+							log (message_warning & "port not connected at " 
+								& to_string (element (port_cursor).coordinates, et_coordinates.module));
+						end if;
+					end if;
+				
+					next (port_cursor);
+				end loop;
+			end query_ports;
+			
+		begin -- query_portlists
+			-- Search in the portlists for a port that has neither a no_connection_flag attached
+			-- nor any net connected.
+			while portlist_cursor /= et_schematic.type_portlists.no_element loop
+				query_element (
+					position	=> portlist_cursor,
+					process		=> query_ports'access);
+				next (portlist_cursor);
+			end loop;
+		end query_portlists;
+
+	begin -- check_open_ports
+		log ("searching unintentionally left open ports ...", log_threshold);
+		log_indentation_up;
+
+		-- We start with the first module of the rig.
+		--first_module;
+		module_cursor := et_schematic.type_rig.first (rig);
+
+		-- Process one rig module after another.
+		-- module_cursor points to the module in the rig.
+		while module_cursor /= et_schematic.type_rig.no_element loop
+			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log_indentation_up;
+			
+			-- query no_connection_flags of current module and test if any of them
+			-- is not placed at a port
+			query_element (
+				position	=> module_cursor,
+				process 	=> query_portlists'access);
+
+			log_indentation_down;
+			next (module_cursor);
+		end loop;
+
+		log_indentation_down;
+
+	end check_open_ports;
+
+	procedure check_non_deployed_units (log_threshold : in et_string_processing.type_log_level) is
+	-- Warns about not deployed units and open ports thereof.
+		use et_string_processing;
+		use et_schematic.type_rig;
+
+		procedure query_schematic_components (
+		-- Queries the schematic components one after another.
+		-- Opens the library where the generic model is stored.
+		-- The library name is provided by the schematic component.
+			module_name : in type_submodule_name.bounded_string;
+			module		: in et_schematic.type_module) is
+
+			use et_schematic.type_components;
+			component_sch : et_schematic.type_components.cursor := module.components.first;
+			library_cursor : type_libraries.cursor;
+
+			use type_libraries;
+			
+			procedure query_library_components (
+			-- Queries the generic models stored in the library.
+				library		: in et_libraries.type_full_library_name.bounded_string;
+				components	: in et_libraries.type_components.map) is
+				use et_libraries.type_components;
+				component_lib : et_libraries.type_components.cursor := components.first;
+
+				procedure query_units_lib (
+					component_name	: in et_libraries.type_component_generic_name.bounded_string;
+					component 		: in et_libraries.type_component) is
+					use et_libraries.type_units_internal;
+					unit_internal : et_libraries.type_units_internal.cursor := component.units_internal.first;
+
+					procedure query_units_sch (
+						component_name	: in et_libraries.type_component_reference;
+						component 		: in et_schematic.type_component) is
+						use et_schematic.type_units;
+						unit_cursor : et_schematic.type_units.cursor := component.units.first;
+						unit_deployed : boolean := false;
+						use et_libraries.type_unit_name;
+						use et_import;
+
+						function unit_not_deployed return string is
+						begin
+							return et_libraries.to_string (key (component_sch)) 
+								& " unit " & et_libraries.to_string (key (unit_internal))
+								& " with" & et_libraries.to_string (element (unit_internal).add_level)
+								& " not deployed !";
+						end unit_not_deployed;
+		
+					begin
+						while unit_cursor /= et_schematic.type_units.no_element loop
+							if key (unit_cursor) = key (unit_internal) then
+								unit_deployed := true;
+								exit;
+							end if;
+							next (unit_cursor);
+						end loop;
+
+						-- If a unit is not deployed we issue warnings or errors depending 
+						-- on the add level of the unit. 
+						
+						-- CS: show not-connected inputs
+						
+						if not unit_deployed then
+							case element (unit_internal).add_level is
+
+								-- request units usually harbor power supply 
+								when et_libraries.request =>
+
+									-- For CAD formats other thatn kicad_v4 we raise alarm here.
+									-- If a unit with add level "request"
+									-- is not deployed, we have a serious design error. 
+									-- NOTE: kicad_v4 schematics do not contain "request" units as they are 
+									-- "common to all units" of a component. So in order to avoid a 
+									-- false alarm, seemingly missing "request" are ignored here.
+									-- Procdure check_open_ports detects such design errors. 
+
+									if et_import.cad_format /= kicad_v4 then
+										log (message_error & unit_not_deployed
+											& et_schematic.show_danger (et_schematic.no_power_supply));
+										raise constraint_error;
+									end if;
+
+								-- raise alarm if "must" unit is missing. there are numerous reasons
+								-- for such a unit to be there. So no further advise possible.
+								when et_libraries.must =>
+									log (message_error & unit_not_deployed);
+									raise constraint_error;
+
+								-- "can" units may be left non-deployed
+								when et_libraries.can =>
+									null;
+									
+								when et_libraries.next | et_libraries.always =>
+									log (message_warning & unit_not_deployed
+										& et_schematic.show_danger (et_schematic.floating_input));
+
+								-- CS: special threatment for "always" ?
+									
+							end case;
+						end if;
+							
+					end query_units_sch;
+					
+				begin -- query_units_lib
+					while unit_internal /= et_libraries.type_units_internal.no_element loop
+						log ("unit " & et_libraries.to_string (key (unit_internal)) 
+							& et_libraries.to_string (element (unit_internal).add_level), log_threshold + 2);
+
+						-- For each generic unit the units of the schematic component must be inquired
+						-- if any of them matches the current generic unit name:
+						query_element (
+							position => component_sch,
+							process => query_units_sch'access);
+						
+						next (unit_internal);
+					end loop;
+
+					-- CS: external units ?
+					
+				end query_units_lib;
+
+				use et_libraries.type_component_generic_name;
+				generic_model_found : boolean := false; -- goes true once the generic model was found
+				
+			begin -- query_library_components
+				-- Loop in components of library. Once the generic model name matches 
+				-- the name provided by the schematic component, the units of the
+				-- library component must be queried. Exit prematurely after that
+				-- because the same component won't (should not) occur again in the library.
+				-- If the component could not be found, raise error and abort.
+
+				log_indentation_up;
+				
+				while component_lib /= et_libraries.type_components.no_element loop
+					-- component_lib points to the generic model in the library
+
+					-- Sometimes the generic name in the libarary starts with a tilde.
+					-- It must be removed before testing the name.
+					if strip_tilde (key (component_lib)) = element (component_sch).generic_name then
+				
+						query_element (
+							position => component_lib,
+							process => query_units_lib'access);
+
+						generic_model_found := true;
+						exit;
+					end if;
+						
+					--query_element 
+					next (component_lib);
+				end loop;
+
+				log_indentation_down;
+				
+				if not generic_model_found then
+					et_libraries.no_generic_model_found (
+						reference		=> key (component_sch),
+						library			=> element (component_sch).library_name,
+						generic_name	=> element (component_sch).generic_name);
+				end if;
+					
+			end query_library_components;
+			
+		begin -- query_schematic_components
+			while component_sch /= et_schematic.type_components.no_element loop
+
+				log (et_libraries.to_string (key (component_sch)) & " in " 
+					& et_libraries.to_string (element (component_sch).library_name), log_threshold + 1);
+
+				-- Set library cursor so that it points to the library of the generic model.
+				library_cursor := et_libraries.type_libraries.find (
+					container	=> et_libraries.component_libraries, -- the collection of project libraries with generic models
+					key 		=> element (component_sch).library_name); -- lib name provided by schematic component
+				
+				-- Query the library components.
+				et_libraries.type_libraries.query_element (
+					position 	=> library_cursor,
+					process 	=> query_library_components'access);
+				
+				next (component_sch);
+			end loop;
+		end query_schematic_components;
+
+	begin -- check_non_deployed_units
+		log ("detecting non-deployed units ...", log_threshold);
+		log_indentation_up;
+
+		-- We start with the first module of the rig.
+		first_module;
+
+		-- Process one rig module after another.
+		-- module_cursor points to the module in the rig.
+		while module_cursor /= type_rig.no_element loop
+			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log_indentation_up;
+			
+			-- query components in schematic
+			query_element (
+				position => module_cursor,
+				process => query_schematic_components'access);
+
+			log_indentation_down;
+			next (module_cursor);
+		end loop;
+
+		log_indentation_down;
+	end check_non_deployed_units;
+
+
 	
 end et_kicad;
 
