@@ -1104,54 +1104,68 @@ package et_schematic is
 	type type_statistics is private;
 
 	type type_statistics_category is (
-		components_total,
-		components_virtual,
-		components_real,
-		components_mounted,
-		nets_total,
+		COMPONENTS_MOUNTED,
+		COMPONENTS_REAL,
+		COMPONENTS_TOTAL,
+		COMPONENTS_VIRTUAL,
+		
+		NETS_TOTAL,
 		-- CS: nets_global, nets_hierarchic
-		junctions,
-		ports_total,
-		connectors,
-		capacitors,
-		diodes,
-		integrated_circuits,
-		jumpers,
-		leds,
-		netchangers,
-		relays,
-		resistors,
-		testpoints,
-		transistors,
-		inductors
+		JUNCTIONS,
+		PORTS_TOTAL,
+
+		CONNECTORS,
+		CAPACITORS,
+		DIODES,
+		INDUCTORS,
+		INTEGRATED_CIRCUITS,
+		JUMPERS,
+		LEDS,
+		NETCHANGERS,
+		RELAYS,
+		RESISTORS,
+		TESTPOINTS,
+		TRANSISTORS
 		-- CS: no_connection_flags
 		);
 	
-	function make_statistics (log_threshold : in et_string_processing.type_log_level)
-		return type_statistics;
-	-- Returns statistics about the module indicated by module_cursor.
+-- 	function make_statistics (log_threshold : in et_string_processing.type_log_level)
+-- 		return type_statistics;
+-- 	-- Returns statistics about the module indicated by module_cursor.
 
-	function query_statistics (
-		statistics	: in type_statistics;
-		category	: in type_statistics_category) return string;
+-- 	function query_statistics (
+-- 		statistics	: in type_statistics;
+-- 		category	: in type_statistics_category) return string;
+-- 	-- Returns the number objects as specified by given category.
+	
+-- 	procedure write_statistics (log_threshold : in et_string_processing.type_log_level);
+-- 	-- Writes the statistics on components and nets of the rig.
+-- 	-- Distinguishes between CAD and CAM related things.
+
+	procedure statistics_set (
+		cat			: in type_statistics_category;
+		increment	: in boolean := true;
+		number 		: in count_type := 0);
+
+	function statistics_query (cat : in type_statistics_category) return count_type;
 	-- Returns the number objects as specified by given category.
 	
-	procedure write_statistics (log_threshold : in et_string_processing.type_log_level);
-	-- Writes the statistics on components and nets of the rig.
-	-- Distinguishes between CAD and CAM related things.
-
+	function statistics_query (cat : in type_statistics_category) return string;
+	-- Returns the number objects as specified by given category.
 	
 	
 	private
 	
 		type type_statistics is record
+			components_mounted	: count_type := 0;
+			components_real		: count_type := 0;
 			components_total	: count_type := 0;
 			components_virtual	: count_type := 0;
-			components_real		: count_type := 0;
-			components_mounted	: count_type := 0;
+			
 			nets_total			: count_type := 0;
 			junctions			: count_type := 0;
 			ports_total			: count_type := 0;
+
 			capacitors			: count_type := 0;
 			connectors			: count_type := 0;
 			diodes				: count_type := 0;
@@ -1167,7 +1181,11 @@ package et_schematic is
 -- CS		ports_virtual		: count_type := 0;
 -- CS		ports_real			: count_type := 0;
 		end record;	
-	
+
+		statistics : type_statistics;
+		
+
+		
 end et_schematic;
 
 -- Soli Deo Gloria

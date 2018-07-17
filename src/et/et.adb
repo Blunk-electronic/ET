@@ -375,7 +375,7 @@ procedure et is
 			et_kicad.export_netlists (log_threshold => 0);
 			
 			-- export statistics
-			write_statistics (log_threshold => 0);
+			et_kicad.write_statistics (log_threshold => 0);
 
 			-- export bom
 			export_bom (log_threshold => 0);

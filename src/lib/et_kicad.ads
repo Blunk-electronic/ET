@@ -431,6 +431,14 @@ package et_kicad is
 	-- Tests if a power out port is connected to a strand and renames the strand if necessary.	
 	-- Depending on the CAE system power-out or power-in ports may enforce their name on a strand.
 
+
+	function real_components_in_net (
+		module 			: in type_submodule_name.bounded_string; -- nucleo_core
+		net				: in et_schematic.type_net_name.bounded_string; -- motor_on_off
+		log_threshold	: in et_string_processing.type_log_level)
+		return et_schematic.type_ports_with_reference.set;
+	-- Returns a list of real component ports that are connected with the given net.
+
 	
 	function find_component (
 	-- Searches the given library for the given component. Returns a cursor to that component.
@@ -480,6 +488,9 @@ package et_kicad is
 	-- Addresses real components exclusively. Virtual things like GND symbols are not exported.
 	-- Call this procedure after executing procedure make_netlist !
 
+	procedure write_statistics (log_threshold : in et_string_processing.type_log_level);
+	-- Writes the statistics on components and nets of the rig.
+	-- Distinguishes between CAD and CAM related things.
 		
 	
 end et_kicad;

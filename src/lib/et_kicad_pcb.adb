@@ -6809,7 +6809,7 @@ package body et_kicad_pcb is
 
 						
 					else -- The net has no explicitely given name. the name is something like N$56.
-						portlist := real_components_in_net (module => mod_name, net => name, log_threshold => log_threshold + 4);
+						portlist := et_kicad.real_components_in_net (module => mod_name, net => name, log_threshold => log_threshold + 4);
 						-- Returns a list of component ports that are connected with the given net.
 
 						-- Load the first port of the portlist. 
@@ -7375,7 +7375,7 @@ package body et_kicad_pcb is
 					-- The Kicad notation like "Net-(X1-Pad5)" is NOT used !!!
 					-- The id of a name-less net (like N$5) can be obtained still, by looking up the terminals
 					-- of a component package. See details in procedure to_net_id.
-					if real_components_in_net (
+					if et_kicad.real_components_in_net (
 						module			=> mod_name,
 						net 			=> key (net_cursor),
 						log_threshold	=> log_threshold + 4).length > 1 then
