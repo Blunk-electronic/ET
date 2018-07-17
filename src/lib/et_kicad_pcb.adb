@@ -7477,9 +7477,9 @@ package body et_kicad_pcb is
 		begin -- merge_board_and_schematic
 			log ("merging board and schematic ...", log_threshold + 1);
 
-			rig.update_element (
-				position => module_cursor,
-				process => add_board_objects'access);
+			et_kicad.rig.update_element (
+				position	=> module_cursor,
+				process		=> add_board_objects'access);
 
 			exception
 				when event:

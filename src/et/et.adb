@@ -305,7 +305,7 @@ procedure et is
 					else
 						-- Copy the last module.
 						-- The module instance is incremented by copy_module automatically.
-						copy_module (log_threshold => 0);
+						et_kicad.copy_module (log_threshold => 0);
 					end if;
 				end loop;
 
@@ -343,7 +343,7 @@ procedure et is
 		--reset_warnings_counter;
 
 		-- If there are no modules, there is nothing to check:
-		if et_schematic.module_count > 0 then
+		if et_kicad.module_count > 0 then
 		
 			log ("checking modules ...", console => true);
 			log_indentation_up;
@@ -384,7 +384,7 @@ procedure et is
 
 			-- If there is more than one module, interconnections must be validated 
 			-- as specified in configuration file.
-			if et_schematic.module_count > 1 then
+			if et_kicad.module_count > 1 then
 				validate_module_interconnections (log_threshold => 0);
 			end if;
 
@@ -426,7 +426,7 @@ procedure et is
 		set_output (et_import.report_handle);
 		
 		-- If there are no modules, there is nothing to check:
-		if et_schematic.module_count > 0 then
+		if et_kicad.module_count > 0 then
 		
 			log ("importing layouts/boards ...", console => true);
 			log_indentation_up;

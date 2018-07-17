@@ -421,7 +421,17 @@ package et_kicad is
 	rig : et_schematic.type_rig.map;
 	module_cursor : et_schematic.type_rig.cursor;
 
-	
+	function purpose (
+	-- Returns the purpose of the given component in the given module.
+	-- If no purpose specified for the component, an empty string is returned.						 
+		module_name		: in type_submodule_name.bounded_string; -- led_matrix_2
+		reference		: in et_libraries.type_component_reference; -- X701
+		log_threshold	: in et_string_processing.type_log_level)
+		return et_libraries.type_component_purpose.bounded_string;
+
+	procedure add_strand (
+	-- Adds a strand into the module (indicated by module_cursor).
+		strand : in et_schematic.type_strand);
 
 	function first_strand return et_schematic.type_strands.cursor;
 	-- Returns a cursor pointing to the first strand of the module (indicated by module_cursor).
@@ -465,6 +475,44 @@ package et_kicad is
 	procedure check_non_deployed_units (log_threshold : in et_string_processing.type_log_level);
 	-- Warns about not deployed units and open ports thereof.
 
+	function module_count return natural;
+	-- Returns the number of modules of the rig.
+	
+	procedure copy_module (
+	-- Copyies a rig module. 
+	-- If copy_last is true (default) the last module in the rig is copied. 
+	-- If copy_last is false, the module with given name_origin is copied.
+	-- The module instance is always incremented automatically.
+		copy_last		: in boolean := true;						  
+		name_origin		: in et_coordinates.type_submodule_name.bounded_string := et_coordinates.type_submodule_name.to_bounded_string (""); -- nucleo_core_3
+		log_threshold	: in et_string_processing.type_log_level);
+
+	procedure validate_module (
+		module_name : in et_coordinates.type_submodule_name.bounded_string);
+	-- Tests if the given module exists in the rig. Raises error if not existent.
+
+	procedure add_gui_submodule (
+	-- Inserts a gui submodule in the module (indicated by module_cursor)
+		name		: in et_coordinates.type_submodule_name.bounded_string;
+		gui_sub_mod	: in et_schematic.type_gui_submodule);
+	
+	procedure add_sheet_header ( -- CS really requried ?
+	-- Inserts a sheet header in the module (indicated by module_cursor).
+		header	: in et_schematic.type_sheet_header;
+		sheet	: in et_schematic.type_schematic_file_name.bounded_string);
+
+	procedure add_frame ( -- CS really requried ?
+	-- Inserts a drawing frame in the module (indicated by module_cursor).
+		frame	: in et_schematic.type_frame);
+
+	procedure add_title_block ( -- CS really requried ?
+	-- Inserts a title block in the module (indicated by module_cursor).
+		tblock	: in et_schematic.type_title_block);
+
+	procedure add_note (
+	-- Inserts a note in the the module (indicated by module_cursor).
+		note	: in et_schematic.type_note);
+	
 	procedure make_netlists (log_threshold : in et_string_processing.type_log_level);
 	-- Builds the netlists of all modules of the rig.
 	-- Addresses ALL components both virtual and real. Virtual components are things like GND or VCC symbols.

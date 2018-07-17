@@ -286,10 +286,10 @@ package body et_configuration is
 		return et_libraries.type_component_reference is
 
 		use et_coordinates;
-		use et_schematic;
+		--use et_schematic;
 		use et_libraries;
-		use type_rig;
-		module_cursor : type_rig.cursor;
+		use et_schematic.type_rig;
+		module_cursor : et_schematic.type_rig.cursor;
 		module_found : boolean := false;
 		connector_found : boolean := false; -- goes true once a suitable connector was found
 		ref : et_libraries.type_component_reference; -- the reference to be returned
@@ -297,8 +297,8 @@ package body et_configuration is
 		procedure locate_component (
 		-- Searches the component list of the module for a connector with the given purpose.
 		-- Exits on the first matching connector. There should not be any others.
-			module_name : in type_submodule_name.bounded_string;
-			module : in type_module) is
+			module_name	: in type_submodule_name.bounded_string;
+			module		: in et_schematic.type_module) is
 			use et_schematic.type_components;
 			use type_component_purpose;
 			component : et_schematic.type_components.cursor := module.components.first;
@@ -355,7 +355,7 @@ package body et_configuration is
 		log_indentation_up;
 
 		-- locate the module in the rig by its generic name and instance
-		module_cursor := rig.first;
+		module_cursor := et_kicad.rig.first;
 		while module_cursor /= no_element loop
 			if element (module_cursor).generic_name = generic_module_name then
 				if element (module_cursor).instance = instance then
@@ -1223,9 +1223,9 @@ package body et_configuration is
 		opposide_port : et_schematic.type_port_of_module; -- to be returned
 
 		use et_libraries;
-		use et_schematic;
-		use type_rig;
-		module_cursor : type_rig.cursor;
+		--use et_schematic;
+		use et_schematic.type_rig;
+		module_cursor : et_schematic.type_rig.cursor;
 		connector_found : boolean := false; -- goes true once the opposide connector has been found
 	
 		generic_module_name_opposide : et_coordinates.type_submodule_name.bounded_string; -- pwr_supply
@@ -1242,7 +1242,7 @@ package body et_configuration is
 		log_indentation_up;
 		
 		-- set module cursor to the given module. CS it should be found, otherwise exception occurs.
-		module_cursor := find (rig, module_name);
+		module_cursor := find (et_kicad.rig, module_name);
 
 		-- BUILD GIVEN CONNECTOR 
 		log ("given module " & et_coordinates.to_string (module_name), log_threshold + 1);
@@ -1256,7 +1256,7 @@ package body et_configuration is
 		log ("given module instance " & et_coordinates.to_string (connector.instance), log_threshold + 1);
 		
 		-- fetch purpose of component of given port
-		connector.purpose := purpose (module_name, port.reference, log_threshold + 1);
+		connector.purpose := et_kicad.purpose (module_name, port.reference, log_threshold + 1);
 		log ("given connector purpose " & to_string (connector.purpose), log_threshold + 1);
 
 		log ("given connector reference " & to_string (port.reference), log_threshold + 1);
@@ -1414,10 +1414,10 @@ package body et_configuration is
 	-- CS: create routing tables for projects separately.	
 		use et_string_processing;
 		use et_coordinates;
-		use et_schematic;
-		use type_rig;
+		--use et_schematic;
+		use et_schematic.type_rig;
 
-		module_cursor : type_rig.cursor; -- points to the module being processed
+		module_cursor : et_schematic.type_rig.cursor; -- points to the module being processed
 		route : type_route.set; -- for temporarily storage of a single route. 
 	
 		-- nets that have been processed are stored in a list of this type
@@ -1433,24 +1433,24 @@ package body et_configuration is
 			log_threshold	: in type_log_level) is
 
 			use et_libraries;
-			use type_net_name;
-			use type_ports_with_reference;
+			use et_schematic.type_net_name;
+			use et_schematic.type_ports_with_reference;
 
 			net_not_processed_yet : boolean; -- true if the given net has NOT been processed already
 			net_cursor : type_nets.cursor; -- no evaluation
 			
 			netchanger_port_opposide : type_port_name.bounded_string;
-			connector_port_opposide : type_port_of_module;
+			connector_port_opposide : et_schematic.type_port_of_module;
 			
-			net_name_opposide : type_net_name.bounded_string;
+			net_name_opposide : et_schematic.type_net_name.bounded_string;
 			
-			netchangers	: type_ports_with_reference.set; -- the netchangers connected with the net
-			netchanger_cursor : type_ports_with_reference.cursor;
+			netchangers	: et_schematic.type_ports_with_reference.set; -- the netchangers connected with the net
+			netchanger_cursor : et_schematic.type_ports_with_reference.cursor;
 			
-			connectors 	: type_ports_with_reference.set; -- the module interconnectors connected with the net
-			connector_cursor : type_ports_with_reference.cursor;
+			connectors 	: et_schematic.type_ports_with_reference.set; -- the module interconnectors connected with the net
+			connector_cursor : et_schematic.type_ports_with_reference.cursor;
 
-			module_cursor : type_rig.cursor := find (rig, module_name);
+			module_cursor : et_schematic.type_rig.cursor := find (et_kicad.rig, module_name);
 
 		begin -- find_ports_by_net
 -- 			log ("locating ports in module " & et_coordinates.to_string (module_name) 
@@ -1499,7 +1499,7 @@ package body et_configuration is
 
 					-- loop in netchangers of this net
 					-- Get opposide port and net. The component reference on the opposide is the same.
-					while netchanger_cursor /= type_ports_with_reference.no_element loop
+					while netchanger_cursor /= et_schematic.type_ports_with_reference.no_element loop
 						log (to_string (element (netchanger_cursor).reference) 
 							& " port " & to_string (element (netchanger_cursor).name),
 							log_threshold + 2);
@@ -1509,11 +1509,11 @@ package body et_configuration is
 						netchanger_port_opposide := opposide_netchanger_port (element (netchanger_cursor).name);
 
 						-- get opposide net
-						net_name_opposide := connected_net (
+						net_name_opposide := et_schematic.connected_net (
 												port => (
-													module => module_name, -- module of origin like led_matrix_2
-													reference => element (netchanger_cursor).reference, -- component of origin like N3
-													name => netchanger_port_opposide), -- port name of origin like 1
+													module 		=> module_name, -- module of origin like led_matrix_2
+													reference 	=> element (netchanger_cursor).reference, -- component of origin like N3
+													name 		=> netchanger_port_opposide), -- port name of origin like 1
 												log_threshold => log_threshold + 3);
 
 						-- If there is a net connected at the other side, find ports connected with this net.
@@ -1565,7 +1565,7 @@ package body et_configuration is
 
 					-- loop in connectors of this net
 					-- Get opposide reference, port and net.
-					while connector_cursor /= type_ports_with_reference.no_element loop
+					while connector_cursor /= et_schematic.type_ports_with_reference.no_element loop
 						log (to_string (element (connector_cursor).reference) 
 							& " port " & to_string (element (connector_cursor).name),
 							log_threshold + 2);
@@ -1578,7 +1578,7 @@ package body et_configuration is
 													log_threshold => log_threshold + 3);
 
 						-- get opposide net
-						net_name_opposide := connected_net (
+						net_name_opposide := et_schematic.connected_net (
 												port => connector_port_opposide,
 													-- contains:
 													--  module to search in like pwr_supply_1
@@ -1641,11 +1641,11 @@ package body et_configuration is
 		-- Once find_ports_by_net finishes, the current route is complete. If more than one 
 		-- net is in the route, the route is appended to the global rig wide routing table.
 			module_name	: in type_submodule_name.bounded_string;	-- led_matrix_2
-			module		: in type_module) is
-			use type_netlist;
-			netlist		: type_netlist.map := module.netlist;
-			net_cursor	: type_netlist.cursor;
-			net_name	: type_net_name.bounded_string;
+			module		: in et_schematic.type_module) is
+			use et_schematic.type_netlist;
+			netlist		: et_schematic.type_netlist.map := module.netlist;
+			net_cursor	: et_schematic.type_netlist.cursor;
+			net_name	: et_schematic.type_net_name.bounded_string;
 
 			indentation_backup : type_indentation_level;
 			
@@ -1658,12 +1658,12 @@ package body et_configuration is
 			
 			if not is_empty (netlist) then
 				net_cursor := netlist.first;
-				while net_cursor /= type_netlist.no_element loop
+				while net_cursor /= et_schematic.type_netlist.no_element loop
 					net_name := key (net_cursor);
 
 					-- restore log indentation (to prevent log messages shifting infinitely to the right)
 					log_indentation := indentation_backup;
-					log (to_string (net_name), log_threshold + 3);
+					log (et_schematic.to_string (net_name), log_threshold + 3);
 
 					-- here a new route starts, clean up container "route" from previous spins:
 					type_route.clear (route);
@@ -1677,8 +1677,8 @@ package body et_configuration is
 					-- If there is only one net in the route it is discarded.
 					if type_route.length (route) > 1 then
 						type_routing_table.append (
-							container => routing_table,
-							new_item => route);
+							container	=> routing_table,
+							new_item	=> route);
 					end if;
 					
 					next (net_cursor);
@@ -1694,15 +1694,15 @@ package body et_configuration is
 		log ("making routing tables ...", log_threshold);
 		log_indentation_up;
 
-		module_cursor := rig.first;
+		module_cursor := et_kicad.rig.first;
 		
-		while module_cursor /= type_rig.no_element loop
+		while module_cursor /= et_schematic.type_rig.no_element loop
 			log ("module " & to_string (key (module_cursor)), log_threshold + 1);
 			log_indentation_up;
 
 			query_element (
-				position => module_cursor,
-				process => query_nets'access);
+				position	=> module_cursor,
+				process 	=> query_nets'access);
 			
 			log_indentation_down;
 			next (module_cursor);

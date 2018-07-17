@@ -145,6 +145,9 @@ package et_schematic is
 		return et_coordinates.type_submodule_name.bounded_string;
 	-- Returns the base name of the given schematic file name as submodule name.
 
+	procedure module_not_found (module : in type_submodule_name.bounded_string);
+	-- Returns a message stating that the given module does not exist.
+	
 	-- CS: negative schematic coordinates should be forbidden	
 -- 	type type_coordinates is new et_coordinates.type_2d_point with private;	
 -- 	type type_coordinates is new et_libraries.type_coordinates with record
@@ -172,9 +175,9 @@ package et_schematic is
 		log_threshold : in et_string_processing.type_log_level := 0);
 	-- Writes the properties of the given note
 
-	procedure add_note (
-	-- Inserts a note in the the module (indicated by module_cursor).
-		note	: in et_schematic.type_note);
+-- 	procedure add_note (
+-- 	-- Inserts a note in the the module (indicated by module_cursor).
+-- 		note	: in et_schematic.type_note);
 	
 	package type_texts is new indefinite_doubly_linked_lists (
 		element_type => type_note);
@@ -466,10 +469,6 @@ package et_schematic is
 		log_threshold : in et_string_processing.type_log_level
 		) return type_2d_point;
 	
-	procedure add_strand (
-	-- Adds a strand into the module (indicated by module_cursor).
-		strand : in et_schematic.type_strand);
-	
 	-- Strands are collected in a list:
 	package type_strands is new doubly_linked_lists (
 		element_type => type_strand);
@@ -603,7 +602,7 @@ package et_schematic is
     package type_title_blocks is new doubly_linked_lists (
         element_type => type_title_block);
 
-	-- sheet headers (kicad requirement)
+	-- sheet headers (kicad requirement) -> CS move to et_kicad
 	-- The sheet header is a composite of a list of libraries and other things:
 	-- It contains a list of libraries used by a schemetic sheet.
 	-- We use a simple list because the order of the library names must be kept.
@@ -674,14 +673,6 @@ package et_schematic is
 		"<" => compare_reference,
  		element_type => type_component);
 
-	function purpose (
-	-- Returns the purpose of the given component in the given module.
-	-- If no purpose specified for the component, an empty string is returned.						 
-		module_name		: in type_submodule_name.bounded_string; -- led_matrix_2
-		reference		: in type_component_reference; -- X701
-		log_threshold	: in et_string_processing.type_log_level)
-		return type_component_purpose.bounded_string;
-	
 	procedure write_component_properties (
 	-- Writes the properties of the component indicated by the given cursor.
 		component : in type_components.cursor;
@@ -843,7 +834,7 @@ package et_schematic is
 		"<" => et_coordinates.type_submodule_name."<",											 
 		element_type => type_module);
 
-	rig : type_rig.map;
+	--rig : type_rig.map;
 	module_cursor : type_rig.cursor;
 
 	-- The rig has a name like "Blood Sample Analyzer"
@@ -858,84 +849,12 @@ package et_schematic is
 -- 		modules		: type_modules.map;
 -- 	end record;
 
-	procedure copy_module (
-	-- Copyies a rig module. 
-	-- If copy_last is true (default) the last module in the rig is copied. 
-	-- If copy_last is false, the module with given name_origin is copied.
-	-- The module instance is always incremented automatically.
-		copy_last		: in boolean := true;						  
-		name_origin		: in type_submodule_name.bounded_string := type_submodule_name.to_bounded_string (""); -- nucleo_core_3
-		log_threshold	: in et_string_processing.type_log_level);
-
-	function module_count return natural;
-	-- Returns the number of modules of the rig.
-
-	procedure first_module;
-	-- Resets the module_cursor to the first module of the rig.
-
-	procedure validate_module (
-		module_name : in et_coordinates.type_submodule_name.bounded_string);
-	-- Tests if the given module exists in the rig. Raises error if not existent.
-	
-	procedure set_module (
-	-- Sets the active module. Leaves module_cursor pointing
-	-- to the module.
-		module_name : in et_coordinates.type_submodule_name.bounded_string);
-	
-	procedure add_gui_submodule (
-	-- Inserts a gui submodule in the module (indicated by module_cursor)
-		name		: in et_coordinates.type_submodule_name.bounded_string;
-		gui_sub_mod	: in et_schematic.type_gui_submodule);
-
     function first_gui_submodule return type_gui_submodules.cursor;
     -- Returns a cursor pointing to the first gui_submodule of the moduel (indicated by module_cursor)
     
-	procedure add_sheet_header (
-	-- Inserts a sheet header in the module (indicated by module_cursor).
-		header	: in type_sheet_header;
-		sheet	: in type_schematic_file_name.bounded_string);
-	
-	procedure add_frame (
-	-- Inserts a drawing frame in the module (indicated by module_cursor).
-		frame	: in et_schematic.type_frame);
-	
-	procedure add_title_block (
-	-- Inserts a title block in the module (indicated by module_cursor).
-		tblock	: in et_schematic.type_title_block);
-
--- 	function first_strand return type_strands.cursor;
--- 	-- Returns a cursor pointing to the first strand of the module (indicated by module_cursor).
-
--- 	function port_connected_with_segment (
--- 	-- Returns true if the given port sits on the given net segment.
--- 		port	: in type_port'class;
--- 		segment	: in type_net_segment'class) 		
--- 		-- NOTE: Passing a cursor to given segment does not work. This measure would make
--- 		-- excluding the same segment easier in procedure query_segments. The cursor to the given segment
--- 		-- would be the same type as the segment being inquired, yet they do not point to the same
--- 		-- memory location. So forget this idea.
--- 		return boolean;
-
-
-
--- 	procedure update_strand_names (log_threshold : in et_string_processing.type_log_level);
--- 	-- Tests if a power out port is connected to a strand and renames the strand if necessary.	
--- 	-- Depending on the CAE system power-out or power-in ports may enforce their name on a strand.
-	
 	procedure write_strands (log_threshold : in et_string_processing.type_log_level);
 	-- Writes a nice overview of strands, net segments and labels
 
--- 	function first_segment (cursor : in type_strands.cursor) return type_net_segments.cursor;
--- 	-- Returns a cursor pointing to the first net segment of the given strand.
-
--- 	function first_net return type_nets.cursor;
--- 	-- Returns a cursor pointing to the first net of the module (indicated by module_cursor).
-    
--- 	procedure link_strands (log_threshold : in et_string_processing.type_log_level);
--- 	-- Links strands to nets (see type_module.nets).
-
--- 	procedure process_hierarchic_nets (log_threshold : in et_string_processing.type_log_level);
-    
 	procedure write_nets (log_threshold : in et_string_processing.type_log_level);
 	-- Writes a nice overview of all nets, strands, segments and labels.
 	
