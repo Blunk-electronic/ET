@@ -675,8 +675,8 @@ package et_schematic is
 
 	procedure write_component_properties (
 	-- Writes the properties of the component indicated by the given cursor.
-		component : in type_components.cursor;
-		log_threshold : in et_string_processing.type_log_level);
+		component 		: in type_components.cursor;
+		log_threshold	: in et_string_processing.type_log_level);
 
 	function component_reference (cursor : in type_components.cursor) 
 		return type_component_reference;
@@ -753,15 +753,15 @@ package et_schematic is
 		name		: et_libraries.type_port_name.bounded_string;			-- 2
 	end record;
 	
-	function connected_net (
-		port			: in type_port_of_module; -- contains something like nucleo_core_1 X701 port 4
-		log_threshold	: in et_string_processing.type_log_level)
-		return type_net_name.bounded_string;
-	-- Returns the name of the net connected with the given port.
-	-- Searches the netlist of the given module for the given port. 
-	-- The net which is connected with the port is the net whose name
-	-- is to be returned.
-	-- If no net connected with the given port, an empty string is returned.
+-- 	function connected_net (
+-- 		port			: in type_port_of_module; -- contains something like nucleo_core_1 X701 port 4
+-- 		log_threshold	: in et_string_processing.type_log_level)
+-- 		return type_net_name.bounded_string;
+-- 	-- Returns the name of the net connected with the given port.
+-- 	-- Searches the netlist of the given module for the given port. 
+-- 	-- The net which is connected with the port is the net whose name
+-- 	-- is to be returned.
+-- 	-- If no net connected with the given port, an empty string is returned.
 
 	-- This is a set of ports as we need in the netlist.
 	package type_ports_with_reference is new ordered_sets (
@@ -861,18 +861,18 @@ package et_schematic is
 	function first_component return type_components.cursor;
 	-- Returns a cursor pointing to the first component of the module (indicated by module_cursor).
 	
-	procedure add_component (
-	-- Adds a component into the the module (indicated by module_cursor).
-		reference		: in et_libraries.type_component_reference;
-		component		: in type_component;
-		log_threshold	: in et_string_processing.type_log_level);
+-- 	procedure add_component (
+-- 	-- Adds a component into the the module (indicated by module_cursor).
+-- 		reference		: in et_libraries.type_component_reference;
+-- 		component		: in type_component;
+-- 		log_threshold	: in et_string_processing.type_log_level);
 
-	procedure add_unit (
-	-- Adds a unit into the given commponent.
-		reference		: in et_libraries.type_component_reference;
-		unit_name		: in et_libraries.type_unit_name.bounded_string;
-		unit 			: in type_unit;
-		log_threshold	: in et_string_processing.type_log_level);
+-- 	procedure add_unit (
+-- 	-- Adds a unit into the given commponent.
+-- 		reference		: in et_libraries.type_component_reference;
+-- 		unit_name		: in et_libraries.type_unit_name.bounded_string;
+-- 		unit 			: in type_unit;
+-- 		log_threshold	: in et_string_processing.type_log_level);
 
 	procedure reset_component_cursor (cursor : in out type_components.cursor);
 	-- Resets the given component cursor to the begin of the component list
@@ -917,24 +917,24 @@ package et_schematic is
 -- 	function build_portlists (log_threshold : in et_string_processing.type_log_level) return type_portlists.map;
 -- 	-- Returns a list of components with the absolute positions of their ports as they are placed in the schematic.
 
-	procedure check_junctions (log_threshold : in et_string_processing.type_log_level);
-	-- Verifies that junctions are placed where net segments are connected with each other.
-	-- NOTE: make_netlist detects if a junction is missing where a port is connected with a net.
+-- 	procedure check_junctions (log_threshold : in et_string_processing.type_log_level);
+-- 	-- Verifies that junctions are placed where net segments are connected with each other.
+-- 	-- NOTE: make_netlist detects if a junction is missing where a port is connected with a net.
 
-	procedure check_orphaned_junctions (log_threshold : in et_string_processing.type_log_level);
-	-- Warns about orphaned junctions.
+-- 	procedure check_orphaned_junctions (log_threshold : in et_string_processing.type_log_level);
+-- 	-- Warns about orphaned junctions.
 
-	procedure check_misplaced_junctions (log_threshold : in et_string_processing.type_log_level);
-	-- Warns about misplaced junctions.
+-- 	procedure check_misplaced_junctions (log_threshold : in et_string_processing.type_log_level);
+-- 	-- Warns about misplaced junctions.
 	
-	procedure check_misplaced_no_connection_flags (log_threshold : in et_string_processing.type_log_level);
-	-- Warns about no_connection_flags placed at nets.
+-- 	procedure check_misplaced_no_connection_flags (log_threshold : in et_string_processing.type_log_level);
+-- 	-- Warns about no_connection_flags placed at nets.
 
-	procedure check_orphaned_no_connection_flags (log_threshold : in et_string_processing.type_log_level);
-	-- Warns about orphaned no_connection_flags.
+-- 	procedure check_orphaned_no_connection_flags (log_threshold : in et_string_processing.type_log_level);
+-- 	-- Warns about orphaned no_connection_flags.
 
-	procedure net_test (log_threshold : in et_string_processing.type_log_level);
-	-- Tests nets for number of inputs, outputs, bidirs, ...
+-- 	procedure net_test (log_threshold : in et_string_processing.type_log_level);
+-- 	-- Tests nets for number of inputs, outputs, bidirs, ...
 
 	
 -- NETLISTS

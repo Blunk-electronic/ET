@@ -1509,7 +1509,7 @@ package body et_configuration is
 						netchanger_port_opposide := opposide_netchanger_port (element (netchanger_cursor).name);
 
 						-- get opposide net
-						net_name_opposide := et_schematic.connected_net (
+						net_name_opposide := et_kicad.connected_net (
 												port => (
 													module 		=> module_name, -- module of origin like led_matrix_2
 													reference 	=> element (netchanger_cursor).reference, -- component of origin like N3
@@ -1578,7 +1578,7 @@ package body et_configuration is
 													log_threshold => log_threshold + 3);
 
 						-- get opposide net
-						net_name_opposide := et_schematic.connected_net (
+						net_name_opposide := et_kicad.connected_net (
 												port => connector_port_opposide,
 													-- contains:
 													--  module to search in like pwr_supply_1

@@ -512,6 +512,48 @@ package et_kicad is
 	procedure add_note (
 	-- Inserts a note in the the module (indicated by module_cursor).
 		note	: in et_schematic.type_note);
+
+	procedure add_component (
+	-- Adds a component into the the module (indicated by module_cursor).
+		reference		: in et_libraries.type_component_reference;
+		component		: in et_schematic.type_component;
+		log_threshold	: in et_string_processing.type_log_level);
+
+	procedure add_unit (
+	-- Adds a unit into the given commponent.
+		reference		: in et_libraries.type_component_reference;
+		unit_name		: in et_libraries.type_unit_name.bounded_string;
+		unit 			: in et_schematic.type_unit;
+		log_threshold	: in et_string_processing.type_log_level);
+
+	procedure check_junctions (log_threshold : in et_string_processing.type_log_level);
+	-- Verifies that junctions are placed where net segments are connected with each other.
+	-- NOTE: make_netlist detects if a junction is missing where a port is connected with a net.
+
+	procedure check_orphaned_junctions (log_threshold : in et_string_processing.type_log_level);
+	-- Warns about orphaned junctions.
+
+	procedure check_misplaced_junctions (log_threshold : in et_string_processing.type_log_level);
+	-- Warns about misplaced junctions.
+
+	procedure check_misplaced_no_connection_flags (log_threshold : in et_string_processing.type_log_level);
+	-- Warns about no_connection_flags placed at nets.
+
+	procedure check_orphaned_no_connection_flags (log_threshold : in et_string_processing.type_log_level);
+	-- Warns about orphaned no_connection_flags.
+
+	procedure net_test (log_threshold : in et_string_processing.type_log_level);
+	-- Tests nets for number of inputs, outputs, bidirs, ...
+
+	function connected_net (
+		port			: in et_schematic.type_port_of_module; -- contains something like nucleo_core_1 X701 port 4
+		log_threshold	: in et_string_processing.type_log_level)
+		return et_schematic.type_net_name.bounded_string;
+	-- Returns the name of the net connected with the given port.
+	-- Searches the netlist of the given module for the given port. 
+	-- The net which is connected with the port is the net whose name
+	-- is to be returned.
+	-- If no net connected with the given port, an empty string is returned.
 	
 	procedure make_netlists (log_threshold : in et_string_processing.type_log_level);
 	-- Builds the netlists of all modules of the rig.

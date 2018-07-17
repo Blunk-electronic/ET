@@ -349,15 +349,15 @@ procedure et is
 			log_indentation_up;
 			
 			-- detect missing or orphaned junctions
-			check_junctions (log_threshold => 0);
-			check_orphaned_junctions (log_threshold => 0);
-			check_misplaced_junctions (log_threshold => 0);	
+			et_kicad.check_junctions (log_threshold => 0);
+			et_kicad.check_orphaned_junctions (log_threshold => 0);
+			et_kicad.check_misplaced_junctions (log_threshold => 0);	
 
 			-- detect misplaced no-connect-flags
-			check_misplaced_no_connection_flags (log_threshold => 0);
+			et_kicad.check_misplaced_no_connection_flags (log_threshold => 0);
 
 			-- detect orphaned no-connect-flags
-			check_orphaned_no_connection_flags (log_threshold => 0);
+			et_kicad.check_orphaned_no_connection_flags (log_threshold => 0);
 
 			-- make netlists
 			et_kicad.make_netlists (log_threshold => 0);
@@ -369,7 +369,7 @@ procedure et is
 			et_kicad.check_non_deployed_units (log_threshold => 0);
 
 			-- test nets for inputs, outputs, bidirs, ...
-			net_test (log_threshold => 0);
+			et_kicad.net_test (log_threshold => 0);
 			
 			-- export netlists (requires that make_netlists has been called previously)
 			et_kicad.export_netlists (log_threshold => 0);

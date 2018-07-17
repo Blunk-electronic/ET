@@ -6344,7 +6344,7 @@ package body et_kicad is
 						
 						when sch => -- we have a line like "L P3V3 #PWR07"
 					
-							et_schematic.add_component (
+							add_component (
 								reference => reference,
 								component => (
 									appearance		=> sch,
@@ -6366,7 +6366,7 @@ package body et_kicad is
 
 						when sch_pcb => -- we have a line like "L 74LS00 U1"
 
-							et_schematic.add_component ( 
+							add_component ( 
 								reference => reference,
 								component => (
 									appearance		=> sch_pcb,
@@ -6446,7 +6446,7 @@ package body et_kicad is
 
 						when sch =>
 
-							et_schematic.add_unit (
+							add_unit (
 								reference	=> reference,
 								unit_name	=> unit_name,
 								unit 		=> (
@@ -6476,7 +6476,7 @@ package body et_kicad is
 
 						when sch_pcb =>
 
-							et_schematic.add_unit (
+							add_unit (
 								reference	=> reference,
 								unit_name	=> unit_name,
 								unit 		=> (
@@ -9332,7 +9332,1247 @@ package body et_kicad is
 			);
 	end add_note;
 
+	procedure add_component (
+	-- Adds a component into the the module (indicated by module_cursor).
+	-- If a component is already in the list, nothing happens.
+	-- Components may occur multiple times in the schematic if they 
+	-- consist of more than one unit.
+	-- CS: This assumption may not apply for all CAE systems. Currently we
+	-- consider only kicad. In other cases the "inserted" check (see below) 
+	-- must be enabled via an argument.
+		reference		: in et_libraries.type_component_reference;
+		component		: in et_schematic.type_component;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		
+		procedure add (
+			name	: in et_coordinates.type_submodule_name.bounded_string;
+			module	: in out et_schematic.type_module) is
+			
+			inserted	: boolean := false;
+			cursor		: et_schematic.type_components.cursor;
+
+			use et_string_processing;
+		begin
+			module.components.insert (
+				key			=> reference,
+				new_item	=> component,
+				position	=> cursor, -- updates cursor. no further meaning
+				inserted	=> inserted
+				);
+
+-- 			if inserted then -- first occurence of component
+				et_schematic.write_component_properties (component => cursor, log_threshold => log_threshold + 1);
+-- 			else -- not inserted
+-- 				null; -- CS: see comment above
+				--raise constraint_error;
+-- 			end if;
+		end add;
+	begin
+		rig.update_element (
+			position	=> module_cursor,
+			process		=> add'access
+			);
+	end add_component;
 	
+	procedure add_unit (
+	-- Adds a unit into the given commponent.
+		reference		: in et_libraries.type_component_reference;
+		unit_name		: in et_libraries.type_unit_name.bounded_string;
+		unit 			: in et_schematic.type_unit;
+		log_threshold	: in et_string_processing.type_log_level) is
+
+		procedure add (
+			reference	: in et_libraries.type_component_reference;
+			component	: in out et_schematic.type_component) is
+
+			inserted	: boolean := false;
+			cursor		: et_schematic.type_units.cursor;
+
+			use et_string_processing;
+		begin
+			component.units.insert (
+				key			=> unit_name,
+				new_item	=> unit,
+				position	=> cursor, -- updates unit_cursor. no further meaning
+				inserted	=> inserted
+				);
+
+			if inserted then -- fine. unit was inserted successfully
+				et_schematic.write_unit_properties (unit => cursor, log_threshold => log_threshold + 1);
+			else -- not inserted, unit already in component -> failure
+				log_indentation_reset;
+				log (
+					text => message_error & "multiple occurence of the same unit !",
+					console => true);
+				raise constraint_error;
+			end if;
+		end add;
+		
+		procedure locate_component (
+			name	: in et_coordinates.type_submodule_name.bounded_string;
+			module	: in out et_schematic.type_module) is
+			
+			cursor : et_schematic.type_components.cursor;
+		begin
+			cursor := module.components.find (reference);
+			-- CS: do something if reference not found
+			
+			module.components.update_element (
+				position	=> cursor,
+				process		=> add'access
+				);
+		end locate_component;
+		
+	begin
+		rig.update_element (
+			position	=> module_cursor,
+			process		=> locate_component'access
+			);
+	end add_unit;
+
+	procedure check_junctions (log_threshold : in et_string_processing.type_log_level) is
+	-- Verifies that junctions are placed where net segments are connected with each other.
+	-- NOTE: make_netlist detects if a junction is missing where a port is connected with a net.
+	-- Warns about orphaned junctions.
+		use et_string_processing;
+		use et_schematic.type_rig;
+
+		procedure query_strands_prim (
+		-- Query strands of module.
+			module_name	: in type_submodule_name.bounded_string;
+			module		: in et_schematic.type_module) is
+			use et_schematic.type_strands;
+			strand_cursor_prim : et_schematic.type_strands.cursor := module.strands.first;
+
+			procedure query_segments_prim (
+			-- Query segments of strand
+				strand : in et_schematic.type_strand) is
+				use et_schematic.type_net_segments;
+				segment_cursor_prim : et_schematic.type_net_segments.cursor := strand.segments.first;
+
+				type type_junction is record
+					expected : boolean := false;
+					position : type_coordinates;
+				end record;
+
+				junction : type_junction;
+				
+				function find_position_of_expected_junction return type_junction is
+				-- Queries strands and segments of module. Tests if start or end point of the 
+				-- the primary segment (indicated by segment_cursor_prim) meets 
+				-- another segment (port_cursor_secondary) BETWEEN
+				-- its start and end point.Exits prematurely when positive. Returns the composite
+				-- junction_position.
+					junction_position : type_junction;
+				
+					use et_schematic.type_strands;
+
+					-- start strand query with the first strand of the module.
+					strand_cursor_sec : et_schematic.type_strands.cursor := module.strands.first;
+
+					procedure query_segments_sec (
+						strand : in et_schematic.type_strand) is
+						segment_cursor_sec : et_schematic.type_net_segments.cursor := strand.segments.first;
+						use et_geometry;
+						distance : type_distance_point_from_line;
+					begin -- query_segments_sec
+						log_indentation_up;
+						log ("quering segments ...", log_threshold + 4);
+						log_indentation_up;
+						
+						while segment_cursor_sec /= et_schematic.type_net_segments.no_element loop
+						
+							log (et_schematic.to_string (element (segment_cursor_sec)), log_threshold + 4);
+						
+							-- Test segments that are on the same path and sheet. It is sufficient
+							-- to compare the start coordinates of the segments.
+							if same_path_and_sheet (
+								element (segment_cursor_prim).coordinates_start,
+								element (segment_cursor_sec).coordinates_start) then
+
+								-- If START point of primary segment sits BETWEEN start and end point of secondary segment,
+								-- exit prematurely and return the coordinates of the expected junction.
+								distance := distance_of_point_from_line (
+									point 		=> type_2d_point (element (segment_cursor_prim).coordinates_start),
+									line_start	=> type_2d_point (element (segment_cursor_sec).coordinates_start),
+									line_end	=> type_2d_point (element (segment_cursor_sec).coordinates_end),
+									line_range	=> inside_end_points);
+
+								if (not distance.out_of_range) and distance.distance = et_coordinates.zero_distance then
+									junction_position.expected := true;
+									junction_position.position := element (segment_cursor_prim).coordinates_start;
+									exit;
+								end if;
+
+								-- If END point of primary segment sits BETWEEN start and end point of secondary segment,
+								-- exit prematurely and return the coordinates of the expected junction.
+								distance := distance_of_point_from_line (
+									point 		=> type_2d_point (element (segment_cursor_prim).coordinates_end),
+									line_start	=> type_2d_point (element (segment_cursor_sec).coordinates_start),
+									line_end	=> type_2d_point (element (segment_cursor_sec).coordinates_end),
+									line_range	=> inside_end_points);
+
+								if (not distance.out_of_range) and distance.distance = et_coordinates.zero_distance then
+									junction_position.expected := true;
+									junction_position.position := element (segment_cursor_prim).coordinates_end;
+									exit;
+								end if;
+							end if;
+
+							next (segment_cursor_sec);
+						end loop;
+
+						log_indentation_down;	
+						log_indentation_down;
+					end query_segments_sec;
+
+				begin -- find_position_of_expected_junction
+					log_indentation_up;
+					log ("quering strands ...", log_threshold + 3);
+					log_indentation_up;
+
+					-- Query secondary net segments until a junction is expected or until all secondary segments 
+					-- are tested. If no junction is expected return junction_position.expected false.
+					while (not junction_position.expected) and strand_cursor_sec /= et_schematic.type_strands.no_element loop
+
+						log (et_schematic.to_string (element (strand_cursor_sec).name)
+							& " at " 
+							& to_string (element (strand_cursor_sec).coordinates, scope => et_coordinates.module),
+							log_threshold + 3);
+					
+						et_schematic.type_strands.query_element (
+							position	=> strand_cursor_sec,
+							process		=> query_segments_sec'access);
+
+						next (strand_cursor_sec);
+					end loop;
+
+					log_indentation_down;
+					log_indentation_down;
+					return junction_position;
+				end find_position_of_expected_junction;
+
+				function junction_here return boolean is
+				-- Returns true if a junction exits at the expected position (junction.position).
+					junction_found : boolean := false; -- to be returned
+				
+					procedure query_junctions (
+					-- Query junctions. Exits prematurely once a junction is found.
+						module_name : in type_submodule_name.bounded_string;
+						module 		: in et_schematic.type_module) is
+						use et_schematic.type_junctions;
+						junction_cursor : et_schematic.type_junctions.cursor := module.junctions.first;
+					begin -- query_junctions
+						junction_found := false;
+						while junction_cursor /= et_schematic.type_junctions.no_element loop
+							-- compare coordinates of junction and expected junction position
+							if element (junction_cursor).coordinates = junction.position then
+								junction_found := true;
+								exit; -- no further search required
+							end if;
+							next (junction_cursor);	
+						end loop;
+					end query_junctions;
+				
+				begin -- junction_here
+					et_schematic.type_rig.query_element (
+						position	=> module_cursor,
+						process 	=> query_junctions'access);
+
+					return junction_found;
+				end junction_here;
+
+				
+				
+			begin -- query_segments_prim
+				log_indentation_up;
+				log ("quering segments ...", log_threshold + 2);
+				log_indentation_up;
+				
+				while segment_cursor_prim /= et_schematic.type_net_segments.no_element loop
+					log (et_schematic.to_string (element (segment_cursor_prim)), log_threshold + 2);
+				
+					junction := find_position_of_expected_junction;
+
+					if junction.expected then
+						if not junction_here then
+							log (message_warning & "missing net junction at " 
+							 & to_string (junction.position, et_coordinates.module));
+						end if;
+					end if;
+					
+					next (segment_cursor_prim);
+				end loop;
+
+				log_indentation_down;
+				log_indentation_down;
+			end query_segments_prim;
+
+			
+		begin -- query_strands_prim
+			log ("quering strands ...", log_threshold + 1);
+			log_indentation_up;
+			
+			while strand_cursor_prim /= et_schematic.type_strands.no_element loop
+			
+				log (et_schematic.to_string (element (strand_cursor_prim).name)
+					& " at " 
+					& to_string (element (strand_cursor_prim).coordinates, scope => et_coordinates.module),
+					log_threshold + 1);
+			
+				-- query segments of current strand
+				et_schematic.type_strands.query_element (
+					position	=> strand_cursor_prim,
+					process		=> query_segments_prim'access);
+
+				next (strand_cursor_prim);
+			end loop;
+
+			log_indentation_down;	
+		end query_strands_prim;
+		
+	begin -- check_junctions
+		log ("detecting missing net junctions ...", log_threshold);
+		log_indentation_up;
+
+		-- We start with the first module of the rig.
+		--first_module;
+		module_cursor := rig.first;
+
+		-- Process one rig module after another.
+		-- module_cursor points to the module in the rig.
+		while module_cursor /= et_schematic.type_rig.no_element loop
+			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log_indentation_up;
+			
+			-- query strands of current module
+			query_element (
+				position	=> module_cursor,
+				process 	=> query_strands_prim'access);
+
+			log_indentation_down;
+			next (module_cursor);
+		end loop;
+
+		log_indentation_down;
+	end check_junctions;
+
+	procedure check_orphaned_junctions (log_threshold : in et_string_processing.type_log_level) is
+	-- Warns about orphaned junctions.
+		use et_schematic.type_rig;
+		use et_string_processing;
+
+		procedure query_junctions (
+		-- Query junctions.
+			module_name	: in type_submodule_name.bounded_string;
+			module 		: in et_schematic.type_module) is
+			use et_schematic.type_junctions;
+			junction_cursor : et_schematic.type_junctions.cursor := module.junctions.first;
+
+			function segment_here return boolean is
+			-- Returns true if a net segment is found where the junction sits on.
+				segment_found : boolean := false; -- to be returned
+			
+				procedure query_strands (
+				-- Query net segments. Exits prematurely once a strand is found where the junction
+				-- sits on.
+					module_name : in type_submodule_name.bounded_string;
+					module 		: in et_schematic.type_module) is
+					use et_schematic.type_strands;
+					strand_cursor : et_schematic.type_strands.cursor := module.strands.first;
+
+					procedure query_segments (
+					-- Query net segments. Sets the flag segment_found and exits prematurely 
+					-- once a segment is found where the junction sits on.
+						strand : in et_schematic.type_strand) is
+						use et_schematic.type_net_segments;
+						segment_cursor : et_schematic.type_net_segments.cursor := strand.segments.first;
+						use et_geometry;
+						distance : type_distance_point_from_line;
+					begin
+						while segment_cursor /= et_schematic.type_net_segments.no_element loop
+
+							-- Make sure junction and segment share the same module path and sheet.
+							-- It is sufficient to check against the segment start coordinates.
+							if same_path_and_sheet (element (segment_cursor).coordinates_start, element (junction_cursor).coordinates) then
+
+								distance := distance_of_point_from_line (
+									point 		=> type_2d_point (element (junction_cursor).coordinates),
+									line_start	=> type_2d_point (element (segment_cursor).coordinates_start),
+									line_end	=> type_2d_point (element (segment_cursor).coordinates_end),
+									line_range	=> with_end_points);
+
+								if (not distance.out_of_range) and distance.distance = et_coordinates.zero_distance then
+									segment_found := true;
+									exit;
+								end if;
+
+							end if;
+								
+							next (segment_cursor);
+						end loop;
+					end query_segments;
+					
+				begin -- query_strands
+					-- Probe strands until a segment has been found or all strands have been processed:
+					while (not segment_found) and strand_cursor /= et_schematic.type_strands.no_element loop
+
+						et_schematic.type_strands.query_element (
+							position	=> strand_cursor,
+							process		=> query_segments'access);
+
+						next (strand_cursor);
+					end loop;
+				end query_strands;
+			
+			begin -- segment_here
+				--log ("probing for other segment at " & to_string (port.coordinates, et_coordinates.module));
+			
+				et_schematic.type_rig.query_element (
+					position	=> module_cursor,
+					process		=> query_strands'access);
+
+				return segment_found;
+			end segment_here;
+
+		begin -- query_junctions
+			while junction_cursor /= et_schematic.type_junctions.no_element loop
+
+				if not segment_here then
+					log (message_warning & "orphaned net junction at " 
+						 & to_string (element (junction_cursor).coordinates,
+						et_coordinates.module));
+				end if;
+					
+				next (junction_cursor);	
+			end loop;
+		end query_junctions;
+	
+	begin -- check_orphaned_junctions
+		log ("detecting orphaned net junctions ...", log_threshold);
+		log_indentation_up;
+
+		-- We start with the first module of the rig.
+		--first_module;
+		module_cursor := rig.first;
+
+		-- Process one rig module after another.
+		-- module_cursor points to the module in the rig.
+		while module_cursor /= et_schematic.type_rig.no_element loop
+			log ("module " & to_string (key (module_cursor)), log_threshold);
+		
+			-- query strands of current module
+			query_element (
+				position	=> module_cursor,
+				process		=> query_junctions'access);
+			
+			next (module_cursor);
+		end loop;
+
+		log_indentation_down;
+	end check_orphaned_junctions;
+
+	procedure check_misplaced_junctions (log_threshold : in et_string_processing.type_log_level) is
+	-- Warns about misplaced junctions. A junction is considered as "misplaced" if:
+	-- - it is placed at the end of a net segment where no another segment meets 
+	-- - it is placed between two net segments where no port sits
+	-- - it is placed where no segment is (means somewhere in the void)
+		use et_schematic.type_rig;
+		use et_string_processing;
+
+		procedure query_junctions (
+		-- Query junctions and test net segments and ports at the junction coordinates.
+			module_name : in type_submodule_name.bounded_string;
+			module		: in et_schematic.type_module) is
+			use et_schematic.type_junctions;
+			junction_cursor : et_schematic.type_junctions.cursor := module.junctions.first;
+
+			function segment_count_here return natural is
+			-- Returns the number of segments that meet at the junction coordinates.
+				segment_counter : natural := 0; -- to be returned
+			
+				procedure query_strands (
+				-- Query net segments. Exits prematurely once a strand is found where the junction
+				-- sits on.
+					module_name : in type_submodule_name.bounded_string;
+					module 		: in et_schematic.type_module) is
+					use et_schematic.type_strands;
+					strand_cursor : et_schematic.type_strands.cursor := module.strands.first;
+
+					procedure query_segments (
+					-- Query net segments. Sets the flag segment_found and exits prematurely 
+					-- once a segment is found where the junction sits on.
+						strand : in et_schematic.type_strand) is
+						use et_schematic.type_net_segments;
+						segment_cursor : et_schematic.type_net_segments.cursor := strand.segments.first;
+						use et_geometry;
+						distance : type_distance_point_from_line;
+					begin
+						while segment_cursor /= et_schematic.type_net_segments.no_element loop
+
+							-- Make sure junction and segment share the same module path and sheet.
+							-- It is sufficient to check against the segment start coordinates.
+							if same_path_and_sheet (element (segment_cursor).coordinates_start, element (junction_cursor).coordinates) then
+
+								distance := distance_of_point_from_line (
+									point 		=> type_2d_point (element (junction_cursor).coordinates),
+									line_start	=> type_2d_point (element (segment_cursor).coordinates_start),
+									line_end	=> type_2d_point (element (segment_cursor).coordinates_end),
+									line_range	=> with_end_points);
+
+								-- count segments
+								if (not distance.out_of_range) and distance.distance = et_coordinates.zero_distance then
+									segment_counter := segment_counter + 1;
+								end if;
+
+							end if;
+								
+							next (segment_cursor);
+						end loop;
+					end query_segments;
+					
+				begin -- query_strands
+					-- Probe strands.
+					-- There is no need to probe other strands once a segment was found. For this reason
+					-- this loop also tests the segment_counter.
+					while segment_counter = 0 and strand_cursor /= et_schematic.type_strands.no_element loop
+
+						et_schematic.type_strands.query_element (
+							position	=> strand_cursor,
+							process		=> query_segments'access);
+
+						next (strand_cursor);
+					end loop;
+				end query_strands;
+			
+			begin -- segment_count_here
+				et_schematic.type_rig.query_element (
+					position	=> module_cursor,
+					process		=> query_strands'access);
+
+				return segment_counter;
+			end segment_count_here;
+
+			function port_here return boolean is
+			-- Return true if a port exists at the position of the junction.
+				port_found : boolean := false;
+
+				procedure query_portlists (
+				-- Query portlists. Exits prematurely once any port was found.
+					module_name : in type_submodule_name.bounded_string;
+					module 		: in et_schematic.type_module) is
+					use et_schematic.type_portlists;
+					portlist_cursor : et_schematic.type_portlists.cursor := module.portlists.first;
+					
+					procedure query_ports (
+					-- Query ports. Exit prematurely once a port was found.
+						component	: in et_libraries.type_component_reference;
+						ports 		: in et_schematic.type_ports.list) is
+						port_cursor : et_schematic.type_ports.cursor := ports.first;
+						use et_schematic.type_ports;
+					begin
+						while port_cursor /= et_schematic.type_ports.no_element loop
+
+							if element (port_cursor).coordinates = element (junction_cursor).coordinates then
+								port_found := true; -- this would cancel the portlist query loop
+								exit;
+							end if;
+								
+							next (port_cursor);
+						end loop;
+					end query_ports;
+					
+				begin -- query_portlists. exit prematurely once a port was found 
+					while (not port_found) and portlist_cursor /= et_schematic.type_portlists.no_element loop
+						query_element (
+							position	=> portlist_cursor,
+							process		=> query_ports'access);
+						next (portlist_cursor);
+					end loop;
+				end query_portlists;
+
+			begin -- port_here
+				query_element (
+					position	=> module_cursor,
+					process		=> query_portlists'access);
+				return port_found;
+			end port_here;
+
+			procedure log_misplaced_junction is
+			begin
+				log (message_warning & "misplaced net junction at " 
+					& to_string (element (junction_cursor).coordinates,
+					et_coordinates.module));
+			end log_misplaced_junction;
+			
+		begin -- query_junctions
+			while junction_cursor /= et_schematic.type_junctions.no_element loop
+
+				-- Get the number of net segments at the junction coordinates.
+				case segment_count_here is
+					when 0 | 1 => log_misplaced_junction;
+						-- junction in the void or at the end of a single segment
+					
+					when 2 =>
+						-- junction between two segments -> there should be a port
+						if not port_here then 
+							log_misplaced_junction;
+						end if;
+
+					when others => null;
+						-- more than two segments here. nothing wrong.
+				end case;
+					
+				next (junction_cursor);	
+			end loop;
+		end query_junctions;
+		
+	begin -- check_misplaced_junctions
+		log ("detecting misplaced net junctions ...", log_threshold);
+		log_indentation_up;
+
+		-- We start with the first module of the rig.
+		--first_module;
+		module_cursor := rig.first;
+
+		-- Process one rig module after another.
+		-- module_cursor points to the module in the rig.
+		while module_cursor /= et_schematic.type_rig.no_element loop
+			log ("module " & to_string (key (module_cursor)), log_threshold);
+		
+			-- query strands of current module
+			query_element (
+				position	=> module_cursor,
+				process		=> query_junctions'access);
+			
+			next (module_cursor);
+		end loop;
+
+		log_indentation_down;
+	end check_misplaced_junctions;
+	
+	procedure check_misplaced_no_connection_flags (log_threshold : in et_string_processing.type_log_level) is
+	-- Warns about no_connection_flags placed at nets.
+		use et_string_processing;
+		use et_schematic.type_rig;
+		
+		procedure query_strands (
+		-- Query strands and test if no_connection_flags are placed on any segment of the strand.
+			module_name : in type_submodule_name.bounded_string;
+			module 		: in et_schematic.type_module) is
+			use et_schematic.type_strands;
+			strand_cursor : et_schematic.type_strands.cursor := module.strands.first;
+
+			procedure query_segments (
+				strand : in et_schematic.type_strand) is
+				use et_schematic.type_net_segments;
+				segment_cursor : et_schematic.type_net_segments.cursor := strand.segments.first;
+
+				procedure find_no_connection_flag is
+				-- Issues a warning if a no_connection_flag sits at the segment.
+				
+					procedure query_no_connect_flags (
+					-- Query junctions. Exits prematurely once a junction is found.
+						module_name : in type_submodule_name.bounded_string;
+						module 		: in et_schematic.type_module) is
+						use et_schematic.type_no_connection_flags;
+						use et_geometry;
+						no_connection_flag_cursor : et_schematic.type_no_connection_flags.cursor := module.no_connections.first;
+						distance : type_distance_point_from_line;
+					begin -- query_no_connect_flags
+						log ("quering no_connection_flags ...", log_threshold + 4);
+						log_indentation_up;
+						
+						while no_connection_flag_cursor /= et_schematic.type_no_connection_flags.no_element loop
+
+							log (to_string (element (no_connection_flag_cursor).coordinates, scope => et_coordinates.module),
+								log_threshold + 4);
+						
+							-- now we have element (segment_cursor) 
+							-- and element (no_connection_flag_cursor) to work with
+
+							-- Make sure no_connection_flag and segment share the same module path and sheet.
+							-- It is sufficient to check against the segment start coordinates.
+							if same_path_and_sheet (
+								element (no_connection_flag_cursor).coordinates,
+								element (segment_cursor).coordinates_start) then
+															
+								distance := distance_of_point_from_line (
+									point 		=> type_2d_point (element (no_connection_flag_cursor).coordinates),
+									line_start	=> type_2d_point (element (segment_cursor).coordinates_start),
+									line_end	=> type_2d_point (element (segment_cursor).coordinates_end),
+									line_range	=> with_end_points);
+
+								if (not distance.out_of_range) and distance.distance = et_coordinates.zero_distance then
+									log (message_warning & "no-connection-flag misplaced on a net at " 
+										& to_string (element (no_connection_flag_cursor).coordinates, et_coordinates.module));
+								end if;
+							end if;
+
+							next (no_connection_flag_cursor);	
+						end loop;
+
+						log_indentation_down;
+					end query_no_connect_flags;
+				
+				begin -- find_no_connection_flag
+					log_indentation_up;
+				
+					--log ("searching no_connection_flags ...", log_threshold + 3);
+					-- query no_connection_flags of the module
+					et_schematic.type_rig.query_element (
+						position	=> module_cursor,
+						process 	=> query_no_connect_flags'access);
+
+					log_indentation_down;
+				end find_no_connection_flag;
+				
+			begin -- query_segments
+				log_indentation_up;
+				log ("quering segments ...", log_threshold + 2);
+				log_indentation_up;
+				
+				while segment_cursor /= et_schematic.type_net_segments.no_element loop
+					log (et_schematic.to_string (element (segment_cursor)), log_threshold + 2);
+				
+					-- test if there are any no_connection_flags placed on the segment
+					find_no_connection_flag;
+					next (segment_cursor);
+				end loop;
+
+				log_indentation_down;
+				log_indentation_down;
+					
+			end query_segments;
+			
+		begin -- query_strands
+			log ("quering strands ...", log_threshold + 1);
+			log_indentation_up;
+			
+			while strand_cursor /= et_schematic.type_strands.no_element loop
+
+				log (et_schematic.to_string (element (strand_cursor).name)
+					& " at " 
+					& to_string (element (strand_cursor).coordinates, scope => et_coordinates.module),
+					log_threshold + 1);
+			
+				-- query segments of current strand
+				et_schematic.type_strands.query_element (
+					position	=> strand_cursor,
+					process		=> query_segments'access);
+
+				next (strand_cursor);
+			end loop;
+
+			log_indentation_down;
+		end query_strands;
+
+	begin -- check_misplaced_no_connection_flags
+		log ("detecting misplaced no-connection-flags ...", log_threshold);
+		log_indentation_up;
+
+		-- We start with the first module of the rig.
+		--first_module;
+		module_cursor := rig.first;
+
+		-- Process one rig module after another.
+		-- module_cursor points to the module in the rig.
+		while module_cursor /= et_schematic.type_rig.no_element loop
+			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log_indentation_up;
+			
+			-- query strands of current module and check of any misplaced no_connection_flags
+			query_element (
+				position	=> module_cursor,
+				process		=> query_strands'access);
+
+			log_indentation_down;
+			next (module_cursor);
+		end loop;
+
+		log_indentation_down;
+	end check_misplaced_no_connection_flags;
+
+	procedure check_orphaned_no_connection_flags (log_threshold : in et_string_processing.type_log_level) is
+	-- Warns about orphaned no_connection_flags.
+
+		use et_schematic.type_rig;
+		use et_string_processing;
+	
+		procedure query_no_connect_flags (
+		-- Query junctions. Exits prematurely once a junction is found.
+			module_name : in type_submodule_name.bounded_string;
+			module 		: in et_schematic.type_module) is
+			use et_schematic.type_no_connection_flags;
+			no_connection_flag_cursor : et_schematic.type_no_connection_flags.cursor := module.no_connections.first;
+
+			procedure query_portlists (
+			-- Query junctions. Exits prematurely once a junction is found.
+				module_name : in type_submodule_name.bounded_string;
+				module 		: in et_schematic.type_module) is
+				use et_schematic.type_portlists;
+				portlist_cursor : et_schematic.type_portlists.cursor := module.portlists.first;
+
+				-- As long as no port is detected, we consider the flag as orphaned.
+				flag_orphaned : boolean := true;
+				
+				procedure query_ports (
+					component 	: in et_libraries.type_component_reference;
+					ports 		: in et_schematic.type_ports.list) is
+					port_cursor : et_schematic.type_ports.cursor := ports.first;
+					use et_schematic.type_ports;
+				begin -- query_ports
+					-- query ports of component and test if the no_connection_flag is attached to any of them
+					while port_cursor /= et_schematic.type_ports.no_element loop
+
+						-- if port and no_connection_flag have the same coordinates then the 
+						-- flag is considered as not orphaned -> exit prematurely
+						if element (no_connection_flag_cursor).coordinates = element (port_cursor).coordinates then
+							flag_orphaned := false;
+							exit;
+						end if;
+							
+						next (port_cursor);
+					end loop;
+				end query_ports;
+				
+			begin -- query_portlists
+				-- Search in the portlists for a port that has the no_connection_flag attached.
+				-- The search ends prematurely once such a port was found. As long as
+				-- the flag is considered as orphaned the search continues until all portlists
+				-- have been searched.
+				while flag_orphaned and portlist_cursor /= et_schematic.type_portlists.no_element loop
+					query_element (
+						position	=> portlist_cursor,
+						process		=> query_ports'access);
+					next (portlist_cursor);
+				end loop;
+
+				-- If the flag is still orphaned issue a warning.
+				if flag_orphaned then
+					-- no_connection_flag is not placed at any port
+					log (message_warning & "orphaned no_connection_flag found at " 
+						 & to_string (element (no_connection_flag_cursor).coordinates,
+							et_coordinates.module));
+				end if;
+					
+			end query_portlists;
+			
+		begin -- query_no_connect_flags
+			log ("quering no_connection_flags ...", log_threshold + 1);
+			while no_connection_flag_cursor /= et_schematic.type_no_connection_flags.no_element loop
+
+				query_element (
+					position 	=> module_cursor,
+					process 	=> query_portlists'access);
+
+				next (no_connection_flag_cursor);	
+			end loop;
+		end query_no_connect_flags;
+
+	begin -- check_orphaned_no_connection_flags
+		log ("detecting orphaned no-connection-flags ...", log_threshold);
+		log_indentation_up;
+
+		-- We start with the first module of the rig.
+		--first_module;
+		module_cursor := rig.first;
+
+		-- Process one rig module after another.
+		-- module_cursor points to the module in the rig.
+		while module_cursor /= et_schematic.type_rig.no_element loop
+			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log_indentation_up;
+			
+			-- query no_connection_flags of current module and test if any of them
+			-- is not placed at a port
+			query_element (
+				position	=> module_cursor,
+				process 	=> query_no_connect_flags'access);
+
+			log_indentation_down;
+			next (module_cursor);
+		end loop;
+
+		log_indentation_down;
+	end check_orphaned_no_connection_flags;
+
+	procedure net_test (log_threshold : in et_string_processing.type_log_level) is
+	-- Tests nets for number of inputs, outputs, bidirs, ...
+	-- CS: improve test coverage by including component categories like connectors, jumpers, testpads, ...
+		use et_string_processing;
+		use et_schematic.type_rig;
+
+		procedure query_nets (
+			module_name : in type_submodule_name.bounded_string;
+			module 		: in et_schematic.type_module) is
+			use et_schematic.type_netlist;
+			net_cursor : et_schematic.type_netlist.cursor := module.netlist.first;
+
+			procedure query_ports (
+				net_name	: in et_schematic.type_net_name.bounded_string;
+				ports 		: in et_schematic.type_ports_with_reference.set) is
+				use et_schematic.type_ports_with_reference;
+				port_cursor : et_schematic.type_ports_with_reference.cursor := ports.first;
+
+				-- for counting ports by direction
+				input_count 	: natural := 0;
+				output_count 	: natural := 0;
+				power_out_count	: natural := 0;
+				bidir_count		: natural := 0;
+				weak1_count		: natural := 0;
+				weak0_count		: natural := 0;
+				-- CS ? power_in_count	: natural := 0; -- CS: test if power_in name matches net name ?
+
+				-- for counting ports by component category
+				use et_configuration;
+				connector_count	: natural := 0;
+				testpoint_count	: natural := 0;
+				jumper_count	: natural := 0;
+				switch_count	: natural := 0;
+				resistor_count	: natural := 0;
+				ic_count		: natural := 0;
+				others_count	: natural := 0;
+
+				function sum_connectives return natural is
+				begin
+					return connector_count + testpoint_count + jumper_count + switch_count;
+				end sum_connectives;
+
+				function sum_drivers return natural is
+				begin
+					return output_count + bidir_count + weak0_count + weak1_count;
+				end sum_drivers;
+				
+				procedure increment (count : in out natural) is
+				begin count := count + 1; end increment;
+				
+				function show_net return string is
+				begin
+					return "net " & et_schematic.to_string (key (net_cursor));
+					-- CS: show coordinates directly ?
+				end show_net;
+
+				-- CS: procedure (input parameter port-direction) that loops through the ports 
+				-- and outputs them as requested by the input parameter.
+
+			begin -- query_ports
+
+				while port_cursor /= et_schematic.type_ports_with_reference.no_element loop
+			
+					-- log reference, port and direction (all in one line)
+					log ("reference " & et_libraries.to_string (element (port_cursor).reference)
+						& " port " & et_libraries.to_string (element (port_cursor).name)
+						& et_libraries.to_string (element (port_cursor).direction, preamble => true),
+						log_threshold + 3);
+
+					-- count ports by direction
+					case element (port_cursor).direction is
+						when et_libraries.input		=> input_count := input_count + 1; -- CS: use increment (see above)
+						when et_libraries.output	=> output_count := output_count + 1;
+						when et_libraries.bidir		=> bidir_count := bidir_count + 1;
+						when et_libraries.weak0		=> weak0_count := weak0_count + 1;
+						when et_libraries.weak1		=> weak1_count := weak1_count + 1;
+						when et_libraries.power_out	=> power_out_count := power_out_count + 1;
+						
+						when et_libraries.unknown	=> -- CS: verification required
+							log_indentation_reset;
+							log (message_error & show_net & " has a port with unknown direction at " 
+								& to_string (element (port_cursor).coordinates, scope => et_coordinates.module)
+								& et_schematic.show_danger (et_schematic.not_predictable),
+								console => true
+								);
+							raise constraint_error;
+
+							when others		=> null; -- CS: TRISTATE, PASSIVE, POWER_IN
+					end case;
+
+					-- Count ports by component category (address real components only)
+					--if element (port_cursor).appearance = et_libraries.sch_pcb then
+					if et_libraries."=" (element (port_cursor).appearance, et_libraries.sch_pcb) then
+						case category (element (port_cursor).reference) is
+
+							-- count "connectives"
+							when connector			=> increment (connector_count);
+							when testpoint			=> increment (testpoint_count);
+							when jumper				=> increment (jumper_count);
+							when switch				=> increment (switch_count);
+
+							-- count resistors
+							when resistor			=> increment (resistor_count);
+							when resistor_network	=> increment (resistor_count);
+							
+							when integrated_circuit	=> increment (ic_count);
+							
+							when others 			=> increment (others_count);
+						end case;
+					end if;
+						
+					next (port_cursor);
+				end loop;
+
+				-- Test if net has zero OR one single port. Warn about floating inputs:
+				case length (ports) is
+					when 0 =>
+						log (message_warning & "net " & et_schematic.to_string (key (net_cursor)) & " has no ports !"
+							& " See import report for coordinates.");
+					
+					when 1 =>
+						log (message_warning & "net " & et_schematic.to_string (key (net_cursor)) 
+							& " has only one port at "
+							& to_string (element (ports.first).coordinates, scope => et_coordinates.module));
+
+						-- warn about single inputs
+						if input_count = 1 then
+						log (message_warning & show_net & " has only one input !" & 
+							 et_schematic.show_danger (et_schematic.floating_input));
+							-- CS: show affected ports and their coordinates. use a loop in ports and show inputs.
+						end if;
+						
+					when others =>
+						if sum_drivers = 0 then -- no kind of driver
+							if input_count > 0 then -- one or more inputs
+								if others_count = 0 then
+									log (message_warning & show_net & " has no energy sources !" &
+										et_schematic.show_danger (et_schematic.floating_input));
+									-- CS: show affected ports and their coordinates. use a loop in ports and show inputs.
+								end if;
+							end if;
+						end if;
+				end case;
+
+				-- Test if outputs drive against each other:
+				if output_count > 1 then
+					log (message_warning & show_net & " has more than one output !" &
+						et_schematic.show_danger (et_schematic.contention));
+					-- CS: show affected ports and their coordinates. use a loop in ports and show outputs
+				end if;
+
+				-- Test if no pull-resistors are connected with bidirs: -- CS: verification required
+				if bidir_count > 1 then
+					-- For the moment we warn if there are as many bidir as ports. this implies there is nothing that
+					-- could pull the net to a definite level:
+					if length (ports) = count_type (bidir_count) then
+						log (message_warning & show_net & " has no pull resistors !" &
+							et_schematic.show_danger (et_schematic.floating_input));
+					end if;
+				end if;
+
+				-- Test if no pull-down-resistors are connected with weak0 outputs: -- CS: verification required
+				if weak0_count > 0 then
+					-- For the moment we warn if there are as many weak0 outputs as ports. this implies there is nothing that
+					-- could pull the net to a definite level:
+					if length (ports) = count_type (weak0_count) then
+						log (message_warning & show_net & " has no pull-down resistors !" & 
+							et_schematic.show_danger (et_schematic.floating_input));
+					end if;
+				end if;
+
+				-- Test if no pull-up-resistors are connected with weak1 outputs: -- CS: verification required
+				if weak1_count > 0 then
+					-- For the moment we warn if there are as many weak1 outputs as ports. this implies there is nothing that
+					-- could pull the net to a definite level:
+					if length (ports) = count_type (weak1_count) then
+						log (message_warning & show_net & " has no pull-up resistors !" &
+							et_schematic.show_danger (et_schematic.floating_input));
+					end if;
+				end if;
+				
+				-- Test contending weak0 against weak1 outputs -- CS: verification required
+				if weak0_count > 0 and weak1_count > 0 then
+					log (message_warning & show_net & " has weak0 and weak1 outputs !" &
+						et_schematic.show_danger (et_schematic.contention));
+				end if;
+				
+				-- Test if any outputs are connected with a power source
+				if power_out_count > 0 then
+					if output_count > 0 then -- CS: or bidir_count pull_high pull_low
+						log_indentation_reset;
+						log (message_error & show_net & " has outputs connected with power sources !" &
+							 et_schematic.show_danger (et_schematic.short_circuit));
+						-- CS: show affected ports and their coordinates. use a loop in ports and show outputs and power outs.
+						raise constraint_error;
+					end if;
+				end if;
+				
+				-- Test contenting power sources. 
+				-- CS: depends on port names
+				-- CS: mind power flags
+-- 				if power_out_count > 1 then
+-- 					log_indentation_reset;
+-- 					log (message_error & show_net & " has more than one power source !" & show_danger (contention));
+-- 					-- CS: show affected ports and their coordinates
+-- 					raise constraint_error;
+-- 				end if;
+						
+			end query_ports;
+				
+		begin -- query_nets
+			log_indentation_up;
+		
+			while net_cursor /= et_schematic.type_netlist.no_element loop
+				log (et_schematic.to_string (key (net_cursor)), log_threshold + 2);
+
+				log_indentation_up;
+				
+				query_element (
+					position	=> net_cursor,
+					process		=> query_ports'access);
+
+				log_indentation_down;
+				
+				next (net_cursor);
+			end loop;
+				
+			log_indentation_down;
+		end query_nets;
+		
+	begin -- net_test
+		log ("net test ...", log_threshold);
+		log_indentation_up;
+
+		-- We start with the first module of the rig.
+		--first_module;
+		module_cursor := rig.first;
+
+		-- Process one rig module after another.
+		-- module_cursor points to the module in the rig.
+		while module_cursor /= et_schematic.type_rig.no_element loop
+			log ("module " & to_string (key (module_cursor)), log_threshold);
+		
+			-- query nets in netlist
+			query_element (
+				position	=> module_cursor,
+				process 	=> query_nets'access);
+			
+			next (module_cursor);
+		end loop;
+
+		log_indentation_down;
+	end net_test;
+
+	function connected_net (
+		port			: in et_schematic.type_port_of_module; -- contains something like nucleo_core_1 X701 port 4
+		log_threshold	: in et_string_processing.type_log_level)
+		return et_schematic.type_net_name.bounded_string is
+	-- Returns the name of the net connected with the given port.
+	-- Searches the netlist of the given module for the given port. 
+	-- The net which is connected with the port is the net whose name
+	-- is to be returned.
+	-- If no net connected with the given port, an empty string is returned.
+
+		use et_string_processing;
+		use et_schematic.type_rig;
+
+		module_cursor : et_schematic.type_rig.cursor; -- points to the module being searched in
+
+		net_name_to_return : et_schematic.type_net_name.bounded_string; -- to be returned
+
+		procedure query_nets (
+			module_name	: in type_submodule_name.bounded_string;
+			module		: in et_schematic.type_module) is
+			net_cursor	: et_schematic.type_netlist.cursor;
+		
+			net_found : boolean := false; -- goes true once a suitable net found (should be only one)
+			
+			procedure query_ports (
+				net_name	: in et_schematic.type_net_name.bounded_string;
+				ports		: in et_schematic.type_ports_with_reference.set) is
+				port_cursor : et_schematic.type_ports_with_reference.cursor;
+				use et_libraries.type_port_name;
+				use et_schematic.type_ports_with_reference;
+			begin -- query_ports
+				log ("querying ports ...", log_threshold + 2);
+				log_indentation_up;
+
+				-- If the net has any ports, search for the given port.
+				-- Flag net_found goes true on match which terminates the
+				-- loop that picks up the nets (see main of procedure query_nets).
+				if not et_schematic.type_ports_with_reference.is_empty (ports) then
+					port_cursor := ports.first;
+					while port_cursor /= et_schematic.type_ports_with_reference.no_element loop
+						log (et_schematic.to_string (element (port_cursor)), log_threshold + 3); -- show port name
+
+						--if element (port_cursor).reference = port.reference then
+						if et_libraries."=" (element (port_cursor).reference, port.reference) then
+							if element (port_cursor).name = port.name then
+								net_found := true;
+								net_name_to_return := net_name;
+								exit;
+							end if;
+						end if;
+
+						next (port_cursor);
+					end loop;
+				end if;
+
+				log_indentation_down;	
+			end query_ports;
+			
+		begin -- query_nets
+			log ("querying nets ...", log_threshold + 1);
+			log_indentation_up;
+			
+			if not et_schematic.type_netlist.is_empty (module.netlist) then
+
+				-- Loop in nets of module and query ports. Once the given port
+				-- was found this loop exits prematurely. Otherwise, the port
+				-- is considered as not connected -> issue warning
+				net_cursor := module.netlist.first;
+				--while not net_found and net_cursor /= et_schematic.type_netlist.no_element loop
+				while not net_found and et_schematic.type_netlist."/=" (net_cursor, et_schematic.type_netlist.no_element) loop
+					log (et_schematic.to_string (et_schematic.type_netlist.key (net_cursor)), log_threshold + 2); -- show net name
+					log_indentation_up;
+					
+					et_schematic.type_netlist.query_element (
+						position	=> net_cursor,
+						process 	=> query_ports'access);
+
+					log_indentation_down;
+					et_schematic.type_netlist.next (net_cursor);
+				end loop;
+
+				-- If no port was found, issue warning.
+				if not net_found then
+					log (message_warning & "module " & to_string (module_name) 
+						& " port " & et_libraries.to_string (port.name) & " is not connected with any net !");
+				end if;
+					
+			else
+				log (message_warning & "module " & to_string (module_name) & " does not have any nets !");
+			end if;
+
+			log_indentation_down;
+		end query_nets;
+		
+	begin -- connected_net
+		log ("locating in module " & to_string (port.module) & " net connected with " 
+			& et_libraries.to_string (port.reference) & " port " & et_libraries.to_string (port.name) & " ...",
+			 log_threshold);
+		log_indentation_up;
+
+		module_cursor := find (rig, port.module); -- set the cursor to the module
+
+		-- If module exists, locate the given net in the module.
+		-- Otherwise raise alarm and exit.
+		if module_cursor /= et_schematic.type_rig.no_element then
+			--log (to_string (key (module_cursor)), log_threshold + 1);
+			query_element (
+				position	=> module_cursor, 
+				process		=> query_nets'access);
+			
+		else -- module not found
+			log_indentation_reset;
+			log (message_error & "module " & to_string (port.module) & " not found !", console => true);
+			raise constraint_error;
+		end if;
+		
+		log_indentation_down;
+	
+		return net_name_to_return;
+	end connected_net;
+
+
 	
 	procedure make_netlists (log_threshold : in et_string_processing.type_log_level) is
 	-- Builds the netlists of all modules of the rig.
@@ -10122,7 +11362,7 @@ package body et_kicad is
 
 		-- There is another function connected_net. It returns the net name 
 		-- connected with "port". (Port contains the module name, reference and port name)
-		net := et_schematic.connected_net (port, log_threshold + 1);
+		net := connected_net (port, log_threshold + 1);
 		
 		log_indentation_down;
 		
