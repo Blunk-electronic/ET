@@ -754,21 +754,6 @@ package et_schematic is
 	function compare_ports (left, right : in type_port_with_reference) return boolean;
 	-- Returns true if left comes before right. Compares by component reference and port name.
 	-- If left equals right, the return is false.	
-
--- 	function terminal_count (
--- 		reference		: in type_component_reference;
--- 		log_threshold	: in et_string_processing.type_log_level)
--- 		return type_terminal_count;
--- 	-- Returns the number of terminals of the given component reference.
--- 	-- Requires module_cursor (global variable) to point to the current module.
-	
--- 	function to_terminal (
--- 		port 			: in type_port_with_reference; -- see et_schematic spec
--- 		module			: in type_submodule_name.bounded_string; -- the name of the module							 
--- 		log_threshold 	: in et_string_processing.type_log_level)
--- 		return type_terminal; -- see et_libraries spec
--- 	-- Returns the terminal and unit name of the given port in a composite type.
--- 	-- Raises error if given port is of a virtual component (appearance sch).
 	
 	-- When inquiring the net connected with certain component we use this composite:
 	type type_port_of_module is record
@@ -787,14 +772,6 @@ package et_schematic is
 	-- is to be returned.
 	-- If no net connected with the given port, an empty string is returned.
 
--- 	function connected_net (
--- 	-- Returns the name of the net connected with the given component and terminal.
--- 		module			: in et_coordinates.type_submodule_name.bounded_string;	-- nucleo_core
--- 		reference		: in type_component_reference;	-- IC45
--- 		terminal		: in type_terminal_name.bounded_string; -- E14
--- 		log_threshold	: in et_string_processing.type_log_level)		
--- 		return type_net_name.bounded_string;
-	
 	-- This is a set of ports as we need in the netlist.
 	package type_ports_with_reference is new ordered_sets (
 		element_type 	=> type_port_with_reference,
@@ -1037,12 +1014,6 @@ package et_schematic is
 	procedure check_orphaned_no_connection_flags (log_threshold : in et_string_processing.type_log_level);
 	-- Warns about orphaned no_connection_flags.
 
--- 	procedure check_open_ports (log_threshold : in et_string_processing.type_log_level);
--- 	-- Warns about unintentionally left open ports. That are ports without a no_connection_flag.
-
--- 	procedure check_non_deployed_units (log_threshold : in et_string_processing.type_log_level);
--- 	-- Warns about not deployed units and open ports thereof.
-
 	procedure net_test (log_threshold : in et_string_processing.type_log_level);
 	-- Tests nets for number of inputs, outputs, bidirs, ...
 
@@ -1054,33 +1025,6 @@ package et_schematic is
 	--use type_netlist_file_name;
 
 	extension_netlist : constant string (1..3) := "net";
-
--- 	procedure make_netlists (log_threshold : in et_string_processing.type_log_level);
-	-- Builds the netlists of all modules of the rig.
-	-- Addresses ALL components both virtual and real. Virtual components are things like GND or VCC symbols.
-	-- Virtual components are filtered out on exporting the netlist in a file.
-	-- Bases on the portlists and nets/strands information of the module.
-
--- 	procedure export_netlists (log_threshold : in et_string_processing.type_log_level);
--- 	-- Exports/Writes the netlists of the rig in separate files.
--- 	-- Netlists are exported in individual project directories in the work directory of ET.
--- 	-- These project directories have the same name as the module indicated by module_cursor.
--- 	-- Addresses real components exclusively. Virtual things like GND symbols are not exported.
--- 	-- Call this procedure after executing procedure make_netlist !
-
--- 	function components_in_net (
--- 		module 			: in type_submodule_name.bounded_string;	-- nucleo_core
--- 		net				: in type_net_name.bounded_string;			-- motor_on_off
--- 		log_threshold	: in et_string_processing.type_log_level)
--- 		return type_ports_with_reference.set;
--- 	-- Returns a list of component ports that are connected with the given net.
-
--- 	function real_components_in_net (
--- 		module 			: in type_submodule_name.bounded_string;	-- nucleo_core
--- 		net				: in type_net_name.bounded_string;			-- motor_on_off
--- 		log_threshold	: in et_string_processing.type_log_level)
--- 		return type_ports_with_reference.set;
--- 	-- Returns a list of real component ports that are connected with the given net.
 
 	
 -- BOM
@@ -1129,19 +1073,6 @@ package et_schematic is
 		-- CS: no_connection_flags
 		);
 	
--- 	function make_statistics (log_threshold : in et_string_processing.type_log_level)
--- 		return type_statistics;
--- 	-- Returns statistics about the module indicated by module_cursor.
-
--- 	function query_statistics (
--- 		statistics	: in type_statistics;
--- 		category	: in type_statistics_category) return string;
--- 	-- Returns the number objects as specified by given category.
-	
--- 	procedure write_statistics (log_threshold : in et_string_processing.type_log_level);
--- 	-- Writes the statistics on components and nets of the rig.
--- 	-- Distinguishes between CAD and CAM related things.
-
 	procedure statistics_set (
 		cat			: in type_statistics_category;
 		increment	: in boolean := true;

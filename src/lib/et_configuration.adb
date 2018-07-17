@@ -61,6 +61,8 @@ with et_export;
 with et_import;
 with et_csv;
 
+with et_kicad;
+
 package body et_configuration is
 
 	function to_string (net_comparator_on_off : in type_net_comparator_on_off) return string is
@@ -392,10 +394,10 @@ package body et_configuration is
 		log_threshold	: in type_log_level) is
 
 		use et_coordinates;
-		use et_schematic;
+		--use et_schematic;
 		use et_coordinates.type_submodule_name;
 		use et_libraries;
-		use type_rig;
+		use et_schematic.type_rig;
 
 		module_found : boolean := false;
 	
@@ -417,12 +419,13 @@ package body et_configuration is
 		log_indentation_up;
 
 		-- locate module A in the rig by its generic name and instance
-		module_cursor := rig.first; -- via the GLOBAL module cursor
-		while module_cursor /= no_element loop
-			if element (module_cursor).generic_name = module_A then
-				if element (module_cursor).instance = instance_A then
+		-- CS probe CAD format
+		et_kicad.module_cursor := et_schematic.type_rig.first (et_kicad.rig);
+		while et_kicad.module_cursor /= et_schematic.type_rig.no_element loop
+			if element (et_kicad.module_cursor).generic_name = module_A then
+				if element (et_kicad.module_cursor).instance = instance_A then
 					-- get the terminal count of connector A
-					terminal_count_A := terminal_count (reference_A, log_threshold + 2);
+					terminal_count_A := et_kicad.terminal_count (reference_A, log_threshold + 2);
 					log ("module " & to_string (submodule => module_A) & " instance " 
 						& to_string (instance_A) & " connector " 
 						& to_string (reference_A) & to_string (terminal_count_A),
@@ -431,7 +434,7 @@ package body et_configuration is
 					exit;
 				end if;
 			end if;
-			next (module_cursor);
+			next (et_kicad.module_cursor);
 		end loop;
 
 		if not module_found then -- safety measure in case the module could not be found. should never happen
@@ -440,12 +443,12 @@ package body et_configuration is
 
 		
 		-- locate module B in the rig by its generic name and instance
-		module_cursor := rig.first; -- via the GLOBAL module cursor
-		while module_cursor /= no_element loop
-			if element (module_cursor).generic_name = module_B then
-				if element (module_cursor).instance = instance_B then
+		et_kicad.module_cursor := et_schematic.type_rig.first (et_kicad.rig);
+		while et_kicad.module_cursor /= et_schematic.type_rig.no_element loop
+			if element (et_kicad.module_cursor).generic_name = module_B then
+				if element (et_kicad.module_cursor).instance = instance_B then
 					-- get the terminal count of connector B
-					terminal_count_B := terminal_count (reference_B, log_threshold + 2);
+					terminal_count_B := et_kicad.terminal_count (reference_B, log_threshold + 2);
 					log ("module " & to_string (submodule => module_B) & " instance " 
 						& to_string (instance_B) & " connector " 
 						& to_string (reference_B) & to_string (terminal_count_B),
@@ -454,7 +457,7 @@ package body et_configuration is
 					exit;
 				end if;
 			end if;
-			next (module_cursor);
+			next (et_kicad.module_cursor);
 		end loop;
 
 		if not module_found then -- safety measure in case the module could not be found. should never happen
@@ -484,7 +487,8 @@ package body et_configuration is
 
 
 	procedure compare_nets (
-	-- Compares net names of the given connectors (via module.netlist).
+	-- CS This procedure is for kicad only.
+	-- Compares net names of the given connectors (via kicad.module.netlist).
 	-- The net names, the ports and the terminal names on both sides of
 	-- the board-to-board connection must be equal.
 
@@ -520,13 +524,13 @@ package body et_configuration is
 		log_threshold	: in type_log_level) is
 
 		use et_coordinates;
-		use et_schematic;
+		--use et_schematic;
 		use et_libraries;
-		use type_rig;
+		use et_schematic.type_rig;
 
-		module_cursor_right, module_cursor_left : type_rig.cursor;
-		net_right, net_left : type_net_name.bounded_string;	-- motor_on_off
-		port_right, port_left : type_port_with_reference;	-- 4
+		module_cursor_right, module_cursor_left : et_schematic.type_rig.cursor;
+		net_right, net_left : et_schematic.type_net_name.bounded_string;	-- motor_on_off
+		port_right, port_left : et_schematic.type_port_with_reference;	-- 4
 		terminal_right, terminal_left : type_terminal;		-- 4, B3
 	
 		module_right : type_submodule_name.bounded_string := module_A;	-- nucleo_core
@@ -543,27 +547,27 @@ package body et_configuration is
 	
 		procedure query_nets_left (
 			module_name : in type_submodule_name.bounded_string;
-			module		: in type_module) is
-			use type_netlist;
-			net_cursor : type_netlist.cursor := module.netlist.first;
+			module		: in et_schematic.type_module) is
+			use et_schematic.type_netlist;
+			net_cursor : et_schematic.type_netlist.cursor := module.netlist.first;
 
-			use type_net_name;
+			use et_schematic.type_net_name;
 			net_found : boolean := false;
 
 			function net_or_terminal_not_found return string is
 			begin
 				return "module " & to_string (module_left) 
-					& " : expect net " & to_string (net_name => net_right)
+					& " : expect net " & et_schematic.to_string (net_name => net_right)
 					& " connected with " & to_string (reference_left)
 					& to_string (terminal_right) & "!";
 			end net_or_terminal_not_found;
 			
 			procedure query_ports_left (
-				net_name	: in type_net_name.bounded_string;
-				ports		: in type_ports_with_reference.set) is
-				use type_ports_with_reference;
+				net_name	: in et_schematic.type_net_name.bounded_string;
+				ports		: in et_schematic.type_ports_with_reference.set) is
+				use et_schematic.type_ports_with_reference;
 				use type_port_name;
-				port_cursor : type_ports_with_reference.cursor := ports.first;
+				port_cursor : et_schematic.type_ports_with_reference.cursor := ports.first;
 				terminal_found : boolean := false;
 			begin -- query_ports_left
 				log_indentation_up;
@@ -571,7 +575,7 @@ package body et_configuration is
 					& to_string (terminal_right) & "...", log_threshold + 8);
 
 				log_indentation_up;
-				while port_cursor /= type_ports_with_reference.no_element loop
+				while port_cursor /= et_schematic.type_ports_with_reference.no_element loop
 					port_left := element (port_cursor);
 
 					if port_left.reference = reference_left then
@@ -581,7 +585,7 @@ package body et_configuration is
 							log ("port found", log_threshold + 9);
 
 							-- fetch terminal name from port_left and current module
-							terminal_left := to_terminal (port_left, module_name, log_threshold + 10);
+							terminal_left := et_kicad.to_terminal (port_left, module_name, log_threshold + 10);
 
 							-- compare terminal names. on match exit loop.
 							if terminal_left = terminal_right then
@@ -600,8 +604,8 @@ package body et_configuration is
 				-- by input parameter warn_only.
 				if not terminal_found then
 					case warn_only is
-						when ON => 	log (message_warning & net_or_terminal_not_found); 
-						when OFF =>	
+						when ON		=> 	log (message_warning & net_or_terminal_not_found); 
+						when OFF 	=>	
 							log_indentation_reset;
 							log (message_error & net_or_terminal_not_found, console => true); 
 							raise constraint_error;
@@ -612,19 +616,19 @@ package body et_configuration is
 			end query_ports_left;
 
 		begin -- query_nets_left
-			log ("locating net " & to_string (net_name => net_right) 
+			log ("locating net " & et_schematic.to_string (net_name => net_right) 
 				& " in module " & to_string (module_left) & " ...", log_threshold + 6);
 			log_indentation_up;
 
-			while net_cursor /= type_netlist.no_element loop
+			while net_cursor /= et_schematic.type_netlist.no_element loop
 				net_left := key (net_cursor);
-				log (to_string (net_name => net_left), log_threshold + 7);
+				log (et_schematic.to_string (net_name => net_left), log_threshold + 7);
 
 				if net_left = net_right then
 					net_found := true;
 					query_element (
-						position => net_cursor,
-						process => query_ports_left'access);
+						position	=> net_cursor,
+						process		=> query_ports_left'access);
 					exit;
 				end if;
 
@@ -649,30 +653,30 @@ package body et_configuration is
 		
 		procedure query_nets_right (
 			module_name : in type_submodule_name.bounded_string;
-			module		: in type_module) is
-			use type_netlist;
-			net_cursor : type_netlist.cursor := module.netlist.first;
+			module		: in et_schematic.type_module) is
+			use et_schematic.type_netlist;
+			net_cursor : et_schematic.type_netlist.cursor := module.netlist.first;
 
 			procedure query_ports_right (
-				net_name	: in type_net_name.bounded_string;
-				ports		: in type_ports_with_reference.set) is
-				use type_ports_with_reference;
-				port_cursor : type_ports_with_reference.cursor := ports.first;
+				net_name	: in et_schematic.type_net_name.bounded_string;
+				ports		: in et_schematic.type_ports_with_reference.set) is
+				use et_schematic.type_ports_with_reference;
+				port_cursor : et_schematic.type_ports_with_reference.cursor := ports.first;
 			begin -- query_ports_right
 				net_right := net_name;
-				log (to_string (net_right), log_threshold + 3);
+				log (et_schematic.to_string (net_right), log_threshold + 3);
 
 				log_indentation_up;				
 				log ("querying connector terminals ...", log_threshold + 4);
 				log_indentation_up;
 				
 				-- search for ports that have reference_right
-				while port_cursor /= type_ports_with_reference.no_element loop
+				while port_cursor /= et_schematic.type_ports_with_reference.no_element loop
 					if element (port_cursor).reference = reference_right then
 						port_right := element (port_cursor);
 
 						-- fetch terminal of port_right
-						terminal_right := to_terminal (port_right, module_name, log_threshold + 6);
+						terminal_right := et_kicad.to_terminal (port_right, module_name, log_threshold + 6);
 						
 						log (to_string (reference_right)
 							& to_string (terminal_right), log_threshold + 5);
@@ -681,8 +685,8 @@ package body et_configuration is
 						
 						-- look up nets in module left
 						query_element (
-							position => module_cursor_left,
-							process => query_nets_left'access);
+							position	=> module_cursor_left,
+							process		=> query_nets_left'access);
 
 						log_indentation_down;
 					end if;					
@@ -697,11 +701,11 @@ package body et_configuration is
 			log ("querying nets in module " & to_string (module_right) & " ...", log_threshold + 2);
 			log_indentation_up;
 
-			while net_cursor /= type_netlist.no_element loop
+			while net_cursor /= et_schematic.type_netlist.no_element loop
 
 				query_element (
-					position => net_cursor,
-					process => query_ports_right'access);
+					position	=> net_cursor,
+					process		=> query_ports_right'access);
 
 				next (net_cursor);
 			end loop;
@@ -722,10 +726,10 @@ package body et_configuration is
 				& " connector left " & to_string (reference_left), log_threshold + 1);
 
 			-- locate the module in the rig by its generic name and instance
-			module_cursor_right := rig.first;
+			module_cursor_right := et_kicad.rig.first;
 			while module_cursor_right /= no_element loop
 				if element (module_cursor_right).generic_name = module_right then
-					if element (module_cursor).instance = instance_right then
+					if element (et_kicad.module_cursor).instance = instance_right then
 						exit;
 					end if;
 				end if;
@@ -735,10 +739,10 @@ package body et_configuration is
 			-- CS: abort if module not found
 
 			-- locate the module in the rig by its generic name and instance			
-			module_cursor_left := rig.first;
+			module_cursor_left := et_kicad.rig.first;
 			while module_cursor_left /= no_element loop
 				if element (module_cursor_left).generic_name = module_left then
-					if element (module_cursor).instance = instance_left then
+					if element (et_kicad.module_cursor).instance = instance_left then
 						exit;
 					end if;
 				end if;
@@ -749,8 +753,8 @@ package body et_configuration is
 
 			log_indentation_up;
 			query_element (
-				position => module_cursor_right,
-				process => query_nets_right'access);
+				position	=> module_cursor_right,
+				process		=> query_nets_right'access);
 			log_indentation_down;
 
 		end set_module_cursors;
@@ -980,21 +984,23 @@ package body et_configuration is
 		return et_schematic.type_ports_with_reference.set is
 	-- Returns a set of component ports that are connected with the given net.
 	-- Returns only components of given category.
+	
+	-- CS this function is for kicad only.
 
 		use et_libraries;
-		use et_schematic;
+		--use et_schematic;
 		use et_coordinates;
 		use et_string_processing;
-		use type_rig;
-		use type_ports_with_reference;
+		use et_schematic.type_rig;
+		use et_schematic.type_ports_with_reference;
 
-		module_cursor : type_rig.cursor;
+		module_cursor : et_schematic.type_rig.cursor;
 		
-		ports_all : type_ports_with_reference.set;	-- all ports of the net
-		ports_by_category : type_ports_with_reference.set; -- to be returned
-		port_cursor : type_ports_with_reference.cursor;
-		port_scratch : type_port_with_reference;
-		terminal : type_terminal;
+		ports_all 			: et_schematic.type_ports_with_reference.set;	-- all ports of the net
+		ports_by_category	: et_schematic.type_ports_with_reference.set; -- to be returned
+		port_cursor			: et_schematic.type_ports_with_reference.cursor;
+		port_scratch		: et_schematic.type_port_with_reference;
+		terminal 			: type_terminal;
 
 	begin -- ports_in_net
 -- 		log ("locating" & to_string (category) & " ports in module " 
@@ -1005,7 +1011,7 @@ package body et_configuration is
 		log_indentation_up;
 
 		-- Get all the component ports in the net.
-		ports_all := et_schematic.components_in_net (
+		ports_all := et_kicad.components_in_net (
 						module			=> module,	-- led_matrix_2
 						net				=> net,
 						log_threshold	=> log_threshold + 2);
@@ -1015,7 +1021,7 @@ package body et_configuration is
 		-- If no ports in net, issue a warning.
 		if not is_empty (ports_all) then
 			port_cursor := ports_all.first;
-			while port_cursor /= type_ports_with_reference.no_element loop
+			while port_cursor /= et_schematic.type_ports_with_reference.no_element loop
 				port_scratch := element (port_cursor); -- load the port
 
 				-- only real components matter here:
@@ -1023,23 +1029,23 @@ package body et_configuration is
 					
 					-- filter by given category and insert the current port_scratch in ports_by_category 
 					if et_configuration.category (port_scratch.reference) = category then
-						terminal := to_terminal (port_scratch, module, log_threshold + 3); -- fetch the terminal
+						terminal := et_kicad.to_terminal (port_scratch, module, log_threshold + 3); -- fetch the terminal
 						--log (to_string (port_scratch) & to_string (terminal, show_unit => true, preamble => true),
-						log (to_string (port_scratch) 
+						log (et_schematic.to_string (port_scratch) 
 							& " terminal " & to_string (terminal.name), --, show_unit => true, preamble => true),
 							log_threshold + 1);
 
 						-- insert in container (to be returned)
 						insert (
-							container => ports_by_category,
-							new_item => port_scratch);
+							container	=> ports_by_category,
+							new_item	=> port_scratch);
 					end if;
 				end if;
 				
 				next (port_cursor);
 			end loop;
 		else
-			log (message_warning & "net " & to_string (net) & " is not connected with any ports !");
+			log (message_warning & "net " & et_schematic.to_string (net) & " is not connected with any ports !");
 		end if;
 
 		-- show number of component ports that have been found by given category.

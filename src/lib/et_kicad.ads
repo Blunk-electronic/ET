@@ -432,6 +432,13 @@ package et_kicad is
 	-- Depending on the CAE system power-out or power-in ports may enforce their name on a strand.
 
 
+	function components_in_net (
+		module 			: in type_submodule_name.bounded_string; -- nucleo_core
+		net				: in et_schematic.type_net_name.bounded_string; -- motor_on_off
+		log_threshold	: in et_string_processing.type_log_level)
+		return et_schematic.type_ports_with_reference.set;
+	-- Returns a list of component ports that are connected with the given net.
+	
 	function real_components_in_net (
 		module 			: in type_submodule_name.bounded_string; -- nucleo_core
 		net				: in et_schematic.type_net_name.bounded_string; -- motor_on_off
@@ -464,6 +471,12 @@ package et_kicad is
 	-- Virtual components are filtered out on exporting the netlist in a file.
 	-- Bases on the portlists and nets/strands information of the module.
 
+	function terminal_count (
+		reference		: in et_libraries.type_component_reference;
+		log_threshold	: in et_string_processing.type_log_level)
+		return et_libraries.type_terminal_count;
+	-- Returns the number of terminals of the given component reference.
+	-- Requires module_cursor (global variable) to point to the current module.
 	
 	function to_terminal (
 		port 			: in et_schematic.type_port_with_reference;
