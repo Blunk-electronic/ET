@@ -752,45 +752,45 @@ package et_schematic is
 -- 	component_libraries : type_libraries.map; -- CS: should be part of type_rig. see et_schematic type_rig
 
 	
--- MODULES
-	
-	type type_module is record
-		generic_name	: type_submodule_name.bounded_string;
-		instance		: type_submodule_instance;
-
-		-- The list of project library names in the order as defined in project file:
-		libraries		: type_full_library_names.list;	
-		
-		strands	    	: type_strands.list;			-- the strands of the module
-		junctions		: type_junctions.list;			-- net junctions
-
-		components		: type_components.map;			-- the components of the module
-		net_classes		: et_pcb.type_net_classes.map;	-- the net classes
-		no_connections	: type_no_connection_flags.list;-- the list of no-connection-flags
-		portlists		: type_portlists.map;			-- the portlists of the module
-		netlist			: type_netlist.map;				-- the netlist
-		submodules  	: type_gui_submodules.map;		-- graphical representations of submodules. -- GUI relevant
-        frames      	: type_frames.list;				-- frames -- GUI relevant
-        title_blocks	: type_title_blocks.list;		-- title blocks -- GUI relevant
-		notes       	: type_texts.list;				-- notes
-
-		sheet_headers	: type_sheet_headers.map;		-- the list of sheet headers -- kicad requirement
-		-- CS: images
-
-		-- the nets of the module (incl. routing information from the board):
-		nets 	    	: type_nets.map;				
-		
-		-- General non-component related board stuff (silk screen, documentation, ...):
-		board			: et_pcb.type_board;
-	end record;
-
-
-	-- A rig is a set of modules:
-	package type_rig is new ordered_maps (
-	-- CS: package type_modules is new ordered_maps (
-		key_type => et_coordinates.type_submodule_name.bounded_string, -- example "MOTOR_DRIVER"
-		"<" => et_coordinates.type_submodule_name."<",											 
-		element_type => type_module);
+-- -- MODULES
+-- 	
+-- 	type type_module is record
+-- 		generic_name	: type_submodule_name.bounded_string;
+-- 		instance		: type_submodule_instance;
+-- 
+-- 		-- The list of project library names in the order as defined in project file:
+-- 		libraries		: type_full_library_names.list;	
+-- 		
+-- 		strands	    	: type_strands.list;			-- the strands of the module
+-- 		junctions		: type_junctions.list;			-- net junctions
+-- 
+-- 		components		: type_components.map;			-- the components of the module
+-- 		net_classes		: et_pcb.type_net_classes.map;	-- the net classes
+-- 		no_connections	: type_no_connection_flags.list;-- the list of no-connection-flags
+-- 		portlists		: type_portlists.map;			-- the portlists of the module
+-- 		netlist			: type_netlist.map;				-- the netlist
+-- 		submodules  	: type_gui_submodules.map;		-- graphical representations of submodules. -- GUI relevant
+--         frames      	: type_frames.list;				-- frames -- GUI relevant
+--         title_blocks	: type_title_blocks.list;		-- title blocks -- GUI relevant
+-- 		notes       	: type_texts.list;				-- notes
+-- 
+-- 		sheet_headers	: type_sheet_headers.map;		-- the list of sheet headers -- kicad requirement
+-- 		-- CS: images
+-- 
+-- 		-- the nets of the module (incl. routing information from the board):
+-- 		nets 	    	: type_nets.map;				
+-- 		
+-- 		-- General non-component related board stuff (silk screen, documentation, ...):
+-- 		board			: et_pcb.type_board;
+-- 	end record;
+-- 
+-- 
+-- 	-- A rig is a set of modules:
+-- 	package type_rig is new ordered_maps (
+-- 	-- CS: package type_modules is new ordered_maps (
+-- 		key_type => et_coordinates.type_submodule_name.bounded_string, -- example "MOTOR_DRIVER"
+-- 		"<" => et_coordinates.type_submodule_name."<",											 
+-- 		element_type => type_module);
 
 	--rig : type_rig.map;
 	--module_cursor : type_rig.cursor;

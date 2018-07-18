@@ -335,7 +335,7 @@ procedure et is
 	-- This can be regarded as a kind of extended electrical rule check (ERC).
 	-- Updates the netlist of ALL modules.	
 		use et_schematic;
-		use type_rig;
+		use et_kicad.type_rig;
 		use et_configuration;
 	begin
 		-- export useful things from the imported modules
@@ -418,8 +418,8 @@ procedure et is
 
 
 	procedure read_boards is
-		use et_schematic;
-		use type_rig;
+		--use et_schematic;
+		use et_kicad.type_rig;
 		use et_configuration;
 	begin
 		-- Log messages go in the import report:

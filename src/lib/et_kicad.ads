@@ -43,6 +43,7 @@ with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 
 with et_schematic;
+with et_pcb;
 with et_import;
 with et_coordinates;			use et_coordinates;
 with et_libraries;
@@ -417,10 +418,6 @@ package et_kicad is
 	-- extracts from a string like "bel_ic:S_SO14" the package name "S_SO14"
 
 
-	-- CS derived type_module (from et_schematic)
-	rig : et_schematic.type_rig.map;
-	module_cursor : et_schematic.type_rig.cursor;
-
 	function junction_sits_on_segment (
 	-- Returns true if the given junction sits on the given net segment.
 		junction	: in et_schematic.type_net_junction;
@@ -623,6 +620,49 @@ package et_kicad is
 	-- Generates a bom file. This file is csv formatted and is to be processed by
 	-- other ERP tools (like stock_manager, see <https://github.com/Blunk-electronic/stock_manager>)
 
+
+-- MODULES
+	
+	type type_module is record
+		generic_name	: et_coordinates.type_submodule_name.bounded_string;
+		instance		: type_submodule_instance;
+
+		-- The list of project library names in the order as defined in project file:
+		libraries		: et_libraries.type_full_library_names.list;	
+		
+		strands	    	: et_schematic.type_strands.list;			-- the strands of the module
+		junctions		: et_schematic.type_junctions.list;			-- net junctions
+
+		components		: et_schematic.type_components.map;			-- the components of the module
+		net_classes		: et_pcb.type_net_classes.map;				-- the net classes
+		no_connections	: et_schematic.type_no_connection_flags.list;-- the list of no-connection-flags
+		portlists		: et_schematic.type_portlists.map;			-- the portlists of the module
+		netlist			: et_schematic.type_netlist.map;			-- the netlist
+		submodules  	: et_schematic.type_gui_submodules.map;		-- graphical representations of submodules. -- GUI relevant
+        frames      	: et_schematic.type_frames.list;			-- frames -- GUI relevant
+        title_blocks	: et_schematic.type_title_blocks.list;		-- title blocks -- GUI relevant
+		notes       	: et_schematic.type_texts.list;				-- notes
+
+		sheet_headers	: et_schematic.type_sheet_headers.map;		-- the list of sheet headers
+		-- CS: images
+
+		-- the nets of the module (incl. routing information from the board):
+		nets 	    	: et_schematic.type_nets.map;				
+		
+		-- General non-component related board stuff (silk screen, documentation, ...):
+		board			: et_pcb.type_board;
+	end record;
+
+
+	-- A rig is a set of modules:
+	package type_rig is new ordered_maps (
+	-- CS: package type_modules is new ordered_maps (
+		key_type 		=> et_coordinates.type_submodule_name.bounded_string, -- example "MOTOR_DRIVER"
+		"<" 			=> et_coordinates.type_submodule_name."<",											 
+		element_type 	=> type_module);
+
+	rig : type_rig.map;
+	module_cursor : type_rig.cursor;
 	
 end et_kicad;
 

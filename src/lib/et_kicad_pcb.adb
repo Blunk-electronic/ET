@@ -6751,7 +6751,7 @@ package body et_kicad_pcb is
 			procedure add_board_objects (
 			-- Adds board objects to the schematic module.
 				mod_name : in type_submodule_name.bounded_string;
-				module   : in out type_module) is
+				module   : in out et_kicad.type_module) is
 
 				-- The nets of the module are copied here (in their present state):
 				use et_schematic.type_nets;
@@ -7538,7 +7538,7 @@ package body et_kicad_pcb is
 	-- The schematic modules are indicated by module_cursor.
 		--use et_schematic;
 		use et_coordinates;
-		use et_schematic.type_rig;
+		use et_kicad.type_rig;
 		use et_string_processing;
 		use ada.directories;
 		use et_kicad;
@@ -7549,7 +7549,7 @@ package body et_kicad_pcb is
 
 		-- Process one rig module after another.
 		-- module_cursor points to the module in the rig.
-		while module_cursor /= et_schematic.type_rig.no_element loop
+		while module_cursor /= et_kicad.type_rig.no_element loop
 			log ("module " & to_string (key (module_cursor)), log_threshold);
 			log_indentation_up;
 	

@@ -130,12 +130,12 @@ package body et_configuration is
 		use et_string_processing;
 		use et_coordinates;
 		use et_libraries;
-		use et_schematic.type_rig;
+		use et_kicad.type_rig;
 		
 		procedure locate_component (
 		-- Searches the component list of the module for a connector with the given purpose.
 			module_name : in type_submodule_name.bounded_string;
-			module		: in et_schematic.type_module) is
+			module		: in et_kicad.type_module) is
 			use et_schematic.type_components;
 			use type_component_purpose;
 			component : et_schematic.type_components.cursor := module.components.first;
@@ -184,14 +184,14 @@ package body et_configuration is
 		occurences : natural := 0; -- to be returned
 
 		use et_coordinates;
-		use et_schematic.type_rig;
+		use et_kicad.type_rig;
 		use et_libraries;
 	
 		procedure locate_component (
 		-- Searches the component list of the module for a connector with the given purpose.
 		-- Exits on the first matching connector. There should not be any others.
 			module_name : in type_submodule_name.bounded_string;
-			module 		: in et_schematic.type_module) is
+			module 		: in et_kicad.type_module) is
 			use et_schematic.type_components;
 			use type_component_purpose;
 			component : et_schematic.type_components.cursor := module.components.first;
@@ -286,8 +286,8 @@ package body et_configuration is
 		use et_coordinates;
 		--use et_schematic;
 		use et_libraries;
-		use et_schematic.type_rig;
-		module_cursor : et_schematic.type_rig.cursor;
+		use et_kicad.type_rig;
+		module_cursor : et_kicad.type_rig.cursor;
 		module_found : boolean := false;
 		connector_found : boolean := false; -- goes true once a suitable connector was found
 		ref : et_libraries.type_component_reference; -- the reference to be returned
@@ -296,7 +296,7 @@ package body et_configuration is
 		-- Searches the component list of the module for a connector with the given purpose.
 		-- Exits on the first matching connector. There should not be any others.
 			module_name	: in type_submodule_name.bounded_string;
-			module		: in et_schematic.type_module) is
+			module		: in et_kicad.type_module) is
 			use et_schematic.type_components;
 			use type_component_purpose;
 			component : et_schematic.type_components.cursor := module.components.first;
@@ -395,7 +395,7 @@ package body et_configuration is
 		--use et_schematic;
 		use et_coordinates.type_submodule_name;
 		use et_libraries;
-		use et_schematic.type_rig;
+		use et_kicad.type_rig;
 
 		module_found : boolean := false;
 	
@@ -418,8 +418,8 @@ package body et_configuration is
 
 		-- locate module A in the rig by its generic name and instance
 		-- CS probe CAD format
-		et_kicad.module_cursor := et_schematic.type_rig.first (et_kicad.rig);
-		while et_kicad.module_cursor /= et_schematic.type_rig.no_element loop
+		et_kicad.module_cursor := et_kicad.type_rig.first (et_kicad.rig);
+		while et_kicad.module_cursor /= et_kicad.type_rig.no_element loop
 			if element (et_kicad.module_cursor).generic_name = module_A then
 				if element (et_kicad.module_cursor).instance = instance_A then
 					-- get the terminal count of connector A
@@ -441,8 +441,8 @@ package body et_configuration is
 
 		
 		-- locate module B in the rig by its generic name and instance
-		et_kicad.module_cursor := et_schematic.type_rig.first (et_kicad.rig);
-		while et_kicad.module_cursor /= et_schematic.type_rig.no_element loop
+		et_kicad.module_cursor := et_kicad.type_rig.first (et_kicad.rig);
+		while et_kicad.module_cursor /= et_kicad.type_rig.no_element loop
 			if element (et_kicad.module_cursor).generic_name = module_B then
 				if element (et_kicad.module_cursor).instance = instance_B then
 					-- get the terminal count of connector B
@@ -524,9 +524,9 @@ package body et_configuration is
 		use et_coordinates;
 		--use et_schematic;
 		use et_libraries;
-		use et_schematic.type_rig;
+		use et_kicad.type_rig;
 
-		module_cursor_right, module_cursor_left : et_schematic.type_rig.cursor;
+		module_cursor_right, module_cursor_left : et_kicad.type_rig.cursor;
 		net_right, net_left : et_schematic.type_net_name.bounded_string;	-- motor_on_off
 		port_right, port_left : et_schematic.type_port_with_reference;	-- 4
 		terminal_right, terminal_left : type_terminal;		-- 4, B3
@@ -545,7 +545,7 @@ package body et_configuration is
 	
 		procedure query_nets_left (
 			module_name : in type_submodule_name.bounded_string;
-			module		: in et_schematic.type_module) is
+			module		: in et_kicad.type_module) is
 			use et_schematic.type_netlist;
 			net_cursor : et_schematic.type_netlist.cursor := module.netlist.first;
 
@@ -651,7 +651,7 @@ package body et_configuration is
 		
 		procedure query_nets_right (
 			module_name : in type_submodule_name.bounded_string;
-			module		: in et_schematic.type_module) is
+			module		: in et_kicad.type_module) is
 			use et_schematic.type_netlist;
 			net_cursor : et_schematic.type_netlist.cursor := module.netlist.first;
 
@@ -989,10 +989,10 @@ package body et_configuration is
 		--use et_schematic;
 		use et_coordinates;
 		use et_string_processing;
-		use et_schematic.type_rig;
+		use et_kicad.type_rig;
 		use et_schematic.type_ports_with_reference;
 
-		module_cursor : et_schematic.type_rig.cursor;
+		module_cursor : et_kicad.type_rig.cursor;
 		
 		ports_all 			: et_schematic.type_ports_with_reference.set;	-- all ports of the net
 		ports_by_category	: et_schematic.type_ports_with_reference.set; -- to be returned
@@ -1222,8 +1222,8 @@ package body et_configuration is
 
 		use et_libraries;
 		--use et_schematic;
-		use et_schematic.type_rig;
-		module_cursor : et_schematic.type_rig.cursor;
+		use et_kicad.type_rig;
+		module_cursor : et_kicad.type_rig.cursor;
 		connector_found : boolean := false; -- goes true once the opposide connector has been found
 	
 		generic_module_name_opposide : et_coordinates.type_submodule_name.bounded_string; -- pwr_supply
@@ -1413,9 +1413,9 @@ package body et_configuration is
 		use et_string_processing;
 		use et_coordinates;
 		--use et_schematic;
-		use et_schematic.type_rig;
+		use et_kicad.type_rig;
 
-		module_cursor : et_schematic.type_rig.cursor; -- points to the module being processed
+		module_cursor : et_kicad.type_rig.cursor; -- points to the module being processed
 		route : type_route.set; -- for temporarily storage of a single route. 
 	
 		-- nets that have been processed are stored in a list of this type
@@ -1448,7 +1448,7 @@ package body et_configuration is
 			connectors 	: et_schematic.type_ports_with_reference.set; -- the module interconnectors connected with the net
 			connector_cursor : et_schematic.type_ports_with_reference.cursor;
 
-			module_cursor : et_schematic.type_rig.cursor := find (et_kicad.rig, module_name);
+			module_cursor : et_kicad.type_rig.cursor := find (et_kicad.rig, module_name);
 
 		begin -- find_ports_by_net
 -- 			log ("locating ports in module " & et_coordinates.to_string (module_name) 
@@ -1639,7 +1639,7 @@ package body et_configuration is
 		-- Once find_ports_by_net finishes, the current route is complete. If more than one 
 		-- net is in the route, the route is appended to the global rig wide routing table.
 			module_name	: in type_submodule_name.bounded_string;	-- led_matrix_2
-			module		: in et_schematic.type_module) is
+			module		: in et_kicad.type_module) is
 			use et_schematic.type_netlist;
 			netlist		: et_schematic.type_netlist.map := module.netlist;
 			net_cursor	: et_schematic.type_netlist.cursor;
@@ -1694,7 +1694,7 @@ package body et_configuration is
 
 		module_cursor := et_kicad.rig.first;
 		
-		while module_cursor /= et_schematic.type_rig.no_element loop
+		while module_cursor /= et_kicad.type_rig.no_element loop
 			log ("module " & to_string (key (module_cursor)), log_threshold + 1);
 			log_indentation_up;
 
