@@ -421,6 +421,12 @@ package et_kicad is
 	rig : et_schematic.type_rig.map;
 	module_cursor : et_schematic.type_rig.cursor;
 
+	function junction_sits_on_segment (
+	-- Returns true if the given junction sits on the given net segment.
+		junction	: in et_schematic.type_net_junction;
+		segment		: in et_schematic.type_net_segment'class) 
+		return boolean;
+	
 	function component_power_flag (cursor : in et_schematic.type_components.cursor)
 	-- Returns the component power flag status.
 		return et_libraries.type_power_flag;

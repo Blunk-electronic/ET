@@ -7668,6 +7668,37 @@ package body et_kicad is
 	end import_design;
 
 
+	function junction_sits_on_segment (
+	-- Returns true if the given junction sits on the given net segment.
+		junction	: in et_schematic.type_net_junction;
+		segment		: in et_schematic.type_net_segment'class) 
+		return boolean is
+
+		-- CS: clean up as in port_connected_with_segment
+		
+		zero : constant et_coordinates.type_distance := et_coordinates.zero_distance;
+		sits_on_segment : boolean := false;
+		d : et_geometry.type_distance_point_from_line;
+
+		use et_geometry;
+		use et_coordinates;
+
+	begin
+		-- calculate the shortes distance of point from line.
+		d := distance_of_point_from_line (
+			point 		=> type_2d_point (junction.coordinates),
+			line_start	=> type_2d_point (segment.coordinates_start),
+			line_end	=> type_2d_point (segment.coordinates_end),
+			line_range	=> inside_end_points);
+
+		if (not d.out_of_range) and d.distance = zero then
+			sits_on_segment := true;
+		end if;
+
+		return sits_on_segment;
+	end junction_sits_on_segment;
+	
+
 	function component_power_flag (cursor : in et_schematic.type_components.cursor)
 	-- Returns the component power flag status.
 		return et_libraries.type_power_flag is
