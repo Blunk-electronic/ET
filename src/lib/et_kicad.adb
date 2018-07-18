@@ -181,6 +181,11 @@ package body et_kicad is
 				);
 	end library_name;
 
+	function to_string (dir : in type_library_directory.bounded_string) return string is
+	begin
+		return type_library_directory.to_string (dir);
+	end to_string;
+	
 	function package_name (text : in string) return et_libraries.type_component_package_name.bounded_string is
 	-- extracts from a string like "bel_ic:S_SO14" the package name "S_SO14"
 		function field (line : in type_fields_of_line; position : in positive) return string renames
@@ -3774,62 +3779,61 @@ package body et_kicad is
 				section_eeschema_libraries_entered := false;
 			end clear_section_entered_flags;
 
-			procedure insert_library_groups (
-				groups 			: in string;
+			procedure insert_library_directories (
+				directories		: in string;
 				log_threshold	: in type_log_level) is
-			-- The library directories (we regard them as groups) must be inserted in the component_libraries_neu.
+			-- The library directories must be inserted in the project_lib_dirs
 			-- The given string is something like "../../lbr;../connectors;../misc_components".
 			-- Library directories are separated by semicolon.
-			-- component_libraries_neu applies for the whole rig.
-			-- In project_lib_dirs the order of appearance of the groups is kept. 
+			-- In project_lib_dirs the order of appearance of the directories is kept (because it is a simple list). 
 			-- project_lib_dirs applies for the single module only and is cleared once a 
 			-- kicad project file is read.
-			-- project_lib_dirs assists in search operations.
-				use type_library_group_name;
+			-- project_lib_dirs assists search operations.
+				use type_library_directory;
 				directory_count 	: natural;
 				lib_dir_separator 	: constant string (1..1) := ";";
-				group_cursor 		: et_libraries.type_libraries.cursor;
+				--dir_cursor 			: type_libraries.cursor;
 				--group_inserted 		: boolean;
-				group_name 			: type_library_group_name.bounded_string;
-			begin
-				log ("creating library groups ...", log_threshold);
+				lib_dir_name 		: type_library_directory.bounded_string;
+			begin -- insert_library_directories
+				log ("creating library directories ...", log_threshold);
 				log_indentation_up;
 				
 				-- If no library directory is specified then issue a warning, otherwise:
-				if groups'length > 0 then
+				if directories'length > 0 then
 
 					-- If there is no semicolon, there is 1 directory.
 					-- If there are two semicolons, there are 2 directories ...
-					directory_count := ada.strings.fixed.count (groups, lib_dir_separator) + 1;
+					directory_count := ada.strings.fixed.count (directories, lib_dir_separator) + 1;
 
 					-- extract directory names and create a group for each of them:
 					for place in 1..directory_count loop
 
-						-- get the directory (or group) name where "place" points to:
-						group_name := to_bounded_string (get_field_from_line (
-												text_in 	=> groups,
+						-- get the directory name where "place" points to:
+						lib_dir_name := to_bounded_string (get_field_from_line (
+												text_in 	=> directories,
 												position 	=> place,
 												ifs 		=> lib_dir_separator (1)));
 
-						log ("group " & to_string (group => group_name), log_threshold + 1);
+						log ("directory " & to_string (lib_dir_name), log_threshold + 1);
 
-						-- Insert the library group in the project_lib_dirs.
-						-- project_lib_dirs is a simple list where the group names are kept in the
+						-- Insert the library directory in the project_lib_dirs.
+						-- project_lib_dirs is a simple list where the directory names are kept in the
 						-- same order as they appear in the project file ("../../lbr;../connectors;../misc_components")
 						-- See more in specs of project_lib_dirs in et_kicad.ads.
-						if not type_project_lib_dirs.contains (project_lib_dirs, group_name) then
-							type_project_lib_dirs.append (project_lib_dirs, group_name);
+						if not type_project_lib_dirs.contains (search_list_project_lib_dirs, lib_dir_name) then
+							type_project_lib_dirs.append (search_list_project_lib_dirs, lib_dir_name);
 						else
-							log (message_warning & "multiple usage of group " & to_string (group => group_name));
+							log (message_warning & "multiple usage of directory " & to_string (lib_dir_name));
 						end if;
 
 						
-						if exists (to_string (group => group_name)) then
+						if exists (to_string (lib_dir_name)) then
 
 							null;
-							-- insert the library group in the component_libraries
--- CS						et_libraries.type_libraries.insert (
--- 								container	=> et_schematic.component_libraries,
+							-- insert the library directoryp in the component_libraries
+-- 							type_libraries.insert (
+-- 								container	=> component_libraries_neu,
 -- 								position	=> group_cursor,
 -- 								inserted	=> group_inserted,
 -- 								key			=> group_name);
@@ -3841,7 +3845,7 @@ package body et_kicad is
 
 						else
 							log_indentation_reset;
-							log (message_error & "directory " & to_string (group => group_name) & " does not exist !", console => true);
+							log (message_error & "directory " & to_string (lib_dir_name) & " does not exist !", console => true);
 							raise constraint_error;
 						end if;
 							
@@ -3851,27 +3855,27 @@ package body et_kicad is
 				end if;
 
 				log_indentation_down;
-			end insert_library_groups;
+			end insert_library_directories;
 
-			procedure insert_empty_libraries ( -- CS in kicad groups !
+			procedure insert_empty_libraries (
 				log_threshold : in type_log_level) is
-			-- Creates empty libraries in the still empty library groups.
+			-- Creates empty libraries in the still empty library directories.
 			-- The names of the libraries are taken from the list project_libraries.
 			-- 1. The project_libraries is just a simple list of project library names (specified in the kicad project
 			--    file by something like LibName1=bel_logic).
 			-- 2. At this time we do not know where these libraries live. 
-			-- 3. We have a list of groups (directories) in project_lib_dirs (as specified in 
+			-- 3. We have a list of directories in project_lib_dirs (as specified in 
 			--    the kicad project file by something like LibDir=../../lbr;../connectors).
-			-- 4. This procedure searches the project libraries in the groups (as listed in project_lib_dirs).
-			--    If a project library exists there (at file system level), it is created in the same-named group in
-			--    component_libraries_neu (as empty library) also. The first match matters -> the search ends 
+			-- 4. This procedure searches the project libraries in the directories (as listed in project_lib_dirs).
+			--    If a project library exists there (at file system level), it is created in the same-named directory in
+			--    component_libraries (as empty library) also. The first match matters -> the search ends 
 			--    after the first finding.
 				use type_library_names;
-				library_cursor : type_library_names.cursor := project_libraries.first;
+				library_cursor : type_library_names.cursor := search_list_project_libraries.first;
 				library_found : boolean;
 			
 				use type_project_lib_dirs;
-				group_cursor : type_project_lib_dirs.cursor;
+				lib_dir_cursor : type_project_lib_dirs.cursor;
 			
 -- 				procedure insert_library (
 -- 				-- Creates an empty library in the given group.
@@ -3908,18 +3912,18 @@ package body et_kicad is
 					library_found := false;
 
 					-- loop in groups (specified in the kicad project file by LibDir=../../lbr;../connectors)
-					group_cursor := project_lib_dirs.first;
-					while group_cursor /= type_project_lib_dirs.no_element loop
+					lib_dir_cursor := search_list_project_lib_dirs.first;
+					while lib_dir_cursor /= type_project_lib_dirs.no_element loop
 
-						log ("searching in " & to_string (group => element (group_cursor)), -- ../../lbr
+						log ("searching in " & to_string (element (lib_dir_cursor)), -- ../../lbr
 							log_threshold + 3); 
 						
 						-- Test at file system level, whether the current project library exists
-						-- in the directory indicated by group_cursor.
+						-- in the directory indicated by lib_dir_cursor.
 						-- If exists, create an empty library in the current group of component_libraries_neu.
 						-- Exit after the first finding.
 						if exists (compose (
-							containing_directory	=> to_string (group => element (group_cursor)), -- ../../lbr
+							containing_directory	=> to_string (element (lib_dir_cursor)), -- ../../lbr
 							name					=> to_string (element (library_cursor)), -- connectors, active, ...
 							extension				=> file_extension_schematic_lib)) 
 							then
@@ -3931,7 +3935,7 @@ package body et_kicad is
 								-- CS
 								--type_libraries_neu.update_element (
 								--	container	=> component_libraries_neu,
-								--	position	=> type_libraries_neu.find (component_libraries_neu, element (group_cursor)),
+								--	position	=> type_libraries_neu.find (component_libraries_neu, element (lib_dir_cursor)),
 								--	process		=> insert_library'access);
 
 								log_indentation_down;
@@ -3940,7 +3944,7 @@ package body et_kicad is
 								exit;
 						end if;
 
-						next (group_cursor);
+						next (lib_dir_cursor);
 					end loop;
 
 					-- raise alarm and abort if current library not found in any directory
@@ -3972,8 +3976,8 @@ package body et_kicad is
 			-- In tmp_project_libraries the project libraries are collected. 
 			-- Later they become part of the module being processed. -- CS rework comment
 			type_full_library_names.clear (tmp_project_libraries); -- CS remove
-			type_project_lib_dirs.clear (project_lib_dirs);
-			type_library_names.clear (project_libraries);
+			type_project_lib_dirs.clear (search_list_project_lib_dirs);
+			type_library_names.clear (search_list_project_libraries);
 
 			-- Open project file. 
 			-- The file name is composed of project name and extension.
@@ -4014,8 +4018,7 @@ package body et_kicad is
 					when 2 =>
 						if section_eeschema_entered then
 
-							-- Get library group names (LibDir) and store it in library_group (see et_libraries.ads)
-							-- CS: rework comments
+							-- Get library directory names 
 							if field (line,1) = project_keyword_library_directory then
 								library_group := to_bounded_string (field (line,2)); -- CS remove
 
@@ -4024,9 +4027,9 @@ package body et_kicad is
 									 & " " & field (line,2),
 									 log_threshold + 2);
 
-								-- The library directories (we regard them as groups) must be
+								-- The library directories must be
 								-- inserted in the project libraries.
-								insert_library_groups (field (line,2), log_threshold + 3);
+								insert_library_directories (field (line,2), log_threshold + 3);
 							end if;
 							
 						end if;
@@ -4051,11 +4054,11 @@ package body et_kicad is
 								-- The library could have been referenced already. If so,
 								-- there is no need to append it again to project_libraries.
 								if not type_library_names.contains (
-									container 	=> project_libraries,
+									container 	=> search_list_project_libraries,
 									item		=> type_library_name.to_bounded_string (field (line,2))) then
 									
 										type_library_names.append (
-											container	=> project_libraries, 
+											container	=> search_list_project_libraries, 
 											new_item	=> type_library_name.to_bounded_string (field (line,2)));
 
 										-- NOTE: project_libraries keeps the libraries in the same order as they appear

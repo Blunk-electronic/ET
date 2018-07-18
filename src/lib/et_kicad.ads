@@ -102,7 +102,7 @@ package et_kicad is
     project_keyword_library_name            : constant string (1..7)  := "LibName"; -- with index like "LibName1"
 
 
-	-- LIBRARIES
+-- LIBRARIES
 	package type_libraries is new ordered_maps (
 		key_type 		=> et_libraries.type_full_library_name.bounded_string, -- ../../lbr/passive/capacitors
 		"<"				=> et_libraries.type_full_library_name."<",
@@ -111,22 +111,37 @@ package et_kicad is
 
 	-- All component models are collected here.
 	component_libraries : type_libraries.map;
-
+	
 	-- when reading the project file, the project library names are collected here temporarily:
 	tmp_project_libraries : et_libraries.type_full_library_names.list; -- CS remove
 
-	-- LIBRARY SEARCH LISTS
+
+	--component_libraries_neu : type_libraries.map;		
+	
+-- LIBRARY SEARCH LISTS
 	-- The order of project libraries and their containing directories 
 	-- matters (for search operations).
 	-- For this reason we keep them in simple lists.
 	-- If multiple projects are imported, these lists are always
 	-- cleared when a project file is read. See procedure read_project_file.
-	project_libraries : et_libraries.type_library_names.list; -- bel_logic, bel_primitives, ...
-	package type_project_lib_dirs is new doubly_linked_lists (
-		element_type => et_libraries.type_library_group_name.bounded_string, -- active, passive, ...
-		"=" => et_libraries.type_library_group_name."=");
-	project_lib_dirs : type_project_lib_dirs.list;
 
+	-- search list for library names
+	search_list_project_libraries : et_libraries.type_library_names.list; -- bel_logic, bel_primitives, ...
+
+	-- Libraries are stored in directories:
+	library_directory_length_max : constant positive := 300; -- CS: increase if necessary
+	package type_library_directory is new generic_bounded_length (library_directory_length_max);
+
+	function to_string (dir : in type_library_directory.bounded_string) return string;
+	
+	-- search list for library directories
+	package type_project_lib_dirs is new doubly_linked_lists (
+		element_type	=> type_library_directory.bounded_string,
+		"=" 			=> type_library_directory."=");
+	search_list_project_lib_dirs : type_project_lib_dirs.list;
+
+
+	
 -- COMPONENT TEXT FIELDS
 
 	-- In compoenent libraries and schematic, a text field is indicated by letter "F":

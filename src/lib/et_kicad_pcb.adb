@@ -2349,7 +2349,7 @@ package body et_kicad_pcb is
 		use et_pcb;
 
 		use et_kicad.type_project_lib_dirs;
-		group_cursor : et_kicad.type_project_lib_dirs.cursor := et_kicad.project_lib_dirs.first;
+		lib_dir_cursor : et_kicad.type_project_lib_dirs.cursor := et_kicad.search_list_project_lib_dirs.first;
 	
 		-- backup the directory of origin
 		use type_directory_name;
@@ -2466,12 +2466,12 @@ package body et_kicad_pcb is
 
 		-- CS copy groups from component_libraries_neu to package_libraries_neu
 		
-		while group_cursor /= et_kicad.type_project_lib_dirs.no_element loop
+		while lib_dir_cursor /= et_kicad.type_project_lib_dirs.no_element loop
 		
-			-- fetch package library names from group indicated by group_cursor
+			-- fetch package library names from group indicated by lib_dir_cursor
 			library_names := directory_entries (
 				--target_directory	=> et_libraries.to_string (et_libraries.library_group),
-				target_directory	=> et_libraries.to_string (element (group_cursor)),  
+				target_directory	=> et_kicad.to_string (element (lib_dir_cursor)),  
 				category			=> ada.directories.directory,
 				pattern				=> et_kicad.package_library_pattern);
 
@@ -2532,7 +2532,7 @@ package body et_kicad_pcb is
 			end if;
 
 
-			next (group_cursor);
+			next (lib_dir_cursor);
 		end loop;
 
 		log_indentation_down;
