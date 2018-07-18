@@ -421,6 +421,10 @@ package et_kicad is
 	rig : et_schematic.type_rig.map;
 	module_cursor : et_schematic.type_rig.cursor;
 
+	function component_power_flag (cursor : in et_schematic.type_components.cursor)
+	-- Returns the component power flag status.
+		return et_libraries.type_power_flag;
+	
 	function purpose (
 	-- Returns the purpose of the given component in the given module.
 	-- If no purpose specified for the component, an empty string is returned.						 
@@ -441,7 +445,12 @@ package et_kicad is
 	-- Tests if a power out port is connected to a strand and renames the strand if necessary.	
 	-- Depending on the CAE system power-out or power-in ports may enforce their name on a strand.
 
+	procedure write_strands (log_threshold : in et_string_processing.type_log_level);
+	-- Writes a nice overview of strands, net segments and labels
 
+	procedure write_nets (log_threshold : in et_string_processing.type_log_level);
+	-- Writes a nice overview of all nets, strands, segments and labels.
+	
 	function components_in_net (
 		module 			: in type_submodule_name.bounded_string; -- nucleo_core
 		net				: in et_schematic.type_net_name.bounded_string; -- motor_on_off
@@ -463,7 +472,16 @@ package et_kicad is
 		component	: in et_libraries.type_component_generic_name.bounded_string) 
 		return et_libraries.type_components.cursor;
 
+	procedure reset_component_cursor (cursor : in out et_schematic.type_components.cursor);
+	-- Resets the given component cursor to the begin of the component list
+	-- of the module indicated by module_cursor.
 
+	procedure reset_library_cursor (cursor : in out et_libraries.type_full_library_names.cursor);
+	-- Resets the given library cursor to the begin of the library list.
+
+	function number_of_libraries return count_type;
+	-- Returns the number of project libraries.
+	
 	function build_portlists (log_threshold : in et_string_processing.type_log_level) 
 		return et_schematic.type_portlists.map;
 	-- Returns a list of components with the absolute positions of their ports as they are placed in the schematic.
@@ -594,7 +612,11 @@ package et_kicad is
 	procedure write_statistics (log_threshold : in et_string_processing.type_log_level);
 	-- Writes the statistics on components and nets of the rig.
 	-- Distinguishes between CAD and CAM related things.
-		
+
+	procedure export_bom (log_threshold : in et_string_processing.type_log_level);
+	-- Generates a bom file. This file is csv formatted and is to be processed by
+	-- other ERP tools (like stock_manager, see <https://github.com/Blunk-electronic/stock_manager>)
+
 	
 end et_kicad;
 

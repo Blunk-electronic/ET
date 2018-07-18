@@ -682,17 +682,17 @@ package et_schematic is
 		return type_component_reference;
 	-- Returns the component reference where cursor points to.
 
-	function component_appearance (cursor : in type_components.cursor)
-	-- Returns the component appearance where cursor points to.
-		return type_appearance_schematic;
+-- 	function component_appearance (cursor : in type_components.cursor)
+-- 	-- Returns the component appearance where cursor points to.
+-- 		return type_appearance_schematic;
 
 	function bom (cursor : in type_components.cursor)
 	-- Returns the component bom status where cursor points to.
 		return type_bom;
 
-	function component_power_flag (cursor : in type_components.cursor)
-	-- Returns the component power flag status.
-		 return type_power_flag;
+-- 	function component_power_flag (cursor : in type_components.cursor)
+-- 	-- Returns the component power flag status.
+-- 		 return type_power_flag;
 	
 	-- No-connection-flags indicate that a component port is intentionally left unconnected.
 	type type_no_connection_flag is record
@@ -835,7 +835,7 @@ package et_schematic is
 		element_type => type_module);
 
 	--rig : type_rig.map;
-	module_cursor : type_rig.cursor;
+	--module_cursor : type_rig.cursor;
 
 	-- The rig has a name like "Blood Sample Analyzer"
 	-- Mostly this is equal to the project name.
@@ -849,17 +849,17 @@ package et_schematic is
 -- 		modules		: type_modules.map;
 -- 	end record;
 
-    function first_gui_submodule return type_gui_submodules.cursor;
-    -- Returns a cursor pointing to the first gui_submodule of the moduel (indicated by module_cursor)
+--     function first_gui_submodule return type_gui_submodules.cursor;
+--     -- Returns a cursor pointing to the first gui_submodule of the moduel (indicated by module_cursor)
     
-	procedure write_strands (log_threshold : in et_string_processing.type_log_level);
-	-- Writes a nice overview of strands, net segments and labels
+-- 	procedure write_strands (log_threshold : in et_string_processing.type_log_level);
+-- 	-- Writes a nice overview of strands, net segments and labels
 
-	procedure write_nets (log_threshold : in et_string_processing.type_log_level);
-	-- Writes a nice overview of all nets, strands, segments and labels.
+-- 	procedure write_nets (log_threshold : in et_string_processing.type_log_level);
+-- 	-- Writes a nice overview of all nets, strands, segments and labels.
 	
-	function first_component return type_components.cursor;
-	-- Returns a cursor pointing to the first component of the module (indicated by module_cursor).
+-- 	function first_component return type_components.cursor;
+-- 	-- Returns a cursor pointing to the first component of the module (indicated by module_cursor).
 	
 -- 	procedure add_component (
 -- 	-- Adds a component into the the module (indicated by module_cursor).
@@ -874,15 +874,15 @@ package et_schematic is
 -- 		unit 			: in type_unit;
 -- 		log_threshold	: in et_string_processing.type_log_level);
 
-	procedure reset_component_cursor (cursor : in out type_components.cursor);
-	-- Resets the given component cursor to the begin of the component list
-	-- of the module indicated by module_cursor.
+-- 	procedure reset_component_cursor (cursor : in out type_components.cursor);
+-- 	-- Resets the given component cursor to the begin of the component list
+-- 	-- of the module indicated by module_cursor.
 
-	procedure reset_library_cursor (cursor : in out type_full_library_names.cursor);
-	-- Resets the given library cursor to the begin of the library list.
+-- 	procedure reset_library_cursor (cursor : in out type_full_library_names.cursor);
+-- 	-- Resets the given library cursor to the begin of the library list.
 
-	function number_of_libraries return count_type;
-	-- Returns the number of project libraries.
+-- 	function number_of_libraries return count_type;
+-- 	-- Returns the number of project libraries.
 	
 	function units_of_component (component_cursor : in type_components.cursor) return type_units.map;
 	-- Returns the units of the given component.
@@ -952,9 +952,6 @@ package et_schematic is
 	package type_bom_file_name is new generic_bounded_length (bom_file_name_length); 
 
 	extension_bom : constant string (1..3) := "csv";
-	procedure export_bom (log_threshold : in et_string_processing.type_log_level);
-	-- Generates a bom file. This file is csv formatted and is to be processed by
-	-- other ERP tools (like stock_manager, see <https://github.com/Blunk-electronic/stock_manager>)
 
 -- STATISTICS
 

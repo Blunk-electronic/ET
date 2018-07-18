@@ -123,20 +123,19 @@ package body et_configuration is
 	
 	procedure multiple_purpose_error (
 	-- Outputs an error message on multiple usage of a purpose of a component category.
-		category : in type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
-		purpose : in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
-		log_threshold : in et_string_processing.type_log_level) is
+		category		: in type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
+		purpose 		: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
+		log_threshold 	: in et_string_processing.type_log_level) is
 		
 		use et_string_processing;
 		use et_coordinates;
 		use et_libraries;
-		use et_schematic;
-		use type_rig;
+		use et_schematic.type_rig;
 		
 		procedure locate_component (
 		-- Searches the component list of the module for a connector with the given purpose.
 			module_name : in type_submodule_name.bounded_string;
-			module : in type_module) is
+			module		: in et_schematic.type_module) is
 			use et_schematic.type_components;
 			use type_component_purpose;
 			component : et_schematic.type_components.cursor := module.components.first;
@@ -167,8 +166,8 @@ package body et_configuration is
 			 console => true);
 
 		query_element (
-			position => module_cursor,
-			process => locate_component'access);
+			position	=> et_kicad.module_cursor,
+			process		=> locate_component'access);
 
 		raise constraint_error;
 	end multiple_purpose_error;
@@ -177,23 +176,22 @@ package body et_configuration is
 	function multiple_purpose (
 	-- Returns the number of occurences of components with the given purpose and category.
 	-- Example: If there are two connectors with purpose "PWR_IN" the return is 2.
-		category : in type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
-		purpose : in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
-		log_threshold : in et_string_processing.type_log_level)
+		category 		: in type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
+		purpose 		: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
+		log_threshold 	: in et_string_processing.type_log_level)
 		return natural is
 
 		occurences : natural := 0; -- to be returned
 
 		use et_coordinates;
-		use et_schematic;
+		use et_schematic.type_rig;
 		use et_libraries;
-		use type_rig;
 	
 		procedure locate_component (
 		-- Searches the component list of the module for a connector with the given purpose.
 		-- Exits on the first matching connector. There should not be any others.
 			module_name : in type_submodule_name.bounded_string;
-			module : in type_module) is
+			module 		: in et_schematic.type_module) is
 			use et_schematic.type_components;
 			use type_component_purpose;
 			component : et_schematic.type_components.cursor := module.components.first;
@@ -222,8 +220,8 @@ package body et_configuration is
 	begin -- multiple_purpose
 
 		query_element (
-			position => module_cursor,
-			process => locate_component'access);
+			position	=> et_kicad.module_cursor,
+			process		=> locate_component'access);
 
 		-- Show the result of the search:
 		if occurences = 0 then

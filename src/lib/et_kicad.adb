@@ -66,6 +66,7 @@ with et_pcb;
 with et_pcb_coordinates;
 with et_kicad_pcb;
 with et_export;
+with et_csv;
 
 package body et_kicad is
 
@@ -2746,12 +2747,12 @@ package body et_kicad is
 		use et_schematic.type_rig;
 		
 	begin -- read_components_libraries
-		et_schematic.reset_library_cursor (project_lib_cursor);
+		reset_library_cursor (project_lib_cursor);
 		-- CS: use query_element where module_cursor points to, query libraries ...
-		-- CS: remove et_schematic.reset_library_cursor and et_schematic.number_of_libraries
+		-- CS: remove functions reset_library_cursor and number_of_libraries
 		
 		-- If there are no libraries in the project file, there is nothing to do but writing a warning:
-		if et_schematic.number_of_libraries = 0 then -- CS: use length
+		if number_of_libraries = 0 then -- CS: use length
 			log (message_warning & "no component libraries defined in project file !");
 		else
 			log ("Loading component libraries ...", log_threshold);
@@ -3584,6 +3585,143 @@ package body et_kicad is
 		log_indentation_down;
 
 	end process_hierarchic_nets;
+
+
+	procedure write_nets (log_threshold : in et_string_processing.type_log_level) is
+	-- Writes a nice overview of all nets, strands, segments and labels.
+	-- Bases on the element "nets" of the modules. See specification of type_module.
+		use et_string_processing;
+	
+		procedure query_label (
+			segment : in et_schematic.type_net_segment) is
+			label_simple	: et_schematic.type_simple_labels.cursor	:= segment.label_list_simple.first;
+			label_tag		: et_schematic.type_tag_labels.cursor	:= segment.label_list_tag.first;
+			use et_schematic.type_simple_labels;
+			use et_schematic.type_tag_labels;
+		begin
+			if log_level >= log_threshold + 3 then
+				
+				log_indentation_up;
+				while label_simple /= et_schematic.type_simple_labels.no_element loop
+					log ("simple label at " & to_string (position => element (label_simple).coordinates, scope => xy));
+					next (label_simple);
+				end loop;
+
+				while label_tag /= et_schematic.type_tag_labels.no_element loop
+					if element (label_tag).hierarchic then
+						log ("hierarchic label at " 
+							& to_string (position => element (label_tag).coordinates, scope => xy));
+					end if;
+
+					if element (label_tag).global then
+						log ("global label at " 
+							& to_string (position => element (label_tag).coordinates, scope => xy));
+					end if;
+					
+					next (label_tag);
+				end loop;
+				
+				log_indentation_down;
+			end if;
+		end query_label;
+		
+		procedure query_segment (
+			strand : in et_schematic.type_strand) is
+			segment : et_schematic.type_net_segments.cursor := strand.segments.first;
+			use et_schematic.type_net_segments;
+
+			-- for the segment we provide a consequtive number which has no further meaning
+			segment_number : count_type := 1;			
+		begin
+			if log_level >= log_threshold + 2 then
+				log_indentation_up;
+				while segment /= et_schematic.type_net_segments.no_element loop
+					log ("segment #" 
+						& count_type'image (segment_number) 
+						& latin_1.space
+						& et_schematic.to_string (segment => element (segment), scope => xy));
+
+					query_element (
+						position	=> segment,
+						process		=> query_label'access);
+					
+					segment_number := segment_number + 1;
+					next (segment);
+				end loop;
+				log_indentation_down;
+			end if;
+		end query_segment;
+		
+		procedure query_strand (
+			net_name 	: in et_schematic.type_net_name.bounded_string;
+			net 		: in et_schematic.type_net) is
+			
+			strand : et_schematic.type_strands.cursor := net.strands.first;
+			use et_schematic.type_strands;
+
+			-- for the strand we provide a consequtive number which has no further meaning
+			strand_number : count_type := 1;			
+		begin -- query_strand
+			if log_level >= log_threshold + 1 then
+				log_indentation_up;
+				while strand /= et_schematic.type_strands.no_element loop
+					log ("strand #" & trim (count_type'image (strand_number), left) &
+						" at " & to_string (position => element (strand).coordinates, scope => et_coordinates.module)
+						);
+
+					query_element (
+						position	=> strand,
+						process		=> query_segment'access);
+					
+					strand_number := strand_number + 1;
+					next (strand);
+				end loop;
+				log_indentation_down;
+			end if;
+		end query_strand;
+		
+		procedure query_net (
+			mod_name	: in type_submodule_name.bounded_string;
+			module 		: in et_schematic.type_module) is
+			net : et_schematic.type_nets.cursor := module.nets.first;
+			use et_schematic.type_nets;
+		begin
+			log_indentation_up;
+			while net /= et_schematic.type_nets.no_element loop
+				log ("net " & et_schematic.to_string (key (net)));
+
+				query_element (
+					position	=> net,
+					process		=> query_strand'access);
+				
+				next (net);
+			end loop;
+
+			log_indentation_down;
+		end query_net;
+
+		use et_schematic.type_rig;
+		
+	begin -- write_nets
+		if log_level >= log_threshold then
+			log ("net report");
+			log_indentation_up;
+				
+			--first_module;
+			--while module_cursor /= type_rig.no_element loop
+					
+			--	log ("module " & to_string (key (module_cursor)));
+
+				query_element (
+					position	=> module_cursor,
+					process		=> query_net'access);
+				
+			--	next (module_cursor);
+			--end loop;
+
+			log_indentation_down;
+		end if;
+	end write_nets;
 
 	
 	
@@ -7489,7 +7627,7 @@ package body et_kicad is
 				update_strand_names (log_threshold + 1); -- includes portlist generation
 
 				-- write strands report
-				et_schematic.write_strands (log_threshold + 1);
+				write_strands (log_threshold + 1);
 				
 				-- Merge the strands which are still independed of each other. 
 				-- For example a strand named "VCC3V3" exists on submodule A on sheet 2. 
@@ -7503,7 +7641,7 @@ package body et_kicad is
 				process_hierarchic_nets (log_threshold + 1);
 				
 				-- write net report
-				et_schematic.write_nets (log_threshold + 1);
+				write_nets (log_threshold + 1);
 
 				
 			when others =>
@@ -7530,6 +7668,28 @@ package body et_kicad is
 	end import_design;
 
 
+	function component_power_flag (cursor : in et_schematic.type_components.cursor)
+	-- Returns the component power flag status.
+		return et_libraries.type_power_flag is
+		use et_string_processing;
+	begin
+		-- Only vitual components have the power flag property. 
+		-- For real components the return is always false;
+		if et_libraries."=" (et_schematic.type_components.element (cursor).appearance, et_libraries.sch) then
+			--log ("virtual component");
+			--if type_components.element (cursor).power_flag then
+			--	log ("power flag on");
+			--else
+			--	log ("power flag off");
+			--end if;
+			return et_schematic.type_components.element (cursor).power_flag;
+		else
+			--log ("real component");
+			return et_libraries.no;
+		end if;
+	end component_power_flag;
+
+	
 	function purpose (
 	-- Returns the purpose of the given component in the given module.
 	-- If no purpose specified for the component, an empty string is returned.
@@ -8070,6 +8230,93 @@ package body et_kicad is
 		
 	end update_strand_names;
 
+	procedure write_strands (log_threshold : in et_string_processing.type_log_level) is
+	-- Writes a nice overview of strands, net segments and labels
+	-- CS: output consequtive number for strands and segments (as in procedure write_nets)
+		use et_string_processing;
+
+		procedure query_label (
+			segment : in et_schematic.type_net_segment) is
+			label_simple	: et_schematic.type_simple_labels.cursor	:= segment.label_list_simple.first;
+			label_tag		: et_schematic.type_tag_labels.cursor		:= segment.label_list_tag.first;
+			use et_schematic.type_simple_labels;
+			use et_schematic.type_tag_labels;
+		begin
+			if log_level >= log_threshold + 2 then
+				log_indentation_up;
+				while label_simple /= et_schematic.type_simple_labels.no_element loop
+					log ("simple label " & to_string (position => element (label_simple).coordinates));
+					next (label_simple);
+				end loop;
+
+				while label_tag /= et_schematic.type_tag_labels.no_element loop
+					log ("tag label " & to_string (position => element (label_tag).coordinates));
+					next (label_tag);
+				end loop;
+
+				log_indentation_down;
+			end if;
+		end query_label;
+	
+		procedure query_segment (
+			strand : in et_schematic.type_strand) is
+			segment : et_schematic.type_net_segments.cursor := strand.segments.first;
+			use et_schematic.type_net_segments;
+		begin
+			if log_level >= log_threshold + 1 then
+				while segment /= et_schematic.type_net_segments.no_element loop
+					log_indentation_up;
+					log ("segment " & et_schematic.to_string (element (segment)));
+
+					et_schematic.type_net_segments.query_element (
+						position	=> segment,
+						process		=> query_label'access);
+
+					log_indentation_down;				
+					next (segment);
+				end loop;
+			end if;
+		end query_segment;
+	
+		procedure query_strands (
+			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
+			module		: in et_schematic.type_module) is
+			strand : et_schematic.type_strands.cursor := module.strands.first;
+			use et_schematic.type_strands;
+			use et_coordinates.type_path_to_submodule;
+			use ada.directories;
+		begin
+			if log_level >= log_threshold then
+				while strand /= et_schematic.type_strands.no_element loop
+					log_indentation_up;
+
+					log (et_schematic.to_string (element (strand).name) &
+						 " scope " & et_schematic.to_string (element (strand).scope) &
+						 " in " & et_coordinates.to_string (et_coordinates.path (element (strand).coordinates)));
+					
+					et_schematic.type_strands.query_element (
+						position	=> strand,
+						process		=> query_segment'access);
+					
+					log_indentation_down;
+					next (strand);
+				end loop;
+			end if;
+		end query_strands;
+		
+	begin -- write_strands
+		if log_level >= log_threshold then
+			log ("strands report");
+			
+			et_schematic.type_rig.query_element (
+				position	=> module_cursor,
+				process		=> query_strands'access);
+		end if;
+	
+	end write_strands;
+
+
+	
 	function find_component (
 	-- Searches the given library for the given component. Returns a cursor to that component.
 		library		: in et_libraries.type_full_library_name.bounded_string;
@@ -8117,7 +8364,61 @@ package body et_kicad is
 		return comp_cursor;
 	end find_component;
 
+	procedure reset_component_cursor (cursor : in out et_schematic.type_components.cursor) is
+	-- Resets the given component cursor to the begin of the component list
+	-- of the module indicated by module_cursor.
+		procedure reset (
+			name	: in et_coordinates.type_submodule_name.bounded_string;
+			module	: in et_schematic.type_module) is
+			use et_schematic.type_components;
+		begin
+			cursor := et_schematic.type_components.first (module.components);
+		end reset;
+	begin
+		et_schematic.type_rig.query_element (
+			position	=> module_cursor,
+			process		=> reset'access
+			);
+	end reset_component_cursor;
 
+	procedure reset_library_cursor (cursor : in out et_libraries.type_full_library_names.cursor) is
+	-- Resets the given library cursor to the begin of the library list.
+		procedure reset (
+			name	: in et_coordinates.type_submodule_name.bounded_string;
+			module	: in et_schematic.type_module) is
+			use et_libraries.type_full_library_names;
+		begin
+			cursor := et_libraries.type_full_library_names.first (module.libraries);
+		end reset;
+	begin
+		et_schematic.type_rig.query_element (
+			position	=> module_cursor,
+			process		=> reset'access
+			);
+	end reset_library_cursor;
+
+	function number_of_libraries return count_type is
+	-- Returns the number of project libraries.
+		n : count_type := 0;
+
+		procedure get (
+			name	: in et_coordinates.type_submodule_name.bounded_string;
+			module	: in et_schematic.type_module) is
+			use et_libraries.type_full_library_names;
+		begin
+			n := et_libraries.type_full_library_names.length (module.libraries);
+		end get;
+
+	begin
+		et_schematic.type_rig.query_element (
+			position	=> module_cursor,
+			process		=> get'access
+			);
+
+		return n;
+	end number_of_libraries;
+	
+	
 	function build_portlists (log_threshold : in et_string_processing.type_log_level) 
 		return et_schematic.type_portlists.map is
 	-- Returns a list of components with the absolute positions of their ports as they are placed in the schematic.
@@ -8302,7 +8603,7 @@ package body et_kicad is
 									-- We also set the port appearance (by taking it from the schematic component begin processed).
 									-- Later when writing the netlist, this property
 									-- serves to tell real from virtual ports.
-									appearance	=> et_schematic.component_appearance (component_cursor_sch),
+									appearance	=> element (component_cursor_sch).appearance,
 
 									-- schematic defined properties:
 									coordinates	=> port_coordinates,
@@ -8330,8 +8631,8 @@ package body et_kicad is
 									-- We also set the port appearance (by taking it from the schematic component begin processed).
 									-- Later when writing the netlist, this property
 									-- serves to tell real from virtual ports.
-									appearance	=> et_schematic.component_appearance (component_cursor_sch),
-
+									appearance	=> element (component_cursor_sch).appearance,
+									
 									-- schematic defined properties:
 									coordinates	=> port_coordinates,
 
@@ -8476,9 +8777,12 @@ package body et_kicad is
 		procedure check_appearance_sch_vs_lib is
 		-- Verifies appearance of schematic component against library component.
 		begin
-			if et_schematic.component_appearance (component_cursor_sch) = 
-			   et_libraries.component_appearance (component_cursor_lib) then
-				null; -- fine
+-- 			if et_schematic.component_appearance (component_cursor_sch) = 
+-- 			   et_libraries.component_appearance (component_cursor_lib) then
+-- 			   null; -- fine
+			if element (component_cursor_sch).appearance =
+			   element (component_cursor_lib).appearance then
+			   null; -- fine			   
 			else
 				-- this should never happen
 				log_indentation_down;
@@ -8527,7 +8831,7 @@ package body et_kicad is
 		-- This list contains the units found in the schematic with their coordinates.
 		-- These coordinates plus the port coordinates (extracted in 
 		-- procedure (extract_ports) will later yield the absolute positions of the ports.
-		et_schematic.reset_component_cursor (component_cursor_sch);
+		reset_component_cursor (component_cursor_sch);
 		while component_cursor_sch /= et_schematic.type_components.no_element loop
 		
 			-- log component by its reference		
@@ -11726,6 +12030,150 @@ package body et_kicad is
 		return ports_real;
 	end real_components_in_net;
 
+
+	procedure export_bom (log_threshold : in et_string_processing.type_log_level) is
+	-- Generates a bom file. This file is csv formatted and is to be processed by
+	-- other ERP tools (like stock_manager, see <https://github.com/Blunk-electronic/stock_manager>)
+		use ada.directories;
+		use et_general;
+		use et_string_processing;
+		use et_export;
+		use et_csv;
+		use et_schematic.type_rig;
+		use et_schematic.type_components;
+		
+		bom_file_name : et_schematic.type_bom_file_name.bounded_string;
+		bom_handle : ada.text_io.file_type;
+
+		column_component	: constant string (1 .. 9) := "COMPONENT";
+		column_value		: constant string (1 .. 5) := "VALUE";
+		column_generic_name	: constant string (1 ..12) := "GENERIC_NAME";
+		column_package		: constant string (1 .. 7) := "PACKAGE";
+		column_author		: constant string (1 .. 6) := "AUTHOR";
+		column_bom			: constant string (1 .. 3) := "BOM";
+		column_commissioned	: constant string (1 ..12) := "COMMISSIONED";
+		column_purpose		: constant string (1 .. 7) := "PURPOSE";
+		column_part_code	: constant string (1 .. 9) := "PART_CODE"; -- CS: make sure stock_manager can handle it. former PART_CODE_BEL
+		column_part_code_ext: constant string (1 ..13) := "PART_CODE_EXT"; -- not used
+		column_updated		: constant string (1 .. 7) := "UPDATED";
+
+		procedure query_components (
+			module_name : in et_coordinates.type_submodule_name.bounded_string;
+			module		: in et_schematic.type_module) is
+		
+			component : et_schematic.type_components.cursor := module.components.first;
+
+		begin -- query_components
+			log_indentation_up;
+			while component /= et_schematic.type_components.no_element loop
+
+				-- We ignore all virtual components like power flags, power symbols, ...
+				--if component_appearance (component) = sch_pcb then
+				if et_libraries."=" (element (component).appearance, et_libraries.sch_pcb) then
+
+					if et_libraries."=" (et_schematic.bom (component), et_libraries.YES) then
+						log (et_libraries.to_string (key (component)), log_threshold + 2);
+
+						-- CS: warning if netchanger/net-ties occur here. they should have the bom flag set to NO.
+						et_csv.reset_column;
+						
+						put_field (file => bom_handle, text => et_libraries.to_string (key (component))); -- R6
+						put_field (file => bom_handle, text => et_libraries.to_string (element (component).value)); -- 100R
+						put_field (file => bom_handle, text => et_libraries.to_string (element (component).generic_name)); -- RESISTOR
+						put_field (file => bom_handle, text => et_libraries.to_string (et_schematic.to_package_name (
+																library_name => element (component).library_name,
+																generic_name => element (component).generic_name,
+																package_variant => element (component).variant)));
+						put_field (file => bom_handle, text => et_libraries.to_string (element (component).author));
+						put_field (file => bom_handle, text => et_libraries.to_string (element (component).bom));
+						put_field (file => bom_handle, text => to_string (element (component).commissioned));
+						put_field (file => bom_handle, text => et_libraries.to_string (element (component).purpose));
+						put_field (file => bom_handle, text => et_libraries.to_string (element (component).partcode));
+
+						-- CS: This is an empty field. it is reserved for the attribute "PART_CODE_EXT" 
+						-- which is currently not supported:
+						put_field (file => bom_handle, text => "");
+
+						put_field (file => bom_handle, text => to_string (element (component).updated));
+						put_lf    (file => bom_handle, field_count => et_csv.column);
+
+					end if;
+				end if;
+
+				next (component);
+			end loop;
+				
+			log_indentation_down;
+		end query_components;
+		
+	begin -- export_bom
+		log ("exporting BOM ...", log_threshold);
+		log_indentation_up;
+
+		-- We start with the first module of the rig.		
+		--first_module;
+		module_cursor := rig.first;
+
+		-- Process one rig module after another.
+		-- module_cursor points to the module in the rig.
+		while module_cursor /= et_schematic.type_rig.no_element loop
+			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log_indentation_up;
+
+			create_project_directory (to_string (key (module_cursor)), log_threshold + 2);
+			-- compose the bom file name and its path like "../ET/motor_driver/CAM/motor_driver.csv"
+			bom_file_name := et_schematic.type_bom_file_name.to_bounded_string 
+				(
+				compose (
+					containing_directory => compose 
+						(
+						containing_directory => compose (work_directory, to_string (key (module_cursor))),
+						name => et_export.directory_cam
+						),
+					name => to_string (key (module_cursor)),
+					extension => et_schematic.extension_bom)
+				);
+
+			-- create the BOM (which inevitably and intentionally overwrites the previous file)
+			log ("creating BOM file " & et_schematic.type_bom_file_name.to_string (bom_file_name), log_threshold + 1);
+			create (
+				file => bom_handle,
+				mode => out_file, 
+				name => et_schematic.type_bom_file_name.to_string (bom_file_name));
+
+			-- CS: A nice header should be placed. First make sure stock_manager can handle it.
+
+			-- write the BOM table header
+			et_csv.reset_column;
+			put_field (file => bom_handle, text => column_component);
+			put_field (file => bom_handle, text => column_value);
+			put_field (file => bom_handle, text => column_generic_name);
+			put_field (file => bom_handle, text => column_package);
+			put_field (file => bom_handle, text => column_author);
+			put_field (file => bom_handle, text => column_bom);
+			put_field (file => bom_handle, text => column_commissioned);
+			put_field (file => bom_handle, text => column_purpose);
+			put_field (file => bom_handle, text => column_part_code);
+			put_field (file => bom_handle, text => column_part_code_ext);
+			put_field (file => bom_handle, text => column_updated);
+			put_lf    (file => bom_handle, field_count => et_csv.column);
+
+			query_element (
+				position	=> module_cursor,
+				process		=> query_components'access);
+
+			-- CS: A list end mark should be placed. First make sure stock_manager can handle it.
+			-- put_line (bom_handle, comment_mark & " end of list");
+			
+			close (bom_handle);
+			log_indentation_down;
+			next (module_cursor);
+		end loop;
+
+		log_indentation_down;
+	end export_bom;
+
+	
 -- STATISTICS
 
 	procedure make_statistics (log_threshold : in et_string_processing.type_log_level)

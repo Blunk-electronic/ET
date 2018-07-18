@@ -7478,7 +7478,7 @@ package body et_kicad_pcb is
 			log ("merging board and schematic ...", log_threshold + 1);
 
 			et_kicad.rig.update_element (
-				position	=> module_cursor,
+				position	=> et_kicad.module_cursor,
 				process		=> add_board_objects'access);
 
 			exception
