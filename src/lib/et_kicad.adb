@@ -3779,24 +3779,26 @@ package body et_kicad is
 				section_eeschema_libraries_entered := false;
 			end clear_section_entered_flags;
 
-			procedure insert_library_directories (
+			procedure locate_library_directories (
 				directories		: in string;
 				log_threshold	: in type_log_level) is
 			-- The library directories must be inserted in the project_lib_dirs
 			-- The given string is something like "../../lbr;../connectors;../misc_components".
 			-- Library directories are separated by semicolon.
-			-- In project_lib_dirs the order of appearance of the directories is kept (because it is a simple list). 
-			-- project_lib_dirs applies for the single module only and is cleared once a 
+			-- Tests if each directory exists -> abort if not.
+			-- In search_list_project_lib_dirs the order of appearance of the directories 
+			-- is kept (because it is a simple list). 
+			-- search_list_project_lib_dirs applies for the single module only and is cleared once a 
 			-- kicad project file is read.
-			-- project_lib_dirs assists search operations.
+			-- search_list_project_lib_dirs assists search operations.
 				use type_library_directory;
 				directory_count 	: natural;
 				lib_dir_separator 	: constant string (1..1) := ";";
 				--dir_cursor 			: type_libraries.cursor;
 				--group_inserted 		: boolean;
 				lib_dir_name 		: type_library_directory.bounded_string;
-			begin -- insert_library_directories
-				log ("creating library directories ...", log_threshold);
+			begin -- locate_library_directories
+				log ("locating library directories ...", log_threshold);
 				log_indentation_up;
 				
 				-- If no library directory is specified then issue a warning, otherwise:
@@ -3827,23 +3829,8 @@ package body et_kicad is
 							log (message_warning & "multiple usage of directory " & to_string (lib_dir_name));
 						end if;
 
-						
-						if exists (to_string (lib_dir_name)) then
-
-							null;
-							-- insert the library directoryp in the component_libraries
--- 							type_libraries.insert (
--- 								container	=> component_libraries_neu,
--- 								position	=> group_cursor,
--- 								inserted	=> group_inserted,
--- 								key			=> group_name);
-
-							-- The library group may have been inserted earlier by reading another project:
--- 							if not group_inserted then						
--- 								log (" already there -> skipped", log_threshold + 1);
--- 							end if;
-
-						else
+						-- Test if the library directory exists:
+						if not exists (to_string (lib_dir_name)) then
 							log_indentation_reset;
 							log (message_error & "directory " & to_string (lib_dir_name) & " does not exist !", console => true);
 							raise constraint_error;
@@ -3855,111 +3842,89 @@ package body et_kicad is
 				end if;
 
 				log_indentation_down;
-			end insert_library_directories;
+			end locate_library_directories;
 
-			procedure insert_empty_libraries (
+			procedure locate_libraries (
 				log_threshold : in type_log_level) is
-			-- Creates empty libraries in the still empty library directories.
-			-- The names of the libraries are taken from the list project_libraries.
-			-- 1. The project_libraries is just a simple list of project library names (specified in the kicad project
-			--    file by something like LibName1=bel_logic).
-			-- 2. At this time we do not know where these libraries live. 
-			-- 3. We have a list of directories in project_lib_dirs (as specified in 
-			--    the kicad project file by something like LibDir=../../lbr;../connectors).
-			-- 4. This procedure searches the project libraries in the directories (as listed in project_lib_dirs).
-			--    If a project library exists there (at file system level), it is created in the same-named directory in
-			--    component_libraries (as empty library) also. The first match matters -> the search ends 
-			--    after the first finding.
+			-- Tests if the libraries (listed in search_list_project_libraries) exist in any of the
+			-- directories listed in search_list_project_lib_dirs.
+			-- The first match matters -> the search ends after the first finding.
 				use type_library_names;
-				library_cursor : type_library_names.cursor := search_list_project_libraries.first;
-				library_found : boolean;
+				search_list_library_cursor : type_library_names.cursor := search_list_project_libraries.first;
+				library_found		: boolean; -- true if library file exists
 			
 				use type_project_lib_dirs;
-				lib_dir_cursor : type_project_lib_dirs.cursor;
+				search_list_lib_dir_cursor : type_project_lib_dirs.cursor;
+
+				library_inserted	: boolean; -- true if new empty library has been created in component_libraries
+				library_cursor		: type_libraries.cursor; -- points to the new empty library that has been created 
 			
--- 				procedure insert_library (
--- 				-- Creates an empty library in the given group.
--- 					group_name	: in type_library_group_name.bounded_string;
--- 					group		: in out type_library_group.map) is
--- 					lib_inserted : boolean;
--- 					dummy_cursor : et_schematic.type_library_group.cursor;
--- 				begin
--- 					type_library_group.insert (
--- 						container	=> group, -- library group ../../lbr
--- 						key			=> element (library_cursor), -- library name "bel_logic"
--- 						inserted	=> lib_inserted,
--- 						new_item	=> et_libraries.type_components.empty_map,
--- 						position	=> dummy_cursor);
--- 
--- 					-- The library could have been inserted earlier by reading another project:
--- 					if not lib_inserted then
--- 						log (" already there -> skipped", log_threshold + 3);
--- 					end if;
--- 				end insert_library;
-				
-			begin -- insert_empty_libraries
-				log ("creating empty libraries ...", log_threshold);
+			begin -- locate_libraries
+				log ("locating library directories ...", log_threshold);
 				log_indentation_up;
 				
 				-- loop in project_libraries (specified in the kicad project file)
-				while library_cursor /= type_library_names.no_element loop
+				while search_list_library_cursor /= type_library_names.no_element loop
 
 					-- library_cursor points to the current library
-					log ("library " & to_string (element (library_cursor)), log_threshold + 1);
+					log ("library " & to_string (element (search_list_library_cursor)), log_threshold + 1);
 					log_indentation_up;
 					
 					-- This flag goes true once the library has been found at file system level
 					library_found := false;
 
-					-- loop in groups (specified in the kicad project file by LibDir=../../lbr;../connectors)
-					lib_dir_cursor := search_list_project_lib_dirs.first;
-					while lib_dir_cursor /= type_project_lib_dirs.no_element loop
+					-- Loop in directories (specified in the kicad project file by LibDir=../../lbr;../connectors).
+					-- Exit loop on first match.
+					search_list_lib_dir_cursor := search_list_project_lib_dirs.first;
+					while search_list_lib_dir_cursor /= type_project_lib_dirs.no_element loop
 
-						log ("searching in " & to_string (element (lib_dir_cursor)), -- ../../lbr
+						log ("searching in " & to_string (element (search_list_lib_dir_cursor)), -- ../../lbr
 							log_threshold + 3); 
 						
 						-- Test at file system level, whether the current project library exists
-						-- in the directory indicated by lib_dir_cursor.
-						-- If exists, create an empty library in the current group of component_libraries_neu.
+						-- in the directory indicated by search_list_lib_dir_cursor.
+						-- If exists, create an empty library in with a full name in component_libraries.
 						-- Exit after the first finding.
 						if exists (compose (
-							containing_directory	=> to_string (element (lib_dir_cursor)), -- ../../lbr
-							name					=> to_string (element (library_cursor)), -- connectors, active, ...
+							containing_directory	=> to_string (element (search_list_lib_dir_cursor)), -- ../../lbr
+							name					=> to_string (element (search_list_library_cursor)), -- connectors, active, ...
 							extension				=> file_extension_schematic_lib)) 
 							then
-								
-								log_indentation_up;
-								log ("found", log_threshold + 3);
-
-								-- create empty library in the group of component_libraries_neu
-								-- CS
-								--type_libraries_neu.update_element (
-								--	container	=> component_libraries_neu,
-								--	position	=> type_libraries_neu.find (component_libraries_neu, element (lib_dir_cursor)),
-								--	process		=> insert_library'access);
-
-								log_indentation_down;
-
+								log (" found", log_threshold + 3);
 								library_found := true;
+
+								-- create empty library (if not existing already)
+								type_libraries.insert (
+									container	=> component_libraries_neu,
+									key 		=> et_libraries.type_full_library_name.to_bounded_string (compose (
+										containing_directory	=> to_string (element (search_list_lib_dir_cursor)), -- ../../lbr
+										name					=> to_string (element (search_list_library_cursor)), -- connectors, active, ...
+										extension				=> file_extension_schematic_lib)),
+									new_item	=> et_libraries.type_components.empty_map,
+									inserted	=> library_inserted,
+									position	=> library_cursor
+									); 
+								
 								exit;
 						end if;
 
-						next (lib_dir_cursor);
+						next (search_list_lib_dir_cursor);
 					end loop;
 
 					-- raise alarm and abort if current library not found in any directory
 					if not library_found then
 						log_indentation_reset;
-						log (message_error & "library " & to_string (element (library_cursor)) & " not found in any group !", console => true);
+						log (message_error & "library " & to_string (element (search_list_library_cursor)) &
+							 " not found in any directory !", console => true);
 						raise constraint_error;
 					end if;
 
 					log_indentation_down;
-					next (library_cursor);
+					next (search_list_library_cursor);
 				end loop;
 
 				log_indentation_down;
-			end insert_empty_libraries;
+			end locate_libraries;
 			
 		begin -- read_project_file
 			log_indentation_reset;
@@ -4028,8 +3993,8 @@ package body et_kicad is
 									 log_threshold + 2);
 
 								-- The library directories must be
-								-- inserted in the project libraries.
-								insert_library_directories (field (line,2), log_threshold + 3);
+								-- inserted in the search list of library directories.
+								locate_library_directories (field (line,2), log_threshold + 3);
 							end if;
 							
 						end if;
@@ -4052,7 +4017,7 @@ package body et_kicad is
 											extension				=> file_extension_schematic_lib)));
 
 								-- The library could have been referenced already. If so,
-								-- there is no need to append it again to project_libraries.
+								-- there is no need to append it again to search_list_project_libraries.
 								if not type_library_names.contains (
 									container 	=> search_list_project_libraries,
 									item		=> type_library_name.to_bounded_string (field (line,2))) then
@@ -4061,11 +4026,10 @@ package body et_kicad is
 											container	=> search_list_project_libraries, 
 											new_item	=> type_library_name.to_bounded_string (field (line,2)));
 
-										-- NOTE: project_libraries keeps the libraries in the same order as they appear
-										-- in the project file. project_libraries assists search operations.
-										-- See specs of project_libraries in et_kicad.ads for more.
-										-- project_libraries applies for the current project only. 
-										-- project_libraries is cleared as soon as another kicad project file is read.
+										-- NOTE: search_list_project_libraries keeps the libraries in the same order as they appear
+										-- in the project file. search_list_project_libraries assists search operations.
+										-- It applies for the current project only and
+										-- is cleared as soon as another kicad project file is read.
 										
 										-- For the log write something like "LibName bel_connectors_and_jumpers"
 										log (field (line,1) & " " & field (line,2), log_threshold + 2);
@@ -4084,9 +4048,11 @@ package body et_kicad is
 				
 			end loop;
 
-			-- Insert empty libraries in the groups of kicad libraries ! CS
-			-- The names of the libraries are taken from the list project_libraries.
-			insert_empty_libraries (log_threshold + 3);
+			-- Test if the libraries collected in search_list_project_libraries
+			-- exist in any of the library directories.
+			locate_libraries (log_threshold + 3);
+
+			-- CS save search lists
 			
 			close (project_file_handle);
 

@@ -116,7 +116,7 @@ package et_kicad is
 	tmp_project_libraries : et_libraries.type_full_library_names.list; -- CS remove
 
 
-	--component_libraries_neu : type_libraries.map;		
+	component_libraries_neu : type_libraries.map;		
 	
 -- LIBRARY SEARCH LISTS
 	-- The order of project libraries and their containing directories 
@@ -124,6 +124,9 @@ package et_kicad is
 	-- For this reason we keep them in simple lists.
 	-- If multiple projects are imported, these lists are always
 	-- cleared when a project file is read. See procedure read_project_file.
+	
+	-- CS: it could be useful to store the search lists in each module (type_module.lib_dirs, type_module.libs)
+	-- See comment at end of procedure read_project_file.
 
 	-- search list for library names
 	search_list_project_libraries : et_libraries.type_library_names.list; -- bel_logic, bel_primitives, ...
