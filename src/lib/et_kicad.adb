@@ -1697,11 +1697,12 @@ package body et_kicad is
 				end if;
 
 				exception
-					when constraint_error =>
+					when event: others =>
 						log_indentation_reset;
 						log (text => message_error & "component " & to_string (tmp_component_name) & " invalid !",
 							 console => true);
-							-- CS: provide details about the problem (line number, ...)
+						-- CS: provide details about the problem (line number, ...)
+						log (ada.exceptions.exception_message (event));
 						raise;
 						
 			end insert_component;
@@ -1730,6 +1731,13 @@ package body et_kicad is
 				if tmp_unit_id > 0 then -- if tmp_unit_id is zero, nothing is done
 					type_libraries.query_element (lib_cursor, locate_component'access);
 				end if;
+
+				exception
+					when event:
+						others =>
+							log (ada.exceptions.exception_message (event));
+							raise;
+
 			end set_unit_cursor;
 				
 			
@@ -1778,13 +1786,20 @@ package body et_kicad is
 
 			begin -- add_unit
 				if tmp_unit_id > 0 then
-					libraries.update_element ( lib_cursor, locate_component'access);
+					libraries.update_element (lib_cursor, locate_component'access);
 				elsif tmp_units_total = 1 then
 					tmp_unit_id := 1;
-					libraries.update_element ( lib_cursor, locate_component'access);
+					libraries.update_element (lib_cursor, locate_component'access);
 				else
 					null; -- CS
 				end if;
+
+				exception
+					when event:
+						others =>
+							log (ada.exceptions.exception_message (event));
+							raise;
+
 			end add_unit;
 
 			procedure create_units is
@@ -1910,6 +1925,13 @@ package body et_kicad is
 						raise constraint_error; -- should never happen. see comment above after "if" statement
 					end if;
 				end if;
+
+				exception
+					when event:
+						others =>
+							log (ada.exceptions.exception_message (event));
+							raise;
+
 			end add_symbol_element;
 			
 
@@ -1973,7 +1995,13 @@ package body et_kicad is
 					set_unit_cursor (component_libraries);
 					libraries.update_element (lib_cursor, locate_component'access);
 				end loop;
-				
+
+				exception
+					when event:
+						others =>
+							log (ada.exceptions.exception_message (event));
+							raise;
+
 			end set_text_placeholder_properties;
 			
 			procedure read_draw_object (line : in type_fields_of_line; log_threshold : in type_log_level) is
@@ -2220,6 +2248,13 @@ package body et_kicad is
 
 				begin -- add_footprint
 					libraries.update_element (lib_cursor, locate_component'access);
+
+					exception
+						when event:
+							others =>
+								log (ada.exceptions.exception_message (event));
+								raise;
+
 				end do_it;
 				
 			begin -- add_footprint
@@ -2496,6 +2531,13 @@ package body et_kicad is
 				
 				log_indentation_down;
 				log_indentation_down;
+
+				exception
+					when event:
+						others =>
+							log (ada.exceptions.exception_message (event));
+							raise;
+
 			end build_package_variant;
 			
 
@@ -2744,76 +2786,88 @@ package body et_kicad is
 			log_indentation_down;
 
 			exception
-				when constraint_error =>
-					log (text => message_error & affected_line (line) & to_string (line), console => true);
-					raise;
+				when event:
+					others =>
+						log (text => message_error & affected_line (line) & to_string (line), console => true);
+						log (ada.exceptions.exception_message (event));
+						raise;
 		end read_library;
 
+		library_empty : boolean;
+		
+		procedure library_empty_check (
+			library_name	: in type_full_library_name.bounded_string;
+			library			: in type_components.map)
+			is
+		begin
+			if type_components.is_empty (library) then
+				library_empty := true;
+			else
+				library_empty := false;
+			end if;
+		end library_empty_check;
+		
 		use type_rig;
 		
 	begin -- read_components_libraries
-		reset_library_cursor (project_lib_cursor);
+-- 		reset_library_cursor (project_lib_cursor);
 		-- CS: use query_element where module_cursor points to, query libraries ...
 		-- CS: remove functions reset_library_cursor and number_of_libraries
 		
 		-- If there are no libraries in the project file, there is nothing to do but writing a warning:
-		if number_of_libraries = 0 then -- CS: use length
-			log (message_warning & "no component libraries defined in project file !");
-		else
+-- 		if number_of_libraries = 0 then -- CS: use length
+-- 			log (message_warning & "no component libraries defined in project file !");
+-- 		else
 			log ("Loading component libraries ...", log_threshold);
 			log_indentation_up;
 			
-			-- We loop in the list of project libraries:
-			while project_lib_cursor /= type_full_library_names.no_element loop
+			-- If for the project libraries defined they must be read.
+			-- The search_list_project_libraries is empty if there are no libraries defined -> nothing to do.
+			-- Otherwise start with the first libraray (in component_libraries) and test if it is empty.
+			-- If it is empty, it is to be read. If it contains anything, it has been read by a previous 
+			-- project import already and can be skipped (saves computing time).
+			if not type_library_names.is_empty (search_list_project_libraries) then
 
-				-- Set the library to be read:
-				lib_file_name := element (project_lib_cursor);
+				-- Set lib_cursor to first library and loop in component_libraries.
+				lib_cursor := component_libraries.first;
+				while type_libraries."/=" (lib_cursor, type_libraries.no_element) loop
 
-				-- log library file name
-				log (to_string (lib_file_name), log_threshold + 1);
-				
-				if exists (to_string (lib_file_name)) then
-					open (
-						file => library_handle,
-						mode => in_file,
-						name => to_string (lib_file_name));
-
-					-- Since the full libary file name (incl. path) is known, we insert an empty
-					-- library in the list of component libraries.
-					-- After that the lib_cursor points to the latest inserted library.
-					type_libraries.insert (
-						container	=> component_libraries,
-						key			=> lib_file_name, -- full library file name (incl. path) like "../lib/my_lib.lib"
-						new_item	=> type_components.empty_map,
+					-- log library file name
+					log (type_full_library_name.to_string (type_libraries.key (lib_cursor)), log_threshold + 1);
+					
+					-- Test if current library is empty.
+					type_libraries.query_element (
 						position	=> lib_cursor,
-						inserted	=> lib_inserted
-						);
+						process		=> library_empty_check'access); -- sets or clears flag "library_empty"
 
-					-- The library could have been inserted earlier by reading another project,
-					-- thus the library is skipped.
-					if lib_inserted then
+					-- If library empty (means it has not been read already),
+					-- open the same-named file and read it.
+					if library_empty then
+
+						open (
+							file => library_handle,
+							mode => in_file,
+							name => type_full_library_name.to_string (type_libraries.key (lib_cursor)));
+						
 						-- Now we read the library file and add components
 						-- to the library pointed to by lib_cursor:
 						set_input (library_handle);
 						read_library (log_threshold + 1);
+
+						close (library_handle);
 					else
 						log (" already loaded -> skipped", log_threshold + 1);
 					end if;
-					
-					close (library_handle);
-				else
-					log (message_warning & "library '" & to_string (lib_file_name) & "' not found !");
-				end if;
 
-				-- prepare next library file to be be read
-				next (project_lib_cursor);
-
-			end loop;
+					type_libraries.next (lib_cursor);
+				end loop;
+				
+			else
+				log (message_warning & "no component libraries defined in project file !");
+			end if;
 			
 			log_indentation_down;
 			
-		end if;
-				
 	end read_components_libraries;
 
 
@@ -3895,7 +3949,7 @@ package body et_kicad is
 
 								-- create empty library (if not existing already)
 								type_libraries.insert (
-									container	=> component_libraries_neu,
+									container	=> component_libraries,
 									key 		=> et_libraries.type_full_library_name.to_bounded_string (compose (
 										containing_directory	=> to_string (element (search_list_lib_dir_cursor)), -- ../../lbr
 										name					=> to_string (element (search_list_library_cursor)), -- connectors, active, ...

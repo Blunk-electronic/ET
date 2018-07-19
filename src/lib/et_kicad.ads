@@ -115,8 +115,6 @@ package et_kicad is
 	-- when reading the project file, the project library names are collected here temporarily:
 	tmp_project_libraries : et_libraries.type_full_library_names.list; -- CS remove
 
-
-	component_libraries_neu : type_libraries.map;		
 	
 -- LIBRARY SEARCH LISTS
 	-- The order of project libraries and their containing directories 
