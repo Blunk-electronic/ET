@@ -7478,8 +7478,8 @@ package body et_kicad is
 											base_name (to_string (top_level_schematic))),
 						instance		=> type_submodule_instance'first,
 						
-						libraries		=> search_list_project_libraries,
-						lib_dirs		=> search_list_project_lib_dirs,
+						libraries_comp	=> search_list_project_libraries,
+						library_dirs	=> search_list_project_lib_dirs,
 						
 						strands			=> type_strands.empty_list,
 						junctions		=> type_junctions.empty_list,

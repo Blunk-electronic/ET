@@ -631,8 +631,9 @@ package et_kicad is
 		instance		: type_submodule_instance;
 
 		-- The search list of project library directories and names:
-		lib_dirs 		: type_project_lib_dirs.list; -- active, passive, ...
-		libraries 		: et_libraries.type_library_names.list; -- bel_logic, bel_primitives, ...
+		library_dirs 	: type_project_lib_dirs.list; 				-- search list for library directories (active, passive, ...)
+		libraries_comp	: et_libraries.type_library_names.list; 	-- search list for component libraries (bel_logic, bel_primitives, ...)
+		-- NOTE: There is no search list for packages, because they are nowhere declared (not even in the project conf. file)
 		
 		strands	    	: et_schematic.type_strands.list;			-- the strands of the module
 		junctions		: et_schematic.type_junctions.list;			-- net junctions
