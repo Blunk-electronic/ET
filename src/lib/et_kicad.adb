@@ -2804,11 +2804,11 @@ package body et_kicad is
 		log_indentation_up;
 		
 		-- If for the project libraries defined they must be read.
-		-- The search_list_project_libraries is empty if there are no libraries defined -> nothing to do.
+		-- The search_list_component_libraries is empty if there are no libraries defined -> nothing to do.
 		-- Otherwise start with the first libraray (in component_libraries) and test if it is empty.
 		-- If it is empty, it is to be read. If it contains anything, it has been read by a previous 
 		-- project import already and can be skipped (saves computing time).
-		if not type_library_names.is_empty (search_list_project_libraries) then
+		if not type_library_names.is_empty (search_list_component_libraries) then
 
 			-- Set lib_cursor to first library and loop in component_libraries.
 			lib_cursor := component_libraries.first;
@@ -3795,9 +3795,7 @@ package body et_kicad is
         use stack_of_sheet_lists;
 		
 		function read_project_file return type_schematic_file_name.bounded_string is
-		-- Reads the project file in terms of LibDir and LibName. 
-		-- LibDir is stored in variable lib_dir.
-		-- Project library names are stored in project_libraries.
+		-- Reads the project file (component libraries, library directories, ...) 
 		-- Returns the name of the top level schematic file.
 			line : type_fields_of_line;
 			
@@ -3882,11 +3880,11 @@ package body et_kicad is
 
 			procedure locate_libraries (
 				log_threshold : in type_log_level) is
-			-- Tests if the libraries (listed in search_list_project_libraries) exist in any of the
+			-- Tests if the libraries (listed in search_list_component_libraries) exist in any of the
 			-- directories listed in search_list_project_lib_dirs.
 			-- The first match matters -> the search ends after the first finding.
 				use type_library_names;
-				search_list_library_cursor : type_library_names.cursor := search_list_project_libraries.first;
+				search_list_library_cursor : type_library_names.cursor := search_list_component_libraries.first;
 				library_found		: boolean; -- true if library file exists
 			
 				use type_project_lib_dirs;
@@ -3975,7 +3973,7 @@ package body et_kicad is
 			-- Clear search list of project libraries from earlier projects that have been imported.
 			-- If we import only one project, this statement does not matter.
 			type_project_lib_dirs.clear (search_list_project_lib_dirs);
-			type_library_names.clear (search_list_project_libraries);
+			type_library_names.clear (search_list_component_libraries);
 
 			-- Open project file. 
 			-- The file name is composed of project name and extension.
@@ -4027,6 +4025,7 @@ package body et_kicad is
 
 								-- The library directories must be
 								-- inserted in the search list of library directories.
+								-- These directories assist search operations for both components and packages.
 								locate_library_directories (field (line,2), log_threshold + 3);
 							end if;
 							
@@ -4034,25 +4033,26 @@ package body et_kicad is
 
 						if section_eeschema_libraries_entered then
 
-							-- From a line like "LibName1=bel_supply" get library names (incl. path and extension) and
-							-- store them in search_list_project_libraries (see et_kicad.ads).
+							-- From a line like "LibName1=bel_supply" get component library names 
+							-- (incl. path and extension) and
+							-- store them in search_list_component_libraries (see et_kicad.ads).
 							-- We ignore the index of LibName. Since we store the lib names in a 
 							-- simple list their order remains unchanged anyway.
 							if field (line,1)(1..project_keyword_library_name'length) 
 								= project_keyword_library_name then
 
-								-- The library could have been referenced already. If so,
-								-- there is no need to append it again to search_list_project_libraries.
+								-- The component library could have been referenced already. If so,
+								-- there is no need to append it again to search_list_component_libraries.
 								if not type_library_names.contains (
-									container 	=> search_list_project_libraries,
+									container 	=> search_list_component_libraries,
 									item		=> type_library_name.to_bounded_string (field (line,2))) then
 									
 										type_library_names.append (
-											container	=> search_list_project_libraries, 
+											container	=> search_list_component_libraries, 
 											new_item	=> type_library_name.to_bounded_string (field (line,2)));
 
-										-- NOTE: search_list_project_libraries keeps the libraries in the same order as they appear
-										-- in the project file. search_list_project_libraries assists search operations.
+										-- NOTE: search_list_component_libraries keeps the libraries in the same order as they appear
+										-- in the project file. search_list_component_libraries assists search operations.
 										-- It applies for the current project only and
 										-- is cleared as soon as another kicad project file is read.
 										
@@ -4073,7 +4073,7 @@ package body et_kicad is
 				
 			end loop;
 
-			-- Test if the libraries collected in search_list_project_libraries
+			-- Test if the libraries collected in search_list_component_libraries
 			-- exist in any of the library directories.
 			locate_libraries (log_threshold + 3);
 
@@ -7450,7 +7450,9 @@ package body et_kicad is
 				-- Kicad uses Y axis positive downwards style (in both schematic and board)
 				Y_axis_positive := downwards;
 				
-				-- derive top level schematic file name from project name
+				-- Derive top level schematic file name from project name.
+				-- This action also creates the directory and component library search lists
+				-- in search_list_component_libraries and search_list_project_lib_dirs.
 				top_level_schematic	:= read_project_file;
 				
 				-- The top level schematic file dictates the module name. 
@@ -7478,7 +7480,7 @@ package body et_kicad is
 											base_name (to_string (top_level_schematic))),
 						instance		=> type_submodule_instance'first,
 						
-						libraries_comp	=> search_list_project_libraries,
+						libraries_comp	=> search_list_component_libraries,
 						library_dirs	=> search_list_project_lib_dirs,
 						
 						strands			=> type_strands.empty_list,

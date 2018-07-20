@@ -2337,9 +2337,9 @@ package body et_kicad_pcb is
 	end to_package_model;
 	
 	procedure read_libraries (
-	-- Reads package libraries. Root directory is et_libraries.lib_dir.
-	-- Create the libraries in container package_libraries (see et_pcb specs).
-	-- The libraries in the container are named after the libraries found in lib_dir.
+	-- Reads package libraries.
+	-- Create the libraries in container package_libraries.
+	-- Bases on search_list_project_lib_dirs (created on reading the project file).
 		log_threshold 	: in et_string_processing.type_log_level) is
 
 		use ada.directories;
@@ -2348,6 +2348,8 @@ package body et_kicad_pcb is
 		use et_general.type_directory_entries;
 		use et_pcb;
 
+		-- The directory search lists have been created on reading the project file.
+		-- Set lib_dir_cursor to first directory.
 		use et_kicad.type_project_lib_dirs;
 		lib_dir_cursor : et_kicad.type_project_lib_dirs.cursor := et_kicad.search_list_project_lib_dirs.first;
 	
@@ -2464,32 +2466,27 @@ package body et_kicad_pcb is
 		log ("reading package libraries ...", log_threshold);
 		log_indentation_up;
 
-		-- CS copy groups from component_libraries_neu to package_libraries_neu
-		
+		-- loop in search_list_project_lib_dirs and scan for package libraries (*.pretty stuff)
 		while lib_dir_cursor /= et_kicad.type_project_lib_dirs.no_element loop
 		
-			-- fetch package library names from group indicated by lib_dir_cursor
+			-- Scan for package library in directory indicated by lib_dir_cursor:
 			library_names := directory_entries (
-				--target_directory	=> et_libraries.to_string (et_libraries.library_group),
 				target_directory	=> et_kicad.to_string (element (lib_dir_cursor)),  
 				category			=> ada.directories.directory,
-				pattern				=> et_kicad.package_library_pattern);
+				pattern				=> et_kicad.package_library_pattern); -- *.pretty stuff
 
-
-			-- Notify operator that there are no package libraries.
-			-- Otherwise loop through the library names
-			-- and create the libraries in container package_libraries.
+			-- If directory contains no packages, notify operator that there are no package libraries.
+			-- Otherwise loop through the library names and create the libraries in container package_libraries.
 			if is_empty (library_names) then
--- 				log_indentation_reset;
--- 				log (message_error & "no package libraries found !");
--- 				raise constraint_error;
-				log ("no package libraries found here");
+				log (message_warning & "no package libraries found in " &
+					 et_kicad.to_string (element (lib_dir_cursor)) & " !");
 			else
-				-- show number of package libraries
+				-- show number of package libraries found in the directory
 				log ("found" & count_type'image (length (library_names)) & " libraries", log_threshold + 1);
 				log_indentation_up;
 
-				-- Loop through library names and create the actual libraries in container package_libraries:
+				-- Loop through library_names and create the same-named empty libraries 
+				-- in container package_libraries:
 				library_name_cursor := library_names.first;
 				while library_name_cursor /= type_directory_entries.no_element loop
 					log ("reading " & element (library_name_cursor) & " ...", log_threshold + 2);
@@ -2497,10 +2494,9 @@ package body et_kicad_pcb is
 					-- create the (empty) library
 					type_libraries.insert (
 						container	=> package_libraries,
-	-- 					key			=> to_library_name (element (library_name_cursor)),
-						key			=> to_full_library_name (
-											group		=> library_group,
-											lib_name	=> to_library_name (element (library_name_cursor))),
+						key			=> et_libraries.to_full_library_name (compose (
+										containing_directory	=> et_kicad.to_string (element (lib_dir_cursor)),
+										name					=> element (library_name_cursor))),
 						inserted	=> library_inserted,
 						position	=> library_cursor,
 						new_item	=> type_packages_in_library.empty_map);

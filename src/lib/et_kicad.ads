@@ -119,9 +119,10 @@ package et_kicad is
 	-- For this reason we keep them in simple lists.
 	-- If multiple projects are imported, these lists are always
 	-- cleared when a project file is read. See procedure read_project_file.
+	-- The search lists are stored for each module (see type_module specs).
 	
-	-- search list for library names
-	search_list_project_libraries : et_libraries.type_library_names.list; -- bel_logic, bel_primitives, ...
+	-- search list for component library names
+	search_list_component_libraries : et_libraries.type_library_names.list; -- bel_logic, bel_primitives, ...
 
 	-- Libraries are stored in directories:
 	library_directory_length_max : constant positive := 300; -- CS: increase if necessary
@@ -129,7 +130,8 @@ package et_kicad is
 
 	function to_string (dir : in type_library_directory.bounded_string) return string;
 	
-	-- search list for library directories
+	-- Search list for library directories.
+	-- This list applies for both component and package search operations.
 	package type_project_lib_dirs is new doubly_linked_lists (
 		element_type	=> type_library_directory.bounded_string,
 		"=" 			=> type_library_directory."=");
