@@ -495,12 +495,6 @@ package et_kicad is
 	-- Resets the given component cursor to the begin of the component list
 	-- of the module indicated by module_cursor.
 
-	procedure reset_library_cursor (cursor : in out et_libraries.type_full_library_names.cursor);
-	-- Resets the given library cursor to the begin of the library list.
-
-	function number_of_libraries return count_type;
-	-- Returns the number of project libraries.
-	
 	function build_portlists (log_threshold : in et_string_processing.type_log_level) 
 		return et_schematic.type_portlists.map;
 	-- Returns a list of components with the absolute positions of their ports as they are placed in the schematic.

@@ -604,22 +604,13 @@ package body et_kicad is
 	end prepend_tilde;
 	
 	procedure read_components_libraries (log_threshold : in type_log_level) is
-	-- Reads component libraries. Root directory is et_libraries.lib_dir.
+	-- Reads component libraries.
 		
         use et_libraries; -- most of the following stuff is specified there
 		use et_libraries.type_full_library_names;
 
-		-- The list of full library names tells us which libraries the project requires.
-		-- This is the cursor to the full library names. It points to the library name in the current module.
-		project_lib_cursor : type_full_library_names.cursor;
-
-		-- Here we keep the full library name (incl. path) like "/home/user/lib/my_lib.lib" temporarily
-		-- before inserting an empty library in the library list et_libraries.component_libraries :
-		lib_file_name	: et_libraries.type_full_library_name.bounded_string;
-
 		-- This is the library cursor. It points to the library being processed (in the list component_libraries):
 		lib_cursor		: type_libraries.cursor;
-		lib_inserted	: boolean; -- indicates whether a library has been inserted
 
 		-- This is the component cursor. It points to the component being processed.
 		comp_cursor		: et_libraries.type_components.cursor;
@@ -2793,9 +2784,10 @@ package body et_kicad is
 						raise;
 		end read_library;
 
-		library_empty : boolean;
+		library_empty : boolean; -- used to detect empty libraries
 		
 		procedure library_empty_check (
+		-- Sets or cleares the flag "library_empty".
 			library_name	: in type_full_library_name.bounded_string;
 			library			: in type_components.map)
 			is
@@ -2807,66 +2799,56 @@ package body et_kicad is
 			end if;
 		end library_empty_check;
 		
-		use type_rig;
-		
 	begin -- read_components_libraries
--- 		reset_library_cursor (project_lib_cursor);
-		-- CS: use query_element where module_cursor points to, query libraries ...
-		-- CS: remove functions reset_library_cursor and number_of_libraries
+		log ("Loading component libraries ...", log_threshold);
+		log_indentation_up;
 		
-		-- If there are no libraries in the project file, there is nothing to do but writing a warning:
--- 		if number_of_libraries = 0 then -- CS: use length
--- 			log (message_warning & "no component libraries defined in project file !");
--- 		else
-			log ("Loading component libraries ...", log_threshold);
-			log_indentation_up;
-			
-			-- If for the project libraries defined they must be read.
-			-- The search_list_project_libraries is empty if there are no libraries defined -> nothing to do.
-			-- Otherwise start with the first libraray (in component_libraries) and test if it is empty.
-			-- If it is empty, it is to be read. If it contains anything, it has been read by a previous 
-			-- project import already and can be skipped (saves computing time).
-			if not type_library_names.is_empty (search_list_project_libraries) then
+		-- If for the project libraries defined they must be read.
+		-- The search_list_project_libraries is empty if there are no libraries defined -> nothing to do.
+		-- Otherwise start with the first libraray (in component_libraries) and test if it is empty.
+		-- If it is empty, it is to be read. If it contains anything, it has been read by a previous 
+		-- project import already and can be skipped (saves computing time).
+		if not type_library_names.is_empty (search_list_project_libraries) then
 
-				-- Set lib_cursor to first library and loop in component_libraries.
-				lib_cursor := component_libraries.first;
-				while type_libraries."/=" (lib_cursor, type_libraries.no_element) loop
+			-- Set lib_cursor to first library and loop in component_libraries.
+			lib_cursor := component_libraries.first;
+			while type_libraries."/=" (lib_cursor, type_libraries.no_element) loop
 
-					-- log library file name
-					log (type_full_library_name.to_string (type_libraries.key (lib_cursor)), log_threshold + 1);
-					
-					-- Test if current library is empty.
-					type_libraries.query_element (
-						position	=> lib_cursor,
-						process		=> library_empty_check'access); -- sets or clears flag "library_empty"
-
-					-- If library empty (means it has not been read already),
-					-- open the same-named file and read it.
-					if library_empty then
-
-						open (
-							file => library_handle,
-							mode => in_file,
-							name => type_full_library_name.to_string (type_libraries.key (lib_cursor)));
-						
-						-- Now we read the library file and add components
-						-- to the library pointed to by lib_cursor:
-						set_input (library_handle);
-						read_library (log_threshold + 1);
-
-						close (library_handle);
-					else
-						log (" already loaded -> skipped", log_threshold + 1);
-					end if;
-
-					type_libraries.next (lib_cursor);
-				end loop;
+				-- log library file name
+				log (type_full_library_name.to_string (type_libraries.key (lib_cursor)), log_threshold + 1);
 				
-			else
-				log (message_warning & "no component libraries defined in project file !");
-			end if;
+				-- Test if current library is empty.
+				type_libraries.query_element (
+					position	=> lib_cursor,
+					process		=> library_empty_check'access); -- sets or clears flag "library_empty"
+
+				-- If library empty (means it has not been read already),
+				-- open the same-named file and read it.
+				if library_empty then
+
+					open (
+						file => library_handle,
+						mode => in_file,
+						name => type_full_library_name.to_string (type_libraries.key (lib_cursor)));
+					
+					-- Now we read the library file and add components
+					-- to the library pointed to by lib_cursor:
+					set_input (library_handle);
+					read_library (log_threshold + 1);
+
+					close (library_handle);
+				else
+					log (" already loaded -> skipped", log_threshold + 1);
+				end if;
+
+				type_libraries.next (lib_cursor);
+			end loop;
 			
-			log_indentation_down;
+		else
+			log (message_warning & "no component libraries defined in project file !");
+		end if;
+		
+		log_indentation_down;
 			
 	end read_components_libraries;
 
@@ -8435,44 +8417,6 @@ package body et_kicad is
 			);
 	end reset_component_cursor;
 
-	procedure reset_library_cursor (cursor : in out et_libraries.type_full_library_names.cursor) is
-	-- Resets the given library cursor to the begin of the library list.
-		procedure reset (
-			name	: in et_coordinates.type_submodule_name.bounded_string;
-			module	: in type_module) is
-			use et_libraries.type_full_library_names;
-		begin
-			cursor := et_libraries.type_full_library_names.first (module.libraries);
-		end reset;
-	begin
-		type_rig.query_element (
-			position	=> module_cursor,
-			process		=> reset'access
-			);
-	end reset_library_cursor;
-
-	function number_of_libraries return count_type is
-	-- Returns the number of project libraries.
-		n : count_type := 0;
-
-		procedure get (
-			name	: in et_coordinates.type_submodule_name.bounded_string;
-			module	: in type_module) is
-			use et_libraries.type_full_library_names;
-		begin
-			n := et_libraries.type_full_library_names.length (module.libraries);
-		end get;
-
-	begin
-		type_rig.query_element (
-			position	=> module_cursor,
-			process		=> get'access
-			);
-
-		return n;
-	end number_of_libraries;
-	
-	
 	function build_portlists (log_threshold : in et_string_processing.type_log_level) 
 		return et_schematic.type_portlists.map is
 	-- Returns a list of components with the absolute positions of their ports as they are placed in the schematic.
