@@ -2364,7 +2364,7 @@ package body et_kicad_pcb is
 		-- inserting was successuful. It goes false if the library is already in the list.
 		-- The library_cursor points to the library in the container package_libraries.
 		library_inserted : boolean;
-		library_cursor : et_pcb.type_libraries.cursor;
+		library_cursor : type_libraries.cursor;
 
 		procedure read_package_names (
 		-- Creates empty packages in the package_libraries. The package names are
@@ -2495,7 +2495,7 @@ package body et_kicad_pcb is
 					log ("reading " & element (library_name_cursor) & " ...", log_threshold + 2);
 
 					-- create the (empty) library
-					et_pcb.type_libraries.insert (
+					type_libraries.insert (
 						container	=> package_libraries,
 	-- 					key			=> to_library_name (element (library_name_cursor)),
 						key			=> to_full_library_name (
@@ -2511,7 +2511,7 @@ package body et_kicad_pcb is
 						-- change in library (the kicad package library is just a directory like ../lbr/bel_ic.pretty)
 						set_directory (compose (to_string (library_group), element (library_name_cursor)));
 						
-						et_pcb.type_libraries.update_element (
+						type_libraries.update_element (
 							container	=> package_libraries,
 							position	=> library_cursor,
 							process		=> read_package_names'access);
@@ -7565,6 +7565,181 @@ package body et_kicad_pcb is
 			next (module_cursor);
 		end loop;
 	end read_boards;
+
+
+	function terminal_port_map_fits (
+	-- Used when terminal_port_maps are to be used for packages.
+	-- The given package is specified by the library name and package name.
+	-- Returns true if the terminal_port_map fits on the given package.
+		library_name		: in et_libraries.type_full_library_name.bounded_string;		-- ../lbr/bel_ic.pretty
+		package_name 		: in et_libraries.type_component_package_name.bounded_string;	-- S_SO14
+		terminal_port_map	: in et_libraries.type_terminal_port_map.map) 
+		return boolean is
+
+		use type_libraries;
+		library_cursor : type_libraries.cursor;
+
+		procedure validate_terminals (package_terminals : in et_pcb.type_terminals.map) is
+		-- Test if the terminals of the terminal_port_map are also in the given package.
+		-- Raises constraint_error if a terminal could not be found in the package.
+			use et_pcb.type_terminals; -- the terminals of the package
+			use et_libraries.type_terminal_port_map;
+		
+			-- This cursor points to the terminal in the terminal_port_map
+			terminal_cursor : et_libraries.type_terminal_port_map.cursor; 
+
+			-- For temporarily storage of a terminal name:
+			terminal_name_in_map : et_libraries.type_terminal_name.bounded_string;
+		begin -- validate_terminals
+			-- Loop in terminal_port_map. Test each terminal whether it occurs
+			-- in the package_terminals.
+			terminal_cursor := terminal_port_map.first;
+			while terminal_cursor /= et_libraries.type_terminal_port_map.no_element loop
+				terminal_name_in_map := key (terminal_cursor);
+
+				if package_terminals.find (terminal_name_in_map) = et_pcb.type_terminals.no_element then
+					log_indentation_reset;
+					log (message_error & "package " & et_libraries.to_string (packge => package_name)
+						 & " does not have a terminal '" 
+						 & et_libraries.to_string (terminal_name_in_map) & "' !", console => true);
+					raise constraint_error;
+				end if;
+				
+				next (terminal_cursor);
+			end loop;
+		end validate_terminals;
+			
+	
+		procedure locate_package (
+		-- Locates the package by package_name in the given package library.
+			library_name	: in et_libraries.type_full_library_name.bounded_string;
+			packages		: in et_pcb.type_packages_library.map) is
+			package_cursor : et_pcb.type_packages_library.cursor;
+
+			use et_pcb.type_packages_library;
+			use et_pcb.type_terminals;
+			use et_libraries.type_terminal_port_map;
+			terminals : et_libraries.type_terminal_count;
+		begin
+			if is_empty (packages) then
+				log_indentation_reset;
+				log (message_error & "package library " & et_libraries.to_string (library_name)
+					 & " is empty !", console => true);
+				raise constraint_error;
+			else
+				-- locate the package
+				package_cursor := packages.find (package_name);
+				if package_cursor = et_pcb.type_packages_library.no_element then
+					log_indentation_reset;
+					log (message_error & "package " & et_libraries.to_string (packge => package_name)
+						& " not found in library " & et_libraries.to_string (library_name)
+						& " !", console => true);
+					raise constraint_error;
+				else
+					-- load the total number of terminals the package provides
+					terminals := et_libraries.type_terminal_count (length (element (package_cursor).terminals));
+
+					-- If the package has less terminals than the given terminal_port_map abort:
+					if et_libraries."<" (terminals, et_libraries.type_terminal_count (length (terminal_port_map))) then
+						log_indentation_reset;
+						log (message_error & "package " & et_libraries.to_string (packge => package_name)
+							& " as too little terminals !",
+							console => true);
+						raise constraint_error;
+					else
+						validate_terminals (element (package_cursor).terminals);
+					end if;
+					
+				end if;
+
+			end if;
+			
+		end locate_package;
+		
+	begin -- terminal_port_map_fits
+		if not is_empty (package_libraries) then
+			library_cursor := package_libraries.find (library_name);
+
+			if library_cursor = type_libraries.no_element then
+				log_indentation_reset;
+				log (message_error & "package library " & et_libraries.to_string (library_name)
+					 & " not found in " & et_libraries.to_string (et_libraries.library_group) 
+					 & " !", console => true);
+				raise constraint_error;
+			else
+				-- locate the given package (by package_name) in the given package library:
+				query_element (
+					position	=> library_cursor,
+					process		=> locate_package'access);
+			end if;
+				
+		else
+			log_indentation_reset;
+			log (message_error & "no package libraries available !", console => true);
+			raise constraint_error;
+		end if;
+
+		return true;
+
+		exception
+			when event:
+				others =>
+					log_indentation_reset;
+					log (ada.exceptions.exception_message (event), console => true);
+					raise;
+
+	end terminal_port_map_fits;
+
+	function terminal_count (
+	-- Returns the number of terminals of the given package in the given library.
+		library_name		: in et_libraries.type_full_library_name.bounded_string;
+		package_name 		: in et_libraries.type_component_package_name.bounded_string)
+		return et_libraries.type_terminal_count is
+
+		use type_libraries;
+		
+		terminals : et_libraries.type_terminal_count; -- to be returned
+		library_cursor : type_libraries.cursor; -- points to the library
+
+		procedure locate_package (
+			library_name	: in et_libraries.type_full_library_name.bounded_string;
+			packages		: in et_pcb.type_packages_library.map) is
+			use et_pcb.type_terminals;
+			use et_pcb.type_packages_library;
+			package_cursor : et_pcb.type_packages_library.cursor;
+		begin
+			-- locate the package
+			package_cursor := packages.find (package_name);
+
+			-- get number of terminals
+			terminals := et_libraries.type_terminal_count (length (element (package_cursor).terminals));
+		end locate_package;
+		
+	begin -- terminal_count
+		-- locate the library
+		library_cursor := type_libraries.find (package_libraries, library_name);
+
+		if library_cursor = type_libraries.no_element then
+			log_indentation_reset;
+			log (message_error & et_libraries.to_string (library_name) & " not found !", console => true);
+			raise constraint_error;
+		else
+			-- query packages in library
+			type_libraries.query_element (library_cursor, locate_package'access);
+		end if;
+		
+		return terminals;
+
+		exception
+			when event:
+				others =>
+					log_indentation_reset;
+					log (ada.exceptions.exception_message (event), console => true);
+					raise;
+
+	end terminal_count;
+	
+
 	
 end et_kicad_pcb;
 

@@ -2462,7 +2462,7 @@ package body et_kicad is
 
 								-- Test whether library and package and terminal_port_map fit together.
 								-- NOTE: The library name must be extended by the "pretty" extension.
-								if et_pcb.terminal_port_map_fits (
+								if et_kicad_pcb.terminal_port_map_fits (
 									library_name		=> to_full_library_name (
 															to_string (to_full_library_name (
 																group		=> library_group, -- ../lbr
@@ -2936,7 +2936,7 @@ package body et_kicad is
 
 					-- Test whether the new variant complies with the terminal_port_map
 					-- NOTE: The library name must be extended by the "pretty" extension.
-					if et_pcb.terminal_port_map_fits (
+					if et_kicad_pcb.terminal_port_map_fits (
 						library_name 		=> to_full_library_name (
 												et_libraries.to_string (full_package_library_name) -- ../lbr/bel_ic
 												& package_library_directory_extension), -- .pretty
@@ -11207,13 +11207,13 @@ package body et_kicad is
 					-- and the package name.
 					-- If a kicad_v4 project is imported, the library name must be extended by the "pretty" extension.
 					if cad_format = kicad_v4 then
-						terminals := et_pcb.terminal_count (
+						terminals := et_kicad_pcb.terminal_count (
 									library_name	=> et_libraries.to_full_library_name (
 														et_libraries.to_string (element (variant_cursor).packge.library) -- ../lbr/bel_ic
 														& package_library_directory_extension), -- .pretty
 									package_name	=> element (variant_cursor).packge.name);	-- S_SO14
 					else
-						terminals := et_pcb.terminal_count (
+						terminals := et_kicad_pcb.terminal_count (
 									library_name	=> element (variant_cursor).packge.library,	-- ../lbr/bel_ic
 									package_name	=> element (variant_cursor).packge.name);	-- S_SO14
 					end if;

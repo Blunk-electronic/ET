@@ -1099,7 +1099,10 @@ package et_pcb is
 	function package_position (position : in type_package_position) return string;
 	-- Returns the coordinates of a package (in a board) as string.
 
+
 	
+	
+-- LIBRARIES
 	
 	-- A package in the library extends the base package type:
 	type type_package_library is new type_package with record
@@ -1113,14 +1116,6 @@ package et_pcb is
 		key_type 		=> et_libraries.type_component_package_name.bounded_string, -- S_SO14
 		element_type 	=> type_package_library);
 	use type_packages_library;
-
-	package type_libraries is new ordered_maps (
-		key_type		=> et_libraries.type_full_library_name.bounded_string, -- projects/lbr/smd_packages.pac
-		element_type	=> type_packages_library.map,
-		"<"				=> et_libraries.type_full_library_name."<");
-
-	-- All package models are collected here:
-	package_libraries : type_libraries.map;
 
 
 
@@ -1362,19 +1357,19 @@ package et_pcb is
 
 	
 
-	function terminal_count (
-		library_name		: in et_libraries.type_full_library_name.bounded_string;
-		package_name 		: in et_libraries.type_component_package_name.bounded_string)
-		return et_libraries.type_terminal_count;
+-- 	function terminal_count (
+-- 		library_name		: in et_libraries.type_full_library_name.bounded_string;
+-- 		package_name 		: in et_libraries.type_component_package_name.bounded_string)
+-- 		return et_libraries.type_terminal_count;
 
-	function terminal_port_map_fits (
-	-- Used when terminal_port_maps are to be used for packages.
-	-- The given package is specified by the library name and package name.
-	-- Returns true if the terminal_port_map fits on the given package.
-		library_name		: in et_libraries.type_full_library_name.bounded_string;		-- ../lbr/bel_ic.pretty
-		package_name 		: in et_libraries.type_component_package_name.bounded_string;	-- S_SO14
-		terminal_port_map	: in et_libraries.type_terminal_port_map.map) 
-		return boolean;
+-- 	function terminal_port_map_fits (
+-- 	-- Used when terminal_port_maps are to be used for packages.
+-- 	-- The given package is specified by the library name and package name.
+-- 	-- Returns true if the terminal_port_map fits on the given package.
+-- 		library_name		: in et_libraries.type_full_library_name.bounded_string;		-- ../lbr/bel_ic.pretty
+-- 		package_name 		: in et_libraries.type_component_package_name.bounded_string;	-- S_SO14
+-- 		terminal_port_map	: in et_libraries.type_terminal_port_map.map) 
+-- 		return boolean;
 
 
 	-- This is general board stuff:

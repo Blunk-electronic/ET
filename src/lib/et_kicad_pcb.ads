@@ -499,9 +499,22 @@ package et_kicad_pcb is
 	end record;
 
 
+	
+-- LIBRARIES
+	
+	package type_libraries is new ordered_maps (
+		key_type		=> et_libraries.type_full_library_name.bounded_string, -- projects/lbr/smd_packages.pac
+		element_type	=> et_pcb.type_packages_library.map,
+		"="				=> et_pcb.type_packages_library."=",
+		"<"				=> et_libraries.type_full_library_name."<");
+
+	-- All package models are collected here:
+	package_libraries : type_libraries.map;
+
+	
 	procedure read_libraries (
 	-- Reads package libraries. Root directory is et_libraries.lib_dir.
-	-- Create the libraries in container package_libraries (see et_pcb specs).								 
+	-- Create the libraries in container package_libraries. 
 	-- The libraries in the container are named after the libraries found in lib_dir.
 		log_threshold 	: in et_string_processing.type_log_level);
 
@@ -696,6 +709,21 @@ package et_kicad_pcb is
 	procedure read_boards (log_threshold : in et_string_processing.type_log_level);
 	-- Imports layout files. The files to be imported are named after the schematic modules.
 	-- The schematic modules are indicated by module_cursor.
+
+	function terminal_count (
+		library_name		: in et_libraries.type_full_library_name.bounded_string;
+		package_name 		: in et_libraries.type_component_package_name.bounded_string)
+		return et_libraries.type_terminal_count;
+	
+	function terminal_port_map_fits (
+	-- Used when terminal_port_maps are to be used for packages.
+	-- The given package is specified by the library name and package name.
+	-- Returns true if the terminal_port_map fits on the given package.
+		library_name		: in et_libraries.type_full_library_name.bounded_string;		-- ../lbr/bel_ic.pretty
+		package_name 		: in et_libraries.type_component_package_name.bounded_string;	-- S_SO14
+		terminal_port_map	: in et_libraries.type_terminal_port_map.map) 
+		return boolean;
+
 	
 end et_kicad_pcb;
 
