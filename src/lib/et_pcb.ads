@@ -1105,17 +1105,18 @@ package et_pcb is
 -- LIBRARIES
 	
 	-- A package in the library extends the base package type:
-	type type_package_library is new type_package with record
+	type type_package_in_library is new type_package with record
 		silk_screen				: type_silk_screen_package_both_sides; -- incl. placeholder for reference and purpose
 		assembly_documentation	: type_assembly_documentation_package_both_sides; -- incl. placeholder for value
 		terminals				: type_terminals.map;
 	end record;
 
 	-- Lots of packages (in a library) can be collected in a map:
-	package type_packages_library is new indefinite_ordered_maps (
-		key_type 		=> et_libraries.type_component_package_name.bounded_string, -- S_SO14
-		element_type 	=> type_package_library);
-	use type_packages_library;
+	package type_packages_in_library is new indefinite_ordered_maps (
+		key_type 		=> et_libraries.type_component_package_name.bounded_string, -- S_SO14, T_0207
+		element_type 	=> type_package_in_library);
+	
+	use type_packages_in_library;
 
 
 

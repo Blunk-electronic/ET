@@ -503,9 +503,9 @@ package et_kicad_pcb is
 -- LIBRARIES
 	
 	package type_libraries is new ordered_maps (
-		key_type		=> et_libraries.type_full_library_name.bounded_string, -- projects/lbr/smd_packages.pac
-		element_type	=> et_pcb.type_packages_library.map,
-		"="				=> et_pcb.type_packages_library."=",
+		key_type		=> et_libraries.type_full_library_name.bounded_string, -- projects/lbr/smd_packages
+		element_type	=> et_pcb.type_packages_in_library.map,
+		"="				=> et_pcb.type_packages_in_library."=",
 		"<"				=> et_libraries.type_full_library_name."<");
 
 	-- All package models are collected here:

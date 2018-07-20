@@ -359,7 +359,7 @@ package body et_kicad_pcb is
 		file_name		: in string; -- S_0201.kicad_mod
 		lines			: in et_pcb.type_lines.list;
 		log_threshold	: in et_string_processing.type_log_level)
-		return et_pcb.type_package_library is
+		return et_pcb.type_package_in_library is
 		
 		use et_pcb;
 		use et_pcb.type_lines;
@@ -2370,7 +2370,7 @@ package body et_kicad_pcb is
 		-- Creates empty packages in the package_libraries. The package names are
 		-- named after the packages found in the library directories.
 			library_name	: in type_full_library_name.bounded_string;
-			packages		: in out type_packages_library.map) is
+			packages		: in out type_packages_in_library.map) is
 
 			package_names : type_directory_entries.list;
 			package_name_cursor : type_directory_entries.cursor;
@@ -2431,7 +2431,7 @@ package body et_kicad_pcb is
 
 				-- From the collected lines the package model can be built and inserted in the 
 				-- package list right away:
-				type_packages_library.insert (
+				type_packages_in_library.insert (
 					container	=> packages,
 					key			=> to_package_name (base_name (element (package_name_cursor))), -- S_0201
 					new_item	=> to_package_model (
@@ -2503,7 +2503,7 @@ package body et_kicad_pcb is
 											lib_name	=> to_library_name (element (library_name_cursor))),
 						inserted	=> library_inserted,
 						position	=> library_cursor,
-						new_item	=> type_packages_library.empty_map);
+						new_item	=> type_packages_in_library.empty_map);
 
 					if library_inserted then
 						log_indentation_up;
@@ -7613,10 +7613,10 @@ package body et_kicad_pcb is
 		procedure locate_package (
 		-- Locates the package by package_name in the given package library.
 			library_name	: in et_libraries.type_full_library_name.bounded_string;
-			packages		: in et_pcb.type_packages_library.map) is
-			package_cursor : et_pcb.type_packages_library.cursor;
+			packages		: in et_pcb.type_packages_in_library.map) is
+			package_cursor : et_pcb.type_packages_in_library.cursor;
 
-			use et_pcb.type_packages_library;
+			use et_pcb.type_packages_in_library;
 			use et_pcb.type_terminals;
 			use et_libraries.type_terminal_port_map;
 			terminals : et_libraries.type_terminal_count;
@@ -7629,7 +7629,7 @@ package body et_kicad_pcb is
 			else
 				-- locate the package
 				package_cursor := packages.find (package_name);
-				if package_cursor = et_pcb.type_packages_library.no_element then
+				if package_cursor = et_pcb.type_packages_in_library.no_element then
 					log_indentation_reset;
 					log (message_error & "package " & et_libraries.to_string (packge => package_name)
 						& " not found in library " & et_libraries.to_string (library_name)
@@ -7703,10 +7703,10 @@ package body et_kicad_pcb is
 
 		procedure locate_package (
 			library_name	: in et_libraries.type_full_library_name.bounded_string;
-			packages		: in et_pcb.type_packages_library.map) is
+			packages		: in et_pcb.type_packages_in_library.map) is
 			use et_pcb.type_terminals;
-			use et_pcb.type_packages_library;
-			package_cursor : et_pcb.type_packages_library.cursor;
+			use et_pcb.type_packages_in_library;
+			package_cursor : et_pcb.type_packages_in_library.cursor;
 		begin
 			-- locate the package
 			package_cursor := packages.find (package_name);
