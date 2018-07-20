@@ -3972,11 +3972,8 @@ package body et_kicad is
 				level => log_threshold + 1);
 			log_indentation_up;
 
-			-- Clear list of project libraries from earlier projects that have been imported.
+			-- Clear search list of project libraries from earlier projects that have been imported.
 			-- If we import only one project, this statement does not matter.
-			-- In tmp_project_libraries the project libraries are collected. 
-			-- Later they become part of the module being processed. -- CS rework comment
-			type_full_library_names.clear (tmp_project_libraries); -- CS remove
 			type_project_lib_dirs.clear (search_list_project_lib_dirs);
 			type_library_names.clear (search_list_project_libraries);
 
@@ -4038,19 +4035,11 @@ package body et_kicad is
 						if section_eeschema_libraries_entered then
 
 							-- From a line like "LibName1=bel_supply" get library names (incl. path and extension) and
-							-- store them in list tmp_project_libraries (see et_kicad.ads).
+							-- store them in search_list_project_libraries (see et_kicad.ads).
 							-- We ignore the index of LibName. Since we store the lib names in a 
-							-- doubly linked list their order remains unchanged anyway. -- CS rework
+							-- simple list their order remains unchanged anyway.
 							if field (line,1)(1..project_keyword_library_name'length) 
 								= project_keyword_library_name then
-
-								type_full_library_names.append ( -- CS remove
-									container	=> tmp_project_libraries, 
-									new_item	=> type_full_library_name.to_bounded_string (
-										compose (
-											containing_directory	=> et_libraries.to_string (library_group),
-											name					=> field (line,2),
-											extension				=> file_extension_schematic_lib)));
 
 								-- The library could have been referenced already. If so,
 								-- there is no need to append it again to search_list_project_libraries.
@@ -4088,8 +4077,6 @@ package body et_kicad is
 			-- exist in any of the library directories.
 			locate_libraries (log_threshold + 3);
 
-			-- CS save search lists
-			
 			close (project_file_handle);
 
 			-- Derive the top level schematic file name from the project name.
@@ -7491,7 +7478,9 @@ package body et_kicad is
 											base_name (to_string (top_level_schematic))),
 						instance		=> type_submodule_instance'first,
 						
-						libraries		=> tmp_project_libraries, -- set project libraries (collected via project file)
+						libraries		=> search_list_project_libraries,
+						lib_dirs		=> search_list_project_lib_dirs,
+						
 						strands			=> type_strands.empty_list,
 						junctions		=> type_junctions.empty_list,
 						nets			=> type_nets.empty_map,

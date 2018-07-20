@@ -112,9 +112,6 @@ package et_kicad is
 	-- All component models are collected here.
 	component_libraries : type_libraries.map;
 	
-	-- when reading the project file, the project library names are collected here temporarily:
-	tmp_project_libraries : et_libraries.type_full_library_names.list; -- CS remove
-
 	
 -- LIBRARY SEARCH LISTS
 	-- The order of project libraries and their containing directories 
@@ -123,9 +120,6 @@ package et_kicad is
 	-- If multiple projects are imported, these lists are always
 	-- cleared when a project file is read. See procedure read_project_file.
 	
-	-- CS: it could be useful to store the search lists in each module (type_module.lib_dirs, type_module.libs)
-	-- See comment at end of procedure read_project_file.
-
 	-- search list for library names
 	search_list_project_libraries : et_libraries.type_library_names.list; -- bel_logic, bel_primitives, ...
 
@@ -140,7 +134,6 @@ package et_kicad is
 		element_type	=> type_library_directory.bounded_string,
 		"=" 			=> type_library_directory."=");
 	search_list_project_lib_dirs : type_project_lib_dirs.list;
-
 
 	
 -- COMPONENT TEXT FIELDS
@@ -637,8 +630,9 @@ package et_kicad is
 		generic_name	: et_coordinates.type_submodule_name.bounded_string;
 		instance		: type_submodule_instance;
 
-		-- The list of project library names in the order as defined in project file:
-		libraries		: et_libraries.type_full_library_names.list;	
+		-- The search list of project library directories and names:
+		lib_dirs 		: type_project_lib_dirs.list; -- active, passive, ...
+		libraries 		: et_libraries.type_library_names.list; -- bel_logic, bel_primitives, ...
 		
 		strands	    	: et_schematic.type_strands.list;			-- the strands of the module
 		junctions		: et_schematic.type_junctions.list;			-- net junctions
