@@ -67,6 +67,15 @@ package et_kicad_pcb is
 	layer_bot_copper			: constant string (1..4)	:= "B.Cu";
 	layer_all_copper			: constant string (1..4)	:= "*.Cu";
 
+
+	function full_library_name (
+		library_name	: in et_libraries.type_library_name.bounded_string; -- bel_logic
+		package_name 	: in et_libraries.type_component_package_name.bounded_string) -- S_SO14
+		return et_libraries.type_full_library_name.bounded_string;
+	-- Returns the first library directory (in search_list_project_lib_dirs) that
+	-- contains the given package library with the given package.
+
+	
 	-- For things in section layers like (0 F.Cu signal) or (49 F.Fab user) we have those specs.
 	-- This is board file related.
 	layer_id_max : constant positive := 49; -- includes ALL layers (signal and non-signal)

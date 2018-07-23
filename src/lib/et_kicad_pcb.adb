@@ -68,6 +68,37 @@ with et_kicad;
 
 package body et_kicad_pcb is
 
+	function full_library_name (
+		library_name	: in et_libraries.type_library_name.bounded_string; -- bel_logic
+		package_name 	: in et_libraries.type_component_package_name.bounded_string) -- S_SO14
+		return et_libraries.type_full_library_name.bounded_string is
+	-- Returns the first library directory (in search_list_project_lib_dirs) that
+	-- contains the given package library with the given package.
+		lib : et_libraries.type_full_library_name.bounded_string; -- to be returned
+
+		use et_kicad;
+		use type_project_lib_dirs;
+		use et_libraries;
+		dir_cursor : et_kicad.type_project_lib_dirs.cursor := et_kicad.search_list_project_lib_dirs.first;
+	begin
+		while dir_cursor /= et_kicad.type_project_lib_dirs.no_element loop
+
+			if type_libraries.contains (
+				container	=> package_libraries,
+				key			=> type_full_library_name.to_bounded_string (ada.directories.compose (
+									containing_directory => to_string (element (dir_cursor)),
+									name	=> et_libraries.to_string (library_name)))) then
+
+				null;
+
+			end if;
+			
+			next (dir_cursor);
+		end loop;
+		--	& package_library_directory_extension),
+		return lib;
+	end full_library_name;
+	
 	function to_plot_output_directory (directory : in string) return type_plot_output_directory.bounded_string is
 	begin
 		return type_plot_output_directory.to_bounded_string (directory);
