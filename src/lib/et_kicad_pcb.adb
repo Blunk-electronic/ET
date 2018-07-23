@@ -2363,12 +2363,14 @@ package body et_kicad_pcb is
 		library_name_cursor : type_directory_entries.cursor;
 
 		-- While inserting the libraries the flag library_inserted goes true once
-		-- inserting was successuful. It goes false if the library is already in the list.
-		-- The library_cursor points to the library in the container package_libraries.
+		-- inserting was successuful, this should always be the case. This flag is
+		-- mandatory and is not evaluated.
 		library_inserted : boolean;
+
+		-- The library_cursor points to the library in the container package_libraries.
 		library_cursor : type_libraries.cursor;
 
-		procedure read_package_names (
+		procedure read_packages (
 		-- Creates empty packages in the package_libraries. The package names are
 		-- named after the packages found in the library directories.
 			library_name	: in type_full_library_name.bounded_string;
@@ -2383,7 +2385,7 @@ package body et_kicad_pcb is
 			use et_pcb.type_lines;
 			lines : et_pcb.type_lines.list; -- all lines of a single package model
 
-		begin -- read_package_names
+		begin -- read_packages
 			log ("reading package names in " & current_directory & " ...", log_threshold + 3);
 			log_indentation_up;
 
@@ -2459,7 +2461,7 @@ package body et_kicad_pcb is
 						log (ada.exceptions.exception_message (event), console => true);
 						raise;
 
-		end read_package_names;
+		end read_packages;
 
 	
 	begin -- read_libraries
@@ -2468,7 +2470,9 @@ package body et_kicad_pcb is
 
 		-- loop in search_list_project_lib_dirs and scan for package libraries (*.pretty stuff)
 		while lib_dir_cursor /= et_kicad.type_project_lib_dirs.no_element loop
-		
+
+			log ("in directory " & et_kicad.to_string (element (lib_dir_cursor)), log_threshold + 1);
+			
 			-- Scan for package library in directory indicated by lib_dir_cursor:
 			library_names := directory_entries (
 				target_directory	=> et_kicad.to_string (element (lib_dir_cursor)),  
@@ -2482,7 +2486,7 @@ package body et_kicad_pcb is
 					 et_kicad.to_string (element (lib_dir_cursor)) & " !");
 			else
 				-- show number of package libraries found in the directory
-				log ("found" & count_type'image (length (library_names)) & " libraries", log_threshold + 1);
+				log ("found" & count_type'image (length (library_names)) & " libraries", log_threshold + 2);
 				log_indentation_up;
 
 				-- Loop through library_names and create the same-named empty libraries 
@@ -2497,32 +2501,25 @@ package body et_kicad_pcb is
 						key			=> et_libraries.to_full_library_name (compose ( -- ../lbr/tht_packages/plcc.pretty 
 										containing_directory	=> et_kicad.to_string (element (lib_dir_cursor)),
 										name					=> element (library_name_cursor))),
-						inserted	=> library_inserted,
+						inserted	=> library_inserted, -- mandatory, not evaluated, should be true always
 						position	=> library_cursor,
 						new_item	=> type_packages_in_library.empty_map);
 
-					if library_inserted then
-						log_indentation_up;
-						
-						-- change in library (the kicad package library is just a directory like ../lbr/bel_ic.pretty)
-						set_directory (compose (to_string (library_group), element (library_name_cursor)));
+					-- change in library (the kicad package library is just a directory like ../lbr/bel_ic.pretty)
+					set_directory (compose (
+						containing_directory	=> et_kicad.to_string (element (lib_dir_cursor)),
+						name					=> element (library_name_cursor)));
 
-						-- Read the library contents and store them in package_libraries where
-						-- library_cursor is pointing to:
-						type_libraries.update_element (
-							container	=> package_libraries,
-							position	=> library_cursor,
-							process		=> read_package_names'access);
+					-- Read the library contents and store them in package_libraries where
+					-- library_cursor is pointing to:
+					type_libraries.update_element (
+						container	=> package_libraries,
+						position	=> library_cursor,
+						process		=> read_packages'access);
 
-						-- change back to directory of origin
-						set_directory (et_pcb.to_string (origin_directory));
-						log_indentation_down;
-					else
-						log_indentation_up;
-						log ("already loaded -> skipped", log_threshold + 2);
-						log_indentation_down;
-					end if;
-					
+					-- change back to directory of origin
+					set_directory (et_pcb.to_string (origin_directory));
+
 					next (library_name_cursor);
 				end loop;
 

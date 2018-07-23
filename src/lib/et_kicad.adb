@@ -166,6 +166,18 @@ package body et_kicad is
 		set_y (point, y);
 		return point;
 	end to_point;
+
+	function library_directory (
+		library_name	: in et_libraries.type_library_name.bounded_string; -- bel_logic
+		package_name 	: in et_libraries.type_component_package_name.bounded_string) -- S_SO14
+		return type_library_directory.bounded_string is
+	-- Returns the first library directory (in search_list_project_lib_dirs) that
+	-- contains the given package library with the given package.
+		lib_dir : type_library_directory.bounded_string; -- to be returned
+	begin
+		return lib_dir;
+	end library_directory;
+	
 	
 	function library_name (text : in string) return et_libraries.type_library_name.bounded_string is
 	-- extracts from a string like "bel_ic:S_SO14" the library name "bel_ic"
@@ -2463,9 +2475,11 @@ package body et_kicad is
 								-- Test whether library and package and terminal_port_map fit together.
 								-- NOTE: The library name must be extended by the "pretty" extension.
 								if et_kicad_pcb.terminal_port_map_fits (
-									library_name		=> to_full_library_name (
+									library_name		=> to_full_library_name ( -- ../lbr_dir_1/bel_logic.pretty
 															to_string (to_full_library_name (
-																group		=> library_group, -- ../lbr
+																group		=> et_kicad.library_directory (  -- ../lbr_dir_1
+																	library_name	=> library_name (content (field_package)), -- bel_logic
+																	package_name	=> package_name (content (field_package))), -- S_SO14
 																lib_name	=> library_name (content (field_package)))) -- bel_ic
 															& package_library_directory_extension),
 									package_name		=> package_name (content (field_package)), -- S_SO14
@@ -2800,7 +2814,7 @@ package body et_kicad is
 		end library_empty_check;
 		
 	begin -- read_components_libraries
-		log ("Loading component libraries ...", log_threshold);
+		log ("reading component libraries ...", log_threshold);
 		log_indentation_up;
 		
 		-- If for the project libraries defined they must be read.
@@ -3880,11 +3894,11 @@ package body et_kicad is
 
 			procedure locate_libraries (
 				log_threshold : in type_log_level) is
-			-- Tests if the libraries (listed in search_list_component_libraries) exist in any of the
+			-- Tests if the libraries (listed in search_list_component_libraries) exist in the
 			-- directories listed in search_list_project_lib_dirs.
-			-- The first match matters -> the search ends after the first finding.
+			-- If a library was found, a same-named library is created in the container component_libraries.
 				use type_library_names;
-				search_list_library_cursor : type_library_names.cursor := search_list_component_libraries.first;
+				search_list_library_cursor : type_library_names.cursor;
 				library_found		: boolean; -- true if library file exists
 			
 				use type_project_lib_dirs;
@@ -3896,8 +3910,9 @@ package body et_kicad is
 			begin -- locate_libraries
 				log ("locating library directories ...", log_threshold);
 				log_indentation_up;
-				
+
 				-- loop in project_libraries (specified in the kicad project file)
+				search_list_library_cursor := search_list_component_libraries.first;
 				while search_list_library_cursor /= type_library_names.no_element loop
 
 					-- library_cursor points to the current library
@@ -3906,21 +3921,19 @@ package body et_kicad is
 					
 					-- This flag goes true once the library has been found at file system level
 					library_found := false;
-
-					-- Loop in directories (specified in the kicad project file by LibDir=../../lbr;../connectors).
-					-- Exit loop on first match.
+				
+					-- Loop in directories (specified in the kicad project file by LibDir=../../lbr_dir_1;../lbr_dir_2).
 					search_list_lib_dir_cursor := search_list_project_lib_dirs.first;
 					while search_list_lib_dir_cursor /= type_project_lib_dirs.no_element loop
 
-						log ("searching in " & to_string (element (search_list_lib_dir_cursor)), -- ../../lbr
+						log ("searching in " & to_string (element (search_list_lib_dir_cursor)), -- ../../lbr_dir_1; ../../lbr_dir_2; ...
 							log_threshold + 3); 
 						
 						-- Test at file system level, whether the current project library exists
 						-- in the directory indicated by search_list_lib_dir_cursor.
 						-- If exists, create an empty library in with a full name in component_libraries.
-						-- Exit after the first finding.
 						if exists (compose (
-							containing_directory	=> to_string (element (search_list_lib_dir_cursor)), -- ../../lbr
+							containing_directory	=> to_string (element (search_list_lib_dir_cursor)), -- ../../lbr_dir_1
 							name					=> to_string (element (search_list_library_cursor)), -- connectors, active, ...
 							extension				=> file_extension_schematic_lib)) 
 							then
@@ -3939,7 +3952,6 @@ package body et_kicad is
 									position	=> library_cursor
 									); 
 								
-								exit;
 						end if;
 
 						next (search_list_lib_dir_cursor);
@@ -4024,7 +4036,7 @@ package body et_kicad is
 									 log_threshold + 2);
 
 								-- The library directories must be
-								-- inserted in the search list of library directories.
+								-- inserted in the search list of library directories (search_list_project_lib_dirs).
 								-- These directories assist search operations for both components and packages.
 								locate_library_directories (field (line,2), log_threshold + 3);
 							end if;
@@ -4392,7 +4404,7 @@ package body et_kicad is
 			end search_for_same_coordinates;
 			
 			
-			procedure associate_net_labels_with_anonymous_strands is
+			procedure associate_net_labels_with_anonymous_strands (log_threshold : in type_log_level) is
 			-- All anonymous strands must be given a name. The name is enforced by net labels.
 				
 			-- The first label found on the strand dictates the strand name.
@@ -4466,7 +4478,7 @@ package body et_kicad is
 				
 				-- This does only make sense if there are strands at all:
 				if not is_empty (anonymous_strands) then
-					log (text => "associating net labels with strands ...");
+					log ("associating net labels with strands ...", log_threshold);
 					
 					-- Loop in list of anonymous strands, get a (non-processed-yet) strand, loop in list of segments and 
 					-- find a (non-processed-yet) net label that sits on the net segment. If label sits on segment:
@@ -4724,7 +4736,7 @@ package body et_kicad is
 					--
 					-- NOTE: Even if a strand has no name at this stage, it may get a dedicated name later.
 					-- Power-out ports may overwrite the strand name.
-					log (text => "building name-less strands ...");
+					log ("building name-less strands ...", log_threshold);
 					log_indentation_up;
 
 					strand_cursor := anonymous_strands.first; -- reset strand cursor
@@ -4786,7 +4798,7 @@ package body et_kicad is
 					-- Build named strands with label. Those strands have the "processed" flag set.
 					-- NOTE: Even if a strand has a dedicated name at this stage, it may get a dedicated name later on netlist generation.
 					-- Power-out ports may overwrite the strand name (which would be regarded as design error and is handled on netlist generation)
-					log (text => "building named strands ...");
+					log ("building named strands ...", log_threshold);
 					log_indentation_up;
 					
 					strand_cursor := anonymous_strands.first; -- reset strand cursor
@@ -4846,7 +4858,7 @@ package body et_kicad is
 				log_indentation_down;
 			end associate_net_labels_with_anonymous_strands;
 			
-			procedure process_junctions is
+			procedure process_junctions (log_threshold : in type_log_level) is
 			-- Breaks down all net segments where a junction sits on. 
 			-- In the end, the number of net segments may increase.
 
@@ -4951,7 +4963,7 @@ package body et_kicad is
 			end process_junctions;
 
 
-			procedure build_anonymous_strands is
+			procedure build_anonymous_strands (log_threshold : in type_log_level) is
 			-- From the wild segments and junctions assemble net segments to anonymous strands.
 
 				procedure add_strand_to_anonymous_strands is
@@ -4999,7 +5011,7 @@ package body et_kicad is
 
 					-- Segments where a junction sits on, must be broken down. This results in more segments than calculated earlier.
 					-- The outcome of process_junctions might be a greater number of net segments than currently being held in segment_count.
-					process_junctions;
+					process_junctions (log_threshold + 1);
 					-- segment_count now has been updated
 
 					log_indentation_up;
@@ -5629,8 +5641,8 @@ package body et_kicad is
 			
 				segment : type_wild_net_segment; -- the segment being built
 			begin
-				log ("making net segment ...", log_threshold);
-				log_indentation_up;
+				--log ("making net segment ...", log_threshold);
+				--log_indentation_up;
 
 				line_cursor := type_lines.first (lines);
 				
@@ -5654,14 +5666,14 @@ package body et_kicad is
 				if length (segment) > zero_distance then 
 
 					-- The net segments are to be collected in a wild list of segments for later sorting.
-					log (to_string (segment => segment, scope => xy), log_threshold + 1);
+					log ("net segment" & to_string (segment => segment, scope => xy), log_threshold);
 					
 					type_wild_segments.append (wild_segments, segment);
 				else -- segment has zero length
 					log (message_warning & affected_line (et_kicad.line) & "Net segment with zero length found -> ignored !");
 				end if; -- length
 
-				log_indentation_down;
+				--log_indentation_down;
 			end make_net_segment;
 
 			function junction_header (line : in type_fields_of_line) return boolean is
@@ -5699,8 +5711,8 @@ package body et_kicad is
 				end append_junction;
 				
 			begin -- make_junction
-				log ("making net junction ...", log_threshold);
-				log_indentation_up;
+				--log ("making net junction ...", log_threshold);
+				--log_indentation_up;
 				
 				set_path (junction.coordinates, path_to_submodule);
 				set_sheet (junction.coordinates, sheet_number_current);
@@ -5708,7 +5720,7 @@ package body et_kicad is
 				set_y (junction.coordinates, mil_to_distance (field (line,4)));
 
 				-- for the log
-				log (to_string (junction => junction, scope => xy), log_threshold + 1);
+				log ("net junction" & to_string (junction => junction, scope => xy), log_threshold);
 
 				-- add to wild list of junctions
 				type_junctions.append (wild_junctions, junction);
@@ -5719,7 +5731,7 @@ package body et_kicad is
 					position => module_cursor,
 					process => append_junction'access);
 
-				log_indentation_down;
+				--log_indentation_down;
 			end make_junction;
 
 			function simple_label_header (line : in type_fields_of_line) return boolean is
@@ -5747,8 +5759,8 @@ package body et_kicad is
 				
 				label : type_net_label_simple; -- the label being built
 			begin
-				log ("making simple label ...", log_threshold);
-				log_indentation_up;
+				--log ("simple label", log_threshold + 1);
+				--log_indentation_up;
 				
 				line_cursor := type_lines.first (lines);
 
@@ -5776,7 +5788,7 @@ package body et_kicad is
 				check_net_name_characters (label.text);
 				
 				-- for the log
-				log (to_string (label => type_net_label (label), scope => xy), log_threshold + 1);
+				log ("simple label" & to_string (label => type_net_label (label), scope => xy), log_threshold);
 
 				check_schematic_text_size (category => net_label, size => label.size);
 				-- CS: check label style
@@ -5785,7 +5797,7 @@ package body et_kicad is
 				-- The simple labels are to be collected in a wild list of simple labels.
 				type_simple_labels.append (wild_simple_labels, label);
 
-				log_indentation_down;
+				--log_indentation_down;
 			end make_simple_label;
 
 			function tag_label_header (line : in type_fields_of_line) return boolean is
@@ -5815,8 +5827,8 @@ package body et_kicad is
 				
 				label : type_net_label_tag; -- the label being built
 			begin
-				log ("making tag label ...", log_threshold);
-				log_indentation_up;
+				--log ("making tag label ...", log_threshold);
+				--log_indentation_up;
 
 				line_cursor := type_lines.first (lines);
 
@@ -5856,7 +5868,7 @@ package body et_kicad is
 				check_net_name_characters (label.text);
 
 				-- for the log
-				log (to_string (label => type_net_label (label), scope => xy), log_threshold + 1);
+				log ("tag label" & to_string (label => type_net_label (label), scope => xy), log_threshold);
 
 				check_schematic_text_size (category => net_label, size => label.size);
 				-- CS: check style and line width
@@ -5864,7 +5876,7 @@ package body et_kicad is
 				-- The tag labels are to be collected in a wild list of tag labels for later sorting.
 				type_tag_labels.append (wild_tag_labels, label);
 
-				log_indentation_down;
+				--log_indentation_down;
 			end make_tag_label;
 
 			function text_note_header (line : in type_fields_of_line) return boolean is
@@ -5891,8 +5903,8 @@ package body et_kicad is
 			
 				note : type_note; -- the text note being built
 			begin
-				log ("making text note ...", log_threshold);
-				log_indentation_up;
+				--log ("making text note ...", log_threshold);
+				--log_indentation_up;
 				
 				line_cursor := type_lines.first (lines);
 
@@ -5917,12 +5929,12 @@ package body et_kicad is
 				-- CS: Currently we store the line as it is in tmp_note.text
 				note.content := et_libraries.type_text_content.to_bounded_string (to_string (line));
 
-				write_note_properties (note, log_threshold + 1);
+				write_note_properties (note, log_threshold);
 				
 				-- the notes are to be collected in the list of notes
 				add_note (note);
 
-				log_indentation_down;
+				--log_indentation_down;
 			end make_text_note;
 
 			function component_header (line : in type_fields_of_line) return boolean is
@@ -7100,12 +7112,8 @@ package body et_kicad is
 				set_y (no_connection_flag.coordinates, mil_to_distance (field (line,4)));
 
 				-- for the log
-				if log_level >= log_threshold + 1 then
-					log_indentation_up;
-					log ("no-connection-flag at " 
-						& to_string (no_connection_flag => no_connection_flag, scope => xy));
-					log_indentation_down;
-				end if;
+				log ("no-connection-flag" & to_string (no_connection_flag => no_connection_flag, scope => xy),
+					 log_threshold + 1);
 
 				-- append the no-connect-flag to the list of no_connections of the current module
 				update_element (
@@ -7122,7 +7130,7 @@ package body et_kicad is
 		
 			if exists (to_string (current_schematic)) then
 				log ("reading schematic file " & to_string (current_schematic) & " ...",
-					 log_threshold + 1,
+					 log_threshold,
 					 console => true);
 
 				-- log module path as recorded by parent unit
@@ -7403,7 +7411,7 @@ package body et_kicad is
 
 				-- From the wild list of net segments, assemble net segments to anonymous strands.
 				-- A strand is: all net segments connected with each other by their start or end points.
-				build_anonymous_strands;
+				build_anonymous_strands (log_threshold + 1);
 	
 				-- All anonymous strands must be given a name. The name is enforced by the a net label.
 				-- (The fact that power-put ports enforce a name also, is cared for later on netlist generation.)
@@ -7412,7 +7420,7 @@ package body et_kicad is
 				-- If the name differs from the net name set earlier, a warning is output. 
 				-- Strands without label remain anonymous. Their name is assigned by using the notation "N$".
 				-- The strands are finally appended to the strands of the current module (see spec. of type_module.strands).
-				associate_net_labels_with_anonymous_strands;
+				associate_net_labels_with_anonymous_strands (log_threshold + 1);
 
 			else
 				log_indentation_reset;

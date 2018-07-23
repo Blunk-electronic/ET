@@ -247,19 +247,19 @@ package et_coordinates is
 
 	zero_position : constant type_coordinates;
 
-	coordinates_preamble_xy : constant string (1..11) := "pos. "
+	coordinates_preamble_xy : constant string (1..12) := " pos. "
 		& "(x"
 		& axis_separator
 		& "y) ";
 	
-	coordinates_preamble_sheet : constant string (1..17) := "pos. "
+	coordinates_preamble_sheet : constant string (1..18) := " pos. "
 		& "(sheet"
 		& axis_separator
 		& "x"
 		& axis_separator
 		& "y) ";
 
-	coordinates_preamble_module : constant string (1..22) := "pos. "
+	coordinates_preamble_module : constant string (1..23) := " pos. "
 		& "(path"
 		& axis_separator
 		& "sheet"

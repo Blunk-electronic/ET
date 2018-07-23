@@ -240,16 +240,13 @@ package body et_schematic is
 	end to_string;
 
 	procedure write_note_properties (
-		note : in et_schematic.type_note;
-		log_threshold : in et_string_processing.type_log_level := 0) is
+		note 			: in et_schematic.type_note;
+		log_threshold	: in et_string_processing.type_log_level := 0) is
 	-- Writes the properties of the given note
 		use et_string_processing;
 		use et_coordinates;
-	
--- 		log_threshold : type_log_level := 2;
 	begin
-		log_indentation_up;
-		log ("text note", log_threshold);
+		log ("text note" & to_string (position => note.coordinates, scope => xy), log_threshold);
 
 		log_indentation_up;
 
@@ -259,12 +256,8 @@ package body et_schematic is
 		else
 			log (text => et_string_processing.message_warning & "no content !", level => log_threshold); 
 		end if;
-
-		
+	
 		if log_level >= log_threshold + 1 then
-			
-			-- position
-			log (to_string (position => note.coordinates));
 			
 			-- size
 			log ("size" & et_libraries.type_text_size'image (note.size));
@@ -289,7 +282,6 @@ package body et_schematic is
 
 		end if;
 		
-		log_indentation_down;
 		log_indentation_down;
 	end write_note_properties;
 
@@ -623,10 +615,9 @@ package body et_schematic is
 	function to_string (segment : in type_net_segment; scope : in type_scope := sheet) return string is
 	-- Returns the start and end coordinates of the given net segment.
 	begin
-		-- CS: it is sufficient to output
-		return ("start "
+		return (" start"
 			& to_string (position => segment.coordinates_start, scope => scope)
-			& " end " 
+			& " end" 
 			& to_string (position => segment.coordinates_end, scope => xy));
 	end to_string;
 
