@@ -2491,10 +2491,10 @@ package body et_kicad_pcb is
 				while library_name_cursor /= type_directory_entries.no_element loop
 					log ("reading " & element (library_name_cursor) & " ...", log_threshold + 2);
 
-					-- create the (empty) library
+					-- create the (empty) library in container package_libraries
 					type_libraries.insert (
 						container	=> package_libraries,
-						key			=> et_libraries.to_full_library_name (compose (
+						key			=> et_libraries.to_full_library_name (compose ( -- ../lbr/tht_packages/plcc.pretty 
 										containing_directory	=> et_kicad.to_string (element (lib_dir_cursor)),
 										name					=> element (library_name_cursor))),
 						inserted	=> library_inserted,
@@ -2506,7 +2506,9 @@ package body et_kicad_pcb is
 						
 						-- change in library (the kicad package library is just a directory like ../lbr/bel_ic.pretty)
 						set_directory (compose (to_string (library_group), element (library_name_cursor)));
-						
+
+						-- Read the library contents and store them in package_libraries where
+						-- library_cursor is pointing to:
 						type_libraries.update_element (
 							container	=> package_libraries,
 							position	=> library_cursor,
