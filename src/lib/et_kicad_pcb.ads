@@ -67,6 +67,15 @@ package et_kicad_pcb is
 	layer_bot_copper			: constant string (1..4)	:= "B.Cu";
 	layer_all_copper			: constant string (1..4)	:= "*.Cu";
 
+	-- NOTE: this is not a real file extension but just a part of a directory name:
+	package_library_directory_extension	: constant string (1..7) := ".pretty";
+	
+	package_file_extension				: constant string (1..9) := "kicad_mod";
+
+	-- These constants are required for directory entry searches:
+	package_library_pattern	: constant string (1..8)	:= "*" & package_library_directory_extension;
+	package_pattern 		: constant string (1..11)	:= "*." & package_file_extension;
+	
 
 	function full_library_name (
 		library_name	: in et_libraries.type_library_name.bounded_string; -- bel_logic

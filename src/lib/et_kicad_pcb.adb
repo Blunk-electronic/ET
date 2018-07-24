@@ -119,7 +119,7 @@ package body et_kicad_pcb is
 			full_library_name := to_bounded_string (ada.directories.compose (
 									containing_directory	=> to_string (element (dir_cursor)),
 									name					=> et_libraries.to_string (library_name),
-									extension				=> package_library_directory_extension)); 
+									extension				=> package_library_directory_extension (2..package_library_directory_extension'last))); 
 
 			log ("searching in " & type_full_library_name.to_string (full_library_name) &
 				 " ...", log_threshold + 1);
@@ -461,8 +461,9 @@ package body et_kicad_pcb is
 		-- returns the path and file name. used for error messages.
 			use et_libraries;
 		begin
-			return "file " & ada.directories.compose (
-				to_string (library_group), file_name);
+			--return "file " & ada.directories.compose (
+			--	to_string (library_group), file_name);
+			return "file " & file_name;
 		end path_and_file_name;
 		
 		-- This cursor points to the line being processed (in the list of lines given in "lines"):
@@ -2452,8 +2453,8 @@ package body et_kicad_pcb is
 		library_name_cursor : type_directory_entries.cursor;
 
 		-- While inserting the libraries the flag library_inserted goes true once
-		-- inserting was successuful, this should always be the case. This flag is
-		-- mandatory and is not evaluated.
+		-- inserting was successuful. The flag goes false if a library already exist.
+		-- This is happens if a library has already been created via the import of another project.
 		library_inserted : boolean;
 
 		-- The library_cursor points to the library in the container package_libraries.
@@ -2481,7 +2482,7 @@ package body et_kicad_pcb is
 			package_names := directory_entries (
 								target_directory	=> current_directory, 
 								category			=> ada.directories.ordinary_file,
-								pattern				=> et_kicad.package_pattern);
+								pattern				=> package_pattern);
 
 			-- show number of package libraries
 			if is_empty (package_names) then
@@ -2566,7 +2567,7 @@ package body et_kicad_pcb is
 			library_names := directory_entries (
 				target_directory	=> et_kicad.to_string (element (lib_dir_cursor)),  
 				category			=> ada.directories.directory,
-				pattern				=> et_kicad.package_library_pattern); -- *.pretty stuff
+				pattern				=> package_library_pattern); -- *.pretty stuff
 
 			-- If directory contains no packages, notify operator that there are no package libraries.
 			-- Otherwise loop through the library names and create the libraries in container package_libraries.
@@ -2590,25 +2591,29 @@ package body et_kicad_pcb is
 						key			=> et_libraries.to_full_library_name (compose ( -- ../lbr/tht_packages/plcc.pretty 
 										containing_directory	=> et_kicad.to_string (element (lib_dir_cursor)),
 										name					=> element (library_name_cursor))),
-						inserted	=> library_inserted, -- mandatory, not evaluated, should be true always
+						inserted	=> library_inserted,
 						position	=> library_cursor,
 						new_item	=> type_packages_in_library.empty_map);
 
-					-- change in library (the kicad package library is just a directory like ../lbr/bel_ic.pretty)
-					set_directory (compose (
-						containing_directory	=> et_kicad.to_string (element (lib_dir_cursor)),
-						name					=> element (library_name_cursor)));
+					-- If library has been created already (by import of other project) then there
+					-- is no need to read it again.
+					if library_inserted then
+						-- change in library (the kicad package library is just a directory like ../lbr/bel_ic.pretty)
+						set_directory (compose (
+							containing_directory	=> et_kicad.to_string (element (lib_dir_cursor)),
+							name					=> element (library_name_cursor)));
 
-					-- Read the library contents and store them in package_libraries where
-					-- library_cursor is pointing to:
-					type_libraries.update_element (
-						container	=> package_libraries,
-						position	=> library_cursor,
-						process		=> read_packages'access);
+						-- Read the library contents and store them in package_libraries where
+						-- library_cursor is pointing to:
+						type_libraries.update_element (
+							container	=> package_libraries,
+							position	=> library_cursor,
+							process		=> read_packages'access);
 
-					-- change back to directory of origin
-					set_directory (et_pcb.to_string (origin_directory));
-
+						-- change back to directory of origin
+						set_directory (et_pcb.to_string (origin_directory));
+					end if;
+					
 					next (library_name_cursor);
 				end loop;
 
@@ -7747,7 +7752,8 @@ package body et_kicad_pcb is
 			if library_cursor = type_libraries.no_element then
 				log_indentation_reset;
 				log (message_error & "package library " & et_libraries.to_string (library_name)
-					 & " not found in " & et_libraries.to_string (et_libraries.library_group) 
+					 --& " not found in " & et_libraries.to_string (et_libraries.library_group)
+					 & " not found"
 					 & " !", console => true);
 				raise constraint_error;
 			else

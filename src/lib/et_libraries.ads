@@ -78,10 +78,6 @@ package et_libraries is
 	library_group_length_max : constant positive := 300; -- CS: increase if necessary
 	package type_library_group_name is new generic_bounded_length (library_group_length_max);
 
-	-- This is the library group directory.
-	library_group : type_library_group_name.bounded_string;
-	-- CS: currently there is only one group. In the future this should be a list of groups
-
 	function to_string (group : in type_library_group_name.bounded_string) return string;
 	
 	-- If a library is fully specified with group, name and extension we store them in bounded strings:

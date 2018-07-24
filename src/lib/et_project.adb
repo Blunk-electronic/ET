@@ -181,53 +181,53 @@ package body et_project is
 	end create_project_directory;
 
 	
-	procedure write_component_libraries (log_threshold : in et_string_processing.type_log_level) is
-	-- Writes the ET native libraries in libraries_directory_name.
-	-- Creates sub-directories for library groups (like active, passive, misc, ...)
-	-- CS: currently only one group is supported. See et_libraries.library_group .
-	-- Each group is further-on composed of sub-directories for symbols, packages and devices.
-		use et_string_processing;
-		use ada.directories;
-		-- The group may be a path like "../../lbr" or "../passive". 
-		-- We are interested in the simple name like "lbr" or "passive".
-		lib_group_length : positive := simple_name (et_libraries.to_string (et_libraries.library_group))'length;
-
-		-- The path where the group is to be stored is composed of the libraries_directory_name and the group name.
-		path_length : positive := type_libraries_directory.length (component_libraries_directory_name) + lib_group_length + 1; -- incl. directory separator
-		package type_path is new generic_bounded_length (path_length);
-		use type_path;
-		path : type_path.bounded_string;
-
--- 		procedure w
--- 		device_file_handle : ada.text_io.file_type;
-	begin -- write_component_libraries
-		
-		-- set the path of the library group:
-		path := to_bounded_string (
-				  compose (
-					type_libraries_directory.to_string (component_libraries_directory_name), -- "components"
-					simple_name (et_libraries.to_string (et_libraries.library_group)) -- "passive"
-					)
-				);
-
-		-- create library group (CS or lots of groups in the future, see comments above)
-		create_path (to_string (path));
-
-		-- create sub-directories for symbols, packages and devices.
-		create_path (compose (to_string (path), directory_libraries_components_sym));
-		create_path (compose (to_string (path), directory_libraries_components_pac));
-		create_path (compose (to_string (path), directory_libraries_components_dev));
-		
-		log ("writing native libraries in " & to_string (path) & " ...", log_threshold);
-
-		
-		
-		exception when event:
-			others => 
-				log (ada.exceptions.exception_message (event), console => true);
-				raise;
-
-	end write_component_libraries;
+-- 	procedure write_component_libraries (log_threshold : in et_string_processing.type_log_level) is
+-- 	-- Writes the ET native libraries in libraries_directory_name.
+-- 	-- Creates sub-directories for library groups (like active, passive, misc, ...)
+-- 	-- CS: currently only one group is supported. See et_libraries.library_group .
+-- 	-- Each group is further-on composed of sub-directories for symbols, packages and devices.
+-- 		use et_string_processing;
+-- 		use ada.directories;
+-- 		-- The group may be a path like "../../lbr" or "../passive". 
+-- 		-- We are interested in the simple name like "lbr" or "passive".
+-- 		lib_group_length : positive := simple_name (et_libraries.to_string (et_libraries.library_group))'length;
+-- 
+-- 		-- The path where the group is to be stored is composed of the libraries_directory_name and the group name.
+-- 		path_length : positive := type_libraries_directory.length (component_libraries_directory_name) + lib_group_length + 1; -- incl. directory separator
+-- 		package type_path is new generic_bounded_length (path_length);
+-- 		use type_path;
+-- 		path : type_path.bounded_string;
+-- 
+-- -- 		procedure w
+-- -- 		device_file_handle : ada.text_io.file_type;
+-- 	begin -- write_component_libraries
+-- 		
+-- 		-- set the path of the library group:
+-- 		path := to_bounded_string (
+-- 				  compose (
+-- 					type_libraries_directory.to_string (component_libraries_directory_name), -- "components"
+-- 					simple_name (et_libraries.to_string (et_libraries.library_group)) -- "passive"
+-- 					)
+-- 				);
+-- 
+-- 		-- create library group (CS or lots of groups in the future, see comments above)
+-- 		create_path (to_string (path));
+-- 
+-- 		-- create sub-directories for symbols, packages and devices.
+-- 		create_path (compose (to_string (path), directory_libraries_components_sym));
+-- 		create_path (compose (to_string (path), directory_libraries_components_pac));
+-- 		create_path (compose (to_string (path), directory_libraries_components_dev));
+-- 		
+-- 		log ("writing native libraries in " & to_string (path) & " ...", log_threshold);
+-- 
+-- 		
+-- 		
+-- 		exception when event:
+-- 			others => 
+-- 				log (ada.exceptions.exception_message (event), console => true);
+-- 				raise;
+-- 
+-- 	end write_component_libraries;
 	
 end et_project;
 	

@@ -2489,10 +2489,15 @@ package body et_kicad is
 
 													-- We compose the full library name from lib_dir (global variable) and the 
 													-- library name. example: projects/lbr/bel_ic
-													library => to_full_library_name (
-														group		=> library_group,
-														lib_name	=> library_name (content (field_package)))), 
+-- 													library => to_full_library_name (
+-- 														group		=> library_group,
+-- 														lib_name	=> library_name (content (field_package)))), 
 
+													library => et_kicad_pcb.full_library_name ( -- ../lbr_dir_1/bel_logic.pretty
+																library_name	=> library_name (content (field_package)), -- bel_logic
+																package_name	=> package_name (content (field_package)), -- S_SO14
+																log_threshold	=> log_threshold + 1)),
+												
 												-- The terminal to port map tmp_terminal_port_map is now finally copied
 												-- to its final destination:
 												terminal_port_map => tmp_terminal_port_map)); -- H4/GPIO2
@@ -2942,7 +2947,7 @@ package body et_kicad is
 					if et_kicad_pcb.terminal_port_map_fits (
 						library_name 		=> to_full_library_name (
 												et_libraries.to_string (full_package_library_name) -- ../lbr/bel_ic
-												& package_library_directory_extension), -- .pretty
+												& et_kicad_pcb.package_library_directory_extension), -- .pretty
 						package_name 		=> package_name,
 						terminal_port_map	=> element (variant_cursor).terminal_port_map) then
 
@@ -3020,7 +3025,11 @@ package body et_kicad is
 		log_indentation_up;
 
 		-- Compose the full name of the package library:
-		full_package_library_name := to_full_library_name (group => library_group, lib_name => package_library);
+		--full_package_library_name := to_full_library_name (group => library_group, lib_name => package_library);
+		full_package_library_name := full_library_name (
+			library_name 	=> package_library, -- bel_ic
+			package_name	=> package_name,	-- S_SO14
+			log_threshold	=> log_threshold + 1);
 
 		-- locate the given component library
 		library_cursor := component_libraries.find (component_library);
@@ -11209,7 +11218,7 @@ package body et_kicad is
 						terminals := et_kicad_pcb.terminal_count (
 									library_name	=> et_libraries.to_full_library_name (
 														et_libraries.to_string (element (variant_cursor).packge.library) -- ../lbr/bel_ic
-														& package_library_directory_extension), -- .pretty
+														& et_kicad_pcb.package_library_directory_extension), -- .pretty
 									package_name	=> element (variant_cursor).packge.name);	-- S_SO14
 					else
 						terminals := et_kicad_pcb.terminal_count (
