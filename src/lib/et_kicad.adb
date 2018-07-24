@@ -2450,6 +2450,8 @@ package body et_kicad is
 
 						tmp_variant_name : type_component_variant_name.bounded_string; -- temporarily used for building the variant name
 						tmp_variants : type_component_variants.map; -- temporarily used for building the variant
+
+-- 						full_package_library_name : type_full_library_name.bounded_string;
 					begin
 						case component.appearance is
 							when sch_pcb => -- real component
@@ -2460,6 +2462,12 @@ package body et_kicad is
 								tmp_variant_name := to_component_variant_name (to_string (package_name (content (field_package)))); -- S_SO14
 								check_variant_name_characters (tmp_variant_name);
 
+-- 								full_package_library_name := et_kicad_pcb.full_library_name ( -- ../lbr_dir_1/bel_logic.pretty
+-- 									library_name	=> library_name (content (field_package)), -- bel_logic
+-- 									package_name	=> package_name (content (field_package)), -- S_SO14
+-- 									log_threshold	=> log_threshold + 1),
+
+								
 								-- Test whether library, package and terminal_port_map fit together.
 								if et_kicad_pcb.terminal_port_map_fits (
 
@@ -2470,6 +2478,7 @@ package body et_kicad is
 																library_name	=> library_name (content (field_package)), -- bel_logic
 																package_name	=> package_name (content (field_package)), -- S_SO14
 																log_threshold	=> log_threshold + 1),
+
 
 									package_name		=> package_name (content (field_package)), -- S_SO14
 									terminal_port_map	=> tmp_terminal_port_map) then
@@ -3026,7 +3035,7 @@ package body et_kicad is
 
 		-- Compose the full name of the package library:
 		--full_package_library_name := to_full_library_name (group => library_group, lib_name => package_library);
-		full_package_library_name := full_library_name (
+		full_package_library_name := et_kicad_pcb.full_library_name (
 			library_name 	=> package_library, -- bel_ic
 			package_name	=> package_name,	-- S_SO14
 			log_threshold	=> log_threshold + 1);
@@ -4026,7 +4035,7 @@ package body et_kicad is
 
 							-- Get library directory names 
 							if field (line,1) = project_keyword_library_directory then
-								library_group := to_bounded_string (field (line,2)); -- CS remove
+								--library_group := to_bounded_string (field (line,2)); -- CS remove
 
 								-- For the log write something like "LibDir ../../lbr"
 								log (project_keyword_library_directory 
@@ -11214,17 +11223,17 @@ package body et_kicad is
 					-- This is achieved by looking up the library (full name provided in package_variant)
 					-- and the package name.
 					-- If a kicad_v4 project is imported, the library name must be extended by the "pretty" extension.
-					if cad_format = kicad_v4 then
-						terminals := et_kicad_pcb.terminal_count (
-									library_name	=> et_libraries.to_full_library_name (
-														et_libraries.to_string (element (variant_cursor).packge.library) -- ../lbr/bel_ic
-														& et_kicad_pcb.package_library_directory_extension), -- .pretty
-									package_name	=> element (variant_cursor).packge.name);	-- S_SO14
-					else
+-- 					if cad_format = kicad_v4 then
+-- 						terminals := et_kicad_pcb.terminal_count (
+-- 									library_name	=> et_libraries.to_full_library_name (
+-- 														et_libraries.to_string (element (variant_cursor).packge.library) -- ../lbr/bel_ic
+-- 														& et_kicad_pcb.package_library_directory_extension), -- .pretty
+-- 									package_name	=> element (variant_cursor).packge.name);	-- S_SO14
+-- 					else
 						terminals := et_kicad_pcb.terminal_count (
 									library_name	=> element (variant_cursor).packge.library,	-- ../lbr/bel_ic
 									package_name	=> element (variant_cursor).packge.name);	-- S_SO14
-					end if;
+-- 					end if;
 						
 					log_indentation_down;	
 

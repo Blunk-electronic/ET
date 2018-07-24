@@ -493,7 +493,7 @@ begin -- main
 				log_threshold 	=> 0);
 
 			-- write the ET native component libraries			
-			et_project.write_component_libraries (log_threshold => 0);
+			-- CS et_project.write_component_libraries (log_threshold => 0);
 			
 			et_export.close_report;
 
@@ -532,7 +532,7 @@ begin -- main
 				log_threshold 	=> 0);
 
 			-- write the ET native component libraries			
-			et_project.write_component_libraries (log_threshold => 0);
+			-- CS et_project.write_component_libraries (log_threshold => 0);
 			
 			et_export.close_report;
 	end case;
