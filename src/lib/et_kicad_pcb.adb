@@ -70,33 +70,91 @@ package body et_kicad_pcb is
 
 	function full_library_name (
 		library_name	: in et_libraries.type_library_name.bounded_string; -- bel_logic
-		package_name 	: in et_libraries.type_component_package_name.bounded_string) -- S_SO14
+		package_name 	: in et_libraries.type_component_package_name.bounded_string; -- S_SO14
+		log_threshold	: in et_string_processing.type_log_level)
 		return et_libraries.type_full_library_name.bounded_string is
-	-- Returns the first library directory (in search_list_project_lib_dirs) that
+	-- Returns the full library name of the library that
 	-- contains the given package library with the given package.
+	-- Searches the library directories in the order given in search_list_project_lib_dirs.
 		lib : et_libraries.type_full_library_name.bounded_string; -- to be returned
 
 		use et_kicad;
 		use type_project_lib_dirs;
 		use et_libraries;
+		use type_full_library_name;
+		use ada.directories;
+	
 		dir_cursor : et_kicad.type_project_lib_dirs.cursor := et_kicad.search_list_project_lib_dirs.first;
-	begin
+		lib_cursor : et_kicad_pcb.type_libraries.cursor;
+
+		full_library_name : type_full_library_name.bounded_string;
+		package_found : boolean := false;
+
+		procedure search_package (
+		-- Searches the library (indicated by lib_cursor) for the given package.
+		-- Sets the flag package_found if the library contains the given package.
+			lib_name	: in et_libraries.type_full_library_name.bounded_string;
+			library		: in et_pcb.type_packages_in_library.map) is
+		begin
+			if et_pcb.type_packages_in_library.contains (
+				container	=> library,
+				key			=> package_name) then
+
+				package_found := true;
+			end if;
+		end search_package;
+	
+	begin -- full_library_name
+		log ("locating library '" & to_string (library_name) &
+			"' containing package '" & to_string (package_name) & "' ...", log_threshold);
+		log_indentation_up;
+		
+		-- Loop in search_list_project_lib_dirs. Test if the given library exists in the directory
+		-- exists in the directory indicated by dir_cursor..
 		while dir_cursor /= et_kicad.type_project_lib_dirs.no_element loop
 
-			if type_libraries.contains (
-				container	=> package_libraries,
-				key			=> type_full_library_name.to_bounded_string (ada.directories.compose (
-									containing_directory => to_string (element (dir_cursor)),
-									name	=> et_libraries.to_string (library_name)))) then
+			-- Test if library exists. package_libraries hosts libraries by their full name.
+			-- So the lbrary to test is formed by the current directory name, the given library name
+			-- and the package_library_directory_extension (*.pretty)
+			full_library_name := to_bounded_string (ada.directories.compose (
+									containing_directory	=> to_string (element (dir_cursor)),
+									name					=> et_libraries.to_string (library_name),
+									extension				=> package_library_directory_extension)); 
 
-				null;
+			log ("searching in " & type_full_library_name.to_string (full_library_name) &
+				 " ...", log_threshold + 1);
+			
+			lib_cursor := et_kicad_pcb.type_libraries.find (
+				container	=> package_libraries,
+				key			=> full_library_name);
+
+			-- If library exists, lib_cursor will point to it. Then the library can be searched 
+			-- for the given package.
+			if et_kicad_pcb.type_libraries."/=" (lib_cursor, et_kicad_pcb.type_libraries.no_element) then
+
+				-- search the library for the given package
+				et_kicad_pcb.type_libraries.query_element (
+					position	=> lib_cursor,
+					process		=> search_package'access);
+
+				-- The search ends as soon as the given package was found.
+				if package_found then exit; end if;
 
 			end if;
 			
 			next (dir_cursor);
 		end loop;
-		--	& package_library_directory_extension),
-		return lib;
+
+		if package_found then
+			log (" found !", log_threshold + 2);
+		else
+			log (message_error & "package '" & to_string (package_name) &
+			 "' not found in any library named '" & to_string (library_name) & " !", console => true);
+		end if;
+
+		log_indentation_down;
+		
+		return full_library_name;
 	end full_library_name;
 	
 	function to_plot_output_directory (directory : in string) return type_plot_output_directory.bounded_string is

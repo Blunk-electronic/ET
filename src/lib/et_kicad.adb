@@ -2460,19 +2460,16 @@ package body et_kicad is
 								tmp_variant_name := to_component_variant_name (to_string (package_name (content (field_package)))); -- S_SO14
 								check_variant_name_characters (tmp_variant_name);
 
-								-- Test whether library and package and terminal_port_map fit together.
-								-- NOTE: The library name must be extended by the "pretty" extension.
+								-- Test whether library, package and terminal_port_map fit together.
 								if et_kicad_pcb.terminal_port_map_fits (
--- 									library_name		=> to_full_library_name ( -- ../lbr_dir_1/bel_logic.pretty
--- 															to_string (to_full_library_name (
--- 																group		=> et_kicad.library_directory (  -- ../lbr_dir_1
--- 																	library_name	=> library_name (content (field_package)), -- bel_logic
--- 																	package_name	=> package_name (content (field_package))), -- S_SO14
--- 																lib_name	=> library_name (content (field_package)))) -- bel_ic
--- 															& package_library_directory_extension),
+
+									-- The full library name is the result of a search operation:
+									-- The first directory and the first library that contains the package.
+									-- There can be many library directories so search in.
 									library_name		=> et_kicad_pcb.full_library_name ( -- ../lbr_dir_1/bel_logic.pretty
 																library_name	=> library_name (content (field_package)), -- bel_logic
-																package_name	=> package_name (content (field_package))), -- S_SO14
+																package_name	=> package_name (content (field_package)), -- S_SO14
+																log_threshold	=> log_threshold + 1),
 
 									package_name		=> package_name (content (field_package)), -- S_SO14
 									terminal_port_map	=> tmp_terminal_port_map) then

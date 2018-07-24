@@ -70,7 +70,8 @@ package et_kicad_pcb is
 
 	function full_library_name (
 		library_name	: in et_libraries.type_library_name.bounded_string; -- bel_logic
-		package_name 	: in et_libraries.type_component_package_name.bounded_string) -- S_SO14
+		package_name 	: in et_libraries.type_component_package_name.bounded_string; -- S_SO14
+		log_threshold	: in et_string_processing.type_log_level)
 		return et_libraries.type_full_library_name.bounded_string;
 	-- Returns the first library directory (in search_list_project_lib_dirs) that
 	-- contains the given package library with the given package.
@@ -512,7 +513,7 @@ package et_kicad_pcb is
 -- LIBRARIES
 	
 	package type_libraries is new ordered_maps (
-		key_type		=> et_libraries.type_full_library_name.bounded_string, -- projects/lbr/smd_packages
+		key_type		=> et_libraries.type_full_library_name.bounded_string, -- projects/lbr/smd_packages.pretty
 		element_type	=> et_pcb.type_packages_in_library.map,
 		"="				=> et_pcb.type_packages_in_library."=",
 		"<"				=> et_libraries.type_full_library_name."<");
