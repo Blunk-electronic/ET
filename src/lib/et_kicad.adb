@@ -2451,7 +2451,7 @@ package body et_kicad is
 						tmp_variant_name : type_component_variant_name.bounded_string; -- temporarily used for building the variant name
 						tmp_variants : type_component_variants.map; -- temporarily used for building the variant
 
--- 						full_package_library_name : type_full_library_name.bounded_string;
+						full_package_library_name : type_full_library_name.bounded_string;
 					begin
 						case component.appearance is
 							when sch_pcb => -- real component
@@ -2462,50 +2462,32 @@ package body et_kicad is
 								tmp_variant_name := to_component_variant_name (to_string (package_name (content (field_package)))); -- S_SO14
 								check_variant_name_characters (tmp_variant_name);
 
--- 								full_package_library_name := et_kicad_pcb.full_library_name ( -- ../lbr_dir_1/bel_logic.pretty
--- 									library_name	=> library_name (content (field_package)), -- bel_logic
--- 									package_name	=> package_name (content (field_package)), -- S_SO14
--- 									log_threshold	=> log_threshold + 1),
-
+								-- The full library name is the result of a search operation:
+								-- The first directory and the first library that contains the package.
+								-- There can be many library directories so search in.
+								full_package_library_name := et_kicad_pcb.full_library_name ( -- ../lbr_dir_1/bel_logic.pretty
+									library_name	=> library_name (content (field_package)), -- bel_logic
+									package_name	=> package_name (content (field_package)), -- S_SO14
+									log_threshold	=> log_threshold + 1);
 								
 								-- Test whether library, package and terminal_port_map fit together.
 								if et_kicad_pcb.terminal_port_map_fits (
-
-									-- The full library name is the result of a search operation:
-									-- The first directory and the first library that contains the package.
-									-- There can be many library directories so search in.
-									library_name		=> et_kicad_pcb.full_library_name ( -- ../lbr_dir_1/bel_logic.pretty
-																library_name	=> library_name (content (field_package)), -- bel_logic
-																package_name	=> package_name (content (field_package)), -- S_SO14
-																log_threshold	=> log_threshold + 1),
-
-
+									library_name		=> full_package_library_name,
 									package_name		=> package_name (content (field_package)), -- S_SO14
 									terminal_port_map	=> tmp_terminal_port_map) then
 								
 										-- Insert in tmp_variants (which is temporarily) the default variant.
 										insert (
-											container => tmp_variants,
-											key => tmp_variant_name, -- the same as the package name -- S_SO14
-									
-											new_item => (
+											container	=> tmp_variants,
+											key			=> tmp_variant_name, -- the same as the package name -- S_SO14
+											new_item 	=> (
 												-- The package field contains something like "bel_ic:S_SO14".
 												-- This provides the library name and the package name.
 
 												-- create package variant
 												packge => (
-													name => package_name (content (field_package)), -- S_SO14
-
-													-- We compose the full library name from lib_dir (global variable) and the 
-													-- library name. example: projects/lbr/bel_ic
--- 													library => to_full_library_name (
--- 														group		=> library_group,
--- 														lib_name	=> library_name (content (field_package)))), 
-
-													library => et_kicad_pcb.full_library_name ( -- ../lbr_dir_1/bel_logic.pretty
-																library_name	=> library_name (content (field_package)), -- bel_logic
-																package_name	=> package_name (content (field_package)), -- S_SO14
-																log_threshold	=> log_threshold + 1)),
+													name 	=> package_name (content (field_package)), -- S_SO14
+													library	=> full_package_library_name),
 												
 												-- The terminal to port map tmp_terminal_port_map is now finally copied
 												-- to its final destination:
