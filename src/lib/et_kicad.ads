@@ -103,7 +103,8 @@ package et_kicad is
 		element_type 	=> et_libraries.type_components.map,
 		"=" 			=> et_libraries.type_components."=");
 
-	-- All component models are collected here.
+	-- All component models of a proejct are collected here temporarily.
+	-- This collection is cleared when a new project is read. See procedure read_project_file.
 	component_libraries : type_libraries.map;
 	
 	
@@ -627,9 +628,11 @@ package et_kicad is
 		instance		: type_submodule_instance;
 
 		-- The search list of project library directories and names:
-		library_dirs 	: type_project_lib_dirs.list; 				-- search list for library directories (active, passive, ...)
-		libraries_comp	: et_libraries.type_library_names.list; 	-- search list for component libraries (bel_logic, bel_primitives, ...)
+		search_list_library_dirs	: type_project_lib_dirs.list; 				-- search list for library directories (active, passive, ...)
+		search_list_library_comps	: et_libraries.type_library_names.list; 	-- search list for component libraries (bel_logic, bel_primitives, ...)
 		-- NOTE: There is no search list for packages, because they are nowhere declared (not even in the project conf. file)
+		
+		component_libraries			: type_libraries.map;
 		
 		strands	    	: et_schematic.type_strands.list;			-- the strands of the module
 		junctions		: et_schematic.type_junctions.list;			-- net junctions

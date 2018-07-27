@@ -2806,7 +2806,7 @@ package body et_kicad is
 		-- The search_list_component_libraries is empty if there are no libraries defined -> nothing to do.
 		-- Otherwise start with the first libraray (in component_libraries) and test if it is empty.
 		-- If it is empty, it is to be read. If it contains anything, it has been read by a previous 
-		-- project import already and can be skipped (saves computing time).
+		-- project import already and can be skipped (saves computing time). -- CS rework this comment
 		if not type_library_names.is_empty (search_list_component_libraries) then
 
 			-- Set lib_cursor to first library and loop in component_libraries.
@@ -2816,14 +2816,14 @@ package body et_kicad is
 				-- log library file name
 				log (type_full_library_name.to_string (type_libraries.key (lib_cursor)), log_threshold + 1);
 				
-				-- Test if current library is empty.
+				-- Test if current library is empty. -- CS no need
 				type_libraries.query_element (
 					position	=> lib_cursor,
 					process		=> library_empty_check'access); -- sets or clears flag "library_empty"
 
 				-- If library empty (means it has not been read already),
 				-- open the same-named file and read it.
-				if library_empty then
+				if library_empty then -- CS no need
 
 					open (
 						file => library_handle,
@@ -3885,7 +3885,7 @@ package body et_kicad is
 				log_threshold : in type_log_level) is
 			-- Tests if the libraries (listed in search_list_component_libraries) exist in the
 			-- directories listed in search_list_project_lib_dirs.
-			-- If a library was found, a same-named library is created in the container component_libraries.
+			-- If a library was found, a same-named empty library is created in the container component_libraries.
 				use type_library_names;
 				search_list_library_cursor : type_library_names.cursor;
 				library_found		: boolean; -- true if library file exists
@@ -3893,8 +3893,8 @@ package body et_kicad is
 				use type_project_lib_dirs;
 				search_list_lib_dir_cursor : type_project_lib_dirs.cursor;
 
-				library_inserted	: boolean; -- true if new empty library has been created in component_libraries
-				library_cursor		: type_libraries.cursor; -- points to the new empty library that has been created 
+				--library_inserted	: boolean; -- true if new empty library has been created in component_libraries
+				--library_cursor		: type_libraries.cursor; -- points to the new empty library that has been created 
 			
 			begin -- locate_libraries
 				log ("locating library directories ...", log_threshold);
@@ -3920,7 +3920,7 @@ package body et_kicad is
 						
 						-- Test at file system level, whether the current project library exists
 						-- in the directory indicated by search_list_lib_dir_cursor.
-						-- If exists, create an empty library in with a full name in component_libraries.
+						-- If exists, create an empty library (with a full name) in component_libraries.
 						if exists (compose (
 							containing_directory	=> to_string (element (search_list_lib_dir_cursor)), -- ../../lbr_dir_1
 							name					=> to_string (element (search_list_library_cursor)), -- connectors, active, ...
@@ -3929,16 +3929,16 @@ package body et_kicad is
 								log (" found", log_threshold + 3);
 								library_found := true;
 
-								-- create empty library (if not existing already)
+								-- create empty component library
 								type_libraries.insert (
 									container	=> component_libraries,
 									key 		=> et_libraries.type_full_library_name.to_bounded_string (compose (
 										containing_directory	=> to_string (element (search_list_lib_dir_cursor)), -- ../../lbr
 										name					=> to_string (element (search_list_library_cursor)), -- connectors, active, ...
 										extension				=> file_extension_schematic_lib)),
-									new_item	=> et_libraries.type_components.empty_map,
-									inserted	=> library_inserted,
-									position	=> library_cursor
+									new_item	=> et_libraries.type_components.empty_map
+									--inserted	=> library_inserted,
+									--position	=> library_cursor
 									); 
 								
 						end if;
@@ -3972,9 +3972,13 @@ package body et_kicad is
 			log_indentation_up;
 
 			-- Clear search list of project libraries from earlier projects that have been imported.
-			-- If we import only one project, this statement does not matter.
+			-- If we import only one project, this statement does not matter:
 			type_project_lib_dirs.clear (search_list_project_lib_dirs);
 			type_library_names.clear (search_list_component_libraries);
+
+			-- Clear component_libraries because it still contains librares of earlier project imports.
+			-- If we import only one project, this statement does not matter:
+			type_libraries.clear (component_libraries);
 
 			-- Open project file. 
 			-- The file name is composed of project name and extension.
@@ -4071,6 +4075,7 @@ package body et_kicad is
 
 			-- Test if the libraries collected in search_list_component_libraries
 			-- exist in any of the library directories.
+			-- Create empty component libraries.
 			locate_libraries (log_threshold + 3);
 
 			close (project_file_handle);
@@ -7472,8 +7477,10 @@ package body et_kicad is
 											base_name (to_string (top_level_schematic))),
 						instance		=> type_submodule_instance'first,
 						
-						libraries_comp	=> search_list_component_libraries,
-						library_dirs	=> search_list_project_lib_dirs,
+						search_list_library_comps	=> search_list_component_libraries,
+						search_list_library_dirs	=> search_list_project_lib_dirs,
+
+						component_libraries => type_libraries.empty_map,
 						
 						strands			=> type_strands.empty_list,
 						junctions		=> type_junctions.empty_list,
@@ -7505,6 +7512,7 @@ package body et_kicad is
 				
 				-- read component libraries
 				read_components_libraries (log_threshold);
+				-- CS copy component_libraries to module.component_libraries
 
 				current_schematic := top_level_schematic;
 				check_submodule_name_characters (to_submodule_name (current_schematic));
