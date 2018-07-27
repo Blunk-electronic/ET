@@ -2802,7 +2802,7 @@ package body et_kicad is
 		log ("reading component libraries ...", log_threshold);
 		log_indentation_up;
 		
-		-- If for the project libraries defined they must be read.
+		-- The project libraries must be read as specified in project file.
 		-- The search_list_component_libraries is empty if there are no libraries defined -> nothing to do.
 		-- Otherwise start with the first libraray (in component_libraries) and test if it is empty.
 		-- If it is empty, it is to be read. If it contains anything, it has been read by a previous 
@@ -4017,12 +4017,7 @@ package body et_kicad is
 
 							-- Get library directory names 
 							if field (line,1) = project_keyword_library_directory then
-								--library_group := to_bounded_string (field (line,2)); -- CS remove
-
-								-- For the log write something like "LibDir ../../lbr"
-								log (project_keyword_library_directory 
-									 & " " & field (line,2),
-									 log_threshold + 2);
+								log ("library directories " & field (line,2), log_threshold + 2);
 
 								-- The library directories must be
 								-- inserted in the search list of library directories (search_list_project_lib_dirs).

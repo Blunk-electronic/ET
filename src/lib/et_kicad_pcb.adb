@@ -148,8 +148,10 @@ package body et_kicad_pcb is
 		if package_found then
 			log (" found !", log_threshold + 2);
 		else
+			log_indentation_reset;
 			log (message_error & "package '" & to_string (package_name) &
-			 "' not found in any library named '" & to_string (library_name) & " !", console => true);
+				"' not found in any library named '" & to_string (library_name) & "' !", console => true);
+			raise constraint_error;
 		end if;
 
 		log_indentation_down;
@@ -2612,6 +2614,8 @@ package body et_kicad_pcb is
 
 						-- change back to directory of origin
 						set_directory (et_pcb.to_string (origin_directory));
+					else
+						log (" already loaded -> skipped", log_threshold + 2);
 					end if;
 					
 					next (library_name_cursor);
