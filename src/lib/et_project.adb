@@ -142,6 +142,7 @@ package body et_project is
 		
 		-- create sub-directories for supplementary stuff:
 		log ("creating subdirectories for supplementary stuff ...", log_threshold + 1);
+		create_directory (compose (to_string (path), directory_libraries));
 		create_directory (compose (to_string (path), directory_dru));
 		create_directory (compose (to_string (path), directory_cam));
 		create_directory (compose (to_string (path), directory_net_classes));
