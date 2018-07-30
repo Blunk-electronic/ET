@@ -1732,7 +1732,7 @@ package body et_kicad is
 			end set_unit_cursor;
 				
 			
-			procedure add_unit (libraries : in out type_libraries.map) is -- CS: no need for parameter libraries. use component_libraries directly on update
+			procedure add_unit is
 			-- Add the unit with current tmp_unit_id to current component (indicated by comp_cursor).
 			-- Leaves unit_cursor pointing to unit that has been added.
 			
@@ -1777,10 +1777,10 @@ package body et_kicad is
 
 			begin -- add_unit
 				if tmp_unit_id > 0 then
-					libraries.update_element (lib_cursor, locate_component'access);
+					component_libraries.update_element (lib_cursor, locate_component'access);
 				elsif tmp_units_total = 1 then
 					tmp_unit_id := 1;
-					libraries.update_element (lib_cursor, locate_component'access);
+					component_libraries.update_element (lib_cursor, locate_component'access);
 				else
 					null; -- CS
 				end if;
@@ -1800,7 +1800,7 @@ package body et_kicad is
 			begin
 				for u in 1 .. type_unit_id (tmp_units_total) loop
 					tmp_unit_id := u;
-					add_unit (component_libraries);
+					add_unit;
 				end loop;
 			end create_units;
 
@@ -2200,7 +2200,7 @@ package body et_kicad is
 							if not extra_unit_available then 
 								tmp_unit_add_level := request;
 								tmp_unit_global := true; -- this is a unit with power supply pins that apply for the whole component
-								add_unit (component_libraries);
+								add_unit;
 								extra_unit_available := true;
 							else
 								null;
