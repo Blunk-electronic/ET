@@ -217,7 +217,7 @@ procedure et is
 		-- After the import, we restore the directory.
 		backup_projects_root_directory;
 
-		log ("importing module " & et_schematic.to_string (project_name) & " ...");
+		log ("importing module " & et_schematic.to_string (project_name) & " ...", console => true);
 		log ("CAD format " & to_string (et_import.cad_format));
 		
 		-- CS: use case construct to probe cad formats
@@ -270,7 +270,8 @@ procedure et is
 		-- Loop in et_configuration.import_module and import module per module.
 		module_cursor_import := et_configuration.import_modules.first;
 		while module_cursor_import /= type_import_modules.no_element loop
-
+			log (row_separator_single);
+			
 			-- The design import requires changing of directories. So we backup the current directory.
 			-- After the import, we restore the directory.
 			backup_projects_root_directory;
@@ -284,19 +285,19 @@ procedure et is
 
 			if instances = type_submodule_instance'first then 
 				-- Only one instance requried -> do a regular single design import.
-				log ("importing module " & et_schematic.to_string (module) & " ...");
+				log ("importing module " & et_schematic.to_string (module) & " ...", console => true);
 				log ("CAD format " & et_import.to_string (et_import.cad_format));
 				
 				-- CS: use case construct to probe cad formats
 				et_kicad.import_design (project => module, log_threshold => 0);
 
 			else -- multi-instances
-				log ("importing and instantiating module " & et_schematic.to_string (module) & " ...");
+				log ("importing and instantiating module " & et_schematic.to_string (module) & " ...", console => true);
 				log ("CAD format " & et_import.to_string (et_import.cad_format));
 				
 				-- Import the project only once.
 				for i in type_submodule_instance'first .. instances loop
-					log ("instance " & to_string (i) & " ...");
+					log ("instance " & to_string (i) & " ...", console => true);
 
 					if i = type_submodule_instance'first then -- first instance
 						
@@ -312,7 +313,6 @@ procedure et is
 			end if;
 			
 			restore_projects_root_directory;
-			
 			next (module_cursor_import);
 		end loop;
 		
@@ -427,8 +427,10 @@ procedure et is
 		
 		-- If there are no modules, there is nothing to check:
 		if et_kicad.module_count > 0 then
-		
+
+			log (row_separator_double);
 			log ("importing layouts/boards ...", console => true);
+			
 			log_indentation_up;
 
 			-- CS: use case construct to probe cad formats
@@ -466,6 +468,7 @@ begin -- main
 			-- check the imported module
 			check_modules; -- updates the netlists of all modules. creates and opens export report
 
+			log_indentation_reset;
 			read_boards; -- writes in import report. closes import report
 
 			-- Log messages go in the export report:
@@ -506,6 +509,7 @@ begin -- main
 			-- check modules
 			check_modules; -- updates the netlists of all modules. creates and opens export report
 
+			log_indentation_reset;
 			read_boards; -- writes in import report. closes import report
 
 			-- Log messages go in the export report:

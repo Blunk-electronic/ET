@@ -2530,8 +2530,6 @@ package body et_kicad is
 
 			end build_package_variant;
 			
-
-			
 		begin -- read_library
 			log_indentation_up;
 			
@@ -2783,30 +2781,13 @@ package body et_kicad is
 						raise;
 		end read_library;
 
-		library_empty : boolean; -- used to detect empty libraries
-		
-		procedure library_empty_check (
-		-- Sets or cleares the flag "library_empty".
-			library_name	: in type_full_library_name.bounded_string;
-			library			: in type_components.map)
-			is
-		begin
-			if type_components.is_empty (library) then
-				library_empty := true;
-			else
-				library_empty := false;
-			end if;
-		end library_empty_check;
-		
 	begin -- read_components_libraries
 		log ("reading component libraries ...", log_threshold);
 		log_indentation_up;
 		
 		-- The project libraries must be read as specified in project file.
 		-- The search_list_component_libraries is empty if there are no libraries defined -> nothing to do.
-		-- Otherwise start with the first libraray (in component_libraries) and test if it is empty.
-		-- If it is empty, it is to be read. If it contains anything, it has been read by a previous 
-		-- project import already and can be skipped (saves computing time). -- CS rework this comment
+		-- The component_libraries are empty (created on reading the project file) and must be filled.
 		if not type_library_names.is_empty (search_list_component_libraries) then
 
 			-- Set lib_cursor to first library and loop in component_libraries.
@@ -2816,29 +2797,18 @@ package body et_kicad is
 				-- log library file name
 				log (type_full_library_name.to_string (type_libraries.key (lib_cursor)), log_threshold + 1);
 				
-				-- Test if current library is empty. -- CS no need
-				type_libraries.query_element (
-					position	=> lib_cursor,
-					process		=> library_empty_check'access); -- sets or clears flag "library_empty"
-
-				-- If library empty (means it has not been read already),
-				-- open the same-named file and read it.
-				if library_empty then -- CS no need
-
-					open (
-						file => library_handle,
-						mode => in_file,
-						name => type_full_library_name.to_string (type_libraries.key (lib_cursor)));
+				-- open the same-named file and read it
+				open (
+					file => library_handle,
+					mode => in_file,
+					name => type_full_library_name.to_string (type_libraries.key (lib_cursor)));
 					
-					-- Now we read the library file and add components
-					-- to the library pointed to by lib_cursor:
-					set_input (library_handle);
-					read_library (log_threshold + 1);
+				-- Now we read the library file and add components
+				-- to the library pointed to by lib_cursor:
+				set_input (library_handle);
+				read_library (log_threshold + 1);
 
-					close (library_handle);
-				else
-					log (" already loaded -> skipped", log_threshold + 1);
-				end if;
+				close (library_handle);
 
 				type_libraries.next (lib_cursor);
 			end loop;
@@ -2848,7 +2818,6 @@ package body et_kicad is
 		end if;
 		
 		log_indentation_down;
-			
 	end read_components_libraries;
 
 
@@ -3968,7 +3937,8 @@ package body et_kicad is
 				 & compose (
 					name		=> type_project_name.to_string (project), 
 					extension	=> file_extension_project) & " ...",
-				level => log_threshold + 1);
+				level => log_threshold + 1
+				);
 			log_indentation_up;
 
 			-- Clear search list of project libraries from earlier projects that have been imported.
@@ -7119,7 +7089,7 @@ package body et_kicad is
 		
 			if exists (to_string (current_schematic)) then
 				log ("reading schematic file " & to_string (current_schematic) & " ...",
-					 log_threshold,
+					 log_threshold + 1,
 					 console => true);
 
 				-- log module path as recorded by parent unit

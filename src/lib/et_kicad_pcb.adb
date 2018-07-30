@@ -6749,6 +6749,7 @@ package body et_kicad_pcb is
 			raise constraint_error;
 		end if;
 
+		log_indentation_down;
 
 		return board;
 	end to_board;
@@ -7643,6 +7644,7 @@ package body et_kicad_pcb is
 		-- Process one rig module after another.
 		-- module_cursor points to the module in the rig.
 		while module_cursor /= et_kicad.type_rig.no_element loop
+			log ("----------------------------", log_threshold);
 			log ("module " & to_string (key (module_cursor)), log_threshold);
 			log_indentation_up;
 	
