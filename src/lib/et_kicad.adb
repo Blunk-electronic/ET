@@ -1809,8 +1809,6 @@ package body et_kicad is
 			-- Adds a symbol element (circle, arcs, lines, ports, etc.) to the unit with the current tmp_unit_id.
 			-- The kind of symbol element is given by parameter "element".
 			-- The symbol properties are taken from the temporarily variables named tmp_draw_*.
-						
-				libraries	: in out type_libraries.map; -- CS: no need for parameter libraries. use tmp_component_libraries directly on update
 				element		: in type_symbol_element) is
 
 				procedure insert (
@@ -1900,7 +1898,7 @@ package body et_kicad is
 					-- The element belongs to a particular unit exclusively.
 					-- Only the current unit of the current component receives the symbol element.
 					set_unit_cursor (tmp_component_libraries); -- set unit_cursor according to current tmp_unit_id
-					libraries.update_element (lib_cursor, locate_component'access);
+					tmp_component_libraries.update_element (lib_cursor, locate_component'access);
 				else -- tmp_unit_id = 0
 					-- The element belongs to all units of the current component.
 					-- In a loop the tmp_unit_id is now modified so that all units (except extra units) 
@@ -1910,7 +1908,7 @@ package body et_kicad is
 						for u in 1 .. type_unit_id (tmp_units_total) loop
 							tmp_unit_id := u; -- set tmp_unit_id
 							set_unit_cursor (tmp_component_libraries);  -- set unit_cursor according to current tmp_unit_id
-							libraries.update_element (lib_cursor, locate_component'access);
+							tmp_component_libraries.update_element (lib_cursor, locate_component'access);
 						end loop;
 					else
 						raise constraint_error; -- should never happen. see comment above after "if" statement
@@ -1926,7 +1924,7 @@ package body et_kicad is
 			end add_symbol_element;
 			
 
-			procedure set_text_placeholder_properties (libraries : in out type_libraries.map) is -- CS: no need for parameter libraries. use tmp_component_libraries directly on update
+			procedure set_text_placeholder_properties is
 			-- Sets the properties of placeholders in all units of the component indicated by comp_cursor.
 			
 				procedure set (
@@ -1984,7 +1982,7 @@ package body et_kicad is
 				for u in 1..total loop
 					tmp_unit_id := u;
 					set_unit_cursor (tmp_component_libraries);
-					libraries.update_element (lib_cursor, locate_component'access);
+					tmp_component_libraries.update_element (lib_cursor, locate_component'access);
 				end loop;
 
 				exception
@@ -2054,7 +2052,7 @@ package body et_kicad is
 						tmp_draw_polyline := to_polyline (line);
 
 						-- add polyline to unit
-						add_symbol_element (tmp_component_libraries, polyline);
+						add_symbol_element (polyline);
 						
 					when S => -- rectangle
 						log (draw_object & "rectangle", log_threshold);
@@ -2076,7 +2074,7 @@ package body et_kicad is
 						tmp_draw_rectangle := to_rectangle (line);
 
 						-- add rectangle to unit
-						add_symbol_element (tmp_component_libraries, rectangle);
+						add_symbol_element (rectangle);
 						
 					when C => -- circle
 						log (draw_object & "circle", log_threshold);
@@ -2099,7 +2097,7 @@ package body et_kicad is
 						tmp_draw_circle := to_circle (line);
 						
 						-- add circle to unit
-						add_symbol_element (tmp_component_libraries, circle);
+						add_symbol_element (circle);
 						
 					when A => -- arc
 						log (draw_object & "arc", log_threshold);
@@ -2127,7 +2125,7 @@ package body et_kicad is
 						tmp_draw_arc := to_arc (line);
 						
 						-- add arc to unit
-						add_symbol_element (tmp_component_libraries, arc);
+						add_symbol_element (arc);
 
 					when T => -- text
 						log (draw_object & "text", log_threshold);
@@ -2157,7 +2155,7 @@ package body et_kicad is
 						tmp_draw_text := to_text (line);
 						
 						-- add text to unit
-						add_symbol_element (tmp_component_libraries, text);
+						add_symbol_element (text);
 						
 					when X => -- port
 						log (draw_object & "port", log_threshold);
@@ -2192,7 +2190,7 @@ package body et_kicad is
 						if tmp_unit_id > 0 then
 							-- add unit specific port to unit
 							--log ("unit id " & type_unit_id'image (tmp_unit_id) , level => log_threshold);
-							add_symbol_element (libraries => tmp_component_libraries, element => port);
+							add_symbol_element (port);
 						else 
 							-- The unit id changes from 0 to tmp_units_total + 1 (one notch above the total number) :
 							tmp_unit_id := type_unit_id (tmp_units_total) + 1;
@@ -2207,7 +2205,7 @@ package body et_kicad is
 							end if;
 							-- insert the port in the extra unit
 							--log ("unit id " & type_unit_id'image (tmp_unit_id) , level => log_threshold);						
-							add_symbol_element (libraries => tmp_component_libraries, element => port);
+							add_symbol_element (port);
 						end if;
 				end case;
 
@@ -2221,7 +2219,7 @@ package body et_kicad is
 				function field (line : in type_fields_of_line; position : in positive) return string renames
 					et_string_processing.get_field_from_line;
 				
-				procedure do_it (libraries : in out type_libraries.map) is -- CS: no need for parameter libraries. use tmp_component_libraries directly on update
+				procedure do_it is
 				-- Adds the footprint finally.
 					procedure insert_footprint (
 						key			: in type_component_generic_name.bounded_string;
@@ -2238,7 +2236,7 @@ package body et_kicad is
 					end locate_component;
 
 				begin -- add_footprint
-					libraries.update_element (lib_cursor, locate_component'access);
+					tmp_component_libraries.update_element (lib_cursor, locate_component'access);
 
 					exception
 						when event:
@@ -2255,7 +2253,7 @@ package body et_kicad is
 				fp := type_package_proposal.to_bounded_string (field (line,1));
 				log (type_package_proposal.to_string (fp), log_threshold);
 
-				do_it (tmp_component_libraries);
+				do_it;
 				
 				log_indentation_down;
 			end add_footprint;
@@ -2644,7 +2642,7 @@ package body et_kicad is
 								-- Set placeholders (reference, value, commissioned, ...) in internal units.
 								-- The placeholder properties are known from the field-section.
 								-- The placeholder properties apply for all units.
-								set_text_placeholder_properties (tmp_component_libraries);
+								set_text_placeholder_properties;
 
 								-- If this is a real component, build package variant from tmp_terminal_port_map
 								if tmp_appearance = sch_pcb then
