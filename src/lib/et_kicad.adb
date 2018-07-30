@@ -609,7 +609,7 @@ package body et_kicad is
         use et_libraries; -- most of the following stuff is specified there
 		use et_libraries.type_full_library_names;
 
-		-- This is the library cursor. It points to the library being processed (in the list component_libraries):
+		-- This is the library cursor. It points to the library being processed (in the list tmp_component_libraries):
 		lib_cursor		: type_libraries.cursor;
 
 		-- This is the component cursor. It points to the component being processed.
@@ -1777,10 +1777,10 @@ package body et_kicad is
 
 			begin -- add_unit
 				if tmp_unit_id > 0 then
-					component_libraries.update_element (lib_cursor, locate_component'access);
+					tmp_component_libraries.update_element (lib_cursor, locate_component'access);
 				elsif tmp_units_total = 1 then
 					tmp_unit_id := 1;
-					component_libraries.update_element (lib_cursor, locate_component'access);
+					tmp_component_libraries.update_element (lib_cursor, locate_component'access);
 				else
 					null; -- CS
 				end if;
@@ -1810,7 +1810,7 @@ package body et_kicad is
 			-- The kind of symbol element is given by parameter "element".
 			-- The symbol properties are taken from the temporarily variables named tmp_draw_*.
 						
-				libraries	: in out type_libraries.map; -- CS: no need for parameter libraries. use component_libraries directly on update
+				libraries	: in out type_libraries.map; -- CS: no need for parameter libraries. use tmp_component_libraries directly on update
 				element		: in type_symbol_element) is
 
 				procedure insert (
@@ -1899,7 +1899,7 @@ package body et_kicad is
 					--log ("unit id " & type_unit_id'image (tmp_unit_id) , level => 1);
 					-- The element belongs to a particular unit exclusively.
 					-- Only the current unit of the current component receives the symbol element.
-					set_unit_cursor (component_libraries); -- set unit_cursor according to current tmp_unit_id
+					set_unit_cursor (tmp_component_libraries); -- set unit_cursor according to current tmp_unit_id
 					libraries.update_element (lib_cursor, locate_component'access);
 				else -- tmp_unit_id = 0
 					-- The element belongs to all units of the current component.
@@ -1909,7 +1909,7 @@ package body et_kicad is
 					if element /= port then -- should always be true since tmp_unit_id is always greater zero when a port is added to a unit
 						for u in 1 .. type_unit_id (tmp_units_total) loop
 							tmp_unit_id := u; -- set tmp_unit_id
-							set_unit_cursor (component_libraries);  -- set unit_cursor according to current tmp_unit_id
+							set_unit_cursor (tmp_component_libraries);  -- set unit_cursor according to current tmp_unit_id
 							libraries.update_element (lib_cursor, locate_component'access);
 						end loop;
 					else
@@ -1926,7 +1926,7 @@ package body et_kicad is
 			end add_symbol_element;
 			
 
-			procedure set_text_placeholder_properties (libraries : in out type_libraries.map) is -- CS: no need for parameter libraries. use component_libraries directly on update
+			procedure set_text_placeholder_properties (libraries : in out type_libraries.map) is -- CS: no need for parameter libraries. use tmp_component_libraries directly on update
 			-- Sets the properties of placeholders in all units of the component indicated by comp_cursor.
 			
 				procedure set (
@@ -1983,7 +1983,7 @@ package body et_kicad is
 				-- In a loop we set tmp_unit_id for each unit and update the unit of the component.
 				for u in 1..total loop
 					tmp_unit_id := u;
-					set_unit_cursor (component_libraries);
+					set_unit_cursor (tmp_component_libraries);
 					libraries.update_element (lib_cursor, locate_component'access);
 				end loop;
 
@@ -2054,7 +2054,7 @@ package body et_kicad is
 						tmp_draw_polyline := to_polyline (line);
 
 						-- add polyline to unit
-						add_symbol_element (component_libraries, polyline);
+						add_symbol_element (tmp_component_libraries, polyline);
 						
 					when S => -- rectangle
 						log (draw_object & "rectangle", log_threshold);
@@ -2076,7 +2076,7 @@ package body et_kicad is
 						tmp_draw_rectangle := to_rectangle (line);
 
 						-- add rectangle to unit
-						add_symbol_element (component_libraries, rectangle);
+						add_symbol_element (tmp_component_libraries, rectangle);
 						
 					when C => -- circle
 						log (draw_object & "circle", log_threshold);
@@ -2099,7 +2099,7 @@ package body et_kicad is
 						tmp_draw_circle := to_circle (line);
 						
 						-- add circle to unit
-						add_symbol_element (component_libraries, circle);
+						add_symbol_element (tmp_component_libraries, circle);
 						
 					when A => -- arc
 						log (draw_object & "arc", log_threshold);
@@ -2127,7 +2127,7 @@ package body et_kicad is
 						tmp_draw_arc := to_arc (line);
 						
 						-- add arc to unit
-						add_symbol_element (component_libraries, arc);
+						add_symbol_element (tmp_component_libraries, arc);
 
 					when T => -- text
 						log (draw_object & "text", log_threshold);
@@ -2157,7 +2157,7 @@ package body et_kicad is
 						tmp_draw_text := to_text (line);
 						
 						-- add text to unit
-						add_symbol_element (component_libraries, text);
+						add_symbol_element (tmp_component_libraries, text);
 						
 					when X => -- port
 						log (draw_object & "port", log_threshold);
@@ -2192,7 +2192,7 @@ package body et_kicad is
 						if tmp_unit_id > 0 then
 							-- add unit specific port to unit
 							--log ("unit id " & type_unit_id'image (tmp_unit_id) , level => log_threshold);
-							add_symbol_element (libraries => component_libraries, element => port);
+							add_symbol_element (libraries => tmp_component_libraries, element => port);
 						else 
 							-- The unit id changes from 0 to tmp_units_total + 1 (one notch above the total number) :
 							tmp_unit_id := type_unit_id (tmp_units_total) + 1;
@@ -2207,7 +2207,7 @@ package body et_kicad is
 							end if;
 							-- insert the port in the extra unit
 							--log ("unit id " & type_unit_id'image (tmp_unit_id) , level => log_threshold);						
-							add_symbol_element (libraries => component_libraries, element => port);
+							add_symbol_element (libraries => tmp_component_libraries, element => port);
 						end if;
 				end case;
 
@@ -2221,7 +2221,7 @@ package body et_kicad is
 				function field (line : in type_fields_of_line; position : in positive) return string renames
 					et_string_processing.get_field_from_line;
 				
-				procedure do_it (libraries : in out type_libraries.map) is -- CS: no need for parameter libraries. use component_libraries directly on update
+				procedure do_it (libraries : in out type_libraries.map) is -- CS: no need for parameter libraries. use tmp_component_libraries directly on update
 				-- Adds the footprint finally.
 					procedure insert_footprint (
 						key			: in type_component_generic_name.bounded_string;
@@ -2255,7 +2255,7 @@ package body et_kicad is
 				fp := type_package_proposal.to_bounded_string (field (line,1));
 				log (type_package_proposal.to_string (fp), log_threshold);
 
-				do_it (component_libraries);
+				do_it (tmp_component_libraries);
 				
 				log_indentation_down;
 			end add_footprint;
@@ -2515,7 +2515,7 @@ package body et_kicad is
 				log_indentation_up;
 				
 				type_libraries.update_element ( 
-					container	=> component_libraries,
+					container	=> tmp_component_libraries,
 					position	=> lib_cursor,
 					process		=> locate_component'access);
 				
@@ -2644,7 +2644,7 @@ package body et_kicad is
 								-- Set placeholders (reference, value, commissioned, ...) in internal units.
 								-- The placeholder properties are known from the field-section.
 								-- The placeholder properties apply for all units.
-								set_text_placeholder_properties (component_libraries);
+								set_text_placeholder_properties (tmp_component_libraries);
 
 								-- If this is a real component, build package variant from tmp_terminal_port_map
 								if tmp_appearance = sch_pcb then
@@ -2680,7 +2680,7 @@ package body et_kicad is
 											
 											-- Insert the component into the current library (indicated by lib_cursor):
 											type_libraries.update_element ( 
-												container	=> component_libraries,
+												container	=> tmp_component_libraries,
 												position	=> lib_cursor,
 												process		=> insert_component'access);
 
@@ -2696,7 +2696,7 @@ package body et_kicad is
 
 											-- Insert the component into the current library (indicated by lib_cursor):
 											type_libraries.update_element ( 
-												container	=> component_libraries,
+												container	=> tmp_component_libraries,
 												position	=> lib_cursor,
 												process		=> insert_component'access);
 
@@ -2786,12 +2786,12 @@ package body et_kicad is
 		log_indentation_up;
 		
 		-- The project libraries must be read as specified in project file.
-		-- The search_list_component_libraries is empty if there are no libraries defined -> nothing to do.
-		-- The component_libraries are empty (created on reading the project file) and must be filled.
+		-- The search_list_tmp_component_libraries is empty if there are no libraries defined -> nothing to do.
+		-- The tmp_component_libraries are empty (created on reading the project file) and must be filled.
 		if not type_library_names.is_empty (search_list_component_libraries) then
 
-			-- Set lib_cursor to first library and loop in component_libraries.
-			lib_cursor := component_libraries.first;
+			-- Set lib_cursor to first library and loop in tmp_component_libraries.
+			lib_cursor := tmp_component_libraries.first;
 			while type_libraries."/=" (lib_cursor, type_libraries.no_element) loop
 
 				-- log library file name
@@ -2992,11 +2992,11 @@ package body et_kicad is
 			log_threshold	=> log_threshold + 1);
 
 		-- locate the given component library
-		library_cursor := component_libraries.find (component_library);
+		library_cursor := tmp_component_libraries.find (component_library);
 
 		-- locate the given generic component
 		type_libraries.update_element (
-			container	=> component_libraries,
+			container	=> tmp_component_libraries,
 			position	=> library_cursor,
 			process		=> locate_component'access);
 		
@@ -3854,7 +3854,7 @@ package body et_kicad is
 				log_threshold : in type_log_level) is
 			-- Tests if the libraries (listed in search_list_component_libraries) exist in the
 			-- directories listed in search_list_project_lib_dirs.
-			-- If a library was found, a same-named empty library is created in the container component_libraries.
+			-- If a library was found, a same-named empty library is created in the container tmp_component_libraries.
 				use type_library_names;
 				search_list_library_cursor : type_library_names.cursor;
 				library_found		: boolean; -- true if library file exists
@@ -3862,7 +3862,7 @@ package body et_kicad is
 				use type_project_lib_dirs;
 				search_list_lib_dir_cursor : type_project_lib_dirs.cursor;
 
-				--library_inserted	: boolean; -- true if new empty library has been created in component_libraries
+				--library_inserted	: boolean; -- true if new empty library has been created in tmp_component_libraries
 				--library_cursor		: type_libraries.cursor; -- points to the new empty library that has been created 
 			
 			begin -- locate_libraries
@@ -3889,7 +3889,7 @@ package body et_kicad is
 						
 						-- Test at file system level, whether the current project library exists
 						-- in the directory indicated by search_list_lib_dir_cursor.
-						-- If exists, create an empty library (with a full name) in component_libraries.
+						-- If exists, create an empty library (with a full name) in tmp_component_libraries.
 						if exists (compose (
 							containing_directory	=> to_string (element (search_list_lib_dir_cursor)), -- ../../lbr_dir_1
 							name					=> to_string (element (search_list_library_cursor)), -- connectors, active, ...
@@ -3900,7 +3900,7 @@ package body et_kicad is
 
 								-- create empty component library
 								type_libraries.insert (
-									container	=> component_libraries,
+									container	=> tmp_component_libraries,
 									key 		=> et_libraries.type_full_library_name.to_bounded_string (compose (
 										containing_directory	=> to_string (element (search_list_lib_dir_cursor)), -- ../../lbr
 										name					=> to_string (element (search_list_library_cursor)), -- connectors, active, ...
@@ -3946,9 +3946,9 @@ package body et_kicad is
 			type_project_lib_dirs.clear (search_list_project_lib_dirs);
 			type_library_names.clear (search_list_component_libraries);
 
-			-- Clear component_libraries because it still contains librares of earlier project imports.
+			-- Clear tmp_component_libraries because it still contains librares of earlier project imports.
 			-- If we import only one project, this statement does not matter:
-			type_libraries.clear (component_libraries);
+			type_libraries.clear (tmp_component_libraries);
 
 			-- Open project file. 
 			-- The file name is composed of project name and extension.
@@ -6337,7 +6337,7 @@ package body et_kicad is
 				
 					component_found : boolean := false; -- goes true once the given component was found in any library
 					
-					lib_cursor : type_libraries.cursor := component_libraries.first; -- points to the library being searched in
+					lib_cursor : type_libraries.cursor := tmp_component_libraries.first; -- points to the library being searched in
 					library : type_full_library_name.bounded_string; -- the full library name to be returned
 
 					procedure query_components (
@@ -7402,6 +7402,14 @@ package body et_kicad is
 		module_name : type_submodule_name.bounded_string; -- the name of the module to be created
 		module_inserted : boolean := false; -- goes true if module already created. should never happen
 
+		procedure save_component_libraries (
+		-- Saves the current tmp_component_libraries in the current module.
+			module_name	: in type_submodule_name.bounded_string;
+			module		: in out type_module) is
+		begin
+			module.component_libraries := tmp_component_libraries;
+		end save_component_libraries;
+		
 	begin -- import_design
 
 		-- change to given project directory
@@ -7418,8 +7426,9 @@ package body et_kicad is
 				Y_axis_positive := downwards;
 				
 				-- Derive top level schematic file name from project name.
-				-- This action also creates the directory and component library search lists
+				-- This action creates new directory and component library search lists
 				-- in search_list_component_libraries and search_list_project_lib_dirs.
+				-- It also clears tmp_component_libraries (which is a temparily storage).
 				top_level_schematic	:= read_project_file;
 				
 				-- The top level schematic file dictates the module name. 
@@ -7478,11 +7487,20 @@ package body et_kicad is
 				end if;
 
 				-- read package libraries
-				et_kicad_pcb.read_libraries (log_threshold);
+				et_kicad_pcb.read_libraries (log_threshold); -- stores them in et_kicad_pcb.package_libraries
 				
 				-- read component libraries
-				read_components_libraries (log_threshold);
-				-- CS copy component_libraries to module.component_libraries
+				read_components_libraries (log_threshold); -- stores them in tmp_component_libraries
+
+				-- tmp_component_libraries is a tempoarily storage place.
+				-- It must be saved in module.component_libraries in case the 
+				-- component libraries are to be converted into the ET native library format.
+				-- NOTE: tmp_component_libraries is still requried for other operations (like read_schematic)
+				-- within the current module.
+				-- CS: in the future tmp_component_libraries should be discarded. update_element and query_element
+				-- operations should access the component_libraries of a module directly.
+				type_rig.update_element (rig, module_cursor, save_component_libraries'access);
+				
 
 				current_schematic := top_level_schematic;
 				check_submodule_name_characters (to_submodule_name (current_schematic));
@@ -8345,7 +8363,7 @@ package body et_kicad is
 		end locate;
 	
 	begin
-		lib_cursor := component_libraries.find (library);
+		lib_cursor := tmp_component_libraries.find (library);
 
 		-- If the given library exists, locate the given component therein.
 		-- Otherwise generate a warning.
@@ -9251,7 +9269,7 @@ package body et_kicad is
 
 				-- Set library cursor so that it points to the library of the generic model.
 				library_cursor := type_libraries.find (
-					container	=> component_libraries, -- the collection of project libraries with generic models
+					container	=> tmp_component_libraries, -- the collection of project libraries with generic models
 					key 		=> element (component_sch).library_name); -- lib name provided by schematic component
 				
 				-- Query the library components.
@@ -11242,7 +11260,7 @@ package body et_kicad is
 			package_variant := element (component_cursor).variant; -- get the package variant name of the component
 
 			-- set library cursor. NOTE: assumption is that there IS a library with this name
-			library_cursor := component_libraries.find (library_name); 
+			library_cursor := tmp_component_libraries.find (library_name); 
 
 			type_libraries.query_element (
 				position	=> library_cursor,
@@ -11399,7 +11417,7 @@ package body et_kicad is
 			package_variant := element (component_cursor).variant; -- get the package variant name of the component
 
 			-- set library cursor. NOTE: assumption is that there IS a library with this name
-			library_cursor := component_libraries.find (library_name); 
+			library_cursor := tmp_component_libraries.find (library_name); 
 
 			type_libraries.query_element (
 				position	=> library_cursor,
@@ -11581,7 +11599,7 @@ package body et_kicad is
 				
 				-- set library cursor. NOTE: assumption is that there IS a library with this name.
 				-- CS: Otherwise an exception would occur here.
-				library_cursor := component_libraries.find (library_name); 
+				library_cursor := tmp_component_libraries.find (library_name); 
 
 				if type_libraries."/=" (library_cursor, type_libraries.no_element) then
 					type_libraries.query_element (

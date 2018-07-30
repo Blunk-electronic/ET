@@ -103,9 +103,13 @@ package et_kicad is
 		element_type 	=> et_libraries.type_components.map,
 		"=" 			=> et_libraries.type_components."=");
 
-	-- All component models of a proejct are collected here temporarily.
+	-- All component models of a project/module are collected here temporarily.
 	-- This collection is cleared when a new project is read. See procedure read_project_file.
-	component_libraries : type_libraries.map;
+	-- NOTE: tmp_component_libraries is requried for operations (like read_schematic)
+	-- within the current module.
+	-- CS: in the future tmp_component_libraries should be discarded. update_element and query_element
+	-- operations should access the component_libraries of a module directly (see type_module).
+	tmp_component_libraries : type_libraries.map;
 	
 	
 -- LIBRARY SEARCH LISTS
