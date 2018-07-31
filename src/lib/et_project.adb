@@ -82,10 +82,13 @@ package body et_project is
 		path := to_bounded_string (compose (to_string (project_path), directory_libraries));
 		path := to_bounded_string (compose (to_string (path), directory_libraries_components));
 		
-		log ("creating in " & current_directory & " a new " & et_general.system_name & " libraries directory " 
-			 & to_string (path) & " ...",
-			log_threshold);
+-- 		log ("creating in " & current_directory & " a new " & et_general.system_name & " libraries directory " 
+-- 			 & to_string (path) & " ...",
+-- 			log_threshold);
+		log ("directory for project wide libraries '" & directory_libraries & "' ...", log_threshold);
 
+		log_indentation_up;
+		
 		-- delete previous libraries directory
 		if exists (to_string (path)) then
 			delete_tree (to_string (path));
@@ -98,8 +101,10 @@ package body et_project is
 		log ("setting global library directory name ...", log_threshold + 1);
 		component_libraries_directory_name := type_libraries_directory.to_bounded_string (to_string (path));
 	
-		log ("global library directory name is now " 
-			 & type_libraries_directory.to_string (component_libraries_directory_name), log_threshold + 1);
+		log (" global library directory name is now " 
+			 & type_libraries_directory.to_string (component_libraries_directory_name), log_threshold + 2);
+
+		log_indentation_down;
 		
 		exception when event:
 			others => 
@@ -127,10 +132,13 @@ package body et_project is
 		use type_path;
 		path : type_path.bounded_string := to_bounded_string (compose (to_string (project_path), to_string (project_name)));
 	begin
-		log ("creating in " & current_directory & " a new " & et_general.system_name & " project directory " 
-			 & to_string (path) & " ...",
-			log_threshold);
+-- 		log ("creating in " & current_directory & " a new " & et_general.system_name & " project directory " 
+-- 			 & to_string (path) & " ...",
+-- 			log_threshold);
+		log ("project directory '" & to_string (project_name) & "' ...", log_threshold);
 
+		log_indentation_up;
+		
 		-- delete previous project directory
 		if exists (to_string (path)) then
 			delete_tree (to_string (path));
@@ -158,7 +166,7 @@ package body et_project is
 			name => to_string (project_name),
 			extension => project_file_name_extension));
 		
-		log ("global project file name is now " & type_project_file_name.to_string (project_file_name), log_threshold + 1);
+		log (" global project file name is now " & type_project_file_name.to_string (project_file_name), log_threshold + 2);
 
 		-- create project file and write in it a header
 		create (
@@ -173,6 +181,8 @@ package body et_project is
 		new_line (project_file_handle);
 
 		close (project_file_handle);
+
+		log_indentation_down;
 		
 		exception when event:
 			others => 

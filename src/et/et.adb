@@ -424,6 +424,8 @@ procedure et is
 	begin
 		-- Log messages go in the import report:
 		set_output (et_import.report_handle);
+
+		-- CS: use case construct to probe cad formats		
 		
 		-- If there are no modules, there is nothing to check:
 		if et_kicad.module_count > 0 then
@@ -433,7 +435,6 @@ procedure et is
 			
 			log_indentation_up;
 
-			-- CS: use case construct to probe cad formats
 			et_kicad_pcb.read_boards (log_threshold => 0);
 			
 			log_indentation_down;
@@ -444,7 +445,57 @@ procedure et is
 		
 	end read_boards;
 
+	procedure make_native_projects (log_threshold : in type_log_level) is
+	-- In directory work_directory/et_project.directory_et_import sub-directories
+	-- are to be created: One for project wide libraries (named by directory_et_import) and
+	-- others for the actual projects (nameed after the imported projects)
+		use et_kicad.type_rig;
+		project_name : et_project.type_et_project_name.bounded_string;
+		project_path : et_project.type_et_project_path.bounded_string :=
+						et_project.type_et_project_path.to_bounded_string (
+							compose (work_directory, et_project.directory_import));
+	begin -- make_native_projects
+		log (row_separator_single, log_threshold);
+		log ("making native project(s) in " &
+			 et_project.type_et_project_path.to_string (project_path) &
+			 " ...", log_threshold);
 
+		log_indentation_up;
+		
+		-- create a new project wide libraries directory for components
+		et_project.create_libraries_directory_components (
+			project_path	=> project_path,
+			log_threshold 	=> log_threshold + 1);
+
+		-- CS clean up previous imports ?
+		
+		case et_import.cad_format is
+			when et_import.KICAD_V4 =>
+				et_kicad.module_cursor := et_kicad.rig.first;
+				while et_kicad.module_cursor /= et_kicad.type_rig.no_element loop
+
+					project_name := et_project.type_et_project_name.to_bounded_string (
+						et_coordinates.to_string (et_kicad.type_rig.key (et_kicad.module_cursor)));
+
+					log ("project " & et_project.type_et_project_name.to_string (project_name), log_threshold);
+					
+					-- create a single new ET project
+					log_indentation_up;
+					
+					et_project.create_project_directory (
+						project_name	=> project_name,
+						project_path	=> project_path,
+						log_threshold 	=> log_threshold + 1);
+
+					log_indentation_down;
+					
+					next (et_kicad.module_cursor);
+				end loop;
+			when others => null;
+		end case;
+
+		log_indentation_down;
+	end make_native_projects;
 	
 begin -- main
 
@@ -474,27 +525,7 @@ begin -- main
 			-- Log messages go in the export report:
 			set_output (et_export.report_handle);
 
-
-			-- In directory work_directory/et_project.directory_et_import two sub-directories
-			-- are to be created: One for libraries (named by directory_et_import) and another
-			-- for the actual project (same name as project itself):
-
-			-- CS clean up previous imports ?
-			
-			-- create a new libraries directory for components
-			et_project.create_libraries_directory_components (
-				project_path	=> et_project.type_et_project_path.to_bounded_string (
-									compose (work_directory, et_project.directory_import)),
-				log_threshold 	=> 0);
-			
-			-- create a new ET project
-			-- It is to be named after the single project that has just been imported.
-			et_project.create_project_directory (
-				project_name	=> et_project.type_et_project_name.to_bounded_string (et_schematic.to_string (project_name)),
-				project_path	=> et_project.type_et_project_path.to_bounded_string (
-									compose (work_directory, et_project.directory_import)),
-				log_threshold 	=> 0);
-
+			make_native_projects (log_threshold => 0);
 			-- write the ET native component libraries			
 			-- CS et_project.write_component_libraries (log_threshold => 0);
 			
@@ -515,26 +546,7 @@ begin -- main
 			-- Log messages go in the export report:
 			set_output (et_export.report_handle);
 			
-			-- In directory work_directory/et_project.directory_et_import two sub-directories
-			-- are to be created: One for libraries (named by directory_et_import) and another
-			-- for the actual project (same name as project itself):
-
-			-- CS clean up previous imports ?
-			
-			-- create a new libraries directory for components
-			et_project.create_libraries_directory_components (
-				project_path	=> et_project.type_et_project_path.to_bounded_string (
-									compose (work_directory, et_project.directory_import)),
-				log_threshold 	=> 0);
-			
-			-- create a new ET project
-			-- CS: It is to be named after the rig name passed as argument. currently statically set to "rig"
-			et_project.create_project_directory (
-				project_name	=> et_project.type_et_project_name.to_bounded_string ("rig"),
-				project_path	=> et_project.type_et_project_path.to_bounded_string (
-									compose (work_directory, et_project.directory_import)),
-				log_threshold 	=> 0);
-
+			make_native_projects (log_threshold => 0);
 			-- write the ET native component libraries			
 			-- CS et_project.write_component_libraries (log_threshold => 0);
 			
