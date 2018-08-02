@@ -42,6 +42,7 @@ with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 
+with et_project;
 with et_schematic;
 with et_pcb;
 with et_import;
@@ -70,12 +71,75 @@ package et_kicad is
     
     schematic_version                   : constant positive := 2;
 
+	schematic_file_name_length : constant positive := 100; -- includes extension -- CS general stuff -> move to et_import ?
+	package type_schematic_file_name is new generic_bounded_length (schematic_file_name_length); 
+	--use type_schematic_file_name;
 
+	top_level_schematic	: type_schematic_file_name.bounded_string; 
+
+	schematic_handle	: ada.text_io.file_type; -- CS general stuff -> move to et_import ?
+	
+	function to_string (schematic : in type_schematic_file_name.bounded_string) return string; -- CS general stuff -> move to et_import ?
+	-- Returns the given schematic file name as string.
+
+	-- Sheet names may have the same length as schematic files.
+	package type_sheet_name is new generic_bounded_length (schematic_file_name_length); 
+	--use type_sheet_name;
+
+	function to_submodule_name (file_name : in type_schematic_file_name.bounded_string)
+		return et_coordinates.type_submodule_name.bounded_string;
+	-- Returns the base name of the given schematic file name as submodule name.
+
+	-- sheet headers (kicad requirement) -> CS move to et_kicad
+	-- The sheet header is a composite of a list of libraries and other things:
+	-- It contains a list of libraries used by a schemetic sheet.
+	-- We use a simple list because the order of the library names must be kept.
+    type type_sheet_header is record
+		libraries   : et_libraries.type_library_names.list; -- CS: probably not used by kicad, just information
+        eelayer_a   : positive; -- 25 -- CS: meaning not clear, probably not used
+        eelayer_b   : natural; -- 0 -- CS: meaning not clear, probably not used
+    end record;
+
+	-- Since there are usually many sheets, we need a map from schematic file name to schematic header.
+    package type_sheet_headers is new ordered_maps (
+        key_type		=> type_schematic_file_name.bounded_string,
+		element_type	=> type_sheet_header,
+		"<"				=> type_schematic_file_name."<"
+		);
+	
+    sheet_comment_length : constant natural := 100;
+	package type_sheet_comment is new generic_bounded_length (sheet_comment_length); -- currently not used
+
+	-- Within a schematic every object can be located by the name of the:
+    -- - path to the submodule (first item in path is the top level module)
+	-- - submodule name
+	-- - sheet number (NOTE: The sheet numbering restarts in a submodule)
+	-- - basic coordinates x/y
+
+	-- While reading submodules (in kicad sheets) the path_to_submodule keeps record of current point in the design 
+	-- hierarchy. Each time a submodule ABC has been found with nested submodules, the name of ABC is appended here.
+	-- Once the parent module is entered again, the name ABC is removed from the list. When assigning coordinates
+	-- to an object, the path_to_submodule is read. 
+	-- So this list (from first to last) provides a full path that tells us
+	-- the exact location of the submodule within the design hierarchy.
+	path_to_submodule : et_coordinates.type_path_to_submodule.list;
+	
+	-- Here we append a submodule name to the path_to_submodule.
+	procedure append_name_of_parent_module_to_path (submodule : in et_coordinates.type_submodule_name.bounded_string);
+
+	-- Here we remove the last submodule name form the path_to_submodule.
+	procedure delete_last_module_name_from_path; -- CS: unify with append_name_of_parent_module_to_path
+
+	procedure module_not_found (module : in type_submodule_name.bounded_string);
+	-- Returns a message stating that the given module does not exist.
+
+	-- Units may have alternative representations such as de_Morgan
+	--type type_alternative_representation is (NO, YES);
 
 	
 	procedure import_design (
 		first_instance 	: in boolean := false;
-		project			: in et_schematic.type_project_name.bounded_string;								
+		project			: in et_project.type_project_name.bounded_string;								
 		log_threshold	: in et_string_processing.type_log_level); 
 	-- Imports the design as specified by project_name.
 	-- Inserts the created submodule in the rig (see et_schematic.type_rig).
@@ -523,8 +587,8 @@ package et_kicad is
 	
 	procedure add_sheet_header ( -- CS really requried ?
 	-- Inserts a sheet header in the module (indicated by module_cursor).
-		header	: in et_schematic.type_sheet_header;
-		sheet	: in et_schematic.type_schematic_file_name.bounded_string);
+		header	: in type_sheet_header;
+		sheet	: in type_schematic_file_name.bounded_string);
 
 	procedure add_frame ( -- CS really requried ?
 	-- Inserts a drawing frame in the module (indicated by module_cursor).
@@ -651,7 +715,7 @@ package et_kicad is
         title_blocks	: et_schematic.type_title_blocks.list;		-- title blocks -- GUI relevant
 		notes       	: et_schematic.type_texts.list;				-- notes
 
-		sheet_headers	: et_schematic.type_sheet_headers.map;		-- the list of sheet headers
+		sheet_headers	: type_sheet_headers.map;		-- the list of sheet headers
 		-- CS: images
 
 		-- the nets of the module (incl. routing information from the board):

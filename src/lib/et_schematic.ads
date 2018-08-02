@@ -62,104 +62,6 @@ with et_pcb_coordinates;
 
 package et_schematic is
 
--- NAMES GENERAL
-
-	-- This is the root directory where all projects live:
-	projects_root_dir_length : constant natural := 100;
-	package type_projects_root_dir is new generic_bounded_length (projects_root_dir_length);
-	projects_root_dir : type_projects_root_dir.bounded_string;
-	
-	-- The name of a project may have 100 characters which seems sufficient for now.
- 	project_name_length : constant natural := 100;
-	package type_project_name is new generic_bounded_length (project_name_length); 
-
-	project_file_handle	: ada.text_io.file_type;
-
-	function to_string (project_name : in type_project_name.bounded_string) return string;
-	
-	function to_project_name (name : in string) return type_project_name.bounded_string;
-	-- Converts the given string to type_project_name.
-	
-	schematic_file_name_length : constant positive := project_name_length + 4; -- includes extension
-	package type_schematic_file_name is new generic_bounded_length (schematic_file_name_length); 
-	use type_schematic_file_name;
-
-	subtype type_file_name_text_size is type_distance range 1.0 .. 5.0; -- unit is mm
-	file_name_text_size_default : constant type_file_name_text_size := 1.3;
-
-	function to_file_name_text_size (size : in string) return type_file_name_text_size;
-	-- Converts a string to type_file_name_text_size.
-
-	top_level_schematic	: type_schematic_file_name.bounded_string;
-	
-	schematic_handle	: ada.text_io.file_type;
-	
-	function to_string (schematic : in type_schematic_file_name.bounded_string) return string;
-	-- Returns the given schematic file name as string.
-
--- SHEETS
-    -- A sheet title may have 100 characters which seems sufficient for now.
- 	sheet_title_length : constant natural := 100;    
-	package type_sheet_title is new generic_bounded_length (sheet_title_length);
-	use type_sheet_title;
-    
-    sheet_comment_length : constant natural := 100;
-	package type_sheet_comment is new generic_bounded_length (sheet_comment_length); 
-	use type_sheet_comment;
-	
-	-- Sheet names may have the same length as schematic files.
-	package type_sheet_name is new generic_bounded_length (schematic_file_name_length); 
-	use type_sheet_name;
-
-	subtype type_sheet_name_text_size is type_distance range 1.0 .. 5.0; -- unit is mm
-	sheet_name_text_size_default : constant type_sheet_name_text_size := 1.3;
-
-	function to_sheet_name_text_size (size : in string) return type_sheet_name_text_size;
-	-- Converts a string to type_sheet_name_text_size.
-
-	
--- COORDINATES
-   
-	-- Within a schematic every object can be located by the name of the:
-    -- - path to the submodule (first item in path is the top level module)
-	-- - submodule name
-	-- - sheet number (NOTE: The sheet numbering restarts in a submodule)
-	-- - basic coordinates x/y
-
-
-	-- While reading submodules (in kicad sheets) the path_to_submodule keeps record of current point in the design 
-	-- hierarchy. Each time a submodule ABC has been found with nested submodules, the name of ABC is appended here.
-	-- Once the parent module is entered again, the name ABC is removed from the list. When assigning coordinates
-	-- to an object, the path_to_submodule is read. 
-	-- So this list (from first to last) provides a full path that tells us
-	-- the exact location of the submodule within the design hierarchy.
-	path_to_submodule : et_coordinates.type_path_to_submodule.list;
-	
-	-- Here we append a submodule name to the path_to_submodule.
-	procedure append_name_of_parent_module_to_path (submodule : in et_coordinates.type_submodule_name.bounded_string);
-
-	-- Here we remove the last submodule name form the path_to_submodule.
-	procedure delete_last_module_name_from_path; -- CS: unify with append_name_of_parent_module_to_path
-
-	function to_submodule_name (file_name : in type_schematic_file_name.bounded_string)
-		return et_coordinates.type_submodule_name.bounded_string;
-	-- Returns the base name of the given schematic file name as submodule name.
-
-	procedure module_not_found (module : in type_submodule_name.bounded_string);
-	-- Returns a message stating that the given module does not exist.
-	
-	-- CS: negative schematic coordinates should be forbidden	
--- 	type type_coordinates is new et_coordinates.type_2d_point with private;	
--- 	type type_coordinates is new et_libraries.type_coordinates with record
---         path            : type_path_to_submodule.list;
--- 		module_name		: type_submodule_name.bounded_string;
--- 		sheet_number	: positive;
--- 	end record;
-
-
-	
-	
-
 	
 -- TEXT FIELD
 
@@ -175,10 +77,6 @@ package et_schematic is
 		log_threshold : in et_string_processing.type_log_level := 0);
 	-- Writes the properties of the given note
 
--- 	procedure add_note (
--- 	-- Inserts a note in the the module (indicated by module_cursor).
--- 		note	: in et_schematic.type_note);
-	
 	package type_texts is new indefinite_doubly_linked_lists (
 		element_type => type_note);
 
@@ -596,22 +494,6 @@ package et_schematic is
     package type_title_blocks is new doubly_linked_lists (
         element_type => type_title_block);
 
-	-- sheet headers (kicad requirement) -> CS move to et_kicad
-	-- The sheet header is a composite of a list of libraries and other things:
-	-- It contains a list of libraries used by a schemetic sheet.
-	-- We use a simple list because the order of the library names must be kept.
-    type type_sheet_header is record
-		libraries   : et_libraries.type_library_names.list; -- CS: probably not used by kicad, just information
-        eelayer_a   : positive; -- 25 -- CS: meaning not clear, probably not used
-        eelayer_b   : natural; -- 0 -- CS: meaning not clear, probably not used
-    end record;
-
-	-- Since there are usually many sheets, we need a map from schematic file name to schematic header.
-    package type_sheet_headers is new ordered_maps (
-        key_type => type_schematic_file_name.bounded_string,
-        element_type => type_sheet_header);
-	
-	
 
 	
 	

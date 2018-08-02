@@ -62,6 +62,7 @@ with et_geometry;
 
 with et_general;
 with et_string_processing;		use et_string_processing;
+with et_project;
 with et_pcb;
 with et_pcb_coordinates;
 with et_kicad_pcb;
@@ -70,6 +71,57 @@ with et_csv;
 
 package body et_kicad is
 
+	function to_string (schematic : in type_schematic_file_name.bounded_string) return string is
+	-- Returns the given schematic file name as string.
+	begin
+		return type_schematic_file_name.to_string (schematic);
+	end to_string;
+
+	function to_submodule_name (file_name : in type_schematic_file_name.bounded_string)
+		return et_coordinates.type_submodule_name.bounded_string is
+	-- Returns the base name of the given schematic file name as submodule name.
+		use ada.directories;
+	begin
+		-- CS: test if given submodule has an extension. if not return
+		-- submodule as it is.
+		--return to_bounded_string (base_name (et_coordinates.to_string (submodule)));
+		return type_submodule_name.to_bounded_string (base_name (to_string (file_name)));
+	end to_submodule_name;
+
+	-- Here we append a submodule name to the path_to_submodule.
+	-- CS: unify with procedure delete_last_module_name_from_path
+	procedure append_name_of_parent_module_to_path (submodule : in et_coordinates.type_submodule_name.bounded_string) is
+		use et_string_processing;
+		use ada.directories;
+		use et_coordinates.type_submodule_name;
+	begin
+		-- CS: limit path length !
+-- 		log ("append path_to_submodule " 
+-- 			& base_name (type_submodule_name.to_string (submodule)), level => 1);
+
+		-- Since we are dealing with file names, the extension must be removed before appending.
+		type_path_to_submodule.append (path_to_submodule,
+			to_bounded_string (base_name (type_submodule_name.to_string (submodule))));
+
+	end append_name_of_parent_module_to_path;
+	
+	-- Here we remove the last submodule name form the path_to_submodule.
+	procedure delete_last_module_name_from_path is
+		use et_coordinates;
+	begin
+		type_path_to_submodule.delete_last (path_to_submodule);
+	end delete_last_module_name_from_path;
+
+	procedure module_not_found (module : in type_submodule_name.bounded_string) is
+	-- Returns a message stating that the given module does not exist.
+		use et_string_processing;
+	begin
+		log_indentation_reset;
+		log (message_error & " module " & to_string (module) & " not found !");
+		raise constraint_error;
+	end module_not_found;
+
+	
 	procedure clear (lines : in out type_lines.list) is -- CS no paramter required
 	-- CS procedure clear is
 	begin
@@ -3738,7 +3790,7 @@ package body et_kicad is
 	
 	procedure import_design (
 		first_instance 	: in boolean := false;
-		project			: in et_schematic.type_project_name.bounded_string;
+		project			: in et_project.type_project_name.bounded_string;
 		log_threshold	: in et_string_processing.type_log_level) is
 	-- Imports the design libraries and the actual design as specified by parameter "project".
 	-- Inserts the created (sub)module in the rig (see type_rig).
@@ -3933,7 +3985,7 @@ package body et_kicad is
 			log (
 				text => "reading project file " 
 				 & compose (
-					name		=> type_project_name.to_string (project), 
+					name		=> et_project.type_project_name.to_string (project), 
 					extension	=> file_extension_project) & " ...",
 				level => log_threshold + 1
 				);
@@ -3951,13 +4003,13 @@ package body et_kicad is
 			-- Open project file. 
 			-- The file name is composed of project name and extension.
 			open (
-				file => project_file_handle,
+				file => et_project.project_file_handle,
 				mode => in_file,
 				name => compose (
-							name		=> et_schematic.type_project_name.to_string (project), 
+							name		=> et_project.type_project_name.to_string (project), 
 							extension	=> file_extension_project)
 				);
-			set_input (project_file_handle);
+			set_input (et_project.project_file_handle);
 			
 			while not end_of_file loop
 
@@ -4046,13 +4098,13 @@ package body et_kicad is
 			-- Create empty component libraries.
 			locate_libraries (log_threshold + 3);
 
-			close (project_file_handle);
+			close (et_project.project_file_handle);
 
 			-- Derive the top level schematic file name from the project name.
 			-- It is just a matter of file extension.
 			return type_schematic_file_name.to_bounded_string (
 				compose (
-					name		=> et_schematic.type_project_name.to_string (project), 
+					name		=> et_project.type_project_name.to_string (project), 
 					extension	=> file_extension_schematic)
 					);
 		end read_project_file;
@@ -7411,11 +7463,8 @@ package body et_kicad is
 	begin -- import_design
 
 		-- change to given project directory
-		log (
-			text => "changing to project directory " & (type_project_name.to_string (project) & " ..."),
-			level => log_threshold
-			);
-		set_directory (type_project_name.to_string (project));
+		log ("changing to project directory " & (et_project.to_string (project) & " ..."), log_threshold);
+		set_directory (et_project.to_string (project));
 		
 		case et_import.cad_format is
 			when et_import.kicad_v4 =>
@@ -7757,7 +7806,7 @@ package body et_kicad is
 				position	=> module_cursor,
 				process		=> query_components'access);
 		else
-			et_schematic.module_not_found (module_name); -- module does not exist -> error
+			module_not_found (module_name); -- module does not exist -> error
 		end if;
 
 		-- Show purpose.
@@ -9498,8 +9547,8 @@ package body et_kicad is
 
 	procedure add_sheet_header (
 	-- Inserts a sheet header in the module (indicated by module_cursor).
-		header	: in et_schematic.type_sheet_header;
-		sheet	: in et_schematic.type_schematic_file_name.bounded_string) is
+		header	: in type_sheet_header;
+		sheet	: in type_schematic_file_name.bounded_string) is
 
 		procedure add (
 			mod_name	: in et_coordinates.type_submodule_name.bounded_string;

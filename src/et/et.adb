@@ -64,7 +64,7 @@ procedure et is
 	operator_action : type_operator_action := request_help;
 	conf_file_name	: et_configuration.type_configuration_file_name.bounded_string;	
 
-	project_name : et_schematic.type_project_name.bounded_string; -- used for single module import
+	project_name	: et_project.type_project_name.bounded_string; -- used for single module import
 	
 	procedure get_commandline_arguments is
 		use et_schematic;
@@ -95,7 +95,7 @@ procedure et is
 
 					elsif full_switch = switch_import_module then
 						put_line ("import module " & strip_directory_separator (parameter));
-						project_name := type_project_name.to_bounded_string (parameter);
+						project_name := et_project.type_project_name.to_bounded_string (parameter);
 
 						-- set operator action
 						operator_action := import_module;
@@ -142,16 +142,16 @@ procedure et is
 	end get_commandline_arguments;
 
 	procedure backup_projects_root_directory is
-		use et_schematic;
-		use et_schematic.type_projects_root_dir;
+		use et_project;
+		use et_project.type_projects_root_dir;
 	begin
 		-- CS: log ?
 		projects_root_dir := to_bounded_string (current_directory);
 	end backup_projects_root_directory;
 
 	procedure restore_projects_root_directory is
-		use et_schematic;
-		use et_schematic.type_projects_root_dir;
+		use et_project;
+		use et_project.type_projects_root_dir;
 	begin
 		log_indentation_reset;
 		log (text => "changing back to projects directory " & to_string (projects_root_dir) & " ...",
@@ -179,14 +179,14 @@ procedure et is
 	-- This imports a single module.
 	-- CAUTION: uses the global variable project_name !!!
 		use et_schematic;
-		use et_schematic.type_project_name;
+		use et_project.type_project_name;
 		use et_import;
 	begin
 		-- Test if project name specified and if project base directory exists:
 		if length (project_name) > 0 then
 
 			-- If project name was provided with a trailing directory separator it must be removed.
-			project_name := to_bounded_string (strip_directory_separator (et_schematic.to_string (project_name)));
+			project_name := et_project.to_project_name (strip_directory_separator (et_project.to_string (project_name)));
 			validate_project (project_name, et_import.cad_format);
 		else
 			put_line (message_error & "project name not specified !");
@@ -217,7 +217,7 @@ procedure et is
 		-- After the import, we restore the directory.
 		backup_projects_root_directory;
 
-		log ("importing module " & et_schematic.to_string (project_name) & " ...", console => true);
+		log ("importing module " & et_project.to_string (project_name) & " ...", console => true);
 		log ("CAD format " & to_string (et_import.cad_format));
 		
 		-- CS: use case construct to probe cad formats
@@ -241,14 +241,14 @@ procedure et is
 	procedure import_modules is
 	-- Imports modules as specified in configuration file and inserts them in the rig.
 		use et_schematic;
-		use et_schematic.type_project_name;
+		use et_project.type_project_name;
 		use et_configuration;
 		use type_import_modules;
 		use et_coordinates;
 
 		module_cursor_import : type_import_modules.cursor;
 		instances : type_submodule_instance;
-		module : type_project_name.bounded_string; -- when importing multiple projects, we regard them as modules
+		module : et_project.type_project_name.bounded_string; -- when importing multiple projects, we regard them as modules
 	begin
 		log ("importing modules ...");
 		
@@ -285,14 +285,14 @@ procedure et is
 
 			if instances = type_submodule_instance'first then 
 				-- Only one instance requried -> do a regular single design import.
-				log ("importing module " & et_schematic.to_string (module) & " ...", console => true);
+				log ("importing module " & et_project.to_string (module) & " ...", console => true);
 				log ("CAD format " & et_import.to_string (et_import.cad_format));
 				
 				-- CS: use case construct to probe cad formats
 				et_kicad.import_design (project => module, log_threshold => 0);
 
 			else -- multi-instances
-				log ("importing and instantiating module " & et_schematic.to_string (module) & " ...", console => true);
+				log ("importing and instantiating module " & et_project.to_string (module) & " ...", console => true);
 				log ("CAD format " & et_import.to_string (et_import.cad_format));
 				
 				-- Import the project only once.
@@ -450,7 +450,7 @@ procedure et is
 	-- are to be created: One for project wide libraries (named by directory_et_import) and
 	-- others for the actual projects (nameed after the imported projects)
 		use et_kicad.type_rig;
-		project_name : et_project.type_et_project_name.bounded_string;
+		project_name : et_project.type_project_name.bounded_string;
 		project_path : et_project.type_et_project_path.bounded_string :=
 						et_project.type_et_project_path.to_bounded_string (
 							compose (work_directory, et_project.directory_import));
@@ -474,10 +474,10 @@ procedure et is
 				et_kicad.module_cursor := et_kicad.rig.first;
 				while et_kicad.module_cursor /= et_kicad.type_rig.no_element loop
 
-					project_name := et_project.type_et_project_name.to_bounded_string (
+					project_name := et_project.type_project_name.to_bounded_string (
 						et_coordinates.to_string (et_kicad.type_rig.key (et_kicad.module_cursor)));
 
-					log ("project " & et_project.type_et_project_name.to_string (project_name), log_threshold);
+					log ("project " & et_project.type_project_name.to_string (project_name), log_threshold);
 					
 					-- create a single new ET project
 					log_indentation_up;

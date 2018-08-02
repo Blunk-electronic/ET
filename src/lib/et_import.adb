@@ -39,6 +39,7 @@ with ada.directories;
 
 with et_general;
 with et_schematic;
+with et_project;
 with et_string_processing;			--use et_string_processing;
 
 package body et_import is
@@ -99,11 +100,12 @@ package body et_import is
 	end invalid_cad_format;
 	
 	procedure validate_project (
-		name : in type_project_name.bounded_string;
-		cad_format : in type_cad_format := UNKNOWN) is
+		name		: in et_project.type_project_name.bounded_string;
+		cad_format	: in type_cad_format := UNKNOWN) is
 	-- Checks if the given project of the given format exists in the current working directory.
 	-- CS: currently this is just a test, whether the directory "name" exists.
 	-- CS: do a more detailled check depending on cad format (look for project files).
+		use et_project;
 	begin
 		if exists (type_project_name.to_string (name)) then
 			null; -- fine

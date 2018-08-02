@@ -78,10 +78,25 @@ package et_project is
 	directory_documentation	: constant string (1..13)	:= "documentation";
 	directory_miscellaneous	: constant string (1..13)	:= "miscellaneous";		
 
+	subtype type_file_name_text_size is type_distance range 1.0 .. 5.0; -- unit is mm
+	file_name_text_size_default : constant type_file_name_text_size := 1.3;
+
+	function to_file_name_text_size (size : in string) return type_file_name_text_size;
+
+	
+	-- This is the root directory where all projects live:
+	projects_root_dir_length : constant natural := 100;
+	package type_projects_root_dir is new generic_bounded_length (projects_root_dir_length);
+	projects_root_dir : type_projects_root_dir.bounded_string;
+	
 	
 	project_name_max : constant natural := 100;
-	package type_et_project_name is new generic_bounded_length (project_name_max);
+	package type_project_name is new generic_bounded_length (project_name_max);
 
+	function to_string (project_name : in type_project_name.bounded_string) return string;
+
+	function to_project_name (name : in string) return type_project_name.bounded_string;
+	
 	project_path_max : constant natural := 200;
 	package type_et_project_path is new generic_bounded_length (project_path_max);
 
@@ -93,6 +108,17 @@ package et_project is
 	
 	project_file_handle : ada.text_io.file_type;
 
+    -- A sheet title may have 100 characters which seems sufficient for now.
+ 	sheet_title_length : constant natural := 100;    
+	package type_sheet_title is new generic_bounded_length (sheet_title_length);
+
+	subtype type_sheet_name_text_size is type_distance range 1.0 .. 5.0; -- unit is mm
+	sheet_name_text_size_default : constant type_sheet_name_text_size := 1.3;
+
+	function to_sheet_name_text_size (size : in string) return type_sheet_name_text_size;
+	-- Converts a string to type_sheet_name_text_size.
+
+	
 	-- The current directory where libraries live is stored here:
 	package type_libraries_directory is new generic_bounded_length (project_path_max + directory_libraries_components'length + 1); -- incl. directory separator
 	component_libraries_directory_name : type_libraries_directory.bounded_string; -- ET_projects/lbr
@@ -108,7 +134,7 @@ package et_project is
 	procedure create_project_directory (
 	-- Creates given project directory in the given project_path.
 	-- Already existing projects in given project_path are overwritten.
-		project_name	: in type_et_project_name.bounded_string;
+		project_name	: in type_project_name.bounded_string;
 		project_path	: in type_et_project_path.bounded_string;
 		log_threshold	: in et_string_processing.type_log_level);
 

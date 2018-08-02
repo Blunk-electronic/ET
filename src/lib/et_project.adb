@@ -59,6 +59,30 @@ with et_import;
 
 package body et_project is
 
+	function to_string (project_name : in type_project_name.bounded_string) return string is
+	begin
+		return type_project_name.to_string (project_name);
+	end to_string;
+	
+	function to_project_name (name : in string) return type_project_name.bounded_string is
+	-- Converts the given string to type_project_name.
+	begin
+		return type_project_name.to_bounded_string (name);
+	end to_project_name;
+
+	function to_sheet_name_text_size (size : in string) return type_sheet_name_text_size is
+	-- Converts a string to type_sheet_name_text_size.
+	begin
+		return type_sheet_name_text_size'value (size);
+	end to_sheet_name_text_size;
+
+	function to_file_name_text_size (size : in string) return type_file_name_text_size is
+	-- Converts a string to type_file_name_text_size.
+	begin
+		return type_file_name_text_size'value (size);
+	end to_file_name_text_size;
+	
+	
 -- NATIVE PROJECT
 
 	procedure create_libraries_directory_components (
@@ -71,7 +95,7 @@ package body et_project is
 		use et_general;
 		use ada.directories;
 		use et_string_processing;
-		use type_et_project_name;
+		use type_project_name;
 		use type_et_project_path;
 
 		path_length : positive :=  project_path_max + directory_libraries'length + directory_libraries_components'length + 2; -- incl. directory separators
@@ -119,13 +143,13 @@ package body et_project is
 	-- Already existing projects in given project_path are overwritten.
 	-- Sets the global project file name so that subsequent write and read operations
 	-- know the right project file.
-		project_name	: in type_et_project_name.bounded_string;
+		project_name	: in type_project_name.bounded_string;
 		project_path	: in type_et_project_path.bounded_string;
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_general;
 		use ada.directories;
 		use et_string_processing;
-		use type_et_project_name;
+		use type_project_name;
 		use type_et_project_path;
 
 		package type_path is new generic_bounded_length (project_name_max + project_path_max + 1); -- incl. directory separator

@@ -56,6 +56,7 @@ with et_general;
 with et_coordinates;
 with et_libraries;
 with et_schematic;
+with et_project;
 with et_string_processing;		use et_string_processing;
 with et_export;
 with et_import;
@@ -2426,9 +2427,9 @@ package body et_configuration is
 		put_line (configuration_file_handle, to_string (COMPONENT_ATTRIBUTE) 
 			& et_libraries.to_string (et_libraries.placeholder_text_size_default, preamble => false));
 		put_line (configuration_file_handle, to_string (SHEET_NAME) 
-			& et_libraries.to_string (et_schematic.sheet_name_text_size_default, preamble => false));
+			& et_libraries.to_string (et_project.sheet_name_text_size_default, preamble => false));
 		put_line (configuration_file_handle, to_string (et_configuration.FILE_NAME) 
-			& et_libraries.to_string (et_schematic.file_name_text_size_default, preamble => false));
+			& et_libraries.to_string (et_project.file_name_text_size_default, preamble => false));
 
 		
 		new_line (configuration_file_handle);
@@ -2645,7 +2646,7 @@ package body et_configuration is
 						check_submodule_name_length (field (element (line_cursor), column_module_name));
 						module.name := to_submodule_name (field (element (line_cursor), column_module_name));
 						check_submodule_name_characters (module.name);
-						et_import.validate_project (et_schematic.to_project_name (field (element (line_cursor), column_module_name)));
+						et_import.validate_project (et_project.to_project_name (field (element (line_cursor), column_module_name)));
 
 						-- read abbrevation
 						check_submodule_abbrevation_length (field (element (line_cursor), column_abbrevation_A));
@@ -2935,10 +2936,10 @@ package body et_configuration is
 								size := to_component_attribute_text_size (field (element (line_cursor), 2));
 
 							when SHEET_NAME =>
-								size := et_schematic.to_sheet_name_text_size (field (element (line_cursor), 2));
+								size := et_project.to_sheet_name_text_size (field (element (line_cursor), 2));
 
 							when et_configuration.FILE_NAME =>
-								size := et_schematic.to_file_name_text_size (field (element (line_cursor), 2));
+								size := et_project.to_file_name_text_size (field (element (line_cursor), 2));
 								
 						end case;
 						
