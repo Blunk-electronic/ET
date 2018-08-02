@@ -121,6 +121,188 @@ package body et_kicad is
 		raise constraint_error;
 	end module_not_found;
 
+	function unit_exists (
+	-- Returns true if the unit with the given name exists in the given list of units.
+		name	: in et_libraries.type_unit_name.bounded_string; -- the unit being inquired
+		units	: in type_units.map) -- the list of units
+		return boolean is
+		use type_units;
+	begin
+		if type_units.find (container => units, key => name) = type_units.no_element then
+			return false;
+		else	
+			return true;
+		end if;
+	end unit_exists;
+
+	function position_of_unit (
+	-- Returns the coordinates of the unit with the given name.
+	-- It is assumed, the unit in question exists.
+	-- The unit is an element in the given list of units.
+		name 	: in et_libraries.type_unit_name.bounded_string; -- the unit being inquired
+		units 	: in type_units.map) -- the list of units
+		return et_coordinates.type_coordinates is
+		unit_cursor : type_units.cursor;
+	begin
+		unit_cursor := type_units.find (container => units, key => name);
+		return type_units.element (unit_cursor).position;
+	end position_of_unit;
+
+	function mirror_style_of_unit (
+	-- Returns the mirror style of the given unit.
+	-- It is assumed, the unit in question exists.
+	-- The unit is an element in the given list of units.
+		name 	: in et_libraries.type_unit_name.bounded_string; -- the unit being inquired
+		units 	: in type_units.map) -- the list of units
+		return et_schematic.type_mirror is
+		unit_cursor : type_units.cursor;
+	begin
+		unit_cursor := type_units.find (container => units, key => name);
+		return type_units.element (unit_cursor).mirror;
+	end mirror_style_of_unit;
+
+	function orientation_of_unit (
+	-- Returns the orientation of the given unit.
+	-- It is assumed, the unit in question exists.
+	-- The unit is an element in the given list of units.
+		name	: in et_libraries.type_unit_name.bounded_string; -- the unit being inquired
+		units	: in type_units.map) -- the list of units
+		return et_coordinates.type_angle is
+		unit_cursor : type_units.cursor;
+	begin
+		unit_cursor := type_units.find (container => units, key => name);
+		return type_units.element (unit_cursor).orientation;
+	end orientation_of_unit;
+
+	
+	procedure write_unit_properties (
+	-- Writes the properties of the unit indicated by the given cursor.
+		unit			: in type_units.cursor;
+		log_threshold	: in et_string_processing.type_log_level) is
+
+		use et_string_processing;
+		use et_coordinates;
+	begin
+		log_indentation_up;
+		
+		-- unit name
+		log ("properties of unit " 
+			& et_libraries.to_string (type_units.key (unit)), log_threshold);
+
+		log_indentation_up;
+		
+		--alternative representation
+		log ("alternative (deMorgan) representation " 
+			 & to_lower (type_de_morgan_representation'image (type_units.element (unit).alt_repres)),
+			 log_threshold);
+
+		-- path to package
+		log ("path to package " 
+			& string (type_units.element (unit).path_to_package), log_threshold);
+
+		-- position
+		log (to_string (position => type_units.element (unit).position), log_threshold);
+
+		-- orientation or angle
+		log (to_string (type_units.element (unit).orientation), log_threshold);
+
+		-- mirror style
+		log (et_schematic.to_string (type_units.element (unit).mirror), log_threshold);
+
+		-- placeholders
+		log ("placeholders", log_threshold + 1);
+		log_indentation_up;
+
+			-- reference
+			et_libraries.write_placeholder_properties (
+				placeholder => type_units.element (unit).reference,
+				log_threshold => log_threshold + 1);
+
+			-- value
+			et_libraries.write_placeholder_properties (
+				placeholder => type_units.element (unit).value,
+				log_threshold => log_threshold + 1);
+
+			-- some placeholders exist depending on the component appearance
+			case type_units.element (unit).appearance is
+				when et_libraries.sch_pcb =>
+					
+					-- package/footprint
+					et_libraries.write_placeholder_properties (
+						placeholder => type_units.element (unit).packge,
+						log_threshold => log_threshold + 1);
+
+					-- datasheet
+					et_libraries.write_placeholder_properties (
+						placeholder => type_units.element (unit).datasheet,
+						log_threshold => log_threshold + 1);
+
+					-- purpose
+					et_libraries.write_placeholder_properties (
+						placeholder => type_units.element (unit).purpose,
+						log_threshold => log_threshold + 1);
+					
+					-- partcode
+					et_libraries.write_placeholder_properties (
+						placeholder => type_units.element (unit).partcode,
+						log_threshold => log_threshold + 1);
+
+					-- bom
+					et_libraries.write_placeholder_properties (
+						placeholder => type_units.element (unit).bom,
+						log_threshold => log_threshold + 1);
+					
+				when others => null;
+			end case;
+
+			-- commissioned
+			et_libraries.write_placeholder_properties (
+				placeholder => type_units.element (unit).commissioned,
+				log_threshold => log_threshold + 1);
+
+			-- updated
+			et_libraries.write_placeholder_properties (
+				placeholder => type_units.element (unit).updated,
+				log_threshold => log_threshold + 1);
+
+			-- author
+			et_libraries.write_placeholder_properties (
+				placeholder => type_units.element (unit).author,
+				log_threshold => log_threshold + 1);
+
+		log_indentation_down;
+		log_indentation_down;
+		log_indentation_down;		
+	end write_unit_properties;
+
+
+	function units_of_component (component_cursor : in type_components.cursor) return type_units.map is
+	-- Returns the units of the given component.
+		u : type_units.map;
+
+		procedure locate (
+			name		: in et_libraries.type_component_reference;
+			component	: in type_component) is
+		begin
+			-- copy the units of the component to the return value
+			u := component.units;
+		end locate;
+		
+	begin
+		-- locate the given component by component_cursor
+		type_components.query_element (component_cursor, locate'access);
+		
+		-- CS: do something if cursor invalid. via exception handler ?
+		return u;
+	end units_of_component;
+	
+	function component_reference (cursor : in type_components.cursor) 
+		return et_libraries.type_component_reference is
+	-- Returns the component reference where cursor points to.
+	begin
+		return type_components.key (cursor);
+	end component_reference;
+
 	
 	procedure clear (lines : in out type_lines.list) is -- CS no paramter required
 	-- CS procedure clear is
@@ -538,17 +720,15 @@ package body et_kicad is
 	end to_appearance;
 
 	function to_alternative_representation (line : in type_fields_of_line; schematic : in boolean)
-	-- Converts the kicad alternative (deMorgan) representation to the et alternative representation.
+	-- Converts the kicad alternative (deMorgan) representation to the type_de_morgan_representation.
 	-- In a schematic it is expressed in a line like "U 2 1 5992967A". The 3rd field is the deMorgan flag.
-		return et_schematic.type_alternative_representation is
+		return type_de_morgan_representation is
 
-		use et_schematic;
-	
 		function field (line : in type_fields_of_line; pos : in positive) return string 
 			renames et_string_processing.get_field_from_line;
 		
 		rep_in : type_alternative_representation;
-		rep_out : et_schematic.type_alternative_representation;
+		rep_out : type_de_morgan_representation;
 	begin
 		rep_in := type_alternative_representation'value (field (line,3));
 
@@ -1654,7 +1834,7 @@ package body et_kicad is
 			-- If the component was inserted (should be) the comp_cursor points to the component
 			-- for later inserting the units:
 				key			: in type_full_library_name.bounded_string;
-				components	: in out type_components.map) is
+				components	: in out et_libraries.type_components.map) is
 			begin -- insert_component
 
 -- 				-- For the logfile write the component name.
@@ -1666,7 +1846,7 @@ package body et_kicad is
 					when sch =>
 
 						-- we insert into the given components list a new component
-						type_components.insert(
+						et_libraries.type_components.insert(
 							container	=> components,
 							key			=> tmp_component_name, -- generic name like #PWR, #FLG 
 							position	=> comp_cursor,
@@ -1695,7 +1875,7 @@ package body et_kicad is
 					when sch_pcb =>
 
 						-- we insert into the given components list a new component
-						type_components.insert(
+						et_libraries.type_components.insert(
 							container	=> components,
 							key			=> tmp_component_name, -- generic name like 74LS00
 							position	=> comp_cursor,
@@ -1758,16 +1938,16 @@ package body et_kicad is
 				procedure locate_unit (
 				-- sets the unit_cursor
 					key			: in type_component_generic_name.bounded_string;
-					component	: in type_component) is
+					component	: in et_libraries.type_component) is
 				begin
 					unit_cursor := component.units_internal.find (to_unit_name (tmp_unit_id));
 				end locate_unit;
 
 				procedure locate_component ( 
 					key			: in type_full_library_name.bounded_string;
-					components	: in type_components.map) is
+					components	: in et_libraries.type_components.map) is
 				begin
-					type_components.query_element (comp_cursor, locate_unit'access);
+					et_libraries.type_components.query_element (comp_cursor, locate_unit'access);
 				end locate_component;
 
 			begin -- set_unit_cursor
@@ -1805,7 +1985,7 @@ package body et_kicad is
 				procedure insert_unit (
 				-- Inserts an internal unit in a component.
 					key			: in type_component_generic_name.bounded_string;
-					component	: in out type_component) is
+					component	: in out et_libraries.type_component) is
 
 					unit : type_unit_internal (tmp_appearance);
 				begin
@@ -1822,7 +2002,7 @@ package body et_kicad is
 
 				procedure locate_component ( 
 					key			: in type_full_library_name.bounded_string;
-					components	: in out type_components.map) is
+					components	: in out et_libraries.type_components.map) is
 				begin
 					components.update_element (comp_cursor, insert_unit'access);
 				end locate_component;
@@ -1931,7 +2111,7 @@ package body et_kicad is
 				procedure locate_unit (
 				-- Locates the unit indicated by unit_cursor.
 					key			: in type_component_generic_name.bounded_string;
-					component	: in out type_component) is
+					component	: in out et_libraries.type_component) is
 				begin
 					component.units_internal.update_element (unit_cursor, insert'access);
 				end locate_unit;
@@ -1939,7 +2119,7 @@ package body et_kicad is
 				procedure locate_component ( 
 				-- Locates the component indicated by comp_cursor.
 					key			: in type_full_library_name.bounded_string;
-					components	: in out type_components.map) is
+					components	: in out et_libraries.type_components.map) is
 				begin -- locate_component
 					components.update_element (comp_cursor, locate_unit'access);
 				end locate_component;
@@ -2009,7 +2189,7 @@ package body et_kicad is
 				procedure locate_unit (
 				-- Locates the unit indicated by unit_cursor.
 					key			: in type_component_generic_name.bounded_string;
-					component	: in out type_component) is
+					component	: in out et_libraries.type_component) is
 				begin
 					component.units_internal.update_element (unit_cursor, set'access);
 				end locate_unit;
@@ -2017,7 +2197,7 @@ package body et_kicad is
 				procedure locate_component ( 
 				-- Locates the component indicated by comp_cursor.
 					key			: in type_full_library_name.bounded_string;
-					components	: in out type_components.map) is
+					components	: in out et_libraries.type_components.map) is
 				begin -- locate_component
 					components.update_element (comp_cursor, locate_unit'access);
 				end locate_component;
@@ -2275,14 +2455,14 @@ package body et_kicad is
 				-- Adds the footprint finally.
 					procedure insert_footprint (
 						key			: in type_component_generic_name.bounded_string;
-						component	: in out type_component) is
+						component	: in out et_libraries.type_component) is
 					begin
 						component.package_filter.insert (fp);
 					end insert_footprint;
 					
 					procedure locate_component ( 
 						key			: in type_full_library_name.bounded_string;
-						components	: in out type_components.map) is
+						components	: in out et_libraries.type_components.map) is
 					begin
 						components.update_element (comp_cursor, insert_footprint'access);
 					end locate_component;
@@ -2489,11 +2669,11 @@ package body et_kicad is
 				
 				procedure locate_component (
 					lib_name	: in type_full_library_name.bounded_string;
-					components	: in out type_components.map) is
+					components	: in out et_libraries.type_components.map) is
 
 					procedure build (
 						comp_name	: in type_component_generic_name.bounded_string;
-						component	: in out type_component) is
+						component	: in out et_libraries.type_component) is
 
 						use type_component_variants;
 						use type_terminal_port_map;
@@ -2895,15 +3075,15 @@ package body et_kicad is
 		procedure locate_component (
 		-- Locates the given generic component in the component libraray.
 			library_name	: in type_full_library_name.bounded_string;
-			components 		: in out type_components.map) is
+			components 		: in out et_libraries.type_components.map) is
 
-			use type_components;
-			component_cursor : type_components.cursor; -- points to the generic component
+			use et_libraries.type_components;
+			component_cursor : et_libraries.type_components.cursor; -- points to the generic component
 			
 			procedure query_variants (
 			-- Queries the package variants of the generic component.
 				component_name	: in type_component_generic_name.bounded_string; -- RESISTOR
-				component 		: in out type_component) is
+				component 		: in out et_libraries.type_component) is
 
 				use type_component_package_name;
 				use type_component_variants;
@@ -3009,12 +3189,12 @@ package body et_kicad is
 			-- If not found, search the component again with a tilde prepended to
 			-- to the generic name:
 			component_cursor := components.find (generic_name);
-			if component_cursor = type_components.no_element then
+			if component_cursor = et_libraries.type_components.no_element then
 				component_cursor := components.find (prepend_tilde (generic_name));
 			end if;
 
 			-- query the package variants of the generic component
-			type_components.update_element (
+			et_libraries.type_components.update_element (
 				container	=> components,
 				position 	=> component_cursor,
 				process 	=> query_variants'access);
@@ -6015,7 +6195,7 @@ package body et_kicad is
 				orientation					: et_coordinates.type_angle;
 				mirror						: type_mirror;
 				path_to_package				: type_path_to_package; -- 59F202F2
-				alternative_representation	: et_schematic.type_alternative_representation;
+				alternative_representation	: type_de_morgan_representation;
 			
 				-- These are the "field found flags". They signal if a particular text field has been found.
 				-- They are evaluated once the given lines are read completely.
@@ -7771,13 +7951,13 @@ package body et_kicad is
 		-- Searches the components of the module for the given reference.
 			module_name : in type_submodule_name.bounded_string;
 			module		: in type_module) is
-			use et_schematic.type_components;
-			component_cursor : et_schematic.type_components.cursor := module.components.first;
+			use type_components;
+			component_cursor : type_components.cursor := module.components.first;
 		begin
 			log ("querying components ...", log_threshold + 1);
 			log_indentation_up;
 
-			while component_cursor /= et_schematic.type_components.no_element loop
+			while component_cursor /= type_components.no_element loop
 				if et_libraries."=" (key (component_cursor), reference) then
 
 					-- component with given reference found.
@@ -8426,15 +8606,15 @@ package body et_kicad is
 		return comp_cursor;
 	end find_component;
 
-	procedure reset_component_cursor (cursor : in out et_schematic.type_components.cursor) is
+	procedure reset_component_cursor (cursor : in out type_components.cursor) is
 	-- Resets the given component cursor to the begin of the component list
 	-- of the module indicated by module_cursor.
 		procedure reset (
 			name	: in et_coordinates.type_submodule_name.bounded_string;
 			module	: in type_module) is
-			use et_schematic.type_components;
+			use type_components;
 		begin
-			cursor := et_schematic.type_components.first (module.components);
+			cursor := type_components.first (module.components);
 		end reset;
 	begin
 		type_rig.query_element (
@@ -8478,7 +8658,8 @@ package body et_kicad is
 		use et_string_processing;
 
 		-- This component cursor points to the schematic component being processed.
-		component_cursor_sch: et_schematic.type_components.cursor;
+		use type_components;
+		component_cursor_sch: type_components.cursor;
 
 		-- The component reference in the schematic (like R44 or IC34)
 		-- is tempoarily held here:
@@ -8491,7 +8672,7 @@ package body et_kicad is
 		-- CS: log_threshold for messages below
 
 		-- For tempoarily storage of units of a component (taken from the schematic):
-		units_sch : et_schematic.type_units.map;
+		units_sch : type_units.map;
 
 		procedure extract_ports is
 		-- Extracts the ports of the component indicated by component_cursor_lib.
@@ -8587,7 +8768,7 @@ package body et_kicad is
 					-- rotate port coordinates
 					rotate (
 						point => port_coordinates,
-						angle => et_schematic.orientation_of_unit (unit_name_lib, units_sch),
+						angle => orientation_of_unit (unit_name_lib, units_sch),
 						log_threshold => log_threshold + 3);
 
 					-- Mirror port coordinates if required.
@@ -8856,10 +9037,10 @@ package body et_kicad is
 		-- These coordinates plus the port coordinates (extracted in 
 		-- procedure (extract_ports) will later yield the absolute positions of the ports.
 		reset_component_cursor (component_cursor_sch);
-		while component_cursor_sch /= et_schematic.type_components.no_element loop
+		while component_cursor_sch /= type_components.no_element loop
 		
 			-- log component by its reference		
-			component_reference :=  et_schematic.component_reference (component_cursor_sch);
+			component_reference := et_kicad.component_reference (component_cursor_sch);
 			log ("reference " & et_libraries.to_string (component_reference), log_threshold + 1);
 			
 			-- Insert component in portlists. for the moment the portlist of this component is empty.
@@ -8874,7 +9055,7 @@ package body et_kicad is
 				);
 			
 			-- get the units of the current schematic component (indicated by component_cursor_sch)
-			units_sch := et_schematic.units_of_component (component_cursor_sch);
+			units_sch := units_of_component (component_cursor_sch);
 
 			log_indentation_up;			
 
@@ -9157,8 +9338,8 @@ package body et_kicad is
 			module_name : in type_submodule_name.bounded_string;
 			module		: in type_module) is
 
-			use et_schematic.type_components;
-			component_sch : et_schematic.type_components.cursor := module.components.first;
+			use type_components;
+			component_sch : type_components.cursor := module.components.first;
 			library_cursor : type_libraries.cursor;
 
 			use type_libraries;
@@ -9178,9 +9359,9 @@ package body et_kicad is
 
 					procedure query_units_sch (
 						component_name	: in et_libraries.type_component_reference;
-						component 		: in et_schematic.type_component) is
-						use et_schematic.type_units;
-						unit_cursor : et_schematic.type_units.cursor := component.units.first;
+						component 		: in type_component) is
+						use type_units;
+						unit_cursor : type_units.cursor := component.units.first;
 						unit_deployed : boolean := false;
 						use et_libraries.type_unit_name;
 						use et_import;
@@ -9194,7 +9375,7 @@ package body et_kicad is
 						end unit_not_deployed;
 		
 					begin
-						while unit_cursor /= et_schematic.type_units.no_element loop
+						while unit_cursor /= type_units.no_element loop
 							if key (unit_cursor) = key (unit_internal) then
 								unit_deployed := true;
 								exit;
@@ -9309,7 +9490,7 @@ package body et_kicad is
 			end query_library_components;
 			
 		begin -- query_schematic_components
-			while component_sch /= et_schematic.type_components.no_element loop
+			while component_sch /= type_components.no_element loop
 
 				log (et_libraries.to_string (key (component_sch)) & " in " 
 					& et_libraries.to_string (element (component_sch).library_name), log_threshold + 1);
@@ -9669,7 +9850,7 @@ package body et_kicad is
 	-- consider only kicad. In other cases the "inserted" check (see below) 
 	-- must be enabled via an argument.
 		reference		: in et_libraries.type_component_reference;
-		component		: in et_schematic.type_component;
+		component		: in type_component;
 		log_threshold 	: in et_string_processing.type_log_level) is
 		
 		procedure add (
@@ -9677,7 +9858,7 @@ package body et_kicad is
 			module	: in out type_module) is
 			
 			inserted	: boolean := false;
-			cursor		: et_schematic.type_components.cursor;
+			cursor		: type_components.cursor;
 
 			use et_string_processing;
 		begin
@@ -9689,7 +9870,7 @@ package body et_kicad is
 				);
 
 -- 			if inserted then -- first occurence of component
-				et_schematic.write_component_properties (component => cursor, log_threshold => log_threshold + 1);
+				write_component_properties (component => cursor, log_threshold => log_threshold + 1);
 -- 			else -- not inserted
 -- 				null; -- CS: see comment above
 				--raise constraint_error;
@@ -9706,7 +9887,7 @@ package body et_kicad is
 	-- Adds a unit into the given commponent.
 		reference		: in et_libraries.type_component_reference;
 		unit_name		: in et_libraries.type_unit_name.bounded_string;
-		unit 			: in et_schematic.type_unit;
+		unit 			: in type_unit;
 		log_threshold	: in et_string_processing.type_log_level) is
 
 		procedure add (

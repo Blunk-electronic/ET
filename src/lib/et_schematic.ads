@@ -83,9 +83,6 @@ package et_schematic is
 
 -- UNITS AND COMPONENTS
 
-	-- Units may have alternative representations such as de_Morgan
-	type type_alternative_representation is (NO, YES);
-
 	-- units can be placed mirrored along the x or y axis or not at all.
 	type type_mirror is (none, x_axis, y_axis);
 
@@ -96,22 +93,15 @@ package et_schematic is
 	-- and those which appear in both schematic an layout (so called real components):
 	subtype type_appearance_schematic is type_component_appearance range sch .. sch_pcb;
 
-	-- KiCad uses an 8 digit string like 59969508 to link a unit from schematic to package (in board file).
-	-- Other CAE systmes might use this approach too. If longer strings or variying lenght is used,
-	-- the type should become a bounded string or whatsoever:
-	type type_path_to_package is new string (1..8);
-	
 	-- In a schematic we find units spread all over.
 	-- A unit is a subsection of a component.
 	-- A unit has placeholders for text like reference (like IC303), value (like 7400), ...
 	-- Some placeholders are available when the component appears in both schematic and layout.
-	type type_unit (appearance : type_appearance_schematic) is record
+	type type_unit (appearance : type_appearance_schematic) is tagged record
 		position		: et_coordinates.type_coordinates;
 		orientation		: et_coordinates.type_angle;
 		mirror			: type_mirror;
-		path_to_package	: type_path_to_package;
 		name			: et_libraries.type_unit_name.bounded_string;
-		alt_repres		: type_alternative_representation;
 		reference		: et_libraries.type_text_placeholder (meaning => et_libraries.reference);
 		value			: et_libraries.type_text_placeholder (meaning => et_libraries.value);
 		commissioned	: et_libraries.type_text_placeholder (meaning => et_libraries.commissioned);		
@@ -138,45 +128,40 @@ package et_schematic is
 		"<" => type_unit_name."<",
 		element_type => type_unit);
 
-	function unit_exists (
-	-- Returns true if the unit with the given name exists in the given list of units.
-		name : in type_unit_name.bounded_string; -- the unit being inquired
-		units : in type_units.map) -- the list of units
-		return boolean;
 
-	function position_of_unit (
-	-- Returns the coordinates of the unit with the given name.
-	-- It is assumed, the unit in question exists.
-	-- The unit is an element in the given list of units.
-		name : in type_unit_name.bounded_string; -- the unit being inquired
-		units : in type_units.map) -- the list of units
-		return type_coordinates;
-	
-	function mirror_style_of_unit (
-	-- Returns the mirror style of the given unit.
-	-- It is assumed, the unit in question exists.
-	-- The unit is an element in the given list of units.
-		name : in type_unit_name.bounded_string; -- the unit being inquired
-		units : in type_units.map) -- the list of units
-		return type_mirror;
-	
-	function orientation_of_unit (
-	-- Returns the orientation of the given unit.
-	-- It is assumed, the unit in question exists.
-	-- The unit is an element in the given list of units.
-		name : in type_unit_name.bounded_string; -- the unit being inquired
-		units : in type_units.map) -- the list of units
-		return type_angle;
+-- 	function position_of_unit (
+-- 	-- Returns the coordinates of the unit with the given name.
+-- 	-- It is assumed, the unit in question exists.
+-- 	-- The unit is an element in the given list of units.
+-- 		name : in type_unit_name.bounded_string; -- the unit being inquired
+-- 		units : in type_units.map) -- the list of units
+-- 		return type_coordinates;
+-- 	
+-- 	function mirror_style_of_unit (
+-- 	-- Returns the mirror style of the given unit.
+-- 	-- It is assumed, the unit in question exists.
+-- 	-- The unit is an element in the given list of units.
+-- 		name : in type_unit_name.bounded_string; -- the unit being inquired
+-- 		units : in type_units.map) -- the list of units
+-- 		return type_mirror;
+-- 	
+-- 	function orientation_of_unit (
+-- 	-- Returns the orientation of the given unit.
+-- 	-- It is assumed, the unit in question exists.
+-- 	-- The unit is an element in the given list of units.
+-- 		name : in type_unit_name.bounded_string; -- the unit being inquired
+-- 		units : in type_units.map) -- the list of units
+-- 		return type_angle;
 	
 	-- This is a component as it appears in the schematic.
-	type type_component (appearance : type_appearance_schematic) is record
+	type type_component (appearance : type_appearance_schematic) is tagged record
 		library_name	: type_full_library_name.bounded_string; -- symbol lib like ../libraries/transistors.lib
 		generic_name	: et_libraries.type_component_generic_name.bounded_string; -- example: "TRANSISTOR_PNP"
 		value			: et_libraries.type_component_value.bounded_string; -- 470R
 		commissioned	: et_string_processing.type_date; -- 2017-08-17T14:17:25
 		updated			: et_string_processing.type_date; -- 2017-10-30T08:33:56
 		author			: et_libraries.type_person_name.bounded_string; -- Steve Miller
-		units			: type_units.map; -- PWR, A, B, ...
+--		units			: type_units.map; -- PWR, A, B, ...
 		case appearance is
 			-- If a component appears in both schematic and layout it has got:
 			when sch_pcb => 
@@ -211,12 +196,6 @@ package et_schematic is
 	-- Returns the package name of the given component.
 		
 	
-	procedure write_unit_properties (
-	-- Writes the properties of the unit indicated by the given cursor.
-		unit			: in type_units.cursor;
-		log_threshold	: in et_string_processing.type_log_level);
-
-
 -- LABELS AND NETS
 
 	-- The name of a net may have 100 characters which seems sufficient for now.
@@ -536,10 +515,6 @@ package et_schematic is
 		component 		: in type_components.cursor;
 		log_threshold	: in et_string_processing.type_log_level);
 
-	function component_reference (cursor : in type_components.cursor) 
-		return type_component_reference;
-	-- Returns the component reference where cursor points to.
-
 	function bom (cursor : in type_components.cursor)
 	-- Returns the component bom status where cursor points to.
 		return type_bom;
@@ -689,8 +664,8 @@ package et_schematic is
 -- 		modules		: type_modules.map;
 -- 	end record;
 
-	function units_of_component (component_cursor : in type_components.cursor) return type_units.map;
-	-- Returns the units of the given component.
+-- 	function units_of_component (component_cursor : in type_components.cursor) return type_units.map;
+-- 	-- Returns the units of the given component.
 
    
 -- MISC

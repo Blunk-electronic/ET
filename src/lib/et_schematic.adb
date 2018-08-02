@@ -280,13 +280,6 @@ package body et_schematic is
 		
 	end write_component_properties;
 
-	function component_reference (cursor : in type_components.cursor) 
-		return type_component_reference is
-	-- Returns the component reference where cursor points to.
-	begin
-		return type_components.key (cursor);
-	end component_reference;
-
 	function bom (cursor : in type_components.cursor)
 	-- Returns the component bom status where cursor points to.
 		return type_bom is
@@ -306,60 +299,7 @@ package body et_schematic is
 		return (to_string (position => no_connection_flag.coordinates, scope => scope));
 	end to_string;
 
-	function unit_exists (
-	-- Returns true if the unit with the given name exists in the given list of units.
-		name : in type_unit_name.bounded_string; -- the unit being inquired
-		units : in et_schematic.type_units.map) -- the list of units
-		return boolean is
 
-		use et_schematic;
-		use et_schematic.type_units;
-	begin
-		if et_schematic.type_units.find (container => units, key => name) = type_units.no_element then
-			return false;
-		else	
-			return true;
-		end if;
-	end unit_exists;
-	
-	function position_of_unit (
-	-- Returns the coordinates of the unit with the given name.
-	-- It is assumed, the unit in question exists.
-	-- The unit is an element in the given list of units.
-		name : in type_unit_name.bounded_string; -- the unit being inquired
-		units : in et_schematic.type_units.map) -- the list of units
-		return et_coordinates.type_coordinates is
-		unit_cursor : et_schematic.type_units.cursor;
-	begin
-		unit_cursor := et_schematic.type_units.find (container => units, key => name);
-		return et_schematic.type_units.element (unit_cursor).position;
-	end position_of_unit;
-
-	function mirror_style_of_unit (
-	-- Returns the mirror style of the given unit.
-	-- It is assumed, the unit in question exists.
-	-- The unit is an element in the given list of units.
-		name : in type_unit_name.bounded_string; -- the unit being inquired
-		units : in et_schematic.type_units.map) -- the list of units
-		return et_schematic.type_mirror is
-		unit_cursor : et_schematic.type_units.cursor;
-	begin
-		unit_cursor := et_schematic.type_units.find (container => units, key => name);
-		return et_schematic.type_units.element (unit_cursor).mirror;
-	end mirror_style_of_unit;
-
-	function orientation_of_unit (
-	-- Returns the orientation of the given unit.
-	-- It is assumed, the unit in question exists.
-	-- The unit is an element in the given list of units.
-		name : in type_unit_name.bounded_string; -- the unit being inquired
-		units : in et_schematic.type_units.map) -- the list of units
-		return type_angle is
-		unit_cursor : et_schematic.type_units.cursor;
-	begin
-		unit_cursor := et_schematic.type_units.find (container => units, key => name);
-		return et_schematic.type_units.element (unit_cursor).orientation;
-	end orientation_of_unit;
 	
 
 	function to_package_name (
@@ -375,105 +315,6 @@ package body et_schematic is
 		return package_name;
 	end to_package_name;
 	
-	procedure write_unit_properties (
-	-- Writes the properties of the unit indicated by the given cursor.
-		unit			: in type_units.cursor;
-		log_threshold	: in et_string_processing.type_log_level) is
-
-		use et_string_processing;
-		use et_coordinates;
-	begin
-		log_indentation_up;
-		
-		-- unit name
-		log ("properties of unit " 
-			& to_string (type_units.key (unit)), log_threshold);
-
-		log_indentation_up;
-		
-		-- alternative representation
-		log ("alternative (deMorgan) representation " 
-			 & to_lower (type_alternative_representation'image (type_units.element (unit).alt_repres)),
-			 log_threshold);
-
-		-- path to package
-		log ("path to package " 
-			& string (type_units.element (unit).path_to_package), log_threshold);
-
-		-- position
-		log (to_string (position => type_units.element (unit).position), log_threshold);
-
-		-- orientation or angle
-		log (to_string (type_units.element (unit).orientation), log_threshold);
-
-		-- mirror style
-		log (to_string (type_units.element (unit).mirror), log_threshold);
-
-		-- placeholders
-		log ("placeholders", log_threshold + 1);
-		log_indentation_up;
-
-			-- reference
-			et_libraries.write_placeholder_properties (
-				placeholder => type_units.element (unit).reference,
-				log_threshold => log_threshold + 1);
-
-			-- value
-			et_libraries.write_placeholder_properties (
-				placeholder => type_units.element (unit).value,
-				log_threshold => log_threshold + 1);
-
-			-- some placeholders exist depending on the component appearance
-			case type_units.element (unit).appearance is
-				when sch_pcb =>
-					
-					-- package/footprint
-					et_libraries.write_placeholder_properties (
-						placeholder => type_units.element (unit).packge,
-						log_threshold => log_threshold + 1);
-
-					-- datasheet
-					et_libraries.write_placeholder_properties (
-						placeholder => type_units.element (unit).datasheet,
-						log_threshold => log_threshold + 1);
-
-					-- purpose
-					et_libraries.write_placeholder_properties (
-						placeholder => type_units.element (unit).purpose,
-						log_threshold => log_threshold + 1);
-					
-					-- partcode
-					et_libraries.write_placeholder_properties (
-						placeholder => type_units.element (unit).partcode,
-						log_threshold => log_threshold + 1);
-
-					-- bom
-					et_libraries.write_placeholder_properties (
-						placeholder => type_units.element (unit).bom,
-						log_threshold => log_threshold + 1);
-					
-				when others => null;
-			end case;
-
-			-- commissioned
-			et_libraries.write_placeholder_properties (
-				placeholder => type_units.element (unit).commissioned,
-				log_threshold => log_threshold + 1);
-
-			-- updated
-			et_libraries.write_placeholder_properties (
-				placeholder => type_units.element (unit).updated,
-				log_threshold => log_threshold + 1);
-
-			-- author
-			et_libraries.write_placeholder_properties (
-				placeholder => type_units.element (unit).author,
-				log_threshold => log_threshold + 1);
-
-		log_indentation_down;
-		log_indentation_down;
-		log_indentation_down;		
-	end write_unit_properties;
 
 	procedure check_net_name_length (net : in string) is
 	-- Tests if the given net name is longer than allowed.	
@@ -790,25 +631,25 @@ package body et_schematic is
 	end show_danger;
 	
 
-	function units_of_component (component_cursor : in type_components.cursor) return type_units.map is
-	-- Returns the units of the given component.
-		u : type_units.map;
-
-		procedure locate (
-			name : in type_component_reference;
-			component : in type_component) is
-		begin
-			-- copy the units of the component to the return value
-			u := component.units;
-		end locate;
-		
-	begin
-		-- locate the given component by component_cursor
-		type_components.query_element (component_cursor, locate'access);
-		
-		-- CS: do something if cursor invalid. via exception handler ?
-		return u;
-	end units_of_component;
+-- 	function units_of_component (component_cursor : in type_components.cursor) return type_units.map is
+-- 	-- Returns the units of the given component.
+-- 		u : type_units.map;
+-- 
+-- 		procedure locate (
+-- 			name : in type_component_reference;
+-- 			component : in type_component) is
+-- 		begin
+-- 			-- copy the units of the component to the return value
+-- 			u := component.units;
+-- 		end locate;
+-- 		
+-- 	begin
+-- 		-- locate the given component by component_cursor
+-- 		type_components.query_element (component_cursor, locate'access);
+-- 		
+-- 		-- CS: do something if cursor invalid. via exception handler ?
+-- 		return u;
+-- 	end units_of_component;
 
 	function to_string (port : in type_port_with_reference) return string is
 	-- Returns the properties of the given port as string.

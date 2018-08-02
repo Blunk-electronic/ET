@@ -41,6 +41,7 @@ with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
+with ada.containers.indefinite_ordered_maps;
 
 with et_project;
 with et_schematic;
@@ -134,7 +135,94 @@ package et_kicad is
 	-- Returns a message stating that the given module does not exist.
 
 	-- Units may have alternative representations such as de_Morgan
-	--type type_alternative_representation is (NO, YES);
+	type type_de_morgan_representation is (NO, YES);
+
+	-- KiCad uses an 8 digit string like 59969508 to link a unit from schematic to package (in board file).
+	-- Other CAE systmes might use this approach too. If longer strings or variying lenght is used,
+	-- the type should become a bounded string or whatsoever:
+	type type_path_to_package is new string (1..8); -- CS ????? -- is a timestap ?
+	
+	type type_unit is new et_schematic.type_unit with record
+		path_to_package	: type_path_to_package;
+		alt_repres		: type_de_morgan_representation;
+	end record;
+
+	procedure add_unit (
+	-- Adds a unit into the given commponent.
+		reference		: in et_libraries.type_component_reference;
+		unit_name		: in et_libraries.type_unit_name.bounded_string;
+		unit 			: in type_unit;
+		log_threshold	: in et_string_processing.type_log_level);
+
+	
+	-- Units of a component are collected in a map.
+	-- A unit is accessed by its name like "I/O Bank 3" or "PWR" or "A" or "B" ...	
+	package type_units is new indefinite_ordered_maps (
+		key_type		=> et_libraries.type_unit_name.bounded_string,
+		"<"				=> et_libraries.type_unit_name."<",
+		element_type	=> type_unit);
+
+	function unit_exists (
+	-- Returns true if the unit with the given name exists in the given list of units.
+		name	: in et_libraries.type_unit_name.bounded_string; -- the unit being inquired
+		units	: in type_units.map) -- the list of units
+		return boolean;
+
+	function position_of_unit (
+	-- Returns the coordinates of the unit with the given name.
+	-- It is assumed, the unit in question exists.
+	-- The unit is an element in the given list of units.
+		name	: in et_libraries.type_unit_name.bounded_string; -- the unit being inquired
+		units	: in type_units.map) -- the list of units
+		return type_coordinates;
+	
+	function mirror_style_of_unit (
+	-- Returns the mirror style of the given unit.
+	-- It is assumed, the unit in question exists.
+	-- The unit is an element in the given list of units.
+		name	: in et_libraries.type_unit_name.bounded_string; -- the unit being inquired
+		units 	: in type_units.map) -- the list of units
+		return et_schematic.type_mirror;
+	
+	function orientation_of_unit (
+	-- Returns the orientation of the given unit.
+	-- It is assumed, the unit in question exists.
+	-- The unit is an element in the given list of units.
+		name 	: in et_libraries.type_unit_name.bounded_string; -- the unit being inquired
+		units 	: in type_units.map) -- the list of units
+		return et_coordinates.type_angle;
+	
+	procedure write_unit_properties (
+	-- Writes the properties of the unit indicated by the given cursor.
+		unit			: in type_units.cursor;
+		log_threshold	: in et_string_processing.type_log_level);
+
+	
+	type type_component is new et_schematic.type_component with record
+		units			: type_units.map; -- PWR, A, B, ...
+	end record;
+
+	
+	procedure add_component (
+	-- Adds a component into the the module (indicated by module_cursor).
+		reference		: in et_libraries.type_component_reference;
+		component		: in type_component;
+		log_threshold	: in et_string_processing.type_log_level);
+
+
+	-- The components of a module are collected in a map.
+ 	package type_components is new indefinite_ordered_maps (
+		key_type 		=> et_libraries.type_component_reference, -- something like "IC43"
+		"<" 			=> et_schematic.compare_reference,
+ 		element_type 	=> type_component);
+
+	function component_reference (cursor : in type_components.cursor) 
+		return et_libraries.type_component_reference;
+	-- Returns the component reference where cursor points to.
+	
+	
+	function units_of_component (component_cursor : in type_components.cursor) return type_units.map;
+	-- Returns the units of the given component.
 
 	
 	procedure import_design (
@@ -549,7 +637,7 @@ package et_kicad is
 		component	: in et_libraries.type_component_generic_name.bounded_string) 
 		return et_libraries.type_components.cursor;
 
-	procedure reset_component_cursor (cursor : in out et_schematic.type_components.cursor);
+	procedure reset_component_cursor (cursor : in out type_components.cursor);
 	-- Resets the given component cursor to the begin of the component list
 	-- of the module indicated by module_cursor.
 
@@ -601,19 +689,6 @@ package et_kicad is
 	procedure add_note (
 	-- Inserts a note in the the module (indicated by module_cursor).
 		note	: in et_schematic.type_note);
-
-	procedure add_component (
-	-- Adds a component into the the module (indicated by module_cursor).
-		reference		: in et_libraries.type_component_reference;
-		component		: in et_schematic.type_component;
-		log_threshold	: in et_string_processing.type_log_level);
-
-	procedure add_unit (
-	-- Adds a unit into the given commponent.
-		reference		: in et_libraries.type_component_reference;
-		unit_name		: in et_libraries.type_unit_name.bounded_string;
-		unit 			: in et_schematic.type_unit;
-		log_threshold	: in et_string_processing.type_log_level);
 
 	procedure check_junctions (log_threshold : in et_string_processing.type_log_level);
 	-- Verifies that junctions are placed where net segments are connected with each other.
@@ -705,7 +780,7 @@ package et_kicad is
 		strands	    	: et_schematic.type_strands.list;			-- the strands of the module
 		junctions		: et_schematic.type_junctions.list;			-- net junctions
 
-		components		: et_schematic.type_components.map;			-- the components of the module
+		components		: type_components.map;						-- the components of the module
 		net_classes		: et_pcb.type_net_classes.map;				-- the net classes
 		no_connections	: et_schematic.type_no_connection_flags.list;-- the list of no-connection-flags
 		portlists		: et_schematic.type_portlists.map;			-- the portlists of the module

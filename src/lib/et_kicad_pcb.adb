@@ -2939,7 +2939,7 @@ package body et_kicad_pcb is
 		package_name 			: et_libraries.type_component_package_name.bounded_string;
 		package_library_name	: et_libraries.type_library_name.bounded_string;
 		package_position		: et_pcb_coordinates.type_package_position;
-		package_path			: et_schematic.type_path_to_package; -- the link to the symbol in the schematic like 59F208B2
+		package_path			: et_kicad.type_path_to_package; -- the link to the symbol in the schematic like 59F208B2
 
 		-- The majority of terminals dictates the package technology. The default is THT.
 		package_technology 	: type_assembly_technology := THT;
@@ -3760,7 +3760,7 @@ package body et_kicad_pcb is
 								when 0 => null;
 								when 1 =>
 									-- the path is given like this /59F207B1. The forward slash must be removed:
-									package_path := et_schematic.type_path_to_package (
+									package_path := et_kicad.type_path_to_package (
 										to_string (arg)(2..package_path'length + 1));
 								when others => too_many_arguments;
 							end case;
