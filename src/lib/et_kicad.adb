@@ -303,6 +303,89 @@ package body et_kicad is
 		return type_components.key (cursor);
 	end component_reference;
 
+
+	procedure write_component_properties (
+	-- Writes the properties of the component indicated by the given cursor.
+		component 		: in type_components.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+
+		use et_string_processing;
+		use et_libraries;
+	begin
+		-- reference (serves as key in list of components)
+		log ("component " & to_string (type_components.key (component)) & " properties", log_threshold);
+
+		log_indentation_up;
+		
+		-- CS: library file name
+		-- name in library
+		log ("name in library "
+			& to_string (type_components.element (component).generic_name), log_threshold);
+		
+		-- value
+		log ("value "
+			& to_string (type_components.element (component).value), log_threshold);
+
+		-- commissioned
+		log ("commissioned "
+			& string (type_components.element (component).commissioned), log_threshold);
+
+		-- updated
+		log ("updated      "
+			& string (type_components.element(component).updated), log_threshold);
+
+		-- author
+		log ("author "
+			& to_string (type_components.element(component).author), log_threshold);
+		
+		-- appearance
+		log (to_string (type_components.element(component).appearance), log_threshold);
+
+		-- depending on the component appearance there is more to report:
+		case type_components.element(component).appearance is
+			when sch_pcb =>
+
+-- 				-- package
+-- 				log ("package " 
+-- 					& to_string (type_components.element (component).packge), log_threshold);
+
+				-- datasheet
+				log ("datasheet "
+					& type_component_datasheet.to_string (type_components.element (component).datasheet), log_threshold);
+
+				-- partcode
+				log ("partcode "
+					& type_component_partcode.to_string (type_components.element (component).partcode), log_threshold);
+				
+				-- purpose
+				log ("purpose "
+					& type_component_purpose.to_string (type_components.element(component).purpose), log_threshold);
+
+				-- bom
+				log ("bom "
+					& to_string (type_components.element (component).bom), log_threshold);
+
+			when others => null; -- CS should never happen as virtual components do not have a package
+		end case;
+
+		log_indentation_down;
+		
+	end write_component_properties;
+
+	function bom (cursor : in type_components.cursor)
+	-- Returns the component bom status where cursor points to.
+		return et_libraries.type_bom is
+		b : et_libraries.type_bom; -- the bom status
+		use et_libraries;
+	begin
+		-- Only real components have a bom status.
+		--if component_appearance (cursor) = sch_pcb then
+		if type_components.element (cursor).appearance = sch_pcb then
+			b := type_components.element (cursor).bom;
+		end if;
+		return b;
+	end bom;
+	
 	
 	procedure clear (lines : in out type_lines.list) is -- CS no paramter required
 	-- CS procedure clear is
@@ -3443,7 +3526,7 @@ package body et_kicad is
 
 		function on_segment (
 			port 	: in et_schematic.type_gui_submodule_port;
-			segment : in et_schematic.type_net_segment)
+			segment : in et_schematic.type_net_segment_base)
 			return boolean is
 		-- Returns true if given port sits on given segment.
 			use et_geometry;
@@ -3836,7 +3919,7 @@ package body et_kicad is
 		use et_string_processing;
 	
 		procedure query_label (
-			segment : in et_schematic.type_net_segment) is
+			segment : in et_schematic.type_net_segment_base) is
 			label_simple	: et_schematic.type_simple_labels.cursor	:= segment.label_list_simple.first;
 			label_tag		: et_schematic.type_tag_labels.cursor	:= segment.label_list_tag.first;
 			use et_schematic.type_simple_labels;
@@ -4383,7 +4466,7 @@ package body et_kicad is
 			-- Adds a net segment (indicated by given cursor) to anonymous_strand.
 			-- This procedure happens to be called for a certain segment more than once (unavoidable). So the flag "picked" serves
 			-- as indicator for a segment already added to the anonymous_strand.
-				scratch : type_net_segment;
+				scratch : type_net_segment_base;
 			begin
 				-- If segment already picked and added to anonymous_strand, do nothing with this segment. 
 				-- Otherwise set the "picked" flag of that segment, output the coordinates of the segment, add it to anonymous net.
@@ -4404,10 +4487,10 @@ package body et_kicad is
 -- 						type_net_segment (type_wild_segments.element (segment_cursor)));
 					
 					log (to_string (
-							segment => type_net_segment (type_wild_segments.element (segment_cursor)),
+							segment => type_net_segment_base (type_wild_segments.element (segment_cursor)),
 							scope => xy), log_threshold + 1);
 
-					scratch := type_net_segment (type_wild_segments.element (segment_cursor));
+					scratch := type_net_segment_base (type_wild_segments.element (segment_cursor));
 					type_net_segments.append (anonymous_strand.segments, scratch);
 				end if;
 			end add_segment_to_anonymous_strand;
@@ -4611,14 +4694,14 @@ package body et_kicad is
 				ls  :	type_net_label_simple;
 				lt  : 	type_net_label_tag;				
 				anon_strand_a, anon_strand_b : type_anonymous_strand;
-				segment	: type_net_segment;
+				segment	: type_net_segment_base;
 				lls : 	type_simple_labels.list;
 				llt : 	type_tag_labels.list;
 			
 				strand 		: type_strand;
 				net_name	: type_net_name.bounded_string;
 				
-				function label_sits_on_segment (label : in type_net_label; segment : in type_net_segment) return boolean is
+				function label_sits_on_segment (label : in type_net_label; segment : in type_net_segment_base) return boolean is
 					sits_on_segment : boolean := false;
 					d : et_geometry.type_distance_point_from_line;
 					use et_geometry;
@@ -5100,7 +5183,7 @@ package body et_kicad is
 								-- fetch junction from current cursor position
 								junction := type_junctions.element (junction_cursor);
 								
-								if junction_sits_on_segment (junction, type_net_segment (segment)) then -- match
+								if junction_sits_on_segment (junction, type_net_segment_base (segment)) then -- match
 
 									if log_level >= log_threshold + 1 then
 										log_indentation_up;
@@ -7882,7 +7965,7 @@ package body et_kicad is
 	function junction_sits_on_segment (
 	-- Returns true if the given junction sits on the given net segment.
 		junction	: in et_schematic.type_net_junction;
-		segment		: in et_schematic.type_net_segment'class) 
+		segment		: in et_schematic.type_net_segment_base'class) 
 		return boolean is
 
 		-- CS: clean up as in port_connected_with_segment
@@ -8154,7 +8237,7 @@ package body et_kicad is
 	function port_connected_with_segment (
 	-- Returns true if the given port sits on the given net segment.
 		port	: in et_schematic.type_port'class;
-		segment	: in et_schematic.type_net_segment'class) 
+		segment	: in et_schematic.type_net_segment_base'class) 
 		-- NOTE: Passing a cursor to given segment does not work. This measure would make
 		-- excluding the same segment easier in procedure query_segments. The cursor to the given segment
 		-- would be the same type as the segment being inquired, yet they do not point to the same
@@ -8478,7 +8561,7 @@ package body et_kicad is
 		use et_string_processing;
 
 		procedure query_label (
-			segment : in et_schematic.type_net_segment) is
+			segment : in et_schematic.type_net_segment_base) is
 			label_simple	: et_schematic.type_simple_labels.cursor	:= segment.label_list_simple.first;
 			label_tag		: et_schematic.type_tag_labels.cursor		:= segment.label_list_tag.first;
 			use et_schematic.type_simple_labels;
@@ -9884,7 +9967,7 @@ package body et_kicad is
 	end add_component;
 	
 	procedure add_unit (
-	-- Adds a unit into the given commponent.
+	-- Adds a unit to the given commponent.
 		reference		: in et_libraries.type_component_reference;
 		unit_name		: in et_libraries.type_unit_name.bounded_string;
 		unit 			: in type_unit;
@@ -9892,10 +9975,10 @@ package body et_kicad is
 
 		procedure add (
 			reference	: in et_libraries.type_component_reference;
-			component	: in out et_schematic.type_component) is
+			component	: in out type_component) is
 
 			inserted	: boolean := false;
-			cursor		: et_schematic.type_units.cursor;
+			cursor		: type_units.cursor;
 
 			use et_string_processing;
 		begin
@@ -9907,7 +9990,7 @@ package body et_kicad is
 				);
 
 			if inserted then -- fine. unit was inserted successfully
-				et_schematic.write_unit_properties (unit => cursor, log_threshold => log_threshold + 1);
+				write_unit_properties (unit => cursor, log_threshold => log_threshold + 1);
 			else -- not inserted, unit already in component -> failure
 				log_indentation_reset;
 				log (
@@ -9921,7 +10004,7 @@ package body et_kicad is
 			name	: in et_coordinates.type_submodule_name.bounded_string;
 			module	: in out type_module) is
 			
-			cursor : et_schematic.type_components.cursor;
+			cursor : type_components.cursor;
 		begin
 			cursor := module.components.find (reference);
 			-- CS: do something if reference not found
@@ -11386,9 +11469,9 @@ package body et_kicad is
 		procedure locate_component_in_schematic (
 			module_name : in type_submodule_name.bounded_string;
 			module		: in type_module) is
-			use et_schematic.type_components;
+			use type_components;
 		
-			component_cursor: et_schematic.type_components.cursor;
+			component_cursor: type_components.cursor;
 			
 			library_name	: et_libraries.type_full_library_name.bounded_string;
 			generic_name	: et_libraries.type_component_generic_name.bounded_string;
@@ -11537,8 +11620,8 @@ package body et_kicad is
 			module_name : in type_submodule_name.bounded_string;
 			module		: in type_module) is
 		
-			use et_schematic.type_components;
-			component_cursor: et_schematic.type_components.cursor;
+			use type_components;
+			component_cursor: type_components.cursor;
 			
 			library_name	: et_libraries.type_full_library_name.bounded_string;
 			generic_name	: et_libraries.type_component_generic_name.bounded_string;
@@ -11702,8 +11785,8 @@ package body et_kicad is
 		-- Searches the components of the module for the given reference.
 			module_name : in type_submodule_name.bounded_string;
 			module		: in type_module) is
-			use et_schematic.type_components;
-			component_cursor_schematic : et_schematic.type_components.cursor := module.components.first;
+			use type_components;
+			component_cursor_schematic : type_components.cursor := module.components.first;
 
 			--package_name : type_component_package_name.bounded_string;
 
@@ -11819,7 +11902,7 @@ package body et_kicad is
 
 			-- find component with given reference in schematic
 			component_cursor_schematic := module.components.find (reference);
-			if component_cursor_schematic /= et_schematic.type_components.no_element then
+			if component_cursor_schematic /= type_components.no_element then
 
 				library_name := element (component_cursor_schematic).library_name; -- get library name where the symbol is stored in
 				generic_name := element (component_cursor_schematic).generic_name; -- get generic component name in the library
@@ -12245,7 +12328,7 @@ package body et_kicad is
 		use et_export;
 		use et_csv;
 		use type_rig;
-		use et_schematic.type_components;
+		use type_components;
 		
 		bom_file_name : et_schematic.type_bom_file_name.bounded_string;
 		bom_handle : ada.text_io.file_type;
@@ -12266,17 +12349,17 @@ package body et_kicad is
 			module_name : in et_coordinates.type_submodule_name.bounded_string;
 			module		: in type_module) is
 		
-			component : et_schematic.type_components.cursor := module.components.first;
+			component : type_components.cursor := module.components.first;
 
 		begin -- query_components
 			log_indentation_up;
-			while component /= et_schematic.type_components.no_element loop
+			while component /= type_components.no_element loop
 
 				-- We ignore all virtual components like power flags, power symbols, ...
 				--if component_appearance (component) = sch_pcb then
 				if et_libraries."=" (element (component).appearance, et_libraries.sch_pcb) then
 
-					if et_libraries."=" (et_schematic.bom (component), et_libraries.YES) then
+					if et_libraries."=" (bom (component), et_libraries.YES) then
 						log (et_libraries.to_string (key (component)), log_threshold + 2);
 
 						-- CS: warning if netchanger/net-ties occur here. they should have the bom flag set to NO.
@@ -12396,8 +12479,8 @@ package body et_kicad is
 			name	: in type_submodule_name.bounded_string;
 			module	: in type_module) is
 
-			use et_schematic.type_components;		
-			component : et_schematic.type_components.cursor := module.components.first;
+			use type_components;		
+			component : type_components.cursor := module.components.first;
 			
 			use et_configuration;
 
@@ -12421,7 +12504,7 @@ package body et_kicad is
 
 			-- count virtual and real components. real components are separated by
 			-- the fact if they are mounted or not.
-			while component /= et_schematic.type_components.no_element loop
+			while component /= type_components.no_element loop
 
 				case element (component).appearance is
 					when et_libraries.sch => -- virtual

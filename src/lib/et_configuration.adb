@@ -137,14 +137,14 @@ package body et_configuration is
 		-- Searches the component list of the module for a connector with the given purpose.
 			module_name : in type_submodule_name.bounded_string;
 			module		: in et_kicad.type_module) is
-			use et_schematic.type_components;
+			use et_kicad.type_components;
 			use type_component_purpose;
-			component : et_schematic.type_components.cursor := module.components.first;
+			component : et_kicad.type_components.cursor := module.components.first;
 		begin
 			log ("purpose already used by component");
 			log_indentation_up;
 
-			while component /= et_schematic.type_components.no_element loop
+			while component /= et_kicad.type_components.no_element loop
 				if element (component).appearance = sch_pcb then -- it must be a real component
 					if et_configuration.category (key (component)) = category then -- category must match
 						if element (component).purpose = purpose then -- purpose must match
@@ -193,9 +193,9 @@ package body et_configuration is
 		-- Exits on the first matching connector. There should not be any others.
 			module_name : in type_submodule_name.bounded_string;
 			module 		: in et_kicad.type_module) is
-			use et_schematic.type_components;
+			use et_kicad.type_components;
 			use type_component_purpose;
-			component : et_schematic.type_components.cursor := module.components.first;
+			component : et_kicad.type_components.cursor := module.components.first;
 		begin
 			log ("detecting multiple usage of purpose " 
 				 & enclose_in_quotes (et_libraries.to_string (purpose)) 
@@ -203,7 +203,7 @@ package body et_configuration is
 				 & " ...", log_threshold);
 			log_indentation_up;
 
-			while component /= et_schematic.type_components.no_element loop
+			while component /= et_kicad.type_components.no_element loop
 				if element (component).appearance = sch_pcb then -- it must be a real component
 					if et_configuration.category (key (component)) = category then -- category must match
 						if element (component).purpose = purpose then -- purpose must match
@@ -298,14 +298,14 @@ package body et_configuration is
 		-- Exits on the first matching connector. There should not be any others.
 			module_name	: in type_submodule_name.bounded_string;
 			module		: in et_kicad.type_module) is
-			use et_schematic.type_components;
+			use et_kicad.type_components;
 			use type_component_purpose;
-			component : et_schematic.type_components.cursor := module.components.first;
+			component : et_kicad.type_components.cursor := module.components.first;
 		begin
 			log ("searching connector ...", log_threshold);
 			log_indentation_up;
 
-			while component /= et_schematic.type_components.no_element loop
+			while component /= et_kicad.type_components.no_element loop
 				if element (component).appearance = sch_pcb then -- it must be a real component
 					if category (key (component)) = CONNECTOR then -- it must be a connector
 						if element (component).purpose = purpose then -- purpose must match

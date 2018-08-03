@@ -124,9 +124,9 @@ package et_schematic is
 	-- Units of a component are collected in a map.
 	-- A unit is accessed by its name like "I/O Bank 3" or "PWR" or "A" or "B" ...	
 	package type_units is new indefinite_ordered_maps (
-		key_type => type_unit_name.bounded_string,
-		"<" => type_unit_name."<",
-		element_type => type_unit);
+		key_type		=> type_unit_name.bounded_string,
+		"<" 			=> type_unit_name."<",
+		element_type 	=> type_unit);
 
 
 -- 	function position_of_unit (
@@ -189,11 +189,12 @@ package et_schematic is
 	end record;
 
 	function to_package_name (
-		library_name	: in type_full_library_name.bounded_string; -- symbol lib like ../libraries/transistors.lib
-		generic_name	: in et_libraries.type_component_generic_name.bounded_string; -- example: "TRANSISTOR_PNP"
+		library_name	: in type_full_library_name.bounded_string; -- ../libraries/transistors.lib
+		generic_name	: in et_libraries.type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
 		package_variant	: in type_component_variant_name.bounded_string) -- N, D
 		return type_component_package_name.bounded_string;
-	-- Returns the package name of the given component.
+	-- Returns the package name of the given component. 
+	-- CS move to et_kicad ?
 		
 	
 -- LABELS AND NETS
@@ -221,7 +222,7 @@ package et_schematic is
 
 	function simple_name (net_name : in type_net_name.bounded_string) return type_net_name.bounded_string;
 	-- Returns the simple name of the given net name.
-	-- Example: If the given name is "MOTOR_DRIVER.CLOCK" then the return is "CLOCK".
+	-- Example: If the given name is "MOTOR_DRIVER/CLOCK" then the return is "CLOCK".
 	
 	function anonymous (net_name : in type_net_name.bounded_string) return boolean;
 	-- Returns true if the given net name is anonymous.
@@ -239,8 +240,8 @@ package et_schematic is
 	-- Converts a string to type_net_label_text_size.
 
 	
-	type type_label_direction is (input, output, bidir, tristate, passive);
-	type type_label_appearance is (simple, tag);
+	type type_label_direction is (input, output, bidir, tristate, passive); -- CS rename to type_net_label_direction
+	type type_label_appearance is (simple, tag); -- CS rename to type_net_lael_appearance
 	type type_net_label (label_appearance : type_label_appearance) is record
 		coordinates	: et_coordinates.type_coordinates;
 		orientation	: type_angle;
@@ -259,8 +260,6 @@ package et_schematic is
 		end case;
 	end record;
 
-	-- The smallest element of a net is a segment. It has a start and an end point.
-	-- It may have a list of simple labels. It may have a list of tag labels.
 	type type_net_label_simple is new type_net_label (label_appearance => simple);
 	package type_simple_labels is new doubly_linked_lists (
 		element_type => type_net_label_simple);
@@ -281,34 +280,32 @@ package et_schematic is
 		-- CS: processed flag
 	end record;
 
-	function to_string (junction : in type_net_junction; scope : in type_scope) return string;
-	-- Returns the position of the given junction as string.
-
-	type type_net_segment; -- prespecificaton. see below
-	
 	-- Junctions are to be collected in a list.
 	package type_junctions is new doubly_linked_lists (
 		element_type => type_net_junction);
+	
+	function to_string (junction : in type_net_junction; scope : in type_scope) return string;
+	-- Returns the position of the given junction as string.
 
 	-- A segment may have labels attached.
 	-- So this is the definition of a net segment with start and end point,
 	-- lists of simple and tag labels:
-	type type_net_segment is tagged record
+	type type_net_segment_base is tagged record
 		coordinates_start 	: et_coordinates.type_coordinates;
 		coordinates_end   	: et_coordinates.type_coordinates;
 		label_list_simple 	: type_simple_labels.list;
 		label_list_tag    	: type_tag_labels.list;
 	end record;
 
-	function length (segment : in type_net_segment) return type_distance;
+	function length (segment : in type_net_segment_base) return type_distance;
 	-- Returns the length of the given net segment.
 	
-	function to_string (segment : in type_net_segment; scope : in type_scope := sheet) return string; -- CS: should replace write_coordinates_of_segment
+	function to_string (segment : in type_net_segment_base; scope : in type_scope := sheet) return string; -- CS: should replace write_coordinates_of_segment
 	-- Returns the start and end coordinates of the given net segment.
 	
 	-- A net is a list of segments.
 	package type_net_segments is new doubly_linked_lists (
-		element_type => type_net_segment);
+		element_type => type_net_segment_base); -- CS kicad ?
 
 	-- In a GUI a net may be visible within a submodule (local) or 
 	-- it may be seen from the parent module (hierachical net) or
@@ -509,15 +506,6 @@ package et_schematic is
 		key_type => type_component_reference, -- something like "IC43"
 		"<" => compare_reference,
  		element_type => type_component);
-
-	procedure write_component_properties (
-	-- Writes the properties of the component indicated by the given cursor.
-		component 		: in type_components.cursor;
-		log_threshold	: in et_string_processing.type_log_level);
-
-	function bom (cursor : in type_components.cursor)
-	-- Returns the component bom status where cursor points to.
-		return type_bom;
 
 	-- No-connection-flags indicate that a component port is intentionally left unconnected.
 	type type_no_connection_flag is record

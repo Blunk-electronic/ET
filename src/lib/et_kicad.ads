@@ -224,6 +224,15 @@ package et_kicad is
 	function units_of_component (component_cursor : in type_components.cursor) return type_units.map;
 	-- Returns the units of the given component.
 
+	procedure write_component_properties (
+	-- Writes the properties of the component indicated by the given cursor.
+		component 		: in type_components.cursor;
+		log_threshold	: in et_string_processing.type_log_level);
+
+	function bom (cursor : in type_components.cursor)
+	-- Returns the component bom status where cursor points to.
+		return et_libraries.type_bom;
+
 	
 	procedure import_design (
 		first_instance 	: in boolean := false;
@@ -542,7 +551,7 @@ package et_kicad is
 
 	
 -- NET SEGMENT AND STRAND PROCESSING
-	type type_wild_net_segment is new et_schematic.type_net_segment with record
+	type type_wild_net_segment is new et_schematic.type_net_segment_base with record
 		s, e : boolean := false; -- flag indicates the end point beeing assumed
 		picked : boolean := false; -- flag indicates that the segment has been added to the anonymous net
 	end record;
@@ -583,7 +592,7 @@ package et_kicad is
 	function junction_sits_on_segment (
 	-- Returns true if the given junction sits on the given net segment.
 		junction	: in et_schematic.type_net_junction;
-		segment		: in et_schematic.type_net_segment'class) 
+		segment		: in et_schematic.type_net_segment_base'class) 
 		return boolean;
 	
 	function component_power_flag (cursor : in et_schematic.type_components.cursor)

@@ -75,7 +75,7 @@ package body et_schematic is
 
 	function simple_name (net_name : in type_net_name.bounded_string) return type_net_name.bounded_string is
 	-- Returns the simple name of the given net name.
-	-- Example: If the given name is "MOTOR_DRIVER.CLOCK" then the return is "CLOCK".
+	-- Example: If the given name is "MOTOR_DRIVER/CLOCK" then the return is "CLOCK".
 		position_of_last_separator : natural := 0;
 		name : type_net_name.bounded_string;
 	begin
@@ -213,85 +213,6 @@ package body et_schematic is
 	end write_note_properties;
 
 	
-	procedure write_component_properties (
-	-- Writes the properties of the component indicated by the given cursor.
-		component 		: in type_components.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-
-		use et_string_processing;
-	begin
-		-- reference (serves as key in list of components)
-		log ("component " & to_string (type_components.key (component)) & " properties", log_threshold);
-
-		log_indentation_up;
-		
-		-- CS: library file name
-		-- name in library
-		log ("name in library "
-			& to_string (type_components.element (component).generic_name), log_threshold);
-		
-		-- value
-		log ("value "
-			& to_string (type_components.element (component).value), log_threshold);
-
-		-- commissioned
-		log ("commissioned "
-			& string (type_components.element (component).commissioned), log_threshold);
-
-		-- updated
-		log ("updated      "
-			& string (type_components.element(component).updated), log_threshold);
-
-		-- author
-		log ("author "
-			& to_string (type_components.element(component).author), log_threshold);
-		
-		-- appearance
-		log (to_string (type_components.element(component).appearance), log_threshold);
-
-		-- depending on the component appearance there is more to report:
-		case type_components.element(component).appearance is
-			when sch_pcb =>
-
--- 				-- package
--- 				log ("package " 
--- 					& to_string (type_components.element (component).packge), log_threshold);
-
-				-- datasheet
-				log ("datasheet "
-					& type_component_datasheet.to_string (type_components.element (component).datasheet), log_threshold);
-
-				-- partcode
-				log ("partcode "
-					& type_component_partcode.to_string (type_components.element (component).partcode), log_threshold);
-				
-				-- purpose
-				log ("purpose "
-					& type_component_purpose.to_string (type_components.element(component).purpose), log_threshold);
-
-				-- bom
-				log ("bom "
-					& to_string (type_components.element (component).bom), log_threshold);
-
-			when others => null; -- CS should never happen as virtual components do not have a package
-		end case;
-
-		log_indentation_down;
-		
-	end write_component_properties;
-
-	function bom (cursor : in type_components.cursor)
-	-- Returns the component bom status where cursor points to.
-		return type_bom is
-		b : type_bom; -- the bom status
-	begin
-		-- Only real components have a bom status.
-		--if component_appearance (cursor) = sch_pcb then
-		if type_components.element (cursor).appearance = sch_pcb then
-			b := type_components.element (cursor).bom;
-		end if;
-		return b;
-	end bom;
 	
 	function to_string (no_connection_flag : in type_no_connection_flag; scope : in type_scope) return string is
 	-- Returns the position of the given no-connection-flag as string.
@@ -303,12 +224,12 @@ package body et_schematic is
 	
 
 	function to_package_name (
-		library_name	: in type_full_library_name.bounded_string; -- symbol lib like ../libraries/transistors.lib
-		generic_name	: in et_libraries.type_component_generic_name.bounded_string; -- example: "TRANSISTOR_PNP"
+		library_name	: in type_full_library_name.bounded_string; -- ../libraries/transistors.lib
+		generic_name	: in et_libraries.type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
 		package_variant	: in type_component_variant_name.bounded_string) -- N, D
 		return type_component_package_name.bounded_string is
 	-- Returns the package name for of the given component.
-
+	-- CS move to et_kicad ?
 		package_name : type_component_package_name.bounded_string; -- to be returned
 	begin -- to_package_name
 		-- CS
@@ -370,7 +291,7 @@ package body et_schematic is
 		
 	end check_net_name_characters;
 	
-	function length (segment : in type_net_segment) return type_distance is
+	function length (segment : in type_net_segment_base) return type_distance is
 	-- Returns the length of the given net segment.
 		len : type_distance;
 		use et_string_processing;
@@ -380,7 +301,7 @@ package body et_schematic is
 		return len;
 	end length;
 	
-	function to_string (segment : in type_net_segment; scope : in type_scope := sheet) return string is
+	function to_string (segment : in type_net_segment_base; scope : in type_scope := sheet) return string is
 	-- Returns the start and end coordinates of the given net segment.
 	begin
 		return (" start"
