@@ -385,6 +385,57 @@ package body et_kicad is
 		end if;
 		return b;
 	end bom;
+
+	function lowest_xy (
+	-- Returns the lowest x/y position of the given strand.
+		strand			: in type_strand;
+		log_threshold	: in et_string_processing.type_log_level
+		) return type_2d_point is
+		point_1, point_2 : type_2d_point;
+		segment : type_net_segments.cursor;
+	
+		use type_net_segments;
+		use et_string_processing;
+
+		-- CS: usage of intermediate variables for x/Y of start/end points could improve performance
+	begin
+		log_indentation_up;
+		log ("calculating the point nearest to drawing origin ...", log_threshold + 1);
+
+		-- init point_1 as the farest possible point from drawing origin
+		set_x (point_1, type_distance_xy'last);
+		set_y (point_1, type_distance_xy'last);
+		
+		-- loop through segments and keep the nearest point to origin
+		segment := strand.segments.first;
+		while segment /= type_net_segments.no_element loop
+
+			-- check start point of segment
+			-- if closer to orign than point_1 keep start point
+			point_2	:= type_2d_point (element (segment).coordinates_start);
+			if distance (point_2, zero) < distance (point_1, zero) then
+				log (" start", log_threshold + 2);
+				point_1 := point_2;
+			end if;
+
+			-- check start point of segment
+			-- if closer to orign than point_1 keep end point
+			point_2	:= type_2d_point (element (segment).coordinates_end);
+			if distance (point_2, zero) < distance (point_1, zero) then
+				log (" end", log_threshold + 2);
+				point_1 := point_2;
+			end if;
+			
+			next (segment);
+		end loop;
+
+		log_indentation_down;
+		
+		return point_1;
+	end lowest_xy;
+
+
+
 	
 	
 	procedure clear (lines : in out type_lines.list) is -- CS no paramter required
@@ -3332,11 +3383,11 @@ package body et_kicad is
 	-- Another strand "VCC3V3" exists on submodule C on sheet 1. They do not "know" each other
 	-- and must be merged into a single net.
 		use et_string_processing;
-		use et_schematic.type_strands;
+		use et_kicad.type_strands;
 
         net_name : et_schematic.type_net_name.bounded_string;
 	
-		strand	: et_schematic.type_strands.cursor;
+		strand	: type_strands.cursor;
 	
 		procedure add_net (
 		-- Creates a net with the name and the scope (local, global) of the current strand. 
@@ -3348,11 +3399,11 @@ package body et_kicad is
 			use et_schematic.type_nets;
 			
 			net_created : boolean;
-			net_cursor : et_schematic.type_nets.cursor;
+			net_cursor : et_kicad.type_nets.cursor;
 
 			procedure add_strand (
 				name	: in et_schematic.type_net_name.bounded_string;
-				net		: in out et_schematic.type_net) is
+				net		: in out type_net) is
 			begin
 				log ("strand of net " & et_schematic.to_string (name), level => log_threshold + 2);
 				
@@ -3390,9 +3441,9 @@ package body et_kicad is
 		-- loop in strands of the current module
 		strand := first_strand;
 		log_indentation_up;
-		while strand /= et_schematic.type_strands.no_element loop
+		while strand /= type_strands.no_element loop
 
-            case et_schematic.type_strands.element (strand).scope is
+            case type_strands.element (strand).scope is
                 when et_schematic.local =>
 
 					-- Output a warning if strand has no name.
@@ -3463,27 +3514,27 @@ package body et_kicad is
 		log_indentation_down;
 	end link_strands;
 
-	function first_segment (cursor : in et_schematic.type_strands.cursor) return et_schematic.type_net_segments.cursor is
+	function first_segment (cursor : in type_strands.cursor) return type_net_segments.cursor is
 	-- Returns a cursor pointing to the first net segment of the given strand.
-		segment_cursor : et_schematic.type_net_segments.cursor;
+		segment_cursor : type_net_segments.cursor;
 
 		procedure set_cursor (
-			strand : in et_schematic.type_strand) is
+			strand : in type_strand) is
 		begin
 			segment_cursor := strand.segments.first;
 		end set_cursor;
 
 	begin
-		et_schematic.type_strands.query_element (
+		type_strands.query_element (
 			position	=> cursor,
 			process		=> set_cursor'access
 			);
 		return segment_cursor;
 	end first_segment;
 	
-	function first_net return et_schematic.type_nets.cursor is
+	function first_net return type_nets.cursor is
 	-- Returns a cursor pointing to the first net of the module (indicated by module_cursor).
-		cursor : et_schematic.type_nets.cursor;	
+		cursor : type_nets.cursor;	
 
 		procedure set_cursor (
 			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
@@ -3508,14 +3559,14 @@ package body et_kicad is
 	-- IMPORTANT: Gui_submodules and hierarchic nets are virtual components in a graphical GUI. Neither of them exists in reality.
 		use et_string_processing;
 		use et_schematic.type_net_name;
-		use et_schematic.type_nets;
-		use et_schematic.type_strands;
-		net : et_schematic.type_nets.cursor;
+		use type_nets;
+		use type_strands;
+		net : type_nets.cursor;
 
 		-- Temparily we collect the hierarchic strands that are to be appended 
 		-- (to the net being examined) here. Once the net has been examined completely
 		-- we append hierarchic_strands_tmp to the strands of the net.
-		hierarchic_strands_tmp : et_schematic.type_strands.list := et_schematic.type_strands.empty_list;
+		hierarchic_strands_tmp : type_strands.list := type_strands.empty_list;
 	
 		-- This construct returned after examining a gui_submodule for a suitable hierarchic net at a deeper level:
         type type_hierachic_net is record
@@ -3546,7 +3597,7 @@ package body et_kicad is
 			end if;
 		end on_segment;
 
-		function hierarchic_net (segment : in et_schematic.type_net_segments.cursor) return type_hierachic_net is
+		function hierarchic_net (segment : in type_net_segments.cursor) return type_hierachic_net is
 		-- Tests if the given segment is connected with a hierarchic net via a gui_submodule.
 		-- When positive: marks the port as "processed" and returns a type_hierachic_net (see spec above):
 		--	- net.available true
@@ -3575,7 +3626,7 @@ package body et_kicad is
 					-- These are the "ports" of the gui_submodule (they represent the hierarchic nets within the real submodule).
 					port : et_schematic.type_gui_submodule_ports.cursor := gui_submodule.ports.first; -- default to first port
 					use et_schematic.type_gui_submodule_ports;
-					use et_schematic.type_net_segments;
+					use type_net_segments;
 
 					procedure mark_processed (
 						name : in et_schematic.type_net_name.bounded_string;
@@ -3679,8 +3730,8 @@ package body et_kicad is
 		
 			-- Cursor h_strand points to the hierarchic strand being examined.
 			-- Defaults to the first strand of the rig module (indicated by module_cursor):
-			h_strand : et_schematic.type_strands.cursor := first_strand;
-			use et_schematic.type_strands;
+			h_strand : type_strands.cursor := first_strand;
+			use type_strands;
 			use type_path_to_submodule;
 			use type_submodule_name;
 
@@ -3690,18 +3741,18 @@ package body et_kicad is
 
 			procedure query_segments (
 			-- Tests if the given hierarchic strand is connected to any hierarchical nets.
-				h_strand	: in et_schematic.type_strand -- the hierachic strand being examined
+				h_strand	: in type_strand -- the hierachic strand being examined
 				) is
 				-- The cursor that points to the segment being examined.
 				-- Defaults to the first segment of h_strand:
-				segment : et_schematic.type_net_segments.cursor := h_strand.segments.first;
-				use et_schematic.type_net_segments;
+				segment : type_net_segments.cursor := h_strand.segments.first;
+				use type_net_segments;
 
 				-- If a hierarchic net is available, it will be loaded here temparily.
 				h_net : type_hierachic_net;
 			begin
 				-- Test segment if it is connected to a hierarchic net (via gui_submodules):
-				while segment /= et_schematic.type_net_segments.no_element loop
+				while segment /= type_net_segments.no_element loop
 
 					-- Test if any hierarchic nets are connected (via gui_submodules):
 					h_net := hierarchic_net (segment);
@@ -3737,7 +3788,7 @@ package body et_kicad is
 						& " in submodule " & to_string (net.path) & " ...",
 					log_threshold + 2);
 				
-				while h_strand /= et_schematic.type_strands.no_element loop
+				while h_strand /= type_strands.no_element loop
 					if et_schematic."=" (element (h_strand).scope, et_schematic.hierarchic) then
 						if path (element (h_strand).coordinates) = net.path then
 							if element (h_strand).name = net.name then
@@ -3750,13 +3801,13 @@ package body et_kicad is
 									);
 
 								log_indentation_up;
-								log ("strand " & to_string (et_schematic.lowest_xy (element (h_strand), log_threshold + 3)),
+								log ("strand " & to_string (lowest_xy (element (h_strand), log_threshold + 3)),
 									 log_threshold + 2
 									);
 								log_indentation_down;
 
 								-- append the strand to the temparily collection of hierarchic strands
-								et_schematic.type_strands.append (
+								et_kicad.type_strands.append (
 									container	=> hierarchic_strands_tmp,
 									new_item	=> element (h_strand));
 
@@ -3787,26 +3838,26 @@ package body et_kicad is
 		procedure query_strands (
 		-- Looks for any hierarchic nets connected via gui_submodules with the given net.
 			net_name : in et_schematic.type_net_name.bounded_string; -- the name of the net being examined
-			net      : in et_schematic.type_net -- the net being examined
+			net      : in type_net -- the net being examined
 			) is
-			use et_schematic.type_strands;
+			use type_strands;
 			-- The cursor pointing to the strand of the net. Defaults to the first strand.
-			strand : et_schematic.type_strands.cursor := net.strands.first; 
+			strand : type_strands.cursor := net.strands.first; 
 
 			procedure query_segments (
 			-- Looks for any hierarchic nets connected via gui_submodules with the given net.
-				strand   : in et_schematic.type_strand -- the strand being examined
+				strand   : in type_strand -- the strand being examined
 				) is 
 				-- The cursor pointing to the segment of the strand. Defaults to the first segment.
-				use et_schematic.type_net_segments;
-				segment  : et_schematic.type_net_segments.cursor := strand.segments.first;
+				use type_net_segments;
+				segment : type_net_segments.cursor := strand.segments.first;
 
 				-- If a hierarchic net is available, it will be loaded here temparily.
 				h_net : type_hierachic_net;
 			begin
 				-- Load one segment after another and test if the segment
 				-- is connected with any hierarchic nets (at deeper levels in the design hierarchy).
-				while segment /= et_schematic.type_net_segments.no_element loop
+				while segment /= type_net_segments.no_element loop
 
 					-- Test if any hierarchic nets are connected (via gui_submodules):
 					h_net := hierarchic_net (segment);
@@ -3830,10 +3881,10 @@ package body et_kicad is
 
 		begin -- query_strands
 			-- Load one strand after another. Then query its segments.
-			while strand /= et_schematic.type_strands.no_element loop
+			while strand /= type_strands.no_element loop
 				query_element (
-					position => strand,
-					process => query_segments'access);
+					position	=> strand,
+					process		=> query_segments'access);
 
 				next (strand);
 			end loop;
@@ -3841,8 +3892,8 @@ package body et_kicad is
 
 		procedure append_hierarchic_strands (
 			--net_name : in type_net_name.bounded_string;
-			net_cursor	: in et_schematic.type_nets.cursor;
-			strands	 	: in et_schematic.type_strands.list
+			net_cursor	: in type_nets.cursor;
+			strands	 	: in type_strands.list
 			) is
 			use type_rig;
 
@@ -3850,23 +3901,23 @@ package body et_kicad is
 				module_name	: in type_submodule_name.bounded_string;
 				module		: in out type_module
 				) is
-				use et_schematic.type_nets;
+				use type_nets;
 				--net_cursor : type_nets.cursor;
 
 				procedure append_strands (
 					net_name	: in et_schematic.type_net_name.bounded_string;
-					net			: in out et_schematic.type_net
+					net			: in out type_net
 					) is
-					use et_schematic.type_strands;
+					use type_strands;
 				begin
 					splice (
 						target => net.strands,
-						before => et_schematic.type_strands.no_element,
+						before => type_strands.no_element,
 						source => hierarchic_strands_tmp);
 				end append_strands;
 
 			begin -- locate_net
-				et_schematic.type_nets.update_element (
+				type_nets.update_element (
 					container	=> module.nets,
 					position	=> net_cursor,
 					process		=> append_strands'access);
@@ -3889,20 +3940,20 @@ package body et_kicad is
 		-- Then query the strands of the net.
 		net := first_net;
 		log_indentation_up;
-		while net /= et_schematic.type_nets.no_element loop
+		while net /= type_nets.no_element loop
 			log ("net " & to_string (key (net)), log_threshold + 1);
 
 			-- Examine the global or local net for any hierarchical nets connected to it.
 			-- If there are any, they are collected in hierarchic_strands_tmp.
 			query_element (
-				position => net,
-				process => query_strands'access);
+				position	=> net,
+				process		=> query_strands'access);
 
 			-- What we have collected in hierarchic_strands_tmp is now appended to the net.
 			append_hierarchic_strands (
 				--net_name => key (net),
-				net_cursor => net,
-				strands => hierarchic_strands_tmp); 
+				net_cursor	=> net,
+				strands		=> hierarchic_strands_tmp); 
 				-- NOTE: clears hierarchic_strands_tmp by its own
 				-- in order to provide a clean collector for the next net.
 
@@ -3952,16 +4003,16 @@ package body et_kicad is
 		end query_label;
 		
 		procedure query_segment (
-			strand : in et_schematic.type_strand) is
-			segment : et_schematic.type_net_segments.cursor := strand.segments.first;
-			use et_schematic.type_net_segments;
+			strand : in type_strand) is
+			segment : type_net_segments.cursor := strand.segments.first;
+			use type_net_segments;
 
 			-- for the segment we provide a consequtive number which has no further meaning
 			segment_number : count_type := 1;			
 		begin
 			if log_level >= log_threshold + 2 then
 				log_indentation_up;
-				while segment /= et_schematic.type_net_segments.no_element loop
+				while segment /= type_net_segments.no_element loop
 					log ("segment #" 
 						& count_type'image (segment_number) 
 						& latin_1.space
@@ -3980,17 +4031,17 @@ package body et_kicad is
 		
 		procedure query_strand (
 			net_name 	: in et_schematic.type_net_name.bounded_string;
-			net 		: in et_schematic.type_net) is
+			net 		: in type_net) is
 			
-			strand : et_schematic.type_strands.cursor := net.strands.first;
-			use et_schematic.type_strands;
+			strand : type_strands.cursor := net.strands.first;
+			use type_strands;
 
 			-- for the strand we provide a consequtive number which has no further meaning
 			strand_number : count_type := 1;			
 		begin -- query_strand
 			if log_level >= log_threshold + 1 then
 				log_indentation_up;
-				while strand /= et_schematic.type_strands.no_element loop
+				while strand /= type_strands.no_element loop
 					log ("strand #" & trim (count_type'image (strand_number), left) &
 						" at " & to_string (position => element (strand).coordinates, scope => et_coordinates.module)
 						);
@@ -4009,11 +4060,11 @@ package body et_kicad is
 		procedure query_net (
 			mod_name	: in type_submodule_name.bounded_string;
 			module 		: in type_module) is
-			net : et_schematic.type_nets.cursor := module.nets.first;
-			use et_schematic.type_nets;
+			net : type_nets.cursor := module.nets.first;
+			use type_nets;
 		begin
 			log_indentation_up;
-			while net /= et_schematic.type_nets.no_element loop
+			while net /= type_nets.no_element loop
 				log ("net " & et_schematic.to_string (key (net)));
 
 				query_element (
@@ -8085,7 +8136,7 @@ package body et_kicad is
 
 	procedure add_strand (
 	-- Adds a strand into the the module (indicated by module_cursor).
-		strand : in et_schematic.type_strand) is
+		strand : in type_strand) is
 		
 		procedure add (
 			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
@@ -8106,9 +8157,9 @@ package body et_kicad is
 			);
 	end add_strand;
 
-	function first_strand return et_schematic.type_strands.cursor is
+	function first_strand return type_strands.cursor is
 	-- Returns a cursor pointing to the first strand of the module (indicated by module_cursor).
-		cursor : et_schematic.type_strands.cursor;	
+		cursor : type_strands.cursor;	
 
 		procedure set_cursor (
 			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
@@ -8162,7 +8213,7 @@ package body et_kicad is
 			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out type_module) is
 
-			use et_schematic.type_strands;
+			use type_strands;
 			
 			cursor : type_strands.cursor := module.strands.first;
 			-- Points to the strand being processed
@@ -8289,15 +8340,15 @@ package body et_kicad is
 			-- Query net segments. Exits prematurely once a segment is found.
 				module_name	: in type_submodule_name.bounded_string;
 				module 		: in type_module) is
-				use et_schematic.type_strands;
-				strand_cursor : et_schematic.type_strands.cursor := module.strands.first;
+				use type_strands;
+				strand_cursor : type_strands.cursor := module.strands.first;
 
 				procedure query_segments (
-					strand : in et_schematic.type_strand) is
-					use et_schematic.type_net_segments;
-					segment_cursor : et_schematic.type_net_segments.cursor := strand.segments.first;
+					strand : in type_strand) is
+					use type_net_segments;
+					segment_cursor : type_net_segments.cursor := strand.segments.first;
 				begin
-					while segment_cursor /= et_schematic.type_net_segments.no_element loop
+					while segment_cursor /= type_net_segments.no_element loop
 				
 						-- The inquired segment must not be the same as the given segment:
 						if not (element (segment_cursor).coordinates_start = segment.coordinates_start and
@@ -8323,9 +8374,9 @@ package body et_kicad is
 				
 			begin -- query_strands
 				-- Once a segment has been found or all strands have been processed:
-				while (not segment_found) and strand_cursor /= et_schematic.type_strands.no_element loop
+				while (not segment_found) and strand_cursor /= type_strands.no_element loop
 
-					et_schematic.type_strands.query_element (
+					type_strands.query_element (
 						position	=> strand_cursor,
 						process 	=> query_segments'access);
 
@@ -8415,13 +8466,13 @@ package body et_kicad is
 		use et_coordinates;
 		use et_libraries;
 		
-		strand		: et_schematic.type_strands.cursor := first_strand;
-		segment		: et_schematic.type_net_segments.cursor;
+		strand		: type_strands.cursor := first_strand;
+		segment		: type_net_segments.cursor;
 		component	: et_schematic.type_portlists.cursor;
 		port		: et_schematic.type_ports.cursor;
 		
-		use et_schematic.type_strands;
-		use et_schematic.type_net_segments;
+		use type_strands;
+		use type_net_segments;
 		use et_schematic.type_portlists;
 		use et_schematic.type_ports;
 		use et_schematic.type_net_name;
@@ -8440,13 +8491,13 @@ package body et_kicad is
 		portlists := build_portlists (log_threshold + 1);
 
 		-- LOOP IN STRANDS OF MODULE
-		while strand /= et_schematic.type_strands.no_element loop
+		while strand /= type_strands.no_element loop
 			log_indentation_up;
 			log ("strand of net " & et_schematic.to_string (element (strand).name), log_threshold + 3);
 
 			-- LOOP IN SEGMENTS OF STRAND
 			segment := first_segment (strand);
-			while segment /= et_schematic.type_net_segments.no_element loop
+			while segment /= type_net_segments.no_element loop
 				log_indentation_up;
 				log ("probing segment " & et_schematic.to_string (element (segment)), log_threshold + 3);
 
@@ -8584,16 +8635,16 @@ package body et_kicad is
 		end query_label;
 	
 		procedure query_segment (
-			strand : in et_schematic.type_strand) is
-			segment : et_schematic.type_net_segments.cursor := strand.segments.first;
-			use et_schematic.type_net_segments;
+			strand : in type_strand) is
+			segment : type_net_segments.cursor := strand.segments.first;
+			use type_net_segments;
 		begin
 			if log_level >= log_threshold + 1 then
-				while segment /= et_schematic.type_net_segments.no_element loop
+				while segment /= type_net_segments.no_element loop
 					log_indentation_up;
 					log ("segment " & et_schematic.to_string (element (segment)));
 
-					et_schematic.type_net_segments.query_element (
+					type_net_segments.query_element (
 						position	=> segment,
 						process		=> query_label'access);
 
@@ -8606,20 +8657,20 @@ package body et_kicad is
 		procedure query_strands (
 			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in type_module) is
-			strand : et_schematic.type_strands.cursor := module.strands.first;
-			use et_schematic.type_strands;
+			strand : type_strands.cursor := module.strands.first;
+			use type_strands;
 			use et_coordinates.type_path_to_submodule;
 			use ada.directories;
 		begin
 			if log_level >= log_threshold then
-				while strand /= et_schematic.type_strands.no_element loop
+				while strand /= type_strands.no_element loop
 					log_indentation_up;
 
 					log (et_schematic.to_string (element (strand).name) &
 						 " scope " & et_schematic.to_string (element (strand).scope) &
 						 " in " & et_coordinates.to_string (et_coordinates.path (element (strand).coordinates)));
 					
-					et_schematic.type_strands.query_element (
+					type_strands.query_element (
 						position	=> strand,
 						process		=> query_segment'access);
 					
@@ -10033,14 +10084,14 @@ package body et_kicad is
 		-- Query strands of module.
 			module_name	: in type_submodule_name.bounded_string;
 			module		: in type_module) is
-			use et_schematic.type_strands;
-			strand_cursor_prim : et_schematic.type_strands.cursor := module.strands.first;
+			use type_strands;
+			strand_cursor_prim : type_strands.cursor := module.strands.first;
 
 			procedure query_segments_prim (
 			-- Query segments of strand
-				strand : in et_schematic.type_strand) is
-				use et_schematic.type_net_segments;
-				segment_cursor_prim : et_schematic.type_net_segments.cursor := strand.segments.first;
+				strand : in type_strand) is
+				use type_net_segments;
+				segment_cursor_prim : type_net_segments.cursor := strand.segments.first;
 
 				type type_junction is record
 					expected : boolean := false;
@@ -10057,14 +10108,14 @@ package body et_kicad is
 				-- junction_position.
 					junction_position : type_junction;
 				
-					use et_schematic.type_strands;
+					use type_strands;
 
 					-- start strand query with the first strand of the module.
-					strand_cursor_sec : et_schematic.type_strands.cursor := module.strands.first;
+					strand_cursor_sec : type_strands.cursor := module.strands.first;
 
 					procedure query_segments_sec (
-						strand : in et_schematic.type_strand) is
-						segment_cursor_sec : et_schematic.type_net_segments.cursor := strand.segments.first;
+						strand : in type_strand) is
+						segment_cursor_sec : type_net_segments.cursor := strand.segments.first;
 						use et_geometry;
 						distance : type_distance_point_from_line;
 					begin -- query_segments_sec
@@ -10072,7 +10123,7 @@ package body et_kicad is
 						log ("quering segments ...", log_threshold + 4);
 						log_indentation_up;
 						
-						while segment_cursor_sec /= et_schematic.type_net_segments.no_element loop
+						while segment_cursor_sec /= type_net_segments.no_element loop
 						
 							log (et_schematic.to_string (element (segment_cursor_sec)), log_threshold + 4);
 						
@@ -10125,14 +10176,14 @@ package body et_kicad is
 
 					-- Query secondary net segments until a junction is expected or until all secondary segments 
 					-- are tested. If no junction is expected return junction_position.expected false.
-					while (not junction_position.expected) and strand_cursor_sec /= et_schematic.type_strands.no_element loop
+					while (not junction_position.expected) and strand_cursor_sec /= type_strands.no_element loop
 
 						log (et_schematic.to_string (element (strand_cursor_sec).name)
 							& " at " 
 							& to_string (element (strand_cursor_sec).coordinates, scope => et_coordinates.module),
 							log_threshold + 3);
 					
-						et_schematic.type_strands.query_element (
+						query_element (
 							position	=> strand_cursor_sec,
 							process		=> query_segments_sec'access);
 
@@ -10181,7 +10232,7 @@ package body et_kicad is
 				log ("quering segments ...", log_threshold + 2);
 				log_indentation_up;
 				
-				while segment_cursor_prim /= et_schematic.type_net_segments.no_element loop
+				while segment_cursor_prim /= type_net_segments.no_element loop
 					log (et_schematic.to_string (element (segment_cursor_prim)), log_threshold + 2);
 				
 					junction := find_position_of_expected_junction;
@@ -10205,7 +10256,7 @@ package body et_kicad is
 			log ("quering strands ...", log_threshold + 1);
 			log_indentation_up;
 			
-			while strand_cursor_prim /= et_schematic.type_strands.no_element loop
+			while strand_cursor_prim /= type_strands.no_element loop
 			
 				log (et_schematic.to_string (element (strand_cursor_prim).name)
 					& " at " 
@@ -10213,7 +10264,7 @@ package body et_kicad is
 					log_threshold + 1);
 			
 				-- query segments of current strand
-				et_schematic.type_strands.query_element (
+				query_element (
 					position	=> strand_cursor_prim,
 					process		=> query_segments_prim'access);
 
@@ -10270,19 +10321,19 @@ package body et_kicad is
 				-- sits on.
 					module_name : in type_submodule_name.bounded_string;
 					module 		: in type_module) is
-					use et_schematic.type_strands;
-					strand_cursor : et_schematic.type_strands.cursor := module.strands.first;
+					use type_strands;
+					strand_cursor : type_strands.cursor := module.strands.first;
 
 					procedure query_segments (
 					-- Query net segments. Sets the flag segment_found and exits prematurely 
 					-- once a segment is found where the junction sits on.
-						strand : in et_schematic.type_strand) is
-						use et_schematic.type_net_segments;
-						segment_cursor : et_schematic.type_net_segments.cursor := strand.segments.first;
+						strand : in type_strand) is
+						use type_net_segments;
+						segment_cursor : type_net_segments.cursor := strand.segments.first;
 						use et_geometry;
 						distance : type_distance_point_from_line;
 					begin
-						while segment_cursor /= et_schematic.type_net_segments.no_element loop
+						while segment_cursor /= type_net_segments.no_element loop
 
 							-- Make sure junction and segment share the same module path and sheet.
 							-- It is sufficient to check against the segment start coordinates.
@@ -10307,9 +10358,9 @@ package body et_kicad is
 					
 				begin -- query_strands
 					-- Probe strands until a segment has been found or all strands have been processed:
-					while (not segment_found) and strand_cursor /= et_schematic.type_strands.no_element loop
+					while (not segment_found) and strand_cursor /= type_strands.no_element loop
 
-						et_schematic.type_strands.query_element (
+						query_element (
 							position	=> strand_cursor,
 							process		=> query_segments'access);
 
@@ -10388,19 +10439,19 @@ package body et_kicad is
 				-- sits on.
 					module_name : in type_submodule_name.bounded_string;
 					module 		: in type_module) is
-					use et_schematic.type_strands;
-					strand_cursor : et_schematic.type_strands.cursor := module.strands.first;
+					use type_strands;
+					strand_cursor : type_strands.cursor := module.strands.first;
 
 					procedure query_segments (
 					-- Query net segments. Sets the flag segment_found and exits prematurely 
 					-- once a segment is found where the junction sits on.
-						strand : in et_schematic.type_strand) is
-						use et_schematic.type_net_segments;
-						segment_cursor : et_schematic.type_net_segments.cursor := strand.segments.first;
+						strand : in type_strand) is
+						use type_net_segments;
+						segment_cursor : type_net_segments.cursor := strand.segments.first;
 						use et_geometry;
 						distance : type_distance_point_from_line;
 					begin
-						while segment_cursor /= et_schematic.type_net_segments.no_element loop
+						while segment_cursor /= type_net_segments.no_element loop
 
 							-- Make sure junction and segment share the same module path and sheet.
 							-- It is sufficient to check against the segment start coordinates.
@@ -10427,9 +10478,9 @@ package body et_kicad is
 					-- Probe strands.
 					-- There is no need to probe other strands once a segment was found. For this reason
 					-- this loop also tests the segment_counter.
-					while segment_counter = 0 and strand_cursor /= et_schematic.type_strands.no_element loop
+					while segment_counter = 0 and strand_cursor /= type_strands.no_element loop
 
-						et_schematic.type_strands.query_element (
+						query_element (
 							position	=> strand_cursor,
 							process		=> query_segments'access);
 
@@ -10552,13 +10603,13 @@ package body et_kicad is
 		-- Query strands and test if no_connection_flags are placed on any segment of the strand.
 			module_name : in type_submodule_name.bounded_string;
 			module 		: in type_module) is
-			use et_schematic.type_strands;
-			strand_cursor : et_schematic.type_strands.cursor := module.strands.first;
+			use type_strands;
+			strand_cursor : type_strands.cursor := module.strands.first;
 
 			procedure query_segments (
-				strand : in et_schematic.type_strand) is
-				use et_schematic.type_net_segments;
-				segment_cursor : et_schematic.type_net_segments.cursor := strand.segments.first;
+				strand : in type_strand) is
+				use type_net_segments;
+				segment_cursor : type_net_segments.cursor := strand.segments.first;
 
 				procedure find_no_connection_flag is
 				-- Issues a warning if a no_connection_flag sits at the segment.
@@ -10624,7 +10675,7 @@ package body et_kicad is
 				log ("quering segments ...", log_threshold + 2);
 				log_indentation_up;
 				
-				while segment_cursor /= et_schematic.type_net_segments.no_element loop
+				while segment_cursor /= type_net_segments.no_element loop
 					log (et_schematic.to_string (element (segment_cursor)), log_threshold + 2);
 				
 					-- test if there are any no_connection_flags placed on the segment
@@ -10641,7 +10692,7 @@ package body et_kicad is
 			log ("quering strands ...", log_threshold + 1);
 			log_indentation_up;
 			
-			while strand_cursor /= et_schematic.type_strands.no_element loop
+			while strand_cursor /= type_strands.no_element loop
 
 				log (et_schematic.to_string (element (strand_cursor).name)
 					& " at " 
@@ -10649,7 +10700,7 @@ package body et_kicad is
 					log_threshold + 1);
 			
 				-- query segments of current strand
-				et_schematic.type_strands.query_element (
+				query_element (
 					position	=> strand_cursor,
 					process		=> query_segments'access);
 
@@ -11195,23 +11246,23 @@ package body et_kicad is
 				module_name	: in type_submodule_name.bounded_string;
 				module		: in type_module) is
 
-				use et_schematic.type_nets;
-				net_cursor 		: et_schematic.type_nets.cursor := module.nets.first; -- points to the net being read
+				use type_nets;
+				net_cursor 		: type_nets.cursor := module.nets.first; -- points to the net being read
 				net_in_netlist	: et_schematic.type_netlist.cursor; -- points to the net being built in the netlist
 				net_created		: boolean := false; -- goes true once the net has been created in the netlist
 				
 				procedure query_strands (
 				-- Tests if a strand of the given net is connected to any component port.
 					net_name	: in et_schematic.type_net_name.bounded_string;
-					net			: in et_schematic.type_net) is
-					use et_schematic.type_strands;
-					strand_cursor : et_schematic.type_strands.cursor := net.strands.first; -- points to the first strand of the net
+					net			: in type_net) is
+					use type_strands;
+					strand_cursor : type_strands.cursor := net.strands.first; -- points to the first strand of the net
 
-					procedure query_segments (strand : in et_schematic.type_strand) is
+					procedure query_segments (strand : in type_strand) is
 					-- Tests the net segments of the given strand if they are connected with any component ports.
 					-- For every segment, all component ports must be tested.
-						use et_schematic.type_net_segments;
-						segment : et_schematic.type_net_segments.cursor := strand.segments.first; -- points to the segment being read
+						use type_net_segments;
+						segment : type_net_segments.cursor := strand.segments.first; -- points to the segment being read
 						use et_schematic.type_portlists;
 						component_cursor : et_schematic.type_portlists.cursor; -- points to the component being read
 
@@ -11340,7 +11391,7 @@ package body et_kicad is
 					begin -- query_segments
 						log_indentation_up;
 					
-						while segment /= et_schematic.type_net_segments.no_element loop
+						while segment /= type_net_segments.no_element loop
 
 							log ("segment " & et_schematic.to_string (element (segment)), log_threshold + 4);
 
@@ -11365,15 +11416,15 @@ package body et_kicad is
 				begin -- query_strands
 					log_indentation_up;
 				
-					while strand_cursor /= et_schematic.type_strands.no_element loop
+					while strand_cursor /= type_strands.no_element loop
 
 						-- log strand coordinates
 						log ("strand " & to_string (element (strand_cursor).coordinates, scope => et_coordinates.module),
 							 log_threshold + 3);
 
 						query_element (
-							position => strand_cursor,
-							process => query_segments'access);
+							position	=> strand_cursor,
+							process		=> query_segments'access);
 				
 						next (strand_cursor);
 					end loop;
@@ -11384,7 +11435,7 @@ package body et_kicad is
 			begin -- query_nets
 				log_indentation_up;
 			
-				while net_cursor /= et_schematic.type_nets.no_element loop
+				while net_cursor /= type_nets.no_element loop
 
 					-- log the name of the net being built
 					log (et_schematic.to_string (key (net_cursor)), log_threshold + 2);

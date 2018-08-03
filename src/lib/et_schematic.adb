@@ -317,53 +317,6 @@ package body et_schematic is
 		return type_strand_scope'image (scope);
 	end to_string;
 
-	function lowest_xy (
-	-- Returns the lowest x/y position of the given strand.
-		strand : in type_strand;
-		log_threshold : in et_string_processing.type_log_level
-		) return type_2d_point is
-		point_1, point_2 : type_2d_point;
-		segment : type_net_segments.cursor;
-	
-		use type_net_segments;
-		use et_string_processing;
-
-		-- CS: usage of intermediate variables for x/Y of start/end points could improve performance
-	begin
-		log_indentation_up;
-		log ("calculating the point nearest to drawing origin ...", log_threshold + 1);
-
-		-- init point_1 as the farest possible point from drawing origin
-		set_x (point_1, type_distance_xy'last);
-		set_y (point_1, type_distance_xy'last);
-		
-		-- loop through segments and keep the nearest point to origin
-		segment := strand.segments.first;
-		while segment /= type_net_segments.no_element loop
-
-			-- check start point of segment
-			-- if closer to orign than point_1 keep start point
-			point_2	:= type_2d_point (element (segment).coordinates_start);
-			if distance (point_2, zero) < distance (point_1, zero) then
-				log (" start", log_threshold + 2);
-				point_1 := point_2;
-			end if;
-
-			-- check start point of segment
-			-- if closer to orign than point_1 keep end point
-			point_2	:= type_2d_point (element (segment).coordinates_end);
-			if distance (point_2, zero) < distance (point_1, zero) then
-				log (" end", log_threshold + 2);
-				point_1 := point_2;
-			end if;
-			
-			next (segment);
-		end loop;
-
-		log_indentation_down;
-		
-		return point_1;
-	end lowest_xy;
 	
 
 	function to_component_reference (

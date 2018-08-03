@@ -551,6 +551,10 @@ package et_kicad is
 
 	
 -- NET SEGMENT AND STRAND PROCESSING
+	package type_net_segments is new doubly_linked_lists (
+		element_type	=> et_schematic.type_net_segment_base,
+		"="				=> et_schematic."=");
+	
 	type type_wild_net_segment is new et_schematic.type_net_segment_base with record
 		s, e : boolean := false; -- flag indicates the end point beeing assumed
 		picked : boolean := false; -- flag indicates that the segment has been added to the anonymous net
@@ -568,9 +572,32 @@ package et_kicad is
 		side : type_segment_side; -- end point of the segment found
 	end record;
 
+	-- A strand is a collection of net segments which belong to each other. 
+	-- Segments belong to each other because their start/end points meet.
+	-- A strand has coordinates. 
+	-- x/y position are the lowest values within the strand. see function lowest_xy.
+	-- As long as strands are independed of each other they must 
+	-- have a name and their own scope.
+	type type_strand is new et_schematic.type_strand with record
+		segments 	: type_net_segments.list; -- list of net segments		
+	end record;
+
+	function lowest_xy (
+	-- Returns the lowest x/y position of the given strand.
+		strand 			: in type_strand;
+		log_threshold	: in et_string_processing.type_log_level
+		) return type_2d_point;
+
+	procedure add_strand (
+	-- Adds a strand into the module (indicated by module_cursor).
+		strand : in type_strand);
+	
+	-- Strands are collected in a list:
+	package type_strands is new doubly_linked_lists (element_type => type_strand);
+	
 	-- An anonymous strand is a list of net segments that are connected with each other (by their start or end points):
 	type type_anonymous_strand is record
-		segments 	: et_schematic.type_net_segments.list;			-- the net segments
+		segments 	: type_net_segments.list; -- the net segments
 		name 		: et_schematic.type_net_name.bounded_string;	-- the strand name (derived from net labels)
 		scope 		: et_schematic.type_strand_scope := et_schematic.type_strand_scope'first; -- the scope (derived from net labels)
 		processed	: boolean := false;	-- set once a label has been found on the net
@@ -581,6 +608,22 @@ package et_kicad is
 		element_type => type_anonymous_strand);
 
 
+	type type_net is new et_schematic.type_net with record
+		strands		: type_strands.list;
+		-- CS differential status
+	end record;
+
+	-- Nets are collected in a map:
+	package type_nets is new ordered_maps (
+		key_type		=> et_schematic.type_net_name.bounded_string, -- example "CPU_CLOCK"
+		"<"				=> et_schematic.type_net_name."<",
+		element_type	=> type_net);
+
+
+
+
+
+	
 
 	function library_name (text : in string) return et_libraries.type_library_name.bounded_string;
 	-- extracts from a string like "bel_ic:S_SO14" the library name "bel_ic"
@@ -607,11 +650,7 @@ package et_kicad is
 		log_threshold	: in et_string_processing.type_log_level)
 		return et_libraries.type_component_purpose.bounded_string;
 
-	procedure add_strand (
-	-- Adds a strand into the module (indicated by module_cursor).
-		strand : in et_schematic.type_strand);
-
-	function first_strand return et_schematic.type_strands.cursor;
+	function first_strand return type_strands.cursor;
 	-- Returns a cursor pointing to the first strand of the module (indicated by module_cursor).
 
 	
@@ -786,7 +825,7 @@ package et_kicad is
 		
 		component_libraries			: type_libraries.map;
 		
-		strands	    	: et_schematic.type_strands.list;			-- the strands of the module
+		strands	    	: type_strands.list;						-- the strands of the module
 		junctions		: et_schematic.type_junctions.list;			-- net junctions
 
 		components		: type_components.map;						-- the components of the module
@@ -803,7 +842,7 @@ package et_kicad is
 		-- CS: images
 
 		-- the nets of the module (incl. routing information from the board):
-		nets 	    	: et_schematic.type_nets.map;				
+		nets 	    	: type_nets.map;
 		
 		-- General non-component related board stuff (silk screen, documentation, ...):
 		board			: et_pcb.type_board;

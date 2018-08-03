@@ -303,9 +303,8 @@ package et_schematic is
 	function to_string (segment : in type_net_segment_base; scope : in type_scope := sheet) return string; -- CS: should replace write_coordinates_of_segment
 	-- Returns the start and end coordinates of the given net segment.
 	
-	-- A net is a list of segments.
 	package type_net_segments is new doubly_linked_lists (
-		element_type => type_net_segment_base); -- CS kicad ?
+		element_type => type_net_segment_base); -- CS native type_net_segment
 
 	-- In a GUI a net may be visible within a submodule (local) or 
 	-- it may be seen from the parent module (hierachical net) or
@@ -324,18 +323,17 @@ package et_schematic is
 	-- x/y position are the lowest values within the strand. see function lowest_xy.
 	-- As long as strands are independed of each other they must 
 	-- have a name and their own scope.
-	type type_strand is record
-		segments 	: type_net_segments.list; -- list of net segments		
+	type type_strand is tagged record -- rename to type_stand_base
 		coordinates : et_coordinates.type_coordinates;
 		name		: type_net_name.bounded_string; -- example "CPU_CLOCK"
 		scope 		: type_strand_scope := type_strand_scope'first; -- example "local"
 	end record;
 
-	function lowest_xy (
-	-- Returns the lowest x/y position of the given strand.
-		strand : in type_strand;
-		log_threshold : in et_string_processing.type_log_level
-		) return type_2d_point;
+	type type_strand_native is new type_strand with record -- rename to type_strand
+		segments	: type_net_segments.list;
+	end record;
+
+	
 	
 	-- Strands are collected in a list:
 	package type_strands is new doubly_linked_lists (
@@ -346,18 +344,21 @@ package et_schematic is
 	anonymous_net_name_prefix : constant string (1..2) := "N$";
 
 	-- This is a net:
-	type type_net is record
+	type type_net is tagged record -- cs rename to type_net_base
 		scope 		: type_net_scope := type_net_scope'first; -- example "local"
-		strands		: type_strands.list;
 		route		: et_pcb.type_route;
 		class 		: et_pcb.type_net_class_name.bounded_string; -- default, High_Voltage, EMV-critical, ...
-		-- CS differential status
 	end record;
 
+	type type_net_native is tagged record -- cs rename to type_net
+		strands		: type_strands.list;
+	end record;
+
+	
 	-- Nets are collected in a map:
 	package type_nets is new ordered_maps (
-		key_type => type_net_name.bounded_string, -- example "CPU_CLOCK"	
-		element_type => type_net);
+		key_type		=> type_net_name.bounded_string, -- example "CPU_CLOCK"	
+		element_type	=> type_net_native);
 
 -- VISUALISATION IN A GRAPHICAL USER INTERFACE
 	-- How objects are displayed in a GUI.

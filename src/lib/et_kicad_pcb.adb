@@ -6848,9 +6848,9 @@ package body et_kicad_pcb is
 				module   : in out et_kicad.type_module) is
 
 				-- The nets of the module are copied here (in their present state):
-				use et_schematic.type_nets;
-				nets 		: et_schematic.type_nets.map := module.nets;
-				net_cursor	: et_schematic.type_nets.cursor := nets.first;
+				use et_kicad.type_nets;
+				nets 		: et_kicad.type_nets.map := module.nets;
+				net_cursor	: et_kicad.type_nets.cursor := nets.first;
 				
 				net_id		: type_net_id; -- the net id used by kicad
 
@@ -7111,7 +7111,7 @@ package body et_kicad_pcb is
 				procedure add_route (
 				-- adds routing information to the schematic module
 					net_name	: in et_schematic.type_net_name.bounded_string;
-					net			: in out et_schematic.type_net) is
+					net			: in out et_kicad.type_net) is
 				begin
 					net.route := route (net_id);
 				end add_route;
@@ -7236,8 +7236,8 @@ package body et_kicad_pcb is
 					nets_of_class		: type_nets_of_class.list;
 					net_cursor_board	: type_nets_of_class.cursor;
 
-					use et_schematic.type_nets;
-					net_cursor_schematic : et_schematic.type_nets.cursor;
+					use et_kicad.type_nets;
+					net_cursor_schematic : et_kicad.type_nets.cursor;
 
 					function to_net_name (net_name_in : in type_net_name.bounded_string)
 					-- Translates from an anonymous kicad net name like "Net-(IC2-Pad11)" to an 
@@ -7319,7 +7319,7 @@ package body et_kicad_pcb is
 					procedure set_net_class (
 					-- Sets the class of the given net in the schematic module.
 						net_name	: in type_net_name.bounded_string;
-						net 		: in out et_schematic.type_net) is
+						net 		: in out et_kicad.type_net) is
 					begin
 						net.class := key (net_class_cursor_board);
 						log (" net name " & to_string (net_name), log_threshold + 3);
@@ -7350,12 +7350,12 @@ package body et_kicad_pcb is
 							-- If it could not be found, it is an anonymous net. The name "Net-(IC2-Pad11)" must then
 							-- be translated to the anonymous ET net name like "N$45".
 							net_cursor_schematic := module.nets.find (element (net_cursor_board));
-							if net_cursor_schematic = type_nets.no_element then
+							if net_cursor_schematic = et_kicad.type_nets.no_element then
 								-- anonymous net -> translate to ET notation
 								net_cursor_schematic := module.nets.find (to_net_name (element (net_cursor_board)));
 							end if;
 						
-							et_schematic.type_nets.update_element (
+							et_kicad.type_nets.update_element (
 								container	=> module.nets, -- the current schematic module
 								position	=> net_cursor_schematic, -- the current net
 								process		=> set_net_class'access); -- set the net class
@@ -7460,7 +7460,7 @@ package body et_kicad_pcb is
 
 				-- segments, vias and polygons (only those polygons that are connected with a net)
 				log_indentation_up;
-				while net_cursor /= type_nets.no_element loop
+				while net_cursor /= et_kicad.type_nets.no_element loop
 
 					-- We are interested in nets that have more than one terminal connected.
 					-- Nets with less than two terminals do not appear in a kicad board file and must be skipped here.
@@ -7480,7 +7480,7 @@ package body et_kicad_pcb is
 								 to_string (net_id), log_threshold + 2);
 
 							-- add route (segments and vias) to module.nets (see et_schematic type_module)
-							et_schematic.type_nets.update_element (
+							et_kicad.type_nets.update_element (
 								container	=> module.nets,
 								position	=> find (module.nets, key (net_cursor)),
 								process		=> add_route'access);
