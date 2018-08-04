@@ -622,6 +622,40 @@ package et_kicad is
 
 
 
+	type type_gui_submodule_port is new et_schematic.type_gui_submodule_port with record
+        processed   : boolean; -- used when linking hierarchic nets
+	end record;
+
+	package type_gui_submodule_ports is new ordered_maps (
+		key_type		=> et_schematic.type_net_name.bounded_string,
+		"<"				=> et_schematic.type_net_name."<",
+		element_type	=> type_gui_submodule_port);
+
+	type type_gui_submodule is new et_schematic.type_gui_submodule_base with record
+		timestamp           : et_string_processing.type_timestamp;
+		ports				: type_gui_submodule_ports.map;
+	end record;
+
+	procedure add_gui_submodule (
+	-- Inserts a gui submodule in the module (indicated by module_cursor)
+		name		: in et_coordinates.type_submodule_name.bounded_string;
+		gui_sub_mod	: in type_gui_submodule);
+	
+    package type_gui_submodules is new ordered_maps (
+        key_type		=> et_coordinates.type_submodule_name.bounded_string,
+		"<" 			=> et_coordinates.type_submodule_name."<",
+        element_type	=> type_gui_submodule);
+
+
+    -- there are lots of drawing frames in a schematic contained in a list
+	package type_frames is new doubly_linked_lists (
+		element_type	=> et_schematic.type_frame,
+		"="				=> et_schematic."=");
+	
+    -- there are lots of title blocks in a schematic contained in a list
+    package type_title_blocks is new doubly_linked_lists (
+        element_type	=> et_schematic.type_title_block,
+		"="				=> et_schematic."=");
 
 	
 
@@ -716,17 +750,12 @@ package et_kicad is
 		module_name : in et_coordinates.type_submodule_name.bounded_string);
 	-- Tests if the given module exists in the rig. Raises error if not existent.
 
-	procedure add_gui_submodule (
-	-- Inserts a gui submodule in the module (indicated by module_cursor)
-		name		: in et_coordinates.type_submodule_name.bounded_string;
-		gui_sub_mod	: in et_schematic.type_gui_submodule);
-	
 	procedure add_sheet_header ( -- CS really requried ?
 	-- Inserts a sheet header in the module (indicated by module_cursor).
 		header	: in type_sheet_header;
 		sheet	: in type_schematic_file_name.bounded_string);
 
-	procedure add_frame ( -- CS really requried ?
+	procedure add_frame (
 	-- Inserts a drawing frame in the module (indicated by module_cursor).
 		frame	: in et_schematic.type_frame);
 
@@ -833,9 +862,9 @@ package et_kicad is
 		no_connections	: et_schematic.type_no_connection_flags.list;-- the list of no-connection-flags
 		portlists		: et_schematic.type_portlists.map;			-- the portlists of the module
 		netlist			: et_schematic.type_netlist.map;			-- the netlist
-		submodules  	: et_schematic.type_gui_submodules.map;		-- graphical representations of submodules. -- GUI relevant
-        frames      	: et_schematic.type_frames.list;			-- frames -- GUI relevant
-        title_blocks	: et_schematic.type_title_blocks.list;		-- title blocks -- GUI relevant
+		submodules  	: type_gui_submodules.map;					-- graphical representations of submodules. -- GUI relevant
+        frames      	: type_frames.list;							-- frames -- GUI relevant
+        title_blocks	: type_title_blocks.list;					-- title blocks -- GUI relevant
 		notes       	: et_schematic.type_texts.list;				-- notes
 
 		sheet_headers	: type_sheet_headers.map;		-- the list of sheet headers

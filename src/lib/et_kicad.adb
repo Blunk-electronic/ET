@@ -3576,7 +3576,7 @@ package body et_kicad is
         end record;
 
 		function on_segment (
-			port 	: in et_schematic.type_gui_submodule_port;
+			port 	: in type_gui_submodule_port;
 			segment : in et_schematic.type_net_segment_base)
 			return boolean is
 		-- Returns true if given port sits on given segment.
@@ -3613,24 +3613,24 @@ package body et_kicad is
 			procedure query_gui_submodules (
 				mod_name	: in type_submodule_name.bounded_string;
 				module 		: in out type_module) is
-				submodule_cursor : et_schematic.type_gui_submodules.cursor := module.submodules.first; -- CS: rename to gui_submodule_cursor
-				use et_schematic.type_gui_submodules;
+				submodule_cursor : type_gui_submodules.cursor := module.submodules.first; -- CS: rename to gui_submodule_cursor
+				use type_gui_submodules;
 
 				procedure query_ports (
 				-- Tests if the "port" of the given gui_submodule is connected with the given net segment.
 				-- If connected, the path of the gui_submodule and the submodule_name form the path to the real submodule. This
 				-- path is subsequently returned. The query ends.
 					submodule_name	: in type_submodule_name.bounded_string; -- The gui_submodule has a name. It is also the name of the real submodule.
-					gui_submodule	: in out et_schematic.type_gui_submodule -- This is the gui_submodule being queried.
+					gui_submodule	: in out type_gui_submodule -- This is the gui_submodule being queried.
 					) is
 					-- These are the "ports" of the gui_submodule (they represent the hierarchic nets within the real submodule).
-					port : et_schematic.type_gui_submodule_ports.cursor := gui_submodule.ports.first; -- default to first port
-					use et_schematic.type_gui_submodule_ports;
+					port : type_gui_submodule_ports.cursor := gui_submodule.ports.first; -- default to first port
+					use type_gui_submodule_ports;
 					use type_net_segments;
 
 					procedure mark_processed (
 						name : in et_schematic.type_net_name.bounded_string;
-						port : in out et_schematic.type_gui_submodule_port) is
+						port : in out type_gui_submodule_port) is
 					begin
 						port.processed := true;
 					end mark_processed;
@@ -3644,27 +3644,27 @@ package body et_kicad is
 						path_out : type_path_to_submodule.list := path_in;
 					begin
 						type_path_to_submodule.append (
-							container => path_out,
-							new_item => submodule);
+							container	=> path_out,
+							new_item	=> submodule);
 						return path_out;
 					end append_submodule_to_path;
 					
 				begin -- query_ports of the given gui_submodule. Test only the non-processed ones.
 					-- If "port" sits on given segment, mark the "port" as processed.
 					-- NOTE: The "processed" mark prevents multiple testing of the same "port" (which could lead to a forever-loop)
-					while port /= et_schematic.type_gui_submodule_ports.no_element loop
+					while port /= type_gui_submodule_ports.no_element loop
 
 						-- we are interested in non-processed ports only
 						if not element (port).processed then
 
 							-- if segment is connected with port
-							if on_segment (element (port), element (segment)) then
+							if on_segment (element (port), et_schematic.type_net_segment_base (element (segment))) then
 
 								-- mark port as processed
 								update_element (
-									container => gui_submodule.ports,
-									position => port,
-									process => mark_processed'access);
+									container	=> gui_submodule.ports,
+									position	=> port,
+									process		=> mark_processed'access);
 
 								-- form the return value
 								net := (
@@ -3689,12 +3689,12 @@ package body et_kicad is
 			begin -- query_gui_submodules
 				-- Query gui_submodules. For each gui_submodule query its "ports".
 				-- These "ports" are virtual and tell the name of the subordinated hierarchic net.
-				while submodule_cursor /= et_schematic.type_gui_submodules.no_element loop
+				while submodule_cursor /= type_gui_submodules.no_element loop
 
 					update_element (
-						container => module.submodules,
-						position => submodule_cursor,
-						process => query_ports'access);
+						container	=> module.submodules,
+						position	=> submodule_cursor,
+						process 	=> query_ports'access);
 
 					-- Once a hierarchic net has been found, the job is done.
 					if net.available then exit; end if;
@@ -3707,9 +3707,9 @@ package body et_kicad is
 
 			-- Locate the rig module as indicated by module_cursor. Then query the gui_submodules.
 			update_element (
-				container => rig,
-				position => module_cursor,
-				process => query_gui_submodules'access);
+				container	=> rig,
+				position	=> module_cursor,
+				process		=> query_gui_submodules'access);
 			
 			return net;
 		end hierarchic_net;
@@ -5647,7 +5647,7 @@ package body et_kicad is
 				if field (et_kicad.line,1) = schematic_keyword_title then                        
 					-- CS test field count					
 					title_block_text.meaning := TITLE;
-					title_block_text.text := type_title_block_text_string.to_bounded_string((field (et_kicad.line,2)));
+					title_block_text.text := type_title_block_text_content.to_bounded_string ((field (et_kicad.line,2)));
 					type_title_block_texts.append (title_block_texts, title_block_text);
 				end if;
 
@@ -5657,7 +5657,7 @@ package body et_kicad is
 				if field (et_kicad.line,1) = schematic_keyword_date then                        
 					-- CS test field count					
 					title_block_text.meaning := DRAWN_DATE;
-					title_block_text.text := type_title_block_text_string.to_bounded_string((field (et_kicad.line,2)));
+					title_block_text.text := type_title_block_text_content.to_bounded_string ((field (et_kicad.line,2)));
 					type_title_block_texts.append (title_block_texts, title_block_text);
 				end if;
 
@@ -5667,7 +5667,7 @@ package body et_kicad is
 				if field (et_kicad.line,1) = schematic_keyword_revision then                        
 					-- CS test field count					
 					title_block_text.meaning := REVISION;
-					title_block_text.text := type_title_block_text_string.to_bounded_string ((field (line,2)));
+					title_block_text.text := type_title_block_text_content.to_bounded_string ((field (line,2)));
 					type_title_block_texts.append (title_block_texts, title_block_text);
 				end if;
 
@@ -5677,7 +5677,7 @@ package body et_kicad is
 				if field (et_kicad.line,1) = schematic_keyword_company then
 					-- CS test field count					
 					title_block_text.meaning := COMPANY;
-					title_block_text.text := type_title_block_text_string.to_bounded_string((field (et_kicad.line,2)));
+					title_block_text.text := type_title_block_text_content.to_bounded_string ((field (et_kicad.line,2)));
 					type_title_block_texts.append (title_block_texts, title_block_text);
 				end if;
 
@@ -5690,7 +5690,7 @@ package body et_kicad is
 					field (et_kicad.line,1) = schematic_keyword_comment_4 then
 					-- CS test field count
 					title_block_text.meaning := MISC;
-					title_block_text.text := type_title_block_text_string.to_bounded_string ((field (et_kicad.line,2)));
+					title_block_text.text := type_title_block_text_content.to_bounded_string ((field (et_kicad.line,2)));
 					type_title_block_texts.append (title_block_texts, title_block_text);
 				end if;
 
@@ -5731,7 +5731,7 @@ package body et_kicad is
 				lines 			: in type_lines.list;
 				log_threshold	: in type_log_level) is
 			-- Builds the GUI sheet.
-				sheet : et_schematic.type_gui_submodule; -- the hierarchical GUI sheet being built
+				sheet : type_gui_submodule; -- the hierarchical GUI sheet being built
 				name, file : et_coordinates.type_submodule_name.bounded_string; -- sheet name and file name (must be equal)
 
 				port_inserted : boolean; -- used to detect multiple ports with the same name
@@ -5922,7 +5922,7 @@ package body et_kicad is
 					log (message_warning & "hierarchic sheet '" & to_string (submodule => name) & "' has no ports !");
 				end if;
 
-				-- insert the hierarchical GUI sheet in module (see et_schematic type_module)
+				-- insert the hierarchical GUI sheet in module (see type_module)
 				add_gui_submodule (name, sheet);
 
 				log_indentation_down;
@@ -9822,14 +9822,14 @@ package body et_kicad is
 	procedure add_gui_submodule (
 	-- Inserts a gui submodule in the module (indicated by module_cursor)
 		name		: in et_coordinates.type_submodule_name.bounded_string;
-		gui_sub_mod	: in et_schematic.type_gui_submodule) is
+		gui_sub_mod	: in type_gui_submodule) is
 
 		procedure add (
 			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out type_module) is
 			
 			inserted	: boolean := false;
-			cursor		: et_schematic.type_gui_submodules.cursor;
+			cursor		: type_gui_submodules.cursor;
 
 			use et_string_processing;
 		begin

@@ -350,27 +350,27 @@ package et_schematic is
 		text_size	: type_text_size;
 		coordinates	: type_2d_point;
         orientation	: type_angle;
-        processed   : boolean; -- used when linking hierarchic nets
 	end record;
 
 	package type_gui_submodule_ports is new ordered_maps (
 		key_type		=> type_net_name.bounded_string,
 		element_type	=> type_gui_submodule_port);
 
-	type type_gui_submodule is record
+	type type_gui_submodule_base is tagged record
         text_size_of_name   : type_text_size;
-        text_size_of_file   : type_text_size;        
+        text_size_of_file   : type_text_size;
 		coordinates		    : type_coordinates;
         size_x, size_y      : type_distance; -- size x/y of the box
-        timestamp           : et_string_processing.type_timestamp;
-        ports				: type_gui_submodule_ports.map;
 	end record;
 
-    -- A list of submodules is a component of the main module:    
+	type type_gui_submodule is new type_gui_submodule_base with record
+        ports				: type_gui_submodule_ports.map;
+	end record;
+	
     package type_gui_submodules is new ordered_maps (
-        key_type => et_coordinates.type_submodule_name.bounded_string,
-		"<" => et_coordinates.type_submodule_name."<",
-        element_type => type_gui_submodule);
+        key_type		=> et_coordinates.type_submodule_name.bounded_string,
+		"<" 			=> et_coordinates.type_submodule_name."<",
+        element_type	=> type_gui_submodule);
 
 
     -- DRAWING FRAME
@@ -381,8 +381,7 @@ package et_schematic is
         coordinates_end   : type_2d_point;
 	end record;
 	
-	package type_frame_lines is new doubly_linked_lists (
-        element_type => type_frame_line);
+	package type_frame_lines is new doubly_linked_lists (type_frame_line);
 
 	type type_frame_text is record
 		coordinates		: type_2d_point;
@@ -392,8 +391,7 @@ package et_schematic is
 		-- CS: font, ...
 	end record;
 	
-	package type_frame_texts is new doubly_linked_lists (
-        element_type => type_frame_text);
+	package type_frame_texts is new doubly_linked_lists (type_frame_text);
 
     -- the final drawing frame
     type type_frame is record
@@ -404,32 +402,29 @@ package et_schematic is
         texts           : type_frame_texts.list;
     end record;
 
-    -- there are lots of drawing frames in a schematic contained in a list
-    package type_frames is new doubly_linked_lists (
-        element_type => type_frame);
-
     -- TITLE BLOCK
     type type_title_block_line is record
 		coordinates_start : type_2d_point;
 		coordinates_end   : type_2d_point;
     end record;
 
-	package type_title_block_lines is new doubly_linked_lists (
-        element_type => type_title_block_line);
+	package type_title_block_lines is new doubly_linked_lists (type_title_block_line);
     
- 	title_block_text_length	: constant natural := 200;
-	package type_title_block_text_string is new generic_bounded_length(title_block_text_length); use type_title_block_text_string;
+ 	title_block_text_length_max : constant natural := 200;
+	package type_title_block_text_content is new generic_bounded_length (title_block_text_length_max);
+	--use type_title_block_text_string;
 
-	type type_title_block_text_meaning is ( PROJECT, TITLE, 
+	type type_title_block_text_meaning is ( 
+		PROJECT, TITLE, 
         DRAWN_BY, CHECKED_BY, APPROVED_BY, 
         DRAWN_DATE, CHECKED_DATE, APPROVED_DATE,
         COMPANY,
 		REVISION, MISC);
 	
-	type type_title_block_text is record -- CS: from kicad $descr
+	type type_title_block_text is record
 		meaning			: type_title_block_text_meaning;
  		coordinates		: type_2d_point;
-		text			: type_title_block_text_string.bounded_string;
+		text			: type_title_block_text_content.bounded_string;
  		size			: type_text_size;
  		orientation		: type_angle;
 		-- CS: font, ...
@@ -445,9 +440,6 @@ package et_schematic is
         texts           : type_title_block_texts.list;
     end record;
 
-    -- there are lots of title blocks in a schematic contained in a list
-    package type_title_blocks is new doubly_linked_lists (
-        element_type => type_title_block);
 
 
 	
