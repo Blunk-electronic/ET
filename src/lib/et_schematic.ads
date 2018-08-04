@@ -129,30 +129,6 @@ package et_schematic is
 		element_type 	=> type_unit);
 
 
--- 	function position_of_unit (
--- 	-- Returns the coordinates of the unit with the given name.
--- 	-- It is assumed, the unit in question exists.
--- 	-- The unit is an element in the given list of units.
--- 		name : in type_unit_name.bounded_string; -- the unit being inquired
--- 		units : in type_units.map) -- the list of units
--- 		return type_coordinates;
--- 	
--- 	function mirror_style_of_unit (
--- 	-- Returns the mirror style of the given unit.
--- 	-- It is assumed, the unit in question exists.
--- 	-- The unit is an element in the given list of units.
--- 		name : in type_unit_name.bounded_string; -- the unit being inquired
--- 		units : in type_units.map) -- the list of units
--- 		return type_mirror;
--- 	
--- 	function orientation_of_unit (
--- 	-- Returns the orientation of the given unit.
--- 	-- It is assumed, the unit in question exists.
--- 	-- The unit is an element in the given list of units.
--- 		name : in type_unit_name.bounded_string; -- the unit being inquired
--- 		units : in type_units.map) -- the list of units
--- 		return type_angle;
-	
 	-- This is a component as it appears in the schematic.
 	type type_component (appearance : type_appearance_schematic) is tagged record
 		library_name	: type_full_library_name.bounded_string; -- symbol lib like ../libraries/transistors.lib
@@ -277,7 +253,6 @@ package et_schematic is
 	-- A net junction is where segments can be connected with each other.
 	type type_net_junction is record
 		coordinates : et_coordinates.type_coordinates;
-		-- CS: processed flag
 	end record;
 
 	-- Junctions are to be collected in a list.
@@ -296,15 +271,20 @@ package et_schematic is
 		label_list_simple 	: type_simple_labels.list;
 		label_list_tag    	: type_tag_labels.list;
 	end record;
-
+	
 	function length (segment : in type_net_segment_base) return type_distance;
 	-- Returns the length of the given net segment.
 	
 	function to_string (segment : in type_net_segment_base; scope : in type_scope := sheet) return string; -- CS: should replace write_coordinates_of_segment
 	-- Returns the start and end coordinates of the given net segment.
+
+	type type_net_segment is new type_net_segment_base with record
+		junctions			: type_junctions.list;
+		-- CS ports
+	end record;
 	
 	package type_net_segments is new doubly_linked_lists (
-		element_type => type_net_segment_base); -- CS native type_net_segment
+		element_type => type_net_segment);
 
 	-- In a GUI a net may be visible within a submodule (local) or 
 	-- it may be seen from the parent module (hierachical net) or
@@ -323,13 +303,13 @@ package et_schematic is
 	-- x/y position are the lowest values within the strand. see function lowest_xy.
 	-- As long as strands are independed of each other they must 
 	-- have a name and their own scope.
-	type type_strand is tagged record -- rename to type_stand_base
+	type type_strand_base is tagged record
 		coordinates : et_coordinates.type_coordinates;
 		name		: type_net_name.bounded_string; -- example "CPU_CLOCK"
 		scope 		: type_strand_scope := type_strand_scope'first; -- example "local"
 	end record;
 
-	type type_strand_native is new type_strand with record -- rename to type_strand
+	type type_strand is new type_strand_base with record
 		segments	: type_net_segments.list;
 	end record;
 
@@ -344,13 +324,13 @@ package et_schematic is
 	anonymous_net_name_prefix : constant string (1..2) := "N$";
 
 	-- This is a net:
-	type type_net is tagged record -- cs rename to type_net_base
+	type type_net_base is tagged record
 		scope 		: type_net_scope := type_net_scope'first; -- example "local"
 		route		: et_pcb.type_route;
 		class 		: et_pcb.type_net_class_name.bounded_string; -- default, High_Voltage, EMV-critical, ...
 	end record;
 
-	type type_net_native is tagged record -- cs rename to type_net
+	type type_net is new type_net_base with record
 		strands		: type_strands.list;
 	end record;
 
@@ -358,16 +338,14 @@ package et_schematic is
 	-- Nets are collected in a map:
 	package type_nets is new ordered_maps (
 		key_type		=> type_net_name.bounded_string, -- example "CPU_CLOCK"	
-		element_type	=> type_net_native);
+		element_type	=> type_net);
 
--- VISUALISATION IN A GRAPHICAL USER INTERFACE
-	-- How objects are displayed in a GUI.
-
+	-- VISUALISATION OF A SUBMODULE IN A GRAPHICAL USER INTERFACE
     -- SUBMODULE
     -- A submodule is a box with coordinates and length x/y.
 	-- On the box edges are ports. 
 	-- It serves as link between a hierachical net and the parent module.
-	type type_gui_submodule_port is record
+	type type_gui_submodule_port is tagged record
 		direction	: type_port_direction;
 		text_size	: type_text_size;
 		coordinates	: type_2d_point;
@@ -376,8 +354,8 @@ package et_schematic is
 	end record;
 
 	package type_gui_submodule_ports is new ordered_maps (
-		key_type => type_net_name.bounded_string,
-		element_type => type_gui_submodule_port);
+		key_type		=> type_net_name.bounded_string,
+		element_type	=> type_gui_submodule_port);
 
 	type type_gui_submodule is record
         text_size_of_name   : type_text_size;

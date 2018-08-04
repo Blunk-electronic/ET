@@ -578,7 +578,7 @@ package et_kicad is
 	-- x/y position are the lowest values within the strand. see function lowest_xy.
 	-- As long as strands are independed of each other they must 
 	-- have a name and their own scope.
-	type type_strand is new et_schematic.type_strand with record
+	type type_strand is new et_schematic.type_strand_base with record
 		segments 	: type_net_segments.list; -- list of net segments		
 	end record;
 
@@ -608,7 +608,7 @@ package et_kicad is
 		element_type => type_anonymous_strand);
 
 
-	type type_net is new et_schematic.type_net with record
+	type type_net is new et_schematic.type_net_base with record
 		strands		: type_strands.list;
 		-- CS differential status
 	end record;
