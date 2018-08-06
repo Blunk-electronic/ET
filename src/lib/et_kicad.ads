@@ -41,6 +41,7 @@ with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
+with ada.containers.ordered_sets;
 with ada.containers.indefinite_ordered_maps;
 
 with et_project;
@@ -232,6 +233,92 @@ package et_kicad is
 	function bom (cursor : in type_components.cursor)
 	-- Returns the component bom status where cursor points to.
 		return et_libraries.type_bom;
+
+
+
+	-- No-connection-flags indicate that a component port is intentionally left unconnected.
+	type type_no_connection_flag is record
+		coordinates : et_coordinates.type_coordinates;
+		-- CS: processed flag
+	end record;
+
+	-- No-connection-flags can be stored in a simple list:
+	package type_no_connection_flags is new doubly_linked_lists (type_no_connection_flag);	
+
+	function to_string (no_connection_flag : in type_no_connection_flag; scope : in type_scope) return string;
+	-- Returns the position of the given no-connection-flag as string.
+
+	type type_port_open is new boolean;
+	type type_port_connected is (YES, NO);
+	
+	-- For portlists and netlists we need a component port with its basic elements:
+	type type_port is tagged record -- CS: use a controlled type since some selectors do not apply for virtual ports
+		name			: et_libraries.type_port_name.bounded_string; -- the port name like GPIO1, GPIO2
+		coordinates 	: type_coordinates;
+		direction		: et_libraries.type_port_direction; -- example: "passive"
+		style			: et_libraries.type_port_style;
+		appearance		: et_schematic.type_appearance_schematic;
+		intended_open	: type_port_open; -- set while portlist generation. true if port is to be left open intentionally (by a no_connection-flag)
+		connected		: type_port_connected; -- set while netlist generation. true when port connected with a net
+		power_flag		: et_libraries.type_power_flag; -- indicates if port belongs to a power_flag
+	end record;
+
+	-- Ports can be collected in a simple list:
+	package type_ports is new doubly_linked_lists (type_port); 
+	--use type_ports;
+
+	-- The components with their ports are collected in a map with the component reference as key:
+	package type_portlists is new ordered_maps (
+		key_type		=> et_libraries.type_component_reference,
+		element_type	=> type_ports.list,
+		"<"				=> et_schematic.compare_reference,
+		"="				=> type_ports."=");
+
+	-- If component ports are to be listed, 
+	-- we need additionally the component reference like R102 or IC7
+	type type_port_with_reference is new type_port with record
+		reference : et_libraries.type_component_reference;
+	end record;
+
+	function to_string (port : in type_port_with_reference) return string;
+	-- Returns the properties of the given port as string.
+
+	function to_terminal (
+		port 			: in type_port_with_reference;
+		module			: in type_submodule_name.bounded_string; -- the name of the module							 
+		log_threshold 	: in et_string_processing.type_log_level)
+		return et_libraries.type_terminal;
+	-- Returns the terminal and unit name of the given port in a composite type.
+	-- Raises error if given port is of a virtual component (appearance sch).
+
+	
+	function compare_ports (left, right : in type_port_with_reference) return boolean;
+	-- Returns true if left comes before right. Compares by component reference and port name.
+	-- If left equals right, the return is false.	
+	
+	-- When inquiring the net connected with certain component we use this composite:
+	type type_port_of_module is record
+		module		: et_coordinates.type_submodule_name.bounded_string;	-- nucleo_core_3
+		reference	: et_libraries.type_component_reference;				-- N409
+		name		: et_libraries.type_port_name.bounded_string;			-- 2
+	end record;
+	
+	-- This is a set of ports as we need in the netlist.
+	package type_ports_with_reference is new ordered_sets (
+		element_type 	=> type_port_with_reference,
+		"<" 			=> compare_ports);
+
+	-- This is the netlist of a single submodule:
+	-- It does also contain ports of virtual components (power symbols) except 
+	-- so called "power flags".
+	package type_netlist is new ordered_maps (
+		key_type		=> et_schematic.type_net_name.bounded_string, -- net name like "MCU_CLOCK"
+		"<"				=> et_schematic.type_net_name."<",
+		"="				=> type_ports_with_reference."=",
+		element_type	=> type_ports_with_reference.set); -- the list of ports connected with the net
+
+
+
 
 	
 	procedure import_design (
@@ -702,14 +789,14 @@ package et_kicad is
 		module 			: in type_submodule_name.bounded_string; -- nucleo_core
 		net				: in et_schematic.type_net_name.bounded_string; -- motor_on_off
 		log_threshold	: in et_string_processing.type_log_level)
-		return et_schematic.type_ports_with_reference.set;
+		return type_ports_with_reference.set;
 	-- Returns a list of component ports that are connected with the given net.
 	
 	function real_components_in_net (
 		module 			: in type_submodule_name.bounded_string; -- nucleo_core
 		net				: in et_schematic.type_net_name.bounded_string; -- motor_on_off
 		log_threshold	: in et_string_processing.type_log_level)
-		return et_schematic.type_ports_with_reference.set;
+		return type_ports_with_reference.set;
 	-- Returns a list of real component ports that are connected with the given net.
 
 	
@@ -724,7 +811,7 @@ package et_kicad is
 	-- of the module indicated by module_cursor.
 
 	function build_portlists (log_threshold : in et_string_processing.type_log_level) 
-		return et_schematic.type_portlists.map;
+		return type_portlists.map;
 	-- Returns a list of components with the absolute positions of their ports as they are placed in the schematic.
 
 
@@ -787,7 +874,7 @@ package et_kicad is
 	-- Tests nets for number of inputs, outputs, bidirs, ...
 
 	function connected_net (
-		port			: in et_schematic.type_port_of_module; -- contains something like nucleo_core_1 X701 port 4
+		port			: in type_port_of_module; -- contains something like nucleo_core_1 X701 port 4
 		log_threshold	: in et_string_processing.type_log_level)
 		return et_schematic.type_net_name.bounded_string;
 	-- Returns the name of the net connected with the given port.
@@ -809,14 +896,6 @@ package et_kicad is
 	-- Returns the number of terminals of the given component reference.
 	-- Requires module_cursor (global variable) to point to the current module.
 	
-	function to_terminal (
-		port 			: in et_schematic.type_port_with_reference;
-		module			: in type_submodule_name.bounded_string; -- the name of the module							 
-		log_threshold 	: in et_string_processing.type_log_level)
-		return et_libraries.type_terminal;
-	-- Returns the terminal and unit name of the given port in a composite type.
-	-- Raises error if given port is of a virtual component (appearance sch).
-
 	function connected_net (
 	-- Returns the name of the net connected with the given component and terminal.
 		module			: in type_submodule_name.bounded_string;	-- nucleo_core
@@ -859,9 +938,9 @@ package et_kicad is
 
 		components		: type_components.map;						-- the components of the module
 		net_classes		: et_pcb.type_net_classes.map;				-- the net classes
-		no_connections	: et_schematic.type_no_connection_flags.list;-- the list of no-connection-flags
-		portlists		: et_schematic.type_portlists.map;			-- the portlists of the module
-		netlist			: et_schematic.type_netlist.map;			-- the netlist
+		no_connections	: type_no_connection_flags.list;			-- the list of no-connection-flags
+		portlists		: type_portlists.map;						-- the portlists of the module
+		netlist			: type_netlist.map;							-- the netlist
 		submodules  	: type_gui_submodules.map;					-- graphical representations of submodules. -- GUI relevant
         frames      	: type_frames.list;							-- frames -- GUI relevant
         title_blocks	: type_title_blocks.list;					-- title blocks -- GUI relevant

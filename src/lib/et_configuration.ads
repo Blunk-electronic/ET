@@ -50,6 +50,7 @@ with et_coordinates;
 with et_libraries;
 with et_schematic;
 with et_import;
+with et_kicad;
 with et_string_processing;
 
 package et_configuration is
@@ -224,7 +225,7 @@ package et_configuration is
 		net				: in et_schematic.type_net_name.bounded_string;			-- motor_on_off
 		category		: in type_component_category;				-- netchanger, connector
 		log_threshold	: in et_string_processing.type_log_level)
-		return et_schematic.type_ports_with_reference.set;
+		return et_kicad.type_ports_with_reference.set;
 	-- Returns a set of component ports that are connected with the given net.
 	-- Returns only components of given category.
 

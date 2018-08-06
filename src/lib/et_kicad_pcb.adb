@@ -6873,9 +6873,9 @@ package body et_kicad_pcb is
 					net_cursor : type_netlist.cursor := board.netlist.first;
 					id : type_net_id; -- to be returned
 					
-					use type_ports_with_reference;
-					portlist : type_ports_with_reference.set;
-					port : type_port_with_reference;
+					use et_kicad.type_ports_with_reference;
+					portlist : et_kicad.type_ports_with_reference.set;
+					port : et_kicad.type_port_with_reference;
 					terminal : et_libraries.type_terminal;
 					net_name_in_board : type_net_name.bounded_string;
 				begin -- to_net_id

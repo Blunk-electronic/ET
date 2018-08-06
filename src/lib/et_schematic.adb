@@ -213,13 +213,6 @@ package body et_schematic is
 	end write_note_properties;
 
 	
-	
-	function to_string (no_connection_flag : in type_no_connection_flag; scope : in type_scope) return string is
-	-- Returns the position of the given no-connection-flag as string.
-	begin	
-		return (to_string (position => no_connection_flag.coordinates, scope => scope));
-	end to_string;
-
 
 	
 
@@ -503,60 +496,6 @@ package body et_schematic is
 			when not_predictable	=> return preamble & "UNPREDICTABLE HARM !";
 		end case;	
 	end show_danger;
-	
-
--- 	function units_of_component (component_cursor : in type_components.cursor) return type_units.map is
--- 	-- Returns the units of the given component.
--- 		u : type_units.map;
--- 
--- 		procedure locate (
--- 			name : in type_component_reference;
--- 			component : in type_component) is
--- 		begin
--- 			-- copy the units of the component to the return value
--- 			u := component.units;
--- 		end locate;
--- 		
--- 	begin
--- 		-- locate the given component by component_cursor
--- 		type_components.query_element (component_cursor, locate'access);
--- 		
--- 		-- CS: do something if cursor invalid. via exception handler ?
--- 		return u;
--- 	end units_of_component;
-
-	function to_string (port : in type_port_with_reference) return string is
-	-- Returns the properties of the given port as string.
-	begin
-		return "reference " & to_string (port.reference) 
-			& " port " & to_string (port.name)
-			& " coordinates " & to_string (position => port.coordinates, scope => module);
-	end to_string;
-	
-	function compare_ports (left, right : in type_port_with_reference) return boolean is
-	-- Returns true if left comes before right. Compares by component reference and port name.
-	-- If left equals right, the return is false.	
-	-- CS: needs verification !
-		result : boolean := false;
-		use et_libraries;
-		use et_schematic;
-	begin
-		-- First we compare the component reference.
-		-- Examples: C56 comes before R4, LED5 comes before LED7
-		if compare_reference (left.reference, right.reference) then
-			result := true;
-
-		-- If equal pin names, compare port names -- CS: should never happen. raise alarm ?
-		elsif type_port_name.">" (left.name, right.name) then
-			result := true;
-			
-		else
-			result := false;
-		end if;
-
-		-- in case of equivalence of left and right, we return false (default)
-		return result;
-	end compare_ports;
 	
 
 
