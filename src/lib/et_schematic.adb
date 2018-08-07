@@ -92,51 +92,6 @@ package body et_schematic is
 	end to_net_label_text_size;
 
 	
--- 	procedure write_label_properties (label : in type_net_label) is
--- 	-- Writes the properties of the given net label in the logfile.
--- 		use et_string_processing;
--- 		use et_coordinates;
--- 
--- 		log_threshold : type_log_level := 2;
--- 	begin
--- 		log_indentation_up;
--- 		
--- 		case label.label_appearance is
--- 			when simple =>
--- 				log (text => "simple label " & to_string (label.text) & " at " & to_string (position => label.coordinates));
--- 				
--- 			when tag =>
--- 				if label.hierarchic then
--- 					log (text => "hierarchic label " & to_string (label.text) & " at " & to_string (position => label.coordinates));
--- 				end if;
--- 				if label.global then
--- 					log (text => "global label " & to_string (label.text) & " at " & to_string (position => label.coordinates));
--- 				end if;
--- 					-- CS: directon, global, hierarchic, style, ...
--- 		end case;
--- 
--- 		log_indentation_up;
--- 		log (text => to_string (label.orientation), level => log_threshold + 1);
--- 		
--- 		case label.label_appearance is
--- 			when simple =>
--- 				null;
--- 			when tag =>
--- 				null;
--- 				--put("tag label ");
--- 				-- CS: directon, global, hierarchic, style, ...
--- 		end case;
--- 
--- 		log_indentation_down;
--- 		log_indentation_down;
--- 
--- 	end write_label_properties;
--- 
--- 	function to_string (label : in type_net_label; scope : in type_scope) return string is
--- 	-- Returns the coordinates of the given label as string.
--- 	begin
--- 		return (to_string (position => label.coordinates, scope => scope));
--- 	end to_string;
 	
 	function to_string (junction : in type_net_junction; scope : in type_scope) return string is
 	-- Returns the position of the given junction as string.

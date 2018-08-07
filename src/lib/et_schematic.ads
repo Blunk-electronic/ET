@@ -199,53 +199,12 @@ package et_schematic is
 	function anonymous (net_name : in type_net_name.bounded_string) return boolean;
 	-- Returns true if the given net name is anonymous.
 	
-	-- A label is frequently attached to a net segment in order to make the net name visible. 
-	-- The label can be a simple string or a tag. 
-	-- The label carries the name of the net. 
-	-- In case the appearance is "tag", the property "direction" exists.
-	-- The "direction" indicates the flow of energy or information on the net.
-
 	subtype type_net_label_text_size is type_distance range 1.0 .. 5.0; -- unit is mm
 	net_label_text_size_default : constant type_net_label_text_size := 1.3;
 
 	function to_net_label_text_size (text : in string) return type_net_label_text_size;
 	-- Converts a string to type_net_label_text_size.
 
-	
--- 	type type_label_direction is (input, output, bidir, tristate, passive); -- CS rename to type_net_label_direction
--- 	type type_label_appearance is (simple, tag); -- CS rename to type_net_lael_appearance
--- 	type type_net_label (label_appearance : type_label_appearance) is record
--- 		coordinates	: et_coordinates.type_coordinates;
--- 		orientation	: type_angle;
---         text		: type_net_name.bounded_string;
---         size		: et_libraries.type_text_size;
---         style		: et_libraries.type_text_style;
---         width		: et_libraries.type_text_line_width;
--- 		processed	: boolean := false; -- used for associating label with net segment
--- 		case label_appearance is
--- 			when tag => 
--- 				direction : type_label_direction;
--- 				-- CS: coordinates of next tag of this net (by sheet coord. or area ?)
--- 				global : boolean; -- CS: use only one flag. true -> hierachic, false -> global
--- 				hierarchic : boolean;
--- 			when simple => null;
--- 		end case;
--- 	end record;
--- 
--- 	type type_net_label_simple is new type_net_label (label_appearance => simple);
--- 	package type_simple_labels is new doubly_linked_lists (
--- 		element_type => type_net_label_simple);
--- 	
--- 	type type_net_label_tag is new type_net_label (label_appearance => tag);		
--- 	package type_tag_labels is new doubly_linked_lists (
--- 		element_type => type_net_label_tag);
--- 
--- 	procedure write_label_properties (label : in type_net_label);
--- 	-- Writes the properties of the given net label in the logfile.
--- 
--- 	function to_string (label : in type_net_label; scope : in type_scope) return string;
--- 	-- Returns the coordinates of the given label as string.
-	
 	-- A net junction is where segments can be connected with each other.
 	type type_net_junction is record
 		coordinates : et_coordinates.type_coordinates;
@@ -265,8 +224,6 @@ package et_schematic is
 		coordinates_start 	: et_coordinates.type_coordinates;
 		coordinates_end   	: et_coordinates.type_coordinates;
 		junctions			: type_junctions.list;
--- 		label_list_simple 	: type_simple_labels.list;
--- 		label_list_tag    	: type_tag_labels.list;
 	end record;
 	
 	function length (segment : in type_net_segment_base) return type_distance;

@@ -374,6 +374,12 @@ package et_kicad is
 	function to_string (scope : in type_strand_scope) return string;
 	-- Returns the given scope as string.
 
+	-- A strand is a collection of net segments which belong to each other. 
+	-- Segments belong to each other because their start/end points meet.
+	-- A strand has coordinates. 
+	-- x/y position are the lowest values within the strand. see function lowest_xy.
+	-- As long as strands are independed of each other they must 
+	-- have a name and their own scope.
 	type type_strand is new et_schematic.type_strand_base with record
 		scope 		: type_strand_scope := type_strand_scope'first; -- example "local"
 		segments	: type_net_segments.list;
@@ -722,9 +728,6 @@ package et_kicad is
 
 	
 -- NET SEGMENT AND STRAND PROCESSING
--- 	package type_net_segments is new doubly_linked_lists (
--- 		element_type	=> et_schematic.type_net_segment_base,
--- 		"="				=> et_schematic."=");
 	
 	type type_wild_net_segment is new type_net_segment with record
 		s, e	: boolean := false; -- flag indicates the end point being assumed
@@ -742,19 +745,6 @@ package et_kicad is
 		side : type_segment_side; -- end point of the segment found
 	end record;
 
-	-- A strand is a collection of net segments which belong to each other. 
-	-- Segments belong to each other because their start/end points meet.
-	-- A strand has coordinates. 
-	-- x/y position are the lowest values within the strand. see function lowest_xy.
-	-- As long as strands are independed of each other they must 
-	-- have a name and their own scope.
--- 	type type_strand is new type_strand_base with record
--- 		segments 	: type_net_segments.list; -- list of net segments		
--- 	end record;
-
-	-- Strands are collected in a list:
-	--package type_strands is new doubly_linked_lists (element_type => type_strand);
-	
 	-- An anonymous strand is a list of net segments that are connected with each other (by their start or end points):
 	type type_anonymous_strand is record
 		segments 	: type_net_segments.list; -- the net segments
@@ -766,19 +756,6 @@ package et_kicad is
 	-- We collect anonymous strands in a simple list:
 	package type_anonymous_strands is new doubly_linked_lists (
 		element_type => type_anonymous_strand);
-
-
--- 	type type_net is new et_schematic.type_net_base with record
--- 		strands		: type_strands.list;
--- 		-- CS differential status
--- 	end record;
-
--- 	-- Nets are collected in a map:
--- 	package type_nets is new ordered_maps (
--- 		key_type		=> et_schematic.type_net_name.bounded_string, -- example "CPU_CLOCK"
--- 		"<"				=> et_schematic.type_net_name."<",
--- 		element_type	=> type_net);
-
 
 
 
