@@ -328,7 +328,7 @@ package et_kicad is
 	type type_net_label (label_appearance : type_label_appearance) is record
 		coordinates	: et_coordinates.type_coordinates;
 		orientation	: type_angle;
-        text		: type_net_name.bounded_string;
+        text		: et_schematic.type_net_name.bounded_string;
         size		: et_libraries.type_text_size;
         style		: et_libraries.type_text_style;
         width		: et_libraries.type_text_line_width;
@@ -344,12 +344,10 @@ package et_kicad is
 	end record;
 
 	type type_net_label_simple is new type_net_label (label_appearance => simple);
-	package type_simple_labels is new doubly_linked_lists (
-		element_type => type_net_label_simple);
+	package type_simple_labels is new doubly_linked_lists (type_net_label_simple);
 	
 	type type_net_label_tag is new type_net_label (label_appearance => tag);		
-	package type_tag_labels is new doubly_linked_lists (
-		element_type => type_net_label_tag);
+	package type_tag_labels is new doubly_linked_lists (type_net_label_tag);
 
 	procedure write_label_properties (label : in type_net_label);
 	-- Writes the properties of the given net label in the logfile.
@@ -358,8 +356,53 @@ package et_kicad is
 	-- Returns the coordinates of the given label as string.
 
 
+	type type_net_segment is new et_schematic.type_net_segment_base with record
+		label_list_simple 	: type_simple_labels.list;
+		label_list_tag    	: type_tag_labels.list;
+	end record;
+	
+	package type_net_segments is new doubly_linked_lists (type_net_segment);
+	
+	-- In a GUI a net may be visible within a submodule (local) or 
+	-- it may be seen from the parent module (hierachical net) or
+	-- it is visible across the whole scheamtic (global).
+	-- In reality a net can only be either local or global. Hierarchic nets
+	-- are just extensions of local or global nets with a different name.
+	type type_strand_scope is (UNKNOWN, HIERARCHIC, LOCAL, GLOBAL);
+	subtype type_net_scope is type_strand_scope range LOCAL..GLOBAL; 
+	
+	function to_string (scope : in type_strand_scope) return string;
+	-- Returns the given scope as string.
 
+	type type_strand is new et_schematic.type_strand_base with record
+		scope 		: type_strand_scope := type_strand_scope'first; -- example "local"
+		segments	: type_net_segments.list;
+	end record;
 
+	function lowest_xy (
+	-- Returns the lowest x/y position of the given strand.
+		strand 			: in type_strand;
+		log_threshold	: in et_string_processing.type_log_level
+		) return type_2d_point;
+
+	procedure add_strand (
+	-- Adds a strand into the module (indicated by module_cursor).
+		strand : in type_strand);
+	
+	-- Strands are collected in a list:
+	package type_strands is new doubly_linked_lists (type_strand);
+	
+	type type_net is new et_schematic.type_net_base with record 
+		scope 		: type_net_scope := type_net_scope'first; -- example "local"
+		strands		: type_strands.list;
+		-- CS differential status
+	end record;
+	
+	-- Nets are collected in a map:
+	package type_nets is new ordered_maps (
+		key_type		=> et_schematic.type_net_name.bounded_string, -- example "CPU_CLOCK"
+		"<"				=> et_schematic.type_net_name."<",
+		element_type	=> type_net);
 	
 	
 	procedure import_design (
@@ -679,19 +722,18 @@ package et_kicad is
 
 	
 -- NET SEGMENT AND STRAND PROCESSING
-	package type_net_segments is new doubly_linked_lists (
-		element_type	=> et_schematic.type_net_segment_base,
-		"="				=> et_schematic."=");
+-- 	package type_net_segments is new doubly_linked_lists (
+-- 		element_type	=> et_schematic.type_net_segment_base,
+-- 		"="				=> et_schematic."=");
 	
-	type type_wild_net_segment is new et_schematic.type_net_segment_base with record
-		s, e : boolean := false; -- flag indicates the end point beeing assumed
-		picked : boolean := false; -- flag indicates that the segment has been added to the anonymous net
+	type type_wild_net_segment is new type_net_segment with record
+		s, e	: boolean := false; -- flag indicates the end point being assumed
+		picked	: boolean := false; -- flag indicates that the segment has been added to the anonymous net
 	end record;
 
-	type type_segment_side is (start_point, end_point); -- the end point of a segment	
+	type type_segment_side is (START_POINT, END_POINT); -- the end point of a segment	
 
-	package type_wild_segments is new doubly_linked_lists ( 
-		element_type => type_wild_net_segment);
+	package type_wild_segments is new doubly_linked_lists (type_wild_net_segment);
 
 	-- The function search_for_same_coordinates returns this type:
 	type type_same_coord_result is record
@@ -706,28 +748,18 @@ package et_kicad is
 	-- x/y position are the lowest values within the strand. see function lowest_xy.
 	-- As long as strands are independed of each other they must 
 	-- have a name and their own scope.
-	type type_strand is new et_schematic.type_strand_base with record
-		segments 	: type_net_segments.list; -- list of net segments		
-	end record;
+-- 	type type_strand is new type_strand_base with record
+-- 		segments 	: type_net_segments.list; -- list of net segments		
+-- 	end record;
 
-	function lowest_xy (
-	-- Returns the lowest x/y position of the given strand.
-		strand 			: in type_strand;
-		log_threshold	: in et_string_processing.type_log_level
-		) return type_2d_point;
-
-	procedure add_strand (
-	-- Adds a strand into the module (indicated by module_cursor).
-		strand : in type_strand);
-	
 	-- Strands are collected in a list:
-	package type_strands is new doubly_linked_lists (element_type => type_strand);
+	--package type_strands is new doubly_linked_lists (element_type => type_strand);
 	
 	-- An anonymous strand is a list of net segments that are connected with each other (by their start or end points):
 	type type_anonymous_strand is record
 		segments 	: type_net_segments.list; -- the net segments
 		name 		: et_schematic.type_net_name.bounded_string;	-- the strand name (derived from net labels)
-		scope 		: et_schematic.type_strand_scope := et_schematic.type_strand_scope'first; -- the scope (derived from net labels)
+		scope 		: type_strand_scope := type_strand_scope'first; -- the scope (derived from net labels)
 		processed	: boolean := false;	-- set once a label has been found on the net
 	end record;
 
@@ -736,16 +768,16 @@ package et_kicad is
 		element_type => type_anonymous_strand);
 
 
-	type type_net is new et_schematic.type_net_base with record
-		strands		: type_strands.list;
-		-- CS differential status
-	end record;
+-- 	type type_net is new et_schematic.type_net_base with record
+-- 		strands		: type_strands.list;
+-- 		-- CS differential status
+-- 	end record;
 
-	-- Nets are collected in a map:
-	package type_nets is new ordered_maps (
-		key_type		=> et_schematic.type_net_name.bounded_string, -- example "CPU_CLOCK"
-		"<"				=> et_schematic.type_net_name."<",
-		element_type	=> type_net);
+-- 	-- Nets are collected in a map:
+-- 	package type_nets is new ordered_maps (
+-- 		key_type		=> et_schematic.type_net_name.bounded_string, -- example "CPU_CLOCK"
+-- 		"<"				=> et_schematic.type_net_name."<",
+-- 		element_type	=> type_net);
 
 
 

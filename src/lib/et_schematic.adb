@@ -281,14 +281,7 @@ package body et_schematic is
 			& to_string (position => segment.coordinates_end, scope => xy));
 	end to_string;
 
-	function to_string (scope : in type_strand_scope) return string is
-	-- Retruns the given scope as string.
-	begin
-		--return to_lower (type_scope_of_net'image (scope));
-		return type_strand_scope'image (scope);
-	end to_string;
 
-	
 
 	function to_component_reference (
 	-- Converts a string like "IC303" to a composite type_component_reference.

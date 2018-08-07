@@ -264,8 +264,9 @@ package et_schematic is
 	type type_net_segment_base is tagged record
 		coordinates_start 	: et_coordinates.type_coordinates;
 		coordinates_end   	: et_coordinates.type_coordinates;
-		label_list_simple 	: type_simple_labels.list;
-		label_list_tag    	: type_tag_labels.list;
+		junctions			: type_junctions.list;
+-- 		label_list_simple 	: type_simple_labels.list;
+-- 		label_list_tag    	: type_tag_labels.list;
 	end record;
 	
 	function length (segment : in type_net_segment_base) return type_distance;
@@ -274,24 +275,7 @@ package et_schematic is
 	function to_string (segment : in type_net_segment_base; scope : in type_scope := sheet) return string; -- CS: should replace write_coordinates_of_segment
 	-- Returns the start and end coordinates of the given net segment.
 
-	type type_net_segment is new type_net_segment_base with record
-		junctions			: type_junctions.list;
-		-- CS ports
-	end record;
-	
-	package type_net_segments is new doubly_linked_lists (
-		element_type => type_net_segment);
 
-	-- In a GUI a net may be visible within a submodule (local) or 
-	-- it may be seen from the parent module (hierachical net) or
-	-- it is visible across the whole scheamtic (global).
-	-- In reality a net can only be either local or global. Hierarchic nets
-	-- are just extensions of local or global nets with a different name.
-	type type_strand_scope is (unknown, hierarchic, local, global);
-	subtype type_net_scope is type_strand_scope range local..global; 
-	
-	function to_string (scope : in type_strand_scope) return string;
-	-- Retruns the given scope as string.
 
 	-- A strand is a collection of net segments which belong to each other. 
 	-- Segments belong to each other because their start/end points meet.
@@ -300,20 +284,9 @@ package et_schematic is
 	-- As long as strands are independed of each other they must 
 	-- have a name and their own scope.
 	type type_strand_base is tagged record
-		coordinates : et_coordinates.type_coordinates;
+		coordinates : et_coordinates.type_coordinates; -- lowest x/y
 		name		: type_net_name.bounded_string; -- example "CPU_CLOCK"
-		scope 		: type_strand_scope := type_strand_scope'first; -- example "local"
 	end record;
-
-	type type_strand is new type_strand_base with record
-		segments	: type_net_segments.list;
-	end record;
-
-	
-	
-	-- Strands are collected in a list:
-	package type_strands is new doubly_linked_lists (
-		element_type => type_strand);
 
     -- If the name of a strand can not be identified, we default to the well proved
 	-- N$ notation:
@@ -321,20 +294,10 @@ package et_schematic is
 
 	-- This is a net:
 	type type_net_base is tagged record
-		scope 		: type_net_scope := type_net_scope'first; -- example "local"
-		route		: et_pcb.type_route;
+		route		: et_pcb.type_route; -- routing information -> pcb related
 		class 		: et_pcb.type_net_class_name.bounded_string; -- default, High_Voltage, EMV-critical, ...
 	end record;
 
-	type type_net is new type_net_base with record
-		strands		: type_strands.list;
-	end record;
-
-	
-	-- Nets are collected in a map:
-	package type_nets is new ordered_maps (
-		key_type		=> type_net_name.bounded_string, -- example "CPU_CLOCK"	
-		element_type	=> type_net);
 
 	-- VISUALISATION OF A SUBMODULE IN A GRAPHICAL USER INTERFACE
     -- SUBMODULE
