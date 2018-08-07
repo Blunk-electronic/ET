@@ -73,28 +73,6 @@ package body et_schematic is
 		return type_net_name.to_string (net_name);
 	end to_string;
 
-	function simple_name (net_name : in type_net_name.bounded_string) return type_net_name.bounded_string is
-	-- Returns the simple name of the given net name.
-	-- Example: If the given name is "MOTOR_DRIVER/CLOCK" then the return is "CLOCK".
-		position_of_last_separator : natural := 0;
-		name : type_net_name.bounded_string;
-	begin
-		-- Detect position of last hierarchy separator.
-		position_of_last_separator := index (net_name, hierarchy_separator, backward);
-
-		-- If the given net name is a simple name already, return it as it is.
-		-- Otherwise extract the simple net name from position of hierarchy 
-		-- separator until end of net_name.
-		if position_of_last_separator > 0 then
-			name := type_net_name.to_bounded_string (
-				slice (net_name, position_of_last_separator + 1, length (net_name)));
-		else
-			name := net_name;
-		end if;
-		
-		return name;
-	end simple_name;
-	
 	function anonymous (net_name : in type_net_name.bounded_string) return boolean is
 	-- Returns true if the given net name is anonymous.
 	begin
@@ -114,51 +92,51 @@ package body et_schematic is
 	end to_net_label_text_size;
 
 	
-	procedure write_label_properties (label : in type_net_label) is
-	-- Writes the properties of the given net label in the logfile.
-		use et_string_processing;
-		use et_coordinates;
-
-		log_threshold : type_log_level := 2;
-	begin
-		log_indentation_up;
-		
-		case label.label_appearance is
-			when simple =>
-				log (text => "simple label " & to_string (label.text) & " at " & to_string (position => label.coordinates));
-				
-			when tag =>
-				if label.hierarchic then
-					log (text => "hierarchic label " & to_string (label.text) & " at " & to_string (position => label.coordinates));
-				end if;
-				if label.global then
-					log (text => "global label " & to_string (label.text) & " at " & to_string (position => label.coordinates));
-				end if;
-					-- CS: directon, global, hierarchic, style, ...
-		end case;
-
-		log_indentation_up;
-		log (text => to_string (label.orientation), level => log_threshold + 1);
-		
-		case label.label_appearance is
-			when simple =>
-				null;
-			when tag =>
-				null;
-				--put("tag label ");
-				-- CS: directon, global, hierarchic, style, ...
-		end case;
-
-		log_indentation_down;
-		log_indentation_down;
-
-	end write_label_properties;
-
-	function to_string (label : in type_net_label; scope : in type_scope) return string is
-	-- Returns the coordinates of the given label as string.
-	begin
-		return (to_string (position => label.coordinates, scope => scope));
-	end to_string;
+-- 	procedure write_label_properties (label : in type_net_label) is
+-- 	-- Writes the properties of the given net label in the logfile.
+-- 		use et_string_processing;
+-- 		use et_coordinates;
+-- 
+-- 		log_threshold : type_log_level := 2;
+-- 	begin
+-- 		log_indentation_up;
+-- 		
+-- 		case label.label_appearance is
+-- 			when simple =>
+-- 				log (text => "simple label " & to_string (label.text) & " at " & to_string (position => label.coordinates));
+-- 				
+-- 			when tag =>
+-- 				if label.hierarchic then
+-- 					log (text => "hierarchic label " & to_string (label.text) & " at " & to_string (position => label.coordinates));
+-- 				end if;
+-- 				if label.global then
+-- 					log (text => "global label " & to_string (label.text) & " at " & to_string (position => label.coordinates));
+-- 				end if;
+-- 					-- CS: directon, global, hierarchic, style, ...
+-- 		end case;
+-- 
+-- 		log_indentation_up;
+-- 		log (text => to_string (label.orientation), level => log_threshold + 1);
+-- 		
+-- 		case label.label_appearance is
+-- 			when simple =>
+-- 				null;
+-- 			when tag =>
+-- 				null;
+-- 				--put("tag label ");
+-- 				-- CS: directon, global, hierarchic, style, ...
+-- 		end case;
+-- 
+-- 		log_indentation_down;
+-- 		log_indentation_down;
+-- 
+-- 	end write_label_properties;
+-- 
+-- 	function to_string (label : in type_net_label; scope : in type_scope) return string is
+-- 	-- Returns the coordinates of the given label as string.
+-- 	begin
+-- 		return (to_string (position => label.coordinates, scope => scope));
+-- 	end to_string;
 	
 	function to_string (junction : in type_net_junction; scope : in type_scope) return string is
 	-- Returns the position of the given junction as string.
