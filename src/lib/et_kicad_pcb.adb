@@ -7119,7 +7119,7 @@ package body et_kicad_pcb is
 				procedure update_component_in_schematic (
 				-- Updates the component in the schematic with position, text placeholders
 					comp_ref	: in et_libraries.type_component_reference;
-					component	: in out et_kicad.type_component) is
+					component	: in out et_kicad.type_component_schematic) is
 				begin
 					component.position := package_position;
 					component.text_placeholders := text_placeholders;

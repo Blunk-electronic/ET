@@ -282,7 +282,7 @@ package body et_kicad is
 
 		procedure locate (
 			name		: in et_libraries.type_component_reference;
-			component	: in type_component) is
+			component	: in type_component_schematic) is
 		begin
 			-- copy the units of the component to the return value
 			u := component.units;
@@ -9546,7 +9546,7 @@ package body et_kicad is
 
 					procedure query_units_sch (
 						component_name	: in et_libraries.type_component_reference;
-						component 		: in type_component) is
+						component 		: in type_component_schematic) is
 						use type_units;
 						unit_cursor : type_units.cursor := component.units.first;
 						unit_deployed : boolean := false;
@@ -10037,7 +10037,7 @@ package body et_kicad is
 	-- consider only kicad. In other cases the "inserted" check (see below) 
 	-- must be enabled via an argument.
 		reference		: in et_libraries.type_component_reference;
-		component		: in type_component;
+		component		: in type_component_schematic;
 		log_threshold 	: in et_string_processing.type_log_level) is
 		
 		procedure add (
@@ -10079,7 +10079,7 @@ package body et_kicad is
 
 		procedure add (
 			reference	: in et_libraries.type_component_reference;
-			component	: in out type_component) is
+			component	: in out type_component_schematic) is
 
 			inserted	: boolean := false;
 			cursor		: type_units.cursor;

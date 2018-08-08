@@ -202,7 +202,7 @@ package et_kicad is
 
 	
 	-- This is a component as it appears in the schematic.
-	type type_component (appearance : et_schematic.type_appearance_schematic) is record
+	type type_component_schematic (appearance : et_schematic.type_appearance_schematic) is record
 		library_name	: et_libraries.type_full_library_name.bounded_string; -- symbol lib like ../libraries/transistors.lib
 		generic_name	: et_libraries.type_component_generic_name.bounded_string; -- example: "TRANSISTOR_PNP"
 		value			: et_libraries.type_component_value.bounded_string; -- 470R
@@ -241,7 +241,7 @@ package et_kicad is
 	procedure add_component (
 	-- Adds a component into the the module (indicated by module_cursor).
 		reference		: in et_libraries.type_component_reference;
-		component		: in type_component;
+		component		: in type_component_schematic;
 		log_threshold	: in et_string_processing.type_log_level);
 
 
@@ -249,7 +249,7 @@ package et_kicad is
  	package type_components is new indefinite_ordered_maps (
 		key_type 		=> et_libraries.type_component_reference, -- something like "IC43"
 		"<" 			=> et_schematic.compare_reference,
- 		element_type 	=> type_component);
+ 		element_type 	=> type_component_schematic);
 
 	function component_reference (cursor : in type_components.cursor) 
 		return et_libraries.type_component_reference;
