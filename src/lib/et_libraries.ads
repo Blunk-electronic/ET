@@ -524,12 +524,12 @@ package et_libraries is
 	procedure validate_component_package_name (name : in type_component_package_name.bounded_string);
 	-- Tests if the given component package name meets certain conventions.
 
-	-- COMPONENT PACKAGE FILTER (kicad requirement)
-	-- If certain packages are to be proposed they are collected in a so called "package filter"
-	package_proposal_length_max : constant positive := 100;
-	package type_package_proposal is new generic_bounded_length (package_proposal_length_max);
-	use type_package_proposal;
-	package type_package_filter is new ordered_sets (type_package_proposal.bounded_string);
+-- 	-- COMPONENT PACKAGE FILTER (kicad requirement)
+-- 	-- If certain packages are to be proposed they are collected in a so called "package filter"
+-- 	package_proposal_length_max : constant positive := 100;
+-- 	package type_package_proposal is new generic_bounded_length (package_proposal_length_max);
+-- 	use type_package_proposal;
+-- 	package type_package_filter is new ordered_sets (type_package_proposal.bounded_string);
 
 -- TERMINALS
 	type type_terminal_count is new count_type; -- CS: limit to a reasonable range ?
@@ -832,18 +832,12 @@ package et_libraries is
 		coordinates	: type_coordinates;
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
 		add_level	: type_unit_add_level := type_unit_add_level'first;
-
-		-- Currentliy only required by kicad: Units that harbor component wide 
-		-- pins have this flag set.
-		-- Usually units with power supply pins exclusively.
-		-- When building portlists this flag is important. See et_netlist package.
-		global		: boolean := false; -- CS: use a boolean derived type 
 	end record;
 
 	-- Internal units are collected in a map:
 	package type_units_internal is new indefinite_ordered_maps (
-		key_type => type_unit_name.bounded_string, -- like "I/O-Bank 3" "A" or "B"
-		element_type => type_unit_internal);
+		key_type		=> type_unit_name.bounded_string, -- like "I/O-Bank 3" "A" or "B"
+		element_type	=> type_unit_internal);
 
 	-- External units have a reference to an external symbol.
 	-- External units are stored in a library and are shared by many components.
@@ -1004,7 +998,7 @@ package et_libraries is
 	-- If preamble is true, each property of the terminal is headed by a short preamble.
 	
 -- POWER FLAGS (kicad requirement)
-	type type_power_flag is (YES, NO);
+-- 	type type_power_flag is (YES, NO);
 
 
 
@@ -1022,17 +1016,14 @@ package et_libraries is
 
 			-- If a component appears in the schematic only, it is a virtual component 
 			-- and thus does not have any package variants.
-			-- Such components are power symbols or power flags. Later when building netlists
-			-- those components enforce net names (like GND or P3V3). Power flags do not
-			-- enforce net names. In order to distinguish them from regular power symbols the
-			-- power_flag is provided.
+			-- Such components are power symbols. Later when building netlists
+			-- those components enforce net names (like GND or P3V3).
 			when sch => 
-				power_flag		: type_power_flag := no;
+				null;
 
 			-- If a component appears in both schematic and layout it comes 
 			-- with at least one package/footprint variant. We store variants in a map.
 			when sch_pcb => 
-				package_filter	: type_package_filter.set := type_package_filter.empty_set; -- kicad requirement
 				datasheet		: type_component_datasheet.bounded_string; -- kicad requirement
 				purpose			: type_component_purpose.bounded_string;
 				partcode		: type_component_partcode.bounded_string;
@@ -1047,13 +1038,13 @@ package et_libraries is
 	-- Components are stored in a map.
 	-- Within the map they are accessed by a key type_component_name (something like "CAPACITOR").
 	package type_components is new indefinite_ordered_maps (
-		key_type => type_component_generic_name.bounded_string, -- example: "TRANSISTOR_PNP"
-		element_type => type_component);
+		key_type		=> type_component_generic_name.bounded_string, -- example: "TRANSISTOR_PNP"
+		element_type	=> type_component);
 -- 	use type_components;
 
-	function component_appearance (cursor : in type_components.cursor)
-	-- Returns the component appearance where cursor points to.
-		return type_component_appearance;
+-- 	function component_appearance (cursor : in type_components.cursor)
+-- 	-- Returns the component appearance where cursor points to.
+-- 		return type_component_appearance;
 
 	--	CS: currently there is no need for a component summary
 	-- procedure write_component_properties (component : in type_components.cursor);
@@ -1069,19 +1060,19 @@ package et_libraries is
 -- 	component_libraries : type_libraries.map; -- CS: should be part of type_rig. see et_schematic type_rig
 
 -- LIBRARIES
-	type type_library is record
-		devices		: et_libraries.type_components.map;
-		symbols		: et_libraries.type_symbols.map;
---		packages	: et_pcb.type_packages_library.map;
-	end record;
-		
-	package type_libraries is new ordered_maps (
-		key_type		=> type_library_group_name.bounded_string, -- active, passive, ... -- CS rename to library_name
-		"<" 			=> type_library_group_name."<",
-		element_type	=> type_library);
-
-	-- All component models are collected here. This collection applies for the whole rig.
-	component_libraries : type_libraries.map; -- CS: should be part of type_rig. see et_schematic type_rig
+-- 	type type_library is record
+-- 		devices		: et_libraries.type_components.map;
+-- 		symbols		: et_libraries.type_symbols.map;
+-- --		packages	: et_pcb.type_packages_library.map;
+-- 	end record;
+-- 		
+-- 	package type_libraries is new ordered_maps (
+-- 		key_type		=> type_library_group_name.bounded_string, -- active, passive, ... -- CS rename to library_name
+-- 		"<" 			=> type_library_group_name."<",
+-- 		element_type	=> type_library);
+-- 
+-- 	-- All component models are collected here. This collection applies for the whole rig.
+-- 	component_libraries : type_libraries.map; -- CS: should be part of type_rig. see et_schematic type_rig
 
 
 

@@ -1664,12 +1664,12 @@ package body et_libraries is
 		end if;
 	end check_reference_characters;
 	
-	function component_appearance (cursor : in type_components.cursor)
-	-- Returns the component appearance where cursor points to.
-		return type_component_appearance is
-	begin
-		return type_components.element (cursor).appearance;
-	end component_appearance;
+-- 	function component_appearance (cursor : in type_components.cursor)
+-- 	-- Returns the component appearance where cursor points to.
+-- 		return type_component_appearance is
+-- 	begin
+-- 		return type_components.element (cursor).appearance;
+-- 	end component_appearance;
 
 --	CS: currently there is no need for a component summary	
 -- 	procedure write_component_properties (component : in type_components.cursor) is

@@ -352,10 +352,10 @@ package et_schematic is
 -- MODULE
 
 	-- The components of a module are collected in a map.
- 	package type_components is new indefinite_ordered_maps (
-		key_type		=> type_component_reference, -- something like "IC43"
-		"<"				=> compare_reference,
- 		element_type	=> type_component);
+--  	package type_components is new indefinite_ordered_maps (
+-- 		key_type		=> type_component_reference, -- something like "IC43"
+-- 		"<"				=> compare_reference,
+--  		element_type	=> type_component);
 
 	
 -- -- MODULES

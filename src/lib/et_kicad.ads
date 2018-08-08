@@ -200,6 +200,80 @@ package et_kicad is
 		unit			: in type_units.cursor;
 		log_threshold	: in et_string_processing.type_log_level);
 
+	-- POWER FLAGS
+	type type_power_flag is (YES, NO);
+
+	-- COMPONENT PACKAGE FILTER
+	-- If certain packages are to be proposed they are collected in a so called "package filter"
+	package_proposal_length_max : constant positive := 100;
+	package type_package_proposal is new generic_bounded_length (package_proposal_length_max);
+	package type_package_filter is new ordered_sets (
+		element_type	=> type_package_proposal.bounded_string,
+		"="				=> type_package_proposal."=",
+		"<"				=> type_package_proposal."<");
+
+	type type_unit (appearance : type_component_appearance) is record
+		symbol		: type_symbol (appearance);
+		coordinates	: type_coordinates;
+		-- Units that harbor component wide pins have this flag set.
+		-- Usually units with power supply pins exclusively.
+		-- When building portlists this flag is important.
+		global		: boolean := false; -- CS: use a boolean derived type 
+	end record;
+
+	package type_units is new indefinite_ordered_maps (
+		key_type		=> type_unit_name.bounded_string, -- like "I/O-Bank 3" "A" or "B"
+		element_type	=> type_unit);
+	
+	
+	-- This is a component as it appears in the library:.
+	type type_component_library (appearance : et_libraries.type_component_appearance) is record
+		prefix			: et_libraries.type_component_prefix.bounded_string; -- R, C, IC, ...
+		value			: et_libraries.type_component_value.bounded_string; -- 74LS00
+		units			: type_units.map := type_units.empty_map;
+		commissioned	: et_libraries.type_component_date;
+		updated			: et_libraries.type_component_date;
+		author			: et_libraries.type_person_name.bounded_string;
+
+		case appearance is
+
+			-- If a component appears in the schematic only, it is a virtual component 
+			-- and thus does not have any package variants.
+			-- Such components are power symbols or power flags. Later when building netlists
+			-- those components enforce net names (like GND or P3V3). Power flags do not
+			-- enforce net names. In order to distinguish them from regular power symbols the
+			-- power_flag is provided.
+			when et_libraries.SCH => 
+				power_flag		: type_power_flag := NO;
+
+			-- If a component appears in both schematic and layout it comes 
+			-- with at least one package/footprint variant. We store variants in a map.
+			when et_libraries.SCH_PCB => 
+				package_filter	: type_package_filter.set := type_package_filter.empty_set; -- kicad requirement
+				datasheet		: et_libraries.type_component_datasheet.bounded_string; -- kicad requirement
+				purpose			: et_libraries.type_component_purpose.bounded_string;
+				partcode		: et_libraries.type_component_partcode.bounded_string;
+				bom				: et_libraries.type_bom;
+				variants		: et_libraries.type_component_variants.map;
+				
+			when others => null; -- CS
+		end case;
+
+	end record;
+
+
+	
+	-- Library components are stored in a map.
+	-- Within the map they are accessed by a key type_component_name (something like "CAPACITOR").
+	package type_components_library is new indefinite_ordered_maps (
+		key_type		=> et_libraries.type_component_generic_name.bounded_string, -- example: "TRANSISTOR_PNP"
+		"<"				=> et_libraries.type_component_generic_name."<",
+		element_type	=> type_component_library);
+
+	function component_appearance (cursor : in type_components_library.cursor)
+	-- Returns the component appearance where cursor points to.
+		return et_libraries.type_component_appearance;
+
 	
 	-- This is a component as it appears in the schematic.
 	type type_component_schematic (appearance : et_schematic.type_appearance_schematic) is record
@@ -230,7 +304,7 @@ package et_kicad is
 			-- enforce net names. In order to distinguish them from regular power symbols the
 			-- power_flag is provided.
 			when et_libraries.sch => 
-				power_flag	: et_libraries.type_power_flag := et_libraries.NO;
+				power_flag	: type_power_flag := NO;
 				
 			when others => null; -- CS
 		end case;
@@ -294,7 +368,7 @@ package et_kicad is
 		appearance		: et_schematic.type_appearance_schematic;
 		intended_open	: type_port_open; -- set while portlist generation. true if port is to be left open intentionally (by a no_connection-flag)
 		connected		: type_port_connected; -- set while netlist generation. true when port connected with a net
-		power_flag		: et_libraries.type_power_flag; -- indicates if port belongs to a power_flag
+		power_flag		: type_power_flag; -- indicates if port belongs to a power_flag
 	end record;
 
 	-- Ports can be collected in a simple list:
@@ -472,8 +546,8 @@ package et_kicad is
 	package type_libraries is new ordered_maps (
 		key_type 		=> et_libraries.type_full_library_name.bounded_string, -- ../../lbr/passive/capacitors
 		"<"				=> et_libraries.type_full_library_name."<",
-		element_type 	=> et_libraries.type_components.map,
-		"=" 			=> et_libraries.type_components."=");
+		element_type 	=> type_components_library.map,
+		"=" 			=> type_components_library."=");
 
 	-- All component models of a project/module are collected here temporarily.
 	-- This collection is cleared when a new project is read. See procedure read_project_file.
@@ -871,9 +945,9 @@ package et_kicad is
 		segment		: in et_schematic.type_net_segment_base'class) 
 		return boolean;
 	
-	function component_power_flag (cursor : in type_components.cursor)
+	function component_power_flag (cursor : in type_components_library.cursor)
 	-- Returns the component power flag status.
-		return et_libraries.type_power_flag;
+		return type_power_flag;
 	
 	function purpose (
 	-- Returns the purpose of the given component in the given module.
@@ -916,7 +990,7 @@ package et_kicad is
 	-- Searches the given library for the given component. Returns a cursor to that component.
 		library		: in et_libraries.type_full_library_name.bounded_string; -- consists of group name and actual library name
 		component	: in et_libraries.type_component_generic_name.bounded_string) 
-		return et_libraries.type_components.cursor;
+		return type_components_library.cursor;
 
 	procedure reset_component_cursor (cursor : in out type_components.cursor);
 	-- Resets the given component cursor to the begin of the component list
