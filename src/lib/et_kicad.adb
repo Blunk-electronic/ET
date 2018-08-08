@@ -8095,24 +8095,24 @@ package body et_kicad is
 	end junction_sits_on_segment;
 	
 
-	function component_power_flag (cursor : in et_schematic.type_components.cursor)
+	function component_power_flag (cursor : in type_components.cursor)
 	-- Returns the component power flag status.
 		return et_libraries.type_power_flag is
 		use et_string_processing;
 	begin
 		-- Only vitual components have the power flag property. 
 		-- For real components the return is always false;
-		if et_libraries."=" (et_schematic.type_components.element (cursor).appearance, et_libraries.sch) then
+		if et_libraries."=" (type_components.element (cursor).appearance, et_libraries.sch) then
 			--log ("virtual component");
 			--if type_components.element (cursor).power_flag then
 			--	log ("power flag on");
 			--else
 			--	log ("power flag off");
 			--end if;
-			return et_schematic.type_components.element (cursor).power_flag;
+			return type_components.element (cursor).power_flag;
 		else
 			--log ("real component");
-			return et_libraries.no;
+			return et_libraries.NO;
 		end if;
 	end component_power_flag;
 

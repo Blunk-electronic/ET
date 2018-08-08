@@ -84,7 +84,7 @@ package et_schematic is
 -- UNITS AND COMPONENTS
 
 	-- units can be placed mirrored along the x or y axis or not at all.
-	type type_mirror is (none, x_axis, y_axis);
+	type type_mirror is (NONE, X_AXIS, Y_AXIS);
 
 	function to_string (mirror : in type_mirror) return string;
 	-- returns the given mirror style as string
@@ -130,7 +130,7 @@ package et_schematic is
 
 
 	-- This is a component as it appears in the schematic.
-	type type_component (appearance : type_appearance_schematic) is tagged record
+	type type_component (appearance : type_appearance_schematic) is record
 		library_name	: type_full_library_name.bounded_string; -- symbol lib like ../libraries/transistors.lib
 		generic_name	: et_libraries.type_component_generic_name.bounded_string; -- example: "TRANSISTOR_PNP"
 		value			: et_libraries.type_component_value.bounded_string; -- 470R
@@ -152,13 +152,8 @@ package et_schematic is
 				position			: et_pcb_coordinates.type_package_position; -- incl. angle and face
 				text_placeholders	: et_pcb.type_text_placeholders;
 				
-			-- If a component appears in the schematic only, it does not have any package variants.
-			-- Such components are power symbols or power flags. Later when building netlists
-			-- those component may enforce net names (like GND or P3V3). Power flags do not
-			-- enforce net names. In order to distinguish them from regular power symbols the
-			-- power_flag is provided.
 			when sch => 
-				power_flag	: type_power_flag := no;
+				null;
 				
 			when others => null; -- CS
 		end case;

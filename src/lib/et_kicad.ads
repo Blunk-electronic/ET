@@ -50,6 +50,7 @@ with et_schematic;
 with et_pcb;
 with et_import;
 with et_coordinates;			use et_coordinates;
+with et_pcb_coordinates;
 with et_libraries;
 with et_string_processing;
 
@@ -200,10 +201,42 @@ package et_kicad is
 		log_threshold	: in et_string_processing.type_log_level);
 
 	
-	type type_component is new et_schematic.type_component with record
+	-- This is a component as it appears in the schematic.
+	type type_component (appearance : et_schematic.type_appearance_schematic) is record
+		library_name	: et_libraries.type_full_library_name.bounded_string; -- symbol lib like ../libraries/transistors.lib
+		generic_name	: et_libraries.type_component_generic_name.bounded_string; -- example: "TRANSISTOR_PNP"
+		value			: et_libraries.type_component_value.bounded_string; -- 470R
+		commissioned	: et_string_processing.type_date; -- 2017-08-17T14:17:25
+		updated			: et_string_processing.type_date; -- 2017-10-30T08:33:56
+		author			: et_libraries.type_person_name.bounded_string; -- Steve Miller
 		units			: type_units.map; -- PWR, A, B, ...
+		case appearance is
+			-- If a component appears in both schematic and layout it has got:
+			when et_libraries.sch_pcb => 
+				partcode			: et_libraries.type_component_partcode.bounded_string;
+				purpose				: et_libraries.type_component_purpose.bounded_string;
+				datasheet			: et_libraries.type_component_datasheet.bounded_string;
+				bom					: et_libraries.type_bom;
+				variant				: et_libraries.type_component_variant_name.bounded_string; -- D, N
+
+				-- This is layout related. In the layout the package has a position
+				-- and placeholders reference, value, purpose.
+				position			: et_pcb_coordinates.type_package_position; -- incl. angle and face
+				text_placeholders	: et_pcb.type_text_placeholders;
+				
+			-- If a component appears in the schematic only, it does not have any package variants.
+			-- Such components are power symbols or power flags. Later when building netlists
+			-- those component may enforce net names (like GND or P3V3). Power flags do not
+			-- enforce net names. In order to distinguish them from regular power symbols the
+			-- power_flag is provided.
+			when et_libraries.sch => 
+				power_flag	: et_libraries.type_power_flag := et_libraries.NO;
+				
+			when others => null; -- CS
+		end case;
 	end record;
 
+	
 	
 	procedure add_component (
 	-- Adds a component into the the module (indicated by module_cursor).
@@ -838,7 +871,7 @@ package et_kicad is
 		segment		: in et_schematic.type_net_segment_base'class) 
 		return boolean;
 	
-	function component_power_flag (cursor : in et_schematic.type_components.cursor)
+	function component_power_flag (cursor : in type_components.cursor)
 	-- Returns the component power flag status.
 		return et_libraries.type_power_flag;
 	
