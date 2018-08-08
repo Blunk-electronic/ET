@@ -424,26 +424,13 @@ package et_schematic is
    
 -- MISC
 
-    -- When reading a schematic sheet, submodules might be discovered.
-    -- They are returned to the parent unit in a list of submodules:
-	package type_submodule_names is new vectors ( -- the bare list -- CS: better an ordered set ?
-		index_type => positive,
-		"=" => et_coordinates.type_submodule_name."=",
-		element_type => et_coordinates.type_submodule_name.bounded_string);
-
-    -- A composite type with additional supporting information:
-	type type_submodule_names_extended is record
-		parent_module	: et_coordinates.type_submodule_name.bounded_string;
-		list			: type_submodule_names.vector;
-		id				: positive; -- id of a submodule in the list
-	end record;
 
 	type type_danger is (
-		floating_input,
-		contention,
-		short_circuit,
-		no_power_supply,
-		not_predictable
+		FLOATING_INPUT,
+		CONTENTION,
+		SHORT_CIRCUIT,
+		NO_POWER_SUPPLY,
+		NOT_PREDICTABLE
 		);
 	
 	function show_danger (danger : in type_danger) return string;

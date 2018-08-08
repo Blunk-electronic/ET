@@ -43,6 +43,7 @@ with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 with ada.containers.ordered_sets;
 with ada.containers.indefinite_ordered_maps;
+with ada.containers.vectors;
 
 with et_project;
 with et_schematic;
@@ -795,7 +796,23 @@ package et_kicad is
 		"<" 			=> et_coordinates.type_submodule_name."<",
         element_type	=> type_gui_submodule);
 
+    -- When reading a schematic sheet, submodules might be discovered.
+    -- They are returned to the parent unit in a list of submodules:
+	package type_submodule_names is new vectors ( -- the bare list -- CS: better an ordered set ?
+		index_type		=> positive,
+		"=" 			=> et_coordinates.type_submodule_name."=",
+		element_type	=> et_coordinates.type_submodule_name.bounded_string);
 
+    -- A composite type with additional supporting information:
+	type type_submodule_names_extended is record
+		parent_module	: et_coordinates.type_submodule_name.bounded_string;
+		list			: type_submodule_names.vector;
+		id				: positive; -- id of a submodule in the list
+	end record;
+
+
+
+	
     -- there are lots of drawing frames in a schematic contained in a list
 	package type_frames is new doubly_linked_lists (
 		element_type	=> et_schematic.type_frame,
