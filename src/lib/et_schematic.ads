@@ -256,38 +256,6 @@ package et_schematic is
 	end record;
 
 
-	-- VISUALISATION OF A SUBMODULE IN A GRAPHICAL USER INTERFACE
-    -- SUBMODULE
-    -- A submodule is a box with coordinates and length x/y.
-	-- On the box edges are ports. 
-	-- It serves as link between a hierachical net and the parent module.
-	type type_gui_submodule_port is tagged record
-		direction	: type_port_direction;
-		text_size	: type_text_size;
-		coordinates	: type_2d_point;
-        orientation	: type_angle;
-	end record;
-
-	package type_gui_submodule_ports is new ordered_maps (
-		key_type		=> type_net_name.bounded_string,
-		element_type	=> type_gui_submodule_port);
-
-	type type_gui_submodule_base is tagged record
-        text_size_of_name   : type_text_size;
-        text_size_of_file   : type_text_size;
-		coordinates		    : type_coordinates;
-        size_x, size_y      : type_distance; -- size x/y of the box
-	end record;
-
-	type type_gui_submodule is new type_gui_submodule_base with record
-        ports				: type_gui_submodule_ports.map;
-	end record;
-	
-    package type_gui_submodules is new ordered_maps (
-        key_type		=> et_coordinates.type_submodule_name.bounded_string,
-		"<" 			=> et_coordinates.type_submodule_name."<",
-        element_type	=> type_gui_submodule);
-
 
     -- DRAWING FRAME
     -- A drawing frame consists of straight lines and texts.

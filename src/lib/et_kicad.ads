@@ -758,8 +758,16 @@ package et_kicad is
 		element_type => type_anonymous_strand);
 
 
-
-	type type_gui_submodule_port is new et_schematic.type_gui_submodule_port with record
+	-- VISUALISATION OF A SUBMODULE IN A GRAPHICAL USER INTERFACE
+    -- SUBMODULE
+    -- A submodule is a box with coordinates and length x/y.
+	-- On the box edges are ports. 
+	-- It serves as link between a hierachical net and the parent module.
+	type type_gui_submodule_port is record
+		direction	: et_libraries.type_port_direction;
+		text_size	: et_libraries.type_text_size;
+		coordinates	: et_coordinates.type_2d_point;
+        orientation	: et_coordinates.type_angle;
         processed   : boolean; -- used when linking hierarchic nets
 	end record;
 
@@ -768,7 +776,11 @@ package et_kicad is
 		"<"				=> et_schematic.type_net_name."<",
 		element_type	=> type_gui_submodule_port);
 
-	type type_gui_submodule is new et_schematic.type_gui_submodule_base with record
+	type type_gui_submodule is record
+        text_size_of_name   : et_libraries.type_text_size;
+        text_size_of_file   : et_libraries.type_text_size;
+		coordinates		    : type_coordinates;
+        size_x, size_y      : type_distance; -- size x/y of the box
 		timestamp           : et_string_processing.type_timestamp;
 		ports				: type_gui_submodule_ports.map;
 	end record;
