@@ -339,16 +339,6 @@ package et_libraries is
 		name : in type_component_generic_name.bounded_string; -- TRANSISTOR_NPN
 		characters : in character_set := component_generic_name_characters);
 
--- 	function strip_tilde (generic_name : in type_component_generic_name.bounded_string) return
--- 		type_component_generic_name.bounded_string;
--- 	-- Kicad requirement: Removes a heading tilde character from a generic component name.
--- 	-- example: ~TRANSISTOR_NPN becomes TRANSISTOR_NPN
-
--- 	function prepend_tilde (generic_name : in type_component_generic_name.bounded_string) return
--- 		type_component_generic_name.bounded_string;
--- 	-- Kicad requirement: Prepends a heading tilde character to a generic component name.
--- 	-- example: TRANSISTOR_NPN becomes ~TRANSISTOR_NPN
-	
 	function to_string (generic_name : in type_component_generic_name.bounded_string) return string;
 	-- Returns the given generic name as as string.
 
@@ -517,13 +507,6 @@ package et_libraries is
 	
 	procedure validate_component_package_name (name : in type_component_package_name.bounded_string);
 	-- Tests if the given component package name meets certain conventions.
-
--- 	-- COMPONENT PACKAGE FILTER (kicad requirement)
--- 	-- If certain packages are to be proposed they are collected in a so called "package filter"
--- 	package_proposal_length_max : constant positive := 100;
--- 	package type_package_proposal is new generic_bounded_length (package_proposal_length_max);
--- 	use type_package_proposal;
--- 	package type_package_filter is new ordered_sets (type_package_proposal.bounded_string);
 
 -- TERMINALS
 	type type_terminal_count is new count_type; -- CS: limit to a reasonable range ?
@@ -990,9 +973,6 @@ package et_libraries is
 	-- If show_unit is true, the unit name is output.
 	-- If preamble is true, each property of the terminal is headed by a short preamble.
 	
--- POWER FLAGS (kicad requirement)
--- 	type type_power_flag is (YES, NO);
-
 
 
 -- COMPONENTS
