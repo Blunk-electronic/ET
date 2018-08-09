@@ -556,6 +556,45 @@ package body et_kicad is
 		-- CS: do something if cursor invalid. via exception handler ?
 		return port_cursor;
 	end first_port;
+
+
+	procedure check_datasheet_length (datasheet : in string) is
+	-- Tests if the given datasheet is longer than allowed.
+		use et_string_processing;
+	begin
+		if datasheet'length > component_datasheet_length_max then
+			log (message_error & "max. number of characters for URL is" 
+				 & positive'image (component_datasheet_length_max) & " !",
+				console => true);
+			raise constraint_error;
+		end if;
+	end check_datasheet_length;
+	
+	procedure check_datasheet_characters (
+		datasheet : in type_component_datasheet.bounded_string;
+		characters : in character_set := component_datasheet_characters) is
+	-- Tests if the given URL contains only valid characters as specified
+	-- by given character set. Raises exception if invalid character found.
+		use et_string_processing;
+		use type_component_datasheet;
+		invalid_character_position : natural := 0;
+	begin
+		invalid_character_position := index (
+			source => datasheet,
+			set => characters,
+			test => outside);
+
+		if invalid_character_position > 0 then
+			log_indentation_reset;
+			log (message_error & "URL to datasheet " & to_string (datasheet) 
+				 & " has invalid character at position"
+				 & natural'image (invalid_character_position),
+				 console => true
+				);
+			raise constraint_error;
+		end if;
+	end check_datasheet_characters;
+
 	
 	
 	

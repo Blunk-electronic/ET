@@ -250,6 +250,24 @@ package et_kicad is
 		key_type		=> et_libraries.type_unit_name.bounded_string, -- like "I/O-Bank 3" "A" or "B"
 		"<"				=> et_libraries.type_unit_name."<",
 		element_type	=> type_unit_library);
+
+	-- For some components (not all !) it is helpful to have an URL to the datasheet.
+	-- We limit the URL to reansonable 500 characters. Excessive Google URLs are thus not allowed.
+	component_datasheet_characters : character_set := 
+		to_set (ranges => (('A','Z'),('a','z'),('0','9'))) or to_set (":/._-&");
+	component_datasheet_length_max : constant positive := 500;
+	package type_component_datasheet is new generic_bounded_length (component_datasheet_length_max);
+
+	procedure check_datasheet_length (datasheet : in string);
+	-- Tests if the given datasheet is longer than allowed.
+	
+	procedure check_datasheet_characters (
+		datasheet	: in type_component_datasheet.bounded_string;
+		characters	: in character_set := component_datasheet_characters);
+	-- Tests if the given URL contains only valid characters as specified
+	-- by given character set. Raises exception if invalid character found.
+
+
 	
 	-- This is a component as it appears in the library:.
 	type type_component_library (appearance : et_libraries.type_component_appearance) is record
@@ -275,7 +293,7 @@ package et_kicad is
 			-- with at least one package/footprint variant. We store variants in a map.
 			when et_libraries.SCH_PCB => 
 				package_filter	: type_package_filter.set := type_package_filter.empty_set; -- kicad requirement
-				datasheet		: et_libraries.type_component_datasheet.bounded_string; -- kicad requirement
+				datasheet		: type_component_datasheet.bounded_string; -- kicad requirement
 				purpose			: et_libraries.type_component_purpose.bounded_string;
 				partcode		: et_libraries.type_component_partcode.bounded_string;
 				bom				: et_libraries.type_bom;
@@ -325,7 +343,7 @@ package et_kicad is
 			when et_libraries.sch_pcb => 
 				partcode			: et_libraries.type_component_partcode.bounded_string;
 				purpose				: et_libraries.type_component_purpose.bounded_string;
-				datasheet			: et_libraries.type_component_datasheet.bounded_string;
+				datasheet			: type_component_datasheet.bounded_string;
 				bom					: et_libraries.type_bom;
 				variant				: et_libraries.type_component_variant_name.bounded_string; -- D, N
 

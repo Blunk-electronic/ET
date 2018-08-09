@@ -373,22 +373,6 @@ package et_libraries is
 	
 
 
--- COMPONENT DATASHEET (kicad requirement)
-	-- For some components (not all !) it is helpful to have an URL to the datasheet.
-	-- We limit the URL to reansonable 500 characters. Excessive Google URLs are thus not allowed.
-	component_datasheet_characters : character_set := 
-		to_set (ranges => (('A','Z'),('a','z'),('0','9'))) or to_set (":/._-&");
-	component_datasheet_length_max : constant positive := 500;
-	package type_component_datasheet is new generic_bounded_length (component_datasheet_length_max);
-
-	procedure check_datasheet_length (datasheet : in string);
-	-- Tests if the given datasheet is longer than allowed.
-	
-	procedure check_datasheet_characters (
-		datasheet : in type_component_datasheet.bounded_string;
-		characters : in character_set := component_datasheet_characters);
-	-- Tests if the given URL contains only valid characters as specified
-	-- by given character set. Raises exception if invalid character found.
 
 
 
@@ -997,7 +981,6 @@ package et_libraries is
 			-- If a component appears in both schematic and layout it comes 
 			-- with at least one package/footprint variant. We store variants in a map.
 			when sch_pcb => 
-				datasheet		: type_component_datasheet.bounded_string; -- kicad requirement
 				purpose			: type_component_purpose.bounded_string;
 				partcode		: type_component_partcode.bounded_string;
 				bom				: type_bom;

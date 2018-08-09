@@ -143,7 +143,6 @@ package et_schematic is
 			when sch_pcb => 
 				partcode			: type_component_partcode.bounded_string;
 				purpose				: type_component_purpose.bounded_string;
-				datasheet			: type_component_datasheet.bounded_string;
 				bom					: type_bom;
 				variant				: type_component_variant_name.bounded_string; -- D, N
 
