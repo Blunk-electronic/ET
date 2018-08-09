@@ -772,10 +772,9 @@ package et_libraries is
 	type type_symbol_text is new type_text (meaning => misc) with null record;
 	package type_symbol_texts is new doubly_linked_lists (element_type => type_symbol_text);
 
-	type type_symbol (appearance : type_component_appearance) is record
+	type type_symbol (appearance : type_component_appearance) is tagged record
 		shapes		: type_shapes; -- the collection of shapes
 		texts		: type_symbol_texts.list; -- the collection of texts (meaning misc)
-		ports		: type_ports.list := type_ports.empty_list; -- the ports of the symbol
 		
 		-- Placeholders for component wide texts. To be filled with content when 
 		-- a symbol is placed in the schematic:

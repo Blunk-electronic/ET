@@ -212,9 +212,50 @@ package et_kicad is
 		"="				=> type_package_proposal."=",
 		"<"				=> type_package_proposal."<");
 
+-- 	type type_symbol (appearance : et_libraries.type_component_appearance) is record
+-- 		shapes		: et_libraries.type_shapes; -- the collection of shapes
+-- 		texts		: et_libraries.type_symbol_texts.list; -- the collection of texts (meaning misc)
+-- 		ports		: et_libraries.type_ports.list := type_ports.empty_list; -- the ports of the symbol
+-- 		
+-- 		-- Placeholders for component wide texts. To be filled with content when 
+-- 		-- a symbol is placed in the schematic:
+-- 		reference	: et_libraries.type_text_placeholder (meaning => et_libraries.reference);
+-- 		value		: et_libraries.type_text_placeholder (meaning => et_libraries.value);
+-- 		commissioned: et_libraries.type_text_placeholder (meaning => et_libraries.commissioned);
+-- 		updated		: et_libraries.type_text_placeholder (meaning => et_libraries.updated);
+-- 		author		: et_libraries.type_text_placeholder (meaning => et_libraries.author);
+-- 		-- Symbols have further text placeholders according to the appearance of the component:
+-- 		case appearance is
+-- 			when sch_pcb =>
+-- 				packge		: et_libraries.type_text_placeholder (meaning => et_libraries.packge);
+-- 				datasheet	: et_libraries.type_text_placeholder (meaning => et_libraries.datasheet);
+-- 				purpose		: et_libraries.type_text_placeholder (meaning => et_libraries.purpose);
+-- 				partcode	: et_libraries.type_text_placeholder (meaning => et_libraries.partcode);
+-- 				bom 		: et_libraries.type_text_placeholder (meaning => et_libraries.bom);
+-- 			when others => null;
+-- 		end case;
+-- 	end record;
+
+	-- Ports of a component are collected in a simple list. A list, because multiple ports
+	-- with the same name (but differing terminal names) may exist. For example lots of GND
+	-- ports at FPGAs.
+	--package type_ports is new doubly_linked_lists (element_type => et_libraries.type_port); 
+
+
+	type type_symbol is new et_libraries.type_symbol with record
+		ports : et_libraries.type_ports.list := et_libraries.type_ports.empty_list; -- the ports of the symbol
+	end record;
+
+	package type_symbols is new indefinite_ordered_maps (
+		element_type	=> type_symbol,
+		key_type		=> et_libraries.type_symbol_name.bounded_string,
+		"<"				=> et_libraries.type_symbol_name."<"
+		);
+
+	
 	-- a component unit in the library
 	type type_unit_library (appearance : et_libraries.type_component_appearance) is record
-		symbol		: et_libraries.type_symbol (appearance);
+		symbol		: type_symbol (appearance);
 		coordinates	: type_coordinates;
 		-- Units that harbor component wide pins have this flag set.
 		-- Usually units with power supply pins exclusively.

@@ -527,7 +527,7 @@ package body et_kicad is
 		unit_cursor : in type_units_library.cursor)
 		return et_libraries.type_ports.cursor is
 
-		port_cursor : et_libraries.type_ports.cursor;
+		port_cursor : et_libraries.type_ports.cursor; -- to be returned
 
 		procedure locate (
 			name : in et_libraries.type_unit_name.bounded_string;
