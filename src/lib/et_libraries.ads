@@ -298,11 +298,11 @@ package et_libraries is
 	
 	
 	-- Initially, a port has at least a name.
-	type type_port_basic is tagged record
+	type type_port_base is tagged record
 		name				: type_port_name.bounded_string; -- like CLOCK or CE
 	end record;
 	
-	type type_port is new type_port_basic with record 	-- CS: set defaults
+	type type_port is new type_port_base with record 	-- CS: set defaults
 		direction			: type_port_direction; -- example: "passive"
 		style				: type_port_style;
 		coordinates			: type_2d_point; -- there is only x and y
@@ -312,19 +312,13 @@ package et_libraries is
 		terminal_visible	: type_terminal_name_visible;
 		port_name_size		: type_port_name_text_size;
 		terminal_name_size	: type_terminal_name_text_size;
-
-		-- kicad requirement: the clearance between symbol outline and port name 
-		-- CS: define a reasonable range
-		port_name_offset	: type_distance; 
-		
-		-- CS : obsolete ? pin_position_offset ?
-		-- CS: port swap level ?
+		-- CS: port swap level ? -> would require a derived new type
 	end record;
 
 	-- Ports of a component are collected in a simple list. A list, because multiple ports
 	-- with the same name (but differing terminal names) may exist. For example lots of GND
 	-- ports at FPGAs.
-	package type_ports is new doubly_linked_lists (element_type => type_port); 
+--	package type_ports is new doubly_linked_lists (element_type => type_port); 
 
 
 	
@@ -964,7 +958,7 @@ package et_libraries is
 	-- Do not confuse with type_variant (see et_schematic.ads) which also contains the variant name
 	-- like in TL084D or TL084N.
 
-	type type_port_in_terminal_port_map is new type_port_basic with record
+	type type_port_in_terminal_port_map is new type_port_base with record
 		unit	: type_unit_name.bounded_string;
 	end record;
 	

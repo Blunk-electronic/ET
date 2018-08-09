@@ -212,38 +212,21 @@ package et_kicad is
 		"="				=> type_package_proposal."=",
 		"<"				=> type_package_proposal."<");
 
--- 	type type_symbol (appearance : et_libraries.type_component_appearance) is record
--- 		shapes		: et_libraries.type_shapes; -- the collection of shapes
--- 		texts		: et_libraries.type_symbol_texts.list; -- the collection of texts (meaning misc)
--- 		ports		: et_libraries.type_ports.list := type_ports.empty_list; -- the ports of the symbol
--- 		
--- 		-- Placeholders for component wide texts. To be filled with content when 
--- 		-- a symbol is placed in the schematic:
--- 		reference	: et_libraries.type_text_placeholder (meaning => et_libraries.reference);
--- 		value		: et_libraries.type_text_placeholder (meaning => et_libraries.value);
--- 		commissioned: et_libraries.type_text_placeholder (meaning => et_libraries.commissioned);
--- 		updated		: et_libraries.type_text_placeholder (meaning => et_libraries.updated);
--- 		author		: et_libraries.type_text_placeholder (meaning => et_libraries.author);
--- 		-- Symbols have further text placeholders according to the appearance of the component:
--- 		case appearance is
--- 			when sch_pcb =>
--- 				packge		: et_libraries.type_text_placeholder (meaning => et_libraries.packge);
--- 				datasheet	: et_libraries.type_text_placeholder (meaning => et_libraries.datasheet);
--- 				purpose		: et_libraries.type_text_placeholder (meaning => et_libraries.purpose);
--- 				partcode	: et_libraries.type_text_placeholder (meaning => et_libraries.partcode);
--- 				bom 		: et_libraries.type_text_placeholder (meaning => et_libraries.bom);
--- 			when others => null;
--- 		end case;
--- 	end record;
+
+	type type_port_library is new et_libraries.type_port with record 	-- CS: set defaults
+		-- the clearance between symbol outline and port name 
+		-- CS: define a reasonable range
+		port_name_offset	: type_distance; 
+		-- CS : obsolete ? pin_position_offset ?
+	end record;
 
 	-- Ports of a component are collected in a simple list. A list, because multiple ports
 	-- with the same name (but differing terminal names) may exist. For example lots of GND
 	-- ports at FPGAs.
-	--package type_ports is new doubly_linked_lists (element_type => et_libraries.type_port); 
-
+	package type_ports_library is new doubly_linked_lists (type_port_library);
 
 	type type_symbol is new et_libraries.type_symbol with record
-		ports : et_libraries.type_ports.list := et_libraries.type_ports.empty_list; -- the ports of the symbol
+		ports : type_ports_library.list := type_ports_library.empty_list; -- the ports of the symbol
 	end record;
 
 	package type_symbols is new indefinite_ordered_maps (
@@ -320,7 +303,7 @@ package et_kicad is
 	function first_port (
 	-- Returns the cursor to the first port of the given unit
 		unit_cursor : in type_units_library.cursor)
-		return et_libraries.type_ports.cursor;
+		return type_ports_library.cursor;
 	
 	
 	function component_appearance (cursor : in type_components_library.cursor)

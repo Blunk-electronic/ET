@@ -525,22 +525,22 @@ package body et_kicad is
 	function first_port (
 	-- Returns the cursor to the first port of the given unit
 		unit_cursor : in type_units_library.cursor)
-		return et_libraries.type_ports.cursor is
+		return type_ports_library.cursor is
 
-		port_cursor : et_libraries.type_ports.cursor; -- to be returned
+		port_cursor : type_ports_library.cursor; -- to be returned
 
 		procedure locate (
 			name : in et_libraries.type_unit_name.bounded_string;
 			unit : in type_unit_library) is
 
-			use et_libraries.type_ports;
+			use type_ports_library;
 			use et_string_processing;
 		begin
 			-- Set the port cursor to the first port of the unit.
-			port_cursor := et_libraries.type_ports.first (unit.symbol.ports);
+			port_cursor := type_ports_library.first (unit.symbol.ports);
 
 			-- In case the unit has no ports, abort.
-			if port_cursor = et_libraries.type_ports.no_element then
+			if port_cursor = type_ports_library.no_element then
 				--log_indentation_reset;
 				log (message_warning & "generic unit " 
 						& et_libraries.to_string (unit_name => type_units_library.key (unit_cursor)) 
@@ -1176,7 +1176,7 @@ package body et_kicad is
 			tmp_draw_arc		: type_arc;
 			tmp_draw_circle 	: type_circle;
 			tmp_draw_text		: type_symbol_text;
-			tmp_draw_port		: et_libraries.type_port;
+			tmp_draw_port		: type_port_library;
 
 			-- The terminal-port map of the current component is stored here temporarily.
 			-- When building the package variant (there will be only the default variant)
@@ -1607,11 +1607,11 @@ package body et_kicad is
 				return text;
 			end to_text;
 
-			function to_port (line : in et_string_processing.type_fields_of_line) return et_libraries.type_port is
+			function to_port (line : in et_string_processing.type_fields_of_line) return type_port_library is
 			-- Converts the given line to a type_port.
 				use et_configuration;
 			
-				port : et_libraries.type_port; -- the port being built
+				port : type_port_library; -- the port being built -> to be returned
 
 				function field (line : in type_fields_of_line; position : in positive) return string renames
 					et_string_processing.get_field_from_line;
@@ -8937,7 +8937,7 @@ package body et_kicad is
 		procedure extract_ports is
 		-- Extracts the ports of the component indicated by component_cursor_lib.
 		-- NOTE: The library contains the relative (x/y) positions of the ports.
-			use et_libraries.type_ports;
+			use type_ports_library;
 			use et_coordinates;
 			use et_schematic;
 		
@@ -8945,7 +8945,7 @@ package body et_kicad is
 			unit_cursor : type_units_library.cursor;
 
 			-- The port cursor of the unit indicates the port of a unit.
-			port_cursor : et_libraries.type_ports.cursor; 
+			port_cursor : type_ports_library.cursor; 
 
 			unit_name_lib : type_unit_name.bounded_string; -- the unit name in the library. like "A", "B" or "PWR"
 			unit_position : et_coordinates.type_coordinates; -- the coordinates of the current unit
@@ -9147,7 +9147,7 @@ package body et_kicad is
 
 						-- Loop in port list of the unit:						
 						port_cursor := first_port (unit_cursor); -- port in library
-						while port_cursor /= et_libraries.type_ports.no_element loop
+						while port_cursor /= type_ports_library.no_element loop
 
 							--log ("port " & type_port_name.to_string (key (port_cursor))
 							log ("port " & to_string (element (port_cursor).name),
@@ -9203,7 +9203,7 @@ package body et_kicad is
 					port_cursor := first_port (unit_cursor); -- port in library
 
 					-- Loop in port list of the unit:
-					while port_cursor /= et_libraries.type_ports.no_element loop
+					while port_cursor /= type_ports_library.no_element loop
 						log_indentation_up;
 						--log ("port " & type_port_name.to_string (key (port_cursor))
 						log ("port " & to_string (element (port_cursor).name),
