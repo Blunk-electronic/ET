@@ -6855,9 +6855,9 @@ package body et_kicad_pcb is
 				net_id		: type_net_id; -- the net id used by kicad
 
 				-- The components of the module are copied here (in their present state):
-				use et_kicad.type_components;
-				components			: et_kicad.type_components.map := module.components;
-				component_cursor	: et_kicad.type_components.cursor := components.first;
+				use et_kicad.type_components_schematic;
+				components			: et_kicad.type_components_schematic.map := module.components;
+				component_cursor	: et_kicad.type_components_schematic.cursor := components.first;
 
 				use type_packages_board;
 				package_cursor		: type_packages_board.cursor;
@@ -7493,7 +7493,7 @@ package body et_kicad_pcb is
 				transfer_net_classes;
 
 				-- update package positions in schematic module
-				while component_cursor /= et_kicad.type_components.no_element loop -- (cursor points to schematic components)
+				while component_cursor /= et_kicad.type_components_schematic.no_element loop -- (cursor points to schematic components)
 
 					-- We are interested in real components only. Virtual schematic components
 					-- do not appear in a board and thus are skipped.
@@ -7529,7 +7529,7 @@ package body et_kicad_pcb is
 								text_placeholders := to_placeholders;
 								
 								-- update component in schematic module
-								et_kicad.type_components.update_element (
+								et_kicad.type_components_schematic.update_element (
 									container 	=> module.components,
 									position	=> find (module.components, package_reference),
 									process		=> update_component_in_schematic'access);

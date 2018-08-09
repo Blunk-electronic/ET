@@ -1037,9 +1037,9 @@ package et_libraries is
 
 	-- Components are stored in a map.
 	-- Within the map they are accessed by a key type_component_name (something like "CAPACITOR").
-	package type_components is new indefinite_ordered_maps (
-		key_type		=> type_component_generic_name.bounded_string, -- example: "TRANSISTOR_PNP"
-		element_type	=> type_component);
+-- 	package type_components is new indefinite_ordered_maps (
+-- 		key_type		=> type_component_generic_name.bounded_string, -- example: "TRANSISTOR_PNP"
+-- 		element_type	=> type_component);
 -- 	use type_components;
 
 -- 	function component_appearance (cursor : in type_components.cursor)

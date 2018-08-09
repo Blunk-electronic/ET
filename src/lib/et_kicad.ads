@@ -145,7 +145,7 @@ package et_kicad is
 	-- the type should become a bounded string or whatsoever:
 	type type_path_to_package is new string (1..8); -- CS ????? -- is a timestap ?
 	
-	type type_unit is new et_schematic.type_unit with record
+	type type_unit_schematic is new et_schematic.type_unit with record
 		path_to_package	: type_path_to_package;
 		alt_repres		: type_de_morgan_representation;
 	end record;
@@ -154,21 +154,21 @@ package et_kicad is
 	-- Adds a unit into the given commponent.
 		reference		: in et_libraries.type_component_reference;
 		unit_name		: in et_libraries.type_unit_name.bounded_string;
-		unit 			: in type_unit;
+		unit 			: in type_unit_schematic;
 		log_threshold	: in et_string_processing.type_log_level);
 
 	
 	-- Units of a component are collected in a map.
 	-- A unit is accessed by its name like "I/O Bank 3" or "PWR" or "A" or "B" ...	
-	package type_units is new indefinite_ordered_maps (
+	package type_units_schematic is new indefinite_ordered_maps (
 		key_type		=> et_libraries.type_unit_name.bounded_string,
 		"<"				=> et_libraries.type_unit_name."<",
-		element_type	=> type_unit);
+		element_type	=> type_unit_schematic);
 
 	function unit_exists (
 	-- Returns true if the unit with the given name exists in the given list of units.
 		name	: in et_libraries.type_unit_name.bounded_string; -- the unit being inquired
-		units	: in type_units.map) -- the list of units
+		units	: in type_units_schematic.map) -- the list of units
 		return boolean;
 
 	function position_of_unit (
@@ -176,7 +176,7 @@ package et_kicad is
 	-- It is assumed, the unit in question exists.
 	-- The unit is an element in the given list of units.
 		name	: in et_libraries.type_unit_name.bounded_string; -- the unit being inquired
-		units	: in type_units.map) -- the list of units
+		units	: in type_units_schematic.map) -- the list of units
 		return type_coordinates;
 	
 	function mirror_style_of_unit (
@@ -184,7 +184,7 @@ package et_kicad is
 	-- It is assumed, the unit in question exists.
 	-- The unit is an element in the given list of units.
 		name	: in et_libraries.type_unit_name.bounded_string; -- the unit being inquired
-		units 	: in type_units.map) -- the list of units
+		units 	: in type_units_schematic.map) -- the list of units
 		return et_schematic.type_mirror;
 	
 	function orientation_of_unit (
@@ -192,12 +192,12 @@ package et_kicad is
 	-- It is assumed, the unit in question exists.
 	-- The unit is an element in the given list of units.
 		name 	: in et_libraries.type_unit_name.bounded_string; -- the unit being inquired
-		units 	: in type_units.map) -- the list of units
+		units 	: in type_units_schematic.map) -- the list of units
 		return et_coordinates.type_angle;
 	
 	procedure write_unit_properties (
 	-- Writes the properties of the unit indicated by the given cursor.
-		unit			: in type_units.cursor;
+		unit			: in type_units_schematic.cursor;
 		log_threshold	: in et_string_processing.type_log_level);
 
 	-- POWER FLAGS
@@ -271,7 +271,7 @@ package et_kicad is
 		"<"				=> et_libraries.type_component_generic_name."<",
 		element_type	=> type_component_library);
 
-	function first_internal_unit (
+	function first_unit (
 	-- Returns the cursor to the first unit of the given component
 		component_cursor : in type_components_library.cursor)
 		return type_units_library.cursor;
@@ -295,7 +295,7 @@ package et_kicad is
 		commissioned	: et_string_processing.type_date; -- 2017-08-17T14:17:25
 		updated			: et_string_processing.type_date; -- 2017-10-30T08:33:56
 		author			: et_libraries.type_person_name.bounded_string; -- Steve Miller
-		units			: type_units.map; -- PWR, A, B, ...
+		units			: type_units_schematic.map; -- PWR, A, B, ...
 		case appearance is
 			-- If a component appears in both schematic and layout it has got:
 			when et_libraries.sch_pcb => 
@@ -332,25 +332,25 @@ package et_kicad is
 
 
 	-- The components of a module are collected in a map.
- 	package type_components is new indefinite_ordered_maps (
+ 	package type_components_schematic is new indefinite_ordered_maps (
 		key_type 		=> et_libraries.type_component_reference, -- something like "IC43"
 		"<" 			=> et_schematic.compare_reference,
  		element_type 	=> type_component_schematic);
 
-	function component_reference (cursor : in type_components.cursor) 
+	function component_reference (cursor : in type_components_schematic.cursor) 
 		return et_libraries.type_component_reference;
 	-- Returns the component reference where cursor points to.
 	
 	
-	function units_of_component (component_cursor : in type_components.cursor) return type_units.map;
+	function units_of_component (component_cursor : in type_components_schematic.cursor) return type_units_schematic.map;
 	-- Returns the units of the given component.
 
 	procedure write_component_properties (
 	-- Writes the properties of the component indicated by the given cursor.
-		component 		: in type_components.cursor;
+		component 		: in type_components_schematic.cursor;
 		log_threshold	: in et_string_processing.type_log_level);
 
-	function bom (cursor : in type_components.cursor)
+	function bom (cursor : in type_components_schematic.cursor)
 	-- Returns the component bom status where cursor points to.
 		return et_libraries.type_bom;
 
@@ -1004,7 +1004,7 @@ package et_kicad is
 		component	: in et_libraries.type_component_generic_name.bounded_string) 
 		return type_components_library.cursor;
 
-	procedure reset_component_cursor (cursor : in out type_components.cursor);
+	procedure reset_component_cursor (cursor : in out type_components_schematic.cursor);
 	-- Resets the given component cursor to the begin of the component list
 	-- of the module indicated by module_cursor.
 
@@ -1134,7 +1134,7 @@ package et_kicad is
 		strands	    	: type_strands.list;						-- the strands of the module
 		junctions		: et_schematic.type_junctions.list;			-- net junctions
 
-		components		: type_components.map;						-- the components of the module
+		components		: type_components_schematic.map;			-- the components of the module
 		net_classes		: et_pcb.type_net_classes.map;				-- the net classes
 		no_connections	: type_no_connection_flags.list;			-- the list of no-connection-flags
 		portlists		: type_portlists.map;						-- the portlists of the module
