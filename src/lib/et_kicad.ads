@@ -212,8 +212,9 @@ package et_kicad is
 		"="				=> type_package_proposal."=",
 		"<"				=> type_package_proposal."<");
 
-	type type_unit (appearance : type_component_appearance) is record
-		symbol		: type_symbol (appearance);
+	-- a component unit in the library
+	type type_unit_library (appearance : et_libraries.type_component_appearance) is record
+		symbol		: et_libraries.type_symbol (appearance);
 		coordinates	: type_coordinates;
 		-- Units that harbor component wide pins have this flag set.
 		-- Usually units with power supply pins exclusively.
@@ -221,16 +222,16 @@ package et_kicad is
 		global		: boolean := false; -- CS: use a boolean derived type 
 	end record;
 
-	package type_units is new indefinite_ordered_maps (
-		key_type		=> type_unit_name.bounded_string, -- like "I/O-Bank 3" "A" or "B"
-		element_type	=> type_unit);
-	
+	package type_units_library is new indefinite_ordered_maps (
+		key_type		=> et_libraries.type_unit_name.bounded_string, -- like "I/O-Bank 3" "A" or "B"
+		"<"				=> et_libraries.type_unit_name."<",
+		element_type	=> type_unit_library);
 	
 	-- This is a component as it appears in the library:.
 	type type_component_library (appearance : et_libraries.type_component_appearance) is record
 		prefix			: et_libraries.type_component_prefix.bounded_string; -- R, C, IC, ...
 		value			: et_libraries.type_component_value.bounded_string; -- 74LS00
-		units			: type_units.map := type_units.empty_map;
+		units			: type_units_library.map := type_units_library.empty_map;
 		commissioned	: et_libraries.type_component_date;
 		updated			: et_libraries.type_component_date;
 		author			: et_libraries.type_person_name.bounded_string;
@@ -270,6 +271,17 @@ package et_kicad is
 		"<"				=> et_libraries.type_component_generic_name."<",
 		element_type	=> type_component_library);
 
+	function first_internal_unit (
+	-- Returns the cursor to the first unit of the given component
+		component_cursor : in type_components_library.cursor)
+		return type_units_library.cursor;
+
+	function first_port (
+	-- Returns the cursor to the first port of the given unit
+		unit_cursor : in type_units_library.cursor)
+		return et_libraries.type_ports.cursor;
+	
+	
 	function component_appearance (cursor : in type_components_library.cursor)
 	-- Returns the component appearance where cursor points to.
 		return et_libraries.type_component_appearance;

@@ -1084,15 +1084,7 @@ package et_libraries is
 -- 		component	: in type_component_generic_name.bounded_string) 
 -- 		return type_components.cursor;
 
-	function first_internal_unit (
-	-- Returns the cursor to the first unit of the given component
-		component_cursor : in type_components.cursor)
-		return type_units_internal.cursor;
 
-	function first_port (
-	-- Returns the cursor to the first port of the given unit
-		unit_cursor : in type_units_internal.cursor)
-		return type_ports.cursor;
 	
 	procedure no_generic_model_found (
 		reference : in type_component_reference; -- IC303

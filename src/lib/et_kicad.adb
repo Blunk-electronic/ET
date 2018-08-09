@@ -485,6 +485,78 @@ package body et_kicad is
 		return type_components_library.element (cursor).appearance;
 	end component_appearance;
 
+	function first_internal_unit ( -- CS rename to first_unit
+	-- Returns the cursor to the first unit of the given component.
+		component_cursor : in type_components_library.cursor)
+		return type_units_library.cursor is
+
+		unit_cursor : type_units_library.cursor;
+
+		procedure locate (
+			name		: in et_libraries.type_component_generic_name.bounded_string;
+			component	: in type_component_library) is
+
+			use type_units_library;
+			use et_string_processing;
+		begin
+			-- Set the unit cursor to the first unit of the component.
+			unit_cursor := type_units_library.first (component.units);
+
+			-- In case the component has no units, abort.
+			if unit_cursor = type_units_library.no_element then
+				log_indentation_reset;
+				log (message_error & "generic component " 
+						& et_libraries.to_string (generic_name => type_components_library.key (component_cursor)) 
+						& " has no units !",
+					console => true);
+				raise constraint_error;
+			end if;
+		end locate;
+	
+	begin
+		-- locate the component by the given component cursor
+		type_components_library.query_element (component_cursor, locate'access);
+
+		-- CS: do something if cursor invalid. via exception handler ?
+		return unit_cursor;
+	end first_internal_unit;
+
+
+	function first_port (
+	-- Returns the cursor to the first port of the given unit
+		unit_cursor : in type_units_library.cursor)
+		return et_libraries.type_ports.cursor is
+
+		port_cursor : et_libraries.type_ports.cursor;
+
+		procedure locate (
+			name : in et_libraries.type_unit_name.bounded_string;
+			unit : in type_unit_library) is
+
+			use et_libraries.type_ports;
+			use et_string_processing;
+		begin
+			-- Set the port cursor to the first port of the unit.
+			port_cursor := et_libraries.type_ports.first (unit.symbol.ports);
+
+			-- In case the unit has no ports, abort.
+			if port_cursor = et_libraries.type_ports.no_element then
+				--log_indentation_reset;
+				log (message_warning & "generic unit " 
+						& et_libraries.to_string (unit_name => type_units_library.key (unit_cursor)) 
+						& " has no ports !");
+					--console => true);
+				--CS raise constraint_error;
+			end if;
+		end locate;
+
+	begin
+		type_units_library.query_element (unit_cursor, locate'access);
+		
+		-- CS: do something if cursor invalid. via exception handler ?
+		return port_cursor;
+	end first_port;
+	
 	
 	
 	procedure clear (lines : in out type_lines.list) is -- CS no paramter required
@@ -1031,8 +1103,8 @@ package body et_kicad is
 		comp_cursor		: type_components_library.cursor;
 		comp_inserted	: boolean; -- indicates whether a component has been inserted
 
-		-- This is the unit cursor. It points to the unit being processed. In kicad we deal with internal units exclusively.
-		unit_cursor		: et_libraries.type_units_internal.cursor;
+		-- This is the unit cursor. It points to the unit being processed.
+		unit_cursor		: type_units_library.cursor;
 		unit_inserted	: boolean; -- indicates whether a unit has been inserted
 
 		
@@ -2050,7 +2122,7 @@ package body et_kicad is
 								commissioned	=> type_component_date (content (field_commissioned)),
 								updated			=> type_component_date (content (field_updated)),
 								author			=> type_person_name.to_bounded_string (content (field_author)),
-								units_internal	=> type_units_internal.empty_map
+								units			=> type_units_library.empty_map
 								)
 							);
 						
@@ -2069,7 +2141,7 @@ package body et_kicad is
 								commissioned	=> type_component_date (content (field_commissioned)),
 								updated			=> type_component_date (content (field_updated)),
 								author			=> type_person_name.to_bounded_string (content (field_author)),
-								units_internal	=> type_units_internal.empty_map,
+								units			=> type_units_library.empty_map,
 
 								package_filter	=> type_package_filter.empty_set,
 								datasheet		=> type_component_datasheet.to_bounded_string (content (field_datasheet)),
@@ -2121,7 +2193,7 @@ package body et_kicad is
 					key			: in type_component_generic_name.bounded_string;
 					component	: in type_component_library) is
 				begin
-					unit_cursor := component.units_internal.find (to_unit_name (tmp_unit_id));
+					unit_cursor := component.units.find (to_unit_name (tmp_unit_id));
 				end locate_unit;
 
 				procedure locate_component ( 
@@ -2168,13 +2240,11 @@ package body et_kicad is
 					key			: in type_component_generic_name.bounded_string;
 					component	: in out type_component_library) is
 
-					unit : type_unit_internal (tmp_appearance);
+					unit : type_unit_library (tmp_appearance);
 				begin
-					unit.swap_level	:= tmp_unit_swap_level;
-					unit.add_level	:= tmp_unit_add_level;
 					unit.global		:= tmp_unit_global;
 					
-					component.units_internal.insert (
+					component.units.insert (
 						key			=> to_unit_name (tmp_unit_id),
 						new_item	=> unit,
 						position	=> unit_cursor,
@@ -2228,7 +2298,7 @@ package body et_kicad is
 				-- Inserts the given element in the unit.
 				-- If a port is to be inserted: Aborts on multiple usage of port or pin names.
 					key		: in type_unit_name.bounded_string;
-					unit	: in out type_unit_internal) is
+					unit	: in out type_unit_library) is
 					pos		: natural := 0; -- helps to trace the program position where an exception occured
 				begin
 					case element is
@@ -2256,11 +2326,11 @@ package body et_kicad is
 							unit.symbol.ports.append (tmp_draw_port);
 
 							type_terminal_port_map.insert (
-								container => tmp_terminal_port_map,
-								key => tmp_terminal_name, -- terminal name
-								new_item => (
-									name => tmp_draw_port.name, -- port name
-									unit => to_unit_name (tmp_unit_id))); -- unit name
+								container	=> tmp_terminal_port_map,
+								key			=> tmp_terminal_name, -- terminal name
+								new_item 	=> (
+												name => tmp_draw_port.name, -- port name
+												unit => to_unit_name (tmp_unit_id))); -- unit name
 							
 							
 						when others =>
@@ -2294,7 +2364,7 @@ package body et_kicad is
 					key			: in type_component_generic_name.bounded_string;
 					component	: in out type_component_library) is
 				begin
-					component.units_internal.update_element (unit_cursor, insert'access);
+					component.units.update_element (unit_cursor, insert'access);
 				end locate_unit;
 				
 				procedure locate_component ( 
@@ -2343,7 +2413,7 @@ package body et_kicad is
 				procedure set (
 				-- Sets the properties of the placeholders in the current unit.
 					key		: in type_unit_name.bounded_string;
-					unit	: in out type_unit_internal) is
+					unit	: in out type_unit_library) is
 				begin
 					-- For the unit we are interested in the properties of the component text fields.
 					-- The component text fields as given in the component section look like "F0 "IC" 0 50 50 H V C BIB".
@@ -2372,7 +2442,7 @@ package body et_kicad is
 					key			: in type_component_generic_name.bounded_string;
 					component	: in out type_component_library) is
 				begin
-					component.units_internal.update_element (unit_cursor, set'access);
+					component.units.update_element (unit_cursor, set'access);
 				end locate_unit;
 				
 				procedure locate_component ( 
@@ -8867,16 +8937,15 @@ package body et_kicad is
 		procedure extract_ports is
 		-- Extracts the ports of the component indicated by component_cursor_lib.
 		-- NOTE: The library contains the relative (x/y) positions of the ports.
-			use et_libraries.type_units_internal;
 			use et_libraries.type_ports;
 			use et_coordinates;
 			use et_schematic;
 		
 			-- The unit cursor of the component advances through the units stored in the library.
-			unit_cursor_internal	: type_units_internal.cursor;
+			unit_cursor : type_units_library.cursor;
 
 			-- The port cursor of the unit indicates the port of a unit.
-			port_cursor				: et_libraries.type_ports.cursor; 
+			port_cursor : et_libraries.type_ports.cursor; 
 
 			unit_name_lib : type_unit_name.bounded_string; -- the unit name in the library. like "A", "B" or "PWR"
 			unit_position : et_coordinates.type_coordinates; -- the coordinates of the current unit
@@ -9059,11 +9128,12 @@ package body et_kicad is
 			-- Searches in the component (indicated by component_cursor_lib) for units
 			-- with the "global" flag set.
 			-- Sets the port_cursor for each port and leaves the rest of the work to procedure add_port.
-				unit_cursor : type_units.cursor;
+				unit_cursor : type_units_library.cursor;
+				use type_units_library;
 			begin
 				-- Loop in list of internal units:
 				unit_cursor := first_internal_unit (component_cursor_lib);
-				while unit_cursor /= type_units.no_element loop
+				while unit_cursor /= type_units_library.no_element loop
 					log_indentation_up;
 
 					if element (unit_cursor).global then
@@ -9106,14 +9176,15 @@ package body et_kicad is
 			-- unit in the schematic are stored in unit_position.
 
 			-- Init the unit cursor of the current component:
-			unit_cursor_internal := first_internal_unit (component_cursor_lib);
+			unit_cursor := first_internal_unit (component_cursor_lib);
 
 			-- Loop in list of internal units:
-			while unit_cursor_internal /= type_units_internal.no_element loop
+			--while unit_cursor_internal /= type_units_library.no_element loop
+			while type_units_library."/=" (unit_cursor, type_units_library.no_element) loop
 				log_indentation_up;
 
 				-- get the unit name
-				unit_name_lib := key (unit_cursor_internal);
+				unit_name_lib := type_units_library.key (unit_cursor);
 
 				-- Now the unit name serves as key into the unit list we got from the schematic (unit_sch).
 				-- If the unit is deployed in the schematic, we load unit_position. 
@@ -9129,7 +9200,7 @@ package body et_kicad is
 					-- position of the port (in schematic).
 
 					-- Init port cursor
-					port_cursor := first_port (unit_cursor_internal); -- port in library
+					port_cursor := first_port (unit_cursor); -- port in library
 
 					-- Loop in port list of the unit:
 					while port_cursor /= et_libraries.type_ports.no_element loop
@@ -9164,7 +9235,7 @@ package body et_kicad is
 				end if;
 
 				log_indentation_down;
-				unit_cursor_internal := next (unit_cursor_internal);
+				unit_cursor := type_units_library.next (unit_cursor);
 			end loop;
 			
 		end extract_ports;
@@ -9263,7 +9334,7 @@ package body et_kicad is
 				library		=> element (component_cursor_sch).library_name, -- like ../lib/transistors.lib
 				component	=> element (component_cursor_sch).generic_name); -- like TRANSISTOR_PNP
 				
-			if component_cursor_lib = et_libraries.type_components.no_element then
+			if component_cursor_lib = type_components_library.no_element then
 				-- component not found
 				no_generic_model_found (
 					reference => key (component_cursor_sch),
@@ -9537,15 +9608,15 @@ package body et_kicad is
 			procedure query_library_components (
 			-- Queries the generic models stored in the library.
 				library		: in et_libraries.type_full_library_name.bounded_string;
-				components	: in et_libraries.type_components.map) is
-				use et_libraries.type_components;
-				component_lib : et_libraries.type_components.cursor := components.first;
+				components	: in type_components_library.map) is
+				use type_components_library;
+				component_lib : type_components_library.cursor := components.first;
 
 				procedure query_units_lib (
 					component_name	: in et_libraries.type_component_generic_name.bounded_string;
-					component 		: in et_libraries.type_component) is
-					use et_libraries.type_units_internal;
-					unit_internal : et_libraries.type_units_internal.cursor := component.units_internal.first;
+					component 		: in type_component_library) is
+					use type_units_library;
+					unit : type_units_library.cursor := component.units.first;
 
 					procedure query_units_sch (
 						component_name	: in et_libraries.type_component_reference;
@@ -9559,14 +9630,13 @@ package body et_kicad is
 						function unit_not_deployed return string is
 						begin
 							return et_libraries.to_string (key (component_sch)) 
-								& " unit " & et_libraries.to_string (key (unit_internal))
-								& " with" & et_libraries.to_string (element (unit_internal).add_level)
+								& " unit " & et_libraries.to_string (key (unit))
 								& " not deployed !";
 						end unit_not_deployed;
 		
 					begin
 						while unit_cursor /= type_units.no_element loop
-							if key (unit_cursor) = key (unit_internal) then
+							if key (unit_cursor) = key (unit) then
 								unit_deployed := true;
 								exit;
 							end if;
@@ -9579,62 +9649,60 @@ package body et_kicad is
 						-- CS: show not-connected inputs
 						
 						if not unit_deployed then
-							case element (unit_internal).add_level is
-
-								-- request units usually harbor power supply 
-								when et_libraries.request =>
-
-									-- For CAD formats other thatn kicad_v4 we raise alarm here.
-									-- If a unit with add level "request"
-									-- is not deployed, we have a serious design error. 
-									-- NOTE: kicad_v4 schematics do not contain "request" units as they are 
-									-- "common to all units" of a component. So in order to avoid a 
-									-- false alarm, seemingly missing "request" are ignored here.
-									-- Procdure check_open_ports detects such design errors. 
-
-									if et_import.cad_format /= kicad_v4 then
-										log (message_error & unit_not_deployed
-											& et_schematic.show_danger (et_schematic.no_power_supply));
-										raise constraint_error;
-									end if;
-
-								-- raise alarm if "must" unit is missing. there are numerous reasons
-								-- for such a unit to be there. So no further advise possible.
-								when et_libraries.must =>
-									log (message_error & unit_not_deployed);
-									raise constraint_error;
-
-								-- "can" units may be left non-deployed
-								when et_libraries.can =>
-									null;
-									
-								when et_libraries.next | et_libraries.always =>
+-- 							case element (unit).add_level is
+-- 
+-- 								-- request units usually harbor power supply 
+-- 								when et_libraries.request =>
+-- 
+-- 									-- For CAD formats other thatn kicad_v4 we raise alarm here.
+-- 									-- If a unit with add level "request"
+-- 									-- is not deployed, we have a serious design error. 
+-- 									-- NOTE: kicad_v4 schematics do not contain "request" units as they are 
+-- 									-- "common to all units" of a component. So in order to avoid a 
+-- 									-- false alarm, seemingly missing "request" are ignored here.
+-- 									-- Procdure check_open_ports detects such design errors. 
+-- 
+-- 									if et_import.cad_format /= kicad_v4 then
+-- 										log (message_error & unit_not_deployed
+-- 											& et_schematic.show_danger (et_schematic.no_power_supply));
+-- 										raise constraint_error;
+-- 									end if;
+-- 
+-- 								-- raise alarm if "must" unit is missing. there are numerous reasons
+-- 								-- for such a unit to be there. So no further advise possible.
+-- 								when et_libraries.must =>
+-- 									log (message_error & unit_not_deployed);
+-- 									raise constraint_error;
+-- 
+-- 								-- "can" units may be left non-deployed
+-- 								when et_libraries.can =>
+-- 									null;
+-- 									
+-- 								when et_libraries.next | et_libraries.always =>
 									log (message_warning & unit_not_deployed
 										& et_schematic.show_danger (et_schematic.floating_input));
-
-								-- CS: special threatment for "always" ?
-									
-							end case;
+-- 
+-- 								-- CS: special threatment for "always" ?
+-- 									
+-- 							end case;
 						end if;
 							
 					end query_units_sch;
 					
 				begin -- query_units_lib
-					while unit_internal /= et_libraries.type_units_internal.no_element loop
-						log ("unit " & et_libraries.to_string (key (unit_internal)) 
-							& et_libraries.to_string (element (unit_internal).add_level), log_threshold + 2);
+					while unit /= type_units_library.no_element loop
+						log ("unit " & et_libraries.to_string (key (unit)) 
+							 --& et_libraries.to_string (element (unit).add_level), log_threshold + 2);
+							 , log_threshold + 2);
 
 						-- For each generic unit the units of the schematic component must be inquired
 						-- if any of them matches the current generic unit name:
 						query_element (
-							position => component_sch,
-							process => query_units_sch'access);
+							position	=> component_sch,
+							process		=> query_units_sch'access);
 						
-						next (unit_internal);
+						next (unit);
 					end loop;
-
-					-- CS: external units ?
-					
 				end query_units_lib;
 
 				use et_libraries.type_component_generic_name;
@@ -9649,7 +9717,7 @@ package body et_kicad is
 
 				log_indentation_up;
 				
-				while component_lib /= et_libraries.type_components.no_element loop
+				while component_lib /= type_components_library.no_element loop
 					-- component_lib points to the generic model in the library
 
 					-- Sometimes the generic name in the libarary starts with a tilde.
@@ -11681,15 +11749,15 @@ package body et_kicad is
 
 			procedure locate_component_in_library (
 				library_name 	: in et_libraries.type_full_library_name.bounded_string;
-				components 		: in et_libraries.type_components.map) is
-				use et_libraries.type_components;
+				components 		: in type_components_library.map) is
+				use type_components_library;
 
-				component_cursor : et_libraries.type_components.cursor;
+				component_cursor : type_components_library.cursor;
 
 				procedure query_variants (
 				-- Looks up the list of variants of the component.
 					name 		: in et_libraries.type_component_generic_name.bounded_string;
-					component 	: in et_libraries.type_component) is
+					component 	: in type_component_library) is
 					use et_libraries.type_component_variants;
 					use et_import;
 
@@ -11742,18 +11810,18 @@ package body et_kicad is
 				-- If we are importing a kicad_v4 project, the generic name might have not been found.
 				-- Why ? The generic component name might have a tilde prepended. So the search must
 				-- be started over with a tilde prepended to the generic_name.
-				if component_cursor = et_libraries.type_components.no_element then
+				if component_cursor = type_components_library.no_element then
 					case et_import.cad_format is
 						when et_import.kicad_v4 =>
 							-- search for generic name ~NETCHANGER
 							component_cursor := components.find (prepend_tilde (generic_name));
-						when others => null;
+						when others => null; -- CS kicad_v5 ?
 					end case;
 				end if;
 					
-				et_libraries.type_components.query_element (
-					position => component_cursor,
-					process => query_variants'access);
+				type_components_library.query_element (
+					position	=> component_cursor,
+					process		=> query_variants'access);
 
 				log_indentation_down;
 			end locate_component_in_library;
@@ -11832,15 +11900,15 @@ package body et_kicad is
 
 			procedure locate_component_in_library (
 				library_name 	: in et_libraries.type_full_library_name.bounded_string;
-				components 		: in et_libraries.type_components.map) is
-				use et_libraries.type_components;
+				components 		: in type_components_library.map) is
+				use type_components_library;
 
-				component_cursor : et_libraries.type_components.cursor;
+				component_cursor : type_components_library.cursor;
 
 				procedure query_variants (
 				-- Looks up the list of variants of the component.
 					name 		: in et_libraries.type_component_generic_name.bounded_string;
-					component 	: in et_libraries.type_component) is
+					component 	: in type_component_library) is
 					use et_libraries.type_component_variants;
 
 					variant_cursor : et_libraries.type_component_variants.cursor;
@@ -11899,7 +11967,7 @@ package body et_kicad is
 				-- If we are importing a kicad_v4 project, the generic name might have not been found.
 				-- Why ? The generic component name might have a tilde prepended. So the search must
 				-- be started over with a tilde prepended to the generic_name.
-				if component_cursor = et_libraries.type_components.no_element then
+				if component_cursor = type_components_library.no_element then
 					case et_import.cad_format is
 						when et_import.kicad_v4 =>
 							-- search for generic name ~NETCHANGER
@@ -11908,9 +11976,9 @@ package body et_kicad is
 					end case;
 				end if;
 					
-				et_libraries.type_components.query_element (
-					position => component_cursor,
-					process => query_variants'access);
+				type_components_library.query_element (
+					position	=> component_cursor,
+					process		=> query_variants'access);
 
 				log_indentation_down;
 			end locate_component_in_library;
@@ -11999,15 +12067,15 @@ package body et_kicad is
 			procedure locate_component_in_library (
 			-- Locates the given component by its generic name in the library.
 				library_name 	: in et_libraries.type_full_library_name.bounded_string;
-				components 		: in et_libraries.type_components.map) is
+				components 		: in type_components_library.map) is
 
-				use et_libraries.type_components;
-				component_cursor : et_libraries.type_components.cursor;
+				use type_components_library;
+				component_cursor : type_components_library.cursor;
 
 				procedure query_variants (
 				-- Looks up the list of variants of the component.
 					name 		: in et_libraries.type_component_generic_name.bounded_string;
-					component 	: in et_libraries.type_component) is
+					component 	: in type_component_library) is
 				
 					use et_libraries.type_component_variants;
 					variant_cursor : et_libraries.type_component_variants.cursor;
@@ -12072,18 +12140,18 @@ package body et_kicad is
 				-- If we are importing a kicad_v4 project, the generic name might have not been found.
 				-- Why ? The generic component name might have a tilde prepended. So the search must
 				-- be started over with a tilde prepended to the generic_name.
-				if component_cursor = et_libraries.type_components.no_element then
+				if component_cursor = type_components_library.no_element then
 					case et_import.cad_format is
 						when et_import.kicad_v4 =>
 							-- search for generic name ~NETCHANGER
 							component_cursor := components.find (prepend_tilde (generic_name));
-						when others => null;
+						when others => null; -- CS kicad_v5 ?
 					end case;
 				end if;
 
-				if component_cursor /= et_libraries.type_components.no_element then
+				if component_cursor /= type_components_library.no_element then
 					-- Query the variants of the component in the library.
-					et_libraries.type_components.query_element (
+					type_components_library.query_element (
 						position 	=> component_cursor,
 						process 	=> query_variants'access);
 					
