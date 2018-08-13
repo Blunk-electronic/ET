@@ -94,7 +94,7 @@ package et_kicad is
 		return et_coordinates.type_submodule_name.bounded_string;
 	-- Returns the base name of the given schematic file name as submodule name.
 
-	-- sheet headers (kicad requirement) -> CS move to et_kicad
+	-- sheet headers
 	-- The sheet header is a composite of a list of libraries and other things:
 	-- It contains a list of libraries used by a schemetic sheet.
 	-- We use a simple list because the order of the library names must be kept.
@@ -292,8 +292,8 @@ package et_kicad is
 			-- If a component appears in both schematic and layout it comes 
 			-- with at least one package/footprint variant. We store variants in a map.
 			when et_libraries.SCH_PCB => 
-				package_filter	: type_package_filter.set := type_package_filter.empty_set; -- kicad requirement
-				datasheet		: type_component_datasheet.bounded_string; -- kicad requirement
+				package_filter	: type_package_filter.set := type_package_filter.empty_set;
+				datasheet		: type_component_datasheet.bounded_string;
 				purpose			: et_libraries.type_component_purpose.bounded_string;
 				partcode		: et_libraries.type_component_partcode.bounded_string;
 				bom				: et_libraries.type_bom;

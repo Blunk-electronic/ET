@@ -71,8 +71,7 @@ package et_libraries is
 	
 	-- Bare library names can be stored further-on in a simple list:
 	-- We use a simple list because the order of the library names sometimes matters and must be kept.
-    package type_library_names is new doubly_linked_lists (
-		element_type => type_library_name.bounded_string);
+    package type_library_names is new doubly_linked_lists (type_library_name.bounded_string);
 
 	-- Libraries are grouped (like passive, active, misc, ...). The group name is specified as:
 	library_group_length_max : constant positive := 300; -- CS: increase if necessary
@@ -83,8 +82,6 @@ package et_libraries is
 	-- If a library is fully specified with group, name and extension we store them in bounded strings:
 	library_full_name_max : constant positive := library_group_length_max + library_name_length_max + 4;
 	package type_full_library_name is new generic_bounded_length (library_full_name_max);
-	-- CS composite of group and lib name ?
-	use type_full_library_name;
 
 	-- CS: for type_full_library_name: character set, check characters, check length
 	
@@ -102,7 +99,8 @@ package et_libraries is
 	-- Full library names can be stored further-on in a simple list:
 	-- We use a simple list because the order of the library names sometimes matters and must be kept.
     package type_full_library_names is new doubly_linked_lists ( -- CS remove
-		element_type => type_full_library_name.bounded_string);
+		element_type 	=> type_full_library_name.bounded_string,
+		"="				=> type_full_library_name."=");
 
 	
 	-- When accessing library files we need this:
