@@ -93,8 +93,12 @@ package body et_schematic is
 
 	
 	
-	function to_string (junction : in type_net_junction; scope : in type_scope) return string is
-	-- Returns the position of the given junction as string.
+	function to_string (
+		junction : in type_net_junction;
+		scope : in et_coordinates.type_scope) 
+		return string is
+		-- Returns the position of the given junction as string.
+		use et_coordinates;
 	begin	
 		return (to_string (position => junction.coordinates, scope => scope));
 	end to_string;
@@ -206,8 +210,9 @@ package body et_schematic is
 		
 	end check_net_name_characters;
 	
-	function length (segment : in type_net_segment_base) return type_distance is
+	function length (segment : in type_net_segment_base) return et_coordinates.type_distance is
 	-- Returns the length of the given net segment.
+		use et_coordinates;
 		len : type_distance;
 		use et_string_processing;
 	begin
@@ -216,8 +221,12 @@ package body et_schematic is
 		return len;
 	end length;
 	
-	function to_string (segment : in type_net_segment_base; scope : in type_scope := sheet) return string is
+	function to_string (
+		segment	: in type_net_segment_base;
+		scope 	: in et_coordinates.type_scope := et_coordinates.sheet)
+		return string is
 	-- Returns the start and end coordinates of the given net segment.
+		use et_coordinates;
 	begin
 		return (" start"
 			& to_string (position => segment.coordinates_start, scope => scope)

@@ -54,7 +54,7 @@ with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 with et_general;
-with et_coordinates;			use et_coordinates;
+with et_coordinates;
 with et_libraries;
 with et_string_processing;
 with et_pcb;
@@ -187,7 +187,7 @@ package et_schematic is
 	function anonymous (net_name : in type_net_name.bounded_string) return boolean;
 	-- Returns true if the given net name is anonymous.
 	
-	subtype type_net_label_text_size is type_distance range 1.0 .. 5.0; -- unit is mm
+	subtype type_net_label_text_size is et_coordinates.type_distance range 1.0 .. 5.0; -- unit is mm
 	net_label_text_size_default : constant type_net_label_text_size := 1.3;
 
 	function to_net_label_text_size (text : in string) return type_net_label_text_size;
@@ -201,7 +201,7 @@ package et_schematic is
 	-- Junctions are to be collected in a list.
 	package type_junctions is new doubly_linked_lists (type_net_junction);
 	
-	function to_string (junction : in type_net_junction; scope : in type_scope) return string;
+	function to_string (junction : in type_net_junction; scope : in et_coordinates.type_scope) return string;
 	-- Returns the position of the given junction as string.
 
 	-- A segment may have labels attached.
@@ -212,10 +212,12 @@ package et_schematic is
 		junctions			: type_junctions.list;
 	end record;
 	
-	function length (segment : in type_net_segment_base) return type_distance;
+	function length (segment : in type_net_segment_base) return et_coordinates.type_distance;
 	-- Returns the length of the given net segment.
 	
-	function to_string (segment : in type_net_segment_base; scope : in type_scope := sheet) return string;
+	function to_string (
+		segment	: in type_net_segment_base;
+		scope	: in et_coordinates.type_scope := et_coordinates.sheet) return string;
 	-- Returns the start and end coordinates of the given net segment.
 
 
@@ -244,17 +246,17 @@ package et_schematic is
     -- A drawing frame consists of straight lines and texts.
     -- The text is a character at the x/y border that helps to locate objects.
     type type_frame_line is record
-		coordinates_start : type_2d_point;
-        coordinates_end   : type_2d_point;
+		coordinates_start : et_coordinates.type_2d_point;
+        coordinates_end   : et_coordinates.type_2d_point;
 	end record;
 	
 	package type_frame_lines is new doubly_linked_lists (type_frame_line);
 
 	type type_frame_text is record
-		coordinates		: type_2d_point;
+		coordinates		: et_coordinates.type_2d_point;
 		text			: character_set := et_string_processing.general_characters;
 		size			: et_libraries.type_text_size;
-		orientation		: type_angle;
+		orientation		: et_coordinates.type_angle;
 		-- CS: font, ...
 	end record;
 	
@@ -262,17 +264,17 @@ package et_schematic is
 
     -- the final drawing frame
     type type_frame is record
-        coordinates     : type_coordinates; -- the position of the frame
+        coordinates     : et_coordinates.type_coordinates; -- the position of the frame
         paper_size      : et_general.type_paper_size; -- the size of the paper
-        size_x, size_y  : type_distance; -- the dimensions of the frame (should fit into paper_size) 
+        size_x, size_y  : et_coordinates.type_distance; -- the dimensions of the frame (should fit into paper_size) 
         lines           : type_frame_lines.list;
         texts           : type_frame_texts.list;
     end record;
 
     -- TITLE BLOCK
     type type_title_block_line is record
-		coordinates_start : type_2d_point;
-		coordinates_end   : type_2d_point;
+		coordinates_start : et_coordinates.type_2d_point;
+		coordinates_end   : et_coordinates.type_2d_point;
     end record;
 
 	package type_title_block_lines is new doubly_linked_lists (type_title_block_line);
@@ -289,15 +291,14 @@ package et_schematic is
 	
 	type type_title_block_text is record
 		meaning			: type_title_block_text_meaning;
- 		coordinates		: type_2d_point;
+ 		coordinates		: et_coordinates.type_2d_point;
 		text			: type_title_block_text_content.bounded_string;
  		size			: et_libraries.type_text_size;
- 		orientation		: type_angle;
+ 		orientation		: et_coordinates.type_angle;
 		-- CS: font, ...
  	end record;
 
-	package type_title_block_texts is new doubly_linked_lists (
- 		element_type => type_title_block_text);
+	package type_title_block_texts is new doubly_linked_lists (type_title_block_text);
 
     -- the final title block
     type type_title_block is record

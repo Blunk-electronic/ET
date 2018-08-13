@@ -85,7 +85,7 @@ package body et_kicad is
 		-- CS: test if given submodule has an extension. if not return
 		-- submodule as it is.
 		--return to_bounded_string (base_name (et_coordinates.to_string (submodule)));
-		return type_submodule_name.to_bounded_string (base_name (to_string (file_name)));
+		return et_coordinates.type_submodule_name.to_bounded_string (base_name (to_string (file_name)));
 	end to_submodule_name;
 
 	-- Here we append a submodule name to the path_to_submodule.
@@ -93,6 +93,7 @@ package body et_kicad is
 	procedure append_name_of_parent_module_to_path (submodule : in et_coordinates.type_submodule_name.bounded_string) is
 		use et_string_processing;
 		use ada.directories;
+		use et_coordinates;
 		use et_coordinates.type_submodule_name;
 	begin
 		-- CS: limit path length !
@@ -112,12 +113,12 @@ package body et_kicad is
 		type_path_to_submodule.delete_last (path_to_submodule);
 	end delete_last_module_name_from_path;
 
-	procedure module_not_found (module : in type_submodule_name.bounded_string) is
+	procedure module_not_found (module : in et_coordinates.type_submodule_name.bounded_string) is
 	-- Returns a message stating that the given module does not exist.
 		use et_string_processing;
 	begin
 		log_indentation_reset;
-		log (message_error & " module " & to_string (module) & " not found !");
+		log (message_error & " module " & et_coordinates.to_string (module) & " not found !");
 		raise constraint_error;
 	end module_not_found;
 
@@ -400,14 +401,18 @@ package body et_kicad is
 	end to_package_name;
 	
 	
-	function to_string (no_connection_flag : in type_no_connection_flag; scope : in type_scope) return string is
+	function to_string (
+		no_connection_flag	: in type_no_connection_flag;
+		scope				: in et_coordinates.type_scope) return string is
 	-- Returns the position of the given no-connection-flag as string.
+		use et_coordinates;
 	begin	
 		return (to_string (position => no_connection_flag.coordinates, scope => scope));
 	end to_string;
 
 	function to_string (port : in type_port_with_reference) return string is
 	-- Returns the properties of the given port as string.
+		use et_coordinates;
 	begin
 		return "reference " & et_libraries.to_string (port.reference) 
 			& " port " & et_libraries.to_string (port.name)
@@ -445,12 +450,14 @@ package body et_kicad is
 	-- Returns the lowest x/y position of the given strand.
 		strand			: in type_strand;
 		log_threshold	: in et_string_processing.type_log_level
-		) return type_2d_point is
-		point_1, point_2 : type_2d_point;
+		) return et_coordinates.type_2d_point is
+		
+		point_1, point_2 : et_coordinates.type_2d_point;
 		segment : type_net_segments.cursor;
 	
 		use type_net_segments;
 		use et_string_processing;
+		use et_coordinates;
 
 		-- CS: usage of intermediate variables for x/Y of start/end points could improve performance
 	begin
@@ -694,10 +701,11 @@ package body et_kicad is
 		end if;
 	end validate_prefix;
 			
-	function to_point (x_in, y_in : in string) return type_2d_point is
-		point : type_2d_point;
-		x : type_distance_xy;
-		y : type_distance_xy;
+	function to_point (x_in, y_in : in string) return et_coordinates.type_2d_point is
+		point : et_coordinates.type_2d_point;
+		x, y : et_coordinates.type_distance_xy;
+
+		use et_coordinates;
 	begin
 		x := mil_to_distance (x_in);
 		y := mil_to_distance (y_in);
@@ -1186,8 +1194,8 @@ package body et_kicad is
 
 			tmp_port_name_visible		: type_port_name_visible;
 			tmp_terminal_name_visible	: type_terminal_name_visible;
-			tmp_port_name_offset	: type_distance; -- CS: rename to port_name_offset
-			tmp_terminal_name	: type_terminal_name.bounded_string;
+			tmp_port_name_offset		: et_coordinates.type_distance; -- CS: rename to port_name_offset
+			tmp_terminal_name			: type_terminal_name.bounded_string;
 			
 			tmp_units_total		: type_units_total; -- see spec for range -- CS rename to units_total	
 			tmp_unit_id			: type_unit_id; -- assumes 0 if all units are affected, -- see spec	-- CS rename to unit_id
@@ -1400,8 +1408,9 @@ package body et_kicad is
 				end_point	: positive := positive (et_string_processing.field_count (line)) - 2;
 
 				-- temporarily we store coordinates of a point here
-				point		: type_coordinates;
-				
+				point		: et_coordinates.type_coordinates;
+
+				use et_coordinates;
 			begin -- to_polyline
 
 				-- read total number of points
@@ -1448,6 +1457,8 @@ package body et_kicad is
 				-- #7 : 1 -> not common to all body styles (alternative representation or DeMorgan) -- CS: verify
 				-- #8 : line width
 				-- #9 : fill style N/F/f no fill/foreground/background
+
+				use et_coordinates;
 			begin -- to_rectangle
 				set_x (rectangle.start_point, mil_to_distance (mil => field (line,2), warn_on_negative => false));
 				set_y (rectangle.start_point, mil_to_distance (mil => field (line,3), warn_on_negative => false));
@@ -1486,7 +1497,8 @@ package body et_kicad is
 				--  #6 : 1 -> not common to all body styles (alternative representation or DeMorgan) -- CS: verify
 				--  #7 : line width (23)
 				--  #8 : fill style N/F/f no fill/foreground/background
-			
+
+				use et_coordinates;
 			begin -- to_circle
 				set_x (circle.center, mil_to_distance (mil => field (line,2), warn_on_negative => false));
 				set_y (circle.center, mil_to_distance (mil => field (line,3), warn_on_negative => false));
@@ -1525,6 +1537,7 @@ package body et_kicad is
 				-- #11..12 : start point (x/y)
 				-- #13..14 : end point (x/y)
 
+				use et_coordinates;
 			begin -- to_arc
 				set_x (arc.center, mil_to_distance (mil => field (line,2), warn_on_negative => false));
 				set_y (arc.center, mil_to_distance (mil => field (line,3), warn_on_negative => false));
@@ -1628,7 +1641,8 @@ package body et_kicad is
 					translate (t, et_string_processing.tilde_to_space'access);
 					return type_text_content.to_bounded_string (t);
 				end to_content;
-				
+
+				use et_coordinates;
 			begin -- to_text
 				text.orientation	:= to_degrees (field (line,2));
 				if text.orientation not in type_angle_90 then
@@ -1759,6 +1773,8 @@ package body et_kicad is
 					return s_out;
 					-- CS: exception handler
 				end to_style;
+
+				use et_coordinates;
 				
 			begin -- to_port
 				log_indentation_up;
@@ -3061,6 +3077,8 @@ package body et_kicad is
 							raise;
 
 			end build_package_variant;
+
+			use et_coordinates;
 			
 		begin -- read_library
 			log_indentation_up;
@@ -3561,7 +3579,7 @@ package body et_kicad is
 		-- Creates a net with the name and the scope (local, global) of the current strand. 
 		-- If strand is local, the net name is rendered to a full hierarchic name.
 		-- If the net existed already, then strand is appended to the strands of the net.
-			mod_name : in type_submodule_name.bounded_string;
+			mod_name : in et_coordinates.type_submodule_name.bounded_string;
 			module   : in out type_module) is
 
 			use type_nets;
@@ -3581,7 +3599,8 @@ package body et_kicad is
 
 				if log_level >= log_threshold + 2 then
 					log_indentation_up;
-					log ("strand at " & to_string (position => element (strand).coordinates, scope => et_coordinates.module));
+					log ("strand at " & et_coordinates.to_string (
+						position => element (strand).coordinates, scope => et_coordinates.module));
 					log_indentation_down;
 				end if;
 				
@@ -3617,7 +3636,8 @@ package body et_kicad is
 					-- Output a warning if strand has no name.
 					if et_schematic.anonymous (element (strand).name) then
 						log (message_warning & "net " & et_schematic.to_string (element (strand).name) 
-							& " at " & to_string (position => element (strand).coordinates, scope => et_coordinates.module)
+							& " at " & et_coordinates.to_string (
+								position => element (strand).coordinates, scope => et_coordinates.module)
 							& " has no dedicated name !");
 					end if;
 
@@ -3641,22 +3661,22 @@ package body et_kicad is
 -- 					end if;
 
 					-- if strand is in top module form a net name like "/MASTER_RESET"
-					if type_path_to_submodule.is_empty (et_coordinates.path (element (strand).coordinates)) then
+					if et_coordinates.type_path_to_submodule.is_empty (et_coordinates.path (element (strand).coordinates)) then
 						net_name := et_schematic.type_net_name.to_bounded_string (
-							hierarchy_separator
+							et_coordinates.hierarchy_separator
 							& et_schematic.to_string (element (strand).name));
 
 					else -- strand is in any submodule. form a net name like "/SENSOR/RESET"
 						net_name := et_schematic.type_net_name.to_bounded_string (
 							et_coordinates.to_string (et_coordinates.path (element (strand).coordinates))
-							& hierarchy_separator 
+							& et_coordinates.hierarchy_separator 
 							& et_schematic.to_string (element (strand).name));
 					end if;
 				
                     -- Create net and append strand to module.nets
                     rig.update_element (
-                        position => module_cursor,
-                        process => add_net'access);
+                        position	=> module_cursor,
+                        process		=> add_net'access);
 
 				when GLOBAL =>
 					-- form the net name depending on scope
@@ -3664,8 +3684,8 @@ package body et_kicad is
 
                     -- Create net and append strand to module.nets
                     rig.update_element (
-                        position => module_cursor,
-                        process => add_net'access);
+                        position	=> module_cursor,
+                        process		=> add_net'access);
 
 				when UNKNOWN =>
 					log (message_error & "unknown scope of net !");
@@ -3739,7 +3759,7 @@ package body et_kicad is
 		-- This construct returned after examining a gui_submodule for a suitable hierarchic net at a deeper level:
         type type_hierachic_net is record
 			available	: boolean := false; -- when false, path and port are without meaning
-			path        : type_path_to_submodule.list := type_path_to_submodule.empty_list;	-- the path of the submodule
+			path        : et_coordinates.type_path_to_submodule.list := et_coordinates.type_path_to_submodule.empty_list;	-- the path of the submodule
 			name		: et_schematic.type_net_name.bounded_string := to_bounded_string (""); -- the name of the hierarchic net -- CS: rename to name
         end record;
 
@@ -3750,6 +3770,7 @@ package body et_kicad is
 		-- Returns true if given port sits on given segment.
 			use et_geometry;
 			distance : type_distance_point_from_line;
+			use et_coordinates;
 		begin
 			distance := distance_of_point_from_line (
 				point 		=> port.coordinates,
@@ -3779,7 +3800,7 @@ package body et_kicad is
 			use type_rig;
 
 			procedure query_gui_submodules (
-				mod_name	: in type_submodule_name.bounded_string;
+				mod_name	: in et_coordinates.type_submodule_name.bounded_string;
 				module 		: in out type_module) is
 				submodule_cursor : type_gui_submodules.cursor := module.submodules.first; -- CS: rename to gui_submodule_cursor
 				use type_gui_submodules;
@@ -3788,7 +3809,7 @@ package body et_kicad is
 				-- Tests if the "port" of the given gui_submodule is connected with the given net segment.
 				-- If connected, the path of the gui_submodule and the submodule_name form the path to the real submodule. This
 				-- path is subsequently returned. The query ends.
-					submodule_name	: in type_submodule_name.bounded_string; -- The gui_submodule has a name. It is also the name of the real submodule.
+					submodule_name	: in et_coordinates.type_submodule_name.bounded_string; -- The gui_submodule has a name. It is also the name of the real submodule.
 					gui_submodule	: in out type_gui_submodule -- This is the gui_submodule being queried.
 					) is
 					-- These are the "ports" of the gui_submodule (they represent the hierarchic nets within the real submodule).
@@ -3806,12 +3827,12 @@ package body et_kicad is
 					function append_submodule_to_path (
 					-- This function appends the name of a submodule to a path.
 					-- Required to form the full path to the submodule.
-						path_in		: in type_path_to_submodule.list;
-						submodule	: in type_submodule_name.bounded_string)
+						path_in		: in et_coordinates.type_path_to_submodule.list;
+						submodule	: in et_coordinates.type_submodule_name.bounded_string)
 						return et_coordinates.type_path_to_submodule.list is
-						path_out : type_path_to_submodule.list := path_in;
+						path_out : et_coordinates.type_path_to_submodule.list := path_in;
 					begin
-						type_path_to_submodule.append (
+						et_coordinates.type_path_to_submodule.append (
 							container	=> path_out,
 							new_item	=> submodule);
 						return path_out;
@@ -3839,7 +3860,8 @@ package body et_kicad is
 									available	=> true, -- means: there is a subordinated hierarchical net available
 										   
 									-- Form the path of the real submodule (gui_submodule path + submodule name):
-									path		=> append_submodule_to_path (path (gui_submodule.coordinates), submodule_name), -- example /core/LEVEL_SHIFTER
+									path		=> append_submodule_to_path (et_coordinates.path (gui_submodule.coordinates), submodule_name), 
+												-- example /core/LEVEL_SHIFTER
 
 									-- The name of the subordinated hierarchical net:
 									name		=> et_schematic.type_net_name.to_bounded_string (to_string (key (port))));
@@ -3900,8 +3922,8 @@ package body et_kicad is
 			-- Defaults to the first strand of the rig module (indicated by module_cursor):
 			h_strand : type_strands.cursor := first_strand;
 			use type_strands;
-			use type_path_to_submodule;
-			use type_submodule_name;
+			use et_coordinates.type_path_to_submodule;
+			use et_coordinates.type_submodule_name;
 
 			-- This flag goes true once the given net has been found in the submodule.
 			-- It serves to warn the operator about a missing hierarchic net.
@@ -3941,7 +3963,8 @@ package body et_kicad is
 					next (segment);
 				end loop;
 			end query_segments;
-			
+
+			use et_coordinates;
 		begin -- collect_hierarchic_strands
 
 			-- If a hierarchic net is available, query all hierarchic strands of
@@ -4067,7 +4090,7 @@ package body et_kicad is
 			use type_rig;
 
 			procedure locate_net (
-				module_name	: in type_submodule_name.bounded_string;
+				module_name	: in et_coordinates.type_submodule_name.bounded_string;
 				module		: in out type_module
 				) is
 				use type_nets;
@@ -4144,6 +4167,7 @@ package body et_kicad is
 			label_tag		: type_tag_labels.cursor	:= segment.label_list_tag.first;
 			use type_simple_labels;
 			use type_tag_labels;
+			use et_coordinates;
 		begin
 			if log_level >= log_threshold + 3 then
 				
@@ -4175,7 +4199,8 @@ package body et_kicad is
 			strand : in type_strand) is
 			segment : type_net_segments.cursor := strand.segments.first;
 			use type_net_segments;
-
+			use et_coordinates;
+			
 			-- for the segment we provide a consequtive number which has no further meaning
 			segment_number : count_type := 1;			
 		begin
@@ -4206,7 +4231,8 @@ package body et_kicad is
 			
 			strand : type_strands.cursor := net.strands.first;
 			use type_strands;
-
+			use et_coordinates;
+			
 			-- for the strand we provide a consequtive number which has no further meaning
 			strand_number : count_type := 1;			
 		begin -- query_strand
@@ -4229,7 +4255,7 @@ package body et_kicad is
 		end query_strand;
 		
 		procedure query_net (
-			mod_name	: in type_submodule_name.bounded_string;
+			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module 		: in type_module) is
 			net : type_nets.cursor := module.nets.first;
 			use type_nets;
@@ -4646,6 +4672,8 @@ package body et_kicad is
 			current_schematic	: in type_schematic_file_name.bounded_string;
 			log_threshold		: in type_log_level)
 			return type_submodule_names_extended is
+
+			use et_coordinates;
 		-- Reads the given schematic file. If it contains submodules (hierarchic sheets), 
         -- they will be returned in list_of_submodules. Otherwise the returned list is empty.
 
@@ -7939,12 +7967,12 @@ package body et_kicad is
 
 		end read_schematic;
 
-		module_name : type_submodule_name.bounded_string; -- the name of the module to be created
+		module_name : et_coordinates.type_submodule_name.bounded_string; -- the name of the module to be created
 		module_inserted : boolean := false; -- goes true if module already created. should never happen
 
 		procedure save_component_libraries (
 		-- Saves the current tmp_component_libraries in the current module.
-			module_name	: in type_submodule_name.bounded_string;
+			module_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out type_module) is
 		begin
 			module.component_libraries := tmp_component_libraries;
@@ -7960,7 +7988,7 @@ package body et_kicad is
 			when et_import.kicad_v4 =>
 
 				-- Kicad uses Y axis positive downwards style (in both schematic and board)
-				Y_axis_positive := downwards;
+				et_coordinates.Y_axis_positive := et_coordinates.downwards;
 				
 				-- Derive top level schematic file name from project name.
 				-- This action creates new directory and component library search lists
@@ -7973,14 +8001,14 @@ package body et_kicad is
 				-- instance must be appended to the module_name.
 				if first_instance then 
 					-- Append instance to module name
-					module_name := append_instance (
+					module_name := et_coordinates.append_instance (
 										submodule =>
-											type_submodule_name.to_bounded_string (
+											et_coordinates.type_submodule_name.to_bounded_string (
 												base_name (to_string (top_level_schematic))),
-										instance => type_submodule_instance'first);
+										instance => et_coordinates.type_submodule_instance'first);
 				else
 					-- default mode: regular design import. set module name as top_level_schematic
-					module_name := type_submodule_name.to_bounded_string (
+					module_name := et_coordinates.type_submodule_name.to_bounded_string (
 											base_name (to_string (top_level_schematic)));
 				end if;
 
@@ -7989,9 +8017,9 @@ package body et_kicad is
 					container	=> rig,
 					key			=> module_name,
 					new_item 	=> (
-						generic_name	=> type_submodule_name.to_bounded_string (
+						generic_name	=> et_coordinates.type_submodule_name.to_bounded_string (
 											base_name (to_string (top_level_schematic))),
-						instance		=> type_submodule_instance'first,
+						instance		=> et_coordinates.type_submodule_instance'first,
 						
 						search_list_library_comps	=> search_list_component_libraries,
 						search_list_library_dirs	=> search_list_project_lib_dirs,
@@ -8019,7 +8047,7 @@ package body et_kicad is
 
 				if not module_inserted then -- CS should never happen
 					log_indentation_reset;
-					log (message_error & "module " & to_string (module_name) & " already in rig !");
+					log (message_error & "module " & et_coordinates.to_string (module_name) & " already in rig !");
 					raise constraint_error;
 				end if;
 
@@ -8040,7 +8068,7 @@ package body et_kicad is
 				
 
 				current_schematic := top_level_schematic;
-				check_submodule_name_characters (to_submodule_name (current_schematic));
+				et_coordinates.check_submodule_name_characters (to_submodule_name (current_schematic));
 				
                 -- The top level schematic file is the first entry in the module path.
 				-- The top level schematic file is the root in the module path.
@@ -8085,7 +8113,7 @@ package body et_kicad is
 									container => list_of_submodules.list,
 									index => list_of_submodules.id)));
 
-						check_submodule_name_characters (to_submodule_name (current_schematic));
+						et_coordinates.check_submodule_name_characters (to_submodule_name (current_schematic));
 						
 						-- backup list_of_submodules OF THIS LEVEL on stack (including the current submodule id)
 						push (list_of_submodules);
@@ -8093,7 +8121,9 @@ package body et_kicad is
 						log ("DESCENDING TO HIERARCHY LEVEL -" & trim (natural'image (depth),left));
 						log (row_separator_single);
 
-						append_name_of_parent_module_to_path (type_submodule_name.to_bounded_string (base_name (to_string (current_schematic)))); -- EXP
+						append_name_of_parent_module_to_path (et_coordinates.type_submodule_name.to_bounded_string (
+							base_name (to_string (current_schematic))));
+						
 						-- Read schematic file as indicated by list_of_submodules.id. 
 						-- Read_schematic receives the name of the schematic file to be read.
 						list_of_submodules := read_schematic (current_schematic, log_threshold);
@@ -8103,7 +8133,7 @@ package body et_kicad is
 						if type_submodule_names.is_empty (list_of_submodules.list) then -- flat submodule (no hierarchic sheets)
 
 							list_of_submodules := pop;
-							delete_last_module_name_from_path; -- EXP
+							delete_last_module_name_from_path;
                             list_of_submodules.id := list_of_submodules.id + 1;
                             
 							log ("NO SUBMODULES HERE. ASCENDING TO HIERARCHY LEVEL -" & trim (natural'image (depth),left));
@@ -8112,7 +8142,6 @@ package body et_kicad is
 						else
 							-- set cursor at first submodule of list and append name of parent module to path_to_submodule
                             list_of_submodules.id := 1;
-                            --append_name_of_parent_module_to_path (list_of_submodules.parent_module); -- EXP
 						end if;
 
 						-- Once the last submodule of the list has been processed, restore list of the overlying level and advance to next module.
@@ -8123,9 +8152,8 @@ package body et_kicad is
 								exit; 
 							end if;
 							list_of_submodules := pop; -- restore overlying list
-							delete_last_module_name_from_path; -- update path_to_submodule -- EXP
+							delete_last_module_name_from_path;
                             list_of_submodules.id := list_of_submodules.id + 1;
---                             delete_last_module_name_from_path; -- update path_to_submodule -- EXP
 							log ("LAST SUBMODULE PROCESSED. ASCENDING TO HIERARCHY LEVEL: -" & trim(natural'image(depth),left));
 							log (row_separator_single);
 						end if;
@@ -8245,7 +8273,7 @@ package body et_kicad is
 	function purpose (
 	-- Returns the purpose of the given component in the given module.
 	-- If no purpose specified for the component, an empty string is returned.
-		module_name		: in type_submodule_name.bounded_string; -- led_matrix_2
+		module_name		: in et_coordinates.type_submodule_name.bounded_string; -- led_matrix_2
 		reference		: in et_libraries.type_component_reference; -- X701
 		log_threshold	: in et_string_processing.type_log_level)
 		return et_libraries.type_component_purpose.bounded_string is
@@ -8259,7 +8287,7 @@ package body et_kicad is
 	
 		procedure query_components (
 		-- Searches the components of the module for the given reference.
-			module_name : in type_submodule_name.bounded_string;
+			module_name : in et_coordinates.type_submodule_name.bounded_string;
 			module		: in type_module) is
 			use type_components_schematic;
 			component_cursor : type_components_schematic.cursor := module.components.first;
@@ -8282,7 +8310,7 @@ package body et_kicad is
 		end query_components;
 			
 	begin -- purpose
-		log ("module " & to_string (module_name) 
+		log ("module " & et_coordinates.to_string (module_name) 
 			 & " looking up purpose of " 
 			 & et_libraries.to_string (reference) & " ...", log_threshold);
 		log_indentation_up;
@@ -8413,7 +8441,7 @@ package body et_kicad is
 -- 							& to_string (name_after) & " ...",
 -- 							level => 2
 -- 						);
-					log (to_string (position => strand.coordinates, scope => et_coordinates.module),
+					log (et_coordinates.to_string (position => strand.coordinates, scope => et_coordinates.module),
 						log_threshold + 1);
 
 					log_indentation_down;
@@ -8795,6 +8823,7 @@ package body et_kicad is
 			label_tag		: type_tag_labels.cursor	:= segment.label_list_tag.first;
 			use type_simple_labels;
 			use type_tag_labels;
+			use et_coordinates;
 		begin
 			if log_level >= log_threshold + 2 then
 				log_indentation_up;
@@ -9315,7 +9344,7 @@ package body et_kicad is
 			use type_rig;
 		
 			procedure save (
-				module_name	: in type_submodule_name.bounded_string;
+				module_name	: in et_coordinates.type_submodule_name.bounded_string;
 				module 		: in out type_module) is
 			begin
 				module.portlists := portlists;
@@ -9323,9 +9352,9 @@ package body et_kicad is
 		begin -- save_portlists
 			log ("saving portlists ...", log_threshold + 1);
 			update_element (
-				container => rig,
-				position => module_cursor,
-				process => save'access);
+				container	=> rig,
+				position	=> module_cursor,
+				process 	=> save'access);
 		end save_portlists;
 		
 	begin -- build_portlists
@@ -9428,7 +9457,7 @@ package body et_kicad is
 		use et_string_processing;
 
 		procedure query_portlists (
-			module_name	: in type_submodule_name.bounded_string;
+			module_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module 		: in type_module) is
 			use type_portlists;
 			portlist_cursor : type_portlists.cursor := module.portlists.first;
@@ -9554,6 +9583,7 @@ package body et_kicad is
 					return false;
 				end connected_by_other_unit;
 
+				use et_coordinates;
 			begin -- query_ports
 				-- Test the port if it is NOT intentionally left open AND
 				-- if it is not connected to any net segment.
@@ -9621,7 +9651,7 @@ package body et_kicad is
 		-- Process one rig module after another.
 		-- module_cursor points to the module in the rig.
 		while module_cursor /= type_rig.no_element loop
-			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log ("module " & et_coordinates.to_string (key (module_cursor)), log_threshold);
 			log_indentation_up;
 			
 			-- query no_connection_flags of current module and test if any of them
@@ -9647,7 +9677,7 @@ package body et_kicad is
 		-- Queries the schematic components one after another.
 		-- Opens the library where the generic model is stored.
 		-- The library name is provided by the schematic component.
-			module_name : in type_submodule_name.bounded_string;
+			module_name : in et_coordinates.type_submodule_name.bounded_string;
 			module		: in type_module) is
 
 			use type_components_schematic;
@@ -9829,13 +9859,13 @@ package body et_kicad is
 		-- Process one rig module after another.
 		-- module_cursor points to the module in the rig.
 		while module_cursor /= type_rig.no_element loop
-			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log ("module " & et_coordinates.to_string (key (module_cursor)), log_threshold);
 			log_indentation_up;
 			
 			-- query components in schematic
 			query_element (
-				position => module_cursor,
-				process => query_schematic_components'access);
+				position	=> module_cursor,
+				process		=> query_schematic_components'access);
 
 			log_indentation_down;
 			next (module_cursor);
@@ -9849,7 +9879,7 @@ package body et_kicad is
 		count : count_type := 0;
 	
 		procedure count_nets (
-			module_name	: in type_submodule_name.bounded_string;
+			module_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in type_module) is
 		begin
 			count := type_netlist.length (module.netlist);
@@ -9868,7 +9898,7 @@ package body et_kicad is
 		count : count_type := 0;
 	
 		procedure count_junctions (
-			module_name	: in type_submodule_name.bounded_string;
+			module_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in type_module) is
 			use et_schematic.type_junctions;
 		begin
@@ -9903,7 +9933,8 @@ package body et_kicad is
 
 		use et_string_processing;
 		use type_rig;
-
+		use et_coordinates;
+		
 		module_cursor_origin : type_rig.cursor;
 		generic_name_origin : et_coordinates.type_submodule_name.bounded_string;
 		instance_origin : type_submodule_instance;
@@ -9984,6 +10015,7 @@ package body et_kicad is
 		module_cursor : type_rig.cursor;
 		use type_rig;
 		use et_string_processing;
+		use et_coordinates;
 	begin
 		if find (rig, module_name) = type_rig.no_element then
 			log_indentation_reset;
@@ -10257,7 +10289,7 @@ package body et_kicad is
 
 		procedure query_strands_prim (
 		-- Query strands of module.
-			module_name	: in type_submodule_name.bounded_string;
+			module_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in type_module) is
 			use type_strands;
 			strand_cursor_prim : type_strands.cursor := module.strands.first;
@@ -10270,7 +10302,7 @@ package body et_kicad is
 
 				type type_junction is record
 					expected : boolean := false;
-					position : type_coordinates;
+					position : et_coordinates.type_coordinates;
 				end record;
 
 				junction : type_junction;
@@ -10293,6 +10325,7 @@ package body et_kicad is
 						segment_cursor_sec : type_net_segments.cursor := strand.segments.first;
 						use et_geometry;
 						distance : type_distance_point_from_line;
+						use et_coordinates;
 					begin -- query_segments_sec
 						log_indentation_up;
 						log ("quering segments ...", log_threshold + 4);
@@ -10356,7 +10389,7 @@ package body et_kicad is
 
 						log (et_schematic.to_string (element (strand_cursor_sec).name)
 							& " at " 
-							& to_string (element (strand_cursor_sec).coordinates, scope => et_coordinates.module),
+							& et_coordinates.to_string (element (strand_cursor_sec).coordinates, scope => et_coordinates.module),
 							log_threshold + 3);
 					
 						query_element (
@@ -10377,10 +10410,11 @@ package body et_kicad is
 				
 					procedure query_junctions (
 					-- Query junctions. Exits prematurely once a junction is found.
-						module_name : in type_submodule_name.bounded_string;
+						module_name : in et_coordinates.type_submodule_name.bounded_string;
 						module 		: in type_module) is
 						use et_schematic.type_junctions;
 						junction_cursor : et_schematic.type_junctions.cursor := module.junctions.first;
+						use et_coordinates;
 					begin -- query_junctions
 						junction_found := false;
 						while junction_cursor /= et_schematic.type_junctions.no_element loop
@@ -10401,7 +10435,7 @@ package body et_kicad is
 					return junction_found;
 				end junction_here;
 
-				
+				use et_coordinates;
 				
 			begin -- query_segments_prim
 				log_indentation_up;
@@ -10437,7 +10471,7 @@ package body et_kicad is
 			
 				log (et_schematic.to_string (element (strand_cursor_prim).name)
 					& " at " 
-					& to_string (element (strand_cursor_prim).coordinates, scope => et_coordinates.module),
+					& et_coordinates.to_string (element (strand_cursor_prim).coordinates, scope => et_coordinates.module),
 					log_threshold + 1);
 			
 				-- query segments of current strand
@@ -10462,7 +10496,7 @@ package body et_kicad is
 		-- Process one rig module after another.
 		-- module_cursor points to the module in the rig.
 		while module_cursor /= type_rig.no_element loop
-			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log ("module " & et_coordinates.to_string (key (module_cursor)), log_threshold);
 			log_indentation_up;
 			
 			-- query strands of current module
@@ -10484,7 +10518,7 @@ package body et_kicad is
 
 		procedure query_junctions (
 		-- Query junctions.
-			module_name	: in type_submodule_name.bounded_string;
+			module_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module 		: in type_module) is
 			use et_schematic.type_junctions;
 			junction_cursor : et_schematic.type_junctions.cursor := module.junctions.first;
@@ -10496,7 +10530,7 @@ package body et_kicad is
 				procedure query_strands (
 				-- Query net segments. Exits prematurely once a strand is found where the junction
 				-- sits on.
-					module_name : in type_submodule_name.bounded_string;
+					module_name : in et_coordinates.type_submodule_name.bounded_string;
 					module 		: in type_module) is
 					use type_strands;
 					strand_cursor : type_strands.cursor := module.strands.first;
@@ -10509,6 +10543,7 @@ package body et_kicad is
 						segment_cursor : type_net_segments.cursor := strand.segments.first;
 						use et_geometry;
 						distance : type_distance_point_from_line;
+						use et_coordinates;
 					begin
 						while segment_cursor /= type_net_segments.no_element loop
 
@@ -10560,7 +10595,7 @@ package body et_kicad is
 
 				if not segment_here then
 					log (message_warning & "orphaned net junction at " 
-						 & to_string (element (junction_cursor).coordinates,
+						 & et_coordinates.to_string (element (junction_cursor).coordinates,
 						et_coordinates.module));
 				end if;
 					
@@ -10579,7 +10614,7 @@ package body et_kicad is
 		-- Process one rig module after another.
 		-- module_cursor points to the module in the rig.
 		while module_cursor /= type_rig.no_element loop
-			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log ("module " & et_coordinates.to_string (key (module_cursor)), log_threshold);
 		
 			-- query strands of current module
 			query_element (
@@ -10602,7 +10637,7 @@ package body et_kicad is
 
 		procedure query_junctions (
 		-- Query junctions and test net segments and ports at the junction coordinates.
-			module_name : in type_submodule_name.bounded_string;
+			module_name : in et_coordinates.type_submodule_name.bounded_string;
 			module		: in type_module) is
 			use et_schematic.type_junctions;
 			junction_cursor : et_schematic.type_junctions.cursor := module.junctions.first;
@@ -10614,7 +10649,7 @@ package body et_kicad is
 				procedure query_strands (
 				-- Query net segments. Exits prematurely once a strand is found where the junction
 				-- sits on.
-					module_name : in type_submodule_name.bounded_string;
+					module_name : in et_coordinates.type_submodule_name.bounded_string;
 					module 		: in type_module) is
 					use type_strands;
 					strand_cursor : type_strands.cursor := module.strands.first;
@@ -10627,6 +10662,7 @@ package body et_kicad is
 						segment_cursor : type_net_segments.cursor := strand.segments.first;
 						use et_geometry;
 						distance : type_distance_point_from_line;
+						use et_coordinates;
 					begin
 						while segment_cursor /= type_net_segments.no_element loop
 
@@ -10679,7 +10715,7 @@ package body et_kicad is
 
 				procedure query_portlists (
 				-- Query portlists. Exits prematurely once any port was found.
-					module_name : in type_submodule_name.bounded_string;
+					module_name : in et_coordinates.type_submodule_name.bounded_string;
 					module 		: in type_module) is
 					use type_portlists;
 					portlist_cursor : type_portlists.cursor := module.portlists.first;
@@ -10690,6 +10726,7 @@ package body et_kicad is
 						ports 		: in type_ports.list) is
 						port_cursor : type_ports.cursor := ports.first;
 						use type_ports;
+						use et_coordinates;
 					begin
 						while port_cursor /= type_ports.no_element loop
 
@@ -10721,7 +10758,7 @@ package body et_kicad is
 			procedure log_misplaced_junction is
 			begin
 				log (message_warning & "misplaced net junction at " 
-					& to_string (element (junction_cursor).coordinates,
+					& et_coordinates.to_string (element (junction_cursor).coordinates,
 					et_coordinates.module));
 			end log_misplaced_junction;
 			
@@ -10758,7 +10795,7 @@ package body et_kicad is
 		-- Process one rig module after another.
 		-- module_cursor points to the module in the rig.
 		while module_cursor /= type_rig.no_element loop
-			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log ("module " & et_coordinates.to_string (key (module_cursor)), log_threshold);
 		
 			-- query strands of current module
 			query_element (
@@ -10778,7 +10815,7 @@ package body et_kicad is
 		
 		procedure query_strands (
 		-- Query strands and test if no_connection_flags are placed on any segment of the strand.
-			module_name : in type_submodule_name.bounded_string;
+			module_name : in et_coordinates.type_submodule_name.bounded_string;
 			module 		: in type_module) is
 			use type_strands;
 			strand_cursor : type_strands.cursor := module.strands.first;
@@ -10793,10 +10830,11 @@ package body et_kicad is
 				
 					procedure query_no_connect_flags (
 					-- Query junctions. Exits prematurely once a junction is found.
-						module_name : in type_submodule_name.bounded_string;
+						module_name : in et_coordinates.type_submodule_name.bounded_string;
 						module 		: in type_module) is
 						use type_no_connection_flags;
 						use et_geometry;
+						use et_coordinates;
 						no_connection_flag_cursor : type_no_connection_flags.cursor := module.no_connections.first;
 						distance : type_distance_point_from_line;
 					begin -- query_no_connect_flags
@@ -10825,7 +10863,7 @@ package body et_kicad is
 
 								if (not distance.out_of_range) and distance.distance = et_coordinates.zero_distance then
 									log (message_warning & "no-connection-flag misplaced on a net at " 
-										& to_string (element (no_connection_flag_cursor).coordinates, et_coordinates.module));
+										& et_coordinates.to_string (element (no_connection_flag_cursor).coordinates, et_coordinates.module));
 								end if;
 							end if;
 
@@ -10874,7 +10912,7 @@ package body et_kicad is
 
 				log (et_schematic.to_string (element (strand_cursor).name)
 					& " at " 
-					& to_string (element (strand_cursor).coordinates, scope => et_coordinates.module),
+					& et_coordinates.to_string (element (strand_cursor).coordinates, scope => et_coordinates.module),
 					log_threshold + 1);
 			
 				-- query segments of current strand
@@ -10899,7 +10937,7 @@ package body et_kicad is
 		-- Process one rig module after another.
 		-- module_cursor points to the module in the rig.
 		while module_cursor /= type_rig.no_element loop
-			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log ("module " & et_coordinates.to_string (key (module_cursor)), log_threshold);
 			log_indentation_up;
 			
 			-- query strands of current module and check of any misplaced no_connection_flags
@@ -10922,14 +10960,14 @@ package body et_kicad is
 	
 		procedure query_no_connect_flags (
 		-- Query junctions. Exits prematurely once a junction is found.
-			module_name : in type_submodule_name.bounded_string;
+			module_name : in et_coordinates.type_submodule_name.bounded_string;
 			module 		: in type_module) is
 			use type_no_connection_flags;
 			no_connection_flag_cursor : type_no_connection_flags.cursor := module.no_connections.first;
 
 			procedure query_portlists (
 			-- Query junctions. Exits prematurely once a junction is found.
-				module_name : in type_submodule_name.bounded_string;
+				module_name : in et_coordinates.type_submodule_name.bounded_string;
 				module 		: in type_module) is
 				use type_portlists;
 				portlist_cursor : type_portlists.cursor := module.portlists.first;
@@ -10942,6 +10980,7 @@ package body et_kicad is
 					ports 		: in type_ports.list) is
 					port_cursor : type_ports.cursor := ports.first;
 					use type_ports;
+					use et_coordinates;
 				begin -- query_ports
 					-- query ports of component and test if the no_connection_flag is attached to any of them
 					while port_cursor /= type_ports.no_element loop
@@ -10973,7 +11012,7 @@ package body et_kicad is
 				if flag_orphaned then
 					-- no_connection_flag is not placed at any port
 					log (message_warning & "orphaned no_connection_flag found at " 
-						 & to_string (element (no_connection_flag_cursor).coordinates,
+						 & et_coordinates.to_string (element (no_connection_flag_cursor).coordinates,
 							et_coordinates.module));
 				end if;
 					
@@ -11002,7 +11041,7 @@ package body et_kicad is
 		-- Process one rig module after another.
 		-- module_cursor points to the module in the rig.
 		while module_cursor /= type_rig.no_element loop
-			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log ("module " & et_coordinates.to_string (key (module_cursor)), log_threshold);
 			log_indentation_up;
 			
 			-- query no_connection_flags of current module and test if any of them
@@ -11025,6 +11064,7 @@ package body et_kicad is
 		position_of_last_separator : natural := 0;
 		use et_schematic;
 		use et_schematic.type_net_name;
+		use et_coordinates;
 		name : type_net_name.bounded_string;
 	begin
 		-- Detect position of last hierarchy separator.
@@ -11091,8 +11131,11 @@ package body et_kicad is
 
 	end write_label_properties;
 
-	function to_string (label : in type_net_label; scope : in type_scope) return string is
+	function to_string (
+		label : in type_net_label;
+		scope : in et_coordinates.type_scope) return string is
 	-- Returns the coordinates of the given label as string.
+		use et_coordinates;
 	begin
 		return (to_string (position => label.coordinates, scope => scope));
 	end to_string;
@@ -11112,7 +11155,7 @@ package body et_kicad is
 		use type_rig;
 
 		procedure query_nets (
-			module_name : in type_submodule_name.bounded_string;
+			module_name : in et_coordinates.type_submodule_name.bounded_string;
 			module 		: in type_module) is
 			use type_netlist;
 			net_cursor : type_netlist.cursor := module.netlist.first;
@@ -11164,6 +11207,7 @@ package body et_kicad is
 				-- CS: procedure (input parameter port-direction) that loops through the ports 
 				-- and outputs them as requested by the input parameter.
 
+				use et_coordinates;
 			begin -- query_ports
 
 				while port_cursor /= type_ports_with_reference.no_element loop
@@ -11346,7 +11390,7 @@ package body et_kicad is
 		-- Process one rig module after another.
 		-- module_cursor points to the module in the rig.
 		while module_cursor /= type_rig.no_element loop
-			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log ("module " & et_coordinates.to_string (key (module_cursor)), log_threshold);
 		
 			-- query nets in netlist
 			query_element (
@@ -11371,6 +11415,7 @@ package body et_kicad is
 
 		use et_string_processing;
 		use type_rig;
+		use et_coordinates;
 
 		module_cursor : type_rig.cursor; -- points to the module being searched in
 
@@ -11493,6 +11538,7 @@ package body et_kicad is
 	
 		use et_string_processing;
 		use type_rig;
+		use et_coordinates;
 
 		function make_netlist return type_netlist.map is
 		-- Generates the netlist of the current module (indicated by module_cursor).
@@ -11783,6 +11829,7 @@ package body et_kicad is
 
 		use type_rig;
 		use et_string_processing;
+		use et_coordinates;
 		terminals : et_libraries.type_terminal_count; -- to be returned
 
 		procedure locate_component_in_schematic (
@@ -11915,7 +11962,7 @@ package body et_kicad is
 
 	function to_terminal (
 		port 			: in type_port_with_reference;
-		module			: in type_submodule_name.bounded_string; -- the name of the module
+		module			: in et_coordinates.type_submodule_name.bounded_string; -- the name of the module
 		log_threshold 	: in et_string_processing.type_log_level) -- see et_libraries spec
 		return et_libraries.type_terminal is
 	-- Returns the terminal and unit name of the given port in a composite type.
@@ -11933,6 +11980,7 @@ package body et_kicad is
 
 		use type_rig;
 		use et_string_processing;
+		use et_coordinates;
 		terminal : et_libraries.type_terminal; -- to be returned
 
 		procedure locate_component_in_schematic (
@@ -12082,7 +12130,7 @@ package body et_kicad is
 
 	function connected_net (
 	-- Returns the name of the net connected with the given component and terminal.
-		module			: in type_submodule_name.bounded_string; -- nucleo_core
+		module			: in et_coordinates.type_submodule_name.bounded_string; -- nucleo_core
 		reference		: in et_libraries.type_component_reference;	-- IC45
 		terminal		: in et_libraries.type_terminal_name.bounded_string; -- E14
 		log_threshold	: in et_string_processing.type_log_level)		
@@ -12097,6 +12145,7 @@ package body et_kicad is
 
 		use et_string_processing;
 		use type_rig;
+		use et_coordinates;
 
 		module_cursor : type_rig.cursor; -- points to the module being searched in
 
@@ -12291,6 +12340,7 @@ package body et_kicad is
 		use et_general;
 		use et_string_processing;
 		use et_export;
+		use et_coordinates;
 		
 		netlist_handle 		: ada.text_io.file_type;
 		netlist_file_name	: et_schematic.type_netlist_file_name.bounded_string;
@@ -12435,13 +12485,14 @@ package body et_kicad is
 	end export_netlists;
 
 	function components_in_net (
-		module 			: in type_submodule_name.bounded_string; -- nucleo_core
+		module 			: in et_coordinates.type_submodule_name.bounded_string; -- nucleo_core
 		net				: in et_schematic.type_net_name.bounded_string; -- motor_on_off
 		log_threshold	: in et_string_processing.type_log_level)
 		return type_ports_with_reference.set is
 	-- Returns a list of component ports that are connected with the given net.
 
 		use et_string_processing;
+		use et_coordinates;
 		use type_rig;
 
 		module_cursor : type_rig.cursor;
@@ -12546,13 +12597,14 @@ package body et_kicad is
 
 
 	function real_components_in_net (
-		module 			: in type_submodule_name.bounded_string; -- nucleo_core
+		module 			: in et_coordinates.type_submodule_name.bounded_string; -- nucleo_core
 		net				: in et_schematic.type_net_name.bounded_string; -- motor_on_off
 		log_threshold	: in et_string_processing.type_log_level)
 		return type_ports_with_reference.set is
 	-- Returns a list of real component ports that are connected with the given net.
 
 		use et_string_processing;
+		use et_coordinates;
 		use type_rig;
 
 		module_cursor : type_rig.cursor;
@@ -12724,21 +12776,21 @@ package body et_kicad is
 		-- Process one rig module after another.
 		-- module_cursor points to the module in the rig.
 		while module_cursor /= type_rig.no_element loop
-			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log ("module " & et_coordinates.to_string (key (module_cursor)), log_threshold);
 			log_indentation_up;
 
-			create_project_directory (to_string (key (module_cursor)), log_threshold + 2);
+			create_project_directory (et_coordinates.to_string (key (module_cursor)), log_threshold + 2);
 			-- compose the bom file name and its path like "../ET/motor_driver/CAM/motor_driver.csv"
 			bom_file_name := et_schematic.type_bom_file_name.to_bounded_string 
 				(
 				compose (
 					containing_directory => compose 
 						(
-						containing_directory => compose (work_directory, to_string (key (module_cursor))),
+						containing_directory => compose (work_directory, et_coordinates.to_string (key (module_cursor))),
 						name => et_export.directory_cam
 						),
-					name => to_string (key (module_cursor)),
-					extension => et_schematic.extension_bom)
+					name		=> et_coordinates.to_string (key (module_cursor)),
+					extension	=> et_schematic.extension_bom)
 				);
 
 			-- create the BOM (which inevitably and intentionally overwrites the previous file)
@@ -12785,16 +12837,12 @@ package body et_kicad is
 	
 -- STATISTICS
 
-	procedure make_statistics (log_threshold : in et_string_processing.type_log_level)
-	--return et_schematic.type_statistics 
-		is
-	-- Returns statistics about the module indicated by module_cursor.
-
-		--statistics : et_schematic.type_statistics;
+	procedure make_statistics (log_threshold : in et_string_processing.type_log_level) is
 	
 		arrow : constant string (1..4) := " -> ";
 
 		use et_string_processing;		
+		use et_coordinates;
 		
 		procedure count_components (
 			name	: in type_submodule_name.bounded_string;
@@ -12870,7 +12918,7 @@ package body et_kicad is
 		end count_components;
 
 		procedure count_ports (
-			name	: in type_submodule_name.bounded_string;
+			name	: in et_coordinates.type_submodule_name.bounded_string;
 			module	: in type_module) is
 
 			use type_portlists;
@@ -12953,17 +13001,17 @@ package body et_kicad is
 		log_indentation_up;
 		
 		while module_cursor /= type_rig.no_element loop
-			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log ("module " & et_coordinates.to_string (key (module_cursor)), log_threshold);
 			log_indentation_up;
 
 			-- CAD
-			create_project_directory (to_string (key (module_cursor)), log_threshold + 2);			
+			create_project_directory (et_coordinates.to_string (key (module_cursor)), log_threshold + 2);			
 			-- compose the CAD statistics file name and its path like "../ET/motor_driver/motor_driver.stat"
 			statistics_file_name_cad := et_schematic.type_statistic_file_name.to_bounded_string 
 				(
 				compose (
-					containing_directory	=> compose (work_directory, to_string (key (module_cursor))),
-					name 					=> to_string (key (module_cursor)),
+					containing_directory	=> compose (work_directory, et_coordinates.to_string (key (module_cursor))),
+					name 					=> et_coordinates.to_string (key (module_cursor)),
 					extension 				=> et_schematic.extension_statistics)
 				);
 
@@ -12979,7 +13027,7 @@ package body et_kicad is
 			log_indentation_up;
 			put_line (statistics_handle_cad, comment_mark & " " & system_name & " CAD statistics");
 			put_line (statistics_handle_cad, comment_mark & " " & date);
-			put_line (statistics_handle_cad, comment_mark & " module " & to_string (key (module_cursor)));
+			put_line (statistics_handle_cad, comment_mark & " module " & et_coordinates.to_string (key (module_cursor)));
 			put_line (statistics_handle_cad, comment_mark & " " & row_separator_double);
 
 			make_statistics (log_threshold + 1);
@@ -13031,10 +13079,10 @@ package body et_kicad is
 				compose (
 					containing_directory => compose 
 						(
-						containing_directory	=> compose (work_directory, to_string (key (module_cursor))),
+						containing_directory	=> compose (work_directory, et_coordinates.to_string (key (module_cursor))),
 						name					=> et_export.directory_cam
 						),
-					name				=> to_string (key (module_cursor)),
+					name				=> et_coordinates.to_string (key (module_cursor)),
 					extension			=> et_schematic.extension_statistics)
 				);
 
@@ -13050,7 +13098,7 @@ package body et_kicad is
 			log_indentation_up;
 			put_line (statistics_handle_cam, comment_mark & " " & system_name & " CAM statistics");
 			put_line (statistics_handle_cam, comment_mark & " " & date);
-			put_line (statistics_handle_cam, comment_mark & " module " & to_string (key (module_cursor)));
+			put_line (statistics_handle_cam, comment_mark & " module " & et_coordinates.to_string (key (module_cursor)));
 			put_line (statistics_handle_cam, comment_mark & " " & row_separator_double);
 
 			-- components

@@ -49,7 +49,7 @@ with et_project;
 with et_schematic;
 with et_pcb;
 with et_import;
-with et_coordinates;			use et_coordinates;
+with et_coordinates;
 with et_pcb_coordinates;
 with et_libraries;
 with et_string_processing;
@@ -134,7 +134,7 @@ package et_kicad is
 	-- Here we remove the last submodule name form the path_to_submodule.
 	procedure delete_last_module_name_from_path; -- CS: unify with append_name_of_parent_module_to_path
 
-	procedure module_not_found (module : in type_submodule_name.bounded_string);
+	procedure module_not_found (module : in et_coordinates.type_submodule_name.bounded_string);
 	-- Returns a message stating that the given module does not exist.
 
 	-- Units may have alternative representations such as de_Morgan
@@ -177,7 +177,7 @@ package et_kicad is
 	-- The unit is an element in the given list of units.
 		name	: in et_libraries.type_unit_name.bounded_string; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
-		return type_coordinates;
+		return et_coordinates.type_coordinates;
 	
 	function mirror_style_of_unit (
 	-- Returns the mirror style of the given unit.
@@ -216,7 +216,7 @@ package et_kicad is
 	type type_port_library is new et_libraries.type_port with record 	-- CS: set defaults
 		-- the clearance between symbol outline and port name 
 		-- CS: define a reasonable range
-		port_name_offset	: type_distance; 
+		port_name_offset : et_coordinates.type_distance; 
 		-- CS : obsolete ? pin_position_offset ?
 	end record;
 
@@ -239,7 +239,7 @@ package et_kicad is
 	-- a component unit in the library
 	type type_unit_library (appearance : et_libraries.type_component_appearance) is record
 		symbol		: type_symbol (appearance);
-		coordinates	: type_coordinates;
+		coordinates	: et_coordinates.type_coordinates;
 		-- Units that harbor component wide pins have this flag set.
 		-- Usually units with power supply pins exclusively.
 		-- When building portlists this flag is important.
@@ -413,7 +413,9 @@ package et_kicad is
 	-- No-connection-flags can be stored in a simple list:
 	package type_no_connection_flags is new doubly_linked_lists (type_no_connection_flag);	
 
-	function to_string (no_connection_flag : in type_no_connection_flag; scope : in type_scope) return string;
+	function to_string (
+		no_connection_flag	: in type_no_connection_flag;
+		scope				: in et_coordinates.type_scope) return string;
 	-- Returns the position of the given no-connection-flag as string.
 
 	type type_port_open is new boolean;
@@ -422,7 +424,7 @@ package et_kicad is
 	-- For portlists and netlists we need a component port with its basic elements:
 	type type_port is tagged record -- CS: use a controlled type since some selectors do not apply for virtual ports
 		name			: et_libraries.type_port_name.bounded_string; -- the port name like GPIO1, GPIO2
-		coordinates 	: type_coordinates;
+		coordinates 	: et_coordinates.type_coordinates;
 		direction		: et_libraries.type_port_direction; -- example: "passive"
 		style			: et_libraries.type_port_style;
 		appearance		: et_schematic.type_appearance_schematic;
@@ -453,7 +455,7 @@ package et_kicad is
 
 	function to_terminal (
 		port 			: in type_port_with_reference;
-		module			: in type_submodule_name.bounded_string; -- the name of the module							 
+		module			: in et_coordinates.type_submodule_name.bounded_string; -- the name of the module							 
 		log_threshold 	: in et_string_processing.type_log_level)
 		return et_libraries.type_terminal;
 	-- Returns the terminal and unit name of the given port in a composite type.
@@ -491,11 +493,11 @@ package et_kicad is
 	-- Returns the simple name of the given net name.
 	-- Example: If the given name is "MOTOR_DRIVER/CLOCK" then the return is "CLOCK".
 
-	type type_label_direction is (input, output, bidir, tristate, passive); -- CS rename to type_net_label_direction
-	type type_label_appearance is (simple, tag); -- CS rename to type_net_lael_appearance
+	type type_label_direction is (INPUT, OUTPUT, BIDIR, TRISTATE, PASSIVE); -- CS rename to type_net_label_direction
+	type type_label_appearance is (SIMPLE, TAG); -- CS rename to type_net_lael_appearance
 	type type_net_label (label_appearance : type_label_appearance) is record
 		coordinates	: et_coordinates.type_coordinates;
-		orientation	: type_angle;
+		orientation	: et_coordinates.type_angle;
         text		: et_schematic.type_net_name.bounded_string;
         size		: et_libraries.type_text_size;
         style		: et_libraries.type_text_style;
@@ -520,7 +522,9 @@ package et_kicad is
 	procedure write_label_properties (label : in type_net_label);
 	-- Writes the properties of the given net label in the logfile.
 
-	function to_string (label : in type_net_label; scope : in type_scope) return string;
+	function to_string (
+		label 	: in type_net_label;
+		scope 	: in et_coordinates.type_scope) return string;
 	-- Returns the coordinates of the given label as string.
 
 
@@ -557,7 +561,7 @@ package et_kicad is
 	-- Returns the lowest x/y position of the given strand.
 		strand 			: in type_strand;
 		log_threshold	: in et_string_processing.type_log_level
-		) return type_2d_point;
+		) return et_coordinates.type_2d_point;
 
 	procedure add_strand (
 	-- Adds a strand into the module (indicated by module_cursor).
@@ -837,7 +841,8 @@ package et_kicad is
 	endfplist	: constant string (1..10) := "$ENDFPLIST";
 
 	-- The distance of the pin name from the pin itself (supply pins only)
-	subtype type_supply_pin_name_position_offset is type_distance range 0.00 .. type_distance'last;
+	subtype type_supply_pin_name_position_offset is et_coordinates.type_distance
+		range 0.00 .. et_coordinates.type_distance'last;
 
 	-- KiCad supports up to 64 units within a component
 	unit_count_max : constant positive := 64;
@@ -947,8 +952,8 @@ package et_kicad is
 	type type_gui_submodule is record
         text_size_of_name   : et_libraries.type_text_size;
         text_size_of_file   : et_libraries.type_text_size;
-		coordinates		    : type_coordinates;
-        size_x, size_y      : type_distance; -- size x/y of the box
+		coordinates		    : et_coordinates.type_coordinates;
+        size_x, size_y      : et_coordinates.type_distance; -- size x/y of the box
 		timestamp           : et_string_processing.type_timestamp;
 		ports				: type_gui_submodule_ports.map;
 	end record;
@@ -1012,7 +1017,7 @@ package et_kicad is
 	function purpose (
 	-- Returns the purpose of the given component in the given module.
 	-- If no purpose specified for the component, an empty string is returned.						 
-		module_name		: in type_submodule_name.bounded_string; -- led_matrix_2
+		module_name		: in et_coordinates.type_submodule_name.bounded_string; -- led_matrix_2
 		reference		: in et_libraries.type_component_reference; -- X701
 		log_threshold	: in et_string_processing.type_log_level)
 		return et_libraries.type_component_purpose.bounded_string;
@@ -1032,14 +1037,14 @@ package et_kicad is
 	-- Writes a nice overview of all nets, strands, segments and labels.
 	
 	function components_in_net (
-		module 			: in type_submodule_name.bounded_string; -- nucleo_core
+		module 			: in et_coordinates.type_submodule_name.bounded_string; -- nucleo_core
 		net				: in et_schematic.type_net_name.bounded_string; -- motor_on_off
 		log_threshold	: in et_string_processing.type_log_level)
 		return type_ports_with_reference.set;
 	-- Returns a list of component ports that are connected with the given net.
 	
 	function real_components_in_net (
-		module 			: in type_submodule_name.bounded_string; -- nucleo_core
+		module 			: in et_coordinates.type_submodule_name.bounded_string; -- nucleo_core
 		net				: in et_schematic.type_net_name.bounded_string; -- motor_on_off
 		log_threshold	: in et_string_processing.type_log_level)
 		return type_ports_with_reference.set;
@@ -1144,7 +1149,7 @@ package et_kicad is
 	
 	function connected_net (
 	-- Returns the name of the net connected with the given component and terminal.
-		module			: in type_submodule_name.bounded_string;	-- nucleo_core
+		module			: in et_coordinates.type_submodule_name.bounded_string;	-- nucleo_core
 		reference		: in et_libraries.type_component_reference;	-- IC45
 		terminal		: in et_libraries.type_terminal_name.bounded_string; -- E14
 		log_threshold	: in et_string_processing.type_log_level)		
@@ -1170,7 +1175,7 @@ package et_kicad is
 	
 	type type_module is record
 		generic_name	: et_coordinates.type_submodule_name.bounded_string;
-		instance		: type_submodule_instance;
+		instance		: et_coordinates.type_submodule_instance;
 
 		-- The search list of project library directories and names:
 		search_list_library_dirs	: type_project_lib_dirs.list; 				-- search list for library directories (active, passive, ...)
