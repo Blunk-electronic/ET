@@ -158,13 +158,6 @@ package et_schematic is
 		end case;
 	end record;
 
-	function to_package_name (
-		library_name	: in type_full_library_name.bounded_string; -- ../libraries/transistors.lib
-		generic_name	: in et_libraries.type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
-		package_variant	: in type_component_variant_name.bounded_string) -- N, D
-		return type_component_package_name.bounded_string;
-	-- Returns the package name of the given component. 
-	-- CS move to et_kicad ?
 		
 	
 -- LABELS AND NETS

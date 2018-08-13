@@ -149,18 +149,6 @@ package body et_schematic is
 
 	
 
-	function to_package_name (
-		library_name	: in type_full_library_name.bounded_string; -- ../libraries/transistors.lib
-		generic_name	: in et_libraries.type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
-		package_variant	: in type_component_variant_name.bounded_string) -- N, D
-		return type_component_package_name.bounded_string is
-	-- Returns the package name for of the given component.
-	-- CS move to et_kicad ?
-		package_name : type_component_package_name.bounded_string; -- to be returned
-	begin -- to_package_name
-		-- CS
-		return package_name;
-	end to_package_name;
 	
 
 	procedure check_net_name_length (net : in string) is

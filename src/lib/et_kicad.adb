@@ -387,6 +387,18 @@ package body et_kicad is
 		return b;
 	end bom;
 
+	function to_package_name (
+		library_name	: in et_libraries.type_full_library_name.bounded_string; -- ../libraries/transistors.lib
+		generic_name	: in et_libraries.type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
+		package_variant	: in et_libraries.type_component_variant_name.bounded_string) -- N, D
+		return et_libraries.type_component_package_name.bounded_string is
+	-- Returns the package name for of the given component.
+		package_name : et_libraries.type_component_package_name.bounded_string; -- to be returned
+	begin -- to_package_name
+		-- CS
+		return package_name;
+	end to_package_name;
+	
 	
 	function to_string (no_connection_flag : in type_no_connection_flag; scope : in type_scope) return string is
 	-- Returns the position of the given no-connection-flag as string.
@@ -12675,7 +12687,7 @@ package body et_kicad is
 						put_field (file => bom_handle, text => et_libraries.to_string (key (component))); -- R6
 						put_field (file => bom_handle, text => et_libraries.to_string (element (component).value)); -- 100R
 						put_field (file => bom_handle, text => et_libraries.to_string (element (component).generic_name)); -- RESISTOR
-						put_field (file => bom_handle, text => et_libraries.to_string (et_schematic.to_package_name (
+						put_field (file => bom_handle, text => et_libraries.to_string (to_package_name (
 																library_name => element (component).library_name,
 																generic_name => element (component).generic_name,
 																package_variant => element (component).variant)));

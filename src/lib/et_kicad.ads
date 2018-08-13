@@ -328,6 +328,12 @@ package et_kicad is
 	-- Returns the component appearance where cursor points to.
 		return et_libraries.type_component_appearance;
 
+	function to_package_name (
+		library_name	: in et_libraries.type_full_library_name.bounded_string; -- ../libraries/transistors.lib
+		generic_name	: in et_libraries.type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
+		package_variant	: in et_libraries.type_component_variant_name.bounded_string) -- N, D
+		return et_libraries.type_component_package_name.bounded_string;
+	-- Returns the package name of the given component. 
 	
 	-- This is a component as it appears in the schematic.
 	type type_component_schematic (appearance : et_schematic.type_appearance_schematic) is record
