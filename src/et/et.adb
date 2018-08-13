@@ -47,7 +47,7 @@ with ada.command_line;			use ada.command_line;
 with gnat.command_line;			use gnat.command_line;
 with ada.directories;			use ada.directories;
 
-with et_general;				use et_general;
+with et_general;
 with et_string_processing;		use et_string_processing;
 with et_coordinates;
 with et_schematic;
@@ -61,13 +61,14 @@ with et_project;
 procedure et is
 
 	-- Depending on the command line arguments this variable tells what the operator wants to do:
-	operator_action : type_operator_action := request_help;
+	operator_action : et_general.type_operator_action := et_general.request_help;
 	conf_file_name	: et_configuration.type_configuration_file_name.bounded_string;	
 
 	project_name	: et_project.type_project_name.bounded_string; -- used for single module import
 	
 	procedure get_commandline_arguments is
 		use et_schematic;
+		use et_general;
 	begin
 		loop 
 			case getopt (switch_version 
@@ -160,6 +161,7 @@ procedure et is
 	end restore_projects_root_directory;
 	
 	procedure create_work_directory is
+		use et_general;
 	begin
 		if not exists (work_directory) then
 			put_line ("creating " & system_name & " work directory " & work_directory & " ...");
@@ -168,6 +170,7 @@ procedure et is
 	end create_work_directory;
 
 	procedure create_report_directory is
+		use et_general;
 	begin	
 		if not exists (compose (work_directory, report_directory)) then
 			put_line ("creating report directory ...");
@@ -453,7 +456,7 @@ procedure et is
 		project_name : et_project.type_project_name.bounded_string;
 		project_path : et_project.type_et_project_path.bounded_string :=
 						et_project.type_et_project_path.to_bounded_string (
-							compose (work_directory, et_project.directory_import));
+							compose (et_general.work_directory, et_project.directory_import));
 	begin -- make_native_projects
 		log (row_separator_single, log_threshold);
 		log ("making native project(s) in " &
@@ -503,15 +506,15 @@ begin -- main
 	get_commandline_arguments;
 
 	case operator_action is
-		when request_help =>
+		when et_general.request_help =>
 			null; -- CS
 
-		when make_configuration =>
+		when et_general.make_configuration =>
 			et_configuration.make_default_configuration (conf_file_name, log_threshold => 0);
 
 
 			
-		when import_module =>
+		when et_general.import_module =>
 	
 			-- import a single module indicated by variable project_name
 			import_module; -- calls import_design (according to CAD format)
@@ -532,7 +535,7 @@ begin -- main
 			et_export.close_report;
 
 			
-		when import_modules =>
+		when et_general.import_modules =>
 
 			-- import many modules as specified in configuration file
 			import_modules; -- calls import_design (according to CAD format)
