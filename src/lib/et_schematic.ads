@@ -55,7 +55,7 @@ with ada.containers.ordered_sets;
 
 with et_general;
 with et_coordinates;			use et_coordinates;
-with et_libraries;				use et_libraries;
+with et_libraries;
 with et_string_processing;
 with et_pcb;
 with et_pcb_coordinates;
@@ -91,7 +91,8 @@ package et_schematic is
 
 	-- In a schematic we handle only virtual components (like GND symbols)
 	-- and those which appear in both schematic an layout (so called real components):
-	subtype type_appearance_schematic is type_component_appearance range sch .. sch_pcb;
+	subtype type_appearance_schematic is et_libraries.type_component_appearance 
+		range et_libraries.SCH .. et_libraries.SCH_PCB;
 
 	-- In a schematic we find units spread all over.
 	-- A unit is a subsection of a component.
@@ -108,8 +109,8 @@ package et_schematic is
 		updated			: et_libraries.type_text_placeholder (meaning => et_libraries.updated);		
 		author			: et_libraries.type_text_placeholder (meaning => et_libraries.author);
 		case appearance is
-			when sch => null; -- CS
-			when sch_pcb =>
+			when et_libraries.sch => null; -- CS
+			when et_libraries.sch_pcb =>
 				packge		: et_libraries.type_text_placeholder (meaning => et_libraries.packge); -- like "SOT23"
 				datasheet	: et_libraries.type_text_placeholder (meaning => et_libraries.datasheet); -- might be useful for some special components
 				purpose		: et_libraries.type_text_placeholder (meaning => et_libraries.purpose); -- to be filled in schematic later by the user
@@ -124,34 +125,34 @@ package et_schematic is
 	-- Units of a component are collected in a map.
 	-- A unit is accessed by its name like "I/O Bank 3" or "PWR" or "A" or "B" ...	
 	package type_units is new indefinite_ordered_maps (
-		key_type		=> type_unit_name.bounded_string,
-		"<" 			=> type_unit_name."<",
+		key_type		=> et_libraries.type_unit_name.bounded_string,
+		"<" 			=> et_libraries.type_unit_name."<",
 		element_type 	=> type_unit);
 
 
 	-- This is a component as it appears in the schematic.
 	type type_component (appearance : type_appearance_schematic) is record
-		library_name	: type_full_library_name.bounded_string; -- symbol lib like ../libraries/transistors.lib
+		library_name	: et_libraries.type_full_library_name.bounded_string; -- symbol lib like ../libraries/transistors.lib
 		generic_name	: et_libraries.type_component_generic_name.bounded_string; -- example: "TRANSISTOR_PNP"
 		value			: et_libraries.type_component_value.bounded_string; -- 470R
 		commissioned	: et_string_processing.type_date; -- 2017-08-17T14:17:25
 		updated			: et_string_processing.type_date; -- 2017-10-30T08:33:56
 		author			: et_libraries.type_person_name.bounded_string; -- Steve Miller
---		units			: type_units.map; -- PWR, A, B, ...
+		units			: type_units.map; -- PWR, A, B, ...
 		case appearance is
 			-- If a component appears in both schematic and layout it has got:
-			when sch_pcb => 
-				partcode			: type_component_partcode.bounded_string;
-				purpose				: type_component_purpose.bounded_string;
-				bom					: type_bom;
-				variant				: type_component_variant_name.bounded_string; -- D, N
+			when et_libraries.sch_pcb => 
+				partcode			: et_libraries.type_component_partcode.bounded_string;
+				purpose				: et_libraries.type_component_purpose.bounded_string;
+				bom					: et_libraries.type_bom;
+				variant				: et_libraries.type_component_variant_name.bounded_string; -- D, N
 
 				-- This is layout related. In the layout the package has a position
 				-- and placeholders reference, value, purpose.
 				position			: et_pcb_coordinates.type_package_position; -- incl. angle and face
 				text_placeholders	: et_pcb.type_text_placeholders;
 				
-			when sch => 
+			when et_libraries.sch => 
 				null;
 				
 			when others => null; -- CS
@@ -198,15 +199,13 @@ package et_schematic is
 	end record;
 
 	-- Junctions are to be collected in a list.
-	package type_junctions is new doubly_linked_lists (
-		element_type => type_net_junction);
+	package type_junctions is new doubly_linked_lists (type_net_junction);
 	
 	function to_string (junction : in type_net_junction; scope : in type_scope) return string;
 	-- Returns the position of the given junction as string.
 
 	-- A segment may have labels attached.
-	-- So this is the definition of a net segment with start and end point,
-	-- lists of simple and tag labels:
+	-- So this is the definition of a net segment with start/end point and junctions
 	type type_net_segment_base is tagged record
 		coordinates_start 	: et_coordinates.type_coordinates;
 		coordinates_end   	: et_coordinates.type_coordinates;
@@ -216,7 +215,7 @@ package et_schematic is
 	function length (segment : in type_net_segment_base) return type_distance;
 	-- Returns the length of the given net segment.
 	
-	function to_string (segment : in type_net_segment_base; scope : in type_scope := sheet) return string; -- CS: should replace write_coordinates_of_segment
+	function to_string (segment : in type_net_segment_base; scope : in type_scope := sheet) return string;
 	-- Returns the start and end coordinates of the given net segment.
 
 
@@ -224,16 +223,13 @@ package et_schematic is
 	-- A strand is a collection of net segments which belong to each other. 
 	-- Segments belong to each other because their start/end points meet.
 	-- A strand has coordinates. 
-	-- x/y position are the lowest values within the strand. see function lowest_xy.
-	-- As long as strands are independed of each other they must 
-	-- have a name and their own scope.
+	-- x/y position are the lowest values within the strand.
 	type type_strand_base is tagged record
 		coordinates : et_coordinates.type_coordinates; -- lowest x/y
 		name		: type_net_name.bounded_string; -- example "CPU_CLOCK"
 	end record;
 
-    -- If the name of a strand can not be identified, we default to the well proved
-	-- N$ notation:
+    -- If the name of a strand can not be identified, we default to the well proved "N$" notation:
 	anonymous_net_name_prefix : constant string (1..2) := "N$";
 
 	-- This is a net:
@@ -257,7 +253,7 @@ package et_schematic is
 	type type_frame_text is record
 		coordinates		: type_2d_point;
 		text			: character_set := et_string_processing.general_characters;
-		size			: type_text_size;
+		size			: et_libraries.type_text_size;
 		orientation		: type_angle;
 		-- CS: font, ...
 	end record;
@@ -283,7 +279,6 @@ package et_schematic is
     
  	title_block_text_length_max : constant natural := 200;
 	package type_title_block_text_content is new generic_bounded_length (title_block_text_length_max);
-	--use type_title_block_text_string;
 
 	type type_title_block_text_meaning is ( 
 		PROJECT, TITLE, 
@@ -296,7 +291,7 @@ package et_schematic is
 		meaning			: type_title_block_text_meaning;
  		coordinates		: type_2d_point;
 		text			: type_title_block_text_content.bounded_string;
- 		size			: type_text_size;
+ 		size			: et_libraries.type_text_size;
  		orientation		: type_angle;
 		-- CS: font, ...
  	end record;
@@ -322,17 +317,17 @@ package et_schematic is
 	-- NOTE: Leading zeroes in the id are removed.	
 		text_in : in string;
 		allow_special_character_in_prefix : in boolean := false) -- CS: provide CAD system specific character set instead
-		return type_component_reference;
+		return et_libraries.type_component_reference;
 
-	function default_component_reference return type_component_reference;
+	function default_component_reference return et_libraries.type_component_reference;
 	-- Returns a default component reference with an empty prefix and and id 0.
 	-- Used to initialize a component reference.
 	
-	function compare_reference (left, right : in type_component_reference) return boolean;
+	function compare_reference (left, right : in et_libraries.type_component_reference) return boolean;
 	-- Returns true if left comes before right.
 	-- If left equals right, the return is false.	
 	
-	function equal_reference (left, right : in type_component_reference) return boolean;
+	function equal_reference (left, right : in et_libraries.type_component_reference) return boolean;
 	-- Returns true if left equals right.
 
 
@@ -439,8 +434,8 @@ package et_schematic is
 
 	extension_bom : constant string (1..3) := "csv";
 
--- STATISTICS
 
+-- STATISTICS
 	-- Whenever we deal with statistic file this type should be used:
 	statistic_file_name_length : constant positive := 100; -- CS: should suffice for now
 	package type_statistic_file_name is new generic_bounded_length (statistic_file_name_length); 

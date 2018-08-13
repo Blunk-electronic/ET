@@ -105,6 +105,7 @@ package body et_schematic is
 	-- Writes the properties of the given note
 		use et_string_processing;
 		use et_coordinates;
+		use et_libraries;
 	begin
 		log ("text note" & to_string (position => note.coordinates, scope => xy), log_threshold);
 
@@ -234,8 +235,9 @@ package body et_schematic is
 	-- CS: text prefix characters against character set component_prefix_characters
 		text_in : in string;
 		allow_special_character_in_prefix : in boolean := false -- CS: provide CAD system specific character set instead
-		) return type_component_reference is
-
+		) return et_libraries.type_component_reference is
+		use et_libraries;
+		
 		r : type_component_reference := (
 				prefix => type_component_prefix.to_bounded_string(""),
 				id => 0,
@@ -330,9 +332,10 @@ package body et_schematic is
 		return r;
 	end to_component_reference;
 
-	function default_component_reference return type_component_reference is
+	function default_component_reference return et_libraries.type_component_reference is
 	-- Returns a default component reference with an empty prefix and and id 0.
 	-- Used to initialize a component reference.	
+		use et_libraries;
 	begin
 		return ((
 			prefix		=> type_component_prefix.to_bounded_string (""),
@@ -340,7 +343,7 @@ package body et_schematic is
 			id_width	=> 1));
 	end default_component_reference;
 		
-	function compare_reference (left, right : in type_component_reference) return boolean is
+	function compare_reference (left, right : in et_libraries.type_component_reference) return boolean is
 	-- Returns true if left comes before right.
 	-- If left equals right, the return is false.
 	-- CS: needs verification !
@@ -369,7 +372,7 @@ package body et_schematic is
 		return result;
 	end compare_reference;
 
-	function equal_reference (left, right : in type_component_reference) return boolean is
+	function equal_reference (left, right : in et_libraries.type_component_reference) return boolean is
 	-- Returns true if left equals right.
 	-- Example: if IC4 = IC4 then return true.
 		result : boolean := false;
