@@ -71,6 +71,24 @@ with et_csv;
 
 package body et_kicad is
 
+
+	function to_string (group : in type_library_group_name.bounded_string) return string is
+	begin
+		return type_library_group_name.to_string (group);
+	end to_string;
+
+	function to_full_library_name (
+		group		: in type_library_group_name.bounded_string;
+		lib_name	: in et_libraries.type_library_name.bounded_string) 
+		return et_libraries.type_full_library_name.bounded_string is
+	-- composes the full library name from the given group and lib name.
+	begin
+		return et_libraries.to_full_library_name (
+			compose (to_string (group), et_libraries.to_string (lib_name))
+			);
+	end to_full_library_name;
+
+	
 	function to_string (schematic : in type_schematic_file_name.bounded_string) return string is
 	-- Returns the given schematic file name as string.
 	begin
@@ -1153,7 +1171,7 @@ package body et_kicad is
 	-- Reads component libraries.
 		
         use et_libraries; -- most of the following stuff is specified there
-		use et_libraries.type_full_library_names;
+		use type_full_library_names;
 
 		-- This is the library cursor. It points to the library being processed (in the list tmp_component_libraries):
 		lib_cursor		: type_libraries.cursor;
@@ -4312,7 +4330,7 @@ package body et_kicad is
 	-- This is required for multiple design instantiations. (things like nucleo_core_1).
 		
 		--use et_import.type_schematic_file_name;
-		use et_libraries.type_library_group_name;
+		use type_library_group_name;
 		use et_schematic;
 
 		function field (line : in type_fields_of_line; position : in positive) return string renames
@@ -5725,9 +5743,9 @@ package body et_kicad is
 
 						-- Store bare library name in the list sheet_header.libraries:
 						-- We use a doubly linked list because the order of the library names must be kept.
-						et_libraries.type_library_names.append (
-							container => sheet_header.libraries,
-							new_item => et_libraries.type_library_name.to_bounded_string (
+						type_library_names.append (
+							container	=> sheet_header.libraries,
+							new_item	=> et_libraries.to_library_name (
 								get_field_from_line (field (et_kicad.line,1), 2, latin_1.colon))
 							);
 
@@ -8994,7 +9012,7 @@ package body et_kicad is
 		component_cursor_portlists	: type_portlists.cursor; -- points to the portlist being built
 	
 		use et_libraries;
-		use et_libraries.type_full_library_names;
+		use type_full_library_names;
 		use et_string_processing;
 
 		-- This component cursor points to the schematic component being processed.

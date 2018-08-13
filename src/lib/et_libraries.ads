@@ -69,18 +69,9 @@ package et_libraries is
 	function to_string (library_name : in type_library_name.bounded_string) return string;
 	-- Returns the given library name as string.
 	
-	-- Bare library names can be stored further-on in a simple list:
-	-- We use a simple list because the order of the library names sometimes matters and must be kept.
-    package type_library_names is new doubly_linked_lists (type_library_name.bounded_string);
 
-	-- Libraries are grouped (like passive, active, misc, ...). The group name is specified as:
-	library_group_length_max : constant positive := 300; -- CS: increase if necessary
-	package type_library_group_name is new generic_bounded_length (library_group_length_max);
-
-	function to_string (group : in type_library_group_name.bounded_string) return string;
-	
 	-- If a library is fully specified with group, name and extension we store them in bounded strings:
-	library_full_name_max : constant positive := library_group_length_max + library_name_length_max + 4;
+	library_full_name_max : constant positive := 300 + library_name_length_max + 4;
 	package type_full_library_name is new generic_bounded_length (library_full_name_max);
 
 	-- CS: for type_full_library_name: character set, check characters, check length
@@ -91,20 +82,12 @@ package et_libraries is
 	function to_full_library_name (full_library_name : in string) return type_full_library_name.bounded_string;
 	-- converts a string to a full library name.
 	
-	function to_full_library_name (
-		group		: in type_library_group_name.bounded_string;
-		lib_name 	: in type_library_name.bounded_string) return type_full_library_name.bounded_string;
-	-- composes the full library name from the given group and the actual lib name.
 	
-	-- Full library names can be stored further-on in a simple list:
-	-- We use a simple list because the order of the library names sometimes matters and must be kept.
-    package type_full_library_names is new doubly_linked_lists ( -- CS remove
-		element_type 	=> type_full_library_name.bounded_string,
-		"="				=> type_full_library_name."=");
 
 	
 	-- When accessing library files we need this:
 	library_handle : ada.text_io.file_type;
+	
 	
 	-- The name of the person who has drawn, checked or approved something may have 100 characters which seems sufficient for now.
  	person_name_length : constant natural := 100;
@@ -214,12 +197,14 @@ package et_libraries is
 
 	procedure write_text_properies (
 	-- Outputs the properties of the given text.
-		text : in et_libraries.type_text;
-		log_threshold : in et_string_processing.type_log_level);
+		text 			: in et_libraries.type_text;
+		log_threshold	: in et_string_processing.type_log_level);
 
 	function content (text : in type_text) return string;
 	-- Returns the content of the given text as string.
 
+
+	
 	
 -- TERMINALS
 	

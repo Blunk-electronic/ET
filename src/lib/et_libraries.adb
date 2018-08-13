@@ -68,11 +68,6 @@ package body et_libraries is
 		return type_library_name.to_string (library_name);
 	end to_string;
 	
-	function to_string (group : in type_library_group_name.bounded_string) return string is
-	begin
-		return type_library_group_name.to_string (group);
-	end to_string;
-
 	function to_string (full_library_name : in type_full_library_name.bounded_string) return string is
 	-- Returns the given full library name as string;
 	begin
@@ -85,16 +80,6 @@ package body et_libraries is
 		return type_full_library_name.to_bounded_string (full_library_name);
 	end to_full_library_name;
 
-	function to_full_library_name (
-		group		: in type_library_group_name.bounded_string;
-		lib_name	: in type_library_name.bounded_string) return type_full_library_name.bounded_string is
-		-- composes the full library name from the given group and the actual lib name.
-	begin
-		return type_full_library_name.to_bounded_string (
-			compose (to_string (group), to_string (lib_name))
-			);
-	end to_full_library_name;
-	
 	function to_string (person : in type_person_name.bounded_string) return string is
 	-- Returns the given person name as string.
 	begin

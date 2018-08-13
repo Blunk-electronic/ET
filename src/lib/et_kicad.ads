@@ -94,12 +94,18 @@ package et_kicad is
 		return et_coordinates.type_submodule_name.bounded_string;
 	-- Returns the base name of the given schematic file name as submodule name.
 
+	-- Bare library names can be stored further-on in a simple list:
+	-- We use a simple list because the order of the library names sometimes matters and must be kept.
+	package type_library_names is new doubly_linked_lists (
+		element_type	=> et_libraries.type_library_name.bounded_string,
+		"="				=> et_libraries.type_library_name."=");
+	
 	-- sheet headers
 	-- The sheet header is a composite of a list of libraries and other things:
 	-- It contains a list of libraries used by a schemetic sheet.
 	-- We use a simple list because the order of the library names must be kept.
     type type_sheet_header is record
-		libraries   : et_libraries.type_library_names.list; -- CS: probably not used by kicad, just information
+		libraries   : type_library_names.list; -- CS: probably not used by kicad, just information
         eelayer_a   : positive; -- 25 -- CS: meaning not clear, probably not used
         eelayer_b   : natural; -- 0 -- CS: meaning not clear, probably not used
     end record;
@@ -607,6 +613,27 @@ package et_kicad is
 
 
 -- LIBRARIES
+
+	-- Full library names can be stored further-on in a simple list:
+	-- We use a simple list because the order of the library names sometimes matters and must be kept.
+    package type_full_library_names is new doubly_linked_lists ( -- CS remove
+		element_type 	=> et_libraries.type_full_library_name.bounded_string,
+		"="				=> et_libraries.type_full_library_name."=");
+
+	-- Libraries are grouped (like passive, active, misc, ...). The group name is specified as:
+	library_group_length_max : constant positive := 300; -- CS: increase if necessary
+	package type_library_group_name is new generic_bounded_length (library_group_length_max);
+
+	function to_string (group : in type_library_group_name.bounded_string) return string;
+
+	
+	function to_full_library_name (
+		group		: in type_library_group_name.bounded_string;
+		lib_name 	: in et_libraries.type_library_name.bounded_string) 
+		return et_libraries.type_full_library_name.bounded_string;
+	-- composes the full library name from the given group and the actual lib name.
+	
+
 	package type_libraries is new ordered_maps (
 		key_type 		=> et_libraries.type_full_library_name.bounded_string, -- ../../lbr/passive/capacitors
 		"<"				=> et_libraries.type_full_library_name."<",
@@ -631,7 +658,7 @@ package et_kicad is
 	-- The search lists are stored for each module (see type_module specs).
 	
 	-- search list for component library names
-	search_list_component_libraries : et_libraries.type_library_names.list; -- bel_logic, bel_primitives, ...
+	search_list_component_libraries : type_library_names.list; -- bel_logic, bel_primitives, ...
 
 	-- Libraries are stored in directories:
 	library_directory_length_max : constant positive := 300; -- CS: increase if necessary
@@ -1178,8 +1205,8 @@ package et_kicad is
 		instance		: et_coordinates.type_submodule_instance;
 
 		-- The search list of project library directories and names:
-		search_list_library_dirs	: type_project_lib_dirs.list; 				-- search list for library directories (active, passive, ...)
-		search_list_library_comps	: et_libraries.type_library_names.list; 	-- search list for component libraries (bel_logic, bel_primitives, ...)
+		search_list_library_dirs	: type_project_lib_dirs.list; 	-- search list for library directories (active, passive, ...)
+		search_list_library_comps	: type_library_names.list; 		-- search list for component libraries (bel_logic, bel_primitives, ...)
 		-- NOTE: There is no search list for packages, because they are nowhere declared (not even in the project conf. file)
 		
 		component_libraries			: type_libraries.map;
