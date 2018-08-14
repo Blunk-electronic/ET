@@ -7788,10 +7788,12 @@ package body et_kicad_pcb is
 
 	function terminal_count (
 	-- Returns the number of terminals of the given package in the given library.
-		library_name		: in et_libraries.type_full_library_name.bounded_string;
-		package_name 		: in et_libraries.type_component_package_name.bounded_string)
+		packge : in et_libraries.type_full_library_name.bounded_string) -- ../lbr/bel_ic.pretty/S_SO14
 		return et_libraries.type_terminal_count is
 
+		library_name : et_libraries.type_full_library_name.bounded_string;
+		package_name : et_libraries.type_component_package_name.bounded_string;
+		
 		use type_libraries;
 		
 		terminals : et_libraries.type_terminal_count; -- to be returned
@@ -7812,6 +7814,11 @@ package body et_kicad_pcb is
 		end locate_package;
 		
 	begin -- terminal_count
+
+		-- extract the library and package name from the given package
+		package_name := et_libraries.to_package_name (ada.directories.simple_name (et_libraries.to_string (packge))); -- S_SO14
+		library_name := et_libraries.to_full_library_name (ada.directories.containing_directory (et_libraries.to_string (packge))); -- ../lbr/bel_ic.pretty
+		
 		-- locate the library
 		library_cursor := type_libraries.find (package_libraries, library_name);
 

@@ -730,8 +730,7 @@ package et_kicad_pcb is
 	-- The schematic modules are indicated by module_cursor.
 
 	function terminal_count (
-		library_name		: in et_libraries.type_full_library_name.bounded_string;
-		package_name 		: in et_libraries.type_component_package_name.bounded_string)
+		packge : in et_libraries.type_full_library_name.bounded_string) -- ../lbr/bel_ic/S_SO14
 		return et_libraries.type_terminal_count;
 	
 	function terminal_port_map_fits (

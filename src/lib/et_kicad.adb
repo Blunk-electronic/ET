@@ -3030,7 +3030,7 @@ package body et_kicad is
 
 								-- The full library name is the result of a search operation:
 								-- The first directory and the first library that contains the package.
-								-- There can be many library directories so search in.
+								-- There can be many library directories to search in.
 								full_package_library_name := et_kicad_pcb.full_library_name ( -- ../lbr_dir_1/bel_logic.pretty
 									library_name	=> library_name (content (field_package)), -- bel_logic
 									package_name	=> package_name (content (field_package)), -- S_SO14
@@ -3048,13 +3048,17 @@ package body et_kicad is
 											key			=> tmp_variant_name, -- the same as the package name -- S_SO14
 											new_item 	=> (
 												-- The package field contains something like "bel_ic:S_SO14".
-												-- This provides the library name and the package name.
+												-- It provides the library name and the package name.
 
 												-- create package variant
-												packge => (
-													name 	=> package_name (content (field_package)), -- S_SO14
-													library	=> full_package_library_name),
-												
+-- 												packge => (
+-- 													name 	=> package_name (content (field_package)), -- S_SO14
+-- 													library	=> full_package_library_name),
+
+												packge => to_full_library_name (compose (
+															containing_directory => to_string (full_package_library_name),
+															name => to_string (package_name (content (field_package))))),
+
 												-- The terminal to port map tmp_terminal_port_map is now finally copied
 												-- to its final destination:
 												terminal_port_map => tmp_terminal_port_map)); -- H4/GPIO2
@@ -3443,8 +3447,13 @@ package body et_kicad is
 					-- From the library and package name we can reason the variant name.
 					-- So if both the given library and package name match, the variant name
 					-- is set to be returned.
-					if 	element (variant_cursor).packge.library = full_package_library_name and
-						element (variant_cursor).packge.name = package_name then 
+					
+					--if 	element (variant_cursor).packge.library = full_package_library_name and
+					--	element (variant_cursor).packge.name = package_name then 
+
+					if element (variant_cursor).packge = to_full_library_name (compose (
+							containing_directory	=> et_libraries.to_string (full_package_library_name),
+							name					=> et_libraries.to_string (package_name))) then
 						
 						log ("variant " 
 							& to_string (package_variant => key (variant_cursor)) 
@@ -3487,8 +3496,12 @@ package body et_kicad is
 
 						-- build the new package variant
 						new_variant := (
-							packge 				=> (library		=> full_package_library_name,
-													name 		=> package_name),
+-- 							packge 				=> (library		=> full_package_library_name,
+-- 													name 		=> package_name),
+
+							packge => (to_full_library_name (compose (
+								containing_directory	=> et_libraries.to_string (full_package_library_name),
+								name					=> et_libraries.to_string (package_name)))),
 							
 							terminal_port_map	=> element (variant_cursor).terminal_port_map
 							);
@@ -11899,8 +11912,9 @@ package body et_kicad is
 -- 									package_name	=> element (variant_cursor).packge.name);	-- S_SO14
 -- 					else
 						terminals := et_kicad_pcb.terminal_count (
-									library_name	=> element (variant_cursor).packge.library,	-- ../lbr/bel_ic
-									package_name	=> element (variant_cursor).packge.name);	-- S_SO14
+-- 									library_name	=> element (variant_cursor).packge.library,	-- ../lbr/bel_ic
+-- 									package_name	=> element (variant_cursor).packge.name);	-- S_SO14
+									element (variant_cursor).packge);
 -- 					end if;
 						
 					log_indentation_down;	
