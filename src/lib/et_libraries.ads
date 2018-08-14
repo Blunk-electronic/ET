@@ -301,7 +301,7 @@ package et_libraries is
 	-- Ports of a component are collected in a simple list. A list, because multiple ports
 	-- with the same name (but differing terminal names) may exist. For example lots of GND
 	-- ports at FPGAs.
---	package type_ports is new doubly_linked_lists (element_type => type_port); 
+	package type_ports is new doubly_linked_lists (element_type => type_port); 
 
 
 	
@@ -716,7 +716,7 @@ package et_libraries is
 	type type_symbol_text is new type_text (meaning => MISC) with null record;
 	package type_symbol_texts is new doubly_linked_lists (element_type => type_symbol_text);
 
-	type type_symbol (appearance : type_component_appearance) is tagged record
+	type type_symbol_base (appearance : type_component_appearance) is tagged record
 		shapes		: type_shapes; -- the collection of shapes
 		texts		: type_symbol_texts.list; -- the collection of texts (meaning misc)
 		
@@ -739,9 +739,10 @@ package et_libraries is
 		end case;
 	end record;
 
-	package type_symbols is new indefinite_ordered_maps (
-		element_type	=> type_symbol,
-		key_type		=> type_symbol_name.bounded_string);
+	type type_symbol is new type_symbol_base with record
+		ports : type_ports.list;
+	end record;
+
 
 
 	unit_name_length_max : constant natural := 50;	
@@ -782,16 +783,16 @@ package et_libraries is
 		key_type		=> type_unit_name.bounded_string, -- like "I/O-Bank 3" "A" or "B"
 		element_type	=> type_unit_internal);
 
-	-- External units have a reference to an external symbol.
-	-- External units are stored in a library and are shared by many components.
-	type type_unit_reference is record
-		library		: type_full_library_name.bounded_string; -- like /my_libraries/logig.sym
-		name		: type_symbol_name.bounded_string;		 -- like "NAND" or "Resistor" or "Switch"
-	end record;
+-- 	-- External units have a reference to an external symbol.
+-- 	-- External units are stored in a library and are shared by many components.
+-- 	type type_unit_reference is record
+-- 		library		: type_full_library_name.bounded_string; -- like /my_libraries/logig.sym
+-- 		name		: type_symbol_name.bounded_string;		 -- like "NAND" or "Resistor" or "Switch"
+-- 	end record;
 
 	-- An external unit has a reference and a swap level.
 	type type_unit_external is record -- CS: parameter appearance ?
-		reference	: type_unit_reference;
+		reference	: type_full_library_name.bounded_string; -- like /my_libraries/NAND.sym --type_unit_reference;
 		coordinates	: type_coordinates;
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
 		add_level	: type_unit_add_level := type_unit_add_level'first;
@@ -799,7 +800,7 @@ package et_libraries is
 
 	-- External units are collected in a map;
 	package type_units_external is new ordered_maps (
-		key_type		=> type_unit_name.bounded_string,		 -- like "I/O-Bank 3"
+		key_type		=> type_unit_name.bounded_string, -- like "I/O-Bank 3"
 		element_type	=> type_unit_external);
 
 	type type_bom is (YES, NO); -- if a component is to be mounted or not
@@ -915,6 +916,7 @@ package et_libraries is
 
 	type type_component_variant is record
 		packge				: type_component_package; -- includes package and lib name
+		--packge				: type_full_library_name.bounded_string;
 		terminal_port_map	: type_terminal_port_map.map; -- which port is connected with with terminal
 	end record;
 
@@ -971,29 +973,34 @@ package et_libraries is
 
 	end record;
 
-	-- Components are stored in a map.
-	-- Within the map they are accessed by a key type_component_name (something like "CAPACITOR").
--- 	package type_components is new indefinite_ordered_maps (
--- 		key_type		=> type_component_generic_name.bounded_string, -- example: "TRANSISTOR_PNP"
--- 		element_type	=> type_component);
--- 	use type_components;
+	
+-- STORAGE
+	
+	-- External symbols:
+	package type_symbols is new indefinite_ordered_maps (
+		key_type		=> type_full_library_name.bounded_string, -- ../lbr/logic/NAND.sym
+		"<"				=> type_full_library_name."<",
+		element_type	=> type_symbol);
+	
+	-- Components:
+	package type_components is new indefinite_ordered_maps (
+		key_type 		=> type_full_library_name.bounded_string, -- ../lbr/logic_ttl/7400.cmp
+		"<"				=> type_full_library_name."<",
+		element_type	=> type_component);
+
 
 -- 	function component_appearance (cursor : in type_components.cursor)
 -- 	-- Returns the component appearance where cursor points to.
 -- 		return type_component_appearance;
 
-	--	CS: currently there is no need for a component summary
-	-- procedure write_component_properties (component : in type_components.cursor);
-	-- Writes the properties of the component indicated by the given cursor.
-
--- 	-- LIBRARIES
+	-- LIBRARIES
 -- 	package type_libraries is new ordered_maps (
--- 		key_type 		=> type_full_library_name.bounded_string, -- consists of group name and actual library name
+-- 		key_type 		=> type_full_library_name.bounded_string, -- ../lbr/transistors/zetex.dev
 -- 		element_type 	=> type_components.map,
 -- 		"=" 			=> type_components."=");
--- 
--- 	-- All component models are collected here. This collection applies for the whole rig.
--- 	component_libraries : type_libraries.map; -- CS: should be part of type_rig. see et_schematic type_rig
+
+	-- All component models are collected here.
+	components : type_components.map;
 
 -- LIBRARIES
 -- 	type type_library is record

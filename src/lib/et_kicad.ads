@@ -231,7 +231,7 @@ package et_kicad is
 	-- ports at FPGAs.
 	package type_ports_library is new doubly_linked_lists (type_port_library);
 
-	type type_symbol is new et_libraries.type_symbol with record
+	type type_symbol is new et_libraries.type_symbol_base with record
 		ports : type_ports_library.list := type_ports_library.empty_list; -- the ports of the symbol
 	end record;
 
