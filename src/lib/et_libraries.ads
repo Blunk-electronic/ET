@@ -613,11 +613,11 @@ package et_libraries is
 	subtype type_line_width is type_distance;
 
 	-- fill
-	type type_fill_border is ( visible, invisible);
-	type type_fill_pattern is (none, solid); -- CS: hatched ? and its properties ?
+	type type_fill_border is (VISIBLE, INVISIBLE);
+	type type_fill_pattern is (NONE, SOLID); -- CS: hatched ? and its properties ?
 	type type_fill is record 
-		border	: type_fill_border := visible;
-		pattern : type_fill_pattern := solid;
+		border	: type_fill_border := VISIBLE;
+		pattern : type_fill_pattern := SOLID;
 	end record;
 	
 	-- straight lines
@@ -704,16 +704,16 @@ package et_libraries is
 	package type_symbol_name is new generic_bounded_length(symbol_name_length_max); use type_symbol_name;
 
 	type type_symbol_element is (
-		line, polyline, rectangle, arc, circle, -- shapes
-		port, 
-		text); -- text embedded in a symbol
+		LINE, POLYLINE, RECTANGLE, ARC, CIRCLE, -- shapes
+		PORT, 
+		TEXT); -- text embedded in a symbol
 		--reference, value, commissioned, updated, author); -- text field placeholders
 
 	-- Texts may be embedded in a symbol like "counter" or "&". So far they have the meaning "misc".
 	-- CS: strings and texts within a unit symbol serve for documentation only. As long as
 	-- there is no dedicated enumeration value available we choose "misc".
 	-- CS: The meaning could be something like "documentation" some day.
-	type type_symbol_text is new type_text (meaning => misc) with null record;
+	type type_symbol_text is new type_text (meaning => MISC) with null record;
 	package type_symbol_texts is new doubly_linked_lists (element_type => type_symbol_text);
 
 	type type_symbol (appearance : type_component_appearance) is tagged record
@@ -722,19 +722,19 @@ package et_libraries is
 		
 		-- Placeholders for component wide texts. To be filled with content when 
 		-- a symbol is placed in the schematic:
-		reference	: type_text_placeholder (meaning => et_libraries.reference);
-		value		: type_text_placeholder (meaning => et_libraries.value);
-		commissioned: type_text_placeholder (meaning => et_libraries.commissioned);
-		updated		: type_text_placeholder (meaning => et_libraries.updated);
-		author		: type_text_placeholder (meaning => et_libraries.author);
+		reference	: type_text_placeholder (meaning => et_libraries.REFERENCE);
+		value		: type_text_placeholder (meaning => et_libraries.VALUE);
+		commissioned: type_text_placeholder (meaning => et_libraries.COMMISSIONED);
+		updated		: type_text_placeholder (meaning => et_libraries.UPDATED);
+		author		: type_text_placeholder (meaning => et_libraries.AUTHOR);
 		-- Symbols have further text placeholders according to the appearance of the component:
 		case appearance is
 			when sch_pcb =>
-				packge		: type_text_placeholder (meaning => et_libraries.packge);
-				datasheet	: type_text_placeholder (meaning => et_libraries.datasheet);
-				purpose		: type_text_placeholder (meaning => et_libraries.purpose);
-				partcode	: type_text_placeholder (meaning => et_libraries.partcode);
-				bom 		: type_text_placeholder (meaning => et_libraries.bom);
+				packge		: type_text_placeholder (meaning => et_libraries.PACKGE);
+				datasheet	: type_text_placeholder (meaning => et_libraries.DATASHEET);
+				purpose		: type_text_placeholder (meaning => et_libraries.PURPOSE);
+				partcode	: type_text_placeholder (meaning => et_libraries.PARTCODE);
+				bom 		: type_text_placeholder (meaning => et_libraries.BOM);
 			when others => null;
 		end case;
 	end record;
@@ -762,7 +762,7 @@ package et_libraries is
 		NEXT, 		-- should be default. for things like logig gates, multi-OP-Amps, ...
 		REQUEST, 	-- for power supply 
 		CAN,		-- for things like optional relay contacts
-		ALWAYS,		-- CS: see EAGLE manual
+		ALWAYS,		-- 
 		MUST);		-- for things like relay coils
 
 	function to_string (add_level : in type_unit_add_level) return string;
@@ -795,17 +795,14 @@ package et_libraries is
 		coordinates	: type_coordinates;
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
 		add_level	: type_unit_add_level := type_unit_add_level'first;
-		-- NOTE: there is no "global" flag as with type_unit_internal.
-		-- The "global" flag is a kicad requirement. Since kicad does not know 
-		-- external units, this flag is not present here.
 	end record;
 
 	-- External units are collected in a map;
 	package type_units_external is new ordered_maps (
-		key_type => type_unit_name.bounded_string,		 -- like "I/O-Bank 3"
-		element_type => type_unit_external);
+		key_type		=> type_unit_name.bounded_string,		 -- like "I/O-Bank 3"
+		element_type	=> type_unit_external);
 
-	type type_bom is (YES, NO);
+	type type_bom is (YES, NO); -- if a component is to be mounted or not
 
 	function to_string (bom : in type_bom) return string;
 	-- Returns the given bom variable as string.
@@ -856,7 +853,7 @@ package et_libraries is
 -- TERMINALS
 	-- A terminal is where electrical energy is fed in or provided by a component.
 	-- Other CAE systems refer to "pins" or "pads". In order to use only a single word
-	-- we furhter-on speak about "terminals".
+	-- we further-on speak about "terminals".
 	-- The name of a terminal may have 10 characters which seems sufficient for now.
 	-- CS: character set, length check, charcter check
  	terminal_name_length_max : constant natural := 10;
@@ -1026,9 +1023,9 @@ package et_libraries is
 
 	
 	procedure no_generic_model_found (
-		reference : in type_component_reference; -- IC303
-		library : in type_full_library_name.bounded_string; -- ../lib/xilinx.lib
-		generic_name : in type_component_generic_name.bounded_string);
+		reference		: in type_component_reference; -- IC303
+		library			: in type_full_library_name.bounded_string; -- ../lib/xilinx.lib
+		generic_name	: in type_component_generic_name.bounded_string);
 
 		
 		

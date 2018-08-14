@@ -73,12 +73,11 @@ package et_schematic is
 	end record;
 
 	procedure write_note_properties (
-		note : in et_schematic.type_note;
-		log_threshold : in et_string_processing.type_log_level := 0);
+		note			: in et_schematic.type_note;
+		log_threshold	: in et_string_processing.type_log_level := 0);
 	-- Writes the properties of the given note
 
-	package type_texts is new indefinite_doubly_linked_lists (
-		element_type => type_note);
+	package type_texts is new indefinite_doubly_linked_lists (element_type => type_note);
 
 
 -- UNITS AND COMPONENTS
