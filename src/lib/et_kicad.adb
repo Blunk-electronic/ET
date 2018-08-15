@@ -4667,10 +4667,10 @@ package body et_kicad is
 			-- CS: exception handler
 		end to_angle;
 		
-		function to_direction (text_in : in string) return type_label_direction is
+		function to_direction (text_in : in string) return type_net_label_direction is
 		-- Converts the direction of a label to a type_label_direction. 
 		-- CS: currently case sensitive ! Use dedicated type for input parameter.
-			d_out : type_label_direction := input;
+			d_out : type_net_label_direction := input;
 		begin
 			if text_in = schematic_keyword_label_dir_input then
 				d_out := input;
@@ -11119,18 +11119,19 @@ package body et_kicad is
 	-- Writes the properties of the given net label in the logfile.
 		use et_string_processing;
 		use et_coordinates;
+		use et_schematic;
 
 		log_threshold : type_log_level := 2;
 	begin
 		log_indentation_up;
 		
 		case label.label_appearance is
-			when simple =>
+			when SIMPLE =>
 			log ("simple label " & 
 				 et_schematic.to_string (label.text) & " at " & 
 				 to_string (position => label.coordinates)); -- CS log_threshold ?
 				
-			when tag =>
+			when TAG =>
 				if label.hierarchic then
 					log ("hierarchic label " & 
 					et_schematic.to_string (label.text) & " at " &

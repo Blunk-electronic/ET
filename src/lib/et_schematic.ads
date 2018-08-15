@@ -131,7 +131,7 @@ package et_schematic is
 
 	-- This is a component as it appears in the schematic.
 	type type_component (appearance : type_appearance_schematic) is record
-		library_name	: et_libraries.type_full_library_name.bounded_string; -- symbol lib like ../libraries/transistors.lib
+		library_name	: et_libraries.type_full_library_name.bounded_string; -- ../libraries/transistors.cmp
 		generic_name	: et_libraries.type_component_generic_name.bounded_string; -- example: "TRANSISTOR_PNP"
 		value			: et_libraries.type_component_value.bounded_string; -- 470R
 		commissioned	: et_string_processing.type_date; -- 2017-08-17T14:17:25
@@ -203,14 +203,53 @@ package et_schematic is
 	function to_string (junction : in type_net_junction; scope : in et_coordinates.type_scope) return string;
 	-- Returns the position of the given junction as string.
 
-	-- A segment may have labels attached.
-	-- So this is the definition of a net segment with start/end point and junctions
+	type type_port_component is record
+		reference	: et_libraries.type_component_reference;
+		name		: et_libraries.type_port_name.bounded_string;
+		-- CS unit name ?
+	end record;
+
+	package type_ports_component is new doubly_linked_lists (type_port_component);
+
+	type type_port_submodule is record
+		module		: et_coordinates.type_submodule_name.bounded_string; -- name of submodule
+		port		: type_net_name.bounded_string; -- the net inside the submodule
+		position	: et_coordinates.type_coordinates; -- the position of the port in the parent module
+		direction	: et_libraries.type_port_direction;
+	end record;
+
+	package type_ports_submodule is new doubly_linked_lists (type_port_submodule);
+		
+	type type_net_label_appearance is (
+		SIMPLE,	-- a label that shows just the name of the net
+		TAG 	-- a lable that shows the net name, the sheet name and the row/column
+		);		-- where the net continues
+
+	type type_net_label_direction is (INPUT, OUTPUT, BIDIR, TRISTATE, PASSIVE);
+	
+	type type_net_label (appearance : type_net_label_appearance) is record
+		coordinates	: et_coordinates.type_coordinates;
+		orientation	: et_coordinates.type_angle;
+        size		: et_libraries.type_text_size;
+        style		: et_libraries.type_text_style;
+		width		: et_libraries.type_text_line_width;
+		case appearance is
+			when TAG => 
+				direction : type_net_label_direction;
+				-- CS: coordinates of next tag of this net (by sheet coord. or area ?)
+			when SIMPLE => null;
+		end case;
+	end record;
+
+	package type_net_labels is new indefinite_doubly_linked_lists (type_net_label);
+	
+	-- This is the definition of a net segment with start/end point and junctions
 	type type_net_segment_base is tagged record
 		coordinates_start 	: et_coordinates.type_coordinates;
 		coordinates_end   	: et_coordinates.type_coordinates;
 		junctions			: type_junctions.list;
 	end record;
-	
+
 	function length (segment : in type_net_segment_base) return et_coordinates.type_distance;
 	-- Returns the length of the given net segment.
 	
@@ -227,8 +266,8 @@ package et_schematic is
 	-- x/y position are the lowest values within the strand.
 	type type_strand_base is tagged record
 		coordinates : et_coordinates.type_coordinates; -- lowest x/y
-		name		: type_net_name.bounded_string; -- example "CPU_CLOCK"
 	end record;
+
 
     -- If the name of a strand can not be identified, we default to the well proved "N$" notation:
 	anonymous_net_name_prefix : constant string (1..2) := "N$";
@@ -239,8 +278,34 @@ package et_schematic is
 		class 		: et_pcb.type_net_class_name.bounded_string; -- default, High_Voltage, EMV-critical, ...
 	end record;
 
+	
+	
+	type type_net_segment is new type_net_segment_base with record
+		labels			: type_net_labels.list;
+		ports_component	: type_ports_component.list;
+		ports_submodule	: type_ports_submodule.list;
+		-- CS no_connections	: type_no_connection_flags.list;-- the list of no-connection-flags
+	end record;
+
+	package type_net_segments is new doubly_linked_lists (type_net_segment);
+	
+	type type_strand is new type_strand_base with record
+		segments	: type_net_segments.list;
+	end record;
+
+	package type_strands is new doubly_linked_lists (type_strand);
+	
+	type type_net is new type_net_base with record
+		strands		: type_strands.list;
+	end record;
+	
+	package type_nets is new ordered_maps (
+		key_type		=> type_net_name.bounded_string,
+		element_type	=> type_net);
+	
 
 
+	
     -- DRAWING FRAME
     -- A drawing frame consists of straight lines and texts.
     -- The text is a character at the x/y border that helps to locate objects.
@@ -332,61 +397,57 @@ package et_schematic is
 
 
 
+-- SUBMODULES
+	type type_submodule is record
+		generic_name	: et_coordinates.type_submodule_name.bounded_string;
+		instance		: et_coordinates.type_submodule_instance;
+		-- CS path to submodule
+	end record;
 
-    
+	package type_submodules is new ordered_maps (
+		key_type		=> et_coordinates.type_submodule_name.bounded_string,
+		"<" 			=> et_coordinates.type_submodule_name."<",
+		element_type	=> type_submodule);
 
 
 -- MODULE
 
 	-- The components of a module are collected in a map.
---  	package type_components is new indefinite_ordered_maps (
--- 		key_type		=> type_component_reference, -- something like "IC43"
--- 		"<"				=> compare_reference,
---  		element_type	=> type_component);
+ 	package type_components is new indefinite_ordered_maps (
+		key_type		=> et_libraries.type_component_reference, -- something like "IC43"
+		"<"				=> compare_reference,
+ 		element_type	=> type_component);
 
 	
--- -- MODULES
--- 	
--- 	type type_module is record
--- 		generic_name	: type_submodule_name.bounded_string;
--- 		instance		: type_submodule_instance;
--- 
--- 		-- The list of project library names in the order as defined in project file:
--- 		libraries		: type_full_library_names.list;	
--- 		
--- 		strands	    	: type_strands.list;			-- the strands of the module
--- 		junctions		: type_junctions.list;			-- net junctions
--- 
--- 		components		: type_components.map;			-- the components of the module
--- 		net_classes		: et_pcb.type_net_classes.map;	-- the net classes
--- 		no_connections	: type_no_connection_flags.list;-- the list of no-connection-flags
--- 		portlists		: type_portlists.map;			-- the portlists of the module
--- 		netlist			: type_netlist.map;				-- the netlist
--- 		submodules  	: type_gui_submodules.map;		-- graphical representations of submodules. -- GUI relevant
+
+	
+	type type_module is record
+		generic_name	: et_coordinates.type_submodule_name.bounded_string;
+		instance		: et_coordinates.type_submodule_instance;
+		components		: type_components.map;			-- the components of the module
+		net_classes		: et_pcb.type_net_classes.map;	-- the net classes
+		submodules  	: type_submodules.map;			-- graphical representations of submodules
 --         frames      	: type_frames.list;				-- frames -- GUI relevant
 --         title_blocks	: type_title_blocks.list;		-- title blocks -- GUI relevant
--- 		notes       	: type_texts.list;				-- notes
--- 
--- 		sheet_headers	: type_sheet_headers.map;		-- the list of sheet headers -- kicad requirement
+		notes       	: type_texts.list;				-- notes
 -- 		-- CS: images
--- 
--- 		-- the nets of the module (incl. routing information from the board):
--- 		nets 	    	: type_nets.map;				
--- 		
--- 		-- General non-component related board stuff (silk screen, documentation, ...):
--- 		board			: et_pcb.type_board;
--- 	end record;
--- 
--- 
--- 	-- A rig is a set of modules:
--- 	package type_rig is new ordered_maps (
--- 	-- CS: package type_modules is new ordered_maps (
--- 		key_type => et_coordinates.type_submodule_name.bounded_string, -- example "MOTOR_DRIVER"
--- 		"<" => et_coordinates.type_submodule_name."<",											 
--- 		element_type => type_module);
 
-	--rig : type_rig.map;
-	--module_cursor : type_rig.cursor;
+		-- the nets of the module (incl. routing information from the board):
+		nets 	    	: type_nets.map;				
+		
+		-- General non-component related board stuff (silk screen, documentation, ...):
+		board			: et_pcb.type_board;
+	end record;
+
+
+	-- A rig is a set of modules:
+	package type_rig is new ordered_maps (
+		key_type		=> et_coordinates.type_submodule_name.bounded_string, -- example "MOTOR_DRIVER"
+		"<" 			=> et_coordinates.type_submodule_name."<",
+		element_type	=> type_module);
+
+	rig : type_rig.map;
+	module_cursor : type_rig.cursor;
 
 	-- The rig has a name like "Blood Sample Analyzer"
 	-- Mostly this is equal to the project name.

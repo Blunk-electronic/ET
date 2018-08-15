@@ -499,9 +499,7 @@ package et_kicad is
 	-- Returns the simple name of the given net name.
 	-- Example: If the given name is "MOTOR_DRIVER/CLOCK" then the return is "CLOCK".
 
-	type type_label_direction is (INPUT, OUTPUT, BIDIR, TRISTATE, PASSIVE); -- CS rename to type_net_label_direction
-	type type_label_appearance is (SIMPLE, TAG); -- CS rename to type_net_lael_appearance
-	type type_net_label (label_appearance : type_label_appearance) is record
+	type type_net_label (label_appearance : et_schematic.type_net_label_appearance) is record
 		coordinates	: et_coordinates.type_coordinates;
 		orientation	: et_coordinates.type_angle;
         text		: et_schematic.type_net_name.bounded_string;
@@ -510,19 +508,18 @@ package et_kicad is
         width		: et_libraries.type_text_line_width;
 		processed	: boolean := false; -- used for associating label with net segment
 		case label_appearance is
-			when tag => 
-				direction : type_label_direction;
-				-- CS: coordinates of next tag of this net (by sheet coord. or area ?)
-				global : boolean; -- CS: use only one flag. true -> hierachic, false -> global
-				hierarchic : boolean;
-			when simple => null;
+			when et_schematic.TAG => 
+				direction	: et_schematic.type_net_label_direction;
+				global		: boolean; -- CS: use only one flag. true -> hierachic, false -> global
+				hierarchic	: boolean;
+			when et_schematic.SIMPLE => null;
 		end case;
 	end record;
 
-	type type_net_label_simple is new type_net_label (label_appearance => simple);
+	type type_net_label_simple is new type_net_label (label_appearance => et_schematic.SIMPLE);
 	package type_simple_labels is new doubly_linked_lists (type_net_label_simple);
 	
-	type type_net_label_tag is new type_net_label (label_appearance => tag);		
+	type type_net_label_tag is new type_net_label (label_appearance => et_schematic.TAG);
 	package type_tag_labels is new doubly_linked_lists (type_net_label_tag);
 
 	procedure write_label_properties (label : in type_net_label);
@@ -559,6 +556,7 @@ package et_kicad is
 	-- As long as strands are independed of each other they must 
 	-- have a name and their own scope.
 	type type_strand is new et_schematic.type_strand_base with record
+		name		: et_schematic.type_net_name.bounded_string; -- example "CPU_CLOCK"		
 		scope 		: type_strand_scope := type_strand_scope'first; -- example "local"
 		segments	: type_net_segments.list;
 	end record;
