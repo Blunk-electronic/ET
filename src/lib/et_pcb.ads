@@ -1065,8 +1065,6 @@ package et_pcb is
 
 	
 	-- This is the base type of a package:
-	-- Depending on whether it is about a library or a board this type is
-	-- extended by other properties.
 	type type_package (appearance : type_package_appearance) is abstract tagged record
 		description				: type_package_description.bounded_string;
 		copper					: type_copper_package_both_sides; -- non-electric objects
@@ -1078,13 +1076,12 @@ package et_pcb is
 		via_restrict 			: type_via_restrict_package;
 		-- CS holes
 
-		-- PCB contours non-plated. Kicad refers to them as "edge cuts".
-		pcb_contours			: type_package_pcb_contour; -- non-plated millings
+		-- PCB contours or so called "non-plated millings"
+		pcb_contours			: type_package_pcb_contour;
 
 		-- Plated millings. NOTE: NOT FOR SLITTED HOLES ! See type_terminal instead.
 		pcb_contours_plated 	: type_package_pcb_contour_plated;
 		
-		time_stamp				: et_string_processing.type_timestamp;
 		technology				: type_assembly_technology; -- set by majority of terminals
 		
 		-- Only REAL packages have 3d contours:
@@ -1105,19 +1102,17 @@ package et_pcb is
 -- LIBRARIES
 	
 	-- A package in the library extends the base package type:
-	type type_package_in_library is new type_package with record
+	type type_package_library is new type_package with record
 		silk_screen				: type_silk_screen_package_both_sides; -- incl. placeholder for reference and purpose
 		assembly_documentation	: type_assembly_documentation_package_both_sides; -- incl. placeholder for value
 		terminals				: type_terminals.map;
 	end record;
 
-	-- Lots of packages (in a library) can be collected in a map:
-	package type_packages_in_library is new indefinite_ordered_maps (
-		key_type 		=> et_libraries.type_component_package_name.bounded_string, -- S_SO14, T_0207
-		element_type 	=> type_package_in_library);
-	
-	use type_packages_in_library;
-
+	-- packages
+	package type_packages_library is new indefinite_ordered_maps (
+		key_type		=> et_libraries.type_full_library_name.bounded_string, -- ../lbr/smd/SO15.pac
+		"<"				=> et_libraries.type_full_library_name."<",
+		element_type	=> type_package_library);
 
 
 

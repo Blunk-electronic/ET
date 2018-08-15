@@ -520,11 +520,28 @@ package et_kicad_pcb is
 
 	
 -- LIBRARIES
+	-- This is the base type of a package:
+	type type_package is new et_pcb.type_package with record
+		time_stamp				: et_string_processing.type_timestamp;
+	end record;
+
+
+	type type_package_library is new type_package with record
+		silk_screen				: et_pcb.type_silk_screen_package_both_sides; -- incl. placeholder for reference and purpose
+		assembly_documentation	: et_pcb.type_assembly_documentation_package_both_sides; -- incl. placeholder for value
+		terminals				: et_pcb.type_terminals.map;
+	end record;
+	
+	-- Lots of packages (in a library) can be collected in a map:
+	package type_packages_library is new indefinite_ordered_maps (
+		key_type 		=> et_libraries.type_component_package_name.bounded_string, -- S_SO14, T_0207
+		"<"				=> et_libraries.type_component_package_name."<",
+		element_type 	=> type_package_library);
 	
 	package type_libraries is new ordered_maps (
 		key_type		=> et_libraries.type_full_library_name.bounded_string, -- projects/lbr/smd_packages.pretty
-		element_type	=> et_pcb.type_packages_in_library.map,
-		"="				=> et_pcb.type_packages_in_library."=",
+		element_type	=> type_packages_library.map,
+		"="				=> type_packages_library."=",
 		"<"				=> et_libraries.type_full_library_name."<");
 
 	-- All package models are collected here:
@@ -587,7 +604,7 @@ package et_kicad_pcb is
 
 	
 	-- A package in a board extends the base package type:
-	type type_package_board is new et_pcb.type_package with record
+	type type_package_board is new type_package with record
 		silk_screen				: et_pcb.type_silk_screen_package_both_sides;
 		assembly_documentation	: et_pcb.type_assembly_documentation_package_both_sides;
 		terminals				: type_terminals.map; -- terminals with net names
