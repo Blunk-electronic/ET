@@ -203,6 +203,7 @@ package et_schematic is
 	function to_string (junction : in type_net_junction; scope : in et_coordinates.type_scope) return string;
 	-- Returns the position of the given junction as string.
 
+	-- This is the port of a component:
 	type type_port_component is record
 		reference	: et_libraries.type_component_reference;
 		name		: et_libraries.type_port_name.bounded_string;
@@ -211,9 +212,19 @@ package et_schematic is
 
 	package type_ports_component is new doubly_linked_lists (type_port_component);
 
+	-- This is the port of a submodule. It is the interface between the parent and 
+	-- submodule:
 	type type_port_submodule is record
-		module		: et_coordinates.type_submodule_name.bounded_string; -- name of submodule
-		port		: type_net_name.bounded_string; -- the net inside the submodule
+		-- The port belongs to a certain submodule:
+		module		: et_coordinates.type_submodule_name.bounded_string;
+
+		-- The port addresses a certain net inside the submodule:
+		net			: type_net_name.bounded_string;
+
+		-- The port addresses a certain port of the net inside the submodule.
+		-- Inside a submodule a net can have multiple ports to the outside world.
+		port		: et_libraries.type_port_name.bounded_string;
+
 		position	: et_coordinates.type_coordinates; -- the position of the port in the parent module
 		direction	: et_libraries.type_port_direction;
 	end record;
@@ -294,9 +305,14 @@ package et_schematic is
 	end record;
 
 	package type_strands is new doubly_linked_lists (type_strand);
+
+	-- If a net exists in a (sub)module exclusively or whether it can be
+	-- seen from the parent module:
+	type type_net_scope is (LOCAL, GLOBAL);
 	
 	type type_net is new type_net_base with record
 		strands		: type_strands.list;
+		scope		: type_net_scope := LOCAL;
 	end record;
 	
 	package type_nets is new ordered_maps (
@@ -398,10 +414,35 @@ package et_schematic is
 
 
 -- SUBMODULES
+	submodule_path_length_max : constant positive := 300;
+	package type_submodule_path is new generic_bounded_length (submodule_path_length_max);
+
+	type type_submodule_size is record
+		x, y : et_coordinates.type_distance; -- size x/y of the box
+	end record;
+
+	type type_submodule_position_offset_in_board is record
+		x, y 	: et_coordinates.type_distance;
+		angle	: et_pcb_coordinates.type_angle;
+	end record;
+
+	type type_submodule_view_mode is (
+		ORIGIN,		-- references and net names displayed as drawn in the generic submodule
+		INSTANCE	-- references and net names displayed after renumbering and prefixing
+		);
+
+	--type type_reference_offset is natural
+	
 	type type_submodule is record
-		generic_name	: et_coordinates.type_submodule_name.bounded_string;
-		instance		: et_coordinates.type_submodule_instance;
-		-- CS path to submodule
+		path				: type_submodule_path.bounded_string; 		-- ../schemlets/motor_driver.et
+		instance			: et_coordinates.type_submodule_instance; 	-- MOT_DRV_3 (will be the net prefix later on)
+        text_size_path		: et_libraries.type_text_size;				-- 
+        text_size_instance	: et_libraries.type_text_size;
+		position		    : et_coordinates.type_coordinates;
+		size				: type_submodule_size;
+		position_offset		: type_submodule_position_offset_in_board;
+		view_mode			: type_submodule_view_mode;
+		reference_offset	: natural;
 	end record;
 
 	package type_submodules is new ordered_maps (
