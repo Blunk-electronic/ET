@@ -431,8 +431,6 @@ package et_schematic is
 		INSTANCE	-- references and net names displayed after renumbering and prefixing
 		);
 
-	--type type_reference_offset is natural
-	
 	type type_submodule is record
 		path				: type_submodule_path.bounded_string; 		-- ../schemlets/motor_driver.et
 		instance			: et_coordinates.type_submodule_instance; 	-- MOT_DRV_3 (will be the net prefix later on)
@@ -442,7 +440,7 @@ package et_schematic is
 		size				: type_submodule_size;
 		position_offset		: type_submodule_position_offset_in_board;
 		view_mode			: type_submodule_view_mode;
-		reference_offset	: natural;
+		reference_offset	: et_libraries.type_component_reference_id;	-- R88 turns to R2088 or R788
 	end record;
 
 	package type_submodules is new ordered_maps (
