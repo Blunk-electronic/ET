@@ -521,7 +521,7 @@ package et_kicad_pcb is
 	
 -- LIBRARIES
 	-- This is the base type of a package:
-	type type_package is new et_pcb.type_package with record
+	type type_package is new et_pcb.type_package_base with record
 		time_stamp				: et_string_processing.type_timestamp;
 	end record;
 

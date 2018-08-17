@@ -985,43 +985,12 @@ package et_libraries is
 		element_type	=> type_component);
 
 
--- 	function component_appearance (cursor : in type_components.cursor)
--- 	-- Returns the component appearance where cursor points to.
--- 		return type_component_appearance;
 
-	-- LIBRARIES
--- 	package type_libraries is new ordered_maps (
--- 		key_type 		=> type_full_library_name.bounded_string, -- ../lbr/transistors/zetex.dev
--- 		element_type 	=> type_components.map,
--- 		"=" 			=> type_components."=");
+	-- All symbols are collected here:
+	symbols : type_symbols.map;
 
 	-- All component models are collected here.
 	components : type_components.map;
-
--- LIBRARIES
--- 	type type_library is record
--- 		devices		: et_libraries.type_components.map;
--- 		symbols		: et_libraries.type_symbols.map;
--- --		packages	: et_pcb.type_packages_library.map;
--- 	end record;
--- 		
--- 	package type_libraries is new ordered_maps (
--- 		key_type		=> type_library_group_name.bounded_string, -- active, passive, ... -- CS rename to library_name
--- 		"<" 			=> type_library_group_name."<",
--- 		element_type	=> type_library);
--- 
--- 	-- All component models are collected here. This collection applies for the whole rig.
--- 	component_libraries : type_libraries.map; -- CS: should be part of type_rig. see et_schematic type_rig
-
-
-
-	
-	
--- 	function find_component (
--- 	-- Searches the given library for the given component. Returns a cursor to that component.
--- 		library		: in type_full_library_name.bounded_string; -- consists of group name and actual library name
--- 		component	: in type_component_generic_name.bounded_string) 
--- 		return type_components.cursor;
 
 
 	

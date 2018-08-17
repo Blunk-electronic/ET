@@ -1065,7 +1065,7 @@ package et_pcb is
 
 	
 	-- This is the base type of a package:
-	type type_package (appearance : type_package_appearance) is abstract tagged record
+	type type_package_base (appearance : type_package_appearance) is abstract tagged record
 		description				: type_package_description.bounded_string;
 		copper					: type_copper_package_both_sides; -- non-electric objects
 		keepout 				: type_keepout_both_sides;
@@ -1102,20 +1102,21 @@ package et_pcb is
 -- LIBRARIES
 	
 	-- A package in the library extends the base package type:
-	type type_package_library is new type_package with record
+	type type_package is new type_package_base with record
 		silk_screen				: type_silk_screen_package_both_sides; -- incl. placeholder for reference and purpose
 		assembly_documentation	: type_assembly_documentation_package_both_sides; -- incl. placeholder for value
 		terminals				: type_terminals.map;
 	end record;
 
 	-- packages
-	package type_packages_library is new indefinite_ordered_maps (
+	package type_packages is new indefinite_ordered_maps (
 		key_type		=> et_libraries.type_full_library_name.bounded_string, -- ../lbr/smd/SO15.pac
 		"<"				=> et_libraries.type_full_library_name."<",
-		element_type	=> type_package_library);
+		element_type	=> type_package);
 
 
-
+	-- All packages are collected here
+	packages : type_packages.map;
 
 
 	
