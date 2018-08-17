@@ -7843,6 +7843,17 @@ package body et_kicad_pcb is
 	end terminal_count;
 	
 
+-- 	procedure to_native (log_threshold : in et_string_processing.type_log_level) is
+-- 	-- Converts the packages (from package_libraries) to native packages.
+-- 	-- NOTE: Packages of the board (incl. their deviations from the package_libraries) are ignored !
+-- 	begin
+-- 		log ("packages ...", log_threshold);
+-- 		log_indentation_up;
+-- -- CS
+-- -- 
+-- 		log_indentation_down;
+-- 	end to_native;
+
 	
 end et_kicad_pcb;
 

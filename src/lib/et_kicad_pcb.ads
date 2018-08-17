@@ -759,6 +759,11 @@ package et_kicad_pcb is
 		terminal_port_map	: in et_libraries.type_terminal_port_map.map) 
 		return boolean;
 
+-- 	procedure to_native (log_threshold : in et_string_processing.type_log_level);
+-- 	-- Converts the packages (from package_libraries) to native packages.
+-- 	-- NOTE: Packages of the board (incl. their deviations from the package_libraries) are ignored !
+
+		
 	
 end et_kicad_pcb;
 

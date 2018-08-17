@@ -1235,14 +1235,14 @@ package et_kicad is
 
 	-- A rig is a set of modules:
 	package type_rig is new ordered_maps (
-	-- CS: package type_modules is new ordered_maps (
 		key_type 		=> et_coordinates.type_submodule_name.bounded_string, -- example "MOTOR_DRIVER"
 		"<" 			=> et_coordinates.type_submodule_name."<",											 
 		element_type 	=> type_module);
 
 	rig : type_rig.map;
 	module_cursor : type_rig.cursor;
-	
+
+
 end et_kicad;
 
 -- Soli Deo Gloria
