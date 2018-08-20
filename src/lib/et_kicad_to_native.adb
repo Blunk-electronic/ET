@@ -101,23 +101,145 @@ package body et_kicad_to_native is
 			module		: in out et_schematic.type_module) is
 
 			use et_kicad.type_components_schematic;
-			components_kicad : et_kicad.type_components_schematic.map;
-			component_cursor_kicad : et_kicad.type_components_schematic.cursor;
-		begin
+			components_kicad		: et_kicad.type_components_schematic.map;
+			component_cursor_kicad	: et_kicad.type_components_schematic.cursor;
+
+			use et_schematic.type_components;
+			component_cursor_native	: et_schematic.type_components.cursor;
+			component_inserted		: boolean;
+
+			procedure copy_units (
+			-- Copies the kicad units to the native component.
+				reference	: in et_libraries.type_component_reference;
+				component	: in out et_schematic.type_component) is
+
+				use et_kicad.type_units_schematic;
+				units_kicad			: et_kicad.type_units_schematic.map := element (component_cursor_kicad).units;
+				unit_cursor_kicad	: et_kicad.type_units_schematic.cursor := units_kicad.first; -- point to first unit
+
+				use et_schematic.type_units;
+				unit_cursor_native	: et_schematic.type_units.cursor;
+				unit_inserted		: boolean;
+
+				unit_native_virtual	: et_schematic.type_unit (et_libraries.SCH);
+				unit_native_real	: et_schematic.type_unit (et_libraries.SCH_PCB);
+			begin -- copy_units
+				log_indentation_up;
+				
+				while unit_cursor_kicad /= et_kicad.type_units_schematic.no_element loop
+					log ("unit " & et_libraries.to_string (key (unit_cursor_kicad)), log_threshold + 3);
+
+					-- depending on the appearance of the kicad component, we create a virtual or real 
+					-- unit in the native schematic module:
+
+					-- The units can be obtained by converting the kicad unit to the base unit (see et_schematic.type_units)
+					-- because Kicad units are derived from this base type.
+					-- Kicad stuff like path_to_package or alternative representation is discarded.
+					case element (component_cursor_kicad).appearance is
+						when et_libraries.SCH =>
+
+							unit_native_virtual := et_schematic.type_unit (element (unit_cursor_kicad));
+							
+							et_schematic.type_units.insert (
+								container	=> component.units,
+								key			=> key (unit_cursor_kicad),
+								position	=> unit_cursor_native,
+								inserted	=> unit_inserted,
+								new_item	=> unit_native_virtual);
+
+						when et_libraries.SCH_PCB =>
+
+							unit_native_real := et_schematic.type_unit (element (unit_cursor_kicad));
+							
+							et_schematic.type_units.insert (
+								container	=> component.units,
+								key			=> key (unit_cursor_kicad),
+								position	=> unit_cursor_native,
+								inserted	=> unit_inserted,
+								new_item	=> unit_native_real);
+								
+					end case;
+					
+					next (unit_cursor_kicad);
+				end loop;
+				
+				log_indentation_down;
+			end copy_units;
+
+		begin -- copy_schematic_components
+			log_indentation_up;
+			
 			-- load a copy of kicad schematic components
 			components_kicad := element (module_cursor_kicad).components;
 			
-			-- copy if there are components in the kicad schematic. otherwise there is nothing to do.
-			if not is_empty (components_kicad) then
+-- 			-- copy if there are components in the kicad schematic. otherwise there is nothing to do.
+-- 			if not is_empty (components_kicad) then
 
-				-- loop in the component list of the kicad module
-				component_cursor_kicad := components_kicad.first;
-				while component_cursor_kicad /= et_kicad.type_components_schematic.no_element loop
-					--component_kicad := element (component_cursor_kicad);
+			-- loop in the component list of the kicad schematic module
+			component_cursor_kicad := components_kicad.first;
+			while component_cursor_kicad /= et_kicad.type_components_schematic.no_element loop
 
-					next (component_cursor_kicad);
-				end loop;
-			end if;
+				log ("component " & et_libraries.to_string (key (component_cursor_kicad)), log_threshold + 2);
+				
+				-- depending on the appearance of the kicad component, we create a virtual or real 
+				-- component in the native schematic module.
+				-- Kicad stuff like power_flag is discarded.
+				case element (component_cursor_kicad).appearance is
+					when et_libraries.SCH =>
+						
+						et_schematic.type_components.insert (
+							container	=> module.components,
+							key			=> key (component_cursor_kicad), -- IC308, R12
+							position	=> component_cursor_native,
+							new_item	=> (
+								appearance			=> et_libraries.SCH,
+								library_name		=> element (component_cursor_kicad).library_name,
+								generic_name		=> element (component_cursor_kicad).generic_name,
+								value				=> element (component_cursor_kicad).value,
+								commissioned		=> element (component_cursor_kicad).commissioned,
+								updated				=> element (component_cursor_kicad).updated,
+								author				=> element (component_cursor_kicad).author,
+								others 				=> <>), -- unit list is empty at this time
+
+							inserted	=> component_inserted); -- should always be true
+
+					when et_libraries.SCH_PCB => null;
+						et_schematic.type_components.insert (
+							container	=> module.components,
+							key			=> key (component_cursor_kicad), -- IC308, R12
+							position	=> component_cursor_native,
+							new_item	=> (
+								appearance			=> et_libraries.SCH_PCB,
+								library_name		=> element (component_cursor_kicad).library_name,
+								generic_name		=> element (component_cursor_kicad).generic_name,
+								value				=> element (component_cursor_kicad).value,
+								commissioned		=> element (component_cursor_kicad).commissioned,
+								updated				=> element (component_cursor_kicad).updated,
+								author				=> element (component_cursor_kicad).author,
+
+								partcode			=> element (component_cursor_kicad).partcode,
+								purpose				=> element (component_cursor_kicad).purpose,
+								bom					=> element (component_cursor_kicad).bom,
+								variant				=> element (component_cursor_kicad).variant,
+
+								position			=> element (component_cursor_kicad).position,
+								text_placeholders	=> element (component_cursor_kicad).text_placeholders,
+								others 				=> <>), -- unit list is empty at this time
+
+							inserted	=> component_inserted); -- should always be true
+				end case;
+
+				-- copy the units from the kicad component to the native component
+				et_schematic.type_components.update_element (
+					container	=> module.components,
+					position	=> component_cursor_native,
+					process		=> copy_units'access);
+
+				next (component_cursor_kicad);
+			end loop;
+-- 			end if;
+
+			log_indentation_down;
 		end copy_schematic_components;
 
 		
@@ -137,13 +259,13 @@ package body et_kicad_to_native is
 				inserted	=> module_inserted -- should always be true
 				);
 
-			-- copy general stuff
+			-- copy general stuff (notes, routing info, silk screen, documentation, net classes, ...)
 			update_element (
 				container	=> et_schematic.rig,
 				position	=> module_cursor_native,
 				process		=> copy_general_stuff'access);
 
-			-- copy schematic components
+			-- copy schematic components (incl. their units)
 			update_element (
 				container	=> et_schematic.rig,
 				position	=> module_cursor_native,
