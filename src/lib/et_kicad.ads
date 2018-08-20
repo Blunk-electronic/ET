@@ -974,7 +974,7 @@ package et_kicad is
 		"<"				=> et_schematic.type_net_name."<",
 		element_type	=> type_gui_submodule_port);
 
-	type type_gui_submodule is record
+	type type_gui_submodule is record -- CS rename to type_hierarchic_sheet
         text_size_of_name   : et_libraries.type_text_size;
         text_size_of_file   : et_libraries.type_text_size;
 		coordinates		    : et_coordinates.type_coordinates;
@@ -988,8 +988,8 @@ package et_kicad is
 		name		: in et_coordinates.type_submodule_name.bounded_string;
 		gui_sub_mod	: in type_gui_submodule);
 	
-    package type_gui_submodules is new ordered_maps (
-        key_type		=> et_coordinates.type_submodule_name.bounded_string,
+    package type_gui_submodules is new ordered_maps ( -- CS rename to type_hierarchic_sheets
+        key_type		=> et_coordinates.type_submodule_name.bounded_string, -- file/sheet name are equally
 		"<" 			=> et_coordinates.type_submodule_name."<",
         element_type	=> type_gui_submodule);
 

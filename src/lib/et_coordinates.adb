@@ -531,13 +531,13 @@ package body et_coordinates is
 	-- Returns the given position as string. Scope specifies how much position is to
 	-- be displayed. See specification of type_scope.
 		position	: in type_coordinates;
-		scope		: in type_scope := sheet)
+		scope		: in type_scope := SHEET)
 		return string is
 
 		use et_string_processing;
 	begin
 		case scope is
-			when module =>
+			when MODULE =>
 				return coordinates_preamble_module
 					& to_string (position.path) & latin_1.space & hierarchy_separator & latin_1.space
 					& to_string (position.sheet_number) 
@@ -546,7 +546,7 @@ package body et_coordinates is
 					& latin_1.space & axis_separator & latin_1.space
 					& to_string (distance_y (position));
 				
-			when sheet =>
+			when SHEET =>
 				return coordinates_preamble_sheet
 					& to_string (position.sheet_number) 
 					& latin_1.space & axis_separator & latin_1.space
@@ -554,7 +554,7 @@ package body et_coordinates is
 					& latin_1.space & axis_separator & latin_1.space
 					& to_string (distance_y (position));
 
-			when xy =>
+			when XY =>
 				return coordinates_preamble_xy
 					& to_string (distance_x (position))
 					& latin_1.space & axis_separator & latin_1.space

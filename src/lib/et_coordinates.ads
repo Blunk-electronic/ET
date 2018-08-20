@@ -270,16 +270,16 @@ package et_coordinates is
 
 	
 	type type_scope is (
-		xy, -- only x an y pos.
-		sheet, 	-- coordinates sheet related
-		module); -- coordinates with the module in scope
+		XY, -- only x an y pos.
+		SHEET, 	-- coordinates sheet related
+		MODULE); -- coordinates with the module in scope
 		-- CS: rig ? -- with the whole rig is scope
 
 	function to_string (
 	-- Returns the given position as string. Scope specifies how much position is to
 	-- be displayed. See type_scope comments.
 		position	: in type_coordinates;
-		scope		: in type_scope := sheet)
+		scope		: in type_scope := SHEET)
 		return string;
 
 	function path (position : in type_coordinates) return type_path_to_submodule.list;

@@ -167,14 +167,9 @@ package body et_kicad_to_native is
 			end copy_units;
 
 		begin -- copy_schematic_components
-			log_indentation_up;
-			
 			-- load a copy of kicad schematic components
 			components_kicad := element (module_cursor_kicad).components;
 			
--- 			-- copy if there are components in the kicad schematic. otherwise there is nothing to do.
--- 			if not is_empty (components_kicad) then
-
 			-- loop in the component list of the kicad schematic module
 			component_cursor_kicad := components_kicad.first;
 			while component_cursor_kicad /= et_kicad.type_components_schematic.no_element loop
@@ -236,12 +231,41 @@ package body et_kicad_to_native is
 					process		=> copy_units'access);
 
 				next (component_cursor_kicad);
-			end loop;
--- 			end if;
 
-			log_indentation_down;
+			end loop;
 		end copy_schematic_components;
 
+		procedure translate_sheets (
+			module_name : in et_coordinates.type_submodule_name.bounded_string;
+			module		: in out et_schematic.type_module) is
+
+			use et_kicad.type_gui_submodules;
+			kicad_sheets		: et_kicad.type_gui_submodules.map := element (module_cursor_kicad).submodules;
+			kicad_sheet_cursor	: et_kicad.type_gui_submodules.cursor := kicad_sheets.first;
+
+			use et_schematic.type_submodules;
+			submodule_cursor_native : et_schematic.type_submodules.cursor;
+			submodule_inserted		: boolean;
+		begin -- translate_sheets
+			-- loop in hierarchic kicad sheets
+			while kicad_sheet_cursor /= et_kicad.type_gui_submodules.no_element loop
+				log ("hierarchic sheet" & et_coordinates.to_string (
+					position	=> element (kicad_sheet_cursor).coordinates,
+					scope		=> et_coordinates.MODULE),
+					log_threshold + 2);
+
+				et_schematic.type_submodules.insert (
+					container	=> module.submodules,
+					position	=> submodule_cursor_native,
+					inserted	=> submodule_inserted,
+					key			=> key (kicad_sheet_cursor),
+					new_item	=> (others => <>)
+					);
+				
+				next (kicad_sheet_cursor);
+			end loop;
+		end translate_sheets;
+		
 		
 	begin
 -- 		log ("component libraries ...", log_threshold);
@@ -270,6 +294,12 @@ package body et_kicad_to_native is
 				container	=> et_schematic.rig,
 				position	=> module_cursor_native,
 				process		=> copy_schematic_components'access);
+
+			-- Translate hierarchic kicad sheets to native submodules
+			update_element (
+				container	=> et_schematic.rig,
+				position	=> module_cursor_native,
+				process		=> translate_sheets'access);
 			
 			
 			log_indentation_down;
