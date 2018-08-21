@@ -254,17 +254,186 @@ package body et_kicad_to_native is
 					scope		=> et_coordinates.MODULE),
 					log_threshold + 2);
 
+				-- 1. In kicad the gui submodule has a name which should be the same as the sheet name.
+				-- This is ensured on importing the kicad schematic (see et_kicad.adb). --> CS wrong ! fix it !
+				-- 2. The kicad name becomes now the name of the native submodule.
 				et_schematic.type_submodules.insert (
 					container	=> module.submodules,
 					position	=> submodule_cursor_native,
 					inserted	=> submodule_inserted,
-					key			=> key (kicad_sheet_cursor),
-					new_item	=> (others => <>)
+					key			=> key (kicad_sheet_cursor), -- submodule name
+					new_item	=> (
+						text_size_path		=> element (kicad_sheet_cursor).text_size_of_file,
+						text_size_instance	=> element (kicad_sheet_cursor).text_size_of_file,
+						position			=> element (kicad_sheet_cursor).coordinates,
+						size 				=> (element (kicad_sheet_cursor).size_x, element (kicad_sheet_cursor).size_y),
+						others => <>)
 					);
 				
 				next (kicad_sheet_cursor);
 			end loop;
 		end translate_sheets;
+
+		procedure copy_nets (
+			module_name : in et_coordinates.type_submodule_name.bounded_string;
+			module		: in out et_schematic.type_module) is
+
+			use et_kicad.type_nets;
+			use et_kicad.type_strands;
+			kicad_nets			: et_kicad.type_nets.map := element (module_cursor_kicad).nets;
+			kicad_net_cursor	: et_kicad.type_nets.cursor := kicad_nets.first;
+
+			use et_schematic.type_nets;
+			net_cursor_native	: et_schematic.type_nets.cursor;
+			net_inserted		: boolean;
+
+			procedure insert_strands (
+			-- copies the kicad strands to native strands of a net.
+			-- Strand names (from kicad) are discarded. ET does not provide a name for a strand.
+			-- As a strand is part of a net, there is no need for individual strand names.
+				net_name	: in et_schematic.type_net_name.bounded_string;
+				net			: in out et_schematic.type_net) is
+
+				use et_kicad.type_strands;
+				kicad_strands : et_kicad.type_strands.list := element (kicad_net_cursor).strands;
+				kicad_strand_cursor : et_kicad.type_strands.cursor := kicad_strands.first;
+								
+				use et_kicad.type_net_segments;
+				kicad_segments : et_kicad.type_net_segments.list;
+				kicad_segment_cursor : et_kicad.type_net_segments.cursor;
+
+				use et_schematic.type_strands;
+				strands_native : et_schematic.type_strands.list;
+				strand_base : et_schematic.type_strand_base;
+			
+				use et_schematic.type_net_segments;
+				net_segments_native : et_schematic.type_net_segments.list;
+				net_segment_base : et_schematic.type_net_segment_base;
+
+				use et_schematic.type_net_labels;
+				net_labels_native : et_schematic.type_net_labels.list;
+
+				function tag_and_simple_labels (segment : in et_kicad.type_net_segment) 
+				-- Copies from the given kicad net segment all simple and tag labels and returns
+				-- them in a single list.
+					return et_schematic.type_net_labels.list is
+					labels : et_schematic.type_net_labels.list; -- to be returned
+
+					use et_kicad.type_simple_labels;
+					simple_label_cursor : et_kicad.type_simple_labels.cursor := segment.label_list_simple.first;
+
+					use et_kicad.type_tag_labels;
+					tag_label_cursor : et_kicad.type_tag_labels.cursor := segment.label_list_tag.first;
+
+				begin -- tag_and_simple_labels
+
+					-- simple labels
+					while simple_label_cursor /= et_kicad.type_simple_labels.no_element loop
+
+						et_schematic.type_net_labels.append (
+							container	=> labels,
+							new_item	=> (
+								appearance	=> et_schematic.SIMPLE,
+								coordinates	=> element (simple_label_cursor).coordinates,
+								orientation	=> element (simple_label_cursor).orientation,
+								size		=> element (simple_label_cursor).size,
+								style		=> element (simple_label_cursor).style,
+								width		=> element (simple_label_cursor).width)
+						);
+						
+						next (simple_label_cursor);
+					end loop;
+
+					-- tag labels
+					while tag_label_cursor /= et_kicad.type_tag_labels.no_element loop
+
+						et_schematic.type_net_labels.append (
+							container	=> labels,
+							new_item	=> (
+								appearance	=> et_schematic.TAG,
+								coordinates	=> element (tag_label_cursor).coordinates,
+								orientation	=> element (tag_label_cursor).orientation,
+								size		=> element (tag_label_cursor).size,
+								style		=> element (tag_label_cursor).style,
+								width		=> element (tag_label_cursor).width,
+								direction	=> element (tag_label_cursor).direction
+								)
+						);
+						
+						next (tag_label_cursor);
+					end loop;
+					
+					return labels;
+				end tag_and_simple_labels;
+				
+			begin -- insert_strands
+
+				-- loop in strands of current kicad net
+				while kicad_strand_cursor /= et_kicad.type_strands.no_element loop
+
+					-- load segments of current strand
+					kicad_segments := element (kicad_strand_cursor).segments;
+					kicad_segment_cursor := kicad_segments.first;
+
+					-- loop in segments of current strand
+					while kicad_segment_cursor /= et_kicad.type_net_segments.no_element loop
+
+						-- get coordinates and junctions from the current kicad net segment:
+						net_segment_base := et_schematic.type_net_segment_base (element (kicad_segment_cursor));
+
+						-- get labels from current kicad net segment
+						net_labels_native := tag_and_simple_labels (element (kicad_segment_cursor));
+
+						-- collect native net segment in list net_segments_native
+						et_schematic.type_net_segments.append (
+							container	=> net_segments_native,
+							new_item	=> (net_segment_base with net_labels_native)											
+							);
+
+						next (kicad_segment_cursor);
+					end loop;
+
+					-- get lowest x/y coordinates of current kicad strand:
+					strand_base := et_schematic.type_strand_base (element (kicad_strand_cursor));
+
+					-- collect native strand in list strands_native
+					et_schematic.type_strands.append (
+						container	=> strands_native,
+						new_item	=> (strand_base with net_segments_native));
+					
+					next (kicad_strand_cursor);
+				end loop;
+
+				net.strands := strands_native;
+					
+			end insert_strands;
+				
+		begin -- copy_nets
+			-- loop in kicad nets
+			while kicad_net_cursor /= et_kicad.type_nets.no_element loop
+				log ("net " & et_schematic.to_string (key (kicad_net_cursor)), log_threshold + 2);
+
+				et_schematic.type_nets.insert (
+					container	=> module.nets,
+					position	=> net_cursor_native,
+					inserted	=> net_inserted,
+					key			=> key (kicad_net_cursor), -- net name
+					new_item	=> (
+							-- convert the kicad net scope to native net scope
+							scope	=> et_schematic.type_net_scope'value (et_kicad.to_string (element (kicad_net_cursor).scope)),
+							others 	=> <>)
+					);
+
+				-- insert strands
+				et_schematic.type_nets.update_element (
+					container	=> module.nets,
+					position	=> net_cursor_native,
+					process		=> insert_strands'access);
+				
+				
+				next (kicad_net_cursor);
+			end loop;
+		end copy_nets;
 		
 		
 	begin
@@ -300,7 +469,13 @@ package body et_kicad_to_native is
 				container	=> et_schematic.rig,
 				position	=> module_cursor_native,
 				process		=> translate_sheets'access);
-			
+
+			-- copy nets
+			update_element (
+				container	=> et_schematic.rig,
+				position	=> module_cursor_native,
+				process		=> copy_nets'access);
+				
 			
 			log_indentation_down;
 

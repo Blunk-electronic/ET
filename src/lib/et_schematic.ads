@@ -293,14 +293,16 @@ package et_schematic is
 	
 	type type_net_segment is new type_net_segment_base with record
 		labels			: type_net_labels.list;
-		ports_component	: type_ports_component.list;
-		ports_submodule	: type_ports_submodule.list;
+		-- CS ? ports_component	: type_ports_component.list;
+		-- CS ? ports_submodule	: type_ports_submodule.list; 
 		-- CS no_connections	: type_no_connection_flags.list;-- the list of no-connection-flags
 	end record;
 
 	package type_net_segments is new doubly_linked_lists (type_net_segment);
 	
 	type type_strand is new type_strand_base with record
+	-- NOTE: ET does not provide a name for a strand.
+	-- As a strand is part of a net, there is no need for individual strand names.
 		segments	: type_net_segments.list;
 	end record;
 
@@ -422,8 +424,8 @@ package et_schematic is
 	end record;
 
 	type type_submodule_position_offset_in_board is record
-		x, y 	: et_coordinates.type_distance;
-		angle	: et_pcb_coordinates.type_angle;
+		x, y 	: et_pcb_coordinates.type_distance := et_pcb_coordinates.zero_distance;
+		angle	: et_pcb_coordinates.type_angle	:= et_pcb_coordinates.zero_angle;
 	end record;
 
 	type type_submodule_view_mode is (
