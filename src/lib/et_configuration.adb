@@ -122,8 +122,8 @@ package body et_configuration is
 		raise constraint_error;
 	end to_abbrevation;
 	
-	procedure multiple_purpose_error (
-	-- Outputs an error message on multiple usage of a purpose of a component category.
+	procedure multiple_purpose_warning (
+	-- Outputs a warning message on multiple usage of a purpose of a component category.
 		category		: in type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
 		purpose 		: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
 		log_threshold 	: in et_string_processing.type_log_level) is
@@ -141,14 +141,15 @@ package body et_configuration is
 			use type_component_purpose;
 			component : et_kicad.type_components_schematic.cursor := module.components.first;
 		begin
-			log ("purpose already used by component");
+			--log ("purpose already used by component");
 			log_indentation_up;
 
 			while component /= et_kicad.type_components_schematic.no_element loop
 				if element (component).appearance = sch_pcb then -- it must be a real component
 					if et_configuration.category (key (component)) = category then -- category must match
 						if element (component).purpose = purpose then -- purpose must match
-							log (et_libraries.to_string (key (component)));
+							log ("purpose already used by component " &
+								 et_libraries.to_string (key (component)));
 						end if;
 					end if;
 				end if;
@@ -158,20 +159,25 @@ package body et_configuration is
 			log_indentation_down;
 		end locate_component;
 			
-	begin -- multiple_purpose_error
-		log_indentation_reset;
-		log (message_error & "There must be ONLY ONE " 
+	begin -- multiple_purpose_warning
+-- 		log_indentation_reset;
+-- 		log (message_error & "There must be ONLY ONE" 
+-- 			 & to_string (category) 
+-- 			 & " with purpose " 
+-- 			 & enclose_in_quotes (et_libraries.to_string (purpose)) & " !",
+-- 			 console => true);
+
+		log (message_warning & "There must be ONLY ONE" 
 			 & to_string (category) 
 			 & " with purpose " 
-			 & enclose_in_quotes (et_libraries.to_string (purpose)) & " !",
-			 console => true);
+			 & enclose_in_quotes (et_libraries.to_string (purpose)) & " !");
 
 		query_element (
 			position	=> et_kicad.module_cursor,
 			process		=> locate_component'access);
 
-		raise constraint_error;
-	end multiple_purpose_error;
+		--raise constraint_error;
+	end multiple_purpose_warning;
 		
 	
 	function multiple_purpose (
@@ -196,7 +202,8 @@ package body et_configuration is
 			use et_kicad.type_components_schematic;
 			use type_component_purpose;
 			component : et_kicad.type_components_schematic.cursor := module.components.first;
-		begin
+		begin -- locate_component
+			log_indentation_up;		
 			log ("detecting multiple usage of purpose " 
 				 & enclose_in_quotes (et_libraries.to_string (purpose)) 
 				 & " in component category " & to_string (category) 
@@ -215,6 +222,7 @@ package body et_configuration is
 				next (component);
 			end loop;
 
+			log_indentation_down;
 			log_indentation_down;
 		end locate_component;
 

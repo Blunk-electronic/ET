@@ -100,9 +100,9 @@ package et_kicad is
 		element_type	=> et_libraries.type_library_name.bounded_string,
 		"="				=> et_libraries.type_library_name."=");
 	
-	-- sheet headers
+	-- SHEET HEADERS
 	-- The sheet header is a composite of a list of libraries and other things:
-	-- It contains a list of libraries used by a schemetic sheet.
+	-- It contains a list of libraries used by a particular schemetic sheet.
 	-- We use a simple list because the order of the library names must be kept.
     type type_sheet_header is record
 		libraries   : type_library_names.list; -- CS: probably not used by kicad, just information
@@ -975,6 +975,7 @@ package et_kicad is
 		element_type	=> type_gui_submodule_port);
 
 	type type_gui_submodule is record -- CS rename to type_hierarchic_sheet
+		file_name			: et_schematic.type_submodule_path.bounded_string; -- sensor.sch
         text_size_of_name   : et_libraries.type_text_size;
         text_size_of_file   : et_libraries.type_text_size;
 		coordinates		    : et_coordinates.type_coordinates;
@@ -1222,7 +1223,7 @@ package et_kicad is
         title_blocks	: type_title_blocks.list;					-- title blocks -- GUI relevant
 		notes       	: et_schematic.type_texts.list;				-- notes
 
-		sheet_headers	: type_sheet_headers.map;		-- the list of sheet headers
+		sheet_headers	: type_sheet_headers.map;					-- the list of sheet headers
 		-- CS: images
 
 		-- the nets of the module (incl. routing information from the board):

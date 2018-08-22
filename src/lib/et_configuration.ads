@@ -170,18 +170,18 @@ package et_configuration is
 -- 		WIRE
 		);
 
-	procedure multiple_purpose_error (
-	-- Outputs an error message on multiple usage of a purpose of a component category.
-		category : in type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
-		purpose : in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
-		log_threshold : in et_string_processing.type_log_level);
+	procedure multiple_purpose_warning (
+	-- Outputs an warning message on multiple usage of a purpose of a component category.
+		category		: in type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
+		purpose			: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
+		log_threshold	: in et_string_processing.type_log_level);
 	
 	function multiple_purpose (
 	-- Returns the number of occurences of components with the given purpose and category.
 	-- Example: If there are two connectors with purpose "PWR_IN" the return is 2.
-		category : in type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
-		purpose : in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
-		log_threshold : in et_string_processing.type_log_level)
+		category		: in type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
+		purpose			: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
+		log_threshold	: in et_string_processing.type_log_level)
 		return natural;
 	
 	procedure validate_module_interconnection (connection : in type_module_interconnection);

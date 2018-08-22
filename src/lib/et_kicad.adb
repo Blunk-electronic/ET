@@ -4700,13 +4700,13 @@ package body et_kicad is
 		procedure set_picked (segment : in out type_wild_net_segment ) is begin segment.picked := true; end set_picked;
 		
 		function read_schematic (
+		-- Reads the given schematic file. If it contains submodules (hierarchic sheets), 
+        -- they will be returned in list_of_submodules. Otherwise the returned list is empty.
 			current_schematic	: in type_schematic_file_name.bounded_string;
 			log_threshold		: in type_log_level)
 			return type_submodule_names_extended is
 
 			use et_coordinates;
-		-- Reads the given schematic file. If it contains submodules (hierarchic sheets), 
-        -- they will be returned in list_of_submodules. Otherwise the returned list is empty.
 
 			list_of_submodules : type_submodule_names_extended; -- list to be returned
 			name_of_submodule_scratch : type_submodule_name.bounded_string; -- temporarily used before appended to list_of_submodules
@@ -5783,10 +5783,10 @@ package body et_kicad is
 				end loop;
 
 				-- Add sheet_header to module.
-                -- NOTE: The file name serves as key in order to match from file to header.
+                -- NOTE: The file name serves as key in order to map from file to header.
 				add_sheet_header (
-					header => sheet_header,
-					sheet => current_schematic);
+					header	=> sheet_header,
+					sheet	=> current_schematic);
 
 			end make_sheet_header;
 
@@ -5967,7 +5967,7 @@ package body et_kicad is
 				log_threshold	: in type_log_level) is
 			-- Builds the GUI sheet.
 				sheet : type_gui_submodule; -- the hierarchical GUI sheet being built
-				name, file : et_coordinates.type_submodule_name.bounded_string; -- sheet name and file name (must be equal)
+				name : et_coordinates.type_submodule_name.bounded_string; -- sheet name
 
 				port_inserted : boolean; -- used to detect multiple ports with the same name
 				port_cursor : type_gui_submodule_ports.cursor; -- obligatory, but not read
@@ -6066,8 +6066,6 @@ package body et_kicad is
 				next (line_cursor);
 				
 				-- Read sheet name from a line like "F0 "mcu_stm32f030" 60"
-				-- Since this is the black-box-representation of a kicad-sheet its name is threated as name of a submodule.
-				-- The sheet name will later be compared with the sheet file name.
 				if field (et_kicad.line,1) = schematic_keyword_sheet_name then
 					-- CS test field count					
 					name := to_submodule_name (field (et_kicad.line,2));
@@ -6084,7 +6082,7 @@ package body et_kicad is
 				-- Read sheet file name from a line like "F1 "mcu_stm32f030.sch" 60".
 				if field (et_kicad.line,1) = schematic_keyword_sheet_file then
 					-- CS test field count					
-					file := to_submodule_name (submodule => base_name (field (et_kicad.line,2)));
+					sheet.file_name := et_schematic.type_submodule_path.to_bounded_string (field (et_kicad.line,2));
 
 					-- set text size of file name and test for excessive text size
 					sheet.text_size_of_file := to_text_size (mil_to_distance (field (et_kicad.line,3)));
@@ -6092,19 +6090,19 @@ package body et_kicad is
 					-- Test text size by category.
 					check_schematic_text_size (category => FILE_NAME, size => sheet.text_size_of_file);
 					
-					-- Test if sheet name and file name match:
-					if name /= file then
-						log_indentation_reset;
-						log (text => message_error & "name mismatch: sheet name '" 
-							& to_string (submodule => name) & "' differs from file name '"
-							& to_string (submodule => file));
-						raise constraint_error;
-					end if;
+-- 					-- Test if sheet name and file name match:
+-- 					if name /= file then
+-- 						log_indentation_reset;
+-- 						log (text => message_error & "name mismatch: sheet name '" 
+-- 							& to_string (submodule => name) & "' differs from file name '"
+-- 							& to_string (submodule => file));
+-- 						raise constraint_error;
+-- 					end if;
 
 					-- append sheet file name (with extension) to list_of_submodules to be returned to parent unit
 					type_submodule_names.append (
-						list_of_submodules.list,
-						to_submodule_name (submodule => field (et_kicad.line,2)));
+						container	=> list_of_submodules.list,
+						new_item	=> to_submodule_name (submodule => field (et_kicad.line,2)));
 				end if;
 
 				log ("hierarchic sheet " & to_string (submodule => name), log_threshold + 1);
@@ -6157,7 +6155,7 @@ package body et_kicad is
 					log (message_warning & "hierarchic sheet '" & to_string (submodule => name) & "' has no ports !");
 				end if;
 
-				-- insert the hierarchical GUI sheet in module (see type_module)
+				-- insert the hierarchical sheet in module (see type_module)
 				add_gui_submodule (name, sheet);
 
 				log_indentation_down;
@@ -6860,15 +6858,15 @@ package body et_kicad is
 
 											-- test if purpose already used for this category 
 											if et_configuration.multiple_purpose (
-												category => et_configuration.category (reference), -- derive cat from reference
-												purpose => to_purpose (content (field_purpose)),
-												log_threshold => log_threshold + 2) > 0 then
+												category 		=> et_configuration.category (reference), -- derive cat from reference
+												purpose 		=> to_purpose (content (field_purpose)),
+												log_threshold 	=> log_threshold + 2) > 0 then
 
-													-- purpose already in use -> error
-													et_configuration.multiple_purpose_error (
-														category => et_configuration.category (reference),
-														purpose => to_purpose (content (field_purpose)),
-														log_threshold => log_threshold + 2);
+													-- purpose already in use -> warning
+													et_configuration.multiple_purpose_warning (
+														category		=> et_configuration.category (reference),
+														purpose			=> to_purpose (content (field_purpose)),
+														log_threshold	=> log_threshold + 2);
 											end if;
 
 											-- make sure the purpose text is visible in the graphical representation:
@@ -6910,14 +6908,16 @@ package body et_kicad is
 		-- 			log_indentation_down;				
 					
 					exception
-						when constraint_error =>
-							log_indentation_reset;
-							log (
-								text => message_error & "invalid field in component " & et_libraries.to_string (reference)
-									& " at " & to_string (position => position),
-								console => true);
-							-- CS: evaluate prog position and provided more detailled output
-							raise constraint_error;
+						when event:
+							others =>
+								log_indentation_reset;
+								log (
+									text => message_error & "invalid field in component " & et_libraries.to_string (reference)
+										& to_string (position => position),
+										console => true);
+								log (ada.exceptions.exception_message (event), console => true);
+								-- CS: evaluate prog position and provided more detailled output
+								raise;
 
 				end check_text_fields;
 
@@ -7405,7 +7405,8 @@ package body et_kicad is
 			begin -- make_component (schematic)
 				log ("making component ...", log_threshold);
 				log_indentation_up;
-			
+
+				-- loop in lines provided by "lines"
 				line_cursor := type_lines.first (lines);
 				while line_cursor /= type_lines.no_element loop
 
@@ -7627,9 +7628,14 @@ package body et_kicad is
 				log_indentation_down;
 				
 				exception
-					when others => 
-						error_in_schematic_file (et_kicad.line);
-						raise;
+					when event:
+						others =>
+							if line_cursor /= type_lines.no_element then
+								error_in_schematic_file (et_kicad.line);
+							end if;
+								
+							--log (ada.exceptions.exception_message (event), console => true);
+							raise;
 				
 			end make_component;
 
@@ -7663,7 +7669,7 @@ package body et_kicad is
 						new_item => no_connection_flag);
 				end append_no_connect_flag;				
 			
-			begin
+			begin -- make_no_connection
 				set_path (no_connection_flag.coordinates, path_to_submodule);
 				set_sheet (no_connection_flag.coordinates, sheet_number_current);
 				set_x (no_connection_flag.coordinates, mil_to_distance (field (line,3)));
@@ -10058,7 +10064,7 @@ package body et_kicad is
 	end validate_module;
 	
 	procedure add_gui_submodule (
-	-- Inserts a gui submodule in the module (indicated by module_cursor)
+	-- Inserts a hierachic sheet in the module (indicated by module_cursor)
 		name		: in et_coordinates.type_submodule_name.bounded_string;
 		gui_sub_mod	: in type_gui_submodule) is
 
@@ -10107,11 +10113,22 @@ package body et_kicad is
 			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out type_module) is
 
-			use et_string_processing;
-		begin
-			module.sheet_headers.insert (
+			--use et_string_processing;
+
+			-- A sheet header might exist already (due to multiple instancing of a sheet).
+			-- The flag header_inserted would assume a false state.
+			-- The given header would then not be inserted in the module.sheet_headers list.
+			header_inserted : boolean;
+			sheet_header_cursor : type_sheet_headers.cursor;
+			
+		begin -- add
+			type_sheet_headers.insert (
+				container	=> module.sheet_headers,
 				key			=> sheet,
-				new_item	=> header);
+				new_item	=> header,
+				inserted	=> header_inserted,
+				position	=> sheet_header_cursor
+				);
 
 			if log_level >= 1 then
 				null; -- CS: write this procedure:
@@ -10282,9 +10299,11 @@ package body et_kicad is
 				write_unit_properties (unit => cursor, log_threshold => log_threshold + 1);
 			else -- not inserted, unit already in component -> failure
 				log_indentation_reset;
-				log (
-					text	=> message_error & "multiple occurence of the same unit !",
+				log (message_error & "component " & et_libraries.to_string (reference) &
+					 " unit " & et_libraries.to_string (unit_name) & " used multiple times !" &
+					 " Make sure " & et_libraries.to_string (reference) & " exists ONLY ONCE !",
 					console	=> true);
+
 				raise constraint_error;
 			end if;
 		end add;
