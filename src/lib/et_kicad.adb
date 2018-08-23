@@ -6530,6 +6530,8 @@ package body et_kicad is
 			-- L 74LS00 U1		-- component specific
 			-- U 4 1 5965E676	-- unit 1 of 4, link to package in board file
 			-- P 4100 4000		-- unit position x/y
+			-- AR Path="/59F17F77/5A991798" Ref="LED1"  Part="1" -- alternative reference
+			-- AR Path="/5B7E59F3/5A991798" Ref="LED50"  Part="1" 
 			-- F 0 "U1" H 4100 4050 50  0000 C CNN		-- text fields
 			-- F 1 "74LS00" H 4100 3900 50  0000 C CNN	
 			-- F 2 "bel_ic:S_SO14" H 4100 4000 50  0001 C CNN
@@ -6557,6 +6559,7 @@ package body et_kicad is
 				reference					: type_component_reference;	-- like IC5	
 				appearance					: type_component_appearance := et_libraries.sch; -- CS: why this default ?
 				generic_name_in_lbr			: type_component_generic_name.bounded_string; -- like TRANSISTOR_PNP
+				alternative_references		: type_alternative_references.list;
 				unit_name					: type_unit_name.bounded_string; -- A, B, PWR, CT, IO-BANK1 ...
 				position					: et_coordinates.type_coordinates;
 				orientation					: et_coordinates.type_angle;
@@ -7054,6 +7057,7 @@ package body et_kicad is
 
 									library_name	=> full_component_library_name, -- ../lbr/bel_logic.lib
 									generic_name	=> generic_name_in_lbr,
+									alt_references	=> alternative_references,
 									
 									value 			=> to_value (content (field_value)),
 									commissioned 	=> type_date (et_libraries.content (field_commissioned)),
@@ -7073,6 +7077,7 @@ package body et_kicad is
 
 									library_name	=> full_component_library_name, -- ../lbr/bel_logic.lib
 									generic_name	=> generic_name_in_lbr,
+									alt_references	=> alternative_references,
 									
 									value			=> to_value (content (field_value)),
 									commissioned	=> type_date (content (field_commissioned)),
@@ -7399,6 +7404,69 @@ package body et_kicad is
 
 				end build_unit_orientation_and_mirror_style;
 
+
+				procedure add_alternative_reference (line : in type_fields_of_line) is
+				-- Adds the alternative reference given in a line like 
+				-- AR Path="/5B7E59F3/5B7E5817" Ref="#PWR03"  Part="1" 
+				-- to the list alternative_references.
+					function field (line : in type_fields_of_line; position : in positive) return string renames
+						et_string_processing.get_field_from_line;
+
+					path	: et_string_processing.type_fields_of_line; -- 59F17F77 5A991798
+					ref		: et_libraries.type_component_reference; -- #PWR03
+					unit	: et_libraries.type_unit_name.bounded_string; -- 1 -- CS is this really about unit names ?
+
+					path_segment : et_string_processing.type_timestamp;
+					alt_ref_path : type_alternative_reference_path.list;
+				begin
+					--log ("alternative reference " & (field (line, 2)), log_threshold + 1); -- Path="/59F17F77/5A991798
+					--log (field (line, 2) (8 .. field (line, 2)'last), log_threshold + 1);
+					
+					-- extract the path segments from field 2: example: Path="/59F17F77/5A991798					
+					path := et_string_processing.read_line (
+						line			=> trim (field (line, 2) (8 .. field (line, 2)'last), both), -- 59F17F77/5A991798
+						-- NOTE: the trailing double quote is already gone.
+						
+						comment_mark	=> "", -- no comment marks
+						ifs				=> hierarchy_separator(1)); -- hierarchy_separator is a string
+
+					--log (et_string_processing.to_string (path), log_threshold + 1);
+					
+					-- Transfer the path segments to alt_ref_path.
+					-- "path" contains a list of strings.
+					-- alt_ref_path is a list of timestamps
+					for place in 1 .. positive (et_string_processing.field_count (path)) loop
+
+						-- convert the segment from string to timestamp
+						path_segment := et_string_processing.type_timestamp (et_string_processing.get_field_from_line (path, place));
+
+						-- append the segment
+						type_alternative_reference_path.append (	
+							container	=> alt_ref_path,
+							new_item	=> path_segment);
+					end loop;
+
+					-- extract the reference from field 3: example: Ref="#PWR03
+					-- NOTE: the trailing double quote is already gone.
+					ref := et_schematic.to_component_reference (
+						text_in 	=> field (line, 3) (6.. (field (line, 3)'last)),  -- #PWR03
+						allow_special_character_in_prefix => true);
+					
+					-- extract the part name (CS unit name ?) from field 4: example Part="1
+					-- NOTE: the trailing double quote is already gone.
+					unit := et_libraries.to_unit_name (field (line, 4) (7 .. (field (line, 4)'last)));
+
+					-- Now all components of the alternative reference are ready.
+					-- Append the new alternative reference to list alternative_references:
+					type_alternative_references.append (
+						container	=> alternative_references,
+						new_item	=> (
+										path		=> alt_ref_path,
+										reference	=> ref,
+										part		=> unit
+									   ));
+					
+				end add_alternative_reference;
 				
 				use type_lines;
 			
@@ -7492,11 +7560,9 @@ package body et_kicad is
 						set_path (position, path_to_submodule);
 						set_sheet (position, sheet_number_current);
 
-					-- Skip unit path entry in lines like "AR Path="/59EF082F" Ref="N23"  Part="1"
+					-- Read alternative reference like "AR Path="/59EF082F" Ref="N23"  Part="1"
 					elsif field (et_kicad.line,1) = schematic_component_identifier_path then -- "AR"
-						-- CS: meaning unclear
-						log (message_warning & affected_line (et_kicad.line) 
-							& "ignoring line '" & to_string (et_kicad.line) & "' ! Meaning unclear !");
+						add_alternative_reference (et_kicad.line);
 
 					-- read unit fields 0..2 from lines like:
 					-- 			"F 0 "N701" H 2600 2100 39  0000 C CNN"

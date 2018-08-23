@@ -396,7 +396,7 @@ package et_schematic is
 	function to_component_reference (
 	-- Converts a string like "IC303" to a composite type_component_reference.
 	-- If allow_special_charater_in_prefix is given true, the first character
-	-- is allowed to be a special character. Example: "L P3V3 #PWR07". This is currently a kicad requirement.
+	-- is allowed to be a special character. Like "#PWR07" as it is used by kicad.
 	-- NOTE: Leading zeroes in the id are removed.	
 		text_in : in string;
 		allow_special_character_in_prefix : in boolean := false) -- CS: provide CAD system specific character set instead

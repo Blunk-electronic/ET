@@ -340,11 +340,26 @@ package et_kicad is
 		package_variant	: in et_libraries.type_component_variant_name.bounded_string) -- N, D
 		return et_libraries.type_component_package_name.bounded_string;
 	-- Returns the package name of the given component. 
+
+	-- Alternative references used in instances of sheets:
+	-- example: AR Path="/59F17FDE/5A991D18" Ref="RPH1"  Part="1" 
+	package type_alternative_reference_path is new doubly_linked_lists (
+		element_type	=> et_string_processing.type_timestamp, -- 5A991D18
+		"="				=> et_string_processing."=");
+	
+	type type_alternative_reference is record
+		path		: type_alternative_reference_path.list; -- 59F17FDE 5A991D18 ...
+		reference	: et_libraries.type_component_reference; -- R452
+		part		: et_libraries.type_unit_name.bounded_string; -- CS is this about a unit name ?
+	end record;
+
+	package type_alternative_references is new doubly_linked_lists (type_alternative_reference);
 	
 	-- This is a component as it appears in the schematic.
 	type type_component_schematic (appearance : et_schematic.type_appearance_schematic) is record
 		library_name	: et_libraries.type_full_library_name.bounded_string; -- symbol lib like ../libraries/transistors.lib
 		generic_name	: et_libraries.type_component_generic_name.bounded_string; -- example: "TRANSISTOR_PNP"
+		alt_references	: type_alternative_references.list;
 		value			: et_libraries.type_component_value.bounded_string; -- 470R
 		commissioned	: et_string_processing.type_date; -- 2017-08-17T14:17:25
 		updated			: et_string_processing.type_date; -- 2017-10-30T08:33:56
