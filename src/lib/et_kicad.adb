@@ -6096,21 +6096,14 @@ package body et_kicad is
 					-- Test text size by category.
 					check_schematic_text_size (category => FILE_NAME, size => sheet.text_size_of_file);
 					
--- 					-- Test if sheet name and file name match:
--- 					if name /= file then
--- 						log_indentation_reset;
--- 						log (text => message_error & "name mismatch: sheet name '" 
--- 							& to_string (submodule => name) & "' differs from file name '"
--- 							& to_string (submodule => file));
--- 						raise constraint_error;
--- 					end if;
-
 					-- Append sheet file name to hierarchic_sheet_file_names. 
 					-- This list will be returned by this function (read_schematic) to the calling
 					-- parent unit (import_design).
 					type_hierarchic_sheet_file_names.append (
 						container	=> hierarchic_sheet_file_names.sheets,
-						new_item	=> to_schematic_file_name (field (et_kicad.line,2))); -- sensor.sch
+						new_item	=> (
+										file		=> to_schematic_file_name (field (et_kicad.line,2)), -- sensor.sch
+										timestamp	=> sheet.timestamp)); -- B5D45A33
 				end if;
 
 				log ("hierarchic sheet " & to_string (submodule => sheet_name.name), log_threshold + 1);

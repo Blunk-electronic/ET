@@ -1017,16 +1017,23 @@ package et_kicad is
 		"<" 			=> compare_hierarchic_sheets,
 		element_type	=> type_hierarchic_sheet);
 
-    -- When reading a schematic sheet, hierachic sheets might be discovered.
-    -- They are returned to the parent unit in a list of schematic file names:
+
+	-- When reading a schematic sheet, hierachic sheets might be discovered.
+	-- They are returned to the parent unit in a list of schematic file names:
+	type type_hierarchic_sheet_file_name_and_timestamp is record
+		file		: type_schematic_file_name.bounded_string;
+		timestamp	: et_string_processing.type_timestamp;
+	end record;
+	
 	package type_hierarchic_sheet_file_names is new vectors ( -- the bare list -- CS: better an ordered set ?
 		index_type		=> positive,
-		"=" 			=> type_schematic_file_name."=",
-		element_type	=> type_schematic_file_name.bounded_string); -- sensor.sch
+-- 		"=" 			=> type_schematic_file_name."=",
+-- 		element_type	=> type_schematic_file_name.bounded_string); -- sensor.sch
+		element_type	=> type_hierarchic_sheet_file_name_and_timestamp);
 
 	type type_hierarchic_sheet_file_names_extended is record
 		parent_module	: et_coordinates.type_submodule_name.bounded_string;
-		sheets			: type_hierarchic_sheet_file_names.vector;
+		sheets			: type_hierarchic_sheet_file_names.vector; -- sensor.sch driver.sch ...
 		id				: positive; -- id of a sheet in the list
 	end record;
 
