@@ -95,6 +95,11 @@ package body et_kicad is
 		return type_schematic_file_name.to_string (schematic);
 	end to_string;
 
+	function to_schematic_file_name (file : in string) return type_schematic_file_name.bounded_string is
+	begin
+		return type_schematic_file_name.to_bounded_string (file);
+	end to_schematic_file_name;
+	
 	function to_submodule_name (file_name : in type_schematic_file_name.bounded_string)
 		return et_coordinates.type_submodule_name.bounded_string is
 	-- Returns the base name of the given schematic file name as submodule name.
@@ -3795,7 +3800,7 @@ package body et_kicad is
         end record;
 
 		function on_segment (
-			port 	: in type_gui_submodule_port;
+			port 	: in type_hierarchic_sheet_port;
 			segment : in et_schematic.type_net_segment_base)
 			return boolean is
 		-- Returns true if given port sits on given segment.
@@ -3844,13 +3849,13 @@ package body et_kicad is
 					gui_submodule	: in out type_hierarchic_sheet -- This is the gui_submodule being queried.
 					) is
 					-- These are the "ports" of the gui_submodule (they represent the hierarchic nets within the real submodule).
-					port : type_gui_submodule_ports.cursor := gui_submodule.ports.first; -- default to first port
-					use type_gui_submodule_ports;
+					port : type_hierarchic_sheet_ports.cursor := gui_submodule.ports.first; -- default to first port
+					use type_hierarchic_sheet_ports;
 					use type_net_segments;
 
 					procedure mark_processed (
 						name : in et_schematic.type_net_name.bounded_string;
-						port : in out type_gui_submodule_port) is
+						port : in out type_hierarchic_sheet_port) is
 					begin
 						port.processed := true;
 					end mark_processed;
@@ -3872,7 +3877,7 @@ package body et_kicad is
 				begin -- query_ports of the given gui_submodule. Test only the non-processed ones.
 					-- If "port" sits on given segment, mark the "port" as processed.
 					-- NOTE: The "processed" mark prevents multiple testing of the same "port" (which could lead to a forever-loop)
-					while port /= type_gui_submodule_ports.no_element loop
+					while port /= type_hierarchic_sheet_ports.no_element loop
 
 						-- we are interested in non-processed ports only
 						if not element (port).processed then
@@ -4349,13 +4354,13 @@ package body et_kicad is
 		function field (line : in type_fields_of_line; position : in positive) return string renames
 			et_string_processing.get_field_from_line;
 		
-		list_of_submodules : type_submodule_names_extended;
+		hierarchic_sheet_file_names : type_hierarchic_sheet_file_names_extended;
 
-		current_schematic	: type_schematic_file_name.bounded_string;
+		current_schematic	: type_schematic_file_name.bounded_string; -- sensor.sch
 		
 		net_id : natural := 0; -- for counting name-less nets (like N$1, N$2, N$3, ...)
 
-		package stack_of_sheet_lists is new et_general.stack_lifo (max => 10, item => type_submodule_names_extended);
+		package stack_of_sheet_lists is new et_general.stack_lifo (max => 10, item => type_hierarchic_sheet_file_names_extended);
         use stack_of_sheet_lists;
 		
 		function read_project_file return type_schematic_file_name.bounded_string is
@@ -4701,15 +4706,15 @@ package body et_kicad is
 		
 		function read_schematic (
 		-- Reads the given schematic file. If it contains submodules (hierarchic sheets), 
-        -- they will be returned in list_of_submodules. Otherwise the returned list is empty.
+        -- they will be returned in hierarchic_sheet_file_names. Otherwise the returned list is empty.
 			current_schematic	: in type_schematic_file_name.bounded_string;
 			log_threshold		: in type_log_level)
-			return type_submodule_names_extended is
+			return type_hierarchic_sheet_file_names_extended is
 
 			use et_coordinates;
 
-			list_of_submodules : type_submodule_names_extended; -- list to be returned
-			name_of_submodule_scratch : type_submodule_name.bounded_string; -- temporarily used before appended to list_of_submodules
+			hierarchic_sheet_file_names : type_hierarchic_sheet_file_names_extended; -- list to be returned
+			name_of_submodule_scratch : type_submodule_name.bounded_string; -- temporarily used before appended to hierarchic_sheet_file_names
 
 			use et_string_processing;
 		
@@ -5865,10 +5870,10 @@ package body et_kicad is
 					sheet_count_total := to_sheet_number (field (et_kicad.line,3));
 					-- CS: sheet_count_total must not change from sheet to sheet. Check required.
 					if sheet_count_total > 1 then
-						-- Set in the list_of_submodules (to be returned) the parent_module. The schematic file 
+						-- Set in the hierarchic_sheet_file_names (to be returned) the parent_module. The schematic file 
 						-- being processed (see input parameters of read_schematic) becomes the parent module
 						-- of the submodules here.
-						list_of_submodules.parent_module := type_submodule_name.to_bounded_string (to_string (current_schematic));
+						hierarchic_sheet_file_names.parent_module := type_submodule_name.to_bounded_string (to_string (current_schematic));
 					end if;
 					-- CS: make sure total sheet count is less or equal current sheet number.
 
@@ -5971,7 +5976,7 @@ package body et_kicad is
 				sheet_name	: type_hierarchic_sheet_name;
 
 				port_inserted	: boolean; -- used to detect multiple ports with the same name
-				port_cursor		: type_gui_submodule_ports.cursor; -- obligatory, but not read
+				port_cursor		: type_hierarchic_sheet_ports.cursor; -- obligatory, but not read
 
 				use type_lines;
 				use et_coordinates.type_submodule_name;
@@ -6100,12 +6105,12 @@ package body et_kicad is
 -- 						raise constraint_error;
 -- 					end if;
 
-					-- Append sheet file name (with extension) to list_of_submodules. 
+					-- Append sheet file name to hierarchic_sheet_file_names. 
 					-- This list will be returned by this function (read_schematic) to the calling
 					-- parent unit (import_design).
-					type_hierarchic_sheet_names.append (
-						container	=> list_of_submodules.list,
-						new_item	=> to_submodule_name (submodule => field (et_kicad.line,2))); -- sensor, driver ...
+					type_hierarchic_sheet_file_names.append (
+						container	=> hierarchic_sheet_file_names.sheets,
+						new_item	=> to_schematic_file_name (field (et_kicad.line,2))); -- sensor.sch
 				end if;
 
 				log ("hierarchic sheet " & to_string (submodule => sheet_name.name), log_threshold + 1);
@@ -6130,7 +6135,7 @@ package body et_kicad is
 						log ("port " & strip_quotes (field (et_kicad.line, 2)), log_threshold + 2);
 
 						-- add port
-						type_gui_submodule_ports.insert (
+						type_hierarchic_sheet_ports.insert (
 							container => sheet.ports,
 							key => to_net_name (field (et_kicad.line, 2)), -- port name
 							new_item => (
@@ -6159,7 +6164,7 @@ package body et_kicad is
 				end if;
 
 				-- insert the hierarchical sheet in module (see type_module)
-				add_gui_submodule (sheet_name, sheet);
+				add_hierarchic_sheet (sheet_name, sheet);
 
 				log_indentation_down;
 				
@@ -7729,8 +7734,8 @@ package body et_kicad is
 				use type_rig;
 			
 				procedure append_no_connect_flag (
-					module_name : in type_submodule_name.bounded_string;
-					module : in out type_module) is
+					module_name	: in type_submodule_name.bounded_string;
+					module		: in out type_module) is
 					use type_no_connection_flags;
 				begin
 					append (
@@ -8062,7 +8067,7 @@ package body et_kicad is
 				raise constraint_error;
 			end if;
 
-			return list_of_submodules;
+			return hierarchic_sheet_file_names;
 
 			exception
 				when others =>
@@ -8184,14 +8189,14 @@ package body et_kicad is
 				
 				-- The function read_schematic requires the name of the current submodule,
 				-- It returns a list of submodules.
-				list_of_submodules := read_schematic (current_schematic, log_threshold);
+				hierarchic_sheet_file_names := read_schematic (current_schematic, log_threshold);
 
 				log("DESIGN STRUCTURE ");
 				log_indentation_up;
 				
-				-- If read_schematic returns an empty list of hierachic sheets, we are dealing with a flat design. 
-				-- Otherwise the design is hierarchic.
-				if type_hierarchic_sheet_names.is_empty (list_of_submodules.list) then -- flat design
+				-- If read_schematic returns an empty list of hierachic sheets file names,
+				-- we are dealing with a flat design. Otherwise the design is hierarchic.
+				if type_hierarchic_sheet_file_names.is_empty (hierarchic_sheet_file_names.sheets) then -- flat design
 					log ("FLAT");
 				else -- hierarchic design
 					-- In the following we dive into the submodules. Each time before a deeper level is entered,
@@ -8206,23 +8211,27 @@ package body et_kicad is
 					
 					-- output the number of submodules (sheets) found at level 0:
 					log ("number of hierarchic sheets" & natural'image (
-						natural (type_hierarchic_sheet_names.length (list_of_submodules.list)))); -- CS: use count_type
+						natural (type_hierarchic_sheet_file_names.length (hierarchic_sheet_file_names.sheets)))); -- CS: use count_type
 
 					-- Initially set submodule pointer at first submodule of list:
-					list_of_submodules.id := 1;
+					hierarchic_sheet_file_names.id := 1;
                     
 					loop
-						-- fetch name of submodule (where id is pointing to)
-						current_schematic := type_schematic_file_name.to_bounded_string (
-							et_coordinates.type_submodule_name.to_string (
-								type_hierarchic_sheet_names.element (
-									container	=> list_of_submodules.list,
-									index		=> list_of_submodules.id)));
+						-- fetch file name of hierachic sheet (where id is pointing to)
+-- 						current_schematic := type_schematic_file_name.to_bounded_string (
+-- 							et_coordinates.type_submodule_name.to_string (
+-- 								type_hierarchic_sheet_names.element (
+-- 									container	=> hierarchic_sheet_file_names.list,
+-- 									index		=> hierarchic_sheet_file_names.id)));
+
+						current_schematic := type_hierarchic_sheet_file_names.element (
+									container	=> hierarchic_sheet_file_names.sheets,
+									index		=> hierarchic_sheet_file_names.id);
 
 						et_coordinates.check_submodule_name_characters (to_submodule_name (current_schematic));
 						
-						-- backup list_of_submodules OF THIS LEVEL on stack (including the current submodule id)
-						push (list_of_submodules);
+						-- backup hierarchic_sheet_file_names OF THIS LEVEL on stack (including the current submodule id)
+						push (hierarchic_sheet_file_names);
 						
 						log ("DESCENDING TO HIERARCHY LEVEL -" & trim (natural'image (depth),left));
 						log (row_separator_single);
@@ -8230,37 +8239,37 @@ package body et_kicad is
 						append_name_of_parent_module_to_path (et_coordinates.type_submodule_name.to_bounded_string (
 							base_name (to_string (current_schematic))));
 						
-						-- Read schematic file as indicated by list_of_submodules.id. 
+						-- Read schematic file as indicated by hierarchic_sheet_file_names.id. 
 						-- Read_schematic receives the name of the schematic file to be read.
-						list_of_submodules := read_schematic (current_schematic, log_threshold);
+						hierarchic_sheet_file_names := read_schematic (current_schematic, log_threshold);
 
-						-- If the schematic file contains submodules (hierarchic sheets), set list_of_submodules.id to the first 
-						-- submodule of them. Otherwise restore submodule list of parent module and advance therein to next submodule.
-						if type_hierarchic_sheet_names.is_empty (list_of_submodules.list) then -- flat submodule (no hierarchic sheets)
+						-- If the schematic file contains hierarchic sheets, set hierarchic_sheet_file_names.id to the first 
+						-- sheet of them. Otherwise restore sheet list of parent module and advance therein to next sheet.
+						if type_hierarchic_sheet_file_names.is_empty (hierarchic_sheet_file_names.sheets) then -- flat schematic (no hierarchic sheets)
 
-							list_of_submodules := pop;
+							hierarchic_sheet_file_names := pop;
 							delete_last_module_name_from_path;
-                            list_of_submodules.id := list_of_submodules.id + 1;
+                            hierarchic_sheet_file_names.id := hierarchic_sheet_file_names.id + 1;
                             
 							log ("NO SUBMODULES HERE. ASCENDING TO HIERARCHY LEVEL -" & trim (natural'image (depth),left));
 							log (row_separator_single);
 
 						else
 							-- set cursor at first submodule of list and append name of parent module to path_to_submodule
-                            list_of_submodules.id := 1;
+                            hierarchic_sheet_file_names.id := 1;
 						end if;
 
 						-- Once the last sheet of the list has been processed, restore list of the overlying 
 						-- level and advance to next sheet.
 						-- Exit after last sheet in level 0 has been processed.
-						if list_of_submodules.id > positive (type_hierarchic_sheet_names.length (list_of_submodules.list)) then
+						if hierarchic_sheet_file_names.id > positive (type_hierarchic_sheet_file_names.length (hierarchic_sheet_file_names.sheets)) then
 							if depth = 0 then 
 								log ("LAST SUBMODULE PROCESSED.");
 								exit; 
 							end if;
-							list_of_submodules := pop; -- restore overlying list
+							hierarchic_sheet_file_names := pop; -- restore overlying list
 							delete_last_module_name_from_path;
-                            list_of_submodules.id := list_of_submodules.id + 1;
+                            hierarchic_sheet_file_names.id := hierarchic_sheet_file_names.id + 1;
 							log ("LAST SUBMODULE PROCESSED. ASCENDING TO HIERARCHY LEVEL: -" & trim(natural'image(depth),left));
 							log (row_separator_single);
 						end if;
@@ -10156,7 +10165,7 @@ package body et_kicad is
 
 	end compare_hierarchic_sheets;
 	
-	procedure add_gui_submodule (
+	procedure add_hierarchic_sheet (
 	-- Inserts a hierachic sheet in the module (indicated by module_cursor)
 		name		: in type_hierarchic_sheet_name;
 		gui_sub_mod	: in type_hierarchic_sheet) is
@@ -10188,12 +10197,13 @@ package body et_kicad is
 				raise constraint_error;
 			end if;
 		end add;
-	begin
+			
+	begin -- add_hierarchic_sheet
 		rig.update_element (
 			position	=> module_cursor,
 			process		=> add'access
 			);
-	end add_gui_submodule;
+	end add_hierarchic_sheet;
 
 
 

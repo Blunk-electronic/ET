@@ -419,6 +419,8 @@ package et_schematic is
 	submodule_path_length_max : constant positive := 300;
 	package type_submodule_path is new generic_bounded_length (submodule_path_length_max);
 
+	function to_submodule_path (path : in string) return type_submodule_path.bounded_string;
+	
 	type type_submodule_size is record
 		x, y : et_coordinates.type_distance; -- size x/y of the box
 	end record;

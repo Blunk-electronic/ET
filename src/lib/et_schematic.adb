@@ -404,7 +404,16 @@ package body et_schematic is
 		return result;
 	end equal_reference;
 
+	function to_submodule_path (path : in string) return type_submodule_path.bounded_string is
+	begin
+		return type_submodule_path.to_bounded_string (path);
+	end to_submodule_path;
 
+	function to_string (path : in type_submodule_path.bounded_string) return string is
+	begin
+		return type_submodule_path.to_string (path);
+	end to_string;
+	
 	function to_string (mirror : in type_mirror) return string is
 	-- returns the given mirror style as string
 	begin

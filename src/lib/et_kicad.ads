@@ -86,6 +86,8 @@ package et_kicad is
 	function to_string (schematic : in type_schematic_file_name.bounded_string) return string; -- CS general stuff -> move to et_import ?
 	-- Returns the given schematic file name as string.
 
+	function to_schematic_file_name (file : in string) return type_schematic_file_name.bounded_string;
+	
 	-- Sheet names may have the same length as schematic files.
 	package type_sheet_name is new generic_bounded_length (schematic_file_name_length); 
 	--use type_sheet_name;
@@ -971,12 +973,10 @@ package et_kicad is
 		element_type => type_anonymous_strand);
 
 
-	-- VISUALISATION OF A SUBMODULE IN A GRAPHICAL USER INTERFACE
-    -- SUBMODULE
-    -- A submodule is a box with coordinates and length x/y.
+    -- A hierachic sheet is a box with coordinates and length x/y.
 	-- On the box edges are ports. 
 	-- It serves as link between a hierachical net and the parent module.
-	type type_gui_submodule_port is record
+	type type_hierarchic_sheet_port is record
 		direction	: et_libraries.type_port_direction;
 		text_size	: et_libraries.type_text_size;
 		coordinates	: et_coordinates.type_2d_point;
@@ -984,10 +984,10 @@ package et_kicad is
         processed   : boolean; -- used when linking hierarchic nets
 	end record;
 
-	package type_gui_submodule_ports is new ordered_maps (
+	package type_hierarchic_sheet_ports is new ordered_maps (
 		key_type		=> et_schematic.type_net_name.bounded_string,
 		"<"				=> et_schematic.type_net_name."<",
-		element_type	=> type_gui_submodule_port);
+		element_type	=> type_hierarchic_sheet_port);
 
 	-- A hierachic sheet is identified by the file name and the sheet name itself.
 	type type_hierarchic_sheet_name is record 
@@ -1001,11 +1001,11 @@ package et_kicad is
 		coordinates		    : et_coordinates.type_coordinates;
         size_x, size_y      : et_coordinates.type_distance; -- size x/y of the box
 		timestamp           : et_string_processing.type_timestamp;
-		ports				: type_gui_submodule_ports.map;
+		ports				: type_hierarchic_sheet_ports.map;
 	end record;
 
-	procedure add_gui_submodule (
-	-- Inserts a gui submodule in the module (indicated by module_cursor)
+	procedure add_hierarchic_sheet (
+	-- Inserts a hierachic sheet in the module (indicated by module_cursor)
 		name		: in type_hierarchic_sheet_name;
 		gui_sub_mod	: in type_hierarchic_sheet);
 
@@ -1019,14 +1019,14 @@ package et_kicad is
 
     -- When reading a schematic sheet, hierachic sheets might be discovered.
     -- They are returned to the parent unit in a list of schematic file names:
-	package type_hierarchic_sheet_names is new vectors ( -- the bare list -- CS: better an ordered set ?
+	package type_hierarchic_sheet_file_names is new vectors ( -- the bare list -- CS: better an ordered set ?
 		index_type		=> positive,
-		"=" 			=> et_coordinates.type_submodule_name."=",
-		element_type	=> et_coordinates.type_submodule_name.bounded_string);
+		"=" 			=> type_schematic_file_name."=",
+		element_type	=> type_schematic_file_name.bounded_string); -- sensor.sch
 
-	type type_submodule_names_extended is record
+	type type_hierarchic_sheet_file_names_extended is record
 		parent_module	: et_coordinates.type_submodule_name.bounded_string;
-		list			: type_hierarchic_sheet_names.vector;
+		sheets			: type_hierarchic_sheet_file_names.vector;
 		id				: positive; -- id of a sheet in the list
 	end record;
 
