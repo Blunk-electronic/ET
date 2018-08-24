@@ -989,7 +989,13 @@ package et_kicad is
 		"<"				=> et_schematic.type_net_name."<",
 		element_type	=> type_gui_submodule_port);
 
-	type type_gui_submodule is record -- CS rename to type_hierarchic_sheet
+	-- A hierachic sheet is identified by the file name and the sheet name itself.
+	type type_hierarchic_sheet_name is record 
+		file	: et_schematic.type_submodule_path.bounded_string; -- sensor.sch
+		name	: et_coordinates.type_submodule_name.bounded_string; -- sensor_outside
+	end record;
+	
+	type type_hierarchic_sheet is record
 		file_name			: et_schematic.type_submodule_path.bounded_string; -- sensor.sch
         text_size_of_name   : et_libraries.type_text_size;
         text_size_of_file   : et_libraries.type_text_size;
@@ -1002,12 +1008,15 @@ package et_kicad is
 	procedure add_gui_submodule (
 	-- Inserts a gui submodule in the module (indicated by module_cursor)
 		name		: in et_coordinates.type_submodule_name.bounded_string;
-		gui_sub_mod	: in type_gui_submodule);
+		gui_sub_mod	: in type_hierarchic_sheet);
+
+	function compare_hierarchic_sheet (left, right : in type_hierarchic_sheet_name) return boolean;
+	-- Returns true if left comes before right. If left equals right, the return is false.			
 	
-    package type_gui_submodules is new ordered_maps ( -- CS rename to type_hierarchic_sheets
+    package type_hierarchic_sheets is new ordered_maps (
         key_type		=> et_coordinates.type_submodule_name.bounded_string, -- file/sheet name are equally
 		"<" 			=> et_coordinates.type_submodule_name."<",
-        element_type	=> type_gui_submodule);
+        element_type	=> type_hierarchic_sheet);
 
     -- When reading a schematic sheet, submodules might be discovered.
     -- They are returned to the parent unit in a list of submodules:
@@ -1233,7 +1242,7 @@ package et_kicad is
 		no_connections	: type_no_connection_flags.list;			-- the list of no-connection-flags
 		portlists		: type_portlists.map;						-- the portlists of the module
 		netlist			: type_netlist.map;							-- the netlist
-		submodules  	: type_gui_submodules.map;					-- graphical representations of submodules. -- GUI relevant
+		submodules  	: type_hierarchic_sheets.map;				-- sheets
         frames      	: type_frames.list;							-- frames -- GUI relevant
         title_blocks	: type_title_blocks.list;					-- title blocks -- GUI relevant
 		notes       	: et_schematic.type_texts.list;				-- notes

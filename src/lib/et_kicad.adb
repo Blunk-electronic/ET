@@ -3774,7 +3774,7 @@ package body et_kicad is
 	-- Looks up strands of hierarchic nets and appends them to the local or global nets (if connected via gui_submodules). 
 	-- Hierarchic nets are mere extensions of a global or local net at deeper levels in the design hierarchy. 
 	-- So every hierarchic net is connected with a local or global net at a higher level. 
-	-- The link between a global or local net and a hierarchic net is the gui_submodule (see spec. of type_gui_submodule). 
+	-- The link between a global or local net and a hierarchic net is the gui_submodule (see spec. of type_hierarchic_sheet). 
 	-- IMPORTANT: Gui_submodules and hierarchic nets are virtual components in a graphical GUI. Neither of them exists in reality.
 		use et_string_processing;
 		use et_schematic.type_net_name;
@@ -3833,15 +3833,15 @@ package body et_kicad is
 			procedure query_gui_submodules (
 				mod_name	: in et_coordinates.type_submodule_name.bounded_string;
 				module 		: in out type_module) is
-				submodule_cursor : type_gui_submodules.cursor := module.submodules.first; -- CS: rename to gui_submodule_cursor
-				use type_gui_submodules;
+				submodule_cursor : type_hierarchic_sheets.cursor := module.submodules.first; -- CS: rename to gui_submodule_cursor
+				use type_hierarchic_sheets;
 
 				procedure query_ports (
 				-- Tests if the "port" of the given gui_submodule is connected with the given net segment.
 				-- If connected, the path of the gui_submodule and the submodule_name form the path to the real submodule. This
 				-- path is subsequently returned. The query ends.
 					submodule_name	: in et_coordinates.type_submodule_name.bounded_string; -- The gui_submodule has a name. It is also the name of the real submodule.
-					gui_submodule	: in out type_gui_submodule -- This is the gui_submodule being queried.
+					gui_submodule	: in out type_hierarchic_sheet -- This is the gui_submodule being queried.
 					) is
 					-- These are the "ports" of the gui_submodule (they represent the hierarchic nets within the real submodule).
 					port : type_gui_submodule_ports.cursor := gui_submodule.ports.first; -- default to first port
@@ -3910,7 +3910,7 @@ package body et_kicad is
 			begin -- query_gui_submodules
 				-- Query gui_submodules. For each gui_submodule query its "ports".
 				-- These "ports" are virtual and tell the name of the subordinated hierarchic net.
-				while submodule_cursor /= type_gui_submodules.no_element loop
+				while submodule_cursor /= type_hierarchic_sheets.no_element loop
 
 					update_element (
 						container	=> module.submodules,
@@ -5966,7 +5966,7 @@ package body et_kicad is
 				lines 			: in type_lines.list;
 				log_threshold	: in type_log_level) is
 			-- Builds the GUI sheet.
-				sheet : type_gui_submodule; -- the hierarchical GUI sheet being built
+				sheet : type_hierarchic_sheet; -- the hierarchical GUI sheet being built
 				name : et_coordinates.type_submodule_name.bounded_string; -- sheet name
 
 				port_inserted : boolean; -- used to detect multiple ports with the same name
@@ -6099,10 +6099,12 @@ package body et_kicad is
 -- 						raise constraint_error;
 -- 					end if;
 
-					-- append sheet file name (with extension) to list_of_submodules to be returned to parent unit
+					-- Append sheet file name (with extension) to list_of_submodules. 
+					-- This list will be returned by this function (read_schematic) to the calling
+					-- parent unit (import_design).
 					type_submodule_names.append (
 						container	=> list_of_submodules.list,
-						new_item	=> to_submodule_name (submodule => field (et_kicad.line,2)));
+						new_item	=> to_submodule_name (submodule => field (et_kicad.line,2))); -- sensor, driver ...
 				end if;
 
 				log ("hierarchic sheet " & to_string (submodule => name), log_threshold + 1);
@@ -8137,7 +8139,7 @@ package body et_kicad is
 						no_connections	=> type_no_connection_flags.empty_list,
 						portlists		=> type_portlists.empty_map,
 						netlist			=> type_netlist.empty_map,
-						submodules		=> type_gui_submodules.empty_map,
+						submodules		=> type_hierarchic_sheets.empty_map,
 						frames			=> type_frames.empty_list,
 						title_blocks	=> type_title_blocks.empty_list,
 						notes			=> type_texts.empty_list,
@@ -10128,18 +10130,41 @@ package body et_kicad is
 			raise constraint_error;
 		end if;
 	end validate_module;
+
+	function compare_hierarchic_sheet (left, right : in type_hierarchic_sheet_name) return boolean is
+	-- Returns true if left comes before right. If left equals right, the return is false.
+		use et_schematic.type_submodule_path;
+		use et_coordinates.type_submodule_name;
+	begin
+		-- first compare file names
+		if left.file > right.file then
+			return true;
+		elsif left.file < right.file then
+			return false;
+		else 
+		-- if file names are equal, compare sheet names
+			if left.name > right.name then
+				return true;
+			elsif left.name < right.name then
+				return false;
+			else 
+				return false;
+			end if;
+		end if;
+
+	end compare_hierarchic_sheet;
 	
 	procedure add_gui_submodule (
 	-- Inserts a hierachic sheet in the module (indicated by module_cursor)
 		name		: in et_coordinates.type_submodule_name.bounded_string;
-		gui_sub_mod	: in type_gui_submodule) is
+		gui_sub_mod	: in type_hierarchic_sheet) is
 
 		procedure add (
 			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out type_module) is
 			
 			inserted	: boolean := false;
-			cursor		: type_gui_submodules.cursor;
+			cursor		: type_hierarchic_sheets.cursor;
 
 			use et_string_processing;
 		begin

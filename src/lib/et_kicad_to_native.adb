@@ -239,16 +239,16 @@ package body et_kicad_to_native is
 			module_name : in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_schematic.type_module) is
 
-			use et_kicad.type_gui_submodules;
-			kicad_sheets		: et_kicad.type_gui_submodules.map := element (module_cursor_kicad).submodules;
-			kicad_sheet_cursor	: et_kicad.type_gui_submodules.cursor := kicad_sheets.first;
+			use et_kicad.type_hierarchic_sheets;
+			kicad_sheets		: et_kicad.type_hierarchic_sheets.map := element (module_cursor_kicad).submodules;
+			kicad_sheet_cursor	: et_kicad.type_hierarchic_sheets.cursor := kicad_sheets.first;
 
 			use et_schematic.type_submodules;
 			submodule_cursor_native : et_schematic.type_submodules.cursor;
 			submodule_inserted		: boolean;
 		begin -- translate_sheets
 			-- loop in hierarchic kicad sheets
-			while kicad_sheet_cursor /= et_kicad.type_gui_submodules.no_element loop
+			while kicad_sheet_cursor /= et_kicad.type_hierarchic_sheets.no_element loop
 				log ("hierarchic sheet" & et_coordinates.to_string (
 					position	=> element (kicad_sheet_cursor).coordinates,
 					scope		=> et_coordinates.MODULE),
