@@ -996,7 +996,6 @@ package et_kicad is
 	end record;
 	
 	type type_hierarchic_sheet is record
-		file_name			: et_schematic.type_submodule_path.bounded_string; -- sensor.sch
         text_size_of_name   : et_libraries.type_text_size;
         text_size_of_file   : et_libraries.type_text_size;
 		coordinates		    : et_coordinates.type_coordinates;
@@ -1007,29 +1006,28 @@ package et_kicad is
 
 	procedure add_gui_submodule (
 	-- Inserts a gui submodule in the module (indicated by module_cursor)
-		name		: in et_coordinates.type_submodule_name.bounded_string;
+		name		: in type_hierarchic_sheet_name;
 		gui_sub_mod	: in type_hierarchic_sheet);
 
-	function compare_hierarchic_sheet (left, right : in type_hierarchic_sheet_name) return boolean;
+	function compare_hierarchic_sheets (left, right : in type_hierarchic_sheet_name) return boolean;
 	-- Returns true if left comes before right. If left equals right, the return is false.			
 	
     package type_hierarchic_sheets is new ordered_maps (
-        key_type		=> et_coordinates.type_submodule_name.bounded_string, -- file/sheet name are equally
-		"<" 			=> et_coordinates.type_submodule_name."<",
-        element_type	=> type_hierarchic_sheet);
+        key_type		=> type_hierarchic_sheet_name,
+		"<" 			=> compare_hierarchic_sheets,
+		element_type	=> type_hierarchic_sheet);
 
-    -- When reading a schematic sheet, submodules might be discovered.
-    -- They are returned to the parent unit in a list of submodules:
-	package type_submodule_names is new vectors ( -- the bare list -- CS: better an ordered set ?
+    -- When reading a schematic sheet, hierachic sheets might be discovered.
+    -- They are returned to the parent unit in a list of schematic file names:
+	package type_hierarchic_sheet_names is new vectors ( -- the bare list -- CS: better an ordered set ?
 		index_type		=> positive,
 		"=" 			=> et_coordinates.type_submodule_name."=",
 		element_type	=> et_coordinates.type_submodule_name.bounded_string);
 
-    -- A composite type with additional supporting information:
 	type type_submodule_names_extended is record
 		parent_module	: et_coordinates.type_submodule_name.bounded_string;
-		list			: type_submodule_names.vector;
-		id				: positive; -- id of a submodule in the list
+		list			: type_hierarchic_sheet_names.vector;
+		id				: positive; -- id of a sheet in the list
 	end record;
 
 

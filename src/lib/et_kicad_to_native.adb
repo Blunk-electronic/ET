@@ -245,7 +245,7 @@ package body et_kicad_to_native is
 
 			use et_schematic.type_submodules;
 			submodule_cursor_native : et_schematic.type_submodules.cursor;
-			submodule_inserted		: boolean;
+--			submodule_inserted		: boolean;
 		begin -- translate_sheets
 			-- loop in hierarchic kicad sheets
 			while kicad_sheet_cursor /= et_kicad.type_hierarchic_sheets.no_element loop
@@ -257,18 +257,19 @@ package body et_kicad_to_native is
 				-- 1. In kicad the gui submodule has a name which should be the same as the sheet name.
 				-- This is ensured on importing the kicad schematic (see et_kicad.adb). --> CS wrong ! fix it !
 				-- 2. The kicad name becomes now the name of the native submodule.
-				et_schematic.type_submodules.insert (
-					container	=> module.submodules,
-					position	=> submodule_cursor_native,
-					inserted	=> submodule_inserted,
-					key			=> key (kicad_sheet_cursor), -- submodule name
-					new_item	=> (
-						text_size_path		=> element (kicad_sheet_cursor).text_size_of_file,
-						text_size_instance	=> element (kicad_sheet_cursor).text_size_of_file,
-						position			=> element (kicad_sheet_cursor).coordinates,
-						size 				=> (element (kicad_sheet_cursor).size_x, element (kicad_sheet_cursor).size_y),
-						others => <>)
-					);
+-- CS 
+-- 				et_schematic.type_submodules.insert (
+-- 					container	=> module.submodules,
+-- 					position	=> submodule_cursor_native,
+-- 					inserted	=> submodule_inserted,
+-- 					key			=> key (kicad_sheet_cursor), -- submodule name
+-- 					new_item	=> (
+-- 						text_size_path		=> element (kicad_sheet_cursor).text_size_of_file,
+-- 						text_size_instance	=> element (kicad_sheet_cursor).text_size_of_file,
+-- 						position			=> element (kicad_sheet_cursor).coordinates,
+-- 						size 				=> (element (kicad_sheet_cursor).size_x, element (kicad_sheet_cursor).size_y),
+-- 						others => <>)
+-- 					);
 				
 				next (kicad_sheet_cursor);
 			end loop;
