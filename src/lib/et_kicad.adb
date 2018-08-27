@@ -100,9 +100,10 @@ package body et_kicad is
 		return et_coordinates.type_submodule_name.to_bounded_string (base_name (et_coordinates.to_string (file_name)));
 	end to_submodule_name;
 
-	-- Here we append a submodule name to the path_to_submodule.
+	-- Here we append a sheet name to the path_to_sheet.
 	-- CS: unify with procedure delete_last_module_name_from_path
-	procedure append_name_of_parent_module_to_path (submodule : in et_coordinates.type_submodule_name.bounded_string) is
+	--procedure append_name_of_parent_module_to_path (submodule : in et_coordinates.type_submodule_name.bounded_string) is
+	procedure append_sheet_name_to_path (sheet : in et_coordinates.type_submodule_name.bounded_string) is
 		use et_string_processing;
 		use ada.directories;
 		use et_coordinates;
@@ -112,17 +113,16 @@ package body et_kicad is
 -- 		log ("append path_to_submodule " 
 -- 			& base_name (type_submodule_name.to_string (submodule)), level => 1);
 
-		-- Since we are dealing with file names, the extension must be removed before appending.
-		type_path_to_submodule.append (path_to_submodule,
-			to_bounded_string (base_name (type_submodule_name.to_string (submodule))));
+		type_path_to_submodule.append (path_to_sheet, sheet);
+			--to_bounded_string (base_name (type_submodule_name.to_string (submodule))));
 
-	end append_name_of_parent_module_to_path;
+	end append_sheet_name_to_path;
 	
-	-- Here we remove the last submodule name form the path_to_submodule.
+	-- Here we remove the last submodule name form the path_to_sheet.
 	procedure delete_last_module_name_from_path is
 		use et_coordinates;
 	begin
-		type_path_to_submodule.delete_last (path_to_submodule);
+		type_path_to_submodule.delete_last (path_to_sheet);
 	end delete_last_module_name_from_path;
 
 	procedure module_not_found (module : in et_coordinates.type_submodule_name.bounded_string) is
@@ -4732,7 +4732,7 @@ package body et_kicad is
 			begin
 				log_indentation_reset;
 				log (message_error & "in schematic file '" 
-					& to_string (current_schematic.file) & "' " 
+					& to_string (current_schematic.sheet.file) & "' " 
 					& et_string_processing.affected_line (line)
 					& to_string (line),
 					console => true);
@@ -5330,7 +5330,7 @@ package body et_kicad is
 							log_indentation_down;
 							
                             -- assign coordinates
-							set_path (strand.coordinates, path_to_submodule);
+							set_path (strand.coordinates, path_to_sheet);
 							set_sheet (strand.coordinates, sheet_number_current);
 
 							-- set x,y coordinates (lowest available on the sheet)
@@ -5385,7 +5385,7 @@ package body et_kicad is
 							log_indentation_down;
 
                             -- assign coordinates
-                            set_path (strand.coordinates, path_to_submodule);
+                            set_path (strand.coordinates, path_to_sheet);
 							set_sheet (strand.coordinates, sheet_number_current);
 
 							-- set x,y coordinates (lowest available on the sheet)
@@ -5781,7 +5781,7 @@ package body et_kicad is
                 -- NOTE: The file name serves as key in order to map from file to header.
 				add_sheet_header (
 					header	=> sheet_header,
-					sheet	=> current_schematic.file);
+					sheet	=> current_schematic.sheet.file);
 
 			end make_sheet_header;
 
@@ -5831,7 +5831,7 @@ package body et_kicad is
 				frame.size_y 		:= mil_to_distance (field (et_kicad.line,4)); 
 				
 				--frame.coordinates.path := path_to_submodule;
-				set_path (frame.coordinates, path_to_submodule);
+				set_path (frame.coordinates, path_to_sheet);
 
 				-- CS: Other properties of the drawing frame like x/y coordinates, lists of lines and texts are 
 				-- kicad built-in things and remain unassigned here.
@@ -5863,7 +5863,8 @@ package body et_kicad is
 						-- Set in the hierarchic_sheet_file_names (to be returned) the parent_module. The schematic file 
 						-- being processed (see input parameters of read_schematic) becomes the parent module
 						-- of the submodules here.
-						hierarchic_sheet_file_names.parent_module := et_coordinates.to_submodule_name (to_string (current_schematic.file));
+						hierarchic_sheet_file_names.parent_module := et_coordinates.to_submodule_name (
+							to_string (current_schematic.sheet.file));
 					end if;
 					-- CS: make sure total sheet count is less or equal current sheet number.
 
@@ -5930,7 +5931,7 @@ package body et_kicad is
 				-- Then purge temporarily list of texts.
 				-- Then append temporarily title block to main module.
 										
-				set_path (title_block.coordinates, path_to_submodule);
+				set_path (title_block.coordinates, path_to_sheet);
 				
 				title_block.texts := title_block_texts; -- assign collected texts list to temporarily title block
 				-- CS: x/y coordinates and list of lines are kicad built-in things and thus not available currently.
@@ -5963,7 +5964,7 @@ package body et_kicad is
 				log_threshold	: in type_log_level) is
 
 				sheet		: type_hierarchic_sheet; -- the hierarchical sheet being built
-				sheet_name	: type_hierarchic_sheet_name;
+				sheet_name	: type_hierarchic_sheet_name; -- incl. file name and sheet name
 
 				port_inserted	: boolean; -- used to detect multiple ports with the same name
 				port_cursor		: type_hierarchic_sheet_ports.cursor; -- obligatory, but not read
@@ -6040,7 +6041,7 @@ package body et_kicad is
 				-- read GUI sheet position and size from a line like "S 4050 5750 1050 650"
 				if field (et_kicad.line,1) = schematic_keyword_sheet_pos_and_size then
 					-- CS test field count
-					set_path (sheet.coordinates, path_to_submodule);
+					set_path (sheet.coordinates, path_to_sheet);
 					--log ("path " & to_string (path (sheet.coordinates)));
 					set_sheet (sheet.coordinates, sheet_number_current);
 					set_x (sheet.coordinates, mil_to_distance (field (et_kicad.line,2)));
@@ -6087,12 +6088,12 @@ package body et_kicad is
 					check_schematic_text_size (category => FILE_NAME, size => sheet.text_size_of_file);
 					
 					-- Append sheet file name to hierarchic_sheet_file_names. 
-					-- This list will be returned by this function (read_schematic) to the calling
+					-- This list will be returned by this function (we are in read_schematic) to the calling
 					-- parent unit (import_design).
 					type_hierarchic_sheet_file_names.append (
 						container	=> hierarchic_sheet_file_names.sheets,
 						new_item	=> (
-										file		=> to_schematic_file_name (field (et_kicad.line,2)), -- sensor.sch
+										sheet		=> sheet_name, -- incl. file name and sheet name
 										timestamp	=> sheet.timestamp)); -- B5D45A33
 				end if;
 
@@ -6194,8 +6195,8 @@ package body et_kicad is
 				line_cursor := type_lines.first (lines);
 				
 				-- Build a temporarily net segment with fully specified coordinates:
-				set_path (segment.coordinates_start, path_to_submodule);
-				set_path (segment.coordinates_end, path_to_submodule);
+				set_path (segment.coordinates_start, path_to_sheet);
+				set_path (segment.coordinates_end, path_to_sheet);
 				
 				-- The sheet number. NOTE: Kicad V4 can handle only one sheet per submodule. The sheet numbering is consecutive and does
 				-- not care about the actual submodule names.
@@ -6261,7 +6262,7 @@ package body et_kicad is
 				--log ("making net junction ...", log_threshold);
 				--log_indentation_up;
 				
-				set_path (junction.coordinates, path_to_submodule);
+				set_path (junction.coordinates, path_to_sheet);
 				set_sheet (junction.coordinates, sheet_number_current);
 				set_x (junction.coordinates, mil_to_distance (field (line,3)));
 				set_y (junction.coordinates, mil_to_distance (field (line,4)));
@@ -6312,7 +6313,7 @@ package body et_kicad is
 				line_cursor := type_lines.first (lines);
 
 				-- Build a temporarily simple label from a line like "Text Label 5350 3050 0    60   ~ 0" :
-				set_path (label.coordinates, path_to_submodule);
+				set_path (label.coordinates, path_to_sheet);
 				set_sheet (label.coordinates, sheet_number_current);
 				set_x (label.coordinates, mil_to_distance (field (et_kicad.line,3)));
 				set_y (label.coordinates, mil_to_distance (field (et_kicad.line,4)));
@@ -6389,7 +6390,7 @@ package body et_kicad is
 					label.global := true;
 				end if;
 
-				set_path (label.coordinates, path_to_submodule);
+				set_path (label.coordinates, path_to_sheet);
 				set_sheet (label.coordinates, sheet_number_current);
 				set_x (label.coordinates, mil_to_distance (field (et_kicad.line,3)));
 				set_y (label.coordinates, mil_to_distance (field (et_kicad.line,4)));
@@ -6456,7 +6457,7 @@ package body et_kicad is
 				line_cursor := type_lines.first (lines);
 
 				-- set coordinates
-				set_path (note.coordinates, path_to_submodule);
+				set_path (note.coordinates, path_to_sheet);
 				set_sheet (note.coordinates, sheet_number_current);
 				set_x (note.coordinates, mil_to_distance (field (et_kicad.line,3)));
 				set_y (note.coordinates, mil_to_distance (field (et_kicad.line,4)));
@@ -6652,6 +6653,13 @@ package body et_kicad is
 
 					commissioned, updated : et_string_processing.type_date;
 
+					function timestamp_to_reference (timestap : in et_string_processing.type_timestamp) 
+						return et_libraries.type_component_reference is
+						reference : et_libraries.type_component_reference;
+					begin
+						return reference;
+					end timestamp_to_reference;
+					
 				begin -- check_text_fields
 					log_indentation_up;
 
@@ -6667,24 +6675,31 @@ package body et_kicad is
 						missing_field (et_libraries.reference);
 						-- CS: use missing_field (text_reference.meaning); -- apply this to other calls of missing_field too
 					else
-						-- verify text_reference equals reference. @kicad: why this redundance ?
-						-- KiCad stores redundant information on the component reference as in this example;
+						-- current_schematic.timestamp
+						if type_alternative_references.is_empty (alternative_references) then
+							-- verify text_reference equals reference. @kicad: why this redundance ?
+							-- KiCad stores redundant information on the component reference as in this example;
 
-						-- $Comp
-						-- L 74LS00 IC1 <- reference
-						-- U 1 1 59969711
-						-- P 4100 4000
-						-- F 0 "IC1" H 4100 4050 50  0000 C BIB <- text_reference
-						
-						if et_libraries.to_string (reference) /= et_libraries.content (field_reference) then
-							log_indentation_reset;
-							log (message_error & "reference mismatch ! Header reads " 
-								 & et_libraries.to_string (reference) & " but field contains " 
-								 & et_libraries.content (field_reference),
-								console => true);
-							raise constraint_error;
+							-- $Comp
+							-- L 74LS00 IC1 <- reference
+							-- U 1 1 59969711
+							-- P 4100 4000
+							-- F 0 "IC1" H 4100 4050 50  0000 C BIB <- text_reference
+							
+							if et_libraries.to_string (reference) /= et_libraries.content (field_reference) then
+								log_indentation_reset;
+								log (message_error & "reference mismatch ! Header reads " 
+									& et_libraries.to_string (reference) & " but field contains " 
+									& et_libraries.content (field_reference),
+									console => true);
+								raise constraint_error;
+							end if;
+
+						else
+							null; -- CS
+							
 						end if;
-
+						
 						check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_reference.size);
 					end if;
 
@@ -7548,7 +7563,7 @@ package body et_kicad is
 						set_y (position, mil_to_distance (field (et_kicad.line,3))); -- "4500"
 
 						-- The unit coordinates is more than just x/y :
-						set_path (position, path_to_submodule);
+						set_path (position, path_to_sheet);
 						set_sheet (position, sheet_number_current);
 
 					-- Read alternative reference like "AR Path="/59EF082F" Ref="N23"  Part="1"
@@ -7727,7 +7742,7 @@ package body et_kicad is
 				end append_no_connect_flag;				
 			
 			begin -- make_no_connection
-				set_path (no_connection_flag.coordinates, path_to_submodule);
+				set_path (no_connection_flag.coordinates, path_to_sheet);
 				set_sheet (no_connection_flag.coordinates, sheet_number_current);
 				set_x (no_connection_flag.coordinates, mil_to_distance (field (line,3)));
 				set_y (no_connection_flag.coordinates, mil_to_distance (field (line,4)));
@@ -7749,17 +7764,17 @@ package body et_kicad is
 			log_indentation_reset;
 			log_indentation_up;
 		
-			if exists (to_string (current_schematic.file)) then
-				log ("reading schematic file " & to_string (current_schematic.file) &
+			if exists (to_string (current_schematic.sheet.file)) then
+				log ("reading schematic file " & to_string (current_schematic.sheet.file) &
 					" with timestamp " & string (current_schematic.timestamp) & " ...",
 					 log_threshold + 1,
 					 console => true);
 
 				-- log module path as recorded by parent unit
 				log_indentation_up;
-				log ("path " & to_string (path_to_submodule), log_threshold + 1);
+				log ("path " & to_string (path_to_sheet), log_threshold + 1);
 				
-				open (file => schematic_handle, mode => in_file, name => to_string (current_schematic.file));
+				open (file => schematic_handle, mode => in_file, name => to_string (current_schematic.sheet.file));
 				set_input (schematic_handle);
 
 				-- read schematic file line per line
@@ -8029,7 +8044,8 @@ package body et_kicad is
 
 				close (schematic_handle);
 				log_indentation_down;
-				log ("reading complete. closing schematic file " & to_string (current_schematic.file) & " ...", log_threshold);
+				log ("reading complete. closing schematic file " &
+					 to_string (current_schematic.sheet.file) & " ...", log_threshold);
 
 				-- From the wild list of net segments, assemble net segments to anonymous strands.
 				-- A strand is: all net segments connected with each other by their start or end points.
@@ -8046,7 +8062,7 @@ package body et_kicad is
 
 			else
 				log_indentation_reset;
-				log (message_error & "schematic file '" & to_string (current_schematic.file) & "' not found !",
+				log (message_error & "schematic file '" & to_string (current_schematic.sheet.file) & "' not found !",
 					console => true);
 				raise constraint_error;
 			end if;
@@ -8162,8 +8178,8 @@ package body et_kicad is
 				type_rig.update_element (rig, module_cursor, save_component_libraries'access);
 				
 
-				current_schematic.file := top_level_schematic;
-				et_coordinates.check_submodule_name_characters (to_submodule_name (current_schematic.file));
+				current_schematic.sheet.file := top_level_schematic;
+				et_coordinates.check_submodule_name_characters (to_submodule_name (current_schematic.sheet.file));
 				
                 -- The top level schematic file is the first entry in the module path.
 				-- The top level schematic file is the root in the module path.
@@ -8211,7 +8227,7 @@ package body et_kicad is
 									container	=> hierarchic_sheet_file_names.sheets,
 									index		=> hierarchic_sheet_file_names.id);
 
-						et_coordinates.check_submodule_name_characters (to_submodule_name (current_schematic.file));
+						et_coordinates.check_submodule_name_characters (to_submodule_name (current_schematic.sheet.file));
 						
 						-- backup hierarchic_sheet_file_names OF THIS LEVEL on stack (including the current submodule id)
 						push (hierarchic_sheet_file_names);
@@ -8219,8 +8235,9 @@ package body et_kicad is
 						log ("DESCENDING TO HIERARCHY LEVEL -" & trim (natural'image (depth),left));
 						log (row_separator_single);
 
-						append_name_of_parent_module_to_path (et_coordinates.to_submodule_name (
-							base_name (et_coordinates.to_string (current_schematic.file))));
+						--append_name_of_parent_module_to_path (et_coordinates.to_submodule_name (
+						--	base_name (et_coordinates.to_string (current_schematic.sheet.file))));
+						append_sheet_name_to_path (current_schematic.sheet.name);
 						
 						-- Read schematic file as indicated by hierarchic_sheet_file_names.id. 
 						-- Read_schematic receives the name of the schematic file to be read.
@@ -8238,7 +8255,7 @@ package body et_kicad is
 							log (row_separator_single);
 
 						else
-							-- set cursor at first submodule of list and append name of parent module to path_to_submodule
+							-- set cursor at first submodule of list and append name of parent module to path_to_sheet
                             hierarchic_sheet_file_names.id := 1;
 						end if;
 

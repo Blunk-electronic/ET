@@ -118,18 +118,18 @@ package et_kicad is
 	-- - sheet number (NOTE: The sheet numbering restarts in a submodule)
 	-- - basic coordinates x/y
 
-	-- While reading submodules (in kicad sheets) the path_to_submodule keeps record of current point in the design 
-	-- hierarchy. Each time a submodule ABC has been found with nested submodules, the name of ABC is appended here.
-	-- Once the parent module is entered again, the name ABC is removed from the list. When assigning coordinates
-	-- to an object, the path_to_submodule is read. 
+	-- While reading sheets the path_to_sheet keeps record of current point in the design 
+	-- hierarchy. Each time a sheet ABC has been found with nested sub-sheets, the name of ABC is appended here.
+	-- Once the parent sheet is entered again, the name ABC is removed from the list. When assigning coordinates
+	-- to an object, the path_to_sheet is read. 
 	-- So this list (from first to last) provides a full path that tells us
-	-- the exact location of the submodule within the design hierarchy.
-	path_to_submodule : et_coordinates.type_path_to_submodule.list;
+	-- the exact location of the sheet within the design hierarchy.
+	path_to_sheet : et_coordinates.type_path_to_submodule.list;
 	
-	-- Here we append a submodule name to the path_to_submodule.
-	procedure append_name_of_parent_module_to_path (submodule : in et_coordinates.type_submodule_name.bounded_string);
+	-- Here we append a sheet name to the path_to_sheet.
+	procedure append_sheet_name_to_path (sheet : in et_coordinates.type_submodule_name.bounded_string);
 
-	-- Here we remove the last submodule name form the path_to_submodule.
+	-- Here we remove the last submodule name form the path_to_sheet.
 	procedure delete_last_module_name_from_path; -- CS: unify with append_name_of_parent_module_to_path
 
 	procedure module_not_found (module : in et_coordinates.type_submodule_name.bounded_string);
@@ -1011,20 +1011,17 @@ package et_kicad is
 	-- When reading a schematic sheet, hierachic sheets might be discovered.
 	-- They are returned to the parent unit in a list of schematic file names:
 	type type_hierarchic_sheet_file_name_and_timestamp is record
-		file		: et_coordinates.type_schematic_file_name.bounded_string;
-		--sheet		: et_coordinates.type_submodule_name.bounded_string;	
+		sheet		: type_hierarchic_sheet_name;	
 		timestamp	: et_string_processing.type_timestamp := et_string_processing.timestamp_default;
 	end record;
 	
 	package type_hierarchic_sheet_file_names is new vectors ( -- the bare list -- CS: better an ordered set ?
 		index_type		=> positive,
--- 		"=" 			=> type_schematic_file_name."=",
--- 		element_type	=> type_schematic_file_name.bounded_string); -- sensor.sch
 		element_type	=> type_hierarchic_sheet_file_name_and_timestamp);
 
 	type type_hierarchic_sheet_file_names_extended is record
 		parent_module	: et_coordinates.type_submodule_name.bounded_string;
-		sheets			: type_hierarchic_sheet_file_names.vector; -- sensor.sch driver.sch ...
+		sheets			: type_hierarchic_sheet_file_names.vector;
 		id				: positive; -- id of a sheet in the list
 	end record;
 
