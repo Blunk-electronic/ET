@@ -149,6 +149,12 @@ package et_coordinates is
 
 	function distance (point_1, point_2 : in type_2d_point) return type_distance;
 	-- Returns the distance between the given points.
+
+	schematic_file_name_length : constant positive := 100; -- includes extension
+	package type_schematic_file_name is new generic_bounded_length (schematic_file_name_length); 
+
+	function to_string (schematic : in type_schematic_file_name.bounded_string) return string;
+	function to_schematic_file_name (file : in string) return type_schematic_file_name.bounded_string;
 	
 	-- The name of a submodule may have 100 characters which seems sufficient for now.
  	submodule_name_length_max : constant positive := 100;
@@ -209,7 +215,7 @@ package et_coordinates is
 
 	
     -- The location of a submodule within the design hierarchy is reflected by
-    -- a list of submodule names like motor_driver.counter.supply
+    -- a list of submodule names like motor_driver/counter/supply
     -- The first item in this list is the name of the top level module.
     package type_path_to_submodule is new doubly_linked_lists (
         element_type => type_submodule_name.bounded_string);

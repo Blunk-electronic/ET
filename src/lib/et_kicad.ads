@@ -75,24 +75,14 @@ package et_kicad is
     
     schematic_version                   : constant positive := 2;
 
-	schematic_file_name_length : constant positive := 100; -- includes extension -- CS general stuff -> move to et_import ?
-	package type_schematic_file_name is new generic_bounded_length (schematic_file_name_length); 
-	--use type_schematic_file_name;
+	top_level_schematic	: et_coordinates.type_schematic_file_name.bounded_string; 
 
-	top_level_schematic	: type_schematic_file_name.bounded_string; 
-
-	schematic_handle	: ada.text_io.file_type; -- CS general stuff -> move to et_import ?
-	
-	function to_string (schematic : in type_schematic_file_name.bounded_string) return string; -- CS general stuff -> move to et_import ?
-	-- Returns the given schematic file name as string.
-
-	function to_schematic_file_name (file : in string) return type_schematic_file_name.bounded_string;
+	schematic_handle : ada.text_io.file_type;
 	
 	-- Sheet names may have the same length as schematic files.
-	package type_sheet_name is new generic_bounded_length (schematic_file_name_length); 
-	--use type_sheet_name;
+	package type_sheet_name is new generic_bounded_length (et_coordinates.schematic_file_name_length);
 
-	function to_submodule_name (file_name : in type_schematic_file_name.bounded_string)
+	function to_submodule_name (file_name : in et_coordinates.type_schematic_file_name.bounded_string)
 		return et_coordinates.type_submodule_name.bounded_string;
 	-- Returns the base name of the given schematic file name as submodule name.
 
@@ -114,9 +104,9 @@ package et_kicad is
 
 	-- Since there are usually many sheets, we need a map from schematic file name to schematic header.
     package type_sheet_headers is new ordered_maps (
-        key_type		=> type_schematic_file_name.bounded_string,
+        key_type		=> et_coordinates.type_schematic_file_name.bounded_string,
 		element_type	=> type_sheet_header,
-		"<"				=> type_schematic_file_name."<"
+		"<"				=> et_coordinates.type_schematic_file_name."<"
 		);
 	
     sheet_comment_length : constant natural := 100;
@@ -991,7 +981,7 @@ package et_kicad is
 
 	-- A hierachic sheet is identified by the file name and the sheet name itself.
 	type type_hierarchic_sheet_name is record 
-		file	: et_schematic.type_submodule_path.bounded_string; -- sensor.sch
+		file	: et_coordinates.type_schematic_file_name.bounded_string; -- sensor.sch
 		name	: et_coordinates.type_submodule_name.bounded_string; -- sensor_outside
 	end record;
 	
@@ -1021,7 +1011,8 @@ package et_kicad is
 	-- When reading a schematic sheet, hierachic sheets might be discovered.
 	-- They are returned to the parent unit in a list of schematic file names:
 	type type_hierarchic_sheet_file_name_and_timestamp is record
-		file		: type_schematic_file_name.bounded_string;
+		file		: et_coordinates.type_schematic_file_name.bounded_string;
+		--sheet		: et_coordinates.type_submodule_name.bounded_string;	
 		timestamp	: et_string_processing.type_timestamp := et_string_processing.timestamp_default;
 	end record;
 	
@@ -1146,7 +1137,7 @@ package et_kicad is
 	procedure add_sheet_header ( -- CS really requried ?
 	-- Inserts a sheet header in the module (indicated by module_cursor).
 		header	: in type_sheet_header;
-		sheet	: in type_schematic_file_name.bounded_string);
+		sheet	: in et_coordinates.type_schematic_file_name.bounded_string);
 
 	procedure add_frame (
 	-- Inserts a drawing frame in the module (indicated by module_cursor).

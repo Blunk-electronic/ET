@@ -324,6 +324,18 @@ package body et_coordinates is
 		return type_distance (dis);
 	end distance;
 
+	function to_string (schematic : in type_schematic_file_name.bounded_string) return string is
+	-- Returns the given schematic file name as string.
+	begin
+		return type_schematic_file_name.to_string (schematic);
+	end to_string;
+
+	function to_schematic_file_name (file : in string) return type_schematic_file_name.bounded_string is
+	begin
+		return type_schematic_file_name.to_bounded_string (file);
+	end to_schematic_file_name;
+
+	
 	procedure check_submodule_name_length (name : in string) is
 	-- Checks if the given submodule name is not longer than allowed.
 		use et_string_processing;
