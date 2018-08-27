@@ -1022,7 +1022,7 @@ package et_kicad is
 	-- They are returned to the parent unit in a list of schematic file names:
 	type type_hierarchic_sheet_file_name_and_timestamp is record
 		file		: type_schematic_file_name.bounded_string;
-		timestamp	: et_string_processing.type_timestamp;
+		timestamp	: et_string_processing.type_timestamp := et_string_processing.timestamp_default;
 	end record;
 	
 	package type_hierarchic_sheet_file_names is new vectors ( -- the bare list -- CS: better an ordered set ?

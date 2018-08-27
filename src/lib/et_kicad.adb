@@ -4356,7 +4356,7 @@ package body et_kicad is
 		
 		hierarchic_sheet_file_names : type_hierarchic_sheet_file_names_extended;
 
-		current_schematic	: type_schematic_file_name.bounded_string; -- sensor.sch
+		current_schematic : type_hierarchic_sheet_file_name_and_timestamp; -- sensor.sch / B7F2F34A
 		
 		net_id : natural := 0; -- for counting name-less nets (like N$1, N$2, N$3, ...)
 
@@ -4707,7 +4707,8 @@ package body et_kicad is
 		function read_schematic (
 		-- Reads the given schematic file. If it contains submodules (hierarchic sheets), 
         -- they will be returned in hierarchic_sheet_file_names. Otherwise the returned list is empty.
-			current_schematic	: in type_schematic_file_name.bounded_string;
+			--current_schematic	: in type_schematic_file_name.bounded_string;
+			current_schematic	: in type_hierarchic_sheet_file_name_and_timestamp;
 			log_threshold		: in type_log_level)
 			return type_hierarchic_sheet_file_names_extended is
 
@@ -4742,7 +4743,7 @@ package body et_kicad is
 			begin
 				log_indentation_reset;
 				log (message_error & "in schematic file '" 
-					& to_string (current_schematic) & "' " 
+					& to_string (current_schematic.file) & "' " 
 					& et_string_processing.affected_line (line)
 					& to_string (line),
 					console => true);
@@ -5791,7 +5792,7 @@ package body et_kicad is
                 -- NOTE: The file name serves as key in order to map from file to header.
 				add_sheet_header (
 					header	=> sheet_header,
-					sheet	=> current_schematic);
+					sheet	=> current_schematic.file);
 
 			end make_sheet_header;
 
@@ -5873,7 +5874,7 @@ package body et_kicad is
 						-- Set in the hierarchic_sheet_file_names (to be returned) the parent_module. The schematic file 
 						-- being processed (see input parameters of read_schematic) becomes the parent module
 						-- of the submodules here.
-						hierarchic_sheet_file_names.parent_module := type_submodule_name.to_bounded_string (to_string (current_schematic));
+						hierarchic_sheet_file_names.parent_module := et_coordinates.to_submodule_name (to_string (current_schematic.file));
 					end if;
 					-- CS: make sure total sheet count is less or equal current sheet number.
 
@@ -7759,8 +7760,9 @@ package body et_kicad is
 			log_indentation_reset;
 			log_indentation_up;
 		
-			if exists (to_string (current_schematic)) then
-				log ("reading schematic file " & to_string (current_schematic) & " ...",
+			if exists (to_string (current_schematic.file)) then
+				log ("reading schematic file " & to_string (current_schematic.file) &
+					" with timestamp " & string (current_schematic.timestamp) & " ...",
 					 log_threshold + 1,
 					 console => true);
 
@@ -7768,7 +7770,7 @@ package body et_kicad is
 				log_indentation_up;
 				log ("path " & to_string (path_to_submodule), log_threshold + 1);
 				
-				open (file => schematic_handle, mode => in_file, name => to_string (current_schematic));
+				open (file => schematic_handle, mode => in_file, name => to_string (current_schematic.file));
 				set_input (schematic_handle);
 
 				-- read schematic file line per line
@@ -8038,7 +8040,7 @@ package body et_kicad is
 
 				close (schematic_handle);
 				log_indentation_down;
-				log ("reading complete. closing schematic file " & to_string (current_schematic) & " ...", log_threshold);
+				log ("reading complete. closing schematic file " & to_string (current_schematic.file) & " ...", log_threshold);
 
 				-- From the wild list of net segments, assemble net segments to anonymous strands.
 				-- A strand is: all net segments connected with each other by their start or end points.
@@ -8055,7 +8057,7 @@ package body et_kicad is
 
 			else
 				log_indentation_reset;
-				log (message_error & "schematic file '" & to_string (current_schematic) & "' not found !",
+				log (message_error & "schematic file '" & to_string (current_schematic.file) & "' not found !",
 					console => true);
 				raise constraint_error;
 			end if;
@@ -8171,17 +8173,16 @@ package body et_kicad is
 				type_rig.update_element (rig, module_cursor, save_component_libraries'access);
 				
 
-				current_schematic := top_level_schematic;
-				et_coordinates.check_submodule_name_characters (to_submodule_name (current_schematic));
+				current_schematic.file := top_level_schematic;
+				et_coordinates.check_submodule_name_characters (to_submodule_name (current_schematic.file));
 				
                 -- The top level schematic file is the first entry in the module path.
 				-- The top level schematic file is the root in the module path.
 				-- Starting from the top level module, we read its schematic file. The result can be a list 
-				-- of submodules which means that the design is hierarchic.
-				-- NOTE: Kicad refers to submodules as "sheets" !
+				-- of sheets which means that the design is hierarchic.
 				
 				-- The function read_schematic requires the name of the current submodule,
-				-- It returns a list of submodules.
+				-- It returns a list of hierachic sheets.
 				hierarchic_sheet_file_names := read_schematic (current_schematic, log_threshold);
 
 				log("DESIGN STRUCTURE ");
@@ -8210,7 +8211,7 @@ package body et_kicad is
 					hierarchic_sheet_file_names.id := 1;
                     
 					loop
-						-- fetch file name of hierachic sheet (where id is pointing to)
+						-- fetch file name of hierarchic sheet (where id is pointing to)
 -- 						current_schematic := type_schematic_file_name.to_bounded_string (
 -- 							et_coordinates.type_submodule_name.to_string (
 -- 								type_hierarchic_sheet_names.element (
@@ -8221,7 +8222,7 @@ package body et_kicad is
 									container	=> hierarchic_sheet_file_names.sheets,
 									index		=> hierarchic_sheet_file_names.id);
 
-						et_coordinates.check_submodule_name_characters (to_submodule_name (current_schematic));
+						et_coordinates.check_submodule_name_characters (to_submodule_name (current_schematic.file));
 						
 						-- backup hierarchic_sheet_file_names OF THIS LEVEL on stack (including the current submodule id)
 						push (hierarchic_sheet_file_names);
@@ -8230,7 +8231,7 @@ package body et_kicad is
 						log (row_separator_single);
 
 						append_name_of_parent_module_to_path (et_coordinates.type_submodule_name.to_bounded_string (
-							base_name (to_string (current_schematic))));
+							base_name (to_string (current_schematic.file))));
 						
 						-- Read schematic file as indicated by hierarchic_sheet_file_names.id. 
 						-- Read_schematic receives the name of the schematic file to be read.
