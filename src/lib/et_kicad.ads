@@ -333,11 +333,20 @@ package et_kicad is
 		return et_libraries.type_component_package_name.bounded_string;
 	-- Returns the package name of the given component. 
 
+
+	-- TIMESTAMP
+	timestamp_characters : character_set := to_set (ranges => (('A','F'),('0','9'))); -- CS: upper case letters only	
+	type type_timestamp is new string (1..8); -- like "3459A3C1"
+	timestamp_default : type_timestamp := "00000000";
+	procedure check_timestamp (timestamp : in type_timestamp);
+	-- Checks the given timestamp for valid characters and plausible time.
+
+
+	
 	-- Alternative references used in instances of sheets:
 	-- example: AR Path="/59F17FDE/5A991D18" Ref="RPH1"  Part="1" 
 	package type_alternative_reference_path is new doubly_linked_lists (
-		element_type	=> et_string_processing.type_timestamp, -- 5A991D18
-		"="				=> et_string_processing."=");
+		element_type	=> type_timestamp); -- 5A991D18
 	
 	type type_alternative_reference is record
 		path		: type_alternative_reference_path.list; -- 59F17FDE 5A991D18 ...
@@ -990,7 +999,7 @@ package et_kicad is
         text_size_of_file   : et_libraries.type_text_size;
 		coordinates		    : et_coordinates.type_coordinates;
         size_x, size_y      : et_coordinates.type_distance; -- size x/y of the box
-		timestamp           : et_string_processing.type_timestamp;
+		timestamp           : type_timestamp;
 		ports				: type_hierarchic_sheet_ports.map;
 	end record;
 
@@ -1012,7 +1021,7 @@ package et_kicad is
 	-- They are returned to the parent unit in a list of schematic file names:
 	type type_hierarchic_sheet_file_name_and_timestamp is record
 		sheet		: type_hierarchic_sheet_name;	
-		timestamp	: et_string_processing.type_timestamp := et_string_processing.timestamp_default;
+		timestamp	: type_timestamp := timestamp_default;
 	end record;
 	
 	package type_hierarchic_sheet_file_names is new vectors ( -- the bare list -- CS: better an ordered set ?

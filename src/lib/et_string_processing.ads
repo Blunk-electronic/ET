@@ -161,12 +161,12 @@ package et_string_processing is
 	mounted		: constant string (1..7)  := "mounted";
 	not_mounted	: constant string (1..11) := "not mounted";
 	
--- TIMESTAMP -- CS move timestamp stuff to et_kicad
-	timestamp_characters : character_set := to_set (ranges => (('A','F'),('0','9'))); -- CS: upper case letters only	
-	type type_timestamp is new string (1..8); -- like "3459A3C1"
-	timestamp_default : type_timestamp := "00000000";
-	procedure check_timestamp (timestamp : in type_timestamp);
-	-- Checks the given timestamp for valid characters and plausible time.
+-- -- TIMESTAMP
+-- 	timestamp_characters : character_set := to_set (ranges => (('A','F'),('0','9'))); -- CS: upper case letters only	
+-- 	type type_timestamp is new string (1..8); -- like "3459A3C1"
+-- 	timestamp_default : type_timestamp := "00000000";
+-- 	procedure check_timestamp (timestamp : in type_timestamp);
+-- 	-- Checks the given timestamp for valid characters and plausible time.
 	
 
 	function strip_directory_separator (text : in string) return string;

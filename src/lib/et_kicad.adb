@@ -411,6 +411,13 @@ package body et_kicad is
 		-- CS
 		return package_name;
 	end to_package_name;
+
+
+	procedure check_timestamp (timestamp : in type_timestamp) is
+	-- Checks the given timestamp for valid characters and plausible time.
+	begin
+		null; -- CS
+	end check_timestamp;
 	
 	
 	function to_string (
@@ -6653,7 +6660,7 @@ package body et_kicad is
 
 					commissioned, updated : et_string_processing.type_date;
 
-					function timestamp_to_reference (timestap : in et_string_processing.type_timestamp) 
+					function timestamp_to_reference (timestamp : in type_timestamp) 
 						return et_libraries.type_component_reference is
 						reference : et_libraries.type_component_reference;
 					begin
@@ -7422,7 +7429,7 @@ package body et_kicad is
 					ref		: et_libraries.type_component_reference; -- #PWR03
 					unit	: et_libraries.type_unit_name.bounded_string; -- 1 -- CS is this really about unit names ?
 
-					path_segment : et_string_processing.type_timestamp;
+					path_segment : type_timestamp;
 					alt_ref_path : type_alternative_reference_path.list;
 				begin
 					--log ("alternative reference " & (field (line, 2)), log_threshold + 1); -- Path="/59F17F77/5A991798
@@ -7444,7 +7451,7 @@ package body et_kicad is
 					for place in 1 .. positive (et_string_processing.field_count (path)) loop
 
 						-- convert the segment from string to timestamp
-						path_segment := et_string_processing.type_timestamp (et_string_processing.get_field_from_line (path, place));
+						path_segment := type_timestamp (et_string_processing.get_field_from_line (path, place));
 
 						-- append the segment
 						type_alternative_reference_path.append (	

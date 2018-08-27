@@ -197,11 +197,6 @@ package body et_string_processing is
 		return true;
 	end date_valid;
 	
-	procedure check_timestamp (timestamp : in type_timestamp) is
-	-- Checks the given timestamp for valid characters and plausible time.
-	begin
-		null; -- CS
-	end check_timestamp;
 
 	function strip_directory_separator (text : in string) return string is
 	-- Removes the trailing directory separtor (if preset).
