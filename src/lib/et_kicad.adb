@@ -9775,18 +9775,18 @@ package body et_kicad is
 							-- For ports with other directions, issue a warning.
 							if et_libraries."=" (element (port_cursor).direction, et_libraries.power_in) then
 								if not connected_by_other_unit then
-									log (message_error & "power supply not connected at " 
+									log (message_error & "power supply not connected at" 
 										& to_string (element (port_cursor).coordinates, et_coordinates.module)
 										& " nor via other units of this component !");
 									raise constraint_error;
 								end if;
 							else
-								log (message_warning & "port not connected at " 
+								log (message_warning & "port not connected at" 
 									& to_string (element (port_cursor).coordinates, et_coordinates.module));
 							end if;
 
 						else
-							log (message_warning & "port not connected at " 
+							log (message_warning & "port not connected at" 
 								& to_string (element (port_cursor).coordinates, et_coordinates.module));
 						end if;
 					end if;
