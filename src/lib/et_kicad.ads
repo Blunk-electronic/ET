@@ -346,12 +346,12 @@ package et_kicad is
 	-- Alternative references used in instances of sheets:
 	-- example: AR Path="/59F17FDE/5A991D18" Ref="RPH1"  Part="1" 
 	package type_alternative_reference_path is new doubly_linked_lists (
-		element_type	=> type_timestamp); -- 5A991D18
+		element_type => type_timestamp); -- 5A991D18
 	
 	type type_alternative_reference is record
 		path		: type_alternative_reference_path.list; -- 59F17FDE 5A991D18 ...
 		reference	: et_libraries.type_component_reference; -- R452
-		part		: et_libraries.type_unit_name.bounded_string; -- CS is this about a unit name ?
+		part		: et_libraries.type_unit_name.bounded_string; -- CS is this about a unit name ? currently written but never read
 	end record;
 
 	package type_alternative_references is new doubly_linked_lists (type_alternative_reference);

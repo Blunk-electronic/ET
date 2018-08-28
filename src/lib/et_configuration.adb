@@ -238,7 +238,7 @@ package body et_configuration is
 			log ("none found. very good.", log_threshold + 1);
 			log_indentation_down;
 		else
-			log (message_warning & "for component category " 
+			log (message_warning & "for component category" 
 				& to_string (category) 
 				& " the purpose " 
 				& enclose_in_quotes (et_libraries.to_string (purpose)) 

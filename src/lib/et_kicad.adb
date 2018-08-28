@@ -6660,19 +6660,54 @@ package body et_kicad is
 
 					commissioned, updated : et_string_processing.type_date;
 
-					function timestamp_to_reference (timestamp : in type_timestamp) 
-						return et_libraries.type_component_reference is
-						reference : et_libraries.type_component_reference;
-					begin
-						return reference;
-					end timestamp_to_reference;
+					procedure process_alternative_references is
+					-- Looks up alternative_references. The are provided in the schematic file in lines like:
+					-- AR Path="/5B7CFC57/5A991D18" Ref="RPH19"  Part="1" 
+					-- AR Path="/59F17FDE/5A991D18" Ref="RPH1"  Part="1" 
+					-- The line with prenultimate timestamp (59F17FDE) that matches the current_schematic.timestamp
+					-- dictates the new component reference (RPH1).
+						use type_alternative_references;
+						alt_ref_cursor : type_alternative_references.cursor := alternative_references.first;
+						suitable_reference_found : boolean := false;
+
+						procedure query_path (alt_ref : in type_alternative_reference) is
+						-- queries paths like /59F17FDE/5A991D18 and compares the prenultimate timestamp
+						-- with the current_schematic.timestamp. Sets the suitable_reference_found flag on match.
+						-- Overwrites preliminary reference and content of field_reference.
+							use type_alternative_reference_path;
+							timestamp_cursor : type_alternative_reference_path.cursor := alt_ref.path.last;
+						begin
+							timestamp_cursor := previous (timestamp_cursor);
+							if element (timestamp_cursor) = current_schematic.timestamp then
+								
+								reference := alt_ref.reference;
+								field_reference.content := et_libraries.type_text_content.to_bounded_string (et_libraries.to_string (alt_ref.reference));
+								suitable_reference_found := true;
+
+								log ("update due to alternative reference: New component reference in this sheet is now " &
+									et_libraries.to_string (reference), log_threshold);
+							end if;
+						end query_path;
+							
+					begin -- process_alternative_references
+						-- loop in list of alternative references and exit once a suitable one was found.
+						while alt_ref_cursor /= type_alternative_references.no_element loop
+
+							type_alternative_references.query_element (
+								position	=> alt_ref_cursor,
+								process		=> query_path'access);
+
+							if suitable_reference_found then exit; end if;
+							
+							next (alt_ref_cursor);
+						end loop;
+					end process_alternative_references;
 					
 				begin -- check_text_fields
 					log_indentation_up;
 
-					-- write precheck preamble
-					log ("component " 
-						& to_string (reference) & " prechecking fields ...", level => log_threshold);
+-- 					-- write precheck preamble
+					log ("prechecking fields ...", log_threshold);
 					log_indentation_up;
 					
 					-- reference
@@ -6682,16 +6717,18 @@ package body et_kicad is
 						missing_field (et_libraries.reference);
 						-- CS: use missing_field (text_reference.meaning); -- apply this to other calls of missing_field too
 					else
-						-- current_schematic.timestamp
-						if type_alternative_references.is_empty (alternative_references) then
-							-- verify text_reference equals reference. @kicad: why this redundance ?
-							-- KiCad stores redundant information on the component reference as in this example;
-
+						-- If alternative references have been found, they must be looked up according to the
+						-- timestamp of the current schematic (selector timestamp).
+						-- Otherwise the reference must be verified aginst the content of the reference field.
+						-- Reason: KiCad stores redundant information on the component reference as in this example;
 							-- $Comp
 							-- L 74LS00 IC1 <- reference
 							-- U 1 1 59969711
 							-- P 4100 4000
 							-- F 0 "IC1" H 4100 4050 50  0000 C BIB <- text_reference
+
+						if type_alternative_references.is_empty (alternative_references) then -- no alternative references
+							log ("reference" & et_libraries.to_string (reference), log_threshold + 1);
 							
 							if et_libraries.to_string (reference) /= et_libraries.content (field_reference) then
 								log_indentation_reset;
@@ -6702,11 +6739,10 @@ package body et_kicad is
 								raise constraint_error;
 							end if;
 
-						else
-							null; -- CS
-							
+						else -- alternative references found
+							process_alternative_references;
 						end if;
-						
+
 						check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_reference.size);
 					end if;
 
@@ -7432,7 +7468,7 @@ package body et_kicad is
 					path_segment : type_timestamp;
 					alt_ref_path : type_alternative_reference_path.list;
 				begin
-					--log ("alternative reference " & (field (line, 2)), log_threshold + 1); -- Path="/59F17F77/5A991798
+					log ("alternative reference " & et_string_processing.to_string (line), log_threshold + 3); -- Path="/59F17F77/5A991798
 					--log (field (line, 2) (8 .. field (line, 2)'last), log_threshold + 1);
 					
 					-- extract the path segments from field 2: example: Path="/59F17F77/5A991798					
@@ -7459,11 +7495,16 @@ package body et_kicad is
 							new_item	=> path_segment);
 					end loop;
 
+-- 					log ("new reference '" & field (line, 3) (6.. (field (line, 3)'last)) & "'", log_threshold + 1);  -- #PWR03
+					
 					-- extract the reference from field 3: example: Ref="#PWR03
 					-- NOTE: the trailing double quote is already gone.
 					ref := et_schematic.to_component_reference (
-						text_in 	=> field (line, 3) (6.. (field (line, 3)'last)),  -- #PWR03
-						allow_special_character_in_prefix => true);
+							text_in 							=> field (line, 3) (6.. (field (line, 3)'last)),  -- #PWR03
+							allow_special_character_in_prefix	=> true);
+
+-- 					log ("test", log_threshold + 1);
+-- 					log ("new reference " & et_libraries.to_string (ref), log_threshold + 1);  -- #PWR03
 					
 					-- extract the part name (CS unit name ?) from field 4: example Part="1
 					-- NOTE: the trailing double quote is already gone.
@@ -7511,6 +7552,8 @@ package body et_kicad is
 						log (to_string (appearance), log_threshold + 3);
 
 						-- Depending on the appearance of the component the reference is built and checked.
+						-- IMPORTANT: The reference is preliminary. Due to possible hierarchic design, it
+						-- might be overwritten once alternative references are found in this sheet.
 						case appearance is
 						
 							when et_libraries.sch => 
@@ -7522,7 +7565,7 @@ package body et_kicad is
 									text_in => field (et_kicad.line,3),
 									allow_special_character_in_prefix => true); 
 
-								log ("reference " & to_string (reference), log_threshold);
+								log ("reference " & to_string (reference) & " (preliminary)", log_threshold);
 								validate_prefix (reference);
 
 							when et_libraries.sch_pcb =>
@@ -7535,7 +7578,7 @@ package body et_kicad is
 									text_in => field (et_kicad.line,3),
 									allow_special_character_in_prefix => false);
 
-								log ("reference " & to_string (reference), log_threshold);
+								log ("reference " & to_string (reference) & " (preliminary)", log_threshold);
 								
 								et_configuration.validate_prefix (reference);
 

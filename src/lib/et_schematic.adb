@@ -246,7 +246,10 @@ package body et_schematic is
 		allow_special_character_in_prefix : in boolean := false -- CS: provide CAD system specific character set instead
 		) return et_libraries.type_component_reference is
 		use et_libraries;
-		
+
+		-- justify given text_in on the left
+		text_in_justified : string (1 .. text_in'length) := text_in;
+	
 		r : type_component_reference := (
 				prefix => type_component_prefix.to_bounded_string(""),
 				id => 0,
@@ -258,7 +261,7 @@ package body et_schematic is
 		procedure invalid_reference is
 			use et_string_processing;
 		begin
-			log (text => latin_1.lf & message_error & "invalid component reference '" & text_in & "'",
+			log (text => latin_1.lf & message_error & "invalid component reference '" & text_in_justified & "'",
 				console => true);
 			
 			raise constraint_error;
@@ -269,10 +272,13 @@ package body et_schematic is
 
 		use et_libraries.type_component_prefix;
 	begin
--- 		et_string_processing.log ("to component reference >" & text_in & "<");
+-- 		et_string_processing.log ("to component reference >" & text_in_justified & "<");
+-- 		et_string_processing.log ("first" & positive'image (text_in_justified'first) & " " &
+-- 								  "last" & positive'image (text_in_justified'last));
+		
 		-- assemble prefix
-		for i in text_in'first .. text_in'last loop
-			c := text_in(i);
+		for i in text_in_justified'first .. text_in_justified'last loop
+			c := text_in_justified(i);
 			
 			case i is 
 				-- The first character MUST be an upper case letter.
@@ -281,7 +287,7 @@ package body et_schematic is
 				when 1 => 
 					case allow_special_character_in_prefix is
 						when false =>
--- 							et_string_processing.log ("false");							
+-- 							et_string_processing.log ("false");
 							if is_upper(c) then
 								r.prefix := r.prefix & c;
 							else 
@@ -314,12 +320,12 @@ package body et_schematic is
 		end loop;
 
 		-- assemble id
-		-- Start with the last character in text_in.
+		-- Start with the last character in text_in_justified.
 		-- Finish at the position d (that is the first digit after the last letter, see above).
 		-- All the characters within this range must be digits.
 		-- The significance of the digit is increased after each pass.
-		for i in reverse d .. text_in'last loop
-			c := text_in(i);
+		for i in reverse d .. text_in_justified'last loop
+			c := text_in_justified(i);
 			
 			if is_digit(c) then
 				r.id := r.id + 10**digit * natural'value(1 * c);
