@@ -138,13 +138,15 @@ package et_kicad is
 	-- Units may have alternative representations such as de_Morgan
 	type type_de_morgan_representation is (NO, YES);
 
-	-- KiCad uses an 8 digit string like 59969508 to link a unit from schematic to package (in board file).
-	-- Other CAE systmes might use this approach too. If longer strings or variying lenght is used,
-	-- the type should become a bounded string or whatsoever:
-	type type_path_to_package is new string (1..8); -- CS ????? -- is a timestap ?
+	-- TIMESTAMP
+	timestamp_characters : character_set := to_set (ranges => (('A','F'),('0','9'))); -- CS: upper case letters only	
+	type type_timestamp is new string (1..8); -- like "3459A3C1"
+	timestamp_default : type_timestamp := "00000000";
+	procedure check_timestamp (timestamp : in type_timestamp);
+	-- Checks the given timestamp for valid characters and plausible time.
 	
 	type type_unit_schematic is new et_schematic.type_unit with record
-		path_to_package	: type_path_to_package;
+		timestamp		: type_timestamp;
 		alt_repres		: type_de_morgan_representation;
 	end record;
 
@@ -334,12 +336,6 @@ package et_kicad is
 	-- Returns the package name of the given component. 
 
 
-	-- TIMESTAMP
-	timestamp_characters : character_set := to_set (ranges => (('A','F'),('0','9'))); -- CS: upper case letters only	
-	type type_timestamp is new string (1..8); -- like "3459A3C1"
-	timestamp_default : type_timestamp := "00000000";
-	procedure check_timestamp (timestamp : in type_timestamp);
-	-- Checks the given timestamp for valid characters and plausible time.
 
 
 	

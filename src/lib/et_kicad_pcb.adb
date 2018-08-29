@@ -2939,8 +2939,12 @@ package body et_kicad_pcb is
 		package_name 			: et_libraries.type_component_package_name.bounded_string;
 		package_library_name	: et_libraries.type_library_name.bounded_string;
 		package_position		: et_pcb_coordinates.type_package_position;
-		package_path			: et_kicad.type_path_to_package; -- the link to the symbol in the schematic like 59F208B2
-
+		
+		-- package_path			: et_kicad.type_timestamp; -- like /59F17F64/59F18F3E/5B852A16/5B851D80
+		-- CS: This this the sheet path. Currently it is ignored, because no need for it.
+		-- If the need arises, package_path must be a list of type_timestamp.
+		-- This could be achieved similar to the approach used procedure add_alternative_reference in et_kicad.
+		
 		-- The majority of terminals dictates the package technology. The default is THT.
 		package_technology 	: type_assembly_technology := THT;
 
@@ -3758,10 +3762,9 @@ package body et_kicad_pcb is
 						when SEC_PATH =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 =>
-									-- the path is given like this /59F207B1. The forward slash must be removed:
-									package_path := et_kicad.type_path_to_package (
-										to_string (arg)(2..package_path'length + 1));
+								when 1 => null;
+									-- the path is given like this /59F207B1/4564523. The forward slash must be removed:
+									-- CS: no need yet. package_path := et_kicad.type_timestamp (to_string (arg)(2..package_path'length + 1));
 								when others => too_many_arguments;
 							end case;
 

@@ -209,9 +209,9 @@ package body et_kicad is
 			 & to_lower (type_de_morgan_representation'image (type_units_schematic.element (unit).alt_repres)),
 			 log_threshold);
 
-		-- path to package
-		log ("path to package " 
-			& string (type_units_schematic.element (unit).path_to_package), log_threshold);
+		-- timestamp
+		log ("timestamp " 
+			& string (type_units_schematic.element (unit).timestamp), log_threshold);
 
 		-- position
 		log (to_string (position => type_units_schematic.element (unit).position), log_threshold);
@@ -6563,7 +6563,7 @@ package body et_kicad is
 				position					: et_coordinates.type_coordinates;
 				orientation					: et_coordinates.type_angle;
 				mirror						: type_mirror;
-				path_to_package				: type_path_to_package; -- 59F202F2
+				timestamp					: type_timestamp; -- 59F202F2
 				alternative_representation	: type_de_morgan_representation;
 			
 				-- These are the "field found flags". They signal if a particular text field has been found.
@@ -7209,7 +7209,7 @@ package body et_kicad is
 									orientation		=> orientation,
 									mirror			=> mirror,
 									name			=> unit_name,
-									path_to_package	=> path_to_package,
+									timestamp		=> timestamp,
 									alt_repres		=> alternative_representation,
 
 									-- placeholders:
@@ -7239,7 +7239,7 @@ package body et_kicad is
 									orientation		=> orientation,
 									mirror			=> mirror,
 									name			=> unit_name,
-									path_to_package	=> path_to_package,
+									timestamp		=> timestamp,
 									alt_repres		=> alternative_representation,
 
 									-- placeholders:
@@ -7604,7 +7604,7 @@ package body et_kicad is
 						alternative_representation := to_alternative_representation (line => et_kicad.line, schematic => true);
 
 						-- Read and check the link to the board file:
-						path_to_package := type_path_to_package (field (et_kicad.line,4));
+						timestamp := type_timestamp (field (et_kicad.line,4));
 
 					-- Read unit coordinates from a line like "P 3200 4500".
 					elsif field (et_kicad.line,1) = schematic_component_identifier_coord then -- "P"
