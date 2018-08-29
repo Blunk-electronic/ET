@@ -3167,6 +3167,9 @@ package body et_kicad_pcb is
 
 			-- the former actvie section name becomes the parent section name
 			section.parent := section.name;
+
+			-- CS provide log info on current section
+			-- log ("section " & to_string (section.name), log_threshold + 1);
 			
 			section.arg_counter := 0;
 			
