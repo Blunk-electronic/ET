@@ -1030,7 +1030,7 @@ package et_kicad is
 		element_type	=> type_hierarchic_sheet_file_name_and_timestamp);
 
 	type type_hierarchic_sheet_file_names_extended is record
-		parent_module	: et_coordinates.type_submodule_name.bounded_string;
+		parent_sheet	: et_coordinates.type_submodule_name.bounded_string;
 		sheets			: type_hierarchic_sheet_file_names.vector;
 		id				: positive; -- id of a sheet in the list
 	end record;

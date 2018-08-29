@@ -5867,10 +5867,10 @@ package body et_kicad is
 					sheet_count_total := to_sheet_number (field (et_kicad.line,3));
 					-- CS: sheet_count_total must not change from sheet to sheet. Check required.
 					if sheet_count_total > 1 then
-						-- Set in the hierarchic_sheet_file_names (to be returned) the parent_module. The schematic file 
-						-- being processed (see input parameters of read_schematic) becomes the parent module
-						-- of the submodules here.
-						hierarchic_sheet_file_names.parent_module := et_coordinates.to_submodule_name (
+						-- Set in the hierarchic_sheet_file_names (to be returned) the parent_sheet name. The schematic file 
+						-- being processed (see input parameters of read_schematic) becomes the parent sheet
+						-- of the sheet here.
+						hierarchic_sheet_file_names.parent_sheet := et_coordinates.to_submodule_name (
 							to_string (current_schematic.sheet.file));
 					end if;
 					-- CS: make sure total sheet count is less or equal current sheet number.
