@@ -3668,7 +3668,7 @@ package body et_kicad is
 					-- Output a warning if strand has no name.
 					if et_schematic.anonymous (element (strand).name) then
 						log (message_warning & "net " & et_schematic.to_string (element (strand).name) 
-							& " at " & et_coordinates.to_string (
+							& " at" & et_coordinates.to_string (
 								position => element (strand).coordinates, scope => et_coordinates.module)
 							& " has no dedicated name !");
 					end if;
@@ -6151,7 +6151,7 @@ package body et_kicad is
 					end loop;
 
 				else -- sheet has no ports -> warning
-					log (message_warning & "hierarchic sheet '" & to_string (submodule => sheet_name.name) & "' has no ports !");
+					log (message_warning & "hierarchic sheet " & to_string (submodule => sheet_name.name) & " has no ports !");
 				end if;
 
 				-- insert the hierarchical sheet in module (see type_module)
@@ -6684,8 +6684,8 @@ package body et_kicad is
 								field_reference.content := et_libraries.type_text_content.to_bounded_string (et_libraries.to_string (alt_ref.reference));
 								suitable_reference_found := true;
 
-								log ("update due to alternative reference: New component reference in this sheet is now " &
-									et_libraries.to_string (reference), log_threshold);
+								log ("update due to hierachic structure: " &
+									et_libraries.to_string (reference), make_component.log_threshold);
 							end if;
 						end query_path;
 							
@@ -7816,13 +7816,14 @@ package body et_kicad is
 		
 			if exists (to_string (current_schematic.sheet.file)) then
 				log ("reading schematic file " & to_string (current_schematic.sheet.file) &
+					" sheet name " & to_string (current_schematic.sheet.name) &
 					" with timestamp " & string (current_schematic.timestamp) & " ...",
-					 log_threshold + 1,
+					 log_threshold,
 					 console => true);
 
 				-- log module path as recorded by parent unit
 				log_indentation_up;
-				log ("path " & to_string (path_to_sheet), log_threshold + 1);
+				log ("path " & to_string (path_to_sheet), log_threshold);
 				
 				open (file => schematic_handle, mode => in_file, name => to_string (current_schematic.sheet.file));
 				set_input (schematic_handle);
@@ -8094,8 +8095,8 @@ package body et_kicad is
 
 				close (schematic_handle);
 				log_indentation_down;
-				log ("reading complete. closing schematic file " &
-					 to_string (current_schematic.sheet.file) & " ...", log_threshold);
+				--log ("reading complete. closing schematic file " &
+				--	 to_string (current_schematic.sheet.file) & " ...", log_threshold);
 
 				-- From the wild list of net segments, assemble net segments to anonymous strands.
 				-- A strand is: all net segments connected with each other by their start or end points.
@@ -8236,109 +8237,85 @@ package body et_kicad is
 				-- Starting from the top level module, we read its schematic file. The result can be a list 
 				-- of sheets which means that the design is hierarchic.
 				
-				-- The function read_schematic requires the name of the current submodule,
+				-- The function read_schematic requires the name of the current schematic,
 				-- It returns a list of hierachic sheets.
 				hierarchic_sheet_file_names := read_schematic (current_schematic, log_threshold);
 
-				log("DESIGN STRUCTURE ");
-				log_indentation_up;
-				
 				-- If read_schematic returns an empty list of hierachic sheets file names,
 				-- we are dealing with a flat design. Otherwise the design is hierarchic.
 				if type_hierarchic_sheet_file_names.is_empty (hierarchic_sheet_file_names.sheets) then -- flat design
-					log ("FLAT");
+					log ("design structure FLAT");
 				else -- hierarchic design
-					-- In the following we dive into the submodules. Each time before a deeper level is entered,
-					-- the list of submodules (of the current level) is saved on a LIFO stack.
+					-- In the following we dive into the sheets. Each time before a deeper level is entered,
+					-- the list of sheets (of the current level) is saved on a LIFO stack.
 					-- The top level schematic is at level 0. The level decreases (negative) each time a deeper
 					-- level is entered.
-					log ("HIERARCHIC");
+					log ("design structure HIERARCHIC");
 					
 					stack_of_sheet_lists.init; -- stack init
 
 					log_indentation_up;
 					
-					-- output the number of submodules (sheets) found at level 0:
-					log ("number of hierarchic sheets" & natural'image (
+					-- output the number of sheets found at level 0:
+					log ("number of hierarchic sheets total" & natural'image (
 						natural (type_hierarchic_sheet_file_names.length (hierarchic_sheet_file_names.sheets)))); -- CS: use count_type
 
-					-- Initially set submodule pointer at first submodule of list:
+					-- Initially set sheet pointer at first sheet of list:
 					hierarchic_sheet_file_names.id := 1;
                     
 					loop
-						-- fetch file name of hierarchic sheet (where id is pointing to)
--- 						current_schematic := type_schematic_file_name.to_bounded_string (
--- 							et_coordinates.type_submodule_name.to_string (
--- 								type_hierarchic_sheet_names.element (
--- 									container	=> hierarchic_sheet_file_names.list,
--- 									index		=> hierarchic_sheet_file_names.id)));
+						if hierarchic_sheet_file_names.id <= positive (type_hierarchic_sheet_file_names.length (hierarchic_sheet_file_names.sheets)) then
 
-						current_schematic := type_hierarchic_sheet_file_names.element (
-									container	=> hierarchic_sheet_file_names.sheets,
-									index		=> hierarchic_sheet_file_names.id);
+							current_schematic := type_hierarchic_sheet_file_names.element (
+										container	=> hierarchic_sheet_file_names.sheets,
+										index		=> hierarchic_sheet_file_names.id);
 
-						et_coordinates.check_submodule_name_characters (to_submodule_name (current_schematic.sheet.file));
-						
-						-- backup hierarchic_sheet_file_names OF THIS LEVEL on stack (including the current submodule id)
-						push (hierarchic_sheet_file_names);
-						
-						log ("DESCENDING TO HIERARCHY LEVEL -" & trim (natural'image (depth),left));
-						log (row_separator_single);
+							et_coordinates.check_submodule_name_characters (to_submodule_name (current_schematic.sheet.file));
+							
+							-- backup hierarchic_sheet_file_names OF THIS LEVEL on stack (including the current sheet id)
+							push (hierarchic_sheet_file_names);
+							
+							append_sheet_name_to_path (current_schematic.sheet.name);
+							
+							-- Read schematic file as indicated by hierarchic_sheet_file_names.id. 
+							-- Read_schematic receives the name of the schematic file to be read.
+							hierarchic_sheet_file_names := read_schematic (current_schematic, log_threshold);
 
-						--append_name_of_parent_module_to_path (et_coordinates.to_submodule_name (
-						--	base_name (et_coordinates.to_string (current_schematic.sheet.file))));
-						append_sheet_name_to_path (current_schematic.sheet.name);
-						
-						-- Read schematic file as indicated by hierarchic_sheet_file_names.id. 
-						-- Read_schematic receives the name of the schematic file to be read.
-						hierarchic_sheet_file_names := read_schematic (current_schematic, log_threshold);
+							-- If the schematic file contains hierarchic sheets, set hierarchic_sheet_file_names.id to the first 
+							-- sheet of them. Otherwise restore sheet list of parent sheet and advance there to next sheet.
+							if type_hierarchic_sheet_file_names.is_empty (hierarchic_sheet_file_names.sheets) then -- flat schematic (no hierarchic sheets)
 
-						-- If the schematic file contains hierarchic sheets, set hierarchic_sheet_file_names.id to the first 
-						-- sheet of them. Otherwise restore sheet list of parent module and advance therein to next sheet.
-						if type_hierarchic_sheet_file_names.is_empty (hierarchic_sheet_file_names.sheets) then -- flat schematic (no hierarchic sheets)
+								hierarchic_sheet_file_names := pop;
+								delete_last_module_name_from_path;
+								hierarchic_sheet_file_names.id := hierarchic_sheet_file_names.id + 1;
 
-							hierarchic_sheet_file_names := pop;
-							delete_last_module_name_from_path;
-                            hierarchic_sheet_file_names.id := hierarchic_sheet_file_names.id + 1;
-                            
-							log ("NO SUBMODULES HERE. ASCENDING TO HIERARCHY LEVEL -" & trim (natural'image (depth),left));
-							log (row_separator_single);
+							else
+								-- set cursor to first sheet of list
+								hierarchic_sheet_file_names.id := 1;
+							end if;
 
-						else
-							-- set cursor at first submodule of list and append name of parent module to path_to_sheet
-                            hierarchic_sheet_file_names.id := 1;
 						end if;
-
+							
 						-- Once the last sheet of the list has been processed, restore list of the overlying 
 						-- level and advance to next sheet.
 						-- Exit after last sheet in level 0 has been processed.
 						if hierarchic_sheet_file_names.id > positive (type_hierarchic_sheet_file_names.length (hierarchic_sheet_file_names.sheets)) then
+
 							if depth = 0 then 
-								log ("LAST SUBMODULE PROCESSED.");
 								exit; 
 							end if;
+
 							hierarchic_sheet_file_names := pop; -- restore overlying list
 							delete_last_module_name_from_path;
-                            hierarchic_sheet_file_names.id := hierarchic_sheet_file_names.id + 1;
-							log ("LAST SUBMODULE PROCESSED. ASCENDING TO HIERARCHY LEVEL: -" & trim(natural'image(depth),left));
-							log (row_separator_single);
+							hierarchic_sheet_file_names.id := hierarchic_sheet_file_names.id + 1;
+							
 						end if;
 						
 					end loop;
 
-					--log_indentation_down;
-
-					-- Checks scope of strands across the current module (indicated by module_cursor).
-					-- NOTE: module_cursor points to the current module.
-					--check_strands; -- CS: currently not used and does not belong here
-					
 				end if;
 
-				
-				log_indentation_down;
-
 				-- Update strand names according to power in/out ports connected with them:
-				-- This is CAE-system depended ! See details in procedure spec and body.
 				update_strand_names (log_threshold + 1); -- includes portlist generation
 
 				-- write strands report
@@ -8351,8 +8328,7 @@ package body et_kicad is
 				link_strands (log_threshold + 1);
 
 				-- Append hierarchic strands to global or local nets.
-				-- IMPORTANT: Hierarchic nets are nothing more than extensions of
-				-- local or global nets !
+				-- IMPORTANT: Hierarchic nets are nothing more than extensions of local or global nets !
 				process_hierarchic_nets (log_threshold + 1);
 				
 				-- write net report
@@ -8923,9 +8899,7 @@ package body et_kicad is
 											--log_indentation_reset;
 											log (message_warning & "component " & et_libraries.to_string (key (component)) 
 												& " POWER IN port " & to_string (element (port).name) 
-												--& latin_1.lf
-												& " at " & to_string (element (port).coordinates, module)
-												--& latin_1.lf
+												& " at" & to_string (element (port).coordinates, module)
 												& " conflicts with net " & et_schematic.to_string (element (strand).name) & " !");
 											--raise constraint_error;
 
@@ -8935,9 +8909,7 @@ package body et_kicad is
 											log_indentation_reset;
 											log (message_error & "component " & et_libraries.to_string (key (component)) 
 												& " POWER IN port " & to_string (element (port).name) 
-												--& latin_1.lf
-												& " at " & to_string (element (port).coordinates, module)
-												--& latin_1.lf
+												& " at" & to_string (element (port).coordinates, module)
 												& " conflicts with " & to_string (element (strand).scope) 
 												& " net " & et_schematic.to_string (element (strand).name) & " !");
 											raise constraint_error;
@@ -8946,9 +8918,6 @@ package body et_kicad is
 										
 									end if;
 
-								-- With eagle, power-out ports enforce their name on the strand.
-								-- when et_import.eagle =>
-									
 								when others =>
 									log_indentation_reset;
 									log (message_error & et_import.invalid_cad_format (et_import.cad_format));

@@ -991,7 +991,8 @@ package et_kicad is
 	-- A hierachic sheet is identified by the file name and the sheet name itself.
 	type type_hierarchic_sheet_name is record 
 		file	: et_coordinates.type_schematic_file_name.bounded_string; -- sensor.sch
-		name	: et_coordinates.type_submodule_name.bounded_string; -- sensor_outside
+		name	: et_coordinates.type_submodule_name.bounded_string := et_coordinates.type_submodule_name.to_bounded_string ("n/a"); -- sensor_outside
+		-- "n/a" because the top level schematic never has a sheet name
 	end record;
 	
 	type type_hierarchic_sheet is record
