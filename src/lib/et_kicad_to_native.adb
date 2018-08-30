@@ -436,8 +436,7 @@ package body et_kicad_to_native is
 			end loop;
 		end copy_nets;
 		
-		
-	begin
+	begin -- to_native
 -- 		log ("component libraries ...", log_threshold);
 -- 		log_indentation_up;
 		

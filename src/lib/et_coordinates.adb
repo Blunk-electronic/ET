@@ -482,7 +482,8 @@ package body et_coordinates is
 	function to_string (sheet_number : in type_submodule_sheet_number) return string is
 	-- Returns a sheet number to a string.
 	begin
-		return trim (type_submodule_sheet_number'image (sheet_number), left);
+		--return trim (type_submodule_sheet_number'image (sheet_number), left);
+		return type_submodule_sheet_number'image (sheet_number);
 	end to_string;
 
 	function to_sheet_number (sheet_number : in string) return type_submodule_sheet_number is

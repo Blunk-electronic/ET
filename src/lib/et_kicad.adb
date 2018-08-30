@@ -2588,18 +2588,19 @@ package body et_kicad is
 					log_indentation_down;
 				end write_scope_of_object;
 
-				draw_object : constant string (1..12) := "draw object ";
+				--draw_object : constant string (1..12) := "draw object ";
 				
 			begin -- read_draw_object
 				--log ("draw object", level => log_threshold + 1);
-				--log_indentation_up;
+				log_indentation_up;
 
 				-- At a certain log level we report the bare line of a draw object as it is:
 				--log (to_string (line), log_threshold + 2);
 				
 				case type_library_draw'value (field (line,1)) is
 					when P => -- polyline
-						log (draw_object & "polyline", log_threshold);
+						--log (draw_object & "polyline", log_threshold);
+						log ("polyline", log_threshold);
 						-- A polyline is defined by a string like "P 3 0 1 10 0 0 100 50 70 0 N"
 						-- field meaning:
 						--  #2 : number of bends (incl. start and end points) (3)
@@ -2611,8 +2612,8 @@ package body et_kicad is
 						-- #10..11  : end point (x/y) (50/70)
 						-- last field : fill style N/F/f no fill/foreground/background
 
-						log (to_string (line), log_threshold + 1);
-						-- CS: output properites in a human readable form instead.
+						log (to_string (line), log_threshold);
+						-- CS: output properties in a human readable form instead.
 						
 						tmp_unit_id := to_unit_id (field (line,3));
 						write_scope_of_object (tmp_unit_id);
@@ -2624,7 +2625,8 @@ package body et_kicad is
 						add_symbol_element (polyline);
 						
 					when S => -- rectangle
-						log (draw_object & "rectangle", log_threshold);
+						--log (draw_object & "rectangle", log_threshold);
+						log ("rectangle", log_threshold);
 						-- A rectangle is defined by a string like "S -40 -100 40 100 0 1 10 N"
 						-- field meaning;
 						-- #2..5 : start point -40/-100   end point 40/100
@@ -2633,7 +2635,7 @@ package body et_kicad is
 						-- #8 : line width
 						-- #9 : fill style N/F/f no fill/foreground/background
 
-						log (to_string (line), log_threshold + 1);
+						log (to_string (line), log_threshold);
 						-- CS: output properites in a human readable form instead.
 						
 						tmp_unit_id := to_unit_id (field (line,6));
@@ -2646,7 +2648,8 @@ package body et_kicad is
 						add_symbol_element (rectangle);
 						
 					when C => -- circle
-						log (draw_object & "circle", log_threshold);
+						--log (draw_object & "circle", log_threshold);
+						log ("circle", log_threshold);
 						-- A circle is defined by a string like "C 0 0 112 0 1 23 N"
 						-- field meaning:
 						--  #2..3 : center (x/y)
@@ -2656,7 +2659,7 @@ package body et_kicad is
 						--  #7 : line width (23)
 						--  #8 : fill style N/F/f no fill/foreground/background
 
-						log (to_string (line), log_threshold + 1);
+						log (to_string (line), log_threshold);
 						-- CS: output properites in a human readable form instead.
 						
 						tmp_unit_id := to_unit_id (field (line,5));
@@ -2669,7 +2672,8 @@ package body et_kicad is
 						add_symbol_element (circle);
 						
 					when A => -- arc
-						log (draw_object & "arc", log_threshold);
+						--log (draw_object & "arc", log_threshold);
+						log ("arc", log_threshold);
 						-- An arc is defined by a string like "A 150 0 150 1800 900 0 1 33 N 0 0 150 150"
 						-- NOTE: kicad bug: multiply all y values by -1
 						-- field meaning:
@@ -2684,7 +2688,7 @@ package body et_kicad is
 						-- #11..12 : start point (x/y)
 						-- #13..14 : end point (x/y)
 
-						log (to_string (line), log_threshold + 1);
+						log (to_string (line), log_threshold);
 						-- CS: output properites in a human readable form instead.
 						
 						tmp_unit_id := to_unit_id (field (line,7));
@@ -2697,7 +2701,8 @@ package body et_kicad is
 						add_symbol_element (arc);
 
 					when T => -- text
-						log (draw_object & "text", log_threshold);
+						--log (draw_object & "text", log_threshold);
+						log ("text", log_threshold);
 						-- A text is defined by a string like "T 0 0 300 60 0 0 0 leuchtdiode Normal 0 C C"
 						-- Space characters whitin the actual text are replaced by tilde as in this example:
 						-- "T 0 -100 0 60 0 1 0 gate~C Normal 0 C C"
@@ -2714,7 +2719,7 @@ package body et_kicad is
 						-- #12 : alignment left/center/right L/C/R
 						-- #13 : alignment top/center/bottom T/C/B
 
-						log (to_string (line), log_threshold + 1);
+						log (to_string (line), log_threshold);
 						-- CS: output properites in a human readable form instead.
 						
 						tmp_unit_id := to_unit_id (field (line,7));
@@ -2727,7 +2732,8 @@ package body et_kicad is
 						add_symbol_element (text);
 						
 					when X => -- port
-						log (draw_object & "port", log_threshold);
+						--log (draw_object & "port", log_threshold);
+						log ("port", log_threshold);
 						-- A port is defined by a string like "X ~ 1 0 150 52 D 51 50 1 1 P"
 						-- field meaning:
 						--  #2 : port name (~)
@@ -2742,7 +2748,7 @@ package body et_kicad is
 						-- #12 : electrical type (direction), see et_kicad.ads for more
 						-- #13 : optional field: pin style, see et_kicad.ads for more
 
-						log (to_string (line), log_threshold + 1);
+						log (to_string (line), log_threshold);
 						-- CS: output properties in a human readable form instead.
 						
 						tmp_unit_id := to_unit_id (field (line,10));
@@ -2778,7 +2784,7 @@ package body et_kicad is
 						end if;
 				end case;
 
-				--log_indentation_down;
+				log_indentation_down;
 			end read_draw_object;
 
 			procedure add_footprint (line : in type_fields_of_line; log_threshold : in type_log_level) is
@@ -3278,7 +3284,7 @@ package body et_kicad is
 											create_units;
 
 											active_section := draw;
-											log ("draw begin", level => log_threshold + 3);
+											log ("draw begin", level => log_threshold + 2);
 										else
 											-- Read the text fields in a set of temporarily variables field_prefix, field_value, ...
 											read_field (line, log_threshold + 2);
@@ -3317,7 +3323,7 @@ package body et_kicad is
 										-- thate this subsection has been processed.
 										if field  (line,1) = et_kicad.enddraw then
 											active_section := none;
-											log ("draw end", level => log_threshold + 3);
+											log ("draw end", level => log_threshold + 2);
 										else
 											-- Read draw objects
 											read_draw_object (line, log_threshold + 2);
@@ -3329,7 +3335,7 @@ package body et_kicad is
 										-- NOTE #2: the active section "fields" is not set here but when the fields are read (see NOTE #1)
 										if field  (line,1) = et_kicad.draw then
 											active_section := draw;
-											log ("draw begin", level => log_threshold + 3);
+											log ("draw begin", level => log_threshold + 2);
 										end if;
 
 								end case; -- active_section
@@ -4008,7 +4014,7 @@ package body et_kicad is
 				log_indentation_up;
 
 				log ("probing hierarchic net " & to_string (net.name) 
-						& " in submodule " & to_string (net.path) & " ...",
+						& " in sheet " & to_string (net.path) & " ...",
 					log_threshold + 2);
 				
 				while h_strand /= type_strands.no_element loop
@@ -4018,7 +4024,7 @@ package body et_kicad is
 							if element (h_strand).name = net.name then
 								hierarchic_net_found := true;
 
-								log ("reaches down into submodule " 
+								log ("reaches down into sheet " 
 									& to_string (net.path) 
 									& " as net " & to_string (net.name),
 									log_threshold + 1
@@ -4272,7 +4278,7 @@ package body et_kicad is
 				log_indentation_up;
 				while strand /= type_strands.no_element loop
 					log ("strand #" & trim (count_type'image (strand_number), left) &
-						" at " & to_string (position => element (strand).coordinates, scope => et_coordinates.module)
+						" at" & to_string (position => element (strand).coordinates, scope => et_coordinates.module)
 						);
 
 					query_element (
@@ -5076,7 +5082,7 @@ package body et_kicad is
 
 												if log_level >= log_threshold + 1 then
 													log_indentation_up;
-													log ("label at " & to_string (label => type_net_label (ls), scope => xy));
+													log ("label at" & to_string (label => type_net_label (ls), scope => xy));
 													log_indentation_down;
 												end if;
 
@@ -5094,7 +5100,7 @@ package body et_kicad is
 														log_indentation_reset;
 														log (message_error
 															& "hierarchic net " & type_net_name.to_string (anon_strand_a.name) 
-															& " has a local label at " 
+															& " has a local label at" 
 															& to_string (position => ls.coordinates) & " !");
 														raise constraint_error;
 
@@ -5103,7 +5109,7 @@ package body et_kicad is
 														log_indentation_reset;
 														log (message_error
 															& "global net " & type_net_name.to_string (anon_strand_a.name) 
-															& " has a local label at " 
+															& " has a local label at" 
 																& to_string (position => ls.coordinates) & " !");
 															raise constraint_error;
 												end case;
@@ -5124,7 +5130,7 @@ package body et_kicad is
 														log_indentation_reset;
 														log (message_error 
 															 & "Net " & type_net_name.to_string (anon_strand_a.name) & " has contradicting label " 
-															 & "at " & to_string (position => ls.coordinates) & " !");
+															 & "at" & to_string (position => ls.coordinates) & " !");
 														raise constraint_error;
 													end if;
 												end if;
@@ -5179,7 +5185,7 @@ package body et_kicad is
 
 												if log_level >= log_threshold + 1 then
 													log_indentation_up;
-													log ("label at " & to_string (label => type_net_label (lt), scope => xy));
+													log ("label at" & to_string (label => type_net_label (lt), scope => xy));
 													log_indentation_down;
 												end if;
 
@@ -5200,7 +5206,7 @@ package body et_kicad is
 															log_indentation_reset;
 															log (message_error
 																& "local net " & type_net_name.to_string (anon_strand_a.name) 
-																& " has a hierarchic or global label at " 
+																& " has a hierarchic or global label at" 
 																& to_string (position => lt.coordinates) & " !");
 															raise constraint_error;
 														end if;
@@ -5211,7 +5217,7 @@ package body et_kicad is
 															log_indentation_reset;
 															log (message_error
 																& "hierarchic net " & type_net_name.to_string (anon_strand_a.name) 
-																& " has a global label at " 
+																& " has a global label at" 
 																& to_string (position => lt.coordinates) & " !");
 															raise constraint_error;
 														end if;
@@ -5222,7 +5228,7 @@ package body et_kicad is
 															log_indentation_reset;
 															log (message_error
 																& "global net " & type_net_name.to_string (anon_strand_a.name) 
-																& " has a hierarchic label at " 
+																& " has a hierarchic label at" 
 																& to_string (position => lt.coordinates) & " !");
 															raise constraint_error;
 														end if;
@@ -5238,7 +5244,7 @@ package body et_kicad is
 														log_indentation_reset;
 														log (message_error 
 															 & "Net " & type_net_name.to_string (anon_strand_a.name) & " has contradicting label " 
-															 & "at " & to_string (position => lt.coordinates) & " !");
+															 & "at" & to_string (position => lt.coordinates) & " !");
 														raise constraint_error;
 													end if;
 												end if;
@@ -8984,7 +8990,7 @@ package body et_kicad is
 			if log_level >= log_threshold + 1 then
 				while segment /= type_net_segments.no_element loop
 					log_indentation_up;
-					log ("segment " & et_schematic.to_string (et_schematic.type_net_segment_base (element (segment))));
+					log ("segment" & et_schematic.to_string (et_schematic.type_net_segment_base (element (segment))));
 
 					type_net_segments.query_element (
 						position	=> segment,

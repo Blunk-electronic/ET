@@ -1240,7 +1240,7 @@ package et_kicad is
 		net_classes		: et_pcb.type_net_classes.map;				-- the net classes
 		no_connections	: type_no_connection_flags.list;			-- the list of no-connection-flags
 		portlists		: type_portlists.map;						-- the portlists of the module
-		netlist			: type_netlist.map;							-- the netlist
+		netlist			: type_netlist.map;							-- net names and connected ports
 		submodules  	: type_hierarchic_sheets.map;				-- sheets
         frames      	: type_frames.list;							-- frames -- GUI relevant
         title_blocks	: type_title_blocks.list;					-- title blocks -- GUI relevant
@@ -1249,8 +1249,10 @@ package et_kicad is
 		sheet_headers	: type_sheet_headers.map;					-- the list of sheet headers
 		-- CS: images
 
-		-- the nets of the module (incl. routing information from the board):
-		nets 	    	: type_nets.map;
+		-- The nets of the module: net names, class, 
+		-- schematic related stuff: strands, segments, labels, junctions
+		-- board related stuff: lines, arcs, vias, polygons
+		nets 	    	: type_nets.map; 
 		
 		-- General non-component related board stuff (silk screen, documentation, ...):
 		board			: et_pcb.type_board;
