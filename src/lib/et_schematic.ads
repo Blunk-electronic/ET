@@ -77,7 +77,7 @@ package et_schematic is
 		log_threshold	: in et_string_processing.type_log_level := 0);
 	-- Writes the properties of the given note
 
-	package type_texts is new indefinite_doubly_linked_lists (element_type => type_note);
+	package type_texts is new doubly_linked_lists (type_note);
 
 
 -- UNITS AND COMPONENTS

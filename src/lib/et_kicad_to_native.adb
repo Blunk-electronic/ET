@@ -72,7 +72,77 @@ with et_csv;
 
 package body et_kicad_to_native is
 
+	procedure flatten (log_threshold : in et_string_processing.type_log_level) is
+	-- Flattens the kicad project: Changes the path (selector of et_coordinates.type_coordinates) to
+	-- the root path (/).
+		use et_kicad.type_rig;
+		module_cursor : et_kicad.type_rig.cursor := et_kicad.type_rig.first (et_kicad.rig);
 
+		root : et_coordinates.type_path_to_submodule.list := et_coordinates.type_path_to_submodule.empty_list;
+		before	: constant string (1..15) := "position before";
+		now		: constant string (1..15) := "position now   ";
+		
+		procedure flatten_notes (
+			module_name	: in et_coordinates.type_submodule_name.bounded_string;
+			module		: in out et_kicad.type_module) is
+
+			use et_schematic.type_texts;
+			note_cursor : et_schematic.type_texts.cursor := module.notes.first;
+
+			procedure change_path (note : in out et_schematic.type_note) is
+				use et_coordinates;
+			begin
+				log ("note '" & et_libraries.to_string (note.content) & "'", log_threshold + 3);
+				log_indentation_up;
+				
+				log (before & to_string (position => note.coordinates, scope => et_coordinates.MODULE),
+					 log_threshold + 4);
+
+				et_coordinates.set_path (note.coordinates, root);
+
+				log (now & to_string (position => note.coordinates, scope => et_coordinates.MODULE),
+					 log_threshold + 4);
+
+				log_indentation_down;
+			end change_path;
+				
+		begin -- flatten_notes
+			log ("text notes ...", log_threshold + 2);
+			log_indentation_up;
+			
+			while note_cursor /= et_schematic.type_texts.no_element loop
+				et_schematic.type_texts.update_element (
+					container	=> module.notes,
+					position	=> note_cursor,
+					process		=> change_path'access);
+
+				next (note_cursor);
+			end loop;
+
+			log_indentation_down;
+		end flatten_notes;
+		
+	begin -- flatten
+		log ("flattening project ...", log_threshold);
+		log_indentation_up;
+		
+		while module_cursor /= et_kicad.type_rig.no_element loop
+			log ("module " & et_coordinates.to_string (key (module_cursor)), log_threshold + 1);
+			log_indentation_up;
+
+			update_element (
+				container	=> et_kicad.rig,
+				position	=> module_cursor,
+				process		=> flatten_notes'access);
+
+			next (module_cursor);
+
+			log_indentation_down;
+		end loop;
+		
+		log_indentation_down;
+	end flatten;
+	
 	procedure to_native (log_threshold : in et_string_processing.type_log_level) is
 	-- Converts the rig (inc. component libraries) to a native project.
 	-- Converts the packages (from package_libraries) to native packages.
@@ -437,8 +507,10 @@ package body et_kicad_to_native is
 		end copy_nets;
 		
 	begin -- to_native
--- 		log ("component libraries ...", log_threshold);
--- 		log_indentation_up;
+		flatten (log_threshold);
+
+		log ("coverting ...", log_threshold);
+		log_indentation_up;
 		
 		while module_cursor_kicad /= et_kicad.type_rig.no_element loop
 			log ("module " & et_coordinates.to_string (key (module_cursor_kicad)), log_threshold + 1);
@@ -497,9 +569,9 @@ package body et_kicad_to_native is
 
 -- 		log ("layouts ...", log_threshold);
 -- 		log_indentation_up;
--- 
--- 
--- 		log_indentation_down;
+
+
+		log_indentation_down;
 		
 
 		

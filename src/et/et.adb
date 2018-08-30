@@ -503,6 +503,7 @@ procedure et is
 
 	procedure convert is
 	begin
+		log (et_string_processing.row_separator_single);
 		log ("converting to " & et_general.system_name & " native project ...", console => true);
 		log_indentation_up;
 		

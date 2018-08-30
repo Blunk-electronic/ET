@@ -62,6 +62,9 @@ with et_pcb_coordinates;
 
 package et_kicad_to_native is
 
+	procedure flatten (log_threshold : in et_string_processing.type_log_level);
+	-- Flattens the kicad project: Changes the path (selector of et_coordinates.type_coordinates) to
+	-- the root path (/).
 	
 	procedure to_native (log_threshold : in et_string_processing.type_log_level);
 	-- Converts the rig (inc. component libraries) to a native project.
