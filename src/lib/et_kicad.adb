@@ -4363,8 +4363,7 @@ package body et_kicad is
 		net_id : natural := 0; -- for counting name-less nets (like N$1, N$2, N$3, ...)
 
 		-- The sheet number is incremented each time a sheet has been read.
-		-- NOTE: The sheet number written in the schematic file header (a line like "Sheet 1 7")
-		-- has no meaning.
+		-- NOTE: The sheet number written in the schematic file header (a line like "Sheet 1 7") has no meaning.
 		sheet_number : et_coordinates.type_submodule_sheet_number := 1;
 
 		package stack_of_sheet_lists is new et_general.stack_lifo (max => 10, item => type_hierarchic_sheet_file_names_extended);
@@ -4729,7 +4728,11 @@ package body et_kicad is
 			line : et_string_processing.type_fields_of_line; -- the line of the schematic file being processed
 		
 			sheet_file : type_schematic_file_name.bounded_string;
-			sheet_count_total, sheet_number_current : type_submodule_sheet_number;
+	
+			-- This is the total number of sheets as it is given in the sheet header. 
+			-- A line like "Sheet 1 7" gives the sheet number (1), which is meaningless,
+			-- and the total number of sheet of the design (7).
+			sheet_count_total : type_submodule_sheet_number;
 
 			wild_simple_labels	: type_simple_labels.list;
             wild_tag_labels 	: type_tag_labels.list;
@@ -5349,7 +5352,7 @@ package body et_kicad is
 							
                             -- assign coordinates
 							set_path (strand.coordinates, path_to_sheet);
-							set_sheet (strand.coordinates, sheet_number_current);
+							set_sheet (strand.coordinates, sheet_number);
 
 							-- set x,y coordinates (lowest available on the sheet)
 							set (strand.coordinates, to_coordinates (lowest_xy (strand, log_threshold + 3)));
@@ -5404,7 +5407,7 @@ package body et_kicad is
 
                             -- assign coordinates
                             set_path (strand.coordinates, path_to_sheet);
-							set_sheet (strand.coordinates, sheet_number_current);
+							set_sheet (strand.coordinates, sheet_number);
 
 							-- set x,y coordinates (lowest available on the sheet)
 							set (strand.coordinates, to_coordinates (lowest_xy (strand, log_threshold + 3)));
@@ -5870,14 +5873,21 @@ package body et_kicad is
 
 				next (line_cursor);
 
-				-- Count sheet number on encountering a line like "Sheet 1 7"
-				-- NOTE: The sheet number written here has no meaning. The real sheet number is just a 
-				-- count-up on every sheet header encountered.
+				-- Log sheet number on encountering a line like "Sheet 1 7"
+				-- NOTE: The sheet number written here (field 2) has no meaning. The real sheet number is 
+				-- obtained by reading the value of sheet_number. sheet_number is has been incremented
+				-- before function read_schematic was called.
 				if field (et_kicad.line,1) = schematic_keyword_sheet then
-					-- CS test field count					
-					sheet_number_current := to_sheet_number (field (et_kicad.line,2));
-					log ("sheet number" & to_string (sheet_number_current) & "(preliminary)", log_threshold + 1);
+					-- CS test field count
+
+					-- The sheet number written here is meaningless:
+					--sheet_number_current := to_sheet_number (field (et_kicad.line,2));
+					-- Instead we log the global sheet_number:
+					log ("sheet number" & to_string (sheet_number), log_threshold + 1);
+
+					-- Get the total number of sheet of this design. 
 					sheet_count_total := to_sheet_number (field (et_kicad.line,3));
+					
 					-- CS: sheet_count_total must not change from sheet to sheet. Check required.
 					if sheet_count_total > 1 then
 						-- Set in the hierarchic_sheet_file_names (to be returned) the parent_sheet name. The schematic file 
@@ -5888,12 +5898,8 @@ package body et_kicad is
 					end if;
 					-- CS: make sure total sheet count is less or equal current sheet number.
 
-					sheet_number_current := sheet_number;
-					log ("sheet number" & to_string (sheet_number_current) & "(updated)", log_threshold + 1);
-					sheet_number := sheet_number + 1; -- prepare sheet number of next sheet
-					
 					-- Our temporarily drawing frame gets the current sheet number assigned.
-					set_sheet (frame.coordinates, sheet_number_current);
+					set_sheet (frame.coordinates, sheet_number);
 				end if;						
 
 				next (line_cursor);
@@ -6067,7 +6073,7 @@ package body et_kicad is
 					-- CS test field count
 					set_path (sheet.coordinates, path_to_sheet);
 					--log ("path " & to_string (path (sheet.coordinates)));
-					set_sheet (sheet.coordinates, sheet_number_current);
+					set_sheet (sheet.coordinates, sheet_number);
 					set_x (sheet.coordinates, mil_to_distance (field (et_kicad.line,2)));
 					set_y (sheet.coordinates, mil_to_distance (field (et_kicad.line,3)));
 
@@ -6222,10 +6228,9 @@ package body et_kicad is
 				set_path (segment.coordinates_start, path_to_sheet);
 				set_path (segment.coordinates_end, path_to_sheet);
 				
-				-- The sheet number. NOTE: Kicad V4 can handle only one sheet per submodule. The sheet numbering is consecutive and does
-				-- not care about the actual submodule names.
-				set_sheet (segment.coordinates_start, sheet_number_current);
-				set_sheet (segment.coordinates_end,   sheet_number_current);
+				-- The sheet number.
+				set_sheet (segment.coordinates_start, sheet_number);
+				set_sheet (segment.coordinates_end, sheet_number);
 
 				-- the x/y position
 				set_x (segment.coordinates_start, mil_to_distance (field (et_kicad.line,1)));
@@ -6287,7 +6292,7 @@ package body et_kicad is
 				--log_indentation_up;
 				
 				set_path (junction.coordinates, path_to_sheet);
-				set_sheet (junction.coordinates, sheet_number_current);
+				set_sheet (junction.coordinates, sheet_number);
 				set_x (junction.coordinates, mil_to_distance (field (line,3)));
 				set_y (junction.coordinates, mil_to_distance (field (line,4)));
 
@@ -6338,7 +6343,7 @@ package body et_kicad is
 
 				-- Build a temporarily simple label from a line like "Text Label 5350 3050 0    60   ~ 0" :
 				set_path (label.coordinates, path_to_sheet);
-				set_sheet (label.coordinates, sheet_number_current);
+				set_sheet (label.coordinates, sheet_number);
 				set_x (label.coordinates, mil_to_distance (field (et_kicad.line,3)));
 				set_y (label.coordinates, mil_to_distance (field (et_kicad.line,4)));
 
@@ -6415,7 +6420,7 @@ package body et_kicad is
 				end if;
 
 				set_path (label.coordinates, path_to_sheet);
-				set_sheet (label.coordinates, sheet_number_current);
+				set_sheet (label.coordinates, sheet_number);
 				set_x (label.coordinates, mil_to_distance (field (et_kicad.line,3)));
 				set_y (label.coordinates, mil_to_distance (field (et_kicad.line,4)));
 
@@ -6482,7 +6487,7 @@ package body et_kicad is
 
 				-- set coordinates
 				set_path (note.coordinates, path_to_sheet);
-				set_sheet (note.coordinates, sheet_number_current);
+				set_sheet (note.coordinates, sheet_number);
 				set_x (note.coordinates, mil_to_distance (field (et_kicad.line,3)));
 				set_y (note.coordinates, mil_to_distance (field (et_kicad.line,4)));
 				
@@ -7631,7 +7636,7 @@ package body et_kicad is
 
 						-- The unit coordinates is more than just x/y :
 						set_path (position, path_to_sheet);
-						set_sheet (position, sheet_number_current);
+						set_sheet (position, sheet_number);
 
 					-- Read alternative reference like "AR Path="/59EF082F" Ref="N23"  Part="1"
 					elsif field (et_kicad.line,1) = schematic_component_identifier_path then -- "AR"
@@ -7810,7 +7815,7 @@ package body et_kicad is
 			
 			begin -- make_no_connection
 				set_path (no_connection_flag.coordinates, path_to_sheet);
-				set_sheet (no_connection_flag.coordinates, sheet_number_current);
+				set_sheet (no_connection_flag.coordinates, sheet_number);
 				set_x (no_connection_flag.coordinates, mil_to_distance (field (line,3)));
 				set_y (no_connection_flag.coordinates, mil_to_distance (field (line,4)));
 
@@ -8296,6 +8301,8 @@ package body et_kicad is
 							
 							-- Read schematic file as indicated by hierarchic_sheet_file_names.id. 
 							-- Read_schematic receives the name of the schematic file to be read.
+							-- The sheet number increases each time.
+							sheet_number := et_coordinates."+" (sheet_number, 1);
 							hierarchic_sheet_file_names := read_schematic (current_schematic, log_threshold);
 
 							-- If the schematic file contains hierarchic sheets, set hierarchic_sheet_file_names.id to the first 

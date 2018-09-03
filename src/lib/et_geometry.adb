@@ -106,11 +106,11 @@ package body et_geometry is
 		-- Otherwise we must do a bit more as described in 
 		-- https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
 		if delta_x = zero_distance then
-			log ("delta_x zero -> vertical line", level => 4);
+			--log ("delta_x zero -> vertical line", level => 4);
 			result.distance := distance_x (point) - distance_x (s);
 			
 		elsif delta_y = zero_distance then
-			log ("delta_y zero -> horizontal line", level => 4);
+			--log ("delta_y zero -> horizontal line", level => 4);
 			result.distance := distance_y (s) - distance_y (point);
 			
 		else
@@ -126,7 +126,7 @@ package body et_geometry is
 			result.distance := type_distance (s5 / s8);
 		end if;
 		
-		log ("distance " & type_distance'image (result.distance), level => 4);
+		--log ("distance " & type_distance'image (result.distance), level => 4);
 		
 		-- If the range check adresses the line end points, the direction of the line
 		-- matters. Means if it was drawn from the left to the right or the other way around.
