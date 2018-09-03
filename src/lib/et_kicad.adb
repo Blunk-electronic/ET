@@ -4362,6 +4362,11 @@ package body et_kicad is
 		
 		net_id : natural := 0; -- for counting name-less nets (like N$1, N$2, N$3, ...)
 
+		-- The sheet number is incremented each time a sheet has been read.
+		-- NOTE: The sheet number written in the schematic file header (a line like "Sheet 1 7")
+		-- has no meaning.
+		sheet_number : et_coordinates.type_submodule_sheet_number := 1;
+
 		package stack_of_sheet_lists is new et_general.stack_lifo (max => 10, item => type_hierarchic_sheet_file_names_extended);
         use stack_of_sheet_lists;
 		
@@ -5865,11 +5870,13 @@ package body et_kicad is
 
 				next (line_cursor);
 
-				-- read sheet number from a line like "Sheet 1 7"
+				-- Count sheet number on encountering a line like "Sheet 1 7"
+				-- NOTE: The sheet number written here has no meaning. The real sheet number is just a 
+				-- count-up on every sheet header encountered.
 				if field (et_kicad.line,1) = schematic_keyword_sheet then
 					-- CS test field count					
 					sheet_number_current := to_sheet_number (field (et_kicad.line,2));
-					log ("sheet" & to_string (sheet_number_current) & " ...", log_threshold + 1);
+					log ("sheet number" & to_string (sheet_number_current) & "(preliminary)", log_threshold + 1);
 					sheet_count_total := to_sheet_number (field (et_kicad.line,3));
 					-- CS: sheet_count_total must not change from sheet to sheet. Check required.
 					if sheet_count_total > 1 then
@@ -5881,6 +5888,10 @@ package body et_kicad is
 					end if;
 					-- CS: make sure total sheet count is less or equal current sheet number.
 
+					sheet_number_current := sheet_number;
+					log ("sheet number" & to_string (sheet_number_current) & "(updated)", log_threshold + 1);
+					sheet_number := sheet_number + 1; -- prepare sheet number of next sheet
+					
 					-- Our temporarily drawing frame gets the current sheet number assigned.
 					set_sheet (frame.coordinates, sheet_number_current);
 				end if;						
