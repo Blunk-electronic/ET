@@ -3487,11 +3487,8 @@ package body et_kicad is
 					variant_cursor := component.variants.first; 
 
 					-- Test whether the new variant complies with the terminal_port_map
-					-- NOTE: The library name must be extended by the "pretty" extension.
 					if et_kicad_pcb.terminal_port_map_fits (
-						library_name 		=> to_full_library_name (
-												et_libraries.to_string (full_package_library_name) -- ../lbr/bel_ic
-												& et_kicad_pcb.package_library_directory_extension), -- .pretty
+						library_name 		=> full_package_library_name,
 						package_name 		=> package_name,
 						terminal_port_map	=> element (variant_cursor).terminal_port_map) then
 
