@@ -5900,7 +5900,7 @@ package body et_kicad is
 				end if;						
 
 				next (line_cursor);
-				
+
 				-- read sheet title from a line like "Title "abc""
 				if field (et_kicad.line,1) = schematic_keyword_title then                        
 					-- CS test field count					
@@ -5961,7 +5961,9 @@ package body et_kicad is
 				set_path (title_block.coordinates, path_to_sheet);
 				
 				title_block.texts := title_block_texts; -- assign collected texts list to temporarily title block
-				-- CS: x/y coordinates and list of lines are kicad built-in things and thus not available currently.
+				set_sheet (title_block.coordinates, sheet_number); -- assign sheet_number to title block
+				-- CS: x/y coordinates and list of lines are kicad built-in things and thus not available currently
+				-- and assume default values (0/0).
 
 				-- purge temporarily texts
 				type_title_block_texts.clear (title_block_texts);
