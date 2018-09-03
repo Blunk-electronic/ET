@@ -1034,15 +1034,6 @@ package et_kicad is
 
 
 	
-    -- there are lots of drawing frames in a schematic contained in a list
-	package type_frames is new doubly_linked_lists (
-		element_type	=> et_schematic.type_frame,
-		"="				=> et_schematic."=");
-	
-    -- there are lots of title blocks in a schematic contained in a list
-    package type_title_blocks is new doubly_linked_lists (
-        element_type	=> et_schematic.type_title_block,
-		"="				=> et_schematic."=");
 
 	
 
@@ -1242,8 +1233,8 @@ package et_kicad is
 		portlists		: type_portlists.map;						-- the portlists of the module
 		netlist			: type_netlist.map;							-- net names and connected ports
 		submodules  	: type_hierarchic_sheets.map;				-- sheets
-        frames      	: type_frames.list;							-- frames -- GUI relevant
-        title_blocks	: type_title_blocks.list;					-- title blocks -- GUI relevant
+        frames      	: et_schematic.type_frames.list;			-- frames -- GUI relevant
+        title_blocks	: et_schematic.type_title_blocks.list;		-- title blocks -- GUI relevant
 		notes       	: et_schematic.type_texts.list;				-- notes
 
 		sheet_headers	: type_sheet_headers.map;					-- the list of sheet headers

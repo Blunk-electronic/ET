@@ -313,7 +313,7 @@ package et_coordinates is
 	
 		type type_coordinates is new type_2d_point with record
 			path            : type_path_to_submodule.list;
-			sheet_number	: type_submodule_sheet_number;
+			sheet_number	: type_submodule_sheet_number := type_submodule_sheet_number'first;
 		end record;
 
 		zero_position : constant type_coordinates := (

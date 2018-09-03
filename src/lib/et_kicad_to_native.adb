@@ -121,6 +121,47 @@ package body et_kicad_to_native is
 
 			log_indentation_down;
 		end flatten_notes;
+
+		procedure flatten_title_blocks (
+			module_name	: in et_coordinates.type_submodule_name.bounded_string;
+			module		: in out et_kicad.type_module) is
+
+			use et_schematic.type_title_blocks;
+			block_cursor : et_schematic.type_title_blocks.cursor := module.title_blocks.first;
+
+			procedure change_path (block : in out et_schematic.type_title_block) is
+				use et_coordinates;
+			begin
+				-- CS what should be logged here ?
+				log_indentation_up;
+				
+				log (before & to_string (position => block.coordinates, scope => et_coordinates.MODULE),
+					 log_threshold + 4);
+
+				et_coordinates.set_path (block.coordinates, root);
+
+				log (now & to_string (position => block.coordinates, scope => et_coordinates.MODULE),
+					 log_threshold + 4);
+
+				log_indentation_down;
+			end change_path;
+				
+		begin -- flatten_title_blocks
+			log ("title blocks ...", log_threshold + 2);
+			log_indentation_up;
+			
+			while block_cursor /= et_schematic.type_title_blocks.no_element loop
+				et_schematic.type_title_blocks.update_element (
+					container	=> module.title_blocks,
+					position	=> block_cursor,
+					process		=> change_path'access);
+
+				next (block_cursor);
+			end loop;
+
+			log_indentation_down;
+		end flatten_title_blocks;
+
 		
 	begin -- flatten
 		log ("flattening project ...", log_threshold);
@@ -135,6 +176,12 @@ package body et_kicad_to_native is
 				position	=> module_cursor,
 				process		=> flatten_notes'access);
 
+			update_element (
+				container	=> et_kicad.rig,
+				position	=> module_cursor,
+				process		=> flatten_title_blocks'access);
+
+			
 			next (module_cursor);
 
 			log_indentation_down;

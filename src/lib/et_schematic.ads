@@ -353,6 +353,9 @@ package et_schematic is
         texts           : type_frame_texts.list;
     end record;
 
+    -- there are lots of drawing frames in a schematic contained in a list
+	package type_frames is new doubly_linked_lists (type_frame);
+	
     -- TITLE BLOCK
     type type_title_block_line is record
 		coordinates_start : et_coordinates.type_2d_point;
@@ -389,7 +392,8 @@ package et_schematic is
         texts           : type_title_block_texts.list;
     end record;
 
-
+    -- there are lots of title blocks in a schematic contained in a list
+    package type_title_blocks is new doubly_linked_lists (type_title_block);
 
 	
 	

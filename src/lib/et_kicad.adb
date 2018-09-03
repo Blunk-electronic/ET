@@ -5807,11 +5807,11 @@ package body et_kicad is
 			-- Builds the drawing frame.
 				lines 			: in type_lines.list;
 				log_threshold	: in type_log_level) is
-				
-				-- These are the components of the drawing frame. At the end
-				-- of this procedure they are assembled to a drawing frame:
-				
+
 				frame : et_schematic.type_frame; -- a single drawing frame
+			
+				-- These are the components of the title block. At the end
+				-- of this procedure they are assembled to a final title block:
 				title_block_text 	: et_schematic.type_title_block_text; -- a single text within the title block
 				title_block_texts 	: et_schematic.type_title_block_texts.list; -- a list of title block texts
 				title_block 		: et_schematic.type_title_block; -- a full title block
