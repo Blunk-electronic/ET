@@ -162,6 +162,74 @@ package body et_kicad_to_native is
 			log_indentation_down;
 		end flatten_frames;
 
+
+		procedure flatten_components (
+			module_name	: in et_coordinates.type_submodule_name.bounded_string;
+			module		: in out et_kicad.type_module) is
+
+			use et_kicad.type_components_schematic;
+			component_cursor : et_kicad.type_components_schematic.cursor := module.components.first;
+
+			procedure query_units (
+				reference	: in et_libraries.type_component_reference;
+				component	: in out et_kicad.type_component_schematic) is
+				-- 				use et_coordinates;
+				use et_kicad.type_units_schematic;
+				unit_cursor : et_kicad.type_units_schematic.cursor := component.units.first;
+
+				procedure change_path (
+					unit_name	: in et_libraries.type_unit_name.bounded_string;
+					unit		: in out et_kicad.type_unit_schematic) is
+					use et_coordinates;
+				begin
+					log ("unit " & et_libraries.to_string (unit_name), log_threshold + 4);
+					log_indentation_up;
+					
+					log (before & to_string (position => unit.position, scope => et_coordinates.MODULE),
+						log_threshold + 4);
+
+					et_coordinates.set_path (unit.position, root);
+
+					log (now & to_string (position => unit.position, scope => et_coordinates.MODULE),
+						log_threshold + 4);
+
+					log_indentation_down;
+				end change_path;
+
+			begin -- query_units
+				log (et_libraries.to_string (key (component_cursor)), log_threshold + 3);
+				log_indentation_up;
+
+				while unit_cursor /= et_kicad.type_units_schematic.no_element loop
+					
+					et_kicad.type_units_schematic.update_element (
+						container	=> component.units,
+						position	=> unit_cursor,
+						process		=> change_path'access);
+
+					next (unit_cursor);
+				end loop;
+
+				log_indentation_down;
+			end query_units;
+				
+		begin -- flatten_components
+			log ("components ...", log_threshold + 2);
+			log_indentation_up;
+			
+			while component_cursor /= et_kicad.type_components_schematic.no_element loop
+
+				et_kicad.type_components_schematic.update_element (
+					container	=> module.components,
+					position	=> component_cursor,
+					process		=> query_units'access);
+
+				next (component_cursor);
+			end loop;
+
+			log_indentation_down;
+		end flatten_components;
+
 		
 	begin -- flatten
 		log ("flattening project ...", log_threshold);
@@ -181,6 +249,10 @@ package body et_kicad_to_native is
 				position	=> module_cursor,
 				process		=> flatten_frames'access);
 
+			update_element (
+				container	=> et_kicad.rig,
+				position	=> module_cursor,
+				process		=> flatten_components'access);
 			
 			next (module_cursor);
 
