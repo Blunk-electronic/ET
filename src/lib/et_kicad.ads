@@ -1230,7 +1230,6 @@ package et_kicad is
 		netlist			: type_netlist.map;							-- net names and connected ports
 		submodules  	: type_hierarchic_sheets.map;				-- sheets
         frames      	: et_libraries.type_frames.list;			-- frames -- GUI relevant
-		--title_blocks	: et_libraries.type_title_blocks.list;		-- title blocks -- GUI relevant
 		notes       	: et_schematic.type_texts.list;				-- notes
 
 		sheet_headers	: type_sheet_headers.map;					-- the list of sheet headers
