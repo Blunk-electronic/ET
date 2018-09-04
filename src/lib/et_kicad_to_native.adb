@@ -126,10 +126,10 @@ package body et_kicad_to_native is
 			module_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_kicad.type_module) is
 
-			use et_schematic.type_title_blocks;
-			block_cursor : et_schematic.type_title_blocks.cursor := module.title_blocks.first;
+			use et_libraries.type_title_blocks;
+			block_cursor : et_libraries.type_title_blocks.cursor := module.title_blocks.first;
 
-			procedure change_path (block : in out et_schematic.type_title_block) is
+			procedure change_path (block : in out et_libraries.type_title_block) is
 				use et_coordinates;
 			begin
 				-- CS what should be logged here ?
@@ -150,8 +150,8 @@ package body et_kicad_to_native is
 			log ("title blocks ...", log_threshold + 2);
 			log_indentation_up;
 			
-			while block_cursor /= et_schematic.type_title_blocks.no_element loop
-				et_schematic.type_title_blocks.update_element (
+			while block_cursor /= et_libraries.type_title_blocks.no_element loop
+				et_libraries.type_title_blocks.update_element (
 					container	=> module.title_blocks,
 					position	=> block_cursor,
 					process		=> change_path'access);

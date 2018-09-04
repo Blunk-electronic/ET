@@ -5808,13 +5808,13 @@ package body et_kicad is
 				lines 			: in type_lines.list;
 				log_threshold	: in type_log_level) is
 
-				frame : et_schematic.type_frame; -- a single drawing frame
+				frame : et_libraries.type_frame; -- a single drawing frame
 			
 				-- These are the components of the title block. At the end
 				-- of this procedure they are assembled to a final title block:
-				title_block_text 	: et_schematic.type_title_block_text; -- a single text within the title block
-				title_block_texts 	: et_schematic.type_title_block_texts.list; -- a list of title block texts
-				title_block 		: et_schematic.type_title_block; -- a full title block
+				title_block_text 	: et_libraries.type_title_block_text; -- a single text within the title block
+				title_block_texts 	: et_libraries.type_title_block_texts.list; -- a list of title block texts
+				title_block 		: et_libraries.type_title_block; -- a full title block
 				
 				-- If the description reveals there is more than one sheet, we have a hierarchic design. Means we
 				-- need to read follwing sheet sections.
@@ -5904,9 +5904,9 @@ package body et_kicad is
 				-- read sheet title from a line like "Title "abc""
 				if field (et_kicad.line,1) = schematic_keyword_title then                        
 					-- CS test field count					
-					title_block_text.meaning := TITLE;
-					title_block_text.text := type_title_block_text_content.to_bounded_string ((field (et_kicad.line,2)));
-					type_title_block_texts.append (title_block_texts, title_block_text);
+					title_block_text.meaning := et_libraries.TITLE;
+					title_block_text.text := et_libraries.type_title_block_text_content.to_bounded_string ((field (et_kicad.line,2)));
+					et_libraries.type_title_block_texts.append (title_block_texts, title_block_text);
 				end if;
 
 				next (line_cursor);
@@ -5914,9 +5914,9 @@ package body et_kicad is
 				-- read date from a line like "Date "1981-01-23""
 				if field (et_kicad.line,1) = schematic_keyword_date then                        
 					-- CS test field count					
-					title_block_text.meaning := DRAWN_DATE;
-					title_block_text.text := type_title_block_text_content.to_bounded_string ((field (et_kicad.line,2)));
-					type_title_block_texts.append (title_block_texts, title_block_text);
+					title_block_text.meaning := et_libraries.DRAWN_DATE;
+					title_block_text.text := et_libraries.type_title_block_text_content.to_bounded_string ((field (et_kicad.line,2)));
+					et_libraries.type_title_block_texts.append (title_block_texts, title_block_text);
 				end if;
 
 				next (line_cursor);
@@ -5924,9 +5924,9 @@ package body et_kicad is
 				-- read revision from a line like "Rev "9.7.1"
 				if field (et_kicad.line,1) = schematic_keyword_revision then                        
 					-- CS test field count					
-					title_block_text.meaning := REVISION;
-					title_block_text.text := type_title_block_text_content.to_bounded_string ((field (line,2)));
-					type_title_block_texts.append (title_block_texts, title_block_text);
+					title_block_text.meaning := et_libraries.REVISION;
+					title_block_text.text := et_libraries.type_title_block_text_content.to_bounded_string ((field (line,2)));
+					et_libraries.type_title_block_texts.append (title_block_texts, title_block_text);
 				end if;
 
 				next (line_cursor);
@@ -5934,9 +5934,9 @@ package body et_kicad is
 				-- read company name
 				if field (et_kicad.line,1) = schematic_keyword_company then
 					-- CS test field count					
-					title_block_text.meaning := COMPANY;
-					title_block_text.text := type_title_block_text_content.to_bounded_string ((field (et_kicad.line,2)));
-					type_title_block_texts.append (title_block_texts, title_block_text);
+					title_block_text.meaning := et_libraries.COMPANY;
+					title_block_text.text := et_libraries.type_title_block_text_content.to_bounded_string ((field (et_kicad.line,2)));
+					et_libraries.type_title_block_texts.append (title_block_texts, title_block_text);
 				end if;
 
 				next (line_cursor);
@@ -5947,9 +5947,9 @@ package body et_kicad is
 					field (et_kicad.line,1) = schematic_keyword_comment_3 or 
 					field (et_kicad.line,1) = schematic_keyword_comment_4 then
 					-- CS test field count
-					title_block_text.meaning := MISC;
-					title_block_text.text := type_title_block_text_content.to_bounded_string ((field (et_kicad.line,2)));
-					type_title_block_texts.append (title_block_texts, title_block_text);
+					title_block_text.meaning := et_libraries.MISC;
+					title_block_text.text := et_libraries.type_title_block_text_content.to_bounded_string ((field (et_kicad.line,2)));
+					et_libraries.type_title_block_texts.append (title_block_texts, title_block_text);
 				end if;
 
 				-- FINALIZE
@@ -5966,7 +5966,7 @@ package body et_kicad is
 				-- and assume default values (0/0).
 
 				-- purge temporarily texts
-				type_title_block_texts.clear (title_block_texts);
+				et_libraries.type_title_block_texts.clear (title_block_texts);
 
 				-- append title block to module
 				add_title_block (title_block);
@@ -8218,8 +8218,8 @@ package body et_kicad is
 						portlists		=> type_portlists.empty_map,
 						netlist			=> type_netlist.empty_map,
 						submodules		=> type_hierarchic_sheets.empty_map,
-						frames			=> type_frames.empty_list,
-						title_blocks	=> type_title_blocks.empty_list,
+						frames			=> et_libraries.type_frames.empty_list,
+						title_blocks	=> et_libraries.type_title_blocks.empty_list,
 						notes			=> type_texts.empty_list,
 						sheet_headers	=> type_sheet_headers.empty_map,
 
@@ -10294,7 +10294,7 @@ package body et_kicad is
 	-- Inserts a drawing frame in the the module (indicated by module_cursor).
 	-- As drawing frames are collected in a simple list, the same frame
 	-- can be added multiple times.
-		frame	: in et_schematic.type_frame) is
+		frame	: in et_libraries.type_frame) is
 		
 		procedure add (
 			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
@@ -10323,7 +10323,7 @@ package body et_kicad is
 	-- Inserts a title block in the the module (indicated by module_cursor).
 	-- As title blocks are collected in a simple list, the same title block
 	-- can be added multiple times.
-		tblock	: in et_schematic.type_title_block) is
+		tblock	: in et_libraries.type_title_block) is
 		
 		procedure add (
 			mod_name	: in et_coordinates.type_submodule_name.bounded_string;

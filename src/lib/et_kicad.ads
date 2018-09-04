@@ -1135,11 +1135,11 @@ package et_kicad is
 
 	procedure add_frame (
 	-- Inserts a drawing frame in the module (indicated by module_cursor).
-		frame	: in et_schematic.type_frame);
+		frame	: in et_libraries.type_frame);
 
 	procedure add_title_block ( -- CS really requried ?
 	-- Inserts a title block in the module (indicated by module_cursor).
-		tblock	: in et_schematic.type_title_block);
+		tblock	: in et_libraries.type_title_block);
 
 	procedure add_note (
 	-- Inserts a note in the the module (indicated by module_cursor).
@@ -1233,8 +1233,8 @@ package et_kicad is
 		portlists		: type_portlists.map;						-- the portlists of the module
 		netlist			: type_netlist.map;							-- net names and connected ports
 		submodules  	: type_hierarchic_sheets.map;				-- sheets
-        frames      	: et_schematic.type_frames.list;			-- frames -- GUI relevant
-        title_blocks	: et_schematic.type_title_blocks.list;		-- title blocks -- GUI relevant
+        frames      	: et_libraries.type_frames.list;			-- frames -- GUI relevant
+        title_blocks	: et_libraries.type_title_blocks.list;		-- title blocks -- GUI relevant
 		notes       	: et_schematic.type_texts.list;				-- notes
 
 		sheet_headers	: type_sheet_headers.map;					-- the list of sheet headers
