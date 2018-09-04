@@ -239,7 +239,7 @@ package et_schematic is
 	type type_net_label_direction is (INPUT, OUTPUT, BIDIR, TRISTATE, PASSIVE);
 	
 	type type_net_label (appearance : type_net_label_appearance) is record
-		coordinates	: et_coordinates.type_coordinates;
+		coordinates	: et_coordinates.type_2d_point;
 		orientation	: et_coordinates.type_angle;
         size		: et_libraries.type_text_size;
         style		: et_libraries.type_text_style;

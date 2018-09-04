@@ -4208,19 +4208,22 @@ package body et_kicad is
 				
 				log_indentation_up;
 				while label_simple /= type_simple_labels.no_element loop
-					log ("simple label at " & to_string (position => element (label_simple).coordinates, scope => xy));
+					--log ("simple label at " & to_string (position => element (label_simple).coordinates, scope => xy));
+					log ("simple label at " & to_string (point => element (label_simple).coordinates));
 					next (label_simple);
 				end loop;
 
 				while label_tag /= type_tag_labels.no_element loop
 					if element (label_tag).hierarchic then
-						log ("hierarchic label at " 
-							& to_string (position => element (label_tag).coordinates, scope => xy));
+						--log ("hierarchic label at " 
+							   --	& to_string (position => element (label_tag).coordinates, scope => xy));
+						log ("hierarchic label at " & to_string (point => element (label_tag).coordinates));
 					end if;
 
 					if element (label_tag).global then
-						log ("global label at " 
-							& to_string (position => element (label_tag).coordinates, scope => xy));
+						--log ("global label at " 
+							   --	& to_string (position => element (label_tag).coordinates, scope => xy));
+						log ("global label at " & to_string (point => element (label_tag).coordinates));
 					end if;
 					
 					next (label_tag);
@@ -5087,7 +5090,8 @@ package body et_kicad is
 
 												if log_level >= log_threshold + 1 then
 													log_indentation_up;
-													log ("label at" & to_string (label => type_net_label (ls), scope => xy));
+													--log ("label at" & to_string (label => type_net_label (ls), scope => xy));
+													log ("label at" & to_string (label => type_net_label (ls)));
 													log_indentation_down;
 												end if;
 
@@ -5106,7 +5110,8 @@ package body et_kicad is
 														log (message_error
 															& "hierarchic net " & type_net_name.to_string (anon_strand_a.name) 
 															& " has a local label at" 
-															& to_string (position => ls.coordinates) & " !");
+															--& to_string (position => ls.coordinates) & " !");
+															& to_string (point => ls.coordinates) & " !");
 														raise constraint_error;
 
 													when global => -- strand has been marked as "global" already. no local label allowed !
@@ -5115,7 +5120,8 @@ package body et_kicad is
 														log (message_error
 															& "global net " & type_net_name.to_string (anon_strand_a.name) 
 															& " has a local label at" 
-																& to_string (position => ls.coordinates) & " !");
+															--& to_string (position => ls.coordinates) & " !");
+															& to_string (point => ls.coordinates) & " !");
 															raise constraint_error;
 												end case;
 
@@ -5135,7 +5141,8 @@ package body et_kicad is
 														log_indentation_reset;
 														log (message_error 
 															 & "Net " & type_net_name.to_string (anon_strand_a.name) & " has contradicting label " 
-															 & "at" & to_string (position => ls.coordinates) & " !");
+															 --& "at" & to_string (position => ls.coordinates) & " !");
+															 & "at" & to_string (point => ls.coordinates) & " !");
 														raise constraint_error;
 													end if;
 												end if;
@@ -5190,7 +5197,8 @@ package body et_kicad is
 
 												if log_level >= log_threshold + 1 then
 													log_indentation_up;
-													log ("label at" & to_string (label => type_net_label (lt), scope => xy));
+													--log ("label at" & to_string (label => type_net_label (lt), scope => xy));
+													log ("label at" & to_string (label => type_net_label (lt)));
 													log_indentation_down;
 												end if;
 
@@ -5212,7 +5220,8 @@ package body et_kicad is
 															log (message_error
 																& "local net " & type_net_name.to_string (anon_strand_a.name) 
 																& " has a hierarchic or global label at" 
-																& to_string (position => lt.coordinates) & " !");
+																--& to_string (position => lt.coordinates) & " !");
+																& to_string (point => lt.coordinates) & " !");
 															raise constraint_error;
 														end if;
 														
@@ -5223,7 +5232,8 @@ package body et_kicad is
 															log (message_error
 																& "hierarchic net " & type_net_name.to_string (anon_strand_a.name) 
 																& " has a global label at" 
-																& to_string (position => lt.coordinates) & " !");
+																--& to_string (position => lt.coordinates) & " !");
+																& to_string (point => lt.coordinates) & " !");
 															raise constraint_error;
 														end if;
 
@@ -5234,7 +5244,8 @@ package body et_kicad is
 															log (message_error
 																& "global net " & type_net_name.to_string (anon_strand_a.name) 
 																& " has a hierarchic label at" 
-																& to_string (position => lt.coordinates) & " !");
+																--& to_string (position => lt.coordinates) & " !");
+																& to_string (point => lt.coordinates) & " !");
 															raise constraint_error;
 														end if;
 												end case;
@@ -5249,7 +5260,8 @@ package body et_kicad is
 														log_indentation_reset;
 														log (message_error 
 															 & "Net " & type_net_name.to_string (anon_strand_a.name) & " has contradicting label " 
-															 & "at" & to_string (position => lt.coordinates) & " !");
+															 --& "at" & to_string (position => lt.coordinates) & " !");
+															 & "at" & to_string (point => lt.coordinates) & " !");
 														raise constraint_error;
 													end if;
 												end if;
@@ -6333,8 +6345,8 @@ package body et_kicad is
 				line_cursor := type_lines.first (lines);
 
 				-- Build a temporarily simple label from a line like "Text Label 5350 3050 0    60   ~ 0" :
-				set_path (label.coordinates, path_to_sheet);
-				set_sheet (label.coordinates, sheet_number);
+				--set_path (label.coordinates, path_to_sheet);
+				--set_sheet (label.coordinates, sheet_number);
 				set_x (label.coordinates, mil_to_distance (field (et_kicad.line,3)));
 				set_y (label.coordinates, mil_to_distance (field (et_kicad.line,4)));
 
@@ -6356,7 +6368,8 @@ package body et_kicad is
 				check_net_name_characters (label.text);
 				
 				-- for the log
-				log ("simple label" & to_string (label => type_net_label (label), scope => xy), log_threshold);
+				--log ("simple label" & to_string (label => type_net_label (label), scope => xy), log_threshold);
+				log ("simple label" & to_string (label => type_net_label (label)), log_threshold);
 
 				check_schematic_text_size (category => net_label, size => label.size);
 				-- CS: check label style
@@ -6410,8 +6423,8 @@ package body et_kicad is
 					label.global := true;
 				end if;
 
-				set_path (label.coordinates, path_to_sheet);
-				set_sheet (label.coordinates, sheet_number);
+				--set_path (label.coordinates, path_to_sheet);
+				--set_sheet (label.coordinates, sheet_number);
 				set_x (label.coordinates, mil_to_distance (field (et_kicad.line,3)));
 				set_y (label.coordinates, mil_to_distance (field (et_kicad.line,4)));
 
@@ -6436,7 +6449,8 @@ package body et_kicad is
 				check_net_name_characters (label.text);
 
 				-- for the log
-				log ("tag label" & to_string (label => type_net_label (label), scope => xy), log_threshold);
+				--log ("tag label" & to_string (label => type_net_label (label), scope => xy), log_threshold);
+				log ("tag label" & to_string (label => type_net_label (label)), log_threshold);
 
 				check_schematic_text_size (category => net_label, size => label.size);
 				-- CS: check style and line width
@@ -8977,12 +8991,14 @@ package body et_kicad is
 			if log_level >= log_threshold + 2 then
 				log_indentation_up;
 				while label_simple /= type_simple_labels.no_element loop
-					log ("simple label " & to_string (position => element (label_simple).coordinates));
+					--log ("simple label " & to_string (position => element (label_simple).coordinates));
+					log ("simple label " & to_string (point => element (label_simple).coordinates));
 					next (label_simple);
 				end loop;
 
 				while label_tag /= type_tag_labels.no_element loop
-					log ("tag label " & to_string (position => element (label_tag).coordinates));
+					--log ("tag label " & to_string (position => element (label_tag).coordinates));
+					log ("tag label " & to_string (point => element (label_tag).coordinates));
 					next (label_tag);
 				end loop;
 
@@ -11256,18 +11272,21 @@ package body et_kicad is
 			when SIMPLE =>
 			log ("simple label " & 
 				 et_schematic.to_string (label.text) & " at " & 
-				 to_string (position => label.coordinates)); -- CS log_threshold ?
+				 --to_string (position => label.coordinates)); -- CS log_threshold ?
+				 to_string (point => label.coordinates)); -- CS log_threshold ?
 				
 			when TAG =>
 				if label.hierarchic then
 					log ("hierarchic label " & 
 					et_schematic.to_string (label.text) & " at " &
-					to_string (position => label.coordinates));  -- CS log_threshold ?
+					--to_string (position => label.coordinates));  -- CS log_threshold ?
+					to_string (point => label.coordinates));  -- CS log_threshold ?
 				end if;
 					
 				if label.global then
 					log ("global label " & et_schematic.to_string (label.text) & " at " &
-					to_string (position => label.coordinates));  -- CS log_threshold ?
+					--to_string (position => label.coordinates));  -- CS log_threshold ?
+					to_string (point => label.coordinates));  -- CS log_threshold ?
 				end if;
 					
 				-- CS: directon, global, hierarchic, style, ...
@@ -11290,13 +11309,12 @@ package body et_kicad is
 
 	end write_label_properties;
 
-	function to_string (
-		label : in type_net_label;
-		scope : in et_coordinates.type_scope) return string is
+	function to_string (label : in type_net_label) return string is
 	-- Returns the coordinates of the given label as string.
 		use et_coordinates;
 	begin
-		return (to_string (position => label.coordinates, scope => scope));
+		--return (to_string (position => label.coordinates, scope => scope));
+		return to_string (point => label.coordinates);
 	end to_string;
 	
 	function to_string (scope : in type_strand_scope) return string is

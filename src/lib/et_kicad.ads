@@ -512,7 +512,7 @@ package et_kicad is
 	-- Example: If the given name is "MOTOR_DRIVER/CLOCK" then the return is "CLOCK".
 
 	type type_net_label (label_appearance : et_schematic.type_net_label_appearance) is record
-		coordinates	: et_coordinates.type_coordinates;
+		coordinates	: et_coordinates.type_2d_point;
 		orientation	: et_coordinates.type_angle;
         text		: et_schematic.type_net_name.bounded_string;
         size		: et_libraries.type_text_size;
@@ -537,9 +537,7 @@ package et_kicad is
 	procedure write_label_properties (label : in type_net_label);
 	-- Writes the properties of the given net label in the logfile.
 
-	function to_string (
-		label 	: in type_net_label;
-		scope 	: in et_coordinates.type_scope) return string;
+	function to_string (label : in type_net_label) return string;
 	-- Returns the coordinates of the given label as string.
 
 
