@@ -3837,7 +3837,7 @@ package body et_kicad is
 			procedure query_gui_submodules (
 				mod_name	: in et_coordinates.type_submodule_name.bounded_string;
 				module 		: in out type_module) is
-				submodule_cursor : type_hierarchic_sheets.cursor := module.submodules.first; -- CS: rename to gui_submodule_cursor
+				submodule_cursor : type_hierarchic_sheets.cursor := module.hierarchic_sheets.first; -- CS: rename to gui_submodule_cursor
 				use type_hierarchic_sheets;
 
 				procedure query_ports (
@@ -3917,7 +3917,7 @@ package body et_kicad is
 				while submodule_cursor /= type_hierarchic_sheets.no_element loop
 
 					update_element (
-						container	=> module.submodules,
+						container	=> module.hierarchic_sheets,
 						position	=> submodule_cursor,
 						process 	=> query_ports'access);
 
@@ -8201,20 +8201,20 @@ package body et_kicad is
 
 						component_libraries => type_libraries.empty_map,
 						
-						strands			=> type_strands.empty_list,
-						junctions		=> type_junctions.empty_list,
-						nets			=> type_nets.empty_map,
-						net_classes		=> et_pcb.type_net_classes.empty_map, -- net classes are defined in the board file
-						components		=> type_components_schematic.empty_map,
-						no_connections	=> type_no_connection_flags.empty_list,
-						portlists		=> type_portlists.empty_map,
-						netlist			=> type_netlist.empty_map,
-						submodules		=> type_hierarchic_sheets.empty_map,
-						frames			=> et_libraries.type_frames.empty_list,
-						notes			=> type_texts.empty_list,
-						sheet_headers	=> type_sheet_headers.empty_map,
+						strands				=> type_strands.empty_list,
+						junctions			=> type_junctions.empty_list,
+						nets				=> type_nets.empty_map,
+						net_classes			=> et_pcb.type_net_classes.empty_map, -- net classes are defined in the board file
+						components			=> type_components_schematic.empty_map,
+						no_connections		=> type_no_connection_flags.empty_list,
+						portlists			=> type_portlists.empty_map,
+						netlist				=> type_netlist.empty_map,
+						hierarchic_sheets	=> type_hierarchic_sheets.empty_map,
+						frames				=> et_libraries.type_frames.empty_list,
+						notes				=> type_texts.empty_list,
+						sheet_headers		=> type_sheet_headers.empty_map,
 
-						board			=> (others => <>)), -- no board stuff available at this time -> use defaults
+						board				=> (others => <>)), -- no board stuff available at this time -> use defaults
 					
 					position	=> module_cursor,
 					inserted	=> module_inserted);
@@ -10212,7 +10212,7 @@ package body et_kicad is
 
 			use et_string_processing;
 		begin
-			module.submodules.insert (
+			module.hierarchic_sheets.insert (
 				key			=> name,
 				new_item	=> gui_sub_mod,
 				position	=> cursor, -- updates cursor. no further meaning

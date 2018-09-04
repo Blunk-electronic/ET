@@ -357,7 +357,7 @@ package body et_kicad_to_native is
 			module		: in out et_schematic.type_module) is
 
 			use et_kicad.type_hierarchic_sheets;
-			kicad_sheets		: et_kicad.type_hierarchic_sheets.map := element (module_cursor_kicad).submodules;
+			kicad_sheets		: et_kicad.type_hierarchic_sheets.map := element (module_cursor_kicad).hierarchic_sheets;
 			kicad_sheet_cursor	: et_kicad.type_hierarchic_sheets.cursor := kicad_sheets.first;
 
 			use et_schematic.type_submodules;
