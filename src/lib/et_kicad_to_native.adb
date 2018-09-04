@@ -122,45 +122,45 @@ package body et_kicad_to_native is
 			log_indentation_down;
 		end flatten_notes;
 
-		procedure flatten_title_blocks (
+		procedure flatten_frames (
 			module_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_kicad.type_module) is
 
-			use et_libraries.type_title_blocks;
-			block_cursor : et_libraries.type_title_blocks.cursor := module.title_blocks.first;
+			use et_libraries.type_frames;
+			frame_cursor : et_libraries.type_frames.cursor := module.frames.first;
 
-			procedure change_path (block : in out et_libraries.type_title_block) is
+			procedure change_path (frame : in out et_libraries.type_frame) is
 				use et_coordinates;
 			begin
 				-- CS what should be logged here ?
 				log_indentation_up;
 				
-				log (before & to_string (position => block.coordinates, scope => et_coordinates.MODULE),
+				log (before & to_string (position => frame.coordinates, scope => et_coordinates.MODULE),
 					 log_threshold + 4);
 
-				et_coordinates.set_path (block.coordinates, root);
+				et_coordinates.set_path (frame.coordinates, root);
 
-				log (now & to_string (position => block.coordinates, scope => et_coordinates.MODULE),
+				log (now & to_string (position => frame.coordinates, scope => et_coordinates.MODULE),
 					 log_threshold + 4);
 
 				log_indentation_down;
 			end change_path;
 				
-		begin -- flatten_title_blocks
-			log ("title blocks ...", log_threshold + 2);
+		begin -- flatten_frames
+			log ("frames ...", log_threshold + 2);
 			log_indentation_up;
 			
-			while block_cursor /= et_libraries.type_title_blocks.no_element loop
-				et_libraries.type_title_blocks.update_element (
-					container	=> module.title_blocks,
-					position	=> block_cursor,
+			while frame_cursor /= et_libraries.type_frames.no_element loop
+				et_libraries.type_frames.update_element (
+					container	=> module.frames,
+					position	=> frame_cursor,
 					process		=> change_path'access);
 
-				next (block_cursor);
+				next (frame_cursor);
 			end loop;
 
 			log_indentation_down;
-		end flatten_title_blocks;
+		end flatten_frames;
 
 		
 	begin -- flatten
@@ -179,7 +179,7 @@ package body et_kicad_to_native is
 			update_element (
 				container	=> et_kicad.rig,
 				position	=> module_cursor,
-				process		=> flatten_title_blocks'access);
+				process		=> flatten_frames'access);
 
 			
 			next (module_cursor);

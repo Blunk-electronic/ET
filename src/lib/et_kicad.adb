@@ -5814,7 +5814,7 @@ package body et_kicad is
 				-- of this procedure they are assembled to a final title block:
 				title_block_text 	: et_libraries.type_title_block_text; -- a single text within the title block
 				title_block_texts 	: et_libraries.type_title_block_texts.list; -- a list of title block texts
-				title_block 		: et_libraries.type_title_block; -- a full title block
+				--title_block 		: et_libraries.type_title_block; -- a full title block
 				
 				-- If the description reveals there is more than one sheet, we have a hierarchic design. Means we
 				-- need to read follwing sheet sections.
@@ -5953,23 +5953,15 @@ package body et_kicad is
 				end if;
 
 				-- FINALIZE
-
-				-- Make temporarily title_block complete by assigning coordinates and list of texts.
-				-- Then purge temporarily list of texts.
-				-- Then append temporarily title block to main module.
-										
-				set_path (title_block.coordinates, path_to_sheet);
-				
-				title_block.texts := title_block_texts; -- assign collected texts list to temporarily title block
-				set_sheet (title_block.coordinates, sheet_number); -- assign sheet_number to title block
-				-- CS: x/y coordinates and list of lines are kicad built-in things and thus not available currently
-				-- and assume default values (0/0).
+				frame.title_block.texts := title_block_texts; -- assign collected texts list to temporarily title block
+				-- CS: x/y coordinates and list of lines of a title block are kicad built-in things and 
+				-- thus not available here. -> x/y assume default values (0/0).
 
 				-- purge temporarily texts
 				et_libraries.type_title_block_texts.clear (title_block_texts);
 
 				-- append title block to module
-				add_title_block (title_block);
+				--add_title_block (title_block);
 				
 				-- append temporarily drawing frame to module
 				add_frame (frame);
@@ -8219,7 +8211,6 @@ package body et_kicad is
 						netlist			=> type_netlist.empty_map,
 						submodules		=> type_hierarchic_sheets.empty_map,
 						frames			=> et_libraries.type_frames.empty_list,
-						title_blocks	=> et_libraries.type_title_blocks.empty_list,
 						notes			=> type_texts.empty_list,
 						sheet_headers	=> type_sheet_headers.empty_map,
 
@@ -10318,34 +10309,6 @@ package body et_kicad is
 			);
 	end add_frame;
 
-
-	procedure add_title_block (
-	-- Inserts a title block in the the module (indicated by module_cursor).
-	-- As title blocks are collected in a simple list, the same title block
-	-- can be added multiple times.
-		tblock	: in et_libraries.type_title_block) is
-		
-		procedure add (
-			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
-			module		: in out type_module) is
-
-			use et_string_processing;
-		begin
-			module.title_blocks.append (
-				new_item	=> tblock);
-
-			if log_level >= 1 then
-				null; -- CS: write this procedure:
-				--et_schematic.write_title_block_properties
-			end if;
-
-		end add;
-	begin
-		rig.update_element (
-			position	=> module_cursor,
-			process		=> add'access
-			);
-	end add_title_block;
 
 	procedure add_note (
 	-- Inserts a note in the the module (indicated by module_cursor).

@@ -1034,15 +1034,11 @@ package et_libraries is
 
     -- the final title block
     type type_title_block is record
-        coordinates     : et_coordinates.type_coordinates;
+        coordinates     : et_coordinates.type_2d_point;
         lines           : type_title_block_lines.list;
         texts           : type_title_block_texts.list;
     end record;
 
-    -- there are lots of title blocks in a schematic contained in a list
-    package type_title_blocks is new doubly_linked_lists (type_title_block);
-
-	
     -- A drawing frame consists of straight lines and texts.
     -- The text is a character at the x/y border that helps to locate objects.
     type type_frame_line is record
@@ -1068,7 +1064,8 @@ package et_libraries is
         paper_size      : et_general.type_paper_size; -- the size of the paper
         size_x, size_y  : et_coordinates.type_distance; -- the dimensions of the frame (should fit into paper_size) 
         lines           : type_frame_lines.list;
-        texts           : type_frame_texts.list;
+		texts           : type_frame_texts.list;
+		title_block		: type_title_block;
     end record;
 
     -- there are lots of drawing frames in a schematic contained in a list
