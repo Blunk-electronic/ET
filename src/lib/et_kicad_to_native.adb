@@ -79,8 +79,10 @@ package body et_kicad_to_native is
 		module_cursor : et_kicad.type_rig.cursor := et_kicad.type_rig.first (et_kicad.rig);
 
 		root : et_coordinates.type_path_to_submodule.list := et_coordinates.type_path_to_submodule.empty_list;
-		before	: constant string (1..15) := "position before";
-		now		: constant string (1..15) := "position now   ";
+-- 		before	: constant string (1..15) := "position before";
+-- 		now		: constant string (1..15) := "position now   ";
+		before	: constant string (1..6) := "before";
+		now		: constant string (1..6) := "now   ";
 		
 		procedure flatten_notes (
 			module_name	: in et_coordinates.type_submodule_name.bounded_string;
@@ -230,6 +232,98 @@ package body et_kicad_to_native is
 			log_indentation_down;
 		end flatten_components;
 
+		procedure flatten_nets (
+			module_name	: in et_coordinates.type_submodule_name.bounded_string;
+			module		: in out et_kicad.type_module) is
+
+			use et_kicad.type_nets;
+			net_cursor : et_kicad.type_nets.cursor := module.nets.first;
+
+			procedure query_strands (
+				net_name	: in et_schematic.type_net_name.bounded_string;
+				net			: in out et_kicad.type_net) is
+
+				use et_kicad.type_strands;
+				strand_cursor : et_kicad.type_strands.cursor := net.strands.first;
+
+				procedure query_segments (strand : in out et_kicad.type_strand) is
+					use et_kicad.type_net_segments;
+					segment_cursor : et_kicad.type_net_segments.cursor := strand.segments.first;
+
+					procedure change_path (segment : in out et_kicad.type_net_segment) is
+						use et_coordinates;
+					begin
+						log ("segment", log_threshold + 3);
+						log_indentation_up;
+
+						-- start point of net segment
+						log ("start " & before & to_string (position => segment.coordinates_start, scope => et_coordinates.MODULE),
+							log_threshold + 3);
+
+						et_coordinates.set_path (segment.coordinates_start, root);
+
+						log ("start " & now & to_string (position => segment.coordinates_start, scope => et_coordinates.MODULE),
+							log_threshold + 3);
+
+						-- end point of net segment
+						log ("end   " & before & to_string (position => segment.coordinates_end, scope => et_coordinates.MODULE),
+							log_threshold + 3);
+
+						et_coordinates.set_path (segment.coordinates_end, root);
+
+						log ("end   " & now & to_string (position => segment.coordinates_end, scope => et_coordinates.MODULE),
+							log_threshold + 3);
+						
+						log_indentation_down;
+
+					end change_path;
+					
+				begin -- query_segments
+					while segment_cursor /= et_kicad.type_net_segments.no_element loop
+
+						et_kicad.type_net_segments.update_element (
+							container	=> strand.segments,
+							position	=> segment_cursor,
+							process		=> change_path'access);
+						
+						next (segment_cursor);
+					end loop;
+				end query_segments;
+				
+			begin -- query_strands
+				while strand_cursor /= et_kicad.type_strands.no_element loop
+
+					et_kicad.type_strands.update_element (
+						container	=> net.strands,
+						position	=> strand_cursor,
+						process		=> query_segments'access);
+					
+					next (strand_cursor);
+				end loop;
+			end query_strands;
+			
+		begin -- flatten_nets
+			log ("nets ...", log_threshold + 2);
+			log_indentation_up;
+			
+			while net_cursor /= et_kicad.type_nets.no_element loop
+				log (et_schematic.to_string (key (net_cursor)), log_threshold + 3);
+
+				log_indentation_up;
+				
+				et_kicad.type_nets.update_element (
+					container	=> module.nets,
+					position	=> net_cursor,
+					process		=> query_strands'access);
+
+				log_indentation_down;
+				
+				next (net_cursor);
+			end loop;
+
+			log_indentation_down;
+		end flatten_nets;
+		
 		
 	begin -- flatten
 		log ("flattening project ...", log_threshold);
@@ -253,6 +347,11 @@ package body et_kicad_to_native is
 				container	=> et_kicad.rig,
 				position	=> module_cursor,
 				process		=> flatten_components'access);
+
+			update_element (
+				container	=> et_kicad.rig,
+				position	=> module_cursor,
+				process		=> flatten_nets'access);
 			
 			next (module_cursor);
 

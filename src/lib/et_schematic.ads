@@ -194,7 +194,7 @@ package et_schematic is
 
 	-- A net junction is where segments can be connected with each other.
 	type type_net_junction is record
-		coordinates : et_coordinates.type_coordinates;
+		coordinates : et_coordinates.type_coordinates; -- CS type_2d_point ?
 	end record;
 
 	-- Junctions are to be collected in a list.
@@ -257,7 +257,7 @@ package et_schematic is
 	-- This is the definition of a net segment with start/end point and junctions
 	type type_net_segment_base is tagged record
 		coordinates_start 	: et_coordinates.type_coordinates;
-		coordinates_end   	: et_coordinates.type_coordinates;
+		coordinates_end   	: et_coordinates.type_coordinates; -- CS et_coordinates.type_2d_point ?
 		junctions			: type_junctions.list;
 	end record;
 
@@ -265,7 +265,7 @@ package et_schematic is
 	-- Returns the length of the given net segment.
 	
 	function to_string (
-		segment	: in type_net_segment_base;
+		segment	: in type_net_segment_base; -- CS use type_net_segment_base'class
 		scope	: in et_coordinates.type_scope := et_coordinates.sheet) return string;
 	-- Returns the start and end coordinates of the given net segment.
 
