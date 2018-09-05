@@ -659,12 +659,14 @@ package body et_kicad_to_native is
 				end tag_and_simple_labels;
 
 				procedure read_net_junctions (segment : in et_kicad.type_net_segment) is
+				-- Collects net junctions given in segment in the container net_junctions_native.
 					use et_kicad.type_junctions;
 					junction_cursor : et_kicad.type_junctions.cursor := segment.junctions.first;
 					junction_native : et_schematic.type_net_junction;
 				begin
 					while junction_cursor /= et_kicad.type_junctions.no_element loop
 
+						-- copy the x/y position of kicad junction to native junction
 						--et_coordinates.set (junction_native.coordinates, element (junction_cursor).coordinates);
 						
 						et_schematic.type_junctions.append (
@@ -712,6 +714,13 @@ package body et_kicad_to_native is
 					et_schematic.type_strands.append (
 						container	=> strands_native,
 						new_item	=> (strand_base with segments => net_segments_native, junctions => net_junctions_native));
+
+					-- clear collection of net segments (for the next strand)
+					clear (net_segments_native);
+
+					-- clear collection of net junctions (for the next strand)
+					clear (net_junctions_native);
+
 					
 					next (kicad_strand_cursor);
 				end loop;
