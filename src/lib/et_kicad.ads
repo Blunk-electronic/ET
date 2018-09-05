@@ -540,10 +540,24 @@ package et_kicad is
 	function to_string (label : in type_net_label) return string;
 	-- Returns the coordinates of the given label as string.
 
+	-- A net junction is where segments can be connected with each other.
+	type type_net_junction is record
+		coordinates : et_coordinates.type_coordinates;
+	end record;
 
+	function to_string (
+		junction	: in type_net_junction;
+		scope 		: in et_coordinates.type_scope) 
+		return string;
+	-- Returns the position of the given junction as string.
+	
+	-- Junctions are to be collected in a list.
+	package type_junctions is new doubly_linked_lists (type_net_junction);
+	
 	type type_net_segment is new et_schematic.type_net_segment_base with record
 		label_list_simple 	: type_simple_labels.list;
 		label_list_tag    	: type_tag_labels.list;
+		junctions			: type_junctions.list; -- CS not assigned yet
 	end record;
 	
 	package type_net_segments is new doubly_linked_lists (type_net_segment);
@@ -1044,7 +1058,7 @@ package et_kicad is
 
 	function junction_sits_on_segment (
 	-- Returns true if the given junction sits on the given net segment.
-		junction	: in et_schematic.type_net_junction;
+		junction	: in type_net_junction;
 		segment		: in et_schematic.type_net_segment_base'class) 
 		return boolean;
 	
@@ -1219,7 +1233,7 @@ package et_kicad is
 		component_libraries			: type_libraries.map;
 		
 		strands	    		: type_strands.list;						-- the strands of the module
-		junctions			: et_schematic.type_junctions.list;			-- net junctions
+		junctions			: type_junctions.list;						-- net junctions (for ERC, statistics, ...)
 
 		components			: type_components_schematic.map;			-- the components of the module
 		net_classes			: et_pcb.type_net_classes.map;				-- the net classes

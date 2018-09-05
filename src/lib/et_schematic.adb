@@ -93,15 +93,6 @@ package body et_schematic is
 
 	
 	
-	function to_string (
-		junction : in type_net_junction;
-		scope : in et_coordinates.type_scope) 
-		return string is
-		-- Returns the position of the given junction as string.
-		use et_coordinates;
-	begin	
-		return (to_string (position => junction.coordinates, scope => scope));
-	end to_string;
 
 	procedure write_note_properties (
 		note 			: in et_schematic.type_note;

@@ -194,15 +194,12 @@ package et_schematic is
 
 	-- A net junction is where segments can be connected with each other.
 	type type_net_junction is record
-		coordinates : et_coordinates.type_coordinates; -- CS type_2d_point ?
+		coordinates : et_coordinates.type_2d_point;
 	end record;
 
 	-- Junctions are to be collected in a list.
 	package type_junctions is new doubly_linked_lists (type_net_junction);
 	
-	function to_string (junction : in type_net_junction; scope : in et_coordinates.type_scope) return string;
-	-- Returns the position of the given junction as string.
-
 	-- This is the port of a component:
 	type type_port_component is record
 		reference	: et_libraries.type_component_reference;
@@ -258,7 +255,6 @@ package et_schematic is
 	type type_net_segment_base is tagged record
 		coordinates_start 	: et_coordinates.type_coordinates;
 		coordinates_end   	: et_coordinates.type_coordinates; -- CS et_coordinates.type_2d_point ?
-		junctions			: type_junctions.list;
 	end record;
 
 	function length (segment : in type_net_segment_base) return et_coordinates.type_distance;
@@ -293,6 +289,7 @@ package et_schematic is
 	
 	type type_net_segment is new type_net_segment_base with record
 		labels			: type_net_labels.list;
+		-- CS junctions		: type_junctions.list;
 		-- CS ? ports_component	: type_ports_component.list;
 		-- CS ? ports_submodule	: type_ports_submodule.list; 
 		-- CS no_connections	: type_no_connection_flags.list;-- the list of no-connection-flags

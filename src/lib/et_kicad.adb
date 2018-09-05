@@ -5080,6 +5080,7 @@ package body et_kicad is
 								-- Loop in list of simple labels:
 								if not is_empty (wild_simple_labels) then -- do it if there are simple labels at all
 									--put_line(" simple labels ..."); -- CS: log ?
+									
 									simple_label_cursor := wild_simple_labels.first; -- reset label cursor
 									while simple_label_cursor /= type_simple_labels.no_element loop
 										ls := element (simple_label_cursor); -- get simple label
@@ -5286,6 +5287,7 @@ package body et_kicad is
 
 									-- Copy list of tag labels (llt) to current segment (s).
 									segment.label_list_tag := llt;
+									
 									-- Update/replace segment in current anonymous net.
 									type_net_segments.replace_element (
 										container => anon_strand_a.segments, -- the list of segments of the current anonymous strand
@@ -5455,8 +5457,8 @@ package body et_kicad is
 				segment : type_wild_net_segment;
 				junction : type_net_junction;
 			
-				use et_schematic.type_junctions;
-				junction_cursor : et_schematic.type_junctions.cursor; -- points to the junction being processed
+				use type_junctions;
+				junction_cursor : type_junctions.cursor; -- points to the junction being processed
 
 				procedure change_segment_start_coordinates (segment : in out type_wild_net_segment) is 
 				begin
@@ -6278,7 +6280,7 @@ package body et_kicad is
 			-- The wild list is needed when the anonymous strands of
 			-- the sheet are built (see procedure build_anonymous_strands).
 			-- The wild list contains the junction of the current sheet exclusively.
-				junction : et_schematic.type_net_junction;  -- the junction being built
+				junction : type_net_junction;  -- the junction being built
 
 				procedure append_junction (
 				-- add junction to module.junctions
@@ -6286,8 +6288,8 @@ package body et_kicad is
 					module		: in out type_module) is
 				begin
 					type_junctions.append (
-						container => module.junctions,
-						new_item => junction);
+						container	=> module.junctions,
+						new_item	=> junction);
 				end append_junction;
 				
 			begin -- make_junction
@@ -8389,7 +8391,7 @@ package body et_kicad is
 
 	function junction_sits_on_segment (
 	-- Returns true if the given junction sits on the given net segment.
-		junction	: in et_schematic.type_net_junction;
+		junction	: in type_net_junction;
 		segment		: in et_schematic.type_net_segment_base'class) 
 		return boolean is
 
@@ -8684,11 +8686,11 @@ package body et_kicad is
 			-- Query junctions. Exits prematurely once a junction is found.
 				module_name	: in type_submodule_name.bounded_string;
 				module 		: in type_module) is
-				use et_schematic.type_junctions;
-				junction_cursor : et_schematic.type_junctions.cursor := module.junctions.first;
+				use type_junctions;
+				junction_cursor : type_junctions.cursor := module.junctions.first;
 			begin -- query_junctions
 				junction_found := false;
-				while junction_cursor /= et_schematic.type_junctions.no_element loop
+				while junction_cursor /= type_junctions.no_element loop
 					-- compare coordinates of junction and given port
 					if element (junction_cursor).coordinates = port.coordinates then
 						junction_found := true;
@@ -10065,9 +10067,9 @@ package body et_kicad is
 		procedure count_junctions (
 			module_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in type_module) is
-			use et_schematic.type_junctions;
+			use type_junctions;
 		begin
-			count := et_schematic.type_junctions.length (module.junctions);
+			count := type_junctions.length (module.junctions);
 		end count_junctions;
 
 	begin -- junction_count
@@ -10586,12 +10588,12 @@ package body et_kicad is
 					-- Query junctions. Exits prematurely once a junction is found.
 						module_name : in et_coordinates.type_submodule_name.bounded_string;
 						module 		: in type_module) is
-						use et_schematic.type_junctions;
-						junction_cursor : et_schematic.type_junctions.cursor := module.junctions.first;
+						use type_junctions;
+						junction_cursor : type_junctions.cursor := module.junctions.first;
 						use et_coordinates;
 					begin -- query_junctions
 						junction_found := false;
-						while junction_cursor /= et_schematic.type_junctions.no_element loop
+						while junction_cursor /= type_junctions.no_element loop
 							-- compare coordinates of junction and expected junction position
 							if element (junction_cursor).coordinates = junction.position then
 								junction_found := true;
@@ -10694,8 +10696,8 @@ package body et_kicad is
 		-- Query junctions.
 			module_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module 		: in type_module) is
-			use et_schematic.type_junctions;
-			junction_cursor : et_schematic.type_junctions.cursor := module.junctions.first;
+			use type_junctions;
+			junction_cursor : type_junctions.cursor := module.junctions.first;
 
 			function segment_here return boolean is
 			-- Returns true if a net segment is found where the junction sits on.
@@ -10765,7 +10767,7 @@ package body et_kicad is
 			end segment_here;
 
 		begin -- query_junctions
-			while junction_cursor /= et_schematic.type_junctions.no_element loop
+			while junction_cursor /= type_junctions.no_element loop
 
 				if not segment_here then
 					log (message_warning & "orphaned net junction at " 
@@ -10813,8 +10815,8 @@ package body et_kicad is
 		-- Query junctions and test net segments and ports at the junction coordinates.
 			module_name : in et_coordinates.type_submodule_name.bounded_string;
 			module		: in type_module) is
-			use et_schematic.type_junctions;
-			junction_cursor : et_schematic.type_junctions.cursor := module.junctions.first;
+			use type_junctions;
+			junction_cursor : type_junctions.cursor := module.junctions.first;
 
 			function segment_count_here return natural is
 			-- Returns the number of segments that meet at the junction coordinates.
@@ -10937,7 +10939,7 @@ package body et_kicad is
 			end log_misplaced_junction;
 			
 		begin -- query_junctions
-			while junction_cursor /= et_schematic.type_junctions.no_element loop
+			while junction_cursor /= type_junctions.no_element loop
 
 				-- Get the number of net segments at the junction coordinates.
 				case segment_count_here is
@@ -11315,6 +11317,16 @@ package body et_kicad is
 	begin
 		--return (to_string (position => label.coordinates, scope => scope));
 		return to_string (point => label.coordinates);
+	end to_string;
+
+	function to_string (
+		junction	: in type_net_junction;
+		scope		: in et_coordinates.type_scope) 
+		return string is
+		-- Returns the position of the given junction as string.
+		use et_coordinates;
+	begin	
+		return (to_string (position => junction.coordinates, scope => scope));
 	end to_string;
 	
 	function to_string (scope : in type_strand_scope) return string is
