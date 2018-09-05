@@ -602,6 +602,9 @@ package body et_kicad_to_native is
 				use et_schematic.type_net_labels;
 				net_labels_native : et_schematic.type_net_labels.list;
 
+				use et_schematic.type_junctions;
+				net_junctions_native : et_schematic.type_junctions.list;
+
 				function tag_and_simple_labels (segment : in et_kicad.type_net_segment) 
 				-- Copies from the given kicad net segment all simple and tag labels and returns
 				-- them in a single list.
@@ -673,10 +676,12 @@ package body et_kicad_to_native is
 						-- get labels from current kicad net segment
 						net_labels_native := tag_and_simple_labels (element (kicad_segment_cursor));
 
+						-- CS net_junctions_native := net_junctions (element (kicad_segment_cursor));
+						
 						-- collect native net segment in list net_segments_native
 						et_schematic.type_net_segments.append (
 							container	=> net_segments_native,
-							new_item	=> (net_segment_base with net_labels_native)											
+							new_item	=> (net_segment_base with net_labels_native)
 							);
 
 						next (kicad_segment_cursor);

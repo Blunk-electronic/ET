@@ -5515,6 +5515,16 @@ package body et_kicad is
 									-- replace end coord. of segment by pos. of junction
 									segment.coordinates_end := junction.coordinates;
 
+									-- If the junction has not been appended to the segment yet, 
+									-- append junction to the segment:
+									-- NOTE: junctions may be appended twice if they sit on net crossings.
+									-- For this reason we first test if the junction has already been appended.
+									if not type_junctions.contains (segment.junctions, junction) then
+										type_junctions.append (
+											container	=> segment.junctions,
+											new_item	=> junction);
+									end if;
+									
 									-- append new segment to list of wild segments
 									type_wild_segments.append (
 										container => wild_segments,

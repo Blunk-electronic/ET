@@ -557,7 +557,7 @@ package et_kicad is
 	type type_net_segment is new et_schematic.type_net_segment_base with record
 		label_list_simple 	: type_simple_labels.list;
 		label_list_tag    	: type_tag_labels.list;
-		junctions			: type_junctions.list; -- CS not assigned yet
+		junctions			: type_junctions.list;
 	end record;
 	
 	package type_net_segments is new doubly_linked_lists (type_net_segment);
