@@ -657,6 +657,23 @@ package body et_kicad_to_native is
 					
 					return labels;
 				end tag_and_simple_labels;
+
+				procedure read_net_junctions (segment : in et_kicad.type_net_segment) is
+					use et_kicad.type_junctions;
+					junction_cursor : et_kicad.type_junctions.cursor := segment.junctions.first;
+					junction_native : et_schematic.type_net_junction;
+				begin
+					while junction_cursor /= et_kicad.type_junctions.no_element loop
+
+						--et_coordinates.set (junction_native.coordinates, element (junction_cursor).coordinates);
+						
+						et_schematic.type_junctions.append (
+							container	=> net_junctions_native,
+							new_item	=> junction_native);
+						
+						next (junction_cursor);
+					end loop;
+				end read_net_junctions;
 				
 			begin -- insert_strands
 
@@ -676,7 +693,8 @@ package body et_kicad_to_native is
 						-- get labels from current kicad net segment
 						net_labels_native := tag_and_simple_labels (element (kicad_segment_cursor));
 
-						-- CS net_junctions_native := net_junctions (element (kicad_segment_cursor));
+						-- read net junctions of the current segment
+						read_net_junctions (element (kicad_segment_cursor));
 						
 						-- collect native net segment in list net_segments_native
 						et_schematic.type_net_segments.append (
@@ -693,7 +711,7 @@ package body et_kicad_to_native is
 					-- collect native strand in list strands_native
 					et_schematic.type_strands.append (
 						container	=> strands_native,
-						new_item	=> (strand_base with net_segments_native));
+						new_item	=> (strand_base with segments => net_segments_native, junctions => net_junctions_native));
 					
 					next (kicad_strand_cursor);
 				end loop;

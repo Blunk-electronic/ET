@@ -289,7 +289,6 @@ package et_schematic is
 	
 	type type_net_segment is new type_net_segment_base with record
 		labels			: type_net_labels.list;
-		--junctions		: type_junctions.list;
 		-- CS ? ports_component	: type_ports_component.list;
 		-- CS ? ports_submodule	: type_ports_submodule.list; 
 		-- CS no_connections	: type_no_connection_flags.list;-- the list of no-connection-flags
@@ -301,6 +300,7 @@ package et_schematic is
 	-- NOTE: ET does not provide a name for a strand.
 	-- As a strand is part of a net, there is no need for individual strand names.
 		segments	: type_net_segments.list;
+		junctions	: type_junctions.list;
 	end record;
 
 	package type_strands is new doubly_linked_lists (type_strand);
