@@ -986,12 +986,6 @@ package et_libraries is
 
 
 
-	-- All symbols are collected here:
-	symbols : type_symbols.map;
-
-	-- All component models are collected here.
-	components : type_components.map;
-
 
 	
 	procedure no_generic_model_found (

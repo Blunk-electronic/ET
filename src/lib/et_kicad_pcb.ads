@@ -545,7 +545,7 @@ package et_kicad_pcb is
 		"="				=> type_packages_library."=",
 		"<"				=> et_libraries.type_full_library_name."<");
 
-	-- All package models are collected here:
+	-- All package models found in the project libraries are collected here:
 	package_libraries : type_libraries.map;
 
 	
