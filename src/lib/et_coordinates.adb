@@ -169,12 +169,12 @@ package body et_coordinates is
 		point.y := y;
 	end set_y;
 
-	procedure set (
-		point : in out type_2d_point;
-		position : in type_2d_point) is
+	procedure set_xy (
+		point 		: in out type_2d_point;
+		position	: in type_2d_point) is
 	begin
 		point := position;
-	end set;
+	end set_xy;
 	
 	procedure mirror (
 		point	: in out type_2d_point;

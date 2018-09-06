@@ -5366,7 +5366,7 @@ package body et_kicad is
 							set_sheet (strand.coordinates, sheet_number);
 
 							-- set x,y coordinates (lowest available on the sheet)
-							set (strand.coordinates, to_coordinates (lowest_xy (strand, log_threshold + 3)));
+							set_xy (strand.coordinates, to_coordinates (lowest_xy (strand, log_threshold + 3)));
                             
 							-- insert strand in module, then purge strand.segments for next spin
 							log ("inserting strand in module ...", log_threshold + 2);
@@ -5421,7 +5421,7 @@ package body et_kicad is
 							set_sheet (strand.coordinates, sheet_number);
 
 							-- set x,y coordinates (lowest available on the sheet)
-							set (strand.coordinates, to_coordinates (lowest_xy (strand, log_threshold + 3)));
+							set_xy (strand.coordinates, to_coordinates (lowest_xy (strand, log_threshold + 3)));
 							
 							-- insert strand in module, then purge strand.segments for next spin
 							log ("inserting strand in module ...", log_threshold + 2);
@@ -9277,7 +9277,7 @@ package body et_kicad is
 				begin -- add
 					-- Init port coordinates with the coordinates of the port found in the library.
 					-- The port position is a type_2d_point and must be converted to type_coordinates.
-					et_coordinates.set (
+					et_coordinates.set_xy (
 						point		=> port_coordinates,
 						position	=> to_coordinates (element (port_cursor).coordinates)); -- with type conversion
 
