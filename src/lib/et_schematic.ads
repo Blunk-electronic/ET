@@ -261,8 +261,8 @@ package et_schematic is
 	-- Returns the length of the given net segment.
 	
 	function to_string (
-		segment	: in type_net_segment_base; -- CS use type_net_segment_base'class
-		scope	: in et_coordinates.type_scope := et_coordinates.sheet) return string;
+		segment	: in type_net_segment_base'class;
+		scope	: in et_coordinates.type_scope := et_coordinates.SHEET) return string;
 	-- Returns the start and end coordinates of the given net segment.
 
 

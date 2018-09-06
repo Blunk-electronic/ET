@@ -213,7 +213,7 @@ package body et_schematic is
 	end length;
 	
 	function to_string (
-		segment	: in type_net_segment_base;
+		segment	: in type_net_segment_base'class;
 		scope 	: in et_coordinates.type_scope := et_coordinates.sheet)
 		return string is
 	-- Returns the start and end coordinates of the given net segment.

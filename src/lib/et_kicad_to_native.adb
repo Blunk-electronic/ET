@@ -683,18 +683,26 @@ package body et_kicad_to_native is
 				end read_net_junctions;
 				
 			begin -- insert_strands
-
+				log_indentation_up;
+				
 				-- loop in strands of current kicad net
 				while kicad_strand_cursor /= et_kicad.type_strands.no_element loop
-
+					log ("strand" & et_coordinates.to_string (
+						 position	=> element (kicad_strand_cursor).coordinates,
+						 scope		=> et_coordinates.SHEET),
+						 log_threshold + 3);
+					
 					-- load segments of current strand
 					kicad_segments := element (kicad_strand_cursor).segments;
 					kicad_segment_cursor := kicad_segments.first;
 
 					-- loop in segments of current strand
 					-- A kicad net segment has labels and junctions.
+					log_indentation_up;
 					while kicad_segment_cursor /= et_kicad.type_net_segments.no_element loop
 
+						--log ("segment" & et_schematic.to_string (element (kicad_segment_cursor)), log_threshold + 4);
+						
 						-- get coordinates and junctions from the current kicad net segment:
 						net_segment_base := et_schematic.type_net_segment_base (element (kicad_segment_cursor));
 
@@ -715,6 +723,7 @@ package body et_kicad_to_native is
 
 						next (kicad_segment_cursor);
 					end loop;
+					log_indentation_down;
 
 					-- get lowest x/y coordinates of current kicad strand:
 					strand_base := et_schematic.type_strand_base (element (kicad_strand_cursor));
@@ -731,7 +740,8 @@ package body et_kicad_to_native is
 				end loop;
 
 				net.strands := strands_native;
-					
+
+				log_indentation_down;
 			end insert_strands;
 				
 		begin -- copy_nets
