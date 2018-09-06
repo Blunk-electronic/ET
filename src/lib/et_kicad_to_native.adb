@@ -670,7 +670,7 @@ package body et_kicad_to_native is
 					while junction_cursor /= et_kicad.type_junctions.no_element loop
 
 						-- copy the x/y position of kicad junction to native junction
-						--et_coordinates.set (junction_native.coordinates, element (junction_cursor).coordinates);
+						et_coordinates.set_xy (junction_native.coordinates, element (junction_cursor).coordinates);
 						
 						et_schematic.type_junctions.append (
 							container	=> junctions,

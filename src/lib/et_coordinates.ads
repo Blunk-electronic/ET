@@ -130,8 +130,8 @@ package et_coordinates is
 	-- Assigns a point the given y position. 
 	
 	procedure set_xy (
-		point	 : in out type_2d_point;
-		position : in type_2d_point);
+		point	 : in out type_2d_point'class;
+		position : in type_2d_point'class);
 	
 	procedure mirror (
 		point	: in out type_2d_point;

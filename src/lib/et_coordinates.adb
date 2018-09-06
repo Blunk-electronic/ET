@@ -170,10 +170,11 @@ package body et_coordinates is
 	end set_y;
 
 	procedure set_xy (
-		point 		: in out type_2d_point;
-		position	: in type_2d_point) is
+		point 		: in out type_2d_point'class;
+		position	: in type_2d_point'class) is
 	begin
-		point := position;
+		point.x := position.x;
+		point.y := position.y;
 	end set_xy;
 	
 	procedure mirror (
