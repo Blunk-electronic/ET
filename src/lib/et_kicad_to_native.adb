@@ -324,7 +324,6 @@ package body et_kicad_to_native is
 			log_indentation_down;
 		end flatten_nets;
 		
-		
 	begin -- flatten
 		log ("flattening project ...", log_threshold);
 		log_indentation_up;
@@ -522,46 +521,6 @@ package body et_kicad_to_native is
 
 			end loop;
 		end copy_schematic_components;
-
-		procedure translate_sheets (
-			module_name : in et_coordinates.type_submodule_name.bounded_string;
-			module		: in out et_schematic.type_module) is
-
-			use et_kicad.type_hierarchic_sheets;
-			kicad_sheets		: et_kicad.type_hierarchic_sheets.map := element (module_cursor_kicad).hierarchic_sheets;
-			kicad_sheet_cursor	: et_kicad.type_hierarchic_sheets.cursor := kicad_sheets.first;
-
-			use et_schematic.type_submodules;
-			submodule_cursor_native : et_schematic.type_submodules.cursor;
---			submodule_inserted		: boolean;
-		begin -- translate_sheets
-			-- loop in hierarchic kicad sheets
-			while kicad_sheet_cursor /= et_kicad.type_hierarchic_sheets.no_element loop
-				log ("hierarchic sheet" & et_coordinates.to_string (
-					position	=> element (kicad_sheet_cursor).coordinates,
-					scope		=> et_coordinates.MODULE),
-					log_threshold + 2);
-
-				-- 1. In kicad the gui submodule has a name which should be the same as the sheet name.
-				-- This is ensured on importing the kicad schematic (see et_kicad.adb). --> CS wrong ! fix it !
-				-- 2. The kicad name becomes now the name of the native submodule.
--- CS 
--- 				et_schematic.type_submodules.insert (
--- 					container	=> module.submodules,
--- 					position	=> submodule_cursor_native,
--- 					inserted	=> submodule_inserted,
--- 					key			=> key (kicad_sheet_cursor), -- submodule name
--- 					new_item	=> (
--- 						text_size_path		=> element (kicad_sheet_cursor).text_size_of_file,
--- 						text_size_instance	=> element (kicad_sheet_cursor).text_size_of_file,
--- 						position			=> element (kicad_sheet_cursor).coordinates,
--- 						size 				=> (element (kicad_sheet_cursor).size_x, element (kicad_sheet_cursor).size_y),
--- 						others => <>)
--- 					);
-				
-				next (kicad_sheet_cursor);
-			end loop;
-		end translate_sheets;
 
 		procedure copy_nets (
 			module_name : in et_coordinates.type_submodule_name.bounded_string;
@@ -790,7 +749,7 @@ package body et_kicad_to_native is
 		end copy_nets;
 		
 	begin -- to_native
-		flatten (log_threshold);
+		flatten (log_threshold); -- levels all paths so that we get a real flat design
 
 		log ("coverting ...", log_threshold);
 		log_indentation_up;
@@ -818,12 +777,6 @@ package body et_kicad_to_native is
 				container	=> et_schematic.rig,
 				position	=> module_cursor_native,
 				process		=> copy_schematic_components'access);
-
-			-- Translate hierarchic kicad sheets to native submodules
-			update_element (
-				container	=> et_schematic.rig,
-				position	=> module_cursor_native,
-				process		=> translate_sheets'access);
 
 			-- copy nets
 			update_element (
