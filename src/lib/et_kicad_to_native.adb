@@ -618,10 +618,15 @@ package body et_kicad_to_native is
 					tag_label_cursor : et_kicad.type_tag_labels.cursor := segment.label_list_tag.first;
 
 				begin -- tag_and_simple_labels
-
+					log_indentation_up;
+					
 					-- simple labels
 					while simple_label_cursor /= et_kicad.type_simple_labels.no_element loop
 
+						log ("simple label" & et_kicad.to_string (
+							label => et_kicad.type_net_label (element (simple_label_cursor))),
+							log_threshold + 5);
+						
 						et_schematic.type_net_labels.append (
 							container	=> labels,
 							new_item	=> (
@@ -639,6 +644,10 @@ package body et_kicad_to_native is
 					-- tag labels
 					while tag_label_cursor /= et_kicad.type_tag_labels.no_element loop
 
+						log ("tag label" & et_kicad.to_string (
+							label => et_kicad.type_net_label (element (tag_label_cursor))),
+							log_threshold + 5);
+						
 						et_schematic.type_net_labels.append (
 							container	=> labels,
 							new_item	=> (
@@ -654,7 +663,8 @@ package body et_kicad_to_native is
 						
 						next (tag_label_cursor);
 					end loop;
-					
+
+					log_indentation_down;
 					return labels;
 				end tag_and_simple_labels;
 
@@ -667,8 +677,13 @@ package body et_kicad_to_native is
 					junction_cursor : et_kicad.type_junctions.cursor := segment.junctions.first;
 					junction_native : et_schematic.type_net_junction;
 				begin
+					log_indentation_up;
 					while junction_cursor /= et_kicad.type_junctions.no_element loop
 
+						log ("junction" & et_coordinates.to_string (
+							point => element (junction_cursor).coordinates),
+							log_threshold + 5);
+						
 						-- copy the x/y position of kicad junction to native junction
 						et_coordinates.set_xy (junction_native.coordinates, element (junction_cursor).coordinates);
 						
@@ -678,7 +693,7 @@ package body et_kicad_to_native is
 						
 						next (junction_cursor);
 					end loop;
-					
+					log_indentation_down;
 					return junctions;
 				end read_net_junctions;
 				
@@ -701,7 +716,10 @@ package body et_kicad_to_native is
 					log_indentation_up;
 					while kicad_segment_cursor /= et_kicad.type_net_segments.no_element loop
 
-						--log ("segment" & et_schematic.to_string (element (kicad_segment_cursor)), log_threshold + 4);
+						log ("segment" & et_schematic.to_string (
+							segment		=> element (kicad_segment_cursor),
+							scope		=> et_coordinates.XY),
+							log_threshold + 4);
 						
 						-- get coordinates and junctions from the current kicad net segment:
 						net_segment_base := et_schematic.type_net_segment_base (element (kicad_segment_cursor));
