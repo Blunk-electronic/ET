@@ -383,7 +383,7 @@ package body et_kicad_to_native is
 			module.net_classes	:= element (module_cursor_kicad).net_classes;
 		end copy_general_stuff;
 
-		procedure copy_schematic_components (
+		procedure copy_components (
 			module_name : in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_schematic.type_module) is
 
@@ -453,7 +453,7 @@ package body et_kicad_to_native is
 				log_indentation_down;
 			end copy_units;
 
-		begin -- copy_schematic_components
+		begin -- copy_components
 			-- load a copy of kicad schematic components
 			components_kicad := element (module_cursor_kicad).components;
 			
@@ -520,7 +520,7 @@ package body et_kicad_to_native is
 				next (component_cursor_kicad);
 
 			end loop;
-		end copy_schematic_components;
+		end copy_components;
 
 		procedure copy_nets (
 			module_name : in et_coordinates.type_submodule_name.bounded_string;
@@ -720,7 +720,23 @@ package body et_kicad_to_native is
 
 				log_indentation_down;
 			end insert_strands;
+
+			procedure copy_layout_stuff (
+				net_name	: in et_schematic.type_net_name.bounded_string;
+				net			: in out et_schematic.type_net) is
+			begin -- copy_layout_stuff
+				log_indentation_up;
+
+				log ("class" & et_pcb.to_string (element (kicad_net_cursor).class), log_threshold + 3);
+				net.class := element (kicad_net_cursor).class;	
 				
+				log ("tracks, vias, polygons ...", log_threshold + 3);
+				net.route := element (kicad_net_cursor).route;
+				-- CS log details on tracks, vias, ...
+				
+				log_indentation_down;
+			end copy_layout_stuff;
+											
 		begin -- copy_nets
 			-- loop in kicad nets
 			while kicad_net_cursor /= et_kicad.type_nets.no_element loop
@@ -737,12 +753,17 @@ package body et_kicad_to_native is
 							others 	=> <>)
 					);
 
-				-- insert strands
+				-- insert strands (schematic related)
 				et_schematic.type_nets.update_element (
 					container	=> module.nets,
 					position	=> net_cursor_native,
 					process		=> insert_strands'access);
-				
+
+				-- copy layout related stuff (copper segments, vias, ...)
+				et_schematic.type_nets.update_element (
+					container	=> module.nets,
+					position	=> net_cursor_native,
+					process		=> copy_layout_stuff'access);
 				
 				next (kicad_net_cursor);
 			end loop;
@@ -766,19 +787,19 @@ package body et_kicad_to_native is
 				inserted	=> module_inserted -- should always be true
 				);
 
-			-- copy general stuff (notes, routing info, silk screen, documentation, net classes, ...)
+			-- copy general stuff (notes, routing info, silk screen, documentation, net class settings, ...)
 			update_element (
 				container	=> et_schematic.rig,
 				position	=> module_cursor_native,
 				process		=> copy_general_stuff'access);
 
-			-- copy schematic components (incl. their units)
+			-- copy components (incl. their units and positions in layout)
 			update_element (
 				container	=> et_schematic.rig,
 				position	=> module_cursor_native,
-				process		=> copy_schematic_components'access);
+				process		=> copy_components'access);
 
-			-- copy nets
+			-- copy nets (incl. layout related stuff: tracks, vias, polygons, net classes, ...)
 			update_element (
 				container	=> et_schematic.rig,
 				position	=> module_cursor_native,
@@ -789,22 +810,11 @@ package body et_kicad_to_native is
 
 			next (module_cursor_kicad);
 		end loop;
--- 		log_indentation_down;
 
 
 -- 		log ("packages ...", log_threshold);
 
 
-		
--- 		log ("schematics ...", log_threshold);
--- 		log_indentation_up;
--- 
--- 
--- 		log_indentation_down;
-
-
--- 		log ("layouts ...", log_threshold);
--- 		log_indentation_up;
 
 
 		log_indentation_down;

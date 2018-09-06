@@ -614,7 +614,7 @@ package et_pcb is
 	-- vias are collected in simple lists
 	package type_vias is new doubly_linked_lists (type_via);
 	
-	-- route
+	-- route (tracks/traces, vias, polgons)
 	type type_route is record 
 		lines 			: type_copper_lines_pcb.list;
 		arcs			: type_copper_arcs_pcb.list;
