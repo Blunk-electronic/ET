@@ -133,7 +133,20 @@ package body et_kicad_to_native is
 			
 			return size;
 		end paper_size_of_schematic_sheet;
-			
+
+		procedure move (point : in out et_coordinates.type_coordinates) is
+			use et_coordinates;
+			sheet_number 		: et_coordinates.type_submodule_sheet_number;
+			sheet_paper_size	: et_general.type_paper_size;
+			sheet_height		: et_coordinates.type_distance_xy;
+			new_y				: et_coordinates.type_distance_xy;
+			begin
+				sheet_number		:= sheet (point);
+				sheet_paper_size	:= paper_size_of_schematic_sheet (sheet_number);
+				sheet_height		:= paper_dimension (axis => X, paper_size => sheet_paper_size);
+				new_y				:= sheet_height - distance_y (point);
+				--set_y (point, new_y);
+			end move;
 
 		procedure flatten_notes (
 			module_name	: in et_coordinates.type_submodule_name.bounded_string;
@@ -152,6 +165,7 @@ package body et_kicad_to_native is
 					 log_threshold + 4);
 
 				et_coordinates.set_path (note.coordinates, root);
+				--move (note.coordinates);
 
 				log (now & to_string (position => note.coordinates, scope => et_coordinates.MODULE),
 					 log_threshold + 4);

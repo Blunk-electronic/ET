@@ -315,7 +315,7 @@ package et_coordinates is
 		paper_size	: in et_general.type_paper_size;
 		orientation	: in et_general.type_paper_orientation := et_general.LANDSCAPE;
 		axis		: in type_axis)
-		return type_distance;
+		return type_distance_xy;
 
 	
 	private 
