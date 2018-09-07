@@ -397,7 +397,7 @@ package et_schematic is
 		components		: type_components.map;			-- the components of the module
 		net_classes		: et_pcb.type_net_classes.map;	-- the net classes
 		submodules  	: type_submodules.map;			-- graphical representations of submodules
---        frames      	: type_frames.list;				-- frames -- GUI relevant
+		frames      	: et_libraries.type_frames.list;-- frames -- CS store in a map with sheet number as key
 		notes       	: type_texts.list;				-- notes
 -- 		-- CS: images
 

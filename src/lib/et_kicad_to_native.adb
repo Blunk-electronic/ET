@@ -73,8 +73,10 @@ with et_csv;
 package body et_kicad_to_native is
 
 	procedure flatten (log_threshold : in et_string_processing.type_log_level) is
-	-- Flattens the kicad project: Changes the path (selector of et_coordinates.type_coordinates) to
-	-- the root path (/).
+	-- Flattens schematic of the kicad project: 
+	-- Changes the path (selector of et_coordinates.type_coordinates) to the root path (/).
+	-- CS: This procedure suits well to mirror the schematic drawing y coordinates. The origin in
+	-- kicad is the upper left corner. The origin in ET is the lower left corner.
 		use et_kicad.type_rig;
 		module_cursor : et_kicad.type_rig.cursor := et_kicad.type_rig.first (et_kicad.rig);
 
@@ -83,7 +85,56 @@ package body et_kicad_to_native is
 -- 		now		: constant string (1..15) := "position now   ";
 		before	: constant string (1..6) := "before";
 		now		: constant string (1..6) := "now   ";
+
+		-- This list of frames serves to map from sheet number to paper size:
+		frames : et_libraries.type_frames.list;
+
+		function paper_size_of_schematic_sheet (sheet_number : in et_coordinates.type_submodule_sheet_number)
+		-- Returns for a given sheet number the respective paper size.
+			return et_general.type_paper_size is
+
+			-- This is to be returned. In case no paper size was found, use the default value of type_paper_size.
+			size : et_general.type_paper_size := et_general.type_paper_size'first;
+
+			sheet_found : boolean := false; -- goes true once the given sheet has been found
 		
+			procedure query_sheet_number (frame : in et_libraries.type_frame) is
+				use et_coordinates;
+			begin
+				if et_coordinates.sheet (frame.coordinates) = sheet_number then
+					size := frame.paper_size;
+					sheet_found := true;
+				end if;
+			end query_sheet_number;
+
+			-- We search for the paper size in the list "frames":
+			use et_libraries.type_frames;
+			frame_cursor : et_libraries.type_frames.cursor := frames.first;
+			
+		begin -- query_frames
+
+			-- loop in list of frames given in "frames"
+			while frame_cursor /= et_libraries.type_frames.no_element loop
+				
+				query_element (
+					position	=> frame_cursor,
+					process		=> query_sheet_number'access);
+
+				if sheet_found then exit; end if; -- cancel search once the given sheet has been found
+				
+				next (frame_cursor);
+			end loop;
+
+			if not sheet_found then
+				log_indentation_reset;
+				log (message_error & "sheet with number" & et_coordinates.to_string (sheet_number) & " not found !");
+				raise constraint_error;
+			end if;
+			
+			return size;
+		end paper_size_of_schematic_sheet;
+			
+
 		procedure flatten_notes (
 			module_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_kicad.type_module) is
@@ -163,7 +214,6 @@ package body et_kicad_to_native is
 
 			log_indentation_down;
 		end flatten_frames;
-
 
 		procedure flatten_components (
 			module_name	: in et_coordinates.type_submodule_name.bounded_string;
@@ -332,6 +382,11 @@ package body et_kicad_to_native is
 			log ("module " & et_coordinates.to_string (key (module_cursor)), log_threshold + 1);
 			log_indentation_up;
 
+			-- As preparation for later mirroring the y positions of objects,
+			-- we need a list of drawing frames. This list will later provide the
+			-- paper sizes of individual drawing sheets.
+			frames := element (module_cursor).frames;
+			
 			update_element (
 				container	=> et_kicad.rig,
 				position	=> module_cursor,
@@ -378,8 +433,13 @@ package body et_kicad_to_native is
 		begin
 			module.generic_name	:= element (module_cursor_kicad).generic_name;
 			module.instance		:= element (module_cursor_kicad).instance;
-			module.notes		:= element (module_cursor_kicad).notes;
+
+			module.notes		:= element (module_cursor_kicad).notes; 
+			-- CS: mirror y coordinates
+
 			module.board		:= element (module_cursor_kicad).board;
+			-- CS: mirror y coordinates
+			
 			module.net_classes	:= element (module_cursor_kicad).net_classes;
 		end copy_general_stuff;
 
@@ -426,6 +486,7 @@ package body et_kicad_to_native is
 						when et_libraries.SCH =>
 
 							unit_native_virtual := et_schematic.type_unit (element (unit_cursor_kicad));
+							-- CS: mirror y coordinates
 							
 							et_schematic.type_units.insert (
 								container	=> component.units,
@@ -437,6 +498,7 @@ package body et_kicad_to_native is
 						when et_libraries.SCH_PCB =>
 
 							unit_native_real := et_schematic.type_unit (element (unit_cursor_kicad));
+							-- CS: mirror y coordinates
 							
 							et_schematic.type_units.insert (
 								container	=> component.units,
@@ -732,6 +794,7 @@ package body et_kicad_to_native is
 				
 				log ("tracks, vias, polygons ...", log_threshold + 3);
 				net.route := element (kicad_net_cursor).route;
+				-- CS: mirror y coordinates
 				-- CS log details on tracks, vias, ...
 				
 				log_indentation_down;
@@ -772,14 +835,14 @@ package body et_kicad_to_native is
 	begin -- to_native
 		flatten (log_threshold); -- levels all paths so that we get a real flat design
 
-		log ("coverting ...", log_threshold);
+		log ("converting ...", log_threshold);
 		log_indentation_up;
 		
 		while module_cursor_kicad /= et_kicad.type_rig.no_element loop
 			log ("module " & et_coordinates.to_string (key (module_cursor_kicad)), log_threshold + 1);
 			log_indentation_up;
 
-			-- create module
+			-- create an empty module
 			et_schematic.type_rig.insert (
 				container	=> et_schematic.rig,
 				key			=> key (module_cursor_kicad),
@@ -804,7 +867,8 @@ package body et_kicad_to_native is
 				container	=> et_schematic.rig,
 				position	=> module_cursor_native,
 				process		=> copy_nets'access);
-				
+
+			-- CS copy frames, mirror y
 			
 			log_indentation_down;
 
