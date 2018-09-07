@@ -46,6 +46,7 @@ with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with et_string_processing;
+with et_general;
 
 package et_coordinates is
 
@@ -300,6 +301,21 @@ package et_coordinates is
 
 	procedure set_sheet (position : in out type_coordinates; sheet : in type_submodule_sheet_number);
 	-- Sets the sheet number in given position.
+
+	-- PAPER SIZES
+	-- As default we assume landscape format for all sheets.
+	paper_size_A3_x : constant et_coordinates.type_distance := 420.0;
+	paper_size_A3_y : constant et_coordinates.type_distance := 297.0;
+	
+	paper_size_A4_x : constant et_coordinates.type_distance := 297.0;
+	paper_size_A4_y : constant et_coordinates.type_distance := 210.0;
+
+	function paper_dimension (
+	-- Returns for the given paper size, orientation and axis the correspoinding size in mm.
+		paper_size	: in et_general.type_paper_size;
+		orientation	: in et_general.type_paper_orientation := et_general.LANDSCAPE;
+		axis		: in type_axis)
+		return type_distance;
 
 	
 	private 

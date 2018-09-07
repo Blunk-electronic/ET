@@ -95,7 +95,7 @@ package et_general is
 
 	
 -- PAPER SIZES
-    type type_paper_size is (A0, A1, A2, A4); -- CS: others ?
+    type type_paper_size is (A3, A4); -- CS: others ?
     paper_size_default : type_paper_size := A4;
 
 	function to_paper_size (paper_size : in string) return type_paper_size;
@@ -103,6 +103,7 @@ package et_general is
 
 	function to_string (paper_size : in type_paper_size) return string;
 
+	type type_paper_orientation is (PORTRAIT, LANDSCAPE);
 
 	
 -- GENERICS
