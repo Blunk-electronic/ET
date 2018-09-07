@@ -54,11 +54,11 @@ package et_coordinates is
 
 	-- There are drawings with the origin at the upper left corner (used by KiCad, ...).
 	-- There are also drawings the the origin at the lower left corner (used by EAGLE, ...)
-	type type_Y_axis_positive is (upwards, downwards);
+	type type_Y_axis_positive is (UPWARDS, DOWNWARDS);
 
 	-- This flag is set on import or export of designs in accordance to the desired CAD format.
 	-- Geometric operations like rotating require this flag.
-	Y_axis_positive : type_Y_axis_positive := upwards;
+	Y_axis_positive : type_Y_axis_positive := UPWARDS;
 	
 	-- The total distance between two objects:
 	--	type type_distance is digits 9 range -100_000_000.0 .. 100_000_000.0; -- unit is metric millimeter
