@@ -75,8 +75,8 @@ package body et_kicad_to_native is
 	procedure flatten (log_threshold : in et_string_processing.type_log_level) is
 	-- Flattens schematic of the kicad project: 
 	-- Changes the path (selector of et_coordinates.type_coordinates) to the root path (/).
-	-- CS: This procedure suits well to mirror the schematic drawing y coordinates. The origin in
-	-- kicad is the upper left corner. The origin in ET is the lower left corner.
+	-- This procedure also moves schematic objects from negative to positive y coordinates.
+	-- The origin in kicad is the upper left corner. The origin in ET is the lower left corner.
 		use et_kicad.type_rig;
 		module_cursor : et_kicad.type_rig.cursor := et_kicad.type_rig.first (et_kicad.rig);
 
@@ -270,8 +270,7 @@ package body et_kicad_to_native is
 
 					et_coordinates.set_path (unit.position, root);
 
-					-- Move position from negative to positive y.
-					move (unit.position);
+					move (unit.position); -- Move position from negative to positive y.
 
 					log (now & to_string (position => unit.position, scope => et_coordinates.MODULE),
 						log_threshold + 4);
@@ -331,7 +330,7 @@ package body et_kicad_to_native is
 					use et_kicad.type_net_segments;
 					segment_cursor : et_kicad.type_net_segments.cursor := strand.segments.first;
 
-					procedure change_path (segment : in out et_kicad.type_net_segment) is
+					procedure change_path_of_segment (segment : in out et_kicad.type_net_segment) is
 						use et_coordinates;
 					begin
 						log ("segment", log_threshold + 3);
@@ -343,6 +342,8 @@ package body et_kicad_to_native is
 
 						et_coordinates.set_path (segment.coordinates_start, root);
 
+						move (segment.coordinates_start.position); -- Move position from negative to positive y.
+						
 						log ("start " & now & to_string (position => segment.coordinates_start, scope => et_coordinates.MODULE),
 							log_threshold + 3);
 
@@ -352,12 +353,16 @@ package body et_kicad_to_native is
 
 						et_coordinates.set_path (segment.coordinates_end, root);
 
+						move (segment.coordinates_end.position); -- Move position from negative to positive y.
+						
 						log ("end   " & now & to_string (position => segment.coordinates_end, scope => et_coordinates.MODULE),
 							log_threshold + 3);
+
+						-- CS change path and y of junctions and segments ?
 						
 						log_indentation_down;
 
-					end change_path;
+					end change_path_of_segment;
 					
 				begin -- query_segments
 					while segment_cursor /= et_kicad.type_net_segments.no_element loop
@@ -365,7 +370,7 @@ package body et_kicad_to_native is
 						et_kicad.type_net_segments.update_element (
 							container	=> strand.segments,
 							position	=> segment_cursor,
-							process		=> change_path'access);
+							process		=> change_path_of_segment'access);
 						
 						next (segment_cursor);
 					end loop;
