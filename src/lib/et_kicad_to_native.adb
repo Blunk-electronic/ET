@@ -271,7 +271,7 @@ package body et_kicad_to_native is
 					et_coordinates.set_path (unit.position, root);
 
 					-- Move position from negative to positive y.
-					-- CS move (unit.position);
+					move (unit.position);
 
 					log (now & to_string (position => unit.position, scope => et_coordinates.MODULE),
 						log_threshold + 4);
