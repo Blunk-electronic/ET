@@ -177,6 +177,8 @@ package body et_kicad_to_native is
 					 log_threshold + 4);
 
 				et_coordinates.set_path (note.coordinates, root);
+
+				-- Move position from negative to positive y.
 				move (note.coordinates);
 
 				log (now & to_string (position => note.coordinates, scope => et_coordinates.MODULE),
@@ -267,6 +269,9 @@ package body et_kicad_to_native is
 						log_threshold + 4);
 
 					et_coordinates.set_path (unit.position, root);
+
+					-- Move position from negative to positive y.
+					-- CS move (unit.position);
 
 					log (now & to_string (position => unit.position, scope => et_coordinates.MODULE),
 						log_threshold + 4);
@@ -418,6 +423,9 @@ package body et_kicad_to_native is
 				position	=> module_cursor,
 				process		=> flatten_notes'access);
 
+			-- CS: The design import (see function read_schematic in kicad.adb) does not read the title block and 
+			-- drawing frame lines and texts. Currently only content of things like company name and comments
+			-- is read.
 			update_element (
 				container	=> et_kicad.rig,
 				position	=> module_cursor,

@@ -5829,6 +5829,9 @@ package body et_kicad is
 
 			procedure make_drawing_frame (
 			-- Builds the drawing frame.
+			-- CS: Read lines and position of text placeholders from
+			-- *.kicad_wks file (either the default file or the one specified
+			-- in the project file by a line like "PageLayoutDescrFile=/home/luno/tmp/sheet.kicad_wks".
 				lines 			: in type_lines.list;
 				log_threshold	: in type_log_level) is
 
@@ -5982,13 +5985,11 @@ package body et_kicad is
 				frame.title_block.texts := title_block_texts; -- assign collected texts list to temporarily title block
 				-- CS: x/y coordinates and list of lines of a title block are kicad built-in things and 
 				-- thus not available here. -> x/y assume default values (0/0).
+				-- See comment above in header of this procedure.
 
 				-- purge temporarily texts
 				et_libraries.type_title_block_texts.clear (title_block_texts);
 
-				-- append title block to module
-				--add_title_block (title_block);
-				
 				-- append temporarily drawing frame to module
 				add_frame (frame);
 
