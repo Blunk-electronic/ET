@@ -2693,9 +2693,9 @@ package body et_kicad_pcb is
 		file_name		: in string; -- pwr_supply.kicad_pcb
 		lines			: in et_pcb.type_lines.list;
 		log_threshold	: in et_string_processing.type_log_level) 
-		return type_board is
+		return et_kicad_pcb.type_board is
 
-		board : type_board; -- to be returned
+		board : et_kicad_pcb.type_board; -- to be returned
 		
 		use et_pcb;
 		use et_pcb.type_lines;
@@ -6775,7 +6775,7 @@ package body et_kicad_pcb is
 
 		-- Here the board data goes. 
 		-- CS: If Kicad supports multi boards some day, this must become a list of boards.
-		board : type_board;
+		board : et_kicad_pcb.type_board;
 
 		procedure merge_board_and_schematic (log_threshold : in type_log_level) is
 		-- Merges the board with the schematic module.
@@ -7622,7 +7622,7 @@ package body et_kicad_pcb is
 			close (board_handle);
 
 			-- parse and process the board data stored in "lines"
-			board := to_board (file_name, lines, log_threshold + 1);
+			board := to_board (file_name, lines, log_threshold + 1); -- board is a et_kicad_pcb.type_board
 
 			merge_board_and_schematic (log_threshold + 1);
 			
