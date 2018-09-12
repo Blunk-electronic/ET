@@ -72,11 +72,11 @@ with et_csv;
 
 package body et_kicad_to_native is
 
-	procedure flatten (log_threshold : in et_string_processing.type_log_level) is
-	-- Flattens schematic of the kicad project: 
-	-- Changes the path (selector of et_coordinates.type_coordinates) to the root path (/).
-	-- This procedure also moves schematic objects from negative to positive y coordinates.
-	-- The origin in kicad is the upper left corner. The origin in ET is the lower left corner.
+	procedure transpose (log_threshold : in et_string_processing.type_log_level) is
+	-- Transposes coordinates of schematic and layout elements:
+	-- 1. In schematic changes the path (selector of et_coordinates.type_coordinates) to the root path (/).
+	-- 2. Moves schematic objects from negative to positive y coordinates.
+	--    (The origin in kicad is the upper left corner. The origin in ET is the lower left corner.)
 		use et_kicad.type_rig;
 		module_cursor : et_kicad.type_rig.cursor := et_kicad.type_rig.first (et_kicad.rig);
 
@@ -509,13 +509,32 @@ package body et_kicad_to_native is
 
 			log_indentation_down;
 		end flatten_nets;
-		
-	begin -- flatten
-		log ("flattening schematic ...", log_threshold);
+
+		procedure move_general_board_stuff (
+		-- Moves general (non-component related) layout objects from kicad frame to native frame
+			module_name	: in et_coordinates.type_submodule_name.bounded_string;
+			module		: in out et_kicad.type_module) is
+		begin
+			null;
+-- 			silk_screen	: type_silk_screen_pcb_both_sides;
+-- 			assy_doc	: type_assembly_documentation_pcb_both_sides;
+-- 			stencil		: type_stencil_both_sides;
+-- 			stop_mask	: type_stop_mask_both_sides;
+-- 			keepout		: type_keepout_both_sides;		
+-- 			contour		: type_pcb_contour;
+-- 			copper		: type_copper_pcb; -- non-electric copper stuff !
+
+		end move_general_board_stuff;
+
+	begin -- transpose
+		log ("transposing coordinates ...", log_threshold);
 		log_indentation_up;
 		
 		while module_cursor /= et_kicad.type_rig.no_element loop
 			log ("module " & et_coordinates.to_string (key (module_cursor)), log_threshold + 1);
+			log_indentation_up;
+
+			log ("schematic ...", log_threshold + 1);
 			log_indentation_up;
 
 			-- As preparation for later moving the y positions of objects,
@@ -545,19 +564,33 @@ package body et_kicad_to_native is
 				container	=> et_kicad.rig,
 				position	=> module_cursor,
 				process		=> flatten_nets'access);
+
+			log_indentation_down;
+			
+			log ("layout ...", log_threshold + 1);
+			log_indentation_up;
+
+			-- general non-component related board stuff (silk screen, documentation, ...):
+			update_element (
+				container	=> et_kicad.rig,
+				position	=> module_cursor,
+				process		=> move_general_board_stuff'access);
+
+			log_indentation_down;
+
 			
 			next (module_cursor);
-
 			log_indentation_down;
 		end loop;
 		
 		log_indentation_down;
-	end flatten;
+	end transpose;
 	
 	procedure to_native (log_threshold : in et_string_processing.type_log_level) is
-	-- Converts the rig (inc. component libraries) to a native project.
+	-- Converts the rig (incl. component libraries) to a native project.
 	-- Converts the packages (from package_libraries) to native packages.
-	-- NOTE: Packages of the board (incl. their deviations from the package_libraries) are ignored !
+	-- NOTE: Packages of the board (incl. their deviations/modifications
+	-- from the package_libraries) are ignored !
 
 		use et_kicad.type_rig;
 		module_cursor_kicad : et_kicad.type_rig.cursor := et_kicad.type_rig.first (et_kicad.rig);
@@ -572,13 +605,8 @@ package body et_kicad_to_native is
 		begin
 			module.generic_name	:= element (module_cursor_kicad).generic_name;
 			module.instance		:= element (module_cursor_kicad).instance;
-
 			module.notes		:= element (module_cursor_kicad).notes; 
-			-- CS: mirror y coordinates
-
 			module.board		:= element (module_cursor_kicad).board;
-			-- CS: mirror y coordinates
-			
 			module.net_classes	:= element (module_cursor_kicad).net_classes;
 		end copy_general_stuff;
 
@@ -625,8 +653,7 @@ package body et_kicad_to_native is
 						when et_libraries.SCH =>
 
 							unit_native_virtual := et_schematic.type_unit (element (unit_cursor_kicad));
-							-- CS: mirror y coordinates
-							
+
 							et_schematic.type_units.insert (
 								container	=> component.units,
 								key			=> key (unit_cursor_kicad),
@@ -637,7 +664,6 @@ package body et_kicad_to_native is
 						when et_libraries.SCH_PCB =>
 
 							unit_native_real := et_schematic.type_unit (element (unit_cursor_kicad));
-							-- CS: mirror y coordinates
 							
 							et_schematic.type_units.insert (
 								container	=> component.units,
@@ -933,7 +959,6 @@ package body et_kicad_to_native is
 				
 				log ("tracks, vias, polygons ...", log_threshold + 3);
 				net.route := element (kicad_net_cursor).route;
-				-- CS: mirror y coordinates
 				-- CS log details on tracks, vias, ...
 				
 				log_indentation_down;
@@ -972,7 +997,7 @@ package body et_kicad_to_native is
 		end copy_nets;
 		
 	begin -- to_native
-		flatten (log_threshold); -- levels all paths so that we get a real flat design
+		transpose (log_threshold); -- levels all paths so that we get a real flat design
 
 		log ("converting ...", log_threshold);
 		log_indentation_up;
@@ -1007,7 +1032,7 @@ package body et_kicad_to_native is
 				position	=> module_cursor_native,
 				process		=> copy_nets'access);
 
-			-- CS copy frames, mirror y
+			-- CS copy frames
 			
 			log_indentation_down;
 
