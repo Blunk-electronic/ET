@@ -143,23 +143,53 @@ package body et_kicad_to_native is
 			sheet_paper_size	: et_general.type_paper_size;
 			sheet_height		: et_coordinates.type_distance_xy;
 			new_y				: et_coordinates.type_distance_xy;
-			begin
-				-- get the sheet number where the given point resides
-				sheet_number		:= sheet (point); 
+		begin
+			-- get the sheet number where the given point resides
+			sheet_number		:= sheet (point); 
 
-				-- get the paper size of the sheet
-				sheet_paper_size	:= paper_size_of_schematic_sheet (sheet_number);
+			-- get the paper size of the sheet
+			sheet_paper_size	:= paper_size_of_schematic_sheet (sheet_number);
 
-				-- get the paper height of the sheet
-				sheet_height		:= paper_dimension (axis => Y, paper_size => sheet_paper_size);
+			-- get the paper height of the sheet
+			sheet_height		:= paper_dimension (axis => Y, paper_size => sheet_paper_size);
 
-				-- calculate the new y position
-				new_y				:= sheet_height - distance_y (point);
+			-- calculate the new y position
+			new_y				:= sheet_height - distance_y (point);
 
-				-- assign the new y position to the given point
-				set_y (point, new_y);
-			end move;
+			-- assign the new y position to the given point
+			set_y (point, new_y);
+		end move;
 
+		procedure move (
+			point_actual	: in out et_coordinates.type_2d_point;	-- the point it is about
+			point_help		: in et_coordinates.type_coordinates	-- supportive point that proviedes the sheet number
+			) is
+		-- Transposes the point_actual from the kicad frame to the ET native frame.
+		-- point_help has supporting purpose: it provides the sheet number where point_actual sits.
+		-- KiCad frames have the origin in the upper left corner.
+		-- ET frames have the origin in the lower left corner.
+			use et_coordinates;
+			sheet_number 		: et_coordinates.type_submodule_sheet_number;
+			sheet_paper_size	: et_general.type_paper_size;
+			sheet_height		: et_coordinates.type_distance_xy;
+			new_y				: et_coordinates.type_distance_xy;
+		begin
+			-- get the sheet number where the given point resides
+			sheet_number		:= sheet (point_help); 
+
+			-- get the paper size of the sheet
+			sheet_paper_size	:= paper_size_of_schematic_sheet (sheet_number);
+
+			-- get the paper height of the sheet
+			sheet_height		:= paper_dimension (axis => Y, paper_size => sheet_paper_size);
+
+			-- calculate the new y position
+			new_y				:= sheet_height - distance_y (point_actual);
+
+			-- assign the new y position to the given point
+			set_y (point_actual, new_y);
+		end move;
+		
 		procedure flatten_notes (
 			module_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_kicad.type_module) is
@@ -332,7 +362,36 @@ package body et_kicad_to_native is
 
 					procedure change_path_of_segment (segment : in out et_kicad.type_net_segment) is
 						use et_coordinates;
-					begin
+						
+						use et_kicad.type_simple_labels;
+						simple_label_cursor : et_kicad.type_simple_labels.cursor := segment.label_list_simple.first;
+
+						procedure move_simple_label (label : in out et_kicad.type_net_label_simple) is
+						-- Moves the given simple label from kicad frame to native frame.
+						begin
+							log ("simple label " & before & to_string (label.coordinates), log_threshold + 3);
+							
+							-- as supportive point that provides the sheet number we pass the segment start position.
+							move (point_actual => label.coordinates, point_help => segment.coordinates_start);
+
+							log ("simple label " & now & to_string (label.coordinates), log_threshold + 3);							
+						end move_simple_label;
+						
+						use et_kicad.type_tag_labels;
+						tag_label_cursor : et_kicad.type_tag_labels.cursor := segment.label_list_tag.first;
+
+						procedure move_tag_label (label : in out et_kicad.type_net_label_tag) is
+						-- Moves the given tag label from kicad frame to native frame.
+						begin
+							log ("tag label " & before & to_string (label.coordinates), log_threshold + 3);
+							
+							-- as supportive point that provides the sheet number we pass the segment start position.
+							move (point_actual => label.coordinates, point_help => segment.coordinates_start);
+							
+							log ("tag label " & now & to_string (label.coordinates), log_threshold + 3);
+						end move_tag_label;
+
+					begin -- change_path_of_segment
 						log ("segment", log_threshold + 3);
 						log_indentation_up;
 
@@ -342,7 +401,7 @@ package body et_kicad_to_native is
 
 						et_coordinates.set_path (segment.coordinates_start, root);
 
-						move (segment.coordinates_start.position); -- Move position from negative to positive y.
+						move (segment.coordinates_start); -- Move position from negative to positive y.
 						
 						log ("start " & now & to_string (position => segment.coordinates_start, scope => et_coordinates.MODULE),
 							log_threshold + 3);
@@ -353,12 +412,29 @@ package body et_kicad_to_native is
 
 						et_coordinates.set_path (segment.coordinates_end, root);
 
-						move (segment.coordinates_end.position); -- Move position from negative to positive y.
+						move (segment.coordinates_end); -- Move position from negative to positive y.
 						
 						log ("end   " & now & to_string (position => segment.coordinates_end, scope => et_coordinates.MODULE),
 							log_threshold + 3);
 
-						-- CS change path and y of junctions and segments ?
+						-- move y of net labels
+						while simple_label_cursor /= et_kicad.type_simple_labels.no_element loop
+							et_kicad.type_simple_labels.update_element (
+								container	=> segment.label_list_simple,
+								position	=> simple_label_cursor,
+								process 	=> move_simple_label'access);
+							next (simple_label_cursor);
+						end loop;
+
+						while tag_label_cursor /= et_kicad.type_tag_labels.no_element loop
+							et_kicad.type_tag_labels.update_element (
+								container	=> segment.label_list_tag,
+								position	=> tag_label_cursor,
+								process 	=> move_tag_label'access);
+							next (tag_label_cursor);
+						end loop;
+
+						-- CS change y of junctionsts ?
 						
 						log_indentation_down;
 
