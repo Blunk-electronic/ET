@@ -391,6 +391,23 @@ package body et_kicad_to_native is
 							log ("tag label " & now & to_string (label.coordinates), log_threshold + 3);
 						end move_tag_label;
 
+						use et_kicad.type_junctions;
+						junction_cursor : et_kicad.type_junctions.cursor := segment.junctions.first;
+
+						procedure change_path_of_junction (junction : in out et_kicad.type_net_junction) is
+						-- Moves the given net junction from kicad frame to native frame.
+						begin
+							log ("junction " & before & to_string (position => junction.coordinates, scope => et_coordinates.MODULE),
+								log_threshold + 3);
+
+							et_coordinates.set_path (junction.coordinates, root);
+							move (junction.coordinates);
+
+							log ("junction " & now & to_string (position => junction.coordinates, scope => et_coordinates.MODULE),
+								log_threshold + 3);
+								 
+						end change_path_of_junction;
+								 
 					begin -- change_path_of_segment
 						log ("segment", log_threshold + 3);
 						log_indentation_up;
@@ -417,7 +434,7 @@ package body et_kicad_to_native is
 						log ("end   " & now & to_string (position => segment.coordinates_end, scope => et_coordinates.MODULE),
 							log_threshold + 3);
 
-						-- move y of net labels
+						-- Move y of net labels.
 						while simple_label_cursor /= et_kicad.type_simple_labels.no_element loop
 							et_kicad.type_simple_labels.update_element (
 								container	=> segment.label_list_simple,
@@ -434,7 +451,14 @@ package body et_kicad_to_native is
 							next (tag_label_cursor);
 						end loop;
 
-						-- CS change y of junctionsts ?
+						-- Change path of junctions (incl. moving y):
+						while junction_cursor /= et_kicad.type_junctions.no_element loop
+							et_kicad.type_junctions.update_element (
+								container	=> segment.junctions,
+								position	=> junction_cursor,
+								process 	=> change_path_of_junction'access);
+							next (junction_cursor);
+						end loop;
 						
 						log_indentation_down;
 
@@ -487,14 +511,14 @@ package body et_kicad_to_native is
 		end flatten_nets;
 		
 	begin -- flatten
-		log ("flattening project ...", log_threshold);
+		log ("flattening schematic ...", log_threshold);
 		log_indentation_up;
 		
 		while module_cursor /= et_kicad.type_rig.no_element loop
 			log ("module " & et_coordinates.to_string (key (module_cursor)), log_threshold + 1);
 			log_indentation_up;
 
-			-- As preparation for later mirroring the y positions of objects,
+			-- As preparation for later moving the y positions of objects,
 			-- we need a list of drawing frames. This list will later provide the
 			-- paper sizes of individual drawing sheets.
 			frames := element (module_cursor).frames;

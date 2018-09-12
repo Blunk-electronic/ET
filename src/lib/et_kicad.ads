@@ -541,7 +541,7 @@ package et_kicad is
 	-- Returns the coordinates of the given label as string.
 
 	-- A net junction is where segments can be connected with each other.
-	type type_net_junction is record
+	type type_net_junction is record -- CS rename to type_junction
 		coordinates : et_coordinates.type_coordinates;
 	end record;
 

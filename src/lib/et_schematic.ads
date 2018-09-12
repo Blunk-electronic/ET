@@ -193,7 +193,7 @@ package et_schematic is
 	-- Converts a string to type_net_label_text_size.
 
 	-- A net junction is where segments can be connected with each other.
-	type type_net_junction is record
+	type type_net_junction is record -- CS rename to type_junction
 		coordinates : et_coordinates.type_2d_point;
 	end record;
 
