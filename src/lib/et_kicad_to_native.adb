@@ -111,7 +111,7 @@ package body et_kicad_to_native is
 			use et_libraries.type_frames;
 			frame_cursor : et_libraries.type_frames.cursor := frames.first;
 			
-		begin -- query_frames
+		begin -- paper_size_of_schematic_sheet
 
 			-- loop in list of frames given in "frames"
 			while frame_cursor /= et_libraries.type_frames.no_element loop
@@ -135,7 +135,7 @@ package body et_kicad_to_native is
 		end paper_size_of_schematic_sheet;
 
 		procedure move (point : in out et_coordinates.type_coordinates) is
-		-- Transposes a point from the kicad frame to the ET native frame.
+		-- Transposes a schematic point from the kicad frame to the ET native frame.
 		-- KiCad frames have the origin in the upper left corner.
 		-- ET frames have the origin in the lower left corner.
 			use et_coordinates;
@@ -164,7 +164,7 @@ package body et_kicad_to_native is
 			point_actual	: in out et_coordinates.type_2d_point;	-- the point it is about
 			point_help		: in et_coordinates.type_coordinates	-- supportive point that proviedes the sheet number
 			) is
-		-- Transposes the point_actual from the kicad frame to the ET native frame.
+		-- Transposes the schematic point_actual from the kicad frame to the ET native frame.
 		-- point_help has supporting purpose: it provides the sheet number where point_actual sits.
 		-- KiCad frames have the origin in the upper left corner.
 		-- ET frames have the origin in the lower left corner.
@@ -193,6 +193,7 @@ package body et_kicad_to_native is
 		procedure flatten_notes (
 			module_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_kicad.type_module) is
+		-- Changes the path and y position of text notes (in schematic) to root path.
 
 			use et_schematic.type_texts;
 			note_cursor : et_schematic.type_texts.cursor := module.notes.first;
@@ -236,7 +237,8 @@ package body et_kicad_to_native is
 		procedure flatten_frames (
 			module_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_kicad.type_module) is
-
+		-- Changes the path of drawing frames (in schematic) to root path.
+			
 			use et_libraries.type_frames;
 			frame_cursor : et_libraries.type_frames.cursor := module.frames.first;
 
@@ -276,7 +278,8 @@ package body et_kicad_to_native is
 		procedure flatten_components (
 			module_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_kicad.type_module) is
-
+		-- Changes the path and y position of units of components (in schematic) to root path.
+			
 			use et_kicad.type_components_schematic;
 			component_cursor : et_kicad.type_components_schematic.cursor := module.components.first;
 
@@ -345,6 +348,7 @@ package body et_kicad_to_native is
 		procedure flatten_nets (
 			module_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_kicad.type_module) is
+		-- Changes the path and y position of net segments, junctions and labels (in schematic) to root path.
 
 			use et_kicad.type_nets;
 			net_cursor : et_kicad.type_nets.cursor := module.nets.first;
@@ -434,7 +438,7 @@ package body et_kicad_to_native is
 						log ("end   " & now & to_string (position => segment.coordinates_end, scope => et_coordinates.MODULE),
 							log_threshold + 3);
 
-						-- Move y of net labels.
+						-- Move y of simple net labels.
 						while simple_label_cursor /= et_kicad.type_simple_labels.no_element loop
 							et_kicad.type_simple_labels.update_element (
 								container	=> segment.label_list_simple,
@@ -443,6 +447,7 @@ package body et_kicad_to_native is
 							next (simple_label_cursor);
 						end loop;
 
+						-- Move y of tag net labels.
 						while tag_label_cursor /= et_kicad.type_tag_labels.no_element loop
 							et_kicad.type_tag_labels.update_element (
 								container	=> segment.label_list_tag,
@@ -611,6 +616,7 @@ package body et_kicad_to_native is
 		end copy_general_stuff;
 
 		procedure copy_components (
+		-- Transfer components from kicad design to native design.
 			module_name : in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_schematic.type_module) is
 
@@ -997,7 +1003,11 @@ package body et_kicad_to_native is
 		end copy_nets;
 		
 	begin -- to_native
-		transpose (log_threshold); -- levels all paths so that we get a real flat design
+
+		-- First, the kicad schematic must be flattened so that we get a real flat design.
+		-- Further-on the y coordinates of objects in schematic must be changed. 
+		-- Kicad schematic has origin in upper left corner. ET has origin in lower left corder.
+		transpose (log_threshold);
 
 		log ("converting ...", log_threshold);
 		log_indentation_up;
@@ -1033,6 +1043,8 @@ package body et_kicad_to_native is
 				process		=> copy_nets'access);
 
 			-- CS copy frames
+
+			-- CS component_libraries (symbols and port-pin-mappings)
 			
 			log_indentation_down;
 
@@ -1041,7 +1053,7 @@ package body et_kicad_to_native is
 
 
 -- 		log ("packages ...", log_threshold);
-
+		-- et_kicad_pcb.package_libraries
 
 
 
