@@ -49,9 +49,11 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
+with et_general;
 with et_string_processing;
 with et_libraries;				--use et_libraries;
 with et_pcb_coordinates;		use et_pcb_coordinates;
+
 
 package et_pcb is
 
@@ -1352,6 +1354,7 @@ package et_pcb is
 
 	-- This is general board stuff:
 	type type_board is record
+		paper_size	: et_general.type_paper_size;
 		silk_screen	: type_silk_screen_pcb_both_sides;
 		assy_doc	: type_assembly_documentation_pcb_both_sides;
 		stencil		: type_stencil_both_sides;

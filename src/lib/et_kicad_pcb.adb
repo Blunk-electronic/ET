@@ -7457,6 +7457,8 @@ package body et_kicad_pcb is
 			begin -- add_board_objects
 				-- General board stuff (not related to any components) is
 				-- copied right away:
+				module.board.paper_size		:= board.paper_size;
+				
 				module.board.silk_screen	:= board.silk_screen;
 				module.board.assy_doc		:= board.assy_doc;
 				module.board.stencil 		:= board.stencil;

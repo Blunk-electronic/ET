@@ -1241,7 +1241,7 @@ package et_kicad is
 		portlists			: type_portlists.map;						-- the portlists of the module
 		netlist				: type_netlist.map;							-- net names and connected ports
 		hierarchic_sheets	: type_hierarchic_sheets.map;				-- hierarchic sheets
-        frames      		: et_libraries.type_frames.list;			-- frames -- GUI relevant
+        frames      		: et_libraries.type_frames.list;			-- schematic frames
 		notes       		: et_schematic.type_texts.list;				-- notes
 	
 		sheet_headers		: type_sheet_headers.map;					-- the list of sheet headers
@@ -1252,7 +1252,8 @@ package et_kicad is
 		-- board related stuff: lines, arcs, vias, polygons
 		nets 	    	: type_nets.map; 
 		
-		-- General non-component related board stuff (silk screen, documentation, ...):
+		-- General non-component related board stuff:
+		-- paper size, silk screen, documentation, ...
 		board			: et_pcb.type_board;
 	end record;
 

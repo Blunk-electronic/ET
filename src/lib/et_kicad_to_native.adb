@@ -87,8 +87,11 @@ package body et_kicad_to_native is
 		now		: constant string (1..6) := "now   ";
 
 		-- This list of frames serves to map from sheet number to paper size:
-		frames : et_libraries.type_frames.list;
+		schematic_frames : et_libraries.type_frames.list;
 
+		-- The paper size of a board/layout drawing:
+		board_paper_size : et_general.type_paper_size;
+		
 		function paper_size_of_schematic_sheet (sheet_number : in et_coordinates.type_submodule_sheet_number)
 		-- Returns for a given sheet number the respective paper size.
 			return et_general.type_paper_size is
@@ -109,7 +112,7 @@ package body et_kicad_to_native is
 
 			-- We search for the paper size in the list "frames":
 			use et_libraries.type_frames;
-			frame_cursor : et_libraries.type_frames.cursor := frames.first;
+			frame_cursor : et_libraries.type_frames.cursor := schematic_frames.first;
 			
 		begin -- paper_size_of_schematic_sheet
 
@@ -573,13 +576,16 @@ package body et_kicad_to_native is
 			log ("module " & et_coordinates.to_string (key (module_cursor)), log_threshold + 1);
 			log_indentation_up;
 
-			log ("schematic ...", log_threshold + 1);
-			log_indentation_up;
+			-- log ("schematic ...", log_threshold + 1);
+			-- log_indentation_up;
 
-			-- As preparation for later moving the y positions of objects,
-			-- we need a list of drawing frames. This list will later provide the
-			-- paper sizes of individual drawing sheets.
-			frames := element (module_cursor).frames;
+			-- As preparation for later moving the y positions of schematic objects,
+			-- we need a list of scheamtic drawing frames. This list will later provide the
+			-- paper sizes of individual drawing sheets of the schematic:
+			schematic_frames := element (module_cursor).frames;
+
+			-- Fetch the paper size of the current layout design:
+			board_paper_size := element (module_cursor).board.paper_size;
 			
 			update_element (
 				container	=> et_kicad.rig,
@@ -604,10 +610,10 @@ package body et_kicad_to_native is
 				position	=> module_cursor,
 				process		=> flatten_nets'access);
 
-			log_indentation_down;
+			--log_indentation_down;
 			
-			log ("layout ...", log_threshold + 1);
-			log_indentation_up;
+			--log ("layout ...", log_threshold + 1);
+			--log_indentation_up;
 
 			-- general non-component related board stuff (silk screen, documentation, ...):
 			update_element (
