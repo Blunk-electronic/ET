@@ -75,7 +75,7 @@ package body et_kicad_to_native is
 	procedure transpose (log_threshold : in et_string_processing.type_log_level) is
 	-- Transposes coordinates of schematic and layout elements:
 	-- 1. In schematic changes the path (selector of et_coordinates.type_coordinates) to the root path (/).
-	-- 2. Moves schematic objects from negative to positive y coordinates.
+	-- 2. Moves schematic and layout objects from negative to positive y coordinates.
 	--    (The origin in kicad is the upper left corner. The origin in ET is the lower left corner.)
 		use et_kicad.type_rig;
 		module_cursor : et_kicad.type_rig.cursor := et_kicad.type_rig.first (et_kicad.rig);
@@ -279,6 +279,7 @@ package body et_kicad_to_native is
 			module_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_kicad.type_module) is
 		-- Changes the path and y position of units of components (in schematic) to root path.
+		-- Moves the y position of components (in layout).
 			
 			use et_kicad.type_components_schematic;
 			component_cursor : et_kicad.type_components_schematic.cursor := module.components.first;
@@ -286,7 +287,7 @@ package body et_kicad_to_native is
 			procedure query_units (
 				reference	: in et_libraries.type_component_reference;
 				component	: in out et_kicad.type_component_schematic) is
-				-- 				use et_coordinates;
+				-- use et_coordinates;
 				use et_kicad.type_units_schematic;
 				unit_cursor : et_kicad.type_units_schematic.cursor := component.units.first;
 
@@ -311,6 +312,13 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end change_path;
 
+				procedure move_package is
+				begin
+					null; -- CS
+					-- wenn appearance sch_pcb
+					-- component.position
+				end move_package;
+				
 			begin -- query_units
 				log (et_libraries.to_string (key (component_cursor)), log_threshold + 3);
 				log_indentation_up;
@@ -325,6 +333,9 @@ package body et_kicad_to_native is
 					next (unit_cursor);
 				end loop;
 
+				-- move y position of package in layout
+				move_package;
+				
 				log_indentation_down;
 			end query_units;
 				
@@ -349,6 +360,7 @@ package body et_kicad_to_native is
 			module_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_kicad.type_module) is
 		-- Changes the path and y position of net segments, junctions and labels (in schematic) to root path.
+		-- MOves the y position of copper objects (in layout).
 
 			use et_kicad.type_nets;
 			net_cursor : et_kicad.type_nets.cursor := module.nets.first;
@@ -480,17 +492,38 @@ package body et_kicad_to_native is
 						next (segment_cursor);
 					end loop;
 				end query_segments;
+
+				procedure move_route is
+				-- Move y position of copper objects of the net: lines, arcs, vias, polygons
+				begin
+					null; -- CS
+					-- net.route
+-- 					type type_route is record 
+-- 						lines 			: type_copper_lines_pcb.list;
+-- 						arcs			: type_copper_arcs_pcb.list;
+-- 						vias			: type_vias.list;
+-- 						polygons		: type_copper_polygons_pcb.list;
+-- 					end record;
+
+				end move_route;
 				
 			begin -- query_strands
+
+				-- schematic related:
 				while strand_cursor /= et_kicad.type_strands.no_element loop
 
 					et_kicad.type_strands.update_element (
 						container	=> net.strands,
 						position	=> strand_cursor,
 						process		=> query_segments'access);
-					
+				
 					next (strand_cursor);
 				end loop;
+
+				-- layout related:
+				-- Copper objects of the net: lines, arcs, vias, polygons
+				move_route;
+
 			end query_strands;
 			
 		begin -- flatten_nets
@@ -516,11 +549,12 @@ package body et_kicad_to_native is
 		end flatten_nets;
 
 		procedure move_general_board_stuff (
-		-- Moves general (non-component related) layout objects from kicad frame to native frame
+		-- Moves y positon of general (non-component related) layout objects from kicad frame to native frame.
 			module_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_kicad.type_module) is
 		begin
-			null;
+			null; -- CS
+			-- module.board
 -- 			silk_screen	: type_silk_screen_pcb_both_sides;
 -- 			assy_doc	: type_assembly_documentation_pcb_both_sides;
 -- 			stencil		: type_stencil_both_sides;
