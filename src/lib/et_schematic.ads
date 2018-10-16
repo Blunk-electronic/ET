@@ -396,6 +396,8 @@ package et_schematic is
 	type type_module is record
 		generic_name	: et_coordinates.type_submodule_name.bounded_string;
 		instance		: et_coordinates.type_submodule_instance;
+		board_available	: type_board_available := FALSE;
+		
 		components		: type_components.map;			-- the components of the module
 		net_classes		: et_pcb.type_net_classes.map;	-- the net classes
 		submodules  	: type_submodules.map;			-- graphical representations of submodules

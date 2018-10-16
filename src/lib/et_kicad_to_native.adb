@@ -93,6 +93,16 @@ package body et_kicad_to_native is
 		-- layout objects from the kicad frame to the native frame.
 		layout_sheet_height : et_pcb_coordinates.type_distance;
 
+		function board_available return boolean is
+		-- Returns true if the current kicad module has a layout file.
+		begin
+			if element (module_cursor).board_available then
+				return true;
+			else 
+				return false;
+			end if;
+		end board_available;
+		
 		function paper_size_of_schematic_sheet (sheet_number : in et_coordinates.type_submodule_sheet_number)
 		-- Returns for a given sheet number the respective paper size.
 			return et_general.type_paper_size is
@@ -376,8 +386,10 @@ package body et_kicad_to_native is
 					next (unit_cursor);
 				end loop;
 
-				-- move y position of package in layout
-				move_package;
+				-- If a board design has been imported, move y position of package in layout.
+				if board_available then
+					move_package;
+				end if;
 				
 				log_indentation_down;
 			end query_units;
@@ -538,6 +550,35 @@ package body et_kicad_to_native is
 
 				procedure move_route is
 				-- Move y position of copper objects of the net: lines, arcs, vias, polygons
+
+					use et_pcb.type_copper_lines_pcb;
+					use et_pcb.type_copper_arcs_pcb;
+					use et_pcb.type_vias;
+					use et_pcb.type_copper_polygons_pcb;
+					
+					line_cursor : et_pcb.type_copper_lines_pcb.cursor := net.route.lines.first;
+					arc_cursor	: et_pcb.type_copper_arcs_pcb.cursor := net.route.arcs.first;
+					via_cursor	: et_pcb.type_vias.cursor := net.route.vias.first;
+					poly_cursor	: et_pcb.type_copper_polygons_pcb.cursor := net.route.polygons.first;
+
+					procedure move_line (line : in out et_pcb.type_copper_line_pcb) is
+						use et_pcb_coordinates;
+					begin
+						log ("board line", log_threshold + 4);
+						log_indentation_up;
+
+						log (before & to_string (line.start_point), log_threshold + 4);
+						log (before & to_string (line.end_point), log_threshold + 4);
+
+						move (line.start_point);
+						move (line.end_point);
+						
+						log (now & to_string (line.start_point), log_threshold + 4);
+						log (now & to_string (line.end_point), log_threshold + 4);
+						
+						log_indentation_down;
+					end move_line;
+						
 				begin
 					null; -- CS
 					-- net.route
@@ -548,6 +589,32 @@ package body et_kicad_to_native is
 -- 						polygons		: type_copper_polygons_pcb.list;
 -- 					end record;
 
+					
+					while line_cursor /= et_pcb.type_copper_lines_pcb.no_element loop
+						et_pcb.type_copper_lines_pcb.update_element (
+							container 	=> net.route.lines,
+							position	=> line_cursor,
+							process		=> move_line'access);
+						
+						next (line_cursor);
+					end loop;
+
+					while arc_cursor /= et_pcb.type_copper_arcs_pcb.no_element loop
+
+						next (arc_cursor);
+					end loop;
+
+					while via_cursor /= et_pcb.type_vias.no_element loop
+
+						next (via_cursor);
+					end loop;
+
+					while poly_cursor /= et_pcb.type_copper_polygons_pcb.no_element loop
+
+						next (poly_cursor);
+					end loop;
+					
+					
 				end move_route;
 				
 			begin -- query_strands
@@ -565,7 +632,9 @@ package body et_kicad_to_native is
 
 				-- layout related:
 				-- Copper objects of the net: lines, arcs, vias, polygons
-				move_route;
+				if board_available then
+					move_route;
+				end if;
 
 			end query_strands;
 			
@@ -626,7 +695,9 @@ package body et_kicad_to_native is
 
 			-- As preparation for later moving the y positions of board objects,
 			-- the layout_sheet_height must be set:
-			prepare_layout_y_movements;
+			if board_available then
+				prepare_layout_y_movements;
+			end if;
 			
 			update_element (
 				container	=> et_kicad.rig,
@@ -657,11 +728,13 @@ package body et_kicad_to_native is
 			--log_indentation_up;
 
 			-- general non-component related board stuff (silk screen, documentation, ...):
-			update_element (
-				container	=> et_kicad.rig,
-				position	=> module_cursor,
-				process		=> move_general_board_stuff'access);
-
+			if board_available then
+				update_element (
+					container	=> et_kicad.rig,
+					position	=> module_cursor,
+					process		=> move_general_board_stuff'access);
+			end if;
+			
 -- 			log_indentation_down;
 
 			
@@ -689,11 +762,12 @@ package body et_kicad_to_native is
 			module_name : in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_schematic.type_module) is
 		begin
-			module.generic_name	:= element (module_cursor_kicad).generic_name;
-			module.instance		:= element (module_cursor_kicad).instance;
-			module.notes		:= element (module_cursor_kicad).notes; 
-			module.board		:= element (module_cursor_kicad).board;
-			module.net_classes	:= element (module_cursor_kicad).net_classes;
+			module.generic_name		:= element (module_cursor_kicad).generic_name;
+			module.instance			:= element (module_cursor_kicad).instance;
+			module.board_available	:= element (module_cursor_kicad).board_available;
+			module.notes			:= element (module_cursor_kicad).notes; 
+			module.board			:= element (module_cursor_kicad).board;
+			module.net_classes		:= element (module_cursor_kicad).net_classes;
 		end copy_general_stuff;
 
 		procedure copy_components (
