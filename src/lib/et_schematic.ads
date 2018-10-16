@@ -389,6 +389,8 @@ package et_schematic is
  		element_type	=> type_component);
 
 	
+	-- For designs which have only a schematic, this flag goes false.
+	type type_board_available is new boolean;
 
 	
 	type type_module is record

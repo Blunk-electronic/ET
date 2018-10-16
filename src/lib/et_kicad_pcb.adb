@@ -7592,6 +7592,12 @@ package body et_kicad_pcb is
 			
 		end merge_board_and_schematic;
 
+		procedure set_board_available_flag (
+			module_name	: in et_coordinates.type_submodule_name.bounded_string;
+			module		: in out et_kicad.type_module) is
+		begin
+			module.board_available := et_schematic.TRUE;
+		end set_board_available_flag;
 		
 	begin -- read_board
 		log ("reading board file " & file_name & " ...", log_threshold);
@@ -7603,6 +7609,12 @@ package body et_kicad_pcb is
 				mode => in_file,
 				name => file_name); -- pwr_supply.kicad_pcb
 
+			-- Now, since there is a board file, the corresponding flag must be set in the module.
+			-- By default it is cleared.
+			et_kicad.rig.update_element (
+				position	=> et_kicad.module_cursor,
+				process		=> set_board_available_flag'access);
+			
 			-- read board file
 			set_input (board_handle);
 			while not end_of_file loop

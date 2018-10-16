@@ -1218,12 +1218,13 @@ package et_kicad is
 	-- Generates a bom file. This file is csv formatted and is to be processed by
 	-- other ERP tools (like stock_manager, see <https://github.com/Blunk-electronic/stock_manager>)
 
-
+	
 -- MODULES
 	
 	type type_module is record
 		generic_name	: et_coordinates.type_submodule_name.bounded_string;
 		instance		: et_coordinates.type_submodule_instance;
+		board_available	: et_schematic.type_board_available := et_schematic.false;
 
 		-- The search list of project library directories and names:
 		search_list_library_dirs	: type_project_lib_dirs.list; 	-- search list for library directories (active, passive, ...)

@@ -8243,7 +8243,9 @@ package body et_kicad is
 						notes				=> type_texts.empty_list,
 						sheet_headers		=> type_sheet_headers.empty_map,
 
-						board				=> (others => <>)), -- no board stuff available at this time -> use defaults
+						board_available		=> <>,
+						board				=> (others => <>) -- no board stuff available at this time -> use defaults
+						),
 					
 					position	=> module_cursor,
 					inserted	=> module_inserted);
