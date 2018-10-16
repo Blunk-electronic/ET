@@ -147,7 +147,7 @@ package body et_kicad_to_native is
 			sheet_paper_size	: et_general.type_paper_size;
 			sheet_height		: et_coordinates.type_distance_xy;
 			new_y				: et_coordinates.type_distance_xy;
-		begin
+		begin -- move
 			-- get the sheet number where the given point resides
 			sheet_number		:= sheet (point); 
 
@@ -199,13 +199,26 @@ package body et_kicad_to_native is
 			-- The paper size of a board/layout drawing:
 			use et_pcb_coordinates;
 			board_paper_size : et_general.type_paper_size;
-		begin
+		begin -- prepare_layout_y_movements
 			-- Fetch the paper size of the current layout design:
 			board_paper_size := element (module_cursor).board.paper_size;
-
+			
+			log ("layout paper size " & et_general.to_string (board_paper_size), log_threshold + 2);
+			
 			-- get the paper height of the sheet
 			layout_sheet_height := paper_dimension (axis => Y, paper_size => board_paper_size);
 		end prepare_layout_y_movements;
+
+		procedure move (point : in out et_pcb_coordinates.type_point_3d'class) is
+		-- Transposes the given point in layout from the kicad frame to the ET native frame.
+		-- KiCad frames have the origin in the upper left corner.
+		-- ET frames have the origin in the lower left corner.
+			use et_pcb_coordinates;
+			new_y : et_pcb_coordinates.type_distance;
+		begin -- move
+			new_y := layout_sheet_height - get_axis (Y, point);
+			set_point (Y, new_y, point);
+		end move;
 		
 		procedure flatten_notes (
 			module_name	: in et_coordinates.type_submodule_name.bounded_string;
@@ -330,10 +343,23 @@ package body et_kicad_to_native is
 				end change_path;
 
 				procedure move_package is
+				-- moves the position of the package in layout
+					use et_libraries;
+					use et_pcb_coordinates;
 				begin
-					null; -- CS
-					-- wenn appearance sch_pcb
-					-- component.position
+					if component.appearance = SCH_PCB then
+						log_indentation_up;
+						
+						log ("package", log_threshold + 4);
+						
+						log_indentation_up;
+						log (before & to_string (component.position), log_threshold + 4);
+						move (point => component.position);
+						log (now & to_string (component.position), log_threshold + 4);
+						
+						log_indentation_down;
+						log_indentation_down;
+					end if;
 				end move_package;
 				
 			begin -- query_units
@@ -636,7 +662,7 @@ package body et_kicad_to_native is
 				position	=> module_cursor,
 				process		=> move_general_board_stuff'access);
 
-			log_indentation_down;
+-- 			log_indentation_down;
 
 			
 			next (module_cursor);
