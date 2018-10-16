@@ -89,9 +89,10 @@ package body et_kicad_to_native is
 		-- This list of frames serves to map from sheet number to paper size:
 		schematic_frames : et_libraries.type_frames.list;
 
-		-- The paper size of a board/layout drawing:
-		board_paper_size : et_general.type_paper_size;
-		
+		-- Here the height of the layout sheet is kept. It is required for move ops of 
+		-- layout objects from the kicad frame to the native frame.
+		layout_sheet_height : et_pcb_coordinates.type_distance;
+
 		function paper_size_of_schematic_sheet (sheet_number : in et_coordinates.type_submodule_sheet_number)
 		-- Returns for a given sheet number the respective paper size.
 			return et_general.type_paper_size is
@@ -176,7 +177,7 @@ package body et_kicad_to_native is
 			sheet_paper_size	: et_general.type_paper_size;
 			sheet_height		: et_coordinates.type_distance_xy;
 			new_y				: et_coordinates.type_distance_xy;
-		begin
+		begin -- move
 			-- get the sheet number where the given point resides
 			sheet_number		:= sheet (point_help); 
 
@@ -192,6 +193,19 @@ package body et_kicad_to_native is
 			-- assign the new y position to the given point
 			set_y (point_actual, new_y);
 		end move;
+
+		procedure prepare_layout_y_movements is
+		-- Sets the layout_sheet_height depending on the paper size of the layout sheet.
+			-- The paper size of a board/layout drawing:
+			use et_pcb_coordinates;
+			board_paper_size : et_general.type_paper_size;
+		begin
+			-- Fetch the paper size of the current layout design:
+			board_paper_size := element (module_cursor).board.paper_size;
+
+			-- get the paper height of the sheet
+			layout_sheet_height := paper_dimension (axis => Y, paper_size => board_paper_size);
+		end prepare_layout_y_movements;
 		
 		procedure flatten_notes (
 			module_name	: in et_coordinates.type_submodule_name.bounded_string;
@@ -580,12 +594,13 @@ package body et_kicad_to_native is
 			-- log_indentation_up;
 
 			-- As preparation for later moving the y positions of schematic objects,
-			-- we need a list of scheamtic drawing frames. This list will later provide the
+			-- we need a list of schematic drawing frames. This list will later provide the
 			-- paper sizes of individual drawing sheets of the schematic:
 			schematic_frames := element (module_cursor).frames;
 
-			-- Fetch the paper size of the current layout design:
-			board_paper_size := element (module_cursor).board.paper_size;
+			-- As preparation for later moving the y positions of board objects,
+			-- the layout_sheet_height must be set:
+			prepare_layout_y_movements;
 			
 			update_element (
 				container	=> et_kicad.rig,

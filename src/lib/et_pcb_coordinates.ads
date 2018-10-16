@@ -49,6 +49,7 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
+with et_general;
 with et_coordinates;
 with et_string_processing;
 
@@ -56,6 +57,7 @@ package et_pcb_coordinates is
 
 	
 	type type_axis is (X, Y, Z);
+	subtype type_axis_2d is type_axis range X .. Y; -- CS use this type for all kinds of 2d ops
 
 	type type_face is (TOP, BOTTOM);
 
@@ -71,6 +73,21 @@ package et_pcb_coordinates is
 	subtype type_distance is type_distance_total range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter
 	zero_distance : constant type_distance := 0.0;
 
+	-- PAPER SIZES
+	-- As default we assume landscape format for all sheets.
+	paper_size_A3_x : constant type_distance := 420.0; -- CS use a common anchestor type and default value with sizes defined in et_coordinates.ads.
+	paper_size_A3_y : constant type_distance := 297.0;
+	
+	paper_size_A4_x : constant type_distance := 297.0;
+	paper_size_A4_y : constant type_distance := 210.0;
+
+	function paper_dimension (
+	-- Returns for the given paper size, orientation and axis the correspoinding size in mm.
+		paper_size	: in et_general.type_paper_size;
+		orientation	: in et_general.type_paper_orientation := et_general.LANDSCAPE;
+		axis		: in type_axis_2d)
+		return type_distance;
+	
 	-- PCB thickness (limited to reasonable range. CS adjust if required)
 	pcb_thickness_min : constant type_distance := 0.1;
 	pcb_thickness_max : constant type_distance := 20.0;	

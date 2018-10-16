@@ -304,7 +304,7 @@ package et_coordinates is
 
 	-- PAPER SIZES
 	-- As default we assume landscape format for all sheets.
-	paper_size_A3_x : constant et_coordinates.type_distance := 420.0;
+	paper_size_A3_x : constant et_coordinates.type_distance := 420.0; -- CS use a common anchestor type and default value with sizes defined in et_pcb_coordinates.ads.
 	paper_size_A3_y : constant et_coordinates.type_distance := 297.0;
 	
 	paper_size_A4_x : constant et_coordinates.type_distance := 297.0;
