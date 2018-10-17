@@ -101,7 +101,7 @@ package et_pcb_coordinates is
 	-- Converts a mil number (given as a string) to millimeters.	
 
 	
-	position_preamble_3d : constant string (1..13) := " pos. "
+	position_preamble_3d : constant string (1..12) := " pos "
 		& "(x"
 		& et_coordinates.axis_separator
 		& "y"

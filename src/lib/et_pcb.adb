@@ -344,14 +344,16 @@ package body et_pcb is
 	function to_string (line : in type_line) return string is
 	-- Returns the start and end point of the given line as string.
 	begin
-		return "start" & to_string (line.start_point) 
+		return latin_1.space 
+			& "start" & to_string (line.start_point) 
 			& " end" & to_string (line.end_point);
 	end to_string;
 
 	function to_string (arc : in type_arc) return string is
 	-- Returns the start, end point and angle of the given arc as string.
 	begin
-		return "center" & to_string (arc.center) 
+		return latin_1.space 
+			& "center" & to_string (arc.center) 
 			& " start" & to_string (arc.start_point) 
 			& " end" & to_string (arc.end_point);
 	end to_string;
@@ -359,7 +361,8 @@ package body et_pcb is
 	function to_string (circle : in type_circle) return string is
 	-- Returns the center and radius of the given circle as string.
 	begin
-		return "center" & to_string (circle.center) 
+		return latin_1.space
+			& "center" & to_string (circle.center) 
 			& " radius" & to_string (circle.radius);
 	end to_string;
 

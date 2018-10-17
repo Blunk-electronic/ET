@@ -480,7 +480,7 @@ package body et_kicad_to_native is
 						end change_path_of_junction;
 								 
 					begin -- change_path_of_segment
-						log ("segment", log_threshold + 3);
+						log ("schematic net segment", log_threshold + 3);
 						log_indentation_up;
 
 						-- start point of net segment
@@ -561,35 +561,103 @@ package body et_kicad_to_native is
 					via_cursor	: et_pcb.type_vias.cursor := net.route.vias.first;
 					poly_cursor	: et_pcb.type_copper_polygons_pcb.cursor := net.route.polygons.first;
 
+					board_track : constant string (1..12) := "board track ";
+					
 					procedure move_line (line : in out et_pcb.type_copper_line_pcb) is
-						use et_pcb_coordinates;
+						use et_pcb;
 					begin
-						log ("board line", log_threshold + 4);
+						log (board_track & "line", log_threshold + 4);
 						log_indentation_up;
 
-						log (before & to_string (line.start_point), log_threshold + 4);
-						log (before & to_string (line.end_point), log_threshold + 4);
+						log (before & to_string (line), log_threshold + 4);
 
 						move (line.start_point);
 						move (line.end_point);
 						
-						log (now & to_string (line.start_point), log_threshold + 4);
-						log (now & to_string (line.end_point), log_threshold + 4);
+						log (now & to_string (line), log_threshold + 4);
 						
 						log_indentation_down;
 					end move_line;
-						
-				begin
-					null; -- CS
-					-- net.route
--- 					type type_route is record 
--- 						lines 			: type_copper_lines_pcb.list;
--- 						arcs			: type_copper_arcs_pcb.list;
--- 						vias			: type_vias.list;
--- 						polygons		: type_copper_polygons_pcb.list;
--- 					end record;
 
+					procedure move_arc (arc : in out et_pcb.type_copper_arc_pcb) is
+						use et_pcb;
+					begin
+						log (board_track & "arc", log_threshold + 4);
+						log_indentation_up;
+
+						log (before & to_string (arc), log_threshold + 4);
+
+						move (arc.center);
+						move (arc.start_point);
+						move (arc.end_point);
+
+						log (now & to_string (arc), log_threshold + 4);
+						
+						log_indentation_down;
+					end move_arc;
+
+					procedure move_via (via : in out et_pcb.type_via) is
+						use et_pcb_coordinates;
+					begin
+						log (board_track & "via", log_threshold + 4);
+						log_indentation_up;
+
+						log (before & to_string (via.position), log_threshold + 4);
+
+						move (via.position);
+
+						log (now & to_string (via.position), log_threshold + 4);
+						
+						log_indentation_down;
+					end move_via;
+
+					procedure move_polygon (polygon : in out et_pcb.type_copper_polygon_pcb) is
+						use et_pcb_coordinates;
+						use et_pcb.type_polygon_points;
+						point_cursor : et_pcb.type_polygon_points.cursor := polygon.points.first;
+
+						new_points : et_pcb.type_polygon_points.set;
+						
+						procedure get_point (point : in type_point_3d) is
+						-- Reads a corner point, copies it, moves the copy and inserts the moved
+						-- copy in a new set "new_points".
+							new_point : type_point_3d := point; -- copy given point
+						begin
+							log (before & to_string (new_point), log_threshold + 4);
+							move (new_point); -- move copied point
+							log (now & to_string (new_point), log_threshold + 4);
+
+							-- insert new point in new_points:
+							et_pcb.type_polygon_points.insert (
+								container	=> new_points,
+								new_item	=> new_point);
+							
+						end get_point;
+						
+					begin -- move_polygon
+						log ("board polygon corner points", log_threshold + 4);
+						log_indentation_up;
+
+						-- loop through polygon corner points and read one after another:
+						while point_cursor /= et_pcb.type_polygon_points.no_element loop
+
+							et_pcb.type_polygon_points.query_element (
+								position	=> point_cursor,
+								process		=> get_point'access);
+							
+							next (point_cursor);
+						end loop;
+
+						-- Now the new set of polygon corner points is available in "new_points".
+						-- new_points replaces the old list of points:
+						polygon.points := new_points;
+						
+						log_indentation_down;
+					end move_polygon;
 					
+				begin -- move_route
+					
+					-- Move lines:
 					while line_cursor /= et_pcb.type_copper_lines_pcb.no_element loop
 						et_pcb.type_copper_lines_pcb.update_element (
 							container 	=> net.route.lines,
@@ -599,21 +667,34 @@ package body et_kicad_to_native is
 						next (line_cursor);
 					end loop;
 
+					-- Move arcs:
 					while arc_cursor /= et_pcb.type_copper_arcs_pcb.no_element loop
+						et_pcb.type_copper_arcs_pcb.update_element (
+							container 	=> net.route.arcs,
+							position	=> arc_cursor,
+							process		=> move_arc'access);
 
 						next (arc_cursor);
 					end loop;
 
+					-- Move vias:
 					while via_cursor /= et_pcb.type_vias.no_element loop
+						et_pcb.type_vias.update_element (
+							container 	=> net.route.vias,
+							position	=> via_cursor,
+							process		=> move_via'access);
 
 						next (via_cursor);
 					end loop;
 
 					while poly_cursor /= et_pcb.type_copper_polygons_pcb.no_element loop
+						et_pcb.type_copper_polygons_pcb.update_element (
+							container 	=> net.route.polygons,
+							position	=> poly_cursor,
+							process		=> move_polygon'access);
 
 						next (poly_cursor);
 					end loop;
-					
 					
 				end move_route;
 				
