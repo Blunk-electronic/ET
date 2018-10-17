@@ -442,7 +442,8 @@ package body et_kicad_to_native is
 						begin
 							log ("simple label " & before & to_string (label.coordinates), log_threshold + 3);
 							
-							-- as supportive point that provides the sheet number we pass the segment start position.
+							-- As supportive point that provides the sheet number we pass the segment start position.
+							-- coordinates of net labels do not posess a sheet number.
 							move (point_actual => label.coordinates, point_help => segment.coordinates_start);
 
 							log ("simple label " & now & to_string (label.coordinates), log_threshold + 3);							
@@ -456,7 +457,8 @@ package body et_kicad_to_native is
 						begin
 							log ("tag label " & before & to_string (label.coordinates), log_threshold + 3);
 							
-							-- as supportive point that provides the sheet number we pass the segment start position.
+							-- As supportive point that provides the sheet number we pass the segment start position.
+							-- coordinates of net labels do not posess a sheet number.
 							move (point_actual => label.coordinates, point_help => segment.coordinates_start);
 							
 							log ("tag label " & now & to_string (label.coordinates), log_threshold + 3);
@@ -537,6 +539,13 @@ package body et_kicad_to_native is
 					end change_path_of_segment;
 					
 				begin -- query_segments
+
+					-- Move the start coordinates of the strand from kicad frame to native frame:
+					log ("schematic strand start " & before & et_coordinates.to_string (point => strand.coordinates), log_threshold + 3);
+					move (strand.coordinates); 
+					log ("schematic strand start " & now & et_coordinates.to_string (point => strand.coordinates), log_threshold + 3);
+
+					-- Change path of segments:
 					while segment_cursor /= et_kicad.type_net_segments.no_element loop
 
 						et_kicad.type_net_segments.update_element (

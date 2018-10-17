@@ -1233,19 +1233,19 @@ package et_kicad is
 		
 		component_libraries			: type_libraries.map;
 		
-		strands	    		: type_strands.list;						-- the strands of the module
-		junctions			: type_junctions.list;						-- net junctions (for ERC, statistics, ...)
+		strands	    		: type_strands.list;				-- the strands of the module
+		junctions			: type_junctions.list;				-- net junctions (for ERC, statistics, ...)
 
-		components			: type_components_schematic.map;			-- the components of the module
-		net_classes			: et_pcb.type_net_classes.map;				-- the net classes
-		no_connections		: type_no_connection_flags.list;			-- the list of no-connection-flags
-		portlists			: type_portlists.map;						-- the portlists of the module
-		netlist				: type_netlist.map;							-- net names and connected ports
-		hierarchic_sheets	: type_hierarchic_sheets.map;				-- hierarchic sheets
-        frames      		: et_libraries.type_frames.list;			-- schematic frames
-		notes       		: et_schematic.type_texts.list;				-- notes
+		components			: type_components_schematic.map;	-- the components of the module
+		net_classes			: et_pcb.type_net_classes.map;		-- the net classes
+		no_connections		: type_no_connection_flags.list;	-- the list of no-connection-flags
+		portlists			: type_portlists.map;				-- the portlists of the module
+		netlist				: type_netlist.map;					-- net names and connected ports
+		hierarchic_sheets	: type_hierarchic_sheets.map;		-- hierarchic sheets. Serve as interface between hierarchic sheets.
+        frames      		: et_libraries.type_frames.list;	-- schematic frames
+		notes       		: et_schematic.type_texts.list;		-- notes
 	
-		sheet_headers		: type_sheet_headers.map;					-- the list of sheet headers
+		sheet_headers		: type_sheet_headers.map;			-- the list of sheet headers
 		-- CS: images
 
 		-- The nets of the module: net names, class, 
