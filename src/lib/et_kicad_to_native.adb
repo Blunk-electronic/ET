@@ -1863,18 +1863,18 @@ package body et_kicad_to_native is
 			end move_keepout;
 
 			procedure move_contour is
-				use et_pcb.type_keepout_lines;
-				lines_cursor : et_pcb.type_keepout_lines.cursor;
+				use et_pcb.type_pcb_contour_lines;
+				lines_cursor : et_pcb.type_pcb_contour_lines.cursor;
 
-				use et_pcb.type_keepout_arcs;
-				arcs_cursor : et_pcb.type_keepout_arcs.cursor;
+				use et_pcb.type_pcb_contour_arcs;
+				arcs_cursor : et_pcb.type_pcb_contour_arcs.cursor;
 
-				use et_pcb.type_keepout_circles;
-				circles_cursor : et_pcb.type_keepout_circles.cursor;
+				use et_pcb.type_pcb_contour_circles;
+				circles_cursor : et_pcb.type_pcb_contour_circles.cursor;
 
 				contour : constant string (1..14) := "board contour ";
 				
-				procedure move_line (line : in out et_pcb.type_keepout_line) is
+				procedure move_line (line : in out et_pcb.type_pcb_contour_line) is
 					use et_pcb;
 				begin
 					log (contour & "line", log_threshold + log_threshold_add);
@@ -1890,7 +1890,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_line;
 
-				procedure move_arc (arc : in out et_pcb.type_keepout_arc) is
+				procedure move_arc (arc : in out et_pcb.type_pcb_contour_arc) is
 					use et_pcb;
 				begin
 					log (contour & "arc", log_threshold + log_threshold_add);
@@ -1907,7 +1907,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_arc;
 
-				procedure move_circle (circle : in out et_pcb.type_keepout_circle) is
+				procedure move_circle (circle : in out et_pcb.type_pcb_contour_circle) is
 					use et_pcb_coordinates;
 				begin
 					log (contour & "circle", log_threshold + log_threshold_add);
@@ -1924,66 +1924,33 @@ package body et_kicad_to_native is
 
 			begin -- move_contour
 				
-				-- LINES TOP
-				lines_cursor := module.board.keepout.top.lines.first;
-				while lines_cursor /= et_pcb.type_keepout_lines.no_element loop
-					et_pcb.type_keepout_lines.update_element (
-						container	=> module.board.keepout.top.lines,
+				-- LINES
+				lines_cursor := module.board.contour.lines.first;
+				while lines_cursor /= et_pcb.type_pcb_contour_lines.no_element loop
+					et_pcb.type_pcb_contour_lines.update_element (
+						container	=> module.board.contour.lines,
 						position	=> lines_cursor,
 						process		=> move_line'access);
 					
 					next (lines_cursor);
 				end loop;
 
-				-- LINES BOTTOM
-				lines_cursor := module.board.keepout.bottom.lines.first;
-				while lines_cursor /= et_pcb.type_keepout_lines.no_element loop
-					et_pcb.type_keepout_lines.update_element (
-						container	=> module.board.keepout.bottom.lines,
-						position	=> lines_cursor,
-						process		=> move_line'access);
-					
-					next (lines_cursor);
-				end loop;
-
-				-- ARCS TOP
-				arcs_cursor := module.board.keepout.top.arcs.first;
-				while arcs_cursor /= et_pcb.type_keepout_arcs.no_element loop
-					et_pcb.type_keepout_arcs.update_element (
-						container	=> module.board.keepout.top.arcs,
+				-- ARCS
+				arcs_cursor := module.board.contour.arcs.first;
+				while arcs_cursor /= et_pcb.type_pcb_contour_arcs.no_element loop
+					et_pcb.type_pcb_contour_arcs.update_element (
+						container	=> module.board.contour.arcs,
 						position	=> arcs_cursor,
 						process		=> move_arc'access);
 					
 					next (arcs_cursor);
 				end loop;
-
-				-- ARCS BOTTOM
-				arcs_cursor := module.board.keepout.bottom.arcs.first;
-				while arcs_cursor /= et_pcb.type_keepout_arcs.no_element loop
-					et_pcb.type_keepout_arcs.update_element (
-						container	=> module.board.keepout.bottom.arcs,
-						position	=> arcs_cursor,
-						process		=> move_arc'access);
-					
-					next (arcs_cursor);
-				end loop;			
 
 				-- CIRCLES TOP
-				circles_cursor := module.board.keepout.top.circles.first;
-				while circles_cursor /= et_pcb.type_keepout_circles.no_element loop
-					et_pcb.type_keepout_circles.update_element (
-						container	=> module.board.keepout.top.circles,
-						position	=> circles_cursor,
-						process		=> move_circle'access);
-					
-					next (circles_cursor);
-				end loop;
-
-				-- CIRCLES BOTTOM
-				circles_cursor := module.board.keepout.bottom.circles.first;
-				while circles_cursor /= et_pcb.type_keepout_circles.no_element loop
-					et_pcb.type_keepout_circles.update_element (
-						container	=> module.board.keepout.bottom.circles,
+				circles_cursor := module.board.contour.circles.first;
+				while circles_cursor /= et_pcb.type_pcb_contour_circles.no_element loop
+					et_pcb.type_pcb_contour_circles.update_element (
+						container	=> module.board.contour.circles,
 						position	=> circles_cursor,
 						process		=> move_circle'access);
 					
@@ -1992,19 +1959,228 @@ package body et_kicad_to_native is
 
 			end move_contour;
 
-
 			
-		begin -- move_general_board_stuff
+			procedure move_copper is
+				use et_pcb.type_copper_lines_pcb;
+				lines_cursor : et_pcb.type_copper_lines_pcb.cursor;
 
+				use et_pcb.type_copper_arcs_pcb;
+				arcs_cursor : et_pcb.type_copper_arcs_pcb.cursor;
+
+				use et_pcb.type_copper_circles_pcb;
+				circles_cursor : et_pcb.type_copper_circles_pcb.cursor;
+
+				use et_pcb.type_copper_polygons_pcb;
+				polygons_cursor : et_pcb.type_copper_polygons_pcb.cursor;
+
+				use et_pcb.type_texts_with_content_pcb;
+				texts_cursor : et_pcb.type_texts_with_content_pcb.cursor;
+
+				use et_pcb.type_text_placeholders_copper;
+				placeholders_cursor : et_pcb.type_text_placeholders_copper.cursor;
+				
+				board_copper : constant string (1..13) := "board copper ";
+				
+				procedure move_line (line : in out et_pcb.type_copper_line_pcb) is
+					use et_pcb;
+				begin
+					log (board_copper & "line", log_threshold + log_threshold_add);
+					log_indentation_up;
+
+					log (before & to_string (line), log_threshold + log_threshold_add);
+
+					move (line.start_point);
+					move (line.end_point);
+					
+					log (now & to_string (line), log_threshold + log_threshold_add);
+							
+					log_indentation_down;
+				end move_line;
+
+				procedure move_arc (arc : in out et_pcb.type_copper_arc_pcb) is
+					use et_pcb;
+				begin
+					log (board_copper & "arc", log_threshold + log_threshold_add);
+					log_indentation_up;
+
+					log (before & to_string (arc), log_threshold + log_threshold_add);
+
+					move (arc.center);
+					move (arc.start_point);
+					move (arc.end_point);
+					
+					log (now & to_string (arc), log_threshold + log_threshold_add);
+							
+					log_indentation_down;
+				end move_arc;
+
+				procedure move_circle (circle : in out et_pcb.type_copper_circle_pcb) is
+					use et_pcb_coordinates;
+				begin
+					log (board_copper & "circle", log_threshold + log_threshold_add);
+					log_indentation_up;
+
+					log (before & " center" & to_string (circle.center), log_threshold + log_threshold_add);
+
+					move (circle.center);
+					
+					log (now & " center" & to_string (circle.center), log_threshold + log_threshold_add);
+							
+					log_indentation_down;
+				end move_circle;
+
+				procedure move_polygon (polygon : in out et_pcb.type_copper_polygon_pcb) is
+					use et_pcb_coordinates;
+					use et_pcb.type_polygon_points;
+					point_cursor : et_pcb.type_polygon_points.cursor := polygon.points.first;
+					new_points : et_pcb.type_polygon_points.set;
+
+					procedure get_point (point : in type_point_3d) is
+					-- Reads a corner point, copies it, moves the copy and inserts the moved
+					-- copy in a new set "new_points".
+						new_point : type_point_3d := point; -- copy given point
+					begin
+						log (before & to_string (new_point), log_threshold + log_threshold_add);
+						move (new_point); -- move copied point
+						log (now & to_string (new_point), log_threshold + log_threshold_add);
+
+						-- insert new point in new_points:
+						et_pcb.type_polygon_points.insert (
+							container	=> new_points,
+							new_item	=> new_point);
+						
+					end get_point;
+					
+				begin -- move_polygon
+					log (board_copper & "polygon corner points", log_threshold + log_threshold_add);
+					log_indentation_up;
+
+					-- loop through polygon corner points and read one after another:
+					while point_cursor /= et_pcb.type_polygon_points.no_element loop
+
+						et_pcb.type_polygon_points.query_element (
+							position	=> point_cursor,
+							process		=> get_point'access);
+						
+						next (point_cursor);
+					end loop;
+
+					-- Now the new set of polygon corner points is available in "new_points".
+					-- new_points replaces the old list of points:
+					polygon.points := new_points;
+					
+					log_indentation_down;
+				end move_polygon;
+
+				procedure move_text (text : in out et_pcb.type_text_with_content_pcb) is
+					use et_pcb_coordinates;
+				begin
+					log (board_copper & "text", log_threshold + log_threshold_add);
+					log_indentation_up;
+
+					log (before & to_string (text.position), log_threshold + log_threshold_add);
+
+					move (text.position);
+					
+					log (now & to_string (text.position), log_threshold + log_threshold_add);
+							
+					log_indentation_down;
+				end move_text;
+
+				procedure move_placeholder (text : in out et_pcb.type_text_placeholder_copper) is
+					use et_pcb_coordinates;
+				begin
+					log (board_copper & "text placeholder", log_threshold + log_threshold_add);
+					log_indentation_up;
+
+					log (before & to_string (text.position), log_threshold + log_threshold_add);
+
+					move (text.position);
+					
+					log (now & to_string (text.position), log_threshold + log_threshold_add);
+							
+					log_indentation_down;
+				end move_placeholder;
+
+			begin -- move_copper
+				
+				-- LINES
+				lines_cursor := module.board.copper.lines.first;
+				while lines_cursor /= et_pcb.type_copper_lines_pcb.no_element loop
+					et_pcb.type_copper_lines_pcb.update_element (
+						container	=> module.board.copper.lines,
+						position	=> lines_cursor,
+						process		=> move_line'access);
+					
+					next (lines_cursor);
+				end loop;
+
+				-- ARCS
+				arcs_cursor := module.board.copper.arcs.first;
+				while arcs_cursor /= et_pcb.type_copper_arcs_pcb.no_element loop
+					et_pcb.type_copper_arcs_pcb.update_element (
+						container	=> module.board.copper.arcs,
+						position	=> arcs_cursor,
+						process		=> move_arc'access);
+					
+					next (arcs_cursor);
+				end loop;
+
+				-- CIRCLES
+				circles_cursor := module.board.copper.circles.first;
+				while circles_cursor /= et_pcb.type_copper_circles_pcb.no_element loop
+					et_pcb.type_copper_circles_pcb.update_element (
+						container	=> module.board.copper.circles,
+						position	=> circles_cursor,
+						process		=> move_circle'access);
+					
+					next (circles_cursor);
+				end loop;
+
+				-- POLYGONS
+				polygons_cursor := module.board.copper.polygons.first;
+				while polygons_cursor /= et_pcb.type_copper_polygons_pcb.no_element loop
+					et_pcb.type_copper_polygons_pcb.update_element (
+						container	=> module.board.copper.polygons,
+						position	=> polygons_cursor,
+						process		=> move_polygon'access);
+					
+					next (polygons_cursor);
+				end loop;
+
+				-- TEXTS
+				texts_cursor := module.board.copper.texts.first;
+				while texts_cursor /= et_pcb.type_texts_with_content_pcb.no_element loop
+					et_pcb.type_texts_with_content_pcb.update_element (
+						container	=> module.board.copper.texts,
+						position	=> texts_cursor,
+						process		=> move_text'access);
+
+					next (texts_cursor);
+				end loop;
+
+				-- TEXT PLACEHOLDERS
+				placeholders_cursor := module.board.copper.placeholders.first;
+				while placeholders_cursor /= et_pcb.type_text_placeholders_copper.no_element loop
+					et_pcb.type_text_placeholders_copper.update_element (
+						container	=> module.board.copper.placeholders,
+						position	=> placeholders_cursor,
+						process		=> move_placeholder'access);
+
+					next (texts_cursor);
+				end loop;
+
+				
+			end move_copper;
+
+		begin -- move_general_board_stuff
 			move_silk_screen;
 			move_assembly_documentation;
 			move_stencil;
 			move_stop_mask;
 			move_keepout;
 			move_contour;
-
--- 			copper		: type_copper_pcb; -- non-electric copper stuff !
-
+			move_copper; -- non-electric copper stuff !!!
 		end move_general_board_stuff;
 
 	begin -- transpose
@@ -2052,11 +2228,6 @@ package body et_kicad_to_native is
 				position	=> module_cursor,
 				process		=> flatten_nets'access);
 
-			--log_indentation_down;
-			
-			--log ("layout ...", log_threshold + 1);
-			--log_indentation_up;
-
 			-- general non-component related board stuff (silk screen, documentation, ...):
 			if board_available then
 				update_element (
@@ -2064,9 +2235,6 @@ package body et_kicad_to_native is
 					position	=> module_cursor,
 					process		=> move_general_board_stuff'access);
 			end if;
-			
--- 			log_indentation_down;
-
 			
 			next (module_cursor);
 			log_indentation_down;
