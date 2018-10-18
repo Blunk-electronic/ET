@@ -53,6 +53,7 @@ with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.directories;			use ada.directories;
 with ada.exceptions; 			use ada.exceptions;
+with ada.environment_variables;
 
 with et_coordinates;
 with et_libraries;
@@ -4547,139 +4548,429 @@ package body et_kicad is
 				log_indentation_down;
 			end locate_libraries;
 
+			procedure read_proj_v4 is
+			begin
+				log_indentation_reset;
+				log (
+					text => "reading project file " 
+					& compose (
+						name		=> et_project.type_project_name.to_string (project), 
+						extension	=> file_extension_project) & " ...",
+					level => log_threshold + 1
+					);
+				log_indentation_up;
+
+				-- Clear search list of project libraries from earlier projects that have been imported.
+				-- If we import only one project, this statement does not matter:
+				type_project_lib_dirs.clear (search_list_project_lib_dirs);
+				type_library_names.clear (search_list_component_libraries);
+
+				-- Clear tmp_component_libraries because it still contains librares of earlier project imports.
+				-- If we import only one project, this statement does not matter:
+				type_libraries.clear (tmp_component_libraries);
+
+				-- Open project file. 
+				-- The file name is composed of project name and extension.
+				open (
+					file => et_project.project_file_handle,
+					mode => in_file,
+					name => compose (
+								name		=> et_project.type_project_name.to_string (project), 
+								extension	=> file_extension_project)
+					);
+				set_input (et_project.project_file_handle);
+				
+				while not end_of_file loop
+
+					-- Save a line in variable "line" (see et_string_processing.ads)
+					line := read_line(
+								line => get_line,
+								comment_mark => "#", -- use constant comment_mark
+								number => ada.text_io.line (current_input),
+								ifs => latin_1.equals_sign); -- fields are separated by equals sign (=)
+
+					case field_count (line) is
+						when 0 => null; -- we skip empty lines
+						when 1 => -- we have a line with just one field. those lines contain headers like "[eeschema]"
+
+							-- test header [eeschema]
+							if field (line,1) = project_header_eeschema then
+								clear_section_entered_flags;
+								section_eeschema_entered := true;
+							end if;
+
+							-- test header [eeschema/libraries]
+							if field (line,1) = project_header_eeschema_libraries then
+								clear_section_entered_flags;
+								section_eeschema_libraries_entered := true;
+							end if;
+
+						when 2 =>
+							if section_eeschema_entered then
+
+								-- Get library directory names 
+								if field (line,1) = project_keyword_library_directory then
+									log ("library directories " & field (line,2), log_threshold + 2);
+
+									-- The library directories must be
+									-- inserted in the search list of library directories (search_list_project_lib_dirs).
+									-- These directories assist search operations for both components and packages.
+									locate_library_directories (field (line,2), log_threshold + 3);
+								end if;
+								
+							end if;
+
+							if section_eeschema_libraries_entered then
+
+								-- From a line like "LibName1=bel_supply" get component library names 
+								-- (incl. path and extension) and
+								-- store them in search_list_component_libraries (see et_kicad.ads).
+								-- We ignore the index of LibName. Since we store the lib names in a 
+								-- simple list their order remains unchanged anyway.
+								if field (line,1)(1..project_keyword_library_name'length) 
+									= project_keyword_library_name then
+
+									-- The component library could have been referenced already. If so,
+									-- there is no need to append it again to search_list_component_libraries.
+									if not type_library_names.contains (
+										container 	=> search_list_component_libraries,
+										item		=> type_library_name.to_bounded_string (field (line,2))) then
+										
+											type_library_names.append (
+												container	=> search_list_component_libraries, 
+												new_item	=> type_library_name.to_bounded_string (field (line,2)));
+
+											-- NOTE: search_list_component_libraries keeps the libraries in the same order as they appear
+											-- in the project file. search_list_component_libraries assists search operations.
+											-- It applies for the current project only and
+											-- is cleared as soon as another kicad project file is read.
+											
+											-- For the log write something like "LibName bel_connectors_and_jumpers"
+											log (field (line,1) & " " & field (line,2), log_threshold + 2);
+									end if;
+
+								end if;
+
+							end if;
+							
+						when others => null;
+					end case;
+
+	-- 				if section_eeschema_entered or section_eeschema_libraries_entered then
+	-- 					put_line(" " & et_string_processing.to_string(line));
+	-- 				end if;
+					
+				end loop;
+
+				-- Test if the libraries collected in search_list_component_libraries
+				-- exist in any of the library directories.
+				-- Create empty component libraries.
+				locate_libraries (log_threshold + 3);
+
+				close (et_project.project_file_handle);
+
+			end read_proj_v4;
+			
+			procedure read_sym_lib_tables is -- CS log_threshold 
+			-- IMPORTANT AND CS: This procedure currently works under linux only !
+				use ada.environment_variables;
+				use ada.directories;
+
+			    sym_lib_path_length_max : constant natural := 200;
+				package type_sym_lib_path is new generic_bounded_length (sym_lib_path_length_max);
+				use type_sym_lib_path;
+				sym_lib_path : type_sym_lib_path.bounded_string;
+				sym_lib_handle : ada.text_io.file_type;
+
+				function read_table return type_project_lib_dirs.list is
+					lib_dirs : type_project_lib_dirs.list; -- to be returned
+
+					line : et_string_processing.type_fields_of_line; -- a line of the table
+					lines : type_lines.list; -- all lines of the table
+
+					-- This cursor points to the line being processed (in the list of lines given in "lines"):
+					line_cursor : type_lines.cursor;
+					
+					opening_bracket : constant character := '(';
+					closing_bracket : constant character := ')';
+
+					term_char_seq : constant string (1..2) := latin_1.space & closing_bracket;
+					term_char_set : character_set := to_set (term_char_seq);
+					
+					-- the section prefix is a workaround due to GNAT reserved keywords.
+					sec_prefix : constant string (1..4) := "sec_";
+
+					-- These are the keywords used in the sym-lib tables:
+					type type_keyword is (
+						INIT,
+						SEC_SYM_LIB_TABLE,
+						SEC_LIB,
+						SEC_NAME,
+						SEC_TYPE,
+						SEC_URI,
+						SEC_OPTIONS,
+						SEC_DESCR
+						);
+
+					argument_length_max : constant positive := 300; -- CS: could become an issue if long URIs used ...
+					package type_argument is new generic_bounded_length (argument_length_max);
+
+					-- After a section name, arguments follow. For each section arguments are counted:
+					type type_argument_counter is range 0..1;
+
+					function to_string (arg_count : in type_argument_counter) return string is begin
+					-- Returns the given argument count as string.
+						return trim (type_argument_counter'image (arg_count), left);
+					end to_string;			
+
+					-- Type contains the current section name, the parent section name and the pointer to the argument.
+					-- The argument counter is reset on entering a section.
+					-- It is incremented once an argument is complete.
+					type type_section is record
+						name 		: type_keyword := INIT;
+						parent		: type_keyword := INIT;
+						arg_counter	: type_argument_counter := type_argument_counter'first;
+					end record;
+
+					section : type_section; -- the section being processed
+
+					-- Since there are numerous subsections we store sections on a stack.
+					-- Once a subsection as been entered the previous section is pushed 
+					-- on stack (see procedure read_section).
+					-- One leaving a subsection the previous section is popped 
+					-- from stack (see end of procedure exec_section).
+					package sections_stack is new et_general.stack_lifo (max => 20, item => type_section);
+
+					function to_string (section : in type_keyword) return string is
+					-- Converts a section name to a string.
+						len : positive := type_keyword'image (section)'last;
+					begin
+						-- Due to the workaround with the SEC_ prefix (see above), it must be removed from
+						-- the section image.
+						return to_lower (type_keyword'image (section)(sec_prefix'last+1 ..len));
+					end to_string;
+				
+					function enter_section (section : in type_keyword) return string is begin
+						return ("entering section " & to_string (section));
+					end enter_section;
+
+					function return_to_section (section : in type_keyword) return string is begin
+						return ("returning to section " & to_string (section));
+					end return_to_section;
+
+					function process_section (section : in type_keyword) return string is begin
+						return ("processing section " & to_string (section));
+					end process_section;
+
+					type type_lib_type is (LEGACY); -- CS: others ?
+					
+					-- TEMPORARILY STORAGE PLACES
+
+					lib_name	: et_libraries.type_library_name.bounded_string;
+					lib_type	: type_lib_type;
+					lib_uri		: et_libraries.type_full_library_name.bounded_string;
+					-- CS lib_options
+					-- CS lib_description
+
+					-- When a line is fetched from the container "lines", it is stored in variable
+					-- "current_line". CS: The line length is limited by line_length_max and should be increased
+					-- if neccessary. 
+					-- The character_cursor points to the character being tested or processed in that line.
+					line_length_max : constant positive := 1000;
+					package type_current_line is new generic_bounded_length (line_length_max);
+					use type_current_line;
+					current_line : type_current_line.bounded_string;
+					character_cursor : natural;
+
+					procedure get_next_line is
+					-- Fetches a new line from the container "lines".
+						use type_lines;
+					begin
+						next (line_cursor);
+						if line_cursor /= type_lines.no_element then
+
+							-- Since a single line in container "lines" (where line_cursor points to) is a list 
+							-- of strings itself, we convert them first to a fixed string and then to a bounded string.
+							current_line := type_current_line.to_bounded_string (to_string (element (line_cursor)));
+							log ("line " & to_string (current_line), log_threshold + 4);
+						else
+							-- This should never happen:
+							log_indentation_reset;
+							log (message_error & "in " & to_string (sym_lib_path), console => true);
+							log (message_error & "no more lines available !", console => true);
+							raise constraint_error;
+						end if;
+					end get_next_line;
+								
+					procedure next_character is
+					-- Updates the cursor position to the position of the next
+					-- non_space character starting from the current cursor position.
+					-- Fetches a new line if no further characters after current cursor position.
+					begin
+						character_cursor := index_non_blank (source => current_line, from => character_cursor + 1);
+						while character_cursor = 0 loop
+							get_next_line;
+							character_cursor := index_non_blank (source => current_line, from => character_cursor + 1);
+						end loop;
+					end next_character;
+					
+					procedure read_section is 
+					-- Stores the section name and current argument counter on sections_stack.
+					-- Reads the section name from current cursor position until termination
+					-- character or its last character.
+						end_of_kw : integer;  -- may become negative if no terminating character present
+
+						procedure invalid_section is begin
+							log_indentation_reset;
+							log (message_error & "invalid subsection '" & to_string (section.name) 
+								& "' in parent section '" & to_string (section.parent) & "' ! (read section)", console => true);
+							raise constraint_error;
+						end invalid_section;
+
+						use type_lines;
+					begin -- read_section
+						-- save previous section on stack
+						sections_stack.push (section);
+
+						-- the former actvie section name becomes the parent section name
+						section.parent := section.name;
+
+						-- CS provide log info on current section
+						-- log ("section " & to_string (section.name), log_threshold + 1);
+						
+						section.arg_counter := 0;
+						
+						-- get position of last character
+						end_of_kw := index (source => current_line, from => character_cursor, set => term_char_set) - 1;
+
+						-- if no terminating character found, end_of_kw assumes length of line
+						if end_of_kw = -1 then
+							end_of_kw := length (current_line);
+						end if;
+
+						-- This is the validation of a section regarding its parent section.
+						-- If an invalid subsection occurs, raise alarm and abort.
+						case section.parent is
+							when SEC_SYM_LIB_TABLE =>
+								case section.name is
+									when SEC_LIB => null;
+									when others => invalid_section;
+								end case;
+
+							when SEC_LIB =>
+								case section.name is
+									when SEC_NAME | SEC_TYPE | SEC_URI | SEC_OPTIONS | SEC_DESCR => null;
+									when others => invalid_section;
+								end case;
+
+							when others => null;
+						end case;
+
+						-- update cursor
+						character_cursor := end_of_kw;
+
+						log (enter_section (section.name), log_threshold + 5);
+
+						exception
+							when event:
+								others =>
+									log_indentation_reset;
+									log (message_error & "in " & to_string (sym_lib_path), console => true);
+									log (message_error & affected_line (element (line_cursor)) 
+										& to_string (element (line_cursor)), console => true);
+
+									log (message_error & "section '" & slice (current_line, character_cursor, end_of_kw) 
+										& "' invalid or not supported yet", console => true);
+									raise;
+
+						
+					end read_section;
+					
+					
+				begin -- read_sym_lib_tables
+					-- Import the file in container "lines"
+					set_input (sym_lib_handle);
+					while not end_of_file loop
+						-- log (get_line);
+
+						-- Store a single line in variable "line" (see et_string_processing.ads)
+						line := et_string_processing.read_line (
+								line 			=> get_line,
+								test_whole_line	=> false, -- comment marks at begin of line matter
+								number 			=> ada.text_io.line (current_input),
+								ifs 			=> latin_1.space); -- fields are separated by space
+
+						-- insert line in container "lines"
+						if field_count (line) > 0 then -- we skip empty or commented lines
+							type_lines.append (lines, line);
+						end if;
+							
+					end loop;
+					set_input (standard_input);
+					-- Now the table is available in container "lines" which is a list of lines.
+					-- A line in turn is a list of strings.
+
+					-- Set line cursor to first line in container "lines":
+					line_cursor := lines.first;
+
+					
+					return lib_dirs;
+				end read_table;
+				
+			begin
+				log_indentation_reset;
+				log ("reading sym-lib-tables", log_threshold + 1);
+
+
+				log_indentation_up;
+
+				-- local table
+				sym_lib_path := to_bounded_string (file_sym_lib_table);
+				if ada.directories.exists (to_string (sym_lib_path)) then
+					log ("local: " & to_string (sym_lib_path), log_threshold + 1); -- show file path and name
+
+					open (
+						file => sym_lib_handle,
+						mode => in_file,
+						name => to_string (sym_lib_path));
+
+
+					close (sym_lib_handle);
+				end if;
+
+				-- global table
+				sym_lib_path := to_bounded_string (value ("HOME") & file_sym_lib_table_global_linux);
+				if ada.directories.exists (to_string (sym_lib_path)) then
+					log ("global: " & to_string (sym_lib_path), log_threshold + 1); -- show file path and name
+
+					open (
+						file => sym_lib_handle,
+						mode => in_file,
+						name => to_string (sym_lib_path));
+
+
+					close (sym_lib_handle);
+				end if;
+
+				
+				log_indentation_down;
+
+			end read_sym_lib_tables;
+			
+			
 			use et_import;
 		begin -- read_project_file
 
 			case cad_format is
-
+				
 				-- For V4;
 				--	The project file provides information where to search for libraries and search orders.
-				when KICAD_V4 =>
-
-					log_indentation_reset;
-					log (
-						text => "reading project file " 
-						& compose (
-							name		=> et_project.type_project_name.to_string (project), 
-							extension	=> file_extension_project) & " ...",
-						level => log_threshold + 1
-						);
-					log_indentation_up;
-
-					-- Clear search list of project libraries from earlier projects that have been imported.
-					-- If we import only one project, this statement does not matter:
-					type_project_lib_dirs.clear (search_list_project_lib_dirs);
-					type_library_names.clear (search_list_component_libraries);
-
-					-- Clear tmp_component_libraries because it still contains librares of earlier project imports.
-					-- If we import only one project, this statement does not matter:
-					type_libraries.clear (tmp_component_libraries);
-
-					-- Open project file. 
-					-- The file name is composed of project name and extension.
-					open (
-						file => et_project.project_file_handle,
-						mode => in_file,
-						name => compose (
-									name		=> et_project.type_project_name.to_string (project), 
-									extension	=> file_extension_project)
-						);
-					set_input (et_project.project_file_handle);
-					
-					while not end_of_file loop
-
-						-- Save a line in variable "line" (see et_string_processing.ads)
-						line := read_line(
-									line => get_line,
-									comment_mark => "#", -- use constant comment_mark
-									number => ada.text_io.line (current_input),
-									ifs => latin_1.equals_sign); -- fields are separated by equals sign (=)
-
-						case field_count (line) is
-							when 0 => null; -- we skip empty lines
-							when 1 => -- we have a line with just one field. those lines contain headers like "[eeschema]"
-
-								-- test header [eeschema]
-								if field (line,1) = project_header_eeschema then
-									clear_section_entered_flags;
-									section_eeschema_entered := true;
-								end if;
-
-								-- test header [eeschema/libraries]
-								if field (line,1) = project_header_eeschema_libraries then
-									clear_section_entered_flags;
-									section_eeschema_libraries_entered := true;
-								end if;
-
-							when 2 =>
-								if section_eeschema_entered then
-
-									-- Get library directory names 
-									if field (line,1) = project_keyword_library_directory then
-										log ("library directories " & field (line,2), log_threshold + 2);
-
-										-- The library directories must be
-										-- inserted in the search list of library directories (search_list_project_lib_dirs).
-										-- These directories assist search operations for both components and packages.
-										locate_library_directories (field (line,2), log_threshold + 3);
-									end if;
-									
-								end if;
-
-								if section_eeschema_libraries_entered then
-
-									-- From a line like "LibName1=bel_supply" get component library names 
-									-- (incl. path and extension) and
-									-- store them in search_list_component_libraries (see et_kicad.ads).
-									-- We ignore the index of LibName. Since we store the lib names in a 
-									-- simple list their order remains unchanged anyway.
-									if field (line,1)(1..project_keyword_library_name'length) 
-										= project_keyword_library_name then
-
-										-- The component library could have been referenced already. If so,
-										-- there is no need to append it again to search_list_component_libraries.
-										if not type_library_names.contains (
-											container 	=> search_list_component_libraries,
-											item		=> type_library_name.to_bounded_string (field (line,2))) then
-											
-												type_library_names.append (
-													container	=> search_list_component_libraries, 
-													new_item	=> type_library_name.to_bounded_string (field (line,2)));
-
-												-- NOTE: search_list_component_libraries keeps the libraries in the same order as they appear
-												-- in the project file. search_list_component_libraries assists search operations.
-												-- It applies for the current project only and
-												-- is cleared as soon as another kicad project file is read.
-												
-												-- For the log write something like "LibName bel_connectors_and_jumpers"
-												log (field (line,1) & " " & field (line,2), log_threshold + 2);
-										end if;
-
-									end if;
-
-								end if;
-								
-							when others => null;
-						end case;
-
-		-- 				if section_eeschema_entered or section_eeschema_libraries_entered then
-		-- 					put_line(" " & et_string_processing.to_string(line));
-		-- 				end if;
-						
-					end loop;
-
-					-- Test if the libraries collected in search_list_component_libraries
-					-- exist in any of the library directories.
-					-- Create empty component libraries.
-					locate_libraries (log_threshold + 3);
-
-					close (et_project.project_file_handle);
+				when KICAD_V4 => read_proj_v4;
 
 				-- For V5;
 				--	The local  libraries are located as specified in the project directory in file sym-lib-table.
 				--	The global libraries are located as specified in file $HOME/.config/kicad/sym-lib-table.
-				when KICAD_V5 =>
-					null;
+				when KICAD_V5 => read_sym_lib_tables;
 
 				when others =>
 					raise constraint_error;

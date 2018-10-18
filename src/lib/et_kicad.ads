@@ -78,6 +78,12 @@ package et_kicad is
 	top_level_schematic	: et_coordinates.type_schematic_file_name.bounded_string; 
 
 	schematic_handle : ada.text_io.file_type;
+
+	-- For V5:
+	file_sym_lib_table : constant string (1..13) := "sym-lib-table";
+	file_sym_lib_table_global_linux : constant string 
+		(1..15 + file_sym_lib_table'length) := "/.config/kicad/" & file_sym_lib_table;
+	-- CS: windows ?
 	
 	-- Sheet names may have the same length as schematic files.
 	package type_sheet_name is new generic_bounded_length (et_coordinates.schematic_file_name_length);
@@ -87,9 +93,10 @@ package et_kicad is
 	-- Returns the base name of the given schematic file name as submodule name.
 
 	-- Bare library names can be stored further-on in a simple list:
-	-- We use a simple list because the order of the library names sometimes matters and must be kept.
+	-- We use a simple list because the order of the library names sometimes matters 
+	-- in V4 and must be kept.
 	package type_library_names is new doubly_linked_lists (
-		element_type	=> et_libraries.type_library_name.bounded_string,
+		element_type	=> et_libraries.type_library_name.bounded_string, -- bel_logic, bel_primitives
 		"="				=> et_libraries.type_library_name."=");
 	
 	-- SHEET HEADERS
