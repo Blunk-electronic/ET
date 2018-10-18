@@ -4384,7 +4384,8 @@ package body et_kicad is
 		package stack_of_sheet_lists is new et_general.stack_lifo (max => 10, item => type_hierarchic_sheet_file_names_extended);
         use stack_of_sheet_lists;
 		
-		function read_project_file return et_coordinates.type_schematic_file_name.bounded_string is
+		function read_project_file (log_threshold : in et_string_processing.type_log_level)
+			return et_coordinates.type_schematic_file_name.bounded_string is
 		-- Reads the project file (component libraries, library directories, ...) 
 		-- Returns the name of the top level schematic file.
 			line : type_fields_of_line;
@@ -4671,7 +4672,7 @@ package body et_kicad is
 
 			end read_proj_v4;
 			
-			procedure read_sym_lib_tables is -- CS log_threshold 
+			procedure read_sym_lib_tables (log_threshold : in et_string_processing.type_log_level) is
 			-- IMPORTANT AND CS: This procedure currently works under linux only !
 				use ada.environment_variables;
 				use ada.directories;
@@ -4792,7 +4793,7 @@ package body et_kicad is
 							-- Since a single line in container "lines" (where line_cursor points to) is a list 
 							-- of strings itself, we convert them first to a fixed string and then to a bounded string.
 							current_line := type_current_line.to_bounded_string (to_string (element (line_cursor)));
-							log ("line " & to_string (current_line), log_threshold + 4);
+							log ("line " & to_string (current_line), log_threshold);
 						else
 							-- This should never happen:
 							log_indentation_reset;
@@ -4869,7 +4870,7 @@ package body et_kicad is
 						-- update cursor
 						character_cursor := end_of_kw;
 
-						log (enter_section (section.name), log_threshold + 5);
+						log (enter_section (section.name), log_threshold + 2);
 
 						exception
 							when event:
@@ -4886,8 +4887,193 @@ package body et_kicad is
 						
 					end read_section;
 					
+					procedure read_arg is
+					-- Reads the arguments of a section.
+					-- Increments the argument counter after each argument.
+					-- Validates the arguments according to the current section.
+					-- Leaves the character_cursor at the position of the last character of the argument.
+					-- If the argument was enclosed in quotations the character_cursor is left at
+					-- the position of the trailing quotation.
+						end_of_arg : integer; -- may become negative if no terminating character present
+
+						use type_argument;
+						use type_lines;
+
+						arg : type_argument.bounded_string; -- here the argument goes temporarily
+
+						procedure too_many_arguments is begin
+							log_indentation_reset;
+							log (message_error & "too many arguments in section " & to_string (section.name) & " !", console => true);
+							log ("excessive argument reads '" & to_string (arg) & "'", console => true);
+							raise constraint_error;
+						end too_many_arguments;
+
+						procedure invalid_section is begin
+							log_indentation_reset;
+							log (message_error & "invalid subsection '" & to_string (section.name) 
+								& "' in parent section '" & to_string (section.parent) & "' ! (read argument)", console => true);
+							raise constraint_error;
+						end invalid_section;
+						
+					begin -- read_arg
+						-- We handle an argument that is wrapped in quotation different from a non-wrapped argument:
+						if element (current_line, character_cursor) = latin_1.quotation then
+							-- Read the quotation-wrapped argument (strip quotations)
+
+							-- get position of last character (before trailing quotation)
+							end_of_arg := index (source => current_line, from => character_cursor + 1, pattern => 1 * latin_1.quotation) - 1;
+
+							-- if no trailing quotation found -> error
+							if end_of_arg = -1 then
+								log_indentation_reset;
+								log (message_error & affected_line (element (line_cursor))
+									& latin_1.space & latin_1.quotation & " expected");
+									raise constraint_error;
+							end if;
+
+							-- compose argument from first character after quotation until end_of_arg
+							arg := to_bounded_string (slice (current_line, character_cursor + 1, end_of_arg));
+
+							-- update cursor (to position of trailing quotation)
+							character_cursor := end_of_arg + 1;
+						else
+							-- Read the argument from current cursor position until termination
+							-- character or its last character.
+
+							-- get position of last character
+							end_of_arg := index (source => current_line, from => character_cursor, set => term_char_set) - 1;
+
+							-- if no terminating character found, end_of_arg assumes length of line
+							if end_of_arg = -1 then
+								end_of_arg := length (current_line);
+							end if;
+
+							-- compose argument from cursor..end_of_arg
+							arg := to_bounded_string (slice (current_line, character_cursor, end_of_arg));
+
+							-- update cursor
+							character_cursor := end_of_arg;
+						end if;
+
+						-- Argument complete. Increment argument counter of section.
+						section.arg_counter := section.arg_counter + 1;
+						
+						log ("arg" & to_string (section.arg_counter) & latin_1.space & to_string (arg), log_threshold + 2);
+
+						-- Validate arguments according to current section and the parent section.
+						-- Load variables. When a section closes, the variables are used to build an object. see exec_section.
+						case section.parent is
+							when SEC_LIB =>
+								case section.name is
+									when SEC_NAME =>
+										case section.arg_counter is
+											when 0 => null;
+											when 1 =>
+												lib_name := type_library_name.to_bounded_string (to_string (arg));
+											when others => too_many_arguments;
+										end case;
+
+									when SEC_TYPE =>
+										case section.arg_counter is
+											when 0 => null;
+											when 1 =>
+												lib_type := type_lib_type'value (to_string (arg));
+											when others => too_many_arguments;
+										end case;
+
+									when SEC_URI =>
+										case section.arg_counter is
+											when 0 => null;
+											when 1 =>
+												lib_uri := type_full_library_name.to_bounded_string (to_string (arg));
+											when others => too_many_arguments;
+										end case;
+
+									when SEC_OPTIONS =>
+										case section.arg_counter is
+											when 0 => null;
+											when 1 =>
+												-- CS lib_options := to_bounded_string (to_string (arg));
+												null;
+											when others => too_many_arguments;
+										end case;
+
+									when SEC_DESCR =>
+										case section.arg_counter is
+											when 0 => null;
+											when 1 =>
+												-- CS lib_description := to_bounded_string (to_string (arg));
+												null;
+											when others => too_many_arguments;
+										end case;
+
+									when others => invalid_section;
+								end case;
+								
+							when others => null; -- Not all sections require arguments.
+						end case;
+
+						exception
+							when event:
+								others =>
+									log_indentation_reset;
+									log (message_error & "in " & to_string (sym_lib_path), console => true);
+									log (message_error & affected_line (element (line_cursor)) 
+										& to_string (element (line_cursor)), console => true);
+									log (ada.exceptions.exception_message (event));
+									raise;
+
+					end read_arg;
 					
-				begin -- read_sym_lib_tables
+
+					procedure exec_section is
+					-- Performs an operation according to the active section and variables that have been
+					-- set earlier (when processing the arguments. see procedure read_arg).
+					-- Restores the previous section.
+						use type_lines;
+					begin -- exec_section
+						log (process_section (section.name), log_threshold + 2);
+						case section.parent is
+							when SEC_SYM_LIB_TABLE =>
+								case section.name is
+									when SEC_LIB =>
+										log ("library " 
+											 & type_library_name.to_string (lib_name)
+											 & " type "
+											 & type_lib_type'image (lib_type)
+											 & " path "
+											 -- CS options and description
+											 & type_full_library_name.to_string (lib_uri),
+											log_threshold + 1); 
+
+										-- CS insert in ???
+										
+									when others => null;
+								end case;
+
+							when others => null;
+						end case;
+
+						-- restore previous section from stack
+						section := sections_stack.pop;
+						log (return_to_section (section.name), log_threshold + 2);
+						
+						exception
+							when event:
+								others =>
+									log_indentation_reset;
+									log (message_error & "in " & to_string (sym_lib_path), console => true);
+									log (message_error & affected_line (element (line_cursor)) 
+										& to_string (element (line_cursor)), console => true);
+									log (ada.exceptions.exception_message (event));
+									raise;
+
+					end exec_section;
+
+					
+				begin -- read_table
+					log_indentation_up;
+					
 					-- Import the file in container "lines"
 					set_input (sym_lib_handle);
 					while not end_of_file loop
@@ -4913,14 +5099,93 @@ package body et_kicad is
 					-- Set line cursor to first line in container "lines":
 					line_cursor := lines.first;
 
+					sections_stack.init;
+
+					-- get first line
+					current_line := type_current_line.to_bounded_string (to_string (type_lines.element (line_cursor)));
+					log ("line " & to_string (current_line), log_threshold + 4);
+
+					-- get position of first opening bracket
+					character_cursor := type_current_line.index (current_line, 1 * opening_bracket);
+
+					-- This is the central loop where decisions are made whether to read a section name,
+					-- an argument or whether to "execute" a section.
+					-- An opening bracket indicates a new (sub)section. A closing bracket indicates that a section
+					-- finishes and is to be executed. The loop comes to an end if the sections stack depth reaches zero.
+					loop
+						-- read (sub)section
+						<<label_read_section>>
+							next_character; -- set character cursor to next character
+							read_section;
+							next_character; -- set character cursor to next character
+
+							-- if a new subsection starts, read subsection
+							if element (current_line, character_cursor) = opening_bracket then goto label_read_section; end if;
+
+						-- read argument
+						<<label_read_argument>>
+							read_arg;
+							next_character; -- set character cursor to next character
+						
+							-- Test for cb, opening_bracket or other character after argument:
+							case element (current_line, character_cursor) is
+
+								-- If closing bracket after argument, the (sub)section ends
+								-- and must be executed:
+								when closing_bracket => goto label_execute_section;
+
+								-- If another section at a deeper level follows,
+								-- read (sub)section:
+								when opening_bracket => goto label_read_section;
+
+								-- In case another argument follows, it must be read:
+								when others => goto label_read_argument; 
+							end case;
+
+						-- execute section
+						<<label_execute_section>>
+							exec_section;
+
+							-- After executing the section, check the stack depth.
+							-- Exit when zero reached (topmost section has been executed).
+							if sections_stack.depth = 0 then exit; end if;
+							
+							next_character; -- set character cursor to next character
+
+							-- Test for cb, opening_bracket or other character after closed section:
+							case element (current_line, character_cursor) is
+
+								-- If closing bracket after closed section,
+								-- execute parent section:
+								when closing_bracket => goto label_execute_section;
+
+								-- If another section at a deeper level follows,
+								-- read subsection:
+								when opening_bracket => goto label_read_section;
+
+								-- In case an argument follows, it belongs to the parent
+								-- section and is to be read:
+								when others => goto label_read_argument; 
+							end case;
+							
+					end loop;
+
+					-- check section name. must be top level section
+					if section.name /= INIT then -- should never happen
+						log_indentation_reset;
+						log (message_error & "in " & to_string (sym_lib_path), console => true);
+						log (message_error & "top level section not closed !", console => true);
+						raise constraint_error;
+					end if;
+
+					log_indentation_down;
 					
 					return lib_dirs;
 				end read_table;
 				
-			begin
+			begin -- read_sym_lib_tables
 				log_indentation_reset;
-				log ("reading sym-lib-tables", log_threshold + 1);
-
+				log ("reading sym-lib-tables", log_threshold);
 
 				log_indentation_up;
 
@@ -4934,7 +5199,8 @@ package body et_kicad is
 						mode => in_file,
 						name => to_string (sym_lib_path));
 
-
+					-- CS read_table;
+					
 					close (sym_lib_handle);
 				end if;
 
@@ -4948,10 +5214,12 @@ package body et_kicad is
 						mode => in_file,
 						name => to_string (sym_lib_path));
 
+					-- CS read_table;
 
 					close (sym_lib_handle);
 				end if;
 
+				-- CS append global to local table
 				
 				log_indentation_down;
 
@@ -4970,7 +5238,7 @@ package body et_kicad is
 				-- For V5;
 				--	The local  libraries are located as specified in the project directory in file sym-lib-table.
 				--	The global libraries are located as specified in file $HOME/.config/kicad/sym-lib-table.
-				when KICAD_V5 => read_sym_lib_tables;
+				when KICAD_V5 => read_sym_lib_tables (log_threshold + 1);
 
 				when others =>
 					raise constraint_error;
@@ -8522,7 +8790,7 @@ package body et_kicad is
 				-- For V4:	This action creates new directory and component library search lists
 				-- 			in search_list_component_libraries and search_list_project_lib_dirs.
 				-- 			It also clears tmp_component_libraries (which is a temparily storage).
-				top_level_schematic	:= read_project_file;
+				top_level_schematic	:= read_project_file (log_threshold + 1);
 				
 				-- The top level schematic file dictates the module name. 
 				-- If parameter first_instance is true, the name of the first
