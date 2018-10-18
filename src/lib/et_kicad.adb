@@ -22,7 +22,7 @@
 --    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction side" where things are not
 --   finished yet or intended for the future.
@@ -3363,39 +3363,54 @@ package body et_kicad is
 	begin -- read_components_libraries
 		log ("reading component libraries ...", log_threshold);
 		log_indentation_up;
-		
-		-- The project libraries must be read as specified in project file.
-		-- The search_list_tmp_component_libraries is empty if there are no libraries defined -> nothing to do.
-		-- The tmp_component_libraries are empty (created on reading the project file) and must be filled.
-		if not type_library_names.is_empty (search_list_component_libraries) then
 
-			-- Set lib_cursor to first library and loop in tmp_component_libraries.
-			lib_cursor := tmp_component_libraries.first;
-			while type_libraries."/=" (lib_cursor, type_libraries.no_element) loop
+		case et_import.cad_format is
 
-				-- log library file name
-				log (type_full_library_name.to_string (type_libraries.key (lib_cursor)), log_threshold + 1);
-				
-				-- open the same-named file and read it
-				open (
-					file => library_handle,
-					mode => in_file,
-					name => type_full_library_name.to_string (type_libraries.key (lib_cursor)));
+			-- For V4:		
+			-- 	The project libraries must be read as specified in project file.
+			-- 	The search_list_tmp_component_libraries is empty if there are no libraries defined -> nothing to do.
+			-- 	The tmp_component_libraries are empty (created on reading the project file) and must be filled.
+			when et_import.KICAD_V4 =>
+				if not type_library_names.is_empty (search_list_component_libraries) then
+
+					-- Set lib_cursor to first library and loop in tmp_component_libraries.
+					lib_cursor := tmp_component_libraries.first;
+					while type_libraries."/=" (lib_cursor, type_libraries.no_element) loop
+
+						-- log library file name
+						log (type_full_library_name.to_string (type_libraries.key (lib_cursor)), log_threshold + 1);
+						
+						-- open the same-named file and read it
+						open (
+							file => library_handle,
+							mode => in_file,
+							name => type_full_library_name.to_string (type_libraries.key (lib_cursor)));
+							
+						-- Now we read the library file and add components
+						-- to the library pointed to by lib_cursor:
+						set_input (library_handle);
+						read_library (log_threshold + 1);
+
+						close (library_handle);
+
+						type_libraries.next (lib_cursor);
+					end loop;
 					
-				-- Now we read the library file and add components
-				-- to the library pointed to by lib_cursor:
-				set_input (library_handle);
-				read_library (log_threshold + 1);
+				else
+					log (message_warning & "no component libraries defined in project file !");
+				end if;
 
-				close (library_handle);
+			-- For V5;
+			--	The local  libraries are located as specified in the project directory in file sym-lib-table.
+			--	The global libraries are located as specified in file $HOME/.config/kicad/sym-lib-table.
+			when et_import.KICAD_V5 =>
+				null; -- CS
+				raise constraint_error;
+				
+			when others =>
+				raise constraint_error;
 
-				type_libraries.next (lib_cursor);
-			end loop;
-			
-		else
-			log (message_warning & "no component libraries defined in project file !");
-		end if;
-		
+		end case;
 		log_indentation_down;
 	end read_components_libraries;
 
@@ -4349,7 +4364,6 @@ package body et_kicad is
 	-- If first_instance is true, the module name further-on gets the instance appended.
 	-- This is required for multiple design instantiations. (things like nucleo_core_1).
 		
-		--use et_import.type_schematic_file_name;
 		use type_library_group_name;
 		use et_schematic;
 
@@ -4532,127 +4546,146 @@ package body et_kicad is
 
 				log_indentation_down;
 			end locate_libraries;
-			
+
+			use et_import;
 		begin -- read_project_file
-			log_indentation_reset;
-			log (
-				text => "reading project file " 
-				 & compose (
-					name		=> et_project.type_project_name.to_string (project), 
-					extension	=> file_extension_project) & " ...",
-				level => log_threshold + 1
-				);
-			log_indentation_up;
 
-			-- Clear search list of project libraries from earlier projects that have been imported.
-			-- If we import only one project, this statement does not matter:
-			type_project_lib_dirs.clear (search_list_project_lib_dirs);
-			type_library_names.clear (search_list_component_libraries);
+			case cad_format is
 
-			-- Clear tmp_component_libraries because it still contains librares of earlier project imports.
-			-- If we import only one project, this statement does not matter:
-			type_libraries.clear (tmp_component_libraries);
+				-- For V4;
+				--	The project file provides information where to search for libraries and search orders.
+				when KICAD_V4 =>
 
-			-- Open project file. 
-			-- The file name is composed of project name and extension.
-			open (
-				file => et_project.project_file_handle,
-				mode => in_file,
-				name => compose (
+					log_indentation_reset;
+					log (
+						text => "reading project file " 
+						& compose (
 							name		=> et_project.type_project_name.to_string (project), 
-							extension	=> file_extension_project)
-				);
-			set_input (et_project.project_file_handle);
-			
-			while not end_of_file loop
+							extension	=> file_extension_project) & " ...",
+						level => log_threshold + 1
+						);
+					log_indentation_up;
 
-				-- Save a line in variable "line" (see et_string_processing.ads)
-				line := read_line(
-							line => get_line,
-							comment_mark => "#", -- use constant comment_mark
-							number => ada.text_io.line (current_input),
-							ifs => latin_1.equals_sign); -- fields are separated by equals sign (=)
+					-- Clear search list of project libraries from earlier projects that have been imported.
+					-- If we import only one project, this statement does not matter:
+					type_project_lib_dirs.clear (search_list_project_lib_dirs);
+					type_library_names.clear (search_list_component_libraries);
 
-				case field_count (line) is
-					when 0 => null; -- we skip empty lines
-					when 1 => -- we have a line with just one field. those lines contain headers like "[eeschema]"
+					-- Clear tmp_component_libraries because it still contains librares of earlier project imports.
+					-- If we import only one project, this statement does not matter:
+					type_libraries.clear (tmp_component_libraries);
 
-						-- test header [eeschema]
-						if field (line,1) = project_header_eeschema then
-							clear_section_entered_flags;
-							section_eeschema_entered := true;
-						end if;
+					-- Open project file. 
+					-- The file name is composed of project name and extension.
+					open (
+						file => et_project.project_file_handle,
+						mode => in_file,
+						name => compose (
+									name		=> et_project.type_project_name.to_string (project), 
+									extension	=> file_extension_project)
+						);
+					set_input (et_project.project_file_handle);
+					
+					while not end_of_file loop
 
-						-- test header [eeschema/libraries]
-						if field (line,1) = project_header_eeschema_libraries then
-							clear_section_entered_flags;
-							section_eeschema_libraries_entered := true;
-						end if;
+						-- Save a line in variable "line" (see et_string_processing.ads)
+						line := read_line(
+									line => get_line,
+									comment_mark => "#", -- use constant comment_mark
+									number => ada.text_io.line (current_input),
+									ifs => latin_1.equals_sign); -- fields are separated by equals sign (=)
 
-					when 2 =>
-						if section_eeschema_entered then
+						case field_count (line) is
+							when 0 => null; -- we skip empty lines
+							when 1 => -- we have a line with just one field. those lines contain headers like "[eeschema]"
 
-							-- Get library directory names 
-							if field (line,1) = project_keyword_library_directory then
-								log ("library directories " & field (line,2), log_threshold + 2);
-
-								-- The library directories must be
-								-- inserted in the search list of library directories (search_list_project_lib_dirs).
-								-- These directories assist search operations for both components and packages.
-								locate_library_directories (field (line,2), log_threshold + 3);
-							end if;
-							
-						end if;
-
-						if section_eeschema_libraries_entered then
-
-							-- From a line like "LibName1=bel_supply" get component library names 
-							-- (incl. path and extension) and
-							-- store them in search_list_component_libraries (see et_kicad.ads).
-							-- We ignore the index of LibName. Since we store the lib names in a 
-							-- simple list their order remains unchanged anyway.
-							if field (line,1)(1..project_keyword_library_name'length) 
-								= project_keyword_library_name then
-
-								-- The component library could have been referenced already. If so,
-								-- there is no need to append it again to search_list_component_libraries.
-								if not type_library_names.contains (
-									container 	=> search_list_component_libraries,
-									item		=> type_library_name.to_bounded_string (field (line,2))) then
-									
-										type_library_names.append (
-											container	=> search_list_component_libraries, 
-											new_item	=> type_library_name.to_bounded_string (field (line,2)));
-
-										-- NOTE: search_list_component_libraries keeps the libraries in the same order as they appear
-										-- in the project file. search_list_component_libraries assists search operations.
-										-- It applies for the current project only and
-										-- is cleared as soon as another kicad project file is read.
-										
-										-- For the log write something like "LibName bel_connectors_and_jumpers"
-										log (field (line,1) & " " & field (line,2), log_threshold + 2);
+								-- test header [eeschema]
+								if field (line,1) = project_header_eeschema then
+									clear_section_entered_flags;
+									section_eeschema_entered := true;
 								end if;
 
-							end if;
+								-- test header [eeschema/libraries]
+								if field (line,1) = project_header_eeschema_libraries then
+									clear_section_entered_flags;
+									section_eeschema_libraries_entered := true;
+								end if;
 
-						end if;
+							when 2 =>
+								if section_eeschema_entered then
+
+									-- Get library directory names 
+									if field (line,1) = project_keyword_library_directory then
+										log ("library directories " & field (line,2), log_threshold + 2);
+
+										-- The library directories must be
+										-- inserted in the search list of library directories (search_list_project_lib_dirs).
+										-- These directories assist search operations for both components and packages.
+										locate_library_directories (field (line,2), log_threshold + 3);
+									end if;
+									
+								end if;
+
+								if section_eeschema_libraries_entered then
+
+									-- From a line like "LibName1=bel_supply" get component library names 
+									-- (incl. path and extension) and
+									-- store them in search_list_component_libraries (see et_kicad.ads).
+									-- We ignore the index of LibName. Since we store the lib names in a 
+									-- simple list their order remains unchanged anyway.
+									if field (line,1)(1..project_keyword_library_name'length) 
+										= project_keyword_library_name then
+
+										-- The component library could have been referenced already. If so,
+										-- there is no need to append it again to search_list_component_libraries.
+										if not type_library_names.contains (
+											container 	=> search_list_component_libraries,
+											item		=> type_library_name.to_bounded_string (field (line,2))) then
+											
+												type_library_names.append (
+													container	=> search_list_component_libraries, 
+													new_item	=> type_library_name.to_bounded_string (field (line,2)));
+
+												-- NOTE: search_list_component_libraries keeps the libraries in the same order as they appear
+												-- in the project file. search_list_component_libraries assists search operations.
+												-- It applies for the current project only and
+												-- is cleared as soon as another kicad project file is read.
+												
+												-- For the log write something like "LibName bel_connectors_and_jumpers"
+												log (field (line,1) & " " & field (line,2), log_threshold + 2);
+										end if;
+
+									end if;
+
+								end if;
+								
+							when others => null;
+						end case;
+
+		-- 				if section_eeschema_entered or section_eeschema_libraries_entered then
+		-- 					put_line(" " & et_string_processing.to_string(line));
+		-- 				end if;
 						
-					when others => null;
-				end case;
+					end loop;
 
--- 				if section_eeschema_entered or section_eeschema_libraries_entered then
--- 					put_line(" " & et_string_processing.to_string(line));
--- 				end if;
-				
-			end loop;
+					-- Test if the libraries collected in search_list_component_libraries
+					-- exist in any of the library directories.
+					-- Create empty component libraries.
+					locate_libraries (log_threshold + 3);
 
-			-- Test if the libraries collected in search_list_component_libraries
-			-- exist in any of the library directories.
-			-- Create empty component libraries.
-			locate_libraries (log_threshold + 3);
+					close (et_project.project_file_handle);
 
-			close (et_project.project_file_handle);
+				-- For V5;
+				--	The local  libraries are located as specified in the project directory in file sym-lib-table.
+				--	The global libraries are located as specified in file $HOME/.config/kicad/sym-lib-table.
+				when KICAD_V5 =>
+					null;
 
+				when others =>
+					raise constraint_error;
+					
+			end case;
+			
 			-- Derive the top level schematic file name from the project name.
 			-- It is just a matter of file extension.
 			return et_coordinates.type_schematic_file_name.to_bounded_string (
@@ -8189,15 +8222,15 @@ package body et_kicad is
 		set_directory (et_project.to_string (project));
 		
 		case et_import.cad_format is
-			when et_import.kicad_v4 =>
+			when et_import.KICAD_V4 | et_import.KICAD_V5 =>
 
 				-- Kicad uses Y axis positive downwards style (in both schematic and board)
 				et_coordinates.Y_axis_positive := et_coordinates.downwards;
 				
 				-- Derive top level schematic file name from project name.
-				-- This action creates new directory and component library search lists
-				-- in search_list_component_libraries and search_list_project_lib_dirs.
-				-- It also clears tmp_component_libraries (which is a temparily storage).
+				-- For V4:	This action creates new directory and component library search lists
+				-- 			in search_list_component_libraries and search_list_project_lib_dirs.
+				-- 			It also clears tmp_component_libraries (which is a temparily storage).
 				top_level_schematic	:= read_project_file;
 				
 				-- The top level schematic file dictates the module name. 
@@ -8224,8 +8257,10 @@ package body et_kicad is
 						generic_name	=> et_coordinates.to_submodule_name (
 											base_name (et_coordinates.to_string (top_level_schematic))),
 						instance		=> et_coordinates.type_submodule_instance'first,
-						
+
+						-- This list is used in V4 projects only:
 						search_list_library_comps	=> search_list_component_libraries,
+
 						search_list_library_dirs	=> search_list_project_lib_dirs,
 
 						component_libraries => type_libraries.empty_map,

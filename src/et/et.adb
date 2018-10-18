@@ -22,7 +22,7 @@
 --    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your editor to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction side" where things are not
 --   finished yet or intended for the future.
@@ -223,9 +223,14 @@ procedure et is
 
 		log ("importing module " & et_project.to_string (project_name) & " ...", console => true);
 		log ("CAD format " & to_string (et_import.cad_format));
+				
+		case et_import.cad_format is
+			when et_import.KICAD_V4 | et_import.KICAD_V5 =>
+				et_kicad.import_design (project => project_name, log_threshold => 0);
+			when others => -- CS
+				raise constraint_error;
+		end case;
 		
-		-- CS: use case construct to probe cad formats
-		et_kicad.import_design (project => project_name, log_threshold => 0);
 		restore_projects_root_directory;
 
 		--et_import.close_report;
@@ -292,8 +297,12 @@ procedure et is
 				log ("importing module " & et_project.to_string (module) & " ...", console => true);
 				log ("CAD format " & et_import.to_string (et_import.cad_format));
 				
-				-- CS: use case construct to probe cad formats
-				et_kicad.import_design (project => module, log_threshold => 0);
+				case et_import.cad_format is
+					when et_import.KICAD_V4 | et_import.KICAD_V5 =>
+						et_kicad.import_design (project => module, log_threshold => 0);
+					when others => -- CS
+						raise constraint_error;
+				end case;
 
 			else -- multi-instances
 				log ("importing and instantiating module " & et_project.to_string (module) & " ...", console => true);
@@ -305,8 +314,13 @@ procedure et is
 
 					if i = type_submodule_instance'first then -- first instance
 						
-						-- CS: use case construct to probe cad formats
-						et_kicad.import_design (first_instance => true, project => module, log_threshold => 0);
+						case et_import.cad_format is
+							when et_import.KICAD_V4 | et_import.KICAD_V5 =>
+								et_kicad.import_design (first_instance => true, project => module, log_threshold => 0);
+							when others => -- CS
+								raise constraint_error;
+						end case;
+
 					else
 						-- Copy the last module.
 						-- The module instance is incremented by copy_module automatically.
@@ -346,67 +360,74 @@ procedure et is
 		et_export.create_report;
 		--reset_warnings_counter;
 
-		-- If there are no modules, there is nothing to check:
-		if et_kicad.module_count > 0 then
+		case et_import.cad_format is
+			when et_import.KICAD_V4 | et_import.KICAD_V5 =>
 		
-			log ("checking modules ...", console => true);
-			log_indentation_up;
-			
-			-- detect missing or orphaned junctions
-			et_kicad.check_junctions (log_threshold => 0);
-			et_kicad.check_orphaned_junctions (log_threshold => 0);
-			et_kicad.check_misplaced_junctions (log_threshold => 0);	
+				-- If there are no modules, there is nothing to check:
+				if et_kicad.module_count > 0 then
+				
+					log ("checking modules ...", console => true);
+					log_indentation_up;
+					
+					-- detect missing or orphaned junctions
+					et_kicad.check_junctions (log_threshold => 0);
+					et_kicad.check_orphaned_junctions (log_threshold => 0);
+					et_kicad.check_misplaced_junctions (log_threshold => 0);	
 
-			-- detect misplaced no-connect-flags
-			et_kicad.check_misplaced_no_connection_flags (log_threshold => 0);
+					-- detect misplaced no-connect-flags
+					et_kicad.check_misplaced_no_connection_flags (log_threshold => 0);
 
-			-- detect orphaned no-connect-flags
-			et_kicad.check_orphaned_no_connection_flags (log_threshold => 0);
+					-- detect orphaned no-connect-flags
+					et_kicad.check_orphaned_no_connection_flags (log_threshold => 0);
 
-			-- make netlists
-			et_kicad.make_netlists (log_threshold => 0);
+					-- make netlists
+					et_kicad.make_netlists (log_threshold => 0);
 
-			-- detect unintentionally left open ports (must happen AFTER make_netlists !)
-			et_kicad.check_open_ports (log_threshold => 0);
+					-- detect unintentionally left open ports (must happen AFTER make_netlists !)
+					et_kicad.check_open_ports (log_threshold => 0);
 
-			-- detect non-deployed units
-			et_kicad.check_non_deployed_units (log_threshold => 0);
+					-- detect non-deployed units
+					et_kicad.check_non_deployed_units (log_threshold => 0);
 
-			-- test nets for inputs, outputs, bidirs, ...
-			et_kicad.net_test (log_threshold => 0);
-			
-			-- export netlists (requires that make_netlists has been called previously)
-			et_kicad.export_netlists (log_threshold => 0);
-			
-			-- export statistics
-			et_kicad.write_statistics (log_threshold => 0);
+					-- test nets for inputs, outputs, bidirs, ...
+					et_kicad.net_test (log_threshold => 0);
+					
+					-- export netlists (requires that make_netlists has been called previously)
+					et_kicad.export_netlists (log_threshold => 0);
+					
+					-- export statistics
+					et_kicad.write_statistics (log_threshold => 0);
 
-			-- export bom
-			et_kicad.export_bom (log_threshold => 0);
-			
+					-- export bom
+					et_kicad.export_bom (log_threshold => 0);
+					
 
 
-			-- If there is more than one module, interconnections must be validated 
-			-- as specified in configuration file.
-			if et_kicad.module_count > 1 then
-				validate_module_interconnections (log_threshold => 0);
-			end if;
+					-- If there is more than one module, interconnections must be validated 
+					-- as specified in configuration file.
+					if et_kicad.module_count > 1 then
+						validate_module_interconnections (log_threshold => 0);
+					end if;
 
-			-- Create routing tables.
-			-- Even if there is just a single module, a routing table is useful.
-			make_routing_tables (log_threshold => 0);
+					-- Create routing tables.
+					-- Even if there is just a single module, a routing table is useful.
+					make_routing_tables (log_threshold => 0);
 
-			export_routing_tables (log_threshold => 0);
-			
-			log_indentation_down;
+					export_routing_tables (log_threshold => 0);
+					
+					log_indentation_down;
 
-		else
-			log ("no modules -> nothing to check and nothing to export");
+				else
+					log ("no modules -> nothing to check and nothing to export");
 
-			-- CS: remove stale directories and files from earlier imports
-			-- CS: remove all directories in folder ET (except reports)
-			-- CS: remove routing table in ET/reports
-		end if;
+					-- CS: remove stale directories and files from earlier imports
+					-- CS: remove all directories in folder ET (except reports)
+					-- CS: remove routing table in ET/reports
+				end if;
+
+			when others =>
+				raise constraint_error; -- CS
+		end case;
 		
 		--et_export.close_report;
 		-- CS might be good to leave the export report open for other things that follow (layout export in native format)
@@ -429,21 +450,26 @@ procedure et is
 		-- Log messages go in the import report:
 		set_output (et_import.report_handle);
 
-		-- CS: use case construct to probe cad formats		
+		case et_import.cad_format is
+			when et_import.KICAD_V4 | et_import.KICAD_V5 =>
 		
-		-- If there are no modules, there is nothing to check:
-		if et_kicad.module_count > 0 then
+				-- If there are no modules, there is nothing to check:
+				if et_kicad.module_count > 0 then
 
-			log (row_separator_double);
-			log ("importing layouts/boards ...", console => true);
-			
-			log_indentation_up;
+					log (row_separator_double);
+					log ("importing layouts/boards ...", console => true);
+					
+					log_indentation_up;
 
-			et_kicad_pcb.read_boards (log_threshold => 0);
-			
-			log_indentation_down;
-		end if;
+					et_kicad_pcb.read_boards (log_threshold => 0);
+					
+					log_indentation_down;
+				end if;
 
+			when others =>
+				raise constraint_error; -- CS
+		end case;
+		
 		et_import.close_report;
 		-- CS might be good to leave the import report open for other things that follow
 		
@@ -508,12 +534,12 @@ procedure et is
 		log_indentation_up;
 		
 		case et_import.cad_format is
-			when et_import.KICAD_V4 => 
+			when et_import.KICAD_V4 | et_import.KICAD_V5 =>
 				et_kicad_to_native.to_native (log_threshold => 0);
 				--et_kicad_pcb.to_native (log_threshold => 0);
 				
-			when others => null;
-
+			when others =>
+				raise constraint_error; -- CS
 		end case;
 
 		log_indentation_down;

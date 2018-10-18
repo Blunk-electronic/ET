@@ -22,7 +22,7 @@
 --    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction side" where things are not
 --   finished yet or intended for the future.
@@ -67,10 +67,15 @@ package et_import is
 	-- Returns the number of warnings as string.
 	
 	-- CAD FORMATS
-	type type_cad_format is (unknown, kicad_v4); -- CS: eagle_vx
+	type type_cad_format is (
+		UNKNOWN,
+		KICAD_V4,
+		KICAD_V5
+		); -- CS: eagle_vx
+	
 	-- If no format specified via cmd line, a default applies so that the operator can be 
 	-- notified about missing cad format.
-	cad_format : type_cad_format := unknown; 
+	cad_format : type_cad_format := UNKNOWN; 
 
 	procedure validate_cad_format (format : in string);
 
