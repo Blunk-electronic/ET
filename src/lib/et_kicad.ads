@@ -678,7 +678,8 @@ package et_kicad is
 	tmp_component_libraries : type_libraries.map;
 	
 	
--- LIBRARY SEARCH LISTS
+	-- LIBRARY SEARCH LISTS ------------------------------------------------------------------
+	-- Relevant for V4:
 	-- The order of project libraries and their containing directories 
 	-- matters (for search operations).
 	-- For this reason we keep them in simple lists.
@@ -702,7 +703,7 @@ package et_kicad is
 		"=" 			=> type_library_directory."=");
 	search_list_project_lib_dirs : type_project_lib_dirs.list;
 
-	-- Symbol-Library-Tables ------------------------------------------------------	
+	-- SYMBOL-LIBRARY-TABLES ------------------------------------------------------	
 	-- Relevant for V5:
 	type type_lib_type is (LEGACY); -- CS: others ?
 
@@ -715,6 +716,9 @@ package et_kicad is
 	end record;
 
 	package type_sym_lib_table is new doubly_linked_lists (type_sym_lib_entry);
+
+	-- After reading the tables (local and global) they are stored here temporarily.
+	sym_lib_tables : type_sym_lib_table.list;
 	-------------------------------------------------------------------------------
 
 	

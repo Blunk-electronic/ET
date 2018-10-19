@@ -4386,8 +4386,14 @@ package body et_kicad is
 		
 		function read_project_file (log_threshold : in et_string_processing.type_log_level)
 			return et_coordinates.type_schematic_file_name.bounded_string is
-		-- Reads the project file (component libraries, library directories, ...) 
-		-- Returns the name of the top level schematic file.
+		-- V4:
+		--	- Reads the project file (component libraries, library directories, ...) 
+		--	- Returns the name of the top level schematic file.
+		--	- Creates temparily search_list_component_libraries and search_list_library_dirs.
+
+		-- V5:
+		--	- Reads the local and global sym-lib-tables and stores them temparily in sym_lib_tables.
+			
 			line : type_fields_of_line;
 			
 			use et_libraries;
@@ -5206,19 +5212,28 @@ package body et_kicad is
 					return table;
 				end read_table;
 
-				procedure set_table (
-				-- Load local and global sym-lib-table in the rig.
-					module_name	: in et_coordinates.type_submodule_name.bounded_string;
-					module		: in out type_module
-					) is
-
-					--package type_merge is new doubly_linked_lists.generic_sorting (type_sym_lib_table);
-					--package type_merge is new type_sym_lib_table.generic_sorting; -- (type_sym_lib_table);
+				procedure concatenate_local_and_global_tables is
+				-- Concatenates local and global sym-lib-tables so that global libraries come AFTER local libraries.
+					use type_sym_lib_table;
+					cursor : type_sym_lib_table.cursor := table_global.first;
 				begin
-					--module.sym_lib_tables := ;
-					null;
-									--merge (table_local, table_global);
-				end set_table;
+					log ("concatenating local and global table ...", log_threshold + 1);
+					
+					-- Append table_global to table_local so that global libraries come AFTER local libraries.
+					-- Loop in table_global and append element per element to table_local
+					while cursor /= type_sym_lib_table.no_element loop
+
+						type_sym_lib_table.append (
+							container	=> table_local,
+							new_item	=> element (cursor)); -- fetch element from global table
+						
+						next (cursor);
+					end loop;
+
+					-- Copy the resulting table to the tempoarily list "sym_lib_tables".
+					-- When the module is created, it will be copied into the rig.
+					sym_lib_tables := table_local;
+				end concatenate_local_and_global_tables;
 				
 			begin -- read_sym_lib_tables
 				log ("reading sym-lib-tables", log_threshold);
@@ -5255,12 +5270,7 @@ package body et_kicad is
 					close (sym_lib_handle);
 				end if;
 
-				-- Load local and global sym-lib-table in the rig.
-				type_rig.update_element (
-					container	=> rig,
-					position	=> module_cursor,
-					process		=> set_table'access);
-				
+				concatenate_local_and_global_tables;
 				
 				log_indentation_down;
 
@@ -8832,10 +8842,10 @@ package body et_kicad is
 				et_coordinates.Y_axis_positive := et_coordinates.downwards;
 				
 				-- Derive top level schematic file name from project name.
+				-- Clears tmp_component_libraries (which is a temparily storage).
 				-- For V4:	This action creates new directory and component library search lists
 				-- 			in search_list_component_libraries and search_list_project_lib_dirs.
-				-- 			It also clears tmp_component_libraries (which is a temparily storage).
-				-- For V5:	Reads sym-lib-tables and stores them in module.sym_lib_tables.
+				-- For V5:	Reads sym-lib-tables and stores them in sym_lib_tables.
 				top_level_schematic	:= read_project_file (log_threshold + 1);
 				
 				-- The top level schematic file dictates the module name. 
@@ -8864,11 +8874,11 @@ package body et_kicad is
 						instance		=> et_coordinates.type_submodule_instance'first,
 
 						-- These search lists are used in V4:
-						search_list_library_comps	=> search_list_component_libraries,
-						search_list_library_dirs	=> search_list_project_lib_dirs,
+						search_list_library_comps	=> search_list_component_libraries, -- see function read_project_file
+						search_list_library_dirs	=> search_list_project_lib_dirs, -- see function read_project_file
 
 						-- V5 uses sym-lib-tables:
-						sym_lib_tables		=> type_sym_lib_table.empty_list,
+						sym_lib_tables		=> sym_lib_tables, -- see function read_project_file
 						
 						component_libraries => type_libraries.empty_map,
 						
