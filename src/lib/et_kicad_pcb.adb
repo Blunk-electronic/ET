@@ -795,7 +795,7 @@ package body et_kicad_pcb is
 			-- save previous section on stack
 			sections_stack.push (section);
 
-			-- the former actvie section name becomes the parent section name
+			-- the former active section name becomes the parent section name
 			section.parent := section.name;
 			
 			section.arg_counter := 0;
