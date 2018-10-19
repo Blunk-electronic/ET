@@ -4550,6 +4550,8 @@ package body et_kicad is
 			end locate_libraries;
 
 			procedure read_proj_v4 is
+			-- Reads the project file and stores search lists in module components
+			-- search_list_library_dirs and search_list_library_comps. See spec for type_module.
 			begin
 				log_indentation_reset;
 				log (
@@ -4673,6 +4675,8 @@ package body et_kicad is
 			end read_proj_v4;
 			
 			procedure read_sym_lib_tables (log_threshold : in et_string_processing.type_log_level) is
+			-- Reads local and global sym-lib-tables and stores them in module component sym_lib_tables. 
+			-- See spec for type_module.
 			-- IMPORTANT AND CS: This procedure currently works under linux only !
 				use ada.environment_variables;
 				use ada.directories;
@@ -4680,11 +4684,16 @@ package body et_kicad is
 			    sym_lib_path_length_max : constant natural := 200;
 				package type_sym_lib_path is new generic_bounded_length (sym_lib_path_length_max);
 				use type_sym_lib_path;
-				sym_lib_path : type_sym_lib_path.bounded_string;
+				sym_lib_path : type_sym_lib_path.bounded_string; -- stores the path and name of a sym-lib-table file 
 				sym_lib_handle : ada.text_io.file_type;
 
-				function read_table return type_project_lib_dirs.list is
-					lib_dirs : type_project_lib_dirs.list; -- to be returned
+				-- After reading the local and global sym-lib-tables they are stored here:
+				table_local, table_global : type_sym_lib_table.list;
+
+				function read_table return type_sym_lib_table.list is
+				-- Reads the file that contains a sym-lib-table. The current_input points to the particular file.
+				-- The file is read into container "lines" which is then parsed to obtain the table content.
+					table : type_sym_lib_table.list; -- to be returned
 
 					line : et_string_processing.type_fields_of_line; -- a line of the table
 					lines : type_lines.list; -- all lines of the table
@@ -4749,6 +4758,7 @@ package body et_kicad is
 						-- Due to the workaround with the SEC_ prefix (see above), it must be removed from
 						-- the section image.
 						return to_lower (type_keyword'image (section)(sec_prefix'last+1 ..len));
+						--return type_keyword'image (section);
 					end to_string;
 				
 					function enter_section (section : in type_keyword) return string is begin
@@ -4763,8 +4773,6 @@ package body et_kicad is
 						return ("processing section " & to_string (section));
 					end process_section;
 
-					type type_lib_type is (LEGACY); -- CS: others ?
-					
 					-- TEMPORARILY STORAGE PLACES
 
 					lib_name	: et_libraries.type_library_name.bounded_string;
@@ -4793,7 +4801,7 @@ package body et_kicad is
 							-- Since a single line in container "lines" (where line_cursor points to) is a list 
 							-- of strings itself, we convert them first to a fixed string and then to a bounded string.
 							current_line := type_current_line.to_bounded_string (to_string (element (line_cursor)));
-							log ("line " & to_string (current_line), log_threshold);
+							--log ("line " & to_string (current_line), log_threshold);
 						else
 							-- This should never happen:
 							log_indentation_reset;
@@ -4837,7 +4845,7 @@ package body et_kicad is
 						section.parent := section.name;
 
 						-- CS provide log info on current section
-						-- log ("section " & to_string (section.name), log_threshold + 1);
+						--log ("section " & to_string (section.name), log_threshold + 1);
 						
 						section.arg_counter := 0;
 						
@@ -4849,6 +4857,10 @@ package body et_kicad is
 							end_of_kw := length (current_line);
 						end if;
 
+						-- Compose section name from cursor..end_of_kw.
+						-- This is an implicit general test whether the keyword is a valid keyword.
+						section.name := type_keyword'value (sec_prefix & slice (current_line, character_cursor, end_of_kw));
+						
 						-- This is the validation of a section regarding its parent section.
 						-- If an invalid subsection occurs, raise alarm and abort.
 						case section.parent is
@@ -4870,7 +4882,7 @@ package body et_kicad is
 						-- update cursor
 						character_cursor := end_of_kw;
 
-						log (enter_section (section.name), log_threshold + 2);
+						log (enter_section (section.name), log_threshold + 3);
 
 						exception
 							when event:
@@ -4958,7 +4970,7 @@ package body et_kicad is
 						-- Argument complete. Increment argument counter of section.
 						section.arg_counter := section.arg_counter + 1;
 						
-						log ("arg" & to_string (section.arg_counter) & latin_1.space & to_string (arg), log_threshold + 2);
+						log ("arg" & to_string (section.arg_counter) & latin_1.space & to_string (arg), log_threshold + 3);
 
 						-- Validate arguments according to current section and the parent section.
 						-- Load variables. When a section closes, the variables are used to build an object. see exec_section.
@@ -5032,10 +5044,13 @@ package body et_kicad is
 					-- Restores the previous section.
 						use type_lines;
 					begin -- exec_section
-						log (process_section (section.name), log_threshold + 2);
+						log (process_section (section.name), log_threshold + 3);
 						case section.parent is
 							when SEC_SYM_LIB_TABLE =>
 								case section.name is
+
+									-- When this section closes, the entry is complete and 
+									-- can be appended to the sym-list-table.
 									when SEC_LIB =>
 										log ("library " 
 											 & type_library_name.to_string (lib_name)
@@ -5043,10 +5058,16 @@ package body et_kicad is
 											 & type_lib_type'image (lib_type)
 											 & " path "
 											 -- CS options and description
-											 & type_full_library_name.to_string (lib_uri),
-											log_threshold + 1); 
+											 & type_full_library_name.to_string (lib_uri), 
+											log_threshold + 2); 
 
-										-- CS insert in ???
+										type_sym_lib_table.append (
+											container	=> table,
+											new_item	=> (
+												lib_name	=> lib_name,
+												lib_type	=> lib_type,
+												lib_uri		=> lib_uri)
+												);
 										
 									when others => null;
 								end case;
@@ -5056,7 +5077,7 @@ package body et_kicad is
 
 						-- restore previous section from stack
 						section := sections_stack.pop;
-						log (return_to_section (section.name), log_threshold + 2);
+						log (return_to_section (section.name), log_threshold + 3);
 						
 						exception
 							when event:
@@ -5070,10 +5091,9 @@ package body et_kicad is
 
 					end exec_section;
 
-					
 				begin -- read_table
 					log_indentation_up;
-					
+
 					-- Import the file in container "lines"
 					set_input (sym_lib_handle);
 					while not end_of_file loop
@@ -5101,9 +5121,12 @@ package body et_kicad is
 
 					sections_stack.init;
 
+					--log ("test 1 section " & to_string (section.name), log_threshold + 1);
+					--log ("test 1 section " & type_keyword'image (section.name), log_threshold + 1);
+					
 					-- get first line
 					current_line := type_current_line.to_bounded_string (to_string (type_lines.element (line_cursor)));
-					log ("line " & to_string (current_line), log_threshold + 4);
+					--log ("line " & to_string (current_line), log_threshold + 4);
 
 					-- get position of first opening bracket
 					character_cursor := type_current_line.index (current_line, 1 * opening_bracket);
@@ -5180,11 +5203,24 @@ package body et_kicad is
 
 					log_indentation_down;
 					
-					return lib_dirs;
+					return table;
 				end read_table;
+
+				procedure set_table (
+				-- Load local and global sym-lib-table in the rig.
+					module_name	: in et_coordinates.type_submodule_name.bounded_string;
+					module		: in out type_module
+					) is
+
+					--package type_merge is new doubly_linked_lists.generic_sorting (type_sym_lib_table);
+					--package type_merge is new type_sym_lib_table.generic_sorting; -- (type_sym_lib_table);
+				begin
+					--module.sym_lib_tables := ;
+					null;
+									--merge (table_local, table_global);
+				end set_table;
 				
 			begin -- read_sym_lib_tables
-				log_indentation_reset;
 				log ("reading sym-lib-tables", log_threshold);
 
 				log_indentation_up;
@@ -5199,7 +5235,7 @@ package body et_kicad is
 						mode => in_file,
 						name => to_string (sym_lib_path));
 
-					-- CS read_table;
+					table_local := read_table;
 					
 					close (sym_lib_handle);
 				end if;
@@ -5214,21 +5250,28 @@ package body et_kicad is
 						mode => in_file,
 						name => to_string (sym_lib_path));
 
-					-- CS read_table;
+					table_global := read_table;
 
 					close (sym_lib_handle);
 				end if;
 
-				-- CS append global to local table
+				-- Load local and global sym-lib-table in the rig.
+				type_rig.update_element (
+					container	=> rig,
+					position	=> module_cursor,
+					process		=> set_table'access);
+				
 				
 				log_indentation_down;
 
 			end read_sym_lib_tables;
 			
-			
 			use et_import;
+			
 		begin -- read_project_file
-
+			log ("reading project file ...", log_threshold);
+			log_indentation_up;
+			
 			case cad_format is
 				
 				-- For V4;
@@ -5244,6 +5287,8 @@ package body et_kicad is
 					raise constraint_error;
 					
 			end case;
+
+			log_indentation_down;
 			
 			-- Derive the top level schematic file name from the project name.
 			-- It is just a matter of file extension.
@@ -8790,6 +8835,7 @@ package body et_kicad is
 				-- For V4:	This action creates new directory and component library search lists
 				-- 			in search_list_component_libraries and search_list_project_lib_dirs.
 				-- 			It also clears tmp_component_libraries (which is a temparily storage).
+				-- For V5:	Reads sym-lib-tables and stores them in module.sym_lib_tables.
 				top_level_schematic	:= read_project_file (log_threshold + 1);
 				
 				-- The top level schematic file dictates the module name. 
@@ -8817,11 +8863,13 @@ package body et_kicad is
 											base_name (et_coordinates.to_string (top_level_schematic))),
 						instance		=> et_coordinates.type_submodule_instance'first,
 
-						-- This list is used in V4 projects only:
+						-- These search lists are used in V4:
 						search_list_library_comps	=> search_list_component_libraries,
-
 						search_list_library_dirs	=> search_list_project_lib_dirs,
 
+						-- V5 uses sym-lib-tables:
+						sym_lib_tables		=> type_sym_lib_table.empty_list,
+						
 						component_libraries => type_libraries.empty_map,
 						
 						strands				=> type_strands.empty_list,

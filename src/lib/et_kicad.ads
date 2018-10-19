@@ -702,6 +702,21 @@ package et_kicad is
 		"=" 			=> type_library_directory."=");
 	search_list_project_lib_dirs : type_project_lib_dirs.list;
 
+	-- Symbol-Library-Tables ------------------------------------------------------	
+	-- Relevant for V5:
+	type type_lib_type is (LEGACY); -- CS: others ?
+
+	type type_sym_lib_entry is record
+		lib_name	: et_libraries.type_library_name.bounded_string;
+		lib_type	: type_lib_type;
+		lib_uri		: et_libraries.type_full_library_name.bounded_string;
+		-- CS options
+		-- CS desrciption
+	end record;
+
+	package type_sym_lib_table is new doubly_linked_lists (type_sym_lib_entry);
+	-------------------------------------------------------------------------------
+
 	
 -- COMPONENT TEXT FIELDS
 
@@ -1233,12 +1248,16 @@ package et_kicad is
 		instance		: et_coordinates.type_submodule_instance;
 		board_available	: et_schematic.type_board_available := et_schematic.false;
 
+		-- V4 uses search lists:
 		-- The search list of project library directories and names:
 		search_list_library_dirs	: type_project_lib_dirs.list; 	-- search list for library directories (active, passive, ...)
 		search_list_library_comps	: type_library_names.list; 		-- search list for component libraries (bel_logic, bel_primitives, ...)
 		-- NOTE: There is no search list for packages, because they are nowhere declared (not even in the project conf. file)
+
+		-- V5 uses sym-lib-tables:
+		sym_lib_tables		: type_sym_lib_table.list;
 		
-		component_libraries			: type_libraries.map;
+		component_libraries	: type_libraries.map;
 		
 		strands	    		: type_strands.list;				-- the strands of the module
 		junctions			: type_junctions.list;				-- net junctions (for ERC, statistics, ...)
