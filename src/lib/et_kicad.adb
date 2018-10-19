@@ -4574,10 +4574,6 @@ package body et_kicad is
 				type_project_lib_dirs.clear (search_list_project_lib_dirs);
 				type_library_names.clear (search_list_component_libraries);
 
-				-- Clear tmp_component_libraries because it still contains librares of earlier project imports.
-				-- If we import only one project, this statement does not matter:
-				type_libraries.clear (tmp_component_libraries);
-
 				-- Open project file. 
 				-- The file name is composed of project name and extension.
 				open (
@@ -5281,6 +5277,10 @@ package body et_kicad is
 		begin -- read_project_file
 			log ("reading project file ...", log_threshold);
 			log_indentation_up;
+
+			-- Clear tmp_component_libraries because it still contains librares of earlier project imports.
+			-- If we import only one project, this statement does not matter:
+			type_libraries.clear (tmp_component_libraries);
 			
 			case cad_format is
 				
