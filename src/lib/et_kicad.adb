@@ -3369,9 +3369,9 @@ package body et_kicad is
 		case et_import.cad_format is
 
 			-- For V4:		
-			-- 	The project libraries must be read as specified in project file.
-			-- 	The search_list_tmp_component_libraries is empty if there are no libraries defined -> nothing to do.
 			when et_import.KICAD_V4 =>
+
+				-- If the search_list_tmp_component_libraries is empty if there are no libraries defined -> nothing to do.
 				if not type_library_names.is_empty (search_list_component_libraries) then
 
 					-- Set lib_cursor to first library and loop in tmp_component_libraries.
@@ -3401,12 +3401,40 @@ package body et_kicad is
 					log (message_warning & "no component libraries defined in project file !");
 				end if;
 
+				
 			-- For V5;
-			--	The local  libraries are located as specified in the project directory in file sym-lib-table.
-			--	The global libraries are located as specified in file $HOME/.config/kicad/sym-lib-table.
 			when et_import.KICAD_V5 =>
-				null; -- CS
-				raise constraint_error;
+
+				-- If tmp_component_libraries is empty -> nothing to do
+				if not type_libraries.is_empty (tmp_component_libraries) then
+
+					-- Set lib_cursor to first library and loop in tmp_component_libraries.
+					lib_cursor := tmp_component_libraries.first;
+					while type_libraries."/=" (lib_cursor, type_libraries.no_element) loop
+
+						-- log library file name
+						log (type_full_library_name.to_string (type_libraries.key (lib_cursor)), log_threshold + 1);
+						
+						-- open the same-named file and read it
+						open (
+							file => library_handle,
+							mode => in_file,
+							name => type_full_library_name.to_string (type_libraries.key (lib_cursor)));
+							
+						-- Now we read the library file and add components
+						-- to the library pointed to by lib_cursor:
+						set_input (library_handle);
+						read_library (log_threshold + 1);
+
+						close (library_handle);
+
+						type_libraries.next (lib_cursor);
+					end loop;
+					
+				else
+					log (message_warning & "no component libraries defined !");
+				end if;
+
 				
 			when others =>
 				raise constraint_error;
