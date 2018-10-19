@@ -661,6 +661,7 @@ package et_kicad is
 		lib_name 	: in et_libraries.type_library_name.bounded_string) 
 		return et_libraries.type_full_library_name.bounded_string;
 	-- composes the full library name from the given group and the actual lib name.
+
 	
 
 	package type_libraries is new ordered_maps (
@@ -668,6 +669,8 @@ package et_kicad is
 		"<"				=> et_libraries.type_full_library_name."<",
 		element_type 	=> type_components_library.map,
 		"=" 			=> type_components_library."=");
+	-- CS the element could be a record consisting of type_components_library.map, lib_type, options and desrciption
+	-- lib_type, options and description are provided in V5 and should be stored here in the future.
 
 	-- All component models of a project/module are collected here temporarily.
 	-- This collection is cleared when a new project is read. See procedure read_project_file.

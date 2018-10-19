@@ -4689,11 +4689,44 @@ package body et_kicad is
 				-- After reading the local and global sym-lib-tables they are stored here:
 				table_local, table_global : type_sym_lib_table.list;
 
-				procedure locate_libraries (log_threshold : in type_log_level) is
-				-- Tests if the libraries (listed in sym_lib_tables) exist.
+				procedure locate_libraries is
+				-- Tests if the libraries (listed in sym_lib_table) exist.
 				-- If a library was found, a same-named empty library is created in the container tmp_component_libraries.
-				begin
-					null;
+					lib_cursor : type_sym_lib_table.cursor := sym_lib_tables.first;
+					use type_sym_lib_table;
+					uri : type_full_library_name.bounded_string;
+				begin -- locate_libraries
+					log ("locating libraries ...", log_threshold + 1);
+					log_indentation_up;
+
+					while lib_cursor /= type_sym_lib_table.no_element loop
+						uri := element (lib_cursor).lib_uri; -- get full name like /home/user/kicad_libs/bel_stm32.lib
+						log (type_full_library_name.to_string (uri), log_threshold + 2);
+
+						-- Test if library file exists:
+						if ada.directories.exists (type_full_library_name.to_string (uri)) then
+
+							-- create empty component library
+							type_libraries.insert (
+								container	=> tmp_component_libraries,
+								key 		=> uri,
+								new_item	=> type_components_library.empty_map
+								); 
+
+							-- CS library type, options and description not processed here.
+							-- See comment on type_libraries in et_kicad.ads.
+							
+						-- raise alarm and abort if library file not found
+						else
+							log_indentation_reset;
+							log (message_error & "library " & type_full_library_name.to_string (uri) 
+								 & " not found !", console => true);
+							raise constraint_error;
+						end if;
+
+						next (lib_cursor);
+					end loop;
+					log_indentation_down;
 				end locate_libraries;
 
 				
@@ -5272,6 +5305,11 @@ package body et_kicad is
 				end if;
 
 				concatenate_local_and_global_tables;
+				-- container sym_lib_tables now contains all library names and paths in this order:
+				--  - local, in the order of appearance in the project specific sym-lib-table file
+				--  - global, in the order of appearance in the global sym-lib-table file
+
+				locate_libraries; -- as given in container sym_lib_tables. creates empty libraries in tmp_component_libraries.
 				
 				log_indentation_down;
 
