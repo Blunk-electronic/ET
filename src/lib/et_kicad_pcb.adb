@@ -2431,9 +2431,12 @@ package body et_kicad_pcb is
 	
 	procedure read_libraries (
 	-- Reads package libraries.
-	-- Create the libraries in container package_libraries.
-	-- Bases on search_list_project_lib_dirs (created on reading the project file).
-	-- The libraries in the container are named like ../lbr/tht_packages/plcc.pretty		
+	-- V4: 
+	-- 	- Creates the libraries in container package_libraries.
+	-- 	- Bases on search_list_project_lib_dirs (created on reading the project file).
+	-- V5:
+	--	- The list package_libraries has been created on reading the project file with empty libraries inside.
+	-- 	- Now the libraries must be filled.
 		log_threshold 	: in et_string_processing.type_log_level) is
 
 		use ada.directories;
@@ -2461,15 +2464,11 @@ package body et_kicad_pcb is
 		-- inserting was successuful. The flag goes false if a library already exist.
 		-- This is happens if a library has already been created via the import of another project.
 		library_inserted : boolean;
-
-		-- The library_cursor points to the library in the container package_libraries.
-		library_cursor : type_libraries.cursor;
-
-		-- V5 RELATED ------------------------------------------------------------------------------------------
-		use et_kicad.type_lib_table;
-		table_cursor : et_kicad.type_lib_table.cursor;
-
 		--------------------------------------------------------------------------------------------------------
+		
+		-- The library_cursor points to the library in the container package_libraries.
+		use type_libraries;
+		library_cursor : type_libraries.cursor;
 		
 		procedure read_packages (
 		-- Creates empty packages in the package_libraries. The package names are
@@ -2644,9 +2643,25 @@ package body et_kicad_pcb is
 
 
 			when KICAD_V5 =>
-				-- CS fill empty package_libraries
-				null;
+				-- Fill empty package_libraries.
+				-- Loop in list package_libraries and fill one library after another:
+				library_cursor := package_libraries.first;
+				
+				while library_cursor /= type_libraries.no_element loop
+					-- change in library (the kicad package library is just a directory like ../lbr/bel_ic.pretty)
+					set_directory (to_string (key (library_cursor)));
 
+					type_libraries.update_element (
+						container	=> package_libraries,
+						position	=> library_cursor,
+						process		=> read_packages'access);
+
+					-- change back to directory of origin
+					set_directory (et_pcb.to_string (origin_directory));
+
+					next (library_cursor);
+				end loop;
+				
 			when others =>
 				raise constraint_error;
 				

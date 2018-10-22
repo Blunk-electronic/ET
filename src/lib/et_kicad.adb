@@ -4993,7 +4993,7 @@ package body et_kicad is
 						-- update cursor
 						character_cursor := end_of_kw;
 
-						log (enter_section (section.name), log_threshold + 3);
+						log (enter_section (section.name), log_threshold + 5);
 
 						exception
 							when event:
@@ -5081,7 +5081,7 @@ package body et_kicad is
 						-- Argument complete. Increment argument counter of section.
 						section.arg_counter := section.arg_counter + 1;
 						
-						log ("arg" & to_string (section.arg_counter) & latin_1.space & to_string (arg), log_threshold + 3);
+						log ("arg" & to_string (section.arg_counter) & latin_1.space & to_string (arg), log_threshold + 5);
 
 						-- Validate arguments according to current section and the parent section.
 						-- Load variables. When a section closes, the variables are used to build an object. see exec_section.
@@ -5188,7 +5188,7 @@ package body et_kicad is
 
 						-- restore previous section from stack
 						section := sections_stack.pop;
-						log (return_to_section (section.name), log_threshold + 3);
+						log (return_to_section (section.name), log_threshold + 5);
 						
 						exception
 							when event:
