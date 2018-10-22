@@ -76,7 +76,17 @@ package body et_kicad_pcb is
 		return et_libraries.type_full_library_name.bounded_string is
 	-- Returns the full library name of the library that
 	-- contains the given package library with the given package.
-	-- Searches the library directories in the order given in search_list_project_lib_dirs.
+		
+	-- V4:
+	-- 	- Searches the library directories in the order given in search_list_project_lib_dirs.
+	-- 	- The full library name is the result of a search operation:
+	-- 	- The first directory and the first library that contains the package.
+	-- 	- There can be many library directories to search in.
+
+	-- V5:
+	--	- Looks up the fp-lib-table for the first occurence of the given library name.
+	--	- The entry in the fp-lib-table in turn provides the full library name (incl. path).
+		
 		lib : et_libraries.type_full_library_name.bounded_string; -- to be returned
 
 		use et_kicad;

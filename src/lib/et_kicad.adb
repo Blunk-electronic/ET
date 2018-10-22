@@ -3024,17 +3024,15 @@ package body et_kicad is
 						case component.appearance is
 							when sch_pcb => -- real component
 
-								-- The name of the default variant is the package 
-								-- name (instead of an empty string or a string like "default"):
+								-- The name of the default variant is the package
+								-- name itself (instead of an empty string or a string like "default"):
 								check_variant_name_length (to_string (package_name (content (field_package)))); -- S_SO14
 								tmp_variant_name := to_component_variant_name (to_string (package_name (content (field_package)))); -- S_SO14
 								check_variant_name_characters (tmp_variant_name);
 
-								-- The full library name is the result of a search operation:
-								-- The first directory and the first library that contains the package.
-								-- There can be many library directories to search in.
-								full_package_library_name := et_kicad_pcb.full_library_name ( -- ../lbr_dir_1/bel_logic.pretty
-									library_name	=> library_name (content (field_package)), -- bel_logic
+								-- Find the library where the given package is stored in.
+								full_package_library_name := et_kicad_pcb.full_library_name ( -- ../lbr_dir_1/bel_ic.pretty
+									library_name	=> library_name (content (field_package)), -- bel_ic
 									package_name	=> package_name (content (field_package)), -- S_SO14
 									log_threshold	=> log_threshold + 1);
 								
