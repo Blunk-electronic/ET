@@ -57,6 +57,8 @@ with ada.containers.vectors;
 
 package et_kicad_general is
 
+	system_name	: constant string (1..5) := "KiCad";
+	
 	-- TIMESTAMP
 	timestamp_characters : character_set := to_set (ranges => (('A','F'),('0','9'))); -- CS: upper case letters only	
 	type type_timestamp is new string (1..8); -- like "3459A3C1"

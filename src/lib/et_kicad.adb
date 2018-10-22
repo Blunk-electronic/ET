@@ -66,6 +66,7 @@ with et_string_processing;		use et_string_processing;
 with et_project;
 with et_pcb;
 with et_pcb_coordinates;
+with et_kicad_general;			use et_kicad_general;
 with et_kicad_pcb;
 with et_export;
 with et_csv;
@@ -9021,8 +9022,13 @@ package body et_kicad is
 						-- V5 uses sym-lib-tables and fp-lib-tables:
 						sym_lib_tables		=> sym_lib_tables, -- see function read_project_file
 						fp_lib_tables		=> fp_lib_tables, -- see function read_project_file
-						
+
+						-- symbol/component libraries
 						component_libraries => type_libraries.empty_map,
+
+						-- V5
+						-- package/footprint libraries
+						footprints			=> et_kicad_pcb.type_libraries.empty_map,
 						
 						strands				=> type_strands.empty_list,
 						junctions			=> type_junctions.empty_list,
@@ -13450,7 +13456,7 @@ package body et_kicad is
 				mode => out_file, 
 				name => et_schematic.type_netlist_file_name.to_string (netlist_file_name));
 
-			put_line (netlist_handle, comment_mark & " " & system_name & " " & et_general.version & " netlist");
+			put_line (netlist_handle, comment_mark & " " & et_general.system_name & " " & et_general.version & " netlist");
 			put_line (netlist_handle, comment_mark & " " & date);
 			put_line (netlist_handle, comment_mark & " module " & to_string (key (module_cursor)));
 			put_line (netlist_handle, comment_mark & " " & row_separator_double);
@@ -14024,7 +14030,7 @@ package body et_kicad is
 				name => et_schematic.type_statistic_file_name.to_string (statistics_file_name_cad));
 
 			log_indentation_up;
-			put_line (statistics_handle_cad, comment_mark & " " & system_name & " CAD statistics");
+			put_line (statistics_handle_cad, comment_mark & " " & et_general.system_name & " CAD statistics");
 			put_line (statistics_handle_cad, comment_mark & " " & date);
 			put_line (statistics_handle_cad, comment_mark & " module " & et_coordinates.to_string (key (module_cursor)));
 			put_line (statistics_handle_cad, comment_mark & " " & row_separator_double);
@@ -14095,7 +14101,7 @@ package body et_kicad is
 				name => et_schematic.type_statistic_file_name.to_string (statistics_file_name_cam));
 
 			log_indentation_up;
-			put_line (statistics_handle_cam, comment_mark & " " & system_name & " CAM statistics");
+			put_line (statistics_handle_cam, comment_mark & " " & et_general.system_name & " CAM statistics");
 			put_line (statistics_handle_cam, comment_mark & " " & date);
 			put_line (statistics_handle_cam, comment_mark & " module " & et_coordinates.to_string (key (module_cursor)));
 			put_line (statistics_handle_cam, comment_mark & " " & row_separator_double);

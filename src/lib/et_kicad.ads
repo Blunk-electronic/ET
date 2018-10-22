@@ -49,7 +49,7 @@ with et_project;
 with et_schematic;
 with et_pcb;
 with et_kicad_general;			use et_kicad_general;
---with et_kicad_pcb;
+with et_kicad_pcb;
 with et_import;
 with et_coordinates;
 with et_pcb_coordinates;
@@ -58,7 +58,7 @@ with et_string_processing;
 
 package et_kicad is
 
-	system_name	: constant string (1..5) := "KiCad";
+	-- CS: a lot of stuff should move from here to et_kicad_general
 	
 	-- If lines of a file are to be collected we use this simple list:
 	package type_lines is new doubly_linked_lists (
@@ -1276,7 +1276,7 @@ package et_kicad is
 		fp_lib_tables		: type_lib_table.list; -- footprints/packages		
 		
 		component_libraries	: type_libraries.map;
-		--footprints			: et_kicad_pcb.type_libraries.map;
+		footprints			: et_kicad_pcb.type_libraries.map;
 		
 		strands	    		: type_strands.list;				-- the strands of the module
 		junctions			: type_junctions.list;				-- net junctions (for ERC, statistics, ...)

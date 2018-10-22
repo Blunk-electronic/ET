@@ -6535,7 +6535,7 @@ package body et_kicad_pcb is
 				when SEC_KICAD_PCB =>
 					case section.name is
 						when SEC_VERSION =>
-							log (et_kicad.system_name & " version " & pcb_file_format_version_4, log_threshold + 1); 
+							log (system_name & " version " & pcb_file_format_version_4, log_threshold + 1); 
 
 						when SEC_HOST =>
 							log ("host " & host_name_pcbnew & " version " & pcb_new_version_4_0_7, log_threshold + 1);
