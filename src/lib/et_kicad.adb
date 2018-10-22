@@ -68,6 +68,7 @@ with et_pcb;
 with et_pcb_coordinates;
 with et_kicad_general;			use et_kicad_general;
 with et_kicad_pcb;
+with et_import;
 with et_export;
 with et_csv;
 
@@ -9007,13 +9008,40 @@ package body et_kicad is
 		module_name : et_coordinates.type_submodule_name.bounded_string; -- the name of the module to be created
 		module_inserted : boolean := false; -- goes true if module already created. should never happen
 
-		procedure save_component_libraries (
-		-- Saves the current tmp_component_libraries in the current module.
-			module_name	: in et_coordinates.type_submodule_name.bounded_string;
-			module		: in out type_module) is
-		begin
-			module.component_libraries := tmp_component_libraries;
-		end save_component_libraries;
+
+		procedure save_libraries is
+			use et_import;
+
+			procedure save_components (
+			-- Saves the current tmp_component_libraries in the current module.
+				module_name	: in et_coordinates.type_submodule_name.bounded_string;
+				module		: in out type_module) is
+			begin
+				module.component_libraries := tmp_component_libraries;
+			end save_components;
+
+			procedure save_packages (
+			-- Saves the package_libraries in the current module.
+				module_name	: in et_coordinates.type_submodule_name.bounded_string;
+				module		: in out type_module) is
+			begin
+				module.footprints := et_kicad_pcb.package_libraries;
+			end save_packages;
+			
+		begin -- save_libraries
+			-- tmp_component_libraries is a tempoarily storage place.
+			-- It must be saved in module.component_libraries.
+			-- tmp_component_libraries is furhter-on requried for other operations (like read_schematic) within the current module.
+			-- CS: in the future tmp_component_libraries should be discarded. update_element and query_element
+			-- operations should access the component_libraries of a module directly.
+			type_rig.update_element (rig, module_cursor, save_components'access);
+			
+			-- V5: et_kicad_pcb.package_libraries is a temparily storage place. It must be saved in module.footprints.
+			if cad_format = KICAD_V5 then
+				type_rig.update_element (rig, module_cursor, save_packages'access);
+			end if;
+			
+		end save_libraries;
 		
 	begin -- import_design
 
@@ -9108,13 +9136,8 @@ package body et_kicad is
 				-- read component libraries
 				read_components_libraries (log_threshold); -- fills tmp_component_libraries
 
-				-- tmp_component_libraries is a tempoarily storage place.
-				-- It must be saved in module.component_libraries.
-				-- tmp_component_libraries is furhter-on requried for other operations (like read_schematic) within the current module.
-				-- CS: in the future tmp_component_libraries should be discarded. update_element and query_element
-				-- operations should access the component_libraries of a module directly.
-				type_rig.update_element (rig, module_cursor, save_component_libraries'access);
-				
+				-- copy temparily containers in module
+				save_libraries;
 
 				current_schematic.sheet.file := top_level_schematic;
 				et_coordinates.check_submodule_name_characters (to_submodule_name (current_schematic.sheet.file));
