@@ -545,14 +545,14 @@ package et_kicad_pcb is
 		"="				=> type_packages_library."=",
 		"<"				=> et_libraries.type_full_library_name."<");
 
-	-- All package models found in the project libraries are collected here:
+	-- V4: All package models found in the project libraries are collected here:
 	package_libraries : type_libraries.map;
 
 	
 	procedure read_libraries (
-	-- Reads package libraries. Root directory is et_libraries.lib_dir.
+	-- Reads package libraries.
 	-- Create the libraries in container package_libraries. 
-	-- The libraries in the container are named after the libraries found in lib_dir.
+	-- The libraries in the container are named like ../lbr/tht_packages/plcc.pretty
 		log_threshold 	: in et_string_processing.type_log_level);
 
 

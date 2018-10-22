@@ -2432,6 +2432,7 @@ package body et_kicad_pcb is
 	-- Reads package libraries.
 	-- Create the libraries in container package_libraries.
 	-- Bases on search_list_project_lib_dirs (created on reading the project file).
+	-- The libraries in the container are named like ../lbr/tht_packages/plcc.pretty		
 		log_threshold 	: in et_string_processing.type_log_level) is
 
 		use ada.directories;

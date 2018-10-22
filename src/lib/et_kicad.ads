@@ -48,6 +48,7 @@ with ada.containers.vectors;
 with et_project;
 with et_schematic;
 with et_pcb;
+--with et_kicad_pcb;
 with et_import;
 with et_coordinates;
 with et_pcb_coordinates;
@@ -1281,6 +1282,7 @@ package et_kicad is
 		fp_lib_tables		: type_lib_table.list; -- footprints/packages		
 		
 		component_libraries	: type_libraries.map;
+		--footprints			: et_kicad_pcb.type_libraries.map;
 		
 		strands	    		: type_strands.list;				-- the strands of the module
 		junctions			: type_junctions.list;				-- net junctions (for ERC, statistics, ...)
