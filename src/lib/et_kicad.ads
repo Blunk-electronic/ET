@@ -48,6 +48,7 @@ with ada.containers.vectors;
 with et_project;
 with et_schematic;
 with et_pcb;
+with et_kicad_general;			use et_kicad_general;
 --with et_kicad_pcb;
 with et_import;
 with et_coordinates;
@@ -155,15 +156,8 @@ package et_kicad is
 	-- Units may have alternative representations such as de_Morgan
 	type type_de_morgan_representation is (NO, YES);
 
-	-- TIMESTAMP
-	timestamp_characters : character_set := to_set (ranges => (('A','F'),('0','9'))); -- CS: upper case letters only	
-	type type_timestamp is new string (1..8); -- like "3459A3C1"
-	timestamp_default : type_timestamp := "00000000";
-	procedure check_timestamp (timestamp : in type_timestamp);
-	-- Checks the given timestamp for valid characters and plausible time.
-	
 	type type_unit_schematic is new et_schematic.type_unit with record
-		timestamp		: type_timestamp;
+		timestamp		: et_kicad_general.type_timestamp;
 		alt_repres		: type_de_morgan_representation;
 	end record;
 
@@ -359,7 +353,7 @@ package et_kicad is
 	-- Alternative references used in instances of sheets:
 	-- example: AR Path="/59F17FDE/5A991D18" Ref="RPH1"  Part="1" 
 	package type_alternative_reference_path is new doubly_linked_lists (
-		element_type => type_timestamp); -- 5A991D18
+		element_type => et_kicad_general.type_timestamp); -- 5A991D18
 	
 	type type_alternative_reference is record
 		path		: type_alternative_reference_path.list; -- 59F17FDE 5A991D18 ...

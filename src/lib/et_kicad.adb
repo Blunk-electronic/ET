@@ -413,14 +413,6 @@ package body et_kicad is
 		return package_name;
 	end to_package_name;
 
-
-	procedure check_timestamp (timestamp : in type_timestamp) is
-	-- Checks the given timestamp for valid characters and plausible time.
-	begin
-		null; -- CS
-	end check_timestamp;
-	
-	
 	function to_string (
 		no_connection_flag	: in type_no_connection_flag;
 		scope				: in et_coordinates.type_scope) return string is

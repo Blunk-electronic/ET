@@ -58,7 +58,7 @@ with et_general;
 with et_coordinates;
 with et_libraries;
 with et_schematic;
-with et_kicad;
+with et_kicad_general;			use et_kicad_general;
 with et_pcb;
 with et_pcb_coordinates;
 with et_pcb_math;
@@ -577,7 +577,7 @@ package body et_kicad_pcb is
 	
 
 		
-		time_stamp	: et_kicad.type_timestamp; -- temporarily storage of package timestamp
+		time_stamp	: type_timestamp; -- temporarily storage of package timestamp
 		description	: type_package_description.bounded_string; -- temp. storage of package description
 		tags 		: type_package_tags.bounded_string; -- temp. storage of package keywords
 
@@ -1083,8 +1083,8 @@ package body et_kicad_pcb is
 								when 0 => null;
 								when 1 =>
 									-- CS check length
-									time_stamp := et_kicad.type_timestamp (to_string (arg));
-									et_kicad.check_timestamp (time_stamp);
+									time_stamp := type_timestamp (to_string (arg));
+									check_timestamp (time_stamp);
 								when others => 
 									too_many_arguments;
 							end case;
@@ -2956,8 +2956,8 @@ package body et_kicad_pcb is
 		package_reference 	: et_libraries.type_component_reference := et_schematic.default_component_reference;
 		package_value 		: et_libraries.type_component_value.bounded_string;
 
-		package_time_stamp	: et_kicad.type_timestamp; -- temporarily storage of package timestamp
-		package_time_edit	: et_kicad.type_timestamp; -- temporarily storage of package time of edit
+		package_time_stamp	: type_timestamp; -- temporarily storage of package timestamp
+		package_time_edit	: type_timestamp; -- temporarily storage of package time of edit
 		package_description	: type_package_description.bounded_string; -- temp. storage of package description
 		package_tags 		: type_package_tags.bounded_string; -- temp. storage of package keywords
 
@@ -3717,8 +3717,8 @@ package body et_kicad_pcb is
 								when 0 => null;
 								when 1 =>
 									-- CS check length
-									package_time_edit := et_kicad.type_timestamp (to_string (arg));
-									et_kicad.check_timestamp (package_time_edit);
+									package_time_edit := type_timestamp (to_string (arg));
+									check_timestamp (package_time_edit);
 								when others => too_many_arguments;
 							end case;
 
@@ -3727,8 +3727,8 @@ package body et_kicad_pcb is
 								when 0 => null;
 								when 1 =>
 									-- CS check length
-									package_time_stamp := et_kicad.type_timestamp (to_string (arg));
-									et_kicad.check_timestamp (package_time_stamp);
+									package_time_stamp := type_timestamp (to_string (arg));
+									check_timestamp (package_time_stamp);
 								when others => too_many_arguments;
 							end case;
 
@@ -5165,7 +5165,7 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 =>
-									segment.timestamp := et_kicad.type_timestamp (to_string (arg));
+									segment.timestamp := type_timestamp (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -5211,7 +5211,7 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									polygon.timestamp := et_kicad.type_timestamp (to_string (arg));
+									polygon.timestamp := type_timestamp (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 

@@ -56,7 +56,7 @@ with et_schematic;
 with et_general;
 with et_pcb;
 with et_pcb_coordinates;
-with et_kicad;
+with et_kicad_general;			use et_kicad_general;
 
 package et_kicad_pcb is
 
@@ -523,7 +523,7 @@ package et_kicad_pcb is
 -- LIBRARIES
 	-- This is the base type of a package:
 	type type_package is new et_pcb.type_package_base with record
-		time_stamp : et_kicad.type_timestamp;
+		time_stamp : type_timestamp;
 	end record;
 
 
@@ -609,7 +609,7 @@ package et_kicad_pcb is
 		silk_screen				: et_pcb.type_silk_screen_package_both_sides;
 		assembly_documentation	: et_pcb.type_assembly_documentation_package_both_sides;
 		terminals				: type_terminals.map; -- terminals with net names
-		time_edit				: et_kicad.type_timestamp;
+		time_edit				: type_timestamp;
 		value					: et_libraries.type_component_value.bounded_string;
 		position				: et_pcb_coordinates.type_package_position; -- incl. angle, face
 	end record;
@@ -650,7 +650,7 @@ package et_kicad_pcb is
 	type type_segment is new et_pcb.type_copper_line with record
 		net_id		: type_net_id;
 		layer		: type_signal_layer_id;
-		timestamp	: et_kicad.type_timestamp;
+		timestamp	: type_timestamp;
 		status		: type_segment_status.bounded_string; -- holds lock status and differential status
 	end record;
 
@@ -696,7 +696,7 @@ package et_kicad_pcb is
 		net_name			: et_schematic.type_net_name.bounded_string; -- if name is empty, the polygon is not connected to any net
 		net_id				: type_net_id; -- if id is 0, the polygon is not connected to any net
 		layer				: type_signal_layer_id;
-		timestamp			: et_kicad.type_timestamp;
+		timestamp			: type_timestamp;
 		gui_hatch_style		: type_polygon_hatch := EDGE;
 		gui_hatch_width		: et_pcb_coordinates.type_distance;	-- see spec for type_polygon_hatch. always 0.508. CS use subtype
 		min_thickness		: et_pcb.type_signal_width;	-- minimum line width
