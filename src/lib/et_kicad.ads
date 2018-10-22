@@ -79,11 +79,20 @@ package et_kicad is
 
 	schematic_handle : ada.text_io.file_type;
 
+	-- SYM-LIB-TABLES AND FP-LIB-TABLES ------------------------------------------------------------------------------
 	-- For V5:
-	file_sym_lib_table : constant string (1..13) := "sym-lib-table";
-	file_sym_lib_table_global_linux : constant string 
-		(1..15 + file_sym_lib_table'length) := "/.config/kicad/" & file_sym_lib_table;
+	file_sym_lib_table			: constant string (1..13) := "sym-lib-table";
+	file_fp_lib_table			: constant string (1..12) := "fp-lib-table";
+	dir_global_lib_tables_linux	: constant string (1..15) := "/.config/kicad/";
 	-- CS: windows ?
+	
+	file_sym_lib_table_global_linux : constant string (1 .. dir_global_lib_tables_linux'length + file_sym_lib_table'length)
+		:= dir_global_lib_tables_linux & file_sym_lib_table;
+
+	file_fp_lib_table_global_linux : constant string (1 .. dir_global_lib_tables_linux'length + file_fp_lib_table'length)
+		:= dir_global_lib_tables_linux & file_fp_lib_table;
+	------------------------------------------------------------------------------------------------------------------
+
 	
 	-- Sheet names may have the same length as schematic files.
 	package type_sheet_name is new generic_bounded_length (et_coordinates.schematic_file_name_length);
@@ -706,11 +715,14 @@ package et_kicad is
 		"=" 			=> type_library_directory."=");
 	search_list_project_lib_dirs : type_project_lib_dirs.list;
 
-	-- SYMBOL-LIBRARY-TABLES ------------------------------------------------------	
+	-- SYMBOL-LIBRARY-TABLES AND FOOTPRINT-LIBRARY-TABLES--------------------------	
 	-- Relevant for V5:
-	type type_lib_type is (LEGACY); -- CS: others ?
+	type type_lib_type is (
+		LEGACY,	-- symbol libs
+		KICAD	-- footprints
+		); -- CS: others ?
 
-	type type_sym_lib_entry is record
+	type type_lib_table_entry is record
 		lib_name	: et_libraries.type_library_name.bounded_string;
 		lib_type	: type_lib_type;
 		lib_uri		: et_libraries.type_full_library_name.bounded_string;
@@ -718,10 +730,13 @@ package et_kicad is
 		-- CS desrciption
 	end record;
 
-	package type_sym_lib_table is new doubly_linked_lists (type_sym_lib_entry);
+	package type_lib_table is new doubly_linked_lists (type_lib_table_entry);
 
-	-- After reading the tables (local and global) they are stored here temporarily.
-	sym_lib_tables : type_sym_lib_table.list;
+	-- After reading the sym-lib-tables (local and global) they are stored here temporarily.
+	sym_lib_tables : type_lib_table.list;
+
+	-- After reading the fp-lib-tables (local and global) they are stored here temporarily.
+	fp_lib_tables : type_lib_table.list;
 	-------------------------------------------------------------------------------
 
 	
@@ -1261,8 +1276,9 @@ package et_kicad is
 		search_list_library_comps	: type_library_names.list; 		-- search list for component libraries (bel_logic, bel_primitives, ...)
 		-- NOTE: There is no search list for packages, because they are nowhere declared (not even in the project conf. file)
 
-		-- V5 uses sym-lib-tables:
-		sym_lib_tables		: type_sym_lib_table.list;
+		-- V5 uses sym-lib-tables and fp-lib-tables to locate libraries:
+		sym_lib_tables		: type_lib_table.list; -- symbols
+		fp_lib_tables		: type_lib_table.list; -- footprints/packages		
 		
 		component_libraries	: type_libraries.map;
 		

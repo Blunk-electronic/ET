@@ -4701,33 +4701,37 @@ package body et_kicad is
 
 			end read_proj_v4;
 			
-			procedure read_sym_lib_tables (log_threshold : in et_string_processing.type_log_level) is
-			-- Reads local and global sym-lib-tables and stores them in module component sym_lib_tables. 
+			procedure read_lib_tables (log_threshold : in et_string_processing.type_log_level) is
+			-- Reads local and global sym-lib-tables and stores them in module component sym_lib_tables.
+			-- Reads local and global fp-lib-tables and stores them in module component fp_lib_tables.
 			-- See spec for type_module.
 			-- IMPORTANT AND CS: This procedure currently works under linux only !
 				use ada.environment_variables;
 				use ada.directories;
 
-			    sym_lib_path_length_max : constant natural := 200;
-				package type_sym_lib_path is new generic_bounded_length (sym_lib_path_length_max);
-				use type_sym_lib_path;
-				sym_lib_path : type_sym_lib_path.bounded_string; -- stores the path and name of a sym-lib-table file 
-				sym_lib_handle : ada.text_io.file_type;
+			    table_path_length_max : constant natural := 200;
+				package type_lib_table_path is new generic_bounded_length (table_path_length_max);
+				use type_lib_table_path;
+				lib_table_path : type_lib_table_path.bounded_string; -- stores the path and name of a sym-lib-table or fp-lib-table file 
+				lib_table_handle : ada.text_io.file_type;
 
 				-- After reading the local and global sym-lib-tables they are stored here:
-				table_local, table_global : type_sym_lib_table.list;
+				sym_table_local, sym_table_global : type_lib_table.list;
 
-				procedure locate_libraries is
+				-- After reading the local and global fp-lib-tables they are stored here:
+				fp_table_local, fp_table_global : type_lib_table.list;
+				
+				procedure locate_component_libraries is
 				-- Tests if the libraries (listed in sym_lib_table) exist.
 				-- If a library was found, a same-named empty library is created in the container tmp_component_libraries.
-					lib_cursor : type_sym_lib_table.cursor := sym_lib_tables.first;
-					use type_sym_lib_table;
+					lib_cursor : type_lib_table.cursor := sym_lib_tables.first;
+					use type_lib_table;
 					uri : type_full_library_name.bounded_string;
-				begin -- locate_libraries
+				begin -- locate_component_libraries
 					log ("locating libraries ...", log_threshold + 1);
 					log_indentation_up;
 
-					while lib_cursor /= type_sym_lib_table.no_element loop
+					while lib_cursor /= type_lib_table.no_element loop
 						uri := element (lib_cursor).lib_uri; -- get full name like /home/user/kicad_libs/bel_stm32.lib
 						log (type_full_library_name.to_string (uri), log_threshold + 2);
 
@@ -4755,13 +4759,13 @@ package body et_kicad is
 						next (lib_cursor);
 					end loop;
 					log_indentation_down;
-				end locate_libraries;
+				end locate_component_libraries;
 
 				
-				function read_table return type_sym_lib_table.list is
-				-- Reads the file that contains a sym-lib-table. The current_input points to the particular file.
+				function read_table return type_lib_table.list is
+				-- Reads the file that contains a sym-lib-table or fp-lib-table. The current_input points to the particular file.
 				-- The file is read into container "lines" which is then parsed to obtain the table content.
-					table : type_sym_lib_table.list; -- to be returned
+					table : type_lib_table.list; -- to be returned
 
 					line : et_string_processing.type_fields_of_line; -- a line of the table
 					lines : type_lines.list; -- all lines of the table
@@ -4782,6 +4786,7 @@ package body et_kicad is
 					type type_keyword is (
 						INIT,
 						SEC_SYM_LIB_TABLE,
+						SEC_FP_LIB_TABLE,
 						SEC_LIB,
 						SEC_NAME,
 						SEC_TYPE,
@@ -4873,7 +4878,7 @@ package body et_kicad is
 						else
 							-- This should never happen:
 							log_indentation_reset;
-							log (message_error & "in " & to_string (sym_lib_path), console => true);
+							log (message_error & "in " & to_string (lib_table_path), console => true);
 							log (message_error & "no more lines available !", console => true);
 							raise constraint_error;
 						end if;
@@ -4932,7 +4937,7 @@ package body et_kicad is
 						-- This is the validation of a section regarding its parent section.
 						-- If an invalid subsection occurs, raise alarm and abort.
 						case section.parent is
-							when SEC_SYM_LIB_TABLE =>
+							when SEC_SYM_LIB_TABLE | SEC_FP_LIB_TABLE =>
 								case section.name is
 									when SEC_LIB => null;
 									when others => invalid_section;
@@ -4956,7 +4961,7 @@ package body et_kicad is
 							when event:
 								others =>
 									log_indentation_reset;
-									log (message_error & "in " & to_string (sym_lib_path), console => true);
+									log (message_error & "in " & to_string (lib_table_path), console => true);
 									log (message_error & affected_line (element (line_cursor)) 
 										& to_string (element (line_cursor)), console => true);
 
@@ -5097,7 +5102,7 @@ package body et_kicad is
 							when event:
 								others =>
 									log_indentation_reset;
-									log (message_error & "in " & to_string (sym_lib_path), console => true);
+									log (message_error & "in " & to_string (lib_table_path), console => true);
 									log (message_error & affected_line (element (line_cursor)) 
 										& to_string (element (line_cursor)), console => true);
 									log (ada.exceptions.exception_message (event));
@@ -5114,7 +5119,7 @@ package body et_kicad is
 					begin -- exec_section
 						log (process_section (section.name), log_threshold + 3);
 						case section.parent is
-							when SEC_SYM_LIB_TABLE =>
+							when SEC_SYM_LIB_TABLE | SEC_FP_LIB_TABLE =>
 								case section.name is
 
 									-- When this section closes, the entry is complete and 
@@ -5129,7 +5134,7 @@ package body et_kicad is
 											 & type_full_library_name.to_string (lib_uri), 
 											log_threshold + 2); 
 
-										type_sym_lib_table.append (
+										type_lib_table.append (
 											container	=> table,
 											new_item	=> (
 												lib_name	=> lib_name,
@@ -5151,7 +5156,7 @@ package body et_kicad is
 							when event:
 								others =>
 									log_indentation_reset;
-									log (message_error & "in " & to_string (sym_lib_path), console => true);
+									log (message_error & "in " & to_string (lib_table_path), console => true);
 									log (message_error & affected_line (element (line_cursor)) 
 										& to_string (element (line_cursor)), console => true);
 									log (ada.exceptions.exception_message (event));
@@ -5163,7 +5168,7 @@ package body et_kicad is
 					log_indentation_up;
 
 					-- Import the file in container "lines"
-					set_input (sym_lib_handle);
+					set_input (lib_table_handle);
 					while not end_of_file loop
 						-- log (get_line);
 
@@ -5264,7 +5269,7 @@ package body et_kicad is
 					-- check section name. must be top level section
 					if section.name /= INIT then -- should never happen
 						log_indentation_reset;
-						log (message_error & "in " & to_string (sym_lib_path), console => true);
+						log (message_error & "in " & to_string (lib_table_path), console => true);
 						log (message_error & "top level section not closed !", console => true);
 						raise constraint_error;
 					end if;
@@ -5274,19 +5279,19 @@ package body et_kicad is
 					return table;
 				end read_table;
 
-				procedure concatenate_local_and_global_tables is
+				procedure concatenate_local_and_global_sym_tables is
 				-- Concatenates local and global sym-lib-tables so that global libraries come AFTER local libraries.
-					use type_sym_lib_table;
-					cursor : type_sym_lib_table.cursor := table_global.first;
+					use type_lib_table;
+					cursor : type_lib_table.cursor := sym_table_global.first;
 				begin
-					log ("concatenating local and global table ...", log_threshold + 1);
+					log ("concatenating local and global symbol table ...", log_threshold + 1);
 					
 					-- Append table_global to table_local so that global libraries come AFTER local libraries.
 					-- Loop in table_global and append element per element to table_local
-					while cursor /= type_sym_lib_table.no_element loop
+					while cursor /= type_lib_table.no_element loop
 
-						type_sym_lib_table.append (
-							container	=> table_local,
+						type_lib_table.append (
+							container	=> sym_table_local,
 							new_item	=> element (cursor)); -- fetch element from global table
 						
 						next (cursor);
@@ -5294,54 +5299,123 @@ package body et_kicad is
 
 					-- Copy the resulting table to the tempoarily list "sym_lib_tables".
 					-- When the module is created, it will be copied into the rig.
-					sym_lib_tables := table_local;
-				end concatenate_local_and_global_tables;
+					sym_lib_tables := sym_table_local;
+				end concatenate_local_and_global_sym_tables;
+
+				procedure concatenate_local_and_global_fp_tables is
+				-- Concatenates local and global fp-lib-tables so that global libraries come AFTER local libraries.
+					use type_lib_table;
+					cursor : type_lib_table.cursor := fp_table_global.first;
+				begin
+					log ("concatenating local and global footprint table ...", log_threshold + 1);
+					
+					-- Append table_global to table_local so that global libraries come AFTER local libraries.
+					-- Loop in table_global and append element per element to table_local
+					while cursor /= type_lib_table.no_element loop
+
+						type_lib_table.append (
+							container	=> fp_table_local,
+							new_item	=> element (cursor)); -- fetch element from global table
+						
+						next (cursor);
+					end loop;
+
+					-- Copy the resulting table to the tempoarily list "fp_lib_tables".
+					-- When the module is created, it will be copied into the rig.
+					fp_lib_tables := fp_table_local;
+				end concatenate_local_and_global_fp_tables;
 				
-			begin -- read_sym_lib_tables
+			begin -- read_lib_tables
 				log ("reading sym-lib-tables", log_threshold);
 
 				log_indentation_up;
 
 				-- local table
-				sym_lib_path := to_bounded_string (file_sym_lib_table);
-				if ada.directories.exists (to_string (sym_lib_path)) then
-					log ("local: " & to_string (sym_lib_path), log_threshold + 1); -- show file path and name
+				lib_table_path := to_bounded_string (file_sym_lib_table);
+				if ada.directories.exists (to_string (lib_table_path)) then
+					log ("local: " & to_string (lib_table_path), log_threshold + 1); -- show file path and name
 
 					open (
-						file => sym_lib_handle,
+						file => lib_table_handle,
 						mode => in_file,
-						name => to_string (sym_lib_path));
+						name => to_string (lib_table_path));
 
-					table_local := read_table;
+					sym_table_local := read_table;
 					
-					close (sym_lib_handle);
+					close (lib_table_handle);
 				end if;
 
 				-- global table
-				sym_lib_path := to_bounded_string (value ("HOME") & file_sym_lib_table_global_linux);
-				if ada.directories.exists (to_string (sym_lib_path)) then
-					log ("global: " & to_string (sym_lib_path), log_threshold + 1); -- show file path and name
+				lib_table_path := to_bounded_string (value ("HOME") & file_sym_lib_table_global_linux);
+				if ada.directories.exists (to_string (lib_table_path)) then
+					log ("global: " & to_string (lib_table_path), log_threshold + 1); -- show file path and name
 
 					open (
-						file => sym_lib_handle,
+						file => lib_table_handle,
 						mode => in_file,
-						name => to_string (sym_lib_path));
+						name => to_string (lib_table_path));
 
-					table_global := read_table;
+					sym_table_global := read_table;
 
-					close (sym_lib_handle);
+					close (lib_table_handle);
 				end if;
 
-				concatenate_local_and_global_tables;
+				concatenate_local_and_global_sym_tables;
 				-- container sym_lib_tables now contains all library names and paths in this order:
 				--  - local, in the order of appearance in the project specific sym-lib-table file
 				--  - global, in the order of appearance in the global sym-lib-table file
 
-				locate_libraries; -- as given in container sym_lib_tables. creates empty libraries in tmp_component_libraries.
+				locate_component_libraries; -- as given in container sym_lib_tables. creates empty libraries in tmp_component_libraries.
 				
 				log_indentation_down;
 
-			end read_sym_lib_tables;
+				--------------
+
+				log ("reading fp-lib-tables", log_threshold);
+
+				log_indentation_up;
+
+				-- local table
+				lib_table_path := to_bounded_string (file_fp_lib_table);
+				if ada.directories.exists (to_string (lib_table_path)) then
+					log ("local: " & to_string (lib_table_path), log_threshold + 1); -- show file path and name
+
+					open (
+						file => lib_table_handle,
+						mode => in_file,
+						name => to_string (lib_table_path));
+
+					fp_table_local := read_table;
+					
+					close (lib_table_handle);
+				end if;
+
+				-- global table
+				lib_table_path := to_bounded_string (value ("HOME") & file_fp_lib_table_global_linux);
+				if ada.directories.exists (to_string (lib_table_path)) then
+					log ("global: " & to_string (lib_table_path), log_threshold + 1); -- show file path and name
+
+					open (
+						file => lib_table_handle,
+						mode => in_file,
+						name => to_string (lib_table_path));
+
+					fp_table_global := read_table;
+
+					close (lib_table_handle);
+				end if;
+
+				concatenate_local_and_global_fp_tables;
+				-- container fp_lib_tables now contains all library names and paths in this order:
+				--  - local, in the order of appearance in the project specific fp-lib-table file
+				--  - global, in the order of appearance in the global fp-lib-table file
+
+				-- CS locate_package_libraries; -- as given in container fp_lib_tables. creates empty libraries in tmp_component_libraries.
+				
+				log_indentation_down;
+				
+				
+			end read_lib_tables;
 			
 			use et_import;
 			
@@ -5360,9 +5434,13 @@ package body et_kicad is
 				when KICAD_V4 => read_proj_v4;
 
 				-- For V5;
-				--	The local  libraries are located as specified in the project directory in file sym-lib-table.
-				--	The global libraries are located as specified in file $HOME/.config/kicad/sym-lib-table.
-				when KICAD_V5 => read_sym_lib_tables (log_threshold + 1);
+				--	The local symbol libraries are located as specified in the project directory in file sym-lib-table.
+				--	The global symbol libraries are located as specified in file $HOME/.config/kicad/sym-lib-table.
+
+				--	The local package libraries are located as specified in the project directory in file fp-lib-table.
+				--	The global package libraries are located as specified in file $HOME/.config/kicad/fp-lib-table.
+
+				when KICAD_V5 => read_lib_tables (log_threshold + 1);
 
 				when others =>
 					raise constraint_error;
@@ -8948,8 +9026,9 @@ package body et_kicad is
 						search_list_library_comps	=> search_list_component_libraries, -- see function read_project_file
 						search_list_library_dirs	=> search_list_project_lib_dirs, -- see function read_project_file
 
-						-- V5 uses sym-lib-tables:
+						-- V5 uses sym-lib-tables and fp-lib-tables:
 						sym_lib_tables		=> sym_lib_tables, -- see function read_project_file
+						fp_lib_tables		=> fp_lib_tables, -- see function read_project_file
 						
 						component_libraries => type_libraries.empty_map,
 						
