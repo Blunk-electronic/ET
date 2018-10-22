@@ -544,8 +544,15 @@ package et_kicad_pcb is
 		element_type	=> type_packages_library.map,
 		"="				=> type_packages_library."=",
 		"<"				=> et_libraries.type_full_library_name."<");
+	-- CS the element could be a record consisting of type_packages_library.map, lib_type, options and desrciption
+	-- lib_type, options and description are provided in V5 and should be stored here in the future.
+	
 
-	-- V4: All package models found in the project libraries are collected here:
+	-- V4: 
+	--	- All package models found in the project libraries are collected here.
+	-- V5: 
+	--	- After reading the sym-lib-tables and fp-lib-tables empty libraries are created here.
+	--	- Procedure read_libraries in turn fills the libraries with content.
 	package_libraries : type_libraries.map;
 
 	

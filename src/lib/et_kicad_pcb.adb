@@ -55,6 +55,7 @@ with ada.containers.ordered_sets;
 with ada.exceptions;
 
 with et_general;
+with et_import;
 with et_coordinates;
 with et_libraries;
 with et_schematic;
@@ -2441,6 +2442,7 @@ package body et_kicad_pcb is
 		use et_general.type_directory_entries;
 		use et_pcb;
 
+		-- V4 RELATED ------------------------------------------------------------------------------------------
 		-- The directory search lists have been created on reading the project file.
 		-- Set lib_dir_cursor to first directory.
 		use et_kicad.type_project_lib_dirs;
@@ -2454,7 +2456,7 @@ package body et_kicad_pcb is
 		-- are stored here. When processing the list we use the library_name_cursor.
 		library_names : type_directory_entries.list;
 		library_name_cursor : type_directory_entries.cursor;
-
+		
 		-- While inserting the libraries the flag library_inserted goes true once
 		-- inserting was successuful. The flag goes false if a library already exist.
 		-- This is happens if a library has already been created via the import of another project.
@@ -2463,6 +2465,12 @@ package body et_kicad_pcb is
 		-- The library_cursor points to the library in the container package_libraries.
 		library_cursor : type_libraries.cursor;
 
+		-- V5 RELATED ------------------------------------------------------------------------------------------
+		use et_kicad.type_lib_table;
+		table_cursor : et_kicad.type_lib_table.cursor;
+
+		--------------------------------------------------------------------------------------------------------
+		
 		procedure read_packages (
 		-- Creates empty packages in the package_libraries. The package names are
 		-- named after the packages found in the library directories.
@@ -2556,79 +2564,93 @@ package body et_kicad_pcb is
 
 		end read_packages;
 
-	
+
+		use et_import;
+		
 	begin -- read_libraries
 		log ("reading package libraries ...", log_threshold);
 		log_indentation_up;
 
-		-- loop in search_list_project_lib_dirs and scan for package libraries (*.pretty stuff)
-		while lib_dir_cursor /= et_kicad.type_project_lib_dirs.no_element loop
+		case cad_format is
+			when KICAD_V4 =>
+				
+				-- loop in search_list_project_lib_dirs and scan for package libraries (*.pretty stuff)
+				while lib_dir_cursor /= et_kicad.type_project_lib_dirs.no_element loop
 
-			log ("in directory " & et_kicad.to_string (element (lib_dir_cursor)), log_threshold + 1);
-			
-			-- Scan for package library in directory indicated by lib_dir_cursor:
-			library_names := directory_entries (
-				target_directory	=> et_kicad.to_string (element (lib_dir_cursor)),  
-				category			=> ada.directories.directory,
-				pattern				=> package_library_pattern); -- *.pretty stuff
-
-			-- If directory contains no packages, notify operator that there are no package libraries.
-			-- Otherwise loop through the library names and create the libraries in container package_libraries.
-			if is_empty (library_names) then
-				log (message_warning & "no package libraries found in " &
-					 et_kicad.to_string (element (lib_dir_cursor)) & " !");
-			else
-				-- show number of package libraries found in the directory
-				log ("found" & count_type'image (length (library_names)) & " libraries", log_threshold + 2);
-				log_indentation_up;
-
-				-- Loop through library_names and create the same-named empty libraries 
-				-- in container package_libraries:
-				library_name_cursor := library_names.first;
-				while library_name_cursor /= type_directory_entries.no_element loop
-					log ("reading " & element (library_name_cursor) & " ...", log_threshold + 2);
-
-					-- create the (empty) library in container package_libraries
-					type_libraries.insert (
-						container	=> package_libraries,
-						key			=> et_libraries.to_full_library_name (compose ( -- ../lbr/tht_packages/plcc.pretty 
-										containing_directory	=> et_kicad.to_string (element (lib_dir_cursor)),
-										name					=> element (library_name_cursor))),
-						inserted	=> library_inserted,
-						position	=> library_cursor,
-						new_item	=> type_packages_library.empty_map);
-
-					-- If library has been created already (by import of other project) then there
-					-- is no need to read it again.
-					if library_inserted then
-						-- change in library (the kicad package library is just a directory like ../lbr/bel_ic.pretty)
-						set_directory (compose (
-							containing_directory	=> et_kicad.to_string (element (lib_dir_cursor)),
-							name					=> element (library_name_cursor)));
-
-						-- Read the library contents and store them in package_libraries where
-						-- library_cursor is pointing to:
-						type_libraries.update_element (
-							container	=> package_libraries,
-							position	=> library_cursor,
-							process		=> read_packages'access);
-
-						-- change back to directory of origin
-						set_directory (et_pcb.to_string (origin_directory));
-					else
-						log (" already loaded -> skipped", log_threshold + 2);
-					end if;
+					log ("in directory " & et_kicad.to_string (element (lib_dir_cursor)), log_threshold + 1);
 					
-					next (library_name_cursor);
+					-- Scan for package library in directory indicated by lib_dir_cursor:
+					library_names := directory_entries (
+						target_directory	=> et_kicad.to_string (element (lib_dir_cursor)),  
+						category			=> ada.directories.directory,
+						pattern				=> package_library_pattern); -- *.pretty stuff
+
+					-- If directory contains no packages, notify operator that there are no package libraries.
+					-- Otherwise loop through the library names and create the libraries in container package_libraries.
+					if is_empty (library_names) then
+						log (message_warning & "no package libraries found in " &
+							et_kicad.to_string (element (lib_dir_cursor)) & " !");
+					else
+						-- show number of package libraries found in the directory
+						log ("found" & count_type'image (length (library_names)) & " libraries", log_threshold + 2);
+						log_indentation_up;
+
+						-- Loop through library_names and create the same-named empty libraries 
+						-- in container package_libraries:
+						library_name_cursor := library_names.first;
+						while library_name_cursor /= type_directory_entries.no_element loop
+							log ("reading " & element (library_name_cursor) & " ...", log_threshold + 2);
+
+							-- create the (empty) library in container package_libraries
+							type_libraries.insert (
+								container	=> package_libraries,
+								key			=> et_libraries.to_full_library_name (compose ( -- ../lbr/tht_packages/plcc.pretty 
+												containing_directory	=> et_kicad.to_string (element (lib_dir_cursor)),
+												name					=> element (library_name_cursor))),
+								inserted	=> library_inserted,
+								position	=> library_cursor,
+								new_item	=> type_packages_library.empty_map);
+
+							-- If library has been created already (by import of other project) then there
+							-- is no need to read it again.
+							if library_inserted then
+								-- change in library (the kicad package library is just a directory like ../lbr/bel_ic.pretty)
+								set_directory (compose (
+									containing_directory	=> et_kicad.to_string (element (lib_dir_cursor)),
+									name					=> element (library_name_cursor)));
+
+								-- Read the library contents and store them in package_libraries where
+								-- library_cursor is pointing to:
+								type_libraries.update_element (
+									container	=> package_libraries,
+									position	=> library_cursor,
+									process		=> read_packages'access);
+
+								-- change back to directory of origin
+								set_directory (et_pcb.to_string (origin_directory));
+							else
+								log (" already loaded -> skipped", log_threshold + 2);
+							end if;
+							
+							next (library_name_cursor);
+						end loop;
+
+						log_indentation_down;
+					end if;
+
+
+					next (lib_dir_cursor);
 				end loop;
 
-				log_indentation_down;
-			end if;
 
+			when KICAD_V5 =>
+				-- CS fill empty package_libraries
+				null;
 
-			next (lib_dir_cursor);
-		end loop;
-
+			when others =>
+				raise constraint_error;
+				
+		end case;
 		log_indentation_down;
 
 		exception

@@ -4411,9 +4411,12 @@ package body et_kicad is
 		--	- Reads the project file (component libraries, library directories, ...) 
 		--	- Returns the name of the top level schematic file.
 		--	- Creates temparily search_list_component_libraries and search_list_library_dirs.
+		--	- Creates empty component/symbol libraries in tmp_component_libraries.
 
 		-- V5:
 		--	- Reads the local and global sym-lib-tables and stores them temparily in sym_lib_tables.
+		--	- Reads the local and global fp-lib-tables and stores them temparily in fp_lib_tables.
+		--	- Creates empty component/symbol libraries in et_kicad_pcb.package_libraries.
 			
 			line : type_fields_of_line;
 			
@@ -4423,7 +4426,9 @@ package body et_kicad is
 			procedure read_proj_v4 is
 			-- Reads the project file and stores search lists in module components
 			-- search_list_library_dirs and search_list_library_comps. See spec for type_module.
-
+			-- Creates empty component/symbol libraries in tmp_component_libraries.
+			-- V5: Creates empty footprint libraries in et_kicad_pcb.package_libraries.
+				
 				-- "section entered flags"
 				section_eeschema_entered 			: boolean := false;
 				section_eeschema_libraries_entered	: boolean := false;            
@@ -4753,6 +4758,46 @@ package body et_kicad is
 					end loop;
 					log_indentation_down;
 				end locate_component_libraries;
+
+				procedure locate_package_libraries is
+				-- Tests if the libraries (listed in fp_lib_table) exist.
+				-- If a library was found, a same-named empty library is created in the container et_kicad_pcb.package_libraries.
+					lib_cursor : type_lib_table.cursor := fp_lib_tables.first;
+					use type_lib_table;
+					uri : type_full_library_name.bounded_string;
+				begin -- locate_package_libraries
+					log ("locating libraries ...", log_threshold + 1);
+					log_indentation_up;
+
+					while lib_cursor /= type_lib_table.no_element loop
+						uri := element (lib_cursor).lib_uri; -- get full name like /home/user/kicad_libs/bel_ic.pretty
+						log (type_full_library_name.to_string (uri), log_threshold + 2);
+
+						-- Test if library file exists:
+						if ada.directories.exists (type_full_library_name.to_string (uri)) then
+
+							-- create empty package/footprint library
+							et_kicad_pcb.type_libraries.insert (
+								container	=> et_kicad_pcb.package_libraries,
+								key 		=> uri,
+								new_item	=> et_kicad_pcb.type_packages_library.empty_map
+								); 
+
+							-- CS library type, options and description not processed here.
+							-- See comment on type_package_libraries in et_kicad_pcb.ads.
+							
+						-- raise alarm and abort if library file not found
+						else
+							log_indentation_reset;
+							log (message_error & "library " & type_full_library_name.to_string (uri) 
+								 & " not found !", console => true);
+							raise constraint_error;
+						end if;
+
+						next (lib_cursor);
+					end loop;
+					log_indentation_down;
+				end locate_package_libraries;
 
 				
 				function read_table return type_lib_table.list is
@@ -5403,11 +5448,10 @@ package body et_kicad is
 				--  - local, in the order of appearance in the project specific fp-lib-table file
 				--  - global, in the order of appearance in the global fp-lib-table file
 
-				-- CS locate_package_libraries; -- as given in container fp_lib_tables. creates empty libraries in tmp_component_libraries.
+				locate_package_libraries; -- as given in container fp_lib_tables. creates empty libraries in et_kicad_pcb.package_libraries.
 				
 				log_indentation_down;
-				
-				
+
 			end read_lib_tables;
 			
 			use et_import;
@@ -8985,9 +9029,11 @@ package body et_kicad is
 				
 				-- Derive top level schematic file name from project name.
 				-- Clears tmp_component_libraries (which is a temparily storage).
+				-- Creates empty component/symbol libraries in tmp_component_libraries.
 				-- For V4:	This action creates new directory and component library search lists
 				-- 			in search_list_component_libraries and search_list_project_lib_dirs.
 				-- For V5:	Reads sym-lib-tables and stores them in sym_lib_tables.
+				--			Creates empty package libraries in et_kicad_pcb.package_libraries.
 				top_level_schematic	:= read_project_file (log_threshold + 1);
 				
 				-- The top level schematic file dictates the module name. 
@@ -9057,16 +9103,14 @@ package body et_kicad is
 				end if;
 
 				-- read package libraries
-				et_kicad_pcb.read_libraries (log_threshold); -- stores them in et_kicad_pcb.package_libraries
+				et_kicad_pcb.read_libraries (log_threshold); -- fills et_kicad_pcb.package_libraries
 				
 				-- read component libraries
-				read_components_libraries (log_threshold); -- stores them in tmp_component_libraries
+				read_components_libraries (log_threshold); -- fills tmp_component_libraries
 
 				-- tmp_component_libraries is a tempoarily storage place.
-				-- It must be saved in module.component_libraries in case the 
-				-- component libraries are to be converted into the ET native library format.
-				-- NOTE: tmp_component_libraries is still requried for other operations (like read_schematic)
-				-- within the current module.
+				-- It must be saved in module.component_libraries.
+				-- tmp_component_libraries is furhter-on requried for other operations (like read_schematic) within the current module.
 				-- CS: in the future tmp_component_libraries should be discarded. update_element and query_element
 				-- operations should access the component_libraries of a module directly.
 				type_rig.update_element (rig, module_cursor, save_component_libraries'access);
