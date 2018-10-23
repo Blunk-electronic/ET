@@ -7967,6 +7967,7 @@ package body et_kicad is
 						line		: in et_string_processing.type_fields_of_line;
 						position	: in positive) return string renames et_string_processing.get_field_from_line;
 
+					-- V4:
 					-- KiCad does not provide an exact name of the library where the generic component
 					-- model can be found. It only provides the generic name of the model.
 					-- The library is determined by the order of the library names in the 
@@ -8417,7 +8418,20 @@ package body et_kicad is
 				end add_alternative_reference;
 				
 				use type_lines;
-			
+
+				function generic_name (text : in string) return type_component_generic_name.bounded_string is
+				-- Extracts from a given string like "bel_logic:7400" the generic component name "7400".
+					ifs : constant string (1..1) := ":";
+
+					-- The separator must NOT be at first position in text.
+					-- CS: Text is limited to 200 characters which seems sufficient.
+					subtype type_pos is positive range 2 .. 200;
+
+					pos : type_pos := index (text, ifs); -- get position of ifs
+				begin -- generic_name
+					return type_component_generic_name.to_bounded_string (text (pos + 1 .. text'last)); -- 7400
+				end generic_name;
+				
 			begin -- make_component (schematic)
 				log ("making component ...", log_threshold);
 				log_indentation_up;
@@ -8428,13 +8442,26 @@ package body et_kicad is
 
 					log ("component line: " & to_string (et_kicad.line), log_threshold + 6);
 
-					-- Read component name and annotation from a line like "L NetChanger N1". 
+					-- V4: 
+					--	- Read component generic name and annotation from a line like "L NetChanger N1".
+					-- V5:
+					--	- Read library name, component generic name and annotation from a line like "L bel_logic:7400 IC1". 
+					
 					-- From this entry we reason the component appearance. 
 					-- The appearance is important for contextual validation of the fields (like field_partcode, field_bom, ...).
 					-- It is also required for validation of the reference (like R12 or C4).
 					if field (et_kicad.line,1) = schematic_component_identifier_name then -- "L"
-						
-						generic_name_in_lbr := type_component_generic_name.to_bounded_string (field (et_kicad.line,2)); -- "SN74LS00"
+
+						case et_import.cad_format is
+							when et_import.KICAD_V4 =>
+								generic_name_in_lbr := type_component_generic_name.to_bounded_string (field (et_kicad.line,2)); -- "SN74LS00"
+
+							when et_import.KICAD_V5 =>
+								generic_name_in_lbr := generic_name (field (et_kicad.line,2)); -- "bel_logic:SN74LS00"
+
+							when others => raise constraint_error;
+						end case;
+								
 						log ("generic name " & to_string (generic_name_in_lbr), log_threshold + 1);
 						
 						check_generic_name_characters (
