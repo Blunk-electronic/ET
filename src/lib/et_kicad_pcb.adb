@@ -90,14 +90,21 @@ package body et_kicad_pcb is
 		lib : et_libraries.type_full_library_name.bounded_string; -- to be returned
 
 		use et_kicad;
+		use et_import;
 		use type_project_lib_dirs;
 		use et_libraries;
 		use type_full_library_name;
 		use ada.directories;
-	
-		dir_cursor : et_kicad.type_project_lib_dirs.cursor := et_kicad.search_list_project_lib_dirs.first;
+
+		-- V4:
+		dir_cursor : et_kicad.type_project_lib_dirs.cursor := et_kicad.search_list_project_lib_dirs.first; -- CS access search_list_library_dirs in module instead
 		lib_cursor : et_kicad_pcb.type_libraries.cursor;
 
+		-- V5:
+		use type_lib_table;
+		fp_lib_table_cursor : type_lib_table.cursor := fp_lib_tables.first; -- CS access fp_lib_tables in module.fp_lib_tables instead
+
+		use et_libraries.type_library_name;
 		full_library_name : type_full_library_name.bounded_string;
 		package_found : boolean := false;
 
@@ -116,52 +123,100 @@ package body et_kicad_pcb is
 		end search_package;
 	
 	begin -- full_library_name
-		log ("locating library '" & to_string (library_name) &
+		log ("locating library '" & et_libraries.to_string (library_name) &
 			"' containing package '" & to_string (package_name) & "' ...", log_threshold);
 		log_indentation_up;
-		
-		-- Loop in search_list_project_lib_dirs. Test if the given library exists in the directory
-		-- exists in the directory indicated by dir_cursor..
-		while dir_cursor /= et_kicad.type_project_lib_dirs.no_element loop
 
-			-- Test if library exists. package_libraries hosts libraries by their full name.
-			-- So the lbrary to test is formed by the current directory name, the given library name
-			-- and the package_library_directory_extension (*.pretty)
-			full_library_name := to_bounded_string (ada.directories.compose (
-									containing_directory	=> to_string (element (dir_cursor)),
-									name					=> et_libraries.to_string (library_name),
-									extension				=> package_library_directory_extension (2..package_library_directory_extension'last))); 
+		case cad_format is
+			when KICAD_V4 =>
+				
+				-- Loop in search_list_project_lib_dirs. Test if the given library
+				-- exists in the directory indicated by dir_cursor..
+				while dir_cursor /= et_kicad.type_project_lib_dirs.no_element loop
 
-			log ("searching in " & type_full_library_name.to_string (full_library_name) &
-				 " ...", log_threshold + 1);
-			
-			lib_cursor := et_kicad_pcb.type_libraries.find (
-				container	=> package_libraries,
-				key			=> full_library_name);
+					-- Test if library exists. package_libraries hosts libraries by their full name.
+					-- So the library to test is formed by the current directory name, the given library name
+					-- and the package_library_directory_extension (*.pretty)
+					full_library_name := to_bounded_string (ada.directories.compose (
+											containing_directory	=> to_string (element (dir_cursor)),
+											name					=> et_libraries.to_string (library_name),
+											extension				=> package_library_directory_extension (2..package_library_directory_extension'last))); 
 
-			-- If library exists, lib_cursor will point to it. Then the library can be searched 
-			-- for the given package.
-			if et_kicad_pcb.type_libraries."/=" (lib_cursor, et_kicad_pcb.type_libraries.no_element) then
+					log ("searching in " & type_full_library_name.to_string (full_library_name) & " ...", log_threshold + 1);
+					
+					lib_cursor := et_kicad_pcb.type_libraries.find (
+						container	=> package_libraries,
+						key			=> full_library_name);
 
-				-- search the library for the given package
-				et_kicad_pcb.type_libraries.query_element (
-					position	=> lib_cursor,
-					process		=> search_package'access);
+					-- If library exists, lib_cursor will point to it. Then the library can be searched 
+					-- for the given package.
+					if et_kicad_pcb.type_libraries."/=" (lib_cursor, et_kicad_pcb.type_libraries.no_element) then
 
-				-- The search ends as soon as the given package was found.
-				if package_found then exit; end if;
+						-- search the library for the given package
+						et_kicad_pcb.type_libraries.query_element (
+							position	=> lib_cursor,
+							process		=> search_package'access);
 
-			end if;
-			
-			next (dir_cursor);
-		end loop;
+						-- The search ends as soon as the given package was found.
+						if package_found then exit; end if;
 
+					end if;
+					
+					next (dir_cursor);
+				end loop;
+
+			when KICAD_V5 =>
+
+				-- Search for the given library_name in the fp-lib-tables.
+				-- The first matching entry in the table provides the full library name (uri).
+				-- Then search in that library for the given package_name. If the package is 
+				-- not in the library, search for next matching entry in fp-lib-table ...
+				while fp_lib_table_cursor /= type_lib_table.no_element loop
+
+					-- On match, open the library (by its uri).
+					if element (fp_lib_table_cursor).lib_name = library_name then
+
+						full_library_name := element (fp_lib_table_cursor).lib_uri;
+
+						log ("searching in " & type_full_library_name.to_string (full_library_name) & " ...", log_threshold + 1);
+						
+						-- locate the library by full name (uri)
+						lib_cursor := et_kicad_pcb.type_libraries.find (
+									container	=> et_kicad_pcb.package_libraries,
+									key			=> full_library_name);
+						
+						-- Search in the library for the given package
+						et_kicad_pcb.type_libraries.query_element (
+							position	=> lib_cursor,
+							process		=> search_package'access);
+
+						-- The search ends as soon as the given package was found.
+						if package_found then exit; end if;
+
+					end if;
+
+					next (fp_lib_table_cursor); -- advance to next entry in fp-lib-table
+				end loop;
+
+				-- If the library could not be located anywhere, abort here:
+				if length (full_library_name) = 0 then
+					log_indentation_reset;
+					log (message_error & "No library '" & et_libraries.to_string (library_name) 
+						 & "' found ! Check local and global fp-lib-tables !", console => true);
+					raise constraint_error;
+				end if;
+
+			when others =>
+				raise constraint_error;
+				
+		end case;
+				
 		if package_found then
 			log (" found !", log_threshold + 2);
 		else
 			log_indentation_reset;
 			log (message_error & "package '" & to_string (package_name) &
-				"' not found in any library named '" & to_string (library_name) & "' !", console => true);
+				"' not found in any library named '" & et_libraries.to_string (library_name) & "' !", console => true);
 			raise constraint_error;
 		end if;
 
