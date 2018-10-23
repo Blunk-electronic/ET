@@ -6569,21 +6569,41 @@ package body et_kicad is
 			-- Tests the given line if it contains a valid schematic sheet header.
 			-- Sets the flag schematic_headline_processed.
 			-- Aborts program if schematic version invalid.
+				use et_import;
 			begin
 				if field (line,1) = schematic_header_keyword_sys_name and
 					field (line,2) = schematic_header_keyword_schematic and
 					field (line,3) = schematic_header_keyword_file and
 					field (line,4) = schematic_header_keyword_version then
-						if positive'value (field (line,5)) = schematic_version then
-							-- headline ok, version is supported
-							schematic_version_valid := true;
-						else
-							log_indentation_reset;
-							log (text => message_error & "schematic version" 
-									& positive'image(schematic_version) & " required.",
-								console => true);
-							raise constraint_error;
-						end if;
+						case cad_format is
+							when KICAD_V4 =>
+								if positive'value (field (line,5)) = schematic_version_v4 then
+									-- headline ok, version is supported
+									schematic_version_valid := true;
+								else
+									log_indentation_reset;
+									log (text => message_error & "schematic version" 
+											& positive'image (schematic_version_v4) & " required.",
+										console => true);
+									raise constraint_error;
+								end if;
+
+							when KICAD_V5 =>
+								if positive'value (field (line,5)) = schematic_version_v5 then
+									-- CS: currently the version number must exactly match. Range check ?
+									-- headline ok, version is supported
+									schematic_version_valid := true;
+								else
+									log_indentation_reset;
+									log (text => message_error & "schematic version" 
+											& positive'image(schematic_version_v5) & " required.",
+										console => true);
+									raise constraint_error;
+								end if;
+
+							when others => raise constraint_error;
+								
+						end case;
 				end if;
 			end check_header;
 			
@@ -8725,7 +8745,7 @@ package body et_kicad is
 							-- The first line should be the headline with the schematic version:
 							-- READ SCHEMATIC HEADLINE:
 
-							-- EESchema Schematic File Version 2
+							-- EESchema Schematic File Version x
 							
 							if not schematic_version_valid then
 								check_header (line); 

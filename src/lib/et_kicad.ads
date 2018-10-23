@@ -75,7 +75,8 @@ package et_kicad is
 	file_extension_schematic_lib		: constant string (1..3) := "lib";
 	file_extension_board	 			: constant string (1..9) := "kicad_pcb";
     
-    schematic_version                   : constant positive := 2;
+	schematic_version_v4	: constant positive := 2; -- CS use dedicated type for schematic version
+    schematic_version_v5	: constant positive := 4;
 
 	top_level_schematic	: et_coordinates.type_schematic_file_name.bounded_string; 
 
