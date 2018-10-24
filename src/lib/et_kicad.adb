@@ -7455,7 +7455,7 @@ package body et_kicad is
 				generic_name_in_lbr			: type_component_generic_name.bounded_string; -- like TRANSISTOR_PNP
 
 				-- V5:
-				library_name				: et_libraries.type_library_name.bounded_string; -- the name of the component library like bel_logic
+				component_library_name		: type_library_name.bounded_string; -- the name of the component library like bel_logic
 				
 				alternative_references		: type_alternative_references.list;
 				unit_name					: type_unit_name.bounded_string; -- A, B, PWR, CT, IO-BANK1 ...
@@ -7959,6 +7959,80 @@ package body et_kicad is
 					
 				end generic_name_to_library;
 
+				function full_name_of_component_library (
+				-- The given reference serves to provide a helpful error message on the affected 
+				-- component in the schematic.
+					component 		: in type_component_generic_name.bounded_string; -- the generic name like "RESISTOR"
+					reference 		: in type_component_reference; -- the reference in the schematic like "R4"
+					log_threshold 	: in type_log_level) 
+					return type_full_library_name.bounded_string is
+
+					use type_lib_table;
+					sym_lib_cursor : type_lib_table.cursor := sym_lib_tables.first;
+
+					use type_libraries;
+					lib_cursor : type_libraries.cursor;
+					
+					use type_library_name;
+					
+					full_name : type_full_library_name.bounded_string;
+					component_found : boolean := false;
+
+					procedure search_component (
+					-- Seaches a component library for the given generic component.
+						lib_name	: in type_full_library_name.bounded_string;
+						lib			: in type_components_library.map) is
+						use type_components_library;
+					begin
+						if contains (lib, component) then
+							component_found := true;
+						end if;
+					end search_component;
+					
+				begin -- full_name_of_component_library
+					log_indentation_up;
+					log ("locating library '" & et_libraries.to_string (component_library_name) & "' containing generic component '" 
+						 & to_string (component) & "' ...", log_threshold);
+
+					-- Search in the sym-lib-table for the first an entry having the component_library_name (uri)
+					while sym_lib_cursor /= type_lib_table.no_element loop
+						if element (sym_lib_cursor).lib_name = component_library_name then
+							full_name := element (sym_lib_cursor).lib_uri;
+
+							-- locate component library by full_name
+							lib_cursor := type_libraries.find (tmp_component_libraries, full_name);
+							
+							-- Test if library contains the given generic component.
+							type_libraries.query_element (
+								position	=> lib_cursor,
+								process		=> search_component'access);
+							
+						end if;
+
+						-- Cancel search once the given generic component has been found. Otherwise
+						-- proceed with next same named library in sym-lib-table.
+						if component_found then exit; end if;
+						
+						next (sym_lib_cursor);
+					end loop;
+
+					log_indentation_down;
+					
+					-- After a successful search return the name of the library where lib_cursor is pointing to.
+					-- Otherwise send error messagen and abort.
+					if component_found then
+						return full_name;
+					else
+						log_indentation_reset;
+						log (message_error & "for component "  
+							& et_libraries.to_string (reference)
+							& " no generic model in any library named '" & et_libraries.to_string (component_library_name) & "' found !",
+							console => true);
+						raise constraint_error;
+					end if;
+
+				end full_name_of_component_library;
+				
 				procedure insert_component is
 				-- Inserts the component in the component list of the module (indicated by module_cursor).
 				-- Components may occur multiple times, which implies they are
@@ -7972,19 +8046,36 @@ package body et_kicad is
 						line		: in et_string_processing.type_fields_of_line;
 						position	: in positive) return string renames et_string_processing.get_field_from_line;
 
-					-- V4:
-					-- KiCad does not provide an exact name of the library where the generic component
-					-- model can be found. It only provides the generic name of the model.
-					-- The library is determined by the order of the library names in the 
-					-- project file. It is the first libraray in this list that contains the model.
-					-- The function generic_name_to_library does the job and sets the full_component_library_name
-					-- here right away:
-					full_component_library_name : type_full_library_name.bounded_string := generic_name_to_library (
-													component		=> generic_name_in_lbr,
-													reference		=> reference,
-													log_threshold	=> log_threshold + 3);
+					full_component_library_name : type_full_library_name.bounded_string;
+
+					use et_import;
 					
 				begin -- insert_component
+
+					case cad_format is
+						when KICAD_V4 =>
+							-- KiCad V4 does not provide an exact name of the library where the generic component
+							-- model can be found. It only provides the generic name of the model.
+							-- The library is determined by the order of the library names in the 
+							-- project file. It is the first library in this list that contains the model.
+							-- The function generic_name_to_library does the job and sets the full_component_library_name
+							-- here right away:
+							full_component_library_name := generic_name_to_library (
+									component		=> generic_name_in_lbr, -- 7400
+									reference		=> reference,			-- IC1
+									log_threshold	=> log_threshold + 3);
+
+						when KICAD_V5 =>
+							-- KiCad V5 provides a simple name for the component library along with the generic 
+							-- component name. From the library name we must deduce the full library name.
+							full_component_library_name := full_name_of_component_library (
+									component		=> generic_name_in_lbr,	-- 7400
+									reference		=> reference,			-- IC1
+									log_threshold	=> log_threshold + 3);
+
+						when others => raise constraint_error;
+					end case;
+					
 					log_indentation_up;
 					
 					-- The component is inserted into the components list of the module according to its appearance.
@@ -8476,7 +8567,7 @@ package body et_kicad is
 
 							when et_import.KICAD_V5 =>
 								generic_name_in_lbr := generic_name (field (et_kicad.line,2)); -- "bel_logic:SN74LS00"
-								library_name := extract_library_name (field (et_kicad.line,2)); -- "bel_logic:SN74LS00"
+								component_library_name := extract_library_name (field (et_kicad.line,2)); -- "bel_logic:SN74LS00"
 
 							when others => raise constraint_error;
 						end case;
