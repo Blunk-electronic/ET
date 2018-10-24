@@ -7420,7 +7420,8 @@ package body et_kicad is
 			-- Some entries are unit specific.
 			-- The component section looks like this example:
 			
-			-- L 74LS00 U1		-- component specific
+			-- V4: L 74LS00 U1				-- component specific
+			-- V5: L bel_logic:74LS00 U1	-- component specific
 			-- U 4 1 5965E676	-- unit 1 of 4, link to package in board file
 			-- P 4100 4000		-- unit position x/y
 			-- AR Path="/59F17F77/5A991798" Ref="LED1"  Part="1" -- alternative reference
@@ -7452,6 +7453,10 @@ package body et_kicad is
 				reference					: type_component_reference;	-- like IC5	
 				appearance					: type_component_appearance := et_libraries.sch; -- CS: why this default ?
 				generic_name_in_lbr			: type_component_generic_name.bounded_string; -- like TRANSISTOR_PNP
+
+				-- V5:
+				library_name				: et_libraries.type_library_name.bounded_string; -- the name of the component library like bel_logic
+				
 				alternative_references		: type_alternative_references.list;
 				unit_name					: type_unit_name.bounded_string; -- A, B, PWR, CT, IO-BANK1 ...
 				position					: et_coordinates.type_coordinates;
@@ -8431,6 +8436,19 @@ package body et_kicad is
 				begin -- generic_name
 					return type_component_generic_name.to_bounded_string (text (pos + 1 .. text'last)); -- 7400
 				end generic_name;
+
+				function extract_library_name (text : in string) return type_library_name.bounded_string is
+				-- Extracts from a given string like "bel_logic:7400" the library name "bel_logic".
+					ifs : constant string (1..1) := ":";
+
+					-- The separator must NOT be at first position in text.
+					-- CS: Text is limited to 200 characters which seems sufficient.
+					subtype type_pos is positive range 2 .. 200;
+
+					pos : type_pos := index (text, ifs); -- get position of ifs
+				begin -- extract_library_name
+					return type_library_name.to_bounded_string (text (text'first .. pos - 1)); -- bel_logic
+				end extract_library_name;
 				
 			begin -- make_component (schematic)
 				log ("making component ...", log_threshold);
@@ -8458,6 +8476,7 @@ package body et_kicad is
 
 							when et_import.KICAD_V5 =>
 								generic_name_in_lbr := generic_name (field (et_kicad.line,2)); -- "bel_logic:SN74LS00"
+								library_name := extract_library_name (field (et_kicad.line,2)); -- "bel_logic:SN74LS00"
 
 							when others => raise constraint_error;
 						end case;
