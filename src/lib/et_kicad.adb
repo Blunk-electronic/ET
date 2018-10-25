@@ -5316,6 +5316,12 @@ package body et_kicad is
 					return table;
 				end read_table;
 
+				procedure warning_on_multiple_entry_in_lib_table (library : in string) is
+				begin
+					log (message_warning & "global library table: '" & library 
+						 & "' already in local library table -> skipped !");
+				end warning_on_multiple_entry_in_lib_table;
+				
 				procedure concatenate_local_and_global_sym_tables is
 				-- Concatenates local and global sym-lib-tables so that global libraries come AFTER local libraries.
 					use type_lib_table;
@@ -5324,12 +5330,24 @@ package body et_kicad is
 					log ("concatenating local and global symbol table ...", log_threshold + 1);
 					
 					-- Append table_global to table_local so that global libraries come AFTER local libraries.
-					-- Loop in table_global and append element per element to table_local
+					-- Loop in table_global and append element per element to table_local.
+					-- If an library entry already exists in the local table, issue a warning and skip it.
 					while cursor /= type_lib_table.no_element loop
 
-						type_lib_table.append (
+						-- Test if entry already in local table.
+						if not type_lib_table.contains (
 							container	=> sym_table_local,
-							new_item	=> element (cursor)); -- fetch element from global table
+							item		=> element (cursor)) then
+
+							-- Library entry not in local table -> append it.
+							type_lib_table.append (
+								container	=> sym_table_local,
+								new_item	=> element (cursor)); -- fetch element from global table
+
+						else -- entry already in local table -> warning and skip
+							warning_on_multiple_entry_in_lib_table (
+								to_string (element (cursor).lib_uri));
+						end if;
 						
 						next (cursor);
 					end loop;
@@ -5347,12 +5365,24 @@ package body et_kicad is
 					log ("concatenating local and global footprint table ...", log_threshold + 1);
 					
 					-- Append table_global to table_local so that global libraries come AFTER local libraries.
-					-- Loop in table_global and append element per element to table_local
+					-- Loop in table_global and append element per element to table_local.
+					-- If an library entry already exists in the local table, issue a warning and skip it.
 					while cursor /= type_lib_table.no_element loop
 
-						type_lib_table.append (
+						-- Test if entry already in local table.
+						if not type_lib_table.contains (
 							container	=> fp_table_local,
-							new_item	=> element (cursor)); -- fetch element from global table
+							item		=> element (cursor)) then
+
+							-- Library entry not in local table -> append it.
+							type_lib_table.append (
+								container	=> fp_table_local,
+								new_item	=> element (cursor)); -- fetch element from global table
+
+						else -- entry already in local table -> warning and skip
+							warning_on_multiple_entry_in_lib_table (
+								to_string (element (cursor).lib_uri));
+						end if;
 						
 						next (cursor);
 					end loop;
