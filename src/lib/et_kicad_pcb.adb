@@ -3565,20 +3565,6 @@ package body et_kicad_pcb is
 				raise constraint_error;
 			end invalid_file_format;
 
-			procedure invalid_host_name is begin
-				log_indentation_reset;
-				log (message_error & "invalid host name ! Expect " & host_name_pcbnew & " !",
-					 console => true);
-				raise constraint_error;
-			end invalid_host_name;
-
-			procedure invalid_pcbnew_version is begin
-				log_indentation_reset;
-				log (message_error & "invalid " & host_name_pcbnew & " version ! Expect " & pcb_new_version_4_0_7 & " !",
-					 console => true);
-				raise constraint_error;
-			end invalid_pcbnew_version;
-
 			procedure to_polygon_pad_connections (connect_style : in string) is
 			-- Sets the connection style of pads.
 			-- It is about entries in the "zone" section like:
@@ -3613,6 +3599,99 @@ package body et_kicad_pcb is
 					polygon.gui_hatch_style := FULL;
 				end if;
 			end to_polygon_hatch_style;
+
+			procedure test_pcbnew_version (version : in string) is
+			-- in V4 the line looks like: 
+			--  (kicad_pcb (version 4) (host pcbnew 4.0.7)
+			-- or in v5 like:
+			-- (kicad_pcb (version 20171130) (host pcbnew 5.0.0-5.0.0)
+				
+				procedure invalid_pcbnew_version (version : in string) is begin
+					log_indentation_reset;
+					log (message_error & "invalid " & host_name_pcbnew & " version ! Expect " & version & " !",
+						console => true);
+					raise constraint_error;
+				end invalid_pcbnew_version;
+
+				use et_import;
+			begin -- test_pcbnew_version
+				case cad_format is
+					when KICAD_V4 =>
+						if version /= pcb_new_version_4_0_7 then
+							invalid_pcbnew_version (pcb_new_version_4_0_7);
+						end if;
+						
+					when KICAD_V5 =>
+						-- CS: do a more professional range check here:
+						if version /= pcb_new_version_5_0_0 then
+							invalid_pcbnew_version (pcb_new_version_5_0_0);
+						end if;
+						
+					when others => raise constraint_error;
+				end case;
+			end test_pcbnew_version;
+
+			procedure test_hostname (name : in string) is
+			-- in V4 the line looks like: 
+			--  (kicad_pcb (version 4) (host pcbnew 4.0.7)
+			-- or in v5 like:
+			-- (kicad_pcb (version 20171130) (host pcbnew 5.0.0-5.0.0)
+
+				procedure invalid_host_name is begin
+					log_indentation_reset;
+					log (message_error & "invalid host name ! Expect " & host_name_pcbnew & " !",
+						console => true);
+					raise constraint_error;
+				end invalid_host_name;
+
+				use et_import;
+			begin -- test_hostname
+				case cad_format is
+					when KICAD_V4 =>
+						if name /= host_name_pcbnew then
+							invalid_host_name;
+						end if;
+
+					when KICAD_V5 =>
+						if name /= host_name_pcbnew then
+
+							-- Newly created projects without a board may have a single 
+							-- strange entry like:
+							--  (kicad_pcb (version 4) (host kicad "dummy file") )
+							if name = host_name_pcbnew_dummy_v5 then
+								log ("dummy board file found", log_threshold + 2);
+							else
+								invalid_host_name;
+							end if;
+						end if;
+
+					when others => raise constraint_error;
+				end case;
+			end test_hostname;
+
+			procedure test_format (format : in string) is
+				use et_import;
+			begin
+				case cad_format is
+					when KICAD_V4 =>
+						-- the line looks like: (kicad_pcb (version 4) (host pcbnew 4.0.7)
+						if to_string (arg) /= pcb_file_format_version_4 then
+							invalid_file_format;
+						end if;
+
+					when KICAD_V5 =>
+						-- the line looks like: 
+						--  (kicad_pcb (version 20171130) (host pcbnew 5.0.0-5.0.0)
+						-- newly created projects without a board have a line like:
+						--  (kicad_pcb (version 4) (host kicad "dummy file") )
+						-- CS test if a positive greater 20171130 is here.
+						null;
+
+					when others =>
+						raise constraint_error;
+				end case;
+			end test_format;
+						
 			
 		begin -- read_arg
 			-- We handle an argument that is wrapped in quotation different from a non-wrapped argument:
@@ -3667,24 +3746,15 @@ package body et_kicad_pcb is
 						when SEC_VERSION =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 =>
-									if to_string (arg) /= pcb_file_format_version_4 then
-										invalid_file_format;
-									end if;
+								when 1 => test_format (to_string (arg)); -- version 4 or 20171130
 								when others => too_many_arguments;
 							end case;
 
 						when SEC_HOST =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 =>
-									if to_string (arg) /= host_name_pcbnew then
-										invalid_host_name;
-									end if;
-								when 2 =>
-									if to_string (arg) /= pcb_new_version_4_0_7 then
-										invalid_pcbnew_version;
-									end if;
+								when 1 => test_hostname (to_string (arg)); -- pcbnew
+								when 2 => test_pcbnew_version (to_string (arg)); -- 5.0.0
 								when others => too_many_arguments;
 							end case;
 

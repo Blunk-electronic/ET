@@ -60,9 +60,20 @@ with et_kicad_general;			use et_kicad_general;
 
 package et_kicad_pcb is
 
+	-- V4:
 	pcb_new_version_4_0_7		: constant string (1..5)	:= "4.0.7";
 	pcb_file_format_version_4	: constant string (1..1)	:= "4";
+	
 	host_name_pcbnew			: constant string (1..6)	:= "pcbnew";
+
+	-- V5:
+	pcb_new_version_5_0_0		: constant string (1..5)	:= "5.0.0";
+	-- Newly created projects without a board have a line like:
+	--  (kicad_pcb (version 4) (host kicad "dummy file") )
+	-- For this reason we need a constant:
+	host_name_pcbnew_dummy_v5	: constant string (1..5)	:= "kicad";
+
+
 	
 	layer_top_copper			: constant string (1..4)	:= "F.Cu";
 	layer_bot_copper			: constant string (1..4)	:= "B.Cu";
