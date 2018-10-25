@@ -3600,12 +3600,14 @@ package body et_kicad_pcb is
 				end if;
 			end to_polygon_hatch_style;
 
+			-- In V5 we sometimes have a non-existing board but nevertheless a board file.
+			dummy_file : boolean := false;
+			
 			procedure test_pcbnew_version (version : in string) is
 			-- in V4 the line looks like: 
 			--  (kicad_pcb (version 4) (host pcbnew 4.0.7)
 			-- or in v5 like:
 			-- (kicad_pcb (version 20171130) (host pcbnew 5.0.0-5.0.0)
-				
 				procedure invalid_pcbnew_version (version : in string) is begin
 					log_indentation_reset;
 					log (message_error & "invalid " & host_name_pcbnew & " version ! Expect " & version & " !",
@@ -3622,9 +3624,12 @@ package body et_kicad_pcb is
 						end if;
 						
 					when KICAD_V5 =>
-						-- CS: do a more professional range check here:
-						if version /= pcb_new_version_5_0_0 then
-							invalid_pcbnew_version (pcb_new_version_5_0_0);
+						-- This check makes sense if we have a real board file:
+						if not dummy_file then
+							-- CS: do a more professional range check here:
+							if version /= pcb_new_version_5_0_0 then
+								invalid_pcbnew_version (pcb_new_version_5_0_0);
+							end if;
 						end if;
 						
 					when others => raise constraint_error;
@@ -3636,7 +3641,6 @@ package body et_kicad_pcb is
 			--  (kicad_pcb (version 4) (host pcbnew 4.0.7)
 			-- or in v5 like:
 			-- (kicad_pcb (version 20171130) (host pcbnew 5.0.0-5.0.0)
-
 				procedure invalid_host_name is begin
 					log_indentation_reset;
 					log (message_error & "invalid host name ! Expect " & host_name_pcbnew & " !",
@@ -3660,6 +3664,7 @@ package body et_kicad_pcb is
 							--  (kicad_pcb (version 4) (host kicad "dummy file") )
 							if name = host_name_pcbnew_dummy_v5 then
 								log ("dummy board file found", log_threshold + 2);
+								dummy_file := true; -- signal other operations that this is a dummy file
 							else
 								invalid_host_name;
 							end if;
