@@ -7657,7 +7657,7 @@ package body et_kicad is
 							-- F 0 "IC1" H 4100 4050 50  0000 C BIB <- text_reference
 
 						if type_alternative_references.is_empty (alternative_references) then -- no alternative references
-							log ("reference" & et_libraries.to_string (reference), log_threshold + 1);
+							log ("reference " & et_libraries.to_string (reference), log_threshold + 1);
 							
 							if et_libraries.to_string (reference) /= et_libraries.content (field_reference) then
 								log_indentation_reset;

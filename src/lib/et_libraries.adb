@@ -1198,7 +1198,7 @@ package body et_libraries is
 		begin
 			log_indentation_reset;
 			log (message_error & "component " & to_string (reference) 
-				& " value " & to_string (value) & " invalid !",
+				& " value " & to_string (value) & " invalid ! Check unit of measurement !",
 				console => true);
 			raise constraint_error;
 		end value_invalid;
@@ -1537,12 +1537,12 @@ package body et_libraries is
 	begin
 		case lz is
 			when 0 => -- no leading zeroes
-				return (type_component_prefix.to_string(reference.prefix) 
-					& trim(natural'image(reference.id),left));
+				return (type_component_prefix.to_string (reference.prefix) 
+					& trim(natural'image (reference.id),left));
 				
 			when others => -- leading zeros required
-				return (type_component_prefix.to_string(reference.prefix) 
-					& lz * '0' & trim(natural'image(reference.id),left));
+				return (type_component_prefix.to_string (reference.prefix) 
+					& lz * '0' & trim(natural'image (reference.id),left));
 		end case;
 	end to_string;
 	
