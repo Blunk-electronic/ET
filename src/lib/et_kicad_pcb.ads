@@ -731,6 +731,11 @@ package et_kicad_pcb is
 	
 	-- This is the data type for the Kicad Board design:
 	type type_board is record
+		
+		-- In V5 we sometimes have a non-existing board but nevertheless a board file.
+		-- For this reason we need this flag:
+		dummy		: boolean := false;
+		
 		general		: type_general_board_info;
 		setup		: type_board_setup; -- DRC stuff
 		plot		: type_plot_setup; -- CAM job (there is only one)

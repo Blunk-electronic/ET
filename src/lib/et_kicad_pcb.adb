@@ -2799,9 +2799,6 @@ package body et_kicad_pcb is
 		return et_kicad_pcb.type_board is
 
 		board : et_kicad_pcb.type_board; -- to be returned
-
-		-- In V5 we sometimes have a non-existing board but nevertheless a board file.
-		dummy_file : boolean := false;
 		
 		use et_pcb;
 		use et_pcb.type_lines;
@@ -3625,7 +3622,7 @@ package body et_kicad_pcb is
 						
 					when KICAD_V5 =>
 						-- This check only makes sense if we have a real board file:
-						if not dummy_file then
+						if not board.dummy then
 							
 							-- CS: do a more professional range check here:
 							if version /= pcb_new_version_5_0_0 then
@@ -3665,7 +3662,7 @@ package body et_kicad_pcb is
 							--  (kicad_pcb (version 4) (host kicad "dummy file") )
 							if name = host_name_pcbnew_dummy_v5 then
 								log ("dummy board file found", log_threshold + 1);
-								dummy_file := true; -- signal other operations that this is a dummy file
+								board.dummy := true; -- signal other operations that this is a dummy file
 							else
 								invalid_host_name;
 							end if;
@@ -7795,12 +7792,6 @@ package body et_kicad_pcb is
 				mode => in_file,
 				name => file_name); -- pwr_supply.kicad_pcb
 
-			-- Now, since there is a board file, the corresponding flag must be set in the module.
-			-- By default it is cleared.
-			et_kicad.rig.update_element (
-				position	=> et_kicad.module_cursor,
-				process		=> set_board_available_flag'access);
-			
 			-- read board file
 			set_input (board_handle);
 			while not end_of_file loop
@@ -7824,7 +7815,18 @@ package body et_kicad_pcb is
 			-- parse and process the board data stored in "lines"
 			board := to_board (file_name, lines, log_threshold + 1); -- board is a et_kicad_pcb.type_board
 
-			merge_board_and_schematic (log_threshold + 1);
+			-- merging board and schematic makes sense if the board file contains real board data:
+			if not board.dummy then
+
+				-- Now the board file has been read AND it is not a dummy:
+				--  - Set the board_available flag in the module (By default it is cleared).
+				et_kicad.rig.update_element (
+					position	=> et_kicad.module_cursor,
+					process		=> set_board_available_flag'access);
+
+				-- do the merge
+				merge_board_and_schematic (log_threshold + 1);
+			end if;
 			
 		else
 			log ("board file " & file_name & " not available. nothing to do.", log_threshold);
