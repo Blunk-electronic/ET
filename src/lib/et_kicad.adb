@@ -9963,64 +9963,50 @@ package body et_kicad is
 						-- test if port is connected with segment
 						if port_connected_with_segment (element (port), element (segment)) then
 							log_indentation_up;
--- 								log ("match", log_threshold + 2);
+							-- log ("match", log_threshold + 2);
 
-							-- Depending on the CAE system power-out or power-in ports may enforce their name
-							-- on a strand.
-							case et_import.cad_format is
+							-- We are interested in "power in" ports exclusively. Only such ports may enforce their
+							-- name on a strand.
+							if element (port).direction = POWER_IN then
 
-								-- With kicad, power-in ports enforce their name on the strand.
-								when et_import.kicad_v4 =>
+								-- If strand has no name yet, it is to be named after the name of the port that sits on it.
+								-- If strand has a name already, its scope must be global
+								-- because power-in ports are allowed in global strands exclusively !
+								if et_schematic.anonymous (element (strand).name) then
+									log ("component " & et_libraries.to_string (key (component)) 
+										& " port name " & to_string (element (port).name) 
+										& " is a power input -> port name sets strand name", log_threshold + 2);
 
-									-- We are interested in "power in" ports exclusively. Only such ports may enforce their
-									-- name on a strand.
-									if element (port).direction = POWER_IN then
+									-- rename strand
+									rename_strands (
+										name_before => element (strand).name,
+										name_after => to_net_name (element (port).name),
+										log_threshold => log_threshold + 3);
 
-										-- If strand has no name yet, it is to be named after the name of the port that sits on it.
-										-- If strand has a name already, its scope must be global
-										-- because power-in ports are allowed in global strands exclusively !
-										if et_schematic.anonymous (element (strand).name) then
-											log ("component " & et_libraries.to_string (key (component)) 
-												& " port name " & to_string (element (port).name) 
-												& " is a power input -> port name sets strand name", log_threshold + 2);
+								-- If strand has been given a name already (for example by previous power-in ports) AND
+								-- if strand name differs from name of current power-in port -> warning
+								elsif to_string (element (strand).name) /= to_string (element (port).name) then
+									--log_indentation_reset;
+									log (message_warning & "component " & et_libraries.to_string (key (component)) 
+										& " POWER IN port " & to_string (element (port).name) 
+										& " at" & to_string (element (port).coordinates, module)
+										& " conflicts with net " & et_schematic.to_string (element (strand).name) & " !");
+									--raise constraint_error;
 
-											-- rename strand
-											rename_strands (
-												name_before => element (strand).name,
-												name_after => to_net_name (element (port).name),
-												log_threshold => log_threshold + 3);
-
-										-- If strand has been given a name already (for example by previous power-in ports) AND
-										-- if strand name differs from name of current power-in port -> warning
-										elsif to_string (element (strand).name) /= to_string (element (port).name) then
-											--log_indentation_reset;
-											log (message_warning & "component " & et_libraries.to_string (key (component)) 
-												& " POWER IN port " & to_string (element (port).name) 
-												& " at" & to_string (element (port).coordinates, module)
-												& " conflicts with net " & et_schematic.to_string (element (strand).name) & " !");
-											--raise constraint_error;
-
-										-- If strand has a name and is local or hierarchic -> error and abort
-										--elsif et_schematic."/=" (element (strand).scope, et_schematic.global) then
-										elsif element (strand).scope /= GLOBAL then
-											log_indentation_reset;
-											log (message_error & "component " & et_libraries.to_string (key (component)) 
-												& " POWER IN port " & to_string (element (port).name) 
-												& " at" & to_string (element (port).coordinates, module)
-												& " conflicts with " & to_string (element (strand).scope) 
-												& " net " & et_schematic.to_string (element (strand).name) & " !");
-											raise constraint_error;
-
-										end if;
-										
-									end if;
-
-								when others =>
+								-- If strand has a name and is local or hierarchic -> error and abort
+								--elsif et_schematic."/=" (element (strand).scope, et_schematic.global) then
+								elsif element (strand).scope /= GLOBAL then
 									log_indentation_reset;
-									log (message_error & et_import.invalid_cad_format (et_import.cad_format));
+									log (message_error & "component " & et_libraries.to_string (key (component)) 
+										& " POWER IN port " & to_string (element (port).name) 
+										& " at" & to_string (element (port).coordinates, module)
+										& " conflicts with " & to_string (element (strand).scope) 
+										& " net " & et_schematic.to_string (element (strand).name) & " !");
 									raise constraint_error;
-									
-							end case;
+
+								end if;
+
+							end if;
 
 							log_indentation_down;
 						end if;
