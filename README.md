@@ -1,10 +1,10 @@
 # ET - ECAD Electronic Tool
-## An approach to model complex schematic and layouts
+## An approach to model complex schematics and layouts
 
 ### The Idea behind
 - Most ECAD tools do not allow to open, check and edit multiple designs simultaneously.
 - We need real hierarchic and modular designs.
-- We need a text based an human readable format for design files.
+- We need a text based, machine and human readable format for design files.
 - Design checks provided by common ECAD tools are way too superficial and trivial.
 - Style guides must be checked against.
 - The tool must be highly scripting capable.
@@ -27,16 +27,16 @@ $ et --make_configuration my_configuration.txt
 
 - This file is now placed in the root directory of your KiCad projects. Edit it according to your customs.
 
-- To import a single KiCad V4 design run this command: 
+- To import a single KiCad V5 design run this command: 
 
 ```sh
-$ et --configuration_file my_configuration.txt --import_format kicad_v4 --import_module my_kicad_project/
+$ et --configuration_file my_configuration.txt --import_format kicad_v5 --import_module my_kicad_project/
 ```
  
 optionally provide a log level for debugging:
 
 ```sh 
-$ et --configuration_file my_configuration.txt --import_format kicad_v4 --import_module my_kicad_project/ --log_level 2
+$ et --configuration_file my_configuration.txt --import_format kicad_v5 --import_module my_kicad_project/ --log_level 2
 ```
 
 - ET creates in the projects root directory a folder named "ET" where you find logfiles, reports, netlists, statistics, BOMs, ...
