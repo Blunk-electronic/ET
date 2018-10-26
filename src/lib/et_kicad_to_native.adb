@@ -2667,7 +2667,7 @@ package body et_kicad_to_native is
 	begin -- to_native
 
 		-- First, the kicad schematic must be flattened so that we get a real flat design.
-		-- Further-on the y coordinates of objects in schematic must be changed. 
+		-- Further-on the y coordinates of objects in schematic and layout must be changed. 
 		-- Kicad schematic has origin in upper left corner. ET has origin in lower left corder.
 		transpose (log_threshold);
 
@@ -2706,7 +2706,9 @@ package body et_kicad_to_native is
 
 			-- CS copy frames
 
-			-- CS component_libraries (symbols and port-pin-mappings)
+			-- V4 and V5: kicad_module.component_libraries (symbols and port-pin-mappings)
+			
+			-- V5: kicad_module.footprints
 			
 			log_indentation_down;
 
@@ -2715,7 +2717,7 @@ package body et_kicad_to_native is
 
 
 -- 		log ("packages ...", log_threshold);
-		-- et_kicad_pcb.package_libraries
+		-- V4: et_kicad_pcb.package_libraries
 
 
 
