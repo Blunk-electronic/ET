@@ -1,8 +1,24 @@
-# ET
-## A tool for checking style and design conventions
-- Supposed to import various CAE formats like KiCad, EAGLE, ...
-- Currently only KiCad V4 is supported.
+# ET - ECAD Electronic Tool
+## An approach to model complex schematic and layouts
 
+### The Idea behind
+- Most ECAD tools do not allow to open, check and edit multiple designs simultaneously.
+- We need real hierarchic and modular designs.
+- We need a text based an human readable format for design files.
+- Design checks provided by common ECAD tools are way too superficial and trivial.
+- Style guides must be checked against.
+- The tool must be highly scripting capable.
+- We want to do agile hardware develpment which requires the features mentioned above.
+- The tool must be open sourced.
+- In the long run, a nice GUI will come with ET.
+- Your feedback and collaboration is highly welcome !
+
+### Supported CAE formats
+- KiCad V4, V5
+- Planned is to support also EAGLE.
+- An ET native format.
+
+### Usage
 - First change into the root directory of your KiCad projects and generate a configuration file where prefixes, units of measurement and other things are defined with this command:
 
 ```sh
@@ -42,3 +58,9 @@ $ sh install.sh
 - The script installs the executable binary et in $HOME/bin and further-on creates a hidden directory .ET in $HOME where other configuration files live.
 - Currently there is nothing to do in the configuration directory -> leave it as it is.
 - For help contact info@blunk-electronic.de . You are highly welcome :-)
+
+#### Why Ada ??
+- The only programming language that provides a robust and strong typing system is Ada.
+- Objects and structures within a schematic, library and board layout are very very complex things and require sound modelling.
+- If saftey critical and military applications use Ada, then is must be good for an advanced ECAD system as well.
+- Ada is beautiful :-)
