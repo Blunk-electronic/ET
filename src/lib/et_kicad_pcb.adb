@@ -2925,6 +2925,9 @@ package body et_kicad_pcb is
 			SEC_TSTAMP,
 			SEC_USEAUXORIGIN,
 			SEC_USEGERBEREXTENSIONS,
+			SEC_USEGERBERATTRIBUTES, -- came with V5, CS supported in V4 ?
+			SEC_USEGERBERADVANCEDATTRIBUTES, -- came with V5, CS supported in V4 ?
+			SEC_CREATEGERBERJOBFILE, -- came with V5, CS supported in V4 ?
 			SEC_UVIAS_ALLOWED,
 			SEC_UVIA_DIA,
 			SEC_UVIA_DRILL,
@@ -3335,6 +3338,9 @@ package body et_kicad_pcb is
 				when SEC_PCBPLOTPARAMS =>
 					case section.name is
 						when SEC_LAYERSELECTION | SEC_USEGERBEREXTENSIONS | SEC_EXCLUDEEDGELAYER | SEC_LINEWIDTH |
+							SEC_USEGERBERATTRIBUTES | -- CS: came with V5. supported in V4 ?
+							SEC_USEGERBERADVANCEDATTRIBUTES | -- CS: came with V5. supported in V4 ?
+							SEC_CREATEGERBERJOBFILE | -- CS: came with V5. supported in V4 ?							
 							SEC_PLOTFRAMEREF | SEC_VIASONMASK | SEC_MODE | SEC_USEAUXORIGIN | SEC_HPGLPENNUMBER |
 							SEC_HPGLPENSPEED | SEC_HPGLPENDIAMETER | SEC_HPGLPENOVERLAY | SEC_PSNEGATIVE |
 							SEC_PSA4OUTPUT | SEC_PLOTREFERENCE | SEC_PLOTVALUE | SEC_PLOTINVISIBLETEXT |
@@ -4747,6 +4753,27 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => board.plot.user_gerber_extensions := type_plot_user_gerber_extensions'value (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_USEGERBERATTRIBUTES =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => null; -- CS: board.plot.user_gerber_attributes := type_plot_user_gerber_attributes'value (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_USEGERBERADVANCEDATTRIBUTES =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => null; -- CS: board.plot.user_gerber_advanced_attributes := type_plot_user_gerber_advanced_attributes'value (to_string (arg));
+								when others => too_many_arguments;
+							end case;
+
+						when SEC_CREATEGERBERJOBFILE =>
+							case section.arg_counter is
+								when 0 => null;
+								when 1 => null; -- CS: board.plot.create_gerber_jobfile := type_plot_create_gerber_jobfile'value (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 							
