@@ -2799,6 +2799,9 @@ package body et_kicad_pcb is
 		return et_kicad_pcb.type_board is
 
 		board : et_kicad_pcb.type_board; -- to be returned
+
+		-- In V5 we sometimes have a non-existing board but nevertheless a board file.
+		dummy_file : boolean := false;
 		
 		use et_pcb;
 		use et_pcb.type_lines;
@@ -3600,9 +3603,6 @@ package body et_kicad_pcb is
 				end if;
 			end to_polygon_hatch_style;
 
-			-- In V5 we sometimes have a non-existing board but nevertheless a board file.
-			dummy_file : boolean := false;
-			
 			procedure test_pcbnew_version (version : in string) is
 			-- in V4 the line looks like: 
 			--  (kicad_pcb (version 4) (host pcbnew 4.0.7)
@@ -3624,8 +3624,9 @@ package body et_kicad_pcb is
 						end if;
 						
 					when KICAD_V5 =>
-						-- This check makes sense if we have a real board file:
+						-- This check only makes sense if we have a real board file:
 						if not dummy_file then
+							
 							-- CS: do a more professional range check here:
 							if version /= pcb_new_version_5_0_0 then
 								invalid_pcbnew_version (pcb_new_version_5_0_0);
@@ -3663,7 +3664,7 @@ package body et_kicad_pcb is
 							-- strange entry like:
 							--  (kicad_pcb (version 4) (host kicad "dummy file") )
 							if name = host_name_pcbnew_dummy_v5 then
-								log ("dummy board file found", log_threshold + 2);
+								log ("dummy board file found", log_threshold + 1);
 								dummy_file := true; -- signal other operations that this is a dummy file
 							else
 								invalid_host_name;
@@ -3749,6 +3750,7 @@ package body et_kicad_pcb is
 				when SEC_KICAD_PCB =>
 					case section.name is
 						when SEC_VERSION =>
+							-- example: (kicad_pcb (version 4) (host pcbnew 4.0.7)
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => test_format (to_string (arg)); -- version 4 or 20171130
@@ -3758,7 +3760,9 @@ package body et_kicad_pcb is
 						when SEC_HOST =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => test_hostname (to_string (arg)); -- pcbnew
+								when 1 => test_hostname (to_string (arg)); -- pcbnew 
+									-- This sets the dummy_file flag if the board file is a dummy.
+								
 								when 2 => test_pcbnew_version (to_string (arg)); -- 5.0.0
 								when others => too_many_arguments;
 							end case;
@@ -6712,10 +6716,14 @@ package body et_kicad_pcb is
 				when SEC_KICAD_PCB =>
 					case section.name is
 						when SEC_VERSION =>
-							log (system_name & " version " & pcb_file_format_version_4, log_threshold + 1); 
+							-- In V5 the board file could be a dummy file with version 4 written in the header.
+							-- CS: It would be confusing for the operator to show the file format here.
+							--log (system_name & " version " & pcb_file_format_version_4, log_threshold + 1); 
+							null;
 
 						when SEC_HOST =>
-							log ("host " & host_name_pcbnew & " version " & pcb_new_version_4_0_7, log_threshold + 1);
+							--log ("host " & host_name_pcbnew & " version " & pcb_new_version_4_0_7, log_threshold + 1);
+							null;
 
 						when SEC_GENERAL =>
 							null; -- CS log general information
