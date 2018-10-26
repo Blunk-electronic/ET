@@ -67,7 +67,7 @@ package et_kicad_pcb is
 	host_name_pcbnew			: constant string (1..6)	:= "pcbnew";
 
 	-- V5:
-	pcb_new_version_5_0_0		: constant string (1..5)	:= "5.0.0";
+	pcb_new_version_5_0_0		: constant string (1..11)	:= "5.0.0-5.0.0";
 	-- Newly created projects without a board have a line like:
 	--  (kicad_pcb (version 4) (host kicad "dummy file") )
 	-- For this reason we need a constant:
