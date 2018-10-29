@@ -1116,6 +1116,7 @@ package et_pcb is
 		"<"				=> et_libraries.type_package_library_name."<",
 		element_type	=> type_package);
 
+	library_file_extension : constant string (1..3) := "pac";
 
 	
 -- PROPERTIES OF OBJECTS IN COPPER (NON ELECTRIC !!)

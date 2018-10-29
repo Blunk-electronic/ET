@@ -58,18 +58,6 @@ package et_libraries is
 -- LIBRARY NAMES AND DIRECTORIES
 
 	library_name_length_max : constant natural := 100; -- CS: increase if necessary
-	
--- 	-- If a library is fully specified with path, name and extension we store them in bounded strings:
--- 	library_full_name_max : constant positive := 300 + library_name_length_max + 4;
--- 	package type_full_library_name is new generic_bounded_length (library_full_name_max);
--- 
--- 	-- CS: for type_full_library_name: character set, check characters, check length
--- 	
--- 	function to_string (full_library_name : in type_full_library_name.bounded_string) return string;
--- 	-- Returns the given full library name as string;
--- 
--- 	function to_full_library_name (full_library_name : in string) return type_full_library_name.bounded_string;
--- 	-- converts a string to a full library name.
 
 
 
@@ -271,7 +259,7 @@ package et_libraries is
 	type type_port_name_visible is (ON, OFF);
 	type type_terminal_name_visible is (ON, OFF);
 
-	type type_port_style is ( -- CS: find a better name
+	type type_port_style is ( -- CS: find a better name, move it to et_kicad
 		NONE,
 		INVERTED,
 		CLOCK,
@@ -994,13 +982,15 @@ package et_libraries is
 		key_type		=> type_symbol_library_name.bounded_string, -- ../lbr/logic/NAND.sym
 		"<"				=> type_symbol_library_name."<",
 		element_type	=> type_symbol);
+
+	symbol_library_file_extension : constant string (1..3) := "sym";
 	
 	package type_devices is new indefinite_ordered_maps (
 		key_type 		=> type_device_library_name.bounded_string, -- ../lbr/logic_ttl/7400.dev
 		"<"				=> type_device_library_name."<",
 		element_type	=> type_device);
 
-
+	device_library_file_extension : constant string (1..3) := "dev";
 
 
 
