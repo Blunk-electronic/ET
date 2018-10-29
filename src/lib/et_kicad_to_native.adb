@@ -2663,6 +2663,87 @@ package body et_kicad_to_native is
 				next (kicad_net_cursor);
 			end loop;
 		end copy_nets;
+
+		procedure copy_libraries (
+			module_name : in et_coordinates.type_submodule_name.bounded_string;
+			module		: in et_kicad.type_module) is
+
+			use et_kicad.type_libraries;
+			component_library_cursor : et_kicad.type_libraries.cursor := module.component_libraries.first;
+
+			use et_libraries.type_device_library_name;
+			dev_library_name : et_libraries.type_device_library_name.bounded_string;
+
+			function concatenate_lib_name_and_generic_name (
+				library	: in et_libraries.type_device_library_name.bounded_string; -- ../../lbr/bel_logic.lib
+				device	: in et_libraries.type_component_generic_name.bounded_string) -- 7400
+				return et_libraries.type_device_library_name.bounded_string is -- ../../lbr/bel_supply_7400.dev
+				new_lib_name : et_libraries.type_device_library_name.bounded_string; -- to be returned
+			begin
+-- 				new_lib_name := containing_directory (to_string (library)) 
+-- 								&
+				return new_lib_name;
+			end concatenate_lib_name_and_generic_name;
+			
+			procedure query_components (
+				library_name	: in et_libraries.type_device_library_name.bounded_string;
+				library			: in et_kicad.type_components_library.map) is
+
+				--use et_libraries.type_component_generic_name;
+				use et_kicad.type_components_library;
+				component_cursor : et_kicad.type_components_library.cursor := library.first;
+
+				use et_libraries.type_component_generic_name;
+				generic_name : et_libraries.type_component_generic_name.bounded_string;
+			begin -- query_components
+				while component_cursor /= et_kicad.type_components_library.no_element loop
+					generic_name := key (component_cursor);
+					log ("device " & to_string (generic_name), log_threshold + 2);
+
+					log ("new device " & to_string (concatenate_lib_name_and_generic_name (dev_library_name, generic_name)),
+						 log_threshold + 2);
+					
+					next (component_cursor);
+				end loop;
+			end query_components;
+			
+		begin -- copy_libraries
+			while component_library_cursor /= et_kicad.type_libraries.no_element loop
+				dev_library_name := key (component_library_cursor);
+				log ("component library " & to_string (dev_library_name), log_threshold + 2);
+
+				log_indentation_up;
+				
+				query_element (
+					position	=> component_library_cursor,
+					process		=> query_components'access);
+
+				log_indentation_down;
+				next (component_library_cursor);
+			end loop;
+
+			-- V4 and V5: kicad_module.component_libraries (symbols and port-pin-mappings)
+			-- component_libraries	: type_libraries.map; -- V4 and V5
+			
+			-- package type_libraries is new ordered_maps (
+			-- 	key_type 		=> et_libraries.type_full_library_name.bounded_string, -- ../../lbr/passive/capacitors
+			--  element_type 	=> type_components_library.map,
+
+			-- package type_components_library is new indefinite_ordered_maps (
+			-- 	key_type		=> et_libraries.type_component_generic_name.bounded_string, -- example: "TRANSISTOR_PNP"
+			-- 	"<"				=> et_libraries.type_component_generic_name."<",
+			-- 	element_type	=> type_component_library); -- DEV
+
+			-- create device libraries
+-- 			update_element (
+-- 				container	=> et_libraries.devices,
+
+			
+			-- V5: kicad_module.footprints
+
+			null;
+		end copy_libraries;
+		
 		
 	begin -- to_native
 
@@ -2706,24 +2787,10 @@ package body et_kicad_to_native is
 
 			-- CS copy frames
 
-			-- V4 and V5: kicad_module.component_libraries (symbols and port-pin-mappings)
-			-- component_libraries	: type_libraries.map; -- V4 and V5
-			
-			-- package type_libraries is new ordered_maps (
-			-- 	key_type 		=> et_libraries.type_full_library_name.bounded_string, -- ../../lbr/passive/capacitors
-			--  element_type 	=> type_components_library.map,
-
-			-- package type_components_library is new indefinite_ordered_maps (
-			-- 	key_type		=> et_libraries.type_component_generic_name.bounded_string, -- example: "TRANSISTOR_PNP"
-			-- 	"<"				=> et_libraries.type_component_generic_name."<",
-			-- 	element_type	=> type_component_library); -- DEV
-
-			-- create device libraries
--- 			update_element (
--- 				container	=> et_libraries.devices,
-
-			
-			-- V5: kicad_module.footprints
+			-- copy component libraries
+			query_element (
+				position	=> module_cursor_kicad,
+				process		=> copy_libraries'access);
 			
 			log_indentation_down;
 

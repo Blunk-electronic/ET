@@ -984,6 +984,9 @@ package et_libraries is
 		element_type	=> type_symbol);
 
 	symbol_library_file_extension : constant string (1..3) := "sym";
+
+	-- HERE RIG WIDE SYMBOLS ARE KEPT:	
+	symbols : type_symbols.map;
 	
 	package type_devices is new indefinite_ordered_maps (
 		key_type 		=> type_device_library_name.bounded_string, -- ../lbr/logic_ttl/7400.dev
@@ -992,6 +995,8 @@ package et_libraries is
 
 	device_library_file_extension : constant string (1..3) := "dev";
 
+	-- HERE RIG WIDE DEVIVES ARE KEPT:
+	devices : type_devices.map;
 
 
 	

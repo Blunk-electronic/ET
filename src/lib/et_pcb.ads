@@ -1118,6 +1118,9 @@ package et_pcb is
 
 	library_file_extension : constant string (1..3) := "pac";
 
+	-- HERE RIG WIDE PACKAGES ARE KEPT:
+	packages : type_packages.map;
+	
 	
 -- PROPERTIES OF OBJECTS IN COPPER (NON ELECTRIC !!)
 	procedure line_copper_properties (
