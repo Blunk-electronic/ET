@@ -56,18 +56,60 @@ with et_configuration;
 
 package body et_libraries is
 
-	function to_string (full_library_name : in type_full_library_name.bounded_string) return string is
-	-- Returns the given full library name as string;
+-- 	function to_string (full_library_name : in type_full_library_name.bounded_string) return string is
+-- 	-- Returns the given full library name as string;
+-- 	begin
+-- 		return type_full_library_name.to_string (full_library_name);
+-- 	end to_string;
+-- 
+-- 	function to_full_library_name (full_library_name : in string) return type_full_library_name.bounded_string is
+-- 	-- converts a string to a full library name.
+-- 	begin
+-- 		return type_full_library_name.to_bounded_string (full_library_name);
+-- 	end to_full_library_name;
+
+
+-- DEVICES
+	function to_string (device_library_name : in type_device_library_name.bounded_string) return string is
+	-- Returns the given device library name as string;
 	begin
-		return type_full_library_name.to_string (full_library_name);
+		return type_device_library_name.to_string (device_library_name);
 	end to_string;
 
-	function to_full_library_name (full_library_name : in string) return type_full_library_name.bounded_string is
-	-- converts a string to a full library name.
+	function to_device_library_name (device_library_name : in string) return type_device_library_name.bounded_string is
+	-- converts a string to a device library name.
 	begin
-		return type_full_library_name.to_bounded_string (full_library_name);
-	end to_full_library_name;
+		return type_device_library_name.to_bounded_string (device_library_name);
+	end to_device_library_name;
+	
+-- SYMBOLS
+	function to_string (symbol_library_name : in type_symbol_library_name.bounded_string) return string is
+	-- Returns the given symbol library name as string;
+	begin
+		return type_symbol_library_name.to_string (symbol_library_name);
+	end to_string;
 
+	function to_symbol_library_name (symbol_library_name : in string) return type_symbol_library_name.bounded_string is
+	-- converts a string to a device library name.
+	begin
+		return type_symbol_library_name.to_bounded_string (symbol_library_name);
+	end to_symbol_library_name;
+
+-- PACKAGES
+	function to_string (package_library_name : in type_package_library_name.bounded_string) return string is
+	-- Returns the given package library name as string;
+	begin
+		return type_package_library_name.to_string (package_library_name);
+	end to_string;
+
+	function to_package_library_name (package_library_name : in string) return type_package_library_name.bounded_string is
+	-- converts a string to a device library name.
+	begin
+		return type_package_library_name.to_bounded_string (package_library_name);
+	end to_package_library_name;
+
+	
+	
 	function to_string (person : in type_person_name.bounded_string) return string is
 	-- Returns the given person name as string.
 	begin
@@ -1565,21 +1607,6 @@ package body et_libraries is
 		end if;
 	end check_reference_characters;
 	
-	
-	procedure no_generic_model_found (
-		reference : in type_component_reference; -- IC303
-		library : in type_full_library_name.bounded_string; -- ../lib/transistors.lib
-		generic_name : in type_component_generic_name.bounded_string) -- TRANSISTOR_NPN
-		is
-		use et_string_processing;
-	begin
-		log_indentation_reset;
-		log (message_error & "component " & to_string (reference) -- CS: output coordinates
-			& " has no generic model " & to_string (generic_name)
-			& " in library " & to_string (library), console => true);
-		raise constraint_error;
-	end no_generic_model_found;
-
 	
 end et_libraries;
 

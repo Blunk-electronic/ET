@@ -337,6 +337,11 @@ package et_kicad is
 	-- Returns the cursor to the first port of the given unit
 		unit_cursor : in type_units_library.cursor)
 		return type_ports_library.cursor;
+
+	procedure no_generic_model_found (
+		reference		: in et_libraries.type_component_reference; -- IC303
+		library			: in et_libraries.type_device_library_name.bounded_string; -- ../lib/xilinx/xc345.dev
+		generic_name	: in et_libraries.type_component_generic_name.bounded_string);
 	
 	
 	function component_appearance (cursor : in type_components_library.cursor)
@@ -344,7 +349,7 @@ package et_kicad is
 		return et_libraries.type_component_appearance;
 
 	function to_package_name (
-		library_name	: in et_libraries.type_full_library_name.bounded_string; -- ../libraries/transistors.lib
+		library_name	: in et_libraries.type_device_library_name.bounded_string; -- ../libraries/transistors.lib
 		generic_name	: in et_libraries.type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
 		package_variant	: in et_libraries.type_component_variant_name.bounded_string) -- N, D
 		return et_libraries.type_component_package_name.bounded_string;
@@ -369,7 +374,7 @@ package et_kicad is
 	
 	-- This is a component as it appears in the schematic.
 	type type_component_schematic (appearance : et_schematic.type_appearance_schematic) is record
-		library_name	: et_libraries.type_full_library_name.bounded_string; -- symbol lib like ../libraries/transistors.lib
+		library_name	: et_libraries.type_device_library_name.bounded_string; -- lib name like ../libraries/transistors.lib
 		generic_name	: et_libraries.type_component_generic_name.bounded_string; -- example: "TRANSISTOR_PNP"
 		alt_references	: type_alternative_references.list;
 		value			: et_libraries.type_component_value.bounded_string; -- 470R
@@ -654,12 +659,12 @@ package et_kicad is
 	-- Full library names can be stored further-on in a simple list:
 	-- We use a simple list because the order of the library names sometimes matters and must be kept.
     package type_full_library_names is new doubly_linked_lists ( -- CS remove
-		element_type 	=> et_libraries.type_full_library_name.bounded_string,
-		"="				=> et_libraries.type_full_library_name."=");
+		element_type 	=> et_libraries.type_device_library_name.bounded_string,
+		"="				=> et_libraries.type_device_library_name."=");
 
 	package type_libraries is new ordered_maps (
-		key_type 		=> et_libraries.type_full_library_name.bounded_string, -- ../../lbr/passive/capacitors
-		"<"				=> et_libraries.type_full_library_name."<",
+		key_type 		=> et_libraries.type_device_library_name.bounded_string, -- ../../lbr/passive/capacitors
+		"<"				=> et_libraries.type_device_library_name."<",
 		element_type 	=> type_components_library.map,
 		"=" 			=> type_components_library."=");
 	-- CS the element could be a record consisting of type_components_library.map, lib_type, options and desrciption
@@ -709,7 +714,10 @@ package et_kicad is
 	type type_lib_table_entry is record
 		lib_name	: type_library_name.bounded_string;
 		lib_type	: type_lib_type;
-		lib_uri		: et_libraries.type_full_library_name.bounded_string;
+		lib_uri		: et_libraries.type_device_library_name.bounded_string;
+		-- CS to be exact: there should be a distinct type_lib_table_entry for components and packages each.
+		-- Currently lib_uri is used for both component and package libraries.
+		
 		-- CS options
 		-- CS desrciption
 	end record;
@@ -1133,7 +1141,7 @@ package et_kicad is
 	
 	function find_component (
 	-- Searches the given library for the given component. Returns a cursor to that component.
-		library		: in et_libraries.type_full_library_name.bounded_string; -- consists of group name and actual library name
+		library		: in et_libraries.type_device_library_name.bounded_string; -- incl. path and file name
 		component	: in et_libraries.type_component_generic_name.bounded_string) 
 		return type_components_library.cursor;
 

@@ -59,20 +59,56 @@ package et_libraries is
 
 	library_name_length_max : constant natural := 100; -- CS: increase if necessary
 	
-	-- If a library is fully specified with group, name and extension we store them in bounded strings:
-	library_full_name_max : constant positive := 300 + library_name_length_max + 4;
-	package type_full_library_name is new generic_bounded_length (library_full_name_max);
+-- 	-- If a library is fully specified with path, name and extension we store them in bounded strings:
+-- 	library_full_name_max : constant positive := 300 + library_name_length_max + 4;
+-- 	package type_full_library_name is new generic_bounded_length (library_full_name_max);
+-- 
+-- 	-- CS: for type_full_library_name: character set, check characters, check length
+-- 	
+-- 	function to_string (full_library_name : in type_full_library_name.bounded_string) return string;
+-- 	-- Returns the given full library name as string;
+-- 
+-- 	function to_full_library_name (full_library_name : in string) return type_full_library_name.bounded_string;
+-- 	-- converts a string to a full library name.
 
-	-- CS: for type_full_library_name: character set, check characters, check length
-	
-	function to_string (full_library_name : in type_full_library_name.bounded_string) return string;
-	-- Returns the given full library name as string;
 
-	function to_full_library_name (full_library_name : in string) return type_full_library_name.bounded_string;
-	-- converts a string to a full library name.
+
+-- DEVICES
+	-- If a library is fully specified with path, name and extension we store them in bounded strings:
+	device_library_name_max : constant positive := 300 + library_name_length_max + 4;
+	package type_device_library_name is new generic_bounded_length (device_library_name_max);
 	
+	function to_string (device_library_name : in type_device_library_name.bounded_string) return string;
+	-- Returns the given device library name as string;
+
+	function to_device_library_name (device_library_name : in string) return type_device_library_name.bounded_string;
+	-- converts a string to a device library name.
 	
 
+-- SYMBOLS
+	-- If a library is fully specified with path, name and extension we store them in bounded strings:
+	symbol_library_name_max : constant positive := 300 + library_name_length_max + 4;
+	package type_symbol_library_name is new generic_bounded_length (symbol_library_name_max);
+	
+	function to_string (symbol_library_name : in type_symbol_library_name.bounded_string) return string;
+	-- Returns the given symbol library name as string;
+
+	function to_symbol_library_name (symbol_library_name : in string) return type_symbol_library_name.bounded_string;
+	-- converts a string to a symbol library name.
+
+	
+-- PACKAGES
+	-- If a library is fully specified with path, name and extension we store them in bounded strings:
+	package_library_name_max : constant positive := 300 + library_name_length_max + 4;
+	package type_package_library_name is new generic_bounded_length (package_library_name_max);
+	
+	function to_string (package_library_name : in type_package_library_name.bounded_string) return string;
+	-- Returns the given package library name as string;
+
+	function to_package_library_name (package_library_name : in string) return type_package_library_name.bounded_string;
+	-- converts a string to a package library name.
+
+	
 	
 	-- When accessing library files we need this:
 	library_handle : ada.text_io.file_type;
@@ -769,16 +805,9 @@ package et_libraries is
 		key_type		=> type_unit_name.bounded_string, -- like "I/O-Bank 3" "A" or "B"
 		element_type	=> type_unit_internal);
 
--- 	-- External units have a reference to an external symbol.
--- 	-- External units are stored in a library and are shared by many components.
--- 	type type_unit_reference is record
--- 		library		: type_full_library_name.bounded_string; -- like /my_libraries/logig.sym
--- 		name		: type_symbol_name.bounded_string;		 -- like "NAND" or "Resistor" or "Switch"
--- 	end record;
-
 	-- An external unit has a reference and a swap level.
 	type type_unit_external is record -- CS: parameter appearance ?
-		reference	: type_full_library_name.bounded_string; -- like /my_libraries/NAND.sym --type_unit_reference;
+		reference	: type_symbol_library_name.bounded_string; -- like /my_libraries/NAND.sym
 		coordinates	: type_coordinates;
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
 		add_level	: type_unit_add_level := type_unit_add_level'first;
@@ -901,7 +930,7 @@ package et_libraries is
 		element_type 	=> type_port_in_terminal_port_map); -- unit A, OE1
 
 	type type_component_variant is record
-		packge				: type_full_library_name.bounded_string; -- includes path and package model
+		packge				: type_package_library_name.bounded_string; -- includes path and package model
 		terminal_port_map	: type_terminal_port_map.map; -- which port is connected with with terminal
 	end record;
 
@@ -926,8 +955,8 @@ package et_libraries is
 	
 
 
--- COMPONENTS
-	type type_component (appearance : type_component_appearance) is record
+-- DEVICES
+	type type_device (appearance : type_component_appearance) is record
 		prefix			: type_component_prefix.bounded_string; -- R, C, IC, ...
 		value			: type_component_value.bounded_string; -- 74LS00
 		units_internal	: type_units_internal.map := type_units_internal.empty_map;
@@ -961,26 +990,17 @@ package et_libraries is
 	
 -- STORAGE
 	
-	-- External symbols:
 	package type_symbols is new indefinite_ordered_maps (
-		key_type		=> type_full_library_name.bounded_string, -- ../lbr/logic/NAND.sym
-		"<"				=> type_full_library_name."<",
+		key_type		=> type_symbol_library_name.bounded_string, -- ../lbr/logic/NAND.sym
+		"<"				=> type_symbol_library_name."<",
 		element_type	=> type_symbol);
 	
-	-- Components:
-	package type_components is new indefinite_ordered_maps (
-		key_type 		=> type_full_library_name.bounded_string, -- ../lbr/logic_ttl/7400.dev
-		"<"				=> type_full_library_name."<",
-		element_type	=> type_component);
+	package type_devices is new indefinite_ordered_maps (
+		key_type 		=> type_device_library_name.bounded_string, -- ../lbr/logic_ttl/7400.dev
+		"<"				=> type_device_library_name."<",
+		element_type	=> type_device);
 
 
-
-
-	
-	procedure no_generic_model_found (
-		reference		: in type_component_reference; -- IC303
-		library			: in type_full_library_name.bounded_string; -- ../lib/xilinx.lib
-		generic_name	: in type_component_generic_name.bounded_string);
 
 
 

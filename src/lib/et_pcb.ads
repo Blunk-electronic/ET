@@ -1112,8 +1112,8 @@ package et_pcb is
 
 	-- packages
 	package type_packages is new indefinite_ordered_maps (
-		key_type		=> et_libraries.type_full_library_name.bounded_string, -- ../lbr/smd/SO15.pac
-		"<"				=> et_libraries.type_full_library_name."<",
+		key_type		=> et_libraries.type_package_library_name.bounded_string, -- ../lbr/smd/SO15.pac
+		"<"				=> et_libraries.type_package_library_name."<",
 		element_type	=> type_package);
 
 
