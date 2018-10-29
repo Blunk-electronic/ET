@@ -70,7 +70,7 @@ with et_kicad;
 package body et_kicad_pcb is
 
 	function full_library_name (
-		library_name	: in et_libraries.type_library_name.bounded_string; -- bel_logic
+		library_name	: in type_library_name.bounded_string; -- bel_logic
 		package_name 	: in et_libraries.type_component_package_name.bounded_string; -- S_SO14
 		log_threshold	: in et_string_processing.type_log_level)
 		return et_libraries.type_full_library_name.bounded_string is
@@ -104,7 +104,7 @@ package body et_kicad_pcb is
 		use type_lib_table;
 		fp_lib_table_cursor : type_lib_table.cursor := fp_lib_tables.first; -- CS access fp_lib_tables in module.fp_lib_tables instead
 
-		use et_libraries.type_library_name;
+		use type_library_name;
 		full_library_name : type_full_library_name.bounded_string;
 		package_found : boolean := false;
 
@@ -123,7 +123,7 @@ package body et_kicad_pcb is
 		end search_package;
 	
 	begin -- full_library_name
-		log ("locating library '" & et_libraries.to_string (library_name) &
+		log ("locating library '" & et_kicad_general.to_string (library_name) &
 			"' containing package '" & to_string (package_name) & "' ...", log_threshold);
 		log_indentation_up;
 
@@ -139,7 +139,7 @@ package body et_kicad_pcb is
 					-- and the package_library_directory_extension (*.pretty)
 					full_library_name := to_bounded_string (ada.directories.compose (
 											containing_directory	=> to_string (element (dir_cursor)),
-											name					=> et_libraries.to_string (library_name),
+											name					=> et_kicad_general.to_string (library_name),
 											extension				=> package_library_directory_extension (2..package_library_directory_extension'last))); 
 
 					log ("searching in " & type_full_library_name.to_string (full_library_name) & " ...", log_threshold + 1);
@@ -201,7 +201,7 @@ package body et_kicad_pcb is
 				-- If the library could not be located anywhere, abort here:
 				if length (full_library_name) = 0 then
 					log_indentation_reset;
-					log (message_error & "No library '" & et_libraries.to_string (library_name) 
+					log (message_error & "No library '" & et_kicad_general.to_string (library_name) 
 						 & "' found ! Check local and global fp-lib-tables !", console => true);
 					raise constraint_error;
 				end if;
@@ -216,7 +216,7 @@ package body et_kicad_pcb is
 		else
 			log_indentation_reset;
 			log (message_error & "package '" & to_string (package_name) &
-				"' not found in any library named '" & et_libraries.to_string (library_name) & "' !", console => true);
+				"' not found in any library named '" & et_kicad_general.to_string (library_name) & "' !", console => true);
 			raise constraint_error;
 		end if;
 
@@ -3043,7 +3043,7 @@ package body et_kicad_pcb is
 		
 		-- PACKAGES
 		package_name 			: et_libraries.type_component_package_name.bounded_string;
-		package_library_name	: et_libraries.type_library_name.bounded_string;
+		package_library_name	: et_kicad_general.type_library_name.bounded_string;
 		package_position		: et_pcb_coordinates.type_package_position;
 		
 		-- package_path			: et_kicad.type_timestamp; -- like /59F17F64/59F18F3E/5B852A16/5B851D80

@@ -56,18 +56,6 @@ with et_configuration;
 
 package body et_libraries is
 
-	function to_library_name (library_name : in string) return type_library_name.bounded_string is
-	-- converts a string to a type_library_name
-	begin
-		return type_library_name.to_bounded_string (library_name);
-	end to_library_name;
-	
-	function to_string (library_name : in type_library_name.bounded_string) return string is
-	-- Returns the given library name as string.
-	begin
-		return type_library_name.to_string (library_name);
-	end to_string;
-	
 	function to_string (full_library_name : in type_full_library_name.bounded_string) return string is
 	-- Returns the given full library name as string;
 	begin

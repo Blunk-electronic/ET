@@ -104,12 +104,15 @@ package et_kicad is
 		return et_coordinates.type_submodule_name.bounded_string;
 	-- Returns the base name of the given schematic file name as submodule name.
 
+
+
+	
 	-- Bare library names can be stored further-on in a simple list:
 	-- We use a simple list because the order of the library names sometimes matters 
 	-- in V4 and must be kept.
 	package type_library_names is new doubly_linked_lists (
-		element_type	=> et_libraries.type_library_name.bounded_string, -- bel_logic, bel_primitives
-		"="				=> et_libraries.type_library_name."=");
+		element_type	=> type_library_name.bounded_string, -- bel_logic, bel_primitives
+		"="				=> type_library_name."=");
 	
 	-- SHEET HEADERS
 	-- The sheet header is a composite of a list of libraries and other things:
@@ -654,21 +657,6 @@ package et_kicad is
 		element_type 	=> et_libraries.type_full_library_name.bounded_string,
 		"="				=> et_libraries.type_full_library_name."=");
 
-	-- Libraries are grouped (like passive, active, misc, ...). The group name is specified as:
-	library_group_length_max : constant positive := 300; -- CS: increase if necessary
-	package type_library_group_name is new generic_bounded_length (library_group_length_max);
-
-	function to_string (group : in type_library_group_name.bounded_string) return string;
-
-	
-	function to_full_library_name (
-		group		: in type_library_group_name.bounded_string;
-		lib_name 	: in et_libraries.type_library_name.bounded_string) 
-		return et_libraries.type_full_library_name.bounded_string;
-	-- composes the full library name from the given group and the actual lib name.
-
-	
-
 	package type_libraries is new ordered_maps (
 		key_type 		=> et_libraries.type_full_library_name.bounded_string, -- ../../lbr/passive/capacitors
 		"<"				=> et_libraries.type_full_library_name."<",
@@ -719,7 +707,7 @@ package et_kicad is
 		); -- CS: others ?
 
 	type type_lib_table_entry is record
-		lib_name	: et_libraries.type_library_name.bounded_string;
+		lib_name	: type_library_name.bounded_string;
 		lib_type	: type_lib_type;
 		lib_uri		: et_libraries.type_full_library_name.bounded_string;
 		-- CS options
@@ -1089,7 +1077,7 @@ package et_kicad is
 
 	
 
-	function library_name (text : in string) return et_libraries.type_library_name.bounded_string;
+	function library_name (text : in string) return type_library_name.bounded_string;
 	-- extracts from a string like "bel_ic:S_SO14" the library name "bel_ic"
 
 	function package_name (text : in string) return et_libraries.type_component_package_name.bounded_string;

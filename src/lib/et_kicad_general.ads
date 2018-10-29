@@ -66,6 +66,20 @@ package et_kicad_general is
 	procedure check_timestamp (timestamp : in type_timestamp);
 	-- Checks the given timestamp for valid characters and plausible time.
 
+-- LIBRARIES
+	library_name_length_max : constant natural := 100; -- CS: increase if necessary
+	
+	-- For storing bare library names like "bel_primitives" we use this bounded string:
+	package type_library_name is new generic_bounded_length (library_name_length_max); 
+	use type_library_name;
+
+	function to_library_name (library_name : in string) return type_library_name.bounded_string;
+	-- converts a string to a type_library_name
+	
+	-- CS: for type_library_name: character set, check characters, check length
+	
+	function to_string (library_name : in type_library_name.bounded_string) return string;
+	-- Returns the given library name as string.
 
 end et_kicad_general;
 

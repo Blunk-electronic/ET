@@ -2707,6 +2707,21 @@ package body et_kicad_to_native is
 			-- CS copy frames
 
 			-- V4 and V5: kicad_module.component_libraries (symbols and port-pin-mappings)
+			-- component_libraries	: type_libraries.map; -- V4 and V5
+			
+			-- package type_libraries is new ordered_maps (
+			-- 	key_type 		=> et_libraries.type_full_library_name.bounded_string, -- ../../lbr/passive/capacitors
+			--  element_type 	=> type_components_library.map,
+
+			-- package type_components_library is new indefinite_ordered_maps (
+			-- 	key_type		=> et_libraries.type_component_generic_name.bounded_string, -- example: "TRANSISTOR_PNP"
+			-- 	"<"				=> et_libraries.type_component_generic_name."<",
+			-- 	element_type	=> type_component_library); -- DEV
+
+			-- create device libraries
+-- 			update_element (
+-- 				container	=> et_libraries.devices,
+
 			
 			-- V5: kicad_module.footprints
 			

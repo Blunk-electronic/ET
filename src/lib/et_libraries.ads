@@ -57,19 +57,8 @@ package et_libraries is
 
 -- LIBRARY NAMES AND DIRECTORIES
 
-	-- For storing bare library names like "bel_primitives" we use this bounded string:
 	library_name_length_max : constant natural := 100; -- CS: increase if necessary
-    package type_library_name is new generic_bounded_length (library_name_length_max); use type_library_name;
-
-	function to_library_name (library_name : in string) return type_library_name.bounded_string;
-	-- converts a string to a type_library_name
 	
-	-- CS: for type_library_name: character set, check characters, check length
-	
-	function to_string (library_name : in type_library_name.bounded_string) return string;
-	-- Returns the given library name as string.
-	
-
 	-- If a library is fully specified with group, name and extension we store them in bounded strings:
 	library_full_name_max : constant positive := 300 + library_name_length_max + 4;
 	package type_full_library_name is new generic_bounded_length (library_full_name_max);
@@ -980,7 +969,7 @@ package et_libraries is
 	
 	-- Components:
 	package type_components is new indefinite_ordered_maps (
-		key_type 		=> type_full_library_name.bounded_string, -- ../lbr/logic_ttl/7400.cmp
+		key_type 		=> type_full_library_name.bounded_string, -- ../lbr/logic_ttl/7400.dev
 		"<"				=> type_full_library_name."<",
 		element_type	=> type_component);
 

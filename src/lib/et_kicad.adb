@@ -74,24 +74,6 @@ with et_csv;
 
 package body et_kicad is
 
-
-	function to_string (group : in type_library_group_name.bounded_string) return string is
-	begin
-		return type_library_group_name.to_string (group);
-	end to_string;
-
-	function to_full_library_name (
-		group		: in type_library_group_name.bounded_string;
-		lib_name	: in et_libraries.type_library_name.bounded_string) 
-		return et_libraries.type_full_library_name.bounded_string is
-	-- composes the full library name from the given group and lib name.
-	begin
-		return et_libraries.to_full_library_name (
-			compose (to_string (group), et_libraries.to_string (lib_name))
-			);
-	end to_full_library_name;
-
-
 	function to_submodule_name (file_name : in et_coordinates.type_schematic_file_name.bounded_string)
 		return et_coordinates.type_submodule_name.bounded_string is
 	-- Returns the base name of the given schematic file name as submodule name.
@@ -729,12 +711,12 @@ package body et_kicad is
 		return point;
 	end to_point;
 
-	function library_name (text : in string) return et_libraries.type_library_name.bounded_string is
+	function library_name (text : in string) return et_kicad_general.type_library_name.bounded_string is
 	-- extracts from a string like "bel_ic:S_SO14" the library name "bel_ic"
 		function field (line : in type_fields_of_line; position : in positive) return string renames
 			et_string_processing.get_field_from_line;
 	begin
-		return et_libraries.type_library_name.to_bounded_string (
+		return et_kicad_general.type_library_name.to_bounded_string (
 			field (
 				read_line (
 					line => text,
@@ -3442,7 +3424,7 @@ package body et_kicad is
 	-- name of package library and package name.
 		component_library 	: in et_libraries.type_full_library_name.bounded_string; 		-- ../lbr/bel_logic.lib
 		generic_name 		: in et_libraries.type_component_generic_name.bounded_string; 	-- 7400
-		package_library 	: in et_libraries.type_library_name.bounded_string; 			-- bel_ic
+		package_library 	: in et_kicad_general.type_library_name.bounded_string; 			-- bel_ic
 		package_name 		: in et_libraries.type_component_package_name.bounded_string;	-- S_SO14
 		log_threshold		: in et_string_processing.type_log_level)
 		return et_libraries.type_component_variant_name.bounded_string is 					-- D
@@ -4385,7 +4367,6 @@ package body et_kicad is
 	-- If first_instance is true, the module name further-on gets the instance appended.
 	-- This is required for multiple design instantiations. (things like nucleo_core_1).
 		
-		use type_library_group_name;
 		use et_schematic;
 
 		function field (line : in type_fields_of_line; position : in positive) return string renames
@@ -4885,7 +4866,7 @@ package body et_kicad is
 
 					-- TEMPORARILY STORAGE PLACES
 
-					lib_name	: et_libraries.type_library_name.bounded_string;
+					lib_name	: et_kicad_general.type_library_name.bounded_string;
 					lib_type	: type_lib_type;
 					lib_uri		: et_libraries.type_full_library_name.bounded_string;
 					-- CS lib_options
@@ -6677,7 +6658,7 @@ package body et_kicad is
 						-- We use a doubly linked list because the order of the library names must be kept.
 						type_library_names.append (
 							container	=> sheet_header.libraries,
-							new_item	=> et_libraries.to_library_name (
+							new_item	=> et_kicad_general.to_library_name (
 								get_field_from_line (field (et_kicad.line,1), 2, latin_1.colon))
 							);
 
@@ -8021,7 +8002,7 @@ package body et_kicad is
 					
 				begin -- full_name_of_component_library
 					log_indentation_up;
-					log ("locating library '" & et_libraries.to_string (component_library_name) & "' containing generic component '" 
+					log ("locating library '" & et_kicad_general.to_string (component_library_name) & "' containing generic component '" 
 						 & to_string (component) & "' ...", log_threshold);
 
 					-- Search in the sym-lib-table for the first an entry having the component_library_name (uri)
@@ -8056,7 +8037,8 @@ package body et_kicad is
 						log_indentation_reset;
 						log (message_error & "for component "  
 							& et_libraries.to_string (reference)
-							& " no generic model in any library named '" & et_libraries.to_string (component_library_name) & "' found !",
+							& " no generic model in any library named '" & et_kicad_general.to_string (component_library_name) 
+							& "' found !",
 							console => true);
 						raise constraint_error;
 					end if;
