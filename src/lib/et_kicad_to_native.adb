@@ -2329,6 +2329,8 @@ package body et_kicad_to_native is
 			
 		procedure copy_components (
 		-- Transfer components from kicad design to native design.
+		-- Changes the links to device models so that they point to the libraries
+		-- in project/libraries/devices/...
 			module_name : in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_schematic.type_module) is
 
@@ -2420,6 +2422,8 @@ package body et_kicad_to_native is
 							position	=> component_cursor_native,
 							new_item	=> (
 								appearance			=> et_libraries.SCH,
+
+								-- The link to the device model is a composition of path,file and generic name:
 								model				=> concatenate_lib_name_and_generic_name (
 														library	=> element (component_cursor_kicad).library_name,
 														device	=> element (component_cursor_kicad).generic_name),
@@ -2439,6 +2443,8 @@ package body et_kicad_to_native is
 							position	=> component_cursor_native,
 							new_item	=> (
 								appearance			=> et_libraries.SCH_PCB,
+
+								-- The link to the device model is a composition of path,file and generic name:
 								model				=> concatenate_lib_name_and_generic_name (
 														library	=> element (component_cursor_kicad).library_name,
 														device	=> element (component_cursor_kicad).generic_name),
@@ -2726,7 +2732,7 @@ package body et_kicad_to_native is
 			component_library_cursor : et_kicad.type_libraries.cursor := module.component_libraries.first;
 
 			use et_libraries.type_device_library_name;
-			dev_library_name : et_libraries.type_device_library_name.bounded_string;
+			component_library_name : et_libraries.type_device_library_name.bounded_string;
 
 -- 			procedure build_devices_target_dir (path, prj : in string) is
 -- 				use et_project;
@@ -2750,24 +2756,56 @@ package body et_kicad_to_native is
 
 				use et_libraries.type_component_generic_name;
 				generic_name : et_libraries.type_component_generic_name.bounded_string;
+				device_model : et_libraries.type_device_library_name.bounded_string;
+
+				device_cursor : et_libraries.type_devices.cursor;
+				inserted : boolean;
+				
 			begin -- query_components
 				while component_cursor /= et_kicad.type_components_library.no_element loop
 					generic_name := key (component_cursor);
 					--log ("device " & to_string (generic_name), log_threshold + 2);
 
-					log ("new device " & to_string (concatenate_lib_name_and_generic_name (dev_library_name, generic_name)),
-						 log_threshold + 2);
+					-- Build the name of the device model from the component library name and generic name:
+					device_model := concatenate_lib_name_and_generic_name (component_library_name, generic_name);
+
+					-- Create a new device model in container et_libraries.devices:
+					log ("device model " & to_string (device_model), log_threshold + 2);
+
+					case element (component_cursor).appearance is
+						when et_libraries.SCH =>
+							et_libraries.type_devices.insert (
+								container	=> et_libraries.devices,
+								position	=> device_cursor,
+								inserted	=> inserted,
+								key			=> device_model,
+								new_item	=> (
+									appearance		=> et_libraries.SCH,
+									prefix 			=> element (component_cursor).prefix,
+									value			=> element (component_cursor).value,
+									commissioned	=> element (component_cursor).commissioned,
+									updated			=> element (component_cursor).updated,
+									author			=> element (component_cursor).author,
+									units_internal	=> <>,
+									units_external	=> <>
+								));
+
+						when et_libraries.SCH_PCB =>
+							null;
+
+						when others =>
+							raise constraint_error;
+					end case;
 					
 					next (component_cursor);
 				end loop;
 			end query_components;
 			
 		begin -- copy_libraries
--- 			build_devices_target_dir (et_project.to_string (project_path), et_project.to_string (project_name));
 			  
 			while component_library_cursor /= et_kicad.type_libraries.no_element loop
-				dev_library_name := key (component_library_cursor);
-				log ("component library " & to_string (dev_library_name), log_threshold + 2);
+				component_library_name := key (component_library_cursor);
+				log ("component library " & to_string (component_library_name), log_threshold + 2);
 
 				log_indentation_up;
 				
@@ -2845,9 +2883,6 @@ package body et_kicad_to_native is
 			-- CS copy frames
 
 			-- copy component libraries
-			project_name := et_project.type_project_name.to_bounded_string (
-				et_coordinates.to_string (et_kicad.type_rig.key (module_cursor_kicad)));
-
 			query_element (
 				position	=> module_cursor_kicad,
 				process		=> copy_libraries'access);
@@ -2856,6 +2891,8 @@ package body et_kicad_to_native is
 				 et_project.type_et_project_path.to_string (project_path) 
 				 & " ...", log_threshold);
 
+			project_name := et_project.type_project_name.to_bounded_string (
+				et_coordinates.to_string (et_kicad.type_rig.key (module_cursor_kicad)));
 			
 			et_project.create_project_directory (
 				project_name	=> project_name,
