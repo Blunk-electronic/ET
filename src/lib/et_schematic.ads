@@ -130,9 +130,8 @@ package et_schematic is
 
 
 	-- This is a component as it appears in the schematic.
-	type type_component (appearance : type_appearance_schematic) is record
-		library_name	: et_libraries.type_device_library_name.bounded_string; -- ../libraries/transistor/BC548.dev
-		generic_name	: et_libraries.type_component_generic_name.bounded_string; -- example: "TRANSISTOR_PNP"
+	type type_device (appearance : type_appearance_schematic) is record
+		model			: et_libraries.type_device_library_name.bounded_string; -- ../libraries/transistor/pnp.dev
 		value			: et_libraries.type_component_value.bounded_string; -- 470R
 		commissioned	: et_string_processing.type_date; -- 2017-08-17T14:17:25
 		updated			: et_string_processing.type_date; -- 2017-10-30T08:33:56
@@ -382,11 +381,11 @@ package et_schematic is
 
 -- MODULE
 
-	-- The components of a module are collected in a map.
- 	package type_components is new indefinite_ordered_maps (
+	-- The devices of a module are collected in a map.
+ 	package type_devices is new indefinite_ordered_maps (
 		key_type		=> et_libraries.type_component_reference, -- something like "IC43"
 		"<"				=> compare_reference,
- 		element_type	=> type_component);
+ 		element_type	=> type_device);
 
 	
 	-- For designs which have only a schematic, this flag goes false.
@@ -398,7 +397,7 @@ package et_schematic is
 		instance		: et_coordinates.type_submodule_instance;
 		board_available	: type_board_available := FALSE;
 		
-		components		: type_components.map;			-- the components of the module
+		devices			: type_devices.map;				-- the devices of the module
 		net_classes		: et_pcb.type_net_classes.map;	-- the net classes
 		submodules  	: type_submodules.map;			-- graphical representations of submodules
 		frames      	: et_libraries.type_frames.list;-- frames -- CS store in a map with sheet number as key

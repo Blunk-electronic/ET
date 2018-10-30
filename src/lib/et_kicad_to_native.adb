@@ -2288,6 +2288,45 @@ package body et_kicad_to_native is
 			module.net_classes		:= element (module_cursor_kicad).net_classes;
 		end copy_general_stuff;
 
+		function concatenate_lib_name_and_generic_name (
+			library	: in et_libraries.type_device_library_name.bounded_string; -- ../../lbr/bel_logic.lib
+			device	: in et_libraries.type_component_generic_name.bounded_string) -- 7400
+
+			-- The return is a composition of prefix_devices_dir, library containing directory,
+			-- generic component name and device model extension 
+			-- like: libraries/devices/__#__#lbr#bel_logic_7400.dev
+			return et_libraries.type_device_library_name.bounded_string is
+
+			use et_libraries;
+			use et_libraries.type_device_library_name;
+			dir : type_device_library_name.bounded_string; -- ../../lbr
+			name : type_device_library_name.bounded_string; -- to be returned
+
+			-- In the containing directory . and / must be replaced by _ and #:
+			characters : character_mapping := to_mapping ("./","_#");
+			
+		begin -- concatenate_lib_name_and_generic_name
+			dir := to_device_library_name (containing_directory (et_libraries.to_string (library)) & '#'); -- ../../lbr
+			translate (dir, characters); -- __#__#lbr
+			--log ("dir " & et_libraries.to_string (dir));
+			
+			name := to_device_library_name (base_name (et_libraries.to_string (library))); -- bel_logic
+			name := dir & name;
+			--log ("name " & et_libraries.to_string (name));
+
+			name := name & '_' & et_libraries.to_device_library_name (et_libraries.to_string (device));
+			--log ("name " & et_libraries.to_string (name));
+
+			name := et_libraries.to_device_library_name (compose (
+					containing_directory	=> et_libraries.to_string (prefix_devices_dir),
+					name					=> et_libraries.to_string (name),
+					extension				=> et_libraries.device_library_file_extension));
+
+			--log ("name " & et_libraries.to_string (name));
+			
+			return name;
+		end concatenate_lib_name_and_generic_name;
+			
 		procedure copy_components (
 		-- Transfer components from kicad design to native design.
 			module_name : in et_coordinates.type_submodule_name.bounded_string;
@@ -2297,14 +2336,14 @@ package body et_kicad_to_native is
 			components_kicad		: et_kicad.type_components_schematic.map;
 			component_cursor_kicad	: et_kicad.type_components_schematic.cursor;
 
-			use et_schematic.type_components;
-			component_cursor_native	: et_schematic.type_components.cursor;
+			use et_schematic.type_devices;
+			component_cursor_native	: et_schematic.type_devices.cursor;
 			component_inserted		: boolean;
 
 			procedure copy_units (
 			-- Copies the kicad units to the native component.
 				reference	: in et_libraries.type_component_reference;
-				component	: in out et_schematic.type_component) is
+				component	: in out et_schematic.type_device) is
 
 				use et_kicad.type_units_schematic;
 				units_kicad			: et_kicad.type_units_schematic.map := element (component_cursor_kicad).units;
@@ -2375,14 +2414,16 @@ package body et_kicad_to_native is
 				case element (component_cursor_kicad).appearance is
 					when et_libraries.SCH =>
 						
-						et_schematic.type_components.insert (
-							container	=> module.components,
+						et_schematic.type_devices.insert (
+							container	=> module.devices,
 							key			=> key (component_cursor_kicad), -- IC308, R12
 							position	=> component_cursor_native,
 							new_item	=> (
 								appearance			=> et_libraries.SCH,
-								library_name		=> element (component_cursor_kicad).library_name,
-								generic_name		=> element (component_cursor_kicad).generic_name,
+								model				=> concatenate_lib_name_and_generic_name (
+														library	=> element (component_cursor_kicad).library_name,
+														device	=> element (component_cursor_kicad).generic_name),
+																								 
 								value				=> element (component_cursor_kicad).value,
 								commissioned		=> element (component_cursor_kicad).commissioned,
 								updated				=> element (component_cursor_kicad).updated,
@@ -2392,14 +2433,16 @@ package body et_kicad_to_native is
 							inserted	=> component_inserted); -- should always be true
 
 					when et_libraries.SCH_PCB => null;
-						et_schematic.type_components.insert (
-							container	=> module.components,
+						et_schematic.type_devices.insert (
+							container	=> module.devices,
 							key			=> key (component_cursor_kicad), -- IC308, R12
 							position	=> component_cursor_native,
 							new_item	=> (
 								appearance			=> et_libraries.SCH_PCB,
-								library_name		=> element (component_cursor_kicad).library_name,
-								generic_name		=> element (component_cursor_kicad).generic_name,
+								model				=> concatenate_lib_name_and_generic_name (
+														library	=> element (component_cursor_kicad).library_name,
+														device	=> element (component_cursor_kicad).generic_name),
+
 								value				=> element (component_cursor_kicad).value,
 								commissioned		=> element (component_cursor_kicad).commissioned,
 								updated				=> element (component_cursor_kicad).updated,
@@ -2417,9 +2460,9 @@ package body et_kicad_to_native is
 							inserted	=> component_inserted); -- should always be true
 				end case;
 
-				-- copy the units from the kicad component to the native component
-				et_schematic.type_components.update_element (
-					container	=> module.components,
+				-- copy the units from the kicad component to the native device
+				et_schematic.type_devices.update_element (
+					container	=> module.devices,
 					position	=> component_cursor_native,
 					process		=> copy_units'access);
 
@@ -2698,44 +2741,6 @@ package body et_kicad_to_native is
 -- 				log ("devices dir: " & et_libraries.to_string (devices_target_dir), log_threshold + 2);
 -- 			end build_devices_target_dir;
 						
-			function concatenate_lib_name_and_generic_name (
-				library	: in et_libraries.type_device_library_name.bounded_string; -- ../../lbr/bel_logic.lib
-				device	: in et_libraries.type_component_generic_name.bounded_string) -- 7400
-
-				-- The return is a composition of prefix_devices_dir, library containing directory,
-				-- generic component name and device model extension 
-				-- like: libraries/devices/__#__#lbr#bel_logic_7400.dev
-				return et_libraries.type_device_library_name.bounded_string is
-
-				use et_libraries;
-				dir : type_device_library_name.bounded_string; -- ../../lbr
-				name : type_device_library_name.bounded_string; -- to be returned
-
-				-- In the containing directory . and / must be replaced by _ and #:
-				characters : character_mapping := to_mapping ("./","_#");
-				
-			begin -- concatenate_lib_name_and_generic_name
-				dir := to_device_library_name (containing_directory (et_libraries.to_string (library)) & '#'); -- ../../lbr
-				translate (dir, characters); -- __#__#lbr
-				--log ("dir " & et_libraries.to_string (dir));
-				
-				name := to_device_library_name (base_name (et_libraries.to_string (library))); -- bel_logic
-				name := dir & name;
-				--log ("name " & et_libraries.to_string (name));
-
-				name := name & '_' & et_libraries.to_device_library_name (et_libraries.to_string (device));
-				--log ("name " & et_libraries.to_string (name));
-
-				name := et_libraries.to_device_library_name (compose (
-						containing_directory	=> et_libraries.to_string (prefix_devices_dir),
-						name					=> et_libraries.to_string (name),
-						extension				=> et_libraries.device_library_file_extension));
-
-				--log ("name " & et_libraries.to_string (name));
-				
-				return name;
-			end concatenate_lib_name_and_generic_name;
-			
 			procedure query_components (
 				library_name	: in et_libraries.type_device_library_name.bounded_string;
 				library			: in et_kicad.type_components_library.map) is
