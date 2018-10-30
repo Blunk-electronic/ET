@@ -70,6 +70,11 @@ package body et_project is
 		return type_project_name.to_bounded_string (name);
 	end to_project_name;
 
+	function to_string (path : in type_et_project_path.bounded_string) return string is
+	begin
+		return type_et_project_path.to_string (path);
+	end to_string;
+	
 	function to_sheet_name_text_size (size : in string) return type_sheet_name_text_size is
 	-- Converts a string to type_sheet_name_text_size.
 	begin
@@ -85,57 +90,57 @@ package body et_project is
 	
 -- NATIVE PROJECT
 
-	procedure create_libraries_directory_components (
-	-- Creates a directory where component libraries will live.
-	-- An already existing directory will be overwritten.
-	-- Sets the global library directory name so that subsequent write and read operations
-	-- access the right directory.
-		project_path	: in type_et_project_path.bounded_string;
-		log_threshold	: in et_string_processing.type_log_level) is
-		use et_general;
-		use ada.directories;
-		use et_string_processing;
-		use type_project_name;
-		use type_et_project_path;
-
-		path_length : positive :=  project_path_max + directory_libraries'length + directory_libraries_components'length + 2; -- incl. directory separators
-		package type_path is new generic_bounded_length (path_length);
-		use type_path;
-		path : type_path.bounded_string;
-	begin -- create_libraries_directory_components
-		path := to_bounded_string (compose (to_string (project_path), directory_libraries));
-		path := to_bounded_string (compose (to_string (path), directory_libraries_components));
-		
--- 		log ("creating in " & current_directory & " a new " & et_general.system_name & " libraries directory " 
--- 			 & to_string (path) & " ...",
--- 			log_threshold);
-		log ("directory for project wide libraries '" & directory_libraries & "' ...", log_threshold);
-
-		log_indentation_up;
-		
-		-- delete previous libraries directory
-		if exists (to_string (path)) then
-			delete_tree (to_string (path));
-		end if;
-		
-		-- create the libraries directory
-		create_path (to_string (path));
-
-		-- set the global library directory name
-		log ("setting global library directory name ...", log_threshold + 1);
-		component_libraries_directory_name := type_libraries_directory.to_bounded_string (to_string (path));
-	
-		log (" global library directory name is now " 
-			 & type_libraries_directory.to_string (component_libraries_directory_name), log_threshold + 2);
-
-		log_indentation_down;
-		
-		exception when event:
-			others => 
-				log (ada.exceptions.exception_message (event), console => true);
-				raise;
-		
-	end create_libraries_directory_components;
+-- 	procedure create_libraries_directory_components (
+-- 	-- Creates a directory where component libraries will live.
+-- 	-- An already existing directory will be overwritten.
+-- 	-- Sets the global library directory name so that subsequent write and read operations
+-- 	-- access the right directory.
+-- 		project_path	: in type_et_project_path.bounded_string;
+-- 		log_threshold	: in et_string_processing.type_log_level) is
+-- 		use et_general;
+-- 		use ada.directories;
+-- 		use et_string_processing;
+-- 		use type_project_name;
+-- 		use type_et_project_path;
+-- 
+-- 		path_length : positive :=  project_path_max + directory_libraries'length + directory_libraries_components'length + 2; -- incl. directory separators
+-- 		package type_path is new generic_bounded_length (path_length);
+-- 		use type_path;
+-- 		path : type_path.bounded_string;
+-- 	begin -- create_libraries_directory_components
+-- 		path := to_bounded_string (compose (to_string (project_path), directory_libraries));
+-- 		path := to_bounded_string (compose (to_string (path), directory_libraries_components));
+-- 		
+-- -- 		log ("creating in " & current_directory & " a new " & et_general.system_name & " libraries directory " 
+-- -- 			 & to_string (path) & " ...",
+-- -- 			log_threshold);
+-- 		log ("directory for project wide libraries '" & directory_libraries & "' ...", log_threshold);
+-- 
+-- 		log_indentation_up;
+-- 		
+-- 		-- delete previous libraries directory
+-- 		if exists (to_string (path)) then
+-- 			delete_tree (to_string (path));
+-- 		end if;
+-- 		
+-- 		-- create the libraries directory
+-- 		create_path (to_string (path));
+-- 
+-- 		-- set the global library directory name
+-- 		log ("setting global library directory name ...", log_threshold + 1);
+-- 		component_libraries_directory_name := type_libraries_directory.to_bounded_string (to_string (path));
+-- 	
+-- 		log (" global library directory name is now " 
+-- 			 & type_libraries_directory.to_string (component_libraries_directory_name), log_threshold + 2);
+-- 
+-- 		log_indentation_down;
+-- 		
+-- 		exception when event:
+-- 			others => 
+-- 				log (ada.exceptions.exception_message (event), console => true);
+-- 				raise;
+-- 		
+-- 	end create_libraries_directory_components;
 
 
 	procedure create_project_directory (
@@ -155,11 +160,20 @@ package body et_project is
 		package type_path is new generic_bounded_length (project_name_max + project_path_max + 1); -- incl. directory separator
 		use type_path;
 		path : type_path.bounded_string := to_bounded_string (compose (to_string (project_path), to_string (project_name)));
+
+		procedure create_library_subdirs (path : in string) is
+		begin
+			create_directory (compose (path, directory_libraries_devices));
+			create_directory (compose (path, directory_libraries_symbols));
+			create_directory (compose (path, directory_libraries_packages));			
+			--log ("subdir " & compose (path, directory_libraries_devices));
+		end create_library_subdirs;
+			
 	begin
 -- 		log ("creating in " & current_directory & " a new " & et_general.system_name & " project directory " 
 -- 			 & to_string (path) & " ...",
 -- 			log_threshold);
-		log ("project directory '" & to_string (project_name) & "' ...", log_threshold);
+		log ("project name '" & to_string (project_name) & "' ...", log_threshold);
 
 		log_indentation_up;
 		
@@ -175,6 +189,8 @@ package body et_project is
 		-- create sub-directories for supplementary stuff:
 		log ("creating subdirectories for supplementary stuff ...", log_threshold + 1);
 		create_directory (compose (to_string (path), directory_libraries));
+		create_library_subdirs (compose (to_string (path), directory_libraries));
+		
 		create_directory (compose (to_string (path), directory_dru));
 		create_directory (compose (to_string (path), directory_cam));
 		create_directory (compose (to_string (path), directory_net_classes));

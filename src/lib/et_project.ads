@@ -22,7 +22,7 @@
 --    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your editor to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction side" where things are not
 --   finished yet or intended for the future.
@@ -63,10 +63,10 @@ package et_project is
 
 	-- native library directories
 	directory_libraries 				: constant string (1..9) 	:= "libraries";	
-	directory_libraries_components		: constant string (1..10) 	:= "components";
-	directory_libraries_components_sym	: constant string (1..7) 	:= "symbols";
-	directory_libraries_components_pac	: constant string (1..8) 	:= "packages";	
-	directory_libraries_components_dev	: constant string (1..7) 	:= "devices";	
+	directory_libraries_devices			: constant string (1..7) 	:= "devices";
+	directory_libraries_symbols			: constant string (1..7) 	:= "symbols";
+	directory_libraries_packages		: constant string (1..8) 	:= "packages";	
+
 	directory_libraries_schemlets		: constant string (1..9) 	:= "schemlets";
 	
 	-- supplementary stuff of a project
@@ -100,10 +100,14 @@ package et_project is
 	project_path_max : constant natural := 200;
 	package type_et_project_path is new generic_bounded_length (project_path_max);
 
+	function to_string (path : in type_et_project_path.bounded_string) return string;
+	
 	-- The current project file name is stored here:
 	package type_project_file_name is new generic_bounded_length (project_path_max + project_name_max + 1); -- incl. directory separator
 	project_file_name : type_project_file_name.bounded_string; -- et_projects/led_matrix
 
+
+	
 	project_file_name_extension : constant string (1..2) := "et";
 	
 	project_file_handle : ada.text_io.file_type;
@@ -120,15 +124,15 @@ package et_project is
 
 	
 	-- The current directory where libraries live is stored here:
-	package type_libraries_directory is new generic_bounded_length (project_path_max + directory_libraries_components'length + 1); -- incl. directory separator
-	component_libraries_directory_name : type_libraries_directory.bounded_string; -- ET_projects/lbr
+-- 	package type_libraries_directory is new generic_bounded_length (project_path_max + directory_libraries_components'length + 1); -- incl. directory separator
+-- 	component_libraries_directory_name : type_libraries_directory.bounded_string; -- ET_projects/lbr
 
 	
-	procedure create_libraries_directory_components (
-	-- Creates a directory where component libraries will live.
-	-- An already existing directory will be overwritten.
-		project_path	: in type_et_project_path.bounded_string;
-		log_threshold	: in et_string_processing.type_log_level);
+-- 	procedure create_libraries_directory_components (
+-- 	-- Creates a directory where component libraries will live.
+-- 	-- An already existing directory will be overwritten.
+-- 		project_path	: in type_et_project_path.bounded_string;
+-- 		log_threshold	: in et_string_processing.type_log_level);
 
 	
 	procedure create_project_directory (

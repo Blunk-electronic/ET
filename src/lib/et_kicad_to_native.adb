@@ -2193,7 +2193,7 @@ package body et_kicad_to_native is
 		end move_general_board_stuff;
 
 	begin -- transpose
-		log ("transposing coordinates ...", log_threshold);
+		log ("transposing coordinates of KiCad modules ...", log_threshold);
 		log_indentation_up;
 		
 		while module_cursor /= et_kicad.type_rig.no_element loop
@@ -2258,6 +2258,17 @@ package body et_kicad_to_native is
 	-- NOTE: Packages of the board (incl. their deviations/modifications
 	-- from the package_libraries) are ignored !
 
+		-- When the native project is created we need a project path and a project name:
+		project_path : et_project.type_et_project_path.bounded_string :=
+						et_project.type_et_project_path.to_bounded_string (
+							compose (et_general.work_directory, et_project.directory_import));
+
+		project_name : et_project.type_project_name.bounded_string;
+
+		prefix_devices_dir : et_libraries.type_device_library_name.bounded_string := 
+			et_libraries.to_device_library_name (compose (
+				et_project.directory_libraries, et_project.directory_libraries_devices));
+		
 		use et_kicad.type_rig;
 		module_cursor_kicad : et_kicad.type_rig.cursor := et_kicad.type_rig.first (et_kicad.rig);
 
@@ -2674,22 +2685,61 @@ package body et_kicad_to_native is
 			use et_libraries.type_device_library_name;
 			dev_library_name : et_libraries.type_device_library_name.bounded_string;
 
+-- 			procedure build_devices_target_dir (path, prj : in string) is
+-- 				use et_project;
+-- 			begin
+-- 				log ("path: " & path, log_threshold + 2);
+-- 				log ("prj: " & prj, log_threshold + 2);				
+-- 				
+-- 				devices_target_dir := et_libraries.to_device_library_name (
+-- 					compose (compose (compose (path, prj), directory_libraries), directory_libraries_devices)
+-- 					);
+-- 
+-- 				log ("devices dir: " & et_libraries.to_string (devices_target_dir), log_threshold + 2);
+-- 			end build_devices_target_dir;
+						
 			function concatenate_lib_name_and_generic_name (
 				library	: in et_libraries.type_device_library_name.bounded_string; -- ../../lbr/bel_logic.lib
 				device	: in et_libraries.type_component_generic_name.bounded_string) -- 7400
-				return et_libraries.type_device_library_name.bounded_string is -- ../../lbr/bel_supply_7400.dev
-				new_lib_name : et_libraries.type_device_library_name.bounded_string; -- to be returned
-			begin
--- 				new_lib_name := containing_directory (to_string (library)) 
--- 								&
-				return new_lib_name;
+
+				-- The return is a composition of prefix_devices_dir, library containing directory,
+				-- generic component name and device model extension 
+				-- like: libraries/devices/__#__#lbr#bel_logic_7400.dev
+				return et_libraries.type_device_library_name.bounded_string is
+
+				use et_libraries;
+				dir : type_device_library_name.bounded_string; -- ../../lbr
+				name : type_device_library_name.bounded_string; -- to be returned
+
+				-- In the containing directory . and / must be replaced by _ and #:
+				characters : character_mapping := to_mapping ("./","_#");
+				
+			begin -- concatenate_lib_name_and_generic_name
+				dir := to_device_library_name (containing_directory (et_libraries.to_string (library)) & '#'); -- ../../lbr
+				translate (dir, characters); -- __#__#lbr
+				--log ("dir " & et_libraries.to_string (dir));
+				
+				name := to_device_library_name (base_name (et_libraries.to_string (library))); -- bel_logic
+				name := dir & name;
+				--log ("name " & et_libraries.to_string (name));
+
+				name := name & '_' & et_libraries.to_device_library_name (et_libraries.to_string (device));
+				--log ("name " & et_libraries.to_string (name));
+
+				name := et_libraries.to_device_library_name (compose (
+						containing_directory	=> et_libraries.to_string (prefix_devices_dir),
+						name					=> et_libraries.to_string (name),
+						extension				=> et_libraries.device_library_file_extension));
+
+				--log ("name " & et_libraries.to_string (name));
+				
+				return name;
 			end concatenate_lib_name_and_generic_name;
 			
 			procedure query_components (
 				library_name	: in et_libraries.type_device_library_name.bounded_string;
 				library			: in et_kicad.type_components_library.map) is
 
-				--use et_libraries.type_component_generic_name;
 				use et_kicad.type_components_library;
 				component_cursor : et_kicad.type_components_library.cursor := library.first;
 
@@ -2698,7 +2748,7 @@ package body et_kicad_to_native is
 			begin -- query_components
 				while component_cursor /= et_kicad.type_components_library.no_element loop
 					generic_name := key (component_cursor);
-					log ("device " & to_string (generic_name), log_threshold + 2);
+					--log ("device " & to_string (generic_name), log_threshold + 2);
 
 					log ("new device " & to_string (concatenate_lib_name_and_generic_name (dev_library_name, generic_name)),
 						 log_threshold + 2);
@@ -2708,6 +2758,8 @@ package body et_kicad_to_native is
 			end query_components;
 			
 		begin -- copy_libraries
+-- 			build_devices_target_dir (et_project.to_string (project_path), et_project.to_string (project_name));
+			  
 			while component_library_cursor /= et_kicad.type_libraries.no_element loop
 				dev_library_name := key (component_library_cursor);
 				log ("component library " & to_string (dev_library_name), log_threshold + 2);
@@ -2746,9 +2798,9 @@ package body et_kicad_to_native is
 		
 		
 	begin -- to_native
-
-		-- First, the kicad schematic must be flattened so that we get a real flat design.
-		-- Further-on the y coordinates of objects in schematic and layout must be changed. 
+	
+		-- First, the kicad schematics must be flattened so that we get real flat designs.
+		-- Further-on the y coordinates of objects in schematics and layouts must be changed. 
 		-- Kicad schematic has origin in upper left corner. ET has origin in lower left corder.
 		transpose (log_threshold);
 
@@ -2788,9 +2840,24 @@ package body et_kicad_to_native is
 			-- CS copy frames
 
 			-- copy component libraries
+			project_name := et_project.type_project_name.to_bounded_string (
+				et_coordinates.to_string (et_kicad.type_rig.key (module_cursor_kicad)));
+
 			query_element (
 				position	=> module_cursor_kicad,
 				process		=> copy_libraries'access);
+
+			log ("creating native project in " &
+				 et_project.type_et_project_path.to_string (project_path) 
+				 & " ...", log_threshold);
+
+			
+			et_project.create_project_directory (
+				project_name	=> project_name,
+				project_path	=> project_path,
+				log_threshold 	=> log_threshold + 1);
+
+
 			
 			log_indentation_down;
 
