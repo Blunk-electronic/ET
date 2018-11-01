@@ -2326,7 +2326,44 @@ package body et_kicad_to_native is
 			
 			return name;
 		end concatenate_lib_name_and_generic_name;
+
+		procedure rename_package_model (
+			model : in out et_libraries.type_package_library_name.bounded_string) is -- ../../lbr/transistors.pretty/S_0805
+
+			-- The return is something like: libraries/packages/__#__#lbr#transistors.pretty_S_0805.pac .
+			--return et_libraries.type_package_library_name.bounded_string is
+
+			use et_libraries;
+			use et_libraries.type_package_library_name;
+-- 			dir : type_device_library_name.bounded_string; -- ../../lbr
+-- 			name : type_device_library_name.bounded_string; -- to be returned
+
+			-- In the containing directory . and / must be replaced by _ and #:
+			characters : character_mapping := to_mapping ("./","_#");
 			
+		begin -- rename_package_model
+-- 			dir := to_device_library_name (containing_directory (et_libraries.to_string (library)) & '#'); -- ../../lbr
+			translate (model, characters); -- __#__#lbr
+			log ("package model new " & et_libraries.to_string (model));
+			
+-- 			name := to_device_library_name (base_name (et_libraries.to_string (library))); -- bel_logic
+-- 			name := dir & name;
+			--log ("name " & et_libraries.to_string (name));
+
+-- 			name := name & '_' & et_libraries.to_device_library_name (et_libraries.to_string (device));
+			--log ("name " & et_libraries.to_string (name));
+
+-- 			name := et_libraries.to_device_library_name (compose (
+-- 					containing_directory	=> et_libraries.to_string (prefix_devices_dir),
+-- 					name					=> et_libraries.to_string (name),
+-- 					extension				=> et_libraries.device_library_file_extension));
+
+			--log ("name " & et_libraries.to_string (name));
+			
+-- 			return name;
+		end rename_package_model;
+
+		
 		procedure copy_components (
 		-- Transfer components from kicad design to native design.
 		-- Changes the links to device models so that they point to the libraries
@@ -2760,7 +2797,130 @@ package body et_kicad_to_native is
 
 				device_cursor : et_libraries.type_devices.cursor;
 				inserted : boolean;
-				
+
+				procedure copy_units (
+				-- Transfers the kicad units to native units in the current native ET device.
+					device_name	: in et_libraries.type_device_library_name.bounded_string; -- libraries/devices/transistors/pnp.dev
+					device		: in out et_libraries.type_device) is
+
+					-- Make a copy of the kicad units of the current kicad component:
+					units_kicad : et_kicad.type_units_library.map := element (component_cursor).units;
+
+					-- This cursor points to a kicad unit:
+					use et_kicad.type_units_library;
+					unit_cursor_kicad : et_kicad.type_units_library.cursor := units_kicad.first;
+
+					-- Here we store temporarily the ports of a kicad unit:
+					ports_kicad : et_kicad.type_ports_library.list;
+					
+					-- This cursor points to a native ET unit.
+					unit_cursor : et_libraries.type_units_internal.cursor;
+					inserted	: boolean;
+
+					procedure copy_ports (
+						unit_name	: in et_libraries.type_unit_name.bounded_string;
+						unit		: in out et_libraries.type_unit_internal) is
+
+						-- This cursor points to a port of a kicad unit. We initialize it so that
+						-- it points to the first port of the current unit.
+						use et_kicad.type_ports_library;
+						port_cursor_kicad : et_kicad.type_ports_library.cursor := ports_kicad.first;
+					begin -- copy_ports
+						-- Loop in kicad ports and append them to the current native unit portlist.
+						while port_cursor_kicad /= et_kicad.type_ports_library.no_element loop
+
+							et_libraries.type_ports.append (
+								container	=> unit.symbol.ports,
+								new_item	=> et_libraries.type_port (element (port_cursor_kicad)));
+									-- NOTE: The kicad port_name_offset is discarded here.
+							
+							next (port_cursor_kicad);
+						end loop;
+					end copy_ports;
+					
+				begin -- copy_units
+					-- If the kicad component is virtual, we have to insert virtual units in the native device as well.
+					-- If the kicad component is real, we have to insert real units in the native device as well.
+					while unit_cursor_kicad /= et_kicad.type_units_library.no_element loop
+
+						-- Copy the portlist of the current unit. It is required when ports are inserted in the native unit.
+						ports_kicad := element (unit_cursor_kicad).symbol.ports;
+						
+						case element (component_cursor).appearance is
+							when et_libraries.SCH => -- create a virtual unit
+						
+								et_libraries.type_units_internal.insert (
+									container	=> device.units_internal,
+									key			=> key (unit_cursor_kicad), -- the name of the unit
+									position	=> unit_cursor, -- set unit_cursor for later updating the current unit
+									inserted	=> inserted,
+									new_item	=> (
+										appearance	=> et_libraries.SCH,
+										coordinates	=> element (unit_cursor_kicad).coordinates,
+										swap_level	=> <>,
+										add_level	=> <>, -- CS depends on the "global" flag. When true add_level should be "requrest"
+										symbol		=> (et_libraries.type_symbol_base (element (unit_cursor_kicad).symbol)
+														with et_libraries.type_ports.empty_list) -- ports will come later
+										));
+
+							when et_libraries.SCH_PCB => -- create a real unit
+						
+								et_libraries.type_units_internal.insert (
+									container	=> device.units_internal,
+									key			=> key (unit_cursor_kicad), -- the name of the unit
+									position	=> unit_cursor, -- set unit_cursor for later updating the current unit
+									inserted	=> inserted,
+									new_item	=> (
+										appearance	=> et_libraries.SCH_PCB,
+										coordinates	=> element (unit_cursor_kicad).coordinates,
+										swap_level	=> <>,
+										add_level	=> <>, -- CS depends on the "global" flag. When true add_level should be "requrest"
+										symbol		=> (et_libraries.type_symbol_base (element (unit_cursor_kicad).symbol)
+														with et_libraries.type_ports.empty_list) -- ports will come later
+										));
+
+							when others =>
+								raise constraint_error;
+
+						end case;
+
+						-- copy ports 
+						et_libraries.type_units_internal.update_element (
+							container	=> device.units_internal,
+							position	=> unit_cursor,
+							process		=> copy_ports'access);
+						
+						next (unit_cursor_kicad);
+					end loop;
+				end copy_units;
+
+				procedure rename_package_model_in_variants (
+					device_name	: in et_libraries.type_device_library_name.bounded_string; -- libraries/devices/transistors/pnp.dev
+					device		: in out et_libraries.type_device) is
+
+					use et_libraries.type_component_variants;
+					variant_cursor : et_libraries.type_component_variants.cursor := device.variants.first;
+
+					procedure rename (
+						variant_name	: in et_libraries.type_component_variant_name.bounded_string; -- N, D, ...
+						variant			: in out et_libraries.type_component_variant) is
+					begin -- rename
+						log ("package model old " & et_libraries.to_string (variant.packge), log_threshold + 3);
+						rename_package_model (variant.packge);
+					end rename;
+					
+				begin -- rename_package_model_in_variants
+					while variant_cursor /= et_libraries.type_component_variants.no_element loop
+
+						et_libraries.type_component_variants.update_element (
+							container	=> device.variants,
+							position	=> variant_cursor,
+							process		=> rename'access);
+						
+						next (variant_cursor);
+					end loop;
+				end rename_package_model_in_variants;
+					
 			begin -- query_components
 				while component_cursor /= et_kicad.type_components_library.no_element loop
 					generic_name := key (component_cursor);
@@ -2771,6 +2931,7 @@ package body et_kicad_to_native is
 
 					-- Create a new device model in container et_libraries.devices:
 					log ("device model " & to_string (device_model), log_threshold + 2);
+					log_indentation_up;
 
 					case element (component_cursor).appearance is
 						when et_libraries.SCH =>
@@ -2786,16 +2947,52 @@ package body et_kicad_to_native is
 									commissioned	=> element (component_cursor).commissioned,
 									updated			=> element (component_cursor).updated,
 									author			=> element (component_cursor).author,
-									units_internal	=> <>,
-									units_external	=> <>
+									units_internal	=> <>, -- internal units will come later
+									units_external	=> <> -- kicad components do not have external symbols
+
+									-- NOTE: KiCad power_flag is discarded.
 								));
 
 						when et_libraries.SCH_PCB =>
-							null;
+							et_libraries.type_devices.insert (
+								container	=> et_libraries.devices,
+								position	=> device_cursor,
+								inserted	=> inserted,
+								key			=> device_model,
+								new_item	=> (
+									appearance		=> et_libraries.SCH_PCB,
+									prefix 			=> element (component_cursor).prefix,
+									value			=> element (component_cursor).value,
+									commissioned	=> element (component_cursor).commissioned,
+									updated			=> element (component_cursor).updated,
+									author			=> element (component_cursor).author,
+									units_internal	=> <>, -- internal units will come later
+									units_external	=> <>, -- kicad components do not have external symbols
+									purpose			=> element (component_cursor).purpose,
+									partcode		=> element (component_cursor).partcode,
+									bom				=> element (component_cursor).bom,
+									variants		=> element (component_cursor).variants
 
+									-- NOTE: KiCad package_filter and datasheet are discarded.
+								));
+
+								-- rename package model file name in variants
+								et_libraries.type_devices.update_element (
+									container	=> et_libraries.devices,
+									position	=> device_cursor,
+									process		=> rename_package_model_in_variants'access);
+							
 						when others =>
 							raise constraint_error;
 					end case;
+
+					-- Copy units.
+					et_libraries.type_devices.update_element (
+						container	=> et_libraries.devices,
+						position	=> device_cursor,
+						process		=> copy_units'access);
+
+					log_indentation_down;
 					
 					next (component_cursor);
 				end loop;

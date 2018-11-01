@@ -918,7 +918,7 @@ package et_libraries is
 		element_type 	=> type_port_in_terminal_port_map); -- unit A, OE1
 
 	type type_component_variant is record
-		packge				: type_package_library_name.bounded_string; -- includes path and package model
+		packge				: type_package_library_name.bounded_string; -- libraries/devices/transistors/pnp.dev
 		terminal_port_map	: type_terminal_port_map.map; -- which port is connected with with terminal
 	end record;
 
