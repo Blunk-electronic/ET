@@ -2268,6 +2268,10 @@ package body et_kicad_to_native is
 		prefix_devices_dir : et_libraries.type_device_library_name.bounded_string := 
 			et_libraries.to_device_library_name (compose (
 				et_project.directory_libraries, et_project.directory_libraries_devices));
+
+		prefix_packages_dir : et_libraries.type_package_library_name.bounded_string := 
+			et_libraries.to_package_library_name (compose (
+				et_project.directory_libraries, et_project.directory_libraries_packages));
 		
 		use et_kicad.type_rig;
 		module_cursor_kicad : et_kicad.type_rig.cursor := et_kicad.type_rig.first (et_kicad.rig);
@@ -2327,40 +2331,28 @@ package body et_kicad_to_native is
 			return name;
 		end concatenate_lib_name_and_generic_name;
 
-		procedure rename_package_model (
-			model : in out et_libraries.type_package_library_name.bounded_string) is -- ../../lbr/transistors.pretty/S_0805
-
+		function rename_package_model (
+			model_in : in et_libraries.type_package_library_name.bounded_string) -- ../../lbr/transistors.pretty/S_0805
+			return et_libraries.type_package_library_name.bounded_string is
 			-- The return is something like: libraries/packages/__#__#lbr#transistors.pretty_S_0805.pac .
-			--return et_libraries.type_package_library_name.bounded_string is
 
 			use et_libraries;
 			use et_libraries.type_package_library_name;
--- 			dir : type_device_library_name.bounded_string; -- ../../lbr
--- 			name : type_device_library_name.bounded_string; -- to be returned
 
 			-- In the containing directory . and / must be replaced by _ and #:
 			characters : character_mapping := to_mapping ("./","_#");
-			
+
+			model_copy : et_libraries.type_package_library_name.bounded_string := model_in; -- ../../lbr/transistors.pretty/S_0805
+			model_return : et_libraries.type_package_library_name.bounded_string;
 		begin -- rename_package_model
--- 			dir := to_device_library_name (containing_directory (et_libraries.to_string (library)) & '#'); -- ../../lbr
-			translate (model, characters); -- __#__#lbr
-			log ("package model new " & et_libraries.to_string (model));
-			
--- 			name := to_device_library_name (base_name (et_libraries.to_string (library))); -- bel_logic
--- 			name := dir & name;
-			--log ("name " & et_libraries.to_string (name));
+			translate (model_copy, characters);
 
--- 			name := name & '_' & et_libraries.to_device_library_name (et_libraries.to_string (device));
-			--log ("name " & et_libraries.to_string (name));
+			model_return := et_libraries.to_package_library_name (compose (
+					containing_directory	=> et_libraries.to_string (prefix_packages_dir),
+					name					=> et_libraries.to_string (model_copy),
+					extension				=> et_pcb.library_file_extension));
 
--- 			name := et_libraries.to_device_library_name (compose (
--- 					containing_directory	=> et_libraries.to_string (prefix_devices_dir),
--- 					name					=> et_libraries.to_string (name),
--- 					extension				=> et_libraries.device_library_file_extension));
-
-			--log ("name " & et_libraries.to_string (name));
-			
--- 			return name;
+			return model_return;
 		end rename_package_model;
 
 		
@@ -2895,6 +2887,8 @@ package body et_kicad_to_native is
 				end copy_units;
 
 				procedure rename_package_model_in_variants (
+				-- The package associated with a variant must be changed so that it becomes 
+				-- something like libraries/packages/__#__#lbr#transistors.pretty_S_0805.pac
 					device_name	: in et_libraries.type_device_library_name.bounded_string; -- libraries/devices/transistors/pnp.dev
 					device		: in out et_libraries.type_device) is
 
@@ -2905,11 +2899,15 @@ package body et_kicad_to_native is
 						variant_name	: in et_libraries.type_component_variant_name.bounded_string; -- N, D, ...
 						variant			: in out et_libraries.type_component_variant) is
 					begin -- rename
-						log ("package model old " & et_libraries.to_string (variant.packge), log_threshold + 3);
-						rename_package_model (variant.packge);
+						variant.packge := (rename_package_model (variant.packge));
+
+						log ("package variant " & et_libraries.to_string (variant_name) 
+							 & " now uses package " 
+							 & et_libraries.to_string (variant.packge), log_threshold + 3);
 					end rename;
 					
 				begin -- rename_package_model_in_variants
+					-- Loop in variants and rename the package names.
 					while variant_cursor /= et_libraries.type_component_variants.no_element loop
 
 						et_libraries.type_component_variants.update_element (
@@ -2976,22 +2974,35 @@ package body et_kicad_to_native is
 									-- NOTE: KiCad package_filter and datasheet are discarded.
 								));
 
-								-- rename package model file name in variants
-								et_libraries.type_devices.update_element (
-									container	=> et_libraries.devices,
-									position	=> device_cursor,
-									process		=> rename_package_model_in_variants'access);
-							
+								-- If multiple designs are converted, a particular device might be 
+								-- in et_libraries.devices already. The flag "inserted" would be false 
+								-- in this case. Renaming the package in the variants must not take place
+								-- again because it had been done in ealier project conversions:
+								if inserted then
+									-- rename package model file name in variants
+									et_libraries.type_devices.update_element (
+										container	=> et_libraries.devices,
+										position	=> device_cursor,
+										process		=> rename_package_model_in_variants'access);
+								end if;
+									
 						when others =>
 							raise constraint_error;
 					end case;
 
-					-- Copy units.
-					et_libraries.type_devices.update_element (
-						container	=> et_libraries.devices,
-						position	=> device_cursor,
-						process		=> copy_units'access);
-
+					-- If multiple designs are converted, a particular device might be 
+					-- in et_libraries.devices already. The flag "inserted" would be false 
+					-- in this case. Copying units must not take place again:
+					if inserted then
+						-- Copy units.
+						et_libraries.type_devices.update_element (
+							container	=> et_libraries.devices,
+							position	=> device_cursor,
+							process		=> copy_units'access);
+					else
+						log ("already there -> skipped", log_threshold + 2);
+					end if;
+					
 					log_indentation_down;
 					
 					next (component_cursor);
@@ -3014,24 +3025,7 @@ package body et_kicad_to_native is
 				next (component_library_cursor);
 			end loop;
 
-			-- V4 and V5: kicad_module.component_libraries (symbols and port-pin-mappings)
-			-- component_libraries	: type_libraries.map; -- V4 and V5
-			
-			-- package type_libraries is new ordered_maps (
-			-- 	key_type 		=> et_libraries.type_full_library_name.bounded_string, -- ../../lbr/passive/capacitors
-			--  element_type 	=> type_components_library.map,
-
-			-- package type_components_library is new indefinite_ordered_maps (
-			-- 	key_type		=> et_libraries.type_component_generic_name.bounded_string, -- example: "TRANSISTOR_PNP"
-			-- 	"<"				=> et_libraries.type_component_generic_name."<",
-			-- 	element_type	=> type_component_library); -- DEV
-
-			-- create device libraries
--- 			update_element (
--- 				container	=> et_libraries.devices,
-
-			
-			-- V5: kicad_module.footprints
+			-- CS V5: kicad_module.footprints
 
 			null;
 		end copy_libraries;
