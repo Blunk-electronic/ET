@@ -2757,25 +2757,20 @@ package body et_kicad_to_native is
 			module_name : in et_coordinates.type_submodule_name.bounded_string;
 			module		: in et_kicad.type_module) is
 
+			-- This cursor points to the kicad component library being converted:
 			use et_kicad.type_libraries;
 			component_library_cursor : et_kicad.type_libraries.cursor := module.component_libraries.first;
 
 			use et_libraries.type_device_library_name;
 			component_library_name : et_libraries.type_device_library_name.bounded_string;
 
--- 			procedure build_devices_target_dir (path, prj : in string) is
--- 				use et_project;
--- 			begin
--- 				log ("path: " & path, log_threshold + 2);
--- 				log ("prj: " & prj, log_threshold + 2);				
--- 				
--- 				devices_target_dir := et_libraries.to_device_library_name (
--- 					compose (compose (compose (path, prj), directory_libraries), directory_libraries_devices)
--- 					);
--- 
--- 				log ("devices dir: " & et_libraries.to_string (devices_target_dir), log_threshold + 2);
--- 			end build_devices_target_dir;
-						
+			-- This cursor points to the kicad footprint library being converted:			
+			use et_kicad_pcb.type_libraries;
+			package_library_cursor : et_kicad_pcb.type_libraries.cursor := module.footprints.first;
+
+			use et_libraries.type_package_library_name;
+			footprint_library_name : et_libraries.type_package_library_name.bounded_string;
+			
 			procedure query_components (
 				library_name	: in et_libraries.type_device_library_name.bounded_string;
 				library			: in et_kicad.type_components_library.map) is
@@ -3008,9 +3003,22 @@ package body et_kicad_to_native is
 					next (component_cursor);
 				end loop;
 			end query_components;
-			
+
+
+			procedure query_packages (
+				library_name	: in et_libraries.type_package_library_name.bounded_string;
+				library			: in et_kicad_pcb.type_packages_library.map) is
+
+				use et_kicad_pcb.type_libraries;
+				package_cursor : et_kicad_pcb.type_libraries.cursor := library.first;
+			begin -- query_packages
+				null;
+			end query_packages;
+
+										 
 		begin -- copy_libraries
-			  
+
+			-- Loop in kicad component libraries:
 			while component_library_cursor /= et_kicad.type_libraries.no_element loop
 				component_library_name := key (component_library_cursor);
 				log ("component library " & to_string (component_library_name), log_threshold + 2);
@@ -3025,9 +3033,20 @@ package body et_kicad_to_native is
 				next (component_library_cursor);
 			end loop;
 
-			-- CS V5: kicad_module.footprints
+			-- Loop in kicad V5 footprint libraries:
+			while package_library_cursor /= et_kicad_pcb.type_libraries.no_element loop
+				footprint_library_name := key (package_library_cursor);
+				log ("footprint library " & to_string (footprint_library_name), log_threshold + 2);
 
-			null;
+				log_indentation_up;
+
+				query_element (
+					position	=> package_library_cursor,
+					process		=> query_packages'access);
+				
+				log_indentation_down;
+				next (package_library_cursor);
+			end loop;
 		end copy_libraries;
 		
 		
