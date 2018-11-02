@@ -67,6 +67,7 @@ with et_pcb;
 with et_pcb_coordinates;
 with et_kicad;
 with et_kicad_pcb;
+with et_import;
 with et_export;
 with et_csv;
 
@@ -2272,6 +2273,11 @@ package body et_kicad_to_native is
 		prefix_packages_dir : et_libraries.type_package_library_name.bounded_string := 
 			et_libraries.to_package_library_name (compose (
 				et_project.directory_libraries, et_project.directory_libraries_packages));
+
+		-- Since V4 package libraries are stored in et_kicad_pcb.package_libraries
+		-- the copy/convert process must be performed only once.
+		-- This flag goes true once V4 package libraries have been converted.
+		packages_v4_copied : boolean := false;
 		
 		use et_kicad.type_rig;
 		module_cursor_kicad : et_kicad.type_rig.cursor := et_kicad.type_rig.first (et_kicad.rig);
@@ -2279,7 +2285,7 @@ package body et_kicad_to_native is
 		use et_schematic.type_rig;
 		module_cursor_native : et_schematic.type_rig.cursor;
 		module_inserted : boolean;
-
+		
 		procedure copy_general_stuff (
 			module_name : in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_schematic.type_module) is
@@ -3071,19 +3077,55 @@ package body et_kicad_to_native is
 				next (component_library_cursor);
 			end loop;
 
-			-- Loop in kicad V5 footprint libraries:
-			while package_library_cursor /= et_kicad_pcb.type_libraries.no_element loop
-				log ("package library " & to_string (key (package_library_cursor)), log_threshold + 2);
 
-				log_indentation_up;
+			-- The way package libraries are copied/converted depends on the kicad format:
+			case et_import.cad_format is
 
-				query_element (
-					position	=> package_library_cursor,
-					process		=> query_packages'access);
-				
-				log_indentation_down;
-				next (package_library_cursor);
-			end loop;
+				when et_import.KICAD_V4 =>
+
+					-- With kicad v4 the package libraries live in a global container et_kicad_pcb.package_libraries.
+					-- Thus, the conversion is a one-time operation. It does not need to be performed for each module 
+					-- over and over.
+					if not packages_v4_copied then
+						package_library_cursor := et_kicad_pcb.package_libraries.first;
+
+						-- Loop in footprint libraries:
+						while package_library_cursor /= et_kicad_pcb.type_libraries.no_element loop
+							log ("package library " & to_string (key (package_library_cursor)), log_threshold + 2);
+
+							log_indentation_up;
+
+							query_element (
+								position	=> package_library_cursor,
+								process		=> query_packages'access);
+							
+							log_indentation_down;
+							next (package_library_cursor);
+						end loop;
+
+						packages_v4_copied := true; -- When processing the next module, there is no need for copying again.
+					end if;
+					
+				-- Kicad V5 package libraries are module specific (selector "footprints") and are converted here:
+				when et_import.KICAD_V5 =>
+
+					-- Loop in footprint libraries:
+					while package_library_cursor /= et_kicad_pcb.type_libraries.no_element loop
+						log ("package library " & to_string (key (package_library_cursor)), log_threshold + 2);
+
+						log_indentation_up;
+
+						query_element (
+							position	=> package_library_cursor,
+							process		=> query_packages'access);
+						
+						log_indentation_down;
+						next (package_library_cursor);
+					end loop;
+
+				when others => null;
+			end case;
+			
 		end copy_libraries;
 		
 		
@@ -3096,7 +3138,8 @@ package body et_kicad_to_native is
 
 		log ("converting ...", log_threshold);
 		log_indentation_up;
-		
+
+		-- Now we create new native modules and copy content from the kicad module to the native module.
 		while module_cursor_kicad /= et_kicad.type_rig.no_element loop
 			log ("module " & et_coordinates.to_string (key (module_cursor_kicad)), log_threshold + 1);
 			log_indentation_up;
@@ -3145,23 +3188,12 @@ package body et_kicad_to_native is
 				project_name	=> project_name,
 				project_path	=> project_path,
 				log_threshold 	=> log_threshold + 1);
-
-
 			
 			log_indentation_down;
-
 			next (module_cursor_kicad);
 		end loop;
 
-
--- 		log ("packages ...", log_threshold);
-		-- V4: et_kicad_pcb.package_libraries
-
-
-
 		log_indentation_down;
-		
-
 		
 	end to_native;
 	
