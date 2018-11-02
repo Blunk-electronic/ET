@@ -2769,7 +2769,7 @@ package body et_kicad_to_native is
 			package_library_cursor : et_kicad_pcb.type_libraries.cursor := module.footprints.first;
 
 			use et_libraries.type_package_library_name;
-			footprint_library_name : et_libraries.type_package_library_name.bounded_string;
+			--footprint_library_name : et_libraries.type_package_library_name.bounded_string;
 			
 			procedure query_components (
 				library_name	: in et_libraries.type_device_library_name.bounded_string;
@@ -2894,11 +2894,11 @@ package body et_kicad_to_native is
 						variant_name	: in et_libraries.type_component_variant_name.bounded_string; -- N, D, ...
 						variant			: in out et_libraries.type_component_variant) is
 					begin -- rename
-						variant.packge := (rename_package_model (variant.packge));
+						variant.packge := (rename_package_model (variant.packge)); -- ../../lbr/transistors.pretty/S_0805
 
 						log ("package variant " & et_libraries.to_string (variant_name) 
 							 & " now uses package " 
-							 & et_libraries.to_string (variant.packge), log_threshold + 3);
+							 & et_libraries.to_string (variant.packge), log_threshold + 4);
 					end rename;
 					
 				begin -- rename_package_model_in_variants
@@ -2923,7 +2923,7 @@ package body et_kicad_to_native is
 					device_model := concatenate_lib_name_and_generic_name (component_library_name, generic_name);
 
 					-- Create a new device model in container et_libraries.devices:
-					log ("device model " & to_string (device_model), log_threshold + 2);
+					log ("device model " & to_string (device_model), log_threshold + 3);
 					log_indentation_up;
 
 					case element (component_cursor).appearance is
@@ -2995,7 +2995,7 @@ package body et_kicad_to_native is
 							position	=> device_cursor,
 							process		=> copy_units'access);
 					else
-						log ("already there -> skipped", log_threshold + 2);
+						log ("already there -> skipped", log_threshold + 3);
 					end if;
 					
 					log_indentation_down;
@@ -3006,13 +3006,51 @@ package body et_kicad_to_native is
 
 
 			procedure query_packages (
-				library_name	: in et_libraries.type_package_library_name.bounded_string;
+			-- Creates with the library name and package name new native package models.
+				library_name	: in et_libraries.type_package_library_name.bounded_string; -- projects/lbr/smd_packages.pretty
 				library			: in et_kicad_pcb.type_packages_library.map) is
 
-				use et_kicad_pcb.type_libraries;
-				package_cursor : et_kicad_pcb.type_libraries.cursor := library.first;
+				use et_kicad_pcb.type_packages_library;
+				package_cursor_kicad	: et_kicad_pcb.type_packages_library.cursor := library.first;
+				package_name			: et_libraries.type_component_package_name.bounded_string;
+				package_model			: et_libraries.type_package_library_name.bounded_string := library_name; -- projects/lbr/smd_packages.pretty
+
+				use et_pcb.type_packages;
+				package_cursor			: et_pcb.type_packages.cursor;
+				inserted				: boolean;
 			begin -- query_packages
-				null;
+				-- Loop in kicad packages (footprints) of the current library.
+				while package_cursor_kicad /= et_kicad_pcb.type_packages_library.no_element loop
+					package_name := key (package_cursor_kicad); -- S_0805
+					--log ("package name " & et_libraries.to_string (package_name), log_threshold + 2);
+
+					-- build the new native package model name
+					package_model := et_libraries.to_package_library_name (compose (
+										containing_directory	=> et_libraries.to_string (library_name), -- projects/lbr/smd_packages.pretty
+										name					=> et_libraries.to_string (package_name))); -- S_0805
+
+					-- replace . and / in package_model 
+					package_model := rename_package_model (package_model);
+					log ("package model " & et_libraries.to_string (package_model), log_threshold + 3);
+
+					-- Insert the new package mode in et_pcb.packages. In case the package is already in the 
+					-- container (due to other project imports), the flag "inserted" will go false. The package
+					-- would not be inserted again:
+					et_pcb.type_packages.insert (
+						container	=> et_pcb.packages,
+						key			=> package_model, -- libraries/packages/#home#user#lbr#bel_battery_pretty#S_CR3232.pac
+						position	=> package_cursor,
+						inserted	=> inserted,
+						new_item	=> (et_pcb.type_package_base (element (package_cursor_kicad))
+										with 
+										silk_screen				=> element (package_cursor_kicad).silk_screen,
+										assembly_documentation	=> element (package_cursor_kicad).assembly_documentation,
+										terminals 				=> element (package_cursor_kicad).terminals)
+										-- NOTE: The kicad timestamp is discarded here.
+						);
+					
+					next (package_cursor_kicad);
+				end loop;
 			end query_packages;
 
 										 
@@ -3035,8 +3073,7 @@ package body et_kicad_to_native is
 
 			-- Loop in kicad V5 footprint libraries:
 			while package_library_cursor /= et_kicad_pcb.type_libraries.no_element loop
-				footprint_library_name := key (package_library_cursor);
-				log ("footprint library " & to_string (footprint_library_name), log_threshold + 2);
+				log ("package library " & to_string (key (package_library_cursor)), log_threshold + 2);
 
 				log_indentation_up;
 
@@ -3078,7 +3115,7 @@ package body et_kicad_to_native is
 				position	=> module_cursor_native,
 				process		=> copy_general_stuff'access);
 
-			-- copy components (incl. their units and positions in layout)
+			-- copy schematic components (incl. their units and positions in layout)
 			update_element (
 				container	=> et_schematic.rig,
 				position	=> module_cursor_native,
