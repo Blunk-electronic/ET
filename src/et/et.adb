@@ -184,6 +184,18 @@ procedure et is
 			create_directory (compose (work_directory, report_directory));
 		end if;
 	end create_report_directory;
+
+	procedure test_if_native_project_specified is
+	-- Aborts program if no native target project name specified via cmd line parameter.
+		use et_project;
+		use et_project.type_project_name;
+	begin
+		if length (project_name) = 0 then
+			log_indentation_reset;
+			log (message_error & "Native target project name not specified !");
+			raise constraint_error;
+		end if;
+	end test_if_native_project_specified;
 	
 	procedure import_module is
 	-- This imports a single module.
@@ -515,7 +527,9 @@ begin -- main
 
 			
 		when et_general.import_module =>
-	
+			-- The targeted native ET project must be specified via cmd line parameter:
+			test_if_native_project_specified;
+			
 			-- import a single module indicated by variable module_name_import
 			import_module; -- calls import_design (according to CAD format)
 
@@ -537,6 +551,8 @@ begin -- main
 
 			
 		when et_general.import_modules =>
+			-- The targeted native ET project must be specified via cmd line parameter:
+			test_if_native_project_specified;
 
 			-- import many modules as specified in configuration file
 			import_modules; -- calls import_design (according to CAD format)
