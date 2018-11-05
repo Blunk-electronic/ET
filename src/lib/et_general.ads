@@ -22,7 +22,7 @@
 --    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction side" where things are not
 --   finished yet or intended for the future.
@@ -81,6 +81,7 @@ package et_general is
 	switch_import_modules		: constant string (1..15)	:= "-import_modules";	-- long switch
 	switch_import_format		: constant string (1..14)	:= "-import_format";	-- long switch
 	switch_configuration_file	: constant string (1..19)	:= "-configuration_file";
+	switch_native_project		: constant string (1..8)	:= "-project";
 
 --	switch_import_file		: constant string (1..12)	:= "-import_file";	-- long switch -- currently we do not care about importing single files
 

@@ -65,11 +65,12 @@ procedure et is
 	operator_action : et_general.type_operator_action := et_general.request_help;
 	conf_file_name	: et_configuration.type_configuration_file_name.bounded_string;	
 
-	project_name	: et_project.type_project_name.bounded_string; -- used for single module import
+	module_name_import	: et_project.type_project_name.bounded_string; -- used for single module import
 	
 	procedure get_commandline_arguments is
 		use et_schematic;
 		use et_general;
+		use et_project;
 	begin
 		loop 
 			case getopt (switch_version 
@@ -81,6 +82,7 @@ procedure et is
 						& latin_1.space & switch_import_format & latin_1.equals_sign
 						& latin_1.space & switch_import_modules -- no parameter
 						& latin_1.space & switch_configuration_file & latin_1.equals_sign
+						& latin_1.space & switch_native_project & latin_1.equals_sign
 					) is
 
 				when latin_1.hyphen => -- which is a '-'
@@ -97,7 +99,7 @@ procedure et is
 
 					elsif full_switch = switch_import_module then
 						put_line ("import module " & strip_directory_separator (parameter));
-						project_name := et_project.type_project_name.to_bounded_string (parameter);
+						module_name_import := et_project.type_project_name.to_bounded_string (parameter);
 
 						-- set operator action
 						operator_action := import_module;
@@ -122,6 +124,10 @@ procedure et is
 					elsif full_switch = switch_configuration_file then -- define configuration file
 						put_line ("configuration file " & parameter);
 						conf_file_name := et_configuration.type_configuration_file_name.to_bounded_string (parameter);
+
+					elsif full_switch = switch_native_project then
+						put_line ("native project " & parameter);
+						project_name := et_project.to_project_name (parameter);
 						
 					elsif full_switch = switch_log_level then
 						put_line ("log level " & parameter);
@@ -181,17 +187,17 @@ procedure et is
 	
 	procedure import_module is
 	-- This imports a single module.
-	-- CAUTION: uses the global variable project_name !!!
+	-- CAUTION: uses the global variable module_name_import !!!
 		use et_schematic;
 		use et_project.type_project_name;
 		use et_import;
 	begin
 		-- Test if project name specified and if project base directory exists:
-		if length (project_name) > 0 then
+		if length (module_name_import) > 0 then
 
 			-- If project name was provided with a trailing directory separator it must be removed.
-			project_name := et_project.to_project_name (strip_directory_separator (et_project.to_string (project_name)));
-			validate_project (project_name, et_import.cad_format);
+			module_name_import := et_project.to_project_name (strip_directory_separator (et_project.to_string (module_name_import)));
+			validate_project (module_name_import, et_import.cad_format);
 		else
 			put_line (message_error & "project name not specified !");
 			raise constraint_error;
@@ -221,12 +227,12 @@ procedure et is
 		-- After the import, we restore the directory.
 		backup_projects_root_directory;
 
-		log ("importing module " & et_project.to_string (project_name) & " ...", console => true);
+		log ("importing module " & et_project.to_string (module_name_import) & " ...", console => true);
 		log ("CAD format " & to_string (et_import.cad_format));
 				
 		case et_import.cad_format is
 			when et_import.KICAD_V4 | et_import.KICAD_V5 =>
-				et_kicad.import_design (project => project_name, log_threshold => 0);
+				et_kicad.import_design (project => module_name_import, log_threshold => 0);
 			when others => -- CS
 				raise constraint_error;
 		end case;
@@ -475,57 +481,6 @@ procedure et is
 		
 	end read_boards;
 
--- 	procedure make_native_projects (log_threshold : in type_log_level) is
--- 	-- In directory work_directory/et_project.directory_et_import sub-directories
--- 	-- are to be created: One for project wide libraries (named by directory_et_import) and
--- 	-- others for the actual projects (nameed after the imported projects)
--- 		use et_kicad.type_rig;
--- 		project_name : et_project.type_project_name.bounded_string;
--- 		project_path : et_project.type_et_project_path.bounded_string :=
--- 						et_project.type_et_project_path.to_bounded_string (
--- 							compose (et_general.work_directory, et_project.directory_import));
--- 	begin -- make_native_projects
--- 		log (row_separator_single, log_threshold);
--- 		log ("making native project(s) in " &
--- 			 et_project.type_et_project_path.to_string (project_path) &
--- 			 " ...", log_threshold);
--- 
--- 		log_indentation_up;
--- 		
--- 		-- create a new project wide libraries directory for components
--- 		et_project.create_libraries_directory_components (
--- 			project_path	=> project_path,
--- 			log_threshold 	=> log_threshold + 1);
--- 
--- 		-- CS clean up previous imports ?
--- 		
--- 		case et_import.cad_format is
--- 			when et_import.KICAD_V4 =>
--- 				et_kicad.module_cursor := et_kicad.rig.first;
--- 				while et_kicad.module_cursor /= et_kicad.type_rig.no_element loop
--- 
--- 					project_name := et_project.type_project_name.to_bounded_string (
--- 						et_coordinates.to_string (et_kicad.type_rig.key (et_kicad.module_cursor)));
--- 
--- 					log ("project " & et_project.type_project_name.to_string (project_name), log_threshold);
--- 					
--- 					-- create a single new ET project
--- 					log_indentation_up;
--- 					
--- 					et_project.create_project_directory (
--- 						project_name	=> project_name,
--- 						project_path	=> project_path,
--- 						log_threshold 	=> log_threshold + 1);
--- 
--- 					log_indentation_down;
--- 					
--- 					next (et_kicad.module_cursor);
--- 				end loop;
--- 			when others => null;
--- 		end case;
--- 
--- 		log_indentation_down;
--- 	end make_native_projects;
 
 	procedure convert is
 	begin
@@ -561,7 +516,7 @@ begin -- main
 			
 		when et_general.import_module =>
 	
-			-- import a single module indicated by variable project_name
+			-- import a single module indicated by variable module_name_import
 			import_module; -- calls import_design (according to CAD format)
 
 			-- check the imported module
