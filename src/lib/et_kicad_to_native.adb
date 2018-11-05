@@ -2264,13 +2264,13 @@ package body et_kicad_to_native is
 						et_project.type_et_project_path.to_bounded_string (
 							compose (et_general.work_directory, et_project.directory_import));
 
-		project_name : et_project.type_project_name.bounded_string;
+		--project_name : et_project.type_project_name.bounded_string;
 
-		prefix_devices_dir : et_libraries.type_device_library_name.bounded_string := 
+		prefix_devices_dir : et_libraries.type_device_library_name.bounded_string := -- libraries/devices
 			et_libraries.to_device_library_name (compose (
 				et_project.directory_libraries, et_project.directory_libraries_devices));
-
-		prefix_packages_dir : et_libraries.type_package_library_name.bounded_string := 
+	
+		prefix_packages_dir : et_libraries.type_package_library_name.bounded_string := -- libraries/packages
 			et_libraries.to_package_library_name (compose (
 				et_project.directory_libraries, et_project.directory_libraries_packages));
 
@@ -3139,6 +3139,16 @@ package body et_kicad_to_native is
 		log ("converting ...", log_threshold);
 		log_indentation_up;
 
+		log ("creating native project " & et_project.to_string (et_project.project_name) 
+			 & " in " & et_project.type_et_project_path.to_string (project_path) 
+			& " ...", log_threshold);
+
+		et_project.create_project_directory (
+			project_name	=> et_project.project_name,
+			project_path	=> project_path,
+			log_threshold 	=> log_threshold + 1);
+
+		
 		-- Now we create new native modules and copy content from the kicad module to the native module.
 		while module_cursor_kicad /= et_kicad.type_rig.no_element loop
 			log ("module " & et_coordinates.to_string (key (module_cursor_kicad)), log_threshold + 1);
@@ -3177,17 +3187,17 @@ package body et_kicad_to_native is
 				position	=> module_cursor_kicad,
 				process		=> copy_libraries'access);
 
-			log ("creating native project in " &
-				 et_project.type_et_project_path.to_string (project_path) 
-				 & " ...", log_threshold);
-
-			project_name := et_project.type_project_name.to_bounded_string (
-				et_coordinates.to_string (et_kicad.type_rig.key (module_cursor_kicad)));
-			
-			et_project.create_project_directory (
-				project_name	=> project_name,
-				project_path	=> project_path,
-				log_threshold 	=> log_threshold + 1);
+-- 			log ("creating native project in " &
+-- 				 et_project.type_et_project_path.to_string (project_path) 
+-- 				 & " ...", log_threshold);
+-- 
+-- 			project_name := et_project.type_project_name.to_bounded_string (
+-- 				et_coordinates.to_string (et_kicad.type_rig.key (module_cursor_kicad)));
+-- 			
+-- 			et_project.create_project_directory (
+-- 				project_name	=> project_name,
+-- 				project_path	=> project_path,
+-- 				log_threshold 	=> log_threshold + 1);
 			
 			log_indentation_down;
 			next (module_cursor_kicad);
