@@ -3139,8 +3139,8 @@ package body et_kicad_to_native is
 		log ("converting ...", log_threshold);
 		log_indentation_up;
 
-		log ("creating native project " & et_project.to_string (et_project.project_name) 
-			 & " in " & et_project.type_et_project_path.to_string (project_path) 
+		log ("creating native project '" & et_project.to_string (et_project.project_name) 
+			 & "' in " & et_project.type_et_project_path.to_string (project_path) 
 			& " ...", log_threshold);
 
 		et_project.create_project_directory (
@@ -3182,7 +3182,12 @@ package body et_kicad_to_native is
 
 			-- CS copy frames
 
-			-- copy component libraries
+			-- Copy component libraries.
+			-- NOTE: In Kicad component libraries are always project dependend.
+			-- Thus the libraries are taken from the kicad module
+			-- and then copied into the global ET native libraries.
+			-- Inside the native libraries the former Kicad libraries are
+			-- named after their location in the file system (sym-lib-tables and fp-lib-tables).
 			query_element (
 				position	=> module_cursor_kicad,
 				process		=> copy_libraries'access);
