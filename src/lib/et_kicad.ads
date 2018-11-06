@@ -1200,10 +1200,20 @@ package et_kicad is
 		header	: in type_sheet_header;
 		sheet	: in et_coordinates.type_schematic_file_name.bounded_string);
 
+	
+	type type_frame is new et_libraries.type_frame with record
+		coordinates : et_coordinates.type_coordinates; -- the position of the frame -- CS rename to position
+	end record;
+
 	procedure add_frame (
 	-- Inserts a drawing frame in the module (indicated by module_cursor).
-		frame	: in et_libraries.type_frame);
+		frame	: in type_frame);
+	
+    -- there are lots of drawing frames in a schematic contained in a list
+	package type_frames is new doubly_linked_lists (type_frame);
+	
 
+	
 	procedure add_note (
 	-- Inserts a note in the the module (indicated by module_cursor).
 		note	: in et_schematic.type_note);
@@ -1303,7 +1313,7 @@ package et_kicad is
 		portlists			: type_portlists.map;				-- the portlists of the module
 		netlist				: type_netlist.map;					-- net names and connected ports
 		hierarchic_sheets	: type_hierarchic_sheets.map;		-- hierarchic sheets. Serve as interface between hierarchic sheets.
-        frames      		: et_libraries.type_frames.list;	-- schematic frames
+        frames      		: type_frames.list;					-- schematic frames
 		notes       		: et_schematic.type_texts.list;		-- notes
 	
 		sheet_headers		: type_sheet_headers.map;			-- the list of sheet headers

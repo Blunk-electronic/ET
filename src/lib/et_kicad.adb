@@ -6713,7 +6713,7 @@ package body et_kicad is
 				lines 			: in type_lines.list;
 				log_threshold	: in type_log_level) is
 
-				frame : et_libraries.type_frame; -- a single drawing frame
+				frame : type_frame; -- a single drawing frame
 			
 				-- These are the components of the title block. At the end
 				-- of this procedure they are assembled to a final title block:
@@ -9295,7 +9295,7 @@ package body et_kicad is
 						portlists			=> type_portlists.empty_map,
 						netlist				=> type_netlist.empty_map,
 						hierarchic_sheets	=> type_hierarchic_sheets.empty_map,
-						frames				=> et_libraries.type_frames.empty_list,
+						frames				=> type_frames.empty_list,
 						notes				=> type_texts.empty_list,
 						sheet_headers		=> type_sheet_headers.empty_map,
 
@@ -11353,7 +11353,7 @@ package body et_kicad is
 	-- Inserts a drawing frame in the the module (indicated by module_cursor).
 	-- As drawing frames are collected in a simple list, the same frame
 	-- can be added multiple times.
-		frame	: in et_libraries.type_frame) is
+		frame : in type_frame) is
 		
 		procedure add (
 			mod_name	: in et_coordinates.type_submodule_name.bounded_string;

@@ -1057,8 +1057,7 @@ package et_libraries is
 	package type_frame_texts is new doubly_linked_lists (type_frame_text);
 
     -- the final drawing frame
-    type type_frame is record
-        coordinates     : et_coordinates.type_coordinates; -- the position of the frame
+    type type_frame is tagged record
         paper_size      : et_general.type_paper_size; -- the size of the paper
         size_x, size_y  : et_coordinates.type_distance; -- the dimensions of the frame (should fit into paper_size) 
         lines           : type_frame_lines.list;

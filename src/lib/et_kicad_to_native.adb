@@ -89,7 +89,7 @@ package body et_kicad_to_native is
 		now		: constant string (1..6) := "now   ";
 
 		-- This list of frames serves to map from sheet number to paper size:
-		schematic_frames : et_libraries.type_frames.list;
+		schematic_frames : et_kicad.type_frames.list;
 
 		-- Here the height of the layout sheet is kept. It is required for move ops of 
 		-- layout objects from the kicad frame to the native frame.
@@ -114,7 +114,7 @@ package body et_kicad_to_native is
 
 			sheet_found : boolean := false; -- goes true once the given sheet has been found
 		
-			procedure query_sheet_number (frame : in et_libraries.type_frame) is
+			procedure query_sheet_number (frame : in et_kicad.type_frame) is
 				use et_coordinates;
 			begin
 				if et_coordinates.sheet (frame.coordinates) = sheet_number then
@@ -124,13 +124,13 @@ package body et_kicad_to_native is
 			end query_sheet_number;
 
 			-- We search for the paper size in the list "frames":
-			use et_libraries.type_frames;
-			frame_cursor : et_libraries.type_frames.cursor := schematic_frames.first;
+			use et_kicad.type_frames;
+			frame_cursor : et_kicad.type_frames.cursor := schematic_frames.first;
 			
 		begin -- paper_size_of_schematic_sheet
 
 			-- loop in list of frames given in "frames"
-			while frame_cursor /= et_libraries.type_frames.no_element loop
+			while frame_cursor /= et_kicad.type_frames.no_element loop
 				
 				query_element (
 					position	=> frame_cursor,
@@ -281,10 +281,10 @@ package body et_kicad_to_native is
 			module		: in out et_kicad.type_module) is
 		-- Changes the path of drawing frames (in schematic) to root path.
 			
-			use et_libraries.type_frames;
-			frame_cursor : et_libraries.type_frames.cursor := module.frames.first;
+			use et_kicad.type_frames;
+			frame_cursor : et_kicad.type_frames.cursor := module.frames.first;
 
-			procedure change_path (frame : in out et_libraries.type_frame) is
+			procedure change_path (frame : in out et_kicad.type_frame) is
 				use et_coordinates;
 			begin
 				-- CS what should be logged here ?
@@ -305,8 +305,8 @@ package body et_kicad_to_native is
 			log ("frames ...", log_threshold + 2);
 			log_indentation_up;
 			
-			while frame_cursor /= et_libraries.type_frames.no_element loop
-				et_libraries.type_frames.update_element (
+			while frame_cursor /= et_kicad.type_frames.no_element loop
+				et_kicad.type_frames.update_element (
 					container	=> module.frames,
 					position	=> frame_cursor,
 					process		=> change_path'access);
