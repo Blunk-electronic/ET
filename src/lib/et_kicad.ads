@@ -160,9 +160,24 @@ package et_kicad is
 	-- Units may have alternative representations such as de_Morgan
 	type type_de_morgan_representation is (NO, YES);
 
-	type type_unit_schematic is new et_schematic.type_unit with record
+	-- A kicad unit inherits a lot from the base unit:
+	type type_unit_schematic (appearance : et_schematic.type_appearance_schematic) is new et_schematic.type_unit_base with record
 		timestamp		: et_kicad_general.type_timestamp;
 		alt_repres		: type_de_morgan_representation;
+
+		-- Some placeholders of a unit are available when the component appears in both schematic and layout:
+		case appearance is
+			when et_libraries.sch => null; -- CS
+			when et_libraries.sch_pcb =>
+				packge		: et_libraries.type_text_placeholder (meaning => et_libraries.packge); -- like "SOT23"
+				datasheet	: et_libraries.type_text_placeholder (meaning => et_libraries.datasheet); -- might be useful for some special components
+				purpose		: et_libraries.type_text_placeholder (meaning => et_libraries.purpose); -- to be filled in schematic later by the user
+				partcode	: et_libraries.type_text_placeholder (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"
+				bom			: et_libraries.type_text_placeholder (meaning => et_libraries.bom);
+		end case;
+		-- NOTE: The placeholders are defined in et_libraries. Thus they have only
+		-- basic coordinates (x/y). Via the unit position the sheet and module
+		-- name can be obtained.
 	end record;
 
 	procedure add_unit (

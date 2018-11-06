@@ -2402,13 +2402,14 @@ package body et_kicad_to_native is
 					-- depending on the appearance of the kicad component, we create a virtual or real 
 					-- unit in the native schematic module:
 
-					-- The units can be obtained by converting the kicad unit to the base unit (see et_schematic.type_units)
-					-- because Kicad units are derived from this base type.
-					-- Kicad stuff like path_to_package or alternative representation is discarded.
+					-- The units can be obtained by converting the kicad unit to the base unit (see et_schematic.type_unit_base)
+					-- and adding stuff of real components (if real device).
+					-- Kicad stuff like "alternative representation", package name, datasheet is discarded.
 					case element (component_cursor_kicad).appearance is
-						when et_libraries.SCH =>
+						when et_libraries.SCH => -- virtual device
 
-							unit_native_virtual := et_schematic.type_unit (element (unit_cursor_kicad));
+							unit_native_virtual := (et_schematic.type_unit_base (element (unit_cursor_kicad))
+													with appearance => et_libraries.SCH);
 
 							et_schematic.type_units.insert (
 								container	=> component.units,
@@ -2417,9 +2418,15 @@ package body et_kicad_to_native is
 								inserted	=> unit_inserted,
 								new_item	=> unit_native_virtual);
 
-						when et_libraries.SCH_PCB =>
+						when et_libraries.SCH_PCB => -- real device
 
-							unit_native_real := et_schematic.type_unit (element (unit_cursor_kicad));
+							unit_native_real := (et_schematic.type_unit_base (element (unit_cursor_kicad))
+											 with -- stuff that comes with a real device:
+												 appearance => et_libraries.SCH_PCB,
+												 purpose	=> element (unit_cursor_kicad).purpose,
+												 partcode	=> element (unit_cursor_kicad).partcode,
+												 bom		=> element (unit_cursor_kicad).bom
+												);
 							
 							et_schematic.type_units.insert (
 								container	=> component.units,

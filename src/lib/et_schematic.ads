@@ -96,8 +96,7 @@ package et_schematic is
 	-- In a schematic we find units spread all over.
 	-- A unit is a subsection of a component.
 	-- A unit has placeholders for text like reference (like IC303), value (like 7400), ...
-	-- Some placeholders are available when the component appears in both schematic and layout.
-	type type_unit (appearance : type_appearance_schematic) is tagged record
+	type type_unit_base is tagged record
 		position		: et_coordinates.type_coordinates;
 		orientation		: et_coordinates.type_angle; -- CS rename to rotation
 		mirror			: type_mirror;
@@ -107,20 +106,22 @@ package et_schematic is
 		commissioned	: et_libraries.type_text_placeholder (meaning => et_libraries.commissioned);		
 		updated			: et_libraries.type_text_placeholder (meaning => et_libraries.updated);		
 		author			: et_libraries.type_text_placeholder (meaning => et_libraries.author);
+	end record;
+
+	-- Some placeholders of a unit are available when the component appears in both schematic and layout:	
+	type type_unit (appearance : type_appearance_schematic) is new type_unit_base with record
 		case appearance is
 			when et_libraries.sch => null; -- CS
 			when et_libraries.sch_pcb =>
-				packge		: et_libraries.type_text_placeholder (meaning => et_libraries.packge); -- like "SOT23"
-				datasheet	: et_libraries.type_text_placeholder (meaning => et_libraries.datasheet); -- might be useful for some special components
 				purpose		: et_libraries.type_text_placeholder (meaning => et_libraries.purpose); -- to be filled in schematic later by the user
 				partcode	: et_libraries.type_text_placeholder (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"
 				bom			: et_libraries.type_text_placeholder (meaning => et_libraries.bom);
 		end case;
 		-- NOTE: The placeholders are defined in et_libraries. Thus they have only
-		-- basic coordinates (x/y). Via the unit position the sheet and module
-		-- name can be obtained.
+		-- basic coordinates (x/y). Via the unit position the sheet number can be obtained.
 	end record;
 
+	
 	-- Units of a component are collected in a map.
 	-- A unit is accessed by its name like "I/O Bank 3" or "PWR" or "A" or "B" ...	
 	package type_units is new indefinite_ordered_maps (
