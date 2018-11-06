@@ -48,6 +48,7 @@ with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
+--with ada.containers.vectors;
 
 with et_coordinates;			use et_coordinates;
 with et_string_processing;
@@ -995,12 +996,17 @@ package et_libraries is
 
 	device_library_file_extension : constant string (1..3) := "dev";
 
-	-- HERE RIG WIDE DEVIVES ARE KEPT:
+	-- HERE RIG WIDE DEVICES ARE KEPT:
 	devices : type_devices.map;
 
 
 	
 -- DRAWING FRAME
+
+	-- $ET_FRAMES/drawing_frame_version_1.frm
+	frame_template_name_length_max : constant positive := 300;
+	package type_frame_template_name is new generic_bounded_length (frame_template_name_length_max);
+
 	
     type type_title_block_line is record
 		coordinates_start : et_coordinates.type_2d_point;
@@ -1032,7 +1038,7 @@ package et_libraries is
 
     -- the final title block
     type type_title_block is record
-        coordinates     : et_coordinates.type_2d_point;
+        coordinates     : et_coordinates.type_2d_point; -- CS rename to position
         lines           : type_title_block_lines.list;
         texts           : type_title_block_texts.list;
     end record;
@@ -1047,16 +1053,17 @@ package et_libraries is
 	package type_frame_lines is new doubly_linked_lists (type_frame_line);
 
 	type type_frame_text is record
-		coordinates		: et_coordinates.type_2d_point;
-		text			: character_set := et_string_processing.general_characters;
+		coordinates		: et_coordinates.type_2d_point; -- CS rename to position
+		text			: character_set := et_string_processing.general_characters; -- CS rename to content
 		size			: et_libraries.type_text_size;
-		orientation		: et_coordinates.type_angle;
+		orientation		: et_coordinates.type_angle; -- CS rename to rotation
 		-- CS: font, ...
 	end record;
 	
 	package type_frame_texts is new doubly_linked_lists (type_frame_text);
 
-    -- the final drawing frame
+	-- the final drawing frame
+	-- NOTE: The native drawing frame has its lower left corner at position x/y 0/0. always.
     type type_frame is tagged record
         paper_size      : et_general.type_paper_size; -- the size of the paper
         size_x, size_y  : et_coordinates.type_distance; -- the dimensions of the frame (should fit into paper_size) 
@@ -1065,8 +1072,10 @@ package et_libraries is
 		title_block		: type_title_block;
     end record;
 
-    -- there are lots of drawing frames in a schematic contained in a list
-	package type_frames is new doubly_linked_lists (type_frame);
+--     -- There are lots of drawing frames in a schematic. We store them in a vector:
+-- 	package type_frames is new vectors (
+-- 		index_type		=> et_coordinates.type_submodule_sheet_number,
+-- 		element_type	=> type_frame);
 
 	
 		

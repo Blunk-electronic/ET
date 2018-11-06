@@ -227,8 +227,8 @@ package et_coordinates is
 	hierarchy_separator : constant string (1..1) := "/";
 
 	-- A submodule may have up to x sheets.
-	submodule_sheet_count_max : constant positive := 100;
-	type type_submodule_sheet_number is new positive range 1..submodule_sheet_count_max;
+	submodule_sheet_count_max : constant positive := 100; -- CS rename to frame_count_max
+	type type_submodule_sheet_number is new positive range 1..submodule_sheet_count_max; -- CS rename to type_frame_number
 
 	function to_string (sheet_number : in type_submodule_sheet_number) return string;
 	-- Returns a sheet number to a string.

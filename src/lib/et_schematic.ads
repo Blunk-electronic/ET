@@ -389,22 +389,25 @@ package et_schematic is
 		"<"				=> compare_reference,
  		element_type	=> type_device);
 
-	
 	-- For designs which have only a schematic, this flag goes false.
 	type type_board_available is new boolean;
 
-	
+
 	type type_module is record
 		generic_name	: et_coordinates.type_submodule_name.bounded_string;
 		instance		: et_coordinates.type_submodule_instance;
 		board_available	: type_board_available := FALSE;
 		
-		devices			: type_devices.map;				-- the devices of the module
-		net_classes		: et_pcb.type_net_classes.map;	-- the net classes
-		submodules  	: type_submodules.map;			-- graphical representations of submodules
-		frames      	: et_libraries.type_frames.list;-- frames -- CS store in a map with sheet number as key
-		notes       	: type_texts.list;				-- notes
--- 		-- CS: images
+		devices			: type_devices.map;						-- the devices of the module
+		net_classes		: et_pcb.type_net_classes.map;			-- the net classes
+		submodules  	: type_submodules.map;					-- graphical representations of submodules
+		
+		frame_template_schematic	: et_libraries.type_frame_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_1.frm
+		frame_count_schematic		: et_coordinates.type_submodule_sheet_number := et_coordinates.type_submodule_sheet_number'first; -- 10 frames
+		frame_template_board		: et_libraries.type_frame_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_2.frm
+		
+		notes       	: type_texts.list;						-- notes
+		-- CS: images
 
 		-- the nets of the module (incl. routing information from the board):
 		nets 	    	: type_nets.map;				
