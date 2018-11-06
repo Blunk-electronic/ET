@@ -412,7 +412,7 @@ package et_schematic is
 	end record;
 
 
-	-- A rig is a set of modules:
+	-- A project (or a rig) is a set of modules:
 	package type_rig is new ordered_maps (
 		key_type		=> et_coordinates.type_submodule_name.bounded_string, -- example "MOTOR_DRIVER"
 		"<" 			=> et_coordinates.type_submodule_name."<",
@@ -421,25 +421,9 @@ package et_schematic is
 	rig : type_rig.map;
 	module_cursor : type_rig.cursor;
 
-	-- The rig has a name like "Blood Sample Analyzer"
-	-- Mostly this is equal to the project name.
-	rig_name_max : constant natural := 100;
-	package type_rig_name is new generic_bounded_length (rig_name_max);
-	
-
--- CS: a rig should also contain the libraries
--- 	type type_rig is record
--- 		libraries	: type_libraries.map;
--- 		modules		: type_modules.map;
--- 	end record;
-
--- 	function units_of_component (component_cursor : in type_components.cursor) return type_units.map;
--- 	-- Returns the units of the given component.
 
    
 -- MISC
-
-
 	type type_danger is (
 		FLOATING_INPUT,
 		CONTENTION,

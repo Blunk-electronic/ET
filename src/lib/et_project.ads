@@ -49,9 +49,9 @@ with ada.containers.ordered_sets;
 
 with et_general;
 with et_coordinates;			use et_coordinates;
-with et_libraries;				--use et_libraries;
+with et_libraries;
 with et_string_processing;
-
+with et_schematic;
 
 package et_project is
 
@@ -143,6 +143,9 @@ package et_project is
 		project_path	: in type_et_project_path.bounded_string;
 		log_threshold	: in et_string_processing.type_log_level);
 
+	procedure write_project_footer;
+	-- writes a nice footer in the project file and closes it.
+	
 
 -- 	procedure write_component_libraries (log_threshold : in et_string_processing.type_log_level);
 -- 	-- Writes the ET native component libraries in libraries_directory_name.

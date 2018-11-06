@@ -55,6 +55,7 @@ with et_string_processing;
 with et_libraries;
 with et_export;
 with et_import;
+with et_schematic;
 
 
 package body et_project is
@@ -148,6 +149,7 @@ package body et_project is
 	-- Already existing projects in given project_path are overwritten.
 	-- Sets the global project file name so that subsequent write and read operations
 	-- know the right project file.
+	-- Leaves the project file (global project_file_handle) open (closes it on exception).
 		project_name	: in type_project_name.bounded_string;
 		project_path	: in type_et_project_path.bounded_string;
 		log_threshold	: in et_string_processing.type_log_level) is
@@ -220,17 +222,27 @@ package body et_project is
 		put_line (project_file_handle, comment_mark & " " & row_separator_double);
 		new_line (project_file_handle);
 
-		close (project_file_handle);
-
 		log_indentation_down;
 		
 		exception when event:
 			others => 
 				log (ada.exceptions.exception_message (event), console => true);
+				close (project_file_handle);
 				raise;
 		
 	end create_project_directory;
 
+	procedure write_project_footer is
+	-- writes a nice footer in the project file and closes it.
+		use et_string_processing;
+	begin
+		put_line (project_file_handle, comment_mark & " " & row_separator_double);
+		put_line (project_file_handle, comment_mark & " " & date);
+		put_line (project_file_handle, comment_mark & " project " & to_string (project_name) & " file end");
+		new_line (project_file_handle);
+
+		close (project_file_handle);
+	end write_project_footer;
 	
 -- 	procedure write_component_libraries (log_threshold : in et_string_processing.type_log_level) is
 -- 	-- Writes the ET native libraries in libraries_directory_name.

@@ -3147,7 +3147,7 @@ package body et_kicad_to_native is
 			project_name	=> et_project.project_name,
 			project_path	=> project_path,
 			log_threshold 	=> log_threshold + 1);
-
+		
 		
 		-- Now we create new native modules and copy content from the kicad module to the native module.
 		while module_cursor_kicad /= et_kicad.type_rig.no_element loop
@@ -3208,6 +3208,10 @@ package body et_kicad_to_native is
 			next (module_cursor_kicad);
 		end loop;
 
+		-- close native project file
+		log ("closing project file ...", log_threshold);
+		et_project.write_project_footer;
+		
 		log_indentation_down;
 		
 	end to_native;
