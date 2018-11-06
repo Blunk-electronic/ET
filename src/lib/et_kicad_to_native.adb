@@ -2464,9 +2464,9 @@ package body et_kicad_to_native is
 														device	=> element (component_cursor_kicad).generic_name),
 																								 
 								value				=> element (component_cursor_kicad).value,
-								commissioned		=> element (component_cursor_kicad).commissioned,
-								updated				=> element (component_cursor_kicad).updated,
-								author				=> element (component_cursor_kicad).author,
+								--commissioned		=> element (component_cursor_kicad).commissioned,
+								--updated				=> element (component_cursor_kicad).updated,
+								--author				=> element (component_cursor_kicad).author,
 								others 				=> <>), -- unit list is empty at this time
 
 							inserted	=> component_inserted); -- should always be true
@@ -2485,9 +2485,9 @@ package body et_kicad_to_native is
 														device	=> element (component_cursor_kicad).generic_name),
 
 								value				=> element (component_cursor_kicad).value,
-								commissioned		=> element (component_cursor_kicad).commissioned,
-								updated				=> element (component_cursor_kicad).updated,
-								author				=> element (component_cursor_kicad).author,
+								--commissioned		=> element (component_cursor_kicad).commissioned,
+								--updated				=> element (component_cursor_kicad).updated,
+								--author				=> element (component_cursor_kicad).author,
 
 								partcode			=> element (component_cursor_kicad).partcode,
 								purpose				=> element (component_cursor_kicad).purpose,
