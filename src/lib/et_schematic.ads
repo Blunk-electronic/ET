@@ -103,9 +103,6 @@ package et_schematic is
 		name			: et_libraries.type_unit_name.bounded_string; -- PWR, IO_BANK_4, 1, 5, A, B, C, ..
 		reference		: et_libraries.type_text_placeholder (meaning => et_libraries.reference);
 		value			: et_libraries.type_text_placeholder (meaning => et_libraries.value);
-		commissioned	: et_libraries.type_text_placeholder (meaning => et_libraries.commissioned);		
-		updated			: et_libraries.type_text_placeholder (meaning => et_libraries.updated);		
-		author			: et_libraries.type_text_placeholder (meaning => et_libraries.author);
 	end record;
 
 	-- Some placeholders of a unit are available when the component appears in both schematic and layout:	

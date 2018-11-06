@@ -162,6 +162,10 @@ package et_kicad is
 
 	-- A kicad unit inherits a lot from the base unit:
 	type type_unit_schematic (appearance : et_schematic.type_appearance_schematic) is new et_schematic.type_unit_base with record
+		commissioned	: et_libraries.type_text_placeholder (meaning => et_libraries.commissioned);		
+		updated			: et_libraries.type_text_placeholder (meaning => et_libraries.updated);		
+		author			: et_libraries.type_text_placeholder (meaning => et_libraries.author);
+		
 		timestamp		: et_kicad_general.type_timestamp;
 		alt_repres		: type_de_morgan_representation;
 
