@@ -99,9 +99,9 @@ package et_schematic is
 	-- Some placeholders are available when the component appears in both schematic and layout.
 	type type_unit (appearance : type_appearance_schematic) is tagged record
 		position		: et_coordinates.type_coordinates;
-		orientation		: et_coordinates.type_angle;
+		orientation		: et_coordinates.type_angle; -- CS rename to rotation
 		mirror			: type_mirror;
-		name			: et_libraries.type_unit_name.bounded_string;
+		name			: et_libraries.type_unit_name.bounded_string; -- PWR, IO_BANK_4, 1, 5, A, B, C, ..
 		reference		: et_libraries.type_text_placeholder (meaning => et_libraries.reference);
 		value			: et_libraries.type_text_placeholder (meaning => et_libraries.value);
 		commissioned	: et_libraries.type_text_placeholder (meaning => et_libraries.commissioned);		

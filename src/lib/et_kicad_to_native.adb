@@ -76,6 +76,7 @@ package body et_kicad_to_native is
 	procedure transpose (log_threshold : in et_string_processing.type_log_level) is
 	-- Transposes coordinates of schematic and layout elements:
 	-- 1. In schematic changes the path (selector of et_coordinates.type_coordinates) to the root path (/).
+	--    CS: Native coordinates currently do not require the "path" selector. The change-path-stuff is thus not required.
 	-- 2. Moves schematic and layout objects from negative to positive y coordinates.
 	--    (The origin in kicad is the upper left corner. The origin in ET is the lower left corner.)
 		use et_kicad.type_rig;

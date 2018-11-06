@@ -328,7 +328,9 @@ package et_coordinates is
 
 	
 		type type_coordinates is new type_2d_point with record
-			path            : type_path_to_submodule.list;
+			path            : type_path_to_submodule.list; -- CS: in native project not required.
+			-- CS: A dedicated type_coordinates for kicad could make sense.
+			
 			sheet_number	: type_submodule_sheet_number := type_submodule_sheet_number'first;
 		end record;
 
