@@ -170,7 +170,7 @@ package et_pcb is
 
 	-- NET CLASSES
 	net_class_name_length_max : constant positive := 50;
-	package type_net_class_name is new generic_bounded_length (net_class_name_length_max);
+	package type_net_class_name is new generic_bounded_length (net_class_name_length_max); -- hi-voltage, si-critical, ...
 
 	function to_string (net_class_name : in type_net_class_name.bounded_string) return string;
 	

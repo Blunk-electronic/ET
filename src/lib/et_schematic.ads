@@ -360,7 +360,7 @@ package et_schematic is
 		);
 
 	type type_submodule is record
-		path				: type_submodule_path.bounded_string; 		-- ../schemlets/motor_driver.et
+		--path				: type_submodule_path.bounded_string; 		-- $ET_TEMPLATES/motor_driver.et
 		instance			: et_coordinates.type_submodule_instance; 	-- MOT_DRV_3 (will be the net prefix later on)
         text_size_path		: et_libraries.type_text_size;				-- 
         text_size_instance	: et_libraries.type_text_size;
@@ -371,11 +371,15 @@ package et_schematic is
 		reference_offset	: et_libraries.type_component_reference_id;	-- R88 turns to R2088 or R788
 	end record;
 
-	package type_submodules is new ordered_maps (
-		key_type		=> et_coordinates.type_submodule_name.bounded_string,
-		"<" 			=> et_coordinates.type_submodule_name."<",
-		element_type	=> type_submodule);
+-- 	package type_submodules is new ordered_maps (
+-- 		key_type		=> et_coordinates.type_submodule_name.bounded_string,
+-- 		"<" 			=> et_coordinates.type_submodule_name."<",
+-- 		element_type	=> type_submodule);
 
+	package type_submodules is new ordered_maps (
+		key_type		=> type_submodule_path.bounded_string, -- $ET_TEMPLATES/motor_driver.et
+		"<" 			=> type_submodule_path."<",
+		element_type	=> type_submodule);
 
 -- MODULE
 
