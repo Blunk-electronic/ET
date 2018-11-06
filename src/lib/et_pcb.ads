@@ -201,7 +201,7 @@ package et_pcb is
 		size_x		: type_text_size;
 		size_y		: type_text_size;
 		width		: type_text_line_width;
-		angle		: type_angle;
+		angle		: type_angle; -- CS rename to rotation
 		alignment	: et_libraries.type_text_alignment;
 		hidden		: boolean; -- CS use type with yes or no
 	end record;

@@ -8220,13 +8220,13 @@ package body et_kicad is
 
 							add_unit (
 								reference	=> reference,
-								unit_name	=> unit_name,
+								unit_name	=> unit_name, -- "I/O Bank 3" or "PWR" or "A" or "B" ...	
 								unit 		=> (
 									appearance		=> sch,
 									position		=> position,
 									orientation		=> orientation,
 									mirror			=> mirror,
-									name			=> unit_name,
+									--name			=> unit_name,
 									timestamp		=> timestamp,
 									alt_repres		=> alternative_representation,
 
@@ -8250,13 +8250,13 @@ package body et_kicad is
 
 							add_unit (
 								reference	=> reference,
-								unit_name	=> unit_name,
+								unit_name	=> unit_name, -- "I/O Bank 3" or "PWR" or "A" or "B" ...	
 								unit 		=> (
 									appearance		=> sch_pcb,
 									position		=> position,
 									orientation		=> orientation,
 									mirror			=> mirror,
-									name			=> unit_name,
+									--name			=> unit_name,
 									timestamp		=> timestamp,
 									alt_repres		=> alternative_representation,
 
