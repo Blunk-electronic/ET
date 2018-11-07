@@ -342,7 +342,7 @@ package et_pcb is
 	-- Corner points are collected in an ordered set.
 	-- This prevents placing two identical points on top of each other.
 	package type_polygon_points is new ordered_sets (
-		element_type	=> type_point_3d,
+		element_type	=> type_point_3d, -- CS: better a 2d point ?
 		"<"				=> right_point_before_left);
 
 	type type_polygon is abstract tagged record
@@ -564,8 +564,8 @@ package et_pcb is
 		case pad_connection is
 			when THERMAL =>
 				thermal_technology	: type_polygon_pad_technology; -- whether SMT, THT or both kinds of pads connect with the polygon
-				thermal_width		: type_polygon_thermal_width; -- the spoke width
-				thermal_gap			: type_polygon_thermal_gap; -- the space between associated pads and polygon
+				thermal_width		: type_polygon_thermal_width; -- the thermal width
+				thermal_gap			: type_polygon_thermal_gap; -- the space between associated pads and polygon -- CS: rename to thermal_length ?
 
 			when SOLID =>
 				solid_technology	: type_polygon_pad_technology; -- whether SMT, THT or both kinds of pads connect with the polygon
