@@ -235,7 +235,7 @@ package body et_kicad_to_native is
 		procedure flatten_notes (
 			module_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_kicad.type_module) is
-		-- Changes the path and y position of text notes (in schematic) to root path.
+		-- Changes the path and y position of text notes (in schematic).
 
 			use et_schematic.type_texts;
 			note_cursor : et_schematic.type_texts.cursor := module.notes.first;
@@ -2194,6 +2194,81 @@ package body et_kicad_to_native is
 			move_copper; -- non-electric copper stuff !!!
 		end move_general_board_stuff;
 
+		procedure flatten_netlist (
+		-- Changes the path and y position of ports.
+		-- NOTE: The netlist contains nets with their connected ports.
+			module_name	: in et_coordinates.type_submodule_name.bounded_string;
+			module		: in out et_kicad.type_module) is
+
+			use et_kicad.type_netlist;
+			net_cursor : et_kicad.type_netlist.cursor := module.netlist.first;
+
+			procedure query_ports (
+				net_name	: in et_schematic.type_net_name.bounded_string;
+				ports		: in out et_kicad.type_ports_with_reference.set) is
+
+				use et_kicad.type_ports_with_reference;
+				port_cursor : et_kicad.type_ports_with_reference.cursor := ports.first;
+				port : et_kicad.type_port_with_reference;
+				
+				use et_coordinates;
+			begin -- query_ports
+				log ("net " & et_schematic.to_string (net_name), log_threshold + 3);
+				log_indentation_up;
+
+				-- Loop in ports of given net and change path and y position.
+				while port_cursor /= et_kicad.type_ports_with_reference.no_element loop
+					port := element (port_cursor); -- load the port as it currently is
+					
+					log (et_libraries.to_string (port.reference)
+						& " port "
+						& et_libraries.to_string (port.name), log_threshold + 4);
+					log_indentation_up;
+
+					-- show old position
+					log (before & to_string (position => port.coordinates, scope => et_coordinates.MODULE),
+						log_threshold + 5);
+
+					-- change path
+					et_coordinates.set_path (port.coordinates, root);
+
+					-- Move position from negative to positive y.
+					move (port.coordinates);
+
+					-- show new position
+					log (now & to_string (position => port.coordinates, scope => et_coordinates.MODULE),
+						log_threshold + 5);
+
+					-- replace old port by new port
+					et_kicad.type_ports_with_reference.replace_element (
+						container		=> ports,
+						position		=> port_cursor,
+						new_item		=> port);
+					
+					log_indentation_down;
+					next (port_cursor);
+				end loop;
+				
+				log_indentation_down;
+			end query_ports;
+			
+		begin -- flatten_netlist
+			log ("netlist ...", log_threshold + 2);
+			log_indentation_up;
+
+			while net_cursor /= et_kicad.type_netlist.no_element loop
+				
+				et_kicad.type_netlist.update_element (
+					container	=> module.netlist,
+					position	=> net_cursor,
+					process		=> query_ports'access);
+				
+				next (net_cursor);
+			end loop;
+			
+			log_indentation_down;
+		end flatten_netlist;
+		
 	begin -- transpose
 		log ("transposing coordinates of KiCad modules ...", log_threshold);
 		log_indentation_up;
@@ -2239,6 +2314,11 @@ package body et_kicad_to_native is
 				position	=> module_cursor,
 				process		=> flatten_nets'access);
 
+			update_element (
+				container	=> et_kicad.rig,
+				position	=> module_cursor,
+				process		=> flatten_netlist'access);
+			
 			-- general non-component related board stuff (silk screen, documentation, ...):
 			if board_available then
 				update_element (
@@ -2670,7 +2750,7 @@ package body et_kicad_to_native is
 					use et_coordinates;
 					use et_geometry;
 					distance : et_geometry.type_distance_point_from_line;
-				begin
+				begin -- read_ports
 					log_indentation_up;
 					
 					-- get all ports connected with the current net (in the kicad module):
@@ -2689,13 +2769,7 @@ package body et_kicad_to_native is
 						if 	sheet (element (port_cursor_kicad).coordinates) = 
 							sheet (element (kicad_strand_cursor).coordinates) then
 
--- 							log ("port " & et_libraries.to_string (element (port_cursor_kicad).reference) 
--- 									& latin_1.space 
--- 									& et_libraries.to_string (element (port_cursor_kicad).name)
--- 									& et_coordinates.to_string (position => element (port_cursor_kicad).coordinates),
--- 									log_threshold + 5);
-
-							
+							-- calculate distance of port from segment
 							distance := distance_of_point_from_line (
 								point 		=> type_2d_point (element (port_cursor_kicad).coordinates),
 								line_start	=> type_2d_point (segment.coordinates_start),
@@ -2704,9 +2778,10 @@ package body et_kicad_to_native is
 
 							-- If port sits on segment, append it to ports_of_segment.
 							if (not distance.out_of_range) and distance.distance = zero_distance then
-								log ("port " & et_libraries.to_string (element (port_cursor_kicad).reference) 
-									 & latin_1.space 
-									 & et_libraries.to_string (element (port_cursor_kicad).name),
+								log (et_libraries.to_string (element (port_cursor_kicad).reference) 
+									 & " port "
+									 & et_libraries.to_string (element (port_cursor_kicad).name)
+									 & to_string (position => element (port_cursor_kicad).coordinates, scope => XY),
 									 log_threshold + 5);
 
 								et_schematic.type_ports_component.append (
@@ -2757,6 +2832,7 @@ package body et_kicad_to_native is
 						-- read net junctions of the current segment in temp. collection net_junctions_native
 						net_junctions_native := read_net_junctions (element (kicad_segment_cursor));
 
+						-- read ports connected with the segment
 						ports_native := read_ports (element (kicad_segment_cursor)); -- provide ports connected with the current segment
 						
 						-- Collect native net segment in list net_segments_native.
