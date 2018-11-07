@@ -1304,14 +1304,14 @@ package et_kicad is
 		component_libraries	: type_libraries.map; -- V4 and V5
 		footprints			: et_kicad_pcb.type_libraries.map;	-- V5 only. V4 packages are in et_kicad_pcb.package_libraries
 		
-		strands	    		: type_strands.list;				-- the strands of the module
+		strands	    		: type_strands.list;				-- the strands of the module (incl. net names and segments)
 		junctions			: type_junctions.list;				-- net junctions (for ERC, statistics, ...)
 
 		components			: type_components_schematic.map;	-- the components of the module
 		net_classes			: et_pcb.type_net_classes.map;		-- the net classes
 		no_connections		: type_no_connection_flags.list;	-- the list of no-connection-flags
-		portlists			: type_portlists.map;				-- the portlists of the module
-		netlist				: type_netlist.map;					-- net names and connected ports
+		portlists			: type_portlists.map;				-- the portlists of the module (components with their ports)
+		netlist				: type_netlist.map;					-- net names and connected component ports (incl. position of port)
 		hierarchic_sheets	: type_hierarchic_sheets.map;		-- hierarchic sheets. Serve as interface between hierarchic sheets.
         frames      		: type_frames.list;					-- schematic frames
 		notes       		: et_schematic.type_texts.list;		-- notes

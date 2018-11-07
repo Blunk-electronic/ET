@@ -2562,6 +2562,9 @@ package body et_kicad_to_native is
 				use et_schematic.type_junctions;
 				net_junctions_native : et_schematic.type_junctions.list;
 
+				use et_schematic.type_ports_component;
+				ports_native : et_schematic.type_ports_component.list;
+				
 				function tag_and_simple_labels (segment : in et_kicad.type_net_segment) 
 				-- Copies from the given kicad net segment all simple and tag labels and returns
 				-- them in a single list.
@@ -2653,6 +2656,73 @@ package body et_kicad_to_native is
 					log_indentation_down;
 					return junctions;
 				end read_net_junctions;
+
+				function read_ports (segment : in et_kicad.type_net_segment)
+				-- Returns the component ports connected with the given net segment.
+					return et_schematic.type_ports_component.list is
+
+					use et_kicad.type_ports_with_reference;
+					port_cursor_kicad : et_kicad.type_ports_with_reference.cursor;
+					all_ports_of_net : et_kicad.type_ports_with_reference.set;
+					
+					ports_of_segment : et_schematic.type_ports_component.list; -- to be returned
+
+					use et_coordinates;
+					use et_geometry;
+					distance : et_geometry.type_distance_point_from_line;
+				begin
+					log_indentation_up;
+					
+					-- get all ports connected with the current net (in the kicad module):
+					all_ports_of_net := et_kicad.components_in_net (
+						module			=> key (module_cursor_kicad), -- the name of the kicad module
+						net				=> net_name, -- the net in question 
+						log_threshold	=> log_threshold + 6);
+
+					-- Loop in all ports of the net. 
+					-- Select the ports which are on the same sheet as the current strand.
+					-- Select the ports which are connected with the given net segment.
+					port_cursor_kicad := all_ports_of_net.first;
+					while port_cursor_kicad /= et_kicad.type_ports_with_reference.no_element loop
+
+						-- compare sheet numbers
+						if 	sheet (element (port_cursor_kicad).coordinates) = 
+							sheet (element (kicad_strand_cursor).coordinates) then
+
+-- 							log ("port " & et_libraries.to_string (element (port_cursor_kicad).reference) 
+-- 									& latin_1.space 
+-- 									& et_libraries.to_string (element (port_cursor_kicad).name)
+-- 									& et_coordinates.to_string (position => element (port_cursor_kicad).coordinates),
+-- 									log_threshold + 5);
+
+							
+							distance := distance_of_point_from_line (
+								point 		=> type_2d_point (element (port_cursor_kicad).coordinates),
+								line_start	=> type_2d_point (segment.coordinates_start),
+								line_end	=> type_2d_point (segment.coordinates_end),
+								line_range	=> with_end_points);
+
+							-- If port sits on segment, append it to ports_of_segment.
+							if (not distance.out_of_range) and distance.distance = zero_distance then
+								log ("port " & et_libraries.to_string (element (port_cursor_kicad).reference) 
+									 & latin_1.space 
+									 & et_libraries.to_string (element (port_cursor_kicad).name),
+									 log_threshold + 5);
+
+								et_schematic.type_ports_component.append (
+									container	=> ports_of_segment,
+									new_item	=> (
+											reference 	=> element (port_cursor_kicad).reference,
+											name		=> element (port_cursor_kicad).name));
+							end if;
+
+						end if;
+						next (port_cursor_kicad);
+					end loop;
+					
+					log_indentation_down;
+					return ports_of_segment;
+				end read_ports;
 				
 			begin -- insert_strands
 				log_indentation_up;
@@ -2686,6 +2756,8 @@ package body et_kicad_to_native is
 
 						-- read net junctions of the current segment in temp. collection net_junctions_native
 						net_junctions_native := read_net_junctions (element (kicad_segment_cursor));
+
+						ports_native := read_ports (element (kicad_segment_cursor)); -- provide ports connected with the current segment
 						
 						-- Collect native net segment in list net_segments_native.
 						-- Native net segments have labels and junctions.
@@ -2693,7 +2765,10 @@ package body et_kicad_to_native is
 							container	=> net_segments_native,
 							new_item	=> (net_segment_base with 
 											labels		=> net_labels_native,
-											junctions	=> net_junctions_native)
+											junctions	=> net_junctions_native,
+											component_ports	=> ports_native,
+											submodule_ports	=> <> -- there are no ports of submodules
+										   )
 							);
 
 						next (kicad_segment_cursor);

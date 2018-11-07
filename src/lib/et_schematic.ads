@@ -210,12 +210,13 @@ package et_schematic is
 	-- submodule:
 	type type_port_submodule is record
 		-- The port belongs to a certain submodule:
-		module		: et_coordinates.type_submodule_name.bounded_string;
+		module		: et_coordinates.type_submodule_name.bounded_string; -- MOT_DRV_3
 
-		-- The port addresses a certain net inside the submodule:
-		net			: type_net_name.bounded_string;
+		-- The port addresses a certain net inside the submodule: CS ?
+		--net			: type_net_name.bounded_string; CS ?
 
 		-- The port addresses a certain port of the net inside the submodule.
+		-- The actual net name is not visible to the parent module.
 		-- Inside a submodule a net can have multiple ports to the outside world.
 		port		: et_libraries.type_port_name.bounded_string;
 
@@ -285,10 +286,10 @@ package et_schematic is
 	
 	
 	type type_net_segment is new type_net_segment_base with record
-		labels		: type_net_labels.list;
-		junctions	: type_junctions.list;
-		-- CS ? ports_component	: type_ports_component.list;
-		-- CS ? ports_submodule	: type_ports_submodule.list; 
+		labels			: type_net_labels.list;
+		junctions		: type_junctions.list;
+		component_ports	: type_ports_component.list;
+		submodule_ports	: type_ports_submodule.list; 
 		-- CS no_connections	: type_no_connection_flags.list;-- the list of no-connection-flags
 	end record;
 
@@ -303,7 +304,7 @@ package et_schematic is
 	package type_strands is new doubly_linked_lists (type_strand);
 
 	-- If a net exists in a (sub)module exclusively or whether it can be
-	-- seen from the parent module:
+	-- seen from the parent module. For example power nets like GND are global.
 	type type_net_scope is (LOCAL, GLOBAL);
 	
 	type type_net is new type_net_base with record
@@ -360,13 +361,13 @@ package et_schematic is
 		);
 
 	type type_submodule is record
-		--path				: type_submodule_path.bounded_string; 		-- $ET_TEMPLATES/motor_driver.et
-		instance			: et_coordinates.type_submodule_instance; 	-- MOT_DRV_3 (will be the net prefix later on)
-        text_size_path		: et_libraries.type_text_size;				-- 
+		--path				: type_submodule_path.bounded_string; 					-- $ET_TEMPLATES/motor_driver.et
+		name  				: et_coordinates.type_submodule_name.bounded_string;	-- MOT_DRV_3 (will be the net prefix later on)
+        text_size_path		: et_libraries.type_text_size;
         text_size_instance	: et_libraries.type_text_size;
 		position		    : et_coordinates.type_coordinates;
 		size				: type_submodule_size;
-		position_offset		: type_submodule_position_offset_in_board;
+		position_in_board	: type_submodule_position_offset_in_board;
 		view_mode			: type_submodule_view_mode;
 		reference_offset	: et_libraries.type_component_reference_id;	-- R88 turns to R2088 or R788
 	end record;
