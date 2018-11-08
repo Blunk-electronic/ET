@@ -556,7 +556,7 @@ package et_pcb is
 	-- A polygon in a signal layer is usually connected with a THT or SMD pads (or both) via thermals, solid (or not at all).
 	-- For this reason we define a controlled type here because some properties may exist (or may not exists) depending
 	-- on the kinde of pad_connection:
-	type type_copper_polygon_pcb (pad_connection : type_polygon_pad_connection) is new type_copper_polygon with record
+	type type_copper_polygon_signal (pad_connection : type_polygon_pad_connection) is new type_copper_polygon with record
 		layer 		: type_signal_layer;
 		width_min	: type_signal_width; -- the minimum width
 				
@@ -579,7 +579,15 @@ package et_pcb is
 	text_polygon_signal_layer	: constant string (1..12) := "signal_layer";	
 	text_polygon_width_min		: constant string (1..13) := "minimum_width";
 	
-	package type_copper_polygons_pcb is new indefinite_doubly_linked_lists (type_copper_polygon_pcb);
+	package type_copper_polygons_signal is new indefinite_doubly_linked_lists (type_copper_polygon_signal);
+
+	-- A floating copper polygon:
+	type type_copper_polygon_floating is new type_copper_polygon with record
+		layer 		: type_signal_layer;
+		width_min	: type_signal_width; -- the minimum width
+	end record;
+
+	package type_copper_polygons_floating is new doubly_linked_lists (type_copper_polygon_floating);
 
 
 	
@@ -598,7 +606,10 @@ package et_pcb is
 		lines 			: type_copper_lines_pcb.list;
 		arcs			: type_copper_arcs_pcb.list;
 		circles			: type_copper_circles_pcb.list;
-		polygons		: type_copper_polygons_pcb.list; -- CS probably no good idea to allow floating copper polygons
+
+		-- CS: It is probably no good idea to allow floating copper polygons.
+		polygons		: type_copper_polygons_floating.list; 
+		
 		texts			: type_texts_with_content_pcb.list;
 		placeholders	: type_text_placeholders_copper.list;
 	end record;
@@ -620,7 +631,7 @@ package et_pcb is
 		lines 			: type_copper_lines_pcb.list;
 		arcs			: type_copper_arcs_pcb.list;
 		vias			: type_vias.list;
-		polygons		: type_copper_polygons_pcb.list;
+		polygons		: type_copper_polygons_signal.list;
 	end record;
 
 	
@@ -1176,10 +1187,14 @@ package et_pcb is
 
 	procedure route_polygon_properties (
 	-- Logs the properties of the given polygon of a route
-		cursor			: in type_copper_polygons_pcb.cursor;
+		cursor			: in type_copper_polygons_signal.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 	
-	
+	procedure floating_copper_polygon_properties (
+	-- Logs the properties of the given floating copper polygon.
+		cursor			: in type_copper_polygons_floating.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+
 
 	
 -- PROPERTIES OF OBJECTS IN SILK SCREEN	

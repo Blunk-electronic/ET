@@ -7594,71 +7594,24 @@ package body et_kicad_pcb is
 						if element (polygon_cursor).net_id = type_net_id'first then
 						-- Transfer kicad polygon to et polygon:
 
-							-- The polygon to be appended to board.copper.polygons is a controlled type.
-							-- Hence, there are selectors (properties) that exist (or do not exist)
-							-- depending on the kind of pad_connection. See spec for type_copper_polygon_pcb
-							-- for details.
-
 							-- These properites of kicad polygons are discarded as there is no need for them:
 							-- net_id, timestamp, hatch_style, hatch_width, filled, fill_mode_segment, arc_segments
 							
-							case element (polygon_cursor).pad_connection is
-								when et_pcb.THERMAL =>
-									module.board.copper.polygons.append (
-										new_item => (et_pcb.type_copper_polygon (element (polygon_cursor)) with
-											pad_connection		=> et_pcb.THERMAL,
-											width_min			=> element (polygon_cursor).min_thickness,
+							module.board.copper.polygons.append (
+								new_item => (et_pcb.type_copper_polygon (element (polygon_cursor)) with
+									width_min			=> element (polygon_cursor).min_thickness,
 
-											-- Translate the kicad layer id to the ET signal layer:
-											-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
-											-- The bottom layer in kicad is always number 31. Top layer is number 0.
-											-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
-											layer 				=> et_pcb.type_signal_layer (element (polygon_cursor).layer + 1),
+									-- Translate the kicad layer id to the ET signal layer:
+									-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
+									-- The bottom layer in kicad is always number 31. Top layer is number 0.
+									-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
+									layer 				=> et_pcb.type_signal_layer (element (polygon_cursor).layer + 1)
+								));
 
-											-- This is the type depended stuff:
-											thermal_technology	=> element (polygon_cursor).pad_technology,
-											thermal_gap			=> element (polygon_cursor).thermal_gap,
-											thermal_width		=> element (polygon_cursor).thermal_width
-										));
-
-								when et_pcb.SOLID =>
-									module.board.copper.polygons.append (
-										new_item => (et_pcb.type_copper_polygon (element (polygon_cursor)) with
-											pad_connection		=> et_pcb.SOLID,
-											width_min			=> element (polygon_cursor).min_thickness,
-											
-											-- Translate the kicad layer id to the ET signal layer:
-											-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
-											-- The bottom layer in kicad is always number 31. Top layer is number 0.
-											-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
-											layer 				=> et_pcb.type_signal_layer (element (polygon_cursor).layer + 1),
-											
-											-- This is the type depended stuff:
-											solid_technology	=> element (polygon_cursor).pad_technology
-										));
-								
-								when et_pcb.NONE =>
-									module.board.copper.polygons.append (
-										new_item => (et_pcb.type_copper_polygon (element (polygon_cursor)) with
-											pad_connection		=> et_pcb.NONE,
-											width_min			=> element (polygon_cursor).min_thickness,
-											
-											-- Translate the kicad layer id to the ET signal layer:
-											-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
-											-- The bottom layer in kicad is always number 31. Top layer is number 0.
-											-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
-											layer 				=> et_pcb.type_signal_layer (element (polygon_cursor).layer + 1)
-
-											-- no further properties
-										));
-
-							end case;
-
-							et_pcb.route_polygon_properties (module.board.copper.polygons.last, log_threshold + 2);
+							et_pcb.floating_copper_polygon_properties (module.board.copper.polygons.last, log_threshold + 2);
 							log (message_warning & "polygon is not connected with any net !", log_threshold + 2);
 
 						end if;
-							
 						next (polygon_cursor);
 					end loop;
 					

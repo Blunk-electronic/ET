@@ -498,9 +498,9 @@ package body et_pcb is
 
 	procedure route_polygon_properties (
 	-- Logs the properties of the given polygon of a route
-		cursor			: in type_copper_polygons_pcb.cursor;
+		cursor			: in type_copper_polygons_signal.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_copper_polygons_pcb;
+		use type_copper_polygons_signal;
 		use type_polygon_points;
 		points : type_polygon_points.set;
 		point_cursor : type_polygon_points.cursor;
@@ -546,6 +546,38 @@ package body et_pcb is
 		log_indentation_down;
 	end route_polygon_properties;
 
+	procedure floating_copper_polygon_properties (
+	-- Logs the properties of the given floating copper polygon.
+		cursor			: in type_copper_polygons_floating.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_copper_polygons_floating;
+		use type_polygon_points;
+		points : type_polygon_points.set;
+		point_cursor : type_polygon_points.cursor;
+	begin
+		-- general stuff
+		log ("polygon" & 
+			 " " & text_polygon_signal_layer & to_string (element (cursor).layer) &
+			 " " & text_polygon_width_min & to_string (element (cursor).width_min) &
+			 " " & text_polygon_corner_easing & to_string (element (cursor).corner_easing) &
+			 " " & text_polygon_easing_radius & to_string (element (cursor).easing_radius),
+			 log_threshold);
+
+		log_indentation_up;
+		
+		-- corner points
+		log (text_polygon_corner_points, log_threshold);
+		points := element (cursor).points;
+		point_cursor := points.first;
+		while point_cursor /= type_polygon_points.no_element loop
+			log (to_string (element (point_cursor)), log_threshold);
+			next (point_cursor);
+		end loop;
+		
+		log_indentation_down;
+	end floating_copper_polygon_properties;
+
+	
 -- PROPERTIES OF OBJECTS IN SILK SCREEN
 	procedure line_silk_screen_properties (
 	-- Logs the properties of the given line of silk screen
