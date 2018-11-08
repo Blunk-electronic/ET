@@ -658,7 +658,7 @@ package et_pcb is
 
 	
 	-- This is the type for stop mask objects in general:
-	type type_stop_mask is record
+	type type_stop_mask is tagged record
 		lines 		: type_stop_lines.list;
 		arcs		: type_stop_arcs.list;
 		circles		: type_stop_circles.list;
@@ -666,12 +666,23 @@ package et_pcb is
 		polygons	: type_stop_polygons.list;
 	end record;
 
-	-- Because stop mask is about two sides of the board this composite is required:
+	-- Stop mask of packages (in library):
 	type type_stop_mask_both_sides is record
 		top		: type_stop_mask;
 		bottom	: type_stop_mask;
 	end record;
 
+	-- Stop mask in board (may contain placeholders):
+	type type_stop_mask_pcb is new type_stop_mask with record
+		placeholders : type_text_placeholders_pcb.list; -- for texts in copper to be exposed
+	end record;
+
+	type type_stop_mask_pcb_both_sides is record
+		top		: type_stop_mask_pcb;
+		bottom	: type_stop_mask_pcb;
+	end record;
+
+	
 	stop_mask_expansion_min : constant type_distance := 0.02;
 	stop_mask_expansion_max : constant type_distance := 0.2;
 	subtype type_stop_mask_expansion is type_distance range stop_mask_expansion_min .. stop_mask_expansion_max;
