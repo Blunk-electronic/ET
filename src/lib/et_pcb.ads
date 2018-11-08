@@ -459,8 +459,8 @@ package et_pcb is
 
 	type type_copper_circle is new type_circle with record
 		width				: type_signal_width;
-		hatching_line_width	: type_signal_width := fill_style_hatching_line_width_default; -- the with of the copper traces
-		hatching_spacing	: type_signal_clearance := fill_style_hatching_spacing_default; -- the space between the copper traces
+		hatching_line_width	: type_signal_width := fill_style_hatching_line_width_default; -- the with of the lines
+		hatching_spacing	: type_signal_clearance := fill_style_hatching_spacing_default; -- the space between the lines
 	end record;
 	package type_copper_circles is new doubly_linked_lists (type_copper_circle);
 
@@ -716,7 +716,9 @@ package et_pcb is
 
 	
 	type type_stencil_circle is new type_circle with record
-		width	: type_general_line_width;
+		width				: type_general_line_width;
+		hatching_line_width	: type_signal_width := fill_style_hatching_line_width_default; -- the with of the lines
+		hatching_spacing	: type_signal_clearance := fill_style_hatching_spacing_default; -- the space between the lines
 	end record;
 
 	package type_stencil_circles is new doubly_linked_lists (type_stencil_circle);
@@ -883,7 +885,12 @@ package et_pcb is
 	type type_keepout_arc is new type_arc with null record;
 	package type_keepout_arcs is new doubly_linked_lists (type_keepout_arc);
 	
-	type type_keepout_circle is new type_circle with null record;
+	type type_keepout_circle is new type_circle with record
+		width				: type_general_line_width; -- line width of circumfence
+		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the lines
+		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the lines
+	end record;
+	
 	package type_keepout_circles is new doubly_linked_lists (type_keepout_circle);
 
 	type type_keepout_polygon is new type_polygon with null record;

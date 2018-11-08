@@ -1889,19 +1889,24 @@ package body et_kicad_pcb is
 
 						
 					when TOP_KEEP =>
-						keepout.top.circles.append ((
-							center 		=> circle.center,
-							radius		=> circle.radius, -- line width discarded because this is keepout
-							filled		=> circle.filled,
-							fill_style	=> circle.fill_style));
+						keepout.top.circles.append ((et_pcb.type_circle (circle) with circle.width, others => <>)); 
+						-- filling not supported by kicad -> therefore "others" assumes default.
+							-- center 		=> circle.center,
+							-- radius		=> circle.radius,
+							-- filled		=> circle.filled,
+							-- fill_style	=> circle.fill_style,
+							-- width		=> circle.width,
+							-- hatching_line_width	=> <>,
+							-- hatching_spacing	=> <>
+							-- ));
 						circle_keepout_properties (TOP, keepout.top.circles.last, log_threshold + 1);
 						
 					when BOT_KEEP =>
-						keepout.bottom.circles.append ((
-							center 		=> circle.center,
-							radius		=> circle.radius, -- line width discarded because this is keepout
-							filled		=> circle.filled,
-							fill_style	=> circle.fill_style));
+						keepout.bottom.circles.append ((et_pcb.type_circle (circle) with circle.width, others => <>)); 
+							-- center 		=> circle.center,
+							-- radius		=> circle.radius, -- line width discarded because this is keepout
+							-- filled		=> circle.filled,
+							-- fill_style	=> circle.fill_style));
 						circle_keepout_properties (BOTTOM, keepout.bottom.circles.last, log_threshold + 1);
 
 						
@@ -1930,11 +1935,13 @@ package body et_kicad_pcb is
 
 						
 					when TOP_PASTE =>
-						stencil.top.circles.append ((et_pcb.type_circle (circle) with circle.width));
+						--stencil.top.circles.append ((et_pcb.type_circle (circle) with circle.width));
+						stencil.top.circles.append ((et_pcb.type_circle (circle) with circle.width, others => <>));
 						circle_stencil_properties (TOP, stencil.top.circles.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						stencil.bottom.circles.append ((et_pcb.type_circle (circle) with circle.width));
+						--stencil.bottom.circles.append ((et_pcb.type_circle (circle) with circle.width));
+						stencil.bottom.circles.append ((et_pcb.type_circle (circle) with circle.width, others => <>));
 						circle_stencil_properties (BOTTOM, stencil.bottom.circles.last, log_threshold + 1);
 
 					when others => invalid_layer;
@@ -5979,11 +5986,13 @@ package body et_kicad_pcb is
 
 						
 					when TOP_PASTE =>
-						board.stencil.top.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
+						--board.stencil.top.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
+						board.stencil.top.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width, others => <>));
 						circle_stencil_properties (TOP, board.stencil.top.circles.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						board.stencil.bottom.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
+						--board.stencil.bottom.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width));
+						board.stencil.bottom.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width, others => <>));
 						circle_stencil_properties (BOTTOM, board.stencil.bottom.circles.last, log_threshold + 1);
 						
 
@@ -5999,19 +6008,21 @@ package body et_kicad_pcb is
 
 						
 					when TOP_KEEP =>
-						board.keepout.top.circles.append ((
-							center		=> board_circle.center,
-							radius		=> board_circle.radius,
-							filled		=> board_circle.filled,
-							fill_style	=> board_circle.fill_style));
+						board.keepout.top.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width, others => <>));
+						--board.keepout.top.circles.append ((
+						--	center		=> board_circle.center,
+						--	radius		=> board_circle.radius,
+						--	filled		=> board_circle.filled,
+						--	fill_style	=> board_circle.fill_style));
 						circle_keepout_properties (TOP, board.keepout.top.circles.last, log_threshold + 1);
 
 					when BOT_KEEP =>
-						board.keepout.bottom.circles.append ((
-							center		=> board_circle.center,
-							radius		=> board_circle.radius,
-							filled		=> board_circle.filled,
-							fill_style	=> board_circle.fill_style));
+						board.keepout.bottom.circles.append ((et_pcb.type_circle (board_circle) with board_circle.width, others => <>));
+						--board.keepout.bottom.circles.append ((
+						--	center		=> board_circle.center,
+						--	radius		=> board_circle.radius,
+						--	filled		=> board_circle.filled,
+						--	fill_style	=> board_circle.fill_style));
 						circle_keepout_properties (BOTTOM, board.keepout.bottom.circles.last, log_threshold + 1);
 
 						
@@ -6256,19 +6267,21 @@ package body et_kicad_pcb is
 
 						
 					when TOP_KEEP =>
-						package_keepout.top.circles.append ((
-							center 		=> package_circle.center,
-							radius		=> package_circle.radius,  -- line width discarded because this is keepout
-							filled		=> package_circle.filled,
-							fill_style	=> package_circle.fill_style));
+						package_keepout.top.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width, others => <>));
+						--package_keepout.top.circles.append ((
+						--	center 		=> package_circle.center,
+						--	radius		=> package_circle.radius,  -- line width discarded because this is keepout
+						--	filled		=> package_circle.filled,
+						--	fill_style	=> package_circle.fill_style));
 						circle_keepout_properties (TOP, package_keepout.top.circles.last, log_threshold + 1);
 						
 					when BOT_KEEP =>
-						package_keepout.bottom.circles.append ((
-							center 		=> package_circle.center,
-							radius		=> package_circle.radius,  -- line width discarded because this is keepout
-							filled		=> package_circle.filled,
-							fill_style	=> package_circle.fill_style));
+						package_keepout.bottom.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width, others => <>));
+						--package_keepout.bottom.circles.append ((
+						--	center 		=> package_circle.center,
+						--	radius		=> package_circle.radius,  -- line width discarded because this is keepout
+						--	filled		=> package_circle.filled,
+						--	fill_style	=> package_circle.fill_style));
 						circle_keepout_properties (BOTTOM, package_keepout.bottom.circles.last, log_threshold + 1);
 
 						
@@ -6297,11 +6310,13 @@ package body et_kicad_pcb is
 
 						
 					when TOP_PASTE =>
-						package_stencil.top.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
+						--package_stencil.top.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
+						package_stencil.top.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width, others => <>));
 						circle_stencil_properties (TOP, package_stencil.top.circles.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						package_stencil.bottom.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
+						--package_stencil.bottom.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width));
+						package_stencil.bottom.circles.append ((et_pcb.type_circle (package_circle) with package_circle.width, others => <>));
 						circle_stencil_properties (BOTTOM, package_stencil.bottom.circles.last, log_threshold + 1);
 
 					when others => invalid_layer;
