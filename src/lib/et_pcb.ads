@@ -581,7 +581,7 @@ package et_pcb is
 	
 	package type_copper_polygons_signal is new indefinite_doubly_linked_lists (type_copper_polygon_signal);
 
-	-- A floating copper polygon:
+	-- A floating copper polygon is not connected to a net:
 	type type_copper_polygon_floating is new type_copper_polygon with record
 		layer 		: type_signal_layer;
 		width_min	: type_signal_width; -- the minimum width
