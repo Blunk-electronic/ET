@@ -595,8 +595,7 @@ package et_pcb is
 		layer	: type_signal_layer;
 	end record;
 
-	package type_texts_with_content_pcb is new doubly_linked_lists (
-		element_type => type_text_with_content_pcb);
+	package type_texts_with_content_pcb is new doubly_linked_lists (type_text_with_content_pcb);
 
 
 	
@@ -1400,8 +1399,8 @@ package et_pcb is
 		stencil		: type_stencil_both_sides;
 		stop_mask	: type_stop_mask_both_sides;
 		keepout		: type_keepout_both_sides;		
+		copper		: type_copper_pcb; -- non-electric copper stuff, incl. floating polygons !
 		contour		: type_pcb_contour;
-		copper		: type_copper_pcb; -- non-electric copper stuff !
 	end record;
 
 	
