@@ -784,7 +784,7 @@ package et_libraries is
 	-- An internal unit is owned by the particular component exclusively.
 	type type_unit_internal (appearance : type_component_appearance) is record
 		symbol		: type_symbol (appearance);
-		coordinates	: type_coordinates;
+		coordinates	: type_2d_point; -- CS: rename to position
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
 		add_level	: type_unit_add_level := type_unit_add_level'first;
 	end record;

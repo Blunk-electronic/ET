@@ -274,7 +274,7 @@ package et_kicad is
 	-- a component unit in the library
 	type type_unit_library (appearance : et_libraries.type_component_appearance) is record
 		symbol		: type_symbol (appearance);
-		coordinates	: et_coordinates.type_coordinates;
+		coordinates	: et_coordinates.type_2d_point;
 		-- Units that harbor component wide pins have this flag set.
 		-- Usually units with power supply pins exclusively.
 		-- When building portlists this flag is important.
