@@ -285,12 +285,12 @@ package et_pcb is
 		);
 		-- CS should be defined via configuration file:
 
-	-- There can be lots of placeholders of this kind. So they can be are stored in a list:
+	-- TEXT PLACEHOLDERS
 	type type_text_placeholder_pcb is new type_text with record
 		meaning : type_text_meaning_pcb;
 	end record;
 
-
+	package type_text_placeholders_pcb is new doubly_linked_lists (type_text_placeholder_pcb);
 
 
 
@@ -299,8 +299,7 @@ package et_pcb is
 		content : et_libraries.type_text_content.bounded_string;
 	end record;
 
-	package type_texts_with_content is new doubly_linked_lists (
-		element_type => type_text_with_content);
+	package type_texts_with_content is new doubly_linked_lists (type_text_with_content);
 	
 
 	-- FILL STYLE OF OBJECTS WITH A CLOSED CIRCUMFENCE
@@ -781,8 +780,11 @@ package et_pcb is
 	end record;
 
 	-- For silk screen objects that do not belong to any packages use this type:
-	type type_silk_screen_pcb is new type_silk_screen with null record;
-		-- CS placeholder for revision, board name, misc ... defined via configuration file
+	type type_silk_screen_pcb is new type_silk_screen with record
+		-- Placeholders for revision, board name, misc ... :
+		placeholders : type_text_placeholders_pcb.list;
+	end record;
+		
 
 	-- Because silk screen is about two sides of the board this composite is required:	
 	type type_silk_screen_pcb_both_sides is record
@@ -846,8 +848,11 @@ package et_pcb is
 	end record;
 
 	-- For assembly documentation objects that do not belong to any packages use this type:
-	type type_assembly_documentation_pcb is new type_assembly_documentation with null record;
-		-- CS placeholder for revision, board name, misc ... defined via configuration file
+	type type_assembly_documentation_pcb is new type_assembly_documentation with record
+		-- Placeholders for revision, board name, misc ... :
+		placeholders : type_text_placeholders_pcb.list;
+	end record;
+
 
 	-- Because assembly documentation is about two sides of the board this composite is required:	
 	type type_assembly_documentation_pcb_both_sides is record
