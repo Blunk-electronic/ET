@@ -1028,9 +1028,9 @@ package et_libraries is
 	type type_title_block_text is record
 		meaning			: type_title_block_text_meaning;
  		coordinates		: et_coordinates.type_2d_point;
-		text			: type_title_block_text_content.bounded_string;
+		text			: type_title_block_text_content.bounded_string; -- CS: rename to content
  		size			: et_libraries.type_text_size;
- 		orientation		: et_coordinates.type_angle;
+ 		orientation		: et_coordinates.type_angle; -- CS: rename to rotation
 		-- CS: font, ...
  	end record;
 
