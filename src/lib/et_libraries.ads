@@ -302,11 +302,11 @@ package et_libraries is
 	type type_port is new type_port_base with record 	-- CS: set defaults
 		direction			: type_port_direction; -- example: "passive"
 		style				: type_port_style;
-		coordinates			: type_2d_point; -- there is only x and y
-		length				: type_port_length;
-		orientation			: type_angle;
+		coordinates			: type_2d_point; -- CS: rename to position
+		length				: type_port_length; 
+		orientation			: type_angle; -- CS: rename to rotation
 		port_name_visible	: type_port_name_visible;
-		terminal_visible	: type_terminal_name_visible;
+		terminal_visible	: type_terminal_name_visible; -- CS: rename to terminal_name_visible
 		port_name_size		: type_port_name_text_size;
 		terminal_name_size	: type_terminal_name_text_size;
 		-- CS: port swap level ? -> would require a derived new type
@@ -315,7 +315,7 @@ package et_libraries is
 	-- Ports of a component are collected in a simple list. A list, because multiple ports
 	-- with the same name (but differing terminal names) may exist. For example lots of GND
 	-- ports at FPGAs.
-	package type_ports is new doubly_linked_lists (element_type => type_port); 
+	package type_ports is new doubly_linked_lists (type_port); 
 
 
 	
@@ -633,56 +633,56 @@ package et_libraries is
 	
 	-- straight lines
 	type type_line is record
-		start_point 	: type_coordinates;
-		end_point   	: type_coordinates;
+		start_point 	: type_coordinates; -- CS 2d point ?
+		end_point   	: type_coordinates; -- CS 2d point ?
 		line_width		: type_line_width;
 	end record;
-	package type_lines is new doubly_linked_lists (element_type => type_line);
+	package type_lines is new doubly_linked_lists (type_line);
 
 	-- polylines 
 	-- A polyline is a list of points. Their interconnections have a width and a fill.
 	-- Filling can be done even if start and end point do not meet. In this case a virtual line
 	-- is "invented" that connects start and end point.
 	-- Finally the polylines are collected in a simple list.
-	package type_points is new doubly_linked_lists (element_type => type_coordinates);
+	package type_points is new doubly_linked_lists (type_coordinates); -- CS 2d point ?
 	type type_polyline is record
 		line_width		: type_line_width;
 		fill			: type_fill;
 		points			: type_points.list;
 	end record;
-	package type_polylines is new doubly_linked_lists (element_type => type_polyline);
+	package type_polylines is new doubly_linked_lists (type_polyline);
 
 	-- Rectangles
 	-- It is sufficient to specifiy the diagonal of the rectangle.
 	type type_rectangle is record
-		start_point		: type_coordinates;
-		end_point		: type_coordinates;
+		start_point		: type_coordinates; -- CS 2d point ? -- CS: rename to corner_A
+		end_point		: type_coordinates; -- CS 2d point ? -- CS: rename to corner_B
 		line_width		: type_line_width;
 		fill			: type_fill;
 	end record;
-	package type_rectangles is new doubly_linked_lists (element_type => type_rectangle);	
+	package type_rectangles is new doubly_linked_lists (type_rectangle);	
 	
 	-- Arcs
 	type type_arc is record
-		center			: type_coordinates;
+		center			: type_coordinates; -- CS 2d point ?
 		radius  		: type_distance;
-		start_point		: type_coordinates;
-		end_point		: type_coordinates;
-		start_angle		: type_angle;
-		end_angle		: type_angle;
+		start_point		: type_coordinates; -- CS 2d point ?
+		end_point		: type_coordinates; -- CS 2d point ?
+		start_angle		: type_angle; -- CS: ?
+		end_angle		: type_angle; -- CS: ?
 		line_width		: type_line_width;
  		fill			: type_fill;
 	end record;
-	package type_arcs is new doubly_linked_lists (element_type => type_arc);
+	package type_arcs is new doubly_linked_lists (type_arc);
 
 	-- Circles
 	type type_circle is record
-		center			: type_coordinates;
+		center			: type_coordinates; -- CS 2d point ?
 		radius  		: type_distance;
 		line_width		: type_line_width;
 		fill			: type_fill;
 	end record;
-	package type_circles is new doubly_linked_lists (element_type => type_circle);
+	package type_circles is new doubly_linked_lists (type_circle);
 
 	-- Shapes are wrapped in a the type_shapes:
 	type type_shapes is record
@@ -725,7 +725,7 @@ package et_libraries is
 	-- there is no dedicated enumeration value available we choose "misc".
 	-- CS: The meaning could be something like "documentation" some day.
 	type type_symbol_text is new type_text (meaning => MISC) with null record;
-	package type_symbol_texts is new doubly_linked_lists (element_type => type_symbol_text);
+	package type_symbol_texts is new doubly_linked_lists (type_symbol_text);
 
 	type type_symbol_base (appearance : type_component_appearance) is tagged record
 		shapes		: type_shapes; -- the collection of shapes
@@ -735,14 +735,14 @@ package et_libraries is
 		-- a symbol is placed in the schematic:
 		reference	: type_text_placeholder (meaning => et_libraries.REFERENCE);
 		value		: type_text_placeholder (meaning => et_libraries.VALUE);
-		commissioned: type_text_placeholder (meaning => et_libraries.COMMISSIONED);
-		updated		: type_text_placeholder (meaning => et_libraries.UPDATED);
-		author		: type_text_placeholder (meaning => et_libraries.AUTHOR);
+		commissioned: type_text_placeholder (meaning => et_libraries.COMMISSIONED); -- CS: remove or move to kicad
+		updated		: type_text_placeholder (meaning => et_libraries.UPDATED); -- CS: remove or move to kicad
+		author		: type_text_placeholder (meaning => et_libraries.AUTHOR); -- CS: remove or move to kicad
 		-- Symbols have further text placeholders according to the appearance of the component:
 		case appearance is
 			when sch_pcb =>
-				packge		: type_text_placeholder (meaning => et_libraries.PACKGE);
-				datasheet	: type_text_placeholder (meaning => et_libraries.DATASHEET);
+				packge		: type_text_placeholder (meaning => et_libraries.PACKGE); -- CS: remove or move to kicad
+				datasheet	: type_text_placeholder (meaning => et_libraries.DATASHEET); -- CS: remove or move to kicad
 				purpose		: type_text_placeholder (meaning => et_libraries.PURPOSE);
 				partcode	: type_text_placeholder (meaning => et_libraries.PARTCODE);
 				bom 		: type_text_placeholder (meaning => et_libraries.BOM);
@@ -797,7 +797,7 @@ package et_libraries is
 	-- An external unit has a reference and a swap level.
 	type type_unit_external is record -- CS: parameter appearance ?
 		reference	: type_symbol_library_name.bounded_string; -- like /my_libraries/NAND.sym
-		coordinates	: type_coordinates;
+		coordinates	: type_coordinates; -- CS: 2d point -- CS: rename to position -- CS: maybe no need at all ?
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
 		add_level	: type_unit_add_level := type_unit_add_level'first;
 	end record;
