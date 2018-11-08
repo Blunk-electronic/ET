@@ -1014,9 +1014,7 @@ package body et_pcb is
 	begin
 		circle := element (cursor);
 		log ("PCB contour (edge cuts / outline) circle face" & latin_1.space 
-			& to_string (type_circle (circle))
-			& " filled " & boolean'image (circle.filled)
-			& " " & text_fill_style & to_string (circle.fill_style), log_threshold);
+			& to_string (type_circle (circle)), log_threshold);
 	end circle_pcb_contour_properties;
 
 

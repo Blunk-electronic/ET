@@ -333,8 +333,6 @@ package et_pcb is
 	type type_circle is abstract tagged record
 		center			: type_point_3d;
 		radius  		: type_distance;
-		filled 			: boolean := false;
-		fill_style		: type_fill_style := SOLID; -- don't care if filled is false
 	end record;
 
 	-- POLYGON
@@ -459,6 +457,8 @@ package et_pcb is
 
 	type type_copper_circle is new type_circle with record
 		width				: type_signal_width;
+		filled 				: boolean := false;
+		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
 		hatching_line_width	: type_signal_width := fill_style_hatching_line_width_default; -- the with of the lines
 		hatching_spacing	: type_signal_clearance := fill_style_hatching_spacing_default; -- the space between the lines
 	end record;
@@ -652,6 +652,8 @@ package et_pcb is
 	
 	type type_stop_circle is new type_circle with record
 		width				: type_general_line_width; -- the width of the circumfence
+		filled 				: boolean := false;
+		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
 		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the lines
 		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the lines
 	end record;
@@ -716,6 +718,8 @@ package et_pcb is
 	
 	type type_stencil_circle is new type_circle with record
 		width				: type_general_line_width;
+		filled 				: boolean := false;
+		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
 		hatching_line_width	: type_signal_width := fill_style_hatching_line_width_default; -- the with of the lines
 		hatching_spacing	: type_signal_clearance := fill_style_hatching_spacing_default; -- the space between the lines
 	end record;
@@ -764,6 +768,8 @@ package et_pcb is
 	
 	type type_silk_circle is new type_circle with record
 		width				: type_general_line_width; -- line width of circumfence
+		filled 				: boolean := false;
+		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
 		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the lines
 		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the lines
 	end record;
@@ -829,6 +835,8 @@ package et_pcb is
 	
 	type type_doc_circle is new type_circle with record
 		width				: type_general_line_width; -- line width of circumfence
+		filled 				: boolean := false;
+		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
 		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the lines
 		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the lines
 	end record;
@@ -886,6 +894,8 @@ package et_pcb is
 	
 	type type_keepout_circle is new type_circle with record
 		width				: type_general_line_width; -- line width of circumfence
+		filled 				: boolean := false;
+		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
 		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the lines
 		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the lines
 	end record;
