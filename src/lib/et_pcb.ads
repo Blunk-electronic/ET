@@ -346,7 +346,7 @@ package et_pcb is
 		"<"				=> right_point_before_left);
 
 	type type_polygon is abstract tagged record
-		points			: type_polygon_points.set;
+		points			: type_polygon_points.set; -- CS rename to corners
 		fill_style		: type_fill_style := SOLID; -- a polygon is always filled
 	end record;
 
@@ -745,14 +745,18 @@ package et_pcb is
 	
 	type type_silk_circle is new type_circle with record
 		width				: type_general_line_width; -- line width of circumfence
-		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the copper traces
-		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the copper traces
+		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the lines
+		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the lines
 	end record;
 
 	package type_silk_circles is new doubly_linked_lists (type_silk_circle);
 
 
-	type type_silk_polygon is new type_polygon with null record;
+	type type_silk_polygon is new type_polygon with record
+		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the lines
+		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the lines
+	end record;
+	
 	package type_silk_polygons is new doubly_linked_lists (type_silk_polygon);
 	
 
@@ -806,14 +810,18 @@ package et_pcb is
 	
 	type type_doc_circle is new type_circle with record
 		width				: type_general_line_width; -- line width of circumfence
-		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the copper traces
-		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the copper traces
+		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the lines
+		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the lines
 	end record;
 
 	package type_doc_circles is new doubly_linked_lists (type_doc_circle);
 
 
-	type type_doc_polygon is new type_polygon with null record;
+	type type_doc_polygon is new type_polygon with record
+		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the lines
+		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the lines
+	end record;
+	
 	package type_doc_polygons is new doubly_linked_lists (type_doc_polygon);
 
 	
