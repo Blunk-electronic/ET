@@ -344,9 +344,21 @@ package et_pcb is
 		element_type	=> type_point_3d, -- CS: better a 2d point ?
 		"<"				=> right_point_before_left);
 
+	type type_corner_easing is (NONE, CHAMFER, FILLET);
+	
+	polygon_easing_radius_max : constant type_distance := 1.0;
+	subtype type_polygon_easing_radius is type_distance range type_distance'first .. polygon_easing_radius_max;
+
+	function to_corner_easing (easing : in string) return type_corner_easing;
+	function to_string (easing : in type_corner_easing) return string;
+	
 	type type_polygon is abstract tagged record
-		points			: type_polygon_points.set; -- CS rename to corners
-		fill_style		: type_fill_style := SOLID; -- a polygon is always filled
+		points				: type_polygon_points.set; -- CS rename to corners
+		fill_style			: type_fill_style := SOLID; -- a polygon is always filled
+		hatching_line_width	: type_signal_width := fill_style_hatching_line_width_default; -- the with of the lines
+		hatching_spacing	: type_signal_clearance := fill_style_hatching_spacing_default; -- the space between the lines
+		corner_easing		: type_corner_easing := NONE;
+		easing_radius		: type_polygon_easing_radius := zero_distance; -- center of circle at corner point
 	end record;
 
 	text_polygon_corner_points : constant string (1..13) := "corner_points";
@@ -434,11 +446,6 @@ package et_pcb is
 	
 
 	-- COPPER OBJECTS (NON ELECTRIC !!) OF A PACKAGE
-	type type_corner_easing is (NONE, CHAMFER, FILLET);
-
-	function to_corner_easing (easing : in string) return type_corner_easing;
-	function to_string (easing : in type_corner_easing) return string;
-	
 	type type_copper_line is new type_line with record
 		width	: type_signal_width;
 		-- CS locked	: type_locked;
@@ -463,16 +470,9 @@ package et_pcb is
 	function to_string (priority_level : in type_polygon_priority) return string;
 	function to_polygon_priority (priority_level : in string) return type_polygon_priority;
 
-	polygon_easing_radius_max : constant type_distance := 1.0;
-	subtype type_polygon_easing_radius is type_distance range type_distance'first .. polygon_easing_radius_max;
-	
 	type type_copper_polygon is new type_polygon with record
 		priority_level		: type_polygon_priority := type_polygon_priority'first;
 		isolation_gap		: type_signal_clearance; -- the space between foreign pads and the polygon
-		corner_easing		: type_corner_easing := NONE;
-		easing_radius		: type_polygon_easing_radius := zero_distance; -- center of circle at corner point
-		hatching_line_width	: type_signal_width := fill_style_hatching_line_width_default; -- the with of the copper traces
-		hatching_spacing	: type_signal_clearance := fill_style_hatching_spacing_default; -- the space between the copper traces
 	end record;
 
 	text_polygon_priority_level	: constant string (1..14) := "priority_level";
@@ -649,10 +649,7 @@ package et_pcb is
 	package type_stop_circles is new doubly_linked_lists (type_stop_circle);
 
 
-	type type_stop_polygon is new type_polygon with record
-		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the lines
-		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the lines
-	end record;
+	type type_stop_polygon is new type_polygon with null record;
 	
 	package type_stop_polygons is new doubly_linked_lists (type_stop_polygon);
 
@@ -762,10 +759,7 @@ package et_pcb is
 	package type_silk_circles is new doubly_linked_lists (type_silk_circle);
 
 
-	type type_silk_polygon is new type_polygon with record
-		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the lines
-		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the lines
-	end record;
+	type type_silk_polygon is new type_polygon with null record;
 	
 	package type_silk_polygons is new doubly_linked_lists (type_silk_polygon);
 	
@@ -830,10 +824,7 @@ package et_pcb is
 	package type_doc_circles is new doubly_linked_lists (type_doc_circle);
 
 
-	type type_doc_polygon is new type_polygon with record
-		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the lines
-		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the lines
-	end record;
+	type type_doc_polygon is new type_polygon with null record;
 	
 	package type_doc_polygons is new doubly_linked_lists (type_doc_polygon);
 
