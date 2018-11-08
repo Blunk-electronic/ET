@@ -45,6 +45,7 @@ with ada.containers.ordered_sets;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.vectors;
 
+with et_general;
 with et_project;
 with et_schematic;
 with et_pcb;
@@ -1283,6 +1284,11 @@ package et_kicad is
 	-- Generates a bom file. This file is csv formatted and is to be processed by
 	-- other ERP tools (like stock_manager, see <https://github.com/Blunk-electronic/stock_manager>)
 
+	-- This is general board stuff:
+	type type_board is new et_pcb.type_board with record
+		paper_size	: et_general.type_paper_size;
+	end record;
+	
 	
 -- MODULES
 	
@@ -1326,7 +1332,7 @@ package et_kicad is
 		
 		-- General non-component related board stuff:
 		-- paper size, silk screen, documentation, ...
-		board			: et_pcb.type_board;
+		board			: type_board;
 	end record;
 
 

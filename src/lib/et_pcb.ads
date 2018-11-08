@@ -1357,8 +1357,7 @@ package et_pcb is
 
 
 	-- This is general board stuff:
-	type type_board is record
-		paper_size	: et_general.type_paper_size;
+	type type_board is tagged record
 		silk_screen	: type_silk_screen_pcb_both_sides;
 		assy_doc	: type_assembly_documentation_pcb_both_sides;
 		stencil		: type_stencil_both_sides;

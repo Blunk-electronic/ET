@@ -2375,7 +2375,7 @@ package body et_kicad_to_native is
 			module.instance			:= element (module_cursor_kicad).instance;
 			module.board_available	:= element (module_cursor_kicad).board_available;
 			module.notes			:= element (module_cursor_kicad).notes; 
-			module.board			:= element (module_cursor_kicad).board;
+			module.board			:= et_pcb.type_board (element (module_cursor_kicad).board);
 			module.net_classes		:= element (module_cursor_kicad).net_classes;
 		end copy_general_stuff;
 
