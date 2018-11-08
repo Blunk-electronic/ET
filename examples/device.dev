@@ -1,0 +1,130 @@
+# SYSTEM ET device
+# date 2018-11-06T09:31:48
+# ======================================================================================================================================================
+
+prefix IC
+value 74HCT00
+commissioned 2018-01-27
+updated 2018-01-28
+author Dieter Krause
+appearance real
+purpose motor_on
+partcode IC_PAC_S_SOT14_VAL_74HCT00
+bom yes
+
+[VARIANTS BEGIN]
+	[VARIANT BEGIN]
+		name D
+		file $libraries/devices/transistors/pnp.dev
+		[TERMINAL_PORT_MAP BEGIN]
+			terminal G14 unit A port CE
+		[TERMINAL_PORT_MAP END]	
+	[VARIANT END]
+[VARIANTS END]
+		
+		
+[UNITS_INTERNAL BEGIN]
+	[UNIT BEGIN]
+		name B
+		position x 3 y 4
+		swap_level 0
+		add_level next
+		
+		[SYMBOL BEGIN]
+
+			[SHAPES BEGIN]
+				[LINE BEGIN]
+					start x 22.3
+					end y 32.5
+					line_width 0.2
+				[LINE END]
+				
+				[POLYLINE BEGIN]
+					line_width 0.2
+					fill border visible/invisible pattern solid/none
+					point x 4 y 1.2
+					point x 4 y 2.2
+				[POLYLINE END]
+				
+				[RECTANGLE BEGIN]
+					corner_A 22.3
+					corner_B 12.5
+					line_width 0.2
+					fill border visible/invisible pattern solid/none
+				[RECTANGLE END]
+				
+				[ARC BEGIN]
+					center x 10 y 3
+					radius 4.4
+					start x 5 y 55
+					end x 5 y 45
+					line_width 0.2
+					fill border visible/invisible pattern solid/none
+				[ARC END]
+				
+				[CIRCLE BEGIN]
+					center x 10 y 3
+					radius 4.4
+					line_width 0.2
+					fill border visible/invisible pattern solid/none
+				[CIRCLE END]
+				
+			[SHAPES END]
+			
+			[TEXTS BEGIN]
+				[TEXT BEGIN]
+					content "blah"
+					position x 40 y 20
+					size x 3.0 y 3.0
+					style
+					line_width 0.2
+					rotation 0
+					alignment center
+					hidden yes/no
+				[TEXT END]
+			[TEXTS END]
+
+			[PLACEHOLDERS BEGIN]
+				[PLACEHOLDER BEGIN]
+					meaning reference/value/purpose/partcode/bom
+					position x 40 y 20
+					size x 3.0 y 3.0
+					style
+					line_width 0.2
+					rotation 0
+					alignment center
+					hidden yes/no
+				[PLACEHOLDER END]
+
+			[PLACEHOLDERS END]
+			
+			[PORTS BEGIN]
+				[PORT BEGIN]
+					name ADR12
+					position x 4 y 1
+					direction input
+					style 
+					length
+					rotation
+					port_name_visible 
+					terminal_name_visible
+					port_name_size
+					terminal_name_size
+				[PORT END]
+			[PORTS END]
+			
+		[SYMBOL END]
+	[UNIT END]
+[UNITS_INTERNAL END]
+
+
+
+[UNITS_EXTERNAL BEGIN]
+	[UNIT BEGIN]
+		name A
+		file $my_libraries/NAND.sym
+		swap_level 0
+		add_level next
+	[UNIT END]	
+[UNITS_EXTERNAL END]
+
