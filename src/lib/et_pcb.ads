@@ -316,7 +316,7 @@ package et_pcb is
 	fill_style_hatching_spacing_default		: constant type_distance := 2.0; -- the space between the lines
 	
 	-- LINE
-	type type_line is abstract tagged record
+	type type_line_2d is abstract tagged record
 		start_point 	: type_point_2d;
 		end_point   	: type_point_2d;
 	end record;
@@ -327,7 +327,7 @@ package et_pcb is
 	end record;
 	
 	-- ARC
-	type type_arc is abstract tagged record
+	type type_arc_2d is abstract tagged record
 		center			: type_point_2d;
 		start_point		: type_point_2d;
 		end_point		: type_point_2d;
@@ -342,7 +342,7 @@ package et_pcb is
 	end record;
 	
 	-- CIRCLE
-	type type_circle is abstract tagged record
+	type type_circle_2d is abstract tagged record
 		center			: type_point_2d;
 		radius  		: type_distance;
 	end record;
@@ -385,32 +385,32 @@ package et_pcb is
 
 
 	
-	function to_string (line : in type_line) return string;
+	function to_string (line : in type_line_2d) return string;
 	-- Returns the start and end point of the given line as string.
 
-	function to_string (arc : in type_arc) return string;
+	function to_string (arc : in type_arc_2d) return string;
 	-- Returns the start, end point and angle of the given arc as string.
 
-	function to_string (circle : in type_circle) return string;
+	function to_string (circle : in type_circle_2d) return string;
 	-- Returns the center and radius of the given circle as string.
 
 	
 	
 	-- PCB CONTOUR/OUTLINE
-	type type_pcb_contour_line is new type_line with record
+	type type_pcb_contour_line is new type_line_2d with record
 		locked : type_locked := type_locked'first;
 	end record;
 
 	package type_pcb_contour_lines is new doubly_linked_lists (type_pcb_contour_line);
 
 	
-	type type_pcb_contour_arc is new type_arc with record
+	type type_pcb_contour_arc is new type_arc_2d with record
 		locked : type_locked := type_locked'first;
 	end record;
 	package type_pcb_contour_arcs is new doubly_linked_lists (type_pcb_contour_arc);
 
 	
-	type type_pcb_contour_circle is new type_circle with record
+	type type_pcb_contour_circle is new type_circle_2d with record
 		locked : type_locked := type_locked'first;
 	end record;
 	package type_pcb_contour_circles is new doubly_linked_lists (type_pcb_contour_circle);
@@ -439,13 +439,13 @@ package et_pcb is
 		log_threshold	: in et_string_processing.type_log_level);
 		
 	-- PACKAGE CONTOUR/OUTLINE -- for 3d only
-	type type_package_contour_line is new type_line with null record;
+	type type_package_contour_line is new type_line_3d with null record;
 	package type_package_contour_lines is new doubly_linked_lists (type_package_contour_line);
 
-	type type_package_contour_arc is new type_arc with null record;
+	type type_package_contour_arc is new type_arc_3d with null record;
 	package type_package_contour_arcs is new doubly_linked_lists (type_package_contour_arc);
 
-	type type_package_contour_circle is new type_circle with null record;
+	type type_package_contour_circle is new type_circle_3d with null record;
 	package type_package_contour_circles is new doubly_linked_lists (type_package_contour_circle);
 	
 	type type_package_contours is record
@@ -462,18 +462,18 @@ package et_pcb is
 	
 
 	-- COPPER OBJECTS (NON ELECTRIC !!) OF A PACKAGE
-	type type_copper_line is new type_line with record
+	type type_copper_line is new type_line_2d with record
 		width	: type_signal_width;
 		-- CS locked	: type_locked;
 	end record;
 	package type_copper_lines is new doubly_linked_lists (type_copper_line);
 
-	type type_copper_arc is new type_arc with record
+	type type_copper_arc is new type_arc_2d with record
 		width	: type_signal_width;
 	end record;
 	package type_copper_arcs is new doubly_linked_lists (type_copper_arc);
 
-	type type_copper_circle is new type_circle with record
+	type type_copper_circle is new type_circle_2d with record
 		width				: type_signal_width;
 		filled 				: boolean := false;
 		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
@@ -654,21 +654,21 @@ package et_pcb is
 	
 	
 	-- SOLDER STOP MASK
-	type type_stop_line is new type_line with record
+	type type_stop_line is new type_line_2d with record
 		width	: type_general_line_width;
 	end record;
 
 	package type_stop_lines is new doubly_linked_lists (type_stop_line);
 
 
-	type type_stop_arc is new type_arc with record
+	type type_stop_arc is new type_arc_2d with record
 		width	: type_general_line_width;
 	end record;
 
 	package type_stop_arcs is new doubly_linked_lists (type_stop_arc);
 
 	
-	type type_stop_circle is new type_circle with record
+	type type_stop_circle is new type_circle_2d with record
 		width				: type_general_line_width; -- the width of the circumfence
 		filled 				: boolean := false;
 		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
@@ -720,21 +720,21 @@ package et_pcb is
 
 
 	-- SOLDER PASTE STENCIL
-	type type_stencil_line is new type_line with record
+	type type_stencil_line is new type_line_2d with record
 		width	: type_general_line_width;
 	end record;
 
 	package type_stencil_lines is new doubly_linked_lists (type_stencil_line);
 
 
-	type type_stencil_arc is new type_arc with record
+	type type_stencil_arc is new type_arc_2d with record
 		width	: type_general_line_width;
 	end record;
 
 	package type_stencil_arcs is new doubly_linked_lists (type_stencil_arc);
 
 	
-	type type_stencil_circle is new type_circle with record
+	type type_stencil_circle is new type_circle_2d with record
 		width				: type_general_line_width;
 		filled 				: boolean := false;
 		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
@@ -770,21 +770,21 @@ package et_pcb is
 	
 	
 	-- SILK SCREEN
-	type type_silk_line is new type_line with record
+	type type_silk_line is new type_line_2d with record
 		width	: type_general_line_width;
 	end record;
 
 	package type_silk_lines is new doubly_linked_lists (type_silk_line);
 
 
-	type type_silk_arc is new type_arc with record
+	type type_silk_arc is new type_arc_2d with record
 		width	: type_general_line_width;
 	end record;
 
 	package type_silk_arcs is new doubly_linked_lists (type_silk_arc);
 
 	
-	type type_silk_circle is new type_circle with record
+	type type_silk_circle is new type_circle_2d with record
 		width				: type_general_line_width; -- line width of circumfence
 		filled 				: boolean := false;
 		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
@@ -837,21 +837,21 @@ package et_pcb is
 	
 
 	-- ASSEMBLY DOCUMENTATION
-	type type_doc_line is new type_line with record
+	type type_doc_line is new type_line_2d with record
 		width	: type_general_line_width;
 	end record;
 
 	package type_doc_lines is new doubly_linked_lists (type_doc_line);
 
 
-	type type_doc_arc is new type_arc with record
+	type type_doc_arc is new type_arc_2d with record
 		width	: type_general_line_width;
 	end record;
 
 	package type_doc_arcs is new doubly_linked_lists (type_doc_arc);
 
 	
-	type type_doc_circle is new type_circle with record
+	type type_doc_circle is new type_circle_2d with record
 		width				: type_general_line_width; -- line width of circumfence
 		filled 				: boolean := false;
 		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
@@ -904,13 +904,13 @@ package et_pcb is
 	
 	
 	-- KEEPOUT
-	type type_keepout_line is new type_line with null record;
+	type type_keepout_line is new type_line_2d with null record;
 	package type_keepout_lines is new doubly_linked_lists (type_keepout_line);
 
-	type type_keepout_arc is new type_arc with null record;
+	type type_keepout_arc is new type_arc_2d with null record;
 	package type_keepout_arcs is new doubly_linked_lists (type_keepout_arc);
 	
-	type type_keepout_circle is new type_circle with record
+	type type_keepout_circle is new type_circle_2d with record
 		width				: type_general_line_width; -- line width of circumfence
 		filled 				: boolean := false;
 		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
@@ -941,19 +941,19 @@ package et_pcb is
 
 	
 	-- ROUTE RESTRICT
-	type type_route_restrict_line is new type_line with record
+	type type_route_restrict_line is new type_line_2d with record
 		layers : type_signal_layers.set;
 	end record;
 	
 	package type_route_restrict_lines is new doubly_linked_lists (type_route_restrict_line);
 
-	type type_route_restrict_arc is new type_arc with record
+	type type_route_restrict_arc is new type_arc_2d with record
 		layers : type_signal_layers.set;
 	end record;
 	
 	package type_route_restrict_arcs is new doubly_linked_lists (type_route_restrict_arc);
 	
-	type type_route_restrict_circle is new type_circle with record
+	type type_route_restrict_circle is new type_circle_2d with record
 		layers : type_signal_layers.set;
 	end record;
 	package type_route_restrict_circles is new doubly_linked_lists (type_route_restrict_circle);
@@ -979,21 +979,21 @@ package et_pcb is
 	
 
 	-- VIA RESTRICT
-	type type_via_restrict_line is new type_line with record
+	type type_via_restrict_line is new type_line_2d with record
 		layers : type_signal_layers.set;
 	end record;
 	
 	package type_via_restrict_lines is new doubly_linked_lists (type_via_restrict_line);
 
 	
-	type type_via_restrict_arc is new type_arc with record
+	type type_via_restrict_arc is new type_arc_2d with record
 		layers : type_signal_layers.set;
 	end record;
 	
 	package type_via_restrict_arcs is new doubly_linked_lists (type_via_restrict_arc);
 
 	
-	type type_via_restrict_circle is new type_circle with record
+	type type_via_restrict_circle is new type_circle_2d with record
 		layers : type_signal_layers.set;
 	end record;
 	
