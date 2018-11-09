@@ -949,21 +949,21 @@ package et_pcb is
 	
 	-- ROUTE RESTRICT
 	type type_route_restrict_line is new type_line_2d with record
-		width	: type_general_line_width;		
+		width	: type_general_line_width; -- CS use subtype for reasonable range
 		layers 	: type_signal_layers.set;
 	end record;
 	
 	package type_route_restrict_lines is new doubly_linked_lists (type_route_restrict_line);
 
 	type type_route_restrict_arc is new type_arc_2d with record
-		width	: type_general_line_width;
+		width	: type_general_line_width; -- CS use subtype for reasonable range
 		layers 	: type_signal_layers.set;
 	end record;
 	
 	package type_route_restrict_arcs is new doubly_linked_lists (type_route_restrict_arc);
 	
 	type type_route_restrict_circle is new type_circle_2d with record
-		width	: type_general_line_width;
+		width	: type_general_line_width; -- CS use subtype for reasonable range
 		layers 	: type_signal_layers.set;
 	end record;
 	package type_route_restrict_circles is new doubly_linked_lists (type_route_restrict_circle);
@@ -990,7 +990,7 @@ package et_pcb is
 
 	-- VIA RESTRICT
 	type type_via_restrict_line is new type_line_2d with record
-		width	: type_general_line_width;
+		width	: type_general_line_width; -- CS use subtype for reasonable range
 		layers	: type_signal_layers.set;
 	end record;
 	
@@ -998,7 +998,7 @@ package et_pcb is
 
 	
 	type type_via_restrict_arc is new type_arc_2d with record
-		width	: type_general_line_width;		
+		width	: type_general_line_width; -- CS use subtype for reasonable range
 		layers	: type_signal_layers.set;
 	end record;
 	
@@ -1006,7 +1006,7 @@ package et_pcb is
 
 	
 	type type_via_restrict_circle is new type_circle_2d with record
-		width	: type_general_line_width;		
+		width	: type_general_line_width; -- CS use subtype for reasonable range
 		layers	: type_signal_layers.set;
 	end record;
 	
@@ -1069,7 +1069,9 @@ package et_pcb is
 		technology	: type_assembly_technology;
 		shape		: type_terminal_shape;
 		tht_hole	: type_terminal_tht_hole) -- without meaning if technology is SMT
+
 		is tagged record
+
 		position	: type_terminal_position;
 
 		case technology is
@@ -1086,7 +1088,8 @@ package et_pcb is
 						
 					WHEN NON_CIRCULAR =>
 						size_tht_x, size_tht_y : type_pad_size; -- CS use a composite type for x/y
-
+						-- CS: better a polygon to allow arbitrary shapes for heatsinks etc ?
+						
 						case tht_hole is
 							when DRILLED =>
 								drill_size_dri : type_drill_size;
@@ -1107,6 +1110,7 @@ package et_pcb is
 						
 					WHEN NON_CIRCULAR =>
 						size_smt_x, size_smt_y : type_pad_size; -- CS use a composite type for x/y
+						-- CS: better a polygon to allow arbitrary shapes for heatsinks etc ?
 				end case;
 
 		end case;
