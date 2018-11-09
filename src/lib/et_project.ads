@@ -149,7 +149,82 @@ package et_project is
 
 -- 	procedure write_component_libraries (log_threshold : in et_string_processing.type_log_level);
 -- 	-- Writes the ET native component libraries in libraries_directory_name.
+
+	-- PROJECT FILE SECTIONS
+	project_module_begin		: constant string (1 .. 14) := "[MODULE BEGIN]";
+	project_module_end			: constant string (1 .. 12) := "[MODULE END]";	
+
+	project_net_classes_begin	: constant string (1 .. 19) := "[NET_CLASSES BEGIN]";
+	project_net_classes_end		: constant string (1 .. 17) := "[NET_CLASSES END]";	
+	project_net_class_begin		: constant string (1 .. 17) := "[NET_CLASS BEGIN]";
+	project_net_class_end		: constant string (1 .. 15) := "[NET_CLASS END]";	
+
+	project_nets_begin			: constant string (1 .. 12) := "[NETS BEGIN]";
+	project_nets_end			: constant string (1 .. 10) := "[NETS END]";	
+	project_net_begin			: constant string (1 .. 11) := "[NET BEGIN]";
+	project_net_end				: constant string (1 ..  9) := "[NET END]";	
+
+	project_strands_begin		: constant string (1 .. 15) := "[STRANDS BEGIN]";
+	project_strands_end			: constant string (1 .. 13) := "[STRANDS END]";
+	project_strand_begin		: constant string (1 .. 14) := "[STRAND BEGIN]";
+	project_strand_end			: constant string (1 .. 12) := "[STRAND END]";
+
+	project_segments_begin		: constant string (1 .. 16) := "[SEGMENTS BEGIN]";
+	project_segments_end		: constant string (1 .. 14) := "[SEGMENTS END]";	
+	project_segment_begin		: constant string (1 .. 15) := "[SEGMENT BEGIN]";
+	project_segment_end			: constant string (1 .. 13) := "[SEGMENT END]";	
+
+	project_labels_begin		: constant string (1 .. 14) := "[LABELS BEGIN]";
+	project_labels_end			: constant string (1 .. 12) := "[LABELS END]";
+	project_label_begin			: constant string (1 .. 13) := "[LABEL BEGIN]";
+	project_label_end			: constant string (1 .. 11) := "[LABEL END]";	
+
+	project_submodule_ports_begin	: constant string (1 .. 23) := "[SUBMODULE_PORTS BEGIN]";
+	project_submodule_ports_end		: constant string (1 .. 21) := "[SUBMODULE_PORTS END]";
+	project_port_begin				: constant string (1 .. 12) := "[PORT BEGIN]";
+	project_port_end				: constant string (1 .. 10) := "[PORT END]";
+
+	project_route_begin				: constant string (1 .. 13) := "[ROUTE BEGIN]";
+	project_route_end				: constant string (1 .. 11) := "[ROUTE END]";	
+
+	project_line_begin				: constant string (1 .. 12) := "[LINE BEGIN]";
+	project_line_end				: constant string (1 .. 10) := "[LINE END]";
+
+	project_arc_begin				: constant string (1 .. 11) := "[ARC BEGIN]";
+	project_arc_end					: constant string (1 ..  9) := "[ARC END]";
+
+	project_polygon_begin			: constant string (1 .. 15) := "[POLYGON BEGIN]";
+	project_polygon_end				: constant string (1 .. 13) := "[POLYGON END]";
+
+	project_via_begin				: constant string (1 .. 11) := "[VIA BEGIN]";
+	project_via_end					: constant string (1 ..  9) := "[VIA END]";
 	
+	project_submodules_begin		: constant string (1 .. 18)	:= "[SUBMODULES BEGIN]";
+	project_submodules_end			: constant string (1 .. 16)	:= "[SUBMODULES END]";	
+	project_submodule_begin			: constant string (1 .. 17)	:= "[SUBMODULE BEGIN]";
+	project_submodule_end			: constant string (1 .. 15)	:= "[SUBMODULE END]";	
+
+	project_drawing_frames_begin	: constant string (1 .. 22)	:= "[DRAWING_FRAMES BEGIN]";
+	project_drawing_frames_end		: constant string (1 .. 20)	:= "[DRAWING_FRAMES END]";
+	project_schematic_begin			: constant string (1 .. 17)	:= "[SCHEMATIC BEGIN]";
+	project_schematic_end			: constant string (1 .. 15)	:= "[SCHEMATIC END]";		
+	project_board_begin				: constant string (1 .. 13)	:= "[BOARD BEGIN]";
+	project_board_end				: constant string (1 .. 11)	:= "[BOARD END]";		
+
+	project_devices_begin			: constant string (1 .. 15)	:= "[DEVICES BEGIN]";
+	project_devices_end				: constant string (1 .. 13)	:= "[DEVICES END]";	
+	project_device_begin			: constant string (1 .. 14)	:= "[DEVICE BEGIN]";
+	project_device_end				: constant string (1 .. 12)	:= "[DEVICE END]";	
+	project_unit_begin				: constant string (1 .. 12)	:= "[UNIT BEGIN]";
+	project_unit_end				: constant string (1 .. 10)	:= "[UNIT END]";	
+	project_placeholder_begin		: constant string (1 .. 19)	:= "[PLACEHOLDER BEGIN]";
+	project_placeholder_end			: constant string (1 .. 17)	:= "[PLACEHOLDER END]";	
+	project_package_begin			: constant string (1 .. 15)	:= "[PACKAGE BEGIN]";
+	project_package_end				: constant string (1 .. 13)	:= "[PACKAGE END]";
+
+
+
+
 end et_project;
 
 -- Soli Deo Gloria
