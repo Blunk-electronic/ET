@@ -394,23 +394,24 @@ package et_pcb is
 	function to_string (circle : in type_circle_2d) return string;
 	-- Returns the center and radius of the given circle as string.
 
+	-- CS: functions as above for 3d line, arc, circle
 	
 	
 	-- PCB CONTOUR/OUTLINE
-	type type_pcb_contour_line is new type_line_2d with record
+	type type_pcb_contour_line is new type_line_2d with record -- CS: in the future type_line_3d
 		locked : type_locked := type_locked'first;
 	end record;
 
 	package type_pcb_contour_lines is new doubly_linked_lists (type_pcb_contour_line);
 
 	
-	type type_pcb_contour_arc is new type_arc_2d with record
+	type type_pcb_contour_arc is new type_arc_2d with record  -- CS: in the future type_arc_3d
 		locked : type_locked := type_locked'first;
 	end record;
 	package type_pcb_contour_arcs is new doubly_linked_lists (type_pcb_contour_arc);
 
 	
-	type type_pcb_contour_circle is new type_circle_2d with record
+	type type_pcb_contour_circle is new type_circle_2d with record  -- CS: in the future type_circle_3d
 		locked : type_locked := type_locked'first;
 	end record;
 	package type_pcb_contour_circles is new doubly_linked_lists (type_pcb_contour_circle);
