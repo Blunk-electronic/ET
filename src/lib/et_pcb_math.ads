@@ -22,7 +22,7 @@
 --    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction side" where things are not
 --   finished yet or intended for the future.
@@ -42,15 +42,15 @@ with et_pcb_coordinates;		use et_pcb_coordinates;
 package et_pcb_math is
 
 	
-	function distance (point_one, point_two : in type_point_3d) return type_distance_total;
+	function distance (point_one, point_two : in type_point_2d) return type_distance_total;
 	-- Computes the total distance between point_one and point_two.
 		
 	function arc_end_point (
 	-- Computes the end point of an arc.
-		center		: in type_point_3d;
-		start_point	: in type_point_3d;	
+		center		: in type_point_2d;
+		start_point	: in type_point_2d;	
 		angle 		: in type_angle)
-		return type_point_3d;
+		return type_point_2d;
 		
 	
 end et_pcb_math;

@@ -22,7 +22,7 @@
 --    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction side" where things are not
 --   finished yet or intended for the future.
@@ -391,7 +391,7 @@ package body et_pcb is
 	function package_position (position : in type_package_position) return string is
 	-- Returns the coordinates of a package (in a board) as string.
 	begin
-		return (" position" & to_string (position)
+		return (" position" & to_string (type_point_2d (position))
 			& " angle" & to_string (get_angle (position))
 			& " face" & to_string (get_face (position)));
 	end package_position;
@@ -1034,7 +1034,7 @@ package body et_pcb is
 	begin
 		log ("terminal name " & to_string (name)
 			& " technology" & to_string (terminal.technology)
-			& to_string (type_point_3d (terminal.position))
+			& to_string (type_point_2d (terminal.position))
 			& to_string (angle => get_angle (terminal.position), preamble => true),
 			log_threshold);
 

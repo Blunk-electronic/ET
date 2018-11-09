@@ -114,7 +114,7 @@ package et_pcb is
 
 	-- DRILLS
 	type type_drill is tagged record
-		position	: type_point_3d; -- CS us a 2d point or set z always to zero
+		position	: type_point_2d;
 		diameter	: type_drill_size;
 	end record;
 
@@ -197,7 +197,7 @@ package et_pcb is
 	
 	-- TEXT IN GENERAL
 	type type_text is abstract tagged record
-		position	: type_point_3d;
+		position	: type_point_2d;
 		size_x		: type_text_size;
 		size_y		: type_text_size;
 		width		: type_text_line_width;
@@ -317,30 +317,48 @@ package et_pcb is
 	
 	-- LINE
 	type type_line is abstract tagged record
+		start_point 	: type_point_2d;
+		end_point   	: type_point_2d;
+	end record;
+
+	type type_line_3d is abstract tagged record
 		start_point 	: type_point_3d;
 		end_point   	: type_point_3d;
 	end record;
-
+	
 	-- ARC
 	type type_arc is abstract tagged record
+		center			: type_point_2d;
+		start_point		: type_point_2d;
+		end_point		: type_point_2d;
+-- 		angle			: type_angle;
+	end record;
+
+	type type_arc_3d is abstract tagged record
 		center			: type_point_3d;
 		start_point		: type_point_3d;
 		end_point		: type_point_3d;
 -- 		angle			: type_angle;
 	end record;
-
+	
 	-- CIRCLE
 	type type_circle is abstract tagged record
+		center			: type_point_2d;
+		radius  		: type_distance;
+	end record;
+
+	type type_circle_3d is abstract tagged record
 		center			: type_point_3d;
 		radius  		: type_distance;
 	end record;
 
+	
 	-- POLYGON
 	-- Corner points are collected in an ordered set.
 	-- This prevents placing two identical points on top of each other.
 	package type_polygon_points is new ordered_sets (
-		element_type	=> type_point_3d, -- CS: better a 2d point ?
-		"<"				=> right_point_before_left);
+		element_type	=> type_point_2d,
+		"<"				=> right_point_before_left_2d);
 
 	type type_corner_easing is (NONE, CHAMFER, FILLET);
 	

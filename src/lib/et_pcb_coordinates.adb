@@ -69,9 +69,9 @@ package body et_pcb_coordinates is
 		return type_distance'value (distance);
 	end to_distance;
 
-	function right_point_before_left (right, left : in type_point_3d) return boolean is
+	function right_point_before_left_2d (right, left : in type_point_2d) return boolean is
 	-- Returns true if right point comes before left point.
-	-- Compares axis in this order: x, y, z.
+	-- Compares axis in this order: x, y
 	-- If right point equals left point, returns false.
 		result : boolean := false;
 	begin
@@ -79,11 +79,11 @@ package body et_pcb_coordinates is
 		elsif right.x = left.x then
 			
 			if right.y < left.y then result := true;
-			elsif right.y = left.y then
-
-				if right.z < left.z then result := true;
-				else result := false;
-				end if;
+-- 			elsif right.y = left.y then
+-- 
+-- 				if right.z < left.z then result := true;
+-- 				else result := false;
+-- 				end if;
 				
 			else result := false;
 			end if;
@@ -92,7 +92,7 @@ package body et_pcb_coordinates is
 		end if;
 
 		return result;
-	end right_point_before_left;
+	end right_point_before_left_2d;
 	
 	function mil_to_distance (mil : in string; warn_on_negative : boolean := true) 
 		return type_distance is
@@ -201,53 +201,68 @@ package body et_pcb_coordinates is
 		return type_angle'value (angle);
 	end to_angle;
 	
-	function to_string (point : in type_point_3d'class) return string is
+	function to_string (point : in type_point_2d) return string is
 	begin
-		return position_preamble_3d
+		return position_preamble_2d
 			& to_string (point.x)
 			& latin_1.space
 			& et_coordinates.axis_separator
-			& to_string (point.y)
-			& latin_1.space			
-			& et_coordinates.axis_separator
-			& to_string (point.z);
+			& to_string (point.y);
+-- 			& latin_1.space			
+-- 			& et_coordinates.axis_separator
+-- 			& to_string (point.z);
 	end to_string;
 
-	function point_zero return type_point_3d'class is
-	begin
-		return zero;
-	end point_zero;
-	
 	function terminal_position_default return type_terminal_position'class is
 		pos : type_terminal_position;
 	begin
 		pos.x := zero_distance;
 		pos.y := zero_distance;
-		pos.z := zero_distance;
 		pos.angle := zero_angle;
 		return pos;
 	end terminal_position_default;
 	
 	function package_position_default return type_package_position is
 	begin
-		return (zero with face => TOP, angle => zero_angle);
+		return (zero_2d with face => TOP, angle => zero_angle);
 	end package_position_default;
 
 	procedure set_point (
-		axis 	: in type_axis;
+		axis 	: in type_axis_2d;
 		value	: in type_distance;
-		point	: in out type_point_3d'class) is
+		point	: in out type_point_2d) is
 	begin
 		case axis is
 			when X => point.x := value;
 			when Y => point.y := value;
-			when Z => point.z := value;
 		end case;
 	end set_point;
 
+	procedure set_point (
+		axis 	: in type_axis_2d;
+		value	: in type_distance;
+		point	: in out type_terminal_position) is
+	begin
+		case axis is
+			when X => point.x := value;
+			when Y => point.y := value;
+		end case;
+	end set_point;
+
+	procedure set_point (
+		axis 	: in type_axis_2d;
+		value	: in type_distance;
+		point	: in out type_package_position) is
+	begin
+		case axis is
+			when X => point.x := value;
+			when Y => point.y := value;
+		end case;
+	end set_point;
+	
 	procedure rotate (
 	-- Rotates the given point by the given angle with the origin as center.
-		point	: in out type_point_3d'class; -- z axis ignored -> rotation in z-plane
+		point	: in out type_point_2d;
 		angle	: in type_angle) is
 
 		type type_float_distance is digits 7 range -1000.0 .. 1000.0; -- CS: refine
@@ -333,14 +348,13 @@ package body et_pcb_coordinates is
 	end rotate;
 	
 	function get_axis (
-		axis	: in type_axis;
-		point	: in type_point_3d'class)
+		axis	: in type_axis_2d;
+		point	: in type_point_2d)
 		return type_distance_total is
 	begin
 		case axis is
 			when X => return point.x;
 			when Y => return point.y;
-			when Z => return point.z;
 		end case;
 	end get_axis;
 	
@@ -372,7 +386,7 @@ package body et_pcb_coordinates is
 	
 	function to_terminal_position (
 	-- Composes from a given point and angle the terminal position.
-		point	: in type_point_3d;
+		point	: in type_point_2d;
 		angle	: in type_angle)
 		return type_terminal_position'class is
 		pos : type_terminal_position;

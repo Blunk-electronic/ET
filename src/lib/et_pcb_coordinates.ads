@@ -100,6 +100,11 @@ package et_pcb_coordinates is
 		return type_distance;
 	-- Converts a mil number (given as a string) to millimeters.	
 
+	position_preamble_2d : constant string (1..10) := " pos "
+		& "(x"
+		& et_coordinates.axis_separator
+		& "y)";
+
 	
 	position_preamble_3d : constant string (1..12) := " pos "
 		& "(x"
@@ -125,35 +130,43 @@ package et_pcb_coordinates is
 	type type_point_2d is tagged private;
 	type type_point_3d is tagged private;
 
-	function right_point_before_left (right, left : in type_point_3d) return boolean;
+	function right_point_before_left_2d (right, left : in type_point_2d) return boolean;
 	-- Returns true if right point comes before left point.
-	-- Compares axis is this order: x, y, z.
+	-- Compares axis is this order: x, y
 	-- If right point equals left point, returns false.
 
-	type type_terminal_position is new type_point_3d with private;
+	type type_terminal_position is new type_point_2d with private;
 	type type_package_position is new type_terminal_position with private;
 
-	function to_string (point : in type_point_3d'class) return string;
+	function to_string (point : in type_point_2d) return string;
 	
-	function point_zero return type_point_3d'class;
-
 	function terminal_position_default return type_terminal_position'class;
 
 	function package_position_default return type_package_position;
 
 	procedure set_point (
-		axis 	: in type_axis;
+		axis 	: in type_axis_2d;
 		value	: in type_distance;					 
-		point	: in out type_point_3d'class);
+		point	: in out type_point_2d);
 
+	procedure set_point (
+		axis 	: in type_axis_2d;
+		value	: in type_distance;					 
+		point	: in out type_terminal_position);
+
+	procedure set_point (
+		axis 	: in type_axis_2d;
+		value	: in type_distance;					 
+		point	: in out type_package_position);
+	
 	procedure rotate (
 	-- Rotates the given point by the given angle with the origin as center.
-		point	: in out type_point_3d'class; -- z axis ignored -> rotation in z-plane
+		point	: in out type_point_2d;
 		angle	: in type_angle);
 	
 	function get_axis ( -- CS find a better name
-		axis	: in type_axis;
-		point	: in type_point_3d'class)
+		axis	: in type_axis_2d;
+		point	: in type_point_2d)
 		return type_distance_total;
 	
 	procedure set_angle (
@@ -172,7 +185,7 @@ package et_pcb_coordinates is
 	
 	function to_terminal_position (
 	-- Composes from a given point and angle the terminal position.
-		point	: in type_point_3d;
+		point	: in type_point_2d;
 		angle	: in type_angle)
 		return type_terminal_position'class;
 
@@ -188,9 +201,9 @@ package et_pcb_coordinates is
 		end record;
 
 		zero_2d : constant type_point_2d := (others => zero_distance);
-		zero : constant type_point_3d := (others => zero_distance);
+		zero_3d : constant type_point_3d := (others => zero_distance);
 
-		type type_terminal_position is new type_point_3d with record
+		type type_terminal_position is new type_point_2d with record
 			angle	: type_angle := zero_angle;
 		end record;
 		

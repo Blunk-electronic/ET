@@ -22,7 +22,7 @@
 --    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction side" where things are not
 --   finished yet or intended for the future.
@@ -47,16 +47,18 @@ package body et_pcb_math is
 	type type_float is digits 11 range type_distance_total'first .. type_distance_total'last; -- CS adjust accuracy ?
 	package functions is new ada.numerics.generic_elementary_functions (type_float);
 	
-	function distance (point_one, point_two : in type_point_3d) return type_distance_total is
+	function distance (point_one, point_two : in type_point_2d) return type_distance_total is
 	-- Computes the total distance between point_one and point_two.	
 		distance : type_distance_total; -- to be returned
-		delta_x, delta_y, delta_z : type_float := 0.0;
+		--delta_x, delta_y, delta_z : type_float := 0.0;
+		delta_x, delta_y : type_float := 0.0;
 	begin
 		delta_x := type_float (get_axis (X, point_one) - get_axis (X, point_two));
 		delta_y := type_float (get_axis (Y, point_one) - get_axis (Y, point_two));
-		delta_z := type_float (get_axis (Z, point_one) - get_axis (Z, point_two));
+		--delta_z := type_float (get_axis (Z, point_one) - get_axis (Z, point_two));
 
-		distance := type_distance_total (functions.sqrt (delta_x ** 2) + (delta_y ** 2) + (delta_z ** 2));
+		--distance := type_distance_total (functions.sqrt (delta_x ** 2) + (delta_y ** 2) + (delta_z ** 2));
+		distance := type_distance_total (functions.sqrt (delta_x ** 2) + (delta_y ** 2));
 		
 		return distance;
 	end distance;
@@ -64,15 +66,15 @@ package body et_pcb_math is
 
 	function arc_end_point (
 	-- Computes the end point of an arc.
-		center		: in type_point_3d;
-		start_point	: in type_point_3d;	
+		center		: in type_point_2d;
+		start_point	: in type_point_2d;	
 		angle 		: in type_angle)
-		return type_point_3d is
-		end_point : type_point_3d; -- to be returned
+		return type_point_2d is
+		end_point : type_point_2d; -- to be returned
 	begin
+		-- CS
 		set_point (X, zero_distance, end_point);
 		set_point (Y, zero_distance, end_point);
-		set_point (Z, zero_distance, end_point);
 		
 		return end_point;
 	end arc_end_point;
