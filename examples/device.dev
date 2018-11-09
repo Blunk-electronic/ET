@@ -123,6 +123,7 @@ bom yes
 	[UNIT BEGIN]
 		name A
 		file $my_libraries/NAND.sym
+		position x 3 y 4
 		swap_level 0
 		add_level next
 	[UNIT END]	
