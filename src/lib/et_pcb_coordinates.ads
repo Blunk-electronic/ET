@@ -121,7 +121,8 @@ package et_pcb_coordinates is
 		return string;
 
 	function to_angle (angle : in string) return type_angle;
-	
+
+	type type_point_2d is tagged private;
 	type type_point_3d is tagged private;
 
 	function right_point_before_left (right, left : in type_point_3d) return boolean;
@@ -178,10 +179,15 @@ package et_pcb_coordinates is
 	
 	private
 
-		type type_point_3d is tagged record
-			x, y, z : type_distance := zero_distance;
+		type type_point_2d is tagged record
+			x, y : type_distance := zero_distance;
+		end record;
+		
+		type type_point_3d is new type_point_2d with record
+			z : type_distance := zero_distance;
 		end record;
 
+		zero_2d : constant type_point_2d := (others => zero_distance);
 		zero : constant type_point_3d := (others => zero_distance);
 
 		type type_terminal_position is new type_point_3d with record
