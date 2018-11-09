@@ -905,10 +905,16 @@ package et_pcb is
 	
 	
 	-- KEEPOUT
-	type type_keepout_line is new type_line_2d with null record;
+	type type_keepout_line is new type_line_2d with record
+		width	: type_general_line_width;
+	end record;
+	
 	package type_keepout_lines is new doubly_linked_lists (type_keepout_line);
 
-	type type_keepout_arc is new type_arc_2d with null record;
+	type type_keepout_arc is new type_arc_2d with record
+		width	: type_general_line_width;
+	end record;
+		
 	package type_keepout_arcs is new doubly_linked_lists (type_keepout_arc);
 	
 	type type_keepout_circle is new type_circle_2d with record
@@ -1047,7 +1053,7 @@ package et_pcb is
 	type type_terminal_solder_paste is (NONE, APPLIED);
 	function to_string (solder_paste : in type_terminal_solder_paste) return string;
 	
-	type type_terminal_stop_mask is (CLOSED, OPEN);
+	type type_terminal_stop_mask is (CLOSED, OPEN); -- CS: why ? kicad feature ?
 	function to_string (stop_mask : in type_terminal_stop_mask) return string;
 
 	type type_terminal_tht_hole is (DRILLED, MILLED);
@@ -1087,7 +1093,7 @@ package et_pcb is
 			when SMT =>
 				shape_smt		: type_terminal_shape_smt;
 				face			: type_face;
-				stop_mask 		: type_terminal_stop_mask;
+				stop_mask 		: type_terminal_stop_mask; -- CS: why ?
 				solder_paste	: type_terminal_solder_paste;
 				case shape is
 					when CIRCULAR =>
@@ -1107,7 +1113,7 @@ package et_pcb is
 		log_threshold 	: in et_string_processing.type_log_level);
 	
 	package type_terminals is new indefinite_ordered_maps (
-		key_type		=> et_libraries.type_terminal_name.bounded_string,
+		key_type		=> et_libraries.type_terminal_name.bounded_string, -- H7, 14
 		element_type	=> type_terminal,
 		"<"				=> et_libraries.type_terminal_name."<");
 
