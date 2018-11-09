@@ -2991,50 +2991,24 @@ package body et_kicad_to_native is
 					end copy_ports;
 					
 				begin -- copy_units
-					-- If the kicad component is virtual, we have to insert virtual units in the native device as well.
-					-- If the kicad component is real, we have to insert real units in the native device as well.
 					while unit_cursor_kicad /= et_kicad.type_units_library.no_element loop
 
 						-- Copy the portlist of the current unit. It is required when ports are inserted in the native unit.
 						ports_kicad := element (unit_cursor_kicad).symbol.ports;
 						
-						case element (component_cursor).appearance is
-							when et_libraries.SCH => -- create a virtual unit
-						
-								et_libraries.type_units_internal.insert (
-									container	=> device.units_internal,
-									key			=> key (unit_cursor_kicad), -- the name of the unit
-									position	=> unit_cursor, -- set unit_cursor for later updating the current unit
-									inserted	=> inserted,
-									new_item	=> (
-										appearance	=> et_libraries.SCH,
-										coordinates	=> element (unit_cursor_kicad).coordinates,
-										swap_level	=> <>,
-										add_level	=> <>, -- CS depends on the "global" flag. When true add_level should be "requrest"
-										symbol		=> (et_libraries.type_symbol_base (element (unit_cursor_kicad).symbol)
-														with et_libraries.type_ports.empty_list) -- ports will come later
-										));
-
-							when et_libraries.SCH_PCB => -- create a real unit
-						
-								et_libraries.type_units_internal.insert (
-									container	=> device.units_internal,
-									key			=> key (unit_cursor_kicad), -- the name of the unit
-									position	=> unit_cursor, -- set unit_cursor for later updating the current unit
-									inserted	=> inserted,
-									new_item	=> (
-										appearance	=> et_libraries.SCH_PCB,
-										coordinates	=> element (unit_cursor_kicad).coordinates,
-										swap_level	=> <>,
-										add_level	=> <>, -- CS depends on the "global" flag. When true add_level should be "requrest"
-										symbol		=> (et_libraries.type_symbol_base (element (unit_cursor_kicad).symbol)
-														with et_libraries.type_ports.empty_list) -- ports will come later
-										));
-
-							when others =>
-								raise constraint_error;
-
-						end case;
+						et_libraries.type_units_internal.insert (
+							container	=> device.units_internal,
+							key			=> key (unit_cursor_kicad), -- the name of the unit
+							position	=> unit_cursor, -- set unit_cursor for later updating the current unit
+							inserted	=> inserted,
+							new_item	=> (
+								coordinates	=> element (unit_cursor_kicad).coordinates,
+								swap_level	=> <>,
+								add_level	=> <>, -- CS depends on the "global" flag. When true add_level should be "requrest"
+								symbol		=> (et_libraries.type_symbol_base (element (unit_cursor_kicad).symbol)
+												with et_libraries.type_ports.empty_list) -- ports will come later
+												-- NOTE: Placeholders except for reference and value are discarded here.
+								));
 
 						-- copy ports 
 						et_libraries.type_units_internal.update_element (

@@ -260,8 +260,24 @@ package et_kicad is
 	-- ports at FPGAs.
 	package type_ports_library is new doubly_linked_lists (type_port_library);
 
-	type type_symbol is new et_libraries.type_symbol_base with record
+	type type_symbol (appearance : et_libraries.type_component_appearance) is new et_libraries.type_symbol_base with record
 		ports : type_ports_library.list := type_ports_library.empty_list; -- the ports of the symbol
+
+		-- Placeholders for component wide texts. To be filled with content when 
+		-- a symbol is placed in the schematic:
+		commissioned	: et_libraries.type_text_placeholder (meaning => et_libraries.COMMISSIONED);
+		updated			: et_libraries.type_text_placeholder (meaning => et_libraries.UPDATED);
+		author			: et_libraries.type_text_placeholder (meaning => et_libraries.AUTHOR);
+		-- Symbols have further text placeholders according to the appearance of the component:		
+		case appearance is
+			when et_libraries.SCH_PCB =>
+				packge		: et_libraries.type_text_placeholder (meaning => et_libraries.PACKGE);
+				datasheet	: et_libraries.type_text_placeholder (meaning => et_libraries.DATASHEET);
+				purpose		: et_libraries.type_text_placeholder (meaning => et_libraries.PURPOSE);
+				partcode	: et_libraries.type_text_placeholder (meaning => et_libraries.PARTCODE);
+				bom 		: et_libraries.type_text_placeholder (meaning => et_libraries.BOM);
+			when others => null;
+		end case;
 	end record;
 
 	package type_symbols is new indefinite_ordered_maps (

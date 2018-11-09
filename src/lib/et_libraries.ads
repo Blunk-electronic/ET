@@ -727,7 +727,7 @@ package et_libraries is
 	type type_symbol_text is new type_text (meaning => MISC) with null record;
 	package type_symbol_texts is new doubly_linked_lists (type_symbol_text);
 
-	type type_symbol_base (appearance : type_component_appearance) is tagged record
+	type type_symbol_base is tagged record		
 		shapes		: type_shapes; -- the collection of shapes
 		texts		: type_symbol_texts.list; -- the collection of texts (meaning misc)
 		
@@ -735,19 +735,6 @@ package et_libraries is
 		-- a symbol is placed in the schematic:
 		reference	: type_text_placeholder (meaning => et_libraries.REFERENCE);
 		value		: type_text_placeholder (meaning => et_libraries.VALUE);
-		commissioned: type_text_placeholder (meaning => et_libraries.COMMISSIONED); -- CS: remove or move to kicad
-		updated		: type_text_placeholder (meaning => et_libraries.UPDATED); -- CS: remove or move to kicad
-		author		: type_text_placeholder (meaning => et_libraries.AUTHOR); -- CS: remove or move to kicad
-		-- Symbols have further text placeholders according to the appearance of the component:
-		case appearance is
-			when sch_pcb =>
-				packge		: type_text_placeholder (meaning => et_libraries.PACKGE); -- CS: remove or move to kicad
-				datasheet	: type_text_placeholder (meaning => et_libraries.DATASHEET); -- CS: remove or move to kicad
-				purpose		: type_text_placeholder (meaning => et_libraries.PURPOSE);
-				partcode	: type_text_placeholder (meaning => et_libraries.PARTCODE);
-				bom 		: type_text_placeholder (meaning => et_libraries.BOM);
-			when others => null;
-		end case;
 	end record;
 
 	type type_symbol is new type_symbol_base with record
@@ -782,8 +769,8 @@ package et_libraries is
 	
 	-- An internal unit is a symbol with a swap level.
 	-- An internal unit is owned by the particular component exclusively.
-	type type_unit_internal (appearance : type_component_appearance) is record
-		symbol		: type_symbol (appearance);
+	type type_unit_internal is record
+		symbol		: type_symbol;
 		coordinates	: type_2d_point; -- CS: rename to position
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
 		add_level	: type_unit_add_level := type_unit_add_level'first;
