@@ -413,6 +413,21 @@
 			[BOTTOM END]
 			
 		[KEEPOUT END]
+
+		[ROUTE_RESTRICT BEGIN]
+			same as keepout but with layer numbers:
+				[LINE BEGIN]
+					start x 22.3
+					end y 32.5
+					width 0.2
+					layer 2..15
+				[LINE END]
+
+		[ROUTE_RESTRICT END]
+
+		[VIA_RESTRICT BEGIN]
+			same as route restrict
+		[VIA_RESTRICT END]
 		
 		[COPPER BEGIN]
 			[LINE BEGIN]

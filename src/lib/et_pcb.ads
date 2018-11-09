@@ -949,19 +949,22 @@ package et_pcb is
 	
 	-- ROUTE RESTRICT
 	type type_route_restrict_line is new type_line_2d with record
-		layers : type_signal_layers.set;
+		width	: type_general_line_width;		
+		layers 	: type_signal_layers.set;
 	end record;
 	
 	package type_route_restrict_lines is new doubly_linked_lists (type_route_restrict_line);
 
 	type type_route_restrict_arc is new type_arc_2d with record
-		layers : type_signal_layers.set;
+		width	: type_general_line_width;
+		layers 	: type_signal_layers.set;
 	end record;
 	
 	package type_route_restrict_arcs is new doubly_linked_lists (type_route_restrict_arc);
 	
 	type type_route_restrict_circle is new type_circle_2d with record
-		layers : type_signal_layers.set;
+		width	: type_general_line_width;
+		layers 	: type_signal_layers.set;
 	end record;
 	package type_route_restrict_circles is new doubly_linked_lists (type_route_restrict_circle);
 
@@ -987,21 +990,24 @@ package et_pcb is
 
 	-- VIA RESTRICT
 	type type_via_restrict_line is new type_line_2d with record
-		layers : type_signal_layers.set;
+		width	: type_general_line_width;
+		layers	: type_signal_layers.set;
 	end record;
 	
 	package type_via_restrict_lines is new doubly_linked_lists (type_via_restrict_line);
 
 	
 	type type_via_restrict_arc is new type_arc_2d with record
-		layers : type_signal_layers.set;
+		width	: type_general_line_width;		
+		layers	: type_signal_layers.set;
 	end record;
 	
 	package type_via_restrict_arcs is new doubly_linked_lists (type_via_restrict_arc);
 
 	
 	type type_via_restrict_circle is new type_circle_2d with record
-		layers : type_signal_layers.set;
+		width	: type_general_line_width;		
+		layers	: type_signal_layers.set;
 	end record;
 	
 	package type_via_restrict_circles is new doubly_linked_lists (type_via_restrict_circle);
@@ -1433,7 +1439,9 @@ package et_pcb is
 		assy_doc	: type_assembly_documentation_pcb_both_sides;
 		stencil		: type_stencil_both_sides;
 		stop_mask	: type_stop_mask_both_sides;
-		keepout		: type_keepout_both_sides;		
+		keepout		: type_keepout_both_sides;
+		route_restrict	: type_route_restrict_pcb;
+		via_restrict	: type_via_restrict_pcb;
 		copper		: type_copper_pcb; -- non-electric copper stuff, incl. floating polygons !
 		contour		: type_pcb_contour;
 	end record;
