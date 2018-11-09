@@ -1420,7 +1420,7 @@ package body et_kicad is
 				end_point	: positive := positive (et_string_processing.field_count (line)) - 2;
 
 				-- temporarily we store coordinates of a point here
-				point		: et_coordinates.type_coordinates;
+				point		: et_coordinates.type_2d_point;
 
 				use et_coordinates;
 			begin -- to_polyline

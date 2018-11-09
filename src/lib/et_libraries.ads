@@ -633,8 +633,8 @@ package et_libraries is
 	
 	-- straight lines
 	type type_line is record
-		start_point 	: type_coordinates; -- CS 2d point ?
-		end_point   	: type_coordinates; -- CS 2d point ?
+		start_point 	: type_2d_point;
+		end_point   	: type_2d_point;
 		line_width		: type_line_width;
 	end record;
 	package type_lines is new doubly_linked_lists (type_line);
@@ -644,7 +644,7 @@ package et_libraries is
 	-- Filling can be done even if start and end point do not meet. In this case a virtual line
 	-- is "invented" that connects start and end point.
 	-- Finally the polylines are collected in a simple list.
-	package type_points is new doubly_linked_lists (type_coordinates); -- CS 2d point ?
+	package type_points is new doubly_linked_lists (type_2d_point);
 	type type_polyline is record
 		line_width		: type_line_width;
 		fill			: type_fill;
@@ -655,8 +655,8 @@ package et_libraries is
 	-- Rectangles
 	-- It is sufficient to specifiy the diagonal of the rectangle.
 	type type_rectangle is record
-		start_point		: type_coordinates; -- CS 2d point ? -- CS: rename to corner_A
-		end_point		: type_coordinates; -- CS 2d point ? -- CS: rename to corner_B
+		start_point		: type_2d_point; -- CS: rename to corner_A
+		end_point		: type_2d_point; -- CS: rename to corner_B
 		line_width		: type_line_width;
 		fill			: type_fill;
 	end record;
@@ -664,10 +664,10 @@ package et_libraries is
 	
 	-- Arcs
 	type type_arc is record
-		center			: type_coordinates; -- CS 2d point ?
+		center			: type_2d_point;
 		radius  		: type_distance;
-		start_point		: type_coordinates; -- CS 2d point ?
-		end_point		: type_coordinates; -- CS 2d point ?
+		start_point		: type_2d_point;
+		end_point		: type_2d_point;
 		start_angle		: type_angle; -- CS: ?
 		end_angle		: type_angle; -- CS: ?
 		line_width		: type_line_width;
@@ -677,7 +677,7 @@ package et_libraries is
 
 	-- Circles
 	type type_circle is record
-		center			: type_coordinates; -- CS 2d point ?
+		center			: type_2d_point;
 		radius  		: type_distance;
 		line_width		: type_line_width;
 		fill			: type_fill;
@@ -797,7 +797,7 @@ package et_libraries is
 	-- An external unit has a reference and a swap level.
 	type type_unit_external is record -- CS: parameter appearance ?
 		reference	: type_symbol_library_name.bounded_string; -- like /my_libraries/NAND.sym
-		coordinates	: type_coordinates; -- CS: 2d point -- CS: rename to position -- CS: maybe no need at all ?
+		coordinates	: type_2d_point; -- CS: rename to position
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
 		add_level	: type_unit_add_level := type_unit_add_level'first;
 	end record;
