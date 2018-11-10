@@ -86,7 +86,7 @@ bom yes
 
 			[PLACEHOLDERS BEGIN]
 				[PLACEHOLDER BEGIN]
-					meaning reference/value/purpose/partcode/bom
+					meaning reference/value/purpose
 					position x 40 y 20
 					size x 3.0 y 3.0
 					style

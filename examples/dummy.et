@@ -151,22 +151,24 @@
 			purpose 
 			variant N
 			
-			[UNIT BEGIN]
-				name 1
-				position sheet 2 x 130 y 210
-				rotation 45
-				mirrored no/yes
+			[UNITS BEGIN]
+				[UNIT BEGIN]
+					name 1
+					position sheet 2 x 130 y 210
+					rotation 45
+					mirrored no/yes
 
-				[PLACEHOLDER BEGIN] 
-					meaning reference,value
-					position x 135 y 205
-					size 2.5
-					style
-					line_width 0.15
-					alignment
-				[PLACEHOLDER END] 
+					[PLACEHOLDER BEGIN] 
+						meaning reference,value
+						position x 135 y 205
+						size 2.5
+						style
+						line_width 0.15
+						alignment
+					[PLACEHOLDER END] 
 
-			[UNIT END]
+				[UNIT END]
+			[UNITS END]
 
 			[PACKAGE BEGIN]
 				position x 34.5 y 60.1

@@ -232,6 +232,9 @@ package et_project is
 	section_device_begin			: constant string (1 .. 14)	:= "[DEVICE BEGIN]";
 	section_device_end				: constant string (1 .. 12)	:= "[DEVICE END]";	
 
+	section_units_begin				: constant string (1 .. 13)	:= "[UNITS BEGIN]";
+	section_units_end				: constant string (1 .. 11)	:= "[UNITS END]";
+	
 	section_unit_begin				: constant string (1 .. 12)	:= "[UNIT BEGIN]";
 	section_unit_end				: constant string (1 .. 10)	:= "[UNIT END]";	
 
@@ -327,6 +330,71 @@ package et_project is
 	
 	section_title_block_begin		: constant string (1 .. 19)	:= "[TITLE_BLOCK BEGIN]";
 	section_title_block_end			: constant string (1 .. 17)	:= "[TITLE_BLOCK END]";	
+
+	type type_section_name_project is (
+		SEC_MODULE,
+		SEC_NET_CLASSES,
+		SEC_NET_CLASS,
+		SEC_NETS,
+		SEC_NET,
+		SEC_STRANDS,
+		SEC_STRAND,
+		SEC_SEGMENTS,
+		SEC_SEGMENT,
+		SEC_LABELS,
+		SEC_LABEL,
+		SEC_SUBMODULE_PORTS,
+		SEC_ROUTE,
+		SEC_LINE,
+		SEC_ARC,
+		SEC_POLYGON,
+		SEC_VIA,
+		SEC_SUBMODULES,
+		SEC_SUBMODULE,
+		SEC_FRAMES,
+		SEC_SCHEMATIC,
+		SEC_BOARD,
+		SEC_DEVICES,
+		SEC_DEVICE,
+		SEC_UNITS,
+		SEC_UNIT,
+		SEC_PACKAGE,
+		SEC_PLACEHOLDER,
+		SEC_SILK_SCREEN,
+		SEC_ASSEMBLY_DOCUMENTATION,
+		SEC_KEEPOUT,
+		SEC_ROUTE_RESTRICT,
+		SEC_VIA_RESTRICT,
+		SEC_STOP_MASK,
+		SEC_STENCIL,
+		SEC_COPPER,
+		SEC_PCB_CONTOURS_NON_PLATED,
+		-- CS SEC_PCB_CONTOURS_PLATED
+		SEC_TOP,
+		SEC_BOTTOM
+		);
+
+	type type_section_name_device is (
+		SEC_VARIANTS,
+		SEC_VARIANT,
+		SEC_TERMINAL_PORT_MAP,
+		SEC_UNITS_INTERNAL,
+		SEC_UNIT,
+		SEC_SYMBOL,
+		SEC_SHAPES,
+		SEC_LINE,
+		SEC_ARC,
+		SEC_CIRCLE,
+		SEC_POLYLINE,
+		SEC_RECTANGLE,
+		SEC_TEXTS,
+		SEC_TEXT,
+		SEC_PLACEHOLDERS,
+		SEC_PORTS,
+		SEC_PORT,
+		SEC_UNITS_EXTERNAL
+		);
+
 	
 end et_project;
 
