@@ -22,7 +22,7 @@
 --    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction side" where things are not
 --   finished yet or intended for the future.
@@ -2260,7 +2260,7 @@ package body et_configuration is
 		use et_general;
 		function comment return string is begin return comment_mark & latin_1.space; end comment;
 	begin
-		et_export.create_report;
+		--et_export.create_report;
 		--reset_warnings_counter;
 
 	
@@ -2473,12 +2473,12 @@ package body et_configuration is
 		put_line (configuration_file_handle, comment & system_name & " configuration end");
 		close (configuration_file_handle);
 
-		et_export.close_report;
+		--et_export.close_report;
 
 		exception
 			when event:
 				others => 
-					et_export.close_report;
+					et_string_processing.close_report;
 					put_line (standard_output, message_error & "Read export report for warnings and error messages !"); -- CS: show path to report file
 
 		

@@ -53,18 +53,18 @@ package et_import is
 
 -- FILES, DIRECTORIES AND HANDLES
 
-	function file_report_import return string;
-	-- Returns the relative path and name of the import report file.
+-- 	function file_report_import return string;
+-- 	-- Returns the relative path and name of the import report file.
 	
-	report_handle : ada.text_io.file_type;
+-- 	report_handle : ada.text_io.file_type;
 
-	type type_warning_counter is private;
+-- 	type type_warning_counter is private;
 	
-	procedure increment_warning_counter;
-	-- Increments the warning counter by one.
-
-	function warning_count return string;
-	-- Returns the number of warnings as string.
+-- 	procedure increment_warning_counter;
+-- 	-- Increments the warning counter by one.
+-- 
+-- 	function warning_count return string;
+-- 	-- Returns the number of warnings as string.
 	
 	-- CAD FORMATS
 	type type_cad_format is (
@@ -93,19 +93,19 @@ package et_import is
 	-- Checks if the given project of the given format exists in the current working directory.
 	
 	
-	procedure create_report;
-	-- Creates the report file in report_directory.
-	-- Sets the output to the report file.
-	-- Leaves the report file open for further puts.
+-- 	procedure create_report;
+-- 	-- Creates the report file in report_directory.
+-- 	-- Sets the output to the report file.
+-- 	-- Leaves the report file open for further puts.
+-- 
+-- 	procedure close_report;
+-- 	-- Writes the report footer and closes the report file.
+-- 	-- Sets the output back to standard_output.
 
-	procedure close_report;
-	-- Writes the report footer and closes the report file.
-	-- Sets the output back to standard_output.
-
-	private
-		type type_warning_counter is new natural;
+-- 	private
+-- 		type type_warning_counter is new natural;
 		
-		warning_counter : type_warning_counter := 0;
+-- 		warning_counter : type_warning_counter := 0;
 
 end et_import;
 

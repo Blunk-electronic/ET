@@ -22,7 +22,7 @@
 --    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction side" where things are not
 --   finished yet or intended for the future.
@@ -262,13 +262,46 @@ package et_string_processing is
 	-- Returns the number of fields in the given line.
 
 	function lines_equally (left, right : in type_fields_of_line) return boolean;
+
+	report_handle : ada.text_io.file_type; -- CS rename to log_handle
+	
+	type type_warning_counter is private;
+
+	procedure increment_warning_counter;
+	-- Increments the warning counter by one.
+
+	function warning_count return type_warning_counter;
+	-- Returns the number of warnings.
+	
+	function warning_count return string;
+	-- Returns the number of warnings as string.
+
+	function no_warnings return boolean;
+	-- Returns true if no warnings have been generated.
+
+	function file_report_import return string;
+	-- Returns the relative path and name of the import report file.
+	
+	procedure create_report;
+	-- Creates the report file in report_directory.
+	-- Sets the output to the report file.
+	-- Leaves the report file open for further puts.
+
+	procedure close_report;
+	-- Writes the report footer and closes the report file.
+	-- Sets the output back to standard_output.
 	
 	private
-		type type_fields_of_line is record
-			fields		: type_list_of_strings.vector;
-			field_count	: count_type;		-- number of fields in line
-			number		: positive_count; 	-- line numer
-		end record;
+	
+	type type_warning_counter is new natural;
+		
+	warning_counter : type_warning_counter := 0;
+	
+	type type_fields_of_line is record
+		fields		: type_list_of_strings.vector;
+		field_count	: count_type;		-- number of fields in line
+		number		: positive_count; 	-- line numer
+	end record;
 
 
 		

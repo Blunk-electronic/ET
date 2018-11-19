@@ -22,7 +22,7 @@
 --    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction side" where things are not
 --   finished yet or intended for the future.
@@ -44,19 +44,19 @@ with et_string_processing;		--use et_string_processing;
 package et_export is
 
 
-	function file_report_export return string;
-	-- Returns the relative path and name of the export report file.
+-- 	function file_report_export return string;
+-- 	-- Returns the relative path and name of the export report file.
 
-	type type_warning_counter is private;
+-- 	type type_warning_counter is private;
 	
-	procedure increment_warning_counter;
+-- 	procedure increment_warning_counter;
 	-- Increments the warning counter by one.
 
-	function warning_count return string;
+-- 	function warning_count return string;
 	-- Returns the number of warnings as string.
 
 	
-	report_handle : ada.text_io.file_type;
+-- 	report_handle : ada.text_io.file_type;
 
 
 	
@@ -66,12 +66,12 @@ package et_export is
 	-- notified about missing cad format.
 	cad_format : type_cad_format := type_cad_format'first; 
 
-	procedure create_report;
+-- 	procedure create_report;
 	-- Creates the report file in report_directory.
 	-- Sets the output to the report file.
 	-- Leaves the report file open for further puts.
 
-	procedure close_report;
+-- 	procedure close_report;
 	-- Writes the report footer and closes the report file.
 	-- Sets the output back to standard_output.
 
@@ -84,10 +84,10 @@ package et_export is
 		project			: in string;
 		log_threshold	: in et_string_processing.type_log_level);
 
-	private
-		type type_warning_counter is new natural;
-		
-		warning_counter : type_warning_counter := 0;
+-- 	private
+-- 		type type_warning_counter is new natural;
+-- 		
+-- 		warning_counter : type_warning_counter := 0;
 	
 end et_export;
 

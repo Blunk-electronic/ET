@@ -149,12 +149,12 @@ package body et_string_processing is
 		use et_import;
 		use et_export;
 	begin
-		if name (current_output) = name (et_import.report_handle) then
-			et_import.increment_warning_counter;
-			return warning & et_import.warning_count & " : ";
-		elsif name (current_output) = name (et_export.report_handle) then
-			et_export.increment_warning_counter;
-			return warning & et_export.warning_count & " : ";
+		if name (current_output) = name (report_handle) then
+			increment_warning_counter;
+			return warning & warning_count & " : ";
+-- 		elsif name (current_output) = name (et_export.report_handle) then
+-- 			et_export.increment_warning_counter;
+-- 			return warning & et_export.warning_count & " : ";
 		else
 			return warning (1..7) & " : ";
 		end if;
@@ -821,6 +821,94 @@ package body et_string_processing is
 		
 		return true;
 	end lines_equally;
+
+	procedure increment_warning_counter is begin
+	-- Increments the warning counter by one.
+		warning_counter := warning_counter + 1;
+	end increment_warning_counter;
+
+	function warning_count return type_warning_counter is begin
+	-- Returns the number of warnings.
+		return warning_counter;
+	end warning_count;
+
+	function no_warnings return boolean is begin
+	-- Returns true if no warnings have been generated.
+		if warning_counter = 0 then return true;
+		else return false;
+		end if;
+	end no_warnings;
+	
+	function warning_count return string is begin
+	-- Returns the number of warnings as string.
+		return type_warning_counter'image (warning_counter);
+	end warning_count;
+
+	function file_report_import return string is
+	-- Returns the relative path and name of the import report file.
+		use et_general;
+	begin
+		return compose ( 
+			containing_directory => compose (work_directory, report_directory),
+			name => "log_messages",
+			extension => report_extension
+			);
+	end file_report_import;
+
+	procedure create_report is
+	-- Creates the report file in report_directory.
+	-- Sets the output to the report file.
+	-- Leaves the report file open for further puts.
+		use et_general;		
+    begin
+		create (file => report_handle,
+				mode => out_file, 
+				name => file_report_import);
+
+		set_output (report_handle);
+		
+		put_line (system_name & " " & version & " messages log");
+		put_line (date);
+		put_line (metric_system);
+		put_line (angles_in_degrees);
+		put_line (to_string (log_level));
+		put_line (row_separator_double);		
+	end create_report;
+
+	procedure close_report is
+	-- Writes the report footer and closes the report file.
+	-- Sets the output back to standard_output.
+		use et_general;
+	begin
+		if is_open (report_handle) then
+
+			set_output (report_handle);
+			
+			put_line (row_separator_double);
+
+			if no_warnings then
+				put_line ("no warnings");
+			else
+				put_line ("warnings" & warning_count);
+			end if;
+			
+			put_line (row_separator_single);
+			
+			put_line (date);
+			put_line (system_name & " log messages end");
+
+			set_output (standard_output);
+			
+			close (report_handle);
+
+			if not no_warnings then -- means if there are warnings
+				put_line (standard_output, "WARNING ! "
+					& "Read log file " & file_report_import & " for warnings and error messages !");
+			end if;
+			
+		end if;
+	end close_report;
+
 	
 end et_string_processing;
 

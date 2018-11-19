@@ -223,7 +223,7 @@ procedure et is
 
 		create_work_directory;
 		create_report_directory;
-		et_import.create_report; -- directs all puts to the report file
+		et_string_processing.create_report; -- directs all puts to the report file
 
 		-- read configuration file if specified. otherwise issue warning
 		if et_configuration.type_configuration_file_name.length (conf_file_name) > 0 then
@@ -258,7 +258,7 @@ procedure et is
 		exception
 			when event:
 				others =>
-					et_import.close_report;
+					et_string_processing.close_report;
 					put_line (standard_output, message_error & "Read import report for warnings and error messages !"); -- CS: show path to report file
 					raise;
 
@@ -281,7 +281,7 @@ procedure et is
 		
 		create_work_directory;
 		create_report_directory;
-		et_import.create_report; -- directs all puts to the report file
+		et_string_processing.create_report; -- directs all puts to the report file
 
 		-- Read configuration file if specified. otherwise issue warning 
 		-- CS: make a procedure as this is used by procedure import_desing too.
@@ -359,7 +359,7 @@ procedure et is
 		exception
 			when event:
 				others =>
-					et_import.close_report;
+					et_string_processing.close_report;
 					--put (exception_message (event));
 					put_line (standard_output, message_error & "Read import report for warnings and error messages !"); -- CS: show path to report file
 					raise;
@@ -375,7 +375,7 @@ procedure et is
 		use et_configuration;
 	begin
 		-- export useful things from the imported modules
-		et_export.create_report;
+		--et_export.create_report;
 		--reset_warnings_counter;
 
 		case et_import.cad_format is
@@ -453,7 +453,7 @@ procedure et is
 		exception
 			when event:
 				others => 
-					et_export.close_report;
+					close_report;
 					put_line (standard_output, message_error & "Read export report for warnings and error messages !"); -- CS: show path to report file
 					raise;
 				
@@ -466,7 +466,7 @@ procedure et is
 		use et_configuration;
 	begin
 		-- Log messages go in the import report:
-		set_output (et_import.report_handle);
+		set_output (report_handle);
 
 		case et_import.cad_format is
 			when et_import.KICAD_V4 | et_import.KICAD_V5 =>
@@ -488,7 +488,7 @@ procedure et is
 				raise constraint_error; -- CS
 		end case;
 		
-		et_import.close_report;
+		et_string_processing.close_report;
 		-- CS might be good to leave the import report open for other things that follow
 		
 	end read_boards;
@@ -513,7 +513,8 @@ procedure et is
 	end convert;
 		
 begin -- main
-
+	create_report;
+	
 	-- process command line arguments
 	get_commandline_arguments;
 
@@ -540,12 +541,10 @@ begin -- main
 			read_boards; -- writes in import report. closes import report
 
 			-- Log messages go in the export report:
-			set_output (et_export.report_handle);
+			--set_output (et_export.report_handle);
 
 			convert;
 			
-			et_export.close_report;
-
 			
 		when et_general.import_modules =>
 			-- The targeted native ET project must be specified via cmd line parameter:
@@ -561,11 +560,10 @@ begin -- main
 			read_boards; -- writes in import report. closes import report
 
 			-- Log messages go in the export report:
-			set_output (et_export.report_handle);
+			--set_output (et_export.report_handle);
 
 			convert;
 			
-			et_export.close_report;
 	end case;
 
 
@@ -574,8 +572,7 @@ begin -- main
 		when event:
 			others => 
 				log (ada.exceptions.exception_message (event), console => true);
-				et_import.close_report;
-				et_export.close_report;
+				close_report;
 				set_exit_status (failure);
 
 end et;
