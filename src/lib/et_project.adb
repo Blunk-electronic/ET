@@ -204,9 +204,9 @@ package body et_project is
 		-- set the global project_file_name
 		log ("setting global project file name ...", log_threshold + 1);
 		project_file_name := type_project_file_name.to_bounded_string (compose (
-			containing_directory => to_string (path),
-			name => to_string (project_name),
-			extension => project_file_name_extension));
+			containing_directory	=> to_string (path),
+			name 					=> to_string (project_name),
+			extension 				=> project_file_name_extension));
 		
 		log (" global project file name is now " & type_project_file_name.to_string (project_file_name), log_threshold + 2);
 
@@ -251,6 +251,10 @@ package body et_project is
 		log ("saving project ...", log_threshold);
 		set_output (project_file_handle);
 
+
+		-- CS write content
+
+		
 		-- close native project file
 		write_project_footer;
 
@@ -269,20 +273,69 @@ package body et_project is
 	procedure open_project (log_threshold : in et_string_processing.type_log_level) is
 	-- Opens and reads the schematic and layout data present in project file (project_file_handle).
 		use et_string_processing;
-	begin
-		log ("opening project ...", log_threshold);
--- 		set_input (project_file_handle);
--- 
--- 		-- close native project file
--- 		write_project_footer;
--- 
--- 		set_output (standard_output);		
--- 		close (project_file_handle);
+		use ada.directories;
 
+		line : et_string_processing.type_fields_of_line;
+	begin
+		log ("opening project '" & to_string (project_name) & "' ...", log_threshold, console => true);
+		log_indentation_up;
+
+		--log ("directory " & base_name (to_string (project_name)));
+		
+		project_file_name := type_project_file_name.to_bounded_string (compose (
+			containing_directory	=> to_string (project_name),
+			name 					=> base_name (to_string (project_name)),
+			extension 				=> project_file_name_extension));
+
+		log ("project file is " & type_project_file_name.to_string (project_file_name), log_threshold + 1);
+		
+		if exists (type_project_file_name.to_string (project_file_name)) then
+
+			-- open project file
+			open (
+				file => project_file_handle,
+				mode => in_file, 
+				name => type_project_file_name.to_string (project_file_name));
+
+			set_input (project_file_handle);
+
+			-- read the file line by line
+			while not end_of_file loop
+				line := et_string_processing.read_line (
+					line 			=> get_line,
+					number			=> ada.text_io.line (current_input),
+					comment_mark 	=> et_string_processing.comment_mark,
+					delimiter_wrap	=> true, -- if connector purpose is given in quotations
+					ifs 			=> latin_1.space); -- fields are separated by space
+
+				-- we are interested in lines that contain something. emtpy lines are skipped:
+				if field_count (line) > 0 then
+					put_line (standard_output, to_string (line));
+
+					-- CS read content
+				end if;
+			end loop;
+
+			
+			set_input (standard_input);
+			close (project_file_handle);
+
+		else
+			log_indentation_reset;
+			log (message_error & "Native project file " & type_project_file_name.to_string (project_file_name) 
+				 & " does not exist !", console => true);
+			--log ("Example to open the native project by specifying the project directory:", console => true);			log ("Example to open the native project by specifying the project directory:", console => true);
+			--log (system_name_cmd_line & "openetample to open the native project by specifying the project directory:", console => true);
+			raise constraint_error;
+		end if;
+		log_indentation_down;
+		
 		exception when event:
 			others => 
 				log (ada.exceptions.exception_message (event), console => true);
-				close (project_file_handle);
+				if is_open (project_file_handle) then
+					close (project_file_handle);
+				end if;
 				raise;
 
 	end open_project;

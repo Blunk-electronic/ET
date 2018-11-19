@@ -204,7 +204,9 @@ package et_string_processing is
 	function trim_space_in_string (text_in : in string) return string;
 	-- shrinks successive space characters to a single one in given string
 
-
+	function remove_trailing_directory_separator (path_in : string) return string;
+	-- removes a trailing directory separator.
+	
 	procedure write_message (
 		file_handle : in ada.text_io.file_type;
 		identation : in natural := 0;

@@ -83,6 +83,7 @@ procedure et is
 						& latin_1.space & switch_import_modules -- no parameter
 						& latin_1.space & switch_configuration_file & latin_1.equals_sign
 						& latin_1.space & switch_native_project & latin_1.equals_sign
+						& latin_1.space & switch_native_project_open & latin_1.equals_sign						
 					) is
 
 				when latin_1.hyphen => -- which is a '-'
@@ -102,7 +103,7 @@ procedure et is
 						module_name_import := et_project.type_project_name.to_bounded_string (parameter);
 
 						-- set operator action
-						operator_action := import_module;
+						operator_action := IMPORT_MODULE;
 
 					elsif full_switch = switch_import_format then
 						put_line ("import format " & parameter);
@@ -112,13 +113,13 @@ procedure et is
 						put_line ("import modules as specified by configuraton file");
 
 						-- set operator action
-						operator_action := import_modules;
+						operator_action := IMPORT_MODULES;
 						
 					elsif full_switch = switch_make_default_conf then -- make configuration file
 						put_line ("configuration file " & parameter);
 
 						-- set operator action
-						operator_action := make_configuration;
+						operator_action := MAKE_CONFIGURATION;
 						conf_file_name := et_configuration.type_configuration_file_name.to_bounded_string (parameter);
 
 					elsif full_switch = switch_configuration_file then -- define configuration file
@@ -126,8 +127,15 @@ procedure et is
 						conf_file_name := et_configuration.type_configuration_file_name.to_bounded_string (parameter);
 
 					elsif full_switch = switch_native_project then
-						put_line ("native project " & parameter);
+						put_line ("native target project " & parameter);
 						project_name := et_project.to_project_name (parameter);
+
+					elsif full_switch = switch_native_project_open then
+						put_line ("native project " & parameter);
+						project_name := et_project.to_project_name (remove_trailing_directory_separator (parameter));
+
+						-- set operator action
+						operator_action := OPEN_NATIVE_PROJECT;
 						
 					elsif full_switch = switch_log_level then
 						put_line ("log level " & parameter);
@@ -487,15 +495,14 @@ begin -- main
 	get_commandline_arguments;
 
 	case operator_action is
-		when et_general.request_help =>
+		when et_general.REQUEST_HELP =>
 			null; -- CS
 
-		when et_general.make_configuration =>
+		when et_general.MAKE_CONFIGURATION =>
 			et_configuration.make_default_configuration (conf_file_name, log_threshold => 0);
 
 
-			
-		when et_general.import_module =>
+		when et_general.IMPORT_MODULE =>
 			-- The targeted native ET project must be specified via cmd line parameter:
 			test_if_native_project_specified;
 			
@@ -511,7 +518,7 @@ begin -- main
 			convert;
 			
 			
-		when et_general.import_modules =>
+		when et_general.IMPORT_MODULES =>
 			-- The targeted native ET project must be specified via cmd line parameter:
 			test_if_native_project_specified;
 
@@ -525,7 +532,10 @@ begin -- main
 			read_boards; -- writes in import report. closes import report
 
 			convert;
-			
+
+
+		when et_general.OPEN_NATIVE_PROJECT =>
+			et_project.open_project (log_threshold => 0);
 	end case;
 
 	close_report;

@@ -141,15 +141,11 @@ package body et_string_processing is
 	end angles_in_degrees;	
 	
 	function message_warning return string is
-	-- Returns a warning string and increments the import/export warning counter.
+	-- Returns a warning string and increments the warning counter.
 		warning : constant string (1..9) := "WARNING #";
 	begin
-		if name (current_output) = name (report_handle) then
-			increment_warning_counter;
-			return warning & warning_count & " : ";
-		else
-			return warning (1..7) & " : ";
-		end if;
+		increment_warning_counter;
+		return warning & trim (warning_count, left) & " : ";
 	end message_warning;
 
 	function message_note return string is
@@ -391,7 +387,19 @@ package body et_string_processing is
 		return to_string(s);
 	end trim_space_in_string;
 
+	function remove_trailing_directory_separator (path_in : string) return string is
+	-- removes a trailing directory separator.
+	begin
+		if 	path_in (path_in'last) = '/' or -- on linux
+			path_in (path_in'last) = '\' then -- on windows
 
+			return path_in (path_in'first .. path_in'last - 1);
+		else
+			return path_in;
+		end if;
+	end remove_trailing_directory_separator;
+
+		
 	procedure write_message (
 		file_handle : in ada.text_io.file_type;
 		identation : in natural := 0;
@@ -849,9 +857,8 @@ package body et_string_processing is
 
 	procedure create_report is
 	-- Creates the report file in report_directory.
-	-- Sets the output to the report file.
-	-- Leaves the report file open for further puts.
-		use et_general;		
+		use et_general;
+		previous_output : ada.text_io.file_type renames current_output;
     begin
 		create (file => report_handle,
 				mode => out_file, 
@@ -863,7 +870,9 @@ package body et_string_processing is
 		put_line (date);
 		put_line (metric_system);
 		put_line (angles_in_degrees);
-		put_line (row_separator_double);		
+		put_line (row_separator_double);
+
+		set_output (previous_output);
 	end create_report;
 
 	procedure close_report is
