@@ -97,11 +97,11 @@ package body et_string_processing is
 		text	: in string;
 		level	: in type_log_level := type_log_level'first;
 		console	: in boolean := false) is
-	-- Writes the given text with the current log_indentation in the current output. 
+	-- Writes the given text with the current log_indentation in the logfile. 
 	-- If the system wide log level is greater or equal the the given log_level the given text is put on the log.
 	begin
 		if log_level >= level then
-			put_line (current_output, natural (log_indentation) * latin_1.space & text);
+			put_line (report_handle, natural (log_indentation) * latin_1.space & text);
 
 			if console then
 				put_line (standard_output, natural (log_indentation) * latin_1.space & text);

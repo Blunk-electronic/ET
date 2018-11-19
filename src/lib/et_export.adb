@@ -41,80 +41,6 @@ with et_string_processing;			use et_string_processing;
 
 package body et_export is
 
--- 	function file_report_export return string is
--- 	-- Returns the relative path and name of the export report file.
--- 		use et_general;
--- 	begin
--- 		return compose ( 
--- 			containing_directory => compose (work_directory, report_directory),
--- 			name => "export",
--- 			extension => report_extension
--- 			);
--- 	end file_report_export;
-
--- 	procedure increment_warning_counter is begin
--- 	-- Increments the warning counter by one.
--- 		warning_counter := warning_counter + 1;
--- 	end increment_warning_counter;
--- 
--- 	function warning_count return string is begin
--- 	-- Returns the number of warnings as string.
--- 		return type_warning_counter'image (warning_counter);
--- 	end warning_count;
-	
--- 	procedure create_report is
--- 	-- Creates the report file in report_directory.
--- 	-- Sets the output to the report file.
--- 	-- Leaves the report file open for further puts.
---     begin
--- 		create (file => et_export.report_handle, mode => out_file, 
--- 				name => file_report_export);
--- 
--- 		set_output (et_export.report_handle);
--- 		
--- 		put_line (et_general.system_name & " " & et_general.version & " export report");
--- 		put_line (date);
--- 		put_line (metric_system);
--- 		put_line (angles_in_degrees);
--- 		put_line (to_string (log_level));
--- 		put_line (row_separator_double);
--- 		log_indentation_reset;
--- 	end create_report;
-
--- 	procedure close_report is
--- 	-- Writes the report footer and closes the report file.
--- 	-- Sets the output back to standard_output.
--- 	begin
--- 		if is_open (et_export.report_handle) then
--- 
--- 			set_output (et_export.report_handle);
--- 			
--- 			put_line (row_separator_double);
--- 			
--- 			if warning_counter = 0 then
--- 				put_line ("no warnings");
--- 			else
--- 				put_line ("warnings" & type_warning_counter'image (warning_counter));
--- 			end if;
--- 			
--- 			put_line (row_separator_single);
--- 			
--- 			put_line (date);
--- 			put_line (et_general.system_name & " export report end");
--- 
--- 			set_output (standard_output);
--- 			
--- 			close (et_export.report_handle);
--- 
--- 			if warning_counter > 0 then
--- 				put_line (standard_output, "WARNING ! "
--- 					& "Read export report " & file_report_export 
--- 					& " for warnings and error messages !");
--- 			end if;
--- 		end if;
--- 			
--- 	end close_report;
-
 	procedure create_project_directory (
 	-- Creates given project directory in work_directory of ET.
 	-- Creates subdirectory for CAM
@@ -131,18 +57,6 @@ package body et_export is
 			create_path (compose (compose (work_directory, project), directory_cam));
 		end if;
 	end create_project_directory;
-
-
--- 	function file_name_export (name : in string) return string is
--- 	-- Returns the relative path and name of the file to be exported.
--- 		use et_general;
--- 	begin
--- 		return compose ( 
--- 			containing_directory => compose (work_directory, report_directory),
--- 			name => name,
--- 			extension => report_extension
--- 			);
--- 	end file_name_export;
 
 end et_export;
 

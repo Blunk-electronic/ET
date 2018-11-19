@@ -3325,18 +3325,6 @@ package body et_kicad_to_native is
 				position	=> module_cursor_kicad,
 				process		=> copy_libraries'access);
 
--- 			log ("creating native project in " &
--- 				 et_project.type_et_project_path.to_string (project_path) 
--- 				 & " ...", log_threshold);
--- 
--- 			project_name := et_project.type_project_name.to_bounded_string (
--- 				et_coordinates.to_string (et_kicad.type_rig.key (module_cursor_kicad)));
--- 			
--- 			et_project.create_project_directory (
--- 				project_name	=> project_name,
--- 				project_path	=> project_path,
--- 				log_threshold 	=> log_threshold + 1);
-			
 			log_indentation_down;
 			next (module_cursor_kicad);
 		end loop;

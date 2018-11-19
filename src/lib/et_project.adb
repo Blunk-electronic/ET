@@ -245,8 +245,6 @@ package body et_project is
 			put_line (comment_mark & " " & date);
 			put_line (comment_mark & " project " & to_string (project_name) & " file end");
 			new_line;
-
-			close (project_file_handle);
 		end write_project_footer;
 
 	begin
@@ -257,7 +255,37 @@ package body et_project is
 		write_project_footer;
 
 		set_output (standard_output);		
+		close (project_file_handle);
+
+		exception when event:
+			others => 
+				log (ada.exceptions.exception_message (event), console => true);
+				close (project_file_handle);
+				raise;
+
 	end save_project;
+
+
+	procedure open_project (log_threshold : in et_string_processing.type_log_level) is
+	-- Opens and reads the schematic and layout data present in project file (project_file_handle).
+		use et_string_processing;
+	begin
+		log ("opening project ...", log_threshold);
+-- 		set_input (project_file_handle);
+-- 
+-- 		-- close native project file
+-- 		write_project_footer;
+-- 
+-- 		set_output (standard_output);		
+-- 		close (project_file_handle);
+
+		exception when event:
+			others => 
+				log (ada.exceptions.exception_message (event), console => true);
+				close (project_file_handle);
+				raise;
+
+	end open_project;
 	
 -- 	procedure write_component_libraries (log_threshold : in et_string_processing.type_log_level) is
 -- 	-- Writes the ET native libraries in libraries_directory_name.
