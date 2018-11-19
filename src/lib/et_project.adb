@@ -232,17 +232,32 @@ package body et_project is
 		
 	end create_project_directory;
 
-	procedure write_project_footer is
-	-- writes a nice footer in the project file and closes it.
+	
+	procedure save_project (log_threshold : in et_string_processing.type_log_level) is
+	-- Saves the schematic and layout data in project file (project_file_handle).
 		use et_string_processing;
-	begin
-		put_line (project_file_handle, comment_mark & " " & row_separator_double);
-		put_line (project_file_handle, comment_mark & " " & date);
-		put_line (project_file_handle, comment_mark & " project " & to_string (project_name) & " file end");
-		new_line (project_file_handle);
 
-		close (project_file_handle);
-	end write_project_footer;
+		procedure write_project_footer is
+		-- writes a nice footer in the project file and closes it.
+		begin
+			log ("closing project file ...", log_threshold + 1);
+			put_line (comment_mark & " " & row_separator_double);
+			put_line (comment_mark & " " & date);
+			put_line (comment_mark & " project " & to_string (project_name) & " file end");
+			new_line;
+
+			close (project_file_handle);
+		end write_project_footer;
+
+	begin
+		log ("saving project ...", log_threshold);
+		set_output (project_file_handle);
+
+		-- close native project file
+		write_project_footer;
+
+		set_output (standard_output);		
+	end save_project;
 	
 -- 	procedure write_component_libraries (log_threshold : in et_string_processing.type_log_level) is
 -- 	-- Writes the ET native libraries in libraries_directory_name.

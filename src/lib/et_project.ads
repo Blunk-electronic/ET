@@ -143,8 +143,8 @@ package et_project is
 		project_path	: in type_et_project_path.bounded_string;
 		log_threshold	: in et_string_processing.type_log_level);
 
-	procedure write_project_footer;
-	-- writes a nice footer in the project file and closes it.
+	procedure save_project (log_threshold : in et_string_processing.type_log_level);
+	-- Saves the schematic and layout data in project file (project_file_handle).
 	
 
 -- 	procedure write_component_libraries (log_threshold : in et_string_processing.type_log_level);
