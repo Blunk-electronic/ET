@@ -44,36 +44,11 @@ with et_string_processing;		--use et_string_processing;
 package et_export is
 
 
--- 	function file_report_export return string;
--- 	-- Returns the relative path and name of the export report file.
-
--- 	type type_warning_counter is private;
-	
--- 	procedure increment_warning_counter;
-	-- Increments the warning counter by one.
-
--- 	function warning_count return string;
-	-- Returns the number of warnings as string.
-
-	
--- 	report_handle : ada.text_io.file_type;
-
-
-	
 	-- CAD FORMATS
 	type type_cad_format is (et_v1, kicad_v4);
 	-- If no format specified via cmd line, a default applies so that the operator can be 
 	-- notified about missing cad format.
 	cad_format : type_cad_format := type_cad_format'first; 
-
--- 	procedure create_report;
-	-- Creates the report file in report_directory.
-	-- Sets the output to the report file.
-	-- Leaves the report file open for further puts.
-
--- 	procedure close_report;
-	-- Writes the report footer and closes the report file.
-	-- Sets the output back to standard_output.
 
 	directory_cam			: constant string (1 ..  3) := "CAM";
 	directory_statistics	: constant string (1 .. 10) := "statistics";
@@ -84,11 +59,6 @@ package et_export is
 		project			: in string;
 		log_threshold	: in et_string_processing.type_log_level);
 
--- 	private
--- 		type type_warning_counter is new natural;
--- 		
--- 		warning_counter : type_warning_counter := 0;
-	
 end et_export;
 
 -- Soli Deo Gloria

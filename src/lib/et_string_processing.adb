@@ -43,9 +43,6 @@ with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.text_io;				use ada.text_io;
 
-with et_import;
-with et_export;
-
 package body et_string_processing is
 
 	function to_string (
@@ -146,15 +143,10 @@ package body et_string_processing is
 	function message_warning return string is
 	-- Returns a warning string and increments the import/export warning counter.
 		warning : constant string (1..9) := "WARNING #";
-		use et_import;
-		use et_export;
 	begin
 		if name (current_output) = name (report_handle) then
 			increment_warning_counter;
 			return warning & warning_count & " : ";
--- 		elsif name (current_output) = name (et_export.report_handle) then
--- 			et_export.increment_warning_counter;
--- 			return warning & et_export.warning_count & " : ";
 		else
 			return warning (1..7) & " : ";
 		end if;
@@ -844,16 +836,16 @@ package body et_string_processing is
 		return type_warning_counter'image (warning_counter);
 	end warning_count;
 
-	function file_report_import return string is
+	function log_file_name return string is
 	-- Returns the relative path and name of the import report file.
 		use et_general;
 	begin
 		return compose ( 
-			containing_directory => compose (work_directory, report_directory),
-			name => "log_messages",
-			extension => report_extension
+			containing_directory 	=> compose (work_directory, report_directory),
+			name					=> "messages",
+			extension				=> report_extension
 			);
-	end file_report_import;
+	end log_file_name;
 
 	procedure create_report is
 	-- Creates the report file in report_directory.
@@ -863,7 +855,7 @@ package body et_string_processing is
     begin
 		create (file => report_handle,
 				mode => out_file, 
-				name => file_report_import);
+				name => log_file_name);
 
 		set_output (report_handle);
 		
@@ -871,7 +863,6 @@ package body et_string_processing is
 		put_line (date);
 		put_line (metric_system);
 		put_line (angles_in_degrees);
-		put_line (to_string (log_level));
 		put_line (row_separator_double);		
 	end create_report;
 
@@ -903,7 +894,7 @@ package body et_string_processing is
 
 			if not no_warnings then -- means if there are warnings
 				put_line (standard_output, "WARNING ! "
-					& "Read log file " & file_report_import & " for warnings and error messages !");
+					& "Read log file " & log_file_name & " for warnings and error messages !");
 			end if;
 			
 		end if;

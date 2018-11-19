@@ -2473,14 +2473,11 @@ package body et_configuration is
 		put_line (configuration_file_handle, comment & system_name & " configuration end");
 		close (configuration_file_handle);
 
-		--et_export.close_report;
-
 		exception
 			when event:
 				others => 
-					et_string_processing.close_report;
 					put_line (standard_output, message_error & "Read export report for warnings and error messages !"); -- CS: show path to report file
-
+					raise;
 		
 	end make_default_configuration;
 

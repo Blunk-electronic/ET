@@ -279,7 +279,7 @@ package et_string_processing is
 	function no_warnings return boolean;
 	-- Returns true if no warnings have been generated.
 
-	function file_report_import return string;
+	function log_file_name return string;
 	-- Returns the relative path and name of the import report file.
 	
 	procedure create_report;

@@ -9181,7 +9181,7 @@ package body et_kicad is
 			exception
 				when others =>
 					error_in_schematic_file (line);
-					et_string_processing.close_report;
+-- 					et_string_processing.close_report;
 -- 					put_line (standard_output, "Read import report for warnings and error messages !"); -- CS: show path to report file
 					raise;					
 

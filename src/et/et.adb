@@ -167,7 +167,7 @@ procedure et is
 		set_directory (to_string (projects_root_dir));
 	end restore_projects_root_directory;
 	
-	procedure create_work_directory is
+	procedure create_work_directory is  -- CS move to et_string_processing
 		use et_general;
 	begin
 		if not exists (work_directory) then
@@ -176,7 +176,7 @@ procedure et is
 		end if;
 	end create_work_directory;
 
-	procedure create_report_directory is
+	procedure create_report_directory is -- CS move to et_string_processing
 		use et_general;
 	begin	
 		if not exists (compose (work_directory, report_directory)) then
@@ -221,10 +221,6 @@ procedure et is
 			raise constraint_error;
 		end if;		
 
-		create_work_directory;
-		create_report_directory;
-		et_string_processing.create_report; -- directs all puts to the report file
-
 		-- read configuration file if specified. otherwise issue warning
 		if et_configuration.type_configuration_file_name.length (conf_file_name) > 0 then
 			et_configuration.read_configuration (
@@ -251,14 +247,9 @@ procedure et is
 		
 		restore_projects_root_directory;
 
-		--et_import.close_report;
-		-- keep import report open for things that follow later (for example layout import)
-		set_output (standard_output);
-
 		exception
 			when event:
 				others =>
-					et_string_processing.close_report;
 					put_line (standard_output, message_error & "Read import report for warnings and error messages !"); -- CS: show path to report file
 					raise;
 
@@ -279,10 +270,6 @@ procedure et is
 	begin
 		log ("importing modules ...");
 		
-		create_work_directory;
-		create_report_directory;
-		et_string_processing.create_report; -- directs all puts to the report file
-
 		-- Read configuration file if specified. otherwise issue warning 
 		-- CS: make a procedure as this is used by procedure import_desing too.
 		if et_configuration.type_configuration_file_name.length (conf_file_name) > 0 then
@@ -352,15 +339,9 @@ procedure et is
 			next (module_cursor_import);
 		end loop;
 		
-		--et_import.close_report;
-		-- keep import report open for things that follow later (for example layout import)
-		set_output (standard_output);
-
 		exception
 			when event:
 				others =>
-					et_string_processing.close_report;
-					--put (exception_message (event));
 					put_line (standard_output, message_error & "Read import report for warnings and error messages !"); -- CS: show path to report file
 					raise;
 
@@ -374,10 +355,6 @@ procedure et is
 		use et_kicad.type_rig;
 		use et_configuration;
 	begin
-		-- export useful things from the imported modules
-		--et_export.create_report;
-		--reset_warnings_counter;
-
 		case et_import.cad_format is
 			when et_import.KICAD_V4 | et_import.KICAD_V5 =>
 		
@@ -447,13 +424,9 @@ procedure et is
 				raise constraint_error; -- CS
 		end case;
 		
-		--et_export.close_report;
-		-- CS might be good to leave the export report open for other things that follow (layout export in native format)
-	
 		exception
 			when event:
 				others => 
-					close_report;
 					put_line (standard_output, message_error & "Read export report for warnings and error messages !"); -- CS: show path to report file
 					raise;
 				
@@ -465,9 +438,6 @@ procedure et is
 		use et_kicad.type_rig;
 		use et_configuration;
 	begin
-		-- Log messages go in the import report:
-		set_output (report_handle);
-
 		case et_import.cad_format is
 			when et_import.KICAD_V4 | et_import.KICAD_V5 =>
 		
@@ -487,10 +457,6 @@ procedure et is
 			when others =>
 				raise constraint_error; -- CS
 		end case;
-		
-		et_string_processing.close_report;
-		-- CS might be good to leave the import report open for other things that follow
-		
 	end read_boards;
 
 
@@ -513,6 +479,8 @@ procedure et is
 	end convert;
 		
 begin -- main
+	create_work_directory;
+	create_report_directory;
 	create_report;
 	
 	-- process command line arguments
@@ -540,9 +508,6 @@ begin -- main
 			log_indentation_reset;
 			read_boards; -- writes in import report. closes import report
 
-			-- Log messages go in the export report:
-			--set_output (et_export.report_handle);
-
 			convert;
 			
 			
@@ -559,14 +524,11 @@ begin -- main
 			log_indentation_reset;
 			read_boards; -- writes in import report. closes import report
 
-			-- Log messages go in the export report:
-			--set_output (et_export.report_handle);
-
 			convert;
 			
 	end case;
 
-
+	close_report;
 
 	exception
 		when event:
