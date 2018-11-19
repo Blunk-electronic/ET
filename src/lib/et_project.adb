@@ -236,7 +236,9 @@ package body et_project is
 	procedure save_project (log_threshold : in et_string_processing.type_log_level) is
 	-- Saves the schematic and layout data in project file (project_file_handle).
 		use et_string_processing;
-
+		use et_schematic;
+		use et_schematic.type_rig;
+		
 		procedure write_project_footer is
 		-- writes a nice footer in the project file and closes it.
 		begin
@@ -247,13 +249,53 @@ package body et_project is
 			new_line;
 		end write_project_footer;
 
+		tab_depth : natural := 0;
+
+		tab : character renames tabulator;
+		space : character renames latin_1.space;
+		
+		procedure tab_depth_up is begin
+			tab_depth := tab_depth + 1;
+		end tab_depth_up;
+
+		procedure tab_depth_down is begin
+			tab_depth := tab_depth - 1;
+		end tab_depth_down;
+		
+		module_cursor : type_rig.cursor := rig.first;
 	begin
 		log ("saving project ...", log_threshold);
 		set_output (project_file_handle);
 
+		
+		-- write content
+		log_indentation_up;
+		
+		while module_cursor /= et_schematic.type_rig.no_element loop
+			
+			log ("module " & to_string (key (module_cursor)), log_threshold);
+			put_line (section_module_begin);
+			tab_depth_up;
 
-		-- CS write content
+			-- generic module name
+			put_line (tab_depth * tabulator & module_generic_name 
+				& space & to_string (element (module_cursor).generic_name));
 
+			-- module instance name
+			put_line (tab_depth * tabulator & module_instance_name 
+				& space & to_string (element (module_cursor).instance));
+
+			
+			put_line (section_module_end);
+			tab_depth_down;
+			
+			new_line;
+			put_line (comment_mark & row_separator_single);
+			new_line;
+			next (module_cursor);
+		end loop;
+		
+		log_indentation_down;
 		
 		-- close native project file
 		write_project_footer;
@@ -276,6 +318,13 @@ package body et_project is
 		use ada.directories;
 
 		line : et_string_processing.type_fields_of_line;
+
+		procedure process_line is 
+		begin
+			put_line (standard_output, to_string (line));
+			-- CS read content
+		end process_line;
+				
 	begin
 		log ("opening project '" & to_string (project_name) & "' ...", log_threshold, console => true);
 		log_indentation_up;
@@ -304,15 +353,13 @@ package body et_project is
 				line := et_string_processing.read_line (
 					line 			=> get_line,
 					number			=> ada.text_io.line (current_input),
-					comment_mark 	=> et_string_processing.comment_mark,
-					delimiter_wrap	=> true, -- if connector purpose is given in quotations
+					comment_mark 	=> et_string_processing.comment_mark, -- comments start with #
+					delimiter_wrap	=> true, -- strings are enclosed in quotations
 					ifs 			=> latin_1.space); -- fields are separated by space
 
 				-- we are interested in lines that contain something. emtpy lines are skipped:
 				if field_count (line) > 0 then
-					put_line (standard_output, to_string (line));
-
-					-- CS read content
+					process_line;
 				end if;
 			end loop;
 

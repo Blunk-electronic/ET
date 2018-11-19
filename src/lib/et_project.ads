@@ -153,10 +153,13 @@ package et_project is
 -- 	procedure write_component_libraries (log_threshold : in et_string_processing.type_log_level);
 -- 	-- Writes the ET native component libraries in libraries_directory_name.
 
-	-- PROJECT FILE SECTIONS
+	-- PROJECT FILE SECTIONS AND KEYWORDS
 	section_module_begin			: constant string (1 .. 14) := "[MODULE BEGIN]";
 	section_module_end				: constant string (1 .. 12) := "[MODULE END]";	
 
+	module_generic_name				: constant string := "generic_name";
+	module_instance_name			: constant string := "instance";
+	
 	section_net_classes_begin		: constant string (1 .. 19) := "[NET_CLASSES BEGIN]";
 	section_net_classes_end			: constant string (1 .. 17) := "[NET_CLASSES END]";	
 

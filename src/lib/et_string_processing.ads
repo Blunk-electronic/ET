@@ -98,6 +98,8 @@ package et_string_processing is
 -- 	
 -- 	type type_log_identation_operation is ( RESET, UP, DOWN, PUSH, POP);
 -- 	procedure log_indentation_operation (operation : in type_log_identation_operation);
+
+	tabulator : constant character := latin_1.ht;
 	
 	function indent (width : in type_indentation_level) return string;
 	
