@@ -184,7 +184,8 @@ package et_project is
 	keyword_pos_x					: constant string := "x";
 	keyword_pos_y					: constant string := "y";		
 	keyword_device					: constant string := "device";
-
+	keyword_port					: constant string := "port";
+	keyword_module					: constant string := "module";	
 	
 	section_net_classes			: constant string := "[NET_CLASSES";
 	section_net_class			: constant string := "[NET_CLASS";
@@ -198,11 +199,14 @@ package et_project is
 	section_segments			: constant string := "[SEGMENTS";
 	section_segment				: constant string := "[SEGMENT";
 
+	section_junctions			: constant string := "[JUNCTIONS";
+	
 	section_labels				: constant string := "[LABELS";
 	section_label				: constant string := "[LABEL";
 
 	section_submodule_ports		: constant string := "[SUBMODULE_PORTS";
-
+	section_port				: constant string := "[PORT";
+	
 	section_route				: constant string := "[ROUTE";
 
 	section_lines				: constant string := "[LINES";

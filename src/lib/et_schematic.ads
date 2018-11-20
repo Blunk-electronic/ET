@@ -191,14 +191,14 @@ package et_schematic is
 
 	-- A net junction is where segments can be connected with each other.
 	type type_net_junction is record -- CS rename to type_junction
-		coordinates : et_coordinates.type_2d_point;
+		coordinates : et_coordinates.type_2d_point; -- CS rename to position
 	end record;
 
 	-- Junctions are to be collected in a list.
 	package type_junctions is new doubly_linked_lists (type_net_junction);
 	
-	-- This is the port of a component:
-	type type_port_component is record
+	-- This is the port of a device:
+	type type_port_component is record -- CS rename to type_port_device
 		reference	: et_libraries.type_component_reference;
 		name		: et_libraries.type_port_name.bounded_string;
 		-- CS unit name ?
@@ -231,11 +231,15 @@ package et_schematic is
 		TAG 	-- a lable that shows the net name, the sheet name and the row/column
 		);		-- where the net continues
 
+	function to_string (appearance : in type_net_label_appearance) return string;
+	
 	type type_net_label_direction is (INPUT, OUTPUT, BIDIR, TRISTATE, PASSIVE);
+
+	function to_string (direction : in type_net_label_direction) return string;
 	
 	type type_net_label (appearance : type_net_label_appearance) is record
-		coordinates	: et_coordinates.type_2d_point;
-		orientation	: et_coordinates.type_angle;
+		coordinates	: et_coordinates.type_2d_point; -- CS rename to position
+		orientation	: et_coordinates.type_angle; -- CS rename to rotation
         size		: et_libraries.type_text_size;
         style		: et_libraries.type_text_style;
 		width		: et_libraries.type_text_line_width;
@@ -270,7 +274,7 @@ package et_schematic is
 	-- A strand has coordinates. 
 	-- x/y position are the lowest values within the strand.
 	type type_strand_base is tagged record
-		coordinates : et_coordinates.type_coordinates; -- lowest x/y
+		coordinates : et_coordinates.type_coordinates; -- lowest x/y -- CS rename to position
 	end record;
 
 

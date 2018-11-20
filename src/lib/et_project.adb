@@ -268,7 +268,7 @@ package body et_project is
 		procedure section_mark (section : in string; mark : in type_section_mark) is begin
 			case mark is
 				when HEADER =>
-					new_line;
+					--new_line;
 					put_line (tab_depth * tabulator & section & space & section_begin);
 					tab_depth_up;
 				when FOOTER =>
@@ -309,6 +309,11 @@ package body et_project is
 			return space & keyword_pos_x & space & to_string (distance_x (pos)) 
 				 & space & keyword_pos_y & space & to_string (distance_y (pos));
 		end position;
+
+		function rotation (angle : in type_angle) return string is
+		begin
+			return type_angle'image (angle);
+		end rotation;
 		
 		procedure query_net_classes (module_name : in type_submodule_name.bounded_string; module : in type_module) is
 			use et_pcb;
@@ -353,7 +358,96 @@ package body et_project is
 				procedure query_segments (strand : in type_strand) is
 					use type_net_segments;
 					segment_cursor : type_net_segments.cursor := strand.segments.first;
-				begin
+
+					procedure query_labels (segment : in type_net_segment) is
+						use type_net_labels;
+						label_cursor : type_net_labels.cursor := segment.labels.first;
+						use et_libraries;
+					begin -- query_labels
+						section_mark (section_labels, HEADER);
+						while label_cursor /= type_net_labels.no_element loop
+							section_mark (section_label, HEADER);
+							
+							write (keyword => keyword_position, parameters => position (element (label_cursor).coordinates));
+							write (keyword => keyword_rotation, parameters => rotation (element (label_cursor).orientation));
+							write (keyword => keyword_size, parameters => 
+								   et_libraries.to_string (size => element (label_cursor).size, preamble => false));
+							write (keyword => keyword_style, parameters => to_string (element (label_cursor).style));
+							write (keyword => keyword_line_width, parameters =>
+								   et_libraries.to_string (width => element (label_cursor).width));
+
+							write (keyword => keyword_appearance, parameters =>
+								   et_schematic.to_string (appearance => element (label_cursor).appearance));
+							
+							-- a tag label also indicates a signal direction
+							if element (label_cursor).appearance = TAG then
+								write (keyword => keyword_direction, parameters => to_string (element (label_cursor).direction));
+							end if;
+							
+							section_mark (section_label, FOOTER);
+							next (label_cursor);
+						end loop;
+						section_mark (section_labels, FOOTER);
+					end query_labels;
+
+					procedure query_junctions (segment : in type_net_segment) is
+						use type_junctions;
+						junction_cursor : type_junctions.cursor := segment.junctions.first;
+					begin -- query_labels
+						section_mark (section_junctions, HEADER);
+						while junction_cursor /= type_junctions.no_element loop
+							write (keyword => keyword_position, parameters => position (element (junction_cursor).coordinates));
+							next (junction_cursor);
+						end loop;
+						section_mark (section_junctions, FOOTER);
+					end query_junctions;
+
+					procedure query_device_ports (segment : in type_net_segment) is
+						use type_ports_component;
+						port_cursor : type_ports_component.cursor := segment.component_ports.first;
+					begin -- query_device_ports
+						section_mark (section_ports, HEADER);
+						while port_cursor /= type_ports_component.no_element loop
+							write (keyword => keyword_device, parameters => 
+								space & et_libraries.to_string (element (port_cursor).reference)
+								& space & keyword_port & space
+								& et_libraries.to_string (element (port_cursor).name)
+								);
+							next (port_cursor);
+						end loop;
+						section_mark (section_ports, FOOTER);
+					end query_device_ports;
+
+					procedure query_submodule_ports (segment : in type_net_segment) is
+						use type_ports_submodule;
+						port_cursor : type_ports_submodule.cursor := segment.submodule_ports.first;
+					begin -- query_submodule_ports
+						section_mark (section_submodule_ports, HEADER);
+						while port_cursor /= type_ports_submodule.no_element loop
+							section_mark (section_port, HEADER);
+
+							-- module name
+							write (keyword => keyword_module, parameters => 
+								space & to_string (element (port_cursor).module));
+
+							-- port name
+							write (keyword => keyword_name, parameters => 
+								space & et_libraries.to_string (element (port_cursor).port));
+
+							-- port position
+							write (keyword => keyword_position, parameters => position (element (port_cursor).position));
+
+							-- port direction
+							write (keyword => keyword_direction, parameters => et_libraries.to_string (element (port_cursor).direction));
+							
+							section_mark (section_port, FOOTER);
+							next (port_cursor);
+						end loop;
+						section_mark (section_submodule_ports, FOOTER);
+					end query_submodule_ports;
+
+					
+				begin -- query_strands
 					section_mark (section_segments, HEADER);
 					while segment_cursor /= type_net_segments.no_element loop
 						section_mark (section_segment, HEADER);
@@ -361,13 +455,18 @@ package body et_project is
 						write (keyword => keyword_start, parameters => position (element (segment_cursor).coordinates_start));
 						write (keyword => keyword_end,   parameters => position (element (segment_cursor).coordinates_end));
 
+						query_element (segment_cursor, query_labels'access);
+						query_element (segment_cursor, query_junctions'access);
+						query_element (segment_cursor, query_device_ports'access);
+						query_element (segment_cursor, query_submodule_ports'access);
+						
 						section_mark (section_segment, FOOTER);
 						next (segment_cursor);
 					end loop;
 					section_mark (section_segments, FOOTER);
 				end query_segments;
 				
-			begin
+			begin -- query_segments
 				section_mark (section_strands, HEADER);
 				while strand_cursor /= type_strands.no_element loop
 					section_mark (section_strand, HEADER);
@@ -382,7 +481,7 @@ package body et_project is
 				section_mark (section_strands, FOOTER);
 			end query_strands;
 			
-		begin
+		begin -- query_nets
 			log_indentation_up;
 			section_mark (section_nets, HEADER);
 			while net_cursor /= type_nets.no_element loop

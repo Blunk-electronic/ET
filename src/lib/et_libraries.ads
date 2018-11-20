@@ -131,10 +131,12 @@ package et_libraries is
 
 	subtype type_text_line_width is type_distance range 0.0 .. 5.0; -- unit is mm
 
-	function width_to_string (width : in type_text_line_width) return string;
+	function to_string (width : in type_text_line_width) return string;
 	-- Returns the given line width as string.
 	
 	type type_text_style is (NORMAL, ITALIC, BOLD, ITALIC_BOLD);
+	function to_string (style : in type_text_style) return string;
+	
 	type type_text_visible is (YES, NO);
 	
 	type type_text_alignment_horizontal is (LEFT, CENTER, RIGHT);

@@ -148,12 +148,17 @@ package body et_libraries is
 		end if;
 	end to_string;
 
-	function width_to_string (width : in type_text_line_width) return string is
+	function to_string (width : in type_text_line_width) return string is
 	-- Returns the given line width as string.
 	begin
-		return "width " & et_coordinates.to_string (width);
-	end width_to_string;
+		return latin_1.space & et_coordinates.to_string (width);
+	end to_string;
 
+	function to_string (style : in type_text_style) return string is
+	begin
+		return latin_1.space & to_lower (type_text_style'image (style));
+	end to_string;
+	
 
 	-- TEXT ALIGNMENT
 	function to_string (alignment : in type_text_alignment_horizontal) return string is
@@ -654,15 +659,15 @@ package body et_libraries is
 		log (to_string (placeholder.position), log_threshold);
 
 		-- size
-		log (et_libraries.to_string (placeholder.size), log_threshold);
+		log (et_libraries.to_string (size => placeholder.size), log_threshold);
 
 		-- style
 		log ("style "
 			& to_lower (type_text_style'image (placeholder.style)), log_threshold);
 
 		-- line width
-		log ("line width "
-			& width_to_string (placeholder.line_width), log_threshold);
+		log ("line width"
+			& to_string (width => placeholder.line_width), log_threshold);
 
 		-- angle
 		log (to_string (placeholder.orientation), log_threshold); 
