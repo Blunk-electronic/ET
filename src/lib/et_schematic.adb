@@ -225,7 +225,10 @@ package body et_schematic is
 			& to_string (position => segment.coordinates_end, scope => xy));
 	end to_string;
 
-
+	function to_string (net_scope : in type_net_scope) return string is
+	begin
+		return " " & to_lower (type_net_scope'image (net_scope));
+	end to_string;
 
 	function to_component_reference (
 	-- Converts a string like "IC303" to a composite type_component_reference.

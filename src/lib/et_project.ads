@@ -154,188 +154,124 @@ package et_project is
 -- 	-- Writes the ET native component libraries in libraries_directory_name.
 
 	-- PROJECT FILE SECTIONS AND KEYWORDS
-	section_module_begin			: constant string (1 .. 14) := "[MODULE BEGIN]";
-	section_module_end				: constant string (1 .. 12) := "[MODULE END]";	
-
-	module_generic_name				: constant string := "generic_name";
-	module_instance_name			: constant string := "instance";
+	section_module				: constant string := "[MODULE";
 	
-	section_net_classes_begin		: constant string (1 .. 19) := "[NET_CLASSES BEGIN]";
-	section_net_classes_end			: constant string (1 .. 17) := "[NET_CLASSES END]";	
-
-	section_net_class_begin			: constant string (1 .. 17) := "[NET_CLASS BEGIN]";
-	section_net_class_end			: constant string (1 .. 15) := "[NET_CLASS END]";	
-
-	section_nets_begin				: constant string (1 .. 12) := "[NETS BEGIN]";
-	section_nets_end				: constant string (1 .. 10) := "[NETS END]";	
-
-	section_net_begin				: constant string (1 .. 11) := "[NET BEGIN]";
-	section_net_end					: constant string (1 ..  9) := "[NET END]";	
-
-	section_strands_begin			: constant string (1 .. 15) := "[STRANDS BEGIN]";
-	section_strands_end				: constant string (1 .. 13) := "[STRANDS END]";
-
-	section_strand_begin			: constant string (1 .. 14) := "[STRAND BEGIN]";
-	section_strand_end				: constant string (1 .. 12) := "[STRAND END]";
-
-	section_segments_begin			: constant string (1 .. 16) := "[SEGMENTS BEGIN]";
-	section_segments_end			: constant string (1 .. 14) := "[SEGMENTS END]";	
-
-	section_segment_begin			: constant string (1 .. 15) := "[SEGMENT BEGIN]";
-	section_segment_end				: constant string (1 .. 13) := "[SEGMENT END]";	
-
-	section_labels_begin			: constant string (1 .. 14) := "[LABELS BEGIN]";
-	section_labels_end				: constant string (1 .. 12) := "[LABELS END]";
-
-	section_label_begin				: constant string (1 .. 13) := "[LABEL BEGIN]";
-	section_label_end				: constant string (1 .. 11) := "[LABEL END]";	
-
-	section_submodule_ports_begin	: constant string (1 .. 23) := "[SUBMODULE_PORTS BEGIN]";
-	section_submodule_ports_end		: constant string (1 .. 21) := "[SUBMODULE_PORTS END]";
-
-	section_route_begin				: constant string (1 .. 13) := "[ROUTE BEGIN]";
-	section_route_end				: constant string (1 .. 11) := "[ROUTE END]";	
-
-	section_lines_begin				: constant string (1 .. 13) := "[LINES BEGIN]";
-	section_lines_end				: constant string (1 .. 11) := "[LINES END]";
+	section_begin				: constant string := "BEGIN]";	
+	section_end					: constant string := "END]";
 	
-	section_line_begin				: constant string (1 .. 12) := "[LINE BEGIN]";
-	section_line_end				: constant string (1 .. 10) := "[LINE END]";
+	keyword_generic_name			: constant string := "generic_name";
+	keyword_instance_name			: constant string := "instance";
+	keyword_name					: constant string := "name";
+	keyword_description				: constant string := "description";
+	keyword_clearance				: constant string := "clearance";		
+	keyword_track_width_min			: constant string := "track_width_min";
+	keyword_via_drill_min			: constant string := "via_drill_min";
+	keyword_via_restring_min		: constant string := "via_restring_min";	
+	keyword_micro_via_drill_min		: constant string := "micro_via_drill_min";
+	keyword_micro_via_restring_min	: constant string := "micro_via_restring_min";	
+	keyword_class					: constant string := "class";
+	keyword_scope					: constant string := "scope";	
+	keyword_position				: constant string := "position";
+	keyword_start					: constant string := "start";
+	keyword_end						: constant string := "end";
+	keyword_rotation				: constant string := "rotation";
+	keyword_size					: constant string := "size";
+	keyword_style					: constant string := "style";
+	keyword_line_width				: constant string := "line_width";
+	keyword_appearance				: constant string := "appearance";
+	keyword_direction				: constant string := "direction";			
+	keyword_junction				: constant string := "junction";
+	keyword_pos_x					: constant string := "x";
+	keyword_pos_y					: constant string := "y";		
+	keyword_device					: constant string := "device";
 
-	section_arc_begin				: constant string (1 .. 11) := "[ARC BEGIN]";
-	section_arc_end					: constant string (1 ..  9) := "[ARC END]";
-
-	section_circle_begin			: constant string (1 .. 14)	:= "[CIRCLE BEGIN]";
-	section_circl_end				: constant string (1 .. 12)	:= "[CIRCLE END]";	
 	
-	section_polygon_begin			: constant string (1 .. 15) := "[POLYGON BEGIN]";
-	section_polygon_end				: constant string (1 .. 13) := "[POLYGON END]";
+	section_net_classes			: constant string := "[NET_CLASSES";
+	section_net_class			: constant string := "[NET_CLASS";
 
-	section_corners_begin			: constant string (1 .. 15) := "[CORNERS BEGIN]";
-	section_corners_end				: constant string (1 .. 13) := "[CORNERS END]";
+	section_nets				: constant string := "[NETS";
+	section_net					: constant string := "[NET";
+
+	section_strands				: constant string := "[STRANDS";
+	section_strand				: constant string := "[STRAND";
+
+	section_segments			: constant string := "[SEGMENTS";
+	section_segment				: constant string := "[SEGMENT";
+
+	section_labels				: constant string := "[LABELS";
+	section_label				: constant string := "[LABEL";
+
+	section_submodule_ports		: constant string := "[SUBMODULE_PORTS";
+
+	section_route				: constant string := "[ROUTE";
+
+	section_lines				: constant string := "[LINES";
+	section_line				: constant string := "[LINE";
+
+	section_arc					: constant string := "[ARC";
+	section_circle				: constant string := "[CIRCLE";
 	
-	section_via_begin				: constant string (1 .. 11) := "[VIA BEGIN]";
-	section_via_end					: constant string (1 ..  9) := "[VIA END]";
+	section_polygon				: constant string := "[POLYGON";
+	section_corners				: constant string := "[CORNERS";
 	
-	section_submodules_begin		: constant string (1 .. 18)	:= "[SUBMODULES BEGIN]";
-	section_submodules_end			: constant string (1 .. 16)	:= "[SUBMODULES END]";	
-
-	section_submodule_begin			: constant string (1 .. 17)	:= "[SUBMODULE BEGIN]";
-	section_submodule_end			: constant string (1 .. 15)	:= "[SUBMODULE END]";	
-
-	section_drawing_frames_begin	: constant string (1 .. 22)	:= "[DRAWING_FRAMES BEGIN]";
-	section_drawing_frames_end		: constant string (1 .. 20)	:= "[DRAWING_FRAMES END]";
-
-	section_schematic_begin			: constant string (1 .. 17)	:= "[SCHEMATIC BEGIN]";
-	section_schematic_end			: constant string (1 .. 15)	:= "[SCHEMATIC END]";		
-
-	section_board_begin				: constant string (1 .. 13)	:= "[BOARD BEGIN]";
-	section_board_end				: constant string (1 .. 11)	:= "[BOARD END]";		
-
-	section_devices_begin			: constant string (1 .. 15)	:= "[DEVICES BEGIN]";
-	section_devices_end				: constant string (1 .. 13)	:= "[DEVICES END]";	
-
-	section_device_begin			: constant string (1 .. 14)	:= "[DEVICE BEGIN]";
-	section_device_end				: constant string (1 .. 12)	:= "[DEVICE END]";	
-
-	section_units_begin				: constant string (1 .. 13)	:= "[UNITS BEGIN]";
-	section_units_end				: constant string (1 .. 11)	:= "[UNITS END]";
+	section_via					: constant string := "[VIA]";
 	
-	section_unit_begin				: constant string (1 .. 12)	:= "[UNIT BEGIN]";
-	section_unit_end				: constant string (1 .. 10)	:= "[UNIT END]";	
+	section_submodules			: constant string := "[SUBMODULES";
 
-	section_texts_begin				: constant string (1 .. 13)	:= "[TEXTS BEGIN]";
-	section_texts_end				: constant string (1 .. 11)	:= "[TEXTS END]";	
+	section_submodule			: constant string := "[SUBMODULE";
+
+	section_drawing_frames		: constant string := "[DRAWING_FRAMES";
+
+	section_schematic			: constant string	:= "[SCHEMATIC";
+
+	section_board				: constant string	:= "[BOARD";
+
+	section_devices				: constant string	:= "[DEVICES";
+	section_device				: constant string	:= "[DEVICE";
+
+	section_units				: constant string	:= "[UNITS";
+	section_unit				: constant string	:= "[UNIT";
+
+	section_texts				: constant string	:= "[TEXTS";
+	section_text				: constant string	:= "[TEXT";
+
+	section_placeholder			: constant string	:= "[PLACEHOLDER";
+	section_package				: constant string	:= "[PACKAGE";
+
+	section_silk_screen			: constant string	:= "[SILK_SCREEN";
+	section_assembly_doc		: constant string	:= "[ASSEMBLY_DOCUMENTATION";
+	section_stencil				: constant string	:= "[STENCIL";
+	section_stop_mask			: constant string	:= "[STOP_MASK";
+	section_keepout				: constant string	:= "[KEEPOUT";
+	section_route_restrict		: constant string	:= "[ROUTE_RESTRICT";
+	section_via_restrict		: constant string	:= "[VIA_RESTRICT";
+	section_copper				: constant string	:= "[COPPER";
+	section_pcb_contours		: constant string	:= "[PCB_CONTOURS_NON_PLATED";
+	section_pcb_contours_plated	: constant string	:= "[PCB_CONTOURS_PLATED";
+	section_pac_3d_contours		: constant string	:= "[PACKAGE_3D_CONTOURS";
 	
-	section_text_begin				: constant string (1 .. 12)	:= "[TEXT BEGIN]";
-	section_text_end				: constant string (1 .. 10)	:= "[TEXT END]";	
+	section_top					: constant string	:= "[TOP";
+	section_bottom				: constant string	:= "[BOTTOM";
 
-	section_placeholder_begin		: constant string (1 .. 19)	:= "[PLACEHOLDER BEGIN]";
-	section_placeholder_end			: constant string (1 .. 17)	:= "[PLACEHOLDER END]";	
+	section_variants			: constant string	:= "[VARIANTS";
+	section_variant				: constant string	:= "[VARIANT";
 
-	section_package_begin			: constant string (1 .. 15)	:= "[PACKAGE BEGIN]";
-	section_package_end				: constant string (1 .. 13)	:= "[PACKAGE END]";
-
-	section_silk_screen_begin		: constant string (1 .. 19)	:= "[SILK_SCREEN BEGIN]";
-	section_silk_screen_end			: constant string (1 .. 17)	:= "[SILK_SCREEN END]";
-
-	section_assembly_doc_begin		: constant string (1 .. 30)	:= "[ASSEMBLY_DOCUMENTATION BEGIN]";
-	section_assembly_doc_end		: constant string (1 .. 28)	:= "[ASSEMBLY_DOCUMENTATION END]";
-
-	section_stencil_begin			: constant string (1 .. 15)	:= "[STENCIL BEGIN]";
-	section_stencil_end				: constant string (1 .. 13)	:= "[STENCIL END]";
-
-	section_stop_mask_begin			: constant string (1 .. 17)	:= "[STOP_MASK BEGIN]";
-	section_stop_mask_end			: constant string (1 .. 15)	:= "[STOP_MASK END]";
+	section_terminal_port_map	: constant string	:= "[TERMINAL_PORT_MAP";
+	section_units_internal		: constant string	:= "[UNITS_INTERNAL";
+	section_units_external		: constant string	:= "[UNITS_EXTERNAL";
 	
-	section_keepout_begin			: constant string (1 .. 15)	:= "[KEEPOUT BEGIN]";
-	section_keepout_end				: constant string (1 .. 13)	:= "[KEEPOUT END]";
+	section_symbol				: constant string	:= "[SYMBOL";
+	section_shapes				: constant string	:= "[SHAPES";
+	section_polyline			: constant string	:= "[POLYLINE";
+	section_rectangle			: constant string	:= "[RECTANGLE";
 
-	section_route_restrict_begin	: constant string (1 .. 22)	:= "[ROUTE_RESTRICT BEGIN]";
-	section_route_restrict_end		: constant string (1 .. 20)	:= "[ROUTE_RESTRICT END]";
+	section_ports				: constant string	:= "[PORTS";
+	section_port_begin			: constant string	:= "[PORT";
 
-	section_via_restrict_begin		: constant string (1 .. 20)	:= "[VIA_RESTRICT BEGIN]";
-	section_via_restrict_end		: constant string (1 .. 18)	:= "[VIA_RESTRICT END]";
-
-	section_copper_begin			: constant string (1 .. 14)	:= "[COPPER BEGIN]";
-	section_copper_end				: constant string (1 .. 12)	:= "[COPPER END]";
-
-	section_pcb_contours_begin		: constant string (1 .. 31)	:= "[PCB_CONTOURS_NON_PLATED BEGIN]";
-	section_pcb_contours_end		: constant string (1 .. 29)	:= "[PCB_CONTOURS_NON_PLATED END]";
-
-	section_pcb_contours_plated		: constant string (1 .. 27)	:= "[PCB_CONTOURS_PLATED BEGIN]";
-	section_pcb_contours_plated_end	: constant string (1 .. 25)	:= "[PCB_CONTOURS_PLATED END]";
-
-	section_pac_3d_contours_begin	: constant string (1 .. 27)	:= "[PACKAGE_3D_CONTOURS BEGIN]";
-	section_pac_3d_contours_end		: constant string (1 .. 25)	:= "[PACKAGE_3D_CONTOURS END]";
+	section_terminals			: constant string	:= "[TERMINALS";
+	section_terminal			: constant string	:= "[TERMINAL";
 	
-	section_top_begin				: constant string (1 .. 11)	:= "[TOP BEGIN]";
-	section_top_end					: constant string (1 ..  9)	:= "[TOP END]";	
-
-	section_bottom_begin			: constant string (1 .. 14)	:= "[BOTTOM BEGIN]";
-	section_bottom_end				: constant string (1 .. 12)	:= "[BOTTOM END]";	
-
-	section_variants_begin			: constant string (1 .. 16)	:= "[VARIANTS BEGIN]";
-	section_variants_end			: constant string (1 .. 14)	:= "[VARIANTS END]";	
-
-	section_variant_begin			: constant string (1 .. 15)	:= "[VARIANT BEGIN]";
-	section_variant_end				: constant string (1 .. 13)	:= "[VARIANT END]";	
-
-	section_terminal_port_map_begin	: constant string (1 .. 25)	:= "[TERMINAL_PORT_MAP BEGIN]";
-	section_terminal_port_map_end	: constant string (1 .. 23)	:= "[TERMINAL_PORT_MAP END]";
-
-	section_units_internal_begin	: constant string (1 .. 22)	:= "[UNITS_INTERNAL BEGIN]";
-	section_units_internal_end		: constant string (1 .. 20)	:= "[UNITS_INTERNAL END]";
-
-	section_units_external_begin	: constant string (1 .. 22)	:= "[UNITS_EXTERNAL BEGIN]";
-	section_units_external_end		: constant string (1 .. 20)	:= "[UNITS_EXTERNAL END]";
-	
-	section_symbol_begin			: constant string (1 .. 14)	:= "[SYMBOL BEGIN]";
-	section_symbol_end				: constant string (1 .. 12)	:= "[SYMBOL END]";
-	
-	section_shapes_begin			: constant string (1 .. 14)	:= "[SHAPES BEGIN]";
-	section_shapes_end				: constant string (1 .. 12)	:= "[SHAPES END]";
-
-	section_polyline_begin			: constant string (1 .. 16)	:= "[POLYLINE BEGIN]";
-	section_polyline_end			: constant string (1 .. 14)	:= "[POLYLINE END]";	
-
-	section_rectangle_begin			: constant string (1 .. 17)	:= "[RECTANGLE BEGIN]";
-	section_rectangle_end			: constant string (1 .. 15)	:= "[RECTANGLE END]";	
-
-	section_ports_begin				: constant string (1 .. 13)	:= "[PORTS BEGIN]";
-	section_ports_end				: constant string (1 .. 11)	:= "[PORTS END]";	
-
-	section_port_begin				: constant string (1 .. 12)	:= "[PORT BEGIN]";
-	section_port_end				: constant string (1 .. 10)	:= "[PORT END]";	
-
-	section_terminals_begin			: constant string (1 .. 17)	:= "[TERMINALS BEGIN]";
-	section_terminals_end			: constant string (1 .. 15)	:= "[TERMINALS END]";
-
-	section_terminal_begin			: constant string (1 .. 16)	:= "[TERMINAL BEGIN]";
-	section_terminal_end			: constant string (1 .. 14)	:= "[TERMINAL END]";
-	
-	section_title_block_begin		: constant string (1 .. 19)	:= "[TITLE_BLOCK BEGIN]";
-	section_title_block_end			: constant string (1 .. 17)	:= "[TITLE_BLOCK END]";	
+	section_title_block			: constant string	:= "[TITLE_BLOCK";
 
 	type type_section_name_project is (
 		SEC_MODULE,

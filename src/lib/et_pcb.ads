@@ -177,10 +177,12 @@ package et_pcb is
 	net_class_description_length_max : constant positive := 100;
 	package type_net_class_description is new generic_bounded_length (net_class_description_length_max);
 
+	function to_string (class_description : in type_net_class_description.bounded_string) return string;
+	
 	type type_net_class is tagged record
 		description				: type_net_class_description.bounded_string;
 		clearance				: type_signal_clearance;
-		signal_width_min		: type_signal_width;
+		signal_width_min		: type_signal_width; -- CS rename to track_width_min
 		via_drill_min			: type_drill_size;
 		via_restring_min		: type_restring_width;
 		micro_via_drill_min		: type_drill_size;

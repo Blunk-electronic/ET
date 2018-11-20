@@ -200,7 +200,10 @@ package body et_pcb is
 		return " " & type_net_class_name.to_string (net_class_name);
 	end to_string;
 
-	
+	function to_string (class_description : in type_net_class_description.bounded_string) return string is
+	begin
+		return " " & type_net_class_description.to_string (class_description);
+	end to_string;
 	
 	function text_properties (text : in type_text) return string is
 	-- Returns the properties of the given text in a long single string.

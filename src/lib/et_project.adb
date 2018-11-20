@@ -56,7 +56,8 @@ with et_libraries;
 with et_export;
 with et_import;
 with et_schematic;
-
+with et_pcb;
+with et_pcb_coordinates;
 
 package body et_project is
 
@@ -261,12 +262,151 @@ package body et_project is
 		procedure tab_depth_down is begin
 			tab_depth := tab_depth - 1;
 		end tab_depth_down;
+
+		type type_section_mark is (HEADER, FOOTER);
+		
+		procedure section_mark (section : in string; mark : in type_section_mark) is begin
+			case mark is
+				when HEADER =>
+					new_line;
+					put_line (tab_depth * tabulator & section & space & section_begin);
+					tab_depth_up;
+				when FOOTER =>
+					tab_depth_down;
+					put_line (tab_depth * tabulator & section & space & section_end);
+			end case;
+		end section_mark;
+
+		procedure write (
+			keyword 	: in string;
+			parameters	: in string;
+			space 		: in boolean := false;
+			wrap		: in boolean := false) is 
+			parameters_wrapped : string (1..parameters'length + 2);
+		begin -- write
+			if wrap then
+				parameters_wrapped := latin_1.quotation & parameters & latin_1.quotation;
+			end if;
+						
+			if wrap then
+				-- If wrapping required, a space is always between keyword and parameters
+				put_line (tab_depth * tabulator & keyword & latin_1.space & parameters_wrapped);
+			else
+				case space is
+					when true =>
+						put_line (tab_depth * tabulator & keyword & latin_1.space & parameters);
+					when false =>
+						put_line (tab_depth * tabulator & keyword & parameters);
+				end case;
+			end if;
+		end write;
 		
 		module_cursor : type_rig.cursor := rig.first;
+
+		function position (pos : in type_2d_point'class) return string is
+		-- Returns something like "x 12.34 y 45.0"
+		begin
+			return space & keyword_pos_x & space & to_string (distance_x (pos)) 
+				 & space & keyword_pos_y & space & to_string (distance_y (pos));
+		end position;
+		
+		procedure query_net_classes (module_name : in type_submodule_name.bounded_string; module : in type_module) is
+			use et_pcb;
+			use et_pcb.type_net_classes;
+			class_cursor : et_pcb.type_net_classes.cursor := module.net_classes.first;
+
+			use et_pcb_coordinates;
+		begin
+			log_indentation_up;
+			section_mark (section_net_classes, HEADER);
+			while class_cursor /= type_net_classes.no_element loop
+				log ("net class " & to_string (key (class_cursor)), log_threshold + 1);
+				section_mark (section_net_class, HEADER);
+
+				write (keyword => keyword_name, parameters => to_string (key (class_cursor)));
+				write (keyword => keyword_description, parameters => et_pcb.to_string (element (class_cursor).description), wrap => true);
+				write (keyword => keyword_clearance, parameters => to_string (element (class_cursor).clearance));
+				write (keyword => keyword_track_width_min, parameters => to_string (element (class_cursor).signal_width_min));
+				write (keyword => keyword_via_drill_min, parameters => to_string (element (class_cursor).via_drill_min));
+				write (keyword => keyword_via_restring_min, parameters => to_string (element (class_cursor).via_restring_min));
+				write (keyword => keyword_micro_via_drill_min, parameters => to_string (element (class_cursor).micro_via_drill_min));
+				write (keyword => keyword_micro_via_restring_min, parameters => to_string (element (class_cursor).micro_via_restring_min));
+
+				section_mark (section_net_class, FOOTER);
+				next (class_cursor);
+			end loop;
+			section_mark (section_net_classes, FOOTER);
+			log_indentation_down;
+		end query_net_classes;
+
+		procedure query_nets (module_name : in type_submodule_name.bounded_string; module : in type_module) is
+			use et_schematic;
+			use et_schematic.type_nets;
+			net_cursor : et_schematic.type_nets.cursor := module.nets.first;
+
+			use et_pcb;
+
+			procedure query_strands (net_name : in type_net_name.bounded_string; net : in type_net) is
+				use type_strands;
+				strand_cursor : type_strands.cursor := net.strands.first;
+
+				procedure query_segments (strand : in type_strand) is
+					use type_net_segments;
+					segment_cursor : type_net_segments.cursor := strand.segments.first;
+				begin
+					section_mark (section_segments, HEADER);
+					while segment_cursor /= type_net_segments.no_element loop
+						section_mark (section_segment, HEADER);
+
+						write (keyword => keyword_start, parameters => position (element (segment_cursor).coordinates_start));
+						write (keyword => keyword_end,   parameters => position (element (segment_cursor).coordinates_end));
+
+						section_mark (section_segment, FOOTER);
+						next (segment_cursor);
+					end loop;
+					section_mark (section_segments, FOOTER);
+				end query_segments;
+				
+			begin
+				section_mark (section_strands, HEADER);
+				while strand_cursor /= type_strands.no_element loop
+					section_mark (section_strand, HEADER);
+					-- CS write strand position
+
+					query_element (strand_cursor, query_segments'access);
+					
+					section_mark (section_strand, FOOTER);
+					next (strand_cursor);
+				end loop;
+				
+				section_mark (section_strands, FOOTER);
+			end query_strands;
+			
+		begin
+			log_indentation_up;
+			section_mark (section_nets, HEADER);
+			while net_cursor /= type_nets.no_element loop
+				log ("net " & to_string (key (net_cursor)), log_threshold + 1);
+				section_mark (section_net, HEADER);
+
+				write (keyword => keyword_name, parameters => to_string (key (net_cursor)), space => true);
+				write (keyword => keyword_class, parameters => to_string (element (net_cursor).class));
+				write (keyword => keyword_scope, parameters => to_string (element (net_cursor).scope));
+
+				query_element (net_cursor, query_strands'access);
+				
+				section_mark (section_net, FOOTER);
+				next (net_cursor);
+			end loop;
+			section_mark (section_nets, FOOTER);
+			
+			log_indentation_down;
+		end query_nets;
+
+		
 	begin
 		log ("saving project ...", log_threshold);
 		set_output (project_file_handle);
-
 		
 		-- write content
 		log_indentation_up;
@@ -274,20 +414,21 @@ package body et_project is
 		while module_cursor /= et_schematic.type_rig.no_element loop
 			
 			log ("module " & to_string (key (module_cursor)), log_threshold);
-			put_line (section_module_begin);
-			tab_depth_up;
+			section_mark (section_module, HEADER);
 
 			-- generic module name
-			put_line (tab_depth * tabulator & module_generic_name 
-				& space & to_string (element (module_cursor).generic_name));
+			write (keyword => keyword_generic_name, parameters => to_string (element (module_cursor).generic_name), space => true);
 
 			-- module instance name
-			put_line (tab_depth * tabulator & module_instance_name 
-				& space & to_string (element (module_cursor).instance));
+			write (keyword => keyword_instance_name, parameters => to_string (element (module_cursor).instance), space => true);
 
+			-- net classes
+			query_element (module_cursor, query_net_classes'access);
+
+			-- nets
+			query_element (module_cursor, query_nets'access);
 			
-			put_line (section_module_end);
-			tab_depth_down;
+			section_mark (section_module, FOOTER);
 			
 			new_line;
 			put_line (comment_mark & row_separator_single);

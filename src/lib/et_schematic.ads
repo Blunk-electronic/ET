@@ -306,6 +306,8 @@ package et_schematic is
 	-- If a net exists in a (sub)module exclusively or whether it can be
 	-- seen from the parent module. For example power nets like GND are global.
 	type type_net_scope is (LOCAL, GLOBAL);
+
+	function to_string (net_scope : in type_net_scope) return string;
 	
 	type type_net is new type_net_base with record
 		strands		: type_strands.list;
