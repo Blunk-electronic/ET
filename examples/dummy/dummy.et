@@ -13,7 +13,7 @@
 			name hi-voltage
 			description "bla"
 			clearance 0.3
-			signal_width_min 0.15
+			track_width_min 0.15
 			via_drill_min 0.3
 			via_restring_min 0.15
 			micro_via_drill_min 0.2
@@ -45,9 +45,14 @@
 									direction input
 								[LABEL END]
 							[LABELS END]
-							
-							junction x 4 y 4
-							device R3 1 #reference and port
+				
+							[JUNCTIONS BEGIN]
+								position x 4 y 4
+							[JUNCTIONS END]
+
+							[PORTS BEGIN]
+								device R3 port 1 #reference and port							
+							[PORTS END]
 							
 							[SUBMODULE_PORTS BEGIN]
 								[PORT BEGIN]
@@ -65,8 +70,8 @@
 	
 			[ROUTE BEGIN]
 				[LINE BEGIN]
-					start x 22.3
-					end y 32.5
+					start x 22.3 y 23.3
+					end x 133.2 y 32.5 
 					layer 2
 					width 0.2
 				[LINE END]
@@ -94,9 +99,9 @@
 					thermal_width 0.3
 					thermal_gap 0.8
 					[CORNERS BEGIN]
-						x 123.54 y 2.7
-						x 133.54 y 335.3
-						x 523.54 y 6.7
+						position x 123.54 y 2.7
+						position x 133.54 y 335.3
+						position x 523.54 y 6.7
 					[CORNERS END]
 				[POLYGON END]
 

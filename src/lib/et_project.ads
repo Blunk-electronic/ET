@@ -185,7 +185,27 @@ package et_project is
 	keyword_pos_y					: constant string := "y";		
 	keyword_device					: constant string := "device";
 	keyword_port					: constant string := "port";
-	keyword_module					: constant string := "module";	
+	keyword_module					: constant string := "module";
+	keyword_layer					: constant string := "layer";
+	keyword_width					: constant string := "width";
+	keyword_center					: constant string := "center";
+	keyword_diameter				: constant string := "diameter";
+	keyword_restring_outer_layers	: constant string := "restring_outer_layers";
+	keyword_restring_inner_layers	: constant string := "restring_inner_layers";		
+	keyword_layer_start				: constant string := "layer_start";
+	keyword_layer_end				: constant string := "layer_end";		
+	keyword_priority				: constant string := "priority";
+	keyword_isolation				: constant string := "isolation";
+	keyword_corner_easing			: constant string := "corner_easing";
+	keyword_easing_radius			: constant string := "easing_radius";	
+	keyword_fill_style				: constant string := "fill_style";	
+	keyword_hatching_line_width		: constant string := "hatching_line_width";
+	keyword_hatching_line_spacing	: constant string := "hatching_line_spacing";		
+	keyword_pad_connection			: constant string := "pad_connection";
+	keyword_min_width				: constant string := "min_width";
+	keyword_pad_technology			: constant string := "pad_technology";		
+	keyword_thermal_width			: constant string := "thermal_width";		
+	keyword_thermal_gap				: constant string := "thermal_gap";		
 	
 	section_net_classes			: constant string := "[NET_CLASSES";
 	section_net_class			: constant string := "[NET_CLASS";
@@ -218,7 +238,7 @@ package et_project is
 	section_polygon				: constant string := "[POLYGON";
 	section_corners				: constant string := "[CORNERS";
 	
-	section_via					: constant string := "[VIA]";
+	section_via					: constant string := "[VIA";
 	
 	section_submodules			: constant string := "[SUBMODULES";
 

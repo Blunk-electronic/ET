@@ -508,6 +508,8 @@ package body et_project is
 					
 					write (keyword => keyword_start, parameters => position (element (line_cursor).start_point));
 					write (keyword => keyword_end  , parameters => position (element (line_cursor).end_point));
+					write (keyword => keyword_layer, parameters => to_string (element (line_cursor).layer));
+					write (keyword => keyword_width, parameters => et_pcb_coordinates.to_string (element (line_cursor).width));
 
 					section_mark (section_line, FOOTER);
 					next (line_cursor);
@@ -516,13 +518,35 @@ package body et_project is
 				while arc_cursor /= type_copper_arcs_pcb.no_element loop
 					section_mark (section_arc, HEADER);
 
+					write (keyword => keyword_center, parameters => position (element (arc_cursor).center));
+					write (keyword => keyword_start , parameters => position (element (arc_cursor).start_point));
+					write (keyword => keyword_end   , parameters => position (element (arc_cursor).end_point));
+					write (keyword => keyword_width , parameters => et_pcb_coordinates.to_string (element (arc_cursor).width));
+					write (keyword => keyword_layer , parameters => to_string (element (arc_cursor).layer));
+					
 					section_mark (section_arc, FOOTER);
 					next (arc_cursor);
 				end loop;
 
+				while via_cursor /= type_vias.no_element loop
+					section_mark (section_via, HEADER);
+
+					write (keyword => keyword_position, parameters => position (element (via_cursor).position));
+					write (keyword => keyword_diameter, parameters => et_pcb_coordinates.to_string (element (via_cursor).diameter));
+					write (keyword => keyword_layer_start, parameters => to_string (element (via_cursor).layer_start));
+					write (keyword => keyword_layer_end  , parameters => to_string (element (via_cursor).layer_end));
+					write (keyword => keyword_restring_outer_layers, parameters => et_pcb_coordinates.to_string (element (via_cursor).restring_outer));
+					write (keyword => keyword_restring_inner_layers, parameters => et_pcb_coordinates.to_string (element (via_cursor).restring_inner));
+					
+					section_mark (section_via, FOOTER);
+					next (via_cursor);
+				end loop;
+				
 				while polygon_cursor /= type_copper_polygons_signal.no_element loop
 					section_mark (section_polygon, HEADER);
 
+					write (keyword => keyword_priority, parameters => et_pcb.to_string (element (polygon_cursor).priority_level));
+					
 					section_mark (section_polygon, FOOTER);
 					next (polygon_cursor);
 				end loop;
