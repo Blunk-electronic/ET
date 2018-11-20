@@ -314,6 +314,12 @@ package body et_project is
 		begin
 			return type_angle'image (angle);
 		end rotation;
+
+		function position (point : et_pcb_coordinates.type_point_2d) return string is
+			use et_pcb_coordinates;
+		begin
+			return " x" & to_string (get_axis (X, point)) & " y" & to_string (get_axis (Y, point));
+		end position;
 		
 		procedure query_net_classes (module_name : in type_submodule_name.bounded_string; module : in type_module) is
 			use et_pcb;
@@ -480,6 +486,50 @@ package body et_project is
 				
 				section_mark (section_strands, FOOTER);
 			end query_strands;
+
+			procedure query_route (net_name : in type_net_name.bounded_string; net : in type_net) is
+				use et_pcb;
+				use type_copper_lines_pcb;
+				line_cursor : type_copper_lines_pcb.cursor := net.route.lines.first;
+
+				use type_copper_arcs_pcb;
+				arc_cursor : type_copper_arcs_pcb.cursor := net.route.arcs.first;
+
+				use type_vias;
+				via_cursor : type_vias.cursor := net.route.vias.first;
+
+				use type_copper_polygons_signal;
+				polygon_cursor : type_copper_polygons_signal.cursor := net.route.polygons.first;
+			begin -- query_route
+				section_mark (section_route, HEADER);
+
+				while line_cursor /= type_copper_lines_pcb.no_element loop
+					section_mark (section_line, HEADER);
+					
+					write (keyword => keyword_start, parameters => position (element (line_cursor).start_point));
+					write (keyword => keyword_end  , parameters => position (element (line_cursor).end_point));
+
+					section_mark (section_line, FOOTER);
+					next (line_cursor);
+				end loop;
+
+				while arc_cursor /= type_copper_arcs_pcb.no_element loop
+					section_mark (section_arc, HEADER);
+
+					section_mark (section_arc, FOOTER);
+					next (arc_cursor);
+				end loop;
+
+				while polygon_cursor /= type_copper_polygons_signal.no_element loop
+					section_mark (section_polygon, HEADER);
+
+					section_mark (section_polygon, FOOTER);
+					next (polygon_cursor);
+				end loop;
+				
+				section_mark (section_route, FOOTER);
+
+			end query_route;
 			
 		begin -- query_nets
 			log_indentation_up;
@@ -493,6 +543,7 @@ package body et_project is
 				write (keyword => keyword_scope, parameters => to_string (element (net_cursor).scope));
 
 				query_element (net_cursor, query_strands'access);
+				query_element (net_cursor, query_route'access);
 				
 				section_mark (section_net, FOOTER);
 				next (net_cursor);
