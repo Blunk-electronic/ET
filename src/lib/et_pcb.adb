@@ -321,22 +321,22 @@ package body et_pcb is
 
 	function to_string (easing : in type_corner_easing) return string is
 	begin
-		return latin_1.space & type_corner_easing'image (easing);
+		return latin_1.space & to_lower (type_corner_easing'image (easing));
 	end to_string;
 
 	function to_string (polygon_pad_connection : in type_polygon_pad_connection) return string is
 	begin
-		return latin_1.space & type_polygon_pad_connection'image (polygon_pad_connection);
+		return latin_1.space & to_lower (type_polygon_pad_connection'image (polygon_pad_connection));
 	end to_string;
 
 	function to_string (polygon_pad_technology : in type_polygon_pad_technology) return string is
 	begin
-		return latin_1.space & type_polygon_pad_technology'image (polygon_pad_technology);
+		return latin_1.space & to_lower (type_polygon_pad_technology'image (polygon_pad_technology));
 	end to_string;
 
 	function to_string (fill_style : in type_fill_style) return string is
 	begin
-		return " " & type_fill_style'image (fill_style);
+		return " " & to_lower (type_fill_style'image (fill_style));
 	end to_string;
 
 	function to_fill_style (fill_style : in string) return type_fill_style is
