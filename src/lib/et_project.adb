@@ -500,6 +500,19 @@ package body et_project is
 
 				use type_copper_polygons_signal;
 				polygon_cursor : type_copper_polygons_signal.cursor := net.route.polygons.first;
+
+				procedure query_points (polygon : in type_copper_polygon_signal) is
+					use type_polygon_points;
+					point_cursor : type_polygon_points.cursor := polygon.points.first;
+				begin
+					section_mark (section_corners, HEADER);
+					while point_cursor /= type_polygon_points.no_element loop
+						write (keyword => keyword_position, parameters => position (element (point_cursor)));
+						next (point_cursor);
+					end loop;
+					section_mark (section_corners, FOOTER);
+				end query_points;
+				
 			begin -- query_route
 				section_mark (section_route, HEADER);
 
@@ -567,13 +580,13 @@ package body et_project is
 							
 						when NONE => null;
 					end case;
-					-- points				: type_polygon_points.set;
+
+					query_element (polygon_cursor, query_points'access);
 					section_mark (section_polygon, FOOTER);
 					next (polygon_cursor);
 				end loop;
 				
 				section_mark (section_route, FOOTER);
-
 			end query_route;
 			
 		begin -- query_nets
@@ -622,6 +635,19 @@ package body et_project is
 
 			-- nets
 			query_element (module_cursor, query_nets'access);
+
+			-- frames
+			
+			-- notes
+			
+			-- submodules
+
+			-- devices
+
+			-- board
+
+
+
 			
 			section_mark (section_module, FOOTER);
 			
