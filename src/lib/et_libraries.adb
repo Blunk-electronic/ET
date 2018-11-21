@@ -22,7 +22,7 @@
 --    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction side" where things are not
 --   finished yet or intended for the future.
@@ -144,7 +144,7 @@ package body et_libraries is
 		if preamble then
 			return "size " & et_coordinates.to_string (size);
 		else
-			return latin_1.space & et_coordinates.to_string (size);
+			return et_coordinates.to_string (size);
 		end if;
 	end to_string;
 
@@ -711,14 +711,14 @@ package body et_libraries is
 		log (to_string (text.position), level => log_threshold + 1);
 		
 		-- size
-		log ("size " & et_coordinates.to_string (text.size), level => log_threshold + 1);
+		log ("size" & et_coordinates.to_string (text.size), level => log_threshold + 1);
 
 		-- style
 		log ("style " & to_lower(et_libraries.type_text_style'image (text.style)),
 			 level => log_threshold + 1);
 
 		-- line width
-		log ("line width " & et_coordinates.to_string (text.line_width),
+		log ("line width" & et_coordinates.to_string (text.line_width),
 			level => log_threshold + 1);
 
 		-- orientation

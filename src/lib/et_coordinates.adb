@@ -106,7 +106,7 @@ package body et_coordinates is
 	function to_string (distance : in type_distance) return string is
 	-- Returns the given distance to a string.
 	begin
-		return trim (type_distance'image (distance), left);
+		return type_distance'image (distance);
 		--return format_distance (distance);
 	end to_string;
 

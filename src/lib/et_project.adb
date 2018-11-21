@@ -313,8 +313,8 @@ package body et_project is
 
 			-- This function returns the basic text with x and y coordinates.
 			function text return string is begin return 
-				space & keyword_pos_x & space & to_string (distance_x (pos)) 
-				& space & keyword_pos_y & space & to_string (distance_y (pos));
+				space & keyword_pos_x & to_string (distance_x (pos)) 
+				& space & keyword_pos_y & to_string (distance_y (pos));
 			end text;
 			
 		begin -- position
@@ -340,14 +340,16 @@ package body et_project is
 		function position (point : et_pcb_coordinates.type_point_2d'class) return string is
 			use et_pcb_coordinates;
 		begin
-			return " x" & to_string (get_axis (X, point)) & " y" & to_string (get_axis (Y, point));
+			return space & keyword_pos_x & to_string (get_axis (X, point)) 
+				& space & keyword_pos_y & to_string (get_axis (Y, point));
 		end position;
 
 		procedure write_text_properties (text : in et_pcb.type_text'class) is
 			use et_pcb_coordinates;
 		begin
 			write (keyword => keyword_position, parameters => position (text.position));
-			write (keyword => keyword_size, parameters => " x" & to_string (text.size_x) & " y" & to_string (text.size_y));
+			write (keyword => keyword_size, parameters => space & keyword_pos_x & to_string (text.size_x) 
+				   & space & keyword_pos_y & to_string (text.size_y));
 			write (keyword => keyword_line_width, parameters => to_string (text.width));
 			write (keyword => keyword_rotation, parameters => to_string (text.angle));
 			write (keyword => keyword_alignment, parameters => space &
@@ -363,12 +365,13 @@ package body et_project is
 			write (keyword => keyword_position, parameters => position (text.position));
 			write (keyword => keyword_size, parameters => et_libraries.to_string (text.size, preamble => false));
 			write (keyword => keyword_line_width, parameters => to_string (text.line_width));
--- 			write (keyword => keyword_rotation, parameters => to_string (text.angle));
--- 			write (keyword => keyword_alignment, parameters => space &
--- 				   keyword_horizontal & et_libraries.to_string (text.alignment.horizontal) & space &
--- 				   keyword_vertical   & et_libraries.to_string (text.alignment.vertical)
--- 				  );
--- 			write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
+			write (keyword => keyword_rotation, parameters => rotation (text.orientation));
+			write (keyword => keyword_style, parameters => et_libraries.to_string (text.style));
+			write (keyword => keyword_alignment, parameters => space &
+				   keyword_horizontal & et_libraries.to_string (text.alignment.horizontal) & space &
+				   keyword_vertical   & et_libraries.to_string (text.alignment.vertical)
+				  );
+			--write (keyword => keyword_hidden, parameters => et_libraries.to_string (text.visible)); -- CS: no need. probably useless
 		end write_text_properties;
 		
 		function face (point : et_pcb_coordinates.type_package_position) return string is
@@ -675,7 +678,7 @@ package body et_project is
 			procedure query_units (device_name : in et_libraries.type_component_reference; device : in et_schematic.type_device) is
 				use et_schematic.type_units;
 				unit_cursor : type_units.cursor := device.units.first;
---- current CS
+
 				procedure write_placeholder (ph : in et_libraries.type_text_placeholder) is
 				begin
 					section_mark (section_placeholder, HEADER);
@@ -683,8 +686,10 @@ package body et_project is
 					write_text_properties (ph);
 					section_mark (section_placeholder, FOOTER);
 				end write_placeholder;
+
+				use et_libraries;
 				
-			begin
+			begin -- query_units
 				section_mark (section_units, HEADER);
 				while unit_cursor /= type_units.no_element loop
 					section_mark (section_unit, HEADER);
@@ -694,7 +699,15 @@ package body et_project is
 					write (keyword => keyword_mirrored, parameters => to_string (element (unit_cursor).mirror, verbose => false)); -- x_axis, y_axis, none
 
 					section_mark (section_placeholders, HEADER);
+
 					write_placeholder (element (unit_cursor).reference);
+					write_placeholder (element (unit_cursor).value);
+
+					if element (unit_cursor).appearance = et_libraries.SCH_PCB then
+						write_placeholder (element (unit_cursor).purpose);
+						write_placeholder (element (unit_cursor).partcode);
+						write_placeholder (element (unit_cursor).bom);
+					end if;
 
 					section_mark (section_placeholders, FOOTER);
 					
