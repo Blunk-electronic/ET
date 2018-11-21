@@ -231,7 +231,7 @@ package et_coordinates is
 	type type_submodule_sheet_number is new positive range 1..submodule_sheet_count_max; -- CS rename to type_frame_number
 
 	function to_string (sheet_number : in type_submodule_sheet_number) return string;
-	-- Returns a sheet number to a string.
+	-- Returns a sheet number as string.
 
 	function to_sheet_number (sheet_number : in string) return type_submodule_sheet_number;
 	-- Converts a string to type_submodule_sheet_number

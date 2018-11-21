@@ -205,7 +205,7 @@ package body et_kicad is
 		log (to_string (type_units_schematic.element (unit).orientation), log_threshold);
 
 		-- mirror style
-		log (et_schematic.to_string (type_units_schematic.element (unit).mirror), log_threshold);
+		log (et_schematic.to_string (type_units_schematic.element (unit).mirror, verbose => true), log_threshold);
 
 		-- placeholders
 		log ("placeholders", log_threshold + 1);
@@ -8367,9 +8367,9 @@ package body et_kicad is
 								if mirror_1 = 0 then
 									case mirror_2 is
 										when -1 =>
-											mirror := x_axis;
+											mirror := X_AXIS;
 										when  1 =>
-											mirror := none;
+											mirror := NO;
 										when others =>
 											-- invalid mirror style
 											raise constraint_error;
@@ -8393,7 +8393,7 @@ package body et_kicad is
 									case mirror_1 is
 										when -1 =>
 											if mirror_2 = 0 then
-												mirror := none;
+												mirror := NO;
 											else
 												-- invalid mirror style
 												raise constraint_error;
@@ -8405,7 +8405,7 @@ package body et_kicad is
 
 										when  1 =>
 											if mirror_2 = 0 then
-												mirror := x_axis;
+												mirror := X_AXIS;
 											else
 												-- invaid mirror style
 												raise constraint_error;
@@ -8419,7 +8419,7 @@ package body et_kicad is
 									case mirror_1 is
 										when -1 =>
 											if mirror_2 = 0 then
-												mirror := x_axis;
+												mirror := X_AXIS;
 											else
 												-- invalid mirror style
 												raise constraint_error;
@@ -8431,7 +8431,7 @@ package body et_kicad is
 
 										when  1 =>
 											if mirror_2 = 0 then
-												mirror := none;
+												mirror := NO;
 											else
 												-- invalid mirror style
 												raise constraint_error;
@@ -8451,9 +8451,9 @@ package body et_kicad is
 								if mirror_1 = 0 then
 									case mirror_2 is
 										when -1 =>
-											mirror := none;
+											mirror := NO;
 										when  1 =>
-											mirror := x_axis;
+											mirror := X_AXIS;
 										when others =>
 											-- invalid mirror style
 											raise constraint_error;
@@ -10329,9 +10329,9 @@ package body et_kicad is
 
 					-- Mirror port coordinates if required.
 					case mirror_style_of_unit (unit_name_lib, units_sch) is
-						when none => null; -- unit not mirrored in schematic
-						when x_axis => mirror (point => port_coordinates, axis => x);
-						when y_axis => mirror (point => port_coordinates, axis => y);
+						when NO => null; -- unit not mirrored in schematic
+						when X_AXIS => mirror (point => port_coordinates, axis => x);
+						when Y_AXIS => mirror (point => port_coordinates, axis => y);
 					end case;
 
 					-- offset port coordinates by the coordinates of the unit found in the schematic

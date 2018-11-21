@@ -163,12 +163,12 @@ package body et_libraries is
 	-- TEXT ALIGNMENT
 	function to_string (alignment : in type_text_alignment_horizontal) return string is
 	begin
-		return type_text_alignment_horizontal'image (alignment);
+		return latin_1.space & to_lower (type_text_alignment_horizontal'image (alignment));
 	end to_string;
 
 	function to_string (alignment : in type_text_alignment_vertical) return string is
 	begin
-		return type_text_alignment_vertical'image (alignment);
+		return latin_1.space & to_lower (type_text_alignment_vertical'image (alignment));
 	end to_string;
 
 	function to_string (alignment : in type_text_alignment) return string is
@@ -617,7 +617,7 @@ package body et_libraries is
 	function to_string (meaning : in type_text_meaning) return string is
 	-- Returns the given text meaning as uppercase string.
 	begin
-		return type_text_meaning'image (meaning);
+		return latin_1.space & to_lower (type_text_meaning'image (meaning));
 	end to_string;
 
 	function to_component_attribute_text_size (text : in string) return type_placeholder_text_size is
@@ -696,7 +696,7 @@ package body et_libraries is
 -- 		log_indentation_up;
 		
 		-- meaning
-		log ("field/attribute '" & et_libraries.to_string (text.meaning) & "'", level => log_threshold);
+		log ("field/attribute" & et_libraries.to_string (text.meaning), level => log_threshold);
 		log_indentation_up;
 		
 		-- content

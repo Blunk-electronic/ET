@@ -22,7 +22,7 @@
 --    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction side" where things are not
 --   finished yet or intended for the future.
@@ -424,10 +424,17 @@ package body et_schematic is
 		return type_submodule_path.to_string (path);
 	end to_string;
 	
-	function to_string (mirror : in type_mirror) return string is
+	function to_string (
+		mirror	: in type_mirror;
+		verbose : in boolean)
+		return string is
 	-- returns the given mirror style as string
 	begin
-		return "mirror style " & to_lower (type_mirror'image (mirror));
+		if verbose then
+			return "mirrored " & to_lower (type_mirror'image (mirror));
+		else
+			return latin_1.space & to_lower (type_mirror'image (mirror));
+		end if;
 	end to_string;
 	
 	function show_danger (danger : in type_danger) return string is

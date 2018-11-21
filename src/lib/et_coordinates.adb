@@ -481,7 +481,7 @@ package body et_coordinates is
 	end append_instance;
 
 	function to_string (sheet_number : in type_submodule_sheet_number) return string is
-	-- Returns a sheet number to a string.
+	-- Returns a sheet number as string.
 	begin
 		--return trim (type_submodule_sheet_number'image (sheet_number), left);
 		return type_submodule_sheet_number'image (sheet_number);

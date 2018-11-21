@@ -202,10 +202,10 @@ package et_pcb is
 		position	: type_point_2d;
 		size_x		: type_text_size;
 		size_y		: type_text_size;
-		width		: type_text_line_width;
+		width		: type_text_line_width; -- CS rename to line_width
 		angle		: type_angle; -- CS rename to rotation
 		alignment	: et_libraries.type_text_alignment;
-		hidden		: boolean; -- CS use type with yes or no
+		hidden		: boolean; -- CS use type with yes or no -- CS useful at all ?
 	end record;
 
 	function text_properties (text : in type_text) return string;
@@ -221,9 +221,8 @@ package et_pcb is
 		meaning : type_text_meaning_package;
 	end record;
 
-	-- There can be lots of placeholders of this kind. So they can be are stored in a list:	
-	package type_text_placeholders_package is new doubly_linked_lists (
-		element_type => type_text_placeholder_package);
+	-- There can be lots of placeholders of this kind. So they are stored in a list:	
+	package type_text_placeholders_package is new doubly_linked_lists (type_text_placeholder_package);
 
 
 	

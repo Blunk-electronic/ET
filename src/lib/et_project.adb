@@ -43,6 +43,8 @@ with ada.strings.fixed; 		use ada.strings.fixed;
 
 with ada.text_io;				use ada.text_io;
 
+with ada.tags;
+
 with ada.exceptions;
 with ada.directories;
 
@@ -300,17 +302,31 @@ package body et_project is
 				end case;
 			end if;
 		end write;
-		
+
 		module_cursor : type_rig.cursor := rig.first;
 
-		function position (pos : in type_2d_point'class) return string is
-		-- Returns something like "x 12.34 y 45.0"
-		begin
-			return space & keyword_pos_x & space & to_string (distance_x (pos)) 
-				 & space & keyword_pos_y & space & to_string (distance_y (pos));
+		function position (pos : in et_coordinates.type_2d_point'class) return string is
+		-- Returns something like "x 12.34 y 45.0" or "sheet 3 x 12.34 y 45.0".
+		-- This kind of output depends on the tag of the given object.
+			use et_coordinates;
+			use ada.tags;
+
+			-- This function returns the basic text with x and y coordinates.
+			function text return string is begin return 
+				space & keyword_pos_x & space & to_string (distance_x (pos)) 
+				& space & keyword_pos_y & space & to_string (distance_y (pos));
+			end text;
+			
+		begin -- position
+			if pos'tag = type_2d_point'tag then
+				return text; -- a 2d point has just x and y
+			else
+				-- A type_coordinates also has the sheet number:
+				return space & keyword_sheet & to_string (sheet (type_coordinates (pos))) & text;
+			end if;
 		end position;
 
-		function rotation (angle : in type_angle) return string is
+		function rotation (angle : in et_coordinates.type_angle) return string is
 		begin
 			return type_angle'image (angle);
 		end rotation;
@@ -327,6 +343,34 @@ package body et_project is
 			return " x" & to_string (get_axis (X, point)) & " y" & to_string (get_axis (Y, point));
 		end position;
 
+		procedure write_text_properties (text : in et_pcb.type_text'class) is
+			use et_pcb_coordinates;
+		begin
+			write (keyword => keyword_position, parameters => position (text.position));
+			write (keyword => keyword_size, parameters => " x" & to_string (text.size_x) & " y" & to_string (text.size_y));
+			write (keyword => keyword_line_width, parameters => to_string (text.width));
+			write (keyword => keyword_rotation, parameters => to_string (text.angle));
+			write (keyword => keyword_alignment, parameters => space &
+				   keyword_horizontal & et_libraries.to_string (text.alignment.horizontal) & space &
+				   keyword_vertical   & et_libraries.to_string (text.alignment.vertical)
+				  );
+			write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
+		end write_text_properties;
+
+		procedure write_text_properties (text : in et_libraries.type_text_basic'class) is
+			use et_coordinates;
+		begin
+			write (keyword => keyword_position, parameters => position (text.position));
+			write (keyword => keyword_size, parameters => et_libraries.to_string (text.size, preamble => false));
+			write (keyword => keyword_line_width, parameters => to_string (text.line_width));
+-- 			write (keyword => keyword_rotation, parameters => to_string (text.angle));
+-- 			write (keyword => keyword_alignment, parameters => space &
+-- 				   keyword_horizontal & et_libraries.to_string (text.alignment.horizontal) & space &
+-- 				   keyword_vertical   & et_libraries.to_string (text.alignment.vertical)
+-- 				  );
+-- 			write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
+		end write_text_properties;
+		
 		function face (point : et_pcb_coordinates.type_package_position) return string is
 			use et_pcb_coordinates;
 		begin
@@ -631,12 +675,29 @@ package body et_project is
 			procedure query_units (device_name : in et_libraries.type_component_reference; device : in et_schematic.type_device) is
 				use et_schematic.type_units;
 				unit_cursor : type_units.cursor := device.units.first;
+--- current CS
+				procedure write_placeholder (ph : in et_libraries.type_text_placeholder) is
+				begin
+					section_mark (section_placeholder, HEADER);
+					write (keyword => keyword_meaning, parameters => et_libraries.to_string (ph.meaning));
+					write_text_properties (ph);
+					section_mark (section_placeholder, FOOTER);
+				end write_placeholder;
+				
 			begin
 				section_mark (section_units, HEADER);
 				while unit_cursor /= type_units.no_element loop
 					section_mark (section_unit, HEADER);
 					write (keyword => keyword_name, parameters => et_libraries.to_string (key (unit_cursor)), space => true);
-					--write (keyword => keyword_position, parameters => et_plibraries.to_string (key (unit_cursor)), space => true);					
+					write (keyword => keyword_position, parameters => position (element (unit_cursor).position)); -- position sheet 1 x 147.32 y 96.97
+					write (keyword => keyword_rotation, parameters => rotation (element (unit_cursor).orientation)); -- rotation 180.0
+					write (keyword => keyword_mirrored, parameters => to_string (element (unit_cursor).mirror, verbose => false)); -- x_axis, y_axis, none
+
+					section_mark (section_placeholders, HEADER);
+					write_placeholder (element (unit_cursor).reference);
+
+					section_mark (section_placeholders, FOOTER);
+					
 					section_mark (section_unit, FOOTER);
 					next (unit_cursor);
 				end loop;
@@ -647,15 +708,24 @@ package body et_project is
 				use et_pcb;
 				use et_pcb.type_text_placeholders_package;
 				placeholder_cursor : type_text_placeholders_package.cursor;
-			begin
-				placeholder_cursor := device.text_placeholders.silk_screen.top.first;
-				
-				section_mark (section_placeholder, HEADER);
-				while placeholder_cursor /= type_text_placeholders_package.no_element loop
 
-					next (placeholder_cursor);
-				end loop;
-				section_mark (section_placeholder, FOOTER);
+				procedure write_placeholder (placeholder_cursor : in type_text_placeholders_package.cursor) is 
+				begin
+					section_mark (section_placeholder, HEADER);
+					write (keyword => keyword_meaning, parameters => to_string (element (placeholder_cursor).meaning));
+					write_text_properties (element (placeholder_cursor));
+					section_mark (section_placeholder, FOOTER);					
+				end write_placeholder;
+				
+			begin -- query_placeholders
+				section_mark (section_placeholders, HEADER);
+				
+				device.text_placeholders.silk_screen.top.iterate (write_placeholder'access);
+				device.text_placeholders.silk_screen.bottom.iterate (write_placeholder'access);
+				device.text_placeholders.assy_doc.top.iterate (write_placeholder'access);
+				device.text_placeholders.assy_doc.bottom.iterate (write_placeholder'access);
+				
+				section_mark (section_placeholders, FOOTER);				
 			end query_placeholders;
 			
 		begin -- query_devices

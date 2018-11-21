@@ -221,7 +221,7 @@ package body et_pcb is
 	
 	function to_string (text_meaning : in type_text_meaning_package) return string is
 	begin
-		return type_text_meaning_package'image (text_meaning);
+		return latin_1.space & to_lower (type_text_meaning_package'image (text_meaning));
 	end to_string;
 	
 	function to_directory (directory_name : in string) return type_directory_name.bounded_string is

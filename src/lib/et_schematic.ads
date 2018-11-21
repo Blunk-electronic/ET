@@ -83,9 +83,12 @@ package et_schematic is
 -- UNITS AND COMPONENTS
 
 	-- units can be placed mirrored along the x or y axis or not at all.
-	type type_mirror is (NONE, X_AXIS, Y_AXIS);
+	type type_mirror is (NO, X_AXIS, Y_AXIS);
 
-	function to_string (mirror : in type_mirror) return string;
+	function to_string (
+		mirror	: in type_mirror;
+		verbose	: in boolean)
+		return string;
 	-- returns the given mirror style as string
 
 	-- In a schematic we handle only virtual components (like GND symbols)
@@ -100,7 +103,6 @@ package et_schematic is
 		position		: et_coordinates.type_coordinates;
 		orientation		: et_coordinates.type_angle; -- CS rename to rotation
 		mirror			: type_mirror;
-		--name			: et_libraries.type_unit_name.bounded_string; -- PWR, IO_BANK_4, 1, 5, A, B, C, ..
 		reference		: et_libraries.type_text_placeholder (meaning => et_libraries.reference);
 		value			: et_libraries.type_text_placeholder (meaning => et_libraries.value);
 	end record;

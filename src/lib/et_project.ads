@@ -215,6 +215,12 @@ package et_project is
 	keyword_variant					: constant string := "variant";
 	keyword_mirrored				: constant string := "mirrored";
 	keyword_face					: constant string := "face";
+	keyword_meaning					: constant string := "meaning";
+	keyword_alignment				: constant string := "alignment";
+	keyword_horizontal				: constant string := "horizontal";
+	keyword_vertical				: constant string := "vertical";		
+	keyword_hidden					: constant string := "hidden";		
+	keyword_sheet					: constant string := "sheet";
 	
 	section_net_classes			: constant string := "[NET_CLASSES";
 	section_net_class			: constant string := "[NET_CLASS";
@@ -268,6 +274,7 @@ package et_project is
 	section_texts				: constant string	:= "[TEXTS";
 	section_text				: constant string	:= "[TEXT";
 
+	section_placeholders		: constant string	:= "[PLACEHOLDERS";	
 	section_placeholder			: constant string	:= "[PLACEHOLDER";
 	section_package				: constant string	:= "[PACKAGE";
 

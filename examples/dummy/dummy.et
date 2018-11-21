@@ -148,7 +148,7 @@
 	[DEVICES BEGIN]
 		[DEVICE BEGIN]
 			name R1
-			appearance REAL
+			appearance sch_pcb
 			value 100R
 			model $ET_LIB_DIR/resistors/single.dev
 			bom no/yes
@@ -161,17 +161,17 @@
 					name 1
 					position sheet 2 x 130 y 210
 					rotation 45
-					mirrored no/yes
-
-					[PLACEHOLDER BEGIN] 
-						meaning reference,value
-						position x 135 y 205
-						size 2.5
-						style
-						line_width 0.15
-						alignment
-					[PLACEHOLDER END] 
-
+					mirrored no/x_axis/y_axis
+					[PLACEHOLDERS BEGIN] 
+						[PLACEHOLDER BEGIN] 
+							meaning reference,value
+							position x 135 y 205
+							size 2.5
+							style
+							line_width 0.15
+							alignment
+						[PLACEHOLDER END] 
+					[PLACEHOLDERS END] 
 				[UNIT END]
 			[UNITS END]
 
@@ -180,18 +180,19 @@
 				rotation 180
 				face top/bottom
 
-				[PLACEHOLDER BEGIN] 
-					meaning reference,value,purpose
-					layer documentation/silk_screen
-					position x 135 y 205
-					rotation 270
-					alignment
-					face top/bottom
-					size x 2 y 2 
-					line_width 0.15
-					hidden yes/no
-				[PLACEHOLDER END] 
-				
+				[PLACEHOLDERS BEGIN] 
+					[PLACEHOLDER BEGIN] 
+						meaning reference,value,purpose
+						layer documentation/silk_screen
+						position x 135 y 205
+						rotation 270
+						alignment
+						face top/bottom
+						size x 2 y 2 
+						line_width 0.15
+						hidden yes/no
+					[PLACEHOLDER END] 
+				[PLACEHOLDERS END] 
 			[PACKAGE END]
 		[DEVICE END]
 	[DEVICES END]
