@@ -412,6 +412,7 @@ package et_schematic is
 		frame_template_schematic	: et_libraries.type_frame_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_1.frm
 		frame_count_schematic		: et_coordinates.type_submodule_sheet_number := et_coordinates.type_submodule_sheet_number'first; -- 10 frames
 		frame_template_board		: et_libraries.type_frame_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_2.frm
+		-- CS: handle sheet description via a composite type consisting of template name and a bounded string
 		
 		notes       	: type_texts.list;						-- notes
 		-- CS: images

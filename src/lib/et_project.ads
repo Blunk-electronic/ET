@@ -205,7 +205,16 @@ package et_project is
 	keyword_min_width				: constant string := "min_width";
 	keyword_pad_technology			: constant string := "pad_technology";		
 	keyword_thermal_width			: constant string := "thermal_width";		
-	keyword_thermal_gap				: constant string := "thermal_gap";		
+	keyword_thermal_gap				: constant string := "thermal_gap";
+	keyword_template				: constant string := "template";
+	keyword_model					: constant string := "model";				
+	keyword_value					: constant string := "value";
+	keyword_bom						: constant string := "bom";		
+	keyword_partcode				: constant string := "partcode";	
+	keyword_purpose					: constant string := "purpose";	
+	keyword_variant					: constant string := "variant";
+	keyword_mirrored				: constant string := "mirrored";
+	keyword_face					: constant string := "face";
 	
 	section_net_classes			: constant string := "[NET_CLASSES";
 	section_net_class			: constant string := "[NET_CLASS";

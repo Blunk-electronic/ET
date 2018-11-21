@@ -337,7 +337,7 @@ package body et_kicad is
 			& to_string (type_components_schematic.element(component).author), log_threshold);
 		
 		-- appearance
-		log (to_string (type_components_schematic.element(component).appearance), log_threshold);
+		log (to_string (type_components_schematic.element(component).appearance, verbose => true), log_threshold);
 
 		-- depending on the component appearance there is more to report:
 		case type_components_schematic.element(component).appearance is
@@ -8607,7 +8607,7 @@ package body et_kicad is
 							characters => et_libraries.component_generic_name_characters); 
 
 						appearance := to_appearance (line => et_kicad.line, schematic => true);
-						log (to_string (appearance), log_threshold + 3);
+						log (to_string (appearance, verbose => true), log_threshold + 3);
 
 						-- Depending on the appearance of the component the reference is built and checked.
 						-- IMPORTANT: The reference is preliminary. Due to possible hierarchic design, it
@@ -14098,11 +14098,11 @@ package body et_kicad is
 			begin
 				if mounted then
 					log (et_libraries.to_string (key (component)) 
-						& arrow & et_libraries.to_string (element (component).appearance),
+						& arrow & et_libraries.to_string (element (component).appearance, verbose => true),
 						log_threshold + 1);
 				else
 					log (et_libraries.to_string (key (component)) 
-						& arrow & et_libraries.to_string (element (component).appearance) 
+						& arrow & et_libraries.to_string (element (component).appearance, verbose => true) 
 						& arrow & not_mounted, log_threshold + 1);
 				end if;
 			end log_component;

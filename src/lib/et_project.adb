@@ -315,11 +315,23 @@ package body et_project is
 			return type_angle'image (angle);
 		end rotation;
 
-		function position (point : et_pcb_coordinates.type_point_2d) return string is
+		function rotation (pos : in et_pcb_coordinates.type_terminal_position'class) return string is
+			use et_pcb_coordinates;
+		begin
+			return to_string (get_angle (pos));
+		end rotation;
+		
+		function position (point : et_pcb_coordinates.type_point_2d'class) return string is
 			use et_pcb_coordinates;
 		begin
 			return " x" & to_string (get_axis (X, point)) & " y" & to_string (get_axis (Y, point));
 		end position;
+
+		function face (point : et_pcb_coordinates.type_package_position) return string is
+			use et_pcb_coordinates;
+		begin
+			return to_string (get_face (point));
+		end face;
 		
 		procedure query_net_classes (module_name : in type_submodule_name.bounded_string; module : in type_module) is
 			use et_pcb;
@@ -611,6 +623,90 @@ package body et_project is
 			log_indentation_down;
 		end query_nets;
 
+		procedure query_devices (module_name : in type_submodule_name.bounded_string; module : in type_module) is
+			use et_schematic;
+			use type_devices;
+			device_cursor : et_schematic.type_devices.cursor := module.devices.first;
+
+			procedure query_units (device_name : in et_libraries.type_component_reference; device : in et_schematic.type_device) is
+				use et_schematic.type_units;
+				unit_cursor : type_units.cursor := device.units.first;
+			begin
+				section_mark (section_units, HEADER);
+				while unit_cursor /= type_units.no_element loop
+					section_mark (section_unit, HEADER);
+					write (keyword => keyword_name, parameters => et_libraries.to_string (key (unit_cursor)), space => true);
+					--write (keyword => keyword_position, parameters => et_plibraries.to_string (key (unit_cursor)), space => true);					
+					section_mark (section_unit, FOOTER);
+					next (unit_cursor);
+				end loop;
+				section_mark (section_units, FOOTER);
+			end query_units;
+
+			procedure query_placeholders (device_name : in et_libraries.type_component_reference; device : in et_schematic.type_device) is
+				use et_pcb;
+				use et_pcb.type_text_placeholders_package;
+				placeholder_cursor : type_text_placeholders_package.cursor;
+			begin
+				placeholder_cursor := device.text_placeholders.silk_screen.top.first;
+				
+				section_mark (section_placeholder, HEADER);
+				while placeholder_cursor /= type_text_placeholders_package.no_element loop
+
+					next (placeholder_cursor);
+				end loop;
+				section_mark (section_placeholder, FOOTER);
+			end query_placeholders;
+			
+		begin -- query_devices
+			section_mark (section_devices, HEADER);			
+			while device_cursor /= type_devices.no_element loop
+				section_mark (section_device, HEADER);
+				write (keyword => keyword_name, parameters => et_libraries.to_string (key (device_cursor)), space => true);
+				write (keyword => keyword_appearance, parameters => et_libraries.to_string (element (device_cursor).appearance));
+				write (keyword => keyword_value, parameters => et_libraries.to_string (element (device_cursor).value), space => true);
+				write (keyword => keyword_model, parameters => et_libraries.to_string (element (device_cursor).model), space => true);
+
+				case element (device_cursor).appearance is
+					when et_libraries.SCH_PCB =>
+						write (keyword => keyword_variant , parameters => et_libraries.to_string (element (device_cursor).variant), space => true);
+						write (keyword => keyword_partcode, parameters => et_libraries.to_string (element (device_cursor).partcode), space => true);
+						write (keyword => keyword_purpose , parameters => et_libraries.to_string (element (device_cursor).purpose), space => true, wrap => true);
+						write (keyword => keyword_bom     , parameters => et_libraries.to_string (element (device_cursor).bom));
+						
+						section_mark (section_package, HEADER);
+						write (keyword => keyword_position, parameters => position (element (device_cursor).position)); -- position in board !
+						write (keyword => keyword_rotation, parameters => rotation (element (device_cursor).position)); -- rotation in board !
+						write (keyword => keyword_face    , parameters => face (element (device_cursor).position));
+
+						query_element (device_cursor, query_placeholders'access);
+						section_mark (section_package, FOOTER);
+					when et_libraries.SCH => null;
+				end case;
+
+				query_element (device_cursor, query_units'access);
+				
+				section_mark (section_device, FOOTER);
+				next (device_cursor);
+			end loop;
+			section_mark (section_devices, FOOTER);
+		end query_devices;
+
+		procedure query_frames (module_name : in type_submodule_name.bounded_string; module : in type_module) is
+			-- CS: handle sheet description 
+			use et_libraries;
+			use type_frame_template_name;
+		begin
+			section_mark (section_drawing_frames, HEADER);
+			section_mark (section_schematic, HEADER);			
+			write (keyword => keyword_template, parameters => to_string (module.frame_template_schematic));
+			section_mark (section_schematic, FOOTER);			
+
+			section_mark (section_board, HEADER);			
+			write (keyword => keyword_template, parameters => to_string (module.frame_template_board));
+			section_mark (section_board, FOOTER);			
+			section_mark (section_drawing_frames, FOOTER);
+		end query_frames;
 		
 	begin -- save_project
 		log ("saving project ...", log_threshold);
@@ -637,13 +733,15 @@ package body et_project is
 			query_element (module_cursor, query_nets'access);
 
 			-- frames
+			query_element (module_cursor, query_frames'access);
 			
 			-- notes
 			
 			-- submodules
 
 			-- devices
-
+			query_element (module_cursor, query_devices'access);
+			
 			-- board
 
 

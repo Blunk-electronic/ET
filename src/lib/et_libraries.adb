@@ -843,17 +843,24 @@ package body et_libraries is
 		end if;
 	end check_prefix_characters;
 	
-	function to_string (appearance : in type_component_appearance) return string is
+	function to_string (
+		appearance	: in type_component_appearance;
+		verbose		: in boolean := false)
+		return string is
 	-- Returns the given component appearance as string.
 	begin
-		case appearance is
-			when sch =>
-				return ("appears in schematic only (virtual component)");
-			when sch_pcb =>
-				return ("appears in schematic and layout");
-			when pcb =>
-				return ("appears in layout only (mechanical component)");
-		end case;
+		if verbose then
+			case appearance is
+				when sch =>
+					return ("appears in schematic only (virtual component)");
+				when sch_pcb =>
+					return ("appears in schematic and layout");
+				when pcb =>
+					return ("appears in layout only (mechanical component)");
+			end case;
+		else
+			return latin_1.space & to_lower (type_component_appearance'image (appearance));
+		end if;
 	end to_string;
 
 	function to_string (unit_name : in type_unit_name.bounded_string) return string is
@@ -877,7 +884,7 @@ package body et_libraries is
 	function to_string (bom : in type_bom) return string is
 	-- Returns the given bom variable as string.	
 	begin
-		return type_bom'image (bom);
+		return latin_1.space & to_lower (type_bom'image (bom));
 	end to_string;
 
 	procedure check_bom_characters (bom : in string) is

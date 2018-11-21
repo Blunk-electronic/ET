@@ -444,7 +444,10 @@ package et_libraries is
 		-- ...
 		);
 
-	function to_string (appearance : in type_component_appearance) return string;
+	function to_string (
+		appearance	: in type_component_appearance;
+		verbose		: in boolean := false)
+		return string;
 	-- Returns the given component appearance as string.
 
 
