@@ -545,8 +545,29 @@ package body et_project is
 				while polygon_cursor /= type_copper_polygons_signal.no_element loop
 					section_mark (section_polygon, HEADER);
 
-					write (keyword => keyword_priority, parameters => et_pcb.to_string (element (polygon_cursor).priority_level));
-					
+					write (keyword => keyword_priority , parameters => et_pcb.to_string (element (polygon_cursor).priority_level));
+					write (keyword => keyword_layer , parameters => to_string (element (polygon_cursor).layer));
+					write (keyword => keyword_min_width , parameters => et_pcb_coordinates.to_string (element (polygon_cursor).width_min));
+					write (keyword => keyword_isolation, parameters => et_pcb_coordinates.to_string (element (polygon_cursor).isolation_gap));
+					write (keyword => keyword_fill_style, parameters => to_string (element (polygon_cursor).fill_style));
+					write (keyword => keyword_hatching_line_width  , parameters => et_pcb_coordinates.to_string (element (polygon_cursor).hatching_line_width));
+					write (keyword => keyword_hatching_line_spacing, parameters => et_pcb_coordinates.to_string (element (polygon_cursor).hatching_spacing));
+					write (keyword => keyword_corner_easing, parameters => to_string (element (polygon_cursor).corner_easing));
+					write (keyword => keyword_easing_radius, parameters => et_pcb_coordinates.to_string (element (polygon_cursor).easing_radius));
+
+					case element (polygon_cursor).pad_connection is
+						when THERMAL => 
+							write (keyword => keyword_pad_connection, parameters => et_pcb.to_string (element (polygon_cursor).pad_connection));
+							write (keyword => keyword_pad_technology, parameters => et_pcb.to_string (element (polygon_cursor).thermal_technology));
+							write (keyword => keyword_thermal_width , parameters => et_pcb_coordinates.to_string (element (polygon_cursor).thermal_width));
+							write (keyword => keyword_thermal_gap   , parameters => et_pcb_coordinates.to_string (element (polygon_cursor).thermal_gap));	
+							
+						when SOLID =>
+							write (keyword => keyword_pad_technology, parameters => et_pcb.to_string (element (polygon_cursor).solid_technology));	
+							
+						when NONE => null;
+					end case;
+					-- points				: type_polygon_points.set;
 					section_mark (section_polygon, FOOTER);
 					next (polygon_cursor);
 				end loop;
@@ -578,7 +599,7 @@ package body et_project is
 		end query_nets;
 
 		
-	begin
+	begin -- save_project
 		log ("saving project ...", log_threshold);
 		set_output (project_file_handle);
 		
