@@ -359,10 +359,16 @@ package body et_project is
 			write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
 		end write_text_properties;
 
-		procedure write_text_properties (text : in et_libraries.type_text_placeholder'class) is
+		procedure write_text_properties (text : in et_libraries.type_text_basic'class) is
 			use et_coordinates;
+-- 			use ada.tags;
+-- 			text_schematic : et_schematic.type_text;
 		begin
-			write (keyword => keyword_position, parameters => position (text.position));
+-- 			if text'tag = et_schematic.type_text'tag then
+-- 				text_schematic := et_schematic.type_text (text);
+-- 				write (keyword => keyword_position, parameters => position (text_schematic.coordinates));
+-- 			end if;
+			
 			write (keyword => keyword_size, parameters => et_libraries.to_string (text.size, preamble => false));
 			write (keyword => keyword_line_width, parameters => to_string (text.line_width));
 			write (keyword => keyword_rotation, parameters => rotation (text.orientation));
@@ -683,6 +689,7 @@ package body et_project is
 				begin
 					section_mark (section_placeholder, HEADER);
 					write (keyword => keyword_meaning, parameters => et_libraries.to_string (ph.meaning));
+					write (keyword => keyword_position, parameters => position (ph.position));
 					write_text_properties (ph);
 					section_mark (section_placeholder, FOOTER);
 				end write_placeholder;
@@ -815,7 +822,7 @@ package body et_project is
 			section_mark (section_submodules, FOOTER);
 		end query_submodules;
 
-		procedure query_notes (module_name : in type_submodule_name.bounded_string; module : in type_module) is
+		procedure query_texts (module_name : in type_submodule_name.bounded_string; module : in type_module) is
 			use et_schematic;
 			use type_texts;
 			text_cursor : type_texts.cursor := module.texts.first;
@@ -823,16 +830,15 @@ package body et_project is
 			section_mark (section_texts, HEADER);
 			while text_cursor /= type_texts.no_element loop
 				section_mark (section_text, HEADER);
-				--write (keyword => keyword_meaning, parameters => et_libraries.to_string (element (text_cursor).meaning));
 				write (keyword => keyword_position, parameters => position (element (text_cursor).coordinates));
 				write (keyword => keyword_content, space => true, wrap => true,
 					   parameters => et_libraries.to_string (element (text_cursor).content));
-				--write_text_properties (element (text_cursor));
+				write_text_properties (element (text_cursor));
 				section_mark (section_text, FOOTER);
 				next (text_cursor);
 			end loop;
 			section_mark (section_texts, FOOTER);
-		end query_notes;
+		end query_texts;
 		
 	begin -- save_project
 		log ("saving project ...", log_threshold);
@@ -862,7 +868,7 @@ package body et_project is
 			query_element (module_cursor, query_frames'access);
 			
 			-- notes
-			query_element (module_cursor, query_notes'access);
+			query_element (module_cursor, query_texts'access);
 			
 			-- submodules
 			query_element (module_cursor, query_submodules'access);

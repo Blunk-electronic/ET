@@ -195,6 +195,18 @@
 			[PACKAGE END]
 		[DEVICE END]
 	[DEVICES END]
+	
+	[TEXTS BEGIN]
+		[TEXT BEGIN]	
+			position sheet 1 x 180.34 y 39.82
+			content "ET Test Circuit"
+			size 1.70
+			line_width 0.33
+			rotation 180.0
+			style italic
+			alignment horizontal center vertical center
+		[TEXT END]
+	[TEXTS END]	
 
 	[BOARD_BEGIN]
 		[SILK_SCREEN BEGIN]
