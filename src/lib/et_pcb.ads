@@ -762,7 +762,7 @@ package et_pcb is
 		arcs		: type_stencil_arcs.list;
 		circles		: type_stencil_circles.list;
 		polygons	: type_stencil_polygons.list;
-		-- CS: texts ? -- not reasonable and a waste of material
+		-- CS: texts ? -- not reasonable and a waste of resources
 	end record;
 
 	-- Because stencil is about two sides of the board this composite is required:

@@ -868,6 +868,10 @@ package body et_project is
 			use type_doc_circles;
 			use type_doc_polygons;
 
+			use type_stencil_lines;
+			use type_stencil_arcs;
+			use type_stencil_circles;
+			use type_stencil_polygons;
 			
 			procedure line_begin is begin section_mark (section_line, HEADER); end;
 			procedure line_end   is begin section_mark (section_line, FOOTER); end;			
@@ -1007,7 +1011,57 @@ package body et_project is
 				corners_end;
 				polygon_end;
 			end write_polygons;
+
+			-- STENCIL (OR SOLDER PASTE MASK)
+			procedure write_lines (cursor : in type_stencil_lines.cursor) is begin
+				line_begin;
+				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
+				write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+				write (keyword => keyword_width, parameters => to_string (element (cursor).width));
+				line_end;
+			end write_lines;
+
+			procedure write_arcs (cursor : in type_stencil_arcs.cursor) is begin
+				arc_begin;
+				write (keyword => keyword_center, parameters => position (element (cursor).center));
+				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
+				write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+				write (keyword => keyword_width, parameters => to_string (element (cursor).width));
+				arc_end;
+			end write_arcs;
+
+			procedure write_circles (cursor : in type_stencil_circles.cursor) is begin
+				circle_begin;
+				write (keyword => keyword_center, parameters => position (element (cursor).center));
+				write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
+				write (keyword => keyword_width , parameters => to_string (element (cursor).width));
+				write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
+				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
+				write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
+				write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
+				circle_end;
+			end write_circles;
+			
+			procedure write_polygons (cursor : in type_stencil_polygons.cursor) is 
+				use type_polygon_points;
 				
+				procedure query_points (polygon : in type_stencil_polygon) is begin
+					iterate (polygon.points, write_polygon_corners'access); -- see general stuff above
+				end query_points;
+				
+			begin -- write_polygons
+				polygon_begin;
+				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
+				write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
+				write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
+				write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
+				write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
+				corners_begin;
+				query_element (cursor, query_points'access);
+				corners_end;
+				polygon_end;
+			end write_polygons;
+
 			
 		begin -- query_board
 			section_mark (section_board, HEADER);
@@ -1058,7 +1112,27 @@ package body et_project is
 
 			section_mark (section_assembly_doc, FOOTER);
 
+			-- STENCIL
+			section_mark (section_stencil, HEADER);
 
+			section_mark (section_top, HEADER);
+				iterate (module.board.stencil.top.lines, write_lines'access);
+				iterate (module.board.stencil.top.arcs, write_arcs'access);
+				iterate (module.board.stencil.top.circles, write_circles'access);
+				iterate (module.board.stencil.top.polygons, write_polygons'access);
+				section_mark (section_top, FOOTER);
+
+				section_mark (section_bottom, HEADER);
+				iterate (module.board.stencil.bottom.lines, write_lines'access);
+				iterate (module.board.stencil.bottom.arcs, write_arcs'access);
+				iterate (module.board.stencil.bottom.circles, write_circles'access);
+				iterate (module.board.stencil.bottom.polygons, write_polygons'access);
+				section_mark (section_bottom, FOOTER);
+
+			section_mark (section_stencil, FOOTER);
+
+
+			
 			---BOARD END-----
 			section_mark (section_board, FOOTER);
 		end query_board;
