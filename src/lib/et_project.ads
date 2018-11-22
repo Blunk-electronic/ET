@@ -221,6 +221,8 @@ package et_project is
 	keyword_vertical				: constant string := "vertical";		
 	keyword_hidden					: constant string := "hidden";		
 	keyword_sheet					: constant string := "sheet";
+	keyword_path					: constant string := "path";	
+	keyword_position_in_board		: constant string := "position_in_board";
 	
 	section_net_classes			: constant string := "[NET_CLASSES";
 	section_net_class			: constant string := "[NET_CLASS";

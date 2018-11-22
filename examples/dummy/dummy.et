@@ -120,12 +120,11 @@
 	[SUBMODULES BEGIN]
 		[SUBMODULE BEGIN]
 			path $ET_TEMPLATES/motor_driver.et
-			instance stepper_driver
-			text_size_path
-			text_size_instance
+			name stepper_driver
 			position sheet 3 x 130 y 210
 			size x 50 y 60
 			position_in_board x 23 y 0.2
+			rotation 90.0
 			view_mode origin/instance
 			reference_offset 100, 1000 -> CS
 		[SUBMODULE END]

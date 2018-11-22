@@ -369,10 +369,9 @@ package et_schematic is
 		);
 
 	type type_submodule is record
-		--path				: type_submodule_path.bounded_string; 					-- $ET_TEMPLATES/motor_driver.et
 		name  				: et_coordinates.type_submodule_name.bounded_string;	-- MOT_DRV_3 (will be the net prefix later on)
-        text_size_path		: et_libraries.type_text_size;
-        text_size_instance	: et_libraries.type_text_size;
+        --text_size_path		: et_libraries.type_text_size; -- CS no need, should be sized automatically by the GUI
+        --text_size_instance	: et_libraries.type_text_size; -- CS no need, should be sized automatically by the GUI
 		position		    : et_coordinates.type_coordinates;
 		size				: type_submodule_size;
 		position_in_board	: type_submodule_position_offset_in_board;

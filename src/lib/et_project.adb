@@ -790,6 +790,27 @@ package body et_project is
 			section_mark (section_board, FOOTER);			
 			section_mark (section_drawing_frames, FOOTER);
 		end query_frames;
+
+		procedure query_submodules (module_name : in type_submodule_name.bounded_string; module : in type_module) is
+			use et_schematic;
+			use type_submodules;
+			submodule_cursor : type_submodules.cursor := module.submodules.first;
+		begin
+			section_mark (section_submodules, HEADER);
+			while submodule_cursor /= type_submodules.no_element loop
+				section_mark (section_submodule, HEADER);
+				write (keyword => keyword_name, space => true, parameters => type_submodule_path.to_string (key (submodule_cursor)));
+				write (keyword => keyword_path, space => true, parameters => type_submodule_name.to_string (element (submodule_cursor).name));
+				write (keyword => keyword_position, parameters => position (element (submodule_cursor).position));
+				write (keyword => keyword_size, parameters => 
+					space & keyword_pos_x & to_string (element (submodule_cursor).size.x) &
+					space & keyword_pos_y & to_string (element (submodule_cursor).size.y)); -- size x 50 y 70
+				--write (keyword => keyword_position_in_board, parameter => position (element (submodule_cursor).position_in_board
+				section_mark (section_submodule, FOOTER);				
+				next (submodule_cursor);
+			end loop;
+			section_mark (section_submodules, FOOTER);
+		end query_submodules;
 		
 	begin -- save_project
 		log ("saving project ...", log_threshold);
@@ -821,7 +842,7 @@ package body et_project is
 			-- notes
 			
 			-- submodules
-
+			query_element (module_cursor, query_submodules'access);
 			-- devices
 			query_element (module_cursor, query_devices'access);
 			
