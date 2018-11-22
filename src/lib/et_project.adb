@@ -878,6 +878,16 @@ package body et_project is
 			use type_stop_arcs;
 			use type_stop_circles;
 			use type_stop_polygons;
+
+			use type_keepout_lines;
+			use type_keepout_arcs;
+			use type_keepout_circles;
+			use type_keepout_polygons;
+
+			use type_route_restrict_lines;
+			use type_route_restrict_arcs;
+			use type_route_restrict_circles;
+			use type_route_restrict_polygons;
 			
 			procedure line_begin is begin section_mark (section_line, HEADER); end;
 			procedure line_end   is begin section_mark (section_line, FOOTER); end;			
@@ -917,6 +927,26 @@ package body et_project is
 				write (keyword => keyword_position, parameters => position (element (pc)));
 			end write_polygon_corners;
 
+			procedure write_layer_numbers (layers : in type_signal_layers.set) is
+				use type_signal_layers;
+				-- For each layer number we require 3 characters (like "10 12 13 ...")
+				-- CS the count should be set in a more professional way.
+				-- CS Constraint error will be raised if layer numbers assume 3 digits (some day...)
+				count : count_type := length (layers) * 3; 
+
+				-- The layer numbers will be stored here:
+				package type_layers is new generic_bounded_length (positive (count)); use type_layers;
+				layers_string : type_layers.bounded_string;
+				
+				procedure read_them (slc : in type_signal_layers.cursor) is
+				begin
+					layers_string := layers_string & to_bounded_string (to_string (element (slc)));
+				end read_them;
+				
+			begin -- write_layer_numbers
+				iterate (layers, read_them'access);
+				write (keyword => keyword_layers, parameters => to_string (layers_string));
+			end write_layer_numbers;
 			
 			-- SILK SCREEN
 			procedure write_lines (cursor : in type_silk_lines.cursor) is begin
@@ -1118,7 +1148,106 @@ package body et_project is
 				polygon_end;
 			end write_polygons;
 
+			-- KEEPOUT
+			procedure write_lines (cursor : in type_keepout_lines.cursor) is begin
+				line_begin;
+				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
+				write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+				write (keyword => keyword_width, parameters => to_string (element (cursor).width));
+				line_end;
+			end write_lines;
 
+			procedure write_arcs (cursor : in type_keepout_arcs.cursor) is begin
+				arc_begin;
+				write (keyword => keyword_center, parameters => position (element (cursor).center));
+				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
+				write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+				write (keyword => keyword_width, parameters => to_string (element (cursor).width));
+				arc_end;
+			end write_arcs;
+
+			procedure write_circles (cursor : in type_keepout_circles.cursor) is begin
+				circle_begin;
+				write (keyword => keyword_center, parameters => position (element (cursor).center));
+				write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
+				write (keyword => keyword_width , parameters => to_string (element (cursor).width));
+				write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
+				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
+				write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
+				write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
+				circle_end;
+			end write_circles;
+			
+			procedure write_polygons (cursor : in type_keepout_polygons.cursor) is 
+				use type_polygon_points;
+				
+				procedure query_points (polygon : in type_keepout_polygon) is begin
+					iterate (polygon.points, write_polygon_corners'access); -- see general stuff above
+				end query_points;
+				
+			begin -- write_polygons
+				polygon_begin;
+				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
+				write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
+				write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
+				write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
+				write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
+				corners_begin;
+				query_element (cursor, query_points'access);
+				corners_end;
+				polygon_end;
+			end write_polygons;
+
+			-- ROUTE RESTRICT
+			procedure write_lines (cursor : in type_route_restrict_lines.cursor) is begin
+				line_begin;
+				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
+				write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+				write (keyword => keyword_width, parameters => to_string (element (cursor).width));
+				write_layer_numbers (element (cursor).layers);
+				line_end;
+			end write_lines;
+
+			procedure write_arcs (cursor : in type_route_restrict_arcs.cursor) is begin
+				arc_begin;
+				write (keyword => keyword_center, parameters => position (element (cursor).center));
+				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
+				write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+				write (keyword => keyword_width, parameters => to_string (element (cursor).width));
+				write_layer_numbers (element (cursor).layers);
+				arc_end;
+			end write_arcs;
+
+			procedure write_circles (cursor : in type_route_restrict_circles.cursor) is begin
+				circle_begin;
+				write (keyword => keyword_center, parameters => position (element (cursor).center));
+				write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
+				write (keyword => keyword_width , parameters => to_string (element (cursor).width));
+				write_layer_numbers (element (cursor).layers);
+				circle_end;
+			end write_circles;
+			
+			procedure write_polygons (cursor : in type_route_restrict_polygons.cursor) is 
+				use type_polygon_points;
+				
+				procedure query_points (polygon : in type_route_restrict_polygon) is begin
+					iterate (polygon.points, write_polygon_corners'access); -- see general stuff above
+				end query_points;
+				
+			begin -- write_polygons
+				polygon_begin;
+				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
+				write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
+				write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
+				write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
+				write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
+				-- CS write_layer_numbers (element (cursor).layers);
+				corners_begin;
+				query_element (cursor, query_points'access);
+				corners_end;
+				polygon_end;
+			end write_polygons;
+			
 			
 		begin -- query_board
 			section_mark (section_board, HEADER);
@@ -1209,6 +1338,40 @@ package body et_project is
 
 			section_mark (section_stop_mask, FOOTER);
 
+			-- KEEPOUT
+			section_mark (section_keepout, HEADER);
+
+			section_mark (section_top, HEADER);
+				iterate (module.board.keepout.top.lines, write_lines'access);
+				iterate (module.board.keepout.top.arcs, write_arcs'access);
+				iterate (module.board.keepout.top.circles, write_circles'access);
+				iterate (module.board.keepout.top.polygons, write_polygons'access);
+				-- CS iterate (module.board.keepout.top.texts, write_texts'access);
+				section_mark (section_top, FOOTER);
+
+				section_mark (section_bottom, HEADER);
+				iterate (module.board.keepout.bottom.lines, write_lines'access);
+				iterate (module.board.keepout.bottom.arcs, write_arcs'access);
+				iterate (module.board.keepout.bottom.circles, write_circles'access);
+				iterate (module.board.keepout.bottom.polygons, write_polygons'access);
+				-- CS iterate (module.board.keepout.bottom.texts, write_texts'access);
+				section_mark (section_bottom, FOOTER);
+
+			section_mark (section_keepout, FOOTER);
+
+			-- ROUTE RESTRICT
+			section_mark (section_route_restrict, HEADER);
+				iterate (module.board.route_restrict.lines, write_lines'access);
+				iterate (module.board.route_restrict.arcs, write_arcs'access);
+				iterate (module.board.route_restrict.circles, write_circles'access);
+				iterate (module.board.route_restrict.polygons, write_polygons'access);
+				-- CS iterate (module.board.route_restrict.texts, write_texts'access);
+			section_mark (section_route_restrict, FOOTER);
+
+
+			-- VIA RESTRICT
+
+			
 			
 			---BOARD END-----
 			section_mark (section_board, FOOTER);

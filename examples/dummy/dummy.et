@@ -439,7 +439,7 @@
 					start x 22.3
 					end y 32.5
 					width 0.2
-					layer 2..15
+					layers 2 3 15
 				[LINE END]
 
 		[ROUTE_RESTRICT END]

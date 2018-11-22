@@ -228,6 +228,7 @@ package et_project is
 	keyword_content					: constant string := "content";
 	keyword_radius					: constant string := "radius";
 	keyword_filled					: constant string := "filled";		
+	keyword_layers					: constant string := "layers";
 	
 	section_net_classes			: constant string := "[NET_CLASSES";
 	section_net_class			: constant string := "[NET_CLASS";

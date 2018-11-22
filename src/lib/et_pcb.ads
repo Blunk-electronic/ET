@@ -974,7 +974,7 @@ package et_pcb is
 	end record;
 	package type_route_restrict_circles is new doubly_linked_lists (type_route_restrict_circle);
 
-	type type_route_restrict_polygon is new type_polygon with null record;
+	type type_route_restrict_polygon is new type_polygon with null record; -- CS layers ?
 	package type_route_restrict_polygons is new doubly_linked_lists (type_route_restrict_polygon);
 
 	
@@ -982,7 +982,7 @@ package et_pcb is
 	type type_route_restrict is tagged record
 		lines 		: type_route_restrict_lines.list;
 		arcs		: type_route_restrict_arcs.list;
-		circles		: type_route_restrict_lines.list;
+		circles		: type_route_restrict_circles.list;
 		polygons	: type_route_restrict_polygons.list;
 		-- CS texts		: type_texts_with_content.list; -- for routing notes ?		
 	end record;
