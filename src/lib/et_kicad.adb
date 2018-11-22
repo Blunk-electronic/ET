@@ -2499,19 +2499,29 @@ package body et_kicad is
 					-- The content (in this example "IC") is not relevant here as it applies for the whole component.
 					-- We convert the text field downward to a type_text_basic (which strips off the content) first.
 					-- Then we convert the type_text_basic upward to type_text_placeholder by providing the meaning:
-					unit.symbol.reference	:= (type_text_basic (field_reference)		with meaning => reference);
-					unit.symbol.value		:= (type_text_basic (field_value)			with meaning => value);
-					unit.symbol.commissioned:= (type_text_basic (field_commissioned)	with meaning => commissioned);
-					unit.symbol.updated		:= (type_text_basic (field_updated)			with meaning => updated);
-					unit.symbol.author		:= (type_text_basic (field_author)			with meaning => author);
+					unit.symbol.reference	:= (type_text_basic (field_reference)
+												with meaning => reference, position => field_reference.position);
+					unit.symbol.value		:= (type_text_basic (field_value)
+												with meaning => value, position => field_value.position);
+					unit.symbol.commissioned:= (type_text_basic (field_commissioned)	
+												with meaning => commissioned, position => field_commissioned.position);
+					unit.symbol.updated		:= (type_text_basic (field_updated)			
+												with meaning => updated, position => field_updated.position);
+					unit.symbol.author		:= (type_text_basic (field_author)			
+												with meaning => author, position => field_author.position);
 
 					case unit.symbol.appearance is
 						when sch_pcb =>
-							unit.symbol.packge		:= (type_text_basic (field_package)		with meaning => packge);
-							unit.symbol.datasheet	:= (type_text_basic (field_datasheet)	with meaning => datasheet);
-							unit.symbol.purpose		:= (type_text_basic (field_purpose)		with meaning => purpose);
-							unit.symbol.partcode	:= (type_text_basic (field_partcode)	with meaning => partcode);
-							unit.symbol.bom			:= (type_text_basic (field_bom)			with meaning => bom);
+							unit.symbol.packge		:= (type_text_basic (field_package)		
+														with meaning => packge, position => field_package.position);
+							unit.symbol.datasheet	:= (type_text_basic (field_datasheet)	
+														with meaning => datasheet, position => field_datasheet.position);
+							unit.symbol.purpose		:= (type_text_basic (field_purpose)		
+														with meaning => purpose, position => field_purpose.position);
+							unit.symbol.partcode	:= (type_text_basic (field_partcode)	
+														with meaning => partcode, position => field_partcode.position);
+							unit.symbol.bom			:= (type_text_basic (field_bom)			
+														with meaning => bom, position => field_bom.position);
 						when others => null;
 					end case;
 				end set;
@@ -8233,15 +8243,15 @@ package body et_kicad is
 									-- placeholders:
 									-- Convert tmp_component_text_* to a placeholder while maintaining the text meaning.
 									reference		=> (type_text_basic (field_reference)
-														with meaning => field_reference.meaning),
+														with meaning => field_reference.meaning, position => field_reference.position),
 									value			=> (type_text_basic (field_value)
-														with meaning => field_value.meaning),
+														with meaning => field_value.meaning, position => field_value.position),
 									updated			=> (type_text_basic (field_updated)
-														with meaning => field_updated.meaning),
+														with meaning => field_updated.meaning, position => field_updated.position),
 									author			=> (type_text_basic (field_author)
-														with meaning => field_author.meaning),
+														with meaning => field_author.meaning, position => field_author.position),
 									commissioned	=> (type_text_basic (field_commissioned)
-														with meaning => field_commissioned.meaning)),
+														with meaning => field_commissioned.meaning, position => field_commissioned.position)),
 								
 								log_threshold => log_threshold + 2);
 												
@@ -8263,25 +8273,25 @@ package body et_kicad is
 									-- placeholders:
 									-- Convert tmp_component_text_* to a placeholder while maintaining the text meaning.
 									reference		=> (type_text_basic (field_reference)
-														with meaning => field_reference.meaning),
+														with meaning => field_reference.meaning, position => field_reference.position),
 									value			=> (type_text_basic (field_value)
-														with meaning => field_value.meaning),
+														with meaning => field_value.meaning, position => field_value.position),
 									packge			=> (type_text_basic (field_package)
-														with meaning => field_package.meaning),
+														with meaning => field_package.meaning, position => field_package.position),
 									datasheet		=> (type_text_basic (field_datasheet)
-														with meaning => field_datasheet.meaning),
+														with meaning => field_datasheet.meaning, position => field_datasheet.position),
 									purpose			=> (type_text_basic (field_purpose)
-														with meaning => field_purpose.meaning),
+														with meaning => field_purpose.meaning, position => field_purpose.position),
 									partcode		=> (type_text_basic (field_partcode)
-														with meaning => field_partcode.meaning),
+														with meaning => field_partcode.meaning, position => field_partcode.position),
 									updated			=> (type_text_basic (field_updated)
-														with meaning => field_updated.meaning),
+														with meaning => field_updated.meaning, position => field_updated.position),
 									author			=> (type_text_basic (field_author)
-														with meaning => field_author.meaning),
+														with meaning => field_author.meaning, position => field_author.position),
 									commissioned	=> (type_text_basic (field_commissioned)
-														with meaning => field_commissioned.meaning),
+														with meaning => field_commissioned.meaning, position => field_commissioned.position),
 									bom				=> (type_text_basic (field_bom)
-														with meaning => field_bom.meaning)),
+														with meaning => field_bom.meaning, position => field_bom.position)),
 								
 								log_threshold => log_threshold + 2);
 

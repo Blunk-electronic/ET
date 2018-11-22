@@ -67,7 +67,7 @@ package et_schematic is
 
 	-- A text/note field in the schematic gets extended by extended coordinates (see above)
 	type type_text is new et_libraries.type_text_basic with record
-		meaning			: et_libraries.type_text_meaning := et_libraries.note;
+		--meaning			: et_libraries.type_text_meaning := et_libraries.note;
 		coordinates		: et_coordinates.type_coordinates; -- CS rename to position
 		content			: et_libraries.type_text_content.bounded_string;
 	end record;

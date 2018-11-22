@@ -359,7 +359,7 @@ package body et_project is
 			write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
 		end write_text_properties;
 
-		procedure write_text_properties (text : in et_libraries.type_text_basic'class) is
+		procedure write_text_properties (text : in et_libraries.type_text_placeholder'class) is
 			use et_coordinates;
 		begin
 			write (keyword => keyword_position, parameters => position (text.position));
@@ -823,11 +823,11 @@ package body et_project is
 			section_mark (section_texts, HEADER);
 			while text_cursor /= type_texts.no_element loop
 				section_mark (section_text, HEADER);
-				write (keyword => keyword_meaning, parameters => et_libraries.to_string (element (text_cursor).meaning));
+				--write (keyword => keyword_meaning, parameters => et_libraries.to_string (element (text_cursor).meaning));
 				write (keyword => keyword_position, parameters => position (element (text_cursor).coordinates));
 				write (keyword => keyword_content, space => true, wrap => true,
 					   parameters => et_libraries.to_string (element (text_cursor).content));
-				write_text_properties (element (text_cursor));
+				--write_text_properties (element (text_cursor));
 				section_mark (section_text, FOOTER);
 				next (text_cursor);
 			end loop;

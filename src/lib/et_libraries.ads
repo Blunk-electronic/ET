@@ -178,7 +178,7 @@ package et_libraries is
 	
 	-- These are basic properties a text has got:
 	type type_text_basic is tagged record
-		position	: type_2d_point;
+		--position	: type_2d_point;
         size    	: type_text_size := text_size_default;
         style		: type_text_style := type_text_style'first;
         line_width	: type_text_line_width := type_text_line_width'first; -- CS: use a general type_line_width ?
@@ -194,22 +194,32 @@ package et_libraries is
 	function to_string (text_content : in type_text_content.bounded_string) return string;
 	
 	procedure check_text_content_length (content : in string);
-	-- Tests if the content not longer than allowed.
+	-- Tests if the content is not longer than allowed.
 	
-	-- This is a real text with its content:
-	type type_text (meaning : type_text_meaning) is new type_text_basic with record
-        content		: type_text_content.bounded_string;
-	end record;
+-- 	-- This is a real text with its content:
+-- 	type type_text (meaning : type_text_meaning) is new type_text_basic with record
+--         content		: type_text_content.bounded_string;
+-- 	end record;
+-- 
+-- 	-- This is a placeholder for a text. It does not have content yet, but a meaning:
+-- 	type type_text_placeholder (meaning : type_text_meaning) is new type_text_basic with null record;
 
 	-- This is a placeholder for a text. It does not have content yet, but a meaning:
-	type type_text_placeholder (meaning : type_text_meaning) is new type_text_basic with null record;
+	type type_text_placeholder (meaning : type_text_meaning) is new type_text_basic with record
+		position	: type_2d_point;		
+	end record;
 
-
-	
 	procedure write_placeholder_properties (
 	-- Writes the properties of the given placeholder.
 		placeholder		: in type_text_placeholder;
 		log_threshold	: in et_string_processing.type_log_level);
+	
+	-- This is a real text with its content:
+	type type_text is new type_text_placeholder with record
+        content		: type_text_content.bounded_string;
+	end record;
+
+	
 
 	procedure write_text_properies (
 	-- Outputs the properties of the given text.
