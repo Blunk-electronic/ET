@@ -286,6 +286,8 @@ package et_pcb is
 		);
 		-- CS should be defined via configuration file:
 
+	function to_string (meaning : in type_text_meaning_pcb) return string;
+	
 	-- TEXT PLACEHOLDERS
 	type type_text_placeholder_pcb is new type_text with record
 		meaning : type_text_meaning_pcb;
@@ -480,7 +482,7 @@ package et_pcb is
 	
 	type type_copper_circle is new type_circle_2d with record
 		width				: type_signal_width;
-		filled 				: boolean := false;
+		filled 				: type_filled := NO;
 		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
 		hatching_line_width	: type_signal_width := fill_style_hatching_line_width_default; -- the with of the lines
 		hatching_spacing	: type_signal_clearance := fill_style_hatching_spacing_default; -- the space between the lines
@@ -675,7 +677,7 @@ package et_pcb is
 	
 	type type_stop_circle is new type_circle_2d with record
 		width				: type_general_line_width; -- the width of the circumfence
-		filled 				: boolean := false;
+		filled 				: type_filled := NO;
 		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
 		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the lines
 		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the lines
@@ -741,7 +743,7 @@ package et_pcb is
 	
 	type type_stencil_circle is new type_circle_2d with record
 		width				: type_general_line_width;
-		filled 				: boolean := false;
+		filled 				: type_filled := NO;
 		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
 		hatching_line_width	: type_signal_width := fill_style_hatching_line_width_default; -- the with of the lines
 		hatching_spacing	: type_signal_clearance := fill_style_hatching_spacing_default; -- the space between the lines
@@ -791,7 +793,7 @@ package et_pcb is
 	
 	type type_silk_circle is new type_circle_2d with record
 		width				: type_general_line_width; -- line width of circumfence
-		filled 				: boolean := false;
+		filled 				: type_filled := NO;
 		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
 		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the lines
 		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the lines
@@ -858,7 +860,7 @@ package et_pcb is
 	
 	type type_doc_circle is new type_circle_2d with record
 		width				: type_general_line_width; -- line width of circumfence
-		filled 				: boolean := false;
+		filled 				: type_filled := NO;
 		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
 		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the lines
 		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the lines
@@ -923,7 +925,7 @@ package et_pcb is
 	
 	type type_keepout_circle is new type_circle_2d with record
 		width				: type_general_line_width; -- line width of circumfence
-		filled 				: boolean := false;
+		filled 				: type_filled := NO;
 		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
 		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the lines
 		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the lines

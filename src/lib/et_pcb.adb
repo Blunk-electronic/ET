@@ -223,6 +223,11 @@ package body et_pcb is
 	begin
 		return latin_1.space & to_lower (type_text_meaning_package'image (text_meaning));
 	end to_string;
+
+	function to_string (meaning : in type_text_meaning_pcb) return string is
+	begin
+		return latin_1.space & to_lower (type_text_meaning_pcb'image (meaning));
+	end to_string;
 	
 	function to_directory (directory_name : in string) return type_directory_name.bounded_string is
 	-- Converts a string to a type_directory_name.
@@ -447,7 +452,7 @@ package body et_pcb is
 		log ("copper circle face" & to_string (face) & latin_1.space 
 			 & to_string (type_circle_2d (circle))
 			 & " width" & to_string (circle.width)
-			 & " filled " & boolean'image (circle.filled), log_threshold);
+			 & " filled" & to_string (circle.filled), log_threshold);
 	end circle_copper_properties;
 
 	procedure text_copper_properties (
@@ -627,7 +632,7 @@ package body et_pcb is
 		log ("silk screen circle face" & to_string (face) & latin_1.space 
 			 & to_string (type_circle_2d (circle))
 			 & " width" & to_string (circle.width)
-			 & " filled " & boolean'image (circle.filled)
+			 & " filled" & to_string (circle.filled)
 			 & " " & text_fill_style & to_string (circle.fill_style), log_threshold);
 
 		-- if filled with a hatched pattern, output hatch line width and spacing
@@ -715,7 +720,7 @@ package body et_pcb is
 		log ("assembly doc circle face" & to_string (face) & latin_1.space 
 			 & to_string (type_circle_2d (circle))
 			 & " width" & to_string (circle.width)
-			 & " filled " & boolean'image (circle.filled)
+			 & " filled" & to_string (circle.filled)
 			 & " " & text_fill_style & to_string (circle.fill_style), log_threshold);
 
 		-- if filled with a hatched pattern, output hatch line width and spacing
@@ -801,7 +806,7 @@ package body et_pcb is
 		circle := element (cursor);
 		log ("keepout (courtyard) circle face" & to_string (face) & latin_1.space 
 			& to_string (type_circle_2d (circle))
-			& " filled " & boolean'image (circle.filled)
+			& " filled" & to_string (circle.filled)
 			& " " & text_fill_style & to_string (circle.fill_style), log_threshold);
 	end circle_keepout_properties;
 
@@ -834,7 +839,7 @@ package body et_pcb is
 		log ("stop mask circle face" & to_string (face) & latin_1.space 
 			& to_string (type_circle_2d (circle))
 			& " width" & to_string (circle.width)
-			& " filled " & boolean'image (circle.filled)
+			& " filled" & to_string (circle.filled)
 			& " " & text_fill_style & to_string (circle.fill_style), log_threshold);
 
 		-- if filled with a hatched pattern, output hatch line width and spacing
@@ -906,7 +911,7 @@ package body et_pcb is
 		log ("solder paste (stencil) circle face" & to_string (face) & latin_1.space 
 			& to_string (type_circle_2d (circle))
 			& " width" & to_string (circle.width)
-			& " filled " & boolean'image (circle.filled)
+			& " filled" & to_string (circle.filled)
 			& " " & text_fill_style & to_string (circle.fill_style), log_threshold);
 	end circle_stencil_properties;
 

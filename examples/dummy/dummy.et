@@ -212,8 +212,8 @@
 		[SILK_SCREEN BEGIN]
 			[TOP BEGIN]
 				[LINE BEGIN]
-					start x 22.3
-					end y 32.5
+					start x 22.3 y 455
+					end x 32.5 y 455
 					width 0.2
 				[LINE END]
 
@@ -241,9 +241,9 @@
 					hatching_line_width 0.3
 					hatching_line_spacing 1
 					[CORNERS BEGIN]
-						x 123.54 y 2.7
-						x 133.54 y 335.3
-						x 523.54 y 6.7
+						position x 123.54 y 2.7
+						position x 133.54 y 335.3
+						position x 523.54 y 6.7
 					[CORNERS END]
 				[POLYGON END]
 				

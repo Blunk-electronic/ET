@@ -870,8 +870,38 @@ package body et_project is
 			procedure circle_end   is begin section_mark (section_circle, FOOTER); end;			
 			procedure polygon_begin is begin section_mark (section_polygon, HEADER); end;
 			procedure polygon_end   is begin section_mark (section_polygon, FOOTER); end;
+			procedure corners_begin is begin section_mark (section_corners, HEADER); end;
+			procedure corners_end   is begin section_mark (section_corners, FOOTER); end;
+			procedure text_begin is begin section_mark (section_text, HEADER); end;
+			procedure text_end   is begin section_mark (section_text, FOOTER); end;
+			procedure placeholder_begin is begin section_mark (section_placeholder, HEADER); end;
+			procedure placeholder_end   is begin section_mark (section_placeholder, FOOTER); end;
+
+			-- general stuff
+			procedure write_texts (cursor : in type_texts_with_content.cursor) is
+			begin
+				text_begin;
+				write (keyword => keyword_content, parameters => et_libraries.to_string (element (cursor).content));
+				write_text_properties (element (cursor));
+				text_end;
+			end write_texts;
+
+			procedure write_placeholders (cursor : in type_text_placeholders_pcb.cursor) is
+			begin
+				placeholder_begin;
+				write (keyword => keyword_meaning, parameters => to_string (element (cursor).meaning));
+				write_text_properties (element (cursor));
+				placeholder_end;
+			end write_placeholders;
+
+			procedure write_polygon_corners (pc : in type_polygon_points.cursor) is
+				use type_polygon_points;
+			begin
+				write (keyword => keyword_position, parameters => position (element (pc)));
+			end write_polygon_corners;
+
 			
-			
+			-- silk screen
 			procedure write_lines (cursor : in type_silk_lines.cursor) is begin
 				line_begin;
 				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
@@ -894,38 +924,59 @@ package body et_project is
 				write (keyword => keyword_center, parameters => position (element (cursor).center));
 				write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
 				write (keyword => keyword_width , parameters => to_string (element (cursor).width));
-				--write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
+				write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
+				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
+				write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
+				write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
 				circle_end;
 			end write_circles;
-
-			procedure write_polygons (cursor : in type_silk_polygons.cursor) is begin
+			
+			procedure write_polygons (cursor : in type_silk_polygons.cursor) is 
+				use type_polygon_points;
+				
+				procedure query_points (polygon : in type_silk_polygon) is begin
+					iterate (polygon.points, write_polygon_corners'access); -- see general stuff above
+				end query_points;
+				
+			begin -- write_polygons
 				polygon_begin;
--- 				write (keyword => keyword_center, parameters => position (element (cursor).center));
--- 				write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
--- 				write (keyword => keyword_width , parameters => to_string (element (cursor).width));
+				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
+				write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
+				write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
+				write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
+				write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
+				corners_begin;
+				query_element (cursor, query_points'access);
+				corners_end;
 				polygon_end;
 			end write_polygons;
-			
+
+				
 			
 		begin -- query_board
 			section_mark (section_board, HEADER);
 
+			-- SILK SCREEN
 			section_mark (section_silk_screen, HEADER);
 
 			-- TOP
 			section_mark (section_top, HEADER);
-
 			iterate (module.board.silk_screen.top.lines, write_lines'access);
 			iterate (module.board.silk_screen.top.arcs, write_arcs'access);
 			iterate (module.board.silk_screen.top.circles, write_circles'access);
--- 			iterate (module.board.silk_screen.top.polygons, write_lines'access);
--- 			iterate (module.board.silk_screen.top.texts, write_lines'access);
--- 			iterate (module.board.silk_screen.top.placeholders, write_lines'access);
-			
+			iterate (module.board.silk_screen.top.polygons, write_polygons'access);
+			iterate (module.board.silk_screen.top.texts, write_texts'access);
+			iterate (module.board.silk_screen.top.placeholders, write_placeholders'access);
 			section_mark (section_top, FOOTER);
 
+			-- BOTTOM
 			section_mark (section_bottom, HEADER);
 			iterate (module.board.silk_screen.bottom.lines, write_lines'access);
+			iterate (module.board.silk_screen.bottom.arcs, write_arcs'access);
+			iterate (module.board.silk_screen.bottom.circles, write_circles'access);
+			iterate (module.board.silk_screen.bottom.polygons, write_polygons'access);
+			iterate (module.board.silk_screen.bottom.texts, write_texts'access);
+			iterate (module.board.silk_screen.bottom.placeholders, write_placeholders'access);
 			section_mark (section_bottom, FOOTER);
 			
 			section_mark (section_silk_screen, FOOTER);
