@@ -696,8 +696,8 @@ package et_pcb is
 		lines 		: type_stop_lines.list;
 		arcs		: type_stop_arcs.list;
 		circles		: type_stop_circles.list;
-		texts		: type_texts_with_content.list; -- for texts in copper to be exposed
 		polygons	: type_stop_polygons.list;
+		texts		: type_texts_with_content.list; -- for texts in copper to be exposed
 	end record;
 
 	-- Stop mask of packages (in library):
