@@ -240,7 +240,7 @@ package body et_kicad_to_native is
 			use et_schematic.type_texts;
 			note_cursor : et_schematic.type_texts.cursor := module.notes.first;
 
-			procedure change_path (note : in out et_schematic.type_note) is
+			procedure change_path (note : in out et_schematic.type_text) is
 				use et_coordinates;
 			begin
 				log ("note '" & et_libraries.to_string (note.content) & "'", log_threshold + 3);
@@ -2374,7 +2374,7 @@ package body et_kicad_to_native is
 			module.generic_name		:= element (module_cursor_kicad).generic_name;
 			module.instance			:= element (module_cursor_kicad).instance;
 			module.board_available	:= element (module_cursor_kicad).board_available;
-			module.notes			:= element (module_cursor_kicad).notes; 
+			module.texts			:= element (module_cursor_kicad).notes; 
 			module.board			:= et_pcb.type_board (element (module_cursor_kicad).board);
 			module.net_classes		:= element (module_cursor_kicad).net_classes;
 		end copy_general_stuff;

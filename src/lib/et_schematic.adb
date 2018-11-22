@@ -95,7 +95,7 @@ package body et_schematic is
 	
 
 	procedure write_note_properties (
-		note 			: in et_schematic.type_note;
+		note 			: in et_schematic.type_text;
 		log_threshold	: in et_string_processing.type_log_level := 0) is
 	-- Writes the properties of the given note
 		use et_string_processing;

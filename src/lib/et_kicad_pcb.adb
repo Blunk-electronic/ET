@@ -7360,7 +7360,7 @@ package body et_kicad_pcb is
 	
 								type_text_placeholders_package.append (
 									container	=> placeholders.silk_screen.top,
-									new_item	=> (type_text (element (cursor)) with meaning => REFERENCE));
+									new_item	=> (et_pcb.type_text (element (cursor)) with meaning => REFERENCE));
 	
 								-- log placeholder properties
 								placeholder_silk_screen_properties (TOP, placeholders.silk_screen.top.last, log_threshold + 3);
@@ -7377,7 +7377,7 @@ package body et_kicad_pcb is
 
 								type_text_placeholders_package.append (
 									container	=> placeholders.silk_screen.bottom,
-									new_item	=> (type_text (element (cursor)) with meaning => REFERENCE));
+									new_item	=> (et_pcb.type_text (element (cursor)) with meaning => REFERENCE));
 
 								-- log placeholder properties
 								placeholder_silk_screen_properties (BOTTOM, placeholders.silk_screen.bottom.last, log_threshold + 3);
@@ -7394,7 +7394,7 @@ package body et_kicad_pcb is
 
 								type_text_placeholders_package.append (
 									container	=> placeholders.assy_doc.top,
-									new_item	=> (type_text (element (cursor)) with meaning => VALUE));
+									new_item	=> (et_pcb.type_text (element (cursor)) with meaning => VALUE));
 
 								-- log placeholder properties
 								placeholder_assy_doc_properties (TOP, placeholders.assy_doc.top.last, log_threshold + 3);
@@ -7411,7 +7411,7 @@ package body et_kicad_pcb is
 
 								type_text_placeholders_package.append (
 									container	=> placeholders.assy_doc.bottom,
-									new_item	=> (type_text (element (cursor)) with meaning => VALUE));
+									new_item	=> (et_pcb.type_text (element (cursor)) with meaning => VALUE));
 
 								-- log placeholder properties
 								placeholder_assy_doc_properties (BOTTOM, placeholders.assy_doc.bottom.last, log_threshold + 3);

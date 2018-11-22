@@ -7376,7 +7376,7 @@ package body et_kicad is
 				-- The label header "Text Notes 3400 2800 0 60 Italic 12" and the next line like
 				-- "ERC32 Test Board" is read here. It contains the actual text.
 			
-				note : type_note; -- the text note being built
+				note : type_text; -- the text note being built
 			begin
 				--log ("making text note ...", log_threshold);
 				--log_indentation_up;
@@ -7506,16 +7506,16 @@ package body et_kicad is
 
 				-- These are the actual fields that descibe the component more detailled.
 				-- They are contextual validated once the given lines are read completely.
-				field_reference		: type_text (meaning => et_libraries.reference); -- like IC5 (redundant information with referenc, see above)
-				field_value			: type_text (meaning => value);	-- like 74LS00
-				field_commissioned 	: type_text (meaning => commissioned); -- 2018-01-04T03:56:09
-				field_updated		: type_text (meaning => updated); -- 2018-02-04T03:56:09
-				field_author		: type_text (meaning => author); -- like Steve Miller
-				field_package		: type_text (meaning => packge); -- like "bel_primiteves:S_SOT23"
-				field_datasheet		: type_text (meaning => datasheet); -- might be useful for some special components
-				field_purpose		: type_text (meaning => purpose); -- to be filled in schematic later by the user
-				field_partcode		: type_text (meaning => partcode); -- like "R_PAC_S_0805_VAL_"
-				field_bom			: type_text (meaning => bom); -- yes/no
+				field_reference		: et_libraries.type_text (meaning => et_libraries.reference); -- like IC5 (redundant information with referenc, see above)
+				field_value			: et_libraries.type_text (meaning => value);	-- like 74LS00
+				field_commissioned 	: et_libraries.type_text (meaning => commissioned); -- 2018-01-04T03:56:09
+				field_updated		: et_libraries.type_text (meaning => updated); -- 2018-02-04T03:56:09
+				field_author		: et_libraries.type_text (meaning => author); -- like Steve Miller
+				field_package		: et_libraries.type_text (meaning => packge); -- like "bel_primiteves:S_SOT23"
+				field_datasheet		: et_libraries.type_text (meaning => datasheet); -- might be useful for some special components
+				field_purpose		: et_libraries.type_text (meaning => purpose); -- to be filled in schematic later by the user
+				field_partcode		: et_libraries.type_text (meaning => partcode); -- like "R_PAC_S_0805_VAL_"
+				field_bom			: et_libraries.type_text (meaning => bom); -- yes/no
 			
 				function to_field return et_libraries.type_text is
 				-- Converts a field like "F 1 "green" H 2700 2750 50  0000 C CNN" to a type_text
@@ -11378,12 +11378,10 @@ package body et_kicad is
 	end add_frame;
 
 
-	procedure add_note (
+	procedure add_note (note : in et_schematic.type_text) is
 	-- Inserts a note in the the module (indicated by module_cursor).
 	-- As notes are collected in a simple list, the same note
 	-- can be added multiple times.
-		note	: in et_schematic.type_note) is
-		
 		procedure add (
 			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out type_module) is

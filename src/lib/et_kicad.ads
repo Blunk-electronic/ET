@@ -1231,9 +1231,9 @@ package et_kicad is
 	
 
 	
-	procedure add_note (
+	procedure add_note (note : in et_schematic.type_text);
 	-- Inserts a note in the the module (indicated by module_cursor).
-		note	: in et_schematic.type_note);
+
 
 	procedure check_junctions (log_threshold : in et_string_processing.type_log_level);
 	-- Verifies that junctions are placed where net segments are connected with each other.

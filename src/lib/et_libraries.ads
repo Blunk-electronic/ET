@@ -159,7 +159,7 @@ package et_libraries is
 		UPDATED,		-- for the date of the last edit in the library
 		AUTHOR,			-- for the person who did the last edit
 		
-		PACKGE,			-- for compoenent packages like SOT23
+		PACKGE,			-- for component packages like SOT23
 		DATASHEET,		-- for url to datasheet
 		PURPOSE,		-- for the purpose of the component in the design.
 		PARTCODE,		-- for the primary key into an external database (like "R_PAC_S_0805_VAL_200R")

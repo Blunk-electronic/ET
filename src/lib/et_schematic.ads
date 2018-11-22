@@ -66,18 +66,18 @@ package et_schematic is
 -- TEXT FIELD
 
 	-- A text/note field in the schematic gets extended by extended coordinates (see above)
-	type type_note is new et_libraries.type_text_basic with record
+	type type_text is new et_libraries.type_text_basic with record
 		meaning			: et_libraries.type_text_meaning := et_libraries.note;
-		coordinates		: et_coordinates.type_coordinates;
+		coordinates		: et_coordinates.type_coordinates; -- CS rename to position
 		content			: et_libraries.type_text_content.bounded_string;
 	end record;
 
 	procedure write_note_properties (
-		note			: in et_schematic.type_note;
+		note			: in et_schematic.type_text;
 		log_threshold	: in et_string_processing.type_log_level := 0);
 	-- Writes the properties of the given note
 
-	package type_texts is new doubly_linked_lists (type_note);
+	package type_texts is new doubly_linked_lists (type_text);
 
 
 -- UNITS AND COMPONENTS
@@ -412,7 +412,7 @@ package et_schematic is
 		frame_template_board		: et_libraries.type_frame_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_2.frm
 		-- CS: handle sheet description via a composite type consisting of template name and a bounded string
 		
-		notes       	: type_texts.list;						-- notes
+		texts       	: type_texts.list;						-- notes
 		-- CS: images
 
 		-- the nets of the module (incl. routing information from the board):
