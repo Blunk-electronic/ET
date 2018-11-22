@@ -855,13 +855,20 @@ package body et_project is
 			-- 	copper		: type_copper_pcb; -- non-electric copper stuff, incl. floating polygons !
 			-- 	contour		: type_pcb_contour;
 			-- end record;
+			use type_texts_with_content;
+			use type_text_placeholders_pcb;
+
 			use type_silk_lines;
 			use type_silk_arcs;
 			use type_silk_circles;
 			use type_silk_polygons;
-			use type_texts_with_content;
-			use type_text_placeholders_pcb;
 
+			use type_doc_lines;
+			use type_doc_arcs;
+			use type_doc_circles;
+			use type_doc_polygons;
+
+			
 			procedure line_begin is begin section_mark (section_line, HEADER); end;
 			procedure line_end   is begin section_mark (section_line, FOOTER); end;			
 			procedure arc_begin  is begin section_mark (section_arc , HEADER); end;
@@ -901,7 +908,7 @@ package body et_project is
 			end write_polygon_corners;
 
 			
-			-- silk screen
+			-- SILK SCREEN
 			procedure write_lines (cursor : in type_silk_lines.cursor) is begin
 				line_begin;
 				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
@@ -951,6 +958,55 @@ package body et_project is
 				polygon_end;
 			end write_polygons;
 
+			-- ASSEMBLY DOCUMENTATION
+			procedure write_lines (cursor : in type_doc_lines.cursor) is begin
+				line_begin;
+				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
+				write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+				write (keyword => keyword_width, parameters => to_string (element (cursor).width));
+				line_end;
+			end write_lines;
+
+			procedure write_arcs (cursor : in type_doc_arcs.cursor) is begin
+				arc_begin;
+				write (keyword => keyword_center, parameters => position (element (cursor).center));
+				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
+				write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+				write (keyword => keyword_width, parameters => to_string (element (cursor).width));
+				arc_end;
+			end write_arcs;
+
+			procedure write_circles (cursor : in type_doc_circles.cursor) is begin
+				circle_begin;
+				write (keyword => keyword_center, parameters => position (element (cursor).center));
+				write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
+				write (keyword => keyword_width , parameters => to_string (element (cursor).width));
+				write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
+				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
+				write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
+				write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
+				circle_end;
+			end write_circles;
+			
+			procedure write_polygons (cursor : in type_doc_polygons.cursor) is 
+				use type_polygon_points;
+				
+				procedure query_points (polygon : in type_doc_polygon) is begin
+					iterate (polygon.points, write_polygon_corners'access); -- see general stuff above
+				end query_points;
+				
+			begin -- write_polygons
+				polygon_begin;
+				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
+				write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
+				write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
+				write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
+				write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
+				corners_begin;
+				query_element (cursor, query_points'access);
+				corners_end;
+				polygon_end;
+			end write_polygons;
 				
 			
 		begin -- query_board
@@ -959,28 +1015,51 @@ package body et_project is
 			-- SILK SCREEN
 			section_mark (section_silk_screen, HEADER);
 
-			-- TOP
-			section_mark (section_top, HEADER);
-			iterate (module.board.silk_screen.top.lines, write_lines'access);
-			iterate (module.board.silk_screen.top.arcs, write_arcs'access);
-			iterate (module.board.silk_screen.top.circles, write_circles'access);
-			iterate (module.board.silk_screen.top.polygons, write_polygons'access);
-			iterate (module.board.silk_screen.top.texts, write_texts'access);
-			iterate (module.board.silk_screen.top.placeholders, write_placeholders'access);
-			section_mark (section_top, FOOTER);
+				section_mark (section_top, HEADER);
+				iterate (module.board.silk_screen.top.lines, write_lines'access);
+				iterate (module.board.silk_screen.top.arcs, write_arcs'access);
+				iterate (module.board.silk_screen.top.circles, write_circles'access);
+				iterate (module.board.silk_screen.top.polygons, write_polygons'access);
+				iterate (module.board.silk_screen.top.texts, write_texts'access);
+				iterate (module.board.silk_screen.top.placeholders, write_placeholders'access);
+				section_mark (section_top, FOOTER);
 
-			-- BOTTOM
-			section_mark (section_bottom, HEADER);
-			iterate (module.board.silk_screen.bottom.lines, write_lines'access);
-			iterate (module.board.silk_screen.bottom.arcs, write_arcs'access);
-			iterate (module.board.silk_screen.bottom.circles, write_circles'access);
-			iterate (module.board.silk_screen.bottom.polygons, write_polygons'access);
-			iterate (module.board.silk_screen.bottom.texts, write_texts'access);
-			iterate (module.board.silk_screen.bottom.placeholders, write_placeholders'access);
-			section_mark (section_bottom, FOOTER);
+				section_mark (section_bottom, HEADER);
+				iterate (module.board.silk_screen.bottom.lines, write_lines'access);
+				iterate (module.board.silk_screen.bottom.arcs, write_arcs'access);
+				iterate (module.board.silk_screen.bottom.circles, write_circles'access);
+				iterate (module.board.silk_screen.bottom.polygons, write_polygons'access);
+				iterate (module.board.silk_screen.bottom.texts, write_texts'access);
+				iterate (module.board.silk_screen.bottom.placeholders, write_placeholders'access);
+				section_mark (section_bottom, FOOTER);
 			
 			section_mark (section_silk_screen, FOOTER);
-			
+
+			-- ASSEMBLY DOCUMENTATION
+			section_mark (section_assembly_doc, HEADER);
+
+			section_mark (section_top, HEADER);
+				iterate (module.board.assy_doc.top.lines, write_lines'access);
+				iterate (module.board.assy_doc.top.arcs, write_arcs'access);
+				iterate (module.board.assy_doc.top.circles, write_circles'access);
+				iterate (module.board.assy_doc.top.polygons, write_polygons'access);
+				iterate (module.board.assy_doc.top.texts, write_texts'access);
+				iterate (module.board.assy_doc.top.placeholders, write_placeholders'access);
+				section_mark (section_top, FOOTER);
+
+				section_mark (section_bottom, HEADER);
+				iterate (module.board.assy_doc.bottom.lines, write_lines'access);
+				iterate (module.board.assy_doc.bottom.arcs, write_arcs'access);
+				iterate (module.board.assy_doc.bottom.circles, write_circles'access);
+				iterate (module.board.assy_doc.bottom.polygons, write_polygons'access);
+				iterate (module.board.assy_doc.bottom.texts, write_texts'access);
+				iterate (module.board.assy_doc.bottom.placeholders, write_placeholders'access);
+				section_mark (section_bottom, FOOTER);
+
+			section_mark (section_assembly_doc, FOOTER);
+
+
+			---BOARD END-----
 			section_mark (section_board, FOOTER);
 		end query_board;
 		
