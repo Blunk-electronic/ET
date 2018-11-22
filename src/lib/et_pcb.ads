@@ -475,6 +475,9 @@ package et_pcb is
 	end record;
 	package type_copper_arcs is new doubly_linked_lists (type_copper_arc);
 
+	type type_filled is (YES, NO);
+	function to_string (filled : in type_filled) return string;
+	
 	type type_copper_circle is new type_circle_2d with record
 		width				: type_signal_width;
 		filled 				: boolean := false;

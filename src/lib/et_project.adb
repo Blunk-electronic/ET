@@ -839,6 +839,99 @@ package body et_project is
 			end loop;
 			section_mark (section_texts, FOOTER);
 		end query_texts;
+
+		procedure query_board (module_name : in type_submodule_name.bounded_string; module : in type_module) is
+			use et_pcb;
+			use et_pcb_coordinates;
+
+			-- type type_board is tagged record
+			-- 	silk_screen	: type_silk_screen_pcb_both_sides;
+			-- 	assy_doc	: type_assembly_documentation_pcb_both_sides;
+			-- 	stencil		: type_stencil_both_sides;
+			-- 	stop_mask	: type_stop_mask_both_sides;
+			-- 	keepout		: type_keepout_both_sides;
+			-- 	route_restrict	: type_route_restrict_pcb;
+			-- 	via_restrict	: type_via_restrict_pcb;
+			-- 	copper		: type_copper_pcb; -- non-electric copper stuff, incl. floating polygons !
+			-- 	contour		: type_pcb_contour;
+			-- end record;
+			use type_silk_lines;
+			use type_silk_arcs;
+			use type_silk_circles;
+			use type_silk_polygons;
+			use type_texts_with_content;
+			use type_text_placeholders_pcb;
+
+			procedure line_begin is begin section_mark (section_line, HEADER); end;
+			procedure line_end   is begin section_mark (section_line, FOOTER); end;			
+			procedure arc_begin  is begin section_mark (section_arc , HEADER); end;
+			procedure arc_end    is begin section_mark (section_arc , FOOTER); end;
+			procedure circle_begin is begin section_mark (section_circle, HEADER); end;
+			procedure circle_end   is begin section_mark (section_circle, FOOTER); end;			
+			procedure polygon_begin is begin section_mark (section_polygon, HEADER); end;
+			procedure polygon_end   is begin section_mark (section_polygon, FOOTER); end;
+			
+			
+			procedure write_lines (cursor : in type_silk_lines.cursor) is begin
+				line_begin;
+				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
+				write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+				write (keyword => keyword_width, parameters => to_string (element (cursor).width));
+				line_end;
+			end write_lines;
+
+			procedure write_arcs (cursor : in type_silk_arcs.cursor) is begin
+				arc_begin;
+				write (keyword => keyword_center, parameters => position (element (cursor).center));
+				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
+				write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+				write (keyword => keyword_width, parameters => to_string (element (cursor).width));
+				arc_end;
+			end write_arcs;
+
+			procedure write_circles (cursor : in type_silk_circles.cursor) is begin
+				circle_begin;
+				write (keyword => keyword_center, parameters => position (element (cursor).center));
+				write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
+				write (keyword => keyword_width , parameters => to_string (element (cursor).width));
+				--write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
+				circle_end;
+			end write_circles;
+
+			procedure write_polygons (cursor : in type_silk_polygons.cursor) is begin
+				polygon_begin;
+-- 				write (keyword => keyword_center, parameters => position (element (cursor).center));
+-- 				write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
+-- 				write (keyword => keyword_width , parameters => to_string (element (cursor).width));
+				polygon_end;
+			end write_polygons;
+			
+			
+		begin -- query_board
+			section_mark (section_board, HEADER);
+
+			section_mark (section_silk_screen, HEADER);
+
+			-- TOP
+			section_mark (section_top, HEADER);
+
+			iterate (module.board.silk_screen.top.lines, write_lines'access);
+			iterate (module.board.silk_screen.top.arcs, write_arcs'access);
+			iterate (module.board.silk_screen.top.circles, write_circles'access);
+-- 			iterate (module.board.silk_screen.top.polygons, write_lines'access);
+-- 			iterate (module.board.silk_screen.top.texts, write_lines'access);
+-- 			iterate (module.board.silk_screen.top.placeholders, write_lines'access);
+			
+			section_mark (section_top, FOOTER);
+
+			section_mark (section_bottom, HEADER);
+			iterate (module.board.silk_screen.bottom.lines, write_lines'access);
+			section_mark (section_bottom, FOOTER);
+			
+			section_mark (section_silk_screen, FOOTER);
+			
+			section_mark (section_board, FOOTER);
+		end query_board;
 		
 	begin -- save_project
 		log ("saving project ...", log_threshold);
@@ -877,7 +970,7 @@ package body et_project is
 			query_element (module_cursor, query_devices'access);
 			
 			-- board
-
+			query_element (module_cursor, query_board'access);
 
 
 			

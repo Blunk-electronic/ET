@@ -226,6 +226,7 @@ package et_project is
 	keyword_view_mode				: constant string := "view_mode";
 	keyword_reference_offset		: constant string := "reference_offset";	
 	keyword_content					: constant string := "content";
+	keyword_radius					: constant string := "radius";	
 	
 	section_net_classes			: constant string := "[NET_CLASSES";
 	section_net_class			: constant string := "[NET_CLASS";
