@@ -805,7 +805,10 @@ package body et_project is
 				write (keyword => keyword_size, parameters => 
 					space & keyword_pos_x & to_string (element (submodule_cursor).size.x) &
 					space & keyword_pos_y & to_string (element (submodule_cursor).size.y)); -- size x 50 y 70
-				--write (keyword => keyword_position_in_board, parameter => position (element (submodule_cursor).position_in_board
+				write (keyword => keyword_position_in_board, parameters => position (element (submodule_cursor).position_in_board));
+				write (keyword => keyword_rotation, parameters => rotation (element (submodule_cursor).position_in_board));
+				write (keyword => keyword_view_mode, parameters => to_string (element (submodule_cursor).view_mode));
+				write (keyword => keyword_reference_offset, parameters => et_libraries.to_string (element (submodule_cursor).reference_offset));
 				section_mark (section_submodule, FOOTER);				
 				next (submodule_cursor);
 			end loop;

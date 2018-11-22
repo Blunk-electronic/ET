@@ -358,23 +358,20 @@ package et_schematic is
 		x, y : et_coordinates.type_distance; -- size x/y of the box
 	end record;
 
-	type type_submodule_position_offset_in_board is record
-		x, y 	: et_pcb_coordinates.type_distance := et_pcb_coordinates.zero_distance;
-		angle	: et_pcb_coordinates.type_angle	:= et_pcb_coordinates.zero_angle;
-	end record;
-
 	type type_submodule_view_mode is (
 		ORIGIN,		-- references and net names displayed as drawn in the generic submodule
 		INSTANCE	-- references and net names displayed after renumbering and prefixing
 		);
 
+	function to_string (view : in type_submodule_view_mode) return string;
+	
 	type type_submodule is record
 		name  				: et_coordinates.type_submodule_name.bounded_string;	-- MOT_DRV_3 (will be the net prefix later on)
         --text_size_path		: et_libraries.type_text_size; -- CS no need, should be sized automatically by the GUI
         --text_size_instance	: et_libraries.type_text_size; -- CS no need, should be sized automatically by the GUI
 		position		    : et_coordinates.type_coordinates;
 		size				: type_submodule_size;
-		position_in_board	: type_submodule_position_offset_in_board;
+		position_in_board	: et_pcb_coordinates.type_submodule_position;
 		view_mode			: type_submodule_view_mode;
 		reference_offset	: et_libraries.type_component_reference_id;	-- R88 turns to R2088 or R788
 	end record;

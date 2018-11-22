@@ -379,7 +379,7 @@ package body et_configuration is
 		if not module_found then
 			log_indentation_reset;
 			log (message_error & "no generic module " & to_string (submodule => generic_module_name)
-				 & " with instance " & to_string (instance)
+				 & " with instance " & et_coordinates.to_string (instance)
 				 & " found in the rig !", console => true);
 			raise constraint_error;
 		end if;
@@ -416,7 +416,7 @@ package body et_configuration is
 		begin
 			log_indentation_reset;
 			log (message_error & "module " & to_string (submodule => name) 
-				& " instance " & to_string (instance) & " not found !",
+				& " instance " & et_coordinates.to_string (instance) & " not found !",
 				console => true);
 			raise constraint_error;
 		end module_not_found;
@@ -434,7 +434,7 @@ package body et_configuration is
 					-- get the terminal count of connector A
 					terminal_count_A := et_kicad.terminal_count (reference_A, log_threshold + 2);
 					log ("module " & to_string (submodule => module_A) & " instance " 
-						& to_string (instance_A) & " connector " 
+						& et_coordinates.to_string (instance_A) & " connector " 
 						& to_string (reference_A) & to_string (terminal_count_A),
 						log_threshold + 1);
 					module_found := true;
@@ -457,7 +457,7 @@ package body et_configuration is
 					-- get the terminal count of connector B
 					terminal_count_B := et_kicad.terminal_count (reference_B, log_threshold + 2);
 					log ("module " & to_string (submodule => module_B) & " instance " 
-						& to_string (instance_B) & " connector " 
+						& et_coordinates.to_string (instance_B) & " connector " 
 						& to_string (reference_B) & to_string (terminal_count_B),
 						log_threshold + 1);
 					module_found := true;
@@ -479,10 +479,10 @@ package body et_configuration is
 			log_indentation_reset;
 			log (message_error 
 				& " module " & to_string (submodule => module_A) 
-				& " instance " & to_string (instance_A)
+				& " instance " & et_coordinates.to_string (instance_A)
 				& " connector " & to_string (reference_A)
 				& " and module " & to_string (submodule => module_B)
-				& " instance " & to_string (instance_B)
+				& " instance " & et_coordinates.to_string (instance_B)
 				& " connector " & to_string (reference_B)
 				& " do not match !",
 				console => true);
@@ -725,11 +725,11 @@ package body et_configuration is
 			use type_submodule_name;
 		begin
 			log ("module right " & to_string (submodule => module_right) 
-				& " instance " & to_string (instance_right)
+				& " instance " & et_coordinates.to_string (instance_right)
 				& " connector right " & to_string (reference_right), log_threshold + 1);
 
 			log ("module left " & to_string (submodule => module_left) 
-				& " instance " & to_string (instance_left)
+				& " instance " & et_coordinates.to_string (instance_left)
 				& " connector left " & to_string (reference_left), log_threshold + 1);
 
 			-- locate the module in the rig by its generic name and instance
@@ -821,7 +821,7 @@ package body et_configuration is
 			log ("generic module A " & to_string (module_A.name), log_threshold + 2); -- led_matrix
 
 			instance_A := element (interconnection_cursor).peer_A.instance; -- 2
-			log ("instance A " & to_string (instance_A), log_threshold + 2);
+			log ("instance A " & et_coordinates.to_string (instance_A), log_threshold + 2);
 			
 			-- A: map from module name and purpose to reference
 			purpose_A := element (interconnection_cursor).peer_A.purpose;
@@ -843,7 +843,7 @@ package body et_configuration is
 			log ("generic module B " & to_string (module_B.name), log_threshold + 2);
 
 			instance_B := element (interconnection_cursor).peer_B.instance;
-			log ("instance B " & to_string (instance_B), log_threshold + 2);
+			log ("instance B " & et_coordinates.to_string (instance_B), log_threshold + 2);
 			
 			-- B: map from module name and purpose to reference
 			purpose_B := element (interconnection_cursor).peer_B.purpose;
@@ -2570,7 +2570,7 @@ package body et_configuration is
 				begin
 					log_indentation_reset;
 					log (message_error & "connector " & to_string (connector.abbrevation) 
-						 & " instance " & to_string (connector.instance)
+						 & " instance " & et_coordinates.to_string (connector.instance)
 						 & " already used !",
 						 console => true);
 					raise constraint_error;

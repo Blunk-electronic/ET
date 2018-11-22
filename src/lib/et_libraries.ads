@@ -404,6 +404,8 @@ package et_libraries is
 	subtype type_component_reference_id is natural range natural'first .. 99_999; -- R1..R99999, IC1..IC99999 should be enough
 	component_reference_id_default : constant type_component_reference_id := 0;
 
+	function to_string (ref_id : in type_component_reference_id) return string;
+	
 	subtype type_component_reference_id_width is positive range positive'first .. 5; -- see number of digits of type_component_reference_id
 	
 	type type_component_reference is record -- CS: should be private

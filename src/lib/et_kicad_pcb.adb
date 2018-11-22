@@ -6697,7 +6697,7 @@ package body et_kicad_pcb is
 				log ("polygon/zone net " & et_schematic.to_string (polygon.net_name) &
 					 " " & text_polygon_signal_layer & to_string (polygon.layer) &
 					 " timestamp " & string (polygon.timestamp) & -- CS use constant
-					 " " & text_polygon_priority_level & to_string (polygon.priority_level) &
+					 " " & text_polygon_priority_level & et_pcb.to_string (polygon.priority_level) &
 					 -- CS: hatch_style and hatch_width are related to the display mode in the GUI.
 					 -- So there is no need to output this stuff here.
 					 --" hatch_width" & to_string (polygon.hatch_width) & -- CS use constant for "hatch width" ?

@@ -136,6 +136,7 @@ package et_pcb_coordinates is
 	-- If right point equals left point, returns false.
 
 	type type_terminal_position is new type_point_2d with private;
+	type type_submodule_position is new type_terminal_position with private;
 	type type_package_position is new type_terminal_position with private;
 
 	function to_string (point : in type_point_2d) return string;
@@ -206,6 +207,8 @@ package et_pcb_coordinates is
 		type type_terminal_position is new type_point_2d with record
 			angle	: type_angle := zero_angle;
 		end record;
+
+		type type_submodule_position is new type_terminal_position with null record;
 		
 		type type_package_position is new type_terminal_position with record
 			face	: type_face := TOP;

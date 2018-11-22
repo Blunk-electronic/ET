@@ -419,6 +419,11 @@ package body et_schematic is
 		return type_submodule_path.to_bounded_string (path);
 	end to_submodule_path;
 
+	function to_string (view : in type_submodule_view_mode) return string is
+	begin
+		return latin_1.space & to_lower (type_submodule_view_mode'image (view));
+	end to_string;
+	
 	function to_string (path : in type_submodule_path.bounded_string) return string is
 	begin
 		return type_submodule_path.to_string (path);
