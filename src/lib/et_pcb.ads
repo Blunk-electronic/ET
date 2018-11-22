@@ -1019,7 +1019,7 @@ package et_pcb is
 	package type_via_restrict_circles is new doubly_linked_lists (type_via_restrict_circle);
 
 	
-	type type_via_restrict_polygon is new type_polygon with null record;
+	type type_via_restrict_polygon is new type_polygon with null record; -- CS layers ?
 
 	package type_via_restrict_polygons is new doubly_linked_lists (type_via_restrict_polygon);
 
@@ -1029,7 +1029,7 @@ package et_pcb is
 	type type_via_restrict is tagged record
 		lines 		: type_via_restrict_lines.list;
 		arcs		: type_via_restrict_arcs.list;
-		circles		: type_via_restrict_lines.list;
+		circles		: type_via_restrict_circles.list;
 		polygons	: type_via_restrict_polygons.list;
 		-- CS texts		: type_texts_with_content.list; -- for via notes ?
 	end record;
