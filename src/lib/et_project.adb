@@ -1557,6 +1557,7 @@ package body et_project is
 		device			: in et_libraries.type_device; -- the actual device model
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
+		use et_libraries;
 		file_handle : ada.text_io.file_type;
 	begin
 		log (name, log_threshold);
@@ -1566,12 +1567,17 @@ package body et_project is
 			mode	=> out_file,
 			name	=> name);
 
-		-- write a nice header
-		put_line (file_handle, comment_mark & " " & et_general.system_name & " device");
-		put_line (file_handle, comment_mark & " " & date);
-		put_line (file_handle, comment_mark & " " & row_separator_double);
-		new_line (file_handle);
+		set_output (file_handle);
 		
+		-- write a nice header
+		put_line (comment_mark & " " & et_general.system_name & " device");
+		put_line (comment_mark & " " & date);
+		put_line (comment_mark & " " & row_separator_double);
+		new_line;
+
+		write (keyword => keyword_prefix, parameters => to_string (device.prefix));
+
+		set_output (standard_output);
 		close (file_handle);
 	end save_device;
 
@@ -1590,12 +1596,15 @@ package body et_project is
 			mode	=> out_file,
 			name	=> name);
 
-		-- write a nice header
-		put_line (file_handle, comment_mark & " " & et_general.system_name & " symbol");
-		put_line (file_handle, comment_mark & " " & date);
-		put_line (file_handle, comment_mark & " " & row_separator_double);
-		new_line (file_handle);
+		set_output (file_handle);
 		
+		-- write a nice header
+		put_line (comment_mark & " " & et_general.system_name & " symbol");
+		put_line (comment_mark & " " & date);
+		put_line (comment_mark & " " & row_separator_double);
+		new_line;
+
+		set_output (standard_output);
 		close (file_handle);
 	end save_symbol;
 	
@@ -1614,12 +1623,15 @@ package body et_project is
 			mode	=> out_file,
 			name	=> name);
 
-		-- write a nice header
-		put_line (file_handle, comment_mark & " " & et_general.system_name & " package");
-		put_line (file_handle, comment_mark & " " & date);
-		put_line (file_handle, comment_mark & " " & row_separator_double);
-		new_line (file_handle);
+		set_output (file_handle);
 		
+		-- write a nice header
+		put_line (comment_mark & " " & et_general.system_name & " package");
+		put_line (comment_mark & " " & date);
+		put_line (comment_mark & " " & row_separator_double);
+		new_line;
+
+		set_output (standard_output);
 		close (file_handle);
 	end save_package;
 

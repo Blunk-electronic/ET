@@ -247,6 +247,7 @@ package et_project is
 	keyword_filled					: constant string := "filled";		
 	keyword_layers					: constant string := "layers";
 	keyword_locked					: constant string := "locked";
+	keyword_prefix					: constant string := "prefix";	
 	
 	section_net_classes			: constant string := "[NET_CLASSES";
 	section_net_class			: constant string := "[NET_CLASS";
