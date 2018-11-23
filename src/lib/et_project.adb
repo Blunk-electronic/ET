@@ -893,6 +893,13 @@ package body et_project is
 			use type_via_restrict_arcs;
 			use type_via_restrict_circles;
 			use type_via_restrict_polygons;
+
+			use type_copper_lines_pcb;
+			use type_copper_arcs_pcb;
+			use type_copper_circles_pcb;
+			use type_copper_polygons_floating;
+			use type_texts_with_content_pcb;
+			use type_text_placeholders_copper;
 			
 			procedure line_begin is begin section_mark (section_line, HEADER); end;
 			procedure line_end   is begin section_mark (section_line, FOOTER); end;			
@@ -1302,6 +1309,74 @@ package body et_project is
 				corners_end;
 				polygon_end;
 			end write_polygons;
+
+			-- COPPER (NON-ELECTRIC)
+			procedure write_lines (cursor : in type_copper_lines_pcb.cursor) is begin
+				line_begin;
+				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
+				write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+				write (keyword => keyword_width, parameters => to_string (element (cursor).width));
+				write (keyword => keyword_layer, parameters => to_string (element (cursor).layer));
+				line_end;
+			end write_lines;
+
+			procedure write_arcs (cursor : in type_copper_arcs_pcb.cursor) is begin
+				arc_begin;
+				write (keyword => keyword_center, parameters => position (element (cursor).center));
+				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
+				write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+				write (keyword => keyword_width, parameters => to_string (element (cursor).width));
+				write (keyword => keyword_layer, parameters => to_string (element (cursor).layer));
+				arc_end;
+			end write_arcs;
+
+			procedure write_circles (cursor : in type_copper_circles_pcb.cursor) is begin
+				circle_begin;
+				write (keyword => keyword_center, parameters => position (element (cursor).center));
+				write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
+				write (keyword => keyword_width , parameters => to_string (element (cursor).width));
+				write (keyword => keyword_layer, parameters => to_string (element (cursor).layer));
+				circle_end;
+			end write_circles;
+			
+			procedure write_polygons (cursor : in type_copper_polygons_floating.cursor) is 
+				use type_polygon_points;
+				
+				procedure query_points (polygon : in type_copper_polygon_floating) is begin
+					iterate (polygon.points, write_polygon_corners'access); -- see general stuff above
+				end query_points;
+				
+			begin -- write_polygons
+				polygon_begin;
+				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
+				write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
+				write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
+				write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
+				write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
+				write (keyword => keyword_layer, parameters => to_string (element (cursor).layer));
+				corners_begin;
+				query_element (cursor, query_points'access);
+				corners_end;
+				polygon_end;
+			end write_polygons;
+
+			procedure write_texts (cursor : in type_texts_with_content_pcb.cursor) is -- texts in copper !
+			begin
+				text_begin;
+				write (keyword => keyword_content, parameters => et_libraries.to_string (element (cursor).content));
+				write_text_properties (element (cursor));
+				write (keyword => keyword_layer, parameters => to_string (element (cursor).layer));
+				text_end;
+			end write_texts;
+
+			procedure write_placeholders (cursor : in type_text_placeholders_copper.cursor) is
+			begin
+				placeholder_begin;
+				write (keyword => keyword_meaning, parameters => to_string (element (cursor).meaning));
+				write_text_properties (element (cursor));
+				write (keyword => keyword_layer, parameters => to_string (element (cursor).layer));
+				placeholder_end;
+			end write_placeholders;
 			
 			
 		begin -- query_board
@@ -1433,7 +1508,15 @@ package body et_project is
 				-- CS iterate (module.board.via_restrict.texts, write_texts'access);
 			section_mark (section_via_restrict, FOOTER);
 
-			-- COPPER
+			-- COPPER (NON-ELECTRIC)
+			section_mark (section_copper, HEADER);
+				iterate (module.board.copper.lines, write_lines'access);
+				iterate (module.board.copper.arcs, write_arcs'access);
+				iterate (module.board.copper.circles, write_circles'access);
+				iterate (module.board.copper.polygons, write_polygons'access);
+				iterate (module.board.copper.texts, write_texts'access);
+				iterate (module.board.copper.placeholders, write_placeholders'access);
+			section_mark (section_copper, FOOTER);
 
 			-- CONTOUR
 			

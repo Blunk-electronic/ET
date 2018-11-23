@@ -257,14 +257,15 @@ package et_pcb is
 		SIGNAL_NAME
 		);
 
+	function to_string (meaning : in type_text_meaning_copper) return string;
+	
 	type type_text_placeholder_copper is new type_text with record
 		meaning : type_text_meaning_copper;
 		layer	: type_signal_layer;	-- the copper layer the placeholder is placed at
 	end record;
 
 	-- There can be lots of placeholders of this kind. So they can be are stored in a list:
-	package type_text_placeholders_copper is new doubly_linked_lists (
-		element_type => type_text_placeholder_copper);
+	package type_text_placeholders_copper is new doubly_linked_lists (type_text_placeholder_copper);
 
 
 	
