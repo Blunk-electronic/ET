@@ -153,8 +153,8 @@ package body et_project is
 	-- Sets the global project file name so that subsequent write and read operations
 	-- know the right project file.
 	-- Leaves the project file (global project_file_handle) open (closes it on exception).
-		project_name	: in type_project_name.bounded_string;
-		project_path	: in type_et_project_path.bounded_string;
+		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
+		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_general;
 		use ada.directories;
@@ -238,6 +238,8 @@ package body et_project is
 	
 	procedure save_project (log_threshold : in et_string_processing.type_log_level) is
 	-- Saves the schematic and layout data in project file (project_file_handle).
+	-- CS: improve log messages !!
+		
 		use et_string_processing;
 		use et_schematic;
 		use et_schematic.type_rig;
@@ -1596,8 +1598,6 @@ package body et_project is
 			
 			-- board
 			query_element (module_cursor, query_board'access);
-
-
 			
 			section_mark (section_module, FOOTER);
 			
@@ -1624,6 +1624,25 @@ package body et_project is
 	end save_project;
 
 
+	procedure save_device (
+		name			: in string; -- libraries/devices/resistor.dev
+		device			: in et_libraries.type_device; -- the actual device model
+		log_threshold	: in et_string_processing.type_log_level) is
+		use et_string_processing;
+		file_handle : ada.text_io.file_type;
+	begin
+		log ("device " & name, log_threshold);
+
+		create (
+			file 	=> file_handle,
+			mode	=> in_file,
+			name	=> name);
+		
+		close (file_handle);
+	end save_device;
+
+
+	
 	procedure open_project (log_threshold : in et_string_processing.type_log_level) is
 	-- Opens and reads the schematic and layout data present in project file (project_file_handle).
 		use et_string_processing;

@@ -139,19 +139,21 @@ package et_project is
 	procedure create_project_directory (
 	-- Creates given project directory in the given project_path.
 	-- Already existing projects in given project_path are overwritten.
-		project_name	: in type_project_name.bounded_string;
-		project_path	: in type_et_project_path.bounded_string;
+		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
+		project_path	: in type_et_project_path.bounded_string;	-- /home/user/et_projects
 		log_threshold	: in et_string_processing.type_log_level);
 
 	procedure save_project (log_threshold : in et_string_processing.type_log_level);
 	-- Saves the schematic and layout data in project file (project_file_handle).
 
+	procedure save_device (
+		name			: in string; -- libraries/devices/resistor.dev
+		device			: in et_libraries.type_device; -- the actual device model
+		log_threshold	: in et_string_processing.type_log_level);
+	
 	procedure open_project (log_threshold : in et_string_processing.type_log_level);
 	-- Opens and reads the schematic and layout data present in project file (project_file_handle).
 	
-
--- 	procedure write_component_libraries (log_threshold : in et_string_processing.type_log_level);
--- 	-- Writes the ET native component libraries in libraries_directory_name.
 
 	-- PROJECT FILE SECTIONS AND KEYWORDS
 	section_module				: constant string := "[MODULE";

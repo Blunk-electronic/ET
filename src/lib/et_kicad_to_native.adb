@@ -52,6 +52,7 @@ with ada.strings; 				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.directories;			use ada.directories;
+with gnat.directory_operations;
 with ada.exceptions; 			use ada.exceptions;
 
 with et_coordinates;
@@ -3260,8 +3261,51 @@ package body et_kicad_to_native is
 			end case;
 			
 		end copy_libraries;
-		
-		
+
+
+		procedure save_libraries (
+			project_name	: in et_project.type_project_name.bounded_string;		-- blood_sample_analyzer
+			project_path	: in et_project.type_et_project_path.bounded_string; 	-- /home/user/et_projects/imported_from_kicad
+			log_threshold	: in et_string_processing.type_log_level) is
+			use et_project;
+			use type_project_name;
+			use type_et_project_path;
+			use ada.directories;
+			use et_string_processing;
+
+			package type_path is new generic_bounded_length (project_name_max + project_path_max + 1); -- incl. directory separator
+			use type_path;
+			path : type_path.bounded_string := to_bounded_string (
+					compose (type_et_project_path.to_string (project_path), type_project_name.to_string (project_name)));
+
+			use et_libraries.type_devices;
+			procedure save_device (device_cursor : in et_libraries.type_devices.cursor) is
+				use et_libraries;
+			begin
+				--log ("device " & to_string (path) & gnat.directory_operations.dir_separator & to_string (key (device_cursor)));
+				
+				et_project.save_device (
+					-- library name like: 
+					-- ET/et_import/dummy/libraries/devices/__#__#lbr#bel_connector_and_jumper_FEMALE_01X06.dev
+					name	=> to_string (path) & gnat.directory_operations.dir_separator & to_string (key (device_cursor)),
+
+					-- the device model itself:
+					device	=> element (device_cursor),
+					log_threshold	=> log_threshold + 1
+					); 
+
+			end save_device;
+			
+		begin -- save_libraries
+			log ("saving libraries ...", log_threshold);
+
+			log_indentation_up;
+			iterate (et_libraries.devices, save_device'access);
+			-- CS iterate (et_pcb.packages, save_package'access);
+
+			log_indentation_down;			
+		end save_libraries;
+			
 	begin -- to_native
 	
 		-- First, the kicad schematics must be flattened so that we get real flat designs.
@@ -3277,8 +3321,8 @@ package body et_kicad_to_native is
 			& " ...", log_threshold);
 
 		et_project.create_project_directory (
-			project_name	=> et_project.project_name,
-			project_path	=> project_path,
+			project_name	=> et_project.project_name, -- blood_sample_analyzer
+			project_path	=> project_path, 			-- /home/user/et_projects/imported_from_kicad
 			log_threshold 	=> log_threshold + 1);
 		-- Project file with project_file_handle is now open for write operations.
 		
@@ -3333,7 +3377,13 @@ package body et_kicad_to_native is
 
 		-- save project
 		et_project.save_project (log_threshold);
-		
+
+		-- save libraries
+		save_libraries (
+			project_name	=> et_project.project_name, -- blood_sample_analyzer
+			project_path	=> project_path, 			-- /home/user/et_projects/imported_from_kicad
+			log_threshold 	=> log_threshold + 1);
+
 		
 		log_indentation_down;
 		
