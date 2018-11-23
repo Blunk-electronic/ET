@@ -119,12 +119,8 @@ package body et_project is
 			--log ("subdir " & compose (path, directory_libraries_devices));
 		end create_library_subdirs;
 			
-	begin
--- 		log ("creating in " & current_directory & " a new " & et_general.system_name & " project directory " 
--- 			 & to_string (path) & " ...",
--- 			log_threshold);
+	begin -- create_project_directory
 		log ("project name '" & to_string (project_name) & "' ...", log_threshold);
-
 		log_indentation_up;
 		
 		-- delete previous project directory
@@ -1574,8 +1570,14 @@ package body et_project is
 
 		create (
 			file 	=> file_handle,
-			mode	=> in_file,
+			mode	=> out_file,
 			name	=> name);
+
+		-- write a nice header
+		put_line (file_handle, comment_mark & " " & et_general.system_name & " device");
+		put_line (file_handle, comment_mark & " " & date);
+		put_line (file_handle, comment_mark & " " & row_separator_double);
+		new_line (file_handle);
 		
 		close (file_handle);
 	end save_device;
@@ -1592,8 +1594,14 @@ package body et_project is
 
 		create (
 			file 	=> file_handle,
-			mode	=> in_file,
+			mode	=> out_file,
 			name	=> name);
+
+		-- write a nice header
+		put_line (file_handle, comment_mark & " " & et_general.system_name & " symbol");
+		put_line (file_handle, comment_mark & " " & date);
+		put_line (file_handle, comment_mark & " " & row_separator_double);
+		new_line (file_handle);
 		
 		close (file_handle);
 	end save_symbol;
@@ -1610,8 +1618,14 @@ package body et_project is
 
 		create (
 			file 	=> file_handle,
-			mode	=> in_file,
+			mode	=> out_file,
 			name	=> name);
+
+		-- write a nice header
+		put_line (file_handle, comment_mark & " " & et_general.system_name & " package");
+		put_line (file_handle, comment_mark & " " & date);
+		put_line (file_handle, comment_mark & " " & row_separator_double);
+		new_line (file_handle);
 		
 		close (file_handle);
 	end save_package;
