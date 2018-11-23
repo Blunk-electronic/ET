@@ -595,8 +595,11 @@ package et_libraries is
 	-- Returns true if left comes before right.
 	-- If left equals right, the return is false.
 	
-	function to_string (date : in type_component_date) return string;
+	function to_string (
 	-- Returns the given date as string.
+		date	: in type_component_date;
+		verbose	: in boolean := false)
+		return string;
 	
 	procedure date_format_error (date : in string);
 	
@@ -922,12 +925,12 @@ package et_libraries is
 		key_type 		=> type_terminal_name.bounded_string, -- H7, 14
 		element_type 	=> type_port_in_terminal_port_map); -- unit A, OE1
 
-	type type_component_variant is record
+	type type_component_variant is record -- CS rename to type_package_variant
 		packge				: type_package_library_name.bounded_string; -- libraries/devices/transistors/pnp.dev
 		terminal_port_map	: type_terminal_port_map.map; -- which port is connected with with terminal
 	end record;
 
-	package type_component_variants is new ordered_maps (
+	package type_component_variants is new ordered_maps ( -- CS rename to type_package_variants
 		key_type 		=> type_component_variant_name.bounded_string, -- D, N
 		element_type 	=> type_component_variant);
 
@@ -956,7 +959,7 @@ package et_libraries is
 		units_external	: type_units_external.map := type_units_external.empty_map;
 		commissioned	: type_component_date;
 		updated			: type_component_date;
-		author			: type_person_name.bounded_string;
+		author			: type_person_name.bounded_string; -- CS should be type_component_author
 
 		case appearance is
 

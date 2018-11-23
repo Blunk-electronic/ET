@@ -113,7 +113,7 @@ package body et_libraries is
 	function to_string (person : in type_person_name.bounded_string) return string is
 	-- Returns the given person name as string.
 	begin
-		return type_person_name.to_string (person);
+		return latin_1.space & type_person_name.to_string (person);
 	end to_string;
 
 	function to_text_size (size : in type_distance) return type_text_size is
@@ -499,10 +499,17 @@ package body et_libraries is
 		end if;
 	end compare_date;
 	
-	function to_string (date : in type_component_date) return string is
+	function to_string (
+		date	: in type_component_date;
+		verbose	: in boolean := false)
+		return string is
 	-- Returns the given date as string.
 	begin
-		return " date " & string (date);
+		if verbose then
+			return " date " & string (date);
+		else
+			return latin_1.space & string (date);
+		end if;
 	end to_string;
 	
 	procedure date_format_error (date : in string) is
@@ -803,7 +810,7 @@ package body et_libraries is
 	function to_string (prefix : in type_component_prefix.bounded_string) return string is
 	-- returns the given prefix as string
 	begin
-		return type_component_prefix.to_string (prefix);
+		return type_component_prefix.to_string (prefix); -- leading space not allowd !
 	end to_string;
 
 	procedure check_prefix_length (prefix : in string) is

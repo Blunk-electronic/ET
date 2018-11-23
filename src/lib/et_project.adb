@@ -1559,7 +1559,29 @@ package body et_project is
 		use et_string_processing;
 		use et_libraries;
 		file_handle : ada.text_io.file_type;
-	begin
+
+		use type_component_variants;
+		
+		procedure write_variant (var : in type_component_variants.cursor) is
+			use type_terminal_port_map;
+			
+			procedure write_terminal (term : in type_terminal_port_map.cursor) is
+			begin
+				null;
+			end write_terminal;
+			
+		begin -- write_variant
+			section_mark (section_variants, HEADER);
+			write (keyword => keyword_name, space => true, parameters => to_string (key (var)));
+			write (keyword => keyword_file, space => true, parameters => to_string (element (var).packge)); -- CS path correct ??
+			section_mark (section_terminal_port_map, HEADER);
+			-- CS iterate (var.terminal_port_map, write_variant'access);
+			section_mark (section_terminal_port_map, FOOTER);
+			section_mark (section_variants, FOOTER);			
+		end write_variant;
+		
+	begin -- save_device
+		
 		log (name, log_threshold);
 
 		create (
@@ -1575,8 +1597,26 @@ package body et_project is
 		put_line (comment_mark & " " & row_separator_double);
 		new_line;
 
-		write (keyword => keyword_prefix, parameters => to_string (device.prefix));
+		reset_tab_depth;
+		
+		write (keyword => keyword_prefix, space => true, parameters => to_string (device.prefix));
+		write (keyword => keyword_value , space => true, parameters => to_string (device.value));
+		write (keyword => keyword_commissioned, parameters => to_string (device.commissioned));
+		write (keyword => keyword_updated     , parameters => to_string (device.updated));
+		write (keyword => keyword_author      , parameters => to_string (device.author));
 
+		case device.appearance is
+			when SCH_PCB =>
+				write (keyword => keyword_purpose , space => true, parameters => to_string (device.purpose));
+				write (keyword => keyword_partcode, space => true, parameters => to_string (device.partcode));
+				write (keyword => keyword_bom     , parameters => to_string (device.bom));
+
+				section_mark (section_variants, HEADER);
+				iterate (device.variants, write_variant'access);
+				section_mark (section_variants, FOOTER);
+			when others => null;				
+		end case;
+		
 		set_output (standard_output);
 		close (file_handle);
 	end save_device;
@@ -1604,6 +1644,8 @@ package body et_project is
 		put_line (comment_mark & " " & row_separator_double);
 		new_line;
 
+		reset_tab_depth;		
+		
 		set_output (standard_output);
 		close (file_handle);
 	end save_symbol;
@@ -1631,6 +1673,8 @@ package body et_project is
 		put_line (comment_mark & " " & row_separator_double);
 		new_line;
 
+		reset_tab_depth;
+		
 		set_output (standard_output);
 		close (file_handle);
 	end save_package;
