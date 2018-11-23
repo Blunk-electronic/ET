@@ -514,7 +514,7 @@
 			
 		[COPPER END]
 		
-		[PCB_CONTOURS_NON_PLATED BEGIN]
+		[PCB_CONTOUR_NON_PLATED BEGIN]
 			[LINE BEGIN]
 				start x 22.3
 				end y 32.5
@@ -533,7 +533,7 @@
 				radius 10
 				locked yes/no
 			[CIRCLE END]
-		[PCB_CONTOURS_NON_PLATED END]
+		[PCB_CONTOUR_NON_PLATED END]
 	[BOARD_END]
 	
 [MODULE END]

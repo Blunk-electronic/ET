@@ -358,6 +358,11 @@ package body et_pcb is
 	begin
 		return type_fill_style'value (fill_style);
 	end to_fill_style;
+
+	function to_string (locked : in type_locked) return string is
+	begin
+		return latin_1.space & to_lower (type_locked'image (locked));
+	end to_string;
 	
 	function to_string (line : in type_line_2d) return string is
 	-- Returns the start and end point of the given line as string.

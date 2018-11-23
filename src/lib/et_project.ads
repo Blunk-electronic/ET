@@ -229,6 +229,7 @@ package et_project is
 	keyword_radius					: constant string := "radius";
 	keyword_filled					: constant string := "filled";		
 	keyword_layers					: constant string := "layers";
+	keyword_locked					: constant string := "locked";
 	
 	section_net_classes			: constant string := "[NET_CLASSES";
 	section_net_class			: constant string := "[NET_CLASS";
@@ -294,9 +295,9 @@ package et_project is
 	section_route_restrict		: constant string	:= "[ROUTE_RESTRICT";
 	section_via_restrict		: constant string	:= "[VIA_RESTRICT";
 	section_copper				: constant string	:= "[COPPER";
-	section_pcb_contours		: constant string	:= "[PCB_CONTOURS_NON_PLATED";
-	section_pcb_contours_plated	: constant string	:= "[PCB_CONTOURS_PLATED";
-	section_pac_3d_contours		: constant string	:= "[PACKAGE_3D_CONTOURS";
+	section_pcb_contour			: constant string	:= "[PCB_CONTOUR_NON_PLATED";
+	section_pcb_contour_plated	: constant string	:= "[PCB_CONTOUR_PLATED";
+	section_pac_3d_contour		: constant string	:= "[PACKAGE_3D_CONTOUR";
 	
 	section_top					: constant string	:= "[TOP";
 	section_bottom				: constant string	:= "[BOTTOM";

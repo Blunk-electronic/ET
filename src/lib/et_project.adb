@@ -900,6 +900,10 @@ package body et_project is
 			use type_copper_polygons_floating;
 			use type_texts_with_content_pcb;
 			use type_text_placeholders_copper;
+
+			use type_pcb_contour_lines;
+			use type_pcb_contour_arcs;
+			use type_pcb_contour_circles;
 			
 			procedure line_begin is begin section_mark (section_line, HEADER); end;
 			procedure line_end   is begin section_mark (section_line, FOOTER); end;			
@@ -1378,6 +1382,32 @@ package body et_project is
 				placeholder_end;
 			end write_placeholders;
 			
+			-- BOARD CONTOUR
+			procedure write_lines (cursor : in type_pcb_contour_lines.cursor) is begin
+				line_begin;
+				write (keyword => keyword_start , parameters => position (element (cursor).start_point));
+				write (keyword => keyword_end   , parameters => position (element (cursor).end_point));
+				write (keyword => keyword_locked, parameters => to_string (element (cursor).locked));
+				line_end;
+			end write_lines;
+
+			procedure write_arcs (cursor : in type_pcb_contour_arcs.cursor) is begin
+				arc_begin;
+				write (keyword => keyword_center, parameters => position (element (cursor).center));
+				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
+				write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+				write (keyword => keyword_locked, parameters => to_string (element (cursor).locked));
+				arc_end;
+			end write_arcs;
+
+			procedure write_circles (cursor : in type_pcb_contour_circles.cursor) is begin
+				circle_begin;
+				write (keyword => keyword_center, parameters => position (element (cursor).center));
+				write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
+				write (keyword => keyword_locked, parameters => to_string (element (cursor).locked));
+				circle_end;
+			end write_circles;
+
 			
 		begin -- query_board
 			section_mark (section_board, HEADER);
@@ -1498,7 +1528,6 @@ package body et_project is
 				-- CS iterate (module.board.route_restrict.texts, write_texts'access);
 			section_mark (section_route_restrict, FOOTER);
 
-
 			-- VIA RESTRICT
 			section_mark (section_via_restrict, HEADER);
 				iterate (module.board.via_restrict.lines, write_lines'access);
@@ -1518,7 +1547,12 @@ package body et_project is
 				iterate (module.board.copper.placeholders, write_placeholders'access);
 			section_mark (section_copper, FOOTER);
 
-			-- CONTOUR
+			-- BOARD CONTOUR
+			section_mark (section_pcb_contour, HEADER);
+				iterate (module.board.contour.lines, write_lines'access);
+				iterate (module.board.contour.arcs, write_arcs'access);
+				iterate (module.board.contour.circles, write_circles'access);
+			section_mark (section_pcb_contour, FOOTER);
 			
 			---BOARD END-----
 			section_mark (section_board, FOOTER);

@@ -387,7 +387,7 @@ package et_pcb is
 	-- LOCK STATUS OF AN OBJECT
 	type type_locked is (NO, YES);
 
-
+	function to_string (locked : in type_locked) return string;
 	
 	function to_string (line : in type_line_2d) return string;
 	-- Returns the start and end point of the given line as string.
@@ -1446,15 +1446,15 @@ package et_pcb is
 
 	-- This is general board stuff:
 	type type_board is tagged record
-		silk_screen	: type_silk_screen_pcb_both_sides;
-		assy_doc	: type_assembly_documentation_pcb_both_sides;
-		stencil		: type_stencil_both_sides;
-		stop_mask	: type_stop_mask_both_sides;
-		keepout		: type_keepout_both_sides;
+		silk_screen		: type_silk_screen_pcb_both_sides;
+		assy_doc		: type_assembly_documentation_pcb_both_sides;
+		stencil			: type_stencil_both_sides;
+		stop_mask		: type_stop_mask_both_sides;
+		keepout			: type_keepout_both_sides;
 		route_restrict	: type_route_restrict_pcb;
 		via_restrict	: type_via_restrict_pcb;
-		copper		: type_copper_pcb; -- non-electric copper stuff, incl. floating polygons !
-		contour		: type_pcb_contour;
+		copper			: type_copper_pcb; -- non-electric copper stuff, incl. floating polygons !
+		contour			: type_pcb_contour;
 	end record;
 
 	
