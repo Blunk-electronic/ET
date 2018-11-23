@@ -176,6 +176,48 @@ package body et_project is
 		
 	end create_project_directory;
 
+
+	procedure tab_depth_up is begin tab_depth := tab_depth + 1; end tab_depth_up;
+	procedure tab_depth_down is begin tab_depth := tab_depth - 1; end tab_depth_down;
+	procedure reset_tab_depth is begin tab_depth := type_tab_depth'first; end reset_tab_depth;
+
+	procedure section_mark (section : in string; mark : in type_section_mark) is begin
+	-- Make sure the current_output is set properly.
+		case mark is
+			when HEADER =>
+				--new_line;
+				put_line (tab_depth * tab & section & space & section_begin);
+				tab_depth_up;
+			when FOOTER =>
+				tab_depth_down;
+				put_line (tab_depth * tab & section & space & section_end);
+		end case;
+	end section_mark;
+
+	procedure write (
+		keyword 	: in string;
+		parameters	: in string;
+		space 		: in boolean := false;
+		wrap		: in boolean := false) is 
+		parameters_wrapped : string (1..parameters'length + 2);
+	begin -- write
+		if wrap then
+			parameters_wrapped := latin_1.quotation & parameters & latin_1.quotation;
+		end if;
+					
+		if wrap then
+			-- If wrapping required, a space is always between keyword and parameters
+			put_line (tab_depth * tab & keyword & latin_1.space & parameters_wrapped);
+		else
+			case space is
+				when true =>
+					put_line (tab_depth * tab & keyword & latin_1.space & parameters);
+				when false =>
+					put_line (tab_depth * tab & keyword & parameters);
+			end case;
+		end if;
+	end write;
+
 	
 	procedure save_project (log_threshold : in et_string_processing.type_log_level) is
 	-- Saves the schematic and layout data in project file (project_file_handle).
@@ -194,57 +236,6 @@ package body et_project is
 			put_line (comment_mark & " project " & to_string (project_name) & " file end");
 			new_line;
 		end write_project_footer;
-
-		tab_depth : natural := 0;
-
-		tab : character renames tabulator;
-		space : character renames latin_1.space;
-		
-		procedure tab_depth_up is begin
-			tab_depth := tab_depth + 1;
-		end tab_depth_up;
-
-		procedure tab_depth_down is begin
-			tab_depth := tab_depth - 1;
-		end tab_depth_down;
-
-		type type_section_mark is (HEADER, FOOTER);
-		
-		procedure section_mark (section : in string; mark : in type_section_mark) is begin
-			case mark is
-				when HEADER =>
-					--new_line;
-					put_line (tab_depth * tabulator & section & space & section_begin);
-					tab_depth_up;
-				when FOOTER =>
-					tab_depth_down;
-					put_line (tab_depth * tabulator & section & space & section_end);
-			end case;
-		end section_mark;
-
-		procedure write (
-			keyword 	: in string;
-			parameters	: in string;
-			space 		: in boolean := false;
-			wrap		: in boolean := false) is 
-			parameters_wrapped : string (1..parameters'length + 2);
-		begin -- write
-			if wrap then
-				parameters_wrapped := latin_1.quotation & parameters & latin_1.quotation;
-			end if;
-						
-			if wrap then
-				-- If wrapping required, a space is always between keyword and parameters
-				put_line (tab_depth * tabulator & keyword & latin_1.space & parameters_wrapped);
-			else
-				case space is
-					when true =>
-						put_line (tab_depth * tabulator & keyword & latin_1.space & parameters);
-					when false =>
-						put_line (tab_depth * tabulator & keyword & parameters);
-				end case;
-			end if;
-		end write;
 
 		module_cursor : type_rig.cursor := rig.first;
 
@@ -1497,6 +1488,8 @@ package body et_project is
 	begin -- save_project
 		log ("saving project ...", log_threshold);
 		set_output (project_file_handle);
+
+		reset_tab_depth;
 		
 		-- write content
 		log_indentation_up;

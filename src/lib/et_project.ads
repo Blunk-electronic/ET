@@ -37,6 +37,7 @@
 --   ToDo: 
 
 with ada.text_io;				use ada.text_io;
+with ada.characters.latin_1;
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
 with ada.containers;            use ada.containers;
@@ -132,6 +133,19 @@ package et_project is
 		project_path	: in type_et_project_path.bounded_string;	-- /home/user/et_projects
 		log_threshold	: in et_string_processing.type_log_level);
 
+
+	
+	subtype type_tab_depth is natural range natural'first .. 9;
+	tab_depth : type_tab_depth := type_tab_depth'first;
+	
+	tab : character renames et_string_processing.tabulator;
+	space : character renames ada.characters.latin_1.space;
+
+	
+	type type_section_mark is (HEADER, FOOTER);
+
+	
+	
 	procedure save_project (log_threshold : in et_string_processing.type_log_level);
 	-- Saves the schematic and layout data in project file (project_file_handle).
 
