@@ -3318,8 +3318,10 @@ package body et_kicad_to_native is
 			-- Copy component libraries.
 			-- NOTE: In Kicad component libraries are always project dependend.
 			-- Thus the libraries are taken from the kicad module
-			-- and then copied into the global ET native libraries.
-			-- Inside the native libraries the former Kicad libraries are
+			-- and then copied into the global ET native library containers:
+			--  et_libraries.devices
+			--  et_pcb.packages
+			-- Inside the ET native libraries the former Kicad libraries are
 			-- named after their location in the file system (sym-lib-tables and fp-lib-tables).
 			query_element (
 				position	=> module_cursor_kicad,
