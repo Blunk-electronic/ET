@@ -3264,6 +3264,8 @@ package body et_kicad_to_native is
 
 
 		procedure save_libraries (
+		-- Saves the project library containers (et_libraries.devices and et_pcb.packages) in
+		-- the directory specified by project_path and project_name.
 			project_name	: in et_project.type_project_name.bounded_string;		-- blood_sample_analyzer
 			project_path	: in et_project.type_et_project_path.bounded_string; 	-- /home/user/et_projects/imported_from_kicad
 			log_threshold	: in et_string_processing.type_log_level) is
@@ -3277,31 +3279,51 @@ package body et_kicad_to_native is
 			use type_path;
 			path : type_path.bounded_string := to_bounded_string (
 					compose (type_et_project_path.to_string (project_path), type_project_name.to_string (project_name)));
-
+			-- Path now contains something like /home/user/et_projects/imported_from_kicad/blood_sample_analyzer
+			
 			use et_libraries.type_devices;
+
 			procedure save_device (device_cursor : in et_libraries.type_devices.cursor) is
 				use et_libraries;
 			begin
-				--log ("device " & to_string (path) & gnat.directory_operations.dir_separator & to_string (key (device_cursor)));
-				
 				et_project.save_device (
 					-- library name like: 
-					-- ET/et_import/dummy/libraries/devices/__#__#lbr#bel_connector_and_jumper_FEMALE_01X06.dev
+					-- /home/user/et_projects/imported_from_kicad/blood_sample_analyzer/libraries/devices/__#__#lbr#bel_connector_and_jumper_FEMALE_01X06.dev
 					name	=> to_string (path) & gnat.directory_operations.dir_separator & to_string (key (device_cursor)),
 
 					-- the device model itself:
 					device	=> element (device_cursor),
-					log_threshold	=> log_threshold + 1
-					); 
-
+					log_threshold	=> log_threshold + 1); 
 			end save_device;
+
+			use et_pcb.type_packages;
+			
+			procedure save_package (package_cursor : in et_pcb.type_packages.cursor) is
+				use et_libraries.type_package_library_name;
+			begin
+				et_project.save_package (
+					-- package name like: 
+					-- /home/user/et_projects/imported_from_kicad/blood_sample_analyzer/libraries/packages/__#__#lbr#bel_connector_and_jumper_FEMALE_01X06.pac
+					name	=> to_string (path) & gnat.directory_operations.dir_separator & to_string (key (package_cursor)),
+
+					-- the package model itself:
+					packge	=> element (package_cursor),
+					log_threshold	=> log_threshold + 1); 
+			end save_package;
 			
 		begin -- save_libraries
 			log ("saving libraries ...", log_threshold);
+			log_indentation_up;
 
+			log ("devices (former KiCad components) ...", log_threshold + 1);
 			log_indentation_up;
 			iterate (et_libraries.devices, save_device'access);
-			-- CS iterate (et_pcb.packages, save_package'access);
+			log_indentation_down;
+			
+			log ("packages (former KiCad footprints) ...", log_threshold + 1);
+			log_indentation_up;
+			iterate (et_pcb.packages, save_package'access);
+			log_indentation_down;
 
 			log_indentation_down;			
 		end save_libraries;

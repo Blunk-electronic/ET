@@ -52,6 +52,7 @@ with et_coordinates;			use et_coordinates;
 with et_libraries;
 with et_string_processing;
 with et_schematic;
+with et_pcb;
 
 package et_project is
 
@@ -124,18 +125,6 @@ package et_project is
 	-- Converts a string to type_sheet_name_text_size.
 
 	
-	-- The current directory where libraries live is stored here:
--- 	package type_libraries_directory is new generic_bounded_length (project_path_max + directory_libraries_components'length + 1); -- incl. directory separator
--- 	component_libraries_directory_name : type_libraries_directory.bounded_string; -- ET_projects/lbr
-
-	
--- 	procedure create_libraries_directory_components (
--- 	-- Creates a directory where component libraries will live.
--- 	-- An already existing directory will be overwritten.
--- 		project_path	: in type_et_project_path.bounded_string;
--- 		log_threshold	: in et_string_processing.type_log_level);
-
-	
 	procedure create_project_directory (
 	-- Creates given project directory in the given project_path.
 	-- Already existing projects in given project_path are overwritten.
@@ -150,6 +139,18 @@ package et_project is
 		name			: in string; -- libraries/devices/resistor.dev
 		device			: in et_libraries.type_device; -- the actual device model
 		log_threshold	: in et_string_processing.type_log_level);
+
+	procedure save_symbol (
+	-- Saves the given symbol model in a file specified by name.
+		name			: in string; -- libraries/symbols/resistor.sym
+		symbol			: in et_libraries.type_symbol; -- the actual symbol model
+		log_threshold	: in et_string_processing.type_log_level);
+	
+	procedure save_package (
+		name			: in string; -- libraries/devices/resistor.pac
+		packge			: in et_pcb.type_package; -- the actual device model
+		log_threshold	: in et_string_processing.type_log_level);
+
 	
 	procedure open_project (log_threshold : in et_string_processing.type_log_level);
 	-- Opens and reads the schematic and layout data present in project file (project_file_handle).

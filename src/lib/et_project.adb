@@ -92,61 +92,6 @@ package body et_project is
 	end to_file_name_text_size;
 	
 	
--- NATIVE PROJECT
-
--- 	procedure create_libraries_directory_components (
--- 	-- Creates a directory where component libraries will live.
--- 	-- An already existing directory will be overwritten.
--- 	-- Sets the global library directory name so that subsequent write and read operations
--- 	-- access the right directory.
--- 		project_path	: in type_et_project_path.bounded_string;
--- 		log_threshold	: in et_string_processing.type_log_level) is
--- 		use et_general;
--- 		use ada.directories;
--- 		use et_string_processing;
--- 		use type_project_name;
--- 		use type_et_project_path;
--- 
--- 		path_length : positive :=  project_path_max + directory_libraries'length + directory_libraries_components'length + 2; -- incl. directory separators
--- 		package type_path is new generic_bounded_length (path_length);
--- 		use type_path;
--- 		path : type_path.bounded_string;
--- 	begin -- create_libraries_directory_components
--- 		path := to_bounded_string (compose (to_string (project_path), directory_libraries));
--- 		path := to_bounded_string (compose (to_string (path), directory_libraries_components));
--- 		
--- -- 		log ("creating in " & current_directory & " a new " & et_general.system_name & " libraries directory " 
--- -- 			 & to_string (path) & " ...",
--- -- 			log_threshold);
--- 		log ("directory for project wide libraries '" & directory_libraries & "' ...", log_threshold);
--- 
--- 		log_indentation_up;
--- 		
--- 		-- delete previous libraries directory
--- 		if exists (to_string (path)) then
--- 			delete_tree (to_string (path));
--- 		end if;
--- 		
--- 		-- create the libraries directory
--- 		create_path (to_string (path));
--- 
--- 		-- set the global library directory name
--- 		log ("setting global library directory name ...", log_threshold + 1);
--- 		component_libraries_directory_name := type_libraries_directory.to_bounded_string (to_string (path));
--- 	
--- 		log (" global library directory name is now " 
--- 			 & type_libraries_directory.to_string (component_libraries_directory_name), log_threshold + 2);
--- 
--- 		log_indentation_down;
--- 		
--- 		exception when event:
--- 			others => 
--- 				log (ada.exceptions.exception_message (event), console => true);
--- 				raise;
--- 		
--- 	end create_libraries_directory_components;
-
-
 	procedure create_project_directory (
 	-- Creates given project directory in the given project_path.
 	-- Already existing projects in given project_path are overwritten.
@@ -363,14 +308,7 @@ package body et_project is
 
 		procedure write_text_properties (text : in et_libraries.type_text_basic'class) is
 			use et_coordinates;
--- 			use ada.tags;
--- 			text_schematic : et_schematic.type_text;
 		begin
--- 			if text'tag = et_schematic.type_text'tag then
--- 				text_schematic := et_schematic.type_text (text);
--- 				write (keyword => keyword_position, parameters => position (text_schematic.coordinates));
--- 			end if;
-			
 			write (keyword => keyword_size, parameters => et_libraries.to_string (text.size, preamble => false));
 			write (keyword => keyword_line_width, parameters => to_string (text.line_width));
 			write (keyword => keyword_rotation, parameters => rotation (text.orientation));
@@ -1625,13 +1563,14 @@ package body et_project is
 
 
 	procedure save_device (
+	-- Saves the given device model in a file specified by name.
 		name			: in string; -- libraries/devices/resistor.dev
 		device			: in et_libraries.type_device; -- the actual device model
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		file_handle : ada.text_io.file_type;
 	begin
-		log ("device " & name, log_threshold);
+		log (name, log_threshold);
 
 		create (
 			file 	=> file_handle,
@@ -1641,6 +1580,41 @@ package body et_project is
 		close (file_handle);
 	end save_device;
 
+	procedure save_symbol (
+	-- Saves the given symbol model in a file specified by name.
+		name			: in string; -- libraries/symbols/resistor.sym
+		symbol			: in et_libraries.type_symbol; -- the actual symbol model
+		log_threshold	: in et_string_processing.type_log_level) is
+		use et_string_processing;
+		file_handle : ada.text_io.file_type;
+	begin
+		log (name, log_threshold);
+
+		create (
+			file 	=> file_handle,
+			mode	=> in_file,
+			name	=> name);
+		
+		close (file_handle);
+	end save_symbol;
+	
+	procedure save_package (
+	-- Saves the given package model in a file specified by name.
+		name			: in string; -- libraries/packages/resistor.pac
+		packge			: in et_pcb.type_package; -- the actual package model
+		log_threshold	: in et_string_processing.type_log_level) is
+		use et_string_processing;
+		file_handle : ada.text_io.file_type;
+	begin
+		log (name, log_threshold);
+
+		create (
+			file 	=> file_handle,
+			mode	=> in_file,
+			name	=> name);
+		
+		close (file_handle);
+	end save_package;
 
 	
 	procedure open_project (log_threshold : in et_string_processing.type_log_level) is
@@ -1717,54 +1691,6 @@ package body et_project is
 				raise;
 
 	end open_project;
-	
--- 	procedure write_component_libraries (log_threshold : in et_string_processing.type_log_level) is
--- 	-- Writes the ET native libraries in libraries_directory_name.
--- 	-- Creates sub-directories for library groups (like active, passive, misc, ...)
--- 	-- CS: currently only one group is supported. See et_libraries.library_group .
--- 	-- Each group is further-on composed of sub-directories for symbols, packages and devices.
--- 		use et_string_processing;
--- 		use ada.directories;
--- 		-- The group may be a path like "../../lbr" or "../passive". 
--- 		-- We are interested in the simple name like "lbr" or "passive".
--- 		lib_group_length : positive := simple_name (et_libraries.to_string (et_libraries.library_group))'length;
--- 
--- 		-- The path where the group is to be stored is composed of the libraries_directory_name and the group name.
--- 		path_length : positive := type_libraries_directory.length (component_libraries_directory_name) + lib_group_length + 1; -- incl. directory separator
--- 		package type_path is new generic_bounded_length (path_length);
--- 		use type_path;
--- 		path : type_path.bounded_string;
--- 
--- -- 		procedure w
--- -- 		device_file_handle : ada.text_io.file_type;
--- 	begin -- write_component_libraries
--- 		
--- 		-- set the path of the library group:
--- 		path := to_bounded_string (
--- 				  compose (
--- 					type_libraries_directory.to_string (component_libraries_directory_name), -- "components"
--- 					simple_name (et_libraries.to_string (et_libraries.library_group)) -- "passive"
--- 					)
--- 				);
--- 
--- 		-- create library group (CS or lots of groups in the future, see comments above)
--- 		create_path (to_string (path));
--- 
--- 		-- create sub-directories for symbols, packages and devices.
--- 		create_path (compose (to_string (path), directory_libraries_components_sym));
--- 		create_path (compose (to_string (path), directory_libraries_components_pac));
--- 		create_path (compose (to_string (path), directory_libraries_components_dev));
--- 		
--- 		log ("writing native libraries in " & to_string (path) & " ...", log_threshold);
--- 
--- 		
--- 		
--- 		exception when event:
--- 			others => 
--- 				log (ada.exceptions.exception_message (event), console => true);
--- 				raise;
--- 
--- 	end write_component_libraries;
 	
 end et_project;
 	
