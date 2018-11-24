@@ -251,7 +251,11 @@ package et_project is
 	keyword_commissioned			: constant string := "commissioned";
 	keyword_updated					: constant string := "updated";
 	keyword_author					: constant string := "author";
-	keyword_file					: constant string := "file";		
+	keyword_file					: constant string := "file";
+	keyword_terminal				: constant string := "terminal";
+	keyword_unit					: constant string := "unit";		
+	keyword_swap_level				: constant string := "swap_level";
+	keyword_add_level				: constant string := "add_level";
 	
 	section_net_classes			: constant string := "[NET_CLASSES";
 	section_net_class			: constant string := "[NET_CLASS";
