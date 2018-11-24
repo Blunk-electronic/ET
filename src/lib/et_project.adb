@@ -1561,23 +1561,40 @@ package body et_project is
 		file_handle : ada.text_io.file_type;
 
 		use type_component_variants;
+		variant_cursor : type_component_variants.cursor;
 		
-		procedure write_variant (var : in type_component_variants.cursor) is
-			use type_terminal_port_map;
-			
+-- 		procedure write_variant (variant_cursor : in type_component_variants.cursor) is
+-- 			use type_terminal_port_map;
+-- 			
 			procedure write_terminal (term : in type_terminal_port_map.cursor) is
 			begin
+				--write (keyword => keyword_terminal, parameters => to_string (key (term)));
 				null;
 			end write_terminal;
-			
-		begin -- write_variant
-			section_mark (section_variants, HEADER);
-			write (keyword => keyword_name, space => true, parameters => to_string (key (var)));
-			write (keyword => keyword_file, space => true, parameters => to_string (element (var).packge)); -- CS path correct ??
+-- 
+-- 			procedure query_terminal_port_map
+-- 			
+-- 		begin -- write_variant
+-- 			section_mark (section_variants, HEADER);
+-- 			write (keyword => keyword_name, space => true, parameters => to_string (key (variant_cursor)));
+-- 			write (keyword => keyword_file, space => true, parameters => to_string (element (variant_cursor).packge)); -- CS path correct ??
+-- 			section_mark (section_terminal_port_map, HEADER);
+-- 			-- CS iterate (var.terminal_port_map, write_variant'access);
+-- 			--query_element (element (var), query_terminal_port_map'access);
+-- 			section_mark (section_terminal_port_map, FOOTER);
+-- 			section_mark (section_variants, FOOTER);			
+-- 		end write_variant;
+
+		procedure write_variant (
+			packge	: in type_component_variant_name.bounded_string;
+			variant	: in type_component_variant) is
+
+			use type_terminal_port_map;	
+		begin
+			write (keyword => keyword_file, space => true, parameters => to_string (variant.packge)); -- CS path correct ??
 			section_mark (section_terminal_port_map, HEADER);
-			-- CS iterate (var.terminal_port_map, write_variant'access);
-			section_mark (section_terminal_port_map, FOOTER);
-			section_mark (section_variants, FOOTER);			
+			iterate (variant.terminal_port_map, write_terminal'access);
+			section_mark (section_terminal_port_map, FOOTER);						
 		end write_variant;
 		
 	begin -- save_device
@@ -1612,7 +1629,20 @@ package body et_project is
 				write (keyword => keyword_bom     , parameters => to_string (device.bom));
 
 				section_mark (section_variants, HEADER);
-				iterate (device.variants, write_variant'access);
+
+				variant_cursor := device.variants.first;
+				while variant_cursor /= type_component_variants.no_element loop
+					section_mark (section_variant, HEADER);
+					write (keyword => keyword_name, space => true, parameters => to_string (key (variant_cursor)));
+
+					query_element (
+						position	=> variant_cursor,
+						process		=> write_variant'access);
+
+					section_mark (section_variant, FOOTER);					
+					next (variant_cursor);
+				end loop;
+
 				section_mark (section_variants, FOOTER);
 			when others => null;				
 		end case;
