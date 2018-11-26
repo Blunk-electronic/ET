@@ -1833,6 +1833,10 @@ package body et_project is
 			next (unit_external_cursor);
 		end loop;
 		section_mark (section_units_external, FOOTER);
+
+		-- CS write footer
+
+		reset_tab_depth;
 		
 		set_output (standard_output);
 		close (file_handle);
@@ -1862,6 +1866,8 @@ package body et_project is
 		new_line;
 
 		write_symbol (symbol);
+
+		-- CS write footer
 		
 		reset_tab_depth;		
 		
@@ -1893,6 +1899,8 @@ package body et_project is
 		new_line;
 
 		-- CS
+
+		-- CS write footer
 		
 		reset_tab_depth;
 		
