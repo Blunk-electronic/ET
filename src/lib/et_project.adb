@@ -218,7 +218,27 @@ package body et_project is
 		end if;
 	end write;
 
-	
+	function position (pos : in et_coordinates.type_2d_point'class) return string is
+	-- Returns something like "x 12.34 y 45.0" or "sheet 3 x 12.34 y 45.0".
+	-- This kind of output depends on the tag of the given object.
+		use et_coordinates;
+		use ada.tags;
+
+		-- This function returns the basic text with x and y coordinates.
+		function text return string is begin return 
+			space & keyword_pos_x & to_string (distance_x (pos)) 
+			& space & keyword_pos_y & to_string (distance_y (pos));
+		end text;
+		
+	begin -- position
+		if pos'tag = type_2d_point'tag then
+			return text; -- a 2d point has just x and y
+		else
+			-- A type_coordinates also has the sheet number:
+			return space & keyword_sheet & to_string (sheet (type_coordinates (pos))) & text;
+		end if;
+	end position;
+		
 	procedure save_project (log_threshold : in et_string_processing.type_log_level) is
 	-- Saves the schematic and layout data in project file (project_file_handle).
 	-- CS: improve log messages !!
@@ -238,27 +258,6 @@ package body et_project is
 		end write_project_footer;
 
 		module_cursor : type_rig.cursor := rig.first;
-
-		function position (pos : in et_coordinates.type_2d_point'class) return string is
-		-- Returns something like "x 12.34 y 45.0" or "sheet 3 x 12.34 y 45.0".
-		-- This kind of output depends on the tag of the given object.
-			use et_coordinates;
-			use ada.tags;
-
-			-- This function returns the basic text with x and y coordinates.
-			function text return string is begin return 
-				space & keyword_pos_x & to_string (distance_x (pos)) 
-				& space & keyword_pos_y & to_string (distance_y (pos));
-			end text;
-			
-		begin -- position
-			if pos'tag = type_2d_point'tag then
-				return text; -- a 2d point has just x and y
-			else
-				-- A type_coordinates also has the sheet number:
-				return space & keyword_sheet & to_string (sheet (type_coordinates (pos))) & text;
-			end if;
-		end position;
 
 		function rotation (angle : in et_coordinates.type_angle) return string is
 		begin
@@ -1582,6 +1581,34 @@ package body et_project is
 			iterate (variant.terminal_port_map, write_terminal'access);
 			section_mark (section_terminal_port_map, FOOTER);						
 		end write_variant;
+
+		use type_units_internal;
+		unit_internal_cursor : type_units_internal.cursor := device.units_internal.first;
+		
+		use type_units_external;
+		unit_external_cursor : type_units_external.cursor := device.units_external.first;
+
+		procedure query_internal_unit (
+			name	: in type_unit_name.bounded_string;
+			unit	: in type_unit_internal) is
+		begin -- query_internal_unit
+			write (keyword => keyword_name, space => true, parameters => to_string (name));
+			write (keyword => keyword_position, parameters => position (unit.coordinates));
+			write (keyword => keyword_swap_level, parameters => to_string (unit.swap_level));
+			write (keyword => keyword_add_level , parameters => to_string (unit.add_level));
+		end query_internal_unit;
+
+		procedure query_external_unit (
+			name	: in type_unit_name.bounded_string;
+			unit	: in type_unit_external) is
+		begin -- query_external_unit
+			write (keyword => keyword_name, space => true, parameters => to_string (name));
+			write (keyword => keyword_position, parameters => position (unit.coordinates));
+			write (keyword => keyword_swap_level, parameters => to_string (unit.swap_level));
+			write (keyword => keyword_add_level , parameters => to_string (unit.add_level));
+			write (keyword => keyword_file, space => true, parameters => to_string (unit.file));
+		end query_external_unit;
+
 		
 	begin -- save_device
 		
@@ -1601,13 +1628,15 @@ package body et_project is
 		new_line;
 
 		reset_tab_depth;
-		
+
+		-- prefix, value, ...
 		write (keyword => keyword_prefix, space => true, parameters => to_string (device.prefix));
 		write (keyword => keyword_value , space => true, parameters => to_string (device.value));
 		write (keyword => keyword_commissioned, parameters => to_string (device.commissioned));
 		write (keyword => keyword_updated     , parameters => to_string (device.updated));
 		write (keyword => keyword_author      , parameters => to_string (device.author));
 
+		-- package variants
 		case device.appearance is
 			when SCH_PCB =>
 				write (keyword => keyword_purpose , space => true, parameters => to_string (device.purpose));
@@ -1633,15 +1662,24 @@ package body et_project is
 			when others => null;				
 		end case;
 
+		-- internal units
 		section_mark (section_units_internal, HEADER);
-
-
+		while unit_internal_cursor /= type_units_internal.no_element loop
+			section_mark (section_unit, HEADER);
+			query_element (unit_internal_cursor, query_internal_unit'access);
+			section_mark (section_unit, FOOTER);
+			next (unit_internal_cursor);
+		end loop;
 		section_mark (section_units_internal, FOOTER);
 
-
+		-- external units
 		section_mark (section_units_external, HEADER);
-
-
+		while unit_external_cursor /= type_units_external.no_element loop
+			section_mark (section_unit, HEADER);
+			query_element (unit_external_cursor, query_external_unit'access);
+			section_mark (section_unit, FOOTER);
+			next (unit_external_cursor);
+		end loop;
 		section_mark (section_units_external, FOOTER);
 		
 		set_output (standard_output);

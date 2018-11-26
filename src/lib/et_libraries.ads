@@ -777,6 +777,8 @@ package et_libraries is
 	type type_unit_swap_level is new natural range 0..unit_swap_level_max;
 	unit_swap_level_default : constant := type_unit_swap_level'first;
 
+	function to_string (swap_level : in type_unit_swap_level) return string;
+
 	type type_unit_add_level is (
 		NEXT, 		-- should be default. for things like logig gates, multi-OP-Amps, ...
 		REQUEST, 	-- for power supply 
@@ -803,7 +805,7 @@ package et_libraries is
 
 	-- An external unit has a reference and a swap level.
 	type type_unit_external is record -- CS: parameter appearance ?
-		reference	: type_symbol_library_name.bounded_string; -- like /my_libraries/NAND.sym
+		file		: type_symbol_library_name.bounded_string; -- like /my_libraries/NAND.sym -- CS rename to file
 		coordinates	: type_2d_point; -- CS: rename to position
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
 		add_level	: type_unit_add_level := type_unit_add_level'first;

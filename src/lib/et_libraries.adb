@@ -887,10 +887,15 @@ package body et_libraries is
 		return type_unit_name.to_bounded_string (unit_name);
 	end to_unit_name;
 
+	function to_string (swap_level : in type_unit_swap_level) return string is
+	begin
+		return type_unit_swap_level'image (swap_level);
+	end to_string;
+	
 	function to_string (add_level : in type_unit_add_level) return string is
 	-- Returns the given add level as string.
 	begin
-		return " add level " & type_unit_add_level'image (add_level);
+		return latin_1.space & to_lower (type_unit_add_level'image (add_level));
 	end to_string;
 
 	function to_string (bom : in type_bom) return string is
