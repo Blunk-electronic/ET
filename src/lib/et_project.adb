@@ -238,7 +238,25 @@ package body et_project is
 			return space & keyword_sheet & to_string (sheet (type_coordinates (pos))) & text;
 		end if;
 	end position;
-		
+
+	function rotation (angle : in et_coordinates.type_angle) return string is begin
+		return type_angle'image (angle);
+	end rotation;
+	
+	procedure write_text_properties (text : in et_libraries.type_text_basic'class) is
+		use et_coordinates;
+	begin
+		write (keyword => keyword_size, parameters => et_libraries.to_string (text.size, preamble => false));
+		write (keyword => keyword_line_width, parameters => to_string (text.line_width));
+		write (keyword => keyword_rotation, parameters => rotation (text.orientation));
+		write (keyword => keyword_style, parameters => et_libraries.to_string (text.style));
+		write (keyword => keyword_alignment, parameters => space &
+				keyword_horizontal & et_libraries.to_string (text.alignment.horizontal) & space &
+				keyword_vertical   & et_libraries.to_string (text.alignment.vertical)
+				);
+		--write (keyword => keyword_hidden, parameters => et_libraries.to_string (text.visible)); -- CS: no need. probably useless
+	end write_text_properties;
+	
 	procedure save_project (log_threshold : in et_string_processing.type_log_level) is
 	-- Saves the schematic and layout data in project file (project_file_handle).
 	-- CS: improve log messages !!
@@ -258,11 +276,6 @@ package body et_project is
 		end write_project_footer;
 
 		module_cursor : type_rig.cursor := rig.first;
-
-		function rotation (angle : in et_coordinates.type_angle) return string is
-		begin
-			return type_angle'image (angle);
-		end rotation;
 
 		function rotation (pos : in et_pcb_coordinates.type_terminal_position'class) return string is
 			use et_pcb_coordinates;
@@ -292,20 +305,6 @@ package body et_project is
 			write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
 		end write_text_properties;
 
-		procedure write_text_properties (text : in et_libraries.type_text_basic'class) is
-			use et_coordinates;
-		begin
-			write (keyword => keyword_size, parameters => et_libraries.to_string (text.size, preamble => false));
-			write (keyword => keyword_line_width, parameters => to_string (text.line_width));
-			write (keyword => keyword_rotation, parameters => rotation (text.orientation));
-			write (keyword => keyword_style, parameters => et_libraries.to_string (text.style));
-			write (keyword => keyword_alignment, parameters => space &
-				   keyword_horizontal & et_libraries.to_string (text.alignment.horizontal) & space &
-				   keyword_vertical   & et_libraries.to_string (text.alignment.vertical)
-				  );
-			--write (keyword => keyword_hidden, parameters => et_libraries.to_string (text.visible)); -- CS: no need. probably useless
-		end write_text_properties;
-		
 		function face (point : et_pcb_coordinates.type_package_position) return string is
 			use et_pcb_coordinates;
 		begin
@@ -1550,6 +1549,144 @@ package body et_project is
 	end save_project;
 
 
+	procedure write_symbol (
+		symbol			: in et_libraries.type_symbol;
+		log_threshold	: in et_string_processing.type_log_level) is
+		use et_libraries;
+		use type_lines;
+		use type_polylines;
+		use type_rectangles;
+		use type_arcs;
+		use type_circles;
+		use type_symbol_texts;
+		use type_ports;
+
+		procedure write_line (cursor : in type_lines.cursor) is begin
+			section_mark (section_line, HEADER);
+			write (keyword => keyword_start, parameters => position (element (cursor).start_point));
+			write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+			write (keyword => keyword_width, parameters => et_coordinates.to_string (element (cursor).line_width));
+			section_mark (section_line, FOOTER);
+		end write_line;
+
+		procedure write_arc (cursor : in type_arcs.cursor) is begin
+			section_mark (section_arc, HEADER);
+			write (keyword => keyword_center, parameters => position (element (cursor).center));
+			write (keyword => keyword_start , parameters => position (element (cursor).start_point));
+			write (keyword => keyword_end   , parameters => position (element (cursor).end_point));
+			write (keyword => keyword_radius, parameters => et_coordinates.to_string (element (cursor).radius));			
+			write (keyword => keyword_width , parameters => et_coordinates.to_string (element (cursor).line_width));
+			write (keyword => keyword_fill  , parameters => to_string (element (cursor).fill));
+			section_mark (section_arc, FOOTER);
+		end write_arc;
+
+		procedure write_circle (cursor : in type_circles.cursor) is begin
+			section_mark (section_circle, HEADER);
+			write (keyword => keyword_center, parameters => position (element (cursor).center));
+			write (keyword => keyword_radius, parameters => et_coordinates.to_string (element (cursor).radius));
+			write (keyword => keyword_width , parameters => et_coordinates.to_string (element (cursor).line_width));
+			write (keyword => keyword_fill  , parameters => to_string (element (cursor).fill));
+			section_mark (section_arc, FOOTER);
+		end write_circle;
+
+		procedure write_rectangle (cursor : in type_rectangles.cursor) is begin
+			section_mark (section_rectangle, HEADER);
+			write (keyword => keyword_corner_a, parameters => position (element (cursor).start_point));
+			write (keyword => keyword_corner_b, parameters => position (element (cursor).end_point));
+			write (keyword => keyword_width , parameters => et_coordinates.to_string (element (cursor).line_width));
+			write (keyword => keyword_fill  , parameters => to_string (element (cursor).fill));
+			section_mark (section_rectangle, FOOTER);
+		end write_rectangle;
+		
+		procedure write_polyline (cursor : in type_polylines.cursor) is 
+			line : type_polyline := element (cursor);
+			use type_points;
+
+			procedure write_point (cursor : in type_points.cursor) is begin
+				write (keyword_position, parameters => position (element (cursor)));
+			end write_point;
+		
+		begin -- write_polyline
+			section_mark (section_polyline, HEADER);
+			write (keyword => keyword_width , parameters => et_coordinates.to_string (line.line_width));
+			write (keyword => keyword_fill  , parameters => to_string (line.fill));
+			section_mark (section_corners, HEADER);
+			iterate (line.points, write_point'access);
+			section_mark (section_corners, FOOTER);
+			section_mark (section_polyline, FOOTER);
+		end write_polyline;
+
+		procedure write_text (cursor : in type_symbol_texts.cursor) is 
+		begin
+			section_mark (section_text, HEADER);
+			write (keyword => keyword_position, parameters => position (element (cursor).position));
+			write (keyword => keyword_content , parameters => to_string (element (cursor).content));			
+			write_text_properties (element (cursor));
+			section_mark (section_text, FOOTER);
+		end write_text;
+
+		procedure write_placeholders is
+		begin
+			section_mark (section_placeholders, HEADER);
+
+			section_mark (section_placeholder, HEADER);
+			write (keyword => keyword_meaning , parameters => to_string (symbol.reference.meaning));
+			write (keyword => keyword_position, parameters => position (symbol.reference.position));
+			write_text_properties (symbol.reference);
+			section_mark (section_placeholder, FOOTER);
+
+			section_mark (section_placeholder, HEADER);
+			write (keyword => keyword_meaning , parameters => to_string (symbol.value.meaning));
+			write (keyword => keyword_position, parameters => position (symbol.value.position));
+			write_text_properties (symbol.value);
+			section_mark (section_placeholder, FOOTER);
+
+			
+			section_mark (section_placeholders, FOOTER);
+		end write_placeholders;
+		
+	begin -- write_symbol
+		
+		-- SHAPES BEGIN
+		section_mark (section_shapes, HEADER);
+		
+			-- lines
+			iterate (symbol.shapes.lines, write_line'access);
+
+			-- arcs
+			iterate (symbol.shapes.arcs, write_arc'access);
+			
+			-- circles
+			iterate (symbol.shapes.circles, write_circle'access);
+
+			-- rectangles
+			iterate (symbol.shapes.rectangles, write_rectangle'access);
+			
+			-- polylines
+			iterate (symbol.shapes.polylines, write_polyline'access);
+
+		section_mark (section_shapes, FOOTER);
+		-- SHAPES END
+		
+		-- TEXTS
+		section_mark (section_texts, HEADER);
+		iterate (symbol.texts, write_text'access);
+		section_mark (section_texts, FOOTER);
+
+		-- PLACEHOLDERS
+		section_mark (section_placeholders, HEADER);
+		write_placeholders;
+		section_mark (section_placeholders, FOOTER);
+
+		-- PORTS
+		section_mark (section_ports, HEADER);
+
+		section_mark (section_ports, FOOTER);
+
+
+
+	end write_symbol;
+	
 	procedure save_device (
 	-- Saves the given device model in a file specified by name.
 		name			: in string; -- libraries/devices/resistor.dev
@@ -1596,6 +1733,9 @@ package body et_project is
 			write (keyword => keyword_position, parameters => position (unit.coordinates));
 			write (keyword => keyword_swap_level, parameters => to_string (unit.swap_level));
 			write (keyword => keyword_add_level , parameters => to_string (unit.add_level));
+			section_mark (section_symbol, HEADER);
+			write_symbol (unit.symbol, log_threshold + 1);
+			section_mark (section_symbol, FOOTER);
 		end query_internal_unit;
 
 		procedure query_external_unit (

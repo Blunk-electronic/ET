@@ -596,6 +596,12 @@ package body et_libraries is
 		end if;
 	end check_author_characters;
 
+	function to_string (fill : in type_fill) return string is begin
+		return latin_1.space & to_lower (type_fill_border'image (fill.border))
+		& latin_1.space & "pattern" & latin_1.space 
+		& to_lower (type_fill_pattern'image (fill.pattern));
+	end to_string;
+	
 -- 	function to_string (variant : in type_component_variant) return string is
 -- 	-- Returns the given variant as string.
 -- 	-- NOTE: This displays the type_component_variant (see et_libraries.ads).

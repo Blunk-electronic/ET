@@ -646,16 +646,18 @@ package et_libraries is
 	-- fill
 	type type_fill_border is (VISIBLE, INVISIBLE);
 	type type_fill_pattern is (NONE, SOLID); -- CS: hatched ? and its properties ?
-	type type_fill is record 
+	type type_fill is record
 		border	: type_fill_border := VISIBLE;
 		pattern : type_fill_pattern := SOLID;
 	end record;
+
+	function to_string (fill : in type_fill) return string;
 	
 	-- straight lines
 	type type_line is record
 		start_point 	: type_2d_point;
 		end_point   	: type_2d_point;
-		line_width		: type_line_width;
+		line_width		: type_line_width; -- CS rename to width
 	end record;
 	package type_lines is new doubly_linked_lists (type_line);
 
@@ -666,7 +668,7 @@ package et_libraries is
 	-- Finally the polylines are collected in a simple list.
 	package type_points is new doubly_linked_lists (type_2d_point);
 	type type_polyline is record
-		line_width		: type_line_width;
+		line_width		: type_line_width;  -- CS rename to width
 		fill			: type_fill;
 		points			: type_points.list;
 	end record;
@@ -677,7 +679,7 @@ package et_libraries is
 	type type_rectangle is record
 		start_point		: type_2d_point; -- CS: rename to corner_A
 		end_point		: type_2d_point; -- CS: rename to corner_B
-		line_width		: type_line_width;
+		line_width		: type_line_width;  -- CS rename to width
 		fill			: type_fill;
 	end record;
 	package type_rectangles is new doubly_linked_lists (type_rectangle);	
@@ -690,7 +692,7 @@ package et_libraries is
 		end_point		: type_2d_point;
 		start_angle		: type_angle; -- CS: ?
 		end_angle		: type_angle; -- CS: ?
-		line_width		: type_line_width;
+		line_width		: type_line_width;  -- CS rename to width
  		fill			: type_fill;
 	end record;
 	package type_arcs is new doubly_linked_lists (type_arc);
@@ -699,7 +701,7 @@ package et_libraries is
 	type type_circle is record
 		center			: type_2d_point;
 		radius  		: type_distance;
-		line_width		: type_line_width;
+		line_width		: type_line_width;  -- CS rename to width
 		fill			: type_fill;
 	end record;
 	package type_circles is new doubly_linked_lists (type_circle);
@@ -707,10 +709,10 @@ package et_libraries is
 	-- Shapes are wrapped in a the type_shapes:
 	type type_shapes is record
 		lines		: type_lines.list 		:= type_lines.empty_list;
-		polylines	: type_polylines.list	:= type_polylines.empty_list;
-		rectangles	: type_rectangles.list	:= type_rectangles.empty_list;
 		arcs 		: type_arcs.list		:= type_arcs.empty_list;
 		circles		: type_circles.list		:= type_circles.empty_list;
+		rectangles	: type_rectangles.list	:= type_rectangles.empty_list;
+		polylines	: type_polylines.list	:= type_polylines.empty_list;
 	end record;
 
 
@@ -805,7 +807,7 @@ package et_libraries is
 
 	-- An external unit has a reference and a swap level.
 	type type_unit_external is record -- CS: parameter appearance ?
-		file		: type_symbol_library_name.bounded_string; -- like /my_libraries/NAND.sym -- CS rename to file
+		file		: type_symbol_library_name.bounded_string; -- like /my_libraries/NAND.sym
 		coordinates	: type_2d_point; -- CS: rename to position
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
 		add_level	: type_unit_add_level := type_unit_add_level'first;

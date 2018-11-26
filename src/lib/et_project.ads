@@ -256,6 +256,9 @@ package et_project is
 	keyword_unit					: constant string := "unit";		
 	keyword_swap_level				: constant string := "swap_level";
 	keyword_add_level				: constant string := "add_level";
+	keyword_fill					: constant string := "fill";
+	keyword_corner_a				: constant string := "corner_a";
+	keyword_corner_b				: constant string := "corner_b";
 	
 	section_net_classes			: constant string := "[NET_CLASSES";
 	section_net_class			: constant string := "[NET_CLASS";
