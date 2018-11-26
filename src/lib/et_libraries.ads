@@ -790,7 +790,7 @@ package et_libraries is
 	function to_string (swap_level : in type_unit_swap_level) return string;
 
 	type type_unit_add_level is (
-		NEXT, 		-- should be default. for things like logig gates, multi-OP-Amps, ...
+		NEXT, 		-- should be default. for things like logic gates, multi-OP-Amps, ...
 		REQUEST, 	-- for power supply 
 		CAN,		-- for things like optional relay contacts
 		ALWAYS,		-- 

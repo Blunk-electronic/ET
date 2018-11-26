@@ -1838,7 +1838,7 @@ package body et_project is
 		close (file_handle);
 	end save_device;
 
-	procedure save_symbol (
+	procedure save_symbol ( -- CS: testing requried
 	-- Saves the given symbol model in a file specified by name.
 		name			: in string; -- libraries/symbols/resistor.sym
 		symbol			: in et_libraries.type_symbol; -- the actual symbol model
@@ -1861,6 +1861,8 @@ package body et_project is
 		put_line (comment_mark & " " & row_separator_double);
 		new_line;
 
+		write_symbol (symbol);
+		
 		reset_tab_depth;		
 		
 		set_output (standard_output);
@@ -1890,6 +1892,8 @@ package body et_project is
 		put_line (comment_mark & " " & row_separator_double);
 		new_line;
 
+		-- CS
+		
 		reset_tab_depth;
 		
 		set_output (standard_output);
