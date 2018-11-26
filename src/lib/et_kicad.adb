@@ -8311,7 +8311,9 @@ package body et_kicad is
 				begin -- verify_unit_name_and_position
 					
 					if et_libraries.to_string (unit_name) /= field (line,1) then
-						raise constraint_error; -- CS: write useful message
+						log_indentation_reset;
+						log (message_error & "invalid unit name '" & field (line,1) & "'", console => true);
+						raise constraint_error;
 					end if;
 					
 					if distance_x (position) /= mil_to_distance (field (line,2)) then

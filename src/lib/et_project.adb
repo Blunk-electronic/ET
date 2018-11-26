@@ -1563,34 +1563,20 @@ package body et_project is
 		use type_component_variants;
 		variant_cursor : type_component_variants.cursor;
 		
--- 		procedure write_variant (variant_cursor : in type_component_variants.cursor) is
--- 			use type_terminal_port_map;
--- 			
-			procedure write_terminal (term : in type_terminal_port_map.cursor) is
-			begin
-				--write (keyword => keyword_terminal, parameters => to_string (key (term)));
-				null;
-			end write_terminal;
--- 
--- 			procedure query_terminal_port_map
--- 			
--- 		begin -- write_variant
--- 			section_mark (section_variants, HEADER);
--- 			write (keyword => keyword_name, space => true, parameters => to_string (key (variant_cursor)));
--- 			write (keyword => keyword_file, space => true, parameters => to_string (element (variant_cursor).packge)); -- CS path correct ??
--- 			section_mark (section_terminal_port_map, HEADER);
--- 			-- CS iterate (var.terminal_port_map, write_variant'access);
--- 			--query_element (element (var), query_terminal_port_map'access);
--- 			section_mark (section_terminal_port_map, FOOTER);
--- 			section_mark (section_variants, FOOTER);			
--- 		end write_variant;
-
 		procedure write_variant (
 			packge	: in type_component_variant_name.bounded_string;
 			variant	: in type_component_variant) is
-
 			use type_terminal_port_map;	
-		begin
+
+			procedure write_terminal (terminal_cursor : in type_terminal_port_map.cursor) is begin
+				write (keyword => keyword_terminal, parameters => 
+					to_string (key (terminal_cursor)) & space 		-- terminal name like G14 or 16
+					& keyword_unit & space & to_string (element (terminal_cursor).unit) -- unit name like A,B or GPIO_BANK_1
+					& space & to_string (element (terminal_cursor).name) 	-- port name like CE, WE, GND
+					);
+			end write_terminal;
+
+		begin -- write_variant
 			write (keyword => keyword_file, space => true, parameters => to_string (variant.packge)); -- CS path correct ??
 			section_mark (section_terminal_port_map, HEADER);
 			iterate (variant.terminal_port_map, write_terminal'access);
@@ -1646,6 +1632,17 @@ package body et_project is
 				section_mark (section_variants, FOOTER);
 			when others => null;				
 		end case;
+
+		section_mark (section_units_internal, HEADER);
+
+
+		section_mark (section_units_internal, FOOTER);
+
+
+		section_mark (section_units_external, HEADER);
+
+
+		section_mark (section_units_external, FOOTER);
 		
 		set_output (standard_output);
 		close (file_handle);

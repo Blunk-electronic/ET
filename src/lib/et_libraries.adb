@@ -208,7 +208,7 @@ package body et_libraries is
 	function to_string (terminal : in type_terminal_name.bounded_string) return string is
 	-- Returns the given terminal name as string.
 	begin
-		return type_terminal_name.to_string (terminal);
+		return latin_1.space & type_terminal_name.to_string (terminal);
 	end to_string;
 
 	function to_terminal_name (terminal : in string) return type_terminal_name.bounded_string is
