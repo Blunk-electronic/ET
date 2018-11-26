@@ -259,6 +259,11 @@ package et_project is
 	keyword_fill					: constant string := "fill";
 	keyword_corner_a				: constant string := "corner_a";
 	keyword_corner_b				: constant string := "corner_b";
+	keyword_length					: constant string := "length";	
+	keyword_port_name_visible		: constant string := "port_name_visible";
+	keyword_terminal_name_visible	: constant string := "terminal_name_visible";
+	keyword_port_name_size			: constant string := "port_name_size";
+	keyword_terminal_name_size		: constant string := "terminal_name_size";	
 	
 	section_net_classes			: constant string := "[NET_CLASSES";
 	section_net_class			: constant string := "[NET_CLASS";

@@ -178,9 +178,7 @@ package body et_libraries is
 			& " / "
 			& to_string (alignment.vertical);
 	end to_string;
-	
-
-	
+		
 	function to_string (
 		direction	: in type_port_direction;
 		preamble	: in boolean := true) return string is
@@ -191,6 +189,18 @@ package body et_libraries is
 		else
 			return latin_1.space & to_lower (type_port_direction'image (direction));
 		end if;
+	end to_string;
+
+	function to_string (style : in type_port_style) return string is begin
+		return latin_1.space & to_lower (type_port_style'image (style));
+	end to_string;
+
+	function to_string (port_visible : in type_port_name_visible) return string is begin
+		return latin_1.space & to_lower (type_port_name_visible'image (port_visible));
+	end to_string;
+
+	function to_string (terminal_visible : in type_terminal_name_visible) return string is begin
+		return latin_1.space & to_lower (type_terminal_name_visible'image (terminal_visible));
 	end to_string;
 	
 	function to_string (port : in type_port_name.bounded_string) return string is

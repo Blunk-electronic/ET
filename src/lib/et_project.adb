@@ -1616,8 +1616,7 @@ package body et_project is
 			section_mark (section_polyline, FOOTER);
 		end write_polyline;
 
-		procedure write_text (cursor : in type_symbol_texts.cursor) is 
-		begin
+		procedure write_text (cursor : in type_symbol_texts.cursor) is begin
 			section_mark (section_text, HEADER);
 			write (keyword => keyword_position, parameters => position (element (cursor).position));
 			write (keyword => keyword_content , parameters => to_string (element (cursor).content));			
@@ -1641,9 +1640,25 @@ package body et_project is
 			write_text_properties (symbol.value);
 			section_mark (section_placeholder, FOOTER);
 
+			-- CS purpose ?
 			
 			section_mark (section_placeholders, FOOTER);
 		end write_placeholders;
+
+		procedure write_port (cursor : in type_ports.cursor) is begin
+			section_mark (section_port, HEADER);
+			write (keyword => keyword_name, space => true, parameters => to_string (element (cursor).name));
+			write (keyword => keyword_position, parameters => position (element (cursor).coordinates));
+			write (keyword => keyword_direction, parameters => to_string (element (cursor).direction, preamble => false));
+			write (keyword => keyword_style, parameters => to_string (element (cursor).style));
+			write (keyword => keyword_length, parameters => et_coordinates.to_string (element (cursor).length));
+			write (keyword => keyword_rotation, parameters => rotation (element (cursor).orientation));
+			write (keyword => keyword_port_name_visible, parameters => to_string (element (cursor).port_name_visible));
+			write (keyword => keyword_port_name_size, parameters => et_coordinates.to_string (element (cursor).port_name_size));
+			write (keyword => keyword_terminal_name_visible, parameters => to_string (element (cursor).terminal_visible));
+			write (keyword => keyword_terminal_name_size, parameters => et_coordinates.to_string (element (cursor).terminal_name_size));
+			section_mark (section_port, FOOTER);			
+		end write_port;
 		
 	begin -- write_symbol
 		
@@ -1680,11 +1695,8 @@ package body et_project is
 
 		-- PORTS
 		section_mark (section_ports, HEADER);
-
+		iterate (symbol.ports, write_port'access);
 		section_mark (section_ports, FOOTER);
-
-
-
 	end write_symbol;
 	
 	procedure save_device (

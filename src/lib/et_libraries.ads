@@ -269,10 +269,15 @@ package et_libraries is
 		preamble	: in boolean := true) return string;
 	-- Returns the given port direction as string.
 
-	type type_port_name_visible is (ON, OFF);
-	type type_terminal_name_visible is (ON, OFF);
+	type type_port_name_visible is (ON, OFF); -- CS change to yes/no
+	function to_string (port_visible : in type_port_name_visible) return string;
 
-	type type_port_style is ( -- CS: find a better name, move it to et_kicad
+	
+	type type_terminal_name_visible is (ON, OFF); -- CS change to yes/no
+	function to_string (terminal_visible : in type_terminal_name_visible) return string;	
+	
+	
+	type type_port_style is ( -- CS: find a better name, move it to et_kicad. make own port style type and map in kicad.adb properly
 		NONE,
 		INVERTED,
 		CLOCK,
@@ -291,6 +296,8 @@ package et_libraries is
 		INVISIBLE_OUTPUT_LOW,
 		INVISIBLE_FALLING_EDGE_CLK, INVISIBLE_RISING_EDGE_CLK,
 		INVISIBLE_NON_LOGIC);
+
+	function to_string (style : in type_port_style) return string;
 	
  	port_name_length_max : constant natural := 100;
 	package type_port_name is new generic_bounded_length (port_name_length_max);
@@ -313,13 +320,13 @@ package et_libraries is
 	
 	type type_port is new type_port_base with record 	-- CS: set defaults
 		direction			: type_port_direction; -- example: "passive"
-		style				: type_port_style;
+		style				: type_port_style := NONE;
 		coordinates			: type_2d_point; -- CS: rename to position
 		length				: type_port_length; 
 		orientation			: type_angle; -- CS: rename to rotation
 		port_name_visible	: type_port_name_visible;
-		terminal_visible	: type_terminal_name_visible; -- CS: rename to terminal_name_visible
 		port_name_size		: type_port_name_text_size;
+		terminal_visible	: type_terminal_name_visible; -- CS: rename to terminal_name_visible
 		terminal_name_size	: type_terminal_name_text_size;
 		-- CS: port swap level ? -> would require a derived new type
 	end record;
@@ -757,6 +764,7 @@ package et_libraries is
 		-- a symbol is placed in the schematic:
 		reference	: type_text_placeholder (meaning => et_libraries.REFERENCE);
 		value		: type_text_placeholder (meaning => et_libraries.VALUE);
+		-- CS: purpose ?
 	end record;
 
 	type type_symbol is new type_symbol_base with record
