@@ -1158,7 +1158,7 @@ package et_pcb is
 		copper					: type_copper_package_both_sides; -- non-electric objects
 		keepout 				: type_keepout_both_sides;
 		stop_mask				: type_stop_mask_both_sides;
-		solder_stencil			: type_stencil_both_sides;
+		stencil					: type_stencil_both_sides;
 
 		route_restrict 			: type_route_restrict_package;
 		via_restrict 			: type_via_restrict_package;

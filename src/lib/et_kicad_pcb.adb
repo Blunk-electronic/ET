@@ -2464,7 +2464,7 @@ package body et_kicad_pcb is
 					silk_screen				=> silk_screen,
 					keepout					=> keepout,
 					stop_mask				=> stop_mask,
-					solder_stencil			=> stencil,
+					stencil					=> stencil,
 					route_restrict 			=> (others => <>), -- kicad does not know route restrict
 					via_restrict 			=> (others => <>), -- kicad does not know via restrict
 					assembly_documentation 	=> assy_doc,
@@ -2483,7 +2483,7 @@ package body et_kicad_pcb is
 					silk_screen				=> silk_screen,
 					keepout					=> keepout,
 					stop_mask				=> stop_mask,
-					solder_stencil			=> stencil,
+					stencil					=> stencil,
 					route_restrict 			=> (others => <>), -- kicad does not know route restrict
 					via_restrict 			=> (others => <>), -- kicad does not know via restrict
 					assembly_documentation 	=> assy_doc,
@@ -5643,7 +5643,7 @@ package body et_kicad_pcb is
 								copper			=> package_copper,
 								keepout			=> package_keepout,
 								stop_mask		=> package_stop_mask,
-								solder_stencil	=> package_stencil,
+								stencil			=> package_stencil,
 								route_restrict	=> (others => <>), -- kicad does not know route restrict
 								via_restrict	=> (others => <>), -- kicad does not know via restrict
 								assembly_documentation	=> package_assy_doc,
@@ -5671,7 +5671,7 @@ package body et_kicad_pcb is
 								copper			=> package_copper,
 								keepout			=> package_keepout,
 								stop_mask		=> package_stop_mask,
-								solder_stencil	=> package_stencil,
+								stencil			=> package_stencil,
 								route_restrict	=> (others => <>), -- kicad does not know route restrict
 								via_restrict	=> (others => <>), -- kicad does not know via restrict
 								assembly_documentation	=> package_assy_doc,
