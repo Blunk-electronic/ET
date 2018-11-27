@@ -277,7 +277,10 @@ package et_libraries is
 	function to_string (terminal_visible : in type_terminal_name_visible) return string;	
 	
 	
-	type type_port_characteristic is ( -- CS: A type for characteristics of passive, input and output should be done.
+	type type_port_characteristic is ( 
+	-- CS: A type for characteristics of passive, input and output should be done.
+	-- see note in type_port.
+		
 		NONE, -- NOTE: Default must be here at first position !
 		INVERTED,
 		POSITIVE_EDGE,
