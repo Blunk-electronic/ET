@@ -2341,8 +2341,6 @@ package body et_kicad_to_native is
 	-- NOTE: Packages of the board (incl. their deviations/modifications
 	-- from the package_libraries) are ignored !
 
-		-- CS function port_style_to_characteristic (style : in type_port_style
-		
 		-- When the native project is created we need a project path and a project name:
 		project_path : et_project.type_et_project_path.bounded_string :=
 						et_project.type_et_project_path.to_bounded_string (
@@ -2976,6 +2974,29 @@ package body et_kicad_to_native is
 						unit_name	: in et_libraries.type_unit_name.bounded_string;
 						unit		: in out et_libraries.type_unit_internal) is
 
+						function to_characteristic (style : in et_kicad.type_port_style) 
+						-- Maps from kicad port style to native port characteristic.
+							return et_libraries.type_port_characteristic is 
+							use et_kicad;
+							use et_libraries;
+						begin
+							case style is
+								when NONE | NON_LOGIC | INVISIBLE_NON_LOGIC => return NONE;
+								
+								when INVERTED | INVISIBLE_INVERTED | INVISIBLE_INPUT_LOW |
+									INPUT_LOW | OUTPUT_LOW | INVISIBLE_OUTPUT_LOW => return INVERTED;
+									
+								when CLOCK | INVISIBLE_CLOCK | RISING_EDGE_CLK |
+									INVISIBLE_RISING_EDGE_CLK => return POSITIVE_EDGE;
+								
+								when INVERTED_CLOCK | INVISIBLE_INVERTED_CLOCK | INVISIBLE_CLOCK_LOW |
+									FALLING_EDGE_CLK | INVISIBLE_FALLING_EDGE_CLK => return NEGATIVE_EDGE;
+								
+								when others => return NONE;
+
+							end case;
+						end to_characteristic;
+						
 						-- This cursor points to a port of a kicad unit. We initialize it so that
 						-- it points to the first port of the current unit.
 						use et_kicad.type_ports_library;
@@ -2987,7 +3008,7 @@ package body et_kicad_to_native is
 							et_libraries.type_ports.append (
 								container	=> unit.symbol.ports,
 								new_item	=> (et_libraries.type_port (element (port_cursor_kicad))
-												with characteristic => et_libraries.NONE) -- CS: map from kicad style to characteristic
+												with characteristic => to_characteristic (element (port_cursor_kicad).style))
 										);
 									-- NOTE: The kicad port_name_offset is discarded here.
 							

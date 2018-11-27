@@ -277,27 +277,15 @@ package et_libraries is
 	function to_string (terminal_visible : in type_terminal_name_visible) return string;	
 	
 	
-	type type_port_style is ( -- CS: find a better name, move it to et_kicad. make own port style type and map in kicad.adb properly
-		NONE,
+	type type_port_characteristic is ( -- CS: A type for characteristics of passive, input and output should be done.
+		NONE, -- NOTE: Default must be here at first position !
 		INVERTED,
-		CLOCK,
-		INVERTED_CLOCK,
-		INPUT_LOW,
-		CLOCK_LOW,
-		OUTPUT_LOW,
-		FALLING_EDGE_CLK, RISING_EDGE_CLK,
-		NON_LOGIC,
+		POSITIVE_EDGE,
+		NEGATIVE_EDGE,		
+		EDGE
+		);
 
-		INVISIBLE_INVERTED,
-		INVISIBLE_CLOCK,
-		INVISIBLE_INVERTED_CLOCK,
-		INVISIBLE_INPUT_LOW,
-		INVISIBLE_CLOCK_LOW,
-		INVISIBLE_OUTPUT_LOW,
-		INVISIBLE_FALLING_EDGE_CLK, INVISIBLE_RISING_EDGE_CLK,
-		INVISIBLE_NON_LOGIC);
-
-	function to_string (style : in type_port_style) return string;
+	function to_string (characteristic : in type_port_characteristic) return string;
 	
  	port_name_length_max : constant natural := 100;
 	package type_port_name is new generic_bounded_length (port_name_length_max);
@@ -320,7 +308,6 @@ package et_libraries is
 	
 	type type_port is new type_port_base with record 	-- CS: set defaults
 		direction			: type_port_direction; -- example: "passive"
--- 		style				: type_port_style := NONE;
 		coordinates			: type_2d_point; -- CS: rename to position
 		length				: type_port_length; 
 		orientation			: type_angle; -- CS: rename to rotation
@@ -331,8 +318,10 @@ package et_libraries is
 		-- CS: port swap level ? -> would require a derived new type
 	end record;
 
-	type type_port_native is new type_port with record
-		characteristic	: type_port_style;
+	type type_port_native is new type_port with record 
+		-- CS should be controlled by the direction. depending on that, we will have characteristics 
+		-- for passive, inputs and outputs separately.		
+		characteristic	: type_port_characteristic := NONE;
 	end record;
 	
 	-- Ports of a component are collected in a simple list. A list, because multiple ports
