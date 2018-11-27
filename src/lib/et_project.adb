@@ -1706,6 +1706,7 @@ package body et_project is
 		iterate (symbol.ports, write_port'access);
 		section_mark (section_ports, FOOTER);
 	end write_symbol;
+
 	
 	procedure save_device (
 	-- Saves the given device model in a file specified by name.
@@ -1842,7 +1843,11 @@ package body et_project is
 		end loop;
 		section_mark (section_units_external, FOOTER);
 
-		-- CS write footer
+		-- write footer
+		new_line;		
+		put_line (comment_mark & " " & row_separator_double);
+		put_line (comment_mark & " device model file end");
+		new_line;
 
 		reset_tab_depth;
 		
@@ -1875,7 +1880,11 @@ package body et_project is
 
 		write_symbol (symbol, log_threshold + 1);
 
-		-- CS write footer
+		-- write footer
+		new_line;		
+		put_line (comment_mark & " " & row_separator_double);
+		put_line (comment_mark & " symbol file end");
+		new_line;
 		
 		reset_tab_depth;		
 		
@@ -1908,7 +1917,11 @@ package body et_project is
 
 		-- CS
 
-		-- CS write footer
+		-- write footer
+		new_line;
+		put_line (comment_mark & " " & row_separator_double);
+		put_line (comment_mark & " package model file end");
+		new_line;
 		
 		reset_tab_depth;
 		
