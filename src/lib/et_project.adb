@@ -1640,7 +1640,15 @@ package body et_project is
 			write_text_properties (symbol.value);
 			section_mark (section_placeholder, FOOTER);
 
-			-- CS purpose ?
+			case symbol.appearance is
+				when et_libraries.SCH_PCB =>
+					section_mark (section_placeholder, HEADER);
+					write (keyword => keyword_meaning , parameters => to_string (symbol.purpose.meaning));
+					write (keyword => keyword_position, parameters => position (symbol.purpose.position));
+					write_text_properties (symbol.purpose);
+					section_mark (section_placeholder, FOOTER);
+				when others => null;
+			end case;
 			
 			section_mark (section_placeholders, FOOTER);
 		end write_placeholders;
@@ -1865,7 +1873,7 @@ package body et_project is
 		put_line (comment_mark & " " & row_separator_double);
 		new_line;
 
-		write_symbol (symbol);
+		write_symbol (symbol, log_threshold + 1);
 
 		-- CS write footer
 		

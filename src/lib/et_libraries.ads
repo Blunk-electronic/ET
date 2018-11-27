@@ -764,11 +764,16 @@ package et_libraries is
 		-- a symbol is placed in the schematic:
 		reference	: type_text_placeholder (meaning => et_libraries.REFERENCE);
 		value		: type_text_placeholder (meaning => et_libraries.VALUE);
-		-- CS: purpose ?
 	end record;
 
-	type type_symbol is new type_symbol_base with record
+	type type_symbol (appearance : type_component_appearance) is new type_symbol_base with record
 		ports : type_ports.list;
+		case appearance is
+			when SCH_PCB =>
+				purpose : type_text_placeholder (meaning => et_libraries.PURPOSE);
+			when SCH => null;				
+			when others => null; -- CS
+		end case;
 	end record;
 
 
@@ -801,8 +806,8 @@ package et_libraries is
 	
 	-- An internal unit is a symbol with a swap level.
 	-- An internal unit is owned by the particular component exclusively.
-	type type_unit_internal is record
-		symbol		: type_symbol;
+	type type_unit_internal (appearance : type_component_appearance) is record
+		symbol		: type_symbol (appearance);
 		coordinates	: type_2d_point; -- CS: rename to position
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
 		add_level	: type_unit_add_level := type_unit_add_level'first;
