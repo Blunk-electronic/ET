@@ -1658,7 +1658,7 @@ package body et_project is
 			write (keyword => keyword_name, space => true, parameters => to_string (element (cursor).name));
 			write (keyword => keyword_position, parameters => position (element (cursor).coordinates));
 			write (keyword => keyword_direction, parameters => to_string (element (cursor).direction, preamble => false));
-			write (keyword => keyword_style, parameters => to_string (element (cursor).style));
+			write (keyword => keyword_characteristic, parameters => to_string (element (cursor).characteristic));
 			write (keyword => keyword_length, parameters => et_coordinates.to_string (element (cursor).length));
 			write (keyword => keyword_rotation, parameters => rotation (element (cursor).orientation));
 			write (keyword => keyword_port_name_visible, parameters => to_string (element (cursor).port_name_visible));

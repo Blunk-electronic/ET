@@ -2341,6 +2341,8 @@ package body et_kicad_to_native is
 	-- NOTE: Packages of the board (incl. their deviations/modifications
 	-- from the package_libraries) are ignored !
 
+		-- CS function port_style_to_characteristic (style : in type_port_style
+		
 		-- When the native project is created we need a project path and a project name:
 		project_path : et_project.type_et_project_path.bounded_string :=
 						et_project.type_et_project_path.to_bounded_string (
@@ -2984,7 +2986,9 @@ package body et_kicad_to_native is
 
 							et_libraries.type_ports.append (
 								container	=> unit.symbol.ports,
-								new_item	=> et_libraries.type_port (element (port_cursor_kicad)));
+								new_item	=> (et_libraries.type_port (element (port_cursor_kicad))
+												with characteristic => et_libraries.NONE) -- CS: map from kicad style to characteristic
+										);
 									-- NOTE: The kicad port_name_offset is discarded here.
 							
 							next (port_cursor_kicad);

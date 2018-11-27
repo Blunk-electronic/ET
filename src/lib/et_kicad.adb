@@ -273,6 +273,9 @@ package body et_kicad is
 		log_indentation_down;		
 	end write_unit_properties;
 
+	function to_string (style : in type_port_style) return string is begin
+		return latin_1.space & to_lower (type_port_style'image (style));
+	end to_string;
 
 	function units_of_component (component_cursor : in type_components_schematic.cursor) return type_units_schematic.map is
 	-- Returns the units of the given component.

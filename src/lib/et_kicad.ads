@@ -247,11 +247,34 @@ package et_kicad is
 		"="				=> type_package_proposal."=",
 		"<"				=> type_package_proposal."<");
 
+	type type_port_style is (
+		NONE,
+		INVERTED,
+		CLOCK,
+		INVERTED_CLOCK,
+		INPUT_LOW,
+		CLOCK_LOW,
+		OUTPUT_LOW,
+		FALLING_EDGE_CLK, RISING_EDGE_CLK,
+		NON_LOGIC,
 
+		INVISIBLE_INVERTED,
+		INVISIBLE_CLOCK,
+		INVISIBLE_INVERTED_CLOCK,
+		INVISIBLE_INPUT_LOW,
+		INVISIBLE_CLOCK_LOW,
+		INVISIBLE_OUTPUT_LOW,
+		INVISIBLE_FALLING_EDGE_CLK, INVISIBLE_RISING_EDGE_CLK,
+		INVISIBLE_NON_LOGIC);
+
+	function to_string (style : in type_port_style) return string;
+	
 	type type_port_library is new et_libraries.type_port with record 	-- CS: set defaults
+		style : type_port_style := NONE;
+
 		-- the clearance between symbol outline and port name 
 		-- CS: define a reasonable range
-		port_name_offset : et_coordinates.type_distance; 
+		port_name_offset : et_coordinates.type_distance;
 		-- CS : obsolete ? pin_position_offset ?
 	end record;
 
@@ -500,7 +523,7 @@ package et_kicad is
 		name			: et_libraries.type_port_name.bounded_string; -- the port name like GPIO1, GPIO2
 		coordinates 	: et_coordinates.type_coordinates;
 		direction		: et_libraries.type_port_direction; -- example: "passive"
-		style			: et_libraries.type_port_style;
+		style			: type_port_style;
 		appearance		: et_schematic.type_appearance_schematic;
 		intended_open	: type_port_open; -- set while portlist generation. true if port is to be left open intentionally (by a no_connection-flag)
 		connected		: type_port_connected; -- set while netlist generation. true when port connected with a net

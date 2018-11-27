@@ -320,7 +320,7 @@ package et_libraries is
 	
 	type type_port is new type_port_base with record 	-- CS: set defaults
 		direction			: type_port_direction; -- example: "passive"
-		style				: type_port_style := NONE;
+-- 		style				: type_port_style := NONE;
 		coordinates			: type_2d_point; -- CS: rename to position
 		length				: type_port_length; 
 		orientation			: type_angle; -- CS: rename to rotation
@@ -331,10 +331,14 @@ package et_libraries is
 		-- CS: port swap level ? -> would require a derived new type
 	end record;
 
+	type type_port_native is new type_port with record
+		characteristic	: type_port_style;
+	end record;
+	
 	-- Ports of a component are collected in a simple list. A list, because multiple ports
 	-- with the same name (but differing terminal names) may exist. For example lots of GND
 	-- ports at FPGAs.
-	package type_ports is new doubly_linked_lists (type_port); 
+	package type_ports is new doubly_linked_lists (type_port_native); 
 
 
 	

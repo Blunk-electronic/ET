@@ -193,7 +193,7 @@ package et_project is
 	keyword_end						: constant string := "end";
 	keyword_rotation				: constant string := "rotation";
 	keyword_size					: constant string := "size";
-	keyword_style					: constant string := "style";
+	keyword_style					: constant string := "style"; -- CS remvoe ?
 	keyword_line_width				: constant string := "line_width";
 	keyword_appearance				: constant string := "appearance";
 	keyword_direction				: constant string := "direction";			
@@ -263,7 +263,8 @@ package et_project is
 	keyword_port_name_visible		: constant string := "port_name_visible";
 	keyword_terminal_name_visible	: constant string := "terminal_name_visible";
 	keyword_port_name_size			: constant string := "port_name_size";
-	keyword_terminal_name_size		: constant string := "terminal_name_size";	
+	keyword_terminal_name_size		: constant string := "terminal_name_size";
+	keyword_characteristic			: constant string := "characteristic";		
 	
 	section_net_classes			: constant string := "[NET_CLASSES";
 	section_net_class			: constant string := "[NET_CLASS";
