@@ -3007,7 +3007,7 @@ package body et_kicad_to_native is
 
 							et_libraries.type_ports.append (
 								container	=> unit.symbol.ports,
-								new_item	=> (et_libraries.type_port (element (port_cursor_kicad))
+								new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad))
 												with characteristic => to_characteristic (element (port_cursor_kicad).style))
 										);
 									-- NOTE: The kicad port_name_offset is discarded here.

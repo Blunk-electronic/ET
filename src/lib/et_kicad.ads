@@ -269,7 +269,7 @@ package et_kicad is
 
 	function to_string (style : in type_port_style) return string;
 	
-	type type_port_library is new et_libraries.type_port with record 	-- CS: set defaults
+	type type_port_library is new et_libraries.type_port_base with record 	-- CS: set defaults
 		style : type_port_style := NONE;
 
 		-- the clearance between symbol outline and port name 

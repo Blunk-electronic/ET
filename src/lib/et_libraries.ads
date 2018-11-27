@@ -302,11 +302,11 @@ package et_libraries is
 	
 	
 	-- Initially, a port has at least a name.
-	type type_port_base is tagged record
+	type type_port_named is tagged record
 		name				: type_port_name.bounded_string; -- like CLOCK or CE
 	end record;
 	
-	type type_port is new type_port_base with record 	-- CS: set defaults
+	type type_port_base is new type_port_named with record 	-- CS: set defaults
 		direction			: type_port_direction; -- example: "passive"
 		coordinates			: type_2d_point; -- CS: rename to position
 		length				: type_port_length; 
@@ -318,7 +318,7 @@ package et_libraries is
 		-- CS: port swap level ? -> would require a derived new type
 	end record;
 
-	type type_port_native is new type_port with record 
+	type type_port is new type_port_base with record 
 		-- CS should be controlled by the direction. depending on that, we will have characteristics 
 		-- for passive, inputs and outputs separately.		
 		characteristic	: type_port_characteristic := NONE;
@@ -327,7 +327,7 @@ package et_libraries is
 	-- Ports of a component are collected in a simple list. A list, because multiple ports
 	-- with the same name (but differing terminal names) may exist. For example lots of GND
 	-- ports at FPGAs.
-	package type_ports is new doubly_linked_lists (type_port_native); 
+	package type_ports is new doubly_linked_lists (type_port); 
 
 
 	
@@ -927,7 +927,7 @@ package et_libraries is
 	-- Do not confuse with type_variant (see et_schematic.ads) which also contains the variant name
 	-- like in TL084D or TL084N.
 
-	type type_port_in_terminal_port_map is new type_port_base with record
+	type type_port_in_terminal_port_map is new type_port_named with record
 		unit	: type_unit_name.bounded_string;
 	end record;
 	
