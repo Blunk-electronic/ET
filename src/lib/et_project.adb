@@ -591,6 +591,70 @@ package body et_project is
 		polygon_end;
 	end write_polygon;
 
+-- VIA RESTRICT
+	procedure write_line (cursor : in et_pcb.type_via_restrict_lines.cursor) is 
+		use et_pcb;
+		use type_via_restrict_lines;
+		use et_pcb_coordinates;		
+	begin
+		line_begin;
+		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
+		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+		write (keyword => keyword_width, parameters => to_string (element (cursor).width));
+		write_layer_numbers (element (cursor).layers);
+		line_end;
+	end write_line;
+
+	procedure write_arc (cursor : in et_pcb.type_via_restrict_arcs.cursor) is 
+		use et_pcb;
+		use type_via_restrict_arcs;
+		use et_pcb_coordinates;		
+	begin
+		arc_begin;
+		write (keyword => keyword_center, parameters => position (element (cursor).center));
+		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
+		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+		write (keyword => keyword_width, parameters => to_string (element (cursor).width));
+		write_layer_numbers (element (cursor).layers);
+		arc_end;
+	end write_arc;
+
+	procedure write_circle (cursor : in et_pcb.type_via_restrict_circles.cursor) is 
+		use et_pcb;
+		use type_via_restrict_circles;
+		use et_pcb_coordinates;		
+	begin
+		circle_begin;
+		write (keyword => keyword_center, parameters => position (element (cursor).center));
+		write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
+		write (keyword => keyword_width , parameters => to_string (element (cursor).width));
+		write_layer_numbers (element (cursor).layers);
+		circle_end;
+	end write_circle;
+	
+	procedure write_polygon (cursor : in et_pcb.type_via_restrict_polygons.cursor) is 
+		use et_pcb;
+		use type_via_restrict_polygons;
+		use et_pcb_coordinates;		
+		use type_polygon_points;
+		
+		procedure query_points (polygon : in type_via_restrict_polygon) is begin
+			iterate (polygon.points, write_polygon_corners'access); -- see general stuff above
+		end query_points;
+		
+	begin -- write_polygon
+		polygon_begin;
+		write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
+		write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
+		write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
+		write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
+		write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
+		-- CS write_layer_numbers (element (cursor).layers);
+		corners_begin;
+		query_element (cursor, query_points'access);
+		corners_end;
+		polygon_end;
+	end write_polygon;
 
 	
 	procedure save_project (log_threshold : in et_string_processing.type_log_level) is
@@ -1243,57 +1307,6 @@ package body et_project is
 				polygon_end;
 			end write_polygons;
 
-
-			-- VIA RESTRICT
-			procedure write_lines (cursor : in type_via_restrict_lines.cursor) is begin
-				line_begin;
-				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-				write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
-				write (keyword => keyword_width, parameters => to_string (element (cursor).width));
-				write_layer_numbers (element (cursor).layers);
-				line_end;
-			end write_lines;
-
-			procedure write_arcs (cursor : in type_via_restrict_arcs.cursor) is begin
-				arc_begin;
-				write (keyword => keyword_center, parameters => position (element (cursor).center));
-				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-				write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
-				write (keyword => keyword_width, parameters => to_string (element (cursor).width));
-				write_layer_numbers (element (cursor).layers);
-				arc_end;
-			end write_arcs;
-
-			procedure write_circles (cursor : in type_via_restrict_circles.cursor) is begin
-				circle_begin;
-				write (keyword => keyword_center, parameters => position (element (cursor).center));
-				write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
-				write (keyword => keyword_width , parameters => to_string (element (cursor).width));
-				write_layer_numbers (element (cursor).layers);
-				circle_end;
-			end write_circles;
-			
-			procedure write_polygons (cursor : in type_via_restrict_polygons.cursor) is 
-				use type_polygon_points;
-				
-				procedure query_points (polygon : in type_via_restrict_polygon) is begin
-					iterate (polygon.points, write_polygon_corners'access); -- see general stuff above
-				end query_points;
-				
-			begin -- write_polygons
-				polygon_begin;
-				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
-				write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
-				write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
-				write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
-				write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
-				-- CS write_layer_numbers (element (cursor).layers);
-				corners_begin;
-				query_element (cursor, query_points'access);
-				corners_end;
-				polygon_end;
-			end write_polygons;
-
 			-- COPPER (NON-ELECTRIC)
 			procedure write_lines (cursor : in type_copper_lines_pcb.cursor) is begin
 				line_begin;
@@ -1510,10 +1523,10 @@ package body et_project is
 
 			-- VIA RESTRICT
 			section_mark (section_via_restrict, HEADER);
-				iterate (module.board.via_restrict.lines, write_lines'access);
-				iterate (module.board.via_restrict.arcs, write_arcs'access);
-				iterate (module.board.via_restrict.circles, write_circles'access);
-				iterate (module.board.via_restrict.polygons, write_polygons'access);
+				iterate (module.board.via_restrict.lines, write_line'access);
+				iterate (module.board.via_restrict.arcs, write_arc'access);
+				iterate (module.board.via_restrict.circles, write_circle'access);
+				iterate (module.board.via_restrict.polygons, write_polygon'access);
 				-- CS iterate (module.board.via_restrict.texts, write_text'access);
 			section_mark (section_via_restrict, FOOTER);
 
@@ -1983,6 +1996,11 @@ package body et_project is
 		use type_route_restrict_circles;
 		use type_route_restrict_polygons;
 
+		use type_via_restrict_lines;
+		use type_via_restrict_arcs;
+		use type_via_restrict_circles;
+		use type_via_restrict_polygons;
+
 		
 		procedure write_copper is
 
@@ -2126,24 +2144,24 @@ package body et_project is
 		procedure write_route_restrict is begin
 			section_mark (section_route_restrict, HEADER);
 
-			-- top
-			section_mark (section_top, HEADER);
 			iterate (packge.route_restrict.lines, write_line'access);
 			iterate (packge.route_restrict.arcs, write_arc'access);
 			iterate (packge.route_restrict.circles, write_circle'access);
 			iterate (packge.route_restrict.polygons, write_polygon'access);			
-			section_mark (section_top, FOOTER);
-			
-			-- bottom
-			section_mark (section_bottom, HEADER);
-			iterate (packge.route_restrict.lines, write_line'access);
-			iterate (packge.route_restrict.arcs, write_arc'access);
-			iterate (packge.route_restrict.circles, write_circle'access);
-			iterate (packge.route_restrict.polygons, write_polygon'access);			
-			section_mark (section_bottom, FOOTER);
 
 			section_mark (section_route_restrict, FOOTER);			
 		end write_route_restrict;
+
+		procedure write_via_restrict is begin
+			section_mark (section_via_restrict, HEADER);
+
+			iterate (packge.via_restrict.lines, write_line'access);
+			iterate (packge.via_restrict.arcs, write_arc'access);
+			iterate (packge.via_restrict.circles, write_circle'access);
+			iterate (packge.via_restrict.polygons, write_polygon'access);			
+
+			section_mark (section_via_restrict, FOOTER);			
+		end write_via_restrict;
 
 		
 	begin -- save_package
@@ -2175,6 +2193,7 @@ package body et_project is
 		write_stop_mask;
 		write_stencil;
 		write_route_restrict;
+		write_via_restrict;
 		
 		-- CS
 		-- silk_screen				: type_silk_screen_package_both_sides; -- incl. placeholder for reference and purpose
