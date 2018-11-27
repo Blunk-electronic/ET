@@ -3,6 +3,7 @@
 # ======================================================================================================================================================
 
 description "blahab"
+appearance real/virtual
 technology SMT/THT
 
 [COPPER BEGIN] # non-electric !
@@ -31,6 +32,8 @@ technology SMT/THT
 		[CIRCLE END]
 		
 		[POLYGON BEGIN]
+			priority 0
+			isolation 0.800
 			corner_easing none/chamfer/fillet
 			easing_radius 0.3
 			fill_style solid,hatched,cutout
