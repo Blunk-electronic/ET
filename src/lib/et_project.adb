@@ -373,6 +373,72 @@ package body et_project is
 		polygon_end;
 	end write_polygon;
 	
+-- STOP MASK
+	procedure write_line (cursor : in et_pcb.type_stop_lines.cursor) is 
+		use et_pcb;
+		use type_stop_lines;
+		use et_pcb_coordinates;
+	begin
+		line_begin;
+		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
+		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+		write (keyword => keyword_width, parameters => to_string (element (cursor).width));
+		line_end;
+	end write_line;
+
+	procedure write_arc (cursor : in et_pcb.type_stop_arcs.cursor) is 
+		use et_pcb;
+		use type_stop_arcs;
+		use et_pcb_coordinates;
+	begin
+		arc_begin;
+		write (keyword => keyword_center, parameters => position (element (cursor).center));
+		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
+		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+		write (keyword => keyword_width, parameters => to_string (element (cursor).width));
+		arc_end;
+	end write_arc;
+
+	procedure write_circle (cursor : in et_pcb.type_stop_circles.cursor) is 
+		use et_pcb;
+		use type_stop_circles;
+		use et_pcb_coordinates;
+	begin
+		circle_begin;
+		write (keyword => keyword_center, parameters => position (element (cursor).center));
+		write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
+		write (keyword => keyword_width , parameters => to_string (element (cursor).width));
+		write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
+		write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
+		write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
+		write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
+		circle_end;
+	end write_circle;
+	
+	procedure write_polygon (cursor : in et_pcb.type_stop_polygons.cursor) is 
+		use et_pcb;
+		use type_stop_polygons;
+		use et_pcb_coordinates;
+		use type_polygon_points;
+		
+		procedure query_points (polygon : in type_stop_polygon) is begin
+			iterate (polygon.points, write_polygon_corners'access); -- see general stuff above
+		end query_points;
+		
+	begin -- write_polygon
+		polygon_begin;
+		write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
+		write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
+		write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
+		write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
+		write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
+		corners_begin;
+		query_element (cursor, query_points'access);
+		corners_end;
+		polygon_end;
+	end write_polygon;
+
+			
 	
 	procedure save_project (log_threshold : in et_string_processing.type_log_level) is
 	-- Saves the schematic and layout data in project file (project_file_handle).
@@ -1095,56 +1161,6 @@ package body et_project is
 				polygon_end;
 			end write_polygons;
 
-			-- STOP MASK
-			procedure write_lines (cursor : in type_stop_lines.cursor) is begin
-				line_begin;
-				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-				write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
-				write (keyword => keyword_width, parameters => to_string (element (cursor).width));
-				line_end;
-			end write_lines;
-
-			procedure write_arcs (cursor : in type_stop_arcs.cursor) is begin
-				arc_begin;
-				write (keyword => keyword_center, parameters => position (element (cursor).center));
-				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-				write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
-				write (keyword => keyword_width, parameters => to_string (element (cursor).width));
-				arc_end;
-			end write_arcs;
-
-			procedure write_circles (cursor : in type_stop_circles.cursor) is begin
-				circle_begin;
-				write (keyword => keyword_center, parameters => position (element (cursor).center));
-				write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
-				write (keyword => keyword_width , parameters => to_string (element (cursor).width));
-				write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
-				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
-				write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
-				write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
-				circle_end;
-			end write_circles;
-			
-			procedure write_polygons (cursor : in type_stop_polygons.cursor) is 
-				use type_polygon_points;
-				
-				procedure query_points (polygon : in type_stop_polygon) is begin
-					iterate (polygon.points, write_polygon_corners'access); -- see general stuff above
-				end query_points;
-				
-			begin -- write_polygons
-				polygon_begin;
-				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
-				write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
-				write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
-				write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
-				write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
-				corners_begin;
-				query_element (cursor, query_points'access);
-				corners_end;
-				polygon_end;
-			end write_polygons;
-
 			-- ROUTE RESTRICT
 			procedure write_lines (cursor : in type_route_restrict_lines.cursor) is begin
 				line_begin;
@@ -1412,18 +1428,18 @@ package body et_project is
 			section_mark (section_stop_mask, HEADER);
 
 			section_mark (section_top, HEADER);
-				iterate (module.board.stop_mask.top.lines, write_lines'access);
-				iterate (module.board.stop_mask.top.arcs, write_arcs'access);
-				iterate (module.board.stop_mask.top.circles, write_circles'access);
-				iterate (module.board.stop_mask.top.polygons, write_polygons'access);
+				iterate (module.board.stop_mask.top.lines, write_line'access);
+				iterate (module.board.stop_mask.top.arcs, write_arc'access);
+				iterate (module.board.stop_mask.top.circles, write_circle'access);
+				iterate (module.board.stop_mask.top.polygons, write_polygon'access);
 				iterate (module.board.stop_mask.top.texts, write_text'access);			
 				section_mark (section_top, FOOTER);
 
 				section_mark (section_bottom, HEADER);
-				iterate (module.board.stop_mask.bottom.lines, write_lines'access);
-				iterate (module.board.stop_mask.bottom.arcs, write_arcs'access);
-				iterate (module.board.stop_mask.bottom.circles, write_circles'access);
-				iterate (module.board.stop_mask.bottom.polygons, write_polygons'access);
+				iterate (module.board.stop_mask.bottom.lines, write_line'access);
+				iterate (module.board.stop_mask.bottom.arcs, write_arc'access);
+				iterate (module.board.stop_mask.bottom.circles, write_circle'access);
+				iterate (module.board.stop_mask.bottom.polygons, write_polygon'access);
 				iterate (module.board.stop_mask.bottom.texts, write_text'access);
 				section_mark (section_bottom, FOOTER);
 
@@ -1918,6 +1934,11 @@ package body et_project is
 		use type_keepout_arcs;
 		use type_keepout_circles;
 		use type_keepout_polygons;
+
+		use type_stop_lines;
+		use type_stop_arcs;
+		use type_stop_circles;
+		use type_stop_polygons;
 		
 		procedure write_copper is
 
@@ -1992,9 +2013,7 @@ package body et_project is
 			section_mark (section_copper, FOOTER);
 		end write_copper;
 
-		procedure write_keepout is 
-
-		begin -- write_keepout
+		procedure write_keepout is begin
 			section_mark (section_keepout, HEADER);
 
 			-- top
@@ -2015,6 +2034,29 @@ package body et_project is
 
 			section_mark (section_keepout, FOOTER);			
 		end write_keepout;
+
+		procedure write_stop_mask is begin
+			section_mark (section_stop_mask, HEADER);
+
+			-- top
+			section_mark (section_top, HEADER);
+			iterate (packge.stop_mask.top.lines, write_line'access);
+			iterate (packge.stop_mask.top.arcs, write_arc'access);
+			iterate (packge.stop_mask.top.circles, write_circle'access);
+			iterate (packge.stop_mask.top.polygons, write_polygon'access);			
+			section_mark (section_top, FOOTER);
+			
+			-- bottom
+			section_mark (section_bottom, HEADER);
+			iterate (packge.stop_mask.bottom.lines, write_line'access);
+			iterate (packge.stop_mask.bottom.arcs, write_arc'access);
+			iterate (packge.stop_mask.bottom.circles, write_circle'access);
+			iterate (packge.stop_mask.bottom.polygons, write_polygon'access);			
+			section_mark (section_bottom, FOOTER);
+
+			section_mark (section_stop_mask, FOOTER);			
+		end write_stop_mask;
+
 		
 	begin -- save_package
 		log (name, log_threshold);
@@ -2042,6 +2084,7 @@ package body et_project is
 
 		write_copper;
 		write_keepout;
+		write_stop_mask;
 		
 		-- CS
 		-- silk_screen				: type_silk_screen_package_both_sides; -- incl. placeholder for reference and purpose
