@@ -264,32 +264,32 @@ package body et_pcb is
 	
 	function to_string (appearance : in type_package_appearance) return string is
 	begin
-		return type_package_appearance'image (appearance);
+		return latin_1.space & to_lower (type_package_appearance'image (appearance));
 	end to_string;
 	
 	function to_string (technology : in type_assembly_technology) return string is
 	begin
-		return latin_1.space & type_assembly_technology'image (technology);
+		return latin_1.space & to_lower (type_assembly_technology'image (technology));
 	end to_string;
 
 	function to_string (shape : in type_terminal_shape_tht) return string is
 	begin
-		return latin_1.space & type_terminal_shape_tht'image (shape);
+		return latin_1.space & to_lower (type_terminal_shape_tht'image (shape));
 	end to_string;
 
 	function to_string (shape : in type_terminal_shape_smt) return string is
 	begin
-		return latin_1.space & type_terminal_shape_smt'image (shape);
+		return latin_1.space & to_lower (type_terminal_shape_smt'image (shape));
 	end to_string;
 
 	function to_string (solder_paste : in type_terminal_solder_paste) return string is
 	begin
-		return latin_1.space & type_terminal_solder_paste'image (solder_paste);
+		return latin_1.space & to_lower (type_terminal_solder_paste'image (solder_paste));
 	end to_string;
 
 	function to_string (stop_mask : in type_terminal_stop_mask) return string is
 	begin
-		return latin_1.space & type_terminal_stop_mask'image (stop_mask);
+		return latin_1.space & to_lower (type_terminal_stop_mask'image (stop_mask));
 	end to_string;
 
 	function no_contour return type_package_contours is
@@ -390,9 +390,15 @@ package body et_pcb is
 	end to_string;
 
 	
-	function to_string (description : in type_package_description.bounded_string) return string is
+	function to_string (
+		description : in type_package_description.bounded_string;
+		verbose		: in boolean := false) return string is
 	begin
-		return "description '" & type_package_description.to_string (description) & "'";
+		if verbose then
+			return "description '" & type_package_description.to_string (description) & "'";
+		else
+			return type_package_description.to_string (description);
+		end if;
 	end to_string;
 
 	function to_package_description (description : in string) return type_package_description.bounded_string is

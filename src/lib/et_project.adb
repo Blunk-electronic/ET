@@ -242,6 +242,14 @@ package body et_project is
 	function rotation (angle : in et_coordinates.type_angle) return string is begin
 		return type_angle'image (angle);
 	end rotation;
+
+
+	function position (point : et_pcb_coordinates.type_point_2d'class) return string is
+		use et_pcb_coordinates;
+	begin
+		return space & keyword_pos_x & to_string (get_axis (X, point)) 
+			& space & keyword_pos_y & to_string (get_axis (Y, point));
+	end position;
 	
 	procedure write_text_properties (text : in et_libraries.type_text_basic'class) is
 		use et_coordinates;
@@ -256,6 +264,52 @@ package body et_project is
 				);
 		--write (keyword => keyword_hidden, parameters => et_libraries.to_string (text.visible)); -- CS: no need. probably useless
 	end write_text_properties;
+
+	procedure write_text_properties (text : in et_pcb.type_text'class) is
+		use et_pcb_coordinates;
+	begin
+		write (keyword => keyword_position, parameters => position (text.position));
+		write (keyword => keyword_size, parameters => space & keyword_pos_x & to_string (text.size_x) 
+				& space & keyword_pos_y & to_string (text.size_y));
+		write (keyword => keyword_line_width, parameters => to_string (text.width));
+		write (keyword => keyword_rotation, parameters => to_string (text.angle));
+		write (keyword => keyword_alignment, parameters => space &
+				keyword_horizontal & et_libraries.to_string (text.alignment.horizontal) & space &
+				keyword_vertical   & et_libraries.to_string (text.alignment.vertical)
+				);
+		write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
+	end write_text_properties;
+
+	procedure line_begin is begin section_mark (section_line, HEADER); end;
+	procedure line_end   is begin section_mark (section_line, FOOTER); end;			
+	procedure arc_begin  is begin section_mark (section_arc , HEADER); end;
+	procedure arc_end    is begin section_mark (section_arc , FOOTER); end;
+	procedure circle_begin is begin section_mark (section_circle, HEADER); end;
+	procedure circle_end   is begin section_mark (section_circle, FOOTER); end;			
+	procedure polygon_begin is begin section_mark (section_polygon, HEADER); end;
+	procedure polygon_end   is begin section_mark (section_polygon, FOOTER); end;
+	procedure corners_begin is begin section_mark (section_corners, HEADER); end;
+	procedure corners_end   is begin section_mark (section_corners, FOOTER); end;
+	procedure text_begin is begin section_mark (section_text, HEADER); end;
+	procedure text_end   is begin section_mark (section_text, FOOTER); end;
+	procedure placeholder_begin is begin section_mark (section_placeholder, HEADER); end;
+	procedure placeholder_end   is begin section_mark (section_placeholder, FOOTER); end;
+	
+	procedure write_text (cursor : in et_pcb.type_texts_with_content.cursor) is
+		use et_pcb.type_texts_with_content;
+	begin
+		text_begin;
+		write (keyword => keyword_content, parameters => et_libraries.to_string (element (cursor).content));
+		write_text_properties (element (cursor));
+		text_end;
+	end write_text;
+	
+	procedure write_polygon_corners (pc : in et_pcb.type_polygon_points.cursor) is
+		use et_pcb.type_polygon_points;
+	begin
+		write (keyword => keyword_position, parameters => position (element (pc)));
+	end write_polygon_corners;
+
 	
 	procedure save_project (log_threshold : in et_string_processing.type_log_level) is
 	-- Saves the schematic and layout data in project file (project_file_handle).
@@ -283,28 +337,6 @@ package body et_project is
 			return to_string (get_angle (pos));
 		end rotation;
 		
-		function position (point : et_pcb_coordinates.type_point_2d'class) return string is
-			use et_pcb_coordinates;
-		begin
-			return space & keyword_pos_x & to_string (get_axis (X, point)) 
-				& space & keyword_pos_y & to_string (get_axis (Y, point));
-		end position;
-
-		procedure write_text_properties (text : in et_pcb.type_text'class) is
-			use et_pcb_coordinates;
-		begin
-			write (keyword => keyword_position, parameters => position (text.position));
-			write (keyword => keyword_size, parameters => space & keyword_pos_x & to_string (text.size_x) 
-				   & space & keyword_pos_y & to_string (text.size_y));
-			write (keyword => keyword_line_width, parameters => to_string (text.width));
-			write (keyword => keyword_rotation, parameters => to_string (text.angle));
-			write (keyword => keyword_alignment, parameters => space &
-				   keyword_horizontal & et_libraries.to_string (text.alignment.horizontal) & space &
-				   keyword_vertical   & et_libraries.to_string (text.alignment.vertical)
-				  );
-			write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
-		end write_text_properties;
-
 		function face (point : et_pcb_coordinates.type_package_position) return string is
 			use et_pcb_coordinates;
 		begin
@@ -769,18 +801,6 @@ package body et_project is
 			use et_pcb;
 			use et_pcb_coordinates;
 
-			-- type type_board is tagged record
-			-- 	silk_screen	: type_silk_screen_pcb_both_sides;
-			-- 	assy_doc	: type_assembly_documentation_pcb_both_sides;
-			-- 	stencil		: type_stencil_both_sides;
-			-- 	stop_mask	: type_stop_mask_both_sides;
-			-- 	keepout		: type_keepout_both_sides;
-			-- 	route_restrict	: type_route_restrict_pcb;
-			-- 	via_restrict	: type_via_restrict_pcb;
-			-- 	copper		: type_copper_pcb; -- non-electric copper stuff, incl. floating polygons !
-			-- 	contour		: type_pcb_contour;
-			-- end record;
-			
 			use type_texts_with_content;
 			use type_text_placeholders_pcb;
 
@@ -830,30 +850,7 @@ package body et_project is
 			use type_pcb_contour_arcs;
 			use type_pcb_contour_circles;
 			
-			procedure line_begin is begin section_mark (section_line, HEADER); end;
-			procedure line_end   is begin section_mark (section_line, FOOTER); end;			
-			procedure arc_begin  is begin section_mark (section_arc , HEADER); end;
-			procedure arc_end    is begin section_mark (section_arc , FOOTER); end;
-			procedure circle_begin is begin section_mark (section_circle, HEADER); end;
-			procedure circle_end   is begin section_mark (section_circle, FOOTER); end;			
-			procedure polygon_begin is begin section_mark (section_polygon, HEADER); end;
-			procedure polygon_end   is begin section_mark (section_polygon, FOOTER); end;
-			procedure corners_begin is begin section_mark (section_corners, HEADER); end;
-			procedure corners_end   is begin section_mark (section_corners, FOOTER); end;
-			procedure text_begin is begin section_mark (section_text, HEADER); end;
-			procedure text_end   is begin section_mark (section_text, FOOTER); end;
-			procedure placeholder_begin is begin section_mark (section_placeholder, HEADER); end;
-			procedure placeholder_end   is begin section_mark (section_placeholder, FOOTER); end;
-
 			-- general stuff
-			procedure write_texts (cursor : in type_texts_with_content.cursor) is
-			begin
-				text_begin;
-				write (keyword => keyword_content, parameters => et_libraries.to_string (element (cursor).content));
-				write_text_properties (element (cursor));
-				text_end;
-			end write_texts;
-
 			procedure write_placeholders (cursor : in type_text_placeholders_pcb.cursor) is
 			begin
 				placeholder_begin;
@@ -861,12 +858,6 @@ package body et_project is
 				write_text_properties (element (cursor));
 				placeholder_end;
 			end write_placeholders;
-
-			procedure write_polygon_corners (pc : in type_polygon_points.cursor) is
-				use type_polygon_points;
-			begin
-				write (keyword => keyword_position, parameters => position (element (pc)));
-			end write_polygon_corners;
 
 			procedure write_layer_numbers (layers : in type_signal_layers.set) is
 				use type_signal_layers;
@@ -888,6 +879,8 @@ package body et_project is
 				iterate (layers, read_them'access);
 				write (keyword => keyword_layers, parameters => to_string (layers_string));
 			end write_layer_numbers;
+
+			-- CS: rename procedure names so that they are in singular
 			
 			-- SILK SCREEN
 			procedure write_lines (cursor : in type_silk_lines.cursor) is begin
@@ -1345,7 +1338,7 @@ package body et_project is
 				iterate (module.board.silk_screen.top.arcs, write_arcs'access);
 				iterate (module.board.silk_screen.top.circles, write_circles'access);
 				iterate (module.board.silk_screen.top.polygons, write_polygons'access);
-				iterate (module.board.silk_screen.top.texts, write_texts'access);
+				iterate (module.board.silk_screen.top.texts, write_text'access);
 				iterate (module.board.silk_screen.top.placeholders, write_placeholders'access);
 				section_mark (section_top, FOOTER);
 
@@ -1354,7 +1347,7 @@ package body et_project is
 				iterate (module.board.silk_screen.bottom.arcs, write_arcs'access);
 				iterate (module.board.silk_screen.bottom.circles, write_circles'access);
 				iterate (module.board.silk_screen.bottom.polygons, write_polygons'access);
-				iterate (module.board.silk_screen.bottom.texts, write_texts'access);
+				iterate (module.board.silk_screen.bottom.texts, write_text'access);
 				iterate (module.board.silk_screen.bottom.placeholders, write_placeholders'access);
 				section_mark (section_bottom, FOOTER);
 			
@@ -1368,7 +1361,7 @@ package body et_project is
 				iterate (module.board.assy_doc.top.arcs, write_arcs'access);
 				iterate (module.board.assy_doc.top.circles, write_circles'access);
 				iterate (module.board.assy_doc.top.polygons, write_polygons'access);
-				iterate (module.board.assy_doc.top.texts, write_texts'access);
+				iterate (module.board.assy_doc.top.texts, write_text'access);
 				iterate (module.board.assy_doc.top.placeholders, write_placeholders'access);
 				section_mark (section_top, FOOTER);
 
@@ -1377,7 +1370,7 @@ package body et_project is
 				iterate (module.board.assy_doc.bottom.arcs, write_arcs'access);
 				iterate (module.board.assy_doc.bottom.circles, write_circles'access);
 				iterate (module.board.assy_doc.bottom.polygons, write_polygons'access);
-				iterate (module.board.assy_doc.bottom.texts, write_texts'access);
+				iterate (module.board.assy_doc.bottom.texts, write_text'access);
 				iterate (module.board.assy_doc.bottom.placeholders, write_placeholders'access);
 				section_mark (section_bottom, FOOTER);
 
@@ -1410,7 +1403,7 @@ package body et_project is
 				iterate (module.board.stop_mask.top.arcs, write_arcs'access);
 				iterate (module.board.stop_mask.top.circles, write_circles'access);
 				iterate (module.board.stop_mask.top.polygons, write_polygons'access);
-				iterate (module.board.stop_mask.top.texts, write_texts'access);			
+				iterate (module.board.stop_mask.top.texts, write_text'access);			
 				section_mark (section_top, FOOTER);
 
 				section_mark (section_bottom, HEADER);
@@ -1418,7 +1411,7 @@ package body et_project is
 				iterate (module.board.stop_mask.bottom.arcs, write_arcs'access);
 				iterate (module.board.stop_mask.bottom.circles, write_circles'access);
 				iterate (module.board.stop_mask.bottom.polygons, write_polygons'access);
-				iterate (module.board.stop_mask.bottom.texts, write_texts'access);
+				iterate (module.board.stop_mask.bottom.texts, write_text'access);
 				section_mark (section_bottom, FOOTER);
 
 			section_mark (section_stop_mask, FOOTER);
@@ -1898,8 +1891,110 @@ package body et_project is
 		packge			: in et_pcb.type_package; -- the actual package model
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
+		use et_pcb;
+		
 		file_handle : ada.text_io.file_type;
-	begin
+
+		use type_copper_lines;
+		use type_copper_arcs;
+		use type_copper_circles;
+		use type_texts_with_content;
+		use type_copper_polygons;
+
+		use type_keepout_lines;
+		
+		procedure write_copper is
+
+			procedure write_line (cursor : in type_copper_lines.cursor) is begin
+				line_begin;
+				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
+				write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+				write (keyword => keyword_width, parameters => et_pcb_coordinates.to_string (element (cursor).width));
+				line_end;
+			end write_line;
+
+			procedure write_arc (cursor : in type_copper_arcs.cursor) is begin
+				arc_begin;
+				write (keyword => keyword_center, parameters => position (element (cursor).center));				
+				write (keyword => keyword_start , parameters => position (element (cursor).start_point));
+				write (keyword => keyword_end   , parameters => position (element (cursor).end_point));
+				write (keyword => keyword_width , parameters => et_pcb_coordinates.to_string (element (cursor).width));
+				arc_end;
+			end write_arc;
+
+			procedure write_circle (cursor : in type_copper_circles.cursor) is begin
+				circle_begin;
+				write (keyword => keyword_center, parameters => position (element (cursor).center));				
+				write (keyword => keyword_radius, parameters => et_pcb_coordinates.to_string (element (cursor).radius));
+				write (keyword => keyword_width , parameters => et_pcb_coordinates.to_string (element (cursor).width));
+				circle_end;
+			end write_circle;
+
+			procedure write_polygon (cursor : in type_copper_polygons.cursor) is 
+				use et_pcb_coordinates;
+				use type_polygon_points;
+				
+				procedure query_points (polygon : in type_copper_polygon) is begin
+					iterate (polygon.points, write_polygon_corners'access);
+				end query_points;
+
+			begin -- write_polygon
+				polygon_begin;
+				write (keyword => keyword_priority, parameters => et_pcb.to_string (element (cursor).priority_level));
+				write (keyword => keyword_isolation, parameters => to_string (element (cursor).isolation_gap));
+				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
+				write (keyword => keyword_hatching_line_width  , parameters => et_pcb_coordinates.to_string (element (cursor).hatching_line_width));
+				write (keyword => keyword_hatching_line_spacing, parameters => et_pcb_coordinates.to_string (element (cursor).hatching_spacing));
+				write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
+				write (keyword => keyword_easing_radius, parameters => et_pcb_coordinates.to_string (element (cursor).easing_radius));
+				corners_begin;
+				query_element (cursor, query_points'access);
+				corners_end;
+				polygon_end;
+			end write_polygon;
+
+			
+		begin -- write_copper
+			section_mark (section_copper, HEADER);
+
+			-- top
+			section_mark (section_top, HEADER);			
+			iterate (packge.copper.top.lines, write_line'access);
+			iterate (packge.copper.top.arcs, write_arc'access);
+			iterate (packge.copper.top.circles, write_circle'access);
+			iterate (packge.copper.top.texts, write_text'access);
+			section_mark (section_top, FOOTER);
+
+			-- bottom
+			section_mark (section_bottom, HEADER);			
+			iterate (packge.copper.bottom.lines, write_line'access);
+			iterate (packge.copper.bottom.arcs, write_arc'access);
+			iterate (packge.copper.bottom.circles, write_circle'access);
+			iterate (packge.copper.bottom.texts, write_text'access);			
+			section_mark (section_bottom, FOOTER);
+
+			section_mark (section_copper, FOOTER);
+		end write_copper;
+
+		procedure write_keepout is 
+
+		begin -- write_keepout
+			section_mark (section_keepout, HEADER);
+
+			-- top
+			section_mark (section_top, HEADER);
+			--iterate (packge.keepout.top.lines, write_line'access);
+			section_mark (section_top, FOOTER);
+			
+			-- bottom
+			section_mark (section_top, HEADER);
+
+			section_mark (section_top, FOOTER);
+
+			section_mark (section_keepout, FOOTER);			
+		end write_keepout;
+		
+	begin -- save_package
 		log (name, log_threshold);
 
 		create (
@@ -1915,7 +2010,22 @@ package body et_project is
 		put_line (comment_mark & " " & row_separator_double);
 		new_line;
 
+		reset_tab_depth;
+
+		write (keyword => keyword_description, space => true, wrap => true, 
+			   parameters => to_string (packge.description));
+
+		write (keyword => keyword_appearance, parameters => to_string (packge.appearance));
+		write (keyword => keyword_assembly_technology, parameters => to_string (packge.technology));
+
+		write_copper;
+		write_keepout;
+		
 		-- CS
+		-- silk_screen				: type_silk_screen_package_both_sides; -- incl. placeholder for reference and purpose
+		-- assembly_documentation	: type_assembly_documentation_package_both_sides; -- incl. placeholder for value
+		-- terminals				: type_terminals.map;
+
 
 		-- write footer
 		new_line;

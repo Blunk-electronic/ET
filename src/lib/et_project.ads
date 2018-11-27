@@ -265,6 +265,7 @@ package et_project is
 	keyword_port_name_size			: constant string := "port_name_size";
 	keyword_terminal_name_size		: constant string := "terminal_name_size";
 	keyword_characteristic			: constant string := "characteristic";		
+	keyword_assembly_technology		: constant string := "technology";				
 	
 	section_net_classes			: constant string := "[NET_CLASSES";
 	section_net_class			: constant string := "[NET_CLASS";

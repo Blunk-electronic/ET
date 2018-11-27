@@ -513,8 +513,8 @@ package et_pcb is
 		lines 		: type_copper_lines.list;
 		arcs		: type_copper_arcs.list;
 		circles		: type_copper_circles.list;
-		texts		: type_texts_with_content.list;
 		polygons	: type_copper_polygons.list;
+		texts		: type_texts_with_content.list;
 	end record;
 	
 	-- since NON ELECTRIC copper objects of a package can be on both sides 
@@ -1138,7 +1138,9 @@ package et_pcb is
 	package_description_length_max : constant positive := 200;
 	package type_package_description is new generic_bounded_length (package_description_length_max);
 
-	function to_string (description : in type_package_description.bounded_string) return string;
+	function to_string (
+		description : in type_package_description.bounded_string;
+		verbose		: in boolean := false) return string;
 
 	function to_package_description (description : in string) return type_package_description.bounded_string;
 	

@@ -2214,7 +2214,7 @@ package body et_kicad_pcb is
 					log ("timestamp " & string (time_stamp), log_threshold + 1);
 
 				when SEC_DESCR =>
-					log (to_string (description), log_threshold + 1);
+					log (to_string (description, verbose => true), log_threshold + 1);
 					
 				when SEC_TAGS =>
 					log (to_string (tags), log_threshold + 1);
@@ -6817,7 +6817,7 @@ package body et_kicad_pcb is
 							log ("time stamp " & string (package_time_stamp), log_threshold + 1);
 							
 						when SEC_DESCR =>
-							log (to_string (package_description), log_threshold + 1);
+							log (to_string (package_description, verbose => true), log_threshold + 1);
 							
 						when SEC_TAGS =>
 							log (to_string (package_tags), log_threshold + 1);
