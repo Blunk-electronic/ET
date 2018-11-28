@@ -1375,19 +1375,17 @@ package body et_project is
 				placeholder_end;
 			end write_placeholder;
 
-			-- CS: rename procedure names so that they are in singular
-			
 			-- COPPER (NON-ELECTRIC)
-			procedure write_lines (cursor : in type_copper_lines_pcb.cursor) is begin
+			procedure write_line (cursor : in type_copper_lines_pcb.cursor) is begin
 				line_begin;
 				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
 				write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
 				write (keyword => keyword_width, parameters => to_string (element (cursor).width));
 				write (keyword => keyword_layer, parameters => to_string (element (cursor).layer));
 				line_end;
-			end write_lines;
+			end write_line;
 
-			procedure write_arcs (cursor : in type_copper_arcs_pcb.cursor) is begin
+			procedure write_arc (cursor : in type_copper_arcs_pcb.cursor) is begin
 				arc_begin;
 				write (keyword => keyword_center, parameters => position (element (cursor).center));
 				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
@@ -1395,25 +1393,25 @@ package body et_project is
 				write (keyword => keyword_width, parameters => to_string (element (cursor).width));
 				write (keyword => keyword_layer, parameters => to_string (element (cursor).layer));
 				arc_end;
-			end write_arcs;
+			end write_arc;
 
-			procedure write_circles (cursor : in type_copper_circles_pcb.cursor) is begin
+			procedure write_circle (cursor : in type_copper_circles_pcb.cursor) is begin
 				circle_begin;
 				write (keyword => keyword_center, parameters => position (element (cursor).center));
 				write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
 				write (keyword => keyword_width , parameters => to_string (element (cursor).width));
 				write (keyword => keyword_layer, parameters => to_string (element (cursor).layer));
 				circle_end;
-			end write_circles;
+			end write_circle;
 			
-			procedure write_polygons (cursor : in type_copper_polygons_floating.cursor) is 
+			procedure write_polygon (cursor : in type_copper_polygons_floating.cursor) is 
 				use type_polygon_points;
 				
 				procedure query_points (polygon : in type_copper_polygon_floating) is begin
 					iterate (polygon.points, write_polygon_corners'access); -- see general stuff above
 				end query_points;
 				
-			begin -- write_polygons
+			begin -- write_polygon
 				polygon_begin;
 				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
 				write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
@@ -1425,7 +1423,7 @@ package body et_project is
 				query_element (cursor, query_points'access);
 				corners_end;
 				polygon_end;
-			end write_polygons;
+			end write_polygon;
 
 			procedure write_text (cursor : in type_texts_with_content_pcb.cursor) is -- copper texts in board !
 			begin
@@ -1576,10 +1574,10 @@ package body et_project is
 
 			-- COPPER (NON-ELECTRIC)
 			section_mark (section_copper, HEADER);
-				iterate (module.board.copper.lines, write_lines'access);
-				iterate (module.board.copper.arcs, write_arcs'access);
-				iterate (module.board.copper.circles, write_circles'access);
-				iterate (module.board.copper.polygons, write_polygons'access);
+				iterate (module.board.copper.lines, write_line'access);
+				iterate (module.board.copper.arcs, write_arc'access);
+				iterate (module.board.copper.circles, write_circle'access);
+				iterate (module.board.copper.polygons, write_polygon'access);
 				iterate (module.board.copper.texts, write_text'access);
 				iterate (module.board.copper.placeholders, write_placeholder'access);
 			section_mark (section_copper, FOOTER);
@@ -2308,6 +2306,12 @@ package body et_project is
 			-- CS
 			section_mark (section_pac_3d_contour, FOOTER);
 		end write_package_contour;
+
+		procedure write_terminals is begin
+			section_mark (section_terminals, HEADER);
+
+			section_mark (section_terminals, FOOTER);
+		end write_terminals;
 		
 	begin -- save_package
 		log (name, log_threshold);
@@ -2343,7 +2347,7 @@ package body et_project is
 		write_via_restrict;
 		write_contour; -- pcb contour
 		write_contour_plated; -- pcb contour
-
+		write_terminals;
 
 		
 		-- CS
