@@ -2458,7 +2458,7 @@ package body et_kicad_pcb is
 					appearance				=> REAL,
 					package_contours		=> no_contour, -- CS to be filled from 3d model
 					pcb_contour				=> (others => <>), -- kicad does allow pcb contours in a package
-					pcb_contours_plated 	=> (others => <>), -- kicad does allow plated pcb contours in a package
+					pcb_contour_plated 		=> (others => <>), -- kicad does allow plated pcb contours in a package
 					terminals				=> terminals,
 					copper					=> copper, -- non electric !
 					silk_screen				=> silk_screen,
@@ -2477,7 +2477,7 @@ package body et_kicad_pcb is
 				return (
 					appearance				=> VIRTUAL,
 					pcb_contour				=> (others => <>), -- kicad does allow pcb contours in a package
-					pcb_contours_plated 	=> (others => <>), -- kicad does allow plated pcb contours in a package
+					pcb_contour_plated 		=> (others => <>), -- kicad does allow plated pcb contours in a package
 					terminals				=> terminals,
 					copper					=> copper, -- non electric !
 					silk_screen				=> silk_screen,
@@ -5648,7 +5648,7 @@ package body et_kicad_pcb is
 								via_restrict	=> (others => <>), -- kicad does not know via restrict
 								assembly_documentation	=> package_assy_doc,
 								pcb_contour			=> (others => <>), -- kicad does not allow pcb contours in a package,
-								pcb_contours_plated	=> (others => <>), -- kicad does not allow plated pcb contours in a package
+								pcb_contour_plated	=> (others => <>), -- kicad does not allow plated pcb contours in a package
 								package_contours	=> package_contours
 								)
 							);
@@ -5676,7 +5676,7 @@ package body et_kicad_pcb is
 								via_restrict	=> (others => <>), -- kicad does not know via restrict
 								assembly_documentation	=> package_assy_doc,
 								pcb_contour			=> (others => <>), -- kicad does not allow pcb contours in a package
-								pcb_contours_plated	=> (others => <>) -- kicad does not allow plated pcb contours in a package
+								pcb_contour_plated	=> (others => <>) -- kicad does not allow plated pcb contours in a package
 								-- a virtual package does not have contours
 								)
 							);

@@ -2189,6 +2189,17 @@ package body et_project is
 
 			section_mark (section_pcb_contour, FOOTER);
 		end write_contour;
+
+		procedure write_contour_plated is begin
+			section_mark (section_pcb_contour_plated, HEADER);
+
+			iterate (packge.pcb_contour_plated.lines, write_line'access);
+			iterate (packge.pcb_contour_plated.arcs, write_arc'access);
+			iterate (packge.pcb_contour_plated.circles, write_circle'access);
+
+			section_mark (section_pcb_contour_plated, FOOTER);
+		end write_contour_plated;
+
 		
 	begin -- save_package
 		log (name, log_threshold);
@@ -2221,6 +2232,7 @@ package body et_project is
 		write_route_restrict;
 		write_via_restrict;
 		write_contour;
+		write_contour_plated;
 		
 		-- CS
 		-- silk_screen				: type_silk_screen_package_both_sides; -- incl. placeholder for reference and purpose

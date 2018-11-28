@@ -1168,7 +1168,7 @@ package et_pcb is
 		pcb_contour				: type_package_pcb_contour;
 
 		-- Plated millings. NOTE: NOT FOR SLITTED HOLES ! See type_terminal instead.
-		pcb_contours_plated 	: type_package_pcb_contour_plated;
+		pcb_contour_plated 		: type_package_pcb_contour_plated;
 		
 		technology				: type_assembly_technology; -- set by majority of terminals
 		
