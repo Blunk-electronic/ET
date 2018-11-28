@@ -1301,13 +1301,13 @@ package body et_project is
 			use type_pcb_contour_circles;
 			
 			-- general stuff
-			procedure write_placeholders (cursor : in type_text_placeholders_pcb.cursor) is
+			procedure write_placeholder (cursor : in type_text_placeholders_pcb.cursor) is
 			begin
 				placeholder_begin;
 				write (keyword => keyword_meaning, parameters => to_string (element (cursor).meaning));
 				write_text_properties (element (cursor));
 				placeholder_end;
-			end write_placeholders;
+			end write_placeholder;
 
 			-- CS: rename procedure names so that they are in singular
 			
@@ -1421,14 +1421,14 @@ package body et_project is
 				text_end;
 			end write_text;
 
-			procedure write_placeholders (cursor : in type_text_placeholders_copper.cursor) is
+			procedure write_placeholder (cursor : in type_text_placeholders_copper.cursor) is -- placeholders in board copper !
 			begin
 				placeholder_begin;
 				write (keyword => keyword_meaning, parameters => to_string (element (cursor).meaning));
 				write_text_properties (element (cursor));
 				write (keyword => keyword_layer, parameters => to_string (element (cursor).layer));
 				placeholder_end;
-			end write_placeholders;
+			end write_placeholder;
 			
 			
 		begin -- query_board
@@ -1443,7 +1443,7 @@ package body et_project is
 				iterate (module.board.silk_screen.top.circles, write_circle'access);
 				iterate (module.board.silk_screen.top.polygons, write_polygon'access);
 				iterate (module.board.silk_screen.top.texts, write_text'access);
-				iterate (module.board.silk_screen.top.placeholders, write_placeholders'access);
+				iterate (module.board.silk_screen.top.placeholders, write_placeholder'access);
 				section_mark (section_top, FOOTER);
 
 				section_mark (section_bottom, HEADER);
@@ -1452,7 +1452,7 @@ package body et_project is
 				iterate (module.board.silk_screen.bottom.circles, write_circle'access);
 				iterate (module.board.silk_screen.bottom.polygons, write_polygon'access);
 				iterate (module.board.silk_screen.bottom.texts, write_text'access);
-				iterate (module.board.silk_screen.bottom.placeholders, write_placeholders'access);
+				iterate (module.board.silk_screen.bottom.placeholders, write_placeholder'access);
 				section_mark (section_bottom, FOOTER);
 			
 			section_mark (section_silk_screen, FOOTER);
@@ -1466,7 +1466,7 @@ package body et_project is
 				iterate (module.board.assy_doc.top.circles, write_circles'access);
 				iterate (module.board.assy_doc.top.polygons, write_polygons'access);
 				iterate (module.board.assy_doc.top.texts, write_text'access);
-				iterate (module.board.assy_doc.top.placeholders, write_placeholders'access);
+				iterate (module.board.assy_doc.top.placeholders, write_placeholder'access);
 				section_mark (section_top, FOOTER);
 
 				section_mark (section_bottom, HEADER);
@@ -1475,7 +1475,7 @@ package body et_project is
 				iterate (module.board.assy_doc.bottom.circles, write_circles'access);
 				iterate (module.board.assy_doc.bottom.polygons, write_polygons'access);
 				iterate (module.board.assy_doc.bottom.texts, write_text'access);
-				iterate (module.board.assy_doc.bottom.placeholders, write_placeholders'access);
+				iterate (module.board.assy_doc.bottom.placeholders, write_placeholder'access);
 				section_mark (section_bottom, FOOTER);
 
 			section_mark (section_assembly_doc, FOOTER);
@@ -1566,7 +1566,7 @@ package body et_project is
 				iterate (module.board.copper.circles, write_circles'access);
 				iterate (module.board.copper.polygons, write_polygons'access);
 				iterate (module.board.copper.texts, write_text'access);
-				iterate (module.board.copper.placeholders, write_placeholders'access);
+				iterate (module.board.copper.placeholders, write_placeholder'access);
 			section_mark (section_copper, FOOTER);
 
 			-- BOARD CONTOUR
@@ -2000,7 +2000,7 @@ package body et_project is
 		file_handle : ada.text_io.file_type;
 
 		use type_texts_with_content;
-		--use type_text_placeholders_package;
+		use type_text_placeholders_package;
 		
 		use type_copper_lines;
 		use type_copper_arcs;
@@ -2116,6 +2116,14 @@ package body et_project is
 			section_mark (section_copper, FOOTER);
 		end write_copper;
 
+		procedure write_placeholder (cursor : in type_text_placeholders_package.cursor) is
+		begin
+			placeholder_begin;
+			write (keyword => keyword_meaning, parameters => to_string (element (cursor).meaning));
+			write_text_properties (element (cursor));
+			placeholder_end;
+		end write_placeholder;
+		
 		procedure write_silk_screen is begin
 			section_mark (section_silk_screen, HEADER);
 
@@ -2126,6 +2134,7 @@ package body et_project is
 			iterate (packge.silk_screen.top.circles, write_circle'access);
 			iterate (packge.silk_screen.top.polygons, write_polygon'access);
 			iterate (packge.silk_screen.top.texts, write_text'access);
+			iterate (packge.silk_screen.top.placeholders, write_placeholder'access);
 			section_mark (section_top, FOOTER);
 			
 			-- bottom
@@ -2135,6 +2144,7 @@ package body et_project is
 			iterate (packge.silk_screen.bottom.circles, write_circle'access);
 			iterate (packge.silk_screen.bottom.polygons, write_polygon'access);
 			iterate (packge.silk_screen.bottom.texts, write_text'access);
+			iterate (packge.silk_screen.bottom.placeholders, write_placeholder'access);
 			section_mark (section_bottom, FOOTER);
 
 			section_mark (section_silk_screen, FOOTER);			
