@@ -2024,15 +2024,17 @@ package body et_kicad_pcb is
 								position	=> terminal_cursor,
 								inserted	=> terminal_inserted,
 								new_item 	=> (
-												technology 		=> THT,
-												pad_shape 		=> CIRCULAR,
-												tht_hole		=> DRILLED,
-												width_inner_layers => terminal_copper_width_inner_layers,
-												drill_size_cir	=> terminal_drill_size,
-												offset_x		=> terminal_drill_offset_x,
-												offset_y		=> terminal_drill_offset_y,
-												shape_tht		=> terminal_shape_tht,
-												position		=> terminal_position
+												technology 			=> THT,
+												--pad_shape 		=> CIRCULAR,
+												pad_shape_top		=> (others <>), -- CS
+												pad_shape_bottom	=> (others <>), -- CS
+												tht_hole			=> DRILLED,
+												width_inner_layers	=> terminal_copper_width_inner_layers,
+												drill_size_cir		=> terminal_drill_size,
+												--offset_x		=> terminal_drill_offset_x,
+												--offset_y		=> terminal_drill_offset_y,
+												--shape_tht		=> terminal_shape_tht,
+												position			=> terminal_position
 												));
 						else -- NON_CIRCULAR
 							case terminal_drill_shape is

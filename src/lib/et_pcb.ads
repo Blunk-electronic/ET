@@ -1087,7 +1087,7 @@ package et_pcb is
 		polygons	: type_pad_polygons.list; 
 	end record;	
 	
-	type type_terminal_new (
+	type type_terminal (
 		technology	: type_assembly_technology; -- smt/tht
 		tht_hole	: type_terminal_tht_hole) -- drilled/milled, without meaning if technology is SMT
 		is tagged record
@@ -1123,64 +1123,64 @@ package et_pcb is
 		
 		
 	-- This is the base type specification of a terminal:
-	type type_terminal (
-		technology	: type_assembly_technology; -- smt/tht
-		tht_hole	: type_terminal_tht_hole; -- drilled/milled, without meaning if technology is SMT
-		pad_shape	: type_terminal_shape) -- circular/non_circular
+-- 	type type_terminal (
+-- 		technology	: type_assembly_technology; -- smt/tht
+-- 		tht_hole	: type_terminal_tht_hole; -- drilled/milled, without meaning if technology is SMT
+-- 		pad_shape	: type_terminal_shape) -- circular/non_circular
+-- 
+-- 		is tagged record
+-- 
+-- 		position	: type_terminal_position; 
+-- 		-- For SMT pads -> center of pad.
+-- 		-- For THT pads => center of drill. If milled hole -> position without meaning.
+-- 
+-- 		case technology is
+-- 			when THT =>
+-- 
+-- 				-- This is the width of the copper surrounding the hole in inner layers.
+-- 				-- Since the hole can also be a rectangle (or other shape) we do not speak about restring.
+-- 				width_inner_layers : type_distance; -- CS use subtype for reasonable range
+-- 				
+-- 				shape_tht 	: type_terminal_shape_tht; -- OCTAGON, CIRCULAR, RECTANGLE, LONG, LONG_OFFSET
+-- 
+-- 				case pad_shape is
+-- 					when CIRCULAR =>
+-- 						drill_size_cir : type_drill_size;
+-- 						offset_x : type_pad_drill_offset; -- CS use a composite type for x/y
+-- 						offset_y : type_pad_drill_offset;
+-- 						
+-- 					when NON_CIRCULAR =>
+-- 						-- The dimensions of the pad in the outer layers is specified here:
+-- 						size_tht_x, size_tht_y : type_pad_size; -- CS use a composite type for x/y
+-- 						-- CS: better a polygon to allow arbitrary shapes for heatsinks etc ?
+-- 						
+-- 						case tht_hole is
+-- 							when DRILLED =>
+-- 								drill_size_dri : type_drill_size;
+-- 
+-- 							when MILLED => -- position without meaning
+-- 								millings : type_package_pcb_contour_plated;
+-- 						end case;
+-- 				end case;
+-- 				
+-- 			when SMT =>
+-- 				shape_smt		: type_terminal_shape_smt;
+-- 				face			: type_face;
+-- 				stop_mask 		: type_terminal_stop_mask; -- CS: why ?
+-- 				solder_paste	: type_terminal_solder_paste;
+-- 				case pad_shape is
+-- 					when CIRCULAR =>
+-- 						null;
+-- 						
+-- 					WHEN NON_CIRCULAR =>
+-- 						size_smt_x, size_smt_y : type_pad_size; -- CS use a composite type for x/y
+-- 						-- CS: better a polygon to allow arbitrary shapes for heatsinks etc ?
+-- 				end case;
+-- 
+-- 		end case;
+-- 	end record;
 
-		is tagged record
-
-		position	: type_terminal_position; 
-		-- For SMT pads -> center of pad.
-		-- For THT pads => center of drill. If milled hole -> position without meaning.
-
-		case technology is
-			when THT =>
-
-				-- This is the width of the copper surrounding the hole in inner layers.
-				-- Since the hole can also be a rectangle (or other shape) we do not speak about restring.
-				width_inner_layers : type_distance; -- CS use subtype for reasonable range
-				
-				shape_tht 	: type_terminal_shape_tht; -- OCTAGON, CIRCULAR, RECTANGLE, LONG, LONG_OFFSET
-
-				case pad_shape is
-					when CIRCULAR =>
-						drill_size_cir : type_drill_size;
-						offset_x : type_pad_drill_offset; -- CS use a composite type for x/y
-						offset_y : type_pad_drill_offset;
-						
-					when NON_CIRCULAR =>
-						-- The dimensions of the pad in the outer layers is specified here:
-						size_tht_x, size_tht_y : type_pad_size; -- CS use a composite type for x/y
-						-- CS: better a polygon to allow arbitrary shapes for heatsinks etc ?
-						
-						case tht_hole is
-							when DRILLED =>
-								drill_size_dri : type_drill_size;
-
-							when MILLED => -- position without meaning
-								millings : type_package_pcb_contour_plated;
-						end case;
-				end case;
-				
-			when SMT =>
-				shape_smt		: type_terminal_shape_smt;
-				face			: type_face;
-				stop_mask 		: type_terminal_stop_mask; -- CS: why ?
-				solder_paste	: type_terminal_solder_paste;
-				case pad_shape is
-					when CIRCULAR =>
-						null;
-						
-					WHEN NON_CIRCULAR =>
-						size_smt_x, size_smt_y : type_pad_size; -- CS use a composite type for x/y
-						-- CS: better a polygon to allow arbitrary shapes for heatsinks etc ?
-				end case;
-
-		end case;
-	end record;
-
-	procedure terminal_properties (
+	procedure terminal_properties ( -- CS rework body according to new type_terminal
 	-- Logs the properties of the given terminal.
 		terminal		: in et_pcb.type_terminal;
 		name			: in et_libraries.type_terminal_name.bounded_string;
