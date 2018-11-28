@@ -1071,19 +1071,21 @@ package et_pcb is
 
 	-- This is the base type specification of a terminal:
 	type type_terminal (
-		technology	: type_assembly_technology;
-		tht_hole	: type_terminal_tht_hole; -- without meaning if technology is SMT
-		pad_shape	: type_terminal_shape) 
+		technology	: type_assembly_technology; -- smt/tht
+		tht_hole	: type_terminal_tht_hole; -- drilled/milled, without meaning if technology is SMT
+		pad_shape	: type_terminal_shape) -- circular/non_circular
 
 		is tagged record
 
-		position	: type_terminal_position;
+		position	: type_terminal_position; 
+		-- For SMT pads -> center of pad.
+		-- For THT pads => center of drill. If milled hole -> position without meaning.
 
 		case technology is
 			when THT =>
 
-				-- This is the width of the copper surrounding the hole. Since the hole
-				-- can also be a rectangle (or other shape) we do not speak about restring.
+				-- This is the width of the copper surrounding the hole in inner layers.
+				-- Since the hole can also be a rectangle (or other shape) we do not speak about restring.
 				width_inner_layers : type_distance; -- CS use subtype for reasonable range
 				
 				shape_tht 	: type_terminal_shape_tht; -- OCTAGON, CIRCULAR, RECTANGLE, LONG, LONG_OFFSET
@@ -1094,7 +1096,8 @@ package et_pcb is
 						offset_x : type_pad_drill_offset; -- CS use a composite type for x/y
 						offset_y : type_pad_drill_offset;
 						
-					WHEN NON_CIRCULAR =>
+					when NON_CIRCULAR =>
+						-- The dimensions of the pad in the outer layers is specified here:
 						size_tht_x, size_tht_y : type_pad_size; -- CS use a composite type for x/y
 						-- CS: better a polygon to allow arbitrary shapes for heatsinks etc ?
 						
@@ -1102,7 +1105,7 @@ package et_pcb is
 							when DRILLED =>
 								drill_size_dri : type_drill_size;
 
-							when MILLED =>
+							when MILLED => -- position without meaning
 								millings : type_package_pcb_contour_plated;
 						end case;
 				end case;
