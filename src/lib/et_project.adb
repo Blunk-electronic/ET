@@ -2200,6 +2200,11 @@ package body et_project is
 			section_mark (section_pcb_contour_plated, FOOTER);
 		end write_contour_plated;
 
+		procedure write_package_contour is begin
+			section_mark (section_pac_3d_contour, HEADER);
+			-- CS
+			section_mark (section_pac_3d_contour, FOOTER);
+		end write_package_contour;
 		
 	begin -- save_package
 		log (name, log_threshold);
@@ -2233,12 +2238,19 @@ package body et_project is
 		write_via_restrict;
 		write_contour;
 		write_contour_plated;
+
+
 		
 		-- CS
 		-- silk_screen				: type_silk_screen_package_both_sides; -- incl. placeholder for reference and purpose
 		-- assembly_documentation	: type_assembly_documentation_package_both_sides; -- incl. placeholder for value
 		-- terminals				: type_terminals.map;
 
+		-- 3D stuff
+		if packge.appearance = REAL then
+			null;
+			--write_package_contour;  -- CS uncomment when 3d support available
+		end if;
 
 		-- write footer
 		new_line;

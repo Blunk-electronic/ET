@@ -2456,7 +2456,7 @@ package body et_kicad_pcb is
 			when REAL =>
 				return (
 					appearance				=> REAL,
-					package_contours		=> no_contour, -- CS to be filled from 3d model
+					package_contour			=> (others => <>), -- CS to be filled from 3d model
 					pcb_contour				=> (others => <>), -- kicad does allow pcb contours in a package
 					pcb_contour_plated 		=> (others => <>), -- kicad does allow plated pcb contours in a package
 					terminals				=> terminals,
@@ -3083,7 +3083,7 @@ package body et_kicad_pcb is
 		package_copper			: et_pcb.type_copper_package_both_sides;
 		
 		-- countours of a package as provided by the 3d model:
-		package_contours			: et_pcb.type_package_contours; -- CS not assigned yet
+		package_contour			: et_pcb.type_package_contour; -- CS not assigned yet
 		
 	-- TERMINALS
 		-- Temporarily we need lots of variables for terminal properties.
@@ -5649,7 +5649,7 @@ package body et_kicad_pcb is
 								assembly_documentation	=> package_assy_doc,
 								pcb_contour			=> (others => <>), -- kicad does not allow pcb contours in a package,
 								pcb_contour_plated	=> (others => <>), -- kicad does not allow plated pcb contours in a package
-								package_contours	=> package_contours
+								package_contour		=> package_contour
 								)
 							);
 						

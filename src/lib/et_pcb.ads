@@ -453,15 +453,11 @@ package et_pcb is
 	type type_package_contour_circle is new type_circle_3d with null record;
 	package type_package_contour_circles is new doubly_linked_lists (type_package_contour_circle);
 	
-	type type_package_contours is record
+	type type_package_contour is record
 		lines 	: type_package_contour_lines.list;
 		arcs	: type_package_contour_arcs.list;
 		circles	: type_package_contour_circles.list;
 	end record;
-
-	function no_contour return type_package_contours;
-	-- Returns an empty package contour.
-
 
 
 	
@@ -1175,7 +1171,7 @@ package et_pcb is
 		-- Only REAL packages have 3d contours:
 		case appearance is
 			when REAL =>
-				package_contours : type_package_contours;
+				package_contour	: type_package_contour;
 			when VIRTUAL =>
 				null; -- netchangers, testpoints, ISA-Board edge connectors, ...
 		end case;

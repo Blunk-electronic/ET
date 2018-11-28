@@ -292,15 +292,6 @@ package body et_pcb is
 		return latin_1.space & to_lower (type_terminal_stop_mask'image (stop_mask));
 	end to_string;
 
-	function no_contour return type_package_contours is
-	-- Returns an empty package contour.		
-	begin
-		return (
-			lines 	=> type_package_contour_lines.empty_list,
-			arcs 	=> type_package_contour_arcs.empty_list,
-			circles	=> type_package_contour_circles.empty_list);
-	end no_contour;
-
 	function to_string (filled : in type_filled) return string is
 	begin
 		return latin_1.space & to_lower (type_filled'image (filled));
