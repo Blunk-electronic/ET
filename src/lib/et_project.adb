@@ -657,6 +657,46 @@ package body et_project is
 	end write_polygon;
 
 	
+-- BOARD CONTOUR
+	procedure write_line (cursor : in et_pcb.type_pcb_contour_lines.cursor) is 
+		use et_pcb;
+		use type_pcb_contour_lines;
+		use et_pcb_coordinates;		
+	begin
+		line_begin;
+		write (keyword => keyword_start , parameters => position (element (cursor).start_point));
+		write (keyword => keyword_end   , parameters => position (element (cursor).end_point));
+		write (keyword => keyword_locked, parameters => to_string (element (cursor).locked));
+		line_end;
+	end write_line;
+
+	procedure write_arc (cursor : in et_pcb.type_pcb_contour_arcs.cursor) is 
+		use et_pcb;
+		use type_pcb_contour_arcs;
+		use et_pcb_coordinates;		
+	begin
+		arc_begin;
+		write (keyword => keyword_center, parameters => position (element (cursor).center));
+		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
+		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+		write (keyword => keyword_locked, parameters => to_string (element (cursor).locked));
+		arc_end;
+	end write_arc;
+
+	procedure write_circle (cursor : in et_pcb.type_pcb_contour_circles.cursor) is 
+		use et_pcb;
+		use type_pcb_contour_circles;
+		use et_pcb_coordinates;		
+	begin
+		circle_begin;
+		write (keyword => keyword_center, parameters => position (element (cursor).center));
+		write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
+		write (keyword => keyword_locked, parameters => to_string (element (cursor).locked));
+		circle_end;
+	end write_circle;
+
+	
+	
 	procedure save_project (log_threshold : in et_string_processing.type_log_level) is
 	-- Saves the schematic and layout data in project file (project_file_handle).
 	-- CS: improve log messages !!
@@ -1375,32 +1415,6 @@ package body et_project is
 				placeholder_end;
 			end write_placeholders;
 			
-			-- BOARD CONTOUR
-			procedure write_lines (cursor : in type_pcb_contour_lines.cursor) is begin
-				line_begin;
-				write (keyword => keyword_start , parameters => position (element (cursor).start_point));
-				write (keyword => keyword_end   , parameters => position (element (cursor).end_point));
-				write (keyword => keyword_locked, parameters => to_string (element (cursor).locked));
-				line_end;
-			end write_lines;
-
-			procedure write_arcs (cursor : in type_pcb_contour_arcs.cursor) is begin
-				arc_begin;
-				write (keyword => keyword_center, parameters => position (element (cursor).center));
-				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-				write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
-				write (keyword => keyword_locked, parameters => to_string (element (cursor).locked));
-				arc_end;
-			end write_arcs;
-
-			procedure write_circles (cursor : in type_pcb_contour_circles.cursor) is begin
-				circle_begin;
-				write (keyword => keyword_center, parameters => position (element (cursor).center));
-				write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
-				write (keyword => keyword_locked, parameters => to_string (element (cursor).locked));
-				circle_end;
-			end write_circles;
-
 			
 		begin -- query_board
 			section_mark (section_board, HEADER);
@@ -1542,9 +1556,9 @@ package body et_project is
 
 			-- BOARD CONTOUR
 			section_mark (section_pcb_contour, HEADER);
-				iterate (module.board.contour.lines, write_lines'access);
-				iterate (module.board.contour.arcs, write_arcs'access);
-				iterate (module.board.contour.circles, write_circles'access);
+				iterate (module.board.contour.lines, write_line'access);
+				iterate (module.board.contour.arcs, write_arc'access);
+				iterate (module.board.contour.circles, write_circle'access);
 			section_mark (section_pcb_contour, FOOTER);
 			
 			---BOARD END-----
@@ -2001,6 +2015,9 @@ package body et_project is
 		use type_via_restrict_circles;
 		use type_via_restrict_polygons;
 
+		use type_pcb_contour_lines;
+		use type_pcb_contour_arcs;
+		use type_pcb_contour_circles;
 		
 		procedure write_copper is
 
@@ -2163,6 +2180,15 @@ package body et_project is
 			section_mark (section_via_restrict, FOOTER);			
 		end write_via_restrict;
 
+		procedure write_contour is begin
+			section_mark (section_pcb_contour, HEADER);
+
+			iterate (packge.pcb_contour.lines, write_line'access);
+			iterate (packge.pcb_contour.arcs, write_arc'access);
+			iterate (packge.pcb_contour.circles, write_circle'access);
+
+			section_mark (section_pcb_contour, FOOTER);
+		end write_contour;
 		
 	begin -- save_package
 		log (name, log_threshold);
@@ -2194,6 +2220,7 @@ package body et_project is
 		write_stencil;
 		write_route_restrict;
 		write_via_restrict;
+		write_contour;
 		
 		-- CS
 		-- silk_screen				: type_silk_screen_package_both_sides; -- incl. placeholder for reference and purpose

@@ -1164,8 +1164,8 @@ package et_pcb is
 		via_restrict 			: type_via_restrict_package;
 		-- CS holes
 
-		-- PCB contours or so called "non-plated millings"
-		pcb_contours			: type_package_pcb_contour;
+		-- PCB contour or so called "non-plated millings"
+		pcb_contour				: type_package_pcb_contour;
 
 		-- Plated millings. NOTE: NOT FOR SLITTED HOLES ! See type_terminal instead.
 		pcb_contours_plated 	: type_package_pcb_contour_plated;
