@@ -1069,6 +1069,59 @@ package et_pcb is
 	type type_terminal_tht_hole is (DRILLED, MILLED);
 	function to_string (tht_hole : in type_terminal_tht_hole) return string;
 
+	--------------------------
+	type type_pad_line is new type_line_2d with null record;
+	type type_pad_arc is new type_arc_2d with null record;
+	type type_pad_circle is new type_circle_2d with null record;
+	type type_pad_polygon is record points : type_polygon_points.set; end record;
+
+	package type_pad_lines is new doubly_linked_lists (type_pad_line);
+	package type_pad_arcs is new doubly_linked_lists (type_pad_arc);
+	package type_pad_circles is new doubly_linked_lists (type_pad_circle);
+	package type_pad_polygons is new doubly_linked_lists (type_pad_polygon);
+	
+	type type_pad_outline is record
+		lines 		: type_pad_lines.list;
+		arcs		: type_pad_arcs.list;
+		circles		: type_pad_circles.list;
+		polygons	: type_pad_polygons.list; 
+	end record;	
+	
+	type type_terminal_new (
+		technology	: type_assembly_technology; -- smt/tht
+		tht_hole	: type_terminal_tht_hole) -- drilled/milled, without meaning if technology is SMT
+		is tagged record
+
+		position : type_terminal_position; -- drill position, center of pad or assigned by operator
+			
+		case technology is
+			when THT =>
+				pad_shape_top		: type_pad_outline; -- The pad shape on the top side
+				pad_shape_bottom	: type_pad_outline; -- is not nessecariy the same as on the bottom side.
+
+				-- This is the width of the copper surrounding the hole in inner layers.
+				-- Since the hole can be of any shape we do not speak about restring.
+				width_inner_layers : type_distance; -- CS use subtype for reasonable range
+				
+				case tht_hole is
+					when DRILLED =>
+						drill_size_dri : type_drill_size;
+						
+					when MILLED =>
+						millings : type_package_pcb_contour_plated;
+				end case;
+				
+			when SMT =>
+				pad_shape		: type_pad_outline;
+				face			: type_face;
+				stop_mask 		: type_terminal_stop_mask; -- CS: why ?
+				solder_paste	: type_terminal_solder_paste;
+				
+		end case;
+	end record;
+	--------------------------
+		
+		
 	-- This is the base type specification of a terminal:
 	type type_terminal (
 		technology	: type_assembly_technology; -- smt/tht
