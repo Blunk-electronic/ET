@@ -272,6 +272,11 @@ package body et_pcb is
 		return latin_1.space & to_lower (type_assembly_technology'image (technology));
 	end to_string;
 
+	function to_string (shape : in type_terminal_shape) return string is
+	begin
+		return latin_1.space & to_lower (type_terminal_shape'image (shape));
+	end to_string;
+	
 	function to_string (shape : in type_terminal_shape_tht) return string is
 	begin
 		return latin_1.space & to_lower (type_terminal_shape_tht'image (shape));
@@ -292,6 +297,11 @@ package body et_pcb is
 		return latin_1.space & to_lower (type_terminal_stop_mask'image (stop_mask));
 	end to_string;
 
+	function to_string (tht_hole : in type_terminal_tht_hole) return string is
+	begin
+		return latin_1.space & to_lower (type_terminal_tht_hole'image (tht_hole));
+	end to_string;
+	
 	function to_string (filled : in type_filled) return string is
 	begin
 		return latin_1.space & to_lower (type_filled'image (filled));

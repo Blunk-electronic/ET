@@ -2333,7 +2333,14 @@ package body et_project is
 				section_mark (section_terminal, HEADER);
 				write (keyword => keyword_name, parameters => et_libraries.to_string (key (terminal_cursor)));
 				write (keyword => keyword_assembly_technology, parameters => to_string (element (terminal_cursor).technology));
-				write (keyword => keyword_shape, parameters => to_string (element (terminal_cursor).shape_tht));
+
+				-- A THT can have a drilled or a milled hole:
+				if element (terminal_cursor).technology = THT then
+					write (keyword => keyword_tht_hole, parameters => to_string (element (terminal_cursor).tht_hole));
+				end if;
+
+				write (keyword => keyword_pad_shape, parameters => to_string (element (terminal_cursor).shape));
+				write (keyword => keyword_position, parameters => position (element (terminal_cursor).position));
 				section_mark (section_terminal, FOOTER);
 				next (terminal_cursor);
 			end loop;

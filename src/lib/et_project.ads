@@ -266,8 +266,8 @@ package et_project is
 	keyword_terminal_name_size		: constant string := "terminal_name_size";
 	keyword_characteristic			: constant string := "characteristic";		
 	keyword_assembly_technology		: constant string := "technology";				
-	keyword_shape					: constant string := "shape";
-	keyword_tht_hole				: constant string := "tht_hole";
+	keyword_pad_shape				: constant string := "pad_shape";
+	keyword_tht_hole				: constant string := "hole";
 	--keyword_width_inner_layers
 	
 	section_net_classes			: constant string := "[NET_CLASSES";

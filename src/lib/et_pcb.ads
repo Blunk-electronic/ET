@@ -1051,12 +1051,13 @@ package et_pcb is
 
 	function to_string (technology : in type_assembly_technology) return string;
 
-	type type_terminal_shape is (CIRCULAR, NON_CIRCULAR);
+	type type_terminal_shape is (CIRCULAR, NON_CIRCULAR); -- CS rename to type_pad_shape
+	function to_string (shape : in type_terminal_shape) return string;
 	
-	type type_terminal_shape_tht is (OCTAGON, CIRCULAR, RECTANGLE, LONG, LONG_OFFSET);
+	type type_terminal_shape_tht is (OCTAGON, CIRCULAR, RECTANGLE, LONG, LONG_OFFSET); -- CS rename to type_pad_shape_tht
 	function to_string (shape : in type_terminal_shape_tht) return string;
 	
-	type type_terminal_shape_smt is (RECTANGLE, CIRCULAR, LONG);
+	type type_terminal_shape_smt is (RECTANGLE, CIRCULAR, LONG); -- CS rename to type_pad_shape_smt
 	function to_string (shape : in type_terminal_shape_smt) return string;	
 
 	type type_terminal_solder_paste is (NONE, APPLIED);
@@ -1066,12 +1067,13 @@ package et_pcb is
 	function to_string (stop_mask : in type_terminal_stop_mask) return string;
 
 	type type_terminal_tht_hole is (DRILLED, MILLED);
+	function to_string (tht_hole : in type_terminal_tht_hole) return string;
 
 	-- This is the base type specification of a terminal:
 	type type_terminal (
 		technology	: type_assembly_technology;
-		shape		: type_terminal_shape;
-		tht_hole	: type_terminal_tht_hole) -- without meaning if technology is SMT
+		tht_hole	: type_terminal_tht_hole; -- without meaning if technology is SMT
+		shape		: type_terminal_shape) 
 
 		is tagged record
 
