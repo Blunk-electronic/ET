@@ -1079,6 +1079,9 @@ package et_pcb is
 
 		case technology is
 			when THT =>
+
+				-- This is the width of the copper surrounding the hole. Since the hole
+				-- can also be a rectangle (or other shape) we do not speak about restring.
 				width_inner_layers : type_distance; -- CS use subtype for reasonable range
 				
 				shape_tht 	: type_terminal_shape_tht; -- OCTAGON, CIRCULAR, RECTANGLE, LONG, LONG_OFFSET

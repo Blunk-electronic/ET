@@ -1963,6 +1963,14 @@ package body et_project is
 		
 		set_output (standard_output);
 		close (file_handle);
+
+		exception when event: others =>
+			log (ada.exceptions.exception_message (event));
+			if is_open (file_handle) then
+				close (file_handle);
+			end if;
+			raise;
+		
 	end save_device;
 
 	procedure save_symbol ( -- CS: testing requried
@@ -2000,6 +2008,14 @@ package body et_project is
 		
 		set_output (standard_output);
 		close (file_handle);
+
+		exception when event: others =>
+			log (ada.exceptions.exception_message (event));
+			if is_open (file_handle) then
+				close (file_handle);
+			end if;
+			raise;
+		
 	end save_symbol;
 	
 	procedure save_package (
@@ -2307,9 +2323,21 @@ package body et_project is
 			section_mark (section_pac_3d_contour, FOOTER);
 		end write_package_contour;
 
-		procedure write_terminals is begin
+		procedure write_terminals is 
+			use type_terminals;
+			terminal_cursor : type_terminals.cursor := packge.terminals.first;
+		begin
 			section_mark (section_terminals, HEADER);
-
+			
+			while terminal_cursor /= type_terminals.no_element loop
+				section_mark (section_terminal, HEADER);
+				write (keyword => keyword_name, parameters => et_libraries.to_string (key (terminal_cursor)));
+				write (keyword => keyword_assembly_technology, parameters => to_string (element (terminal_cursor).technology));
+				write (keyword => keyword_shape, parameters => to_string (element (terminal_cursor).shape_tht));
+				section_mark (section_terminal, FOOTER);
+				next (terminal_cursor);
+			end loop;
+			
 			section_mark (section_terminals, FOOTER);
 		end write_terminals;
 		
@@ -2349,10 +2377,6 @@ package body et_project is
 		write_contour_plated; -- pcb contour
 		write_terminals;
 
-		
-		-- CS
-		-- terminals				: type_terminals.map;
-
 		-- 3D stuff
 		if packge.appearance = REAL then
 			null;
@@ -2369,6 +2393,14 @@ package body et_project is
 		
 		set_output (standard_output);
 		close (file_handle);
+
+		exception when event: others =>
+			log (ada.exceptions.exception_message (event));
+			if is_open (file_handle) then
+				close (file_handle);
+			end if;
+			raise;
+
 	end save_package;
 
 	

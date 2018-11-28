@@ -3230,7 +3230,7 @@ package body et_kicad_to_native is
 					package_model := rename_package_model (package_model);
 					log ("package model " & et_libraries.to_string (package_model), log_threshold + 3);
 
-					-- Insert the new package mode in et_pcb.packages. In case the package is already in the 
+					-- Insert the new package model in et_pcb.packages. In case the package is already in the 
 					-- container (due to other project imports), the flag "inserted" will go false. The package
 					-- would not be inserted again:
 					et_pcb.type_packages.insert (
