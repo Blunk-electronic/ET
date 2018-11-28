@@ -695,6 +695,70 @@ package body et_project is
 		circle_end;
 	end write_circle;
 
+-- SILK SCREEN
+	procedure write_line (cursor : in et_pcb.type_silk_lines.cursor) is 
+		use et_pcb;
+		use type_silk_lines;
+		use et_pcb_coordinates;		
+	begin
+		line_begin;
+		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
+		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+		write (keyword => keyword_width, parameters => to_string (element (cursor).width));
+		line_end;
+	end write_line;
+
+	procedure write_arc (cursor : in et_pcb.type_silk_arcs.cursor) is 
+		use et_pcb;
+		use type_silk_arcs;
+		use et_pcb_coordinates;		
+	begin
+		arc_begin;
+		write (keyword => keyword_center, parameters => position (element (cursor).center));
+		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
+		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+		write (keyword => keyword_width, parameters => to_string (element (cursor).width));
+		arc_end;
+	end write_arc;
+
+	procedure write_circle (cursor : in et_pcb.type_silk_circles.cursor) is 
+		use et_pcb;
+		use type_silk_circles;
+		use et_pcb_coordinates;		
+	begin
+		circle_begin;
+		write (keyword => keyword_center, parameters => position (element (cursor).center));
+		write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
+		write (keyword => keyword_width , parameters => to_string (element (cursor).width));
+		write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
+		write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
+		write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
+		write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
+		circle_end;
+	end write_circle;
+	
+	procedure write_polygon (cursor : in et_pcb.type_silk_polygons.cursor) is 
+		use et_pcb;
+		use type_silk_polygons;
+		use et_pcb_coordinates;		
+		use type_polygon_points;
+		
+		procedure query_points (polygon : in type_silk_polygon) is begin
+			iterate (polygon.points, write_polygon_corners'access); -- see general stuff above
+		end query_points;
+		
+	begin -- write_polygon
+		polygon_begin;
+		write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
+		write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
+		write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
+		write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
+		write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
+		corners_begin;
+		query_element (cursor, query_points'access);
+		corners_end;
+		polygon_end;
+	end write_polygon;
 	
 	
 	procedure save_project (log_threshold : in et_string_processing.type_log_level) is
@@ -1247,55 +1311,6 @@ package body et_project is
 
 			-- CS: rename procedure names so that they are in singular
 			
-			-- SILK SCREEN
-			procedure write_lines (cursor : in type_silk_lines.cursor) is begin
-				line_begin;
-				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-				write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
-				write (keyword => keyword_width, parameters => to_string (element (cursor).width));
-				line_end;
-			end write_lines;
-
-			procedure write_arcs (cursor : in type_silk_arcs.cursor) is begin
-				arc_begin;
-				write (keyword => keyword_center, parameters => position (element (cursor).center));
-				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-				write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
-				write (keyword => keyword_width, parameters => to_string (element (cursor).width));
-				arc_end;
-			end write_arcs;
-
-			procedure write_circles (cursor : in type_silk_circles.cursor) is begin
-				circle_begin;
-				write (keyword => keyword_center, parameters => position (element (cursor).center));
-				write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
-				write (keyword => keyword_width , parameters => to_string (element (cursor).width));
-				write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
-				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
-				write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
-				write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
-				circle_end;
-			end write_circles;
-			
-			procedure write_polygons (cursor : in type_silk_polygons.cursor) is 
-				use type_polygon_points;
-				
-				procedure query_points (polygon : in type_silk_polygon) is begin
-					iterate (polygon.points, write_polygon_corners'access); -- see general stuff above
-				end query_points;
-				
-			begin -- write_polygons
-				polygon_begin;
-				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
-				write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
-				write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
-				write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
-				write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
-				corners_begin;
-				query_element (cursor, query_points'access);
-				corners_end;
-				polygon_end;
-			end write_polygons;
 
 			-- ASSEMBLY DOCUMENTATION
 			procedure write_lines (cursor : in type_doc_lines.cursor) is begin
@@ -1397,14 +1412,14 @@ package body et_project is
 				polygon_end;
 			end write_polygons;
 
-			procedure write_texts (cursor : in type_texts_with_content_pcb.cursor) is -- texts in copper !
+			procedure write_text (cursor : in type_texts_with_content_pcb.cursor) is -- copper texts in board !
 			begin
 				text_begin;
 				write (keyword => keyword_content, parameters => et_libraries.to_string (element (cursor).content));
 				write_text_properties (element (cursor));
 				write (keyword => keyword_layer, parameters => to_string (element (cursor).layer));
 				text_end;
-			end write_texts;
+			end write_text;
 
 			procedure write_placeholders (cursor : in type_text_placeholders_copper.cursor) is
 			begin
@@ -1423,19 +1438,19 @@ package body et_project is
 			section_mark (section_silk_screen, HEADER);
 
 				section_mark (section_top, HEADER);
-				iterate (module.board.silk_screen.top.lines, write_lines'access);
-				iterate (module.board.silk_screen.top.arcs, write_arcs'access);
-				iterate (module.board.silk_screen.top.circles, write_circles'access);
-				iterate (module.board.silk_screen.top.polygons, write_polygons'access);
+				iterate (module.board.silk_screen.top.lines, write_line'access);
+				iterate (module.board.silk_screen.top.arcs, write_arc'access);
+				iterate (module.board.silk_screen.top.circles, write_circle'access);
+				iterate (module.board.silk_screen.top.polygons, write_polygon'access);
 				iterate (module.board.silk_screen.top.texts, write_text'access);
 				iterate (module.board.silk_screen.top.placeholders, write_placeholders'access);
 				section_mark (section_top, FOOTER);
 
 				section_mark (section_bottom, HEADER);
-				iterate (module.board.silk_screen.bottom.lines, write_lines'access);
-				iterate (module.board.silk_screen.bottom.arcs, write_arcs'access);
-				iterate (module.board.silk_screen.bottom.circles, write_circles'access);
-				iterate (module.board.silk_screen.bottom.polygons, write_polygons'access);
+				iterate (module.board.silk_screen.bottom.lines, write_line'access);
+				iterate (module.board.silk_screen.bottom.arcs, write_arc'access);
+				iterate (module.board.silk_screen.bottom.circles, write_circle'access);
+				iterate (module.board.silk_screen.bottom.polygons, write_polygon'access);
 				iterate (module.board.silk_screen.bottom.texts, write_text'access);
 				iterate (module.board.silk_screen.bottom.placeholders, write_placeholders'access);
 				section_mark (section_bottom, FOOTER);
@@ -1550,7 +1565,7 @@ package body et_project is
 				iterate (module.board.copper.arcs, write_arcs'access);
 				iterate (module.board.copper.circles, write_circles'access);
 				iterate (module.board.copper.polygons, write_polygons'access);
-				iterate (module.board.copper.texts, write_texts'access);
+				iterate (module.board.copper.texts, write_text'access);
 				iterate (module.board.copper.placeholders, write_placeholders'access);
 			section_mark (section_copper, FOOTER);
 
@@ -1984,6 +1999,9 @@ package body et_project is
 		
 		file_handle : ada.text_io.file_type;
 
+		use type_texts_with_content;
+		--use type_text_placeholders_package;
+		
 		use type_copper_lines;
 		use type_copper_arcs;
 		use type_copper_circles;
@@ -2018,6 +2036,12 @@ package body et_project is
 		use type_pcb_contour_lines;
 		use type_pcb_contour_arcs;
 		use type_pcb_contour_circles;
+
+		use type_silk_lines;
+		use type_silk_arcs;
+		use type_silk_circles;
+		use type_silk_polygons;
+
 		
 		procedure write_copper is
 
@@ -2092,6 +2116,30 @@ package body et_project is
 			section_mark (section_copper, FOOTER);
 		end write_copper;
 
+		procedure write_silk_screen is begin
+			section_mark (section_silk_screen, HEADER);
+
+			-- top
+			section_mark (section_top, HEADER);
+			iterate (packge.silk_screen.top.lines, write_line'access);
+			iterate (packge.silk_screen.top.arcs, write_arc'access);
+			iterate (packge.silk_screen.top.circles, write_circle'access);
+			iterate (packge.silk_screen.top.polygons, write_polygon'access);
+			iterate (packge.silk_screen.top.texts, write_text'access);
+			section_mark (section_top, FOOTER);
+			
+			-- bottom
+			section_mark (section_bottom, HEADER);
+			iterate (packge.silk_screen.bottom.lines, write_line'access);
+			iterate (packge.silk_screen.bottom.arcs, write_arc'access);
+			iterate (packge.silk_screen.bottom.circles, write_circle'access);
+			iterate (packge.silk_screen.bottom.polygons, write_polygon'access);
+			iterate (packge.silk_screen.bottom.texts, write_text'access);
+			section_mark (section_bottom, FOOTER);
+
+			section_mark (section_silk_screen, FOOTER);			
+		end write_silk_screen;
+		
 		procedure write_keepout is begin
 			section_mark (section_keepout, HEADER);
 
@@ -2230,6 +2278,7 @@ package body et_project is
 		write (keyword => keyword_appearance, parameters => to_string (packge.appearance));
 		write (keyword => keyword_assembly_technology, parameters => to_string (packge.technology));
 
+		write_silk_screen;
 		write_copper;
 		write_keepout;
 		write_stop_mask;
