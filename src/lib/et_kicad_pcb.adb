@@ -2025,7 +2025,7 @@ package body et_kicad_pcb is
 								inserted	=> terminal_inserted,
 								new_item 	=> (
 												technology 		=> THT,
-												shape 			=> CIRCULAR,
+												pad_shape 		=> CIRCULAR,
 												tht_hole		=> DRILLED,
 												width_inner_layers => terminal_copper_width_inner_layers,
 												drill_size_cir	=> terminal_drill_size,
@@ -2043,7 +2043,7 @@ package body et_kicad_pcb is
 										inserted	=> terminal_inserted,
 										new_item 	=> (
 														technology 		=> THT,
-														shape			=> NON_CIRCULAR,
+														pad_shape		=> NON_CIRCULAR,
 														tht_hole		=> DRILLED,
 														width_inner_layers => terminal_copper_width_inner_layers,
 														drill_size_dri	=> terminal_drill_size,
@@ -2060,7 +2060,7 @@ package body et_kicad_pcb is
 										inserted	=> terminal_inserted,
 										new_item 	=> (
 														technology 		=> THT,
-														shape			=> NON_CIRCULAR,
+														pad_shape		=> NON_CIRCULAR,
 														tht_hole		=> MILLED,
 														width_inner_layers => terminal_copper_width_inner_layers,
 
@@ -2097,7 +2097,7 @@ package body et_kicad_pcb is
 								inserted	=> terminal_inserted,
 								new_item 	=> (
 												technology 		=> SMT,
-												shape			=> CIRCULAR,
+												pad_shape		=> CIRCULAR,
 												tht_hole		=> DRILLED, -- has no meaning here
 												shape_smt		=> terminal_shape_smt,
 												position		=> terminal_position,
@@ -2112,7 +2112,7 @@ package body et_kicad_pcb is
 								inserted	=> terminal_inserted,
 								new_item 	=> (
 												technology 		=> SMT,
-												shape			=> NON_CIRCULAR,
+												pad_shape		=> NON_CIRCULAR,
 												tht_hole		=> DRILLED, -- has no meaning here
 												shape_smt		=> terminal_shape_smt,
 												position		=> terminal_position,
@@ -6384,7 +6384,7 @@ package body et_kicad_pcb is
 								inserted	=> terminal_inserted,
 								new_item 	=> (
 												technology 		=> THT,
-												shape 			=> CIRCULAR,
+												pad_shape 		=> CIRCULAR,
 												tht_hole		=> DRILLED,
 												width_inner_layers => terminal_copper_width_inner_layers,
 												drill_size_cir	=> terminal_drill_size,
@@ -6405,7 +6405,7 @@ package body et_kicad_pcb is
 										inserted	=> terminal_inserted,
 										new_item 	=> (
 														technology 		=> THT,
-														shape			=> NON_CIRCULAR,
+														pad_shape		=> NON_CIRCULAR,
 														tht_hole		=> DRILLED,
 														width_inner_layers => terminal_copper_width_inner_layers,
 														drill_size_dri	=> terminal_drill_size,
@@ -6425,7 +6425,7 @@ package body et_kicad_pcb is
 										inserted	=> terminal_inserted,
 										new_item 	=> (
 														technology 		=> THT,
-														shape			=> NON_CIRCULAR,
+														pad_shape		=> NON_CIRCULAR,
 														tht_hole		=> MILLED,
 														width_inner_layers => terminal_copper_width_inner_layers,
 
@@ -6468,7 +6468,7 @@ package body et_kicad_pcb is
 								inserted	=> terminal_inserted,
 								new_item 	=> (
 												technology 		=> SMT,
-												shape			=> CIRCULAR,
+												pad_shape		=> CIRCULAR,
 												tht_hole		=> DRILLED, -- has no meaning here
 												shape_smt		=> terminal_shape_smt,
 												position		=> terminal_position,
@@ -6487,7 +6487,7 @@ package body et_kicad_pcb is
 								inserted	=> terminal_inserted,
 								new_item 	=> (
 												technology 		=> SMT,
-												shape			=> NON_CIRCULAR,
+												pad_shape		=> NON_CIRCULAR,
 												tht_hole		=> DRILLED, -- has no meaning here
 												shape_smt		=> terminal_shape_smt,
 												position		=> terminal_position,

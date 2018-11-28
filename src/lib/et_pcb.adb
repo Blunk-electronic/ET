@@ -1073,7 +1073,7 @@ package body et_pcb is
 			when THT => 
 				log ("shape" & to_string (terminal.shape_tht), log_threshold_1);
 				log ("copper width of inner layers" & to_string (terminal.width_inner_layers), log_threshold_1);
-				case terminal.shape is
+				case terminal.pad_shape is
 					when NON_CIRCULAR =>
 						log ("size x" & to_string (terminal.size_tht_x), log_threshold_1);
 						log ("size y" & to_string (terminal.size_tht_y), log_threshold_1);
@@ -1096,7 +1096,7 @@ package body et_pcb is
 			when SMT => 
 				log ("shape" & to_string (terminal.shape_smt), log_threshold_1);
 
-				case terminal.shape is
+				case terminal.pad_shape is
 					when NON_CIRCULAR =>
 						log ("size x" & to_string (terminal.size_smt_x), log_threshold_1);
 						log ("size y" & to_string (terminal.size_smt_y), log_threshold_1);

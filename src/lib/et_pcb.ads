@@ -1073,7 +1073,7 @@ package et_pcb is
 	type type_terminal (
 		technology	: type_assembly_technology;
 		tht_hole	: type_terminal_tht_hole; -- without meaning if technology is SMT
-		shape		: type_terminal_shape) 
+		pad_shape	: type_terminal_shape) 
 
 		is tagged record
 
@@ -1088,7 +1088,7 @@ package et_pcb is
 				
 				shape_tht 	: type_terminal_shape_tht; -- OCTAGON, CIRCULAR, RECTANGLE, LONG, LONG_OFFSET
 
-				case shape is
+				case pad_shape is
 					when CIRCULAR =>
 						drill_size_cir : type_drill_size;
 						offset_x : type_pad_drill_offset; -- CS use a composite type for x/y
@@ -1112,7 +1112,7 @@ package et_pcb is
 				face			: type_face;
 				stop_mask 		: type_terminal_stop_mask; -- CS: why ?
 				solder_paste	: type_terminal_solder_paste;
-				case shape is
+				case pad_shape is
 					when CIRCULAR =>
 						null;
 						

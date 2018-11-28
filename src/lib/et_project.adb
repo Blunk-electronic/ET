@@ -2339,7 +2339,7 @@ package body et_project is
 					write (keyword => keyword_tht_hole, parameters => to_string (element (terminal_cursor).tht_hole));
 				end if;
 
-				write (keyword => keyword_pad_shape, parameters => to_string (element (terminal_cursor).shape));
+				write (keyword => keyword_pad_shape, parameters => to_string (element (terminal_cursor).pad_shape));
 				write (keyword => keyword_position, parameters => position (element (terminal_cursor).position));
 				section_mark (section_terminal, FOOTER);
 				next (terminal_cursor);
