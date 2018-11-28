@@ -759,6 +759,72 @@ package body et_project is
 		corners_end;
 		polygon_end;
 	end write_polygon;
+
+-- ASSEMBLY DOCUMENTATION
+	procedure write_line (cursor : in et_pcb.type_doc_lines.cursor) is 
+		use et_pcb;
+		use type_doc_lines;
+		use et_pcb_coordinates;		
+	begin
+		line_begin;
+		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
+		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+		write (keyword => keyword_width, parameters => to_string (element (cursor).width));
+		line_end;
+	end write_line;
+
+	procedure write_arc (cursor : in et_pcb.type_doc_arcs.cursor) is 
+		use et_pcb;
+		use type_doc_arcs;
+		use et_pcb_coordinates;		
+	begin
+		arc_begin;
+		write (keyword => keyword_center, parameters => position (element (cursor).center));
+		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
+		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+		write (keyword => keyword_width, parameters => to_string (element (cursor).width));
+		arc_end;
+	end write_arc;
+
+	procedure write_circle (cursor : in et_pcb.type_doc_circles.cursor) is
+		use et_pcb;
+		use type_doc_circles;
+		use et_pcb_coordinates;		
+	begin
+		circle_begin;
+		write (keyword => keyword_center, parameters => position (element (cursor).center));
+		write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
+		write (keyword => keyword_width , parameters => to_string (element (cursor).width));
+		write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
+		write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
+		write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
+		write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
+		circle_end;
+	end write_circle;
+	
+	procedure write_polygon (cursor : in et_pcb.type_doc_polygons.cursor) is 
+		use et_pcb;
+		use type_doc_polygons;
+		use et_pcb_coordinates;		
+		use type_polygon_points;
+		
+		procedure query_points (polygon : in type_doc_polygon) is begin
+			iterate (polygon.points, write_polygon_corners'access); -- see general stuff above
+		end query_points;
+		
+	begin -- write_polygon
+		polygon_begin;
+		write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
+		write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
+		write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
+		write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
+		write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
+		corners_begin;
+		query_element (cursor, query_points'access);
+		corners_end;
+		polygon_end;
+	end write_polygon;
+
 	
 	
 	procedure save_project (log_threshold : in et_string_processing.type_log_level) is
@@ -1311,57 +1377,6 @@ package body et_project is
 
 			-- CS: rename procedure names so that they are in singular
 			
-
-			-- ASSEMBLY DOCUMENTATION
-			procedure write_lines (cursor : in type_doc_lines.cursor) is begin
-				line_begin;
-				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-				write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
-				write (keyword => keyword_width, parameters => to_string (element (cursor).width));
-				line_end;
-			end write_lines;
-
-			procedure write_arcs (cursor : in type_doc_arcs.cursor) is begin
-				arc_begin;
-				write (keyword => keyword_center, parameters => position (element (cursor).center));
-				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-				write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
-				write (keyword => keyword_width, parameters => to_string (element (cursor).width));
-				arc_end;
-			end write_arcs;
-
-			procedure write_circles (cursor : in type_doc_circles.cursor) is begin
-				circle_begin;
-				write (keyword => keyword_center, parameters => position (element (cursor).center));
-				write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
-				write (keyword => keyword_width , parameters => to_string (element (cursor).width));
-				write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
-				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
-				write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
-				write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
-				circle_end;
-			end write_circles;
-			
-			procedure write_polygons (cursor : in type_doc_polygons.cursor) is 
-				use type_polygon_points;
-				
-				procedure query_points (polygon : in type_doc_polygon) is begin
-					iterate (polygon.points, write_polygon_corners'access); -- see general stuff above
-				end query_points;
-				
-			begin -- write_polygons
-				polygon_begin;
-				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
-				write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
-				write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
-				write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
-				write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
-				corners_begin;
-				query_element (cursor, query_points'access);
-				corners_end;
-				polygon_end;
-			end write_polygons;
-
 			-- COPPER (NON-ELECTRIC)
 			procedure write_lines (cursor : in type_copper_lines_pcb.cursor) is begin
 				line_begin;
@@ -1461,19 +1476,19 @@ package body et_project is
 			section_mark (section_assembly_doc, HEADER);
 
 			section_mark (section_top, HEADER);
-				iterate (module.board.assy_doc.top.lines, write_lines'access);
-				iterate (module.board.assy_doc.top.arcs, write_arcs'access);
-				iterate (module.board.assy_doc.top.circles, write_circles'access);
-				iterate (module.board.assy_doc.top.polygons, write_polygons'access);
+				iterate (module.board.assy_doc.top.lines, write_line'access);
+				iterate (module.board.assy_doc.top.arcs, write_arc'access);
+				iterate (module.board.assy_doc.top.circles, write_circle'access);
+				iterate (module.board.assy_doc.top.polygons, write_polygon'access);
 				iterate (module.board.assy_doc.top.texts, write_text'access);
 				iterate (module.board.assy_doc.top.placeholders, write_placeholder'access);
 				section_mark (section_top, FOOTER);
 
 				section_mark (section_bottom, HEADER);
-				iterate (module.board.assy_doc.bottom.lines, write_lines'access);
-				iterate (module.board.assy_doc.bottom.arcs, write_arcs'access);
-				iterate (module.board.assy_doc.bottom.circles, write_circles'access);
-				iterate (module.board.assy_doc.bottom.polygons, write_polygons'access);
+				iterate (module.board.assy_doc.bottom.lines, write_line'access);
+				iterate (module.board.assy_doc.bottom.arcs, write_arc'access);
+				iterate (module.board.assy_doc.bottom.circles, write_circle'access);
+				iterate (module.board.assy_doc.bottom.polygons, write_polygon'access);
 				iterate (module.board.assy_doc.bottom.texts, write_text'access);
 				iterate (module.board.assy_doc.bottom.placeholders, write_placeholder'access);
 				section_mark (section_bottom, FOOTER);
@@ -2042,7 +2057,11 @@ package body et_project is
 		use type_silk_circles;
 		use type_silk_polygons;
 
-		
+		use type_doc_lines;
+		use type_doc_arcs;
+		use type_doc_circles;
+		use type_doc_polygons;
+				
 		procedure write_copper is
 
 			procedure write_line (cursor : in type_copper_lines.cursor) is begin
@@ -2149,6 +2168,32 @@ package body et_project is
 
 			section_mark (section_silk_screen, FOOTER);			
 		end write_silk_screen;
+
+		procedure write_assembly_documentation is begin
+			section_mark (section_assembly_doc, HEADER);
+
+			-- top
+			section_mark (section_top, HEADER);
+			iterate (packge.assembly_documentation.top.lines, write_line'access);
+			iterate (packge.assembly_documentation.top.arcs, write_arc'access);
+			iterate (packge.assembly_documentation.top.circles, write_circle'access);
+			iterate (packge.assembly_documentation.top.polygons, write_polygon'access);
+			iterate (packge.assembly_documentation.top.texts, write_text'access);
+			iterate (packge.assembly_documentation.top.placeholders, write_placeholder'access);
+			section_mark (section_top, FOOTER);
+			
+			-- bottom
+			section_mark (section_bottom, HEADER);
+			iterate (packge.assembly_documentation.bottom.lines, write_line'access);
+			iterate (packge.assembly_documentation.bottom.arcs, write_arc'access);
+			iterate (packge.assembly_documentation.bottom.circles, write_circle'access);
+			iterate (packge.assembly_documentation.bottom.polygons, write_polygon'access);
+			iterate (packge.assembly_documentation.bottom.texts, write_text'access);
+			iterate (packge.assembly_documentation.bottom.placeholders, write_placeholder'access);
+			section_mark (section_bottom, FOOTER);
+
+			section_mark (section_assembly_doc, FOOTER);
+		end write_assembly_documentation;
 		
 		procedure write_keepout is begin
 			section_mark (section_keepout, HEADER);
@@ -2289,20 +2334,19 @@ package body et_project is
 		write (keyword => keyword_assembly_technology, parameters => to_string (packge.technology));
 
 		write_silk_screen;
-		write_copper;
+		write_assembly_documentation;
 		write_keepout;
+		write_copper;
 		write_stop_mask;
 		write_stencil;
 		write_route_restrict;
 		write_via_restrict;
-		write_contour;
-		write_contour_plated;
+		write_contour; -- pcb contour
+		write_contour_plated; -- pcb contour
 
 
 		
 		-- CS
-		-- silk_screen				: type_silk_screen_package_both_sides; -- incl. placeholder for reference and purpose
-		-- assembly_documentation	: type_assembly_documentation_package_both_sides; -- incl. placeholder for value
 		-- terminals				: type_terminals.map;
 
 		-- 3D stuff

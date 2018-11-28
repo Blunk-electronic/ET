@@ -876,8 +876,8 @@ package et_pcb is
 		lines 		: type_doc_lines.list;
 		arcs		: type_doc_arcs.list;
 		circles		: type_doc_circles.list;
-		texts		: type_texts_with_content.list;
 		polygons	: type_doc_polygons.list;
+		texts		: type_texts_with_content.list;
 	end record;
 
 	-- Assembly documentation objects of a package (in the library) include placeholders:
