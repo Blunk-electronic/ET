@@ -2025,18 +2025,15 @@ package body et_kicad_pcb is
 								inserted	=> terminal_inserted,
 								new_item 	=> (
 												technology 			=> THT,
-												--pad_shape 		=> CIRCULAR,
-												pad_shape_top		=> (others <>), -- CS
-												pad_shape_bottom	=> (others <>), -- CS
 												tht_hole			=> DRILLED,
+												position			=> terminal_position,
+												pad_shape_top		=> (others => <>), -- CS calculate circle from pad diameter, terminal_drill_offset_x/y
+												pad_shape_bottom	=> (others => <>), -- CS calculate circle from pad diameter, terminal_drill_offset_x/y
 												width_inner_layers	=> terminal_copper_width_inner_layers,
-												drill_size_cir		=> terminal_drill_size,
-												--offset_x		=> terminal_drill_offset_x,
-												--offset_y		=> terminal_drill_offset_y,
-												--shape_tht		=> terminal_shape_tht,
-												position			=> terminal_position
+												drill_size			=> terminal_drill_size
 												));
-						else -- NON_CIRCULAR
+
+						else -- NON_CIRCULAR : OCTAGON, RECTANGLE, LONG, LONG_OFFSET
 							case terminal_drill_shape is
 								when CIRCULAR =>
 									terminals.insert (
@@ -2044,15 +2041,13 @@ package body et_kicad_pcb is
 										position	=> terminal_cursor,
 										inserted	=> terminal_inserted,
 										new_item 	=> (
-														technology 		=> THT,
-														pad_shape		=> NON_CIRCULAR,
-														tht_hole		=> DRILLED,
-														width_inner_layers => terminal_copper_width_inner_layers,
-														drill_size_dri	=> terminal_drill_size,
-														shape_tht		=> terminal_shape_tht,
-														position		=> terminal_position,
-														size_tht_x		=> terminal_size_x,
-														size_tht_y		=> terminal_size_y
+														technology 			=> THT,
+														tht_hole			=> DRILLED,
+														position			=> terminal_position,
+														pad_shape_top		=> (others => <>), -- CS calculate octagon, rectangle, long from terminal_size_x/y
+														pad_shape_bottom	=> (others => <>), -- CS calculate octagon, rectangle, long from terminal_size_x/y
+														width_inner_layers 	=> terminal_copper_width_inner_layers,
+														drill_size			=> terminal_drill_size
 													));
 
 								when SLOTTED =>
@@ -2061,26 +2056,24 @@ package body et_kicad_pcb is
 										position	=> terminal_cursor,
 										inserted	=> terminal_inserted,
 										new_item 	=> (
-														technology 		=> THT,
-														pad_shape		=> NON_CIRCULAR,
-														tht_hole		=> MILLED,
-														width_inner_layers => terminal_copper_width_inner_layers,
+														technology 			=> THT,
+														tht_hole			=> MILLED,
+														position			=> terminal_position,
+														pad_shape_top		=> (others => <>), -- CS calculate rectangle from terminal_size_x/y
+														pad_shape_bottom	=> (others => <>), -- CS calculate rectangle from terminal_size_x/y
+														width_inner_layers	=> terminal_copper_width_inner_layers,
 
 														-- The plated millings of the hole is a list of lines.
-														-- KiCad does not allow arcs or circles for plated millings.
-														millings		=> (lines => contour_milled_rectangle_of_pad
-																				(center => terminal_position,
-																				size_x => terminal_milling_size_x,
-																				size_y => terminal_milling_size_y,
-																				offset_x => terminal_drill_offset_x,
-																				offset_y => terminal_drill_offset_y),
-																				
-																			arcs => type_pcb_contour_arcs.empty_list,
-																			circles => type_pcb_contour_circles.empty_list),
-														shape_tht		=> terminal_shape_tht,
-														position		=> terminal_position,
-														size_tht_x		=> terminal_size_x,
-														size_tht_y		=> terminal_size_y
+														millings			=> (
+																lines 	=> contour_milled_rectangle_of_pad (
+																			center		=> terminal_position,
+																			size_x		=> terminal_milling_size_x,
+																			size_y		=> terminal_milling_size_y,
+																			offset_x	=> terminal_drill_offset_x,
+																			offset_y	=> terminal_drill_offset_y),
+
+																-- KiCad does not allow arcs or circles for plated millings.
+																others	=> <>)
 													));
 							end case;
 
@@ -2099,31 +2092,28 @@ package body et_kicad_pcb is
 								inserted	=> terminal_inserted,
 								new_item 	=> (
 												technology 		=> SMT,
-												pad_shape		=> CIRCULAR,
 												tht_hole		=> DRILLED, -- has no meaning here
-												shape_smt		=> terminal_shape_smt,
 												position		=> terminal_position,
+												pad_shape		=> (others => <>), -- CS pad diameter
 												face 			=> terminal_face,
 												stop_mask		=> terminal_stop_mask,
 												solder_paste	=> terminal_solder_paste
-											));
-						else
+											   ));
+							
+						else -- RECTANGLE, LONG
 							terminals.insert (
 								key 		=> terminal_name, 
 								position	=> terminal_cursor,
 								inserted	=> terminal_inserted,
 								new_item 	=> (
 												technology 		=> SMT,
-												pad_shape		=> NON_CIRCULAR,
 												tht_hole		=> DRILLED, -- has no meaning here
-												shape_smt		=> terminal_shape_smt,
 												position		=> terminal_position,
+												pad_shape		=> (others => <>), -- CS terminal_size_x/y
 												face 			=> terminal_face,
 												stop_mask		=> terminal_stop_mask,
-												solder_paste	=> terminal_solder_paste,
-												size_smt_x		=> terminal_size_x,
-												size_smt_y		=> terminal_size_y
-											));
+												solder_paste	=> terminal_solder_paste
+												));
 						end if;
 
 						init_stop_and_mask; -- relevant for SMT terminals only (stop mask always open, solder paste never applied)
@@ -6385,20 +6375,18 @@ package body et_kicad_pcb is
 								position	=> terminal_cursor,
 								inserted	=> terminal_inserted,
 								new_item 	=> (
-												technology 		=> THT,
-												pad_shape 		=> CIRCULAR,
-												tht_hole		=> DRILLED,
-												width_inner_layers => terminal_copper_width_inner_layers,
-												drill_size_cir	=> terminal_drill_size,
-												offset_x		=> terminal_drill_offset_x,
-												offset_y		=> terminal_drill_offset_y,
-												shape_tht		=> terminal_shape_tht,
-												position		=> terminal_position,
+												technology 			=> THT,
+												tht_hole			=> DRILLED,
+												position			=> terminal_position,
+												pad_shape_top		=> (others => <>), -- CS calculate circle from pad diameter, terminal_drill_offset_x/y
+												pad_shape_bottom	=> (others => <>), -- CS calculate circle from pad diameter, terminal_drill_offset_x/y
+												width_inner_layers	=> terminal_copper_width_inner_layers,
+												drill_size			=> terminal_drill_size,
 
 												-- the pad is connected with a certain net
-												net_name		=> terminal_net_name
+												net_name			=> terminal_net_name
 												));
-						else -- NON_CIRCULAR
+						else -- NON_CIRCULAR : OCTAGON, RECTANGLE, LONG, LONG_OFFSET
 							case terminal_drill_shape is
 								when CIRCULAR =>
 									terminals.insert (
@@ -6406,15 +6394,13 @@ package body et_kicad_pcb is
 										position	=> terminal_cursor,
 										inserted	=> terminal_inserted,
 										new_item 	=> (
-														technology 		=> THT,
-														pad_shape		=> NON_CIRCULAR,
-														tht_hole		=> DRILLED,
-														width_inner_layers => terminal_copper_width_inner_layers,
-														drill_size_dri	=> terminal_drill_size,
-														shape_tht		=> terminal_shape_tht,
-														position		=> terminal_position,
-														size_tht_x		=> terminal_size_x,
-														size_tht_y		=> terminal_size_y,
+														technology 			=> THT,
+														tht_hole			=> DRILLED,
+														position			=> terminal_position,
+														pad_shape_top		=> (others => <>), -- CS calculate octagon, rectangle, long from terminal_size_x/y
+														pad_shape_bottom	=> (others => <>), -- CS calculate octagon, rectangle, long from terminal_size_x/y
+														width_inner_layers	=> terminal_copper_width_inner_layers,
+														drill_size			=> terminal_drill_size,
 
 														-- the pad is connected with a certain net
 														net_name		=> terminal_net_name
@@ -6426,26 +6412,24 @@ package body et_kicad_pcb is
 										position	=> terminal_cursor,
 										inserted	=> terminal_inserted,
 										new_item 	=> (
-														technology 		=> THT,
-														pad_shape		=> NON_CIRCULAR,
-														tht_hole		=> MILLED,
-														width_inner_layers => terminal_copper_width_inner_layers,
+														technology 			=> THT,
+														tht_hole			=> MILLED,
+														position			=> terminal_position,
+														pad_shape_top		=> (others => <>), -- CS calculate rectangle from terminal_size_x/y
+														pad_shape_bottom	=> (others => <>), -- CS calculate rectangle from terminal_size_x/y
+														width_inner_layers	=> terminal_copper_width_inner_layers,
 
 														-- The plated millings of the hole is a list of lines.
-														-- KiCad does not allow arcs or circles for plated millings.
-														millings		=> (lines => contour_milled_rectangle_of_pad
-																			(center => terminal_position,
-																			size_x => terminal_milling_size_x,
-																			size_y => terminal_milling_size_y,
-																			offset_x => terminal_drill_offset_x,
-																			offset_y => terminal_drill_offset_y),
+														millings			=> (
+																lines	=> contour_milled_rectangle_of_pad (
+																			center 		=> terminal_position,
+																			size_x 		=> terminal_milling_size_x,
+																			size_y 		=> terminal_milling_size_y,
+																			offset_x 	=> terminal_drill_offset_x,
+																			offset_y 	=> terminal_drill_offset_y),
 
-																			arcs => type_pcb_contour_arcs.empty_list,
-																			circles => type_pcb_contour_circles.empty_list),
-														shape_tht		=> terminal_shape_tht,
-														position		=> terminal_position,
-														size_tht_x		=> terminal_size_x,
-														size_tht_y		=> terminal_size_y,
+																-- KiCad does not allow arcs or circles for plated millings.
+																others	=> <>),
 
 														-- the pad is connected with a certain net
 														net_name		=> terminal_net_name
@@ -6470,17 +6454,15 @@ package body et_kicad_pcb is
 								inserted	=> terminal_inserted,
 								new_item 	=> (
 												technology 		=> SMT,
-												pad_shape		=> CIRCULAR,
 												tht_hole		=> DRILLED, -- has no meaning here
-												shape_smt		=> terminal_shape_smt,
 												position		=> terminal_position,
-
-												-- the pad is connected with a certain net
-												net_name		=> terminal_net_name,
-												
+												pad_shape		=> (others => <>), -- CS pad diameter
 												face 			=> terminal_face,
 												stop_mask		=> terminal_stop_mask,
-												solder_paste	=> terminal_solder_paste
+												solder_paste	=> terminal_solder_paste,
+
+												-- the pad is connected with a certain net
+												net_name		=> terminal_net_name
 											));
 						else
 							terminals.insert (
@@ -6489,19 +6471,15 @@ package body et_kicad_pcb is
 								inserted	=> terminal_inserted,
 								new_item 	=> (
 												technology 		=> SMT,
-												pad_shape		=> NON_CIRCULAR,
 												tht_hole		=> DRILLED, -- has no meaning here
-												shape_smt		=> terminal_shape_smt,
 												position		=> terminal_position,
-												
-												-- the pad is connected with a certain net
-												net_name		=> terminal_net_name,
-												
+												pad_shape		=> (others => <>), -- CS terminal_size_x/y
 												face 			=> terminal_face,
 												stop_mask		=> terminal_stop_mask,
 												solder_paste	=> terminal_solder_paste,
-												size_smt_x		=> terminal_size_x,
-												size_smt_y		=> terminal_size_y
+												
+												-- the pad is connected with a certain net
+												net_name		=> terminal_net_name
 											));
 						end if;
 

@@ -1105,7 +1105,7 @@ package et_pcb is
 				
 				case tht_hole is
 					when DRILLED =>
-						drill_size_dri : type_drill_size;
+						drill_size : type_drill_size;
 						
 					when MILLED =>
 						millings : type_package_pcb_contour_plated;
