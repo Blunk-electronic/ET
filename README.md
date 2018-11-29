@@ -1,5 +1,5 @@
 # ET - ECAD Electronic Tool
-## An approach to model complex schematics and layouts
+## An approach to model and develop complex schematics and layouts
 
 ### The Idea behind
 - Most ECAD tools do not allow to opening, checking and editing of multiple designs simultaneously.
@@ -72,7 +72,8 @@ $ sh install.sh
 #### Why Ada ??
 - The only programming language that provides a robust and strong typing system is Ada.
 - Objects and structures within a schematic, library and board layout are very very complex things and require sound modelling.
-- If saftey critical and military applications use Ada, then is must be good for an advanced ECAD system as well.
+- If saftey/mission critical and military applications use Ada, then is must be good for an advanced ECAD system as well.
+- Ada is defined by ISO/IEC 8652:2012 and MIL-STD-1815
 - Ada is beautiful :-)
 
 ### Collaboration
