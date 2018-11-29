@@ -1052,7 +1052,42 @@ package body et_pcb is
 		use et_pcb_coordinates;
 		use et_libraries;
 		log_threshold_1 : type_log_level := log_threshold + 1;
-	begin
+
+		use type_pad_lines;
+		use type_pad_arcs;
+		use type_pad_circles;
+		use type_pad_polygons;		
+		
+		procedure line (cursor : in type_pad_lines.cursor) is begin
+			log (to_string (type_line_2d (element (cursor))), log_threshold + 1);
+		end line;
+
+		procedure arc (cursor : in type_pad_arcs.cursor) is begin
+			log (to_string (type_arc_2d (element (cursor))), log_threshold + 1);
+		end arc;
+		
+		procedure circle (cursor : in type_pad_circles.cursor) is begin
+			log (to_string (type_circle_2d (element (cursor))), log_threshold + 1);
+		end circle;
+
+		procedure polygon (cursor : in type_pad_polygons.cursor) is 
+			use type_polygon_points;
+			points : type_polygon_points.set := element (cursor).points;
+
+			procedure point (cursor : in type_polygon_points.cursor) is begin
+				log (et_pcb_coordinates.to_string (element (cursor)), log_threshold + 1);	
+			end point;
+	
+		begin -- polygon
+			log ("polygon with corners", log_threshold + 1);
+			log_indentation_up;
+			iterate (points, point'access);
+			log_indentation_down;
+		end polygon;
+	
+		
+		
+	begin -- terminal_properties
 		log ("terminal name" & to_string (name)
 			& " technology" & to_string (terminal.technology)
 			& to_string (type_point_2d (terminal.position))
@@ -1064,7 +1099,18 @@ package body et_pcb is
 		case terminal.technology is
 			when THT => 
 				
-				-- CS log pad_shape_top/bottom
+				-- log pad_shape_top/bottom
+				log ("pad contour top", log_threshold + 1);
+				iterate (terminal.pad_shape_top.lines, line'access);
+				iterate (terminal.pad_shape_top.arcs, arc'access);
+				iterate (terminal.pad_shape_top.circles, circle'access);
+				iterate (terminal.pad_shape_top.polygons, polygon'access);
+
+				log ("pad contour bottom", log_threshold + 1);
+				iterate (terminal.pad_shape_bottom.lines, line'access);
+				iterate (terminal.pad_shape_bottom.arcs, arc'access);
+				iterate (terminal.pad_shape_bottom.circles, circle'access);
+				iterate (terminal.pad_shape_bottom.polygons, polygon'access);
 				
 				log ("copper width of inner layers" & to_string (terminal.width_inner_layers), log_threshold_1);
 
@@ -1082,7 +1128,12 @@ package body et_pcb is
 				
 			when SMT => 
 				
-				-- CS log pad_shape
+				-- log pad_shape
+				log ("pad contour", log_threshold + 1);
+				iterate (terminal.pad_shape.lines, line'access);
+				iterate (terminal.pad_shape.arcs, arc'access);
+				iterate (terminal.pad_shape.circles, circle'access);
+				iterate (terminal.pad_shape.polygons, polygon'access);
 				
 				log ("face" & to_string (terminal.face), log_threshold_1);
 				log ("stop mask" & to_string (terminal.stop_mask), log_threshold_1);
