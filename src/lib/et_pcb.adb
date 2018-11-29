@@ -247,17 +247,23 @@ package body et_pcb is
 		use type_pcb_contour_lines;
 		use type_pcb_contour_arcs;
 		use type_pcb_contour_circles;
-		line_cursor 	: type_pcb_contour_lines.cursor;
-		arc_cursor		: type_pcb_contour_arcs.cursor;
-		circle_cursor	: type_pcb_contour_circles.cursor;
-	begin
-		if not is_empty (millings.lines) then
-			line_cursor := millings.lines.first;
-			while line_cursor /= type_pcb_contour_lines.no_element loop
-				line_pcb_contour_properties (line_cursor, log_threshold);
-				next (line_cursor);
-			end loop;
-		end if;
+		
+		procedure line (cursor : in type_pcb_contour_lines.cursor) is begin
+			line_pcb_contour_properties (cursor, log_threshold);
+		end;
+
+		procedure arc (cursor : in type_pcb_contour_arcs.cursor) is begin
+			arc_pcb_contour_properties (cursor, log_threshold);
+		end;
+
+		procedure circle (cursor : in type_pcb_contour_circles.cursor) is begin
+			circle_pcb_contour_properties (cursor, log_threshold);
+		end;
+		
+	begin -- log_plated_millings
+		iterate (millings.lines, line'access);
+		iterate (millings.arcs, arc'access);
+		iterate (millings.circles, circle'access);
 	end log_plated_millings;
 	
 		
