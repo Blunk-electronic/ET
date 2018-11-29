@@ -1051,16 +1051,20 @@ package et_pcb is
 
 	function to_string (technology : in type_assembly_technology) return string;
 
-	type type_terminal_solder_paste is (NONE, APPLIED);
-	function to_string (solder_paste : in type_terminal_solder_paste) return string;
 	
-	type type_terminal_stop_mask is (CLOSED, OPEN);  -- net-ties or netchangers have their pads covered
-	function to_string (stop_mask : in type_terminal_stop_mask) return string;
+	type type_solder_paste_status is (NONE, APPLIED);
+	function to_string (solder_paste : in type_solder_paste_status) return string;
+	
+	type type_stop_mask_status is (CLOSED, OPEN);  -- net-ties or netchangers have their pads covered
+	function to_string (stop_mask : in type_stop_mask_status) return string;
 
+	
+	-- A THT terminal may have a drilled or a milled hole (milled hole is also called "plated millings")
 	type type_terminal_tht_hole is (DRILLED, MILLED);
 	function to_string (tht_hole : in type_terminal_tht_hole) return string;
 
-	--------------------------
+	
+	-- A pad outline consists of lines, arcs, circles, polygons:
 	type type_pad_line is new type_line_2d with null record;
 	type type_pad_arc is new type_arc_2d with null record;
 	type type_pad_circle is new type_circle_2d with null record;
@@ -1105,8 +1109,8 @@ package et_pcb is
 			when SMT =>
 				pad_shape		: type_pad_outline;
 				face			: type_face;
-				stop_mask 		: type_terminal_stop_mask;
-				solder_paste	: type_terminal_solder_paste;
+				stop_mask 		: type_stop_mask_status;
+				solder_paste	: type_solder_paste_status;
 				
 		end case;
 	end record;

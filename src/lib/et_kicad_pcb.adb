@@ -291,7 +291,7 @@ package body et_kicad_pcb is
 		end if;
 	end to_assembly_technology;
 			
-	function to_terminal_shape_tht (shape : in string) return type_terminal_shape_tht is
+	function to_pad_shape_tht (shape : in string) return type_pad_shape_tht is
 	begin
 		if shape = "rect" then return RECTANGLE;
 		elsif shape = "oval" then return LONG;
@@ -300,9 +300,9 @@ package body et_kicad_pcb is
 			log (message_error & "invalid shape for a THT terminal !", console => true);
 			raise constraint_error;
 		end if;
-	end to_terminal_shape_tht;
+	end to_pad_shape_tht;
 
-	function to_terminal_shape_smt (shape : in string) return type_terminal_shape_smt is
+	function to_pad_shape_smt (shape : in string) return type_pad_shape_smt is
 	begin
 		if shape = "rect" then return RECTANGLE;
 		elsif shape = "oval" then return LONG;
@@ -312,7 +312,7 @@ package body et_kicad_pcb is
 			log (message_error & "invalid shape for an SMT terminal !", console => true);
 			raise constraint_error;
 		end if;
-	end to_terminal_shape_smt;
+	end to_pad_shape_smt;
 
 	function to_signal_layer_id (layer : in string) return type_signal_layer_id is
 	-- Translates a string like F.Cu or In2.Cu or or In15.Cu to a type_signal_layer_id (0..31) -- see spec
@@ -662,8 +662,8 @@ package body et_kicad_pcb is
 		-- compose the final terminal.
 		terminal_name 		: et_libraries.type_terminal_name.bounded_string;
 		terminal_technology	: type_assembly_technology;
-		terminal_shape_tht 	: type_terminal_shape_tht;
-		terminal_shape_smt 	: type_terminal_shape_smt;
+		terminal_shape_tht 	: type_pad_shape_tht;
+		terminal_shape_smt 	: type_pad_shape_smt;
 
 		terminal_face 			: et_pcb_coordinates.type_face;
 		terminal_drill_size		: type_drill_size; 
@@ -683,20 +683,20 @@ package body et_kicad_pcb is
 		-- Temporarily these flags hold the solder paste status of an SMT terminal.
 		-- They are initialized by procedure init_terminal_layers and validated by
 		-- procedure set_stop_and_mask.
-		terminal_top_solder_paste, terminal_bot_solder_paste : type_terminal_solder_paste;
+		terminal_top_solder_paste, terminal_bot_solder_paste : type_solder_paste_status;
 
 		-- This is the flag for the solder paste status of an SMT terminal.
 		-- Read when finally building a terminal.
-		terminal_solder_paste : type_terminal_solder_paste;
+		terminal_solder_paste : type_solder_paste_status;
 
 		-- Temporarily these flags hold the solder paste status of an SMT terminal.
 		-- They are initialized by procedure init_terminal_layers and validated by
 		-- procedure set_stop_and_mask.
-		terminal_top_stop_mask, terminal_bot_stop_mask : type_terminal_stop_mask;
+		terminal_top_stop_mask, terminal_bot_stop_mask : type_stop_mask_status;
 
 		-- This is the flag for the stop mask status of an SMT terminal.
 		-- Read when finally building a terminal.
-		terminal_stop_mask : type_terminal_stop_mask;
+		terminal_stop_mask : type_stop_mask_status;
 
 		-- Here we collect all kinds of terminals after they have been built.
 		terminals : et_pcb.type_terminals.map;
@@ -738,10 +738,10 @@ package body et_kicad_pcb is
 		procedure init_stop_and_mask is begin
 		-- Resets the temporarily status flags of solder paste and stop mask of an SMT terminal.
 		-- Does not affect THT terminals (stop mask always open, solder paste never applied).
-			terminal_top_solder_paste := type_terminal_solder_paste'first;
-			terminal_bot_solder_paste := type_terminal_solder_paste'first;
-			terminal_top_stop_mask := type_terminal_stop_mask'first;
-			terminal_bot_stop_mask := type_terminal_stop_mask'first;
+			terminal_top_solder_paste := type_solder_paste_status'first;
+			terminal_bot_solder_paste := type_solder_paste_status'first;
+			terminal_top_stop_mask := type_stop_mask_status'first;
+			terminal_bot_stop_mask := type_stop_mask_status'first;
 		end init_stop_and_mask;
 
 		procedure set_stop_and_mask is
@@ -1674,8 +1674,8 @@ package body et_kicad_pcb is
 									terminal_technology := to_assembly_technology (to_string (arg));
 								when 3 =>
 									case terminal_technology is
-										when SMT => terminal_shape_smt := to_terminal_shape_smt (to_string (arg));
-										when THT => terminal_shape_tht := to_terminal_shape_tht (to_string (arg));
+										when SMT => terminal_shape_smt := to_pad_shape_smt (to_string (arg));
+										when THT => terminal_shape_tht := to_pad_shape_tht (to_string (arg));
 									end case;
 								when others => too_many_arguments;
 							end case;
@@ -2770,14 +2770,14 @@ package body et_kicad_pcb is
 		return layer_id;
 	end to_layer_id;
 
-	function to_string (shape : in type_terminal_shape_tht) return string is
+	function to_string (shape : in type_pad_shape_tht) return string is
 	begin
-		return latin_1.space & to_lower (type_terminal_shape_tht'image (shape));
+		return latin_1.space & to_lower (type_pad_shape_tht'image (shape));
 	end to_string;
 	
-	function to_string (shape : in type_terminal_shape_smt) return string is
+	function to_string (shape : in type_pad_shape_smt) return string is
 	begin
-		return latin_1.space & to_lower (type_terminal_shape_smt'image (shape));
+		return latin_1.space & to_lower (type_pad_shape_smt'image (shape));
 	end to_string;
 	
 	function to_layer_name (name : in string) return type_layer_name.bounded_string is
@@ -3090,8 +3090,8 @@ package body et_kicad_pcb is
 		-- compose the final terminal.
 		terminal_name 			: et_libraries.type_terminal_name.bounded_string;
 		terminal_technology		: type_assembly_technology;
-		terminal_shape_tht 		: type_terminal_shape_tht;
-		terminal_shape_smt 		: type_terminal_shape_smt;
+		terminal_shape_tht 		: type_pad_shape_tht;
+		terminal_shape_smt 		: type_pad_shape_smt;
 
 		terminal_face 			: et_pcb_coordinates.type_face;
 		terminal_drill_size		: type_drill_size; 
@@ -3114,20 +3114,20 @@ package body et_kicad_pcb is
 		-- Temporarily these flags hold the solder paste status of an SMT terminal.
 		-- They are initialized by procedure init_terminal_layers and validated by
 		-- procedure set_stop_and_mask.
-		terminal_top_solder_paste, terminal_bot_solder_paste : type_terminal_solder_paste;
+		terminal_top_solder_paste, terminal_bot_solder_paste : type_solder_paste_status;
 
 		-- This is the flag for the solder paste status of an SMT terminal.
 		-- Read when finally building a terminal.
-		terminal_solder_paste : type_terminal_solder_paste;
+		terminal_solder_paste : type_solder_paste_status;
 
 		-- Temporarily these flags hold the solder paste status of an SMT terminal.
 		-- They are initialized by procedure init_terminal_layers and validated by
 		-- procedure set_stop_and_mask.
-		terminal_top_stop_mask, terminal_bot_stop_mask : type_terminal_stop_mask;
+		terminal_top_stop_mask, terminal_bot_stop_mask : type_stop_mask_status;
 
 		-- This is the flag for the stop mask status of an SMT terminal.
 		-- Read when finally building a terminal.
-		terminal_stop_mask : type_terminal_stop_mask;
+		terminal_stop_mask : type_stop_mask_status;
 
 		-- Here we collect all kinds of terminals after they have been built.
 		-- NOTE: This is the type_terminals as specified in et_kicad_pcb ! (includes net names)
@@ -3145,10 +3145,10 @@ package body et_kicad_pcb is
 		procedure init_stop_and_mask is begin
 		-- Resets the temporarily status flags of solder paste and stop mask of an SMT terminal.
 		-- Does not affect THT terminals (stop mask always open, solder paste never applied).
-			terminal_top_solder_paste := type_terminal_solder_paste'first;
-			terminal_bot_solder_paste := type_terminal_solder_paste'first;
-			terminal_top_stop_mask := type_terminal_stop_mask'first;
-			terminal_bot_stop_mask := type_terminal_stop_mask'first;
+			terminal_top_solder_paste := type_solder_paste_status'first;
+			terminal_bot_solder_paste := type_solder_paste_status'first;
+			terminal_top_stop_mask := type_stop_mask_status'first;
+			terminal_bot_stop_mask := type_stop_mask_status'first;
 		end init_stop_and_mask;
 
 		procedure set_stop_and_mask is
@@ -4032,8 +4032,8 @@ package body et_kicad_pcb is
 									terminal_technology := to_assembly_technology (to_string (arg));
 								when 3 =>
 									case terminal_technology is
-										when SMT => terminal_shape_smt := to_terminal_shape_smt (to_string (arg));
-										when THT => terminal_shape_tht := to_terminal_shape_tht (to_string (arg));
+										when SMT => terminal_shape_smt := to_pad_shape_smt (to_string (arg));
+										when THT => terminal_shape_tht := to_pad_shape_tht (to_string (arg));
 									end case;
 								when others => too_many_arguments;
 							end case;

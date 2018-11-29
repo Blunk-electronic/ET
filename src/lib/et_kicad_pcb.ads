@@ -153,11 +153,11 @@ package et_kicad_pcb is
 	attribute_technology_smd		: constant string (1..3)	:= "smd";
 	attribute_technology_virtual	: constant string (1..7)	:= "virtual";
 
-	type type_terminal_shape_tht is (OCTAGON, CIRCULAR, RECTANGLE, LONG, LONG_OFFSET); -- CS rename to type_pad_shape_tht
-	function to_string (shape : in type_terminal_shape_tht) return string;
+	type type_pad_shape_tht is (OCTAGON, CIRCULAR, RECTANGLE, LONG, LONG_OFFSET);
+	function to_string (shape : in type_pad_shape_tht) return string;
 	
-	type type_terminal_shape_smt is (RECTANGLE, CIRCULAR, LONG); -- CS rename to type_pad_shape_smt
-	function to_string (shape : in type_terminal_shape_smt) return string;	
+	type type_pad_shape_smt is (RECTANGLE, CIRCULAR, LONG);
+	function to_string (shape : in type_pad_shape_smt) return string;	
 	
 	drill_shape_oval	: constant string (1..4) := "oval"; -- used with slotted holes
 	pad_drill_offset	: constant string (1..6) := "offset";
