@@ -2,7 +2,7 @@
 ## An approach to model and develop complex schematics and layouts
 
 ### The Idea behind
-- Most ECAD tools do not allow to opening, checking and editing of multiple designs simultaneously.
+- Most ECAD tools do not allow opening, checking and editing of multiple designs simultaneously.
 - We need real hierarchic and modular designs.
 - We need a text based, machine and human readable format for design files.
 - Design checks provided by common ECAD tools are way too superficial and trivial.
