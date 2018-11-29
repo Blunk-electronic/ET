@@ -13,6 +13,16 @@
 - In the long run, a nice GUI will come with ET.
 - Your feedback and collaboration is highly welcome !
 
+## Outstanding Features
+- native Linux support
+- ASCII / text based design and device model files - optimized for version control with GIT
+- human readable and editable design and model files
+- multi-board/layout support
+- true hierarchic and modular design
+- submodules instantiated in parent module by reference
+- extensive design rule checking (device prefixes, purpose of user-interactive devices, partcodes, pinout of board-to-board connections ...)
+- interfacing with system modelling tools
+
 ### Supported CAE formats
 - KiCad V4, V5
 - Planned is to support also EAGLE.
@@ -64,3 +74,7 @@ $ sh install.sh
 - Objects and structures within a schematic, library and board layout are very very complex things and require sound modelling.
 - If saftey critical and military applications use Ada, then is must be good for an advanced ECAD system as well.
 - Ada is beautiful :-)
+
+### Collaboration
+- We need a nice web site for the project.
+- You are highly welcome !
