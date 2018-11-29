@@ -2333,14 +2333,36 @@ package body et_project is
 				section_mark (section_terminal, HEADER);
 				write (keyword => keyword_name, parameters => et_libraries.to_string (key (terminal_cursor)));
 				write (keyword => keyword_assembly_technology, parameters => to_string (element (terminal_cursor).technology));
-
-				-- A THT can have a drilled or a milled hole:
-				if element (terminal_cursor).technology = THT then
-					write (keyword => keyword_tht_hole, parameters => to_string (element (terminal_cursor).tht_hole));
-				end if;
-
-				--write (keyword => keyword_pad_shape, parameters => to_string (element (terminal_cursor).pad_shape));
 				write (keyword => keyword_position, parameters => position (element (terminal_cursor).position));
+				
+				case element (terminal_cursor).technology is
+					when THT =>
+						-- CS write_pad_shape top/bottom
+
+						write (keyword => keyword_width_inner_layers, 
+							   parameters => et_pcb_coordinates.to_string (element (terminal_cursor).width_inner_layers));
+						
+						-- A THT terminal can have a drilled or a milled hole:
+						write (keyword => keyword_tht_hole, parameters => to_string (element (terminal_cursor).tht_hole));
+
+						case element (terminal_cursor).tht_hole is
+							when DRILLED => 
+								write (keyword_drill_size, parameters => et_pcb_coordinates.to_string (element (terminal_cursor).drill_size));
+								
+							when MILLED => 
+								null; -- CS write plated millings
+						end case;
+						
+					when SMT =>
+
+						-- CS write_pad_shape
+
+						write (keyword => keyword_face, parameters => et_pcb_coordinates.to_string (element (terminal_cursor).face));
+						write (keyword => keyword_stop_mask, parameters => et_pcb.to_string (element (terminal_cursor).stop_mask));
+						write (keyword => keyword_solder_paste, parameters => et_pcb.to_string (element (terminal_cursor).solder_paste));	
+				end case;
+
+
 				section_mark (section_terminal, FOOTER);
 				next (terminal_cursor);
 			end loop;

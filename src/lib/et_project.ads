@@ -268,7 +268,10 @@ package et_project is
 	keyword_assembly_technology		: constant string := "technology";				
 	keyword_pad_shape				: constant string := "pad_shape";
 	keyword_tht_hole				: constant string := "hole";
-	--keyword_width_inner_layers
+	keyword_width_inner_layers		: constant string := "width_inner_layers";
+	keyword_stop_mask				: constant string := "stop_mask";
+	keyword_solder_paste			: constant string := "solder_paste";
+	keyword_drill_size				: constant string := "drill_size";
 	
 	section_net_classes			: constant string := "[NET_CLASSES";
 	section_net_class			: constant string := "[NET_CLASS";
