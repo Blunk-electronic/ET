@@ -272,21 +272,6 @@ package body et_pcb is
 		return latin_1.space & to_lower (type_assembly_technology'image (technology));
 	end to_string;
 
-	function to_string (shape : in type_terminal_shape) return string is
-	begin
-		return latin_1.space & to_lower (type_terminal_shape'image (shape));
-	end to_string;
-	
-	function to_string (shape : in type_terminal_shape_tht) return string is
-	begin
-		return latin_1.space & to_lower (type_terminal_shape_tht'image (shape));
-	end to_string;
-
-	function to_string (shape : in type_terminal_shape_smt) return string is
-	begin
-		return latin_1.space & to_lower (type_terminal_shape_smt'image (shape));
-	end to_string;
-
 	function to_string (solder_paste : in type_terminal_solder_paste) return string is
 	begin
 		return latin_1.space & to_lower (type_terminal_solder_paste'image (solder_paste));
@@ -1108,8 +1093,8 @@ package body et_pcb is
 -- 				log ("stop mask" & to_string (terminal.stop_mask), log_threshold_1);
 -- 				log ("solder paste" & to_string (terminal.solder_paste), log_threshold_1);
 -- 		end case;
-
-		log_indentation_down;
+-- 
+-- 		log_indentation_down;
 	end terminal_properties;
 
 

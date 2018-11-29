@@ -291,8 +291,7 @@ package body et_kicad_pcb is
 		end if;
 	end to_assembly_technology;
 			
-	function to_terminal_shape_tht (shape : in string) return et_pcb.type_terminal_shape_tht is
-		use et_pcb;
+	function to_terminal_shape_tht (shape : in string) return type_terminal_shape_tht is
 	begin
 		if shape = "rect" then return RECTANGLE;
 		elsif shape = "oval" then return LONG;
@@ -303,8 +302,7 @@ package body et_kicad_pcb is
 		end if;
 	end to_terminal_shape_tht;
 
-	function to_terminal_shape_smt (shape : in string) return et_pcb.type_terminal_shape_smt is
-		use et_pcb;
+	function to_terminal_shape_smt (shape : in string) return type_terminal_shape_smt is
 	begin
 		if shape = "rect" then return RECTANGLE;
 		elsif shape = "oval" then return LONG;
@@ -2770,8 +2768,17 @@ package body et_kicad_pcb is
 		end if;
 		
 		return layer_id;
-		
 	end to_layer_id;
+
+	function to_string (shape : in type_terminal_shape_tht) return string is
+	begin
+		return latin_1.space & to_lower (type_terminal_shape_tht'image (shape));
+	end to_string;
+	
+	function to_string (shape : in type_terminal_shape_smt) return string is
+	begin
+		return latin_1.space & to_lower (type_terminal_shape_smt'image (shape));
+	end to_string;
 	
 	function to_layer_name (name : in string) return type_layer_name.bounded_string is
 	-- converts a layer name given as string to a bounded string
