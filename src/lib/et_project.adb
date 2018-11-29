@@ -2326,7 +2326,55 @@ package body et_project is
 		procedure write_terminals is 
 			use type_terminals;
 			terminal_cursor : type_terminals.cursor := packge.terminals.first;
-		begin
+
+			procedure write_pad_shape (pad_shape : in type_pad_outline) is
+				use type_pad_lines;
+				use type_pad_arcs;
+				use type_pad_circles;
+				use type_pad_polygons;
+
+				procedure write_line (cursor : in type_pad_lines.cursor) is begin
+					line_begin;
+					write (keyword => keyword_start, parameters => position (element (cursor).start_point));
+					write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+					line_end;
+				end write_line;
+
+				procedure write_arc (cursor : in type_pad_arcs.cursor) is begin
+					arc_begin;
+					write (keyword => keyword_center, parameters => position (element (cursor).center));
+					write (keyword => keyword_start, parameters => position (element (cursor).start_point));
+					write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+					arc_end;
+				end write_arc;
+
+				procedure write_circle (cursor : in type_pad_circles.cursor) is begin
+					circle_begin;
+					write (keyword => keyword_center, parameters => position (element (cursor).center));
+					write (keyword => keyword_radius, parameters => et_pcb_coordinates.to_string (element (cursor).radius));
+					circle_end;
+				end write_circle;
+
+				procedure write_polygon (cursor : in type_pad_polygons.cursor) is 
+					procedure query_points (polygon : in type_pad_polygon) is 
+						use et_pcb.type_polygon_points;
+					begin
+						iterate (polygon.points, write_polygon_corners'access);
+					end query_points;
+				begin -- write_polygon
+					polygon_begin;
+					query_element (cursor, query_points'access);
+					polygon_end;
+				end write_polygon;
+									
+			begin --write_pad_shape
+				iterate (pad_shape.lines, write_line'access);
+				iterate (pad_shape.arcs, write_arc'access);
+				iterate (pad_shape.circles, write_circle'access);
+				iterate (pad_shape.polygons, write_polygon'access);
+			end write_pad_shape;
+			
+		begin -- write_terminals
 			section_mark (section_terminals, HEADER);
 			
 			while terminal_cursor /= type_terminals.no_element loop
@@ -2337,8 +2385,21 @@ package body et_project is
 				
 				case element (terminal_cursor).technology is
 					when THT =>
-						-- CS write_pad_shape top/bottom
+						-- pad contour top
+						section_mark (section_pad_contour, HEADER);
+						
+						section_mark (section_top, HEADER);
+						write_pad_shape (element (terminal_cursor).pad_shape_top);
+						section_mark (section_top, FOOTER);
 
+						-- pad contour bottom
+						section_mark (section_bottom, HEADER);
+						write_pad_shape (element (terminal_cursor).pad_shape_bottom);
+						section_mark (section_bottom, FOOTER);
+						
+						section_mark (section_pad_contour, FOOTER);
+
+						-- copper width in inner layers
 						write (keyword => keyword_width_inner_layers, 
 							   parameters => et_pcb_coordinates.to_string (element (terminal_cursor).width_inner_layers));
 						
@@ -2354,9 +2415,11 @@ package body et_project is
 						end case;
 						
 					when SMT =>
-
-						-- CS write_pad_shape
-
+						-- pad contour
+						section_mark (section_pad_contour, HEADER);
+						write_pad_shape (element (terminal_cursor).pad_shape);
+						section_mark (section_pad_contour, FOOTER);
+						
 						write (keyword => keyword_face, parameters => et_pcb_coordinates.to_string (element (terminal_cursor).face));
 						write (keyword => keyword_stop_mask, parameters => et_pcb.to_string (element (terminal_cursor).stop_mask));
 						write (keyword => keyword_solder_paste, parameters => et_pcb.to_string (element (terminal_cursor).solder_paste));	
