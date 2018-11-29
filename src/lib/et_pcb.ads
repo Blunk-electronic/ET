@@ -1116,7 +1116,7 @@ package et_pcb is
 	end record;
 	
 
-	procedure terminal_properties ( -- CS rework body according to new type_terminal
+	procedure terminal_properties (
 	-- Logs the properties of the given terminal.
 		terminal		: in et_pcb.type_terminal;
 		name			: in et_libraries.type_terminal_name.bounded_string;

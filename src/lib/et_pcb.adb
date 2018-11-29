@@ -1047,54 +1047,43 @@ package body et_pcb is
 		use et_libraries;
 		log_threshold_1 : type_log_level := log_threshold + 1;
 	begin
-		log ("terminal name " & to_string (name)
+		log ("terminal name" & to_string (name)
 			& " technology" & to_string (terminal.technology)
 			& to_string (type_point_2d (terminal.position))
 			& to_string (angle => get_angle (terminal.position), preamble => true),
 			log_threshold);
 
--- 		log_indentation_up;
--- 		case terminal.technology is
--- 			when THT => 
--- 				log ("shape" & to_string (terminal.shape_tht), log_threshold_1);
--- 				log ("copper width of inner layers" & to_string (terminal.width_inner_layers), log_threshold_1);
--- 				case terminal.pad_shape is
--- 					when NON_CIRCULAR =>
--- 						log ("size x" & to_string (terminal.size_tht_x), log_threshold_1);
--- 						log ("size y" & to_string (terminal.size_tht_y), log_threshold_1);
--- 						case terminal.tht_hole is
--- 							when DRILLED =>
--- 								log ("drill" & to_string (terminal.drill_size_dri), log_threshold_1); 
--- 							when MILLED =>
--- 								if log_level >= log_threshold_1 then
--- 									log ("plated milling contour ");
--- 									log_indentation_up;
--- 									log_plated_millings (terminal.millings, log_threshold_1);
--- 									log_indentation_down;
--- 								end if;
--- 						end case;
--- 						
--- 					when CIRCULAR =>
--- 						log ("drill" & to_string (terminal.drill_size_cir), log_threshold_1); 
--- 				end case;
--- 				
--- 			when SMT => 
--- 				log ("shape" & to_string (terminal.shape_smt), log_threshold_1);
--- 
--- 				case terminal.pad_shape is
--- 					when NON_CIRCULAR =>
--- 						log ("size x" & to_string (terminal.size_smt_x), log_threshold_1);
--- 						log ("size y" & to_string (terminal.size_smt_y), log_threshold_1);
--- 					when CIRCULAR =>
--- 						null; -- CS 
--- 				end case;
--- 				
--- 				log ("face" & to_string (terminal.face), log_threshold_1);
--- 				log ("stop mask" & to_string (terminal.stop_mask), log_threshold_1);
--- 				log ("solder paste" & to_string (terminal.solder_paste), log_threshold_1);
--- 		end case;
--- 
--- 		log_indentation_down;
+		log_indentation_up;
+
+		case terminal.technology is
+			when THT => 
+				
+				-- CS log pad_shape_top/bottom
+				
+				log ("copper width of inner layers" & to_string (terminal.width_inner_layers), log_threshold_1);
+
+				case terminal.tht_hole is
+					when DRILLED =>
+						log ("drill" & to_string (terminal.drill_size), log_threshold_1); 
+					when MILLED =>
+						if log_level >= log_threshold_1 then
+							log ("plated milling contour ");
+							log_indentation_up;
+								log_plated_millings (terminal.millings, log_threshold_1);
+							log_indentation_down;
+						end if;
+				end case;
+				
+			when SMT => 
+				
+				-- CS log pad_shape
+				
+				log ("face" & to_string (terminal.face), log_threshold_1);
+				log ("stop mask" & to_string (terminal.stop_mask), log_threshold_1);
+				log ("solder paste" & to_string (terminal.solder_paste), log_threshold_1);
+		end case;
+
+		log_indentation_down;
 	end terminal_properties;
 
 
