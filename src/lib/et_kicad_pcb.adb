@@ -372,6 +372,268 @@ package body et_kicad_pcb is
 		append (shape.circles, circle);
 		return shape;
 	end to_pad_shape_circle;
+
+	function to_pad_shape_rectangle (
+	-- Converts the given position and dimensions of a rectangular pad
+	-- to a list with four lines (top, bottom, right, left).
+		center		: in et_pcb_coordinates.type_terminal_position; -- the pad center position (incl. angle)
+		size_x		: in et_pcb.type_pad_size;	-- the size in x of the pad
+		size_y		: in et_pcb.type_pad_size;	-- the size in y of the pad
+		offset_x	: in et_pcb.type_pad_drill_offset;	-- the offset of the pad from the center in x
+		offset_y	: in et_pcb.type_pad_drill_offset)	-- the offset of the pad from the center in y
+		return et_pcb.type_pad_outline is
+
+		use et_pcb;
+		use et_pcb_coordinates;
+		use et_pcb.type_pad_lines;
+		
+		shape : type_pad_outline; -- to be returned
+		
+		line_horizontal_bottom	: type_pad_line;
+		line_horizontal_top		: type_pad_line;
+		line_vertical_left 		: type_pad_line;
+		line_vertical_right 	: type_pad_line;
+		size_x_half : type_pad_size;
+		size_y_half : type_pad_size;
+	begin
+		size_x_half := size_x * 0.5;
+		size_y_half := size_y * 0.5;
+
+		-- HORIZONAL LINES
+		
+		-- bottom
+		-- start point x
+		set_point (X, 
+			value => offset_x + get_axis (X, type_point_2d (center)) - size_x_half,
+			point => line_horizontal_bottom.start_point);
+
+		-- start point y
+		set_point (Y, 
+			value => offset_y + get_axis (Y, type_point_2d (center)) - size_y_half,
+			point => line_horizontal_bottom.start_point);
+
+		-- rotate start point by angle of pad
+		rotate (point => line_horizontal_bottom.start_point, angle => get_angle (center));
+		
+		-- end point x
+		set_point (X,
+			value => offset_x + get_axis (X, type_point_2d (center)) + size_x_half,
+			point => line_horizontal_bottom.end_point);
+
+		-- end point y
+		set_point (Y,
+			value => offset_y + get_axis (Y, type_point_2d (center)) - size_y_half,
+			point => line_horizontal_bottom.end_point);
+
+		-- rotate end point by angle of pad
+		rotate (point => line_horizontal_bottom.end_point, angle => get_angle (center));
+
+
+		-- top
+		-- start point x
+		set_point (X, 
+			value => offset_x + get_axis (X, type_point_2d (center)) - size_x_half,
+			point => line_horizontal_top.start_point);
+
+		-- start point y
+		set_point (Y, 
+			value => offset_y + get_axis (Y, type_point_2d (center)) + size_y_half,
+			point => line_horizontal_top.start_point);
+
+		-- rotate start point by angle of pad
+		rotate (point => line_horizontal_top.start_point, angle => get_angle (center));
+		
+		-- end point x
+		set_point (X,
+			value => offset_x + get_axis (X, type_point_2d (center)) + size_x_half,
+			point => line_horizontal_top.end_point);
+
+		-- end point y
+		set_point (Y,
+			value => offset_y + get_axis (Y, type_point_2d (center)) + size_y_half,
+			point => line_horizontal_top.end_point);
+
+		-- rotate end point by angle of pad
+		rotate (point => line_horizontal_top.end_point, angle => get_angle (center));
+
+
+		
+
+		-- VERTICAL LINE
+
+		-- left
+		-- start point x
+		set_point (X,
+			value => offset_x + get_axis (X, type_point_2d (center)) - size_x_half,
+			point => line_vertical_left.start_point);
+
+		-- start point y
+		set_point (Y,
+			value => offset_y + get_axis (Y, type_point_2d (center)) - size_y_half,
+			point => line_vertical_left.start_point);
+
+		-- rotate start point by angle of pad
+		rotate (point => line_vertical_left.start_point, angle => get_angle (center));
+		
+		-- end point x
+		set_point (X,
+			value => offset_x + get_axis (X, type_point_2d (center)) - size_x_half,
+			point => line_vertical_left.end_point);
+
+		-- end point y
+		set_point (Y,
+			value => offset_y + get_axis (Y, type_point_2d (center)) + size_y_half,
+			point => line_vertical_left.end_point);
+
+		-- rotate end point by angle of pad
+		rotate (point => line_vertical_left.end_point, angle => get_angle (center));
+
+
+
+		-- right
+		-- start point x
+		set_point (X,
+			value => offset_x + get_axis (X, type_point_2d (center)) + size_x_half,
+			point => line_vertical_right.start_point);
+
+		-- start point y
+		set_point (Y,
+			value => offset_y + get_axis (Y, type_point_2d (center)) - size_y_half,
+			point => line_vertical_right.start_point);
+
+		-- rotate start point by angle of pad
+		rotate (point => line_vertical_right.start_point, angle => get_angle (center));
+		
+		-- end point x
+		set_point (X,
+			value => offset_x + get_axis (X, type_point_2d (center)) + size_x_half,
+			point => line_vertical_right.end_point);
+
+		-- end point y
+		set_point (Y,
+			value => offset_y + get_axis (Y, type_point_2d (center)) + size_y_half,
+			point => line_vertical_right.end_point);
+
+		-- rotate end point by angle of pad
+		rotate (point => line_vertical_right.end_point, angle => get_angle (center));
+
+
+		
+		shape.lines.append (line_horizontal_top);
+		shape.lines.append (line_horizontal_bottom);
+		shape.lines.append (line_vertical_left);
+		shape.lines.append (line_vertical_right);		
+		
+		return shape;
+	end to_pad_shape_rectangle;
+
+	function to_pad_shape_oval (
+	-- Converts the given position and dimensions of an oval pad
+	-- to a list with two vertical lines and two arcs (rotation assumed zero).
+		center		: in et_pcb_coordinates.type_terminal_position; -- the pad center position (incl. angle)
+		size_x		: in et_pcb.type_pad_size;	-- the size in x of the pad
+		size_y		: in et_pcb.type_pad_size;	-- the size in y of the pad
+		offset_x	: in et_pcb.type_pad_drill_offset;	-- the offset of the pad from the center in x
+		offset_y	: in et_pcb.type_pad_drill_offset)	-- the offset of the pad from the center in y
+		return et_pcb.type_pad_outline is
+
+		use et_pcb;
+		use et_pcb_coordinates;
+		use et_pcb.type_pad_lines;
+		use et_pcb.type_pad_arcs;		
+		
+		shape : type_pad_outline; -- to be returned
+
+		upper_arc	: type_pad_arc;
+		lower_arc	: type_pad_arc;
+		
+		line_vertical_left 		: type_pad_line;
+		line_vertical_right 	: type_pad_line;
+		
+		size_x_half : type_pad_size;
+		size_y_half : type_pad_size;
+	begin
+		size_x_half := size_x * 0.5;
+		size_y_half := size_y * 0.5;
+
+		-- UPPPER ARC
+		-- start point
+-- 		set_point (X,
+-- 			value => offset_x + get_axis (X, type_point_2d (center)) - 
+
+		-- LOWER ARC
+
+
+		
+
+		-- VERTICAL LINE
+
+		-- left
+		-- start point x
+		set_point (X,
+			value => offset_x + get_axis (X, type_point_2d (center)) - size_x_half,
+			point => line_vertical_left.start_point);
+
+		-- start point y
+		set_point (Y,
+			value => offset_y + get_axis (Y, type_point_2d (center)) - size_y_half,
+			point => line_vertical_left.start_point);
+
+		-- rotate start point by angle of pad
+		rotate (point => line_vertical_left.start_point, angle => get_angle (center));
+		
+		-- end point x
+		set_point (X,
+			value => offset_x + get_axis (X, type_point_2d (center)) - size_x_half,
+			point => line_vertical_left.end_point);
+
+		-- end point y
+		set_point (Y,
+			value => offset_y + get_axis (Y, type_point_2d (center)) + size_y_half,
+			point => line_vertical_left.end_point);
+
+		-- rotate end point by angle of pad
+		rotate (point => line_vertical_left.end_point, angle => get_angle (center));
+
+
+
+		-- right
+		-- start point x
+		set_point (X,
+			value => offset_x + get_axis (X, type_point_2d (center)) + size_x_half,
+			point => line_vertical_right.start_point);
+
+		-- start point y
+		set_point (Y,
+			value => offset_y + get_axis (Y, type_point_2d (center)) - size_y_half,
+			point => line_vertical_right.start_point);
+
+		-- rotate start point by angle of pad
+		rotate (point => line_vertical_right.start_point, angle => get_angle (center));
+		
+		-- end point x
+		set_point (X,
+			value => offset_x + get_axis (X, type_point_2d (center)) + size_x_half,
+			point => line_vertical_right.end_point);
+
+		-- end point y
+		set_point (Y,
+			value => offset_y + get_axis (Y, type_point_2d (center)) + size_y_half,
+			point => line_vertical_right.end_point);
+
+		-- rotate end point by angle of pad
+		rotate (point => line_vertical_right.end_point, angle => get_angle (center));
+
+		
+		shape.arcs.append (upper_arc);
+		shape.arcs.append (lower_arc);
+		shape.lines.append (line_vertical_left);
+		shape.lines.append (line_vertical_right);		
+		
+		return shape;
+	end to_pad_shape_oval;
+
+
 	
 	function contour_milled_rectangle_of_pad (
 	-- Converts the given position and dimensions of a rectangular slotted hole
@@ -2030,12 +2292,13 @@ package body et_kicad_pcb is
 				terminal_cursor : et_pcb.type_terminals.cursor;
 				-- This flag goes true once a terminal is to be inserted that already exists (by its name).
 				terminal_inserted : boolean;
-			begin -- insert_terminal
-	
-				case terminal_technology is
-					when THT =>
 
-						if terminal_shape_tht = CIRCULAR then
+				shape : et_pcb.type_pad_outline;
+
+				procedure insert_tht is begin
+					case terminal_hole_shape is
+						when CIRCULAR =>
+							
 							terminals.insert (
 								key 		=> terminal_name,
 								position	=> terminal_cursor,
@@ -2044,57 +2307,88 @@ package body et_kicad_pcb is
 									technology 			=> THT,
 									tht_hole			=> DRILLED,
 									position			=> terminal_position,
-									pad_shape_top		=> to_pad_shape_circle (terminal_position, pad_size_x),
-									pad_shape_bottom	=> to_pad_shape_circle (terminal_position, pad_size_x),
-									width_inner_layers	=> terminal_copper_width_inner_layers,
+									pad_shape_top		=> shape, -- The shape is the same on top
+									pad_shape_bottom	=> shape, -- and on bottom side.
+									width_inner_layers 	=> terminal_copper_width_inner_layers,
 									drill_size			=> terminal_drill_size
-									));
+								));
 
-						else -- RECTANGULAR, OVAL
-							case terminal_hole_shape is
-								when CIRCULAR =>
-									terminals.insert (
-										key 		=> terminal_name,
-										position	=> terminal_cursor,
-										inserted	=> terminal_inserted,
-										new_item 	=> (
-											technology 			=> THT,
-											tht_hole			=> DRILLED,
-											position			=> terminal_position,
-											pad_shape_top		=> (others => <>), -- CS calculate octagon, rectangle, long from pad_size_x/y terminal_drill_offset_x/y
-											pad_shape_bottom	=> (others => <>), -- CS calculate octagon, rectangle, long from pad_size_x/y
-											width_inner_layers 	=> terminal_copper_width_inner_layers,
-											drill_size			=> terminal_drill_size
+						when OVAL =>
+							terminals.insert (
+								key 		=> terminal_name,
+								position	=> terminal_cursor,
+								inserted	=> terminal_inserted,
+								new_item 	=> (
+									technology 			=> THT,
+									tht_hole			=> MILLED,
+									position			=> terminal_position,
+									pad_shape_top		=> shape, -- The shape is the same on top
+									pad_shape_bottom	=> shape, -- as on bottom side.
+									width_inner_layers	=> terminal_copper_width_inner_layers,
+
+									-- The plated millings of the hole is a list of lines.
+									millings			=> (
+											lines 	=> contour_milled_rectangle_of_pad (
+														center		=> terminal_position,
+														size_x		=> terminal_milling_size_x,
+														size_y		=> terminal_milling_size_y,
+														offset_x	=> terminal_drill_offset_x,
+														offset_y	=> terminal_drill_offset_y),
+
+											-- KiCad does not allow arcs or circles for plated millings.
+											others	=> <>)
+								));
+					end case;
+				end insert_tht;
+				
+			begin -- insert_terminal
+	
+				case terminal_technology is
+					when THT =>
+
+						case terminal_shape_tht is
+							when CIRCULAR =>
+								-- Caclulate the pad shape. It is a circle. 
+								-- Therefor the size in x serves as diameter.
+								shape := to_pad_shape_circle (terminal_position, pad_size_x);
+								
+								terminals.insert (
+									key 		=> terminal_name,
+									position	=> terminal_cursor,
+									inserted	=> terminal_inserted,
+									new_item 	=> (
+										technology 			=> THT,
+										tht_hole			=> DRILLED,
+										position			=> terminal_position,
+										pad_shape_top		=> shape, -- The shape is the same on top
+										pad_shape_bottom	=> shape, -- and on bottom side.
+										width_inner_layers	=> terminal_copper_width_inner_layers,
+										drill_size			=> terminal_drill_size
 										));
 
-								when OVAL =>
-									terminals.insert (
-										key 		=> terminal_name,
-										position	=> terminal_cursor,
-										inserted	=> terminal_inserted,
-										new_item 	=> (
-											technology 			=> THT,
-											tht_hole			=> MILLED,
-											position			=> terminal_position,
-											pad_shape_top		=> (others => <>), -- CS calculate rectangle from pad_size_x/y
-											pad_shape_bottom	=> (others => <>), -- CS calculate rectangle from pad_size_x/y
-											width_inner_layers	=> terminal_copper_width_inner_layers,
+							when RECTANGULAR =>
+								-- Calculate the pad shape.
+								shape := to_pad_shape_rectangle (
+											center		=> terminal_position,
+											size_x 		=> pad_size_x,
+											size_y 		=> pad_size_y,
+											offset_x 	=> terminal_drill_offset_x,
+											offset_y 	=> terminal_drill_offset_y);
 
-											-- The plated millings of the hole is a list of lines.
-											millings			=> (
-													lines 	=> contour_milled_rectangle_of_pad (
-																center		=> terminal_position,
-																size_x		=> terminal_milling_size_x,
-																size_y		=> terminal_milling_size_y,
-																offset_x	=> terminal_drill_offset_x,
-																offset_y	=> terminal_drill_offset_y),
+								insert_tht;
 
-													-- KiCad does not allow arcs or circles for plated millings.
-													others	=> <>)
-										));
-							end case;
+							when OVAL => 
+								-- Calculate the pad shape.
+								shape := to_pad_shape_rectangle (
+											center		=> terminal_position,
+											size_x 		=> pad_size_x,
+											size_y 		=> pad_size_y,
+											offset_x 	=> terminal_drill_offset_x,
+											offset_y 	=> terminal_drill_offset_y);
 
-						end if;
+								insert_tht;
+
+						end case;
 
 						
 					when SMT =>
