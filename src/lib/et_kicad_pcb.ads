@@ -154,21 +154,27 @@ package et_kicad_pcb is
 	attribute_technology_virtual	: constant string (1..7)	:= "virtual";
 
 	type type_pad_shape_tht is (
-		OCTAGON, 
 		CIRCULAR, 
-		RECTANGLE, 
-		OVAL
+		OVAL,
+		RECTANGULAR
 		-- CS others ?
 		);
 	
 	function to_string (shape : in type_pad_shape_tht) return string;
 	
-	type type_pad_shape_smt is (RECTANGLE, CIRCULAR, LONG);
-	function to_string (shape : in type_pad_shape_smt) return string;	
+	type type_pad_shape_smt is (
+		CIRCULAR, 
+		OVAL,
+		RECTANGULAR
+		-- CS others ?
+		);
 	
-	drill_shape_oval	: constant string (1..4) := "oval"; -- used with slotted holes
+	function to_string (shape : in type_pad_shape_smt) return string;	
+
+	-- slotted holes	
+	tht_hole_shape_oval	: constant string (1..4) := "oval";
 	pad_drill_offset	: constant string (1..6) := "offset";
-	type type_drill_shape is (CIRCULAR, SLOTTED);
+	type type_tht_hole_shape is (CIRCULAR, OVAL);
 
 	-- "Slotted drills" or "plated millings" for terminals are limited by drill sizes because
 	-- the PCB manufacturer starts the milling with a drill.

@@ -293,7 +293,7 @@ package body et_kicad_pcb is
 			
 	function to_pad_shape_tht (shape : in string) return type_pad_shape_tht is
 	begin
-		if shape = "rect" then return RECTANGLE;
+		if shape = "rect" then return RECTANGULAR;
 		elsif shape = "circle" then return CIRCULAR;
 		elsif shape = "oval" then return OVAL;
 		else
@@ -305,12 +305,12 @@ package body et_kicad_pcb is
 
 	function to_pad_shape_smt (shape : in string) return type_pad_shape_smt is
 	begin
-		if shape = "rect" then return RECTANGLE;
-		elsif shape = "oval" then return LONG;
+		if shape = "rect" then return RECTANGULAR;
+		elsif shape = "oval" then return OVAL;
 		elsif shape = "circle" then return CIRCULAR;
 		else
 			log_indentation_reset;
-			log (message_error & "invalid shape for an SMT terminal !", console => true);
+			log (message_error & "invalid or not supported shape for an SMT terminal !", console => true);
 			raise constraint_error;
 		end if;
 	end to_pad_shape_smt;
@@ -684,7 +684,7 @@ package body et_kicad_pcb is
 
 		terminal_face 			: et_pcb_coordinates.type_face;
 		terminal_drill_size		: type_drill_size; 
-		terminal_drill_shape	: type_drill_shape; -- for slotted holes
+		terminal_hole_shape	: type_tht_hole_shape; -- for slotted holes
 		terminal_milling_size_x	: type_pad_milling_size;  -- CS use a composite instead ?
 		terminal_milling_size_y	: type_pad_milling_size; 
 		terminal_drill_offset_x	: type_pad_drill_offset;  -- CS use a composite instead ?
@@ -1595,22 +1595,22 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									if to_string (arg) = drill_shape_oval then -- (drill oval 1.2 5.5)
-										terminal_drill_shape := SLOTTED;
+									if to_string (arg) = tht_hole_shape_oval then -- (drill oval 1.2 5.5)
+										terminal_hole_shape := OVAL;
 									else
-										terminal_drill_shape := CIRCULAR; -- (drill 2.2)
+										terminal_hole_shape := CIRCULAR; -- (drill 2.2)
 										validate_drill_size (to_distance (to_string (arg)));
 										terminal_drill_size := to_distance (to_string (arg));
 									end if;
 								when 2 =>
-									case terminal_drill_shape is
+									case terminal_hole_shape is
 										when CIRCULAR => too_many_arguments;
-										when SLOTTED => terminal_milling_size_x := to_distance (to_string (arg)); -- 1.2
+										when OVAL => terminal_milling_size_x := to_distance (to_string (arg)); -- 1.2
 									end case;
 								when 3 =>
-									case terminal_drill_shape is
+									case terminal_hole_shape is
 										when CIRCULAR => too_many_arguments;
-										when SLOTTED => terminal_milling_size_y := to_distance (to_string (arg)); -- 5.5
+										when OVAL => terminal_milling_size_y := to_distance (to_string (arg)); -- 5.5
 									end case;
 									
 								when others => too_many_arguments;
@@ -2050,48 +2050,48 @@ package body et_kicad_pcb is
 									drill_size			=> terminal_drill_size
 									));
 
-						else -- OCTAGON, RECTANGLE, OVAL
-							case terminal_drill_shape is
+						else -- RECTANGULAR, OVAL
+							case terminal_hole_shape is
 								when CIRCULAR =>
 									terminals.insert (
 										key 		=> terminal_name,
 										position	=> terminal_cursor,
 										inserted	=> terminal_inserted,
 										new_item 	=> (
-														technology 			=> THT,
-														tht_hole			=> DRILLED,
-														position			=> terminal_position,
-														pad_shape_top		=> (others => <>), -- CS calculate octagon, rectangle, long from pad_size_x/y terminal_drill_offset_x/y
-														pad_shape_bottom	=> (others => <>), -- CS calculate octagon, rectangle, long from pad_size_x/y
-														width_inner_layers 	=> terminal_copper_width_inner_layers,
-														drill_size			=> terminal_drill_size
-													));
+											technology 			=> THT,
+											tht_hole			=> DRILLED,
+											position			=> terminal_position,
+											pad_shape_top		=> (others => <>), -- CS calculate octagon, rectangle, long from pad_size_x/y terminal_drill_offset_x/y
+											pad_shape_bottom	=> (others => <>), -- CS calculate octagon, rectangle, long from pad_size_x/y
+											width_inner_layers 	=> terminal_copper_width_inner_layers,
+											drill_size			=> terminal_drill_size
+										));
 
-								when SLOTTED =>
+								when OVAL =>
 									terminals.insert (
 										key 		=> terminal_name,
 										position	=> terminal_cursor,
 										inserted	=> terminal_inserted,
 										new_item 	=> (
-														technology 			=> THT,
-														tht_hole			=> MILLED,
-														position			=> terminal_position,
-														pad_shape_top		=> (others => <>), -- CS calculate rectangle from pad_size_x/y
-														pad_shape_bottom	=> (others => <>), -- CS calculate rectangle from pad_size_x/y
-														width_inner_layers	=> terminal_copper_width_inner_layers,
+											technology 			=> THT,
+											tht_hole			=> MILLED,
+											position			=> terminal_position,
+											pad_shape_top		=> (others => <>), -- CS calculate rectangle from pad_size_x/y
+											pad_shape_bottom	=> (others => <>), -- CS calculate rectangle from pad_size_x/y
+											width_inner_layers	=> terminal_copper_width_inner_layers,
 
-														-- The plated millings of the hole is a list of lines.
-														millings			=> (
-																lines 	=> contour_milled_rectangle_of_pad (
-																			center		=> terminal_position,
-																			size_x		=> terminal_milling_size_x,
-																			size_y		=> terminal_milling_size_y,
-																			offset_x	=> terminal_drill_offset_x,
-																			offset_y	=> terminal_drill_offset_y),
+											-- The plated millings of the hole is a list of lines.
+											millings			=> (
+													lines 	=> contour_milled_rectangle_of_pad (
+																center		=> terminal_position,
+																size_x		=> terminal_milling_size_x,
+																size_y		=> terminal_milling_size_y,
+																offset_x	=> terminal_drill_offset_x,
+																offset_y	=> terminal_drill_offset_y),
 
-																-- KiCad does not allow arcs or circles for plated millings.
-																others	=> <>)
-													));
+													-- KiCad does not allow arcs or circles for plated millings.
+													others	=> <>)
+										));
 							end case;
 
 						end if;
@@ -3114,7 +3114,7 @@ package body et_kicad_pcb is
 
 		terminal_face 			: et_pcb_coordinates.type_face;
 		terminal_drill_size		: type_drill_size; 
-		terminal_drill_shape	: type_drill_shape; -- for slotted holes
+		terminal_hole_shape	: type_tht_hole_shape; -- for slotted holes
 		terminal_milling_size_x	: type_pad_milling_size;
 		terminal_milling_size_y	: type_pad_milling_size;
 		terminal_drill_offset_x	: type_pad_drill_offset;
@@ -4456,22 +4456,22 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									if to_string (arg) = drill_shape_oval then -- (drill oval 1.2 5.5)
-										terminal_drill_shape := SLOTTED;
+									if to_string (arg) = tht_hole_shape_oval then -- (drill oval 1.2 5.5)
+										terminal_hole_shape := OVAL;
 									else
-										terminal_drill_shape := CIRCULAR; -- (drill 2.2)
+										terminal_hole_shape := CIRCULAR; -- (drill 2.2)
 										validate_drill_size (to_distance (to_string (arg)));
 										terminal_drill_size := to_distance (to_string (arg));
 									end if;
 								when 2 =>
-									case terminal_drill_shape is
+									case terminal_hole_shape is
 										when CIRCULAR => too_many_arguments;
-										when SLOTTED => terminal_milling_size_x := to_distance (to_string (arg)); -- 1.2
+										when OVAL => terminal_milling_size_x := to_distance (to_string (arg)); -- 1.2
 									end case;
 								when 3 =>
-									case terminal_drill_shape is
+									case terminal_hole_shape is
 										when CIRCULAR => too_many_arguments;
-										when SLOTTED => terminal_milling_size_y := to_distance (to_string (arg)); -- 5.5
+										when OVAL => terminal_milling_size_y := to_distance (to_string (arg)); -- 5.5
 									end case;
 									
 								when others => too_many_arguments;
@@ -6414,8 +6414,8 @@ package body et_kicad_pcb is
 									-- the pad is connected with a certain net
 									net_name			=> terminal_net_name
 									));
-						else -- OCTAGON, RECTANGLE, OVAL
-							case terminal_drill_shape is
+						else -- RECTANGLE, OVAL
+							case terminal_hole_shape is
 								when CIRCULAR =>
 									terminals.insert (
 										key 		=> terminal_name,
@@ -6434,7 +6434,7 @@ package body et_kicad_pcb is
 											net_name		=> terminal_net_name
 										));
 
-								when SLOTTED =>
+								when OVAL =>
 									terminals.insert (
 										key 		=> terminal_name,
 										position	=> terminal_cursor,
