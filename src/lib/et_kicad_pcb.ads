@@ -153,7 +153,14 @@ package et_kicad_pcb is
 	attribute_technology_smd		: constant string (1..3)	:= "smd";
 	attribute_technology_virtual	: constant string (1..7)	:= "virtual";
 
-	type type_pad_shape_tht is (OCTAGON, CIRCULAR, RECTANGLE, LONG, LONG_OFFSET);
+	type type_pad_shape_tht is (
+		OCTAGON, 
+		CIRCULAR, 
+		RECTANGLE, 
+		OVAL
+		-- CS others ?
+		);
+	
 	function to_string (shape : in type_pad_shape_tht) return string;
 	
 	type type_pad_shape_smt is (RECTANGLE, CIRCULAR, LONG);
