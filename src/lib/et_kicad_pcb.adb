@@ -355,6 +355,23 @@ package body et_kicad_pcb is
 	end to_signal_layer_id;
 
 
+	function to_pad_shape_circle (
+		position : in et_pcb_coordinates.type_terminal_position;
+		diameter : in et_pcb.type_pad_size)
+		return et_pcb.type_pad_outline is
+
+		use et_pcb_coordinates;
+		use et_pcb;
+		use et_pcb.type_pad_circles;
+		circle : type_pad_circle;
+		shape : et_pcb.type_pad_outline;
+	begin
+		circle.center := type_point_2d (position);
+		circle.radius := diameter / 2.0;
+		append (shape.circles, circle);
+		log ("XXL CIRCLE");
+		return shape;
+	end to_pad_shape_circle;
 	
 	function contour_milled_rectangle_of_pad (
 	-- Converts the given position and dimensions of a rectangular slotted hole
@@ -672,10 +689,12 @@ package body et_kicad_pcb is
 		terminal_milling_size_y	: type_pad_milling_size; 
 		terminal_drill_offset_x	: type_pad_drill_offset;  -- CS use a composite instead ?
 		terminal_drill_offset_y	: type_pad_drill_offset;
-	
-		terminal_position	: et_pcb_coordinates.type_terminal_position;
-		terminal_size_x 	: type_pad_size;  -- CS use a composite instead ?
-		terminal_size_y 	: type_pad_size;		
+
+		-- The center of an smt pad or the position of the drill of a tht pad:
+		terminal_position	: et_pcb_coordinates.type_terminal_position; 
+		
+		pad_size_x : type_pad_size;  -- CS use a composite instead ?
+		pad_size_y : type_pad_size;
 
 -- 		terminal_copper_width_outer_layers : et_pcb_coordinates.type_distance;
 		terminal_copper_width_inner_layers : et_pcb_coordinates.type_distance := 1.0; -- CS load from DRU ?
@@ -1517,10 +1536,10 @@ package body et_kicad_pcb is
 								when 0 => null;
 								when 1 => 
 									validate_pad_size (to_distance (to_string (arg)));
-									terminal_size_x := to_distance (to_string (arg));
+									pad_size_x := to_distance (to_string (arg));
 								when 2 => 
 									validate_pad_size (to_distance (to_string (arg)));
-									terminal_size_y := to_distance (to_string (arg));
+									pad_size_y := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 							
@@ -2025,8 +2044,8 @@ package body et_kicad_pcb is
 												technology 			=> THT,
 												tht_hole			=> DRILLED,
 												position			=> terminal_position,
-												pad_shape_top		=> (others => <>), -- CS calculate circle from pad diameter, terminal_drill_offset_x/y
-												pad_shape_bottom	=> (others => <>), -- CS calculate circle from pad diameter, terminal_drill_offset_x/y
+												pad_shape_top		=> to_pad_shape_circle (terminal_position, pad_size_x), -- (others => <>), -- CS calculate circle from pad diameter, terminal_drill_offset_x/y
+												pad_shape_bottom	=> to_pad_shape_circle (terminal_position, pad_size_x), -- (others => <>), -- CS calculate circle from pad diameter, terminal_drill_offset_x/y
 												width_inner_layers	=> terminal_copper_width_inner_layers,
 												drill_size			=> terminal_drill_size
 												));
@@ -2042,8 +2061,8 @@ package body et_kicad_pcb is
 														technology 			=> THT,
 														tht_hole			=> DRILLED,
 														position			=> terminal_position,
-														pad_shape_top		=> (others => <>), -- CS calculate octagon, rectangle, long from terminal_size_x/y
-														pad_shape_bottom	=> (others => <>), -- CS calculate octagon, rectangle, long from terminal_size_x/y
+														pad_shape_top		=> (others => <>), -- CS calculate octagon, rectangle, long from pad_size_x/y
+														pad_shape_bottom	=> (others => <>), -- CS calculate octagon, rectangle, long from pad_size_x/y
 														width_inner_layers 	=> terminal_copper_width_inner_layers,
 														drill_size			=> terminal_drill_size
 													));
@@ -2057,8 +2076,8 @@ package body et_kicad_pcb is
 														technology 			=> THT,
 														tht_hole			=> MILLED,
 														position			=> terminal_position,
-														pad_shape_top		=> (others => <>), -- CS calculate rectangle from terminal_size_x/y
-														pad_shape_bottom	=> (others => <>), -- CS calculate rectangle from terminal_size_x/y
+														pad_shape_top		=> (others => <>), -- CS calculate rectangle from pad_size_x/y
+														pad_shape_bottom	=> (others => <>), -- CS calculate rectangle from pad_size_x/y
 														width_inner_layers	=> terminal_copper_width_inner_layers,
 
 														-- The plated millings of the hole is a list of lines.
@@ -2107,7 +2126,7 @@ package body et_kicad_pcb is
 												technology 		=> SMT,
 												tht_hole		=> DRILLED, -- has no meaning here
 												position		=> terminal_position,
-												pad_shape		=> (others => <>), -- CS terminal_size_x/y
+												pad_shape		=> (others => <>), -- CS pad_size_x/y
 												face 			=> terminal_face,
 												stop_mask		=> terminal_stop_mask,
 												solder_paste	=> terminal_solder_paste
@@ -3101,9 +3120,11 @@ package body et_kicad_pcb is
 		terminal_drill_offset_x	: type_pad_drill_offset;
 		terminal_drill_offset_y	: type_pad_drill_offset;
 
+		-- The center of an smt pad or the position of the drill of a tht pad:		
 		terminal_position	: et_pcb_coordinates.type_terminal_position;
-		terminal_size_x 	: type_pad_size;
-		terminal_size_y 	: type_pad_size;		
+		
+		pad_size_x : type_pad_size;
+		pad_size_y : type_pad_size;		
 
 		terminal_net_name	: et_schematic.type_net_name.bounded_string;
 		terminal_net_id		: type_net_id_terminal;
@@ -4410,10 +4431,10 @@ package body et_kicad_pcb is
 								when 0 => null;
 								when 1 => 
 									validate_pad_size (to_distance (to_string (arg)));
-									terminal_size_x := to_distance (to_string (arg));
+									pad_size_x := to_distance (to_string (arg));
 								when 2 => 
 									validate_pad_size (to_distance (to_string (arg)));
-									terminal_size_y := to_distance (to_string (arg));
+									pad_size_y := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 							
@@ -6404,8 +6425,8 @@ package body et_kicad_pcb is
 														technology 			=> THT,
 														tht_hole			=> DRILLED,
 														position			=> terminal_position,
-														pad_shape_top		=> (others => <>), -- CS calculate octagon, rectangle, long from terminal_size_x/y
-														pad_shape_bottom	=> (others => <>), -- CS calculate octagon, rectangle, long from terminal_size_x/y
+														pad_shape_top		=> (others => <>), -- CS calculate octagon, rectangle, long from pad_size_x/y
+														pad_shape_bottom	=> (others => <>), -- CS calculate octagon, rectangle, long from pad_size_x/y
 														width_inner_layers	=> terminal_copper_width_inner_layers,
 														drill_size			=> terminal_drill_size,
 
@@ -6422,8 +6443,8 @@ package body et_kicad_pcb is
 														technology 			=> THT,
 														tht_hole			=> MILLED,
 														position			=> terminal_position,
-														pad_shape_top		=> (others => <>), -- CS calculate rectangle from terminal_size_x/y
-														pad_shape_bottom	=> (others => <>), -- CS calculate rectangle from terminal_size_x/y
+														pad_shape_top		=> (others => <>), -- CS calculate rectangle from pad_size_x/y
+														pad_shape_bottom	=> (others => <>), -- CS calculate rectangle from pad_size_x/y
 														width_inner_layers	=> terminal_copper_width_inner_layers,
 
 														-- The plated millings of the hole is a list of lines.
@@ -6480,7 +6501,7 @@ package body et_kicad_pcb is
 												technology 		=> SMT,
 												tht_hole		=> DRILLED, -- has no meaning here
 												position		=> terminal_position,
-												pad_shape		=> (others => <>), -- CS terminal_size_x/y
+												pad_shape		=> (others => <>), -- CS pad_size_x/y
 												face 			=> terminal_face,
 												stop_mask		=> terminal_stop_mask,
 												solder_paste	=> terminal_solder_paste,

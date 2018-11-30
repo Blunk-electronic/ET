@@ -2467,7 +2467,7 @@ package body et_project is
 		write_via_restrict;
 		write_contour; -- pcb contour
 		write_contour_plated; -- pcb contour
-		write_terminals;
+		write_terminals; -- incl. pad properties, drill sizes, millings, ...
 
 		-- 3D stuff
 		if packge.appearance = REAL then
