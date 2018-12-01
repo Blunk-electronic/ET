@@ -376,6 +376,7 @@ package body et_kicad_pcb is
 	function to_pad_shape_rectangle (
 	-- Converts the given position and dimensions of a rectangular pad
 	-- to a list with four lines (top, bottom, right, left).
+	-- CS: rework as in to_pad_shape_oval
 		center		: in et_pcb_coordinates.type_terminal_position; -- the pad center position (incl. angle)
 		size_x		: in et_pcb.type_pad_size;	-- the size in x of the pad
 		size_y		: in et_pcb.type_pad_size;	-- the size in y of the pad
@@ -388,6 +389,9 @@ package body et_kicad_pcb is
 		use et_pcb.type_pad_lines;
 		
 		shape : type_pad_outline; -- to be returned
+
+		-- The given center of the pad also provides us with the angle of rotation:
+		--angle : constant type_angle := get_angle (center);
 		
 		line_horizontal_bottom	: type_pad_line;
 		line_horizontal_top		: type_pad_line;
@@ -544,91 +548,73 @@ package body et_kicad_pcb is
 		
 		shape : type_pad_outline; -- to be returned
 
-		upper_arc	: type_pad_arc;
-		lower_arc	: type_pad_arc;
+		-- The given center of the pad also provides us with the angle of rotation:
+		angle : constant type_angle := get_angle (center);
 		
-		line_vertical_left 		: type_pad_line;
-		line_vertical_right 	: type_pad_line;
+		-- supportive frequently used values
+		x1p : constant type_pad_size := size_x / 2;
+		x1n : constant type_pad_size := -(x1p);
+
+		y1p : constant type_pad_size := size_y / 2;
+		y1n : constant type_pad_size := -(y1p);
+
+		y2p : constant type_pad_size := y1p - x1p;
+		y2n : constant type_pad_size := -(y2p);
+
+		-- supportive points:
+		p11, p12 : type_point_2d; -- start/end point of left line
+		p21, p22 : type_point_2d; -- start/end point of right line
+		p41, p42 : type_point_2d; -- center of upper/lower arc
+
+		-- These are the two lines and the two arcs we need for the oval pad contour:
+		line_1, line_2 : type_pad_line; -- left line, right line
+		arc_1, arc_2 : type_pad_arc; -- upper arc, lower arc
 		
-		size_x_half : type_pad_size;
-		size_y_half : type_pad_size;
-	begin
-		size_x_half := size_x * 0.5;
-		size_y_half := size_y * 0.5;
+	begin -- to_pad_shape_oval
 
-		-- UPPPER ARC
-		-- start point
--- 		set_point (X,
--- 			value => offset_x + get_axis (X, type_point_2d (center)) - 
+		-- set supportive points
+		p11 := type_point_2d (set_point (x => x1n, y => y2p));
+		p12 := type_point_2d (set_point (x => x1n, y => y2n));
 
-		-- LOWER ARC
+		p21 := type_point_2d (set_point (x => x1p, y => y2p));
+		p22 := type_point_2d (set_point (x => x1p, y => y2n));
 
+		p41 := type_point_2d (set_point (x => zero_distance, y => y2p));
+		p42 := type_point_2d (set_point (x => zero_distance, y => y2n));			
 
+		-- rotate supportive points 
+		rotate (p11, angle);
+		rotate (p12, angle);
 		
-
-		-- VERTICAL LINE
-
-		-- left
-		-- start point x
-		set_point (X,
-			value => offset_x + get_axis (X, type_point_2d (center)) - size_x_half,
-			point => line_vertical_left.start_point);
-
-		-- start point y
-		set_point (Y,
-			value => offset_y + get_axis (Y, type_point_2d (center)) - size_y_half,
-			point => line_vertical_left.start_point);
-
-		-- rotate start point by angle of pad
-		rotate (point => line_vertical_left.start_point, angle => get_angle (center));
+		rotate (p21, angle);
+		rotate (p22, angle);
 		
-		-- end point x
-		set_point (X,
-			value => offset_x + get_axis (X, type_point_2d (center)) - size_x_half,
-			point => line_vertical_left.end_point);
+		rotate (p41, angle);
+		rotate (p42, angle);		
 
-		-- end point y
-		set_point (Y,
-			value => offset_y + get_axis (Y, type_point_2d (center)) + size_y_half,
-			point => line_vertical_left.end_point);
+		-- set left line
+		line_1.start_point := p11;
+		line_1.end_point := p12;
 
-		-- rotate end point by angle of pad
-		rotate (point => line_vertical_left.end_point, angle => get_angle (center));
+		-- set right line
+		line_2.start_point := p21;
+		line_2.end_point := p22;
 
+		-- set upper arc
+		arc_1.center := p41;
+		arc_1.start_point := p11;
+		arc_1.end_point := p21;
 
+		-- set lower arc
+		arc_2.center := p42;
+		arc_2.start_point := p12;
+		arc_2.end_point := p22;
 
-		-- right
-		-- start point x
-		set_point (X,
-			value => offset_x + get_axis (X, type_point_2d (center)) + size_x_half,
-			point => line_vertical_right.start_point);
-
-		-- start point y
-		set_point (Y,
-			value => offset_y + get_axis (Y, type_point_2d (center)) - size_y_half,
-			point => line_vertical_right.start_point);
-
-		-- rotate start point by angle of pad
-		rotate (point => line_vertical_right.start_point, angle => get_angle (center));
-		
-		-- end point x
-		set_point (X,
-			value => offset_x + get_axis (X, type_point_2d (center)) + size_x_half,
-			point => line_vertical_right.end_point);
-
-		-- end point y
-		set_point (Y,
-			value => offset_y + get_axis (Y, type_point_2d (center)) + size_y_half,
-			point => line_vertical_right.end_point);
-
-		-- rotate end point by angle of pad
-		rotate (point => line_vertical_right.end_point, angle => get_angle (center));
-
-		
-		shape.arcs.append (upper_arc);
-		shape.arcs.append (lower_arc);
-		shape.lines.append (line_vertical_left);
-		shape.lines.append (line_vertical_right);		
+		-- build shape
+		shape.lines.append (line_1);
+		shape.lines.append (line_2);
+		shape.arcs.append (arc_1);
+		shape.arcs.append (arc_2);				
 		
 		return shape;
 	end to_pad_shape_oval;
@@ -2379,7 +2365,7 @@ package body et_kicad_pcb is
 
 							when OVAL => 
 								-- Calculate the pad shape.
-								shape := to_pad_shape_rectangle (
+								shape := to_pad_shape_oval (
 											center		=> terminal_position,
 											size_x 		=> pad_size_x,
 											size_y 		=> pad_size_y,
