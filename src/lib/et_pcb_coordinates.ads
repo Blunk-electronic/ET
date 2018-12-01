@@ -130,6 +130,9 @@ package et_pcb_coordinates is
 	type type_point_2d is tagged private;
 	type type_point_3d is tagged private;
 
+	function set_point (x, y : in type_distance) return type_point_2d'class;
+	function set_point (x, y, z : in type_distance) return type_point_3d'class;
+	
 	function right_point_before_left_2d (right, left : in type_point_2d) return boolean;
 	-- Returns true if right point comes before left point.
 	-- Compares axis is this order: x, y
@@ -196,7 +199,7 @@ package et_pcb_coordinates is
 		type type_point_2d is tagged record
 			x, y : type_distance := zero_distance;
 		end record;
-		
+
 		type type_point_3d is new type_point_2d with record
 			z : type_distance := zero_distance;
 		end record;

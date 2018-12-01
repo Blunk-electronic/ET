@@ -200,6 +200,26 @@ package body et_pcb_coordinates is
 	begin
 		return type_angle'value (angle);
 	end to_angle;
+
+	function set_point (x, y : in type_distance) 
+		return type_point_2d'class is
+		point : type_point_2d;
+	begin
+		point.x := x;
+		point.y := y;
+		return point;
+	end set_point;
+
+	function set_point (x, y, z : in type_distance) 
+		return type_point_3d'class is
+		point : type_point_3d;
+	begin
+		point.x := x;
+		point.y := y;
+		point.z := z;
+		return point;
+	end set_point;
+
 	
 	function to_string (point : in type_point_2d) return string is
 	begin
@@ -249,6 +269,8 @@ package body et_pcb_coordinates is
 		end case;
 	end set_point;
 
+		
+	
 	procedure set_point (
 		axis 	: in type_axis_2d;
 		value	: in type_distance;
