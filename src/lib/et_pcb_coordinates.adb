@@ -222,7 +222,7 @@ package body et_pcb_coordinates is
 
 	
 	function to_string (point : in type_point_2d) return string is
-	begin
+	begin -- CS: test the tag of given point (class wide) to output z as well.
 		return position_preamble_2d
 			& to_string (point.x)
 			& latin_1.space
@@ -247,6 +247,7 @@ package body et_pcb_coordinates is
 		return (zero_2d with face => TOP, angle => zero_angle);
 	end package_position_default;
 
+	-- CS make one function of the next functions "set_point" by testing the tag of given point.
 	procedure set_point (
 		axis 	: in type_axis_2d;
 		value	: in type_distance;
@@ -268,8 +269,6 @@ package body et_pcb_coordinates is
 			when Y => point.y := value;
 		end case;
 	end set_point;
-
-		
 	
 	procedure set_point (
 		axis 	: in type_axis_2d;
