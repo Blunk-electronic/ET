@@ -1158,10 +1158,11 @@ package et_pcb is
 		-- CS holes
 
 		-- PCB contour or so called "non-plated millings"
-		pcb_contour				: type_package_pcb_contour; -- CS: is there a need for such things ?
+		pcb_contour				: type_package_pcb_contour; 
 
 		-- Plated millings. NOTE: NOT FOR SLITTED HOLES ! See type_terminal instead.
-		pcb_contour_plated 		: type_package_pcb_contour_plated;
+		-- CS: currently no need for such things
+		--pcb_contour_plated 		: type_package_pcb_contour_plated;
 		
 		technology				: type_assembly_technology; -- set by majority of terminals
 		

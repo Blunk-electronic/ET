@@ -2307,15 +2307,16 @@ package body et_project is
 			section_mark (section_pcb_contour, FOOTER);
 		end write_contour;
 
-		procedure write_contour_plated is begin
-			section_mark (section_pcb_contour_plated, HEADER);
-
-			iterate (packge.pcb_contour_plated.lines, write_line'access);
-			iterate (packge.pcb_contour_plated.arcs, write_arc'access);
-			iterate (packge.pcb_contour_plated.circles, write_circle'access);
-
-			section_mark (section_pcb_contour_plated, FOOTER);
-		end write_contour_plated;
+		-- CS currently no need for plated millings not terminal related
+-- 		procedure write_contour_plated is begin
+-- 			section_mark (section_pcb_contour_plated, HEADER);
+-- 
+-- 			iterate (packge.pcb_contour_plated.lines, write_line'access);
+-- 			iterate (packge.pcb_contour_plated.arcs, write_arc'access);
+-- 			iterate (packge.pcb_contour_plated.circles, write_circle'access);
+-- 
+-- 			section_mark (section_pcb_contour_plated, FOOTER);
+-- 		end write_contour_plated;
 
 		procedure write_package_contour is begin
 			section_mark (section_pac_3d_contour, HEADER);
@@ -2474,8 +2475,8 @@ package body et_project is
 		write_stencil;
 		write_route_restrict;
 		write_via_restrict;
-		write_contour; -- pcb contour
-		write_contour_plated; -- pcb contour
+		write_contour; -- pcb contour plated
+		-- write_contour_plated; -- pcb contour -- CS currently no need
 		write_terminals; -- incl. pad properties, drill sizes, millings, ...
 
 		-- 3D stuff
