@@ -175,10 +175,6 @@ technology SMT/THT
 	[CIRCLE END]
 [PCB_CONTOURS_NON_PLATED END]
 
-[PCB_CONTOURS_PLATED BEGIN]
-	same as PCB_CONTOURS_NON_PLATED
-[PCB_CONTOURS_PLATED END]
-
 # if real
 [PACKAGE_3D_CONTOURS BEGIN]
 
@@ -257,36 +253,106 @@ technology SMT/THT
 
 [TERMINALS BEGIN]
 	[TERMINAL BEGIN]
-		name H7
-		technology SMT/THT
-		shape circular/non_circular
-		tht_hole drilled/milled # relevant if techno is THT
-		position x 443.2 y 45.0
-		
-		#if techno is THT
-			width_inner_layers 1.2
-			shape octagon/circular/rectangle/long/long_offset
-			#if shape circular
-				drill_size 0.8
-				offset x 4 y 0
-			#if shape non_circular
-				size x 5 y 3
-				#if tht_hole drilled
-					drill_size 1
-				#if tht_hole milled
-					[MILLINGS BEGIN]
-					
-					[MILLINGS END]
-					
-		#if techno is SMT
-			shape_smt rectangle/circular/long
-			face top/bottom
-			stop_mask open/closed
-			solder_paste none/applied
-			#if shape non_circular
-				size x 2 y 3
-		
+		name 6
+		technology tht
+		position x 12.700 y 0.000
+		[PAD_CONTOUR BEGIN]
+			[TOP BEGIN]
+				[LINE BEGIN]
+					start x -0.900 y 1.200
+					end x -0.900 y -0.800
+				[LINE END]
+				[LINE BEGIN]
+					start x 1.100 y 1.200
+					end x 1.100 y -0.800
+				[LINE END]
+				[ARC BEGIN]
+					center x 0.100 y 1.200
+					start x -0.900 y 1.200
+					end x 1.100 y 1.200
+				[ARC END]
+				[ARC BEGIN]
+					center x 0.100 y -0.800
+					start x -0.900 y -0.800
+					end x 1.100 y -0.800
+				[ARC END]
+			[TOP END]
+			[BOTTOM BEGIN]
+				[LINE BEGIN]
+					start x -0.900 y 1.200
+					end x -0.900 y -0.800
+				[LINE END]
+				[LINE BEGIN]
+					start x 1.100 y 1.200
+					end x 1.100 y -0.800
+				[LINE END]
+				[ARC BEGIN]
+					center x 0.100 y 1.200
+					start x -0.900 y 1.200
+					end x 1.100 y 1.200
+				[ARC END]
+				[ARC BEGIN]
+					center x 0.100 y -0.800
+					start x -0.900 y -0.800
+					end x 1.100 y -0.800
+				[ARC END]
+			[BOTTOM END]
+		[PAD_CONTOUR END]
+		width_inner_layers 1.000
+		hole milled
+		[MILLINGS BEGIN]
+			[LINE BEGIN]
+				start x -0.400 y 1.200
+				end x -0.400 y -0.800
+				locked no
+			[LINE END]
+			[LINE BEGIN]
+				start x 0.600 y 1.200
+				end x 0.600 y -0.800
+				locked no
+			[LINE END]
+			[LINE BEGIN]
+				start x -0.400 y 1.200
+				end x 0.600 y 1.200
+				locked no
+			[LINE END]
+			[LINE BEGIN]
+				start x -0.400 y -0.800
+				end x 0.600 y -0.800
+				locked no
+			[LINE END]
+		[MILLINGS END]
 	[TERMINAL END]
+
+	[TERMINAL BEGIN]
+		name 9
+		technology smt
+		position x 2.925 y 2.540
+		[PAD_CONTOUR BEGIN]
+			[LINE BEGIN]
+				start x -1.000 y -0.700
+				end x -1.000 y 0.700
+			[LINE END]
+			[LINE BEGIN]
+				start x 1.000 y -0.700
+				end x 1.000 y 0.700
+			[LINE END]
+			[ARC BEGIN]
+				center x 0.000 y -0.700
+				start x -1.000 y -0.700
+				end x 1.000 y -0.700
+			[ARC END]
+			[ARC BEGIN]
+				center x 0.000 y 0.700
+				start x -1.000 y 0.700
+				end x 1.000 y 0.700
+			[ARC END]
+		[PAD_CONTOUR END]
+		face top
+		stop_mask open
+		solder_paste applied
+	[TERMINAL END]
+	
 [TERMINALS END]
 
 # ======================================================================================================================================================
