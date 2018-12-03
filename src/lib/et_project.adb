@@ -2373,6 +2373,15 @@ package body et_project is
 				iterate (pad_shape.circles, write_circle'access);
 				iterate (pad_shape.polygons, write_polygon'access);
 			end write_pad_shape;
+
+			procedure write_plated_millings (millings : in type_package_pcb_contour_plated) is
+			begin
+				section_mark (section_pad_millings, HEADER);
+				iterate (millings.lines, write_line'access);
+				iterate (millings.arcs, write_arc'access);
+				iterate (millings.circles, write_circle'access);
+				section_mark (section_pad_millings, FOOTER);
+			end write_plated_millings;
 			
 		begin -- write_terminals
 			section_mark (section_terminals, HEADER);
@@ -2411,7 +2420,7 @@ package body et_project is
 								write (keyword_drill_size, parameters => et_pcb_coordinates.to_string (element (terminal_cursor).drill_size));
 								
 							when MILLED => 
-								null; -- CS write plated millings
+								write_plated_millings (element (terminal_cursor).millings);
 						end case;
 						
 					when SMT =>

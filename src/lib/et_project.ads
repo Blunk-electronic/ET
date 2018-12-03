@@ -362,7 +362,8 @@ package et_project is
 	section_terminals			: constant string	:= "[TERMINALS";
 	section_terminal			: constant string	:= "[TERMINAL";
 	
-	section_pad_contour			: constant string	:= "[CONTOUR";
+	section_pad_contour			: constant string	:= "[PAD_CONTOUR";
+	section_pad_millings		: constant string	:= "[MILLINGS";
 	
 	section_title_block			: constant string	:= "[TITLE_BLOCK";
 	
