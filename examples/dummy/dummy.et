@@ -6,7 +6,7 @@
 [MODULE BEGIN]
 
 	generic_name led_matrix
-	instance led_matrix_1
+	instance 1..5
 	
 	[NET_CLASSES BEGIN]
 		[NET_CLASS BEGIN]

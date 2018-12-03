@@ -1879,7 +1879,6 @@ package body et_project is
 			write (keyword => keyword_add_level , parameters => to_string (unit.add_level));
 			write (keyword => keyword_file, space => true, parameters => to_string (unit.file));
 		end query_external_unit;
-
 		
 	begin -- save_device
 		
@@ -2514,6 +2513,8 @@ package body et_project is
 		line : et_string_processing.type_fields_of_line;
 
 		procedure process_line is 
+			module_name : type_submodule_name.bounded_string; -- motor_driver
+			module_instance : type_submodule_instance; -- 1, 3, ...
 		begin
 			put_line (standard_output, to_string (line));
 			-- CS read content
