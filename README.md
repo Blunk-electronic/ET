@@ -31,7 +31,7 @@
 
 ### Example of a project configuration file
 - The project configuration file defines module instances and how modules (boards) are connected with each other.
-- It also customizes the ERC (electrical rule check).
+- It also customizes the ERC (electrical rule check) in terms of prefixes (R,C,L,IC, ...), units of measurement, ...
 - See this example <https://github.com/Blunk-electronic/ET/blob/master/examples/conf.txt>
 
 ### Supported CAE formats
@@ -40,6 +40,9 @@
 - An ET native format as shown above.
 
 ### Usage
+
+#### Importing KiCad projects
+
 - First change into the root directory of your KiCad projects and generate a configuration file where prefixes, units of measurement and other things are defined with this command:
 
 ```sh
