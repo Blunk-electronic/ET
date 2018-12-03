@@ -247,6 +247,15 @@ package body et_pcb_coordinates is
 		return (zero_2d with face => TOP, angle => zero_angle);
 	end package_position_default;
 
+	procedure move_point (
+		point	: in out type_point_2d'class;
+		offset	: in type_point_2d) 
+	is begin
+		point.x := point.x + offset.x;
+		point.y := point.y + offset.y;
+	end move_point;
+
+	
 	-- CS make one function of the next functions "set_point" by testing the tag of given point.
 	procedure set_point (
 		axis 	: in type_axis_2d;

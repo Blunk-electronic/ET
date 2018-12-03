@@ -537,14 +537,16 @@ package body et_kicad_pcb is
 		center		: in et_pcb_coordinates.type_terminal_position; -- the pad center position (incl. angle)
 		size_x		: in et_pcb.type_pad_size;	-- the size in x of the pad
 		size_y		: in et_pcb.type_pad_size;	-- the size in y of the pad
-		offset_x	: in et_pcb.type_pad_drill_offset;	-- the x offset of the pad from the center -- CS currently ignored
-		offset_y	: in et_pcb.type_pad_drill_offset)	-- the y offset of the pad from the center -- CS currently ignored
+		offset_x	: in et_pcb.type_pad_drill_offset;	-- the x offset of the pad from the center
+		offset_y	: in et_pcb.type_pad_drill_offset)	-- the y offset of the pad from the center
 		return et_pcb.type_pad_outline is
 
 		use et_pcb;
 		use et_pcb_coordinates;
 		use et_pcb.type_pad_lines;
 		use et_pcb.type_pad_arcs;		
+
+		offset : type_point_2d := type_point_2d (set_point (offset_x, offset_y));
 		
 		shape : type_pad_outline; -- to be returned
 
@@ -592,6 +594,16 @@ package body et_kicad_pcb is
 		rotate (p41, angle);
 		rotate (p42, angle);		
 
+		-- move supportive points by given offset
+		move_point (p11, offset);
+		move_point (p12, offset);
+		
+		move_point (p21, offset);
+		move_point (p22, offset);
+		
+		move_point (p41, offset);
+		move_point (p42, offset);		
+		
 		-- set left line
 		line_1.start_point := p11;
 		line_1.end_point := p12;

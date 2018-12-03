@@ -148,6 +148,10 @@ package et_pcb_coordinates is
 
 	function package_position_default return type_package_position;
 
+	procedure move_point (
+		point	: in out type_point_2d'class;
+		offset	: in type_point_2d);
+	
 	procedure set_point (
 		axis 	: in type_axis_2d;
 		value	: in type_distance;					 
