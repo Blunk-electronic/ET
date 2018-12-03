@@ -51,6 +51,8 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
+with ada.tags;
+
 with ada.exceptions;
 with ada.numerics;
 with ada.numerics.generic_elementary_functions;
@@ -255,34 +257,10 @@ package body et_pcb_coordinates is
 		point.y := point.y + offset.y;
 	end move_point;
 
-	
-	-- CS make one function of the next functions "set_point" by testing the tag of given point.
 	procedure set_point (
 		axis 	: in type_axis_2d;
 		value	: in type_distance;
-		point	: in out type_point_2d) is
-	begin
-		case axis is
-			when X => point.x := value;
-			when Y => point.y := value;
-		end case;
-	end set_point;
-
-	procedure set_point (
-		axis 	: in type_axis_2d;
-		value	: in type_distance;
-		point	: in out type_terminal_position) is
-	begin
-		case axis is
-			when X => point.x := value;
-			when Y => point.y := value;
-		end case;
-	end set_point;
-	
-	procedure set_point (
-		axis 	: in type_axis_2d;
-		value	: in type_distance;
-		point	: in out type_package_position) is
+		point	: in out type_point_2d'class) is
 	begin
 		case axis is
 			when X => point.x := value;

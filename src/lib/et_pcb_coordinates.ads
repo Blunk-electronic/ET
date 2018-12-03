@@ -151,22 +151,12 @@ package et_pcb_coordinates is
 	procedure move_point (
 		point	: in out type_point_2d'class;
 		offset	: in type_point_2d);
-	
-	procedure set_point (
-		axis 	: in type_axis_2d;
-		value	: in type_distance;					 
-		point	: in out type_point_2d);
 
 	procedure set_point (
 		axis 	: in type_axis_2d;
 		value	: in type_distance;					 
-		point	: in out type_terminal_position);
+		point	: in out type_point_2d'class);
 
-	procedure set_point (
-		axis 	: in type_axis_2d;
-		value	: in type_distance;					 
-		point	: in out type_package_position);
-	
 	procedure rotate (
 	-- Rotates the given point by the given angle with the origin as center.
 		point	: in out type_point_2d;
