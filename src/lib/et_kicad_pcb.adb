@@ -357,18 +357,25 @@ package body et_kicad_pcb is
 
 
 	function to_pad_shape_circle (
-		position : in et_pcb_coordinates.type_terminal_position;
-		diameter : in et_pcb.type_pad_size)
+		position	: in et_pcb_coordinates.type_terminal_position;
+		diameter	: in et_pcb.type_pad_size;
+		offset_x	: in et_pcb.type_pad_drill_offset;	-- the offset of the pad from the center in x
+		offset_y	: in et_pcb.type_pad_drill_offset)	-- the offset of the pad from the center in y
 		return et_pcb.type_pad_outline is
 
 		use et_pcb_coordinates;
 		use et_pcb;
 		use et_pcb.type_pad_circles;
+
+		offset : type_point_2d := type_point_2d (set_point (offset_x, offset_y));
+		
 		circle : type_pad_circle;
-		shape : et_pcb.type_pad_outline;
+
+		shape : et_pcb.type_pad_outline; -- to be returned
 	begin
 		circle.center := type_point_2d (position);
 		circle.radius := diameter / 2.0;
+		move_point (circle.center, offset);
 		append (shape.circles, circle);
 		return shape;
 	end to_pad_shape_circle;
@@ -2205,8 +2212,10 @@ package body et_kicad_pcb is
 						case terminal_shape_tht is
 							when CIRCULAR =>
 								-- Caclulate the pad shape. It is a circle. 
-								-- Therefor the size in x serves as diameter.
-								shape := to_pad_shape_circle (terminal_position, pad_size_x);
+								-- Therefore the size in x serves as diameter.
+								shape := to_pad_shape_circle (
+											terminal_position, pad_size_x, 
+											terminal_drill_offset_x, terminal_drill_offset_y);
 								
 								terminals.insert (
 									key 		=> terminal_name,
@@ -2246,42 +2255,89 @@ package body et_kicad_pcb is
 
 						end case;
 
+						--  CS reset drill offset ? as we do with packages in layout ?
+						--terminal_drill_offset_x := pad_drill_offset_min; -- in case the next terminal drill has no offset
+						--terminal_drill_offset_y := pad_drill_offset_min; -- in case the next terminal drill has no offset
+
 						
 					when SMT =>
 
 						-- From the SMT terminal face, validate the status of stop mask and solder paste.
 						set_stop_and_mask;
 						
-						if terminal_shape_smt = CIRCULAR then
-							terminals.insert (
-								key 		=> terminal_name, 
-								position	=> terminal_cursor,
-								inserted	=> terminal_inserted,
-								new_item 	=> (
-												technology 		=> SMT,
-												tht_hole		=> DRILLED, -- has no meaning here
-												position		=> terminal_position,
-												pad_shape		=> (others => <>), -- CS pad diameter
-												face 			=> terminal_face,
-												stop_mask		=> terminal_stop_mask,
-												solder_paste	=> terminal_solder_paste
-											   ));
+						case terminal_shape_smt is
+							when CIRCULAR =>
+
+								-- Caclulate the pad shape. It is a circle. 
+								-- Therefor the size in x serves as diameter.
+								shape := to_pad_shape_circle (
+											terminal_position, pad_size_x, 
+											terminal_drill_offset_x, terminal_drill_offset_y);
+								
+								terminals.insert (
+									key 		=> terminal_name, 
+									position	=> terminal_cursor,
+									inserted	=> terminal_inserted,
+									new_item 	=> (
+										technology 		=> SMT,
+										tht_hole		=> DRILLED, -- has no meaning here
+										position		=> terminal_position,
+										pad_shape		=> shape,
+										face 			=> terminal_face,
+										stop_mask		=> terminal_stop_mask,
+										solder_paste	=> terminal_solder_paste
+										));
 							
-						else -- RECTANGLE, LONG
-							terminals.insert (
-								key 		=> terminal_name, 
-								position	=> terminal_cursor,
-								inserted	=> terminal_inserted,
-								new_item 	=> (
-												technology 		=> SMT,
-												tht_hole		=> DRILLED, -- has no meaning here
-												position		=> terminal_position,
-												pad_shape		=> (others => <>), -- CS pad_size_x/y
-												face 			=> terminal_face,
-												stop_mask		=> terminal_stop_mask,
-												solder_paste	=> terminal_solder_paste
-												));
-						end if;
+							when RECTANGULAR =>
+
+								-- Calculate the rectangular pad shape.
+								shape := to_pad_shape_rectangle (
+											center		=> terminal_position,
+											size_x 		=> pad_size_x,
+											size_y 		=> pad_size_y,
+											offset_x 	=> terminal_drill_offset_x,
+											offset_y 	=> terminal_drill_offset_y);
+
+								terminals.insert (
+									key 		=> terminal_name, 
+									position	=> terminal_cursor,
+									inserted	=> terminal_inserted,
+									new_item 	=> (
+										technology 		=> SMT,
+										tht_hole		=> DRILLED, -- has no meaning here
+										position		=> terminal_position,
+										pad_shape		=> shape,
+										face 			=> terminal_face,
+										stop_mask		=> terminal_stop_mask,
+										solder_paste	=> terminal_solder_paste
+										));
+
+								
+							when OVAL =>
+
+								-- Calculate the oval pad shape.
+								shape := to_pad_shape_oval (
+											center		=> terminal_position,
+											size_x 		=> pad_size_x,
+											size_y 		=> pad_size_y,
+											offset_x 	=> terminal_drill_offset_x,
+											offset_y 	=> terminal_drill_offset_y);
+
+								terminals.insert (
+									key 		=> terminal_name, 
+									position	=> terminal_cursor,
+									inserted	=> terminal_inserted,
+									new_item 	=> (
+										technology 		=> SMT,
+										tht_hole		=> DRILLED, -- has no meaning here
+										position		=> terminal_position,
+										pad_shape		=> shape,
+										face 			=> terminal_face,
+										stop_mask		=> terminal_stop_mask,
+										solder_paste	=> terminal_solder_paste
+										));
+								
+						end case;
 
 						init_stop_and_mask; -- relevant for SMT terminals only (stop mask always open, solder paste never applied)
 				end case;
@@ -6604,12 +6660,14 @@ package body et_kicad_pcb is
 				case terminal_technology is
 					when THT =>
 
-						------
 						case terminal_shape_tht is
 							when CIRCULAR =>
+
 								-- Caclulate the pad shape. It is a circle. 
-								-- Therefor the size in x serves as diameter.
-								shape := to_pad_shape_circle (terminal_position, pad_size_x);
+								-- Therefore the size in x serves as diameter.
+								shape := to_pad_shape_circle (
+											terminal_position, pad_size_x, 
+											terminal_drill_offset_x, terminal_drill_offset_y);
 								
 								terminals.insert (
 									key 		=> terminal_name,
@@ -6661,42 +6719,88 @@ package body et_kicad_pcb is
 						-- From the SMT terminal face, validate the status of stop mask and solder paste.
 						set_stop_and_mask;
 						
-						if terminal_shape_smt = CIRCULAR then
-							terminals.insert (
-								key 		=> terminal_name, 
-								position	=> terminal_cursor,
-								inserted	=> terminal_inserted,
-								new_item 	=> (
-												technology 		=> SMT,
-												tht_hole		=> DRILLED, -- has no meaning here
-												position		=> terminal_position,
-												pad_shape		=> (others => <>), -- CS pad diameter
-												face 			=> terminal_face,
-												stop_mask		=> terminal_stop_mask,
-												solder_paste	=> terminal_solder_paste,
+						case terminal_shape_smt is
+							when CIRCULAR =>
 
-												-- the pad is connected with a certain net
-												net_name		=> terminal_net_name
-											   ));
+								-- Caclulate the pad shape. It is a circle. 
+								-- Therefor the size in x serves as diameter.
+								shape := to_pad_shape_circle (
+											terminal_position, pad_size_x, 
+											terminal_drill_offset_x, terminal_drill_offset_y);
+								
+								terminals.insert (
+									key 		=> terminal_name, 
+									position	=> terminal_cursor,
+									inserted	=> terminal_inserted,
+									new_item 	=> (
+										technology 		=> SMT,
+										tht_hole		=> DRILLED, -- has no meaning here
+										position		=> terminal_position,
+										pad_shape		=> shape,
+										face 			=> terminal_face,
+										stop_mask		=> terminal_stop_mask,
+										solder_paste	=> terminal_solder_paste,
+
+										-- the pad is connected with a certain net
+										net_name		=> terminal_net_name
+										));
 							
-						else -- RECTANGLE, LONG
-							terminals.insert (
-								key 		=> terminal_name, 
-								position	=> terminal_cursor,
-								inserted	=> terminal_inserted,
-								new_item 	=> (
-												technology 		=> SMT,
-												tht_hole		=> DRILLED, -- has no meaning here
-												position		=> terminal_position,
-												pad_shape		=> (others => <>), -- CS pad_size_x/y
-												face 			=> terminal_face,
-												stop_mask		=> terminal_stop_mask,
-												solder_paste	=> terminal_solder_paste,
-												
-												-- the pad is connected with a certain net
-												net_name		=> terminal_net_name
-											));
-						end if;
+							when RECTANGULAR =>
+
+								-- Calculate the rectangular pad shape.
+								shape := to_pad_shape_rectangle (
+											center		=> terminal_position,
+											size_x 		=> pad_size_x,
+											size_y 		=> pad_size_y,
+											offset_x 	=> terminal_drill_offset_x,
+											offset_y 	=> terminal_drill_offset_y);
+
+								terminals.insert (
+									key 		=> terminal_name, 
+									position	=> terminal_cursor,
+									inserted	=> terminal_inserted,
+									new_item 	=> (
+										technology 		=> SMT,
+										tht_hole		=> DRILLED, -- has no meaning here
+										position		=> terminal_position,
+										pad_shape		=> shape,
+										face 			=> terminal_face,
+										stop_mask		=> terminal_stop_mask,
+										solder_paste	=> terminal_solder_paste,
+
+										-- the pad is connected with a certain net
+										net_name		=> terminal_net_name
+										));
+
+								
+							when OVAL =>
+
+								-- Calculate the oval pad shape.
+								shape := to_pad_shape_oval (
+											center		=> terminal_position,
+											size_x 		=> pad_size_x,
+											size_y 		=> pad_size_y,
+											offset_x 	=> terminal_drill_offset_x,
+											offset_y 	=> terminal_drill_offset_y);
+
+								terminals.insert (
+									key 		=> terminal_name, 
+									position	=> terminal_cursor,
+									inserted	=> terminal_inserted,
+									new_item 	=> (
+										technology 		=> SMT,
+										tht_hole		=> DRILLED, -- has no meaning here
+										position		=> terminal_position,
+										pad_shape		=> shape,
+										face 			=> terminal_face,
+										stop_mask		=> terminal_stop_mask,
+										solder_paste	=> terminal_solder_paste,
+
+										-- the pad is connected with a certain net
+										net_name		=> terminal_net_name
+										));
+								
+						end case;
 
 						init_stop_and_mask; -- relevant for SMT terminals only (stop mask always open, solder paste never applied)
 				end case;
