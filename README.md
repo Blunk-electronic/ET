@@ -23,6 +23,12 @@
 - extensive design rule checking (device prefixes, purpose of user-interactive devices, partcodes, pinout of board-to-board connections ...)
 - interfacing with system modelling tools
 
+### Examples of design and component models
+- A project file (containing schematic and layout stuff) looks like this <https://github.com/Blunk-electronic/ET/blob/master/examples/dummy/dummy.et>
+- Device model <https://github.com/Blunk-electronic/ET/blob/master/examples/device.dev>
+- Symbol model <https://github.com/Blunk-electronic/ET/blob/master/examples/symbol.sym>
+- Package model <https://github.com/Blunk-electronic/ET/blob/master/examples/package.pac>
+
 ### Supported CAE formats
 - KiCad V4, V5
 - Planned is to support also EAGLE.
