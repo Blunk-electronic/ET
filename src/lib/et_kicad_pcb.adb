@@ -559,7 +559,7 @@ package body et_kicad_pcb is
 
 
 	
-	function contour_milled_rectangle_of_pad (
+	function to_pad_milling_contour (
 	-- Converts the given position and dimensions of a rectangular slotted hole
 	-- to a list with four lines (top, bottom, right, left).
 		center		: et_pcb_coordinates.type_terminal_position; -- the terminal position (incl. angle, (z axis ignored))
@@ -571,145 +571,75 @@ package body et_kicad_pcb is
 
 		use et_pcb;
 		use et_pcb_coordinates;
-	
+
+		offset : type_point_2d := type_point_2d (set_point (offset_x, offset_y));
+		
 		lines : type_pcb_contour_lines.list; -- to be returned
-		line_horizontal_bottom	: type_pcb_contour_line;
-		line_horizontal_top		: type_pcb_contour_line;	
-		line_vertical_left 		: type_pcb_contour_line;
-		line_vertical_right 	: type_pcb_contour_line;
-		size_x_half : type_pad_size;
-		size_y_half : type_pad_size;
-	begin
-		size_x_half := size_x * 0.5;
-		size_y_half := size_y * 0.5;
 
-		-- HORIZONAL LINES
+		-- The given center of the pad also provides us with the angle of rotation:
+		angle : constant type_angle := get_angle (center);
 		
-		-- bottom
-		-- start point x
-		set_point (X, 
-			value => offset_x + get_axis (X, type_point_2d (center)) - size_x_half,
-			point => line_horizontal_bottom.start_point);
+		-- supportive frequently used values
+		xp : constant type_distance := size_x / 2;
+		xn : constant type_distance := -(xp);
 
-		-- start point y
-		set_point (Y, 
-			value => offset_y + get_axis (Y, type_point_2d (center)) - size_y_half,
-			point => line_horizontal_bottom.start_point);
+		yp : constant type_distance := size_y / 2;
+		yn : constant type_distance := -(yp);
 
-		-- rotate start point by angle of pad
-		rotate (point => line_horizontal_bottom.start_point, angle => get_angle (center));
+ 		-- supportive corner points:
+		p11, p12 : type_point_2d;
+		p21, p22 : type_point_2d;
+
+		-- These are the four lines we need for the rectangular pad contour:
+		line_1, line_2 : type_pcb_contour_line; -- left line, right line
+		line_3, line_4 : type_pcb_contour_line; -- upper line, lower line
+
+	begin -- to_pad_milling_contour
+		-- set supportive cornert points
+		p11 := type_point_2d (set_point (x => xn, y => yp));
+		p12 := type_point_2d (set_point (x => xn, y => yn));
+
+		p21 := type_point_2d (set_point (x => xp, y => yp));
+		p22 := type_point_2d (set_point (x => xp, y => yn));
+
+		-- rotate supportive points
+		rotate (p11, angle);
+		rotate (p11, angle);
+
+		rotate (p21, angle);
+		rotate (p21, angle);
+
+		-- move supportive points by given offset
+		move_point (p11, offset);
+		move_point (p12, offset);
 		
-		-- end point x
-		set_point (X,
-			value => offset_x + get_axis (X, type_point_2d (center)) + size_x_half,
-			point => line_horizontal_bottom.end_point);
+		move_point (p21, offset);
+		move_point (p22, offset);
 
-		-- end point y
-		set_point (Y,
-			value => offset_y + get_axis (Y, type_point_2d (center)) - size_y_half,
-			point => line_horizontal_bottom.end_point);
+		-- set left line
+		line_1.start_point := p11;
+		line_1.end_point := p12;
 
-		-- rotate end point by angle of pad
-		rotate (point => line_horizontal_bottom.end_point, angle => get_angle (center));
+		-- set right line
+		line_2.start_point := p21;
+		line_2.end_point := p22;
 
+		-- set upper line
+		line_3.start_point := p11;
+		line_3.end_point := p21;		
 
-		-- top
-		-- start point x
-		set_point (X, 
-			value => offset_x + get_axis (X, type_point_2d (center)) - size_x_half,
-			point => line_horizontal_top.start_point);
+		-- set lower line
+		line_4.start_point := p12;
+		line_4.end_point := p22;
 
-		-- start point y
-		set_point (Y, 
-			value => offset_y + get_axis (Y, type_point_2d (center)) + size_y_half,
-			point => line_horizontal_top.start_point);
-
-		-- rotate start point by angle of pad
-		rotate (point => line_horizontal_top.start_point, angle => get_angle (center));
-		
-		-- end point x
-		set_point (X,
-			value => offset_x + get_axis (X, type_point_2d (center)) + size_x_half,
-			point => line_horizontal_top.end_point);
-
-		-- end point y
-		set_point (Y,
-			value => offset_y + get_axis (Y, type_point_2d (center)) + size_y_half,
-			point => line_horizontal_top.end_point);
-
-		-- rotate end point by angle of pad
-		rotate (point => line_horizontal_top.end_point, angle => get_angle (center));
-
-
-		
-
-		-- VERTICAL LINE
-
-		-- left
-		-- start point x
-		set_point (X,
-			value => offset_x + get_axis (X, type_point_2d (center)) - size_x_half,
-			point => line_vertical_left.start_point);
-
-		-- start point y
-		set_point (Y,
-			value => offset_y + get_axis (Y, type_point_2d (center)) - size_y_half,
-			point => line_vertical_left.start_point);
-
-		-- rotate start point by angle of pad
-		rotate (point => line_vertical_left.start_point, angle => get_angle (center));
-		
-		-- end point x
-		set_point (X,
-			value => offset_x + get_axis (X, type_point_2d (center)) - size_x_half,
-			point => line_vertical_left.end_point);
-
-		-- end point y
-		set_point (Y,
-			value => offset_y + get_axis (Y, type_point_2d (center)) + size_y_half,
-			point => line_vertical_left.end_point);
-
-		-- rotate end point by angle of pad
-		rotate (point => line_vertical_left.end_point, angle => get_angle (center));
-
-
-
-		-- right
-		-- start point x
-		set_point (X,
-			value => offset_x + get_axis (X, type_point_2d (center)) + size_x_half,
-			point => line_vertical_right.start_point);
-
-		-- start point y
-		set_point (Y,
-			value => offset_y + get_axis (Y, type_point_2d (center)) - size_y_half,
-			point => line_vertical_right.start_point);
-
-		-- rotate start point by angle of pad
-		rotate (point => line_vertical_right.start_point, angle => get_angle (center));
-		
-		-- end point x
-		set_point (X,
-			value => offset_x + get_axis (X, type_point_2d (center)) + size_x_half,
-			point => line_vertical_right.end_point);
-
-		-- end point y
-		set_point (Y,
-			value => offset_y + get_axis (Y, type_point_2d (center)) + size_y_half,
-			point => line_vertical_right.end_point);
-
-		-- rotate end point by angle of pad
-		rotate (point => line_vertical_right.end_point, angle => get_angle (center));
-
-
-		
-		lines.append (line_horizontal_top);
-		lines.append (line_horizontal_bottom);
-		lines.append (line_vertical_left);
-		lines.append (line_vertical_right);		
+		-- build milling contour
+		lines.append (line_1);
+		lines.append (line_2);
+		lines.append (line_3);
+		lines.append (line_4);
 		
 		return lines;
-	end contour_milled_rectangle_of_pad;
+	end to_pad_milling_contour;
 
 	
 	function to_package_model (
@@ -2253,7 +2183,7 @@ package body et_kicad_pcb is
 
 									-- The plated millings of the hole is a list of lines.
 									millings			=> (
-											lines 	=> contour_milled_rectangle_of_pad (
+											lines 	=> to_pad_milling_contour (
 														center		=> terminal_position,
 														size_x		=> terminal_milling_size_x,
 														size_y		=> terminal_milling_size_y,
@@ -6651,7 +6581,7 @@ package body et_kicad_pcb is
 
 									-- The plated millings of the hole is a list of lines.
 									millings			=> (
-											lines 	=> contour_milled_rectangle_of_pad (
+											lines 	=> to_pad_milling_contour (
 														center		=> terminal_position,
 														size_x		=> terminal_milling_size_x,
 														size_y		=> terminal_milling_size_y,
