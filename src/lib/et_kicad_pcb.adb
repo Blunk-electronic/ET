@@ -537,8 +537,8 @@ package body et_kicad_pcb is
 		center		: in et_pcb_coordinates.type_terminal_position; -- the pad center position (incl. angle)
 		size_x		: in et_pcb.type_pad_size;	-- the size in x of the pad
 		size_y		: in et_pcb.type_pad_size;	-- the size in y of the pad
-		offset_x	: in et_pcb.type_pad_drill_offset;	-- the offset of the pad from the center in x
-		offset_y	: in et_pcb.type_pad_drill_offset)	-- the offset of the pad from the center in y
+		offset_x	: in et_pcb.type_pad_drill_offset;	-- the x offset of the pad from the center -- CS currently ignored
+		offset_y	: in et_pcb.type_pad_drill_offset)	-- the y offset of the pad from the center -- CS currently ignored
 		return et_pcb.type_pad_outline is
 
 		use et_pcb;
@@ -552,14 +552,14 @@ package body et_kicad_pcb is
 		angle : constant type_angle := get_angle (center);
 		
 		-- supportive frequently used values
-		x1p : constant type_pad_size := size_x / 2;
-		x1n : constant type_pad_size := -(x1p);
+		x1p : constant type_distance := size_x / 2;
+		x1n : constant type_distance := -(x1p);
 
-		y1p : constant type_pad_size := size_y / 2;
-		y1n : constant type_pad_size := -(y1p);
+		y1p : constant type_distance := size_y / 2;
+		y1n : constant type_distance := -(y1p);
 
-		y2p : constant type_pad_size := y1p - x1p;
-		y2n : constant type_pad_size := -(y2p);
+		y2p : constant type_distance := y1p - x1p;
+		y2n : constant type_distance := -(y2p);
 
 		-- supportive points:
 		p11, p12 : type_point_2d; -- start/end point of left line
@@ -2272,7 +2272,8 @@ package body et_kicad_pcb is
 			
 
 			procedure insert_terminal is 
-			-- Insert a terminal in the list "terminals":
+			-- Insert a terminal in the list "terminals".
+			-- This is library related stuff.
 
 				-- this cursor points to the terminal inserted last
 				terminal_cursor : et_pcb.type_terminals.cursor;
@@ -6666,18 +6667,20 @@ package body et_kicad_pcb is
 			end insert_fp_line;
 
 			procedure insert_terminal is 
-			-- Insert a terminal in the list "terminals":
+			-- Insert a terminal in the list "terminals".
+			-- This is layout related stuff.
 			
 				-- This cursor points to the last inserted terminal:
 				terminal_cursor : et_kicad_pcb.type_terminals.cursor;
 				-- This flag goes true once a terminal is to be inserted that already exists (by its name).
 				terminal_inserted : boolean;
-			begin -- insert_terminal
 
-				case terminal_technology is
-					when THT =>
+				shape : et_pcb.type_pad_outline;
 
-						if terminal_shape_tht = CIRCULAR then
+				procedure insert_tht is begin
+					case terminal_hole_shape is
+						when CIRCULAR =>
+							
 							terminals.insert (
 								key 		=> terminal_name,
 								position	=> terminal_cursor,
@@ -6686,65 +6689,98 @@ package body et_kicad_pcb is
 									technology 			=> THT,
 									tht_hole			=> DRILLED,
 									position			=> terminal_position,
-									pad_shape_top		=> to_pad_shape_circle (terminal_position, pad_size_x),
-									pad_shape_bottom	=> to_pad_shape_circle (terminal_position, pad_size_x),
-									width_inner_layers	=> terminal_copper_width_inner_layers,
+									pad_shape_top		=> shape, -- The shape is the same on top
+									pad_shape_bottom	=> shape, -- and on bottom side.
+									width_inner_layers 	=> terminal_copper_width_inner_layers,
 									drill_size			=> terminal_drill_size,
+									
+									-- the pad is connected with a certain net
+									net_name			=> terminal_net_name
+								));
+
+						when OVAL =>
+							terminals.insert (
+								key 		=> terminal_name,
+								position	=> terminal_cursor,
+								inserted	=> terminal_inserted,
+								new_item 	=> (
+									technology 			=> THT,
+									tht_hole			=> MILLED,
+									position			=> terminal_position,
+									pad_shape_top		=> shape, -- The shape is the same on top
+									pad_shape_bottom	=> shape, -- as on bottom side.
+									width_inner_layers	=> terminal_copper_width_inner_layers,
+
+									-- The plated millings of the hole is a list of lines.
+									millings			=> (
+											lines 	=> contour_milled_rectangle_of_pad (
+														center		=> terminal_position,
+														size_x		=> terminal_milling_size_x,
+														size_y		=> terminal_milling_size_y,
+														offset_x	=> terminal_drill_offset_x,
+														offset_y	=> terminal_drill_offset_y),
+
+											-- KiCad does not allow arcs or circles for plated millings.
+											others	=> <>),
 
 									-- the pad is connected with a certain net
 									net_name			=> terminal_net_name
-									));
-						else -- RECTANGLE, OVAL
-							case terminal_hole_shape is
-								when CIRCULAR =>
-									terminals.insert (
-										key 		=> terminal_name,
-										position	=> terminal_cursor,
-										inserted	=> terminal_inserted,
-										new_item 	=> (
-											technology 			=> THT,
-											tht_hole			=> DRILLED,
-											position			=> terminal_position,
-											pad_shape_top		=> (others => <>), -- CS calculate octagon, rectangle, long from pad_size_x/y
-											pad_shape_bottom	=> (others => <>), -- CS calculate octagon, rectangle, long from pad_size_x/y
-											width_inner_layers	=> terminal_copper_width_inner_layers,
-											drill_size			=> terminal_drill_size,
+								));
+					end case;
+				end insert_tht;
+				
+			begin -- insert_terminal
 
-											-- the pad is connected with a certain net
-											net_name		=> terminal_net_name
+				case terminal_technology is
+					when THT =>
+
+						------
+						case terminal_shape_tht is
+							when CIRCULAR =>
+								-- Caclulate the pad shape. It is a circle. 
+								-- Therefor the size in x serves as diameter.
+								shape := to_pad_shape_circle (terminal_position, pad_size_x);
+								
+								terminals.insert (
+									key 		=> terminal_name,
+									position	=> terminal_cursor,
+									inserted	=> terminal_inserted,
+									new_item 	=> (
+										technology 			=> THT,
+										tht_hole			=> DRILLED,
+										position			=> terminal_position,
+										pad_shape_top		=> shape, -- The shape is the same on top
+										pad_shape_bottom	=> shape, -- and on bottom side.
+										width_inner_layers	=> terminal_copper_width_inner_layers,
+										drill_size			=> terminal_drill_size,
+
+										-- the pad is connected with a certain net
+										net_name			=> terminal_net_name
 										));
 
-								when OVAL =>
-									terminals.insert (
-										key 		=> terminal_name,
-										position	=> terminal_cursor,
-										inserted	=> terminal_inserted,
-										new_item 	=> (
-											technology 			=> THT,
-											tht_hole			=> MILLED,
-											position			=> terminal_position,
-											pad_shape_top		=> (others => <>), -- CS calculate rectangle from pad_size_x/y
-											pad_shape_bottom	=> (others => <>), -- CS calculate rectangle from pad_size_x/y
-											width_inner_layers	=> terminal_copper_width_inner_layers,
+							when RECTANGULAR =>
+								-- Calculate the pad shape.
+								shape := to_pad_shape_rectangle (
+											center		=> terminal_position,
+											size_x 		=> pad_size_x,
+											size_y 		=> pad_size_y,
+											offset_x 	=> terminal_drill_offset_x,
+											offset_y 	=> terminal_drill_offset_y);
 
-											-- The plated millings of the hole is a list of lines.
-											millings			=> (
-													lines	=> contour_milled_rectangle_of_pad (
-																center 		=> terminal_position,
-																size_x 		=> terminal_milling_size_x,
-																size_y 		=> terminal_milling_size_y,
-																offset_x 	=> terminal_drill_offset_x,
-																offset_y 	=> terminal_drill_offset_y),
+								insert_tht;
 
-													-- KiCad does not allow arcs or circles for plated millings.
-													others	=> <>),
+							when OVAL => 
+								-- Calculate the pad shape.
+								shape := to_pad_shape_oval (
+											center		=> terminal_position,
+											size_x 		=> pad_size_x,
+											size_y 		=> pad_size_y,
+											offset_x 	=> terminal_drill_offset_x,
+											offset_y 	=> terminal_drill_offset_y);
 
-											-- the pad is connected with a certain net
-											net_name		=> terminal_net_name
-										));
-							end case;
+								insert_tht;
 
-						end if;
+						end case;
 
 						-- reset drill offset
 						terminal_drill_offset_x := pad_drill_offset_min; -- in case the next terminal drill has no offset
@@ -6771,8 +6807,9 @@ package body et_kicad_pcb is
 
 												-- the pad is connected with a certain net
 												net_name		=> terminal_net_name
-											));
-						else
+											   ));
+							
+						else -- RECTANGLE, LONG
 							terminals.insert (
 								key 		=> terminal_name, 
 								position	=> terminal_cursor,
