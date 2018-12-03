@@ -2150,9 +2150,11 @@ package body et_kicad_pcb is
 
 				shape : et_pcb.type_pad_outline;
 
-				procedure insert_tht is begin
+				procedure insert_tht is begin 
+				-- NOTE: The pad shape (stored in shape) now must be assigned to
+				-- a therminal with either a circular or an oval hole.
 					case terminal_hole_shape is
-						when CIRCULAR =>
+						when CIRCULAR => -- a circular hole
 							
 							terminals.insert (
 								key 		=> terminal_name,
@@ -2168,7 +2170,7 @@ package body et_kicad_pcb is
 									drill_size			=> terminal_drill_size
 								));
 
-						when OVAL =>
+						when OVAL => -- a milled hole
 							terminals.insert (
 								key 		=> terminal_name,
 								position	=> terminal_cursor,
@@ -2182,16 +2184,15 @@ package body et_kicad_pcb is
 									width_inner_layers	=> terminal_copper_width_inner_layers,
 
 									-- The plated millings of the hole is a list of lines.
-									millings			=> (
-											lines 	=> to_pad_milling_contour (
-														center		=> terminal_position,
-														size_x		=> terminal_milling_size_x,
-														size_y		=> terminal_milling_size_y,
-														offset_x	=> terminal_drill_offset_x,
-														offset_y	=> terminal_drill_offset_y),
+									millings => (lines 	=> to_pad_milling_contour (
+											center		=> terminal_position,
+											size_x		=> terminal_milling_size_x,
+											size_y		=> terminal_milling_size_y,
+											offset_x	=> terminal_drill_offset_x,
+											offset_y	=> terminal_drill_offset_y),
 
-											-- KiCad does not allow arcs or circles for plated millings.
-											others	=> <>)
+										-- KiCad does not allow arcs or circles for plated millings.
+										others	=> <>)
 								));
 					end case;
 				end insert_tht;
@@ -6546,8 +6547,10 @@ package body et_kicad_pcb is
 				shape : et_pcb.type_pad_outline;
 
 				procedure insert_tht is begin
+				-- NOTE: The pad shape (stored in shape) now must be assigned to
+				-- a therminal with either a circular or an oval hole.
 					case terminal_hole_shape is
-						when CIRCULAR =>
+						when CIRCULAR => -- a circular hole
 							
 							terminals.insert (
 								key 		=> terminal_name,
@@ -6566,7 +6569,7 @@ package body et_kicad_pcb is
 									net_name			=> terminal_net_name
 								));
 
-						when OVAL =>
+						when OVAL => -- a milled hole
 							terminals.insert (
 								key 		=> terminal_name,
 								position	=> terminal_cursor,
@@ -6580,16 +6583,15 @@ package body et_kicad_pcb is
 									width_inner_layers	=> terminal_copper_width_inner_layers,
 
 									-- The plated millings of the hole is a list of lines.
-									millings			=> (
-											lines 	=> to_pad_milling_contour (
-														center		=> terminal_position,
-														size_x		=> terminal_milling_size_x,
-														size_y		=> terminal_milling_size_y,
-														offset_x	=> terminal_drill_offset_x,
-														offset_y	=> terminal_drill_offset_y),
+									millings => (lines 	=> to_pad_milling_contour (
+											center		=> terminal_position,
+											size_x		=> terminal_milling_size_x,
+											size_y		=> terminal_milling_size_y,
+											offset_x	=> terminal_drill_offset_x,
+											offset_y	=> terminal_drill_offset_y),
 
-											-- KiCad does not allow arcs or circles for plated millings.
-											others	=> <>),
+										-- KiCad does not allow arcs or circles for plated millings.
+										others	=> <>),
 
 									-- the pad is connected with a certain net
 									net_name			=> terminal_net_name
