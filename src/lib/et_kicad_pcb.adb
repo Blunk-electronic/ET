@@ -802,8 +802,8 @@ package body et_kicad_pcb is
 		-- compose the final terminal.
 		terminal_name 		: et_libraries.type_terminal_name.bounded_string;
 		terminal_technology	: type_assembly_technology;
-		terminal_shape_tht 	: type_pad_shape_tht;
-		terminal_shape_smt 	: type_pad_shape_smt;
+		terminal_pad_shape_tht 	: type_pad_shape_tht;
+		terminal_pad_shape_smt 	: type_pad_shape_smt;
 
 		terminal_face 			: et_pcb_coordinates.type_face;
 		terminal_drill_size		: type_drill_size; 
@@ -1816,8 +1816,8 @@ package body et_kicad_pcb is
 									terminal_technology := to_assembly_technology (to_string (arg));
 								when 3 =>
 									case terminal_technology is
-										when SMT => terminal_shape_smt := to_pad_shape_smt (to_string (arg));
-										when THT => terminal_shape_tht := to_pad_shape_tht (to_string (arg));
+										when SMT => terminal_pad_shape_smt := to_pad_shape_smt (to_string (arg));
+										when THT => terminal_pad_shape_tht := to_pad_shape_tht (to_string (arg));
 									end case;
 								when others => too_many_arguments;
 							end case;
@@ -2209,7 +2209,7 @@ package body et_kicad_pcb is
 				case terminal_technology is
 					when THT =>
 
-						case terminal_shape_tht is
+						case terminal_pad_shape_tht is
 							when CIRCULAR =>
 								-- Caclulate the pad shape. It is a circle. 
 								-- Therefore the size in x serves as diameter.
@@ -2265,7 +2265,7 @@ package body et_kicad_pcb is
 						-- From the SMT terminal face, validate the status of stop mask and solder paste.
 						set_stop_and_mask;
 						
-						case terminal_shape_smt is
+						case terminal_pad_shape_smt is
 							when CIRCULAR =>
 
 								-- Caclulate the pad shape. It is a circle. 
@@ -3321,8 +3321,8 @@ package body et_kicad_pcb is
 		-- compose the final terminal.
 		terminal_name 			: et_libraries.type_terminal_name.bounded_string;
 		terminal_technology		: type_assembly_technology;
-		terminal_shape_tht 		: type_pad_shape_tht;
-		terminal_shape_smt 		: type_pad_shape_smt;
+		terminal_pad_shape_tht 		: type_pad_shape_tht;
+		terminal_pad_shape_smt 		: type_pad_shape_smt;
 
 		terminal_face 			: et_pcb_coordinates.type_face;
 		terminal_drill_size		: type_drill_size; 
@@ -4265,8 +4265,8 @@ package body et_kicad_pcb is
 									terminal_technology := to_assembly_technology (to_string (arg));
 								when 3 =>
 									case terminal_technology is
-										when SMT => terminal_shape_smt := to_pad_shape_smt (to_string (arg));
-										when THT => terminal_shape_tht := to_pad_shape_tht (to_string (arg));
+										when SMT => terminal_pad_shape_smt := to_pad_shape_smt (to_string (arg));
+										when THT => terminal_pad_shape_tht := to_pad_shape_tht (to_string (arg));
 									end case;
 								when others => too_many_arguments;
 							end case;
@@ -6672,7 +6672,7 @@ package body et_kicad_pcb is
 				case terminal_technology is
 					when THT =>
 
-						case terminal_shape_tht is
+						case terminal_pad_shape_tht is
 							when CIRCULAR =>
 
 								-- Caclulate the pad shape. It is a circle. 
@@ -6731,7 +6731,7 @@ package body et_kicad_pcb is
 						-- From the SMT terminal face, validate the status of stop mask and solder paste.
 						set_stop_and_mask;
 						
-						case terminal_shape_smt is
+						case terminal_pad_shape_smt is
 							when CIRCULAR =>
 
 								-- Caclulate the pad shape. It is a circle. 
