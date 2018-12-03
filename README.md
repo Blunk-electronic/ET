@@ -29,10 +29,15 @@
 - Symbol model <https://github.com/Blunk-electronic/ET/blob/master/examples/symbol.sym>
 - Package model <https://github.com/Blunk-electronic/ET/blob/master/examples/package.pac>
 
+### Example of a project configuration file
+- The project configuration file defines module instances and how modules (boards) are connected with each other.
+- It also customizes the ERC (electrical rule check).
+- See this example <https://github.com/Blunk-electronic/ET/blob/master/examples/conf.txt>
+
 ### Supported CAE formats
-- KiCad V4, V5
-- Planned is to support also EAGLE.
-- An ET native format.
+- KiCad V4, V5 (import only)
+- Planned is to support also EAGLE (import only)
+- An ET native format as shown above.
 
 ### Usage
 - First change into the root directory of your KiCad projects and generate a configuration file where prefixes, units of measurement and other things are defined with this command:
