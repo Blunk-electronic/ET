@@ -2491,9 +2491,6 @@ package body et_configuration is
 		use et_string_processing;
 		line : et_string_processing.type_fields_of_line; -- the line of the file
 
-		function field (line : in type_fields_of_line; position : in positive) return string renames
-			et_string_processing.get_field_from_line;
-
 		type type_section is (
 			none,
 			import_modules,
@@ -2648,24 +2645,24 @@ package body et_configuration is
 						log (to_string (element (line_cursor)), log_threshold + 2);
 
 						-- read module name
-						check_submodule_name_length (field (element (line_cursor), column_module_name));
-						module.name := to_submodule_name (field (element (line_cursor), column_module_name));
+						check_submodule_name_length (et_string_processing.field (element (line_cursor), column_module_name));
+						module.name := to_submodule_name (et_string_processing.field (element (line_cursor), column_module_name));
 						check_submodule_name_characters (module.name);
-						et_import.validate_project (et_project.to_project_name (field (element (line_cursor), column_module_name)));
+						et_import.validate_project (et_project.to_project_name (et_string_processing.field (element (line_cursor), column_module_name)));
 
 						-- read abbrevation
-						check_submodule_abbrevation_length (field (element (line_cursor), column_abbrevation_A));
-						module.abbrevation := to_abbrevation (field (element (line_cursor), column_abbrevation_A));
+						check_submodule_abbrevation_length (et_string_processing.field (element (line_cursor), column_abbrevation_A));
+						module.abbrevation := to_abbrevation (et_string_processing.field (element (line_cursor), column_abbrevation_A));
 						check_submodule_abbrevation_characters (module.abbrevation);
 
 						-- read cad format
-						et_import.validate_cad_format (field (element (line_cursor), column_cad_format));
-						module.format := et_import.to_cad_format (field (element (line_cursor), column_cad_format));
+						et_import.validate_cad_format (et_string_processing.field (element (line_cursor), column_cad_format));
+						module.format := et_import.to_cad_format (et_string_processing.field (element (line_cursor), column_cad_format));
 						-- CS: default if not provided ?
 
 						-- read number of instances
-						check_number_of_instances (field (element (line_cursor), column_instance_A)); -- character check included
-						module.instances := to_number_of_instances (field (element (line_cursor), column_instance_A));
+						check_number_of_instances (et_string_processing.field (element (line_cursor), column_instance_A)); -- character check included
+						module.instances := to_number_of_instances (et_string_processing.field (element (line_cursor), column_instance_A));
 						-- CS: default if not provided ?
 
 						-- test multiple occurences of module name
@@ -2705,35 +2702,35 @@ package body et_configuration is
 						log (to_string (element (line_cursor)), log_threshold + 2);
 
 						-- read module abbrevation A
-						check_submodule_abbrevation_length (field (element (line_cursor), column_abbrevation_A));
-						connection.peer_A.abbrevation := to_abbrevation (field (element (line_cursor), column_abbrevation_A));
+						check_submodule_abbrevation_length (et_string_processing.field (element (line_cursor), column_abbrevation_A));
+						connection.peer_A.abbrevation := to_abbrevation (et_string_processing.field (element (line_cursor), column_abbrevation_A));
 						check_submodule_abbrevation_characters (connection.peer_A.abbrevation);
 
 						-- read number of instances
-						check_number_of_instances (field (element (line_cursor), column_instance_A)); -- character check included
-						connection.peer_A.instance := to_number_of_instances (field (element (line_cursor), column_instance_A));
+						check_number_of_instances (et_string_processing.field (element (line_cursor), column_instance_A)); -- character check included
+						connection.peer_A.instance := to_number_of_instances (et_string_processing.field (element (line_cursor), column_instance_A));
 						
 						-- read connector purpose A
-						check_purpose_length (field (element (line_cursor), column_purpose_A));
-						validate_purpose (field (element (line_cursor), column_purpose_A));
-						connection.peer_A.purpose := to_purpose (field (element (line_cursor), column_purpose_A));
+						check_purpose_length (et_string_processing.field (element (line_cursor), column_purpose_A));
+						validate_purpose (et_string_processing.field (element (line_cursor), column_purpose_A));
+						connection.peer_A.purpose := to_purpose (et_string_processing.field (element (line_cursor), column_purpose_A));
 						check_purpose_characters (connection.peer_A.purpose);
 						-- NOTE: The question whether there is a connector with this purpose in the module can
 						-- not be answered here, because the project has not been imported yet.
 						
 						-- read module abbrevation B
-						check_submodule_abbrevation_length (field (element (line_cursor), column_abbrevation_B));
-						connection.peer_B.abbrevation := to_abbrevation (field (element (line_cursor), column_abbrevation_B));
+						check_submodule_abbrevation_length (et_string_processing.field (element (line_cursor), column_abbrevation_B));
+						connection.peer_B.abbrevation := to_abbrevation (et_string_processing.field (element (line_cursor), column_abbrevation_B));
 						check_submodule_abbrevation_characters (connection.peer_B.abbrevation);
 
 						-- read number of instances
-						check_number_of_instances (field (element (line_cursor), column_instance_B)); -- character check included
-						connection.peer_B.instance := to_number_of_instances (field (element (line_cursor), column_instance_B));
+						check_number_of_instances (et_string_processing.field (element (line_cursor), column_instance_B)); -- character check included
+						connection.peer_B.instance := to_number_of_instances (et_string_processing.field (element (line_cursor), column_instance_B));
 						
 						-- read connector purpose B
-						check_purpose_length (field (element (line_cursor), column_purpose_B));
-						validate_purpose (field (element (line_cursor), column_purpose_B));
-						connection.peer_B.purpose := to_purpose (field (element (line_cursor), column_purpose_B));
+						check_purpose_length (et_string_processing.field (element (line_cursor), column_purpose_B));
+						validate_purpose (et_string_processing.field (element (line_cursor), column_purpose_B));
+						connection.peer_B.purpose := to_purpose (et_string_processing.field (element (line_cursor), column_purpose_B));
 						check_purpose_characters (connection.peer_B.purpose);
 						-- NOTE: The question whether there is a connector with this purpose in the module can
 						-- not be answered here, because the project has not been imported yet.
@@ -2751,15 +2748,15 @@ package body et_configuration is
 							for pos in positive (column_first_option) .. positive (field_count (element (line_cursor))) loop
 
 								-- test option keywords
-								if field (element (line_cursor), pos) = option_module_interconnections_comparator_off then
+								if et_string_processing.field (element (line_cursor), pos) = option_module_interconnections_comparator_off then
 									connection.options.comparator := OFF;
-								elsif field (element (line_cursor), pos) = option_module_interconnections_comparator_on then
+								elsif et_string_processing.field (element (line_cursor), pos) = option_module_interconnections_comparator_on then
 									connection.options.comparator := ON;
-								elsif field (element (line_cursor), pos) = option_module_interconnections_warn_only then
+								elsif et_string_processing.field (element (line_cursor), pos) = option_module_interconnections_warn_only then
 									connection.options.warn_only := ON;
 								else
 									log_indentation_reset;
-									log (message_error & "unknown option " & field (element (line_cursor), pos), console => true);
+									log (message_error & "unknown option " & et_string_processing.field (element (line_cursor), pos), console => true);
 									raise constraint_error;
 								end if;
 								
@@ -2813,12 +2810,12 @@ package body et_configuration is
 						-- Build the prefix from field #1:
 						-- Test if prefix is not too long, if it contains only allowed characters.
 						-- We test against the default character set as specified in et_libraries.
-						check_prefix_length (field (element (line_cursor), 1));
-						prefix := type_component_prefix.to_bounded_string (field (element (line_cursor), 1));
+						check_prefix_length (et_string_processing.field (element (line_cursor), 1));
+						prefix := type_component_prefix.to_bounded_string (et_string_processing.field (element (line_cursor), 1));
 						check_prefix_characters (prefix, component_prefix_characters);
 
 						-- build the component category from field #2:
-						cat := to_category (field (element (line_cursor), 2));
+						cat := to_category (et_string_processing.field (element (line_cursor), 2));
 						
 						-- insert the prefix assignment in container component_prefixes
 						type_component_prefixes.insert (
@@ -2852,11 +2849,11 @@ package body et_configuration is
 						-- Build the unit abbrevation from field #1:
 						-- Test if abbrevation contains only allowed characters.
 						-- We test against the character set specified for abbrevations of units of measurement.
-						abbrevation := type_unit_abbrevation.to_bounded_string (field (element (line_cursor), 1));
+						abbrevation := type_unit_abbrevation.to_bounded_string (et_string_processing.field (element (line_cursor), 1));
 						check_abbrevation_of_unit_characters (abbrevation, unit_abbrevation_characters);
 
 						-- Build the unit of measurement from field #2:
-						unit := to_unit_of_measurement (field (element (line_cursor), 2));
+						unit := to_unit_of_measurement (et_string_processing.field (element (line_cursor), 2));
 						
 						-- insert the abbrevation to unit of measurement assignment in container component_units
 						type_units_of_measurement.insert (
@@ -2897,7 +2894,7 @@ package body et_configuration is
 						log (to_string (element (line_cursor)), log_threshold + 2);
 
 						-- build the component category from field #1:
-						cat := to_category (field (element (line_cursor), 1));
+						cat := to_category (et_string_processing.field (element (line_cursor), 1));
 
 						-- insert the category in container component_categories_with_operator_interaction
 						type_categories_with_operator_interacton.insert (
@@ -2922,29 +2919,29 @@ package body et_configuration is
 						log (to_string (element (line_cursor)), log_threshold + 2);
 
 						-- build the text category from field #1:
-						text := to_text (field (element (line_cursor), 1));
+						text := to_text (et_string_processing.field (element (line_cursor), 1));
 
 						-- build the text size from field #2. 
 						-- Depending on the text category the string is passed through
 						-- the corresponding text size subtypes for that category:
 						case text is
 							when NET_LABEL =>
-								size := et_schematic.to_net_label_text_size (field (element (line_cursor), 2));
+								size := et_schematic.to_net_label_text_size (et_string_processing.field (element (line_cursor), 2));
 
 							when PORT_NAME =>
-								size := to_port_name_text_size (field (element (line_cursor), 2));
+								size := to_port_name_text_size (et_string_processing.field (element (line_cursor), 2));
 
 							when TERMINAL_NAME =>
-								size := to_terminal_name_text_size (field (element (line_cursor), 2));
+								size := to_terminal_name_text_size (et_string_processing.field (element (line_cursor), 2));
 
 							when COMPONENT_ATTRIBUTE =>
-								size := to_component_attribute_text_size (field (element (line_cursor), 2));
+								size := to_component_attribute_text_size (et_string_processing.field (element (line_cursor), 2));
 
 							when SHEET_NAME =>
-								size := et_project.to_sheet_name_text_size (field (element (line_cursor), 2));
+								size := et_project.to_sheet_name_text_size (et_string_processing.field (element (line_cursor), 2));
 
 							when et_configuration.FILE_NAME =>
-								size := et_project.to_file_name_text_size (field (element (line_cursor), 2));
+								size := et_project.to_file_name_text_size (et_string_processing.field (element (line_cursor), 2));
 								
 						end case;
 						
@@ -2972,12 +2969,12 @@ package body et_configuration is
 						log (to_string (element (line_cursor)), log_threshold + 2);
 
 						-- build the partcode keyword from field #1:
-						check_partcode_keyword_length (field (element (line_cursor), 1));
-						partcode_keyword := to_partcode_keyword (field (element (line_cursor), 1));
+						check_partcode_keyword_length (et_string_processing.field (element (line_cursor), 1));
+						partcode_keyword := to_partcode_keyword (et_string_processing.field (element (line_cursor), 1));
 						check_partcode_keyword_characters (partcode_keyword);
 
 						-- build the partcode section name from field #2. 
-						partcode_section := to_partcode_section (field (element (line_cursor), 2));
+						partcode_section := to_partcode_section (et_string_processing.field (element (line_cursor), 2));
 						
 						-- insert the text category and size in container text_sizes_schematic
 						type_partcode_keywords.insert (
@@ -3061,38 +3058,38 @@ package body et_configuration is
 						-- Sections regarding multi-board support are skipped if just a single project
 						-- is to be imported.
 						if not single_module then
-							if field (line, 1) = section_import_modules then
+							if et_string_processing.field (line, 1) = section_import_modules then
 								process_previous_section;
 								section_entered := import_modules;
 							end if;
 
-							if field (line, 1) = section_module_interconnections then
+							if et_string_processing.field (line, 1) = section_module_interconnections then
 								process_previous_section;
 								section_entered := module_interconnections;
 							end if;
 						end if;
 						
-						if field (line, 1) = section_component_prefixes then
+						if et_string_processing.field (line, 1) = section_component_prefixes then
 							process_previous_section;
 							section_entered := component_prefixes;
 						end if;
 
-						if field (line, 1) = section_component_units then
+						if et_string_processing.field (line, 1) = section_component_units then
 							process_previous_section;
 							section_entered := component_units;
 						end if;
 
-						if field (line, 1) = section_components_with_operator_interaction then
+						if et_string_processing.field (line, 1) = section_components_with_operator_interaction then
 							process_previous_section;
 							section_entered := components_with_operator_interaction;
 						end if;
 
-						if field (line, 1) = section_text_sizes_schematic then
+						if et_string_processing.field (line, 1) = section_text_sizes_schematic then
 							process_previous_section;
 							section_entered := text_sizes_schematic;
 						end if;
 
-						if field (line, 1) = section_partcode_keywords then
+						if et_string_processing.field (line, 1) = section_partcode_keywords then
 							process_previous_section;
 							section_entered := partcode_keywords;
 						end if;

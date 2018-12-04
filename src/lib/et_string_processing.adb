@@ -430,7 +430,7 @@ package body et_string_processing is
 		text_in 	: in string;
 		position 	: in positive;
 		ifs 		: in character := latin_1.space;
-		trailer 	: boolean := false;
+		trailer 	: in boolean := false;
 		trailer_to 	: in character := latin_1.semicolon
 		) return string is
 		use type_extended_string;
@@ -755,7 +755,7 @@ package body et_string_processing is
 
 
 	-- CS: comments
-	function get_field_from_line (line : in type_fields_of_line; position : in positive) return string is
+	function field (line : in type_fields_of_line; position : in positive) return string is
 		use type_list_of_strings;
 	begin
 		if count_type(position) > line.field_count then
@@ -763,24 +763,24 @@ package body et_string_processing is
 		else
 			return element(line.fields, positive(position));
 		end if;
-	end get_field_from_line;
+	end field;
 
 	-- CS: comments	
-	function to_string ( line : in type_fields_of_line) return string is
+	function to_string (line : in type_fields_of_line) return string is
 		s : unbounded_string;
 		ifs : constant character := latin_1.space;
 	begin
 		if line.field_count > 0 then
-			for i in 1..positive(line.field_count) loop
+			for i in 1..positive (line.field_count) loop
 				case i is
 					when 1 =>
-						s := to_unbounded_string(trim(get_field_from_line(line, i),both));
+						s := to_unbounded_string (trim (field (line, i),both));
 					when others =>
-						s := s & ifs & to_unbounded_string(trim(get_field_from_line(line, i),both));
+						s := s & ifs & to_unbounded_string (trim (field (line, i),both));
 				end case;
 			end loop;
 		end if;
-		return to_string(s);
+		return to_string (s);
 	end to_string;
 
 	function line_number (line : in type_fields_of_line) return positive is

@@ -732,15 +732,10 @@ package body et_kicad is
 
 	function library_name (text : in string) return et_kicad_general.type_library_name.bounded_string is
 	-- extracts from a string like "bel_ic:S_SO14" the library name "bel_ic"
-		function field (line : in type_fields_of_line; position : in positive) return string renames
-			et_string_processing.get_field_from_line;
 	begin
 		return et_kicad_general.type_library_name.to_bounded_string (
-			field (
-				read_line (
-					line => text,
-					ifs => latin_1.colon), 
-				position => 1) -- the part before the colon
+			et_string_processing.field (
+				read_line (line => text, ifs => latin_1.colon), position => 1) -- the part before the colon
 				);
 	end library_name;
 
@@ -751,15 +746,10 @@ package body et_kicad is
 	
 	function package_name (text : in string) return et_libraries.type_component_package_name.bounded_string is
 	-- extracts from a string like "bel_ic:S_SO14" the package name "S_SO14"
-		function field (line : in type_fields_of_line; position : in positive) return string renames
-			et_string_processing.get_field_from_line;
 	begin
 		return et_libraries.type_component_package_name.to_bounded_string (
-			field (
-				read_line (
-					line => text,
-					ifs => latin_1.colon), 
-				position => 2) -- the part after the colon
+			et_string_processing.field (
+				read_line (line => text, ifs => latin_1.colon), position => 2) -- the part after the colon
 				);
 	end package_name;
 
@@ -772,10 +762,6 @@ package body et_kicad is
 		schematic : in boolean) -- set false if it is about fields in a library, true if it is about a schematic field	
 		return et_libraries.type_text_meaning is
 
-		function field (
-			line		: in type_fields_of_line;
-			position	: in positive) return string renames get_field_from_line;
-		
 		meaning : et_libraries.type_text_meaning;
 
 		function strip_f ( text : in string) return string is
@@ -793,11 +779,11 @@ package body et_kicad is
 				-- In a schematic the meaning of a text field is identified by "F 0 ...".
 
 				-- So the first thing to do is test if the letter F at the begin of the line:
-				if field (line,1) = component_field_identifier then
+				if et_string_processing.field (line,1) = component_field_identifier then
 
 					-- Then we test the field id.
 					-- The field id must be mapped to the actual field meaning:
-					case type_component_field_id'value (field (line,2)) is -- "0..9"
+					case type_component_field_id'value (et_string_processing.field (line,2)) is -- "0..9"
 						when component_field_reference		=> meaning := et_libraries.reference;
 						when component_field_value			=> meaning := et_libraries.value;
 						when component_field_package		=> meaning := et_libraries.packge;
@@ -820,9 +806,9 @@ package body et_kicad is
 				-- In a library the meaning of a text field is identified by "F0 .. F9".
 				
 				-- So the first thing to do is test if the letter F at the begin of the line:
-				if strip_id (field (line,1)) = component_field_identifier then
+				if strip_id (et_string_processing.field (line,1)) = component_field_identifier then
 				
-					case type_component_field_id'value (strip_f (field (line,1))) is
+					case type_component_field_id'value (strip_f (et_string_processing.field (line,1))) is
 						when component_field_reference		=> meaning := et_libraries.reference;
 						when component_field_value			=> meaning := et_libraries.value;
 						when component_field_package		=> meaning := et_libraries.packge;
@@ -999,10 +985,6 @@ package body et_kicad is
 		comp_app	: et_libraries.type_component_appearance;
 		lca			: type_library_component_appearance;
 
-		function field (
-			line		: in type_fields_of_line;
-			position	: in positive) return string renames get_field_from_line;
-
 		procedure invalid_appearance is
 		begin
 			log_indentation_reset;
@@ -1019,7 +1001,8 @@ package body et_kicad is
 			when true =>
 				-- If it is about a schematic component we just test if the first
 				-- character of the 3rd subfield is a hash sign.
-				if field (line,3) (field (line,3)'first) = schematic_component_power_symbol_prefix then
+				if et_string_processing.field (line,3) (et_string_processing.field (line,3)'first) 
+					= schematic_component_power_symbol_prefix then
 					comp_app := sch;
 				else
 					comp_app := sch_pcb;
@@ -1028,7 +1011,7 @@ package body et_kicad is
 			when false =>
 				-- If it is about a library component we test the whole letter
 				-- in subfield #10.
-				lca := type_library_component_appearance'value (field (line,10));
+				lca := type_library_component_appearance'value (et_string_processing.field (line,10));
 
 				-- Evaluate lca and set comp_app accordingly.
 				case lca is
@@ -1053,13 +1036,10 @@ package body et_kicad is
 	-- In a schematic it is expressed in a line like "U 2 1 5992967A". The 3rd field is the deMorgan flag.
 		return type_de_morgan_representation is
 
-		function field (line : in type_fields_of_line; pos : in positive) return string 
-			renames et_string_processing.get_field_from_line;
-		
 		rep_in : type_alternative_representation;
 		rep_out : type_de_morgan_representation;
 	begin
-		rep_in := type_alternative_representation'value (field (line,3));
+		rep_in := type_alternative_representation'value (et_string_processing.field (line,3));
 
 		case rep_in is
 			when alternative_representation_yes =>
@@ -1185,9 +1165,6 @@ package body et_kicad is
 		procedure read_library (log_threshold : in type_log_level) is
 			line : type_fields_of_line; -- the line being processed
 
-			function field (line : in type_fields_of_line; position : in positive) return string renames
-				et_string_processing.get_field_from_line;
-			
 			-- This flag goes true once a component section is entered. It is cleared
 			-- when the component section is left.
 			component_entered : boolean := false; 
@@ -1402,9 +1379,6 @@ package body et_kicad is
 				points		: type_points.list;
 				total		: positive; -- for cross checking 
 
-				function field (line : in type_fields_of_line; position : in positive) return string renames
-					et_string_processing.get_field_from_line;
-
 				-- A polyline is defined by a string like "P 3 0 1 10 0 0 100 50 70 0 N"
 				-- field meaning:
 				--  #2 : number of bends (incl. start and end points) (3)
@@ -1429,18 +1403,18 @@ package body et_kicad is
 			begin -- to_polyline
 
 				-- read total number of points
-				total := positive'value (field (line, pos));
+				total := positive'value (et_string_processing.field (line, pos));
 				
 				-- read line width (field #5)
 				pos := 5;
-				polyline.line_width := type_line_width'value (field (line, pos));
+				polyline.line_width := type_line_width'value (et_string_processing.field (line, pos));
 
 				-- From the next field (#6) on, we find the coordinates of the 
 				-- start point, the bend point(s) and the end point:
 				pos := 6;
 				loop exit when pos > end_point;
-					set_x (point, mil_to_distance (mil => field (line, pos), warn_on_negative => false)); -- set x
-					set_y (point, mil_to_distance (mil => field (line, pos+1), warn_on_negative => false)); -- set y (right after the x-field)
+					set_x (point, mil_to_distance (mil => et_string_processing.field (line, pos), warn_on_negative => false)); -- set x
+					set_y (point, mil_to_distance (mil => et_string_processing.field (line, pos+1), warn_on_negative => false)); -- set y (right after the x-field)
 
 					-- For some unknown reason, kicad saves the y position of library objects inverted.
 					-- It is probably a bug. However, when importing objects we must invert y. 
@@ -1451,7 +1425,7 @@ package body et_kicad is
 				end loop;
 
 				-- read fill style from last field
-				polyline.fill := to_fill (field (line, pos));				
+				polyline.fill := to_fill (et_string_processing.field (line, pos));				
 
 				-- CS: log properties
 				
@@ -1461,9 +1435,6 @@ package body et_kicad is
 			function to_rectangle (line : in et_string_processing.type_fields_of_line) return type_rectangle is
 			-- Returns from the given fields of a line a type_rectangle.
 				rectangle	: type_rectangle;
-
-				function field (line : in type_fields_of_line; position : in positive) return string renames
-					et_string_processing.get_field_from_line;
 
 				-- A rectangle is defined by a string like "S -40 -100 40 100 0 1 10 N"
 				-- field meaning;
@@ -1475,22 +1446,22 @@ package body et_kicad is
 
 				use et_coordinates;
 			begin -- to_rectangle
-				set_x (rectangle.start_point, mil_to_distance (mil => field (line,2), warn_on_negative => false));
-				set_y (rectangle.start_point, mil_to_distance (mil => field (line,3), warn_on_negative => false));
+				set_x (rectangle.start_point, mil_to_distance (mil => et_string_processing.field (line,2), warn_on_negative => false));
+				set_y (rectangle.start_point, mil_to_distance (mil => et_string_processing.field (line,3), warn_on_negative => false));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
 				mirror (point => rectangle.start_point, axis => x);
 				
-				set_x (rectangle.end_point, mil_to_distance (mil => field (line,4), warn_on_negative => false));
-				set_y (rectangle.end_point, mil_to_distance (mil => field (line,5), warn_on_negative => false));
+				set_x (rectangle.end_point, mil_to_distance (mil => et_string_processing.field (line,4), warn_on_negative => false));
+				set_y (rectangle.end_point, mil_to_distance (mil => et_string_processing.field (line,5), warn_on_negative => false));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
 				mirror (point => rectangle.end_point, axis => x);
 				
-				rectangle.line_width	:= type_line_width'value (field (line,8));
-				rectangle.fill			:= to_fill (field (line,9));
+				rectangle.line_width	:= type_line_width'value (et_string_processing.field (line,8));
+				rectangle.fill			:= to_fill (et_string_processing.field (line,9));
 
 				-- CS: log properties
 				
@@ -1501,9 +1472,6 @@ package body et_kicad is
 			-- Returns from the given fields of a circle a type_circle.
 				circle	: type_circle;
 
-				function field (line : in type_fields_of_line; position : in positive) return string renames
-					et_string_processing.get_field_from_line;
-			
 				-- A circle is defined by a string like "C 0 0 112 0 1 23 N"
 				-- field meaning:
 				--  #2..3 : center (x/y)
@@ -1515,16 +1483,16 @@ package body et_kicad is
 
 				use et_coordinates;
 			begin -- to_circle
-				set_x (circle.center, mil_to_distance (mil => field (line,2), warn_on_negative => false));
-				set_y (circle.center, mil_to_distance (mil => field (line,3), warn_on_negative => false));
+				set_x (circle.center, mil_to_distance (mil => et_string_processing.field (line,2), warn_on_negative => false));
+				set_y (circle.center, mil_to_distance (mil => et_string_processing.field (line,3), warn_on_negative => false));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
 				mirror (point => circle.center, axis => x);
 	
-				circle.radius		:= mil_to_distance (mil => field (line,4), warn_on_negative => false);
-				circle.line_width	:= type_line_width'value (field (line,7));
-				circle.fill			:= to_fill (field (line,8));
+				circle.radius		:= mil_to_distance (mil => et_string_processing.field (line,4), warn_on_negative => false);
+				circle.line_width	:= type_line_width'value (et_string_processing.field (line,7));
+				circle.fill			:= to_fill (et_string_processing.field (line,8));
 
 				-- CS: log properties
 				
@@ -1534,9 +1502,6 @@ package body et_kicad is
 			function to_arc (line : in et_string_processing.type_fields_of_line) return type_arc is
 			-- Returns from the given fields of an arc a type_arc.
 				arc		: type_arc;
-
-				function field (line : in type_fields_of_line; position : in positive) return string renames
-					et_string_processing.get_field_from_line;
 
 				-- An arc is defined by a string like "A 150 0 150 1800 900 0 1 33 N 0 0 150 150"
 				-- NOTE: kicad bug: multiply all y values by -1
@@ -1554,30 +1519,30 @@ package body et_kicad is
 
 				use et_coordinates;
 			begin -- to_arc
-				set_x (arc.center, mil_to_distance (mil => field (line,2), warn_on_negative => false));
-				set_y (arc.center, mil_to_distance (mil => field (line,3), warn_on_negative => false));
+				set_x (arc.center, mil_to_distance (mil => et_string_processing.field (line,2), warn_on_negative => false));
+				set_y (arc.center, mil_to_distance (mil => et_string_processing.field (line,3), warn_on_negative => false));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
 				mirror (point => arc.center, axis => x);
 
-				arc.radius			:= mil_to_distance (mil => field (line,4), warn_on_negative => false);
+				arc.radius			:= mil_to_distance (mil => et_string_processing.field (line,4), warn_on_negative => false);
 
-				arc.start_angle		:= to_degrees (field (line,5));
-				arc.end_angle		:= to_degrees (field (line,6));
+				arc.start_angle		:= to_degrees (et_string_processing.field (line,5));
+				arc.end_angle		:= to_degrees (et_string_processing.field (line,6));
 				
-				arc.line_width		:= type_line_width'value (field (line,9));
-				arc.fill			:= to_fill (field (line,10));
+				arc.line_width		:= type_line_width'value (et_string_processing.field (line,9));
+				arc.fill			:= to_fill (et_string_processing.field (line,10));
 				
-				set_x (arc.start_point, mil_to_distance (mil => field (line,11), warn_on_negative => false));
-				set_y (arc.start_point, mil_to_distance (mil => field (line,12), warn_on_negative => false));
+				set_x (arc.start_point, mil_to_distance (mil => et_string_processing.field (line,11), warn_on_negative => false));
+				set_y (arc.start_point, mil_to_distance (mil => et_string_processing.field (line,12), warn_on_negative => false));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
 				mirror (point => arc.start_point, axis => x);
 
-				set_x (arc.end_point, mil_to_distance (mil => field (line,13), warn_on_negative => false));
-				set_y (arc.end_point, mil_to_distance (mil => field (line,14), warn_on_negative => false));
+				set_x (arc.end_point, mil_to_distance (mil => et_string_processing.field (line,13), warn_on_negative => false));
+				set_y (arc.end_point, mil_to_distance (mil => et_string_processing.field (line,14), warn_on_negative => false));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
@@ -1590,9 +1555,6 @@ package body et_kicad is
 			function to_text (line : in et_string_processing.type_fields_of_line) return type_symbol_text is
 			-- Returns from the given fields of a text a type_symbol_text.
 				text	: type_symbol_text;
-
-				function field (line : in type_fields_of_line; position : in positive) return string renames
-					et_string_processing.get_field_from_line;
 
 				-- A text is defined by a string like "T 0 0 300 60 0 0 0 leuchtdiode Normal 0 C C"
 				-- Space characters whitin the actual text are replaced by tilde as in this example:
@@ -1659,29 +1621,29 @@ package body et_kicad is
 
 				use et_coordinates;
 			begin -- to_text
-				text.orientation	:= to_degrees (field (line,2));
+				text.orientation := to_degrees (et_string_processing.field (line,2));
 				if text.orientation not in type_angle_90 then
 					warning_angle_greater_90_degrees;
 				end if;
 				
-				set_x (text.position, mil_to_distance (mil => field (line,3), warn_on_negative => false));
-				set_y (text.position, mil_to_distance (mil => field (line,4), warn_on_negative => false));
+				set_x (text.position, mil_to_distance (mil => et_string_processing.field (line,3), warn_on_negative => false));
+				set_y (text.position, mil_to_distance (mil => et_string_processing.field (line,4), warn_on_negative => false));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
 				mirror (point => text.position, axis => x);
 
-				text.size := mil_to_distance (mil => field (line,5), warn_on_negative => false);
+				text.size := mil_to_distance (mil => et_string_processing.field (line,5), warn_on_negative => false);
 
 				-- compose from fields 10 and 11 the text style
-				text.style := to_style (field (line,10), field (line,11));
+				text.style := to_style (et_string_processing.field (line,10), et_string_processing.field (line,11));
 
 				-- compose alignment
-				text.alignment.horizontal	:= to_alignment_horizontal (field (line,12));
-				text.alignment.vertical		:= to_alignment_vertical (field (line,13));
+				text.alignment.horizontal	:= to_alignment_horizontal (et_string_processing.field (line,12));
+				text.alignment.vertical		:= to_alignment_vertical (et_string_processing.field (line,13));
 
 				-- read text content and replace tildes by spaces
-				text.content				:= to_content (field (line,9));
+				text.content := to_content (et_string_processing.field (line,9));
 
 				-- CS: log properties
 				return text;
@@ -1692,9 +1654,6 @@ package body et_kicad is
 				use et_configuration;
 			
 				port : type_port_library; -- the port being built -> to be returned
-
-				function field (line : in type_fields_of_line; position : in positive) return string renames
-					et_string_processing.get_field_from_line;
 
 				-- A port is defined by a string like "X ~ 1 0 150 52 D 51 50 1 1 P"
 				-- field meaning:
@@ -1795,35 +1754,35 @@ package body et_kicad is
 				log_indentation_up;
 
 				-- port name. to be taken from field #2 of the given line
-				port.name := type_port_name.to_bounded_string (field (line,2)); -- GND, GPIO2
+				port.name := type_port_name.to_bounded_string (et_string_processing.field (line,2)); -- GND, GPIO2
 				
 				-- compose terminal name. must be stored temporarily. will be inserted in default package variant
-				tmp_terminal_name := type_terminal_name.to_bounded_string (field (line,3)); -- H5, 14
+				tmp_terminal_name := type_terminal_name.to_bounded_string (et_string_processing.field (line,3)); -- H5, 14
 
 				-- compose position
-				set_x (port.coordinates, mil_to_distance (mil => field (line,4), warn_on_negative => false));
-				set_y (port.coordinates, mil_to_distance (mil => field (line,5), warn_on_negative => false));
+				set_x (port.coordinates, mil_to_distance (mil => et_string_processing.field (line,4), warn_on_negative => false));
+				set_y (port.coordinates, mil_to_distance (mil => et_string_processing.field (line,5), warn_on_negative => false));
 				mirror (point => port.coordinates, axis => x);
 
 				-- compose length
-				port.length := mil_to_distance (mil => field (line,6), warn_on_negative => false);
+				port.length := mil_to_distance (mil => et_string_processing.field (line,6), warn_on_negative => false);
 
 				-- compose orientation
 				-- CS: port.orientation	:= type_library_pin_orientation
 
 				-- port and termnal name text size
-				port.terminal_name_size := mil_to_distance (mil => field (line,8), warn_on_negative => false);
+				port.terminal_name_size := mil_to_distance (mil => et_string_processing.field (line,8), warn_on_negative => false);
 				check_schematic_text_size (category => TERMINAL_NAME, size => port.terminal_name_size);
 
-				port.port_name_size	:= mil_to_distance (mil => field (line,9), warn_on_negative => false);
+				port.port_name_size	:= mil_to_distance (mil => et_string_processing.field (line,9), warn_on_negative => false);
 				check_schematic_text_size (category => PORT_NAME, size => port.port_name_size);
 
 				-- direction
-				port.direction := to_direction (field (line,12));
+				port.direction := to_direction (et_string_processing.field (line,12));
 
 				-- port style (optional, to be composed if field #13 present)
 				if field_count (line) = 13 then
-					port.style := to_style (field (line,13));
+					port.style := to_style (et_string_processing.field (line,13));
 				end if;
 
 				-- visibility port and pin names
@@ -1858,9 +1817,6 @@ package body et_kicad is
 				-- instantiate a text field as speficied by given parameter meaning
 				text : type_text (meaning);
 
-				function field (line : in type_fields_of_line; position : in positive) return string renames
-					et_string_processing.get_field_from_line;
-			
 			begin -- to_field
 				-- field #:
 				-- 3/4 : x/y coordinates
@@ -1870,8 +1826,8 @@ package body et_kicad is
 				-- 8 : aligment horizontal (R,C,L)
 				-- 9 : aligment vertical (TNN, CNN, BNN) / font normal, italic, bold, bold_italic (TBI, TBN)
 
-				check_text_content_length (strip_quotes (field (line,2)));
-				text.content := type_text_content.to_bounded_string (strip_quotes (field (line,2)));
+				check_text_content_length (strip_quotes (et_string_processing.field (line,2)));
+				text.content := type_text_content.to_bounded_string (strip_quotes (et_string_processing.field (line,2)));
 					
 				-- check content vs. meaning. 
 				case meaning is
@@ -1927,21 +1883,21 @@ package body et_kicad is
 
 				end case;
 				
-				set_x (text.position, mil_to_distance (mil => field (line,3), warn_on_negative => false));
-				set_y (text.position, mil_to_distance (mil => field (line,4), warn_on_negative => false));
-				text.size := mil_to_distance (mil => field (line,5), warn_on_negative => false);
+				set_x (text.position, mil_to_distance (mil => et_string_processing.field (line,3), warn_on_negative => false));
+				set_y (text.position, mil_to_distance (mil => et_string_processing.field (line,4), warn_on_negative => false));
+				text.size := mil_to_distance (mil => et_string_processing.field (line,5), warn_on_negative => false);
 
-				text.orientation := to_field_orientation (field  (line,6));
+				text.orientation := to_field_orientation (et_string_processing.field  (line,6));
 				
 				text.visible := to_field_visible (
-					vis_in		=> field  (line,7),
+					vis_in		=> et_string_processing.field (line,7),
 					schematic	=> false);
 			
-				text.alignment.horizontal := to_alignment_horizontal (field (line,8));
+				text.alignment.horizontal := to_alignment_horizontal (et_string_processing.field (line,8));
 
-				text.alignment.vertical   := to_alignment_vertical (field (line,9));
+				text.alignment.vertical   := to_alignment_vertical (et_string_processing.field (line,9));
 
-				text.style := to_text_style (style_in => field (line,9), text => false);
+				text.style := to_text_style (style_in => et_string_processing.field (line,9), text => false);
 				
 				-- NOTE: text.line_width assumes default as no explicit line width is provided here.
 				return text;
@@ -1958,7 +1914,6 @@ package body et_kicad is
 				-- CS: check hor aligment.
 				-- CS: check vert aligment.
 				-- CS: check style.
-
 			
 				procedure missing_field (meaning : in et_libraries.type_text_meaning) is 
 				begin
@@ -2050,10 +2005,10 @@ package body et_kicad is
 							missing_field (field_package.meaning);
 						else
 							validate_component_package_name (
-								type_component_package_name.to_bounded_string (field (
+								type_component_package_name.to_bounded_string (et_string_processing.field (
 									line => read_line ( -- CS use function package_name
-										line => content (field_package), -- bel_ic:S_SO14
-										ifs => latin_1.colon),
+										line	=> content (field_package), -- bel_ic:S_SO14
+										ifs		=> latin_1.colon),
 									position => 2))); -- the block after the colon
 
 							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_package.size);
@@ -2078,10 +2033,10 @@ package body et_kicad is
 								-- The field contains something like bel_ic:S_SO14 . 
 								-- The part after the colon is the package name. The part before the colon is the library
 								-- name which is not of interest here.
-								packge => type_component_package_name.to_bounded_string (field (
+								packge => type_component_package_name.to_bounded_string (et_string_processing.field (
 									line => read_line ( -- CS use function package_name
-										line => content (field_package), -- bel_ic:S_SO14
-										ifs => latin_1.colon),
+										line	=> content (field_package), -- bel_ic:S_SO14
+										ifs		=> latin_1.colon),
 									position => 2)), -- the block after the colon
 
 								-- the BOM status
@@ -2570,8 +2525,6 @@ package body et_kicad is
 			
 			procedure read_draw_object (line : in type_fields_of_line; log_threshold : in type_log_level) is
 			-- Creates a symbol element from the given line and adds it to the unit indicated by tmp_unit_id.
-				function field (line : in type_fields_of_line; position : in positive) return string renames
-					et_string_processing.get_field_from_line;
 					
 				function to_unit_id (text : in string) return type_unit_id is
 				-- converts a unit id given as string to type_unit_id
@@ -2603,7 +2556,7 @@ package body et_kicad is
 				-- At a certain log level we report the bare line of a draw object as it is:
 				--log (to_string (line), log_threshold + 2);
 				
-				case type_library_draw'value (field (line,1)) is
+				case type_library_draw'value (et_string_processing.field (line,1)) is
 					when P => -- polyline
 						--log (draw_object & "polyline", log_threshold);
 						log ("polyline", log_threshold);
@@ -2621,7 +2574,7 @@ package body et_kicad is
 						log (to_string (line), log_threshold);
 						-- CS: output properties in a human readable form instead.
 						
-						tmp_unit_id := to_unit_id (field (line,3));
+						tmp_unit_id := to_unit_id (et_string_processing.field (line,3));
 						write_scope_of_object (tmp_unit_id);
 
 						-- compose polyline
@@ -2644,7 +2597,7 @@ package body et_kicad is
 						log (to_string (line), log_threshold);
 						-- CS: output properites in a human readable form instead.
 						
-						tmp_unit_id := to_unit_id (field (line,6));
+						tmp_unit_id := to_unit_id (et_string_processing.field (line,6));
 						write_scope_of_object (tmp_unit_id);
 
 						-- compose rectangle
@@ -2668,7 +2621,7 @@ package body et_kicad is
 						log (to_string (line), log_threshold);
 						-- CS: output properites in a human readable form instead.
 						
-						tmp_unit_id := to_unit_id (field (line,5));
+						tmp_unit_id := to_unit_id (et_string_processing.field (line,5));
 						write_scope_of_object (tmp_unit_id);
 
 						-- compose circle
@@ -2697,7 +2650,7 @@ package body et_kicad is
 						log (to_string (line), log_threshold);
 						-- CS: output properites in a human readable form instead.
 						
-						tmp_unit_id := to_unit_id (field (line,7));
+						tmp_unit_id := to_unit_id (et_string_processing.field (line,7));
 						write_scope_of_object (tmp_unit_id);
 
 						-- compose arc
@@ -2728,7 +2681,7 @@ package body et_kicad is
 						log (to_string (line), log_threshold);
 						-- CS: output properites in a human readable form instead.
 						
-						tmp_unit_id := to_unit_id (field (line,7));
+						tmp_unit_id := to_unit_id (et_string_processing.field (line,7));
 						write_scope_of_object (tmp_unit_id);
 
 						-- compose text
@@ -2757,7 +2710,7 @@ package body et_kicad is
 						log (to_string (line), log_threshold);
 						-- CS: output properties in a human readable form instead.
 						
-						tmp_unit_id := to_unit_id (field (line,10));
+						tmp_unit_id := to_unit_id (et_string_processing.field (line,10));
 						write_scope_of_object (tmp_unit_id);
 
 						-- compose port
@@ -2797,9 +2750,6 @@ package body et_kicad is
 			-- Reads the proposed footprint and adds it to the package filter of the current component.
 				fp : type_package_proposal.bounded_string;
 
-				function field (line : in type_fields_of_line; position : in positive) return string renames
-					et_string_processing.get_field_from_line;
-				
 				procedure do_it is
 				-- Adds the footprint finally.
 					procedure insert_footprint (
@@ -2831,7 +2781,7 @@ package body et_kicad is
 	-- 			log ("footpint/package filter", level => log_threshold + 1);
 				log_indentation_up;
 
-				fp := type_package_proposal.to_bounded_string (field (line,1));
+				fp := type_package_proposal.to_bounded_string (et_string_processing.field (line,1));
 				log (type_package_proposal.to_string (fp), log_threshold);
 
 				do_it;
@@ -2852,8 +2802,6 @@ package body et_kicad is
 			-- F4 "1974-12-27T23:04:22" 650 100 60 H I C CNN "commissioned"
 			-- F5 "2017-01-23T23:04:22" 650 0 60 H I C CNN "updated"
 			-- F6 "MBL" 450 -100 60 H I C CNN "author"
-				function field (line : in type_fields_of_line; position : in positive) return string renames
-					et_string_processing.get_field_from_line;
 					
 				use et_string_processing;
 
@@ -2868,7 +2816,7 @@ package body et_kicad is
 						-- CS: Do a cross check of prefix and reference -- "U" 
 						-- The prefix is already defined in the component hearder. 
 						-- Why this redundance ? Ask the kicad makers...
-						if strip_quotes (field (line,2)) = type_component_prefix.to_string (tmp_prefix) then
+						if strip_quotes (et_string_processing.field (line,2)) = type_component_prefix.to_string (tmp_prefix) then
 							null; -- fine
 						else
 							log (message_warning & affected_line (line) & ": prefix vs. reference mismatch !");
@@ -2914,7 +2862,8 @@ package body et_kicad is
 					-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
 					when purpose =>
 					
-						if to_lower (strip_quotes (field (line,10))) = to_lower (type_text_meaning'image (purpose)) then
+						if to_lower (strip_quotes (et_string_processing.field (line,10))) 
+							= to_lower (type_text_meaning'image (purpose)) then
 							field_purpose_found := true;
 							field_purpose := to_field (line => line, meaning => purpose);
 							-- for the log:
@@ -2929,7 +2878,8 @@ package body et_kicad is
 					-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
 					when partcode =>
 					
-						if to_lower (strip_quotes(field (line,10))) = to_lower (type_text_meaning'image (partcode)) then
+						if to_lower (strip_quotes (et_string_processing.field (line,10))) 
+							= to_lower (type_text_meaning'image (partcode)) then
 							field_partcode_found := true;
 							field_partcode := to_field (line => line, meaning => partcode);
 							-- for the log:
@@ -2944,7 +2894,8 @@ package body et_kicad is
 					-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
 					when commissioned =>
 					
-						if to_lower (strip_quotes(field (line,10))) = to_lower (type_text_meaning'image (commissioned)) then
+						if to_lower (strip_quotes (et_string_processing.field (line,10))) 
+							= to_lower (type_text_meaning'image (commissioned)) then
 							field_commissioned_found := true;
 							field_commissioned := to_field (line => line, meaning => commissioned);
 							-- for the log:
@@ -2959,7 +2910,8 @@ package body et_kicad is
 					-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
 					when updated =>
 					
-						if to_lower (strip_quotes(field (line,10))) = to_lower (type_text_meaning'image (updated)) then
+						if to_lower (strip_quotes (et_string_processing.field (line,10))) 
+							= to_lower (type_text_meaning'image (updated)) then
 							field_updated_found := true;
 							field_updated := to_field (line => line, meaning => updated);
 							-- for the log:
@@ -2974,7 +2926,8 @@ package body et_kicad is
 					-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
 					when author =>
 					
-						if to_lower (strip_quotes(field (line,10))) = to_lower (type_text_meaning'image (author)) then
+						if to_lower (strip_quotes (et_string_processing.field (line,10))) 
+							= to_lower (type_text_meaning'image (author)) then
 							field_author_found := true;
 							field_author := to_field (line => line, meaning => author);
 							-- for the log:
@@ -2989,7 +2942,8 @@ package body et_kicad is
 					-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
 					when bom =>
 					
-						if to_lower (strip_quotes (field (line,10))) = to_lower (type_text_meaning'image (bom)) then
+						if to_lower (strip_quotes (et_string_processing.field (line,10))) 
+							= to_lower (type_text_meaning'image (bom)) then
 							field_bom_found := true;
 							field_bom := to_field (line => line, meaning => bom);
 							-- for the log:
@@ -3142,7 +3096,7 @@ package body et_kicad is
 						
 						if not component_entered then 
 							
-							if field (line,1) = et_kicad.def then
+							if et_string_processing.field (line,1) = et_kicad.def then
 								component_entered := true;
 
 								init_temp_variables;
@@ -3151,13 +3105,14 @@ package body et_kicad is
 								active_section := fields;
 
 								-- The commponent header provides the first component properties:
-								tmp_component_name := et_libraries.type_component_generic_name.to_bounded_string (field (line,2)); -- 74LS00
+								tmp_component_name := et_libraries.type_component_generic_name.to_bounded_string (
+														et_string_processing.field (line,2)); -- 74LS00
 
 								-- The generic component name must be checked for invalid characters.
 								-- NOTE: we test against the kicad specific character set that allows a tilde.
 								check_generic_name_characters (
-									name => tmp_component_name,
-									characters => component_generic_name_characters);
+									name		=> tmp_component_name,
+									characters	=> component_generic_name_characters);
 								
 								-- for the log:
 								--log (field (line,2), log_threshold + 1); -- 74LS00
@@ -3177,33 +3132,33 @@ package body et_kicad is
 								--  #9 : all units not interchangeable L (otherwise F), (similar to swap level in EAGLE)
 								--  #10: power symbol P (otherwise N)
 
-								tmp_prefix := type_component_prefix.to_bounded_string (field (line,3)); -- U
+								tmp_prefix := type_component_prefix.to_bounded_string (et_string_processing.field (line,3)); -- U
 
 								-- Detect invalid characters in tmp_prefix:
 								-- NOTE: we test against the kicad specific character set that allows a #
 								check_prefix_characters (
-									prefix => tmp_prefix,
-									characters => et_kicad.component_prefix_characters);
+									prefix		=> tmp_prefix,
+									characters	=> et_kicad.component_prefix_characters);
 
 								-- The unknown field #4 is always a zero
-								if field (line, 4) /= "0" then
+								if et_string_processing.field (line, 4) /= "0" then
 									log (message_warning & "expect 0 in field #4 !");
 								end if;
 								
-								tmp_port_name_offset	:= mil_to_distance (mil => field  (line,5), warn_on_negative => false); -- relevant for supply pins only
-								tmp_terminal_name_visible	:= to_pin_visibile (field (line,6));
-								tmp_port_name_visible	:= to_port_visibile (field (line,7));
+								tmp_port_name_offset := mil_to_distance (mil => et_string_processing.field (line,5), warn_on_negative => false); -- relevant for supply pins only
+								tmp_terminal_name_visible := to_pin_visibile (et_string_processing.field (line,6));
+								tmp_port_name_visible := to_port_visibile (et_string_processing.field (line,7));
 								
 								-- Get number of units and set swap level as specified in field #9.
 								-- Swap level assumes default if only one unit available.
-								tmp_units_total := type_units_total'value (field  (line,8));
+								tmp_units_total := type_units_total'value (et_string_processing.field (line,8));
 								if tmp_units_total > 1 then
 									log_indentation_up;
 									log ("with" & type_units_total'image (tmp_units_total) & " units", log_threshold + 2);
 
 									-- From the "interchangeable" flag we set the component wide swap level. It applies for 
 									-- all units of the component (except extra units):
-									tmp_unit_swap_level := to_swap_level (field (line,9));
+									tmp_unit_swap_level := to_swap_level (et_string_processing.field (line,9));
 									log_indentation_down;
 								else
 									tmp_unit_swap_level := unit_swap_level_default;
@@ -3217,7 +3172,7 @@ package body et_kicad is
 						else -- we are inside a component section and process subsections
 
 							-- We wait for the end of component mark (ENDDEF) and clear the component_entered flag accordingly.
-							if field (line,1) = et_kicad.enddef then
+							if et_string_processing.field (line,1) = et_kicad.enddef then
 								component_entered := false;
 
 								-- Set placeholders (reference, value, commissioned, ...) in internal units.
@@ -3255,7 +3210,7 @@ package body et_kicad is
 										-- added to the component when the section "DRAW" is processed..
 										
 										-- As long as none of those headers occurs, we read the text fields.
-										if field (line,1) = et_kicad.fplist then
+										if et_string_processing.field (line,1) = et_kicad.fplist then
 											
 											-- Insert the component into the current library (indicated by lib_cursor):
 											type_libraries.update_element ( 
@@ -3271,7 +3226,7 @@ package body et_kicad is
 											--log ("footprint/package filter begin", level => log_threshold + 1);
 											log ("footprint/package filter", level => log_threshold + 2);
 
-										elsif field (line,1) = et_kicad.draw then
+										elsif et_string_processing.field (line,1) = et_kicad.draw then
 
 											-- Insert the component into the current library (indicated by lib_cursor):
 											type_libraries.update_element ( 
@@ -3306,7 +3261,7 @@ package body et_kicad is
 										-- we process the lines of this subsection.
 										-- When the footer appears, we set active_section to "none" which means
 										-- that this subsection has been processed.
-										if field  (line,1) = et_kicad.endfplist then
+										if et_string_processing.field (line,1) = et_kicad.endfplist then
 											active_section := none;
 											--log ("footprint/package filter end", level => log_threshold + 1);
 										else
@@ -3321,7 +3276,7 @@ package body et_kicad is
 										-- we process the lines of this subsection.
 										-- When the footer appears, we set active_section to "none" which means
 										-- thate this subsection has been processed.
-										if field  (line,1) = et_kicad.enddraw then
+										if et_string_processing.field (line,1) = et_kicad.enddraw then
 											active_section := none;
 											log ("draw end", level => log_threshold + 2);
 										else
@@ -3333,7 +3288,7 @@ package body et_kicad is
 										-- If no subsection is being processed, we wait for the "draw" header (DRAW)
 										-- and set the active_section accordingly.
 										-- NOTE #2: the active section "fields" is not set here but when the fields are read (see NOTE #1)
-										if field  (line,1) = et_kicad.draw then
+										if et_string_processing.field (line,1) = et_kicad.draw then
 											active_section := draw;
 											log ("draw begin", level => log_threshold + 2);
 										end if;
@@ -4394,9 +4349,6 @@ package body et_kicad is
 		
 		use et_schematic;
 
-		function field (line : in type_fields_of_line; position : in positive) return string renames
-			et_string_processing.get_field_from_line;
-		
 		hierarchic_sheet_file_names : type_hierarchic_sheet_file_names_extended;
 
 		current_schematic : type_hierarchic_sheet_file_name_and_timestamp; -- sensor.sch / B7F2F34A
@@ -4627,13 +4579,13 @@ package body et_kicad is
 						when 1 => -- we have a line with just one field. those lines contain headers like "[eeschema]"
 
 							-- test header [eeschema]
-							if field (line,1) = project_header_eeschema then
+							if et_string_processing.field (line,1) = project_header_eeschema then
 								clear_section_entered_flags;
 								section_eeschema_entered := true;
 							end if;
 
 							-- test header [eeschema/libraries]
-							if field (line,1) = project_header_eeschema_libraries then
+							if et_string_processing.field (line,1) = project_header_eeschema_libraries then
 								clear_section_entered_flags;
 								section_eeschema_libraries_entered := true;
 							end if;
@@ -4642,13 +4594,13 @@ package body et_kicad is
 							if section_eeschema_entered then
 
 								-- Get library directory names 
-								if field (line,1) = project_keyword_library_directory then
-									log ("library directories " & field (line,2), log_threshold + 2);
+								if et_string_processing.field (line,1) = project_keyword_library_directory then
+									log ("library directories " & et_string_processing.field (line,2), log_threshold + 2);
 
 									-- The library directories must be
 									-- inserted in the search list of library directories (search_list_project_lib_dirs).
 									-- These directories assist search operations for both components and packages.
-									locate_library_directories (field (line,2), log_threshold + 3);
+									locate_library_directories (et_string_processing.field (line,2), log_threshold + 3);
 								end if;
 								
 							end if;
@@ -4660,18 +4612,18 @@ package body et_kicad is
 								-- store them in search_list_component_libraries (see et_kicad.ads).
 								-- We ignore the index of LibName. Since we store the lib names in a 
 								-- simple list their order remains unchanged anyway.
-								if field (line,1)(1..project_keyword_library_name'length) 
+								if et_string_processing.field (line,1)(1..project_keyword_library_name'length) 
 									= project_keyword_library_name then
 
 									-- The component library could have been referenced already. If so,
 									-- there is no need to append it again to search_list_component_libraries.
 									if not type_library_names.contains (
 										container 	=> search_list_component_libraries,
-										item		=> type_library_name.to_bounded_string (field (line,2))) then
+										item		=> type_library_name.to_bounded_string (et_string_processing.field (line,2))) then
 										
 											type_library_names.append (
 												container	=> search_list_component_libraries, 
-												new_item	=> type_library_name.to_bounded_string (field (line,2)));
+												new_item	=> type_library_name.to_bounded_string (et_string_processing.field (line,2)));
 
 											-- NOTE: search_list_component_libraries keeps the libraries in the same order as they appear
 											-- in the project file. search_list_component_libraries assists search operations.
@@ -4679,7 +4631,7 @@ package body et_kicad is
 											-- is cleared as soon as another kicad project file is read.
 											
 											-- For the log write something like "LibName bel_connectors_and_jumpers"
-											log (field (line,1) & " " & field (line,2), log_threshold + 2);
+											log (et_string_processing.field (line,1) & " " & et_string_processing.field (line,2), log_threshold + 2);
 									end if;
 
 								end if;
@@ -6610,13 +6562,13 @@ package body et_kicad is
 			-- Aborts program if schematic version invalid.
 				use et_import;
 			begin
-				if field (line,1) = schematic_header_keyword_sys_name and
-					field (line,2) = schematic_header_keyword_schematic and
-					field (line,3) = schematic_header_keyword_file and
-					field (line,4) = schematic_header_keyword_version then
+				if et_string_processing.field (line,1) = schematic_header_keyword_sys_name and
+					et_string_processing.field (line,2) = schematic_header_keyword_schematic and
+					et_string_processing.field (line,3) = schematic_header_keyword_file and
+					et_string_processing.field (line,4) = schematic_header_keyword_version then
 						case cad_format is
 							when KICAD_V4 =>
-								if positive'value (field (line,5)) = schematic_version_v4 then
+								if positive'value (et_string_processing.field (line,5)) = schematic_version_v4 then
 									-- headline ok, version is supported
 									schematic_version_valid := true;
 								else
@@ -6628,7 +6580,7 @@ package body et_kicad is
 								end if;
 
 							when KICAD_V5 =>
-								if positive'value (field (line,5)) = schematic_version_v5 then
+								if positive'value (et_string_processing.field (line,5)) = schematic_version_v5 then
 									-- CS: currently the version number must exactly match. Range check ?
 									-- headline ok, version is supported
 									schematic_version_valid := true;
@@ -6676,10 +6628,10 @@ package body et_kicad is
 					--log ("---> C " & to_string (line));
 					
 					-- Field #1 of the line must be broken down by its own ifs in order to get "LIBS" and "bel_stm32"
-					if get_field_from_line (field (et_kicad.line,1), 1, latin_1.colon) = schematic_library then
+					if get_field_from_line (et_string_processing.field (et_kicad.line,1), 1, latin_1.colon) = schematic_library then
 
 						-- for the log: write library name
-						log ("uses library " & get_field_from_line (field (et_kicad.line,1), 2, latin_1.colon),
+						log ("uses library " & get_field_from_line (et_string_processing.field (et_kicad.line,1), 2, latin_1.colon),
 							log_threshold + 1);
 
 						-- Store bare library name in the list sheet_header.libraries:
@@ -6687,23 +6639,23 @@ package body et_kicad is
 						type_library_names.append (
 							container	=> sheet_header.libraries,
 							new_item	=> et_kicad_general.to_library_name (
-								get_field_from_line (field (et_kicad.line,1), 2, latin_1.colon))
+								get_field_from_line (et_string_processing.field (et_kicad.line,1), 2, latin_1.colon))
 							);
 
 					end if;
 
 					-- layer numbers from a line like "EELAYER 25 0" -- CS: not used ?
 					-- CS: we do not read the line "EELAYER END" and assume it is always there.                                                        
-					if field (et_kicad.line,1) = schematic_eelayer then
-						if field (et_kicad.line,2) = schematic_eelayer_end then
+					if et_string_processing.field (et_kicad.line,1) = schematic_eelayer then
+						if et_string_processing.field (et_kicad.line,2) = schematic_eelayer_end then
 							null;
 						else
 							-- append layer numbers to the sheet header
 							sheet_header.eelayer_a := positive'value(
-								field (et_kicad.line,2));
+								et_string_processing.field (et_kicad.line,2));
 
 							sheet_header.eelayer_b := natural'value(
-								field (et_kicad.line,3));
+								et_string_processing.field (et_kicad.line,3));
 						end if;
 					end if;
 
@@ -6762,11 +6714,11 @@ package body et_kicad is
 
 				-- read drawing frame dimensions from a line like "$Descr A4 11693 8268"
 				-- CS test field count				
-				frame.paper_size	:= et_general.to_paper_size (field (et_kicad.line,2));
+				frame.paper_size	:= et_general.to_paper_size (et_string_processing.field (et_kicad.line,2));
 
 				-- The sheet size seems to be ignored by kicad. Only the paper_size matters.
-				frame.size_x		:= mil_to_distance (field (et_kicad.line,3)); 
-				frame.size_y 		:= mil_to_distance (field (et_kicad.line,4)); 
+				frame.size_x		:= mil_to_distance (et_string_processing.field (et_kicad.line,3)); 
+				frame.size_y 		:= mil_to_distance (et_string_processing.field (et_kicad.line,4)); 
 				
 				--frame.coordinates.path := path_to_submodule;
 				set_path (frame.coordinates, path_to_sheet);
@@ -6781,10 +6733,11 @@ package body et_kicad is
 				-- CS: we assume only one encoding. other encodings are ignored currently.
 				-- The encoding should be project wide. KiCad allows a sheet specific encoding which is no
 				-- good idea.
-				if field (et_kicad.line,1) = schematic_keyword_encoding then
+				if et_string_processing.field (et_kicad.line,1) = schematic_keyword_encoding then
 					-- CS test field count
-					if field (et_kicad.line,2) /= encoding_default then
-						log (message_warning & "non-default endcoding '" & field (et_kicad.line,2) & "' found !");
+					if et_string_processing.field (et_kicad.line,2) /= encoding_default then
+						log (message_warning & "non-default endcoding '" 
+							 & et_string_processing.field (et_kicad.line,2) & "' found !");
 					end if;
 				end if;
 
@@ -6794,7 +6747,7 @@ package body et_kicad is
 				-- NOTE: The sheet number written here (field 2) has no meaning. The real sheet number is 
 				-- obtained by reading the value of sheet_number. sheet_number is has been incremented
 				-- before function read_schematic was called.
-				if field (et_kicad.line,1) = schematic_keyword_sheet then
+				if et_string_processing.field (et_kicad.line,1) = schematic_keyword_sheet then
 					-- CS test field count
 
 					-- The sheet number written here is meaningless:
@@ -6803,7 +6756,7 @@ package body et_kicad is
 					log ("sheet number" & to_string (sheet_number), log_threshold + 1);
 
 					-- Get the total number of sheet of this design. 
-					sheet_count_total := to_sheet_number (field (et_kicad.line,3));
+					sheet_count_total := to_sheet_number (et_string_processing.field (et_kicad.line,3));
 					
 					-- CS: sheet_count_total must not change from sheet to sheet. Check required.
 					if sheet_count_total > 1 then
@@ -6822,53 +6775,63 @@ package body et_kicad is
 				next (line_cursor);
 
 				-- read sheet title from a line like "Title "abc""
-				if field (et_kicad.line,1) = schematic_keyword_title then                        
+				if et_string_processing.field (et_kicad.line,1) = schematic_keyword_title then                        
 					-- CS test field count					
 					title_block_text.meaning := et_libraries.TITLE;
-					title_block_text.text := et_libraries.type_title_block_text_content.to_bounded_string ((field (et_kicad.line,2)));
+					title_block_text.text := et_libraries.type_title_block_text_content.to_bounded_string (
+												  (et_string_processing.field (et_kicad.line,2)));
+					
 					et_libraries.type_title_block_texts.append (title_block_texts, title_block_text);
 				end if;
 
 				next (line_cursor);
 				
 				-- read date from a line like "Date "1981-01-23""
-				if field (et_kicad.line,1) = schematic_keyword_date then                        
+				if et_string_processing.field (et_kicad.line,1) = schematic_keyword_date then                        
 					-- CS test field count					
 					title_block_text.meaning := et_libraries.DRAWN_DATE;
-					title_block_text.text := et_libraries.type_title_block_text_content.to_bounded_string ((field (et_kicad.line,2)));
+					title_block_text.text := et_libraries.type_title_block_text_content.to_bounded_string (
+												(et_string_processing.field (et_kicad.line,2)));
+
 					et_libraries.type_title_block_texts.append (title_block_texts, title_block_text);
 				end if;
 
 				next (line_cursor);
 				
 				-- read revision from a line like "Rev "9.7.1"
-				if field (et_kicad.line,1) = schematic_keyword_revision then                        
+				if et_string_processing.field (et_kicad.line,1) = schematic_keyword_revision then                        
 					-- CS test field count					
 					title_block_text.meaning := et_libraries.REVISION;
-					title_block_text.text := et_libraries.type_title_block_text_content.to_bounded_string ((field (line,2)));
+					title_block_text.text := et_libraries.type_title_block_text_content.to_bounded_string (
+												(et_string_processing.field (line,2)));
+
 					et_libraries.type_title_block_texts.append (title_block_texts, title_block_text);
 				end if;
 
 				next (line_cursor);
 
 				-- read company name
-				if field (et_kicad.line,1) = schematic_keyword_company then
+				if et_string_processing.field (et_kicad.line,1) = schematic_keyword_company then
 					-- CS test field count					
 					title_block_text.meaning := et_libraries.COMPANY;
-					title_block_text.text := et_libraries.type_title_block_text_content.to_bounded_string ((field (et_kicad.line,2)));
+					title_block_text.text := et_libraries.type_title_block_text_content.to_bounded_string (
+												(et_string_processing.field (et_kicad.line,2)));
+
 					et_libraries.type_title_block_texts.append (title_block_texts, title_block_text);
 				end if;
 
 				next (line_cursor);
 
 				-- read commments 1..4 CS: need something more flexible here in order to read any number of comments.
-				if  field (et_kicad.line,1) = schematic_keyword_comment_1 or
-					field (et_kicad.line,1) = schematic_keyword_comment_2 or
-					field (et_kicad.line,1) = schematic_keyword_comment_3 or 
-					field (et_kicad.line,1) = schematic_keyword_comment_4 then
+				if  et_string_processing.field (et_kicad.line,1) = schematic_keyword_comment_1 or
+					et_string_processing.field (et_kicad.line,1) = schematic_keyword_comment_2 or
+					et_string_processing.field (et_kicad.line,1) = schematic_keyword_comment_3 or 
+					et_string_processing.field (et_kicad.line,1) = schematic_keyword_comment_4 then
 					-- CS test field count
 					title_block_text.meaning := et_libraries.MISC;
-					title_block_text.text := et_libraries.type_title_block_text_content.to_bounded_string ((field (et_kicad.line,2)));
+					title_block_text.text := et_libraries.type_title_block_text_content.to_bounded_string (
+												(et_string_processing.field (et_kicad.line,2)));
+
 					et_libraries.type_title_block_texts.append (title_block_texts, title_block_text);
 				end if;
 
@@ -6978,36 +6941,36 @@ package body et_kicad is
 -- 				log (to_string (et_kicad.line), log_threshold + 1);
 
 				-- read GUI sheet position and size from a line like "S 4050 5750 1050 650"
-				if field (et_kicad.line,1) = schematic_keyword_sheet_pos_and_size then
+				if et_string_processing.field (et_kicad.line,1) = schematic_keyword_sheet_pos_and_size then
 					-- CS test field count
 					set_path (sheet.coordinates, path_to_sheet);
 					--log ("path " & to_string (path (sheet.coordinates)));
 					set_sheet (sheet.coordinates, sheet_number);
-					set_x (sheet.coordinates, mil_to_distance (field (et_kicad.line,2)));
-					set_y (sheet.coordinates, mil_to_distance (field (et_kicad.line,3)));
+					set_x (sheet.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,2)));
+					set_y (sheet.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,3)));
 
-					sheet.size_x := mil_to_distance (field (et_kicad.line,4));
-					sheet.size_y := mil_to_distance (field (et_kicad.line,5));                                
+					sheet.size_x := mil_to_distance (et_string_processing.field (et_kicad.line,4));
+					sheet.size_y := mil_to_distance (et_string_processing.field (et_kicad.line,5));                                
 				end if;
 
 				next (line_cursor);
 -- 				log (to_string (et_kicad.line), log_threshold + 1);
 				
 				-- read GUI submodule (sheet) timestamp from a line like "U 58A73B5D"
-				if field (et_kicad.line,1) = schematic_keyword_sheet_timestamp then 
+				if et_string_processing.field (et_kicad.line,1) = schematic_keyword_sheet_timestamp then 
 					-- CS test field count					
-					sheet.timestamp := type_timestamp (field (et_kicad.line,2));
+					sheet.timestamp := type_timestamp (et_string_processing.field (et_kicad.line,2));
 				end if;
 
 				next (line_cursor);
 				
 				-- Read sheet name from a line like "F0 "mcu_stm32f030" 60"
-				if field (et_kicad.line,1) = schematic_keyword_sheet_name then
+				if et_string_processing.field (et_kicad.line,1) = schematic_keyword_sheet_name then
 					-- CS test field count					
-					sheet_name.name := to_submodule_name (field (et_kicad.line,2));
+					sheet_name.name := to_submodule_name (et_string_processing.field (et_kicad.line,2));
 
 					-- set text size of sheet name and test for excessive text size.
-					sheet.text_size_of_name := to_text_size (mil_to_distance (field (et_kicad.line,3)));
+					sheet.text_size_of_name := to_text_size (mil_to_distance (et_string_processing.field (et_kicad.line,3)));
 
 					-- Test text size by category.
 					check_schematic_text_size (category => et_configuration.SHEET_NAME, size => sheet.text_size_of_name);
@@ -7016,12 +6979,12 @@ package body et_kicad is
 				next (line_cursor);
 				
 				-- Read sheet file name from a line like "F1 "mcu_stm32f030.sch" 60".
-				if field (et_kicad.line,1) = schematic_keyword_sheet_file then
+				if et_string_processing.field (et_kicad.line,1) = schematic_keyword_sheet_file then
 					-- CS test field count					
-					sheet_name.file := et_coordinates.to_schematic_file_name (field (et_kicad.line,2));
+					sheet_name.file := et_coordinates.to_schematic_file_name (et_string_processing.field (et_kicad.line,2));
 					
 					-- set text size of file name and test for excessive text size
-					sheet.text_size_of_file := to_text_size (mil_to_distance (field (et_kicad.line,3)));
+					sheet.text_size_of_file := to_text_size (mil_to_distance (et_string_processing.field (et_kicad.line,3)));
 
 					-- Test text size by category.
 					check_schematic_text_size (category => FILE_NAME, size => sheet.text_size_of_file);
@@ -7048,23 +7011,23 @@ package body et_kicad is
 				if line_cursor /= no_element then
 					
 					-- Test of excessive text size.
-					text_size := to_text_size (mil_to_distance (field (et_kicad.line, 7)));
+					text_size := to_text_size (mil_to_distance (et_string_processing.field (et_kicad.line, 7)));
 
 					-- Test text size by category.
 					check_schematic_text_size (category => PORT_NAME, size => text_size);
 					
 					while line_cursor /= no_element loop
 						log_indentation_up;
-						log ("port " & strip_quotes (field (et_kicad.line, 2)), log_threshold + 2);
+						log ("port " & strip_quotes (et_string_processing.field (et_kicad.line, 2)), log_threshold + 2);
 
 						-- add port
 						type_hierarchic_sheet_ports.insert (
 							container => sheet.ports,
-							key => to_net_name (field (et_kicad.line, 2)), -- port name
+							key => to_net_name (et_string_processing.field (et_kicad.line, 2)), -- port name
 							new_item => (
-								direction 	=> to_direction (field (et_kicad.line, 3)),
-								orientation	=> to_orientation (field (et_kicad.line, 4)),
-								coordinates	=> to_point (field (et_kicad.line, 5), field (et_kicad.line, 6)),
+								direction 	=> to_direction (et_string_processing.field (et_kicad.line, 3)),
+								orientation	=> to_orientation (et_string_processing.field (et_kicad.line, 4)),
+								coordinates	=> to_point (et_string_processing.field (et_kicad.line, 5), et_string_processing.field (et_kicad.line, 6)),
 								text_size	=> text_size,
 								processed	=> false),
 							inserted => port_inserted,
@@ -7074,7 +7037,7 @@ package body et_kicad is
 						-- if port could not be inserted -> abort
 						if not port_inserted then
 							log_indentation_reset;
-							log (message_error & "multiple usage of port " & field (et_kicad.line, 2) & " !");
+							log (message_error & "multiple usage of port " & et_string_processing.field (et_kicad.line, 2) & " !");
 							raise constraint_error;
 						end if;
 						
@@ -7107,9 +7070,9 @@ package body et_kicad is
 				result : boolean := false;
 			begin
 				-- CS test field count
-				if field (line,1) = schematic_keyword_wire then
-					if field (line,2) = schematic_keyword_wire then
-						if field (line,3) = schematic_keyword_line then
+				if et_string_processing.field (line,1) = schematic_keyword_wire then
+					if et_string_processing.field (line,2) = schematic_keyword_wire then
+						if et_string_processing.field (line,3) = schematic_keyword_line then
 							result := true;
 						end if;
 					end if;
@@ -7142,10 +7105,10 @@ package body et_kicad is
 				set_sheet (segment.coordinates_end, sheet_number);
 
 				-- the x/y position
-				set_x (segment.coordinates_start, mil_to_distance (field (et_kicad.line,1)));
-				set_y (segment.coordinates_start, mil_to_distance (field (et_kicad.line,2)));
-				set_x (segment.coordinates_end, mil_to_distance (field (et_kicad.line,3)));
-				set_y (segment.coordinates_end, mil_to_distance (field (et_kicad.line,4)));
+				set_x (segment.coordinates_start, mil_to_distance (et_string_processing.field (et_kicad.line,1)));
+				set_y (segment.coordinates_start, mil_to_distance (et_string_processing.field (et_kicad.line,2)));
+				set_x (segment.coordinates_end, mil_to_distance (et_string_processing.field (et_kicad.line,3)));
+				set_y (segment.coordinates_end, mil_to_distance (et_string_processing.field (et_kicad.line,4)));
 
 				-- Ignore net segments with zero length (CS: for some reason they may exist. could be a kicad bug)
 				-- If a net segment has zero length, issue a warning.
@@ -7167,8 +7130,8 @@ package body et_kicad is
 				result : boolean := false;
 			begin
 				-- CS test field count
-				if field (line,1) = schematic_keyword_connection then
-					if field (line,2) = schematic_tilde then
+				if et_string_processing.field (line,1) = schematic_keyword_connection then
+					if et_string_processing.field (line,2) = schematic_tilde then
 						result := true;
 					end if;
 				end if;
@@ -7202,8 +7165,8 @@ package body et_kicad is
 				
 				set_path (junction.coordinates, path_to_sheet);
 				set_sheet (junction.coordinates, sheet_number);
-				set_x (junction.coordinates, mil_to_distance (field (line,3)));
-				set_y (junction.coordinates, mil_to_distance (field (line,4)));
+				set_x (junction.coordinates, mil_to_distance (et_string_processing.field (line,3)));
+				set_y (junction.coordinates, mil_to_distance (et_string_processing.field (line,4)));
 
 				-- for the log
 				log ("net junction" & to_string (junction => junction, scope => xy), log_threshold);
@@ -7226,8 +7189,8 @@ package body et_kicad is
 				result : boolean := false;
 			begin
 				-- CS test field count
-				if 	field (line,1) = schematic_keyword_text and 
-					field (line,2) = schematic_keyword_label_simple then
+				if 	et_string_processing.field (line,1) = schematic_keyword_text and 
+					et_string_processing.field (line,2) = schematic_keyword_label_simple then
 						result := true;
 				end if;
 				return result;
@@ -7253,22 +7216,22 @@ package body et_kicad is
 				-- Build a temporarily simple label from a line like "Text Label 5350 3050 0    60   ~ 0" :
 				--set_path (label.coordinates, path_to_sheet);
 				--set_sheet (label.coordinates, sheet_number);
-				set_x (label.coordinates, mil_to_distance (field (et_kicad.line,3)));
-				set_y (label.coordinates, mil_to_distance (field (et_kicad.line,4)));
+				set_x (label.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,3)));
+				set_y (label.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,4)));
 
-				label.orientation := to_angle (field (et_kicad.line,5));
-				label.size := mil_to_distance (field (et_kicad.line,6));
-				label.style := to_text_style (style_in => field (et_kicad.line,7), text => true);
-				label.width := et_libraries.type_text_line_width'value (field (et_kicad.line,8));
+				label.orientation := to_angle (et_string_processing.field (et_kicad.line,5));
+				label.size := mil_to_distance (et_string_processing.field (et_kicad.line,6));
+				label.style := to_text_style (style_in => et_string_processing.field (et_kicad.line,7), text => true);
+				label.width := et_libraries.type_text_line_width'value (et_string_processing.field (et_kicad.line,8));
 
 				next (line_cursor);
 
 				-- Make sure the label text (later this will be a net name) is not longer
 				-- than allowed.
-				check_net_name_length (field (et_kicad.line,1));
+				check_net_name_length (et_string_processing.field (et_kicad.line,1));
 				
 				-- get label text and put it to temporarily simple label
-				label.text := type_net_name.to_bounded_string (field (et_kicad.line,1));
+				label.text := type_net_name.to_bounded_string (et_string_processing.field (et_kicad.line,1));
 
 				-- Make sure there are no forbidden characters in the net name.
 				check_net_name_characters (label.text);
@@ -7294,9 +7257,9 @@ package body et_kicad is
 				result : boolean := false;
 			begin
 				-- CS test field count
-				if field (line,1) = schematic_keyword_text and 
-					(field (line,2) = schematic_keyword_label_hierarchic or
-					 field (line,2) = schematic_keyword_label_global) then
+				if et_string_processing.field (line,1) = schematic_keyword_text and 
+					(et_string_processing.field (line,2) = schematic_keyword_label_hierarchic or
+					 et_string_processing.field (line,2) = schematic_keyword_label_global) then
 						result := true;
 				end if;
 				return result;
@@ -7321,7 +7284,7 @@ package body et_kicad is
 
 				-- Build a temporarily hierarchic/global label from a line like "Text GLabel 1850 3100 0 58 BiDi ~ 0"
 				-- The keyword in field 2 tells whether we have a hierarchic or global label:
-				if field (et_kicad.line,2) = schematic_keyword_label_hierarchic then
+				if et_string_processing.field (et_kicad.line,2) = schematic_keyword_label_hierarchic then
 					label.hierarchic := true;
 					label.global := false;
 				else
@@ -7331,25 +7294,25 @@ package body et_kicad is
 
 				--set_path (label.coordinates, path_to_sheet);
 				--set_sheet (label.coordinates, sheet_number);
-				set_x (label.coordinates, mil_to_distance (field (et_kicad.line,3)));
-				set_y (label.coordinates, mil_to_distance (field (et_kicad.line,4)));
+				set_x (label.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,3)));
+				set_y (label.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,4)));
 
-				label.orientation := to_angle (field (et_kicad.line,5));
-				label.direction := to_direction (field (et_kicad.line,7));
+				label.orientation := to_angle (et_string_processing.field (et_kicad.line,5));
+				label.direction := to_direction (et_string_processing.field (et_kicad.line,7));
 
 				-- build text attributes from size, font and line width
-				label.size := mil_to_distance (field (et_kicad.line,6));
-				label.style := to_text_style (style_in => field (et_kicad.line,8), text => true);
-				label.width := et_libraries.type_text_line_width'value (field (et_kicad.line,9));
+				label.size := mil_to_distance (et_string_processing.field (et_kicad.line,6));
+				label.style := to_text_style (style_in => et_string_processing.field (et_kicad.line,8), text => true);
+				label.width := et_libraries.type_text_line_width'value (et_string_processing.field (et_kicad.line,9));
 
 				next (line_cursor);
 
 				-- Make sure the label text (later this will be a net name) is not longer
 				-- than allowed.
-				check_net_name_length (field (et_kicad.line,1));
+				check_net_name_length (et_string_processing.field (et_kicad.line,1));
 				
 				-- get label text
-				label.text := type_net_name.to_bounded_string (field (et_kicad.line,1));
+				label.text := type_net_name.to_bounded_string (et_string_processing.field (et_kicad.line,1));
 				
 				-- Make sure there are no forbidden characters in the net name.
 				check_net_name_characters (label.text);
@@ -7374,8 +7337,8 @@ package body et_kicad is
 				result : boolean := false;
 			begin
 				-- CS test field count
-				if field (line,1) = schematic_keyword_text and 
-					field (line,2) = schematic_keyword_note then
+				if et_string_processing.field (line,1) = schematic_keyword_text and 
+					et_string_processing.field (line,2) = schematic_keyword_note then
 						result := true;
 				end if;
 				return result;
@@ -7399,16 +7362,16 @@ package body et_kicad is
 				-- set coordinates
 				set_path (note.coordinates, path_to_sheet);
 				set_sheet (note.coordinates, sheet_number);
-				set_x (note.coordinates, mil_to_distance (field (et_kicad.line,3)));
-				set_y (note.coordinates, mil_to_distance (field (et_kicad.line,4)));
+				set_x (note.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,3)));
+				set_y (note.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,4)));
 				
-				note.orientation   := to_angle (field (et_kicad.line,5));
+				note.orientation   := to_angle (et_string_processing.field (et_kicad.line,5));
 
 				-- set text size and check for excessive size
-				note.size := et_libraries.to_text_size (mil_to_distance (field (et_kicad.line,6)));
+				note.size := et_libraries.to_text_size (mil_to_distance (et_string_processing.field (et_kicad.line,6)));
 				
-				note.style := to_text_style (style_in => field (et_kicad.line,7), text => true);
-				note.line_width := mil_to_distance (field (et_kicad.line,8));
+				note.style := to_text_style (style_in => et_string_processing.field (et_kicad.line,7), text => true);
+				note.line_width := mil_to_distance (et_string_processing.field (et_kicad.line,8));
 
 				next (line_cursor);
 
@@ -7429,7 +7392,7 @@ package body et_kicad is
 			-- Returns true if given line is a header of a component.
 			begin
 				-- CS test field count
-				if field (line,1) = schematic_component_header then
+				if et_string_processing.field (line,1) = schematic_component_header then
 					return true;
 				else 
 					return false;
@@ -7440,7 +7403,7 @@ package body et_kicad is
 			-- Returns true if given line is a footer of a component.
 			begin
 				-- CS test field count
-				if field (line,1) = schematic_component_footer then
+				if et_string_processing.field (line,1) = schematic_component_footer then
 					return true;
 				else 
 					return false;
@@ -7532,45 +7495,43 @@ package body et_kicad is
 			
 				function to_field return et_libraries.type_text is
 				-- Converts a field like "F 1 "green" H 2700 2750 50  0000 C CNN" to a type_text
-					function field (line : in type_fields_of_line; position : in positive) return string renames get_field_from_line;
 					text_position : type_2d_point;
-
 					size : type_text_size;
 				begin
 					-- test if the field content is longer than allowed:
-					check_text_content_length (field (et_kicad.line,3));
+					check_text_content_length (et_string_processing.field (et_kicad.line,3));
 					
-					set_x (text_position, mil_to_distance (field (et_kicad.line,5)));
-					set_y (text_position, mil_to_distance (field (et_kicad.line,6)));
+					set_x (text_position, mil_to_distance (et_string_processing.field (et_kicad.line,5)));
+					set_y (text_position, mil_to_distance (et_string_processing.field (et_kicad.line,6)));
 
-					size := mil_to_distance (field (et_kicad.line,7));
+					size := mil_to_distance (et_string_processing.field (et_kicad.line,7));
 
 					return (
 						-- read text field meaning
 						meaning 	=> to_text_meaning (line => et_kicad.line, schematic => true),
 
 						-- read content like "N701" or "NetChanger" from field position 3
-						content		=> type_text_content.to_bounded_string (field (et_kicad.line,3)),
+						content		=> type_text_content.to_bounded_string (et_string_processing.field (et_kicad.line,3)),
 
 						-- read orientation like "H"
-						orientation	=> to_field_orientation (field (et_kicad.line,4)),
+						orientation	=> to_field_orientation (et_string_processing.field (et_kicad.line,4)),
 
 						-- read coordinates
 						position	=> text_position,
 										
 						size		=> size,
-						style		=> to_text_style (style_in => field (et_kicad.line,10), text => false),
+						style		=> to_text_style (style_in => et_string_processing.field (et_kicad.line,10), text => false),
 						line_width	=> type_text_line_width'first,
 
 						-- build text visibility
 						visible		=> to_field_visible (
-											vis_in		=> field (et_kicad.line,8),
+											vis_in		=> et_string_processing.field (et_kicad.line,8),
 											schematic	=> true),
 
 						-- build text alignment
 						alignment	=> (
-										horizontal	=> to_alignment_horizontal (field (et_kicad.line,9)),
-										vertical	=> to_alignment_vertical   (field (et_kicad.line,10)))
+										horizontal	=> to_alignment_horizontal (et_string_processing.field (et_kicad.line,9)),
+										vertical	=> to_alignment_vertical   (et_string_processing.field (et_kicad.line,10)))
 						);
 				end to_field;
 
@@ -7799,7 +7760,7 @@ package body et_kicad is
 									-- The field contains something like bel_ic:S_SO14 . 
 									-- The part after the colon is the package name. The part before the colon is the library
 									-- name which is not of interest here.
-									packge => type_component_package_name.to_bounded_string (field (
+									packge => type_component_package_name.to_bounded_string (et_string_processing.field (
 										line => read_line ( -- CS use package_name (content (field_package)
 											line => content (field_package), -- bel_ic:S_SO14
 											ifs => latin_1.colon),
@@ -8082,10 +8043,6 @@ package body et_kicad is
 				-- The component to be inserted gets assembled from the temporarily variables assigned until now.
 				-- Tests if a footprint has been associated with the component.
 
-					function field (
-						line		: in et_string_processing.type_fields_of_line;
-						position	: in positive) return string renames et_string_processing.get_field_from_line;
-
 					full_component_library_name : type_device_library_name.bounded_string;
 
 					use et_import;
@@ -8308,18 +8265,15 @@ package body et_kicad is
 				-- Checks if the x/y position of the unit matches that provided in given line.
 				-- It is about the strange repetition of the unit name and its x/y coordinates in a line like
 				-- "2    6000 4000"
-					function field (line : in type_fields_of_line; position : in positive) return string renames
-						et_string_processing.get_field_from_line;
-			
 				begin -- verify_unit_name_and_position
 					
-					if et_libraries.to_string (unit_name) /= field (line,1) then
+					if et_libraries.to_string (unit_name) /= et_string_processing.field (line,1) then
 						log_indentation_reset;
-						log (message_error & "invalid unit name '" & field (line,1) & "'", console => true);
+						log (message_error & "invalid unit name '" & et_string_processing.field (line,1) & "'", console => true);
 						raise constraint_error;
 					end if;
 					
-					if distance_x (position) /= mil_to_distance (field (line,2)) then
+					if distance_x (position) /= mil_to_distance (et_string_processing.field (line,2)) then
 						log_indentation_reset;
 	-- 					log ("position invalid. expected '" & to_string (position.x) 
 	-- 						& "' found '" 
@@ -8328,7 +8282,7 @@ package body et_kicad is
 						raise constraint_error; -- CS: write useful message
 					end if;
 
-					if distance_y (position) /= mil_to_distance (field (line,3)) then
+					if distance_y (position) /= mil_to_distance (et_string_processing.field (line,3)) then
 						raise constraint_error; -- CS: write useful message
 					end if;
 
@@ -8338,9 +8292,6 @@ package body et_kicad is
 				procedure build_unit_orientation_and_mirror_style (line : in type_fields_of_line) is
 				-- Builds from a line (see below) the component orientation and mirror style:
 
-					function field (line : in type_fields_of_line; position : in positive) return string renames
-						et_string_processing.get_field_from_line;
-				
 					-- Angles in Kicad are to be interpreted as: 
 					-- positive angle -> counter clock wise
 					-- negative angle -> clock wise
@@ -8368,10 +8319,10 @@ package body et_kicad is
 				begin -- CS: provide useful log messages via exception handler
 
 					-- compute unit orientation
-					orient_1 := type_schematic_unit_orientation'value (field (line, 1));
-					orient_2 := type_schematic_unit_orientation'value (field (line, 2));
-					mirror_1 := type_schematic_unit_mirror_style'value (field (line, 3));
-					mirror_2 := type_schematic_unit_mirror_style'value (field (line, 4));
+					orient_1 := type_schematic_unit_orientation'value (et_string_processing.field (line, 1));
+					orient_2 := type_schematic_unit_orientation'value (et_string_processing.field (line, 2));
+					mirror_1 := type_schematic_unit_mirror_style'value (et_string_processing.field (line, 3));
+					mirror_2 := type_schematic_unit_mirror_style'value (et_string_processing.field (line, 4));
 
 					case orient_1 is
 						when -1 =>
@@ -8491,9 +8442,7 @@ package body et_kicad is
 				-- Adds the alternative reference given in a line like 
 				-- AR Path="/5B7E59F3/5B7E5817" Ref="#PWR03"  Part="1" 
 				-- to the list alternative_references.
-					function field (line : in type_fields_of_line; position : in positive) return string renames
-						et_string_processing.get_field_from_line;
-
+				
 					path	: et_string_processing.type_fields_of_line; -- 59F17F77 5A991798
 					ref		: et_libraries.type_component_reference; -- #PWR03
 					unit	: et_libraries.type_unit_name.bounded_string; -- 1 -- CS is this really about unit names ?
@@ -8506,11 +8455,11 @@ package body et_kicad is
 					
 					-- extract the path segments from field 2: example: Path="/59F17F77/5A991798					
 					path := et_string_processing.read_line (
-						line			=> trim (field (line, 2) (8 .. field (line, 2)'last), both), -- 59F17F77/5A991798
+						line			=> trim (et_string_processing.field (line, 2) (8 .. et_string_processing.field (line, 2)'last), both), -- 59F17F77/5A991798
 						-- NOTE: the trailing double quote is already gone.
 						
 						comment_mark	=> "", -- no comment marks
-						ifs				=> hierarchy_separator(1)); -- hierarchy_separator is a string
+						ifs				=> hierarchy_separator (1)); -- hierarchy_separator is a string
 
 					--log (et_string_processing.to_string (path), log_threshold + 1);
 					
@@ -8520,7 +8469,7 @@ package body et_kicad is
 					for place in 1 .. positive (et_string_processing.field_count (path)) loop
 
 						-- convert the segment from string to timestamp
-						path_segment := type_timestamp (et_string_processing.get_field_from_line (path, place));
+						path_segment := type_timestamp (et_string_processing.field (path, place));
 
 						-- append the segment
 						type_alternative_reference_path.append (	
@@ -8533,7 +8482,7 @@ package body et_kicad is
 					-- extract the reference from field 3: example: Ref="#PWR03
 					-- NOTE: the trailing double quote is already gone.
 					ref := et_schematic.to_component_reference (
-							text_in 							=> field (line, 3) (6.. (field (line, 3)'last)),  -- #PWR03
+							text_in 							=> et_string_processing.field (line, 3) (6.. (et_string_processing.field (line, 3)'last)),  -- #PWR03
 							allow_special_character_in_prefix	=> true);
 
 -- 					log ("test", log_threshold + 1);
@@ -8541,7 +8490,7 @@ package body et_kicad is
 					
 					-- extract the part name (CS unit name ?) from field 4: example Part="1
 					-- NOTE: the trailing double quote is already gone.
-					unit := et_libraries.to_unit_name (field (line, 4) (7 .. (field (line, 4)'last)));
+					unit := et_libraries.to_unit_name (et_string_processing.field (line, 4) (7 .. (et_string_processing.field (line, 4)'last)));
 
 					-- Now all components of the alternative reference are ready.
 					-- Append the new alternative reference to list alternative_references:
@@ -8601,15 +8550,16 @@ package body et_kicad is
 					-- From this entry we reason the component appearance. 
 					-- The appearance is important for contextual validation of the fields (like field_partcode, field_bom, ...).
 					-- It is also required for validation of the reference (like R12 or C4).
-					if field (et_kicad.line,1) = schematic_component_identifier_name then -- "L"
+					if et_string_processing.field (et_kicad.line,1) = schematic_component_identifier_name then -- "L"
 
 						case et_import.cad_format is
 							when et_import.KICAD_V4 =>
-								generic_name_in_lbr := type_component_generic_name.to_bounded_string (field (et_kicad.line,2)); -- "SN74LS00"
+								generic_name_in_lbr := type_component_generic_name.to_bounded_string (
+														et_string_processing.field (et_kicad.line,2)); -- "SN74LS00"
 
 							when et_import.KICAD_V5 =>
-								generic_name_in_lbr := generic_name (field (et_kicad.line,2)); -- "bel_logic:SN74LS00"
-								component_library_name := extract_library_name (field (et_kicad.line,2)); -- "bel_logic:SN74LS00"
+								generic_name_in_lbr := generic_name (et_string_processing.field (et_kicad.line,2)); -- "bel_logic:SN74LS00"
+								component_library_name := extract_library_name (et_string_processing.field (et_kicad.line,2)); -- "bel_logic:SN74LS00"
 
 							when others => raise constraint_error;
 						end case;
@@ -8635,7 +8585,7 @@ package body et_kicad is
 								-- Afterward we validate the prefix of the reference. It must be
 								-- a power symbol or a power flag (#PWR or #FLG).
 								reference := to_component_reference (
-									text_in => field (et_kicad.line,3),
+									text_in => et_string_processing.field (et_kicad.line,3),
 									allow_special_character_in_prefix => true); 
 
 								log ("reference " & to_string (reference) & " (preliminary)", log_threshold);
@@ -8648,7 +8598,7 @@ package body et_kicad is
 								-- It is about a REAL component. Its prefix must be one 
 								-- of those defined in the configuration file (see et_configuration).
 								reference := to_component_reference ( -- character check included
-									text_in => field (et_kicad.line,3),
+									text_in => et_string_processing.field (et_kicad.line,3),
 									allow_special_character_in_prefix => false);
 
 								log ("reference " & to_string (reference) & " (preliminary)", log_threshold);
@@ -8666,31 +8616,31 @@ package body et_kicad is
 					-- read line like "U 2 1 4543D4D3F" 
 					-- U is the line indicator, 2 is the unit id, 1 is the demorgan flag.
 					-- Last field is the link to the package in the board file.
-					elsif field (et_kicad.line,1) = schematic_component_identifier_unit then -- "U"
+					elsif et_string_processing.field (et_kicad.line,1) = schematic_component_identifier_unit then -- "U"
 
 						-- KiCad uses positive numbers to identifiy units. But in general a unit name can
 						-- be a string as well. Therefore we handle the unit id as string.
 						unit_name := type_unit_name.to_bounded_string ( -- CS: check_unit_name_characters
-							field (et_kicad.line,2)); -- the unit id
+							et_string_processing.field (et_kicad.line,2)); -- the unit id
 
 						-- Read DeMorgan flag:
 						alternative_representation := to_alternative_representation (line => et_kicad.line, schematic => true);
 
 						-- Read and check the link to the board file:
-						timestamp := type_timestamp (field (et_kicad.line,4));
+						timestamp := type_timestamp (et_string_processing.field (et_kicad.line,4));
 
 					-- Read unit coordinates from a line like "P 3200 4500".
-					elsif field (et_kicad.line,1) = schematic_component_identifier_coord then -- "P"
+					elsif et_string_processing.field (et_kicad.line,1) = schematic_component_identifier_coord then -- "P"
 					
-						set_x (position, mil_to_distance (field (et_kicad.line,2))); -- "3200"
-						set_y (position, mil_to_distance (field (et_kicad.line,3))); -- "4500"
+						set_x (position, mil_to_distance (et_string_processing.field (et_kicad.line,2))); -- "3200"
+						set_y (position, mil_to_distance (et_string_processing.field (et_kicad.line,3))); -- "4500"
 
 						-- The unit coordinates is more than just x/y :
 						set_path (position, path_to_sheet);
 						set_sheet (position, sheet_number);
 
 					-- Read alternative reference like "AR Path="/59EF082F" Ref="N23"  Part="1"
-					elsif field (et_kicad.line,1) = schematic_component_identifier_path then -- "AR"
+					elsif et_string_processing.field (et_kicad.line,1) = schematic_component_identifier_path then -- "AR"
 						add_alternative_reference (et_kicad.line);
 
 					-- read unit fields 0..2 from lines like:
@@ -8700,11 +8650,11 @@ package body et_kicad is
 
 					-- Set "field found flags" accordingly.
 					-- Do some basic checks on the fields.
-					elsif field (et_kicad.line,1) = component_field_identifier then -- "F"
+					elsif et_string_processing.field (et_kicad.line,1) = component_field_identifier then -- "F"
 
 						--log ("unit field A: " & to_string (et_kicad.line));
 						
-						case type_component_field_id'value (field (et_kicad.line,2)) is
+						case type_component_field_id'value (et_string_processing.field (et_kicad.line,2)) is
 							
 							when component_field_reference =>
 								field_reference_found := true;
@@ -8839,8 +8789,8 @@ package body et_kicad is
 				result : boolean := false;
 			begin
 				-- CS test field count
-				if field (line,1) = schematic_keyword_no_connection then
-					if field (line,2) = schematic_tilde then
+				if et_string_processing.field (line,1) = schematic_keyword_no_connection then
+					if et_string_processing.field (line,2) = schematic_tilde then
 						result := true;
 					end if;
 				end if;
@@ -8867,8 +8817,8 @@ package body et_kicad is
 			begin -- make_no_connection
 				set_path (no_connection_flag.coordinates, path_to_sheet);
 				set_sheet (no_connection_flag.coordinates, sheet_number);
-				set_x (no_connection_flag.coordinates, mil_to_distance (field (line,3)));
-				set_y (no_connection_flag.coordinates, mil_to_distance (field (line,4)));
+				set_x (no_connection_flag.coordinates, mil_to_distance (et_string_processing.field (line,3)));
+				set_y (no_connection_flag.coordinates, mil_to_distance (et_string_processing.field (line,4)));
 
 				-- for the log
 				log ("no-connection-flag" & to_string (no_connection_flag => no_connection_flag, scope => xy),
@@ -8945,16 +8895,17 @@ package body et_kicad is
 							--	EELAYER END
 
 							if not sheet_header_entered then
-								if get_field_from_line (field  (line,1), 1, latin_1.colon) = schematic_library then
+								if get_field_from_line (et_string_processing.field (line,1), 1, latin_1.colon) = schematic_library then
 									sheet_header_entered := true;
 									add (line);
 								end if;
 							else -- we are inside the sheet header and wait for the footer
-								if field (line,1) = schematic_eelayer and field (line,2) = schematic_eelayer_end then
-									sheet_header_entered := false;
-									add (line);
-									make_sheet_header (lines);
-									clear (lines); -- clean up line collector
+								if et_string_processing.field (line,1) = schematic_eelayer 
+									and et_string_processing.field (line,2) = schematic_eelayer_end then
+										sheet_header_entered := false;
+										add (line);
+										make_sheet_header (lines);
+										clear (lines); -- clean up line collector
 								else
 									add (line);
 								end if;
@@ -8976,13 +8927,13 @@ package body et_kicad is
 							-- $EndDescr
 							
 							if not description_entered then
-								if field (line,1) = schematic_description_header then -- $Descr A4 11693 8268
+								if et_string_processing.field (line,1) = schematic_description_header then -- $Descr A4 11693 8268
 									description_entered := true; -- we are entering the sheet description
 
 									add (line);
 								end if;
 							else -- we are inside the description
-								if field (line,1) = schematic_description_footer then -- $EndDescr
+								if et_string_processing.field (line,1) = schematic_description_footer then -- $EndDescr
 									description_entered := false; -- we are leaving the description
 									description_processed := true;
 
@@ -9011,11 +8962,11 @@ package body et_kicad is
 
 							if sheet_count_total > 1 then -- read hierarchical GUI sheets
 								if not sheet_description_entered then
-									if field (line,1) = schematic_sheet_header then -- $Sheet
+									if et_string_processing.field (line,1) = schematic_sheet_header then -- $Sheet
 										sheet_description_entered := true;
 									end if;
 								else -- we are inside a sheet description
-									if field (line,1) = schematic_sheet_footer then -- $EndSheet
+									if et_string_processing.field (line,1) = schematic_sheet_footer then -- $EndSheet
 										sheet_description_entered := false; -- we are leaving the sheet description
 
 										make_gui_sheet (lines, log_threshold + 1);
