@@ -148,6 +148,10 @@ package et_pcb_coordinates is
 
 	function package_position_default return type_package_position;
 
+	procedure reset_point (
+	-- Moves the given point to the origin (0/0).
+		point	: in out type_point_2d'class);					
+	
 	procedure move_point (
 		point	: in out type_point_2d'class;
 		offset	: in type_point_2d);

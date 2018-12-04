@@ -359,16 +359,13 @@ package body et_kicad_pcb is
 	function to_pad_shape_circle (
 		position	: in et_pcb_coordinates.type_terminal_position;
 		diameter	: in et_pcb.type_pad_size;
-		offset_x	: in et_pcb.type_pad_drill_offset;	-- the offset of the pad from the center in x
-		offset_y	: in et_pcb.type_pad_drill_offset)	-- the offset of the pad from the center in y
+		offset		: in et_pcb_coordinates.type_point_2d)	-- the offset of the pad from the center
 		return et_pcb.type_pad_outline is
 
 		use et_pcb_coordinates;
 		use et_pcb;
 		use et_pcb.type_pad_circles;
 
-		offset : type_point_2d := type_point_2d (set_point (offset_x, offset_y));
-		
 		circle : type_pad_circle;
 
 		shape : et_pcb.type_pad_outline; -- to be returned
@@ -387,16 +384,13 @@ package body et_kicad_pcb is
 		center		: in et_pcb_coordinates.type_terminal_position; -- the pad center position (incl. angle)
 		size_x		: in et_pcb.type_pad_size;	-- the size in x of the pad
 		size_y		: in et_pcb.type_pad_size;	-- the size in y of the pad
-		offset_x	: in et_pcb.type_pad_drill_offset;	-- the offset of the pad from the center in x
-		offset_y	: in et_pcb.type_pad_drill_offset)	-- the offset of the pad from the center in y
+		offset		: in et_pcb_coordinates.type_point_2d)	-- the offset of the pad from the center
 		return et_pcb.type_pad_outline is
 
 		use et_pcb;
 		use et_pcb_coordinates;
 		use et_pcb.type_pad_lines;
 
-		offset : type_point_2d := type_point_2d (set_point (offset_x, offset_y));
-		
 		shape : type_pad_outline; -- to be returned
 
 		-- The given center of the pad also provides us with the angle of rotation:
@@ -470,8 +464,7 @@ package body et_kicad_pcb is
 		center		: in et_pcb_coordinates.type_terminal_position; -- the pad center position (incl. angle)
 		size_x		: in et_pcb.type_pad_size;	-- the size in x of the pad
 		size_y		: in et_pcb.type_pad_size;	-- the size in y of the pad
-		offset_x	: in et_pcb.type_pad_drill_offset;	-- the x offset of the pad from the center
-		offset_y	: in et_pcb.type_pad_drill_offset)	-- the y offset of the pad from the center
+		offset		: in et_pcb_coordinates.type_point_2d)	-- the offset of the pad from the center
 		return et_pcb.type_pad_outline is
 
 		use et_pcb;
@@ -479,8 +472,6 @@ package body et_kicad_pcb is
 		use et_pcb.type_pad_lines;
 		use et_pcb.type_pad_arcs;		
 
-		offset : type_point_2d := type_point_2d (set_point (offset_x, offset_y));
-		
 		shape : type_pad_outline; -- to be returned
 
 		-- The given center of the pad also provides us with the angle of rotation:
@@ -569,18 +560,15 @@ package body et_kicad_pcb is
 	function to_pad_milling_contour (
 	-- Converts the given position and dimensions of a rectangular slotted hole
 	-- to a list with four lines (top, bottom, right, left).
-		center		: et_pcb_coordinates.type_terminal_position; -- the terminal position (incl. angle, (z axis ignored))
-		size_x		: et_pcb.type_pad_size;	-- the size in x of the hole
-		size_y		: et_pcb.type_pad_size;	-- the size in y of the hole
-		offset_x	: et_pcb.type_pad_drill_offset;	-- the offset of the hole from the center in x
-		offset_y	: et_pcb.type_pad_drill_offset)	-- the offset of the hole from the center in y
+		center		: in et_pcb_coordinates.type_terminal_position; -- the terminal position (incl. angle, (z axis ignored))
+		size_x		: in et_pcb.type_pad_size;	-- the size in x of the hole
+		size_y		: in et_pcb.type_pad_size;	-- the size in y of the hole
+		offset		: in et_pcb_coordinates.type_point_2d)	-- the offset of the pad from the center
 		return et_pcb.type_pcb_contour_lines.list is
 
 		use et_pcb;
 		use et_pcb_coordinates;
 
-		offset : type_point_2d := type_point_2d (set_point (offset_x, offset_y));
-		
 		lines : type_pcb_contour_lines.list; -- to be returned
 
 		-- The given center of the pad also provides us with the angle of rotation:
@@ -648,7 +636,6 @@ package body et_kicad_pcb is
 		return lines;
 	end to_pad_milling_contour;
 
-	
 	function to_package_model (
 	-- Builds a package model from the given lines.
 		file_name		: in string; -- S_0201.kicad_mod
@@ -810,8 +797,7 @@ package body et_kicad_pcb is
 		terminal_hole_shape	: type_tht_hole_shape; -- for slotted holes
 		terminal_milling_size_x	: type_pad_milling_size;  -- CS use a composite instead ?
 		terminal_milling_size_y	: type_pad_milling_size; 
-		terminal_drill_offset_x	: type_pad_drill_offset;  -- CS use a composite instead ?
-		terminal_drill_offset_y	: type_pad_drill_offset;
+		terminal_pad_drill_offset : et_pcb_coordinates.type_point_2d;
 
 		-- The center of an smt pad or the position of the drill of a tht pad:
 		terminal_position	: et_pcb_coordinates.type_terminal_position; 
@@ -1747,8 +1733,8 @@ package body et_kicad_pcb is
 						when SEC_DRILL =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => terminal_drill_offset_x := to_distance (to_string (arg));
-								when 2 => terminal_drill_offset_y := to_distance (to_string (arg));
+								when 1 => set_point (axis => X, point => terminal_pad_drill_offset, value => to_distance (to_string (arg)));
+								when 2 => set_point (axis => Y, point => terminal_pad_drill_offset, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 						when others => invalid_section;
@@ -1812,6 +1798,11 @@ package body et_kicad_pcb is
 									-- CS: check terminal name length
 									terminal_name := to_terminal_name (to_string (arg));
 									-- CS: check characters
+
+									-- Reset pad-drill offset (in case there is no offset given).
+									-- This serves as initialize measure.
+									reset_point (terminal_pad_drill_offset); 
+
 								when 2 =>
 									terminal_technology := to_assembly_technology (to_string (arg));
 								when 3 =>
@@ -2195,8 +2186,7 @@ package body et_kicad_pcb is
 											center		=> terminal_position,
 											size_x		=> terminal_milling_size_x,
 											size_y		=> terminal_milling_size_y,
-											offset_x	=> terminal_drill_offset_x,
-											offset_y	=> terminal_drill_offset_y),
+											offset		=> terminal_pad_drill_offset),
 
 										-- KiCad does not allow arcs or circles for plated millings.
 										others	=> <>)
@@ -2215,7 +2205,7 @@ package body et_kicad_pcb is
 								-- Therefore the size in x serves as diameter.
 								shape := to_pad_shape_circle (
 											terminal_position, pad_size_x, 
-											terminal_drill_offset_x, terminal_drill_offset_y);
+											terminal_pad_drill_offset);
 								
 								terminals.insert (
 									key 		=> terminal_name,
@@ -2237,8 +2227,7 @@ package body et_kicad_pcb is
 											center		=> terminal_position,
 											size_x 		=> pad_size_x,
 											size_y 		=> pad_size_y,
-											offset_x 	=> terminal_drill_offset_x,
-											offset_y 	=> terminal_drill_offset_y);
+											offset		=> terminal_pad_drill_offset);
 
 								insert_tht;
 
@@ -2248,18 +2237,13 @@ package body et_kicad_pcb is
 											center		=> terminal_position,
 											size_x 		=> pad_size_x,
 											size_y 		=> pad_size_y,
-											offset_x 	=> terminal_drill_offset_x,
-											offset_y 	=> terminal_drill_offset_y);
+											offset		=> terminal_pad_drill_offset);
 
 								insert_tht;
 
 						end case;
 
-						--  CS reset drill offset ? as we do with packages in layout ?
-						--terminal_drill_offset_x := pad_drill_offset_min; -- in case the next terminal drill has no offset
-						--terminal_drill_offset_y := pad_drill_offset_min; -- in case the next terminal drill has no offset
-
-						
+				
 					when SMT =>
 
 						-- From the SMT terminal face, validate the status of stop mask and solder paste.
@@ -2272,7 +2256,7 @@ package body et_kicad_pcb is
 								-- Therefor the size in x serves as diameter.
 								shape := to_pad_shape_circle (
 											terminal_position, pad_size_x, 
-											terminal_drill_offset_x, terminal_drill_offset_y);
+											terminal_pad_drill_offset);
 								
 								terminals.insert (
 									key 		=> terminal_name, 
@@ -2295,8 +2279,7 @@ package body et_kicad_pcb is
 											center		=> terminal_position,
 											size_x 		=> pad_size_x,
 											size_y 		=> pad_size_y,
-											offset_x 	=> terminal_drill_offset_x,
-											offset_y 	=> terminal_drill_offset_y);
+											offset 		=> terminal_pad_drill_offset);
 
 								terminals.insert (
 									key 		=> terminal_name, 
@@ -2320,8 +2303,7 @@ package body et_kicad_pcb is
 											center		=> terminal_position,
 											size_x 		=> pad_size_x,
 											size_y 		=> pad_size_y,
-											offset_x 	=> terminal_drill_offset_x,
-											offset_y 	=> terminal_drill_offset_y);
+											offset		=> terminal_pad_drill_offset);
 
 								terminals.insert (
 									key 		=> terminal_name, 
@@ -3329,9 +3311,9 @@ package body et_kicad_pcb is
 		terminal_hole_shape	: type_tht_hole_shape; -- for slotted holes
 		terminal_milling_size_x	: type_pad_milling_size;
 		terminal_milling_size_y	: type_pad_milling_size;
-		terminal_drill_offset_x	: type_pad_drill_offset;
-		terminal_drill_offset_y	: type_pad_drill_offset;
 
+		terminal_pad_drill_offset : et_pcb_coordinates.type_point_2d;
+		
 		-- The center of an smt pad or the position of the drill of a tht pad:		
 		terminal_position	: et_pcb_coordinates.type_terminal_position;
 		
@@ -4261,6 +4243,11 @@ package body et_kicad_pcb is
 									-- CS: check terminal name length
 									terminal_name := to_terminal_name (to_string (arg));
 									-- CS: check characters
+
+									-- Reset pad-drill offset (in case there is no offset given).
+									-- This serves as initialize measure.
+									reset_point (terminal_pad_drill_offset); 
+
 								when 2 =>
 									terminal_technology := to_assembly_technology (to_string (arg));
 								when 3 =>
@@ -4749,8 +4736,8 @@ package body et_kicad_pcb is
 						when SEC_OFFSET =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => terminal_drill_offset_x := to_distance (to_string (arg));
-								when 2 => terminal_drill_offset_y := to_distance (to_string (arg));
+								when 1 => set_point (axis => X, point => terminal_pad_drill_offset, value => to_distance (to_string (arg)));
+								when 2 => set_point (axis => Y, point => terminal_pad_drill_offset, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 						when others => invalid_section;
@@ -6655,8 +6642,7 @@ package body et_kicad_pcb is
 											center		=> terminal_position,
 											size_x		=> terminal_milling_size_x,
 											size_y		=> terminal_milling_size_y,
-											offset_x	=> terminal_drill_offset_x,
-											offset_y	=> terminal_drill_offset_y),
+											offset		=> terminal_pad_drill_offset),
 
 										-- KiCad does not allow arcs or circles for plated millings.
 										others	=> <>),
@@ -6679,7 +6665,7 @@ package body et_kicad_pcb is
 								-- Therefore the size in x serves as diameter.
 								shape := to_pad_shape_circle (
 											terminal_position, pad_size_x, 
-											terminal_drill_offset_x, terminal_drill_offset_y);
+											terminal_pad_drill_offset);
 								
 								terminals.insert (
 									key 		=> terminal_name,
@@ -6704,9 +6690,8 @@ package body et_kicad_pcb is
 											center		=> terminal_position,
 											size_x 		=> pad_size_x,
 											size_y 		=> pad_size_y,
-											offset_x 	=> terminal_drill_offset_x,
-											offset_y 	=> terminal_drill_offset_y);
-
+											offset		=> terminal_pad_drill_offset);
+										 
 								insert_tht;
 
 							when OVAL => 
@@ -6715,16 +6700,12 @@ package body et_kicad_pcb is
 											center		=> terminal_position,
 											size_x 		=> pad_size_x,
 											size_y 		=> pad_size_y,
-											offset_x 	=> terminal_drill_offset_x,
-											offset_y 	=> terminal_drill_offset_y);
-
+											offset		=> terminal_pad_drill_offset);
+										 
 								insert_tht;
 
 						end case;
 
-						-- reset drill offset
-						terminal_drill_offset_x := pad_drill_offset_min; -- in case the next terminal drill has no offset
-						terminal_drill_offset_y := pad_drill_offset_min; -- in case the next terminal drill has no offset
 						
 					when SMT =>
 
@@ -6738,7 +6719,7 @@ package body et_kicad_pcb is
 								-- Therefor the size in x serves as diameter.
 								shape := to_pad_shape_circle (
 											terminal_position, pad_size_x, 
-											terminal_drill_offset_x, terminal_drill_offset_y);
+											terminal_pad_drill_offset);
 								
 								terminals.insert (
 									key 		=> terminal_name, 
@@ -6764,9 +6745,8 @@ package body et_kicad_pcb is
 											center		=> terminal_position,
 											size_x 		=> pad_size_x,
 											size_y 		=> pad_size_y,
-											offset_x 	=> terminal_drill_offset_x,
-											offset_y 	=> terminal_drill_offset_y);
-
+											offset		=> terminal_pad_drill_offset);
+										 
 								terminals.insert (
 									key 		=> terminal_name, 
 									position	=> terminal_cursor,
@@ -6792,9 +6772,8 @@ package body et_kicad_pcb is
 											center		=> terminal_position,
 											size_x 		=> pad_size_x,
 											size_y 		=> pad_size_y,
-											offset_x 	=> terminal_drill_offset_x,
-											offset_y 	=> terminal_drill_offset_y);
-
+											offset		=> terminal_pad_drill_offset);
+								
 								terminals.insert (
 									key 		=> terminal_name, 
 									position	=> terminal_cursor,

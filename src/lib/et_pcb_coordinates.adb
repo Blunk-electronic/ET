@@ -249,6 +249,14 @@ package body et_pcb_coordinates is
 		return (zero_2d with face => TOP, angle => zero_angle);
 	end package_position_default;
 
+	procedure reset_point (
+	-- Moves the given point to the origin (0/0).
+		point	: in out type_point_2d'class)
+	is begin
+		point.x := zero_distance;
+		point.y := zero_distance;
+	end reset_point;
+	
 	procedure move_point (
 		point	: in out type_point_2d'class;
 		offset	: in type_point_2d) 
