@@ -1612,6 +1612,8 @@ package body et_project is
 
 			-- module instance name
 			write (keyword => keyword_instance_name, parameters => to_string (element (module_cursor).instance), space => true);
+			-- CS: If multiple instances of the same module present, a range like 1..5 should be written here.
+			-- So the module would be written only once in the project file.
 
 			-- net classes
 			query_element (module_cursor, query_net_classes'access);
@@ -2514,7 +2516,9 @@ package body et_project is
 
 		procedure process_line is 
 			module_name : type_submodule_name.bounded_string; -- motor_driver
-			module_instance : type_submodule_instance; -- 1, 3, ...
+			
+			module_instance : type_submodule_instance; -- 1, 3, ... 
+			-- CS: range like 1..5 not supported yet. This would require a list of module_instance.
 		begin
 			put_line (standard_output, to_string (line));
 			-- CS read content
