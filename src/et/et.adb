@@ -73,7 +73,7 @@ procedure et is
 		use et_project;
 	begin
 		loop 
-			case getopt (switch_version 
+			case getopt (switch_version -- FIND THE SWITCH STRINGS IN ET_GENERAL !!!
 						& latin_1.space & switch_help -- no parameter
 						& latin_1.space & switch_make_default_conf & latin_1.equals_sign
 						& latin_1.space & switch_log_level & latin_1.equals_sign

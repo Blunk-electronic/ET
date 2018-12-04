@@ -166,15 +166,8 @@ package et_project is
 		log_threshold	: in et_string_processing.type_log_level);
 
 	
-	procedure open_project (log_threshold : in et_string_processing.type_log_level);
-	-- Opens and reads the schematic and layout data present in project file (project_file_handle).
-	
 
-	-- PROJECT FILE SECTIONS AND KEYWORDS
-	section_module				: constant string := "[MODULE";
-	
-	section_begin				: constant string := "BEGIN]";	
-	section_end					: constant string := "END]";
+-- PROJECT FILE SECTIONS AND KEYWORDS
 	
 	keyword_generic_name			: constant string := "generic_name";
 	keyword_instance_name			: constant string := "instance";
@@ -272,6 +265,11 @@ package et_project is
 	keyword_stop_mask				: constant string := "stop_mask";
 	keyword_solder_paste			: constant string := "solder_paste";
 	keyword_drill_size				: constant string := "drill_size";
+
+	section_begin				: constant string := "BEGIN]";	
+	section_end					: constant string := "END]";
+
+	section_module				: constant string := "[MODULE";
 	
 	section_net_classes			: constant string := "[NET_CLASSES";
 	section_net_class			: constant string := "[NET_CLASS";
@@ -379,24 +377,32 @@ package et_project is
 		SEC_SEGMENT,
 		SEC_LABELS,
 		SEC_LABEL,
+		SEC_JUNCTIONS,
+		SEC_PORTS,
 		SEC_SUBMODULE_PORTS,
+		SEC_PORT,
 		SEC_ROUTE,
 		SEC_LINE,
 		SEC_ARC,
 		SEC_POLYGON,
+		SEC_CORNERS,
 		SEC_VIA,
 		SEC_SUBMODULES,
 		SEC_SUBMODULE,
-		SEC_FRAMES,
+		SEC_DRAWING_FRAMES,
 		SEC_SCHEMATIC,
 		SEC_BOARD,
 		SEC_DEVICES,
 		SEC_DEVICE,
+		SEC_TEXTS,
+		SEC_TEXT,
 		SEC_UNITS,
 		SEC_UNIT,
 		SEC_PACKAGE,
 		SEC_PLACEHOLDER,
+		SEC_PLACEHOLDERS,		
 		SEC_SILK_SCREEN,
+		SEC_CIRCLE,
 		SEC_ASSEMBLY_DOCUMENTATION,
 		SEC_KEEPOUT,
 		SEC_ROUTE_RESTRICT,
@@ -404,12 +410,19 @@ package et_project is
 		SEC_STOP_MASK,
 		SEC_STENCIL,
 		SEC_COPPER,
-		SEC_PCB_CONTOURS_NON_PLATED,
-		-- CS SEC_PCB_CONTOURS_PLATED
+		SEC_PCB_CONTOUR_NON_PLATED,
+		-- CS SEC_PCB_CONTOUR_PLATED
 		SEC_TOP,
 		SEC_BOTTOM
 		);
 
+	function to_string (section : in type_section_name_project) return string;
+	-- Converts a section like SEC_MODULE to a string "module".
+	
+	procedure open_project (log_threshold : in et_string_processing.type_log_level);
+	-- Opens and reads the schematic and layout data present in project file (project_file_handle).
+
+	
 	type type_section_name_device is (
 		SEC_VARIANTS,
 		SEC_VARIANT,
@@ -431,6 +444,25 @@ package et_project is
 		SEC_UNITS_EXTERNAL
 		);
 
+
+-- GENERICS
+	
+	generic
+		max : positive;
+		type item is private;
+	package stack_lifo is
+		procedure push (x : in item);
+		procedure pop;
+		function pop return item;
+		function depth return natural;
+		procedure init;
+		function current return item;
+		function parent return item;
+		
+	end stack_lifo;
+
+
+	
 	
 end et_project;
 

@@ -2506,7 +2506,13 @@ package body et_project is
 
 	end save_package;
 
-
+	function to_string (section : in type_section_name_project) return string is
+	-- Converts a section like SEC_MODULE to a string "module".
+		len : positive := type_section_name_project'image (section)'length;
+	begin
+		return to_lower (type_section_name_project'image (section) (5..len));
+	end to_string;
+	
 	procedure open_project (log_threshold : in et_string_processing.type_log_level) is
 	-- Opens and reads the schematic and layout data present in project file (project_file_handle).
 		use et_string_processing;
@@ -2514,32 +2520,118 @@ package body et_project is
 
 		line : et_string_processing.type_fields_of_line;
 
+		-- This is the section stack. Here we track the sections. On entering a section, its name is
+		-- pushed onto the stack. When leaving a section the latest section name is popped.
+		max_section_depth : constant positive := 10;
+		package stack is new stack_lifo (
+			item	=> type_section_name_project,
+			max 	=> max_section_depth);
+
 		procedure process_line is 
 			module_name : type_submodule_name.bounded_string; -- motor_driver
 			
 			module_instance : type_submodule_instance; -- 1, 3, ... 
 			-- CS: range like 1..5 not supported yet. This would require a list of module_instance.
 
-			function section_header (name : in string) -- the section name like "[MODULE"
-				return boolean is
-			begin
-				if et_string_processing.field (line, 1) = name then
-					if et_string_processing.field (line, 2) = section_begin then
-						return true;
-					else
+			procedure set_section is
+			-- Tests if the current line is a section header or footer. Returns true in both cases.
+			-- Returns false if the current line is neither a section header or footer.
+			-- If it is a header, the section name is pushed onto the sections stack.
+			-- If it is a footer, the latest section name is popped from the stack.
+
+				function set (
+					section_keyword	: in string; -- [MODULE
+					section			: in type_section_name_project) -- SEC_MODULE
+					return boolean is 
+				begin
+					if et_string_processing.field (line, 1) = section_keyword then -- section name detected in field 1
+						if et_string_processing.field (line, 2) = section_begin then -- section header detected in field 2
+							stack.push (section);
+							log ("entering section " & to_string (section), log_threshold + 1);
+							return true;
+						elsif et_string_processing.field (line, 2) = section_end then -- section footer detected in field 2
+							if stack.depth > 1 then
+								stack.pop;
+								log ("returning to section " & to_string (stack.current), log_threshold + 1);
+								-- CS: appears twice. fix it.
+							--else
+							--	log ("project file reading complete", log_threshold + 1);
+							end if;
+							return true;
+						else
+							log_indentation_reset;
+							log (message_error & "missing " & section_begin & " or " & section_end & " after section name !", console => true);
+							raise constraint_error;
+						end if;
+					else -- neither a section header nor footer
 						return false;
 					end if;
+				end set;
+				
+			begin -- set_section
+				if set (section_module, SEC_MODULE) then null;
+				elsif set (section_net_classes, SEC_NET_CLASSES) then null;
+				elsif set (section_net_class, SEC_NET_CLASS) then null;
+				elsif set (section_nets, SEC_NETS) then null;
+				elsif set (section_net, SEC_NET) then null;
+				elsif set (section_strands, SEC_STRANDS) then null;
+				elsif set (section_strand, SEC_STRAND) then null;
+				elsif set (section_segments, SEC_SEGMENTS) then null;
+				elsif set (section_segment, SEC_SEGMENT) then null;
+				elsif set (section_labels, SEC_LABELS) then null;
+				elsif set (section_label, SEC_LABEL) then null;
+				elsif set (section_junctions, SEC_JUNCTIONS) then null;
+				elsif set (section_ports, SEC_PORTS) then null;
+				elsif set (section_submodule_ports, SEC_SUBMODULE_PORTS) then null;								
+				elsif set (section_ports, SEC_PORT) then null;				
+				elsif set (section_route, SEC_ROUTE) then null;								
+				elsif set (section_line, SEC_LINE) then null;								
+				elsif set (section_arc, SEC_ARC) then null;								
+				elsif set (section_polygon, SEC_POLYGON) then null;								
+				elsif set (section_corners, SEC_CORNERS) then null;								
+				elsif set (section_via, SEC_VIA) then null;								
+				elsif set (section_submodules, SEC_SUBMODULES) then null;
+				elsif set (section_submodule, SEC_SUBMODULE) then null;
+				elsif set (section_drawing_frames, SEC_DRAWING_FRAMES) then null;
+				elsif set (section_schematic, SEC_SCHEMATIC) then null;
+				elsif set (section_board, SEC_BOARD) then null;
+				elsif set (section_device, SEC_DEVICE) then null;
+				elsif set (section_units, SEC_UNITS) then null;
+				elsif set (section_unit, SEC_UNIT) then null;
+				elsif set (section_placeholders, SEC_PLACEHOLDERS) then null;				
+				elsif set (section_placeholder, SEC_PLACEHOLDER) then null;
+				elsif set (section_package, SEC_PACKAGE) then null;
+				elsif set (section_texts, SEC_TEXTS) then null;
+				elsif set (section_text, SEC_TEXT) then null;
+				elsif set (section_silk_screen, SEC_SILK_SCREEN) then null;
+				elsif set (section_top, SEC_TOP) then null;
+				elsif set (section_bottom, SEC_BOTTOM) then null;
+				elsif set (section_circle, SEC_CIRCLE) then null;
+				elsif set (section_assembly_doc, SEC_ASSEMBLY_DOCUMENTATION) then null;
+				elsif set (section_stencil, SEC_STENCIL) then null;
+				elsif set (section_stop_mask, SEC_STOP_MASK) then null;
+				elsif set (section_keepout, SEC_KEEPOUT) then null;
+				elsif set (section_route_restrict, SEC_ROUTE_RESTRICT) then null;
+				elsif set (section_via_restrict, SEC_VIA_RESTRICT) then null;
+				elsif set (section_copper, SEC_COPPER) then null;				
+				elsif set (section_pcb_contour, SEC_PCB_CONTOUR_NON_PLATED) then null;
+				-- CS others
 				else
-					return false;
+					null; -- the line contains something else
 				end if;
-			end section_header;
+			end set_section;
 
 		begin -- process_line
-			put_line (standard_output, to_string (line));
-			if section_header (section_module) then
+			--put_line (standard_output, to_string (line));
+			set_section;
+			
+			-- CS read content
+			if stack.current = SEC_MODULE then
+				log ("line --> " & to_string (line), log_threshold + 1);
+			else
 				null;
 			end if;
-			-- CS read content
+
 		end process_line;
 				
 	begin
@@ -2565,6 +2657,8 @@ package body et_project is
 
 			set_input (project_file_handle);
 
+			stack.init;
+			
 			-- read the file line by line
 			while not end_of_file loop
 				line := et_string_processing.read_line (
@@ -2603,6 +2697,56 @@ package body et_project is
 				raise;
 
 	end open_project;
+
+
+
+	
+-- GENERICS
+	
+	package body stack_lifo is
+		s : array (1..max) of item;
+		top : natural range 0..max;
+
+		procedure push (x : in item) is
+		begin
+			top := top + 1;
+			s (top) := x;
+		end push;
+
+		procedure pop is
+		begin
+			top := top - 1;
+		end pop;
+		
+		function pop return item is
+		begin
+			top := top - 1;
+			return s (top + 1);
+		end pop;
+
+		function depth return natural is
+		begin
+			return top;
+		end depth;
+
+		procedure init is
+		begin
+			top := 0;
+		end init;
+
+		function current return item is 
+		begin
+			return s (top);
+		end current;
+		
+		function parent return item is
+		begin
+			return s (top - 1);
+		end parent;
+		
+	end stack_lifo;
+
+
 	
 end et_project;
 	
