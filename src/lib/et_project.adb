@@ -2506,7 +2506,7 @@ package body et_project is
 
 	end save_package;
 
-	
+
 	procedure open_project (log_threshold : in et_string_processing.type_log_level) is
 	-- Opens and reads the schematic and layout data present in project file (project_file_handle).
 		use et_string_processing;
@@ -2519,8 +2519,26 @@ package body et_project is
 			
 			module_instance : type_submodule_instance; -- 1, 3, ... 
 			-- CS: range like 1..5 not supported yet. This would require a list of module_instance.
-		begin
+
+			function section_header (name : in string) -- the section name like "[MODULE"
+				return boolean is
+			begin
+				if et_string_processing.field (line, 1) = name then
+					if et_string_processing.field (line, 2) = section_begin then
+						return true;
+					else
+						return false;
+					end if;
+				else
+					return false;
+				end if;
+			end section_header;
+
+		begin -- process_line
 			put_line (standard_output, to_string (line));
+			if section_header (section_module) then
+				null;
+			end if;
 			-- CS read content
 		end process_line;
 				
