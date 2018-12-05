@@ -2528,109 +2528,117 @@ package body et_project is
 			max 	=> max_section_depth);
 
 		procedure process_line is 
-			module_name : type_submodule_name.bounded_string; -- motor_driver
-			
-			module_instance : type_submodule_instance; -- 1, 3, ... 
-			-- CS: range like 1..5 not supported yet. This would require a list of module_instance.
 
-			procedure set_section is
+			function f (line : in type_fields_of_line; position : in positive) return string 
+				renames et_string_processing.field;
+			
+			function set (
 			-- Tests if the current line is a section header or footer. Returns true in both cases.
 			-- Returns false if the current line is neither a section header or footer.
 			-- If it is a header, the section name is pushed onto the sections stack.
 			-- If it is a footer, the latest section name is popped from the stack.
-
-				function set (
-					section_keyword	: in string; -- [MODULE
-					section			: in type_section_name_project) -- SEC_MODULE
-					return boolean is 
-				begin
-					if et_string_processing.field (line, 1) = section_keyword then -- section name detected in field 1
-						if et_string_processing.field (line, 2) = section_begin then -- section header detected in field 2
-							stack.push (section);
-							log ("entering section " & to_string (section), log_threshold + 1);
-							return true;
-						elsif et_string_processing.field (line, 2) = section_end then -- section footer detected in field 2
-							stack.pop;
-							if stack.empty then
-								log ("project file reading complete", log_threshold + 1);
-							else
-								log ("returning to section " & to_string (stack.current), log_threshold + 1);
-							end if;
-							return true;
+				section_keyword	: in string; -- [MODULE
+				section			: in type_section_name_project) -- SEC_MODULE
+				return boolean is 
+			begin -- set
+				if f (line, 1) = section_keyword then -- section name detected in field 1
+					if f (line, 2) = section_begin then -- section header detected in field 2
+						stack.push (section);
+						log ("entering section " & to_string (section), log_threshold + 1);
+						return true;
+					elsif f (line, 2) = section_end then -- section footer detected in field 2
+						stack.pop;
+						if stack.empty then
+							log ("project file reading complete", log_threshold + 1);
 						else
-							log_indentation_reset;
-							log (message_error & "missing " & section_begin & " or " & section_end & " after section name !", console => true);
-							raise constraint_error;
+							log ("returning to section " & to_string (stack.current), log_threshold + 1);
 						end if;
-					else -- neither a section header nor footer
-						return false;
+						return true;
+					else
+						log_indentation_reset;
+						log (message_error & "missing " & section_begin & " or " & section_end & " after section name !", console => true);
+						raise constraint_error;
 					end if;
-				end set;
-				
-			begin -- set_section
-				if set (section_module, SEC_MODULE) then null;
-				elsif set (section_net_classes, SEC_NET_CLASSES) then null;
-				elsif set (section_net_class, SEC_NET_CLASS) then null;
-				elsif set (section_nets, SEC_NETS) then null;
-				elsif set (section_net, SEC_NET) then null;
-				elsif set (section_strands, SEC_STRANDS) then null;
-				elsif set (section_strand, SEC_STRAND) then null;
-				elsif set (section_segments, SEC_SEGMENTS) then null;
-				elsif set (section_segment, SEC_SEGMENT) then null;
-				elsif set (section_labels, SEC_LABELS) then null;
-				elsif set (section_label, SEC_LABEL) then null;
-				elsif set (section_junctions, SEC_JUNCTIONS) then null;
-				elsif set (section_ports, SEC_PORTS) then null;
-				elsif set (section_submodule_ports, SEC_SUBMODULE_PORTS) then null;								
-				elsif set (section_ports, SEC_PORT) then null;				
-				elsif set (section_route, SEC_ROUTE) then null;								
-				elsif set (section_line, SEC_LINE) then null;								
-				elsif set (section_arc, SEC_ARC) then null;								
-				elsif set (section_polygon, SEC_POLYGON) then null;								
-				elsif set (section_corners, SEC_CORNERS) then null;								
-				elsif set (section_via, SEC_VIA) then null;								
-				elsif set (section_submodules, SEC_SUBMODULES) then null;
-				elsif set (section_submodule, SEC_SUBMODULE) then null;
-				elsif set (section_drawing_frames, SEC_DRAWING_FRAMES) then null;
-				elsif set (section_schematic, SEC_SCHEMATIC) then null;
-				elsif set (section_board, SEC_BOARD) then null;
-				elsif set (section_device, SEC_DEVICE) then null;
-				elsif set (section_units, SEC_UNITS) then null;
-				elsif set (section_unit, SEC_UNIT) then null;
-				elsif set (section_placeholders, SEC_PLACEHOLDERS) then null;				
-				elsif set (section_placeholder, SEC_PLACEHOLDER) then null;
-				elsif set (section_package, SEC_PACKAGE) then null;
-				elsif set (section_texts, SEC_TEXTS) then null;
-				elsif set (section_text, SEC_TEXT) then null;
-				elsif set (section_silk_screen, SEC_SILK_SCREEN) then null;
-				elsif set (section_top, SEC_TOP) then null;
-				elsif set (section_bottom, SEC_BOTTOM) then null;
-				elsif set (section_circle, SEC_CIRCLE) then null;
-				elsif set (section_assembly_doc, SEC_ASSEMBLY_DOCUMENTATION) then null;
-				elsif set (section_stencil, SEC_STENCIL) then null;
-				elsif set (section_stop_mask, SEC_STOP_MASK) then null;
-				elsif set (section_keepout, SEC_KEEPOUT) then null;
-				elsif set (section_route_restrict, SEC_ROUTE_RESTRICT) then null;
-				elsif set (section_via_restrict, SEC_VIA_RESTRICT) then null;
-				elsif set (section_copper, SEC_COPPER) then null;				
-				elsif set (section_pcb_contour, SEC_PCB_CONTOUR_NON_PLATED) then null;
-				-- CS others
-				else
-					null; -- the line contains something else
+				else -- neither a section header nor footer
+					return false;
 				end if;
-			end set_section;
+			end set;
 
+			-- VARIABLES FOR TEMPORARILY STORAGE BEGIN
+			--module_name : type_submodule_name.bounded_string; -- motor_driver
+			
+			--module_instance : type_submodule_instance; -- 1, 3, ... 
+			-- CS: range like 1..5 not supported yet. This would require a list of module_instance.
+
+			-- VARIABLES FOR TEMPORARILY STORAGE END
+			
 		begin -- process_line
 			--put_line (standard_output, to_string (line));
-			set_section;
 			
-			-- CS read content
-			if not stack.empty then
-				if stack.current = SEC_MODULE then
-					log ("line --> " & to_string (line), log_threshold + 1);
-				else
-					null;
+			if set (section_module, SEC_MODULE) then null;
+			elsif set (section_net_classes, SEC_NET_CLASSES) then null;
+			elsif set (section_net_class, SEC_NET_CLASS) then null;
+			elsif set (section_nets, SEC_NETS) then null;
+			elsif set (section_net, SEC_NET) then null;
+			elsif set (section_strands, SEC_STRANDS) then null;
+			elsif set (section_strand, SEC_STRAND) then null;
+			elsif set (section_segments, SEC_SEGMENTS) then null;
+			elsif set (section_segment, SEC_SEGMENT) then null;
+			elsif set (section_labels, SEC_LABELS) then null;
+			elsif set (section_label, SEC_LABEL) then null;
+			elsif set (section_junctions, SEC_JUNCTIONS) then null;
+			elsif set (section_ports, SEC_PORTS) then null;
+			elsif set (section_submodule_ports, SEC_SUBMODULE_PORTS) then null;								
+			elsif set (section_ports, SEC_PORT) then null;				
+			elsif set (section_route, SEC_ROUTE) then null;								
+			elsif set (section_line, SEC_LINE) then null;								
+			elsif set (section_arc, SEC_ARC) then null;								
+			elsif set (section_polygon, SEC_POLYGON) then null;								
+			elsif set (section_corners, SEC_CORNERS) then null;								
+			elsif set (section_via, SEC_VIA) then null;								
+			elsif set (section_submodules, SEC_SUBMODULES) then null;
+			elsif set (section_submodule, SEC_SUBMODULE) then null;
+			elsif set (section_drawing_frames, SEC_DRAWING_FRAMES) then null;
+			elsif set (section_schematic, SEC_SCHEMATIC) then null;
+			elsif set (section_board, SEC_BOARD) then null;
+			elsif set (section_devices, SEC_DEVICES) then null;				
+			elsif set (section_device, SEC_DEVICE) then null;
+			elsif set (section_units, SEC_UNITS) then null;
+			elsif set (section_unit, SEC_UNIT) then null;
+			elsif set (section_placeholders, SEC_PLACEHOLDERS) then null;				
+			elsif set (section_placeholder, SEC_PLACEHOLDER) then null;
+			elsif set (section_package, SEC_PACKAGE) then null;
+			elsif set (section_texts, SEC_TEXTS) then null;
+			elsif set (section_text, SEC_TEXT) then null;
+			elsif set (section_silk_screen, SEC_SILK_SCREEN) then null;
+			elsif set (section_top, SEC_TOP) then null;
+			elsif set (section_bottom, SEC_BOTTOM) then null;
+			elsif set (section_circle, SEC_CIRCLE) then null;
+			elsif set (section_assembly_doc, SEC_ASSEMBLY_DOCUMENTATION) then null;
+			elsif set (section_stencil, SEC_STENCIL) then null;
+			elsif set (section_stop_mask, SEC_STOP_MASK) then null;
+			elsif set (section_keepout, SEC_KEEPOUT) then null;
+			elsif set (section_route_restrict, SEC_ROUTE_RESTRICT) then null;
+			elsif set (section_via_restrict, SEC_VIA_RESTRICT) then null;
+			elsif set (section_copper, SEC_COPPER) then null;				
+			elsif set (section_pcb_contour, SEC_PCB_CONTOUR_NON_PLATED) then null;
+			else
+				-- The line contains something else -> the payload data. 
+				-- Temporarily this data is stored in corresponding variables.
+
+				if not stack.empty then
+					if stack.current = SEC_MODULE then
+						log ("line --> " & to_string (line), log_threshold + 1);
+						if f (line,1) = keyword_generic_name then
+							null;
+							--rig.insert (
+							--module_name := to_submodule_name (f (line,2));
+						end if;
+					else
+						null;
+					end if;
 				end if;
+
 			end if;
 
 		end process_line;

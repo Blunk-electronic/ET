@@ -186,7 +186,7 @@ package et_project is
 	keyword_end						: constant string := "end";
 	keyword_rotation				: constant string := "rotation";
 	keyword_size					: constant string := "size";
-	keyword_style					: constant string := "style"; -- CS remvoe ?
+	keyword_style					: constant string := "style"; -- CS remove ?
 	keyword_line_width				: constant string := "line_width";
 	keyword_appearance				: constant string := "appearance";
 	keyword_direction				: constant string := "direction";			
