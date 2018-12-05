@@ -5,21 +5,22 @@
 
 [IMPORT_MODULES]
 
-# module abbrevation cad_format [number_of_instances]
+# generic_name instance cad_format
 # examples:
-# nucleo_core NCC kicad_v4 1
-# motor_driver MOT kicad_v4 2
-led_matrix LMX kicad_v4 1
-pwr_supply PWR kicad_v4 1
-#hierarchy_1 HIR kicad_v4 1
+# nucleo_core NCC kicad_v4
+# motor_driver MOT_1 kicad_v4
+led_matrix LMX_1 kicad_v4
+pwr_supply PWR kicad_v5
+
 
 [MODULE_INTERCONNECTIONS]
 
-# abbrevation instance connector_purpose abbrevation instance connector_purpose [options]
+# instance connector_purpose instance connector_purpose [options]
 # examples:
-# NCC 1 MOTOR_CTRL_OUT_1 MOT 1 MOTOR_CTRL_IN # net_comparator_off warn_only
-# NCC 1 MOTOR_CTRL_OUT_2 MOT 2 MOTOR_CTRL_IN # net_comparator_off warn_only
-LMX 1 "PWR CTRL IN" PWR 1 "PWR CTRL OUT" net_comparator_on warn_only
+# NCC MOTOR_CTRL_OUT_1 MOT_1 MOTOR_CTRL_IN # net_comparator_off warn_only
+# NCC MOTOR_CTRL_OUT_2 MOT_2 MOTOR_CTRL_IN # net_comparator_off warn_only
+LMX_1 "PWR CTRL IN" PWR "PWR CTRL OUT A" net_comparator_on warn_only
+LMX_2 "PWR CTRL IN" PWR "PWR CTRL OUT B" net_comparator_on warn_only
 
 [COMPONENT_PREFIXES]
 
