@@ -2550,12 +2550,11 @@ package body et_project is
 							log ("entering section " & to_string (section), log_threshold + 1);
 							return true;
 						elsif et_string_processing.field (line, 2) = section_end then -- section footer detected in field 2
-							if stack.depth > 1 then
-								stack.pop;
+							stack.pop;
+							if stack.empty then
+								log ("project file reading complete", log_threshold + 1);
+							else
 								log ("returning to section " & to_string (stack.current), log_threshold + 1);
-								-- CS: appears twice. fix it.
-							--else
-							--	log ("project file reading complete", log_threshold + 1);
 							end if;
 							return true;
 						else
@@ -2626,15 +2625,17 @@ package body et_project is
 			set_section;
 			
 			-- CS read content
-			if stack.current = SEC_MODULE then
-				log ("line --> " & to_string (line), log_threshold + 1);
-			else
-				null;
+			if not stack.empty then
+				if stack.current = SEC_MODULE then
+					log ("line --> " & to_string (line), log_threshold + 1);
+				else
+					null;
+				end if;
 			end if;
 
 		end process_line;
 				
-	begin
+	begin -- open_project
 		log ("opening project '" & to_string (project_name) & "' ...", log_threshold, console => true);
 		log_indentation_up;
 
@@ -2657,6 +2658,7 @@ package body et_project is
 
 			set_input (project_file_handle);
 
+			-- Init section stack.
 			stack.init;
 			
 			-- read the file line by line
@@ -2674,6 +2676,10 @@ package body et_project is
 				end if;
 			end loop;
 
+			-- As a safety measure the stack must be empty.
+			if not stack.empty then 
+				log (message_warning & "section stack not empty !");
+			end if;
 			
 			set_input (standard_input);
 			close (project_file_handle);
@@ -2734,6 +2740,13 @@ package body et_project is
 			top := 0;
 		end init;
 
+		function empty return boolean is
+		begin
+			if top = 0 then return true;
+			else return false;
+			end if;
+		end empty;
+		
 		function current return item is 
 		begin
 			return s (top);

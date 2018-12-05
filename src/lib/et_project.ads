@@ -456,6 +456,7 @@ package et_project is
 		function pop return item;
 		function depth return natural;
 		procedure init;
+		function empty return boolean;
 		function current return item;
 		function parent return item;
 		
