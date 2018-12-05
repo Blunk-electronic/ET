@@ -5,8 +5,24 @@
 
 [MODULE BEGIN]
 
-	generic_name led_matrix
-	instance 1..5
+	name LMX_1
+	generic_name modules/led_matrix.et
+	
+[MODULE END]
+
+
+[MODULE BEGIN]
+
+	name LMX_2
+	generic_name modules/led_matrix.et
+	
+[MODULE END]
+
+
+
+[MODULE BEGIN]	
+	
+	name LMX_3
 	
 	[NET_CLASSES BEGIN]
 		[NET_CLASS BEGIN]
