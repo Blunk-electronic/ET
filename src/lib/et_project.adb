@@ -1608,7 +1608,7 @@ package body et_project is
 			section_mark (section_module, HEADER);
 
 			-- generic module name
-			write (keyword => keyword_generic_name, parameters => to_string (element (module_cursor).generic_name), space => true);
+			--write (keyword => keyword_generic_name, parameters => to_string (element (module_cursor).generic_name), space => true);
 
 			-- module instance name
 			--write (keyword => keyword_instance_name, parameters => to_string (element (module_cursor).instance), space => true);

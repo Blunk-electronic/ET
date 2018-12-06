@@ -399,7 +399,7 @@ package et_schematic is
 
 
 	type type_module is record
-		generic_name	: et_coordinates.type_submodule_name.bounded_string; -- "GENERIC_MOTOR_DRIVER"
+		--generic_name	: et_coordinates.type_submodule_name.bounded_string; -- "GENERIC_MOTOR_DRIVER"
 		--instance		: et_coordinates.type_submodule_instance; -- CS: remove
 		board_available	: type_board_available := FALSE;
 		
@@ -425,7 +425,7 @@ package et_schematic is
 
 	-- A project (or a rig) is a set of modules:
 	package type_rig is new ordered_maps (
-		-- This is the instance name like "MY_MOTOR_DRIVER_1" or "MOT_DRV_1"
+		-- This is the module name like "MY_MOTOR_DRIVER" or "BLOOD_SAMPLE_ANALYZER"
 		key_type		=> et_coordinates.type_submodule_name.bounded_string,
 		"<" 			=> et_coordinates.type_submodule_name."<",
 		element_type	=> type_module);

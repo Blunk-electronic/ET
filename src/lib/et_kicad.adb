@@ -9230,8 +9230,8 @@ package body et_kicad is
 					container	=> rig,
 					key			=> module_name,
 					new_item 	=> (
-						generic_name	=> et_coordinates.to_submodule_name (
-											base_name (et_coordinates.to_string (top_level_schematic))),
+						--generic_name	=> et_coordinates.to_submodule_name (
+						--					base_name (et_coordinates.to_string (top_level_schematic))),
 						--instance		=> et_coordinates.type_submodule_instance'first,
 
 						-- These search lists are used in V4:

@@ -1342,7 +1342,7 @@ package et_kicad is
 -- MODULES
 	
 	type type_module is record
-		generic_name	: et_coordinates.type_submodule_name.bounded_string;  -- "GENERIC_MOTOR_DRIVER"
+		--generic_name	: et_coordinates.type_submodule_name.bounded_string;  -- "GENERIC_MOTOR_DRIVER"
 		--instance		: et_coordinates.type_submodule_instance; -- CS remove
 		board_available	: et_schematic.type_board_available := et_schematic.false;
 
@@ -1385,9 +1385,11 @@ package et_kicad is
 	end record;
 
 
-	-- A rig is a set of modules:
+	-- A rig is a set of modules.
+	-- CS: Currently kicad does not support multiple modules (so called multi-board support).
+	-- Therefore the rig contains only one module.
 	package type_rig is new ordered_maps (
-		-- This is the instance name like "MY_MOTOR_DRIVER_1" or "MOT_DRV_1"
+		-- This is the module name like "MY_MOTOR_DRIVER" or "BLOOD_SAMPLE_ANALYZER"
 		key_type 		=> et_coordinates.type_submodule_name.bounded_string,
 		"<" 			=> et_coordinates.type_submodule_name."<",											 
 		element_type 	=> type_module);
