@@ -2373,7 +2373,7 @@ package body et_kicad_to_native is
 			module		: in out et_schematic.type_module) is
 		begin
 			module.generic_name		:= element (module_cursor_kicad).generic_name;
-			module.instance			:= element (module_cursor_kicad).instance;
+			--module.instance			:= element (module_cursor_kicad).instance;
 			module.board_available	:= element (module_cursor_kicad).board_available;
 			module.texts			:= element (module_cursor_kicad).notes; 
 			module.board			:= et_pcb.type_board (element (module_cursor_kicad).board);

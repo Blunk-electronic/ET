@@ -400,7 +400,7 @@ package et_schematic is
 
 	type type_module is record
 		generic_name	: et_coordinates.type_submodule_name.bounded_string; -- "GENERIC_MOTOR_DRIVER"
-		instance		: et_coordinates.type_submodule_instance; -- CS: remove
+		--instance		: et_coordinates.type_submodule_instance; -- CS: remove
 		board_available	: type_board_available := FALSE;
 		
 		devices			: type_devices.map;						-- the devices of the module

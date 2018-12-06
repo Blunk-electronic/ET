@@ -4337,16 +4337,12 @@ package body et_kicad is
 	
 	
 	procedure import_design (
-		first_instance 	: in boolean := false;
+--		first_instance 	: in boolean := false;
 		project			: in et_project.type_project_name.bounded_string;
 		log_threshold	: in et_string_processing.type_log_level) is
 	-- Imports the design libraries and the actual design as specified by parameter "project".
 	-- Inserts the created (sub)module in the rig (see type_rig).
 	-- Leaves the global module_cursor pointing where the module was inserted.
-	-- If first_instance is false, the module gets the name as defined in the kicad project file.
-	-- For a regular single design import this is the default.
-	-- If first_instance is true, the module name further-on gets the instance appended.
-	-- This is required for multiple design instantiations. (things like nucleo_core_1).
 		
 		use et_schematic;
 
@@ -9213,21 +9209,21 @@ package body et_kicad is
 				--			Creates empty package libraries in et_kicad_pcb.package_libraries.
 				top_level_schematic	:= read_project_file (log_threshold + 1);
 				
-				-- The top level schematic file dictates the module name. 
-				-- If parameter first_instance is true, the name of the first
-				-- instance must be appended to the module_name.
-				if first_instance then 
-					-- Append instance to module name
-					module_name := et_coordinates.append_instance (
-										submodule =>
-											et_coordinates.to_submodule_name (
-												base_name (et_coordinates.to_string (top_level_schematic))),
-										instance => et_coordinates.type_submodule_instance'first);
-				else
+-- 				-- The top level schematic file dictates the module name. 
+-- 				-- If parameter first_instance is true, the name of the first
+-- 				-- instance must be appended to the module_name.
+-- 				if first_instance then 
+-- 					-- Append instance to module name
+-- 					module_name := et_coordinates.append_instance (
+-- 										submodule =>
+-- 											et_coordinates.to_submodule_name (
+-- 												base_name (et_coordinates.to_string (top_level_schematic))),
+-- 										instance => et_coordinates.type_submodule_instance'first);
+-- 				else
 					-- default mode: regular design import. set module name as top_level_schematic
 					module_name := et_coordinates.to_submodule_name (
 											base_name (et_coordinates.to_string (top_level_schematic)));
-				end if;
+-- 				end if;
 
 				-- create the module:
 				type_rig.insert (
@@ -9236,7 +9232,7 @@ package body et_kicad is
 					new_item 	=> (
 						generic_name	=> et_coordinates.to_submodule_name (
 											base_name (et_coordinates.to_string (top_level_schematic))),
-						instance		=> et_coordinates.type_submodule_instance'first,
+						--instance		=> et_coordinates.type_submodule_instance'first,
 
 						-- These search lists are used in V4:
 						search_list_library_comps	=> search_list_component_libraries, -- see function read_project_file
@@ -11106,92 +11102,92 @@ package body et_kicad is
 	end module_count;
 
 	
-	procedure copy_module (
-	-- Copyies a rig module. 
-	-- If copy_last is true (default) the last module in the rig is copied. 
-	-- If copy_last is false, the module with given name_origin is copied.
-	-- The module instance is always incremented automatically.
-		copy_last		: in boolean := true;
-		name_origin		: in et_coordinates.type_submodule_name.bounded_string := et_coordinates.type_submodule_name.to_bounded_string (""); -- nucleo_core_3
-		log_threshold	: in et_string_processing.type_log_level) is
-
-		use et_string_processing;
-		use type_rig;
-		use et_coordinates;
-		
-		module_cursor_origin : type_rig.cursor;
-		generic_name_origin : et_coordinates.type_submodule_name.bounded_string;
-		instance_origin : type_submodule_instance;
-		instance_new : type_submodule_instance;
-		module_cursor_new : type_rig.cursor;
-		name_origin_scratch : et_coordinates.type_submodule_name.bounded_string := name_origin;
-		name_new : et_coordinates.type_submodule_name.bounded_string;
-		inserted : boolean := false;
-
-		procedure set_instance (
-			module_name	: in et_coordinates.type_submodule_name.bounded_string;
-			module		: in out type_module) is
-		begin
-			module.instance := instance_new;
-		end set_instance;
-
-	begin -- copy_module
-		if copy_last then -- default mode
-			log ("copying last module ...", log_threshold);
-			module_cursor_origin := last (rig); -- set module cursor to last module in rig
-		else
-			log ("copying module " & to_string (name_origin) & " ...", log_threshold);
-			module_cursor_origin := find (rig, name_origin); -- set module cursor to given origin module
-
-			-- if given module does not exist, raise error
-			if module_cursor_origin = type_rig.no_element then
-				log_indentation_reset;
-				log (message_error & " module " & to_string (name_origin) & " not found !", console => true);
-				raise constraint_error;
-			end if;
-		end if;
-			
-		log_indentation_up;
-
-		-- load generic name of origin module
-		generic_name_origin := element (module_cursor_origin).generic_name; -- nucleo_core
-		log ("generic name    : " & to_string (generic_name_origin), log_threshold + 1);
-
-		-- load instance of origin module		
-		instance_origin := element (module_cursor_origin).instance; -- 3
-		log ("instance origin : " & to_string (instance_origin), log_threshold + 1);
-
-		-- compute instance of new module
-		instance_new := instance_origin + 1;
-		log ("instance new    : " & to_string (instance_new), log_threshold + 1);
-
-		-- build name of new module
-		name_new := append_instance (submodule => generic_name_origin, instance => instance_new);
-		log ("name new        : " & to_string (name_new), log_threshold);
-		
-		-- Create new module: The module indicated by module_cursor_origin is inserted again.
-		-- afterward module_cursor_new points to the newly create module.
-		insert (
-			container	=> rig,
-			new_item	=> element (module_cursor_origin),
-			key 		=> name_new,
-			position 	=> module_cursor_new,
-			inserted 	=> inserted);
-		
-		if not inserted then
-			log_indentation_reset;
-			log (message_error & " module " & to_string (name_new) & " not created !", console => true);
-			raise constraint_error;
-		end if;
-
-		-- set the new instance in the newly create module
-		update_element (
-			container	=> rig,
-			position	=> module_cursor_new,
-			process		=> set_instance'access);
-		
-		log_indentation_down;
-	end copy_module;
+-- 	procedure copy_module (
+-- 	-- Copyies a rig module. 
+-- 	-- If copy_last is true (default) the last module in the rig is copied. 
+-- 	-- If copy_last is false, the module with given name_origin is copied.
+-- 	-- The module instance is always incremented automatically.
+-- 		copy_last		: in boolean := true;
+-- 		name_origin		: in et_coordinates.type_submodule_name.bounded_string := et_coordinates.type_submodule_name.to_bounded_string (""); -- nucleo_core_3
+-- 		log_threshold	: in et_string_processing.type_log_level) is
+-- 
+-- 		use et_string_processing;
+-- 		use type_rig;
+-- 		use et_coordinates;
+-- 		
+-- 		module_cursor_origin : type_rig.cursor;
+-- 		generic_name_origin : et_coordinates.type_submodule_name.bounded_string;
+-- 		instance_origin : type_submodule_instance;
+-- 		instance_new : type_submodule_instance;
+-- 		module_cursor_new : type_rig.cursor;
+-- 		name_origin_scratch : et_coordinates.type_submodule_name.bounded_string := name_origin;
+-- 		name_new : et_coordinates.type_submodule_name.bounded_string;
+-- 		inserted : boolean := false;
+-- 
+-- 		procedure set_instance (
+-- 			module_name	: in et_coordinates.type_submodule_name.bounded_string;
+-- 			module		: in out type_module) is
+-- 		begin
+-- 			module.instance := instance_new;
+-- 		end set_instance;
+-- 
+-- 	begin -- copy_module
+-- 		if copy_last then -- default mode
+-- 			log ("copying last module ...", log_threshold);
+-- 			module_cursor_origin := last (rig); -- set module cursor to last module in rig
+-- 		else
+-- 			log ("copying module " & to_string (name_origin) & " ...", log_threshold);
+-- 			module_cursor_origin := find (rig, name_origin); -- set module cursor to given origin module
+-- 
+-- 			-- if given module does not exist, raise error
+-- 			if module_cursor_origin = type_rig.no_element then
+-- 				log_indentation_reset;
+-- 				log (message_error & " module " & to_string (name_origin) & " not found !", console => true);
+-- 				raise constraint_error;
+-- 			end if;
+-- 		end if;
+-- 			
+-- 		log_indentation_up;
+-- 
+-- 		-- load generic name of origin module
+-- 		generic_name_origin := element (module_cursor_origin).generic_name; -- nucleo_core
+-- 		log ("generic name    : " & to_string (generic_name_origin), log_threshold + 1);
+-- 
+-- 		-- load instance of origin module		
+-- 		instance_origin := element (module_cursor_origin).instance; -- 3
+-- 		log ("instance origin : " & to_string (instance_origin), log_threshold + 1);
+-- 
+-- 		-- compute instance of new module
+-- 		instance_new := instance_origin + 1;
+-- 		log ("instance new    : " & to_string (instance_new), log_threshold + 1);
+-- 
+-- 		-- build name of new module
+-- 		name_new := append_instance (submodule => generic_name_origin, instance => instance_new);
+-- 		log ("name new        : " & to_string (name_new), log_threshold);
+-- 		
+-- 		-- Create new module: The module indicated by module_cursor_origin is inserted again.
+-- 		-- afterward module_cursor_new points to the newly create module.
+-- 		insert (
+-- 			container	=> rig,
+-- 			new_item	=> element (module_cursor_origin),
+-- 			key 		=> name_new,
+-- 			position 	=> module_cursor_new,
+-- 			inserted 	=> inserted);
+-- 		
+-- 		if not inserted then
+-- 			log_indentation_reset;
+-- 			log (message_error & " module " & to_string (name_new) & " not created !", console => true);
+-- 			raise constraint_error;
+-- 		end if;
+-- 
+-- 		-- set the new instance in the newly create module
+-- 		update_element (
+-- 			container	=> rig,
+-- 			position	=> module_cursor_new,
+-- 			process		=> set_instance'access);
+-- 		
+-- 		log_indentation_down;
+-- 	end copy_module;
 
 	procedure validate_module (
 		module_name : in et_coordinates.type_submodule_name.bounded_string) is

@@ -195,24 +195,24 @@ package et_coordinates is
 	function to_abbrevation (abbrevation : in string) return type_submodule_abbrevation.bounded_string;
 	-- Converts a string to type_submodule_abbrevation.
 	
-	-- A submodule can be instantiated multiples times.
-	-- CS: currently we limit the number of instances to this value. increase if neccessary.
-	submodule_instances_max : constant positive := 10; 
-	subtype type_submodule_instance is positive range 1..submodule_instances_max;
+-- 	-- A submodule can be instantiated multiples times.
+-- 	-- CS: currently we limit the number of instances to this value. increase if neccessary.
+-- 	submodule_instances_max : constant positive := 10; 
+-- 	subtype type_submodule_instance is positive range 1..submodule_instances_max;
 
-	procedure check_number_of_instances (instances : in string);
+-- 	procedure check_number_of_instances (instances : in string);
 	-- Checks if given instances is a digit and if it is within allowed range.
 
-	function to_number_of_instances (instances : in string) return type_submodule_instance;
+-- 	function to_number_of_instances (instances : in string) return type_submodule_instance;
 	
-	function to_string (instance : in type_submodule_instance) return string;
-	-- Converts a submodule instance index to a string.
+-- 	function to_string (instance : in type_submodule_instance) return string;
+-- 	-- Converts a submodule instance index to a string.
 
-	function append_instance (
-		submodule	: in type_submodule_name.bounded_string; -- nucleo_core
-		separator	: in string := "_";
-		instance	: in type_submodule_instance) -- 4
-		return type_submodule_name.bounded_string; -- nucleo_core_4
+-- 	function append_instance (
+-- 		submodule	: in type_submodule_name.bounded_string; -- nucleo_core
+-- 		separator	: in string := "_";
+-- 		instance	: in type_submodule_instance) -- 4
+-- 		return type_submodule_name.bounded_string; -- nucleo_core_4
 
 	
     -- The location of a submodule within the design hierarchy is reflected by

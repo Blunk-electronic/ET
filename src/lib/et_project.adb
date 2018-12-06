@@ -1611,7 +1611,7 @@ package body et_project is
 			write (keyword => keyword_generic_name, parameters => to_string (element (module_cursor).generic_name), space => true);
 
 			-- module instance name
-			write (keyword => keyword_instance_name, parameters => to_string (element (module_cursor).instance), space => true);
+			--write (keyword => keyword_instance_name, parameters => to_string (element (module_cursor).instance), space => true);
 			-- CS: If multiple instances of the same module present, a range like 1..5 should be written here.
 			-- So the module would be written only once in the project file.
 

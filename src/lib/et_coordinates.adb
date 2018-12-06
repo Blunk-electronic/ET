@@ -437,51 +437,51 @@ package body et_coordinates is
 		return type_submodule_abbrevation.to_bounded_string (abbrevation);
 	end to_abbrevation;
 
-	procedure check_number_of_instances (instances : in string) is
-	-- Checks if given instances is a digit and if it is within allowed range.
-		use et_string_processing;
-	begin
-		-- check characters. all must be digits
-		for place in instances'first .. instances'last loop
-			if not is_digit (instances (place)) then
-				log_indentation_reset;
-				log (message_error & "instances must contain only digits !", console => true);
-				raise constraint_error;
-			end if;
-		end loop;
+-- 	procedure check_number_of_instances (instances : in string) is
+-- 	-- Checks if given instances is a digit and if it is within allowed range.
+-- 		use et_string_processing;
+-- 	begin
+-- 		-- check characters. all must be digits
+-- 		for place in instances'first .. instances'last loop
+-- 			if not is_digit (instances (place)) then
+-- 				log_indentation_reset;
+-- 				log (message_error & "instances must contain only digits !", console => true);
+-- 				raise constraint_error;
+-- 			end if;
+-- 		end loop;
+-- 
+-- 		-- Test if within range:
+-- 		if positive'value (instances) not in type_submodule_instance then
+-- 			log_indentation_reset;
+-- 			log (message_error & "max. number of instances per module is" 
+-- 				 & type_submodule_instance'image (type_submodule_instance'last) & " !",
+-- 				console => true);
+-- 			raise constraint_error;
+-- 		end if;
+-- 	end check_number_of_instances;
 
-		-- Test if within range:
-		if positive'value (instances) not in type_submodule_instance then
-			log_indentation_reset;
-			log (message_error & "max. number of instances per module is" 
-				 & type_submodule_instance'image (type_submodule_instance'last) & " !",
-				console => true);
-			raise constraint_error;
-		end if;
-	end check_number_of_instances;
+-- 	function to_number_of_instances (instances : in string) return type_submodule_instance is
+-- 	begin
+-- 		return type_submodule_instance'value (instances);
+-- 	end to_number_of_instances;
 
-	function to_number_of_instances (instances : in string) return type_submodule_instance is
-	begin
-		return type_submodule_instance'value (instances);
-	end to_number_of_instances;
+-- 	function to_string (instance : in type_submodule_instance) return string is
+-- 	-- Converts a submodule instance index to a string.
+-- 	begin
+-- 		return trim (type_submodule_instance'image (instance), left);
+-- 	end to_string;
 
-	function to_string (instance : in type_submodule_instance) return string is
-	-- Converts a submodule instance index to a string.
-	begin
-		return trim (type_submodule_instance'image (instance), left);
-	end to_string;
-
-	function append_instance (
-		submodule	: in type_submodule_name.bounded_string; -- nucleo_core
-		separator	: in string := "_";
-		instance	: in type_submodule_instance) -- 4
-		return type_submodule_name.bounded_string is -- nucleo_core_4
-	begin
-		return 
-			submodule -- nucleo_core
-			& type_submodule_name.to_bounded_string (separator) -- "_"
-			& type_submodule_name.to_bounded_string (trim (type_submodule_instance'image (instance), left)); -- 4
-	end append_instance;
+-- 	function append_instance (
+-- 		submodule	: in type_submodule_name.bounded_string; -- nucleo_core
+-- 		separator	: in string := "_";
+-- 		instance	: in type_submodule_instance) -- 4
+-- 		return type_submodule_name.bounded_string is -- nucleo_core_4
+-- 	begin
+-- 		return 
+-- 			submodule -- nucleo_core
+-- 			& type_submodule_name.to_bounded_string (separator) -- "_"
+-- 			& type_submodule_name.to_bounded_string (trim (type_submodule_instance'image (instance), left)); -- 4
+-- 	end append_instance;
 
 	function to_string (sheet_number : in type_submodule_sheet_number) return string is
 	-- Returns a sheet number as string.

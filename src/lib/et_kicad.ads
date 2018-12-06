@@ -692,16 +692,12 @@ package et_kicad is
 	
 	
 	procedure import_design (
-		first_instance 	: in boolean := false;
+		--first_instance 	: in boolean := false;
 		project			: in et_project.type_project_name.bounded_string;								
 		log_threshold	: in et_string_processing.type_log_level); 
 	-- Imports the design as specified by project_name.
 	-- Inserts the created submodule in the rig (see et_schematic.type_rig).
 	-- Leaves the global module_cursor pointing where the module was inserted.
-	-- If first_instance is false, the module gets the name as defined in the kicad project file.
-	-- For a regular single design import this is the default.
-	-- If first_instance is true, the module name further-on gets the instance appended.
-	-- This is required for multiple design instantiations. (things like nucleo_core_1).
 
 -- COMMENT MARKS
 	comment_mark							: constant string (1..1) := "#";
@@ -1223,14 +1219,14 @@ package et_kicad is
 	function module_count return natural;
 	-- Returns the number of modules of the rig.
 	
-	procedure copy_module (
-	-- Copyies a rig module. 
-	-- If copy_last is true (default) the last module in the rig is copied. 
-	-- If copy_last is false, the module with given name_origin is copied.
-	-- The module instance is always incremented automatically.
-		copy_last		: in boolean := true;						  
-		name_origin		: in et_coordinates.type_submodule_name.bounded_string := et_coordinates.type_submodule_name.to_bounded_string (""); -- nucleo_core_3
-		log_threshold	: in et_string_processing.type_log_level);
+-- 	procedure copy_module (
+-- 	-- Copyies a rig module. 
+-- 	-- If copy_last is true (default) the last module in the rig is copied. 
+-- 	-- If copy_last is false, the module with given name_origin is copied.
+-- 	-- The module instance is always incremented automatically.
+-- 		copy_last		: in boolean := true;						  
+-- 		name_origin		: in et_coordinates.type_submodule_name.bounded_string := et_coordinates.type_submodule_name.to_bounded_string (""); -- nucleo_core_3
+-- 		log_threshold	: in et_string_processing.type_log_level);
 
 	procedure validate_module (
 		module_name : in et_coordinates.type_submodule_name.bounded_string);
@@ -1347,7 +1343,7 @@ package et_kicad is
 	
 	type type_module is record
 		generic_name	: et_coordinates.type_submodule_name.bounded_string;  -- "GENERIC_MOTOR_DRIVER"
-		instance		: et_coordinates.type_submodule_instance; -- CS remove
+		--instance		: et_coordinates.type_submodule_instance; -- CS remove
 		board_available	: et_schematic.type_board_available := et_schematic.false;
 
 		-- V4 uses search lists:
