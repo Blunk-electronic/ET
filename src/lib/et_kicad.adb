@@ -71,6 +71,7 @@ with et_kicad_pcb;
 with et_import;
 with et_export;
 with et_csv;
+with et_configuration;
 
 package body et_kicad is
 
@@ -7808,13 +7809,13 @@ package body et_kicad is
 											validate_purpose (content (field_purpose)); -- must be something useful
 
 											-- test if purpose already used for this category 
-											if et_configuration.multiple_purpose (
+											if multiple_purpose (
 												category 		=> et_configuration.category (reference), -- derive cat from reference
 												purpose 		=> to_purpose (content (field_purpose)),
 												log_threshold 	=> log_threshold + 2) > 0 then
 
 													-- purpose already in use -> warning
-													et_configuration.multiple_purpose_warning (
+													multiple_purpose_warning (
 														category		=> et_configuration.category (reference),
 														purpose			=> to_purpose (content (field_purpose)),
 														log_threshold	=> log_threshold + 2);
@@ -14037,6 +14038,134 @@ package body et_kicad is
 	end export_bom;
 
 
+	procedure multiple_purpose_warning (
+	-- Outputs a warning message on multiple usage of a purpose of a component category.
+		category		: in et_configuration.type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
+		purpose 		: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
+		log_threshold 	: in et_string_processing.type_log_level) is
+		
+		use et_string_processing;
+		use et_coordinates;
+		use et_libraries;
+		use et_kicad.type_rig;
+		use et_configuration;
+		
+		procedure locate_component (
+		-- Searches the component list of the module for a connector with the given purpose.
+			module_name : in type_submodule_name.bounded_string;
+			module		: in et_kicad.type_module) is
+			use et_kicad.type_components_schematic;
+			use type_component_purpose;
+			component : et_kicad.type_components_schematic.cursor := module.components.first;
+		begin
+			--log ("purpose already used by component");
+			log_indentation_up;
+
+			while component /= et_kicad.type_components_schematic.no_element loop
+				if element (component).appearance = sch_pcb then -- it must be a real component
+					if et_configuration.category (key (component)) = category then -- category must match
+						if element (component).purpose = purpose then -- purpose must match
+							log ("purpose already used by component " &
+								 et_libraries.to_string (key (component)));
+						end if;
+					end if;
+				end if;
+				next (component);
+			end loop;
+
+			log_indentation_down;
+		end locate_component;
+			
+	begin -- multiple_purpose_warning
+-- 		log_indentation_reset;
+-- 		log (message_error & "There must be ONLY ONE" 
+-- 			 & to_string (category) 
+-- 			 & " with purpose " 
+-- 			 & enclose_in_quotes (et_libraries.to_string (purpose)) & " !",
+-- 			 console => true);
+
+		log (message_warning & "There must be ONLY ONE" 
+			 & to_string (category) 
+			 & " with purpose " 
+			 & enclose_in_quotes (et_libraries.to_string (purpose)) & " !");
+
+		query_element (
+			position	=> et_kicad.module_cursor,
+			process		=> locate_component'access);
+
+		--raise constraint_error;
+	end multiple_purpose_warning;
+		
+	
+	function multiple_purpose (
+	-- Returns the number of occurences of components with the given purpose and category.
+	-- Example: If there are two connectors with purpose "PWR_IN" the return is 2.
+		category 		: in et_configuration.type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
+		purpose 		: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
+		log_threshold 	: in et_string_processing.type_log_level)
+		return natural is
+
+		occurences : natural := 0; -- to be returned
+
+		use et_coordinates;
+		use et_kicad.type_rig;
+		use et_libraries;
+		use et_configuration;
+		
+		procedure locate_component (
+		-- Searches the component list of the module for a connector with the given purpose.
+		-- Exits on the first matching connector. There should not be any others.
+			module_name : in type_submodule_name.bounded_string;
+			module 		: in et_kicad.type_module) is
+			use et_kicad.type_components_schematic;
+			use type_component_purpose;
+			component : et_kicad.type_components_schematic.cursor := module.components.first;
+		begin -- locate_component
+			log_indentation_up;		
+			log ("detecting multiple usage of purpose " 
+				 & enclose_in_quotes (et_libraries.to_string (purpose)) 
+				 & " in component category " & to_string (category) 
+				 & " ...", log_threshold);
+			log_indentation_up;
+
+			while component /= et_kicad.type_components_schematic.no_element loop
+				if element (component).appearance = sch_pcb then -- it must be a real component
+					if et_configuration.category (key (component)) = category then -- category must match
+						if element (component).purpose = purpose then -- purpose must match
+							log (et_libraries.to_string (key (component)), log_threshold + 1);
+							occurences := occurences + 1;
+						end if;
+					end if;
+				end if;
+				next (component);
+			end loop;
+
+			log_indentation_down;
+			log_indentation_down;
+		end locate_component;
+
+	begin -- multiple_purpose
+
+		query_element (
+			position	=> et_kicad.module_cursor,
+			process		=> locate_component'access);
+
+		-- Show the result of the search:
+		if occurences = 0 then
+			log_indentation_up;
+			log ("none found. very good.", log_threshold + 1);
+			log_indentation_down;
+		else
+			log (message_warning & "for component category" 
+				& to_string (category) 
+				& " the purpose " 
+				& enclose_in_quotes (et_libraries.to_string (purpose)) 
+				& " is used multiple times !");
+			-- CS: show the affected components by reference and coordinates
+		end if;
+		
+		return occurences;
+	end multiple_purpose;
 
 	
 -- STATISTICS

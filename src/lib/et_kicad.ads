@@ -56,6 +56,7 @@ with et_coordinates;
 with et_pcb_coordinates;
 with et_libraries;
 with et_string_processing;
+with et_configuration;
 
 package et_kicad is
 
@@ -1327,7 +1328,20 @@ package et_kicad is
 	type type_board is new et_pcb.type_board with record
 		paper_size	: et_general.type_paper_size;
 	end record;
+
+	procedure multiple_purpose_warning ( -- CS: move to et_kicad
+	-- Outputs an warning message on multiple usage of a purpose of a component category.
+		category		: in et_configuration.type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
+		purpose			: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
+		log_threshold	: in et_string_processing.type_log_level);
 	
+	function multiple_purpose ( -- CS: move to et_kicad
+	-- Returns the number of occurences of components with the given purpose and category.
+	-- Example: If there are two connectors with purpose "PWR_IN" the return is 2.
+		category		: in et_configuration.type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
+		purpose			: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
+		log_threshold	: in et_string_processing.type_log_level)
+		return natural;
 	
 -- MODULES
 	
