@@ -24,14 +24,12 @@
 - interfacing with system modelling tools
 
 ### Examples of design and component models
-- A project file (containing schematic and layout stuff) looks like this <https://github.com/Blunk-electronic/ET/blob/master/examples/dummy/dummy.et>
+- A module file (containing schematic and layout stuff) looks like this <https://github.com/Blunk-electronic/ET/blob/master/examples/dummy/dummy.mod>
 - Device model <https://github.com/Blunk-electronic/ET/blob/master/examples/device.dev>
 - Symbol model <https://github.com/Blunk-electronic/ET/blob/master/examples/symbol.sym>
 - Package model <https://github.com/Blunk-electronic/ET/blob/master/examples/package.pac>
 
-### Example of a project configuration file
-- The project configuration file defines module instances and how modules (boards) are connected with each other.
-- It also customizes the ERC (electrical rule check) in terms of prefixes (R,C,L,IC, ...), units of measurement, ...
+### Example of an ERC configuration file
 - See this example <https://github.com/Blunk-electronic/ET/blob/master/examples/conf.txt>
 
 ### Supported CAE formats
@@ -41,7 +39,7 @@
 
 ### Usage
 
-#### Importing KiCad projects
+#### Importing a KiCad project
 
 - First change into the root directory of your KiCad projects and generate a configuration file where prefixes, units of measurement and other things are defined with this command:
 
@@ -65,11 +63,6 @@ $ et --configuration_file my_configuration.txt --import_format kicad_v5 --import
 
 - ET creates in the projects root directory a folder named "ET" where you find logfiles, netlists, statistics, BOMs, ...
 
-- If there are lots of projects to be imported, write their names in the configuration file in section [IMPORT_MODULES]. Then run this command:
-
-```sh
-$ et --import_modules --configuration_file my_configuration.txt --project my_et_project --log_level 1
-```
 
 ### Installation
 - Install the GNAT Ada compiler (version 7 or later). It should come along with major linux distros.
