@@ -3,25 +3,6 @@
 # Please modify it according to your needs.
 # ======================================================================================================================================================
 
-[IMPORT_MODULES]
-
-# generic_name instance cad_format
-# examples:
-# nucleo_core NCC kicad_v4
-# motor_driver MOT_1 kicad_v4
-led_matrix LMX_1 kicad_v4
-pwr_supply PWR kicad_v5
-
-
-[MODULE_INTERCONNECTIONS]
-
-# instance connector_purpose instance connector_purpose [options]
-# examples:
-# NCC MOTOR_CTRL_OUT_1 MOT_1 MOTOR_CTRL_IN # net_comparator_off warn_only
-# NCC MOTOR_CTRL_OUT_2 MOT_2 MOTOR_CTRL_IN # net_comparator_off warn_only
-LMX_1 "PWR CTRL IN" PWR "PWR CTRL OUT A" net_comparator_on warn_only
-LMX_2 "PWR CTRL IN" PWR "PWR CTRL OUT B" net_comparator_on warn_only
-
 [COMPONENT_PREFIXES]
 
 # prefix category

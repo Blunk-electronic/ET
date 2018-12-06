@@ -79,7 +79,7 @@ package et_general is
 	switch_help					: constant string (1..5)	:= "-help"; -- long switch	
 	switch_make_default_conf	: constant string (1..19) 	:= "-make_configuration";
 	switch_import_module		: constant string (1..14)	:= "-import_module";	-- long switch
-	switch_import_modules		: constant string (1..15)	:= "-import_modules";	-- long switch
+	--switch_import_modules		: constant string (1..15)	:= "-import_modules";	-- long switch
 	switch_import_format		: constant string (1..14)	:= "-import_format";	-- long switch
 	switch_configuration_file	: constant string (1..19)	:= "-configuration_file";
 	switch_native_project		: constant string (1..8)	:= "-project";
@@ -92,7 +92,7 @@ package et_general is
 		REQUEST_HELP,
 		MAKE_CONFIGURATION,
 		IMPORT_MODULE, -- note SINGULAR
-		IMPORT_MODULES, -- note PLURAL
+		--IMPORT_MODULES, -- note PLURAL
 		OPEN_NATIVE_PROJECT
 		-- CS: others ?
 		);

@@ -80,7 +80,7 @@ procedure et is
 						--& latin_1.space & switch_import_file & latin_1.equals_sign -- CS: see below
 						& latin_1.space & switch_import_module & latin_1.equals_sign
 						& latin_1.space & switch_import_format & latin_1.equals_sign
-						& latin_1.space & switch_import_modules -- no parameter
+						--& latin_1.space & switch_import_modules -- no parameter
 						& latin_1.space & switch_configuration_file & latin_1.equals_sign
 						& latin_1.space & switch_native_project & latin_1.equals_sign
 						& latin_1.space & switch_native_project_open & latin_1.equals_sign						
@@ -109,11 +109,11 @@ procedure et is
 						put_line ("import format " & parameter);
 						et_import.cad_format := et_import.type_cad_format'value (parameter);
 
-					elsif full_switch = switch_import_modules then
-						put_line ("import modules as specified by configuraton file");
-
-						-- set operator action
-						operator_action := IMPORT_MODULES;
+-- 					elsif full_switch = switch_import_modules then
+-- 						put_line ("import modules as specified by configuraton file");
+-- 
+-- 						-- set operator action
+-- 						operator_action := IMPORT_MODULES;
 						
 					elsif full_switch = switch_make_default_conf then -- make configuration file
 						put_line ("configuration file " & parameter);
@@ -233,7 +233,7 @@ procedure et is
 		if et_configuration.type_configuration_file_name.length (conf_file_name) > 0 then
 			et_configuration.read_configuration (
 				file_name => conf_file_name,
-				single_module => true, -- we are dealing a single project
+				--single_module => true, -- we are dealing a single project
 				log_threshold => 0);
 		else
 			log (message_warning & "no configuration file specified !");
@@ -264,96 +264,96 @@ procedure et is
 	end import_module;
 
 
-	procedure import_modules is
-	-- Imports modules as specified in configuration file and inserts them in the rig.
-		use et_schematic;
-		use et_project.type_project_name;
-		use et_configuration;
-		use type_import_modules;
-		use et_coordinates;
-
-		module_cursor_import : type_import_modules.cursor;
-		instances : type_submodule_instance;
-		module : et_project.type_project_name.bounded_string; -- when importing multiple projects, we regard them as modules
-	begin
-		log ("importing modules ...");
-		
-		-- Read configuration file if specified. otherwise issue warning 
-		-- CS: make a procedure as this is used by procedure import_desing too.
-		if et_configuration.type_configuration_file_name.length (conf_file_name) > 0 then
-			et_configuration.read_configuration (
-				file_name => conf_file_name,
-				single_module => false, -- we are dealing with more than one module
-				log_threshold => 0);
-		else
-			log (message_warning & "no configuration file specified !");
-		end if;
-		
-		-- Loop in et_configuration.import_module and import module per module.
-		module_cursor_import := et_configuration.import_modules.first;
-		while module_cursor_import /= type_import_modules.no_element loop
-			log (row_separator_single);
-			
-			-- The design import requires changing of directories. So we backup the current directory.
-			-- After the import, we restore the directory.
-			backup_projects_root_directory;
-
-			module := to_bounded_string (to_string (element (module_cursor_import).name));
-			et_import.cad_format := element (module_cursor_import).format;
-			instances := element (module_cursor_import).instances;
-
-			-- If the design is to be instantiated multiple times we import only the first instance.
-			-- All other instances are created by copying the latest instance.
-
-			if instances = type_submodule_instance'first then 
-				-- Only one instance requried -> do a regular single design import.
-				log ("importing module " & et_project.to_string (module) & " ...", console => true);
-				log ("CAD format " & et_import.to_string (et_import.cad_format));
-				
-				case et_import.cad_format is
-					when et_import.KICAD_V4 | et_import.KICAD_V5 =>
-						et_kicad.import_design (project => module, log_threshold => 0);
-					when others => -- CS
-						raise constraint_error;
-				end case;
-
-			else -- multi-instances
-				log ("importing and instantiating module " & et_project.to_string (module) & " ...", console => true);
-				log ("CAD format " & et_import.to_string (et_import.cad_format));
-				
-				-- Import the project only once.
-				for i in type_submodule_instance'first .. instances loop
-					log ("instance " & to_string (i) & " ...", console => true);
-
-					if i = type_submodule_instance'first then -- first instance
-						
-						case et_import.cad_format is
-							when et_import.KICAD_V4 | et_import.KICAD_V5 =>
-								et_kicad.import_design (first_instance => true, project => module, log_threshold => 0);
-							when others => -- CS
-								raise constraint_error;
-						end case;
-
-					else
-						-- Copy the last module.
-						-- The module instance is incremented by copy_module automatically.
-						et_kicad.copy_module (log_threshold => 0);
-					end if;
-				end loop;
-
-			end if;
-			
-			restore_projects_root_directory;
-			next (module_cursor_import);
-		end loop;
-		
-		exception
-			when event:
-				others =>
-					put_line (standard_output, message_error & "Read import report for warnings and error messages !"); -- CS: show path to report file
-					raise;
-
-	end import_modules;
+-- 	procedure import_modules is
+-- 	-- Imports modules as specified in configuration file and inserts them in the rig.
+-- 		use et_schematic;
+-- 		use et_project.type_project_name;
+-- 		use et_configuration;
+-- 		use type_import_modules;
+-- 		use et_coordinates;
+-- 
+-- 		module_cursor_import : type_import_modules.cursor;
+-- 		instances : type_submodule_instance;
+-- 		module : et_project.type_project_name.bounded_string; -- when importing multiple projects, we regard them as modules
+-- 	begin
+-- 		log ("importing modules ...");
+-- 		
+-- 		-- Read configuration file if specified. otherwise issue warning 
+-- 		-- CS: make a procedure as this is used by procedure import_desing too.
+-- 		if et_configuration.type_configuration_file_name.length (conf_file_name) > 0 then
+-- 			et_configuration.read_configuration (
+-- 				file_name => conf_file_name,
+-- 				single_module => false, -- we are dealing with more than one module
+-- 				log_threshold => 0);
+-- 		else
+-- 			log (message_warning & "no configuration file specified !");
+-- 		end if;
+-- 		
+-- 		-- Loop in et_configuration.import_module and import module per module.
+-- 		module_cursor_import := et_configuration.import_modules.first;
+-- 		while module_cursor_import /= type_import_modules.no_element loop
+-- 			log (row_separator_single);
+-- 			
+-- 			-- The design import requires changing of directories. So we backup the current directory.
+-- 			-- After the import, we restore the directory.
+-- 			backup_projects_root_directory;
+-- 
+-- 			module := to_bounded_string (to_string (element (module_cursor_import).name));
+-- 			et_import.cad_format := element (module_cursor_import).format;
+-- 			instances := element (module_cursor_import).instances;
+-- 
+-- 			-- If the design is to be instantiated multiple times we import only the first instance.
+-- 			-- All other instances are created by copying the latest instance.
+-- 
+-- 			if instances = type_submodule_instance'first then 
+-- 				-- Only one instance requried -> do a regular single design import.
+-- 				log ("importing module " & et_project.to_string (module) & " ...", console => true);
+-- 				log ("CAD format " & et_import.to_string (et_import.cad_format));
+-- 				
+-- 				case et_import.cad_format is
+-- 					when et_import.KICAD_V4 | et_import.KICAD_V5 =>
+-- 						et_kicad.import_design (project => module, log_threshold => 0);
+-- 					when others => -- CS
+-- 						raise constraint_error;
+-- 				end case;
+-- 
+-- 			else -- multi-instances
+-- 				log ("importing and instantiating module " & et_project.to_string (module) & " ...", console => true);
+-- 				log ("CAD format " & et_import.to_string (et_import.cad_format));
+-- 				
+-- 				-- Import the project only once.
+-- 				for i in type_submodule_instance'first .. instances loop
+-- 					log ("instance " & to_string (i) & " ...", console => true);
+-- 
+-- 					if i = type_submodule_instance'first then -- first instance
+-- 						
+-- 						case et_import.cad_format is
+-- 							when et_import.KICAD_V4 | et_import.KICAD_V5 =>
+-- 								et_kicad.import_design (first_instance => true, project => module, log_threshold => 0);
+-- 							when others => -- CS
+-- 								raise constraint_error;
+-- 						end case;
+-- 
+-- 					else
+-- 						-- Copy the last module.
+-- 						-- The module instance is incremented by copy_module automatically.
+-- 						et_kicad.copy_module (log_threshold => 0);
+-- 					end if;
+-- 				end loop;
+-- 
+-- 			end if;
+-- 			
+-- 			restore_projects_root_directory;
+-- 			next (module_cursor_import);
+-- 		end loop;
+-- 		
+-- 		exception
+-- 			when event:
+-- 				others =>
+-- 					put_line (standard_output, message_error & "Read import report for warnings and error messages !"); -- CS: show path to report file
+-- 					raise;
+-- 
+-- 	end import_modules;
 
 
 	procedure check_modules is
@@ -408,15 +408,15 @@ procedure et is
 
 					-- If there is more than one module, interconnections must be validated 
 					-- as specified in configuration file.
-					if et_kicad.module_count > 1 then
-						validate_module_interconnections (log_threshold => 0);
-					end if;
+-- 					if et_kicad.module_count > 1 then
+-- 						validate_module_interconnections (log_threshold => 0);
+-- 					end if;
 
 					-- Create routing tables.
 					-- Even if there is just a single module, a routing table is useful.
-					make_routing_tables (log_threshold => 0);
+-- 					make_routing_tables (log_threshold => 0);
 
-					export_routing_tables (log_threshold => 0);
+--					export_routing_tables (log_threshold => 0);
 					
 					log_indentation_down;
 
@@ -518,20 +518,20 @@ begin -- main
 			convert;
 			
 			
-		when et_general.IMPORT_MODULES =>
-			-- The targeted native ET project must be specified via cmd line parameter:
-			test_if_native_project_specified;
-
-			-- import many modules as specified in configuration file
-			import_modules; -- calls import_design (according to CAD format)
-
-			-- check modules
-			check_modules; -- updates the netlists of all modules. creates and opens export report
-
-			log_indentation_reset;
-			read_boards; -- writes in import report. closes import report
-
-			convert;
+-- 		when et_general.IMPORT_MODULES =>
+-- 			-- The targeted native ET project must be specified via cmd line parameter:
+-- 			test_if_native_project_specified;
+-- 
+-- 			-- import many modules as specified in configuration file
+-- 			import_modules; -- calls import_design (according to CAD format)
+-- 
+-- 			-- check modules
+-- 			check_modules; -- updates the netlists of all modules. creates and opens export report
+-- 
+-- 			log_indentation_reset;
+-- 			read_boards; -- writes in import report. closes import report
+-- 
+-- 			convert;
 
 
 		when et_general.OPEN_NATIVE_PROJECT =>

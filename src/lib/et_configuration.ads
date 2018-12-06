@@ -61,68 +61,68 @@ package et_configuration is
 	section_components_with_operator_interaction 	: constant string (1..31)	:= "[OPERATOR_INTERACTION_REQUIRED]";
 	section_partcode_keywords						: constant string (1..20)	:= "[PART_CODE_KEYWORDS]";
 	-- CS: section_connector_gnd_terminal					: constant string (1..24) := "[CONNECTOR_GND_TERMINAL]";
-	section_import_modules							: constant string (1..16)	:= "[IMPORT_MODULES]";
-	section_module_interconnections					: constant string (1..25)	:= "[MODULE_INTERCONNECTIONS]";
+	--section_import_modules							: constant string (1..16)	:= "[IMPORT_MODULES]";
+	--section_module_interconnections					: constant string (1..25)	:= "[MODULE_INTERCONNECTIONS]";
 	section_text_sizes_schematic					: constant string (1..22)	:= "[TEXT_SIZES_SCHEMATIC]";
 
-	option_module_interconnections_comparator_off	: constant string (1..18)	:= "net_comparator_off";
-	option_module_interconnections_comparator_on	: constant string (1..17)	:= "net_comparator_on";
-	option_module_interconnections_warn_only		: constant string (1..9) 	:= "warn_only";	
+-- 	option_module_interconnections_comparator_off	: constant string (1..18)	:= "net_comparator_off";
+-- 	option_module_interconnections_comparator_on	: constant string (1..17)	:= "net_comparator_on";
+-- 	option_module_interconnections_warn_only		: constant string (1..9) 	:= "warn_only";	
 	
-	-- A module to be imported has a name, an abbrevation, a CAD format and a certain 
-	-- number of instances.
-	-- Example: nucleo_core NCC kicad_v4 1
-	-- We collect these modules in a simple list because the order must be kept.
-	type type_import_module is record
-		name		: et_coordinates.type_submodule_name.bounded_string; -- MOTOR_DRIVER
-		abbrevation	: et_coordinates.type_submodule_abbrevation.bounded_string; -- MOT
-		format		: et_import.type_cad_format; -- KICAD_V4, EAGLE_V7
-		instances	: et_coordinates.type_submodule_instance; -- 4 
-	end record;
-
-	package type_import_modules is new doubly_linked_lists (
-		element_type => type_import_module);
-
-	-- Finally the container where the modules to be imported are stored is this:
-	import_modules : type_import_modules.list;
+-- 	-- A module to be imported has a name, an abbrevation, a CAD format and a certain 
+-- 	-- number of instances.
+-- 	-- Example: nucleo_core NCC kicad_v4 1
+-- 	-- We collect these modules in a simple list because the order must be kept.
+-- 	type type_import_module is record
+-- 		name		: et_coordinates.type_submodule_name.bounded_string; -- MOTOR_DRIVER
+-- 		abbrevation	: et_coordinates.type_submodule_abbrevation.bounded_string; -- MOT
+-- 		format		: et_import.type_cad_format; -- KICAD_V4, EAGLE_V7
+-- 		instances	: et_coordinates.type_submodule_instance; -- 4 
+-- 	end record;
+-- 
+-- 	package type_import_modules is new doubly_linked_lists (
+-- 		element_type => type_import_module);
+-- 
+-- 	-- Finally the container where the modules to be imported are stored is this:
+-- 	import_modules : type_import_modules.list;
 
 
 	-- Module interconnections are collected in a simple list:
 	-- CS type type_connector_gender is (UNKNOWN, FEMALE, MALE);
 	
-	type type_connector is record
-		-- CS: gender ?
-		abbrevation	: et_coordinates.type_submodule_abbrevation.bounded_string; -- MOT
-		instance	: et_coordinates.type_submodule_instance; -- 4 
-		purpose		: et_libraries.type_component_purpose.bounded_string; -- MOTOR_CTRL_IN
-	end record;
+-- 	type type_connector is record
+-- 		-- CS: gender ?
+-- 		abbrevation	: et_coordinates.type_submodule_abbrevation.bounded_string; -- MOT
+-- 		instance	: et_coordinates.type_submodule_instance; -- 4 
+-- 		purpose		: et_libraries.type_component_purpose.bounded_string; -- MOTOR_CTRL_IN
+-- 	end record;
 
-	type type_net_comparator_on_off is (ON, OFF);
+-- 	type type_net_comparator_on_off is (ON, OFF);
 	
-	function to_string (net_comparator_on_off : in type_net_comparator_on_off) return string;
-	-- Returns the given net comparator status as string.
+-- 	function to_string (net_comparator_on_off : in type_net_comparator_on_off) return string;
+-- 	-- Returns the given net comparator status as string.
 	
-	type type_net_comparator_warn_only is (ON, OFF);
+-- 	type type_net_comparator_warn_only is (ON, OFF);
 
-	function to_string (net_comparator_warn : in type_net_comparator_warn_only) return string;
-	-- Returns the given net comparator warning status as string.
+-- 	function to_string (net_comparator_warn : in type_net_comparator_warn_only) return string;
+-- 	-- Returns the given net comparator warning status as string.
 	
-	type type_module_interconnection_options is record
-		comparator	: type_net_comparator_on_off := ON; -- net_comparator_off
-		warn_only 	: type_net_comparator_warn_only := OFF; -- warn_only
-	end record;
-	
-	type type_module_interconnection is record
-		peer_A	: type_connector;
-		peer_B	: type_connector;
-		options	: type_module_interconnection_options;
-	end record;
-
-	-- This is the container with the module interconnections:
-	package type_module_interconnections is new doubly_linked_lists (
-		element_type => type_module_interconnection);
-
-	module_interconnections : type_module_interconnections.list;
+-- 	type type_module_interconnection_options is record
+-- 		comparator	: type_net_comparator_on_off := ON; -- net_comparator_off
+-- 		warn_only 	: type_net_comparator_warn_only := OFF; -- warn_only
+-- 	end record;
+-- 	
+-- 	type type_module_interconnection is record
+-- 		peer_A	: type_connector;
+-- 		peer_B	: type_connector;
+-- 		options	: type_module_interconnection_options;
+-- 	end record;
+-- 
+-- 	-- This is the container with the module interconnections:
+-- 	package type_module_interconnections is new doubly_linked_lists (
+-- 		element_type => type_module_interconnection);
+-- 
+-- 	module_interconnections : type_module_interconnections.list;
 
 	type type_component_category is (
 		ANTENNA,
@@ -170,13 +170,13 @@ package et_configuration is
 -- 		WIRE
 		);
 
-	procedure multiple_purpose_warning (
+	procedure multiple_purpose_warning ( -- CS: move to et_kicad
 	-- Outputs an warning message on multiple usage of a purpose of a component category.
 		category		: in type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
 		purpose			: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
 		log_threshold	: in et_string_processing.type_log_level);
 	
-	function multiple_purpose (
+	function multiple_purpose ( -- CS: move to et_kicad
 	-- Returns the number of occurences of components with the given purpose and category.
 	-- Example: If there are two connectors with purpose "PWR_IN" the return is 2.
 		category		: in type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
@@ -184,13 +184,13 @@ package et_configuration is
 		log_threshold	: in et_string_processing.type_log_level)
 		return natural;
 	
-	procedure validate_module_interconnection (connection : in type_module_interconnection);
-	-- checks if something like "NCC 1 MOTOR_CTRL_OUT_2 MOT 2 MOTOR_CTRL_IN" makes sense
-	-- in connection with entries in section import_modules
+-- 	procedure validate_module_interconnection (connection : in type_module_interconnection);
+-- 	-- checks if something like "NCC 1 MOTOR_CTRL_OUT_2 MOT 2 MOTOR_CTRL_IN" makes sense
+-- 	-- in connection with entries in section import_modules
 
-	procedure validate_module_interconnections (log_threshold: in et_string_processing.type_log_level);
-	-- Tests if module interconnections at net level make sense.
-	-- NOTE: call AFTER modules have been imported !
+-- 	procedure validate_module_interconnections (log_threshold: in et_string_processing.type_log_level);
+-- 	-- Tests if module interconnections at net level make sense.
+-- 	-- NOTE: call AFTER modules have been imported !
 	
 	function to_string (cat : in type_component_category) return string;
 	-- returns the given component category as string
@@ -220,66 +220,66 @@ package et_configuration is
 	-- Returns the category of the given component reference. If no category could be
 	-- found, returns category UNKNOWN.
 
-	function ports_in_net (
-		module 			: in et_coordinates.type_submodule_name.bounded_string;	-- led_matrix_2
-		net				: in et_schematic.type_net_name.bounded_string;			-- motor_on_off
-		category		: in type_component_category;				-- netchanger, connector
-		log_threshold	: in et_string_processing.type_log_level)
-		return et_kicad.type_ports_with_reference.set;
-	-- Returns a set of component ports that are connected with the given net.
-	-- Returns only components of given category.
+-- 	function ports_in_net (
+-- 		module 			: in et_coordinates.type_submodule_name.bounded_string;	-- led_matrix_2
+-- 		net				: in et_schematic.type_net_name.bounded_string;			-- motor_on_off
+-- 		category		: in type_component_category;				-- netchanger, connector
+-- 		log_threshold	: in et_string_processing.type_log_level)
+-- 		return et_kicad.type_ports_with_reference.set;
+-- 	-- Returns a set of component ports that are connected with the given net.
+-- 	-- Returns only components of given category.
 
-	-- Handling routing information requires this type:
-	type type_net is record
-		module	: et_coordinates.type_submodule_name.bounded_string;
-		net		: et_schematic.type_net_name.bounded_string;
-	end record;
-
-	function to_string (
-		net			: in type_net;
-		separator	: in character := '.') return string;
-	-- Returns the given net as string. In a form like "led_matrix.master_clock"
+-- 	-- Handling routing information requires this type:
+-- 	type type_net is record
+-- 		module	: et_coordinates.type_submodule_name.bounded_string;
+-- 		net		: et_schematic.type_net_name.bounded_string;
+-- 	end record;
+-- 
+-- 	function to_string (
+-- 		net			: in type_net;
+-- 		separator	: in character := '.') return string;
+-- 	-- Returns the given net as string. In a form like "led_matrix.master_clock"
+-- 	
+-- 	function compare_nets (left, right : in type_net) return boolean;
+-- 	-- Returns true if left net comes before right net.
 	
-	function compare_nets (left, right : in type_net) return boolean;
-	-- Returns true if left net comes before right net.
+-- 	-- If nets of type_net are collected in a set, we have a type_route.
+-- 	package type_route is new ordered_sets (element_type => type_net, "<" => compare_nets);
+-- 	--use type_route;
+-- 
+-- 	-- Lots of routes are collected in a simple list.
+-- 	-- So we have a list of routes.
+-- 	package type_routing_table is new doubly_linked_lists (
+-- 		element_type => type_route.set,
+-- 		"=" => type_route."=");
+-- 
+-- 	-- This is the rig wide routing table:
+-- 	routing_table : type_routing_table.list;
+-- 
+-- 	-- The minimum length of a route is 2 nets.
+-- 	-- The maximum length is set here to a reasonable value. CS: increase if neccessary
+-- 	route_length_max : constant positive := 50; 
+-- 	type type_route_length is range 2..route_length_max;
+-- 
+-- 	function to_string (route_length : in type_route_length) return string;
+-- 	-- Returns the given route length as string;
 	
-	-- If nets of type_net are collected in a set, we have a type_route.
-	package type_route is new ordered_sets (element_type => type_net, "<" => compare_nets);
-	--use type_route;
-
-	-- Lots of routes are collected in a simple list.
-	-- So we have a list of routes.
-	package type_routing_table is new doubly_linked_lists (
-		element_type => type_route.set,
-		"=" => type_route."=");
-
-	-- This is the rig wide routing table:
-	routing_table : type_routing_table.list;
-
-	-- The minimum length of a route is 2 nets.
-	-- The maximum length is set here to a reasonable value. CS: increase if neccessary
-	route_length_max : constant positive := 50; 
-	type type_route_length is range 2..route_length_max;
-
-	function to_string (route_length : in type_route_length) return string;
-	-- Returns the given route length as string;
+-- 	function longest_route (table : in type_routing_table.list) return type_route_length;
+-- 	-- Returns the lenght of the longest route in the given routing table.
+-- 	-- NOTE: assumes that the given routing table is not empty. Raises error othewise.
 	
-	function longest_route (table : in type_routing_table.list) return type_route_length;
-	-- Returns the lenght of the longest route in the given routing table.
-	-- NOTE: assumes that the given routing table is not empty. Raises error othewise.
+-- 	routing_table_file_name_length : constant positive := 100; -- CS: should suffice for now
+-- 	package type_routing_table_file_name is new generic_bounded_length (routing_table_file_name_length);
 	
-	routing_table_file_name_length : constant positive := 100; -- CS: should suffice for now
-	package type_routing_table_file_name is new generic_bounded_length (routing_table_file_name_length);
+-- 	procedure make_routing_tables (log_threshold : in et_string_processing.type_log_level);
+-- 	-- Creates the routing table for the whole rig in global variable routin_table.
+-- 	-- CS: create routing tables for projects separately.
 	
-	procedure make_routing_tables (log_threshold : in et_string_processing.type_log_level);
-	-- Creates the routing table for the whole rig in global variable routin_table.
-	-- CS: create routing tables for projects separately.
-	
-	procedure export_routing_tables (log_threshold : in et_string_processing.type_log_level);
-	-- Exports/Writes the routing table of the rig in a csv file.
-	-- Reads the global rig wide routing table variable routing_table. 
-	-- Requires that procedure make_routing_tables has been executed before.
-	-- CS: Export routing tables for projects separately.
+-- 	procedure export_routing_tables (log_threshold : in et_string_processing.type_log_level);
+-- 	-- Exports/Writes the routing table of the rig in a csv file.
+-- 	-- Reads the global rig wide routing table variable routing_table. 
+-- 	-- Requires that procedure make_routing_tables has been executed before.
+-- 	-- CS: Export routing tables for projects separately.
 
 	
 	type type_unit_of_measurement is (
@@ -482,7 +482,7 @@ package et_configuration is
 
 	procedure read_configuration (
 		file_name		: in type_configuration_file_name.bounded_string; -- configuration file name
-		single_module	: in boolean; -- if true, sections addressing multi-board support are ignored
+		--single_module	: in boolean; -- if true, sections addressing multi-board support are ignored
 		log_threshold	: in et_string_processing.type_log_level);
 	-- Reads the given configuration file.
 
