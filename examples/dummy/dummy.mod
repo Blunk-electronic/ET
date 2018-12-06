@@ -1,0 +1,536 @@
+# SYSTEM ET module
+# date 2018-11-06T09:31:48
+# ======================================================================================================================================================
+
+[NET_CLASSES BEGIN]
+	[NET_CLASS BEGIN]
+		name hi-voltage
+		description "bla"
+		clearance 0.3
+		track_width_min 0.15
+		via_drill_min 0.3
+		via_restring_min 0.15
+		micro_via_drill_min 0.2
+		micro_via_restring_min 0.1
+	[NET_CLASS END]
+[NET_CLASSES END]	
+
+[NETS BEGIN]
+	[NET BEGIN]
+		name MASTER_RESET_N
+		class HV
+		scope local/global
+		[STRANDS BEGIN]
+			[STRAND BEGIN]
+				position sheet 12 x 4 y 6 
+				[SEGMENTS BEGIN]
+					[SEGMENT BEGIN]
+						start x 3 y 4
+						end x 5 y 4
+						
+						[LABELS BEGIN]
+							[LABEL BEGIN]
+								position x 3 y 4
+								rotation 0
+								size 2
+								style normal
+								line_width 0.2
+								appearance simple/tag
+								direction input
+							[LABEL END]
+						[LABELS END]
+			
+						[JUNCTIONS BEGIN]
+							position x 4 y 4
+						[JUNCTIONS END]
+
+						[PORTS BEGIN]
+							device R3 port 1 #reference and port							
+						[PORTS END]
+						
+						[SUBMODULE_PORTS BEGIN]
+							[PORT BEGIN]
+								module motor_driver
+								name MASTER_RESET_N
+								position x 3 y 4
+								direction input
+							[PORT END]
+						[SUBMODULE_PORTS END]
+						
+					[SEGMENT END]
+				[SEGMENTS END]
+			[STRAND END]
+		[STRANDS END]
+
+		[ROUTE BEGIN]
+			[LINE BEGIN]
+				start x 22.3 y 23.3
+				end x 133.2 y 32.5 
+				layer 2
+				width 0.2
+			[LINE END]
+
+			[ARC BEGIN]
+				center x 45 y 4.2
+				start x 42 y 54
+				end x 45 y 65
+				layer 2
+				width 0.5
+			[ARC END]
+
+			[POLYGON BEGIN]
+				priority 2
+				isolation 1.2
+				corner_easing none/chamfer/fillet
+				easing_radius 0.3
+				fill_style solid,hatched,cutout
+				hatching_line_width 0.3
+				hatching_line_spacing 1
+				pad_connection thermal/solid/none
+				layer 2
+				min_width 0.3
+				pad_technology smt_only/tht_only/smt_and_tht # use for both THERMAL and SOLID pad_connection
+				thermal_width 0.3
+				thermal_gap 0.8
+				[CORNERS BEGIN]
+					position x 123.54 y 2.7
+					position x 133.54 y 335.3
+					position x 523.54 y 6.7
+				[CORNERS END]
+			[POLYGON END]
+
+			[VIA BEGIN]
+				position x 56 y 44.5
+				diameter 0.25
+				restring_outer_layers 0.3
+				restring_inner_layers 0.35
+				layer_start 1
+				layer_end 15
+			[VIA END]
+		[ROUTE END]
+	[NET END]
+[NETS END]
+
+[SUBMODULES BEGIN]
+	[SUBMODULE BEGIN]
+		path $ET_TEMPLATES/motor_driver.et
+		name stepper_driver
+		position sheet 3 x 130 y 210
+		size x 50 y 60
+		position_in_board x 23 y 0.2
+		rotation 90.0
+		view_mode origin/instance
+		reference_offset 100, 1000 -> CS
+	[SUBMODULE END]
+[SUBMODULES END]
+
+[DRAWING_FRAMES BEGIN]
+	[SCHEMATIC BEGIN] 
+		template $ET_FRAMES/drawing_frame_version_1.frm 
+		count 8
+		description 1 "bla"
+		description 2 "blabl"
+	[SCHEMATIC END] 
+	
+	[BOARD BEGIN] 
+		template $ET_FRAMES/drawing_frame_version_2.frm
+	[BOARD END]
+[DRAWING_FRAMES END]
+	
+	
+[DEVICES BEGIN]
+	[DEVICE BEGIN]
+		name R1
+		appearance sch_pcb
+		value 100R
+		model $ET_LIB_DIR/resistors/single.dev
+		bom no/yes
+		partcode BEL_R_PAC_S_0805_VAL_100R
+		purpose 
+		variant N
+		
+		[UNITS BEGIN]
+			[UNIT BEGIN]
+				name 1
+				position sheet 2 x 130 y 210
+				rotation 45
+				mirrored no/x_axis/y_axis
+				[PLACEHOLDERS BEGIN] 
+					[PLACEHOLDER BEGIN] 
+						meaning reference,value
+						position x 135 y 205
+						size 2.5
+						style
+						line_width 0.15
+						alignment
+					[PLACEHOLDER END] 
+				[PLACEHOLDERS END] 
+			[UNIT END]
+		[UNITS END]
+
+		[PACKAGE BEGIN]
+			position x 34.5 y 60.1
+			rotation 180
+			face top/bottom
+
+			[PLACEHOLDERS BEGIN] 
+				[PLACEHOLDER BEGIN] 
+					meaning reference,value,purpose
+					layer documentation/silk_screen
+					position x 135 y 205
+					rotation 270
+					alignment
+					face top/bottom
+					size x 2 y 2 
+					line_width 0.15
+					hidden yes/no
+				[PLACEHOLDER END] 
+			[PLACEHOLDERS END] 
+		[PACKAGE END]
+	[DEVICE END]
+[DEVICES END]
+
+[TEXTS BEGIN]
+	[TEXT BEGIN]	
+		position sheet 1 x 180.34 y 39.82
+		content "ET Test Circuit"
+		size 1.70
+		line_width 0.33
+		rotation 180.0
+		style italic
+		alignment horizontal center vertical center
+	[TEXT END]
+[TEXTS END]	
+
+[BOARD BEGIN]
+	[SILK_SCREEN BEGIN]
+		[TOP BEGIN]
+			[LINE BEGIN]
+				start x 22.3 y 455
+				end x 32.5 y 455
+				width 0.2
+			[LINE END]
+
+			[ARC BEGIN]
+				center x 45 y 4.2
+				start x 42 y 54
+				end x 45 y 65
+				width 0.5
+			[ARC END]
+
+			[CIRCLE BEGIN]
+				center x 45 y 4.2
+				radius 10
+				width 0.5
+				filled yes/no
+				fill_style solid/hatched/cutout
+				hatching_line_width 0.3
+				hatching_line_spacing 1
+			[CIRCLE END]
+			
+			[POLYGON BEGIN]
+				fill_style solid,hatched,cutout
+				corner_easing none/chamfer/fillet
+				easing_radius 0.3
+				hatching_line_width 0.3
+				hatching_line_spacing 1
+				[CORNERS BEGIN]
+					position x 123.54 y 2.7
+					position x 133.54 y 335.3
+					position x 523.54 y 6.7
+				[CORNERS END]
+			[POLYGON END]
+			
+			[TEXT BEGIN]
+				position x 40 y 20
+				size x 3.0 y 3.0
+				line_width 0.2
+				rotation 0
+				content "bla"
+				alignment center
+				hidden yes/no
+			[TEXT END]
+
+			[PLACEHOLDER BEGIN]
+				position x 40 y 20
+				size x 3.0 y 3.0
+				line_width 0.2
+				rotation 0
+				meaning project_name
+				alignment center
+				hidden yes/no
+			[PLACEHOLDER END]
+			
+		[TOP END]
+		
+		[BOTTOM BEGIN]
+		
+		[BOTTOM END]
+	[SILK_SCREEN END]
+	
+	[ASSEMBLY_DOCUMENTATION BEGIN]
+		same as in SILK_SCREEN
+	[ASSEMBLY_DOCUMENTATION END]	
+
+	[STENCIL BEGIN]
+		[TOP BEGIN]
+			[LINE BEGIN]
+				start x 22.3
+				end y 32.5
+				width 0.2
+			[LINE END]
+
+			[ARC BEGIN]
+				center x 45 y 4.2
+				start x 42 y 54
+				end x 45 y 65
+				width 0.5
+			[ARC END]
+
+			[CIRCLE BEGIN]
+				center x 45 y 4.2
+				radius 10
+				width 0.5
+				filled yes/no
+				fill_style solid/hatched/cutout
+				hatching_line_width 0.3
+				hatching_line_spacing 1
+			[CIRCLE END]
+			
+			[POLYGON BEGIN]
+				fill_style solid,hatched,cutout
+				corner_easing none/chamfer/fillet
+				easing_radius 0.3
+				hatching_line_width 0.3
+				hatching_line_spacing 1
+				[CORNERS BEGIN]
+					x 123.54 y 2.7
+					x 133.54 y 335.3
+					x 523.54 y 6.7
+				[CORNERS END]
+			[POLYGON END]
+			
+		[TOP END]
+		
+		[BOTTOM BEGIN]
+			same as in top
+		[BOTTOM END]
+	[STENCIL END]
+	
+	[STOP_MASK BEGIN]
+		[TOP BEGIN]
+			[LINE BEGIN]
+				start x 22.3
+				end y 32.5
+				width 0.2
+			[LINE END]
+
+			[ARC BEGIN]
+				center x 45 y 4.2
+				start x 42 y 54
+				end x 45 y 65
+				width 0.5
+			[ARC END]
+
+			[CIRCLE BEGIN]
+				center x 45 y 4.2
+				radius 10
+				width 0.5
+				filled yes/no
+				fill_style solid/hatched/cutout
+				hatching_line_width 0.3
+				hatching_line_spacing 1
+			[CIRCLE END]
+
+			[POLYGON BEGIN]
+				fill_style solid,hatched,cutout
+				corner_easing none/chamfer/fillet
+				easing_radius 0.3
+				hatching_line_width 0.3
+				hatching_line_spacing 1
+				[CORNERS BEGIN]
+					x 123.54 y 2.7
+					x 133.54 y 335.3
+					x 523.54 y 6.7
+				[CORNERS END]
+			[POLYGON END]
+			
+			[TEXT BEGIN]
+				position x 40 y 20
+				size x 3.0 y 3.0
+				line_width 0.2
+				rotation 0
+				content "bla"
+				alignment center
+				hidden yes/no
+			[TEXT END]
+
+			[PLACEHOLDER BEGIN]
+				position x 40 y 20
+				size x 3.0 y 3.0
+				line_width 0.2
+				rotation 0
+				meaning project_name
+				alignment center
+				hidden yes/no
+			[PLACEHOLDER END]
+			
+		[TOP END]
+		
+		[BOTTOM BEGIN]
+			same as in top
+		[BOTTOM END]
+	[STOP_MASK END]		
+
+	[KEEPOUT BEGIN]
+		[TOP BEGIN]
+			[LINE BEGIN]
+				start x 22.3
+				end y 32.5
+				width 0.2
+			[LINE END]
+
+			[ARC BEGIN]
+				center x 45 y 4.2
+				start x 42 y 54
+				end x 45 y 65
+				width 0.5
+			[ARC END]
+
+			[CIRCLE BEGIN]
+				center x 45 y 4.2
+				radius 10
+				width 0.5
+				filled yes/no
+				fill_style solid/hatched/cutout
+				hatching_line_width 0.3
+				hatching_line_spacing 1
+			[CIRCLE END]
+
+			[POLYGON BEGIN]
+				fill_style solid,hatched,cutout
+				corner_easing none/chamfer/fillet
+				easing_radius 0.3
+				hatching_line_width 0.3
+				hatching_line_spacing 1
+				[CORNERS BEGIN]
+					x 123.54 y 2.7
+					x 133.54 y 335.3
+					x 523.54 y 6.7
+				[CORNERS END]
+			[POLYGON END]
+		[TOP END]
+
+		[BOTTOM BEGIN]
+			same as in top
+		[BOTTOM END]
+		
+	[KEEPOUT END]
+
+	[ROUTE_RESTRICT BEGIN]
+		same as keepout but with layer numbers:
+			[LINE BEGIN]
+				start x 22.3
+				end y 32.5
+				width 0.2
+				layers 2 3 15
+			[LINE END]
+
+	[ROUTE_RESTRICT END]
+
+	[VIA_RESTRICT BEGIN]
+		same as route restrict
+	[VIA_RESTRICT END]
+	
+	[COPPER BEGIN]
+		[LINE BEGIN]
+			start x 22.3
+			end y 32.5
+			layer 2
+			width 0.2
+		[LINE END]
+
+		[ARC BEGIN]
+			center x 45 y 4.2
+			start x 42 y 54
+			end x 45 y 65
+			layer 2
+			width 0.5
+		[ARC END]
+
+		[CIRCLE BEGIN]
+			center x 45 y 4.2
+			radius 10
+			layer 2
+			width 0.5
+			filled yes/no
+			fill_style solid/hatched/cutout
+			hatching_line_width 0.3
+			hatching_line_spacing 1
+		[CIRCLE END]
+		
+		[POLYGON BEGIN]
+			corner_easing none/chamfer/fillet
+			easing_radius 0.3
+			fill_style solid,hatched,cutout
+			hatching_line_width 0.3
+			hatching_line_spacing 1
+			layer 2
+			min_width 0.3
+			[CORNERS BEGIN]
+				x 123.54 y 2.7
+				x 133.54 y 335.3
+				x 523.54 y 6.7
+			[CORNERS END]
+		[POLYGON END]
+
+		[TEXT BEGIN]
+			position x 40 y 20
+			size x 3.0 y 3.0
+			layer 2
+			line_width 0.2
+			rotation 0
+			content "bla"
+			alignment center
+			hidden yes/no
+		[TEXT END]
+
+		[PLACEHOLDER BEGIN]
+			position x 40 y 20
+			size x 3.0 y 3.0
+			layer 2
+			line_width 0.2
+			rotation 0
+			meaning project_name
+			alignment center
+			hidden yes/no
+		[PLACEHOLDER END]
+		
+	[COPPER END]
+	
+	[PCB_CONTOUR_NON_PLATED BEGIN]
+		[LINE BEGIN]
+			start x 22.3
+			end y 32.5
+			locked yes/no
+		[LINE END]
+
+		[ARC BEGIN]
+			center x 45 y 4.2
+			start x 42 y 54
+			end x 45 y 65
+			locked yes/no
+		[ARC END]
+
+		[CIRCLE BEGIN]
+			center x 45 y 4.2
+			radius 10
+			locked yes/no
+		[CIRCLE END]
+	[PCB_CONTOUR_NON_PLATED END]
+[BOARD_END]
+	
+
+# ======================================================================================================================================================
+# date 2018-11-06T09:31:48
+# module file end

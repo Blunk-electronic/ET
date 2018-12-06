@@ -59,8 +59,10 @@ with et_string_processing;
 with et_configuration;
 
 package et_kicad is
-
+	
 	-- CS: a lot of stuff should move from here to et_kicad_general
+
+	project_file_handle : ada.text_io.file_type;
 	
 	-- If lines of a file are to be collected we use this simple list:
 	package type_lines is new doubly_linked_lists (

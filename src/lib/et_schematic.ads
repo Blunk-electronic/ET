@@ -425,7 +425,7 @@ package et_schematic is
 
 	-- A project (or a rig) is a set of modules:
 	package type_rig is new ordered_maps (
-		-- This is the module name like "MY_MOTOR_DRIVER" or "BLOOD_SAMPLE_ANALYZER"
+		-- This is the module name like "MY_MOTOR_DRIVER_2" or "POWER_SUPPLY"
 		key_type		=> et_coordinates.type_submodule_name.bounded_string,
 		"<" 			=> et_coordinates.type_submodule_name."<",
 		element_type	=> type_module);

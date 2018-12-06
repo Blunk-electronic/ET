@@ -109,11 +109,14 @@ package et_project is
 	package type_project_file_name is new generic_bounded_length (project_path_max + project_name_max + 1); -- incl. directory separator
 	project_file_name : type_project_file_name.bounded_string; -- et_projects/led_matrix
 
-
+	-- The module file name:
+	module_file_name_length_max : constant positive := 100;
+	package type_module_file_name is new generic_bounded_length (module_file_name_length_max);
+	module_file_name : type_module_file_name.bounded_string; -- led_matrix
 	
-	project_file_name_extension : constant string (1..2) := "et";
+	module_file_name_extension : constant string := "mod";
 	
-	project_file_handle : ada.text_io.file_type;
+	module_file_handle : ada.text_io.file_type;
 
     -- A sheet title may have 100 characters which seems sufficient for now.
  	sheet_title_length : constant natural := 100;    
@@ -146,8 +149,14 @@ package et_project is
 
 	
 	
-	procedure save_project (log_threshold : in et_string_processing.type_log_level);
-	-- Saves the schematic and layout data in project file (project_file_handle).
+	procedure save_module (
+		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
+		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
+		log_threshold 	: in et_string_processing.type_log_level);
+	-- Saves the schematic and layout data in the module file (named after the project_name)
+	-- CS: a fourth parameters should be the module name. If not provided the module will be
+	-- named after the given project_name.
+
 
 	procedure save_device (
 		name			: in string; -- libraries/devices/resistor.dev

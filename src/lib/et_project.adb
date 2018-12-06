@@ -145,33 +145,33 @@ package body et_project is
 		create_directory (compose (to_string (path), directory_documentation));
 		create_directory (compose (to_string (path), directory_miscellaneous));
 
-		-- set the global project_file_name
-		log ("setting global project file name ...", log_threshold + 1);
-		project_file_name := type_project_file_name.to_bounded_string (compose (
-			containing_directory	=> to_string (path),
-			name 					=> to_string (project_name),
-			extension 				=> project_file_name_extension));
-		
-		log (" global project file name is now " & type_project_file_name.to_string (project_file_name), log_threshold + 2);
-
-		-- create project file and write in it a header
-		create (
-			file => project_file_handle,
-			mode => out_file, 
-			name => type_project_file_name.to_string (project_file_name));
-
-		put_line (project_file_handle, comment_mark & " " & system_name & " project file");
-		put_line (project_file_handle, comment_mark & " " & date);
-		put_line (project_file_handle, comment_mark & " project " & to_string (project_name));
-		put_line (project_file_handle, comment_mark & " " & row_separator_double);
-		new_line (project_file_handle);
+-- 		-- set the global project_file_name
+-- 		log ("setting global project file name ...", log_threshold + 1);
+-- 		project_file_name := type_project_file_name.to_bounded_string (compose (
+-- 			containing_directory	=> to_string (path),
+-- 			name 					=> to_string (project_name),
+-- 			extension 				=> project_file_name_extension));
+-- 		
+-- 		log (" global project file name is now " & type_project_file_name.to_string (project_file_name), log_threshold + 2);
+-- 
+-- 		-- create project file and write in it a header
+-- 		create (
+-- 			file => project_file_handle,
+-- 			mode => out_file, 
+-- 			name => type_project_file_name.to_string (project_file_name));
+-- 
+-- 		put_line (project_file_handle, comment_mark & " " & system_name & " project file");
+-- 		put_line (project_file_handle, comment_mark & " " & date);
+-- 		put_line (project_file_handle, comment_mark & " project " & to_string (project_name));
+-- 		put_line (project_file_handle, comment_mark & " " & row_separator_double);
+-- 		new_line (project_file_handle);
 
 		log_indentation_down;
 		
 		exception when event:
 			others => 
 				log (ada.exceptions.exception_message (event), console => true);
-				close (project_file_handle);
+				--close (project_file_handle);
 				raise;
 		
 	end create_project_directory;
@@ -827,26 +827,67 @@ package body et_project is
 
 	
 	
-	procedure save_project (log_threshold : in et_string_processing.type_log_level) is
-	-- Saves the schematic and layout data in project file (project_file_handle).
+	procedure save_module (
+		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
+		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
+		log_threshold 	: in et_string_processing.type_log_level) is
+	-- Saves the schematic and layout data in the module file (named after the project_name)
+	-- CS: a fourth parameters should be the module name. If not provided the module will be
+	-- named after the given project_name.
 	-- CS: improve log messages !!
 		
 		use et_string_processing;
 		use et_schematic;
 		use et_schematic.type_rig;
-		
-		procedure write_project_footer is
-		-- writes a nice footer in the project file and closes it.
-		begin
-			log ("closing project file ...", log_threshold + 1);
-			put_line (comment_mark & " " & row_separator_double);
-			put_line (comment_mark & " " & date);
-			put_line (comment_mark & " project " & to_string (project_name) & " file end");
-			new_line;
-		end write_project_footer;
 
 		module_cursor : type_rig.cursor := rig.first;
+		module_file_handle : ada.text_io.file_type;
+		
+		procedure write_module_header is 
+		-- Creates the module file and writes a nice header in it.
+			use ada.directories;
+			use type_project_name;
+			use type_et_project_path;
+			use et_general;
 
+			package type_path is new generic_bounded_length (project_name_max + project_path_max + 1); -- incl. directory separator
+			use type_path;
+			path : type_path.bounded_string := to_bounded_string (compose (to_string (project_path), to_string (project_name)));
+			
+		begin -- write_module_header
+			log ("module " & to_string (key (module_cursor)), log_threshold);
+
+			log ("setting module file name ...", log_threshold + 1);
+			module_file_name := type_module_file_name.to_bounded_string (compose (
+				containing_directory	=> to_string (path),
+				name 					=> to_string (project_name),
+				extension 				=> module_file_name_extension));
+			
+			log (" module file name is now " & type_module_file_name.to_string (module_file_name), log_threshold + 2);
+
+			-- create module file and write in it a header
+			create (
+				file => module_file_handle,
+				mode => out_file, 
+				name => type_module_file_name.to_string (module_file_name));
+
+			set_output (module_file_handle);
+			put_line (comment_mark & " " & system_name & " module");
+			put_line (comment_mark & " " & date);
+			put_line (comment_mark & " " & row_separator_double);
+			new_line;
+		end write_module_header;
+		
+		procedure write_module_footer is
+		-- writes a nice footer in the module file and closes it.
+		begin
+			log ("closing module file ...", log_threshold + 1);
+			put_line (comment_mark & " " & row_separator_double);
+			put_line (comment_mark & " " & date);
+			put_line (comment_mark & " module file end");
+			new_line;
+		end write_module_footer;
+		
 		function rotation (pos : in et_pcb_coordinates.type_terminal_position'class) return string is
 			use et_pcb_coordinates;
 		begin
@@ -1592,10 +1633,10 @@ package body et_project is
 			---BOARD END-----
 			section_mark (section_board, FOOTER);
 		end query_board;
-		
-	begin -- save_project
-		log ("saving project ...", log_threshold);
-		set_output (project_file_handle);
+
+	
+	begin -- save_module
+		log ("saving module ...", log_threshold);
 
 		reset_tab_depth;
 		
@@ -1603,18 +1644,10 @@ package body et_project is
 		log_indentation_up;
 		
 		while module_cursor /= et_schematic.type_rig.no_element loop
+
+			write_module_header;
+
 			
-			log ("module " & to_string (key (module_cursor)), log_threshold);
-			section_mark (section_module, HEADER);
-
-			-- generic module name
-			--write (keyword => keyword_generic_name, parameters => to_string (element (module_cursor).generic_name), space => true);
-
-			-- module instance name
-			--write (keyword => keyword_instance_name, parameters => to_string (element (module_cursor).instance), space => true);
-			-- CS: If multiple instances of the same module present, a range like 1..5 should be written here.
-			-- So the module would be written only once in the project file.
-
 			-- net classes
 			query_element (module_cursor, query_net_classes'access);
 
@@ -1636,29 +1669,33 @@ package body et_project is
 			-- board
 			query_element (module_cursor, query_board'access);
 			
-			section_mark (section_module, FOOTER);
+			--section_mark (section_module, FOOTER);
 			
+			--new_line;
+			--put_line (comment_mark & row_separator_single);
 			new_line;
-			put_line (comment_mark & row_separator_single);
-			new_line;
+
+
+			-- close native project file
+			write_module_footer;
+
+			set_output (standard_output);		
+			close (module_file_handle);
+
+
 			next (module_cursor);
 		end loop;
 		
 		log_indentation_down;
 		
-		-- close native project file
-		write_project_footer;
-
-		set_output (standard_output);		
-		close (project_file_handle);
 
 		exception when event:
 			others => 
 				log (ada.exceptions.exception_message (event), console => true);
-				close (project_file_handle);
+				close (module_file_handle);
 				raise;
 
-	end save_project;
+	end save_module;
 
 
 	procedure write_symbol (
@@ -2652,7 +2689,7 @@ package body et_project is
 		project_file_name := type_project_file_name.to_bounded_string (compose (
 			containing_directory	=> to_string (project_name),
 			name 					=> base_name (to_string (project_name)),
-			extension 				=> project_file_name_extension));
+			extension 				=> module_file_name_extension));
 
 		log ("project file is " & type_project_file_name.to_string (project_file_name), log_threshold + 1);
 		
@@ -2660,11 +2697,11 @@ package body et_project is
 
 			-- open project file
 			open (
-				file => project_file_handle,
+				file => module_file_handle,
 				mode => in_file, 
 				name => type_project_file_name.to_string (project_file_name));
 
-			set_input (project_file_handle);
+			set_input (module_file_handle);
 
 			-- Init section stack.
 			stack.init;
@@ -2690,7 +2727,7 @@ package body et_project is
 			end if;
 			
 			set_input (standard_input);
-			close (project_file_handle);
+			close (module_file_handle);
 
 		else
 			log_indentation_reset;
@@ -2705,8 +2742,8 @@ package body et_project is
 		exception when event:
 			others => 
 				log (ada.exceptions.exception_message (event), console => true);
-				if is_open (project_file_handle) then
-					close (project_file_handle);
+				if is_open (module_file_handle) then
+					close (module_file_handle);
 				end if;
 				raise;
 

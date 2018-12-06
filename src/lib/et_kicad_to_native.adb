@@ -3399,13 +3399,14 @@ package body et_kicad_to_native is
 			 & "' in " & et_project.type_et_project_path.to_string (project_path) 
 			& " ...", log_threshold);
 
+		-- create project directory
 		et_project.create_project_directory (
 			project_name	=> et_project.project_name, -- blood_sample_analyzer
 			project_path	=> project_path, 			-- /home/user/et_projects/imported_from_kicad
 			log_threshold 	=> log_threshold + 1);
-		-- Project file with project_file_handle is now open for write operations.
 		
 		-- Now we create new native modules and copy content from the kicad module to the native module.
+		-- CS: currently there is only one kicad and only one native module.
 		while module_cursor_kicad /= et_kicad.type_rig.no_element loop
 			log ("module " & et_coordinates.to_string (key (module_cursor_kicad)), log_threshold + 1);
 			log_indentation_up;
@@ -3454,8 +3455,11 @@ package body et_kicad_to_native is
 			next (module_cursor_kicad);
 		end loop;
 
-		-- save project
-		et_project.save_project (log_threshold);
+		-- save module
+		et_project.save_module (
+			project_name	=> et_project.project_name, -- blood_sample_analyzer
+			project_path	=> project_path, 			-- /home/user/et_projects/imported_from_kicad
+			log_threshold	=> log_threshold);
 
 		-- save libraries
 		save_libraries (

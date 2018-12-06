@@ -4554,13 +4554,13 @@ package body et_kicad is
 				-- Open project file. 
 				-- The file name is composed of project name and extension.
 				open (
-					file => et_project.project_file_handle,
+					file => project_file_handle,
 					mode => in_file,
 					name => compose (
 								name		=> et_project.type_project_name.to_string (project), 
 								extension	=> file_extension_project)
 					);
-				set_input (et_project.project_file_handle);
+				set_input (project_file_handle);
 				
 				while not end_of_file loop
 
@@ -4649,7 +4649,7 @@ package body et_kicad is
 				-- Create empty component libraries.
 				locate_libraries (log_threshold + 3);
 
-				close (et_project.project_file_handle);
+				close (project_file_handle);
 
 			end read_proj_v4;
 			
