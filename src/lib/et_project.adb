@@ -829,11 +829,11 @@ package body et_project is
 	
 	procedure save_module (
 		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
+		module_name		: in type_submodule_name.bounded_string := type_submodule_name.to_bounded_string ("");	-- motor_driver
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold 	: in et_string_processing.type_log_level) is
-	-- Saves the schematic and layout data in the module file (named after the project_name)
-	-- CS: a fourth parameters should be the module name. If not provided the module will be
-	-- named after the given project_name.
+	-- Saves the schematic and layout data in the module file of the given project.
+	-- If module_name not provided, the module will be named after the given project_name.
 	-- CS: improve log messages !!
 		
 		use et_string_processing;
@@ -855,13 +855,21 @@ package body et_project is
 			path : type_path.bounded_string := to_bounded_string (compose (to_string (project_path), to_string (project_name)));
 			
 		begin -- write_module_header
-			log ("module " & to_string (key (module_cursor)), log_threshold);
-
 			log ("setting module file name ...", log_threshold + 1);
-			module_file_name := type_module_file_name.to_bounded_string (compose (
-				containing_directory	=> to_string (path),
-				name 					=> to_string (project_name),
-				extension 				=> module_file_name_extension));
+
+			-- If given module_name is empty (means it has not been passed), the module is named after the project.
+			-- Otherwise the module name is as given by module_name.
+			if type_submodule_name.length (module_name) = 0 then
+				module_file_name := type_module_file_name.to_bounded_string (compose (
+					containing_directory	=> to_string (path),
+					name 					=> to_string (project_name),
+					extension 				=> module_file_name_extension));
+			else
+				module_file_name := type_module_file_name.to_bounded_string (compose (
+					containing_directory	=> to_string (path),
+					name 					=> to_string (module_name),
+					extension 				=> module_file_name_extension));
+			end if;
 			
 			log (" module file name is now " & type_module_file_name.to_string (module_file_name), log_threshold + 2);
 
@@ -1642,9 +1650,8 @@ package body et_project is
 		
 		-- write content
 		log_indentation_up;
-		
-		while module_cursor /= et_schematic.type_rig.no_element loop
 
+		
 			write_module_header;
 
 			
@@ -1669,25 +1676,16 @@ package body et_project is
 			-- board
 			query_element (module_cursor, query_board'access);
 			
-			--section_mark (section_module, FOOTER);
-			
-			--new_line;
-			--put_line (comment_mark & row_separator_single);
 			new_line;
 
-
-			-- close native project file
+		
 			write_module_footer;
 
 			set_output (standard_output);		
 			close (module_file_handle);
 
-
-			next (module_cursor);
-		end loop;
 		
 		log_indentation_down;
-		
 
 		exception when event:
 			others => 
