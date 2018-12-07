@@ -82,7 +82,7 @@ procedure et is
 						& latin_1.space & switch_import_format & latin_1.equals_sign
 						--& latin_1.space & switch_import_modules -- no parameter
 						& latin_1.space & switch_configuration_file & latin_1.equals_sign
-						& latin_1.space & switch_native_project & latin_1.equals_sign
+						--& latin_1.space & switch_native_project & latin_1.equals_sign
 						& latin_1.space & switch_native_project_open & latin_1.equals_sign						
 					) is
 
@@ -126,9 +126,9 @@ procedure et is
 						put_line ("configuration file " & parameter);
 						conf_file_name := et_configuration.type_configuration_file_name.to_bounded_string (parameter);
 
-					elsif full_switch = switch_native_project then
-						put_line ("native target project " & parameter);
-						project_name := et_project.to_project_name (parameter);
+-- 					elsif full_switch = switch_native_project then
+-- 						put_line ("native target project " & parameter);
+-- 						project_name := et_project.to_project_name (parameter);
 
 					elsif full_switch = switch_native_project_open then
 						put_line ("native project " & parameter);
@@ -193,17 +193,17 @@ procedure et is
 		end if;
 	end create_report_directory;
 
-	procedure test_if_native_project_specified is
-	-- Aborts program if no native target project name specified via cmd line parameter.
-		use et_project;
-		use et_project.type_project_name;
-	begin
-		if length (project_name) = 0 then
-			log_indentation_reset;
-			log (message_error & "Native target project name not specified !");
-			raise constraint_error;
-		end if;
-	end test_if_native_project_specified;
+-- 	procedure test_if_native_project_specified is
+-- 	-- Aborts program if no native target project name specified via cmd line parameter.
+-- 		use et_project;
+-- 		use et_project.type_project_name;
+-- 	begin
+-- 		if length (project_name) = 0 then
+-- 			log_indentation_reset;
+-- 			log (message_error & "Native target project name not specified !");
+-- 			raise constraint_error;
+-- 		end if;
+-- 	end test_if_native_project_specified;
 	
 	procedure import_module is
 	-- This imports a single module.
@@ -504,7 +504,7 @@ begin -- main
 
 		when et_general.IMPORT_MODULE =>
 			-- The targeted native ET project must be specified via cmd line parameter:
-			test_if_native_project_specified;
+			--test_if_native_project_specified;
 			
 			-- import a single module indicated by variable module_name_import
 			import_module; -- calls import_design (according to CAD format)

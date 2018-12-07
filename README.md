@@ -52,16 +52,16 @@ $ et --make_configuration my_configuration.txt
 - To import a single KiCad V5 design into a native project 'my_et_project' run this command: 
 
 ```sh
-$ et --configuration_file my_configuration.txt --import_format kicad_v5 --import_module my_kicad_project/ --project my_et_project
+$ et --configuration_file my_configuration.txt --import_format kicad_v5 --import_module my_kicad_project/
 ```
  
 optionally provide a log level for debugging:
 
 ```sh 
-$ et --configuration_file my_configuration.txt --import_format kicad_v5 --import_module my_kicad_project/ --project my_et_project --log_level 2
+$ et --configuration_file my_configuration.txt --import_format kicad_v5 --import_module my_kicad_project/ --log_level 2
 ```
 
-- ET creates in the projects root directory a folder named "ET" where you find logfiles, netlists, statistics, BOMs, ...
+- ET creates in the projects root directory a folder named "ET" where you find the imported projects, logfiles, netlists, statistics, BOMs, ...
 
 
 ### Installation
