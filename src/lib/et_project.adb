@@ -120,7 +120,7 @@ package body et_project is
 		end create_library_subdirs;
 			
 	begin -- create_project_directory
-		log ("project name '" & to_string (project_name) & "' ...", log_threshold);
+		log ("creating native project " & to_string (path) & " ...", log_threshold);
 		log_indentation_up;
 		
 		-- delete previous project directory

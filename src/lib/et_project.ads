@@ -94,7 +94,7 @@ package et_project is
 	
 	project_name_max : constant natural := 100;
 	package type_project_name is new generic_bounded_length (project_name_max);
-	project_name : type_project_name.bounded_string; -- the name of the current native project (or the rig)
+	project_name : type_project_name.bounded_string; -- the name of the current native project (or the rig) -- CS remove
 	
 	function to_string (project_name : in type_project_name.bounded_string) return string;
 

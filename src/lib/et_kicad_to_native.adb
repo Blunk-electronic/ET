@@ -2372,8 +2372,6 @@ package body et_kicad_to_native is
 			module_name : in et_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_schematic.type_module) is
 		begin
-			--module.generic_name		:= element (module_cursor_kicad).generic_name;
-			--module.instance			:= element (module_cursor_kicad).instance;
 			module.board_available	:= element (module_cursor_kicad).board_available;
 			module.texts			:= element (module_cursor_kicad).notes; 
 			module.board			:= et_pcb.type_board (element (module_cursor_kicad).board);
@@ -3384,10 +3382,13 @@ package body et_kicad_to_native is
 
 			log_indentation_down;			
 		end save_libraries;
-			
+
+		use et_project.type_project_name;
+		project_name : et_project.type_project_name.bounded_string; -- blood_sample_analyzer
+		
 	begin -- to_native
 	
-		-- First, the kicad schematics must be flattened so that we get real flat designs.
+		-- First, the kicad designs (currently there is only one) must be flattened so that we get real flat designs.
 		-- Further-on the y coordinates of objects in schematics and layouts must be changed. 
 		-- Kicad schematic has origin in upper left corner. ET has origin in lower left corder.
 		transpose (log_threshold);
@@ -3395,26 +3396,29 @@ package body et_kicad_to_native is
 		log ("converting ...", log_threshold);
 		log_indentation_up;
 
-		log ("creating native project '" & et_project.to_string (et_project.project_name) 
-			 & "' in " & et_project.type_et_project_path.to_string (project_path) 
-			& " ...", log_threshold);
-
-		-- create project directory
-		et_project.create_project_directory (
-			project_name	=> et_project.project_name, -- blood_sample_analyzer
-			project_path	=> project_path, 			-- /home/user/et_projects/imported_from_kicad
-			log_threshold 	=> log_threshold + 1);
-		
-		-- Now we create new native modules and copy content from the kicad module to the native module.
+		-- Now we create new native modules and copy content from the kicad module to the
+		-- same named native module.
 		-- CS: currently there is only one kicad and only one native module.
 		while module_cursor_kicad /= et_kicad.type_rig.no_element loop
-			log ("module " & et_coordinates.to_string (key (module_cursor_kicad)), log_threshold + 1);
+
+			-- Copy the kicad module name to the native project name.
+			-- The native project name and the module contained will have the same name.
+			project_name := to_bounded_string (et_coordinates.to_string (key (module_cursor_kicad)));
+			
+			log ("module " & to_string (project_name), log_threshold + 1);
 			log_indentation_up;
 
+			-- For each kicad design we create a native project:
+			et_project.create_project_directory (
+				project_name	=> project_name, 		-- blood_sample_analyzer
+				project_path	=> project_path, 		-- /home/user/et_projects/imported_from_kicad
+				log_threshold 	=> log_threshold + 2);
+
+			
 			-- create an empty module
 			et_schematic.type_rig.insert (
 				container	=> et_schematic.rig,
-				key			=> key (module_cursor_kicad),
+				key			=> key (module_cursor_kicad),	-- blood_sample_analyzer
 				position	=> module_cursor_native,
 				inserted	=> module_inserted -- should always be true
 				);
@@ -3451,21 +3455,23 @@ package body et_kicad_to_native is
 				position	=> module_cursor_kicad,
 				process		=> copy_libraries'access);
 
+			-- save module
+			et_project.save_module (
+				project_name	=> project_name, -- blood_sample_analyzer
+				project_path	=> project_path, -- /home/user/et_projects/imported_from_kicad
+				log_threshold	=> log_threshold);
+
+			-- save libraries
+			save_libraries (
+				project_name	=> project_name, -- blood_sample_analyzer
+				project_path	=> project_path, -- /home/user/et_projects/imported_from_kicad
+				log_threshold 	=> log_threshold + 1);
+
+			
 			log_indentation_down;
 			next (module_cursor_kicad);
 		end loop;
 
-		-- save module
-		et_project.save_module (
-			project_name	=> et_project.project_name, -- blood_sample_analyzer
-			project_path	=> project_path, 			-- /home/user/et_projects/imported_from_kicad
-			log_threshold	=> log_threshold);
-
-		-- save libraries
-		save_libraries (
-			project_name	=> et_project.project_name, -- blood_sample_analyzer
-			project_path	=> project_path, 			-- /home/user/et_projects/imported_from_kicad
-			log_threshold 	=> log_threshold + 1);
 
 		
 		log_indentation_down;
