@@ -399,8 +399,6 @@ package et_schematic is
 
 
 	type type_module is record
-		--generic_name	: et_coordinates.type_submodule_name.bounded_string; -- "GENERIC_MOTOR_DRIVER"
-		--instance		: et_coordinates.type_submodule_instance; -- CS: remove
 		board_available	: type_board_available := FALSE;
 		
 		devices			: type_devices.map;						-- the devices of the module
@@ -423,7 +421,8 @@ package et_schematic is
 	end record;
 
 	
-	-- This is a single native target module:
+	-- This is a single native target module used as scratch.
+	-- Make sure it is cleared before use ! --> via statement: et_schematic.module := (others => <>); 
 	module : et_schematic.type_module; 
 	
 

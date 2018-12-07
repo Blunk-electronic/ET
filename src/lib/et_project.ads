@@ -112,7 +112,6 @@ package et_project is
 	-- The module file name:
 	module_file_name_length_max : constant positive := 100;
 	package type_module_file_name is new generic_bounded_length (module_file_name_length_max);
-	module_file_name : type_module_file_name.bounded_string; -- led_matrix
 	
 	module_file_name_extension : constant string := "mod";
 	

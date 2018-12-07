@@ -1307,18 +1307,18 @@ package et_kicad is
 		log_threshold	: in et_string_processing.type_log_level)		
 		return et_schematic.type_net_name.bounded_string;
 
-	procedure export_netlists (log_threshold : in et_string_processing.type_log_level);
+	procedure export_netlists (log_threshold : in et_string_processing.type_log_level); -- CS this is general and should be in et_schematic
 	-- Exports/Writes the netlists of the rig in separate files.
 	-- Netlists are exported in individual project directories in the work directory of ET.
 	-- These project directories have the same name as the module indicated by module_cursor.
 	-- Addresses real components exclusively. Virtual things like GND symbols are not exported.
 	-- Call this procedure after executing procedure make_netlist !
 
-	procedure write_statistics (log_threshold : in et_string_processing.type_log_level);
+	procedure write_statistics (log_threshold : in et_string_processing.type_log_level);  -- CS this is general and should be in et_schematic
 	-- Writes the statistics on components and nets of the rig.
 	-- Distinguishes between CAD and CAM related things.
 
-	procedure export_bom (log_threshold : in et_string_processing.type_log_level);
+	procedure export_bom (log_threshold : in et_string_processing.type_log_level);  -- CS this is general and should be in et_schematic
 	-- Generates a bom file. This file is csv formatted and is to be processed by
 	-- other ERP tools (like stock_manager, see <https://github.com/Blunk-electronic/stock_manager>)
 
@@ -1327,13 +1327,13 @@ package et_kicad is
 		paper_size	: et_general.type_paper_size;
 	end record;
 
-	procedure multiple_purpose_warning ( -- CS: move to et_kicad
+	procedure multiple_purpose_warning (
 	-- Outputs an warning message on multiple usage of a purpose of a component category.
 		category		: in et_configuration.type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
 		purpose			: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
 		log_threshold	: in et_string_processing.type_log_level);
 	
-	function multiple_purpose ( -- CS: move to et_kicad
+	function multiple_purpose (
 	-- Returns the number of occurences of components with the given purpose and category.
 	-- Example: If there are two connectors with purpose "PWR_IN" the return is 2.
 		category		: in et_configuration.type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
@@ -1344,8 +1344,6 @@ package et_kicad is
 -- MODULES
 	
 	type type_module is record
-		--generic_name	: et_coordinates.type_submodule_name.bounded_string;  -- "GENERIC_MOTOR_DRIVER"
-		--instance		: et_coordinates.type_submodule_instance; -- CS remove
 		board_available	: et_schematic.type_board_available := et_schematic.false;
 
 		-- V4 uses search lists:

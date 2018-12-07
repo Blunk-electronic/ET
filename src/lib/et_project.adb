@@ -838,9 +838,7 @@ package body et_project is
 		
 		use et_string_processing;
 		use et_schematic;
-		--use et_schematic.type_rig;
 
-		--module_cursor : type_rig.cursor := rig.first;
 		module_file_handle : ada.text_io.file_type;
 		
 		procedure write_module_header is 
@@ -853,6 +851,8 @@ package body et_project is
 			package type_path is new generic_bounded_length (project_name_max + project_path_max + 1); -- incl. directory separator
 			use type_path;
 			path : type_path.bounded_string := to_bounded_string (compose (to_string (project_path), to_string (project_name)));
+
+			module_file_name : type_module_file_name.bounded_string; -- led_matrix
 			
 		begin -- write_module_header
 			log ("setting module file name ...", log_threshold + 1);
@@ -889,11 +889,17 @@ package body et_project is
 		procedure write_module_footer is
 		-- writes a nice footer in the module file and closes it.
 		begin
+			new_line;
+			
 			log ("closing module file ...", log_threshold + 1);
+			
 			put_line (comment_mark & " " & row_separator_double);
 			put_line (comment_mark & " " & date);
 			put_line (comment_mark & " module file end");
 			new_line;
+
+			set_output (standard_output);		
+			close (module_file_handle);
 		end write_module_footer;
 		
 		function rotation (pos : in et_pcb_coordinates.type_terminal_position'class) return string is
@@ -909,7 +915,6 @@ package body et_project is
 		end face;
 		
 		procedure query_net_classes is
-			--(module_name : in type_submodule_name.bounded_string; module : in type_module) 
 			use et_pcb;
 			use et_pcb.type_net_classes;
 			class_cursor : et_pcb.type_net_classes.cursor := et_schematic.module.net_classes.first;
@@ -938,7 +943,6 @@ package body et_project is
 			log_indentation_down;
 		end query_net_classes;
 
-		--procedure query_nets (module_name : in type_submodule_name.bounded_string; module : in type_module) is
 		procedure query_nets is
 			use et_schematic;
 			use et_schematic.type_nets;
@@ -1200,7 +1204,6 @@ package body et_project is
 			log_indentation_down;
 		end query_nets;
 
-		--procedure query_devices (module_name : in type_submodule_name.bounded_string; module : in type_module) is
 		procedure query_devices is		
 			use et_schematic;
 			use type_devices;
@@ -1307,7 +1310,6 @@ package body et_project is
 			section_mark (section_devices, FOOTER);
 		end query_devices;
 
-		--procedure query_frames (module_name : in type_submodule_name.bounded_string; module : in type_module) is
 		procedure query_frames is		
 			-- CS: handle sheet description 
 			use et_libraries;
@@ -1324,7 +1326,6 @@ package body et_project is
 			section_mark (section_drawing_frames, FOOTER);
 		end query_frames;
 
-		--procedure query_submodules (module_name : in type_submodule_name.bounded_string; module : in type_module) is
 		procedure query_submodules is		
 			use et_schematic;
 			use type_submodules;
@@ -1349,7 +1350,6 @@ package body et_project is
 			section_mark (section_submodules, FOOTER);
 		end query_submodules;
 
-		--procedure query_texts (module_name : in type_submodule_name.bounded_string; module : in type_module) is
 		procedure query_texts is		
 			use et_schematic;
 			use type_texts;
@@ -1368,7 +1368,6 @@ package body et_project is
 			section_mark (section_texts, FOOTER);
 		end query_texts;
 
-		--procedure query_board (module_name : in type_submodule_name.bounded_string; module : in type_module) is
 		procedure query_board is
 			use et_pcb;
 			use et_pcb_coordinates;
@@ -1655,7 +1654,6 @@ package body et_project is
 
 		reset_tab_depth;
 		
-		-- write content
 		log_indentation_up;
 
 		
@@ -1663,40 +1661,28 @@ package body et_project is
 
 		
 		-- net classes
-		--query_element (module_cursor, query_net_classes'access);
 		query_net_classes;
 
 		-- nets
-		--query_element (module_cursor, query_nets'access);
 		query_nets;
 
 		-- frames
-		--query_element (module_cursor, query_frames'access);
 		query_frames;
 		
 		-- notes
-		--query_element (module_cursor, query_texts'access);
 		query_texts;
 		
 		-- submodules
-		--query_element (module_cursor, query_submodules'access);
 		query_submodules;
 		
 		-- devices
-		--query_element (module_cursor, query_devices'access);
 		query_devices;
 		
 		-- board
-		--query_element (module_cursor, query_board'access);
 		query_board;
 	
-		new_line;
-
 	
 		write_module_footer;
-
-		set_output (standard_output);		
-		close (module_file_handle);
 
 		
 		log_indentation_down;

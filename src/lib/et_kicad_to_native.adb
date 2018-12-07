@@ -2347,8 +2347,6 @@ package body et_kicad_to_native is
 						et_project.type_et_project_path.to_bounded_string (
 							compose (et_general.work_directory, et_project.directory_import));
 
-		--project_name : et_project.type_project_name.bounded_string;
-
 		prefix_devices_dir : et_libraries.type_device_library_name.bounded_string := -- libraries/devices
 			et_libraries.to_device_library_name (compose (
 				et_project.directory_libraries, et_project.directory_libraries_devices));
@@ -2367,12 +2365,8 @@ package body et_kicad_to_native is
 
 		use et_schematic.type_rig;
 		module_cursor_native : et_schematic.type_rig.cursor;
--- 		module_inserted : boolean;
 		
 		procedure copy_general_stuff is
--- 					  (
--- 			module_name : in et_coordinates.type_submodule_name.bounded_string;
-			-- 			module		: in out et_schematic.type_module) is
 			use et_schematic;
 		begin
 			module.board_available	:= element (module_cursor_kicad).board_available;
@@ -2446,12 +2440,9 @@ package body et_kicad_to_native is
 
 		
 		procedure copy_components is
-		-- Transfer components from kicad design to native design.
+		-- Transfer components from kicad module to native module.
 		-- Changes the links to device models so that they point to the libraries
 		-- in project/libraries/devices/...
--- 			module_name : in et_coordinates.type_submodule_name.bounded_string;
--- 			module		: in out et_schematic.type_module) is
-
 			use et_schematic;
 			use et_kicad.type_components_schematic;
 			components_kicad		: et_kicad.type_components_schematic.map;
@@ -2603,9 +2594,7 @@ package body et_kicad_to_native is
 			end loop;
 		end copy_components;
 
-		procedure copy_nets is --(
--- 			module_name : in et_coordinates.type_submodule_name.bounded_string;
--- 			module		: in out et_schematic.type_module) is
+		procedure copy_nets is
 			use et_schematic;
 			
 			use et_kicad.type_nets;
@@ -3401,8 +3390,7 @@ package body et_kicad_to_native is
 		log ("converting ...", log_threshold);
 		log_indentation_up;
 
-		-- Now we create new native modules and copy content from the kicad module to the
-		-- same named native module.
+		-- Now we copy content from the kicad module to the same named native module.
 		-- CS: currently there is only one kicad and only one native module.
 		while module_cursor_kicad /= et_kicad.type_rig.no_element loop
 
@@ -3420,36 +3408,12 @@ package body et_kicad_to_native is
 				log_threshold 	=> log_threshold + 2);
 
 			
--- 			-- create an empty module
--- 			et_schematic.type_rig.insert (
--- 				container	=> et_schematic.rig,
--- 				key			=> key (module_cursor_kicad),	-- blood_sample_analyzer
--- 				position	=> module_cursor_native,
--- 				inserted	=> module_inserted -- should always be true
--- 				);
-
-
-			-- copy general stuff (notes, routing info, silk screen, documentation, net class settings, ...)
--- 			update_element (
--- 				container	=> et_schematic.rig,
--- 				position	=> module_cursor_native,
--- 				process		=> copy_general_stuff'access);
-
-			copy_general_stuff;
+			-- clear scratch module
+			et_schematic.module := (others => <>);
 			
-			-- copy schematic components (incl. their units and positions in layout)
--- 			update_element (
--- 				container	=> et_schematic.rig,
--- 				position	=> module_cursor_native,
--- 				process		=> copy_components'access);
+			copy_general_stuff;
 
 			copy_components;
-			
-			-- copy nets (incl. layout related stuff: tracks, vias, polygons, net classes, ...)
--- 			update_element (
--- 				container	=> et_schematic.rig,
--- 				position	=> module_cursor_native,
--- 				process		=> copy_nets'access);
 
 			copy_nets;
 			
@@ -3468,13 +3432,14 @@ package body et_kicad_to_native is
 				process		=> copy_libraries'access);
 
 			
-			-- save module
+			-- save module (from et_schematic.module to module file)
 			et_project.save_module (
 				project_name	=> project_name, -- blood_sample_analyzer
 				project_path	=> project_path, -- /home/user/et_projects/imported_from_kicad
 				log_threshold	=> log_threshold);
 
-			-- save libraries
+			-- save libraries (from et_libraries.devices and et_pcb.packages 
+			-- to native project directory libraries/devices and libraries/packages)
 			save_libraries (
 				project_name	=> project_name, -- blood_sample_analyzer
 				project_path	=> project_path, -- /home/user/et_projects/imported_from_kicad
