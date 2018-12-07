@@ -69,7 +69,12 @@ package et_kicad_to_native is
 	--    (The origin in kicad is the upper left corner. The origin in ET is the lower left corner.)
 	
 	procedure to_native (log_threshold : in et_string_processing.type_log_level);
-	-- Converts the rig (inc. component libraries) to a native project.
+	-- Converts the kicad module (incl. component libraries) to a native module.
+	-- Stores the native module data in et_schematic.module.
+	-- Converts the packages (from package_libraries) to native packages.
+	-- NOTE: Packages of the board (incl. their deviations/modifications
+	-- from the package_libraries) are ignored !
+
 
 		
 end et_kicad_to_native;

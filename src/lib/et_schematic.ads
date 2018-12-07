@@ -422,6 +422,10 @@ package et_schematic is
 		board			: et_pcb.type_board;
 	end record;
 
+	
+	-- This is a single native target module:
+	module : et_schematic.type_module; 
+	
 
 	-- A project (or a rig) is a set of modules:
 	package type_rig is new ordered_maps (

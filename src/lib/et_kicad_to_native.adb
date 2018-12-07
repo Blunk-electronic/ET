@@ -2336,7 +2336,8 @@ package body et_kicad_to_native is
 	end transpose;
 	
 	procedure to_native (log_threshold : in et_string_processing.type_log_level) is
-	-- Converts the rig (incl. component libraries) to a native project.
+	-- Converts the kicad module (incl. component libraries) to a native module.
+	-- Stores the native module data in et_schematic.module.
 	-- Converts the packages (from package_libraries) to native packages.
 	-- NOTE: Packages of the board (incl. their deviations/modifications
 	-- from the package_libraries) are ignored !
@@ -2366,11 +2367,13 @@ package body et_kicad_to_native is
 
 		use et_schematic.type_rig;
 		module_cursor_native : et_schematic.type_rig.cursor;
-		module_inserted : boolean;
+-- 		module_inserted : boolean;
 		
-		procedure copy_general_stuff (
-			module_name : in et_coordinates.type_submodule_name.bounded_string;
-			module		: in out et_schematic.type_module) is
+		procedure copy_general_stuff is
+-- 					  (
+-- 			module_name : in et_coordinates.type_submodule_name.bounded_string;
+			-- 			module		: in out et_schematic.type_module) is
+			use et_schematic;
 		begin
 			module.board_available	:= element (module_cursor_kicad).board_available;
 			module.texts			:= element (module_cursor_kicad).notes; 
@@ -2442,13 +2445,14 @@ package body et_kicad_to_native is
 		end rename_package_model;
 
 		
-		procedure copy_components (
+		procedure copy_components is
 		-- Transfer components from kicad design to native design.
 		-- Changes the links to device models so that they point to the libraries
 		-- in project/libraries/devices/...
-			module_name : in et_coordinates.type_submodule_name.bounded_string;
-			module		: in out et_schematic.type_module) is
+-- 			module_name : in et_coordinates.type_submodule_name.bounded_string;
+-- 			module		: in out et_schematic.type_module) is
 
+			use et_schematic;
 			use et_kicad.type_components_schematic;
 			components_kicad		: et_kicad.type_components_schematic.map;
 			component_cursor_kicad	: et_kicad.type_components_schematic.cursor;
@@ -2599,10 +2603,11 @@ package body et_kicad_to_native is
 			end loop;
 		end copy_components;
 
-		procedure copy_nets (
-			module_name : in et_coordinates.type_submodule_name.bounded_string;
-			module		: in out et_schematic.type_module) is
-
+		procedure copy_nets is --(
+-- 			module_name : in et_coordinates.type_submodule_name.bounded_string;
+-- 			module		: in out et_schematic.type_module) is
+			use et_schematic;
+			
 			use et_kicad.type_nets;
 			use et_kicad.type_strands;
 			kicad_nets			: et_kicad.type_nets.map := element (module_cursor_kicad).nets;
@@ -2920,7 +2925,7 @@ package body et_kicad_to_native is
 		procedure copy_libraries (
 			module_name : in et_coordinates.type_submodule_name.bounded_string;
 			module		: in et_kicad.type_module) is
-
+			
 			-- This cursor points to the kicad component library being converted:
 			use et_kicad.type_libraries;
 			component_library_cursor : et_kicad.type_libraries.cursor := module.component_libraries.first;
@@ -3385,7 +3390,7 @@ package body et_kicad_to_native is
 
 		use et_project.type_project_name;
 		project_name : et_project.type_project_name.bounded_string; -- blood_sample_analyzer
-		
+	
 	begin -- to_native
 	
 		-- First, the kicad designs (currently there is only one) must be flattened so that we get real flat designs.
@@ -3415,32 +3420,39 @@ package body et_kicad_to_native is
 				log_threshold 	=> log_threshold + 2);
 
 			
-			-- create an empty module
-			et_schematic.type_rig.insert (
-				container	=> et_schematic.rig,
-				key			=> key (module_cursor_kicad),	-- blood_sample_analyzer
-				position	=> module_cursor_native,
-				inserted	=> module_inserted -- should always be true
-				);
+-- 			-- create an empty module
+-- 			et_schematic.type_rig.insert (
+-- 				container	=> et_schematic.rig,
+-- 				key			=> key (module_cursor_kicad),	-- blood_sample_analyzer
+-- 				position	=> module_cursor_native,
+-- 				inserted	=> module_inserted -- should always be true
+-- 				);
+
 
 			-- copy general stuff (notes, routing info, silk screen, documentation, net class settings, ...)
-			update_element (
-				container	=> et_schematic.rig,
-				position	=> module_cursor_native,
-				process		=> copy_general_stuff'access);
+-- 			update_element (
+-- 				container	=> et_schematic.rig,
+-- 				position	=> module_cursor_native,
+-- 				process		=> copy_general_stuff'access);
 
+			copy_general_stuff;
+			
 			-- copy schematic components (incl. their units and positions in layout)
-			update_element (
-				container	=> et_schematic.rig,
-				position	=> module_cursor_native,
-				process		=> copy_components'access);
+-- 			update_element (
+-- 				container	=> et_schematic.rig,
+-- 				position	=> module_cursor_native,
+-- 				process		=> copy_components'access);
 
+			copy_components;
+			
 			-- copy nets (incl. layout related stuff: tracks, vias, polygons, net classes, ...)
-			update_element (
-				container	=> et_schematic.rig,
-				position	=> module_cursor_native,
-				process		=> copy_nets'access);
+-- 			update_element (
+-- 				container	=> et_schematic.rig,
+-- 				position	=> module_cursor_native,
+-- 				process		=> copy_nets'access);
 
+			copy_nets;
+			
 			-- CS copy frames
 
 			-- Copy component libraries.
@@ -3455,6 +3467,7 @@ package body et_kicad_to_native is
 				position	=> module_cursor_kicad,
 				process		=> copy_libraries'access);
 
+			
 			-- save module
 			et_project.save_module (
 				project_name	=> project_name, -- blood_sample_analyzer
