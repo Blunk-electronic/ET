@@ -17,7 +17,7 @@
 - native Linux support
 - ASCII / text based design and device model files - optimized for version control with GIT
 - human readable and editable design and model files
-- multi-board/layout support
+- multi-schematic/board/layout support
 - true hierarchic and modular design
 - submodules instantiated in parent module by reference
 - extensive design rule checking (device prefixes, purpose of user-interactive devices, partcodes, pinout of board-to-board connections ...)
@@ -28,6 +28,7 @@
 - Device model <https://github.com/Blunk-electronic/ET/blob/master/examples/device.dev>
 - Symbol model <https://github.com/Blunk-electronic/ET/blob/master/examples/symbol.sym>
 - Package model <https://github.com/Blunk-electronic/ET/blob/master/examples/package.pac>
+- A so called rig-configuration that describes module instances and board-to-board connections <https://github.com/Blunk-electronic/ET/blob/master/examples/dummy/dummy.conf>
 
 ### Example of an ERC configuration file
 - See this example <https://github.com/Blunk-electronic/ET/blob/master/examples/conf.txt>

@@ -91,92 +91,6 @@ package body et_project is
 		return type_file_name_text_size'value (size);
 	end to_file_name_text_size;
 	
-	
-	procedure create_project_directory (
-	-- Creates given project directory in the given project_path.
-	-- Already existing projects in given project_path are overwritten.
-	-- Sets the global project file name so that subsequent write and read operations
-	-- know the right project file.
-	-- Leaves the project file (global project_file_handle) open (closes it on exception).
-		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
-		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
-		log_threshold	: in et_string_processing.type_log_level) is
-		use et_general;
-		use ada.directories;
-		use et_string_processing;
-		use type_project_name;
-		use type_et_project_path;
-
-		package type_path is new generic_bounded_length (project_name_max + project_path_max + 1); -- incl. directory separator
-		use type_path;
-		path : type_path.bounded_string := to_bounded_string (compose (to_string (project_path), to_string (project_name)));
-
-		procedure create_library_subdirs (path : in string) is
-		begin
-			create_directory (compose (path, directory_libraries_devices));
-			create_directory (compose (path, directory_libraries_symbols));
-			create_directory (compose (path, directory_libraries_packages));			
-			--log ("subdir " & compose (path, directory_libraries_devices));
-		end create_library_subdirs;
-			
-	begin -- create_project_directory
-		log ("creating native project " & to_string (path) & " ...", log_threshold);
-		log_indentation_up;
-		
-		-- delete previous project directory
-		if exists (to_string (path)) then
-			delete_tree (to_string (path));
-		end if;
-		
-		-- create project root directory
-		create_path (to_string (path));
-
-		
-		-- create sub-directories for supplementary stuff:
-		log ("creating subdirectories for supplementary stuff ...", log_threshold + 1);
-		create_directory (compose (to_string (path), directory_libraries));
-		create_library_subdirs (compose (to_string (path), directory_libraries));
-		
-		create_directory (compose (to_string (path), directory_dru));
-		create_directory (compose (to_string (path), directory_cam));
-		create_directory (compose (to_string (path), directory_net_classes));
-		create_directory (compose (to_string (path), directory_settings));
-		create_directory (compose (to_string (path), directory_reports));
-		create_directory (compose (to_string (path), directory_documentation));
-		create_directory (compose (to_string (path), directory_miscellaneous));
-
--- 		-- set the global project_file_name
--- 		log ("setting global project file name ...", log_threshold + 1);
--- 		project_file_name := type_project_file_name.to_bounded_string (compose (
--- 			containing_directory	=> to_string (path),
--- 			name 					=> to_string (project_name),
--- 			extension 				=> project_file_name_extension));
--- 		
--- 		log (" global project file name is now " & type_project_file_name.to_string (project_file_name), log_threshold + 2);
--- 
--- 		-- create project file and write in it a header
--- 		create (
--- 			file => project_file_handle,
--- 			mode => out_file, 
--- 			name => type_project_file_name.to_string (project_file_name));
--- 
--- 		put_line (project_file_handle, comment_mark & " " & system_name & " project file");
--- 		put_line (project_file_handle, comment_mark & " " & date);
--- 		put_line (project_file_handle, comment_mark & " project " & to_string (project_name));
--- 		put_line (project_file_handle, comment_mark & " " & row_separator_double);
--- 		new_line (project_file_handle);
-
-		log_indentation_down;
-		
-		exception when event:
-			others => 
-				log (ada.exceptions.exception_message (event), console => true);
-				--close (project_file_handle);
-				raise;
-		
-	end create_project_directory;
-
-
 	procedure tab_depth_up is begin tab_depth := tab_depth + 1; end tab_depth_up;
 	procedure tab_depth_down is begin tab_depth := tab_depth - 1; end tab_depth_down;
 	procedure reset_tab_depth is begin tab_depth := type_tab_depth'first; end reset_tab_depth;
@@ -216,7 +130,139 @@ package body et_project is
 					put_line (tab_depth * tab & keyword & parameters);
 			end case;
 		end if;
-	end write;
+	end write;	
+	
+	procedure create_project_directory (
+	-- Creates given project directory in the given project_path.
+	-- Already existing projects in given project_path are overwritten.
+	-- Sets the global project file name so that subsequent write and read operations
+	-- know the right project file.
+	-- Leaves the project file (global project_file_handle) open (closes it on exception).
+		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
+		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
+		log_threshold	: in et_string_processing.type_log_level) is
+		use et_general;
+		use ada.directories;
+		use et_string_processing;
+		use type_project_name;
+		use type_et_project_path;
+
+		package type_path is new generic_bounded_length (project_name_max + project_path_max + 1); -- incl. directory separator
+		use type_path;
+		path : type_path.bounded_string := to_bounded_string (compose (to_string (project_path), to_string (project_name)));
+
+		procedure create_library_subdirs (path : in string) is
+		begin
+			create_directory (compose (path, directory_libraries_devices));
+			create_directory (compose (path, directory_libraries_symbols));
+			create_directory (compose (path, directory_libraries_packages));			
+			--log ("subdir " & compose (path, directory_libraries_devices));
+		end create_library_subdirs;
+
+		procedure create_rig_configuration is
+		-- create the rig configuration file
+			file_handle : ada.text_io.file_type;
+			rig_conf_file : type_rig_configuration_file_name.bounded_string; -- led_matrix.conf
+		begin
+			log ("creating the rig configuration file ...", log_threshold + 1);
+			rig_conf_file := type_rig_configuration_file_name.to_bounded_string (compose (
+				containing_directory	=> to_string (path),
+				name 					=> to_string (project_name),
+				extension 				=> rig_configuration_file_extension));
+
+			create (
+				file => file_handle,
+				mode => out_file, 
+				name => type_rig_configuration_file_name.to_string (rig_conf_file));
+
+			set_output (file_handle);
+
+			-- write a nice header
+			put_line (comment_mark & " " & system_name & " rig configuration file");
+			put_line (comment_mark & " " & date);
+			put_line (comment_mark & " " & row_separator_double);
+			new_line;
+
+			-- section module instances
+			section_mark (section_module_instances, HEADER);
+
+			section_mark (section_module, HEADER);			
+			write (keyword => keyword_generic_name, space => true, parameters => to_string (project_name));
+			write (keyword => keyword_instance_name, space => true, parameters => to_string (project_name));
+			section_mark (section_module, FOOTER);			
+			
+			-- CS In the future, write other things here that characterize the instance.
+			section_mark (section_module_instances, FOOTER);
+
+
+			-- section connectors
+			new_line;
+			section_mark (section_module_connections, HEADER);
+
+			section_mark (section_connector, HEADER);			
+			write (keyword => comment_mark & " " & keyword_instance_name, space => true, parameters => to_string (project_name));
+			write (keyword => comment_mark & " " & keyword_purpose, space => true, wrap => true, parameters => "power_in");
+			new_line;
+			write (keyword => comment_mark & " " & keyword_instance_name, space => true, parameters => "power_supply");
+			write (keyword => comment_mark & " " & keyword_purpose, space => true, wrap => true, parameters => "power_out");
+			new_line;
+			write (keyword => comment_mark & " " & keyword_net_comparator, space => true, parameters => "on"); -- CS image of enum type
+			write (keyword => comment_mark & " " & keyword_net_comparator_warn_only, space => true, parameters => "on"); -- CS image of enum type
+			section_mark (section_connector, FOOTER);			
+			
+			-- CS In the future, write other things here that characterize the board to board connection
+			section_mark (section_module_connections, FOOTER);
+
+			
+			-- write a nice footer
+			new_line;
+			put_line (comment_mark & " " & row_separator_double);
+			put_line (comment_mark & " " & date);
+			put_line (comment_mark & " rig configuration file end");
+			new_line;
+			
+			set_output (standard_output);
+			close (file_handle);
+		end create_rig_configuration;
+
+	begin -- create_project_directory
+		log ("creating native project " & to_string (path) & " ...", log_threshold);
+		log_indentation_up;
+		
+		-- delete previous project directory
+		if exists (to_string (path)) then
+			delete_tree (to_string (path));
+		end if;
+		
+		-- create project root directory
+		create_path (to_string (path));
+		
+		-- create sub-directories for supplementary stuff:
+		log ("creating subdirectories for supplementary stuff ...", log_threshold + 1);
+		create_directory (compose (to_string (path), directory_libraries));
+		create_library_subdirs (compose (to_string (path), directory_libraries));
+		
+		create_directory (compose (to_string (path), directory_dru));
+		create_directory (compose (to_string (path), directory_cam));
+		create_directory (compose (to_string (path), directory_net_classes));
+		create_directory (compose (to_string (path), directory_settings));
+		create_directory (compose (to_string (path), directory_reports));
+		create_directory (compose (to_string (path), directory_documentation));
+		create_directory (compose (to_string (path), directory_miscellaneous));
+
+		create_rig_configuration;
+
+		log_indentation_down;
+		
+		exception when event:
+			others => 
+				log (ada.exceptions.exception_message (event), console => true);
+				raise;
+		
+	end create_project_directory;
+
+
+
 
 	function position (pos : in et_coordinates.type_2d_point'class) return string is
 	-- Returns something like "x 12.34 y 45.0" or "sheet 3 x 12.34 y 45.0".
@@ -2553,6 +2599,8 @@ package body et_project is
 		use et_string_processing;
 		use ada.directories;
 
+		module_file_handle : ada.text_io.file_type;
+		
 		line : et_string_processing.type_fields_of_line;
 
 		-- This is the section stack. Here we track the sections. On entering a section, its name is
@@ -2664,11 +2712,11 @@ package body et_project is
 				if not stack.empty then
 					if stack.current = SEC_MODULE then
 						log ("line --> " & to_string (line), log_threshold + 1);
-						if f (line,1) = keyword_generic_name then
-							null;
-							--rig.insert (
-							--module_name := to_submodule_name (f (line,2));
-						end if;
+-- 						if f (line,1) = keyword_generic_name then
+-- 							null;
+-- 							--rig.insert (
+-- 							--module_name := to_submodule_name (f (line,2));
+-- 						end if;
 					else
 						null;
 					end if;

@@ -115,8 +115,16 @@ package et_project is
 	
 	module_file_name_extension : constant string := "mod";
 	
-	module_file_handle : ada.text_io.file_type;
 
+
+
+	-- The rig configuration is modelled here:
+	rig_configuration_file_length_max : constant positive := 100;
+	package type_rig_configuration_file_name is new generic_bounded_length (rig_configuration_file_length_max);
+
+	rig_configuration_file_extension : constant string := "conf";
+
+	
     -- A sheet title may have 100 characters which seems sufficient for now.
  	sheet_title_length : constant natural := 100;    
 	package type_sheet_title is new generic_bounded_length (sheet_title_length);
@@ -175,10 +183,12 @@ package et_project is
 
 	
 
--- PROJECT FILE SECTIONS AND KEYWORDS
+-- FILE SECTIONS AND KEYWORDS
 	
 	keyword_generic_name			: constant string := "generic_name";
-	keyword_instance_name			: constant string := "instance";
+	keyword_instance_name			: constant string := "instance_name";
+	keyword_net_comparator			: constant string := "net_comparator";
+	keyword_net_comparator_warn_only: constant string := "warn_only";
 	keyword_name					: constant string := "name";
 	keyword_description				: constant string := "description";
 	keyword_clearance				: constant string := "clearance";		
@@ -277,6 +287,10 @@ package et_project is
 	section_begin				: constant string := "BEGIN]";	
 	section_end					: constant string := "END]";
 
+	section_module_instances	: constant string := "[MODULE_INSTANCES";
+	section_module_connections	: constant string := "[MODULE_CONNECTIONS";
+	section_connector			: constant string := "[CONNECTOR";
+	
 	section_module				: constant string := "[MODULE";
 	
 	section_net_classes			: constant string := "[NET_CLASSES";
