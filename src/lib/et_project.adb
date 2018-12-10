@@ -78,7 +78,14 @@ package body et_project is
 	begin
 		return type_et_project_path.to_string (path);
 	end to_string;
-	
+
+	function to_string (section : in type_section_name_rig_configuration) return string is
+	-- Converts a section like SEC_MODULE_INSTANCES to a string "module_instances".
+		len : positive := type_section_name_rig_configuration'image (section)'length;
+	begin
+		return to_lower (type_section_name_rig_configuration'image (section) (5..len));
+	end to_string;
+
 	function to_sheet_name_text_size (size : in string) return type_sheet_name_text_size is
 	-- Converts a string to type_sheet_name_text_size.
 	begin
@@ -2599,11 +2606,19 @@ package body et_project is
 		use et_string_processing;
 		use ada.directories;
 
+		function f (line : in type_fields_of_line; position : in positive) return string 
+			renames et_string_processing.field;
+		
+		-- We need a backup of the current working directory. When this procedure finishes,
+		-- the working directory must restored.
+		current_working_directory : string := current_directory;
+		
 		module_file_handle : ada.text_io.file_type;
 		
 		line : et_string_processing.type_fields_of_line;
 
-		-- This is the section stack. Here we track the sections. On entering a section, its name is
+		-- This is the section stack of the module. 
+		-- Here we track the sections. On entering a section, its name is
 		-- pushed onto the stack. When leaving a section the latest section name is popped.
 		max_section_depth : constant positive := 10;
 		package stack is new stack_lifo (
@@ -2612,9 +2627,6 @@ package body et_project is
 
 		procedure process_line is 
 
-			function f (line : in type_fields_of_line; position : in positive) return string 
-				renames et_string_processing.field;
-			
 			function set (
 			-- Tests if the current line is a section header or footer. Returns true in both cases.
 			-- Returns false if the current line is neither a section header or footer.
@@ -2632,7 +2644,7 @@ package body et_project is
 					elsif f (line, 2) = section_end then -- section footer detected in field 2
 						stack.pop;
 						if stack.empty then
-							log ("project file reading complete", log_threshold + 1);
+							log ("file complete", log_threshold + 1);
 						else
 							log ("returning to section " & to_string (stack.current), log_threshold + 1);
 						end if;
@@ -2658,8 +2670,8 @@ package body et_project is
 		begin -- process_line
 			--put_line (standard_output, to_string (line));
 			
-			if set (section_module, SEC_MODULE) then null;
-			elsif set (section_net_classes, SEC_NET_CLASSES) then null;
+			--if set (section_module, SEC_MODULE) then null;
+			if set (section_net_classes, SEC_NET_CLASSES) then null;
 			elsif set (section_net_class, SEC_NET_CLASS) then null;
 			elsif set (section_nets, SEC_NETS) then null;
 			elsif set (section_net, SEC_NET) then null;
@@ -2709,45 +2721,118 @@ package body et_project is
 				-- The line contains something else -> the payload data. 
 				-- Temporarily this data is stored in corresponding variables.
 
-				if not stack.empty then
-					if stack.current = SEC_MODULE then
-						log ("line --> " & to_string (line), log_threshold + 1);
+				null;
+-- 				if not stack.empty then
+-- 					if stack.current = SEC_MODULE then
+-- 						log ("line --> " & to_string (line), log_threshold + 1);
 -- 						if f (line,1) = keyword_generic_name then
 -- 							null;
 -- 							--rig.insert (
 -- 							--module_name := to_submodule_name (f (line,2));
 -- 						end if;
-					else
-						null;
-					end if;
-				end if;
+-- 					else
+-- 						null;
+-- 					end if;
+-- 				end if;
 
 			end if;
 
 		end process_line;
+
+		-- The search of rig configuration files requires this stuff:
+		conf_file_search : search_type; -- the state of the search
+		conf_file_filter : filter_type := (ordinary_file => true, others => false);
+
+		procedure read_conf_file (conf_file_handle : in directory_entry_type) is 
+			file_handle : ada.text_io.file_type;
+			file_name : string := simple_name (conf_file_handle); -- my_rig_configuration.conf
+
+			line : et_string_processing.type_fields_of_line;
+
+			-- This is the section stack of the configuration file. 
+			-- Here we track the sections. On entering a section, its name is
+			-- pushed onto the stack. When leaving a section the latest section name is popped.
+			max_section_depth : constant positive := 2;
+			package stack is new stack_lifo (
+				item	=> type_section_name_rig_configuration,
+				max 	=> max_section_depth);
+			
+			procedure process_line is
+
+				function set (
+				-- Tests if the current line is a section header or footer. Returns true in both cases.
+				-- Returns false if the current line is neither a section header or footer.
+				-- If it is a header, the section name is pushed onto the sections stack.
+				-- If it is a footer, the latest section name is popped from the stack.
+					section_keyword	: in string; -- [MODULE_INSTANCES
+					section			: in type_section_name_rig_configuration) -- SEC_MODULE_INSTANCES
+					return boolean is 
+
+					use et_string_processing;
+
+				begin -- set
+					if f (line, 1) = section_keyword then -- section name detected in field 1
+						if f (line, 2) = section_begin then -- section header detected in field 2
+							stack.push (section);
+							log ("entering section " & to_string (section), log_threshold + 1);
+							return true;
+						elsif f (line, 2) = section_end then -- section footer detected in field 2
+							stack.pop;
+							if stack.empty then
+								log ("file complete", log_threshold + 1);
+							else
+								log ("returning to section " & to_string (stack.current), log_threshold + 1);
+							end if;
+							return true;
+						else
+							log_indentation_reset;
+							log (message_error & "missing " & section_begin & " or " & section_end & " after section name !", console => true);
+							raise constraint_error;
+						end if;
+					else -- neither a section header nor footer
+						return false;
+					end if;
+				end set;
 				
-	begin -- open_project
-		log ("opening project '" & to_string (project_name) & "' ...", log_threshold, console => true);
-		log_indentation_up;
+				
+			begin -- process_line
+				if set (section_module_instances, SEC_MODULE_INSTANCES) then null;
+				elsif set (section_module, SEC_MODULE) then null;
+				elsif set (section_module_connections, SEC_MODULE_CONNECTIONS) then null;
+				elsif set (section_connector, SEC_CONNECTOR) then null;
+				else
+					-- The line contains something else -> the payload data. 
+					-- Temporarily this data is stored in corresponding variables.
+					null;
+-- 					if not stack.empty then
+-- 						if stack.current = SEC_MODULE then
+-- 							log ("line --> " & to_string (line), log_threshold + 1);
+-- 	-- 						if f (line,1) = keyword_generic_name then
+-- 	-- 							null;
+-- 	-- 							--rig.insert (
+-- 	-- 							--module_name := to_submodule_name (f (line,2));
+-- 	-- 						end if;
+-- 						else
+-- 							null;
+-- 						end if;
+-- 					end if;
 
-		--log ("directory " & base_name (to_string (project_name)));
-		
-		project_file_name := type_project_file_name.to_bounded_string (compose (
-			containing_directory	=> to_string (project_name),
-			name 					=> base_name (to_string (project_name)),
-			extension 				=> module_file_name_extension));
+				end if;
 
-		log ("project file is " & type_project_file_name.to_string (project_file_name), log_threshold + 1);
-		
-		if exists (type_project_file_name.to_string (project_file_name)) then
+				
+			end process_line;
+			
+		begin -- read_conf_file
+			-- write name of configuration file
+			log (file_name, log_threshold + 1);
 
-			-- open project file
+			-- open rig configuration file
 			open (
-				file => module_file_handle,
+				file => file_handle,
 				mode => in_file, 
-				name => type_project_file_name.to_string (project_file_name));
+				name => file_name);
 
-			set_input (module_file_handle);
+			set_input (file_handle);
 
 			-- Init section stack.
 			stack.init;
@@ -2771,19 +2856,87 @@ package body et_project is
 			if not stack.empty then 
 				log (message_warning & "section stack not empty !");
 			end if;
-			
-			set_input (standard_input);
-			close (module_file_handle);
 
-		else
+			
+			set_input (current_input);
+			close (file_handle);
+		end read_conf_file;
+			
+		
+	begin -- open_project
+		log ("opening project " & to_string (project_name) & " ...", log_threshold, console => true);
+		log_indentation_up;
+		
+		-- If the given project directory exists, enter it. Otherwise error message and abort.
+		if exists (to_string (project_name)) then
+			-- enter the project directory
+			set_directory (to_string (project_name));
+
+			log ("looking for rig configuration files ...", log_threshold + 1);
+			log_indentation_up;
+			if more_entries (conf_file_search) then
+				search (current_directory, rig_configuration_file_extension, conf_file_filter, read_conf_file'access);
+			else
+				log (message_warning & "No rig configuration files found !"); -- CS: write implications !
+			end if;
+			
+			log_indentation_down;
+			
+		else -- project directory does not exist
 			log_indentation_reset;
-			log (message_error & "Native project file " & type_project_file_name.to_string (project_file_name) 
+			log (message_error & "Native project " & to_string (project_name) 
 				 & " does not exist !", console => true);
 			--log ("Example to open the native project by specifying the project directory:", console => true);			log ("Example to open the native project by specifying the project directory:", console => true);
 			--log (system_name_cmd_line & "openetample to open the native project by specifying the project directory:", console => true);
 			raise constraint_error;
 		end if;
+
 		log_indentation_down;
+
+
+			
+		--log ("directory " & base_name (to_string (project_name)));
+		
+-- 		project_file_name := type_project_file_name.to_bounded_string (compose (
+-- 			containing_directory	=> to_string (project_name),
+-- 			name 					=> base_name (to_string (project_name)),
+-- 			extension 				=> module_file_name_extension));
+-- 
+-- 		log ("project file is " & type_project_file_name.to_string (project_file_name), log_threshold + 1);
+		
+-- 		if exists (type_project_file_name.to_string (project_file_name)) then
+-- 
+-- 
+-- 			-- Init section stack.
+-- 			stack.init;
+-- 			
+-- 			-- read the file line by line
+-- 			while not end_of_file loop
+-- 				line := et_string_processing.read_line (
+-- 					line 			=> get_line,
+-- 					number			=> ada.text_io.line (current_input),
+-- 					comment_mark 	=> et_string_processing.comment_mark, -- comments start with #
+-- 					delimiter_wrap	=> true, -- strings are enclosed in quotations
+-- 					ifs 			=> latin_1.space); -- fields are separated by space
+-- 
+-- 				-- we are interested in lines that contain something. emtpy lines are skipped:
+-- 				if field_count (line) > 0 then
+-- 					process_line;
+-- 				end if;
+-- 			end loop;
+-- 
+-- 			-- As a safety measure the stack must be empty.
+-- 			if not stack.empty then 
+-- 				log (message_warning & "section stack not empty !");
+-- 			end if;
+-- 			
+-- 			set_input (standard_input);
+-- 			close (module_file_handle);
+-- 
+-- 		else
+
+		-- Restore working directory.
+		set_directory (current_working_directory);
 		
 		exception when event:
 			others => 
@@ -2791,6 +2944,10 @@ package body et_project is
 				if is_open (module_file_handle) then
 					close (module_file_handle);
 				end if;
+
+				-- Restore working directory.
+				set_directory (current_working_directory);
+
 				raise;
 
 	end open_project;
@@ -2851,6 +3008,48 @@ package body et_project is
 	end stack_lifo;
 
 
+-- 	package body test_section_header_footer is
+-- 
+-- 		function set (
+-- 		-- Tests if the current line is a section header or footer. Returns true in both cases.
+-- 		-- Returns false if the current line is neither a section header or footer.
+-- 		-- If it is a header, the section name is pushed onto the sections stack.
+-- 		-- If it is a footer, the latest section name is popped from the stack.
+-- 			section_keyword	: in string; -- [MODULE
+-- 			section			: in type_section_name) -- SEC_MODULE
+-- 			return boolean is 
+-- 
+-- 			use et_string_processing;
+-- 			
+-- 			function f (line : in et_string_processing.type_fields_of_line; position : in positive) 
+-- 				return string renames et_string_processing.field;
+-- 
+-- 		begin -- set
+-- 			if f (line, 1) = section_keyword then -- section name detected in field 1
+-- 				if f (line, 2) = section_begin then -- section header detected in field 2
+-- 					--stack.push (section);
+-- 					--log ("entering section " & to_string (section), log_threshold + 1);
+-- 					return true;
+-- 				elsif f (line, 2) = section_end then -- section footer detected in field 2
+-- 					--stack.pop;
+-- -- 					if stack.empty then
+-- -- 						log ("project file reading complete", log_threshold + 1);
+-- -- 					else
+-- -- 						log ("returning to section " & to_string (stack.current), log_threshold + 1);
+-- -- 					end if;
+-- 					return true;
+-- 				else
+-- 					log_indentation_reset;
+-- 					log (message_error & "missing " & section_begin & " or " & section_end & " after section name !", console => true);
+-- 					raise constraint_error;
+-- 				end if;
+-- 			else -- neither a section header nor footer
+-- 				return false;
+-- 			end if;
+-- 		end set;
+-- 
+-- 	end test_section_header_footer;
+	
 	
 end et_project;
 	

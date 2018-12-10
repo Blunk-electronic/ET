@@ -121,9 +121,47 @@ package et_project is
 	-- The rig configuration is modelled here:
 	rig_configuration_file_length_max : constant positive := 100;
 	package type_rig_configuration_file_name is new generic_bounded_length (rig_configuration_file_length_max);
-
+	use type_rig_configuration_file_name;
+	
 	rig_configuration_file_extension : constant string := "conf";
 
+	-- The module instance name is something like LMX_1 or DRV_1:
+	module_instance_name_length_max : constant positive := 20;
+	package type_module_instance_name is new generic_bounded_length (module_instance_name_length_max);
+	use type_module_instance_name;
+	
+	type type_module_instance is record
+		generic_name	: et_coordinates.type_submodule_name.bounded_string; -- motor_driver
+		-- CS other properties ?
+	end record;
+
+	-- Lots of module instances are a map from the instance name to the type_module_instance.
+	package type_module_instances is new ordered_maps (
+		key_type		=> type_module_instance_name.bounded_string, -- LMX_1
+		element_type	=> type_module_instance);
+
+	-- A rig configuration consists of a list of module instances
+	-- and a list of module-to-module connectors (or board-to-board connectors):
+	type type_rig_configuration is record
+		module_instances	: type_module_instances.map;
+	end record;
+
+	-- Lots of rig configurations are stored in a map:
+	package type_rig_configurations is new ordered_maps (
+		key_type		=> type_rig_configuration_file_name.bounded_string,
+		element_type	=> type_rig_configuration);
+
+	type type_section_name_rig_configuration is (
+		SEC_MODULE_INSTANCES,
+		SEC_MODULE,
+		SEC_MODULE_CONNECTIONS,
+		SEC_CONNECTOR
+		);
+
+	function to_string (section : in type_section_name_rig_configuration) return string;
+	-- Converts a section like SEC_MODULE_INSTANCES to a string "module_instances".
+
+	
 	
     -- A sheet title may have 100 characters which seems sufficient for now.
  	sheet_title_length : constant natural := 100;    
@@ -388,7 +426,7 @@ package et_project is
 	section_title_block			: constant string	:= "[TITLE_BLOCK";
 	
 	type type_section_name_project is (
-		SEC_MODULE,
+		--SEC_MODULE,
 		SEC_NET_CLASSES,
 		SEC_NET_CLASS,
 		SEC_NETS,
@@ -485,7 +523,19 @@ package et_project is
 	end stack_lifo;
 
 
-	
+-- 	generic
+-- 		line : et_string_processing.type_fields_of_line;
+-- 		type type_section_name is private;
+-- 	package test_section_header_footer is
+-- 		function set (
+-- 			-- Tests if the current line is a section header or footer. Returns true in both cases.
+-- 			-- Returns false if the current line is neither a section header or footer.
+-- 			-- If it is a header, the section name is pushed onto the sections stack.
+-- 			-- If it is a footer, the latest section name is popped from the stack.
+-- 			section_keyword	: in string; -- [MODULE
+-- 			section			: in type_section_name) -- SEC_MODULE
+-- 		return boolean;
+-- 	end test_section_header_footer;
 	
 end et_project;
 

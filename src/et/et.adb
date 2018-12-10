@@ -535,6 +535,17 @@ begin -- main
 
 
 		when et_general.OPEN_NATIVE_PROJECT =>
+			
+			-- read configuration file if specified. otherwise issue warning
+			if et_configuration.type_configuration_file_name.length (conf_file_name) > 0 then
+				et_configuration.read_configuration (
+					file_name		=> conf_file_name,
+					log_threshold	=> 0);
+			else
+				log (message_warning & "no configuration file specified !");
+			end if;
+
+			-- open specified project
 			et_project.open_project (log_threshold => 0);
 	end case;
 
