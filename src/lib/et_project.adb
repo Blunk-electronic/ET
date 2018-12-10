@@ -2612,132 +2612,7 @@ package body et_project is
 		-- We need a backup of the current working directory. When this procedure finishes,
 		-- the working directory must restored.
 		current_working_directory : string := current_directory;
-		
-		module_file_handle : ada.text_io.file_type;
-		
-		line : et_string_processing.type_fields_of_line;
 
-		-- This is the section stack of the module. 
-		-- Here we track the sections. On entering a section, its name is
-		-- pushed onto the stack. When leaving a section the latest section name is popped.
-		max_section_depth : constant positive := 10;
-		package stack is new stack_lifo (
-			item	=> type_section_name_project,
-			max 	=> max_section_depth);
-
-		procedure process_line is 
-
-			function set (
-			-- Tests if the current line is a section header or footer. Returns true in both cases.
-			-- Returns false if the current line is neither a section header or footer.
-			-- If it is a header, the section name is pushed onto the sections stack.
-			-- If it is a footer, the latest section name is popped from the stack.
-				section_keyword	: in string; -- [MODULE
-				section			: in type_section_name_project) -- SEC_MODULE
-				return boolean is 
-			begin -- set
-				if f (line, 1) = section_keyword then -- section name detected in field 1
-					if f (line, 2) = section_begin then -- section header detected in field 2
-						stack.push (section);
-						log ("entering section " & to_string (section), log_threshold + 1);
-						return true;
-					elsif f (line, 2) = section_end then -- section footer detected in field 2
-						stack.pop;
-						if stack.empty then
-							log ("file complete", log_threshold + 1);
-						else
-							log ("returning to section " & to_string (stack.current), log_threshold + 1);
-						end if;
-						return true;
-					else
-						log_indentation_reset;
-						log (message_error & "missing " & section_begin & " or " & section_end & " after section name !", console => true);
-						raise constraint_error;
-					end if;
-				else -- neither a section header nor footer
-					return false;
-				end if;
-			end set;
-
-			-- VARIABLES FOR TEMPORARILY STORAGE BEGIN
-			--module_name : type_submodule_name.bounded_string; -- motor_driver
-			
-			--module_instance : type_submodule_instance; -- 1, 3, ... 
-			-- CS: range like 1..5 not supported yet. This would require a list of module_instance.
-
-			-- VARIABLES FOR TEMPORARILY STORAGE END
-			
-		begin -- process_line
-			--put_line (standard_output, to_string (line));
-			
-			--if set (section_module, SEC_MODULE) then null;
-			if set (section_net_classes, SEC_NET_CLASSES) then null;
-			elsif set (section_net_class, SEC_NET_CLASS) then null;
-			elsif set (section_nets, SEC_NETS) then null;
-			elsif set (section_net, SEC_NET) then null;
-			elsif set (section_strands, SEC_STRANDS) then null;
-			elsif set (section_strand, SEC_STRAND) then null;
-			elsif set (section_segments, SEC_SEGMENTS) then null;
-			elsif set (section_segment, SEC_SEGMENT) then null;
-			elsif set (section_labels, SEC_LABELS) then null;
-			elsif set (section_label, SEC_LABEL) then null;
-			elsif set (section_junctions, SEC_JUNCTIONS) then null;
-			elsif set (section_ports, SEC_PORTS) then null;
-			elsif set (section_submodule_ports, SEC_SUBMODULE_PORTS) then null;								
-			elsif set (section_ports, SEC_PORT) then null;				
-			elsif set (section_route, SEC_ROUTE) then null;								
-			elsif set (section_line, SEC_LINE) then null;								
-			elsif set (section_arc, SEC_ARC) then null;								
-			elsif set (section_polygon, SEC_POLYGON) then null;								
-			elsif set (section_corners, SEC_CORNERS) then null;								
-			elsif set (section_via, SEC_VIA) then null;								
-			elsif set (section_submodules, SEC_SUBMODULES) then null;
-			elsif set (section_submodule, SEC_SUBMODULE) then null;
-			elsif set (section_drawing_frames, SEC_DRAWING_FRAMES) then null;
-			elsif set (section_schematic, SEC_SCHEMATIC) then null;
-			elsif set (section_board, SEC_BOARD) then null;
-			elsif set (section_devices, SEC_DEVICES) then null;				
-			elsif set (section_device, SEC_DEVICE) then null;
-			elsif set (section_units, SEC_UNITS) then null;
-			elsif set (section_unit, SEC_UNIT) then null;
-			elsif set (section_placeholders, SEC_PLACEHOLDERS) then null;				
-			elsif set (section_placeholder, SEC_PLACEHOLDER) then null;
-			elsif set (section_package, SEC_PACKAGE) then null;
-			elsif set (section_texts, SEC_TEXTS) then null;
-			elsif set (section_text, SEC_TEXT) then null;
-			elsif set (section_silk_screen, SEC_SILK_SCREEN) then null;
-			elsif set (section_top, SEC_TOP) then null;
-			elsif set (section_bottom, SEC_BOTTOM) then null;
-			elsif set (section_circle, SEC_CIRCLE) then null;
-			elsif set (section_assembly_doc, SEC_ASSEMBLY_DOCUMENTATION) then null;
-			elsif set (section_stencil, SEC_STENCIL) then null;
-			elsif set (section_stop_mask, SEC_STOP_MASK) then null;
-			elsif set (section_keepout, SEC_KEEPOUT) then null;
-			elsif set (section_route_restrict, SEC_ROUTE_RESTRICT) then null;
-			elsif set (section_via_restrict, SEC_VIA_RESTRICT) then null;
-			elsif set (section_copper, SEC_COPPER) then null;				
-			elsif set (section_pcb_contour, SEC_PCB_CONTOUR_NON_PLATED) then null;
-			else
-				-- The line contains something else -> the payload data. 
-				-- Temporarily this data is stored in corresponding variables.
-
-				null;
--- 				if not stack.empty then
--- 					if stack.current = SEC_MODULE then
--- 						log ("line --> " & to_string (line), log_threshold + 1);
--- 						if f (line,1) = keyword_generic_name then
--- 							null;
--- 							--rig.insert (
--- 							--module_name := to_submodule_name (f (line,2));
--- 						end if;
--- 					else
--- 						null;
--- 					end if;
--- 				end if;
-
-			end if;
-
-		end process_line;
 
 		-- The search of rig configuration files requires this stuff:
 		conf_file_search : search_type; -- the state of the search
@@ -2856,12 +2731,199 @@ package body et_project is
 			if not stack.empty then 
 				log (message_warning & "section stack not empty !");
 			end if;
-
 			
 			set_input (current_input);
 			close (file_handle);
-		end read_conf_file;
+
+			exception when event: others =>
+				log (ada.exceptions.exception_message (event));
+				log (affected_line (line));
+				if is_open (file_handle) then
+					close (file_handle);
+				end if;
+				raise;
 			
+		end read_conf_file;
+
+
+		-- The search of rig module files requires this stuff:
+		module_file_search : search_type; -- the state of the search
+		module_file_filter : filter_type := (ordinary_file => true, others => false);
+
+		procedure read_module_file (module_file_handle : in directory_entry_type) is 
+			file_handle : ada.text_io.file_type;
+			file_name : string := simple_name (module_file_handle); -- motor_driver.mod
+
+			line : et_string_processing.type_fields_of_line;
+
+			-- This is the section stack of the module. 
+			-- Here we track the sections. On entering a section, its name is
+			-- pushed onto the stack. When leaving a section the latest section name is popped.
+			max_section_depth : constant positive := 10;
+			package stack is new stack_lifo (
+				item	=> type_section_name_project,
+				max 	=> max_section_depth);
+
+			procedure process_line is 
+
+				function set (
+				-- Tests if the current line is a section header or footer. Returns true in both cases.
+				-- Returns false if the current line is neither a section header or footer.
+				-- If it is a header, the section name is pushed onto the sections stack.
+				-- If it is a footer, the latest section name is popped from the stack.
+					section_keyword	: in string; -- [MODULE
+					section			: in type_section_name_project) -- SEC_MODULE
+					return boolean is 
+				begin -- set
+					if f (line, 1) = section_keyword then -- section name detected in field 1
+						if f (line, 2) = section_begin then -- section header detected in field 2
+							stack.push (section);
+							log ("entering section " & to_string (section), log_threshold + 1);
+							return true;
+						elsif f (line, 2) = section_end then -- section footer detected in field 2
+							stack.pop;
+							if stack.empty then
+								log ("file complete", log_threshold + 1);
+							else
+								log ("returning to section " & to_string (stack.current), log_threshold + 1);
+							end if;
+							return true;
+						else
+							log_indentation_reset;
+							log (message_error & "missing " & section_begin & " or " & section_end & " after section name !", console => true);
+							raise constraint_error;
+						end if;
+					else -- neither a section header nor footer
+						return false;
+					end if;
+				end set;
+
+				-- VARIABLES FOR TEMPORARILY STORAGE BEGIN
+				--module_name : type_submodule_name.bounded_string; -- motor_driver
+				
+				-- VARIABLES FOR TEMPORARILY STORAGE END
+				
+			begin -- process_line
+				--put_line (standard_output, to_string (line));
+				
+				--if set (section_module, SEC_MODULE) then null;
+				if set (section_net_classes, SEC_NET_CLASSES) then null;
+				elsif set (section_net_class, SEC_NET_CLASS) then null;
+				elsif set (section_nets, SEC_NETS) then null;
+				elsif set (section_net, SEC_NET) then null;
+				elsif set (section_strands, SEC_STRANDS) then null;
+				elsif set (section_strand, SEC_STRAND) then null;
+				elsif set (section_segments, SEC_SEGMENTS) then null;
+				elsif set (section_segment, SEC_SEGMENT) then null;
+				elsif set (section_labels, SEC_LABELS) then null;
+				elsif set (section_label, SEC_LABEL) then null;
+				elsif set (section_junctions, SEC_JUNCTIONS) then null;
+				elsif set (section_ports, SEC_PORTS) then null;
+				elsif set (section_submodule_ports, SEC_SUBMODULE_PORTS) then null;								
+				elsif set (section_ports, SEC_PORT) then null;				
+				elsif set (section_route, SEC_ROUTE) then null;								
+				elsif set (section_line, SEC_LINE) then null;								
+				elsif set (section_arc, SEC_ARC) then null;								
+				elsif set (section_polygon, SEC_POLYGON) then null;								
+				elsif set (section_corners, SEC_CORNERS) then null;								
+				elsif set (section_via, SEC_VIA) then null;								
+				elsif set (section_submodules, SEC_SUBMODULES) then null;
+				elsif set (section_submodule, SEC_SUBMODULE) then null;
+				elsif set (section_drawing_frames, SEC_DRAWING_FRAMES) then null;
+				elsif set (section_schematic, SEC_SCHEMATIC) then null;
+				elsif set (section_board, SEC_BOARD) then null;
+				elsif set (section_devices, SEC_DEVICES) then null;				
+				elsif set (section_device, SEC_DEVICE) then null;
+				elsif set (section_units, SEC_UNITS) then null;
+				elsif set (section_unit, SEC_UNIT) then null;
+				elsif set (section_placeholders, SEC_PLACEHOLDERS) then null;				
+				elsif set (section_placeholder, SEC_PLACEHOLDER) then null;
+				elsif set (section_package, SEC_PACKAGE) then null;
+				elsif set (section_texts, SEC_TEXTS) then null;
+				elsif set (section_text, SEC_TEXT) then null;
+				elsif set (section_silk_screen, SEC_SILK_SCREEN) then null;
+				elsif set (section_top, SEC_TOP) then null;
+				elsif set (section_bottom, SEC_BOTTOM) then null;
+				elsif set (section_circle, SEC_CIRCLE) then null;
+				elsif set (section_assembly_doc, SEC_ASSEMBLY_DOCUMENTATION) then null;
+				elsif set (section_stencil, SEC_STENCIL) then null;
+				elsif set (section_stop_mask, SEC_STOP_MASK) then null;
+				elsif set (section_keepout, SEC_KEEPOUT) then null;
+				elsif set (section_route_restrict, SEC_ROUTE_RESTRICT) then null;
+				elsif set (section_via_restrict, SEC_VIA_RESTRICT) then null;
+				elsif set (section_copper, SEC_COPPER) then null;				
+				elsif set (section_pcb_contour, SEC_PCB_CONTOUR_NON_PLATED) then null;
+				else
+					-- The line contains something else -> the payload data. 
+					-- Temporarily this data is stored in corresponding variables.
+
+					null;
+	-- 				if not stack.empty then
+	-- 					if stack.current = SEC_MODULE then
+	-- 						log ("line --> " & to_string (line), log_threshold + 1);
+	-- 						if f (line,1) = keyword_generic_name then
+	-- 							null;
+	-- 							--rig.insert (
+	-- 							--module_name := to_submodule_name (f (line,2));
+	-- 						end if;
+	-- 					else
+	-- 						null;
+	-- 					end if;
+	-- 				end if;
+
+				end if;
+
+			end process_line;
+
+			
+		begin -- read_module_file
+			-- write name of configuration file
+			log (file_name, log_threshold + 1);
+
+			-- open module file
+			open (
+				file => file_handle,
+				mode => in_file, 
+				name => file_name);
+
+			set_input (file_handle);
+			
+			-- Init section stack.
+			stack.init;
+
+			-- read the file line by line
+			while not end_of_file loop
+				line := et_string_processing.read_line (
+					line 			=> get_line,
+					number			=> ada.text_io.line (current_input),
+					comment_mark 	=> et_string_processing.comment_mark, -- comments start with #
+					delimiter_wrap	=> true, -- strings are enclosed in quotations
+					ifs 			=> latin_1.space); -- fields are separated by space
+
+				-- we are interested in lines that contain something. emtpy lines are skipped:
+				if field_count (line) > 0 then
+					process_line;
+				end if;
+			end loop;
+
+			-- As a safety measure the stack must be empty.
+			if not stack.empty then 
+				log (message_warning & "section stack not empty !");
+			end if;
+			
+			set_input (standard_input);
+			close (file_handle);
+
+			exception when event: others =>
+				log (affected_line (line));			
+				log (ada.exceptions.exception_message (event));
+				if is_open (file_handle) then
+					close (file_handle);
+				end if;
+				raise;
+			
+		end read_module_file;
+		
 		
 	begin -- open_project
 		log ("opening project " & to_string (project_name) & " ...", log_threshold, console => true);
@@ -2869,6 +2931,7 @@ package body et_project is
 		
 		-- If the given project directory exists, enter it. Otherwise error message and abort.
 		if exists (to_string (project_name)) then
+			
 			-- enter the project directory
 			set_directory (to_string (project_name));
 
@@ -2879,6 +2942,17 @@ package body et_project is
 			else
 				log (message_warning & "No rig configuration files found !"); -- CS: write implications !
 			end if;
+
+
+			
+			log ("looking for module files ...", log_threshold + 1);
+			log_indentation_up;
+			if more_entries (module_file_search) then
+				search (current_directory, module_file_name_extension, module_file_filter, read_module_file'access);
+			else
+				log (message_warning & "No modules found !"); -- CS: write implications !
+			end if;
+
 			
 			log_indentation_down;
 			
@@ -2893,57 +2967,12 @@ package body et_project is
 
 		log_indentation_down;
 
-
-			
-		--log ("directory " & base_name (to_string (project_name)));
-		
--- 		project_file_name := type_project_file_name.to_bounded_string (compose (
--- 			containing_directory	=> to_string (project_name),
--- 			name 					=> base_name (to_string (project_name)),
--- 			extension 				=> module_file_name_extension));
--- 
--- 		log ("project file is " & type_project_file_name.to_string (project_file_name), log_threshold + 1);
-		
--- 		if exists (type_project_file_name.to_string (project_file_name)) then
--- 
--- 
--- 			-- Init section stack.
--- 			stack.init;
--- 			
--- 			-- read the file line by line
--- 			while not end_of_file loop
--- 				line := et_string_processing.read_line (
--- 					line 			=> get_line,
--- 					number			=> ada.text_io.line (current_input),
--- 					comment_mark 	=> et_string_processing.comment_mark, -- comments start with #
--- 					delimiter_wrap	=> true, -- strings are enclosed in quotations
--- 					ifs 			=> latin_1.space); -- fields are separated by space
--- 
--- 				-- we are interested in lines that contain something. emtpy lines are skipped:
--- 				if field_count (line) > 0 then
--- 					process_line;
--- 				end if;
--- 			end loop;
--- 
--- 			-- As a safety measure the stack must be empty.
--- 			if not stack.empty then 
--- 				log (message_warning & "section stack not empty !");
--- 			end if;
--- 			
--- 			set_input (standard_input);
--- 			close (module_file_handle);
--- 
--- 		else
-
 		-- Restore working directory.
 		set_directory (current_working_directory);
 		
 		exception when event:
 			others => 
 				log (ada.exceptions.exception_message (event), console => true);
-				if is_open (module_file_handle) then
-					close (module_file_handle);
-				end if;
 
 				-- Restore working directory.
 				set_directory (current_working_directory);
