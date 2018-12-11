@@ -2677,13 +2677,42 @@ package body et_project is
 				instance_name : type_module_instance_name.bounded_string; -- DRV_1
 				
 				procedure execute_section is
+					use type_module_instances;
+					instance_created : boolean;
+					instance_cursor : type_module_instances.cursor;
 				begin
-					null;
--- 					case stack.parent is
--- 						when SEC_MODULE_INSTANCES =>
--- 							case stack.current is
--- 								when SEC_MODULE =>
+					case stack.parent is
+						when SEC_MODULE_INSTANCES =>
+							case stack.current is
+								when SEC_MODULE =>
+									rig.module_instances.insert (
+										key			=> instance_name,
+										new_item	=> (generic_name => generic_name),
+										inserted	=> instance_created,
+										position	=> instance_cursor
+										);
 
+									if not instance_created then
+										log_indentation_reset;
+										log (message_error & "module instance '" 
+											 & to_string (instance_name) & "' already exists !");
+										raise constraint_error;
+									end if;
+									
+								when others => invalid_section;
+							end case;
+							
+						when SEC_MODULE_CONNECTIONS =>
+							case stack.current is
+								when SEC_CONNECTOR =>
+									null;
+
+								when others => invalid_section;
+							end case;
+
+						when others => invalid_section;
+					end case;
+							
 				end execute_section;
 				
 				function set (
