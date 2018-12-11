@@ -2664,7 +2664,7 @@ package body et_project is
 			-- This is the section stack of the configuration file. 
 			-- Here we track the sections. On entering a section, its name is
 			-- pushed onto the stack. When leaving a section the latest section name is popped.
-			max_section_depth : constant positive := 2;
+			max_section_depth : constant positive := 3;
 			package stack is new stack_lifo (
 				item	=> type_section_name_rig_configuration,
 				max 	=> max_section_depth);
@@ -2682,6 +2682,13 @@ package body et_project is
 					instance_cursor : type_module_instances.cursor;
 				begin
 					case stack.parent is
+						when SEC_INIT =>
+							case stack.current is
+								when SEC_MODULE_INSTANCES => null;
+								when SEC_MODULE_CONNECTIONS => null;
+								when others => invalid_section;
+							end case;
+							
 						when SEC_MODULE_INSTANCES =>
 							case stack.current is
 								when SEC_MODULE =>
@@ -2695,7 +2702,8 @@ package body et_project is
 									if not instance_created then
 										log_indentation_reset;
 										log (message_error & "module instance '" 
-											 & to_string (instance_name) & "' already exists !");
+											 & to_string (instance_name) & "' already exists !",
+											 console => true);
 										raise constraint_error;
 									end if;
 									
@@ -2818,6 +2826,7 @@ package body et_project is
 
 			-- Init section stack.
 			stack.init;
+			stack.push (SEC_INIT);
 			
 			-- read the file line by line
 			while not end_of_file loop
@@ -2834,8 +2843,8 @@ package body et_project is
 				end if;
 			end loop;
 
-			-- As a safety measure the stack must be empty.
-			if not stack.empty then 
+			-- As a safety measure the top section must be reached:
+			if stack.depth > 1 then 
 				log (message_warning & write_section_stack_not_empty);
 			end if;
 

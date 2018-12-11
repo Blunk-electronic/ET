@@ -156,6 +156,7 @@ package et_project is
 		element_type	=> type_rig_configuration);
 
 	type type_section_name_rig_configuration is (
+		SEC_INIT,
 		SEC_MODULE_INSTANCES,
 		SEC_MODULE,
 		SEC_MODULE_CONNECTIONS,
