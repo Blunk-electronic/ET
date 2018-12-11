@@ -556,6 +556,7 @@ begin -- main
 			others => 
 				log (ada.exceptions.exception_message (event), console => true);
 				close_report;
+				put_line ("Read log file " & log_file_name & " for details !");
 				set_exit_status (failure);
 
 end et;

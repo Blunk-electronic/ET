@@ -2619,7 +2619,20 @@ package body et_project is
 		function write_missing_begin_end return string is begin 
 			return "missing " & section_begin & " or " & section_end & " after section name !"; end;
 		function write_section_stack_not_empty return string is begin
-			return "section stack not empty !"; end;		
+			return "section stack not empty !"; end;
+
+		procedure invalid_section is begin
+			log_indentation_reset;
+			log (message_error & "invalid section name !", console => true);
+			raise constraint_error;
+		end;
+
+		procedure invalid_keyword (word : in string) is begin
+			log_indentation_reset;
+			log (message_error & "invalid keyword '" & word & "' !", console => true);
+			raise constraint_error;
+		end;
+
 		
 		-- The search of rig configuration files requires this stuff:
 		conf_file_search : search_type; -- the state of the search
@@ -2640,7 +2653,8 @@ package body et_project is
 				max 	=> max_section_depth);
 			
 			procedure process_line is
-
+			-- CS: detect if section name is type_section_name_rig_configuration
+				
 				function set (
 				-- Tests if the current line is a section header or footer. Returns true in both cases.
 				-- Returns false if the current line is neither a section header or footer.
@@ -2672,7 +2686,9 @@ package body et_project is
 						return false;
 					end if;
 				end set;
-				
+
+				generic_name : et_coordinates.type_submodule_name.bounded_string; -- motor_driver
+				instance_name : type_module_instance_name.bounded_string; -- DRV_1
 				
 			begin -- process_line
 				if set (section_module_instances, SEC_MODULE_INSTANCES) then null;
@@ -2682,22 +2698,42 @@ package body et_project is
 				else
 					-- The line contains something else -> the payload data. 
 					-- Temporarily this data is stored in corresponding variables.
-					null;
--- 					if not stack.empty then
--- 						if stack.current = SEC_MODULE then
--- 							log ("line --> " & to_string (line), log_threshold + 1);
--- 	-- 						if f (line,1) = keyword_generic_name then
--- 	-- 							null;
--- 	-- 							--rig.insert (
--- 	-- 							--module_name := to_submodule_name (f (line,2));
--- 	-- 						end if;
--- 						else
--- 							null;
--- 						end if;
--- 					end if;
+					if not stack.empty then
+						log ("line --> " & to_string (line), log_threshold + 3);
+						
+						case stack.parent is
+							when SEC_MODULE_INSTANCES =>
+								case stack.current is
+									when SEC_MODULE =>
+										declare
+											f1 : string := f (line, 1); -- field 1 of line
+											f2 : string := f (line, 2); -- field 2 of line
+										begin
+											if f1 = keyword_generic_name then
+												generic_name := to_submodule_name (f2);
+											elsif f1 = keyword_instance_name then
+												instance_name := to_bounded_string (f2);
+											else
+												invalid_keyword (f1);
+											end if;
+										end;
+										
+									when others => invalid_section;
+										
+								end case;
+								
+							when SEC_MODULE_CONNECTIONS =>
+								null;
+
+							when others => invalid_section;
+						end case;
+					end if;
 
 				end if;
 
+				exception when event: others =>
+					log (affected_line (line) & to_string (line));
+					raise;
 				
 			end process_line;
 			
@@ -2742,11 +2778,7 @@ package body et_project is
 			close (file_handle);
 
 			exception when event: others =>
-				log (ada.exceptions.exception_message (event));
-				log (affected_line (line));
-				if is_open (file_handle) then
-					close (file_handle);
-				end if;
+				if is_open (file_handle) then close (file_handle); end if;
 				raise;
 			
 		end read_conf_file;
@@ -2771,7 +2803,8 @@ package body et_project is
 				max 	=> max_section_depth);
 
 			procedure process_line is 
-
+			-- CS: detect if section name is type_section_name_project
+				
 				function set (
 				-- Tests if the current line is a section header or footer. Returns true in both cases.
 				-- Returns false if the current line is neither a section header or footer.
@@ -2878,6 +2911,10 @@ package body et_project is
 
 				end if;
 
+				exception when event: others =>
+					log (affected_line (line) & to_string (line));
+					raise;
+				
 			end process_line;
 
 			
@@ -2922,11 +2959,7 @@ package body et_project is
 			close (file_handle);
 
 			exception when event: others =>
-				log (affected_line (line));			
-				log (ada.exceptions.exception_message (event));
-				if is_open (file_handle) then
-					close (file_handle);
-				end if;
+				if is_open (file_handle) then close (file_handle); end if;
 				raise;
 			
 		end read_module_file;
@@ -2983,8 +3016,6 @@ package body et_project is
 		
 		exception when event:
 			others => 
-				log (ada.exceptions.exception_message (event), console => true);
-
 				-- Restore working directory.
 				set_directory (current_working_directory);
 
