@@ -2671,6 +2671,20 @@ package body et_project is
 			
 			procedure process_line is
 			-- CS: detect if section name is type_section_name_rig_configuration
+
+				-- variables for temporarily storage:
+				generic_name : et_coordinates.type_submodule_name.bounded_string; -- motor_driver
+				instance_name : type_module_instance_name.bounded_string; -- DRV_1
+				
+				procedure execute_section is
+				begin
+					null;
+-- 					case stack.parent is
+-- 						when SEC_MODULE_INSTANCES =>
+-- 							case stack.current is
+-- 								when SEC_MODULE =>
+
+				end execute_section;
 				
 				function set (
 				-- Tests if the current line is a section header or footer. Returns true in both cases.
@@ -2686,7 +2700,13 @@ package body et_project is
 							stack.push (section);
 							log (write_enter_section & to_string (section), log_threshold + 3);
 							return true;
+							
 						elsif f (line, 2) = section_end then -- section footer detected in field 2
+
+							-- Now that the section ends, the data collected in temporarily
+							-- variables is processed.
+							execute_section;
+							
 							stack.pop;
 							if stack.empty then
 								log (write_top_level_reached, log_threshold + 3);
@@ -2694,26 +2714,17 @@ package body et_project is
 								log (write_return_to_section & to_string (stack.current), log_threshold + 3);
 							end if;
 							return true;
+							
 						else
 							log_indentation_reset;
 							log (message_error & write_missing_begin_end, console => true);
 							raise constraint_error;
 						end if;
+						
 					else -- neither a section header nor footer
 						return false;
 					end if;
 				end set;
-
--- 				function section_end return boolean is
--- 					-- Returns true if end of a section reached.
--- 				begin
--- 					if f (line, 2) = et_project.section_end then return true;
--- 					else return false;
--- 					end if;
--- 				end section_end;
-				
-				generic_name : et_coordinates.type_submodule_name.bounded_string; -- motor_driver
-				instance_name : type_module_instance_name.bounded_string; -- DRV_1
 				
 			begin -- process_line
 				if set (section_module_instances, SEC_MODULE_INSTANCES) then null;
@@ -2830,6 +2841,19 @@ package body et_project is
 
 			procedure process_line is 
 			-- CS: detect if section name is type_section_name_project
+
+				-- variables for temporarily storage:
+				
+				
+				procedure execute_section is
+				begin
+					null;
+-- 					case stack.parent is
+-- 						when SEC_MODULE_INSTANCES =>
+-- 							case stack.current is
+-- 								when SEC_MODULE =>
+
+				end execute_section;
 				
 				function set (
 				-- Tests if the current line is a section header or footer. Returns true in both cases.
@@ -2845,7 +2869,13 @@ package body et_project is
 							stack.push (section);
 							log (write_enter_section & to_string (section), log_threshold + 3);
 							return true;
+
 						elsif f (line, 2) = section_end then -- section footer detected in field 2
+
+							-- Now that the section ends, the data collected in temporarily
+							-- variables is processed.
+							execute_section;
+							
 							stack.pop;
 							if stack.empty then
 								log (write_top_level_reached, log_threshold + 3);
@@ -2853,21 +2883,19 @@ package body et_project is
 								log (write_return_to_section & to_string (stack.current), log_threshold + 3);
 							end if;
 							return true;
+
 						else
 							log_indentation_reset;
 							log (message_error & write_missing_begin_end, console => true);
 							raise constraint_error;
 						end if;
+
 					else -- neither a section header nor footer
 						return false;
 					end if;
 				end set;
 
-				-- VARIABLES FOR TEMPORARILY STORAGE BEGIN
-				--module_name : type_submodule_name.bounded_string; -- motor_driver
-				
-				-- VARIABLES FOR TEMPORARILY STORAGE END
-				
+
 			begin -- process_line
 				--put_line (standard_output, to_string (line));
 				
@@ -2921,19 +2949,12 @@ package body et_project is
 					-- The line contains something else -> the payload data. 
 					-- Temporarily this data is stored in corresponding variables.
 
-					null;
-	-- 				if not stack.empty then
-	-- 					if stack.current = SEC_MODULE then
-	-- 						log ("line --> " & to_string (line), log_threshold + 1);
-	-- 						if f (line,1) = keyword_generic_name then
-	-- 							null;
-	-- 							--rig.insert (
-	-- 							--module_name := to_submodule_name (f (line,2));
-	-- 						end if;
-	-- 					else
-	-- 						null;
-	-- 					end if;
-	-- 				end if;
+					if not stack.empty then
+						log ("line --> " & to_string (line), log_threshold + 3);
+
+						null;
+	
+					end if;
 
 				end if;
 
