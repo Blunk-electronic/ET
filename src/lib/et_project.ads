@@ -145,7 +145,10 @@ package et_project is
 	-- and a list of module-to-module connectors (or board-to-board connectors):
 	type type_rig_configuration is record
 		module_instances	: type_module_instances.map;
+		-- CS description, docs, links, images ... ?
 	end record;
+
+	rig : type_rig_configuration;
 
 	-- Lots of rig configurations are stored in a map:
 	package type_rig_configurations is new ordered_maps (

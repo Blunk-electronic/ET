@@ -2633,6 +2633,23 @@ package body et_project is
 			raise constraint_error;
 		end;
 
+		procedure expect_field_count (line : in type_fields_of_line; count_expected : in count_type) is 
+			count_found : count_type := field_count (line);
+			f1 : string := f (line, 1); -- CS: line must have at least one field otherwise exception occurs here
+		begin
+			if count_found = count_expected then null; -- fine, field count as expected
+			
+			elsif count_found < count_expected then -- less fields than expected
+				log_indentation_reset;
+				log (message_error & "missing parameter for '" & f1 & "' !", console => true);
+				raise constraint_error;
+				
+			elsif count_found > count_expected then -- more fields than expeced
+				log (message_warning & affected_line (line) & "excessive parameters after '" 
+					 & f (line, positive (count_expected)) & "' ignored !");
+			end if;
+			
+		end expect_field_count;
 		
 		-- The search of rig configuration files requires this stuff:
 		conf_file_search : search_type; -- the state of the search
@@ -2687,6 +2704,14 @@ package body et_project is
 					end if;
 				end set;
 
+-- 				function section_end return boolean is
+-- 					-- Returns true if end of a section reached.
+-- 				begin
+-- 					if f (line, 2) = et_project.section_end then return true;
+-- 					else return false;
+-- 					end if;
+-- 				end section_end;
+				
 				generic_name : et_coordinates.type_submodule_name.bounded_string; -- motor_driver
 				instance_name : type_module_instance_name.bounded_string; -- DRV_1
 				
@@ -2706,15 +2731,16 @@ package body et_project is
 								case stack.current is
 									when SEC_MODULE =>
 										declare
-											f1 : string := f (line, 1); -- field 1 of line
-											f2 : string := f (line, 2); -- field 2 of line
+											kw : string := f (line, 1); -- field 1 of line
 										begin
-											if f1 = keyword_generic_name then
-												generic_name := to_submodule_name (f2);
-											elsif f1 = keyword_instance_name then
-												instance_name := to_bounded_string (f2);
+											if kw = keyword_generic_name then
+												expect_field_count (line, 2);
+												generic_name := to_submodule_name (f (line,2));
+											elsif kw = keyword_instance_name then
+												expect_field_count (line, 2);
+												instance_name := to_bounded_string (f (line,2));
 											else
-												invalid_keyword (f1);
+												invalid_keyword (kw);
 											end if;
 										end;
 										
