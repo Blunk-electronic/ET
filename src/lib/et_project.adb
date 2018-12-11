@@ -2613,7 +2613,14 @@ package body et_project is
 		-- the working directory must restored.
 		current_working_directory : string := current_directory;
 
-
+		function write_top_level_reached return string is begin return "top level reached"; end;
+		function write_enter_section return string is begin return "entering section "; end;
+		function write_return_to_section return string is begin return "returning to section "; end;
+		function write_missing_begin_end return string is begin 
+			return "missing " & section_begin & " or " & section_end & " after section name !"; end;
+		function write_section_stack_not_empty return string is begin
+			return "section stack not empty !"; end;		
+		
 		-- The search of rig configuration files requires this stuff:
 		conf_file_search : search_type; -- the state of the search
 		conf_file_filter : filter_type := (ordinary_file => true, others => false);
@@ -2642,26 +2649,23 @@ package body et_project is
 					section_keyword	: in string; -- [MODULE_INSTANCES
 					section			: in type_section_name_rig_configuration) -- SEC_MODULE_INSTANCES
 					return boolean is 
-
-					use et_string_processing;
-
 				begin -- set
 					if f (line, 1) = section_keyword then -- section name detected in field 1
 						if f (line, 2) = section_begin then -- section header detected in field 2
 							stack.push (section);
-							log ("entering section " & to_string (section), log_threshold + 1);
+							log (write_enter_section & to_string (section), log_threshold + 3);
 							return true;
 						elsif f (line, 2) = section_end then -- section footer detected in field 2
 							stack.pop;
 							if stack.empty then
-								log ("file complete", log_threshold + 1);
+								log (write_top_level_reached, log_threshold + 3);
 							else
-								log ("returning to section " & to_string (stack.current), log_threshold + 1);
+								log (write_return_to_section & to_string (stack.current), log_threshold + 3);
 							end if;
 							return true;
 						else
 							log_indentation_reset;
-							log (message_error & "missing " & section_begin & " or " & section_end & " after section name !", console => true);
+							log (message_error & write_missing_begin_end, console => true);
 							raise constraint_error;
 						end if;
 					else -- neither a section header nor footer
@@ -2700,6 +2704,7 @@ package body et_project is
 		begin -- read_conf_file
 			-- write name of configuration file
 			log (file_name, log_threshold + 1);
+			log_indentation_up;
 
 			-- open rig configuration file
 			open (
@@ -2729,9 +2734,10 @@ package body et_project is
 
 			-- As a safety measure the stack must be empty.
 			if not stack.empty then 
-				log (message_warning & "section stack not empty !");
+				log (message_warning & write_section_stack_not_empty);
 			end if;
-			
+
+			log_indentation_down;
 			set_input (current_input);
 			close (file_handle);
 
@@ -2778,19 +2784,19 @@ package body et_project is
 					if f (line, 1) = section_keyword then -- section name detected in field 1
 						if f (line, 2) = section_begin then -- section header detected in field 2
 							stack.push (section);
-							log ("entering section " & to_string (section), log_threshold + 1);
+							log (write_enter_section & to_string (section), log_threshold + 3);
 							return true;
 						elsif f (line, 2) = section_end then -- section footer detected in field 2
 							stack.pop;
 							if stack.empty then
-								log ("file complete", log_threshold + 1);
+								log (write_top_level_reached, log_threshold + 3);
 							else
-								log ("returning to section " & to_string (stack.current), log_threshold + 1);
+								log (write_return_to_section & to_string (stack.current), log_threshold + 3);
 							end if;
 							return true;
 						else
 							log_indentation_reset;
-							log (message_error & "missing " & section_begin & " or " & section_end & " after section name !", console => true);
+							log (message_error & write_missing_begin_end, console => true);
 							raise constraint_error;
 						end if;
 					else -- neither a section header nor footer
@@ -2806,7 +2812,6 @@ package body et_project is
 			begin -- process_line
 				--put_line (standard_output, to_string (line));
 				
-				--if set (section_module, SEC_MODULE) then null;
 				if set (section_net_classes, SEC_NET_CLASSES) then null;
 				elsif set (section_net_class, SEC_NET_CLASS) then null;
 				elsif set (section_nets, SEC_NETS) then null;
@@ -2879,6 +2884,7 @@ package body et_project is
 		begin -- read_module_file
 			-- write name of configuration file
 			log (file_name, log_threshold + 1);
+			log_indentation_up;
 
 			-- open module file
 			open (
@@ -2908,9 +2914,10 @@ package body et_project is
 
 			-- As a safety measure the stack must be empty.
 			if not stack.empty then 
-				log (message_warning & "section stack not empty !");
+				log (message_warning & write_section_stack_not_empty);
 			end if;
-			
+
+			log_indentation_down;
 			set_input (standard_input);
 			close (file_handle);
 
@@ -2935,25 +2942,29 @@ package body et_project is
 			-- enter the project directory
 			set_directory (to_string (project_name));
 
+			--log ("current dir " & current_directory, log_threshold + 1);
+			
 			log ("looking for rig configuration files ...", log_threshold + 1);
 			log_indentation_up;
+			start_search (conf_file_search, current_directory, rig_configuration_file_extension_asterisk, conf_file_filter);
 			if more_entries (conf_file_search) then
-				search (current_directory, rig_configuration_file_extension, conf_file_filter, read_conf_file'access);
+				search (current_directory, rig_configuration_file_extension_asterisk, conf_file_filter, read_conf_file'access);
 			else
 				log (message_warning & "No rig configuration files found !"); -- CS: write implications !
 			end if;
-
+			end_search (conf_file_search);
+			log_indentation_down;
 
 			
 			log ("looking for module files ...", log_threshold + 1);
 			log_indentation_up;
+			start_search (module_file_search, current_directory, module_file_name_extension_asterisk, module_file_filter);
 			if more_entries (module_file_search) then
-				search (current_directory, module_file_name_extension, module_file_filter, read_module_file'access);
+				search (current_directory, module_file_name_extension_asterisk, module_file_filter, read_module_file'access);
 			else
 				log (message_warning & "No modules found !"); -- CS: write implications !
 			end if;
-
-			
+			end_search (module_file_search);
 			log_indentation_down;
 			
 		else -- project directory does not exist

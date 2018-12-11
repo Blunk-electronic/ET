@@ -114,7 +114,7 @@ package et_project is
 	package type_module_file_name is new generic_bounded_length (module_file_name_length_max);
 	
 	module_file_name_extension : constant string := "mod";
-	
+	module_file_name_extension_asterisk : constant string := "*." & module_file_name_extension;
 
 
 
@@ -124,6 +124,7 @@ package et_project is
 	use type_rig_configuration_file_name;
 	
 	rig_configuration_file_extension : constant string := "conf";
+	rig_configuration_file_extension_asterisk : constant string := "*." & rig_configuration_file_extension;
 
 	-- The module instance name is something like LMX_1 or DRV_1:
 	module_instance_name_length_max : constant positive := 20;
