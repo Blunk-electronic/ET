@@ -252,6 +252,8 @@ package et_string_processing is
 	function append (left : in type_fields_of_line; right : in type_fields_of_line) return type_fields_of_line;
 	
 	function field (line : in type_fields_of_line; position : in positive) return string; 
+	-- Returns the field at the given position. Raises constraint error if there is no 
+	-- field at given position.
 	-- CS: position should be a count_type
 
 	function to_string (line : in type_fields_of_line) return string;

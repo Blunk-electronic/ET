@@ -754,14 +754,16 @@ package body et_string_processing is
 	end append;
 
 
-	-- CS: comments
 	function field (line : in type_fields_of_line; position : in positive) return string is
+	-- Returns the field at the given position. Raises constraint error if there is no 
+	-- field at given position.		
 		use type_list_of_strings;
 	begin
-		if count_type(position) > line.field_count then
-			return "";
+		if count_type (position) > line.field_count then
+			--return "";
+			raise constraint_error;
 		else
-			return element(line.fields, positive(position));
+			return element (line.fields, positive (position));
 		end if;
 	end field;
 
