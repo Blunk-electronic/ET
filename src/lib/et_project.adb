@@ -2907,6 +2907,7 @@ package body et_project is
 												expect_field_count (line, 2);
 												purpose_B := et_libraries.to_purpose (f (line,2));
 
+											-- CS: net comparator and warning on/off
 											else
 												invalid_keyword (kw);
 											end if;
