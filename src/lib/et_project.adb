@@ -2903,7 +2903,9 @@ package body et_project is
 		procedure read_conf_file (conf_file_handle : in directory_entry_type) is 
 			file_handle : ada.text_io.file_type;
 			file_name : string := simple_name (conf_file_handle); -- my_rig_configuration.conf
-
+			rig_cursor : type_rigs.cursor;
+			rig_inserted : boolean;
+			
 			line : et_string_processing.type_fields_of_line;
 
 			-- This is the section stack of the configuration file. 
@@ -2939,13 +2941,63 @@ package body et_project is
 				procedure execute_section is
 				-- Once a section concludes, the temporarily variables are read, evaluated
 				-- and finally assembled to actual objects:
-					use type_module_instances;
-					instance_created : boolean;
-					instance_cursor : type_module_instances.cursor;
 
-					connection_inserted : boolean;
-					connection_cursor : type_module_connectors.cursor;
-				begin
+					procedure create_instance (
+						rig_name	: in type_rig_configuration_file_name.bounded_string;
+						rig			: in out type_rig) is
+						instance_created : boolean;
+						instance_cursor : type_module_instances.cursor;
+					begin
+						-- CS: test length of generic name and instance name. must be greater zero
+
+						-- create an instanciated module in the rig
+						rig.module_instances.insert (
+							key			=> instance_name,
+							new_item	=> (generic_name => generic_name),
+							inserted	=> instance_created,
+							position	=> instance_cursor
+							);
+
+						-- An instance may exist only once:
+						if not instance_created then
+							log_indentation_reset;
+							log (message_error & "module instance '" 
+									& to_string (instance_name) & "' already exists !", console => true);
+							raise constraint_error;
+						end if;
+
+						clear_module_instance; -- clean up for next module instance
+					end create_instance;
+
+					procedure create_connection (
+						rig_name	: in type_rig_configuration_file_name.bounded_string;
+						rig			: in out type_rig) is
+						connection_inserted : boolean;
+						connection_cursor : type_module_connectors.cursor;
+					begin
+						-- CS: test length of instance_A/B and purpose A/B. must be greater zero
+
+						-- create a module connector in the rig
+						rig.connections.insert (
+							new_item	=> (
+								instance_A	=> instance_A,
+								instance_B	=> instance_B,
+								purpose_A	=> purpose_A,
+								purpose_B	=> purpose_B),
+							inserted	=> connection_inserted,
+							position	=> connection_cursor);
+
+						-- A module connection may exist only once:
+						if not connection_inserted then
+							log_indentation_reset;
+							log (message_error & "module connection already exists !", console => true);
+							raise constraint_error;
+						end if;
+
+						clear_connector; -- clean up for next module connector
+					end create_connection;
+					
+				begin -- execute_section
 					case stack.parent is
 						when SEC_INIT =>
 							case stack.current is
@@ -2957,26 +3009,12 @@ package body et_project is
 						when SEC_MODULE_INSTANCES =>
 							case stack.current is
 								when SEC_MODULE =>
-									-- CS: test length of generic name and instance name. must be greater zero
-									
+
 									-- create an instanciated module in the rig
-									rig.module_instances.insert (
-										key			=> instance_name,
-										new_item	=> (generic_name => generic_name),
-										inserted	=> instance_created,
-										position	=> instance_cursor
-										);
-
-									-- An instance may exist only once:
-									if not instance_created then
-										log_indentation_reset;
-										log (message_error & "module instance '" 
-											 & to_string (instance_name) & "' already exists !",
-											 console => true);
-										raise constraint_error;
-									end if;
-
-									clear_module_instance; -- clean up for next module instance
+									type_rigs.update_element (
+										container	=> rigs,
+										position	=> rig_cursor,
+										process		=> create_instance'access);
 									
 								when others => invalid_section;
 							end case;
@@ -2984,27 +3022,12 @@ package body et_project is
 						when SEC_MODULE_CONNECTIONS =>
 							case stack.current is
 								when SEC_CONNECTOR =>
-									-- CS: test length of instance_A/B and purpose A/B. must be greater zero
 									
-									-- create a module connector
-									rig.connections.insert (
-										new_item	=> (
-											instance_A	=> instance_A,
-											instance_B	=> instance_B,
-											purpose_A	=> purpose_A,
-											purpose_B	=> purpose_B),
-										inserted	=> connection_inserted,
-										position	=> connection_cursor);
-
-									-- A module connection may exist only once:
-									if not connection_inserted then
-										log_indentation_reset;
-										log (message_error & "module connection already exists !",
-											 console => true);
-										raise constraint_error;
-									end if;
-
-									clear_connector; -- clean up for next module connector
+									-- create a module connector in the rig
+									type_rigs.update_element (
+										container	=> rigs,
+										position	=> rig_cursor,
+										process		=> create_connection'access);
 									
 								when others => invalid_section;
 							end case;
@@ -3151,6 +3174,13 @@ package body et_project is
 			-- Init section stack.
 			stack.init;
 			stack.push (SEC_INIT);
+
+			-- create an empty rig - named after the given configuration file
+			type_rigs.insert (
+				container	=> rigs,
+				key			=> to_bounded_string (simple_name (file_name)),
+				inserted	=> rig_inserted, -- should always be true
+				position	=> rig_cursor);
 			
 			-- read the file line by line
 			while not end_of_file loop

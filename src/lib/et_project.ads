@@ -151,6 +151,7 @@ package et_project is
 		-- CS
 		-- net_comparator : on/off 
 		-- warn_only : on/off 
+		-- cable moodel ?
 	end record;
 
 	function compare_connectors (left, right : in type_connector) return boolean;
@@ -160,21 +161,21 @@ package et_project is
 		element_type	=> type_connector,
 		"<"				=> compare_connectors);
 	
-	-- A rig configuration consists of a list of module instances
+	-- A rig consists of a list of module instances
 	-- and a list of module-to-module connectors (or board-to-board connectors):
-	type type_rig_configuration is record -- CS: rename to type_rig ?
+	type type_rig is record
 		module_instances	: type_module_instances.map;
 		connections			: type_module_connectors.set;
 		-- CS description, docs, links, images ... ?
 	end record;
 
-	rig : type_rig_configuration;
+	-- Lots of rigs are stored in a map:
+	package type_rigs is new ordered_maps (
+		key_type		=> type_rig_configuration_file_name.bounded_string, -- CS dedicated type_rig_name ?
+		element_type	=> type_rig);
 
-	-- Lots of rig configurations are stored in a map:
-	package type_rig_configurations is new ordered_maps (
-		key_type		=> type_rig_configuration_file_name.bounded_string,
-		element_type	=> type_rig_configuration);
-
+	rigs : type_rigs.map;
+	
 	type type_section_name_rig_configuration is (
 		SEC_INIT,
 		SEC_MODULE_INSTANCES,
