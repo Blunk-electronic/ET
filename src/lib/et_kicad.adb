@@ -6773,8 +6773,11 @@ package body et_kicad is
 
 				-- read sheet title from a line like "Title "abc""
 				if et_string_processing.field (et_kicad.line,1) = schematic_keyword_title then                        
-					-- CS test field count					
+					log ("sheet title", log_threshold + 1);
+					
 					title_block_text.meaning := et_libraries.TITLE;
+
+					-- CS test field count										
 					title_block_text.text := et_libraries.type_title_block_text_content.to_bounded_string (
 												  (et_string_processing.field (et_kicad.line,2)));
 					
@@ -6784,7 +6787,9 @@ package body et_kicad is
 				next (line_cursor);
 				
 				-- read date from a line like "Date "1981-01-23""
-				if et_string_processing.field (et_kicad.line,1) = schematic_keyword_date then                        
+				if et_string_processing.field (et_kicad.line,1) = schematic_keyword_date then
+					log ("sheet date", log_threshold + 1);
+					
 					-- CS test field count					
 					title_block_text.meaning := et_libraries.DRAWN_DATE;
 					title_block_text.text := et_libraries.type_title_block_text_content.to_bounded_string (
@@ -6797,11 +6802,13 @@ package body et_kicad is
 				
 				-- read revision from a line like "Rev "9.7.1"
 				if et_string_processing.field (et_kicad.line,1) = schematic_keyword_revision then                        
+					log ("sheet revision", log_threshold + 1);
+					
 					-- CS test field count					
 					title_block_text.meaning := et_libraries.REVISION;
 					title_block_text.text := et_libraries.type_title_block_text_content.to_bounded_string (
-												(et_string_processing.field (line,2)));
-
+												(et_string_processing.field (et_kicad.line,2)));
+					
 					et_libraries.type_title_block_texts.append (title_block_texts, title_block_text);
 				end if;
 
@@ -6809,6 +6816,8 @@ package body et_kicad is
 
 				-- read company name
 				if et_string_processing.field (et_kicad.line,1) = schematic_keyword_company then
+					log ("sheet company name", log_threshold + 1);
+					
 					-- CS test field count					
 					title_block_text.meaning := et_libraries.COMPANY;
 					title_block_text.text := et_libraries.type_title_block_text_content.to_bounded_string (
@@ -6824,6 +6833,9 @@ package body et_kicad is
 					et_string_processing.field (et_kicad.line,1) = schematic_keyword_comment_2 or
 					et_string_processing.field (et_kicad.line,1) = schematic_keyword_comment_3 or 
 					et_string_processing.field (et_kicad.line,1) = schematic_keyword_comment_4 then
+
+					log ("sheet comment", log_threshold + 1);
+					
 					-- CS test field count
 					title_block_text.meaning := et_libraries.MISC;
 					title_block_text.text := et_libraries.type_title_block_text_content.to_bounded_string (
@@ -6850,7 +6862,6 @@ package body et_kicad is
 					when event:
 						others =>
 							log_indentation_reset;
-							--log (message_error , console => true);
 							log (ada.exceptions.exception_message (event));
 							raise;
 				
@@ -8897,14 +8908,16 @@ package body et_kicad is
 									add (line);
 								end if;
 							else -- we are inside the sheet header and wait for the footer
-								if et_string_processing.field (line,1) = schematic_eelayer 
-									and et_string_processing.field (line,2) = schematic_eelayer_end then
-										sheet_header_entered := false;
+								if field_count (line) = 2 then
+									if et_string_processing.field (line,1) = schematic_eelayer 
+										and et_string_processing.field (line,2) = schematic_eelayer_end then
+											sheet_header_entered := false;
+											add (line);
+											make_sheet_header (lines);
+											clear (lines); -- clean up line collector
+									else
 										add (line);
-										make_sheet_header (lines);
-										clear (lines); -- clean up line collector
-								else
-									add (line);
+									end if;
 								end if;
 							end if;
 							
