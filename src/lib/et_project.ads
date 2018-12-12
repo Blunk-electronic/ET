@@ -454,8 +454,8 @@ package et_project is
 	
 	section_title_block			: constant string	:= "[TITLE_BLOCK";
 	
-	type type_section_name_project is (
-		--SEC_MODULE,
+	type type_section_name_module is (
+		SEC_INIT,
 		SEC_NET_CLASSES,
 		SEC_NET_CLASS,
 		SEC_NETS,
@@ -505,8 +505,8 @@ package et_project is
 		SEC_BOTTOM
 		);
 
-	function to_string (section : in type_section_name_project) return string;
-	-- Converts a section like SEC_MODULE to a string "module".
+	function to_string (section : in type_section_name_module) return string;
+	-- Converts a section like SEC_NET to a string "net".
 	
 	procedure open_project (log_threshold : in et_string_processing.type_log_level);
 	-- Opens and reads the schematic and layout data present in project file (project_file_handle).

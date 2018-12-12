@@ -2639,11 +2639,11 @@ package body et_project is
 
 	end save_package;
 
-	function to_string (section : in type_section_name_project) return string is
-	-- Converts a section like SEC_MODULE to a string "module".
-		len : positive := type_section_name_project'image (section)'length;
+	function to_string (section : in type_section_name_module) return string is
+	-- Converts a section like SEC_NET to a string "net".
+		len : positive := type_section_name_module'image (section)'length;
 	begin
-		return to_lower (type_section_name_project'image (section) (5..len));
+		return to_lower (type_section_name_module'image (section) (5..len));
 	end to_string;
 	
 	procedure open_project (log_threshold : in et_string_processing.type_log_level) is
@@ -2695,6 +2695,206 @@ package body et_project is
 			end if;
 			
 		end expect_field_count;
+
+
+
+	-- MODULES
+		
+		-- The search of rig module files requires this stuff:
+		module_file_search : search_type; -- the state of the search
+		module_file_filter : filter_type := (ordinary_file => true, others => false);
+
+		procedure read_module_file (module_file_handle : in directory_entry_type) is 
+			file_handle : ada.text_io.file_type;
+			file_name : string := simple_name (module_file_handle); -- motor_driver.mod
+
+			line : et_string_processing.type_fields_of_line;
+
+			-- This is the section stack of the module. 
+			-- Here we track the sections. On entering a section, its name is
+			-- pushed onto the stack. When leaving a section the latest section name is popped.
+			max_section_depth : constant positive := 11;
+			package stack is new stack_lifo (
+				item	=> type_section_name_module,
+				max 	=> max_section_depth);
+
+
+			-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
+			
+			
+			procedure process_line is 
+			-- CS: detect if section name is type_section_name_project
+
+				procedure execute_section is
+				begin
+					null;
+-- 					case stack.parent is
+-- 						when SEC_MODULE_INSTANCES =>
+-- 							case stack.current is
+-- 								when SEC_MODULE =>
+
+				end execute_section;
+				
+				function set (
+				-- Tests if the current line is a section header or footer. Returns true in both cases.
+				-- Returns false if the current line is neither a section header or footer.
+				-- If it is a header, the section name is pushed onto the sections stack.
+				-- If it is a footer, the latest section name is popped from the stack.
+					section_keyword	: in string; -- [NETS
+					section			: in type_section_name_module) -- SEC_NETS
+					return boolean is 
+				begin -- set
+					if f (line, 1) = section_keyword then -- section name detected in field 1
+						if f (line, 2) = section_begin then -- section header detected in field 2
+							stack.push (section);
+							log (write_enter_section & to_string (section), log_threshold + 3);
+							return true;
+
+						elsif f (line, 2) = section_end then -- section footer detected in field 2
+
+							-- Now that the section ends, the data collected in temporarily
+							-- variables is processed.
+							execute_section;
+							
+							stack.pop;
+							if stack.empty then
+								log (write_top_level_reached, log_threshold + 3);
+							else
+								log (write_return_to_section & to_string (stack.current), log_threshold + 3);
+							end if;
+							return true;
+
+						else
+							log_indentation_reset;
+							log (message_error & write_missing_begin_end, console => true);
+							raise constraint_error;
+						end if;
+
+					else -- neither a section header nor footer
+						return false;
+					end if;
+				end set;
+
+
+			begin -- process_line
+				--put_line (standard_output, to_string (line));
+				
+				if set (section_net_classes, SEC_NET_CLASSES) then null;
+				elsif set (section_net_class, SEC_NET_CLASS) then null;
+				elsif set (section_nets, SEC_NETS) then null;
+				elsif set (section_net, SEC_NET) then null;
+				elsif set (section_strands, SEC_STRANDS) then null;
+				elsif set (section_strand, SEC_STRAND) then null;
+				elsif set (section_segments, SEC_SEGMENTS) then null;
+				elsif set (section_segment, SEC_SEGMENT) then null;
+				elsif set (section_labels, SEC_LABELS) then null;
+				elsif set (section_label, SEC_LABEL) then null;
+				elsif set (section_junctions, SEC_JUNCTIONS) then null;
+				elsif set (section_ports, SEC_PORTS) then null;
+				elsif set (section_submodule_ports, SEC_SUBMODULE_PORTS) then null;								
+				elsif set (section_ports, SEC_PORT) then null;				
+				elsif set (section_route, SEC_ROUTE) then null;								
+				elsif set (section_line, SEC_LINE) then null;								
+				elsif set (section_arc, SEC_ARC) then null;								
+				elsif set (section_polygon, SEC_POLYGON) then null;								
+				elsif set (section_corners, SEC_CORNERS) then null;								
+				elsif set (section_via, SEC_VIA) then null;								
+				elsif set (section_submodules, SEC_SUBMODULES) then null;
+				elsif set (section_submodule, SEC_SUBMODULE) then null;
+				elsif set (section_drawing_frames, SEC_DRAWING_FRAMES) then null;
+				elsif set (section_schematic, SEC_SCHEMATIC) then null;
+				elsif set (section_board, SEC_BOARD) then null;
+				elsif set (section_devices, SEC_DEVICES) then null;				
+				elsif set (section_device, SEC_DEVICE) then null;
+				elsif set (section_units, SEC_UNITS) then null;
+				elsif set (section_unit, SEC_UNIT) then null;
+				elsif set (section_placeholders, SEC_PLACEHOLDERS) then null;				
+				elsif set (section_placeholder, SEC_PLACEHOLDER) then null;
+				elsif set (section_package, SEC_PACKAGE) then null;
+				elsif set (section_texts, SEC_TEXTS) then null;
+				elsif set (section_text, SEC_TEXT) then null;
+				elsif set (section_silk_screen, SEC_SILK_SCREEN) then null;
+				elsif set (section_top, SEC_TOP) then null;
+				elsif set (section_bottom, SEC_BOTTOM) then null;
+				elsif set (section_circle, SEC_CIRCLE) then null;
+				elsif set (section_assembly_doc, SEC_ASSEMBLY_DOCUMENTATION) then null;
+				elsif set (section_stencil, SEC_STENCIL) then null;
+				elsif set (section_stop_mask, SEC_STOP_MASK) then null;
+				elsif set (section_keepout, SEC_KEEPOUT) then null;
+				elsif set (section_route_restrict, SEC_ROUTE_RESTRICT) then null;
+				elsif set (section_via_restrict, SEC_VIA_RESTRICT) then null;
+				elsif set (section_copper, SEC_COPPER) then null;				
+				elsif set (section_pcb_contour, SEC_PCB_CONTOUR_NON_PLATED) then null;
+				else
+					-- The line contains something else -> the payload data. 
+					-- Temporarily this data is stored in corresponding variables.
+
+					if not stack.empty then
+						log ("line --> " & to_string (line), log_threshold + 3);
+
+						null;
+	
+					end if;
+
+				end if;
+
+				exception when event: others =>
+					log (affected_line (line) & to_string (line), console => true);
+					raise;
+				
+			end process_line;
+
+			
+		begin -- read_module_file
+			-- write name of configuration file
+			log (file_name, log_threshold + 1);
+			log_indentation_up;
+
+			-- open module file
+			open (
+				file => file_handle,
+				mode => in_file, 
+				name => file_name);
+
+			set_input (file_handle);
+			
+			-- Init section stack.
+			stack.init;
+			stack.push (SEC_INIT);
+
+			-- read the file line by line
+			while not end_of_file loop
+				line := et_string_processing.read_line (
+					line 			=> get_line,
+					number			=> ada.text_io.line (current_input),
+					comment_mark 	=> et_string_processing.comment_mark, -- comments start with #
+					delimiter_wrap	=> true, -- strings are enclosed in quotations
+					ifs 			=> latin_1.space); -- fields are separated by space
+
+				-- we are interested in lines that contain something. emtpy lines are skipped:
+				if field_count (line) > 0 then
+					process_line;
+				end if;
+			end loop;
+
+			-- As a safety measure the top section must be reached.
+			if stack.depth > 1 then 
+				log (message_warning & write_section_stack_not_empty);
+			end if;
+
+			log_indentation_down;
+			set_input (standard_input);
+			close (file_handle);
+
+			exception when event: others =>
+				if is_open (file_handle) then close (file_handle); end if;
+				raise;
+			
+		end read_module_file;
+
+		
+
+	-- RIG CONFIGURATION		
 		
 		-- The search of rig configuration files requires this stuff:
 		conf_file_search : search_type; -- the state of the search
@@ -2875,6 +3075,7 @@ package body et_project is
 											if kw = keyword_generic_name then
 												expect_field_count (line, 2);
 												generic_name := to_submodule_name (f (line,2));
+												-- CS: test if module with this generic name exists
 											elsif kw = keyword_instance_name then
 												expect_field_count (line, 2);
 												instance_name := to_bounded_string (f (line,2));
@@ -2896,17 +3097,21 @@ package body et_project is
 											if kw = keyword_instance_A then
 												expect_field_count (line, 2);
 												instance_A := to_bounded_string (f (line,2));
+												-- CS: test if instance exists
 											elsif kw = keyword_instance_B then
 												expect_field_count (line, 2);
 												instance_B := to_bounded_string (f (line,2));
+												-- CS: test if instance exists
 												
 											elsif kw = keyword_purpose_A then
 												expect_field_count (line, 2);
 												purpose_A := et_libraries.to_purpose (f (line,2));
+												-- CS: test if a connector with this purpose exits in the instance
 											elsif kw = keyword_purpose_B then
 												expect_field_count (line, 2);
 												purpose_B := et_libraries.to_purpose (f (line,2));
-
+												-- CS: test if a connector with this purpose exits in the instance
+												
 											-- CS: net comparator and warning on/off
 											else
 												invalid_keyword (kw);
@@ -2976,198 +3181,7 @@ package body et_project is
 				raise;
 			
 		end read_conf_file;
-
-
-		-- The search of rig module files requires this stuff:
-		module_file_search : search_type; -- the state of the search
-		module_file_filter : filter_type := (ordinary_file => true, others => false);
-
-		procedure read_module_file (module_file_handle : in directory_entry_type) is 
-			file_handle : ada.text_io.file_type;
-			file_name : string := simple_name (module_file_handle); -- motor_driver.mod
-
-			line : et_string_processing.type_fields_of_line;
-
-			-- This is the section stack of the module. 
-			-- Here we track the sections. On entering a section, its name is
-			-- pushed onto the stack. When leaving a section the latest section name is popped.
-			max_section_depth : constant positive := 10;
-			package stack is new stack_lifo (
-				item	=> type_section_name_project,
-				max 	=> max_section_depth);
-
-			procedure process_line is 
-			-- CS: detect if section name is type_section_name_project
-
-				-- variables for temporarily storage:
-				
-				
-				procedure execute_section is
-				begin
-					null;
--- 					case stack.parent is
--- 						when SEC_MODULE_INSTANCES =>
--- 							case stack.current is
--- 								when SEC_MODULE =>
-
-				end execute_section;
-				
-				function set (
-				-- Tests if the current line is a section header or footer. Returns true in both cases.
-				-- Returns false if the current line is neither a section header or footer.
-				-- If it is a header, the section name is pushed onto the sections stack.
-				-- If it is a footer, the latest section name is popped from the stack.
-					section_keyword	: in string; -- [MODULE
-					section			: in type_section_name_project) -- SEC_MODULE
-					return boolean is 
-				begin -- set
-					if f (line, 1) = section_keyword then -- section name detected in field 1
-						if f (line, 2) = section_begin then -- section header detected in field 2
-							stack.push (section);
-							log (write_enter_section & to_string (section), log_threshold + 3);
-							return true;
-
-						elsif f (line, 2) = section_end then -- section footer detected in field 2
-
-							-- Now that the section ends, the data collected in temporarily
-							-- variables is processed.
-							execute_section;
-							
-							stack.pop;
-							if stack.empty then
-								log (write_top_level_reached, log_threshold + 3);
-							else
-								log (write_return_to_section & to_string (stack.current), log_threshold + 3);
-							end if;
-							return true;
-
-						else
-							log_indentation_reset;
-							log (message_error & write_missing_begin_end, console => true);
-							raise constraint_error;
-						end if;
-
-					else -- neither a section header nor footer
-						return false;
-					end if;
-				end set;
-
-
-			begin -- process_line
-				--put_line (standard_output, to_string (line));
-				
-				if set (section_net_classes, SEC_NET_CLASSES) then null;
-				elsif set (section_net_class, SEC_NET_CLASS) then null;
-				elsif set (section_nets, SEC_NETS) then null;
-				elsif set (section_net, SEC_NET) then null;
-				elsif set (section_strands, SEC_STRANDS) then null;
-				elsif set (section_strand, SEC_STRAND) then null;
-				elsif set (section_segments, SEC_SEGMENTS) then null;
-				elsif set (section_segment, SEC_SEGMENT) then null;
-				elsif set (section_labels, SEC_LABELS) then null;
-				elsif set (section_label, SEC_LABEL) then null;
-				elsif set (section_junctions, SEC_JUNCTIONS) then null;
-				elsif set (section_ports, SEC_PORTS) then null;
-				elsif set (section_submodule_ports, SEC_SUBMODULE_PORTS) then null;								
-				elsif set (section_ports, SEC_PORT) then null;				
-				elsif set (section_route, SEC_ROUTE) then null;								
-				elsif set (section_line, SEC_LINE) then null;								
-				elsif set (section_arc, SEC_ARC) then null;								
-				elsif set (section_polygon, SEC_POLYGON) then null;								
-				elsif set (section_corners, SEC_CORNERS) then null;								
-				elsif set (section_via, SEC_VIA) then null;								
-				elsif set (section_submodules, SEC_SUBMODULES) then null;
-				elsif set (section_submodule, SEC_SUBMODULE) then null;
-				elsif set (section_drawing_frames, SEC_DRAWING_FRAMES) then null;
-				elsif set (section_schematic, SEC_SCHEMATIC) then null;
-				elsif set (section_board, SEC_BOARD) then null;
-				elsif set (section_devices, SEC_DEVICES) then null;				
-				elsif set (section_device, SEC_DEVICE) then null;
-				elsif set (section_units, SEC_UNITS) then null;
-				elsif set (section_unit, SEC_UNIT) then null;
-				elsif set (section_placeholders, SEC_PLACEHOLDERS) then null;				
-				elsif set (section_placeholder, SEC_PLACEHOLDER) then null;
-				elsif set (section_package, SEC_PACKAGE) then null;
-				elsif set (section_texts, SEC_TEXTS) then null;
-				elsif set (section_text, SEC_TEXT) then null;
-				elsif set (section_silk_screen, SEC_SILK_SCREEN) then null;
-				elsif set (section_top, SEC_TOP) then null;
-				elsif set (section_bottom, SEC_BOTTOM) then null;
-				elsif set (section_circle, SEC_CIRCLE) then null;
-				elsif set (section_assembly_doc, SEC_ASSEMBLY_DOCUMENTATION) then null;
-				elsif set (section_stencil, SEC_STENCIL) then null;
-				elsif set (section_stop_mask, SEC_STOP_MASK) then null;
-				elsif set (section_keepout, SEC_KEEPOUT) then null;
-				elsif set (section_route_restrict, SEC_ROUTE_RESTRICT) then null;
-				elsif set (section_via_restrict, SEC_VIA_RESTRICT) then null;
-				elsif set (section_copper, SEC_COPPER) then null;				
-				elsif set (section_pcb_contour, SEC_PCB_CONTOUR_NON_PLATED) then null;
-				else
-					-- The line contains something else -> the payload data. 
-					-- Temporarily this data is stored in corresponding variables.
-
-					if not stack.empty then
-						log ("line --> " & to_string (line), log_threshold + 3);
-
-						null;
 	
-					end if;
-
-				end if;
-
-				exception when event: others =>
-					log (affected_line (line) & to_string (line), console => true);
-					raise;
-				
-			end process_line;
-
-			
-		begin -- read_module_file
-			-- write name of configuration file
-			log (file_name, log_threshold + 1);
-			log_indentation_up;
-
-			-- open module file
-			open (
-				file => file_handle,
-				mode => in_file, 
-				name => file_name);
-
-			set_input (file_handle);
-			
-			-- Init section stack.
-			stack.init;
-
-			-- read the file line by line
-			while not end_of_file loop
-				line := et_string_processing.read_line (
-					line 			=> get_line,
-					number			=> ada.text_io.line (current_input),
-					comment_mark 	=> et_string_processing.comment_mark, -- comments start with #
-					delimiter_wrap	=> true, -- strings are enclosed in quotations
-					ifs 			=> latin_1.space); -- fields are separated by space
-
-				-- we are interested in lines that contain something. emtpy lines are skipped:
-				if field_count (line) > 0 then
-					process_line;
-				end if;
-			end loop;
-
-			-- As a safety measure the stack must be empty.
-			if not stack.empty then 
-				log (message_warning & write_section_stack_not_empty);
-			end if;
-
-			log_indentation_down;
-			set_input (standard_input);
-			close (file_handle);
-
-			exception when event: others =>
-				if is_open (file_handle) then close (file_handle); end if;
-				raise;
-			
-		end read_module_file;
-		
 		
 	begin -- open_project
 		log ("opening project " & to_string (project_name) & " ...", log_threshold, console => true);
@@ -3181,18 +3195,6 @@ package body et_project is
 
 			--log ("current dir " & current_directory, log_threshold + 1);
 			
-			log ("looking for rig configuration files ...", log_threshold + 1);
-			log_indentation_up;
-			start_search (conf_file_search, current_directory, rig_configuration_file_extension_asterisk, conf_file_filter);
-			if more_entries (conf_file_search) then
-				search (current_directory, rig_configuration_file_extension_asterisk, conf_file_filter, read_conf_file'access);
-			else
-				log (message_warning & "No rig configuration files found !"); -- CS: write implications !
-			end if;
-			end_search (conf_file_search);
-			log_indentation_down;
-
-			
 			log ("looking for module files ...", log_threshold + 1);
 			log_indentation_up;
 			start_search (module_file_search, current_directory, module_file_name_extension_asterisk, module_file_filter);
@@ -3202,6 +3204,18 @@ package body et_project is
 				log (message_warning & "No modules found !"); -- CS: write implications !
 			end if;
 			end_search (module_file_search);
+			log_indentation_down;
+
+			
+			log ("looking for rig configuration files ...", log_threshold + 1);
+			log_indentation_up;
+			start_search (conf_file_search, current_directory, rig_configuration_file_extension_asterisk, conf_file_filter);
+			if more_entries (conf_file_search) then
+				search (current_directory, rig_configuration_file_extension_asterisk, conf_file_filter, read_conf_file'access);
+			else
+				log (message_warning & "No rig configuration files found !"); -- CS: write implications !
+			end if;
+			end_search (conf_file_search);
 			log_indentation_down;
 			
 		else -- project directory does not exist
