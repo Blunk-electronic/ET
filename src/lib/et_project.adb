@@ -97,6 +97,51 @@ package body et_project is
 	begin
 		return type_file_name_text_size'value (size);
 	end to_file_name_text_size;
+
+	function compare_connectors (left, right : in type_connector) return boolean is
+	-- Returns true if left connector comes before right connector.
+	-- Returns false if connectors are equal.
+		use et_libraries.type_component_purpose;
+		use type_module_instance_name;
+		r : boolean := false; -- to be returned
+	begin
+		-- First we compare instance_A
+		if left.instance_A > right.instance_A then
+			r := true;
+		elsif left.instance_A < right.instance_A then
+			r := false;
+		else -- left instance_A equals right instance_A
+
+			-- compare instance_B
+			if left.instance_B > right.instance_B then
+				r := true;
+			elsif left.instance_B < right.instance_B then
+				r := false;
+			else -- left instance_B equals right instance_B
+
+				-- compare purpose_A
+				if left.purpose_A > right.purpose_A then
+					r := true;
+				elsif left.purpose_A < right.purpose_A then
+					r := false;
+				else -- left purpose_A equals right purpose_A
+
+					-- compare purpose_B
+					if left.purpose_B > right.purpose_B then
+						r := true;
+					elsif left.purpose_B < right.purpose_B then
+						r := false;
+					else 
+						-- left purpose_B equals right purpose_B
+						-- means: connectors are equal
+						r := false;
+					end if;
+				end if;
+			end if;
+		end if;
+		
+		return r;
+	end compare_connectors;
 	
 	procedure tab_depth_up is begin tab_depth := tab_depth + 1; end tab_depth_up;
 	procedure tab_depth_down is begin tab_depth := tab_depth - 1; end tab_depth_down;
@@ -207,11 +252,11 @@ package body et_project is
 			section_mark (section_module_connections, HEADER);
 
 			section_mark (section_connector, HEADER);			
-			write (keyword => comment_mark & " " & keyword_instance_name, space => true, parameters => to_string (project_name));
-			write (keyword => comment_mark & " " & keyword_purpose, space => true, wrap => true, parameters => "power_in");
+			write (keyword => comment_mark & " " & keyword_instance_A, space => true, parameters => to_string (project_name));
+			write (keyword => comment_mark & " " & keyword_purpose_A, space => true, wrap => true, parameters => "power_in");
 			new_line;
-			write (keyword => comment_mark & " " & keyword_instance_name, space => true, parameters => "power_supply");
-			write (keyword => comment_mark & " " & keyword_purpose, space => true, wrap => true, parameters => "power_out");
+			write (keyword => comment_mark & " " & keyword_instance_B, space => true, parameters => "power_supply");
+			write (keyword => comment_mark & " " & keyword_purpose_B, space => true, wrap => true, parameters => "power_out");
 			new_line;
 			write (keyword => comment_mark & " " & keyword_net_comparator, space => true, parameters => "on"); -- CS image of enum type
 			write (keyword => comment_mark & " " & keyword_net_comparator_warn_only, space => true, parameters => "on"); -- CS image of enum type
@@ -2668,30 +2713,53 @@ package body et_project is
 			package stack is new stack_lifo (
 				item	=> type_section_name_rig_configuration,
 				max 	=> max_section_depth);
+
+			-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
+			generic_name : et_coordinates.type_submodule_name.bounded_string; -- motor_driver
+			instance_name : type_module_instance_name.bounded_string; -- DRV_1
+
+			procedure clear_module_instance is begin
+				generic_name := et_coordinates.type_submodule_name.to_bounded_string ("");
+				instance_name := to_bounded_string ("");
+			end clear_module_instance;
+			
+			purpose_A, purpose_B : et_libraries.type_component_purpose.bounded_string; -- power_in, power_out
+			instance_A, instance_B : type_module_instance_name.bounded_string; -- DRV_1, PWR
+
+			procedure clear_connector is begin
+				purpose_A := et_libraries.to_purpose ("");
+				purpose_A := purpose_B;
+				instance_A := to_bounded_string ("");
+				instance_B := instance_A;
+			end clear_connector;
 			
 			procedure process_line is
 			-- CS: detect if section name is type_section_name_rig_configuration
 
-				-- variables for temporarily storage:
-				generic_name : et_coordinates.type_submodule_name.bounded_string; -- motor_driver
-				instance_name : type_module_instance_name.bounded_string; -- DRV_1
-				
 				procedure execute_section is
+				-- Once a section concludes, the temporarily variables are read, evaluated
+				-- and finally assembled to actual objects:
 					use type_module_instances;
 					instance_created : boolean;
 					instance_cursor : type_module_instances.cursor;
+
+					connection_inserted : boolean;
+					connection_cursor : type_module_connectors.cursor;
 				begin
 					case stack.parent is
 						when SEC_INIT =>
 							case stack.current is
-								when SEC_MODULE_INSTANCES => null;
-								when SEC_MODULE_CONNECTIONS => null;
+								when SEC_MODULE_INSTANCES => null; -- nothing to do
+								when SEC_MODULE_CONNECTIONS => null; -- nothing to do
 								when others => invalid_section;
 							end case;
 							
 						when SEC_MODULE_INSTANCES =>
 							case stack.current is
 								when SEC_MODULE =>
+									-- CS: test length of generic name and instance name. must be greater zero
+									
+									-- create an instanciated module in the rig
 									rig.module_instances.insert (
 										key			=> instance_name,
 										new_item	=> (generic_name => generic_name),
@@ -2699,6 +2767,7 @@ package body et_project is
 										position	=> instance_cursor
 										);
 
+									-- An instance may exist only once:
 									if not instance_created then
 										log_indentation_reset;
 										log (message_error & "module instance '" 
@@ -2706,6 +2775,8 @@ package body et_project is
 											 console => true);
 										raise constraint_error;
 									end if;
+
+									clear_module_instance; -- clean up for next module instance
 									
 								when others => invalid_section;
 							end case;
@@ -2713,8 +2784,28 @@ package body et_project is
 						when SEC_MODULE_CONNECTIONS =>
 							case stack.current is
 								when SEC_CONNECTOR =>
-									null;
+									-- CS: test length of instance_A/B and purpose A/B. must be greater zero
+									
+									-- create a module connector
+									rig.connections.insert (
+										new_item	=> (
+											instance_A	=> instance_A,
+											instance_B	=> instance_B,
+											purpose_A	=> purpose_A,
+											purpose_B	=> purpose_B),
+										inserted	=> connection_inserted,
+										position	=> connection_cursor);
 
+									-- A module connection may exist only once:
+									if not connection_inserted then
+										log_indentation_reset;
+										log (message_error & "module connection already exists !",
+											 console => true);
+										raise constraint_error;
+									end if;
+
+									clear_connector; -- clean up for next module connector
+									
 								when others => invalid_section;
 							end case;
 
@@ -2735,7 +2826,7 @@ package body et_project is
 					if f (line, 1) = section_keyword then -- section name detected in field 1
 						if f (line, 2) = section_begin then -- section header detected in field 2
 							stack.push (section);
-							log (write_enter_section & to_string (section), log_threshold + 3);
+							log (write_enter_section & to_string (section), log_threshold + 4);
 							return true;
 							
 						elsif f (line, 2) = section_end then -- section footer detected in field 2
@@ -2746,9 +2837,9 @@ package body et_project is
 							
 							stack.pop;
 							if stack.empty then
-								log (write_top_level_reached, log_threshold + 3);
+								log (write_top_level_reached, log_threshold + 4);
 							else
-								log (write_return_to_section & to_string (stack.current), log_threshold + 3);
+								log (write_return_to_section & to_string (stack.current), log_threshold + 4);
 							end if;
 							return true;
 							
@@ -2770,7 +2861,7 @@ package body et_project is
 				elsif set (section_connector, SEC_CONNECTOR) then null;
 				else
 					-- The line contains something else -> the payload data. 
-					-- Temporarily this data is stored in corresponding variables.
+					-- Temporarily this data is to be stored in corresponding variables.
 					if not stack.empty then
 						log ("line --> " & to_string (line), log_threshold + 3);
 						
@@ -2779,7 +2870,7 @@ package body et_project is
 								case stack.current is
 									when SEC_MODULE =>
 										declare
-											kw : string := f (line, 1); -- field 1 of line
+											kw : string := f (line, 1);
 										begin
 											if kw = keyword_generic_name then
 												expect_field_count (line, 2);
@@ -2797,7 +2888,34 @@ package body et_project is
 								end case;
 								
 							when SEC_MODULE_CONNECTIONS =>
-								null;
+								case stack.current is
+									when SEC_CONNECTOR =>
+										declare
+											kw : string := f (line, 1);
+										begin
+											if kw = keyword_instance_A then
+												expect_field_count (line, 2);
+												instance_A := to_bounded_string (f (line,2));
+											elsif kw = keyword_instance_B then
+												expect_field_count (line, 2);
+												instance_B := to_bounded_string (f (line,2));
+												
+											elsif kw = keyword_purpose_A then
+												expect_field_count (line, 2);
+												purpose_A := et_libraries.to_purpose (f (line,2));
+											elsif kw = keyword_purpose_B then
+												expect_field_count (line, 2);
+												purpose_B := et_libraries.to_purpose (f (line,2));
+
+											else
+												invalid_keyword (kw);
+											end if;
+										end;
+										
+									when others => invalid_section;
+										
+								end case;
+
 
 							when others => invalid_section;
 						end case;
@@ -2806,7 +2924,7 @@ package body et_project is
 				end if;
 
 				exception when event: others =>
-					log (affected_line (line) & to_string (line));
+					log (affected_line (line) & to_string (line), console => true);
 					raise;
 				
 			end process_line;
@@ -2997,7 +3115,7 @@ package body et_project is
 				end if;
 
 				exception when event: others =>
-					log (affected_line (line) & to_string (line));
+					log (affected_line (line) & to_string (line), console => true);
 					raise;
 				
 			end process_line;

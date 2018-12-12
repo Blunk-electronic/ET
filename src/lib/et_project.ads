@@ -141,10 +141,30 @@ package et_project is
 		key_type		=> type_module_instance_name.bounded_string, -- LMX_1
 		element_type	=> type_module_instance);
 
+	-- module connection (or board-to-board connector). NOTE: This could be a cable as well.
+	type type_connector is record
+		instance_A	: type_module_instance_name.bounded_string; -- LMX_2
+		purpose_A	: et_libraries.type_component_purpose.bounded_string; -- pwr_in
+		instance_B	: type_module_instance_name.bounded_string; -- PWR
+		purpose_B	: et_libraries.type_component_purpose.bounded_string; -- pwr_out
+
+		-- CS
+		-- net_comparator : on/off 
+		-- warn_only : on/off 
+	end record;
+
+	function compare_connectors (left, right : in type_connector) return boolean;
+	-- Returns true if left connector comes before right connector.
+
+	package type_module_connectors is new ordered_sets (
+		element_type	=> type_connector,
+		"<"				=> compare_connectors);
+	
 	-- A rig configuration consists of a list of module instances
 	-- and a list of module-to-module connectors (or board-to-board connectors):
-	type type_rig_configuration is record
+	type type_rig_configuration is record -- CS: rename to type_rig ?
 		module_instances	: type_module_instances.map;
+		connections			: type_module_connectors.set;
 		-- CS description, docs, links, images ... ?
 	end record;
 
@@ -230,6 +250,10 @@ package et_project is
 	
 	keyword_generic_name			: constant string := "generic_name";
 	keyword_instance_name			: constant string := "instance_name";
+	keyword_instance_A				: constant string := "instance_A";
+	keyword_instance_B				: constant string := "instance_B";		
+	keyword_purpose_A				: constant string := "purpose_A";
+	keyword_purpose_B				: constant string := "purpose_B";	
 	keyword_net_comparator			: constant string := "net_comparator";
 	keyword_net_comparator_warn_only: constant string := "warn_only";
 	keyword_name					: constant string := "name";
