@@ -175,6 +175,20 @@ package et_project is
 		element_type	=> type_rig);
 
 	rigs : type_rigs.map;
+
+	-- Generic modules (which contain schematic and layout stuff)
+	-- are collected here:
+	package type_modules is new ordered_maps (
+		key_type		=> et_coordinates.type_submodule_name.bounded_string,
+		"<"				=> et_coordinates.type_submodule_name."<",
+		element_type	=> et_schematic.type_module,
+		"="				=> et_schematic."=");
+
+	use type_modules;
+	modules : type_modules.map;
+
+
+	
 	
 	type type_section_name_rig_configuration is (
 		SEC_INIT,
@@ -551,21 +565,6 @@ package et_project is
 		function parent return item;
 		
 	end stack_lifo;
-
-
--- 	generic
--- 		line : et_string_processing.type_fields_of_line;
--- 		type type_section_name is private;
--- 	package test_section_header_footer is
--- 		function set (
--- 			-- Tests if the current line is a section header or footer. Returns true in both cases.
--- 			-- Returns false if the current line is neither a section header or footer.
--- 			-- If it is a header, the section name is pushed onto the sections stack.
--- 			-- If it is a footer, the latest section name is popped from the stack.
--- 			section_keyword	: in string; -- [MODULE
--- 			section			: in type_section_name) -- SEC_MODULE
--- 		return boolean;
--- 	end test_section_header_footer;
 	
 end et_project;
 

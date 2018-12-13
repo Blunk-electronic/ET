@@ -2707,7 +2707,9 @@ package body et_project is
 		procedure read_module_file (module_file_handle : in directory_entry_type) is 
 			file_handle : ada.text_io.file_type;
 			file_name : string := simple_name (module_file_handle); -- motor_driver.mod
-
+			module_cursor : type_modules.cursor;
+			module_inserted : boolean;
+			
 			line : et_string_processing.type_fields_of_line;
 
 			-- This is the section stack of the module. 
@@ -2777,8 +2779,6 @@ package body et_project is
 
 
 			begin -- process_line
-				--put_line (standard_output, to_string (line));
-				
 				if set (section_net_classes, SEC_NET_CLASSES) then null;
 				elsif set (section_net_class, SEC_NET_CLASS) then null;
 				elsif set (section_nets, SEC_NETS) then null;
@@ -2829,12 +2829,11 @@ package body et_project is
 					-- The line contains something else -> the payload data. 
 					-- Temporarily this data is stored in corresponding variables.
 
-					if not stack.empty then
-						log ("line --> " & to_string (line), log_threshold + 3);
+					log ("line --> " & to_string (line), log_threshold + 3);
 
 						null;
 	
-					end if;
+
 
 				end if;
 
@@ -2861,6 +2860,13 @@ package body et_project is
 			-- Init section stack.
 			stack.init;
 			stack.push (SEC_INIT);
+
+			-- Create an empty module named after the module file.
+			type_modules.insert (
+				container	=> modules,
+				key			=> et_coordinates.to_submodule_name (simple_name (file_name)),
+				position	=> module_cursor,
+				inserted	=> module_inserted);
 
 			-- read the file line by line
 			while not end_of_file loop
@@ -3085,72 +3091,72 @@ package body et_project is
 				else
 					-- The line contains something else -> the payload data. 
 					-- Temporarily this data is to be stored in corresponding variables.
-					if not stack.empty then
-						log ("line --> " & to_string (line), log_threshold + 3);
-						
-						case stack.parent is
-							when SEC_MODULE_INSTANCES =>
-								case stack.current is
-									when SEC_MODULE =>
-										declare
-											kw : string := f (line, 1);
-										begin
-											if kw = keyword_generic_name then
-												expect_field_count (line, 2);
-												generic_name := to_submodule_name (f (line,2));
-												-- CS: test if module with this generic name exists
-											elsif kw = keyword_instance_name then
-												expect_field_count (line, 2);
-												instance_name := to_bounded_string (f (line,2));
-											else
-												invalid_keyword (kw);
-											end if;
-										end;
-										
-									when others => invalid_section;
-										
-								end case;
-								
-							when SEC_MODULE_CONNECTIONS =>
-								case stack.current is
-									when SEC_CONNECTOR =>
-										declare
-											kw : string := f (line, 1);
-										begin
-											if kw = keyword_instance_A then
-												expect_field_count (line, 2);
-												instance_A := to_bounded_string (f (line,2));
-												-- CS: test if instance exists
-											elsif kw = keyword_instance_B then
-												expect_field_count (line, 2);
-												instance_B := to_bounded_string (f (line,2));
-												-- CS: test if instance exists
-												
-											elsif kw = keyword_purpose_A then
-												expect_field_count (line, 2);
-												purpose_A := et_libraries.to_purpose (f (line,2));
-												-- CS: test if a connector with this purpose exits in the instance
-											elsif kw = keyword_purpose_B then
-												expect_field_count (line, 2);
-												purpose_B := et_libraries.to_purpose (f (line,2));
-												-- CS: test if a connector with this purpose exits in the instance
-												
-											-- CS: net comparator and warning on/off
-											else
-												invalid_keyword (kw);
-											end if;
-										end;
-										
-									when others => invalid_section;
-										
-								end case;
+
+					log ("line --> " & to_string (line), log_threshold + 3);
+					
+					case stack.parent is
+						when SEC_MODULE_INSTANCES =>
+							case stack.current is
+								when SEC_MODULE =>
+									declare
+										kw : string := f (line, 1);
+									begin
+										if kw = keyword_generic_name then
+											expect_field_count (line, 2);
+											generic_name := to_submodule_name (f (line,2));
+											-- CS: test if module with this generic name exists
+										elsif kw = keyword_instance_name then
+											expect_field_count (line, 2);
+											instance_name := to_bounded_string (f (line,2));
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+									
+								when others => invalid_section;
+									
+							end case;
+							
+						when SEC_MODULE_CONNECTIONS =>
+							case stack.current is
+								when SEC_CONNECTOR =>
+									declare
+										kw : string := f (line, 1);
+									begin
+										if kw = keyword_instance_A then
+											expect_field_count (line, 2);
+											instance_A := to_bounded_string (f (line,2));
+											-- CS: test if instance exists
+										elsif kw = keyword_instance_B then
+											expect_field_count (line, 2);
+											instance_B := to_bounded_string (f (line,2));
+											-- CS: test if instance exists
+											
+										elsif kw = keyword_purpose_A then
+											expect_field_count (line, 2);
+											purpose_A := et_libraries.to_purpose (f (line,2));
+											-- CS: test if a connector with this purpose exits in the instance
+										elsif kw = keyword_purpose_B then
+											expect_field_count (line, 2);
+											purpose_B := et_libraries.to_purpose (f (line,2));
+											-- CS: test if a connector with this purpose exits in the instance
+											
+										-- CS: net comparator and warning on/off
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+									
+								when others => invalid_section;
+									
+							end case;
 
 
-							when others => invalid_section;
-						end case;
-					end if;
-
+						when others => invalid_section;
+					end case;
 				end if;
+
+
 
 				exception when event: others =>
 					log (affected_line (line) & to_string (line), console => true);
@@ -3326,50 +3332,6 @@ package body et_project is
 		
 	end stack_lifo;
 
-
--- 	package body test_section_header_footer is
--- 
--- 		function set (
--- 		-- Tests if the current line is a section header or footer. Returns true in both cases.
--- 		-- Returns false if the current line is neither a section header or footer.
--- 		-- If it is a header, the section name is pushed onto the sections stack.
--- 		-- If it is a footer, the latest section name is popped from the stack.
--- 			section_keyword	: in string; -- [MODULE
--- 			section			: in type_section_name) -- SEC_MODULE
--- 			return boolean is 
--- 
--- 			use et_string_processing;
--- 			
--- 			function f (line : in et_string_processing.type_fields_of_line; position : in positive) 
--- 				return string renames et_string_processing.field;
--- 
--- 		begin -- set
--- 			if f (line, 1) = section_keyword then -- section name detected in field 1
--- 				if f (line, 2) = section_begin then -- section header detected in field 2
--- 					--stack.push (section);
--- 					--log ("entering section " & to_string (section), log_threshold + 1);
--- 					return true;
--- 				elsif f (line, 2) = section_end then -- section footer detected in field 2
--- 					--stack.pop;
--- -- 					if stack.empty then
--- -- 						log ("project file reading complete", log_threshold + 1);
--- -- 					else
--- -- 						log ("returning to section " & to_string (stack.current), log_threshold + 1);
--- -- 					end if;
--- 					return true;
--- 				else
--- 					log_indentation_reset;
--- 					log (message_error & "missing " & section_begin & " or " & section_end & " after section name !", console => true);
--- 					raise constraint_error;
--- 				end if;
--- 			else -- neither a section header nor footer
--- 				return false;
--- 			end if;
--- 		end set;
--- 
--- 	end test_section_header_footer;
-	
-	
 end et_project;
 	
 -- Soli Deo Gloria
