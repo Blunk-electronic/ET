@@ -759,6 +759,7 @@ package body et_string_processing is
 	-- field at given position.		
 		use type_list_of_strings;
 	begin
+		--log ("field ct:" & count_type'image (line.field_count));
 		if count_type (position) > line.field_count then
 			--return "";
 			raise constraint_error;

@@ -7137,10 +7137,11 @@ package body et_kicad is
 			-- Returns true if given line is a net junction "Connection ~ 4650 4600"
 				result : boolean := false;
 			begin
-				-- CS test field count
-				if et_string_processing.field (line,1) = schematic_keyword_connection then
-					if et_string_processing.field (line,2) = schematic_tilde then
-						result := true;
+				if et_string_processing.field_count (line) = 4 then
+					if et_string_processing.field (line,1) = schematic_keyword_connection then
+						if et_string_processing.field (line,2) = schematic_tilde then
+							result := true;
+						end if;
 					end if;
 				end if;
 				return result;
@@ -7196,10 +7197,11 @@ package body et_kicad is
 			-- "Text Label 2350 3250 0 60 ~ 0"
 				result : boolean := false;
 			begin
-				-- CS test field count
-				if 	et_string_processing.field (line,1) = schematic_keyword_text and 
-					et_string_processing.field (line,2) = schematic_keyword_label_simple then
-						result := true;
+				if et_string_processing.field_count (line) = 8 then
+					if 	et_string_processing.field (line,1) = schematic_keyword_text and 
+						et_string_processing.field (line,2) = schematic_keyword_label_simple then
+							result := true;
+					end if;
 				end if;
 				return result;
 			end simple_label_header;
@@ -7264,11 +7266,12 @@ package body et_kicad is
 			-- "Text GLabel 4700 3200 1 60 UnSpc ~ 0"
 				result : boolean := false;
 			begin
-				-- CS test field count
-				if et_string_processing.field (line,1) = schematic_keyword_text and 
-					(et_string_processing.field (line,2) = schematic_keyword_label_hierarchic or
-					 et_string_processing.field (line,2) = schematic_keyword_label_global) then
-						result := true;
+				if et_string_processing.field_count (line) = 9 then
+					if et_string_processing.field (line,1) = schematic_keyword_text and 
+						(et_string_processing.field (line,2) = schematic_keyword_label_hierarchic or
+						et_string_processing.field (line,2) = schematic_keyword_label_global) then
+							result := true;
+					end if;
 				end if;
 				return result;
 			end tag_label_header;
@@ -7344,10 +7347,11 @@ package body et_kicad is
 			-- ET Test Circuit
 				result : boolean := false;
 			begin
-				-- CS test field count
-				if et_string_processing.field (line,1) = schematic_keyword_text and 
-					et_string_processing.field (line,2) = schematic_keyword_note then
-						result := true;
+				if et_string_processing.field_count (line) = 8 then
+					if et_string_processing.field (line,1) = schematic_keyword_text and 
+						et_string_processing.field (line,2) = schematic_keyword_note then
+							result := true;
+					end if;
 				end if;
 				return result;
 			end text_note_header;
@@ -7398,22 +7402,30 @@ package body et_kicad is
 
 			function component_header (line : in type_fields_of_line) return boolean is
 			-- Returns true if given line is a header of a component.
+			-- The header is "$Comp"	
 			begin
-				-- CS test field count
-				if et_string_processing.field (line,1) = schematic_component_header then
-					return true;
-				else 
+				if et_string_processing.field_count (line) = 1 then
+					if et_string_processing.field (line,1) = schematic_component_header then
+						return true;
+					else 
+						return false;
+					end if;
+				else
 					return false;
 				end if;
 			end component_header;
 
 			function component_footer (line : in type_fields_of_line) return boolean is
 			-- Returns true if given line is a footer of a component.
+			-- The footer is "$EndComp"
 			begin
-				-- CS test field count
-				if et_string_processing.field (line,1) = schematic_component_footer then
-					return true;
-				else 
+				if et_string_processing.field_count (line) = 1 then
+					if et_string_processing.field (line,1) = schematic_component_footer then
+						return true;
+					else 
+						return false;
+					end if;
+				else
 					return false;
 				end if;
 			end component_footer;
@@ -8877,7 +8889,7 @@ package body et_kicad is
 						when others =>
 
 							-- At a certain log level we report the whole line as it is:
- 							log (to_string (line), log_threshold + 7);
+ 							log ("line ->" & to_string (line) & "<-", log_threshold + 7);
 
 							-- The first line should be the headline with the schematic version:
 							-- READ SCHEMATIC HEADLINE:
@@ -8982,7 +8994,6 @@ package body et_kicad is
 										make_gui_sheet (lines, log_threshold + 1);
 										clear (lines);
 									else
-										--log (to_string (line));
 										add (line);
 									end if;
 								end if;
@@ -9157,8 +9168,6 @@ package body et_kicad is
 			exception
 				when others =>
 					error_in_schematic_file (line);
--- 					et_string_processing.close_report;
--- 					put_line (standard_output, "Read import report for warnings and error messages !"); -- CS: show path to report file
 					raise;					
 
 		end read_schematic;
