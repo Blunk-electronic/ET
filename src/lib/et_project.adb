@@ -2722,20 +2722,37 @@ package body et_project is
 
 
 			-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
-			net_class_name			: et_pcb.type_net_class_name.bounded_string;
-			net_class_description	: et_pcb.type_net_class_description.bounded_string;
-			net_class_clearance		: et_pcb.type_track_clearance;
+
+			-- net class
+			net_class_name					: et_pcb.type_net_class_name.bounded_string;
+			net_class_description			: et_pcb.type_net_class_description.bounded_string;
+			net_class_clearance				: et_pcb.type_track_clearance;
+			net_class_width_min				: et_pcb.type_track_width;
+			net_class_via_drill_min			: et_pcb.type_drill_size;
+			net_class_via_restring_min		: et_pcb.type_restring_width;
+			net_class_micro_via_drill_min	: et_pcb.type_drill_size;
+			net_class_micro_via_restring_min: et_pcb.type_restring_width;
 			
 			procedure process_line is 
-			-- CS: detect if section name is type_section_name_project
+			-- CS: detect if section name is type_section_name_module
 
 				procedure execute_section is
+				-- Once a section concludes, the temporarily variables are read, evaluated
+				-- and finally assembled to actual objects:
+					
 				begin
 					null;
 -- 					case stack.parent is
--- 						when SEC_MODULE_INSTANCES =>
+-- 						when SEC_INIT =>
 -- 							case stack.current is
--- 								when SEC_MODULE =>
+-- 								when SEC_NET_CLASSES => null; -- nothing to do
+-- 								when SEC_NETS => null; -- nothing to do
+-- 								when SEC_TEXTS => null; -- nothing to do
+-- 								when SEC_DEVICES => null; -- nothing to do
+-- 								when SEC_SUBMODULES => null; -- nothing to do
+-- 								when SEC_BOARD => null; -- nothing to do
+-- 								when others => invalid_section;
+-- 							end case;
 
 				end execute_section;
 				
@@ -2834,6 +2851,17 @@ package body et_project is
 					log ("line --> " & to_string (line), log_threshold + 3);
 
 					case stack.parent is
+						when SEC_INIT => -- test for allowed sections at top level
+							case stack.current is
+								when SEC_NET_CLASSES => null; -- nothing to do
+								when SEC_NETS => null; -- nothing to do
+								when SEC_TEXTS => null; -- nothing to do
+								when SEC_DEVICES => null; -- nothing to do
+								when SEC_SUBMODULES => null; -- nothing to do
+								when SEC_BOARD => null; -- nothing to do
+								when others => invalid_section;
+							end case;
+						
 						when SEC_NET_CLASSES =>
 							case stack.current is
 								when SEC_NET_CLASS =>
@@ -2843,7 +2871,6 @@ package body et_project is
 										if kw = keyword_name then
 											expect_field_count (line, 2);
 											net_class_name := et_pcb.to_net_class_name (f (line,2));
-											-- CS: test if net class with this name already exists
 										elsif kw = keyword_description then
 											expect_field_count (line, 2);
 											net_class_description := et_pcb.to_net_class_description (f (line,2));
@@ -2851,19 +2878,54 @@ package body et_project is
 											expect_field_count (line, 2);
 											net_class_clearance := et_pcb_coordinates.to_distance (f (line,2));
 											et_pcb.validate_track_clearance (net_class_clearance);
+										elsif kw = keyword_track_width_min then
+											expect_field_count (line, 2);
+											net_class_width_min := et_pcb_coordinates.to_distance (f (line,2));
+											et_pcb.validate_track_width (net_class_width_min);
+										elsif kw = keyword_via_drill_min then
+											expect_field_count (line, 2);
+											net_class_via_drill_min := et_pcb_coordinates.to_distance (f (line,2));
+											et_pcb.validate_drill_size (net_class_via_drill_min);
+										elsif kw = keyword_via_restring_min then
+											expect_field_count (line, 2);
+											net_class_via_restring_min := et_pcb_coordinates.to_distance (f (line,2));
+											et_pcb.validate_restring_width (net_class_via_restring_min);
+										elsif kw = keyword_micro_via_drill_min then
+											expect_field_count (line, 2);
+											net_class_micro_via_drill_min := et_pcb_coordinates.to_distance (f (line,2));
+											et_pcb.validate_drill_size (net_class_micro_via_drill_min);
+										elsif kw = keyword_micro_via_restring_min then
+											expect_field_count (line, 2);
+											net_class_micro_via_restring_min := et_pcb_coordinates.to_distance (f (line,2));
+											et_pcb.validate_restring_width (net_class_micro_via_restring_min);
 										else
 											invalid_keyword (kw);
 										end if;
 									end;
-									
+
 								when others => invalid_section;
-									
 							end case;
 
-						when others => invalid_section;
+						when SEC_NETS =>
+							NULL;
+
+						when SEC_DRAWING_FRAMES =>
+							NULL;
+
+						when SEC_TEXTS =>
+							NULL;
+							
+						when SEC_SUBMODULES =>
+							NULL;
+							
+						when SEC_DEVICES =>
+							NULL;
+
+						when SEC_BOARD =>
+							NULL;
+							
+						when others => null;
 					end case;
-
-
 				end if;
 
 				exception when event: others =>
@@ -3034,12 +3096,6 @@ package body et_project is
 					
 				begin -- execute_section
 					case stack.parent is
-						when SEC_INIT =>
-							case stack.current is
-								when SEC_MODULE_INSTANCES => null; -- nothing to do
-								when SEC_MODULE_CONNECTIONS => null; -- nothing to do
-								when others => invalid_section;
-							end case;
 							
 						when SEC_MODULE_INSTANCES =>
 							case stack.current is
@@ -3067,7 +3123,7 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
-						when others => invalid_section;
+						when others => null; --invalid_section;
 					end case;
 							
 				end execute_section;
@@ -3124,6 +3180,13 @@ package body et_project is
 					log ("line --> " & to_string (line), log_threshold + 3);
 					
 					case stack.parent is
+						when SEC_INIT => -- test for allowed sections at top level
+							case stack.current is
+								when SEC_MODULE_INSTANCES => null; -- nothing to do
+								when SEC_MODULE_CONNECTIONS => null; -- nothing to do
+								when others => invalid_section;
+							end case;
+						
 						when SEC_MODULE_INSTANCES =>
 							case stack.current is
 								when SEC_MODULE =>
@@ -3181,7 +3244,7 @@ package body et_project is
 							end case;
 
 
-						when others => invalid_section;
+						when others => null;
 					end case;
 				end if;
 
