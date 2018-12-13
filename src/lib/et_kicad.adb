@@ -3708,7 +3708,7 @@ package body et_kicad is
 					end if;
 				
                     -- Create net and append strand to module.nets
-                    rig.update_element (
+                    modules.update_element (
                         position	=> module_cursor,
                         process		=> add_net'access);
 
@@ -3717,7 +3717,7 @@ package body et_kicad is
 					net_name := element (strand).name;
 
                     -- Create net and append strand to module.nets
-                    rig.update_element (
+                    modules.update_element (
                         position	=> module_cursor,
                         process		=> add_net'access);
 
@@ -3766,7 +3766,7 @@ package body et_kicad is
 		end set_cursor;
 	
 	begin
-		type_rig.query_element (
+		type_modules.query_element (
 			position	=> module_cursor,
 			process		=> set_cursor'access
 			);
@@ -3831,7 +3831,7 @@ package body et_kicad is
 		-- and tested if they are connected with the given segment.
 		
 			net : type_hierachic_net;
-			use type_rig;
+			use type_modules;
 
 			procedure query_gui_submodules (
 				mod_name	: in et_coordinates.type_submodule_name.bounded_string;
@@ -3929,9 +3929,9 @@ package body et_kicad is
 			
 		begin -- hierarchic_net
 
-			-- Locate the rig module as indicated by module_cursor. Then query the gui_submodules.
+			-- Locate the module as indicated by module_cursor. Then query the gui_submodules.
 			update_element (
-				container	=> rig,
+				container	=> modules,
 				position	=> module_cursor,
 				process		=> query_gui_submodules'access);
 			
@@ -3953,7 +3953,7 @@ package body et_kicad is
 		-- The hierarchic strands found, are collected in the temparily collector hierarchic_strands_tmp.
 		
 			-- Cursor h_strand points to the hierarchic strand being examined.
-			-- Defaults to the first strand of the rig module (indicated by module_cursor):
+			-- Defaults to the first strand of the module (indicated by module_cursor):
 			h_strand : type_strands.cursor := first_strand;
 			use type_strands;
 			use et_coordinates.type_path_to_submodule;
@@ -4001,8 +4001,7 @@ package body et_kicad is
 			use et_coordinates;
 		begin -- collect_hierarchic_strands
 
-			-- If a hierarchic net is available, query all hierarchic strands of
-			-- the rig module.
+			-- If a hierarchic net is available, query all hierarchic strands of the module.
 			-- We have a match if the path of the given hierarchic net equals the
 			-- path of the h_strand AND
 			-- if the name of the given hierarchic net equals the name of the h_strand.
@@ -4121,7 +4120,7 @@ package body et_kicad is
 			net_cursor	: in type_nets.cursor;
 			strands	 	: in type_strands.list
 			) is
-			use type_rig;
+			use type_modules;
 
 			procedure locate_net (
 				module_name	: in et_coordinates.type_submodule_name.bounded_string;
@@ -4153,7 +4152,7 @@ package body et_kicad is
 		begin -- append_hierarchic_strands
 			-- locate module as indicated by module_cursor
 			update_element (
-				container	=> rig,
+				container	=> modules,
 				position	=> module_cursor,
 				process		=> locate_net'access);
 		end append_hierarchic_strands;
@@ -4311,7 +4310,7 @@ package body et_kicad is
 			log_indentation_down;
 		end query_net;
 
-		use type_rig;
+		use type_modules;
 		
 	begin -- write_nets
 		if log_level >= log_threshold then
@@ -4319,7 +4318,7 @@ package body et_kicad is
 			log_indentation_up;
 				
 			--first_module;
-			--while module_cursor /= type_rig.no_element loop
+			--while module_cursor /= type_modules.no_element loop
 					
 			--	log ("module " & to_string (key (module_cursor)));
 
@@ -4341,7 +4340,7 @@ package body et_kicad is
 		project			: in et_project.type_project_name.bounded_string;
 		log_threshold	: in et_string_processing.type_log_level) is
 	-- Imports the design libraries and the actual design as specified by parameter "project".
-	-- Inserts the created (sub)module in the rig (see type_rig).
+	-- Inserts the created (sub)module in the module collection (see type_modules).
 	-- Leaves the global module_cursor pointing where the module was inserted.
 		
 		use et_schematic;
@@ -5311,7 +5310,7 @@ package body et_kicad is
 					end loop;
 
 					-- Copy the resulting table to the tempoarily list "sym_lib_tables".
-					-- When the module is created, it will be copied into the rig.
+					-- When the module is created, it will be copied into the modules.
 					sym_lib_tables := sym_table_local;
 				end concatenate_local_and_global_sym_tables;
 
@@ -5346,7 +5345,7 @@ package body et_kicad is
 					end loop;
 
 					-- Copy the resulting table to the tempoarily list "fp_lib_tables".
-					-- When the module is created, it will be copied into the rig.
+					-- When the module is created, it will be copied into the modules.
 					fp_lib_tables := fp_table_local;
 				end concatenate_local_and_global_fp_tables;
 				
@@ -7184,10 +7183,10 @@ package body et_kicad is
 				type_junctions.append (wild_junctions, junction);
 
 				-- add to module.junctions
-				type_rig.update_element (
-					container => rig,
-					position => module_cursor,
-					process => append_junction'access);
+				type_modules.update_element (
+					container	=> modules,
+					position	=> module_cursor,
+					process		=> append_junction'access);
 
 				--log_indentation_down;
 			end make_junction;
@@ -8822,7 +8821,7 @@ package body et_kicad is
 			-- A line that specifies such a flag loops like "NoConn ~ 5000 3900"
 				no_connection_flag : type_no_connection_flag;
 
-				use type_rig;
+				use type_modules;
 			
 				procedure append_no_connect_flag (
 					module_name	: in type_submodule_name.bounded_string;
@@ -8846,9 +8845,9 @@ package body et_kicad is
 
 				-- append the no-connect-flag to the list of no_connections of the current module
 				update_element (
-					container => rig,
-					position => module_cursor,
-					process => append_no_connect_flag'access);
+					container	=> modules,
+					position	=> module_cursor,
+					process		=> append_no_connect_flag'access);
 				
 			end make_no_connection;
 
@@ -9201,11 +9200,11 @@ package body et_kicad is
 			-- tmp_component_libraries is furhter-on requried for other operations (like read_schematic) within the current module.
 			-- CS: in the future tmp_component_libraries should be discarded. update_element and query_element
 			-- operations should access the component_libraries of a module directly.
-			type_rig.update_element (rig, module_cursor, save_components'access);
+			type_modules.update_element (modules, module_cursor, save_components'access);
 			
 			-- V5: et_kicad_pcb.package_libraries is a temparily storage place. It must be saved in module.footprints.
 			if cad_format = KICAD_V5 then
-				type_rig.update_element (rig, module_cursor, save_packages'access);
+				type_modules.update_element (modules, module_cursor, save_packages'access);
 			end if;
 			
 		end save_libraries;
@@ -9248,13 +9247,10 @@ package body et_kicad is
 -- 				end if;
 
 				-- create the module:
-				type_rig.insert (
-					container	=> rig,
+				type_modules.insert (
+					container	=> modules,
 					key			=> module_name,
 					new_item 	=> (
-						--generic_name	=> et_coordinates.to_submodule_name (
-						--					base_name (et_coordinates.to_string (top_level_schematic))),
-						--instance		=> et_coordinates.type_submodule_instance'first,
 
 						-- These search lists are used in V4:
 						search_list_library_comps	=> search_list_component_libraries, -- see function read_project_file
@@ -9293,7 +9289,7 @@ package body et_kicad is
 
 				if not module_inserted then -- CS should never happen
 					log_indentation_reset;
-					log (message_error & "module " & et_coordinates.to_string (module_name) & " already in rig !");
+					log (message_error & "module " & et_coordinates.to_string (module_name) & " already in imported !");
 					raise constraint_error;
 				end if;
 
@@ -9501,9 +9497,9 @@ package body et_kicad is
 
 		use et_string_processing;	
 		use et_libraries.type_component_purpose;
-		use type_rig;
+		use type_modules;
 	
-		module_cursor : type_rig.cursor;
+		module_cursor : type_modules.cursor;
 		purpose : et_libraries.type_component_purpose.bounded_string; -- to be returned
 	
 		procedure query_components (
@@ -9537,10 +9533,10 @@ package body et_kicad is
 		log_indentation_up;
 
 		-- set module cursor
-		module_cursor := find (et_kicad.rig, module_name);
+		module_cursor := find (et_kicad.modules, module_name);
 
 		-- if module exists, query its component list
-		if module_cursor /= type_rig.no_element then
+		if module_cursor /= type_modules.no_element then
 			query_element (
 				position	=> module_cursor,
 				process		=> query_components'access);
@@ -9576,7 +9572,7 @@ package body et_kicad is
 		end add;
 		
 	begin -- add_strand
-		et_kicad.rig.update_element (
+		et_kicad.modules.update_element (
 			position	=> module_cursor,
 			process		=> add'access
 			);
@@ -9594,7 +9590,7 @@ package body et_kicad is
 		end set_cursor;
 	
 	begin
-		type_rig.query_element (
+		type_modules.query_element (
 			position	=> module_cursor,
 			process		=> set_cursor'access
 			);
@@ -9694,7 +9690,7 @@ package body et_kicad is
 		log ("renaming strands from " & to_string (name_before)
 			 & " to " & to_string (name_after) & " ...", log_threshold);
 		
-		rig.update_element (
+		modules.update_element (
 			position	=> module_cursor,
 			process		=> rename'access
 			);
@@ -9750,7 +9746,7 @@ package body et_kicad is
 			end query_junctions;
 		
 		begin -- junction_here
-			type_rig.query_element (
+			type_modules.query_element (
 				position	=> module_cursor,
 				process 	=> query_junctions'access);
 
@@ -9812,7 +9808,7 @@ package body et_kicad is
 		begin -- another_segment_here
 			--log ("probing for other segment at " & to_string (port.coordinates, et_coordinates.module));
 		
-			type_rig.query_element (
+			type_modules.query_element (
 				position	=> module_cursor,
 				process		=> query_strands'access);
 
@@ -10093,7 +10089,7 @@ package body et_kicad is
 		if log_level >= log_threshold then
 			log ("strands report");
 			
-			type_rig.query_element (
+			type_modules.query_element (
 				position	=> module_cursor,
 				process		=> query_strands'access);
 		end if;
@@ -10160,7 +10156,7 @@ package body et_kicad is
 			cursor := type_components_schematic.first (module.components);
 		end reset;
 	begin
-		type_rig.query_element (
+		type_modules.query_element (
 			position	=> module_cursor,
 			process		=> reset'access
 			);
@@ -10249,7 +10245,7 @@ package body et_kicad is
 					component	: in type_component_reference;
 					ports		: in out type_ports.list) is
 					use et_coordinates;
-					use type_rig;
+					use type_modules;
 					
 					port_coordinates : type_coordinates;
 
@@ -10543,7 +10539,7 @@ package body et_kicad is
 		procedure save_portlists is
 		-- Save the portlists in the module (indicated by module_cursor).
 		-- module_cursor points already there.
-			use type_rig;
+			use type_modules;
 		
 			procedure save (
 				module_name	: in et_coordinates.type_submodule_name.bounded_string;
@@ -10554,7 +10550,7 @@ package body et_kicad is
 		begin -- save_portlists
 			log ("saving portlists ...", log_threshold + 1);
 			update_element (
-				container	=> rig,
+				container	=> modules,
 				position	=> module_cursor,
 				process 	=> save'access);
 		end save_portlists;
@@ -10655,7 +10651,7 @@ package body et_kicad is
 	-- Warns about unintentionally left open ports. That are ports without a no_connection_flag.
 	-- Must be called AFTER make_netlists !
 	
-		use type_rig;
+		use type_modules;
 		use et_string_processing;
 
 		procedure query_portlists (
@@ -10748,7 +10744,7 @@ package body et_kicad is
 -- 					end query_strands;
 -- 				
 -- 				begin -- segment_here
--- 					type_rig.query_element (
+-- 					type_modules.query_element (
 -- 						position => module_cursor,
 -- 						process => query_strands'access);
 -- 
@@ -10846,13 +10842,12 @@ package body et_kicad is
 		log ("searching unintentionally left open ports ...", log_threshold);
 		log_indentation_up;
 
-		-- We start with the first module of the rig.
-		--first_module;
-		module_cursor := type_rig.first (rig);
+		-- We start with the first module of the modules.
+		module_cursor := type_modules.first (modules);
 
-		-- Process one rig module after another.
-		-- module_cursor points to the module in the rig.
-		while module_cursor /= type_rig.no_element loop
+		-- Process one module after another.
+		-- module_cursor points to the module in the modules.
+		while module_cursor /= type_modules.no_element loop
 			log ("module " & et_coordinates.to_string (key (module_cursor)), log_threshold);
 			log_indentation_up;
 			
@@ -10873,7 +10868,7 @@ package body et_kicad is
 	procedure check_non_deployed_units (log_threshold : in et_string_processing.type_log_level) is
 	-- Warns about not deployed units and open ports thereof.
 		use et_string_processing;
-		use type_rig;
+		use type_modules;
 
 		procedure query_schematic_components (
 		-- Queries the schematic components one after another.
@@ -11054,13 +11049,12 @@ package body et_kicad is
 		log ("detecting non-deployed units ...", log_threshold);
 		log_indentation_up;
 
-		-- We start with the first module of the rig.
-		--first_module;
-		module_cursor := type_rig.first (rig);
+		-- We start with the first module of the modules.
+		module_cursor := type_modules.first (modules);
 
-		-- Process one rig module after another.
-		-- module_cursor points to the module in the rig.
-		while module_cursor /= type_rig.no_element loop
+		-- Process one module after another.
+		-- module_cursor points to the module in the modules.
+		while module_cursor /= type_modules.no_element loop
 			log ("module " & et_coordinates.to_string (key (module_cursor)), log_threshold);
 			log_indentation_up;
 			
@@ -11088,7 +11082,7 @@ package body et_kicad is
 		end count_nets;
 
 	begin -- net_count
-		type_rig.query_element (
+		type_modules.query_element (
 			position	=> module_cursor,
 			process		=> count_nets'access);
 
@@ -11108,7 +11102,7 @@ package body et_kicad is
 		end count_junctions;
 
 	begin -- junction_count
-		type_rig.query_element (
+		type_modules.query_element (
 			position	=> module_cursor,
 			process		=> count_junctions'access);
 
@@ -11117,15 +11111,15 @@ package body et_kicad is
 
 
 	function module_count return natural is
-	-- Returns the number of modules of the rig.
-		use type_rig;
+	-- Returns the number of modules in the module collection.
+		use type_modules;
 	begin
-		return natural (length (rig));
+		return natural (length (modules));
 	end module_count;
 
 	
 -- 	procedure copy_module (
--- 	-- Copyies a rig module. 
+-- 	-- Copyies a module. 
 -- 	-- If copy_last is true (default) the last module in the rig is copied. 
 -- 	-- If copy_last is false, the module with given name_origin is copied.
 -- 	-- The module instance is always incremented automatically.
@@ -11134,14 +11128,14 @@ package body et_kicad is
 -- 		log_threshold	: in et_string_processing.type_log_level) is
 -- 
 -- 		use et_string_processing;
--- 		use type_rig;
+-- 		use type_modules;
 -- 		use et_coordinates;
 -- 		
--- 		module_cursor_origin : type_rig.cursor;
+-- 		module_cursor_origin : type_modules.cursor;
 -- 		generic_name_origin : et_coordinates.type_submodule_name.bounded_string;
 -- 		instance_origin : type_submodule_instance;
 -- 		instance_new : type_submodule_instance;
--- 		module_cursor_new : type_rig.cursor;
+-- 		module_cursor_new : type_modules.cursor;
 -- 		name_origin_scratch : et_coordinates.type_submodule_name.bounded_string := name_origin;
 -- 		name_new : et_coordinates.type_submodule_name.bounded_string;
 -- 		inserted : boolean := false;
@@ -11162,7 +11156,7 @@ package body et_kicad is
 -- 			module_cursor_origin := find (rig, name_origin); -- set module cursor to given origin module
 -- 
 -- 			-- if given module does not exist, raise error
--- 			if module_cursor_origin = type_rig.no_element then
+-- 			if module_cursor_origin = type_modules.no_element then
 -- 				log_indentation_reset;
 -- 				log (message_error & " module " & to_string (name_origin) & " not found !", console => true);
 -- 				raise constraint_error;
@@ -11213,16 +11207,16 @@ package body et_kicad is
 
 	procedure validate_module (
 		module_name : in et_coordinates.type_submodule_name.bounded_string) is
-	-- Tests if the given module exists in the rig. Raises error if not existent.
-		module_cursor : type_rig.cursor;
-		use type_rig;
+	-- Tests if the given module exists. Raises error if not existent.
+		module_cursor : type_modules.cursor;
+		use type_modules;
 		use et_string_processing;
 		use et_coordinates;
 	begin
-		if find (rig, module_name) = type_rig.no_element then
+		if find (modules, module_name) = type_modules.no_element then
 			log_indentation_reset;
 			log (message_error & "module " & to_string (module_name)
-				 & " does not exist in the rig !",
+				 & " does not exist !",
 				console => true);
 			raise constraint_error;
 		end if;
@@ -11285,7 +11279,7 @@ package body et_kicad is
 		end add;
 			
 	begin -- add_hierarchic_sheet
-		rig.update_element (
+		modules.update_element (
 			position	=> module_cursor,
 			process		=> add'access
 			);
@@ -11327,7 +11321,7 @@ package body et_kicad is
 		end add;
 
 	begin
-		rig.update_element (
+		modules.update_element (
 			position	=> module_cursor,
 			process		=> add'access
 			);
@@ -11356,7 +11350,7 @@ package body et_kicad is
 
 		end add;
 	begin
-		rig.update_element (
+		modules.update_element (
 			position	=> module_cursor,
 			process		=> add'access
 			);
@@ -11383,7 +11377,7 @@ package body et_kicad is
 
 		end add;
 	begin
-		rig.update_element (
+		modules.update_element (
 			position	=> module_cursor,
 			process		=> add'access
 			);
@@ -11425,7 +11419,7 @@ package body et_kicad is
 -- 			end if;
 		end add;
 	begin
-		rig.update_element (
+		modules.update_element (
 			position	=> module_cursor,
 			process		=> add'access
 			);
@@ -11483,7 +11477,7 @@ package body et_kicad is
 		end locate_component;
 		
 	begin
-		rig.update_element (
+		modules.update_element (
 			position	=> module_cursor,
 			process		=> locate_component'access
 			);
@@ -11494,7 +11488,7 @@ package body et_kicad is
 	-- NOTE: make_netlist detects if a junction is missing where a port is connected with a net.
 	-- Warns about orphaned junctions.
 		use et_string_processing;
-		use type_rig;
+		use type_modules;
 
 		procedure query_strands_prim (
 		-- Query strands of module.
@@ -11637,7 +11631,7 @@ package body et_kicad is
 					end query_junctions;
 				
 				begin -- junction_here
-					type_rig.query_element (
+					type_modules.query_element (
 						position	=> module_cursor,
 						process 	=> query_junctions'access);
 
@@ -11698,13 +11692,13 @@ package body et_kicad is
 		log ("detecting missing net junctions ...", log_threshold);
 		log_indentation_up;
 
-		-- We start with the first module of the rig.
+		-- We start with the first module of the modules.
 		--first_module;
-		module_cursor := rig.first;
+		module_cursor := modules.first;
 
-		-- Process one rig module after another.
-		-- module_cursor points to the module in the rig.
-		while module_cursor /= type_rig.no_element loop
+		-- Process one module after another.
+		-- module_cursor points to the module.
+		while module_cursor /= type_modules.no_element loop
 			log ("module " & et_coordinates.to_string (key (module_cursor)), log_threshold);
 			log_indentation_up;
 			
@@ -11722,7 +11716,7 @@ package body et_kicad is
 
 	procedure check_orphaned_junctions (log_threshold : in et_string_processing.type_log_level) is
 	-- Warns about orphaned junctions.
-		use type_rig;
+		use type_modules;
 		use et_string_processing;
 
 		procedure query_junctions (
@@ -11792,7 +11786,7 @@ package body et_kicad is
 			begin -- segment_here
 				--log ("probing for other segment at " & to_string (port.coordinates, et_coordinates.module));
 			
-				type_rig.query_element (
+				type_modules.query_element (
 					position	=> module_cursor,
 					process		=> query_strands'access);
 
@@ -11816,13 +11810,13 @@ package body et_kicad is
 		log ("detecting orphaned net junctions ...", log_threshold);
 		log_indentation_up;
 
-		-- We start with the first module of the rig.
+		-- We start with the first module of the modules.
 		--first_module;
-		module_cursor := rig.first;
+		module_cursor := modules.first;
 
-		-- Process one rig module after another.
-		-- module_cursor points to the module in the rig.
-		while module_cursor /= type_rig.no_element loop
+		-- Process one module after another.
+		-- module_cursor points to the module.
+		while module_cursor /= type_modules.no_element loop
 			log ("module " & et_coordinates.to_string (key (module_cursor)), log_threshold);
 		
 			-- query strands of current module
@@ -11841,7 +11835,7 @@ package body et_kicad is
 	-- - it is placed at the end of a net segment where no another segment meets 
 	-- - it is placed between two net segments where no port sits
 	-- - it is placed where no segment is (means somewhere in the void)
-		use type_rig;
+		use type_modules;
 		use et_string_processing;
 
 		procedure query_junctions (
@@ -11911,7 +11905,7 @@ package body et_kicad is
 				end query_strands;
 			
 			begin -- segment_count_here
-				type_rig.query_element (
+				type_modules.query_element (
 					position	=> module_cursor,
 					process		=> query_strands'access);
 
@@ -11997,13 +11991,13 @@ package body et_kicad is
 		log ("detecting misplaced net junctions ...", log_threshold);
 		log_indentation_up;
 
-		-- We start with the first module of the rig.
+		-- We start with the first module of the modules.
 		--first_module;
-		module_cursor := rig.first;
+		module_cursor := modules.first;
 
-		-- Process one rig module after another.
-		-- module_cursor points to the module in the rig.
-		while module_cursor /= type_rig.no_element loop
+		-- Process one module after another.
+		-- module_cursor points to the module.
+		while module_cursor /= type_modules.no_element loop
 			log ("module " & et_coordinates.to_string (key (module_cursor)), log_threshold);
 		
 			-- query strands of current module
@@ -12020,7 +12014,7 @@ package body et_kicad is
 	procedure check_misplaced_no_connection_flags (log_threshold : in et_string_processing.type_log_level) is
 	-- Warns about no_connection_flags placed at nets.
 		use et_string_processing;
-		use type_rig;
+		use type_modules;
 		
 		procedure query_strands (
 		-- Query strands and test if no_connection_flags are placed on any segment of the strand.
@@ -12087,7 +12081,7 @@ package body et_kicad is
 				
 					--log ("searching no_connection_flags ...", log_threshold + 3);
 					-- query no_connection_flags of the module
-					type_rig.query_element (
+					type_modules.query_element (
 						position	=> module_cursor,
 						process 	=> query_no_connect_flags'access);
 
@@ -12139,13 +12133,13 @@ package body et_kicad is
 		log ("detecting misplaced no-connection-flags ...", log_threshold);
 		log_indentation_up;
 
-		-- We start with the first module of the rig.
+		-- We start with the first module of the modules.
 		--first_module;
-		module_cursor := rig.first;
+		module_cursor := modules.first;
 
-		-- Process one rig module after another.
-		-- module_cursor points to the module in the rig.
-		while module_cursor /= type_rig.no_element loop
+		-- Process one module after another.
+		-- module_cursor points to the module.
+		while module_cursor /= type_modules.no_element loop
 			log ("module " & et_coordinates.to_string (key (module_cursor)), log_threshold);
 			log_indentation_up;
 			
@@ -12164,7 +12158,7 @@ package body et_kicad is
 	procedure check_orphaned_no_connection_flags (log_threshold : in et_string_processing.type_log_level) is
 	-- Warns about orphaned no_connection_flags.
 
-		use type_rig;
+		use type_modules;
 		use et_string_processing;
 	
 		procedure query_no_connect_flags (
@@ -12243,13 +12237,13 @@ package body et_kicad is
 		log ("detecting orphaned no-connection-flags ...", log_threshold);
 		log_indentation_up;
 
-		-- We start with the first module of the rig.
+		-- We start with the first module of the modules.
 		--first_module;
-		module_cursor := rig.first;
+		module_cursor := modules.first;
 
-		-- Process one rig module after another.
-		-- module_cursor points to the module in the rig.
-		while module_cursor /= type_rig.no_element loop
+		-- Process one module after another.
+		-- module_cursor points to the module in the modules.
+		while module_cursor /= type_modules.no_element loop
 			log ("module " & et_coordinates.to_string (key (module_cursor)), log_threshold);
 			log_indentation_up;
 			
@@ -12374,7 +12368,7 @@ package body et_kicad is
 	-- Tests nets for number of inputs, outputs, bidirs, ...
 	-- CS: improve test coverage by including component categories like connectors, jumpers, testpads, ...
 		use et_string_processing;
-		use type_rig;
+		use type_modules;
 
 		procedure query_nets (
 			module_name : in et_coordinates.type_submodule_name.bounded_string;
@@ -12605,13 +12599,13 @@ package body et_kicad is
 		log ("net test ...", log_threshold);
 		log_indentation_up;
 
-		-- We start with the first module of the rig.
+		-- We start with the first module of the modules.
 		--first_module;
-		module_cursor := rig.first;
+		module_cursor := modules.first;
 
-		-- Process one rig module after another.
-		-- module_cursor points to the module in the rig.
-		while module_cursor /= type_rig.no_element loop
+		-- Process one module after another.
+		-- module_cursor points to the module.
+		while module_cursor /= type_modules.no_element loop
 			log ("module " & et_coordinates.to_string (key (module_cursor)), log_threshold);
 		
 			-- query nets in netlist
@@ -12636,10 +12630,10 @@ package body et_kicad is
 	-- If no net connected with the given port, an empty string is returned.
 
 		use et_string_processing;
-		use type_rig;
+		use type_modules;
 		use et_coordinates;
 
-		module_cursor : type_rig.cursor; -- points to the module being searched in
+		module_cursor : type_modules.cursor; -- points to the module being searched in
 
 		net_name_to_return : et_schematic.type_net_name.bounded_string; -- to be returned
 
@@ -12727,11 +12721,11 @@ package body et_kicad is
 			 log_threshold);
 		log_indentation_up;
 
-		module_cursor := find (rig, port.module); -- set the cursor to the module
+		module_cursor := find (modules, port.module); -- set the cursor to the module
 
 		-- If module exists, locate the given net in the module.
 		-- Otherwise raise alarm and exit.
-		if module_cursor /= type_rig.no_element then
+		if module_cursor /= type_modules.no_element then
 			--log (to_string (key (module_cursor)), log_threshold + 1);
 			query_element (
 				position	=> module_cursor, 
@@ -12751,7 +12745,7 @@ package body et_kicad is
 
 	
 	procedure make_netlists (log_threshold : in et_string_processing.type_log_level) is
-	-- Builds the netlists of all modules of the rig.
+	-- Builds the netlists of all modules of the modules.
 	-- Addresses ALL components both virtual and real. Virtual components are things like GND or VCC symbols.
 	-- Virtual components are filtered out on exporting the netlist in a file.
 	-- Bases on the portlists and nets/strands information of the module.
@@ -12759,7 +12753,7 @@ package body et_kicad is
 	-- Detects if a junction is missing where a port is connected with a net.
 	
 		use et_string_processing;
-		use type_rig;
+		use type_modules;
 		use et_coordinates;
 
 		function make_netlist return type_netlist.map is
@@ -12842,7 +12836,7 @@ package body et_kicad is
 							begin -- mark_port_as_connected
 								-- locate the submodule in the rig
 								update_element (
-									container	=> rig,
+									container	=> modules,
 									position	=> module_cursor,
 									process		=> locate_component'access);
 							end mark_port_as_connected;
@@ -13013,21 +13007,21 @@ package body et_kicad is
 		end add_netlist;
 
 	begin -- make_netlists (note plural !)
-		log (text => "building rig netlists ...", level => log_threshold);
+		log (text => "building netlists ...", level => log_threshold);
 		log_indentation_up;
 		
-		-- We start with the first module of the rig.
+		-- We start with the first module of the modules.
 		--first_module;
-		module_cursor := type_rig.first (rig);
+		module_cursor := type_modules.first (modules);
 
-		-- Process one rig module after another.
-		-- module_cursor points to the module in the rig.
-		while module_cursor /= type_rig.no_element loop
+		-- Process one module after another.
+		-- module_cursor points to the module.
+		while module_cursor /= type_modules.no_element loop
 			log ("module " & to_string (key (module_cursor)), log_threshold);
 			log_indentation_up;
 			
 			update_element (
-				container	=> rig,
+				container	=> modules,
 				position	=> module_cursor,
 				process		=> add_netlist'access);
 
@@ -13049,7 +13043,7 @@ package body et_kicad is
 	-- Returns the number of terminals of the given component reference.
 	-- Requires module_cursor (global variable) to point to the current module.
 
-		use type_rig;
+		use type_modules;
 		use et_string_processing;
 		use et_coordinates;
 		terminals : et_libraries.type_terminal_count; -- to be returned
@@ -13201,7 +13195,7 @@ package body et_kicad is
 	-- 5. get package variant
 	-- 6. look up given port name and return terminal/unit name
 
-		use type_rig;
+		use type_modules;
 		use et_string_processing;
 		use et_coordinates;
 		terminal : et_libraries.type_terminal; -- to be returned
@@ -13337,7 +13331,7 @@ package body et_kicad is
 		if et_libraries."=" (port.appearance, et_libraries.sch_pcb) then -- real component
 
 			query_element (
-				position	=> find (rig, module), -- sets indirectly the cursor to the module
+				position	=> find (modules, module), -- sets indirectly the cursor to the module
 				process		=> locate_component_in_schematic'access);
 			
 		else -- abort
@@ -13367,10 +13361,10 @@ package body et_kicad is
 		port : type_port_of_module; 
 
 		use et_string_processing;
-		use type_rig;
+		use type_modules;
 		use et_coordinates;
 
-		module_cursor : type_rig.cursor; -- points to the module being searched in
+		module_cursor : type_modules.cursor; -- points to the module being searched in
 
 		procedure query_components (
 		-- Searches the components of the module for the given reference.
@@ -13527,11 +13521,11 @@ package body et_kicad is
 			& et_libraries.to_string (reference) & " terminal " & et_libraries.to_string (terminal) & " ...", log_threshold);
 		log_indentation_up;
 
-		module_cursor := find (rig, module); -- set the cursor to the module
+		module_cursor := find (modules, module); -- set the cursor to the module
 
 		-- If module exists, locate the given component in the module.
 		-- Otherwise raise alarm and exit.
-		if module_cursor /= type_rig.no_element then
+		if module_cursor /= type_modules.no_element then
 
 			query_element (
 				position 	=> module_cursor, 
@@ -13553,12 +13547,12 @@ package body et_kicad is
 	end connected_net;
 
 	procedure export_netlists (log_threshold : in et_string_processing.type_log_level) is
-	-- Exports/Writes the netlists of the rig in separate files.
+	-- Exports/Writes the netlists in separate files.
 	-- Netlists are exported in individual project directories in the work directory of ET.
 	-- These project directories have the same name as the module indicated by module_cursor.
 	-- Addresses real components exclusively. Virtual things like GND symbols are not exported.
 	-- Call this procedure after executing procedure make_netlist !
-		use type_rig;
+		use type_modules;
 		use ada.directories;
 		use et_general;
 		use et_string_processing;
@@ -13642,14 +13636,14 @@ package body et_kicad is
 
 	begin -- export_netlists
 
-		-- We start with the first module of the rig.
+		-- We start with the first module of the modules.
 		--first_module;
-		module_cursor := type_rig.first (rig);
+		module_cursor := type_modules.first (modules);
 
 		log ("exporting netlists ...", log_threshold);
 		log_indentation_up;
 		
-		while module_cursor /= type_rig.no_element loop
+		while module_cursor /= type_modules.no_element loop
 			log ("module " & to_string (key (module_cursor)), log_threshold);
 			log_indentation_up;
 
@@ -13716,9 +13710,9 @@ package body et_kicad is
 
 		use et_string_processing;
 		use et_coordinates;
-		use type_rig;
+		use type_modules;
 
-		module_cursor : type_rig.cursor;
+		module_cursor : type_modules.cursor;
 		
 		ports : type_ports_with_reference.set; -- to be returned
 
@@ -13799,11 +13793,11 @@ package body et_kicad is
 			 log_threshold);
 		log_indentation_up;
 
-		module_cursor := find (rig, module); -- set the cursor to the module
+		module_cursor := find (modules, module); -- set the cursor to the module
 
 		-- If module exists, locate the given net in the module.
 		-- Otherwise raise alarm and exit.
-		if module_cursor /= type_rig.no_element then
+		if module_cursor /= type_modules.no_element then
 			query_element (
 				position	=> module_cursor, 
 				process		=> locate_net'access);
@@ -13828,9 +13822,9 @@ package body et_kicad is
 
 		use et_string_processing;
 		use et_coordinates;
-		use type_rig;
+		use type_modules;
 
-		module_cursor : type_rig.cursor;
+		module_cursor : type_modules.cursor;
 		
 		ports_real : type_ports_with_reference.set; -- to be returned
 
@@ -13893,11 +13887,11 @@ package body et_kicad is
 			 log_threshold);
 		log_indentation_up;
 
-		module_cursor := find (rig, module); -- set the cursor to the module
+		module_cursor := find (modules, module); -- set the cursor to the module
 
 		-- If module exists, locate the given net in the module.
 		-- Otherwise raise alarm and exit.
-		if module_cursor /= type_rig.no_element then
+		if module_cursor /= type_modules.no_element then
 			query_element (
 				position	=> module_cursor, 
 				process		=> locate_net'access);
@@ -13921,7 +13915,7 @@ package body et_kicad is
 		use et_string_processing;
 		use et_export;
 		use et_csv;
-		use type_rig;
+		use type_modules;
 		use type_components_schematic;
 		
 		bom_file_name : et_schematic.type_bom_file_name.bounded_string;
@@ -13992,13 +13986,13 @@ package body et_kicad is
 		log ("exporting BOM ...", log_threshold);
 		log_indentation_up;
 
-		-- We start with the first module of the rig.		
+		-- We start with the first module of the modules.		
 		--first_module;
-		module_cursor := rig.first;
+		module_cursor := modules.first;
 
-		-- Process one rig module after another.
-		-- module_cursor points to the module in the rig.
-		while module_cursor /= type_rig.no_element loop
+		-- Process one module after another.
+		-- module_cursor points to the module.
+		while module_cursor /= type_modules.no_element loop
 			log ("module " & et_coordinates.to_string (key (module_cursor)), log_threshold);
 			log_indentation_up;
 
@@ -14065,7 +14059,7 @@ package body et_kicad is
 		use et_string_processing;
 		use et_coordinates;
 		use et_libraries;
-		use et_kicad.type_rig;
+		use et_kicad.type_modules;
 		use et_configuration;
 		
 		procedure locate_component (
@@ -14126,7 +14120,7 @@ package body et_kicad is
 		occurences : natural := 0; -- to be returned
 
 		use et_coordinates;
-		use et_kicad.type_rig;
+		use et_kicad.type_modules;
 		use et_libraries;
 		use et_configuration;
 		
@@ -14306,13 +14300,13 @@ package body et_kicad is
 	begin -- make_statistics
 
 		-- count components
-		type_rig.query_element (
+		type_modules.query_element (
 			position	=> module_cursor,
 			process		=> count_components'access
 			);
 
 		-- count ports
-		type_rig.query_element (
+		type_modules.query_element (
 			position	=> module_cursor,
 			process		=> count_ports'access
 			);
@@ -14328,7 +14322,7 @@ package body et_kicad is
 
 
 	procedure write_statistics (log_threshold : in et_string_processing.type_log_level) is
-	-- Generates the statistics on components and nets of the rig.
+	-- Generates the statistics on components and nets of the modules.
 	-- Distinguishes between CAD and CAM related things.
 		statistics_file_name_cad	: et_schematic.type_statistic_file_name.bounded_string;
 		statistics_file_name_cam	: et_schematic.type_statistic_file_name.bounded_string;
@@ -14340,18 +14334,18 @@ package body et_kicad is
 		
 		use ada.directories;
 		use et_general;
-		use type_rig;
+		use type_modules;
 		use et_string_processing;
 		use et_export;
 
 	begin -- write_statistics
 		--first_module;
-		module_cursor := first (rig);
+		module_cursor := first (modules);
 		
 		log ("writing statistics ...", log_threshold);
 		log_indentation_up;
 		
-		while module_cursor /= type_rig.no_element loop
+		while module_cursor /= type_modules.no_element loop
 			log ("module " & et_coordinates.to_string (key (module_cursor)), log_threshold);
 			log_indentation_up;
 

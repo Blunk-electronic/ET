@@ -8027,7 +8027,7 @@ package body et_kicad_pcb is
 		begin -- merge_board_and_schematic
 			log ("merging board and schematic ...", log_threshold + 1);
 
-			et_kicad.rig.update_element (
+			et_kicad.modules.update_element (
 				position	=> et_kicad.module_cursor,
 				process		=> add_board_objects'access);
 
@@ -8085,7 +8085,7 @@ package body et_kicad_pcb is
 
 				-- Now the board file has been read AND it is not a dummy:
 				--  - Set the board_available flag in the module (By default it is cleared).
-				et_kicad.rig.update_element (
+				et_kicad.modules.update_element (
 					position	=> et_kicad.module_cursor,
 					process		=> set_board_available_flag'access);
 
@@ -8105,18 +8105,17 @@ package body et_kicad_pcb is
 	-- The schematic modules are indicated by module_cursor.
 		--use et_schematic;
 		use et_coordinates;
-		use et_kicad.type_rig;
+		use et_kicad.type_modules;
 		use et_string_processing;
 		use ada.directories;
 		use et_kicad;
 	begin
-		-- We start with the first module of the rig.
-		--first_module;
-		module_cursor := rig.first;
+		-- We start with the first module of the modules.
+		module_cursor := modules.first;
 
-		-- Process one rig module after another.
-		-- module_cursor points to the module in the rig.
-		while module_cursor /= et_kicad.type_rig.no_element loop
+		-- Process one module after another.
+		-- module_cursor points to the module.
+		while module_cursor /= et_kicad.type_modules.no_element loop
 			log ("----------------------------", log_threshold);
 			log ("module " & to_string (key (module_cursor)), log_threshold);
 			log_indentation_up;

@@ -698,8 +698,8 @@ package et_kicad is
 		project			: in et_project.type_project_name.bounded_string;								
 		log_threshold	: in et_string_processing.type_log_level); 
 	-- Imports the design as specified by project_name.
-	-- Inserts the created submodule in the rig (see et_schematic.type_rig).
-	-- Leaves the global module_cursor pointing where the module was inserted.
+	-- Inserts the created submodule in container "modules".
+	-- Leaves the module_cursor pointing where the module was inserted.
 
 -- COMMENT MARKS
 	comment_mark							: constant string (1..1) := "#";
@@ -1219,7 +1219,7 @@ package et_kicad is
 	-- Warns about not deployed units and open ports thereof.
 
 	function module_count return natural;
-	-- Returns the number of modules of the rig.
+	-- Returns the number of modules available in container "modules".
 	
 -- 	procedure copy_module (
 -- 	-- Copyies a rig module. 
@@ -1232,7 +1232,7 @@ package et_kicad is
 
 	procedure validate_module (
 		module_name : in et_coordinates.type_submodule_name.bounded_string);
-	-- Tests if the given module exists in the rig. Raises error if not existent.
+	-- Tests if the given module exists in container "modules". Raises error if not existent.
 
 	procedure add_sheet_header ( -- CS really requried ?
 	-- Inserts a sheet header in the module (indicated by module_cursor).
@@ -1287,7 +1287,7 @@ package et_kicad is
 	-- If no net connected with the given port, an empty string is returned.
 	
 	procedure make_netlists (log_threshold : in et_string_processing.type_log_level);
-	-- Builds the netlists of all modules of the rig.
+	-- Builds the netlists of all modules.
 	-- Addresses ALL components both virtual and real. Virtual components are things like GND or VCC symbols.
 	-- Virtual components are filtered out on exporting the netlist in a file.
 	-- Bases on the portlists and nets/strands information of the module.
@@ -1308,14 +1308,14 @@ package et_kicad is
 		return et_schematic.type_net_name.bounded_string;
 
 	procedure export_netlists (log_threshold : in et_string_processing.type_log_level); -- CS this is general and should be in et_schematic
-	-- Exports/Writes the netlists of the rig in separate files.
+	-- Exports/Writes the netlists of the modules in separate files.
 	-- Netlists are exported in individual project directories in the work directory of ET.
 	-- These project directories have the same name as the module indicated by module_cursor.
 	-- Addresses real components exclusively. Virtual things like GND symbols are not exported.
 	-- Call this procedure after executing procedure make_netlist !
 
 	procedure write_statistics (log_threshold : in et_string_processing.type_log_level);  -- CS this is general and should be in et_schematic
-	-- Writes the statistics on components and nets of the rig.
+	-- Writes the statistics on components and nets of the modules.
 	-- Distinguishes between CAD and CAM related things.
 
 	procedure export_bom (log_threshold : in et_string_processing.type_log_level);  -- CS this is general and should be in et_schematic
@@ -1385,17 +1385,17 @@ package et_kicad is
 	end record;
 
 
-	-- A rig is a set of modules.
+	-- A collection of modules.
 	-- CS: Currently kicad does not support multiple modules (so called multi-board support).
-	-- Therefore the rig contains only one module.
-	package type_rig is new ordered_maps (
+	-- Therefore the collection contains only one module.
+	package type_modules is new ordered_maps (
 		-- This is the module name like "MY_MOTOR_DRIVER" or "BLOOD_SAMPLE_ANALYZER"
 		key_type 		=> et_coordinates.type_submodule_name.bounded_string,
 		"<" 			=> et_coordinates.type_submodule_name."<",											 
 		element_type 	=> type_module);
 
-	rig : type_rig.map;
-	module_cursor : type_rig.cursor;
+	modules : type_modules.map;
+	module_cursor : type_modules.cursor;
 
 
 end et_kicad;

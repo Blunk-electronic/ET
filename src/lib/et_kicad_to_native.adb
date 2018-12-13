@@ -80,8 +80,8 @@ package body et_kicad_to_native is
 	--    CS: Native coordinates currently do not require the "path" selector. The change-path-stuff is thus not required.
 	-- 2. Moves schematic and layout objects from negative to positive y coordinates.
 	--    (The origin in kicad is the upper left corner. The origin in ET is the lower left corner.)
-		use et_kicad.type_rig;
-		module_cursor : et_kicad.type_rig.cursor := et_kicad.type_rig.first (et_kicad.rig);
+		use et_kicad.type_modules;
+		module_cursor : et_kicad.type_modules.cursor := et_kicad.type_modules.first (et_kicad.modules);
 
 		root : et_coordinates.type_path_to_submodule.list := et_coordinates.type_path_to_submodule.empty_list;
 -- 		before	: constant string (1..15) := "position before";
@@ -2274,7 +2274,7 @@ package body et_kicad_to_native is
 		log ("transposing coordinates of KiCad modules ...", log_threshold);
 		log_indentation_up;
 		
-		while module_cursor /= et_kicad.type_rig.no_element loop
+		while module_cursor /= et_kicad.type_modules.no_element loop
 			log ("module " & et_coordinates.to_string (key (module_cursor)), log_threshold + 1);
 			log_indentation_up;
 
@@ -2293,7 +2293,7 @@ package body et_kicad_to_native is
 			end if;
 			
 			update_element (
-				container	=> et_kicad.rig,
+				container	=> et_kicad.modules,
 				position	=> module_cursor,
 				process		=> flatten_notes'access);
 
@@ -2301,29 +2301,29 @@ package body et_kicad_to_native is
 			-- drawing frame lines and texts. Currently only content of things like company name and comments
 			-- is read.
 			update_element (
-				container	=> et_kicad.rig,
+				container	=> et_kicad.modules,
 				position	=> module_cursor,
 				process		=> flatten_frames'access);
 
 			update_element (
-				container	=> et_kicad.rig,
+				container	=> et_kicad.modules,
 				position	=> module_cursor,
 				process		=> flatten_components'access);
 
 			update_element (
-				container	=> et_kicad.rig,
+				container	=> et_kicad.modules,
 				position	=> module_cursor,
 				process		=> flatten_nets'access);
 
 			update_element (
-				container	=> et_kicad.rig,
+				container	=> et_kicad.modules,
 				position	=> module_cursor,
 				process		=> flatten_netlist'access);
 			
 			-- general non-component related board stuff (silk screen, documentation, ...):
 			if board_available then
 				update_element (
-					container	=> et_kicad.rig,
+					container	=> et_kicad.modules,
 					position	=> module_cursor,
 					process		=> move_general_board_stuff'access);
 			end if;
@@ -2360,8 +2360,8 @@ package body et_kicad_to_native is
 		-- This flag goes true once V4 package libraries have been converted.
 		packages_v4_copied : boolean := false;
 		
-		use et_kicad.type_rig;
-		module_cursor_kicad : et_kicad.type_rig.cursor := et_kicad.type_rig.first (et_kicad.rig);
+		use et_kicad.type_modules;
+		module_cursor_kicad : et_kicad.type_modules.cursor := et_kicad.type_modules.first (et_kicad.modules);
 
 
 		procedure copy_general_stuff is
@@ -3390,7 +3390,7 @@ package body et_kicad_to_native is
 
 		-- Now we copy content from the kicad module to the same named native module.
 		-- CS: currently there is only one kicad and only one native module.
-		while module_cursor_kicad /= et_kicad.type_rig.no_element loop
+		while module_cursor_kicad /= et_kicad.type_modules.no_element loop
 
 			-- Copy the kicad module name to the native project name.
 			-- The native project name and the module contained will have the same name.

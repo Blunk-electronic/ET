@@ -360,7 +360,7 @@ procedure et is
 	-- This can be regarded as a kind of extended electrical rule check (ERC).
 	-- Updates the netlist of ALL modules.	
 		use et_schematic;
-		use et_kicad.type_rig;
+		use et_kicad.type_modules;
 		use et_configuration;
 	begin
 		case et_import.cad_format is
@@ -443,7 +443,7 @@ procedure et is
 
 	procedure read_boards is
 		--use et_schematic;
-		use et_kicad.type_rig;
+		use et_kicad.type_modules;
 		use et_configuration;
 	begin
 		case et_import.cad_format is
