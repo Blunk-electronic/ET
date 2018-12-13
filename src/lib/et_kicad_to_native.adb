@@ -2363,9 +2363,7 @@ package body et_kicad_to_native is
 		use et_kicad.type_rig;
 		module_cursor_kicad : et_kicad.type_rig.cursor := et_kicad.type_rig.first (et_kicad.rig);
 
-		use et_schematic.type_rig;
-		module_cursor_native : et_schematic.type_rig.cursor;
-		
+
 		procedure copy_general_stuff is
 			use et_schematic;
 		begin
