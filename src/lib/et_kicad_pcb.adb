@@ -4035,7 +4035,7 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									validate_signal_clearance (to_distance (to_string (arg)));
+									validate_track_clearance (to_distance (to_string (arg)));
 									net_class.clearance := (to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;

@@ -143,18 +143,18 @@ package body et_pcb is
 		return (to_string (drill.position) & " drill_diameter" & to_string (drill.diameter));
 	end to_string;
 	
-	procedure validate_signal_clearance (signal_clearance : in type_distance) is
-	-- Checks whether the given signal clearance is in range of type_signal_clearance.
+	procedure validate_track_clearance (clearance : in type_distance) is
+	-- Checks whether the given track clearance is in range of type_track_clearance.
 	begin
-		if signal_clearance not in type_signal_clearance then
+		if clearance not in type_track_clearance then
 			log_indentation_reset;
-			log (message_error & "signal clearance invalid ! Allowed range is" 
-				 & to_string (type_signal_clearance'first) & " .."
-				 & to_string (type_signal_clearance'last),
+			log (message_error & "track clearance invalid ! Allowed range is" 
+				 & to_string (type_track_clearance'first) & " .."
+				 & to_string (type_track_clearance'last),
 				 console => true);
 			raise constraint_error;
 		end if;
-	end validate_signal_clearance;
+	end validate_track_clearance;
 
 	procedure validate_track_width (track_width : in type_distance) is
 	-- Checks whether the given width is in range of type_track_width.

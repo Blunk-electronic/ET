@@ -391,8 +391,8 @@ package et_kicad_pcb is
 
 	type type_board_setup is record
 		last_trace_width	: et_pcb.type_track_width;
-		trace_clearance		: et_pcb.type_signal_clearance;
-		zone_clearance		: et_pcb.type_signal_clearance;
+		trace_clearance		: et_pcb.type_track_clearance;
+		zone_clearance		: et_pcb.type_track_clearance;
 		zone_45_only		: type_zone_45_only;
 		trace_min			: et_pcb.type_track_width;
 		segment_width		: et_pcb.type_track_width;

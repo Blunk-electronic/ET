@@ -2724,7 +2724,7 @@ package body et_project is
 			-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 			net_class_name			: et_pcb.type_net_class_name.bounded_string;
 			net_class_description	: et_pcb.type_net_class_description.bounded_string;
-			net_class_clearance		: et_pcb.type_signal_clearance;
+			net_class_clearance		: et_pcb.type_track_clearance;
 			
 			procedure process_line is 
 			-- CS: detect if section name is type_section_name_project
@@ -2850,7 +2850,7 @@ package body et_project is
 										elsif kw = keyword_clearance then
 											expect_field_count (line, 2);
 											net_class_clearance := et_pcb_coordinates.to_distance (f (line,2));
-											et_pcb.validate_signal_clearance (net_class_clearance);
+											et_pcb.validate_track_clearance (net_class_clearance);
 										else
 											invalid_keyword (kw);
 										end if;

@@ -142,10 +142,10 @@ package et_pcb is
 
 	
 	-- SIGNALS
-	subtype type_signal_clearance is type_distance range copper_clearance_min .. type_distance'last;
+	subtype type_track_clearance is type_distance range copper_clearance_min .. type_distance'last;
 
-	procedure validate_signal_clearance (signal_clearance : in type_distance);
-	-- Checks whether the given signal clearance is in range of type_signal_clearance.
+	procedure validate_track_clearance (clearance : in type_distance);
+	-- Checks whether the given track clearance is in range of type_track_clearance.
 
 	track_width_max : constant type_distance := 100.0;
 	subtype type_track_width is type_distance range copper_structure_size_min .. track_width_max;
@@ -183,7 +183,7 @@ package et_pcb is
 	
 	type type_net_class is tagged record
 		description				: type_net_class_description.bounded_string;
-		clearance				: type_signal_clearance;
+		clearance				: type_track_clearance;
 		track_width_min			: type_track_width;
 		via_drill_min			: type_drill_size;
 		via_restring_min		: type_restring_width;
@@ -378,7 +378,7 @@ package et_pcb is
 		points				: type_polygon_points.set; -- CS rename to corners
 		fill_style			: type_fill_style := SOLID; -- a polygon is always filled
 		hatching_line_width	: type_track_width := fill_style_hatching_line_width_default; -- the with of the lines
-		hatching_spacing	: type_signal_clearance := fill_style_hatching_spacing_default; -- the space between the lines
+		hatching_spacing	: type_track_clearance := fill_style_hatching_spacing_default; -- the space between the lines
 		corner_easing		: type_corner_easing := NONE;
 		easing_radius		: type_polygon_easing_radius := zero_distance; -- center of circle at corner point
 	end record;
@@ -484,7 +484,7 @@ package et_pcb is
 		filled 				: type_filled := NO;
 		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
 		hatching_line_width	: type_track_width := fill_style_hatching_line_width_default; -- the with of the lines
-		hatching_spacing	: type_signal_clearance := fill_style_hatching_spacing_default; -- the space between the lines
+		hatching_spacing	: type_track_clearance := fill_style_hatching_spacing_default; -- the space between the lines
 	end record;
 	package type_copper_circles is new doubly_linked_lists (type_copper_circle);
 
@@ -496,7 +496,7 @@ package et_pcb is
 
 	type type_copper_polygon is new type_polygon with record
 		priority_level		: type_polygon_priority := type_polygon_priority'first;
-		isolation_gap		: type_signal_clearance; -- the space between foreign pads and the polygon
+		isolation_gap		: type_track_clearance; -- the space between foreign pads and the polygon
 	end record;
 
 	text_polygon_priority_level	: constant string (1..14) := "priority_level";
@@ -551,9 +551,9 @@ package et_pcb is
 	text_polygon_thermal_width : constant string (1..13) := "thermal_width";		
 	
 	-- If a terminal is connected/associated with a polyon, this is the space between pad and polygon:
-	polygon_thermal_gap_min : constant type_signal_clearance := type_signal_clearance'first;
-	polygon_thermal_gap_max : constant type_signal_clearance := 3.0; -- CS: adjust if nessecariy
-	subtype type_polygon_thermal_gap is type_signal_clearance range polygon_thermal_gap_min .. polygon_thermal_gap_max;
+	polygon_thermal_gap_min : constant type_track_clearance := type_track_clearance'first;
+	polygon_thermal_gap_max : constant type_track_clearance := 3.0; -- CS: adjust if nessecariy
+	subtype type_polygon_thermal_gap is type_track_clearance range polygon_thermal_gap_min .. polygon_thermal_gap_max;
 
 	text_polygon_thermal_gap : constant string (1..11) := "thermal_gap";
 	
@@ -745,7 +745,7 @@ package et_pcb is
 		filled 				: type_filled := NO;
 		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
 		hatching_line_width	: type_track_width := fill_style_hatching_line_width_default; -- the with of the lines
-		hatching_spacing	: type_signal_clearance := fill_style_hatching_spacing_default; -- the space between the lines
+		hatching_spacing	: type_track_clearance := fill_style_hatching_spacing_default; -- the space between the lines
 	end record;
 
 	package type_stencil_circles is new doubly_linked_lists (type_stencil_circle);
