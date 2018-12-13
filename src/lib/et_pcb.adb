@@ -156,18 +156,18 @@ package body et_pcb is
 		end if;
 	end validate_signal_clearance;
 
-	procedure validate_signal_width (signal_width : in type_distance) is
-	-- Checks whether the given signal width is in range of type_signal_width.
+	procedure validate_track_width (track_width : in type_distance) is
+	-- Checks whether the given width is in range of type_track_width.
 	begin
-		if signal_width not in type_signal_width then
+		if track_width not in type_track_width then
 			log_indentation_reset;
-			log (message_error & "signal width invalid ! Allowed range is" 
-				 & to_string (type_signal_width'first) & " .."
-				 & to_string (type_signal_width'last),
+			log (message_error & "track width invalid ! Allowed range is" 
+				 & to_string (type_track_width'first) & " .."
+				 & to_string (type_track_width'last),
 				 console => true);
 			raise constraint_error;
 		end if;
-	end validate_signal_width;
+	end validate_track_width;
 
 	procedure validate_restring_width (restring_width : in type_distance) is
 	-- Checks whether the given restring width is in range of type_restring_width.	
@@ -200,10 +200,20 @@ package body et_pcb is
 		return " " & type_net_class_name.to_string (net_class_name);
 	end to_string;
 
+	function to_net_class_name (net_class_name : in string) return type_net_class_name.bounded_string is
+	begin
+		return type_net_class_name.to_bounded_string (net_class_name);
+	end to_net_class_name;
+	
 	function to_string (class_description : in type_net_class_description.bounded_string) return string is
 	begin
 		return " " & type_net_class_description.to_string (class_description);
 	end to_string;
+
+	function to_net_class_description (class_description : in string) return type_net_class_description.bounded_string is
+	begin
+		return type_net_class_description.to_bounded_string (class_description);
+	end to_net_class_description;
 	
 	function text_properties (text : in type_text) return string is
 	-- Returns the properties of the given text in a long single string.

@@ -1028,7 +1028,7 @@ package body et_project is
 				write (keyword => keyword_name, parameters => to_string (key (class_cursor)));
 				write (keyword => keyword_description, parameters => et_pcb.to_string (element (class_cursor).description), wrap => true);
 				write (keyword => keyword_clearance, parameters => to_string (element (class_cursor).clearance));
-				write (keyword => keyword_track_width_min, parameters => to_string (element (class_cursor).signal_width_min));
+				write (keyword => keyword_track_width_min, parameters => to_string (element (class_cursor).track_width_min));
 				write (keyword => keyword_via_drill_min, parameters => to_string (element (class_cursor).via_drill_min));
 				write (keyword => keyword_via_restring_min, parameters => to_string (element (class_cursor).via_restring_min));
 				write (keyword => keyword_micro_via_drill_min, parameters => to_string (element (class_cursor).micro_via_drill_min));
@@ -2722,7 +2722,9 @@ package body et_project is
 
 
 			-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
-			
+			net_class_name			: et_pcb.type_net_class_name.bounded_string;
+			net_class_description	: et_pcb.type_net_class_description.bounded_string;
+			net_class_clearance		: et_pcb.type_signal_clearance;
 			
 			procedure process_line is 
 			-- CS: detect if section name is type_section_name_project
@@ -2831,8 +2833,35 @@ package body et_project is
 
 					log ("line --> " & to_string (line), log_threshold + 3);
 
-						null;
-	
+					case stack.parent is
+						when SEC_NET_CLASSES =>
+							case stack.current is
+								when SEC_NET_CLASS =>
+									declare
+										kw : string := f (line, 1);
+									begin
+										if kw = keyword_name then
+											expect_field_count (line, 2);
+											net_class_name := et_pcb.to_net_class_name (f (line,2));
+											-- CS: test if net class with this name already exists
+										elsif kw = keyword_description then
+											expect_field_count (line, 2);
+											net_class_description := et_pcb.to_net_class_description (f (line,2));
+										elsif kw = keyword_clearance then
+											expect_field_count (line, 2);
+											net_class_clearance := et_pcb_coordinates.to_distance (f (line,2));
+											et_pcb.validate_signal_clearance (net_class_clearance);
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+									
+								when others => invalid_section;
+									
+							end case;
+
+						when others => invalid_section;
+					end case;
 
 
 				end if;

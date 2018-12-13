@@ -147,11 +147,11 @@ package et_pcb is
 	procedure validate_signal_clearance (signal_clearance : in type_distance);
 	-- Checks whether the given signal clearance is in range of type_signal_clearance.
 
-	signal_width_max : constant type_distance := 100.0;
-	subtype type_signal_width is type_distance range copper_structure_size_min .. signal_width_max;
+	track_width_max : constant type_distance := 100.0;
+	subtype type_track_width is type_distance range copper_structure_size_min .. track_width_max;
 
-	procedure validate_signal_width (signal_width : in type_distance);
-	-- Checks whether the given signal width is in range of type_signal_width.
+	procedure validate_track_width (track_width : in type_distance);
+	-- Checks whether the given track width is in range of type_track_width.
 
 
 	-- RESTRING
@@ -173,16 +173,18 @@ package et_pcb is
 	package type_net_class_name is new generic_bounded_length (net_class_name_length_max); -- hi-voltage, si-critical, ...
 
 	function to_string (net_class_name : in type_net_class_name.bounded_string) return string;
+	function to_net_class_name (net_class_name : in string) return type_net_class_name.bounded_string;
 	
 	net_class_description_length_max : constant positive := 100;
 	package type_net_class_description is new generic_bounded_length (net_class_description_length_max);
 
 	function to_string (class_description : in type_net_class_description.bounded_string) return string;
+	function to_net_class_description (class_description : in string) return type_net_class_description.bounded_string;
 	
 	type type_net_class is tagged record
 		description				: type_net_class_description.bounded_string;
 		clearance				: type_signal_clearance;
-		signal_width_min		: type_signal_width; -- CS rename to track_width_min
+		track_width_min			: type_track_width;
 		via_drill_min			: type_drill_size;
 		via_restring_min		: type_restring_width;
 		micro_via_drill_min		: type_drill_size;
@@ -375,7 +377,7 @@ package et_pcb is
 	type type_polygon is abstract tagged record
 		points				: type_polygon_points.set; -- CS rename to corners
 		fill_style			: type_fill_style := SOLID; -- a polygon is always filled
-		hatching_line_width	: type_signal_width := fill_style_hatching_line_width_default; -- the with of the lines
+		hatching_line_width	: type_track_width := fill_style_hatching_line_width_default; -- the with of the lines
 		hatching_spacing	: type_signal_clearance := fill_style_hatching_spacing_default; -- the space between the lines
 		corner_easing		: type_corner_easing := NONE;
 		easing_radius		: type_polygon_easing_radius := zero_distance; -- center of circle at corner point
@@ -464,13 +466,13 @@ package et_pcb is
 
 	-- COPPER OBJECTS (NON ELECTRIC !!) OF A PACKAGE
 	type type_copper_line is new type_line_2d with record
-		width	: type_signal_width;
+		width	: type_track_width;
 		-- CS locked	: type_locked;
 	end record;
 	package type_copper_lines is new doubly_linked_lists (type_copper_line);
 
 	type type_copper_arc is new type_arc_2d with record
-		width	: type_signal_width;
+		width	: type_track_width;
 	end record;
 	package type_copper_arcs is new doubly_linked_lists (type_copper_arc);
 
@@ -478,10 +480,10 @@ package et_pcb is
 	function to_string (filled : in type_filled) return string;
 	
 	type type_copper_circle is new type_circle_2d with record
-		width				: type_signal_width;
+		width				: type_track_width;
 		filled 				: type_filled := NO;
 		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
-		hatching_line_width	: type_signal_width := fill_style_hatching_line_width_default; -- the with of the lines
+		hatching_line_width	: type_track_width := fill_style_hatching_line_width_default; -- the with of the lines
 		hatching_spacing	: type_signal_clearance := fill_style_hatching_spacing_default; -- the space between the lines
 	end record;
 	package type_copper_circles is new doubly_linked_lists (type_copper_circle);
@@ -542,8 +544,8 @@ package et_pcb is
 	end record;
 	package type_copper_circles_pcb is new doubly_linked_lists (type_copper_circle_pcb);
 
-	polygon_thermal_width_min : constant type_signal_width := type_signal_width'first;
-	polygon_thermal_width_max : constant type_signal_width := 3.0; -- CS: adjust if nessecariy
+	polygon_thermal_width_min : constant type_track_width := type_track_width'first;
+	polygon_thermal_width_max : constant type_track_width := 3.0; -- CS: adjust if nessecariy
 	subtype type_polygon_thermal_width is type_distance range polygon_thermal_width_min .. polygon_thermal_width_max;
 
 	text_polygon_thermal_width : constant string (1..13) := "thermal_width";		
@@ -580,7 +582,7 @@ package et_pcb is
 	-- on the kinde of pad_connection:
 	type type_copper_polygon_signal (pad_connection : type_polygon_pad_connection) is new type_copper_polygon with record
 		layer 		: type_signal_layer;
-		width_min	: type_signal_width; -- the minimum width
+		width_min	: type_track_width; -- the minimum width
 				
 		case pad_connection is
 			when THERMAL =>
@@ -606,7 +608,7 @@ package et_pcb is
 	-- A floating copper polygon is not connected to a net:
 	type type_copper_polygon_floating is new type_copper_polygon with record
 		layer 		: type_signal_layer;
-		width_min	: type_signal_width; -- the minimum width
+		width_min	: type_track_width; -- the minimum width
 	end record;
 
 	package type_copper_polygons_floating is new doubly_linked_lists (type_copper_polygon_floating);
@@ -742,7 +744,7 @@ package et_pcb is
 		width				: type_general_line_width;
 		filled 				: type_filled := NO;
 		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
-		hatching_line_width	: type_signal_width := fill_style_hatching_line_width_default; -- the with of the lines
+		hatching_line_width	: type_track_width := fill_style_hatching_line_width_default; -- the with of the lines
 		hatching_spacing	: type_signal_clearance := fill_style_hatching_spacing_default; -- the space between the lines
 	end record;
 

@@ -4044,8 +4044,8 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									validate_signal_width (to_distance (to_string (arg)));
-									net_class.signal_width_min := (to_distance (to_string (arg)));
+									validate_track_width (to_distance (to_string (arg)));
+									net_class.track_width_min := (to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -5545,7 +5545,7 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									validate_signal_width (to_distance (to_string (arg)));
+									validate_track_width (to_distance (to_string (arg)));
 									segment.width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;

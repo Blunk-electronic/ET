@@ -390,12 +390,12 @@ package et_kicad_pcb is
 	type type_visible_elements is new string (1..8);
 
 	type type_board_setup is record
-		last_trace_width	: et_pcb.type_signal_width;
+		last_trace_width	: et_pcb.type_track_width;
 		trace_clearance		: et_pcb.type_signal_clearance;
 		zone_clearance		: et_pcb.type_signal_clearance;
 		zone_45_only		: type_zone_45_only;
-		trace_min			: et_pcb.type_signal_width;
-		segment_width		: et_pcb.type_signal_width;
+		trace_min			: et_pcb.type_track_width;
+		segment_width		: et_pcb.type_track_width;
 		edge_width			: type_edge_cut_line_width;
 		via_size			: type_via_diameter;	-- regular vias
 		via_drill			: et_pcb.type_drill_size;		-- regular vias
@@ -736,7 +736,7 @@ package et_kicad_pcb is
 		timestamp			: type_timestamp;
 		gui_hatch_style		: type_polygon_hatch := EDGE;
 		gui_hatch_width		: et_pcb_coordinates.type_distance;	-- see spec for type_polygon_hatch. always 0.508. CS use subtype
-		min_thickness		: et_pcb.type_signal_width;	-- minimum line width
+		min_thickness		: et_pcb.type_track_width;	-- minimum line width
 		filled				: boolean; -- CS probably no need
 		fill_mode_segment	: boolean := false; -- true on "segment mode", default -> false on "polygon mode"
 		arc_segments		: natural := 0; -- CS subtype ? -- only 16 or 32 allowed
