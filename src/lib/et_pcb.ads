@@ -185,12 +185,15 @@ package et_pcb is
 	
 	type type_net_class is tagged record
 		description				: type_net_class_description.bounded_string;
-		clearance				: type_track_clearance;
-		track_width_min			: type_track_width;
-		via_drill_min			: type_drill_size;
-		via_restring_min		: type_restring_width;
-		micro_via_drill_min		: type_drill_size;
-		micro_via_restring_min	: type_restring_width;
+
+		-- The net class parameters assume default values with the largest/greates structures allowed.
+		-- So the manufacturing costs will be at minimum if parameters had not been provided on instanciation.
+		clearance				: type_track_clearance := type_track_clearance'last;
+		track_width_min			: type_track_width := type_track_width'last;
+		via_drill_min			: type_drill_size := type_drill_size'last;
+		via_restring_min		: type_restring_width := type_restring_width'last;
+		micro_via_drill_min		: type_drill_size := type_drill_size'last;
+		micro_via_restring_min	: type_restring_width := type_restring_width'last;
 	end record;
 
 	package type_net_classes is new ordered_maps (

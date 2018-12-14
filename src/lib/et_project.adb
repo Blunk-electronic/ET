@@ -2732,6 +2732,8 @@ package body et_project is
 			begin
 				net_class_name := net_class_name_default;
 				net_class := (others => <>);
+
+				-- CS reset parameter-found-flags
 			end reset_net_class;
 
 			-- nets
@@ -2753,6 +2755,9 @@ package body et_project is
 						cursor : type_net_classes.cursor;
 					begin -- insert_net_class
 						log ("net class " & to_string (net_class_name), log_threshold + 2);
+
+						-- CS: notify about missing parameters (by reading the parameter-found-flags)
+						-- If a parameter is missing, the default is assumed. See type_net_class spec.
 						
 						type_net_classes.insert (
 							container	=> module.net_classes,
@@ -2767,6 +2772,8 @@ package body et_project is
 								 & "' already exists !", console => true);
 							raise constraint_error;
 						end if;
+
+						reset_net_class; -- clean up for next net class
 						
 					end insert_net_class;
 					
@@ -2904,7 +2911,8 @@ package body et_project is
 										if kw = keyword_name then
 											expect_field_count (line, 2);
 											net_class_name := et_pcb.to_net_class_name (f (line,2));
-											
+
+										-- CS: In the following: set a corresponding parameter-found-flag
 										elsif kw = keyword_description then
 											expect_field_count (line, 2);
 											net_class.description := et_pcb.to_net_class_description (f (line,2));
