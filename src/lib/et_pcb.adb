@@ -207,7 +207,7 @@ package body et_pcb is
 	
 	function to_string (class_description : in type_net_class_description.bounded_string) return string is
 	begin
-		return " " & type_net_class_description.to_string (class_description);
+		return type_net_class_description.to_string (class_description);
 	end to_string;
 
 	function to_net_class_description (class_description : in string) return type_net_class_description.bounded_string is
