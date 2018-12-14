@@ -2743,6 +2743,14 @@ package body et_project is
 			procedure reset_net is begin
 				net := (others => <>);
 			end reset_net;
+
+			strands : et_schematic.type_strands.list;
+			strand	: et_schematic.type_strand;
+			net_segment	: et_schematic.type_net_segment;
+
+-- 			procedure reset_strand is begin
+-- 				strand := (others => <>);
+-- 			end reset_strand;
 			
 			procedure process_line is 
 			-- CS: detect if section name is type_section_name_module
@@ -2840,7 +2848,31 @@ package body et_project is
 
 								when others => invalid_section;
 							end case;
+
+						when SEC_NET =>
+							case stack.current is
+								when SEC_STRANDS =>
+
+									net.strands := strands;
+									et_schematic.type_strands.clear (strands); -- clean up for next strand collection
 									
+								when others => invalid_section;
+							end case;
+
+						when SEC_STRANDS =>
+							case stack.current is
+								when SEC_STRAND =>
+
+									et_schematic.type_strands.append (
+										container	=> strands,
+										new_item	=> strand);
+									
+									strand := (others => <>); -- clean up for next single strand
+									
+								when others => invalid_section;
+							end case;
+							
+							
 						when others => null; -- CS
 					end case;
 
@@ -3044,6 +3076,31 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
+						when SEC_SEGMENTS =>
+							case stack.current is
+								when SEC_SEGMENT =>
+									declare
+										kw : string := f (line, 1);
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_start then
+											expect_field_count (line, 7);
+											-- CS net_segment.coordinates_start := to_position (f (line,2));
+											
+										elsif kw = keyword_end then
+											expect_field_count (line, 7);
+											-- CS net_segment.coordinates_end := to_position (f (line,2));
+											
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+
+											
+								when others => invalid_section;
+							end case;
+
+							
 						when SEC_DRAWING_FRAMES =>
 							NULL;
 
