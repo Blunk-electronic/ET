@@ -197,7 +197,7 @@ package body et_pcb is
 	-- NET CLASSES
 	function to_string (net_class_name : in type_net_class_name.bounded_string) return string is
 	begin
-		return " " & type_net_class_name.to_string (net_class_name);
+		return type_net_class_name.to_string (net_class_name);
 	end to_string;
 
 	function to_net_class_name (net_class_name : in string) return type_net_class_name.bounded_string is

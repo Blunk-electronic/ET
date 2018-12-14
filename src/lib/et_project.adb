@@ -1025,7 +1025,7 @@ package body et_project is
 				log ("net class " & to_string (key (class_cursor)), log_threshold + 1);
 				section_mark (section_net_class, HEADER);
 
-				write (keyword => keyword_name, parameters => to_string (key (class_cursor)));
+				write (keyword => keyword_name, space => true, parameters => to_string (key (class_cursor)));
 				write (keyword => keyword_description, parameters => et_pcb.to_string (element (class_cursor).description), wrap => true);
 				write (keyword => keyword_clearance, parameters => to_string (element (class_cursor).clearance));
 				write (keyword => keyword_track_width_min, parameters => to_string (element (class_cursor).track_width_min));
@@ -2739,20 +2739,56 @@ package body et_project is
 				procedure execute_section is
 				-- Once a section concludes, the temporarily variables are read, evaluated
 				-- and finally assembled to actual objects:
+
+					procedure insert_net_class (
+						module_name	: in et_coordinates.type_submodule_name.bounded_string;
+						module		: in out et_schematic.type_module) is
+						use et_pcb;
+						inserted : boolean;
+						cursor : type_net_classes.cursor;
+					begin -- insert_net_class
+						log ("net class " & to_string (net_class_name), log_threshold + 2);
+						
+						type_net_classes.insert (
+							container	=> module.net_classes,
+							key			=> net_class_name,
+							new_item	=> (
+								description				=> net_class_description,
+								clearance				=> net_class_clearance,
+								track_width_min			=> net_class_width_min,
+								via_drill_min			=> net_class_via_drill_min,
+								via_restring_min		=> net_class_via_restring_min,
+								micro_via_drill_min		=> net_class_micro_via_drill_min,
+								micro_via_restring_min	=> net_class_micro_via_restring_min),
+							
+							inserted	=> inserted,
+							position	=> cursor);
+
+						if not inserted then
+							log_indentation_reset;
+							log (message_error & "net class '" & et_pcb.to_string (net_class_name) 
+								 & "' already exists !", console => true);
+							raise constraint_error;
+						end if;
+						
+					end insert_net_class;
 					
-				begin
-					null;
--- 					case stack.parent is
--- 						when SEC_INIT =>
--- 							case stack.current is
--- 								when SEC_NET_CLASSES => null; -- nothing to do
--- 								when SEC_NETS => null; -- nothing to do
--- 								when SEC_TEXTS => null; -- nothing to do
--- 								when SEC_DEVICES => null; -- nothing to do
--- 								when SEC_SUBMODULES => null; -- nothing to do
--- 								when SEC_BOARD => null; -- nothing to do
--- 								when others => invalid_section;
--- 							end case;
+				begin -- execute_section
+					case stack.parent is
+						when SEC_NET_CLASSES =>
+							case stack.current is
+								when SEC_NET_CLASS => null;
+
+									update_element (
+										container	=> modules,
+										position	=> module_cursor,
+										process		=> insert_net_class'access);
+									
+								when others => invalid_section;
+							end case;
+
+						when others => null; -- CS
+					end case;
 
 				end execute_section;
 				
