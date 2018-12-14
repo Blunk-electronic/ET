@@ -1288,7 +1288,7 @@ package body et_project is
 				section_mark (section_net, HEADER);
 
 				write (keyword => keyword_name, parameters => to_string (key (net_cursor)), space => true);
-				write (keyword => keyword_class, parameters => to_string (element (net_cursor).class));
+				write (keyword => keyword_class, parameters => to_string (element (net_cursor).class), space => true);
 				write (keyword => keyword_scope, parameters => to_string (element (net_cursor).scope));
 
 				query_element (net_cursor, query_strands'access);
@@ -2724,14 +2724,19 @@ package body et_project is
 			-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 
 			-- net class
-			net_class_name					: et_pcb.type_net_class_name.bounded_string;
-			net_class_description			: et_pcb.type_net_class_description.bounded_string;
-			net_class_clearance				: et_pcb.type_track_clearance;
-			net_class_width_min				: et_pcb.type_track_width;
-			net_class_via_drill_min			: et_pcb.type_drill_size;
-			net_class_via_restring_min		: et_pcb.type_restring_width;
-			net_class_micro_via_drill_min	: et_pcb.type_drill_size;
-			net_class_micro_via_restring_min: et_pcb.type_restring_width;
+			net_class 		: et_pcb.type_net_class;
+			net_class_name	: et_pcb.type_net_class_name.bounded_string;
+
+			procedure reset_net_class is 
+				use et_pcb;
+			begin
+				net_class_name := net_class_name_default;
+				net_class := (others => <>);
+			end reset_net_class;
+
+			-- nets
+			--net_name						: et_schematic.type_net_name.bounded_string;
+			--net_class						: et_pcb.type_net_class_name.bounded_string;
 			
 			procedure process_line is 
 			-- CS: detect if section name is type_section_name_module
@@ -2752,15 +2757,7 @@ package body et_project is
 						type_net_classes.insert (
 							container	=> module.net_classes,
 							key			=> net_class_name,
-							new_item	=> (
-								description				=> net_class_description,
-								clearance				=> net_class_clearance,
-								track_width_min			=> net_class_width_min,
-								via_drill_min			=> net_class_via_drill_min,
-								via_restring_min		=> net_class_via_restring_min,
-								micro_via_drill_min		=> net_class_micro_via_drill_min,
-								micro_via_restring_min	=> net_class_micro_via_restring_min),
-							
+							new_item	=> net_class,
 							inserted	=> inserted,
 							position	=> cursor);
 
@@ -2907,33 +2904,40 @@ package body et_project is
 										if kw = keyword_name then
 											expect_field_count (line, 2);
 											net_class_name := et_pcb.to_net_class_name (f (line,2));
+											
 										elsif kw = keyword_description then
 											expect_field_count (line, 2);
-											net_class_description := et_pcb.to_net_class_description (f (line,2));
+											net_class.description := et_pcb.to_net_class_description (f (line,2));
+											
 										elsif kw = keyword_clearance then
 											expect_field_count (line, 2);
-											net_class_clearance := et_pcb_coordinates.to_distance (f (line,2));
-											et_pcb.validate_track_clearance (net_class_clearance);
+											net_class.clearance := et_pcb_coordinates.to_distance (f (line,2));
+											et_pcb.validate_track_clearance (net_class.clearance);
+											
 										elsif kw = keyword_track_width_min then
 											expect_field_count (line, 2);
-											net_class_width_min := et_pcb_coordinates.to_distance (f (line,2));
-											et_pcb.validate_track_width (net_class_width_min);
+											net_class.track_width_min := et_pcb_coordinates.to_distance (f (line,2));
+											et_pcb.validate_track_width (net_class.track_width_min);
+											
 										elsif kw = keyword_via_drill_min then
 											expect_field_count (line, 2);
-											net_class_via_drill_min := et_pcb_coordinates.to_distance (f (line,2));
-											et_pcb.validate_drill_size (net_class_via_drill_min);
+											net_class.via_drill_min := et_pcb_coordinates.to_distance (f (line,2));
+											et_pcb.validate_drill_size (net_class.via_drill_min);
+											
 										elsif kw = keyword_via_restring_min then
 											expect_field_count (line, 2);
-											net_class_via_restring_min := et_pcb_coordinates.to_distance (f (line,2));
-											et_pcb.validate_restring_width (net_class_via_restring_min);
+											net_class.via_restring_min := et_pcb_coordinates.to_distance (f (line,2));
+											et_pcb.validate_restring_width (net_class.via_restring_min);
+											
 										elsif kw = keyword_micro_via_drill_min then
 											expect_field_count (line, 2);
-											net_class_micro_via_drill_min := et_pcb_coordinates.to_distance (f (line,2));
-											et_pcb.validate_drill_size (net_class_micro_via_drill_min);
+											net_class.micro_via_drill_min := et_pcb_coordinates.to_distance (f (line,2));
+											et_pcb.validate_drill_size (net_class.micro_via_drill_min);
+											
 										elsif kw = keyword_micro_via_restring_min then
 											expect_field_count (line, 2);
-											net_class_micro_via_restring_min := et_pcb_coordinates.to_distance (f (line,2));
-											et_pcb.validate_restring_width (net_class_micro_via_restring_min);
+											net_class.micro_via_restring_min := et_pcb_coordinates.to_distance (f (line,2));
+											et_pcb.validate_restring_width (net_class.micro_via_restring_min);
 										else
 											invalid_keyword (kw);
 										end if;
