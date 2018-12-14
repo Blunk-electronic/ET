@@ -240,6 +240,11 @@ package body et_schematic is
 		return " " & to_lower (type_net_scope'image (net_scope));
 	end to_string;
 
+	function to_net_scope (scope : in string) return type_net_scope is
+	begin
+		return type_net_scope'value (scope);
+	end to_net_scope;
+
 	function to_component_reference (
 	-- Converts a string like "IC303" to a composite type_component_reference.
 	-- If allow_special_character_in_prefix is given true, the first character

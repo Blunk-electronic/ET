@@ -285,8 +285,10 @@ package et_schematic is
 
 	-- This is a net:
 	type type_net_base is tagged record
-		route		: et_pcb.type_route; -- routing information -> pcb related
-		class 		: et_pcb.type_net_class_name.bounded_string; -- default, High_Voltage, EMV-critical, ...
+		route	: et_pcb.type_route; -- routing information -> pcb related
+
+		-- The net class of the net: default, High_Voltage, EMV-critical, ...
+		class 	: et_pcb.type_net_class_name.bounded_string := et_pcb.net_class_name_default;
 	end record;
 
 	
@@ -314,6 +316,7 @@ package et_schematic is
 	type type_net_scope is (LOCAL, GLOBAL);
 
 	function to_string (net_scope : in type_net_scope) return string;
+	function to_net_scope (scope : in string) return type_net_scope;
 	
 	type type_net is new type_net_base with record
 		strands		: type_strands.list;

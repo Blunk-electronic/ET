@@ -2737,8 +2737,12 @@ package body et_project is
 			end reset_net_class;
 
 			-- nets
-			--net_name						: et_schematic.type_net_name.bounded_string;
-			--net_class						: et_pcb.type_net_class_name.bounded_string;
+			net_name	: et_schematic.type_net_name.bounded_string; -- motor_on_off
+			net			: et_schematic.type_net;
+
+			procedure reset_net is begin
+				net := (others => <>);
+			end reset_net;
 			
 			procedure process_line is 
 			-- CS: detect if section name is type_section_name_module
@@ -2776,13 +2780,46 @@ package body et_project is
 						reset_net_class; -- clean up for next net class
 						
 					end insert_net_class;
+
+					procedure insert_net (
+						module_name	: in et_coordinates.type_submodule_name.bounded_string;
+						module		: in out et_schematic.type_module) is
+						use et_schematic;
+						inserted : boolean;
+						cursor : type_nets.cursor;
+					begin -- insert_net
+						log ("net " & to_string (net_name), log_threshold + 2);
+
+						-- CS: notify about missing parameters (by reading the parameter-found-flags)
+						-- If a parameter is missing, the default is assumed. See type_net spec.
+						
+						type_nets.insert (
+							container	=> module.nets,
+							key			=> net_name,
+							new_item	=> net,
+							inserted	=> inserted,
+							position	=> cursor);
+
+						if not inserted then
+							log_indentation_reset;
+							log (message_error & "net '" & to_string (net_name) 
+								 & "' already exists !", console => true);
+							raise constraint_error;
+						end if;
+
+						reset_net; -- clean up for next net
+						
+					end insert_net;
+					
+
 					
 				begin -- execute_section
 					case stack.parent is
 						when SEC_NET_CLASSES =>
 							case stack.current is
-								when SEC_NET_CLASS => null;
+								when SEC_NET_CLASS =>
 
+									-- insert net class
 									update_element (
 										container	=> modules,
 										position	=> module_cursor,
@@ -2791,6 +2828,19 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
+						when SEC_NETS =>
+							case stack.current is
+								when SEC_NET =>
+
+									-- insert net
+									update_element (
+										container	=> modules,
+										position	=> module_cursor,
+										process		=> insert_net'access);
+
+								when others => invalid_section;
+							end case;
+									
 						when others => null; -- CS
 					end case;
 
@@ -2955,7 +3005,44 @@ package body et_project is
 							end case;
 
 						when SEC_NETS =>
-							NULL;
+							case stack.current is
+								when SEC_NET =>
+									declare
+										kw : string := f (line, 1);
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_name then
+											expect_field_count (line, 2);
+											net_name := et_schematic.to_net_name (f (line,2));
+											
+										elsif kw = keyword_class then
+											-- CS: imported kicad projects lack the class name sometimes.
+											-- For this reason we do not abort in such cases but issue a warning.
+											-- If abort is a must, the next two statements are required. 
+											-- The "if" construct must be in comments instead.
+											-- It is perhaps more reasonable to care for this flaw in et_kicad_pcb package.
+											
+											-- expect_field_count (line, 2);
+											-- net.class := et_pcb.to_net_class_name (f (line,2));
+											
+											if field_count (line) = 2 then
+												net.class := et_pcb.to_net_class_name (f (line,2));
+											else
+												net.class := et_pcb.net_class_name_default;
+												log (message_warning & affected_line (line) & "No net class specified ! Assume default class !");
+											end if;
+										elsif kw = keyword_scope then
+											expect_field_count (line, 2);
+											net.scope := et_schematic.to_net_scope (f (line,2));
+											
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+
+											
+								when others => invalid_section;
+							end case;
 
 						when SEC_DRAWING_FRAMES =>
 							NULL;
