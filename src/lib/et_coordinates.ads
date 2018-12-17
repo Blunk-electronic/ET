@@ -134,7 +134,7 @@ package et_coordinates is
 	
 	procedure set_xy (
 		point	 : in out type_2d_point'class;
-		position : in type_2d_point'class);
+		position : in type_2d_point);
 	
 	procedure mirror (
 		point	: in out type_2d_point;

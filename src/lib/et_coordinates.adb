@@ -178,7 +178,7 @@ package body et_coordinates is
 
 	procedure set_xy (
 		point 		: in out type_2d_point'class;
-		position	: in type_2d_point'class) is
+		position	: in type_2d_point) is
 	begin
 		point.x := position.x;
 		point.y := position.y;
