@@ -2720,7 +2720,50 @@ package body et_project is
 				item	=> type_section_name_module,
 				max 	=> max_section_depth);
 
+			function to_position (
+				line : in type_fields_of_line; -- "start x 3 y 4" or "position x 44.5 y 53.5"
+				from : in positive)
+				return et_coordinates.type_2d_point is
+				use et_coordinates;
+				
+				point : type_2d_point; -- to be returned
+				x, y : type_distance_xy;
 
+				place : positive := from;
+
+				-- CS: flags to detect missing x or y
+			begin
+				while place <= 5 loop
+
+					-- We expect after the x the corresponding value for x
+					if f (line, place) = keyword_pos_x then
+						x := to_distance (f (line, place + 1));
+
+					-- We expect after the y the corresponding value for y
+					elsif f (line, place) = keyword_pos_y then
+						y := to_distance (f (line, place + 1));
+
+					end if;
+						
+					place := place + 1;
+				end loop;
+
+				-- CS set_xy (point => point, position => (x,y));
+				
+				return point;
+			end to_position;
+
+			function to_position (
+				line : in type_fields_of_line; -- "position sheet 3 x 44.5 y 53.5"
+				from : in positive)
+					return et_coordinates.type_coordinates is
+				point : et_coordinates.type_coordinates; -- to be returned
+			begin
+
+				return point;
+			end to_position;
+
+			
 			-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 
 			-- net class
@@ -3184,13 +3227,17 @@ package body et_project is
 										kw : string := f (line, 1);
 									begin
 										-- CS: In the following: set a corresponding parameter-found-flag
-										if kw = keyword_start then
+										if kw = keyword_start then -- "start x 3 y 4"
 											expect_field_count (line, 7);
-											-- CS net_segment.coordinates_start := to_position (f (line,2));
+
+											-- extract start position starting at field 2
+											net_segment.coordinates_start := to_position (line, from => 2);
 											
-										elsif kw = keyword_end then
+										elsif kw = keyword_end then -- "end x 6 y 4"
 											expect_field_count (line, 7);
-											-- CS net_segment.coordinates_end := to_position (f (line,2));
+
+											-- extract end position starting at field 2
+											net_segment.coordinates_end := to_position (line, from => 2);
 											
 										else
 											invalid_keyword (kw);

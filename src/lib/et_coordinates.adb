@@ -22,7 +22,7 @@
 --    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction side" where things are not
 --   finished yet or intended for the future.
@@ -51,6 +51,10 @@ with et_general;
 
 package body et_coordinates is
 
+	function to_distance (distance : in string) return type_distance_xy is begin
+		return type_distance'value (distance);
+	end to_distance;
+	
 	function mil_to_distance (mil : in string; warn_on_negative : boolean := true) 
 		return type_distance_xy is
 	-- Returns the given mils to type_distance_xy.

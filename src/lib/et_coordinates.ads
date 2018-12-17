@@ -65,10 +65,12 @@ package et_coordinates is
 	type type_distance is delta 0.01 range -100_000_000.00 .. 100_000_000.00;
 	for type_distance'small use 0.01; -- this is the accuracy required for schematic
 
+
 	-- The x and y position of an object:
 	subtype type_distance_xy is type_distance range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter
 	zero_distance : constant type_distance := 0.0;
 
+	function to_distance (distance : in string) return type_distance_xy;	
 
 	-- CS: type_grid ?
 
@@ -320,7 +322,7 @@ package et_coordinates is
 	
 	private 
 		-- In general every object has at least x,y coordinates.
-		type type_2d_point is tagged record
+		type type_2d_point is tagged record -- CS: rename to type_point
 			x, y : type_distance_xy := zero_distance;
 		end record;
 		
