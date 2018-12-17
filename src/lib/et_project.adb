@@ -2746,7 +2746,12 @@ package body et_project is
 
 			strands : et_schematic.type_strands.list;
 			strand	: et_schematic.type_strand;
+			net_segments : et_schematic.type_net_segments.list;
 			net_segment	: et_schematic.type_net_segment;
+			net_labels : et_schematic.type_net_labels.list;
+			--net_label :
+			net_junction : et_schematic.type_net_junction;
+			net_junctions : et_schematic.type_junctions.list;
 
 -- 			procedure reset_strand is begin
 -- 				strand := (others => <>);
@@ -2853,8 +2858,12 @@ package body et_project is
 							case stack.current is
 								when SEC_STRANDS =>
 
+									-- insert strand collection in net
 									net.strands := strands;
 									et_schematic.type_strands.clear (strands); -- clean up for next strand collection
+
+								when SEC_ROUTE =>
+									null; -- CS
 									
 								when others => invalid_section;
 							end case;
@@ -2863,12 +2872,104 @@ package body et_project is
 							case stack.current is
 								when SEC_STRAND =>
 
+									-- insert strand in strands
 									et_schematic.type_strands.append (
 										container	=> strands,
 										new_item	=> strand);
+
+									-- clean up for next single strand
+									strand := (others => <>); 
 									
-									strand := (others => <>); -- clean up for next single strand
+								when others => invalid_section;
+							end case;
+
+						when SEC_STRAND =>
+							case stack.current is
+								when SEC_SEGMENTS =>
+
+									-- insert segments in strand
+									strand.segments := net_segments;
+
+									-- clean up for next segment collection
+									et_schematic.type_net_segments.clear (net_segments);
 									
+								when others => invalid_section;
+							end case;
+
+						when SEC_SEGMENTS =>
+							case stack.current is
+								when SEC_SEGMENT =>
+
+									-- insert segment in segment collection
+									et_schematic.type_net_segments.append (
+										container	=> net_segments,
+										new_item	=> net_segment);
+
+									-- clean up for next segment
+									net_segment := (others => <>);
+									
+								when others => invalid_section;
+							end case;
+
+						when SEC_SEGMENT =>
+							case stack.current is
+								when SEC_LABELS =>
+
+									-- insert labels in segment
+									net_segment.labels := net_labels;
+
+									-- clean up for next label collection
+									et_schematic.type_net_labels.clear (net_labels);
+
+								when SEC_JUNCTIONS =>
+									null; -- NOTE: A junction is defined by a single line.
+									-- Upon reading the line like "position x 4 y 4" the junction is
+									-- appended to the junction collection immediately when the line 
+									-- is read. See main code of process_line.
+									-- There is no section for a single junction like [JUNCTION BEGIN].
+
+									-- insert junction collection in segment
+									-- CS
+									
+								when SEC_PORTS =>
+									null; -- NOTE: A device port is defined by a single line.
+									-- Upon reading the line like "device R3 port 1" the port is
+									-- appended to the port collection immediately when the line 
+									-- is read. See main code of process_line.
+									-- There is no section for a single device port like [PORT BEGIN].
+
+									-- insert port collection in segment
+									-- CS
+
+								when SEC_SUBMODULE_PORTS =>
+									null; -- CS
+									-- insert submodule ports in segment
+									
+								when others => invalid_section;
+							end case;
+
+						when SEC_LABELS =>
+							case stack.current is
+								when SEC_LABEL =>
+
+									null;
+									-- insert label in label collection
+									-- CS
+
+									-- clean up for next label
+									-- CS
+
+								when others => invalid_section;
+							end case;
+
+
+						when SEC_SUBMODULE_PORTS =>
+							case stack.current is
+								when SEC_PORT =>
+
+									null;
+									-- CS insert submodule port in collection of submodule ports
+
 								when others => invalid_section;
 							end case;
 							
@@ -3095,11 +3196,127 @@ package body et_project is
 											invalid_keyword (kw);
 										end if;
 									end;
-
 											
 								when others => invalid_section;
 							end case;
 
+						when SEC_SEGMENT =>
+							case stack.current is
+								when SEC_LABELS => null; -- nothing to do
+								when SEC_JUNCTIONS =>
+									-- read junction parameters
+									-- NOTE: A junction is defined by a single line.
+									-- Upon reading the line like "position x 4 y 4" the junction is
+									-- appended to the junction collection immediately here. See procdure
+									-- execute_section.
+									-- There is no section for a single junction like [JUNCTION BEGIN].
+									declare
+										kw : string := f (line, 1);
+									begin
+										if kw = keyword_position then
+											expect_field_count (line, 5);
+											-- CS append junction to junction collection
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+									
+								when SEC_PORTS =>
+									-- read device port parameters
+									-- NOTE: A device port is defined by a single line.
+									-- Upon reading the line like "device R3 port 1" the port is
+									-- appended to the port collection immediately here. See procdure
+									-- execute_section.									
+									-- There is no section for a single device port like [PORT BEGIN].
+									declare
+										kw : string := f (line, 1);
+									begin
+										if kw = keyword_device then
+											expect_field_count (line, 4);
+											-- CS append port to port collection
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+
+								when SEC_SUBMODULE_PORTS => null; -- nothing to do
+								when others => invalid_section;
+							end case;
+
+						when SEC_LABELS =>
+							case stack.current is
+								when SEC_LABEL =>
+
+									declare
+										kw : string := f (line, 1);
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_position then
+											expect_field_count (line, 5);
+											-- CS 
+											
+										elsif kw = keyword_rotation then
+											expect_field_count (line, 2);
+											-- CS 
+
+										elsif kw = keyword_size then
+											expect_field_count (line, 2);
+											-- CS 
+
+										elsif kw = keyword_style then
+											expect_field_count (line, 2);
+											-- CS 
+
+										elsif kw = keyword_line_width then
+											expect_field_count (line, 2);
+											-- CS 
+
+										elsif kw = keyword_appearance then
+											expect_field_count (line, 2);
+											-- CS 
+
+										elsif kw = keyword_direction then
+											expect_field_count (line, 2);
+											-- CS 
+											
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+
+								when others => invalid_section;
+							end case;
+
+						when SEC_SUBMODULE_PORTS =>
+							case stack.current is
+								when SEC_PORT =>
+									declare
+										kw : string := f (line, 1);
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_module then
+											expect_field_count (line, 2);
+											-- CS 
+											
+										elsif kw = keyword_name then
+											expect_field_count (line, 2);
+											-- CS 
+
+										elsif kw = keyword_position then
+											expect_field_count (line, 5);
+											-- CS 
+
+										elsif kw = keyword_direction then
+											expect_field_count (line, 2);
+											-- CS 
+											
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+
+								when others => invalid_section;
+							end case;
 							
 						when SEC_DRAWING_FRAMES =>
 							NULL;
