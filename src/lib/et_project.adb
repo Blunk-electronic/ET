@@ -2720,35 +2720,34 @@ package body et_project is
 				item	=> type_section_name_module,
 				max 	=> max_section_depth);
 
-			function to_position (
+			function to_position ( -- CS combine with next function to_position using the tag test ?									 
 				line : in type_fields_of_line; -- "start x 3 y 4" or "position x 44.5 y 53.5"
 				from : in positive)
 				return et_coordinates.type_2d_point is
 				use et_coordinates;
 				
 				point : type_2d_point; -- to be returned
-				x, y : type_distance_xy;
 
-				place : positive := from;
+				place : positive := from; -- the field being read from given line
 
 				-- CS: flags to detect missing x or y
 			begin
-				while place <= 5 loop
+				while place <= positive (field_count (line)) loop
 
 					-- We expect after the x the corresponding value for x
 					if f (line, place) = keyword_pos_x then
-						x := to_distance (f (line, place + 1));
+						set_x (point, to_distance (f (line, place + 1)));
 
 					-- We expect after the y the corresponding value for y
 					elsif f (line, place) = keyword_pos_y then
-						y := to_distance (f (line, place + 1));
+						set_y (point, to_distance (f (line, place + 1)));
 
+					else
+						invalid_keyword (f (line, place));
 					end if;
 						
-					place := place + 1;
+					place := place + 2;
 				end loop;
-
-				-- CS set_xy (point => point, position => (x,y));
 				
 				return point;
 			end to_position;
@@ -2756,10 +2755,36 @@ package body et_project is
 			function to_position (
 				line : in type_fields_of_line; -- "position sheet 3 x 44.5 y 53.5"
 				from : in positive)
-					return et_coordinates.type_coordinates is
-				point : et_coordinates.type_coordinates; -- to be returned
-			begin
+				return et_coordinates.type_coordinates is
+				use et_coordinates;
+				
+				point : type_coordinates; -- to be returned
 
+				place : positive := from; -- the field being read from given line
+
+				-- CS: flags to detect missing sheet, x or y
+			begin
+				while place <= positive (field_count (line)) loop
+
+					-- We expect after "sheet" the sheet number
+					if f (line, place) = keyword_sheet then
+						set_sheet (point, to_sheet_number (f (line, place + 1)));
+						
+					-- We expect after the x the corresponding value for x
+					elsif f (line, place) = keyword_pos_x then
+						set_x (point, to_distance (f (line, place + 1)));
+
+					-- We expect after the y the corresponding value for y
+					elsif f (line, place) = keyword_pos_y then
+						set_y (point, to_distance (f (line, place + 1)));
+
+					else
+						invalid_keyword (f (line, place));
+					end if;
+						
+					place := place + 2;
+				end loop;
+				
 				return point;
 			end to_position;
 
