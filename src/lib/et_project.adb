@@ -2816,8 +2816,14 @@ package body et_project is
 			strand	: et_schematic.type_strand;
 			net_segments : et_schematic.type_net_segments.list;
 			net_segment	: et_schematic.type_net_segment;
+			
 			net_labels : et_schematic.type_net_labels.list;
-			--net_label :
+			net_label : et_schematic.type_net_label_base;
+			net_label_appearance : et_schematic.type_net_label_appearance := et_schematic.type_net_label_appearance'first;
+
+			-- The net label direction is relevant if appearance is TAG:
+			net_label_direction : et_schematic.type_net_label_direction := et_schematic.type_net_label_direction'first;
+			
 			net_junction : et_schematic.type_net_junction;
 			net_junctions : et_schematic.type_junctions.list;
 
@@ -3032,16 +3038,38 @@ package body et_project is
 							case stack.current is
 								when SEC_LABEL =>
 
-									null;
 									-- insert label in label collection
-									-- CS
+									case net_label_appearance is
+										when et_schematic.SIMPLE =>
+
+											-- insert a simple label
+											et_schematic.type_net_labels.append (
+												container	=> net_labels,
+												new_item	=> (
+													net_label with 
+													appearance => et_schematic.SIMPLE));
+
+											-- CS warn about parameter "direction" being ignored
+											
+										when et_schematic.TAG =>
+
+											-- insert a tag label
+											et_schematic.type_net_labels.append (
+												container	=> net_labels,
+												new_item	=> (
+													net_label with 
+													appearance	=> et_schematic.TAG,
+													direction	=> net_label_direction));
+
+									end case;
 
 									-- clean up for next label
-									-- CS
+									net_label := (others => <>);
+									net_label_appearance := et_schematic.type_net_label_appearance'first;
+									net_label_direction := et_schematic.type_net_label_direction'first;
 
 								when others => invalid_section;
 							end case;
-
 
 						when SEC_SUBMODULE_PORTS =>
 							case stack.current is
@@ -3353,33 +3381,35 @@ package body et_project is
 										kw : string := f (line, 1);
 									begin
 										-- CS: In the following: set a corresponding parameter-found-flag
-										if kw = keyword_position then
+										if kw = keyword_position then -- position x 148.59 y 104.59
 											expect_field_count (line, 5);
-											-- CS 
+
+											-- extract label position starting at field 2 of line
+											net_label.coordinates := to_position (line, 2);
 											
-										elsif kw = keyword_rotation then
+										elsif kw = keyword_rotation then -- rotation 0.0
 											expect_field_count (line, 2);
-											-- CS 
+											net_label.orientation := et_coordinates.to_angle (f (line, 2));
 
-										elsif kw = keyword_size then
+										elsif kw = keyword_size then -- size 1.3
 											expect_field_count (line, 2);
-											-- CS 
+											net_label.size := et_coordinates.to_distance (f (line, 2));
 
-										elsif kw = keyword_style then
+										elsif kw = keyword_style then -- style normal
 											expect_field_count (line, 2);
-											-- CS 
+											net_label.style := et_libraries.to_text_style (f (line, 2));
 
-										elsif kw = keyword_line_width then
+										elsif kw = keyword_line_width then -- line_width 0.1
 											expect_field_count (line, 2);
-											-- CS 
+											net_label.width := et_coordinates.to_distance (f (line, 2));
 
-										elsif kw = keyword_appearance then
+										elsif kw = keyword_appearance then -- appearance tag/simple
 											expect_field_count (line, 2);
-											-- CS 
+											net_label_appearance := et_schematic.to_appearance (f (line, 2));
 
-										elsif kw = keyword_direction then
+										elsif kw = keyword_direction then -- direction input/output
 											expect_field_count (line, 2);
-											-- CS 
+											net_label_direction := et_schematic.to_direction (f (line, 2));
 											
 										else
 											invalid_keyword (kw);

@@ -154,12 +154,14 @@ package body et_libraries is
 		return latin_1.space & et_coordinates.to_string (width);
 	end to_string;
 
-	function to_string (style : in type_text_style) return string is
-	begin
+	function to_string (style : in type_text_style) return string is begin
 		return latin_1.space & to_lower (type_text_style'image (style));
 	end to_string;
 	
-
+	function to_text_style (style : in string) return type_text_style is begin
+		return type_text_style'value (style);
+	end to_text_style;
+	
 	-- TEXT ALIGNMENT
 	function to_string (alignment : in type_text_alignment_horizontal) return string is
 	begin

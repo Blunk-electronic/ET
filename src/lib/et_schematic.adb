@@ -201,15 +201,21 @@ package body et_schematic is
 		
 	end check_net_name_characters;
 
-	function to_string (appearance : in type_net_label_appearance) return string is
-	begin
+	function to_string (appearance : in type_net_label_appearance) return string is begin
 		return latin_1.space & to_lower (type_net_label_appearance'image (appearance));
 	end to_string;
+
+	function to_appearance (appearance : in string) return type_net_label_appearance is begin
+		return type_net_label_appearance'value (appearance);
+	end to_appearance;
 	
-	function to_string (direction : in type_net_label_direction) return string is
-	begin
+	function to_string (direction : in type_net_label_direction) return string is begin
 		return latin_1.space & to_lower (type_net_label_direction'image (direction));
 	end to_string;
+
+	function to_direction (direction : in string) return type_net_label_direction is begin
+		return type_net_label_direction'value (direction);
+	end to_direction;
 	
 	function length (segment : in type_net_segment_base) return et_coordinates.type_distance is
 	-- Returns the length of the given net segment.

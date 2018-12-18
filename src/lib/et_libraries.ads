@@ -129,13 +129,14 @@ package et_libraries is
 		preamble	: in boolean := true) return string;
 	-- Returns the given text size as string.
 
-	subtype type_text_line_width is type_distance range 0.0 .. 5.0; -- unit is mm
+	subtype type_text_line_width is type_distance range 0.0 .. 5.0; -- unit is mm -- CS: minimum of 0.0 reasonable ?
 
 	function to_string (width : in type_text_line_width) return string;
 	-- Returns the given line width as string.
 	
 	type type_text_style is (NORMAL, ITALIC, BOLD, ITALIC_BOLD);
 	function to_string (style : in type_text_style) return string;
+	function to_text_style (style : in string) return type_text_style;
 	
 	type type_text_visible is (YES, NO);
 	

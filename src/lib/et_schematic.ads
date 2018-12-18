@@ -234,17 +234,21 @@ package et_schematic is
 		);		-- where the net continues
 
 	function to_string (appearance : in type_net_label_appearance) return string;
+	function to_appearance (appearance : in string) return type_net_label_appearance;
 	
 	type type_net_label_direction is (INPUT, OUTPUT, BIDIR, TRISTATE, PASSIVE);
-
 	function to_string (direction : in type_net_label_direction) return string;
-	
-	type type_net_label (appearance : type_net_label_appearance) is record
+	function to_direction (direction : in string) return type_net_label_direction;
+
+	type type_net_label_base is tagged record
 		coordinates	: et_coordinates.type_2d_point; -- CS rename to position
 		orientation	: et_coordinates.type_angle; -- CS rename to rotation
-        size		: et_libraries.type_text_size;
-        style		: et_libraries.type_text_style;
-		width		: et_libraries.type_text_line_width;
+        size		: et_libraries.type_text_size := et_libraries.text_size_default;
+        style		: et_libraries.type_text_style := et_libraries.type_text_style'first;
+		width		: et_libraries.type_text_line_width := et_libraries.type_text_line_width'first;
+	end record;
+	
+	type type_net_label (appearance : type_net_label_appearance) is new type_net_label_base with record
 		case appearance is
 			when TAG => 
 				direction : type_net_label_direction;

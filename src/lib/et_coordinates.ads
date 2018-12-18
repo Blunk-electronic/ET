@@ -101,8 +101,8 @@ package et_coordinates is
 	-- CS: make use of this type by membership tests when required
 
 	function to_string (angle : in type_angle) return string;
-	-- Returns the given angle as string. 
-
+	function to_angle (angle : in string) return type_angle;
+	
 	procedure warning_angle_greater_90_degrees;
 
 

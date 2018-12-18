@@ -126,6 +126,10 @@ package body et_coordinates is
 		return (preamble & type_angle'image (angle) & suffix);
 	end to_string;
 
+	function to_angle (angle : in string) return type_angle is begin
+		return type_angle'value (angle);
+	end to_angle;
+
 	procedure warning_angle_greater_90_degrees is
 		use et_string_processing;
 	begin
