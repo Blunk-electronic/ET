@@ -178,6 +178,10 @@ package body et_libraries is
 			& " / "
 			& to_string (alignment.vertical);
 	end to_string;
+
+	function to_port_direction (direction : in string) return type_port_direction is begin
+		return type_port_direction'value (direction);
+	end to_port_direction;
 		
 	function to_string (
 		direction	: in type_port_direction;
@@ -203,12 +207,14 @@ package body et_libraries is
 		return latin_1.space & to_lower (type_terminal_name_visible'image (terminal_visible));
 	end to_string;
 	
-	function to_string (port : in type_port_name.bounded_string) return string is
-	-- Returns the given port name as string.
-	begin
+	function to_string (port : in type_port_name.bounded_string) return string is begin
 		return type_port_name.to_string (port);
 	end to_string;
 
+	function to_port_name (name : in string) return type_port_name.bounded_string is begin
+		return type_port_name.to_bounded_string (name);
+	end to_port_name;
+	
 	function to_port_name_text_size (text : in string) return type_port_name_text_size is
 	-- Converts a string to type_port_name_text_size.
 	begin

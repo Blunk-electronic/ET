@@ -2821,6 +2821,12 @@ package body et_project is
 			net_junction : et_schematic.type_net_junction;
 			net_junctions : et_schematic.type_junctions.list;
 
+			net_port : et_schematic.type_port_component;
+			net_ports : et_schematic.type_ports_component.list;
+
+			net_submodule_port : et_schematic.type_port_submodule;
+			net_submodule_ports : et_schematic.type_ports_submodule.list;
+			
 -- 			procedure reset_strand is begin
 -- 				strand := (others => <>);
 -- 			end reset_strand;
@@ -2990,28 +2996,34 @@ package body et_project is
 									et_schematic.type_net_labels.clear (net_labels);
 
 								when SEC_JUNCTIONS =>
-									null; -- NOTE: A junction is defined by a single line.
+									-- NOTE: A junction is defined by a single line.
 									-- Upon reading the line like "position x 4 y 4" the junction is
 									-- appended to the junction collection immediately when the line 
 									-- is read. See main code of process_line.
 									-- There is no section for a single junction like [JUNCTION BEGIN].
 
 									-- insert junction collection in segment
-									-- CS
+									net_segment.junctions := net_junctions;
+
+									-- clean up for next junction collection (of another net segment)
+									et_schematic.type_junctions.clear (net_junctions);
 									
 								when SEC_PORTS =>
-									null; -- NOTE: A device port is defined by a single line.
+									-- NOTE: A device port is defined by a single line.
 									-- Upon reading the line like "device R3 port 1" the port is
 									-- appended to the port collection immediately when the line 
 									-- is read. See main code of process_line.
 									-- There is no section for a single device port like [PORT BEGIN].
 
 									-- insert port collection in segment
-									-- CS
+									net_segment.component_ports := net_ports;
+
+									-- clean up for next port collection (of another net segment)
+									et_schematic.type_ports_component.clear (net_ports);
 
 								when SEC_SUBMODULE_PORTS =>
-									null; -- CS
 									-- insert submodule ports in segment
+									net_segment.submodule_ports := net_submodule_ports;
 									
 								when others => invalid_section;
 							end case;
@@ -3035,8 +3047,11 @@ package body et_project is
 							case stack.current is
 								when SEC_PORT =>
 
-									null;
-									-- CS insert submodule port in collection of submodule ports
+									-- insert submodule port in collection of submodule ports
+									et_schematic.type_ports_submodule.append (net_submodule_ports, net_submodule_port);
+
+									-- clean up for next submodule port
+									net_submodule_port := (others => <>);
 
 								when others => invalid_section;
 							end case;
@@ -3287,7 +3302,12 @@ package body et_project is
 									begin
 										if kw = keyword_position then
 											expect_field_count (line, 5);
-											-- CS append junction to junction collection
+
+											-- extract position of junction starting at field 2
+											net_junction.coordinates := to_position (line, from => 2);
+
+											-- append junction to junction collection
+											et_schematic.type_junctions.append (net_junctions, net_junction);
 										else
 											invalid_keyword (kw);
 										end if;
@@ -3296,7 +3316,7 @@ package body et_project is
 								when SEC_PORTS =>
 									-- read device port parameters
 									-- NOTE: A device port is defined by a single line.
-									-- Upon reading the line like "device R3 port 1" the port is
+									-- Upon reading the line like "device IC3 port CE" the port is
 									-- appended to the port collection immediately here. See procdure
 									-- execute_section.									
 									-- There is no section for a single device port like [PORT BEGIN].
@@ -3305,7 +3325,17 @@ package body et_project is
 									begin
 										if kw = keyword_device then
 											expect_field_count (line, 4);
-											-- CS append port to port collection
+
+											net_port.reference := et_schematic.to_component_reference (f (line, 2)); -- IC3
+
+											if f (line, 3) = keyword_port then -- port
+												net_port.name := et_libraries.to_port_name (f (line, 4)); -- CE
+
+												-- append port to port collection
+												et_schematic.type_ports_component.append (net_ports, net_port); 
+											else
+												invalid_keyword (f (line, 3));
+											end if;
 										else
 											invalid_keyword (kw);
 										end if;
@@ -3366,22 +3396,24 @@ package body et_project is
 										kw : string := f (line, 1);
 									begin
 										-- CS: In the following: set a corresponding parameter-found-flag
-										if kw = keyword_module then
+										if kw = keyword_module then -- module motor_driver
 											expect_field_count (line, 2);
-											-- CS 
+											net_submodule_port.module := et_coordinates.to_submodule_name (f (line, 2));
 											
-										elsif kw = keyword_name then
+										elsif kw = keyword_name then -- name MASTER_RESET_N
 											expect_field_count (line, 2);
-											-- CS 
+											net_submodule_port.port := et_libraries.to_port_name (f (line, 2));
 
-										elsif kw = keyword_position then
+										elsif kw = keyword_position then -- position x 3 y 4
 											expect_field_count (line, 5);
-											-- CS 
 
-										elsif kw = keyword_direction then
+											-- extract port position starting at field 2
+											net_submodule_port.position := to_position (line, 2); 
+
+										elsif kw = keyword_direction then -- direction input
 											expect_field_count (line, 2);
-											-- CS 
-											
+											net_submodule_port.direction := et_libraries.to_port_direction (f (line, 2));
+
 										else
 											invalid_keyword (kw);
 										end if;

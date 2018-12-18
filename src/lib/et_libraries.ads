@@ -264,6 +264,8 @@ package et_libraries is
 		NOT_CONNECTED	-- advised by manufacturer to be left unconnected
 		);
 
+	function to_port_direction (direction : in string) return type_port_direction;
+	
 	function to_string (
 		direction	: in type_port_direction;
 		preamble	: in boolean := true) return string;
@@ -295,8 +297,8 @@ package et_libraries is
 	use type_port_name;
 
 	function to_string (port : in type_port_name.bounded_string) return string;
-	-- Returns the given port name as string.
-
+	function to_port_name (name : in string) return type_port_name.bounded_string;
+	
 	subtype type_port_name_text_size is type_distance range 1.0 .. 5.0; -- unit is mm
 	port_name_text_size_default : constant type_port_name_text_size := 1.3;
 

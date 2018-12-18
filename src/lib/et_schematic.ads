@@ -223,7 +223,7 @@ package et_schematic is
 		port		: et_libraries.type_port_name.bounded_string;
 
 		position	: et_coordinates.type_coordinates; -- the position of the port in the parent module
-		direction	: et_libraries.type_port_direction;
+		direction	: et_libraries.type_port_direction; -- CS default
 	end record;
 
 	package type_ports_submodule is new doubly_linked_lists (type_port_submodule);
@@ -296,7 +296,7 @@ package et_schematic is
 	type type_net_segment is new type_net_segment_base with record
 		labels			: type_net_labels.list;
 		junctions		: type_junctions.list;
-		component_ports	: type_ports_component.list;
+		component_ports	: type_ports_component.list; -- CS rename to device ports
 		submodule_ports	: type_ports_submodule.list; 
 		-- CS no_connections	: type_no_connection_flags.list;-- the list of no-connection-flags
 	end record;
