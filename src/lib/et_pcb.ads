@@ -78,6 +78,7 @@ package et_pcb is
 	type type_signal_layer is range signal_layer_top .. signal_layer_bot;
 
 	function to_string (signal_layer : in type_signal_layer) return string;
+	function to_signal_layer (layer : in string) return type_signal_layer;
 
 	package type_signal_layers is new ordered_sets (type_signal_layer);
 

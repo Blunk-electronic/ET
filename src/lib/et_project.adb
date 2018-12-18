@@ -2788,6 +2788,40 @@ package body et_project is
 				return point;
 			end to_position;
 
+
+			function to_position (
+			-- Returns a type_point_2d in the the layout.
+				line : in type_fields_of_line; -- "start x 44.5 y 53.5"
+				from : in positive)
+				return et_pcb_coordinates.type_point_2d is
+				use et_pcb_coordinates;
+				
+				point : type_point_2d; -- to be returned
+
+				place : positive := from; -- the field being read from given line
+
+				-- CS: flags to detect missing sheet, x or y
+			begin
+				while place <= positive (field_count (line)) loop
+
+					-- We expect after the x the corresponding value for x
+					if f (line, place) = keyword_pos_x then
+						set_point (point => point, axis => X, value => to_distance (f (line, place + 1)));
+
+					-- We expect after the y the corresponding value for y
+					elsif f (line, place) = keyword_pos_y then
+						set_point (point => point, axis => Y, value => to_distance (f (line, place + 1)));
+
+					else
+						invalid_keyword (f (line, place));
+					end if;
+						
+					place := place + 2;
+				end loop;
+				
+				return point;
+			end to_position;
+				
 			
 			-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 
@@ -2833,9 +2867,19 @@ package body et_project is
 			net_submodule_port : et_schematic.type_port_submodule;
 			net_submodule_ports : et_schematic.type_ports_submodule.list;
 			
--- 			procedure reset_strand is begin
--- 				strand := (others => <>);
--- 			end reset_strand;
+			route_line 		: et_pcb.type_copper_line_pcb;
+			route_arc		: et_pcb.type_copper_arc_pcb;
+			route_via		: et_pcb.type_via;
+
+-- 			route_polygon_priority_level	: et_pcb.type_polygon_priority := et_pcb.type_polygon_priority'first;
+-- 			route_polygon_isolation_gap		: et_pcb.type_track_clearance := et_pcb.type_track_clearance'first;
+			route_polygon					: et_pcb.type_copper_polygon;
+			route_polygon_pad_connection	: et_pcb.type_polygon_pad_connection := et_pcb.type_polygon_pad_connection'first;
+			route_polygon_layer				: et_pcb.type_signal_layer;
+			route_polygon_pad_technology	: et_pcb.type_polygon_pad_technology := et_pcb.type_polygon_pad_technology'first;
+			route_polygon_thermal_width		: et_pcb.type_polygon_thermal_width := et_pcb.type_polygon_thermal_width'first;
+			route_polygon_thermal_gap		: et_pcb.type_polygon_thermal_gap := et_pcb.type_polygon_thermal_gap'first;
+			route_polygon_solid_technology	: et_pcb.type_polygon_pad_technology := et_pcb.type_polygon_pad_technology'first;
 			
 			procedure process_line is 
 			-- CS: detect if section name is type_section_name_module
@@ -3248,6 +3292,12 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
+						when SEC_NET => -- test for allowed sections in section NET
+							case stack.current is
+								when SEC_STRANDS | SEC_ROUTE => null;
+								when others => invalid_section;
+							end case;
+							
 						when SEC_NETS =>
 							case stack.current is
 								when SEC_NET =>
@@ -3448,6 +3498,125 @@ package body et_project is
 											invalid_keyword (kw);
 										end if;
 									end;
+
+								when others => invalid_section;
+							end case;
+
+						when SEC_ROUTE =>
+							case stack.current is
+								when SEC_LINE =>
+									declare
+										kw : string := f (line, 1);
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_start then -- start x 22.3 y 23.3
+											expect_field_count (line, 5);
+
+											-- extract the start position starting at field 2 of line
+											route_line.start_point := to_position (line, 2);
+											
+										elsif kw = keyword_end then -- end x 22.3 y 23.3
+											expect_field_count (line, 5);
+
+											-- extract the end position starting at field 2 of line
+											route_line.end_point := to_position (line, 2);
+
+										elsif kw = keyword_layer then -- layer 2
+											expect_field_count (line, 2);
+											route_line.layer := et_pcb.to_signal_layer (f (line, 2));
+
+										elsif kw = keyword_width then -- width 0.5
+											expect_field_count (line, 2);
+											route_line.width := et_pcb_coordinates.to_distance (f (line, 2));
+											
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+
+
+								when SEC_ARC =>
+									declare
+										kw : string := f (line, 1);
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_start then -- start x 22.3 y 23.3
+											expect_field_count (line, 5);
+
+											-- extract the start position starting at field 2 of line
+											route_arc.start_point := to_position (line, 2);
+
+										elsif kw = keyword_end then -- end x 22.3 y 23.3
+											expect_field_count (line, 5);
+
+											-- extract the end position starting at field 2 of line
+											route_arc.end_point := to_position (line, 2);
+											
+										elsif kw = keyword_center then -- center x 22.3 y 23.3
+											expect_field_count (line, 5);
+
+											-- extract the center position starting at field 2 of line
+											route_arc.center := to_position (line, 2);
+
+										elsif kw = keyword_layer then -- layer 2
+											expect_field_count (line, 2);
+											route_arc.layer := et_pcb.to_signal_layer (f (line, 2));
+
+										elsif kw = keyword_width then -- width 0.5
+											expect_field_count (line, 2);
+											route_arc.width := et_pcb_coordinates.to_distance (f (line, 2));
+											
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+
+
+								when SEC_POLYGON =>
+									declare
+										kw : string := f (line, 1);
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_priority then -- priority 2
+											expect_field_count (line, 2);
+											route_polygon.priority_level := et_pcb.to_polygon_priority (f (line, 2));
+
+										elsif kw = keyword_isolation then -- isolation 0.5
+											expect_field_count (line, 2);
+											route_polygon.isolation_gap := et_pcb_coordinates.to_distance (f (line, 2));
+											
+										elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
+											expect_field_count (line, 2);
+											route_polygon.corner_easing := et_pcb.to_corner_easing (f (line, 2));
+
+										elsif kw = keyword_easing_radius then -- easing_radius 0.3
+											expect_field_count (line, 2);
+											route_polygon.easing_radius := et_pcb_coordinates.to_distance (f (line, 2));
+
+										elsif kw = keyword_fill_style then -- fill_style solid,hatched,cutout
+											expect_field_count (line, 2);
+											route_polygon.fill_style := et_pcb.to_fill_style (f (line, 2));
+
+										elsif kw = keyword_hatching_line_width then -- hatching_line_width 1
+											expect_field_count (line, 2);
+											route_polygon.hatching_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+
+										elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 1
+											expect_field_count (line, 2);
+											route_polygon.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
+
+										elsif kw = keyword_layer then -- layer 2
+											expect_field_count (line, 2);
+											route_polygon.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
+
+											-- 											
+-- 										else
+-- 											invalid_keyword (kw);
+										end if;
+									end;
+
+
+								when SEC_VIA => null;
 
 								when others => invalid_section;
 							end case;
