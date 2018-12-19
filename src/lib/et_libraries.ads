@@ -1031,6 +1031,8 @@ package et_libraries is
 	frame_template_name_length_max : constant positive := 300;
 	package type_frame_template_name is new generic_bounded_length (frame_template_name_length_max);
 
+	function to_string (name : in type_frame_template_name.bounded_string) return string;
+	function to_template_name (name : in string) return type_frame_template_name.bounded_string;
 	
     type type_title_block_line is record
 		coordinates_start : et_coordinates.type_2d_point;

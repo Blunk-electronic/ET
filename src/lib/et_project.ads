@@ -331,7 +331,7 @@ package et_project is
 	keyword_vertical				: constant string := "vertical";		
 	keyword_hidden					: constant string := "hidden";		
 	keyword_sheet					: constant string := "sheet";
-	keyword_path					: constant string := "path";	
+	--keyword_path					: constant string := "path";	
 	keyword_position_in_board		: constant string := "position_in_board";
 	keyword_view_mode				: constant string := "view_mode";
 	keyword_reference_offset		: constant string := "reference_offset";	

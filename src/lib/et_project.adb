@@ -1409,17 +1409,18 @@ package body et_project is
 		end query_devices;
 
 		procedure query_frames is		
-			-- CS: handle sheet description 
 			use et_libraries;
 			use type_frame_template_name;
 		begin
 			section_mark (section_drawing_frames, HEADER);
 			section_mark (section_schematic, HEADER);			
-			write (keyword => keyword_template, parameters => to_string (et_schematic.module.frame_template_schematic));
+			write (keyword => keyword_template, parameters => et_libraries.to_string (et_schematic.module.frame_template_schematic));
+			-- CS frame count ?
+			-- CS description ?
 			section_mark (section_schematic, FOOTER);			
 
 			section_mark (section_board, HEADER);			
-			write (keyword => keyword_template, parameters => to_string (et_schematic.module.frame_template_board));
+			write (keyword => keyword_template, parameters => et_libraries.to_string (et_schematic.module.frame_template_board));
 			section_mark (section_board, FOOTER);			
 			section_mark (section_drawing_frames, FOOTER);
 		end query_frames;
@@ -2957,8 +2958,13 @@ package body et_project is
 			route_polygon_thermal_gap		: et_pcb.type_polygon_thermal_gap := et_pcb.type_polygon_thermal_gap'first;
 			route_polygon_solid_technology	: et_pcb.type_polygon_pad_technology := et_pcb.type_polygon_pad_technology'first;
 
-			polygon_corner_point : et_pcb_coordinates.type_point_2d;
-			polygon_corner_points : et_pcb.type_polygon_points.set;
+			polygon_corner_point	: et_pcb_coordinates.type_point_2d;
+			polygon_corner_points	: et_pcb.type_polygon_points.set;
+
+			frame_template_schematic	: et_libraries.type_frame_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_1.frm
+			-- CS frame_count_schematic		: et_coordinates.type_submodule_sheet_number := et_coordinates.type_submodule_sheet_number'first; -- 10 frames
+			frame_template_board		: et_libraries.type_frame_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_2.frm
+
 
 			procedure reset_polygon_parameters is 
 				use et_pcb;
@@ -3077,6 +3083,21 @@ package body et_project is
 						
 					end insert_submodule;
 					
+					procedure set_frame_schematic (
+						module_name	: in et_coordinates.type_submodule_name.bounded_string;
+						module		: in out et_schematic.type_module) is
+					begin
+						log ("drawing frame schematic " & et_libraries.to_string (frame_template_schematic), log_threshold + 2);
+						module.frame_template_schematic := frame_template_schematic;
+					end set_frame_schematic;
+					
+					procedure set_frame_board (
+						module_name	: in et_coordinates.type_submodule_name.bounded_string;
+						module		: in out et_schematic.type_module) is
+					begin
+						log ("drawing frame board " & et_libraries.to_string (frame_template_board), log_threshold + 2);
+						module.frame_template_board := frame_template_board;
+					end set_frame_board;
 
 					
 				begin -- execute_section
@@ -3349,6 +3370,28 @@ package body et_project is
 
 								when others => invalid_section;
 							end case;
+
+						when SEC_DRAWING_FRAMES =>
+							case stack.current is
+								when SEC_SCHEMATIC =>
+
+									-- set schematic frame template
+									update_element (
+										container	=> modules,
+										position	=> module_cursor,
+										process		=> set_frame_schematic'access);
+
+								when SEC_BOARD =>
+
+									-- set board/layout frame template
+									update_element (
+										container	=> modules,
+										position	=> module_cursor,
+										process		=> set_frame_board'access);
+									
+								when others => invalid_section;
+							end case;
+
 							
 						when others => null; -- CS
 					end case;
@@ -3457,6 +3500,7 @@ package body et_project is
 								when SEC_TEXTS => null; -- nothing to do
 								when SEC_DEVICES => null; -- nothing to do
 								when SEC_SUBMODULES => null; -- nothing to do
+								when SEC_DRAWING_FRAMES => null; -- nothing to do									
 								when SEC_BOARD => null; -- nothing to do
 								when others => invalid_section;
 							end case;
@@ -3968,8 +4012,41 @@ package body et_project is
 							end case;
 							
 						when SEC_DRAWING_FRAMES =>
-							NULL;
+							case stack.current is
+								when SEC_SCHEMATIC =>
+									declare
+										kw : string := f (line, 1);
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_template then -- template $ET_FRAMES/drawing_frame_version_1.frm
+											expect_field_count (line, 2);
+											frame_template_schematic := et_libraries.to_template_name (f (line, 2));
 
+										--elsif kw = keyword_count then -- count 8
+										--	expect_field_count (line, 2);
+
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+
+								when SEC_BOARD =>
+									declare
+										kw : string := f (line, 1);
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_template then -- template $ET_FRAMES/drawing_frame_version_2.frm
+											expect_field_count (line, 2);
+											frame_template_board := et_libraries.to_template_name (f (line, 2));
+
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+
+								when others => invalid_section;
+							end case;
+								
 						when SEC_TEXTS =>
 							NULL;
 							
