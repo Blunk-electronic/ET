@@ -113,12 +113,11 @@
 
 [SUBMODULES BEGIN]
 	[SUBMODULE BEGIN]
-		path $ET_TEMPLATES/motor_driver.et
-		name stepper_driver
+		name stepper_driver_1
+		file $ET_TEMPLATES/motor_driver.mod
 		position sheet 3 x 130 y 210
 		size x 50 y 60
-		position_in_board x 23 y 0.2
-		rotation 90.0
+		position_in_board x 23 y 0.2 rotation 90.0
 		view_mode origin/instance
 		reference_offset 100, 1000 -> CS
 	[SUBMODULE END]
@@ -127,9 +126,9 @@
 [DRAWING_FRAMES BEGIN]
 	[SCHEMATIC BEGIN] 
 		template $ET_FRAMES/drawing_frame_version_1.frm 
-		count 8
-		description 1 "bla"
-		description 2 "blabl"
+		#count 8
+		#description 1 "bla"
+		#description 2 "blabl"
 	[SCHEMATIC END] 
 	
 	[BOARD BEGIN] 
