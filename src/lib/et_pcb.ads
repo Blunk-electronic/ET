@@ -582,6 +582,7 @@ package et_pcb is
 	text_polygon_pad_technology : constant string (1..15) := "connected_width";
 	
 	function to_string (polygon_pad_technology : in type_polygon_pad_technology) return string;
+	function to_pad_technology (technology : in string) return type_polygon_pad_technology;
 
 	-- A polygon in a signal layer is usually connected with a THT or SMD pads (or both) via thermals, solid (or not at all).
 	-- For this reason we define a controlled type here because some properties may exist (or may not exists) depending

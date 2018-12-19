@@ -2871,15 +2871,20 @@ package body et_project is
 			route_arc		: et_pcb.type_copper_arc_pcb;
 			route_via		: et_pcb.type_via;
 
--- 			route_polygon_priority_level	: et_pcb.type_polygon_priority := et_pcb.type_polygon_priority'first;
--- 			route_polygon_isolation_gap		: et_pcb.type_track_clearance := et_pcb.type_track_clearance'first;
 			route_polygon					: et_pcb.type_copper_polygon;
 			route_polygon_pad_connection	: et_pcb.type_polygon_pad_connection := et_pcb.type_polygon_pad_connection'first;
 			route_polygon_layer				: et_pcb.type_signal_layer;
+			route_polygon_width_min			: et_pcb.type_track_width;
+
+			-- Use this for both thermal_technology and solid_technology:
 			route_polygon_pad_technology	: et_pcb.type_polygon_pad_technology := et_pcb.type_polygon_pad_technology'first;
+			
 			route_polygon_thermal_width		: et_pcb.type_polygon_thermal_width := et_pcb.type_polygon_thermal_width'first;
 			route_polygon_thermal_gap		: et_pcb.type_polygon_thermal_gap := et_pcb.type_polygon_thermal_gap'first;
 			route_polygon_solid_technology	: et_pcb.type_polygon_pad_technology := et_pcb.type_polygon_pad_technology'first;
+
+			polygon_corner_point : et_pcb_coordinates.type_point_2d;
+			polygon_corner_points : et_pcb.type_polygon_points.set;
 			
 			procedure process_line is 
 			-- CS: detect if section name is type_section_name_module
@@ -3534,7 +3539,6 @@ package body et_project is
 										end if;
 									end;
 
-
 								when SEC_ARC =>
 									declare
 										kw : string := f (line, 1);
@@ -3571,7 +3575,6 @@ package body et_project is
 										end if;
 									end;
 
-
 								when SEC_POLYGON =>
 									declare
 										kw : string := f (line, 1);
@@ -3607,17 +3610,95 @@ package body et_project is
 
 										elsif kw = keyword_layer then -- layer 2
 											expect_field_count (line, 2);
-											route_polygon.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
+											route_polygon_layer := et_pcb.to_signal_layer (f (line, 2));
 
-											-- 											
--- 										else
--- 											invalid_keyword (kw);
+										elsif kw = keyword_min_width then -- min_width 0.3
+											expect_field_count (line, 2);
+											route_polygon_width_min := et_pcb_coordinates.to_distance (f (line, 2));
+
+										elsif kw = keyword_pad_technology then -- pad_technology smt_only/tht_only/smt_and_tht
+											expect_field_count (line, 2);
+											route_polygon_pad_technology := et_pcb.to_pad_technology (f (line, 2));
+
+										elsif kw = keyword_thermal_width then -- thermal_width 0.3
+											expect_field_count (line, 2);
+											route_polygon_thermal_width := et_pcb_coordinates.to_distance (f (line, 2));
+
+										elsif kw = keyword_thermal_gap then -- thermal_gap 0.7
+											expect_field_count (line, 2);
+											route_polygon_thermal_gap := et_pcb_coordinates.to_distance (f (line, 2));
+
+										else
+											invalid_keyword (kw);
 										end if;
 									end;
 
-
 								when SEC_VIA => null;
+									declare
+										kw : string := f (line, 1);
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_position then -- position x 22.3 y 23.3
+											expect_field_count (line, 5);
 
+											-- extract the position starting at field 2 of line
+											route_via.position := to_position (line, 2);
+
+										elsif kw = keyword_diameter then -- diameter 0.35
+											expect_field_count (line, 2);
+											route_via.diameter := et_pcb_coordinates.to_distance (f (line, 2));
+
+										elsif kw = keyword_restring_outer_layers then -- restring_outer_layers 0.3
+											expect_field_count (line, 2);
+											route_via.restring_outer := et_pcb_coordinates.to_distance (f (line, 2));
+
+										elsif kw = keyword_restring_inner_layers then -- restring_inner_layers 0.34
+											expect_field_count (line, 2);
+											route_via.restring_inner := et_pcb_coordinates.to_distance (f (line, 2));
+
+										elsif kw = keyword_layer_start then -- layer_start 1
+											expect_field_count (line, 2);
+											route_via.layer_start := et_pcb.to_signal_layer (f (line, 2));
+
+										elsif kw = keyword_layer_end then -- layer_end 15
+											expect_field_count (line, 2);
+											route_via.layer_end := et_pcb.to_signal_layer (f (line, 2));
+											
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+
+								when others => invalid_section;
+							end case;
+
+						when SEC_POLYGON =>
+							case stack.current is
+								when SEC_CORNERS =>
+									declare
+										kw : string := f (line, 1);
+									begin
+										-- read corner points
+										-- NOTE: A corner point is defined by a single line.
+										-- Upon reading the line like "position x 4 y 4" the point is
+										-- appended to the corner point collection immediately here. See procdure
+										-- execute_section.
+										-- There is no section for a single corner like [CORNER BEGIN].
+										
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_position then -- position x 123.54 y 2.7
+											expect_field_count (line, 5);
+
+											-- extract corner coordinates from line starting at field 2
+											polygon_corner_point := to_position (line, 2);
+
+											-- insert the corner point in collection of corner points
+											et_pcb.type_polygon_points.insert (polygon_corner_points, polygon_corner_point);
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+									
 								when others => invalid_section;
 							end case;
 							
