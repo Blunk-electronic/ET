@@ -371,6 +371,7 @@ package et_schematic is
 		);
 
 	function to_string (view : in type_submodule_view_mode) return string;
+	function to_view_mode (mode : in string) return type_submodule_view_mode;
 	
 	type type_submodule is record
 		name  				: et_coordinates.type_submodule_name.bounded_string;	-- MOT_DRV_3 (will be the net prefix later on)
@@ -389,7 +390,7 @@ package et_schematic is
 -- 		element_type	=> type_submodule);
 
 	package type_submodules is new ordered_maps (
-		key_type		=> type_submodule_path.bounded_string, -- $ET_TEMPLATES/motor_driver.et
+		key_type		=> type_submodule_path.bounded_string, -- $ET_TEMPLATES/motor_driver.mod
 		"<" 			=> type_submodule_path."<",
 		element_type	=> type_submodule);
 

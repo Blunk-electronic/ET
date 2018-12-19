@@ -874,10 +874,13 @@ package body et_libraries is
 		end if;
 	end check_prefix_characters;
 
-	function to_string (ref_id : in type_component_reference_id) return string is
-	begin
+	function to_string (ref_id : in type_component_reference_id) return string is begin
 		return latin_1.space & type_component_reference_id'image (ref_id);
 	end to_string;
+
+	function to_reference_id (ref_id : in string) return type_component_reference_id is begin
+		return type_component_reference_id'value (ref_id);
+	end to_reference_id;
 	
 	function to_string (
 		appearance	: in type_component_appearance;

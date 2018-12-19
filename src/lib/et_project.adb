@@ -1438,8 +1438,14 @@ package body et_project is
 				write (keyword => keyword_size, parameters => 
 					space & keyword_pos_x & to_string (element (submodule_cursor).size.x) &
 					space & keyword_pos_y & to_string (element (submodule_cursor).size.y)); -- size x 50 y 70
-				write (keyword => keyword_position_in_board, parameters => position (element (submodule_cursor).position_in_board));
-				write (keyword => keyword_rotation, parameters => rotation (element (submodule_cursor).position_in_board));
+				
+-- 				write (keyword => keyword_position_in_board, parameters => position (element (submodule_cursor).position_in_board));
+-- 				write (keyword => keyword_rotation, parameters => rotation (element (submodule_cursor).position_in_board));
+				
+				write (keyword => keyword_position_in_board, parameters => -- position_in_board x 23 y 0.2 rotation 90.0
+					position (element (submodule_cursor).position_in_board) & space -- x 23 y 0.2
+					& keyword_rotation & space & rotation (element (submodule_cursor).position_in_board)); -- rotation 90.0
+
 				write (keyword => keyword_view_mode, parameters => to_string (element (submodule_cursor).view_mode));
 				write (keyword => keyword_reference_offset, parameters => et_libraries.to_string (element (submodule_cursor).reference_offset));
 				section_mark (section_submodule, FOOTER);				
@@ -2720,7 +2726,7 @@ package body et_project is
 				item	=> type_section_name_module,
 				max 	=> max_section_depth);
 
-			function to_position ( -- CS combine with next function to_position using the tag test ?									 
+			function to_position ( -- CS combine with next function to_position using the tag test ?
 				line : in type_fields_of_line; -- "start x 3 y 4" or "position x 44.5 y 53.5"
 				from : in positive)
 				return et_coordinates.type_2d_point is
@@ -2788,8 +2794,40 @@ package body et_project is
 				return point;
 			end to_position;
 
+			function to_size (
+				line : in type_fields_of_line; -- "size x 30 y 40"
+				from : in positive)
+				return et_schematic.type_submodule_size is
+				use et_coordinates;
+				
+				size : et_schematic.type_submodule_size; -- to be returned
 
-			function to_position (
+				place : positive := from; -- the field being read from given line
+
+				-- CS: flags to detect missing x or y
+			begin
+				while place <= positive (field_count (line)) loop
+
+					-- We expect after the x the corresponding value for x
+					if f (line, place) = keyword_pos_x then
+						size.x := to_distance (f (line, place + 1));
+
+					-- We expect after the y the corresponding value for y
+					elsif f (line, place) = keyword_pos_y then
+						size.y := to_distance (f (line, place + 1));
+
+					else
+						invalid_keyword (f (line, place));
+					end if;
+						
+					place := place + 2;
+				end loop;
+				
+				return size;
+			end to_size;
+
+			
+			function to_position ( -- CS combine with next function to_position using the tag test ?
 			-- Returns a type_point_2d in the the layout.
 				line : in type_fields_of_line; -- "start x 44.5 y 53.5"
 				from : in positive)
@@ -2822,6 +2860,44 @@ package body et_project is
 				return point;
 			end to_position;
 				
+			function to_position (
+			-- Returns a type_submodule_position in the the layout.
+				line : in type_fields_of_line; -- "x 23 y 0.2 rotation 90.0"
+				from : in positive)
+				return et_pcb_coordinates.type_submodule_position is
+				use et_pcb_coordinates;
+				
+				point : type_submodule_position; -- to be returned
+
+				place : positive := from; -- the field being read from given line
+
+				-- CS: flags to detect missing sheet, x or y
+			begin
+				while place <= positive (field_count (line)) loop
+
+					-- We expect after the x the corresponding value for x
+					if f (line, place) = keyword_pos_x then
+						set_point (point => point, axis => X, value => to_distance (f (line, place + 1)));
+
+					-- We expect after the y the corresponding value for y
+					elsif f (line, place) = keyword_pos_y then
+						set_point (point => point, axis => Y, value => to_distance (f (line, place + 1)));
+
+					-- We expect after "rotation" the corresponding value for the rotation
+					elsif f (line, place) = keyword_rotation then
+						set_angle (point => point, value => to_angle (f (line, place + 1)));
+						
+					else
+						invalid_keyword (f (line, place));
+					end if;
+						
+					place := place + 2;
+				end loop;
+				
+				return point;
+			end to_position;
+
+
 			
 			-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 
@@ -2899,6 +2975,9 @@ package body et_project is
 				route_polygon_thermal_gap		:= type_polygon_thermal_gap'first;
 				route_polygon_solid_technology	:= type_polygon_pad_technology'first;
 			end reset_polygon_parameters;
+
+			submodule_path 	: et_schematic.type_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod
+			submodule		: et_schematic.type_submodule;
 			
 			procedure process_line is 
 			-- CS: detect if section name is type_section_name_module
@@ -3794,6 +3873,55 @@ package body et_project is
 									
 								when others => invalid_section;
 							end case;
+
+						when SEC_SUBMODULES =>
+							case stack.current is
+								when SEC_SUBMODULE =>
+									declare
+										kw : string := f (line, 1);
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_path then -- $ET_TEMPLATES/motor_driver.mod
+											expect_field_count (line, 2);
+											submodule_path := et_schematic.to_submodule_path (f (line, 2));
+
+										elsif kw = keyword_name then -- name stepper_driver
+											expect_field_count (line, 2);
+											submodule.name := et_coordinates.to_submodule_name (f (line, 2));
+
+										elsif kw = keyword_position then -- position sheet 3 x 130 y 210
+											expect_field_count (line, 7);
+
+											-- extract position of submodule starting at field 2
+											submodule.position := to_position (line, 2);
+
+										elsif kw = keyword_size then -- size x 30 y 30
+											expect_field_count (line, 5);
+
+											-- extract size of submodule starting at field 2
+											submodule.size := to_size (line, 2);
+
+										elsif kw = keyword_position_in_board then -- position_in_board x 23 y 0.2 rotation 90.0
+											expect_field_count (line, 7);
+
+											-- extract position of submodule starting at field 2
+											submodule.position_in_board := to_position (line, 2);
+
+										elsif kw = keyword_view_mode then -- view_mode origin/instance
+											expect_field_count (line, 2);
+											submodule.view_mode := et_schematic.to_view_mode (f (line, 2));
+
+										elsif kw = keyword_reference_offset then -- reference_offset 1000
+											expect_field_count (line, 2);
+											submodule.reference_offset := et_libraries.to_reference_id (f (line, 2));
+											
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+									
+								when others => invalid_section;
+							end case;
 							
 						when SEC_DRAWING_FRAMES =>
 							NULL;
@@ -3801,8 +3929,6 @@ package body et_project is
 						when SEC_TEXTS =>
 							NULL;
 							
-						when SEC_SUBMODULES =>
-							NULL;
 							
 						when SEC_DEVICES =>
 							NULL;

@@ -421,6 +421,7 @@ package et_libraries is
 	component_reference_id_default : constant type_component_reference_id := 0;
 
 	function to_string (ref_id : in type_component_reference_id) return string;
+	function to_reference_id (ref_id : in string) return type_component_reference_id;
 	
 	subtype type_component_reference_id_width is positive range positive'first .. 5; -- see number of digits of type_component_reference_id
 	
