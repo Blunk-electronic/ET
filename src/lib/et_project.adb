@@ -2866,15 +2866,16 @@ package body et_project is
 
 			net_submodule_port : et_schematic.type_port_submodule;
 			net_submodule_ports : et_schematic.type_ports_submodule.list;
-			
+
+			route			: et_pcb.type_route;
 			route_line 		: et_pcb.type_copper_line_pcb;
 			route_arc		: et_pcb.type_copper_arc_pcb;
 			route_via		: et_pcb.type_via;
 
 			route_polygon					: et_pcb.type_copper_polygon;
 			route_polygon_pad_connection	: et_pcb.type_polygon_pad_connection := et_pcb.type_polygon_pad_connection'first;
-			route_polygon_layer				: et_pcb.type_signal_layer;
-			route_polygon_width_min			: et_pcb.type_track_width;
+			route_polygon_layer				: et_pcb.type_signal_layer := et_pcb.type_signal_layer'first;
+			route_polygon_width_min			: et_pcb.type_track_width := et_pcb.type_track_width'first;
 
 			-- Use this for both thermal_technology and solid_technology:
 			route_polygon_pad_technology	: et_pcb.type_polygon_pad_technology := et_pcb.type_polygon_pad_technology'first;
@@ -2885,6 +2886,19 @@ package body et_project is
 
 			polygon_corner_point : et_pcb_coordinates.type_point_2d;
 			polygon_corner_points : et_pcb.type_polygon_points.set;
+
+			procedure reset_polygon_parameters is 
+				use et_pcb;
+			begin
+				route_polygon					:= (others => <>);
+				route_polygon_pad_connection	:= type_polygon_pad_connection'first;
+				route_polygon_layer				:= type_signal_layer'first;
+				route_polygon_width_min			:= type_track_width'first;
+				route_polygon_pad_technology	:= type_polygon_pad_technology'first;
+				route_polygon_thermal_width		:= type_polygon_thermal_width'first;
+				route_polygon_thermal_gap		:= type_polygon_thermal_gap'first;
+				route_polygon_solid_technology	:= type_polygon_pad_technology'first;
+			end reset_polygon_parameters;
 			
 			procedure process_line is 
 			-- CS: detect if section name is type_section_name_module
@@ -2992,7 +3006,10 @@ package body et_project is
 									et_schematic.type_strands.clear (strands); -- clean up for next strand collection
 
 								when SEC_ROUTE =>
-									null; -- CS
+
+									-- insert route in net
+									net.route := route;
+									route := (others => <>); -- clean up route for next net
 									
 								when others => invalid_section;
 							end case;
@@ -3133,6 +3150,82 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 							
+						when SEC_ROUTE =>
+							case stack.current is
+								when SEC_LINE =>
+
+									-- insert line in route.lines
+									et_pcb.type_copper_lines_pcb.append (route.lines, route_line);
+									route_line := (others => <>); -- clean up for next line
+
+								when SEC_ARC =>
+
+									-- insert arc in route.arcs
+									et_pcb.type_copper_arcs_pcb.append (route.arcs, route_arc);
+									route_arc := (others => <>); -- clean up for next arc
+
+								when SEC_VIA =>
+
+									-- insert via in route.vias
+									et_pcb.type_vias.append (route.vias, route_via);
+									route_via := (others => <>); -- clean up for next via
+
+								when SEC_POLYGON =>
+
+									-- insert polygon in route.polygons
+									-- The polygon type depends on the route_polygon_pad_connection:
+									
+									case route_polygon_pad_connection is
+										when et_pcb.THERMAL =>
+											et_pcb.type_copper_polygons_signal.append (
+												container	=> route.polygons,
+												new_item	=> (route_polygon with
+													layer				=> route_polygon_layer,
+													width_min			=> route_polygon_width_min,
+													pad_connection		=> et_pcb.THERMAL,
+													thermal_technology	=> route_polygon_pad_technology,
+													thermal_width		=> route_polygon_width_min,
+													thermal_gap			=> route_polygon_thermal_gap));
+
+										when et_pcb.SOLID =>
+											et_pcb.type_copper_polygons_signal.append (
+												container	=> route.polygons,
+												new_item	=> (route_polygon with
+													layer				=> route_polygon_layer,
+													width_min			=> route_polygon_width_min,
+													pad_connection		=> et_pcb.SOLID,
+													solid_technology	=> route_polygon_pad_technology));
+
+											-- CS warn about ignored parameters
+											
+										when et_pcb.NONE =>
+											et_pcb.type_copper_polygons_signal.append (
+												container	=> route.polygons,
+												new_item	=> (route_polygon with
+													layer				=> route_polygon_layer,
+													width_min			=> route_polygon_width_min,
+													pad_connection		=> et_pcb.NONE));
+
+											-- CS warn about ignored parameters
+									end case;
+
+									reset_polygon_parameters; -- clean up for next polygon
+
+								when others => invalid_section;
+							end case;
+
+						when SEC_POLYGON =>
+							case stack.current is
+								when SEC_CORNERS =>
+
+									-- insert collection of polygon corner points in polygon
+									route_polygon.points := polygon_corner_points;
+
+									-- clean up for next collection of corner points (of another polygon).
+									et_pcb.type_polygon_points.clear (polygon_corner_points);
+									
+								when others => invalid_section;
+							end case;
 							
 						when others => null; -- CS
 					end case;
