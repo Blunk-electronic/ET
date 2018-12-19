@@ -374,7 +374,8 @@ package et_schematic is
 	function to_view_mode (mode : in string) return type_submodule_view_mode;
 	
 	type type_submodule is record
-		name  				: et_coordinates.type_submodule_name.bounded_string;	-- MOT_DRV_3 (will be the net prefix later on)
+		-- name  				: et_coordinates.type_submodule_name.bounded_string;	-- MOT_DRV_3 (will be the net prefix later on)
+		file				: type_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod		
         --text_size_path		: et_libraries.type_text_size; -- CS no need, should be sized automatically by the GUI
         --text_size_instance	: et_libraries.type_text_size; -- CS no need, should be sized automatically by the GUI
 		position		    : et_coordinates.type_coordinates;
@@ -390,8 +391,9 @@ package et_schematic is
 -- 		element_type	=> type_submodule);
 
 	package type_submodules is new ordered_maps (
-		key_type		=> type_submodule_path.bounded_string, -- $ET_TEMPLATES/motor_driver.mod
-		"<" 			=> type_submodule_path."<",
+		--key_type		=> type_submodule_path.bounded_string, -- $ET_TEMPLATES/motor_driver.mod
+		key_type		=> et_coordinates.type_submodule_name.bounded_string, -- MOT_DRV_3 (will be the net prefix later on)													
+		"<" 			=> et_coordinates.type_submodule_name."<",
 		element_type	=> type_submodule);
 
 -- MODULE

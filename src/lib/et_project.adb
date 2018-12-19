@@ -1432,8 +1432,9 @@ package body et_project is
 			section_mark (section_submodules, HEADER);
 			while submodule_cursor /= type_submodules.no_element loop
 				section_mark (section_submodule, HEADER);
-				write (keyword => keyword_name, space => true, parameters => type_submodule_path.to_string (key (submodule_cursor)));
-				write (keyword => keyword_path, space => true, parameters => type_submodule_name.to_string (element (submodule_cursor).name));
+				write (keyword => keyword_name, space => true, parameters => type_submodule_name.to_string (key (submodule_cursor))); -- name stepper_driver_1
+				write (keyword => keyword_file, space => true, parameters => type_submodule_path.to_string (element (submodule_cursor).file)); -- file $ET_TEMPLATES/motor_driver.mod
+
 				write (keyword => keyword_position, parameters => position (element (submodule_cursor).position));
 				write (keyword => keyword_size, parameters => 
 					space & keyword_pos_x & to_string (element (submodule_cursor).size.x) &
@@ -2918,10 +2919,6 @@ package body et_project is
 			net_name	: et_schematic.type_net_name.bounded_string; -- motor_on_off
 			net			: et_schematic.type_net;
 
-			procedure reset_net is begin
-				net := (others => <>);
-			end reset_net;
-
 			strands : et_schematic.type_strands.list;
 			strand	: et_schematic.type_strand;
 			net_segments : et_schematic.type_net_segments.list;
@@ -2976,7 +2973,7 @@ package body et_project is
 				route_polygon_solid_technology	:= type_polygon_pad_technology'first;
 			end reset_polygon_parameters;
 
-			submodule_path 	: et_schematic.type_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod
+			submodule_name 	: et_coordinates.type_submodule_name.bounded_string; -- MOT_DRV_3
 			submodule		: et_schematic.type_submodule;
 			
 			procedure process_line is 
@@ -3042,7 +3039,9 @@ package body et_project is
 							raise constraint_error;
 						end if;
 
-						reset_net; -- clean up for next net
+						-- clean up for next net
+						net_name := to_net_name ("");
+						net := (others => <>);
 						
 					end insert_net;
 					
@@ -3053,17 +3052,17 @@ package body et_project is
 						inserted : boolean;
 						cursor : type_submodules.cursor;
 					begin -- insert_submodule
-						--log ("submodule " & to_string (net_name), log_threshold + 2);
+						log ("submodule " & to_string (submodule_name), log_threshold + 2);
 
 						-- CS: notify about missing parameters (by reading the parameter-found-flags)
-						-- If a parameter is missing, the default is assumed. See type_net spec.
--- 						
--- 						type_nets.insert (
--- 							container	=> module.submodules,
--- 							key			=> submodule_name,
--- 							new_item	=> submodule,
--- 							inserted	=> inserted,
--- 							position	=> cursor);
+						-- If a parameter is missing, the default is assumed. See type_submodule spec.
+						
+						type_submodules.insert (
+							container	=> module.submodules,
+							key			=> submodule_name,
+							new_item	=> submodule,
+							inserted	=> inserted,
+							position	=> cursor);
 
 						if not inserted then
 							log_indentation_reset;
@@ -3072,7 +3071,9 @@ package body et_project is
 							raise constraint_error;
 						end if;
 
-						--reset_net; -- clean up for next net
+						-- clean up for next submodule
+						submodule_name := to_submodule_name ("");
+						submodule := (others => <>);
 						
 					end insert_submodule;
 					
@@ -3924,13 +3925,13 @@ package body et_project is
 										kw : string := f (line, 1);
 									begin
 										-- CS: In the following: set a corresponding parameter-found-flag
-										if kw = keyword_path then -- $ET_TEMPLATES/motor_driver.mod
+										if kw = keyword_file then -- file $ET_TEMPLATES/motor_driver.mod
 											expect_field_count (line, 2);
-											submodule_path := et_schematic.to_submodule_path (f (line, 2));
+											submodule.file := et_schematic.to_submodule_path (f (line, 2));
 
 										elsif kw = keyword_name then -- name stepper_driver
 											expect_field_count (line, 2);
-											submodule.name := et_coordinates.to_submodule_name (f (line, 2));
+											submodule_name := et_coordinates.to_submodule_name (f (line, 2));
 
 										elsif kw = keyword_position then -- position sheet 3 x 130 y 210
 											expect_field_count (line, 7);
