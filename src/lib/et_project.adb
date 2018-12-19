@@ -3046,6 +3046,36 @@ package body et_project is
 						
 					end insert_net;
 					
+					procedure insert_submodule (
+						module_name	: in et_coordinates.type_submodule_name.bounded_string;
+						module		: in out et_schematic.type_module) is
+						use et_schematic;
+						inserted : boolean;
+						cursor : type_submodules.cursor;
+					begin -- insert_submodule
+						--log ("submodule " & to_string (net_name), log_threshold + 2);
+
+						-- CS: notify about missing parameters (by reading the parameter-found-flags)
+						-- If a parameter is missing, the default is assumed. See type_net spec.
+-- 						
+-- 						type_nets.insert (
+-- 							container	=> module.submodules,
+-- 							key			=> submodule_name,
+-- 							new_item	=> submodule,
+-- 							inserted	=> inserted,
+-- 							position	=> cursor);
+
+						if not inserted then
+							log_indentation_reset;
+							log (message_error & "submodule '" & to_string (submodule_name) 
+								 & "' already exists !", console => true);
+							raise constraint_error;
+						end if;
+
+						--reset_net; -- clean up for next net
+						
+					end insert_submodule;
+					
 
 					
 				begin -- execute_section
@@ -3303,6 +3333,19 @@ package body et_project is
 									-- clean up for next collection of corner points (of another polygon).
 									et_pcb.type_polygon_points.clear (polygon_corner_points);
 									
+								when others => invalid_section;
+							end case;
+
+						when SEC_SUBMODULES =>
+							case stack.current is
+								when SEC_SUBMODULE =>
+
+									-- insert submodule
+									update_element (
+										container	=> modules,
+										position	=> module_cursor,
+										process		=> insert_submodule'access);
+
 								when others => invalid_section;
 							end case;
 							
