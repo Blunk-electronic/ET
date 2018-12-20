@@ -224,6 +224,7 @@ package et_pcb is
 	type type_text_meaning_package is (REFERENCE, VALUE, PURPOSE);
 
 	function to_string (text_meaning : in type_text_meaning_package) return string;
+	function to_text_meaning (text_meaning : in string) return type_text_meaning_package;
 	
 	type type_text_placeholder_package is new type_text with record
 		meaning : type_text_meaning_package;

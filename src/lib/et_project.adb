@@ -366,11 +366,14 @@ package body et_project is
 	procedure write_text_properties (text : in et_pcb.type_text'class) is
 		use et_pcb_coordinates;
 	begin
-		write (keyword => keyword_position, parameters => position (text.position));
+-- 		write (keyword => keyword_position, parameters => position (text.position));
+-- 		write (keyword => keyword_rotation, parameters => to_string (text.angle));
+		write (keyword => keyword_position, parameters => position (text.position) & space &
+			keyword_rotation & to_string (text.angle));
+		
 		write (keyword => keyword_size, parameters => space & keyword_pos_x & to_string (text.size_x) 
 				& space & keyword_pos_y & to_string (text.size_y));
 		write (keyword => keyword_line_width, parameters => to_string (text.width));
-		write (keyword => keyword_rotation, parameters => to_string (text.angle));
 		write (keyword => keyword_alignment, parameters => space &
 				keyword_horizontal & et_libraries.to_string (text.alignment.horizontal) & space &
 				keyword_vertical   & et_libraries.to_string (text.alignment.vertical)
@@ -1391,10 +1394,16 @@ package body et_project is
 						write (keyword => keyword_bom     , parameters => et_libraries.to_string (element (device_cursor).bom));
 						
 						section_mark (section_package, HEADER);
-						write (keyword => keyword_position, parameters => position (element (device_cursor).position)); -- position in board !
-						write (keyword => keyword_rotation, parameters => rotation (element (device_cursor).position)); -- rotation in board !
-						write (keyword => keyword_face    , parameters => face (element (device_cursor).position));
+-- 						write (keyword => keyword_position, parameters => position (element (device_cursor).position)); -- position in board !
+-- 						write (keyword => keyword_rotation, parameters => rotation (element (device_cursor).position)); -- rotation in board !
+-- 						write (keyword => keyword_face    , parameters => face (element (device_cursor).position));
 
+						-- this is the position of the package in the layout:
+						write (keyword => keyword_position, parameters => -- position
+							position (element (device_cursor).position) & space & -- x 34.5 y 60.1
+							keyword_rotation & rotation (element (device_cursor).position) & space & -- rotation 180 
+							keyword_face & face (element (device_cursor).position)); -- face top/bottom
+						
 						query_element (device_cursor, query_placeholders'access);
 						section_mark (section_package, FOOTER);
 					when et_libraries.SCH => null;
@@ -2863,7 +2872,7 @@ package body et_project is
 			end to_position;
 				
 			function to_position (
-			-- Returns a type_submodule_position in the the layout.
+			-- Returns a type_submodule_position in the layout.
 				line : in type_fields_of_line; -- "x 23 y 0.2 rotation 90.0"
 				from : in positive)
 				return et_pcb_coordinates.type_submodule_position is
@@ -2899,6 +2908,47 @@ package body et_project is
 				return point;
 			end to_position;
 
+			function to_position (
+			-- Returns a type_package_position in the layout.
+				line : in type_fields_of_line; -- "position x 23 y 0.2 rotation 90.0 face top"
+				from : in positive)
+				return et_pcb_coordinates.type_package_position is
+				use et_pcb_coordinates;
+				
+				point : type_package_position; -- to be returned
+
+				place : positive := from; -- the field being read from given line
+
+				-- CS: flags to detect missing sheet, x or y
+			begin
+				while place <= positive (field_count (line)) loop
+
+					-- We expect after the x the corresponding value for x
+					if f (line, place) = keyword_pos_x then
+						set_point (point => point, axis => X, value => to_distance (f (line, place + 1)));
+
+					-- We expect after the y the corresponding value for y
+					elsif f (line, place) = keyword_pos_y then
+						set_point (point => point, axis => Y, value => to_distance (f (line, place + 1)));
+
+					-- We expect after "rotation" the corresponding value for the rotation
+					elsif f (line, place) = keyword_rotation then
+						set_angle (point => point, value => to_angle (f (line, place + 1)));
+
+					-- We expect after "face" the actual face (top/bottom)
+					elsif f (line, place) = keyword_face then
+						set_face (position => point, face => to_face (f (line, place + 1)));
+					else
+						invalid_keyword (f (line, place));
+					end if;
+						
+					place := place + 2;
+				end loop;
+				
+				return point;
+			end to_position;
+
+			
 			function to_alignment (
 				line : in type_fields_of_line; -- "alignment horizontal center vertical center"
 				from : in positive)
@@ -3016,6 +3066,24 @@ package body et_project is
 			submodule		: et_schematic.type_submodule;
 
 			note : et_schematic.type_text;
+
+			device_name				: et_libraries.type_component_reference; -- C12
+			device_model			: et_libraries.type_device_library_name.bounded_string; -- ../libraries/transistor/pnp.dev
+			device_value			: et_libraries.type_component_value.bounded_string; -- 470R
+			device_appearance		: et_schematic.type_appearance_schematic;
+			device_unit				: et_schematic.type_unit_base;
+			device_unit_purpose		: et_libraries.type_text_placeholder (meaning => et_libraries.purpose);
+			device_unit_partcode	: et_libraries.type_text_placeholder (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"
+			device_unit_bom			: et_libraries.type_text_placeholder (meaning => et_libraries.bom);
+			device_units			: et_schematic.type_units.map; -- PWR, A, B, ...
+			device_partcode			: et_libraries.type_component_partcode.bounded_string;
+			device_purpose			: et_libraries.type_component_purpose.bounded_string;
+			device_bom				: et_libraries.type_bom;
+			device_variant			: et_libraries.type_component_variant_name.bounded_string; -- D, N
+			device_position			: et_pcb_coordinates.type_package_position; -- incl. angle and face
+			device_text_placeholder	: et_pcb.type_text_placeholder_package;
+			device_text_placeholders: et_pcb.type_text_placeholders; -- silk screen, assy doc, top, bottom
+			
 			
 			procedure process_line is 
 			-- CS: detect if section name is type_section_name_module
@@ -4152,10 +4220,93 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 							
-							
 						when SEC_DEVICES =>
-							NULL;
+							case stack.current is
+								when SEC_DEVICE =>
+									declare
+										kw : string := f (line, 1);
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_name then -- name C12
+											expect_field_count (line, 2);
+											device_name := et_schematic.to_component_reference (f (line, 2));
 
+										elsif kw = keyword_appearance then -- sch_pcb, sch
+											expect_field_count (line, 2);
+											device_appearance := et_libraries.to_appearance (f (line, 2));
+											
+										elsif kw = keyword_value then -- value 100n
+											expect_field_count (line, 2);
+											device_value := et_libraries.to_value (f (line, 2));
+
+										elsif kw = keyword_model then -- model /models/capacitor.dev
+											expect_field_count (line, 2);
+											device_model := et_libraries.to_device_library_name (f (line, 2));
+											
+										elsif kw = keyword_variant then -- variant S_0805, N, D
+											expect_field_count (line, 2);
+											device_variant := et_libraries.to_component_variant_name (f (line, 2));
+
+										elsif kw = keyword_partcode then -- partcode LED_PAC_S_0805_VAL_red
+											expect_field_count (line, 2);
+											device_partcode := et_libraries.to_partcode (f (line, 2));
+
+										elsif kw = keyword_purpose then -- purpose power_out
+											expect_field_count (line, 2);
+											device_purpose := et_libraries.to_purpose (f (line, 2));
+
+										elsif kw = keyword_bom then -- bom yes/no
+											expect_field_count (line, 2);
+											device_bom := et_libraries.to_bom_status (f (line, 2));
+
+											
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+										
+								when others => invalid_section;
+							end case;
+
+						when SEC_DEVICE =>
+							case stack.current is
+								when SEC_PACKAGE =>
+									declare
+										kw : string := f (line, 1);
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_position then -- position x 163.500 y 92.500 rotation 0.00 face top
+											expect_field_count (line, 9);
+
+											-- extract package position starting at field 2
+											device_position := to_position (line, 2);
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+										
+								when others => invalid_section;
+							end case;
+
+						when SEC_PLACEHOLDERS =>
+							case stack.current is
+								when SEC_PLACEHOLDER =>
+									declare
+										kw : string := f (line, 1);
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_meaning then -- meaning reference, value, ...
+											expect_field_count (line, 2);
+											device_text_placeholder.meaning := et_pcb.to_text_meaning (f (line, 2));
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+										
+								when others => invalid_section;
+							end case;
+
+							
 						when SEC_BOARD =>
 							NULL;
 							

@@ -383,12 +383,14 @@ package body et_libraries is
 		return (type_component_generic_name.to_string (generic_name));
 	end to_string;
 
-	function to_string (partcode : in type_component_partcode.bounded_string) return string is
-	-- Returns the given partcode as string.
-	begin
+	function to_string (partcode : in type_component_partcode.bounded_string) return string is begin
 		return type_component_partcode.to_string (partcode);
 	end to_string;
 
+	function to_partcode (partcode : in string) return type_component_partcode.bounded_string is begin
+		return type_component_partcode.to_bounded_string (partcode);
+	end to_partcode;
+	
 	procedure check_partcode_length (partcode : in string) is
 	-- Tests if the given partcode is longer than allowed.
 		use et_string_processing;
@@ -919,6 +921,10 @@ package body et_libraries is
 		end if;
 	end to_string;
 
+	function to_appearance (appearance : in string) return type_component_appearance is begin
+		return type_component_appearance'value (appearance);
+	end to_appearance;
+
 	function to_string (unit_name : in type_unit_name.bounded_string) return string is
 	-- Returns the given unit name as string.
 	begin
@@ -942,12 +948,14 @@ package body et_libraries is
 		return latin_1.space & to_lower (type_unit_add_level'image (add_level));
 	end to_string;
 
-	function to_string (bom : in type_bom) return string is
-	-- Returns the given bom variable as string.	
-	begin
+	function to_string (bom : in type_bom) return string is begin
 		return latin_1.space & to_lower (type_bom'image (bom));
 	end to_string;
 
+	function to_bom_status (bom : in string) return type_bom is begin
+		return type_bom'value (bom);
+	end to_bom_status;
+	
 	procedure check_bom_characters (bom : in string) is
 	-- Checks if given string is a bom status. Case sensitive ! 
 		use et_string_processing;

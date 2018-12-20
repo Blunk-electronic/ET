@@ -54,7 +54,6 @@ with et_coordinates;
 with et_string_processing;
 
 package et_pcb_coordinates is
-
 	
 	type type_axis is (X, Y, Z);
 	subtype type_axis_2d is type_axis range X .. Y; -- CS use this type for all kinds of 2d ops
@@ -62,6 +61,7 @@ package et_pcb_coordinates is
 	type type_face is (TOP, BOTTOM);
 
 	function to_string (face : in type_face) return string;
+	function to_face (face : in string) return type_face;
 	
 	-- The total distance between two objects:
 	type type_distance_total is delta 0.001 range -100_000_000.00 .. 100_000_000.00; -- unit is metric millimeter

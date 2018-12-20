@@ -471,7 +471,7 @@ package et_libraries is
 		return string;
 	-- Returns the given component appearance as string.
 
-
+	function to_appearance (appearance : in string) return type_component_appearance;
 	
 -- COMPONENT VALUES
 	procedure validate_component_value (
@@ -546,7 +546,7 @@ package et_libraries is
 	package type_component_partcode is new generic_bounded_length (component_partcode_length_max);
 	
 	function to_string (partcode : in type_component_partcode.bounded_string) return string;
-	-- Returns the given partcode as string.
+	function to_partcode (partcode : in string) return type_component_partcode.bounded_string;
 
 	procedure check_partcode_length (partcode : in string);
 	-- Tests if the given partcode is longer than allowed.
@@ -836,7 +836,7 @@ package et_libraries is
 	type type_bom is (YES, NO); -- if a component is to be mounted or not
 
 	function to_string (bom : in type_bom) return string;
-	-- Returns the given bom variable as string.
+	function to_bom_status (bom : in string) return type_bom;
 
 	procedure check_bom_characters (bom : in string);
 	-- Checks if given string is a bom status. Case sensitive !

@@ -232,11 +232,14 @@ package body et_pcb is
 			;
 	end text_properties;
 	
-	function to_string (text_meaning : in type_text_meaning_package) return string is
-	begin
+	function to_string (text_meaning : in type_text_meaning_package) return string is begin
 		return latin_1.space & to_lower (type_text_meaning_package'image (text_meaning));
 	end to_string;
 
+	function to_text_meaning (text_meaning : in string) return type_text_meaning_package is begin
+		return type_text_meaning_package'value (text_meaning);
+	end to_text_meaning;
+	
 	function to_string (meaning : in type_text_meaning_copper) return string is
 	begin
 		return latin_1.space & to_lower (type_text_meaning_copper'image (meaning));
