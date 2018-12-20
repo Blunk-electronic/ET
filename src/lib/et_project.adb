@@ -1414,13 +1414,13 @@ package body et_project is
 		begin
 			section_mark (section_drawing_frames, HEADER);
 			section_mark (section_schematic, HEADER);			
-			write (keyword => keyword_template, parameters => et_libraries.to_string (et_schematic.module.frame_template_schematic));
+			write (keyword => keyword_template, space => true, parameters => et_libraries.to_string (et_schematic.module.frame_template_schematic));
 			-- CS frame count ?
 			-- CS description ?
 			section_mark (section_schematic, FOOTER);			
 
 			section_mark (section_board, HEADER);			
-			write (keyword => keyword_template, parameters => et_libraries.to_string (et_schematic.module.frame_template_board));
+			write (keyword => keyword_template, space => true, parameters => et_libraries.to_string (et_schematic.module.frame_template_board));
 			section_mark (section_board, FOOTER);			
 			section_mark (section_drawing_frames, FOOTER);
 		end query_frames;

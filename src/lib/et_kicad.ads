@@ -1368,7 +1368,13 @@ package et_kicad is
 		portlists			: type_portlists.map;				-- the portlists of the module (components with their ports)
 		netlist				: type_netlist.map;					-- net names and connected component ports (incl. position of port)
 		hierarchic_sheets	: type_hierarchic_sheets.map;		-- hierarchic sheets. Serve as interface between hierarchic sheets.
-        frames      		: type_frames.list;					-- schematic frames
+
+		-- CS Drawing frames: not completely modelled. Still under construction.
+		-- Thereis probably no need for a list of frames. Schematic has a single template for all sheets.
+		-- Layout also has a template. 
+		-- So the name of the templates for schematic and layout should suffice.
+		frames      		: type_frames.list;					-- schematic frames (of both schematic and layout)
+		
 		notes       		: et_schematic.type_texts.list;		-- notes
 	
 		sheet_headers		: type_sheet_headers.map;			-- the list of sheet headers

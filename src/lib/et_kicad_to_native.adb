@@ -2909,6 +2909,15 @@ package body et_kicad_to_native is
 			end loop;
 		end copy_nets;
 
+		procedure copy_frames is
+		-- Converts the kicad drawing frame templates (schematic and layout) to native templates.
+		-- CS: not completed yet.
+		-- For the time being the native module gets dummy templates assigned.
+		begin
+			et_schematic.module.frame_template_schematic := et_libraries.frame_template_name_dummy;
+			et_schematic.module.frame_template_board := et_libraries.frame_template_name_dummy;
+		end copy_frames;
+		
 		procedure copy_libraries (
 			module_name : in et_coordinates.type_submodule_name.bounded_string;
 			module		: in et_kicad.type_module) is
@@ -3415,7 +3424,7 @@ package body et_kicad_to_native is
 
 			copy_nets;
 			
-			-- CS copy frames
+			copy_frames; -- CS: not completed yet
 
 			-- Copy component libraries.
 			-- NOTE: In Kicad component libraries are always project dependend.
