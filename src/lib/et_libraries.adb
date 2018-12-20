@@ -163,16 +163,22 @@ package body et_libraries is
 	end to_text_style;
 	
 	-- TEXT ALIGNMENT
-	function to_string (alignment : in type_text_alignment_horizontal) return string is
-	begin
+	function to_string (alignment : in type_text_alignment_horizontal) return string is begin
 		return latin_1.space & to_lower (type_text_alignment_horizontal'image (alignment));
 	end to_string;
 
-	function to_string (alignment : in type_text_alignment_vertical) return string is
-	begin
+	function to_alignment_horizontal (alignment : in string) return type_text_alignment_horizontal is begin
+		return type_text_alignment_horizontal'value (alignment);
+	end to_alignment_horizontal;
+	
+	function to_string (alignment : in type_text_alignment_vertical) return string is begin
 		return latin_1.space & to_lower (type_text_alignment_vertical'image (alignment));
 	end to_string;
 
+	function to_alignment_vertical (alignment : in string) return type_text_alignment_vertical is begin
+		return type_text_alignment_vertical'value (alignment);
+	end to_alignment_vertical;
+	
 	function to_string (alignment : in type_text_alignment) return string is
 	begin
 		return " alignment (hor./vert.) "
@@ -664,10 +670,14 @@ package body et_libraries is
 		return type_placeholder_text_size'value (text);
 	end to_component_attribute_text_size;
 
-	function to_string (text_content : in type_text_content.bounded_string) return string is
-	begin
+	function to_string (text_content : in type_text_content.bounded_string) return string is begin
 		return type_text_content.to_string (text_content);
 	end to_string;
+
+	function to_content (content : in string) return type_text_content.bounded_string is begin
+		return type_text_content.to_bounded_string (content);
+	end to_content;
+
 	
 	procedure check_text_content_length (content : in string) is
 	-- Tests if the content is longer than allowed.

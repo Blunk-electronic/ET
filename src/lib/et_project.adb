@@ -2899,6 +2899,39 @@ package body et_project is
 				return point;
 			end to_position;
 
+			function to_alignment (
+				line : in type_fields_of_line; -- "alignment horizontal center vertical center"
+				from : in positive)
+				return et_libraries.type_text_alignment is
+				use et_libraries;
+				
+				alignment : type_text_alignment; -- to be returned
+
+				place : positive := from; -- the field being read from given line
+
+				-- CS: flags to detect missing sheet, x or y
+			begin
+				while place <= positive (field_count (line)) loop
+
+					-- We expect after the "horizontal" the horizontal alignment
+					if f (line, place) = keyword_horizontal then
+						alignment.horizontal := to_alignment_horizontal (f (line, place + 1));
+
+					-- We expect after the "vertical" the vertical alignment
+					elsif f (line, place) = keyword_vertical then
+						alignment.vertical := to_alignment_vertical (f (line, place + 1));
+						
+					else
+						invalid_keyword (f (line, place));
+					end if;
+						
+					place := place + 2;
+				end loop;
+				
+				return alignment;
+			end to_alignment;
+
+
 
 			
 			-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
@@ -2981,6 +3014,8 @@ package body et_project is
 
 			submodule_name 	: et_coordinates.type_submodule_name.bounded_string; -- MOT_DRV_3
 			submodule		: et_schematic.type_submodule;
+
+			note : et_schematic.type_text;
 			
 			procedure process_line is 
 			-- CS: detect if section name is type_section_name_module
@@ -3099,6 +3134,17 @@ package body et_project is
 						module.frame_template_board := frame_template_board;
 					end set_frame_board;
 
+					procedure insert_note (
+						module_name	: in et_coordinates.type_submodule_name.bounded_string;
+						module		: in out et_schematic.type_module) is
+					begin
+						-- append note to collection of notes
+						et_schematic.type_texts.append (module.texts, note);
+
+						-- clean up for next note
+						note := (others => <>);
+					end insert_note;
+					
 					
 				begin -- execute_section
 					case stack.parent is
@@ -3392,6 +3438,18 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
+						when SEC_TEXTS =>
+							case stack.current is
+								when SEC_TEXT =>
+
+									-- insert note
+									update_element (
+										container	=> modules,
+										position	=> module_cursor,
+										process		=> insert_note'access);
+									
+								when others => invalid_section;
+							end case;
 							
 						when others => null; -- CS
 					end case;
@@ -4048,7 +4106,51 @@ package body et_project is
 							end case;
 								
 						when SEC_TEXTS =>
-							NULL;
+							case stack.current is
+								when SEC_TEXT =>
+									declare
+										kw : string := f (line, 1);
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_position then -- position sheet 2 x 91.44 y 118.56
+											expect_field_count (line, 7);
+
+											-- extract position of note starting at field 2
+											note.coordinates := to_position (line, 2);
+
+										elsif kw = keyword_content then -- content "DUMMY TEXT IN CORE MODULE"
+											expect_field_count (line, 2); -- actual content in quotes !
+											note.content := et_libraries.to_content (f (line, 2));
+
+										elsif kw = keyword_size then -- size 1.4
+											expect_field_count (line, 2);
+											note.size := et_coordinates.to_distance (f (line, 2));
+
+										elsif kw = keyword_line_width then -- line_width 0.1
+											expect_field_count (line, 2);
+											note.line_width := et_coordinates.to_distance (f (line, 2));
+
+										elsif kw = keyword_rotation then -- rotation 90
+											expect_field_count (line, 2);
+											note.orientation := et_coordinates.to_angle (f (line, 2));
+
+										elsif kw = keyword_style then -- stlye normal/italic
+											expect_field_count (line, 2);
+											note.style := et_libraries.to_text_style (f (line, 2));
+
+										elsif kw = keyword_alignment then -- alignment horizontal center vertical center
+											expect_field_count (line, 5);
+
+											-- extract alignment starting at field 2
+											note.alignment := to_alignment (line, 2);
+											
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+
+								when others => invalid_section;
+							end case;
 							
 							
 						when SEC_DEVICES =>

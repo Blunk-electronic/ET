@@ -142,13 +142,15 @@ package et_libraries is
 	
 	type type_text_alignment_horizontal is (LEFT, CENTER, RIGHT);
 	function to_string (alignment : in type_text_alignment_horizontal) return string;
+	function to_alignment_horizontal (alignment : in string) return type_text_alignment_horizontal;
 	
 	type type_text_alignment_vertical is (TOP, CENTER, BOTTOM);
 	function to_string (alignment : in type_text_alignment_vertical) return string;
+	function to_alignment_vertical (alignment : in string) return type_text_alignment_vertical;
 	
 	type type_text_alignment is record
-		horizontal	: type_text_alignment_horizontal := center;
-		vertical	: type_text_alignment_vertical := center;
+		horizontal	: type_text_alignment_horizontal := CENTER;
+		vertical	: type_text_alignment_vertical := CENTER;
 	end record;
 
 	function to_string (alignment : in type_text_alignment) return string;
@@ -179,7 +181,6 @@ package et_libraries is
 	
 	-- These are basic properties a text has got:
 	type type_text_basic is tagged record
-		--position	: type_2d_point;
         size    	: type_text_size := text_size_default;
         style		: type_text_style := type_text_style'first;
         line_width	: type_text_line_width := type_text_line_width'first; -- CS: use a general type_line_width ?
@@ -193,6 +194,7 @@ package et_libraries is
 	package type_text_content is new generic_bounded_length (text_length_max); use type_text_content;
 
 	function to_string (text_content : in type_text_content.bounded_string) return string;
+	function to_content (content : in string) return type_text_content.bounded_string;
 	
 	procedure check_text_content_length (content : in string);
 	-- Tests if the content is not longer than allowed.
