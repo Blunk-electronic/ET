@@ -151,8 +151,7 @@
 		[UNITS BEGIN]
 			[UNIT BEGIN]
 				name 1
-				position sheet 2 x 130 y 210
-				rotation 45
+				position sheet 2 x 130 y 210 rotation 45 
 				mirrored no/x_axis/y_axis
 				[PLACEHOLDERS BEGIN] 
 					[PLACEHOLDER BEGIN] 
@@ -168,18 +167,14 @@
 		[UNITS END]
 
 		[PACKAGE BEGIN]
-			position x 34.5 y 60.1
-			rotation 180
-			face top/bottom
+			position x 34.5 y 60.1 rotation 180 face top/bottom
 
 			[PLACEHOLDERS BEGIN] 
 				[PLACEHOLDER BEGIN] 
-					meaning reference,value,purpose
+					meaning reference/value/purpose
 					layer documentation/silk_screen
-					position x 135 y 205
-					rotation 270
-					alignment
-					face top/bottom
+					position x 135 y 205 rotation 270 face top/bottom
+					alignment horizontal center vertical bottom
 					size x 2 y 2 
 					line_width 0.15
 					hidden yes/no
