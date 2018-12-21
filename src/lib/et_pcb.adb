@@ -239,9 +239,16 @@ package body et_pcb is
 	function to_text_meaning (text_meaning : in string) return type_text_meaning_package is begin
 		return type_text_meaning_package'value (text_meaning);
 	end to_text_meaning;
+
+	function to_string (layer : in type_placeholder_package_layer) return string is begin
+		return latin_1.space & to_lower (type_placeholder_package_layer'image (layer));
+	end to_string;
+
+	function to_layer (layer : in string) return type_placeholder_package_layer is begin
+		return type_placeholder_package_layer'value (layer);
+	end to_layer;
 	
-	function to_string (meaning : in type_text_meaning_copper) return string is
-	begin
+	function to_string (meaning : in type_text_meaning_copper) return string is begin
 		return latin_1.space & to_lower (type_text_meaning_copper'image (meaning));
 	end to_string;
 	

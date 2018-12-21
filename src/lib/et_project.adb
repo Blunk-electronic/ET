@@ -1354,24 +1354,39 @@ package body et_project is
 			end query_units;
 
 			procedure query_placeholders (device_name : in et_libraries.type_component_reference; device : in et_schematic.type_device) is
+				use et_pcb_coordinates;
 				use et_pcb;
 				use et_pcb.type_text_placeholders_package;
 				placeholder_cursor : type_text_placeholders_package.cursor;
 
+				face : et_pcb_coordinates.type_face;
+				layer : type_placeholder_package_layer;
+				
 				procedure write_placeholder (placeholder_cursor : in type_text_placeholders_package.cursor) is 
 				begin
 					section_mark (section_placeholder, HEADER);
+					write (keyword => keyword_layer, parameters => to_string (layer));
+					write (keyword => keyword_face, parameters => to_string (face));
 					write (keyword => keyword_meaning, parameters => to_string (element (placeholder_cursor).meaning));
 					write_text_properties (element (placeholder_cursor));
-					section_mark (section_placeholder, FOOTER);					
+					section_mark (section_placeholder, FOOTER);
 				end write_placeholder;
 				
 			begin -- query_placeholders
 				section_mark (section_placeholders, HEADER);
-				
+
+				layer := SILK_SCREEN;
+				face := TOP;
 				device.text_placeholders.silk_screen.top.iterate (write_placeholder'access);
+
+				face := BOTTOM;				
 				device.text_placeholders.silk_screen.bottom.iterate (write_placeholder'access);
+
+				layer := ASSEMBLY_DOCUMENTATION;
+				face := TOP;				
 				device.text_placeholders.assy_doc.top.iterate (write_placeholder'access);
+
+				face := BOTTOM;
 				device.text_placeholders.assy_doc.bottom.iterate (write_placeholder'access);
 				
 				section_mark (section_placeholders, FOOTER);				
@@ -1398,7 +1413,8 @@ package body et_project is
 -- 						write (keyword => keyword_rotation, parameters => rotation (element (device_cursor).position)); -- rotation in board !
 -- 						write (keyword => keyword_face    , parameters => face (element (device_cursor).position));
 
-						-- this is the position of the package in the layout:
+						-- This is the position of the package in the layout, 
+						-- written in a like like "position x 34.5 y 60.1 rotation 180 face top"
 						write (keyword => keyword_position, parameters => -- position
 							position (element (device_cursor).position) & space & -- x 34.5 y 60.1
 							keyword_rotation & rotation (element (device_cursor).position) & space & -- rotation 180 
@@ -1406,6 +1422,7 @@ package body et_project is
 						
 						query_element (device_cursor, query_placeholders'access);
 						section_mark (section_package, FOOTER);
+						
 					when et_libraries.SCH => null;
 				end case;
 
@@ -3081,8 +3098,10 @@ package body et_project is
 			device_bom				: et_libraries.type_bom;
 			device_variant			: et_libraries.type_component_variant_name.bounded_string; -- D, N
 			device_position			: et_pcb_coordinates.type_package_position; -- incl. angle and face
-			device_text_placeholder	: et_pcb.type_text_placeholder_package;
-			device_text_placeholders: et_pcb.type_text_placeholders; -- silk screen, assy doc, top, bottom
+			device_text_placeholder_layer	: et_pcb.type_placeholder_package_layer := et_pcb.type_placeholder_package_layer'first; -- silk_screen/assembly_documentation
+			device_text_placeholder_face	: et_pcb_coordinates.type_face := et_pcb_coordinates.type_face'first; -- top/bottom
+			device_text_placeholder			: et_pcb.type_text_placeholder_package;
+			device_text_placeholders		: et_pcb.type_text_placeholders; -- silk screen, assy doc, top, bottom
 			
 			
 			procedure process_line is 
@@ -4298,6 +4317,16 @@ package body et_project is
 										if kw = keyword_meaning then -- meaning reference, value, ...
 											expect_field_count (line, 2);
 											device_text_placeholder.meaning := et_pcb.to_text_meaning (f (line, 2));
+											
+										elsif kw = keyword_layer then -- layer silk_screen/assembly_documentation
+											expect_field_count (line, 2);
+											device_text_placeholder_layer := et_pcb.to_layer (f (line, 2));
+											
+										elsif kw = keyword_face then -- face top/bottom
+											expect_field_count (line, 2);
+											device_text_placeholder_face := et_pcb_coordinates.to_face (f (line, 2));
+											
+
 										else
 											invalid_keyword (kw);
 										end if;
@@ -4350,7 +4379,7 @@ package body et_project is
 				line := et_string_processing.read_line (
 					line 			=> get_line,
 					number			=> ada.text_io.line (current_input),
-					comment_mark 	=> et_string_processing.comment_mark, -- comments start with #
+					comment_mark 	=> comment_mark,
 					delimiter_wrap	=> true, -- strings are enclosed in quotations
 					ifs 			=> latin_1.space); -- fields are separated by space
 

@@ -233,7 +233,11 @@ package et_pcb is
 	-- There can be lots of placeholders of this kind. So they are stored in a list:	
 	package type_text_placeholders_package is new doubly_linked_lists (type_text_placeholder_package);
 
-
+	-- Placeholders for device name (or reference) and value can be placed in
+	-- silk screen or assembly documentation only:
+	type type_placeholder_package_layer is (SILK_SCREEN, ASSEMBLY_DOCUMENTATION);
+	function to_string (layer : in type_placeholder_package_layer) return string;
+	function to_layer (layer : in string) return type_placeholder_package_layer;
 	
 	-- A collection of text placeholders in silk screen and assembly documentation 
 	-- modelled by this type. It is used by a schematic module in order to

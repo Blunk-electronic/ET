@@ -56,7 +56,8 @@ with et_schematic;
 with et_pcb;
 
 package et_project is
-
+	comment_mark : constant string := ("--");
+	
 	-- after importing a foreign project, native ET projects are created here:
 	directory_import		: constant string (1..9)	:= "et_import";
 
