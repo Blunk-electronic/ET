@@ -4311,37 +4311,80 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
-						when SEC_PLACEHOLDERS =>
-							case stack.current is
-								when SEC_PLACEHOLDER =>
-									declare
-										kw : string := f (line, 1);
-									begin
-										-- CS: In the following: set a corresponding parameter-found-flag
-										if kw = keyword_meaning then -- meaning reference, value, ...
-											expect_field_count (line, 2);
-											device_text_placeholder.meaning := et_pcb.to_text_meaning (f (line, 2));
-											
-										elsif kw = keyword_layer then -- layer silk_screen/assembly_documentation
-											expect_field_count (line, 2);
-											device_text_placeholder_layer := et_pcb.to_layer (f (line, 2));
-											
-										elsif kw = keyword_face then -- face top/bottom
-											expect_field_count (line, 2);
-											device_text_placeholder_face := et_pcb_coordinates.to_face (f (line, 2));
-											
-
-										else
-											invalid_keyword (kw);
-										end if;
-									end;
-										
-								when others => invalid_section;
-							end case;
+-- 						when SEC_PLACEHOLDERS =>
+-- 							case stack.current is
+-- 								when SEC_PLACEHOLDER =>
+-- 									declare
+-- 										kw : string := f (line, 1);
+-- 									begin
+-- 										-- CS: In the following: set a corresponding parameter-found-flag
+-- 										if kw = keyword_meaning then -- meaning reference, value, ...
+-- 											expect_field_count (line, 2);
+-- 											device_text_placeholder.meaning := et_pcb.to_text_meaning (f (line, 2));
+-- 											
+-- 										elsif kw = keyword_layer then -- layer silk_screen/assembly_documentation
+-- 											expect_field_count (line, 2);
+-- 											device_text_placeholder_layer := et_pcb.to_layer (f (line, 2));
+-- 											
+-- 										elsif kw = keyword_face then -- face top/bottom
+-- 											expect_field_count (line, 2);
+-- 											device_text_placeholder_face := et_pcb_coordinates.to_face (f (line, 2));
+-- 											
+-- 
+-- 										else
+-- 											invalid_keyword (kw);
+-- 										end if;
+-- 									end;
+-- 										
+-- 								when others => invalid_section;
+-- 							end case;
 
 							
 						when SEC_BOARD =>
 							NULL;
+							
+						when others => null;
+					end case;
+
+					-------
+					case stack.current is
+						when SEC_PLACEHOLDER =>
+							case stack.parent is
+								when SEC_PLACEHOLDERS =>
+									case stack.parent (degree => 2) is
+										when SEC_PACKAGE =>
+											declare
+												kw : string := f (line, 1);
+											begin
+												-- CS: In the following: set a corresponding parameter-found-flag
+												if kw = keyword_meaning then -- meaning reference, value, ...
+													expect_field_count (line, 2);
+													device_text_placeholder.meaning := et_pcb.to_text_meaning (f (line, 2));
+													
+												elsif kw = keyword_layer then -- layer silk_screen/assembly_documentation
+													expect_field_count (line, 2);
+													device_text_placeholder_layer := et_pcb.to_layer (f (line, 2));
+													
+												elsif kw = keyword_face then -- face top/bottom
+													expect_field_count (line, 2);
+													device_text_placeholder_face := et_pcb_coordinates.to_face (f (line, 2));
+													
+												elsif kw = keyword_position then -- position x 0.000 y 5.555 rotation 0.00
+													expect_field_count (line, 2);
+													--device_text_placeholder.position := to_position.to_face (f (line, 2));
+
+												else
+													invalid_keyword (kw);
+												end if;
+											end;
+
+										when SEC_UNIT => null; -- CS
+
+										when others => invalid_section;
+									end case;
+									
+								when others => invalid_section;
+							end case;
 							
 						when others => null;
 					end case;
