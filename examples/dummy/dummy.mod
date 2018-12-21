@@ -1,6 +1,6 @@
-# SYSTEM ET module
-# date 2018-11-06T09:31:48
-# ======================================================================================================================================================
+-- SYSTEM ET module
+-- date 2018-11-06T09:31:48
+-- ======================================================================================================================================================
 
 [NET_CLASSES BEGIN]
 	[NET_CLASS BEGIN]
@@ -172,8 +172,9 @@
 			[PLACEHOLDERS BEGIN] 
 				[PLACEHOLDER BEGIN] 
 					meaning reference/value/purpose
-					layer documentation/silk_screen
-					position x 135 y 205 rotation 270 face top/bottom
+					layer assembly_documentation/silk_screen
+					position x 135 y 205 rotation 270 
+					face top/bottom
 					alignment horizontal center vertical bottom
 					size x 2 y 2 
 					line_width 0.15
@@ -525,6 +526,6 @@
 [BOARD_END]
 	
 
-# ======================================================================================================================================================
-# date 2018-11-06T09:31:48
-# module file end
+-- ======================================================================================================================================================
+-- date 2018-11-06T09:31:48
+-- module file end

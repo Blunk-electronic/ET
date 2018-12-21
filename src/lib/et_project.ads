@@ -563,7 +563,7 @@ package et_project is
 		procedure init;
 		function empty return boolean;
 		function current return item;
-		function parent return item;
+		function parent (degree : in natural := 1) return item;
 		
 	end stack_lifo;
 	

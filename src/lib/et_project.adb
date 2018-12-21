@@ -4836,9 +4836,10 @@ package body et_project is
 			return s (top);
 		end current;
 		
-		function parent return item is
+		function parent (degree : in natural := 1) return item is
 		begin
-			return s (top - 1);
+			--return s (top - 1);
+			return s (top - degree);
 		end parent;
 		
 	end stack_lifo;
