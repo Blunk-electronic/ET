@@ -8061,16 +8061,13 @@ package body et_kicad is
 					et_libraries.type_component_reference is
 					use et_libraries;
 					use type_component_prefix;
-					prefix_scratch : type_component_prefix.bounded_string := prefix (reference); -- #PWR
-					reference_out : et_libraries.type_component_reference; -- to be returned -- like PWR04
+					reference_out : et_libraries.type_component_reference := reference; -- to be returned -- like PWR04
 				begin
-					log ("renaming " & to_string (reference));
-					log ("length " & positive'image (length (prefix_scratch)));
-					prefix_scratch := to_bounded_string (slice (prefix_scratch, 2, length (prefix_scratch)));
-					log ("prefix new '" & type_component_prefix.to_string (prefix_scratch) & "'");
-					reference_out.prefix := prefix_scratch;
-
-					log (" to " & to_string (reference_out));
+					--log ("renaming " & to_string (reference_out));
+					--log ("length" & positive'image (length (reference_out.prefix)));
+					reference_out.prefix := to_bounded_string (slice (reference_out.prefix, 2, length (reference_out.prefix)));
+					--log ("prefix new '" & type_component_prefix.to_string (reference_out.prefix) & "'");
+					--log (" to " & to_string (reference_out));
 					return reference_out;
 				end remove_leading_hash;
 				

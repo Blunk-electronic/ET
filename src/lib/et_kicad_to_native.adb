@@ -2527,13 +2527,13 @@ package body et_kicad_to_native is
 				
 				-- depending on the appearance of the kicad component, we create a virtual or real 
 				-- component in the native schematic module.
-				-- Kicad stuff like power_flag is discarded.
+				-- Kicad stuff like the boolean power_flag is ignored.
 				case element (component_cursor_kicad).appearance is
 					when et_libraries.SCH =>
 						
 						et_schematic.type_devices.insert (
 							container	=> module.devices,
-							key			=> key (component_cursor_kicad), -- IC308, R12
+							key			=> key (component_cursor_kicad), -- PWR04, FLG01
 							position	=> component_cursor_native,
 							new_item	=> (
 								appearance			=> et_libraries.SCH,
