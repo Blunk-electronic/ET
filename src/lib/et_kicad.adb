@@ -8052,6 +8052,27 @@ package body et_kicad is
 					end if;
 
 				end full_name_of_component_library;
+
+
+				function remove_leading_hash (reference : in et_libraries.type_component_reference) return
+				-- Removes from a reference like #PWR04 the leading hash character.
+				-- CS: This function should be applied on virtual components (such as power flags or power symbols) only.
+				-- The assumption is that their prefix always starts with a hash character.
+					et_libraries.type_component_reference is
+					use et_libraries;
+					use type_component_prefix;
+					prefix_scratch : type_component_prefix.bounded_string := prefix (reference); -- #PWR
+					reference_out : et_libraries.type_component_reference; -- to be returned -- like PWR04
+				begin
+					log ("renaming " & to_string (reference));
+					log ("length " & positive'image (length (prefix_scratch)));
+					prefix_scratch := to_bounded_string (slice (prefix_scratch, 2, length (prefix_scratch)));
+					log ("prefix new '" & type_component_prefix.to_string (prefix_scratch) & "'");
+					reference_out.prefix := prefix_scratch;
+
+					log (" to " & to_string (reference_out));
+					return reference_out;
+				end remove_leading_hash;
 				
 				procedure insert_component is
 				-- Inserts the component in the component list of the module (indicated by module_cursor).
@@ -8104,8 +8125,9 @@ package body et_kicad is
 						when sch => -- we have a line like "L P3V3 #PWR07"
 					
 							add_component (
-								reference => reference,
-								component => (
+								--reference => reference,
+								reference	=> remove_leading_hash (reference), -- #PWR03 becomes PWR03
+								component	=> (
 									appearance		=> sch,
 
 									-- Whether the component is a "power flag" can be reasoned from its reference:
@@ -8208,7 +8230,8 @@ package body et_kicad is
 						when sch =>
 
 							add_unit (
-								reference	=> reference,
+								--reference	=> reference,
+								reference	=> remove_leading_hash (reference), -- #PWR03 becomes PWR03
 								unit_name	=> unit_name, -- "I/O Bank 3" or "PWR" or "A" or "B" ...	
 								unit 		=> (
 									appearance		=> sch,
