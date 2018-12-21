@@ -366,10 +366,8 @@ package body et_project is
 	procedure write_text_properties (text : in et_pcb.type_text'class) is
 		use et_pcb_coordinates;
 	begin
--- 		write (keyword => keyword_position, parameters => position (text.position));
--- 		write (keyword => keyword_rotation, parameters => to_string (text.angle));
 		write (keyword => keyword_position, parameters => position (text.position) & space &
-			keyword_rotation & to_string (text.angle));
+			keyword_rotation & to_string (text.angle)); -- position x 0.000 y 5.555 rotation 0.00
 		
 		write (keyword => keyword_size, parameters => space & keyword_pos_x & to_string (text.size_x) 
 				& space & keyword_pos_y & to_string (text.size_y));
@@ -381,6 +379,27 @@ package body et_project is
 		write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
 	end write_text_properties;
 
+	procedure write_text_properties_with_face (
+		text	: in et_pcb.type_text'class;
+		face	: in et_pcb_coordinates.type_face) 
+		is
+		use et_pcb_coordinates;
+	begin
+		write (keyword => keyword_position, parameters => position (text.position) & space &
+			   keyword_rotation & to_string (text.angle) & space &
+			  keyword_face & to_string (face)); -- position x 0.000 y 5.555 rotation 0.00 face top
+		
+		write (keyword => keyword_size, parameters => space & keyword_pos_x & to_string (text.size_x) 
+				& space & keyword_pos_y & to_string (text.size_y));
+		write (keyword => keyword_line_width, parameters => to_string (text.width));
+		write (keyword => keyword_alignment, parameters => space &
+				keyword_horizontal & et_libraries.to_string (text.alignment.horizontal) & space &
+				keyword_vertical   & et_libraries.to_string (text.alignment.vertical)
+				);
+		write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
+	end write_text_properties_with_face;
+		
+	
 	procedure line_begin is begin section_mark (section_line, HEADER); end;
 	procedure line_end   is begin section_mark (section_line, FOOTER); end;			
 	procedure arc_begin  is begin section_mark (section_arc , HEADER); end;
@@ -1366,9 +1385,9 @@ package body et_project is
 				begin
 					section_mark (section_placeholder, HEADER);
 					write (keyword => keyword_layer, parameters => to_string (layer));
-					write (keyword => keyword_face, parameters => to_string (face));
+					--write (keyword => keyword_face, parameters => to_string (face));
 					write (keyword => keyword_meaning, parameters => to_string (element (placeholder_cursor).meaning));
-					write_text_properties (element (placeholder_cursor));
+					write_text_properties_with_face (element (placeholder_cursor), face);
 					section_mark (section_placeholder, FOOTER);
 				end write_placeholder;
 				
