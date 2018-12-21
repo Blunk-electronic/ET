@@ -354,11 +354,14 @@ package body et_pcb is
 		return latin_1.space & to_lower (type_corner_easing'image (easing));
 	end to_string;
 
-	function to_string (polygon_pad_connection : in type_polygon_pad_connection) return string is
-	begin
+	function to_string (polygon_pad_connection : in type_polygon_pad_connection) return string is begin
 		return latin_1.space & to_lower (type_polygon_pad_connection'image (polygon_pad_connection));
 	end to_string;
 
+	function to_pad_connection (connection : in string) return type_polygon_pad_connection is begin
+		return type_polygon_pad_connection'value (connection);
+	end to_pad_connection;
+	
 	function to_string (polygon_pad_technology : in type_polygon_pad_technology) return string is begin
 		return latin_1.space & to_lower (type_polygon_pad_technology'image (polygon_pad_technology));
 	end to_string;

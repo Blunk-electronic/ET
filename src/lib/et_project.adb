@@ -4025,6 +4025,10 @@ package body et_project is
 											expect_field_count (line, 2);
 											route_polygon_pad_technology := et_pcb.to_pad_technology (f (line, 2));
 
+										elsif kw = keyword_pad_connection then -- pad_connection thermal/solid
+											expect_field_count (line, 2);
+											route_polygon_pad_connection := et_pcb.to_pad_connection (f (line, 2));
+											
 										elsif kw = keyword_thermal_width then -- thermal_width 0.3
 											expect_field_count (line, 2);
 											route_polygon_thermal_width := et_pcb_coordinates.to_distance (f (line, 2));

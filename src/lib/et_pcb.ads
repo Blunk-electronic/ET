@@ -577,6 +577,7 @@ package et_pcb is
 	text_polygon_pad_connection : constant string (1..14) := "pad_connection";
 	
 	function to_string (polygon_pad_connection : in type_polygon_pad_connection) return string;
+	function to_pad_connection (connection : in string) return type_polygon_pad_connection;
 
 	-- Polygons may be connected with SMT, THT or all pad technologies
 	type type_polygon_pad_technology is (
