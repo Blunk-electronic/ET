@@ -345,6 +345,7 @@ package body et_project is
 	function position (point : et_pcb_coordinates.type_point_2d'class) return string is
 		use et_pcb_coordinates;
 	begin
+		-- CS test tag for proper return
 		return space & keyword_pos_x & to_string (get_axis (X, point)) 
 			& space & keyword_pos_y & to_string (get_axis (Y, point));
 	end position;
@@ -366,8 +367,7 @@ package body et_project is
 	procedure write_text_properties (text : in et_pcb.type_text'class) is
 		use et_pcb_coordinates;
 	begin
-		write (keyword => keyword_position, parameters => position (text.position) & space &
-			keyword_rotation & to_string (text.angle)); -- position x 0.000 y 5.555 rotation 0.00
+		write (keyword => keyword_position, parameters => position (text.position)); -- position x 0.000 y 5.555 rotation 0.00
 		
 		write (keyword => keyword_size, parameters => space & keyword_pos_x & to_string (text.size_x) 
 				& space & keyword_pos_y & to_string (text.size_y));
@@ -386,7 +386,6 @@ package body et_project is
 		use et_pcb_coordinates;
 	begin
 		write (keyword => keyword_position, parameters => position (text.position) & space &
-			   keyword_rotation & to_string (text.angle) & space &
 			  keyword_face & to_string (face)); -- position x 0.000 y 5.555 rotation 0.00 face top
 		
 		write (keyword => keyword_size, parameters => space & keyword_pos_x & to_string (text.size_x) 
