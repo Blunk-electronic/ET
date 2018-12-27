@@ -2873,6 +2873,37 @@ package body et_project is
 				return size;
 			end to_size;
 
+-- 			function to_size (
+-- 				line : in type_fields_of_line; -- "size x 30 y 40"
+-- 				from : in positive)
+-- 				return et_schematic.type_submodule_size is
+-- 				use et_coordinates;
+-- 				
+-- 				size : et_schematic.type_submodule_size; -- to be returned
+-- 
+-- 				place : positive := from; -- the field being read from given line
+-- 
+-- 				-- CS: flags to detect missing x or y
+-- 			begin
+-- 				while place <= positive (field_count (line)) loop
+-- 
+-- 					-- We expect after the x the corresponding value for x
+-- 					if f (line, place) = keyword_pos_x then
+-- 						size.x := to_distance (f (line, place + 1));
+-- 
+-- 					-- We expect after the y the corresponding value for y
+-- 					elsif f (line, place) = keyword_pos_y then
+-- 						size.y := to_distance (f (line, place + 1));
+-- 
+-- 					else
+-- 						invalid_keyword (f (line, place));
+-- 					end if;
+-- 						
+-- 					place := place + 2;
+-- 				end loop;
+-- 				
+-- 				return size;
+-- 			end to_size;
 			
 			function to_position ( -- CS combine with next function to_position using the tag test ?
 			-- Returns a type_point_2d in the the layout.
@@ -3117,8 +3148,10 @@ package body et_project is
 			device_bom				: et_libraries.type_bom;
 			device_variant			: et_libraries.type_component_variant_name.bounded_string; -- D, N
 			device_position			: et_pcb_coordinates.type_package_position; -- incl. angle and face
+
+			device_text_placeholder_position: et_pcb_coordinates.type_package_position;
 			device_text_placeholder_layer	: et_pcb.type_placeholder_package_layer := et_pcb.type_placeholder_package_layer'first; -- silk_screen/assembly_documentation
-			device_text_placeholder_face	: et_pcb_coordinates.type_face := et_pcb_coordinates.type_face'first; -- top/bottom
+			--device_text_placeholder_face	: et_pcb_coordinates.type_face := et_pcb_coordinates.type_face'first; -- top/bottom
 			device_text_placeholder			: et_pcb.type_text_placeholder_package;
 			device_text_placeholders		: et_pcb.type_text_placeholders; -- silk screen, assy doc, top, bottom
 			
@@ -4399,7 +4432,6 @@ package body et_project is
 										elsif kw = keyword_bom then -- bom yes/no
 											expect_field_count (line, 2);
 											device_bom := et_libraries.to_bom_status (f (line, 2));
-
 											
 										else
 											invalid_keyword (kw);
@@ -4446,14 +4478,15 @@ package body et_project is
 													expect_field_count (line, 2);
 													device_text_placeholder_layer := et_pcb.to_layer (f (line, 2));
 													
-												elsif kw = keyword_face then -- face top/bottom
-													expect_field_count (line, 2);
-													device_text_placeholder_face := et_pcb_coordinates.to_face (f (line, 2));
-													
-												elsif kw = keyword_position then -- position x 0.000 y 5.555 rotation 0.00
+												elsif kw = keyword_position then -- position x 0.000 y 5.555 rotation 0.00 face top
 													expect_field_count (line, 9);
-													--device_text_placeholder.position := to_position.to_face (f (line, 2));
 
+													-- extract position of placeholder starting at field 2
+													device_text_placeholder_position := to_position (line, 2);
+
+												elsif kw = keyword_size then -- size x 3.000 y 5
+													expect_field_count (line, 5);
+													-- CS
 												else
 													invalid_keyword (kw);
 												end if;
