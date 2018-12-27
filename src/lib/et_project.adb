@@ -4638,11 +4638,11 @@ package body et_project is
 					end create_connection;
 					
 				begin -- execute_section
-					case stack.parent is
-							
-						when SEC_MODULE_INSTANCES =>
-							case stack.current is
-								when SEC_MODULE =>
+					case stack.current is
+													
+						when SEC_MODULE =>
+							case stack.parent is
+								when SEC_MODULE_INSTANCES =>	
 
 									-- create an instanciated module in the rig
 									type_rigs.update_element (
@@ -4652,10 +4652,10 @@ package body et_project is
 									
 								when others => invalid_section;
 							end case;
-							
-						when SEC_MODULE_CONNECTIONS =>
-							case stack.current is
-								when SEC_CONNECTOR =>
+
+						when SEC_CONNECTOR =>
+							case stack.parent is
+								when SEC_MODULE_CONNECTIONS =>
 									
 									-- create a module connector in the rig
 									type_rigs.update_element (
@@ -4666,7 +4666,7 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
-						when others => null; --invalid_section;
+						when others => null; -- CS
 					end case;
 							
 				end execute_section;
@@ -4722,17 +4722,23 @@ package body et_project is
 
 					log ("line --> " & to_string (line), log_threshold + 3);
 					
-					case stack.parent is
-						when SEC_INIT => -- test for allowed sections at top level
-							case stack.current is
-								when SEC_MODULE_INSTANCES => null; -- nothing to do
-								when SEC_MODULE_CONNECTIONS => null; -- nothing to do
+					case stack.current is
+
+						when SEC_MODULE_INSTANCES =>
+							case stack.parent is
+								when SEC_INIT => null; -- nothing to do
 								when others => invalid_section;
 							end case;
-						
-						when SEC_MODULE_INSTANCES =>
-							case stack.current is
-								when SEC_MODULE =>
+							
+						when SEC_MODULE_CONNECTIONS =>
+							case stack.parent is
+								when SEC_INIT => null; -- nothing to do
+								when others => invalid_section;
+							end case;
+
+						when SEC_MODULE =>
+							case stack.parent is
+								when SEC_MODULE_INSTANCES =>							
 									declare
 										kw : string := f (line, 1);
 									begin
@@ -4749,12 +4755,11 @@ package body et_project is
 									end;
 									
 								when others => invalid_section;
-									
 							end case;
-							
-						when SEC_MODULE_CONNECTIONS =>
-							case stack.current is
-								when SEC_CONNECTOR =>
+
+						when SEC_CONNECTOR =>							
+							case stack.parent is
+								when SEC_MODULE_CONNECTIONS =>
 									declare
 										kw : string := f (line, 1);
 									begin
@@ -4783,15 +4788,11 @@ package body et_project is
 									end;
 									
 								when others => invalid_section;
-									
 							end case;
 
-
-						when others => null;
+						when others => null; -- CS
 					end case;
 				end if;
-
-
 
 				exception when event: others =>
 					log (affected_line (line) & to_string (line), console => true);
