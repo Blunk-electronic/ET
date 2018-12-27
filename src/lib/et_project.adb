@@ -3655,23 +3655,42 @@ package body et_project is
 					-- Temporarily this data is stored in corresponding variables.
 
 					log ("line --> " & to_string (line), log_threshold + 3);
+			
+					case stack.current is
 
-					case stack.parent is
-						when SEC_INIT => -- test for allowed sections at top level
-							case stack.current is
-								when SEC_NET_CLASSES => null; -- nothing to do
-								when SEC_NETS => null; -- nothing to do
-								when SEC_TEXTS => null; -- nothing to do
-								when SEC_DEVICES => null; -- nothing to do
-								when SEC_SUBMODULES => null; -- nothing to do
-								when SEC_DRAWING_FRAMES => null; -- nothing to do									
-								when SEC_BOARD => null; -- nothing to do
+						when SEC_NET_CLASSES =>
+							case stack.parent is
+								when SEC_INIT => null; -- nothing to do
 								when others => invalid_section;
 							end case;
-						
-						when SEC_NET_CLASSES =>
-							case stack.current is
-								when SEC_NET_CLASS =>
+
+						when SEC_DEVICES =>
+							case stack.parent is
+								when SEC_INIT => null; -- nothing to do
+								when others => invalid_section;
+							end case;
+
+						when SEC_TEXTS =>
+							case stack.parent is
+								when SEC_INIT => null; -- nothing to do								
+								when others => invalid_section;
+							end case;
+
+						when SEC_SUBMODULES =>
+							case stack.parent is
+								when SEC_INIT => null; -- nothing to do								
+								when others => invalid_section;
+							end case;
+
+						when SEC_DRAWING_FRAMES =>
+							case stack.parent is
+								when SEC_INIT => null; -- nothing to do								
+								when others => invalid_section;
+							end case;
+
+						when SEC_NET_CLASS =>
+							case stack.parent is
+								when SEC_NET_CLASSES =>
 									declare
 										kw : string := f (line, 1);
 									begin
@@ -3720,16 +3739,22 @@ package body et_project is
 
 								when others => invalid_section;
 							end case;
-
-						when SEC_NET => -- test for allowed sections in section NET
-							case stack.current is
-								when SEC_STRANDS | SEC_ROUTE => null;
+						
+						when SEC_STRANDS =>
+							case stack.parent is
+								when SEC_NET => null; -- nothing to do
 								when others => invalid_section;
 							end case;
-							
-						when SEC_NETS =>
-							case stack.current is
-								when SEC_NET =>
+						
+						when SEC_ROUTE =>
+							case stack.parent is
+								when SEC_NET => null; -- nothing to do
+								when others => invalid_section;
+							end case;
+						
+						when SEC_NET =>
+							case stack.parent is
+								when SEC_NETS =>
 									declare
 										kw : string := f (line, 1);
 									begin
@@ -3762,14 +3787,13 @@ package body et_project is
 											invalid_keyword (kw);
 										end if;
 									end;
-
 											
 								when others => invalid_section;
 							end case;
-
-						when SEC_SEGMENTS =>
-							case stack.current is
-								when SEC_SEGMENT =>
+						
+						when SEC_SEGMENT =>
+							case stack.parent is
+								when SEC_SEGMENTS =>
 									declare
 										kw : string := f (line, 1);
 									begin
@@ -3793,11 +3817,16 @@ package body et_project is
 											
 								when others => invalid_section;
 							end case;
-
-						when SEC_SEGMENT =>
-							case stack.current is
-								when SEC_LABELS => null; -- nothing to do
-								when SEC_JUNCTIONS =>
+						
+						when SEC_LABELS =>
+							case stack.parent is
+								when SEC_SEGMENT => null; -- nothing to do
+								when others => invalid_section;
+							end case;
+							
+						when SEC_JUNCTIONS =>
+							case stack.parent is
+								when SEC_SEGMENT =>
 									-- read junction parameters
 									-- NOTE: A junction is defined by a single line.
 									-- Upon reading the line like "position x 4 y 4" the junction is
@@ -3819,8 +3848,13 @@ package body et_project is
 											invalid_keyword (kw);
 										end if;
 									end;
-									
-								when SEC_PORTS =>
+
+								when others => invalid_section;
+							end case;
+
+						when SEC_PORTS =>
+							case stack.parent is 
+								when SEC_SEGMENT =>
 									-- read device port parameters
 									-- NOTE: A device port is defined by a single line.
 									-- Upon reading the line like "device IC3 port CE" the port is
@@ -3848,14 +3882,18 @@ package body et_project is
 										end if;
 									end;
 
-								when SEC_SUBMODULE_PORTS => null; -- nothing to do
 								when others => invalid_section;
 							end case;
 
-						when SEC_LABELS =>
-							case stack.current is
-								when SEC_LABEL =>
-
+						when SEC_SUBMODULE_PORTS =>
+							case stack.parent is
+								when SEC_SEGMENT => null; -- nothing to do
+								when others => invalid_section;
+							end case;
+						
+						when SEC_LABEL =>
+							case stack.parent is
+								when SEC_LABELS =>
 									declare
 										kw : string := f (line, 1);
 									begin
@@ -3897,10 +3935,10 @@ package body et_project is
 
 								when others => invalid_section;
 							end case;
-
-						when SEC_SUBMODULE_PORTS =>
-							case stack.current is
-								when SEC_PORT =>
+						
+						when SEC_PORT =>
+							case stack.parent is
+								when SEC_SUBMODULE_PORTS =>
 									declare
 										kw : string := f (line, 1);
 									begin
@@ -3930,10 +3968,10 @@ package body et_project is
 
 								when others => invalid_section;
 							end case;
-
-						when SEC_ROUTE =>
-							case stack.current is
-								when SEC_LINE =>
+						
+						when SEC_LINE =>
+							case stack.parent is
+								when SEC_ROUTE =>	
 									declare
 										kw : string := f (line, 1);
 									begin
@@ -3963,7 +4001,12 @@ package body et_project is
 										end if;
 									end;
 
-								when SEC_ARC =>
+								when others => invalid_section;
+							end case;
+
+						when SEC_ARC =>
+							case stack.parent is
+								when SEC_ROUTE =>
 									declare
 										kw : string := f (line, 1);
 									begin
@@ -3999,7 +4042,12 @@ package body et_project is
 										end if;
 									end;
 
-								when SEC_POLYGON =>
+								when others => invalid_section;
+							end case;
+
+						when SEC_POLYGON =>
+							case stack.parent is
+								when SEC_ROUTE =>
 									declare
 										kw : string := f (line, 1);
 									begin
@@ -4061,7 +4109,12 @@ package body et_project is
 										end if;
 									end;
 
-								when SEC_VIA => null;
+								when others => invalid_section;
+							end case;
+
+						when SEC_VIA =>
+							case stack.parent is
+								when SEC_ROUTE =>
 									declare
 										kw : string := f (line, 1);
 									begin
@@ -4099,10 +4152,10 @@ package body et_project is
 
 								when others => invalid_section;
 							end case;
-
-						when SEC_POLYGON =>
-							case stack.current is
-								when SEC_CORNERS =>
+						
+						when SEC_CORNERS =>
+							case stack.parent is
+								when SEC_POLYGON =>
 									declare
 										kw : string := f (line, 1);
 									begin
@@ -4130,9 +4183,9 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
-						when SEC_SUBMODULES =>
-							case stack.current is
-								when SEC_SUBMODULE =>
+						when SEC_SUBMODULE =>
+							case stack.parent is
+								when SEC_SUBMODULES =>
 									declare
 										kw : string := f (line, 1);
 									begin
@@ -4178,10 +4231,10 @@ package body et_project is
 									
 								when others => invalid_section;
 							end case;
-							
-						when SEC_DRAWING_FRAMES =>
-							case stack.current is
-								when SEC_SCHEMATIC =>
+						
+						when SEC_SCHEMATIC =>
+							case stack.parent is
+								when SEC_DRAWING_FRAMES =>
 									declare
 										kw : string := f (line, 1);
 									begin
@@ -4189,24 +4242,6 @@ package body et_project is
 										if kw = keyword_template then -- template $ET_FRAMES/drawing_frame_version_1.frm
 											expect_field_count (line, 2);
 											frame_template_schematic := et_libraries.to_template_name (f (line, 2));
-
-										--elsif kw = keyword_count then -- count 8
-										--	expect_field_count (line, 2);
-
-										else
-											invalid_keyword (kw);
-										end if;
-									end;
-
-								when SEC_BOARD =>
-									declare
-										kw : string := f (line, 1);
-									begin
-										-- CS: In the following: set a corresponding parameter-found-flag
-										if kw = keyword_template then -- template $ET_FRAMES/drawing_frame_version_2.frm
-											expect_field_count (line, 2);
-											frame_template_board := et_libraries.to_template_name (f (line, 2));
-
 										else
 											invalid_keyword (kw);
 										end if;
@@ -4214,10 +4249,30 @@ package body et_project is
 
 								when others => invalid_section;
 							end case;
+
+						when SEC_BOARD =>
+							case stack.parent is
+								when SEC_INIT => null; -- nothing to do
 								
-						when SEC_TEXTS =>
-							case stack.current is
-								when SEC_TEXT =>
+								when SEC_DRAWING_FRAMES =>
+									declare
+										kw : string := f (line, 1);
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_template then -- template $ET_FRAMES/drawing_frame_version_2.frm
+											expect_field_count (line, 2);
+											frame_template_board := et_libraries.to_template_name (f (line, 2));
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+
+								when others => invalid_section;
+							end case;
+							
+						when SEC_TEXT =>
+							case stack.parent is
+								when SEC_TEXTS =>
 									declare
 										kw : string := f (line, 1);
 									begin
@@ -4261,10 +4316,10 @@ package body et_project is
 
 								when others => invalid_section;
 							end case;
-							
-						when SEC_DEVICES =>
-							case stack.current is
-								when SEC_DEVICE =>
+
+						when SEC_DEVICE =>
+							case stack.parent is
+								when SEC_DEVICES =>
 									declare
 										kw : string := f (line, 1);
 									begin
@@ -4310,16 +4365,6 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
-						
-						when SEC_BOARD =>
-							NULL;
-							
-						when others => null;
-					end case;
-
-					-------
-					case stack.current is
-
 						when SEC_PACKAGE =>
 							case stack.parent is
 								when SEC_DEVICE =>
@@ -4340,7 +4385,6 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
-						
 						when SEC_PLACEHOLDER =>
 							case stack.parent is
 								when SEC_PLACEHOLDERS =>
