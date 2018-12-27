@@ -3253,10 +3253,11 @@ package body et_project is
 					
 					
 				begin -- execute_section
-					case stack.parent is
-						when SEC_NET_CLASSES =>
-							case stack.current is
-								when SEC_NET_CLASS =>
+					case stack.current is
+						
+						when SEC_NET_CLASS =>
+							case stack.parent is
+								when SEC_NET_CLASSES =>
 
 									-- insert net class
 									update_element (
@@ -3267,9 +3268,9 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
-						when SEC_NETS =>
-							case stack.current is
-								when SEC_NET =>
+						when SEC_NET =>
+							case stack.parent is
+								when SEC_NETS =>
 
 									-- insert net
 									update_element (
@@ -3280,15 +3281,20 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
-						when SEC_NET =>
-							case stack.current is
-								when SEC_STRANDS =>
+						when SEC_STRANDS =>
+							case stack.parent is
+								when SEC_NET =>
 
 									-- insert strand collection in net
 									net.strands := strands;
 									et_schematic.type_strands.clear (strands); -- clean up for next strand collection
 
-								when SEC_ROUTE =>
+								when others => invalid_section;
+							end case;
+
+						when SEC_ROUTE =>
+							case stack.parent is
+								when SEC_NET =>
 
 									-- insert route in net
 									net.route := route;
@@ -3297,11 +3303,11 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
-						when SEC_STRANDS =>
-							case stack.current is
-								when SEC_STRAND =>
+						when SEC_STRAND =>
+							case stack.parent is
+								when SEC_STRANDS =>
 
-									-- insert strand in strands
+									-- insert strand in collection of strands
 									et_schematic.type_strands.append (
 										container	=> strands,
 										new_item	=> strand);
@@ -3312,9 +3318,9 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
-						when SEC_STRAND =>
-							case stack.current is
-								when SEC_SEGMENTS =>
+						when SEC_SEGMENTS =>
+							case stack.parent is
+								when SEC_STRAND =>
 
 									-- insert segments in strand
 									strand.segments := net_segments;
@@ -3325,9 +3331,9 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
-						when SEC_SEGMENTS =>
-							case stack.current is
-								when SEC_SEGMENT =>
+						when SEC_SEGMENT =>
+							case stack.parent is
+								when SEC_SEGMENTS =>
 
 									-- insert segment in segment collection
 									et_schematic.type_net_segments.append (
@@ -3340,9 +3346,9 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
-						when SEC_SEGMENT =>
-							case stack.current is
-								when SEC_LABELS =>
+						when SEC_LABELS =>
+							case stack.parent is
+								when SEC_SEGMENT =>
 
 									-- insert labels in segment
 									net_segment.labels := net_labels;
@@ -3350,7 +3356,13 @@ package body et_project is
 									-- clean up for next label collection
 									et_schematic.type_net_labels.clear (net_labels);
 
-								when SEC_JUNCTIONS =>
+								when others => invalid_section;
+							end case;
+
+						when SEC_JUNCTIONS =>
+							case stack.parent is
+								when SEC_SEGMENT =>
+
 									-- NOTE: A junction is defined by a single line.
 									-- Upon reading the line like "position x 4 y 4" the junction is
 									-- appended to the junction collection immediately when the line 
@@ -3362,8 +3374,14 @@ package body et_project is
 
 									-- clean up for next junction collection (of another net segment)
 									et_schematic.type_junctions.clear (net_junctions);
-									
-								when SEC_PORTS =>
+
+								when others => invalid_section;
+							end case;
+
+						when SEC_PORTS =>
+							case stack.parent is
+								when SEC_SEGMENT =>
+
 									-- NOTE: A device port is defined by a single line.
 									-- Upon reading the line like "device R3 port 1" the port is
 									-- appended to the port collection immediately when the line 
@@ -3376,16 +3394,22 @@ package body et_project is
 									-- clean up for next port collection (of another net segment)
 									et_schematic.type_ports_component.clear (net_ports);
 
-								when SEC_SUBMODULE_PORTS =>
+								when others => invalid_section;
+							end case;
+									
+						when SEC_SUBMODULE_PORTS =>
+							case stack.parent is
+								when SEC_SEGMENT =>
+							
 									-- insert submodule ports in segment
 									net_segment.submodule_ports := net_submodule_ports;
 									
 								when others => invalid_section;
 							end case;
 
-						when SEC_LABELS =>
-							case stack.current is
-								when SEC_LABEL =>
+						when SEC_LABEL =>
+							case stack.parent is
+								when SEC_LABELS =>
 
 									-- insert label in label collection
 									case net_label_appearance is
@@ -3420,9 +3444,9 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
-						when SEC_SUBMODULE_PORTS =>
-							case stack.current is
-								when SEC_PORT =>
+						when SEC_PORT =>
+							case stack.parent is
+								when SEC_SUBMODULE_PORTS =>
 
 									-- insert submodule port in collection of submodule ports
 									et_schematic.type_ports_submodule.append (net_submodule_ports, net_submodule_port);
@@ -3433,27 +3457,42 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 							
-						when SEC_ROUTE =>
-							case stack.current is
-								when SEC_LINE =>
+						when SEC_LINE =>
+							case stack.parent is
+								when SEC_ROUTE =>
 
 									-- insert line in route.lines
 									et_pcb.type_copper_lines_pcb.append (route.lines, route_line);
 									route_line := (others => <>); -- clean up for next line
 
-								when SEC_ARC =>
+								when others => invalid_section;
+							end case;
+							
+						when SEC_ARC =>
+							case stack.parent is
+								when SEC_ROUTE =>
 
 									-- insert arc in route.arcs
 									et_pcb.type_copper_arcs_pcb.append (route.arcs, route_arc);
 									route_arc := (others => <>); -- clean up for next arc
 
-								when SEC_VIA =>
+								when others => invalid_section;
+							end case;
+									
+						when SEC_VIA =>
+							case stack.parent is
+								when SEC_ROUTE =>
 
 									-- insert via in route.vias
 									et_pcb.type_vias.append (route.vias, route_via);
 									route_via := (others => <>); -- clean up for next via
 
-								when SEC_POLYGON =>
+								when others => invalid_section;
+							end case;
+									
+						when SEC_POLYGON =>
+							case stack.parent is
+								when SEC_ROUTE =>
 
 									-- insert polygon in route.polygons
 									-- The polygon type depends on the route_polygon_pad_connection:
@@ -3497,9 +3536,9 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
-						when SEC_POLYGON =>
-							case stack.current is
-								when SEC_CORNERS =>
+						when SEC_CORNERS =>
+							case stack.parent is
+								when SEC_POLYGON =>
 
 									-- insert collection of polygon corner points in polygon
 									route_polygon.points := polygon_corner_points;
@@ -3510,9 +3549,9 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
-						when SEC_SUBMODULES =>
-							case stack.current is
-								when SEC_SUBMODULE =>
+						when SEC_SUBMODULE =>
+							case stack.parent is
+								when SEC_SUBMODULES =>
 
 									-- insert submodule
 									update_element (
@@ -3523,9 +3562,9 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
-						when SEC_DRAWING_FRAMES =>
-							case stack.current is
-								when SEC_SCHEMATIC =>
+						when SEC_SCHEMATIC =>
+							case stack.parent is
+								when SEC_DRAWING_FRAMES =>
 
 									-- set schematic frame template
 									update_element (
@@ -3533,7 +3572,12 @@ package body et_project is
 										position	=> module_cursor,
 										process		=> set_frame_schematic'access);
 
-								when SEC_BOARD =>
+									when others => invalid_section;
+								end case;
+
+						when SEC_BOARD =>
+							case stack.parent is
+								when SEC_DRAWING_FRAMES =>
 
 									-- set board/layout frame template
 									update_element (
@@ -3544,9 +3588,9 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
-						when SEC_TEXTS =>
-							case stack.current is
-								when SEC_TEXT =>
+						when SEC_TEXT =>
+							case stack.parent is
+								when SEC_TEXTS =>
 
 									-- insert note
 									update_element (
@@ -4423,7 +4467,7 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 							
-						when others => null;
+						when others => null; -- CS
 					end case;
 				end if;
 
