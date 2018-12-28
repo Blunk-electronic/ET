@@ -142,7 +142,8 @@ package et_pcb_coordinates is
 	type type_submodule_position is new type_terminal_position with private;
 	type type_package_position is new type_terminal_position with private;
 
-	function to_string (point : in type_point_2d'class) return string;
+	function to_string (point : in type_point_2d) return string;
+	function to_string (point : in type_terminal_position) return string;	
 	
 	function terminal_position_default return type_terminal_position'class;
 

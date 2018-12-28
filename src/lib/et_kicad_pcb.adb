@@ -1683,7 +1683,8 @@ package body et_kicad_pcb is
 							end case;
 
 						when SEC_FP_TEXT =>
-							text.angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
+							--text.angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
+							set_angle (point => text.position, value => zero_angle);
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
@@ -1691,7 +1692,8 @@ package body et_kicad_pcb is
 								when 2 => 
 									set_point (axis => Y, point => text.position, value => to_distance (to_string (arg)));
 								when 3 => 
-									text.angle := to_angle (to_string (arg));
+									--text.angle := to_angle (to_string (arg));
+									set_angle (point => text.position, value => to_angle (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 							
@@ -4272,7 +4274,8 @@ package body et_kicad_pcb is
 				when SEC_FP_TEXT =>
 					case section.name is
 						when SEC_AT =>
-							package_text.angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
+							--package_text.angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
+							set_angle (point => package_text.position, value => zero_angle);
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
@@ -4280,7 +4283,8 @@ package body et_kicad_pcb is
 								when 2 => 
 									set_point (axis => Y, point => package_text.position, value => to_distance (to_string (arg)));
 								when 3 => 
-									package_text.angle := to_angle (to_string (arg));
+									--package_text.angle := to_angle (to_string (arg));
+									set_angle (point => package_text.position, value => to_angle (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -4314,7 +4318,8 @@ package body et_kicad_pcb is
 				when SEC_GR_TEXT =>
 					case section.name is
 						when SEC_AT =>
-							board_text.angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
+							--board_text.angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
+							set_angle (point => board_text.position, value => zero_angle);
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
@@ -4322,7 +4327,8 @@ package body et_kicad_pcb is
 								when 2 => 
 									set_point (axis => Y, point => board_text.position, value => to_distance (to_string (arg)));
 								when 3 => 
-									board_text.angle := to_angle (to_string (arg));
+									--board_text.angle := to_angle (to_string (arg));
+									set_angle (point => board_text.position, value => to_angle (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 

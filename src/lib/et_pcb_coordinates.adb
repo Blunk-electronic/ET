@@ -226,41 +226,27 @@ package body et_pcb_coordinates is
 	end set_point;
 
 	
-	function to_string (point : in type_point_2d'class) return string is
-		use ada.tags;
+	function to_string (point : in type_point_2d) return string is
 	begin
--- 		if point'tag = type_point_2d'tag then
-
-		--if point'tag = type_terminal_position'tag then
-		if type_point_2d'class (point) in type_terminal_position then
-				return position_preamble_2d
-					& to_string (point.x)
-					& latin_1.space
-					& et_coordinates.axis_separator
-					& to_string (point.y)
-					& et_coordinates.axis_separator
-					& to_string (point.angle);
-
--- 		elsif point'tag = type_package_position'tag then
--- 				return position_preamble_2d
--- 					& to_string (point.x)
--- 					& latin_1.space
--- 					& et_coordinates.axis_separator
--- 					& to_string (point.y)
--- 					& et_coordinates.axis_separator
--- 					& to_string (point.angle)
--- 					& et_coordinates.axis_separator
--- 					& to_string (point.face);
-
-		else
-				return position_preamble_2d
-					& to_string (point.x)
-					& latin_1.space
-					& et_coordinates.axis_separator
-					& to_string (point.y);
-		end if;
+		return position_preamble_2d
+			& to_string (point.x)
+			& latin_1.space
+			& et_coordinates.axis_separator
+			& to_string (point.y);
 	end to_string;
 
+	function to_string (point : in type_terminal_position) return string is
+	begin
+		return position_preamble_2d
+			& to_string (point.x)
+			& latin_1.space
+			& et_coordinates.axis_separator
+			& to_string (point.y)
+			& et_coordinates.axis_separator
+			& to_string (point.angle);
+	end to_string;
+
+	
 	function terminal_position_default return type_terminal_position'class is
 		pos : type_terminal_position;
 	begin

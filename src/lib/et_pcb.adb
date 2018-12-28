@@ -226,7 +226,7 @@ package body et_pcb is
 			& "size (x" & axis_separator & "y)" 
 			& to_string (text.size_x) & latin_1.space & axis_separator & to_string (text.size_y)
 			& " line width" & to_string (text.width)
-			& to_string (text.angle, preamble => true)
+			& to_string (get_angle (text.position), preamble => true)
 			& et_libraries.to_string (text.alignment)
 			& " hidden " & boolean'image (text.hidden)
 			;
