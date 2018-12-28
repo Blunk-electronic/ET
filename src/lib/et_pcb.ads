@@ -207,7 +207,7 @@ package et_pcb is
 	
 	-- TEXT IN GENERAL
 	type type_text is abstract tagged record
-		position	: type_terminal_position;
+		position	: type_point_2d_with_angle;
 		size_x		: type_text_size;
 		size_y		: type_text_size;
 		width		: type_text_line_width; -- CS rename to line_width
@@ -1101,7 +1101,7 @@ package et_pcb is
 		tht_hole	: type_terminal_tht_hole) -- drilled/milled, without meaning if technology is SMT
 		is tagged record
 
-		position : type_terminal_position; -- drill position, center of pad or assigned by operator
+		position : type_point_2d_with_angle; -- drill position, center of pad or assigned by operator
 			
 		case technology is
 			when THT =>

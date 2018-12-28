@@ -138,14 +138,14 @@ package et_pcb_coordinates is
 	-- Compares axis is this order: x, y
 	-- If right point equals left point, returns false.
 
-	type type_terminal_position is new type_point_2d with private;
-	type type_submodule_position is new type_terminal_position with private;
-	type type_package_position is new type_terminal_position with private;
+	type type_point_2d_with_angle is new type_point_2d with private;
+	type type_submodule_position is new type_point_2d_with_angle with private;
+	type type_package_position is new type_point_2d_with_angle with private;
 
 	function to_string (point : in type_point_2d) return string;
-	function to_string (point : in type_terminal_position) return string;	
+	function to_string (point : in type_point_2d_with_angle) return string;	
 	
-	function terminal_position_default return type_terminal_position'class;
+	function terminal_position_default return type_point_2d_with_angle'class;
 
 	function package_position_default return type_package_position;
 
@@ -174,9 +174,9 @@ package et_pcb_coordinates is
 	
 	procedure set_angle (
 		value	: in type_angle;
-		point	: in out type_terminal_position'class);
+		point	: in out type_point_2d_with_angle'class);
 
-	function get_angle (point : in type_terminal_position'class)
+	function get_angle (point : in type_point_2d_with_angle'class)
 		return type_angle;
 
 	procedure set_face (
@@ -190,7 +190,7 @@ package et_pcb_coordinates is
 	-- Composes from a given point and angle the terminal position.
 		point	: in type_point_2d;
 		angle	: in type_angle)
-		return type_terminal_position'class;
+		return type_point_2d_with_angle'class;
 
 	
 	private
@@ -206,13 +206,13 @@ package et_pcb_coordinates is
 		zero_2d : constant type_point_2d := (others => zero_distance);
 		zero_3d : constant type_point_3d := (others => zero_distance);
 
-		type type_terminal_position is new type_point_2d with record
+		type type_point_2d_with_angle is new type_point_2d with record
 			angle	: type_angle := zero_angle;
 		end record;
 
-		type type_submodule_position is new type_terminal_position with null record;
+		type type_submodule_position is new type_point_2d_with_angle with null record;
 		
-		type type_package_position is new type_terminal_position with record
+		type type_package_position is new type_point_2d_with_angle with record
 			face	: type_face := TOP;
 		end record;
 

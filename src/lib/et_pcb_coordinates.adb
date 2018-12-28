@@ -235,7 +235,7 @@ package body et_pcb_coordinates is
 			& to_string (point.y);
 	end to_string;
 
-	function to_string (point : in type_terminal_position) return string is
+	function to_string (point : in type_point_2d_with_angle) return string is
 	begin
 		return position_preamble_2d
 			& to_string (point.x)
@@ -247,8 +247,8 @@ package body et_pcb_coordinates is
 	end to_string;
 
 	
-	function terminal_position_default return type_terminal_position'class is
-		pos : type_terminal_position;
+	function terminal_position_default return type_point_2d_with_angle'class is
+		pos : type_point_2d_with_angle;
 	begin
 		pos.x := zero_distance;
 		pos.y := zero_distance;
@@ -388,12 +388,12 @@ package body et_pcb_coordinates is
 	
 	procedure set_angle (
 		value	: in type_angle;
-		point	: in out type_terminal_position'class) is
+		point	: in out type_point_2d_with_angle'class) is
 	begin
 		point.angle := value;
 	end set_angle;
 
-	function get_angle (point : in type_terminal_position'class) return type_angle is
+	function get_angle (point : in type_point_2d_with_angle'class) return type_angle is
 	begin
 		return point.angle;
 	end get_angle;
@@ -416,8 +416,8 @@ package body et_pcb_coordinates is
 	-- Composes from a given point and angle the terminal position.
 		point	: in type_point_2d;
 		angle	: in type_angle)
-		return type_terminal_position'class is
-		pos : type_terminal_position;
+		return type_point_2d_with_angle'class is
+		pos : type_point_2d_with_angle;
 	begin
 		pos := (point with angle);
 		return pos;

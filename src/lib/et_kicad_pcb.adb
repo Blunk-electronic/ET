@@ -357,7 +357,7 @@ package body et_kicad_pcb is
 
 
 	function to_pad_shape_circle (
-		position	: in et_pcb_coordinates.type_terminal_position;
+		position	: in et_pcb_coordinates.type_point_2d_with_angle;
 		diameter	: in et_pcb.type_pad_size;
 		offset		: in et_pcb_coordinates.type_point_2d)	-- the offset of the pad from the center
 		return et_pcb.type_pad_outline is
@@ -381,7 +381,7 @@ package body et_kicad_pcb is
 	-- Converts the given position and dimensions of a rectangular pad
 	-- to a list with four lines (top, bottom, right, left).
 	-- CS: rework as in to_pad_shape_oval
-		center		: in et_pcb_coordinates.type_terminal_position; -- the pad center position (incl. angle)
+		center		: in et_pcb_coordinates.type_point_2d_with_angle; -- the pad center position (incl. angle)
 		size_x		: in et_pcb.type_pad_size;	-- the size in x of the pad
 		size_y		: in et_pcb.type_pad_size;	-- the size in y of the pad
 		offset		: in et_pcb_coordinates.type_point_2d)	-- the offset of the pad from the center
@@ -461,7 +461,7 @@ package body et_kicad_pcb is
 	function to_pad_shape_oval (
 	-- Converts the given position and dimensions of an oval pad
 	-- to a list with two vertical lines and two arcs (rotation assumed zero).
-		center		: in et_pcb_coordinates.type_terminal_position; -- the pad center position (incl. angle)
+		center		: in et_pcb_coordinates.type_point_2d_with_angle; -- the pad center position (incl. angle)
 		size_x		: in et_pcb.type_pad_size;	-- the size in x of the pad
 		size_y		: in et_pcb.type_pad_size;	-- the size in y of the pad
 		offset		: in et_pcb_coordinates.type_point_2d)	-- the offset of the pad from the center
@@ -560,7 +560,7 @@ package body et_kicad_pcb is
 	function to_pad_milling_contour (
 	-- Converts the given position and dimensions of a rectangular slotted hole
 	-- to a list with four lines (top, bottom, right, left).
-		center		: in et_pcb_coordinates.type_terminal_position; -- the terminal position (incl. angle, (z axis ignored))
+		center		: in et_pcb_coordinates.type_point_2d_with_angle; -- the terminal position (incl. angle, (z axis ignored))
 		size_x		: in et_pcb.type_pad_size;	-- the size in x of the hole
 		size_y		: in et_pcb.type_pad_size;	-- the size in y of the hole
 		offset		: in et_pcb_coordinates.type_point_2d)	-- the offset of the pad from the center
@@ -800,7 +800,7 @@ package body et_kicad_pcb is
 		terminal_pad_drill_offset : et_pcb_coordinates.type_point_2d;
 
 		-- The center of an smt pad or the position of the drill of a tht pad:
-		terminal_position	: et_pcb_coordinates.type_terminal_position; 
+		terminal_position	: et_pcb_coordinates.type_point_2d_with_angle; 
 		
 		pad_size_x : type_pad_size;  -- CS use a composite instead ?
 		pad_size_y : type_pad_size;
@@ -3317,7 +3317,7 @@ package body et_kicad_pcb is
 		terminal_pad_drill_offset : et_pcb_coordinates.type_point_2d;
 		
 		-- The center of an smt pad or the position of the drill of a tht pad:		
-		terminal_position	: et_pcb_coordinates.type_terminal_position;
+		terminal_position	: et_pcb_coordinates.type_point_2d_with_angle;
 		
 		pad_size_x : type_pad_size;
 		pad_size_y : type_pad_size;		

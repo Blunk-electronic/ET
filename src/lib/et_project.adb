@@ -1024,7 +1024,7 @@ package body et_project is
 			close (module_file_handle);
 		end write_module_footer;
 		
-		function rotation (pos : in et_pcb_coordinates.type_terminal_position'class) return string is
+		function rotation (pos : in et_pcb_coordinates.type_point_2d_with_angle'class) return string is
 			use et_pcb_coordinates;
 		begin
 			return to_string (get_angle (pos));
