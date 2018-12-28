@@ -4494,6 +4494,17 @@ package body et_project is
 													-- extract dimensions of placeholder text starting at field 2
 													device_text_placeholder.dimensions := to_dimensions (line, 2);
 
+												elsif kw = keyword_line_width then -- line_width 0.15
+													expect_field_count (line, 2);
+
+													device_text_placeholder.line_width := et_pcb_coordinates.to_distance (f (line, 2));
+
+												elsif kw = keyword_alignment then -- alignment horizontal center vertical center
+													expect_field_count (line, 5);
+
+													-- extract alignment of placeholder starting at field 2
+													device_text_placeholder.alignment := to_alignment (line, 2);
+													
 												else
 													invalid_keyword (kw);
 												end if;
