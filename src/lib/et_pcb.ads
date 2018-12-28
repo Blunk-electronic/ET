@@ -213,10 +213,8 @@ package et_pcb is
 	-- TEXT IN GENERAL
 	type type_text is abstract tagged record
 		position	: type_point_2d_with_angle;
-		--size_x		: type_text_size;
-		--size_y		: type_text_size;
 		dimensions	: type_text_dimensions;
-		width		: type_text_line_width; -- CS rename to line_width
+		line_width	: type_text_line_width;
 		alignment	: et_libraries.type_text_alignment;
 		hidden		: boolean; -- CS use type with yes or no -- CS useful at all ?
 	end record;

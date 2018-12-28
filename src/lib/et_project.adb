@@ -374,7 +374,7 @@ package body et_project is
 		write (keyword => keyword_size, parameters => space & keyword_width & to_string (text.dimensions.width) 
 		   & space & keyword_height & to_string (text.dimensions.height)); -- size width 1.000 height 1.000
 		
-		write (keyword => keyword_line_width, parameters => to_string (text.width));
+		write (keyword => keyword_line_width, parameters => to_string (text.line_width));
 		write (keyword => keyword_alignment, parameters => space &
 				keyword_horizontal & et_libraries.to_string (text.alignment.horizontal) & space &
 				keyword_vertical   & et_libraries.to_string (text.alignment.vertical)
@@ -395,7 +395,7 @@ package body et_project is
 		write (keyword => keyword_size, parameters => space & keyword_width & to_string (text.dimensions.width) 
 			   & space & keyword_height & to_string (text.dimensions.height)); -- size width 1.000 height 1.000
 		
-		write (keyword => keyword_line_width, parameters => to_string (text.width));
+		write (keyword => keyword_line_width, parameters => to_string (text.line_width));
 		write (keyword => keyword_alignment, parameters => space &
 				keyword_horizontal & et_libraries.to_string (text.alignment.horizontal) & space &
 				keyword_vertical   & et_libraries.to_string (text.alignment.vertical)
@@ -2877,37 +2877,37 @@ package body et_project is
 				return size;
 			end to_size;
 
--- 			function to_size (
--- 				line : in type_fields_of_line; -- "size x 30 y 40"
--- 				from : in positive)
--- 				return et_schematic.type_submodule_size is
--- 				use et_coordinates;
--- 				
--- 				size : et_schematic.type_submodule_size; -- to be returned
--- 
--- 				place : positive := from; -- the field being read from given line
--- 
--- 				-- CS: flags to detect missing x or y
--- 			begin
--- 				while place <= positive (field_count (line)) loop
--- 
--- 					-- We expect after the x the corresponding value for x
--- 					if f (line, place) = keyword_pos_x then
--- 						size.x := to_distance (f (line, place + 1));
--- 
--- 					-- We expect after the y the corresponding value for y
--- 					elsif f (line, place) = keyword_pos_y then
--- 						size.y := to_distance (f (line, place + 1));
--- 
--- 					else
--- 						invalid_keyword (f (line, place));
--- 					end if;
--- 						
--- 					place := place + 2;
--- 				end loop;
--- 				
--- 				return size;
--- 			end to_size;
+			function to_dimensions (
+				line : in type_fields_of_line; -- "size widht 30 height 40"
+				from : in positive)
+				return et_pcb.type_text_dimensions is
+				use et_pcb_coordinates;
+				
+				dim : et_pcb.type_text_dimensions; -- to be returned
+
+				place : positive := from; -- the field being read from given line
+
+				-- CS: flags to detect missing x or y
+			begin
+				while place <= positive (field_count (line)) loop
+
+					-- We expect after the "width" the corresponding value for the text width
+					if f (line, place) = keyword_width then
+						dim.width := to_distance (f (line, place + 1));
+
+					-- We expect after the "height" the corresponding value for the text height
+					elsif f (line, place) = keyword_height then
+						dim.height := to_distance (f (line, place + 1));
+
+					else
+						invalid_keyword (f (line, place));
+					end if;
+						
+					place := place + 2;
+				end loop;
+				
+				return dim;
+			end to_dimensions;
 			
 			function to_position ( -- CS combine with next function to_position using the tag test ?
 			-- Returns a type_point_2d in the the layout.
@@ -4488,9 +4488,12 @@ package body et_project is
 													-- extract position of placeholder starting at field 2
 													device_text_placeholder_position := to_position (line, 2);
 
-												elsif kw = keyword_size then -- size x 3.000 y 5
+												elsif kw = keyword_size then -- size width 3.000 height 5
 													expect_field_count (line, 5);
-													-- CS
+
+													-- extract dimensions of placeholder text starting at field 2
+													device_text_placeholder.dimensions := to_dimensions (line, 2);
+
 												else
 													invalid_keyword (kw);
 												end if;
