@@ -3153,9 +3153,11 @@ package body et_project is
 			device_variant			: et_libraries.type_component_variant_name.bounded_string; -- D, N
 			device_position			: et_pcb_coordinates.type_package_position; -- incl. angle and face
 
-			device_text_placeholder_position: et_pcb_coordinates.type_package_position;
+			-- These two variables assist when a particular placeholder is appended to the
+			-- list of placholders in silk screen, assy doc and their top or bottom face:
+			device_text_placeholder_position: et_pcb_coordinates.type_package_position; -- incl. rotation and face
 			device_text_placeholder_layer	: et_pcb.type_placeholder_package_layer := et_pcb.type_placeholder_package_layer'first; -- silk_screen/assembly_documentation
-			--device_text_placeholder_face	: et_pcb_coordinates.type_face := et_pcb_coordinates.type_face'first; -- top/bottom
+			
 			device_text_placeholder			: et_pcb.type_text_placeholder_package;
 			device_text_placeholders		: et_pcb.type_text_placeholders; -- silk screen, assy doc, top, bottom
 			
@@ -3288,6 +3290,45 @@ package body et_project is
 						note := (others => <>);
 					end insert_note;
 					
+					procedure insert_package_placeholder is
+						use et_pcb;
+						use et_pcb_coordinates;
+					begin
+						case device_text_placeholder_layer is
+							when SILK_SCREEN => 
+								case get_face (device_text_placeholder_position) is
+
+									when TOP =>
+										type_text_placeholders_package.append (
+											container	=> device_text_placeholders.silk_screen.top,
+											new_item	=> device_text_placeholder);
+										
+									when BOTTOM =>
+										type_text_placeholders_package.append (
+											container	=> device_text_placeholders.silk_screen.bottom,
+											new_item	=> device_text_placeholder);
+								end case;
+								
+							when ASSEMBLY_DOCUMENTATION =>
+								case get_face (device_text_placeholder_position) is
+
+									when TOP =>
+										type_text_placeholders_package.append (
+											container	=> device_text_placeholders.assy_doc.top,
+											new_item	=> device_text_placeholder);
+
+									when BOTTOM =>
+										type_text_placeholders_package.append (
+											container	=> device_text_placeholders.assy_doc.bottom,
+											new_item	=> device_text_placeholder);
+								end case;
+
+						end case;
+
+						-- reset placeholder for next placeholder
+						device_text_placeholder := (others => <>);
+
+					end insert_package_placeholder;
 					
 				begin -- execute_section
 					case stack.current is
@@ -3637,6 +3678,25 @@ package body et_project is
 									
 								when others => invalid_section;
 							end case;
+
+						when SEC_PLACEHOLDER =>
+							case stack.parent is
+								when SEC_PLACEHOLDERS =>
+									case stack.parent (degree => 2) is
+										when SEC_PACKAGE =>
+
+											-- insert placeholder in collection of text placeholders
+											insert_package_placeholder;
+
+										when SEC_UNIT =>
+											null; -- CS
+
+										when others => invalid_section;
+									end case;
+
+								when others => invalid_section;
+							end case;
+
 							
 						when others => null; -- CS
 					end case;
