@@ -1635,8 +1635,8 @@ package body et_kicad_pcb is
 						when SEC_FONT =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => text.size_x := to_distance (to_string (arg));
-								when 2 => text.size_y := to_distance (to_string (arg));
+								when 1 => text.dimensions.width := to_distance (to_string (arg));
+								when 2 => text.dimensions.height := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -3305,12 +3305,12 @@ package body et_kicad_pcb is
 		-- compose the final terminal.
 		terminal_name 			: et_libraries.type_terminal_name.bounded_string;
 		terminal_technology		: type_assembly_technology;
-		terminal_pad_shape_tht 		: type_pad_shape_tht;
-		terminal_pad_shape_smt 		: type_pad_shape_smt;
+		terminal_pad_shape_tht 	: type_pad_shape_tht;
+		terminal_pad_shape_smt 	: type_pad_shape_smt;
 
 		terminal_face 			: et_pcb_coordinates.type_face;
 		terminal_drill_size		: type_drill_size; 
-		terminal_hole_shape	: type_tht_hole_shape; -- for slotted holes
+		terminal_hole_shape		: type_tht_hole_shape; -- for slotted holes
 		terminal_milling_size_x	: type_pad_milling_size;
 		terminal_milling_size_y	: type_pad_milling_size;
 
@@ -4351,11 +4351,11 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									package_text.size_x := to_distance (to_string (arg));
-									board_text.size_x := to_distance (to_string (arg));
+									package_text.dimensions.width := to_distance (to_string (arg));
+									board_text.dimensions.width := to_distance (to_string (arg));
 								when 2 => 
-									package_text.size_y := to_distance (to_string (arg));
-									board_text.size_y := to_distance (to_string (arg));
+									package_text.dimensions.height := to_distance (to_string (arg));
+									board_text.dimensions.height := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 

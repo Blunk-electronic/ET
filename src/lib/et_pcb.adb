@@ -223,8 +223,8 @@ package body et_pcb is
 		use et_coordinates;
 	begin
 		return to_string (text.position) & latin_1.space
-			& "size (x" & axis_separator & "y)" 
-			& to_string (text.size_x) & latin_1.space & axis_separator & to_string (text.size_y)
+			& "size (width" & axis_separator & "height)" 
+			& to_string (text.dimensions.width) & latin_1.space & axis_separator & to_string (text.dimensions.height)
 			& " line width" & to_string (text.width)
 			& to_string (get_angle (text.position), preamble => true)
 			& et_libraries.to_string (text.alignment)

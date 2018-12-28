@@ -299,6 +299,7 @@ package et_project is
 	keyword_module					: constant string := "module";
 	keyword_layer					: constant string := "layer";
 	keyword_width					: constant string := "width";
+	keyword_height					: constant string := "height";	
 	keyword_center					: constant string := "center";
 	keyword_diameter				: constant string := "diameter";
 	keyword_restring_outer_layers	: constant string := "restring_outer_layers";

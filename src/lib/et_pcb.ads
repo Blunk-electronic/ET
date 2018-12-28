@@ -86,6 +86,11 @@ package et_pcb is
 	text_size_max : constant type_distance := 100.0;
 	subtype type_text_size is type_distance range text_size_min .. text_size_max;
 
+	type type_text_dimensions is record
+		width	: type_text_size;
+		height	: type_text_size;
+	end record;
+
 	procedure validate_text_size (size : in type_distance);
 	-- Checks whether given text size is in range of type_text_size.
 
@@ -208,8 +213,9 @@ package et_pcb is
 	-- TEXT IN GENERAL
 	type type_text is abstract tagged record
 		position	: type_point_2d_with_angle;
-		size_x		: type_text_size;
-		size_y		: type_text_size;
+		--size_x		: type_text_size;
+		--size_y		: type_text_size;
+		dimensions	: type_text_dimensions;
 		width		: type_text_line_width; -- CS rename to line_width
 		alignment	: et_libraries.type_text_alignment;
 		hidden		: boolean; -- CS use type with yes or no -- CS useful at all ?

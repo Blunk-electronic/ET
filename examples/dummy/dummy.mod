@@ -173,10 +173,9 @@
 				[PLACEHOLDER BEGIN] 
 					meaning reference/value/purpose
 					layer assembly_documentation/silk_screen
-					position x 135 y 205 rotation 270 
-					face top/bottom
+					position x 135 y 205 rotation 270 face top/bottom
 					alignment horizontal center vertical bottom
-					size x 2 y 2 
+					size width 2 heigth 2 
 					line_width 0.15
 					hidden yes/no
 				[PLACEHOLDER END] 

@@ -371,8 +371,9 @@ package body et_project is
 			space & keyword_rotation & to_string (get_angle (text.position))
 			  ); -- position x 0.000 y 5.555 rotation 0.00
 		
-		write (keyword => keyword_size, parameters => space & keyword_pos_x & to_string (text.size_x) 
-				& space & keyword_pos_y & to_string (text.size_y));
+		write (keyword => keyword_size, parameters => space & keyword_width & to_string (text.dimensions.width) 
+		   & space & keyword_height & to_string (text.dimensions.height)); -- size width 1.000 height 1.000
+		
 		write (keyword => keyword_line_width, parameters => to_string (text.width));
 		write (keyword => keyword_alignment, parameters => space &
 				keyword_horizontal & et_libraries.to_string (text.alignment.horizontal) & space &
@@ -391,8 +392,9 @@ package body et_project is
 			space & keyword_rotation & to_string (get_angle (text.position)) &
 			space & keyword_face & to_string (face)); -- position x 0.000 y 5.555 rotation 0.00 face top
 		
-		write (keyword => keyword_size, parameters => space & keyword_pos_x & to_string (text.size_x) 
-				& space & keyword_pos_y & to_string (text.size_y));
+		write (keyword => keyword_size, parameters => space & keyword_width & to_string (text.dimensions.width) 
+			   & space & keyword_height & to_string (text.dimensions.height)); -- size width 1.000 height 1.000
+		
 		write (keyword => keyword_line_width, parameters => to_string (text.width));
 		write (keyword => keyword_alignment, parameters => space &
 				keyword_horizontal & et_libraries.to_string (text.alignment.horizontal) & space &
