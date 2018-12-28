@@ -216,7 +216,7 @@ package et_pcb is
 		dimensions	: type_text_dimensions;
 		line_width	: type_text_line_width;
 		alignment	: et_libraries.type_text_alignment;
-		hidden		: boolean; -- CS use type with yes or no -- CS useful at all ?
+		--hidden		: boolean; -- CS currently no need 
 	end record;
 
 	function text_properties (text : in type_text) return string;

@@ -160,7 +160,7 @@
 						size 2.5
 						style
 						line_width 0.15
-						alignment
+						alignment horizontal center vertical bottom
 					[PLACEHOLDER END] 
 				[PLACEHOLDERS END] 
 			[UNIT END]
@@ -177,7 +177,6 @@
 					alignment horizontal center vertical bottom
 					size width 2 heigth 2 
 					line_width 0.15
-					hidden yes/no
 				[PLACEHOLDER END] 
 			[PLACEHOLDERS END] 
 		[PACKAGE END]
@@ -242,7 +241,6 @@
 				rotation 0
 				content "bla"
 				alignment center
-				hidden yes/no
 			[TEXT END]
 
 			[PLACEHOLDER BEGIN]
@@ -252,7 +250,6 @@
 				rotation 0
 				meaning project_name
 				alignment center
-				hidden yes/no
 			[PLACEHOLDER END]
 			
 		[TOP END]
@@ -356,7 +353,6 @@
 				rotation 0
 				content "bla"
 				alignment center
-				hidden yes/no
 			[TEXT END]
 
 			[PLACEHOLDER BEGIN]
@@ -366,7 +362,6 @@
 				rotation 0
 				meaning project_name
 				alignment center
-				hidden yes/no
 			[PLACEHOLDER END]
 			
 		[TOP END]
@@ -486,7 +481,6 @@
 			rotation 0
 			content "bla"
 			alignment center
-			hidden yes/no
 		[TEXT END]
 
 		[PLACEHOLDER BEGIN]
@@ -497,7 +491,6 @@
 			rotation 0
 			meaning project_name
 			alignment center
-			hidden yes/no
 		[PLACEHOLDER END]
 		
 	[COPPER END]

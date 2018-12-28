@@ -379,7 +379,7 @@ package body et_project is
 				keyword_horizontal & et_libraries.to_string (text.alignment.horizontal) & space &
 				keyword_vertical   & et_libraries.to_string (text.alignment.vertical)
 				);
-		write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
+		-- CS write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
 	end write_text_properties;
 
 	procedure write_text_properties_with_face (
@@ -400,7 +400,7 @@ package body et_project is
 				keyword_horizontal & et_libraries.to_string (text.alignment.horizontal) & space &
 				keyword_vertical   & et_libraries.to_string (text.alignment.vertical)
 				);
-		write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
+		-- CS write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
 	end write_text_properties_with_face;
 		
 	

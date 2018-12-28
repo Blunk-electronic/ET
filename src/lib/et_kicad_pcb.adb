@@ -1308,7 +1308,7 @@ package body et_kicad_pcb is
 				when SEC_FP_TEXT =>
 					case section.parent is
 						when SEC_MODULE =>
-							text.hidden := false; -- "hide" flag is optionally provided as last argument. if not, default to false
+							-- CS text.hidden := false; -- "hide" flag is optionally provided as last argument. if not, default to false
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
@@ -1342,7 +1342,8 @@ package body et_kicad_pcb is
 									
 								when 3 => 
 									if to_string (arg) = keyword_fp_text_hide then
-										text.hidden := true;
+										-- CS text.hidden := true;
+										null;
 									end if;
 									
 								when others => too_many_arguments;
@@ -4188,7 +4189,7 @@ package body et_kicad_pcb is
 							end case;
 
 						when SEC_FP_TEXT =>
-							package_text.hidden := false; -- "hide" flag is optionally provided as last argument. if not, default to false
+							-- CS package_text.hidden := false; -- "hide" flag is optionally provided as last argument. if not, default to false
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
@@ -4232,7 +4233,8 @@ package body et_kicad_pcb is
 									
 								when 3 => 
 									if to_string (arg) = keyword_fp_text_hide then
-										package_text.hidden := true;
+										-- CS package_text.hidden := true;
+										null;
 									end if;
 									
 								when others => too_many_arguments;

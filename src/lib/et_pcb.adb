@@ -228,7 +228,7 @@ package body et_pcb is
 			& " line width" & to_string (text.line_width)
 			& to_string (get_angle (text.position), preamble => true)
 			& et_libraries.to_string (text.alignment)
-			& " hidden " & boolean'image (text.hidden)
+			-- CS & " hidden " & boolean'image (text.hidden)
 			;
 	end text_properties;
 	
