@@ -3138,6 +3138,9 @@ package body et_project is
 
 			note : et_schematic.type_text;
 
+			-- The temporarily device will exist where "device" points at:
+			device					: access et_schematic.type_device;
+			
 			device_name				: et_libraries.type_component_reference; -- C12
 			device_model			: et_libraries.type_device_library_name.bounded_string; -- ../libraries/transistor/pnp.dev
 			device_value			: et_libraries.type_component_value.bounded_string; -- 470R
@@ -3157,8 +3160,11 @@ package body et_project is
 			-- list of placholders in silk screen, assy doc and their top or bottom face:
 			device_text_placeholder_position: et_pcb_coordinates.type_package_position; -- incl. rotation and face
 			device_text_placeholder_layer	: et_pcb.type_placeholder_package_layer := et_pcb.type_placeholder_package_layer'first; -- silk_screen/assembly_documentation
-			
+
+			-- a single temporarily placeholder of a package
 			device_text_placeholder			: et_pcb.type_text_placeholder_package;
+
+			-- the temporarily collection of placeholders of packages
 			device_text_placeholders		: et_pcb.type_text_placeholders; -- silk screen, assy doc, top, bottom
 			
 			
@@ -3694,6 +3700,22 @@ package body et_project is
 										when others => invalid_section;
 									end case;
 
+								when others => invalid_section;
+							end case;
+
+						when SEC_PLACEHOLDERS =>
+							case stack.parent is
+								when SEC_PACKAGE =>
+
+									-- insert placeholder collection in temporarily device 
+									device.text_placeholders :=	device_text_placeholders;
+
+									-- clean up for next collection of placeholders
+									device_text_placeholders := (others => <>);
+
+								when SEC_UNIT =>
+									null; -- CS
+									
 								when others => invalid_section;
 							end case;
 
@@ -4469,10 +4491,24 @@ package body et_project is
 											expect_field_count (line, 2);
 											device_name := et_schematic.to_component_reference (f (line, 2));
 
+										-- As soon as the appearance becomes clear, a temporarily device is
+										-- created where pointer "device" is pointing at:
 										elsif kw = keyword_appearance then -- sch_pcb, sch
 											expect_field_count (line, 2);
 											device_appearance := et_libraries.to_appearance (f (line, 2));
-											
+
+											case device_appearance is
+												when et_libraries.SCH =>
+													device := new et_schematic.type_device'(
+														appearance	=> et_libraries.SCH,
+														others		=> <>);
+
+												when et_libraries.SCH_PCB =>
+													device := new et_schematic.type_device'(
+														appearance	=> et_libraries.SCH_PCB,
+														others		=> <>);
+											end case;
+													
 										elsif kw = keyword_value then -- value 100n
 											expect_field_count (line, 2);
 											device_value := et_libraries.to_value (f (line, 2));
@@ -4575,6 +4611,12 @@ package body et_project is
 										when others => invalid_section;
 									end case;
 									
+								when others => invalid_section;
+							end case;
+
+						when SEC_PLACEHOLDERS =>
+							case stack.parent is
+								when SEC_PACKAGE => null;
 								when others => invalid_section;
 							end case;
 							
