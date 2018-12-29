@@ -4164,6 +4164,10 @@ package body et_project is
 										end if;
 									end;
 
+								when SEC_TOP => 
+									null; -- CS
+
+									
 								when others => invalid_section;
 							end case;
 
