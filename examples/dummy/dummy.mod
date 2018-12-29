@@ -145,7 +145,7 @@
 		model $ET_LIB_DIR/resistors/single.dev
 		bom no/yes
 		partcode BEL_R_PAC_S_0805_VAL_100R
-		purpose 
+		purpose brightness_adjustment
 		variant N
 		
 		[UNITS BEGIN]

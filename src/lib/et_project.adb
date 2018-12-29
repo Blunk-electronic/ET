@@ -3150,7 +3150,10 @@ package body et_project is
 			device_unit_purpose		: et_libraries.type_text_placeholder (meaning => et_libraries.purpose);
 			--device_unit_partcode	: et_libraries.type_text_placeholder (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"
 			--device_unit_bom			: et_libraries.type_text_placeholder (meaning => et_libraries.bom);
+
+			-- temporarily collection of units:
 			device_units			: et_schematic.type_units.map; -- PWR, A, B, ...
+			
 			device_partcode			: et_libraries.type_component_partcode.bounded_string;
 			device_purpose			: et_libraries.type_component_purpose.bounded_string;
 			device_bom				: et_libraries.type_bom;
@@ -3340,7 +3343,7 @@ package body et_project is
 					procedure insert_unit is 
 						use et_libraries;
 					begin
-						log ("unit " & to_string (device_unit_name), log_threshold + 2);
+						--log ("unit " & to_string (device_unit_name), log_threshold + 2);
 						-- Depending on the appearance of the device, a virtual or real unit
 						-- is inserted in the unit list of the device.
 						case device_appearance is
@@ -3781,6 +3784,21 @@ package body et_project is
 														
 								when others => invalid_section;
 							end case;
+
+						when SEC_UNITS =>
+							case stack.parent is
+								when SEC_DEVICE =>
+									log ("device " & et_libraries.to_string (device_name), log_threshold + 2);
+									
+									-- insert temporarily collection of units in device
+									device.units := device_units;
+
+									-- clear temporarily collection of units for next device
+									et_schematic.type_units.clear (device_units);
+									
+								when others => invalid_section;
+							end case;
+
 							
 						when others => null; -- CS
 					end case;
