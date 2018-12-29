@@ -114,8 +114,8 @@ package et_schematic is
 			when et_libraries.SCH => null; -- CS
 			when et_libraries.SCH_PCB =>
 				purpose		: et_libraries.type_text_placeholder (meaning => et_libraries.purpose); -- to be filled in schematic later by the user
-				partcode	: et_libraries.type_text_placeholder (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"
-				bom			: et_libraries.type_text_placeholder (meaning => et_libraries.bom);
+				--partcode	: et_libraries.type_text_placeholder (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"
+				--bom			: et_libraries.type_text_placeholder (meaning => et_libraries.bom);
 		end case;
 		-- NOTE: The placeholders are defined in et_libraries. Thus they have only
 		-- basic coordinates (x/y). Via the unit position the sheet number can be obtained.

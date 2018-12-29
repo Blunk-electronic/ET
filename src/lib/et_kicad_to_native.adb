@@ -2495,9 +2495,9 @@ package body et_kicad_to_native is
 							unit_native_real := (et_schematic.type_unit_base (element (unit_cursor_kicad))
 											 with -- stuff that comes with a real device:
 												 appearance => et_libraries.SCH_PCB,
-												 purpose	=> element (unit_cursor_kicad).purpose,
-												 partcode	=> element (unit_cursor_kicad).partcode,
-												 bom		=> element (unit_cursor_kicad).bom
+												 purpose	=> element (unit_cursor_kicad).purpose
+												 --partcode	=> element (unit_cursor_kicad).partcode
+												 --bom		=> element (unit_cursor_kicad).bom
 												);
 							
 							et_schematic.type_units.insert (

@@ -1364,8 +1364,8 @@ package body et_project is
 
 					if element (unit_cursor).appearance = et_libraries.SCH_PCB then
 						write_placeholder (element (unit_cursor).purpose);
-						write_placeholder (element (unit_cursor).partcode);
-						write_placeholder (element (unit_cursor).bom);
+						--write_placeholder (element (unit_cursor).partcode);
+						--write_placeholder (element (unit_cursor).bom);
 					end if;
 
 					section_mark (section_placeholders, FOOTER);
@@ -3148,8 +3148,8 @@ package body et_project is
 			device_unit				: et_schematic.type_unit_base;
 			device_unit_name		: et_libraries.type_unit_name.bounded_string; -- GPIO_BANK_1
 			device_unit_purpose		: et_libraries.type_text_placeholder (meaning => et_libraries.purpose);
-			device_unit_partcode	: et_libraries.type_text_placeholder (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"
-			device_unit_bom			: et_libraries.type_text_placeholder (meaning => et_libraries.bom);
+			--device_unit_partcode	: et_libraries.type_text_placeholder (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"
+			--device_unit_bom			: et_libraries.type_text_placeholder (meaning => et_libraries.bom);
 			device_units			: et_schematic.type_units.map; -- PWR, A, B, ...
 			device_partcode			: et_libraries.type_component_partcode.bounded_string;
 			device_purpose			: et_libraries.type_component_purpose.bounded_string;
@@ -3340,6 +3340,7 @@ package body et_project is
 					procedure insert_unit is 
 						use et_libraries;
 					begin
+						log ("unit " & to_string (device_unit_name), log_threshold + 2);
 						-- Depending on the appearance of the device, a virtual or real unit
 						-- is inserted in the unit list of the device.
 						case device_appearance is
@@ -3356,14 +3357,16 @@ package body et_project is
 									key			=> device_unit_name,
 									new_item	=> (device_unit with
 													appearance	=> et_libraries.SCH_PCB,
-													purpose		=> device_unit_purpose,
-													partcode	=> device_unit_partcode,
-													bom			=> device_unit_bom));
+													purpose		=> device_unit_purpose));
+													--partcode	=> device_unit_partcode));
+													--bom			=> device_unit_bom));
 						end case;
 
 						-- clean up for next unit
 						device_unit_name := unit_name_default;
 						device_unit := (others => <>);
+
+						-- CS reset placeholders for name, value and purpose ?
 					end insert_unit;
 					
 				begin -- execute_section
