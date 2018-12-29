@@ -3336,6 +3336,35 @@ package body et_project is
 						device_text_placeholder := (others => <>);
 
 					end insert_package_placeholder;
+
+					procedure insert_unit is 
+						use et_libraries;
+					begin
+						-- Depending on the appearance of the device, a virtual or real unit
+						-- is inserted in the unit list of the device.
+						case device_appearance is
+							when SCH =>
+								et_schematic.type_units.insert (
+									container	=> device_units,
+									key			=> device_unit_name,
+									new_item	=> (device_unit with appearance	=> et_libraries.SCH));
+
+							when SCH_PCB =>
+								-- A unit of a real device has placeholders:
+								et_schematic.type_units.insert (
+									container	=> device_units,
+									key			=> device_unit_name,
+									new_item	=> (device_unit with
+													appearance	=> et_libraries.SCH_PCB,
+													purpose		=> device_unit_purpose,
+													partcode	=> device_unit_partcode,
+													bom			=> device_unit_bom));
+						end case;
+
+						-- clean up for next unit
+						device_unit_name := unit_name_default;
+						device_unit := (others => <>);
+					end insert_unit;
 					
 				begin -- execute_section
 					case stack.current is
@@ -3737,6 +3766,16 @@ package body et_project is
 									-- reset device package position for next device
 									device_position := et_pcb_coordinates.package_position_default;
 
+								when others => invalid_section;
+							end case;
+
+						when SEC_UNIT =>
+							case stack.parent is
+								when SEC_UNITS =>
+
+									-- insert unit in temporarily collection of units
+									insert_unit;
+														
 								when others => invalid_section;
 							end case;
 							

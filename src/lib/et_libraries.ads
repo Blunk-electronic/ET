@@ -784,6 +784,8 @@ package et_libraries is
 	-- CS unit_name_characters, length check, character check
 	package type_unit_name is new generic_bounded_length (unit_name_length_max); use type_unit_name;
 
+	unit_name_default : constant type_unit_name.bounded_string := type_unit_name.to_bounded_string ("");
+	
 	function to_string (unit_name : in type_unit_name.bounded_string) return string;
 	-- Returns the given unit name as string.
 

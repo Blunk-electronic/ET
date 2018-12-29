@@ -98,7 +98,7 @@ package et_schematic is
 		range et_libraries.SCH .. et_libraries.SCH_PCB;
 
 	-- In a schematic we find units spread all over.
-	-- A unit is a subsection of a component.
+	-- A unit is a subsection of a device.
 	-- A unit has placeholders for text like reference (like IC303), value (like 7400), ...
 	type type_unit_base is tagged record
 		position		: et_coordinates.type_coordinates;
