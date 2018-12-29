@@ -3146,6 +3146,7 @@ package body et_project is
 			device_value			: et_libraries.type_component_value.bounded_string; -- 470R
 			device_appearance		: et_schematic.type_appearance_schematic;
 			device_unit				: et_schematic.type_unit_base;
+			device_unit_name		: et_libraries.type_unit_name.bounded_string; -- GPIO_BANK_1
 			device_unit_purpose		: et_libraries.type_text_placeholder (meaning => et_libraries.purpose);
 			device_unit_partcode	: et_libraries.type_text_placeholder (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"
 			device_unit_bom			: et_libraries.type_text_placeholder (meaning => et_libraries.bom);
@@ -3549,6 +3550,9 @@ package body et_project is
 									et_pcb.type_copper_lines_pcb.append (route.lines, route_line);
 									route_line := (others => <>); -- clean up for next line
 
+								when SEC_TOP => 
+									null; -- CS
+									
 								when others => invalid_section;
 							end case;
 							
@@ -3707,7 +3711,9 @@ package body et_project is
 							case stack.parent is
 								when SEC_PACKAGE =>
 
-									-- insert placeholder collection in temporarily device 
+									-- Insert placeholder collection in temporarily device:
+									-- CS: constraint error will arise here if the device is virtual.
+									-- issue warning and skip this statement in this case:
 									device.text_placeholders :=	device_text_placeholders;
 
 									-- clean up for next collection of placeholders
@@ -3719,6 +3725,20 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
+						when SEC_PACKAGE =>
+							case stack.parent is
+								when SEC_DEVICE =>
+
+									-- Assign coordinates of package to temporarily device:
+									-- CS: constraint error will arise here if the device is virtual.
+									-- issue warning and skip this statement in this case:
+									device.position := device_position;
+
+									-- reset device package position for next device
+									device_position := et_pcb_coordinates.package_position_default;
+
+								when others => invalid_section;
+							end case;
 							
 						when others => null; -- CS
 					end case;
@@ -4623,6 +4643,42 @@ package body et_project is
 								when SEC_PACKAGE => null;
 								when others => invalid_section;
 							end case;
+
+						when SEC_UNIT =>
+							case stack.parent is
+								when SEC_UNITS =>
+									declare
+										kw : string := f (line, 1);
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_name then -- name 1, GPIO_BANK_1, ...
+											expect_field_count (line, 2);
+											device_unit_name := et_libraries.to_unit_name (f (line, 2));
+											
+										elsif kw = keyword_position then -- position sheet 1 x 1.000 y 5.555
+											expect_field_count (line, 7);
+
+											-- extract position of placeholder starting at field 2
+											device_unit.position := to_position (line, 2);
+
+										elsif kw = keyword_rotation then -- rotation 180.0
+											expect_field_count (line, 2);
+
+											-- extract dimensions of placeholder text starting at field 2
+											device_unit.orientation := et_coordinates.to_angle (f (line, 2));
+
+										elsif kw = keyword_mirrored then -- mirrored no/x_axis/y_axis
+											expect_field_count (line, 2);
+											device_unit.mirror := et_schematic.to_mirror_style (f (line, 2));
+
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+									
+								when others => invalid_section;
+							end case;
+
 							
 						when others => null; -- CS
 					end case;

@@ -90,6 +90,8 @@ package et_schematic is
 		return string;
 	-- returns the given mirror style as string
 
+	function to_mirror_style (style : in string) return type_mirror;
+	
 	-- In a schematic we handle only virtual components (like GND symbols)
 	-- and those which appear in both schematic an layout (so called real components):
 	subtype type_appearance_schematic is et_libraries.type_component_appearance 

@@ -455,6 +455,10 @@ package body et_schematic is
 			return latin_1.space & to_lower (type_mirror'image (mirror));
 		end if;
 	end to_string;
+
+	function to_mirror_style (style : in string) return type_mirror is begin
+		return type_mirror'value (style);
+	end to_mirror_style;
 	
 	function show_danger (danger : in type_danger) return string is
 		preamble : constant string (1..9) := " RISK OF ";
