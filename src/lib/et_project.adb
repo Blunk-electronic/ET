@@ -1354,7 +1354,7 @@ package body et_project is
 					section_mark (section_unit, HEADER);
 					write (keyword => keyword_name, parameters => et_libraries.to_string (key (unit_cursor)), space => true);
 					write (keyword => keyword_position, parameters => position (element (unit_cursor).position)); -- position sheet 1 x 147.32 y 96.97
-					write (keyword => keyword_rotation, parameters => rotation (element (unit_cursor).orientation)); -- rotation 180.0
+					write (keyword => keyword_rotation, parameters => rotation (element (unit_cursor).rotation)); -- rotation 180.0
 					write (keyword => keyword_mirrored, parameters => to_string (element (unit_cursor).mirror, verbose => false)); -- x_axis, y_axis, none
 
 					section_mark (section_placeholders, HEADER);
@@ -4665,7 +4665,7 @@ package body et_project is
 											expect_field_count (line, 2);
 
 											-- extract dimensions of placeholder text starting at field 2
-											device_unit.orientation := et_coordinates.to_angle (f (line, 2));
+											device_unit.rotation := et_coordinates.to_angle (f (line, 2));
 
 										elsif kw = keyword_mirrored then -- mirrored no/x_axis/y_axis
 											expect_field_count (line, 2);

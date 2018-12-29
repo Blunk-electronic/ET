@@ -102,7 +102,7 @@ package et_schematic is
 	-- A unit has placeholders for text like reference (like IC303), value (like 7400), ...
 	type type_unit_base is tagged record
 		position		: et_coordinates.type_coordinates;
-		orientation		: et_coordinates.type_angle; -- CS rename to rotation
+		rotation		: et_coordinates.type_angle;
 		mirror			: type_mirror;
 		reference		: et_libraries.type_text_placeholder (meaning => et_libraries.reference);
 		value			: et_libraries.type_text_placeholder (meaning => et_libraries.value);

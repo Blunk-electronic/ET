@@ -170,7 +170,7 @@ package body et_kicad is
 		unit_cursor : type_units_schematic.cursor;
 	begin
 		unit_cursor := type_units_schematic.find (container => units, key => name);
-		return type_units_schematic.element (unit_cursor).orientation;
+		return type_units_schematic.element (unit_cursor).rotation;
 	end orientation_of_unit;
 
 	
@@ -203,7 +203,7 @@ package body et_kicad is
 		log (to_string (position => type_units_schematic.element (unit).position), log_threshold);
 
 		-- orientation or angle
-		log (to_string (type_units_schematic.element (unit).orientation), log_threshold);
+		log (to_string (type_units_schematic.element (unit).rotation), log_threshold);
 
 		-- mirror style
 		log (et_schematic.to_string (type_units_schematic.element (unit).mirror, verbose => true), log_threshold);
@@ -8233,7 +8233,7 @@ package body et_kicad is
 								unit 		=> (
 									appearance		=> sch,
 									position		=> position,
-									orientation		=> orientation,
+									rotation		=> orientation,
 									mirror			=> mirror,
 									--name			=> unit_name,
 									timestamp		=> timestamp,
@@ -8263,7 +8263,7 @@ package body et_kicad is
 								unit 		=> (
 									appearance		=> sch_pcb,
 									position		=> position,
-									orientation		=> orientation,
+									rotation		=> orientation,
 									mirror			=> mirror,
 									--name			=> unit_name,
 									timestamp		=> timestamp,
