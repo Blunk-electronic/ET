@@ -721,8 +721,8 @@ package body et_libraries is
 		log ("line width"
 			& to_string (width => placeholder.line_width), log_threshold);
 
-		-- angle
-		log (to_string (placeholder.orientation), log_threshold); 
+		-- rotation
+		log (to_string (placeholder.rotation), log_threshold); 
 
 		-- visible
 		log ("visible "
@@ -773,8 +773,8 @@ package body et_libraries is
 		log ("line width" & et_coordinates.to_string (text.line_width),
 			level => log_threshold + 1);
 
-		-- orientation
-		log (to_string (text.orientation), level => log_threshold + 1);
+		-- rotation
+		log (to_string (text.rotation), level => log_threshold + 1);
 
 		-- visible
 		log ("visible " & to_lower(et_libraries.type_text_visible'image (text.visible)),

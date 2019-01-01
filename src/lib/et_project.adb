@@ -355,7 +355,7 @@ package body et_project is
 	begin
 		write (keyword => keyword_size, parameters => et_libraries.to_string (text.size, preamble => false));
 		write (keyword => keyword_line_width, parameters => to_string (text.line_width));
-		write (keyword => keyword_rotation, parameters => rotation (text.orientation));
+		write (keyword => keyword_rotation, parameters => rotation (text.rotation));
 		write (keyword => keyword_style, parameters => et_libraries.to_string (text.style));
 		write (keyword => keyword_alignment, parameters => space &
 				keyword_horizontal & et_libraries.to_string (text.alignment.horizontal) & space &
@@ -4551,7 +4551,7 @@ package body et_project is
 
 										elsif kw = keyword_rotation then -- rotation 90
 											expect_field_count (line, 2);
-											note.orientation := et_coordinates.to_angle (f (line, 2));
+											note.rotation := et_coordinates.to_angle (f (line, 2));
 
 										elsif kw = keyword_style then -- stlye normal/italic
 											expect_field_count (line, 2);
@@ -4726,13 +4726,11 @@ package body et_project is
 												elsif kw = keyword_rotation then -- rotation 90.0
 													expect_field_count (line, 2);
 
-													--unit_placeholder.rotation := et_coordinates.to_angle (f (line, 2));
-													unit_placeholder.orientation := et_coordinates.to_angle (f (line, 2));
+													unit_placeholder.rotation := et_coordinates.to_angle (f (line, 2));
 
 												elsif kw = keyword_style then -- stlye italic
 													expect_field_count (line, 2);
 
-													--unit_placeholder.rotation := et_coordinates.to_angle (f (line, 2));
 													unit_placeholder.style := et_libraries.to_text_style (f (line, 2));
 
 												elsif kw = keyword_alignment then -- alignment horizontal center vertical center

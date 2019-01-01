@@ -1622,8 +1622,8 @@ package body et_kicad is
 
 				use et_coordinates;
 			begin -- to_text
-				text.orientation := to_degrees (et_string_processing.field (line,2));
-				if text.orientation not in type_angle_90 then
+				text.rotation := to_degrees (et_string_processing.field (line,2));
+				if text.rotation not in type_angle_90 then
 					warning_angle_greater_90_degrees;
 				end if;
 				
@@ -1888,7 +1888,7 @@ package body et_kicad is
 				set_y (text.position, mil_to_distance (mil => et_string_processing.field (line,4), warn_on_negative => false));
 				text.size := mil_to_distance (mil => et_string_processing.field (line,5), warn_on_negative => false);
 
-				text.orientation := to_field_orientation (et_string_processing.field  (line,6));
+				text.rotation := to_field_orientation (et_string_processing.field  (line,6));
 				
 				text.visible := to_field_visible (
 					vis_in		=> et_string_processing.field (line,7),
@@ -7376,7 +7376,7 @@ package body et_kicad is
 				set_x (note.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,3)));
 				set_y (note.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,4)));
 				
-				note.orientation   := to_angle (et_string_processing.field (et_kicad.line,5));
+				note.rotation := to_angle (et_string_processing.field (et_kicad.line,5));
 
 				-- set text size and check for excessive size
 				note.size := et_libraries.to_text_size (mil_to_distance (et_string_processing.field (et_kicad.line,6)));
@@ -7532,8 +7532,8 @@ package body et_kicad is
 						-- read content like "N701" or "NetChanger" from field position 3
 						content		=> type_text_content.to_bounded_string (et_string_processing.field (et_kicad.line,3)),
 
-						-- read orientation like "H"
-						orientation	=> to_field_orientation (et_string_processing.field (et_kicad.line,4)),
+						-- read rotation like "H"
+						rotation	=> to_field_orientation (et_string_processing.field (et_kicad.line,4)),
 
 						-- read coordinates
 						position	=> text_position,

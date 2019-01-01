@@ -184,7 +184,7 @@ package et_libraries is
         size    	: type_text_size := text_size_default;
         style		: type_text_style := type_text_style'first;
         line_width	: type_text_line_width := type_text_line_width'first; -- CS: use a general type_line_width ?
-        orientation	: type_angle := 0.0; -- CS rename to rotation
+        rotation	: type_angle := 0.0;
 		visible		: type_text_visible := yes; -- unless assigned otherwise all texts are visible by default -- CS probaby a useless feature ?
 		alignment	: type_text_alignment;
 	end record;
