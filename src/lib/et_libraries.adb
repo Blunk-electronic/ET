@@ -725,8 +725,8 @@ package body et_libraries is
 		log (to_string (placeholder.rotation), log_threshold); 
 
 		-- visible
-		log ("visible "
-			& to_lower (et_libraries.type_text_visible'image (placeholder.visible)), log_threshold);
+		--log ("visible "
+		--	& to_lower (et_libraries.type_text_visible'image (placeholder.visible)), log_threshold);
 
 		-- alignment
 		log ("alignment (hor/vert) "
@@ -777,8 +777,8 @@ package body et_libraries is
 		log (to_string (text.rotation), level => log_threshold + 1);
 
 		-- visible
-		log ("visible " & to_lower(et_libraries.type_text_visible'image (text.visible)),
-			level => log_threshold + 1);
+		--log ("visible " & to_lower(et_libraries.type_text_visible'image (text.visible)),
+		--	level => log_threshold + 1);
 
 		-- alignment
 		log ("alignment (horizontal/vertical) "

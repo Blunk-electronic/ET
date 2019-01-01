@@ -138,7 +138,7 @@ package et_libraries is
 	function to_string (style : in type_text_style) return string;
 	function to_text_style (style : in string) return type_text_style;
 	
-	type type_text_visible is (YES, NO);
+	--type type_text_visible is (YES, NO);
 	
 	type type_text_alignment_horizontal is (LEFT, CENTER, RIGHT);
 	function to_string (alignment : in type_text_alignment_horizontal) return string;
@@ -185,7 +185,7 @@ package et_libraries is
         style		: type_text_style := type_text_style'first;
         line_width	: type_text_line_width := type_text_line_width'first; -- CS: use a general type_line_width ?
         rotation	: type_angle := 0.0;
-		visible		: type_text_visible := yes; -- unless assigned otherwise all texts are visible by default -- CS probaby a useless feature ?
+		--visible		: type_text_visible := yes; -- unless assigned otherwise all texts are visible by default -- CS probaby a useless feature ?
 		alignment	: type_text_alignment;
 	end record;
 

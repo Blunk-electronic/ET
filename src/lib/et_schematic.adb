@@ -128,7 +128,7 @@ package body et_schematic is
 			log (to_string (note.rotation));
 
 			-- visible
-			log ("visible " & to_lower (et_libraries.type_text_visible'image (note.visible)));
+			--log ("visible " & to_lower (et_libraries.type_text_visible'image (note.visible)));
 
 			-- alignment
 			log ("alignment (hor/vert) "

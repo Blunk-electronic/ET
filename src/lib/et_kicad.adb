@@ -936,42 +936,42 @@ package body et_kicad is
 				
 	end to_text_style;
 	
-	function to_field_visible ( 
-	-- Converts the kicad field visible flag to the type_text_visible.
-	-- The parameter "schematic" tells whether to convert a schematic or a component library field.
-		vis_in 		: in string; -- the string to be converted
-		schematic	: in boolean -- set false if it is about fields in a library, true if it is about a schematic field
-		-- Explanation: The visibility of fields in schematic is defined by something like "0001" or "0000".
-		-- In component libraries it is defined by characters like V or I.
-		)
-		return et_libraries.type_text_visible is
-		
-		v_in_lib : type_library_field_visible;
-		v_in_sch : type_schematic_field_visible;
-		v_out : et_libraries.type_text_visible;
-	begin
-		case schematic is
-			
-			when true =>
-				-- As the type_schematic_field_visible has letter V as workaround, we must 
-				-- prepend it here to vis_in before converting to a type_schematic_field_visible:
-				v_in_sch := type_schematic_field_visible'value (schematic_field_visibility_prefix & vis_in);
-				case v_in_sch is
-					when V0000 => v_out := et_libraries.yes; -- visible
-					when V0001 => v_out := et_libraries.no;  -- invisible
-				end case;
-
-			when false =>
-				v_in_lib := type_library_field_visible'value(vis_in);
-				case v_in_lib is
-					when V => v_out := et_libraries.yes;
-					when I => v_out := et_libraries.no;
-				end case;
-
-		end case;
-
-		return v_out;
-	end to_field_visible;
+-- 	function to_field_visible ( 
+-- 	-- Converts the kicad field visible flag to the type_text_visible.
+-- 	-- The parameter "schematic" tells whether to convert a schematic or a component library field.
+-- 		vis_in 		: in string; -- the string to be converted
+-- 		schematic	: in boolean -- set false if it is about fields in a library, true if it is about a schematic field
+-- 		-- Explanation: The visibility of fields in schematic is defined by something like "0001" or "0000".
+-- 		-- In component libraries it is defined by characters like V or I.
+-- 		)
+-- 		return et_libraries.type_text_visible is
+-- 		
+-- 		v_in_lib : type_library_field_visible;
+-- 		v_in_sch : type_schematic_field_visible;
+-- 		v_out : et_libraries.type_text_visible;
+-- 	begin
+-- 		case schematic is
+-- 			
+-- 			when true =>
+-- 				-- As the type_schematic_field_visible has letter V as workaround, we must 
+-- 				-- prepend it here to vis_in before converting to a type_schematic_field_visible:
+-- 				v_in_sch := type_schematic_field_visible'value (schematic_field_visibility_prefix & vis_in);
+-- 				case v_in_sch is
+-- 					when V0000 => v_out := et_libraries.yes; -- visible
+-- 					when V0001 => v_out := et_libraries.no;  -- invisible
+-- 				end case;
+-- 
+-- 			when false =>
+-- 				v_in_lib := type_library_field_visible'value(vis_in);
+-- 				case v_in_lib is
+-- 					when V => v_out := et_libraries.yes;
+-- 					when I => v_out := et_libraries.no;
+-- 				end case;
+-- 
+-- 		end case;
+-- 
+-- 		return v_out;
+-- 	end to_field_visible;
 
 	function to_appearance (line : in type_fields_of_line; schematic : in boolean) 
 	-- Converts the apperance flag to type_component_appearance.
@@ -1890,9 +1890,9 @@ package body et_kicad is
 
 				text.rotation := to_field_orientation (et_string_processing.field  (line,6));
 				
-				text.visible := to_field_visible (
-					vis_in		=> et_string_processing.field (line,7),
-					schematic	=> false);
+				--text.visible := to_field_visible (
+				--	vis_in		=> et_string_processing.field (line,7),
+				--	schematic	=> false);
 			
 				text.alignment.horizontal := to_alignment_horizontal (et_string_processing.field (line,8));
 
@@ -2078,16 +2078,16 @@ package body et_kicad is
 
 							-- If component requires user interaction,
 							-- make sure the purpose text is visible in the graphical representation:
-							if requires_operator_interaction (tmp_prefix) = YES then
-								if field_purpose.visible = no then
-									log_indentation_reset;
-									log (message_error & "component "
-										& to_string (tmp_component_name)
-										& " purpose not visible !",
-										console => true);
-									raise constraint_error;
-								end if;
-							end if;
+							--if requires_operator_interaction (tmp_prefix) = YES then
+							--	if field_purpose.visible = no then
+							--		log_indentation_reset;
+							--		log (message_error & "component "
+							--			& to_string (tmp_component_name)
+							--			& " purpose not visible !",
+							--			console => true);
+							--		raise constraint_error;
+							--	end if;
+							--end if;
 
 							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_purpose.size);
 						end if;
@@ -7543,9 +7543,9 @@ package body et_kicad is
 						line_width	=> type_text_line_width'first,
 
 						-- build text visibility
-						visible		=> to_field_visible (
-											vis_in		=> et_string_processing.field (et_kicad.line,8),
-											schematic	=> true),
+						--visible		=> to_field_visible (
+						--					vis_in		=> et_string_processing.field (et_kicad.line,8),
+						--					schematic	=> true),
 
 						-- build text alignment
 						alignment	=> (
@@ -7840,14 +7840,14 @@ package body et_kicad is
 											end if;
 
 											-- make sure the purpose text is visible in the graphical representation:
-											if field_purpose.visible = no then
-												log_indentation_reset;
-												log (message_error & "component " 
-													& et_libraries.to_string (reference)
-													& " purpose not visible !",
-													console => true);
-												raise constraint_error;
-											end if;
+											--if field_purpose.visible = no then
+											--	log_indentation_reset;
+											--	log (message_error & "component " 
+											--		& et_libraries.to_string (reference)
+											--		& " purpose not visible !",
+											--		console => true);
+											--	raise constraint_error;
+											--end if;
 											
 									end case;
 
