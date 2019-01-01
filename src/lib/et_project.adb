@@ -3170,7 +3170,14 @@ package body et_project is
 
 			-- the temporarily collection of placeholders of packages
 			device_text_placeholders		: et_pcb.type_text_placeholders; -- silk screen, assy doc, top, bottom
-			
+
+			-- temporarily placholders of unit reference (IC12), value (7400) and purpose (clock buffer)
+			unit_placeholder			: et_libraries.type_text_basic;
+			unit_placeholder_position	: et_coordinates.type_2d_point;
+			unit_placeholder_meaning	: et_libraries.type_text_meaning;
+-- 			unit_reference	: et_libraries.type_text_placeholder (meaning => et_libraries.REFERENCE);
+-- 			unit_value		: et_libraries.type_text_placeholder (meaning => et_libraries.VALUE);
+-- 			unit_purpose	: et_libraries.type_text_placeholder (meaning => et_libraries.PURPOSE);
 			
 			procedure process_line is 
 			-- CS: detect if section name is type_section_name_module
@@ -4690,7 +4697,54 @@ package body et_project is
 												end if;
 											end;
 
-										when SEC_UNIT => null; -- CS
+										when SEC_UNIT =>
+											declare
+												kw : string := f (line, 1);
+											begin
+												-- CS: In the following: set a corresponding parameter-found-flag
+												if kw = keyword_meaning then -- meaning reference, value or purpose
+													expect_field_count (line, 2);
+													unit_placeholder_meaning := et_libraries.to_text_meaning (f (line, 2));
+													
+												elsif kw = keyword_position then -- position x 0.000 y 5.555
+													expect_field_count (line, 5);
+
+													-- extract position of placeholder starting at field 2
+													unit_placeholder_position := to_position (line, 2);
+
+												elsif kw = keyword_size then -- size 3.0
+													expect_field_count (line, 2);
+
+													-- extract dimensions of placeholder text starting at field 2
+													unit_placeholder.size := et_coordinates.to_distance (f (line, 2));
+
+												elsif kw = keyword_line_width then -- line_width 0.15
+													expect_field_count (line, 2);
+
+													unit_placeholder.line_width := et_coordinates.to_distance (f (line, 2));
+
+												elsif kw = keyword_rotation then -- rotation 90.0
+													expect_field_count (line, 2);
+
+													--unit_placeholder.rotation := et_coordinates.to_angle (f (line, 2));
+													unit_placeholder.orientation := et_coordinates.to_angle (f (line, 2));
+
+												elsif kw = keyword_style then -- stlye italic
+													expect_field_count (line, 2);
+
+													--unit_placeholder.rotation := et_coordinates.to_angle (f (line, 2));
+													unit_placeholder.style := et_libraries.to_text_style (f (line, 2));
+
+												elsif kw = keyword_alignment then -- alignment horizontal center vertical center
+													expect_field_count (line, 5);
+
+													-- extract alignment of placeholder starting at field 2
+													unit_placeholder.alignment := to_alignment (line, 2);
+													
+												else
+													invalid_keyword (kw);
+												end if;
+											end;
 
 										when others => invalid_section;
 									end case;
@@ -4701,6 +4755,7 @@ package body et_project is
 						when SEC_PLACEHOLDERS =>
 							case stack.parent is
 								when SEC_PACKAGE => null;
+								when SEC_UNIT => null;
 								when others => invalid_section;
 							end case;
 

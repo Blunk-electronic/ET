@@ -171,7 +171,7 @@ package et_libraries is
 		MISC); -- CS: others ?
 
 	function to_string (meaning : in type_text_meaning) return string;
-	-- Converts meaning to string.
+	function to_text_meaning (meaning : in string) return type_text_meaning;
 
 	subtype type_placeholder_text_size is type_distance range 1.0 .. 5.0; -- unit is mm
 	placeholder_text_size_default : constant type_placeholder_text_size := 1.3;

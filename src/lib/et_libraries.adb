@@ -660,11 +660,13 @@ package body et_libraries is
 -- 	end to_string;
 
 
-	function to_string (meaning : in type_text_meaning) return string is
-	-- Returns the given text meaning as uppercase string.
-	begin
+	function to_string (meaning : in type_text_meaning) return string is begin
 		return latin_1.space & to_lower (type_text_meaning'image (meaning));
 	end to_string;
+
+	function to_text_meaning (meaning : in string) return type_text_meaning is begin
+		return type_text_meaning'value (meaning);
+	end to_text_meaning;
 
 	function to_component_attribute_text_size (text : in string) return type_placeholder_text_size is
 	-- Converts a string to a type_placeholder_text_size.
