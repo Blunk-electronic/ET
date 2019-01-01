@@ -209,7 +209,7 @@ package et_libraries is
 
 	-- This is a placeholder for a text. It does not have content yet, but a meaning:
 	type type_text_placeholder (meaning : type_text_meaning) is new type_text_basic with record
-		position	: type_2d_point;		
+		position : type_2d_point;
 	end record;
 
 	procedure write_placeholder_properties (

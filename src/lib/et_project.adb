@@ -3174,10 +3174,10 @@ package body et_project is
 			-- temporarily placholders of unit reference (IC12), value (7400) and purpose (clock buffer)
 			unit_placeholder			: et_libraries.type_text_basic;
 			unit_placeholder_position	: et_coordinates.type_2d_point;
-			unit_placeholder_meaning	: et_libraries.type_text_meaning;
--- 			unit_reference	: et_libraries.type_text_placeholder (meaning => et_libraries.REFERENCE);
--- 			unit_value		: et_libraries.type_text_placeholder (meaning => et_libraries.VALUE);
--- 			unit_purpose	: et_libraries.type_text_placeholder (meaning => et_libraries.PURPOSE);
+			unit_placeholder_meaning	: et_libraries.type_text_meaning := et_libraries.type_text_meaning'first;
+			unit_placeholder_reference	: et_libraries.type_text_placeholder (meaning => et_libraries.REFERENCE);
+			unit_placeholder_value		: et_libraries.type_text_placeholder (meaning => et_libraries.VALUE);
+			unit_placeholder_purpose	: et_libraries.type_text_placeholder (meaning => et_libraries.PURPOSE);
 			
 			procedure process_line is 
 			-- CS: detect if section name is type_section_name_module
@@ -3378,6 +3378,70 @@ package body et_project is
 
 						-- CS reset placeholders for name, value and purpose ?
 					end insert_unit;
+
+-- 					procedure copy_unit_placeholder is 
+-- 					-- Copy temporarily placeholder "unit_placeholder" to the unit being processed.
+-- 					-- Depending on the meaning of the placeholder it becomes a placeholder 
+-- 					-- for the reference (like R4), the value (like 100R) or the purpose (like "brightness control").
+-- 						use et_libraries;
+-- 					begin
+-- 						case unit_placeholder_meaning is
+-- 							when REFERENCE =>
+-- 								device_unit.reference := (unit_placeholder with
+-- 									meaning		=> REFERENCE,
+-- 									position	=> unit_placeholder_position);
+-- 								
+-- 							when VALUE =>
+-- 								device_unit.value := (unit_placeholder with
+-- 									meaning		=> VALUE,
+-- 									position	=> unit_placeholder_position);
+-- 
+-- 							when PURPOSE =>
+-- 								device_unit.purpose := (unit_placeholder with
+-- 									meaning		=> PURPOSE,
+-- 									position	=> unit_placeholder_position);
+-- 
+-- 							when others =>
+-- 								log_indentation_reset;
+-- 								log (message_error & "meaning of placeholder not supported !", console => true);
+-- 								raise constraint_error;
+-- 						end case;
+-- 					end copy_unit_placeholder;
+
+					procedure build_unit_placeholder is
+					-- Builds a placeholder from unit_placeholder_meaning, unit_placeholder_position and unit_placeholder.
+					-- Depending on the meaning of the placeholder it becomes a placeholder 
+					-- for the reference (like R4), the value (like 100R) or the purpose (like "brightness control").
+						use et_libraries;
+					begin
+						case unit_placeholder_meaning is
+							when REFERENCE =>
+								unit_placeholder_reference := (unit_placeholder with
+									meaning		=> REFERENCE,
+									position	=> unit_placeholder_position);
+								
+							when VALUE =>
+								unit_placeholder_value := (unit_placeholder with
+									meaning		=> VALUE,
+									position	=> unit_placeholder_position);
+
+							when PURPOSE =>
+								unit_placeholder_purpose := (unit_placeholder with
+									meaning		=> PURPOSE,
+									position	=> unit_placeholder_position);
+
+							when others =>
+								log_indentation_reset;
+								log (message_error & "meaning of placeholder not supported !", console => true);
+								raise constraint_error;
+						end case;
+
+						-- clean up for next placeholder
+						unit_placeholder := (others => <>);
+						unit_placeholder_meaning := et_libraries.type_text_meaning'first;
+						unit_placeholder_position := et_coordinates.zero;
+						
+					end build_unit_placeholder;
 					
 				begin -- execute_section
 					case stack.current is
@@ -3737,11 +3801,13 @@ package body et_project is
 									case stack.parent (degree => 2) is
 										when SEC_PACKAGE =>
 
-											-- insert placeholder in collection of text placeholders
+											-- insert package placeholder in collection of text placeholders
 											insert_package_placeholder;
 
 										when SEC_UNIT =>
-											null; -- CS
+
+											-- build temporarily unit placeholder
+											build_unit_placeholder;
 
 										when others => invalid_section;
 									end case;
