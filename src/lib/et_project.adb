@@ -3175,6 +3175,10 @@ package body et_project is
 			unit_placeholder_reference	: et_libraries.type_text_placeholder (meaning => et_libraries.REFERENCE);
 			unit_placeholder_value		: et_libraries.type_text_placeholder (meaning => et_libraries.VALUE);
 			unit_placeholder_purpose	: et_libraries.type_text_placeholder (meaning => et_libraries.PURPOSE);
+
+			-- general board stuff
+			silk_line		: et_pcb.type_silk_line;
+			assy_doc_line	: et_pcb.type_doc_line;
 			
 			procedure process_line is 
 			-- CS: detect if section name is type_section_name_module
@@ -4337,8 +4341,76 @@ package body et_project is
 									end;
 
 								when SEC_TOP => 
+									case stack.parent is
+										when SEC_SILK_SCREEN =>
+											declare
+												kw : string := f (line, 1);
+											begin
+												-- CS: In the following: set a corresponding parameter-found-flag
+												if kw = keyword_start then -- start x 22.3 y 23.3
+													expect_field_count (line, 5);
+
+													-- extract the start position starting at field 2 of line
+													silk_line.start_point := to_position (line, 2);
+													
+												elsif kw = keyword_end then -- end x 22.3 y 23.3
+													expect_field_count (line, 5);
+
+													-- extract the end position starting at field 2 of line
+													silk_line.end_point := to_position (line, 2);
+
+												elsif kw = keyword_width then -- width 0.5
+													expect_field_count (line, 2);
+													silk_line.width := et_pcb_coordinates.to_distance (f (line, 2));
+													
+												else
+													invalid_keyword (kw);
+												end if;
+											end;
+
+										when SEC_ASSEMBLY_DOCUMENTATION =>
+											declare
+												kw : string := f (line, 1);
+											begin
+												-- CS: In the following: set a corresponding parameter-found-flag
+												if kw = keyword_start then -- start x 22.3 y 23.3
+													expect_field_count (line, 5);
+
+													-- extract the start position starting at field 2 of line
+													assy_doc_line.start_point := to_position (line, 2);
+													
+												elsif kw = keyword_end then -- end x 22.3 y 23.3
+													expect_field_count (line, 5);
+
+													-- extract the end position starting at field 2 of line
+													assy_doc_line.end_point := to_position (line, 2);
+
+												elsif kw = keyword_width then -- width 0.5
+													expect_field_count (line, 2);
+													assy_doc_line.width := et_pcb_coordinates.to_distance (f (line, 2));
+													
+												else
+													invalid_keyword (kw);
+												end if;
+											end;
+
+										when others => invalid_section;
+									end case;
+									
+								when SEC_BOTTOM =>
 									null; -- CS
 
+								when SEC_ROUTE_RESTRICT =>
+									null; -- CS
+
+								when SEC_VIA_RESTRICT =>
+									null; -- CS
+
+								when SEC_COPPER =>
+									null; -- CS
+
+								when SEC_PCB_CONTOUR_NON_PLATED =>
+									null; -- CS
 									
 								when others => invalid_section;
 							end case;
@@ -4883,6 +4955,22 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
+						when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
+							SEC_STOP_MASK | SEC_KEEPOUT | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT |
+							SEC_COPPER | SEC_PCB_CONTOUR_NON_PLATED =>
+							case stack.parent is
+								when SEC_BOARD => null;
+								when others => invalid_section;
+							end case;
+
+						when SEC_TOP | SEC_BOTTOM =>
+							case stack.parent is
+								when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
+									SEC_STOP_MASK | SEC_KEEPOUT => null;
+
+								when others => null;
+							end case;
+							
 						when others => null; -- CS
 					end case;
 				end if;
