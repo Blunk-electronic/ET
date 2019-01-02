@@ -3147,9 +3147,6 @@ package body et_project is
 			device_appearance		: et_schematic.type_appearance_schematic;
 			device_unit				: et_schematic.type_unit_base;
 			device_unit_name		: et_libraries.type_unit_name.bounded_string; -- GPIO_BANK_1
-			device_unit_purpose		: et_libraries.type_text_placeholder (meaning => et_libraries.purpose);
-			--device_unit_partcode	: et_libraries.type_text_placeholder (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"
-			--device_unit_bom			: et_libraries.type_text_placeholder (meaning => et_libraries.bom);
 
 			-- temporarily collection of units:
 			device_units			: et_schematic.type_units.map; -- PWR, A, B, ...
@@ -3353,6 +3350,12 @@ package body et_project is
 						--log ("unit " & to_string (device_unit_name), log_threshold + 2);
 						-- Depending on the appearance of the device, a virtual or real unit
 						-- is inserted in the unit list of the device.
+
+						-- The placeholders for reference and value have been built and can now
+						-- be assigned to the unit:
+						device_unit.reference := unit_placeholder_reference;
+						device_unit.value := unit_placeholder_value;
+						
 						case device_appearance is
 							when SCH =>
 								et_schematic.type_units.insert (
@@ -3366,10 +3369,11 @@ package body et_project is
 									container	=> device_units,
 									key			=> device_unit_name,
 									new_item	=> (device_unit with
-													appearance	=> et_libraries.SCH_PCB,
-													purpose		=> device_unit_purpose));
-													--partcode	=> device_unit_partcode));
-													--bom			=> device_unit_bom));
+										appearance	=> et_libraries.SCH_PCB,
+												
+										-- The placeholder for purpose has been built and can now
+										-- be assigned to the unit:
+										purpose		=> unit_placeholder_purpose));
 						end case;
 
 						-- clean up for next unit
@@ -3378,35 +3382,6 @@ package body et_project is
 
 						-- CS reset placeholders for name, value and purpose ?
 					end insert_unit;
-
--- 					procedure copy_unit_placeholder is 
--- 					-- Copy temporarily placeholder "unit_placeholder" to the unit being processed.
--- 					-- Depending on the meaning of the placeholder it becomes a placeholder 
--- 					-- for the reference (like R4), the value (like 100R) or the purpose (like "brightness control").
--- 						use et_libraries;
--- 					begin
--- 						case unit_placeholder_meaning is
--- 							when REFERENCE =>
--- 								device_unit.reference := (unit_placeholder with
--- 									meaning		=> REFERENCE,
--- 									position	=> unit_placeholder_position);
--- 								
--- 							when VALUE =>
--- 								device_unit.value := (unit_placeholder with
--- 									meaning		=> VALUE,
--- 									position	=> unit_placeholder_position);
--- 
--- 							when PURPOSE =>
--- 								device_unit.purpose := (unit_placeholder with
--- 									meaning		=> PURPOSE,
--- 									position	=> unit_placeholder_position);
--- 
--- 							when others =>
--- 								log_indentation_reset;
--- 								log (message_error & "meaning of placeholder not supported !", console => true);
--- 								raise constraint_error;
--- 						end case;
--- 					end copy_unit_placeholder;
 
 					procedure build_unit_placeholder is
 					-- Builds a placeholder from unit_placeholder_meaning, unit_placeholder_position and unit_placeholder.
@@ -3827,8 +3802,7 @@ package body et_project is
 									-- clean up for next collection of placeholders
 									device_text_placeholders := (others => <>);
 
-								when SEC_UNIT =>
-									null; -- CS
+								when SEC_UNIT => null;
 									
 								when others => invalid_section;
 							end case;
@@ -3872,6 +3846,13 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
+						when SEC_DEVICE =>
+							case stack.parent is
+								when SEC_DEVICES =>
+
+									
+								when others => invalid_section;
+							end case;
 							
 						when others => null; -- CS
 					end case;
@@ -4858,6 +4839,11 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
+						when SEC_UNITS =>
+							case stack.parent is
+								when SEC_DEVICE => null;
+								when others => invalid_section;
+							end case;
 							
 						when others => null; -- CS
 					end case;
