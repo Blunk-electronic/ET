@@ -3417,6 +3417,34 @@ package body et_project is
 						unit_placeholder_position := et_coordinates.zero;
 						
 					end build_unit_placeholder;
+
+					procedure insert_device (
+						module_name		: in type_submodule_name.bounded_string;
+						module			: in out et_schematic.type_module) is
+						use et_schematic;
+						device_cursor : type_devices.cursor;
+						inserted : boolean;
+					begin
+						log ("device " & et_libraries.to_string (device_name), log_threshold + 2);
+
+						type_devices.insert (
+							container	=> module.devices,
+							position	=> device_cursor,
+							inserted	=> inserted,
+							key			=> device_name,
+							new_item	=> device.all);
+
+						if not inserted then
+							log_indentation_reset;
+							log (message_error & "device " & et_libraries.to_string (device_name) & " already exists !",
+								 console => true);
+							raise constraint_error;
+						end if;
+
+						-- reset pointer "device" so that the old device gets destroyed
+						device := null;
+					end insert_device;						
+									
 					
 				begin -- execute_section
 					case stack.current is
@@ -3835,8 +3863,7 @@ package body et_project is
 						when SEC_UNITS =>
 							case stack.parent is
 								when SEC_DEVICE =>
-									log ("device " & et_libraries.to_string (device_name), log_threshold + 2);
-									
+
 									-- insert temporarily collection of units in device
 									device.units := device_units;
 
@@ -3850,7 +3877,18 @@ package body et_project is
 							case stack.parent is
 								when SEC_DEVICES =>
 
+									-- insert device (where pointer "device" is pointing at) in the module
+									update_element (
+										container	=> modules,
+										position	=> module_cursor,
+										process		=> insert_device'access);
 									
+								when others => invalid_section;
+							end case;
+
+						when SEC_DEVICES =>
+							case stack.parent is
+								when SEC_INIT => null;
 								when others => invalid_section;
 							end case;
 							
@@ -4844,7 +4882,7 @@ package body et_project is
 								when SEC_DEVICE => null;
 								when others => invalid_section;
 							end case;
-							
+
 						when others => null; -- CS
 					end case;
 				end if;
