@@ -3177,8 +3177,9 @@ package body et_project is
 			unit_placeholder_purpose	: et_libraries.type_text_placeholder (meaning => et_libraries.PURPOSE);
 
 			-- general board stuff
-			silk_line		: et_pcb.type_silk_line;
-			assy_doc_line	: et_pcb.type_doc_line;
+			type type_line is new et_pcb.type_line_2d with null record;
+			board_line : type_line;
+			board_line_width : et_pcb.type_track_width := et_pcb.type_track_width'first;
 			
 			procedure process_line is 
 			-- CS: detect if section name is type_section_name_module
@@ -3187,6 +3188,9 @@ package body et_project is
 				-- Once a section concludes, the temporarily variables are read, evaluated
 				-- and finally assembled to actual objects:
 
+					-- for sorting general board stuff:
+					type type_layer is (SILK_SCREEN, ASSEMBLY_DOCUMENTATION, STENCIL, STOP_MASK, KEEPOUT);
+					
 					procedure insert_net_class (
 						module_name	: in et_coordinates.type_submodule_name.bounded_string;
 						module		: in out et_schematic.type_module) is
@@ -3449,6 +3453,91 @@ package body et_project is
 						device := null;
 					end insert_device;						
 									
+					procedure insert_line (
+						layer	: in type_layer; -- SILK_SCREEN, ASSEMBLY_DOCUMENTATION, ...
+						face	: in et_pcb_coordinates.type_face) is -- TOP, BOTTOM
+					-- The board_line and its board_line_width are general things. 
+					-- Depending on the layer and the side of the board (face) the board_line
+					-- is now assigned to the board where it belongs to.
+						
+						procedure do_it (
+							module_name	: in type_submodule_name.bounded_string;
+							module		: in out et_schematic.type_module) is
+							use et_pcb_coordinates;
+							use et_pcb;
+						begin -- do_it
+							case face is
+								when TOP =>
+									case layer is
+										when SILK_SCREEN =>
+											type_silk_lines.append (
+												container	=> module.board.silk_screen.top.lines,
+												new_item	=> (type_line_2d (board_line) with board_line_width));
+
+										when ASSEMBLY_DOCUMENTATION =>
+											type_doc_lines.append (
+												container	=> module.board.assy_doc.top.lines,
+												new_item	=> (type_line_2d (board_line) with board_line_width));
+
+										when STENCIL =>
+											type_stencil_lines.append (
+												container	=> module.board.stencil.top.lines,
+												new_item	=> (type_line_2d (board_line) with board_line_width));
+											
+										when STOP_MASK =>
+											type_stop_lines.append (
+												container	=> module.board.stop_mask.top.lines,
+												new_item	=> (type_line_2d (board_line) with board_line_width));
+
+										when KEEPOUT =>
+											type_keepout_lines.append (
+												container	=> module.board.keepout.top.lines,
+												new_item	=> (type_line_2d (board_line) with board_line_width));
+											
+									end case;
+									
+								when BOTTOM => null;
+									case layer is
+										when SILK_SCREEN =>
+											type_silk_lines.append (
+												container	=> module.board.silk_screen.bottom.lines,
+												new_item	=> (type_line_2d (board_line) with board_line_width));
+
+										when ASSEMBLY_DOCUMENTATION =>
+											type_doc_lines.append (
+												container	=> module.board.assy_doc.bottom.lines,
+												new_item	=> (type_line_2d (board_line) with board_line_width));
+											
+										when STENCIL =>
+											type_stencil_lines.append (
+												container	=> module.board.stencil.bottom.lines,
+												new_item	=> (type_line_2d (board_line) with board_line_width));
+											
+										when STOP_MASK =>
+											type_stop_lines.append (
+												container	=> module.board.stop_mask.bottom.lines,
+												new_item	=> (type_line_2d (board_line) with board_line_width));
+
+										when KEEPOUT =>
+											type_keepout_lines.append (
+												container	=> module.board.keepout.bottom.lines,
+												new_item	=> (type_line_2d (board_line) with board_line_width));
+
+									end case;
+									
+							end case;
+						end do_it;
+											
+					begin -- insert_line
+						update_element (
+							container	=> modules,
+							position	=> module_cursor,
+							process		=> do_it'access);
+
+						-- clean up for next board line
+						board_line := (others => <>);
+						board_line_width := et_pcb.type_track_width'first;
+					end insert_line;
 					
 				begin -- execute_section
 					case stack.current is
@@ -3663,8 +3752,65 @@ package body et_project is
 									et_pcb.type_copper_lines_pcb.append (route.lines, route_line);
 									route_line := (others => <>); -- clean up for next line
 
-								when SEC_TOP => 
-									null; -- CS
+								when SEC_TOP =>
+									case stack.parent (degree => 2) is
+										when SEC_SILK_SCREEN =>
+											insert_line (
+												layer	=> SILK_SCREEN,
+												face	=> et_pcb_coordinates.TOP);
+
+										when SEC_ASSEMBLY_DOCUMENTATION =>
+											insert_line (
+												layer	=> ASSEMBLY_DOCUMENTATION,
+												face	=> et_pcb_coordinates.TOP);
+
+										when SEC_STENCIL =>
+											insert_line (
+												layer	=> STENCIL,
+												face	=> et_pcb_coordinates.TOP);
+
+										when SEC_STOP_MASK =>
+											insert_line (
+												layer	=> STOP_MASK,
+												face	=> et_pcb_coordinates.TOP);
+
+										when SEC_KEEPOUT =>
+											insert_line (
+												layer	=> KEEPOUT,
+												face	=> et_pcb_coordinates.TOP);
+											
+										when others => invalid_section;
+									end case;
+
+								when SEC_BOTTOM =>
+									case stack.parent (degree => 2) is
+										when SEC_SILK_SCREEN =>
+											insert_line (
+												layer	=> SILK_SCREEN,
+												face	=> et_pcb_coordinates.BOTTOM);
+
+										when SEC_ASSEMBLY_DOCUMENTATION =>
+											insert_line (
+												layer	=> ASSEMBLY_DOCUMENTATION,
+												face	=> et_pcb_coordinates.BOTTOM);
+
+										when SEC_STENCIL =>
+											insert_line (
+												layer	=> STENCIL,
+												face	=> et_pcb_coordinates.BOTTOM);
+
+										when SEC_STOP_MASK =>
+											insert_line (
+												layer	=> STOP_MASK,
+												face	=> et_pcb_coordinates.BOTTOM);
+
+										when SEC_KEEPOUT =>
+											insert_line (
+												layer	=> KEEPOUT,
+												face	=> et_pcb_coordinates.BOTTOM);
+											
+										when others => invalid_section;
+									end case;
 									
 								when others => invalid_section;
 							end case;
@@ -4340,9 +4486,10 @@ package body et_project is
 										end if;
 									end;
 
-								when SEC_TOP => 
-									case stack.parent is
-										when SEC_SILK_SCREEN =>
+								when SEC_TOP | SEC_BOTTOM => 
+									case stack.parent (degree => 2) is
+										when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+											SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
 											declare
 												kw : string := f (line, 1);
 											begin
@@ -4351,43 +4498,17 @@ package body et_project is
 													expect_field_count (line, 5);
 
 													-- extract the start position starting at field 2 of line
-													silk_line.start_point := to_position (line, 2);
+													board_line.start_point := to_position (line, 2);
 													
 												elsif kw = keyword_end then -- end x 22.3 y 23.3
 													expect_field_count (line, 5);
 
 													-- extract the end position starting at field 2 of line
-													silk_line.end_point := to_position (line, 2);
+													board_line.end_point := to_position (line, 2);
 
 												elsif kw = keyword_width then -- width 0.5
 													expect_field_count (line, 2);
-													silk_line.width := et_pcb_coordinates.to_distance (f (line, 2));
-													
-												else
-													invalid_keyword (kw);
-												end if;
-											end;
-
-										when SEC_ASSEMBLY_DOCUMENTATION =>
-											declare
-												kw : string := f (line, 1);
-											begin
-												-- CS: In the following: set a corresponding parameter-found-flag
-												if kw = keyword_start then -- start x 22.3 y 23.3
-													expect_field_count (line, 5);
-
-													-- extract the start position starting at field 2 of line
-													assy_doc_line.start_point := to_position (line, 2);
-													
-												elsif kw = keyword_end then -- end x 22.3 y 23.3
-													expect_field_count (line, 5);
-
-													-- extract the end position starting at field 2 of line
-													assy_doc_line.end_point := to_position (line, 2);
-
-												elsif kw = keyword_width then -- width 0.5
-													expect_field_count (line, 2);
-													assy_doc_line.width := et_pcb_coordinates.to_distance (f (line, 2));
+													board_line_width := et_pcb_coordinates.to_distance (f (line, 2));
 													
 												else
 													invalid_keyword (kw);
@@ -4396,9 +4517,6 @@ package body et_project is
 
 										when others => invalid_section;
 									end case;
-									
-								when SEC_BOTTOM =>
-									null; -- CS
 
 								when SEC_ROUTE_RESTRICT =>
 									null; -- CS
