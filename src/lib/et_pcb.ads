@@ -492,7 +492,8 @@ package et_pcb is
 
 	type type_filled is (YES, NO);
 	function to_string (filled : in type_filled) return string;
-	
+	function to_filled (filled : in string) return type_filled;
+
 	type type_copper_circle is new type_circle_2d with record
 		width				: type_track_width;
 		filled 				: type_filled := NO;
@@ -673,6 +674,15 @@ package et_pcb is
 		polygons		: type_copper_polygons_signal.list;
 	end record;
 
+
+	-- This circle type is used by silk screen, assembly doc, stop mask, stencil and keepout
+	type type_fillable_circle is new type_circle_2d with record
+		width				: type_general_line_width; -- the width of the circumfence		
+		filled 				: type_filled := NO;
+		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
+		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the lines
+		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the lines
+	end record;
 	
 	
 	-- SOLDER STOP MASK
@@ -690,14 +700,8 @@ package et_pcb is
 	package type_stop_arcs is new doubly_linked_lists (type_stop_arc);
 
 	
-	type type_stop_circle is new type_circle_2d with record
-		width				: type_general_line_width; -- the width of the circumfence
-		filled 				: type_filled := NO;
-		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
-		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the lines
-		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the lines
-	end record;
-
+	
+	type type_stop_circle is new type_fillable_circle with null record;
 	package type_stop_circles is new doubly_linked_lists (type_stop_circle);
 
 
@@ -756,14 +760,7 @@ package et_pcb is
 	package type_stencil_arcs is new doubly_linked_lists (type_stencil_arc);
 
 	
-	type type_stencil_circle is new type_circle_2d with record
-		width				: type_general_line_width;
-		filled 				: type_filled := NO;
-		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
-		hatching_line_width	: type_track_width := fill_style_hatching_line_width_default; -- the with of the lines
-		hatching_spacing	: type_track_clearance := fill_style_hatching_spacing_default; -- the space between the lines
-	end record;
-
+	type type_stencil_circle is new type_fillable_circle with null record;
 	package type_stencil_circles is new doubly_linked_lists (type_stencil_circle);
 
 
@@ -806,14 +803,7 @@ package et_pcb is
 	package type_silk_arcs is new doubly_linked_lists (type_silk_arc);
 
 	
-	type type_silk_circle is new type_circle_2d with record
-		width				: type_general_line_width; -- line width of circumfence
-		filled 				: type_filled := NO;
-		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
-		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the lines
-		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the lines
-	end record;
-
+	type type_silk_circle is new type_fillable_circle with null record;
 	package type_silk_circles is new doubly_linked_lists (type_silk_circle);
 
 
@@ -873,14 +863,7 @@ package et_pcb is
 	package type_doc_arcs is new doubly_linked_lists (type_doc_arc);
 
 	
-	type type_doc_circle is new type_circle_2d with record
-		width				: type_general_line_width; -- line width of circumfence
-		filled 				: type_filled := NO;
-		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
-		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the lines
-		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the lines
-	end record;
-
+	type type_doc_circle is new type_fillable_circle with null record;
 	package type_doc_circles is new doubly_linked_lists (type_doc_circle);
 
 
@@ -938,14 +921,7 @@ package et_pcb is
 		
 	package type_keepout_arcs is new doubly_linked_lists (type_keepout_arc);
 	
-	type type_keepout_circle is new type_circle_2d with record
-		width				: type_general_line_width; -- line width of circumfence
-		filled 				: type_filled := NO;
-		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
-		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the lines
-		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the lines
-	end record;
-	
+	type type_keepout_circle is new type_fillable_circle with null record;	
 	package type_keepout_circles is new doubly_linked_lists (type_keepout_circle);
 
 	type type_keepout_polygon is new type_polygon with null record;

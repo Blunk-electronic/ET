@@ -3182,6 +3182,8 @@ package body et_project is
 
 			type type_arc is new et_pcb.type_arc_2d with null record;
 			board_arc : type_arc;
+
+			board_circle : et_pcb.type_fillable_circle;
 			
 			board_line_width : et_pcb.type_general_line_width := et_pcb.type_general_line_width'first;
 			
@@ -4760,6 +4762,45 @@ package body et_project is
 									end case;
 
 									
+								when others => invalid_section;
+							end case;
+
+						when SEC_CIRCLE =>
+							case stack.parent is
+								when SEC_TOP | SEC_BOTTOM => 
+									case stack.parent (degree => 2) is
+										when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+											SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
+											declare
+												kw : string := f (line, 1);
+											begin
+												-- CS: In the following: set a corresponding parameter-found-flag
+												if kw = keyword_center then -- center x 150 y 45
+													expect_field_count (line, 5);
+
+													-- extract the center position starting at field 2 of line
+													board_circle.center := to_position (line, 2);
+													
+												elsif kw = keyword_radius then -- radius 22
+													expect_field_count (line, 2);
+													board_circle.radius := et_pcb_coordinates.to_distance (f (line, 2));
+													
+												elsif kw = keyword_width then -- width 0.5
+													expect_field_count (line, 2);
+													board_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+
+												elsif kw = keyword_filled then -- filled yes/no
+													expect_field_count (line, 2);													
+													board_circle.filled := et_pcb.to_filled (f (line, 2));
+													
+												else
+													invalid_keyword (kw);
+												end if;
+											end;
+
+										when others => invalid_section;
+									end case;
+
 								when others => invalid_section;
 							end case;
 

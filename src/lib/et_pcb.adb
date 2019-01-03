@@ -316,10 +316,13 @@ package body et_pcb is
 		return latin_1.space & to_lower (type_terminal_tht_hole'image (tht_hole));
 	end to_string;
 	
-	function to_string (filled : in type_filled) return string is
-	begin
+	function to_string (filled : in type_filled) return string is begin
 		return latin_1.space & to_lower (type_filled'image (filled));
 	end to_string;
+
+	function to_filled (filled : in string) return type_filled is begin
+		return type_filled'value (filled);
+	end to_filled;
 	
 	function to_string (priority_level : in type_polygon_priority) return string is
 	begin
