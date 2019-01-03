@@ -3179,7 +3179,11 @@ package body et_project is
 			-- general board stuff
 			type type_line is new et_pcb.type_line_2d with null record;
 			board_line : type_line;
-			board_line_width : et_pcb.type_track_width := et_pcb.type_track_width'first;
+
+			type type_arc is new et_pcb.type_arc_2d with null record;
+			board_arc : type_arc;
+			
+			board_line_width : et_pcb.type_general_line_width := et_pcb.type_general_line_width'first;
 			
 			procedure process_line is 
 			-- CS: detect if section name is type_section_name_module
@@ -3456,7 +3460,7 @@ package body et_project is
 					procedure insert_line (
 						layer	: in type_layer; -- SILK_SCREEN, ASSEMBLY_DOCUMENTATION, ...
 						face	: in et_pcb_coordinates.type_face) is -- TOP, BOTTOM
-					-- The board_line and its board_line_width are general things. 
+					-- The board_line and its board_line_width have been general things until now.
 					-- Depending on the layer and the side of the board (face) the board_line
 					-- is now assigned to the board where it belongs to.
 						
@@ -3536,8 +3540,93 @@ package body et_project is
 
 						-- clean up for next board line
 						board_line := (others => <>);
-						board_line_width := et_pcb.type_track_width'first;
+						board_line_width := et_pcb.type_general_line_width'first;
 					end insert_line;
+
+					procedure insert_arc (
+						layer	: in type_layer; -- SILK_SCREEN, ASSEMBLY_DOCUMENTATION, ...
+						face	: in et_pcb_coordinates.type_face) is -- TOP, BOTTOM
+					-- The board_arc and its board_line_width have been general things until now. 
+					-- Depending on the layer and the side of the board (face) the board_line
+					-- is now assigned to the board where it belongs to.
+						
+						procedure do_it (
+							module_name	: in type_submodule_name.bounded_string;
+							module		: in out et_schematic.type_module) is
+							use et_pcb_coordinates;
+							use et_pcb;
+						begin -- do_it
+							case face is
+								when TOP =>
+									case layer is
+										when SILK_SCREEN =>
+											type_silk_arcs.append (
+												container	=> module.board.silk_screen.top.arcs,
+												new_item	=> (type_arc_2d (board_arc) with board_line_width));
+
+										when ASSEMBLY_DOCUMENTATION =>
+											type_doc_arcs.append (
+												container	=> module.board.assy_doc.top.arcs,
+												new_item	=> (type_arc_2d (board_arc) with board_line_width));
+
+										when STENCIL =>
+											type_stencil_arcs.append (
+												container	=> module.board.stencil.top.arcs,
+												new_item	=> (type_arc_2d (board_arc) with board_line_width));
+											
+										when STOP_MASK =>
+											type_stop_arcs.append (
+												container	=> module.board.stop_mask.top.arcs,
+												new_item	=> (type_arc_2d (board_arc) with board_line_width));
+
+										when KEEPOUT =>
+											type_keepout_arcs.append (
+												container	=> module.board.keepout.top.arcs,
+												new_item	=> (type_arc_2d (board_arc) with board_line_width));
+									end case;
+									
+								when BOTTOM => null;
+									case layer is
+										when SILK_SCREEN =>
+											type_silk_arcs.append (
+												container	=> module.board.silk_screen.bottom.arcs,
+												new_item	=> (type_arc_2d (board_arc) with board_line_width));
+
+										when ASSEMBLY_DOCUMENTATION =>
+											type_doc_arcs.append (
+												container	=> module.board.assy_doc.bottom.arcs,
+												new_item	=> (type_arc_2d (board_arc) with board_line_width));
+											
+										when STENCIL =>
+											type_stencil_arcs.append (
+												container	=> module.board.stencil.bottom.arcs,
+												new_item	=> (type_arc_2d (board_arc) with board_line_width));
+											
+										when STOP_MASK =>
+											type_stop_arcs.append (
+												container	=> module.board.stop_mask.bottom.arcs,
+												new_item	=> (type_arc_2d (board_arc) with board_line_width));
+
+										when KEEPOUT =>
+											type_keepout_arcs.append (
+												container	=> module.board.keepout.bottom.arcs,
+												new_item	=> (type_arc_2d (board_arc) with board_line_width));
+									end case;
+									
+							end case;
+						end do_it;
+											
+					begin -- insert_arc
+						update_element (
+							container	=> modules,
+							position	=> module_cursor,
+							process		=> do_it'access);
+
+						-- clean up for next board arc
+						board_arc := (others => <>);
+						board_line_width := et_pcb.type_general_line_width'first;
+					end insert_arc;
+
 					
 				begin -- execute_section
 					case stack.current is
@@ -3823,6 +3912,67 @@ package body et_project is
 									et_pcb.type_copper_arcs_pcb.append (route.arcs, route_arc);
 									route_arc := (others => <>); -- clean up for next arc
 
+								when SEC_TOP =>
+									case stack.parent (degree => 2) is
+										when SEC_SILK_SCREEN =>
+											insert_arc (
+												layer	=> SILK_SCREEN,
+												face	=> et_pcb_coordinates.TOP);
+
+										when SEC_ASSEMBLY_DOCUMENTATION =>
+											insert_arc (
+												layer	=> ASSEMBLY_DOCUMENTATION,
+												face	=> et_pcb_coordinates.TOP);
+
+										when SEC_STENCIL =>
+											insert_arc (
+												layer	=> STENCIL,
+												face	=> et_pcb_coordinates.TOP);
+
+										when SEC_STOP_MASK =>
+											insert_arc (
+												layer	=> STOP_MASK,
+												face	=> et_pcb_coordinates.TOP);
+
+										when SEC_KEEPOUT =>
+											insert_arc (
+												layer	=> KEEPOUT,
+												face	=> et_pcb_coordinates.TOP);
+											
+										when others => invalid_section;
+									end case;
+
+								when SEC_BOTTOM =>
+									case stack.parent (degree => 2) is
+										when SEC_SILK_SCREEN =>
+											insert_arc (
+												layer	=> SILK_SCREEN,
+												face	=> et_pcb_coordinates.BOTTOM);
+
+										when SEC_ASSEMBLY_DOCUMENTATION =>
+											insert_arc (
+												layer	=> ASSEMBLY_DOCUMENTATION,
+												face	=> et_pcb_coordinates.BOTTOM);
+
+										when SEC_STENCIL =>
+											insert_arc (
+												layer	=> STENCIL,
+												face	=> et_pcb_coordinates.BOTTOM);
+
+										when SEC_STOP_MASK =>
+											insert_arc (
+												layer	=> STOP_MASK,
+												face	=> et_pcb_coordinates.BOTTOM);
+
+										when SEC_KEEPOUT =>
+											insert_arc (
+												layer	=> KEEPOUT,
+												face	=> et_pcb_coordinates.BOTTOM);
+											
+										when others => invalid_section;
+									end case;
+
+									
 								when others => invalid_section;
 							end case;
 									
@@ -4571,6 +4721,45 @@ package body et_project is
 										end if;
 									end;
 
+								when SEC_TOP | SEC_BOTTOM => 
+									case stack.parent (degree => 2) is
+										when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+											SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
+											declare
+												kw : string := f (line, 1);
+											begin
+												-- CS: In the following: set a corresponding parameter-found-flag
+												if kw = keyword_center then -- center x 150 y 45
+													expect_field_count (line, 5);
+
+													-- extract the center position starting at field 2 of line
+													board_arc.center := to_position (line, 2);
+													
+												elsif kw = keyword_start then -- start x 22.3 y 23.3
+													expect_field_count (line, 5);
+
+													-- extract the start position starting at field 2 of line
+													board_arc.start_point := to_position (line, 2);
+													
+												elsif kw = keyword_end then -- end x 22.3 y 23.3
+													expect_field_count (line, 5);
+
+													-- extract the end position starting at field 2 of line
+													board_arc.end_point := to_position (line, 2);
+
+												elsif kw = keyword_width then -- width 0.5
+													expect_field_count (line, 2);
+													board_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+													
+												else
+													invalid_keyword (kw);
+												end if;
+											end;
+
+										when others => invalid_section;
+									end case;
+
+									
 								when others => invalid_section;
 							end case;
 
