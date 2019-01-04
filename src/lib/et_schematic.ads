@@ -381,7 +381,7 @@ package et_schematic is
         --text_size_instance	: et_libraries.type_text_size; -- CS no need, should be sized automatically by the GUI
 		position		    : et_coordinates.type_coordinates;
 		size				: type_submodule_size;
-		position_in_board	: et_pcb_coordinates.type_submodule_position;
+		position_in_board	: et_pcb_coordinates.type_point_2d_with_angle;
 		view_mode			: type_submodule_view_mode;
 		reference_offset	: et_libraries.type_component_reference_id;	-- R88 turns to R2088 or R788
 	end record;

@@ -2943,13 +2943,13 @@ package body et_project is
 			end to_position;
 				
 			function to_position (
-			-- Returns a type_submodule_position in the layout.
+			-- Returns a type_point_2d_with_angle in the layout.
 				line : in type_fields_of_line; -- "x 23 y 0.2 rotation 90.0"
 				from : in positive)
-				return et_pcb_coordinates.type_submodule_position is
+				return et_pcb_coordinates.type_point_2d_with_angle is
 				use et_pcb_coordinates;
 				
-				point : type_submodule_position; -- to be returned
+				point : type_point_2d_with_angle; -- to be returned
 
 				place : positive := from; -- the field being read from given line
 
@@ -5448,7 +5448,7 @@ package body et_project is
 													expect_field_count (line, 7);
 
 													-- extract position of note starting at field 2
-													--board_text.position := to_position (line, 2);
+													board_text.position := to_position (line, 2);
 
 												elsif kw = keyword_size then -- size x 1.4 y 4
 													expect_field_count (line, 5);

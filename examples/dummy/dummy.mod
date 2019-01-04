@@ -151,7 +151,8 @@
 		[UNITS BEGIN]
 			[UNIT BEGIN]
 				name 1
-				position sheet 2 x 130 y 210 rotation 45 
+				position sheet 2 x 130 y 210 
+				rotation 45 
 				mirrored no/x_axis/y_axis
 				[PLACEHOLDERS BEGIN] 
 					[PLACEHOLDER BEGIN] 
@@ -235,23 +236,20 @@
 			[POLYGON END]
 			
 			[TEXT BEGIN]
-				position x 40 y 20
-				size x 3.0 y 3.0
+				position x 40 y 20 rotation 0
+				size width 3.0 height 3.0
 				line_width 0.2
-				rotation 0
 				content "bla"
-				alignment center
+				alignment horizontal center vertical center
 			[TEXT END]
-
-			[PLACEHOLDER BEGIN]
-				position x 40 y 20
-				size x 3.0 y 3.0
-				line_width 0.2
-				rotation 0
-				meaning project_name
-				alignment center
-			[PLACEHOLDER END]
 			
+			[PLACEHOLDER BEGIN]
+				position x 40 y 20 rotation 10
+				size width 3.0 height 3.0
+				line_width 0.2
+				meaning project_name
+				alignment horizontal center vertical center
+			[PLACEHOLDER END]			
 		[TOP END]
 		
 		[BOTTOM BEGIN]
