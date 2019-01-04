@@ -3186,6 +3186,13 @@ package body et_project is
 			board_circle : et_pcb.type_fillable_circle;
 			
 			board_line_width : et_pcb.type_general_line_width := et_pcb.type_general_line_width'first;
+
+			type type_polygon is new et_pcb.type_polygon with null record;
+			board_polygon : type_polygon;
+			
+-- 			route_restrict_line		: type_route_restrict_line;
+-- 			route_restrict_arc		: type_route_restrict_arc;
+-- 			route_restrict_circle	: type_route_restrict_circle;
 			
 			procedure process_line is 
 			-- CS: detect if section name is type_section_name_module
@@ -3632,7 +3639,7 @@ package body et_project is
 					procedure insert_circle (
 						layer	: in type_layer; -- SILK_SCREEN, ASSEMBLY_DOCUMENTATION, ...
 						face	: in et_pcb_coordinates.type_face) is -- TOP, BOTTOM
-					-- The board_circle and its board_line_width have been general things until now. 
+					-- The board_circle has been a general thing until now. 
 					-- Depending on the layer and the side of the board (face) the board_circle
 					-- is now assigned to the board where it belongs to.
 						
@@ -3711,6 +3718,90 @@ package body et_project is
 						-- clean up for next board circle
 						board_circle := (others => <>);
 					end insert_circle;
+
+					procedure insert_polygon (
+						layer	: in type_layer; -- SILK_SCREEN, ASSEMBLY_DOCUMENTATION, ...
+						face	: in et_pcb_coordinates.type_face) is -- TOP, BOTTOM
+					-- The board_polygon and its board_line_width have been general things until now. 
+					-- Depending on the layer and the side of the board (face) the board_polygon
+					-- is now assigned to the board where it belongs to.
+						
+						procedure do_it (
+							module_name	: in type_submodule_name.bounded_string;
+							module		: in out et_schematic.type_module) is
+							use et_pcb_coordinates;
+							use et_pcb;
+						begin -- do_it
+							case face is
+								when TOP =>
+									case layer is
+										when SILK_SCREEN =>
+											type_silk_polygons.append (
+												container	=> module.board.silk_screen.top.polygons,
+												new_item	=> (et_pcb.type_polygon (board_polygon) with null record));
+
+										when ASSEMBLY_DOCUMENTATION =>
+											type_doc_polygons.append (
+												container	=> module.board.assy_doc.top.polygons,
+												new_item	=> (et_pcb.type_polygon (board_polygon) with null record));
+
+										when STENCIL =>
+											type_stencil_polygons.append (
+												container	=> module.board.stencil.top.polygons,
+												new_item	=> (et_pcb.type_polygon (board_polygon) with null record));
+											
+										when STOP_MASK =>
+											type_stop_polygons.append (
+												container	=> module.board.stop_mask.top.polygons,
+												new_item	=> (et_pcb.type_polygon (board_polygon) with null record));
+
+										when KEEPOUT =>
+											type_keepout_polygons.append (
+												container	=> module.board.keepout.top.polygons,
+												new_item	=> (et_pcb.type_polygon (board_polygon) with null record));
+									end case;
+									
+								when BOTTOM => null;
+									case layer is
+										when SILK_SCREEN =>
+											type_silk_polygons.append (
+												container	=> module.board.silk_screen.bottom.polygons,
+												new_item	=> (et_pcb.type_polygon (board_polygon) with null record));
+
+										when ASSEMBLY_DOCUMENTATION =>
+											type_doc_polygons.append (
+												container	=> module.board.assy_doc.bottom.polygons,
+												new_item	=> (et_pcb.type_polygon (board_polygon) with null record));
+											
+										when STENCIL =>
+											type_stencil_polygons.append (
+												container	=> module.board.stencil.bottom.polygons,
+												new_item	=> (et_pcb.type_polygon (board_polygon) with null record));
+											
+										when STOP_MASK =>
+											type_stop_polygons.append (
+												container	=> module.board.stop_mask.bottom.polygons,
+												new_item	=> (et_pcb.type_polygon (board_polygon) with null record));
+
+										when KEEPOUT =>
+											type_keepout_polygons.append (
+												container	=> module.board.keepout.bottom.polygons,
+												new_item	=> (et_pcb.type_polygon (board_polygon) with null record));
+									end case;
+									
+							end case;
+						end do_it;
+											
+					begin -- insert_circle
+						update_element (
+							container	=> modules,
+							position	=> module_cursor,
+							process		=> do_it'access);
+
+						-- clean up for next board polygon
+						board_polygon := (others => <>);
+					end insert_polygon;
+
 
 					
 				begin -- execute_section
@@ -4181,6 +4272,66 @@ package body et_project is
 
 									reset_polygon_parameters; -- clean up for next polygon
 
+								when SEC_TOP =>
+									case stack.parent (degree => 2) is
+										when SEC_SILK_SCREEN =>
+											insert_polygon (
+												layer	=> SILK_SCREEN,
+												face	=> et_pcb_coordinates.TOP);
+
+										when SEC_ASSEMBLY_DOCUMENTATION =>
+											insert_polygon (
+												layer	=> ASSEMBLY_DOCUMENTATION,
+												face	=> et_pcb_coordinates.TOP);
+
+										when SEC_STENCIL =>
+											insert_polygon (
+												layer	=> STENCIL,
+												face	=> et_pcb_coordinates.TOP);
+
+										when SEC_STOP_MASK =>
+											insert_polygon (
+												layer	=> STOP_MASK,
+												face	=> et_pcb_coordinates.TOP);
+
+										when SEC_KEEPOUT =>
+											insert_polygon (
+												layer	=> KEEPOUT,
+												face	=> et_pcb_coordinates.TOP);
+											
+										when others => invalid_section;
+									end case;
+
+								when SEC_BOTTOM =>
+									case stack.parent (degree => 2) is
+										when SEC_SILK_SCREEN =>
+											insert_polygon (
+												layer	=> SILK_SCREEN,
+												face	=> et_pcb_coordinates.BOTTOM);
+
+										when SEC_ASSEMBLY_DOCUMENTATION =>
+											insert_polygon (
+												layer	=> ASSEMBLY_DOCUMENTATION,
+												face	=> et_pcb_coordinates.BOTTOM);
+
+										when SEC_STENCIL =>
+											insert_polygon (
+												layer	=> STENCIL,
+												face	=> et_pcb_coordinates.BOTTOM);
+
+										when SEC_STOP_MASK =>
+											insert_polygon (
+												layer	=> STOP_MASK,
+												face	=> et_pcb_coordinates.BOTTOM);
+
+										when SEC_KEEPOUT =>
+											insert_polygon (
+												layer	=> KEEPOUT,
+												face	=> et_pcb_coordinates.BOTTOM);
+											
+										when others => invalid_section;
+									end case;
+									
 								when others => invalid_section;
 							end case;
 
@@ -5029,6 +5180,43 @@ package body et_project is
 										end if;
 									end;
 
+								when SEC_TOP | SEC_BOTTOM => 
+									case stack.parent (degree => 2) is
+										when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+											SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
+											declare
+												kw : string := f (line, 1);
+											begin
+												-- CS: In the following: set a corresponding parameter-found-flag
+												if kw = keyword_fill_style then -- fill_style solid/hatched/cutout
+													expect_field_count (line, 2);													
+													board_polygon.fill_style := et_pcb.to_fill_style (f (line, 2));
+
+												elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
+													expect_field_count (line, 2);													
+													board_polygon.corner_easing := et_pcb.to_corner_easing (f (line, 2));
+
+												elsif kw = keyword_easing_radius then -- easing_radius 0.4
+													expect_field_count (line, 2);													
+													board_polygon.easing_radius := et_pcb_coordinates.to_distance (f (line, 2));
+													
+												elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
+													expect_field_count (line, 2);													
+													board_polygon.hatching_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+
+												elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
+													expect_field_count (line, 2);													
+													board_polygon.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
+													
+												else
+													invalid_keyword (kw);
+												end if;
+											end;
+
+										when others => invalid_section;
+									end case;
+
+									
 								when others => invalid_section;
 							end case;
 
