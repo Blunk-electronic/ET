@@ -6970,7 +6970,7 @@ package body et_kicad_pcb is
 				point_cursor : type_polygon_points.cursor;
 				inserted : boolean := true;
 			begin
-				polygon.points.insert (
+				polygon.corners.insert (
 					new_item	=> polygon_point,
 					inserted	=> inserted,
 					position	=> point_cursor

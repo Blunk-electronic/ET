@@ -389,7 +389,7 @@ package et_pcb is
 	function to_string (easing : in type_corner_easing) return string;
 	
 	type type_polygon is abstract tagged record
-		points				: type_polygon_points.set; -- CS rename to corners
+		corners				: type_polygon_points.set;
 		fill_style			: type_fill_style := SOLID; -- a polygon is always filled
 		hatching_line_width	: type_track_width := fill_style_hatching_line_width_default; -- the with of the lines
 		hatching_spacing	: type_track_clearance := fill_style_hatching_spacing_default; -- the space between the lines

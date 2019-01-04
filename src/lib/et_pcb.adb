@@ -589,7 +589,7 @@ package body et_pcb is
 
 		-- corner points
 		log (text_polygon_corner_points, log_threshold);
-		points := element (cursor).points;
+		points := element (cursor).corners;
 		point_cursor := points.first;
 		while point_cursor /= type_polygon_points.no_element loop
 			log (to_string (element (point_cursor)), log_threshold);
@@ -620,7 +620,7 @@ package body et_pcb is
 		
 		-- corner points
 		log (text_polygon_corner_points, log_threshold);
-		points := element (cursor).points;
+		points := element (cursor).corners;
 		point_cursor := points.first;
 		while point_cursor /= type_polygon_points.no_element loop
 			log (to_string (element (point_cursor)), log_threshold);

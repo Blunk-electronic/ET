@@ -481,7 +481,7 @@ package body et_project is
 		use et_pcb_coordinates;
 		
 		procedure query_points (polygon : in type_keepout_polygon) is begin
-			iterate (polygon.points, write_polygon_corners'access); -- see general stuff above
+			iterate (polygon.corners, write_polygon_corners'access); -- see general stuff above
 		end query_points;
 		
 	begin -- write_polygon
@@ -546,7 +546,7 @@ package body et_project is
 		use type_polygon_points;
 		
 		procedure query_points (polygon : in type_stop_polygon) is begin
-			iterate (polygon.points, write_polygon_corners'access); -- see general stuff above
+			iterate (polygon.corners, write_polygon_corners'access); -- see general stuff above
 		end query_points;
 		
 	begin -- write_polygon
@@ -611,7 +611,7 @@ package body et_project is
 		use type_polygon_points;
 		
 		procedure query_points (polygon : in type_stencil_polygon) is begin
-			iterate (polygon.points, write_polygon_corners'access); -- see general stuff above
+			iterate (polygon.corners, write_polygon_corners'access); -- see general stuff above
 		end query_points;
 		
 	begin -- write_polygon
@@ -698,7 +698,7 @@ package body et_project is
 		use type_polygon_points;
 		
 		procedure query_points (polygon : in type_route_restrict_polygon) is begin
-			iterate (polygon.points, write_polygon_corners'access); -- see general stuff above
+			iterate (polygon.corners, write_polygon_corners'access); -- see general stuff above
 		end query_points;
 		
 	begin -- write_polygon
@@ -763,7 +763,7 @@ package body et_project is
 		use type_polygon_points;
 		
 		procedure query_points (polygon : in type_via_restrict_polygon) is begin
-			iterate (polygon.points, write_polygon_corners'access); -- see general stuff above
+			iterate (polygon.corners, write_polygon_corners'access); -- see general stuff above
 		end query_points;
 		
 	begin -- write_polygon
@@ -868,7 +868,7 @@ package body et_project is
 		use type_polygon_points;
 		
 		procedure query_points (polygon : in type_silk_polygon) is begin
-			iterate (polygon.points, write_polygon_corners'access); -- see general stuff above
+			iterate (polygon.corners, write_polygon_corners'access); -- see general stuff above
 		end query_points;
 		
 	begin -- write_polygon
@@ -933,7 +933,7 @@ package body et_project is
 		use type_polygon_points;
 		
 		procedure query_points (polygon : in type_doc_polygon) is begin
-			iterate (polygon.points, write_polygon_corners'access); -- see general stuff above
+			iterate (polygon.corners, write_polygon_corners'access); -- see general stuff above
 		end query_points;
 		
 	begin -- write_polygon
@@ -1220,7 +1220,7 @@ package body et_project is
 
 				procedure query_points (polygon : in type_copper_polygon_signal) is
 					use type_polygon_points;
-					point_cursor : type_polygon_points.cursor := polygon.points.first;
+					point_cursor : type_polygon_points.cursor := polygon.corners.first;
 				begin
 					section_mark (section_corners, HEADER);
 					while point_cursor /= type_polygon_points.no_element loop
@@ -1618,7 +1618,7 @@ package body et_project is
 				use type_polygon_points;
 				
 				procedure query_points (polygon : in type_copper_polygon_floating) is begin
-					iterate (polygon.points, write_polygon_corners'access); -- see general stuff above
+					iterate (polygon.corners, write_polygon_corners'access); -- see general stuff above
 				end query_points;
 				
 			begin -- write_polygon
@@ -2299,7 +2299,7 @@ package body et_project is
 				use type_polygon_points;
 				
 				procedure query_points (polygon : in type_copper_polygon) is begin
-					iterate (polygon.points, write_polygon_corners'access);
+					iterate (polygon.corners, write_polygon_corners'access);
 				end query_points;
 
 			begin -- write_polygon
@@ -4345,12 +4345,12 @@ package body et_project is
 									case stack.parent (degree => 2) is
 										when SEC_ROUTE =>
 
-											route_polygon.points := polygon_corner_points;
+											route_polygon.corners := polygon_corner_points;
 
 										when SEC_TOP | SEC_BOTTOM =>
 											-- CS check for parent section (degree => 3) to be 
 											-- silk screen, assy doc, keepout, stencil, stop mask ?
-											board_polygon.points := polygon_corner_points;
+											board_polygon.corners := polygon_corner_points;
 
 										when others => invalid_section;
 									end case;

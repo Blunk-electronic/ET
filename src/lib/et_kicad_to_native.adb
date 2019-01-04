@@ -626,7 +626,7 @@ package body et_kicad_to_native is
 					procedure move_polygon (polygon : in out et_pcb.type_copper_polygon_signal) is
 						use et_pcb_coordinates;
 						use et_pcb.type_polygon_points;
-						point_cursor : et_pcb.type_polygon_points.cursor := polygon.points.first;
+						point_cursor : et_pcb.type_polygon_points.cursor := polygon.corners.first;
 
 						new_points : et_pcb.type_polygon_points.set;
 						
@@ -662,7 +662,7 @@ package body et_kicad_to_native is
 
 						-- Now the new set of polygon corner points is available in "new_points".
 						-- new_points replaces the old list of points:
-						polygon.points := new_points;
+						polygon.corners := new_points;
 						
 						log_indentation_down;
 					end move_polygon;
@@ -829,7 +829,7 @@ package body et_kicad_to_native is
 				procedure move_polygon (polygon : in out et_pcb.type_silk_polygon) is
 					use et_pcb_coordinates;
 					use et_pcb.type_polygon_points;
-					point_cursor : et_pcb.type_polygon_points.cursor := polygon.points.first;
+					point_cursor : et_pcb.type_polygon_points.cursor := polygon.corners.first;
 					new_points : et_pcb.type_polygon_points.set;
 
 					procedure get_point (point : in type_point_2d) is
@@ -864,7 +864,7 @@ package body et_kicad_to_native is
 
 					-- Now the new set of polygon corner points is available in "new_points".
 					-- new_points replaces the old list of points:
-					polygon.points := new_points;
+					polygon.corners := new_points;
 					
 					log_indentation_down;
 				end move_polygon;
@@ -1068,7 +1068,7 @@ package body et_kicad_to_native is
 				procedure move_polygon (polygon : in out et_pcb.type_doc_polygon) is
 					use et_pcb_coordinates;
 					use et_pcb.type_polygon_points;
-					point_cursor : et_pcb.type_polygon_points.cursor := polygon.points.first;
+					point_cursor : et_pcb.type_polygon_points.cursor := polygon.corners.first;
 					new_points : et_pcb.type_polygon_points.set;
 
 					procedure get_point (point : in type_point_2d) is
@@ -1103,7 +1103,7 @@ package body et_kicad_to_native is
 
 					-- Now the new set of polygon corner points is available in "new_points".
 					-- new_points replaces the old list of points:
-					polygon.points := new_points;
+					polygon.corners := new_points;
 					
 					log_indentation_down;
 				end move_polygon;
@@ -1304,7 +1304,7 @@ package body et_kicad_to_native is
 				procedure move_polygon (polygon : in out et_pcb.type_stencil_polygon) is
 					use et_pcb_coordinates;
 					use et_pcb.type_polygon_points;
-					point_cursor : et_pcb.type_polygon_points.cursor := polygon.points.first;
+					point_cursor : et_pcb.type_polygon_points.cursor := polygon.corners.first;
 					new_points : et_pcb.type_polygon_points.set;
 
 					procedure get_point (point : in type_point_2d) is
@@ -1339,7 +1339,7 @@ package body et_kicad_to_native is
 
 					-- Now the new set of polygon corner points is available in "new_points".
 					-- new_points replaces the old list of points:
-					polygon.points := new_points;
+					polygon.corners := new_points;
 					
 					log_indentation_down;
 				end move_polygon;
@@ -1506,7 +1506,7 @@ package body et_kicad_to_native is
 				procedure move_polygon (polygon : in out et_pcb.type_stop_polygon) is
 					use et_pcb_coordinates;
 					use et_pcb.type_polygon_points;
-					point_cursor : et_pcb.type_polygon_points.cursor := polygon.points.first;
+					point_cursor : et_pcb.type_polygon_points.cursor := polygon.corners.first;
 					new_points : et_pcb.type_polygon_points.set;
 
 					procedure get_point (point : in type_point_2d) is
@@ -1541,7 +1541,7 @@ package body et_kicad_to_native is
 
 					-- Now the new set of polygon corner points is available in "new_points".
 					-- new_points replaces the old list of points:
-					polygon.points := new_points;
+					polygon.corners := new_points;
 					
 					log_indentation_down;
 				end move_polygon;
@@ -1742,7 +1742,7 @@ package body et_kicad_to_native is
 				procedure move_polygon (polygon : in out et_pcb.type_keepout_polygon) is
 					use et_pcb_coordinates;
 					use et_pcb.type_polygon_points;
-					point_cursor : et_pcb.type_polygon_points.cursor := polygon.points.first;
+					point_cursor : et_pcb.type_polygon_points.cursor := polygon.corners.first;
 					new_points : et_pcb.type_polygon_points.set;
 
 					procedure get_point (point : in type_point_2d) is
@@ -1777,7 +1777,7 @@ package body et_kicad_to_native is
 
 					-- Now the new set of polygon corner points is available in "new_points".
 					-- new_points replaces the old list of points:
-					polygon.points := new_points;
+					polygon.corners := new_points;
 					
 					log_indentation_down;
 				end move_polygon;
@@ -2044,7 +2044,7 @@ package body et_kicad_to_native is
 				procedure move_polygon (polygon : in out et_pcb.type_copper_polygon_floating) is
 					use et_pcb_coordinates;
 					use et_pcb.type_polygon_points;
-					point_cursor : et_pcb.type_polygon_points.cursor := polygon.points.first;
+					point_cursor : et_pcb.type_polygon_points.cursor := polygon.corners.first;
 					new_points : et_pcb.type_polygon_points.set;
 
 					procedure get_point (point : in type_point_2d) is
@@ -2079,7 +2079,7 @@ package body et_kicad_to_native is
 
 					-- Now the new set of polygon corner points is available in "new_points".
 					-- new_points replaces the old list of points:
-					polygon.points := new_points;
+					polygon.corners := new_points;
 					
 					log_indentation_down;
 				end move_polygon;
