@@ -3804,6 +3804,84 @@ package body et_project is
 						board_polygon := (others => <>);
 					end insert_polygon;
 
+					procedure insert_text (
+						layer	: in type_layer; -- SILK_SCREEN, ASSEMBLY_DOCUMENTATION, ...
+						face	: in et_pcb_coordinates.type_face) is -- TOP, BOTTOM
+					-- The board_polygon and its board_line_width have been general things until now. 
+					-- Depending on the layer and the side of the board (face) the board_polygon
+					-- is now assigned to the board where it belongs to.
+						
+						procedure do_it (
+							module_name	: in type_submodule_name.bounded_string;
+							module		: in out et_schematic.type_module) is
+							use et_pcb_coordinates;
+							use et_pcb;
+						begin -- do_it
+							case face is
+								when TOP =>
+									case layer is
+										when SILK_SCREEN =>
+											type_texts_with_content.append (
+												container	=> module.board.silk_screen.top.texts,
+												new_item	=> board_text);
+
+										when ASSEMBLY_DOCUMENTATION =>
+											type_texts_with_content.append (
+												container	=> module.board.assy_doc.top.texts,
+												new_item	=> board_text);
+
+										when STOP_MASK =>
+											type_texts_with_content.append (
+												container	=> module.board.stop_mask.top.texts,
+												new_item	=> board_text);
+
+										-- CS
+										--when KEEPOUT =>
+										--	type_texts_with_content.append (
+										--		container	=> module.board.keepout.top.texts,
+										--		new_item	=> board_text);
+
+										when others => invalid_section;
+									end case;
+									
+								when BOTTOM => null;
+									case layer is
+										when SILK_SCREEN =>
+											type_texts_with_content.append (
+												container	=> module.board.silk_screen.bottom.texts,
+												new_item	=> board_text);
+
+										when ASSEMBLY_DOCUMENTATION =>
+											type_texts_with_content.append (
+												container	=> module.board.assy_doc.bottom.texts,
+												new_item	=> board_text);
+											
+										when STOP_MASK =>
+											type_texts_with_content.append (
+												container	=> module.board.stop_mask.bottom.texts,
+												new_item	=> board_text);
+
+										-- CS
+										--when KEEPOUT =>
+										--	type_texts_with_content.append (
+										--		container	=> module.board.keepout.bottom.texts,
+										--		new_item	=> board_text);
+
+										when others => invalid_section;
+									end case;
+									
+							end case;
+						end do_it;
+											
+					begin -- insert_text
+						update_element (
+							container	=> modules,
+							position	=> module_cursor,
+							process		=> do_it'access);
+
+						-- clean up for next board text
+						board_text := (others => <>);
+					end insert_text;
 
 					
 				begin -- execute_section
@@ -4411,6 +4489,58 @@ package body et_project is
 										container	=> modules,
 										position	=> module_cursor,
 										process		=> insert_note'access);
+
+								when SEC_TOP =>
+									case stack.parent (degree => 2) is
+										when SEC_SILK_SCREEN =>
+											insert_text (
+												layer	=> SILK_SCREEN,
+												face	=> et_pcb_coordinates.TOP);
+
+										when SEC_ASSEMBLY_DOCUMENTATION =>
+											insert_text (
+												layer	=> ASSEMBLY_DOCUMENTATION,
+												face	=> et_pcb_coordinates.TOP);
+
+										when SEC_STOP_MASK =>
+											insert_text (
+												layer	=> STOP_MASK,
+												face	=> et_pcb_coordinates.TOP);
+
+										-- CS
+										--when SEC_KEEPOUT =>
+										--	insert_text (
+										--		layer	=> KEEPOUT,
+										--		face	=> et_pcb_coordinates.TOP);
+											
+										when others => invalid_section;
+									end case;
+
+								when SEC_BOTTOM =>
+									case stack.parent (degree => 2) is
+										when SEC_SILK_SCREEN =>
+											insert_text (
+												layer	=> SILK_SCREEN,
+												face	=> et_pcb_coordinates.BOTTOM);
+
+										when SEC_ASSEMBLY_DOCUMENTATION =>
+											insert_text (
+												layer	=> ASSEMBLY_DOCUMENTATION,
+												face	=> et_pcb_coordinates.BOTTOM);
+
+										when SEC_STOP_MASK =>
+											insert_text (
+												layer	=> STOP_MASK,
+												face	=> et_pcb_coordinates.BOTTOM);
+
+										-- CS
+										--when SEC_KEEPOUT =>
+										--	insert_text (
+										--		layer	=> KEEPOUT,
+										--		face	=> et_pcb_coordinates.BOTTOM);
+											
+										when others => invalid_section;
+									end case;
 									
 								when others => invalid_section;
 							end case;
@@ -5438,8 +5568,7 @@ package body et_project is
 
 								when SEC_TOP | SEC_BOTTOM =>
 									case stack.parent (degree => 2) is
-										when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-											SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
+										when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STOP_MASK => -- CS SEC_KEEPOUT
 											declare
 												kw : string := f (line, 1);
 											begin
