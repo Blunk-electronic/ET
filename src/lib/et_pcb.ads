@@ -304,6 +304,7 @@ package et_pcb is
 		-- CS should be defined via configuration file:
 
 	function to_string (meaning : in type_text_meaning_pcb) return string;
+	function to_meaning (meaning : in string) return type_text_meaning_pcb;
 	
 	-- TEXT PLACEHOLDERS
 	type type_text_placeholder_pcb is new type_text with record

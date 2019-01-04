@@ -3808,8 +3808,8 @@ package body et_project is
 					procedure insert_text (
 						layer	: in type_layer; -- SILK_SCREEN, ASSEMBLY_DOCUMENTATION, ...
 						face	: in et_pcb_coordinates.type_face) is -- TOP, BOTTOM
-					-- The board_polygon and its board_line_width have been general things until now. 
-					-- Depending on the layer and the side of the board (face) the board_polygon
+					-- The board_text has been a general thing until now. 
+					-- Depending on the layer and the side of the board (face) the board_text
 					-- is now assigned to the board where it belongs to.
 						
 						procedure do_it (
@@ -3883,6 +3883,85 @@ package body et_project is
 						-- clean up for next board text
 						board_text := (others => <>);
 					end insert_text;
+
+					procedure insert_placeholder (
+						layer	: in type_layer; -- SILK_SCREEN, ASSEMBLY_DOCUMENTATION, ...
+						face	: in et_pcb_coordinates.type_face) is -- TOP, BOTTOM
+					-- The board_text_placeholder has been a general thing until now. 
+					-- Depending on the layer and the side of the board (face) the board_text_placeholder
+					-- is now assigned to the board where it belongs to.
+						
+						procedure do_it (
+							module_name	: in type_submodule_name.bounded_string;
+							module		: in out et_schematic.type_module) is
+							use et_pcb_coordinates;
+							use et_pcb;
+						begin -- do_it
+							case face is
+								when TOP =>
+									case layer is
+										when SILK_SCREEN =>
+											type_text_placeholders_pcb.append (
+												container	=> module.board.silk_screen.top.placeholders,
+												new_item	=> board_text_placeholder);
+
+										when ASSEMBLY_DOCUMENTATION =>
+											type_text_placeholders_pcb.append (
+												container	=> module.board.assy_doc.top.placeholders,
+												new_item	=> board_text_placeholder);
+
+										when STOP_MASK =>
+											type_text_placeholders_pcb.append (
+												container	=> module.board.stop_mask.top.placeholders,
+												new_item	=> board_text_placeholder);
+
+										-- CS
+										--when KEEPOUT =>
+										--	type_text_placeholders_pcb.append (
+										--		container	=> module.board.keepout.top.placeholders,
+										--		new_item	=> board_text_placeholder);
+
+										when others => invalid_section;
+									end case;
+									
+								when BOTTOM => null;
+									case layer is
+										when SILK_SCREEN =>
+											type_text_placeholders_pcb.append (
+												container	=> module.board.silk_screen.bottom.placeholders,
+												new_item	=> board_text_placeholder);
+
+										when ASSEMBLY_DOCUMENTATION =>
+											type_text_placeholders_pcb.append (
+												container	=> module.board.assy_doc.bottom.placeholders,
+												new_item	=> board_text_placeholder);
+											
+										when STOP_MASK =>
+											type_text_placeholders_pcb.append (
+												container	=> module.board.stop_mask.bottom.placeholders,
+												new_item	=> board_text_placeholder);
+
+										-- CS
+										--when KEEPOUT =>
+										--	type_text_placeholders_pcb.append (
+										--		container	=> module.board.keepout.bottom.placeholders,
+										--		new_item	=> board_text_placeholder);
+
+										when others => invalid_section;
+									end case;
+									
+							end case;
+						end do_it;
+											
+					begin -- insert_placeholder
+						update_element (
+							container	=> modules,
+							position	=> module_cursor,
+							process		=> do_it'access);
+
+						-- clean up for next board placeholder
+						board_text_placeholder := (others => <>);
+					end insert_placeholder;
 
 					
 				begin -- execute_section
@@ -4563,6 +4642,46 @@ package body et_project is
 										when others => invalid_section;
 									end case;
 
+								when SEC_TOP =>
+									case stack.parent (degree => 2) is
+										when SEC_SILK_SCREEN =>
+											insert_placeholder (
+												layer	=> SILK_SCREEN,
+												face	=> et_pcb_coordinates.TOP);
+
+										when SEC_ASSEMBLY_DOCUMENTATION =>
+											insert_placeholder (
+												layer	=> ASSEMBLY_DOCUMENTATION,
+												face	=> et_pcb_coordinates.TOP);
+
+										when SEC_STOP_MASK =>
+											insert_placeholder (
+												layer	=> STOP_MASK,
+												face	=> et_pcb_coordinates.TOP);
+
+										when others => invalid_section;
+									end case;
+									
+								when SEC_BOTTOM =>
+									case stack.parent (degree => 2) is
+										when SEC_SILK_SCREEN =>
+											insert_placeholder (
+												layer	=> SILK_SCREEN,
+												face	=> et_pcb_coordinates.BOTTOM);
+
+										when SEC_ASSEMBLY_DOCUMENTATION =>
+											insert_placeholder (
+												layer	=> ASSEMBLY_DOCUMENTATION,
+												face	=> et_pcb_coordinates.BOTTOM);
+
+										when SEC_STOP_MASK =>
+											insert_placeholder (
+												layer	=> STOP_MASK,
+												face	=> et_pcb_coordinates.BOTTOM);
+
+										when others => invalid_section;
+									end case;
+									
 								when others => invalid_section;
 							end case;
 
@@ -5798,27 +5917,27 @@ package body et_project is
 													expect_field_count (line, 7);
 
 													-- extract position of note starting at field 2
-													board_text.position := to_position (line, 2);
+													board_text_placeholder.position := to_position (line, 2);
 
 												elsif kw = keyword_size then -- size x 1.4 y 4
 													expect_field_count (line, 5);
 
 													-- extract text dimensions starting at field 2
-													board_text.dimensions := to_dimensions (line, 2);
+													board_text_placeholder.dimensions := to_dimensions (line, 2);
 
 												elsif kw = keyword_line_width then -- line_width 0.1
 													expect_field_count (line, 2);
-													board_text.line_width := et_pcb_coordinates.to_distance (f (line, 2));
+													board_text_placeholder.line_width := et_pcb_coordinates.to_distance (f (line, 2));
 
 												elsif kw = keyword_alignment then -- alignment horizontal center vertical center
 													expect_field_count (line, 5);
 
 													-- extract alignment starting at field 2
-													board_text.alignment := to_alignment (line, 2);
+													board_text_placeholder.alignment := to_alignment (line, 2);
 													
-												elsif kw = keyword_content then -- content "WATER KETTLE CONTROL"
-													expect_field_count (line, 2); -- actual content in quotes !
-													board_text.content := et_libraries.to_content (f (line, 2));
+												elsif kw = keyword_meaning then -- meaning project_name
+													expect_field_count (line, 2);
+													board_text_placeholder.meaning := et_pcb.to_meaning (f (line, 2));
 													
 												else
 													invalid_keyword (kw);
@@ -5828,7 +5947,6 @@ package body et_project is
 										when others => invalid_section;
 									end case;
 
-									
 								when others => invalid_section;
 							end case;
 

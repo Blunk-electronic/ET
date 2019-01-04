@@ -252,10 +252,13 @@ package body et_pcb is
 		return latin_1.space & to_lower (type_text_meaning_copper'image (meaning));
 	end to_string;
 	
-	function to_string (meaning : in type_text_meaning_pcb) return string is
-	begin
+	function to_string (meaning : in type_text_meaning_pcb) return string is begin
 		return latin_1.space & to_lower (type_text_meaning_pcb'image (meaning));
 	end to_string;
+
+	function to_meaning (meaning : in string) return type_text_meaning_pcb is begin
+		return type_text_meaning_pcb'value (meaning);
+	end to_meaning;
 	
 	function to_directory (directory_name : in string) return type_directory_name.bounded_string is
 	-- Converts a string to a type_directory_name.
