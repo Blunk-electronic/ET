@@ -3549,7 +3549,7 @@ package body et_project is
 						layer	: in type_layer; -- SILK_SCREEN, ASSEMBLY_DOCUMENTATION, ...
 						face	: in et_pcb_coordinates.type_face) is -- TOP, BOTTOM
 					-- The board_arc and its board_line_width have been general things until now. 
-					-- Depending on the layer and the side of the board (face) the board_line
+					-- Depending on the layer and the side of the board (face) the board_arc
 					-- is now assigned to the board where it belongs to.
 						
 						procedure do_it (
@@ -3628,6 +3628,89 @@ package body et_project is
 						board_arc := (others => <>);
 						board_line_width := et_pcb.type_general_line_width'first;
 					end insert_arc;
+
+					procedure insert_circle (
+						layer	: in type_layer; -- SILK_SCREEN, ASSEMBLY_DOCUMENTATION, ...
+						face	: in et_pcb_coordinates.type_face) is -- TOP, BOTTOM
+					-- The board_circle and its board_line_width have been general things until now. 
+					-- Depending on the layer and the side of the board (face) the board_circle
+					-- is now assigned to the board where it belongs to.
+						
+						procedure do_it (
+							module_name	: in type_submodule_name.bounded_string;
+							module		: in out et_schematic.type_module) is
+							use et_pcb_coordinates;
+							use et_pcb;
+						begin -- do_it
+							case face is
+								when TOP =>
+									case layer is
+										when SILK_SCREEN =>
+											type_silk_circles.append (
+												container	=> module.board.silk_screen.top.circles,
+												new_item	=> (board_circle with null record));
+
+										when ASSEMBLY_DOCUMENTATION =>
+											type_doc_circles.append (
+												container	=> module.board.assy_doc.top.circles,
+												new_item	=> (board_circle with null record));
+
+										when STENCIL =>
+											type_stencil_circles.append (
+												container	=> module.board.stencil.top.circles,
+												new_item	=> (board_circle with null record));
+											
+										when STOP_MASK =>
+											type_stop_circles.append (
+												container	=> module.board.stop_mask.top.circles,
+												new_item	=> (board_circle with null record));
+
+										when KEEPOUT =>
+											type_keepout_circles.append (
+												container	=> module.board.keepout.top.circles,
+												new_item	=> (board_circle with null record));
+									end case;
+									
+								when BOTTOM => null;
+									case layer is
+										when SILK_SCREEN =>
+											type_silk_circles.append (
+												container	=> module.board.silk_screen.bottom.circles,
+												new_item	=> (board_circle with null record));
+
+										when ASSEMBLY_DOCUMENTATION =>
+											type_doc_circles.append (
+												container	=> module.board.assy_doc.bottom.circles,
+												new_item	=> (board_circle with null record));
+											
+										when STENCIL =>
+											type_stencil_circles.append (
+												container	=> module.board.stencil.bottom.circles,
+												new_item	=> (board_circle with null record));
+											
+										when STOP_MASK =>
+											type_stop_circles.append (
+												container	=> module.board.stop_mask.bottom.circles,
+												new_item	=> (board_circle with null record));
+
+										when KEEPOUT =>
+											type_keepout_circles.append (
+												container	=> module.board.keepout.bottom.circles,
+												new_item	=> (board_circle with null record));
+									end case;
+									
+							end case;
+						end do_it;
+											
+					begin -- insert_circle
+						update_element (
+							container	=> modules,
+							position	=> module_cursor,
+							process		=> do_it'access);
+
+						-- clean up for next board circle
+						board_circle := (others => <>);
+					end insert_circle;
 
 					
 				begin -- execute_section
@@ -3977,7 +4060,73 @@ package body et_project is
 									
 								when others => invalid_section;
 							end case;
+
+						when SEC_CIRCLE =>
+							case stack.parent is
+								when SEC_TOP =>
+									case stack.parent (degree => 2) is
+										when SEC_SILK_SCREEN =>
+											insert_circle (
+												layer	=> SILK_SCREEN,
+												face	=> et_pcb_coordinates.TOP);
+
+										when SEC_ASSEMBLY_DOCUMENTATION =>
+											insert_circle (
+												layer	=> ASSEMBLY_DOCUMENTATION,
+												face	=> et_pcb_coordinates.TOP);
+
+										when SEC_STENCIL =>
+											insert_circle (
+												layer	=> STENCIL,
+												face	=> et_pcb_coordinates.TOP);
+
+										when SEC_STOP_MASK =>
+											insert_circle (
+												layer	=> STOP_MASK,
+												face	=> et_pcb_coordinates.TOP);
+
+										when SEC_KEEPOUT =>
+											insert_circle (
+												layer	=> KEEPOUT,
+												face	=> et_pcb_coordinates.TOP);
+											
+										when others => invalid_section;
+									end case;
+
+								when SEC_BOTTOM =>
+									case stack.parent (degree => 2) is
+										when SEC_SILK_SCREEN =>
+											insert_circle (
+												layer	=> SILK_SCREEN,
+												face	=> et_pcb_coordinates.BOTTOM);
+
+										when SEC_ASSEMBLY_DOCUMENTATION =>
+											insert_circle (
+												layer	=> ASSEMBLY_DOCUMENTATION,
+												face	=> et_pcb_coordinates.BOTTOM);
+
+										when SEC_STENCIL =>
+											insert_circle (
+												layer	=> STENCIL,
+												face	=> et_pcb_coordinates.BOTTOM);
+
+										when SEC_STOP_MASK =>
+											insert_circle (
+												layer	=> STOP_MASK,
+												face	=> et_pcb_coordinates.BOTTOM);
+
+										when SEC_KEEPOUT =>
+											insert_circle (
+												layer	=> KEEPOUT,
+												face	=> et_pcb_coordinates.BOTTOM);
+											
+										when others => invalid_section;
+									end case;
+
 									
+								when others => invalid_section;
+							end case;
+							
 						when SEC_VIA =>
 							case stack.parent is
 								when SEC_ROUTE =>
@@ -4787,11 +4936,23 @@ package body et_project is
 													
 												elsif kw = keyword_width then -- width 0.5
 													expect_field_count (line, 2);
-													board_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+													board_circle.width := et_pcb_coordinates.to_distance (f (line, 2));
 
 												elsif kw = keyword_filled then -- filled yes/no
 													expect_field_count (line, 2);													
 													board_circle.filled := et_pcb.to_filled (f (line, 2));
+
+												elsif kw = keyword_fill_style then -- fill_style solid/hatched/cutout
+													expect_field_count (line, 2);													
+													board_circle.fill_style := et_pcb.to_fill_style (f (line, 2));
+
+												elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
+													expect_field_count (line, 2);													
+													board_circle.hatching_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+
+												elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
+													expect_field_count (line, 2);													
+													board_circle.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
 													
 												else
 													invalid_keyword (kw);
