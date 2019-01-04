@@ -3189,6 +3189,8 @@ package body et_project is
 
 			type type_polygon is new et_pcb.type_polygon with null record;
 			board_polygon : type_polygon;
+
+			board_text : et_pcb.type_text_with_content;
 			
 -- 			route_restrict_line		: type_route_restrict_line;
 -- 			route_restrict_arc		: type_route_restrict_arc;
@@ -5434,6 +5436,48 @@ package body et_project is
 										end if;
 									end;
 
+								when SEC_TOP | SEC_BOTTOM =>
+									case stack.parent (degree => 2) is
+										when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+											SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
+											declare
+												kw : string := f (line, 1);
+											begin
+												-- CS: In the following: set a corresponding parameter-found-flag
+												if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
+													expect_field_count (line, 7);
+
+													-- extract position of note starting at field 2
+													--board_text.position := to_position (line, 2);
+
+												elsif kw = keyword_size then -- size x 1.4 y 4
+													expect_field_count (line, 5);
+
+													-- extract text dimensions starting at field 2
+													board_text.dimensions := to_dimensions (line, 2);
+
+												elsif kw = keyword_line_width then -- line_width 0.1
+													expect_field_count (line, 2);
+													board_text.line_width := et_pcb_coordinates.to_distance (f (line, 2));
+
+												elsif kw = keyword_alignment then -- alignment horizontal center vertical center
+													expect_field_count (line, 5);
+
+													-- extract alignment starting at field 2
+													board_text.alignment := to_alignment (line, 2);
+													
+												elsif kw = keyword_content then -- content "WATER KETTLE CONTROL"
+													expect_field_count (line, 2); -- actual content in quotes !
+													board_text.content := et_libraries.to_content (f (line, 2));
+													
+												else
+													invalid_keyword (kw);
+												end if;
+											end;
+											
+										when others => invalid_section;
+									end case;
+									
 								when others => invalid_section;
 							end case;
 
