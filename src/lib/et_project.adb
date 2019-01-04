@@ -4339,9 +4339,22 @@ package body et_project is
 							case stack.parent is
 								when SEC_POLYGON =>
 
-									-- insert collection of polygon corner points in polygon
-									route_polygon.points := polygon_corner_points;
+									-- Insert collection of polygon corner points in polygon.
+									-- The current polygon can be part of a route or part
+									-- of something on top or bottom like silk screen, assy doc, keepout, stencil, stop mask.
+									case stack.parent (degree => 2) is
+										when SEC_ROUTE =>
 
+											route_polygon.points := polygon_corner_points;
+
+										when SEC_TOP | SEC_BOTTOM =>
+											-- CS check for parent section (degree => 3) to be 
+											-- silk screen, assy doc, keepout, stencil, stop mask ?
+											board_polygon.points := polygon_corner_points;
+
+										when others => invalid_section;
+									end case;
+									
 									-- clean up for next collection of corner points (of another polygon).
 									et_pcb.type_polygon_points.clear (polygon_corner_points);
 									
@@ -5216,7 +5229,6 @@ package body et_project is
 										when others => invalid_section;
 									end case;
 
-									
 								when others => invalid_section;
 							end case;
 
