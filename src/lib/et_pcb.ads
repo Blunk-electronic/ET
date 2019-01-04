@@ -975,7 +975,7 @@ package et_pcb is
 		arcs		: type_route_restrict_arcs.list;
 		circles		: type_route_restrict_circles.list;
 		polygons	: type_route_restrict_polygons.list;
-		-- CS texts		: type_texts_with_content.list; -- for routing notes ?		
+		-- CS texts		: type_texts_with_content.list; -- for routing notes ? mind signal layer !
 	end record;
 	
 	type type_route_restrict_package is new type_route_restrict with null record;
@@ -1204,7 +1204,7 @@ package et_pcb is
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure arc_copper_properties (
-	-- Logs the properties of the given arc of copper
+	-- Logs the propetype_texts_with_contentrties of the given arc of copper
 		face			: in type_face;
 		cursor			: in type_copper_arcs.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
@@ -1439,7 +1439,7 @@ package et_pcb is
 		silk_screen		: type_silk_screen_pcb_both_sides;
 		assy_doc		: type_assembly_documentation_pcb_both_sides;
 		stencil			: type_stencil_both_sides;
-		stop_mask		: type_stop_mask_both_sides;
+		stop_mask		: type_stop_mask_pcb_both_sides;
 		keepout			: type_keepout_both_sides;
 		route_restrict	: type_route_restrict_pcb;
 		via_restrict	: type_via_restrict_pcb;
