@@ -4031,7 +4031,7 @@ package body et_project is
 						clear (route_restrict_layers);
 					end insert_line_route_restrict;
 					
-					procedure insert_arc is
+					procedure insert_arc_route_restrict is
 						use et_pcb;
 						use type_signal_layers;
 						
@@ -4046,7 +4046,7 @@ package body et_project is
 												width	=> board_line_width));
 						end do_it;
 											
-					begin -- insert_arc
+					begin -- insert_arc_route_restrict
 						update_element (
 							container	=> modules,
 							position	=> module_cursor,
@@ -4056,9 +4056,9 @@ package body et_project is
 						board_arc := (others => <>);
 						board_line_width := et_pcb.type_general_line_width'first;
 						clear (route_restrict_layers);
-					end insert_arc;
+					end insert_arc_route_restrict;
 
-					procedure insert_circle is
+					procedure insert_circle_route_restrict is
 						use et_pcb;
 						use type_signal_layers;
 						
@@ -4071,7 +4071,7 @@ package body et_project is
 								new_item	=> (board_circle with route_restrict_layers));
 						end do_it;
 											
-					begin -- insert_circle
+					begin -- insert_circle_route_restrict
 						update_element (
 							container	=> modules,
 							position	=> module_cursor,
@@ -4080,7 +4080,7 @@ package body et_project is
 						-- clean up for next board line
 						board_circle := (others => <>);
 						clear (route_restrict_layers);
-					end insert_circle;
+					end insert_circle_route_restrict;
 
 					procedure insert_polygon is
 						use et_pcb;
@@ -4135,6 +4135,57 @@ package body et_project is
 						board_line_width := et_pcb.type_general_line_width'first;
 						clear (route_restrict_layers);
 					end insert_line_via_restrict;
+
+					procedure insert_arc_via_restrict is
+						use et_pcb;
+						use type_signal_layers;
+						
+						procedure do_it (
+							module_name	: in type_submodule_name.bounded_string;
+							module		: in out et_schematic.type_module) is
+						begin
+							type_via_restrict_arcs.append (
+								container	=> module.board.via_restrict.arcs,
+								new_item	=> (type_arc_2d (board_arc) with 
+												layers	=> route_restrict_layers,
+												width	=> board_line_width));
+						end do_it;
+											
+					begin -- insert_arc_via_restrict
+						update_element (
+							container	=> modules,
+							position	=> module_cursor,
+							process		=> do_it'access);
+
+						-- clean up for next board line
+						board_arc := (others => <>);
+						board_line_width := et_pcb.type_general_line_width'first;
+						clear (route_restrict_layers);
+					end insert_arc_via_restrict;
+
+					procedure insert_circle_via_restrict is
+						use et_pcb;
+						use type_signal_layers;
+						
+						procedure do_it (
+							module_name	: in type_submodule_name.bounded_string;
+							module		: in out et_schematic.type_module) is
+						begin
+							type_via_restrict_circles.append (
+								container	=> module.board.via_restrict.circles,
+								new_item	=> (board_circle with route_restrict_layers));
+						end do_it;
+											
+					begin -- insert_circle_via_restrict
+						update_element (
+							container	=> modules,
+							position	=> module_cursor,
+							process		=> do_it'access);
+
+						-- clean up for next board line
+						board_circle := (others => <>);
+						clear (route_restrict_layers);
+					end insert_circle_via_restrict;
 					
 				begin -- execute_section
 					case stack.current is
@@ -4487,8 +4538,11 @@ package body et_project is
 									end case;
 
 								when SEC_ROUTE_RESTRICT =>
-									insert_arc;
+									insert_arc_route_restrict;
 
+								when SEC_VIA_RESTRICT =>
+									insert_arc_via_restrict;
+									
 								when others => invalid_section;
 							end case;
 
@@ -4555,7 +4609,10 @@ package body et_project is
 									end case;
 
 								when SEC_ROUTE_RESTRICT =>
-									insert_circle;
+									insert_circle_route_restrict;
+
+								when SEC_VIA_RESTRICT =>
+									insert_circle_via_restrict;
 									
 								when others => invalid_section;
 							end case;
@@ -5541,7 +5598,7 @@ package body et_project is
 										when others => invalid_section;
 									end case;
 
-								when SEC_ROUTE_RESTRICT =>
+								when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 									declare
 										kw : string := f (line, 1);
 									begin
@@ -5670,7 +5727,7 @@ package body et_project is
 
 									end case;
 
-								when SEC_ROUTE_RESTRICT =>
+								when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 									declare
 										kw : string := f (line, 1);
 									begin
@@ -5820,7 +5877,7 @@ package body et_project is
 										when others => invalid_section;
 									end case;
 
-								when SEC_ROUTE_RESTRICT =>
+								when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 									declare
 										kw : string := f (line, 1);
 									begin
