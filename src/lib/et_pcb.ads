@@ -676,7 +676,8 @@ package et_pcb is
 	end record;
 
 
-	-- This circle type is used by silk screen, assembly doc, stop mask, stencil and keepout
+	-- This circle type is used by silk screen, assembly doc, 
+	-- stop mask, stencil, keepout, route restrict, via restrict
 	type type_fillable_circle is new type_circle_2d with record
 		width				: type_general_line_width; -- the width of the circumfence		
 		filled 				: type_filled := NO;
@@ -1005,8 +1006,7 @@ package et_pcb is
 	package type_via_restrict_arcs is new doubly_linked_lists (type_via_restrict_arc);
 
 	
-	type type_via_restrict_circle is new type_circle_2d with record
-		width	: type_general_line_width; -- CS use subtype for reasonable range
+	type type_via_restrict_circle is new type_fillable_circle with record
 		layers	: type_signal_layers.set;
 	end record;
 	
