@@ -415,24 +415,96 @@
 	[KEEPOUT END]
 
 	[ROUTE_RESTRICT BEGIN]
-		same as keepout but with layer numbers:
-			[LINE BEGIN]
-				start x 22.3
-				end y 32.5
-				width 0.2
-				layers 2 3 15
-			[LINE END]
+		[LINE BEGIN]
+			start x 22.3 y 34
+			end x 10 y 32.5 
+			width 0.2
+			layers 2 3 15
+		[LINE END]
 
+		[ARC BEGIN]
+			center x 140.000 y 160.000
+			start x 140.000 y 155.000
+			end x 0.000 y 210.000
+			width 0.200
+			layers 1 2 12
+		[ARC END]
+		
+		[CIRCLE BEGIN]
+			center x 250.000 y 125.000
+			radius 5.000
+			width 0.200
+			filled no
+			fill_style solid
+			hatching_line_width 0.300
+			hatching_line_spacing 2.000
+			layers 1 2 12			
+		[CIRCLE END]
+		
+		[POLYGON BEGIN]
+			fill_style solid
+			corner_easing none
+			easing_radius 0.3
+			hatching_line_width 0.3
+			hatching_line_spacing 1
+			layers 1 2 11
+			width 0.200
+			[CORNERS BEGIN]
+				position x 123.54 y 2.7
+				position x 133.54 y 335.3
+				position x 523.54 y 6.7
+			[CORNERS END]
+		[POLYGON END]
 	[ROUTE_RESTRICT END]
 
 	[VIA_RESTRICT BEGIN]
-		same as route restrict
+		[LINE BEGIN]
+			start x 22.3 y 34
+			end x 10 y 32.5 
+			width 0.2
+			layers 2 3 15
+		[LINE END]
+
+		[ARC BEGIN]
+			center x 140.000 y 160.000
+			start x 140.000 y 155.000
+			end x 0.000 y 210.000
+			width 0.200
+			layers 1 2 12
+		[ARC END]
+		
+		[CIRCLE BEGIN]
+			center x 250.000 y 125.000
+			radius 5.000
+			width 0.200
+			filled no
+			fill_style solid
+			hatching_line_width 0.300
+			hatching_line_spacing 2.000
+			layers 1 2 12			
+		[CIRCLE END]
+		
+		[POLYGON BEGIN]
+			fill_style solid
+			corner_easing none
+			easing_radius 0.3
+			hatching_line_width 0.3
+			hatching_line_spacing 1
+			layers 1 2 11
+			width 0.200
+			[CORNERS BEGIN]
+				position x 123.54 y 2.7
+				position x 133.54 y 335.3
+				position x 523.54 y 6.7
+			[CORNERS END]
+		[POLYGON END]
+
 	[VIA_RESTRICT END]
 	
 	[COPPER BEGIN]
 		[LINE BEGIN]
-			start x 22.3
-			end y 32.5
+			start x 22.3 y 334.0
+			end x 24.3 y 32.5
 			layer 2
 			width 0.2
 		[LINE END]

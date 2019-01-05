@@ -4082,7 +4082,7 @@ package body et_project is
 						clear (route_restrict_layers);
 					end insert_circle_route_restrict;
 
-					procedure insert_polygon is
+					procedure insert_polygon_route_restrict is
 						use et_pcb;
 						use type_signal_layers;
 						
@@ -4097,17 +4097,17 @@ package body et_project is
 												width	=> board_line_width));
 						end do_it;
 											
-					begin -- insert_polygon
+					begin -- insert_polygon_route_restrict
 						update_element (
 							container	=> modules,
 							position	=> module_cursor,
 							process		=> do_it'access);
 
-						-- clean up for next board line
+						-- clean up for next board polygon
 						board_polygon := (others => <>);
 						board_line_width := et_pcb.type_general_line_width'first;
 						clear (route_restrict_layers);
-					end insert_polygon;
+					end insert_polygon_route_restrict;
 
 					procedure insert_line_via_restrict is
 						use et_pcb;
@@ -4186,6 +4186,33 @@ package body et_project is
 						board_circle := (others => <>);
 						clear (route_restrict_layers);
 					end insert_circle_via_restrict;
+
+					procedure insert_polygon_via_restrict is
+						use et_pcb;
+						use type_signal_layers;
+						
+						procedure do_it (
+							module_name	: in type_submodule_name.bounded_string;
+							module		: in out et_schematic.type_module) is
+						begin
+							type_via_restrict_polygons.append (
+								container	=> module.board.via_restrict.polygons,
+								new_item	=> (et_pcb.type_polygon (board_polygon) with 
+												layers	=> route_restrict_layers,
+												width	=> board_line_width));
+						end do_it;
+											
+					begin -- insert_polygon_via_restrict
+						update_element (
+							container	=> modules,
+							position	=> module_cursor,
+							process		=> do_it'access);
+
+						-- clean up for next board polygon
+						board_polygon := (others => <>);
+						board_line_width := et_pcb.type_general_line_width'first;
+						clear (route_restrict_layers);
+					end insert_polygon_via_restrict;
 					
 				begin -- execute_section
 					case stack.current is
@@ -4732,7 +4759,10 @@ package body et_project is
 									end case;
 
 								when SEC_ROUTE_RESTRICT =>
-									insert_polygon;
+									insert_polygon_route_restrict;
+
+								when SEC_VIA_RESTRICT =>
+									insert_polygon_via_restrict;
 									
 								when others => invalid_section;
 							end case;
