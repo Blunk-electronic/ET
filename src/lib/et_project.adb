@@ -3237,9 +3237,6 @@ package body et_project is
 			board_text_placeholder : et_pcb.type_text_placeholder_pcb;
 
 			route_restrict_layers : et_pcb.type_signal_layers.set;
--- 			route_restrict_line		: type_route_restrict_line;
--- 			route_restrict_arc		: type_route_restrict_arc;
--- 			route_restrict_circle	: type_route_restrict_circle;
 			
 			procedure process_line is 
 			-- CS: detect if section name is type_section_name_module
@@ -4074,7 +4071,7 @@ package body et_project is
 								new_item	=> (board_circle with route_restrict_layers));
 						end do_it;
 											
-					begin
+					begin -- insert_circle
 						update_element (
 							container	=> modules,
 							position	=> module_cursor,
@@ -4084,6 +4081,33 @@ package body et_project is
 						board_circle := (others => <>);
 						clear (route_restrict_layers);
 					end insert_circle;
+
+					procedure insert_polygon is
+						use et_pcb;
+						use type_signal_layers;
+						
+						procedure do_it (
+							module_name	: in type_submodule_name.bounded_string;
+							module		: in out et_schematic.type_module) is
+						begin
+							type_route_restrict_polygons.append (
+								container	=> module.board.route_restrict.polygons,
+								new_item	=> (et_pcb.type_polygon (board_polygon) with 
+												layers	=> route_restrict_layers,
+												width	=> board_line_width));
+						end do_it;
+											
+					begin -- insert_polygon
+						update_element (
+							container	=> modules,
+							position	=> module_cursor,
+							process		=> do_it'access);
+
+						-- clean up for next board line
+						board_polygon := (others => <>);
+						board_line_width := et_pcb.type_general_line_width'first;
+						clear (route_restrict_layers);
+					end insert_polygon;
 
 					
 				begin -- execute_section
@@ -4620,6 +4644,9 @@ package body et_project is
 											
 										when others => invalid_section;
 									end case;
+
+								when SEC_ROUTE_RESTRICT =>
+									insert_polygon;
 									
 								when others => invalid_section;
 							end case;
@@ -4630,7 +4657,8 @@ package body et_project is
 
 									-- Insert collection of polygon corner points in polygon.
 									-- The current polygon can be part of a route or part
-									-- of something on top or bottom like silk screen, assy doc, keepout, stencil, stop mask.
+									-- of something on top or bottom like silk screen, assy doc, keepout,
+									-- stencil, stop mask, route restrict, via restrict.
 									case stack.parent (degree => 2) is
 										when SEC_ROUTE =>
 
@@ -4641,6 +4669,9 @@ package body et_project is
 											-- silk screen, assy doc, keepout, stencil, stop mask ?
 											board_polygon.corners := polygon_corner_points;
 
+										when SEC_ROUTE_RESTRICT =>
+											board_polygon.corners := polygon_corner_points;
+											
 										when others => invalid_section;
 									end case;
 									
@@ -5764,6 +5795,46 @@ package body et_project is
 										when others => invalid_section;
 									end case;
 
+								when SEC_ROUTE_RESTRICT =>
+									declare
+										kw : string := f (line, 1);
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_fill_style then -- fill_style solid/hatched/cutout
+											expect_field_count (line, 2);													
+											board_polygon.fill_style := et_pcb.to_fill_style (f (line, 2));
+
+										elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
+											expect_field_count (line, 2);													
+											board_polygon.corner_easing := et_pcb.to_corner_easing (f (line, 2));
+
+										elsif kw = keyword_easing_radius then -- easing_radius 0.4
+											expect_field_count (line, 2);													
+											board_polygon.easing_radius := et_pcb_coordinates.to_distance (f (line, 2));
+											
+										elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
+											expect_field_count (line, 2);													
+											board_polygon.hatching_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+
+										elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
+											expect_field_count (line, 2);													
+											board_polygon.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
+
+										elsif kw = keyword_width then -- width 0.5
+											expect_field_count (line, 2);
+											board_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+											
+										elsif kw = keyword_layers then -- layers 1 14 3
+
+											-- there must be at least two fields:
+											expect_field_count (line => line, count_expected => 2, warn => false);
+											route_restrict_layers := to_layers (line);
+																						
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+									
 								when others => invalid_section;
 							end case;
 
