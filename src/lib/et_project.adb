@@ -4033,6 +4033,34 @@ package body et_project is
 						board_line_width := et_pcb.type_general_line_width'first;
 						clear (route_restrict_layers);
 					end insert_line;
+
+					procedure insert_arc is
+						use et_pcb;
+						use type_signal_layers;
+						
+						procedure do_it (
+							module_name	: in type_submodule_name.bounded_string;
+							module		: in out et_schematic.type_module) is
+						begin
+							type_route_restrict_arcs.append (
+								container	=> module.board.route_restrict.arcs,
+								new_item	=> (type_arc_2d (board_arc) with 
+												layers	=> route_restrict_layers,
+												width	=> board_line_width));
+						end do_it;
+											
+					begin -- insert_arc
+						update_element (
+							container	=> modules,
+							position	=> module_cursor,
+							process		=> do_it'access);
+
+						-- clean up for next board line
+						board_arc := (others => <>);
+						board_line_width := et_pcb.type_general_line_width'first;
+						clear (route_restrict_layers);
+					end insert_arc;
+
 					
 				begin -- execute_section
 					case stack.current is
@@ -4381,7 +4409,9 @@ package body et_project is
 										when others => invalid_section;
 									end case;
 
-									
+								when SEC_ROUTE_RESTRICT =>
+									insert_arc;
+
 								when others => invalid_section;
 							end case;
 
@@ -5428,6 +5458,45 @@ package body et_project is
 
 										when others => invalid_section;
 									end case;
+
+								when SEC_ROUTE_RESTRICT =>
+									declare
+										kw : string := f (line, 1);
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_center then -- center x 150 y 45
+											expect_field_count (line, 5);
+
+											-- extract the center position starting at field 2 of line
+											board_arc.center := to_position (line, 2);
+											
+										elsif kw = keyword_start then -- start x 22.3 y 23.3
+											expect_field_count (line, 5);
+
+											-- extract the start position starting at field 2 of line
+											board_arc.start_point := to_position (line, 2);
+											
+										elsif kw = keyword_end then -- end x 22.3 y 23.3
+											expect_field_count (line, 5);
+
+											-- extract the end position starting at field 2 of line
+											board_arc.end_point := to_position (line, 2);
+
+										elsif kw = keyword_width then -- width 0.5
+											expect_field_count (line, 2);
+											board_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+
+										elsif kw = keyword_layers then -- layers 1 14 3
+
+											-- there must be at least two fields:
+											expect_field_count (line => line, count_expected => 2, warn => false);
+
+											route_restrict_layers := to_layers (line);
+
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
 
 									
 								when others => invalid_section;
