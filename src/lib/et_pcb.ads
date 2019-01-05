@@ -1013,7 +1013,10 @@ package et_pcb is
 	package type_via_restrict_circles is new doubly_linked_lists (type_via_restrict_circle);
 
 	
-	type type_via_restrict_polygon is new type_polygon with null record; -- CS layers ?
+	type type_via_restrict_polygon is new type_polygon with record
+		width	: type_general_line_width; -- CS use subtype for reasonable range
+		layers 	: type_signal_layers.set;
+	end record;
 
 	package type_via_restrict_polygons is new doubly_linked_lists (type_via_restrict_polygon);
 
