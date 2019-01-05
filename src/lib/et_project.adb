@@ -4004,7 +4004,7 @@ package body et_project is
 						board_text_placeholder := (others => <>);
 					end insert_placeholder;
 
-					procedure insert_line is
+					procedure insert_line_route_restrict is
 						use et_pcb;
 						use type_signal_layers;
 						
@@ -4019,7 +4019,7 @@ package body et_project is
 												width	=> board_line_width));
 						end do_it;
 											
-					begin -- insert_line
+					begin -- insert_line_route_restrict
 						update_element (
 							container	=> modules,
 							position	=> module_cursor,
@@ -4029,8 +4029,8 @@ package body et_project is
 						board_line := (others => <>);
 						board_line_width := et_pcb.type_general_line_width'first;
 						clear (route_restrict_layers);
-					end insert_line;
-
+					end insert_line_route_restrict;
+					
 					procedure insert_arc is
 						use et_pcb;
 						use type_signal_layers;
@@ -4109,6 +4109,32 @@ package body et_project is
 						clear (route_restrict_layers);
 					end insert_polygon;
 
+					procedure insert_line_via_restrict is
+						use et_pcb;
+						use type_signal_layers;
+						
+						procedure do_it (
+							module_name	: in type_submodule_name.bounded_string;
+							module		: in out et_schematic.type_module) is
+						begin
+							type_via_restrict_lines.append (
+								container	=> module.board.via_restrict.lines,
+								new_item	=> (type_line_2d (board_line) with 
+												layers	=> route_restrict_layers,
+												width	=> board_line_width));
+						end do_it;
+											
+					begin -- insert_line_via_restrict
+						update_element (
+							container	=> modules,
+							position	=> module_cursor,
+							process		=> do_it'access);
+
+						-- clean up for next board line
+						board_line := (others => <>);
+						board_line_width := et_pcb.type_general_line_width'first;
+						clear (route_restrict_layers);
+					end insert_line_via_restrict;
 					
 				begin -- execute_section
 					case stack.current is
@@ -4384,8 +4410,11 @@ package body et_project is
 									end case;
 
 								when SEC_ROUTE_RESTRICT =>
-									insert_line;
-								
+									insert_line_route_restrict;
+
+								when SEC_VIA_RESTRICT =>
+									insert_line_via_restrict;
+									
 								when others => invalid_section;
 							end case;
 							
@@ -4669,7 +4698,7 @@ package body et_project is
 											-- silk screen, assy doc, keepout, stencil, stop mask ?
 											board_polygon.corners := polygon_corner_points;
 
-										when SEC_ROUTE_RESTRICT =>
+										when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 											board_polygon.corners := polygon_corner_points;
 											
 										when others => invalid_section;
@@ -5395,7 +5424,7 @@ package body et_project is
 										when others => invalid_section;
 									end case;
 
-								when SEC_ROUTE_RESTRICT =>
+								when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 									declare
 										kw : string := f (line, 1);
 									begin
@@ -5426,10 +5455,6 @@ package body et_project is
 											invalid_keyword (kw);
 										end if;
 									end;
-
-
-								when SEC_VIA_RESTRICT =>
-									null; -- CS
 
 								when SEC_COPPER =>
 									null; -- CS
