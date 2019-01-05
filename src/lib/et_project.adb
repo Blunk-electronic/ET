@@ -2735,7 +2735,11 @@ package body et_project is
 			raise constraint_error;
 		end;
 
-		procedure expect_field_count (line : in type_fields_of_line; count_expected : in count_type) is 
+		procedure expect_field_count (
+			line			: in type_fields_of_line;	-- the list of fields of the line
+			count_expected	: in count_type;			-- the min. number of fields to expect
+			warn			: in boolean := true) 		-- warn if too many fields
+			is 
 			count_found : count_type := field_count (line);
 			f1 : string := f (line, 1); -- CS: line must have at least one field otherwise exception occurs here
 		begin
@@ -2747,8 +2751,10 @@ package body et_project is
 				raise constraint_error;
 				
 			elsif count_found > count_expected then -- more fields than expeced
-				log (message_warning & affected_line (line) & "excessive parameters after '" 
-					 & f (line, positive (count_expected)) & "' ignored !");
+				if warn then
+					log (message_warning & affected_line (line) & "excessive parameters after '" 
+						 & f (line, positive (count_expected)) & "' ignored !");
+				end if;
 			end if;
 			
 		end expect_field_count;
@@ -3052,7 +3058,44 @@ package body et_project is
 				return alignment;
 			end to_alignment;
 
+			function to_layers (
+			-- Converts a line like "layers 1 4 17" to a set of signal layers.
+			-- Issues warning if a layer number occurs more than once.
+				line : in type_fields_of_line) -- layers 1 3 17
+				return et_pcb.type_signal_layers.set is
 
+				use et_pcb;
+				use et_pcb.type_signal_layers;
+
+				layers 		: et_pcb.type_signal_layers.set; -- to be returned
+				cursor 		: et_pcb.type_signal_layers.cursor;
+				inserted	: boolean;
+				layer 		: et_pcb.type_signal_layer;
+				place 		: positive := 2; -- we start reading the layer numbers with field 2
+			begin
+				while place <= positive (field_count (line)) loop
+
+					-- get the layer number from current place
+					layer := to_signal_layer (f (line, place));
+
+					-- insert the layer number in the container "layers"
+					insert (
+						container	=> layers,
+						new_item	=> layer,
+						inserted	=> inserted,
+						position	=> cursor);
+
+					-- warn if layer already in container
+					if not inserted then
+						log (message_warning & affected_line (line) & "signal layer" & to_string (layer) 
+							& " specified multiple times !");
+					end if;
+					
+					place := place + 1; -- advance to next place
+				end loop;
+				
+				return layers;
+			end to_layers;
 
 			
 			-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
@@ -3192,7 +3235,8 @@ package body et_project is
 
 			board_text : et_pcb.type_text_with_content;
 			board_text_placeholder : et_pcb.type_text_placeholder_pcb;
-			
+
+			route_restrict_layers : et_pcb.type_signal_layers.set;
 -- 			route_restrict_line		: type_route_restrict_line;
 -- 			route_restrict_arc		: type_route_restrict_arc;
 -- 			route_restrict_circle	: type_route_restrict_circle;
@@ -3963,6 +4007,32 @@ package body et_project is
 						board_text_placeholder := (others => <>);
 					end insert_placeholder;
 
+					procedure insert_line is
+						use et_pcb;
+						use type_signal_layers;
+						
+						procedure do_it (
+							module_name	: in type_submodule_name.bounded_string;
+							module		: in out et_schematic.type_module) is
+						begin
+							type_route_restrict_lines.append (
+								container	=> module.board.route_restrict.lines,
+								new_item	=> (type_line_2d (board_line) with 
+												layers	=> route_restrict_layers,
+												width	=> board_line_width));
+						end do_it;
+											
+					begin -- insert_line
+						update_element (
+							container	=> modules,
+							position	=> module_cursor,
+							process		=> do_it'access);
+
+						-- clean up for next board line
+						board_line := (others => <>);
+						board_line_width := et_pcb.type_general_line_width'first;
+						clear (route_restrict_layers);
+					end insert_line;
 					
 				begin -- execute_section
 					case stack.current is
@@ -4236,7 +4306,10 @@ package body et_project is
 											
 										when others => invalid_section;
 									end case;
-									
+
+								when SEC_ROUTE_RESTRICT =>
+									insert_line;
+								
 								when others => invalid_section;
 							end case;
 							
@@ -5236,7 +5309,37 @@ package body et_project is
 									end case;
 
 								when SEC_ROUTE_RESTRICT =>
-									null; -- CS
+									declare
+										kw : string := f (line, 1);
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_start then -- start x 22.3 y 23.3
+											expect_field_count (line, 5);
+
+											-- extract the start position starting at field 2 of line
+											board_line.start_point := to_position (line, 2);
+											
+										elsif kw = keyword_end then -- end x 22.3 y 23.3
+											expect_field_count (line, 5);
+
+											-- extract the end position starting at field 2 of line
+											board_line.end_point := to_position (line, 2);
+
+										elsif kw = keyword_width then -- width 0.5
+											expect_field_count (line, 2);
+											board_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+
+										elsif kw = keyword_layers then -- layers 1 14 3
+
+											-- there must be at least two fields:
+											expect_field_count (line => line, count_expected => 2, warn => false);
+
+											route_restrict_layers := to_layers (line);
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+
 
 								when SEC_VIA_RESTRICT =>
 									null; -- CS
