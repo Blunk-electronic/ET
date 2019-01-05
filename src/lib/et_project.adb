@@ -4061,6 +4061,30 @@ package body et_project is
 						clear (route_restrict_layers);
 					end insert_arc;
 
+					procedure insert_circle is
+						use et_pcb;
+						use type_signal_layers;
+						
+						procedure do_it (
+							module_name	: in type_submodule_name.bounded_string;
+							module		: in out et_schematic.type_module) is
+						begin
+							type_route_restrict_circles.append (
+								container	=> module.board.route_restrict.circles,
+								new_item	=> (board_circle with route_restrict_layers));
+						end do_it;
+											
+					begin
+						update_element (
+							container	=> modules,
+							position	=> module_cursor,
+							process		=> do_it'access);
+
+						-- clean up for next board line
+						board_circle := (others => <>);
+						clear (route_restrict_layers);
+					end insert_circle;
+
 					
 				begin -- execute_section
 					case stack.current is
@@ -4477,6 +4501,8 @@ package body et_project is
 										when others => invalid_section;
 									end case;
 
+								when SEC_ROUTE_RESTRICT =>
+									insert_circle;
 									
 								when others => invalid_section;
 							end case;
@@ -5498,7 +5524,6 @@ package body et_project is
 										end if;
 									end;
 
-									
 								when others => invalid_section;
 							end case;
 
@@ -5548,8 +5573,94 @@ package body et_project is
 											end;
 
 										when others => invalid_section;
+											declare
+												kw : string := f (line, 1);
+											begin
+												-- CS: In the following: set a corresponding parameter-found-flag
+												if kw = keyword_center then -- center x 150 y 45
+													expect_field_count (line, 5);
+
+													-- extract the center position starting at field 2 of line
+													board_circle.center := to_position (line, 2);
+													
+												elsif kw = keyword_radius then -- radius 22
+													expect_field_count (line, 2);
+													board_circle.radius := et_pcb_coordinates.to_distance (f (line, 2));
+													
+												elsif kw = keyword_width then -- width 0.5
+													expect_field_count (line, 2);
+													board_circle.width := et_pcb_coordinates.to_distance (f (line, 2));
+
+												elsif kw = keyword_filled then -- filled yes/no
+													expect_field_count (line, 2);													
+													board_circle.filled := et_pcb.to_filled (f (line, 2));
+
+												elsif kw = keyword_fill_style then -- fill_style solid/hatched/cutout
+													expect_field_count (line, 2);													
+													board_circle.fill_style := et_pcb.to_fill_style (f (line, 2));
+
+												elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
+													expect_field_count (line, 2);													
+													board_circle.hatching_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+
+												elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
+													expect_field_count (line, 2);													
+													board_circle.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
+													
+												else
+													invalid_keyword (kw);
+												end if;
+											end;
+
 									end case;
 
+								when SEC_ROUTE_RESTRICT =>
+									declare
+										kw : string := f (line, 1);
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_center then -- center x 150 y 45
+											expect_field_count (line, 5);
+
+											-- extract the center position starting at field 2 of line
+											board_circle.center := to_position (line, 2);
+											
+										elsif kw = keyword_radius then -- radius 22
+											expect_field_count (line, 2);
+											board_circle.radius := et_pcb_coordinates.to_distance (f (line, 2));
+											
+										elsif kw = keyword_width then -- width 0.5
+											expect_field_count (line, 2);
+											board_circle.width := et_pcb_coordinates.to_distance (f (line, 2));
+
+										elsif kw = keyword_filled then -- filled yes/no
+											expect_field_count (line, 2);													
+											board_circle.filled := et_pcb.to_filled (f (line, 2));
+
+										elsif kw = keyword_fill_style then -- fill_style solid/hatched/cutout
+											expect_field_count (line, 2);													
+											board_circle.fill_style := et_pcb.to_fill_style (f (line, 2));
+
+										elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
+											expect_field_count (line, 2);													
+											board_circle.hatching_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+
+										elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
+											expect_field_count (line, 2);													
+											board_circle.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
+
+										elsif kw = keyword_layers then -- layers 1 14 3
+
+											-- there must be at least two fields:
+											expect_field_count (line => line, count_expected => 2, warn => false);
+
+											route_restrict_layers := to_layers (line);
+											
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+									
 								when others => invalid_section;
 							end case;
 

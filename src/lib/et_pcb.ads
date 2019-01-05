@@ -960,8 +960,7 @@ package et_pcb is
 	
 	package type_route_restrict_arcs is new doubly_linked_lists (type_route_restrict_arc);
 	
-	type type_route_restrict_circle is new type_circle_2d with record
-		width	: type_general_line_width; -- CS use subtype for reasonable range
+	type type_route_restrict_circle is new type_fillable_circle with record
 		layers 	: type_signal_layers.set;
 	end record;
 	package type_route_restrict_circles is new doubly_linked_lists (type_route_restrict_circle);
