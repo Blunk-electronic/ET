@@ -3236,7 +3236,10 @@ package body et_project is
 			board_text : et_pcb.type_text_with_content;
 			board_text_placeholder : et_pcb.type_text_placeholder_pcb;
 
-			route_restrict_layers : et_pcb.type_signal_layers.set;
+			signal_layers : et_pcb.type_signal_layers.set;
+
+			board_polygon_floating : et_pcb.type_copper_polygon_floating;
+			board_track_width : et_pcb.type_track_width := et_pcb.type_track_width'first;
 			
 			procedure process_line is 
 			-- CS: detect if section name is type_section_name_module
@@ -4015,7 +4018,7 @@ package body et_project is
 							type_route_restrict_lines.append (
 								container	=> module.board.route_restrict.lines,
 								new_item	=> (type_line_2d (board_line) with 
-												layers	=> route_restrict_layers,
+												layers	=> signal_layers,
 												width	=> board_line_width));
 						end do_it;
 											
@@ -4028,7 +4031,7 @@ package body et_project is
 						-- clean up for next board line
 						board_line := (others => <>);
 						board_line_width := et_pcb.type_general_line_width'first;
-						clear (route_restrict_layers);
+						clear (signal_layers);
 					end insert_line_route_restrict;
 					
 					procedure insert_arc_route_restrict is
@@ -4042,7 +4045,7 @@ package body et_project is
 							type_route_restrict_arcs.append (
 								container	=> module.board.route_restrict.arcs,
 								new_item	=> (type_arc_2d (board_arc) with 
-												layers	=> route_restrict_layers,
+												layers	=> signal_layers,
 												width	=> board_line_width));
 						end do_it;
 											
@@ -4055,7 +4058,7 @@ package body et_project is
 						-- clean up for next board line
 						board_arc := (others => <>);
 						board_line_width := et_pcb.type_general_line_width'first;
-						clear (route_restrict_layers);
+						clear (signal_layers);
 					end insert_arc_route_restrict;
 
 					procedure insert_circle_route_restrict is
@@ -4068,7 +4071,7 @@ package body et_project is
 						begin
 							type_route_restrict_circles.append (
 								container	=> module.board.route_restrict.circles,
-								new_item	=> (board_circle with route_restrict_layers));
+								new_item	=> (board_circle with signal_layers));
 						end do_it;
 											
 					begin -- insert_circle_route_restrict
@@ -4079,7 +4082,7 @@ package body et_project is
 
 						-- clean up for next board line
 						board_circle := (others => <>);
-						clear (route_restrict_layers);
+						clear (signal_layers);
 					end insert_circle_route_restrict;
 
 					procedure insert_polygon_route_restrict is
@@ -4093,7 +4096,7 @@ package body et_project is
 							type_route_restrict_polygons.append (
 								container	=> module.board.route_restrict.polygons,
 								new_item	=> (et_pcb.type_polygon (board_polygon) with 
-												layers	=> route_restrict_layers,
+												layers	=> signal_layers,
 												width	=> board_line_width));
 						end do_it;
 											
@@ -4106,7 +4109,7 @@ package body et_project is
 						-- clean up for next board polygon
 						board_polygon := (others => <>);
 						board_line_width := et_pcb.type_general_line_width'first;
-						clear (route_restrict_layers);
+						clear (signal_layers);
 					end insert_polygon_route_restrict;
 
 					procedure insert_line_via_restrict is
@@ -4120,7 +4123,7 @@ package body et_project is
 							type_via_restrict_lines.append (
 								container	=> module.board.via_restrict.lines,
 								new_item	=> (type_line_2d (board_line) with 
-												layers	=> route_restrict_layers,
+												layers	=> signal_layers,
 												width	=> board_line_width));
 						end do_it;
 											
@@ -4133,7 +4136,7 @@ package body et_project is
 						-- clean up for next board line
 						board_line := (others => <>);
 						board_line_width := et_pcb.type_general_line_width'first;
-						clear (route_restrict_layers);
+						clear (signal_layers);
 					end insert_line_via_restrict;
 
 					procedure insert_arc_via_restrict is
@@ -4147,7 +4150,7 @@ package body et_project is
 							type_via_restrict_arcs.append (
 								container	=> module.board.via_restrict.arcs,
 								new_item	=> (type_arc_2d (board_arc) with 
-												layers	=> route_restrict_layers,
+												layers	=> signal_layers,
 												width	=> board_line_width));
 						end do_it;
 											
@@ -4160,7 +4163,7 @@ package body et_project is
 						-- clean up for next board line
 						board_arc := (others => <>);
 						board_line_width := et_pcb.type_general_line_width'first;
-						clear (route_restrict_layers);
+						clear (signal_layers);
 					end insert_arc_via_restrict;
 
 					procedure insert_circle_via_restrict is
@@ -4173,7 +4176,7 @@ package body et_project is
 						begin
 							type_via_restrict_circles.append (
 								container	=> module.board.via_restrict.circles,
-								new_item	=> (board_circle with route_restrict_layers));
+								new_item	=> (board_circle with signal_layers));
 						end do_it;
 											
 					begin -- insert_circle_via_restrict
@@ -4184,7 +4187,7 @@ package body et_project is
 
 						-- clean up for next board line
 						board_circle := (others => <>);
-						clear (route_restrict_layers);
+						clear (signal_layers);
 					end insert_circle_via_restrict;
 
 					procedure insert_polygon_via_restrict is
@@ -4198,7 +4201,7 @@ package body et_project is
 							type_via_restrict_polygons.append (
 								container	=> module.board.via_restrict.polygons,
 								new_item	=> (et_pcb.type_polygon (board_polygon) with 
-												layers	=> route_restrict_layers,
+												layers	=> signal_layers,
 												width	=> board_line_width));
 						end do_it;
 											
@@ -4211,8 +4214,32 @@ package body et_project is
 						-- clean up for next board polygon
 						board_polygon := (others => <>);
 						board_line_width := et_pcb.type_general_line_width'first;
-						clear (route_restrict_layers);
+						clear (signal_layers);
 					end insert_polygon_via_restrict;
+
+					procedure insert_polygon_copper is
+						use et_pcb;
+						use type_signal_layers;
+						
+						procedure do_it (
+							module_name	: in type_submodule_name.bounded_string;
+							module		: in out et_schematic.type_module) is
+						begin
+							type_copper_polygons_floating.append (
+								container	=> module.board.copper.polygons,
+								new_item	=> board_polygon_floating);
+						end do_it;
+											
+					begin -- insert_polygon_copper
+						update_element (
+							container	=> modules,
+							position	=> module_cursor,
+							process		=> do_it'access);
+
+						-- clean up for next floating board polygon
+						board_polygon_floating := (others => <>);
+					end insert_polygon_copper;
+
 					
 				begin -- execute_section
 					case stack.current is
@@ -4775,6 +4802,9 @@ package body et_project is
 
 								when SEC_VIA_RESTRICT =>
 									insert_polygon_via_restrict;
+
+								when SEC_COPPER =>
+									insert_polygon_copper;
 									
 								when others => invalid_section;
 							end case;
@@ -4799,6 +4829,9 @@ package body et_project is
 
 										when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 											board_polygon.corners := polygon_corner_points;
+
+										when SEC_COPPER =>
+											board_polygon_floating.corners := polygon_corner_points;
 											
 										when others => invalid_section;
 									end case;
@@ -5603,7 +5636,7 @@ package body et_project is
 											-- there must be at least two fields:
 											expect_field_count (line => line, count_expected => 2, warn => false);
 
-											route_restrict_layers := to_layers (line);
+											signal_layers := to_layers (line);
 										else
 											invalid_keyword (kw);
 										end if;
@@ -5726,7 +5759,7 @@ package body et_project is
 											-- there must be at least two fields:
 											expect_field_count (line => line, count_expected => 2, warn => false);
 
-											route_restrict_layers := to_layers (line);
+											signal_layers := to_layers (line);
 
 										else
 											invalid_keyword (kw);
@@ -5863,7 +5896,7 @@ package body et_project is
 											-- there must be at least two fields:
 											expect_field_count (line => line, count_expected => 2, warn => false);
 
-											route_restrict_layers := to_layers (line);
+											signal_layers := to_layers (line);
 											
 										else
 											invalid_keyword (kw);
@@ -6006,12 +6039,59 @@ package body et_project is
 
 											-- there must be at least two fields:
 											expect_field_count (line => line, count_expected => 2, warn => false);
-											route_restrict_layers := to_layers (line);
-																						
+											signal_layers := to_layers (line);
+
 										else
 											invalid_keyword (kw);
 										end if;
 									end;
+
+								when SEC_COPPER =>
+									declare
+										kw : string := f (line, 1);
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_fill_style then -- fill_style solid/hatched/cutout
+											expect_field_count (line, 2);													
+											board_polygon_floating.fill_style := et_pcb.to_fill_style (f (line, 2));
+
+										elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
+											expect_field_count (line, 2);													
+											board_polygon_floating.corner_easing := et_pcb.to_corner_easing (f (line, 2));
+
+										elsif kw = keyword_easing_radius then -- easing_radius 0.4
+											expect_field_count (line, 2);													
+											board_polygon_floating.easing_radius := et_pcb_coordinates.to_distance (f (line, 2));
+											
+										elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
+											expect_field_count (line, 2);													
+											board_polygon_floating.hatching_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+
+										elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
+											expect_field_count (line, 2);													
+											board_polygon_floating.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
+
+										elsif kw = keyword_width then -- width 0.5
+											expect_field_count (line, 2);
+											board_polygon_floating.width_min := et_pcb_coordinates.to_distance (f (line, 2));
+											
+										elsif kw = keyword_layer then -- layer 1
+											expect_field_count (line, 2);
+											board_polygon_floating.layer := et_pcb.to_signal_layer (f (line, 2));
+
+										elsif kw = keyword_priority then -- priority 2
+											expect_field_count (line, 2);
+											board_polygon_floating.priority_level := et_pcb.to_polygon_priority (f (line, 2));
+
+										elsif kw = keyword_isolation then -- isolation 0.5
+											expect_field_count (line, 2);
+											board_polygon_floating.isolation_gap := et_pcb_coordinates.to_distance (f (line, 2));
+											
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+
 									
 								when others => invalid_section;
 							end case;

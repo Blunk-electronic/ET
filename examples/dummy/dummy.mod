@@ -502,6 +502,7 @@
 	[VIA_RESTRICT END]
 	
 	[COPPER BEGIN]
+
 		[LINE BEGIN]
 			start x 22.3 y 334.0
 			end x 24.3 y 32.5
@@ -529,6 +530,8 @@
 		[CIRCLE END]
 		
 		[POLYGON BEGIN]
+			priority 2
+			isolation 1.2
 			corner_easing none/chamfer/fillet
 			easing_radius 0.3
 			fill_style solid,hatched,cutout
