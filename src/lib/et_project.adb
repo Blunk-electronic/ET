@@ -4230,6 +4230,12 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
+						when SEC_NET_CLASSES =>
+							case stack.parent is
+								when SEC_INIT => null;
+								when others => invalid_section;
+							end case;
+							
 						when SEC_NET =>
 							case stack.parent is
 								when SEC_NETS =>
@@ -4243,6 +4249,12 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
+						when SEC_NETS =>
+							case stack.parent is
+								when SEC_INIT => null;
+								when others => invalid_section;
+							end case;
+							
 						when SEC_STRANDS =>
 							case stack.parent is
 								when SEC_NET =>
@@ -4810,6 +4822,12 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
+						when SEC_SUBMODULES =>
+							case stack.parent is
+								when SEC_INIT => null;
+								when others => invalid_section;
+							end case;
+
 						when SEC_SCHEMATIC =>
 							case stack.parent is
 								when SEC_DRAWING_FRAMES =>
@@ -4825,6 +4843,8 @@ package body et_project is
 
 						when SEC_BOARD =>
 							case stack.parent is
+								when SEC_INIT => null;
+
 								when SEC_DRAWING_FRAMES =>
 
 									-- set board/layout frame template
@@ -4901,6 +4921,18 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
+						when SEC_TEXTS =>
+							case stack.parent is
+								when SEC_INIT => null;
+								when others => invalid_section;
+							end case;
+
+						when SEC_DRAWING_FRAMES =>
+							case stack.parent is
+								when SEC_INIT => null;
+								when others => invalid_section;
+							end case;
+							
 						when SEC_PLACEHOLDER =>
 							case stack.parent is
 								when SEC_PLACEHOLDERS =>
@@ -5034,8 +5066,24 @@ package body et_project is
 								when SEC_INIT => null;
 								when others => invalid_section;
 							end case;
+
+						when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
+							SEC_STOP_MASK | SEC_KEEPOUT | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT |
+							SEC_COPPER | SEC_PCB_CONTOUR_NON_PLATED =>
+							case stack.parent is
+								when SEC_BOARD => null;
+								when others => invalid_section;
+							end case;
+
+						when SEC_TOP | SEC_BOTTOM =>
+							case stack.parent is
+								when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
+									SEC_STOP_MASK | SEC_KEEPOUT => null;
+
+								when others => invalid_section;
+							end case;
 							
-						when others => null; -- CS
+						when SEC_INIT => null; -- CS: should never happen
 					end case;
 
 				end execute_section;
@@ -5217,7 +5265,13 @@ package body et_project is
 
 								when others => invalid_section;
 							end case;
-						
+
+						when SEC_STRAND =>
+							case stack.parent is
+								when SEC_STRANDS => null; -- nothing to do
+								when others => invalid_section;
+							end case;
+							
 						when SEC_STRANDS =>
 							case stack.parent is
 								when SEC_NET => null; -- nothing to do
@@ -5268,7 +5322,13 @@ package body et_project is
 											
 								when others => invalid_section;
 							end case;
-						
+
+						when SEC_NETS =>
+							case stack.parent is
+								when SEC_INIT => null;
+								when others => invalid_section;
+							end case;
+							
 						when SEC_SEGMENT =>
 							case stack.parent is
 								when SEC_SEGMENTS =>
@@ -5295,7 +5355,13 @@ package body et_project is
 											
 								when others => invalid_section;
 							end case;
-						
+
+						when SEC_SEGMENTS =>
+							case stack.parent is
+								when SEC_STRAND => null; -- nothing to do
+								when others => invalid_section;
+							end case;
+							
 						when SEC_LABELS =>
 							case stack.parent is
 								when SEC_SEGMENT => null; -- nothing to do
@@ -6477,10 +6543,10 @@ package body et_project is
 								when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
 									SEC_STOP_MASK | SEC_KEEPOUT => null;
 
-								when others => null;
+								when others => invalid_section;
 							end case;
 							
-						when others => null; -- CS
+						when SEC_INIT => null; -- CS: should never happen
 					end case;
 				end if;
 
