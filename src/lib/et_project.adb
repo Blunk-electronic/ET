@@ -3243,6 +3243,7 @@ package body et_project is
 			board_track_arc : et_pcb.type_copper_arc_pcb;
 			board_track_circle : et_pcb.type_copper_circle_pcb;
 			board_text_copper : et_pcb.type_text_with_content_pcb;
+			board_text_copper_placeholder : et_pcb.type_text_placeholder_copper;
 			
 			procedure process_line is 
 			-- CS: detect if section name is type_section_name_module
@@ -4326,9 +4327,33 @@ package body et_project is
 							position	=> module_cursor,
 							process		=> do_it'access);
 
-						-- clean up for next track circle
+						-- clean up for next text in copper
 						board_text_copper := (others => <>);
 					end insert_board_text;
+
+					procedure insert_board_text_placeholder is
+						use et_pcb;
+						
+						procedure do_it (
+							module_name	: in type_submodule_name.bounded_string;
+							module		: in out et_schematic.type_module) is
+						begin
+							type_text_placeholders_copper.append (
+								container	=> module.board.copper.placeholders,
+								new_item	=> board_text_copper_placeholder);
+						end do_it;
+											
+					begin -- insert_board_text_placeholder
+						update_element (
+							container	=> modules,
+							position	=> module_cursor,
+							process		=> do_it'access);
+
+						-- clean up for next placeholder in copper
+						board_text_copper_placeholder := (others => <>);
+					end insert_board_text_placeholder;
+					
+
 					
 				begin -- execute_section
 					case stack.current is
@@ -5123,6 +5148,9 @@ package body et_project is
 
 										when others => invalid_section;
 									end case;
+
+								when SEC_COPPER =>
+									insert_board_text_placeholder;
 									
 								when others => invalid_section;
 							end case;
@@ -6583,7 +6611,6 @@ package body et_project is
 											invalid_keyword (kw);
 										end if;
 									end;
-
 									
 								when others => invalid_section;
 							end case;
@@ -6805,6 +6832,46 @@ package body et_project is
 										when others => invalid_section;
 									end case;
 
+								when SEC_COPPER =>
+									declare
+										kw : string := f (line, 1);
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
+											expect_field_count (line, 7);
+
+											-- extract position of note starting at field 2
+											board_text_copper_placeholder.position := to_position (line, 2);
+
+										elsif kw = keyword_size then -- size x 1.4 y 4
+											expect_field_count (line, 5);
+
+											-- extract text dimensions starting at field 2
+											board_text_copper_placeholder.dimensions := to_dimensions (line, 2);
+
+										elsif kw = keyword_line_width then -- line_width 0.1
+											expect_field_count (line, 2);
+											board_text_copper_placeholder.line_width := et_pcb_coordinates.to_distance (f (line, 2));
+
+										elsif kw = keyword_alignment then -- alignment horizontal center vertical center
+											expect_field_count (line, 5);
+
+											-- extract alignment starting at field 2
+											board_text_copper_placeholder.alignment := to_alignment (line, 2);
+											
+										elsif kw = keyword_meaning then -- meaning revision/project_name/...
+											expect_field_count (line, 2);
+											board_text_copper_placeholder.meaning := et_pcb.to_meaning (f (line, 2));
+
+										elsif kw = keyword_layer then -- layer 15
+											expect_field_count (line, 2);
+											board_text_copper_placeholder.layer := et_pcb.to_signal_layer (f (line, 2));
+											
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+									
 								when others => invalid_section;
 							end case;
 

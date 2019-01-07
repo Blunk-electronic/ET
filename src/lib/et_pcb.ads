@@ -274,6 +274,7 @@ package et_pcb is
 		);
 
 	function to_string (meaning : in type_text_meaning_copper) return string;
+	function to_meaning (meaning : in string) return type_text_meaning_copper;
 	
 	type type_text_placeholder_copper is new type_text with record
 		meaning : type_text_meaning_copper;
