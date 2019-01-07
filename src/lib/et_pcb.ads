@@ -122,6 +122,7 @@ package et_pcb is
 	type type_drill is tagged record
 		position	: type_point_2d;
 		diameter	: type_drill_size;
+		-- CS locked : type_locked;
 	end record;
 
 	function to_string (drill : in type_drill) return string;
@@ -217,6 +218,7 @@ package et_pcb is
 		line_width	: type_text_line_width;
 		alignment	: et_libraries.type_text_alignment;
 		--hidden		: boolean; -- CS currently no need 
+		-- CS locked : type_locked;		
 	end record;
 
 	function text_properties (text : in type_text) return string;
@@ -341,11 +343,13 @@ package et_pcb is
 	type type_line_2d is abstract tagged record
 		start_point 	: type_point_2d;
 		end_point   	: type_point_2d;
+		-- CS locked : type_locked;
 	end record;
 
 	type type_line_3d is abstract tagged record
 		start_point 	: type_point_3d;
 		end_point   	: type_point_3d;
+		-- CS locked : type_locked;
 	end record;
 	
 	-- ARC
@@ -353,25 +357,29 @@ package et_pcb is
 		center			: type_point_2d;
 		start_point		: type_point_2d;
 		end_point		: type_point_2d;
--- 		angle			: type_angle;
+		-- 		angle			: type_angle;
+		-- CS locked : type_locked;		
 	end record;
 
 	type type_arc_3d is abstract tagged record
 		center			: type_point_3d;
 		start_point		: type_point_3d;
 		end_point		: type_point_3d;
--- 		angle			: type_angle;
+		-- 		angle			: type_angle;
+		-- CS locked : type_locked;
 	end record;
 	
 	-- CIRCLE
 	type type_circle_2d is abstract tagged record
 		center			: type_point_2d;
 		radius  		: type_distance;
+		-- CS locked : type_locked;
 	end record;
 
 	type type_circle_3d is abstract tagged record
 		center			: type_point_3d;
 		radius  		: type_distance;
+		-- CS locked : type_locked;		
 	end record;
 
 	
@@ -397,6 +405,7 @@ package et_pcb is
 		hatching_spacing	: type_track_clearance := fill_style_hatching_spacing_default; -- the space between the lines
 		corner_easing		: type_corner_easing := NONE;
 		easing_radius		: type_polygon_easing_radius := zero_distance; -- center of circle at corner point
+		-- CS locked : type_locked;
 	end record;
 
 	text_polygon_corner_points : constant string (1..13) := "corner_points";
@@ -484,7 +493,6 @@ package et_pcb is
 	-- COPPER OBJECTS (NON ELECTRIC !!) OF A PACKAGE
 	type type_copper_line is new type_line_2d with record
 		width	: type_track_width;
-		-- CS locked	: type_locked;
 	end record;
 	package type_copper_lines is new doubly_linked_lists (type_copper_line);
 
