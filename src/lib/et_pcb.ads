@@ -406,6 +406,7 @@ package et_pcb is
 	type type_locked is (NO, YES);
 
 	function to_string (locked : in type_locked) return string;
+	function to_lock_status (locked : in string) return type_locked;
 	
 	function to_string (line : in type_line_2d) return string;
 	-- Returns the start and end point of the given line as string.

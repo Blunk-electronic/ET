@@ -547,31 +547,29 @@
 		[POLYGON END]
 
 		[TEXT BEGIN]
-			position x 40 y 20
-			size x 3.0 y 3.0
+			position x 40 y 20 rotation 0
+			size width 3.0 height 3.0
 			layer 2
 			line_width 0.2
-			rotation 0
 			content "bla"
-			alignment center
+			alignment horizontal center vertical center
 		[TEXT END]
 
 		[PLACEHOLDER BEGIN]
-			position x 40 y 20
-			size x 3.0 y 3.0
+			position x 40 y 20 rotation 0
+			size width 3.0 height 3.0
 			layer 2
 			line_width 0.2
-			rotation 0
 			meaning project_name
-			alignment center
+			alignment horizontal center vertical center
 		[PLACEHOLDER END]
 		
 	[COPPER END]
 	
 	[PCB_CONTOUR_NON_PLATED BEGIN]
 		[LINE BEGIN]
-			start x 22.3
-			end y 32.5
+			start x 22.3 y 45
+			end x 35 y 32.5
 			locked yes/no
 		[LINE END]
 

@@ -3244,6 +3244,9 @@ package body et_project is
 			board_track_circle : et_pcb.type_copper_circle_pcb;
 			board_text_copper : et_pcb.type_text_with_content_pcb;
 			board_text_copper_placeholder : et_pcb.type_text_placeholder_copper;
+			board_circle_contour : et_pcb.type_pcb_contour_circle;
+
+			lock_status : et_pcb.type_locked := et_pcb.type_locked'first;
 			
 			procedure process_line is 
 			-- CS: detect if section name is type_section_name_module
@@ -4353,7 +4356,73 @@ package body et_project is
 						board_text_copper_placeholder := (others => <>);
 					end insert_board_text_placeholder;
 					
+					procedure insert_line_contour is
+						use et_pcb;
+						
+						procedure do_it (
+							module_name	: in type_submodule_name.bounded_string;
+							module		: in out et_schematic.type_module) is
+						begin
+							type_pcb_contour_lines.append (
+								container	=> module.board.contour.lines,
+								new_item	=> (type_line_2d (board_line) with lock_status));
+						end do_it;
+											
+					begin -- insert_line_contour
+						update_element (
+							container	=> modules,
+							position	=> module_cursor,
+							process		=> do_it'access);
 
+						-- clean up for next pcb contour line
+						board_line := (others => <>);
+						lock_status := et_pcb.type_locked'first;
+					end insert_line_contour;
+					
+					procedure insert_arc_contour is
+						use et_pcb;
+						
+						procedure do_it (
+							module_name	: in type_submodule_name.bounded_string;
+							module		: in out et_schematic.type_module) is
+						begin
+							type_pcb_contour_arcs.append (
+								container	=> module.board.contour.arcs,
+								new_item	=> (type_arc_2d (board_arc) with lock_status));
+						end do_it;
+											
+					begin -- insert_arc_contour
+						update_element (
+							container	=> modules,
+							position	=> module_cursor,
+							process		=> do_it'access);
+
+						-- clean up for next pcb contour arc
+						board_arc := (others => <>);
+						lock_status := et_pcb.type_locked'first;
+					end insert_arc_contour;
+
+					procedure insert_circle_contour is
+						use et_pcb;
+						
+						procedure do_it (
+							module_name	: in type_submodule_name.bounded_string;
+							module		: in out et_schematic.type_module) is
+						begin
+							type_pcb_contour_circles.append (
+								container	=> module.board.contour.circles,
+								new_item	=> board_circle_contour);
+						end do_it;
+											
+					begin -- insert_circle_contour
+						update_element (
+							container	=> modules,
+							position	=> module_cursor,
+							process		=> do_it'access);
+
+						-- clean up for next pcb contour circle
+						board_circle_contour := (others => <>);
+					end insert_circle_contour;
 					
 				begin -- execute_section
 					case stack.current is
@@ -4648,6 +4717,9 @@ package body et_project is
 
 								when SEC_COPPER =>
 									insert_line_track;
+
+								when SEC_PCB_CONTOUR_NON_PLATED =>
+									insert_line_contour;
 									
 								when others => invalid_section;
 							end case;
@@ -4728,6 +4800,9 @@ package body et_project is
 
 								when SEC_COPPER =>
 									insert_arc_track;
+
+								when SEC_PCB_CONTOUR_NON_PLATED =>
+									insert_arc_contour;
 									
 								when others => invalid_section;
 							end case;
@@ -4802,6 +4877,9 @@ package body et_project is
 
 								when SEC_COPPER =>
 									insert_circle_track;
+
+								when SEC_PCB_CONTOUR_NON_PLATED =>
+									insert_circle_contour;
 									
 								when others => invalid_section;
 							end case;
@@ -5801,7 +5879,30 @@ package body et_project is
 									end;
 
 								when SEC_PCB_CONTOUR_NON_PLATED =>
-									null; -- CS
+									declare
+										kw : string := f (line, 1);
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_start then -- start x 22.3 y 23.3
+											expect_field_count (line, 5);
+
+											-- extract the start position starting at field 2 of line
+											board_line.start_point := to_position (line, 2);
+											
+										elsif kw = keyword_end then -- end x 22.3 y 23.3
+											expect_field_count (line, 5);
+
+											-- extract the end position starting at field 2 of line
+											board_line.end_point := to_position (line, 2);
+
+										elsif kw = keyword_locked then -- locked no
+											expect_field_count (line, 2);
+											lock_status := et_pcb.to_lock_status (f (line, 2));
+											
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
 									
 								when others => invalid_section;
 							end case;
@@ -5951,6 +6052,38 @@ package body et_project is
 										elsif kw = keyword_layer then -- layer 1
 											expect_field_count (line, 2);
 											board_track_arc.layer := et_pcb.to_signal_layer (f (line, 2));
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+
+								when SEC_PCB_CONTOUR_NON_PLATED =>
+									declare
+										kw : string := f (line, 1);
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_center then -- center x 150 y 45
+											expect_field_count (line, 5);
+
+											-- extract the center position starting at field 2 of line
+											board_arc.center := to_position (line, 2);
+											
+										elsif kw = keyword_start then -- start x 22.3 y 23.3
+											expect_field_count (line, 5);
+
+											-- extract the start position starting at field 2 of line
+											board_arc.start_point := to_position (line, 2);
+											
+										elsif kw = keyword_end then -- end x 22.3 y 23.3
+											expect_field_count (line, 5);
+
+											-- extract the end position starting at field 2 of line
+											board_arc.end_point := to_position (line, 2);
+									
+										elsif kw = keyword_locked then -- locked no
+											expect_field_count (line, 2);
+											lock_status := et_pcb.to_lock_status (f (line, 2));
+											
 										else
 											invalid_keyword (kw);
 										end if;
@@ -6131,6 +6264,30 @@ package body et_project is
 										elsif kw = keyword_layer then -- layer 1
 											expect_field_count (line, 2);
 											board_track_circle.layer := et_pcb.to_signal_layer (f (line, 2));
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+
+								when SEC_PCB_CONTOUR_NON_PLATED =>
+									declare
+										kw : string := f (line, 1);
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_center then -- center x 150 y 45
+											expect_field_count (line, 5);
+
+											-- extract the center position starting at field 2 of line
+											board_circle_contour.center := to_position (line, 2);
+											
+										elsif kw = keyword_radius then -- radius 22
+											expect_field_count (line, 2);
+											board_circle_contour.radius := et_pcb_coordinates.to_distance (f (line, 2));
+									
+										elsif kw = keyword_locked then -- locked no
+											expect_field_count (line, 2);
+											board_circle_contour.locked := et_pcb.to_lock_status (f (line, 2));
+											
 										else
 											invalid_keyword (kw);
 										end if;
