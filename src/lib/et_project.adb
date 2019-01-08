@@ -1999,9 +1999,7 @@ package body et_project is
 		section_mark (section_texts, FOOTER);
 
 		-- PLACEHOLDERS
-		section_mark (section_placeholders, HEADER);
 		write_placeholders;
-		section_mark (section_placeholders, FOOTER);
 
 		-- PORTS
 		section_mark (section_ports, HEADER);
@@ -2164,20 +2162,496 @@ package body et_project is
 		
 	end save_device;
 
-	procedure open_device (
+
+	
+	function write_top_level_reached return string is begin return "top level reached"; end;
+
+	function write_enter_section return string is begin return "entering section "; end;
+
+	function write_return_to_section return string is begin return "returning to section "; end;
+
+	function write_missing_begin_end return string is begin 
+		return "missing " & section_begin & " or " & section_end & " after section name !"; end;
+
+	function write_section_stack_not_empty return string is begin
+		return "section stack not empty !"; end;
+	
+	procedure invalid_section is 
+		use et_string_processing;
+	begin
+		log_indentation_reset;
+		log (message_error & "invalid section name !", console => true);
+		raise constraint_error;
+	end;
+	
+	procedure read_device_file (
 	-- Opens the device and stores it in container et_libraries.devices.
 		file_name 		: in et_libraries.type_device_library_name.bounded_string; -- ../lbr/logic_ttl/7400.dev
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		use et_libraries;
 		file_handle : ada.text_io.file_type;
-	begin
+
+		line : et_string_processing.type_fields_of_line;
+
+		function f (line : in type_fields_of_line; position : in positive) return string 
+			renames et_string_processing.field;
+		
+		-- This is the section stack of the device model. 
+		-- Here we track the sections. On entering a section, its name is
+		-- pushed onto the stack. When leaving a section the latest section name is popped.
+		max_section_depth : constant positive := 6;
+		package stack is new stack_lifo (
+			item	=> type_section_name_device,
+			max 	=> max_section_depth);
+
+		function to_string (section : in type_section_name_device) return string is
+		-- Converts a section like SEC_VARIANT to a string "variant".
+			len : positive := type_section_name_device'image (section)'length;
+		begin
+			return to_lower (type_section_name_device'image (section) (5..len));
+		end to_string;
+		
+		procedure process_line is 
+		-- CS: detect if section name is type_section_name_module
+
+			procedure execute_section is
+			-- Once a section concludes, the temporarily variables are read, evaluated
+			-- and finally assembled to actual objects:
+				
+			begin -- execute_section
+				case stack.current is
+
+					when SEC_VARIANTS | SEC_UNITS_INTERNAL | SEC_UNITS_EXTERNAL => 
+						case stack.parent is
+							when SEC_INIT => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_VARIANT =>
+						case stack.parent is
+							when SEC_VARIANTS => null; -- nothing to do
+							when others => invalid_section;
+						end case;
+
+					when SEC_TERMINAL_PORT_MAP =>
+						case stack.parent is
+							when SEC_VARIANT => null; -- nothing to do
+							when others => invalid_section;
+						end case;
+
+					when SEC_UNIT =>
+						case stack.parent is
+							when SEC_UNITS_INTERNAL => null; -- nothing to do
+							when SEC_UNITS_EXTERNAL => null; -- nothing to do								
+							when others => invalid_section;
+						end case;
+
+					when SEC_SYMBOL =>
+						case stack.parent is
+							when SEC_UNIT => null; -- nothing to do								
+							when others => invalid_section;
+						end case;
+
+					when SEC_SHAPES =>
+						case stack.parent is
+							when SEC_SYMBOL => null; -- nothing to do								
+							when others => invalid_section;
+						end case;
+
+					when SEC_LINE =>
+						case stack.parent is
+							when SEC_SHAPES => NULL;
+-- 								declare
+-- 									kw : string := f (line, 1);
+-- 								begin
+-- 									if kw = keyword_name then
+-- 										expect_field_count (line, 2);
+-- 										net_class_name := et_pcb.to_net_class_name (f (line,2));
+-- 
+-- 									-- CS: In the following: set a corresponding parameter-found-flag
+-- 									elsif kw = keyword_description then
+-- 										expect_field_count (line, 2);
+-- 										net_class.description := et_pcb.to_net_class_description (f (line,2));
+-- 										
+-- 									elsif kw = keyword_clearance then
+-- 										expect_field_count (line, 2);
+-- 										net_class.clearance := et_pcb_coordinates.to_distance (f (line,2));
+-- 										et_pcb.validate_track_clearance (net_class.clearance);
+-- 										
+-- 									elsif kw = keyword_track_width_min then
+-- 										expect_field_count (line, 2);
+-- 										net_class.track_width_min := et_pcb_coordinates.to_distance (f (line,2));
+-- 										et_pcb.validate_track_width (net_class.track_width_min);
+-- 										
+-- 									elsif kw = keyword_via_drill_min then
+-- 										expect_field_count (line, 2);
+-- 										net_class.via_drill_min := et_pcb_coordinates.to_distance (f (line,2));
+-- 										et_pcb.validate_drill_size (net_class.via_drill_min);
+-- 										
+-- 									elsif kw = keyword_via_restring_min then
+-- 										expect_field_count (line, 2);
+-- 										net_class.via_restring_min := et_pcb_coordinates.to_distance (f (line,2));
+-- 										et_pcb.validate_restring_width (net_class.via_restring_min);
+-- 										
+-- 									elsif kw = keyword_micro_via_drill_min then
+-- 										expect_field_count (line, 2);
+-- 										net_class.micro_via_drill_min := et_pcb_coordinates.to_distance (f (line,2));
+-- 										et_pcb.validate_drill_size (net_class.micro_via_drill_min);
+-- 										
+-- 									elsif kw = keyword_micro_via_restring_min then
+-- 										expect_field_count (line, 2);
+-- 										net_class.micro_via_restring_min := et_pcb_coordinates.to_distance (f (line,2));
+-- 										et_pcb.validate_restring_width (net_class.micro_via_restring_min);
+-- 									else
+-- 										invalid_keyword (kw);
+-- 									end if;
+-- 								end;
+
+							when others => invalid_section;
+						end case;
+
+					when SEC_ARC =>
+						case stack.parent is
+							when SEC_SHAPES => null;
+							when others => invalid_section;
+						end case;
+						
+					when SEC_POLYLINE =>
+						case stack.parent is
+							when SEC_SHAPES => null; -- nothing to do
+							when others => invalid_section;
+						end case;
+					
+					when SEC_RECTANGLE =>
+						case stack.parent is
+							when SEC_SHAPES => null; -- nothing to do
+							when others => invalid_section;
+						end case;
+					
+					when SEC_CIRCLE =>
+						case stack.parent is
+							when SEC_SHAPES => NULL;
+							when others => invalid_section;
+						end case;
+						
+					when SEC_TEXTS =>
+						case stack.parent is
+							when SEC_SYMBOL => NULL;
+							when others => invalid_section;
+						end case;
+
+					when SEC_TEXT =>
+						case stack.parent is
+							when SEC_TEXTS => null; -- nothing to do
+							when others => invalid_section;
+						end case;
+						
+					when SEC_PLACEHOLDERS =>
+						case stack.parent is
+							when SEC_SYMBOL => null; -- nothing to do
+							when others => invalid_section;
+						end case;
+						
+					when SEC_PLACEHOLDER =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => NULL;
+							when others => invalid_section;
+						end case;
+
+					when SEC_PORTS =>
+						case stack.parent is 
+							when SEC_SYMBOL => NULL;
+							when others => invalid_section;
+						end case;
+
+					when SEC_PORT =>
+						case stack.parent is
+							when SEC_PORTS => null; -- nothing to do
+							when others => invalid_section;
+						end case;
+						
+					when SEC_INIT => null; -- CS: should never happen
+				end case;
+
+			end execute_section;
+			
+			function set (
+			-- Tests if the current line is a section header or footer. Returns true in both cases.
+			-- Returns false if the current line is neither a section header or footer.
+			-- If it is a header, the section name is pushed onto the sections stack.
+			-- If it is a footer, the latest section name is popped from the stack.
+				section_keyword	: in string; -- [UNIT
+				section			: in type_section_name_device) -- SEC_UNIT
+				return boolean is 
+			begin -- set
+				if f (line, 1) = section_keyword then -- section name detected in field 1
+					if f (line, 2) = section_begin then -- section header detected in field 2
+						stack.push (section);
+						log (write_enter_section & to_string (section), log_threshold + 3);
+						return true;
+
+					elsif f (line, 2) = section_end then -- section footer detected in field 2
+
+						-- Now that the section ends, the data collected in temporarily
+						-- variables is processed.
+						execute_section;
+						
+						stack.pop;
+						if stack.empty then
+							log (write_top_level_reached, log_threshold + 3);
+						else
+							log (write_return_to_section & to_string (stack.current), log_threshold + 3);
+						end if;
+						return true;
+
+					else
+						log_indentation_reset;
+						log (message_error & write_missing_begin_end, console => true);
+						raise constraint_error;
+					end if;
+
+				else -- neither a section header nor footer
+					return false;
+				end if;
+			end set;
+
+		begin -- process_line
+			if set (section_variants, SEC_VARIANTS) then null;
+			elsif set (section_variant, SEC_VARIANT) then null;
+			elsif set (section_terminal_port_map, SEC_TERMINAL_PORT_MAP) then null;
+			elsif set (section_units_internal, SEC_UNITS_INTERNAL) then null;
+			elsif set (section_units_external, SEC_UNITS_EXTERNAL) then null;			
+			elsif set (section_unit, SEC_UNIT) then null;
+			elsif set (section_symbol, SEC_SYMBOL) then null;
+			elsif set (section_shapes, SEC_SHAPES) then null;
+			elsif set (section_line, SEC_LINE) then null;								
+			elsif set (section_arc, SEC_ARC) then null;								
+			elsif set (section_circle, SEC_CIRCLE) then null;
+			elsif set (section_polyline, SEC_POLYLINE) then null;								
+			elsif set (section_rectangle, SEC_RECTANGLE) then null;								
+			elsif set (section_texts, SEC_TEXTS) then null;
+			elsif set (section_text, SEC_TEXT) then null;
+			elsif set (section_placeholders, SEC_PLACEHOLDERS) then null;
+			elsif set (section_placeholder, SEC_PLACEHOLDER) then null;
+			elsif set (section_ports, SEC_PORTS) then null;
+			elsif set (section_port, SEC_PORT) then null;
+			else
+				-- The line contains something else -> the payload data. 
+				-- Temporarily this data is stored in corresponding variables.
+
+				log ("line --> " & to_string (line), log_threshold + 3);
+		
+				case stack.current is
+
+					when SEC_VARIANTS | SEC_UNITS_INTERNAL | SEC_UNITS_EXTERNAL => 
+						case stack.parent is
+							when SEC_INIT => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_VARIANT =>
+						case stack.parent is
+							when SEC_VARIANTS => null; -- nothing to do
+							when others => invalid_section;
+						end case;
+
+					when SEC_TERMINAL_PORT_MAP =>
+						case stack.parent is
+							when SEC_VARIANT => null; -- nothing to do
+							when others => invalid_section;
+						end case;
+
+					when SEC_UNIT =>
+						case stack.parent is
+							when SEC_UNITS_INTERNAL => null; -- nothing to do
+							when SEC_UNITS_EXTERNAL => null; -- nothing to do								
+							when others => invalid_section;
+						end case;
+
+					when SEC_SYMBOL =>
+						case stack.parent is
+							when SEC_UNIT => null; -- nothing to do								
+							when others => invalid_section;
+						end case;
+
+					when SEC_SHAPES =>
+						case stack.parent is
+							when SEC_SYMBOL => null; -- nothing to do								
+							when others => invalid_section;
+						end case;
+
+					when SEC_LINE =>
+						case stack.parent is
+							when SEC_SHAPES => NULL;
+-- 								declare
+-- 									kw : string := f (line, 1);
+-- 								begin
+-- 									if kw = keyword_name then
+-- 										expect_field_count (line, 2);
+-- 										net_class_name := et_pcb.to_net_class_name (f (line,2));
+-- 
+-- 									-- CS: In the following: set a corresponding parameter-found-flag
+-- 									elsif kw = keyword_description then
+-- 										expect_field_count (line, 2);
+-- 										net_class.description := et_pcb.to_net_class_description (f (line,2));
+-- 										
+-- 									elsif kw = keyword_clearance then
+-- 										expect_field_count (line, 2);
+-- 										net_class.clearance := et_pcb_coordinates.to_distance (f (line,2));
+-- 										et_pcb.validate_track_clearance (net_class.clearance);
+-- 										
+-- 									elsif kw = keyword_track_width_min then
+-- 										expect_field_count (line, 2);
+-- 										net_class.track_width_min := et_pcb_coordinates.to_distance (f (line,2));
+-- 										et_pcb.validate_track_width (net_class.track_width_min);
+-- 										
+-- 									elsif kw = keyword_via_drill_min then
+-- 										expect_field_count (line, 2);
+-- 										net_class.via_drill_min := et_pcb_coordinates.to_distance (f (line,2));
+-- 										et_pcb.validate_drill_size (net_class.via_drill_min);
+-- 										
+-- 									elsif kw = keyword_via_restring_min then
+-- 										expect_field_count (line, 2);
+-- 										net_class.via_restring_min := et_pcb_coordinates.to_distance (f (line,2));
+-- 										et_pcb.validate_restring_width (net_class.via_restring_min);
+-- 										
+-- 									elsif kw = keyword_micro_via_drill_min then
+-- 										expect_field_count (line, 2);
+-- 										net_class.micro_via_drill_min := et_pcb_coordinates.to_distance (f (line,2));
+-- 										et_pcb.validate_drill_size (net_class.micro_via_drill_min);
+-- 										
+-- 									elsif kw = keyword_micro_via_restring_min then
+-- 										expect_field_count (line, 2);
+-- 										net_class.micro_via_restring_min := et_pcb_coordinates.to_distance (f (line,2));
+-- 										et_pcb.validate_restring_width (net_class.micro_via_restring_min);
+-- 									else
+-- 										invalid_keyword (kw);
+-- 									end if;
+-- 								end;
+
+							when others => invalid_section;
+						end case;
+
+					when SEC_ARC =>
+						case stack.parent is
+							when SEC_SHAPES => null;
+							when others => invalid_section;
+						end case;
+						
+					when SEC_POLYLINE =>
+						case stack.parent is
+							when SEC_SHAPES => null; -- nothing to do
+							when others => invalid_section;
+						end case;
+					
+					when SEC_RECTANGLE =>
+						case stack.parent is
+							when SEC_SHAPES => null; -- nothing to do
+							when others => invalid_section;
+						end case;
+					
+					when SEC_CIRCLE =>
+						case stack.parent is
+							when SEC_SHAPES => NULL;
+							when others => invalid_section;
+						end case;
+						
+					when SEC_TEXTS =>
+						case stack.parent is
+							when SEC_SYMBOL => NULL;
+							when others => invalid_section;
+						end case;
+
+					when SEC_TEXT =>
+						case stack.parent is
+							when SEC_TEXTS => null; -- nothing to do
+							when others => invalid_section;
+						end case;
+						
+					when SEC_PLACEHOLDERS =>
+						case stack.parent is
+							when SEC_SYMBOL => null; -- nothing to do
+							when others => invalid_section;
+						end case;
+						
+					when SEC_PLACEHOLDER =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => NULL;
+							when others => invalid_section;
+						end case;
+
+					when SEC_PORTS =>
+						case stack.parent is 
+							when SEC_SYMBOL => NULL;
+							when others => invalid_section;
+						end case;
+
+					when SEC_PORT =>
+						case stack.parent is
+							when SEC_PORTS => null; -- nothing to do
+							when others => invalid_section;
+						end case;
+						
+					when SEC_INIT => null; -- CS: should never happen
+				end case;
+			end if;
+
+			exception when event: others =>
+				log ("file " & to_string (file_name) & latin_1.space 
+					 & affected_line (line) & to_string (line), console => true);
+				raise;
+			
+		end process_line;
+
+
+			
+		
+	begin -- read_device_file
 		log_indentation_up;
 		log ("reading device model " & to_string (file_name) & " ...", log_threshold);
 
+		-- open device model file
+		open (
+			file => file_handle,
+			mode => in_file, 
+			name => to_string (file_name));
+
+		set_input (file_handle);
+		
+		-- Init section stack.
+		stack.init;
+		stack.push (SEC_INIT);
+
+		-- read the file line by line
+		while not end_of_file loop
+			line := et_string_processing.read_line (
+				line 			=> get_line,
+				number			=> ada.text_io.line (current_input),
+				comment_mark 	=> comment_mark,
+				delimiter_wrap	=> true, -- strings are enclosed in quotations
+				ifs 			=> latin_1.space); -- fields are separated by space
+
+			-- we are interested in lines that contain something. emtpy lines are skipped:
+			if field_count (line) > 0 then
+				process_line;
+			end if;
+		end loop;
+
+		-- As a safety measure the top section must be reached finally.
+		if stack.depth > 1 then 
+			log (message_warning & write_section_stack_not_empty);
+		end if;
 
 		log_indentation_down;
-	end open_device;
+		set_input (standard_input);
+		close (file_handle);
+
+		exception when event: others =>
+			if is_open (file_handle) then close (file_handle); end if;
+			raise;
+
+	end read_device_file;
 							  
 	procedure save_symbol ( -- CS: testing requried
 	-- Saves the given symbol model in a file specified by name.
@@ -2729,20 +3203,6 @@ package body et_project is
 		-- We need a backup of the current working directory. When this procedure finishes,
 		-- the working directory must restored.
 		current_working_directory : string := current_directory;
-
-		function write_top_level_reached return string is begin return "top level reached"; end;
-		function write_enter_section return string is begin return "entering section "; end;
-		function write_return_to_section return string is begin return "returning to section "; end;
-		function write_missing_begin_end return string is begin 
-			return "missing " & section_begin & " or " & section_end & " after section name !"; end;
-		function write_section_stack_not_empty return string is begin
-			return "section stack not empty !"; end;
-
-		procedure invalid_section is begin
-			log_indentation_reset;
-			log (message_error & "invalid section name !", console => true);
-			raise constraint_error;
-		end;
 
 		procedure invalid_keyword (word : in string) is begin
 			log_indentation_reset;
@@ -3547,7 +4007,7 @@ package body et_project is
 						end if;
 
 						-- read the device model (like ../libraries/transistor/pnp.dev)
-						open_device (device.model, log_threshold + 3);
+						read_device_file (device.model, log_threshold + 3);
 						
 						-- reset pointer "device" so that the old device gets destroyed
 						device := null;
@@ -7185,7 +7645,7 @@ package body et_project is
 				end if;
 			end loop;
 
-			-- As a safety measure the top section must be reached.
+			-- As a safety measure the top section must be reached finally.
 			if stack.depth > 1 then 
 				log (message_warning & write_section_stack_not_empty);
 			end if;

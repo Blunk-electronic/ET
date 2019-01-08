@@ -249,7 +249,7 @@ package et_project is
 		device			: in et_libraries.type_device; -- the actual device model
 		log_threshold	: in et_string_processing.type_log_level);
 
-	procedure open_device (
+	procedure read_device_file (
 	-- Opens the device and stores it in container et_libraries.devices.
 		file_name 		: in et_libraries.type_device_library_name.bounded_string; -- ../lbr/logic_ttl/7400.dev
 		log_threshold	: in et_string_processing.type_log_level);
@@ -535,6 +535,7 @@ package et_project is
 
 	
 	type type_section_name_device is (
+		SEC_INIT,
 		SEC_VARIANTS,
 		SEC_VARIANT,
 		SEC_TERMINAL_PORT_MAP,
@@ -549,6 +550,7 @@ package et_project is
 		SEC_RECTANGLE,
 		SEC_TEXTS,
 		SEC_TEXT,
+		SEC_PLACEHOLDER,		
 		SEC_PLACEHOLDERS,
 		SEC_PORTS,
 		SEC_PORT,
