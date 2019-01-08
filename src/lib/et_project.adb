@@ -2164,6 +2164,21 @@ package body et_project is
 		
 	end save_device;
 
+	procedure open_device (
+	-- Opens the device and stores it in container et_libraries.devices.
+		file_name 		: in et_libraries.type_device_library_name.bounded_string; -- ../lbr/logic_ttl/7400.dev
+		log_threshold	: in et_string_processing.type_log_level) is
+		use et_string_processing;
+		use et_libraries;
+		file_handle : ada.text_io.file_type;
+	begin
+		log_indentation_up;
+		log ("reading device model " & to_string (file_name) & " ...", log_threshold);
+
+
+		log_indentation_down;
+	end open_device;
+							  
 	procedure save_symbol ( -- CS: testing requried
 	-- Saves the given symbol model in a file specified by name.
 		name			: in string; -- libraries/symbols/resistor.sym
@@ -3196,7 +3211,7 @@ package body et_project is
 			
 			device_partcode			: et_libraries.type_component_partcode.bounded_string;
 			device_purpose			: et_libraries.type_component_purpose.bounded_string;
-			device_bom				: et_libraries.type_bom;
+			device_bom				: et_libraries.type_bom := et_libraries.type_bom'first;
 			device_variant			: et_libraries.type_component_variant_name.bounded_string; -- D, N
 			device_position			: et_pcb_coordinates.type_package_position; -- incl. angle and face
 
@@ -3211,7 +3226,7 @@ package body et_project is
 			-- the temporarily collection of placeholders of packages
 			device_text_placeholders		: et_pcb.type_text_placeholders; -- silk screen, assy doc, top, bottom
 
-			-- temporarily placholders of unit reference (IC12), value (7400) and purpose (clock buffer)
+			-- temporarily placeholders of unit reference (IC12), value (7400) and purpose (clock buffer)
 			unit_placeholder			: et_libraries.type_text_basic;
 			unit_placeholder_position	: et_coordinates.type_2d_point;
 			unit_placeholder_meaning	: et_libraries.type_text_meaning := et_libraries.type_text_meaning'first;
@@ -3497,16 +3512,31 @@ package body et_project is
 						module_name		: in type_submodule_name.bounded_string;
 						module			: in out et_schematic.type_module) is
 						use et_schematic;
-						device_cursor : type_devices.cursor;
+						use et_libraries;
+						device_cursor : et_schematic.type_devices.cursor;
 						inserted : boolean;
 					begin
 						log ("device " & et_libraries.to_string (device_name), log_threshold + 2);
 
-						type_devices.insert (
+						-- assign temporarily variables for model and value:
+						device.model := device_model;
+						device.value := device_value;
+
+						-- assign appearance specific temporarily variables
+						if device.appearance = et_libraries.SCH_PCB then
+							device.partcode := device_partcode;
+							device.purpose := device_purpose;
+							device.bom := device_bom;
+							device.variant := device_variant;
+
+							-- CS: warn operator if provided but ignored due to the fact that device is virtual
+						end if;
+
+						et_schematic.type_devices.insert (
 							container	=> module.devices,
 							position	=> device_cursor,
 							inserted	=> inserted,
-							key			=> device_name,
+							key			=> device_name, -- IC23, R5, LED12
 							new_item	=> device.all);
 
 						if not inserted then
@@ -3516,8 +3546,19 @@ package body et_project is
 							raise constraint_error;
 						end if;
 
+						-- read the device model (like ../libraries/transistor/pnp.dev)
+						open_device (device.model, log_threshold + 3);
+						
 						-- reset pointer "device" so that the old device gets destroyed
 						device := null;
+
+						-- clean up temporarily variables for next device
+						device_model	:= to_device_library_name ("");
+						device_value	:= to_value ("");
+						device_purpose	:= to_purpose ("");
+						device_partcode := to_partcode ("");
+						device_bom		:= type_bom'first;
+						device_variant	:= to_component_variant_name ("");
 					end insert_device;						
 									
 					procedure insert_line (
@@ -5368,7 +5409,6 @@ package body et_project is
 					end if;
 				end set;
 
-
 			begin -- process_line
 				if set (section_net_classes, SEC_NET_CLASSES) then null;
 				elsif set (section_net_class, SEC_NET_CLASS) then null;
@@ -7106,7 +7146,6 @@ package body et_project is
 				
 			end process_line;
 
-			
 		begin -- read_module_file
 			-- write name of configuration file
 			log (file_name, log_threshold + 1);

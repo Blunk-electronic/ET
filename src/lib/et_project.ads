@@ -249,6 +249,11 @@ package et_project is
 		device			: in et_libraries.type_device; -- the actual device model
 		log_threshold	: in et_string_processing.type_log_level);
 
+	procedure open_device (
+	-- Opens the device and stores it in container et_libraries.devices.
+		file_name 		: in et_libraries.type_device_library_name.bounded_string; -- ../lbr/logic_ttl/7400.dev
+		log_threshold	: in et_string_processing.type_log_level);
+	
 	procedure save_symbol (
 	-- Saves the given symbol model in a file specified by name.
 		name			: in string; -- libraries/symbols/resistor.sym
