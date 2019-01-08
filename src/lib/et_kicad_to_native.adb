@@ -3112,7 +3112,7 @@ package body et_kicad_to_native is
 					
 			begin -- query_components
 				while component_cursor /= et_kicad.type_components_library.no_element loop
-					generic_name := key (component_cursor);
+					generic_name := et_kicad.strip_tilde (key (component_cursor));
 					--log ("device " & to_string (generic_name), log_threshold + 2);
 
 					-- Build the name of the device model from the component library name and generic name:

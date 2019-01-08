@@ -2617,34 +2617,35 @@ package body et_project is
 			mode => in_file, 
 			name => to_string (file_name));
 
-		set_input (file_handle);
+-- 		set_input (file_handle);
 		
-		-- Init section stack.
-		stack.init;
-		stack.push (SEC_INIT);
+-- 		-- Init section stack.
+-- 		stack.init;
+-- 		stack.push (SEC_INIT);
+-- 
+-- 		-- read the file line by line
+-- 		while not end_of_file loop
+-- 			line := et_string_processing.read_line (
+-- 				line 			=> get_line,
+-- 				number			=> ada.text_io.line (current_input),
+-- 				comment_mark 	=> comment_mark,
+-- 				delimiter_wrap	=> true, -- strings are enclosed in quotations
+-- 				ifs 			=> latin_1.space); -- fields are separated by space
+-- 
+-- 			-- we are interested in lines that contain something. emtpy lines are skipped:
+-- 			if field_count (line) > 0 then
+-- 				process_line;
+-- 			end if;
+-- 		end loop;
+-- 
+-- 		-- As a safety measure the top section must be reached finally.
+-- 		if stack.depth > 1 then 
+-- 			log (message_warning & write_section_stack_not_empty);
+-- 		end if;
 
-		-- read the file line by line
-		while not end_of_file loop
-			line := et_string_processing.read_line (
-				line 			=> get_line,
-				number			=> ada.text_io.line (current_input),
-				comment_mark 	=> comment_mark,
-				delimiter_wrap	=> true, -- strings are enclosed in quotations
-				ifs 			=> latin_1.space); -- fields are separated by space
+-- 		log_indentation_down;
+		-- 		set_input (standard_input);
 
-			-- we are interested in lines that contain something. emtpy lines are skipped:
-			if field_count (line) > 0 then
-				process_line;
-			end if;
-		end loop;
-
-		-- As a safety measure the top section must be reached finally.
-		if stack.depth > 1 then 
-			log (message_warning & write_section_stack_not_empty);
-		end if;
-
-		log_indentation_down;
-		set_input (standard_input);
 		close (file_handle);
 
 		exception when event: others =>
@@ -5581,7 +5582,7 @@ package body et_project is
 								when SEC_INIT => null;
 
 								when SEC_DRAWING_FRAMES =>
-
+									
 									-- set board/layout frame template
 									update_element (
 										container	=> modules,

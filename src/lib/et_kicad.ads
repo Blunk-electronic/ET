@@ -382,6 +382,11 @@ package et_kicad is
 	end record;
 
 
+	function strip_tilde (generic_name : in et_libraries.type_component_generic_name.bounded_string) return
+		et_libraries.type_component_generic_name.bounded_string;
+	-- Removes a possible heading tilde character from a generic component name.
+	-- example: ~TRANSISTOR_NPN becomes TRANSISTOR_NPN	
+	
 	
 	-- Library components are stored in a map.
 	-- Within the map they are accessed by a key type_component_name (something like "CAPACITOR").
