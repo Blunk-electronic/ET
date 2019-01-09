@@ -740,7 +740,7 @@ package body et_kicad is
 		schematic : in boolean) -- set false if it is about fields in a library, true if it is about a schematic field	
 		return et_libraries.type_text_meaning is
 
-		meaning : et_libraries.type_text_meaning;
+		meaning : et_libraries.type_text_meaning := et_libraries.MISC;
 
 		function strip_f ( text : in string) return string is
 		-- removes the heading character from the given string.
@@ -771,7 +771,7 @@ package body et_kicad is
 						when component_field_commissioned	=> meaning := et_libraries.commissioned;
 						when component_field_updated		=> meaning := et_libraries.updated;
 						when component_field_author			=> meaning := et_libraries.author;
-						when others => invalid_field (line); -- CS: better do nothing or issua a warning
+						when others => null;
 					end case;
 
 				else
@@ -795,7 +795,7 @@ package body et_kicad is
 						when component_field_commissioned	=> meaning := et_libraries.commissioned;
 						when component_field_updated		=> meaning := et_libraries.updated;
 						when component_field_author			=> meaning := et_libraries.author;
-						when others => invalid_field (line);  -- CS: better do nothing or issua a warning
+						when others => null;
 					end case;
 
 				else
@@ -7425,7 +7425,6 @@ package body et_kicad is
 				field_datasheet_found		: boolean := false;
 				field_purpose_found			: boolean := false;
 				field_partcode_found		: boolean := false;
-				field_bom_found				: boolean := false;
 
 				-- These are the actual fields that descibe the component more detailled.
 				-- They are contextual validated once the given lines are read completely.
@@ -7781,15 +7780,6 @@ package body et_kicad is
 								check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_purpose.size);
 							end if;
 
-							-- bom
-							log ("bom", level => log_threshold + 1);
-							if not field_bom_found then
-								missing_field (et_libraries.bom);
-							else
-								check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_bom.size);
-								-- CS: check content of field_bom
-							end if;
-							
 							-- put_line (indent(indentation + 1) & "crosschecks");
 							-- CS: test partcode, verify agsinst prefix, value and package
 							-- CS: test function against prefix of user interactive parts (X, SW, LED, ...)
@@ -8685,8 +8675,7 @@ package body et_kicad is
 								check_author_characters (
 									author => type_component_author.to_bounded_string (content (field_author)));
 								
-							when others => invalid_field (et_kicad.line); -- other fields are not accepted and cause an error
-									-- CS: better do nothing or issua a warning
+							when others => null; -- ignore other fields
 						end case;
 
 						--log ("unit field B: " & to_string (et_kicad.line));
