@@ -5,10 +5,6 @@
 prefix IC
 value 7400
 appearance sch_pcb
-commissioned 1975-02-21T23:04:22
-updated 2011-01-21T23:04:22
-author MBL
-purpose ?PURPOSE?
 partcode IC_PAC_S_SO14_VAL_
 [VARIANTS BEGIN]
 	[VARIANT BEGIN]

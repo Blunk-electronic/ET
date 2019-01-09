@@ -158,16 +158,12 @@ package et_libraries is
 	type type_text_meaning is (
 		REFERENCE,		-- for things like R301 or X9
 		VALUE,			-- for component values like "200R"
-		COMMISSIONED,	-- for the date of commission in the library
-		UPDATED,		-- for the date of the last edit in the library
-		AUTHOR,			-- for the person who did the last edit
-		
 		PACKGE,			-- for component packages like SOT23
 		DATASHEET,		-- for url to datasheet
 		PURPOSE,		-- for the purpose of the component in the design.
 		PARTCODE,		-- for the primary key into an external database (like "R_PAC_S_0805_VAL_200R")
 		NOTE,			-- for notes made by a person
-		BOM,			-- for assembly variants and assembly options
+--		BOM,			-- for assembly variants and assembly options
 		MISC); -- CS: others ?
 
 	function to_string (meaning : in type_text_meaning) return string;
