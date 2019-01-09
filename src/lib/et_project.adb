@@ -2099,7 +2099,6 @@ package body et_project is
 		-- package variants
 		case device.appearance is
 			when SCH_PCB =>
-				write (keyword => keyword_purpose , space => true, parameters => to_string (device.purpose));
 				write (keyword => keyword_partcode, space => true, parameters => to_string (device.partcode));
 
 				section_mark (section_variants, HEADER);

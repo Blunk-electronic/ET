@@ -970,7 +970,6 @@ package et_libraries is
 			-- If a component appears in both schematic and layout it comes 
 			-- with at least one package/footprint variant. We store variants in a map.
 			when sch_pcb => 
-				purpose			: type_component_purpose.bounded_string;
 				partcode		: type_component_partcode.bounded_string;
 				variants		: type_component_variants.map;
 				

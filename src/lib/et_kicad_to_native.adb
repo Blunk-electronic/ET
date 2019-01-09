@@ -3157,7 +3157,6 @@ package body et_kicad_to_native is
 									author			=> element (component_cursor).author,
 									units_internal	=> <>, -- internal units will come later
 									units_external	=> <>, -- kicad components do not have external symbols
-									purpose			=> element (component_cursor).purpose,
 									partcode		=> element (component_cursor).partcode,
 									variants		=> element (component_cursor).variants
 
